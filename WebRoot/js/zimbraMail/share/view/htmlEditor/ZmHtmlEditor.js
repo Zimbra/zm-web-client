@@ -144,8 +144,7 @@ function() {
 	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML) {
 		setTimeout(AjxCallback.simpleClosure(this._deserializeAceObjects, this), 100);
 	}
-	if(this._onContentInitializeCallback){
-        //console.log("this._onContentIntitializedCallback.run()");
+	if (this._onContentInitializeCallback) {
 		this._onContentInitializeCallback.run();
 	}
 };
@@ -220,13 +219,13 @@ function(callback) {
 
 ZmHtmlEditor.prototype.resetSpellCheck =
 function(){
-    this.discardMisspelledWords(); 
-    this._spellCheckHideModeDiv();
+	this.discardMisspelledWords();
+	this._spellCheckHideModeDiv();
 };
 
 ZmHtmlEditor.prototype.discardMisspelledWords =
 function(keepModeDiv) {
-	if (!this._spellCheck) return;
+	if (!this._spellCheck) { return; }
 
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var doc = this._getIframeDoc();
@@ -239,21 +238,23 @@ function(keepModeDiv) {
 			if (!span) continue;
 
 			p = span.parentNode;
-			while (span.firstChild)
+			while (span.firstChild) {
 				p.insertBefore(span.firstChild, span);
+			}
 			p.removeChild(span);
 		}
 
 		if (!AjxEnv.isIE) {
 			doc.body.normalize(); // IE crashes here.
 		} else {
-			doc.body.innerHTML = doc.body.innerHTML;
+			doc.body.innerHTML = doc.body.innerHTML; // WTF.
 		}
 
 		// remove the spell check styles
 		p = doc.getElementById("ZM-SPELLCHECK-STYLE");
-		if (p)
+		if (p) {
 			p.parentNode.removeChild(p);
+		}
 
 		doc.body.style.display = "";
 		this._unregisterEditorEventHandler(doc, "contextmenu");
@@ -262,6 +263,11 @@ function(keepModeDiv) {
 		var div = document.getElementById(this._spellCheckDivId);
 		var scrollTop = div.scrollTop;
 		var textArea = document.getElementById(this._textAreaId);
+		// bug: 41760 - HACK. Convert the nbsps back to spaces since Gecko seems
+		// to return control characters for HTML entities.
+		if (AjxEnv.isGeckoBased) {
+			div.innerHTML = AjxStringUtil.htmlDecode(div.innerHTML, true);
+		}
 		textArea.value = AjxUtil.getInnerText(div);
 
 		// avoid mem. leaks, hopefully
@@ -295,7 +301,7 @@ function() {
 };
 
 ZmHtmlEditor.prototype._resetFormatControlDefaults =
-function(){
+function() {
 	this._fontFamilyButton.setText(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
 	this._fontSizeButton.setText(this._getFontSizeLabel(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE)));
 	this._fontColorButton.setColor(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR));
@@ -418,52 +424,55 @@ function(words, keepModeDiv) {
 	// class="ZM-SPELLCHECK-MISSPELLED">word</span>
 	rec = function(node) {
 		switch (node.nodeType) {
-		    case 1: /* ELEMENT */
-			for (var i = node.firstChild; i; i = rec(i));
-			node = node.nextSibling;
-			break;
-		    case 3: /* TEXT */
-			if (!/[^\s\xA0]/.test(node.data)) {
+			case 1: /* ELEMENT */
+				for (var i = node.firstChild; i; i = rec(i));
 				node = node.nextSibling;
 				break;
-			}
-			// for correct handling of whitespace we should
-			// not mess ourselves with leading/trailing
-			// whitespace, thus we save it in 2 text nodes.
-			var a = null, b = null;
+			case 3: /* TEXT */
+				if (!/[^\s\xA0]/.test(node.data)) {
+					node = node.nextSibling;
+					break;
+				}
+				// for correct handling of whitespace we should
+				// not mess ourselves with leading/trailing
+				// whitespace, thus we save it in 2 text nodes.
+				var a = null, b = null;
 
-			var result = /^[\s\xA0]+/.exec(node.data);
-			if (result) {
-				// a will contain the leading space
-				a = node;
-				node = node.splitText(result[0].length);
-			}
-			result = /[\s\xA0]+$/.exec(node.data);
-			if (result) {
-				// and b will contain the trailing space
-				b = node.splitText(node.data.length - result[0].length);
-			}
+				var result = /^[\s\xA0]+/.exec(node.data);
+				if (result) {
+					// a will contain the leading space
+					a = node;
+					node = node.splitText(result[0].length);
+				}
+				result = /[\s\xA0]+$/.exec(node.data);
+				if (result) {
+					// and b will contain the trailing space
+					b = node.splitText(node.data.length - result[0].length);
+				}
 
-			var text = hiliteWords(node.data, false);
-			text = text.replace(/^ +/, "&nbsp;").replace(/ +$/, "&nbsp;");
-			var div = doc.createElement("div");
-			div.innerHTML = text;
+				var text = hiliteWords(node.data, false);
+				text = text.replace(/^ +/, "&nbsp;").replace(/ +$/, "&nbsp;");
+				var div = doc.createElement("div");
+				div.innerHTML = text;
 
-			// restore whitespace now
-			if (a)
-				div.insertBefore(a, div.firstChild);
-			if (b)
-				div.appendChild(b);
+				// restore whitespace now
+				if (a) {
+					div.insertBefore(a, div.firstChild);
+				}
+				if (b) {
+					div.appendChild(b);
+				}
 
-			var p = node.parentNode;
-			while (div.firstChild)
-				p.insertBefore(div.firstChild, node);
-			div = node.nextSibling;
-			p.removeChild(node);
-			node = div;
-			break;
-		    default :
-			node = node.nextSibling;
+				var p = node.parentNode;
+				while (div.firstChild) {
+					p.insertBefore(div.firstChild, node);
+				}
+				div = node.nextSibling;
+				p.removeChild(node);
+				node = div;
+				break;
+			default :
+				node = node.nextSibling;
 		}
 		return node;
 	};
@@ -496,7 +505,6 @@ function(words, keepModeDiv) {
 		this._registerEditorEventHandler(doc, "contextmenu");
 	}
 	else { // TEXT mode
-
 		var textArea = document.getElementById(this._textAreaId);
 		var scrollTop = textArea.scrollTop;
 		var size = Dwt.getSize(textArea);
@@ -705,16 +713,14 @@ function(dontCreateButtons) {
 		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 
 		// Default is to have ONE toolbar now
-        if(!dontCreateButtons){
-            this._createToolBar1(tb);
-            new DwtControl({parent:tb, className:"vertSep"});
-            this._createToolBar2(tb);
-            this._resetFormatControls();
-        }
+		if (!dontCreateButtons) {
+			this._createToolBar1(tb);
+			new DwtControl({parent:tb, className:"vertSep"});
+			this._createToolBar2(tb);
+			this._resetFormatControls();
+		}
 
 		this._toolbars.push(tb);
-
-
 	}
 };
 
@@ -724,35 +730,24 @@ function(tb) {
 	this._createFontSizeMenu(tb);
 	this._createStyleMenu(tb);
 	this._createJustifyMenu(tb);
-
 	new DwtControl({parent:tb, className:"vertSep"});
-
 	this._createListMenu(tb);
-
 	this._createIndentMenu(tb);
-
 	new DwtControl({parent:tb, className:"vertSep"});
-
-    this._createBUIButtons(tb);
+	this._createBUIButtons(tb);
 
 	appCtxt.notifyZimlets("on_htmlEditor_createToolbar1", [this, tb]);
 };
 
 ZmHtmlEditor.prototype._createToolBar2 =
 function(tb) {
-
-    this._createFontColorButtons(tb);
-
+	this._createFontColorButtons(tb);
 	new DwtControl({parent:tb, className:"vertSep"});
-
-    this._createHorizRuleButton(tb);
-
-    this._createUrlButton(tb);
-
-    this._createTableMenu(tb);
-
+	this._createHorizRuleButton(tb);
+	this._createUrlButton(tb);
+	this._createTableMenu(tb);
 	if (this.ACE_ENABLED) {
-        this._createSpreadSheetButton(tb);
+		this._createSpreadSheetButton(tb);
 	}
 
 	appCtxt.notifyZimlets("on_htmlEditor_createToolbar2", [this, tb]);
@@ -975,21 +970,20 @@ function(html, insertFontStyle, onlyInnerContent) {
 		var cont = [], idx=0;
 
 		if (insertFontStyle) {
-            cont[idx++] = "<div";
+			cont[idx++] = "<div";
 			cont[idx++] = " style='font-family:";
 			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
 			cont[idx++] = "; font-size: ";
 			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 			cont[idx++] = "; color: ";
 			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-			cont[idx++] = ";'";
-            cont[idx++] = ">";
-            cont[idx++] = html;
-		    cont[idx++] = "</div>";
-		}else{
-            cont[idx++] = html;
-        }
-        
+			cont[idx++] = ";'>";
+			cont[idx++] = html;
+			cont[idx++] = "</div>";
+		} else {
+			cont[idx++] = html;
+		}
+
 		return cont.join("");
 	}
 
@@ -1001,8 +995,7 @@ function(html, insertFontStyle, onlyInnerContent) {
 
 	return [
 		"<html><head>",
-		p_style,
-		headContent,
+		p_style, headContent,
 		"</head><body>",
 		html,
 		"</body></html>"
@@ -1090,9 +1083,8 @@ function() {
 //Editor Buttons
 
 ZmHtmlEditor.prototype._createBUIButtons =
-function(tb){
-
-    var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
+function(tb) {
+	var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
 	var listener = new AjxListener(this, this._fontStyleListener);
 	this._boldButton = new DwtToolBarButton(params);
 	this._boldButton.setImage("Bold");
@@ -1115,81 +1107,75 @@ function(tb){
 };
 
 ZmHtmlEditor.prototype._createFontColorButtons =
-function(tb){
+function(tb) {
+	this._fontColorButton = new ZmHtmlEditorColorPicker(tb,null,"ZToolbarButton");
+	this._fontColorButton.dontStealFocus();
+	this._fontColorButton.setImage("FontColor");
+	this._fontColorButton.showColorDisplay(true);
+	this._fontColorButton.setToolTipContent(ZmMsg.fontColor);
+	this._fontColorButton.addSelectionListener(new AjxListener(this, this._fontColorListener));
 
-    this._fontColorButton = new ZmHtmlEditorColorPicker(tb,null,"ZToolbarButton");
-    this._fontColorButton.dontStealFocus();
-    this._fontColorButton.setImage("FontColor");
-    this._fontColorButton.showColorDisplay(true);
-    this._fontColorButton.setToolTipContent(ZmMsg.fontColor);
-    this._fontColorButton.addSelectionListener(new AjxListener(this, this._fontColorListener));
-
-    this._fontBackgroundButton = new ZmHtmlEditorColorPicker(tb, null, "ZToolbarButton");
-    this._fontBackgroundButton.dontStealFocus();
-    this._fontBackgroundButton.setImage("FontBackground");
-    this._fontBackgroundButton.showColorDisplay(true);
-    this._fontBackgroundButton.setToolTipContent(ZmMsg.fontBackground);
-    this._fontBackgroundButton.addSelectionListener(new AjxListener(this, this._fontHiliteListener));
-
+	this._fontBackgroundButton = new ZmHtmlEditorColorPicker(tb, null, "ZToolbarButton");
+	this._fontBackgroundButton.dontStealFocus();
+	this._fontBackgroundButton.setImage("FontBackground");
+	this._fontBackgroundButton.showColorDisplay(true);
+	this._fontBackgroundButton.setToolTipContent(ZmMsg.fontBackground);
+	this._fontBackgroundButton.addSelectionListener(new AjxListener(this, this._fontHiliteListener));
 };
 
 ZmHtmlEditor.prototype._createHorizRuleButton =
-function(tb){
-
-    var params = {parent:tb};
-    this._horizRuleButton = new DwtToolBarButton(params);
-    this._horizRuleButton.setImage("HorizRule");
-    this._horizRuleButton.setToolTipContent(ZmMsg.horizRule);
-    this._horizRuleButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
-    this._horizRuleButton.addSelectionListener(new AjxListener(this, this._insElementListener));
-
+function(tb) {
+	var params = {parent:tb};
+	this._horizRuleButton = new DwtToolBarButton(params);
+	this._horizRuleButton.setImage("HorizRule");
+	this._horizRuleButton.setToolTipContent(ZmMsg.horizRule);
+	this._horizRuleButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
+	this._horizRuleButton.addSelectionListener(new AjxListener(this, this._insElementListener));
 };
 
 ZmHtmlEditor.prototype._createUrlButton =
-function(tb){
-    var params = {parent:tb};
-    this._insertLinkButton = new DwtToolBarButton(params);
+function(tb) {
+	var params = {parent:tb};
+	this._insertLinkButton = new DwtToolBarButton(params);
 	this._insertLinkButton.setImage("URL");
 	this._insertLinkButton.setToolTipContent(ZmMsg.insertLink);
 	this._insertLinkButton.addSelectionListener(new AjxListener(this, this._insertLinkListener));
 };
 
 ZmHtmlEditor.prototype._createTableMenu =
-function(tb){
+function(tb) {
+	var params = {parent:tb};
+	// BEGIN: Table operations
+	var b = this._tableMenu = new DwtToolBarButton(params);
+	b.setToolTipContent(ZmMsg.insertTable);
+	b.dontStealFocus();
+	b.setImage("Table");
+	var menu = new DwtMenu({parent:b});
+	b.setMenu(menu);
 
-    var params = {parent:tb};
-    // BEGIN: Table operations
-    var b = this._tableMenu = new DwtToolBarButton(params);
-    b.setToolTipContent(ZmMsg.insertTable);
-    b.dontStealFocus();
-    b.setImage("Table");
-    var menu = new DwtMenu({parent:b});
-    b.setMenu(menu);
+	var item = new DwtMenuItem({parent:menu});
+	item.setText(ZmMsg.insertTable);
+	var grid_menu = new DwtMenu({parent:item, style:DwtMenu.GENERIC_WIDGET_STYLE});
+	var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
+	grid.addSelectionListener(new AjxListener(this, this._createTableListener));
+	item.setMenu(grid_menu);
+	item.setImage("InsertTable");
 
-    var item = new DwtMenuItem({parent:menu});
-    item.setText(ZmMsg.insertTable);
-    var grid_menu = new DwtMenu({parent:item, style:DwtMenu.GENERIC_WIDGET_STYLE});
-    var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
-    grid.addSelectionListener(new AjxListener(this, this._createTableListener));
-    item.setMenu(grid_menu);
-    item.setImage("InsertTable");
-
-    new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
-    this.__createTableOperationItems(menu);
-    // END: table operations
+	new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
+	this.__createTableOperationItems(menu);
+	// END: table operations
 };
 
 ZmHtmlEditor.prototype._createSpreadSheetButton =
-function(tb){
+function(tb) {
+	new DwtControl({parent:tb, className:"vertSep"});
 
-    new DwtControl({parent:tb, className:"vertSep"});
-
-    var params = {parent:tb, style:0};
-    var b = new DwtToolBarButton(params);
-    b.setImage("SpreadSheet");
-    b.setData("ACE", "ZmSpreadSheet");
-    b.setToolTipContent(ZmMsg.insertSpreadsheet);
-    b.addSelectionListener(new AjxListener(this, this._menu_insertObject));
+	var params = {parent:tb, style:0};
+	var b = new DwtToolBarButton(params);
+	b.setImage("SpreadSheet");
+	b.setData("ACE", "ZmSpreadSheet");
+	b.setToolTipContent(ZmMsg.insertSpreadsheet);
+	b.addSelectionListener(new AjxListener(this, this._menu_insertObject));
 };
 
 ZmHtmlEditor.prototype._createStyleMenu =
@@ -1285,8 +1271,9 @@ function(tb) {
 		var mi = menu.createMenuItem(item.id, {image:item.image, style:DwtMenuItem.RADIO_STYLE});
 		mi.addSelectionListener(listener);
 		mi.setData(ZmHtmlEditor._VALUE, item.id);
-		if (i == 0)
+		if (i == 0) {
 			mi.setChecked(true, true);
+		}
 	}
 
 	b.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
@@ -1344,7 +1331,6 @@ function(fontSize) {
 
 ZmHtmlEditor.prototype._rteStateChangeListener =
 function(ev) {
-
 	this._boldButton.setSelected(ev.isBold);
 	this._underlineButton.setSelected(ev.isUnderline);
 	this._italicButton.setSelected(ev.isItalic);
@@ -1409,18 +1395,21 @@ function(ev) {
 ZmHtmlEditor.prototype._handleEditorEvent =
 function(ev) {
 	var rv = this._eventCallback ? this._eventCallback.run(ev) : true;
-	if (rv)
+	if (rv) {
 		rv = DwtHtmlEditor.prototype._handleEditorEvent.call(this, ev);
-	if (this._TIMER_spell)
+	}
+	if (this._TIMER_spell) {
 		clearTimeout(this._TIMER_spell);
+	}
 	var self = this;
 	if (this._spellCheck) {
 		var dw;
 		// This probably sucks.
-		if (/mouse|context|click|select/i.test(ev.type))
+		if (/mouse|context|click|select/i.test(ev.type)) {
 			dw = new DwtMouseEvent(true);
-		else
+		} else {
 			dw = new DwtUiEvent(true);
+		}
 		dw.setFromDhtmlEvent(ev);
 		this._TIMER_spell = setTimeout(function() {
 			self._handleSpellCheckerEvents(dw);
@@ -1659,20 +1648,20 @@ function(ev) {
 					item.addSelectionListener(self._spellCheckSuggestionListenerObj);
 				}
 			} else {
-                item = menu.createMenuItem("clear", {text:ZmMsg.noSuggestions, className:"ZMenuItem ZmSpellMenuItem"});
+				item = menu.createMenuItem("clear", {text:ZmMsg.noSuggestions, className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("value", "");
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
 				menu.createSeparator();
 
-                item = menu.createMenuItem("clear", {text:ZmMsg.clearText, className:"ZMenuItem ZmSpellMenuItem"});
+				item = menu.createMenuItem("clear", {text:ZmMsg.clearText, className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("value", "");
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
 				item.addSelectionListener(self._spellCheckSuggestionListenerObj);
-            }
+			}
 			return menu;
 		};
 		sc.menu = makeMenu(0, this);
@@ -1718,8 +1707,8 @@ function(words) {
 		if (misspelled == null || misspelled.length == 0) {
 			appCtxt.setStatusMsg(ZmMsg.noMisspellingsFound, ZmStatusView.LEVEL_INFO);
 		} else {
-            var msg = AjxMessageFormat.format(ZmMsg.misspellingsResult, misspelled.length);
-            appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+			var msg = AjxMessageFormat.format(ZmMsg.misspellingsResult, misspelled.length);
+			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 
 			this.highlightMisspelledWords(misspelled);
 			wordsFound = true;
@@ -1842,7 +1831,7 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 };
 
 ZmHtmlEditorColorPicker = function(parent,style,className) {
-    DwtButtonColorPicker.call(this, parent,style,className);
+	DwtButtonColorPicker.call(this, parent,style,className);
 };
 ZmHtmlEditorColorPicker.prototype = new DwtButtonColorPicker;
 ZmHtmlEditorColorPicker.prototype.constructor = ZmHtmlEditorColorPicker;
