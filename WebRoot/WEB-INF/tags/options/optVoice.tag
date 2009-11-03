@@ -569,7 +569,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 		//-->
 	</script>
 	
-	<c:set var="selectiveCallForwardingActive" value="${(requestScope.selectiveCallForwardingActive != 'FALSE' && (features.selectiveCallForwarding.isActive && !empty features.selectiveCallForwarding.forwardFrom && !empty features.selectiveCallForwarding.forwardTo)) || (requestScope.selectiveCallForwardingActive == 'TRUE')}"/>
+	<c:set var="selectiveCallForwardingActive" value="${(requestScope.selectiveCallForwardingActive != 'FALSE' && (features.selectiveCallForwarding.isActive && !empty sessionScope.selectiveCallForwardingFrom[phone] && !empty sessionScope.selectiveCallForwardingTo[phone])) || (requestScope.selectiveCallForwardingActive == 'TRUE')}"/>
 	<c:set var="canAddSelectiveForwarding" value="${empty sessionScope.selectiveCallForwardingFrom || empty sessionScope.selectiveCallForwardingFrom[phone] || fn:length(sessionScope.selectiveCallForwardingFrom[phone]) < 12}"/>
 	<c:set var="displayAddSelectiveForwarding" value="${selectiveCallForwardingActive && !empty requestScope.addSelectiveForwarding && canAddSelectiveForwarding}"/>
 
