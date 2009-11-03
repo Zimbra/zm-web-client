@@ -1285,8 +1285,10 @@ function(ev) {
 			ids.push(item.id);
 		}
 	}
-
-	var url = ("/h/printmessage?id=" + ids.join(","));
+    var url = ("/h/printmessage?id=" + ids.join(","));
+    if(appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES)){
+       url = url+"&xim=1"; 
+    }
 	window.open(appContextPath+url, "_blank");
 };
 
