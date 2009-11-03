@@ -48,6 +48,10 @@ ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_mobilePhone] = ZmMsg.phoneLabelMo
 ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_otherPhone] = ZmMsg.phoneLabelOther;
 ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_workPhone] = ZmMsg.phoneLabelWork;
 ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_workPhone2] = ZmMsg.phoneLabelWork2;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_otherFax] = ZmMsg.AB_FIELD_otherFax;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_workAltPhone] = ZmMsg.AB_FIELD_workAltPhone;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_workFax] = ZmMsg.AB_FIELD_workFax;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_workMobile] = ZmMsg.AB_FIELD_workMobile;
 
 ZmVoiceListView.F_DATE = ZmItem.F_DATE;
 ZmVoiceListView.F_CALLER = "cl";

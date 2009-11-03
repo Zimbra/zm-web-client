@@ -99,12 +99,14 @@ ZmContact.F_otherStreet				= "otherStreet";
 ZmContact.F_otherURL				= "otherURL";
 ZmContact.F_pager					= "pager";
 ZmContact.F_type					= "type";
+ZmContact.F_workAltPhone			= "workAltPhone";
 ZmContact.F_workCity				= "workCity";
 ZmContact.F_workCountry				= "workCountry";
 ZmContact.F_workEmail1				= "workEmail1";
 ZmContact.F_workEmail2				= "workEmail2";
 ZmContact.F_workEmail3				= "workEmail3";
 ZmContact.F_workFax					= "workFax";
+ZmContact.F_workMobile				= "workMobile";
 ZmContact.F_workPhone				= "workPhone";
 ZmContact.F_workPhone2				= "workPhone2";
 ZmContact.F_workPostalCode			= "workPostalCode";
@@ -178,9 +180,12 @@ ZmContact.PHONE_FIELDS = [
 	ZmContact.F_mobilePhone,
 	ZmContact.F_otherFax,
 	ZmContact.F_otherPhone,
+	ZmContact.F_workAltPhone,
 	ZmContact.F_pager,
 	ZmContact.F_workFax,
-	ZmContact.F_workPhone
+	ZmContact.F_workMobile,
+	ZmContact.F_workPhone,
+	ZmContact.F_workPhone2
 ];
 ZmContact.PRIMARY_FIELDS = [
 	ZmContact.F_company,
