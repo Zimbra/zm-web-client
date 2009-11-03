@@ -515,7 +515,6 @@ function(ev) {
 	if (!ZmImApp.INSTANCE.getServiceController().capabilities[ZmImServiceController.ACCOUNTS]) {
 		return;
 	}
-	ev.roster.getGateways();
 	this._gatewayData = this._gatewayData || { };
 
 	var gateways = ev.roster.getGateways();
