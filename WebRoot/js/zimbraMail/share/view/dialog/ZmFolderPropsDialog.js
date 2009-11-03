@@ -338,7 +338,8 @@ function(organizer) {
 		for (var i = 0; i < shares.length; i++) {
 			var share = shares[i];
 			var granteeId = share.grantee && share.grantee.id;
-			if (granteeId && (granteeId != userZid)) {
+            var granteeType = share.grantee && share.grantee.type;
+			if ((granteeId && (granteeId != userZid)) || ( granteeType && granteeType == ZmShare.TYPE_PUBLIC) ) {
 				displayShares.push(share);
 			}
 		}
