@@ -1005,7 +1005,7 @@ if (ext == null) ext = "";
                         <echo>Minimizing to @{var}${jsmin.ext}</echo>
 	                    <try>
 	                        <block>
-		                        <java jar="${common.lib.dir}/yuicompressor-2.3.4.jar" fork="true" failonerror="true"
+		                        <java jar="${common.lib.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true"
 		                              output="${build.dir}/yui-compress.out">
 		                            <arg value="--line-break"/>
 		                            <arg value="0"/>
@@ -1052,7 +1052,7 @@ if (ext == null) ext = "";
 		<for list="${files}" param="filename">
 			<sequential>
 				<echo>Testing file: @{filename}</echo>
-				<java jar="${common.lib.dir}/yuicompressor-2.3.4.jar" fork="true" failonerror="true">
+				<java jar="${common.lib.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true">
 				    <arg value="--line-break"/>
 				    <arg value="0"/>
 				    <arg value="--type"/>
