@@ -465,8 +465,8 @@ function() {
     var el = this.getHtmlElement();
 
     var elementReferenceNames = ["_topSash", "_bottomSash", "_leftSash", "_rightSash", "_dragProxyDiv", "_leftTopSelectionBox", "_rightTopSelectionBox", "_leftBottomSelectionBox", "_rightBottomSelectionBox"];
-    var classNames = ["SelectionSash_Top", "SelectionSash_Bottom", "SelectionSash_Left", "SelectionSash_Right", "DragProxy", "SelectionCornerBox", "SelectionCornerBox", "SelectionCornerBox", "SelectionCornerBox"];
-    var cursors = ["move", "move", "move", "move", "move", "nw-resize", "ne-resize", "sw-resize", "se-resize"];
+    var classNames = ["SelectionSash_Top", "SelectionSash_Bottom", "SelectionSash_Left", "SelectionSash_Right", "DragProxy", "SelectionCornerBox", "ImgClose", "SelectionCornerBox", "SelectionCornerBox"];
+    var cursors = ["move", "move", "move", "move", "move", "nw-resize", "pointer", "sw-resize", "se-resize"];
     var types = [ZmSlideEditView.TYPE_TOP_SASH, ZmSlideEditView.TYPE_BOTTOM_SASH, ZmSlideEditView.TYPE_LEFT_SASH, ZmSlideEditView.TYPE_RIGHT_SASH, ZmSlideEditView.TYPE_DRAG_PROXY_DIV, ZmSlideEditView.TYPE_LEFT_TOP_BOX, ZmSlideEditView.TYPE_RIGHT_TOP_BOX, ZmSlideEditView.TYPE_LEFT_BOTTOM_BOX, ZmSlideEditView.TYPE_RIGHT_BOTTOM_BOX];
 
     var div = null;
@@ -580,11 +580,18 @@ function(ev, div) {
     }
 
     var uiElement = this.getTargetItemDiv(ev);
+    var isDeleteButton = false;
+    var type;
+
     if(uiElement) {
+        type = this._getItemData(uiElement, "type");
+        isDeleteButton = (type == ZmSlideEditView.TYPE_RIGHT_TOP_BOX);
         this._recordTargetPosition(ev, uiElement);
     }
 
-    this.clearCurrentSelection();
+    if(!isDeleteButton) {
+        this.clearCurrentSelection();
+    }
 
     return false;
 };
@@ -810,7 +817,10 @@ function(div) {
     Dwt.setBounds(this._rightSash, x + width - 4, y, Dwt.DEFAULT, size.y);
 
     Dwt.setLocation(this._leftTopSelectionBox, x - 4,  y - 4);
-    Dwt.setLocation(this._rightTopSelectionBox, x + width - 4,  y - 4);
+
+    //right top corner - delete button needs special positioning due to larger image size
+    Dwt.setLocation(this._rightTopSelectionBox, x + width - 4 - 2,  y - 4 - 4);
+
     Dwt.setLocation(this._leftBottomSelectionBox, x - 4,  y + height - 4);
     Dwt.setLocation(this._rightBottomSelectionBox, x + width - 4,  y + height - 4);
 
@@ -874,7 +884,7 @@ function(ev) {
             break;
         case ZmSlideEditView.TYPE_LEFT_TOP_BOX:
         case ZmSlideEditView.TYPE_LEFT_BOTTOM_BOX:
-        case ZmSlideEditView.TYPE_RIGHT_TOP_BOX:
+        //case ZmSlideEditView.TYPE_RIGHT_TOP_BOX:
         case ZmSlideEditView.TYPE_RIGHT_BOTTOM_BOX:
             this._handleResize(deltaX, deltaY, type);
             break;
@@ -919,11 +929,11 @@ function(deltaX, deltaY, type) {
                 newWidth = bounds.width - deltaX;
                 newHeight = bounds.height + deltaY;
                 break;
-            case ZmSlideEditView.TYPE_RIGHT_TOP_BOX:
+            /*case ZmSlideEditView.TYPE_RIGHT_TOP_BOX:
                 newY = newY + deltaY;
                 newWidth = bounds.width + deltaX;
                 newHeight = bounds.height - deltaY;
-                break;
+                break;*/
             case ZmSlideEditView.TYPE_RIGHT_BOTTOM_BOX:
                 newWidth = bounds.width + deltaX;
                 newHeight = bounds.height + deltaY;
@@ -973,7 +983,11 @@ function(ev) {
 
     var offset = this.getOffsetBounds();
 
-    if(this._divDndStarted) {
+    var type = this._getItemData(div, "type");
+
+    if(type == ZmSlideEditView.TYPE_RIGHT_TOP_BOX) {
+        this.deleteTextBox();
+    }else if(this._divDndStarted) {
         var bounds = Dwt.getBounds(this._dragProxyDiv);
         DBG.println("move dest bounds: "+ bounds.x + "," + bounds.y + ", " + (bounds.width) + ", " + (bounds.height));
         this._clearInvalidStyles(this._selectedDiv);
