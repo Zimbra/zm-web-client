@@ -615,8 +615,8 @@ ZmApp.prototype.createDeferred = function() {
 	var types = ZmOrganizer.APP2ORGANIZER[this._name] || [];
 	for (var i = 0; i < types.length; i++) {
 		var type = types[i];
-		var package = ZmOrganizer.ORG_PACKAGE[type];
-		AjxDispatcher.require(package);
+		var packageName = ZmOrganizer.ORG_PACKAGE[type];
+		AjxDispatcher.require(packageName);
 		this._createDeferredFolders(type);
 	}
 };
