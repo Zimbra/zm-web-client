@@ -44,8 +44,6 @@ ZmMailListView.SINGLE_COLUMN_SORT = [
 	{field:ZmItem.F_DATE,	msg:"date"		}
 ];
 
-ZmMailListView.COL_WIDTH_ACCT = 105;
-
 
 // Public methods
 
@@ -224,17 +222,7 @@ ZmMailListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_ACCOUNT) {
 		if (item.account) {
-			htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width='";
-			htmlArr[idx++] = ZmMailListView.COL_WIDTH_ACCT;
-			htmlArr[idx++] = "'><tr><td width=16>";
-			htmlArr[idx++] = AjxImg.getImageHtml(item.account.getIcon());
-			htmlArr[idx++] = "</td>";
-			if (this._isMultiColumn) {
-				htmlArr[idx++] = "<td>";
-				htmlArr[idx++] = item.account.getDisplayName();
-				htmlArr[idx++] = "</td><td width=3>&nbsp;</td>";
-			}
-			htmlArr[idx++] = "</tr></table>";
+			idx = this._getImageHtml(htmlArr, idx, item.account.getIcon(), this._getFieldId(item, field));
 		}
 	} else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
@@ -273,11 +261,11 @@ function() {
 		this._headerInit[ZmItem.F_FLAG]			= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, sortable:ZmItem.F_FLAG, noSortArrow:true, precondition:ZmSetting.FLAGGING_ENABLED};
 		this._headerInit[ZmItem.F_PRIORITY]		= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
 		this._headerInit[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, precondition:ZmSetting.TAGGING_ENABLED};
+		this._headerInit[ZmItem.F_ACCOUNT]		= {icon:"GlobalInbox", width:ZmListView.COL_WIDTH_ICON, noRemove:true, resizeable:true};
 		this._headerInit[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status};
 		this._headerInit[ZmItem.F_FROM]			= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_MLV, resizeable:true, sortable:ZmItem.F_FROM};
 		this._headerInit[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, sortable:ZmItem.F_ATTACHMENT, noSortArrow:true};
 		this._headerInit[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
-		this._headerInit[ZmItem.F_ACCOUNT]		= {text:ZmMsg.account, width:ZmMailListView.COL_WIDTH_ACCT, noRemove:true, resizeable:true};
 		this._headerInit[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};
 		this._headerInit[ZmItem.F_SIZE]			= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, sortable:ZmItem.F_SIZE, resizeable:true};
 		this._headerInit[ZmItem.F_DATE]			= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true};
@@ -551,6 +539,9 @@ function(params) {
 				tooltip = path;
 			}
 		}
+	}
+	else if (field == ZmItem.F_ACCOUNT) {
+		tooltip = item.account ? item.account.getDisplayName() : null;
 	}
 	else {
 		tooltip = ZmListView.prototype._getToolTip.apply(this, arguments);
