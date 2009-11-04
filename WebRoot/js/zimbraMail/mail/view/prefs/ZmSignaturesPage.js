@@ -42,10 +42,11 @@ function() {
 
 	ZmPreferencesPage.prototype.showMe.call(this);
 
-    if(!this._firstTime){
-        this._resetSize();
-        this._firstTime = true;
-    }
+	// bug fix #41719 - always resize when in multi-account mode.
+	if (!this._firstTime || appCtxt.multiAccounts) {
+		this._resetSize();
+		this._firstTime = true;
+	}
 
 	// bug fix #31849 - reset the signature html editor when in multi-account mode
 	// since the view gets re-rendered whenever the account changes
@@ -54,18 +55,19 @@ function() {
 	}
 };
 
-ZmSignaturesPage.prototype.getAllSignatures = function(includeEmpty, includeNonModified) {
+ZmSignaturesPage.prototype.getAllSignatures =
+function(includeEmpty, includeNonModified) {
 	return [].concat(
 		this.getNewSignatures(includeEmpty),
 		this.getModifiedSignatures(includeNonModified)
 	);
 };
 
-ZmSignaturesPage.prototype.getNewSignatures = function(includeEmpty) {
-
+ZmSignaturesPage.prototype.getNewSignatures =
+function(includeEmpty) {
 	var array = [];
 	for (var id in this._signatureComps) {
-		var signature = this._signatureComps[id];        
+		var signature = this._signatureComps[id];
 		if (!signature._new) continue;
 
 		var hasName = signature.name.replace(/\s*/g,"") != "";
@@ -77,7 +79,8 @@ ZmSignaturesPage.prototype.getNewSignatures = function(includeEmpty) {
 	return array;
 };
 
-ZmSignaturesPage.prototype.getDeletedSignatures = function() {
+ZmSignaturesPage.prototype.getDeletedSignatures =
+function() {
 	var array = [];
 	for (var id in this._deletedSignatures) {
 		var signature = this._deletedSignatures[id];
@@ -86,7 +89,8 @@ ZmSignaturesPage.prototype.getDeletedSignatures = function() {
 	return array;
 };
 
-ZmSignaturesPage.prototype.getModifiedSignatures = function(includeNonModified) {
+ZmSignaturesPage.prototype.getModifiedSignatures =
+function(includeNonModified) {
 	var array = [];
 	for (var id in this._signatureComps) {
 		var signature = this._signatureComps[id];
@@ -94,11 +98,11 @@ ZmSignaturesPage.prototype.getModifiedSignatures = function(includeNonModified) 
 
 		var name = signature._orig.name;
 		var value = signature._orig.value;
-        var contentType = signature._orig.contentType;
-        var modified = includeNonModified ||
+		var contentType = signature._orig.contentType;
+		var modified = includeNonModified ||
 					   (name != null && name != signature.name) ||
 					   (value != null && value != signature.getValue()) ||
-                       (contentType != signature.getContentType());
+					   (contentType != signature.getContentType());
 		if (modified) {
 			array.push(signature);
 		}
@@ -106,62 +110,66 @@ ZmSignaturesPage.prototype.getModifiedSignatures = function(includeNonModified) 
 	return array;
 };
 
-ZmSignaturesPage.prototype.reset = function(useDefaults) {
+ZmSignaturesPage.prototype.reset =
+function(useDefaults) {
+	if (this._selSignature) {
+		this._updateSignature();
+	}
 
-    if(this._selSignature){
-        this._updateSignature();
-    }
+	ZmPreferencesPage.prototype.reset.apply(this, arguments);
 
-    ZmPreferencesPage.prototype.reset.apply(this, arguments);
-    
 	this._populateSignatures(true);
 };
 
 // saving
 
-ZmSignaturesPage.prototype.isDirty = function() {
+ZmSignaturesPage.prototype.isDirty =
+function() {
+	if (this._selSignature) {
+		this._updateSignature();
+	}
 
-    if(this._selSignature){
-        this._updateSignature();
-    }    
-
-    return	this.getNewSignatures().length > 0 ||
+	return	this.getNewSignatures().length > 0 ||
 			this.getDeletedSignatures().length > 0 ||
 			this.getModifiedSignatures().length > 0;
 };
 
-ZmSignaturesPage.prototype.validate = function() {
+ZmSignaturesPage.prototype.validate =
+function() {
+	if (this._selSignature) {
+		this._updateSignature();
+	}
 
-    if(this._selSignature){
-        this._updateSignature();
-    }    
-
-    var signatures = this.getAllSignatures();
+	var signatures = this.getAllSignatures();
 	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
 	for (var i = 0; i < signatures.length; i++) {
-        var signature = signatures[i];
-        var isNameEmpty = (signature.name.replace(/\s*/g,"") == "");
-        var isValueEmpty = (signature.value.replace(/\s*/g,"") == "");
-        if(isNameEmpty && isValueEmpty){
-            this._deleteSignature(signature);
-        }else if(isNameEmpty || isValueEmpty){
-            this._errorMsg = isNameEmpty ? ZmMsg.signatureNameMissingRequired : ZmMsg.signatureValueMissingRequired;
+		var signature = signatures[i];
+		var isNameEmpty = (signature.name.replace(/\s*/g,"") == "");
+		var isValueEmpty = (signature.value.replace(/\s*/g,"") == "");
+		if (isNameEmpty && isValueEmpty) {
+			this._deleteSignature(signature);
+		} else if(isNameEmpty || isValueEmpty) {
+			this._errorMsg = isNameEmpty ? ZmMsg.signatureNameMissingRequired : ZmMsg.signatureValueMissingRequired;
 			return false;
-        }
-        var sigValue = signature.value;        
-        if (sigValue.length > maxLength) {
-			this._errorMsg = AjxMessageFormat.format((signature.contentType == ZmMimeTable.TEXT_HTML) ? ZmMsg.errorHtmlSignatureTooLong : ZmMsg.errorSignatureTooLong, maxLength);
+		}
+		var sigValue = signature.value;
+		if (sigValue.length > maxLength) {
+			this._errorMsg = AjxMessageFormat.format((signature.contentType == ZmMimeTable.TEXT_HTML)
+				? ZmMsg.errorHtmlSignatureTooLong
+				: ZmMsg.errorSignatureTooLong, maxLength);
 			return false;
 		}
 	}
 	return true;
 };
 
-ZmSignaturesPage.prototype.getErrorMessage = function() {
+ZmSignaturesPage.prototype.getErrorMessage =
+function() {
 	return this._errorMsg;
 };
 
-ZmSignaturesPage.prototype.addCommand = function(batchCommand) {
+ZmSignaturesPage.prototype.addCommand =
+function(batchCommand) {
 	// delete signatures
 	var deletedSigs = this.getDeletedSignatures();
 	for (var i = 0; i < deletedSigs.length; i++) {
@@ -184,8 +192,8 @@ ZmSignaturesPage.prototype.addCommand = function(batchCommand) {
 	var newSigs = this.getNewSignatures();
 	for (var i = 0; i < newSigs.length; i++) {
 		var signature = newSigs[i];
-        signature._id = signature.id;  //Clearing existing dummy id
-        signature.id = null;
+		signature._id = signature.id; // Clearing existing dummy id
+		signature.id = null;
 		var callback = new AjxCallback(this, this._handleNewResponse, [signature]);
 		signature.create(callback, null, batchCommand);
 	}
@@ -196,110 +204,100 @@ ZmSignaturesPage.prototype.addCommand = function(batchCommand) {
 // Protected methods
 //
 
-ZmSignaturesPage.prototype._initialize = function(container){
+ZmSignaturesPage.prototype._initialize =
+function(container) {
 
-    container.getHtmlElement().innerHTML = AjxTemplate.expand(ZmSignaturesPage.SIGNATURE_TEMPLATE, {id:this._htmlElId});
+	container.getHtmlElement().innerHTML = AjxTemplate.expand(ZmSignaturesPage.SIGNATURE_TEMPLATE, {id:this._htmlElId});
 
-    //Create Controls
+	//Signature LIST
+	var listEl = document.getElementById(this._htmlElId+"_SIG_LIST");
+	var list = new ZmSignatureListView(this);
+	this._replaceControlElement(listEl, list);
+	list.setMultiSelect(false);
+	list.addSelectionListener(new AjxListener(this, this._selectionListener));
+	list.setUI(null, true); // renders headers and empty list
+	this._sigList = list;
 
-    //Signature LIST
-    var listEl = document.getElementById(this._htmlElId+"_SIG_LIST");
-    var list = new ZmSignatureListView(this);
-    this._replaceControlElement(listEl, list);
-    list.setMultiSelect(false);
-    list.addSelectionListener(new AjxListener(this, this._selectionListener));
-    list.setUI(null, true); // renders headers and empty list
-	this._sigList = list;    
+	// Signature ADD
+	var addEl = document.getElementById(this._htmlElId+"_SIG_ADD");
+	var button = new DwtButton(this);
+	button.setText(ZmMsg.addSignature);
+	button.addSelectionListener(new AjxListener(this, this._handleAddButton));
+	this._replaceControlElement(addEl, button);
+	this._sigAddBtn = button;
 
-    //Signature ADD
-    var addEl = document.getElementById(this._htmlElId+"_SIG_ADD");
-    var button = new DwtButton(this);
-    button.setText(ZmMsg.addSignature);
-    button.addSelectionListener(new AjxListener(this, this._handleAddButton));
-    this._replaceControlElement(addEl, button);
-    this._sigAddBtn = button;
+	// Signature Name
+	var nameEl = document.getElementById(this._htmlElId+"_SIG_NAME");
 
+	var params = {
+		parent: this,
+		type: DwtInputField.STRING,
+		required: true,
+		validationStyle: DwtInputField.CONTINUAL_VALIDATION,
+		validator: AjxCallback.simpleClosure(this._updateName, this)
+	};
 
-    // Signature Name
-    var nameEl = document.getElementById(this._htmlElId+"_SIG_NAME");
+	var input = new DwtInputField(params);
 
-    var params = {
-        parent: this,
-        type: DwtInputField.STRING,
-        required: true,
-        validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-        validator: AjxCallback.simpleClosure(this._updateName, this)
-    };
-    
-    var input = new DwtInputField(params);
+	this._replaceControlElement(nameEl, input);
+	this._sigName = input;
 
-    /*var input = new DwtInputField(this);*/
-    this._replaceControlElement(nameEl, input);
-    this._sigName = input;
+	// Signature FORMAT
+	var formatEl = document.getElementById(this._htmlElId+"_SIG_FORMAT");
+	if (formatEl && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+		var select = new DwtSelect(this);
+		select.setToolTipContent(ZmMsg.formatTooltip);
+		select.addOption(ZmMsg.formatAsText, 1 , true);
+		select.addOption(ZmMsg.formatAsHtml, 0, false);
+		select.addChangeListener(new AjxListener(this,this._handleFormatSelect));
+		this._replaceControlElement(formatEl, select);
+		this._sigFormat = select;
+	}
 
-    //Signature FORMAT
-    var formatEl = document.getElementById(this._htmlElId+"_SIG_FORMAT");
-    if(formatEl && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)){
-        var select = new DwtSelect(this);
-        select.setToolTipContent(ZmMsg.formatTooltip);
-        select.addOption(ZmMsg.formatAsText, 1 , true);
-        select.addOption(ZmMsg.formatAsHtml, 0, false);
-        select.addChangeListener(new AjxListener(this,this._handleFormatSelect));
-        this._replaceControlElement(formatEl, select);
-        this._sigFormat = select;
-    }
+	// Signature EDIT/DONE
+	var actionEl = document.getElementById(this._htmlElId+"_SIG_BUTTON");
+	var button = new DwtButton(this);
+	button.setText(ZmMsg.del);
+	button.addSelectionListener(new AjxListener(this, this._handleDeleteButton));
+	this._replaceControlElement(actionEl, button);
+	this._sigBtn = button;
 
-
-    //Signature EDIT/DONE
-    var actionEl = document.getElementById(this._htmlElId+"_SIG_BUTTON");
-    var button = new DwtButton(this);
-    button.setText(ZmMsg.del);
-    button.addSelectionListener(new AjxListener(this, this._handleDeleteButton));
-    this._replaceControlElement(actionEl, button);
-    this._sigBtn = button;
-
-    //Signature CONTENT
-    var valueEl = document.getElementById(this._htmlElId+"_SIG_EDITOR");
-    var htmlEditor = new ZmSignatureEditor(this);
-    this._replaceControlElement(valueEl, htmlEditor);
-    this._sigEditor = htmlEditor;    
-
+	// Signature CONTENT
+	var valueEl = document.getElementById(this._htmlElId+"_SIG_EDITOR");
+	var htmlEditor = new ZmSignatureEditor(this);
+	this._replaceControlElement(valueEl, htmlEditor);
+	this._sigEditor = htmlEditor;
 };
 
-ZmSignaturesPage.prototype._resetSize = function(){
+ZmSignaturesPage.prototype._resetSize =
+function() {
+	this._resetEditorSize();
 
-    this._resetEditorSize();
-
-    //Adjust Size of Signature List
-    
-    //Make sure they are on the the same level
-    var sigSize = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
-    this._sigList.setSize(Dwt.CLEAR, sigSize.y);
-
-    
+	// Make sure they are on the the same level
+	var sigSize = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
+	this._sigList.setSize(Dwt.CLEAR, sigSize.y);
 };
 
-ZmSignaturesPage.prototype._resetEditorSize = function(){
-    // Adjust Size of the HTML Editor
-    var size = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
-    this._sigEditor.setSize(size.x, size.y);
+ZmSignaturesPage.prototype._resetEditorSize =
+function() {
+	// Adjust Size of the HTML Editor
+	var size = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
+	this._sigEditor.setSize(size.x, size.y);
 };
 
-
-ZmSignaturesPage.prototype._setupCustom = function(id, setup, value) {
+ZmSignaturesPage.prototype._setupCustom =
+function(id, setup, value) {
 	if (id == ZmSetting.SIGNATURES) {
-
-        // create container control
-        
+		// create container control
 		var container = new DwtComposite(this);
 		this.setFormObject(id, container);
 
 		// create radio group for defaults
 		this._defaultRadioGroup = new DwtRadioButtonGroup();
 
-        this._initialize(container);
+		this._initialize(container);
 		// populate signatures
-        this._populateSignatures();		
+		this._populateSignatures();
 
 		return container;
 	}
@@ -307,155 +305,150 @@ ZmSignaturesPage.prototype._setupCustom = function(id, setup, value) {
 	return ZmPreferencesPage.prototype._setupCustom.apply(this, arguments);
 };
 
-ZmSignaturesPage.prototype._selectionListener = function(ev){
+ZmSignaturesPage.prototype._selectionListener =
+function(ev) {
+	if (this._selSignature) {
+		this._updateSignature();
+	}
 
-    if(this._selSignature)
-        this._updateSignature();
-
-    var signature = this._sigList.getSelection()[0];
-    if(signature){
-        this._resetSignature(this._signatureComps[signature.id]);
-    }
-
+	var signature = this._sigList.getSelection()[0];
+	if (signature) {
+		this._resetSignature(this._signatureComps[signature.id]);
+	}
 };
 
-ZmSignaturesPage.prototype._updateSignature = function(select){
+ZmSignaturesPage.prototype._updateSignature =
+function(select) {
+	var oldSignature = this._selSignature;
+	if (!oldSignature) { return; }
 
-    var oldSignature = this._selSignature;
-    if(!oldSignature) return;
+	var newName = this._sigName.getValue();
+	var isNameModified = newName != oldSignature.name;
+	if (newName.replace(/\s*/g,"") == "") {
+		newName = this._sigName._origName;
+		isNameModified = true;
+	}
 
-    var newName = this._sigName.getValue();
-    var isNameModified = newName != oldSignature.name;
-    if(newName.replace(/\s*/g,"") == ""){
-        newName = this._sigName._origName;
-        isNameModified = true;
-    }
+	oldSignature.name = newName;
 
-    oldSignature.name = newName;
+	var isText = this._sigFormat ? this._sigFormat.getValue() : true;
+	oldSignature.setContentType(isText ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML);
 
-    var isText = this._sigFormat ? this._sigFormat.getValue() : true;
-    oldSignature.setContentType(isText ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML);
+	if (!isText) {
+		this._restoreSignatureInlineImages();
+	}
+	oldSignature.value = this._sigEditor.getContent(false, true);
 
-    if(!isText){
-        this._restoreSignatureInlineImages();
-    }
-    oldSignature.value = this._sigEditor.getContent(false, true);
+	if (isNameModified) {
+		this._sigList.redrawItem(oldSignature);
+	}
 
-    if(isNameModified){
-        this._sigList.redrawItem(oldSignature);        
-    }
-
-    this._signatureComps[oldSignature.id] = oldSignature;
-    
+	this._signatureComps[oldSignature.id] = oldSignature;
 };
 
-ZmSignaturesPage.prototype._populateSignatures = function(reset) {
-
-    this._signatureComps = {};
+ZmSignaturesPage.prototype._populateSignatures =
+function(reset) {
+	this._signatureComps = {};
 	this._deletedSignatures = {};
-    this._selSignature = null;
-
-    this._sigList.removeAll(true);
-    this._sigList._resetList();
+	this._selSignature = null;
+	this._sigList.removeAll(true);
+	this._sigList._resetList();
 
 	var signatures = appCtxt.getSignatureCollection().getSignatures();
 	var sigNames = AjxUtil.keys(signatures).sort();
 	var lessThanEqual = sigNames.length <= this._maxEntries;
 	var count = lessThanEqual ? sigNames.length : this._maxEntries;
 
-    this._calcAutoSignatureNames(signatures);
+	this._calcAutoSignatureNames(signatures);
 
 	for (var i = 0; i < count; i++) {
 		this._addSignature(signatures[sigNames[i]], true, reset);
 	}
 	for (var i = count; i < this._minEntries; i++) {
-        this._addNewSignature(true);
-	}    
-
-    var selectSig = this._sigList.getList().get(0);
-    this._sigList.setSelection(selectSig);
-	
-};
-
-ZmSignaturesPage.prototype._calcAutoSignatureNames = function(signatures){
-
-    var autoNames = [];
-    var sigregex = "^"+ZmMsg.signature+"\\s#(\\d+)$";
-    sigregex = new RegExp(sigregex, "i");
-    for (var i = 0; i < signatures.length; i++) {
-        if(sigregex.test(signatures[i].name)){
-            autoNames.push(RegExp.$1);
-        }	
+		this._addNewSignature(true);
 	}
-    autoNames.sort(function(a, b){ return a-b; });
 
-    var newNames = [];
-    for(i=1; i<25; i++){  //Should be ideally appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH).
-        newNames.push(i);
-    }
-
-    if(autoNames.length > 0)
-        newNames = AjxUtil.arraySubstract(newNames, autoNames);
-
-    this._newNames = newNames;
-    
+	var selectSig = this._sigList.getList().get(0);
+	this._sigList.setSelection(selectSig);
 };
 
-ZmSignaturesPage.prototype._getNewSignatureName = function(){
-    return AjxMessageFormat.format(ZmMsg.signatureNewName, this._newNames.shift());
+ZmSignaturesPage.prototype._calcAutoSignatureNames =
+function(signatures) {
+	var autoNames = [];
+	var sigregex = "^"+ZmMsg.signature+"\\s#(\\d+)$";
+	sigregex = new RegExp(sigregex, "i");
+	for (var i = 0; i < signatures.length; i++) {
+		if (sigregex.test(signatures[i].name)) {
+			autoNames.push(RegExp.$1);
+		}
+	}
+	autoNames.sort(function(a, b) { return a-b; });
+
+	var newNames = [];
+	for (var i = 1; i < 25; i++) { // Should be ideally appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH).
+		newNames.push(i);
+	}
+
+	if (autoNames.length > 0) {
+		newNames = AjxUtil.arraySubstract(newNames, autoNames);
+	}
+
+	this._newNames = newNames;
 };
 
-ZmSignaturesPage.prototype._getNewSignature = function(){
+ZmSignaturesPage.prototype._getNewSignatureName =
+function() {
+	return AjxMessageFormat.format(ZmMsg.signatureNewName, this._newNames.shift());
+};
 
-    var signature = new ZmSignature(null);
-    signature.id   = Dwt.getNextId();
-    signature.name = this._getNewSignatureName();
+ZmSignaturesPage.prototype._getNewSignature =
+function() {
+	var signature = new ZmSignature(null);
+	signature.id = Dwt.getNextId();
+	signature.name = this._getNewSignatureName();
 	signature._new = true;
 
-    return signature;
+	return signature;
 };
 
-ZmSignaturesPage.prototype._addNewSignature = function(skipControls) {
+ZmSignaturesPage.prototype._addNewSignature =
+function(skipControls) {
 	// add new signature
-    var signature = this._getNewSignature();
-
+	var signature = this._getNewSignature();
 	signature =  this._addSignature(signature, skipControls);
 
 	return signature;
 };
 
-ZmSignaturesPage.prototype._addSignature = function(signature, skipControls, reset, index) {
+ZmSignaturesPage.prototype._addSignature =
+function(signature, skipControls, reset, index) {
+	if (!signature._new) {
+		if (reset) {
+			signature.name = signature._orig.name;
+			signature.value = signature._orig.value;
+			signature.setContentType(signature._orig.contentType);
+		} else if (!signature._orig) {
+			signature._orig = {
+				name:  signature.name,
+				value: signature.getValue(),
+				contentType:  signature.getContentType()
+			};
+		}
+	}
 
-    if(!signature._new){
-        if(reset){
-            signature.name = signature._orig.name;
-            signature.value = signature._orig.value;
-            signature.setContentType(signature._orig.contentType);
-        }else if(!signature._orig){
-            signature._orig = {
-                name:  signature.name,
-                value: signature.getValue(),
-                contentType:  signature.getContentType()
-            }
-        }
-    }
+	this._signatureComps[signature.id] = signature;
 
-    this._signatureComps[signature.id] = signature;
+	if (this._sigList.getItemIndex(signature) == null) {
+		this._sigList.addItem(signature, index);
+	}
 
-    if(this._sigList.getItemIndex(signature) == null){
-        this._sigList.addItem(signature, index);
-    }
+	if (!skipControls) {
+		this._resetSignature(signature); // initialize state
+	}
 
-    if(!skipControls) {
-        // initialize state
-        this._resetSignature(signature);
+	this._resetAddButton();
 
-    }
-
-    this._resetAddButton();
-
-    return signature;
-    
+	return signature;
 };
 
 ZmSignaturesPage.prototype._fixSignatureInlineImages_onTimer =
@@ -471,162 +464,152 @@ function(msg) {
 
 ZmSignaturesPage.prototype._fixSignatureInlineImages =
 function() {
-    var idoc = this._sigEditor.getIframeDoc();
-    if (idoc) {
+	var idoc = this._sigEditor.getIframeDoc();
+	if (idoc) {
+		if (!this._firstTimeFixImages) {
+			this._firstTimeFixImages = true;
+			this._sigEditor.removeOnContentIntializedListener();
+		}
 
-        if (!this._firstTimeFixImages) {
-            this._firstTimeFixImages = true;
-            this._sigEditor.removeOnContentIntializedListener();
-        }
-
-        var images = idoc.getElementsByTagName("img");
-        var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
-        var img;
+		var images = idoc.getElementsByTagName("img");
+		var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
+		var img;
 		for (var i = 0; i < images.length; i++) {
-            img = images[i];
-            var dfsrc = img.getAttribute("dfsrc");
-            if(dfsrc && dfsrc.indexOf("doc:") == 0){
-                img.src = [path, dfsrc.substring(4)].join('');                
-            }            
+			img = images[i];
+			var dfsrc = img.getAttribute("dfsrc");
+			if (dfsrc && dfsrc.indexOf("doc:") == 0) {
+				img.src = [path, dfsrc.substring(4)].join('');
+			}
 		}
 	}
 };
 
 ZmSignaturesPage.prototype._restoreSignatureInlineImages =
-function(){
-    var idoc = this._sigEditor.getIframeDoc();
-    if (idoc) {
+function() {
+	var idoc = this._sigEditor.getIframeDoc();
+	if (idoc) {
 		var images = idoc.getElementsByTagName("img");
-        //var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
-        var img;
-        for (var i = 0; i < images.length; i++) {
-            img = images[i];
-            var dfsrc = img.getAttribute("dfsrc");
-            if(dfsrc && dfsrc.substring(0, 4) == "doc:"){
-                img.removeAttribute("src");
-            }
-        }
-    }
+		var img;
+		for (var i = 0; i < images.length; i++) {
+			img = images[i];
+			var dfsrc = img.getAttribute("dfsrc");
+			if (dfsrc && dfsrc.substring(0, 4) == "doc:") {
+				img.removeAttribute("src");
+			}
+		}
+	}
 };
 
-ZmSignaturesPage.prototype._resetSignature = function(signature, clear ) {
-	
-    this._selSignature = signature;
+ZmSignaturesPage.prototype._resetSignature =
+function(signature, clear ) {
+	this._selSignature = signature;
+	this._sigList.setSelection(signature, true );
+	this._sigName.setValue(signature.name);
+	this._sigName._origName = signature.name;
+	if (this._sigFormat) {
+		this._sigFormat.setSelectedValue(signature.getContentType() == ZmMimeTable.TEXT_PLAIN);
+	}
 
-    this._sigList.setSelection(signature, true );
-
-    this._sigName.setValue(signature.name);
-    this._sigName._origName = signature.name;
-    if(this._sigFormat)
-        this._sigFormat.setSelectedValue(signature.getContentType() == ZmMimeTable.TEXT_PLAIN);
-
-    var editorMode = (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && signature.getContentType() == ZmMimeTable.TEXT_HTML) ?  DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT ;
-    var htmlModeInited = this._sigEditor.isHtmlModeInited();
-    if(editorMode != this._sigEditor.getMode()){
-        this._sigEditor.setMode(editorMode);
-        this._resetEditorSize();
-    }
-    this._sigEditor.setContent(signature.getValue(editorMode == DwtHtmlEditor.HTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN));
-    if(editorMode == DwtHtmlEditor.HTML){
-        /*htmlModeInited ?    this._fixSignatureInlineImages()
-                       :    window.setTimeout(new AjxCallback(this, this._fixSignatureInlineImages), 100);*/
-        this._fixSignatureInlineImages_onTimer();
-    }
-    this._resetDeleteButtons();
-	
+	var editorMode = (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && signature.getContentType() == ZmMimeTable.TEXT_HTML)
+		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+	var htmlModeInited = this._sigEditor.isHtmlModeInited();
+	if (editorMode != this._sigEditor.getMode()) {
+		this._sigEditor.setMode(editorMode);
+		this._resetEditorSize();
+	}
+	this._sigEditor.setContent(signature.getValue(editorMode == DwtHtmlEditor.HTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN));
+	if (editorMode == DwtHtmlEditor.HTML) {
+		this._fixSignatureInlineImages_onTimer();
+	}
+	this._resetDeleteButtons();
 };
 
-ZmSignaturesPage.prototype._resetAddButton = function() {
+ZmSignaturesPage.prototype._resetAddButton =
+function() {
 	if (this._sigAddBtn) {
 		var more = this.getAllSignatures(true, true).length < this._maxEntries;
 		this._sigAddBtn.setEnabled(more);
 	}
 };
 
-ZmSignaturesPage.prototype._resetDeleteButtons = function() {
-    var allSignatures = this.getAllSignatures(true, true);
-    this._deleteState = allSignatures.length > this._minEntries;
-    this._sigBtn.setText(this._deleteState ? ZmMsg.del : ZmMsg.clear);
+ZmSignaturesPage.prototype._resetDeleteButtons =
+function() {
+	var allSignatures = this.getAllSignatures(true, true);
+	this._deleteState = allSignatures.length > this._minEntries;
+	this._sigBtn.setText(this._deleteState ? ZmMsg.del : ZmMsg.clear);
 };
 
 // buttons
-ZmSignaturesPage.prototype._handleFormatSelect = function(ev){
+ZmSignaturesPage.prototype._handleFormatSelect =
+function(ev) {
+	var signature = this._selSignature;
+	var isText = this._sigFormat ? this._sigFormat.getValue() : true;
+	this._sigEditor.setMode( isText ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML, true);
 
-    var signature = this._selSignature;
+	signature.setContentType(isText ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
 
-    var isText = this._sigFormat ? this._sigFormat.getValue() : true;
-    this._sigEditor.setMode( isText ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML, true);
-    //this._resetEditorSize();
-
-    signature.setContentType(isText ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
-
-    this._resetSize();
-
+	this._resetSize();
 };
 
-ZmSignaturesPage.prototype._handleAddButton = function(evt) {
+ZmSignaturesPage.prototype._handleAddButton =
+function(ev) {
+	if (this._selSignature) {
+		this._updateSignature();
+	}
 
-    if(this._selSignature){
-        this._updateSignature();
-    }
-
-    this._addNewSignature();
-
+	this._addNewSignature();
 };
 
-ZmSignaturesPage.prototype._deleteSignature = function(signature){
-    signature = signature || this._selSignature;
-    this._sigList.removeItem(signature);
-    delete this._signatureComps[signature.id];
+ZmSignaturesPage.prototype._deleteSignature =
+function(signature) {
+	signature = signature || this._selSignature;
+	this._sigList.removeItem(signature);
+	delete this._signatureComps[signature.id];
 };
 
-ZmSignaturesPage.prototype._handleDeleteButton = function(evt) {
-
+ZmSignaturesPage.prototype._handleDeleteButton =
+function(evt) {
 	var signature = this._selSignature;
 
 	// update controls
 	if (this._deleteState) {
+		this._deleteSignature();
+		this._selSignature = null;
 
-        this._deleteSignature();
-        //this._sigList.removeItem(signature);
-        //delete this._signatureComps[signature.id];
-        this._selSignature = null;
-        
-        var sel = this._sigList.getList().get(0);
-        if(sel)
-            this._sigList.setSelection(sel);
-        this._resetAddButton();
-
+		var sel = this._sigList.getList().get(0);
+		if (sel) {
+			this._sigList.setSelection(sel);
+		}
+		this._resetAddButton();
 	}
 	else {
-        
-        var newSig = this._getNewSignature();
-        newSig.id = signature.id;
-        newSig.name = signature.name;
+		var newSig = this._getNewSignature();
+		newSig.id = signature.id;
+		newSig.name = signature.name;
 
-        this._addSignature(newSig);
-        
-    }
+		this._addSignature(newSig);
+	}
 
 	// clean-up state
 	if (!signature._new) {
 		this._deletedSignatures[signature.id] = signature;
 	}
-    
 };
 
 // saving
 
-ZmSignaturesPage.prototype._handleDeleteResponse = function(signature, resp) {	
+ZmSignaturesPage.prototype._handleDeleteResponse =
+function(signature, resp) {
 	delete this._deletedSignatures[signature.id];
 };
 
-ZmSignaturesPage.prototype._handleModifyResponse = function(signature, resp) {
-    signature._orig = {
-            name:  signature.name,
-            value: signature.getValue(),
-            contentType:  signature.getContentType()
-    };
+ZmSignaturesPage.prototype._handleModifyResponse =
+function(signature, resp) {
+	signature._orig = {
+		name:  signature.name,
+		value: signature.getValue(),
+		contentType:  signature.getContentType()
+	};
 };
 
 ZmSignaturesPage.prototype._handleModifyError =
@@ -636,61 +619,58 @@ function(signature) {
 		signature.value = signature._orig.value;
 		signature.contentType = signature._orig.contentType;
 	};
-    if(this._selSignature.id == signature.id) {
-	    this._resetSignature(signature);
-    }
+	if (this._selSignature.id == signature.id) {
+		this._resetSignature(signature);
+	}
 	return true;
 };
 
-ZmSignaturesPage.prototype._handleNewResponse = function(signature, resp) {
+ZmSignaturesPage.prototype._handleNewResponse =
+function(signature, resp) {
+	var id = signature.id;
+	signature.id = signature._id;
 
-    var id = signature.id;
-    signature.id = signature._id;
+	var index = this._sigList.getItemIndex(signature);
+	this._deleteSignature(signature);
 
-    var index = this._sigList.getItemIndex(signature);
-    this._deleteSignature(signature);
-    
-    signature.id = id;
-    this._addSignature(signature, false, false, index);
+	signature.id = id;
+	this._addSignature(signature, false, false, index);
 
 	delete signature._new;
 
-    signature._orig = {
-            name:  signature.name,
-            value: signature.getValue(),
-            contentType:  signature.getContentType()
-    };
-    
+	signature._orig = {
+			name:  signature.name,
+			value: signature.getValue(),
+			contentType:  signature.getContentType()
+	};
 };
 
 
 // validation
 
-ZmSignaturesPage.prototype._updateName = function(value){
+ZmSignaturesPage.prototype._updateName =
+function(value) {
+	var signature = this._selSignature;
+	if (!signature) { return; }
 
-    var signature = this._selSignature;
-    if(!signature) return;
-    
-    signature.name = value;
-    this._sigList.redrawItem(signature);
-    this._sigList.setSelection(signature, true);
-
+	signature.name = value;
+	this._sigList.redrawItem(signature);
+	this._sigList.setSelection(signature, true);
 };
 
-ZmSignaturesPage.prototype._validateName = function(value) {
+ZmSignaturesPage.prototype._validateName =
+function(value) {
+	if (value.replace(/\s*/g,"") == "") {
+		throw ZmMsg.errorMissingRequired;
+	}
 
-    if(value.replace(/\s*/g,"") == ""){
-        throw ZmMsg.errorMissingRequired; 
-    }
+	var signature = this._selSignature;
+	if (!signature) { return; }
 
-    var signature = this._selSignature;
-    if(!signature) return;
+	signature.name = value;
+	this._sigList.redrawItem(signature);
 
-    signature.name = value;
-    this._sigList.redrawItem(signature);
-
-    return value;
-
+	return value;
 };
 
 //
@@ -700,10 +680,9 @@ ZmSignaturesPage.prototype._validateName = function(value) {
 //ZmSignatureListView:  Signatures List
 
 ZmSignatureListView = function(parent) {
+	if (arguments.length == 0) { return; }
 
-    if (arguments.length == 0) { return; }
-
-    DwtListView.call(this, {parent:parent, /*className:"DwtChooserListView",*/ headerList:this._getHeaderList(parent)});
+	DwtListView.call(this, {parent:parent, headerList:this._getHeaderList(parent)});
 };
 
 ZmSignatureListView.prototype = new DwtListView;
@@ -712,8 +691,8 @@ ZmSignatureListView.prototype.constructor = ZmSignatureListView;
 ZmSignatureListView.SIGNATURE = "signature";
 
 ZmSignatureListView.prototype.toString =
-function(){
-    return "ZmSignatureListView";
+function() {
+	return "ZmSignatureListView";
 };
 
 ZmSignatureListView.prototype._getHeaderList =
@@ -722,11 +701,11 @@ function() {
 };
 
 ZmSignatureListView.prototype._getCellContents =
-function(html, idx, signature, field, colIdx, params){
-    if(field == ZmSignatureListView.SIGNATURE ) {
-        html[idx++] = AjxStringUtil.htmlEncode(signature.name, true);
-    }
-    return idx;
+function(html, idx, signature, field, colIdx, params) {
+	if (field == ZmSignatureListView.SIGNATURE ) {
+		html[idx++] = AjxStringUtil.htmlEncode(signature.name, true);
+	}
+	return idx;
 };
 
 ZmSignatureListView.prototype._getItemId =
@@ -734,8 +713,9 @@ function(signature) {
 	return (signature && signature.id) ? signature.id : Dwt.getNextId();
 };
 
-ZmSignatureListView.prototype.setSignatures  = function(signatures) {
-    this._resetList();
+ZmSignatureListView.prototype.setSignatures =
+function(signatures) {
+	this._resetList();
 	this.addItems(signatures);
 	var list = this.getList();
 	if (list && list.size() > 0) {
@@ -744,163 +724,170 @@ ZmSignatureListView.prototype.setSignatures  = function(signatures) {
 };
 
 
-
 //ZmSignatureEditor
 
-ZmSignatureEditor = function(parent){
-    ZmHtmlEditor.call(this, parent);
+ZmSignatureEditor = function(parent) {
+	ZmHtmlEditor.call(this, parent);
 };
 
 ZmSignatureEditor.prototype = new ZmHtmlEditor;
 ZmSignatureEditor.prototype.constructor = ZmSignatureEditor;
 ZmSignatureEditor.prototype.TEXTAREA_CLASSNAME = "ZmSignatureEditorTextArea";
 
-ZmSignatureEditor.prototype._createToolbars = function(){
-    if (!this._toolbar1) {
-        ZmHtmlEditor.prototype._createToolbars.call(this, true);
+ZmSignatureEditor.prototype._createToolbars =
+function() {
+	if (!this._toolbar1) {
+		ZmHtmlEditor.prototype._createToolbars.call(this, true);
 
-        //TODO: Need to clean up the code to follow ZCS Toolbar/Opertation model
-        var tb = this._toolbar1;
-        this._createFontFamilyMenu(tb);
-        this._createFontSizeMenu(tb);
-        this._createStyleMenu(tb);
-        this._createJustifyMenu(tb);
-        new DwtControl({parent:tb, className:"vertSep"});
-        this._createBUIButtons(tb);
-        new DwtControl({parent:tb, className:"vertSep"});
-        this._createFontColorButtons(tb);
-	    new DwtControl({parent:tb, className:"vertSep"});
-        this._createHorizRuleButton(tb);
-        this._createUrlButton(tb);
-        this._createUrlImageButton(tb);
-        this._createImageButton(tb);
+		//TODO: Need to clean up the code to follow ZCS Toolbar/Opertation model
+		var tb = this._toolbar1;
+		this._createFontFamilyMenu(tb);
+		this._createFontSizeMenu(tb);
+		this._createStyleMenu(tb);
+		this._createJustifyMenu(tb);
+		new DwtControl({parent:tb, className:"vertSep"});
+		this._createBUIButtons(tb);
+		new DwtControl({parent:tb, className:"vertSep"});
+		this._createFontColorButtons(tb);
+		new DwtControl({parent:tb, className:"vertSep"});
+		this._createHorizRuleButton(tb);
+		this._createUrlButton(tb);
+		this._createUrlImageButton(tb);
+		this._createImageButton(tb);
 
-        this._resetFormatControls();
-    }
+		this._resetFormatControls();
+	}
 };
 
 ZmSignatureEditor.prototype._createImageButton =
-function(tb){
-    var button = new DwtToolBarButton({parent:tb})
+function(tb) {
+	var button = new DwtToolBarButton({parent:tb});
 	button.setImage("InsertImage");
 	button.setToolTipContent(ZmMsg.insertImage);
 	button.addSelectionListener(new AjxListener(this, this._insertImagesListener));
 };
 
 ZmSignatureEditor.prototype._createUrlImageButton =
-function(tb){
-	var button = new DwtToolBarButton({parent:tb})
+function(tb) {
+	var button = new DwtToolBarButton({parent:tb});
 	button.setImage("ImageDoc");
 	button.setToolTipContent(ZmMsg.insertImageUrl);
 	button.addSelectionListener(new AjxListener(this, this._insertUrlImagesListener));
 };
 
 ZmSignatureEditor.prototype._insertUrlImagesListener =
-function(ev){
-   this._getImgSelDlg().popup(); 
+function(ev) {
+	this._getImgSelDlg().popup();
 };
 
-ZmSignatureEditor.prototype._insertImagesListener = function(ev){
+ZmSignatureEditor.prototype._insertImagesListener =
+function(ev) {
+	AjxDispatcher.require("BriefcaseCore");
+	appCtxt.getApp(ZmApp.BRIEFCASE)._createDeferredFolders();
 
-    AjxDispatcher.require("BriefcaseCore");
-    appCtxt.getApp(ZmApp.BRIEFCASE)._createDeferredFolders();
-
-    var callback = new AjxCallback(this, this._imageUploaded);
-    var cFolder = appCtxt.getById(ZmOrganizer.ID_BRIEFCASE);
-    var dialog = appCtxt.getUploadDialog();
-    dialog.popup(cFolder,callback, ZmMsg.uploadImage, null, true);
+	var callback = new AjxCallback(this, this._imageUploaded);
+	var cFolder = appCtxt.getById(ZmOrganizer.ID_BRIEFCASE);
+	var dialog = appCtxt.getUploadDialog();
+	dialog.popup(cFolder,callback, ZmMsg.uploadImage, null, true);
 };
 
-ZmSignatureEditor.prototype._imageUploaded = function(folder, fileNames, files){
-     for(var i=0; i< files.length; i++){
-         var file = files[i];
+ZmSignatureEditor.prototype._imageUploaded =
+function(folder, fileNames, files) {
+	for (var i=0; i< files.length; i++) {
+		var file = files[i];
+		var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
+		var docPath = folder.getRestUrl() + ZmFolder.SEP + file.name;
+		docPath = ["doc:", docPath.substr(docPath.indexOf(path) + path.length)].join("");
 
-         var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
-         var docPath = folder.getRestUrl() + ZmFolder.SEP + file.name;
-         docPath = ["doc:", docPath.substr(docPath.indexOf(path) + path.length)].join("");
+		file.docpath = docPath;
+		file.rest = folder.getRestUrl() + ZmFolder.SEP + AjxStringUtil.urlComponentEncode(file.name);
 
-         file.docpath = docPath;         
-         file.rest = folder.getRestUrl() + ZmFolder.SEP + AjxStringUtil.urlComponentEncode(file.name);
-         
-         this.insertImageDoc(file);         
-     }
+		this.insertImageDoc(file);
+	}
 };
 
-ZmSignatureEditor.prototype.insertImageDoc = function(file, width, height){
+ZmSignatureEditor.prototype.insertImageDoc =
+function(file, width, height) {
+	var src = file.rest;
+	if (!src) { return; }
 
-    var src = file.rest;
-    if(!src) return;    
+	var doc = this._getIframeDoc();
+	var img = doc.createElement("img");
+	img.src = src;
+	if (file.docpath) {
+		img.setAttribute("dfsrc", file.docpath);
+	}
+	if (width) {
+		img.width = width;
+	} else {
+		img.removeAttribute('width');
+	}
+	if (height) {
+		img.height = height;
+	} else {
+		img.removeAttribute('height');
+	}
 
-    var doc = this._getIframeDoc();
-    var img = doc.createElement("img");
-    img.src = src;    
-    if(file.docpath) img.setAttribute("dfsrc", file.docpath);
-    if(width) img.width = width;
-    else img.removeAttribute('width');
-    if(height) img.height = height;
-    else img.removeAttribute('height');
-    var df = doc.createDocumentFragment();
-    df.appendChild(img);
-    this._insertNodeAtSelection(df);
+	var df = doc.createDocumentFragment();
+	df.appendChild(img);
+	this._insertNodeAtSelection(df);
 };
 
-ZmSignatureEditor.prototype._getImgSelDlg = function(){
-    if(this._imgSelDlg){
-        this._imgSelField.value = '';
-        return this._imgSelDlg;
-    }
+ZmSignatureEditor.prototype._getImgSelDlg =
+function() {
+	if (this._imgSelDlg) {
+		this._imgSelField.value = '';
+		return this._imgSelDlg;
+	}
 
-    var dlg = this._imgSelDlg = new DwtDialog(appCtxt.getShell(), null, ZmMsg.addImg);
-    dlg.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.add);
+	var dlg = this._imgSelDlg = new DwtDialog(appCtxt.getShell(), null, ZmMsg.addImg);
+	dlg.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.add);
 
-    var inputId = Dwt.getNextId();
-    var html = [
-            "<div style='padding:5px;' class='ImgSel'>",
-                "<strong>Url:&nbsp;</strong>","<input size='50' id='",inputId,"' type='text' value=''>",
-            "</div>"
-    ].join("");
-    dlg.setContent(html);
+	var inputId = Dwt.getNextId();
+	var html = [
+			"<div style='padding:5px;' class='ImgSel'>",
+				"<strong>Url:&nbsp;</strong>","<input size='50' id='",inputId,"' type='text' value=''>",
+			"</div>"
+	].join("");
+	dlg.setContent(html);
 
-    this._imgSelField = document.getElementById(inputId);
-    delete inputId;
+	this._imgSelField = document.getElementById(inputId);
+	delete inputId;
 
-    dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this,function(){
-        this.insertImage(this._imgSelField.value);
-        dlg.popdown();
-    }));
+	dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this,function() {
+		this.insertImage(this._imgSelField.value);
+		dlg.popdown();
+	}));
 
-    return this._imgSelDlg;
+	return this._imgSelDlg;
 };
 
-ZmSignatureEditor.prototype.setContent = function(content, callback){
-    this._setContentCallback = callback;
-    ZmHtmlEditor.prototype.setContent.call(this, content);
+ZmSignatureEditor.prototype.setContent =
+function(content, callback) {
+	this._setContentCallback = callback;
+	ZmHtmlEditor.prototype.setContent.call(this, content);
 };
 
-ZmSignatureEditor.prototype._onContentInitialized = function(){
-    ZmHtmlEditor.prototype._onContentInitialized.call(this);
-    if(this._setContentCallback){
-        this._setContentCallback.run();
-    }
-
+ZmSignatureEditor.prototype._onContentInitialized =
+function() {
+	ZmHtmlEditor.prototype._onContentInitialized.call(this);
+	if (this._setContentCallback) {
+		this._setContentCallback.run();
+	}
 };
 
-ZmSignatureEditor.prototype.insertLink = function(params) {
-
-    if(this.getContent() == ""){
-        this.setContent("<br>");
-    }
-    ZmHtmlEditor.prototype.insertLink.call(this, params);
-
+ZmSignatureEditor.prototype.insertLink =
+function(params) {
+	if (this.getContent() == "") {
+		this.setContent("<br>");
+	}
+	ZmHtmlEditor.prototype.insertLink.call(this, params);
 };
 
-ZmSignatureEditor.prototype.getIframeDoc = function(){
-    if(!this._iframeDoc){
-        this._iframeDoc = this._getIframeDoc();
-    }
-    return this._iframeDoc;
+ZmSignatureEditor.prototype.getIframeDoc =
+function() {
+	if (!this._iframeDoc) {
+		this._iframeDoc = this._getIframeDoc();
+	}
+	return this._iframeDoc;
 };
-
-
-
-
