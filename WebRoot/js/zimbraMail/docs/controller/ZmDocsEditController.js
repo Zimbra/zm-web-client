@@ -81,7 +81,16 @@ function(id) {
 ZmDocsEditController.prototype.loadDocument = function(item) {
     var content = this._docMgr.fetchDocumentContent(item);
     if(content) {
-        this._docsEdit._editor.setContent(content);
+        if(window.isTinyMCE) {
+            var ed = tinyMCE.get('tiny_mce_content');
+            if(ed) {
+                ed.setContent();
+            }else {
+                document.getElementById('tiny_mce_content').value = content;
+            }
+        }else {
+            this._docsEdit._editor.setContent(content);
+        }
     }
 };
 

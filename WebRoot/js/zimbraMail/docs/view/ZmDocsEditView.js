@@ -193,7 +193,7 @@ ZmDocsEditView.prototype._initialize = function() {
 
         divEl.appendChild(textEl);
         htmlEl.appendChild(divEl);
-
+        tinymce.baseURL = window.contextPath + "/tiny_mce/3.2.6/";
         tinyMCE.init({
             // General options
             mode : "exact",

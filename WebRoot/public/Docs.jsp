@@ -133,15 +133,19 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         for (String pname : pnames) {
             String pageurl = "/"+pprefix+"/"+pname+psuffix;
             if (isDevMode) { %>
-    <jsp:include>
-        <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
-    </jsp:include>
-    <% } else { %>
-    <script type="text/javascript" src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script>
-    <% } %>
-    <% }
-    %>
-    <script type="text/javascript" src="<%=contextPath%>/tiny_mce/3.2.6/tiny_mce.js"></script>
+            <jsp:include>
+                <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
+            </jsp:include>
+            <% } else { %>
+                <script type="text/javascript" src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script>
+            <% } %>
+        <% }
+           if(isTinyMce) { 
+        %>
+            <script type="text/javascript" src="<%=contextPath%>/tiny_mce/3.2.6/tiny_mce.js"></script>
+        <%
+            }
+        %>
 </head>
 <c:set var="fileName" value="${empty param.name ? 'Untitled' : zm:cook(param.name)}"/>
 <c:set var="folderId" value="${empty param.l ? '' : zm:cook(param.l)}"/>
@@ -152,6 +156,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 <script type="text/javascript" language="JavaScript">
 
     window.appContextPath = '<%= contextPath %>';
+    window.contextPath = '<%= contextPath %>';
     window.isRestView = false;
     window.isTinyMCE = <%= isTinyMce %>;
     ZmDocsEditApp._createDBG(${isDevMode});
