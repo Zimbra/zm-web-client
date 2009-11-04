@@ -210,14 +210,14 @@
 	width:16; height:16;
 }
 
-#ifdef GECKO
+#IFDEF GECKO
 #ZimbraWikiPage TABLE {
 	font-size: inherit;
 	font-weight: inherit;
 	font-style: inherit;
 	font-variant: inherit;
 }
-#endif
+#ENDIF
 
 
 

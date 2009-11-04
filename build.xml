@@ -1028,7 +1028,7 @@ if (ext == null) ext = "";
                         <echo>Prepending Copyright to @{var}${license.ext}</echo>
                         <concat destfile="@{var}${license.ext}" fixlastline="true">
                             <header filtering="no" trimleading="yes">
-                                // Copyright (C) 2005-2009 Zimbra Inc. http://www.zimbra.com/
+                                /* Copyright (C) 2005-2009 Zimbra Inc. http://www.zimbra.com/ */
                             </header>
                             <fileset file='@{var}${jsmin.ext}'/>
                         </concat>
@@ -1258,8 +1258,14 @@ if (ext == null) ext = "";
          </javac>
      </target>
 
+     <target name="jspc.optcompile">
+         <javac destdir="${jspc.build.dir}" optimize="on" debug="off" srcdir="${jspc.build.dir}" classpathref="jspc.class.path" target="1.5">
+             <include name="**" />
+         </javac>
+     </target>
+
      <target name="jspc.build" depends="jspc.precompile,jspc.compile"/>
-     <target name="jspc.offline_build" depends="jspc.offline_precompile,jspc.compile"/>
+     <target name="jspc.offline_build" depends="jspc.offline_precompile,jspc.optcompile"/>
 
      <target name="jspc.deploy" depends="jspc.build">
      	<mkdir dir="/opt/zimbra/jetty/work/zimbra/jsp"/>
