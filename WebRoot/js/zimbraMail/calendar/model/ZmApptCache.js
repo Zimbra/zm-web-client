@@ -25,11 +25,11 @@ function() {
 
 ZmApptCache.prototype.clearCache =
 function(folderId) {
-	if(!folderId) {
+	if (!folderId) {
 		this._cachedApptSummaries = {};
 		this._cachedApptVectors = {};
 		this._cachedIds = {};
-	}else {
+	} else {
 		var cacheEntries = this._cachedApptVectors[folderId];
 		if(cacheEntries) {
 			for(var j in cacheEntries) {
@@ -274,12 +274,19 @@ function(params) {
 
 	this._setSoapParams(request, params);
 
+	var accountName = appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null;
 	if (params.callback) {
-		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [params]);
-		var errorCallback = new AjxCallback(this, this._getApptSummariesError);
-		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback:errorCallback, noBusyOverlay:params.noBusyOverlay});
-	} else {
-		var response = appCtxt.getAppController().sendRequest({jsonObj: jsonObj});
+		appCtxt.getAppController().sendRequest({
+			jsonObj: jsonObj,
+			asyncMode: true,
+			callback: (new AjxCallback(this, this._getApptSummariesResponse, [params])),
+			errorCallback: (new AjxCallback(this, this._getApptSummariesError)),
+			noBusyOverlay: params.noBusyOverlay,
+			accountName: accountName
+		});
+	}
+	else {
+		var response = appCtxt.getAppController().sendRequest({jsonObj: jsonObj, accountName: accountName});
 		var result = new ZmCsfeResult(response, false);
 		return this._getApptSummariesResponse(params, result);
 	}
@@ -348,7 +355,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 			callback: (new AjxCallback(this, this.handleBatchResponse, [searchParams, miniCalParams, reminderSearchParams])),
 			errorCallback: (new AjxCallback(this, this.handleBatchResponseError, [searchParams, miniCalParams, reminderSearchParams])),
 			noBusyOverlay: true,
-			accountName: appCtxt.isOffline && appCtxt.accountList.mainAccount.name
+			accountName: (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null)
 		};
 		appCtxt.getAppController().sendRequest(params);
 	} else {
@@ -418,25 +425,27 @@ ZmApptCache.prototype._processErrorCode =
 function(resp) {
 	if (resp && resp.Fault && (resp.Fault.length > 0)) {
 
-        if(this._calViewController) this._calViewController.setSearchInProgress(false);
+		if (this._calViewController) {
+			this._calViewController.setSearchInProgress(false);
+		}
 
 		var errors = [];
 		var ids = {};
-        var invalidAccountMarker = {};
+		var invalidAccountMarker = {};
 		for (var i = 0; i < resp.Fault.length; i++) {
 			var fault = resp.Fault[i];
 			var error = (fault && fault.Detail) ? fault.Detail.Error : null;
 			var code = error ? error.Code : null;
 			var attrs = error ? error.a : null;
 			if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT) {
-				for(var j in attrs) {
+				for (var j in attrs) {
 					var attr = attrs[j];
-					if(attr && (attr.t == "IID") && (attr.n == "itemId")) {
-                        var id = attr._content;
+					if (attr && (attr.t == "IID") && (attr.n == "itemId")) {
+						var id = attr._content;
 						ids[id] = true;
-                        if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT) {
-                            invalidAccountMarker[id] = true;
-                        }
+						if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT) {
+							invalidAccountMarker[id] = true;
+						}
 					}
 				}
 				
@@ -446,24 +455,26 @@ function(resp) {
 			}
 		}
 
-        var deleteHandled = false;
-        var zidsMap = {};
-        for(var id in ids) {
-            if (id && appCtxt.getById(id)) {
-                var folder = appCtxt.getById(id);
-                folder.noSuchFolder = true;
-                this.handleDeleteMountpoint(folder);
-                deleteHandled = true;
-                if(invalidAccountMarker[id] && folder.zid) {
-                    zidsMap[folder.zid] = true;
-                }
-            }
-        }
+		var deleteHandled = false;
+		var zidsMap = {};
+		for (var id in ids) {
+			if (id && appCtxt.getById(id)) {
+				var folder = appCtxt.getById(id);
+				folder.noSuchFolder = true;
+				this.handleDeleteMountpoint(folder);
+				deleteHandled = true;
+				if (invalidAccountMarker[id] && folder.zid) {
+					zidsMap[folder.zid] = true;
+				}
+			}
+		}
 
-        //no such mount point error - mark all folders owned by same account as invalid
-        this.markAllInvalidAccounts(zidsMap);
+		// no such mount point error - mark all folders owned by same account as invalid
+		this.markAllInvalidAccounts(zidsMap);
 
-        if(deleteHandled) this.runErrorRecovery();
+		if (deleteHandled) {
+			this.runErrorRecovery();
+		}
 
 		return deleteHandled;
 	}
@@ -475,18 +486,18 @@ function(resp) {
 //remove this after server sends fault for all removed accounts instead of no such mount point
 ZmApptCache.prototype.markAllInvalidAccounts =
 function(zidsMap) {
-    if (this._calViewController) {
-        var folderIds = this._calViewController.getCheckedCalendarFolderIds();
-        for(var i in folderIds) {
-            var folder = appCtxt.getById(folderIds[i]);            
-            if (folder) {
-                 if(folder.zid && zidsMap[folder.zid]) {
-                    folder.noSuchFolder = true;
-                    this.handleDeleteMountpoint(folder); 
-                 }
-            }
-        }
-    }
+	if (this._calViewController) {
+		var folderIds = this._calViewController.getCheckedCalendarFolderIds();
+		for (var i in folderIds) {
+			var folder = appCtxt.getById(folderIds[i]);
+			if (folder) {
+				if (folder.zid && zidsMap[folder.zid]) {
+					folder.noSuchFolder = true;
+					this.handleDeleteMountpoint(folder);
+				}
+			}
+		}
+	}
 };
 
 ZmApptCache.prototype.handleDeleteMountpoint =
@@ -503,7 +514,7 @@ function(organizer) {
 ZmApptCache.prototype.runErrorRecovery =
 function() {
 	if (this._calViewController) {
-        this._calViewController.setSearchInProgress(false);        
+		this._calViewController.setSearchInProgress(false);
 		this._calViewController._updateCheckedCalendars();
 		if (this._calViewController.onErrorRecovery) {
 			this._calViewController.onErrorRecovery.run();
@@ -577,7 +588,6 @@ function(ex) {
 
 ZmApptCache.prototype.processSearchResponse = 
 function(searchResp, params) {
-
 	if (!searchResp) {
 		if (this._cachedVec) {
 			var resultList = this._cachedVec.clone();
@@ -671,12 +681,14 @@ function(items) {
 	if (!items) { return false; }
 	if (items instanceof Array) {
 		for (var i=0; i < items.length; i++) {
-			if (items[i].id && this._cachedIds[items[i].id])
+			if (items[i].id && this._cachedIds[items[i].id]) {
 				return true;
+			}
 		}
 	} else {
-		if (items.id && this._cachedIds[items.id])
+		if (items.id && this._cachedIds[items.id]) {
 			return true;
+		}
 	}
 	return false;
 };

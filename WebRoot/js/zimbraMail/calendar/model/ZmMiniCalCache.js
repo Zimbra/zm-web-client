@@ -60,9 +60,14 @@ function(params) {
 
 	this._setSoapParams(request, params);
 
-    var respCallback = new AjxCallback(this, this._getMiniCalResponse, [params]);
-    var errorCallback = new AjxCallback(this, this._handleMiniCalResponseError, [params]);
-    appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:params.noBusyOverlay});
+	appCtxt.getAppController().sendRequest({
+		jsonObj: jsonObj,
+		asyncMode: true,
+		callback: (new AjxCallback(this, this._getMiniCalResponse, [params])),
+		errorCallback: (new AjxCallback(this, this._handleMiniCalResponseError, [params])),
+		noBusyOverlay: params.noBusyOverlay,
+		accountName: (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null)
+	});
 };
 
 ZmMiniCalCache.prototype.getCacheData =
@@ -71,7 +76,7 @@ function(params) {
 	var cachedData = this._miniCalData[cacheKey];
 	if (cachedData) {
 		return cachedData;
-	}	
+	}
 };
 
 ZmMiniCalCache.prototype._handleMiniCalResponseError =
