@@ -1445,7 +1445,7 @@ function(event) {
 	} else if (!AjxUtil.isString(addValue) || AjxStringUtil.trim(addValue) == "") {
 		this.showDialogWithFAQ(ZmMsg.missingEmailAddress);
 		this._clearField(this._comboBox);
-	} else if (!AjxEmailAddress.isValid(addValue)) {
+	} else if (!AjxEmailAddress.isValid(addValue) || addValue.length > ZmCallFeature.EMAIL_MAX_LENGTH) {
 		this.showDialogWithFAQ(ZmMsg.voicemailNotificationErrorInvalid);
 		this._clearField(this._comboBox);
 	} else {
