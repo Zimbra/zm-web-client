@@ -109,18 +109,20 @@ function(attId) {
 		}
 
         //this._checkResourceConflicts(appt);
-
+        var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
+        var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
         var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
-        if (attendees && attendees.length > 0) {
-            var newEmails = [];
-            for (var i = 0; i < attendees.length; i++) {
-                var email = attendees[i].getEmail();
-                newEmails.push(email);
-            }
-            this.checkPermissionRequest(newEmails, appt, attId);
+
+        var needsPermissionCheck = (attendees && attendees.length > 0);
+        var needsConflictCheck = (resources && resources.length > 0) || (locations && locations.length > 0);
+
+        if (needsConflictCheck) {
+            this.checkConflicts(appt, attId);
             return false;
-        }else {
-            // otherwise, just save the appointment
+        }else if (needsPermissionCheck) {
+            this.checkAttendeePermissions(appt, attId);
+            return false;
+        }else{
             this._saveCalItemFoRealz(appt, attId);
         }
         return true;
