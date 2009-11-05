@@ -236,6 +236,10 @@ function(viewId, startDate, skipMaintenance) {
 	}
 };
 
+ZmCalViewController.prototype.getCalTreeController = function() {
+    return this._calTreeController;    
+};
+
 ZmCalViewController.prototype.createViewMgr =
 function(startDate) {
 	var newDate = startDate || (this._miniCalendar ? this._miniCalendar.getDate() : new Date());
