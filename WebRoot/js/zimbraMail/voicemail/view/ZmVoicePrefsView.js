@@ -1657,7 +1657,7 @@ function(event) {
 				this.showDialogWithFAQ(ZmMsg.selectiveCallForwardingFromErrorSameAsTo);
 				this._clearField(this._addField);
 			} else if (this._list.containsNumber(addValue)) {
-				this.showDialogWithFAQ(ZmMsg.errorPhoneNotUnique);
+				this.showDialogWithFAQ(ZmMsg.errorPhoneForwardNotUnique);
 				this._clearField(this._addField);
 			} else {
 				this._list.addNumber(addValue);
@@ -1887,7 +1887,7 @@ function(event) {
 				this.showDialogWithFAQ(ZmMsg.selectiveCallRejectionError);
 				this._clearField(this._addField);
 			} else if (this._list && this._list.containsNumber(addValue)) {
-				this.showDialogWithFAQ(ZmMsg.errorPhoneNotUnique);
+				this.showDialogWithFAQ(ZmMsg.errorPhoneRejectNotUnique);
 				this._clearField(this._addField);
 			} else {
 				this._list.addNumber(addValue);
@@ -2064,7 +2064,7 @@ function(event) {
 				this.showDialogwithFAQ(ZmMsg.selectiveCallAcceptanceError);
 				this._clearField(this._addField);
 			} else if (this._list.containsNumber(addValue)) {
-				this.showDialogwithFAQ(ZmMsg.errorPhoneNotUnique);
+				this.showDialogwithFAQ(ZmMsg.errorPhoneAcceptNotUnique);
 				this._clearField(this._addField);
 			} else {
 				this._list.addNumber(addValue);
