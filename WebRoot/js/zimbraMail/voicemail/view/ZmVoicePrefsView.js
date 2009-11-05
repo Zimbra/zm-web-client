@@ -1590,6 +1590,7 @@ function() {
 	if (!to || to=="") {
 		result.isActive = false;
 		result.data.phone = []; // ComCast will not let us save a nonempty list with an empty to field
+		result.data.ft = "";
 	} else {
 		result.data.ft = to;
 	}
