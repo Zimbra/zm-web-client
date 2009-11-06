@@ -192,9 +192,9 @@ function(acctInfo) {
 ZmZimbraAccount.prototype.getStatusIcon =
 function() {
 	switch (this.status) {
-		case ZmZimbraAccount.STATUS_UNKNOWN:	return "Offline";
+//		case ZmZimbraAccount.STATUS_UNKNOWN:	return "Offline"; 				// bug: 42403 - remove
 		case ZmZimbraAccount.STATUS_OFFLINE:	return "ImAway";
-		case ZmZimbraAccount.STATUS_ONLINE:		return ""; // no icon for "online"
+//		case ZmZimbraAccount.STATUS_ONLINE:		return "";						// no icon for "online"
 //		case ZmZimbraAccount.STATUS_RUNNING:	// animated, so cannot be set using AjxImg
 		case ZmZimbraAccount.STATUS_AUTHFAIL:	return "ImDnd";
 		case ZmZimbraAccount.STATUS_ERROR:		return "Critical";
@@ -219,7 +219,7 @@ function(code) {
 ZmZimbraAccount.prototype.getStatusMessage =
 function() {
 	switch (this.status) {
-		case ZmZimbraAccount.STATUS_UNKNOWN:	return ZmMsg.unknown;
+//		case ZmZimbraAccount.STATUS_UNKNOWN:	return ZmMsg.unknown;
 		case ZmZimbraAccount.STATUS_OFFLINE:	return ZmMsg.imStatusOffline;
 		case ZmZimbraAccount.STATUS_ONLINE:		return ZmMsg.imStatusOnline;
 		case ZmZimbraAccount.STATUS_RUNNING:	return ZmMsg.running;

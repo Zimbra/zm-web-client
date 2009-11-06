@@ -138,18 +138,22 @@
 
 <template id="share.App#ZimbraAccountTooltip">
 	<table border=0>
-		<$	if (data.lastSync && data.lastSync != "") { $>
+		<$ if (data.lastSync && data.lastSync != "") { $>
 			<tr>
 				<td class='nobreak' align=right><$= ZmMsg.lastSync $>:</td>
 				<td class='nobreak'>${lastSync}</td>
 			</tr>
-		<$	} $>
-		<$	if (data.status && data.status != "") { $>
+		<$ } else { $>
+			<tr>
+				<td class='nobreak' colspan=2><$= ZmMsg.neverSynced $></td>
+			</tr>
+		<$ } $>
+		<$ if (data.status && data.status != "") { $>
 			<tr>
 				<td align=right valign=top><$= ZmMsg.status $>:</td>
 				<td>${status}</td>
 			</tr>
-		<$	} $>
+		<$ } $>
 	</table>
 </template>
 
