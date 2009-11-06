@@ -78,8 +78,9 @@ function() {
 */
 ZmPrefController.prototype.getFilterRulesController =
 function() {
-	if (!this._filterRulesController)
+	if (!this._filterRulesController) {
 		this._filterRulesController = new ZmFilterRulesController(this._container, this._app, this._prefsView);
+	}
 	return this._filterRulesController;
 };
 
@@ -88,8 +89,9 @@ function() {
 */
 ZmPrefController.prototype.getMobileDevicesController =
 function() {
-	if (!this._mobileDevicesController)
+	if (!this._mobileDevicesController) {
 		this._mobileDevicesController = new ZmMobileDevicesController(this._container, this._app, this._prefsView);
+	}
 	return this._mobileDevicesController;
 };
 
@@ -409,6 +411,16 @@ function() {
 		var tabKey = this._prefsView.getCurrentTab();
 		var viewPage = this._prefsView.getTabView(tabKey);
 		if (viewPage) {
+			// bug: 42399 - the active account may not be "owned" by what is
+			// initially shown in prefs
+			var active = appCtxt.accountList.activeAccount;
+			if (!this._activeAccount) {
+				this._activeAccount = active;
+			}
+			else if (this._activeAccount != active) {
+				appCtxt.accountList.setActiveAccount(this._activeAccount);
+			}
+
 			viewPage.showMe();
 		}
 	}
