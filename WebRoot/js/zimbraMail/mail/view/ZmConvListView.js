@@ -348,23 +348,21 @@ function(item, colIdx) {
 		var exWidth = (item.type == ZmItem.MSG) ? width : (width+15);
 		htmlArr[idx++] = "<td width='" + exWidth + "'></td>";
 	}
+
+	// for multi-account, show the account icon for cross mbox search results
+	if (appCtxt.multiAccounts &&
+		item.type == ZmItem.CONV &&
+		appCtxt.getSearchController().searchAllAccounts)
+	{
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
+	}
+
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
 	if (item.type != ZmItem.MSG) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SIZE, colIdx, ZmMsg.COLUMN_WIDTH_SIZE);
 	}
 
-	var dateWidth = ZmMsg.COLUMN_WIDTH_DATE;
-
-	// for multi-account, show the account icon for cross mbox search results
-	if (appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
-		if (!this._isMultiColumn) {
-			dateWidth = (ZmMsg.COLUMN_WIDTH_DATE / 2);
-		}
-	}
-
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, dateWidth, "align=right");
-
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, "16");
 	htmlArr[idx++] = "</tr></table>";
 

@@ -237,6 +237,12 @@ function(item, colIdx) {
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
+
+	// for multi-account, show the account icon for cross mbox search results
+	if (appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
+	}
+
 	if (item.isHighPriority || item.isLowPriority) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
 	}
@@ -251,19 +257,9 @@ function(item, colIdx) {
 	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr>";
 	htmlArr[idx++] = "<td width=16></td>";
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width, "style='padding-left:0px'");
+
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
-
-	var dateWidth = ZmMsg.COLUMN_WIDTH_DATE;
-
-	// for multi-account, show the account icon for cross mbox search results
-	if (appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
-		if (!this._isMultiColumn) {
-			dateWidth = (ZmMsg.COLUMN_WIDTH_DATE / 2);
-		}
-	}
-
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, dateWidth, "align=right");
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, "16");
 	htmlArr[idx++] = "</tr></table>";
 
