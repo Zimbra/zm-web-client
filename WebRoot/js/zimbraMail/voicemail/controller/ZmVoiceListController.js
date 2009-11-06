@@ -168,7 +168,7 @@ function(ev) {
 		for (var name in combination) {
 			var phone = combination[name].phone;
 			var from = combination[name].addFrom;
-			var callback = new AjxCallback(this, this._modifyCallFeatures, {featureName: ZmCallFeature.SELECTIVE_CALL_FORWARDING, addFrom: from, maxEntries: ZmCallFeature.SELECTIVE_CALL_FORWARDING_MAX_ENTRIES, maxMsg: ZmMsg.selectiveCallForwardingFromErrorMax, mustHaveTo:true, errorMsg:ZmMsg.selectiveCallForwardingErrorCannotAdd});
+			var callback = new AjxCallback(this, this._modifyCallFeatures, {featureName: ZmCallFeature.SELECTIVE_CALL_FORWARDING, addFrom: from, maxEntries: ZmCallFeature.SELECTIVE_CALL_FORWARDING_MAX_ENTRIES, maxMsg: ZmMsg.selectiveCallForwardingFromErrorMax, mustHaveTo:true, errorMsg:ZmMsg.selectiveCallForwardingErrorCannotAdd, alreadyMsg:ZmMsg.errorPhoneForwardNotUnique, isToMsg: ZmMsg.selectiveCallForwardingFromErrorSameAsTo});
 			phone.getCallFeatures(callback);
 		}
 	}
@@ -229,6 +229,7 @@ function(obj, features, phone) {
 	var alreadyMsg = obj.alreadyMsg || "";
 	var errorMsg = obj.errorMsg || null;
 	var mustHaveTo = obj.mustHaveTo;
+	var isToMsg = obj.isToMsg;
 	var feature = features[obj.featureName];
 	
 	if (feature instanceof ZmCallFeature && phone instanceof ZmPhone && addPhones.length > 0) {
@@ -238,10 +239,16 @@ function(obj, features, phone) {
 		if (addPhones.length > 0) {
 			var added = 0;
 			var exists;
+			var isTo;
 			for (var i=0; i<addPhones.length; i++) {
 				var from = addPhones[i];
 				var number = ZmPhone.calculateName(from.getDisplay());
 				exists = false;
+				isTo = false;
+				if (number == feature.data.ft) {
+					isTo = true;
+					break;
+				}
 				for (var j=0; j<result.data.phone.length; j++) {
 					if (result.data.phone[j].pn == number) {
 						exists = true;
@@ -268,6 +275,8 @@ function(obj, features, phone) {
 				}
 			} else if (exists) {
 				appCtxt.setStatusMsg(alreadyMsg);
+			} else if (isTo) {
+				appCtxt.setStatusMsg(isToMsg);
 			}
 		}
 	}
