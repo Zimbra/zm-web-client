@@ -270,6 +270,11 @@ action="compose" paction="view" id="${msg.id}"/>
 
 <br/>
 <br/>
+<script type="text/javascript">
+    <!--
+    window.print();
+    // -->
+</script>
 
 </body>
 </html>
