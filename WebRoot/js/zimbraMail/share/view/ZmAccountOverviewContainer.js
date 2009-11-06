@@ -159,6 +159,7 @@ function(params) {
 		ti.addClassName("ZmOverviewGlobalInbox");
 		ti._initialize(0, true);
 		ti.setVisible(appCtxt.get(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX));
+		this.setSelection(ti, true);
 
 		var mainAcct = appCtxt.accountList.mainAccount;
 		var setting = appCtxt.getSettings(mainAcct).getSetting(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX);
