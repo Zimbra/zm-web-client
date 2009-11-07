@@ -274,14 +274,19 @@ ZmEditContactView.ATTRS = {
 	NOTES: ZmContact.F_notes
 };
 
+ZmEditContactView.updateFieldLists = function() {
+
 ZmEditContactView.LISTS = {
 	ADDRESS: {attrs:ZmContact.ADDRESS_FIELDS}, // NOTE: placeholder for custom handling
 	EMAIL: {attrs:ZmContact.EMAIL_FIELDS, onlyvalue:true},
 	PHONE: {attrs:ZmContact.PHONE_FIELDS},
-	IM: {attrs:ZmContact.IM_FIELDS, addone:ZmContact.IS_ADDONE, onlyvalue:true},
+	IM: {attrs:ZmContact.IM_FIELDS, onlyvalue:true},
 	URL: {attrs:ZmContact.URL_FIELDS},
-	OTHER: {attrs:ZmContact.OTHER_FIELDS, addone:ZmContact.IS_ADDONE}
+	OTHER: {attrs:ZmContact.OTHER_FIELDS}
 };
+
+}; // updateFieldLists
+ZmEditContactView.updateFieldLists();
 
 ZmEditContactView.ADDR_PREFIXES = ["work","home","other"];
 ZmEditContactView.ADDR_SUFFIXES = ["Street","City","State","PostalCode","Country"];
@@ -352,12 +357,12 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 			}
 			case "OTHER": {
 				var list = ZmEditContactView.LISTS[id];
-				this.__initRowsOther(nattrs, id, list.attrs, list.addone, list.onlyvalue, this._listAttrs);
+				this.__initRowsOther(nattrs, id, list.attrs, ZmContact.IS_ADDONE[id], list.onlyvalue, this._listAttrs);
 				break;
 			}
 			default: {
 				var list = ZmEditContactView.LISTS[id];
-				this.__initRowsControl(nattrs, id, list.attrs, list.addone, list.onlyvalue, this._listAttrs);
+				this.__initRowsControl(nattrs, id, list.attrs, ZmContact.IS_ADDONE[id], list.onlyvalue, this._listAttrs);
 			}
 		}
 	}
@@ -416,14 +421,14 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 					}
 				}
 				else {
-					var onlyvalue = id == "IM" || id == "EMAIL";
+					var onlyvalue = ZmEditContactView.LISTS[id] && ZmEditContactView.LISTS[id].onlyvalue;
 					var v = onlyvalue ? item : item.value;
 					if (!v) continue;
 					var list = ZmEditContactView.LISTS[id];
 					var a = onlyvalue ? list.attrs[0] : item.type;
 					if (!counts[a]) counts[a] = 0;
 					var count = ++counts[a];
-					a = (count > 1 || (list.addone && list.addone[a])) ? a+count : a;
+					a = count > 1 || ZmContact.IS_ADDONE[a] ? a+count : a;
 					attributes[a] = v;
 				}
 			}
@@ -1052,6 +1057,7 @@ ZmEditContactViewInputSelect = function(params) {
 	this._formItemId = params.formItemDef.id;
 	this._options = params.options || [];
 	this._cols = params.cols;
+	this._rows = params.rows;
 	this._hint = params.hint;
 	DwtComposite.apply(this, arguments);
 	this._tabGroup = new DwtTabGroup(this._htmlElId);
@@ -1166,7 +1172,7 @@ ZmEditContactViewInputSelect.prototype._createHtmlFromTemplate = function(templa
 };
 
 ZmEditContactViewInputSelect.prototype._createInput = function() {
-	var input = new DwtInputField({parent:this,size:this._cols});
+	var input = new DwtInputField({parent:this,size:this._cols,rows:this._rows});
 	input.setHint(this._hint);
 	input.setHandler(DwtEvent.ONKEYDOWN, AjxCallback.simpleClosure(this._handleInputKeyDown, this, input));
 	input.setHandler(DwtEvent.ONKEYUP, AjxCallback.simpleClosure(this._handleInputKeyUp, this, input));
@@ -1235,6 +1241,8 @@ ZmEditContactViewOther.prototype.toString = function() {
 
 ZmEditContactViewOther.prototype.TEMPLATE = "abook.Contacts#ZmEditContactViewOther";
 
+ZmEditContactViewOther.prototype.DATE_ATTRS = { "birthday": true, "anniversary": true };
+
 // Public methods
 
 ZmEditContactViewOther.prototype.setValue = function(value) {
@@ -1296,7 +1304,7 @@ ZmEditContactViewOther.prototype._createSelect = function() {
 ZmEditContactViewOther.prototype._resetPicker = function() {
 	if (this._picker) {
 		var type = this.getValue().type;
-		this._picker.setVisible(type == "birthday" || type == "anniversary");
+		this._picker.setVisible(type in this.DATE_ATTRS);
 	}
 };
 

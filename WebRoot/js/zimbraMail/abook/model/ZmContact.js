@@ -208,17 +208,6 @@ ZmContact.URL_FIELDS = [
 	ZmContact.F_workURL,
 	ZmContact.F_otherURL
 ];
-
-ZmContact.DISPLAY_FIELDS = [].concat(
-	ZmContact.ADDRESS_FIELDS,
-	ZmContact.EMAIL_FIELDS,
-	ZmContact.IM_FIELDS,
-	ZmContact.OTHER_FIELDS,
-	ZmContact.PHONE_FIELDS,
-	ZmContact.PRIMARY_FIELDS,
-	ZmContact.URL_FIELDS
-);
-
 ZmContact.GAL_FIELDS = [
 	ZmContact.GAL_MODIFY_TIMESTAMP,
 	ZmContact.GAL_CREATE_TIMESTAMP,
@@ -240,6 +229,18 @@ ZmContact.X_FIELDS = [
 	ZmContact.X_fullName
 ];
 
+ZmContact.updateFieldConstants = function() {
+
+ZmContact.DISPLAY_FIELDS = [].concat(
+	ZmContact.ADDRESS_FIELDS,
+	ZmContact.EMAIL_FIELDS,
+	ZmContact.IM_FIELDS,
+	ZmContact.OTHER_FIELDS,
+	ZmContact.PHONE_FIELDS,
+	ZmContact.PRIMARY_FIELDS,
+	ZmContact.URL_FIELDS
+);
+
 ZmContact.IGNORE_FIELDS = [].concat(
 	ZmContact.GAL_FIELDS,
 	ZmContact.MYCARD_FIELDS,
@@ -254,7 +255,9 @@ ZmContact.IS_IGNORE = {};
 for (var i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
 	ZmContact.IS_IGNORE[ZmContact.IGNORE_FIELDS[i]] = true;
 }
-delete i;
+
+}; // updateFieldConstants()
+ZmContact.updateFieldConstants();
 
 /**
  * This structure can be queried to determine if the first
@@ -269,8 +272,6 @@ delete i;
 ZmContact.IS_ADDONE = {};
 ZmContact.IS_ADDONE[ZmContact.F_custom] = true;
 ZmContact.IS_ADDONE[ZmContact.F_imAddress] = true;
-// NOTE: Only add 1 to workEmail if Comcast
-//ZmContact.IS_ADDONE[ZmContact.F_workEmail] = true;
 
 /**
  * Returns an indexed attribute name taking into account if the field

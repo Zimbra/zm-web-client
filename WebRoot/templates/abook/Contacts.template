@@ -451,8 +451,8 @@
 	};
 	var names = ZmEditContactView.LISTS.EMAIL.attrs;
 	for (var i = 0; i < names.length; i++) {
-		var name= names[i];
-		itemlistdata.name = name; $>
+		itemlistdata.name = names[i];
+		itemlistdata.type = ZmMsg["AB_FIELD_"+names[i]]; $>
 		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
 	<$ } $>
 </template>
@@ -477,10 +477,15 @@
 	<$
 	var itemlistdata = {
 		id: data.id,
-		attrs: data.attrs, addone: true, seenone: false,
-		label: ZmMsg.imLabel, name: "imAddress"
-	}; $>
-	<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
+		attrs: data.attrs, seenone: false,
+		label: ZmMsg.imLabel
+	};
+	var names = ZmEditContactView.LISTS.IM.attrs;
+	for (var i = 0; i < names.length; i++) {
+		itemlistdata.name = names[i];
+		itemlistdata.type = ZmMsg["AB_FIELD_"+names[i]]; $>
+		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
+	<$ } $>
 </template>
 
 <template id="abook.Contacts#SplitView_addresses">
@@ -579,7 +584,6 @@
 		var name = names[i];
 		itemlistdata.name = name;
 		itemlistdata.type = ZmMsg["AB_FIELD_"+names[i]];
-		itemlistdata.addone = name == "custom";
 		$>
 		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
 		<$
@@ -611,7 +615,6 @@
 	}
 
 	// display custom
-	itemlistdata.addone = false;
 	for (var a in attrs) {
 		itemlistdata.name = a;
 		itemlistdata.type = a;
@@ -641,7 +644,7 @@
 	var isEmail = data.objectType == ZmObjectManager.EMAIL;
 	var i = 0;
 	while (true) {
-		var name = (++i > 1 || data.addone) ? data.name+i : data.name;
+		var name = ++i > 1 || ZmContact.IS_ADDONE[data.name] ? data.name+i : data.name;
 		var value = data.attrs[name];
 		if (!value) break;
 		if (!isEmail) {
@@ -668,22 +671,6 @@
 		<$ data.seenone = true;
 	}
 	$>
-</template>
-
-<template id="abook.Contacts#SplitViewObject">
-	<$ if (data.value) { $>
-		<tr>
-			<td class='contactLabel'>
-				${label}:
-			</td>
-			<td class='contactOutput'>
-				<$= data.type ? data.data.view._generateObject(data.value, data.type) : (data.value || "") $>
-			</td>
-		</tr>
-		<$ if (data.addSep) { $>
-			<tr><td><br></td></tr>
-		<$ } $>
-	<$ } $>
 </template>
 
 <template id="abook.Contacts#SplitViewGroup">
@@ -832,68 +819,6 @@
 			</tr>
 		</table>
 	</center>
-</template>
-
-
-
-<template id="abook.Contacts#ZmContactView">
-	<table cellspacing=0 cellpadding=0 width=100%>
-		<tr class='contactHeaderRow' id='${id}_headerRow'>
-			<td id='${id}_icon' width=20><$= AjxImg.getImageHtml("Contact") $></td>
-			<td id='${id}_title' class='contactHeader'></td>
-			<td id='${id}_tags' align='right'></td>
-		</tr>
-	</table>
-	<div id='${id}_tabs'></div>
-</template>
-
-<template id="abook.Contacts#AddEditEntry">
-	<$
-		var id = data.data.data.id;
-		var tabIdx = data.data.data.tabIdx;
-		var entry = data.entry;
-	$>
-	<tr>
-		<$ if(!entry.isImage) { $>
-			<td class='contactLabel' <$= entry.isTextArea ? "valign=top" : "" $>>
-				<$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(entry.lbl)) $>
-			</td>
-		<$ } $>
-		<$ if (entry.widgetId) { $>
-			<td id='${entry.widgetId}'></td>
-		<$ } else if (entry.isTextArea) { $>
-			<td><textarea wrap='hard' cols=32 rows='<$= AjxEnv.isSafari ? 5 : 4 $>' name='<$= id $>_name_<$= tabIdx $>' id='<$= id $>_${entry.field}' _field='${entry.field}'></textarea></td>
-		<$ } else if (entry.isDate) { $>
-			<td>
-				<table border=0 cellpadding=0 cellspacing=0>
-					<tr>
-						<td><input type='text' autocomplete='off' size=14 id='<$= id $>_${entry.field}' name='<$= id $>_name_<$= tabIdx $>' _field='${entry.field}' _isDate='true'></td>
-						<td id='<$= id $>_${entry.field}_button' name='<$= id $>_dateButtonName'></td>
-					</tr>
-				</table>
-			</td>
-		<$ } else if (entry.isImage) { $>
-			<td colspan='10'>
-				<table border=0 cellpadding=2 cellspacing=2>
-					<tr>
-						<td>
-							<div id='<$= id$>_${entry.field}_default'><$= AjxImg.getImageHtml("Person_48"); $></div>
-							<img id='<$= id$>_${entry.field}_img' width=100 height=100>
-							<center><a id='<$=id $>_${entry.field}_remove' href='javascript:;'><$= ZmMsg.removePhoto $></a></center>
-						</td>
-						<td>
-							<$= ZmMsg.addNewPhoto $><br\>
-							<form id='<$=id $>_${entry.field}_form' accept-charset='utf-8' method='POST' enctype='multipart/form-data' action='<$= appCtxt.get(ZmSetting.CSFE_UPLOAD_URI) $>'>
-								<input type='file' size=25 id='<$= id$>_${entry.field}_input' name='<$=id $>_name_<$= tabIdx$>' _isImage='true' _field='${entry.field}'>
-							</form>
-						</td>
-					</tr>
-				</table>
-			</td>
-		<$ } else { $>
-			<td><input type='text' autocomplete='off' size=35 name='<$= id $>_name_<$= tabIdx $>' id='<$= id $>_${entry.field}' _field='${entry.field}'></td>
-		<$ } $>
-	</tr>
 </template>
 
 <template id="abook.Contacts#ZmContactViewMyCardTabs" tabs="myCardHome,myCardWork"></template>
