@@ -36,7 +36,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     String ext = (String)request.getAttribute("fileExtension");
     if (ext == null) ext = "";
 
-    String offline = (String)request.getAttribute("fileExtension");
+    String offline = (String)request.getAttribute("offline");
     if (offline == null) offline = application.getInitParameter("offlineMode");
     boolean isOfflineMode = offline != null && offline.equals("true");
 
