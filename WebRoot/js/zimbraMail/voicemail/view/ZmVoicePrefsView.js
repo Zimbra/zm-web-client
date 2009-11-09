@@ -1868,13 +1868,13 @@ function() {
 
 ZmSelectiveCallRejectionUI.prototype._getFrom =
 function() {
-	var from = [];
-	if (this._list && this._list.getList()) {
+	if (this._list) {
 		var items = this._list.getList().getArray();
+		var from = [];
 		for (var i=0; i<items.length; i++)
-			from.push({a: items[i].a, pn: items[i].pn}); // Filter all other attributes
-	}
-	return from;
+			from.push({a: items[i].a, pn: ZmPhone.calculateNonFullName(items[i].pn)}); // Filter all other attributes
+		return from;
+	} else return null;
 }
 
 ZmSelectiveCallRejectionUI.prototype._handleAddFromNumber =
