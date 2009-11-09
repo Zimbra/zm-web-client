@@ -641,12 +641,15 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 							<input type="submit" name="actionVoiceClearSelectiveForwarding" id="clearSelectiveForwarding" value="<fmt:message key='removeAll'/>" <c:if test="${empty sessionScope.selectiveCallForwardingFrom[phone]}">disabled="disabled"</c:if> />
 							<script type="text/javascript">
 							<!--
-								selectiveForwardCheckboxDependers.push("clearSelectiveForwarding");
-								selectiveForwardCheckboxDependers.push("addSelectiveForwarding");
+								<c:if test="${!displayAddSelectiveForwarding && canAddSelectiveForwarding}">
+									selectiveForwardCheckboxDependers.push("addSelectiveForwarding");
+								</c:if>
+								<c:if test="${!empty sessionScope.selectiveCallForwardingFrom[phone]}">
+									selectiveForwardCheckboxDependers.push("clearSelectiveForwarding");
+								</c:if>
 							//-->
 							</script>
 						</td>
-					</tr>
 					</tr>
 
 					<tr>
@@ -716,6 +719,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 		<!--
 			var selectiveForwardingCheckbox = document.getElementById("selectiveCallForwardingActive");
 			selectiveForwardingCheckbox.onchange = function() {selectiveForwardCheckboxChanged(selectiveForwardingCheckbox.checked)};
+			selectiveForwardingCheckbox.onclick = function() {selectiveForwardCheckboxChanged(selectiveForwardingCheckbox.checked)};
 			selectiveForwardCheckboxChanged(selectiveForwardingCheckbox.checked);
 		//-->
 	</script>
@@ -814,11 +818,13 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						
 						<td style="vertical-align:top;padding-left:10px">
 							<input type="submit" id="addSelectiveRejection" name="addSelectiveRejection" value="<fmt:message key='addToList'/>" <c:if test="${displayAddSelectiveRejection || !canAddSelectiveRejection}">disabled</c:if>/>
+							<c:if test="${!displayAddSelectiveRejection && canAddSelectiveRejection}">
 							<script type="text/javascript">
 							<!--
 								selectiveRejectionCheckboxDependers.push("addSelectiveRejection");
 							//-->
 							</script>
+							</c:if>
 						</td>
 					</tr>
 
@@ -874,6 +880,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 		<!--
 			var selectiveRejectionCheckbox = document.getElementById("selectiveCallRejectionActive");
 			selectiveRejectionCheckbox.onchange = function() {selectiveRejectionCheckboxChanged(selectiveRejectionCheckbox.checked)};
+			selectiveRejectionCheckbox.onclick = function() {selectiveRejectionCheckboxChanged(selectiveRejectionCheckbox.checked)};
 			selectiveRejectionCheckboxChanged(selectiveRejectionCheckbox.checked);
 		//-->
 	</script>
