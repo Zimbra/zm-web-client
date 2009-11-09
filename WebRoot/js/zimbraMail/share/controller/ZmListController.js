@@ -111,8 +111,13 @@ function(searchResults, view) {
 
 ZmListController.prototype.getSearchString =
 function() {
-	return this._currentSearch
-		? (this._currentSearch.query || this._currentSearch.queryHint) : "";
+	if (this._currentSearch) {
+		if (appCtxt.multiAccounts && this._currentSearch.queryHint) {
+			return ([this._currentSearch.query, " (", this._currentSearch.queryHint, ")"].join(""));
+		}
+		return this._currentSearch.query;
+	}
+	return "";
 };
 
 ZmListController.prototype.getCurrentView =
