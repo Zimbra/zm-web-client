@@ -309,20 +309,23 @@ function() {
 
 ZmVoicePrefsPage.prototype.isDirty =
 function() {
-	this._getChanges();
-	return this._changes != null;
+	this._getChanges(false); // See if there actually are any changes
+	var dirty = this._changes != null;
+	this._getChanges(true); // Forcefully add all VM preferences, even if unchanged
+	return dirty;
 };
 
+// forceAddVM defaults to true if not explicitly set to false
 ZmVoicePrefsPage.prototype._getChanges =
-function() {
+function(forceAddVM) {
 	if (!this._phone) {
 		return;
 	}
+	forceAddVM = forceAddVM !== false;
 	for(var i = 0, count = this._ui.length; i < count; i++) {
-		//if (this._ui[i].isDirty()) {
-			// Submit ALL features, regardless of dirtiness (bug #42490)
+		if (this._ui[i].isDirty() || (forceAddVM && AjxUtil.indexOf(ZmCallFeature.VOICE_FEATURES, this._ui[i].getName())!=-1 )) {
 			this._addChange(this._ui[i]);
-		//}
+		}
 	}
 };
 
@@ -531,8 +534,10 @@ function() {
 
 ZmVoiceGeneralPage.prototype.isDirty =
 function() {
-	this._getChanges();
-	return this._changes != null || this.isPageSizeDirty();
+	this._getChanges(false); // See if there actually are any changes
+	var dirty = this._changes != null || this.isPageSizeDirty();
+	this._getChanges(true); // Forcefully add all VM preferences, even if unchanged
+	return dirty;
 };
 
 
