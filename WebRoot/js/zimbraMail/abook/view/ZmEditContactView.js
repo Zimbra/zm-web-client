@@ -74,10 +74,10 @@ ZmEditContactView.prototype.getFormItems = function() {
 			// contact attribute fields
 			{ id: "IMAGE", type: "ZmEditContactViewImage" },
 			{ id: "PREFIX", type: "DwtInputField", cols: 5,  hint: ZmMsg.AB_FIELD_prefix, visible: "get('SHOW_PREFIX')" },
-			{ id: "FIRST", type: "DwtInputField", cols: 10, hint: ZmMsg.AB_FIELD_firstName },
+			{ id: "FIRST", type: "DwtInputField", cols: 10, hint: ZmMsg.AB_FIELD_firstName, visible: "get('SHOW_FIRST')" },
 			{ id: "MIDDLE", type: "DwtInputField", cols: 10, hint: ZmMsg.AB_FIELD_middleName, visible: "get('SHOW_MIDDLE')" },
 			{ id: "MAIDEN", type: "DwtInputField", cols: 15, hint: ZmMsg.AB_FIELD_maidenName, visible: "get('SHOW_MAIDEN')" },
-			{ id: "LAST", type: "DwtInputField", cols: 15, hint: ZmMsg.AB_FIELD_lastName },
+			{ id: "LAST", type: "DwtInputField", cols: 15, hint: ZmMsg.AB_FIELD_lastName, visible: "get('SHOW_LAST')" },
 			{ id: "SUFFIX", type: "DwtInputField", hint: ZmMsg.AB_FIELD_suffix, cols: 5, visible: "get('SHOW_SUFFIX')" },
 			{ id: "NICKNAME", type: "DwtInputField", cols: 10, hint: ZmMsg.AB_FIELD_nickname, visible: "get('SHOW_NICKNAME')" },
 			{ id: "COMPANY", type: "DwtInputField", cols: 35, hint: ZmMsg.AB_FIELD_company, visible: "get('SHOW_COMPANY')" },
@@ -257,6 +257,10 @@ ZmEditContactView.SHOW_ID_LABELS = [
 	ZmMsg.AB_FIELD_company
 ];
 
+ZmEditContactView.ALWAYS_SHOW = {
+	FIRST: true, LAST: true, TITLE: true, COMPANY: true
+};
+
 ZmEditContactView.ATTRS = {
 	FILE_AS: ZmContact.F_fileAs,
 	FOLDER: ZmContact.F_folderId,
@@ -341,7 +345,7 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 		var showId = "SHOW_"+id;
 		var control = this.getControl(showId);
 		if (control == null) continue;
-		var checked = (this.getValue(id) || "") != "";
+		var checked = id in ZmEditContactView.ALWAYS_SHOW || (this.getValue(id) || "") != "";
 		this.setValue(showId, checked);
 		control.setChecked(checked, true); // skip notify
 	}
@@ -665,7 +669,7 @@ ZmEditContactView.prototype.__getDetailsMenu = function() {
 			var menuitem = new DwtMenuItem({parent:menu, style:DwtMenuItem.CHECK_STYLE});
 			menuitem.setText(labels[i]);
 			// NOTE: Always show first and last but don't allow to change
-			if (id == "FIRST" || id == "LAST") {
+			if (id in ZmEditContactView.ALWAYS_SHOW) {
 				menuitem.setChecked(true, true);
 				menuitem.setEnabled(false);
 			}
