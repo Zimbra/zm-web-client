@@ -141,7 +141,7 @@ function(callback, errorCallback, batchCommand) {
 		var pvalue = pname == "folderId"
 			? ZmOrganizer.normalizeId(this[pname])
 			: this[pname];
-		if (pname == "id" || (!pvalue && pname != "enabled")) continue;
+		if (pname == "id" || (!pvalue && pname != "enabled" && pname != "leaveOnServer")) continue;
 
 		dsrc.setAttribute(aname, String(pvalue));
 	}
@@ -239,7 +239,7 @@ function(callback, errorCallback, batchCommand, noBusyOverlay) {
 	var soapDoc = AjxSoapDoc.create("TestDataSourceRequest", "urn:zimbraMail");
 	var dsrc = soapDoc.set(this.ELEMENT_NAME);
 
-	var attrs = ["host", "port", "username", "password", "connectionType"];
+	var attrs = ["host", "port", "username", "password", "connectionType", "leaveOnServer"];
 	for (var i = 0; i < attrs.length; i++) {
 		var aname = attrs[i];
 		var pname = ZmDataSource.DATASOURCE_ATTRS[aname];
