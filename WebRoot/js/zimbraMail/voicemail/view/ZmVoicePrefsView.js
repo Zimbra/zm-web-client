@@ -319,9 +319,10 @@ function() {
 		return;
 	}
 	for(var i = 0, count = this._ui.length; i < count; i++) {
-		if (this._ui[i].isDirty()) {
+		//if (this._ui[i].isDirty()) {
+			// Submit ALL features, regardless of dirtiness (bug #42490)
 			this._addChange(this._ui[i]);
-		}
+		//}
 	}
 };
 
