@@ -26,7 +26,7 @@
 <c:if test="${zm:actionSet(param, 'actionSave')}">
 
     <%-- See if the forwarding to number is in the forwarding from list --%>
-    <c:if test="${voiceselected=='forwarding' && param.selectiveCallForwardingActive}">
+    <c:if test="${voiceselected=='forwarding'}">
     <zm:phone var="toValid" displayVar="toNumber" errorVar="errorCode" name="${param.selectiveCallForwardingTo}"/>
     <zm:listObject phone="${param.phone}" map="${sessionScope.selectiveCallForwardingFrom}" strArr="numbers" var="bogus"/>
     <c:set var="entryTest" value="${fn:replace(toNumber, '1-(', '(')}"/>
@@ -53,10 +53,15 @@
 	<c:when test="${voiceselected=='forwarding' && param.selectiveCallForwardingActive && invalidForwardNumber}">
 	        <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsInList"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 	</c:when>
+
+	<c:when test="${voiceselected=='forwarding' && !param.selectiveCallForwardingActive && (!toValid || invalidForwardNumber || empty param.selectiveCallForwardingTo) && !empty sessionScope.selectiveCallForwardingFrom[param.phone]}">
+	        <app:status style="Critical" html="true"><fmt:message key="optionsCallForwardingSelectiveToEmptyInstructions"><fmt:param value="${faqlink}"/></fmt:message></app:status>
+	</c:when>
 	
 	<c:when test="${param.selectiveCallForwardingActive && !empty toValid && !toValid}">
 		<app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalid"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 	</c:when>
+
 
         <c:otherwise>
 	    <c:choose>
@@ -82,12 +87,11 @@
                 </c:when>
 		
                 <c:when test="${voiceselected=='forwarding'}">	
-
-			    <zm:listObject var="bogus" phone="${param.phone}" strArr="scf" map="${sessionScope.selectiveCallForwardingFrom}"/>
-                	    <zm:modifyCallFeatures var="result" phone="${param.phone}"
-                    		callforwardingactive="${param.callForwardingActive}" callforwardingforwardto="${param.callForwardingTo}"
-                    		selectivecallforwardingactive="${param.selectiveCallForwardingActive=='TRUE'}" selectivecallforwardingforwardto="${param.selectiveCallForwardingTo}" selectivecallforwardingforwardfrom="${scf}"
-			    />
+		    <zm:listObject var="bogus" phone="${param.phone}" strArr="scf" map="${sessionScope.selectiveCallForwardingFrom}"/>
+                    <zm:modifyCallFeatures var="result" phone="${param.phone}"
+                	callforwardingactive="${param.callForwardingActive}" callforwardingforwardto="${param.callForwardingTo}"
+                	selectivecallforwardingactive="${param.selectiveCallForwardingActive=='TRUE'}" selectivecallforwardingforwardto="${param.selectiveCallForwardingTo}" selectivecallforwardingforwardfrom="${scf}"
+		    />
                 </c:when>
 		
                 <c:when test="${voiceselected=='screening'}">
@@ -152,8 +156,9 @@
     <zm:listObject phone="${param.phone}" var="emailNotificationAddresses" scope="session" map="${sessionScope.emailNotificationAddresses}" remove="${param.actionVoiceRemoveNotification}"/>
 </c:if>
 
-
-
+<c:if test="${voiceselected=='forwarding' && zm:actionSet(param, 'actionVoiceClearSelectiveForwarding')}">
+    <zm:listObject phone="${param.phone}" var="selectiveCallForwardingFrom" scope="session" map="${sessionScope.selectiveCallForwardingFrom}" clear="${true}"/>
+</c:if>
 
 
 <c:if test="${voiceselected=='forwarding'}">

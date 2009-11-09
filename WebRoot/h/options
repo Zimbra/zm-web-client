@@ -83,8 +83,10 @@
                 </c:when>
             </c:choose>
         </c:when>
-        <c:when test="${zm:actionSet(param, 'actionVoiceAddNotification') || zm:actionSet(param, 'actionVoiceRemoveNotification') || zm:actionSet(param, 'actionVoiceClearNotification') || zm:actionSet(param, 'addSelectiveForwarding') || zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') || zm:actionSet(param, 'actionVoiceRemoveSelectiveForwarding') || zm:actionSet(param, 'addSelectiveRejection') || zm:actionSet(param, 'actionVoiceAddSelectiveRejection') || zm:actionSet(param, 'actionVoiceRemoveSelectiveRejection')}">
-            <zm:checkCrumb crumb="${param.crumb}"/>
+        <c:when test="${zm:actionSet(param, 'actionVoiceAddNotification') || zm:actionSet(param, 'actionVoiceRemoveNotification') || zm:actionSet(param, 'actionVoiceClearNotification') || 
+			zm:actionSet(param, 'addSelectiveForwarding') || zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') || zm:actionSet(param, 'actionVoiceRemoveSelectiveForwarding') || zm:actionSet(param, 'actionVoiceClearSelectiveForwarding') ||
+			zm:actionSet(param, 'addSelectiveRejection') || zm:actionSet(param, 'actionVoiceAddSelectiveRejection') || zm:actionSet(param, 'actionVoiceRemoveSelectiveRejection')}">
+	    <zm:checkCrumb crumb="${param.crumb}"/>
             <c:choose>
                <c:when test="${selected eq 'voice'}">
                    <app:optVoiceAction accountindex="0" />

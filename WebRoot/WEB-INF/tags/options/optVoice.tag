@@ -636,13 +636,17 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						</td>
 
 						<td style="vertical-align:top;padding-left:10px">
-							<input type="submit" name="addSelectiveForwarding" id="addSelectiveForwarding" value="<fmt:message key='addToList'/>" <c:if test="${displayAddSelectiveForwarding || !canAddSelectiveForwarding}">disabled</c:if>/>
+							<input type="submit" name="addSelectiveForwarding" id="addSelectiveForwarding" value="<fmt:message key='addToList'/>" <c:if test="${displayAddSelectiveForwarding || !canAddSelectiveForwarding}">disabled="disabled"</c:if>/>
+							<br/>
+							<input type="submit" name="actionVoiceClearSelectiveForwarding" id="clearSelectiveForwarding" value="<fmt:message key='removeAll'/>" <c:if test="${empty sessionScope.selectiveCallForwardingFrom[phone]}">disabled="disabled"</c:if> />
 							<script type="text/javascript">
 							<!--
+								selectiveForwardCheckboxDependers.push("clearSelectiveForwarding");
 								selectiveForwardCheckboxDependers.push("addSelectiveForwarding");
 							//-->
 							</script>
 						</td>
+					</tr>
 					</tr>
 
 					<tr>
