@@ -52,6 +52,55 @@ function() {
 	}
 }
 
+ZmVoicePrefsView.prototype.getPreSaveCallback = function() {
+	return new AjxCallback(this, this._preSaveCallback);
+}
+
+ZmVoicePrefsView.prototype._preSaveCallback = function(callback) {
+	var preSaveCallbacks = this.getPreSaveCallbacks();
+	if (preSaveCallbacks && preSaveCallbacks.length > 0) {
+		var continueCallback = new AjxCallback(this, this._doPreSave);
+		continueCallback.args = [continueCallback, preSaveCallbacks, callback];
+		this._doPreSave.apply(this, continueCallback.args);
+	} else {
+		callback.run(true);
+	}
+};
+
+
+ZmVoicePrefsView.prototype._doPreSave =
+function(continueCallback, preSaveCallbacks, callback, noPop, success) {
+	// cancel save
+	if (success != null && !success) { return; }
+
+	// perform save
+	if (preSaveCallbacks.length == 0) {
+		callback.run(true);
+	}
+
+	// continue pre-save operations
+	else {
+		var preSaveCallback = preSaveCallbacks.shift();
+		preSaveCallback.run(continueCallback);
+	}
+};
+
+ZmVoicePrefsView.prototype.getPreSaveCallbacks =
+function() {
+	var callbacks = [];
+	var pages = this._tabview.getPages();
+	for (var id in pages) {
+		var page = pages[id];
+		if (page && page.getPreSaveCallback && page.hasRendered()) {
+			var callback = page.getPreSaveCallback();
+			if (callback) {
+				callbacks.push(callback);
+			}
+		}
+	}
+	return callbacks;
+}
+
 ZmVoicePrefsView.prototype.isDirty =
 function() {
 	var pages = this._tabview.getPages();
@@ -180,6 +229,54 @@ function() {
 ZmVoicePrefsPage.prototype.hasRendered =
 function () {
 	return this._hasRendered;
+};
+
+ZmVoicePrefsPage.prototype.getPreSaveCallback = function() {
+	return new AjxCallback(this, this._preSaveCallback);
+}
+
+ZmVoicePrefsPage.prototype._preSaveCallback = function(callback) {
+	var preSaveCallbacks = this.getPreSaveCallbacks();
+	if (preSaveCallbacks && preSaveCallbacks.length > 0) {
+		var continueCallback = new AjxCallback(this, this._doPreSave);
+		continueCallback.args = [continueCallback, preSaveCallbacks, callback];
+		this._doPreSave.apply(this, continueCallback.args);
+	} else {
+		callback.run(true);
+	}
+};
+
+
+ZmVoicePrefsPage.prototype._doPreSave =
+function(continueCallback, preSaveCallbacks, callback, noPop, success) {
+	// cancel save
+	if (success != null && !success) { return; }
+
+	// perform save
+	if (preSaveCallbacks.length == 0) {
+		callback.run(true);
+	}
+
+	// continue pre-save operations
+	else {
+		var preSaveCallback = preSaveCallbacks.shift();
+		preSaveCallback.run(continueCallback);
+	}
+};
+
+ZmVoicePrefsPage.prototype.getPreSaveCallbacks =
+function() {
+	var callbacks = [];
+	for (var i = 0; i < this._ui.length; i++) {
+		var ui = this._ui[i];
+		if (ui && ui.getPreSaveCallback) {
+			var callback = ui.getPreSaveCallback();
+			if (callback) {
+				callbacks.push(callback);
+			}
+		}
+	}
+	return callbacks;
 };
 
 ZmVoicePrefsPage.prototype.getList =
@@ -770,29 +867,37 @@ function() {
 }
 
 ZmCallFeatureUI.prototype.showDialog =
-function(text) {
+function(text, okCallback) {
 	var shell = appCtxt.getShell();
 	var dialog = new ZmDialog({parent:shell, title:ZmMsg.errorCap});
 	dialog.setContent(text);
+	if (okCallback instanceof AjxCallback) {
+		var okListener = new AjxListener(dialog, function() {
+			okCallback.run();
+			this.popdown();
+		});
+		dialog.setButtonListener(DwtDialog.OK_BUTTON, okListener);
+	}
 	dialog.popup();
-}
+};
 
 ZmCallFeatureUI.prototype.showDialogWithFAQ =
-function(text) {
+function(text, okCallback) {
 	if (AjxUtil.isString(text)) {
 		var msg = AjxStringUtil.trim(text);
 		if (msg.length > 0) {
 			if (msg.indexOf("{0}") == -1) {
 				if (!msg.match(/\.$/))
 					msg += ".";
-				msg += " " + this.getFaqLink();
+				msg += " ";
+				msg += this.getFaqLink();
 			} else {
 				msg = AjxMessageFormat.format(msg, [this.getFaqLink()]);
 			}
-			this.showDialog(msg);
+			this.showDialog(msg, okCallback);
 		}
 	}
-}
+};
 
 // "Abstract" methods:
 ZmCallFeatureUI.prototype.getName =
@@ -1751,6 +1856,28 @@ function(id) {
 	
 	this._setAddFromNumberVisibility(false);
 };
+
+ZmSelectiveCallForwardingUI.prototype.getPreSaveCallback =
+function() {
+	return new AjxCallback(this, this._preSaveCallback);
+}
+
+ZmSelectiveCallForwardingUI.prototype._preSaveCallback =
+function(callback) {
+	if (!this._checkbox.isSelected() && (this._getTo()==null || this._getTo()=="" || !this._view._validatePhoneNumber(this._getTo())) && (this._getFrom()!=null || this._getFrom().length==0)) {
+		this.showDialogWithFAQ(ZmMsg.selectiveCallForwardingEmptyToDialog, new AjxCallback(this, this._clearList, callback));
+	} else {
+		callback.run(true);
+	}
+}
+
+ZmSelectiveCallForwardingUI.prototype._clearList =
+function(callback) {
+	if (this._list)
+		this._list.clear();
+	if (callback instanceof AjxCallback)
+		callback.run(true);
+}
 
 ///////////////////////////////////////////////////////////////////////
 
