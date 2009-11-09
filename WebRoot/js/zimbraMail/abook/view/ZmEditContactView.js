@@ -357,12 +357,12 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 			}
 			case "OTHER": {
 				var list = ZmEditContactView.LISTS[id];
-				this.__initRowsOther(nattrs, id, list.attrs, ZmContact.IS_ADDONE[id], list.onlyvalue, this._listAttrs);
+				this.__initRowsOther(nattrs, id, list.attrs, list.onlyvalue, this._listAttrs);
 				break;
 			}
 			default: {
 				var list = ZmEditContactView.LISTS[id];
-				this.__initRowsControl(nattrs, id, list.attrs, ZmContact.IS_ADDONE[id], list.onlyvalue, this._listAttrs);
+				this.__initRowsControl(nattrs, id, list.attrs, list.onlyvalue, this._listAttrs);
 			}
 		}
 	}
@@ -428,7 +428,7 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 					var a = onlyvalue ? list.attrs[0] : item.type;
 					if (!counts[a]) counts[a] = 0;
 					var count = ++counts[a];
-					a = count > 1 || ZmContact.IS_ADDONE[a] ? a+count : a;
+					a = ZmContact.getAttributeName(a, count);
 					attributes[a] = v;
 				}
 			}
@@ -680,12 +680,12 @@ ZmEditContactView.prototype.__getDetailsMenu = function() {
 };
 
 ZmEditContactView.prototype.__initRowsControl =
-function(nattrs,id,prefixes,addone,onlyvalue,listAttrs,skipSetValue) {
+function(nattrs,id,prefixes,onlyvalue,listAttrs,skipSetValue) {
 	var array = [];
 	for (var j = 0; j < prefixes.length; j++) {
 		var prefix = prefixes[j];
 		for (var i = 1; true; i++) {
-			var a = (i > 1 || (addone && addone[prefix])) ? prefix+i : prefix;
+			var a = ZmContact.getAttributeName(prefix, i);
 			var value = nattrs[a];
 			if (!value) break;
 			array.push(onlyvalue ? value : { type:prefix,value:value });
@@ -700,8 +700,8 @@ function(nattrs,id,prefixes,addone,onlyvalue,listAttrs,skipSetValue) {
 };
 
 ZmEditContactView.prototype.__initRowsOther =
-function(nattrs,id,prefixes,addone,onlyvalue,listAttrs) {
-	var array = this.__initRowsControl.call(this,nattrs,id,prefixes,addone,onlyvalue,listAttrs,true);
+function(nattrs,id,prefixes,onlyvalue,listAttrs) {
+	var array = this.__initRowsControl.call(this,nattrs,id,prefixes,onlyvalue,listAttrs,true);
 
 	// gather attributes we know about
 	var attributes = {};
