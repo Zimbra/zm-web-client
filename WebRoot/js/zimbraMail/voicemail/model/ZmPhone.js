@@ -79,6 +79,11 @@ function(display) {
 	return (/^1/.exec(name)) ? name : "1" + name;
 };
 
+ZmPhone.calculateNonFullName =
+function(display) {
+	return ZmPhone.calculateName(display).replace(/^1/, "");
+};
+
 ZmPhone.isValid =
 function(str) {
 	var nameLength = ZmPhone.calculateName(str).length;

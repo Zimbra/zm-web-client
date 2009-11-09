@@ -1609,7 +1609,7 @@ function() {
 	if (this._list && this._list.getList()) {
 		var items = this._list.getList().getArray();
 		for (var i=0; i<items.length; i++)
-			from.push({a: items[i].a, pn: items[i].pn}); // Filter all other attributes	
+			from.push({a: items[i].a, pn: ZmPhone.calculateNonFullName(items[i].pn)}); // Filter all other attributes	
 	}
 	return from;
 }
@@ -1621,7 +1621,7 @@ function() {
 		if (value) {
 			return value;
 		} else {
-			return ZmPhone.calculateName(this._comboBox.getText());
+			return ZmPhone.calculateNonFullName(this._comboBox.getText());
 		}
 	} else return null;
 };
