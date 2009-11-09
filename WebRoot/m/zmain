@@ -275,7 +275,7 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
     </div></div></div><c:if test="${empty param.noframe || empty param.isiniframe}">
     <script type="text/javascript"><c:set var="js">
     if (XHR !==undefined && XHR(true)) {if(!nojs && (window == parent)){registerOnclickHook();
-        set${ua.isIE ? 'Timeout':'Interval'}(function() {checkHash(null,'get');}, 400);
+        <c:if test="${ua.isiPhone or ua.isiPod}">setInterval(function() {checkHash(null,'get');}, 400);</c:if>
         <c:if test="${param.st ne 'newmail' && param.st ne 'compose' && mailbox.features.mail && (empty param.st || param.st eq mailbox.prefs.groupMailBy)}">if(window.location.hash.indexOf('newmail') < 0 && window.location.hash.indexOf('compose') < 0 ){
             setTimeout(function() {ajxReq('<c:url value="/m/zmain?st=newmail"/>',null,null,'get',true);},300);}</c:if>
     }}</c:set>

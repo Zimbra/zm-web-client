@@ -154,7 +154,7 @@ var checkHash = function(url,method, force){
             }
             else
             {
-                var splits = currHash.substring(1).split('&');
+                var splits = currHash.replace(/#|%23/ig,"").split('&');
                 var app = splits[0];
                 delete splits[0];
                 var params = splits.join('&');
