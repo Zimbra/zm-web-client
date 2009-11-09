@@ -918,6 +918,18 @@ ZmEditContactViewRows.prototype.isMaxedOut = function(type) {
 	return maximums != null && maximums.count >= maximums.max;
 };
 
+ZmEditContactViewRows.prototype.isAllMaxedOut = function() {
+	if (!this._options) return false;
+	// determine which ones are maxed out
+	var count = 0;
+	for (var i = 0; i < this._options.length; i++) {
+		var type = this._options[i].value;
+		count += this.isMaxedOut(type) ? 1 : 0;
+	}
+	// are all of the options maxed out?
+	return count == this._options.length;
+};
+
 //
 // Class: ZmEditContactViewInputSelectRows
 //
@@ -934,6 +946,10 @@ ZmEditContactViewInputSelectRows.prototype.toString = function() {
 };
 
 // DwtFormRows methods
+
+ZmEditContactViewInputSelectRows.prototype.getMaxRows = function() {
+	return this.isAllMaxedOut() ? this.getRowCount() : Number.MAX_VALUE;
+};
 
 ZmEditContactViewInputSelectRows.prototype.setValue = function(array) {
 	if (arguments[0] instanceof Array) {
