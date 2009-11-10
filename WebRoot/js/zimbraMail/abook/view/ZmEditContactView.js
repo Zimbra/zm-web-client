@@ -923,7 +923,7 @@ ZmEditContactViewRows.prototype.isMaxedOut = function(type) {
 };
 
 ZmEditContactViewRows.prototype.isAllMaxedOut = function() {
-	if (!this._options) return false;
+	if (!this._options || this._options.length == 0) return false;
 	// determine which ones are maxed out
 	var count = 0;
 	for (var i = 0; i < this._options.length; i++) {
