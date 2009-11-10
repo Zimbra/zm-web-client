@@ -54,7 +54,8 @@ function(msg, ex, noExecReset, hideReportButton)  {
 		detailStr = ex;
 	} else if (ex instanceof Object) {
 		ex.msg = ex.msg || msg;
-		var fields = ["method", "msg", "code", "detail", "trace", "request"];
+		var fields = ["method", "msg", "code", "detail", "trace", "request",
+					"fileName", "lineNumber", "message", "name", "stack" ];
 		var html = [], i = 0;
 		html[i++] = "<table>";
 		for (var j = 0; j < fields.length; j++) {
