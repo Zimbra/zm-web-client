@@ -571,9 +571,9 @@ function(str, callback, aclv, options) {
 		return;
 	}
 
-	str = str.toLowerCase().replace(/"/g, '').replace(/^\-/, '');
+	str = str.toLowerCase().replace(/"/g, '');
 
-	var m = str.match(/\b([a-z]+):/);
+	var m = str.match(/\b-?([a-z]+):/);
 	if (!(m && m.length)) {
 		callback.run();
 		return;
@@ -601,7 +601,7 @@ function(op, str) {
 	var opHash = this._op[op];
 	var results = [];
 	var list = this._list[opHash.listType];
-	var rest = str.substr(op.length + 1);
+	var rest = str.substr(str.indexOf(":") + 1);
 	if (opHash.listType == ZmId.ORG_FOLDER) {
 		rest = rest.replace(/^\//, "");	// remove leading slash in folder path
 	}
@@ -609,18 +609,20 @@ function(op, str) {
 		var o = list[i];
 		var text = opHash.text ? opHash.text(o) : o;
 		var test = text.toLowerCase();
-		if (test.indexOf(rest) == 0) {
+		if (!rest || (test.indexOf(rest) == 0)) {
 			var matchText = opHash.matchText ? opHash.matchText(o) :
 								opHash.quoteMatch ? [op, ":", '"', text, '"'].join("") :
 													[op, ":", text].join("");
+			matchText = str.replace(op + ":" + rest, matchText);
 			results.push({text:			text,
 						  icon:			opHash.icon ? opHash.icon(o) : null,
-						  matchText:	matchText});
+						  matchText:	matchText,
+						  exactMatch:	(test.length == rest.length)});
 		}
 	}
 
 	// no need to show list of one item that is same as what was typed
-	if (results.length == 1 && results[0].matchText == str) {
+	if (results.length == 1 && results[0].exactMatch) {
 		results = [];
 	}
 
