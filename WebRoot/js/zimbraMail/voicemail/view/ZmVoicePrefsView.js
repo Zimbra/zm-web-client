@@ -1864,7 +1864,7 @@ function() {
 
 ZmSelectiveCallForwardingUI.prototype._preSaveCallback =
 function(callback) {
-	if (!this._checkbox.isSelected() && (this._getTo()==null || this._getTo()=="" || !this._view._validatePhoneNumber(this._getTo())) && (this._getFrom()!=null || this._getFrom().length==0)) {
+	if (!this._checkbox.isSelected() && (this._getTo()==null || this._getTo()=="" || !this._view._validatePhoneNumber(this._getTo())) && (this._getFrom()!=null && this._getFrom().length>0)) {
 		this.showDialogWithFAQ(ZmMsg.selectiveCallForwardingEmptyToDialog, new AjxCallback(this, this._clearList, callback));
 	} else {
 		callback.run(true);
