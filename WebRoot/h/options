@@ -55,6 +55,7 @@
             </c:choose>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionCancel')}">
+            <app:optVoice mailbox="${mailbox}"/><%-- May be removed when we find a better solution to clear the session for optVoice --%>
             <zm:checkCrumb crumb="${param.crumb}"/>
             <c:choose>
                 <c:when test="${prevApp eq 'contacts'}" >

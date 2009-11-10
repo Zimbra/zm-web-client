@@ -6,12 +6,30 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<c:set var="voiceselected" value="${empty param.voiceselected ? 'general' : param.voiceselected}"/>
+<%!
+	public static void clearSession(HttpSession session) {
+		if (session != null) {
+			session.setAttribute("emailNotificationAddresses", null);
+			session.setAttribute("callForwardingTo", null);
+			session.setAttribute("selectiveCallForwardingTo", null);
+			session.setAttribute("selectiveCallForwardingFrom", null);
+			session.setAttribute("selectiveCallRejectionFrom", null);
+		}
+	}
+%>
+
+<c:choose>
+<c:when test="${zm:actionSet(param, 'actionCancel')}">
+	<% clearSession(session); %>
+</c:when>
+<c:otherwise>
 
 <%
 String ua = request.getHeader( "User-Agent" );
 boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 %>
+
+<c:set var="voiceselected" value="${empty param.voiceselected ? 'general' : param.voiceselected}"/>
 
 <app:handleError>
 	<zm:checkVoiceStatus var="voiceStatus"/>
@@ -32,11 +50,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 			String value = c.getValue();
 			if (sessionToken == null || !sessionToken.equals(value)) { // Session has been renewed (logged out & logged in). Kill our objects from the session
 				if (session != null) {
-					session.setAttribute("emailNotificationAddresses", null);
-					session.setAttribute("callForwardingTo", null);
-					session.setAttribute("selectiveCallForwardingTo", null);
-					session.setAttribute("selectiveCallForwardingFrom", null);
-					session.setAttribute("selectiveCallRejectionFrom", null);
+					clearSession(session);
 					session.setAttribute("authToken", value);
 				}    
 			}
@@ -890,3 +904,5 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 
 	</td></tr></table>
 </c:if>
+</c:otherwise>
+</c:choose>
