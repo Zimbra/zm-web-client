@@ -153,8 +153,6 @@ function() {
 	}
 }
 
-
-
 ZmVoicePrefsTabView = function(params) {
     params.className = "ZmVoicePrefsTabView";
     DwtTabView.call(this, params);
@@ -200,11 +198,6 @@ ZmVoicePrefsTabView.prototype.getPages =
 function() {
     return this._pages;
 }
-
-
-
-
-
 
 ZmVoicePrefsPage = function(parent, controller) {
 	if (!arguments.length) return;
@@ -435,7 +428,8 @@ function(ui) {
 		this._changes[this._phone.name] = { phone: this._phone, features: {} };
 	}
 	var feature = ui.getFeature();
-	this._changes[this._phone.name].features[feature.name] = feature;
+	if (feature)
+		this._changes[this._phone.name].features[feature.name] = feature;
 };
 
 ZmVoicePrefsPage.prototype.reset =
@@ -766,9 +760,12 @@ function(feature) {
 
 ZmCallFeatureUI.prototype.getFeature =
 function() {
-	var result = this._feature.createProxy();
-	result.isActive = this._checkbox ? this._checkbox.isSelected() : true;
-	return result;
+	if (this._feature) {
+		var result = this._feature.createProxy();
+		result.isActive = this._checkbox ? this._checkbox.isSelected() : true;
+		return result;
+	}
+	return null;
 };
 
 ZmCallFeatureUI.prototype.isDirty =
@@ -953,14 +950,17 @@ function(feature) {
 
 ZmVoiceLanguageUI.prototype._isValueDirty =
 function() {
-	return (this._getSelectedValue() != this._feature.data.value);
+	return this._feature && this._getSelectedValue() != this._feature.data.value;
 };
 
 ZmVoiceLanguageUI.prototype.getFeature =
 function() {
-	var result = this._feature.createProxy();
-	result.data.value = this._getSelectedValue();
-	return result;
+	if (this._feature) {
+		var result = this._feature.createProxy();
+		result.data.value = this._getSelectedValue();
+		return result;
+	}
+	return null;
 };
 
 ZmVoiceLanguageUI.prototype.setFeature =
@@ -996,7 +996,6 @@ function() {
 
 ZmVoiceLanguageUI.prototype._initialize =
 function(id, suffix) {
-	var buttons={};
 	var _suffix = suffix || "_voiceLanguage";
 	var name = id + _suffix;
 	this._container = new DwtComposite({parent:this._view});
@@ -1009,8 +1008,7 @@ function(id, suffix) {
 		button.setValue(value);
 		button.setText(this._getLanguageName(value));
 		this._buttons[value] = button;
-		buttons[b_id] = value;
-		this._buttonGroup.addRadio(b_id, button, false);		
+		this._buttonGroup.addRadio(button.getHTMLElId(), button, false);		
 	}
 	
 };
@@ -1140,9 +1138,12 @@ function() {
 
 ZmVoicePromptUI.prototype.getFeature =
 function() {
-	var result = this._feature.createProxy();
-	result.data.value = this._getSelectedValue();
-	return result;
+	if (this._feature) {
+		var result = this._feature.createProxy();
+		result.data.value = this._getSelectedValue();
+		return result;
+	}
+	return null;
 };
 
 ZmVoicePromptUI.prototype.setFeature =
@@ -1189,7 +1190,7 @@ function(id) {
 		button.setText(this._getPromptLevelName(value));
 		this._buttons[value] = button;
 		buttons[b_id] = value;	
-		this._buttonGroup.addRadio(b_id, button, false);	
+		this._buttonGroup.addRadio(button.getHTMLElId(), button, false);	
 	}	
 };
 
@@ -1272,9 +1273,12 @@ function(feature) {
 
 ZmVoiceRequirePinUI.prototype.getFeature =
 function() {
-	var result = this._feature.createProxy();
-	result.isActive = this._checkbox ? !this._checkbox.isSelected() : false;
-	return result;
+	if (this._feature) {
+		var result = this._feature.createProxy();
+		result.isActive = this._checkbox ? !this._checkbox.isSelected() : false;
+		return result;
+	}
+	return null;
 };
 
 ZmVoiceRequirePinUI.prototype.isDirty =
@@ -1330,9 +1334,12 @@ function() {
 
 ZmCallSendToVoicemailAfterRingsUI.prototype.getFeature =
 function() {
-	var result = this._feature.createProxy();
-	result.data.nr = this._select.getValue();
-	return result;
+	if (this._feature) {
+		var result = this._feature.createProxy();
+		result.data.nr = this._select.getValue();
+		return result;
+	}
+	return null;
 };
 
 ZmCallSendToVoicemailAfterRingsUI.prototype.setFeature =
@@ -1404,9 +1411,12 @@ function() {
 
 ZmCallForwardingUI.prototype.getFeature =
 function() {
-	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
-	result.data.ft = ZmPhone.calculateName(this._comboBox.getText());
-	return result;
+	if (this._feature) {
+		var result = ZmCallFeatureUI.prototype.getFeature.call(this);
+		result.data.ft = ZmPhone.calculateName(this._comboBox.getText());
+		return result;
+	}
+	return null;
 };
 
 ZmCallForwardingUI.prototype.setEnabled =
@@ -1504,13 +1514,15 @@ function() {
 ZmEmailNotificationUI.prototype.getFeature =
 function() {
 	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
-	var addresses = this._getAddresses();
-	if (!addresses || addresses.length==0) {
-		result.isActive = false;
-		result.data.value = "";
-	} else {
-		result.data.value = addresses.join(",");
-		result.isActive = true;
+	if (result) {
+		var addresses = this._getAddresses();
+		if (!addresses || addresses.length==0) {
+			result.isActive = false;
+			result.data.value = "";
+		} else {
+			result.data.value = addresses.join(",");
+			result.isActive = true;
+		}
 	}
 	return result;
 };
@@ -1688,22 +1700,23 @@ function(errors) {
 ZmSelectiveCallForwardingUI.prototype.getFeature =
 function() {
 	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
-	
-	var from = this._getFrom();
-	if (!from || from.length==0) {
-		result.isActive = false;
-		result.data.phone = [];
-	} else {
-		result.data.phone = from;
-	}
+	if (result) {
+		var from = this._getFrom();
+		if (!from || from.length==0) {
+			result.isActive = false;
+			result.data.phone = [];
+		} else {
+			result.data.phone = from;
+		}
 
-	var to = this._getTo();
-	if (!to || to=="") {
-		result.isActive = false;
-		result.data.phone = []; // ComCast will not let us save a nonempty list with an empty to field
-		result.data.ft = "";
-	} else {
-		result.data.ft = to;
+		var to = this._getTo();
+		if (!to || to=="") {
+			result.isActive = false;
+			result.data.phone = []; // ComCast will not let us save a nonempty list with an empty to field
+			result.data.ft = "";
+		} else {
+			result.data.ft = to;
+		}
 	}
 	return result;
 };
@@ -1983,12 +1996,14 @@ function(errors) {
 ZmSelectiveCallRejectionUI.prototype.getFeature =
 function() {
 	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
-	var from = this._getFrom();
-	if (!from || from.length==0) {
-		result.isActive = false;
-		result.data.phone = [];
-	} else {
-		result.data.phone = from;
+	if (result) {
+		var from = this._getFrom();
+		if (!from || from.length==0) {
+			result.isActive = false;
+			result.data.phone = [];
+		} else {
+			result.data.phone = from;
+		}
 	}
 	return result;
 };
@@ -2160,12 +2175,14 @@ function(errors) {
 ZmSelectiveCallAcceptanceUI.prototype.getFeature =
 function() {
 	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
-	var from = this._getFrom();
-	if (!from || from.length==0) {
-		result.isActive = false;
-		result.data.phone = [];
-	} else {
-		result.data.phone = from;
+	if (result) {
+		var from = this._getFrom();
+		if (!from || from.length==0) {
+			result.isActive = false;
+			result.data.phone = [];
+		} else {
+			result.data.phone = from;
+		}
 	}
 	return result;
 };
