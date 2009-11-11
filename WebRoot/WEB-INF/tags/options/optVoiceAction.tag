@@ -162,11 +162,13 @@
 
 
 <c:if test="${voiceselected=='forwarding'}">
+    <zm:phone var="success" displayVar="selectiveCallForwardingToDisplay" errorVar="errorCode" name="${param.selectiveCallForwardingTo}"/>
     <zm:listObject phone="${param.phone}" var="selectiveCallForwardingTo" scope="session" map="${sessionScope.selectiveCallForwardingTo}" clear="${true}"/>
-    <zm:listObject phone="${param.phone}" var="selectiveCallForwardingTo" scope="session" map="${sessionScope.selectiveCallForwardingTo}" add="${param.selectiveCallForwardingTo}"/>
+    <zm:listObject phone="${param.phone}" var="selectiveCallForwardingTo" scope="session" map="${sessionScope.selectiveCallForwardingTo}" add="${success? selectiveCallForwardingToDisplay : param.selectiveCallForwardingTo}"/>
     
+    <zm:phone var="success" displayVar="callForwardingToDisplay" errorVar="errorCode" name="${param.callForwardingTo}"/>
     <zm:listObject phone="${param.phone}" var="callForwardingTo" scope="session" map="${sessionScope.callForwardingTo}" clear="${true}"/>
-    <zm:listObject phone="${param.phone}" var="callForwardingTo" scope="session" map="${sessionScope.callForwardingTo}" add="${param.callForwardingTo}"/>
+    <zm:listObject phone="${param.phone}" var="callForwardingTo" scope="session" map="${sessionScope.callForwardingTo}" add="${success? callForwardingToDisplay : param.callForwardingTo}"/>
 </c:if>
 
 <c:if test="${voiceselected=='forwarding' && zm:actionSet(param, 'addSelectiveForwarding') && !empty sessionScope.selectiveCallForwardingFrom && !empty sessionScope.selectiveCallForwardingFrom[param.phone] && fn:length(sessionScope.selectiveCallForwardingFrom[param.phone]) >= 12}">
