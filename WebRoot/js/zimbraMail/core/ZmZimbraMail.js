@@ -563,13 +563,15 @@ ZmZimbraMail.prototype.handleCalendarComponents =
 function() {
 	if (appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
         var miniCalAction = new AjxTimedAction(this, this.showMiniCalendar);
-        AjxTimedAction.scheduleAction(miniCalAction, ZmCalendarApp.MINICAL_DELAY);
+		var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.MINICAL_DELAY;
+        AjxTimedAction.scheduleAction(miniCalAction, delay);
 	}
 
 	// reminder controlled by calendar preferences setting
 	if (appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) != 0) {
 		var reminderAction = new AjxTimedAction(this, this.showReminder);
-		AjxTimedAction.scheduleAction(reminderAction, ZmCalendarApp.REMINDER_START_DELAY);
+		var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
+		AjxTimedAction.scheduleAction(reminderAction, delay);
 	}
 };
 
