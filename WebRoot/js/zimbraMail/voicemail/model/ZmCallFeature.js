@@ -60,8 +60,14 @@ ZmCallFeature.AUTOPLAY           = "vmPrefAutoPlayNewMsgs";
 ZmCallFeature.PROMPT_LEVEL       = "vmPrefPromptLevel";
 ZmCallFeature.ANNOUNCE_DATETIME  = "vmPrefPlayDateAndTimeInMsgEnv";
 ZmCallFeature.SKIP_PIN_ENTRY     = "vmPrefSkipPinEntry";
+ZmCallFeature.GREETING = "vmPrefGreetingType";
+ZmCallFeature.NOTIFICATION_STATUS = "vmPrefEmailNotifStatus";
+ZmCallFeature.TIMEZONE = "vmPrefTimezone";
+ZmCallFeature.PLAY_TUTORIAL = "vmPrefPlayTutorial";
+ZmCallFeature.ANNOUNCE_NAME = "vmPrefPlayCallerNameInMsgEnv";
+ZmCallFeature.VOICE_ITEMS_PER_PAGE = "zimbraPrefVoiceItemsPerPage";
 
-ZmCallFeature.VOICE_FEATURES = [ZmCallFeature.EMAIL_NOTIFICATION, ZmCallFeature.ANSWERING_LOCALE, ZmCallFeature.USER_LOCALE, ZmCallFeature.AUTOPLAY, ZmCallFeature.PROMPT_LEVEL, ZmCallFeature.ANNOUNCE_DATETIME, ZmCallFeature.SKIP_PIN_ENTRY];
+ZmCallFeature.VOICE_FEATURES = [ZmCallFeature.EMAIL_NOTIFICATION, ZmCallFeature.ANSWERING_LOCALE, ZmCallFeature.USER_LOCALE, ZmCallFeature.AUTOPLAY, ZmCallFeature.PROMPT_LEVEL, ZmCallFeature.ANNOUNCE_DATETIME, ZmCallFeature.SKIP_PIN_ENTRY, ZmCallFeature.ANNOUNCE_NAME, ZmCallFeature.PLAY_TUTORIAL, ZmCallFeature.GREETING];
 
 
 ZmCallFeature.LOCALE_ENGLISH = "ENGLISH";

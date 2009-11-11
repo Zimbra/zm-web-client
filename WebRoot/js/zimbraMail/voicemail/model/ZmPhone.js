@@ -217,7 +217,7 @@ function(callback, response) {
 			this._loadVoicemailPrefs(voicemailPrefs);
 		} else {
 			var feature = this._features[i];
-			if (feature) { //TODO: this check is sposed to be unnecessary.
+			if (feature) {
 				feature._loadCallFeature(features[i][0]);
 			}
 		}
@@ -254,23 +254,48 @@ function() {
 
 ZmPhone.prototype.modifyCallFeatures = 
 function(batchCommand, newFeatures, callback) {
-    var soapDoc = AjxSoapDoc.create("ModifyVoiceFeaturesRequest", "urn:zimbraVoice");
+	var soapDoc = AjxSoapDoc.create("ModifyVoiceFeaturesRequest", "urn:zimbraVoice");
 	appCtxt.getApp(ZmApp.VOICE).setStorePrincipal(soapDoc);
-    var node = soapDoc.set("phone");
-    node.setAttribute("name", this.name);
+	var node = soapDoc.set("phone");
+	node.setAttribute("name", this.name);
 	var voicemailPrefsNode = null;
-	for (var i = 0, count = newFeatures.length; i < count; i++) {
-		if (newFeatures[i].isVoicemailPref) {
-			if (!voicemailPrefsNode) {
-				voicemailPrefsNode = soapDoc.set(ZmCallFeature.VOICEMAIL_PREFS, null, node);
+
+	var allFeatures = [];
+	for (var i=0; i<newFeatures.length; i++) {
+		if (newFeatures[i].isSubscribed)
+			allFeatures.push(newFeatures[i]);
+	}
+
+	// Add features from this._features that are not already in newFeatures
+	for (var name in this._features) {
+		if (this._features[name].isVoicemailPref && this._features[name].isSubscribed) {
+			var found = false;
+			for (var i = 0, count = allFeatures.length; i < count; i++) {
+				if (allFeatures[i].name == name) {
+					found = true;
+					break;
+				}
 			}
-			newFeatures[i].addVoicemailChangeNode(soapDoc, voicemailPrefsNode);
-		} else {
-			newFeatures[i].addChangeNode(soapDoc, node);
+			if (!found) {
+				allFeatures.push(this._features[name]);
+			}
 		}
 	}
-	var respCallback = new AjxCallback(this, this._handleResponseModifyVoiceFeatures, [newFeatures, callback]);
-	batchCommand.addNewRequestParams(soapDoc, respCallback);
+
+	if (allFeatures.length > 0) {
+		for (var i = 0, count = allFeatures.length; i < count; i++) {
+			if (allFeatures[i].isVoicemailPref) {
+				if (!voicemailPrefsNode) {
+					voicemailPrefsNode = soapDoc.set(ZmCallFeature.VOICEMAIL_PREFS, null, node);
+				}
+				allFeatures[i].addVoicemailChangeNode(soapDoc, voicemailPrefsNode);
+			} else {
+				allFeatures[i].addChangeNode(soapDoc, node);
+			}
+		}
+		var respCallback = new AjxCallback(this, this._handleResponseModifyVoiceFeatures, [newFeatures, callback]);
+		batchCommand.addNewRequestParams(soapDoc, respCallback);
+	}
 };
 
 ZmPhone.prototype._handleResponseModifyVoiceFeatures = 

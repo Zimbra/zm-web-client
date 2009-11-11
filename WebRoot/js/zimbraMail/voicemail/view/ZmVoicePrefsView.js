@@ -974,12 +974,17 @@ function(feature) {
 			this._buttonGroup.setSelectedId(radiobutton.getInputElement().id, true);
 		}
 	}
-	this.setEnabled(feature.isActive);
+	this.setEnabled(feature.isActive && feature.isSubscribed);
 };
 
 ZmVoiceLanguageUI.prototype.setEnabled =
 function(enabled) {
 	this._buttonGroup.setEnabled(enabled);
+	for (var name in this._buttons) {
+		var radiobutton = this._buttons[name];
+		if (radiobutton)
+			radiobutton.setEnabled(enabled);
+	}
 };
 
 ZmVoiceLanguageUI.prototype.validate =
