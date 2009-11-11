@@ -512,7 +512,7 @@ function(byUser) {
 	if (showMiniCal && byUser) {
 		var cc = AjxDispatcher.run("GetCalController");
 		cc._checkedCalendars = null;
-		cc._checkedCalendarFolderIds = null;
+		cc._checkedCalendarIds = null;
 		cc.getMiniCalCache().clearCache();
 		cc.fetchMiniCalendarAppts(ZmCalViewController.MAINT_MINICAL);
 	}
