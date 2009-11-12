@@ -270,7 +270,7 @@ function() {
 	}
 
 	//reminder DwtSelect
-	var	displayOptions = [
+    var	displayOptions = [
 		ZmMsg.apptRemindNever,
 		ZmMsg.apptRemindNMinutesBefore,
 		ZmMsg.apptRemindNMinutesBefore,
@@ -283,10 +283,17 @@ function() {
 		ZmMsg.apptRemindNHoursBefore,
 		ZmMsg.apptRemindNHoursBefore,
 		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore
+		ZmMsg.apptRemindNHoursBefore,
+		ZmMsg.apptRemindNDaysBefore,
+		ZmMsg.apptRemindNDaysBefore,
+		ZmMsg.apptRemindNDaysBefore,
+		ZmMsg.apptRemindNDaysBefore,
+		ZmMsg.apptRemindNWeeksBefore,
+		ZmMsg.apptRemindNWeeksBefore
 	];
-	var	options = this._reminderOptions = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080];
-	var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18];
+
+	var	options = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080, 1440, 2880, 4320, 5760, 10080, 20160];
+	var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
 	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
 
 	this._reminderSelect = new DwtSelect({parent:this});
