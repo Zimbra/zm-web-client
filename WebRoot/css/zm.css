@@ -3682,6 +3682,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZToastText {
+	max-width: 500px;
 	@ToastText@
 }
 
