@@ -2295,7 +2295,7 @@ function(identity, justName) {
 	// default replacement parameters
 	var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
 	var params = [
-		name, identity.sendFromDisplay, identity.sendFromAddress,
+		name, ( identity.sendFromDisplay || '' ), identity.sendFromAddress,
 		ZmMsg.accountDefault, appCtxt.get(ZmSetting.DISPLAY_NAME), defaultIdentity.sendFromAddress
 	];
 
@@ -2306,7 +2306,7 @@ function(identity, justName) {
 	}
 	else if (identity.isFromDataSource) {
 		var ds = appCtxt.getDataSourceCollection().getById(identity.id);
-		params[1] = ds.userName;
+		params[1] = ds.userName || '';
 		params[2] = ds.getEmail();
 		var provider = ZmDataSource.getProviderForAccount(ds);
 		pattern = (provider && ZmMsg["identityText-"+provider.id]) || ZmMsg.identityTextExternal;
