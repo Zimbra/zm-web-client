@@ -809,6 +809,96 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener) {
 	return dateButton;
 };
 
+/**
+ * creates a new button with a reminder options as its menu
+ * @parent						parent this DwtButton gets appended to
+ * @buttonId 					buttonId to fetch inside DOM and append DwtButton to
+ * @buttonListener			    AjxListener to call when date button is pressed
+ * @menuSelectionListener	    AjxListener to call when date is selected in DwtCalendar
+*/
+ZmCalendarApp.createReminderButton =
+function(parent, buttonId, buttonListener, menuSelectionListener) {
+	// create button
+	var reminderButton = new DwtButton({parent:parent});
+	reminderButton.addDropDownSelectionListener(buttonListener);
+	reminderButton.setData(Dwt.KEY_ID, buttonId);
+	if (AjxEnv.isIE) {
+		reminderButton.setSize("20");
+	}
+
+	// create menu for button
+	var reminderMenu = new DwtMenu({parent:reminderButton, style:DwtMenu.DROPDOWN_STYLE});
+	reminderMenu.setSize("150");
+	reminderMenu._table.width = "100%";
+	reminderButton.setMenu(reminderMenu, true);
+
+
+    var	displayOptions = [
+		ZmMsg.apptRemindNever,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNHoursBefore,
+		ZmMsg.apptRemindNHoursBefore,
+		ZmMsg.apptRemindNHoursBefore,
+		ZmMsg.apptRemindNHoursBefore,
+		ZmMsg.apptRemindNHoursBefore,
+		ZmMsg.apptRemindNDaysBefore,
+		ZmMsg.apptRemindNDaysBefore,
+		ZmMsg.apptRemindNDaysBefore,
+		ZmMsg.apptRemindNDaysBefore,
+		ZmMsg.apptRemindNWeeksBefore,
+		ZmMsg.apptRemindNWeeksBefore
+	];
+
+	var	options = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080, 1440, 2880, 4320, 5760, 10080, 20160];
+	var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
+	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
+
+    for (var j = 0; j < options.length; j++) {
+        var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], labels[j]);
+        var mi = new DwtMenuItem({parent: reminderMenu, style: DwtMenuItem.NO_STYLE});
+        mi.setText(optLabel);
+        mi.setData("value", options[j]);
+        if(menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
+    }
+
+	// reparent and cleanup
+	reminderButton.reparentHtmlElement(buttonId);
+	delete buttonId;
+
+	return reminderButton;
+};
+
+/**
+ * returns summary of reminder info from the reminder minutes 
+ * @param reminderMinutes - no of minutes before which reminder should be shown
+ */
+ZmCalendarApp.getReminderSummary =
+function(reminderMinutes) {
+
+    var hoursConvertable = ((reminderMinutes%60) == 0);
+    var daysConvertable  = ((reminderMinutes%(60*24)) == 0);
+    var weeksConvertable = ((reminderMinutes%(60*24*7)) == 0);
+
+    if(reminderMinutes == 0) {
+        return ZmMsg.apptRemindNever;
+    } else if(weeksConvertable) {
+        return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNWeeksBefore, reminderMinutes/(60*24*7));
+    } else if(daysConvertable) {
+        return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNDaysBefore, reminderMinutes/(60*24));
+    } else if(hoursConvertable) {
+        return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNHoursBefore, reminderMinutes/60);
+    }else {
+        return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNMinutesBefore, reminderMinutes);
+    }
+
+};
+
 ZmCalendarApp._settingChangeListener =
 function(cal, ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
@@ -863,6 +953,70 @@ ZmCalendarApp.__formatLabel =
 function(prefLabel, prefValue) {
 	prefLabel = prefLabel || "";
 	return prefLabel.match(/\{/) ? AjxMessageFormat.format(prefLabel, prefValue) : prefLabel;
+};
+
+/**
+ * parses given string and return reminder info containing units and exact value
+ * @param reminderString - reminder string eg. "20 minutes before"
+ */
+ZmCalendarApp.parseReminderString =
+function(reminderString) {
+    var reminderFormats = {};
+    reminderFormats[ZmMsg.apptRemindNDaysBefore]    = ZmCalItem.REMINDER_UNIT_DAYS;
+    reminderFormats[ZmMsg.apptRemindNMinutesBefore] = ZmCalItem.REMINDER_UNIT_MINUTES;
+    reminderFormats[ZmMsg.apptRemindNHoursBefore]   = ZmCalItem.REMINDER_UNIT_HOURS;
+    reminderFormats[ZmMsg.apptRemindNWeeksBefore]   = ZmCalItem.REMINDER_UNIT_WEEKS;
+
+    reminderString = reminderString.trim();
+    var formattedString = reminderString;
+    var reminderValue = formattedString.replace(/\D/g, "");
+    reminderValue = reminderValue.trim();
+
+    //junk content returns empty reminder (None) 
+    if(reminderValue == "") {
+        return {reminderValue:"",  reminderUnits: ZmCalItem.REMINDER_NONE};    
+    }else if(reminderValue.indexOf(" ") >= 0) {
+        reminderValue = reminderValue.split(" ")[0];
+    }
+
+    //look for standard reminder formats strings 
+    for(var pattern in  reminderFormats) {
+        var formattedContent = ZmCalendarApp.__formatLabel(pattern, reminderValue);
+        if(formattedContent != "" && formattedContent.toLowerCase() == reminderString.toLowerCase()) {
+            return  {reminderValue: reminderValue, reminderUnits: reminderFormats[pattern]};
+        }
+    }
+
+    var reminderHours = parseInt(reminderValue);
+
+    var remUnitStrings = {};
+    remUnitStrings[ZmCalItem.REMINDER_UNIT_MINUTES] = AjxMsg.minute;
+    remUnitStrings[ZmCalItem.REMINDER_UNIT_HOURS] = AjxMsg.hour;
+    remUnitStrings[ZmCalItem.REMINDER_UNIT_DAYS] = AjxMsg.day;
+    remUnitStrings[ZmCalItem.REMINDER_UNIT_WEEKS] = AjxMsg.week;
+
+    //look for matching units 
+    var reminderUnits = ZmCalItem.REMINDER_UNIT_HOURS;
+    for(var i in remUnitStrings) {
+        if(formattedString.indexOf(remUnitStrings[i]) >= 0) {
+            reminderUnits = i;
+            break;
+        }
+    }
+    return {reminderValue: reminderHours ? reminderHours : 0,  reminderUnits: reminderUnits};
+};
+
+ZmCalendarApp.convertReminderUnits =
+function(reminderValue, reminderUnits) {
+    switch (reminderUnits) {
+        case ZmCalItem.REMINDER_UNIT_MINUTES:  return reminderValue;
+        case ZmCalItem.REMINDER_UNIT_HOURS:  return reminderValue*60;
+        case ZmCalItem.REMINDER_UNIT_DAYS:  return reminderValue*60*24;
+        case ZmCalItem.REMINDER_UNIT_WEEKS:  return reminderValue*60*24*7;
+        default:
+            return 0;
+
+    }
 };
 
 ZmCalendarApp.prototype.updateResourceCache =

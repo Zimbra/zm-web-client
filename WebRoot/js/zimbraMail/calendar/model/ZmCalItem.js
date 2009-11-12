@@ -67,6 +67,11 @@ ZmCalItem.SERVER_WEEK_DAYS			= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
 ZmCalItem.ATTACHMENT_CHECKBOX_NAME	= "__calAttCbox__";
 
+ZmCalItem.REMINDER_UNIT_MINUTES     = "minutes";
+ZmCalItem.REMINDER_UNIT_HOURS       = "hours";
+ZmCalItem.REMINDER_UNIT_DAYS        = "days";
+ZmCalItem.REMINDER_UNIT_WEEKS       = "weeks";
+ZmCalItem.REMINDER_NONE             = "none";
 
 // Getters
 
@@ -304,14 +309,17 @@ function(tmp) {
 	if (tmp && (tmp.action == "DISPLAY")) {
 		if (m != null) {
 			this._reminderMinutes = m;
+            this._origReminderUnits = ZmCalItem.REMINDER_UNIT_MINUTES;
 		}
 		if (h != null) {
 			h = parseInt(h);
 			this._reminderMinutes = h*60;
+            this._origReminderUnits = ZmCalItem.REMINDER_UNIT_HOURS;
 		}
 		if (d != null) {
 			d = parseInt(d);
 			this._reminderMinutes = d*24*60;
+            this._origReminderUnits = ZmCalItem.REMINDER_UNIT_DAYS;
 		}
 	}
 };
@@ -729,12 +737,18 @@ function(soapDoc, comp) {
 	var trigger = soapDoc.set("trigger", null, alarm);
 
 	var rel = soapDoc.set("rel", null, trigger);
-	rel.setAttribute("m", this._reminderMinutes ? this._reminderMinutes:0);
-	//default option is to remind before appt start
-	rel.setAttribute("related", "START");
-	rel.setAttribute("neg", "1");
+
+    this._setReminderUnits(rel);
 
 	this._addXPropsToAlarm(soapDoc, alarm);
+};
+
+ZmCalItem.prototype._setReminderUnits =
+function(rel) {
+    rel.setAttribute("m", this._reminderMinutes ? this._reminderMinutes:0);
+    //default option is to remind before appt start
+    rel.setAttribute("related", "START");
+    rel.setAttribute("neg", "1");
 };
 
 ZmCalItem.prototype._addXPropsToAlarm =
@@ -769,6 +783,16 @@ function(alarmInst, soapDoc, alarmNode)  {
 ZmCalItem.prototype.setReminderMinutes =
 function(minutes) {
 	this._reminderMinutes = minutes;
+};
+
+ZmCalItem.prototype.setReminderUnits =
+function(reminderValue, reminderUnits) {
+    if(!reminderValue) {
+        this._reminderMinutes = 0;
+        return;
+    }
+    reminderValue = parseInt(reminderValue + "");
+	this._reminderMinutes = ZmCalendarApp.convertReminderUnits(reminderValue, reminderUnits);
 };
 
 /**

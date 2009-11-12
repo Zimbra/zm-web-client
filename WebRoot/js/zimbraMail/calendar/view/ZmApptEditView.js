@@ -220,7 +220,7 @@ function() {
 	this._origFormValueMinusAttendees = newMode ? "" : this._formValue(true);
 	if (this._hasReminderSupport) {
 		this._origFormValueMinusReminder = newMode ? "" : this._formValue(false, true);
-		this._origReminderValue = this._reminderSelect.getValue();
+		this._origReminderValue = this._reminderSelectInput.getValue();
 	}
 };
 
@@ -820,7 +820,7 @@ function(excludeAttendees, excludeReminder) {
 		vals.push(this._folderPickedId);
 	}
 	if (!excludeReminder) {
-		vals.push(this._reminderSelect.getValue());
+		vals.push(this._reminderSelectInput.getValue());
 	}
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
