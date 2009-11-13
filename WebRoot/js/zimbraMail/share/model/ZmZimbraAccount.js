@@ -122,6 +122,7 @@ function() {
 
 		var params = {
 			lastSync: (lastSyncDate ? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null),
+			isInitialSync: this.isOfflineInitialSync(),
 			status: this.getStatusMessage()
 		};
 
