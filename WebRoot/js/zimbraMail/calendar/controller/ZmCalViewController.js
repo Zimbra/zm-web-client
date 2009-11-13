@@ -330,11 +330,27 @@ function() {
 		var cal = cc[i];
 		if (cal.noSuchFolder) { continue; }
 
+		if (appCtxt.multiAccounts) {
+			var acctId = cal.account.id;
+			if (!checkedAccountCalendarIds[acctId]) {
+				checkedAccountCalendarIds[acctId] = [];
+			}
+			checkedAccountCalendarIds[acctId].push(cal.id);
+		}
+
 		this._checkedCalendarIds.push(cal.id);
 		if (cal.isRemote && !cal.isRemote()) {
 			this._checkedLocalCalendarIds.push(cal.id);
 		}
 	}
+
+	if (appCtxt.multiAccounts) {
+		this._checkedAccountCalendarIds = [];
+		for (var i in checkedAccountCalendarIds) {
+			this._checkedAccountCalendarIds.push(checkedAccountCalendarIds[i]);
+		}
+	}
+
 	return cc;
 };
 

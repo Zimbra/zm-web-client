@@ -256,10 +256,13 @@ function(params) {
 		var rid = folder ? folder.getRemoteId() : fid;
 		folderIdMapper[rid] = fid;
 
+//		if (appCtxt.multiAccounts) {
+//			fid = folder.nId;
+//		}
 		if (query.length) {
 			query += " OR ";
 		}
-		query += "inid:" + (AjxUtil.isNumeric(fid) ? fid : ['"', fid, '"'].join(""));
+		query += "inid:" + ['"', fid, '"'].join("");
 		
 	}
 	params.queryHint = query;
@@ -294,6 +297,22 @@ function(params) {
 
 ZmApptCache.prototype.batchRequest =
 function(searchParams, miniCalParams, reminderSearchParams) {
+	if (appCtxt.multiAccounts) {
+		if (!this._accountNewList) {
+			this._accountNewList = new AjxVector();
+		}
+		this._accountNewList.removeAll();
+	}
+
+	this._doBatchRequest(searchParams, miniCalParams, reminderSearchParams);
+};
+
+ZmApptCache.prototype._doBatchRequest =
+function(searchParams, miniCalParams, reminderSearchParams) {
+	if (appCtxt.multiAccounts) {
+		searchParams.folderIds = miniCalParams.folderIds = searchParams.accountFolderIds.shift();
+	}
+
 	var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
 	var request = jsonObj.BatchRequest;
 
@@ -304,7 +323,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 		searchParams.query = this._calViewController._userQuery;
 		var apptVec = this.setSearchParams(searchParams);
 
-		//search data in cache
+		// search data in cache
 		if (apptVec != null && (apptVec instanceof AjxVector)) {
 			this._cachedVec = apptVec;
 		} else {
@@ -318,7 +337,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 			reminderSearchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds();
 		}
 
-		//reminder search params is only for grouping reminder related srch
+		// reminder search params is only for grouping reminder related srch
 		var apptVec = this.setSearchParams(reminderSearchParams);
 
 		if (!apptVec) {
@@ -348,6 +367,9 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 		return;
 	}
 
+	var accountName = (appCtxt.multiAccounts)
+		? appCtxt.getById(searchParams.folderIds[0]).account.name : null;
+
 	if ((searchParams && searchParams.callback) || miniCalParams.callback) {
 		var params = {
 			jsonObj: jsonObj,
@@ -355,7 +377,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 			callback: (new AjxCallback(this, this.handleBatchResponse, [searchParams, miniCalParams, reminderSearchParams])),
 			errorCallback: (new AjxCallback(this, this.handleBatchResponseError, [searchParams, miniCalParams, reminderSearchParams])),
 			noBusyOverlay: true,
-			accountName: (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null)
+			accountName: accountName
 		};
 		appCtxt.getAppController().sendRequest(params);
 	} else {
@@ -397,16 +419,23 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 	};
 
 	if (searchResp.length > 1) {
-		//process reminder list
+		// process reminder list
 		this.processSearchResponse(searchResp[1], reminderSearchParams);
 	}
 
 	var newList = this.processSearchResponse(searchResp[0], searchParams);
-	return this.handleSearchCallback(searchParams, newList);
-};
 
-ZmApptCache.prototype.handleSearchCallback =
-function(searchParams, newList) {
+	if (appCtxt.multiAccounts) {
+		this._accountNewList.addList(newList);
+
+		if (searchParams.accountFolderIds.length > 0) {
+			this._doBatchRequest(searchParams, miniCalParams);
+			return;
+		}
+
+		newList = this._accountNewList;
+	}
+
 	if (searchParams.callback) {
 		searchParams.callback.run(newList, null, searchParams.query);
 	} else {
