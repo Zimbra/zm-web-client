@@ -116,7 +116,7 @@
     <tr>
         <td>
             
-                <a name="action" id="action"/>
+                <a name="action" id="action"></a>
                   <table cellspacing="2" cellpadding="2" width="100%">
                         <tr class="zo_m_list_row">
                             <td>

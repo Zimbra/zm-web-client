@@ -26,58 +26,11 @@
     <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
 </mo:handleError>
 
-<mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" scale="true">
+<mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" scale="${true}">
 
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr>
     <td>
-            <%--<table width="100%" cellspacing="0" cellpadding="0">
-                <tr class='zo_toolbar<c:out value="${pageContext.request.servletPath=='/m/main'?'1':''}"/>'>
-                    <td>
-                        <table cellspacing="0" cellpadding="0">
-                            <tr>
-                                <td>
-                                    <a href="${fn:escapeXml(closeUrl)}#msg${msg.id}" class='zo_leftbutton'>
-                                        ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
-                                    </a>
-                                </td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${cursor.hasPrev}">
-                                            <zm:prevItemUrl var="prevMsgUrl" value="${context_url}" action='view'
-                                                            cursor="${cursor}" context="${context}"/>
-                                            <a class='zo_button' href="${fn:escapeXml(prevMsgUrl)}">
-                                                <fmt:message key="MO_PREV"/>
-                                            </a>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <a class='zo_button' style='color:gray'>
-                                                <fmt:message key="MO_PREV"/>
-                                            </a>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${cursor.hasNext}">
-                                            <zm:nextItemUrl var="nextMsgUrl" value="${context_url}" action='view'
-                                                            cursor="${cursor}" context="${context}"/>
-                                            <a class='zo_button' href="${fn:escapeXml(nextMsgUrl)}">
-                                                <fmt:message key="MO_NEXT"/>
-                                            </a>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <a class='zo_button' style='color:gray'>
-                                                <fmt:message key="MO_NEXT"/>
-                                            </a>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>--%>
         <mo:msgToolbar mid="${msg.id}" urlTarget="${context_url}" context="${context}" keys="false"/>
     </td>
 </tr>
@@ -104,11 +57,6 @@
 <input type="hidden" name="doMessageAction" value="1"/>
 <script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
 <table width="100%" cellspacing="0" cellpadding="2">
-<!--<tr>
-    <td colspan="2">
-        <hr size='1'/>
-    </td>
-</tr>-->
 <tr class='zo_action'>
     <td colspan="2" class="Stripes">
         <div class="View">

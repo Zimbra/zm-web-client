@@ -63,7 +63,7 @@
                     </td>
                     <c:if test="${uiv == '1' && isTop}">
                         <td class="Padding" id='select_container' style="display:none;">
-                            <select onchange="changeListSize(this.value)">
+                            <select onchange="changeListSize(this.value);">
                                 <option value="5" ${sessionScope.limit=='5'?'selected':''}>List 5</option>
                                 <option value="10" ${sessionScope.limit=='10'?'selected':''}>List 10</option>
                                 <option value="20" ${sessionScope.limit=='20'?'selected':''}>List 20</option>

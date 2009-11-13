@@ -18,24 +18,11 @@
 <c:if test="${(sessionScope.limit != param.limit && param.limit != null && param.limit != '')  }">
     <c:set var="limit" value="${zm:cook(param.limit)}" scope="session"/>
 </c:if>
-<script type="text/javascript">var selectedImgId = "mail_img";</script>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
-<%--<c:if test="${param.addContact != null}">
-    <zm:createContact var="cnt">
-        <zm:field name="firstName" value="a"/>
-        <zm:field name="lastName" value="b"/>
-        <zm:field name="email" value="a@b.com"/>
-
-    </zm:createContact>
-</c:if>--%>
-
 <c:if test="${param.loginOp=='logout'}">
     <c:set var="uiv" value="1" scope="session"/>
     <c:redirect url="/?loginOp=logout&client=mobile"/>
 </c:if>
-<%--<c:if test="${zm:actionSet(param,'actionSearch') && (param.sq == null || param.sq == '')}">
-    <c:redirect url="/m/moquery"/>
-</c:if>--%>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
@@ -47,7 +34,6 @@
         </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
-
     <mo:composeCheck/>
     <c:set var="action" value="${zm:cook(empty param.paction ? param.action : param.paction)}" scope="request"/>
 </mo:handleError>
@@ -146,7 +132,7 @@
         </table>
         </div>
         <div style="display:none;" class="StatusWarning" id="d_msg"></div>
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" border="0">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
         <tr>
             <td colspan="2" height="100%" valign="top">
                        <mo:handleError>
@@ -227,6 +213,9 @@
                 url = url.replace(/limit=[0-9]+/i,"limit="+size);
             }else{
                 url = url.replace("?","?limit="+size+"&");
+            }
+            if(url.indexOf("?") < 0){
+                url = url+"?limit="+size;                
             }
             if(url.indexOf("so=") >=0 ){
                 url = url.replace(/so=[0-9]+/,"so="+size);

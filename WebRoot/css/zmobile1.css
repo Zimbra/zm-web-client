@@ -73,12 +73,16 @@ html,body {
     font-family: Myriad, "Lucida Grande", Helvetica, Arial, Verdana, Sans-serif;
     background: #FFFFFF;
     color: #000000;
-#IFDEF IPHONE
-    overflow: hidden;
-    -webkit-text-size-adjust: none;
-#ENDIF
 }
-
+.zo_dispimages {
+    cursor: pointer;
+    background-color: #FFFFCC;
+    padding: 2px;
+    font-size: 10pt;
+    border:1px solid #333333;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+}
 .NavbarBg{
 	background: black url("/img/mobile/NavbarBg.gif") repeat-x top left;
 	height: 48px;

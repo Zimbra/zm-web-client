@@ -65,60 +65,6 @@
 <c:when test="${convSummary.messageCount gt 1 and param.mview eq 1}">
     <tr>
         <td>
-                <%--<table width="100%" cellspacing="0" cellpadding="0">
-                    <tr class='zo_toolbar<c:out value="${pageContext.request.servletPath=='/m/main'?'1':''}"/>'>
-                        <td>
-                            <table cellspacing="0" cellpadding="0" width="100%">
-                                <tr>
-                                    <zm:currentResultUrl var="closeUrl" value="${context_url}" action='view' context="${context}"
-                                                         cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
-                                    <td><a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'><fmt:message key="backToConv"/></a></td>
-                                    <td>
-                                        <a class='zo_button' href="#action"><fmt:message key="MO_actions"/></a>
-                                    </td>
-                                    <td>
-                                        <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}"
-                                                                index="${param.csi}"/>
-                                        <c:choose>
-                                            <c:when test="${messCursor.hasPrev}">
-                                                <zm:currentResultUrl var="prevMsgUrl" value="${context_url}" action='view'
-                                                                     context="${context}" mview="1"
-                                                                     cso="${messCursor.prevOffset}"
-                                                                     csi="${messCursor.prevIndex}" css="${param.css}"/>
-                                                <a class='zo_button' href="${fn:escapeXml(prevMsgUrl)}">
-                                                    <fmt:message key="MO_PREV"/>
-                                                </a>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <a class='zo_button' style='color:gray'>
-                                                    <fmt:message key="MO_PREV"/>
-                                                </a>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${messCursor.hasNext}">
-                                                <zm:currentResultUrl var="nextMsgUrl" value="${context_url}" action="view"
-                                                                     context="${context}" mview="1"
-                                                                     cso="${messCursor.nextOffset}"
-                                                                     csi="${messCursor.nextIndex}" css="${param.css}"/>
-                                                <a class='zo_button' href="${fn:escapeXml(nextMsgUrl)}">
-                                                    <fmt:message key="MO_NEXT"/>
-                                                </a>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <a class='zo_button' style='color:gray'>
-                                                    <fmt:message key="MO_NEXT"/>
-                                                </a>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>--%>
             <mo:convToolbar urlTarget="${context_url}" context="${context}" keys="false" isConv="false"/>
         </td>
     </tr>
@@ -126,66 +72,6 @@
 <c:otherwise>
     <tr>
         <td>
-                <%--
-                <table width="100%" cellspacing="0" cellpadding="0">
-                    <tr class='zo_toolbar<c:out value="${pageContext.request.servletPath=='/m/main'?'1':''}"/>'>
-                        <td>
-                            <table cellspacing="0" cellpadding="0">
-                                <tr>
-                                    <zm:currentResultUrl var="closeurl" value="${context_url}"
-                                                         index="${context.currentItemIndex}"
-                                                         context="${context}"/>
-                                    <td><a href="${fn:escapeXml(closeurl)}#conv${convSummary.id}" class='zo_leftbutton'>
-                                            ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
-                                    </a></td>
-                                    <c:if test="${singleMessage}">
-                                    <td>
-                                        <a class='zo_button' href="#action"><fmt:message key="MO_actions"/></a>
-                                    </td>
-                                    </c:if>
-                                    <td>
-                                        <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}"
-                                                                        index="${context.currentItemIndex}"/>
-                                        <c:choose>
-                                            <c:when test="${context.hasPrevItem}">
-                                                <zm:prevItemUrl var="prevItemUrl" value="${context_url}" action="view"
-                                                                cursor="${convCursor}" context="${context}"
-                                                                css="${param.css}"/>
-                                                <a class='zo_button' href="${fn:escapeXml(prevItemUrl)}">
-                                                    <fmt:message key="MO_PREV"/>
-                                                </a>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <a class='zo_button' style='color:gray'>
-                                                    <fmt:message key="MO_PREV"/>
-                                                </a>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${context.hasNextItem}">
-                                                <zm:nextItemUrl var="nextItemUrl" value="${context_url}" action="view"
-                                                                cursor="${convCursor}" context="${context}"
-                                                                css="${param.css}"/>
-                                                <a class='zo_button' href="${fn:escapeXml(nextItemUrl)}">
-                                                    <fmt:message key="MO_NEXT"/>
-                                                </a>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <a class='zo_button' style='color:gray'>
-                                                    <fmt:message key="MO_NEXT"/>
-                                                </a>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-                --%>
             <mo:convToolbar singleMessage="${singleMessage}" urlTarget="${context_url}" context="${context}"
                             keys="false" isConv="true" cid="${convSummary.id}"/>
         </td>
@@ -211,7 +97,7 @@
 <tr>
 <td class="Stripes">
 <div class="View">
-<a name="action" id="action"/>
+<a name="action" id="action"></a>
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
 <tr class='zo_action'>
     <td colspan="2">
@@ -277,51 +163,6 @@
                 </table>
     </td>
 </tr>
-<%--<c:if test="${mailbox.features.tagging and mailbox.hasTags}">
-    <c:set var="tagsToAdd" value="${zm:getAvailableTags(pageContext,message.tagIds,true)}"/>
-    <c:set var="tagsToRemove" value="${zm:getAvailableTags(pageContext,message.tagIds,false)}"/>
-    <c:if test="${not empty tagsToAdd}">
-          <tr class='zo_action'>
-            <td colspan="2">
-                <table cellspacing="0" cellpadding="0">
-                    <tr>
-                        <td>
-                            <input name="actionAddTag" type="submit" value="<fmt:message key="MO_actionAddTag"/>"/>
-                        </td>
-                        <td style='padding-left:5px'>
-                            <select name="tagId">
-                                <c:forEach var="tag" items="${tagsToAdd}">
-                                    <option value="${tag.id}">${fn:escapeXml(tag.name)}</option>
-                                </c:forEach>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </c:if>
-    <c:if test="${not empty tagsToRemove}">
-        <tr class='zo_action'>
-            <td colspan="2">
-                <table cellspacing="0" cellpadding="0">
-                    <tr>
-                        <td>
-                            <input name="actionRemoveTag" type="submit"
-                                   value="<fmt:message key="MO_actionRemoveTag"/>"/>
-                        </td>
-                        <td style='padding-left:5px'>
-                            <select name="tagRemoveId">
-                                <c:forEach var="tag" items="${tagsToRemove}">
-                                    <option value="${tag.id}">${fn:escapeXml(tag.name)}</option>
-                                </c:forEach>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </c:if>
-</c:if>--%>
 <c:if test="${uiv!='1'}">
     <tr>
         <td colspan="2">
@@ -330,7 +171,6 @@
     </tr>
 </c:if>
 </table>
-    <%--/form--%>
 </div>
 </td>
 </tr>
@@ -421,7 +261,7 @@
     <tr>
         <td>
             <div class="wh_bg">
-                <a name="action" id="action"/>
+                <a name="action" id="action"></a>
                  <table cellspacing="2" cellpadding="2" width="100%">
                         <tr class="zo_m_list_row">
                             <td>

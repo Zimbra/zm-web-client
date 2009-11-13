@@ -20,10 +20,10 @@
     </title>
     <c:choose>
         <c:when test="${scale}">
-            <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;"/>
+            <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;"/>
         </c:when>
         <c:otherwise>
-            <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+            <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
         </c:otherwise>
     </c:choose>
     <link href="<c:url value='/css/zmobile${uiv!="0"?uiv:""}${param.st!=null && param.st=="cal"?",mcal":""}.css?v=${version}'/>"  type="text/css" rel="stylesheet" /> 
