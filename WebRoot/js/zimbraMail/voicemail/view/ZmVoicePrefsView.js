@@ -886,8 +886,8 @@ function(text, okCallback) {
 			if (msg.indexOf("{0}") == -1) {
 				if (!msg.match(/\.$/))
 					msg += ".";
-				msg += " ";
-				msg += this.getFaqLink();
+//				msg += " ";
+//				msg += this.getFaqLink();
 			} else {
 				msg = AjxMessageFormat.format(msg, [this.getFaqLink()]);
 			}
