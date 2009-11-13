@@ -1771,7 +1771,7 @@ ZmSelectiveCallForwardingUI.prototype._handleAddFromNumber =
 function(event) {
 	var addValue = this._addField.getValue();
 	if (!addValue || AjxStringUtil.trim(addValue) == "") {
-		this.showDialogWithFAQ(AjxMsg.valueIsRequired);
+		this.showDialog(AjxMsg.valueIsRequired);
 		this._clearField(this._addField);
 	} else {
 		var error = this._view._validatePhoneNumberFct(addValue);
