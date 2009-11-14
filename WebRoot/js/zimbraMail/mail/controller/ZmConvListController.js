@@ -567,12 +567,29 @@ function(items) {
 
 ZmConvListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
+	if (!this._continuation.lastItem) {
+		this._continuation.lastItem = (this._list && this._list.getVector().getLast());
+		this._continuation.totalItems = this._list && this._list.size();
+	}
 	this._applyAction(items, "_doDelete", [hardDelete, attrs]);
 };
 
 ZmConvListController.prototype._doMove =
 function(items, folder, attrs, isShiftKey) {
+	if (!this._continuation.lastItem) {
+		this._continuation.lastItem = (this._list && this._list.getVector().getLast());
+		this._continuation.totalItems = this._list && this._list.size();
+	}
 	this._applyAction(items, "_doMove", [folder, attrs, isShiftKey]);
+};
+
+ZmConvListController.prototype._doSpam =
+function(items, markAsSpam, folder) {
+	if (!this._continuation.lastItem) {
+		this._continuation.lastItem = (this._list && this._list.getVector().getLast());
+		this._continuation.totalItems = this._list && this._list.size();
+	}
+	ZmMailListController.prototype._doSpam.apply(this, arguments);
 };
 
 ZmConvListController.prototype._doMarkRead =

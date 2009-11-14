@@ -37,40 +37,47 @@ function() {
 	return "ZmVoiceList";
 };
 
+/**
+ * @param params		[hash]			hash of params:
+ *        items			[array]			a list of items to move
+ *        folder		[ZmFolder]		destination folder
+ *        attrs			[hash]			additional attrs for SOAP command
+ */
 ZmVoiceList.prototype.moveItems =
-function(items, folder, attrs) {
-	attrs = attrs || {};
-	attrs.phone = this.folder.phone.name;
-	attrs.l = folder.id;
-	var params = {
-		items: items, 
-		action: "move", 
-		attrs: attrs,
-		callback: new AjxCallback(this, this._handleResponseMoveItems, [items, folder])
-	};
+function(params) {
+
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs"]);
+
+	params.attrs = params.attrs || {};
+	params.attrs.phone = this.folder.phone.name;
+	params.attrs.l = params.folder.id;
+	params.action = "move";
+	params.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
+
 	this._itemAction(params);
 };
 
 // The voice server isn't sending notifications. This callback updates
 // folders and such after a move.
 ZmVoiceList.prototype._handleResponseMoveItems =
-function(items, destinationFolder) {
+function(params) {
+
 	// Remove the items.
-	for(var i = 0, count = items.length; i < count; i++) {
-		this.remove(items[i]);
+	for (var i = 0, count = items.length; i < count; i++) {
+		this.remove(params.items[i]);
 	}
 	
 	// Update the unread counts in the folders.
 	var numUnheard = 0;
-	for(var i = 0, count = items.length; i < count; i++) {
-		if (items[i].isUnheard) {
+	for (var i = 0, count = params.items.length; i < count; i++) {
+		if (params.items[i].isUnheard) {
 			numUnheard++;
 		}
 	}
-	var sourceFolder = items[0].getFolder();
+	var sourceFolder = params.items[0].getFolder();
 	if (numUnheard) {
 		sourceFolder.changeNumUnheardBy(-numUnheard);
-		destinationFolder.changeNumUnheardBy(numUnheard);
+		params.folder.changeNumUnheardBy(numUnheard);
 	}
 	
 	// Replenish the list view.
@@ -78,7 +85,7 @@ function(items, destinationFolder) {
 	// This is sort of a hack having the model call back to the controller, but without notifications
 	// this seems like the best approach.
 	var controller = AjxDispatcher.run("GetVoiceController");
-	controller._handleResponseMoveItems(items);
+	controller._handleResponseMoveItems(params.items);
 };
 
 ZmVoiceList.prototype._getActionNamespace =

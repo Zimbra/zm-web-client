@@ -58,23 +58,30 @@ function() {
  * remove the conv row(s) from the list view (even if the conv still matches the
  * search).
  *
- * @param items		[Array]			a list of items to move
- * @param folder	[ZmFolder]		destination folder
- * @param attrs		[Object]		additional attrs for SOAP command
- * @param callback	[AjxCallback]*	callback to trigger once operation completes
+ * @param params		[hash]			hash of params:
+ *        items			[array]			a list of items to move
+ *        folder		[ZmFolder]		destination folder
+ *        attrs			[hash]			additional attrs for SOAP command
+ *        callback		[AjxCallback]*	callback to run after each sub-request
+ *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
+ *        count			[int]*			starting count for number of items processed
  */
 ZmMailList.prototype.moveItems =
-function(items, folder, attrs, callback) {
+function(params) {
+
 	if (this.type != ZmItem.CONV) {
-		ZmList.prototype.moveItems.call(this, items, folder, attrs, callback);
-		return;
+		return ZmList.prototype.moveItems.apply(this, arguments);
 	}
-	
-	var attrs = {};
-	attrs.tcon = this._getTcon();
-	attrs.l = folder.id;
-	var action = (folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
-	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder, callback]);
+
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback"]);
+
+	var params1 = AjxUtil.hashCopy(params);
+
+	params1.attrs = {};
+	params1.attrs.tcon = this._getTcon();
+	params1.attrs.l = params.folder.id;
+	params1.action = (params.folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
+	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
 
 	// set accountName for multi-account to always be the main "local" account
 	// since we assume actioned ID's will always be fully qualified *unless*
@@ -85,70 +92,64 @@ function(items, folder, attrs, callback) {
 			? items[0].account.name
 			: appCtxt.accountList.mainAccount.name;
 	}
+	params1.accountName = accountName;
 
-	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback, accountName: accountName});
-};
-
-ZmMailList.prototype._handleResponseMoveItems =
-function(folder, callback, result) {
-	var movedItems = result.getResponse();	
-	if (movedItems && movedItems.length) {
-		this.moveLocal(movedItems, folder.id);
-		for (var i = 0; i < movedItems.length; i++) {
-			movedItems[i].moveLocal(folder.id);
-		}
-		// note: this happens before we process real notifications
-		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
-	}
-
-	if (callback) {
-		callback.run();
-	}
+	this._itemAction(params1);
 };
 
 /**
-* Marks items as "spam" or "not spam". If they're marked as "not spam", a target folder
-* may be provided.
-*
-* @param items			[Array]			a list of items to move
-* @param markAsSpam		[boolean]		if true, mark as "spam"
-* @param folder			[ZmFolder]*		destination folder
-* @param childWin		[window]*		child window this action is happening for
-*/
+ * Marks items as "spam" or "not spam". If they're marked as "not spam", a target folder
+ * may be provided.
+ * @param params		[hash]			hash of params:
+ *        items			[array]			a list of items
+ *        markAsSpam	[boolean]		if true, mark as "spam"
+ *        folder		[ZmFolder]		destination folder
+ *        childWin		[window]*		the child window this action is happening in
+ *        callback		[AjxCallback]*	callback to run after each sub-request
+ *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
+ *        count			[int]*			starting count for number of items processed
+ */
 ZmMailList.prototype.spamItems = 
-function(items, markAsSpam, folder, childWin) {
+function(params) {
+
+	params = Dwt.getParams(arguments, ["items", "markAsSpam", "folder", "childWin"]);
+
+	var params1 = AjxUtil.hashCopy(params);
+
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		this._mixedAction("spamItems", [items, markAsSpam, folder]);
-		return;
+		return this._mixedAction("spamItems", params);
 	}
 
-	var action = markAsSpam ? "spam" : "!spam";
+	params1.items = AjxUtil.toArray(params.items)
+	params1.action = params.markAsSpam ? "spam" : "!spam";
+	params1.attrs = {};
+	params1.attrs.tcon = this._getTcon();
+	if (params.folder) {
+		params1.attrs.l = params.folder.id;
+	}
 
-	var attrs = {};
-	attrs.tcon = this._getTcon();
-	if (folder) attrs.l = folder.id;
-
-	var respCallback = new AjxCallback(this, this._handleResponseSpamItems, [markAsSpam, folder, childWin]);
-	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback});
+	params1.callback = new AjxCallback(this, this._handleResponseSpamItems, params);
+	this._itemAction(params1);
 };
 
 ZmMailList.prototype._handleResponseSpamItems =
-function(markAsSpam, folder, childWin, result) {
+function(params, result) {
+
 	var movedItems = result.getResponse();
 	if (movedItems && movedItems.length) {
-		folderId = markAsSpam ? ZmFolder.ID_SPAM : (folder ? folder.id : ZmFolder.ID_INBOX);
+		var folderId = params.markAsSpam ? ZmFolder.ID_SPAM : (params.folder ? params.folder.id : ZmFolder.ID_INBOX);
 		this.moveLocal(movedItems, folderId);
 		for (var i = 0; i < movedItems.length; i++) {
 			movedItems[i].moveLocal(folderId);
 		}
 		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
 
-		var msg = markAsSpam ? ZmMsg.markedAsJunk : ZmMsg.markedAsNotJunk;
-		appCtxt.setStatusMsg(AjxMessageFormat.format(msg, movedItems.length));
-
-		if (childWin) {
-			childWin.close();
+		if (params.childWin) {
+			params.childWin.close();
 		}
+	}
+	if (params.callback) {
+		params.callback.run(result);
 	}
 };
 
@@ -157,32 +158,35 @@ function(markAsSpam, folder, childWin, result) {
  * other folders. If we're in conv mode in Trash, we add a constraint of "t",
  * meaning that the action is only applied to items (msgs) in the Trash.
  *
- * @param items			[Array]			list of items to delete
- * @param hardDelete	[boolean]		whether to force physical removal of items
- * @param attrs			[Object]		additional attrs for SOAP command
- * @param childWin		[window]*		the child window this action is happening in
+ * @param params		[hash]			hash of params:
+ *        items			[Array]			list of items to delete
+ *        hardDelete	[boolean]		whether to force physical removal of items
+ *        attrs			[Object]		additional attrs for SOAP command
+ *        childWin		[window]*		the child window this action is happening in
  */
 ZmMailList.prototype.deleteItems =
-function(items, hardDelete, attrs, childWin) {
+function(params) {
+
+	params = Dwt.getParams(arguments, ["items", "hardDelete", "attrs", "childWin"]);
+
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
 		var searchFolder = this.search ? appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isHardDelete()) {
 			var instantOn = appCtxt.getAppController().getInstantNotify();
-			var errorCallback;
 			if (instantOn) {
 				// bug fix #32005 - disable instant notify for ops that might take awhile
 				appCtxt.getAppController().setInstantNotify(false);
-				errorCallback = new AjxCallback(this, this._handleErrorDeleteItems);
+				params.errorCallback = new AjxCallback(this, this._handleErrorDeleteItems);
 			}
 
-			attrs = attrs || {};
-			attrs.tcon = ZmFolder.TCON_CODE[searchFolder.nId];
-			var respCallback = new AjxCallback(this, this._handleResponseDeleteItems, instantOn);
-			this._itemAction({items:items, action:"delete", attrs:attrs, callback:respCallback, errorCallback:errorCallback});
-			return;
+			params.attrs = params.attrs || {};
+			params.attrs.tcon = ZmFolder.TCON_CODE[searchFolder.nId];
+			params.action = "delete";
+			params.callback = new AjxCallback(this, this._handleResponseDeleteItems, instantOn);
+			return this._itemAction(params);
 		}
 	}
-	ZmList.prototype.deleteItems.call(this, items, hardDelete, attrs, childWin);
+	ZmList.prototype.deleteItems.call(this, params);
 };
 
 ZmMailList.prototype._handleResponseDeleteItems =
@@ -208,19 +212,32 @@ function() {
 };
 
 /*
- * Only make the request for items whose state will be changed. 
+ * Only make the request for items whose state will be changed.
+ *
+ * @param params		[hash]				hash of params:
+ *        items			[array]				a list of items to mark read/unread
+ *        value			[boolean]			if true, mark items read
+ *        callback		[AjxCallback]*		callback to run after each sub-request
+ *        finalCallback	[AjxCallback]*		callback to run after all items have been processed
+ *        count			[int]*				starting count for number of items processed
  */
 ZmMailList.prototype.markRead =
-function(items, on, callback) {
+function(params) {
+
+	var items = AjxUtil.toArray(params.items);
+
 	var items1 = [];
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		if ((item.type == ZmItem.CONV && item.hasFlag(ZmItem.FLAG_UNREAD, on)) || (item.isUnread == on)) {
+		if ((item.type == ZmItem.CONV && item.hasFlag(ZmItem.FLAG_UNREAD, params.value)) || (item.isUnread == params.value)) {
 			items1.push(item);
 		}
 	}
+
 	if (items1.length) {
-		this.flagItems(items1, "read", on, callback);
+		params.items = items1;
+		params.op = "read";
+		this.flagItems(params);
 	}
 };
 
@@ -237,7 +254,7 @@ function(items) {
 ZmMailList.prototype.moveLocal =
 function(items, folderId) {
 	ZmList.prototype.moveLocal.call(this, items, folderId);
-	if (folderId != ZmFolder.ID_TRASH) return;
+	if (folderId != ZmFolder.ID_TRASH) { return; }
 
 	var flaggedItems = [];
 	for (var i = 0; i < items.length; i++) {

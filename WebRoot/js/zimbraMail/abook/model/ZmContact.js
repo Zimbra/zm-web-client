@@ -825,7 +825,7 @@ function(newFolderId) {
 	var newFolder = appCtxt.getById(newFolderId);
 	if (this.isShared() || (newFolder && newFolder.link)) {
 		if (this.list) {
-			this.list.moveItems(this, newFolder);
+			this.list.moveItems({items:[this], folder:newFolder});
 		}
 	} else {
 		var jsonObj = {ContactActionRequest:{_jsns:"urn:zimbraMail"}};

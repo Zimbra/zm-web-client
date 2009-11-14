@@ -286,71 +286,111 @@ function(offset, newList) {
 /**
  * Sets/unsets a flag for each of a list of items.
  *
- * @param items		[Array]					a list of items to set/unset a flag for
- * @param flagOp	[String]				the name of the flag operation ("flag" or "read")
- * @param value		[Boolean|string]*		whether to set the flag, or for "update" the flags string
- * @param callback	[AjxCallback]*			callback to run after action. Does not apply to mixed action.
+ * @param params		[hash]				hash of params:
+ *        items			[array]				a list of items to set/unset a flag for
+ *        op			[string]			the name of the flag operation ("flag" or "read")
+ *        value			[boolean|string]*	whether to set the flag, or for "update" the flags string
+ *        callback		[AjxCallback]*		callback to run after each sub-request
+ *        finalCallback	[AjxCallback]*		callback to run after all items have been processed
+ *        count			[int]*				starting count for number of items processed
  */
 ZmList.prototype.flagItems =
-function(items, flagOp, value, callback) {
+function(params) {
+
+	params = Dwt.getParams(arguments, ["items", "op", "value", "callback"]);
+
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		this._mixedAction("flagItems", [items, flagOp, value]);
-		return;
+		return this._mixedAction("flagItems", params);
 	}
 
-	var action = value ? flagOp : "!" + flagOp;
-	var attrs = (action == "update") ? {f:value} : null;
-	this._itemAction({items: items, action: action, attrs:attrs, callback: callback});
+	params.items = AjxUtil.toArray(params.items);
+
+	if (params.action == "update") {
+		params.attrs = {f:params.value};
+	} else {
+		params.action = params.value ? params.op : "!" + params.op;
+	}
+
+	this._itemAction(params);
 };
 
 /**
  * Tags or untags a list of items. A sanity check is done first, so that items
  * aren't tagged redundantly, and so we don't try to remove a nonexistent tag.
  *
- * @param items		a list of items to tag/untag
- * @param tagId		the tag to add/remove from each item
- * @param doTag		true if adding the tag, false if removing it
+ * @param params		[hash]			hash of params:
+ *        items			[array]			a list of items to tag/untag
+ *        tagId			[string]		the tag to add/remove from each item
+ *        doTag			[boolean]		true if adding the tag, false if removing it
+ *        callback		[AjxCallback]*	callback to run after each sub-request
+ *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
+ *        count			[int]*			starting count for number of items processed
  */
 ZmList.prototype.tagItems =
-function(items, tagId, doTag) {
+function(params) {
+
+	params = Dwt.getParams(arguments, ["items", "tagId", "doTag"]);
+
 	// for multi-account mbox, normalize tagId
 	if (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain) {
-		tagId = ZmOrganizer.normalizeId(tagId);
+		params.tagId = ZmOrganizer.normalizeId(params.tagId);
 	}
 
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		this._mixedAction("tagItems", [items, tagId, doTag]);
-		return;
-	}
-
-	// child window loses type info so test for array in a different way
-	if ((!(items instanceof Array)) && items.length === undefined) {
-		items = [items];
+		return this._mixedAction("tagItems", params);
 	}
 
 	// only tag items that don't have the tag, and untag ones that do
 	// always tag a conv, because we don't know if all items in the conv have the tag yet
-	var items1 = [];
+	var items = AjxUtil.toArray(params.items);
+	var items1 = [], doTag = params.doTag, tagId = params.tagId;
 	for (var i = 0; i < items.length; i++) {
-		if ((doTag && (!items[i].hasTag(tagId) || items[i].type == ZmItem.CONV)) || (!doTag && items[i].hasTag(tagId))) {
-			items1.push(items[i]);
+		var item = items[i];
+		if ((doTag && (!item.hasTag(tagId) || item.type == ZmItem.CONV)) ||	(!doTag && item.hasTag(tagId))) {
+			items1.push(item);
 		}
 	}
-	
-	if (items1.length) {
-		var action = doTag ? "tag" : "!tag";
-		this._itemAction({items: items1, action: action, attrs: {tag: tagId}});
-	}
+	params.items = items1;
+	params.attrs = {tag:tagId};
+	params.action = doTag ? "tag" : "!tag";
+
+	this._itemAction(params);
 };
 
+/**
+ * Removes all tags from a list of items.
+ *
+ * @param params		[hash]			hash of params:
+ *        items			[array]			a list of items to tag/untag
+ *        callback		[AjxCallback]*	callback to run after each sub-request
+ *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
+ *        count			[int]*			starting count for number of items processed
+ */
+
 ZmList.prototype.removeAllTags = 
-function(items) {
+function(params) {
+
+	params = (params && params.items) ? params : {items:params};
+
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		this._mixedAction("removeAllTags", [items]);
+		this._mixedAction("removeAllTags", params);
 		return;
 	}
 
-	this._itemAction({items: items, action: "update", attrs: {t: ""}});
+	var items = AjxUtil.toArray(params.items);
+	var items1 = [];
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		if (item.tags && item.tags.length) {
+			items1.push(item);
+		}
+	}
+
+	params.items = items1;
+	params.action = "update";
+	params.attrs = {t: ""};
+
+	this._itemAction(params);
 };
 
 /**
@@ -362,73 +402,82 @@ function(items) {
  * search.
  * </p>
  *
- * @param items		[Array]			a list of items to move
- * @param folder	[ZmFolder]		destination folder
- * @param attrs		[Object]		additional attrs for SOAP command
- * @param callback	[AjxCallback]*	callback to trigger once operation completes
+ * @param params		[hash]			hash of params:
+ *        items			[array]			a list of items to move
+ *        folder		[ZmFolder]		destination folder
+ *        attrs			[hash]			additional attrs for SOAP command
+ *        callback		[AjxCallback]*	callback to run after each sub-request
+ *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
+ *        count			[int]*			starting count for number of items processed
  */
 ZmList.prototype.moveItems =
-function(items, folder, attrs, callback) {
+function(params) {
+
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback"]);
+
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		this._mixedAction("moveItems", [items, folder, attrs]);
-		return;
+		return this._mixedAction("moveItems", params);
 	}
-	if (!(items instanceof Array)) { items = [items]; }
 
-	attrs = attrs || (new Object());
-	attrs.l = folder.id;
-	
-	var respCallback = (this.type == ZmItem.MIXED)
-		? (new AjxCallback(this, this._handleResponseMoveItems, [folder, callback]))
-		: callback;
+	params.items = AjxUtil.toArray(params.items)
+	params.attrs = params.attrs || {};
+	params.attrs.l = params.folder.id;
+	params.callback = (this.type == ZmItem.MIXED) ?
+					  (new AjxCallback(this, this._handleResponseMoveItems, params)) :
+					  params.callback;
+	params.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
+	params.action = "move";
 
-	var accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
-
-	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback, accountName: accountName});
+	this._itemAction(params);
 };
 
 ZmList.prototype._handleResponseMoveItems =
-function(folder, callback, result) {
-	var movedItems = result.getResponse();	
+function(params, result) {
+
+	var movedItems = result.getResponse();
 	if (movedItems && movedItems.length) {
-		this.moveLocal(movedItems, folder.id);
+		this.moveLocal(movedItems, params.folder.id);
 		for (var i = 0; i < movedItems.length; i++) {
-			movedItems[i].moveLocal(folder.id);
+			movedItems[i].moveLocal(params.folder.id);
 		}
-		this._notify(ZmEvent.E_MOVE, {items: movedItems});
+		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
 	}
 
-	if (callback) {
-		callback.run();
+	if (params.callback) {
+		params.callback.run(result);
 	}
 };
 
 /**
  * Copies a list of items to the given folder.
  *
- * @param items		[Array]			a list of items to move
- * @param folder		[ZmFolder]		destination folder
- * @param attrs		[Object]		additional attrs for SOAP command
+ * @param params		[hash]			hash of params:
+ *        items			[array]			a list of items to move
+ *        folder		[ZmFolder]		destination folder
+ *        attrs			[hash]			additional attrs for SOAP command
+ *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
+ *        count			[int]*			starting count for number of items processed
  */
 ZmList.prototype.copyItems =
-function(items, folder, attrs) {
-	if (!(items instanceof Array)) {
-		items = [items];
-	}
+function(params) {
 
-	attrs = attrs || {};
-	attrs.l = folder.id;
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs"]);
+
+	params.items = AjxUtil.toArray(params.items)
+	params.attrs = params.attrs || {};
+	params.attrs.l = params.folder.id;
 
 	// set accountName for multi-account to always be the main "local" account
 	// since we assume actioned ID's will always be fully qualified
-	var accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
+	params.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
+	params.action = "copy";
+	params.callback = new AjxCallback(this, this._handleResponseCopyItems, params);
 
-	var respCallback = new AjxCallback(this, this._handleResponseCopyItems);
-	this._itemAction({items: items, action: "copy", attrs: attrs, callback: respCallback, accountName: accountName});
+	this._itemAction(params);
 };
 
 ZmList.prototype._handleResponseCopyItems =
-function(result) {
+function(params, result) {
 	var resp = result.getResponse();
 	if (resp.length > 0) {
 		var msg = AjxMessageFormat.format(ZmMsg.itemCopied, resp.length);
@@ -441,48 +490,54 @@ function(result) {
  * moves it to the Trash (soft delete). However, if it's already in the Trash,
  * it will be removed from the data store (hard delete).
  *
- * @param items			[Array]			list of items to delete
- * @param hardDelete	[boolean]		whether to force physical removal of items
- * @param attrs			[Object]		additional attrs for SOAP command
- * @param childWin		[window]*		the child window this action is happening in
+ * @param params		[hash]			hash of params:
+ *        items			[Array]			list of items to delete
+ *        hardDelete	[boolean]		whether to force physical removal of items
+ *        attrs			[Object]		additional attrs for SOAP command
+ *        childWin		[window]*		the child window this action is happening in
+ *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
+ *        count			[int]*			starting count for number of items processed
  */
 ZmList.prototype.deleteItems =
-function(items, hardDelete, attrs, childWin) {
+function(params) {
+
+	params = Dwt.getParams(arguments, ["items", "hardDelete", "attrs", "childWin"]);
+
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		this._mixedAction("deleteItems", [items, hardDelete, attrs]);
-		return;
+		return this._mixedAction("deleteItems", params);
 	}
 
-	// child window loses type info so test for array in a different way
-	if ((!(items instanceof Array)) && items.length === undefined) {
-		items = [items];
-	}
+	var items = params.items = AjxUtil.toArray(params.items)
 
 	// figure out which items should be moved to Trash, and which should actually be deleted
 	var toMove = [];
 	var toDelete = [];
 	for (var i = 0; i < items.length; i++) {
-		var folderId = items[i].getFolderId();
+		var item = items[i];
+		var folderId = item.getFolderId();
 		var folder = appCtxt.getById(folderId);
-		if (hardDelete || (folder && folder.isHardDelete())) {
-			toDelete.push(items[i]);
+		if (params.hardDelete || (folder && folder.isHardDelete())) {
+			toDelete.push(item);
 		} else {
-			toMove.push(items[i]);
+			toMove.push(item);
 		}
 	}
 
-	var callback = (childWin != null) ? (new AjxCallback(this._handleDeleteNewWindowResponse, childWin)) : null;
+	params.callback = params.childWin && new AjxCallback(this._handleDeleteNewWindowResponse, params.childWin);
 
 	// soft delete - items moved to Trash
 	if (toMove.length) {
-		var folderId = (appCtxt.multiAccounts)
-			? ZmOrganizer.getSystemId(ZmFolder.ID_TRASH) : ZmFolder.ID_TRASH;
-		this.moveItems(toMove, appCtxt.getById(folderId), attrs, callback);
+		params.items = toMove;
+		var folderId = appCtxt.multiAccounts ? ZmOrganizer.getSystemId(ZmFolder.ID_TRASH) : ZmFolder.ID_TRASH;
+		params.folder = appCtxt.getById(folderId);
+		this.moveItems(params);
 	}
 
 	// hard delete - items actually deleted from data store
 	if (toDelete.length) {
-		this._itemAction({items: toDelete, action: "delete", attrs: attrs, callback: callback});
+		params.items = toDelete;
+		params.action = "delete";
+		this._itemAction(params);
 	}
 };
 
@@ -550,10 +605,12 @@ function(items, folderId) {
  * @param params			[Object]			list of parameters
  *        items				[Array]				list of items to act upon
  *        action			[string]			SOAP operation
- *        attrs				[Object]			hash of additional attrs for SOAP request
- *        callback			[AjxCallback]		async callback
- *        errorCallback		[AjxCallback]		async error callback
+ *        attrs				[Object]*			hash of additional attrs for SOAP request
+ *        callback			[AjxCallback]*		async callback
+ *        finalCallback		[AjxCallback]*		callback to run after all items have been processed
+ *        errorCallback		[AjxCallback]*		async error callback
  *        accountName		[String]*			account to send request on behalf of
+ *        count				[int]*				starting count for number of items processed
  * @param batchCmd			[ZmBatchCommand]*	If set, request data is added to batch request
  */
 ZmList.prototype._itemAction =
@@ -566,6 +623,10 @@ function(params, batchCmd) {
 		if (params.callback) {
 			params.callback.run(new ZmCsfeResult([]));
 		}
+		if (params.finalCallback) {
+			params.finalCallback.run(params);
+		}
+		return;
 	}
 
 	var type;
@@ -613,11 +674,11 @@ function(params, batchCmd) {
 		action:			action,
 		type:			type,
 		callback:		respCallback,
+		finalCallback:	params.finalCallback,
 		errorCallback:	params.errorCallback,
 		batchCmd:		batchCmd,
 		dialog:			dialog,
-		numItems:		0,
-		totalItems:		idList.length
+		numItems:		params.count || 0
 	}
 
 	if (dialog) {
@@ -659,6 +720,7 @@ function(params) {
 		} else {
 			reqParams.soapDoc = params.request;
 		}
+		DBG.println("sa", "* item action: " + list.length);
 		params.reqId = appCtxt.getAppController().sendRequest(reqParams);
 	}
 };
@@ -684,13 +746,12 @@ function(params, result) {
 			}
 			if (params.dialog) {
 				var msgKey = ZmItem.PLURAL_MSG_KEY[params.type] || "items";
-				var text = AjxMessageFormat.format(ZmMsg.itemsProcessed, [params.numItems, params.totalItems, ZmMsg[msgKey]]);
+				var text = AjxMessageFormat.format(ZmMsg.itemsProcessed, [params.numItems, ZmMsg[msgKey]]);
 				params.dialog.setContent(text.toLowerCase());
 				if (!params.dialog.isPoppedUp()) {
 					params.dialog.popup();
 				}
 			}
-			DBG.println(AjxDebug.DBG1, "Batched item action, processed items: " + params.total);
 		}
 	}
 
@@ -698,8 +759,12 @@ function(params, result) {
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._doAction, [params]), 100);
 	} else {
 		params.reqId = null;
-		if (params.dialog) {
+		if (params.dialog && !params.finalCallback) {
 			params.dialog.popdown();
+		}
+		if (params.finalCallback) {
+			DBG.println("sa", "ZmItem running finalCallback");
+			params.finalCallback.run(params);
 		}
 	}
 };
@@ -714,7 +779,10 @@ ZmList.prototype._cancelAction =
 function(params) {
 	params.cancelled = true;
 	if (params.reqId) {
-		appCtxt.getRequestMgr().cancelAction(params.reqId);
+		appCtxt.getRequestMgr().cancelRequest(params.reqId);
+	}
+	if (params.finalCallback) {
+		params.finalCallback.run(params);
 	}
 };
 
@@ -730,17 +798,21 @@ function(params) {
  * easier to do the requests separately.
  */
 ZmList.prototype._mixedAction =
-function(method, args) {
-	var typedItems = this._getTypedItems(args[0]);
+function(method, params) {
+
+	var typedItems = this._getTypedItems(params.items);
+	var params1 = AjxUtil.hashCopy(params);
 	for (var type in typedItems) {
 		this._mixedType = type; // marker that we've been here already
 		if (type == ZmItem.CONTACT) {
 			var items = typedItems[type];
 			for (var i = 0; i < items.length; i++) {
-				items[i].list[method](items[i], args[1], args[2]);
+				params1.items = [items[i]];
+				items[i].list[method](params);
 			}
 		} else {
-			ZmMailList.prototype[method].call(this, typedItems[type], args[1], args[2]);
+			params1.items = typedItems[type];
+			ZmMailList.prototype[method].call(this, params);
 		}
 		this._mixedType = null;
 	}
@@ -748,7 +820,7 @@ function(method, args) {
 
 ZmList.prototype._getTypedItems =
 function(items) {
-	var typedItems = new Object();
+	var typedItems = {};
 	for (var i = 0; i < items.length; i++) {
 		var type = items[i].type;
 		if (!typedItems[type]) {

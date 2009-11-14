@@ -78,10 +78,16 @@ ZmListController = function(container, app) {
 	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
 
 	this._itemCountText = {};
+	this._continuation = {count:0, totalItems:0};
 };
 
 ZmListController.prototype = new ZmController;
 ZmListController.prototype.constructor = ZmListController;
+
+// When performing a search action (bug 10317) on all items (including those not loaded),
+// number of items to load on each search to work through all results. Should be a multiple
+// of ZmList.CHUNK_SIZE.
+ZmListController.CONTINUATION_SEARCH_ITEMS = 500;
 
 // public methods
 
@@ -152,7 +158,8 @@ function(newList) {
  * messages come in: the forward navigation arrow doesn't get
  * enabled.
  */
-ZmListController.prototype.setHasMore = function(hasMore) {
+ZmListController.prototype.setHasMore =
+function(hasMore) {
 	if (hasMore) {
 		// bug: 30546
 		this._list.setHasMore(hasMore);
@@ -766,6 +773,10 @@ function(folder) {
 // Flag/unflag an item
 ZmListController.prototype._doFlag =
 function(items, on) {
+
+	items = AjxUtil.toArray(items);
+	if (!items.length) { return; }
+
 	if (on !== true && on !== false) {
 		on = !items[0].isFlagged;
 	}
@@ -776,27 +787,33 @@ function(items, on) {
 		}
 	}
 
-//	this._list.flagItems(items1, "flag", on);
-	var list = items[0].list || this._list;
-	list.flagItems(items1, "flag", on);
+	var params = {items:items1, op:"flag", value:on};
+	var list = this._setupContinuation(this._doFlag, [on], params);
+	list.flagItems(params);
 };
 
 // Tag/untag items
 ZmListController.prototype._doTag =
 function(items, tag, doTag) {
-	if (!(items instanceof Array)) items = [items];
 
-	var list = items[0].list || this._list;
-	list.tagItems(items, tag.id, doTag);
+	items = AjxUtil.toArray(items);
+	if (!items.length) { return; }
+
+	var params = {items:items, tagId:tag.id, doTag:doTag};
+	var list = this._setupContinuation(this._doTag, [tag, doTag], params);
+	list.tagItems(params);
 };
 
 // Remove all tags for given items
 ZmListController.prototype._doRemoveAllTags =
 function(items) {
-	if (!(items instanceof Array)) items = [items];
 
-	var list = items[0].list || this._list;
-	list.removeAllTags(items);
+	items = AjxUtil.toArray(items);
+	if (!items.length) { return; }
+
+	var params = {items:items};
+	var list = this._setupContinuation(this._doRemoveAllTags, null, params);
+	list.removeAllTags(params);
 };
 
 /**
@@ -808,12 +825,14 @@ function(items) {
 */
 ZmListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
-	if (!(items instanceof Array)) items = [items];
-	if (items.length) {
-		var list = items[0].list || this._list;
-		var win = appCtxt.isChildWindow ? window : null;
-		list.deleteItems(items, hardDelete, attrs, win);
-	}
+
+	items = AjxUtil.toArray(items);
+	if (!items.length) { return; }
+
+	var params = {items:items, hardDelete:hardDelete, attrs:attrs, childWin:appCtxt.isChildWindow && window};
+	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
+	var list = this._setupContinuation(this._doDelete, [hardDelete, attrs], params, allDoneCallback);
+	list.deleteItems(params);
 };
 
 /**
@@ -826,7 +845,9 @@ function(items, hardDelete, attrs) {
 */
 ZmListController.prototype._doMove =
 function(items, folder, attrs, isShiftKey) {
-	if (!(items instanceof Array)) items = [items];
+
+	items = AjxUtil.toArray(items);
+	if (!items.length) { return; }
 
 	var move = [];
 	var copy = [];
@@ -841,13 +862,17 @@ function(items, folder, attrs, isShiftKey) {
 		}
 	}
 
-	var list = items[0].list || this._list;
+	var params = {folder:folder, attrs:attrs};
+	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
+	var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
 	if (move.length) {
-		list.moveItems(move, folder, attrs);
+		params.items = move;
+		list.moveItems(params);
 	}
 
 	if (copy.length) {
-		list.copyItems(copy, folder, attrs);
+		params.items = copy;
+		list.copyItems(params);
 	}
 };
 
@@ -925,10 +950,7 @@ function(parent) {
 		// dynamically build tag menu add/remove lists
 		var items = this._listView[this._currentView].getSelection();
 
-		// child window loses type info so test for array in a different way
-		if ((!(items instanceof Array)) && items.length === undefined) {
-			items = [items];
-		}
+		items = AjxUtil.toArray(items);
 
 		// fetch tag tree from appctxt (not cache) for multi-account case
 		tagMenu.set(items, appCtxt.getTagTree());
@@ -1429,4 +1451,117 @@ function(text) {
 	if (field) {
 		field.setText(text);
 	}
+};
+
+/**
+ * Records total items and last item before we do any more searches. Adds a couple
+ * params to the args for the list action method.
+ *
+ * @param actionMethod		[function]		controller action method
+ * @param args				[array]			arg list for above (except for items arg)
+ * @param params			[hash]			params that will be passed to list action method
+ * @param allDoneCallback	[AjxCallback]	callback to run after all items processed
+ */
+ZmListController.prototype._setupContinuation =
+function(actionMethod, args, params, allDoneCallback) {
+
+	var actionCallback = new AjxCallback(this, actionMethod, args);
+	params.finalCallback = new AjxCallback(this, this._continueAction,
+										  {actionCallback:actionCallback, allDoneCallback:allDoneCallback});
+	params.count = this._continuation.count;
+
+	var list = (params.items && (params.items instanceof Array) && params.items[0].list) || this._list;
+	if (!this._continuation.lastItem) {
+		this._continuation.lastItem = list.getVector().getLast();
+		this._continuation.totalItems = list.size();
+	}
+
+	return list;
+};
+
+/**
+ * See if we are performing an action on all items, including ones that match the current search
+ * but have not yet been retrieved. If so, keep doing searches and performing the action on the
+ * results, until there are no more results.
+ *
+ * The arguments in the action callback should be those after the initial 'items' argument. The
+ * array of items retrieved by the search is prepended to the callback's argument list before it
+ * is run.
+ *
+ * @param params			[hash]			hash of params:
+ *        actionCallback	[AjxCallback]	callback with action to be performed on search results
+ *        allDoneCallback	[AjxCallback]*	callback to run when we're all done
+ * @param actionParams		[hash]			params from ZmList._itemAction, added when this is called
+ */
+ZmListController.prototype._continueAction =
+function(params, actionParams) {
+
+	var lv = this._listView[this._currentView];
+	var curResult = this._continuation.result || this._activeSearch;
+	var cancelled = actionParams && actionParams.cancelled;
+	if (lv.allSelected && curResult && curResult.getAttribute("more") && !cancelled) {
+		var cs = this._currentSearch;
+		var limit = ZmListController.CONTINUATION_SEARCH_ITEMS;
+		var searchParams = {query:this.getSearchString(), types:cs.types, sortBy:cs.sortBy, limit:limit};
+
+		var list = curResult.getResults().getArray();
+		var lastItem = this._continuation.lastItem;
+		if (!lastItem) {
+			lastItem = list && list[list.length - 1];
+		}
+		if (lastItem) {
+			searchParams.lastId = lastItem.id;
+			searchParams.lastSortVal = lastItem.sf;
+			DBG.println("sa", "***** continuation search: " + searchParams.query + " --- " + [lastItem.id, lastItem.sf].join("/"));
+		} else {
+			searchParams.offset = limit + (this._continuation.search ? this._continuation.search.offset : 0);
+		}
+
+		this._continuation.count = actionParams.numItems;
+		if (!this._continuation.totalItems) {
+			this._continuation.totalItems = list.length;
+		}
+
+		this._continuation.search = new ZmSearch(searchParams);
+		var respCallback = new AjxCallback(this, this._handleResponseContinueAction, [params.actionCallback]);
+		appCtxt.getSearchController().redoSearch(this._continuation.search, true, null, respCallback);
+	} else {
+		if (this._continuation.result) {
+			if (lv.allSelected) {
+				var msgKey = ZmItem.PLURAL_MSG_KEY[this._continuation.result.type] || "items";
+				var text = AjxMessageFormat.format(ZmMsg.itemsProcessed, [this._continuation.totalItems, ZmMsg[msgKey]]);
+				appCtxt.setStatusMsg(text);
+			}
+			this._continuation = {count:0, totalItems:0};
+		}
+		if (actionParams && actionParams.dialog) {
+			actionParams.dialog.popdown();
+		}
+		if (params.allDoneCallback) {
+			params.allDoneCallback.run();
+		}
+	}
+};
+
+ZmListController.prototype._handleResponseContinueAction =
+function(actionCallback, result) {
+
+	this._continuation.result = result.getResponse();
+	var items = this._continuation.result.getResults().getArray();
+	DBG.println("sa", "continuation search results: " + items.length);
+	if (items.length) {
+		this._continuation.lastItem = items[items.length - 1];
+		this._continuation.totalItems += items.length;
+		DBG.println("sa", "continuation last item ID: " + this._continuation.lastItem.id);
+		actionCallback.args = actionCallback.args || [];
+		actionCallback.args.unshift(items);
+		actionCallback.run();
+	}
+};
+
+ZmListController.prototype._checkItemCount =
+function() {
+	var lv = this._listView[this._currentView];
+	lv._checkItemCount();
+	lv._handleResponseCheckReplenish();
 };

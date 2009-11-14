@@ -386,7 +386,8 @@ function() {
 ZmMailListController.prototype._sendReadReceiptNotified =
 function(msg, dlg) {
 	var callback = dlg ? (new AjxCallback(dlg, dlg.popdown)) : null;
-	msg.list.flagItems(msg, "update", msg.setFlag(ZmItem.FLAG_READ_RECEIPT_SENT, true), callback);
+	var flags = msg.setFlag(ZmItem.FLAG_READ_RECEIPT_SENT, true);
+	msg.list.flagItems({items:[msg], op:"update", value:flags, callback:callback});
 };
 
 ZmMailListController.prototype._updateViewMenu =
@@ -556,7 +557,7 @@ function(ev) {
 	{
 		var account = ev.item.account || ZmOrganizer.parseId(ev.item.id).account;
 		var folder = appCtxt.getById(ZmOrganizer.getSystemId(ZmFolder.ID_DRAFTS, account));
-		this._list.moveItems([ev.item], folder);
+		this._list.moveItems({items:[ev.item], folder:folder});
 	}
 
 	ZmListController.prototype._listSelectionListener.apply(this, arguments);
@@ -851,8 +852,10 @@ function(params, selection) {
 
 ZmMailListController.prototype._doMarkRead =
 function(items, on, callback) {
-	var list = items[0].list || this._list;
-	list.markRead(items, on, callback);
+
+	var params = {items:items, value:on, callback:callback};
+	var list = this._setupContinuation(this._doMarkRead, [on, callback], params);
+	list.markRead(params);
 };
 
 /**
@@ -867,11 +870,13 @@ function(items, on, callback) {
 */
 ZmMailListController.prototype._doSpam =
 function(items, markAsSpam, folder) {
-	if (!(items instanceof Array)) items = [items];
 
-	var list = items[0].list || this._list;
-	var childWin = appCtxt.isChildWindow ? window : null;
-	list.spamItems(items, markAsSpam, folder, childWin);
+	items = AjxUtil.toArray(items);
+
+	var params = {items:items, markAsSpam:markAsSpam, folder:folder, childWin:appCtxt.isChildWindow && window};
+	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
+	var list = this._setupContinuation(this._doSpam, [markAsSpam, folder], params, allDoneCallback);
+	list.spamItems(params);
 };
 
 ZmMailListController.prototype._inviteReplyHandler =
@@ -920,7 +925,7 @@ function(ev) {
 	var list = msg.list || this.getList();
 	var callback = (appCtxt.isChildWindow)
 		? (new AjxCallback(this, this._handleAcceptShareInNewWindow)) : null;
-	list.moveItems(msg, folder, null, callback);
+	list.moveItems({items:[msg], folder:folder, callback:callback});
 };
 
 ZmMailListController.prototype._declineShareHandler = ZmMailListController.prototype._acceptShareHandler;
@@ -1259,7 +1264,7 @@ function(ev, callback) {
 			ZmMailMsgView.detachMsgInNewWindow(msg);
 			// always mark a msg read if it is displayed in its own window
 			if (msg.isUnread) {
-				msg.list.markRead([msg], true);
+				msg.list.markRead({items:[msg], value:true});
 			}
 		} else {
 			ZmMailMsgView.rfc822Callback(msg.id);
@@ -1272,9 +1277,7 @@ ZmMailListController.prototype._printListener =
 function(ev) {
 	var listView = this._listView[this._currentView];
 	var items = listView.getSelection();
-	if (!(items instanceof Array)) {
-		items = [items];
-	}
+	items = AjxUtil.toArray(items);
 	var ids = [];
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
@@ -1520,10 +1523,6 @@ function() {
 // Flag mail items(override ZmListController to add hook to zimletMgr
 ZmMailListController.prototype._doFlag =
 function(items, on) {
-	if (on !== true && on !== false) {
-		on = !items[0].isFlagged;
-	}
-
 	ZmListController.prototype._doFlag.call(this, items, on);
 	appCtxt.notifyZimlets("onMailFlagClick", [items, on]);
 };

@@ -440,14 +440,14 @@ function(clickedCol, ev) {
 	// bug fix #12734 - disable sorting of "From" column for Sent/Drafts folders
 	var hdr = this.getItemFromElement(clickedCol);
 	if (!(hdr._sortable && this.sortingEnabled)) {
-		this._checkSelectionColumnClicked(clickedCol);
+		this._checkSelectionColumnClicked(clickedCol, ev);
 		return;
 	}
 
 	var isSentOrDrafts = (hdr && hdr._sortable && hdr._sortable == ZmItem.F_FROM)
 		? this._isSentOrDraftsFolder() : null;
 	if (isSentOrDrafts && (isSentOrDrafts.sent || isSentOrDrafts.drafts)) {
-		this._checkSelectionColumnClicked(clickedCol);
+		this._checkSelectionColumnClicked(clickedCol, ev);
 		return;
 	}
 

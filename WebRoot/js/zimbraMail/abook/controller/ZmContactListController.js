@@ -668,7 +668,8 @@ function(view) {
 
 ZmContactListController.prototype._doMove =
 function(items, folder, attrs, isShiftKey) {
-	if (!(items instanceof Array)) items = [items];
+
+	items = AjxUtil.toArray(items);
 
 	var move = [];
 	var copy = [];
@@ -688,14 +689,14 @@ function(items, folder, attrs, isShiftKey) {
 
 	var moveOutFolder = appCtxt.getById(this.getFolderId());
 	var outOfTrash = (moveOutFolder && moveOutFolder.isInTrash() && !folder.isInTrash());
-	var list = (outOfTrash) ? this._list : (items[0].list || this._list);
+	var list = outOfTrash ? this._list : (items[0].list || this._list);
 
 	if (move.length) {
-		list.moveItems(move, folder, attrs, outOfTrash);
+		list.moveItems({items:move, folder:folder, attrs:attrs, outOfTrash:outOfTrash});
 	}
 
 	if (copy.length) {
-		list.copyItems(copy, folder, attrs);
+		list.copyItems({items:copy, folder:folder, attrs:attrs});
 	}
 
 	if (moveFromGal.length) {

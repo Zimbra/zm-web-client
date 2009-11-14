@@ -309,23 +309,25 @@ function(phone) {
 };
 
 /**
-* Moves a list of items to the given folder.
-* <p>
-* This method calls the base class for normal "moves" UNLESS we're dealing w/
-* shared items (or folder) in which case we must send a CREATE request for the
-* given folder to the server followed by a hard delete of the shared contact
-* (this is temporary, until we get better server support).
-* </p>
-*
-* @param items		[Array]			a list of items to move
-* @param folder		[ZmFolder]		destination folder
-* @param attrs		[Object]		additional attrs for SOAP command
-*/
+ * Moves a list of items to the given folder.
+ * <p>
+ * This method calls the base class for normal "moves" UNLESS we're dealing w/
+ * shared items (or folder) in which case we must send a CREATE request for the
+ * given folder to the server followed by a hard delete of the shared contact
+ * (this is temporary, until we get better server support).
+ * </p>
+ *
+ * @param params		[hash]			hash of params:
+ *        items			[array]			a list of items to move
+ *        folder		[ZmFolder]		destination folder
+ *        attrs			[hash]			additional attrs for SOAP command
+ *        outOfTrash	[boolean]		if true, we are moving contacts out of Trash
+ */
 ZmContactList.prototype.moveItems =
-function(items, folder, attrs, outOfTrash) {
-	if (!(items instanceof Array)) {
-		items = [items];
-	}
+function(params) {
+
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "outOfTrash"]);
+	params.items = AjxUtil.toArray(params.items);
 
 	var moveBatchCmd = new ZmBatchCommand(true, null, true);
 	var loadBatchCmd = new ZmBatchCommand(true, null, true);
@@ -334,18 +336,18 @@ function(items, folder, attrs, outOfTrash) {
 
 	// if the folder we're moving contacts to is a shared folder, then dont bother
 	// checking whether each item is shared or not
-	for (var i = 0; i < items.length; i++) {
-		var contact = items[i];
+	for (var i = 0; i < params.items.length; i++) {
+		var contact = params.items[i];
 
 		if (contact.isReadOnly()) { continue; }
 
-		if (contact.isShared() || folder.link) {
+		if (contact.isShared() || params.folder.link) {
 			hardMove.push(contact);
 			if (contact.isLoaded) {
-				moveBatchCmd.add(this._getCopyCmd(contact, folder));
+				moveBatchCmd.add(this._getCopyCmd(contact, params.folder));
 			} else {
                 contact.load(null,null);
-                moveBatchCmd.add(this._getCopyCmd(contact, folder));
+                moveBatchCmd.add(this._getCopyCmd(contact, params.folder));
             }
 		} else {
 			softMove.push(contact);
@@ -367,16 +369,11 @@ function(items, folder, attrs, outOfTrash) {
 
 	// for "soft" moves, handle moving out of Trash differently
 	if (softMove.length > 0) {
-		attrs = attrs || {};
-		attrs.l = folder.id;
-
-		var params = {
-			items: items,
-			action: "move",
-			attrs: attrs,
-			callback: ((outOfTrash) ? (new AjxCallback(this, this._handleResponseMoveItems, [folder, null])) : null),
-			accountName: (appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name)
-		};
+		params.attrs = params.attrs || {};
+		params.attrs.l = params.folder.id;
+		params.action = "move";
+		params.callback = params.outOfTrash && new AjxCallback(this, this._handleResponseMoveItems, params);
+		params.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
 
 		this._itemAction(params);
 	}
@@ -423,19 +420,20 @@ function(contact, folder) {
 };
 
 /**
-* Deletes contacts after checking that this is not a GAL list.
-*
-* @param items		[Array]			list of contacts to delete
-* @param hardDelete	[boolean]		whether to force physical removal of items
-* @param attrs		[Object]		hash of additional attrs for SOAP command
-*/
+ * Deletes contacts after checking that this is not a GAL list.
+ *
+ * @param params		[hash]			hash of params:
+ *        items			[Array]			list of items to delete
+ *        hardDelete	[boolean]		whether to force physical removal of items
+ *        attrs			[Object]		additional attrs for SOAP command
+ */
 ZmContactList.prototype.deleteItems =
-function(items, hardDelete, attrs) {
+function(params) {
 	if (this.isGal) {
 		DBG.println(AjxDebug.DBG1, "Cannot delete GAL contacts");
 		return;
 	}
-	ZmList.prototype.deleteItems.call(this, items, hardDelete, attrs);
+	ZmList.prototype.deleteItems.call(this, params);
 };
 
 ZmContactList.prototype.setIsGal =

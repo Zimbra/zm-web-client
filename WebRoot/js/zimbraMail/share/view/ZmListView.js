@@ -63,6 +63,7 @@ ZmListView = function(params) {
 	this._handleEventType[this.type] = true;
 	this._disallowSelection = {};
 	this._disallowSelection[ZmItem.F_FLAG] = true;
+	this._selectAllEnabled = false;
 
 	if (params.dropTgt) {
 		var args = {container:this._parentEl, threshold:15, amount:5, interval:10, id:params.id};
@@ -223,7 +224,9 @@ function(ev) {
 		if (ev.event != ZmEvent.E_MOVE || !this._controller._list.isCanonical) {
 			this._controller._list.remove(item);
 		}
-		this._controller._app._checkReplenishListView = this;
+		if (!this.allSelected && !this._isPageless) {
+			this._controller._app._checkReplenishListView = this;
+		}
 		this._controller._resetToolbarOperations();
 	}
 };
@@ -508,11 +511,12 @@ function(clickedEl, ev) {
 ZmListView.prototype._columnClicked =
 function(clickedCol, ev) {
 	DwtListView.prototype._columnClicked.call(this, clickedCol, ev);
-	this._checkSelectionColumnClicked(clickedCol);
+	this._checkSelectionColumnClicked(clickedCol, ev);
 };
 
 ZmListView.prototype._checkSelectionColumnClicked =
-function(clickedCol) {
+function(clickedCol, ev) {
+
 	if (!appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) { return; }
 
 	var list = this.getList();
@@ -520,16 +524,28 @@ function(clickedCol) {
 	if (size > 0) {
 		var idx = this._data[clickedCol.id].index;
 		var item = this._headerList[idx];
-		if (item && item._id.indexOf(ZmItem.F_SELECTION) != -1) {
+		if (item && (item._field == ZmItem.F_SELECTION)) {
 			var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, item._field);
 			var hdrDiv = document.getElementById(hdrId);
 			if (hdrDiv) {
+				this.allSelected = false;
 				if (hdrDiv.className == "ImgCheckboxChecked") {
 					this.deselectAll();
 					hdrDiv.className = "ImgCheckboxUnchecked";
 				} else {
 					hdrDiv.className = "ImgCheckboxChecked";
-					this.setSelectedItems(this._list.getArray());
+					this.selectAll();
+					if (this._selectAllEnabled) {
+						var curResult = this._controller._activeSearch;
+						if (curResult && curResult.getAttribute("more")) {
+							var toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, size);
+							if (ev.shiftKey) {
+								this.allSelected = true;
+								toastMsg = ZmMsg.allSearchSelected;
+							}
+							appCtxt.setStatusMsg(toastMsg);
+						}
+					}
 				}
 			}
 		}
@@ -602,6 +618,7 @@ ZmListView.prototype.deselectAll =
 function() {
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		this._checkSelectedItems(false);
+		this.allSelected = false;
 	}
 
 	DwtListView.prototype.deselectAll.call(this);
@@ -691,7 +708,9 @@ function(ev) {
 ZmListView.prototype._getHeaderToolTip =
 function(field, itemIdx, isFolder) {
     var tooltip = null;
-    if (field == ZmItem.F_FLAG) {
+	if (field == ZmItem.F_SELECTION) {
+		tooltip = ZmMsg.selectionColumn;
+	} else if (field == ZmItem.F_FLAG) {
         tooltip = ZmMsg.flag;
     } else if (field == ZmItem.F_PRIORITY){
         tooltip = ZmMsg.priority;
@@ -976,5 +995,3 @@ function(height) {
 		this._checkItemCount();
 	}
 };
-
-

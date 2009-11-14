@@ -21,6 +21,7 @@ ZmMailListView = function(params) {
 	ZmListView.call(this, params);
 
 	this._folderId = null;
+	this._selectAllEnabled = true;
 
 	this._isMultiColumn = this.isMultiColumn();
 	if (!this._isMultiColumn) {

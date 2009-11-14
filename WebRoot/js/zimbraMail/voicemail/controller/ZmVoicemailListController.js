@@ -261,15 +261,15 @@ function(ev) {
 	var folderId = folderType + "-" + phone.name;
 	var destination = phone.folderTree.getById(folderId);
 	var list = items[0].list;
-	list.moveItems(items, destination);
+	list.moveItems({items:items, folder:destination});
 };
 
 // This is being called directly by ZmVoiceList.
 ZmVoicemailListController.prototype._handleResponseMoveItems = 
-function(items) {
+function(params) {
 	var view = this._getView();
-	for(var i = 0, count = items.length; i < count; i++) {
-		view.removeItem(items[i]);
+	for (var i = 0, count = params.items.length; i < count; i++) {
+		view.removeItem(params.items[i]);
 	}
 	this._checkReplenish();
 	this._resetToolbarOperations();
