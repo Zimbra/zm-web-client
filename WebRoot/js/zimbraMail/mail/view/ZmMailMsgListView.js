@@ -211,11 +211,9 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		htmlArr[idx++] = "</nobr>";
 
 	} else if (field == ZmItem.F_SIZE) {
-		if (this._mode != ZmId.VIEW_CONV && this._mode != ZmId.VIEW_CONVLIST) {
-			htmlArr[idx++] = "<nobr>";
-			htmlArr[idx++] = AjxUtil.formatSize(msg.size);
-			htmlArr[idx++] = "</nobr>";
-		}
+		htmlArr[idx++] = "<nobr>";
+		htmlArr[idx++] = AjxUtil.formatSize(msg.size);
+		htmlArr[idx++] = "</nobr>";
 	} else if (field == ZmItem.F_SORTED_BY) {
 		htmlArr[idx++] = this._getAbridgedContent(msg, colIdx);
 	} else {
