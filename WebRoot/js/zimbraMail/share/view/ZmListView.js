@@ -534,18 +534,7 @@ function(clickedCol, ev) {
 					hdrDiv.className = "ImgCheckboxUnchecked";
 				} else {
 					hdrDiv.className = "ImgCheckboxChecked";
-					this.selectAll();
-					if (this._selectAllEnabled) {
-						var curResult = this._controller._activeSearch;
-						if (curResult && curResult.getAttribute("more")) {
-							var toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, size);
-							if (ev.shiftKey) {
-								this.allSelected = true;
-								toastMsg = ZmMsg.allSearchSelected;
-							}
-							appCtxt.setStatusMsg(toastMsg);
-						}
-					}
+					this.selectAll(ev.shiftKey);
 				}
 			}
 		}
@@ -611,6 +600,24 @@ function(selectedArray) {
 
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		this._checkSelectedItems(true);
+	}
+};
+
+ZmListView.prototype.selectAll =
+function(allResults) {
+
+	DwtListView.prototype.selectAll.apply(this, arguments);
+
+	if (this._selectAllEnabled) {
+		var curResult = this._controller._activeSearch;
+		if (curResult && curResult.getAttribute("more")) {
+			var toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, this.getList().size());
+			if (allResults) {
+				this.allSelected = true;
+				toastMsg = ZmMsg.allSearchSelected;
+			}
+			appCtxt.setStatusMsg(toastMsg);
+		}
 	}
 };
 

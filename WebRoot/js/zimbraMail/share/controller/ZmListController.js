@@ -1534,8 +1534,9 @@ function(params, actionParams) {
 			}
 			this._continuation = {count:0, totalItems:0};
 		}
-		if (actionParams && actionParams.dialog) {
-			actionParams.dialog.popdown();
+		var dialog = DwtBaseDialog.getActiveDialog();
+		if (dialog) {
+			dialog.popdown();
 		}
 		if (params.allDoneCallback) {
 			params.allDoneCallback.run();

@@ -213,21 +213,14 @@ function(actionCode) {
 
 	switch (actionCode) {
 
-		case ZmKeyMap.GET_MAIL:
-			this._checkMailListener();
-			break;
-
-		case ZmKeyMap.REPLY:
-		case ZmKeyMap.REPLY_ALL:
-			if (!isDrafts && (num == 1) && !isSyncFailures) {
-				this._doAction({action:ZmMailListController.ACTION_CODE_TO_OP[actionCode]});
-			}
-			break;
-
 		case ZmKeyMap.FORWARD:
 			if (!isDrafts) {
 				this._doAction({action:ZmOperation.FORWARD});
 			}
+			break;
+
+		case ZmKeyMap.GET_MAIL:
+			this._checkMailListener();
 			break;
 
 		case ZmKeyMap.GOTO_INBOX:
@@ -250,6 +243,17 @@ function(actionCode) {
 			}
 			break;
 
+		case ZmKeyMap.REPLY:
+		case ZmKeyMap.REPLY_ALL:
+			if (!isDrafts && (num == 1) && !isSyncFailures) {
+				this._doAction({action:ZmMailListController.ACTION_CODE_TO_OP[actionCode]});
+			}
+			break;
+
+		case ZmKeyMap.SELECT_ALL:
+			lv.selectAll(true);
+			break;
+	
 		case ZmKeyMap.SPAM:
 			if (num && !isDrafts && !isSyncFailures) {
 				this._spamListener();

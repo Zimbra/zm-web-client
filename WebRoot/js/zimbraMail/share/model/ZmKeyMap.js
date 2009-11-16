@@ -177,6 +177,7 @@ ZmKeyMap.REPLY					= "Reply";
 ZmKeyMap.REPLY_ALL				= "ReplyAll";
 ZmKeyMap.SAVE					= "Save";
 ZmKeyMap.SAVED_SEARCH			= "SavedSearch";
+ZmKeyMap.SELECT_ALL				= "SelectAll";
 ZmKeyMap.SEND					= "Send";
 ZmKeyMap.SHORTCUTS				= "Shortcuts";
 ZmKeyMap.SHOW_FRAGMENT			= "ShowFragment";

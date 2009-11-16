@@ -660,12 +660,6 @@ function(params, batchCmd) {
 		}
 	}
 
-	var respCallback = params.callback && (new AjxCallback(this, this._handleResponseItemAction, [params.callback]));
-	var dialog;
-	if (idList.length > 10) {
-		dialog = appCtxt.getCancelMsgDialog();
-	}
-
 	var params1 = {
 		ids:			idList,
 		idHash:			idHash,
@@ -677,13 +671,16 @@ function(params, batchCmd) {
 		finalCallback:	params.finalCallback,
 		errorCallback:	params.errorCallback,
 		batchCmd:		batchCmd,
-		dialog:			dialog,
 		numItems:		params.count || 0
 	}
 
-	if (dialog) {
+	var respCallback = params.callback && (new AjxCallback(this, this._handleResponseItemAction, [params.callback]));
+	var dialog = DwtBaseDialog.getActiveDialog();
+	if (!dialog && idList.length > 10) {
+		dialog = appCtxt.getCancelMsgDialog();
 		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._cancelAction, [params1]));
 	}
+	params1.dialog = dialog;
 
 	this._doAction(params1);
 };
@@ -759,12 +756,14 @@ function(params, result) {
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._doAction, [params]), 100);
 	} else {
 		params.reqId = null;
-		if (params.dialog && !params.finalCallback) {
-			params.dialog.popdown();
-		}
 		if (params.finalCallback) {
+			// finalCallback is responsible for clearing dialog
 			DBG.println("sa", "ZmItem running finalCallback");
 			params.finalCallback.run(params);
+		} else {
+			if (params.dialog ) {
+				params.dialog.popdown();
+			}
 		}
 	}
 };
