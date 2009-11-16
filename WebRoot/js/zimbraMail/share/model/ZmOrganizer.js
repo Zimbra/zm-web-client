@@ -1584,7 +1584,7 @@ function(name, showUnread, noMarkup) {
 		name = AjxStringUtil.htmlEncode(name, true);
 	}
 	if (showUnread && this.numUnread > 0) {
-		name = [name, " (", this.numUnread, ")"].join("");
+        name = AjxMessageFormat.format(ZmMsg.folderUnread, [name, this.numUnread]);
 		if (!noMarkup) {
 			name = ["<span style='font-weight:bold'>", name, "</span>"].join("");
 		}
