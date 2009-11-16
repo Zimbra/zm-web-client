@@ -412,7 +412,15 @@ function() {
 			this.associateItemWithElement(null, te, ZmCalBaseView.TYPE_DAY_HEADER, id, {dayIndex:i});
 			te.className = day.isToday ? 'calendar_heading_day_today' : 'calendar_heading_day';
 		}
-		d.setDate(d.getDate()+1);
+
+        var oldDate = d.getDate();
+        d.setDate(d.getDate() + 1);
+        if(oldDate == d.getDate()) {
+            //daylight saving problem
+            d.setHours(0,0,0,0);
+            d.setTime(d.getTime() + AjxDateUtil.MSEC_PER_DAY);
+        }
+
 	}
 	var te = document.getElementById(this._headerYearId);
 	te.innerHTML = this._days[0].date.getFullYear();
