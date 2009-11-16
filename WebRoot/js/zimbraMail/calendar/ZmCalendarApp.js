@@ -967,10 +967,10 @@ function(reminderString) {
     reminderFormats[ZmMsg.apptRemindNHoursBefore]   = ZmCalItem.REMINDER_UNIT_HOURS;
     reminderFormats[ZmMsg.apptRemindNWeeksBefore]   = ZmCalItem.REMINDER_UNIT_WEEKS;
 
-    reminderString = reminderString.trim();
+    reminderString = AjxStringUtil.trim(reminderString);
     var formattedString = reminderString;
     var reminderValue = formattedString.replace(/\D/g, "");
-    reminderValue = reminderValue.trim();
+    reminderValue = AjxStringUtil.trim(reminderValue);
 
     //junk content returns empty reminder (None) 
     if(reminderValue == "") {
