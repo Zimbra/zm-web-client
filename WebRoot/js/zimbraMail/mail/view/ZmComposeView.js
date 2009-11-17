@@ -2082,6 +2082,7 @@ function(templateId, data) {
 		this._field[type] = document.getElementById(this._fieldId[type]);
 		if (this._field[type]) {
 			this._field[type].addrType = type;
+			this._setEventHandler(this._fieldId[type], "onMouseUp");
 		}
 
 		// create picker
@@ -2119,6 +2120,7 @@ function(templateId, data) {
 
 	this._setEventHandler(data.subjectInputId, "onKeyUp");
 	this._setEventHandler(data.subjectInputId, "onBlur");
+	this._setEventHandler(data.subjectInputId, "onMouseUp");
 
 	if (appCtxt.isOffline) {
 		if (!this._fromSelect) {
@@ -2899,6 +2901,18 @@ function(ev) {
 	cv.updateTabTitle();
 
 	return true;
+};
+
+// set focus within tab group to element so tabbing works
+ZmComposeView._onMouseUp =
+function(ev) {
+
+	ev = DwtUiEvent.getEvent(ev);
+	var element = DwtUiEvent.getTargetWithProp(ev, "id");
+	if (!element) { return true; }
+
+	var kbMgr = appCtxt.getKeyboardMgr();
+	kbMgr.__currTabGroup.setFocusMember(element);
 };
 
 // for com.zimbra.dnd zimlet
