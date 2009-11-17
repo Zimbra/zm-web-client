@@ -19,18 +19,17 @@ body	{  @ChromeBg@ }
 #skin_container_splash_screen			{		}
 
 #skin_container_links a{
-	color: #516f0c;
+	color: #333;
 }
 
 	#skin_container_links a:hover{
 		color: white; 
-		background-color: #516f0c;
+		background-color: #333;
 		text-decoration: none;
 	}
 
-#skin_container_tree_top {	
-	
-	background: #848689 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
+#skin_container_tree_top {		
+	background: #85878a url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
 	text-align:center;
 }
 
@@ -101,4 +100,12 @@ body	{  @ChromeBg@ }
 
 .ZDisabled .ZToolbarButtonTable .ZWidgetTitle {
 	color: #ccc;
+}
+
+.ZmCalViewMgr, .calendar_view, .ZmContactInfoView {
+	background-color: #fff;
+}
+
+.ZmContactInfoView .contactHeaderTable {
+	background-color: #e5e5e5;
 }
