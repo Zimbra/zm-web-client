@@ -29,6 +29,7 @@ body	{  @ChromeBg@	}
 	
 	background: #6f1616 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
 	text-align:center;
+	color: #fff;
 }
 
 #skin_spacing_tree {
@@ -89,4 +90,13 @@ body	{  @ChromeBg@	}
 
 .DwtTreeItem-selected-focused {
 	@TreeItemSelectedBg@
+}
+
+
+.ZmCalViewMgr, .calendar_view, .ZmContactInfoView {
+	background-color: #fff;
+}
+
+.ZmContactInfoView .contactHeaderTable {
+	background-color: #e5e5e5;
 }
