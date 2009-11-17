@@ -204,11 +204,14 @@ ZmDataSourceCollection.prototype.initialize = function(dataSources) {
 			var dataSource = errors[i];
 			var timestamp = Number(dataSource.failingSince);
 			var lastError = dataSource.lastError;
-			var params = [
-				AjxStringUtil.htmlEncode(dataSource.getName()), new Date(timestamp * 1000),
-				AjxStringUtil.htmlEncode(lastError)
-			];
-			array.push(AjxMessageFormat.format(ZmMsg.dataSourceFailureItem, params));
+			if (isNaN(timestamp)) {
+				var pattern = ZmMsg.dataSourceFailureItem_noDate;
+				var params = [AjxStringUtil.htmlEncode(dataSource.getName()), AjxStringUtil.htmlEncode(lastError)];
+			} else {
+				var pattern = ZmMsg.dataSourceFailureItem;
+				var params = [AjxStringUtil.htmlEncode(dataSource.getName()), new Date(timestamp * 1000), AjxStringUtil.htmlEncode(lastError)];
+			}
+			array.push(AjxMessageFormat.format(pattern, params));
 		}
 		array.push(ZmMsg.dataSourceFailureInstructions);
 		var message = array.join("");
