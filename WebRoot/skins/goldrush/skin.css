@@ -92,7 +92,8 @@
 .ZmHtmlEditor .ZToolbarButtonTable .ZWidgetTitle,.ZmHtmlEditor .ZHover .ZToolbarButtonTable .ZWidgetTitle,.ZmHtmlEditor .ZDisabled .ZToolbarButtonTable .ZWidgetTitle{ color: black;}
 
 .ZOptionsSectionMain .ZToolbarButtonTable .ZWidgetTitle,
-.ZOptionsSectionMain .ZDisabled .ZToolbarButtonTable .ZWidgetTitle{ 
+.ZOptionsSectionMain .ZDisabled .ZToolbarButtonTable .ZWidgetTitle,
+.ZmFilePropertiesLabel{ 
 	color: black;
 }
 
