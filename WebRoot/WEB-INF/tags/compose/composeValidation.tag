@@ -85,15 +85,16 @@
         setTimeout(function() {
             try{
                 myEditor.saveHTML();
+                _fields["body"] = trim(document.getElementById("body").value);
             }catch(ex){// we may come here if editor is not yet loaded
                 setTimeout(function() {
                     try{
                         myEditor.saveHTML();
+                        _fields["body"] = trim(document.getElementById("body").value);
                     }catch(ex1){}
                 },4000);//wait for 4 more seconds
             }
         }, 4000);  // Saves to content text area
-        _fields["body"] = trim(document.getElementById("body").value);
     </c:if>
     }
 
@@ -105,7 +106,7 @@
         var _el = _form.elements;
         for ( var _i=0;_i < _el.length; _i++){
             if(_el[_i].type == "text" || _el[_i].type == "textarea"){
-                if(_fields[_el[_i].name] != _el[_i].value) { _checkFail = true;}
+                if(_fields[_el[_i].name] != undefined && _fields[_el[_i].name] != _el[_i].value) { _checkFail = true;}
             }
         }
     <c:if test="${(isHtml)}">
