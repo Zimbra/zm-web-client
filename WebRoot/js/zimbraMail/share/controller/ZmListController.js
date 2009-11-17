@@ -1470,7 +1470,8 @@ function(actionMethod, args, params, allDoneCallback) {
 										  {actionCallback:actionCallback, allDoneCallback:allDoneCallback});
 	params.count = this._continuation.count;
 
-	var list = (params.items && (params.items instanceof Array) && params.items[0].list) || this._list;
+	var items = params.items;
+	var list = (items && (items instanceof Array) && items.length && items[0].list) || this._list;
 	if (!this._continuation.lastItem) {
 		this._continuation.lastItem = list.getVector().getLast();
 		this._continuation.totalItems = list.size();
@@ -1497,14 +1498,15 @@ ZmListController.prototype._continueAction =
 function(params, actionParams) {
 
 	var lv = this._listView[this._currentView];
-	var curResult = this._continuation.result || this._activeSearch;
 	var cancelled = actionParams && actionParams.cancelled;
-	if (lv.allSelected && curResult && curResult.getAttribute("more") && !cancelled) {
+	var contResult = this._continuation.result;
+	var hasMore = contResult ? contResult.getAttribute("more") : this._list.hasMore();
+	if (lv.allSelected && hasMore && !cancelled) {
 		var cs = this._currentSearch;
 		var limit = ZmListController.CONTINUATION_SEARCH_ITEMS;
 		var searchParams = {query:this.getSearchString(), types:cs.types, sortBy:cs.sortBy, limit:limit};
 
-		var list = curResult.getResults().getArray();
+		var list = contResult ? contResult.getResults().getArray() : this._list.getArray();
 		var lastItem = this._continuation.lastItem;
 		if (!lastItem) {
 			lastItem = list && list[list.length - 1];
@@ -1526,11 +1528,13 @@ function(params, actionParams) {
 		var respCallback = new AjxCallback(this, this._handleResponseContinueAction, [params.actionCallback]);
 		appCtxt.getSearchController().redoSearch(this._continuation.search, true, null, respCallback);
 	} else {
-		if (this._continuation.result) {
+		if (contResult) {
 			if (lv.allSelected) {
-				var msgKey = ZmItem.PLURAL_MSG_KEY[this._continuation.result.type] || "items";
+				// items beyond page were acted on, give user a total count
+				var msgKey = ZmItem.PLURAL_MSG_KEY[contResult.type] || "items";
 				var text = AjxMessageFormat.format(ZmMsg.itemsProcessed, [this._continuation.totalItems, ZmMsg[msgKey]]);
 				appCtxt.setStatusMsg(text);
+				lv.deselectAll();
 			}
 			this._continuation = {count:0, totalItems:0};
 		}

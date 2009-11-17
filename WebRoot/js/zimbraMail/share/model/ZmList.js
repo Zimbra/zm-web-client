@@ -660,6 +660,8 @@ function(params, batchCmd) {
 		}
 	}
 
+	var respCallback = params.callback && (new AjxCallback(this, this._handleResponseItemAction, [params.callback]));
+
 	var params1 = {
 		ids:			idList,
 		idHash:			idHash,
@@ -674,7 +676,6 @@ function(params, batchCmd) {
 		numItems:		params.count || 0
 	}
 
-	var respCallback = params.callback && (new AjxCallback(this, this._handleResponseItemAction, [params.callback]));
 	var dialog = DwtBaseDialog.getActiveDialog();
 	if (!dialog && idList.length > 10) {
 		dialog = appCtxt.getCancelMsgDialog();
