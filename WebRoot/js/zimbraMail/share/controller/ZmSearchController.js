@@ -376,6 +376,38 @@ function(params) {
 	return types;
 };
 
+/**
+ * Selects the appropriate item in the overview based on the search. Selection only happens
+ * if the search was a simple search for a folder, tag, or saved search. A check is done to
+ * make sure that item is not already selected, so selection should only occur for a query
+ * manually run by the user.
+ *
+ * @param searchObj		[ZmSearch]		the current search
+ */
+ZmSearchController.prototype.updateOverview =
+function(searchObj) {
+	var search = searchObj || appCtxt.getCurrentSearch();
+
+	var id, type;
+	if (search.folderId) {
+		id = this._getNormalizedId(search.folderId);
+		var folderTree = appCtxt.getFolderTree();
+		var folder = folderTree && folderTree.getById(id);
+		type = folder ? folder.type : ZmOrganizer.FOLDER;
+	} else if (search.tagId) {
+		id = this._getNormalizedId(search.tagId);
+		type = ZmOrganizer.TAG;
+	} else if (search.searchId) {
+		id = this._getNormalizedId(search.searchId);
+		type = ZmOrganizer.SEARCH;
+	}
+	var app = appCtxt.getCurrentApp();
+	var overview = app && app.getOverview();
+	if (overview) {
+		overview.setSelected(id, type);
+	}
+};
+
 ZmSearchController.prototype._getSuitableSortBy =
 function(types) {
 	var sortBy;
@@ -562,7 +594,7 @@ ZmSearchController.prototype._handleLoadShowResults =
 function(results, search, noUpdateOverview) {
 	appCtxt.setCurrentList(results.getResults(results.type));
 	if (!noUpdateOverview) {
-		this._updateOverview(search);
+		this.updateOverview(search);
 	}
 	DBG.timePt("render search results");
 };
@@ -773,36 +805,6 @@ function(selItem) {
 	return (selItemId && ZmSearchToolBar.SHARE_ICON[selItemId])
 		? ZmSearchToolBar.SHARE_ICON[selItemId]
 		: ZmSearchToolBar.ICON[ZmId.SEARCH_SHARED];
-};
-
-/**
- * Selects the appropriate item in the overview based on the search. Selection only happens
- * if the search was a simple search for a folder, tag, or saved search. A check is done to
- * make sure that item is not already selected, so selection should only occur for a query
- * manually run by the user.
- *
- * @param search		[ZmSearch]		the current search
- */
-ZmSearchController.prototype._updateOverview =
-function(search) {
-	var id, type;
-	if (search.folderId) {
-		id = this._getNormalizedId(search.folderId);
-		var folderTree = appCtxt.getFolderTree();
-		var folder = folderTree && folderTree.getById(id);
-		type = folder ? folder.type : ZmOrganizer.FOLDER;
-	} else if (search.tagId) {
-		id = this._getNormalizedId(search.tagId);
-		type = ZmOrganizer.TAG;
-	} else if (search.searchId) {
-		id = this._getNormalizedId(search.searchId);
-		type = ZmOrganizer.SEARCH;
-	}
-	var app = appCtxt.getCurrentApp();
-	var overview = app && app.getOverview();
-	if (overview) {
-		overview.setSelected(id, type);
-	}
 };
 
 ZmSearchController.prototype._getNormalizedId =
