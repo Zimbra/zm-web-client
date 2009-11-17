@@ -60,7 +60,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"NewPage"});
     ZmOperation.registerOp(ZmId.OP_NEW_PRESENTATION, {textKey:"newPresentationBeta", tooltipKey:"newPresentation", image:"Presentation"});
     ZmOperation.registerOp(ZmId.OP_NEW_SPREADSHEET, {textKey:"newSpreadSheetBeta", tooltipKey:"newSpreadSheet", image:"ZSpreadSheet"});
-    ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", image:"Doc"});
+    ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", image:"Doc", shortcut:ZmKeyMap.NEW_DOC});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
@@ -144,8 +144,7 @@ ZmBriefcaseApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.NEW_FILE]         = "uploadNewFile";
-	//newItemOps[ZmOperation.NEW_PRESENTATION] = "newPresentation";
-    //newItemOps[ZmOperation.NEW_SPREADSHEET]  = "newSpreadSheet"
+	newItemOps[ZmOperation.NEW_DOC]          = "document";
 
 	var newOrgOps = {};
 	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "briefcase";
