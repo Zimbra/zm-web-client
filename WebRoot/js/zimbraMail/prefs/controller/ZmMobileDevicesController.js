@@ -124,7 +124,23 @@ function(ev) {
 	var item = this._listView.getSelection()[0];
 	var id = ev.item.getData(ZmOperation.KEY_ID);
 	var callback = new AjxCallback(this, this._handleAction, [item, id]);
-	item.doAction(ev.item.getData(ZmOperation.KEY_ID), callback);
+	var action = ev.item.getData(ZmOperation.KEY_ID);
+
+	// bug 42135: add confirmation for mobile wipe
+	if (action == ZmOperation.MOBILE_WIPE) {
+		var dialog = appCtxt.getOkCancelMsgDialog();
+		dialog.setMessage(ZmMsg.mobileDeviceWipeConfirm);
+		dialog.registerCallback(DwtDialog.OK_BUTTON, this._handleDeviceWipe, this, [dialog, item, callback]);
+		dialog.popup();
+	} else {
+		item.doAction(action, callback);
+	}
+};
+
+ZmMobileDevicesController.prototype._handleDeviceWipe =
+function(dialog, item, callback) {
+	dialog.popdown();
+	item.doAction(ZmOperation.MOBILE_WIPE, callback);
 };
 
 ZmMobileDevicesController.prototype._handleAction =
