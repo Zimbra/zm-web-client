@@ -1613,21 +1613,22 @@ function(addrNodes, parentNode, isDraft, accountName) {
 	// from or the one we have is the default anyway
 	var identity = this.identity;
 	var isPrimary = identity == null || identity.isDefault;
+
+    //TODO: OPTIMIZE CODE by aggregating the common code.
 	if (accountName && isPrimary) {
 
 		var mainAcct = ac.accountList.mainAccount.getEmail();
 		var onBehalfOf = false;
 
-		// when saving a draft, even if obo, we do it on the main account so reset the from
-		if (isDraft) {
-			var folder = appCtxt.getById(this.folderId);
-			if (folder && folder.isRemote()) {
-				accountName = folder.getOwner();
-				onBehalfOf  = (accountName != mainAcct);
-			}
-		}
 
-		if (this._origMsg && this._origMsg.isDraft) {
+        var folder = appCtxt.getById(this.folderId);
+        if (folder && folder.isRemote() && !this._origMsg.sendAsMe) {
+            accountName = folder.getOwner();
+            onBehalfOf  = (accountName != mainAcct);
+        }
+
+
+		if (this._origMsg && this._origMsg.isDraft && !this._origMsg.sendAsMe) {
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo so reset account name
 			if (from && from.address.toLowerCase() != mainAcct.toLowerCase()) {
@@ -1660,32 +1661,42 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			addrNodes.push({t:"s", a:mainAcct});
 		}
 	} else if (identity) {
-		var addrNode = {t:"f"};
+                
+        var mainAcct = ac.accountList.mainAccount.getEmail();
+        var onBehalfOf = false;
 
-		// bug fix #20630 - handling sending drafts obo
-		if (this._origMsg && this._origMsg.isDraft && !this._origMsg.sendAsMe) {
-			var mainAcct = ac.accountList.mainAccount.getEmail();
+        var folder = appCtxt.getById(this.folderId);
+        if (folder && folder.isRemote() && !this._origMsg.sendAsMe) {
+            accountName = folder.getOwner();
+            onBehalfOf  = (accountName != mainAcct);
+        }
+
+        if (this._origMsg && this._origMsg.isDraft && !this._origMsg.sendAsMe) {
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
-			// this means we're sending a draft msg obo
+			// this means we're sending a draft msg obo so reset account name
 			if (from && from.address.toLowerCase() != mainAcct.toLowerCase() && !appCtxt.isMyAddress(from.address.toLowerCase())) {
-				addrNode.a = from.address;
-				addrNodes.push(addrNode);
-				// if sending obo, always set sender as main account
-				if (!isDraft) {
-					addrNodes.push({t:"s", a:mainAcct});
-				}
-				parentNode.e = addrNodes;
-				return;
-			}
+				accountName = from.address;
+				onBehalfOf = true;
+			}           
 		}
 
-		addrNode.a = identity.sendFromAddress || ac.accountList.mainAccount.getEmail();
-		var name = identity.sendFromDisplay;
-		if (name) {
-			addrNode.p = name;
-		}
-		addrNodes.push(addrNode);
+        var addr, displayName;
+        if(onBehalfOf){
+            addr = accountName;
+        }else{
+            addr = identity.sendFromAddress || mainAcct;
+            displayName = identity.sendFromDisplay;
+        }
 
+        var addrNode = {t:"f", a:addr};
+        if(displayName)
+            addrNode.p = displayName;
+        addrNodes.push(addrNode);
+
+        if( onBehalfOf){
+            addrNodes.push({t:"s", a:mainAcct});
+        }
+        
 		if (identity && identity.isFromDataSource && ac.get(ZmSetting.SEND_ON_BEHALF_OF)) {
 			var dataSource = ac.getDataSourceCollection().getById(identity.id);
 			if (dataSource) {

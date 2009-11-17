@@ -392,9 +392,13 @@ function(attId, docIds, draftType, callback) {
 		// if shared folder, make sure we send the email on-behalf-of
 		var folder = msg.folderId ? ac.getById(msg.folderId) : null;
 		if (folder && folder.isRemote() && this._composeView.sendMsgOboIsOK()) {
-			acctName = folder.getOwner();
+			acctName = folder.getOwner();            
 		}
 	}
+
+    if(origMsg){
+        origMsg.sendAsMe = !this._composeView.sendMsgOboIsOK();
+    }
 
 	// If this message had been saved from draft and it has a sender (meaning
 	// it's a reply from someone else's account) then get the account name from
