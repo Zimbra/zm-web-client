@@ -329,7 +329,7 @@ function(creates, force) {
 				} else if (name == "cn") {
 					var clc = AjxDispatcher.run("GetContactListController");
 					var clcList = (clc && clc.getFolderId()) ? clc.getList() : new ZmContactList(null);
-					if (appCtxt.multiAccounts && clcList.search.folderId != create.l) {
+					if (appCtxt.multiAccounts && clcList.search && clcList.search.folderId != create.l) {
 						continue;
 					}
 					clcList.notifyCreate(create);
