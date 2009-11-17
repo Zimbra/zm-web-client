@@ -100,3 +100,19 @@ body	{  @ChromeBg@	}
 .ZmContactInfoView .contactHeaderTable {
 	background-color: #e5e5e5;
 }
+
+.ZmOverviewLocalHeader,
+.ZmOverviewLocalHeader-actioned,
+.ZmOverviewLocalHeader-selected,
+.ZmOverviewLocalHeader-selected-focused {
+	@TreeHeaderContainer@
+}
+
+
+.ZmConvExpanded {
+	background-color:#e5e5e5;
+}
+
+.ZmComposeView {
+	background-color: #e5e5e5;
+}
