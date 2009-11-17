@@ -303,7 +303,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                             </c:if>
 
                             <div id="ZloginFormPanel">
-                                <form method="post" name="loginForm" action="${formActionUrl}">
+                                <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
                                     <input type="hidden" name="loginOp" value="login"/>
                                     <table width="100%" cellpadding="4">
                                         <tr>

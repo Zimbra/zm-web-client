@@ -69,6 +69,8 @@
 	<filter-mapping>
 	    <filter-name>CharEncodingFilter</filter-name>
 		<url-pattern>/h/*</url-pattern>
+        <url-pattern>/public/login.jsp</url-pattern>
+        <url-pattern>/</url-pattern>
 		<url-pattern>/m/*</url-pattern>
 	</filter-mapping>
 
