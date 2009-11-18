@@ -1728,7 +1728,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 <template id='prefs.Pages#AccountTestItem'>
 	<tr>
-		<td class='ZmTestItem'>${account.name}</td>
+		<td class='ZmTestItem'><$=AjxStringUtil.htmlEncode(data.account.name)$></td>
 		<td id='${account.id}_test_status' class='ZmTestStatus'></td>
 	</tr>
 	<tr id='${account.id}_test_details' style='display:none'>

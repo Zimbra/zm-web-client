@@ -1773,7 +1773,7 @@ function(continueCallback) {
 		var account = dirtyAccounts[i];
 		if (account.type == ZmAccount.TYPE_IMAP && account.name.match(/^\s*inbox\s*$/i)) {
 			var params = {
-				msg: AjxMessageFormat.format(ZmMsg.accountNameReserved, [account.name]),
+				msg: AjxMessageFormat.format(ZmMsg.accountNameReserved, [AjxStringUtil.htmlEncode(account.name)]),
 				level: ZmStatusView.LEVEL_CRITICAL
 			};
 			appCtxt.setStatusMsg(params);
@@ -1831,7 +1831,7 @@ function(continueCallback) {
 					var folderId = folder.id;
 					if (folderId != ZmOrganizer.ID_INBOX && Number(folderId) < 256) {
 						var params = {
-							msg: AjxMessageFormat.format(ZmMsg.accountNameReserved, [name]),
+							msg: AjxMessageFormat.format(ZmMsg.accountNameReserved, [AjxStringUtil.htmlEncode(name)]),
 							level: ZmStatusView.LEVEL_CRITICAL
 						};
 						appCtxt.setStatusMsg(params);
