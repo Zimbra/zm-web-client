@@ -95,7 +95,7 @@ function() {
 
 // View is always in sync with rules
 ZmFilterRulesView.prototype.reset = function() {};
-
+ZmFilterRulesView.prototype.resetOnAccountChange = function() {};
 
 /**
  * ZmFilterListView

@@ -43,7 +43,7 @@ function() {
 	ZmPreferencesPage.prototype.showMe.call(this);
 
 	// bug fix #41719 - always resize when in multi-account mode.
-	if (!this._firstTime || appCtxt.multiAccounts) {
+	if (!this._firstTime) {
 		this._resetSize();
 		this._firstTime = true;
 	}
@@ -72,7 +72,7 @@ function(includeEmpty) {
 
 		var hasName = signature.name.replace(/\s*/g,"") != "";
 		var hasValue = signature.getValue().replace(/\s*/g,"") != "";
-		if (includeEmpty || (hasName && hasValue) ) {
+		if (includeEmpty || (hasName && hasValue)) {
 			array.push(signature);
 		}
 	}
@@ -121,6 +121,13 @@ function(useDefaults) {
 	this._populateSignatures(true);
 };
 
+ZmSignaturesPage.prototype.resetOnAccountChange =
+function() {
+	ZmPreferencesPage.prototype.resetOnAccountChange.apply(this, arguments);
+	this._selSignature = null;
+	this._firstTime = false;
+};
+
 // saving
 
 ZmSignaturesPage.prototype.isDirty =
@@ -129,9 +136,9 @@ function() {
 		this._updateSignature();
 	}
 
-	return	this.getNewSignatures().length > 0 ||
-			this.getDeletedSignatures().length > 0 ||
-			this.getModifiedSignatures().length > 0;
+	return this.getNewSignatures().length > 0 ||
+		   this.getDeletedSignatures().length > 0 ||
+		   this.getModifiedSignatures().length > 0;
 };
 
 ZmSignaturesPage.prototype.validate =
@@ -148,7 +155,7 @@ function() {
 		var isValueEmpty = (signature.value.replace(/\s*/g,"") == "");
 		if (isNameEmpty && isValueEmpty) {
 			this._deleteSignature(signature);
-		} else if(isNameEmpty || isValueEmpty) {
+		} else if (isNameEmpty || isValueEmpty) {
 			this._errorMsg = isNameEmpty ? ZmMsg.signatureNameMissingRequired : ZmMsg.signatureValueMissingRequired;
 			return false;
 		}
@@ -197,7 +204,6 @@ function(batchCommand) {
 		var callback = new AjxCallback(this, this._handleNewResponse, [signature]);
 		signature.create(callback, null, batchCommand);
 	}
-
 };
 
 //
@@ -237,10 +243,8 @@ function(container) {
 		validator: AjxCallback.simpleClosure(this._updateName, this)
 	};
 
-	var input = new DwtInputField(params);
-
+	var input = this._sigName = new DwtInputField(params);
 	this._replaceControlElement(nameEl, input);
-	this._sigName = input;
 
 	// Signature FORMAT
 	var formatEl = document.getElementById(this._htmlElId+"_SIG_FORMAT");
@@ -501,9 +505,9 @@ function() {
 };
 
 ZmSignaturesPage.prototype._resetSignature =
-function(signature, clear ) {
+function(signature, clear) {
 	this._selSignature = signature;
-	this._sigList.setSelection(signature, true );
+	this._sigList.setSelection(signature, true);
 	this._sigName.setValue(signature.name);
 	this._sigName._origName = signature.name;
 	if (this._sigFormat) {

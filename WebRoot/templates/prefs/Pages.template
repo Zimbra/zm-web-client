@@ -638,7 +638,6 @@ and the container element is replaced with that control.
 			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
 	</div>
 
-
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -715,8 +714,12 @@ and the container element is replaced with that control.
         </tr>
         <tr>
             <td colspan=2>
-                <span class='ZOptionsLabel'><$=ZmMsg.noteLabel$></span>&nbsp;&nbsp;
-                <span class="ZOptionsField"><$=ZmMsg.signatureNote$></span>
+				<table width=1%>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.noteLabel$></td>
+						<td class='ZOptionsField'><nobr><$=ZmMsg.signatureNote$></nobr></td>
+					</tr>
+				</table>
             </td>
         </tr>
     </table>    

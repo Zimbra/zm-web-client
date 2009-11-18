@@ -199,8 +199,7 @@ function() {
 ZmPrefView.prototype.resetOnAccountChange =
 function() {
 	for (var id in this.prefView) {
-		var viewPage = this.prefView[id];
-		viewPage.hasRendered = false;
+		this.prefView[id].resetOnAccountChange();
 	}
 };
 

@@ -171,10 +171,10 @@ function(tabView, ev) {
 ZmPrefPageTreeController.prototype._handleMultiAccountItemSelection =
 function(ev, overview, treeItem, item) {
 	if (this._currentAccount != item.account) {
-		this._currentAccount = item.account;
-
 		var prefsController = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController();
 		var prefsView = prefsController.getPrefsView();
+
+		this._currentAccount = prefsController._activeAccount = item.account;
 
 		if (prefsView.getChangedPrefs(true, true)) {
 			ev.handled = true;

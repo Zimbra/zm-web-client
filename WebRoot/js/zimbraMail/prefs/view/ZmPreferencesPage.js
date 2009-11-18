@@ -464,6 +464,11 @@ function(useDefaults) {
 	}
 };
 
+ZmPreferencesPage.prototype.resetOnAccountChange =
+function() {
+	this.hasRendered = false;
+};
+
 ZmPreferencesPage.prototype.isDirty = function() { return false; };
 ZmPreferencesPage.prototype.validate = function() {	return true; };
 ZmPreferencesPage.prototype.addCommand = function(batchCmd) {};
