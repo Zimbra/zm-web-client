@@ -121,7 +121,6 @@
 /* Body container (div) for the tooltip. */
 .DwtToolTipBody {
 	padding:2px;
-	max-width:400px;
 }
 
 /* Containers (divs) for the top and bottom pointers of the tooltips.
