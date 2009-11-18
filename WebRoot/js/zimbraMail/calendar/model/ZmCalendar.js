@@ -193,6 +193,26 @@ function(obj) {
 	}
 };
 
+ZmCalendar.prototype.notifyDelete =
+function(obj) {
+
+    if(this.isRemote() && !this._deleteAction){
+        var overviewController = appCtxt.getOverviewController();
+        var treeController = overviewController.getTreeController(this.type);
+        var overviewId = appCtxt.getCurrentApp().getOverviewId();
+        var treeView = treeController.getTreeView(overviewId);
+        var node = treeView.getTreeItemById(this.id);        
+        this.noSuchFolder = true;
+        node.setText(this.getName(true));
+    }else{
+        ZmOrganizer.prototype.notifyDelete.call(this, obj);
+    }
+};
+
+ZmCalendar.prototype._delete = function(){
+    this._deleteAction = true;
+    ZmOrganizer.prototype._delete.call(this);
+};
 
 // Static methods
 
