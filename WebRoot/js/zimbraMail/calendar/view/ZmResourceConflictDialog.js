@@ -217,10 +217,12 @@ function(list, appt, callback) {
         return;
     }
 
+    var recurrence = appt.getRecurrence();
+
     for (var i = 0; i < size; i++) {
         var data = this._instData[i];
         var cancelButtonContainer = document.getElementById(data.cancelButtonId);
-        cancelButtonContainer.innerHTML = this.getCancelHTML();
+        cancelButtonContainer.innerHTML = this.getCancelHTML(recurrence.isInstanceCanceled(data.inst.ridZ));
         Dwt.setHandler(cancelButtonContainer, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._handleCancelInstance, this, data.inst.ridZ, data.cancelButtonId, data.deltaId));
     }
 };
@@ -253,15 +255,15 @@ function(ridZ, cancelButtonId, deltaId) {
                 this._canceledInstanceCount--;
             }
             if(cancelEl) {
-                cancelEl.innerHTML =  cancelInstance ? ZmMsg.cancelled + " - <span class='FakeAnchor'>" + ZmMsg.restorePage + "</span>" : this.getCancelHTML();
+                cancelEl.innerHTML =  this.getCancelHTML(cancelInstance);
             }            
         }
     }
 };
 
 ZmResourceConflictDialog.prototype.getCancelHTML =
-function() {
-    return "<span class='FakeAnchor'>" + ZmMsg.cancelInstance + "</span>";    
+function(isCanceled) {
+    return isCanceled ? ZmMsg.cancelled + " - <span class='FakeAnchor'>" + ZmMsg.restorePage + "</span>" : "<span class='FakeAnchor'>" + ZmMsg.cancelInstance + "</span>";    
 };
 
 ZmResourceConflictDialog.prototype.popup =

@@ -235,17 +235,17 @@ function(soapDoc, recurInfo) {
         if(s) {
             var sNode = soapDoc.set("s", null, except);
             sNode.setAttribute("d", s.d);
-            sNode.setAttribute("tz", s.tz);
+            if(s.tz) sNode.setAttribute("tz", s.tz);
         }
         if(e) {
             var eNode = soapDoc.set("e", null, except);
             eNode.setAttribute("d", e.d);
-            eNode.setAttribute("tz", e.tz);
+            if(e.tz)  eNode.setAttribute("tz", e.tz);
         }
         if(exceptId) {
             var exceptIdNode = soapDoc.set("exceptId", null, except);
             exceptIdNode.setAttribute("d", exceptId.d);
-            exceptIdNode.setAttribute("tz", exceptId.tz);
+            if(exceptId.tz) exceptIdNode.setAttribute("tz", exceptId.tz);
         }
 
     }
