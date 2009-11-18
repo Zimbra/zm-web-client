@@ -658,14 +658,23 @@ function(columnItem, bSortAsc) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
 	var query;
-	if (columnItem._sortable == ZmItem.F_FLAG || columnItem._sortable == ZmItem.F_ATTACHMENT) {
+	if (columnItem._sortable == ZmItem.F_FLAG ||
+		columnItem._sortable == ZmItem.F_ATTACHMENT)
+	{
 		query = this._getSearchForSort(columnItem._sortable);
-	} else if (this.getList().size() > 1 && this._sortByString) {
+	}
+	else if (this.getList().size() > 1 && this._sortByString) {
 		query = this._controller.getSearchString();
 	}
 
 	if (query) {
-		var params = {query:query, types:[ZmItem.CONV], sortBy:this._sortByString, limit:this.getLimit()};
+		var params = {
+			query: query,
+			queryHint: this._controller.getSearchStringHint(),
+			types: [ZmItem.CONV],
+			sortBy: this._sortByString,
+			limit:this.getLimit()
+		};
 		appCtxt.getSearchController().search(params);
 	}
 };

@@ -117,13 +117,12 @@ function(searchResults, view) {
 
 ZmListController.prototype.getSearchString =
 function() {
-	if (this._currentSearch) {
-		if (appCtxt.multiAccounts && this._currentSearch.queryHint) {
-			return ([this._currentSearch.query, " (", this._currentSearch.queryHint, ")"].join(""));
-		}
-		return this._currentSearch.query;
-	}
-	return "";
+	return this._currentSearch ? this._currentSearch.query : "";
+};
+
+ZmListController.prototype.getSearchStringHint =
+function() {
+	return this._currentSearch ? this._currentSearch.queryHint : "";
 };
 
 ZmListController.prototype.getCurrentView =
@@ -1041,12 +1040,16 @@ function(search, offset) {
 
 ZmListController.prototype._search =
 function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
-	var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
-	// use types from original search
-	var types = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.types : [];
-	var sc = appCtxt.getSearchController();
-	var params = {query: this.getSearchString(), types: types, sortBy: sortBy, offset: offset, limit: limit,
-				  lastId: lastId, lastSortVal: lastSortVal};
+	var params = {
+		query: this.getSearchString(),
+		queryHint: this.getSearchStringHint(),
+		types: ((this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.types : []), // use types from original search 
+		sortBy: appCtxt.get(ZmSetting.SORTING_PREF, view), 
+		offset: offset,
+		limit: limit,
+		lastId: lastId,
+		lastSortVal: lastSortVal
+	};
 	// add any additional params...
 	this._getMoreSearchParams(params);
 
@@ -1504,7 +1507,13 @@ function(params, actionParams) {
 	if (lv.allSelected && hasMore && !cancelled) {
 		var cs = this._currentSearch;
 		var limit = ZmListController.CONTINUATION_SEARCH_ITEMS;
-		var searchParams = {query:this.getSearchString(), types:cs.types, sortBy:cs.sortBy, limit:limit};
+		var searchParams = {
+			query: this.getSearchString(),
+			queryHint: this.getSearchStringHint(),
+			types: cs.types,
+			sortBy: cs.sortBy,
+			limit: limit
+		};
 
 		var list = contResult ? contResult.getResults().getArray() : this._list.getArray();
 		var lastItem = this._continuation.lastItem;

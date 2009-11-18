@@ -899,6 +899,7 @@ function(sortField, controller) {
 	controller = controller || this._controller;
 	var query = controller.getSearchString();
 	if (!query) { return ""; }
+
 	var str = (sortField == ZmItem.F_FLAG) ? " is:flagged" : " has:attachment";
 	if (query.indexOf(str) != -1) {
 		query = query.replace(str, "");

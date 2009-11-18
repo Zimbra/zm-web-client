@@ -85,11 +85,17 @@ ZmConv.prototype.load =
 function(params, callback) {
 
 	params = params || {};
+	var ctlr = appCtxt.getCurrentController();
 	var query = params.query;
 	if (!query) {
-		var ctlr = appCtxt.getCurrentController();
-		query = (ctlr && ctlr.getSearchString) ? ctlr.getSearchString() :
-				appCtxt.get(ZmSetting.INITIAL_SEARCH);
+		query = (ctlr && ctlr.getSearchString) 
+			? ctlr.getSearchString()
+			: appCtxt.get(ZmSetting.INITIAL_SEARCH);
+	}
+	var queryHint = params.queryHint;
+	if (!queryHint) {
+		queryHint = (ctlr && ctlr.getSearchStringHint)
+			? ctlr.getSearchStringHint() : "";
 	}
 	var sortBy = params.sortBy || ZmSearch.DATE_DESC;
 	var offset = params.offset || 0;
@@ -116,6 +122,7 @@ function(params, callback) {
 
 		var searchParams = {
 			query: query,
+			queryHint: queryHint,
 			types: (AjxVector.fromArray([ZmItem.MSG])),
 			sortBy: sortBy,
 			offset: offset,

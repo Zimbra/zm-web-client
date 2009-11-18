@@ -448,12 +448,8 @@ function(params, noRender, callback, errorCallback) {
 	appCtxt.notifyZimlets("onSearch", [params.query]);
 
 	if (this._searchToolBar) {
-		var value;
-		if (!this.searchAllAccounts &&
-			(appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText))
-		{
-			value = params.query;
-		}
+		var value = (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText)
+			? params.query : null;
 		this._searchToolBar.setSearchFieldValue(value || "");
 
 		// bug: 42512 - deselect global inbox if searching via search toolbar

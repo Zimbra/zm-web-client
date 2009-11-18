@@ -395,9 +395,12 @@ function(columnItem, bSortAsc) {
 
 	var query;
 	var controller = AjxDispatcher.run((this._mode == ZmId.VIEW_CONV) ? "GetConvController" : "GetTradController");
-	if (columnItem._sortable == ZmItem.F_FLAG || columnItem._sortable == ZmItem.F_ATTACHMENT) {
+	if (columnItem._sortable == ZmItem.F_FLAG ||
+		columnItem._sortable == ZmItem.F_ATTACHMENT) 
+	{
 		query = this._getSearchForSort(columnItem._sortable, controller);
-	} else if (this.getList().size() > 1 && this._sortByString) {
+	}
+	else if (this.getList().size() > 1 && this._sortByString) {
 		query = controller.getSearchString();
 	}
 
@@ -406,10 +409,22 @@ function(columnItem, bSortAsc) {
 			var conv = controller.getConv();
 			if (conv) {
 				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller]);
-				conv.load({query:query, sortBy:this._sortByString, getFirstMsg:controller.isReadingPaneOn()}, respCallback);
+				var params = {
+					query: query,
+					queryHint: controller.getSearchStringHint(),
+					sortBy: this._sortByString,
+					getFirstMsg: controller.isReadingPaneOn()
+				};
+				conv.load(params, respCallback);
 			}
 		} else {
-			var params = {query:query, types:[ZmItem.MSG], sortBy:this._sortByString, limit:this.getLimit()};
+			var params = {
+				query: query,
+				queryHint: controller.getSearchStringHint(),
+				types: [ZmItem.MSG],
+				sortBy: this._sortByString,
+				limit: this.getLimit()
+			};
 			appCtxt.getSearchController().search(params);
 		}
 	}

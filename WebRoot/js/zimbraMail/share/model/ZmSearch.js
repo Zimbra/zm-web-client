@@ -425,7 +425,7 @@ function(callback, result) {
  */
 ZmSearch.prototype.getConv = 
 function(params) {
-	if (!this.query || !params.cid) { return; }
+	if ((!this.query && !this.queryHint) || !params.cid) { return; }
 
 	var jsonObj = {SearchConvRequest:{_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.SearchConvRequest;

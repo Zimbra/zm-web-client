@@ -215,8 +215,13 @@ function(columnItem, bSortAsc) {
 	}
 
 	if (this.getList().size() > 1 && this._sortByString) {
-		var searchString = this._controller.getSearchString();
-		var params = {query:searchString, types:[ZmItem.TASK], sortBy:this._sortByString, limit:this.getLimit()};
+		var params = {
+			query: this._controller.getSearchString(),
+			queryHint: this._controller.getSearchStringHint(),
+			types: [ZmItem.TASK],
+			sortBy: this._sortByString,
+			limit: this.getLimit()
+		};
 		appCtxt.getSearchController().search(params);
 	}
 };
