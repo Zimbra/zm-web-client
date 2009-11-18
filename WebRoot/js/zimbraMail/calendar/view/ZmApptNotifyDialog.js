@@ -46,6 +46,10 @@ function(appt, attId, addedAttendees, removedAttendees) {
 	this._attId = attId;
 	this._defaultRadio.checked = true;
 
+    var aCount = addedAttendees.length;
+    var rCount = removedAttendees.length;    
+    Dwt.setSize(Dwt.byId(this._containerId), 275, (aCount + rCount > 10) ? 300 : Dwt.CLEAR );
+
 	this._addedList.innerHTML = this._getAttedeeHtml(addedAttendees, ZmMsg.added);
 	this._removedList.innerHTML = this._getAttedeeHtml(removedAttendees, ZmMsg.removed);
 };
@@ -81,11 +85,12 @@ function() {
 	this._notifyChoiceName	= Dwt.getNextId();
 	this._addedListId		= Dwt.getNextId();
 	this._removedListId		= Dwt.getNextId();
+    this._containerId       = Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
 
-	html[i++] = "<div style='width:275px; height: 300px; overflow: auto;'>";
+	html[i++] = "<div style='width:275px; overflow: auto;' id='"+this._containerId+"'>";
 	html[i++] = ZmMsg.attendeeListChanged;
 	html[i++] = "<br><div id='";
 	html[i++] = this._addedListId;
