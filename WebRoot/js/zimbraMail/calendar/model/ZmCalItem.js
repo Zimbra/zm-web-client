@@ -83,6 +83,7 @@ ZmCalItem.prototype.getOrigStartDate 	= function() { return this._origStartDate 
 ZmCalItem.prototype.getOrigStartTime 	= function() { return this.getOrigStartDate().getTime(); };
 ZmCalItem.prototype.getOrigTimezone     = function() { return this._origTimezone || this.timezone; };
 ZmCalItem.prototype.getRecurBlurb		= function() { return this._recurrence.getBlurb(); };
+ZmCalItem.prototype.getRecurrence		= function() { return this._recurrence; };
 ZmCalItem.prototype.getRecurType		= function() { return this._recurrence.repeatType; };
 ZmCalItem.prototype.getTimezone         = function() { return this.timezone; };
 ZmCalItem.prototype.getSummary			= function(isHtml) { };					// override if necessary

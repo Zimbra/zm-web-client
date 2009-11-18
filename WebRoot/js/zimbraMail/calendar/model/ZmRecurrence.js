@@ -32,7 +32,7 @@ ZmRecurrence = function(calItem) {
 	this.repeatWeeklyDays		= [];	 										// SU|MO|TU|WE|TH|FR|SA
 	this.repeatYearlyMonthsList	= 1; 											// list of numbers representing months (usually, just one month)
 
-    this._cancelRecurIds        = [];                                           //list of recurIds to be excluded
+    this._cancelRecurIds        = {};                                           //list of recurIds to be excluded
 };
 
 ZmRecurrence.prototype.toString =
@@ -155,15 +155,24 @@ function(soapDoc, inv) {
 
 ZmRecurrence.prototype.setExcludes =
 function(soapDoc, recur) {
-    if(this._cancelRecurIds.length > 0) {
-        var exclude = soapDoc.set("exclude", null, recur);
-        var dates = soapDoc.set("dates", null, exclude);
-        for(var i in this._cancelRecurIds) {
-            var ridZ = this._cancelRecurIds[i];
-            var dtval = soapDoc.set("dtval", null, dates);
-            var s = soapDoc.set("s", null, dtval);
-            s.setAttribute("d", ridZ);
+    if(!this._cancelRecurIds) return;
+
+    var exclude;
+    var dates;
+
+    for(var i in this._cancelRecurIds) {
+
+        if(!this._cancelRecurIds[i]) continue;
+
+        if(!exclude && !dates) {
+            exclude = soapDoc.set("exclude", null, recur);
+            dates = soapDoc.set("dates", null, exclude);
         }
+
+        var ridZ = i;
+        var dtval = soapDoc.set("dtval", null, dates);
+        var s = soapDoc.set("s", null, dtval);
+        s.setAttribute("d", ridZ);
     }
 };
 
@@ -425,15 +434,15 @@ function(recurRules, startDate) {
 
 ZmRecurrence.prototype.addCancelRecurId =
 function(ridZ) {
-    this._cancelRecurIds.push(ridZ);        
+    this._cancelRecurIds[ridZ] = true;        
+};
+
+ZmRecurrence.prototype.isInstanceCanceled =
+function(ridZ) {
+    return this._cancelRecurIds[ridZ];
 };
 
 ZmRecurrence.prototype.removeCancelRecurId =
 function(ridZ) {
-    for(var i in this._cancelRecurIds) {
-        if(this._cancelRecurIds[i] == ridZ) {
-            this._cancelRecurIds.splice(i, 1);
-            return;
-        }
-    }
+    this._cancelRecurIds[ridZ] = null;
 };

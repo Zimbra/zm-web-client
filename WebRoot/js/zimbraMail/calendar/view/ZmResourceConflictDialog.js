@@ -22,9 +22,8 @@ ZmResourceConflictDialog = function(parent) {
 
     var saveButton = new DwtDialog_ButtonDescriptor(ZmResourceConflictDialog.SAVE_BUTTON, ZmMsg.save, DwtDialog.ALIGN_RIGHT, null);
     var cancelButton = new DwtDialog_ButtonDescriptor(ZmResourceConflictDialog.CANCEL_BUTTON, ZmMsg.cancel, DwtDialog.ALIGN_RIGHT, null);
-    var ignoreSaveButton = new DwtDialog_ButtonDescriptor(ZmResourceConflictDialog.IGNORE_SAVE_BUTTON, ZmMsg.resourceConflictIgnore, DwtDialog.ALIGN_LEFT, null);
 
-	DwtDialog.call(this, {parent:parent, standardButtons: DwtDialog.NO_BUTTONS, extraButtons: [ignoreSaveButton, saveButton, cancelButton]});
+	DwtDialog.call(this, {parent:parent, standardButtons: DwtDialog.NO_BUTTONS, extraButtons: [saveButton, cancelButton]});
 
 	this.setContent(this._contentHtml(selectId));
 	this.setTitle(ZmMsg.resourceConflictLabel);
@@ -39,7 +38,6 @@ ZmResourceConflictDialog = function(parent) {
 
     this.registerCallback(ZmResourceConflictDialog.SAVE_BUTTON, this._handleSaveButton, this);
     this.registerCallback(ZmResourceConflictDialog.CANCEL_BUTTON, this.popdown, this);
-    this.registerCallback(ZmResourceConflictDialog.IGNORE_SAVE_BUTTON, this._handleIgnoreAllAndSaveButton, this);
 };
 
 ZmResourceConflictDialog.prototype = new DwtDialog;
@@ -63,7 +61,7 @@ function() {
 ZmResourceConflictDialog.prototype._contentHtml =
 function(selectId) {
 	this._listId = Dwt.getNextId();
-	return [ "<span class='ResourceConflictMsg'>", ZmMsg.resourceConflictInfo, "</span><br><br>", 
+	return [ "<div class='ResourceConflictMsg'>", ZmMsg.resourceConflictInfo, "</div>", 
 	"<div class='ZmResourceConflictDialog' id='", this._listId, "' style='overflow:auto;height:", ZmResourceConflictDialog.HEIGHT ,"px;'></div>"].join("");
 };
 
@@ -100,11 +98,15 @@ function(html, inst, data, attendeeMap, needSep) {
     html.append("<td width=25px>", AjxImg.getImageHtml("Appointment"), "</td>");
 	html.append("<td><b>", this.getDurationText(inst), "</b></td>");
     html.append("</tr><tr>");
-    html.append("<td align='right' colspan='2' id='", data.deltaId, "'></td>");
+    html.append("<td align='left' colspan='2'>");
+    html.append("<div class='ResourceConflictResolver'>");
+    html.append("<span id='" + data.cancelButtonId + "'></span> <span id='" + data.deltaId + "'></span>");
+    html.append("</div>");
+    html.append("</td>");
 	html.append("</tr></table>");
 	html.append("</td>");
-    html.append("<td align=right valign='top' id='", data.cancelButtonId, "'>");
-    html.append("</td>");
+    //html.append("<td align=right valign='top' id='", data.cancelButtonId, "'>");
+    //html.append("</td>");
 	html.append("<td align=right valign='top' id='", data.buttonId, "'>");
 	html.append("<table cellpadding=1 cellspacing=0 border=0>");
 	
@@ -167,6 +169,7 @@ function(list, appt, callback) {
     this._appt = appt;
 	this._instData = {};
     this._callback = callback;
+    this._canceledInstanceCount = 0;
 	
 	var attendeeMap = {};
 	var types = [ZmCalBaseItem.PERSON, ZmCalBaseItem.LOCATION, ZmCalBaseItem.EQUIPMENT];
@@ -187,7 +190,7 @@ function(list, appt, callback) {
 
 	var formatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.SHORT, AjxDateFormat.MEDIUM);
 	
-	var size = list.length;
+	var size = this._conflictSize = list.length;
 
     var dlgC = document.getElementById(this._listId);
     Dwt.setSize(dlgC, Dwt.DEFAULT, size > 5 ? ZmResourceConflictDialog.MAX_HEIGHT : ZmResourceConflictDialog.HEIGHT);
@@ -210,42 +213,55 @@ function(list, appt, callback) {
 	var div = document.getElementById(this._listId);
 	div.innerHTML = html.toString();
 
-    var cancelInstListener = new AjxListener(this, this._cancelInstanceListener);
+    if(!appt.isRecurring() && size==1) {
+        return;
+    }
 
     for (var i = 0; i < size; i++) {
         var data = this._instData[i];
-        // dismiss button
-        var dismissBtn = this._cancelButtons[data.cancelButtonId] = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:data.cancelButtonId});
-        dismissBtn.setImage("Cancel");
-        dismissBtn.addSelectionListener(cancelInstListener);
-        if(data.inst) {
-            dismissBtn.ridZ = data.inst.ridZ;
-            dismissBtn.deltaId = data.deltaId;
+        var cancelButtonContainer = document.getElementById(data.cancelButtonId);
+        cancelButtonContainer.innerHTML = this.getCancelHTML();
+        Dwt.setHandler(cancelButtonContainer, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._handleCancelInstance, this, data.inst.ridZ, data.cancelButtonId, data.deltaId));
+    }
+};
+
+ZmResourceConflictDialog._onClick =
+function(ev) {
+	ev = ev || window.event;
+	var el = DwtUiEvent.getTarget(ev);
+	var edv = AjxCore.objectWithId(el._editViewId);
+	if (edv) {
+		edv._handleOnClick(el);
+	}
+};
+
+ZmResourceConflictDialog.prototype._handleCancelInstance =
+function(ridZ, cancelButtonId, deltaId) {
+    var instEl = document.getElementById(ridZ + "_conflictInstTxt");
+    var deltaEl = document.getElementById(deltaId);
+    var cancelEl = document.getElementById(cancelButtonId);
+    if(instEl) {
+        var appt = this._appt;
+        var recurrence = appt.getRecurrence();
+        if(recurrence) {
+            var cancelInstance = !recurrence.isInstanceCanceled(ridZ);
+            if(cancelInstance) {
+                recurrence.addCancelRecurId(ridZ);
+                this._canceledInstanceCount++;
+            }else {
+                recurrence.removeCancelRecurId(ridZ);
+                this._canceledInstanceCount--;
+            }
+            if(cancelEl) {
+                cancelEl.innerHTML =  cancelInstance ? ZmMsg.cancelled + " - <span class='FakeAnchor'>" + ZmMsg.restorePage + "</span>" : this.getCancelHTML();
+            }            
         }
     }
 };
 
-ZmResourceConflictDialog.prototype._cancelInstanceListener =
-function(ev) {
-	var obj = DwtControl.getTargetControl(ev);
-    var instEl = document.getElementById(obj.ridZ + "_conflictInstTxt");
-    var deltaEl = document.getElementById(obj.deltaId);
-    if(instEl) {
-        var isCanceled = (!instEl.className);
-        instEl.className = isCanceled ? "CanceledInstText" : "";
-        obj.setImage(isCanceled ? "Check" : "Cancel");
-        var appt = this._appt;
-        if(appt._recurrence) {
-            if(isCanceled) {
-                appt._recurrence.addCancelRecurId(obj.ridZ);
-            }else {
-                appt._recurrence.removeCancelRecurId(obj.ridZ);                
-            }
-        }
-        if(deltaEl) {
-            deltaEl.innerHTML =  isCanceled ? ZmMsg.cancelled : "";
-        }
-    }
+ZmResourceConflictDialog.prototype.getCancelHTML =
+function() {
+    return "<span class='FakeAnchor'>" + ZmMsg.cancelInstance + "</span>";    
 };
 
 ZmResourceConflictDialog.prototype.popup =
@@ -255,8 +271,8 @@ function() {
 
 ZmResourceConflictDialog.prototype._handleSaveButton =
 function() {
-  if(this._callback) this._callback.run();
-  this.popdown();  
+    if(this._callback) this._callback.run();
+    this.popdown();
 };
 
 ZmResourceConflictDialog.prototype._handleIgnoreAllAndSaveButton =

@@ -3908,3 +3908,13 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmApptComposeView .addresses {
     width:100%;
 }
+
+/*calendar resource conflict dialog app*/
+
+.ResourceConflictMsg {
+    padding: 10px 20px 10px 2px;
+}
+
+.ResourceConflictResolver {
+    padding-left: 27px;
+}
