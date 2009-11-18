@@ -179,6 +179,14 @@ else {
 		}
 		// other
 		public String getMethod() { return "POST"; }
+		public int getContentLength() {
+			try {
+				return this.data.getBytes("UTF-8").length;
+			}
+			catch (Exception e) {
+				return super.getContentLength();
+			}
+		}
 	}
 	static class WrappedResponse extends HttpServletResponseWrapper {
 		// Data
