@@ -455,6 +455,11 @@ function(params, noRender, callback, errorCallback) {
 			value = params.query;
 		}
 		this._searchToolBar.setSearchFieldValue(value || "");
+
+		// bug: 42512 - deselect global inbox if searching via search toolbar
+		if (appCtxt.multiAccounts && params.userText && this.searchAllAccounts) {
+			appCtxt.getCurrentApp().getOverviewContainer().deselectAll();
+		}
 	}
 
 	// get types from search type if not passed in explicitly
