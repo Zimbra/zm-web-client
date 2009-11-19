@@ -283,7 +283,7 @@ function(params) {
 			jsonObj: jsonObj,
 			asyncMode: true,
 			callback: (new AjxCallback(this, this._getApptSummariesResponse, [params])),
-			errorCallback: (new AjxCallback(this, this._getApptSummariesError)),
+			errorCallback: (new AjxCallback(this, this._getApptSummariesError, [params])),
 			noBusyOverlay: params.noBusyOverlay,
 			accountName: accountName
 		});
@@ -526,6 +526,7 @@ function(zidsMap) {
 				}
 			}
 		}
+        this._calViewController._updateCheckedCalendars();
 	}
 };
 
@@ -606,13 +607,77 @@ function(params, result) {
 };
 
 ZmApptCache.prototype._getApptSummariesError =
-function(ex) {
-	if (ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR) {
+function(params, ex) {
+    var code = ex ? ex.code : null;
+	if (code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR) {
 		var d = appCtxt.getMsgDialog();
 		d.setMessage(ZmMsg.errorCalendarParse);
 		d.popup();
 		return true;
 	}
+
+    var ids = {};
+    var invalidAccountMarker = {};
+
+    //check for deleted remote mount point or account
+    var itemIds = (ex.data && ex.data.itemId && ex.data.itemId.length) ? ex.data.itemId : [];
+    if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT) {
+        for(var j in itemIds) {
+            var id = itemIds[j];
+            ids[id] = true;
+            if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT) {
+                invalidAccountMarker[id] = true;
+            }
+        }
+    }
+
+    var deleteHandled = this.handleDeletedFolderIds(ids, invalidAccountMarker);
+
+    if(deleteHandled) {
+        var newFolderIds = [];
+
+        //filter out invalid folder ids
+        for(var i in params.folderIds) {
+            var folderId = params.folderIds[i];
+            var isDeleted = (folderId && ids[folderId]);
+            if(!isDeleted) newFolderIds.push(folderId);
+        }
+
+        //search again if some of the folders are marked for deletion
+        if(params.folderIds.length != newFolderIds.length) {
+            params.folderIds = newFolderIds;
+            //handle the case where all checked folders are invalid 
+            if(params.folderIds.length == 0) {
+                params.callback.run(new AjxVector(), "");
+                return true;
+            }
+            DBG.println('Appt Summaries Search Failed - Error Recovery Search');
+            this.getApptSummaries(params);
+        }
+    };
+    
+    return deleteHandled;
+};
+
+ZmApptCache.prototype.handleDeletedFolderIds =
+function(ids, invalidAccountMarker) {
+    var deleteHandled = false;
+    var zidsMap = {};
+    for(var id in ids) {
+        if (id && appCtxt.getById(id)) {
+            var folder = appCtxt.getById(id);
+            folder.noSuchFolder = true;
+            this.handleDeleteMountpoint(folder);
+            deleteHandled = true;
+            if(invalidAccountMarker[id] && folder.zid) {
+                zidsMap[folder.zid] = true;
+            }
+        }
+    }
+
+    //no such mount point error - mark all folders owned by same account as invalid
+    this.markAllInvalidAccounts(zidsMap);
+    return deleteHandled;
 };
 
 ZmApptCache.prototype.processSearchResponse = 

@@ -1948,18 +1948,35 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 };
 
 ZmCalViewController.prototype.getDayToolTipText =
-function(date, noheader) {
+function(date, noheader, callback) {
 	try {
 		var start = new Date(date.getTime());
 		start.setHours(0, 0, 0, 0);
 		var startTime = start.getTime();
 		var end = start.getTime() + AjxDateUtil.MSEC_PER_DAY;
-		var result = this.getApptSummaries({start:startTime, end:end, fanoutAllDay:true});
-		return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader);
+        var params = {start:startTime, end:end, fanoutAllDay:true};
+        if(callback) {
+            params.callback = new AjxCallback(this, this._handleToolTipSearchResponse, [start, noheader, callback]);
+            this.getApptSummaries(params);
+        }else {
+            var result = this.getApptSummaries(params);            
+		    return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader);
+        }
 	} catch (ex) {
 		DBG.println(ex);
 		return "<b>" + ZmMsg.errorGettingAppts + "</b>";
 	}
+};
+
+ZmCalViewController.prototype._handleToolTipSearchResponse =
+function(start, noheader, callback, result) {
+	try {
+        var tooltip =  ZmApptViewHelper.getDayToolTipText(start, result, this, noheader);
+        callback.run(tooltip);        
+    } catch (ex) {
+        DBG.println(ex);
+        callback.run("<b>" + ZmMsg.errorGettingAppts + "</b>");
+    }
 };
 
 ZmCalViewController.prototype.getUserStatusToolTipText =

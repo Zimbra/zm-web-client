@@ -220,17 +220,24 @@ function(control, day) {
 		(this._currentMouseOverDay.getMonth() == day.getMonth()))
 	{
 		this._currentMouseOverDay = null;
-		var tooltipContent = this.getCalViewController().getDayToolTipText(day);
-		control.setToolTipContent(tooltipContent);
-		var mouseEv = DwtShell.mouseEvent;
-		if (mouseEv && mouseEv.docX > 0 && mouseEv.docY > 0) {
-			var shell = DwtShell.getShell(window);
-			var tooltip = shell.getToolTip();
-			tooltip.setContent(tooltipContent);
-			tooltip.popup(mouseEv.docX, mouseEv.docY);
-			control.__tooltipClosed = false;
-		}
+        var mouseEv = DwtShell.mouseEvent;
+        if(mouseEv && mouseEv.docX > 0 && mouseEv.docY > 0) {
+            var callback = new AjxCallback(this, this.showTooltip, [control, mouseEv.docX, mouseEv.docY]);
+            this.getCalViewController().getDayToolTipText(day, false, callback);
+        }
 	}
+};
+
+ZmCalMgr.prototype.showTooltip =
+function(control, x, y, tooltipContent) {
+    control.setToolTipContent(tooltipContent);
+    if(x > 0 && y > 0) {
+        var shell = DwtShell.getShell(window);
+        var tooltip = shell.getToolTip();
+        tooltip.setContent(tooltipContent);
+        tooltip.popup(x, y);
+        control.__tooltipClosed = false;
+    }
 };
 
 ZmCalMgr.prototype.getApptSummaries =
