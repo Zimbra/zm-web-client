@@ -19,12 +19,12 @@ body	{  @ChromeBg@ }
 #skin_container_splash_screen			{		}
 
 #skin_container_links a{
-	color: #a58c58;
+	color: #634919;
 }
 
 	#skin_container_links a:hover{
 		color: white; 
-		background-color: #a58c58;
+		background-color: #634919;
 		text-decoration: none;
 	}
 

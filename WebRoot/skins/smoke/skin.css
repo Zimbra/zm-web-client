@@ -109,3 +109,11 @@ body	{  @ChromeBg@ }
 .ZmContactInfoView .contactHeaderTable {
 	background-color: #e5e5e5;
 }
+
+.ZmCalViewMgr, .calendar_view, .ZmContactInfoView {
+	background-color: #fff;
+}
+
+.ZmContactInfoView .contactHeaderTable {
+	background-color: #e5e5e5;
+}
