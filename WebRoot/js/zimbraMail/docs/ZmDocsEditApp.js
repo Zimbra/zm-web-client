@@ -25,16 +25,15 @@ ZmDocsEditApp = function(){
 };
 
 ZmDocsEditApp.prototype.constructor = ZmDocsEditApp;
-
 ZmDocsEditApp.APP_ZIMBRA_DOC = "application/x-zimbra-doc";
-
+ZmDocsEditApp._controller = null;
 
 ZmDocsEditApp.prototype.toString = function(){
     return "ZmDocsEditApp";
 };
 
 ZmDocsEditApp.prototype._init = function(){
-    this._controller = new ZmDocsEditController(appCtxt.getShell());
+    ZmDocsEditApp._controller = this._controller = new ZmDocsEditController(appCtxt.getShell());
     appCtxt.setAppController(this._controller);    
 };
 
@@ -124,12 +123,4 @@ window.onload = function() {
     setTimeout(function() {
             ZmDocsEditApp.launch();
     }, 200);
-};
-
-window.onbeforeunload = function() {
-    if(!ZmDocsEditApp.fileInfo.id) {
-        return ZmMsg.exitDocNotSaved;
-    } else {
-        return ZmMsg.exitDocUnSavedChanges;
-    }
 };

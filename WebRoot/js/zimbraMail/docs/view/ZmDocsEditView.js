@@ -70,9 +70,9 @@ ZmDocsEditView.prototype.save = function(){
         ZmDocsEditApp.fileInfo.content = ed.getContent();
     } else {
         ZmDocsEditApp.fileInfo.content = this._editor.getContent();
-    }    
+    }
+    ZmDocsEditController.savedDoc = ZmDocsEditApp.fileInfo.content; 
     ZmDocsEditApp.fileInfo.contentType = ZmDocsEditApp.APP_ZIMBRA_DOC;
-
     this._docMgr.setSaveCallback(new AjxCallback(this, this._saveHandler));
     this._docMgr.saveDocument(ZmDocsEditApp.fileInfo);
 
@@ -155,6 +155,7 @@ function(id) {
 ZmDocsEditView.prototype.loadDoc =
 function(item) {
     var content = this._docMgr.fetchDocumentContent(item);
+
     if(this._editor) {
         this._editor.setEditorHTML(content ? content : "<br/>");
     }

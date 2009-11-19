@@ -27,6 +27,7 @@ ZmDocsEditController = 	function(shell) {
 
 ZmDocsEditController.prototype = new ZmController();
 ZmDocsEditController.prototype.constructor = ZmDocsEditController;
+ZmDocsEditController.savedDoc = null;
 
 ZmDocsEditController.prototype.toString = function() {
     return "ZmDocsEditController";
@@ -91,11 +92,11 @@ ZmDocsEditController.prototype.loadDocument = function(item) {
         }else {
             this._docsEdit._editor.setContent(content);
         }
+        ZmDocsEditController.savedDoc = content;
     }
 };
 
 ZmDocsEditController.prototype._initModel = function(){
-
     if(ZmDocsEditApp.fileInfo && ZmDocsEditApp.fileInfo.id) {
         var item = ZmDocsEditApp.fileInfo.loaded ? ZmDocsEditApp.fileInfo : this.loadData(ZmDocsEditApp.fileInfo.id);
         if(!item.rest){    //TODO: Change this code to construct a rest url
@@ -129,4 +130,27 @@ function(){
     params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
     params.transitions = ZmToast.DEFAULT_TRANSITIONS;
 	this.statusView.setStatusMsg(params);
+};
+
+window.onbeforeunload = function() {
+    return ZmDocsEditApp._controller.checkForChanges();
+};
+
+ZmDocsEditController.prototype.checkForChanges = function() {
+   var curDoc = null;
+   var controller = ZmDocsEditApp._controller;
+   if(window.isTinyMCE) {
+     var ed = tinyMCE.get('tiny_mce_content');
+     curDoc = ed.getContent();
+   } else {
+     curDoc = controller._docsEdit._editor.getContent();  
+   }
+   /*if(!ZmDocsEditApp.fileInfo.id) {
+     return ZmMsg.exitDocNotSaved;
+   }*/
+   if(curDoc == '<html><body><br></body></html>') {
+        return;     
+   } else if(curDoc != ZmDocsEditController.savedDoc) {
+        return ZmMsg.exitDocUnSavedChanges;
+   } 
 };
