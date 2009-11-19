@@ -562,12 +562,24 @@ function(msgView, ev) {
 	var id = this.getAttribute("href");
 	var el = null;
 	var doc = this.ownerDocument;
-	if (/^#(.*)$/.test(id)) {
-		id = RegExp.$1;
+
+	if (id.substr(0, 1) == "#") {
+		id = id.substr(1);
 		el = doc.getElementById(id);
-		if (!el) try {
-			el = doc.getElementsByName(id)[0];
-		} catch(ex) {};
+		if (!el) {
+			try {
+				el = doc.getElementsByName(id)[0];
+			} catch(ex) {};
+		}
+		if (!el) {
+			id = decodeURIComponent(id);
+			el = doc.getElementById(id);
+			if (!el) {
+				try {
+					el = doc.getElementsByName(id)[0];
+				} catch(ex) {};
+			}
+		}
 	}
 
 	// attempt #1: doesn't work at all -- we're not scrolling with the IFRAME :-(
@@ -587,11 +599,13 @@ function(msgView, ev) {
 	// (that is the whole msgView).  Note we have to take
 	// into account the headers, "display images", etc --
 	// so we add iframe.offsetTop/Left.
-	var div = msgView.getHtmlElement();
-	var iframe = document.getElementById(msgView._iframeId);
-	var pos = Dwt.getLocation(el);
-	div.scrollTop = pos.y + iframe.offsetTop - 20; // fuzz factor necessary for unknown reason :-(
-	div.scrollLeft = pos.x + iframe.offsetLeft;
+	if (el) {
+		var div = msgView.getHtmlElement();
+		var iframe = document.getElementById(msgView._iframeId);
+		var pos = Dwt.getLocation(el);
+		div.scrollTop = pos.y + iframe.offsetTop - 20; // fuzz factor necessary for unknown reason :-(
+		div.scrollLeft = pos.x + iframe.offsetLeft;
+	}
 	ev.stopPropagation();
 	ev.preventDefault();
 	return false;
