@@ -2222,7 +2222,7 @@ function(ev, force) {
 	this._showAddressField(AjxEmailAddress.BCC, !isBccFieldVisible);
 };
 
-ZmComposeView.prototype._createPrioityMenuItem =
+ZmComposeView.prototype._createPriorityMenuItem =
 function(menu, text, flag) {
 	var item = DwtMenuItem.create({parent:menu, imageInfo:this._getPriorityImage(flag), text:text});
 	item._priorityFlag = flag;
@@ -2233,9 +2233,9 @@ ZmComposeView.prototype._priorityButtonMenuCallback =
 function() {
 	var menu = new DwtMenu({parent:this._priorityButton});
 	this._priorityMenuListnerObj = new AjxListener(this, this._priorityMenuListner);
-	this._createPrioityMenuItem(menu, ZmMsg.high, ZmItem.FLAG_HIGH_PRIORITY);
-	this._createPrioityMenuItem(menu, ZmMsg.normal, "");
-	this._createPrioityMenuItem(menu, ZmMsg.low, ZmItem.FLAG_LOW_PRIORITY);
+	this._createPriorityMenuItem(menu, ZmMsg.high, ZmItem.FLAG_HIGH_PRIORITY);
+	this._createPriorityMenuItem(menu, ZmMsg.normal, "");
+	this._createPriorityMenuItem(menu, ZmMsg.low, ZmItem.FLAG_LOW_PRIORITY);
 	return menu;
 };
 

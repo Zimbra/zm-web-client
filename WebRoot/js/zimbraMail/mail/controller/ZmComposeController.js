@@ -239,17 +239,17 @@ function() {
 		}
 		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldDiscardCallback, this);
 		ps.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
-	}
-	else if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+	} else if (this._canSaveDraft()) {
 		ps.reset();
 		ps.setMessage(ZmMsg.askSaveDraft, DwtMessageDialog.WARNING_STYLE);
 		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 		ps.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
 	} else {
+		ps = this._popShield = appCtxt.getYesNoMsgDialog();
 		ps.setMessage(ZmMsg.askLeaveCompose, DwtMessageDialog.WARNING_STYLE);
 		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
-		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
+		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldDismissCallback, this);
 	}
 	ps.addPopdownListener(this._dialogPopdownListener);
 	ps.popup(this._composeView._getDialogXY());
@@ -593,8 +593,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SAVE: // Save to draft
-			if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) &&
-				!this._composeView._isInviteReply(this._action)) {
+			if (this._canSaveDraft()) {
 				this.saveDraft();
 			}
 			break;
@@ -758,13 +757,7 @@ function(params) {
 	}
 	cv.reEnableDesignMode();
 
-	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) &&
-		(action != ZmOperation.REPLY_ACCEPT) &&
-		(action != ZmOperation.REPLY_DECLINE) &&
-		(action != ZmOperation.REPLY_CANCEL) &&
-		(action != ZmOperation.REPLY_MODIFY) &&
-		(action != ZmOperation.REPLY_TENTATIVE))
-	{
+	if (this._canSaveDraft()) {
 		var autoSaveInterval = appCtxt.get(ZmSetting.AUTO_SAVE_DRAFT_INTERVAL);
 		if (autoSaveInterval) {
 			if (!this._autoSaveTimer) {
@@ -1311,6 +1304,9 @@ function(idle) {
 
 ZmComposeController.prototype.saveDraft =
 function(draftType, attId, docIds, callback) {
+
+	if (!this._canSaveDraft()) { return; }
+
 	draftType = draftType || ZmComposeController.DRAFT_TYPE_MANUAL;
 	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener, [draftType, callback]);
 	if (!docIds) {
@@ -1398,7 +1394,7 @@ function(mailtoParams) {
 	this._popShield.removePopdownListener(this._dialogPopdownListener);
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
-	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+	if (this._canSaveDraft()) {
 		// save as draft
 		var callback = mailtoParams ? new AjxCallback(this, this.doAction, mailtoParams) :
 					   				  new AjxCallback(this, this._popShieldYesDraftSaved);
@@ -1412,6 +1408,8 @@ function(mailtoParams) {
 		}
 		if (mailtoParams) {
 			this.doAction(mailtoParams);
+		} else {
+			appCtxt.getAppViewMgr().showPendingView(true);
 		}
 	}
 };
@@ -1428,7 +1426,7 @@ function(mailtoParams) {
 	this._popShield.removePopdownListener(this._dialogPopdownListener);
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
-	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+	if (this._canSaveDraft()) {
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
 		} else {
@@ -1575,4 +1573,9 @@ ZmComposeController.prototype.setSessionId =
 function(type, sessionId) {
 	ZmController.prototype.setSessionId.apply(this, arguments);
 	this.tabId = ["tab", this.viewId].join("_");
+};
+
+ZmComposeController.prototype._canSaveDraft =
+function() {
+	return appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) && !this._composeView._isInviteReply(this._action);
 };
