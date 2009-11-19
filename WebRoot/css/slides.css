@@ -48,19 +48,25 @@ h1 {
     padding:0px;
 }
 
-.slide_object_title{
+.slide_object_title, .slide_object_title * {
 	font-family: arial, helvetica, verdana, sans-serif;
     font-size: 200%;
-    font-weight: bold;
-	padding: 0px;
-	margin: 0px;
-	color: #333333;
 }
 
-.slide_object_notes{
+.slide_object_title {
+    font-weight: bold;    
+    padding: 0px;
+    margin: 0px;
+    color: #333333;    
+}
+
+.slide_object_notes, .slide_object_notes * {
 	font-family: arial, helvetica, verdana, sans-serif;
     font-size: 145%;
-    font-weight: bold;
+}
+
+.slide_object_notes {
+    font-weight: bold;    
 	padding: 0px;
 	margin: 0px;
 	color: #333333;
