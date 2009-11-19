@@ -567,7 +567,8 @@ function(ev, div) {
             div = div.parentNode;
         }
 
-        this.animateExpansion(div, this._currentSlideDiv);
+        //this.animateExpansion(div, this._currentSlideDiv);
+        this._animateCallback(div);
         return true;
     }
 
@@ -1354,7 +1355,8 @@ function(content, idx, generateEndSlide, forSlideShow) {
                 var zindex = Dwt.Z_VIEW;
                 var width = forSlideShow ? 75 : 100;
                 var hideSlide = (!forSlideShow && i==0) ? '' : ';display:none;'; 
-                content[idx++] = ["<div class='slide' style='width:" + width + "%;height:100%;position:absolute;left:0%;top:0%;z-index:", zindex, hideSlide ,"'>"].join("");
+                content[idx++] = ["<div class='slide' style='z-index:", zindex, hideSlide ,"'>"].join("");
+                //content[idx++] = ["<div class='slide' style='width:" + width + "%;height:100%;position:absolute;left:0%;top:0%;z-index:", zindex, hideSlide ,"'>"].join("");
                 content[idx++]  = previewNode.innerHTML;
                 content[idx++] = '</div>';
                 i++;
