@@ -88,7 +88,7 @@ function(params) {
 	// we're moving a draft out of Trash
 	var accountName;
 	if (appCtxt.multiAccounts) {
-		accountName = (items[0].isDraft && folder.id == ZmFolder.ID_DRAFTS)
+		accountName = (params.items[0].isDraft && folder.id == ZmFolder.ID_DRAFTS)
 			? items[0].account.name
 			: appCtxt.accountList.mainAccount.name;
 	}
