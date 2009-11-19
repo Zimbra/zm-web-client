@@ -90,7 +90,10 @@ function(content) {
     this._stateEvent = new DwtHtmlEditorStateEvent();
     this._stateEvent.dwtObj = this;
     this._updateStateAction = new AjxTimedAction(this, this._updateState);
-    this._finishHtmlModeInit();
+
+    var cont = AjxCallback.simpleClosure(this._finishHtmlModeInit, this);
+    setTimeout(cont, DwtHtmlEditor._INITDELAY);
+
     return this._iframe;
 }
 
