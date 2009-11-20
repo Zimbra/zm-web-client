@@ -193,29 +193,29 @@ function() {
 	var forAttHtml = this._composeView._attcDiv.innerHTML;
 	var body = this._getBodyContent();
 	var composeMode = this._composeView.getComposeMode();
-	var identityId = this._composeView.getIdentity().id;
 	var backupForm = this._composeView.backupForm;
 	var sendUID = this._composeView.sendUID;
 	var action = this._composeView._action || this._action;
+	var identity = this._composeView.getIdentity();
 
 	// this is how child window knows what to do once loading:
 	var newWinObj = appCtxt.getNewWindow();
 	newWinObj.command = "composeDetach";
 	newWinObj.params = {
-		action:action,
-		msg:msg,
-		addrs:addrs,
-		subj:subj,
-		forwardHtml:forAttHtml,
-		body:body,
-		composeMode:composeMode,
-		identityId:identityId,
-		accountName:this._accountName,
-		backupForm:backupForm,
-		sendUID:sendUID,
-		msgIds:this._msgIds,
-		forAttIds:this._forAttIds,
-		sessionId:this.sessionId
+		action: action,
+		msg: msg,
+		addrs: addrs,
+		subj: subj,
+		forwardHtml: forAttHtml,
+		body: body,
+		composeMode: composeMode,
+		identityId: (identity ? identity.id : null),
+		accountName: this._accountName,
+		backupForm: backupForm,
+		sendUID: sendUID,
+		msgIds: this._msgIds,
+		forAttIds: this._forAttIds,
+		sessionId: this.sessionId
 	};
 };
 
@@ -385,7 +385,7 @@ function(attId, docIds, draftType, callback) {
 	if (isDraft) {
 		if (appCtxt.isOffline) {
 			// for offline, save drafts based on account owner of From: dropdown
-			acctName = appCtxt.accountList.getAccount(msg.offlineFromValue.accountId).name;
+			acctName = ac.accountList.getAccount(msg.offlineFromValue.accountId).name;
 		} else {
 			acctName = ac.getActiveAccount().name;
 		}

@@ -1421,7 +1421,8 @@ function() {
  */
 ZmComposeView.prototype.getFromAccount =
 function() {
-	return appCtxt.accountList.getAccount(this._fromSelect.getSelectedOption().accountId);
+	var ac = window.parentAppCtxt || window.appCtxt;
+	return ac.accountList.getAccount(this._fromSelect.getSelectedOption().accountId);
 };
 
 // Private / protected methods
