@@ -648,7 +648,15 @@ ZmOrganizer.prototype.getToolTip =
 function(force) {
 	if (!this._tooltip || force) {
 		var itemText = this._getItemsText();
-		var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};
+		var numTotal = this.numTotal;
+
+		if (appCtxt.isOffline && this.account.isMain &&
+			(this.nId == ZmFolder.ID_DRAFTS ||
+			 this.nId == ZmFolder.ID_OUTBOX))
+		{
+			numTotal = appCtxt.accountList.getItemCount(this.nId);
+		}
+		var subs = {itemText:itemText, numTotal:numTotal, sizeTotal:this.sizeTotal};
 		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
 	}
 	return this._tooltip;

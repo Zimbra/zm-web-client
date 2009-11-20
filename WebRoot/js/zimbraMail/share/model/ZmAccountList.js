@@ -99,11 +99,11 @@ function(email) {
 };
 
 /**
- * Returns the cumulative unread count of all accounts for the given folder ID
+ * Returns the cumulative item count of all accounts for the given folder ID
  *
  * @param folderId		[String]	folder ID
  */
-ZmAccountList.prototype.getUnreadCount =
+ZmAccountList.prototype.getItemCount =
 function(folderId) {
 	var unread = 0;
 	for (var i = 0; i < this.visibleAccounts.length; i++) {

@@ -445,7 +445,7 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 		this.nId == ZmFolder.ID_OUTBOX)
 	{
 		var numTotal = (appCtxt.isOffline && this.account.isMain)
-			? appCtxt.accountList.getUnreadCount(this.nId) : this.numTotal;
+			? appCtxt.accountList.getItemCount(this.nId) : this.numTotal;
 
 		var name = (useSystemName && this._systemName) ? this._systemName : this.name;
 		if (showUnread && numTotal > 0) {
