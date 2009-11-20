@@ -742,7 +742,9 @@ function(contentType) {
 ZmMailMsg.prototype.sendInviteReply =
 function(edited, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg) {
 	this._origMsg = this._origMsg || this;
-
+    if(componentId == 0){ //editing reply, custom message
+        this._origMsg._customMsg = true;            
+    }
 	return this._sendInviteReply(edited, componentId || 0, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg);
 };
 
@@ -1613,6 +1615,21 @@ function(addrNodes, parentNode, isDraft, accountName) {
 	// from or the one we have is the default anyway
 	var identity = this.identity;
 	var isPrimary = identity == null || identity.isDefault;
+
+    //If repying to an invite which was addressed to user's alias then accept reply should appear from the alias 
+    if(this._origMsg && this._origMsg.isInvite() && this.isReplied && (!this._origMsg._customMsg || !identity)){// is default reply or has no identities. 
+        var origTos =  this._origMsg._getAttendees();
+        var size = origTos && origTos.size() > 0 ? origTos.size() : 0;
+        var aliazesString = ","+appCtxt.get(ZmSetting.MAIL_ALIASES).join(",")+",";
+        for(var i = 0; i < size; i++){
+            var origTo = origTos.get(i).address;
+            if(origTo && aliazesString.indexOf(","+origTo+",") >= 0){
+                var addrNode = {t:"f",a: origTo};
+                addrNodes.push(addrNode);
+                return; //We have already added appropriate alias as a "from". return from here.
+            }
+        }
+    }
 
     //TODO: OPTIMIZE CODE by aggregating the common code.
 	if (accountName && isPrimary) {
