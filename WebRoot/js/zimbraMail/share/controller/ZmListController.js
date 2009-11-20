@@ -1547,9 +1547,10 @@ function(params, actionParams) {
 			}
 			this._continuation = {count:0, totalItems:0};
 		}
-		var dialog = DwtBaseDialog.getActiveDialog();
+		var dialog = ZmList.progressDialog;
 		if (dialog) {
 			dialog.popdown();
+			ZmList.progressDialog = null;
 		}
 		if (params.allDoneCallback) {
 			params.allDoneCallback.run();

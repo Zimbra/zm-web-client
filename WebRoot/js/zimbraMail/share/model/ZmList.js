@@ -676,12 +676,16 @@ function(params, batchCmd) {
 		numItems:		params.count || 0
 	}
 
-	var dialog = DwtBaseDialog.getActiveDialog();
-	if (!dialog && idList.length > 10) {
-		dialog = appCtxt.getCancelMsgDialog();
-		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._cancelAction, [params1]));
+	var dialog = ZmList.progressDialog;
+	if (idList.length > ZmList.CHUNK_SIZE) {
+		if (!dialog) {
+			dialog = ZmList.progressDialog = appCtxt.getCancelMsgDialog();
+			dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._cancelAction, [params1]));
+		}
+	} else if (dialog) {
+		dialog.unregisterCallback(DwtDialog.CANCEL_BUTTON);
+		ZmList.progressDialog = null;
 	}
-	params1.dialog = dialog;
 
 	this._doAction(params1);
 };
@@ -726,6 +730,7 @@ function(params) {
 ZmList.prototype._handleResponseDoAction =
 function(params, result) {
 
+	var dialog = ZmList.progressDialog;
 	var response = result.getResponse();
 	var resp = response[ZmItem.SOAP_CMD[params.type] + "Response"];
 	if (resp && resp.action) {
@@ -742,12 +747,12 @@ function(params, result) {
 			if (params.callback) {
 				params.callback.run(items, result);
 			}
-			if (params.dialog) {
+			if (dialog) {
 				var msgKey = ZmItem.PLURAL_MSG_KEY[params.type] || "items";
 				var text = AjxMessageFormat.format(ZmMsg.itemsProcessed, [params.numItems, ZmMsg[msgKey]]);
-				params.dialog.setContent(text.toLowerCase());
-				if (!params.dialog.isPoppedUp()) {
-					params.dialog.popup();
+				dialog.setContent(text.toLowerCase());
+				if (!dialog.isPoppedUp()) {
+					dialog.popup();
 				}
 			}
 		}
@@ -762,8 +767,9 @@ function(params, result) {
 			DBG.println("sa", "ZmItem running finalCallback");
 			params.finalCallback.run(params);
 		} else {
-			if (params.dialog ) {
-				params.dialog.popdown();
+			if (dialog) {
+				dialog.popdown();
+				ZmList.progressDialog = null;
 			}
 		}
 	}
