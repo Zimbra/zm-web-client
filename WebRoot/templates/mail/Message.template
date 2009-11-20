@@ -38,7 +38,7 @@
 									<tr>
 										<$ if (data.sentByIcon) { $>
 											<td valign=top>
-												<a href="javascript:;" onclick="ZmMailMsgView.contactIconCallback('${sentByNormal}', '${sentByIcon}'); return false;">
+												<a href="javascript:;" onclick="ZmMailMsgView.contactIconCallback('<$=AjxStringUtil.xmlAttrEncode(data.sentByNormal)$>', '${sentByIcon}'); return false;">
 													<$= AjxImg.getImageHtml(data.sentByIcon, "cursor:pointer") $>
 												</a>
 											</td>

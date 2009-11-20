@@ -1036,7 +1036,7 @@ function(msg, container, callback) {
 	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
 	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
 	var sentBy = (sender && sender.address) ? sender : addr;
-	var sentByAddr = sentBy.address; // non-objectified version
+	var sentByAddr = String(sentBy);
 	var sentByIcon = cl	? (cl.getContactByEmail(sentByAddr) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
 	var additionalHdrs = [];
@@ -1932,8 +1932,9 @@ function(addr, icon) {
 	} else {
 		AjxDispatcher.require(["ContactsCore", "Contacts"], false);
 		var contact = new ZmContact(null);
-		contact.initFromEmail(addr);
-		AjxDispatcher.run("GetContactController").show(contact);
+		var email = AjxEmailAddress.parse(addr);
+		contact.initFromEmail(email);
+		AjxDispatcher.run("GetContactController").show(contact, true);
 	}
 };
 
