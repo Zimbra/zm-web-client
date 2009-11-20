@@ -121,7 +121,7 @@ function(params) {
 	if (this._msg) {
 		this._msg.onChange = null;
 	}
-    this._acceptFolderId = params.acceptFolderId;
+	this._acceptFolderId = params.acceptFolderId;
 	var obo = params.accountName;
 	var msg = this._msg = this._addressesMsg = params.msg;
 	if (msg) {
@@ -327,7 +327,7 @@ function(msg) {
 		return this._attachDialog.isInline();
 	}
 
-    msg = msg || this._msg;
+	msg = msg || this._msg;
 
 	if (msg && this._msgAttId && msg.id == this._msgAttId) {
 		return false;
@@ -913,11 +913,11 @@ ZmComposeView.prototype._fixMultipartRelatedImages_onTimer =
 function(msg) {
 	// first time the editor is initialized, idoc.getElementsByTagName("img") is empty
 	// Instead of waiting for 500ms, trying to add this callback. Risky but works.
-    if (!this._firstTimeFixImages) {
-        this._htmlEditor.addOnContentIntializedListener(new AjxCallback(this, this._fixMultipartRelatedImages, [msg, this._htmlEditor._getIframeDoc()]));
-    } else {
-        this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
-    }
+	if (!this._firstTimeFixImages) {
+		this._htmlEditor.addOnContentIntializedListener(new AjxCallback(this, this._fixMultipartRelatedImages, [msg, this._htmlEditor._getIframeDoc()]));
+	} else {
+		this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
+	}
 };
 
 /**
@@ -927,16 +927,16 @@ function(msg) {
 ZmComposeView.prototype._fixMultipartRelatedImages =
 function(msg, idoc) {
 	if (!this._firstTimeFixImages) {
-        this._htmlEditor.removeOnContentIntializedListener();
-        var self = this;      //Fix possible hiccups during compose  in new window
-        setTimeout(function() {
-                self._fixMultipartRelatedImages(msg, self._htmlEditor._getIframeDoc());
-        }, 10);
+		this._htmlEditor.removeOnContentIntializedListener();
+		var self = this; // Fix possible hiccups during compose in new window
+		setTimeout(function() {
+				self._fixMultipartRelatedImages(msg, self._htmlEditor._getIframeDoc());
+		}, 10);
 		this._firstTimeFixImages = true;
-        return;
+		return;
 	}
 
-    idoc = idoc || this._htmlEditor._getIframeDoc();
+	idoc = idoc || this._htmlEditor._getIframeDoc();
 	if (!idoc) { return; }
 
 	var images = idoc.getElementsByTagName("img");
@@ -1049,7 +1049,7 @@ function(bEnableInputs) {
 	this._subjectField.value = "";
 	this.updateTabTitle();
 
-    this._htmlEditor.resetSpellCheck();
+	this._htmlEditor.resetSpellCheck();
 	this._htmlEditor.clear();
 
 	// the div that holds the attc.table and null out innerHTML
@@ -1409,9 +1409,19 @@ function() {
 
 ZmComposeView.prototype.updateTabTitle =
 function() {
-	var buttonText = this._subjectField.value ? this._subjectField.value.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) :
-												ZmComposeController.DEFAULT_TAB_TEXT;
+	var buttonText = this._subjectField.value
+		? this._subjectField.value.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT)
+		: ZmComposeController.DEFAULT_TAB_TEXT;
 	appCtxt.getAppViewMgr().setTabTitle(this._controller.viewId, buttonText);
+};
+
+/**
+ * Used in multi-account mode to determine which account this composer is
+ * belongs to.
+ */
+ZmComposeView.prototype.getFromAccount =
+function() {
+	return appCtxt.accountList.getAccount(this._fromSelect.getSelectedOption().accountId);
 };
 
 // Private / protected methods
@@ -1718,7 +1728,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		sigStyle = sig ? appCtxt.get(ZmSetting.SIGNATURE_STYLE) : null;
 	}
 	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? (sig) : "";
-    var isInviteForward = false;
+	var isInviteForward = false;
 
 	// get reply/forward prefs as necessary
 	if (!incOption) {
@@ -1732,7 +1742,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 			}
 		} else if (action == ZmOperation.FORWARD_ATT) {
 			incOption = ZmSetting.INCLUDE_ATTACH;
-            isInviteForward = (msg && msg.isInvite());
+			isInviteForward = (msg && msg.isInvite());
 		}
 	}
 
@@ -1745,9 +1755,9 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		value = extraBodyText ? extraBodyText + value : value;
 		this._msgAttId = this._msg.id;
 	} else if (!this._msgIds) {
-        if(isInviteForward) {
-            this._msgAttId = this._msg.id;
-        }
+		if (isInviteForward) {
+			this._msgAttId = this._msg.id;
+		}
 		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
 		var crlf2 = composingHtml ? "<br><br>" : ZmMsg.CRLF2;
 		var leadingText = extraBodyText ? extraBodyText + crlf : crlf;
@@ -1915,8 +1925,10 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		}
 	}
 
-    var isHtmlEditorInitd = this._htmlEditor.isHtmlModeInited();
-    if(!isHtmlEditorInitd) this._fixMultipartRelatedImages_onTimer(msg);
+	var isHtmlEditorInitd = this._htmlEditor.isHtmlModeInited();
+	if (!isHtmlEditorInitd) {
+		this._fixMultipartRelatedImages_onTimer(msg);
+	}
 
 	if (!nosig && sigStyle == ZmSetting.SIG_INTERNET) {
 		this.addSignature(value);
@@ -1925,11 +1937,12 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		this._htmlEditor.setContent(value);
 	}
 
-    if(isHtmlEditorInitd) this._fixMultipartRelatedImages_onTimer(msg);
-    
+	if (isHtmlEditorInitd) {
+		this._fixMultipartRelatedImages_onTimer(msg);
+	}
+
 	hasInlineImages = hasInlineImages || !appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	this._showForwardField(msg, action, incOption, hasInlineImages, hasInlineAtts);
-
 };
 
 ZmComposeView.prototype.resetBody =
@@ -2504,7 +2517,7 @@ function(msg) {
 	// for cross account searches, the active account isn't necessarily the
 	// account of the selected conv/msg so reset it based on the selected option.
 	if (appCtxt.getSearchController().searchAllAccounts) {
-		active = appCtxt.accountList.getAccount(this._fromSelect.getSelectedOption().accountId);
+		active = this.getFromAccount();
 		this._controller._accountName = active.name;
 	}
 
@@ -2825,16 +2838,14 @@ function(msgDialog, ev){
 
 ZmComposeView.prototype._spellCheckErrorShield =
 function(ex){
+	var msgDialog = appCtxt.getYesNoMsgDialog();
+	msgDialog.setMessage(ZmMsg.spellCheckFailed);
+	msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._spellCheckErrorShieldOkListener, this, msgDialog );
+	msgDialog.registerCallback(DwtDialog.NO_BUTTON, this._spellCheckErrorShieldCancelListener, this, msgDialog);
+	msgDialog.associateEnterWithButton(DwtDialog.NO_BUTTON);
+	msgDialog.popup(null, DwtDialog.NO_BUTTON);
 
-    var msgDialog = appCtxt.getYesNoMsgDialog();
-    msgDialog.setMessage(ZmMsg.spellCheckFailed);
-    msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._spellCheckErrorShieldOkListener, this, msgDialog );
-    msgDialog.registerCallback(DwtDialog.NO_BUTTON, this._spellCheckErrorShieldCancelListener, this, msgDialog);
-    msgDialog.associateEnterWithButton(DwtDialog.NO_BUTTON);
-    msgDialog.popup(null, DwtDialog.NO_BUTTON);
-
-    return true;
-
+	return true;
 };
 
 ZmComposeView.prototype._spellCheckErrorShieldOkListener =
@@ -2845,16 +2856,16 @@ function(msgDialog, ev){
 	this._htmlEditor.discardMisspelledWords();
 	msgDialog.popdown();
 
-    this._spellCheckOkay = true;
+	this._spellCheckOkay = true;
 	this._controller.sendMsg();
 	
 };
 
 ZmComposeView.prototype._spellCheckErrorShieldCancelListener =
 function(msgDialog, ev){
-    this._controller._toolbar.enableAll(true);
-    this._controller.toggleSpellCheckButton(false);
-    this._htmlEditor.discardMisspelledWords();
+	this._controller._toolbar.enableAll(true);
+	this._controller.toggleSpellCheckButton(false);
+	this._htmlEditor.discardMisspelledWords();
 	msgDialog.popdown();
 };
 

@@ -97,12 +97,12 @@ function() {
 
 	// translate between include preferences and operations
 	ZmComposeController.INC_OP = {};
-	ZmComposeController.INC_OP[ZmSetting.INCLUDE_ATTACH]	= ZmOperation.INC_ATTACHMENT;
-	ZmComposeController.INC_OP[ZmSetting.INCLUDE]			= ZmOperation.INC_NO_PREFIX;
-	ZmComposeController.INC_OP[ZmSetting.INCLUDE_NONE]		= ZmOperation.INC_NONE;
-	ZmComposeController.INC_OP[ZmSetting.INCLUDE_PREFIX]	= ZmOperation.INC_PREFIX;
-        ZmComposeController.INC_OP[ZmSetting.INCLUDE_PREFIX_FULL]	= ZmOperation.INC_PREFIX_FULL;
-	ZmComposeController.INC_OP[ZmSetting.INCLUDE_SMART]		= ZmOperation.INC_SMART;
+	ZmComposeController.INC_OP[ZmSetting.INCLUDE_ATTACH]		= ZmOperation.INC_ATTACHMENT;
+	ZmComposeController.INC_OP[ZmSetting.INCLUDE]				= ZmOperation.INC_NO_PREFIX;
+	ZmComposeController.INC_OP[ZmSetting.INCLUDE_NONE]			= ZmOperation.INC_NONE;
+	ZmComposeController.INC_OP[ZmSetting.INCLUDE_PREFIX]		= ZmOperation.INC_PREFIX;
+	ZmComposeController.INC_OP[ZmSetting.INCLUDE_PREFIX_FULL]	= ZmOperation.INC_PREFIX_FULL;
+	ZmComposeController.INC_OP[ZmSetting.INCLUDE_SMART]			= ZmOperation.INC_SMART;
 	ZmComposeController.INC_MAP = {};
 	for (var i in ZmComposeController.INC_OP) {
 		ZmComposeController.INC_MAP[ZmComposeController.INC_OP[i]] = i;
@@ -379,8 +379,9 @@ function(attId, docIds, draftType, callback) {
 	}
 
 	var ac = window.parentAppCtxt || window.appCtxt;
-	// always save draft on the active account
-	var acctName = this._accountName;
+	var acctName = appCtxt.multiAccounts
+		? this._composeView.getFromAccount().name : this._accountName;
+
 	if (isDraft) {
 		if (appCtxt.isOffline) {
 			// for offline, save drafts based on account owner of From: dropdown
@@ -396,9 +397,9 @@ function(attId, docIds, draftType, callback) {
 		}
 	}
 
-    if(origMsg){
-        origMsg.sendAsMe = !this._composeView.sendMsgOboIsOK();
-    }
+	if (origMsg) {
+		origMsg.sendAsMe = !this._composeView.sendMsgOboIsOK();
+	}
 
 	// If this message had been saved from draft and it has a sender (meaning
 	// it's a reply from someone else's account) then get the account name from
