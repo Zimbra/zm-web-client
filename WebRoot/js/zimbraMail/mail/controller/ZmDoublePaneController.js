@@ -121,8 +121,9 @@ function() {
 	if (this._doublePaneView) {
 		this._doublePaneView.reset();
 	}
-	if (this.listView) {
-		this.listView._itemToSelect = this.listView._selectedItem = null;
+	var lv = this._listView[this._currentView];
+	if (lv) {
+		lv._itemToSelect = lv._selectedItem = null;
 	}
 };
 
@@ -138,6 +139,26 @@ function() {
 	return false;
 };
 
+ZmDoublePaneController.prototype.handleKeyAction =
+function(actionCode) {
+
+	DBG.println(AjxDebug.DBG3, "ZmDoublePaneController.handleKeyAction");
+	var lv = this._listView[this._currentView];
+
+	switch (actionCode) {
+
+		case DwtKeyMap.SELECT_NEXT:
+		case DwtKeyMap.SELECT_PREV:
+			if (lv) {
+				return lv.handleKeyAction(actionCode);
+			}
+			break;
+
+		default:
+			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+	}
+	return true;
+};
 
 // Private and protected methods
 

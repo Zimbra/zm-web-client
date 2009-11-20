@@ -319,8 +319,7 @@ function(actionCode) {
 			break;
 
 		default:
-			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
-			break;
+			return ZmDoublePaneController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
 };

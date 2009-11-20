@@ -155,7 +155,7 @@ function(actionCode) {
 			return DwtListView.prototype.handleKeyAction.apply(mlv, arguments);
 
 		default:
-			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmDoublePaneController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
 };
