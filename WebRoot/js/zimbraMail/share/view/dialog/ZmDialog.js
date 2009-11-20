@@ -193,10 +193,8 @@ function(overview, treeIds, omit, noRootSelect) {
 	if (!noRootSelect) {
 		for (var i = 0; i < treeIds.length; i++) {
 			var treeView = overview.getTreeView(treeIds[i]);
-			if (treeView) {
-				var hi = treeView.getHeaderItem();
-				if (hi) hi.enableSelection(true);
-			}
+			var hi = treeView && treeView.getHeaderItem();
+			if (hi) hi.enableSelection(true);
 		}
 	}
 };

@@ -145,7 +145,7 @@ function(params) {
 		button:				isMultiAcctSubHeader ? null : params.newButton,
 		dndScrollCallback:	this._overview._dndScrollCallback,
 		dndScrollId:		this.overviewId,
-		selectable:			false
+		selectable:			appCtxt.multiAccounts
 	});
 	ti._isHeader = true;
 	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];

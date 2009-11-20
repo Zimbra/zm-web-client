@@ -118,6 +118,7 @@ function(params) {
 	var omitParam = {};
 	if (appCtxt.multiAccounts) {
 		omitParam[ZmOrganizer.ID_ZIMLET] = true;
+		omitParam[ZmOrganizer.ID_GLOBAL_INBOX] = true;
 	} else {
 		omitParam = omitPerAcct[appCtxt.accountList.mainAccount.id];
 	}

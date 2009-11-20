@@ -145,7 +145,9 @@ function(params) {
 	}
 
 	// add Global Inbox tree item
-	if (appCtxt.isOffline && this._appName == ZmApp.MAIL &&
+	skip = params.omit && params.omit[ZmOrganizer.ID_GLOBAL_INBOX];
+	if (appCtxt.isOffline && !skip && 
+		this._appName == ZmApp.MAIL &&
 		appCtxt.accountList.size(true) > 2)
 	{
 		var params = {
