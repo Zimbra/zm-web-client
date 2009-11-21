@@ -422,7 +422,8 @@ function(ev) {
 		oc.deselectAll(overview);
 	}
 
-	var value = this._lastVal = ev.item.getText();
+	var organizer = ev.item && ev.item.getData(Dwt.KEY_OBJECT);
+	var value = this._lastVal = organizer ? organizer.getName(null, null, true) : ev.item.getText();
 	this._inputField.setValue(value);
 	if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
 		this._okButtonListener();

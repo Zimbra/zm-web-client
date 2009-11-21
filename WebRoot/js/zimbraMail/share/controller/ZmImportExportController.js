@@ -240,14 +240,14 @@ ZmImportExportController.prototype._doImport = function(params) {
 	// generate request url
 	var folder = params.folderId && appCtxt.getById(params.folderId);
 	if (folder && folder.nId == ZmOrganizer.ID_ROOT) folder = null;
-	var path = folder ? folder.getPath(null, null, null, null, true) : "";
+	var path = folder ? folder.getPath(null, null, null, true, true) : "";
 	var type = params.type || params.ext;
 
 	var url = [
 		"/home/",
 		encodeURIComponent(appCtxt.get(ZmSetting.USERNAME)),
 		"/",
-		path,
+		encodeURIComponent(path),
 		"?",
 		type ? "fmt="+encodeURIComponent(type) : "",
 		params.views ? "&types="+encodeURIComponent(params.views) : "",
@@ -337,11 +337,14 @@ ZmImportExportController.prototype._doExportData = function(params) {
 
 	var folder = params.folderId && appCtxt.getById(params.folderId);
 	if (folder && folder.nId == ZmOrganizer.ID_ROOT) folder = null;
-	var path = folder ? folder.getPath(null, null, null, null, true) : "";
+	var path = folder ? folder.getPath(null, null, null, true, true) : "";
 
 	// generate request URL
 	var url = [
-		"/home/",encodeURIComponent(appCtxt.get(ZmSetting.USERNAME)),"/",path
+		"/home/",
+		encodeURIComponent(appCtxt.get(ZmSetting.USERNAME)),
+		"/",
+		encodeURIComponent(path)
 	].join("");
 
 	var formParams = { "fmt" : type };
