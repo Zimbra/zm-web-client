@@ -328,7 +328,11 @@ function (msg) {
 ZmMsgController.prototype._checkReplenish =
 function(params) {
 	// XXX: remove this when replenishment is fixed for msg controller!
-	DBG.println("SORRY. NO REPLENISHMENT FOR YOU.");
+	DBG.println(AjxDebug.DBG1, "SORRY. NO REPLENISHMENT FOR YOU.");
+};
+
+ZmMsgController.prototype._checkItemCount =
+function() {
 };
 
 ZmMsgController.prototype._getDefaultFocusItem = 

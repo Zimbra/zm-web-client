@@ -1589,3 +1589,5 @@ function(which, type, noBump) {
 
 	return unreadItem;
 };
+
+ZmMailListController.prototype._getNextItemToSelect = function() {};
