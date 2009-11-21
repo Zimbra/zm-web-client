@@ -426,7 +426,9 @@ function(query, callback) {
 		types:		[ZmId.ITEM_CONTACT],
 		callback:	callback
 	};
-	appCtxt.getSearchController().search(params);
+	var sc = appCtxt.getSearchController();
+	sc.searchAllAccounts = false;
+	sc.search(params);
 };
 
 ZmContactsApp.prototype.getInitialSearchType =
