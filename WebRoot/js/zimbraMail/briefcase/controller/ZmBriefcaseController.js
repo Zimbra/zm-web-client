@@ -28,9 +28,9 @@ ZmBriefcaseController = function(container, app) {
 	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);
 	this._listeners[ZmOperation.CREATE_SLIDE_SHOW] = new AjxListener(this, this._createSlideShow);
 
-    this._listeners[ZmOperation.NEW_SPREADSHEET] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_SPREADSHEET]);
-    this._listeners[ZmOperation.NEW_PRESENTATION] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_PRESENTATION])
-    this._listeners[ZmOperation.NEW_DOC] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_DOC])
+	this._listeners[ZmOperation.NEW_SPREADSHEET] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_SPREADSHEET]);
+	this._listeners[ZmOperation.NEW_PRESENTATION] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_PRESENTATION]);
+	this._listeners[ZmOperation.NEW_DOC] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_DOC]);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
@@ -84,29 +84,30 @@ function() {
 			ZmOperation.TAG_MENU,
 			ZmOperation.SEP,
 			ZmOperation.VIEW_MENU,
-            ZmOperation.SEP];
+			ZmOperation.SEP];
 
-    if(appCtxt.get(ZmSetting.DOCS_ENABLED)){
-           ops.push(ZmOperation.NEW_DOC);
-    }
-    if(appCtxt.get(ZmSetting.SPREADSHEET_ENABLED)){
-           ops.push(ZmOperation.NEW_SPREADSHEET);
-    }
-    if(appCtxt.get(ZmSetting.SLIDES_ENABLED)){
-           ops.push(ZmOperation.NEW_PRESENTATION);
-    }
-        
-    ops.push(ZmOperation.FILLER);
-    
-    if(appCtxt.get(ZmSetting.MAIL_ENABLED)){
-        ops.push(ZmOperation.SEND_FILE_MENU);
-    }
+	if (appCtxt.get(ZmSetting.DOCS_ENABLED)) {
+		   ops.push(ZmOperation.NEW_DOC);
+	}
+	if (appCtxt.get(ZmSetting.SPREADSHEET_ENABLED)) {
+		ops.push(ZmOperation.NEW_SPREADSHEET);
+	}
+	if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
+		ops.push(ZmOperation.NEW_PRESENTATION);
+	}
 
-    return ops;
+	ops.push(ZmOperation.FILLER);
+
+	if(appCtxt.get(ZmSetting.MAIL_ENABLED)){
+		ops.push(ZmOperation.SEND_FILE_MENU);
+	}
+
+	return ops;
 };
 
-ZmBriefcaseController.prototype._handleDoc = function(op){
-     this._app.handleOp(op);
+ZmBriefcaseController.prototype._handleDoc =
+function(op) {
+	this._app.handleOp(op);
 };
 
 ZmBriefcaseController.prototype._initializeToolBar =
@@ -155,7 +156,7 @@ function(parent, num) {
 	var isReadOnly = this.isReadOnly(this._currentFolder);
 	var isItemSelected = (num>0);
 	var isZimbraAccount = appCtxt.getActiveAccount().isZimbraAccount;
-    var isMailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
+	var isMailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
 
 	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		var isViewHtmlEnabled = true;
@@ -175,11 +176,11 @@ function(parent, num) {
 	parent.enable([ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isMailEnabled && isItemSelected && !isMultiFolder && !isFolderSelected));
 	parent.enable(ZmOperation.OPEN_FILE, (isItemSelected && !isMultiFolder));
 	parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected));
-    parent.enable(ZmOperation.CREATE_SLIDE_SHOW, (!isReadOnly && isItemSelected));
+	parent.enable(ZmOperation.CREATE_SLIDE_SHOW, (!isReadOnly && isItemSelected));
 	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
-    parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
-    parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared));
+	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
+	parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared));
 };
 
 ZmBriefcaseController.prototype._getTagMenuMsg =
@@ -219,7 +220,7 @@ function(items, delcallback) {
 	actionNode.setAttribute("id", ids);
 	actionNode.setAttribute("op", "delete");
 
-	var responseHandler = new AjxCallback(this,this.deleteCallback,[ids]);
+	var responseHandler = new AjxCallback(this, this.deleteCallback, [ids]);
 
 	var params = {
 		soapDoc: soapDoc,
@@ -248,12 +249,12 @@ ZmBriefcaseController.prototype._createNewView =
 function(view) {
 	if (!this._listView[view]) {
 		var viewCtor = ZmBriefcaseController._VIEWS[view];
-		if(view == ZmId.VIEW_BRIEFCASE_COLUMN) {
+		if (view == ZmId.VIEW_BRIEFCASE_COLUMN) {
 			this._parentView[view] = new viewCtor(this._container, null, null, this, this._dropTgt);
 			var listView = this._listView[view] = this._parentView[view].getListView();
 			listView.setDragSource(this._dragSrc);
 			return listView;
-		}else{
+		} else {
 			this._listView[view] = new viewCtor(this._container, this, this._dropTgt);
 		}
 	}
@@ -316,7 +317,14 @@ function(objects) {
 
 ZmBriefcaseController.prototype.show =
 function(folderId, force, fromSearch) {
-	folderId = folderId || ZmOrganizer.ID_BRIEFCASE;
+	if (!folderId) {
+		if (appCtxt.multiAccounts) {
+			folderId = appCtxt.multiAccounts
+				? ZmOrganizer.getSystemId(ZmOrganizer.ID_BRIEFCASE, appCtxt.getActiveAccount()) : ZmOrganizer.ID_BRIEFCASE;
+		} else {
+			folderId = ZmOrganizer.ID_BRIEFCASE;
+		}
+	}
 
 	// save state
 	this._fromSearch = fromSearch;
@@ -609,7 +617,7 @@ function() {
 	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		list.push(ZmOperation.VIEW_FILE_AS_HTML);
 	}
-    list.push(ZmOperation.CREATE_SLIDE_SHOW);
+	list.push(ZmOperation.CREATE_SLIDE_SHOW);
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
@@ -795,9 +803,9 @@ function(num) {
 ZmBriefcaseController.prototype._initSendMenu =
 function(view) {
 
-    var sendBtn = this._toolbar[view].getButton(ZmOperation.SEND_FILE_MENU);
-    if(!sendBtn) return;
-    
+	var sendBtn = this._toolbar[view].getButton(ZmOperation.SEND_FILE_MENU);
+	if (!sendBtn) { return; }
+
 	var menu = new ZmPopupMenu(sendBtn);
 	sendBtn.setMenu(menu);
 
@@ -978,7 +986,7 @@ ZmBriefcaseController.prototype.getItemTooltip =
 function(item, listView) {
 
 	if (item.isFolder) { return null; }
-	
+
 	var prop = [{name:ZmMsg.briefcasePropName, value:item.name}];
 	if (item.size) {
 		prop.push({name:ZmMsg.briefcasePropSize, value:AjxUtil.formatSize(item.size)});
@@ -1011,27 +1019,27 @@ function() {
 
 ZmBriefcaseController.prototype._resetToolbarOperations =
 function() {
-    if(this._listView[this._currentView] != null) {
-        this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
-    }
+	if (this._listView[this._currentView] != null) {
+		this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
+	}
 };
 
 ZmBriefcaseController.prototype._createSlideShow =
 function() {
-    var importSlidesQueue = [];
-    var view = this._listView[this._currentView];
+	var importSlidesQueue = [];
+	var view = this._listView[this._currentView];
 	var items = view.getSelection();
 	if (!items) { return; }
 
-	items = items instanceof Array ? items : [ items ];
-    for (var i in items) {
-        var item = items[i];
-        var restUrl = item.getRestUrl();
-        if(item && !item.isFolder && restUrl != null) {
-            importSlidesQueue.push(restUrl);
-        }
-    }
-    window.importSlides = true;
-    window.importSlidesQueue = importSlidesQueue;    
-    this._app.handleOp(ZmOperation.NEW_PRESENTATION);
+	items = items instanceof Array ? items : [items];
+	for (var i in items) {
+		var item = items[i];
+		var restUrl = item.getRestUrl();
+		if(item && !item.isFolder && restUrl != null) {
+			importSlidesQueue.push(restUrl);
+		}
+	}
+	window.importSlides = true;
+	window.importSlidesQueue = importSlidesQueue;
+	this._app.handleOp(ZmOperation.NEW_PRESENTATION);
 };
