@@ -17,8 +17,6 @@
 </c:choose>
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <c:set var="messageIds" value="${fn:join(paramValues.id, ',')}"/>
-<zm:computeSearchContext var="context" usecache="true"/>
-
 </app:handleError>
 <html>
 <app:head mailbox="${mailbox}"/>
@@ -36,6 +34,7 @@
 <c:forEach items="${messageIds}" var="mid" varStatus="status">
 <c:set var="cid" value="${fn:split(mid,':')}"/>
 <c:if test="${cid[0] eq 'C'}">
+    <zm:computeSearchContext var="context" usecache="true" types="conversation"/>
     <c:if test="${fn:length(cid) gt 2}"><c:set var="cidExt" value=":${cid[2]}"/></c:if> <%-- there are two colons when conv is from shared folder so we need to form correct cid as sharedFolderId:convId --%>
     <zm:searchConv var="convSearchResult" id="${cid[1]}${cidExt}" context="${context}"  markread="false" fetch="all"/>
     <table cellpadding="0" cellspacing="5"  width="100%">
