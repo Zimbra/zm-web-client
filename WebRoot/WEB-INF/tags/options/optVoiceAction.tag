@@ -71,7 +71,6 @@
                         autoPlayNewMsgs="${param.autoPlayNewMsgs}"
                         playDateAndTimeInMsgEnv="${param.playDateAndTimeInMsgEnv}"
                         requirePinEntry="${param.requirePinEntry}"
-                        playCallerNameInMsgEnv="${param.playCallerNameInMsgEnv}"
                         promptLevel="${param.promptLevel}"
                         answeringLocale="${param.answeringLocale}"
                         userLocale="${param.userLocale}"
