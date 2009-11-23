@@ -226,6 +226,8 @@ function(ev) {
 		}
 		if (!this.allSelected && !this._isPageless) {
 			this._controller._app._checkReplenishListView = this;
+		} else {
+			this._handleResponseCheckReplenish();
 		}
 		this._controller._resetToolbarOperations();
 	}
