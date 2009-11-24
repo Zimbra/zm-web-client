@@ -201,7 +201,7 @@ function(setting, right) {
 		var val = textarea.getValue();
 		var users = val.split(/[\n,;]/);
 		for (var i = 0; i < users.length; i++) {
-			var user = users[i];
+			var user = AjxStringUtil.trim(users[i]);
 			if (!user) { continue; }
 			if (zidHash[user] != user) {
 				user = (user.indexOf('@') == -1) ? [user, appCtxt.getUserDomain()].join('@') : user;
