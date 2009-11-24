@@ -30,12 +30,16 @@ ZmImportView = function(params) {
 			},
 			{ id: "TYPE_HINT", type: "DwtText" },
 			{ id: "SUBTYPE", type: "DwtSelect",
-				visible: "get('TYPE') == ZmImportExportController.TYPE_CSV"
+				visible: "get('TYPE') == ZmImportExportController.TYPE_CSV && String(get('FILE')).match(/\\.csv$/i)"
 			},
 			{ id: "FOLDER_BUTTON", type: "DwtButton", label: ZmMsg.browse,
+				enabled: "get('FILE')",
 				onclick: this._folderButton_onclick
 			},
 			{ id: "FORM" },
+			{ id: "FILE",
+				setter: new Function() // no-op -- can't set a file value
+			},
 			{ id: "RESOLVE", type: "DwtRadioButtonGroup", value: "",
 				items: [
 					{ id: "RESOLVE_IGNORE", label: ZmMsg.resolveDuplicateIgnore, value: "" },
@@ -43,10 +47,10 @@ ZmImportView = function(params) {
 					{ id: "RESOLVE_REPLACE", label: ZmMsg.resolveDuplicateReplace, value: "replace" },
 					{ id: "RESOLVE_RESET", label: ZmMsg.resolveDuplicateReset, value: "reset" }
 				],
-				visible: "get('TYPE') == ZmImportExportController.TYPE_TGZ"
+				visible: "get('FILE') && get('TYPE') == ZmImportExportController.TYPE_TGZ"
 			},
 			{ id: "ADVANCED", type: "DwtCheckbox", label: ZmMsg.advancedSettings,
-				visible: "get('TYPE') == ZmImportExportController.TYPE_TGZ"
+				visible: "get('FILE') && get('TYPE') == ZmImportExportController.TYPE_TGZ"
 			},
 			// advanced
 			{ id: "DATA_TYPES", type: "ZmImportExportDataTypes",
