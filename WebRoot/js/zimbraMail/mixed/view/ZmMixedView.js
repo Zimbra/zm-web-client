@@ -51,9 +51,9 @@ ZmMixedView.LV_FUNCS = ["_addParams", "_getDiv", "_getDivClass", "_getTable",
 
 // functions particular to certain types
 ZmMixedView.LV_ADDED_FUNCS = {};
-ZmMixedView.LV_ADDED_FUNCS[ZmItem.CONV]	= ["_getFragmentSpan", "_getFragmentHtml",
+ZmMixedView.LV_ADDED_FUNCS[ZmItem.CONV]	= ["_getFragmentSpan", "_getFragmentHtml", "_getStyleViaZimlet",
 										   "_getParticipantHtml", "_fitParticipants"];
-ZmMixedView.LV_ADDED_FUNCS[ZmItem.MSG]	= ["_getFragmentSpan", "_getFragmentHtml"];
+ZmMixedView.LV_ADDED_FUNCS[ZmItem.MSG]	= ["_getFragmentSpan", "_getFragmentHtml", "_getStyleViaZimlet"];
 
 ZmMixedView.LV_FUNCS_TT = {};
 ZmMixedView.LV_FUNCS_TT[ZmItem.CONV]	= ["_getParticipantToolTip", "_handleResponseGetContact"];
