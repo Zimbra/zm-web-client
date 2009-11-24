@@ -53,7 +53,7 @@ function(zimletArray, userProps, target, callback, sync) {
 	var packageCallback = callback ? new AjxCallback(this, this._loadZimlets, [zimletArray, userProps, target, callback, sync]) : null;
 	AjxPackage.require({ name: "Zimlet", callback: packageCallback });
 	if (!callback) {
-		this._loadZimlets.apply(this, arguments);
+		this._loadZimlets(zimletArray, userProps, target, callback, sync);
 	}
 };
 
@@ -66,7 +66,7 @@ function(zimletArray, userProps, target, callback, sync) {
 		var zimletObj = zimletArray[i];
 		var zimlet0 = zimletObj.zimlet[0];
 		// NOTE: Only instantiate zimlet context for specified target
-		if (!targetRe.test(zimlet0.target || "main")) continue;
+		if (!targetRe.test(zimlet0.target || "main")) { continue; }
 		z = new ZmZimletContext(i, zimletObj);
 		this._ZIMLETS_BY_ID[z.name] = z;
 		this._ZIMLETS.push(z);

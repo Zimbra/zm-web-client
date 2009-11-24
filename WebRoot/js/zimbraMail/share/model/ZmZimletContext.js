@@ -102,7 +102,9 @@ ZmZimletContext = function(id, zimlet) {
 	}
 
 	if (this.config) {
-		if (this.config instanceof Array) {
+		if (this.config instanceof Array ||
+			(appCtxt.isChildWindow && this.config.length && this.config[0])) {
+
 			this.config = this.config[0];
 		}
 		this._translateConfig();
@@ -333,14 +335,16 @@ function() {
 
 ZmZimletContext.prototype.getConfig =
 function(name) {
-	if (!this.config) { return; }
 
-	if (this.config.local && this.config.local[name]) {
-		return this.config.local[name];
+	var config = (this.config && this.config.length && this.config[0]) ? this.config[0] : this.config;
+	if (!config) { return; }
+
+	if (config.local && config.local[name]) {
+		return config.local[name];
 	}
 
-	if (this.config.global && this.config.global[name]) {
-		return this.config.global[name];
+	if (config.global && config.global[name]) {
+		return config.global[name];
 	}
 
 	return null;

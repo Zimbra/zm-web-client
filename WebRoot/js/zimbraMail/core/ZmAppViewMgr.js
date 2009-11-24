@@ -1053,16 +1053,18 @@ function(ev) {
 		var deltaHeight = ev.newHeight - ev.oldHeight;
 		DBG.println(AjxDebug.DBG1, "shell control event: dW = " + deltaWidth + ", dH = " + deltaHeight);
 		if (this._isNewWindow) {
-			// reset width of top toolbar
-			var topToolbar = this._views[this._currentView][ZmAppViewMgr.C_TOOLBAR_TOP];
-			if (topToolbar) {
-				topToolbar.setSize(ev.newWidth, Dwt.DEFAULT);
-			}
-			// make sure to remove height of top toolbar for height of app content
 			var view = this._views[this._currentView];
-			var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
-			if (appContent) {
-				appContent.setSize(ev.newWidth, ev.newHeight - topToolbar.getH());
+			if (view) {
+				// reset width of top toolbar
+				var topToolbar = view[ZmAppViewMgr.C_TOOLBAR_TOP];
+				if (topToolbar) {
+					topToolbar.setSize(ev.newWidth, Dwt.DEFAULT);
+				}
+				// make sure to remove height of top toolbar for height of app content
+				var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
+				if (appContent) {
+					appContent.setSize(ev.newWidth, ev.newHeight - topToolbar.getH());
+				}
 			}
 		} else {
 			if (deltaHeight && deltaWidth) {

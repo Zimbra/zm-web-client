@@ -187,10 +187,12 @@ function() {
     
 	// setup zimlets, Load it first becoz.. zimlets has to get processed first.
 	if (target) {
-		var zimletArray = this.__hack_zimletArray() || [];
-		if (this.__hack_hasZimletsForTarget(zimletArray, target)) {
+		var allzimlets = parentAppCtxt.get(ZmSetting.ZIMLETS);
+		var checkedZimlets = parentAppCtxt.get(ZmSetting.CHECKED_ZIMLETS) || [];
+		var zimletArray = this._settings._getCheckedZimlets(allzimlets, checkedZimlets);
+		if (this._hasZimletsForTarget(zimletArray, target)) {
 			var zimletMgr = appCtxt.getZimletMgr();
-			var userProps = this.__hack_userProps();
+			var userProps = this._getUserProps();
 			var createViewCallback =  new AjxCallback(this, this._createView);
             appCtxt.setZimletsPresent(true);
 			zimletMgr.loadZimlets(zimletArray, userProps, target, createViewCallback, true);
@@ -270,7 +272,7 @@ function() {
  * HACK: This should go away once we have a cleaner server solution that
  *       allows us to get just those zimlets for the specified target.
  */
-ZmNewWindow.prototype.__hack_hasZimletsForTarget =
+ZmNewWindow.prototype._hasZimletsForTarget =
 function(zimletArray, target) {
 	var targetRe = new RegExp("\\b"+target+"\\b");
 	for (var i=0; i < zimletArray.length; i++) {
@@ -282,12 +284,8 @@ function(zimletArray, target) {
 	}
 	return false;
 };
-ZmNewWindow.prototype.__hack_zimletArray =
-function() {
-	return parentAppCtxt.get(ZmSetting.ZIMLETS);
-};
 
-ZmNewWindow.prototype.__hack_userProps =
+ZmNewWindow.prototype._getUserProps =
 function() {
 	var userPropsArray = parentAppCtxt.get(ZmSetting.USER_PROPS);
 

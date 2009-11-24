@@ -298,23 +298,14 @@ function(callback, accountName, metaData, result) {
 };
 
 ZmSettings.prototype._loadZimlets =
-function(allzimlets, props) {
-	allzimlets = allzimlets || [];
-	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:allzimlets, isGlobal:true});
+function(allZimlets, props) {
+
+	allZimlets = allZimlets || [];
+	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:allZimlets, isGlobal:true});
 	this.registerSetting("USER_PROPS",	{type:ZmSetting.T_CONFIG, defaultValue:props});
 
-	var zimlets = []; // Filter zimlets from getinforesponse and load only user checked
 	var checkedZimlets = appCtxt.get(ZmSetting.CHECKED_ZIMLETS) || [];
-	for (var i = 0; i < allzimlets.length; i++) {
-		var zimletObj = allzimlets[i];
-		var zimlet0 = zimletObj.zimlet[0];
-		if (!checkedZimlets ||
-			checkedZimlets.length <= 0 ||
-			(","+checkedZimlets.join(",") + ",").indexOf("," + zimlet0.name + ",") >= 0) // YUCK
-		{
-			zimlets.push(zimletObj);
-		}
-	}
+	var zimlets = this._getCheckedZimlets(allZimlets, checkedZimlets);
 
 	DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + zimlets.length + " Zimlets");
 	var zimletMgr = appCtxt.getZimletMgr();
@@ -350,6 +341,28 @@ function(allzimlets, props) {
 			var portletIds = portletMgr.createPortlets(true);
 		}
 	}
+};
+
+/**
+ * Filters a list of zimlets, returned ones that are checked.
+ *
+ * @param zimlets			[array]		list of zimlet objects
+ * @param checkedZimlets	[string]	comma-separated list of zimlet names
+ */
+ZmSettings.prototype._getCheckedZimlets =
+function(allZimlets, checkedZimlets) {
+
+	var zimlets = [];
+	var checkedEmpty = (!(checkedZimlets && checkedZimlets.length));
+	var checkedHash = AjxUtil.arrayAsHash(checkedZimlets);
+	for (var i = 0; i < allZimlets.length; i++) {
+		var zimletObj = allZimlets[i];
+		if (checkedEmpty || checkedHash[zimletObj.zimlet[0].name]) {
+			zimlets.push(zimletObj);
+		}
+	}
+
+	return zimlets;
 };
 
 ZmSettings.prototype.loadPreferenceData =
