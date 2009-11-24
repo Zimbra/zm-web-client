@@ -147,7 +147,7 @@ function(callback, response) {
 			this._loadVoicemailPrefs(voicemailPrefs);
 		} else {
 			var feature = this._features[i];
-			if (feature) { //TODO: this check is sposed to be unnecessary.
+			if (feature) {
 				feature._loadCallFeature(features[i][0]);
 			}
 		}

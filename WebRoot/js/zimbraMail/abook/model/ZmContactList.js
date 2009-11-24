@@ -500,6 +500,16 @@ function(item) {
 	this._updateHashes(item, true);
 };
 
+ZmContactList.prototype.getMyCard =
+function() {
+    if (this._myCard) {
+        this._realizeContact(this._myCard);
+        return this._myCard;
+    } else {
+        return null;
+    }
+};
+
 ZmContactList.prototype._updateHashes =
 function(contact, doAdd) {
 
