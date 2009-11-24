@@ -50,7 +50,7 @@ body	{  @ChromeBg@ }
 
 #skin_border_app_chooser				{	@SkinBorderAppChooser@ 		}
 
-#skin_container_app_top_toolbar { background: #d5d5d3 url("@SkinImgDir@/app_panel_bg.png") top left repeat-x; border:0; border-bottom: 1px solid #999; }
+#skin_container_app_top_toolbar { background: #b29c43 url("@SkinImgDir@/app_panel_bg.png") top left repeat-x; border:0; border-bottom: 1px solid #b29c43; }
 
 
 .Row {	background-color: #fff; border-color: #e5e5e5; border-top-width: 0px;}
@@ -87,9 +87,29 @@ body	{  @ChromeBg@ }
 }
 
 .ZOptionsHeader{
-	color: #594805;
+	color: #000000;
 }
 
 .DwtTreeItem-selected-focused {
 	@TreeItemSelectedBg@
+}
+
+.ZmCalViewMgr, .calendar_view, .ZmContactInfoView {
+	background-color: #fff;
+}
+
+.ZmContactInfoView .contactHeaderTable {
+	background-color: #e5e5e5;
+}
+
+.ZmOverviewLocalHeader,
+.ZmOverviewLocalHeader-actioned,
+.ZmOverviewLocalHeader-selected,
+.ZmOverviewLocalHeader-selected-focused {
+	@TreeHeaderContainer@
+}
+
+
+.ZmConvExpanded {
+	background-color:#e5e5e5;
 }

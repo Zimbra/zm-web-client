@@ -91,9 +91,24 @@ body	{  @ChromeBg@ }
 }
 
 .ZOptionsHeader{
-	color: #594805;
+	color: #003366;
 }
 
 .DwtTreeItem-selected-focused {
 	@TreeItemSelectedBg@
+}
+
+.ZmCalViewMgr, .calendar_view, .ZmContactInfoView {
+	background-color: #fff;
+}
+
+.ZmContactInfoView .contactHeaderTable {
+	background-color: #e5e5e5;
+}
+
+.ZmOverviewLocalHeader,
+.ZmOverviewLocalHeader-actioned,
+.ZmOverviewLocalHeader-selected,
+.ZmOverviewLocalHeader-selected-focused {
+	@TreeHeaderContainer@
 }
