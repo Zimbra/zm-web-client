@@ -544,7 +544,7 @@ ZmEditContactView.prototype._getFullName = function() {
 		firstName: this.getValue("FIRST"), lastName: this.getValue("LAST"),
 		company: this.getValue("COMPANY")
 	};
-	return ZmContact.computeFileAs(contact);
+	return ZmContact.computeFileAs(contact) || ZmMsg.noName;
 };
 
 ZmEditContactView.prototype._getDefaultFocusItem = function() {
