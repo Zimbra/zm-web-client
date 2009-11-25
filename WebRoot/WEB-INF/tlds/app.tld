@@ -826,7 +826,12 @@
         <name>optVoiceAction</name>
         <path>/WEB-INF/tags/options/optVoiceAction.tag</path>
     </tag-file>
-
+    
+    <tag-file>
+        <name>optVoiceTabs</name>
+        <path>/WEB-INF/tags/options/optVoiceTabs.tag</path>
+    </tag-file>
+    
     <tag-file>
         <name>forwardFromRow</name>
         <path>/WEB-INF/tags/voice/forwardFromRow.tag</path>
