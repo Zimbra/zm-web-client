@@ -28,10 +28,26 @@ ZmAccountOverviewContainer = function(params) {
 	if (arguments.length == 0) { return; }
 
 	ZmOverviewContainer.call(this, params);
+
+	this._vFolderTreeItemMap = {};
 };
 
 ZmAccountOverviewContainer.prototype = new ZmOverviewContainer;
 ZmAccountOverviewContainer.prototype.constructor = ZmAccountOverviewContainer;
+
+
+// Consts
+ZmAccountOverviewContainer.VIRTUAL_FOLDERS = [
+	ZmFolder.ID_INBOX,
+	ZmFolder.ID_SENT,
+	ZmFolder.ID_DRAFTS,
+	ZmFolder.ID_SPAM,
+	ZmFolder.ID_OUTBOX,
+	ZmFolder.ID_TRASH
+];
+
+
+// Public methods
 
 ZmAccountOverviewContainer.prototype.toString =
 function() {
@@ -77,12 +93,23 @@ ZmAccountOverviewContainer.prototype.initialize =
 function(params) {
 
 	var header, acct;
-	var showBackgroundColor = false;
 	var accounts = appCtxt.accountList.visibleAccounts;
+	var showAllMailboxes = (appCtxt.isOffline && this._appName == ZmApp.MAIL && (accounts.length > 2));
+	var showBackgroundColor = showAllMailboxes;
+	var mainAcct = appCtxt.accountList.mainAccount;
+
 	for (var i = 0; i < accounts.length; i++) {
 		acct = accounts[i];
 		// skip the main account in offline mode since we'll add it at the end
 		if (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES) { continue; }
+
+		params.omit = {};
+		if (acct.type == ZmAccount.TYPE_POP) {
+			params.omit[ZmFolder.ID_SPAM]   = true;
+			params.omit[ZmFolder.ID_SENT]   = true;
+			params.omit[ZmFolder.ID_DRAFTS] = true;
+			params.omit[ZmFolder.ID_OUTBOX] = true;
+		}
 
 		this._addAccount(params, acct, showBackgroundColor);
 
@@ -95,7 +122,7 @@ function(params) {
 				var isExpanded = appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct);
 				header.setExpanded(isExpanded);
 				if (!isExpanded) {
-					this._setAccountHeaderLabel(acct, header);
+					header.setText(this._getAccountHeaderLabel(acct));
 				}
 			}
 		}
@@ -105,18 +132,74 @@ function(params) {
 		showBackgroundColor = !showBackgroundColor;
 	}
 
+	// add "All Mailboxes"
+	skip = params.omit && params.omit[ZmOrganizer.ID_ALL_MAILBOXES];
+	if (showAllMailboxes && !skip) {
+		var text = ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_ALL_MAILBOXES]];
+		var params1 = {
+			parent: this,
+			text: this._getFolderLabel(ZmOrganizer.ID_INBOX, text),
+			imageInfo: "GlobalInbox"
+		};
+		var allTi = this._allMailboxesTreeHeader = new DwtTreeItem(params1);
+		allTi.setData(Dwt.KEY_ID, ZmOrganizer.ID_ALL_MAILBOXES);
+		allTi.addClassName("ZmOverviewGlobalInbox");
+		allTi._initialize(0, true);
+		allTi.setVisible(appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES));
+		allTi.__origText = text;
+		this.setSelection(allTi, true);
+
+		var setting = appCtxt.getSettings(mainAcct).getSetting(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES);
+		setting.addChangeListener(new AjxListener(this, this._settingChangeListener, allTi));
+
+		var folders = ZmAccountOverviewContainer.VIRTUAL_FOLDERS;
+		for (var i = 0; i < folders.length; i++) {
+			var folderId = folders[i];
+
+			// add virtual system folders
+			params1 = {
+				parent: allTi,
+				text: this._getFolderLabel(folderId, ZmMsg[ZmFolder.MSG_KEY[folderId]]),
+				imageInfo: ZmFolder.ICON[folderId]
+			};
+			var ti = this._vFolderTreeItemMap[folderId] = new DwtTreeItem(params1);
+			ti.setData(Dwt.KEY_ID, folderId);
+			ti.addClassName("DwtTreeItemChildDiv");
+			ti._initialize(null, true);
+		}
+
+		// add global searches
+		params1 = {
+			parent: allTi,
+			text: ZmMsg.searches,
+			imageInfo: "SearchFolder",
+			selectable: false
+		};
+		var searchTi = this._searchTreeHeader = new DwtTreeItem(params1);
+		searchTi.addClassName("DwtTreeItemChildDiv");
+		searchTi._initialize(null, true);
+		searchTi.__isSearch = true;
+
+		var root = appCtxt.getById(ZmOrganizer.ID_ROOT, mainAcct);
+		var searchFolders = root.getByType(ZmOrganizer.SEARCH);
+		for (var i = 0; i < searchFolders.length; i++) {
+			var folder = searchFolders[i];
+			if (folder.id != ZmOrganizer.ID_ALL_MAILBOXES &&
+				folder.isOfflineGlobalSearch)
+			{
+				this.addSearchFolder(folder);
+			}
+		}
+		searchTi.setVisible(searchTi.getItemCount() > 0);
+	}
+
 	// add the "local" account last
 	if (appCtxt.isOffline && this._appName != ZmApp.PREFERENCES) {
-		// hide Junk folder for "local" account
-		var omit = params.omit;
-		if (!omit) { omit = {}; }
-		omit[ZmFolder.ID_SPAM] = true;
+		params.omit = {};
+		this._addAccount(params, mainAcct, showBackgroundColor, "ZmOverviewLocalHeader");
 
-		acct = appCtxt.accountList.mainAccount;
-		this._addAccount(params, acct, showBackgroundColor, "ZmOverviewLocalHeader");
-
-		header = this.getHeaderItem(acct);
-		header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct));
+		header = this.getHeaderItem(mainAcct);
+		header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, mainAcct));
 	}
 
 	// add zimlets at the end of all overviews
@@ -140,33 +223,25 @@ function(params) {
 		var header = this._headerItems[headerDataId];
 		if (header) {
 			header.__isZimlet = true;
-			header.setExpanded(appCtxt.get(ZmSetting.ZIMLET_TREE_OPEN, null, appCtxt.accountList.mainAccount));
+			header.setExpanded(appCtxt.get(ZmSetting.ZIMLET_TREE_OPEN, null, mainAcct));
 		}
 	}
 
-	// add Global Inbox tree item
-	skip = params.omit && params.omit[ZmOrganizer.ID_GLOBAL_INBOX];
-	if (appCtxt.isOffline && !skip && 
-		this._appName == ZmApp.MAIL &&
-		appCtxt.accountList.size(true) > 2)
-	{
-		var params = {
-			parent: this,
-			text: (ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_GLOBAL_INBOX]]),
-			imageInfo: "GlobalInbox"
-		};
-		var ti = new DwtTreeItem(params);
-		ti.setData(Dwt.KEY_ID, appCtxt.getById(ZmOrganizer.ID_GLOBAL_INBOX));
-		ti.setScrollStyle(Dwt.CLIP);
-		ti.addClassName("ZmOverviewGlobalInbox");
-		ti._initialize(0, true);
-		ti.setVisible(appCtxt.get(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX));
-		this.setSelection(ti, true);
+	this._initializeActionMenu();
+};
 
-		var mainAcct = appCtxt.accountList.mainAccount;
-		var setting = appCtxt.getSettings(mainAcct).getSetting(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX);
-		setting.addChangeListener(new AjxListener(this, this._settingChangeListener, ti));
-	}
+ZmAccountOverviewContainer.prototype.addSearchFolder =
+function(folder) {
+	if (!this._searchTreeHeader) { return; }
+
+	var params = {
+		parent: this._searchTreeHeader,
+		text: folder.getName(),
+		imageInfo: folder.getIcon()
+	};
+	var ti = new DwtTreeItem(params);
+	ti.setData(Dwt.KEY_ID, folder);
+	ti._initialize(null, true);
 };
 
 /**
@@ -200,15 +275,71 @@ function(account, updateStatus, updateTooltip) {
 	}
 };
 
+ZmAccountOverviewContainer.prototype.updateLabel =
+function(organizer) {
+	// update account header if necessary
+	if (organizer.nId == ZmOrganizer.ID_INBOX) {
+		var header = this.getHeaderItem(organizer.account);
+		if (header && !header.getExpanded()) {
+			header.setText(this._getAccountHeaderLabel(organizer.account));
+		}
+	}
+
+	// update virtual folder label
+	var ti = this._vFolderTreeItemMap[organizer.nId];
+	if (ti) {
+		ti.setText(this._getFolderLabel(organizer.nId, organizer.name));
+		if (organizer.nId == ZmOrganizer.ID_INBOX &&
+			!this._allMailboxesTreeHeader.getExpanded())
+		{
+			var text = this._getFolderLabel(organizer.nId, this._allMailboxesTreeHeader.__origText);
+			this._allMailboxesTreeHeader.setText(text);
+		}
+	}
+};
+
 ZmAccountOverviewContainer.prototype.resetOperations =
-function(parent, acctId) {
+function(parent, data) {
 
-	parent.enableAll(!(acctId instanceof ZmFolder));
+	if (data instanceof ZmSearchFolder) {
+		parent.getOp(ZmOperation.MARK_ALL_READ).setVisible(false);
+		parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(false);
+		parent.getOp(ZmOperation.NEW_FOLDER).setVisible(false);
+		parent.getOp(ZmOperation.SYNC).setVisible(false);
+		parent.getOp(ZmOperation.DELETE).setVisible(true);
+		return;
+	}
 
-	var acct = appCtxt.accountList.getAccount(acctId);
-	if (acct) {
-		parent.enable(ZmOperation.NEW_FOLDER, acct.type != ZmAccount.TYPE_POP);
-		parent.enable(ZmOperation.SYNC, !acct.isMain);
+	var acct = appCtxt.accountList.getAccount(data);
+	var isAcctType = (acct || data == ZmOrganizer.ID_ALL_MAILBOXES);
+
+	parent.getOp(ZmOperation.MARK_ALL_READ).setVisible(!isAcctType);
+	parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(!isAcctType);
+	parent.getOp(ZmOperation.NEW_FOLDER).setVisible(isAcctType);
+	parent.getOp(ZmOperation.SYNC).setVisible(isAcctType);
+	parent.getOp(ZmOperation.DELETE).setVisible(false);
+
+	if (isAcctType) {
+		parent.enable(ZmOperation.NEW_FOLDER, (acct && acct.type != ZmAccount.TYPE_POP));
+		parent.enable(ZmOperation.SYNC, (!acct || (acct && !acct.isMain)));
+	} else {
+		var markAllEnabled = false;
+		if (data != ZmOrganizer.ID_OUTBOX && data != ZmFolder.ID_DRAFTS &&
+			this._actionedHeaderItem.getText().indexOf("bold") != -1) // friendly hack :)
+		{
+			markAllEnabled = true;
+		}
+
+		var text = ZmMsg.emptyFolder;
+		if (data == ZmOrganizer.ID_TRASH) {
+			text = ZmMsg.emptyTrash;
+		} else if (data == ZmOrganizer.ID_SPAM) {
+			text = ZmMsg.emptyJunk;
+		}
+		parent.getOp(ZmOperation.EMPTY_FOLDER).setText(text);
+
+		parent.enable(ZmOperation.MARK_ALL_READ, markAllEnabled);
+		parent.enable(ZmOperation.EMPTY_FOLDER, (data == ZmOrganizer.ID_TRASH || data == ZmOrganizer.ID_SPAM));
 	}
 };
 
@@ -249,8 +380,6 @@ function(params, account, showBackgroundColor, headerClassName) {
 		};
 
 		this._addSection(headerParams, omit, params, showBackgroundColor);
-
-		this._initializeActionMenu(account);
 	}
 };
 
@@ -301,9 +430,9 @@ function(ev) {
 	var data = item && item.getData(Dwt.KEY_ID);
 
 	if (ev.detail == DwtTree.ITEM_ACTIONED && appCtxt.getApp(this._appName)) {	// right click
-		if (item.__isZimlet) { return; } // do nothing if zimlet is right-clicked
+		if (item.__isZimlet || item.__isSearch) { return; } 					// do nothing if zimlet/search is right-clicked
 
-		var actionMenu = this._getActionMenu(ev);
+		var actionMenu = this._getActionMenu(data);
 		if (actionMenu) {
 			this.resetOperations(actionMenu, data);
 			actionMenu.popup(0, ev.docX, ev.docY);
@@ -325,14 +454,43 @@ function(ev) {
 		// if an account header item was clicked, run the default search for it
 		if (data) {
 			var sc = appCtxt.getSearchController();
-			var params;
 
-			if (data instanceof ZmFolder) {
+			var account = appCtxt.accountList.getAccount(data);
+			if (account) {
+				sc.searchAllAccounts = false;
+				appCtxt.accountList.setActiveAccount(account);
+
+				var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this._appName]];
+				var folder = appCtxt.getById(ZmOrganizer.getSystemId(fid, account));
+				var params = {
+					query: folder.createQuery(),
+					getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+					searchFor: (ZmApp.DEFAULT_SEARCH[this._appName]),
+					sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
+					accountName: (account && account.name),
+					noUpdateOverview: true
+				};
+			} else {
 				var main = appCtxt.accountList.mainAccount;
 				sc.resetSearchAllAccounts();
 				sc.searchAllAccounts = true;
+
+				if (data instanceof ZmSearchFolder) {
+					params = {
+						searchAllAccounts: true,
+						accountName: main.name,
+						getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+						noUpdateOverview: true
+					};
+					sc.redoSearch(data.search, false, params);
+					return;
+				}
+				if (data == ZmOrganizer.ID_ALL_MAILBOXES) {
+					data = ZmFolder.ID_INBOX;
+				}
+
 				params = {
-					queryHint: appCtxt.accountList.generateQuery(ZmOrganizer.ID_INBOX),
+					queryHint: appCtxt.accountList.generateQuery(data),
 					folderId: null,
 					getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML, null, main),
 					searchFor: (ZmApp.DEFAULT_SEARCH[this._appName]),
@@ -341,22 +499,7 @@ function(ev) {
 					noUpdateOverview: true
 				};
 			}
-			else {
-				sc.searchAllAccounts = false;
-				var account = appCtxt.accountList.getAccount(data);
-				appCtxt.accountList.setActiveAccount(account);
 
-				var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this._appName]];
-				var folder = appCtxt.getById(ZmOrganizer.getSystemId(fid, account));
-				params = {
-					query: folder.createQuery(),
-					getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-					searchFor: (ZmApp.DEFAULT_SEARCH[this._appName]),
-					sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
-					accountName: (account && account.name),
-					noUpdateOverview: true
-				};
-			}
 			sc.search(params);
 		}
 	} else {																	// double click
@@ -366,30 +509,41 @@ function(ev) {
 
 ZmAccountOverviewContainer.prototype._treeListener =
 function(ev) {
-	var acct;
+	if (ev.detail != DwtTree.ITEM_COLLAPSED &&
+		ev.detail != DwtTree.ITEM_EXPANDED)
+	{
+		return;
+	}
+
 	var header = ev.item;
+	var expanded = ev.detail == DwtTree.ITEM_EXPANDED;
+
+	var acct;
 	if (header) {
+		var data = header.getData(Dwt.KEY_ID);
+		if (data == ZmOrganizer.ID_ALL_MAILBOXES) {
+			var text = expanded
+				? header.__origText
+				: this._getFolderLabel(ZmOrganizer.ID_INBOX, header.__origText);
+			header.setText(text);
+			return;
+		}
+
 		acct = header.__isZimlet
 			? appCtxt.accountList.mainAccount
-			: appCtxt.accountList.getAccount(header.getData(Dwt.KEY_ID));
+			: appCtxt.accountList.getAccount(data);
 	}
-	if (!acct) { return; }
 
-	if (appCtxt.getCurrentAppName() != ZmApp.PREFERENCES &&
-		(ev.detail == DwtTree.ITEM_COLLAPSED ||
-		 ev.detail == DwtTree.ITEM_EXPANDED))
-	{
-		var expanded = ev.detail == DwtTree.ITEM_EXPANDED;
+	if (acct && appCtxt.getCurrentAppName() != ZmApp.PREFERENCES) {
 		if (!appCtxt.inStartup) {
 			appCtxt.set(ZmSetting.ACCOUNT_TREE_OPEN, expanded, null, null, null, acct);
 		}
 
 		if (!header.__isZimlet) {
-			if (expanded) {
-				header.setText(acct.getDisplayName());
-			} else {
-				this._setAccountHeaderLabel(acct, header);
-			}
+			var text = expanded
+				? acct.getDisplayName()
+				: this._getAccountHeaderLabel(acct);
+			header.setText(text);
 		}
 	}
 };
@@ -399,47 +553,53 @@ function(ti, ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
 
 	var setting = ev.source;
-	if (setting.id == ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX) {
+	if (setting.id == ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) {
 		ti.setVisible(setting.getValue());
 	}
 };
 
-ZmAccountOverviewContainer.prototype.updateAccountHeaderLabel =
-function(acct) {
-	var header = this.getHeaderItem(acct);
-	if (header && !header.getExpanded()) {
-		this._setAccountHeaderLabel(acct, header);
-	}
-};
-
-ZmAccountOverviewContainer.prototype._setAccountHeaderLabel =
+ZmAccountOverviewContainer.prototype._getAccountHeaderLabel =
 function(acct, header) {
 	var inboxId = ZmOrganizer.getSystemId(ZmOrganizer.ID_INBOX, acct, true);
 	var inbox = appCtxt.getById(inboxId);
-	var label = (inbox && inbox.numUnread > 0)
-		? (["<span style='font-weight:bold;'>",acct.getDisplayName()," (", inbox.numUnread, ")","</span>"].join(""))
-		: acct.getDisplayName();
-	header.setText(label);
+	if (inbox && inbox.numUnread > 0) {
+		var name = AjxMessageFormat.format(ZmMsg.folderUnread, [acct.getDisplayName(), inbox.numUnread]);
+		return (["<span style='font-weight:bold;'>", name, "</span>"].join(""));
+	}
+
+	return acct.getDisplayName();
+};
+
+ZmAccountOverviewContainer.prototype._getFolderLabel =
+function(folderId, label) {
+	var checkUnread = (folderId != ZmFolder.ID_DRAFTS && folderId != ZmFolder.ID_OUTBOX);
+	var count = appCtxt.accountList.getItemCount(folderId, checkUnread);
+	if (count > 0) {
+		var name = AjxMessageFormat.format(ZmMsg.folderUnread, [label, count]);
+		return (["<span style='font-weight:bold;'>", name, "</span>"].join(""));
+	}
+
+	return label;
 };
 
 ZmAccountOverviewContainer.prototype._initializeActionMenu =
-function(account) {
+function() {
 	if (!this._actionMenu) {
 		var ops = [
 			ZmOperation.NEW_FOLDER,
-			ZmOperation.SYNC
+			ZmOperation.SYNC,
+			ZmOperation.MARK_ALL_READ,
+			ZmOperation.EMPTY_FOLDER,
+			ZmOperation.DELETE
 		];
-		var args = [appCtxt.getShell(), ops, account];
-		this._actionMenu = new AjxCallback(this, this._createActionMenu, args);
+		this._actionMenu = new AjxCallback(this, this._createActionMenu, [ops]);
 	}
 };
 
 ZmAccountOverviewContainer.prototype._createActionMenu =
-function(parent, menuItems, account) {
-	if (!menuItems) { return; }
-
+function(menuItems) {
 	var listener = new AjxListener(this, this._actionMenuListener);
-	var actionMenu = new ZmActionMenu({parent:parent, menuItems:menuItems});
+	var actionMenu = new ZmActionMenu({parent:appCtxt.getShell(), menuItems:menuItems});
 	menuItems = actionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
 		var mi = actionMenu.getItem(i);
@@ -447,7 +607,6 @@ function(parent, menuItems, account) {
 		if (op == ZmOperation.SYNC) {
 			mi.setText(ZmMsg.sendReceive);
 		}
-		mi.setData(Dwt.KEY_OBJECT, appCtxt.getFolderTree(account).root);
 		actionMenu.addSelectionListener(op, listener);
 	}
 
@@ -457,21 +616,61 @@ function(parent, menuItems, account) {
 ZmAccountOverviewContainer.prototype._actionMenuListener =
 function(ev) {
 	var opId = ev.item.getData(ZmOperation.KEY_ID);
+	var data = this._actionedHeaderItem.getData(Dwt.KEY_ID);
 
 	if (opId == ZmOperation.NEW_FOLDER) {
 		var treeId = ZmApp.ORGANIZER[this._appName];
 		var tc = this._controller.getTreeController(treeId, true);
 		if (tc) {
 			tc._actionedOrganizer = null;
-			var account = appCtxt.accountList.getAccount(this._actionedHeaderItem.getData(Dwt.KEY_ID));
+			var account = appCtxt.accountList.getAccount(data);
 			tc._actionedOrganizer = appCtxt.getFolderTree(account).root;
 			tc._newListener(ev, account);
 		}
 	}
 	else if (opId == ZmOperation.SYNC) {
-		var account = appCtxt.accountList.getAccount(this._actionedHeaderItem.getData(Dwt.KEY_ID));
-		if (account) {
-			account.sync();
+		if (data == ZmOrganizer.ID_ALL_MAILBOXES) {
+			appCtxt.accountList.syncAll();
+		} else {
+			var account = appCtxt.accountList.getAccount(data);
+			if (account) {
+				account.sync();
+			}
 		}
 	}
+	else if (opId == ZmOperation.MARK_ALL_READ ||
+			 opId == ZmOperation.EMPTY_FOLDER)
+	{
+		this._doAction(data, opId);
+	}
+	else if (opId == ZmOperation.DELETE) {
+		data._delete();
+		var parent = this._actionedHeaderItem.parent;
+		parent.removeChild(this._actionedHeaderItem); // HACK: just nuke it
+		parent.setVisible(parent.getItemCount() > 0);
+	}
+};
+
+ZmAccountOverviewContainer.prototype._doAction =
+function(folderId, opId) {
+	var bc = new ZmBatchCommand(true, appCtxt.accountList.mainAccount.name);
+
+	var accounts = appCtxt.accountList.visibleAccounts;
+	for (var i = 0; i < accounts.length; i++) {
+		var account = accounts[i];
+		if (account.isMain) { continue; }
+
+		var fid = ZmOrganizer.getSystemId(folderId, account);
+		var folder = appCtxt.getById(fid);
+		if (folder) {
+			if (opId == ZmOperation.MARK_ALL_READ) {
+				folder.markAllRead(bc);
+			} else {
+				folder.empty(null, bc);
+			}
+			bc.curId++;
+		}
+	}
+
+	bc.run();
 };

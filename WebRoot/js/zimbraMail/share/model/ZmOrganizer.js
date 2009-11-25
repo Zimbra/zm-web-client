@@ -118,7 +118,7 @@ ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
 ZmOrganizer.ID_BRIEFCASE		= 16;
-ZmOrganizer.ID_GLOBAL_INBOX		= 249;
+ZmOrganizer.ID_ALL_MAILBOXES	= 249;
 ZmOrganizer.ID_NOTIFICATION_MP	= 250;
 ZmOrganizer.ID_SYNC_FAILURES	= 252;		// offline only
 ZmOrganizer.ID_OUTBOX    		= 254;		// offline only
@@ -648,15 +648,7 @@ ZmOrganizer.prototype.getToolTip =
 function(force) {
 	if (!this._tooltip || force) {
 		var itemText = this._getItemsText();
-		var numTotal = this.numTotal;
-
-		if (appCtxt.isOffline && this.account.isMain &&
-			(this.nId == ZmFolder.ID_DRAFTS ||
-			 this.nId == ZmFolder.ID_OUTBOX))
-		{
-			numTotal = appCtxt.accountList.getItemCount(this.nId);
-		}
-		var subs = {itemText:itemText, numTotal:numTotal, sizeTotal:this.sizeTotal};
+		var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};
 		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
 	}
 	return this._tooltip;
@@ -870,9 +862,9 @@ function(newParent) {
 
 /**
 * Deletes an organizer. If it's a folder, the server deletes any contents and/or
-* subfolders. If it's Trash or Spam, the server deletes and re-creates the folder.
-* In that case, we don't bother to remove it from the UI (and we ignore creates on
-* system folders).
+* subfolders. If it's Trash or Spam, the server deletes and re-creates the
+* folder. In that case, we don't bother to remove it from the UI (and we ignore
+* creates on system folders).
 */
 ZmOrganizer.prototype._delete =
 function() {
@@ -886,16 +878,20 @@ function() {
 	this._organizerAction({action: action});
 };
 
-ZmOrganizer.prototype._empty = 
-function(doRecursive) {
+ZmOrganizer.prototype.empty = 
+function(doRecursive, batchCmd) {
 	doRecursive = doRecursive || false;
 
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
-					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH || this.nId == ZmFolder.ID_CHATS || this.nId == ZmOrganizer.ID_SYNC_FAILURES));
-	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)
-	if (this.isSystem() && !isEmptyOp) return;
+					 (this.nId == ZmFolder.ID_SPAM ||
+					  this.nId == ZmFolder.ID_TRASH ||
+					  this.nId == ZmFolder.ID_CHATS ||
+					  this.nId == ZmOrganizer.ID_SYNC_FAILURES));
 
-	var params = {action:"empty"};
+	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)
+	if (this.isSystem() && !isEmptyOp) { return; }
+
+	var params = {action:"empty", batchCmd:batchCmd};
 	params.attrs = (this.nId == ZmFolder.ID_TRASH)
 		? {recursive:true}
 		: {recursive:doRecursive};
@@ -908,9 +904,9 @@ function(doRecursive) {
 };
 
 ZmOrganizer.prototype.markAllRead =
-function() {
+function(batchCmd) {
 	var id = this.isRemote() ? this.getRemoteId() : null;
-	this._organizerAction({action: "read", id: id, attrs: {l: this.id}});
+	this._organizerAction({action: "read", id: id, attrs: {l: this.id}, batchCmd:batchCmd});
 };
 
 ZmOrganizer.prototype.sync =

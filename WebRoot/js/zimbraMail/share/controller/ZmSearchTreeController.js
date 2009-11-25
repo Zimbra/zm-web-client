@@ -158,9 +158,7 @@ function(searchFolder) {
 		return;
 	}
 
-	var sc = appCtxt.getSearchController();
-	sc.searchAllAccounts = searchFolder.isOfflineGlobalSearch;
-	sc.redoSearch(searchFolder.search, false, {getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML)});
+	appCtxt.getSearchController().redoSearch(searchFolder.search, false, {getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML)});
 };
 
 ZmSearchTreeController.prototype._getMoveParams =

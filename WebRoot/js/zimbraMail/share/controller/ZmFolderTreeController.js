@@ -66,21 +66,6 @@ function(params) {
 				omit[folder.id] = true;
 			}
 		}
-
-		if (appCtxt.isOffline && params.account) {
-			// for offline, hide drafts/outbox for all accounts except the Local one
-			if (!params.account.isMain) {
-				omit[ZmFolder.ID_DRAFTS] = true;
-				omit[ZmFolder.ID_OUTBOX] = true;
-			}
-			// for offline, hide all system folders except Inbox and Trash
-			else if (params.account.type == ZmAccount.TYPE_POP) {
-				omit[ZmFolder.ID_SPAM]   = true;
-				omit[ZmFolder.ID_SENT]   = true;
-				omit[ZmFolder.ID_DRAFTS] = true;
-				omit[ZmFolder.ID_OUTBOX] = true;
-			}
-		}
 	}
 	params.omit = omit;
 	return ZmTreeController.prototype.show.call(this, params);

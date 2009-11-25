@@ -198,7 +198,7 @@ function() {
 				ZmSetting.PASSWORD,
 				ZmSetting.SEARCH_INCLUDES_SPAM,
 				ZmSetting.SEARCH_INCLUDES_TRASH,
-				ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX,
+				ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES,
 				ZmSetting.SHOW_SEARCH_STRING,
 				ZmSetting.SHOW_SELECTION_CHECKBOX,
 				ZmSetting.SKIN_NAME,
@@ -530,8 +530,8 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
-	ZmPref.registerPref("OFFLINE_SHOW_GLOBAL_INBOX", {
-		displayName:		ZmMsg.showGlobalInbox,
+	ZmPref.registerPref("OFFLINE_SHOW_ALL_MAILBOXES", {
+		displayName:		ZmMsg.showAllMailboxes,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 

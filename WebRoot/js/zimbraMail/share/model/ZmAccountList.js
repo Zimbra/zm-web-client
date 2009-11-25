@@ -102,10 +102,11 @@ function(email) {
  * Returns the cumulative item count of all accounts for the given folder ID
  *
  * @param folderId		[String]	folder ID
+ * @param checkUnread	[Boolean]*	if true, checks the unread count instead of item count
  */
 ZmAccountList.prototype.getItemCount =
-function(folderId) {
-	var unread = 0;
+function(folderId, checkUnread) {
+	var count = 0;
 	for (var i = 0; i < this.visibleAccounts.length; i++) {
 		var acct = this.visibleAccounts[i];
 		if (acct.isMain) { continue; } // local account should never have drafts
@@ -113,11 +114,11 @@ function(folderId) {
 		var fid = ZmOrganizer.getSystemId(folderId, acct);
 		var folder = appCtxt.getById(fid);
 		if (folder) {
-			unread += folder.numTotal;
+			count += (checkUnread ? folder.numUnread : folder.numTotal);
 		}
 	}
 
-	return unread;
+	return count;
 };
 
 ZmAccountList.prototype.generateQuery =

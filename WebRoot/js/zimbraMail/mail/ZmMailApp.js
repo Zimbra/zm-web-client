@@ -1343,7 +1343,7 @@ function(query, callback, response, type) {
 
 	var sc = appCtxt.getSearchController();
 	var queryHint, noUpdateOverview;
-	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX) &&
+	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
 		appCtxt.accountList.size(true) > 2)
 	{
 		query = null;

@@ -122,7 +122,7 @@ function(account) {
 };
 
 ZmOverviewContainer.prototype._getActionMenu =
-function() {
+function(ev) {
 	if (this._actionMenu instanceof AjxCallback) {
 		var callback = this._actionMenu;
 		this._actionMenu = callback.run();

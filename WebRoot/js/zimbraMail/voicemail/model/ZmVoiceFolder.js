@@ -191,7 +191,7 @@ function() {
 	}
 };
 
-ZmVoiceFolder.prototype._empty =
+ZmVoiceFolder.prototype.empty =
 function(){
 	DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
 

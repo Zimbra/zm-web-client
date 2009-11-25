@@ -34,11 +34,11 @@ function(parentNode, node, fields, organizer, treeView) {
 
 	// for multi-account allow account header to update based on Inbox's unread count
 	if (appCtxt.multiAccounts &&
-		fields[ZmOrganizer.F_UNREAD] &&
-		organizer.nId == ZmOrganizer.ID_INBOX)
+		(fields[ZmOrganizer.F_UNREAD] && organizer.isSystem()) ||
+		(fields[ZmOrganizer.F_TOTAL] && (organizer.nId == ZmFolder.ID_DRAFTS || organizer.nId == ZmOrganizer.ID_OUTBOX)))
 	{
 		var ovc = appCtxt.getApp(ZmApp.MAIL).getOverviewContainer();
-		ovc.updateAccountHeaderLabel(organizer.account);
+		ovc.updateLabel(organizer);
 	}
 };
 

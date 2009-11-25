@@ -524,7 +524,7 @@ function(organizer) {
 ZmTreeController.prototype._doEmpty =
 function(organizer) {
     var recursive = false;
-    organizer._empty(recursive);
+    organizer.empty(recursive);
 	var ctlr = appCtxt.getCurrentController();
 	if (ctlr && ctlr._getSearchFolderId) {
 		var folderId = ctlr._getSearchFolderId();
@@ -760,16 +760,6 @@ function(ev, treeView, overviewId) {
 	for (var i = 0; i < organizers.length; i++) {
 		var organizer = organizers[i];
 
-		// HACK - offline has a virtual Drafts/Outbox folder under the Local
-		// account so always force it to look under the Local account
-		if (appCtxt.isOffline &&
-			(organizer.nId == ZmFolder.ID_DRAFTS || organizer.nId == ZmFolder.ID_OUTBOX))
-		{
-			organizer = appCtxt.getById(organizer.nId);
-			overviewId = appCtxt.getApp(ZmApp.MAIL).getOverviewId(appCtxt.accountList.mainAccount);
-			treeView = this._treeView[overviewId];
-		}
-
 		var node = treeView.getTreeItemById(organizer.id);
 		// Note: source tree handles moves - it will have node
 		if (!node && (ev.event != ZmEvent.E_CREATE)) { continue; }
@@ -805,7 +795,12 @@ function(ev, treeView, overviewId) {
 				// parent's tree controller should handle creates - root is shared by all folder types
 				var type = (organizer.parent.nId == ZmOrganizer.ID_ROOT) ? ev.type : organizer.parent.type;
 				if (type != this.type) { continue; }
-				node = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
+				if (organizer.isOfflineGlobalSearch) {
+					appCtxt.getApp(ZmApp.MAIL).getOverviewContainer().addSearchFolder(organizer);
+					return;
+				} else {
+					node = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
+				}
 			} else if (ev.event == ZmEvent.E_MOVE) {
 				node.dispose();
 				if (parentNode) {

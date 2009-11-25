@@ -83,7 +83,7 @@ ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]		= "calendar";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]		= "notebook";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_BRIEFCASE]		= "briefcase";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]			= "chats";
-ZmFolder.MSG_KEY[ZmOrganizer.ID_GLOBAL_INBOX]	= "globalInbox";
+ZmFolder.MSG_KEY[ZmOrganizer.ID_ALL_MAILBOXES]	= "allMailboxes";
 ZmFolder.MSG_KEY[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.MSG_KEY[ZmFolder.ID_SYNC_FAILURES]		= "errorReports";
 ZmFolder.MSG_KEY[ZmFolder.ID_ATTACHMENTS]       = "attachments";
@@ -444,12 +444,9 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 	if (this.nId == ZmFolder.ID_DRAFTS ||
 		this.nId == ZmFolder.ID_OUTBOX)
 	{
-		var numTotal = (appCtxt.isOffline && this.account.isMain)
-			? appCtxt.accountList.getItemCount(this.nId) : this.numTotal;
-
 		var name = (useSystemName && this._systemName) ? this._systemName : this.name;
-		if (showUnread && numTotal > 0) {
-			name = [name, " (", numTotal, ")"].join("");
+		if (showUnread && this.numTotal > 0) {
+			name = AjxMessageFormat.format(ZmMsg.folderUnread, [name, this.numTotal]);
 			if (!noMarkup) {
 				name = ["<span style='font-weight:bold'>", name, "</span>"].join("");
 			}

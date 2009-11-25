@@ -145,7 +145,7 @@ function(params) {
 		button:				isMultiAcctSubHeader ? null : params.newButton,
 		dndScrollCallback:	this._overview._dndScrollCallback,
 		dndScrollId:		this.overviewId,
-		selectable:			appCtxt.multiAccounts
+		selectable:			(appCtxt.multiAccounts && this.type != ZmOrganizer.SEARCH && this.type != ZmOrganizer.TAG)
 	});
 	ti._isHeader = true;
 	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];
@@ -257,23 +257,15 @@ function(params) {
 	} else if (ZmTreeView.COMPARE_FUNC[this.type]) {
 		if (appCtxt.isOffline && this.type == ZmOrganizer.SEARCH) {
 			var local = [];
-			var global = [];
 			for (var j = 0; j < children.length; j++) {
 				var child = children[j];
-				if (child && child.type == ZmOrganizer.SEARCH) {
-					if (child.isOfflineGlobalSearch) {
-						global.push(child);
-					} else {
-						local.push(child);
-					}
+				if (child && child.type == ZmOrganizer.SEARCH && !child.isOfflineGlobalSearch) {
+					local.push(child);
 				}
 			}
-			local.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
-			global.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
-			children = (new Array()).concat(local, global);
-		} else {
-			children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
+			children = local;
 		}
+		children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
 	}
 	DBG.println(AjxDebug.DBG3, "Render: " + org.name + ": " + children.length);
 	var addSep = true;
@@ -291,7 +283,7 @@ function(params) {
 				proxy.treeNode = null;
 				proxy.organizer = child;
 				this._render(proxy);
-				continue; 
+				continue;
 			}
 			if (this._allowedTypes && !this._allowedTypes[child.type]) {
 				if (params.omitParents) continue;
@@ -303,9 +295,7 @@ function(params) {
 			}
 		}
 
-		if ((child.numTotal == 0 && (child.nId == ZmFolder.ID_SYNC_FAILURES)) ||
-			(appCtxt.isOffline && child.nId == ZmOrganizer.ID_GLOBAL_INBOX))
-		{
+		if (child.numTotal == 0 && (child.nId == ZmFolder.ID_SYNC_FAILURES)) {
 			continue;
 		}
 
@@ -333,7 +323,7 @@ function(params) {
 				return;
 			}
 		}
-		
+
 		// NOTE: Separates public and shared folders
 		if ((org.nId == ZmOrganizer.ID_ROOT) && child.link && addSep) {
 			params.treeNode.addSeparator();
