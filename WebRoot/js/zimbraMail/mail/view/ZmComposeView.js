@@ -1160,15 +1160,10 @@ function(content, replaceSignatureId, account) {
 					sigContent = sigContent.toLowerCase();
 				}
 
-				if (sigContent == replaceSignature) {
-					if (signature) {
-						sigEl.id = signature.id;
-					} else {
-						sigEl.removeAttribute("id");
-					}
-					sigEl.innerHTML = newSigContent;
+				sigEl.innerHTML = replaceSignature.replace(sigContent, newSigContent);
+				if (signature) {
+					sigEl.id = signature.id;
 				} else {
-					sigEl.innerHTML = replaceSignature.replace(sigContent, newSigContent);
 					sigEl.removeAttribute("id");
 				}
 				done = true;
@@ -2912,7 +2907,9 @@ function(ev) {
 	if (!element) { return true; }
 
 	var kbMgr = appCtxt.getKeyboardMgr();
-	kbMgr.__currTabGroup.setFocusMember(element);
+	if (kbMgr.__currTabGroup) {
+		kbMgr.__currTabGroup.setFocusMember(element);
+	}
 };
 
 ZmComposeView._onBlur =
