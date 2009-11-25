@@ -194,7 +194,14 @@ ZmDocsEditView.prototype._initialize = function() {
 
         divEl.appendChild(textEl);
         htmlEl.appendChild(divEl);
+
+        var urlParts = AjxStringUtil.parseURL(location.href);
+
+        //important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI
+        //to fix this
         tinymce.baseURL = window.contextPath + "/tiny_mce/3.2.6/";
+        if(tinymce.EditorManager) tinymce.EditorManager.baseURI = new tinymce.util.URI(urlParts.protocol + "://" + urlParts.authority + tinymce.baseURL);
+
         tinyMCE.init({
             // General options
             mode : "exact",
