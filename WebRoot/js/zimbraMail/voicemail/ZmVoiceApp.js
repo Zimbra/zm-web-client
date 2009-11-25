@@ -426,16 +426,40 @@ function(items, op, attributes, callback, errorCallback) {
 };
 
 ZmVoiceApp.prototype.launch =
+function(params, callback) {	this._showApp(params, callback);
+};
+
+ZmVoiceApp.prototype._showApp =
 function(params, callback) {
     this._paramId = (params.qsParams ? params.qsParams.id : null);
-	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
-	AjxDispatcher.require("Voicemail", true, loadCallback, null, true);
+    var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
+    AjxDispatcher.require("Voicemail", true, loadCallback, null, true);
 };
 
 ZmVoiceApp.prototype._handleLoadLaunch =
 function(callback) {
     var respCallback = new AjxCallback(this, this._handleResponseLoadLaunchGotInfo, callback);
-    this.getVoiceInfo(respCallback);
+    var errorCallback = new AjxCallback(this, this._handleErrorLoadLaunchGotInfo);
+    this.getVoiceInfo(respCallback, errorCallback);
+};
+
+ZmVoiceApp.prototype._handleErrorLoadLaunchGotInfo =
+function(ex) {
+	if (ex.code == "voice.SECONDARY_NOT_ALLOWED") {
+		if (!this._showingSecondaryMessage) {
+			this._showingSecondaryMessage = true;
+			var view = new DwtControl({parent:appCtxt.getShell(), posStyle:Dwt.ABSOLUTE_STYLE});
+			view.setScrollStyle(DwtControl.SCROLL);		
+			view.getHtmlElement().innerHTML = ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
+			var elements = {};
+			elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = view;
+			var viewName = "VoiceMessage";
+			this._appViewMgr.createView(viewName, this._name, elements, null, true);
+			this._appViewMgr.pushView(viewName);
+		}
+		return true;
+	}
+	return false;
 };
 
 ZmVoiceApp.prototype._handleResponseLoadLaunchGotInfo =

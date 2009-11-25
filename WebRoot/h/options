@@ -152,7 +152,7 @@
                 </c:when>
                 <c:when test="${zm:actionSet(param, 'actionEditFilter')}">
                     <zm:checkCrumb crumb="${param.crumb}"/>
-                    <zm:modifyFilterRule originalname="${zm:cook(param.origname)}"  rule="${postRule}"/>
+                    <zm:modifyFilterRule originalname="${zm:cook(param.origname)}" rule="${postRule}"/>
                     <c:set var="filterSave" value="success" scope="request"/>
                 </c:when>
             </c:choose>
