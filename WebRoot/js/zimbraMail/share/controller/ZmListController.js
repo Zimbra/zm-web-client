@@ -178,9 +178,9 @@ function(actionCode) {
 
 		case ZmKeyMap.DEL:
 			var tb = this._toolbar[this._currentView];
-			var button = tb && tb.getButton(ZmOperation.DELETE);
+			var button = tb && (tb.getButton(ZmOperation.DELETE) || tb.getButton(ZmOperation.DELETE_MENU));
 			if (button && button.getEnabled()) {
-				this._deleteListener();
+				this._doDelete(this._listView[this._currentView].getSelection());
 			}
 			break;
 
