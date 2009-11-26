@@ -583,6 +583,7 @@ ZmId.CMP_IDENTITY_SELECT	= "_identity_control";
 ZmId.CMP_PRIORITY			= "_priority";
 ZmId.CMP_ATT_ROW			= "_attachments_row";
 ZmId.CMP_ATT_DIV			= "_attachments_div";
+ZmId.CMP_DND_TOOLTIP        = "_zdnd_tooltip";
 
 // compose operations
 ZmId.CMP_TO					= "TO";

@@ -543,7 +543,7 @@ td.DDSepInvisible div {
 }
 
 
-#zdnd_tooltip {
+.zdnd_tooltip {
 	display:none;
 	color:#666666;
 	padding-left:70px;

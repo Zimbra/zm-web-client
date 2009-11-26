@@ -243,7 +243,7 @@
 			<td colspan=3><div id='${attDivId}'></div></td>
 		</tr>
 		<tr>
-			<td colspan=10><div id='zdnd_tooltip'><$=ZmMsg.dndTooltip$></div></td>
+			<td colspan=10><div id='${zdndToolTipId}' class='zdnd_tooltip'><$=ZmMsg.dndTooltip$></div></td>
 		</tr>
 	</table>
 	<!-- compose editor is automatically appended below the header -->

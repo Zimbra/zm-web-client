@@ -2045,7 +2045,8 @@ function(templateId) {
 		identitySelectId:	ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_SELECT),
 		priorityId:			ZmId.getViewId(this._view, ZmId.CMP_PRIORITY),
 		attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
-		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV)
+		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV),
+        zdndToolTipId:      ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP)
 	};
 
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
