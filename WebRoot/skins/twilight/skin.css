@@ -93,7 +93,7 @@ body	{  @ChromeBg@	}
 }
 
 
-.ZmCalViewMgr, .calendar_view, .ZmContactInfoView {
+.ZmCalViewMgr, .calendar_view, .ZmContactInfoView, .ZmNotebookPageView, .ZmEditContactView .contactHeaderTable {
 	background-color: #fff;
 }
 
@@ -113,6 +113,11 @@ body	{  @ChromeBg@	}
 	background-color:#e5e5e5;
 }
 
-.ZmComposeView {
+.ZmComposeView, .ZmApptComposeView, .ZmPageEditView {
 	background-color: #e5e5e5;
+}
+
+
+.ZHover .ZTabBorder{
+	@AppTabBorder-hover@
 }
