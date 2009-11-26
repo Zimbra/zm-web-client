@@ -64,6 +64,11 @@ function(address) {
 	// XXX: REMOVE WHEN IMPLEMENTED - SEE BASE CLASS ZmListView
 };
 
+ZmContactsBaseView.prototype.getLimit =
+function() {
+	return appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
+};
+
 ZmContactsBaseView.prototype.getListView =
 function() {
 	return this;
