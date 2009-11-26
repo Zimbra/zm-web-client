@@ -286,6 +286,7 @@ function() {
 			templateId: "prefs.Pages#Zimlets",
 			manageDirty: true,
             priority: 140,
+			precondition: ZmSetting.CHECKED_ZIMLETS_ENABLED,
 			prefs: [
 				ZmSetting.CHECKED_ZIMLETS    
 			],
