@@ -389,22 +389,24 @@ function(searchObj) {
 	var search = searchObj || appCtxt.getCurrentSearch();
 
 	var id, type;
-	if (search.folderId) {
-		id = this._getNormalizedId(search.folderId);
-		var folderTree = appCtxt.getFolderTree();
-		var folder = folderTree && folderTree.getById(id);
-		type = folder ? folder.type : ZmOrganizer.FOLDER;
-	} else if (search.tagId) {
-		id = this._getNormalizedId(search.tagId);
-		type = ZmOrganizer.TAG;
-	} else if (search.searchId) {
-		id = this._getNormalizedId(search.searchId);
-		type = ZmOrganizer.SEARCH;
-	}
-	var app = appCtxt.getCurrentApp();
-	var overview = app && app.getOverview();
-	if (overview) {
-		overview.setSelected(id, type);
+	if (search) {
+		if (search.folderId) {
+			id = this._getNormalizedId(search.folderId);
+			var folderTree = appCtxt.getFolderTree();
+			var folder = folderTree && folderTree.getById(id);
+			type = folder ? folder.type : ZmOrganizer.FOLDER;
+		} else if (search.tagId) {
+			id = this._getNormalizedId(search.tagId);
+			type = ZmOrganizer.TAG;
+		} else if (search.searchId) {
+			id = this._getNormalizedId(search.searchId);
+			type = ZmOrganizer.SEARCH;
+		}
+		var app = appCtxt.getCurrentApp();
+		var overview = app && app.getOverview();
+		if (overview) {
+			overview.setSelected(id, type);
+		}
 	}
 };
 
