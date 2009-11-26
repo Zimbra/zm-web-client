@@ -187,7 +187,8 @@ function() {
 
 			// ignore if doesn't meet pre-condition
 			var setup = ZmPref.SETUP[id];
-			if (!this._controller.checkPreCondition(setup)) { continue; }
+
+			if (!setup || !this._controller.checkPreCondition(setup)) { continue; }
 
 			// perform load function
 			if (setup.loadFunction) {
