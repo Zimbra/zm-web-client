@@ -93,7 +93,8 @@ body	{  @ChromeBg@	}
 }
 
 
-.ZmCalViewMgr, .calendar_view, .ZmContactInfoView, .ZmNotebookPageView, .ZmEditContactView .contactHeaderTable {
+.ZmCalViewMgr, .calendar_view, .ZmContactInfoView, .ZmNotebookPageView, .ZmEditContactView .contactHeaderTable,
+.DwtListView {
 	background-color: #fff;
 }
 
