@@ -51,9 +51,14 @@ function(params) {
 		var name = view.getTabTitle(tabKey);
 		var section = view.getSectionForTab(tabKey);
 
+console.log(name);
+
 		if (!account || this._showSection(account, section.id)) {
 			// for multi-account mbox, child accounts only show a select few pref options
 			var organizer = ZmPrefPage.createFromSection(section);
+
+console.log(organizer);
+
 			organizer.pageId = tabKey;
 			organizer.account = account;
 			organizers.push(organizer);
@@ -64,6 +69,8 @@ function(params) {
 	for (var i = 0; i < organizers.length; i++) {
 		var organizer = organizers[i];
 		var section = view.getSectionForTab(organizer.pageId);
+
+console.log(section);
 
 		var parentId = section.parentId;
 		if (appCtxt.isOffline &&
