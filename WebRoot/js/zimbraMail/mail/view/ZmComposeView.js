@@ -2513,7 +2513,7 @@ function(msg) {
 
 	// for cross account searches, the active account isn't necessarily the
 	// account of the selected conv/msg so reset it based on the selected option.
-	if (appCtxt.getSearchController().searchAllAccounts) {
+	if (appCtxt.getSearchController().searchAllAccounts && this._fromSelect) {
 		active = this.getFromAccount();
 		this._controller._accountName = active.name;
 	}
@@ -2621,7 +2621,7 @@ function(ev, addrType) {
 		? this._field[curType].value : "";
 
 	var account;
-	if (appCtxt.multiAccounts) {
+	if (appCtxt.multiAccounts && this._fromSelect) {
 		var addr = this._fromSelect.getSelectedOption().addr;
 		account = appCtxt.accountList.getAccountByEmail(addr.address);
 	}
