@@ -3688,6 +3688,10 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZToastBG 				{	@ToastContainer@		}
 
+.ZToastInfo .ZToastBG 	{	@ToastContainer-info@		}
+.ZToastWarn .ZToastBG 	{	@ToastContainer-warning@	}
+.ZToastCrit .ZToastBG 	{	@ToastContainer-critical@	}
+
 /*briefcase app*/
 
 .ZmBriefcaseView {
