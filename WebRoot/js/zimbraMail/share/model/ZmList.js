@@ -422,11 +422,16 @@ function(params) {
 	params.items = AjxUtil.toArray(params.items)
 	params.attrs = params.attrs || {};
 	params.attrs.l = params.folder.id;
-	params.callback = (this.type == ZmItem.MIXED) ?
-					  (new AjxCallback(this, this._handleResponseMoveItems, params)) :
-					  params.callback;
-	params.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
+    params.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
 	params.action = "move";
+    //bug: 42865 - make a copy of params  
+    var proxyParams = {};
+    for(var key in params){
+        proxyParams[key] = params[key];        
+    }
+	params.callback = (this.type == ZmItem.MIXED) ?
+					  (new AjxCallback(this, this._handleResponseMoveItems, proxyParams)) :
+					  params.callback;
 
 	this._itemAction(params);
 };
