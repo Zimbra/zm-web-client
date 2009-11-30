@@ -765,7 +765,7 @@
                     />
             <fileset dir='${build.web.dir}' includes='skins/${skinname}/**'/>
             <fileset dir='${customer.web.dir}' includes='portals/${skinname}/**'/>
-            <fileset dir='${customer.web.dir}' includes='${custom.web.jsp.includes},h/**,m/**'/>
+            <fileset dir='${customer.web.dir}' includes='${custom.web.jsp.includes},h/**,m/**,js/**'/>
             <fileset dir='${customer.web.dir}' includes='WEB-INF/**'/>
         </zip>
     </target>
