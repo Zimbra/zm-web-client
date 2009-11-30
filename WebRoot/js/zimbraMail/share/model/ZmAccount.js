@@ -31,6 +31,7 @@ ZmAccount.TYPE_GMAIL	= "Gmail";
 ZmAccount.TYPE_IMAP		= "Imap";
 ZmAccount.TYPE_LIVE		= "Live";   // MS Live / hotmail
 ZmAccount.TYPE_MSE		= "MSE";    // exchange IMAP
+ZmAccount.TYPE_EXCHANGE = "Xsync";  // exchange (using mobile sync protocol)
 ZmAccount.TYPE_PERSONA	= "PERSONA";
 ZmAccount.TYPE_POP		= "Pop";
 ZmAccount.TYPE_YMP		= "YMP";    // Y! mail
@@ -49,6 +50,7 @@ function(type) {
 		case ZmAccount.TYPE_IMAP:		return ZmMsg.accountTypeImap;
 		case ZmAccount.TYPE_LIVE:		return ZmMsg.msLive;
 		case ZmAccount.TYPE_MSE:		return ZmMsg.msExchange;
+		case ZmAccount.TYPE_EXCHANGE:	return ZmMsg.msExchange;
 		case ZmAccount.TYPE_PERSONA:	return ZmMsg.accountTypePersona;
 		case ZmAccount.TYPE_POP:		return ZmMsg.accountTypePop;
 		case ZmAccount.TYPE_YMP:		return ZmMsg.yahooMail;

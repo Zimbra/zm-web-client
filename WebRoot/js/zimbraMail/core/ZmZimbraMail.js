@@ -377,7 +377,8 @@ function(params) {
 		var callback = new AjxCallback(this,
 			function() {
 				AjxDispatcher.require("Startup2");
-				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+				var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
+				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account)) {
 					this.handleCalendarComponents();
 				}
 				appCtxt.getSearchController().getSearchToolbar().initAutocomplete();
@@ -553,7 +554,11 @@ function(params, result) {
 
 	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params);
 
-	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) && !this._doingPostRenderStartup && (params.startApp != ZmApp.CALENDAR)) {
+	var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account) &&
+		!this._doingPostRenderStartup &&
+		(params.startApp != ZmApp.CALENDAR))
+	{
 		this.handleCalendarComponents();
 	}
 };
@@ -689,11 +694,12 @@ ZmZimbraMail.prototype._getStartApp =
 function(params) {
 	// determine starting app
 	var startApp;
+	var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
 	if (params && params.app) {
 		startApp = ZmApp.QS_ARG_R[params.app.toLowerCase()];
 		// make sure app given in QS is actually enabled
 		var setting = ZmApp.SETTING[startApp];
-		if (setting && !appCtxt.get(setting)) {
+		if (setting && !appCtxt.get(setting, null, account)) {
 			startApp = null;
 		}
 	}
@@ -708,7 +714,7 @@ function(params) {
 		for (var i = 0; i < ZmApp.DEFAULT_APPS.length; i++) {
 			var app = ZmApp.DEFAULT_APPS[i];
 			var setting = ZmApp.SETTING[app];
-			if (!setting || appCtxt.get(setting)) {
+			if (!setting || appCtxt.get(setting, null, account)) {
 				defaultStartApp = app;
 				break;
 			}
@@ -781,8 +787,9 @@ function(funcName, force) {
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
 		var appName = ZmApp.APPS[i];
 		var setting = ZmApp.SETTING[appName];
-		if (!setting || appCtxt.get(setting) || force) {
-			var app = appCtxt.getApp(appName);
+		var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
+		if (!setting || appCtxt.get(setting, null, account) || force) {
+			var app = appCtxt.getApp(appName, null, account);
 			var func = app && app[funcName];
 			if (func && (typeof(func) == "function")) {
 				func.apply(app, args);
@@ -813,7 +820,8 @@ function(apps) {
 	// to encourage the user to upgrade.
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
 		var app = ZmApp.APPS[i];
-		var appEnabled = ZmApp.SETTING[app] && appCtxt.get(ZmApp.SETTING[app]);
+		var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
+		var appEnabled = ZmApp.SETTING[app] && appCtxt.get(ZmApp.SETTING[app], null, account);
 		var upsellEnabled = ZmApp.UPSELL_SETTING[app] && appCtxt.get(ZmApp.UPSELL_SETTING[app]);
 		if (appEnabled || upsellEnabled) {
 			ZmApp.ENABLED_APPS[app] = true;
@@ -1313,13 +1321,14 @@ ZmZimbraMail.prototype.activateApp =
 function(appName, force, callback, errorCallback, params) {
 	DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
 
+	var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
 	var view = this._appViewMgr.getAppView(appName);
 	if (view && !force) {
 		// if the app has been launched, make its view the current one
 		DBG.println(AjxDebug.DBG3, "activateApp, current " + appName + " view: " + view);
 		if (this._appViewMgr.pushView(view)) {
 			this._appViewMgr.setAppView(appName, view);
-            if (!appCtxt.get(ZmApp.SETTING[appName]) && appCtxt.get(ZmApp.UPSELL_SETTING[appName])) {
+            if (!appCtxt.get(ZmApp.SETTING[appName], null, account) && appCtxt.get(ZmApp.UPSELL_SETTING[appName])) {
                 var title = [ZmMsg.zimbraTitle, appName].join(": ");
                 Dwt.setTitle(title);
             }            
@@ -1333,7 +1342,7 @@ function(appName, force, callback, errorCallback, params) {
 			this._createApp(appName);
 		}
 
-		if (!appCtxt.get(ZmApp.SETTING[appName]) &&
+		if (!appCtxt.get(ZmApp.SETTING[appName], null, account) &&
 			appCtxt.get(ZmApp.UPSELL_SETTING[appName]))
 		{
 			this._createUpsellView(appName);
@@ -1385,7 +1394,8 @@ function(appName, view, isTabView) {
 	}
 
 	// app not actually enabled if this is result of upsell view push
-	var appEnabled = !ZmApp.SETTING[appName] || appCtxt.get(ZmApp.SETTING[appName]);
+	var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
+	var appEnabled = !ZmApp.SETTING[appName] || appCtxt.get(ZmApp.SETTING[appName], null, account);
 
 	this._activeTabId = null;	// app is active; tab IDs are for non-apps
 
@@ -1827,9 +1837,10 @@ function() {
 			continue;
 		}
 
+		var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
 		var setting = ZmApp.SETTING[id];
 		var upsellSetting = ZmApp.UPSELL_SETTING[id];
-		if ((setting && appCtxt.get(setting)) || (upsellSetting && appCtxt.get(upsellSetting))) {
+		if ((setting && appCtxt.get(setting, null, account)) || (upsellSetting && appCtxt.get(upsellSetting))) {
 			buttons.push(id);
 		}
 	}

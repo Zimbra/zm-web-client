@@ -138,9 +138,10 @@ function() {
 	}
 
 	switch (this.type) {
-		case ZmAccount.TYPE_GMAIL:	return ZmOrganizer.C_RED;
-		case ZmAccount.TYPE_MSE:	return ZmOrganizer.C_GREEN;
-		case ZmAccount.TYPE_YMP:	return ZmOrganizer.C_PURPLE;
+		case ZmAccount.TYPE_GMAIL:		return ZmOrganizer.C_RED;
+		case ZmAccount.TYPE_MSE:		return ZmOrganizer.C_GREEN;
+		case ZmAccount.TYPE_EXCHANGE:	return ZmOrganizer.C_GREEN;
+		case ZmAccount.TYPE_YMP:		return ZmOrganizer.C_PURPLE;
 	}
 
 	return null;
@@ -411,14 +412,15 @@ function(result) {
 
 	// set icon now that we know the type
 	switch (this.type) {
-		case ZmAccount.TYPE_AOL:	this.icon = "AccountAOL"; break;
-		case ZmAccount.TYPE_GMAIL:	this.icon = "AccountGmail"; break;
-		case ZmAccount.TYPE_IMAP:	this.icon = "AccountIMAP"; break;
-		case ZmAccount.TYPE_LIVE:	this.icon = "AccountMSN"; break;
-		case ZmAccount.TYPE_MSE:	this.icon = "AccountExchange"; break;
-		case ZmAccount.TYPE_POP:	this.icon = "AccountPOP"; break;
-		case ZmAccount.TYPE_YMP:	this.icon = "AccountYahoo"; break;
-		case ZmAccount.TYPE_ZIMBRA:	this.icon = "AccountZimbra"; break;
+		case ZmAccount.TYPE_AOL:		this.icon = "AccountAOL"; break;
+		case ZmAccount.TYPE_GMAIL:		this.icon = "AccountGmail"; break;
+		case ZmAccount.TYPE_IMAP:		this.icon = "AccountIMAP"; break;
+		case ZmAccount.TYPE_LIVE:		this.icon = "AccountMSN"; break;
+		case ZmAccount.TYPE_MSE:		this.icon = "AccountExchange"; break;
+		case ZmAccount.TYPE_EXCHANGE:	this.icon = "AccountExchange"; break;
+		case ZmAccount.TYPE_POP:		this.icon = "AccountPOP"; break;
+		case ZmAccount.TYPE_YMP:		this.icon = "AccountYahoo"; break;
+		case ZmAccount.TYPE_ZIMBRA:		this.icon = "AccountZimbra"; break;
 	}
 
 	// initialize identities/data-sources/signatures for this account

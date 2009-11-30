@@ -1362,6 +1362,7 @@ function(account) {
 		account.type == ZmAccount.TYPE_GMAIL ||
 		account.type == ZmAccount.TYPE_LIVE ||
 		account.type == ZmAccount.TYPE_MSE ||
+		account.type == ZmAccount.TYPE_EXCHANGE ||
 		account.type == ZmAccount.TYPE_YMP ||
 		account.type == ZmAccount.TYPE_ZIMBRA)
 	{

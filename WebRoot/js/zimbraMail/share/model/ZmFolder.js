@@ -558,9 +558,13 @@ function(what, folderType) {
 			if (appCtxt.isOffline && !invalid) {
 				// bug: 41531 - don't allow items to be moved into exchange
 				// account when moving across accounts
-				if (item.account != this.account && this.account.type == ZmAccount.TYPE_MSE) {
+				if (item.account != this.account &&
+					(this.account.type == ZmAccount.TYPE_MSE ||
+					 this.account.type == ZmAccount.TYPE_EXCHANGE))
+				{
 					invalid = true;
-				} else {
+				}
+				else {
 					var cs = appCtxt.getCurrentSearch();
 					var folder = cs && appCtxt.getById(cs.folderId);
 					if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
