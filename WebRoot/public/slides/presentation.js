@@ -75,6 +75,7 @@ function resizeSlide(currentSlide) {
         currentSlide.style.width =  newWidth + "%";
         currentSlide.style.height = '100%';
         currentSlide.style.left = (100-newWidth)/2 + "%";
+        currentSlide.style.position = 'absolute';
         resizeFont(currentSlide);
     }
 }
