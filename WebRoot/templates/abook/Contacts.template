@@ -45,16 +45,16 @@
 						<td>&rdquo;</td>
 					</tr></table>
 				</div>
-				<div id="${id}_COMPANY_row">
-					<table><tr>
-						<td><div id="${id}_COMPANY" tabindex="300"></div></td>
-					</tr></table>
-				</div>
 				<div id="${id}_JOB_row">
 					<table><tr>
 						<td id="${id}_TITLE_row"><div id="${id}_TITLE" tabindex="301"></div></td>
 						<td id="${id}_TITLE_DEPARTMENT_SEP">&nbsp;-&nbsp;</td>
 						<td id="${id}_DEPARTMENT_row"><div id="${id}_DEPARTMENT" tabindex="302"></div></td>
+					</tr></table>
+				</div>
+				<div id="${id}_COMPANY_row">
+					<table><tr>
+						<td><div id="${id}_COMPANY" tabindex="305"></div></td>
 					</tr></table>
 				</div>
 			</td>
@@ -396,9 +396,6 @@
 				<$ if (nickname) { $>
 					<div class='companyName'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
 				<$ } $>
-				<$ if (company) { $>
-					<div class='companyName'><$= AjxStringUtil.htmlEncode(company) $></div>
-				<$ } $>
 				<$ if (title || department) { $>
 					<div class='companyName'>
 					<$ if (title) { $>
@@ -411,6 +408,9 @@
 						<span><$= AjxStringUtil.htmlEncode(department) $></span>
 					<$ } $>
 					</div>
+				<$ } $>
+				<$ if (company) { $>
+					<div class='companyName'><$= AjxStringUtil.htmlEncode(company) $></div>
 				<$ } $>
 			</td>
 			<td valign=bottom align='right'>
