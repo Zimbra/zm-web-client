@@ -16,9 +16,7 @@
 <c:remove var="prevUrl" scope="session"/><c:remove var="currentUrl" scope="session"/></c:if>
 <c:url var="baseURL" scope="request" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:set var="context_url" value="${requestScope.baseURL}"/>
-<c:if test="${param.loginOp=='logout'}">
-    <c:redirect url="/?loginOp=logout&amp;client=mobile"/>
-</c:if>
+<c:if test="${param.loginOp=='logout'}"><c:remove var="mapp" scope="session"/><c:redirect url="/"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:redirect></c:if>
 <%--<c:if test="${not empty param.ajax}">--%>
     <c:url var="prevUrl" scope="session" value="${sessionScope.currentUrl}"/>
     <c:url var="currentUrl" scope="session" value="zmain">
@@ -134,10 +132,10 @@
     <c:if test="${mailbox.features.calendar}"><c:set var="appcount" value="${appcount+1}"/></c:if>
     <c:if test="${mailbox.features.briefcases || mailbox.features.notebook}"><c:set var="appcount" value="${appcount+1}"/></c:if>
     <c:set var="active" value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'folders' ? '-active' : ''}"
-    /><div class="tr"><a style='width: ${95/appcount}%;'  accesskey="${requestScope.mailapp_accesskey}" id="mail" class="mail${active} appTab${active} td" href="${aurl}?st=${mailbox.prefs.groupMailBy}">
+    /><div class="tr"><c:if test="${mailbox.features.mail}"><a style='width: ${95/appcount}%;'  accesskey="${requestScope.mailapp_accesskey}" id="mail" class="mail${active} appTab${active} td" href="${aurl}?st=${mailbox.prefs.groupMailBy}">
             <span onclick="return zClickLink('mail')" class="nstd"><fmt:message key="mail"/></span>
             <span onclick="return zClickLink('mail')" style="display:none;" class="apunread nstd">${mailbox.inbox.unreadCount > 0 ? mailbox.inbox.unreadCount : ''}</span>
-        </a><c:if test="${mailbox.features.contacts}"><c:set var="active" value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
+        </a></c:if><c:if test="${mailbox.features.contacts}"><c:set var="active" value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
         <a style='width: ${95/appcount}%;'  accesskey="${requestScope.contactapp_accesskey}" id="contact" class="contact${active} appTab${active} td" href="${aurl}?st=contact">
             <span onclick="return zClickLink('contact')" class="nstd"><fmt:message key="contacts"/></span>
         </a></c:if><c:if test="${mailbox.features.calendar}"><c:set var="active" value="${param.st eq 'cal' || param.st eq 'cals' ? '-active' : ''}"/>
@@ -223,7 +221,8 @@
             <span class="td" style="width:40%"><input type="text" class="searchInput" name="sname" value="${zm:cook(param.sname)}"/></span>
             <span class="td"><input type="submit" class="searchButton zo_button" name="actionSaveSearch" value="<fmt:message key="save"/>"/></span>
         </form>
-    </div><mo:handleError><c:import url="/m/zmview" var="response" scope="page"/></mo:handleError><%  //!TODO may be should be done through filter? but minimization of html is essential to reduce response size
+    </div><mo:handleError>
+        <c:import url="/m/zmview" var="response" scope="page"/></mo:handleError><%  //!TODO may be should be done through filter? but minimization of html is essential to reduce response size
         String respText = (String)pageContext.getAttribute("response");
         respText = respText.replaceAll("[\t ]+"," ").replaceAll("\n\\s*\n","\n");
         pageContext.setAttribute("response",respText);
@@ -255,7 +254,7 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
 </c:if>
 <c:if test="${empty param.ajax}">
     <div class="tbl"><div class="tr">
-        <div class="container td" id="userinfo"><c:url var="logoutUrl" value="${context_url}?loginOp=logout&amp;client=mobile"/>
+        <div class="container td" id="userinfo"><c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:url>
             <span class="logout-span"><a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/> </a> (${mailbox.accountInfo.attrs["uid"][0]}) </span>
             <span class="quota-span"><fmt:message key="MO_quotaLabel"/>&nbsp;<c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/><fmt:message var="unlimited" key="unlimited"/><fmt:message key="MO_quotaUsage"><fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/><fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,2)}"/></fmt:message></span>
         </div>
