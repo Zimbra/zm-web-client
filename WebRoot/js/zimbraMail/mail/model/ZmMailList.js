@@ -83,16 +83,13 @@ function(params) {
 	params1.action = (params.folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
 	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
 
-	// set accountName for multi-account to always be the main "local" account
-	// since we assume actioned ID's will always be fully qualified *unless*
-	// we're moving a draft out of Trash
-	var accountName;
-	if (appCtxt.multiAccounts) {
-		accountName = (params.items[0].isDraft && params.folder.id == ZmFolder.ID_DRAFTS)
-			? items[0].account.name
-			: appCtxt.accountList.mainAccount.name;
+	// Reset accountName for multi-account to be the respective account if we're
+	// moving a draft out of Trash.
+	if (appCtxt.multiAccounts &&
+		params.items[0].isDraft && params.folder.id == ZmFolder.ID_DRAFTS)
+	{
+		params1.accountName = items[0].account.name;
 	}
-	params1.accountName = accountName;
 
 	this._itemAction(params1);
 };
@@ -120,7 +117,7 @@ function(params) {
 		return this._mixedAction("spamItems", params);
 	}
 
-	params1.items = AjxUtil.toArray(params.items)
+	params1.items = AjxUtil.toArray(params.items);
 	params1.action = params.markAsSpam ? "spam" : "!spam";
 	params1.attrs = {};
 	params1.attrs.tcon = this._getTcon();
@@ -307,7 +304,7 @@ function(convs, msgs) {
 						if (msg._convCreateNode._newId) {
 							msg._convCreateNode.id = msg._convCreateNode._newId;
 						}
-						conv = ZmConv.createFromDom(msg._convCreateNode, args)
+						conv = ZmConv.createFromDom(msg._convCreateNode, args);
 					} else {
 						conv = appCtxt.getById(cid) || ZmConv.createFromMsg(msg, args);
 					}
@@ -538,7 +535,7 @@ function() {
 // status, and the user has marked all read in a folder, redo the search.
 ZmMailList.prototype._folderTreeChangeListener = 
 function(ev) {
-	if (this.size() == 0) return;
+	if (this.size() == 0) { return; }
 
 	var flag = ev.getDetail("flag");
 	var view = appCtxt.getCurrentViewId();

@@ -419,19 +419,20 @@ function(params) {
 		return this._mixedAction("moveItems", params);
 	}
 
-	params.items = AjxUtil.toArray(params.items)
+	params.items = AjxUtil.toArray(params.items);
 	params.attrs = params.attrs || {};
 	params.attrs.l = params.folder.id;
-    params.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
 	params.action = "move";
-    //bug: 42865 - make a copy of params  
-    var proxyParams = {};
-    for(var key in params){
-        proxyParams[key] = params[key];        
-    }
-	params.callback = (this.type == ZmItem.MIXED) ?
-					  (new AjxCallback(this, this._handleResponseMoveItems, proxyParams)) :
-					  params.callback;
+
+	// bug: 42865 - make a copy of params
+	var proxyParams = {};
+	for (var key in params) {
+		proxyParams[key] = params[key];
+	}
+
+	if (this.type == ZmItem.MIXED) {
+		params.callback = new AjxCallback(this, this._handleResponseMoveItems, proxyParams);
+	}
 
 	this._itemAction(params);
 };
@@ -468,13 +469,9 @@ function(params) {
 
 	params = Dwt.getParams(arguments, ["items", "folder", "attrs"]);
 
-	params.items = AjxUtil.toArray(params.items)
+	params.items = AjxUtil.toArray(params.items);
 	params.attrs = params.attrs || {};
 	params.attrs.l = params.folder.id;
-
-	// set accountName for multi-account to always be the main "local" account
-	// since we assume actioned ID's will always be fully qualified
-	params.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
 	params.action = "copy";
 	params.callback = new AjxCallback(this, this._handleResponseCopyItems, params);
 
@@ -512,7 +509,7 @@ function(params) {
 		return this._mixedAction("deleteItems", params);
 	}
 
-	var items = params.items = AjxUtil.toArray(params.items)
+	var items = params.items = AjxUtil.toArray(params.items);
 
 	// figure out which items should be moved to Trash, and which should actually be deleted
 	var toMove = [];
@@ -532,10 +529,27 @@ function(params) {
 
 	// soft delete - items moved to Trash
 	if (toMove.length) {
-		params.items = toMove;
-		var folderId = appCtxt.multiAccounts ? ZmOrganizer.getSystemId(ZmFolder.ID_TRASH) : ZmFolder.ID_TRASH;
-		params.folder = appCtxt.getById(folderId);
-		this.moveItems(params);
+		if (appCtxt.multiAccounts) {
+			// separate out the items based on which account they belong to
+			var accounts = {};
+			for (var i = 0; i < toMove.length; i++) {
+				var item = toMove[i];
+				var acctId = item.account.id;
+				if (!accounts[acctId]) {
+					accounts[acctId] = [];
+				}
+				accounts[acctId].push(item);
+			}
+			if (!params.callback) {
+				params.callback = new AjxCallback(this, this._deleteAccountItems, [accounts, params]);
+			}
+			this._deleteAccountItems(accounts, params);
+		}
+		else {
+			params.items = toMove;
+			params.folder = appCtxt.getById(ZmFolder.ID_TRASH);
+			this.moveItems(params);
+		}
 	}
 
 	// hard delete - items actually deleted from data store
@@ -543,6 +557,27 @@ function(params) {
 		params.items = toDelete;
 		params.action = "delete";
 		this._itemAction(params);
+	}
+};
+
+ZmList.prototype._deleteAccountItems =
+function(accounts, params) {
+	var items;
+	for (var i in accounts) {
+		items = accounts[i];
+		break;
+	}
+
+	if (items) {
+		delete accounts[i];
+
+		var account = appCtxt.accountList.getAccount(i);
+
+		params.accountName = account.name;
+		params.items = items;
+		params.folder = appCtxt.getById(ZmFolder.ID_TRASH);
+
+		this.moveItems(params);
 	}
 };
 
@@ -580,13 +615,13 @@ function(node) {
 // Local change handling
 
 // These generic methods allow a derived class to perform the appropriate internal changes
-ZmList.prototype.modifyLocal 		= function(items, mods) {}
-ZmList.prototype.createLocal 		= function(item) {}
+ZmList.prototype.modifyLocal 		= function(items, mods) {};
+ZmList.prototype.createLocal 		= function(item) {};
 
 // These are not currently used; will need support in ZmItem if they are.
-ZmList.prototype.flagLocal 			= function(items, flag, state) {}
-ZmList.prototype.tagLocal 			= function(items, tag, state) {}
-ZmList.prototype.removeAllTagsLocal = function(items) {}
+ZmList.prototype.flagLocal 			= function(items, flag, state) {};
+ZmList.prototype.tagLocal 			= function(items, tag, state) {};
+ZmList.prototype.removeAllTagsLocal = function(items) {};
 
 // default action is to remove each deleted item from this list
 ZmList.prototype.deleteLocal =
@@ -635,14 +670,16 @@ function(params, batchCmd) {
 	}
 
 	var type;
-	if (this.type == ZmItem.MIXED) {
-		type = this._mixedType;
-	} else if (params.items.length == 1) {
-		type = params.items[0].type;
-	} else {
-		type = this.type;
-	}
+	if (this.type == ZmItem.MIXED)			{ type = this._mixedType; }
+	else if (params.items.length == 1)		{ type = params.items[0].type; }
+	else 									{ type = this.type; }
 	if (!type) { return; }
+
+	// set accountName for multi-account to be the main "local" account since we
+	// assume actioned ID's will always be fully qualified
+	if (!params.accountName && appCtxt.multiAccounts) {
+		params.accountName = appCtxt.accountList.mainAccount.name;
+	}
 
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
 	var useJson = batchCmd ? batchCmd._useJson : true ;
@@ -679,7 +716,7 @@ function(params, batchCmd) {
 		errorCallback:	params.errorCallback,
 		batchCmd:		batchCmd,
 		numItems:		params.count || 0
-	}
+	};
 
 	var dialog = ZmList.progressDialog;
 	if (idList.length > ZmList.CHUNK_SIZE) {
