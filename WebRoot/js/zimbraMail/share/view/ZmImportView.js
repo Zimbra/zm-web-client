@@ -40,9 +40,9 @@ ZmImportView = function(params) {
 			{ id: "FILE",
 				setter: new Function() // no-op -- can't set a file value
 			},
-			{ id: "RESOLVE", type: "DwtRadioButtonGroup", value: "",
+			{ id: "RESOLVE", type: "DwtRadioButtonGroup", value: "ignore",
 				items: [
-					{ id: "RESOLVE_IGNORE", label: ZmMsg.resolveDuplicateIgnore, value: "" },
+					{ id: "RESOLVE_IGNORE", label: ZmMsg.resolveDuplicateIgnore, value: "ignore" },
 					{ id: "RESOLVE_MODIFY", label: ZmMsg.resolveDuplicateModify, value: "modify" },
 					{ id: "RESOLVE_REPLACE", label: ZmMsg.resolveDuplicateReplace, value: "replace" },
 					{ id: "RESOLVE_RESET", label: ZmMsg.resolveDuplicateReset, value: "reset" }
@@ -114,6 +114,9 @@ ZmImportView.prototype.getParams = function() {
 		folderId:	this._folderId,
 		dataTypes:	this.isRelevant("DATA_TYPES") ? this.getValue("DATA_TYPES") : null
 	};
+	if (params.resolve == "ignore") {
+		delete params.resolve;
+	}
 	return params;
 };
 
