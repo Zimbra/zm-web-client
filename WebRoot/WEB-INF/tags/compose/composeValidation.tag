@@ -121,7 +121,9 @@
         }
     </c:if>
         <c:if test="${not empty sessionScope.temp_draftid}">
-            _checkFail = true;        
+            if(_checkFail) {
+                _checkFail = true;
+            }
         </c:if>
         if(_checkFail){
             return "<fmt:message key="composeExitConfirmation"/>"; //disabling this for new way of save/cancel handling
