@@ -351,6 +351,7 @@ function(view) {
 		this._setupPrintMenu(view);
 		this._toolbar[view].addFiller();
 		this._initializeNavToolBar(view);
+		appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar[view], this, view], {waitUntilLoaded:true});
 	} else {
 		this._setupViewMenu(view, false);
 	}

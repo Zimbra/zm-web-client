@@ -256,6 +256,8 @@ function(mode) {
 	if (printButton) {
 		printButton.setEnabled(!isNew);
 	}
+
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._getViewType()], {waitUntilLoaded:true});
 };
 
 ZmCalItemComposeController.prototype._createToolBar =

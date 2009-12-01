@@ -661,6 +661,8 @@ function(viewId) {
 		var icon = ZmOperation.getProp(op, "image");
 		viewButton.setImage(icon);
 	}
+
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, toolbar, this, viewId], {waitUntilLoaded:true});
 };
 
 ZmCalViewController.prototype._setViewContents =

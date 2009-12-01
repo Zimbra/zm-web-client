@@ -140,8 +140,10 @@ ZmContactController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
+	var tb = this._toolbar[view];
+
 	// change the cancel button to "close" if editing existing contact
-	var cancelButton = this._toolbar[view].getButton(ZmOperation.CANCEL);
+	var cancelButton = tb.getButton(ZmOperation.CANCEL);
 	if (this._contact.id == undefined || this._contact.isGal) {
 		cancelButton.setText(ZmMsg.cancel);
 		cancelButton.setImage("Cancel");
@@ -150,15 +152,17 @@ function(view) {
 		cancelButton.setImage("Close");
 	}
 
-	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT);
+	var printButton = tb.getButton(ZmOperation.PRINT);
 	if (printButton) {
 		printButton.setText(ZmMsg.print);
 	}
 
-    var saveButton = this._toolbar[view].getButton(ZmOperation.SAVE);
+    var saveButton = tb.getButton(ZmOperation.SAVE);
     if (saveButton) {
         saveButton.setToolTipContent(ZmMsg.saveContactTooltip);
     }
+
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
 
 ZmContactController.prototype._getTagMenuMsg =
