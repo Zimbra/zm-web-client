@@ -45,6 +45,9 @@
             <c:if test="${voice}">
                 <c:set var="query"/>
             </c:if>
+            <c:if test="${param.hideSearchString}">
+                <c:set var="query" value=""/>
+            </c:if>
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
             <td nowrap="nowrap">

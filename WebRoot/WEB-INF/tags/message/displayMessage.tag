@@ -284,6 +284,7 @@
                                             <c:param name="action" value="view"/>
                                             <c:param name="st" value="conversation"/>
                                             <c:param name="sq" value='conv:"${message.conversationId}"'/>
+                                            <c:param name="hideSearchString" value="true"/>
                                         </c:url>
                                         <a id="OPSHOWCONV" href="${fn:escapeXml(convUrl)}">
                                             <app:img src="startup/ImgConversation.gif" altkey="showConversation" title="showConversation"/>
