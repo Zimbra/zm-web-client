@@ -769,7 +769,7 @@ function(contact, doAdd, fields, hash, includeField, isNumeric) {
 			if (!avalue) break;
 			avalue = isNumeric ? avalue.replace(/[^\d]/g, '') : avalue.toLowerCase();
 			if (doAdd) {
-				hash[avalue] = includeField ? contact : {contact:contact, field:aname};
+				hash[avalue] = includeField ? {contact:contact, field:aname} : contact;
 			} else {
 				delete hash[avalue];
 			}
