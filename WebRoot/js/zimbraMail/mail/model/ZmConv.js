@@ -128,7 +128,7 @@ function(params, callback) {
 			offset: offset,
 			limit: limit,
 			getHtml: (params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML)),
-			accountName: (appCtxt.getSearchController().searchAllAccounts ? appCtxt.accountList.mainAccount.name : null)
+			accountName: (appCtxt.multiAccounts && this.account.name)
 		};
 		var search = this.search = new ZmSearch(searchParams);
 

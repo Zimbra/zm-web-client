@@ -946,13 +946,15 @@ function(parent) {
 	var tagOp = parent.getOp(ZmOperation.TAG_MENU);
 	if (tagOp) {
 		var tagMenu = parent.getTagMenu();
+
 		// dynamically build tag menu add/remove lists
 		var items = this._listView[this._currentView].getSelection();
-
 		items = AjxUtil.toArray(items);
 
+		var account = (appCtxt.multiAccounts && items.length == 1) ? items[0].account : null;
+
 		// fetch tag tree from appctxt (not cache) for multi-account case
-		tagMenu.set(items, appCtxt.getTagTree());
+		tagMenu.set(items, appCtxt.getTagTree(account));
 		if (parent instanceof ZmActionMenu)
 			tagOp.setText(this._getTagMenuMsg(items.length));
 		else {

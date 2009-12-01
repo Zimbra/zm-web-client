@@ -296,7 +296,8 @@ ZmItem.prototype.getTagImageInfo =
 function() {
 	var tagImageInfo;
 
-	if (!this.tags.length || this.isShared()) {
+	var searchAll = appCtxt.getSearchController().searchAllAccounts;
+	if (!this.tags.length || (!searchAll && this.isShared())) {
 		tagImageInfo = "Blank_16";
 	}
 	else if (this.tags.length == 1) {

@@ -789,7 +789,8 @@ function(item) {
 	if (!item) { return; }
 	var numTags = item.tags.length;
 	if (!numTags) { return; }
-	var tagList = appCtxt.getTagTree();
+	var account = appCtxt.multiAccounts ? item.account : null;
+	var tagList = appCtxt.getTagTree(account);
 	var tags = item.tags;
 	var html = [];
 	var idx = 0;

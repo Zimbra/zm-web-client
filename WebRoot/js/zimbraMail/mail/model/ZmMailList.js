@@ -109,6 +109,37 @@ function(params) {
 ZmMailList.prototype.spamItems = 
 function(params) {
 
+	var items = AjxUtil.toArray(params.items);
+
+	if (appCtxt.multiAccounts) {
+		var accounts = this._filterItemsByAccount(items);
+		this._spamAccountItems(accounts, params);
+	} else {
+		this._spamItems(items);
+	}
+};
+
+ZmMailList.prototype._spamAccountItems =
+function(accounts, params) {
+	var items;
+	for (var i in accounts) {
+		items = accounts[i];
+		break;
+	}
+
+	if (items) {
+		delete accounts[i];
+
+		params.accountName = appCtxt.accountList.getAccount(i).name;
+		params.items = items;
+		params.callback = new AjxCallback(this, this._spamAccountItems, [accounts, params]);
+
+		this._spamItems(params);
+	}
+};
+
+ZmMailList.prototype._spamItems =
+function(params) {
 	params = Dwt.getParams(arguments, ["items", "markAsSpam", "folder", "childWin"]);
 
 	var params1 = AjxUtil.hashCopy(params);
@@ -117,7 +148,6 @@ function(params) {
 		return this._mixedAction("spamItems", params);
 	}
 
-	params1.items = AjxUtil.toArray(params.items);
 	params1.action = params.markAsSpam ? "spam" : "!spam";
 	params1.attrs = {};
 	params1.attrs.tcon = this._getTcon();

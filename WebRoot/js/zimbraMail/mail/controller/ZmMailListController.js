@@ -203,11 +203,9 @@ ZmMailListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmMailListController.handleKeyAction");
 
-	var folderId = this._getSearchFolderId();
-	var folder = folderId ? appCtxt.getById(folderId) : null;
-	var isSyncFailures = (folder && (folder.nId == ZmOrganizer.ID_SYNC_FAILURES));
-
-	var isDrafts = (folderId == ZmFolder.ID_DRAFTS);
+	var folder = appCtxt.getById(this._getSearchFolderId());
+	var isSyncFailures = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
+	var isDrafts = (folder && folder.nId == ZmFolder.ID_DRAFTS);
 	var lv = this._listView[this._currentView];
 	var num = lv.getSelectionCount();
 
@@ -236,7 +234,7 @@ function(actionCode) {
 		case ZmKeyMap.MOVE_TO_JUNK:
 			if (isSyncFailures) { break; }
 			if (num && !(isDrafts && actionCode != ZmKeyMap.MOVE_TO_TRASH)) {
-				folderId = ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[actionCode];
+			 	var folderId = ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[actionCode];
 				folder = appCtxt.getById(folderId);
 				var items = lv.getSelection();
 				this._doMove(items, folder);
@@ -605,7 +603,7 @@ function(ev) {
 		: ((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null);
 
 	var item = (items && items.length == 1) ? items[0] : null;
-	if ((this._getSearchFolderId() == ZmFolder.ID_DRAFTS) || (item && item.isDraft)) {
+	if (folder.nId == ZmFolder.ID_DRAFTS || (item && item.isDraft)) {
 		// show drafts menu
 		this._initializeDraftsActionMenu();
 		this._setTagMenu(this._draftsActionMenu);
@@ -1015,7 +1013,8 @@ function(toolbar, btn) {
 // If we're in the Trash folder, change the "Delete" button tooltip
 ZmMailListController.prototype._setupDeleteButton =
 function(parent) {
-	var inTrashFolder = (this._getSearchFolderId() == ZmFolder.ID_TRASH);
+	var folder = appCtxt.getById(this._getSearchFolderId());
+	var inTrashFolder = (folder && folder.nId == ZmFolder.ID_TRASH);
 	var deleteButton = parent.getButton(ZmOperation.DELETE);
 	var deleteMenuButton = parent.getButton(ZmOperation.DELETE_MENU);
 	var tooltip = inTrashFolder ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip;
@@ -1034,7 +1033,8 @@ function(parent) {
 
 	var item = parent.getOp(ZmOperation.SPAM);
 	if (item) {
-		var inSpamFolder = (this._getSearchFolderId() == ZmFolder.ID_SPAM);
+		var folder = appCtxt.getById(this._getSearchFolderId());
+		var inSpamFolder = (folder && folder.nId == ZmFolder.ID_SPAM);
 		item.setText(inSpamFolder ? ZmMsg.notJunk : ZmMsg.junk);
 		item.setImage(inSpamFolder ? 'Inbox' : 'JunkMail');
 		if (item.setToolTipContent) {
@@ -1256,7 +1256,8 @@ ZmMailListController.prototype._spamListener =
 function(ev) {
 	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
 	var items = this._listView[this._currentView].getSelection();
-	var markAsSpam = (this._getSearchFolderId() != ZmFolder.ID_SPAM);
+	var folder = appCtxt.getById(this._getSearchFolderId());
+	var markAsSpam = (folder && folder.nId != ZmFolder.ID_SPAM);
 	this._doSpam(items, markAsSpam);
 };
 
@@ -1450,6 +1451,12 @@ function(parent, num) {
 			// Enable|disable 'edit' context menu item based on selection count
 			editMenu.setEnabled(num == 1);
 		}
+	}
+
+	if (appCtxt.multiAccounts && num > 1 &&
+		appCtxt.getCurrentSearch().isMultiAccount())
+	{
+		parent.enable(ZmOperation.TAG_MENU, false);
 	}
 };
 

@@ -530,20 +530,11 @@ function(params) {
 	// soft delete - items moved to Trash
 	if (toMove.length) {
 		if (appCtxt.multiAccounts) {
-			// separate out the items based on which account they belong to
-			var accounts = {};
-			for (var i = 0; i < toMove.length; i++) {
-				var item = toMove[i];
-				var acctId = item.account.id;
-				if (!accounts[acctId]) {
-					accounts[acctId] = [];
-				}
-				accounts[acctId].push(item);
-			}
+			var accounts = this._filterItemsByAccount(toMove);
+			this._deleteAccountItems(accounts, params);
 			if (!params.callback) {
 				params.callback = new AjxCallback(this, this._deleteAccountItems, [accounts, params]);
 			}
-			this._deleteAccountItems(accounts, params);
 		}
 		else {
 			params.items = toMove;
@@ -571,14 +562,27 @@ function(accounts, params) {
 	if (items) {
 		delete accounts[i];
 
-		var account = appCtxt.accountList.getAccount(i);
-
-		params.accountName = account.name;
+		params.accountName = appCtxt.accountList.getAccount(i).name;
 		params.items = items;
 		params.folder = appCtxt.getById(ZmFolder.ID_TRASH);
 
 		this.moveItems(params);
 	}
+};
+
+ZmList.prototype._filterItemsByAccount =
+function(items) {
+	// separate out the items based on which account they belong to
+	var accounts = {};
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		var acctId = item.account.id;
+		if (!accounts[acctId]) {
+			accounts[acctId] = [];
+		}
+		accounts[acctId].push(item);
+	}
+	return accounts;
 };
 
 ZmList.prototype._handleDeleteNewWindowResponse =

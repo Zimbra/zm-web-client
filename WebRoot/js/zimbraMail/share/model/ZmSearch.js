@@ -495,6 +495,16 @@ function() {
 		: ([ZmMsg.zimbraTitle, ZmMsg.searchResults].join(": "));
 };
 
+ZmSearch.prototype.isMultiAccount =
+function() {
+	if (!this._isMultiAccount) {
+		this._isMultiAccount = (this.queryHint && this.queryHint.length > 0 &&
+								(this.queryHint.split("inid:").length > 1 ||
+								 this.queryHint.split("underid:").length > 1));
+	}
+	return this._isMultiAccount;
+};
+
 ZmSearch.prototype._getStandardMethod = 
 function(soapDoc) {
 
