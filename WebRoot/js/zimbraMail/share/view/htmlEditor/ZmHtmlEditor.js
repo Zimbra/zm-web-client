@@ -891,7 +891,7 @@ function(name, target, data) {
 		this.focus();
 		++this._ace_componentsLoading;
 		if (AjxEnv.isGeckoBased) {
-			doc.designMode = "off";
+			Dwt.enableDesignMode(doc, false);
 		}
 		var ifr = doc.createElement("iframe");
 		ifr.id = "ACE-" + Dwt.getNextId();
@@ -1398,6 +1398,25 @@ function(ev) {
 	if (rv) {
 		rv = DwtHtmlEditor.prototype._handleEditorEvent.call(this, ev);
 	}
+
+	// Bug 28308 - browser focus can get stuck in editor; flail around setting focus
+	// until focus is back in sync
+	if (AjxEnv.isSafari && ev.type == "keydown") {
+		var kbMgr = DwtShell.getShell(window).getKeyboardMgr();
+		if (kbMgr.__focusObj != this) {
+			DBG.println(AjxDebug.DBG1, "HTML editor has a focus issue!!!");
+			var focusObj = kbMgr.__focusObj;
+			var searchCtlr = appCtxt.getSearchController();
+			var searchField = searchCtlr && searchCtlr.getSearchToolbar().getSearchField();
+			if (searchField) {
+				searchField.focus();
+				kbMgr.grabFocus(kbMgr.__focusObj);
+			}
+			kbMgr.grabFocus(focusObj);
+			rv = DwtKeyboardMgr.__keyDownHdlr(ev);
+		}
+	}
+
 	if (this._TIMER_spell) {
 		clearTimeout(this._TIMER_spell);
 	}
@@ -1783,7 +1802,7 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 			enableToolbars.call(this, enableFocus);
 
 			var doc = this._getIframeDoc();
-			doc.designMode = "off";
+			Dwt.enableDesignMode(doc, false);
 			state = -1;
 			if (this._ace_componentsLoading > 0) { return; }
 
@@ -1814,7 +1833,7 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 			enableToolbars.call(this, true);
 			if (this._ace_componentsLoading > 0) { return; }
 
-			doc.designMode = "on";
+			Dwt.enableDesignMode(doc, true);
 			if (!bookmark || bookmark.length == 0) {
 				r = doc.createRange();
 				r.selectNodeContents(doc.body);
