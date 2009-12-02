@@ -446,7 +446,7 @@ function(types) {
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
 
-	this._searchFor = params.searchFor || this._searchFor;
+	var searchFor = this._searchFor = params.searchFor || this._searchFor;
 	appCtxt.notifyZimlets("onSearch", [params.query]);
 
 	if (this._searchToolBar) {
@@ -465,17 +465,17 @@ function(params, noRender, callback, errorCallback) {
 	if (types instanceof Array) { // convert array to AjxVector if necessary
 		types = AjxVector.fromArray(types);
 	}
-	if (params.searchFor == ZmId.SEARCH_MAIL) {
+	if (searchFor == ZmId.SEARCH_MAIL) {
 		params = appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
 	}
 
-	if (this._searchFor == ZmItem.TASK) {
+	if (searchFor == ZmItem.TASK) {
 		var tlc = AjxDispatcher.run("GetTaskListController");
 		params.allowableTaskStatus = (tlc) ? tlc.getAllowableTaskStatus() : null;
 	}
 
 	// if the user explicitly searched for all types, force mixed view
-	var isMixed = (params.searchFor == ZmId.SEARCH_ANY);
+	var isMixed = (searchFor == ZmId.SEARCH_ANY);
 
 	if (params.searchAllAccounts && !params.queryHint) {
 		params.queryHint = appCtxt.accountList.generateQuery(null, types);
@@ -517,7 +517,7 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	// calendar searching is special so hand it off if necessary
-	if (this._searchFor == ZmItem.APPT) {
+	if (searchFor == ZmItem.APPT) {
 		var controller = AjxDispatcher.run("GetCalController");
 		if (controller && types.contains(ZmItem.APPT)) {
 			controller.handleUserSearch(params, respCallback);
