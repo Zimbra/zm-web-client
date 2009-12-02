@@ -112,3 +112,7 @@ body	{  @ChromeBg@ }
 .ZmOverviewLocalHeader-selected-focused {
 	@TreeHeaderContainer@
 }
+
+.ZOptionsSectionTable .ZToolbarButtonTable .ZWidgetTitle {
+	color: #333;
+}

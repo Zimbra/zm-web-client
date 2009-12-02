@@ -117,3 +117,7 @@ body	{  @ChromeBg@ }
 .ZmContactInfoView .contactHeaderTable {
 	background-color: #e5e5e5;
 }
+
+.ZOptionsSectionTable .ZToolbarButtonTable .ZWidgetTitle {
+	color: #333;
+}

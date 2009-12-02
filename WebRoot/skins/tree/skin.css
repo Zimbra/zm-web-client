@@ -98,3 +98,7 @@ body	{  @ChromeBg@ }
 .DwtTreeItem-selected-focused {
 	@TreeItemSelectedBg@
 }
+
+.ZOptionsSectionTable .ZToolbarButtonTable .ZWidgetTitle {
+	color: #333;
+}

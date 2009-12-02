@@ -103,3 +103,7 @@ body	{  @ChromeBg@ }
 .ZDisabled .ZToolbarButtonTable .ZWidgetTitle {
 	color: #ccc;
 }
+
+.ZOptionsSectionTable .ZToolbarButtonTable .ZWidgetTitle {
+	color: #333;
+}
