@@ -84,18 +84,26 @@ function(toolbar, listView) {
 
 ZmFilterRulesController.prototype.getToolbarButtons =
 function() {
-	return [
+	var ops = [
 		ZmOperation.ADD_FILTER_RULE,
 		ZmOperation.SEP,
 		ZmOperation.EDIT_FILTER_RULE,
 		ZmOperation.SEP,
-		ZmOperation.REMOVE_FILTER_RULE,
-		ZmOperation.SEP,
-		ZmOperation.RUN_FILTER_RULE,
-		ZmOperation.FILLER, ZmOperation.MOVE_UP_FILTER_RULE,
-		ZmOperation.SEP,
-		ZmOperation.MOVE_DOWN_FILTER_RULE
+		ZmOperation.REMOVE_FILTER_RULE
 	];
+
+	// bug: 42903 - disable running filters in offline for now
+	if (!appCtxt.isOffline) {
+		ops.push(ZmOperation.SEP, ZmOperation.RUN_FILTER_RULE);
+	}
+
+	ops.push(ZmOperation.FILLER,
+			ZmOperation.MOVE_UP_FILTER_RULE,
+			ZmOperation.SEP,
+			ZmOperation.MOVE_DOWN_FILTER_RULE
+	);
+
+	return ops;
 };
 
 ZmFilterRulesController.prototype.resetListView =
@@ -167,14 +175,22 @@ function() {
 
 ZmFilterRulesController.prototype._getActionMenuOps =
 function() {
-	return [
+	var ops = [
 		ZmOperation.EDIT_FILTER_RULE,
-		ZmOperation.REMOVE_FILTER_RULE,
-		ZmOperation.RUN_FILTER_RULE,
-		ZmOperation.SEP,
-		ZmOperation.MOVE_UP_FILTER_RULE,
-		ZmOperation.MOVE_DOWN_FILTER_RULE
+		ZmOperation.REMOVE_FILTER_RULE
 	];
+
+	// bug: 42903 - disable running filters in offline for now
+	if (!appCtxt.isOffline) {
+		ops.push(ZmOperation.RUN_FILTER_RULE);
+	}
+
+	ops.push(ZmOperation.SEP,
+			ZmOperation.MOVE_UP_FILTER_RULE,
+			ZmOperation.MOVE_DOWN_FILTER_RULE
+	);
+
+	return ops;
 };
 
 /**
