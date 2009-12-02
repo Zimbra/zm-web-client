@@ -871,15 +871,18 @@ function(clickedEl, ev) {
 
 ZmMailListView.prototype._setNextSelection =
 function() {
-	var item = this._getItemToSelect();
-	if (item) {
-		this.setSelection(item, false);
+
+	if (this._itemToSelect) {
+		var item = this._getItemToSelect();
+		if (item) {
+			this.setSelection(item, false);
+			this._itemToSelect = null;
+		}
 	}
 };
 
 /**
  * Returns the next item to select, typically set by the controller.
- * A value of -1 means return the last item.
  */
 ZmMailListView.prototype._getItemToSelect =
 function() {
