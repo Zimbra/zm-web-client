@@ -111,6 +111,13 @@ ZmApp.DROP_TARGETS[ZmApp.MAIN] = {};
 // Static listener registration
 ZmZimbraMail._listeners = {};
 
+// Consts
+ZmZimbraMail.UI_LOAD_BEGIN		= "ui_load_begin";
+ZmZimbraMail.UI_LOAD_END		= "ui_load_end";
+ZmZimbraMail.UI_NETWORK_UP		= "network_up";
+ZmZimbraMail.UI_NETWORK_DOWN	= "network_down";
+
+
 // Public methods
 
 ZmZimbraMail.prototype.toString =
@@ -300,7 +307,7 @@ function() {
 ZmZimbraMail.prototype.startup =
 function(params) {
 	if (appCtxt.isOffline) {
-		this.sendClientEventNotify(true);
+		this.sendClientEventNotify(ZmZimbraMail.UI_LOAD_BEGIN);
 	}
 
 	appCtxt.inStartup = true;
@@ -659,11 +666,28 @@ function() {
 			}), prcb.delay);
 	} else {
 		if (appCtxt.isOffline) {
-			this.sendClientEventNotify(false);
+			this.sendClientEventNotify(ZmZimbraMail.UI_LOAD_END);
+
+			if (AjxEnv.isPrism) {
+				var nc = new ZimbraNetworkChecker();
+				nc.addEventListener("offline", function(e) { appCtxt.getAppController().handleNetworkChange(false); }, false);
+				nc.addEventListener("online", function(e) { appCtxt.getAppController().handleNetworkChange(true); }, false);
+			}
 		}
 		if (appCtxt.multiAccounts) {
 			this._resetUserInfo();
 		}
+	}
+};
+
+ZmZimbraMail.prototype.handleNetworkChange =
+function(online) {
+	if (online) {
+		this.setStatusMsg(ZmMsg.networkChangeOnline);
+		this.sendClientEventNotify(ZmZimbraMail.UI_NETWORK_UP);
+	} else {
+		this.setStatusMsg(ZmMsg.networkChangeOffline, ZmStatusView.LEVEL_WARNING);
+		this.sendClientEventNotify(ZmZimbraMail.UI_NETWORK_DOWN);
 	}
 };
 
@@ -918,12 +942,12 @@ function() {
 };
 
 ZmZimbraMail.prototype.sendClientEventNotify =
-function(loadBegin) {
+function(event) {
 	var params = {
 		jsonObj: {
 			ClientEventNotifyRequest: {
 				_jsns:"urn:zimbraOffline",
-				e: loadBegin ? "ui_load_begin" : "ui_load_end"
+				e: event
 			}
 		},
 		callback: (new AjxCallback(this, this.setInstantNotify, true)),
