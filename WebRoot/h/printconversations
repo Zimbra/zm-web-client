@@ -17,7 +17,7 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <c:set var="convIds" value="${fn:join(paramValues.id, ',')}"/>
-    <zm:computeSearchContext var="context" usecache="true"/>
+    <zm:computeSearchContext var="context" usecache="true" types="conversation" query="*"/>
 
 </app:handleError>
 <html>
