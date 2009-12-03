@@ -451,3 +451,19 @@ function(params) {
 	}
 	return new ZmTreeView(params);
 };
+
+ZmCalendarTreeController.prototype._postSetup =
+function(overviewId, account) {
+	ZmTreeController.prototype._postSetup.apply(this, arguments);
+
+	// bug: 43067 - remove the default calendar since its only a place holder
+	// for caldav based accounts
+	if (account.type == ZmAccount.TYPE_GMAIL ||
+		account.type == ZmAccount.TYPE_YMP)
+	{
+		var treeView = this.getTreeView(overviewId);
+		var calendarId = ZmOrganizer.getSystemId(ZmOrganizer.ID_CALENDAR, account);
+		var treeItem = treeView.getTreeItemById(calendarId);
+		treeItem.dispose();
+	}
+};

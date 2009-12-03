@@ -304,7 +304,7 @@ function(parent, data) {
 	if (data instanceof ZmSearchFolder) {
 		parent.getOp(ZmOperation.MARK_ALL_READ).setVisible(false);
 		parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(false);
-		parent.getOp(ZmOperation.NEW_FOLDER).setVisible(false);
+		parent.getOp(this._newOp).setVisible(false);
 		parent.getOp(ZmOperation.SYNC).setVisible(false);
 		parent.getOp(ZmOperation.DELETE).setVisible(true);
 		return;
@@ -315,12 +315,12 @@ function(parent, data) {
 
 	parent.getOp(ZmOperation.MARK_ALL_READ).setVisible(!isAcctType);
 	parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(!isAcctType);
-	parent.getOp(ZmOperation.NEW_FOLDER).setVisible(isAcctType);
+	parent.getOp(this._newOp).setVisible(isAcctType);
 	parent.getOp(ZmOperation.SYNC).setVisible(isAcctType);
 	parent.getOp(ZmOperation.DELETE).setVisible(false);
 
 	if (isAcctType) {
-		parent.enable(ZmOperation.NEW_FOLDER, (acct && acct.type != ZmAccount.TYPE_POP));
+		parent.enable(this._newOp, (acct && acct.type != ZmAccount.TYPE_POP));
 		parent.enable(ZmOperation.SYNC, (!acct || (acct && !acct.isMain)));
 	} else {
 		var markAllEnabled = false;
@@ -585,8 +585,10 @@ function(folderId, label) {
 ZmAccountOverviewContainer.prototype._initializeActionMenu =
 function() {
 	if (!this._actionMenu) {
+		var orgType = ZmApp.ORGANIZER[this._appName];
+		this._newOp = ZmOrganizer.NEW_OP[orgType];
 		var ops = [
-			ZmOperation.NEW_FOLDER,
+			this._newOp,
 			ZmOperation.SYNC,
 			ZmOperation.MARK_ALL_READ,
 			ZmOperation.EMPTY_FOLDER,
@@ -618,7 +620,7 @@ function(ev) {
 	var opId = ev.item.getData(ZmOperation.KEY_ID);
 	var data = this._actionedHeaderItem.getData(Dwt.KEY_ID);
 
-	if (opId == ZmOperation.NEW_FOLDER) {
+	if (opId == this._newOp) {
 		var treeId = ZmApp.ORGANIZER[this._appName];
 		var tc = this._controller.getTreeController(treeId, true);
 		if (tc) {

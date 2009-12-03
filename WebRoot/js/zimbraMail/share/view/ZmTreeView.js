@@ -299,6 +299,17 @@ function(params) {
 			continue;
 		}
 
+		var parentNode = params.treeNode;
+
+		// bug: 43067 - reparent calendars for caldav-based accounts
+		if (appCtxt.multiAccounts &&
+			child.parent.nId == ZmOrganizer.ID_CALENDAR &&
+			(child.account.type == ZmAccount.TYPE_GMAIL ||
+			 child.account.type == ZmAccount.TYPE_YMP))
+		{
+			parentNode = parentNode.parent;
+		}
+
 		// if there's a large number of folders to display, make user click on special placeholder
 		// to display remainder; we then display them MAX_ITEMS at a time
 		if (numItems >= ZmTreeView.MAX_ITEMS) {
@@ -313,7 +324,7 @@ function(params) {
 				var orgs = ZmMsg[ZmOrganizer.LABEL[this.type]].toLowerCase();
 				child = new ZmFolder({id:ZmFolder.ID_LOAD_FOLDERS, name:AjxMessageFormat.format(ZmMsg.showRemainingFolders, orgs)});
 				child._tooltip = AjxMessageFormat.format(ZmMsg.showRemainingFoldersTooltip, [(children.length - i), orgs]);
-				var ti = this._addNew(params.treeNode, child);
+				var ti = this._addNew(parentNode, child);
 				ti.enableSelection(true);
 				if (this.isCheckedStyle) {
 					ti.showCheckBox(false);
@@ -329,7 +340,7 @@ function(params) {
 			params.treeNode.addSeparator();
 			addSep = false;
 		}
-		this._addNew(params.treeNode, child, null, params.noTooltips, params.omit);
+		this._addNew(parentNode, child, null, params.noTooltips, params.omit);
 		numItems++;
 	}
 };
