@@ -1005,3 +1005,9 @@ function(height) {
 		this._checkItemCount();
 	}
 };
+
+// Allow list view classes to override type used in nav text. Return null to say "items".
+ZmListView.prototype._getItemCountType =
+function() {
+	return this.type;
+};

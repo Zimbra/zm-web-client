@@ -21,9 +21,9 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 
 	// call super constructor
 	var headerList = this._getHeaderList(parent);
-	ZmListView.call(this, {parent:parent, className:"ZmBriefcaseDetailListView",
-					posStyle:DwtControl.ABSOLUTE_STYLE, view:ZmId.VIEW_BRIEFCASE, type:ZmItem.DOCUMENT,
-					controller:controller, headerList:headerList, dropTgt:dropTgt});
+	ZmListView.call(this, {parent:parent, className:"ZmBriefcaseDetailListView", pageless:true,
+					posStyle:DwtControl.ABSOLUTE_STYLE, view:ZmId.VIEW_BRIEFCASE_DETAIL, type:ZmItem.DOCUMENT,
+					controller:controller, headerList:headerList, dropTgt:dropTgt, pageless:true});
 
 	// create a action menu for the header list
 	this._colHeaderActionMenu = new ZmPopupMenu(this);
@@ -158,18 +158,6 @@ function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
-ZmDetailListView.prototype.set =
-function(list) {
-    var element = this.getHtmlElement();
-	if(list instanceof ZmList){
-       var list1 = list.getVector();
-       DwtListView.prototype.set.call(this,list1.clone());
-       //this._list = list1; 
-       return; 
-    }
-
-};
-
 //for ZimbraDnD to do make even more generic
 ZmDetailListView.prototype.processUploadFiles =
 function() {
@@ -207,3 +195,8 @@ function(params) {
 };
 
 //end zimbradnd
+
+ZmDetailListView.prototype._getItemCountType =
+function() {
+	return null;
+};

@@ -1434,11 +1434,16 @@ function() {
 	var lv = this._listView[this._currentView];
 	var list = lv && lv._list;
 	if (!list) { return ""; }
-	var type = lv && lv.type;
+	var type = lv._getItemCountType();
 	var size = list.size();
 	var total = this._getNumTotal();
 	var num = total || size;
-	var typeKey = !type ? "items" : (num == 1) ? ZmItem.MSG_KEY[type] : ZmItem.PLURAL_MSG_KEY[type];
+	var typeKey;
+	if (type) {
+		typeKey = (num == 1) ? ZmItem.MSG_KEY[type] : ZmItem.PLURAL_MSG_KEY[type];
+	} else {
+		typeKey = (num == 1) ? "item" : "items";
+	}
 	if (total) {
 		return AjxMessageFormat.format(ZmMsg.itemCount1, [size, total, ZmMsg[typeKey]]);
 	} else {

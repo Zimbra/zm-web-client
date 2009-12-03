@@ -104,6 +104,7 @@ function() {
     ZmItem.registerItem(ZmItem.DOCUMENT,
 						{app:			ZmApp.NOTEBOOK,
 						 nameKey:		"document",
+						 pluralNameKey:	"documents",
 						 icon:			"GenericDoc",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmDocument",

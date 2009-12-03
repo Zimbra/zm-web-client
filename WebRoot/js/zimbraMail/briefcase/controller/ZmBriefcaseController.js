@@ -96,9 +96,7 @@ function() {
 		ops.push(ZmOperation.NEW_PRESENTATION);
 	}
 
-	ops.push(ZmOperation.FILLER);
-
-	if(appCtxt.get(ZmSetting.MAIL_ENABLED)){
+	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		ops.push(ZmOperation.SEND_FILE_MENU);
 	}
 
@@ -112,24 +110,32 @@ function(op) {
 
 ZmBriefcaseController.prototype._initializeToolBar =
 function(view) {
+
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._setupViewMenu(view, true);
 		this._setNewButtonProps(view, ZmMsg.uploadNewFile, "NewPage", "NewPageDis", ZmOperation.NEW_FILE);
-
-		var toolbar = this._toolbar[this._currentView];
+		var toolbar = this._toolbar[view];
 		var button = toolbar.getButton(ZmOperation.REFRESH);
 		if (button) {
 			button.setImage("Refresh");
 		}
-
 		button = toolbar.getButton(ZmOperation.DELETE);
 		button.setToolTipContent(ZmMsg.deletePermanentTooltip);
-
 		this._initSendMenu(view);
+		toolbar.addFiller();
+		this._initializeNavToolBar(view);
+		appCtxt.notifyZimlets("initializeToolbar", [this._app, toolbar, this, view], {waitUntilLoaded:true});
+	} else {
+		this._setupViewMenu(view, false);
 	}
+};
 
-	this._setupViewMenu(view, false);
+ZmBriefcaseController.prototype._initializeNavToolBar =
+function(view) {
+	this._toolbar[view].addOp(ZmOperation.TEXT);
+	var text = this._itemCountText[view] = this._toolbar[view].getButton(ZmOperation.TEXT);
+	text.addClassName("itemCountText");
 };
 
 ZmBriefcaseController.prototype._resetOperations =
@@ -151,7 +157,7 @@ function(parent, num) {
 			}
 		}
 	}
-	var isMultiFolder = (noOfFolders>1);
+	var isMultiFolder = (noOfFolders > 1);
 	var isShared = this.isShared(this._currentFolder);
 	var isReadOnly = this.isReadOnly(this._currentFolder);
 	var isItemSelected = (num>0);
@@ -341,6 +347,7 @@ function(items) {
 	if (items) {
 		// filter Notebook documents
 		this._list = new ZmList(ZmItem.MIXED, this._currentSearch);
+		this._list.setHasMore(items.hasMore);
 		var temp_arr = items ? items.getArray() : null;
 		if (temp_arr) {
 			for (var i=0; i < temp_arr.length ; i++) {
@@ -364,7 +371,7 @@ function(items) {
 	// switch view
 	var view = this._currentView;
 	if (!view) {
-		view = this._defaultView();
+		view = this._defaultView(items.hasFolder);
 		this._forceSwitch = true;
 	}
 
@@ -392,6 +399,7 @@ function(view, force) {
 			? this._parentView[this._currentView]
 			: this._listView[this._currentView];
 		this._setView({view:view, elements:elements, isAppView:true});
+		this._resetNavToolBarButtons(view);
 	}
 	Dwt.setTitle(this.getCurrentView().getTitle());
 };
@@ -418,33 +426,36 @@ function(callback,folderId,results) {
 
 ZmBriefcaseController.prototype.searchFolder =
 function(folderId, callback) {
-	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
-	soapDoc.setMethodAttribute("types", ZmSearch.TYPE[ZmItem.BRIEFCASE]);
-	soapDoc.setMethodAttribute("limit", "250");
-	soapDoc.set("query", ('inid:"'+folderId+'"'));
 
 	var folder = appCtxt.getById(folderId);
-	var params = { soapDoc:soapDoc, noBusyOverlay:false, accountName: (folder && folder.account && folder.account.name) };
-	var response = appCtxt.getAppController().sendRequest(params);
-	this.handleSearchResponse(folderId, response, callback);
+	var params = {
+		accountName:	folder && folder.account && folder.account.name,
+		types:			[ZmId.ITEM_DOCUMENT],
+		query:			'inid:"' + folderId + '"',
+		limit:			this._app.getLimit()
+	};
+	var search = new ZmSearch(params);
+	var respCallback = new AjxCallback(this, this.handleSearchResponse, [folderId, callback]);
+	search.execute({callback:respCallback});
 };
 
 ZmBriefcaseController.prototype.handleSearchResponse =
-function(folderId, response, callback) {
-	var items; // it's zmlist now not an array
-	if (response && (response.SearchResponse || response._data.SearchResponse)) {
-		var searchResponse = response.SearchResponse || response._data.SearchResponse;
-		var docs = searchResponse.doc || [];
-		items = this.processDocsResponse(docs, folderId);
-	}
+function(folderId, callback, result) {
+
+	var response = this._activeSearch = result.getResponse();
+	this._currentSearch = response.search;
+
+	var items = this.processDocsResponse(response._respEl, folderId);
 	if (callback) {
 		callback.run(items);
 	}
 };
 
 ZmBriefcaseController.prototype.processDocsResponse =
-function(docs,folderId) {
-	var items = new ZmList(ZmItem.MIXED,this._currentSearch);
+function(searchResp, folderId) {
+
+	var docs = searchResp.doc || [];
+	var items = new ZmList(ZmItem.MIXED, this._currentSearch);
 	for (var i = 0; i < docs.length; i++) {
 		var doc = docs[i];
 		var item = this.getItemById(doc.id);
@@ -463,9 +474,10 @@ function(docs,folderId) {
 	// recursive search not done yet : workaround
 	var folder = appCtxt.getById(folderId);
 	if (folder) {
-		var childrens = folder.children;
-		for (var i = 0; i < childrens.size(); i++) {
-			var briefcase = childrens.get(i);
+		var children = folder.children;
+		var size = children.size();
+		for (var i = 0; i < size; i++) {
+			var briefcase = children.get(i);
 			var item = this.getItemById(briefcase.id);
 			if (!item) {
 				item = new ZmBriefcaseItem();
@@ -477,6 +489,8 @@ function(docs,folderId) {
 			items.add(item);
 		}
 	}
+
+	items.hasMore = searchResp.more;
 
 	return items;
 };
