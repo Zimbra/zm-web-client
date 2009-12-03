@@ -135,3 +135,75 @@
                 </c:choose>
             </div></div></div>
 </c:if><input type="hidden" name="isInTrash" value="${context.folder.isInTrash}">
+<c:if test="${isTop}">
+<div id="fbbar" class="tb tbl" style="display:none;">
+<div class="tr"><span class="td" id="fbtd"><span id="sc"></span>
+<c:if test="${not context.isContactSearch}">
+<span class="zo_button_group delete_button">
+<input type='button' class='zo_button prev_button' name='actionJunk' value='<fmt:message key="${context.folder.isSpam ? 'actionNotSpam' : 'actionSpam'}"/>' onclick="$('zForm').anAction[0].value='actionMark${context.folder.isSpam ? 'Unspam' : 'Spam' }';submitForm($('zForm'));">
+<input type='submit' class='zo_button next_button' name='action${context.folder.isInTrash ? 'Hard' : ''}Delete' value='<fmt:message key="delete"/>'>
+</span>
+</c:if>
+<c:if test="${context.isContactSearch}">
+<input type='submit' class='zo_button delete_button' name='action${context.folder.isInTrash ? 'Hard' : ''}Delete' value='<fmt:message key="delete"/>'>    
+</c:if>
+<c:if test="${context.searchResult.size gt 0 && !context.isGALSearch}">
+<span>
+    <select class="zo_select_button" name="anAction" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
+        <option value="" selected="selected"><fmt:message key="moreActions"/></option>
+        <c:choose><c:when test="${not context.folder.isInTrash}"><option value="actionDelete"><fmt:message key="delete"/></option></c:when>
+            <c:otherwise><option value="actionHardDelete"><fmt:message key="delete"/></option></c:otherwise>
+        </c:choose>
+        <optgroup label="<fmt:message key='select'/>">
+            <option value="selectAll"><fmt:message key="all"/></option>
+            <option value="selectNone"><fmt:message key="none"/></option>
+        </optgroup><c:choose><c:when test="${context.isConversationSearch || context.isMessageSearch}">
+        <c:if test="${context.isMessageSearch}"><option value="actionAttachToCompose"><fmt:message key="sendAsAttachments"/></option></c:if>
+        <optgroup label="<fmt:message key="markAs"/>">
+            <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
+            <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option><c:choose>
+            <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+            <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise></c:choose>
+        </optgroup></c:when><c:when test="${context.isContactSearch}">
+        <optgroup label="<fmt:message key="compose"/>">
+            <option value="composeTo"><fmt:message key="to"/></option>
+            <option value="composeCC"><fmt:message key="cc"/></option>
+            <option value="composeBCC"><fmt:message key="bcc"/></option>
+        </optgroup></c:when></c:choose>
+        <optgroup label="<fmt:message key="MO_flag"/>">
+            <option value="actionFlag"><fmt:message key="add"/></option>
+            <option value="actionUnflag"><fmt:message key="remove"/></option>
+        </optgroup>
+        <optgroup label="<fmt:message key="moveAction"/>">
+            <c:choose>
+                <c:when test="${context.isContactSearch}"><c:set var="count" value="${0}"/>
+                    <zm:forEachFolder var="folder">
+                        <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isContactMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if>
+                    </zm:forEachFolder>
+                </c:when>
+                <c:otherwise><c:set var="count" value="${0}"/>
+                    <zm:forEachFolder var="folder">
+                        <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if>
+                    </zm:forEachFolder>
+                </c:otherwise>
+            </c:choose>
+        </optgroup><c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+            <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
+            <optgroup label="<fmt:message key="MO_actionAddTag"/>">
+                <c:forEach var="atag" items="${allTags}"><option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
+            </optgroup>
+            <optgroup label="<fmt:message key="MO_actionRemoveTag"/>">
+                <c:forEach var="atag" items="${allTags}"><option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
+            </optgroup>
+        </c:if>
+    </select>
+</span>
+<noscript><span><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></span></noscript>
+<script type="text/javascript">var actGo = document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script></c:if>
+<c:if test="${context.isContactSearch}">
+<span class=" f-right"><input type='button' class='zo_button' value='<fmt:message key="to"/>' onclick="$('zForm').anAction[0].value='composeTo';submitForm($('zForm'));">
+</span>
+</c:if>
+<span class="zo_button1" onclick="return checkAll($('zForm').getElementsByClassName('chk'),false);"><span class="SmlIcnHldr Cancel"></span></span></span></div>
+</div>
+</c:if>

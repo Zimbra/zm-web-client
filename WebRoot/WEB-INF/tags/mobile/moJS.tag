@@ -406,7 +406,7 @@ var customClick = function (e) {
         if(tname.match(/input/ig) && ttype.match(/submit/ig)){ //submit button; add clicked=true to it
             targ._wasClicked = true;                                                          //ajxForm submit will send only clicked btns to server
             return true;
-        }<c:if test="${ua.isiPhone or ua.isiPod}">else if(dV[dId] && tname.match(/input/ig) && ttype.match(/checkbox/ig))
+        }<c:if test="${ua.isiPhone or ua.isiPod}">else if(tname.match(/input/ig) && ttype.match(/checkbox/ig))
             updateChecked(false,true);</c:if>
     }
     //targ.dispatchEvent(e);
@@ -698,8 +698,8 @@ var hideDelete = function(id){
     if(l && l.length > 0 && dV[id]){
         l = l[0];
         l.innerHTML = iH[id];
-        updateChecked(false);
         p.getElementsByClassName('chk')[0].checked=false;
+        updateChecked(false);
         $('zForm').anAction[0].value='';
         dV[id]=false;
         delete iH[id];
@@ -710,12 +710,20 @@ var updateChecked = function(disabled,doItAll){
    for(var i=0, len = (cbs !== undefined) ? cbs.length : 0; i < len; i++){
        if(cbs[i].checked){ cCount++;cbs[i].disabled = disabled;}
    }
-   if(doItAll)
+   if(cCount > 0){
+    $("fbbar").style.display = "table";
+    uFB();
+    $("sc").innerHTML = "<span class='small-gray-text'>"+cCount+"</span>";
+   }else{
+    $("fbbar").style.display = "none";
+    $("sc").innerHTML = "";
+   }
+   if(doItAll && dV[dId])
     if(cCount <= 0)
         hideDelete(dId);
     else
         $('delBtn').value = "<fmt:message key="delete"/> ("+cCount+")";
-   return cCount; 
+   return cCount;
 };
 var showDelete = function(id){
    var p = $(id);
@@ -770,8 +778,7 @@ var checkAll = function(cb, checked) {
             cb[i].checked = checked;
     else
         cb.checked = checked;
-    <c:if test="${ua.isiPhone or ua.isiPod}">if(dV[dId])
-        updateChecked(false,true);</c:if>
+    <c:if test="${ua.isiPhone or ua.isiPod}">updateChecked(false,true);</c:if>
 };
 <c:if test="${ua.isiPhone or ua.isiPod}">
 var updateOrientation = function() {
@@ -811,6 +818,8 @@ if(window.location.hash){
     sAT(window.location.hash);
 };
 <c:if test="${ua.isiPhone || ua.isiPod}">
+var uFB = function() {var fb = $("fbbar"); if(fb) {var t = window.scrollY;if(t > 88){ t -= 88;}else{t=0;} fb.style['-webkit-transform'] = 'translateY(' + t + 'px)'; }}
+window.onscroll = uFB;
     window.addEventListener("load", function() {
         setTimeout(function() {
             updateOrientation();

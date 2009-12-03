@@ -225,4 +225,4 @@
 <input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>
 <c:if test="${message.isDraft}"><input type="hidden" name="draftid" value="${message.id}"/></c:if>
 </form>
-<script type="text/javascript">AC("toField","toContainer");AC("ccField","ccContainer");AC("bccField","bccContainer");</script>
+<script type="text/javascript">AC("toField","toContainer");AC("ccField","ccContainer");AC("bccField","bccContainer");$('${param.op eq 'reply' || param.op eq 'replyAll' ? 'bodyField' : 'toField'}').focus();</script>
