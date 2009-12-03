@@ -16,7 +16,7 @@ ZmBriefcaseView = function(parent, controller, dropTgt) {
 
 	ZmListView.call(this, {parent:parent, className:"ZmBriefcaseView", posStyle:DwtControl.ABSOLUTE_STYLE,
 					view:ZmId.VIEW_BRIEFCASE, type:ZmItem.DOCUMENT, controller:controller,
-					dropTgt:dropTgt});
+					dropTgt:dropTgt, pageless:true});
 	
 	this._controller = controller;
 
@@ -139,17 +139,6 @@ function(selectedArray) {
 			this._selectedItems.add(el);
 		}
 	}
-};
-
-ZmBriefcaseView.prototype.set =
-function(list) {              //We set list now, not folder id
-	var element = this.getHtmlElement();
-	if(list instanceof ZmList){
-       var list1 = list.getVector();
-       DwtListView.prototype.set.call(this,list1.clone());
-       return;
-    }
-	
 };
 
 ZmBriefcaseView.prototype.getTitle =
@@ -288,3 +277,20 @@ ZmBriefcaseView.prototype.uploadFiles = function(){
     attachDialog.uploadFiles(files,document.getElementById("zdnd_form"),{id:this._controller._currentFolder});
 };
 //End ZimbraDnD
+
+ZmBriefcaseView.prototype._getItemCountType =
+function() {
+	return null;
+};
+
+// Grab more items if we're within one row of bottom
+ZmBriefcaseView.prototype._getItemsNeeded =
+function() {
+
+	if (!(this._controller._list && this._controller._list.hasMore()) || !this._list) { return 0; }
+	if (!this._rendered) { return 0; }
+
+	var scrollDiv = this._parentEl;
+	var fromBottom = (scrollDiv.scrollHeight - (scrollDiv.scrollTop + scrollDiv.clientHeight));
+	return (fromBottom <= this._rowHeight) ? this.getLimit(1) : 0;
+};

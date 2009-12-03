@@ -964,8 +964,21 @@ function(ev) {
 ZmListView.prototype._checkItemCount =
 function() {
 
-	if (!(this._controller._list && this._controller._list.hasMore()) || !this._list) { return; }
-	if (!this._rendered || !this._rowHeight) { return; }
+	var itemsNeeded = this._getItemsNeeded();
+	if (itemsNeeded) {
+		this._controller._paginate(this._view, true, null, itemsNeeded);
+	}
+};
+
+/**
+ * Figure out how many items we need to fetch to maintain a decent number
+ * below the fold. Nonstandard list views may override.
+ */
+ZmListView.prototype._getItemsNeeded =
+function() {
+
+	if (!(this._controller._list && this._controller._list.hasMore()) || !this._list) { return 0; }
+	if (!this._rendered || !this._rowHeight) { return 0; }
 
 	DBG.println(AjxDebug.DBG2, "List view: checking item count");
 	var scrollDiv = this._parentEl;
@@ -992,10 +1005,7 @@ function() {
 	var itemsNeeded = 0;
 	if (bottom < target) {
 		// buffer below visible bottom of list view is not full
-		itemsNeeded = Math.max(Math.floor((target - bottom) / rh), this.getLimit(1));
-	}
-	if (itemsNeeded) {
-		this._controller._paginate(this._view, true, null, itemsNeeded);
+		return Math.max(Math.floor((target - bottom) / rh), this.getLimit(1));
 	}
 };
 

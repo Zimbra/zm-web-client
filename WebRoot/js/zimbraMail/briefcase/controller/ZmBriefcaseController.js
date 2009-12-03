@@ -248,7 +248,7 @@ function() {
 
 ZmBriefcaseController.prototype._defaultView =
 function() {
-	return ZmId.VIEW_BRIEFCASE_COLUMN;
+	return ZmId.VIEW_BRIEFCASE_DETAIL;
 };
 
 ZmBriefcaseController.prototype._createNewView =
@@ -454,6 +454,8 @@ function(folderId, callback, result) {
 ZmBriefcaseController.prototype.processDocsResponse =
 function(searchResp, folderId) {
 
+	this._folderId = folderId;
+
 	var docs = searchResp.doc || [];
 	var items = new ZmList(ZmItem.MIXED, this._currentSearch);
 	for (var i = 0; i < docs.length; i++) {
@@ -495,6 +497,21 @@ function(searchResp, folderId) {
 	return items;
 };
 
+// override since briefcase results are handled their own way :(
+ZmBriefcaseController.prototype._handleResponsePaginate =
+function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
+
+	var searchResult = result.getResponse();
+	this._list.setHasMore(searchResult.getAttribute("more"));
+	this._cacheList(searchResult, offset);
+
+	var items = this.processDocsResponse(searchResult._respEl, this._folderId);
+	this._listView[this._currentView].addItems(items.getArray());
+	this._resetOperations(this._toolbar[view], 0);
+	this._resetNavToolBarButtons(view);
+	appCtxt.getAppController().focusContentPane();
+	this._searchPending = false;
+};
 
 ZmBriefcaseController.prototype.getItemById =
 function(itemId) {
