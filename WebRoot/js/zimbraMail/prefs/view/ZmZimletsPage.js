@@ -153,9 +153,14 @@ ZmZimletsPage._getZimlets =
 function() {
 	var allz = appCtxt.get(ZmSetting.ZIMLETS) || [];
 	var checked = appCtxt.get(ZmSetting.CHECKED_ZIMLETS) || [];
-	var zimlets = new ZmPrefZimlets();
+    var mandatory = appCtxt.get(ZmSetting.MANDATORY_ZIMLETS) || [];
+    var mandatoryStr = "," + mandatory.join(",") + ",";
+    var zimlets = new ZmPrefZimlets();
 	for (var i = 0; i <  allz.length; i++) {
 		var name = allz[i].zimlet[0].name;
+        if(mandatoryStr.indexOf(","+name+",") >= 0 ){
+            continue; //skip mandatory zimlets to be shown in prefs        
+        }
 		var desc = allz[i].zimlet[0].description;
 		if (allz[i].zimlet[0].zimletPanelItem) {
 			var label = (allz[i].zimlet[0].zimletPanelItem instanceof Array)
