@@ -20,12 +20,13 @@ ZmColListView =	function(parent, controller, dropTgt, index) {
 	this._controller = controller;
 	var view = ZmId.VIEW_BRIEFCASE_COLUMN;
 	controller._currentView = view;//cdel
-	ZmListView.call(this, {parent:parent, className:"ZmColListView",
-						   view:view, type:ZmItem.DOCUMENT,
-						   controller:controller, headerList:this._getHeaderList(parent),
-						   dropTgt:dropTgt});
-	
 	this._colIdx = index;
+
+	ZmListView.call(this, {parent:parent, className:"ZmColListView",
+						   view:view, type:ZmItem.DOCUMENT, id:ZmId.getViewId(view, index),
+						   controller:controller, headerList:this._getHeaderList(parent),
+						   dropTgt:dropTgt, pageless:true});
+	
 	// create a action menu for the header list
 	
 	//adding the listeners in constructors so that we get listener events
@@ -106,17 +107,6 @@ function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
-ZmColListView.prototype.set =
-function(list) {                           //We set list now, not folder id
-	var element = this.getHtmlElement();
-	if(list instanceof ZmList){
-       var list1 = list.getVector();
-       DwtListView.prototype.set.call(this,list1.clone());
-       return;
-    }
-	
-};
-
 ZmColListView.prototype._itemClicked =
 function(clickedEl, ev) {
 	this._controller._listView[ZmId.VIEW_BRIEFCASE_COLUMN] = this;
@@ -183,4 +173,9 @@ ZmColListView.prototype._getToolTip =
 function(params) {
 	if (!params.item) { return; }
 	return this._controller.getItemTooltip(params.item, this);
+};
+
+ZmColListView.prototype._getScrollDiv =
+function() {
+	return this.parent._colDivs[this._colIdx];
 };

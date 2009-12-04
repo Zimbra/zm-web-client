@@ -73,7 +73,7 @@ ZmListView = function(params) {
 
 	this._isPageless = params.pageless;
 	if (this._isPageless) {
-		Dwt.setHandler(this._parentEl, DwtEvent.ONSCROLL, ZmListView.handleScroll);
+		Dwt.setHandler(this._getScrollDiv(), DwtEvent.ONSCROLL, ZmListView.handleScroll);
 	}
 };
 
@@ -137,7 +137,7 @@ function(list, sortField) {
 			}
 			DwtListView.prototype.set.call(this, lvList, sortField);
 		}
-		this._setRowHeight(list);
+		this._setRowHeight();
 	} else {
 		var subList;
 		if (list instanceof ZmList) {
@@ -967,7 +967,6 @@ function(ev) {
  */
 ZmListView.prototype._checkItemCount =
 function() {
-
 	var itemsNeeded = this._getItemsNeeded();
 	if (itemsNeeded) {
 		this._controller._paginate(this._view, true, null, itemsNeeded);
@@ -985,7 +984,7 @@ function() {
 	if (!this._rendered || !this._rowHeight) { return 0; }
 
 	DBG.println(AjxDebug.DBG2, "List view: checking item count");
-	var scrollDiv = this._parentEl;
+	var scrollDiv = this._getScrollDiv();
 	var sh = scrollDiv.scrollHeight, st = scrollDiv.scrollTop, rh = this._rowHeight;
 
 	// view (porthole) height - everything measured relative to its top
@@ -1011,6 +1010,11 @@ function() {
 		// buffer below visible bottom of list view is not full
 		return Math.max(Math.floor((target - bottom) / rh), this.getLimit(1));
 	}
+};
+
+ZmListView.prototype._getScrollDiv =
+function() {
+	return this._parentEl;
 };
 
 ZmListView.prototype._sizeChildren =

@@ -195,14 +195,14 @@ function(folderId) {
 
 
 ZmMultiColView.prototype.showFolderContents =
-function(listView,folderId,items) {
-	listView.set(items/*folderId*/);
+function(listView, folderId, items) {
+	listView.set(items);
 	this._sizeChildren();
 	this.scrollToEnd();
 };
 
 ZmMultiColView.prototype.set =
-function(folderId) {
+function(list) {
 	var len = this._listPart.length;
 	var listView = null;
 	if(len == 0){
@@ -218,7 +218,7 @@ function(folderId) {
 		}
 	}
 	this._controller._listView[ZmId.VIEW_BRIEFCASE_COLUMN] = listView;
-	listView.set(folderId);
+	listView.set(list);
 };
 
 ZmMultiColView.prototype.showFileProps =
@@ -415,3 +415,8 @@ ZmMultiColView.prototype.uploadFiles = function(){
     attachDialog.uploadFiles(files,document.getElementById("zdnd_form"),{id:this._controller._currentFolder});
 };
 //end zimbradnd
+
+ZmMultiColView.prototype._checkItemCount =
+function() {
+	return this._currentListView._checkItemCount();
+};
