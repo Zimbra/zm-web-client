@@ -46,7 +46,7 @@
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${msg.subject}" context="${context}" selected='mail' folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
-    <zm:currentResultUrl var="currentUrl" value="" action="view" context="${context}"/>
+    <zm:currentResultUrl var="currentUrl" value="" action="${param.action}" context="${context}"/>
     <SCRIPT TYPE="text/javascript">
     <!--
     var zos = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
@@ -108,10 +108,10 @@
                 <td class='ZhAppContent'>
                         <c:set var="extImageUrl" value=""/>
                         <c:if test="${empty param.xim and empty msg.requestHeader}">
-                            <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
+                            <zm:currentResultUrl var="extImageUrl" value="search" action="${param.action}" context="${context}" xim="1"/>
                         </c:if>
                         <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
-                                             action="compose" paction="view" id="${msg.id}"/>
+                                             action="compose" paction="${param.action}" id="${msg.id}"/>
                         <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
                         <app:displayMessage mailbox="${mailbox}" message="${msg}" externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
                 </td>

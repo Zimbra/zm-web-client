@@ -101,6 +101,9 @@
                         <c:when test="${convHit.isDraft}">
                             <zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(convHit.id,'-')}" action="compose"/>
                         </c:when>
+			<c:when test="${empty selectedRow and convHit.id == context.currentItem.id and mailbox.prefs.readingPaneEnabled and not empty msg and (param.action eq 'view' or param.action eq 'view2')}">
+                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view3' index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                        </c:when>
                         <c:otherwise>
                             <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                         </c:otherwise>
@@ -168,7 +171,7 @@
                          <td class=List>
                              <table width=100% height=100% cellpadding=0 cellspacing=0>
                                  <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
-                                     <zm:currentResultUrl var="msgUrl" value="search" action="view2" context="${context}" cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
+                                     <zm:currentResultUrl var="msgUrl" value="search" action="${hit.id eq msg.id ? 'view4' : 'view2'}" context="${context}" cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
 
                                      <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != msg.id)) ? ' Unread':''}${hit.id eq msg.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                          <!-- <td class='CB' nowrap><input <c:if test="${hit.id eq msg.id}">checked</c:if> type=checkbox name="idcv" value="${hit.id}"/></td> -->

@@ -48,7 +48,7 @@
 <c:set var="ads" value='${message.subject} ${message.fragment}'/>
 
 <app:view mailbox="${mailbox}" selected='mail' title="${message.subject}" context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
-    <zm:currentResultUrl var="currentUrl" action="view2" value="search" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
+    <zm:currentResultUrl var="currentUrl" action="${param.action}" value="search" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
     <form action="${currentUrl}" method="post">
        <table width=100% cellpadding=0 cellspacing=0>
             <tr>
@@ -71,7 +71,7 @@
                                         <td class=List>
                                             <table width=100% height=100% cellpadding=0 cellspacing=0>
                                                 <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
-                                                    <zm:currentResultUrl var="msgUrl" value="search" action="view2" context="${context}"
+                                                    <zm:currentResultUrl var="msgUrl" value="search" action="${param.action}" context="${context}"
                                                                          cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
                                                     <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != message.id)) ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                                         <td style='border:none' class='CB' nowrap><input <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
@@ -92,11 +92,11 @@
                                                             <c:if test="${hit.id == message.id}">
                                                                 <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                                 <c:if test="${messCursor.hasPrev}">
-                                                                    <zm:currentResultUrl var="prevMsgUrl" value="search" action="view2" context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
+                                                                    <zm:currentResultUrl var="prevMsgUrl" value="search" action="${param.action}" context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
                                                                     <a href="${prevMsgUrl}" ></a>
                                                                 </c:if>
                                                                 <c:if test="${messCursor.hasNext}">
-                                                                    <zm:currentResultUrl var="nextMsgUrl" value="search" action="view2" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
+                                                                    <zm:currentResultUrl var="nextMsgUrl" value="search" action="${param.action}" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
                                                                     <a href="${nextMsgUrl}" ></a>
                                                                 </c:if>
                                                             </c:if>
@@ -136,7 +136,7 @@
                                         <td valign=top class='ZhAppContent2'>
                                             <c:set var="extImageUrl" value=""/>
                                             <c:if test="${empty param.xim}">
-                                                <zm:currentResultUrl var="extImageUrl" value="search" context="${context}" action="view2"
+                                                <zm:currentResultUrl var="extImageUrl" value="search" context="${context}" action="${param.action}"
                                                                      cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}" xim="1"/>
                                             </c:if>
                                             <zm:currentResultUrl var="composeUrl" value="search" context="${context}" id="${message.id}"

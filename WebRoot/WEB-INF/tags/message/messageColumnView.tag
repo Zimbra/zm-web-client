@@ -87,6 +87,11 @@
                                     <c:when test="${hit.messageHit.isDraft}">
                                         <zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" context="${context}" action="compose" id="${hit.messageHit.id}"/>
                                     </c:when>
+
+                                    <c:when test="${empty selectedRow and hit.messageHit.id == context.currentItem.id and mailbox.prefs.readingPaneEnabled and not empty msg and (param.action eq 'view' or param.action eq 'view2')}">
+                                        <zm:currentResultUrl var="currentItemUrl" value="search" cid="${hit.id}" action='view3' index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                                    </c:when>
+
                                     <c:otherwise>
                                         <zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="view" context="${context}" id="${hit.messageHit.id}" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                                     </c:otherwise>
