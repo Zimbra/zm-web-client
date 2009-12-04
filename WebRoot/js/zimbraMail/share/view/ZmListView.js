@@ -530,11 +530,15 @@ function(clickedCol, ev) {
 			var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, item._field);
 			var hdrDiv = document.getElementById(hdrId);
 			if (hdrDiv) {
-				this.allSelected = false;
 				if (hdrDiv.className == "ImgCheckboxChecked") {
-					this.deselectAll();
-					hdrDiv.className = "ImgCheckboxUnchecked";
+					if (ev.shiftKey && !this.allSelected) {
+						this.selectAll(ev.shiftKey);
+					} else {
+						this.deselectAll();
+						hdrDiv.className = "ImgCheckboxUnchecked";
+					}
 				} else {
+					this.allSelected = false;
 					hdrDiv.className = "ImgCheckboxChecked";
 					this.selectAll(ev.shiftKey);
 				}
