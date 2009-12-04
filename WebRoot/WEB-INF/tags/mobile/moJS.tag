@@ -706,16 +706,18 @@ var hideDelete = function(id){
     }
 };
 var updateChecked = function(disabled,doItAll){
+   var fbbar = $("fbbar");
+   if(!dV[dId] && !fbbar) return;
    var cCount = 0,cbs=$('zForm').getElementsByClassName('chk');
    for(var i=0, len = (cbs !== undefined) ? cbs.length : 0; i < len; i++){
        if(cbs[i].checked){ cCount++;cbs[i].disabled = disabled;}
    }
    if(cCount > 0){
-    $("fbbar").style.display = "table";
+    fbbar.style.display = "table";
     uFB();
     $("sc").innerHTML = "<span class='small-gray-text'>"+cCount+"</span>";
    }else{
-    $("fbbar").style.display = "none";
+    fbbar.style.display = "none";
     $("sc").innerHTML = "";
    }
    if(doItAll && dV[dId])
