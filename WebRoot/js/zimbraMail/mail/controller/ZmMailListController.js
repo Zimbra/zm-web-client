@@ -603,7 +603,7 @@ function(ev) {
 		: ((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null);
 
 	var item = (items && items.length == 1) ? items[0] : null;
-	if (folder.nId == ZmFolder.ID_DRAFTS || (item && item.isDraft)) {
+	if (folder && folder.nId == ZmFolder.ID_DRAFTS || (item && item.isDraft)) {
 		// show drafts menu
 		this._initializeDraftsActionMenu();
 		this._setTagMenu(this._draftsActionMenu);
