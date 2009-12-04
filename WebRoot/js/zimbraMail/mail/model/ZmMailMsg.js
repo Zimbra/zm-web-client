@@ -1472,6 +1472,19 @@ function(msgNode) {
 		}
 	}
 
+	//Grab the metadata, keyed off the section name
+	if (msgNode.meta) {
+		this.meta = {};
+		for (var i = 0; i < msgNode.meta.length; i++) {
+			var section = msgNode.meta[i].section;
+			this.meta[section] = {};
+			this.meta[section]._attrs = {};
+			for (a in msgNode.meta[i]._attrs) {
+				this.meta[section]._attrs[a] = msgNode.meta[i]._attrs[a];
+			}
+		}
+	}
+
 	// set the "normalized" Id if this message belongs to a shared folder
 	var idx = this.id.indexOf(":");
 	this.nId = (idx != -1) ? (this.id.substr(idx + 1)) : this.id;

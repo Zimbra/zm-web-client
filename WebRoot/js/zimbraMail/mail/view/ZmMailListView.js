@@ -168,7 +168,7 @@ function(item, colIdx) {
 //apply colors to from and subject cells via zimlet
 ZmMailListView.prototype._getStyleViaZimlet =
 function(field, item) {
-	if (field != "fr" && field != "su")
+	if (field != "fr" && field != "su" && field != "st")
 		return "";
 
 	if (appCtxt.zimletsPresent() && this._ignoreProcessingGetMailCellStyle == undefined) {

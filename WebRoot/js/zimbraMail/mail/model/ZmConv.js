@@ -527,6 +527,19 @@ function(convNode) {
 			this.msgIds.push(convNode.m[i].id);
 		}
 	}
+        //Grab the metadata, keyed off the section name
+        if (convNode.meta) {
+                this.meta = {};
+                for (var i = 0; i < convNode.meta.length; i++) {
+			var section = convNode.meta[i].section;
+                        this.meta[section] = {};
+                        this.meta[section]._attrs = {};
+                        for (a in convNode.meta[i]._attrs) {
+                                this.meta[section]._attrs[a] = convNode.meta[i]._attrs[a];
+                        }
+                }
+        }
+
 };
 
 ZmConv.prototype._loadFromMsg =
