@@ -53,6 +53,7 @@
  *        parent			[DwtComposite]*		the control that created this list (defaults to shell)
  *        className			[string]*			CSS class
  *        delims			[array]*			list of delimiters (which separate tokens such as addresses)
+ *        delimCodes		[array]*			list of delimiter key codes
  *        separator			[string]*			separator (gets added to the end of a match)
  *        compCallback		[AjxCallback]*		callback into client to notify it that completion happened
  *        keyDownCallback	[AjxCallback]*		additional client ONKEYDOWN handler
@@ -71,7 +72,9 @@ ZmAutocompleteListView = function(params) {
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
 	this._delims = params.delims || ZmAutocompleteListView.DELIMS;
+	this._delimCodes = params.delimCodes || ZmAutocompleteListView.DELIM_CODES;
 	this._isDelim = AjxUtil.arrayAsHash(this._delims);
+	this._isDelimCode = AjxUtil.arrayAsHash(this._delimCodes);
 	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
 	this._compCallback = params.compCallback;
 	this._keyDownCallback = params.keyDownCallback;
@@ -108,7 +111,8 @@ ZmAutocompleteListView.prototype = new DwtComposite;
 ZmAutocompleteListView.prototype.constructor = ZmAutocompleteListView;
 
 // map of characters that are completion characters
-ZmAutocompleteListView.DELIMS = [',', ';', '\n', '\r', '\t'];
+ZmAutocompleteListView.DELIMS		= [';', '\n', '\r', '\t'];	// used when list is not showing
+ZmAutocompleteListView.DELIM_CODES	= [59, 186, 3, 13, 9];		// used when list is showing
 
 ZmAutocompleteListView.WAIT_ID = "wait";
 
@@ -249,8 +253,7 @@ function(ev) {
 	}
 		
 	// if the user types a single delimiting character with the list showing, do completion
-	var isDelim = (aclv.getVisible() && (aclv._numChars == 1) && 
-				   ((key == 3 || key == 9 || key == 13) || (!ev.shiftKey && (key == 59 || key == 186 || key == 188))));
+	var isDelim = (aclv.getVisible() && (aclv._numChars == 1) && (!ev.shiftKey && aclv._isDelimCode[key]));
 
 	DBG.println(AjxDebug.DBG3, "numChars = " + aclv._numChars + ", key = " + key + ", isDelim: " + isDelim);
 	if (isDelim || (key == 27 || (aclv.getVisible() && (key == 38 || key == 40)))) {
