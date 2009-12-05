@@ -31,6 +31,7 @@
  *        getHtml					[boolean]*		if true, return HTML part for inlined msg
  *        contactSource				[constant]*		where to search for contacts (GAL or personal)
  *        isGalAutocompleteSearch	[boolean]*		if true, autocomplete against GAL
+ *        galType					[constant]*		type of GAL autocomplete (account or resource)
  *        lastId					[int]*			ID of last item displayed (for pagination)
  *        lastSortVal				[string]*		value of sort field for above item
  *        fetch						[boolean]*		if true, fetch first hit message
@@ -40,7 +41,6 @@
  *        field						[string]*		field to search within (instead of default)
  *        soapInfo					[object]*		object with method, namespace, response, and additional attribute fields for creating soap doc
  *        response					[object]*		canned JSON response (no request will be made)
- *        galType					[constant]*		type of GAL autocomplete (account or resource)
  *        folders					[array]*		list of folders for autocomplete
  *        allowableTaskStatus		[array]*		list of task status types to return (assuming one of the values for "types" is "task")
  *        accountName				[String]*		account name to run this search against
@@ -53,7 +53,7 @@ ZmSearch = function(params) {
 		}
 		this.galType					= this.galType || ZmSearch.GAL_ACCOUNT;
 		this.join						= this.join || ZmSearch.JOIN_AND;
-		
+
 		if (this.query) {
 			this._parseQuery();
 		}
@@ -66,6 +66,10 @@ ZmSearch = function(params) {
 		if (ZmSearch._mailEnabled) {
 			AjxDispatcher.require("MailCore");
 		}
+	}
+
+	if (!(this.types instanceof AjxVector)) {
+		this.types = AjxVector.fromArray(AjxUtil.toArray(this.types));
 	}
 };
 
@@ -228,9 +232,9 @@ function(params) {
 			}
 		}
 	}
-		
+
 	var respCallback = new AjxCallback(this, this._handleResponseExecute, [params.callback]);
-	
+
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
@@ -369,9 +373,9 @@ function(params) {
             }
         }
     }
-		
+
 	var respCallback = new AjxCallback(this, this._handleResponseExecute, [params.callback]);
-	
+
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
@@ -393,7 +397,7 @@ function(params) {
 /**
  * Converts the response into a ZmSearchResult and passes it along.
  */
-ZmSearch.prototype._handleResponseExecute = 
+ZmSearch.prototype._handleResponseExecute =
 function(callback, result) {
 	var response = result.getResponse();
 
@@ -407,7 +411,7 @@ function(callback, result) {
 	var searchResult = new ZmSearchResult(this);
 	searchResult.set(response);
 	result.set(searchResult);
-	
+
 	if (callback) {
 		callback.run(result);
 	}
@@ -415,7 +419,7 @@ function(callback, result) {
 
 /**
  * Fetches a conv from the server.
- * 
+ *
  * @param params		[hash]				hash of params:
  *        cid			[string]*			conv ID
  *        callback		[AjxCallback]*		callback to run with result
@@ -423,7 +427,7 @@ function(callback, result) {
  *        markRead		[boolean]*			if true, mark msg read
  *        noTruncate	[boolean]*			if true, do not limit size of msg
  */
-ZmSearch.prototype.getConv = 
+ZmSearch.prototype.getConv =
 function(params) {
 	if ((!this.query && !this.queryHint) || !params.cid) { return; }
 
@@ -461,13 +465,13 @@ function(params) {
 	appCtxt.getAppController().sendRequest(searchParams);
 };
 
-ZmSearch.prototype._handleResponseGetConv = 
+ZmSearch.prototype._handleResponseGetConv =
 function(callback, result) {
 	var response = result.getResponse().SearchConvResponse;
 	var searchResult = new ZmSearchResult(this);
 	searchResult.set(response, null, true);
 	result.set(searchResult);
-	
+
 	if (callback) {
 		callback.run(result);
 	}
@@ -505,7 +509,7 @@ function() {
 	return this._isMultiAccount;
 };
 
-ZmSearch.prototype._getStandardMethod = 
+ZmSearch.prototype._getStandardMethod =
 function(soapDoc) {
 
 	var method = soapDoc.getMethod();
@@ -531,8 +535,9 @@ function(soapDoc) {
 		var cursor = soapDoc.set("cursor");
 		cursor.setAttribute("id", this.lastId);
 		cursor.setAttribute("sortVal", this.lastSortVal);
-		if (this.endSortVal)
+		if (this.endSortVal) {
 			cursor.setAttribute("endSortVal", this.endSortVal);
+		}
 	}
 
 	this.offset = this.offset || 0;
@@ -694,7 +699,7 @@ function() {
 
 	var query = this.query;
 	var len = this.query.length;
-	var tokens = [], ch, op, word = "", fail = false, eow = false;
+	var tokens = [], ch, op, word = "", fail = false, eow = false, endOk = true;
 	var pos = skipSpace(query, 0);
 	while (pos < len && !fail) {
 		ch = query.charAt(pos);
@@ -715,10 +720,12 @@ function() {
 			if (op && word) {
 				tokens.push({isTerm:true, op:op, arg:word});
 				op = word = "";
+				endOk = true;
 			} else if (!op) {
 				if (ZmSearch.COND[word.toLowerCase()]) {
 					tokens.push(ZmSearch.COND[word.toLowerCase()]);
 					word = "";
+					endOk = false;
 				} else if (word) {
 					fail = true;
 				}
@@ -739,6 +746,7 @@ function() {
 		} else if (ch == "-" && !word) {
 			tokens.push("not");
 			pos = skipSpace(query, pos + 1);
+			endOk = false;
 		} else {
 			if (ch != " ") {
 				word += ch;
@@ -747,16 +755,14 @@ function() {
 		}
 	}
 
-	if (fail) { return; }
+	if (fail || !endOk) { return; }
 
-	// only need to check for term at end - cannot end with conditional
+	// check for term at end
 	if ((pos == query.length) && op && word) {
 		tokens.push({isTerm:true, op:op, arg:word});
-	} else {
-		return;
 	}
 
-	var numTerms = 0, id;
+	var numTerms = 0, id, term;
 	var func = ["return Boolean("];
 	for (var i = 0, len = tokens.length; i < len; i++) {
 		var t = tokens[i];
@@ -775,6 +781,7 @@ function() {
 				func.push(test);
 			}
 			numTerms++;
+			term = t;
 			var next = tokens[i + 1];
 			if (next && (next.isTerm || next == ZmSearch.COND["not"] || next == "(")) {
 				func.push(ZmSearch.COND["and"]);
@@ -789,13 +796,19 @@ function() {
 		this.matches = new Function("item", func.join(""));
 	} catch(ex) {}
 
-	DBG.println("bt", "num terms: " + numTerms);
 	if (numTerms == 1) {
 		var t = tokens[0];
 		if (t.op == "in" || t.op == "inid") {
 			this.folderId = id;
 		} else if (t.op == "tag") {
 			this.tagId = id;
+		}
+	}
+
+	if (this.isMultiAccount()) {
+		if (term.op == "in" || term.op == "inid") {
+			var result = ZmOrganizer.parseId(term.arg);
+			this.folderId = result.id;
 		}
 	}
 };
