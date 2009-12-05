@@ -507,6 +507,7 @@ function(id) {
 		dataClass:			new ZmSearchAutocomplete(),
 		matchValue:			"matchText",
 		delims:				[" "],
+		delimCodes:			[32],
 		separator:			" ",
 		enterCallback:		new AjxCallback(this, this._handleEnterKeyPress)
 	};
