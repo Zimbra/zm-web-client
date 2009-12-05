@@ -32,8 +32,8 @@ ZmFolderTreeController = function(type, dropTgt) {
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
-	this._listeners[ZmOperation.SHARE_FOLDER] = new AjxListener(this, this._shareAddrBookListener);
-	this._listeners[ZmOperation.MOUNT_FOLDER] = new AjxListener(this, this._mountAddrBookListener);
+	this._listeners[ZmOperation.SHARE_FOLDER] = new AjxListener(this, this._shareFolderListener);
+	this._listeners[ZmOperation.MOUNT_FOLDER] = new AjxListener(this, this._mountFolderListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER] = new AjxListener(this, this._emptyListener);
 	this._listeners[ZmOperation.SYNC_OFFLINE_FOLDER] = new AjxListener(this, this._syncOfflineFolderListener);
 	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
@@ -562,13 +562,13 @@ function(ev) {
 	}
 };
 
-ZmFolderTreeController.prototype._shareAddrBookListener =
+ZmFolderTreeController.prototype._shareFolderListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
 };
 
-ZmFolderTreeController.prototype._mountAddrBookListener =
+ZmFolderTreeController.prototype._mountFolderListener =
 function(ev) {
 	appCtxt.getMountFolderDialog().popup(ZmOrganizer.FOLDER);
 };
