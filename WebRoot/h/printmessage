@@ -36,49 +36,26 @@
 <c:if test="${cid[0] eq 'C'}">
     <zm:computeSearchContext var="context" usecache="true" types="conversation" query="*"/>
     <c:if test="${fn:length(cid) gt 2}"><c:set var="cidExt" value=":${cid[2]}"/></c:if> <%-- there are two colons when conv is from shared folder so we need to form correct cid as sharedFolderId:convId --%>
-    <zm:getConversation var="cov" id="${cid[1]}${cidExt}"/><%-- !FIXME searchConv throws exception for shared/mounted a/c coversation --%>
-    <c:if test="${cov.messageCount gt 1}">
-        <zm:searchConv var="convSearchResult"  id="${cid[1]}${cidExt}" context="${context}"  markread="false" fetch="all"/>
-        <table cellpadding="0" cellspacing="5"  width="100%">
-            <tr>
-                <td>
-                    <div style="padding: 10px; font-size: 20px !important; font-weight: bold;">${convSearchResult.hits[0].subject}</div><hr/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
-                        <zm:getMessage var="message" id="${hit.id}" markread="false" neuterimages="${empty param.xim}" />
-                        <c:url value="/h/printmessage" var="extImageUrl">
-                            <c:param name="id" value="${param.id}"/>
-                            <c:param name="xim" value="1"/>
-                        </c:url>
-                        <app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" />
-                    </c:forEach>
-                </td>
-            </tr>
-        </table>
-    </c:if>
-    <c:if test="${cov.messageCount eq 1}">
-        <c:set var="cidN" value="${empty cidExt ? fn:replace(cid[1],'-','') : cid[1]}"/> <%-- !FIXME not sure if this is right, treat conv as message --%>
-        <zm:getMessage var="message" id="${cidN}${fn:replace(cidExt,'-','')}" markread="false" neuterimages="${empty param.xim}"/>
-        <table cellpadding="0" cellspacing="5"  width="100%">
+    <zm:searchConv var="convSearchResult" id="${cid[1]}${cidExt}" context="${context}"  markread="false" fetch="all"/>
+    <table cellpadding="0" cellspacing="5"  width="100%">
         <tr>
-            <td colspan="2">
-                <div style="padding: 10px; font-size: 20px !important; font-weight: bold;">${zm:cook(message.subject)}</div><hr/>
+            <td>
+                <div style="padding: 10px; font-size: 20px !important; font-weight: bold;">${convSearchResult.hits[0].subject}</div><hr/>
             </td>
         </tr>
         <tr>
-            <td colspan="2">
-                <c:url value="/h/printmessage" var="extImageUrl">
-                    <c:param name="id" value="${param.id}"/>
-                    <c:param name="xim" value="1"/>
-                </c:url>
-                <app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" />
+            <td>
+                <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
+                    <zm:getMessage var="message" id="${hit.id}" markread="false" neuterimages="${empty param.xim}" />
+                    <c:url value="/h/printmessage" var="extImageUrl">
+                        <c:param name="id" value="${param.id}"/>
+                        <c:param name="xim" value="1"/>
+                    </c:url>
+                    <app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" />
+                </c:forEach>
             </td>
         </tr>
-        </table>
-    </c:if>
+    </table>
 </c:if>
 <c:if test="${cid[0] != 'C'}">
     <zm:getMessage var="message" id="${mid}" markread="false" neuterimages="${empty param.xim}"/>
