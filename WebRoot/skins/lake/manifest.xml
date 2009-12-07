@@ -14,7 +14,7 @@
 			<file>../_base/base2/ZmSkin.js</file>
 		</script>
 		<html>
-			<file>skin.html</file>
+			<file>../_base/base2/skin.html</file>
 			<file>../_base/base2/splash.html</file>
 		</html>
   </advanced>
