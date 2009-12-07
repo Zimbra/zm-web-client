@@ -691,6 +691,11 @@ function(online) {
 		this.setStatusMsg(ZmMsg.networkChangeOffline, ZmStatusView.LEVEL_WARNING);
 		this.sendClientEventNotify(ZmZimbraMail.UI_NETWORK_DOWN);
 	}
+
+	var networkEl = document.getElementById("skin_container_network");
+	if (networkEl) {
+		networkEl.innerHTML = !online ? AjxImg.getImageHtml("Disconnect") : "";
+	}
 };
 
 /**
@@ -1601,15 +1606,19 @@ function() {
 		Dwt.setDisplay(quotaEl, Dwt.DISPLAY_NONE);
 	}
 
-	var accountEl = document.getElementById("skin_container_account");
-	if (accountEl) {
-		accountEl.innerHTML = ZmMsg.accounts;
-		Dwt.setDisplay(accountEl, Dwt.DISPLAY_BLOCK);
-	}
+	if (appCtxt.multiAccounts) {
+		var topTreeOfflineEl = document.getElementById("skin_container_tree_top_offline");
+		var accountEl = document.getElementById("skin_container_account");
+		if (topTreeOfflineEl && accountEl) {
+			accountEl.innerHTML = ZmMsg.accounts;
 
-	var topTreeEl = document.getElementById("skin_container_tree_top");
-	if (topTreeEl) {
-		topTreeEl.className = "OfflineTreeTop";
+			Dwt.setDisplay(topTreeOfflineEl, Dwt.DISPLAY_BLOCK);
+
+			var topTreeEl = document.getElementById("skin_container_tree_top");
+			if (topTreeEl) {
+				Dwt.setDisplay(topTreeEl, Dwt.DISPLAY_NONE);
+			}
+		}
 	}
 
 	this._appViewMgr._fitToContainer([ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER]);
