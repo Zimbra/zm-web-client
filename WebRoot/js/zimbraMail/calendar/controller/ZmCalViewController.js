@@ -2694,7 +2694,8 @@ function(work, view, list, skipMiniCalUpdate, query) {
 	this._userQuery = query;
 
 	if (work & ZmCalViewController.MAINT_VIEW) {
-		this._list = list;
+		this._list = new ZmApptList();
+		this._list.getVector().addList(list);
 		var sel = view.getSelection();
 		view.set(list, skipMiniCalUpdate);
 
@@ -2703,8 +2704,8 @@ function(work, view, list, skipMiniCalUpdate, query) {
 		if (sel && sel.length > 0) {
 			var id = sel[0].id;
 			for (var i = 0; i < this._list.size(); i++) {
-				if (this._list._array[i].id == id) {
-					view.setSelection(this._list._array[i],true);
+				if (this._list.getArray()[i].id == id) {
+					view.setSelection(this._list.getArray[i],true);
 					break;
 				}
 			}
@@ -2926,4 +2927,9 @@ ZmCalViewController.prototype.getCalendarName =
 function(folderId) {
 	var cal = appCtxt.getById(folderId);
 	return cal && cal.getName();
+};
+
+ZmCalViewControthisller.prototype._checkItemCount =
+function() {
+	// No-op since this view doesn't do virtual paging.
 };
