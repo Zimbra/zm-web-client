@@ -615,10 +615,18 @@ function(width) {
     }
 
 	// notes ZmHtmlEditor
-	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
-	this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
-	// bug: 19079 to avoid access denied exception set some content which corrects the doc domain
-	this._notesHtmlEditor.setContent("");
+    if(window.isTinyMCE) {
+        this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode);
+        this._notesHtmlEditor.addOnContentIntializedListener(new AjxCallback(this,this.resizeNotesEditor));        
+        this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
+        // bug: 19079 to avoid access denied exception set some content which corrects the doc domain
+        this._notesHtmlEditor.setContent("");
+    }else {
+	    this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
+	    this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
+        // bug: 19079 to avoid access denied exception set some content which corrects the doc domain
+        this._notesHtmlEditor.setContent("");
+    }
 };
 
 ZmCalItemEditView.prototype._handleReminderOnBlur =
@@ -867,6 +875,12 @@ function(excludeAttendees) {
 	// override
 };
 
+ZmCalItemEditView.prototype.resizeNotesEditor =
+function() {
+    this._notesHtmlEditor.resizeWidth('100%');
+    this._resizeNotes();
+};
+
 ZmCalItemEditView.prototype._resizeNotes =
 function() {
 	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
@@ -883,7 +897,11 @@ function() {
 	var rowHeight = size.y - topHeight;
 	var hFudge = (this._composeMode == DwtHtmlEditor.HTML) ? 50 : 15;
 	var wFudge = AjxEnv.isIE ? size.x-20 : Dwt.DEFAULT;
-	Dwt.setSize(this._bodyField, wFudge, rowHeight - hFudge);
+	if(window.isTinyMCE) {
+        this._notesHtmlEditor.setSize(size.x-5, rowHeight)   
+    }else {
+        Dwt.setSize(this._bodyField, wFudge, rowHeight - hFudge);
+    }
 };
 
 ZmCalItemEditView.prototype._handleRepeatDescFieldHover =

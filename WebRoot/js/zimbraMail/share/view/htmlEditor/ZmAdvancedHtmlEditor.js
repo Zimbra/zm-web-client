@@ -50,6 +50,14 @@ function() {
     return document.getElementById(fieldId);
 };
 
+ZmAdvancedHtmlEditor.prototype.resizeWidth =
+function(width) {
+    var editorContainer = document.getElementById(this._bodyTextAreaId + "_tbl");
+    if(editorContainer) {
+        editorContainer.style.width = width;
+    }
+};
+
 ZmAdvancedHtmlEditor.prototype.setSize =
 function(x, y) {
     var editor = this.getEditor();
@@ -70,8 +78,10 @@ function(x, y) {
     bodyField.style.width = x + 5 + "px";
     bodyField.style.height = y + "px";
 
-    if(editor) {
-        document.getElementById(this._bodyTextAreaId + "_tbl").style.height = y + "px";
+    var editorContainer = document.getElementById(this._bodyTextAreaId + "_tbl");
+    if(editor && editorContainer) {
+        editorContainer.style.height = y + "px";
+        editorContainer.style.width = "100%";
     }
     //todo: handle spellcheck ids 
 };
@@ -227,11 +237,6 @@ function() {
     return editor ? editor.getDoc() : null; 
 };
 
-ZmAdvancedHtmlEditor.prototype.removeOnContentIntializedListener =
-function() {
-    //todo: do something
-};
-
 ZmAdvancedHtmlEditor.prototype.clear =
 function() {
     this.setPendingContent(null);
@@ -242,6 +247,11 @@ function() {
         var field = this.getContentField();
         field.value = "";
     }
+};
+
+ZmAdvancedHtmlEditor.prototype.reparentHtmlElement =
+function(id, position) {
+     return this._editorContainer.reparentHtmlElement(id, position);
 };
 
 ZmAdvancedHtmlEditor.prototype.initTinyMCEEditor =
