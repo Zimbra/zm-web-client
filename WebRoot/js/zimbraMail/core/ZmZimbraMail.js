@@ -92,6 +92,8 @@ ZmZimbraMail = function(params) {
 		ZmApp.QS_ARG_R[ZmApp.QS_ARG[i]] = i;
 	}
 
+	this._shell.addGlobalSelectionListener(new AjxListener(this, this._globalSelectionListener));
+
 	this.startup(params);
 };
 
@@ -2174,7 +2176,7 @@ function() {
 	appCtxt.setZimletsPresent(true);
 };
 
-ZmZimbraMail.globalButtonListener =
+ZmZimbraMail.prototype._globalSelectionListener =
 function(ev) {
 	if (!appCtxt.areZimletsLoaded()) { return; }
 
