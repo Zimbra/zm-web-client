@@ -54,7 +54,7 @@ ZmSearch = function(params) {
 		this.galType					= this.galType || ZmSearch.GAL_ACCOUNT;
 		this.join						= this.join || ZmSearch.JOIN_AND;
 
-		if (this.query) {
+		if (this.query || this.queryHint) {
 			this._parseQuery();
 		}
 	}
@@ -670,8 +670,9 @@ ZmSearch.FLAG["unreplied"]		= "!item.isReplied";
 ZmSearch.prototype._parseQuery =
 function() {
 
-	this.hasUnreadTerm = ZmSearch.UNREAD_QUERY_RE.test(this.query);
-	this.isAnywhere = ZmSearch.IS_ANYWHERE_QUERY_RE.test(this.query);
+	var query = this.query || this.queryHint; 
+	this.hasUnreadTerm = ZmSearch.UNREAD_QUERY_RE.test(query);
+	this.isAnywhere = ZmSearch.IS_ANYWHERE_QUERY_RE.test(query);
 
 	function skipSpace(str, pos) {
 		while (pos < str.length && str.charAt(pos) == " ") {
@@ -697,8 +698,8 @@ function() {
 		return done ? {str:quoted, pos:pos + 1} : null;
 	}
 
-	var query = this.query;
-	var len = this.query.length;
+
+	var len = query.length;
 	var tokens = [], ch, op, word = "", fail = false, eow = false, endOk = true;
 	var pos = skipSpace(query, 0);
 	while (pos < len && !fail) {
@@ -755,7 +756,7 @@ function() {
 		}
 	}
 
-	if (fail || !endOk) { return; }
+	if (fail || (!endOk && !appCtxt.isOffline)) { return; }
 
 	// check for term at end
 	if ((pos == query.length) && op && word) {
