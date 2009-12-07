@@ -97,6 +97,7 @@
 	String vers = getAttribute(request, "version", "");
 
 	String prodMode = getAttribute(request, "prodMode", "");
+	String editor = getParameter(request, "editor", "");
 
 	String ext = getAttribute(request, "fileExtension", null);
 	if (ext == null || isDevMode) ext = "";
@@ -128,6 +129,7 @@
 	pageContext.setAttribute("isProdMode", !prodMode.equals(""));
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
+	pageContext.setAttribute("editor", editor);
 %>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <fmt:setLocale value='${locale}' scope='request' />
@@ -324,7 +326,9 @@ for (var pkg in window.AjxTemplateMsg) {
         <zm:calSearchJSON var="calSearchJSON" authtoken="${requestScope.authResult.authToken}" timezone="${requestScope.tz}" itemsperpage="500" types="appointment"/>
         window.inlineCalSearchResponse = ${calSearchJSON};
         </c:if>
-
+        <c:if test="${editor eq 'tinymce'}">
+        window.isTinyMCE = true; 
+        </c:if>
 		<c:if test="${isLeakDetectorOn}">
 		AjxLeakDetector.begin();
 		</c:if>

@@ -60,6 +60,7 @@ AjxPackage.require("zimbraMail.share.view.ZmAutocompleteListView");
 AjxPackage.require("zimbraMail.share.view.assistant.ZmAssistant");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");
+AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmAdvancedHtmlEditor");
 
 AjxPackage.require("zimbraMail.share.view.dialog.ZmDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmAttachDialog");

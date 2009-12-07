@@ -353,7 +353,7 @@ function(msg, handleInlineDocs){
 	var idoc = this._htmlEditor._getIframeDoc();
 	var images = idoc.getElementsByTagName("img");
 	for (var i = 0; i < images.length; i++) {
-		dfsrc = images[i].getAttribute("dfsrc") || images[i].src;
+		dfsrc = images[i].getAttribute("dfsrc") || images[i].getAttribute("mce_src") || images[i].src;
 		if (dfsrc) {
 			if (dfsrc.substring(0,4) == "cid:") {
 				cid = dfsrc.substring(4);
@@ -942,7 +942,7 @@ function(msg, idoc) {
 	var images = idoc.getElementsByTagName("img");
 	var num = 0;
 	for (var i = 0; i < images.length; i++) {
-		var dfsrc = images[i].getAttribute("dfsrc") || images[i].src;
+		var dfsrc = images[i].getAttribute("dfsrc") || images[i].getAttribute("mce_src") || images[i].src;
 		if (dfsrc) {
 			if (dfsrc.substring(0,4) == "cid:") {
 				num++;
@@ -983,7 +983,7 @@ function(idoc) {
 		for (var i = 0; i < images.length; i++) {
 			var img = images[i];
 			var cid = "";
-			var dfsrc = img.getAttribute("dfsrc");
+			var dfsrc = img.getAttribute("dfsrc") || img.getAttribute("mce_src");
 			if (dfsrc && dfsrc.indexOf("cid:") == 0) {
 				cid = dfsrc;
 				img.removeAttribute("dfsrc");
@@ -2007,9 +2007,15 @@ function(composeMode) {
 	this._composeMode = composeMode || defaultCompMode;
 
 	// init html editor
-	this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
-	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
-	this._bodyField = document.getElementById(this._bodyFieldId);
+    if(window.isTinyMCE) {
+        this._htmlEditor = new ZmAdvancedHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
+        this._bodyFieldId = this._htmlEditor.getBodyFieldId();
+        this._bodyField = document.getElementById(this._bodyFieldId);
+    }else {
+	    this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
+	    this._bodyFieldId = this._htmlEditor.getBodyFieldId();
+	    this._bodyField = document.getElementById(this._bodyFieldId);
+    }
 	this._includedPreface = "";
 
 	// misc. inits
