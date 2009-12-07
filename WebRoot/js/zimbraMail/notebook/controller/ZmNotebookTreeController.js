@@ -145,7 +145,7 @@ function(notebook) {
 	};
 
 	var notebookController = AjxDispatcher.run("GetNotebookController");
-	notebookController.show(notebook.id, true);
+	notebookController.show(notebook ? notebook.id : ZmOrganizer.ID_NOTEBOOK, true);
 
 	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
 		var searchController = appCtxt.getSearchController();
