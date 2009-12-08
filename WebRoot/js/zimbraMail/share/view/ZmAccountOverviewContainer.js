@@ -269,7 +269,7 @@ function(account, updateStatus, updateTooltip) {
 			}
 		}
 
-		if (updateTooltip) {
+		if (updateTooltip || updateStatus) {
 			hi.setToolTipContent(account.getToolTip());
 		}
 	}

@@ -122,7 +122,7 @@ function() {
 
 		var params = {
 			lastSync: (lastSyncDate ? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null),
-			isInitialSync: this.isOfflineInitialSync(),
+			hasNotSynced: (this.isOfflineInitialSync() && this.status == ZmZimbraAccount.STATUS_UNKNOWN),
 			status: this.getStatusMessage()
 		};
 

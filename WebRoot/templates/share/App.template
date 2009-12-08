@@ -143,7 +143,7 @@
 				<td class='nobreak' align=right><$= ZmMsg.lastSync $>:</td>
 				<td class='nobreak'>${lastSync}</td>
 			</tr>
-		<$ } else if (!data.isInitialSync) { $>
+		<$ } else if (data.hasNotSynced) { $>
 			<tr>
 				<td class='nobreak' colspan=2><$= ZmMsg.neverSynced $></td>
 			</tr>
