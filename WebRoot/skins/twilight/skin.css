@@ -25,11 +25,15 @@ body	{  @ChromeBg@	}
 		text-decoration: none;
 	}
 
-#skin_container_tree_top {	
-	
+#skin_container_tree_top,
+#skin_container_tree_top_offline {
 	background: #6f1616 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
 	text-align:center;
-	color: #fff;
+	color: #ffffff;
+}
+
+#skin_container_account {
+	color: #ffffff;
 }
 
 #skin_spacing_tree {

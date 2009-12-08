@@ -28,10 +28,14 @@ body	{  @ChromeBg@ }
 		text-decoration: none;
 	}
 
-#skin_container_tree_top {	
-	
+#skin_container_tree_top,
+#skin_container_tree_top_offline {
 	background: #0071a1 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
 	text-align:center;
+}
+
+#skin_container_account {
+	color: #ffffff;
 }
 
 #skin_spacing_tree {
