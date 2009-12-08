@@ -2929,7 +2929,7 @@ function(folderId) {
 	return cal && cal.getName();
 };
 
-ZmCalViewControthisller.prototype._checkItemCount =
+ZmCalViewController.prototype._checkItemCount =
 function() {
 	// No-op since this view doesn't do virtual paging.
 };
