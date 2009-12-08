@@ -863,14 +863,15 @@ function(items, folder, attrs, isShiftKey) {
 
 	var params = {folder:folder, attrs:attrs};
 	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
-	var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
 	if (move.length) {
 		params.items = move;
+		var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
 		list.moveItems(params);
 	}
 
 	if (copy.length) {
 		params.items = copy;
+		var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
 		list.copyItems(params);
 	}
 };
