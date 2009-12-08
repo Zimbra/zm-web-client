@@ -1552,11 +1552,6 @@ function(params, actionParams) {
 				var text = AjxMessageFormat.format(ZmMsg.itemsProcessed, [this._continuation.totalItems, ZmMsg[msgKey]]);
 				appCtxt.setStatusMsg(text);
 				lv.deselectAll();
-				var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, lv._view, ZmItem.F_SELECTION);
-				var hdrDiv = document.getElementById(hdrId);
-				if (hdrDiv) {
-					hdrDiv.className = "ImgCheckboxUnchecked";
-				}
 			}
 			this._continuation = {count:0, totalItems:0};
 		}

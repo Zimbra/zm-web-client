@@ -577,19 +577,19 @@ function(ev) {
 };
 
 ZmDoublePaneController.prototype._doDelete =
-function(ev) {
+function() {
 	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
 	ZmMailListController.prototype._doDelete.apply(this, arguments);
 };
 
 ZmDoublePaneController.prototype._doMove =
-function(ev) {
+function() {
 	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
 	ZmMailListController.prototype._doMove.apply(this, arguments);
 };
 
 ZmDoublePaneController.prototype._showOrigListener =
-function(ev) {
+function() {
 	var msg = this.getMsg();
 	if (!msg) { return; }
 
@@ -599,19 +599,19 @@ function(ev) {
 };
 
 ZmDoublePaneController.prototype._filterListener = 
-function(ev) {
+function() {
 	var respCallback = new AjxCallback(this, this._handleResponseFilterListener);
 	var msg = this._getLoadedMsg(null, respCallback);
 };
 
 ZmDoublePaneController.prototype._createApptListener =
-function(ev) {
+function() {
 	var respCallback = new AjxCallback(this, this._handleResponseNewApptListener);
 	var msg = this._getLoadedMsg(null, respCallback);
 };
 
 ZmDoublePaneController.prototype._createTaskListener = 
-function(ev) {
+function() {
 	var respCallback = new AjxCallback(this, this._handleResponseNewTaskListener);
 	var msg = this._getLoadedMsg(null, respCallback);
 };

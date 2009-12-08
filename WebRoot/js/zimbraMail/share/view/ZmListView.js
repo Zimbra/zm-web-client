@@ -224,10 +224,12 @@ function(ev) {
 		if (ev.event != ZmEvent.E_MOVE || !this._controller._list.isCanonical) {
 			this._controller._list.remove(item);
 		}
-		if (!this.allSelected && !this._isPageless) {
-			this._controller._app._checkReplenishListView = this;
-		} else {
-			this._handleResponseCheckReplenish();
+		if (!this.allSelected) {
+			if (!this._isPageless) {
+				this._controller._app._checkReplenishListView = this;
+			} else {
+				this._handleResponseCheckReplenish();
+			}
 		}
 		this._controller._resetToolbarOperations();
 	}
@@ -632,6 +634,11 @@ function() {
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		this._checkSelectedItems(false);
 		this.allSelected = false;
+		var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, ZmItem.F_SELECTION);
+		var hdrDiv = document.getElementById(hdrId);
+		if (hdrDiv) {
+			hdrDiv.className = "ImgCheckboxUnchecked";
+		}
 	}
 
 	DwtListView.prototype.deselectAll.call(this);
