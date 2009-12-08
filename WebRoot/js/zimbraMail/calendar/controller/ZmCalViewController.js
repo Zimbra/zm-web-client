@@ -2686,7 +2686,7 @@ function(params) {
 ZmCalViewController.prototype._maintGetApptCallback =
 function(work, view, list, skipMiniCalUpdate, query) {
 	if (list instanceof ZmCsfeException) {
-		this._searchInProgress = false;
+		this.searchInProgress = false;
 		this._handleError(list, new AjxCallback(this, this._maintErrorHandler));
 		return;
 	}
@@ -2717,7 +2717,7 @@ function(work, view, list, skipMiniCalUpdate, query) {
 		this._app.getReminderController().refresh();
 	}
 
-	this._searchInProgress = false;
+	this.searchInProgress = false;
 
 	// initiate schedule action for pending work (process queued actions)
 	if (this._pendingWork != ZmCalViewController.MAINT_NONE) {
@@ -2733,7 +2733,7 @@ function(work, forceMaintenance) {
 	this.onErrorRecovery = new AjxCallback(this, this._errorRecovery, [work, forceMaintenance]);
 
 	// schedule timed action
-	if ((!this._searchInProgress || forceMaintenance) &&
+	if ((!this.searchInProgress || forceMaintenance) &&
 		(this._pendingWork == ZmCalViewController.MAINT_NONE))
 	{
 		this._pendingWork |= work;
@@ -2760,7 +2760,7 @@ function(work, forceMaintenance) {
 ZmCalViewController.prototype._maintenanceAction =
 function() {
 	var work = this._pendingWork;
-	this._searchInProgress = true;
+	this.searchInProgress = true;
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
 
 	var maintainMiniCal = (work & ZmCalViewController.MAINT_MINICAL);
@@ -2769,23 +2769,25 @@ function() {
 	
 	if (work == ZmCalViewController.MAINT_REMINDER) {
 		this._app.getReminderController().refresh();
-		this._searchInProgress = false;
+		this.searchInProgress = false;
 	}
 	else if (maintainMiniCal || maintainView || maintainRemainder) {
 		var view = this.getCurrentView();
-		DBG.println(AjxDebug.DBG2, "ZmCalViewController: _maintenanceAction : View:" + view);
 		if (view && view.needsRefresh()) {
 			var rt = view.getTimeRange();
-			var cb = new AjxCallback(this, this._maintGetApptCallback, [work, view]);
-
-			var params = {start:rt.start, end:rt.end, fanoutAllDay:view._fanoutAllDay(), callback:cb};
-			params.folderIds = this.getCheckedCalendarFolderIds();
-			params.accountFolderIds = this._checkedAccountCalendarIds;
-			params.query = this._userQuery;
+			var params = {
+				start: rt.start,
+				end: rt.end,
+				fanoutAllDay: view._fanoutAllDay(),
+				callback: (new AjxCallback(this, this._maintGetApptCallback, [work, view])),
+				folderIds: this.getCheckedCalendarFolderIds(),
+				accountFolderIds: this._checkedAccountCalendarIds,
+				query: this._userQuery
+			};
 
 			var miniCalParams = this.getMiniCalendarParams(work);
-			var reminderParams;
 
+			var reminderParams;
 			if (maintainRemainder) {
 				reminderParams = this._app.getReminderController().getRefreshParams();
 				reminderParams.callback = null;
@@ -2795,14 +2797,9 @@ function() {
 
 			view.setNeedsRefresh(false);
 		} else {
-			this._searchInProgress = false;
+			this.searchInProgress = false;
 		}
 	}
-};
-
-ZmCalViewController.prototype.setSearchInProgress =
-function(val) {
-	this._searchInProgress = val;
 };
 
 ZmCalViewController.prototype.getKeyMapName =

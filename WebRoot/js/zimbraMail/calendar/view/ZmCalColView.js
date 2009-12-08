@@ -30,7 +30,7 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	this.setDropTarget(dropTgt);
 	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
-}
+};
 
 ZmCalColView.prototype = new ZmCalBaseView;
 ZmCalColView.prototype.constructor = ZmCalColView;
@@ -186,7 +186,7 @@ function(appt) {
 	if (this._scheduleMode) {
 		this._updateUnionData(appt);
 	}
-}
+};
 
 ZmCalColView.prototype._resetCalendarData =
 function() {
@@ -2246,7 +2246,7 @@ function(list, skipMiniCalUpdate) {
 	this._preSet();
 	this._selectedItems.removeAll();
 	var newList = list;
-	if(list && (list == this._list)) {
+	if (list && (list == this._list)) {
 		newList = list.clone();
 	}
 	this._resetList();
@@ -2259,7 +2259,7 @@ function(list, skipMiniCalUpdate) {
 			this._computeApptLayout();
 			for (var i=0; i < size; i++) {
 				var ao = list.get(i);
-				if(ao && ao.isInRange(timeRange.start, timeRange.end)) {
+				if (ao && ao.isInRange(timeRange.start, timeRange.end)) {
 					this.addAppt(ao);
 				}
 			}

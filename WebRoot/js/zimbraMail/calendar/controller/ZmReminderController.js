@@ -85,8 +85,8 @@ ZmReminderController.prototype.refresh =
 function() {
 	if (this._warningTime == 0) { return; }
 
-    this._searchTimeRange = this.getSearchTimeRange();
-    DBG.println(AjxDebug.DBG1, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
+	this._searchTimeRange = this.getSearchTimeRange();
+	DBG.println(AjxDebug.DBG1, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
 
 	var params = this.getRefreshParams();
 	this._calController.getApptSummaries(params);
@@ -95,30 +95,30 @@ function() {
 	if (this._refreshActionId) {
 		AjxTimedAction.cancelAction(this._refreshActionId);
 	}
-    DBG.println(AjxDebug.DBG2, "reminder refresh");
+	DBG.println(AjxDebug.DBG2, "reminder refresh");
 	this._refreshActionId = AjxTimedAction.scheduleAction(this._refreshTimedAction, (AjxDateUtil.MSEC_PER_HOUR * ZmReminderController._CACHE_REFRESH));
 };
 
 ZmReminderController.prototype.getSearchTimeRange =
 function() {
-    var endOfDay = new Date();
-    endOfDay.setHours(23,59,59,999);
+	var endOfDay = new Date();
+	endOfDay.setHours(23,59,59,999);
 
-    //grab a week's appt backwards
-    var end = new Date(endOfDay.getTime());
-    endOfDay.setDate(endOfDay.getDate()-7);
+	//grab a week's appt backwards
+	var end = new Date(endOfDay.getTime());
+	endOfDay.setDate(endOfDay.getDate()-7);
 
-    var start = endOfDay;
-    start.setHours(0,0,0, 0);
+	var start = endOfDay;
+	start.setHours(0,0,0, 0);
 
-    return { start: start.getTime(), end: end.getTime() };
+	return { start: start.getTime(), end: end.getTime() };
 };
 
 ZmReminderController.prototype.getRefreshParams =
 function() {
 	
-    var timeRange = this.getSearchTimeRange();
-	var params = {
+	var timeRange = this.getSearchTimeRange();
+	return {
 		start: timeRange.start,
 		end: timeRange.end,
 		fanoutAllDay: false,
@@ -126,7 +126,6 @@ function() {
 		callback: (new AjxCallback(this, this._refreshCallback)),
 		includeReminders: true
 	};
-	return params;
 };
 
 ZmReminderController.prototype._cancelRefreshAction =
@@ -134,7 +133,7 @@ function() {
 	if (this._refreshActionId) {
 		AjxTimedAction.cancelAction(this._refreshActionId);
 		delete this._refreshActionId;
- 	}
+	}
 };
 
 ZmReminderController.prototype._cancelHousekeepingAction =
@@ -163,7 +162,7 @@ function(list) {
 	}
 
 	var newList = new AjxVector();
-    this._cacheMap = {};
+	this._cacheMap = {};
 
 	// filter recurring appt instances, the alarmData is common for all the instances
 	var size = list.size();
@@ -172,47 +171,47 @@ function(list) {
 		var id = appt.id;
 
 		if (appt.hasAlarmData()) {
-            if(!this._cacheMap[id]) {
-                this._cacheMap[id] = true;
+			if (!this._cacheMap[id]) {
+				this._cacheMap[id] = true;
 				newList.add(appt);
 			}
 		}
 	}
 
-    this._cachedAppts = newList.clone();
-    this._cachedAppts.sort(ZmCalBaseItem.compareByTimeAndDuration);
-    this._activeAppts.removeAll();
+	this._cachedAppts = newList.clone();
+	this._cachedAppts.sort(ZmCalBaseItem.compareByTimeAndDuration);
+	this._activeAppts.removeAll();
 
 	// cancel outstanding timed action and update now...
-    this._cancelHousekeepingAction();
-    this._housekeepingAction();
+	this._cancelHousekeepingAction();
+	this._housekeepingAction();
 };
 
 ZmReminderController.prototype.updateCache =
 function(list) {
-    if(!list) return;
+	if (!list) { return; }
 
-    if(!this._cachedAppts) {
-        this._cachedAppts = new AjxVector();
-    }
+	if (!this._cachedAppts) {
+		this._cachedAppts = new AjxVector();
+	}
 
-    DBG.println(AjxDebug.DBG2, "updating reminder cache...");
-    var srchRange = this.getSearchTimeRange();
-    var count = 0;
+	DBG.println(AjxDebug.DBG2, "updating reminder cache...");
+	var srchRange = this.getSearchTimeRange();
+	var count = 0;
 
-    //filter recurring appt instances, the alarmData is common for all the instances
-    var size = list.size();
-    for(var i=0;i<size;i++) {
-        var appt = list.get(i);
-        var id = appt.id;
-        if(appt.hasAlarmData() && !this._cacheMap[id] && appt.isStartInRange(srchRange.start, srchRange.end)) {
-            this._cacheMap[id] = true;
-            this._cachedAppts.add(appt);
-            count++;
-        }
-    }
+	// filter recurring appt instances, the alarmData is common for all the instances
+	var size = list.size();
+	for (var i = 0; i < size; i++) {
+		var appt = list.get(i);
+		var id = appt.id;
+		if(appt.hasAlarmData() && !this._cacheMap[id] && appt.isStartInRange(srchRange.start, srchRange.end)) {
+			this._cacheMap[id] = true;
+			this._cachedAppts.add(appt);
+			count++;
+		}
+	}
 
-    DBG.println(AjxDebug.DBG2, "new appts added to reminder cache :" + count);
+	DBG.println(AjxDebug.DBG2, "new appts added to reminder cache :" + count);
 };
 
 ZmReminderController.prototype.isApptSnoozed =
@@ -226,7 +225,7 @@ function(uid) {
 */
 ZmReminderController.prototype._housekeepingAction =
 function() {
-    DBG.println(AjxDebug.DBG2, "reminder house keeping action...");    
+	DBG.println(AjxDebug.DBG2, "reminder house keeping action...");
 	var rd = this.getReminderDialog();
 	if (!ZmCsfeCommand.getAuthToken()) {
 		DBG.println(AjxDebug.DBG1, "reminder check: no auth token, bailing");
@@ -236,24 +235,24 @@ function() {
 		return;
 	}
 
-    if(this._searchTimeRange) {
-        var newTimeRange = this.getSearchTimeRange();
-        var diff = newTimeRange.end - this._searchTimeRange.end;
-        if(diff > AjxDateUtil.MSEC_PER_HOUR) {
-            DBG.println(AjxDebug.DBG2, "time elapsed - refreshing reminder cache");
-            this._searchTimeRange = null;
-            this.refresh();
-            return;
-        }
-    }
-    
+	if (this._searchTimeRange) {
+		var newTimeRange = this.getSearchTimeRange();
+		var diff = newTimeRange.end - this._searchTimeRange.end;
+		if (diff > AjxDateUtil.MSEC_PER_HOUR) {
+			DBG.println(AjxDebug.DBG2, "time elapsed - refreshing reminder cache");
+			this._searchTimeRange = null;
+			this.refresh();
+			return;
+		}
+	}
+
 	var cachedSize = this._cachedAppts.size();
 	var activeSize = this._activeAppts.size();
-    if (cachedSize == 0 && activeSize == 0) {
-        DBG.println(AjxDebug.DBG2, "no appts - empty cached and active list");
-        this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60*1000);
-        return;
-    };
+	if (cachedSize == 0 && activeSize == 0) {
+		DBG.println(AjxDebug.DBG2, "no appts - empty cached and active list");
+		this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60*1000);
+		return;
+	}
 
 	var numNotify = 0;
 
@@ -296,12 +295,12 @@ function() {
 
 			if (addToActiveList) {
 				toRemove.push(appt);
-				if(!appCtxt.get(ZmSetting.CAL_SHOW_PAST_DUE_REMINDERS) && appt.isAlarmOld()) {
-                    numNotify--;
-                    this._oldAppts.add(appt);
-                }else {
-                    this._activeAppts.add(appt);
-                }
+				if (!appCtxt.get(ZmSetting.CAL_SHOW_PAST_DUE_REMINDERS) && appt.isAlarmOld()) {
+					numNotify--;
+					this._oldAppts.add(appt);
+				} else {
+					this._activeAppts.add(appt);
+				}
 			}
 		}
 	}
@@ -322,11 +321,11 @@ function() {
 		}
 	}
 
-    DBG.println(AjxDebug.DBG2, "no of appts active:" + this._activeAppts.size() + ", no of appts cached:" + cachedSize);
-    
-    if(this._oldAppts.size() > 0) {
-        this.dismissAppt(this._oldAppts, new AjxCallback(this, this._silentDismissCallback));
-    }
+	DBG.println(AjxDebug.DBG2, "no of appts active:" + this._activeAppts.size() + ", no of appts cached:" + cachedSize);
+
+	if (this._oldAppts.size() > 0) {
+		this.dismissAppt(this._oldAppts, new AjxCallback(this, this._silentDismissCallback));
+	}
 
 	// need to schedule housekeeping callback, ideally right before next _cachedAppt start time - lead,
 	// for now just check once a minute...
@@ -335,20 +334,20 @@ function() {
 
 ZmReminderController.prototype._silentDismissCallback =
 function(list) {
-    var size = list.size();
-    for (var i = 0; i < size; i++) {
-        var appt = list.get(i);
-        if (appt && appt.hasAlarmData()) {
-            if(appt.isAlarmInRange()) {
-                this._activeAppts.add(appt);
-            }
-        }
-    }
-    this._oldAppts.removeAll();
+	var size = list.size();
+	for (var i = 0; i < size; i++) {
+		var appt = list.get(i);
+		if (appt && appt.hasAlarmData()) {
+			if(appt.isAlarmInRange()) {
+				this._activeAppts.add(appt);
+			}
+		}
+	}
+	this._oldAppts.removeAll();
 
-    // cancel outstanding timed action and update now...
-    this._cancelHousekeepingAction();
-    this._housekeepingAction();
+	// cancel outstanding timed action and update now...
+	this._cancelHousekeepingAction();
+	this._housekeepingAction();
 };
 
 /**
@@ -469,14 +468,13 @@ function(list, callback, result) {
 		}
 	}
 
-    if(callback) {
-        callback.run(list);
-    }    
+	if (callback) {
+		callback.run(list);
+	}
 };
 
 ZmReminderController.prototype._handleErrorDismissAppt =
 function(list, callback, response) {
-
 };
 
 ZmReminderController.prototype.getReminderDialog =

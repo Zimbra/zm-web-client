@@ -57,7 +57,7 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view) {
 	this.addControlListener(new AjxListener(this, this._controlListener));	
 	this._createHtml();
 	this._needsRefresh = true;
-}
+};
 
 ZmCalBaseView.prototype = new DwtComposite;
 ZmCalBaseView.prototype.constructor = ZmCalBaseView;
@@ -107,7 +107,9 @@ ZmCalBaseView._getColors = function(color) {
 
 	return { standard: { header: hs, body: bs }, deeper: { header: hd, body: bd } };
 };
-ZmCalBaseView._toColorsCss = function(object) {
+
+ZmCalBaseView._toColorsCss =
+function(object) {
 	var a = [ "background-color:",object.bgcolor,";" ];
 	if (object.color) {
 		a.push("color:",object.color,";");
@@ -115,7 +117,8 @@ ZmCalBaseView._toColorsCss = function(object) {
 	return a.join("");
 };
 
-ZmCalBaseView._isDark = function(color) {
+ZmCalBaseView._isDark =
+function(color) {
 	var c = AjxColor.components(color);
 	return c[0]+c[1]+c[2] < ZmCalBaseView.darkThreshold;
 };
@@ -123,49 +126,49 @@ ZmCalBaseView._isDark = function(color) {
 ZmCalBaseView.prototype.getController =
 function() {
 	return this._controller;
-}
+};
 
 ZmCalBaseView.prototype.firstDayOfWeek =
 function() {
 	return appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
-}
+};
 
 ZmCalBaseView.prototype.addViewActionListener =
 function(listener) {
 	this._evtMgr.addListener(ZmCalBaseView.VIEW_ACTION, listener);
-}
+};
 
 ZmCalBaseView.prototype.removeViewActionListener =
 function(listener) {
 	this._evtMgr.removeListener(ZmCalBaseView.VIEW_ACTION, listener);
-}
+};
 
 // BEGIIN LIST-RELATED
 
 ZmCalBaseView.prototype.addSelectionListener = 
 function(listener) {
 	this._evtMgr.addListener(DwtEvent.SELECTION, listener);
-}
+};
 
 ZmCalBaseView.prototype.removeSelectionListener = 
 function(listener) {
 	this._evtMgr.removeListener(DwtEvent.SELECTION, listener);    	
-}
+};
 
 ZmCalBaseView.prototype.addActionListener = 
 function(listener) {
 	this._evtMgr.addListener(DwtEvent.ACTION, listener);
-}
+};
 
 ZmCalBaseView.prototype.removeActionListener = 
 function(listener) {
 	this._evtMgr.removeListener(DwtEvent.ACTION, listener);    	
-}
+};
 
 ZmCalBaseView.prototype.getList = 
 function() {
 	return this._list;
-}
+};
 
 ZmCalBaseView.prototype.associateItemWithElement =
 function (item, element, type, optionalId) {
@@ -292,7 +295,7 @@ function(ev) {
 		}
 	}
 	return this._mouseDownAction(ev, div);	
-}
+};
 
 ZmCalBaseView.prototype._mouseDownAction = 
 function(ev, div) {
@@ -315,7 +318,7 @@ function(ev, div) {
 };
 
 ZmCalBaseView.prototype._doubleClickAction = 
-function(ev, div) {return true;}
+function(ev, div) { return true; };
 
 ZmCalBaseView.prototype._doubleClickListener =
 function(ev) {
@@ -332,7 +335,7 @@ function(ev) {
 		}
 	}
 	return this._doubleClickAction(ev, div);
-}
+};
 
 ZmCalBaseView.prototype._itemClicked =
 function(clickedEl, ev) {
@@ -432,20 +435,16 @@ function(ev) {
 ZmCalBaseView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, this.getCalTitle()].join(": ");
-}
+};
 
 ZmCalBaseView.prototype.needsRefresh = 
 function() {
 	return this._needsRefresh;
-}
+};
 
 ZmCalBaseView.prototype.setNeedsRefresh = 
 function(refresh) {
 	 this._needsRefresh = refresh;
-};
-ZmCalBaseView.prototype.needsRefresh =
-function() {
-	return this._needsRefresh;
 };
 
 ZmCalBaseView.prototype._getItemId =
@@ -629,7 +628,7 @@ function(appt, html, idx) {
 
 	if (appt.isException) {
 		html[idx++] = "<td>";
-		html[idx++] = AjxImg.getImageHtml("ApptException")
+		html[idx++] = AjxImg.getImageHtml("ApptException");
 		html[idx++] = "</td>";
 	} else if (appt.isRecurring()) {
 		html[idx++] = "<td>";

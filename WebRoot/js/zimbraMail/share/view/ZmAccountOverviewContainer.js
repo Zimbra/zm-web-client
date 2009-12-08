@@ -111,6 +111,10 @@ function(params) {
 			params.omit[ZmFolder.ID_OUTBOX] = true;
 		}
 
+		if (this._appName == ZmApp.CALENDAR) {
+			params.selectable = false;
+		}
+
 		this._addAccount(params, acct, showBackgroundColor);
 
 		header = this.getHeaderItem(acct);

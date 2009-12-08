@@ -302,20 +302,20 @@ ZmCalendarTreeController.prototype._changeListener =
 function(ev, treeView, overviewId) {
 	ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 
-	if (ev.type != this.type) { return; }
+	if (ev.type != this.type || ev.handled) { return; }
 
 	var fields = ev.getDetail("fields") || {};
 	if (ev.event == ZmEvent.E_CREATE ||
 		ev.event == ZmEvent.E_DELETE ||
 		(ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_FLAGS]))
 	{
-		var app = appCtxt.getApp(ZmApp.CALENDAR);
-		var controller = app.getCalController();
+		var controller = appCtxt.getApp(ZmApp.CALENDAR).getCalController();
 		controller._updateCheckedCalendars();
 
-		//if calendar is deleted and  notify complete will initiate the refresh action
-		if(ev.event != ZmEvent.E_DELETE) {
+		// if calendar is deleted, notify will initiate the refresh action
+		if (ev.event != ZmEvent.E_DELETE) {
 			controller._refreshAction(true);
+			ev.handled = true;
 		}
 	}
 };

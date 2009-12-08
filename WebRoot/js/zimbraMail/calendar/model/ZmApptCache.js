@@ -31,13 +31,13 @@ function(folderId) {
 		this._cachedIds = {};
 	} else {
 		var cacheEntries = this._cachedApptVectors[folderId];
-		if(cacheEntries) {
-			for(var j in cacheEntries) {
+		if (cacheEntries) {
+			for (var j in cacheEntries) {
 				var cachedVec = cacheEntries[j];
 				var len = cachedVec.size();
-				for(var i=0; i<len; i++) {
+				for (var i = 0; i < len; i++) {
 					var appt = cachedVec.get(i);
-					if(appt.folderId == folderId) {
+					if (appt.folderId == folderId) {
 						delete this._cachedIds[appt.id];
 					}
 				}
@@ -256,9 +256,6 @@ function(params) {
 		var rid = folder ? folder.getRemoteId() : fid;
 		folderIdMapper[rid] = fid;
 
-//		if (appCtxt.multiAccounts) {
-//			fid = folder.nId;
-//		}
 		if (query.length) {
 			query += " OR ";
 		}
@@ -367,8 +364,12 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 		return;
 	}
 
-	var accountName = (appCtxt.multiAccounts)
-		? appCtxt.getById(searchParams.folderIds[0]).account.name : null;
+	var accountName;
+	if (appCtxt.multiAccounts) {
+		accountName = (searchParams.folderIds.length > 0)
+			? appCtxt.getById(searchParams.folderIds[0]).account.name
+			: appCtxt.accountList.mainAccount.name;
+	}
 
 	if ((searchParams && searchParams.callback) || miniCalParams.callback) {
 		var params = {
@@ -416,7 +417,7 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 	// currently we send only one search request in batch
 	if (!(searchResp instanceof Array)) {
 		searchResp = [searchResp];
-	};
+	}
 
 	if (searchResp.length > 1) {
 		// process reminder list
@@ -446,7 +447,7 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 ZmApptCache.prototype.handleBatchResponseError =
 function(searchParams, miniCalParams, reminderSearchParams, response) {
 	var resp = response && response._data && response._data.BatchResponse;
-	this._calViewController.setSearchInProgress(false);
+	this._calViewController.searchInProgress = false;
 	this._processErrorCode(resp);
 };
 
@@ -455,7 +456,7 @@ function(resp) {
 	if (resp && resp.Fault && (resp.Fault.length > 0)) {
 
 		if (this._calViewController) {
-			this._calViewController.setSearchInProgress(false);
+			this._calViewController.searchInProgress = false;
 		}
 
 		var errors = [];
@@ -544,7 +545,7 @@ function(organizer) {
 ZmApptCache.prototype.runErrorRecovery =
 function() {
 	if (this._calViewController) {
-		this._calViewController.setSearchInProgress(false);
+		this._calViewController.searchInProgress = false;
 		this._calViewController._updateCheckedCalendars();
 		if (this._calViewController.onErrorRecovery) {
 			this._calViewController.onErrorRecovery.run();
