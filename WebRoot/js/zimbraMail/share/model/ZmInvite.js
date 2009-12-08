@@ -402,6 +402,9 @@ function(compNum) {
 ZmInvite.prototype.getDurationText =
 function(compNum, emptyAllDay, startOnly, isText) {
 	var component = this.components[compNum];
+    var sdt = this.getServerStartDate(compNum);
+    var edt = this.getServerEndDate(compNum);
+    if(!sdt && !edt) return "";
 	if (this.isAllDayEvent(compNum)) {
 		if (emptyAllDay) {
 			return "";
@@ -431,22 +434,25 @@ function(compNum, emptyAllDay, startOnly, isText) {
 		var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 
 		var sd = this.getServerStartDate(compNum);
+        var a = [];
+        if(sd){
+		    a = [ dateFormatter.format(sd), isText ? " " : "<br>" ];
+            if (startOnly) {
+			    a.push(timeFormatter.format(sd));
+		    }
+		    else {
+                var ed = this.getServerEndDate(compNum);
+                if(ed){
+                    var startHour = timeFormatter.format(sd);
+                    var endHour = timeFormatter.format(ed);
 
-		var a = [ dateFormatter.format(sd), isText ? " " : "<br>" ];
-		if (startOnly) {
-			a.push(timeFormatter.format(sd));
-		} 
-		else {
-			var ed = this.getServerEndDate(compNum);
-		
-			var startHour = timeFormatter.format(sd);
-			var endHour = timeFormatter.format(ed);
-			
-			if (!ZmInvite._hoursFormatter) {
-				ZmInvite._hoursFormatter = new AjxMessageFormat(ZmMsg.durationHours);
-			}
-			a.push(ZmInvite._hoursFormatter.format( [ startHour, endHour ] ));
-		}
+                    if (!ZmInvite._hoursFormatter) {
+                        ZmInvite._hoursFormatter = new AjxMessageFormat(ZmMsg.durationHours);
+                    }
+                    a.push(ZmInvite._hoursFormatter.format( [ startHour, endHour ] ));
+                }
+		    }
+        }
 		return a.join("");
 	}
 };
