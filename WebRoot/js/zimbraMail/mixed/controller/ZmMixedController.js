@@ -51,7 +51,7 @@ ZmMixedController.PKGS[ZmItem.CONV]			= ["MailCore", "Mail"];
 ZmMixedController.PKGS[ZmItem.MSG]			= ["MailCore", "Mail"];
 ZmMixedController.PKGS[ZmItem.APPT]			= ["CalendarCore", "Calendar"];
 ZmMixedController.PKGS[ZmItem.TASK]			= ["TasksCore", "Tasks"];
-ZmMixedController.PKGS[ZmItem.PAGE]			= ["NotebookCore", "Notebook"];
+ZmMixedController.PKGS[ZmItem.PAGE]			= ["BriefcaseCore", "Briefcase"];
 ZmMixedController.PKGS[ZmItem.BRIEFCASE]	= ["BriefcaseCore", "Briefcase"];
 
 
