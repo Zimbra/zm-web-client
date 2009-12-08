@@ -621,9 +621,10 @@ function() {
 	if (this.isGalAutocompleteSearch) {
 		limit = appCtxt.get(ZmSetting.AUTOCOMPLETE_LIMIT);
 	} else {
-		var curView = appCtxt.getCurrentView();
-		if (curView && curView.getLimit) {
-			limit = curView.getLimit(this.offset);
+		var type = this.types && this.types.get(0);
+		var app = appCtxt.getApp(ZmItem.APP[type]);
+		if (app && app.getLimit) {
+			limit = app.getLimit(this.offset);
 		} else {
 			limit = appCtxt.get(ZmSetting.PAGE_SIZE) || ZmSearch.DEFAULT_LIMIT;
 		}

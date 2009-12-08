@@ -1653,6 +1653,13 @@ function(groupBy) {
 	appCtxt.set(ZmSetting.GROUP_MAIL_BY, groupBy);
 };
 
+// return enough for us to get a scroll bar since we are pageless
+ZmMailApp.prototype.getLimit =
+function(offset) {
+	var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
+	return offset ? limit : 2 * limit;
+};
+
 /**
 * Adds a "Reply" submenu for replying to sender or all.
 *
