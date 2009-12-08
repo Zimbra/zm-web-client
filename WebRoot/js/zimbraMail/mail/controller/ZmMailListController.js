@@ -1308,7 +1308,8 @@ function(ev) {
 ZmMailListController.prototype._checkMailListener =
 function() {
 	if (appCtxt.isOffline) {
-		appCtxt.accountList.syncAll();
+		var callback = new AjxCallback(this, this._handleSyncAll);
+		appCtxt.accountList.syncAll(callback);
 	}
 
 	var folderId = this._getSearchFolderId();
@@ -1338,6 +1339,13 @@ function() {
 				appCtxt.getAppController().sendNoOp();
 			}
 		}
+	}
+};
+
+ZmMailListController.prototype._handleSyncAll =
+function() {
+	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES)) {
+		this._app.getOverviewContainer().highlightAllMboxes();
 	}
 };
 

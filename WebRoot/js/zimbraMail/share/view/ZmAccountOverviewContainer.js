@@ -149,7 +149,7 @@ function(params) {
 		allTi.setVisible(showAllMboxes);
 		allTi.__origText = text;
 		if (showAllMboxes) {
-			this.setSelection(allTi, true);
+			this.highlightAllMboxes();
 		}
 
 		var setting = appCtxt.getSettings(mainAcct).getSetting(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES);
@@ -357,6 +357,12 @@ function() {
 	if (header) {
 		this.removeChild(header);
 	}
+};
+
+ZmAccountOverviewContainer.prototype.highlightAllMboxes =
+function() {
+	this.deselectAll();
+	this.setSelection(this._allMailboxesTreeHeader, true);
 };
 
 ZmAccountOverviewContainer.prototype._addAccount =
