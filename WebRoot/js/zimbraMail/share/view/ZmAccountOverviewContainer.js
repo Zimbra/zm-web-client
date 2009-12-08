@@ -141,13 +141,16 @@ function(params) {
 			text: this._getFolderLabel(ZmOrganizer.ID_INBOX, text),
 			imageInfo: "GlobalInbox"
 		};
+		var showAllMboxes = appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES);
 		var allTi = this._allMailboxesTreeHeader = new DwtTreeItem(params1);
 		allTi.setData(Dwt.KEY_ID, ZmOrganizer.ID_ALL_MAILBOXES);
 		allTi.addClassName("ZmOverviewGlobalInbox");
 		allTi._initialize(0, true);
-		allTi.setVisible(appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES));
+		allTi.setVisible(showAllMboxes);
 		allTi.__origText = text;
-		this.setSelection(allTi, true);
+		if (showAllMboxes) {
+			this.setSelection(allTi, true);
+		}
 
 		var setting = appCtxt.getSettings(mainAcct).getSetting(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES);
 		setting.addChangeListener(new AjxListener(this, this._settingChangeListener, allTi));
@@ -554,7 +557,15 @@ function(ti, ev) {
 
 	var setting = ev.source;
 	if (setting.id == ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) {
-		ti.setVisible(setting.getValue());
+		var isVisible = setting.getValue();
+		ti.setVisible(isVisible);
+		if (!isVisible) {
+			if (appCtxt.getActiveAccount().isMain) {
+				appCtxt.accountList.setActiveAccount(appCtxt.accountList.defaultAccount);
+			}
+			appCtxt.getSearchController().searchAllAccounts = false;
+			appCtxt.getApp(ZmApp.MAIL).mailSearch();
+		}
 	}
 };
 

@@ -1248,7 +1248,7 @@ function() {
 	var container = ZmApp.prototype.getOverviewContainer.apply(this, arguments);
 
 	// bug: 42455 - highlight folder now that overview exists
-	if (firstTime) {
+	if (firstTime && !appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES)) {
 		appCtxt.getSearchController().updateOverview();
 	}
 
