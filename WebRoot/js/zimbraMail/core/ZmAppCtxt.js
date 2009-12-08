@@ -827,7 +827,8 @@ ZmAppCtxt.prototype.getZimletMgr =
 function() {
 	if (!this._zimletMgr) {
 		AjxDispatcher.require("Zimlet");
-		this._zimletMgr = new ZmZimletMgr();
+		if (!this._zimletMgr) // Must re-check here, because if this function is called a second time before the "Zimlet" package is loaded, both calls want to set this._zimletMgr, which must NEVER happen (Issue first located in bug #41338)
+			this._zimletMgr = new ZmZimletMgr();
 	}
 	return this._zimletMgr;
 };
