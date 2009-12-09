@@ -768,7 +768,8 @@ function(params) {
 		} else {
 			reqParams.soapDoc = params.request;
 		}
-		DBG.println("sa", "* item action: " + list.length);
+		DBG.println("sa", "* item action: " + list.length + " items");
+		DBG.println("sa", "items: " + list);
 		params.reqId = appCtxt.getAppController().sendRequest(reqParams);
 	}
 };
@@ -805,14 +806,16 @@ function(params, result) {
 	}
 
 	if (params.ids.length && !params.cancelled) {
+		DBG.println("sa", "item action setting up next chunk, remaining: " + params.ids.length);
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._doAction, [params]), 100);
 	} else {
 		params.reqId = null;
 		if (params.finalCallback) {
 			// finalCallback is responsible for clearing dialog
-			DBG.println("sa", "ZmItem running finalCallback");
+			DBG.println("sa", "item action running finalCallback");
 			params.finalCallback.run(params);
 		} else {
+			DBG.println("sa", "no final callback");
 			if (dialog) {
 				dialog.popdown();
 				ZmList.progressDialog = null;

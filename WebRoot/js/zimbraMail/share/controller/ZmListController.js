@@ -1166,11 +1166,23 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	var selItem = saveSelection ? lv.getSelection()[0] : null;
 	var selectedIdx = selItem ? lv.getItemIndex(selItem) : -1;
 
+	var items = searchResult && searchResult.getResults().getArray();
 	if (lv._isPageless) {
-		lv._itemsToAdd = searchResult && searchResult.getResults().getArray();
+		lv._itemsToAdd = items;
 	}
 
 	this._setViewContents(view);
+
+	// add new items to selection if all results selected, in a way that doesn't call deselectAll()
+	if (lv.allSelected) {
+		for (var i = 0, len = items.length; i < len; i++) {
+			lv.selectItem(items[i], true);
+			lv.setSelectionCbox(items[i], false);
+		}
+		lv.setSelectionHdrCbox(true);
+		DBG.println("scr", "pagination - selected more items: " + items.length);
+		DBG.println("scr", "items selected: " + lv.getSelection().length);
+	}
 	this._resetNavToolBarButtons(view);
 
 	// bug fix #5134 - some views may not want to reset the current selection
@@ -1512,6 +1524,7 @@ function(params, actionParams) {
 	var cancelled = actionParams && actionParams.cancelled;
 	var contResult = this._continuation.result;
 	var hasMore = contResult ? contResult.getAttribute("more") : this._list.hasMore();
+	DBG.println("sa", "lv.allSelected: " + lv.allSelected + ", hasMore: " + hasMore);
 	if (lv.allSelected && hasMore && !cancelled) {
 		var cs = this._currentSearch;
 		var limit = ZmListController.CONTINUATION_SEARCH_ITEMS;
@@ -1545,6 +1558,7 @@ function(params, actionParams) {
 		var respCallback = new AjxCallback(this, this._handleResponseContinueAction, [params.actionCallback]);
 		appCtxt.getSearchController().redoSearch(this._continuation.search, true, null, respCallback);
 	} else {
+		DBG.println("sa", "end of continuation");
 		if (contResult) {
 			if (lv.allSelected) {
 				// items beyond page were acted on, give user a total count
@@ -1578,6 +1592,7 @@ function(actionCallback, result) {
 		DBG.println("sa", "continuation last item ID: " + this._continuation.lastItem.id);
 		actionCallback.args = actionCallback.args || [];
 		actionCallback.args.unshift(items);
+		DBG.println("sa", "calling continuation action on search results");
 		actionCallback.run();
 	}
 };
