@@ -72,7 +72,8 @@ function(params) {
 			parent: header,
 			scroll: Dwt.CLIP,
 			posStyle: Dwt.STATIC_STYLE,
-			selectionSupported: true
+			selectionSupported: true,
+			showUnread: true
 		};
 
 		// next, create an overview for this account and add it to the account header
