@@ -89,7 +89,7 @@
                                     </c:when>
 
                                     <c:when test="${empty selectedRow and hit.messageHit.id == context.currentItem.id and mailbox.prefs.readingPaneEnabled and not empty msg and (param.action eq 'view' or param.action eq 'view2')}">
-                                        <zm:currentResultUrl var="currentItemUrl" value="search" cid="${hit.id}" action='view3' index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                                        <zm:currentResultUrl var="currentItemUrl" value="search" cid="${hit.id}" action='convView' index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                                     </c:when>
 
                                     <c:otherwise>

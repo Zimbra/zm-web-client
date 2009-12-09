@@ -210,10 +210,10 @@
     <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled and action eq 'view2'}">
         <app:convColumnView context="${context}"/>
     </c:when>
-    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled and action eq 'view3'}">
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled and action eq 'convView'}">
         <app:convView context="${context}"/>
     </c:when>
-    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled and action eq 'view4'}">
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled and action eq 'convView2'}">
         <app:convView2 context="${context}"/>
     </c:when>
 
@@ -232,7 +232,7 @@
     <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneEnabled and action eq 'view'}">
         <app:messageColumnView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneEnabled and action eq 'view3'}">
+    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneEnabled and action eq 'convView'}">
         <app:messageView context="${context}"/>
     </c:when>  
     <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneEnabled}">
