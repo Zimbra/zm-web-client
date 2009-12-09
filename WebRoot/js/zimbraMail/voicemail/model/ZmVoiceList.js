@@ -63,7 +63,7 @@ ZmVoiceList.prototype._handleResponseMoveItems =
 function(params) {
 
 	// Remove the items.
-	for (var i = 0, count = items.length; i < count; i++) {
+	for (var i = 0, count = params.items.length; i < count; i++) {
 		this.remove(params.items[i]);
 	}
 	
