@@ -500,24 +500,6 @@ function() {
 	return newList;
 };
 
-// NOTE: calendar overloads this method since it handles minical independently
-ZmApp.prototype._setMiniCalForActiveAccount =
-function(byUser) {
-	// show/hide mini cal based on active account's pref
-	// XXX: forces calendar core to load even if no accounts have minical enabled!
-	var showMiniCal = appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
-	AjxDispatcher.run("ShowMiniCalendar", showMiniCal);
-
-	// refetch minical data for newly active account
-	if (showMiniCal && byUser) {
-		var cc = AjxDispatcher.run("GetCalController");
-		cc._checkedCalendars = null;
-		cc._checkedCalendarIds = null;
-		cc.getMiniCalCache().clearCache();
-		cc.fetchMiniCalendarAppts(ZmCalViewController.MAINT_MINICAL);
-	}
-};
-
 ZmApp.prototype._addSettingsChangeListeners =
 function() {
 	if (!this._settingListener) {

@@ -303,9 +303,8 @@ function(params) {
 
 		// bug: 43067 - reparent calendars for caldav-based accounts
 		if (appCtxt.multiAccounts &&
-			child.parent.nId == ZmOrganizer.ID_CALENDAR &&
-			(child.account.type == ZmAccount.TYPE_GMAIL ||
-			 child.account.type == ZmAccount.TYPE_YMP))
+			child.getAccount().isCalDavBased() &&
+			child.parent.nId == ZmOrganizer.ID_CALENDAR)
 		{
 			parentNode = parentNode.parent;
 		}

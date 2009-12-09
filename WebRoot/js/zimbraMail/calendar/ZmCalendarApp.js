@@ -714,24 +714,17 @@ function() {
 	return this._equipment;
 };
 
-ZmCalendarApp.prototype._setMiniCalForActiveAccount =
-function() {
-	// do nothing since calendar handles mini cal on its own
-};
-
 /**
  * returns the list of checked calendar Ids, gets the list from deferred folders
  * to keep things lite when calendar packages are not loaded
- *
- * @localOnly       decides whether shared folders needs to be excluded
 */
 ZmCalendarApp.prototype.getCheckedCalendarFolderIds =
-function(localOnly) {
+function() {
 	var folderIds = [];
 	if (AjxDispatcher.loaded("CalendarCore")) {
-		folderIds = this.getCalController().getCheckedCalendarFolderIds(localOnly);
+		folderIds = this.getCalController().getCheckedCalendarFolderIds();
 	} else {
-		//will be used in reminder dialog
+		// will be used in reminder dialog
 		this._folderNames = {};
 		for (var i = 0; i < this._deferredFolders.length; i++) {
 			var params = this._deferredFolders[i];

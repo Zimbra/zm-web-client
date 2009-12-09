@@ -581,8 +581,9 @@ function(ti, ev) {
 
 ZmAccountOverviewContainer.prototype._getAccountHeaderLabel =
 function(acct, header) {
-	var inboxId = ZmOrganizer.getSystemId(ZmOrganizer.ID_INBOX, acct, true);
-	var inbox = appCtxt.getById(inboxId);
+	var inboxId = (this._appName == ZmApp.MAIL)
+		? ZmOrganizer.getSystemId(ZmOrganizer.ID_INBOX, acct, true) : null;
+	var inbox = inboxId && appCtxt.getById(inboxId);
 	if (inbox && inbox.numUnread > 0) {
 		var name = AjxMessageFormat.format(ZmMsg.folderUnread, [acct.getDisplayName(), inbox.numUnread]);
 		return (["<span style='font-weight:bold;'>", name, "</span>"].join(""));

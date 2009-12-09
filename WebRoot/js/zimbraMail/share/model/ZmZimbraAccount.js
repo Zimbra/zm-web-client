@@ -152,6 +152,12 @@ function() {
 	return (appCtxt.isOffline && (!this.lastSync || (this.lastSync && this.lastSync == 0)));
 };
 
+ZmZimbraAccount.prototype.isCalDavBased =
+function() {
+	return (this.type == ZmAccount.TYPE_GMAIL ||
+			this.type == ZmAccount.TYPE_YMP);
+};
+
 ZmZimbraAccount.prototype.updateState =
 function(acctInfo) {
 	if (this.isMain) { return; } // main account doesn't sync

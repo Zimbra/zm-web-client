@@ -72,16 +72,6 @@ function(params) {
 	return (params.start + ":" + params.end + ":" + params.fanoutAllDay + ":" + query + sortedFolderIds.join(":"));
 };
 
-ZmApptCache.prototype._getCachedMergedVector =
-function(cacheKey) {
-	return this._cachedMergedApptVectors[cacheKey];
-};
-
-ZmApptCache.prototype._cacheMergedVector =
-function(vector, cacheKey) {
-	this._cachedMergedApptVectors[cacheKey] = vector.clone();
-};
-
 ZmApptCache.prototype._getCachedVector =
 function(start, end, fanoutAllDay, folderId, query) {
 	var folderCache = this._cachedApptVectors[folderId];
@@ -186,7 +176,10 @@ function(params) {
 
 	var apptVec = this.setSearchParams(params);
 
-	if (apptVec != null && (apptVec instanceof AjxVector)) {
+	if (apptVec) {
+		if (params.callback) {
+			params.callback.run(apptVec);
+		}
 		return apptVec;
 	}
 
@@ -202,29 +195,23 @@ function(params) {
 
 ZmApptCache.prototype.setSearchParams =
 function(params) {
-	if (!(params.folderIds instanceof Array)) {
+	if (params.folderIds && (!(params.folderIds instanceof Array))) {
 		params.folderIds = [params.folderIds];
-	} else if (params.folderIds.length == 0) {
-		var newVec = new AjxVector();
-		if (params.callback) {
-			params.callback.run(newVec);
-		}
-		return newVec;
+	}
+	else if (!params.folderIds || (params.folderIds && params.folderIds.length == 0)) {
+		return (new AjxVector());
 	}
 
 	params.mergeKey = this._getCachedMergedKey(params);
-	var list = this._getCachedMergedVector(params.mergeKey);
+	var list = this._cachedMergedApptVectors[params.mergeKey];
 	if (list != null) {
-		if (params.callback) {
-			params.callback.run(list.clone());
-		}
 		return list.clone();
 	}
 
 	params.needToFetch = [];
 	params.resultList = [];
 
-	for (var i=0; i < params.folderIds.length; i++) {
+	for (var i = 0; i < params.folderIds.length; i++) {
 		var fid = params.folderIds[i];
 		// check vector cache first
 		list = this._getCachedVector(params.start, params.end, params.fanoutAllDay, fid);
@@ -238,10 +225,7 @@ function(params) {
 	// if already cached, return from cache
 	if (params.needToFetch.length == 0) {
 		var newList = ZmApptList.mergeVectors(params.resultList);
-		this._cacheMergedVector(newList, params.mergeKey);
-		if (params.callback) {
-			params.callback.run(newList);
-		}
+		this._cachedMergedApptVectors[params.mergeKey] = newList.clone();
 		return newList;
 	}
 
@@ -264,7 +248,9 @@ function(params) {
 	}
 	params.queryHint = query;
 	params.folderIdMapper = folderIdMapper;
-	params.offset = 0;	
+	params.offset = 0;
+
+	return null;
 };
 
 ZmApptCache.prototype._search =
@@ -294,35 +280,32 @@ function(params) {
 
 ZmApptCache.prototype.batchRequest =
 function(searchParams, miniCalParams, reminderSearchParams) {
-	if (appCtxt.multiAccounts) {
-		if (!this._accountNewList) {
-			this._accountNewList = new AjxVector();
-		}
-		this._accountNewList.removeAll();
-	}
+	// *always* recreate the accounts list, otherwise we dispose its contents
+	// before the view has a chance to remove the corresponding elements
+	this._accountsSearchList = new AjxVector();
 
 	this._doBatchRequest(searchParams, miniCalParams, reminderSearchParams);
 };
 
 ZmApptCache.prototype._doBatchRequest =
 function(searchParams, miniCalParams, reminderSearchParams) {
-	if (appCtxt.multiAccounts) {
-		searchParams.folderIds = miniCalParams.folderIds = searchParams.accountFolderIds.shift();
-	}
+	searchParams.folderIds = miniCalParams.folderIds = searchParams.accountFolderIds.shift();
 
+	var apptVec;
 	var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
 	var request = jsonObj.BatchRequest;
 
 	if (searchParams) {
-		if (!searchParams.folderIds) {
+		if (!searchParams.folderIds && !appCtxt.multiAccounts) {
 			searchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds();
 		}
 		searchParams.query = this._calViewController._userQuery;
-		var apptVec = this.setSearchParams(searchParams);
+		apptVec = this.setSearchParams(searchParams);
 
 		// search data in cache
-		if (apptVec != null && (apptVec instanceof AjxVector)) {
+		if (apptVec) {
 			this._cachedVec = apptVec;
+			this._accountsSearchList.addList(apptVec);
 		} else {
 			var searchRequest = request.SearchRequest = {_jsns:"urn:zimbraMail"};
 			this._setSoapParams(searchRequest, searchParams);
@@ -331,16 +314,19 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 
 	if (reminderSearchParams) {
 		if (!reminderSearchParams.folderIds) {
-			reminderSearchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds();
+			reminderSearchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds(true);
 		}
 
 		// reminder search params is only for grouping reminder related srch
-		var apptVec = this.setSearchParams(reminderSearchParams);
+		apptVec = this.setSearchParams(reminderSearchParams);
 
 		if (!apptVec) {
 			var searchRequest ={_jsns:"urn:zimbraMail"};
 			request.SearchRequest = request.SearchRequest ? [request.SearchRequest, searchRequest] : searchRequest;
 			this._setSoapParams(searchRequest, reminderSearchParams);
+		}
+		else if (reminderSearchParams.callback) {
+			reminderSearchParams.callback.run(apptVec);
 		}
 	}
 
@@ -358,20 +344,24 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 		miniCalCache._setSoapParams(miniCalRequest, miniCalParams);
 	}
 
-	// both mini cal and search data is in cache : no need to send request
+	// both mini cal and search data is in cache, no need to send request
 	if (searchParams && !request.SearchRequest && !request.GetMiniCalRequest) {
-		// setSoapParams would have invoked callback when this condition occurs
+
+		// process the next account
+		if (searchParams.accountFolderIds.length > 0) {
+			this._doBatchRequest(searchParams, miniCalParams);
+		}
+		else if (searchParams.callback) {
+			searchParams.callback.run(this._accountsSearchList);
+		}
+
 		return;
 	}
 
-	var accountName;
-	if (appCtxt.multiAccounts) {
-		accountName = (searchParams.folderIds.length > 0)
-			? appCtxt.getById(searchParams.folderIds[0]).account.name
-			: appCtxt.accountList.mainAccount.name;
-	}
-
 	if ((searchParams && searchParams.callback) || miniCalParams.callback) {
+		var accountName = (appCtxt.multiAccounts && searchParams.folderIds && (searchParams.folderIds.length > 0))
+			? appCtxt.getById(searchParams.folderIds[0]).getAccount().name : null;
+
 		var params = {
 			jsonObj: jsonObj,
 			asyncMode: true,
@@ -397,6 +387,9 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 
 	if (batchResp && batchResp.Fault) {
 		if (this._processErrorCode(batchResp)) {
+			if (searchParams.accountFolderIds.length > 0) {
+				this._doBatchRequest(searchParams, miniCalParams);
+			}
 			return;
 		}
 	}
@@ -412,7 +405,16 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 		}
 	}
 
-	if (!searchResp || !searchParams) { return; }
+	if (!searchResp || !searchParams) {
+		if (searchParams) {
+			if (searchParams.accountFolderIds.length > 0) {
+				this._doBatchRequest(searchParams, miniCalParams);
+			} else if (searchParams.callback) {
+				searchParams.callback.run(this._accountsSearchList);
+			}
+		}
+		return;
+	}
 
 	// currently we send only one search request in batch
 	if (!(searchResp instanceof Array)) {
@@ -424,23 +426,17 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 		this.processSearchResponse(searchResp[1], reminderSearchParams);
 	}
 
-	var newList = this.processSearchResponse(searchResp[0], searchParams);
+	var list = this.processSearchResponse(searchResp[0], searchParams);
+	this._accountsSearchList.addList(list);
 
-	if (appCtxt.multiAccounts) {
-		this._accountNewList.addList(newList);
-
-		if (searchParams.accountFolderIds.length > 0) {
-			this._doBatchRequest(searchParams, miniCalParams);
-			return;
-		}
-
-		newList = this._accountNewList;
-	}
-
-	if (searchParams.callback) {
-		searchParams.callback.run(newList, null, searchParams.query);
+	if (searchParams.accountFolderIds.length > 0) {
+		this._doBatchRequest(searchParams, miniCalParams);
 	} else {
-		return newList;
+		if (searchParams.callback) {
+			searchParams.callback.run(this._accountsSearchList, null, searchParams.query);
+		} else {
+			return this._accountsSearchList;
+		}
 	}
 };
 
@@ -563,8 +559,8 @@ ZmApptCache.prototype._setSoapParams =
 function(request, params) {
 	request.sortBy = "none";
 	request.limit = "500";
-	//AjxEnv.DEFAULT_LOCALE is set to the browser's locale setting in the case when
-	//the user's (or their COS) locale is not set.
+	// AjxEnv.DEFAULT_LOCALE is set to the browser's locale setting in the case
+	// when the user's (or their COS) locale is not set.
 	request.locale = { _content: AjxEnv.DEFAULT_LOCALE };
 	request.calExpandInstStart = params.start;
 	request.calExpandInstEnd = params.end;
@@ -596,11 +592,9 @@ function(params, result) {
 		return;
 	}
 
-	var searchResp = resp.SearchResponse;
-	var newList = this.processSearchResponse(searchResp, params);
-	if(newList == null) { return; }
+	var newList = this.processSearchResponse(resp.SearchResponse, params);
 
-	if (callback) {
+	if (callback && newList) {
 		callback.run(newList, params.query, result);
 	} else {
 		return newList;
@@ -617,68 +611,70 @@ function(params, ex) {
 		return true;
 	}
 
-    var ids = {};
-    var invalidAccountMarker = {};
+	var ids = {};
+	var invalidAccountMarker = {};
 
-    //check for deleted remote mount point or account
-    var itemIds = (ex.data && ex.data.itemId && ex.data.itemId.length) ? ex.data.itemId : [];
-    if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT) {
-        for(var j in itemIds) {
-            var id = itemIds[j];
-            ids[id] = true;
-            if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT) {
-                invalidAccountMarker[id] = true;
-            }
-        }
-    }
+	// check for deleted remote mount point or account
+	var itemIds = (ex.data && ex.data.itemId && ex.data.itemId.length) ? ex.data.itemId : [];
+	if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT) {
+		for(var j in itemIds) {
+			var id = itemIds[j];
+			ids[id] = true;
+			if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT) {
+				invalidAccountMarker[id] = true;
+			}
+		}
+	}
 
-    var deleteHandled = this.handleDeletedFolderIds(ids, invalidAccountMarker);
+	var deleteHandled = this.handleDeletedFolderIds(ids, invalidAccountMarker);
 
-    if(deleteHandled) {
-        var newFolderIds = [];
+	if (deleteHandled) {
+		var newFolderIds = [];
 
-        //filter out invalid folder ids
-        for(var i in params.folderIds) {
-            var folderId = params.folderIds[i];
-            var isDeleted = (folderId && ids[folderId]);
-            if(!isDeleted) newFolderIds.push(folderId);
-        }
+		// filter out invalid folder ids
+		for (var i in params.folderIds) {
+			var folderId = params.folderIds[i];
+			var isDeleted = (folderId && ids[folderId]);
+			if (!isDeleted) {
+				newFolderIds.push(folderId);
+			}
+		}
 
-        //search again if some of the folders are marked for deletion
-        if(params.folderIds.length != newFolderIds.length) {
-            params.folderIds = newFolderIds;
-            //handle the case where all checked folders are invalid 
-            if(params.folderIds.length == 0) {
-                params.callback.run(new AjxVector(), "");
-                return true;
-            }
-            DBG.println('Appt Summaries Search Failed - Error Recovery Search');
-            this.getApptSummaries(params);
-        }
-    };
-    
-    return deleteHandled;
+		// search again if some of the folders are marked for deletion
+		if (params.folderIds.length != newFolderIds.length) {
+			params.folderIds = newFolderIds;
+			// handle the case where all checked folders are invalid
+			if (params.folderIds.length == 0) {
+				params.callback.run(new AjxVector(), "");
+				return true;
+			}
+			DBG.println('Appt Summaries Search Failed - Error Recovery Search');
+			this.getApptSummaries(params);
+		}
+	}
+
+	return deleteHandled;
 };
 
 ZmApptCache.prototype.handleDeletedFolderIds =
 function(ids, invalidAccountMarker) {
-    var deleteHandled = false;
-    var zidsMap = {};
-    for(var id in ids) {
-        if (id && appCtxt.getById(id)) {
-            var folder = appCtxt.getById(id);
-            folder.noSuchFolder = true;
-            this.handleDeleteMountpoint(folder);
-            deleteHandled = true;
-            if(invalidAccountMarker[id] && folder.zid) {
-                zidsMap[folder.zid] = true;
-            }
-        }
-    }
+	var deleteHandled = false;
+	var zidsMap = {};
+	for (var id in ids) {
+		if (id && appCtxt.getById(id)) {
+			var folder = appCtxt.getById(id);
+			folder.noSuchFolder = true;
+			this.handleDeleteMountpoint(folder);
+			deleteHandled = true;
+			if (invalidAccountMarker[id] && folder.zid) {
+				zidsMap[folder.zid] = true;
+			}
+		}
+	}
 
-    //no such mount point error - mark all folders owned by same account as invalid
-    this.markAllInvalidAccounts(zidsMap);
-    return deleteHandled;
+	//no such mount point error - mark all folders owned by same account as invalid
+	this.markAllInvalidAccounts(zidsMap);
+	return deleteHandled;
 };
 
 ZmApptCache.prototype.processSearchResponse = 
@@ -689,7 +685,7 @@ function(searchResp, params) {
 			this._cachedVec = null;
 			return resultList;
 		}
-		return null;
+		return;
 	}
 
 	if (searchResp && searchResp.appt && searchResp.appt.length) {
@@ -746,7 +742,7 @@ function(searchResp, params) {
 
 	// merge all the data and return
 	var newList = ZmApptList.mergeVectors(params.resultList);
-	this._cacheMergedVector(newList, params.mergeKey);
+	this._cachedMergedApptVectors[params.mergeKey] = newList.clone();
 
 	this._rawAppts = null;
 	return newList;
