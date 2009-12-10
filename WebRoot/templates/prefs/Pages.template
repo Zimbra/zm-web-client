@@ -138,7 +138,7 @@ and the container element is replaced with that control.
 
 <template id='prefs.Pages#Mail'>
 	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
-			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
 	</div>
 
 	<$ if (!appCtxt.multiAccounts || data.activeAccount.isMain) { $>
@@ -199,17 +199,47 @@ and the container element is replaced with that control.
 							<td class='ZOptionsField'><select id='${id}_SELECT_AFTER_DELETE' tabindex='97'></select></td>
 						</tr>
 
-						<tr><td colspan=2><hr></td></tr>
+						<$ if (!appCtxt.isOffline) { $>
+							<tr><td colspan=2><hr></td></tr>
 
-						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.initialMailSearchLabel$></td>
-							<td class='ZOptionsField'><div id='${id}_INITIAL_SEARCH' tabindex='100'></div></td>
-						</tr>
+							<tr>
+								<td class='ZOptionsLabel'><$=ZmMsg.initialMailSearchLabel$></td>
+								<td class='ZOptionsField'><div id='${id}_INITIAL_SEARCH' tabindex='100'></div></td>
+							</tr>
+						<$ } $>
 					</table>
 				</td>
 			</tr>
 		</table>
 	<$ } $>
+
+	<$
+		if (appCtxt.isOffline && data.activeAccount == appCtxt.accountList.defaultAccount) {
+			var size = appCtxt.accountList.size(true);
+			if ((size > 2 && !appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES)) || size == 2) {
+	$>
+				<table border=0 cellspacing=0 cellpadding=0 width=100%>
+					<tr class='ZOptionsHeaderRow'>
+						<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+						<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.displayMessages$></td>
+						<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+					</tr>
+				</table>
+				<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+					<tr>
+						<td class='ZOptionsSectionMain'>
+							<table width=100%>
+								<tr>
+									<td class='ZOptionsLabel'><$=ZmMsg.initialMailSearchLabel$></td>
+									<td class='ZOptionsField'><div id='${id}_INITIAL_SEARCH' tabindex='100'></div></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+		<$ } $>
+	<$ } $>
+
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -221,7 +251,6 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
-
 					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_SOUNDS)) { $>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.messageArrivalLabel$></td>
