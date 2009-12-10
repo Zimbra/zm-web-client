@@ -85,7 +85,7 @@ function(params) {
 	// This is sort of a hack having the model call back to the controller, but without notifications
 	// this seems like the best approach.
 	var controller = AjxDispatcher.run("GetVoiceController");
-	controller._handleResponseMoveItems(params.items);
+	controller._handleResponseMoveItems(params);
 };
 
 ZmVoiceList.prototype._getActionNamespace =
