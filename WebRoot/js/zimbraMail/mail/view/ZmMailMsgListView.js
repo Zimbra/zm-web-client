@@ -404,14 +404,16 @@ function(columnItem, bSortAsc) {
 		query = controller.getSearchString();
 	}
 
-	if (query) {
+	var queryHint = this._controller.getSearchStringHint();
+
+	if (query || queryHint) {
 		if (this._mode == ZmId.VIEW_CONV) {
 			var conv = controller.getConv();
 			if (conv) {
 				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller]);
 				var params = {
 					query: query,
-					queryHint: controller.getSearchStringHint(),
+					queryHint: queryHint,
 					sortBy: this._sortByString,
 					getFirstMsg: controller.isReadingPaneOn()
 				};
@@ -420,7 +422,7 @@ function(columnItem, bSortAsc) {
 		} else {
 			var params = {
 				query: query,
-				queryHint: controller.getSearchStringHint(),
+				queryHint: queryHint,
 				types: [ZmItem.MSG],
 				sortBy: this._sortByString,
 				limit: this.getLimit()

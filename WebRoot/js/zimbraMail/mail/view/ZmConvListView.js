@@ -667,10 +667,12 @@ function(columnItem, bSortAsc) {
 		query = this._controller.getSearchString();
 	}
 
-	if (query) {
+	var queryHint = this._controller.getSearchStringHint();
+
+	if (query || queryHint) {
 		var params = {
 			query: query,
-			queryHint: this._controller.getSearchStringHint(),
+			queryHint: queryHint,
 			types: [ZmItem.CONV],
 			sortBy: this._sortByString,
 			limit:this.getLimit()
