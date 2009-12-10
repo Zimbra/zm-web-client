@@ -320,20 +320,10 @@ function(folder) {
 				}
 				return;
 			}
-
-			// HACK to make single Drafts/Outbox work in multi-account
-			params.callback = (folder.id == ZmFolder.ID_DRAFTS || folder.id == ZmFolder.ID_OUTBOX)
-				? (new AjxCallback(this, this._handleSearch, [sc, params.query, folder])) : null;
 		}
 
 		sc.search(params);
 	}
-};
-
-ZmFolderTreeController.prototype._handleSearch =
-function(sc, query, folder) {
-	var ov = this._opc.getOverview(appCtxt.getApp(ZmApp.MAIL).getOverviewId());
-	ov.setSelected(folder.id);
 };
 
 ZmFolderTreeController.prototype._getPermissionsResponse =

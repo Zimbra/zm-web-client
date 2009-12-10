@@ -497,19 +497,6 @@ function(params, noRender, callback, errorCallback) {
 	params.types = types;
 	var search = new ZmSearch(params);
 
-	// HACK to make single Drafts/Outbox work in multi-account
-	var folder = appCtxt.isOffline && appCtxt.getById(search.folderId);
-	if (folder &&
-		(folder.nId == ZmFolder.ID_DRAFTS ||
-		 folder.nId == ZmFolder.ID_OUTBOX))
-	{
-		this.searchAllAccounts = true;
-		search.accountName = appCtxt.accountList.mainAccount.name;
-		search.query = "";
-		search.folderId = folder.nId;
-		search.queryHint = appCtxt.accountList.generateQuery(folder.nId);
-	}
-
 	var args = [search, noRender, isMixed, callback, params.noUpdateOverview];
 	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, args);
 	if (!errorCallback) {
