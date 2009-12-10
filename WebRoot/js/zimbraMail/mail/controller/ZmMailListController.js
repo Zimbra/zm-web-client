@@ -895,7 +895,9 @@ function(ev) {
 	}
 	else
 	{
-		var resp = this._sendInviteReply(type, compId, null, null, null, ev._msg, folderId);
+		var ac = window.parentAppCtxt || window.appCtxt;
+		var accountName = ac.multiAccounts && ac.accountList.mainAccount.name;
+		var resp = this._sendInviteReply(type, compId, null, accountName, null, ev._msg, folderId);
 		if (resp && appCtxt.isChildWindow) {
 			window.close();
 		}

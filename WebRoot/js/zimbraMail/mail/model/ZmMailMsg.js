@@ -865,7 +865,9 @@ ZmMailMsg.prototype.moveApptItem =
 function(itemId, nfolder) {
     var callback = new AjxCallback(this, this._handleMoveApptResponse, [nfolder]);
     var errorCallback = new AjxCallback(this, this._handleMoveApptError, [nfolder]);
-    ZmItem.move(itemId, nfolder, callback, errorCallback);
+	var ac = window.parentAppCtxt || window.appCtxt;
+	var accountName = ac.multiAccounts && ac.accountList.mainAccount.name;
+    ZmItem.move(itemId, nfolder, callback, errorCallback, accountName);
 };
 
 ZmMailMsg.prototype._handleMoveApptResponse =

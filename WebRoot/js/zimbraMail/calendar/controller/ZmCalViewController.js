@@ -325,7 +325,7 @@ function() {
 		if (cal.noSuchFolder) { continue; }
 
 		var acctId = (appCtxt.multiAccounts)
-			? cal.account.id : appCtxt.accountList.mainAccount.id;
+			? cal.getAccount().id : appCtxt.accountList.mainAccount.id;
 
 		if (!checkedAccountCalendarIds[acctId]) {
 			checkedAccountCalendarIds[acctId] = [];
@@ -433,7 +433,13 @@ function(includeLinks, account) {
 	var organizers = appCtxt.getFolderTree(account).getByType(ZmOrganizer.CALENDAR);
 	for (var i = 0; i < organizers.length; i++) {
 		var organizer = organizers[i];
-		if (organizer.zid && !includeLinks) { continue; }
+		if ((organizer.zid && !includeLinks) ||
+			(appCtxt.multiAccounts &&
+			 organizer.nId == ZmOrganizer.ID_CALENDAR &&
+			 organizer.getAccount().isCalDavBased()))
+		{
+			continue;
+		}
 		calendars.push(organizer);
 	}
 	calendars.sort(ZmCalViewController.__BY_NAME);

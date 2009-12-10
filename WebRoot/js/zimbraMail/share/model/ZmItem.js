@@ -485,11 +485,13 @@ function() {
 */
 ZmItem.prototype.deleteLocal = function() {};
 
-ZmItem.prototype.move = function(folderId, callback, errorCallback) {
+ZmItem.prototype.move =
+function(folderId, callback, errorCallback) {
 	return ZmItem.move(this.id, folderId, callback, errorCallback);
 };
 
-ZmItem.move = function(itemId, folderId, callback, errorCallback) {
+ZmItem.move =
+function(itemId, folderId, callback, errorCallback, accountName) {
 	var json = {
 		ItemActionRequest: {
 			_jsns: "urn:zimbraMail",
@@ -505,7 +507,8 @@ ZmItem.move = function(itemId, folderId, callback, errorCallback) {
 		jsonObj:		json,
 		asyncMode:		Boolean(callback),
 		callback:		callback,
-		errorCallback:	errorCallback
+		errorCallback:	errorCallback,
+		accountName:	accountName
 	};
 	return appCtxt.getAppController().sendRequest(params);
 };

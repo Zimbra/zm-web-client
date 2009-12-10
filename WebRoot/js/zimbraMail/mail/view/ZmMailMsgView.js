@@ -51,11 +51,7 @@ ZmMailMsgView = function(params) {
 	}
 
 	this._setMouseEventHdlrs(); // needed by object manager
-
-	// XXX: for now, turn off object handling in new window
-	//if (!appCtxt.isChildWindow) {
-		this._objectManager = true;
-	//}
+	this._objectManager = true;
 
 	this._changeListener = new AjxListener(this, this._msgChangeListener);
 	this.addListener(DwtEvent.ONSELECTSTART, new AjxListener(this, this._selectStartListener));
@@ -183,25 +179,43 @@ function(msg) {
 		: new Date(msg.date);
 
 	var invite = msg.invite;
+	var ac = window.parentAppCtxt || window.appCtxt;
 
-	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
+	if ((ac.get(ZmSetting.CALENDAR_ENABLED) || ac.multiAccounts) &&
 		(invite && invite.type != "task"))
 	{
-		if (!invite.isEmpty() && invite.hasAcceptableComponents() && invite.hasInviteReplyMethod() &&
-			msg.folderId != ZmFolder.ID_TRASH) {
-
+		if (!invite.isEmpty() &&
+			invite.hasAcceptableComponents() &&
+			invite.hasInviteReplyMethod() &&
+			msg.folderId != ZmFolder.ID_TRASH)
+		{
 			var topToolbar = this._getInviteToolbar();
 			topToolbar.reparentHtmlElement(contentDiv);
 			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
-			var ac = window.parentAppCtxt || window.appCtxt;
-			var calendars = ac.getApp(ZmApp.CALENDAR).getCalController().getCalendars(true, msg.account);
-			var visible = calendars.length > 1;
+			var cc = ac.getApp(ZmApp.CALENDAR).getCalController();
+			var calendars = cc.getCalendars(true, msg.account);
+
+			if (appCtxt.multiAccounts) {
+				var accounts = ac.accountList.visibleAccounts;
+				for (var i = 0; i < accounts.length; i++) {
+					var acct = accounts[i];
+					if (acct == msg.account || !ac.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
+					calendars = calendars.concat(cc.getCalendars(true, acct));
+				}
+			}
+
+			var visible = (calendars.length > 1 || appCtxt.multiAccounts);
 			if (visible) {
 				this._inviteMoveSelect.clearOptions();
 				for (var i = 0; i < calendars.length; i++) {
 					var calendar = calendars[i];
-					this._inviteMoveSelect.addOption(calendar.name, calendar.nId == ZmOrganizer.ID_CALENDAR, calendar.id);
+					var icon = appCtxt.multiAccounts ? calendar.account.getIcon() : null;
+					var name = appCtxt.multiAccounts
+						? ([calendar.name, " (", calendar.getAccount().getDisplayName(), ")"].join(""))
+						: calendar.name;
+					var option = new DwtSelectOptionData(calendar.id, name, null, null, icon);
+					this._inviteMoveSelect.addOption(option, calendar.nId == ZmOrganizer.ID_CALENDAR);
 				}
 			}
 			this._inviteMoveSelect.setVisible(visible);
@@ -569,7 +583,7 @@ function(msgView, ev) {
 		if (!el) {
 			try {
 				el = doc.getElementsByName(id)[0];
-			} catch(ex) {};
+			} catch(ex) {}
 		}
 		if (!el) {
 			id = decodeURIComponent(id);
@@ -577,7 +591,7 @@ function(msgView, ev) {
 			if (!el) {
 				try {
 					el = doc.getElementsByName(id)[0];
-				} catch(ex) {};
+				} catch(ex) {}
 			}
 		}
 	}
@@ -727,7 +741,7 @@ function(msg, node) {
 			}
 			child = child.nextSibling;
 		}
-	};
+	}
 
 	if(node.innerHTML.indexOf("dfbackground") != -1){
 		recurse(node);
@@ -829,7 +843,7 @@ function(origText) {
 			ZmMailMsgView._resetIframeHeight(self, document.getElementById(self._iframeId));
 		}, 3);
 		return false;
-	};
+	}
 	// avoid closure memory leaks
 	(function() {
 		var infoBarDiv = document.getElementById(self._infoBarId);
@@ -1757,7 +1771,7 @@ function (image, i, len, msg, idoc, iframe, view) {
 	}
 	catch (ex) {
 		// do nothing
-	};
+	}
 
 	if (i == len - 1) {
 		if (msg) {
@@ -1770,7 +1784,7 @@ function (image, i, len, msg, idoc, iframe, view) {
 ZmMailMsgView.prototype._onloadIframe =
 function(dwtIframe) {
 	var iframe = dwtIframe.getIframe();
-	try { iframe.onload = null; } catch(ex) {};
+	try { iframe.onload = null; } catch(ex) {}
 	ZmMailMsgView._resetIframeHeight(this, iframe);
 };
 
@@ -1788,7 +1802,7 @@ function(self, iframe, attempt) {
 					h -= Dwt.getSize(el).y;
 				}
 			}
-		};
+		}
 		subtract(self._headerElement);
 		subtract(self._displayImagesId);
 		subtract(self._highlightObjectsId);
