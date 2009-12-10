@@ -1331,8 +1331,8 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#Calendar'>
-<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
-			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
 	</div>
 
 	<$ if (data.activeAccount.isMain) { $>
@@ -1372,10 +1372,12 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 							<td class='ZOptionsField'><input id='${id}_CAL_SHOW_CALENDAR_WEEK' tabindex='40' type=checkbox></td>
 						</tr>
 
-						<tr>
-							<td class='ZOptionsLabel'>&nbsp;</td>
-							<td class='ZOptionsField'><input id='${id}_CAL_AUTO_ADD_INVITES' tabindex='40' type=checkbox></td>
-						</tr>
+						<$ if (!appCtxt.multiAccounts) { $>
+							<tr>
+								<td class='ZOptionsLabel'>&nbsp;</td>
+								<td class='ZOptionsField'><input id='${id}_CAL_AUTO_ADD_INVITES' tabindex='40' type=checkbox></td>
+							</tr>
+						<$ } $>
 
 						<tr><td colspan=2><hr></td></tr>
 
@@ -1455,6 +1457,32 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><input id='${id}_CAL_SHOW_TIMEZONE' tabindex='80' type=checkbox></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	<$
+	}
+	else if (appCtxt.multiAccounts &&
+			data.activeAccount.isZimbraAccount &&
+			appCtxt.getSettings(data.activeAccount).attrExists(ZmSetting.CAL_AUTO_ADD_INVITES))
+	{
+	$>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.general$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table width=100%>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_CAL_AUTO_ADD_INVITES' tabindex='81' type=checkbox></td>
 						</tr>
 					</table>
 				</td>

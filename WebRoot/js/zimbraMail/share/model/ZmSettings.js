@@ -145,6 +145,20 @@ function(name) {
 };
 
 /**
+ * Returns true if the given ID was received from the server. Use this method
+ * to determine whether this ID is supported by a ZCS server. Currently used by
+ * desktop since it can "talk" to both v5 and v6 ZCS.
+ *
+ * @param id	[string]	ZmSetting ID
+ */
+ZmSettings.prototype.attrExists =
+function(id) {
+	var name = this.getSetting(id).name;
+	return (this.getInfoResponse.prefs._attrs[name] ||
+			this.getInfoResponse.attrs._attrs[name]);
+};
+
+/**
  * Retrieves the preferences, COS settings, and metadata for the current user.
  * All the data gets stored into the settings collection.
  *
