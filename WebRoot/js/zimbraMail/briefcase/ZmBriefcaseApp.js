@@ -24,7 +24,7 @@ ZmBriefcaseApp.prototype.constructor = ZmBriefcaseApp;
 
 // Organizer and item-related constants
 ZmEvent.S_BRIEFCASE_ITEM			= ZmId.ITEM_BRIEFCASE;
-ZmItem.BRIEFCASE_ITEM				= ZmEvent.S_BRIEFCASE;
+ZmItem.BRIEFCASE_ITEM				= ZmEvent.S_BRIEFCASE_ITEM;
 ZmItem.BRIEFCASE					= ZmItem.BRIEFCASE_ITEM;	// back-compatibility
 ZmOrganizer.BRIEFCASE				= ZmId.ORG_BRIEFCASE;
 
