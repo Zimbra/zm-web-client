@@ -83,7 +83,7 @@ function() {
 ZmContactsApp.prototype._registerSettings =
 function(settings) {
 	var settings = settings || appCtxt.getSettings();
-	settings.registerSetting("AUTO_ADD_ADDRESS",				{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("AUTO_ADD_ADDRESS",				{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
 	settings.registerSetting("AUTOCOMPLETE_LIMIT",				{name: "zimbraContactAutoCompleteMaxResults", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:20});
 	settings.registerSetting("AUTOCOMPLETE_SHARE",				{name: "zimbraPrefShareContactsInAutoComplete", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("AUTOCOMPLETE_SHARED_ADDR_BOOKS",	{name: "zimbraPrefSharedAddrBookAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});

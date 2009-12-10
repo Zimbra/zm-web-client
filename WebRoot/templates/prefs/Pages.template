@@ -481,7 +481,7 @@ and the container element is replaced with that control.
 				<$ var isHtmlCompose = data.isEnabled(ZmSetting.HTML_COMPOSE_ENABLED); $>
 				<$ if (isHtmlCompose) { $>
 					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.composeLabel$></td>
+						<td class='ZOptionsLabel' valign=top><$=ZmMsg.composeLabel$></td>
 						<td class='ZOptionsNestedTable'>
 							<table>
 								<colgroup>
