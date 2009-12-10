@@ -99,9 +99,7 @@ function(content) {
 
 ZmDocsEditor.prototype._finishHtmlModeInit =
 function() {
-    this._updateState();
-    this._htmlModeInited = true;
-    this._registerEditorEventHandlers(this._iframe, this._getIframeDoc());
+    DwtHtmlEditor.prototype._finishHtmlModeInit.call(this);
 };
 
 ZmDocsEditor.prototype._getIframeDoc = function() {
