@@ -179,15 +179,21 @@ function(x, y, width, height) {
 
 ZmDoublePaneView.prototype.setItem =
 function(items) {
+
+	var paginating = Boolean(this._mailListView._itemsToAdd);
 	this._mailListView.set(items, ZmItem.F_DATE);
-	if (!this._mailListView._isPageless) {
-		if (!this._controller.isReadingPaneOn()) {
-			this._selectFirstItem();
-		} else {
-			if (this._controller._list && this._controller._list.size() > 0) {
-				this._msgView.set();
-			}
+
+	var gotItems = (this._controller._list && this._controller._list.size() > 0);
+	if (this._mailListView._isPageless) {
+		if (gotItems && !paginating) {
+			this._msgView.set();
 		}
+	} else {
+		 if (this._controller.isReadingPaneOn()) {
+			 this._msgView.set();
+		 } else {
+			 this._selectFirstItem();
+		 }
 	}
 };
 
