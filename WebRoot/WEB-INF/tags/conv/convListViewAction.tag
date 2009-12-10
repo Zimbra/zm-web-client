@@ -178,7 +178,8 @@
                 </c:url>
             </c:when>
     </c:choose>
-     <c:if test="${updated and not empty redirectUrl}">
+    <c:if test="${updated and not empty redirectUrl}">
+	<%--<c:if test="${not empty redirectUrl}">--%>
             <zm:getMailbox var="mailbox" refreshaccount="${true}"/>
             <c:redirect url="${redirectUrl}"/>
     </c:if>

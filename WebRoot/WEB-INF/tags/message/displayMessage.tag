@@ -23,11 +23,13 @@
 <%@ attribute name="externalImageUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="composeUrl" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="newWindowUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
+<%@ attribute name="context" rtexprvalue="true" required="false" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+
 <%--compute body up front, so attachments refereneced in multipart/related don't show up --%>
 <c:set var="body" value="${message.body}"/>
 
@@ -281,10 +283,13 @@
                                 <c:if test="${showconvlink and not fn:startsWith(message.conversationId, '-')}">
                                     <td style='padding: 0 2px 0 2px'>
                                         <c:url var="convUrl" value="/h/search">
-                                            <c:param name="action" value="view"/>
+                                            <c:param name="action" value="${param.action}"/>
                                             <c:param name="st" value="conversation"/>
-                                            <c:param name="sq" value='conv:"${message.conversationId}"'/>
+                                            <c:param name="cid" value="${message.conversationId}"/>
                                             <c:param name="hideSearchString" value="true"/>
+                                            <c:if test="${!empty context}">
+                                                <c:if test="${!empty context.sfi}"><c:param name='sfi' value='${context.sfi}'/></c:if>
+                                            </c:if>
                                         </c:url>
                                         <a id="OPSHOWCONV" href="${fn:escapeXml(convUrl)}">
                                             <app:img src="startup/ImgConversation.gif" altkey="showConversation" title="showConversation"/>

@@ -33,8 +33,9 @@
             <table cellspacing="0" cellpadding="0" class="Tb">
                 <tr>
                     <td nowrap>
-                        <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
-	                    <zm:currentResultUrl var="delRedirectUrl" value="/h/search" context="${context}" />
+                        <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}" st="" sc=""/>
+                        <%-- Create a URL pointing back, but without st or sc, because we may get here from a message view (using message->show conversation). If we try to get back to the inbox with st=conversation while we left it expecting "message", we'll be in trouble (unable to set "view by" back to "message" is one side effect) --%>
+                        <zm:currentResultUrl var="delRedirectUrl" value="/h/search" context="${context}" />
                         <input type="hidden" value="${delRedirectUrl}" name="delRedirectUrl" />
                         <a href="${fn:escapeXml(closeurl)}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.gif" alt="close"/> <span>&nbsp;${fn:escapeXml(context.backTo)}&nbsp;</span></a>
                     </td>

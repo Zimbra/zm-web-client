@@ -186,7 +186,7 @@
                     </c:if>
                 </c:url>
             </c:when>
-            <c:when test="${actionOp eq 'byMsg'}">
+            <%--<c:when test="${actionOp eq 'byMsg'}">
                 <zm:modifyPrefs var="updated">
                     <zm:pref name="zimbraPrefGroupMailBy" value="message"/>
                 </zm:modifyPrefs>
@@ -202,9 +202,10 @@
                     </c:if>
                 </c:url>
                 <c:redirect url="${redirectUrl}"/>
-            </c:when>
+            </c:when>--%>
         </c:choose>
         <c:if test="${updated and not empty redirectUrl}">
+        <%--<c:if test="${not empty redirectUrl}">--%>
             <zm:getMailbox var="mailbox" refreshaccount="${true}"/>
             <c:redirect url="${redirectUrl}"/>
         </c:if>
