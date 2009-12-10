@@ -67,7 +67,6 @@ ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE);
 ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_DETAIL);
 ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_COLUMN);
 
-// Overrides ZmListController method, leaving ZmOperation.MOVE off the menu.
 ZmBriefcaseController.prototype._standardActionMenuOps =
 function() {
 	return [ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE];
@@ -275,7 +274,7 @@ function(view) {
 	} else {
 		this._listView[view].set(this._list);
 	}
-	// Select the appropriate notebook in the tree view.
+	// Select the appropriate briefcase in the tree view.
 	if (this._object) {
 		var overviewController = appCtxt.getOverviewController();
 		var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
@@ -345,7 +344,7 @@ ZmBriefcaseController.prototype.showFolderContents =
 function(items) {
 	// populate list
 	if (items) {
-		// filter Notebook documents
+		// filter briefcase items
 		this._list = new ZmList(ZmItem.MIXED, this._currentSearch);
 		this._list.setHasMore(items.hasMore);
 		var temp_arr = items ? items.getArray() : null;
@@ -359,7 +358,7 @@ function(items) {
 			}
 		}
 	} else {
-		this._list = new ZmList(ZmItem.BRIEFCASE);
+		this._list = new ZmList(ZmItem.BRIEFCASE_ITEM);
 
 		if (this._object) {
 			var item = new ZmBriefcaseItem();
@@ -409,7 +408,7 @@ function(callback,folderId,results) {
 	var response = results.getResponse();
 	var items = [];
 	if (response) {
-		this._list = response.getResults(ZmItem.BRIEFCASE);
+		this._list = response.getResults(ZmItem.BRIEFCASE_ITEM);
 		items = this._list.getArray();
 		for (var i=0; i<items.length; i++) {
 			if (items[i].folderId!=folderId) {
@@ -430,7 +429,7 @@ function(folderId, callback) {
 	var folder = appCtxt.getById(folderId);
 	var params = {
 		accountName:	folder && folder.account && folder.account.name,
-		types:			[ZmId.ITEM_DOCUMENT],
+		types:			[ZmItem.BRIEFCASE_ITEM],
 		query:			'inid:"' + folderId + '"',
 		limit:			this._app.getLimit()
 	};

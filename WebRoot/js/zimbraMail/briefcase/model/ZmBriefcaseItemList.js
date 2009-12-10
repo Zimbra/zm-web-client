@@ -14,7 +14,7 @@
  */
 
 ZmBriefcaseItemList = function(search, type) {
-	ZmList.call(this, type || ZmItem.BRIEFCASE, search);
+	ZmList.call(this, type || ZmItem.BRIEFCASE_ITEM, search);
 }
 
 ZmBriefcaseItemList.prototype = new ZmList;

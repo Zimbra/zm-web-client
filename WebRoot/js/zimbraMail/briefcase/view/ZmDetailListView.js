@@ -22,7 +22,7 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 	// call super constructor
 	var headerList = this._getHeaderList(parent);
 	ZmListView.call(this, {parent:parent, className:"ZmBriefcaseDetailListView", pageless:true,
-					posStyle:DwtControl.ABSOLUTE_STYLE, view:ZmId.VIEW_BRIEFCASE_DETAIL, type:ZmItem.DOCUMENT,
+					posStyle:DwtControl.ABSOLUTE_STYLE, view:ZmId.VIEW_BRIEFCASE_DETAIL, type:ZmItem.BRIEFCASE_ITEM,
 					controller:controller, headerList:headerList, dropTgt:dropTgt, pageless:true});
 
 	// create a action menu for the header list
@@ -125,8 +125,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		htmlArr[idx++] = cname;
 		htmlArr[idx++] = "</span>";
 	} else if (field == ZmItem.F_FOLDER) {
-		var notebook = appCtxt.getById(item.folderId);
-		htmlArr[idx++] = notebook ? notebook.getPath() : item.folderId;
+		var briefcase = appCtxt.getById(item.folderId);
+		htmlArr[idx++] = briefcase ? briefcase.getPath() : item.folderId;
 	} else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}

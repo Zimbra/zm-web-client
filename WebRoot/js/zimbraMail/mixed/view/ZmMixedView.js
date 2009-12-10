@@ -34,14 +34,14 @@ ZmMixedView.COLWIDTH_DATE 			= ZmMsg.COLUMN_WIDTH_DATE;
 
 // List view class
 ZmMixedView.LV_CLASS = {};
-ZmMixedView.LV_CLASS[ZmItem.CONTACT]	= "ZmContactSimpleView";
-ZmMixedView.LV_CLASS[ZmItem.GROUP]		= "ZmContactSimpleView";
-ZmMixedView.LV_CLASS[ZmItem.CONV]		= "ZmConvListView";
-ZmMixedView.LV_CLASS[ZmItem.MSG]		= "ZmMailMsgListView";
-ZmMixedView.LV_CLASS[ZmItem.APPT]		= "ZmCalListView";
-ZmMixedView.LV_CLASS[ZmItem.TASK]		= "ZmTaskListView";
-ZmMixedView.LV_CLASS[ZmItem.PAGE]		= "ZmDetailListView";
-ZmMixedView.LV_CLASS[ZmItem.BRIEFCASE]	= "ZmDetailListView";
+ZmMixedView.LV_CLASS[ZmItem.CONTACT]		= "ZmContactSimpleView";
+ZmMixedView.LV_CLASS[ZmItem.GROUP]			= "ZmContactSimpleView";
+ZmMixedView.LV_CLASS[ZmItem.CONV]			= "ZmConvListView";
+ZmMixedView.LV_CLASS[ZmItem.MSG]			= "ZmMailMsgListView";
+ZmMixedView.LV_CLASS[ZmItem.APPT]			= "ZmCalListView";
+ZmMixedView.LV_CLASS[ZmItem.TASK]			= "ZmTaskListView";
+ZmMixedView.LV_CLASS[ZmItem.PAGE]			= "ZmDetailListView";
+ZmMixedView.LV_CLASS[ZmItem.BRIEFCASE_ITEM]	= "ZmDetailListView";
 
 // support functions for _createItemHtml
 ZmMixedView.LV_FUNCS = ["_addParams", "_getDiv", "_getDivClass", "_getTable",

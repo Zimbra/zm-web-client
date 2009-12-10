@@ -14,7 +14,7 @@
  */
 
 ZmBriefcaseItem = function(type, id, list) {
-	ZmItem.call(this, type || ZmItem.BRIEFCASE, id, list);
+	ZmItem.call(this, type || ZmItem.BRIEFCASE_ITEM, id, list);
 	this.folderId = ZmOrganizer.ID_BRIEFCASE;
 	this.version = 0;
 };
@@ -41,9 +41,9 @@ function(node, args) {
 
 ZmBriefcaseItem.prototype.getPath =
 function(dontIncludeThisName) {
-	var notebook = appCtxt.getById(this.folderId);
+	var briefcase = appCtxt.getById(this.folderId);
 	var name = !dontIncludeThisName ? this.name : "";
-	return [notebook.getPath(), "/", name].join("");
+	return [briefcase.getPath(), "/", name].join("");
 };
                                                                                
 ZmBriefcaseItem.prototype.getRestUrl =
@@ -123,8 +123,8 @@ function() {
 
 ZmBriefcaseItem.prototype.isShared =
 function() {
-	var notebook = this.getBriefcaseFolder();
-	return notebook && notebook.link;
+	var briefcase = this.getBriefcaseFolder();
+	return briefcase && briefcase.link;
 };
 
 ZmBriefcaseItem.prototype.createFromAttachment =

@@ -95,7 +95,7 @@ function(folderId,items) {
     if(items){
         this._list = items;
     }else{
-        this._list = new ZmList(ZmItem.BRIEFCASE);
+        this._list = new ZmList(ZmItem.BRIEFCASE_ITEM);
     }
     var bcView = this._tabBriefcaseView;
     bcView.set(folderId, this._list);

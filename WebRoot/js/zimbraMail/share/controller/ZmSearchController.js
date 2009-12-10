@@ -365,7 +365,7 @@ function(params) {
 		if (appCtxt.get(ZmSetting.CALENDAR_ENABLED))		{ types.add(ZmItem.APPT); }
 		if (appCtxt.get(ZmSetting.TASKS_ENABLED))			{ types.add(ZmItem.TASK); }
 		if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED))		{ types.add(ZmItem.PAGE); }
-		if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED))		{ types.add(ZmItem.BRIEFCASE); }
+		if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED))		{ types.add(ZmItem.BRIEFCASE_ITEM); }
 	} else {
 		types.add(searchFor);
 		if (searchFor == ZmItem.PAGE) {

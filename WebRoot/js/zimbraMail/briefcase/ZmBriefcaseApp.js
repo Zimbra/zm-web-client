@@ -15,8 +15,6 @@
 
 ZmBriefcaseApp = function(container, parentController) {
 	ZmApp.call(this, ZmApp.BRIEFCASE, container, parentController);
-
-	this._notebookCache = null;
 };
 
 ZmBriefcaseApp.prototype = new ZmApp;
@@ -25,12 +23,9 @@ ZmBriefcaseApp.prototype.constructor = ZmBriefcaseApp;
 // Constants
 
 // Organizer and item-related constants
-ZmEvent.S_PAGE						= ZmId.ITEM_PAGE;
-ZmEvent.S_DOCUMENT					= ZmId.ITEM_DOCUMENT;
-ZmEvent.S_BRIEFCASE					= ZmId.ITEM_BRIEFCASE;
-ZmItem.PAGE							= ZmEvent.S_PAGE;
-ZmItem.DOCUMENT						= ZmEvent.S_DOCUMENT;
-ZmItem.BRIEFCASE					= ZmEvent.S_BRIEFCASE;
+ZmEvent.S_BRIEFCASE_ITEM			= ZmId.ITEM_BRIEFCASE;
+ZmItem.BRIEFCASE_ITEM				= ZmEvent.S_BRIEFCASE;
+ZmItem.BRIEFCASE					= ZmItem.BRIEFCASE_ITEM;	// back-compatibility
 ZmOrganizer.BRIEFCASE				= ZmId.ORG_BRIEFCASE;
 
 // App-related constants
@@ -82,7 +77,7 @@ function(settings) {
 
 ZmBriefcaseApp.prototype._registerItems =
 function() {
-	ZmItem.registerItem(ZmItem.BRIEFCASE,
+	ZmItem.registerItem(ZmItem.BRIEFCASE_ITEM,
 					{app:			ZmApp.BRIEFCASE,
 					 nameKey:		"document",
 					 icon:			"GenericDoc",
@@ -95,7 +90,7 @@ function() {
 					 resultsList:
 					AjxCallback.simpleClosure(function(search) {
 					AjxDispatcher.require("BriefcaseCore");
-					return new ZmBriefcaseItemList(search, ZmItem.BRIEFCASE);
+					return new ZmBriefcaseItemList(search, ZmItem.BRIEFCASE_ITEM);
 					}, this)
 					});
 };
@@ -130,7 +125,7 @@ function() {
 ZmBriefcaseApp.prototype._setupSearchToolbar =
 function() {
 	//TODO:search for page alone
-	ZmSearchToolBar.addMenuItem(ZmItem.BRIEFCASE,
+	ZmSearchToolBar.addMenuItem(ZmItem.BRIEFCASE_ITEM,
 								{msgKey:		"searchBriefcase",
 								 tooltipKey:	"searchForFiles",
 								 icon:			"Folder",
@@ -162,10 +157,10 @@ function() {
 					  icon:					"Folder",
 					  textPrecedence:		30,
 					  chooserTooltipKey:	"gotoBriefcase",
-					  defaultSearch:		ZmItem.BRIEFCASE,
+					  defaultSearch:		ZmItem.BRIEFCASE_ITEM,
 					  organizer:			ZmOrganizer.BRIEFCASE,
 					  overviewTrees:		[ZmOrganizer.BRIEFCASE, ZmOrganizer.TAG],
-					  searchTypes:			[ZmItem.BRIEFCASE/*, ZmItem.DOCUMENT*/],
+					  searchTypes:			[ZmItem.BRIEFCASE_ITEM],
 					  newItemOps:			newItemOps,
 					  newOrgOps:			newOrgOps,
 					  actionCodes:			actionCodes,
@@ -196,7 +191,7 @@ function(ids, force) {
 };
 
 /**
- * Checks for the creation of a notebook or a mount point to one, or of a page
+ * Checks for the creation of a briefcase or a mount point to one, or of a page
  * or document.
  *
  * @param creates	[hash]		hash of create notifications
@@ -423,10 +418,10 @@ ZmBriefcaseApp.prototype._handleLoadNewBriefcaseItem =
 function() {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING); // pop "Loading..." page
 
-	if (!this._newNotebookCb) {
-		this._newNotebookCb = new AjxCallback(this, this._newBriefcaseCallback);
+	if (!this._newBriefcaseCb) {
+		this._newBriefcaseCb = new AjxCallback(this, this._newBriefcaseCallback);
 	}
-	ZmController.showDialog(appCtxt.getNewBriefcaseDialog(), this._newNotebookCb);
+	ZmController.showDialog(appCtxt.getNewBriefcaseDialog(), this._newBriefcaseCb);
 };
 
 

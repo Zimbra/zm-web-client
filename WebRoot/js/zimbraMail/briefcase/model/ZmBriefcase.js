@@ -18,13 +18,11 @@
 * @constructor
 * @class
 *
-* @author Andy Clark
-*
 * @param id			[int]			numeric ID
 * @param name		[string]		name
 * @param parent		[ZmOrganizer]	parent organizer
 * @param tree		[ZmTree]		tree model that contains this organizer
-* @param color		[constant]		color for this notebook
+* @param color		[constant]		color for this briefcase
 * @param owner		[string]		The owner of this organizer
 * @param zid		[string]*		Zimbra id of owner, if remote share
 * @param rid		[string]*		Remote id of organizer, if remote share
@@ -67,18 +65,6 @@ function() {
 	return "Folder";
 };
 
-ZmBriefcase.prototype.getSearchPath = function() {
-	var serverName = "Briefcase";
-	var clientName = ZmMsg.notebookPersonalName;
-	
-	var path = ZmOrganizer.prototype.getSearchPath.call(this);
-	if (path.match(new RegExp("^"+clientName+"(/)?"))) {
-		path = serverName + path.substring(clientName.length);
-	}
-	
-	return path;
-};
-
 // Callbacks
 
 ZmBriefcase.prototype.notifyCreate =
@@ -94,7 +80,7 @@ function(obj) {
 	ZmOrganizer.prototype.notifyModify.call(this, obj);
 
 	var doNotify = false;
-	var fields = new Object();
+	var fields = {};
 	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
@@ -145,7 +131,7 @@ function(what) {
 		// cannot drag anything onto root folder
 		invalid = true;
 	} else if (this.link) {
-		// cannot drop anything onto a read-only task folder
+		// cannot drop anything onto a read-only folder
 		invalid = this.isReadOnly();
 	}
 
@@ -154,8 +140,7 @@ function(what) {
 		var items = (what instanceof Array) ? what : [what];
 		var item = items[0];
 	
-		if ((item.type != ZmItem.BRIEFCASE) && (item.type != ZmItem.DOCUMENT)) {
-			// only tasks are valid for task folders
+		if (item.type != ZmItem.BRIEFCASE_ITEM) {
 			invalid = true;
 		} else {
 			
@@ -172,7 +157,7 @@ function(what) {
 				}
 			}
 		}
-		//attachments from mail can be moved inside briefcase
+		// attachments from mail can be moved inside briefcase
 		if(item && item.msgId && item.partId){
 			invalid = false;
 		}

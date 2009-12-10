@@ -23,7 +23,7 @@ ZmColListView =	function(parent, controller, dropTgt, index) {
 	this._colIdx = index;
 
 	ZmListView.call(this, {parent:parent, className:"ZmColListView",
-						   view:view, type:ZmItem.DOCUMENT, id:ZmId.getViewId(view, index),
+						   view:view, type:ZmItem.BRIEFCASE_ITEM, id:ZmId.getViewId(view, index),
 						   controller:controller, headerList:this._getHeaderList(parent),
 						   dropTgt:dropTgt, pageless:true});
 	

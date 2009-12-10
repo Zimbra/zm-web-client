@@ -45,37 +45,37 @@ function() {
 
 // Required packages
 ZmMixedController.PKGS = {};
-ZmMixedController.PKGS[ZmItem.CONTACT]		= ["ContactsCore", "Contacts"];
-ZmMixedController.PKGS[ZmItem.GROUP]		= ["ContactsCore", "Contacts"];
-ZmMixedController.PKGS[ZmItem.CONV]			= ["MailCore", "Mail"];
-ZmMixedController.PKGS[ZmItem.MSG]			= ["MailCore", "Mail"];
-ZmMixedController.PKGS[ZmItem.APPT]			= ["CalendarCore", "Calendar"];
-ZmMixedController.PKGS[ZmItem.TASK]			= ["TasksCore", "Tasks"];
-ZmMixedController.PKGS[ZmItem.PAGE]			= ["BriefcaseCore", "Briefcase"];
-ZmMixedController.PKGS[ZmItem.BRIEFCASE]	= ["BriefcaseCore", "Briefcase"];
+ZmMixedController.PKGS[ZmItem.CONTACT]			= ["ContactsCore", "Contacts"];
+ZmMixedController.PKGS[ZmItem.GROUP]			= ["ContactsCore", "Contacts"];
+ZmMixedController.PKGS[ZmItem.CONV]				= ["MailCore", "Mail"];
+ZmMixedController.PKGS[ZmItem.MSG]				= ["MailCore", "Mail"];
+ZmMixedController.PKGS[ZmItem.APPT]				= ["CalendarCore", "Calendar"];
+ZmMixedController.PKGS[ZmItem.TASK]				= ["TasksCore", "Tasks"];
+ZmMixedController.PKGS[ZmItem.PAGE]				= ["BriefcaseCore", "Briefcase"];
+ZmMixedController.PKGS[ZmItem.BRIEFCASE_ITEM]	= ["BriefcaseCore", "Briefcase"];
 
 
 ZmMixedController.LIST_CTLR = {};
-ZmMixedController.LIST_CTLR[ZmItem.MSG]			= "ZmTradController";
-ZmMixedController.LIST_CTLR[ZmItem.CONV]		= "ZmConvListController";
-ZmMixedController.LIST_CTLR[ZmItem.CONTACT]		= "ZmContactListController";
-ZmMixedController.LIST_CTLR[ZmItem.GROUP]		= "ZmContactListController";
-ZmMixedController.LIST_CTLR[ZmItem.APPT]		= "ZmCalViewController";
-ZmMixedController.LIST_CTLR[ZmItem.TASK]		= "ZmTaskListController";
-ZmMixedController.LIST_CTLR[ZmItem.PAGE]		= "ZmNotebookFileController";
-ZmMixedController.LIST_CTLR[ZmItem.DOCUMENT]	= "ZmNotebookFileController";
-ZmMixedController.LIST_CTLR[ZmItem.BRIEFCASE]	= "ZmBriefcaseController";
+ZmMixedController.LIST_CTLR[ZmItem.MSG]				= "ZmTradController";
+ZmMixedController.LIST_CTLR[ZmItem.CONV]			= "ZmConvListController";
+ZmMixedController.LIST_CTLR[ZmItem.CONTACT]			= "ZmContactListController";
+ZmMixedController.LIST_CTLR[ZmItem.GROUP]			= "ZmContactListController";
+ZmMixedController.LIST_CTLR[ZmItem.APPT]			= "ZmCalViewController";
+ZmMixedController.LIST_CTLR[ZmItem.TASK]			= "ZmTaskListController";
+ZmMixedController.LIST_CTLR[ZmItem.PAGE]			= "ZmNotebookFileController";
+ZmMixedController.LIST_CTLR[ZmItem.DOCUMENT]		= "ZmNotebookFileController";
+ZmMixedController.LIST_CTLR[ZmItem.BRIEFCASE_ITEM]	= "ZmBriefcaseController";
 
 ZmMixedController.APP = {};
-ZmMixedController.APP[ZmItem.MSG]		= ZmApp.MAIL;
-ZmMixedController.APP[ZmItem.CONV]		= ZmApp.MAIL;
-ZmMixedController.APP[ZmItem.CONTACT]	= ZmApp.CONTACTS;
-ZmMixedController.APP[ZmItem.GROUP]		= ZmApp.CONTACTS;
-ZmMixedController.APP[ZmItem.APPT]		= ZmApp.CALENDAR;
-ZmMixedController.APP[ZmItem.TASK]		= ZmApp.TASKS;
-ZmMixedController.APP[ZmItem.PAGE]		= ZmApp.NOTEBOOK;
-ZmMixedController.APP[ZmItem.DOCUMENT]	= ZmApp.NOTEBOOK;
-ZmMixedController.APP[ZmItem.BRIEFCASE]	= ZmApp.BRIEFCASE;
+ZmMixedController.APP[ZmItem.MSG]				= ZmApp.MAIL;
+ZmMixedController.APP[ZmItem.CONV]				= ZmApp.MAIL;
+ZmMixedController.APP[ZmItem.CONTACT]			= ZmApp.CONTACTS;
+ZmMixedController.APP[ZmItem.GROUP]				= ZmApp.CONTACTS;
+ZmMixedController.APP[ZmItem.APPT]				= ZmApp.CALENDAR;
+ZmMixedController.APP[ZmItem.TASK]				= ZmApp.TASKS;
+ZmMixedController.APP[ZmItem.PAGE]				= ZmApp.NOTEBOOK;
+ZmMixedController.APP[ZmItem.DOCUMENT]			= ZmApp.NOTEBOOK;
+ZmMixedController.APP[ZmItem.BRIEFCASE_ITEM]	= ZmApp.BRIEFCASE;
 
 // Public methods
 
@@ -238,7 +238,7 @@ function(ev) {
 ZmMixedController.prototype._resetOperations =
 function(parent) {
 	var itemHash = this._divvyItems();
-	parent.enable(ZmOperation.PRINT, !itemHash[ZmItem.BRIEFCASE]);
+	parent.enable(ZmOperation.PRINT, !itemHash[ZmItem.BRIEFCASE_ITEM]);
 };
 
 ZmMixedController.prototype._divvyItems =
