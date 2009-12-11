@@ -176,12 +176,11 @@ function() {
 ZmBriefcaseApp.prototype.deleteNotify =
 function(ids, force) {
 
+	if (!ids) { return; }
 	if (!force && this._deferNotifications("delete", ids)) { return; }
 
 	var bc = AjxDispatcher.run("GetBriefcaseController");
 	for (var i = 0; i < ids.length; i++) {
-		// FIXME: sometimes ids[i] is null, which suggests a bug somewhere in
-		//        ZmApp.js(?) should investigate
 		var item = bc.getItemById(ids[i]);
 		if (item) {
 			item.notifyDelete();
@@ -191,13 +190,13 @@ function(ids, force) {
 };
 
 /**
- * Checks for the creation of a briefcase or a mount point to one, or of a page
- * or document.
+ * Checks for the creation of a briefcase or a mount point to one, or of an item
  *
  * @param creates	[hash]		hash of create notifications
  */
 ZmBriefcaseApp.prototype.createNotify =
 function(creates, force) {
+
 	if (!creates["folder"] && !creates["doc"] && !creates["link"]) { return; }
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
@@ -227,9 +226,9 @@ function(creates, force) {
 
 ZmBriefcaseApp.prototype.modifyNotify =
 function(modifies, force) {
+
 	if (!modifies["doc"]) { return; }
 
-	//TODO: implement modified notification
 	if (!force && !this._noDefer && this._deferNotifications("modify", modifies)) { return; }
 
 	var briefcaseController = this.getBriefcaseController();
@@ -251,7 +250,7 @@ function(modifies, force) {
 					doc.set(mod);
 				}
 				mod._handled = true;
-			}else if (name == "folder") {
+			} else if (name == "folder") {
 				var currentFolderId = briefcaseController.getCurrentFolderId();
 				if (appCtxt.getById(id) && (appCtxt.getById(id).nId == currentFolderId || id == currentFolderId)) {
 					needsRefresh = true;
@@ -261,13 +260,14 @@ function(modifies, force) {
 		}
 	}
 
-	if(needsRefresh) {
+	if (needsRefresh) {
 		briefcaseController.reloadFolder();
 	}
 };
 
 ZmBriefcaseApp.prototype.handleOp =
 function(op) {
+
 	switch (op) {
 		case ZmOperation.NEW_FILE: {
 			var loadCallback = new AjxCallback(this, this._handleNewItem);
@@ -296,70 +296,6 @@ function(op) {
 			 AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, newDocCallback, null);
 			 break;
 		}
-	}
-};
-
-ZmBriefcaseApp.prototype._handleNewDoc =
-function(op) {
-	AjxDispatcher.require("IM");
-	var promptDialog =  ZmPromptDialog.getInstance();
-	var newDocOkCallbackObj =  new AjxCallback(this, this._newDocOkCallback, [op, promptDialog]);
-
-	var title = ZmMsg.briefcaseCreateNewDocument;
-	var label = ZmMsg.documentName;
-
-	if (op == ZmOperation.NEW_PRESENTATION) {
-		title =  ZmMsg.briefcaseCreateNewPresentation;
-		label = ZmMsg.presentationName;
-	}
-
-	var dialogArgs = {
-		title: title,
-		label: label,
-		callback: newDocOkCallbackObj
-	};
-	promptDialog.popup(dialogArgs);
-};
-
-ZmBriefcaseApp.prototype._newDocOkCallback =
-function(op, promptDialog, data) {
-	var message;
-	if (!data.value) {
-		message = ZmMsg.nameEmpty;
-	}
-
-	promptDialog.popdown();
-
-	if (message) {
-		var dialog = appCtxt.getMsgDialog();
-		dialog.reset();
-		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
-		dialog.popup();
-	} else {
-		AjxDispatcher.require("Startup1_1");
-		var contentType = ZmMimeTable.APP_ZIMBRA_DOC;
-		switch(op) {
-			case ZmOperation.NEW_PRESENTATION: contentType = ZmMimeTable.APP_ZIMBRA_SLIDES; break;
-		}
-
-		var overviewController = appCtxt.getOverviewController();
-		var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
-		var folderId = ZmOrganizer.ID_BRIEFCASE;
-		if(treeController) {
-			var treeView = treeController.getTreeView(this.getOverviewId());
-			var briefcase = treeView ? treeView.getSelected() : null;
-			folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
-		}
-
-		var slideURL = this.getEditURLForContentType(contentType) + "?name=" + data.value + "&l=" + folderId;
-		var winname = "_newslide" +  data.value;
-		var winfeatures = [
-			"width=",(screen.width || 640),",",
-			"height=",(screen.height || 480),",",
-			"resizable,toolbar=no,menubar=no,fullscreen=yes,location=no,status=no",
-			"fullscreen=yes"
-		].join("");
-		var win = open(slideURL, winname, winfeatures);
 	}
 };
 

@@ -321,7 +321,7 @@ function(objects) {
 // view management
 
 ZmBriefcaseController.prototype.show =
-function(folderId, force, fromSearch) {
+function(folderId, force) {
 	if (!folderId) {
 		if (appCtxt.multiAccounts) {
 			folderId = appCtxt.multiAccounts
@@ -332,7 +332,6 @@ function(folderId, force, fromSearch) {
 	}
 
 	// save state
-	this._fromSearch = fromSearch;
 	this._object = this._currentFolder = folderId;
 	this._forceSwitch = force;
 
