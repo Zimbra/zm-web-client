@@ -109,13 +109,13 @@ function(params) {
 ZmMailList.prototype.spamItems = 
 function(params) {
 
-	var items = AjxUtil.toArray(params.items);
+	var items = params.items = AjxUtil.toArray(params.items);
 
 	if (appCtxt.multiAccounts) {
 		var accounts = this._filterItemsByAccount(items);
 		this._spamAccountItems(accounts, params);
 	} else {
-		this._spamItems(items);
+		this._spamItems(params);
 	}
 };
 
