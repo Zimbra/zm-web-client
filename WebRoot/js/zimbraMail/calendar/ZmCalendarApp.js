@@ -730,7 +730,7 @@ function() {
 			var params = this._deferredFolders[i];
 			var str = (params && params.obj && params.obj.f) ? params.obj.f : "";
 			if (str && (str.indexOf(ZmOrganizer.FLAG_CHECKED) != -1)) {
-				if (localOnly && (params.obj.zid != null)) {
+				if (params.obj.zid != null) {
 					continue;
 				}
 				folderIds.push(params.obj.id);
