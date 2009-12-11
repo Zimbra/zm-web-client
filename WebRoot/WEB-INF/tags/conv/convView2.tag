@@ -73,6 +73,8 @@
                                                 <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
                                                     <zm:currentResultUrl var="msgUrl" value="search" action="${param.action}" context="${context}"
                                                                          cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
+                                                    <zm:currentResultUrl var="msgSepUrl" value="search" action="${param.action}" context="${context}"
+                                                                         cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" sc="2"/>
                                                     <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != message.id)) ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                                         <td style='border:none' class='CB' nowrap><input <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
                                                         <td style='border:none' class='MsgStatusImg' align=center><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'startup/ImgMsgStatusRead.gif' : hit.messageHit.statusImage}"/></td>
@@ -88,8 +90,12 @@
                                                         </td>
                                                         <td class='Bottom Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                                         <td nowrap colspan=3 class='Bottom'>
-                                                            <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span></a>
-                                                            <c:if test="${hit.id == message.id}">
+
+                                                            <c:choose>
+
+                                                                <c:when test="${hit.id == message.id}">
+${msgUrl}
+                                                                <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span></a>
                                                                 <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                                 <c:if test="${messCursor.hasPrev}">
                                                                     <zm:currentResultUrl var="prevMsgUrl" value="search" action="${param.action}" context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
@@ -99,7 +105,12 @@
                                                                     <zm:currentResultUrl var="nextMsgUrl" value="search" action="${param.action}" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
                                                                     <a href="${nextMsgUrl}" ></a>
                                                                 </c:if>
-                                                            </c:if>
+                                                            </c:when>
+                                                            <c:otherwise>
+${msgSepUrl}
+                                                                <a href="${msgSepUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span></a>
+                                                            </c:otherwise>
+                                                            </c:choose>
                                                         </td>
                                                     </tr>
                                                 </c:forEach>

@@ -205,7 +205,8 @@
                                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
                                                 <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='${param.action}' context="${context}"
                                                                      cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-
+                                                <zm:currentResultUrl var="msgSepUrl" value="search" action="${param.action}" context="${context}"
+                                                                         cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="message" sc=""/>
                                                 <c:if test="${empty selectedRow and hit.id eq message.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
                                                 <c:set var="aid" value="A${hit.id}"/>
@@ -225,9 +226,10 @@
                                                         <c:set var="sender" value="${hit.messageHit.displaySender}"/>${fn:escapeXml(empty sender ? unknownSender : sender)}
                                                     </td>
                                                     <td class='Img' ><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
-                                                    <td ><%-- allow this column to wrap --%>
-                                                        <a id="${aid}" href="${fn:escapeXml(msgUrl)}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
-                                                        <c:if test="${hit.id == message.id}">
+                                                    <td><%-- allow this column to wrap --%>
+                                                        <c:choose>
+                                                            <c:when test="${hit.id == message.id}">
+                                                            <a id="${aid}" href="${fn:escapeXml(msgSepUrl)}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
                                                             <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                             <c:if test="${messCursor.hasPrev}">
                                                                 <zm:currentResultUrl var="prevMsgUrl" value="search" action='${param.action}' context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
@@ -237,7 +239,11 @@
                                                                 <zm:currentResultUrl var="nextMsgUrl" value="search"  action="${param.action}" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
                                                                 <a href="${fn:escapeXml(nextMsgUrl)}" id="NEXT_ITEM"></a>
                                                             </c:if>
-                                                        </c:if>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <a id="${aid}" href="${fn:escapeXml(msgUrl)}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
+                                                        </c:otherwise>
+                                                        </c:choose>
                                                     </td>
                                                     <td nowrap>${fn:escapeXml(zm:getFolderName(pageContext, hit.messageHit.folderId))}</td>
                                                     <td nowrap>${fn:escapeXml(zm:displaySize(pageContext, hit.messageHit.size))}</td>
