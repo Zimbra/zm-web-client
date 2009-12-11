@@ -30,6 +30,7 @@ ZmAccountOverviewContainer = function(params) {
 	ZmOverviewContainer.call(this, params);
 
 	this._vFolderTreeItemMap = {};
+	this._settingChangeListener = new AjxListener(this, this._handleSettingChange);
 };
 
 ZmAccountOverviewContainer.prototype = new ZmOverviewContainer;
@@ -157,7 +158,7 @@ function(params) {
 		}
 
 		var setting = appCtxt.getSettings(mainAcct).getSetting(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES);
-		setting.addChangeListener(new AjxListener(this, this._settingChangeListener, allTi));
+		setting.addChangeListener(this._settingChangeListener);
 
 		var folders = ZmAccountOverviewContainer.VIRTUAL_FOLDERS;
 		for (var i = 0; i < folders.length; i++) {
@@ -394,6 +395,9 @@ function(params, account, showBackgroundColor, headerClassName) {
 
 		this._addSection(headerParams, omit, params, showBackgroundColor);
 	}
+
+	var setting = appCtxt.getSettings(account).getSetting(ZmSetting.QUOTA_USED);
+	setting.addChangeListener(this._settingChangeListener);
 };
 
 ZmAccountOverviewContainer.prototype._addSection =
@@ -561,21 +565,27 @@ function(ev) {
 	}
 };
 
-ZmAccountOverviewContainer.prototype._settingChangeListener =
-function(ti, ev) {
+ZmAccountOverviewContainer.prototype._handleSettingChange =
+function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
 
 	var setting = ev.source;
+
 	if (setting.id == ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) {
 		var isVisible = setting.getValue();
-		ti.setVisible(isVisible);
+		this._allMailboxesTreeHeader.setVisible(isVisible);
 		if (!isVisible) {
 			if (appCtxt.getActiveAccount().isMain) {
 				appCtxt.accountList.setActiveAccount(appCtxt.accountList.defaultAccount);
 			}
 			appCtxt.getSearchController().searchAllAccounts = false;
 			appCtxt.getApp(ZmApp.MAIL).mailSearch();
+		} else {
+			this._deselect(this._allMailboxesTreeHeader);
 		}
+	}
+	else if (setting.id == ZmSetting.QUOTA_USED) {
+		this.updateAccountInfo(ev.getDetails().account, false, true);
 	}
 };
 

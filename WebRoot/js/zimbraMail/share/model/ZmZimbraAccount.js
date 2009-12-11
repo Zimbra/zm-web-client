@@ -120,10 +120,12 @@ function() {
 		var lastSyncDate = (this.lastSync && this.lastSync != 0)
 			? (new Date(parseInt(this.lastSync))) : null;
 
+		var quota = appCtxt.get(ZmSetting.QUOTA_USED, null, this);
 		var params = {
 			lastSync: (lastSyncDate ? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null),
 			hasNotSynced: (this.isOfflineInitialSync() && this.status == ZmZimbraAccount.STATUS_UNKNOWN),
-			status: this.getStatusMessage()
+			status: this.getStatusMessage(),
+			quota: AjxUtil.formatSize(quota, false, 1)
 		};
 
 		return AjxTemplate.expand("share.App#ZimbraAccountTooltip", params);

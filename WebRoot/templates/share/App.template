@@ -154,6 +154,12 @@
 				<td>${status}</td>
 			</tr>
 		<$ } $>
+		<$ if (!data.hasNotSynced) { $>
+			<tr>
+				<td align=right valign=top><$= ZmMsg.offlineQuota $></td>
+				<td>${quota}</td>
+			</tr>
+		<$ } $>
 	</table>
 </template>
 

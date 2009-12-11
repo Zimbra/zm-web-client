@@ -76,7 +76,9 @@ function() {
 
 	// set listeners for settings
 	var listener = new AjxListener(this, this._changeListener);
-	this.getSetting(ZmSetting.QUOTA_USED).addChangeListener(listener);
+	if (!appCtxt.multiAccounts) {
+		this.getSetting(ZmSetting.QUOTA_USED).addChangeListener(listener);
+	}
 	this.getSetting(ZmSetting.POLLING_INTERVAL).addChangeListener(listener);
 	this.getSetting(ZmSetting.SKIN_NAME).addChangeListener(listener);
 	this.getSetting(ZmSetting.LOCALE_NAME).addChangeListener(listener);
