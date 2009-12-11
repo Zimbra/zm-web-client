@@ -208,6 +208,24 @@ function(listener, index) {
 	return this._evtMgr.addListener("ACCOUNT", listener, index);
 };
 
+/**
+ * Returns true if any of the non-main, visible accounts is currently doing an
+ * initial sync.
+ */
+ZmAccountList.prototype.isInitialSyncing =
+function() {
+	for (var i = 0; i < this.visibleAccounts.length; i++) {
+		var acct = this.visibleAccounts[i];
+		if (acct.isMain) { continue; }
+
+		if (acct.isOfflineInitialSync()) {
+			return true;
+		}
+	}
+
+	return false;
+};
+
 ZmAccountList.prototype.syncAll =
 function(callback) {
 	var list = (new Array()).concat(this.visibleAccounts);

@@ -943,8 +943,7 @@ function(notify) {
  */
 ZmMailApp.prototype.createNotify =
 function(creates, force) {
-	var mailCreates = creates["m"];
-	if (!mailCreates && !creates["c"] && !creates["link"]) { return; }
+	if (!creates["m"] && !creates["c"] && !creates["link"]) { return; }
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
 	if (creates["link"]) {
@@ -1104,7 +1103,12 @@ function(creates, type, items, currList, sortBy, convs) {
 	var list = creates[nodeName];
 	if (!(list && list.length)) { return result; }
 
-	var throttle = appCtxt.isOffline && appCtxt.getActiveAccount().isOfflineInitialSync();
+	var throttle;
+	if (appCtxt.isOffline) {
+		throttle = (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES))
+			? appCtxt.accountList.isInitialSyncing()
+			: appCtxt.getActiveAccount().isOfflineInitialSync();
+	}
 	if (throttle) {
 		if (!this._maxEntries) {
 			var mlv = this.getMailListController().getReferenceView().getMailListView();
