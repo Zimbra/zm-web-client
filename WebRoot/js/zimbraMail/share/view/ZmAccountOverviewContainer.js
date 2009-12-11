@@ -662,10 +662,11 @@ function(ev) {
 			}
 		}
 	}
-	else if (opId == ZmOperation.MARK_ALL_READ ||
-			 opId == ZmOperation.EMPTY_FOLDER)
-	{
+	else if (opId == ZmOperation.MARK_ALL_READ) {
 		this._doAction(data, opId);
+	}
+	else if (opId == ZmOperation.EMPTY_FOLDER) {
+		this._confirmEmptyAction(data, opId);
 	}
 	else if (opId == ZmOperation.DELETE) {
 		data._delete();
@@ -673,6 +674,26 @@ function(ev) {
 		parent.removeChild(this._actionedHeaderItem); // HACK: just nuke it
 		parent.setVisible(parent.getItemCount() > 0);
 	}
+};
+
+ZmAccountOverviewContainer.prototype._confirmEmptyAction =
+function(data, opId) {
+	var dialog = appCtxt.getOkCancelMsgDialog();
+	dialog.reset();
+	dialog.registerCallback(DwtDialog.OK_BUTTON, this._emptyCallback, this, [dialog, data, opId]);
+
+	var msg = (data == ZmFolder.ID_TRASH)
+		? ZmMsg.confirmEmptyTrashFolder
+		: (AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, ZmMsg[ZmFolder.MSG_KEY[data]]));
+
+	dialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	dialog.popup();
+};
+
+ZmAccountOverviewContainer.prototype._emptyCallback =
+function(dialog, folderId, opId) {
+	dialog.popdown();
+	this._doAction(folderId, opId);
 };
 
 ZmAccountOverviewContainer.prototype._doAction =
