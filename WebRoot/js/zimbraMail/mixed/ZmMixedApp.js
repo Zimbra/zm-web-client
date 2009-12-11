@@ -73,7 +73,7 @@ function() {
 	for (var i = 0; i < list.length; i++) {
 		var id = list[i];
 		if ((prevApp == ZmApp.CONTACTS && id == ZmOrganizer.FOLDER) ||
-			(prevApp == ZmApp.MAIL && id == ZmOrganizer.ADDRBOOK)) {
+			(prevApp != ZmApp.CONTACTS && id == ZmOrganizer.ADDRBOOK)) {
 			continue;
 		}
 		trees.push(id);

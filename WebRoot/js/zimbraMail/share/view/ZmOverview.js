@@ -133,6 +133,7 @@ function(treeId, omit) {
 
 	AjxDispatcher.require(ZmOrganizer.ORG_PACKAGE[treeId]);
 	var treeController = this._controller.getTreeController(treeId);
+	if (!treeController) { return; }
 	if (this._treeHash[treeId]) {
 		treeController.clearTreeView(this.overviewId);
 	} else {
