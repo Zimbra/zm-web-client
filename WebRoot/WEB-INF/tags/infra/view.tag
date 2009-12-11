@@ -214,61 +214,11 @@
 			</tr>
 
 			<tr id='skin_R3'>
-				<td style="width:8px;">
-					<div class='ImgSkin_Chrome_R3_L'></div>
-				</td>
+				<td style="width:8px;"><div class='ImgSkin_Chrome_R3_L'></div></td>
 				<td class='ImgSkin_Chrome_R3'>
-					<div style='width:170px;height:100%;' id='skin_container_current_app' class='skin_container'>
-			
-					<table width='100%' height='100%' cellspacing=0 cellpadding=0>
-						<tr>
-							<td id='skin_td_quota' style="vertical-align:middle;">
-								<table class="BannerBar" width="100%" cellspacing="0" cellpadding="0" border="0">
-									<tbody>
-										<tr>
-											<c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
-											<c:choose>
-												<c:when test="${max gt 0}">
-													<c:set var="usage" value="${zm:displaySizePercentage(mailbox.size,max)}" />
-													<c:set var="usageNumeric" value="${fn:replace(usage, '%','')}"/>
-													<td class="BannerTextQuota">Email:</td>
-													<td class="BannerTextQuota">
-														<div class="quotabar" align="left">
-															<c:choose>
-																<c:when test="${usageNumeric < 65 }">
-																	<div class="quotaUsed" style="width:${usage}"/>
-																</c:when>
-																<c:when test="${usageNumeric >= 65 && usageNumeric < 85}">
-																	<div class="quotaWarning" style="width:${usage}"/>
-																</c:when>
-																<c:when test="${usageNumeric >= 85}">
-																	<div class="quotaCritical" style="width:${usage}"/>
-																</c:when>
-															</c:choose>
-
-														</div>
-													</td>
-												</c:when>
-												<c:otherwise>
-													<c:set var="usage" value="${zm:displaySizeFractions(pageContext, mailbox.size,1)}" />
-												</c:otherwise>
-											</c:choose>
-											<td class="BannerTextQuota" style="white-space: nowrap;">
-												<fmt:message var="unlimited" key="unlimited"/>
-												<fmt:message  key="quotaUsage">
-													<fmt:param value="${usage}"/>
-													<fmt:param value="${max == null || max == '' || max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,1)}"/>
-												</fmt:message>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</td>
-						</tr>
-					</table>
-</div>
+						<div style='width:170px;height:100%;' id='skin_container_current_app' class='skin_container'></div>
 				</td>
-				<td class='ImgSkin_Chrome_R3'></td>
+				<td class='ImgSkin_Chrome_R3'>&nbsp;</td>
 				<td class='ImgSkin_Chrome_R3' style='padding:0px;'>
 					<table width='100%' cellspacing=0 cellpadding=0>
 					<tr>
@@ -276,6 +226,48 @@
 							<div id='skin_container_app_chooser_lite' class='skin_container'>
 							<app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
 							</div>
+						</td>
+						<td id='skin_td_quota' style="vertical-align:middle;">
+							<table class="BannerBar" cellspacing="0" cellpadding="0" border="0">
+								<tbody>
+									<tr>
+										<c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
+										<c:choose>
+											<c:when test="${max gt 0}">
+												<c:set var="usage" value="${zm:displaySizePercentage(mailbox.size,max)}" />
+												<c:set var="usageNumeric" value="${fn:replace(usage, '%','')}"/>
+												<td class="BannerTextQuota">Email:</td>
+												<td class="BannerTextQuota">
+													<div class="quotabar" align="left">
+														<c:choose>
+															<c:when test="${usageNumeric < 65 }">
+																<div class="quotaUsed" style="width:${usage}"/>
+															</c:when>
+															<c:when test="${usageNumeric >= 65 && usageNumeric < 85}">
+																<div class="quotaWarning" style="width:${usage}"/>
+															</c:when>
+															<c:when test="${usageNumeric >= 85}">
+																<div class="quotaCritical" style="width:${usage}"/>
+															</c:when>
+														</c:choose>
+
+													</div>
+												</td>
+											</c:when>
+											<c:otherwise>
+												<c:set var="usage" value="${zm:displaySizeFractions(pageContext, mailbox.size,1)}" />
+											</c:otherwise>
+										</c:choose>
+										<td class="BannerTextQuota" style="white-space: nowrap;">
+											<fmt:message var="unlimited" key="unlimited"/>
+											<fmt:message  key="quotaUsage">
+												<fmt:param value="${usage}"/>
+												<fmt:param value="${max == null || max == '' || max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,1)}"/>
+											</fmt:message>
+										</td>
+									</tr>
+								</tbody>
+							</table>
 						</td>
 					</tr>
 					</table>
