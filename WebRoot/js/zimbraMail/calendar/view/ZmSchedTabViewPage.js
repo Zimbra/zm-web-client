@@ -113,14 +113,6 @@ function() {
 	this.set(this._dateInfo, this._editView.getOrganizer(), this._attendees);
 	this._controller._setComposeTabGroup();
     this.enablePartcipantStatusColumn(this._editView.getRsvp());
-
-	if (appCtxt.multiAccounts) {
-		var folder = appCtxt.getById(this._editView._folderPickedId);
-		if (folder) {
-			var acct = folder.account || appCtxt.accountList.mainAccount;
-			this._acContactsList.setActiveAccount(acct);
-		}
-	}
 };
 
 ZmSchedTabViewPage.prototype.tabBlur =

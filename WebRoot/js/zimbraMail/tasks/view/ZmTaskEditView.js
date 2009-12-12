@@ -209,11 +209,6 @@ function(width) {
 	this._pCompleteSelect.reparentHtmlElement(this._htmlElId + "_complete");
 };
 
-ZmTaskEditView.prototype._getFolderPickerTreeIds =
-function() {
-	return [ZmOrganizer.TASKS];
-};
-
 ZmTaskEditView.prototype._addEventHandlers =
 function() {
 	var edvId = AjxCore.assignId(this);
@@ -248,11 +243,7 @@ function(excludeAttendees) {
 	vals.push(this._subjectField.getValue());
 	vals.push(this._location.getValue());
 	vals.push(this._prioritySelect.getValue());
-	if (this._folderSelect) {
-		vals.push(this._folderSelect.getValue());
-	} else if (this._folderPickedId) {
-		vals.push(this._folderPickedId);
-	}
+	vals.push(this._folderSelect.getValue());
 	vals.push("" + this._statusCheckbox.checked);
 	vals.push(this._pCompleteSelect.getValue());
 	vals.push(this._statusSelect.getValue());
@@ -301,8 +292,7 @@ function(ev) {
 	var newVal = ev._args.newValue;
 	var oldVal = ev._args.oldValue;
 
-	if (newVal == oldVal)
-		return;
+	if (newVal == oldVal) { return; }
 
 	var selObj = ev._args.selectObj;
 

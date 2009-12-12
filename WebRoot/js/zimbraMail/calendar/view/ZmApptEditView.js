@@ -387,8 +387,10 @@ function(calItem, mode) {
 
     this._forwardToField.value = "";
 
-    if (this._folderSelect) this._folderSelect.setEnabled(!this._isForward);
-    if (this._reminderSelect) this._reminderSelect.setEnabled(!this._isForward);
+    this._folderSelect.setEnabled(!this._isForward);
+    if (this._reminderSelect) {
+		this._reminderSelect.setEnabled(!this._isForward);
+	}
     this._allDayCheckbox.disabled = this._isForward;    
 };
 
@@ -493,9 +495,7 @@ function(width) {
 		var option = ZmApptEditView.PRIVACY_OPTIONS[j];
 		this._privacySelect.addOption(option.label, option.selected, option.value);
 	}
-	if (this._folderSelect) {
-		this._folderSelect.addChangeListener(new AjxListener(this, this._folderListener));
-	}
+	this._folderSelect.addChangeListener(new AjxListener(this, this._folderListener));
 
 	// time ZmTimeSelect
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
@@ -620,11 +620,6 @@ function() {
 	var isEnabled = !isRemote || cal.hasPrivateAccess();
 
 	this._privacySelect.setEnabled(isEnabled);
-};
-
-ZmApptEditView.prototype._getFolderPickerTreeIds =
-function() {
-	return [ZmOrganizer.CALENDAR];
 };
 
 ZmApptEditView.prototype._resetFolderSelect =
@@ -814,11 +809,8 @@ function(excludeAttendees, excludeReminder) {
 	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.EQUIPMENT].getArray(), ZmCalBaseItem.EQUIPMENT));
 	vals.push(this._showAsSelect.getValue());
 	vals.push(this._privacySelect.getValue());
-	if (this._folderSelect) {
-		vals.push(this._folderSelect.getValue());
-	} else if (this._folderPickedId) {
-		vals.push(this._folderPickedId);
-	}
+	vals.push(this._folderSelect.getValue());
+
 	if (!excludeReminder) {
 		vals.push(this._reminderSelectInput.getValue());
 	}

@@ -175,6 +175,79 @@ function(date, list, controller, noheader, emptyMsg) {
 	return html.toString();
 };
 
+/**
+ * Returns a list of calendars based on certain conditions. Especially useful
+ * for multi-account
+ *
+ * @param folderSelect	[DwtSelect]		DwtSelect object to populate
+ * @param folderRow		[HTMLElement]	Table row element to show/hide
+ * @param calendarOrgs	[Object]		Hash map of calendar ID to calendar owner
+ * @param calItem		[ZmCalItem]		a ZmAppt or ZmTask object
+ */
+ZmApptViewHelper.populateFolderSelect =
+function(folderSelect, folderRow, calendarOrgs, calItem) {
+	// get calendar folders (across all accounts)
+	var org = ZmOrganizer.ITEM_ORGANIZER[calItem.type];
+	var data = [];
+	var folderTree;
+	var accounts = appCtxt.accountList.visibleAccounts;
+	for (var i = 0; i < accounts.length; i++) {
+		var acct = accounts[i];
+
+		var appEnabled = ZmApp.SETTING[ZmItem.APP[calItem.type]];
+		if ((appCtxt.multiAccounts && acct.isMain) ||
+			!appCtxt.get(appEnabled, null, acct))
+		{
+			continue;
+		}
+
+		folderTree = appCtxt.getFolderTree(acct);
+		data = data.concat(folderTree.getByType(org));
+	}
+
+	// add the local account last for multi-account
+	if (appCtxt.multiAccounts) {
+		folderTree = appCtxt.getFolderTree(appCtxt.accountList.mainAccount);
+		data = data.concat(folderTree.getByType(org));
+	}
+
+	folderSelect.clearOptions();
+	calendarOrgs = {};
+
+	for (var i = 0; i < data.length; i++) {
+		var cal = data[i];
+
+		if (cal.noSuchFolder || cal.isFeed() || (cal.link && cal.isReadOnly())) { continue; }
+
+		if (appCtxt.multiAccounts &&
+			cal.nId == ZmOrganizer.ID_CALENDAR &&
+			cal.getAccount().isCalDavBased())
+		{
+			continue;
+		}
+
+		var id = cal.link ? cal.getRemoteId() : cal.id;
+		calendarOrgs[id] = cal.owner;
+
+		// bug: 28363 - owner attribute is not available for shared sub folders
+		if (cal.isRemote() && !cal.owner && cal.parent && cal.parent.isRemote()) {
+			calendarOrgs[id] = cal.parent.getOwner();
+		}
+
+		var selected = ((calItem.folderId == cal.id) || (calItem.folderId == id ) || (calItem.folderId == cal.nId));
+		var icon = appCtxt.multiAccounts ? cal.account.getIcon() : null;
+		var name = appCtxt.multiAccounts
+			? ([cal.getName(), " (", cal.getAccount().getDisplayName(), ")"].join(""))
+			: cal.getName();
+		var option = new DwtSelectOption(id, selected, name, null, null, icon);
+		folderSelect.addOption(option, selected);
+	}
+
+
+	var len = folderSelect.size();
+	Dwt.setVisible(folderRow, len > 1);
+};
+
 /*
  * Takes a string, AjxEmailAddress, or contact/resource and returns
  * a ZmContact or a ZmResource. If the attendee cannot be found in

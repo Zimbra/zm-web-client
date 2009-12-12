@@ -46,6 +46,7 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle) 
 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
+	this._calendarOrgs = {};
 
 	this._kbMgr = appCtxt.getKeyboardMgr();
 };
@@ -294,7 +295,7 @@ function() {
 */
 ZmCalItemEditView.prototype.getOrganizer =
 function() {
-	var folderId = this._folderSelect ? this._folderSelect.getValue() : this._folderPickedId;
+	var folderId = this._folderSelect.getValue();
 	var organizer = new ZmContact(null);
 	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(this._calendarOrgs[folderId]), true);
 
@@ -311,7 +312,8 @@ function(tabGroup) {
 
 ZmCalItemEditView.prototype._reset =
 function(calItem, mode, firstTime) {
-	this._resetFolderSelect(calItem, mode);
+	ZmApptViewHelper.populateFolderSelect(this._folderSelect, this._folderRow, this._calendarOrgs, calItem);
+
 	this.enableInputs(true);
 
 	// lets always attempt to populate even if we're dealing w/ a "new" calItem
@@ -366,8 +368,7 @@ function(calItem) {
 	// save field values of this view w/in given appt
 	calItem.setName(this._subjectField.getValue());
 
-	var folderId = this._folderSelect
-		? this._folderSelect.getValue() : this._folderPickedId;
+	var folderId = this._folderSelect.getValue();
 	if (this._mode != ZmCalItem.MODE_NEW && this._calItem.folderId != folderId) {
 		// if moving existing calitem across mail boxes, cache the new folderId
 		// so we can save it as a separate request
@@ -566,12 +567,7 @@ function(width) {
 	Dwt.setSize(this._subjectField.getInputElement(), width, "22px");
 
 	// CalItem folder DwtSelect
-	if (appCtxt.multiAccounts) {
-		this._folderPickerButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
-		this._folderAcctName = document.getElementById(this._htmlElId + "_folderAcctName");
-	} else {
-		this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
-	}
+	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
 
 	// recurrence DwtSelect
 	this._repeatSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_repeatSelect")});
@@ -583,10 +579,6 @@ function(width) {
 
 	this._hasReminderSupport = Boolean(Dwt.byId(this._htmlElId + "_reminderSelect") != null);
 
-	if (this._folderPickerButton) {
-		this._folderPickerButton.addSelectionListener(new AjxListener(this, this._folderPickerListener));
-	}
-
 	// start/end date DwtButton's
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
@@ -595,52 +587,51 @@ function(width) {
 	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_startMiniCalBtn", dateButtonListener, dateCalSelectionListener);
 	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_endMiniCalBtn", dateButtonListener, dateCalSelectionListener);
 
+	if (this._hasReminderSupport) {
+		var params = {
+			parent: this,
+			parentElement: (this._htmlElId + "_reminderSelectInput"),
+			type: DwtInputField.STRING,
+			errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+			validationStyle: DwtInputField.CONTINUAL_VALIDATION
+		};
+		this._reminderSelectInput = new DwtInputField(params);
+		var reminderInputEl = this._reminderSelectInput.getInputElement();
+		Dwt.setSize(reminderInputEl, Dwt.DEFAULT, "22px");
+		reminderInputEl.onblur = AjxCallback.simpleClosure(this._handleReminderOnBlur, this, reminderInputEl);
 
-    if (this._hasReminderSupport) {
-        var params = {
-            parent: this,
-            parentElement: (this._htmlElId + "_reminderSelectInput"),
-            type: DwtInputField.STRING,
-            errorIconStyle: DwtInputField.ERROR_ICON_NONE,
-            validationStyle: DwtInputField.CONTINUAL_VALIDATION
-        };
-        this._reminderSelectInput = new DwtInputField(params);
-        var reminderInputEl = this._reminderSelectInput.getInputElement();
-        Dwt.setSize(reminderInputEl, Dwt.DEFAULT, "22px");
-        reminderInputEl.onblur = AjxCallback.simpleClosure(this._handleReminderOnBlur, this, reminderInputEl);
-
-        var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
-        var reminderSelectionListener = new AjxListener(this, this._reminderSelectionListener);
-        this._reminderButton = ZmCalendarApp.createReminderButton(this, this._htmlElId + "_reminderSelect", reminderButtonListener, reminderSelectionListener);
-    }
+		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
+		var reminderSelectionListener = new AjxListener(this, this._reminderSelectionListener);
+		this._reminderButton = ZmCalendarApp.createReminderButton(this, this._htmlElId + "_reminderSelect", reminderButtonListener, reminderSelectionListener);
+	}
 
 	// notes ZmHtmlEditor
-    if(window.isTinyMCE) {
-        this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode);
-        this._notesHtmlEditor.addOnContentIntializedListener(new AjxCallback(this,this.resizeNotesEditor));        
-        this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
-        // bug: 19079 to avoid access denied exception set some content which corrects the doc domain
-        this._notesHtmlEditor.setContent("");
-    }else {
-	    this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
-	    this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
-        // bug: 19079 to avoid access denied exception set some content which corrects the doc domain
-        this._notesHtmlEditor.setContent("");
-    }
+	if (window.isTinyMCE) {
+		this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode);
+		this._notesHtmlEditor.addOnContentIntializedListener(new AjxCallback(this,this.resizeNotesEditor));
+		this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
+		// bug: 19079 to avoid access denied exception set some content which corrects the doc domain
+		this._notesHtmlEditor.setContent("");
+	} else {
+		this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
+		this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
+		// bug: 19079 to avoid access denied exception set some content which corrects the doc domain
+		this._notesHtmlEditor.setContent("");
+	}
 };
 
 ZmCalItemEditView.prototype._handleReminderOnBlur =
 function(inputEl) {
-    var reminderString = inputEl.value;
+	var reminderString = inputEl.value;
 
-    if(!reminderString) {
-        inputEl.value = ZmMsg.apptRemindNever;
-        return;
-    }
+	if (!reminderString) {
+		inputEl.value = ZmMsg.apptRemindNever;
+		return;
+	}
 
-    var reminderInfo = ZmCalendarApp.parseReminderString(reminderString);
-    var reminderMinutes = ZmCalendarApp.convertReminderUnits(reminderInfo.reminderValue, reminderInfo.reminderUnits);
-    inputEl.value = ZmCalendarApp.getReminderSummary(reminderMinutes);
+	var reminderInfo = ZmCalendarApp.parseReminderString(reminderString);
+	var reminderMinutes = ZmCalendarApp.convertReminderUnits(reminderInfo.reminderValue, reminderInfo.reminderUnits);
+	inputEl.value = ZmCalendarApp.getReminderSummary(reminderMinutes);
 };
 
 ZmCalItemEditView.prototype._addEventHandlers =
@@ -651,103 +642,10 @@ function() {
 // cache all input fields so we dont waste time traversing DOM each time
 ZmCalItemEditView.prototype._cacheFields =
 function() {
-	this._folderLabelField 	= document.getElementById(this._htmlElId + "_folderLabel");
+	this._folderRow			= document.getElementById(this._htmlElId + "_folderRow");
 	this._startDateField 	= document.getElementById(this._htmlElId + "_startDateField");
 	this._endDateField 		= document.getElementById(this._htmlElId + "_endDateField");
 	this._repeatDescField 	= document.getElementById(this._repeatDescId); 		// dont delete!
-};
-
-ZmCalItemEditView.prototype._resetFolderSelect =
-function(calItem, mode) {
-	// get all calendar folders
-	var org = ZmOrganizer.ITEM_ORGANIZER[calItem.type];
-	var folderTree = appCtxt.getFolderTree();
-	var data = folderTree ? folderTree.getByType(org) : [];
-	var len = data.length;
-
-	// look for calItem's calendar
-	var itemCal;
-	for (var i = 0; i < len; i++) {
-		var cal = data[i];
-		if (cal.id == calItem.folderId) {
-			itemCal = cal;
-			break;
-		}
-	}
-
-	if (this._folderSelect) {
-		this._folderSelect.clearOptions();
-	}
-	this._calendarOrgs = {};
-
-	for (var i = 0; i < len; i++) {
-		var cal = data[i];
-
-        //exclude the stale mount points
-        if(cal.noSuchFolder) continue;
-
-		var id = cal.link ? cal.getRemoteId() : cal.id;
-		this._calendarOrgs[id] = cal.owner;
-
-		// bug: 28363 - owner attribute is not available for shared sub
-		// folder for mountpoints
-		if (cal.isRemote() && !cal.owner && cal.parent && cal.parent.isRemote()) {
-			this._calendarOrgs[id] = cal.parent.getOwner();
-		}
-
-		if (this._folderSelect) {
-			// don't show calendar if feed, or remote and don't have write perms
-			var share = cal.getMainShare();
-			if (cal.isFeed() || (cal.link && cal.isReadOnly())) { continue; }
-
-			var selected = ((calItem.folderId == cal.id) || (calItem.folderId == id ) || (calItem.folderId == cal.nId));
-			this._folderSelect.addOption(cal.getName(), selected, id);
-		}
-	}
-
-	if (this._folderSelect) {
-		var num = this._folderSelect.size();
-		Dwt.setVisibility(this._folderSelect.getHtmlElement(), num > 1);
-		Dwt.setVisibility(this._folderLabelField, num > 1);
-	}
-	else if (this._folderPickerButton) {
-		var folder = appCtxt.getById(calItem.folderId);
-		this._folderPickerButton.setText(folder.name);
-		this._folderPickedId = folder.id;
-		this._folderAcctName.innerHTML = folder.account.getDisplayName();
-	}
-};
-
-ZmCalItemEditView.prototype._getFolderPickerTreeIds =
-function() {
-	// override
-};
-
-ZmCalItemEditView.prototype._folderPickerListener =
-function(ev) {
-	var dlg = appCtxt.getChooseFolderDialog();
-	var callback = new AjxCallback(this, this._folderPickerCallback, [dlg]);
-
-	var params = {
-		data:		this._calItem,
-		treeIds:	this._getFolderPickerTreeIds(),
-		overviewId:	dlg.getOverviewId(ZmApp.CALENDAR),
-		omit:		{},
-		appName:	ZmApp.CALENDAR
-	};
-	params.omit[ZmFolder.ID_TRASH] = true;
-	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
-
-	ZmController.showDialog(dlg, callback, params);
-};
-
-ZmCalItemEditView.prototype._folderPickerCallback =
-function(dlg, folder) {
-	dlg.popdown();
-
-	this._folderPickerButton.setText(folder.name);
-	this._folderPickedId = folder.id;
-	this._folderAcctName.innerHTML = folder.account.getDisplayName();
 };
 
 ZmCalItemEditView.prototype._initAttachContainer =

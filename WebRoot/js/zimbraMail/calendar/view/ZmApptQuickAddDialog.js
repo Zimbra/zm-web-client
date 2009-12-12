@@ -44,6 +44,7 @@ ZmApptQuickAddDialog = function(parent) {
 	this.setTitle(ZmMsg.quickAddAppt);
 	DBG.timePt("create content");
 	this._locations = [];
+	this._calendarOrgs = {};
 
 	this._createDwtObjects();
 	this._cacheFields();
@@ -85,7 +86,7 @@ function(appt) {
 	}
 	this._showAsSelect.setSelectedValue("B");
 	this._privacySelect.setSelectedValue("PUB");
-	this._resetCalendarSelect(appt);
+	ZmApptViewHelper.populateFolderSelect(this._folderSelect, this._folderRow, this._calendarOrgs, appt);
 	this._repeatSelect.setSelectedValue("NON");
 	this._repeatDescField.innerHTML = "";
 	this._origFormValue = this._formValue();
@@ -102,8 +103,7 @@ function() {
 	appt.setName(this._subjectField.getValue());
 	appt.freeBusy = this._showAsSelect.getValue();
 	appt.privacy = this._privacySelect.getValue();
-	var calId = this._calendarSelect 
-		? this._calendarSelect.getValue() : this._folderPickedId;
+	var calId = this._folderSelect.getValue();
 	appt.setFolderId(calId);
 	appt.setOrganizer(this._calendarOrgs[calId]);
 
@@ -160,10 +160,8 @@ function(loc) {
 		// tab group filled in here rather than in the constructor b/c we need
 		// all the content fields to have been created
 		var members = [this._subjectField, this._locationField, this._showAsSelect, this._privacySelect];
-		if (this._calendarSelect && this._calendarSelect.size() > 1) {
-			members.push(this._calendarSelect);
-		} else if (this._folderPickerButton) {
-			members.push(this._folderPickerButton);
+		if (this._folderSelect.size() > 1) {
+			members.push(this._folderSelect);
 		}
 		// XXX: ZmTimeSelect doesn't handle focus yet
 		members = members.concat([this._startDateField, this._startDateButton,
@@ -181,12 +179,6 @@ function(loc) {
 
 	var defaultPrivacyOption = appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY);
 	this._privacySelect.setSelectedValue((defaultPrivacyOption == ZmSetting.CAL_VISIBILITY_PRIV) ?  "PRI" : "PUB");
-
-	this._folderPickedId = this._appt.getFolder().id;
-	var accountEl = document.getElementById(this._htmlElId+"_account");
-	if (accountEl) {
-		accountEl.innerHTML = this._appt.getFolder().account.getDisplayName();
-	}
 
 	DBG.timePt("ZmQuickAddDialog#popup", true);
 };
@@ -234,15 +226,9 @@ function() {
 	}
 	this._privacySelect.addChangeListener(new AjxListener(this, this._privacyListener));
 
-	if (appCtxt.multiAccounts) {
-		this._folderPickerButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_calendar")});
-		this._folderPickerButton.addSelectionListener(new AjxListener(this, this._folderPickerListener));
-	}
-	else {
-		this._calendarSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_calendar")});
-		this._calendarSelect.addChangeListener(new AjxListener(this, this._privacyListener));
-	}
-	
+	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_calendar")});
+	this._folderSelect.addChangeListener(new AjxListener(this, this._privacyListener));
+
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
@@ -353,7 +339,7 @@ function() {
 	if (!this._privacySelect) { return; }
 
 	var value = this._privacySelect.getValue();
-	var calId = this._calendarSelect ? this._calendarSelect.getValue() : this._folderPickedId;
+	var calId = this._folderSelect.getValue();
 	var cal = calId && appCtxt.getById(calId);
 
 	if (cal) {
@@ -367,43 +353,9 @@ function() {
 	}
 };
 
-ZmApptQuickAddDialog.prototype._folderPickerListener =
-function(ev) {
-	var dlg = appCtxt.getChooseFolderDialog();
-	var callback = new AjxCallback(this, this._folderPickerCallback, [dlg]);
-
-	var params = {
-		overviewId:	dlg.getOverviewId(ZmApp.CALENDAR),
-		data:		this._calItem,
-		treeIds:	[ZmOrganizer.CALENDAR],
-		omit:		{},
-		appName:	ZmApp.CALENDAR
-	};
-	params.omit[ZmFolder.ID_TRASH] = true;
-	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
-
-	ZmController.showDialog(dlg, callback, params);
-};
-
-ZmApptQuickAddDialog.prototype._folderPickerCallback =
-function(dlg, folder) {
-	dlg.popdown();
-
-	this._folderPickerButton.setText(folder.name);
-	this._folderPickedId = folder.id;
-
-	var accountEl = document.getElementById(this._htmlElId+"_account");
-	if (accountEl) {
-		accountEl.innerHTML = folder.account.getDisplayName();
-	}
-
-	this._privacyListener();
-};
-
 ZmApptQuickAddDialog.prototype._cacheFields =
 function() {
-	this._calLabelField 	= document.getElementById(this._htmlElId + "_calendarLabel");
-	this._calendarRow		= document.getElementById(this._htmlElId + "_calendarRow");
+	this._folderRow			= document.getElementById(this._htmlElId + "_folderRow");
 	this._startDateField 	= document.getElementById(this._htmlElId + "_startDate");
 	this._endDateField 		= document.getElementById(this._htmlElId + "_endDate");
 	this._repeatDescField 	= document.getElementById(this._htmlElId + "_repeatDesc");
@@ -417,50 +369,6 @@ function() {
 	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmApptQuickAddDialog._onChange);
 
 	this._startDateField._qadId = this._endDateField._qadId =  qadId;
-};
-
-ZmApptQuickAddDialog.prototype._resetCalendarSelect = 
-function(appt) {
-	// get all folders w/ view set to "Appointment" we received from initial refresh block
-	var org = ZmOrganizer.ITEM_ORGANIZER[appt.type];
-	var folderTree = appCtxt.getFolderTree();
-	var data = folderTree ? folderTree.getByType(org) : [];
-
-	if (this._calendarSelect) {
-		this._calendarSelect.clearOptions();
-	}
-	this._calendarOrgs = [];
-	for (var i = 0; i < data.length; i++) {
-		var cal = data[i];
-
-        //exclude the stale mount points
-        if(cal.noSuchFolder) continue;
-        
-		var id = cal.link ? cal.getRemoteId() : cal.id;
-		this._calendarOrgs[id] = cal.owner;
-
-		// bug: 28363 owner attribute is not available for shared sub folder for mountpoints
-		if (cal.isRemote() && !cal.owner && cal.parent && cal.parent.isRemote()) {
-			this._calendarOrgs[id] = cal.parent.getOwner();
-		}
-
-		if (this._calendarSelect) {
-			// don't show calendar if remote or don't have write perms
-			if (cal.url) { continue; }
-			var share = cal.getMainShare();
-			if (cal.link && cal.isReadOnly()) { continue; }
-
-			this._calendarSelect.addOption(cal.getName(), (appt.folderId == cal.id) || (appt.folderId == cal.nId), id);
-		}
-	}
-
-	if (this._calendarSelect) {
-		var len = this._calendarSelect.size();
-		Dwt.setVisible(this._calendarRow, len > 1);
-	} else if (this._folderPickerButton) {
-		var calendar = appCtxt.getById(appt.folderId);
-		this._folderPickerButton.setText(calendar.name);
-	}
 };
 
 ZmApptQuickAddDialog.prototype._showTimeFields = 
