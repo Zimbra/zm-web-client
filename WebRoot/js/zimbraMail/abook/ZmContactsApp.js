@@ -431,6 +431,13 @@ function(query, callback) {
 	sc.search(params);
 };
 
+// return enough for us to get a scroll bar since we are pageless
+ZmContactsApp.prototype.getLimit =
+function(offset) {
+	var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
+	return offset ? limit : 2 * limit;
+};
+
 ZmContactsApp.prototype.getInitialSearchType =
 function() {
 	var list = appCtxt.getCurrentList();
