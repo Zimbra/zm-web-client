@@ -40,7 +40,7 @@ ZmMixedView.LV_CLASS[ZmItem.CONV]			= "ZmConvListView";
 ZmMixedView.LV_CLASS[ZmItem.MSG]			= "ZmMailMsgListView";
 ZmMixedView.LV_CLASS[ZmItem.APPT]			= "ZmCalListView";
 ZmMixedView.LV_CLASS[ZmItem.TASK]			= "ZmTaskListView";
-ZmMixedView.LV_CLASS[ZmItem.PAGE]			= "ZmDetailListView";
+ZmMixedView.LV_CLASS[ZmItem.PAGE]			= "ZmFileListView";
 ZmMixedView.LV_CLASS[ZmItem.BRIEFCASE_ITEM]	= "ZmDetailListView";
 
 // support functions for _createItemHtml
