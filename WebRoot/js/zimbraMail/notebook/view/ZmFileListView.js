@@ -98,12 +98,12 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		}
 		htmlArr[idx++] = "<div class='Img" + icon + "'></div>";
 	} else if (field == ZmItem.F_FROM) {
-		var creator = item.creator.split("@");
-		var cname = creator[0];
+		var creator = item.creator && item.creator.split("@");
+		var cname = creator && creator[0];
 		var uname = appCtxt.get(ZmSetting.USERNAME);
 		if (uname) {
 			var user = uname.split("@");
-			if (creator[1] != user[1]) {
+			if (creator && (creator[1] != user[1])) {
 				cname = creator.join("@");
 			}
 		}
