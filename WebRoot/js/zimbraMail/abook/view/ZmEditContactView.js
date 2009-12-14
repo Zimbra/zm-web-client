@@ -535,6 +535,13 @@ ZmEditContactView.prototype.getTitle = function() {
 };
 
 //
+// ZmListView methods
+//
+
+ZmEditContactView.prototype._checkItemCount = function() {};
+ZmEditContactView.prototype._handleResponseCheckReplenish = function() {};
+
+//
 // Protected methods
 //
 
