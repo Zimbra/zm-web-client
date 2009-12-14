@@ -136,7 +136,7 @@ ZmZimletContext.__RE_SCAN_SETTING = /\$\{setting\.([\$a-zA-Z0-9_]+)\}/g;
 
 ZmZimletContext._isArray =
 function(obj){
-    return ( appCtxt.isChildWindow && obj.length && AjxUtil.isFunction(obj.sort) && AjxUtil.isFunction(obj.unshift) );
+    return (!AjxUtil.isUndefined(obj) && appCtxt.isChildWindow && obj.length && AjxUtil.isFunction(obj.sort) && AjxUtil.isFunction(obj.unshift) );
 };
 
 /** This function creates a 'sane' JSON object, given one returned by the
