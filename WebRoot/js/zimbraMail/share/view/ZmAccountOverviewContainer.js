@@ -204,6 +204,7 @@ function(params) {
 	// add the "local" account last
 	if (appCtxt.isOffline && this._appName != ZmApp.PREFERENCES) {
 		params.omit = {};
+		params.selectable = false;
 		this._addAccount(params, mainAcct, showBackgroundColor, "ZmOverviewLocalHeader");
 
 		header = this.getHeaderItem(mainAcct);
@@ -483,6 +484,10 @@ function(ev) {
 
 				var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this._appName]];
 				var folder = appCtxt.getById(ZmOrganizer.getSystemId(fid, account));
+
+				// briefcase is not a ZmFolder so let's skip for now
+				if (!(folder instanceof ZmFolder)) { return; }
+
 				var params = {
 					query: folder.createQuery(),
 					getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
