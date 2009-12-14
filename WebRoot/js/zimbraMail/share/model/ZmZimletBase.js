@@ -917,7 +917,8 @@ function(xsltUrl, doc) {
 };
 
 /**
- * Create a "tab" application.
+ * Create a "tab" application and registers this zimlet to
+ * receive {@link #appAction()} and {@link #appLaunch()} events.
  * 
  * @param	{String}	label	the application label
  * @param	{String}	image	the application image
@@ -940,6 +941,21 @@ function(label, image, tooltip) {
 
 	return appName;
 };
+
+/**
+ * This method gets called each time the tab application is opened or closed.
+ * 
+ * @param    {String} appName        the application name
+ * @param    {Boolean} active        if <code>true</code>, the application status is open; otherwise, <code>false</code>
+ */
+ZmZimletBase.prototype.appAction = function(appName, active) { };
+
+/**
+ * This method gets called when the tab application is opened for the first time.
+ * 
+ * @param    {String} appName        the application name
+ */
+ZmZimletBase.prototype.appLaunch = function(appName) { };
 
 /*
  *
