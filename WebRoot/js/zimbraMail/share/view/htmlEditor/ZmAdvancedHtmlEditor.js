@@ -359,6 +359,9 @@ function(id, mode, content) {
 
     this.setPendingContent(content || "");
 
+    var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
+    var editorCSS = appContextPath + "/css/editor_ui.css?v=" + window.cacheKillerVersion + "&skin=" + appCurrentSkin + "&locale=" + locale;
+
     tinyMCE.init({
         // General options
         mode :  (mode == DwtHtmlEditor.HTML)? "exact" : "none",
@@ -374,6 +377,7 @@ function(id, mode, content) {
         convert_urls : false,
         verify_html : false,
         content_css : false,
+        editor_css: editorCSS,        
         setup : function(ed) {
             ed.onLoadContent.add(handleContentLoad);
             ed.onInit.add(initFontStyles);
