@@ -488,11 +488,14 @@ function(ev) {
 				// briefcase is not a ZmFolder so let's skip for now
 				if (!(folder instanceof ZmFolder)) { return; }
 
+				var defaultSortBy = (this._appName == ZmApp.TASKS)
+					? ZmSearch.DUE_DATE_DESC : ZmSearch.DATE_DESC;
+
 				var params = {
 					query: folder.createQuery(),
 					getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
 					searchFor: (ZmApp.DEFAULT_SEARCH[this._appName]),
-					sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
+					sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : defaultSortBy),
 					accountName: (account && account.name),
 					noUpdateOverview: true
 				};
