@@ -177,6 +177,9 @@ function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */)
 		if (cmdArg1 == "browser") {
 			AjxDispatcher.require("Alert");
 			ZmBrowserAlert.getInstance().start("Alert Test!");
+		} else if (cmdArg1 == "desktop") {
+			AjxDispatcher.require("Alert");
+			ZmDesktopAlert.getInstance().start("Title!", "Message!");
 		} else if (cmdArg1 == "app") {
 			appCtxt.getApp(ZmApp.MAIL).startAlert();
 		} else {
