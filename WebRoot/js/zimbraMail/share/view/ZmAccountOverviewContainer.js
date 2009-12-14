@@ -179,7 +179,7 @@ function(params) {
 		// add global searches
 		params1 = {
 			parent: allTi,
-			text: ZmMsg.searches,
+			text: ZmMsg.globalSearches,
 			imageInfo: "SearchFolder",
 			selectable: false
 		};
@@ -250,6 +250,10 @@ function(folder) {
 	var ti = new DwtTreeItem(params);
 	ti.setData(Dwt.KEY_ID, folder);
 	ti._initialize(null, true);
+
+	if (!this._searchTreeHeader.getVisible()) {
+		this._searchTreeHeader.setVisible(true);
+	}
 };
 
 /**
@@ -537,6 +541,8 @@ function(ev) {
 
 	var acct;
 	if (header) {
+		if (header.__isSearch) { return; }
+
 		var data = header.getData(Dwt.KEY_ID);
 		if (data == ZmOrganizer.ID_ALL_MAILBOXES) {
 			var text = expanded
