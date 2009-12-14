@@ -29,6 +29,14 @@
  */
 ZmOverviewController = function(container) {
 
+    // Temporary debug output (14. dec. 2009), should be removed when no longer needed
+    if (window.console && window.console.log) {
+        console.log("------------------");
+        console.log("ZmOverviewController");
+        console.log(container);
+        console.log(this);
+    }
+
 	ZmController.call(this, container);
 
 	this._overviewContainer = {};
