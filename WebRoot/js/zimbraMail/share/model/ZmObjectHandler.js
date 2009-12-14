@@ -13,6 +13,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * 
+ * This file contains the ZmObjectHandler.
+ * 
+ */
+
+/**
+ * @class
+ *
+ * This is the constructor for the zimlet object handler.
+ * 
+ * @param	{String}	typeName	the type name
+ * @param	{String}	className	the class name
+ */
 ZmObjectHandler = function(typeName, className) {
 	if (arguments.length > 0) {
 		this.init(typeName, className);
@@ -21,12 +36,23 @@ ZmObjectHandler = function(typeName, className) {
 
 ZmObjectHandler.prototype.constructor = ZmObjectHandler;
 
+/**
+ * Called by the Zimlet framework to indicate that the object.
+ * 
+ * @param	{String}	typeName	the type name
+ * @param	{String}	className	the class name; if <code>null</code>, "Object" will be used
+ */
 ZmObjectHandler.prototype.init =
 function(typeName, className) {
 	this._typeName = typeName;
 	this._className = className ? className : "Object";
 };
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmObjectHandler.prototype.toString = 
 function() {
 	// If you can find a cleaner way to get the name of 
@@ -40,18 +66,35 @@ function() {
 	return this._toString;
 };
 
+/**
+ * Gets the type name.
+ * 
+ * @return	{String}		the type name
+ */
 ZmObjectHandler.prototype.getTypeName =
 function() {
 	return this._typeName;
 };
 
-// OVERRIDE if need be
+/**
+ * Gets the class name for a given object.
+ * 
+ * @param	{Object}		obj		the object
+ * @param	context		the content (not used)
+ * @return	{String}		the class name
+ */
 ZmObjectHandler.prototype.getClassName =
 function(obj, context) {
 	return this._className;
 };
 
-// OVERRIDE if need be
+/**
+ * Gets the hovered class name for the given object.
+ * 
+ * @param	{Object}		obj		the object
+ * @param	context		the content (not used)
+ * @return	{String}		the hovered class name
+ */
 ZmObjectHandler.prototype.getHoveredClassName =
 function(obj, context) {
 	var cname = this.getClassName(obj);
@@ -62,7 +105,13 @@ function(obj, context) {
 	return this._classNameHovered;
 };
 
-// OVERRIDE if need be
+/**
+ * Gets the active class name for a given object.
+ * 
+ * @param	{Object}		obj		the object
+ * @param	context		the content (not used)
+ * @return	{String}		the active class name
+ */
 ZmObjectHandler.prototype.getActiveClassName =
 function(obj, context) {
 	var cname = this.getClassName(obj);
@@ -73,6 +122,9 @@ function(obj, context) {
 	return this._classNameActive;
 };
 
+/**
+ * @private
+ */
 ZmObjectHandler.prototype.findObject =
 function(content, startIndex) {
 	if (startIndex === 0) {
@@ -89,29 +141,46 @@ function(content, startIndex) {
 };
 
 
-/** OVERRIDE. returns non-null result in the format of String.match if text on the line matched this
-* handlers regular expression.
-* i.e: var result = handler.match(line);
-* result[0] should be matched string
-* result.index should be location within line match occured
-* handlers can also set result.context which will be passed back to them during the various method calls (getToolTipText, etc)
-*
-* handlers should set regex.lastIndex to startIndex and then use regex.exec(content). they should also use the "g" option when
-* constructing their regex.
-*/
+/**
+ * OVERRIDE: Usage should return a non-null result in the format of
+ * String.match if text on the line matched the handler regular expression.
+ * 
+ * <pre>
+ * var result = handler.match(line);
+ * result[0] // should be matched string
+ * result.index // should be location within line match occurred
+ * </pre>
+ * 
+ * Handlers can also set result.context which will be passed back to
+ * them during the various method calls (getToolTipText, etc).
+ * 
+ * Handlers should set regex.lastIndex to startIndex and then use regex.exec(content).
+ * 
+ * Handlers should also use the "g" option when constructing their regex.
+ */
 ZmObjectHandler.prototype.match =
 function(content, startIndex) {
 	return null;
 };
 
-// OVERRIDE IF NEED BE. Generates content inside the <span>
+/**
+ * Generates content inside the <code><span></code> tag.
+ * 
+ * @return	{Number}	the content index
+ * @private
+ * */
 ZmObjectHandler.prototype._getHtmlContent =
 function(html, idx, obj, context, spanId) {
 	html[idx++] = AjxStringUtil.htmlEncode(obj, true);
 	return idx;
 };
 
-// generates the span
+/**
+ * Generates the <code><span></code> tag.
+ * 
+ * @return	{Number}	the content index
+ * @private
+ */
 ZmObjectHandler.prototype.generateSpan = 
 function(html, idx, obj, spanId, context) {
 	html[idx++] = "<span class='";
@@ -124,35 +193,84 @@ function(html, idx, obj, spanId, context) {
 	return idx;
 };
 
+/**
+ * OVERRIDE: Checks if the handler has tool tip text.
+ * 
+ * @param		{Object}	obj			the object
+ * @param		{Object}	context		the context
+ * @return		<code>true</code> if the handler has tool tip text; <code>false</code> otherwise
+ */
 ZmObjectHandler.prototype.hasToolTipText =
 function(obj, context) {
 	return true;
 };
 
+/**
+ * OVERRIDE: Gets the handler tool tip text.
+ * 
+ * @param		{Object}	obj			the object
+ * @param		{Object}	context		the context
+ * @return		{String}	the handler has tool tip text
+ */
 ZmObjectHandler.prototype.getToolTipText =
 function(obj, context) {
 	return AjxStringUtil.htmlEncode(obj);
 };
 
+/**
+ * OVERRIDE: Populates the handler tool tip text.
+ * 
+ * @param		{Object}	obj			the object
+ * @param		{Object}	context		the context
+ */
 ZmObjectHandler.prototype.populateToolTip =
 function(obj, context) {
 };
 
-
+/**
+ * OVERRIDE: Gets the action menu.
+ * 
+ * @param		{Object}	obj			the object
+ * @param		{String}	span		the span element
+ * @param		{Object}	context		the context
+ * @return		the action menu
+ */
 ZmObjectHandler.prototype.getActionMenu =
 function(obj, span, context) {
 	return null;
 };
 
+/**
+ * OVERRIDE: This method is called when the handler is selected.
+ * 
+ * @param		{Object}	obj			the object
+ * @param		{String}	span		the span element
+ * @param		{Object}	ev			the event
+ * @param		{Object}	context		the context
+ * @see		#clicked()
+ */
 ZmObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
 	return this.clicked(span, obj, context, ev);
 };
 
+/**
+ * OVERRIDE: This method is called when the handler is clicked.
+ * 
+ * @param		{Object}	obj			the object
+ * @param		{String}	span		the span element
+ * @param		{Object}	ev			the event
+ * @param		{Object}	context		the context
+ */
 ZmObjectHandler.prototype.clicked =
 function(span, obj, context, ev) {
 };
 
+/**
+ * This method is called when the handler is hovered-over.
+ * 
+ * @private
+ */
 ZmObjectHandler.prototype.hoverOver = function(object, context, x, y) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
@@ -161,6 +279,11 @@ ZmObjectHandler.prototype.hoverOver = function(object, context, x, y) {
 	this.populateToolTip(object, context);
 };
 
+/**
+ * This method is called when the handler is hovered-out.
+ * 
+ * @private
+ */
 ZmObjectHandler.prototype.hoverOut = function(object, context) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
