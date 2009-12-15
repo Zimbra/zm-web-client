@@ -81,8 +81,8 @@ function(files, status, guids, response) {
     var resp = response && response._data && response._data.BatchResponse;
 
     var folderIds = [];
-    
-	// mark successful uploads
+
+    // mark successful uploads
     if (resp && resp.SaveDocumentResponse) {
         for (var i = 0; i < resp.SaveDocumentResponse.length; i++) {
             var saveDocResp = resp.SaveDocumentResponse[i];
@@ -96,7 +96,7 @@ function(files, status, guids, response) {
         }
     }
 
-	// check for conflicts
+    // check for conflicts
     var conflicts = null;
     if (resp && resp.Fault) {
         var errors = [];
@@ -115,7 +115,7 @@ function(files, status, guids, response) {
                         case "id": { file.id = attr._content; break; }
                         case "ver": { file.version = attr._content; break; }
                         case "rest": { file.rest = attr._content; break; }
-                        
+
                     }
                 }
                 conflicts.push(file);
@@ -124,27 +124,10 @@ function(files, status, guids, response) {
                 DBG.println("Unknown error occurred: "+code);
                 errors[fault.requestId] = fault;
             }
-        }        
+        }
         // TODO: What to do about other errors?
     }
-    /*
-	// resolve conflicts
-	var conflictCount = conflicts.length;
-	if (conflictCount > 0 && this._mode == ZmDocletMgr.MODE_CREATE) {
-		var dialog = appCtxt.getUploadConflictDialog();
-		if (!this._conflictCallback) {
-			this._conflictCallback = new AjxCallback(this, this._uploadSaveDocs2);
-		}
-		this._conflictCallback.args = [ files, status, guids, name, content ];
-		dialog.popup(this._uploadFolder, conflicts, this._conflictCallback);
-	}
 
-	// keep mine
-	else if (conflictCount > 0 && this._mode == ZmDocletMgr.MODE_SAVE) {
-		this._uploadSaveDocs2(files, status, guids, name, content);
-	}
-	// perform callback
-	else*/
     if (this._saveCallback) {
         //Pass on the conflicts to callback
         this._saveCallback.run(files, conflicts);
@@ -173,13 +156,7 @@ function(resetBackoff) {
 
 ZmDocletMgr.prototype._handleException =
 function(ex, continuation) {
-    var handled = false;
-    if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
-        //todo: handle folder not found exception
-    }
-    if (!handled) {
-        ZmController.prototype._handleException.apply(this, arguments);
-    }
+    //todo: handle exceptions
 };
 
 ZmDocletMgr.prototype.runAppFunction =
@@ -320,4 +297,4 @@ ZmDocletMgr.prototype.checkInvalidDocName = function(fileName) {
     }
 
     return message;
-}
+};
