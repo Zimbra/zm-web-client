@@ -51,7 +51,7 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASEITEM, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASEITEM});
+	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASE});
 	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"NewPage"});
 	ZmOperation.registerOp(ZmId.OP_NEW_PRESENTATION, {textKey:"newPresentationBeta", tooltipKey:"newPresentation", image:"Presentation"});
 	ZmOperation.registerOp(ZmId.OP_NEW_SPREADSHEET, {textKey:"newSpreadSheetBeta", tooltipKey:"newSpreadSheet", image:"ZSpreadSheet"});
@@ -78,47 +78,47 @@ function(settings) {
 ZmBriefcaseApp.prototype._registerItems =
 function() {
 	ZmItem.registerItem(ZmItem.BRIEFCASE_ITEM,
-					{app:			ZmApp.BRIEFCASE,
-					 nameKey:		"document",
-					 icon:			"GenericDoc",
-					 soapCmd:		"ItemAction",
-					 itemClass:		"ZmBriefcaseItem",
-					 node:			"doc",
-					 organizer:		ZmOrganizer.BRIEFCASE,
-					 dropTargets:	[ZmOrganizer.TAG, ZmOrganizer.BRIEFCASE],
-					 searchType:	"document",
-					 resultsList:
-					AjxCallback.simpleClosure(function(search) {
-					AjxDispatcher.require("BriefcaseCore");
-					return new ZmBriefcaseItemList(search, ZmItem.BRIEFCASE_ITEM);
-					}, this)
-					});
+						{app:			ZmApp.BRIEFCASE,
+						 nameKey:		"document",
+						 icon:			"GenericDoc",
+						 soapCmd:		"ItemAction",
+						 itemClass:		"ZmBriefcaseItem",
+						 node:			"doc",
+						 organizer:		ZmOrganizer.BRIEFCASE,
+						 dropTargets:	[ZmOrganizer.TAG, ZmOrganizer.BRIEFCASE],
+						 searchType:	"document",
+						 resultsList:
+		AjxCallback.simpleClosure(function(search) {
+			AjxDispatcher.require("BriefcaseCore");
+			return new ZmList(search, ZmItem.BRIEFCASE_ITEM);
+		}, this)
+						});
 };
 
 ZmBriefcaseApp.prototype._registerOrganizers =
 function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.BRIEFCASE,
-							{ app            : ZmApp.BRIEFCASE,
-							  nameKey        : "folders",
-							  defaultFolder  : ZmOrganizer.ID_BRIEFCASE,
-							  soapCmd        : "FolderAction",
-							  firstUserId    : 256,
-							  orgClass       : "ZmBriefcase",
-							  orgPackage     : "BriefcaseCore",
-							  treeController : "ZmBriefcaseTreeController",
-							  labelKey       : "folders",
-							  itemsKey       : "files",
-							  treeType       : ZmOrganizer.FOLDER,
-							  views          : ["document"],
-							  folderKey      : "briefcase",
-							  mountKey       : "mountFolder",
-							  createFunc     : "ZmOrganizer.create",
-							  compareFunc    : "ZmBriefcase.sortCompare",
-							  deferrable     : false,
-							  newOp			 : ZmOperation.NEW_BRIEFCASEITEM,
-							  displayOrder	 : 100,
-							  hasColor       : true,
-							  childWindow    : true
+							{app            : ZmApp.BRIEFCASE,
+							 nameKey        : "folders",
+							 defaultFolder  : ZmOrganizer.ID_BRIEFCASE,
+							 soapCmd        : "FolderAction",
+							 firstUserId    : 256,
+							 orgClass       : "ZmBriefcase",
+							 orgPackage     : "BriefcaseCore",
+							 treeController : "ZmBriefcaseTreeController",
+							 labelKey       : "folders",
+							 itemsKey       : "files",
+							 treeType       : ZmOrganizer.FOLDER,
+							 views          : ["document"],
+							 folderKey      : "briefcase",
+							 mountKey       : "mountFolder",
+							 createFunc     : "ZmOrganizer.create",
+							 compareFunc    : "ZmBriefcase.sortCompare",
+							 deferrable     : false,
+							 newOp			: ZmOperation.NEW_BRIEFCASE,
+							 displayOrder	: 100,
+							 hasColor       : true,
+							 childWindow    : true
 							});
 };
 
@@ -142,11 +142,11 @@ function() {
 	newItemOps[ZmOperation.NEW_DOC]			= "document";
 
 	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "briefcase";
+	newOrgOps[ZmOperation.NEW_BRIEFCASE]	 = "briefcase";
 
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_FILE]			= ZmOperation.NEW_FILE;
-	actionCodes[ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmOperation.NEW_BRIEFCASEITEM;
+	actionCodes[ZmKeyMap.NEW_BRIEFCASE]		= ZmOperation.NEW_BRIEFCASE;
 	actionCodes[ZmKeyMap.NEW_PRESENTATION]	= ZmOperation.NEW_PRESENTATION;
 	actionCodes[ZmKeyMap.NEW_SPREADSHEET]	= ZmOperation.NEW_SPREADSHEET;
 	actionCodes[ZmKeyMap.NEW_DOC]			= ZmOperation.NEW_DOC;
@@ -173,6 +173,7 @@ function() {
 
 // App API
 
+// YYY: do we need this?
 ZmBriefcaseApp.prototype.deleteNotify =
 function(ids, force) {
 
@@ -214,6 +215,7 @@ function(creates, force) {
 				this._handleCreateLink(create, ZmOrganizer.BRIEFCASE);
 			} else if (name == "doc") {
 				if (create.l == bc._currentFolder) {
+					// YYY: new item reruns search - should just add to view
 					needsRefresh = true;
 				}
 			}
@@ -251,6 +253,7 @@ function(modifies, force) {
 				}
 				mod._handled = true;
 			} else if (name == "folder") {
+				// YYY: folder mod reruns search - why?
 				var currentFolderId = briefcaseController.getCurrentFolderId();
 				if (appCtxt.getById(id) && (appCtxt.getById(id).nId == currentFolderId || id == currentFolderId)) {
 					needsRefresh = true;
@@ -274,8 +277,8 @@ function(op) {
 			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback, null, true);
 			break;
 		}
-		case ZmOperation.NEW_BRIEFCASEITEM: {
-			var loadCallback = new AjxCallback(this, this._handleLoadNewBriefcaseItem);
+		case ZmOperation.NEW_BRIEFCASE: {
+			var loadCallback = new AjxCallback(this, this._handleLoadNewBriefcase);
 			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback, null, true);
 			break;
 		}
@@ -350,7 +353,7 @@ function(folder,filenames) {
 	bc.refreshFolder();
 };
 
-ZmBriefcaseApp.prototype._handleLoadNewBriefcaseItem =
+ZmBriefcaseApp.prototype._handleLoadNewBriefcase =
 function() {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING); // pop "Loading..." page
 
