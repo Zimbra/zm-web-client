@@ -21,8 +21,10 @@
  * an order. Each rule is a ZmFilterRule. They can be added and edited via a ZmFilterRuleDialog.
  *
  * @author Conrad Damon
+ *
+ * @param accountName		[string]*		Name of the account this set of filter rules belongs to
  */
-ZmFilterRules = function() {
+ZmFilterRules = function(accountName) {
 
 	ZmModel.call(this, ZmEvent.S_FILTER);
 
@@ -30,6 +32,7 @@ ZmFilterRules = function() {
 	this._ruleIdHash = {};
 	this._ruleNameHash = {};
 	this._initialized = false;
+	this._accountName = accountName;
 };
 
 ZmFilterRules.prototype = new ZmModel;
@@ -188,9 +191,13 @@ function(force, callback) {
 
 	// fetch from server:
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: load rules");
-	var soapDoc = AjxSoapDoc.create("GetFilterRulesRequest", "urn:zimbraMail");
-	var respCallback = new AjxCallback(this, this._handleResponseLoadRules, [callback]);
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	var params = {
+		soapDoc: AjxSoapDoc.create("GetFilterRulesRequest", "urn:zimbraMail"),
+		asyncMode: true,
+		callback: (new AjxCallback(this, this._handleResponseLoadRules, [callback])),
+		accountName:this._accountName
+	};
+	appCtxt.getAppController().sendRequest(params);
 };
 
 ZmFilterRules.prototype._handleResponseLoadRules =
@@ -231,32 +238,33 @@ function(index, notify, callback) {
 	var jsonObj = {ModifyFilterRulesRequest:{_jsns:"urn:zimbraMail"}};
 	var request = request = jsonObj.ModifyFilterRulesRequest;
 
-    var rules = this._vector.getArray();
-    if (rules.length > 0) {
-        request.filterRules = [{filterRule:[]}];
-        var filterRuleObj = request.filterRules[0].filterRule;
+	var rules = this._vector.getArray();
+	if (rules.length > 0) {
+		request.filterRules = [{filterRule:[]}];
+		var filterRuleObj = request.filterRules[0].filterRule;
 
-        for (var i = 0; i < rules.length; i++) {
-            var r = rules[i];
-            var ruleObj = {
-                active: r.active,
-                name: r.name,
-                filterActions: [],
-                filterTests: []
-            };
-            ruleObj.filterActions.push(r.actions);
-            ruleObj.filterTests.push(r.conditions);
-            filterRuleObj.push(ruleObj);
-        }
-    } else {
+		for (var i = 0; i < rules.length; i++) {
+			var r = rules[i];
+			var ruleObj = {
+				active: r.active,
+				name: r.name,
+				filterActions: [],
+				filterTests: []
+			};
+			ruleObj.filterActions.push(r.actions);
+			ruleObj.filterTests.push(r.conditions);
+			filterRuleObj.push(ruleObj);
+		}
+	} else {
 		request.filterRules = {};
-    }
+	}
 
 	var params = {
-		jsonObj:jsonObj,
+		jsonObj: jsonObj,
 		asyncMode: true,
 		callback: (new AjxCallback(this, this._handleResponseSaveRules, [index, notify, callback])),
-		errorCallback: (new AjxCallback(this, this._handleErrorSaveRules))
+		errorCallback: (new AjxCallback(this, this._handleErrorSaveRules)),
+		accountName: this._accountName
 	};
 	appCtxt.getAppController().sendRequest(params);
 };

@@ -580,7 +580,8 @@ function(creates) {
 	
 			DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
 			if (name == "tag") {
-				var tagTree = appCtxt.getTagTree();
+				var account = appCtxt.multiAccounts && ZmOrganizer.parseId(create.id).account;
+				var tagTree = appCtxt.getTagTree(account);
 				if (tagTree) {
 					tagTree.root.notifyCreate(create);
 				}

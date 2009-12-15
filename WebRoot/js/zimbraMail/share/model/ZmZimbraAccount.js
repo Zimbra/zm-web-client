@@ -160,6 +160,23 @@ function() {
 			this.type == ZmAccount.TYPE_YMP);
 };
 
+/**
+ * For CalDav based accounts, the default calendar is hidden, so return the
+ * first non-default calendar instead.
+ */
+ZmZimbraAccount.prototype.getDefaultCalendar =
+function() {
+	var tree = appCtxt.getFolderTree(this);
+	if (this.isCalDavBased()) {
+		var calendars = tree.getByType(ZmOrganizer.CALENDAR);
+		for (var i = 0; i < calendars.length; i++) {
+			if (calendars[i].nId == ZmOrganizer.ID_CALENDAR) { continue; }
+			return calendars[i];
+		}
+	}
+	return tree.getById(ZmOrganizer.ID_CALENDAR);
+};
+
 ZmZimbraAccount.prototype.updateState =
 function(acctInfo) {
 	if (this.isMain) { return; } // main account doesn't sync

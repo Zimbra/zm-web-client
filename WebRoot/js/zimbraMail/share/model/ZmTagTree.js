@@ -25,8 +25,15 @@ ZmTagTree.prototype = new ZmTree;
 ZmTagTree.prototype.constructor = ZmTagTree;
 
 // ordered list of colors
-ZmTagTree.COLOR_LIST = [ZmOrganizer.C_CYAN, ZmOrganizer.C_BLUE, ZmOrganizer.C_PURPLE, ZmOrganizer.C_RED,
-						ZmOrganizer.C_ORANGE, ZmOrganizer.C_YELLOW, ZmOrganizer.C_GREEN];
+ZmTagTree.COLOR_LIST = [
+	ZmOrganizer.C_CYAN,
+	ZmOrganizer.C_BLUE,
+	ZmOrganizer.C_PURPLE,
+	ZmOrganizer.C_RED,
+	ZmOrganizer.C_ORANGE,
+	ZmOrganizer.C_YELLOW,
+	ZmOrganizer.C_GREEN
+];
 
 ZmTagTree.prototype.toString = 
 function() {
@@ -35,14 +42,15 @@ function() {
 
 ZmTagTree.prototype.loadFromJs =
 function(tagsObj, type, account) {
-	if (!tagsObj || !tagsObj.tag || !tagsObj.tag.length) return;
+	if (!tagsObj || !tagsObj.tag || !tagsObj.tag.length) { return; }
 
 	for (var i = 0; i < tagsObj.tag.length; i++) {
 		ZmTag.createFromJs(this.root, tagsObj.tag[i], this, null, account);
 	}
 	var children = this.root.children.getArray();
-	if (children.length)
+	if (children.length) {
 		children.sort(ZmTag.sortCompare);
+	}
 };
 
 ZmTagTree.prototype.getByIndex =

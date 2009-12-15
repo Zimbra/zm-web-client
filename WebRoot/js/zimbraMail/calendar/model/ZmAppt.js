@@ -404,8 +404,9 @@ function(message, subject) {
 	ZmCalItem.prototype.setFromMailMessage.call(this, message, subject);
 
 	// Only unique names in the attendee list, plus omit our own name
+	var account = appCtxt.multiAccounts && message.account;
 	var used = {};
-	used[appCtxt.get(ZmSetting.USERNAME)] = true;
+	used[appCtxt.get(ZmSetting.USERNAME, null, account)] = true;
 	var addrs = message.getAddresses(AjxEmailAddress.FROM, used, true);
 	addrs.addList(message.getAddresses(AjxEmailAddress.CC, used, true));
 	addrs.addList(message.getAddresses(AjxEmailAddress.TO, used, true));

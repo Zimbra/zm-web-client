@@ -92,14 +92,14 @@ function() {
 };
 
 ZmPreferencesApp.prototype.getFilterRules =
-function() {
-	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var activeAcct = appCtxt.getActiveAccount().name;
+function(accountName) {
+	var ac = window.parentAppCtxt || window.appCtxt;
+	var acct = accountName || ac.getActiveAccount().name;
 
-	if (!this._filterRules[activeAcct]) {
-		this._filterRules[activeAcct] = new ZmFilterRules();
+	if (!this._filterRules[acct]) {
+		this._filterRules[acct] = new ZmFilterRules(acct);
 	}
-	return this._filterRules[activeAcct];
+	return this._filterRules[acct];
 };
 
 ZmPreferencesApp.prototype.modifyNotify =

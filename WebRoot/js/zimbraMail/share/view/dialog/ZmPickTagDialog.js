@@ -31,7 +31,8 @@ ZmPickTagDialog = function(parent, className) {
 
 	this._createControls();
 	this._setNameField(this._inputDivId);
-	appCtxt.getTagTree().addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
+	this._tagTreeChangeListener = new AjxListener(this, this._handleTagTreeChange);
+	appCtxt.getTagTree().addChangeListener(this._tagTreeChangeListener);
 	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._creatingTag = false;
 	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
@@ -49,13 +50,23 @@ function() {
 
 ZmPickTagDialog.prototype.popup = 
 function(params) {
+	this._account = params.account;
+
+	if (appCtxt.multiAccounts && params.account) {
+		appCtxt.getTagTree().removeChangeListener(this._tagTreeChangeListener);
+		appCtxt.getTagTree(params.account).addChangeListener(this._tagTreeChangeListener);
+	}
 
 	// all this is done here instead of in the constructor due to multi-account issues
+	var overviewId = (appCtxt.multiAccounts && params.account)
+		? ([this.toString(), "-", params.account.name].join("")) : this.toString();
+
 	var ovParams = {
-		overviewId:			this.toString(),
+		overviewId:			overviewId,
 		treeIds:			[ZmOrganizer.TAG],
-		fieldId:			this._tagTreeDivId
-	}
+		fieldId:			this._tagTreeDivId,
+		account:			params.account
+	};
 	this._setOverview(ovParams, true);
 	this._tagTreeView = this._getOverview().getTreeView(ZmOrganizer.TAG);
 	this._tagTreeView.removeSelectionListener(this._treeViewListener);
@@ -70,7 +81,7 @@ function(params) {
 	this._resetTreeView();
 	this._focusElement = this._inputField;
 	this._inputField.setValue("");
-	var tags = appCtxt.getTagTree().asList();
+	var tags = appCtxt.getTagTree(this._account).asList();
 	if (tags.length == 1) {
 		this._tagTreeView.setSelected(tags[0], true, true);
 	}
@@ -97,7 +108,7 @@ function() {
 	var dialog = appCtxt.getNewTagDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this);
-	dialog.popup();
+	dialog.popup(null, this._account);
 };
 
 ZmPickTagDialog.prototype._newCallback = 
@@ -120,7 +131,7 @@ function() {
 	}
 };
 
-ZmPickTagDialog.prototype._tagTreeChangeListener =
+ZmPickTagDialog.prototype._handleTagTreeChange =
 function(ev) {
 	// TODO - listener for changing tags
 	if (ev.event == ZmEvent.E_CREATE && this._creatingTag) {

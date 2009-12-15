@@ -66,17 +66,19 @@ ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH		= 120;
 ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH	= 20;
 
 /**
-* Shows the dialog and displays either a given rule for editing, or a dummy rule
-* that is the base for adding a new rule.
-*
-* @param rule			[ZmFilterRule]*		rule to edit
-* @param editMode		[boolean]*			if true, we are editing a rule
-* @param referenceRule	[ZmFilterRule]*		rule after which to add new rule
-*/
+ * Shows the dialog and displays either a given rule for editing, or a dummy
+ * rule that is the base for adding a new rule.
+ *
+ * @param rule				[ZmFilterRule]*		rule to edit
+ * @param editMode			[boolean]*			if true, we are editing a rule
+ * @param referenceRule		[ZmFilterRule]*		rule after which to add new rule
+ * @param accountName		[String]*			name of the account to
+ */
 ZmFilterRuleDialog.prototype.popup =
-function(rule, editMode, referenceRule) {
+function(rule, editMode, referenceRule, accountName) {
 	// always make sure we have the right rules container in case of multi-mbox
-	this._rules = AjxDispatcher.run("GetFilterRules");
+	this._accountName = accountName;
+	this._rules = AjxDispatcher.run("GetFilterRules", accountName);
 	this._rules.loadRules(); // make sure rules are loaded (for when we save)
 	this._inputs = {};
 	this._rule = rule || ZmFilterRule.getDummyRule();
@@ -824,16 +826,16 @@ function(ev) {
 */
 ZmFilterRuleDialog.prototype._browseListener =
 function(ev) {
-	var dialog;
-	var button = ev.item;
-	var type = button.getData(ZmFilterRuleDialog.BROWSE_TYPE);
+	var type = ev.item.getData(ZmFilterRuleDialog.BROWSE_TYPE);
 	var isFolder = (type == ZmFilterRule.TYPE_FOLDER_PICKER);
 	var dialog = isFolder ? appCtxt.getChooseFolderDialog()	: appCtxt.getPickTagDialog();
 	var overviewId = isFolder ? dialog.getOverviewId(ZmApp.MAIL) : null;
+	var account = appCtxt.accountList.getAccountByName(this._accountName);
+
 	dialog.reset();
 	dialog.setTitle((type == ZmFilterRule.TYPE_FOLDER_PICKER) ? ZmMsg.chooseFolder : ZmMsg.chooseTag);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, ev.item);
-	dialog.popup({overviewId: overviewId, appName: ZmApp.MAIL});
+	dialog.popup({overviewId:overviewId, appName:ZmApp.MAIL, account:account});
 };
 
 /**

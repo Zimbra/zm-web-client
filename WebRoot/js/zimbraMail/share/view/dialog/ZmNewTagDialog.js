@@ -82,7 +82,8 @@ function() {
 	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
 		if (appCtxt.get(ZmSetting.TAGGING_ENABLED, null, acct)) {
-			this._accountSelect.addOption(acct.getDisplayName(), null, acct.id);
+			var o = new DwtSelectOption(acct.id, null, acct.getDisplayName(), null, null, acct.getIcon());
+			this._accountSelect.addOption(o);
 		}
 	}
 };

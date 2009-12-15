@@ -656,7 +656,9 @@ function(msg) {
 	}
 	rule.setGroupOp(ZmFilterRule.GROUP_ALL);
 	rule.addAction(ZmFilterRule.A_KEEP);
-	appCtxt.getFilterRuleDialog().popup(rule);
+
+	var accountName = appCtxt.multiAccounts && msg.account && msg.account.name;
+	appCtxt.getFilterRuleDialog().popup(rule, null, null, accountName);
 };
 
 ZmDoublePaneController.prototype._dragListener =

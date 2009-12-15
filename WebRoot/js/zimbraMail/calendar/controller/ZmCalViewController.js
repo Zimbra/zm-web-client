@@ -862,7 +862,7 @@ function(mailItem, date) {
 
 ZmCalViewController.prototype._msgLoadedCallback =
 function(mailItem, date, subject) {
-	var newAppt = this._newApptObject(date);
+	var newAppt = this._newApptObject(date, null, null, mailItem);
 	newAppt.setFromMailMessage(mailItem, subject);
 	this.newAppointment(newAppt, ZmCalItem.MODE_NEW);
 };
@@ -1060,7 +1060,7 @@ function(ev) {
 };
 
 ZmCalViewController.prototype._newApptObject =
-function(startDate, duration, folderId) {
+function(startDate, duration, folderId, mailItem) {
 	var newAppt = new ZmAppt();
 	newAppt.setStartDate(AjxDateUtil.roundTimeMins(startDate, 30));
 	newAppt.setEndDate(newAppt.getStartTime() + (duration ? duration : ZmCalViewController.DEFAULT_APPOINTMENT_DURATION));
@@ -1076,23 +1076,28 @@ function(startDate, duration, folderId) {
 	if (folderId) {
 		newAppt.setFolderId(folderId);
 	} else {
-		// bug: 27646 case where only one calendar is checked
-		var checkedFolderIds = this.getCheckedCalendarFolderIds();
-		if (checkedFolderIds && checkedFolderIds.length == 1) {
-			var calId = checkedFolderIds[0];
-			var cal = appCtxt.getById(calId);
-			// don't use calendar if feed, or remote and don't have write perms
-			if (cal) {
-				var share = cal.getMainShare();
-				var skipCal = (cal.isFeed() || (cal.link && share && !share.isWrite()));
-				if (cal && !skipCal) {
-					newAppt.setFolderId(calId);
+		// get folderId from mail message if being created off of one
+		if (appCtxt.multiAccounts && mailItem && mailItem.account) {
+			newAppt.setFolderId(mailItem.account.getDefaultCalendar().id);
+		} else {
+			// bug: 27646 case where only one calendar is checked
+			var checkedFolderIds = this.getCheckedCalendarFolderIds();
+			if (checkedFolderIds && checkedFolderIds.length == 1) {
+				var calId = checkedFolderIds[0];
+				var cal = appCtxt.getById(calId);
+				// don't use calendar if feed, or remote and don't have write perms
+				if (cal) {
+					var share = cal.getMainShare();
+					var skipCal = (cal.isFeed() || (cal.link && share && !share.isWrite()));
+					if (cal && !skipCal) {
+						newAppt.setFolderId(calId);
+					}
 				}
-			}
-		} else if (appCtxt.multiAccounts) {
-			var active = appCtxt.getActiveAccount();
-			if (!active.isMain) {
-				newAppt.setFolderId(ZmOrganizer.getSystemId(ZmOrganizer.ID_CALENDAR, active));  
+			} else if (appCtxt.multiAccounts) {
+				var active = appCtxt.getActiveAccount();
+				if (!active.isMain) {
+					newAppt.setFolderId(active.getDefaultCalendar().id);
+				}
 			}
 		}
 	}
