@@ -1576,17 +1576,18 @@ function(action, type, override) {
 	{
 		// Prevent user's login name and aliases from going into To: or Cc:
 		var used = {};
-		var uname = appCtxt.get(ZmSetting.USERNAME);
+		var account = appCtxt.multiAccounts && this._msg.account;
+		var uname = appCtxt.get(ZmSetting.USERNAME, null, account);
 		if (uname) {
 			used[uname.toLowerCase()] = true;
 		}
-		var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
+		var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES, null, account);
 		for (var i = 0, count = aliases.length; i < count; i++) {
 			used[aliases[i].toLowerCase()] = true;
 		}
 
 		// Check for Canonical Address's
-		var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
+		var defaultIdentity = appCtxt.getIdentityCollection(account).defaultIdentity;
 		if (defaultIdentity && defaultIdentity.sendFromAddress) {
 			// Note: sendFromAddress is same as appCtxt.get(ZmSetting.USERNAME)
 			// if the account does not have any Canonical Address assigned.
@@ -2007,15 +2008,15 @@ function(composeMode) {
 	this._composeMode = composeMode || defaultCompMode;
 
 	// init html editor
-    if(window.isTinyMCE) {
-        this._htmlEditor = new ZmAdvancedHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
-        this._bodyFieldId = this._htmlEditor.getBodyFieldId();
-        this._bodyField = document.getElementById(this._bodyFieldId);
-    }else {
-	    this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
-	    this._bodyFieldId = this._htmlEditor.getBodyFieldId();
-	    this._bodyField = document.getElementById(this._bodyFieldId);
-    }
+	if (window.isTinyMCE) {
+		this._htmlEditor = new ZmAdvancedHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
+		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
+		this._bodyField = document.getElementById(this._bodyFieldId);
+	} else {
+		this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
+		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
+		this._bodyField = document.getElementById(this._bodyFieldId);
+	}
 	this._includedPreface = "";
 
 	// misc. inits
@@ -2052,7 +2053,7 @@ function(templateId) {
 		priorityId:			ZmId.getViewId(this._view, ZmId.CMP_PRIORITY),
 		attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
 		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV),
-        zdndToolTipId:      ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP)
+		zdndToolTipId:		ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP)
 	};
 
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
