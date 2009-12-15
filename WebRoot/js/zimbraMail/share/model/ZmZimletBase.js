@@ -28,18 +28,18 @@
  * inherit from this base class. 
  *
  * @extends	ZmObjectHandler
- * @see		#init()
+ * @see		#init
  */
 ZmZimletBase = function() {
 	// do nothing
 };
 
 /**
- * This defined the Panel Menu.
+ * This defines the Panel Menu (see {@link #menuItemSelected}).
  */
 ZmZimletBase.PANEL_MENU = 1;
 /**
- * This defined the Content Object Menu.
+ * This defines the Content Object Menu (see {@link #menuItemSelected}).
  */
 ZmZimletBase.CONTENTOBJECT_MENU = 2;
 
@@ -72,8 +72,8 @@ function(zimletContext, shell) {
 };
 
 /**
- * Called by the Zimlet framework to indicate that the zimlet it being initialized. This method
- * can be overridden to initialize the zimlet.
+ * This method is called by the Zimlet framework to indicate that
+ * the zimlet it being initialized. This method can be overridden to initialize the zimlet.
  * 
  */
 ZmZimletBase.prototype.init = function() {};
@@ -89,7 +89,9 @@ function() {
 };
 
 /**
- * @private
+ * Gets the shell for the zimlet.
+ * 
+ * @return	{DwtShell}		the shell
  */
 ZmZimletBase.prototype.getShell =
 function() {
@@ -100,7 +102,7 @@ function() {
  * Adds an item to the search toolbar drop-down. A listener (if specified)
  * will be called when the item is selected.
  * 
- * @param	{String}	icon		the icon CSS class to use or <code>null</code> for no icon
+ * @param	{String}	icon		the icon (style class) to use or <code>null</code> for no icon
  * @param	{String}	label		the label for the item
  * @param	{AjxListener}	listener		the listener or <code>null</code> for none
  * @param	{String}	id			the unique id of the item to add
@@ -124,7 +126,9 @@ function() {
 };
 
 /**
- * @private
+ * Gets the zimlet manager.
+ * 
+ * @return	{ZmZimletMgr}		the zimlet manager
  */
 ZmZimletBase.prototype.getZimletManager =
 function() {
@@ -184,17 +188,6 @@ function(portlet) {
 };
 
 /**
- * This method gets called when a double-click is performed.
- *
- * @param	canvas		the canvas
- * @see		#singleClicked(canvas)
- */
-ZmZimletBase.prototype.doubleClicked =
-function(canvas) {
-	this.createPropertyEditor();
-};
-
-/**
  * @private
  */
 ZmZimletBase.prototype._dispatch =
@@ -250,16 +243,27 @@ function(handlerName) {
 /**
  * This method gets called when a single-click is performed.
  *
- * @param	canvas		the canvas
- * @see		#doubleClicked(canvas)
+ * @see		#doubleClicked
  */
 ZmZimletBase.prototype.singleClicked = function(canvas) {};
 
 /**
- * This method is called when a user clicks-on and opens new message.
+ * This method gets called when a double-click is performed. By default, this method
+ * will create the default property editor for editing user properties.
  * 
- * @param	{ZmMailMsg}		msg		the message being opened
- * @param	{ZmMailMsg}		oldMsg	may be <code>null</code>
+ * @see		#singleClicked
+ * @see		#createPropertyEditor
+ */
+ZmZimletBase.prototype.doubleClicked =
+function(canvas) {
+	this.createPropertyEditor();
+};
+
+/**
+ * This method is called when a user clicks-on a message in the mail application.
+ * 
+ * @param	{ZmMailMsg}		msg		the clicked message
+ * @param	{ZmMailMsg}		oldMsg	the previous clicked message or <code>null</code> if this is the first message clicked
  */
 ZmZimletBase.prototype.onMsgView = function(msg, oldMsg) {};
 
@@ -381,7 +385,7 @@ function(obj, span, context) {
 /**
  * This method is called when a context menu item is selected.
  * 
- * @param	{ZmZimletBase.PANEL_MENU|ZmZimletBase.CONTENTOBJECT_MENU}		the context menu
+ * @param	{ZmZimletBase.PANEL_MENU|ZmZimletBase.CONTENTOBJECT_MENU}	contextMenu		the context menu
  * @param	{String}		menuItemId		the selected menu item Id
  * @param	{String}		spanElement		the enclosing span element
  * @param	{String}		contentObjText	the content object text
@@ -445,9 +449,9 @@ function(callback) {
 /**
  * Displays the specified error message in the standard error dialog.
  * 
- * @param	{String}	msg		the message to display
- * @param	{String}	data	the detailed message data
- * @param	{String}	title	the dialog title
+ * @param	{String}	msg		the error message to display
+ * @param	{String}	data	the error message details
+ * @param	{String}	title	the error message dialog title
  */
 ZmZimletBase.prototype.displayErrorMessage =
 function(msg, data, title) {
@@ -462,7 +466,7 @@ function(msg, data, title) {
 /**
  * Displays the specified status message.
  * 
- * @param	{String}	msg		the message to display
+ * @param	{String}	msg		the status message to display
  */
 ZmZimletBase.prototype.displayStatusMessage =
 function(msg) {
@@ -470,10 +474,10 @@ function(msg) {
 };
 
 /**
- * Gets the fully qualified resource url.
+ * Gets the fully qualified resource Url.
  *
  * @param	{String}	resourceName	the resource name
- * @return	{String}	the resource url
+ * @return	{String}	the fully qualified resource Url
  */
 ZmZimletBase.prototype.getResource =
 function(resourceName) {
@@ -532,9 +536,22 @@ function(requestStr, serverURL, requestHeaders, callback, useGet, passErrors) {
 	return AjxRpc.invoke(requestStr, serverURL, requestHeaders, our_callback, useGet);
 };
 
+/**
+ * Enables the specified context menu item.
+ * 
+ * @param	{ZmZimletBase.PANEL_MENU|ZmZimletBase.CONTENTOBJECT_MENU}	contextMenu		the context menu
+ * @param	{String}		menuItemId		the menu item Id
+ * @param	{Boolean}		enabled			<code>true</code> to enable the menu item; <code>false</code> to disable the menu item
+ */
 ZmZimletBase.prototype.enableContextMenuItem =
 function(contextMenu, menuItemId, enabled) {};
 
+/**
+ * Gets the configuration property.
+ * 
+ * @param	{String}		propertyName	the name of the property to retrieve
+ * @return	{String}	the value of the property or <code>null</code> if no such property exists
+ */
 ZmZimletBase.prototype.getConfigProperty =
 function(propertyName) {};
 
@@ -557,7 +574,7 @@ function(propertyName) {
  * @param	{Boolean}	save			if <code>true</code>, the property will be saved (along with any other modified properties) 
  * @param	{AjxCallback}	callback	the callback to invoke after the user properties save
  * @throws	ZimletException		if no such property exists or if the value is not valid for the property type
- * @see		#saveUserProperties()
+ * @see		#saveUserProperties
  */
 ZmZimletBase.prototype.setUserProperty =
 function(propertyName, value, save, callback) {
@@ -593,8 +610,7 @@ function() {
 /**
  * Sets the zimlet icon in the panel.
  * 
- * @param	{String}	icon		the icon
- * 
+ * @param	{String}	icon		the icon (style class) for the zimlet
  * @private
  */
 ZmZimletBase.prototype.setIcon =
@@ -610,7 +626,7 @@ function(icon) {
 };
 
 /**
- * Resets the imlet icon to the one specified in the Zimle Definition File.
+ * Resets the imlet icon to the one specified in the Zimle Definition File (if originally set).
  * 
  * @private
  */
@@ -674,6 +690,7 @@ function(callback) {
  * Gets the user property info for the specified property.
  * 
  * @param	{String}	propertyName		the property
+ * @return	{String}	the value of the user property
  */
 ZmZimletBase.prototype.getUserPropertyInfo =
 function(propertyName) {
@@ -921,12 +938,12 @@ function(xsltUrl, doc) {
 
 /**
  * Creates a "tab" application and registers this zimlet to
- * receive {@link #appAction()} and {@link #appLaunch()} events.
+ * receive {@link #appAction} and {@link #appLaunch} events.
  * 
- * @param	{String}	label	the application label
- * @param	{String}	image	the application image
- * @param	{String}	tooltip	the application tool tip
- * @return	{String}	the resulting app name
+ * @param	{String}	label	the label to use on the application tab
+ * @param	{String}	image	the image (style class) to use on the application tab
+ * @param	{String}	tooltip	the tool tip to display when hover-over the application tab
+ * @return	{String}	the name of the newly created application
  */
 ZmZimletBase.prototype.createApp =
 function(label, image, tooltip) {
@@ -946,17 +963,19 @@ function(label, image, tooltip) {
 };
 
 /**
- * This method gets called each time the tab application is opened or closed.
+ * This method gets called each time the "tab" application is opened or closed.
  * 
- * @param    {String} appName        the application name
- * @param    {Boolean} active        if <code>true</code>, the application status is open; otherwise, <code>false</code>
+ * @param	{String} appName        the application name
+ * @param	{Boolean} active        if <code>true</code>, the application status is open; otherwise, <code>false</code>
+ * @see		#createApp
  */
 ZmZimletBase.prototype.appAction = function(appName, active) { };
 
 /**
- * This method gets called when the tab application is opened for the first time.
+ * This method gets called when the "tab" application is opened for the first time.
  * 
  * @param    {String} appName        the application name
+ * @see		#createApp
  */
 ZmZimletBase.prototype.appLaunch = function(appName) { };
 
