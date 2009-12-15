@@ -427,10 +427,8 @@ function(headerParams, omit, overviewParams, showBackgroundColor) {
 	overviewParams.scroll = Dwt.CLIP;
 	overviewParams.posStyle = Dwt.STATIC_STYLE;
 
-	// next, create an overview for this account and add it to the account header
-	var ov = this._controller._overview[overviewParams.overviewId] =
-			 this._overview[overviewParams.overviewId] =
-			 new ZmOverview(overviewParams, this._controller);
+	// next, create an overview (if it doesn't already exist) for this account and add it to the account header
+	var ov = this._controller._overview[overviewParams.overviewId] = this._overview[overviewParams.overviewId] = this._controller._overview[overviewParams.overviewId] || this._overview[overviewParams.overviewId] || new ZmOverview(overviewParams, this._controller);
 
 	header._addItem(ov, null, true);
 
