@@ -1726,11 +1726,12 @@ function(account) {
 ZmMailApp.prototype.getSignatureCollection =
 function(account) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var activeAcct = account ? account.name : appCtxt.getActiveAccount().name;
-
-	if (!this._signatureCollection[activeAcct]) {
+    account = account || appCtxt.getActiveAccount();
+	var activeAcct = account.name;
+    var settings = appCtxt.getSettings(account);
+	if (!this._signatureCollection[activeAcct] && settings) {
 		var sc = this._signatureCollection[activeAcct] = new ZmSignatureCollection();
-		sc.initialize(appCtxt.getSettings(account).getInfoResponse.signatures);
+		sc.initialize(settings.getInfoResponse.signatures);
 	}
 	return this._signatureCollection[activeAcct];
 };
