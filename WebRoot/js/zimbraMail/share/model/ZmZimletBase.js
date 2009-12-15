@@ -102,7 +102,7 @@ function() {
  * 
  * @param	{String}	icon		the icon CSS class to use or <code>null</code> for no icon
  * @param	{String}	label		the label for the item
- * @param	listener		the listener or <code>null</code> for none
+ * @param	{AjxListener}	listener		the listener or <code>null</code> for none
  * @param	{String}	id			the unique id of the item to add
  * @return	<code>null</code> if item not created
  */
@@ -162,7 +162,7 @@ function(zmObject) {
 /**
  * This method is called when an item is dropped on the Zimlet in the panel.
  * 
- * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmNotebook|ZmTask}	zmObject		the droppedobject
+ * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmNotebook|ZmTask}	zmObject		the dropped object
  */
 ZmZimletBase.prototype.doDrop =
 function(zmObject) {};
@@ -512,10 +512,12 @@ function(callback, passErrors, xmlargs) {
  * Sends the request content (via Ajax) to the specified server.
  * 
  * @param	{String}	requestStr		the request content to send
- * @param	{String}	url				the server url
- * @param	{AjxCallback}	callback	the callback method or <code>null</code> for none
+ * @param	{String}	serverURL		the server url
+ * @param	{String[]}	requestHeaders	the request headers (may be <code>null</code>)
+ * @param	{AjxCallback}	callback	the callback for asynchronous requests or <code>null</code> for none
  * @param	{Boolean}	useGet		<code>true</code> to use HTTP GET; <code>null</code> or <code>false</code> otherwise
- * @parm	{Boolean}	passErrors	<code>true</code> to pass errors; <code>null</code> or <code>false</code> otherwise
+ * @param	{Boolean}	passErrors	<code>true</code> to pass errors; <code>null</code> or <code>false</code> otherwise
+ * @return	the return value
  */
 ZmZimletBase.prototype.sendRequest =
 function(requestStr, serverURL, requestHeaders, callback, useGet, passErrors) {
@@ -553,8 +555,8 @@ function(propertyName) {
  * @param	{String}	propertyName	the name of the property
  * @param	{String}	value			the property value
  * @param	{Boolean}	save			if <code>true</code>, the property will be saved (along with any other modified properties) 
- *
- * @throws	ZimletException		if no such property exists or if the value is not valid for the property type.
+ * @param	{AjxCallback}	callback	the callback to invoke after the user properties save
+ * @throws	ZimletException		if no such property exists or if the value is not valid for the property type
  * @see		#saveUserProperties()
  */
 ZmZimletBase.prototype.setUserProperty =
@@ -567,7 +569,8 @@ function(propertyName, value, save, callback) {
 /**
  * This method is called by the zimlet framework prior to user properties being saved.
  *
- * @param	{Boolean}	<code>true<code> if properties are valid; otherwise, <code>false</code> or {String} if an error message will be displayed in the standard error dialog.
+ * @param	{String[]}	props		the properties
+ * @return	{Boolean}	<code>true<code> if properties are valid; otherwise, <code>false</code> or {String} if an error message will be displayed in the standard error dialog.
  */
 ZmZimletBase.prototype.checkProperties =
 function(props) {
@@ -619,7 +622,7 @@ function() {
 /**
  * Saves the user properties.
  * 
- * @param	{AjxCallback}	callback		the callback method
+ * @param	{AjxCallback}	callback		the callback to invoke after the save
  * @return	{String}		an empty string or an error message
  */
 ZmZimletBase.prototype.saveUserProperties =
@@ -917,7 +920,7 @@ function(xsltUrl, doc) {
 };
 
 /**
- * Create a "tab" application and registers this zimlet to
+ * Creates a "tab" application and registers this zimlet to
  * receive {@link #appAction()} and {@link #appLaunch()} events.
  * 
  * @param	{String}	label	the application label
