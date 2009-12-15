@@ -41,7 +41,7 @@
 <c:if test="${not empty message.invite and mailbox.features.calendar}">
     <c:set var="appt" value="${message.invite.component}"/>
     <c:set var="showInviteReply"
-           value="${not zm:getFolder(pageContext, message.folderId).isInTrash and not empty message.invite.component}"/>
+           value="${not zm:getFolder(pageContext, message.folderId).isInTrash and not empty message.invite.component and message.invite.hasAcceptableComponent and message.invite.hasInviteReplyMethod}"/>
 </c:if>
 <c:set var="shareAccepted" value="${not empty message.share and zm:hasShareMountPoint(mailbox, message)}"/>
 <c:set var="showShareInfo" value="${not empty message.share and not shareAccepted}"/>
