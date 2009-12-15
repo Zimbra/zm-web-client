@@ -236,7 +236,21 @@ function(params, callback) {
 
 ZmTasksApp.prototype._handleLoadLaunch =
 function(callback) {
-	this.search();
+	// bug #43464 - get the first non-local account that supports tasks
+	if (appCtxt.multiAccounts) {
+		var defaultAcct;
+		var accounts = appCtxt.accountList.visibleAccounts;
+		for (var i = 0; i < accounts.length; i++) {
+			var acct = accounts[i];
+			if (acct.isMain) { continue; }
+
+			if (appCtxt.get(ZmSetting.TASKS_ENABLED, null, acct)) {
+				defaultAcct = acct;
+				break;
+			}
+		}
+	}
+	this.search(null, null, null, null, (defaultAcct && defaultAcct.name));
 	if (callback) { callback.run(); }
 };
 
@@ -293,16 +307,18 @@ function(mailItem, date, subject) {
 
 
 ZmTasksApp.prototype.search =
-function(folder, startDate, endDate, callback) {
+function(folder, startDate, endDate, callback, accountName) {
 	var params = {
 		query:			(folder ? folder.createQuery() : "in:tasks"),
 		types:			[ZmItem.TASK],
 		limit:			this.getLimit(),
 		searchFor:		ZmItem.TASK,
 		callback:		callback,
-		accountName:	(folder && folder.account && folder.account.name)
+		accountName:	(accountName || (folder && folder.account && folder.account.name))
 	};
-	appCtxt.getSearchController().search(params);
+	var sc = appCtxt.getSearchController();
+	sc.searchAllAccounts = false;
+	sc.search(params);
 };
 
 
