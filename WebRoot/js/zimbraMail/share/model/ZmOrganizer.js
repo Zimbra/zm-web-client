@@ -75,12 +75,11 @@ ZmOrganizer = function(params) {
 				 ZmOrganizer.ORG_COLOR[this.nId] ||
 				 ZmOrganizer.DEFAULT_COLOR[this.type] ||
 				 ZmOrganizer.C_NONE;
-	this.rgb = params.rgb || (this.color == ZmOrganizer.C_NONE && this.parent && this.parent.rgb);
-	// bug 41411: If server reports rgb "#000000", ignore.
-	// TODO: What if user sets the color to black?
-	if (params.rgb == "#000000") {
-		delete this.rgb;
-	}
+	// NOTE: The server should not send a color parameter if a custom RGB
+	// NOTE: has been set. In other words, the color parameter will only
+	// NOTE: be specified if explicitly set that way and not as an explicit
+	// NOTE: RGB value.
+	this.rgb = ZmOrganizer.COLOR_VALUES[params.color] || params.rgb;
 
 	if (appCtxt.isOffline && !this.account && this.id == this.nId) {
 		this.account = appCtxt.accountList.mainAccount;
@@ -194,15 +193,15 @@ ZmOrganizer.ORG_DEFAULT_COLOR 	= ZmOrganizer.C_ORANGE;
 
 ZmOrganizer.COLOR_VALUES = [
 	null,
-	"#9EB6F5", // blue
-	"#A4E6E6", // cyan
-	"#97C8B1", // green
-	"#BA86E5", // purple
-	"#FC9696", // red
-	"#FFF6B3", // yellow
-	"#FE9BD3", // pink
-	"#D3D3D3", // gray
-	"#FDBC55"  // orange
+	ZmMsg.colorBlue,
+	ZmMsg.colorCyan,
+	ZmMsg.colorGreen,
+	ZmMsg.colorPurple,
+	ZmMsg.colorRed,
+	ZmMsg.colorYellow,
+	ZmMsg.colorPink,
+	ZmMsg.colorGray,
+	ZmMsg.colorOrange
 ];
 
 // color names
