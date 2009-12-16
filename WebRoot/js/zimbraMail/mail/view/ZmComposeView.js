@@ -1303,10 +1303,13 @@ function(signatureId) {
 	if (appCtxt.multiAccounts) {
 		var list = appCtxt.accountList.visibleAccounts;
 		for (var i = 0; i < list.length; i++) {
-			signature = appCtxt.getSignatureCollection(list[i]).getById(signatureId);
-			if (signature) {
-				break;
-			}
+            var collection = appCtxt.getSignatureCollection(list[i]);
+            if (collection) {
+			    signature = collection.getById(signatureId);
+			    if (signature) {
+				    break;
+			    }
+            }
 		}
 	} else {
 		signature = appCtxt.getSignatureCollection().getById(signatureId);
