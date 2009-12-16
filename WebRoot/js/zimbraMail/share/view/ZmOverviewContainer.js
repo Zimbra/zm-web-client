@@ -27,14 +27,6 @@
 ZmOverviewContainer = function(params) {
 	if (arguments.length == 0) { return; }
 
-    // Temporary debug output (14. dec. 2009), should be removed when no longer needed
-    if (window.console && window.console.log) {
-        console.log("------------------");
-        console.log("ZmOverviewContainer");
-        console.log(params);
-        console.log(this);
-    }
-
 	params.className = params.className || "ZmOverviewContainer";
 	params.id = params.id || ZmId.getOverviewContainerId(params.containerId);
 	DwtTree.call(this, params);

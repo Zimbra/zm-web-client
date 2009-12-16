@@ -43,15 +43,6 @@
  */
 ZmOverview = function(params, controller) {
 
-    // Temporary debug output (14. dec. 2009), should be removed when no longer needed
-    if (window.console && window.console.log) {
-        console.log("------------------");
-        console.log("ZmOverview");
-        console.log(params);
-        console.log(controller);
-        console.log(this);
-    }
-
 	var overviewClass = params.overviewClass ? params.overviewClass : "ZmOverview";
 	params.id = params.id || ZmId.getOverviewId(params.overviewId);
 	DwtComposite.call(this, {parent:params.parent, className:overviewClass, posStyle:params.posStyle, id:params.id});
@@ -81,18 +72,11 @@ ZmOverview = function(params, controller) {
 	var doc = document;
 	var element = this.getHtmlElement();
 	if (params.treeIds) {
-        if (window.console && window.console.log) {
-            console.log("---------");
-            console.log("childDivs");
-        }
 		for (var i = 0, count = params.treeIds.length; i < count; i++) {
 			var div = doc.createElement("DIV");
 			var treeId = params.treeIds[i];
 			this._treeParents[treeId] = div.id = [this.overviewId, treeId].join("-parent-");
 			element.appendChild(div);
-            if (window.console && window.console.log) {
-                console.log(div);
-            }
 		}
 	}
 
