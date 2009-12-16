@@ -372,7 +372,7 @@ function(parent, controller) {
 			ZmItem.F_FOLDER,
 			ZmItem.F_SIZE
 		];
-		if (appCtxt.multiAccounts) {
+		if (appCtxt.accountList.size(true) > 2) {
 			headers.push(ZmItem.F_ACCOUNT);
 		}
 		headers.push(ZmItem.F_DATE);
