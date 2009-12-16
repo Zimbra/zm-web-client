@@ -14,14 +14,21 @@
  */
 
 /**
- * Creates a new (empty) mail message.
+ * @overview
+ * 
+ * This file defines the mail message.
+ */
+
+/**
  * @constructor
  * @class
- * This class represents a mail message.
+ * Creates a new (empty) mail message.
  *
- * @param id		[int]			unique ID
- * @param list		[ZmMailList]	list that contains this message
- * @param noCache	[boolean]*		if true, do not cache this msg
+ * @param {Number}		id			the unique ID
+ * @param {Array}		list		the list that contains this message
+ * @param {Boolean}		noCache		if <code>true</code>, do not cache this message; <code>false</code> otherwise
+ * 
+ * @extends	ZmMailItem
  */
 ZmMailMsg = function(id, list, noCache) {
 

@@ -16,14 +16,17 @@
 /**
  * @overview
  * 
- * This file contains the ZmObjectHandler.
+ * This file contains the ZmObjectHandler base class.
  * 
  */
 
 /**
  * @class
  *
- * This is the constructor for the zimlet object handler.
+ * This class defines the default implementation for a zimlet object handler.
+ * <br />
+ * <br />
+ * To write a zimlet, see {@link ZmZimletBase}. 
  * 
  * @param	{String}	typeName	the type name
  * @param	{String}	className	the class name
@@ -37,7 +40,7 @@ ZmObjectHandler = function(typeName, className) {
 ZmObjectHandler.prototype.constructor = ZmObjectHandler;
 
 /**
- * Called by the Zimlet framework to indicate that the object.
+ * This method is called by the Zimlet framework to initialize the object.
  * 
  * @param	{String}	typeName	the type name
  * @param	{String}	className	the class name; if <code>null</code>, "Object" will be used
@@ -79,8 +82,8 @@ function() {
 /**
  * Gets the class name for a given object.
  * 
- * @param	{Object}		obj		the object
- * @param	context		the content (not used)
+ * @param	{Object}		obj			the object
+ * @param	{Object}		context		the content
  * @return	{String}		the class name
  */
 ZmObjectHandler.prototype.getClassName =
@@ -92,7 +95,7 @@ function(obj, context) {
  * Gets the hovered class name for the given object.
  * 
  * @param	{Object}		obj		the object
- * @param	context		the content (not used)
+ * @param	{Object}		context		the content
  * @return	{String}		the hovered class name
  */
 ZmObjectHandler.prototype.getHoveredClassName =
@@ -109,7 +112,7 @@ function(obj, context) {
  * Gets the active class name for a given object.
  * 
  * @param	{Object}		obj		the object
- * @param	context		the content (not used)
+ * @param	{Object}		context		the content
  * @return	{String}		the active class name
  */
 ZmObjectHandler.prototype.getActiveClassName =
@@ -142,8 +145,9 @@ function(content, startIndex) {
 
 
 /**
- * OVERRIDE: Usage should return a non-null result in the format of
- * String.match if text on the line matched the handler regular expression.
+ * This method is used to match content for a zimlet. Zimlet implementations should
+ * override this method. Usage should return a non-null result in the format of
+ * <code>String.match</code> if text on the line matched the handler regular expression.
  * 
  * <pre>
  * var result = handler.match(line);
@@ -152,11 +156,9 @@ function(content, startIndex) {
  * </pre>
  * 
  * Handlers can also set result.context which will be passed back to
- * them during the various method calls (getToolTipText, etc).
- * 
- * Handlers should set regex.lastIndex to startIndex and then use regex.exec(content).
- * 
- * Handlers should also use the "g" option when constructing their regex.
+ * them during the various method calls (getToolTipText, etc). Handlers should set
+ * regex.lastIndex to startIndex and then use regex.exec(content). Handlers should
+ * also use the "g" option when constructing their regex.
  */
 ZmObjectHandler.prototype.match =
 function(content, startIndex) {
@@ -194,7 +196,7 @@ function(html, idx, obj, spanId, context) {
 };
 
 /**
- * OVERRIDE: Checks if the handler has tool tip text.
+ * Checks if the handler has tool tip text.
  * 
  * @param		{Object}	obj			the object
  * @param		{Object}	context		the context
@@ -206,7 +208,7 @@ function(obj, context) {
 };
 
 /**
- * OVERRIDE: Gets the handler tool tip text.
+ * Gets the handler tool tip text.
  * 
  * @param		{Object}	obj			the object
  * @param		{Object}	context		the context
@@ -218,7 +220,7 @@ function(obj, context) {
 };
 
 /**
- * OVERRIDE: Populates the handler tool tip text.
+ * Populates the handler tool tip text.
  * 
  * @param		{Object}	obj			the object
  * @param		{Object}	context		the context
@@ -228,7 +230,7 @@ function(obj, context) {
 };
 
 /**
- * OVERRIDE: Gets the action menu.
+ * Gets the action menu.
  * 
  * @param		{Object}	obj			the object
  * @param		{String}	span		the span element
@@ -241,7 +243,7 @@ function(obj, span, context) {
 };
 
 /**
- * OVERRIDE: This method is called when the handler is selected.
+ * This method is called by the Zimlet framework when the handler is selected.
  * 
  * @param		{Object}	obj			the object
  * @param		{String}	span		the span element
@@ -255,7 +257,7 @@ function(obj, span, ev, context) {
 };
 
 /**
- * OVERRIDE: This method is called when the handler is clicked.
+ * This method is called by the Zimlet framework when the handler is clicked.
  * 
  * @param		{Object}	obj			the object
  * @param		{String}	span		the span element

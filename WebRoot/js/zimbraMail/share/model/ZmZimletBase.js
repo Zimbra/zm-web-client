@@ -24,9 +24,17 @@
  * @class
  *
  * This class provides the default implementation for Zimlet functions. A Zimlet developer may
- * wish to override some functions in order to provide custom functionality. All Zimlets should
- * inherit from this base class. 
- *
+ * wish to override some functions in order to provide custom functionality. All Zimlet Handler Objects should extend this base class.
+ * <br />
+ * <br />
+ * <code>function com_zimbra_myZimletHandlerObject() { };</code>
+ * <br />
+ * <br />
+ * <code>
+ * com_zimbra_myZimletHandlerObject.prototype = new ZmZimletBase();
+ * com_zimbra_myZimletHandlerObject.prototype.constructor = com_zimbra_myZimletHandlerObject;
+ * </code>
+ * 
  * @extends	ZmObjectHandler
  * @see		#init
  */
@@ -259,13 +267,158 @@ function(canvas) {
 	this.createPropertyEditor();
 };
 
+/*
+ *
+ * Application hook methods.
+ * 
+ */
+
 /**
- * This method is called when a user clicks-on a message in the mail application.
+ * This method is called by the Zimlet framework when a user clicks-on a message in the mail application.
  * 
  * @param	{ZmMailMsg}		msg		the clicked message
  * @param	{ZmMailMsg}		oldMsg	the previous clicked message or <code>null</code> if this is the first message clicked
  */
 ZmZimletBase.prototype.onMsgView = function(msg, oldMsg) {};
+
+/**
+ * This method is called by the Zimlet framework when a user clicks-on a message in either the message or conversation view).
+ * 
+ * @param	{ZmMailMsg}			msg			the clicked message
+ * @param	{ZmObjectManager}	objMgr		the object manager
+ */
+ZmZimletBase.prototype.onFindMsgObjects = function(msg, objMgr) {};
+
+/**
+ * This method is called by the Zimlet framework when a contact is clicked-on in the contact list view.
+ * 
+ * @param	{ZmContact}		contact		the contact being viewed
+ * @param	{String}		elementId	the element Id
+ */
+ZmZimletBase.prototype.onContactView = function(contact, elementId) {};
+
+/**
+ * This method is called by the Zimlet framework when application toolbars are initialized.
+ * 
+ * @param	{ZmApp}				app				the application
+ * @param	{ZmButtonToolBar}	toolbar			the toolbar
+ * @param	{ZmController}		controller		the application controller
+ * @param	{String}			viewId			the view Id
+ */
+ZmZimletBase.prototype.initializeToolbar = function(app, toolbar, controller, viewId) {};
+
+/**
+ * This method is called by the Zimlet framework when showing an application view.
+ * 
+ * @param	{String}		view		the name of the view
+ */
+ZmZimletBase.prototype.onShowView = function(view) {};
+
+/**
+ * This method is called by the Zimlet framework when a search is performed.
+ * 
+ * @param	{String}		queryStr		the search query string
+ */
+ZmZimletBase.prototype.onSearch = function(queryStr) {};
+
+/**
+ * This method is called by the Zimlet framework when the search button is clicked.
+ * 
+ * @param	{String}		queryStr		the search query string
+ * @see		#onKeyPressSearchField
+ */
+ZmZimletBase.prototype.onSearchButtonClick = function(queryStr) {};
+
+/**
+ * This method is called by the Zimlet framework when enter is pressed in the search field.
+ * 
+ * @param	{String}		queryStr		the search query string
+ * @see		#onSearchButtonClick
+ */
+ZmZimletBase.prototype.onKeyPressSearchField = function(queryStr) {};
+
+/**
+ * This method gets called by the Zimlet framework when the action menu is initialized on the from/sender of an email message.
+ * 
+ * @param	{ZmController}		controller		the controller
+ * @param	{ZmActionMenu}		actionMenu		the action menu
+ */
+ZmZimletBase.prototype.onParticipantActionMenuInitialized = function(controller, actionMenu) {};
+
+/**
+ * This method gets called by the Zimlet framework when the action menu is initialized
+ * on the subject/fragment of an email message.
+ * 
+ * <p>
+ * This method is called twice:
+ * <ul>
+ * <li>The first-time a right-click is performed on a message in Conversation View.</li>
+ * <li>The first-time a right-click is performed on a message in Message View.</li>
+ * </ul>
+ * </p>
+ * 
+ * @param	{ZmController}		controller		the controller
+ * @param	{ZmActionMenu}		actionMenu		the action menu
+ */
+ZmZimletBase.prototype.onActionMenuInitialized = function(controller, actionMenu) {};
+
+/**
+ * This method is called by the Zimlet framework when an email message is flagged.
+ * 
+ * @param	{ZmMailMsg[]|ZmConv[]}		items		an array of items
+ * @param	{Boolean}		on		<code>true</code> if the flag is being set; <code>false</code> if the flag is being unset
+ */
+ZmZimletBase.prototype.onMailFlagClick = function(items, on) {};
+
+/**
+ * This method is called by the Zimlet framework when an email message is tagged.
+ * 
+ * @param	{ZmMailMsg[]|ZmConv[]}		items		an array of items
+ * @param	{ZmTag}			tag			the tag
+ * @param	{Boolean}		doTag		<code>true</code> if the tag is being set; <code>false</code> if the tag is being removed
+ */
+ZmZimletBase.prototype.onTagAction = function(items, tag, doTag) {};
+
+/**
+ * This method is called by the Zimlet framework when a message is about to be sent.
+ * 
+ * <p>
+ * To fail the error check, the zimlet must return a <code>boolAndErrorMsgArray</code> array
+ * with the following syntax:
+ * <br />
+ * <br />
+ * <code>{hasError:&lt;true or false&gt;, errorMsg:&lt;error msg&gt;, zimletName:&lt;zimlet name&gt;}</code>
+ *</p>
+ *
+ * @param	{ZmMailMsg}		msg		the message
+ * @param	{Array}		boolAndErrorMsgArray	the error messages, if any
+ */
+ZmZimletBase.prototype.emailErrorCheck = function(msg, boolAndErrorMsgArray) {};
+
+/**
+ * This method is called by the Zimlet framework when adding a signature to an email message.
+ * 
+ * <p>
+ * To append extra signature information, the zimlet should push text into the <code>bufferArray</code>.
+ * 
+ * <pre>
+ * bufferArray.push("Have fun, write a Zimlet!");
+ * </pre>
+ * </p>
+ * 
+ * @param	{ZmMailMsg}		contact		the clicked message
+ * @param	{ZmMailMsg}		oldMsg	the previous clicked message or <code>null</code> if this is the first message clicked
+ */
+ZmZimletBase.prototype.appendExtraSignature = function(bufferArray) {};
+
+/**
+ * This method is called by the Zimlet framework when the message confirmation dialog is presented.
+ * 
+ * @param	{ZmMailConfirmView}		confirmView		the confirm view
+ * @param	{ZmMailMsg}		msg		the message
+ */
+ZmZimletBase.prototype.onMailConfirm = function(confirmView, msg) {};
+
 
 /*
  * 
@@ -279,6 +432,7 @@ ZmZimletBase.prototype.onMsgView = function(msg, oldMsg) {};
  * should apply the pattern matching as defined for a given zimlet <code><regex></code>.
  * Zimlets should also use the "g" option when constructing their <code><regex></code>.
  *
+ * <p>
  * Zimlets should set <code>regex.lastIndex</code> to <code>startIndex</code> and then use <code>regex.exec(content)</code>.
  * 
  * <pre>
@@ -286,6 +440,7 @@ ZmZimletBase.prototype.onMsgView = function(msg, oldMsg) {};
  * result[0] // should be matched string
  * result.index // should be location within line match occurred
  * </pre>
+ * </p>
  * 
  * @param	{String}	content		the content to perform a match against
  * @param	{Number}	startIndex	the start index (i.e. where to begin the search)
@@ -396,16 +551,17 @@ function(contextMenu, menuItemId, spanElement, contentObjText, canvas) {};
 
 /**
  * This method is called if there are <code><userProperties></code> elements specified in the
- * Zimlet Definition File. Specifically, the framework will add a properties menu item
- * to the panel item and content object action menus (if one or both are defined).
- * When this menu item is selected, the property editor will be presented
- * to the user.
+ * Zimlet Definition File. When the zimlet panel item is double-clicked, the property
+ * editor will be presented to the user.
  * 
+ * <p>
  * This method creates the property editor for the set of <code><property></code> elements defined
  * in the <code><userProperties></code> element. The default implementation of this
  * method will auto-create a property editor based on the attributes of the user properties.
- * 
+ * </p>
+ * <p>
  * Override this method if a custom property editor is required.
+ * </p>
  * 
  * @param	{AjxCallback}	callback	the callback method for saving user properties
  */
@@ -587,7 +743,7 @@ function(propertyName, value, save, callback) {
  * This method is called by the zimlet framework prior to user properties being saved.
  *
  * @param	{String[]}	props		the properties
- * @return	{Boolean}	<code>true<code> if properties are valid; otherwise, <code>false</code> or {String} if an error message will be displayed in the standard error dialog.
+ * @return	{Boolean}	<code>true</code> if properties are valid; otherwise, <code>false</code> or {String} if an error message will be displayed in the standard error dialog.
  */
 ZmZimletBase.prototype.checkProperties =
 function(props) {
