@@ -866,7 +866,8 @@ function() {
 
 ZmComposeController.prototype._setAddSignatureVisibility =
 function(account) {
-	var button = appCtxt.get(ZmSetting.SIGNATURES_ENABLED, null, account) &&
+	var ac = window.parentAppCtxt || window.appCtxt;
+	var button = ac.get(ZmSetting.SIGNATURES_ENABLED, null, account) &&
 				 this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
 	if (button) {
 		button.setVisible(appCtxt.getSignatureCollection(account).getSize() > 0);
