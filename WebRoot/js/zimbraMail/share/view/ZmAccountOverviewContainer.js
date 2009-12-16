@@ -328,8 +328,8 @@ function(parent, data) {
 
 	parent.getOp(ZmOperation.MARK_ALL_READ).setVisible(!isAcctType);
 	parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(!isAcctType);
-	parent.getOp(this._newOp).setVisible(isAcctType);
-	parent.getOp(ZmOperation.SYNC).setVisible(isAcctType);
+	parent.getOp(this._newOp).setVisible(isAcctType && data != ZmOrganizer.ID_ALL_MAILBOXES);
+	parent.getOp(ZmOperation.SYNC).setVisible(isAcctType && (!acct || (acct && !acct.isMain)));
 	parent.getOp(ZmOperation.DELETE).setVisible(false);
 
 	if (isAcctType) {
