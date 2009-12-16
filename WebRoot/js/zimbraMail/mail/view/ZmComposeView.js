@@ -532,7 +532,7 @@ function(attId, isDraft, dummyMsg) {
 		top.children.add(textPart);
 
 		var htmlPart = new ZmMimePart();
-		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);        
+		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);		
 
 		var idoc = this._htmlEditor._getIframeDoc();
 		this._restoreMultipartRelatedImages(idoc);
@@ -1303,13 +1303,13 @@ function(signatureId) {
 	if (appCtxt.multiAccounts) {
 		var list = appCtxt.accountList.visibleAccounts;
 		for (var i = 0; i < list.length; i++) {
-            var collection = appCtxt.getSignatureCollection(list[i]);
-            if (collection) {
-			    signature = collection.getById(signatureId);
-			    if (signature) {
-				    break;
-			    }
-            }
+			var collection = appCtxt.getSignatureCollection(list[i]);
+			if (collection) {
+				signature = collection.getById(signatureId);
+				if (signature) {
+					break;
+				}
+			}
 		}
 	} else {
 		signature = appCtxt.getSignatureCollection().getById(signatureId);
