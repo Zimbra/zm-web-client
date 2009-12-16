@@ -123,7 +123,7 @@ function() {
 		var quota = appCtxt.get(ZmSetting.QUOTA_USED, null, this);
 		var params = {
 			lastSync: (lastSyncDate ? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null),
-			hasNotSynced: (this.isOfflineInitialSync() && this.status == ZmZimbraAccount.STATUS_UNKNOWN),
+			hasNotSynced: this.hasNotSynced(),
 			status: this.getStatusMessage(),
 			quota: AjxUtil.formatSize(quota, false, 1)
 		};
@@ -149,6 +149,17 @@ function() {
 	return null;
 };
 
+/**
+ * Returns true if this account has never been synced
+ */
+ZmZimbraAccount.prototype.hasNotSynced =
+function() {
+	return (this.isOfflineInitialSync() && this.status == ZmZimbraAccount.STATUS_UNKNOWN);
+};
+
+/**
+ * Returns true if this account is currently syncing for the first time
+ */
 ZmZimbraAccount.prototype.isOfflineInitialSync =
 function() {
 	return (appCtxt.isOffline && (!this.lastSync || (this.lastSync && this.lastSync == 0)));

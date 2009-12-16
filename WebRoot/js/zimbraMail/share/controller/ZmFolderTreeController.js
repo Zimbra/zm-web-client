@@ -297,6 +297,7 @@ function(folder) {
 			}
 		}
 		var sc = appCtxt.getSearchController();
+		var acct = folder.account;
 
 		var params = {
 			query: folder.createQuery(),
@@ -304,7 +305,7 @@ function(folder) {
 			getHtml: (folder.nId == ZmFolder.ID_DRAFTS) || appCtxt.get(ZmSetting.VIEW_AS_HTML),
 			types: ((folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null), // for Sync Failures folder, always show in traditional view
 			sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
-			accountName: (folder.account && folder.account.name)
+			accountName: (acct && acct.name)
 		};
 
 		sc.resetSearchAllAccounts();
@@ -313,17 +314,32 @@ function(folder) {
 			// make sure we have permissions for this folder (in case an "external"
 			// server was down during account load)
 			if (folder.link && folder.shares == null) {
-				var folderTree = appCtxt.getFolderTree(folder.account);
+				var folderTree = appCtxt.getFolderTree(acct);
 				if (folderTree) {
 					var callback = new AjxCallback(this, this._getPermissionsResponse, [params]);
 					folderTree.getPermissions({callback:callback, folderIds:[folder.id]});
 				}
 				return;
 			}
+
+			if (appCtxt.isOffline && acct.hasNotSynced() && !acct.__syncAsked) {
+				acct.__syncAsked = true;
+
+				var dialog = appCtxt.getYesNoMsgDialog();
+				dialog.registerCallback(DwtDialog.YES_BUTTON, this._syncAccount, this, [dialog, acct]);
+				dialog.setMessage(ZmMsg.neverSyncedAsk, DwtMessageDialog.INFO_STYLE);
+				dialog.popup();
+			}
 		}
 
 		sc.search(params);
 	}
+};
+
+ZmFolderTreeController.prototype._syncAccount =
+function(dialog, account) {
+	dialog.popdown();
+	account.sync();
 };
 
 ZmFolderTreeController.prototype._getPermissionsResponse =

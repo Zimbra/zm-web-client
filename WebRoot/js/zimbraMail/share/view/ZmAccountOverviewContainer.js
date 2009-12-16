@@ -458,6 +458,12 @@ function(folderId) {
 	return true;
 };
 
+ZmAccountOverviewContainer.prototype._syncAccount =
+function(dialog, account) {
+	dialog.popdown();
+	account.sync();
+};
+
 ZmAccountOverviewContainer.prototype._treeViewListener =
 function(ev) {
 	if (ev.detail != DwtTree.ITEM_ACTIONED &&
@@ -500,6 +506,15 @@ function(ev) {
 			if (account) {
 				sc.searchAllAccounts = false;
 				appCtxt.accountList.setActiveAccount(account);
+
+				if (appCtxt.isOffline && account.hasNotSynced() && !account.__syncAsked) {
+					account.__syncAsked = true;
+
+					var dialog = appCtxt.getYesNoMsgDialog();
+					dialog.registerCallback(DwtDialog.YES_BUTTON, this._syncAccount, this, [dialog, account]);
+					dialog.setMessage(ZmMsg.neverSyncedAsk, DwtMessageDialog.INFO_STYLE);
+					dialog.popup();
+				}
 
 				var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this._appName]];
 				var folder = appCtxt.getById(ZmOrganizer.getSystemId(fid, account));
