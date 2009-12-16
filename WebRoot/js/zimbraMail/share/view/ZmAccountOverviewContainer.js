@@ -314,9 +314,11 @@ function(organizer) {
 ZmAccountOverviewContainer.prototype.resetOperations =
 function(parent, data) {
 
+	var emptyFolderOp = parent.getOp(ZmOperation.EMPTY_FOLDER);
+
 	if (data instanceof ZmSearchFolder) {
 		parent.getOp(ZmOperation.MARK_ALL_READ).setVisible(false);
-		parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(false);
+		emptyFolderOp.setVisible(false);
 		parent.getOp(this._newOp).setVisible(false);
 		parent.getOp(ZmOperation.SYNC).setVisible(false);
 		parent.getOp(ZmOperation.DELETE).setVisible(true);
@@ -327,7 +329,7 @@ function(parent, data) {
 	var isAcctType = (acct || data == ZmOrganizer.ID_ALL_MAILBOXES);
 
 	parent.getOp(ZmOperation.MARK_ALL_READ).setVisible(!isAcctType);
-	parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(!isAcctType);
+	emptyFolderOp.setVisible(false);
 	parent.getOp(this._newOp).setVisible(isAcctType && data != ZmOrganizer.ID_ALL_MAILBOXES);
 	parent.getOp(ZmOperation.SYNC).setVisible(isAcctType && (!acct || (acct && !acct.isMain)));
 	parent.getOp(ZmOperation.DELETE).setVisible(false);
@@ -336,23 +338,22 @@ function(parent, data) {
 		parent.enable(this._newOp, (acct && acct.type != ZmAccount.TYPE_POP));
 		parent.enable(ZmOperation.SYNC, (!acct || (acct && !acct.isMain)));
 	} else {
+		// reset mark all based on a "friendly" hack ;)
 		var markAllEnabled = false;
 		if (data != ZmOrganizer.ID_OUTBOX && data != ZmFolder.ID_DRAFTS &&
-			this._actionedHeaderItem.getText().indexOf("bold") != -1) // friendly hack :)
+			this._actionedHeaderItem.getText().indexOf("bold") != -1)
 		{
 			markAllEnabled = true;
 		}
-
-		var text = ZmMsg.emptyFolder;
-		if (data == ZmOrganizer.ID_TRASH) {
-			text = ZmMsg.emptyTrash;
-		} else if (data == ZmOrganizer.ID_SPAM) {
-			text = ZmMsg.emptyJunk;
-		}
-		parent.getOp(ZmOperation.EMPTY_FOLDER).setText(text);
-
 		parent.enable(ZmOperation.MARK_ALL_READ, markAllEnabled);
-		parent.enable(ZmOperation.EMPTY_FOLDER, (data == ZmOrganizer.ID_TRASH || data == ZmOrganizer.ID_SPAM));
+
+		// reset empty "folder" based on Trash/Junk
+		if (data == ZmOrganizer.ID_TRASH || data == ZmOrganizer.ID_SPAM) {
+			var text = (data == ZmOrganizer.ID_TRASH) ? ZmMsg.emptyTrash : ZmMsg.emptyJunk;
+			emptyFolderOp.setText(text);
+			emptyFolderOp.setVisible(true);
+			parent.enable(ZmOperation.EMPTY_FOLDER, !this._isFolderEmpty(data));
+		}
 	}
 };
 
@@ -435,6 +436,26 @@ function(headerParams, omit, overviewParams, showBackgroundColor) {
 	// finally set treeviews for this overview
 	var treeIds = overviewParams.overviewTrees || overviewParams.treeIds;
 	ov.set(treeIds, omit);
+};
+
+/**
+ * Iterates all visible account and checks whether folder for each account is
+ * empty. Used by "All Mailboxes" to determine whether a virtual folder needs
+ * to be disabled or not when right-clicked.
+ *
+ * @param folderId		[String]		Normalized folder ID (should not be fully qualified)
+ */
+ZmAccountOverviewContainer.prototype._isFolderEmpty =
+function(folderId) {
+	var accounts = appCtxt.accountList.visibleAccounts;
+	for (var i = 0; i < accounts.length; i++) {
+		var folder = appCtxt.getById(ZmOrganizer.getSystemId(folderId, accounts[i]));
+		if (folder && folder.numTotal > 0) {
+			return false;
+		}
+	}
+
+	return true;
 };
 
 ZmAccountOverviewContainer.prototype._treeViewListener =
