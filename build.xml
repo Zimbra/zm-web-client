@@ -69,6 +69,10 @@
     <property name="ffext.build.dir" location="ffext/build"/>
     <property name="ffext.src.dir" value="ffext/src/zimbradnd"/>
 
+    <!-- TINY_MCE INTEGRATION -->
+    <property name="tinymce.version" value="3.2.6"/>
+    <property name="tinymce.zplugins.dir" value="${web.dir}/tiny_mce_plugins"/>
+        
     <!-- Tasks -->
 
     <taskdef resource="net/sf/antcontrib/antlib.xml">
@@ -105,7 +109,7 @@
 			<equals arg1="${zimbra.buildinfo.type}" arg2="NETWORK" />
 		</condition>
         <property name='common.web.includes' value='${custom.web.includes},js/**,css/**'/>
-        <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**,**/AjxTimezoneData.js'/>
+        <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**,**/AjxTimezoneData.js,tiny_mce_plugins/**'/>
         <property name='common.jsp.includes' value='${custom.jsp.includes},**'/>
         <property name='common.jsp.excludes' value='${custom.jsp.excludes}'/>
         <property name='common.img.includes' value='${custom.img.includes},**'/>
@@ -223,6 +227,8 @@
             <lib dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
             <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
             <zipfileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.files}'/>
+            <!--tiny_mce-->
+            <zipfileset dir='${tinymce.zplugins.dir}' includes='**' prefix='tiny_mce/${tinymce.version}/plugins'/>
 			<zipfileset refid='customer.web.fileset'/>
             <zipfileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}' prefix='public'/>
             <!-- For customer jsp files
@@ -247,6 +253,10 @@
         </copy>
         <copy todir='${webapp.dir}/public' verbose='${sync.verbose}'>
             <fileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}'/>
+        </copy>
+        <!--tiny_mce-->
+        <copy todir='${webapp.dir}/tiny_mce/${tinymce.version}/plugins' verbose='${sync.verbose}'>
+            <fileset dir='${tinymce.zplugins.dir}' includes='**'/>
         </copy>
         <!--<copy todir='${webapp.dir}/img' verbose='${sync.verbose}'>-->
             <!--<fileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}'/>-->
