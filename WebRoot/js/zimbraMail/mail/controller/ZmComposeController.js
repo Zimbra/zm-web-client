@@ -551,7 +551,7 @@ function(setSignature, resetBody) {
 		this._composeView.setComposeMode(newMode);
 	}
 	this._composeView.applySignature(this._getBodyContent(), this._currentSignatureId);
-	this._setAddSignatureVisibility(identity);
+	this._setAddSignatureVisibility();
 };
 
 ZmComposeController.prototype._handleSelectSignature =
@@ -727,7 +727,9 @@ function(params) {
 	this._msgIds = params.msgIds;
 	this._accountName = params.accountName;
 
-	var identityCollection = appCtxt.getIdentityCollection();
+	var account = (appCtxt.multiAccounts && appCtxt.getActiveAccount().isMain)
+		? appCtxt.accountList.defaultAccount : null;
+	var identityCollection = appCtxt.getIdentityCollection(account);
 	var identity = (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
 	params.identity = identity;
 	if (identity) {
@@ -748,7 +750,7 @@ function(params) {
 	this.resetToolbarOperations();
 
 	this._setOptionsMenu(this._composeMode, identity);
-	this._setAddSignatureVisibility(identity);
+	this._setAddSignatureVisibility();
 
 	cv.set(params);
 	this._setComposeTabGroup();
@@ -821,11 +823,11 @@ function() {
 		}
 	}
 
-	var identity = appCtxt.getIdentityCollection().defaultIdentity;
-	var canAddSig = this._setAddSignatureVisibility(identity);
-	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
-		var signatureCollection = appCtxt.getSignatureCollection();
-		signatureCollection.addChangeListener(new AjxListener(this, this._signatureChangeListener));
+	this._setAddSignatureVisibility();
+
+	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED) || appCtxt.multiAccounts) {
+		var sc = appCtxt.getSignatureCollection();
+		sc.addChangeListener(new AjxListener(this, this._signatureChangeListener));
 
 		var button = tb.getButton(ZmOperation.ADD_SIGNATURE);
 		if (button) {
@@ -863,16 +865,12 @@ function() {
 };
 
 ZmComposeController.prototype._setAddSignatureVisibility =
-function(identity) {
-	var visible = false;
-	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
-		visible = appCtxt.getSignatureCollection().getSize() > 0;
-		var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
-		if (signatureButton) {
-			signatureButton.setVisible(visible);
-		}
+function(account) {
+	var button = appCtxt.get(ZmSetting.SIGNATURES_ENABLED, null, account) &&
+				 this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+	if (button) {
+		button.setVisible(appCtxt.getSignatureCollection(account).getSize() > 0);
 	}
-	return visible;
 };
 
 ZmComposeController.prototype._createOptionsMenu =
@@ -1501,23 +1499,23 @@ function() {
 	{
 		return this._composeView._field[AjxEmailAddress.TO];
 	}
-	else
-	{
-		var composeMode = this._composeView.getComposeMode();
-		return (composeMode == DwtHtmlEditor.TEXT)
-			? this._composeView._bodyField
-			: this._composeView._htmlEditor;
-	}
+
+	return (this._composeView.getComposeMode() == DwtHtmlEditor.TEXT)
+		? this._composeView._bodyField
+		: this._composeView._htmlEditor;
 };
 
 ZmComposeController.prototype._createSignatureMenu =
 function(button, account) {
 	if (!this._composeView) { return null; }
+
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
 	if (!button) { return null; }
-	var menu = new DwtMenu({parent:button});
+
+	var menu;
 	var options = appCtxt.getSignatureCollection(account).getSignatureOptions();
 	if (options.length > 0) {
+		menu = new DwtMenu({parent:button});
 		var listener = new AjxListener(this, this._handleSelectSignature);
 		var radioId = this._composeView._htmlElId + "_sig";
 		for (var i = 0; i < options.length; i++) {
@@ -1552,6 +1550,8 @@ function(selected, account) {
 		button.setMenu(menu);
 		this.setSelectedSignature(selected || "");
 	}
+
+	this._setAddSignatureVisibility(account);
 };
 
 ZmComposeController.prototype.resetToolbarOperations =

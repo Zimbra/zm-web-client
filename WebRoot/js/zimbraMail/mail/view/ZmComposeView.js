@@ -144,17 +144,18 @@ function(params) {
 
 	this.reset(true);
 
+	this._setFromSelect(msg);
+
 	if (params.identity) {
 		if (this.identitySelect) {
 			this.identitySelect.setSelectedValue(params.identity.id);
 		}
-		if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
+		if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED) || appCtxt.multiAccounts) {
 			var selected = params.identity.signature || "";
-			this._controller.resetSignatureToolbar(selected);
+			var account = appCtxt.multiAccounts && this.getFromAccount();
+			this._controller.resetSignatureToolbar(selected, account);
 		}
 	}
-
-	this._setFromSelect(msg);
 
 	// reset To/Cc/Bcc fields
 	this._showAddressField(AjxEmailAddress.TO, true, true, true);
@@ -1105,8 +1106,8 @@ function(mimePart) {
 };
 
 ZmComposeView.prototype.getSignatureContentSpan =
-function(signature, sigContent) {
-	signature = signature || this.getSignatureById(this._controller.getSelectedSignature());
+function(signature, sigContent, account) {
+	signature = signature || this.getSignatureById(this._controller.getSelectedSignature(), account);
 	if (!signature) { return ""; }
 
 	var signatureId = signature.id;
@@ -1120,14 +1121,19 @@ function(signature, sigContent) {
 
 /**
  * Called when the user selects something from the Signature menu.
+ *
+ * @param content				[String]*
+ * @param replaceSignatureId	[String]
+ * @param account				[ZmZimbraAccount]*
  */
 ZmComposeView.prototype.applySignature =
 function(content, replaceSignatureId, account) {
 	content = content || "";
-	var signature = this.getSignatureById(this._controller.getSelectedSignature(), account);
+	var acct = account || (appCtxt.multiAccounts && this.getFromAccount());
+	var signature = this.getSignatureById(this._controller.getSelectedSignature(), acct);
 	var isHtml = this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML;
 	var newLine = this._getSignatureNewLine();
-	var isAbove = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_OUTLOOK;
+	var isAbove = appCtxt.get(ZmSetting.SIGNATURE_STYLE, null, acct) == ZmSetting.SIG_OUTLOOK;
 	var done = false;
 	var donotsetcontent = false;
 	var noSignature = !signature;
@@ -1189,7 +1195,7 @@ function(content, replaceSignatureId, account) {
 	}
 	if (!done) {
 		sigContent = this.getSignatureContentSpan(signature);
-		content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE), sigContent, newLine);
+		content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE, null, acct), sigContent, newLine);
 	}
 
 	if (!donotsetcontent) {
@@ -1209,7 +1215,8 @@ function(signatureId) {
 
 	var sep = this._getSignatureSeparator();
 	var newLine = this._getSignatureNewLine();
-	var isAbove = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_OUTLOOK;
+	var account = appCtxt.multiAccounts && this.getFromAccount();
+	var isAbove = appCtxt.get(ZmSetting.SIGNATURE_STYLE, null, account) == ZmSetting.SIG_OUTLOOK;
 	var isText = this.getHtmlEditor().getMode() == DwtHtmlEditor.TEXT;
 	return isAbove ? [sep, sig/*,  isText ? newLine : ""*/ ].join("") : sep + sig;
 };
@@ -1230,7 +1237,8 @@ function(content) {
 	// widget will be initialized when this code is running.
 	content = content || "";
 	var sigContent = this.getSignatureContentSpan();
-	content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE),
+	var account = appCtxt.multiAccounts && this.getFromAccount();
+	content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE, null, account),
 									sigContent,
 									this._getSignatureNewLine());
 
@@ -1337,7 +1345,8 @@ ZmComposeView.prototype._getSignatureSeparator =
 function() {
 	var newLine = this._getSignatureNewLine();
 	var sep = newLine + newLine;
-	if (appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET) {
+	var account = appCtxt.multiAccounts && this.getFromAccount();
+	if (appCtxt.get(ZmSetting.SIGNATURE_STYLE, null, account) == ZmSetting.SIG_INTERNET) {
 		sep += "-- " + newLine;
 	}
 	return sep;
@@ -1719,10 +1728,10 @@ function(action, msg, extraBodyText, incOption, nosig) {
 
 	var sigStyle;
 	var sig;
-	if (!nosig && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
-		//sig = this._getSignature();
-		sig = this.getSignatureContentSpan();
-		sigStyle = sig ? appCtxt.get(ZmSetting.SIGNATURE_STYLE) : null;
+	var account = appCtxt.multiAccounts && this.getFromAccount();
+	if (!nosig && appCtxt.get(ZmSetting.SIGNATURES_ENABLED, null, account)) {
+		sig = this.getSignatureContentSpan(null, null, account);
+		sigStyle = sig ? appCtxt.get(ZmSetting.SIGNATURE_STYLE, null, account) : null;
 	}
 	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? (sig) : "";
 	var isInviteForward = false;
