@@ -22,9 +22,9 @@ ZmCalendarAssistant.prototype.constructor = ZmCalendarAssistant;
 
 ZmCalendarAssistant.prototype.okHandler =
 function(dialog) {
-	var calApp = appCtxt.getApp(ZmApp.CALENDAR);
-	//calApp.activate(true, this._view, this._startDate);	
-	var cc = calApp.getCalController();
+    var calMgr = appCtxt.getCalManager();
+    calMgr.getMiniCalendar();
+    var cc = calMgr.getCalViewController();
 	cc.setDate(this._startDate);
 	// need to call twice due to cal view controller bug
 	cc.show(this._view);
