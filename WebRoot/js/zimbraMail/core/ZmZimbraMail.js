@@ -676,7 +676,7 @@ function() {
 				nc.addEventListener("online", function(e) { appCtxt.getAppController().handleNetworkChange(true); }, false);
 			}
 		}
-		if (appCtxt.multiAccounts) {
+		if (appCtxt.multiAccounts && appCtxt.isOffline) {
 			this._resetUserInfo();
 		}
 	}
@@ -1547,7 +1547,7 @@ function() {
 
 ZmZimbraMail.prototype.setUserInfo =
 function() {
-	if (appCtxt.multiAccounts || appCtxt.isOffline) { return; }
+	if (appCtxt.isOffline) { return; }
 
 	// username
 	var login = appCtxt.get(ZmSetting.USERNAME);
@@ -1558,6 +1558,8 @@ function() {
 			this._userNameField.getHtmlElement().style.lineHeight = "13px";
 		}
 	}
+
+	if (appCtxt.multiAccounts) { return; }
 
 	// quota
 	var usedQuota = (appCtxt.get(ZmSetting.QUOTA_USED)) || 0;
