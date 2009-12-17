@@ -162,22 +162,10 @@ function() {
             continue; //skip mandatory zimlets to be shown in prefs        
         }
 		var desc = allz[i].zimlet[0].description;
-		if (allz[i].zimlet[0].zimletPanelItem) {
-			var label = (allz[i].zimlet[0].zimletPanelItem instanceof Array)
-				? allz[i].zimlet[0].zimletPanelItem[0].label
-				: allz[i].zimlet[0].zimletPanelItem.label;
-
-			var hash = appCtxt.getZimletMgr().getZimletByName(name);
-
-			desc = (hash && hash.processMessage)
-				? (hash.processMessage(label) + " - " + desc)
-				: (label + " - " + desc);
-		} else {
-			desc = allz[i].zimlet[0].description;
-		}
 		var z = new ZmPrefZimlet(name,(!checked || checked.length <= 0 || (","+checked.join(",")+",").indexOf(","+name+",") >=0 ), desc);
 		zimlets.addPrefZimlet(z);
 	}
+    zimlets.sortByName();
 	return zimlets;
 };
 
@@ -200,7 +188,7 @@ ZmPrefZimletListView = function(parent, controller) {
 
 ZmPrefZimletListView.COL_ACTIVE	= "ac";
 ZmPrefZimletListView.COL_NAME	= "na";
-ZmPrefZimletListView.COL_NAME	= "ds";
+ZmPrefZimletListView.COL_DESC	= "ds";
 
 ZmPrefZimletListView.prototype = new DwtListView;
 ZmPrefZimletListView.prototype.constructor = ZmPrefZimletListView;
@@ -224,6 +212,7 @@ ZmPrefZimletListView.prototype._getHeaderList =
 function() {
 	return [
 		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_ACTIVE, text:ZmMsg.active, width:ZmMsg.COLUMN_WIDTH_ACTIVE})),
+        (new DwtListHeaderItem({field:ZmPrefZimletListView.COL_NAME, text:ZmMsg.name, width:ZmMsg.COLUMN_WIDTH_FOLDER_DLV})),    
 		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_DESC, text:ZmMsg.description}))
 	];
 };
@@ -242,6 +231,8 @@ function(html, idx, item, field, colIdx, params) {
 		html[idx++] = "' onchange='ZmPrefZimletListView._activeStateChange'>";
 	} else if (field == ZmPrefZimletListView.COL_DESC) {
 		html[idx++] = AjxStringUtil.stripTags(item.getDescription(), true);
+	}else if (field == ZmPrefZimletListView.COL_NAME) {
+		html[idx++] = AjxStringUtil.stripTags(item.getNameWithoutPrefix(), true);
 	}
 
 	return idx;
@@ -317,8 +308,25 @@ ZmPrefZimlets.prototype.getPrefZimletByName =
 function(name) {
    return this._zNameHash[name];
 };
+/**
+ *
+ * @param desc true for desc sorting, false or empty otherwise
+ */
+ZmPrefZimlets.prototype.sortByName =
+function(desc) {
+   var r = 0;
+   this._vector.sort(function(a,b){
+       var aname = a.getNameWithoutPrefix(), bname = b.getNameWithoutPrefix();
+       if(aname == bname){
+           r = 0;
+       }else if(aname > bname){
+           r = 1;
+       }else
+           r = -1;
+       return (desc ? -r : r);
+   });
 
-
+};
 /**
  * ZmPrefZimlet
  *
@@ -336,6 +344,7 @@ ZmPrefZimlet = function(name, active, desc) {
 ZmPrefZimlet.prototype.isActive			= function() { return this.active; };
 ZmPrefZimlet.prototype.setActive		= function(active) { this.active = active; };
 ZmPrefZimlet.prototype.getName			= function() { return this.name; };
+ZmPrefZimlet.prototype.getNameWithoutPrefix			= function() { return this.name.substring(this.name.lastIndexOf("_")+1); };
 ZmPrefZimlet.prototype.setName			= function(name) { this.name = name; };
 ZmPrefZimlet.prototype.getDescription	= function() { return this.desc; };
 ZmPrefZimlet.prototype.setDescription	= function(desc){ this.desc = desc; };
