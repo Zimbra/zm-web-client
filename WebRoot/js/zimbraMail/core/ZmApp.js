@@ -387,7 +387,7 @@ function(reset) {
 	// only set overview panel content if not in full screen mode
 	var avm = appCtxt.getAppViewMgr();
 	if (!avm.isFullScreen()) {
-		var ov = (appCtxt.multiAccounts || this.getName() == ZmApp.VOICE)
+		var ov = ((appCtxt.multiAccounts && appCtxt.accountList.visibleAccounts.length>1) || this.getName() == ZmApp.VOICE)
 			? this.getOverviewContainer()
 			: this.getOverviewPanelContent();
 		avm.setComponent(ZmAppViewMgr.C_TREE, ov);

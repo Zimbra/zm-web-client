@@ -534,7 +534,7 @@ function(next) {
 
 ZmTreeView.prototype._hideHeaderTreeItem =
 function() {
-	return (appCtxt.multiAccounts &&
+	return (appCtxt.multiAccounts && appCtxt.accountList.visibleAccounts.length>1 &&
 			(this.type == ZmOrganizer.FOLDER ||
 			 this.type == ZmOrganizer.ADDRBOOK ||
 			 this.type == ZmOrganizer.CALENDAR ||
