@@ -2216,7 +2216,7 @@ function(ev) {
 		var avm = appCtxt.getAppViewMgr();
 		var currentViewId = avm.getCurrentViewId();
 		var lastViewId = avm.getLastViewId();
-		var action = (AjxStringUtil.split(text, " ")).join("");
+		var action = (AjxStringUtil.split((""+text), " ")).join("");
 		appCtxt.notifyZimlets("onAction", [type, action, currentViewId, lastViewId]);
 	}
 };

@@ -248,7 +248,8 @@ function(overviewId, parent, types) {
 		headerClass: "DwtTreeItem",
 		treeStyle: DwtTree.CHECKEDITEM_STYLE,
 		isCheckedByDefault: false,
-		treeIds: types
+		treeIds: types,
+		account: appCtxt.getActiveAccount()
 	};
 	var overview = this._overview = appCtxt.getOverviewController().createOverview(params);
 	overview.set(types);

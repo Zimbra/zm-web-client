@@ -72,7 +72,7 @@ function(parent) {
 	html[i++] = this._makeRow(ZmMsg.subject, subjectId);
 	html[i++] = this._makeRow(ZmMsg.content, contentId);
 	html[i++] = "</table>";
-    html[i++] = "<div style='overflow: auto; padding-left: 20px;'>";
+    html[i++] = "<div style='overflow:hidden; padding-left: 20px;'>";
 	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
 		inSpamId = Dwt.getNextId();
 		checked = appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM) ? " checked" : "";
