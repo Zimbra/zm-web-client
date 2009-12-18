@@ -30,10 +30,10 @@
 */
 ZmBriefcase = function(params) {
 	params.type = ZmOrganizer.BRIEFCASE;
-	ZmOrganizer.call(this, params);
+	ZmFolder.call(this, params);
 }
 
-ZmBriefcase.prototype = new ZmOrganizer;
+ZmBriefcase.prototype = new ZmFolder;
 ZmBriefcase.prototype.constructor = ZmBriefcase;
 
 // Constants

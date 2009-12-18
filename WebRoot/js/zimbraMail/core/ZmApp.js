@@ -754,3 +754,23 @@ function() {
 		this._hasRendered = true;
 	}
 };
+
+ZmApp.prototype._getExternalAccount =
+function() {
+
+	// bug #43464 - get the first non-local account that supports this app
+	var defaultAcct;
+	if (appCtxt.multiAccounts) {
+		var accounts = appCtxt.accountList.visibleAccounts;
+		for (var i = 0; i < accounts.length; i++) {
+			var acct = accounts[i];
+			if (acct.isMain) { continue; }
+
+			if (appCtxt.get(ZmApp.SETTING[this.name], null, acct)) {
+				defaultAcct = acct;
+				break;
+			}
+		}
+	}
+	return defaultAcct;
+};

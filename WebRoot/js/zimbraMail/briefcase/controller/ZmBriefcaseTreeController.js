@@ -15,7 +15,7 @@
 
 ZmBriefcaseTreeController = function(type) {
 
-	ZmTreeController.call(this, (type || ZmOrganizer.BRIEFCASE));
+	ZmFolderTreeController.call(this, (type || ZmOrganizer.BRIEFCASE));
 
 	this._listeners[ZmOperation.NEW_BRIEFCASEITEM] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_BRIEFCASE] = new AjxListener(this, this._shareBriefcaseListener);
@@ -26,7 +26,7 @@ ZmBriefcaseTreeController = function(type) {
 	this._eventMgrs = {};
 };
 
-ZmBriefcaseTreeController.prototype = new ZmTreeController;
+ZmBriefcaseTreeController.prototype = new ZmFolderTreeController;
 ZmBriefcaseTreeController.prototype.constructor = ZmBriefcaseTreeController;
 
 ZmBriefcaseTreeController.prototype.toString =
@@ -138,9 +138,8 @@ function() {
 
 // Method that is run when a tree item is left-clicked
 ZmBriefcaseTreeController.prototype._itemClicked =
-function(briefcase) {
-	var bc = AjxDispatcher.run("GetBriefcaseController");
-	bc.show(briefcase.id);
+function(folder) {
+	appCtxt.getApp(ZmApp.BRIEFCASE).search(folder);
 };
 
 // Handles a drop event

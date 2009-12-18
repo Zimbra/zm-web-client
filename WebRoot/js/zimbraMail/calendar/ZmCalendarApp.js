@@ -604,7 +604,7 @@ function(params, callback) {
 };
 
 ZmCalendarApp.prototype.showSearchResults =
-function(results, callback, isGal, folderId) {
+function(results, callback) {
 	// calls ZmSearchController's _handleLoadShowResults
 	if (callback) {
 		callback.run();

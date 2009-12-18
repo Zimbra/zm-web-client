@@ -13,10 +13,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBriefcaseItem = function(type, id, list) {
-	ZmItem.call(this, type || ZmItem.BRIEFCASE_ITEM, id, list);
-	this.folderId = ZmOrganizer.ID_BRIEFCASE;
-	this.version = 0;
+ZmBriefcaseItem = function(id, list) {
+	ZmItem.call(this, ZmItem.BRIEFCASE_ITEM, id, list);
 };
 
 ZmBriefcaseItem.prototype = new ZmItem;
@@ -32,8 +30,8 @@ function() {
 
 ZmBriefcaseItem.createFromDom =
 function(node, args) {
-	var item = new ZmBriefcaseItem(args.type || node._type || -1, node.id, args.list);
-	item.set(node);
+	var item = new ZmBriefcaseItem(node.id, args.list);
+	item._loadFromDom(node);
 	return item;
 };
 
@@ -68,22 +66,6 @@ ZmBriefcaseItem.prototype.isWebDoc = function(){
 
 ZmBriefcaseItem.prototype.isSlideDoc = function(){
     return (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES);
-};
-
-ZmBriefcaseItem.prototype.set =
-function(data) {
-	this.id = data.id;
-	if (data.rest) this.restUrl = data.rest;
-	if (data.l) this.folderId = data.l;
-	if (data.name) this.name = data.name;
-	if (data.cr) this.creator = data.cr;
-	if (data.d) this.createDate = new Date(Number(data.d));
-	if (data.md) this.modifyDate = new Date(Number(data.md));
-	if (data.leb) this.modifier = data.leb;
-	if (data.s) this.size = Number(data.s);
-	if (data.ver) this.version = Number(data.ver);
-	if (data.ct) this.contentType = data.ct.split(";")[0];
-	this._parseTags(data.t);
 };
 
 ZmBriefcaseItem.prototype.getContentType =
@@ -161,4 +143,41 @@ function(ex) {
 ZmBriefcaseItem.prototype.getFolder =
 function() {
 	return appCtxt.getById(this.folderId);
+};
+
+ZmBriefcaseItem.prototype._loadFromDom =
+function(node) {
+
+	this.id = node.id;
+
+	if (node.rest)	{ this.restUrl = node.rest; }
+	if (node.l)		{ this.folderId = node.l; }
+	if (node.name)	{ this.name = node.name; }
+	if (node.cr)	{ this.creator = node.cr; }
+	if (node.d)		{ this.createDate = new Date(Number(node.d)); }
+	if (node.md)	{ this.modifyDate = new Date(Number(node.md)); }
+	if (node.leb)	{ this.modifier = node.leb; }
+	if (node.s)		{ this.size = Number(node.s); }
+	if (node.ver)	{ this.version = Number(node.ver) || 0; }
+	if (node.ct)	{ this.contentType = node.ct.split(";")[0]; }
+	if (node.t)		{ this._parseTags(node.t); }
+};
+
+// Mendoza line
+
+ZmBriefcaseItem.prototype.set =
+function(data) {
+
+	this.id = data.id;
+	if (data.rest) this.restUrl = data.rest;
+	if (data.l) this.folderId = data.l;
+	if (data.name) this.name = data.name;
+	if (data.cr) this.creator = data.cr;
+	if (data.d) this.createDate = new Date(Number(data.d));
+	if (data.md) this.modifyDate = new Date(Number(data.md));
+	if (data.leb) this.modifier = data.leb;
+	if (data.s) this.size = Number(data.s);
+	if (data.ver) this.version = Number(data.ver);
+	if (data.ct) this.contentType = data.ct.split(";")[0];
+	this._parseTags(data.t);
 };

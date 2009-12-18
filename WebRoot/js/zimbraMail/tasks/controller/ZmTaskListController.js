@@ -74,27 +74,19 @@ function() {
 };
 
 ZmTaskListController.prototype.show =
-function(list, folderId) {
+function(results, folderId) {
+
 	this._folderId = folderId;
 
-	// XXX: will "list" ever be ZmTaskList?
-	if (list instanceof ZmTaskList)
-	{
-		this._list = list;			// set as canonical list of contacts
-		this._list._isShared = false;		// this list is not a search of shared items
-	}
-	else if (list instanceof ZmSearchResult)
-	{
-		this._list = list.getResults(ZmItem.TASK);
+	this._list = results.getResults(ZmItem.TASK);
 
-		// XXX: WHY?
-		// find out if we just searched for a shared address book
-		var folder = appCtxt.getById(folderId);
-		this._list._isShared = folder ? folder.link : false;
-		this._list.setHasMore(list.getAttribute("more"));
-	}
+	// XXX: WHY?
+	// find out if we just searched for a shared tasks folder
+	var folder = appCtxt.getById(folderId);
+	this._list._isShared = folder ? folder.link : false;
+	this._list.setHasMore(results.getAttribute("more"));
 
-	ZmListController.prototype.show.call(this, list);
+	ZmListController.prototype.show.call(this, results);
 
 	this._setup(this._currentView);
 
@@ -470,7 +462,7 @@ function(task, mode, ev) {
 ZmTaskListController.prototype._newListener =
 function(ev, op, params) {
 	params = params || {};
-	params.folderId = /*this._list.folderId ||*/ this._list.search.folderId;
+	params.folderId = this._list.search.folderId;
 	ZmListController.prototype._newListener.call(this, ev, op, params);
 };
 

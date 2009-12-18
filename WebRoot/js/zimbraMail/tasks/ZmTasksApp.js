@@ -71,10 +71,9 @@ function() {
 						 dropTargets:	[ZmOrganizer.TAG, ZmOrganizer.TASKS],
 						 searchType:	"task",
 						 resultsList:
-		   AjxCallback.simpleClosure(function(search) {
-			   AjxDispatcher.require("TasksCore");
-			   return new ZmTaskList(search);
-		   }, this)
+	   AjxCallback.simpleClosure(function(search) {
+		   return new ZmList(ZmItem.TASK, search);
+	   }, this)
 						});
 };
 
@@ -236,32 +235,20 @@ function(params, callback) {
 
 ZmTasksApp.prototype._handleLoadLaunch =
 function(callback) {
-	// bug #43464 - get the first non-local account that supports tasks
-	if (appCtxt.multiAccounts) {
-		var defaultAcct;
-		var accounts = appCtxt.accountList.visibleAccounts;
-		for (var i = 0; i < accounts.length; i++) {
-			var acct = accounts[i];
-			if (acct.isMain) { continue; }
-
-			if (appCtxt.get(ZmSetting.TASKS_ENABLED, null, acct)) {
-				defaultAcct = acct;
-				break;
-			}
-		}
-	}
-	this.search(null, null, null, null, (defaultAcct && defaultAcct.name));
+	var acct = this._getExternalAccount();
+	this.search(null, null, null, null, (acct && acct.name));
 	if (callback) { callback.run(); }
 };
 
 ZmTasksApp.prototype.showSearchResults =
-function(results, callback, isGal, folderId) {
-	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback, folderId]);
+function(results, callback) {
+	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
 	AjxDispatcher.require("Tasks", false, loadCallback, null, true);
 };
 
 ZmTasksApp.prototype._handleLoadShowSearchResults =
-function(results, callback, folderId) {
+function(results, callback) {
+	var folderId = results && results.search && results.search.folderId;
 	this.getTaskListController().show(results, folderId);
 	if (callback) callback.run();
 };

@@ -446,13 +446,16 @@ function() {
 };
 
 ZmContactsApp.prototype.showSearchResults =
-function(results, callback, isInGal, folderId) {
-	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback, isInGal, folderId]);
+function(results, callback) {
+	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
 	AjxDispatcher.require("Contacts", false, loadCallback, null, true);
 };
 
 ZmContactsApp.prototype._handleLoadShowSearchResults =
-function(results, callback, isInGal, folderId) {
+function(results, callback) {
+	var search = results && results.search;
+	var folderId = search && search.folderId;
+	var isInGal = search && (search.contactSource == ZmId.SEARCH_GAL);
 	this.getContactListController().show(results, isInGal, folderId);
 	if (callback) {
 		callback.run();

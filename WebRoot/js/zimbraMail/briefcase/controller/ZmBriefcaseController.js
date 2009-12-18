@@ -217,7 +217,7 @@ function(items,delcallback) {
 
 ZmBriefcaseController.prototype._doDelete2 =
 function(items, delcallback) {
-	var ids = ZmBriefcaseController.__itemize(items);
+	var ids = ZmBriefcaseController._itemize(items);
 	if (!ids) { return; }
 
 	var soapDoc = AjxSoapDoc.create("ItemActionRequest", "urn:zimbraMail");
@@ -303,7 +303,7 @@ function() {
 	return this._toolbar[this._currentView];
 };
 
-ZmBriefcaseController.__itemize =
+ZmBriefcaseController._itemize =
 function(objects) {
 	if (objects instanceof Array) {
 		var ids = [];
@@ -321,22 +321,30 @@ function(objects) {
 // view management
 
 ZmBriefcaseController.prototype.show =
-function(folderId, force) {
-	if (!folderId) {
-		if (appCtxt.multiAccounts) {
-			folderId = appCtxt.multiAccounts
-				? ZmOrganizer.getSystemId(ZmOrganizer.ID_BRIEFCASE, appCtxt.getActiveAccount()) : ZmOrganizer.ID_BRIEFCASE;
-		} else {
-			folderId = ZmOrganizer.ID_BRIEFCASE;
-		}
+function(results, folderId) {
+
+	if (!(results instanceof ZmSearchResult)) {
+		return this.showXXX(results, folderId);
 	}
 
-	// save state
-	this._object = this._currentFolder = folderId;
-	this._forceSwitch = force;
+	this._folderId = folderId;
+	this._list = results.getResults(ZmItem.BRIEFCASE_ITEM);
+	this._list.setHasMore(results.getAttribute("more"));
 
-	var callback = new AjxCallback(this, this.showFolderContents);
-	this.getItemsInFolder(folderId, callback);
+	ZmListController.prototype.show.call(this, results);
+
+	this._setup(this._currentView);
+
+	// reset offset if list view has been created
+	var lv = this._listView[this._currentView];
+	if (lv) { lv.offset = 0; }
+
+	var elements = {};
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
+
+	this._setView({view:this._currentView, elements:elements, isAppView:true});
+	this._resetNavToolBarButtons(this._currentView);
 };
 
 ZmBriefcaseController.prototype.showFolderContents =
@@ -1071,4 +1079,25 @@ function() {
 	window.importSlides = true;
 	window.importSlidesQueue = importSlidesQueue;
 	this._app.handleOp(ZmOperation.NEW_PRESENTATION);
+};
+
+// Mendoza line
+
+ZmBriefcaseController.prototype.showXXX =
+function(folderId, force) {
+	if (!folderId) {
+		if (appCtxt.multiAccounts) {
+			folderId = appCtxt.multiAccounts
+				? ZmOrganizer.getSystemId(ZmOrganizer.ID_BRIEFCASE, appCtxt.getActiveAccount()) : ZmOrganizer.ID_BRIEFCASE;
+		} else {
+			folderId = ZmOrganizer.ID_BRIEFCASE;
+		}
+	}
+
+	// save state
+	this._object = this._currentFolder = folderId;
+	this._forceSwitch = force;
+
+	var callback = new AjxCallback(this, this.showFolderContents);
+	this.getItemsInFolder(folderId, callback);
 };

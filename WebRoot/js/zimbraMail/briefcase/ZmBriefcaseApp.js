@@ -89,8 +89,7 @@ function() {
 						 searchType:	"document",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
-			AjxDispatcher.require("BriefcaseCore");
-			return new ZmList(search, ZmItem.BRIEFCASE_ITEM);
+			return new ZmList(ZmItem.BRIEFCASE_ITEM, search);
 		}, this)
 						});
 };
@@ -214,6 +213,10 @@ function(creates, force) {
 			} else if (name == "link") {
 				this._handleCreateLink(create, ZmOrganizer.BRIEFCASE);
 			} else if (name == "doc") {
+				var list = bc.getList();
+//				if (list) {
+//					list.notifyCreate(create);
+//				}
 				if (create.l == bc._currentFolder) {
 					// YYY: new item reruns search - should just add to view
 					needsRefresh = true;
@@ -374,8 +377,25 @@ function(params, callback) {
 
 ZmBriefcaseApp.prototype._handleLoadLaunch =
 function(callback) {
-	this.getBriefcaseController().show(null,true);
+	this.search();
 	if (callback) { callback.run(); }
+};
+
+ZmBriefcaseApp.prototype.search =
+function(folder, callback, accountName) {
+
+	folder = folder || appCtxt.getById(ZmOrganizer.ID_BRIEFCASE);
+	var params = {
+		query:			folder.createQuery(),
+		types:			[ZmItem.BRIEFCASE_ITEM],
+		limit:			this.getLimit(),
+		searchFor:		ZmId.ITEM_BRIEFCASE,
+		callback:		callback,
+		accountName:	(accountName || (folder && folder.account && folder.account.name))
+	};
+	var sc = appCtxt.getSearchController();
+	sc.searchAllAccounts = false;
+	sc.search(params);
 };
 
 ZmBriefcaseApp.prototype.showSearchResults =
@@ -386,12 +406,20 @@ function(results, callback) {
 
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-	this.getBriefcaseController().showFolderContents(results.getResults(ZmItem.MIXED));
+	var folderId = results && results.search && results.search.folderId;
+	this.getBriefcaseController().show(results, folderId);
 	if (callback) { callback.run(); }
 };
 
 ZmBriefcaseApp.prototype.setActive =
 function(active) {
+};
+
+// return enough for us to get a scroll bar since we are pageless
+ZmBriefcaseApp.prototype.getLimit =
+function(offset) {
+	var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
+	return offset ? limit : 2 * limit;
 };
 
 ZmBriefcaseApp.prototype._newBriefcaseCallback =
@@ -498,4 +526,18 @@ ZmBriefcaseApp.prototype._createDeferredFolders =
 function(type) {
 	AjxPackage.require("BriefcaseCore");
 	ZmApp.prototype._createDeferredFolders.call(this, type);
+};
+
+// Mendoza line
+
+ZmBriefcaseApp.prototype._handleLoadLaunchXXX =
+function(callback) {
+	this.getBriefcaseController().show(null,true);
+	if (callback) { callback.run(); }
+};
+
+ZmBriefcaseApp.prototype._handleLoadShowSearchResultsXXX =
+function(results, callback) {
+	this.getBriefcaseController().showFolderContents(results.getResults(ZmItem.MIXED));
+	if (callback) { callback.run(); }
 };

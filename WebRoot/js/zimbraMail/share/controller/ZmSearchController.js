@@ -563,11 +563,10 @@ function(results, search, isMixed, noUpdateOverview) {
 	DBG.timePt("handle search results");
 
 	// determine if we need to default to mixed view
-	var isInGal = (this._contactSource == ZmId.SEARCH_GAL);
 	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		var saveBtn = this._searchToolBar && this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON);
 		if (saveBtn) {
-			saveBtn.setEnabled(!isInGal);
+			saveBtn.setEnabled(this._contactSource != ZmId.SEARCH_GAL);
 		}
 	}
 
@@ -577,7 +576,7 @@ function(results, search, isMixed, noUpdateOverview) {
 	var app = appCtxt.getApp(ZmItem.APP[resultsType]);
 	app.currentSearch = search;
 	app.currentQuery = search.query;
-	app.showSearchResults(results, loadCallback, isInGal, search.folderId);
+	app.showSearchResults(results, loadCallback);
 };
 
 ZmSearchController.prototype._handleLoadShowResults =
