@@ -1434,7 +1434,7 @@ function() {
 ZmComposeView.prototype.getFromAccount =
 function() {
 	var ac = window.parentAppCtxt || window.appCtxt;
-	return ac.accountList.getAccount(this._fromSelect.getSelectedOption().accountId);
+	return this._fromSelect ? ac.accountList.getAccount(this._fromSelect.getSelectedOption().accountId) : ac.accountList.defaultAccount || ac.accountList.activeAccount || ac.accountList.mainAccount;
 };
 
 // Private / protected methods
