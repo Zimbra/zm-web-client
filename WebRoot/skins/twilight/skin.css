@@ -107,10 +107,6 @@ body, #skin_container_splash_screen	{
 	padding:1em;
 }
 
-.ZOptionsHeader{
-	color: @AppC@;
-}
-
 .ZmCalViewMgr,
 .calendar_view,
 .ZmContactInfoView,
