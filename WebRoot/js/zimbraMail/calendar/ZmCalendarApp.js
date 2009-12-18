@@ -128,7 +128,7 @@ function(settings) {
 	settings.registerSetting("ENABLE_APPL_ICAL_DELEGATION", {name: "zimbraPrefAppleIcalDelegationEnabled",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
 	settings.registerSetting("CAL_AUTO_ADD_INVITES",		{name: "zimbraPrefCalendarAutoAddInvites",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("CAL_SEND_INV_DENIED_REPLY",	{name: "zimbraPrefCalendarSendInviteDeniedAutoReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	settings.registerSetting("CAL_INV_FORWARDING_ADDRESS",	{name: "zimbraPrefCalendarForwardInvitesTo", type:ZmSetting.T_PREF, isGlobal:true});
+	settings.registerSetting("CAL_INV_FORWARDING_ADDRESS",	{name: "zimbraPrefCalendarForwardInvitesTo", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST, isGlobal:true});
 	settings.registerSetting("CAL_SHOW_PAST_DUE_REMINDERS",	{name: "zimbraPrefCalendarShowPastDueReminders", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
 	settings.registerSetting("CAL_SHOW_CALENDAR_WEEK",		{name: "zimbraPrefShowCalendarWeek", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
 };
@@ -290,7 +290,8 @@ function() {
 	ZmPref.registerPref("CAL_INV_FORWARDING_ADDRESS", {
 		displayName:		ZmMsg.inviteForwardingAddress,
 		displayContainer:	ZmPref.TYPE_INPUT,
-		validationFunction: ZmPref.validateEmail,
+		validationFunction: ZmPref.validateEmailList,
+        valueFunction:      ZmPref.string2EmailList,
 		errorMessage:		ZmMsg.invalidEmail
 	});
 

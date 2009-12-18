@@ -109,6 +109,14 @@ function(emailStr) {
 	return true;
 };
 
+ZmPref.validateEmailList =
+function(emailStrArray) {
+    for(var i in emailStrArray) {
+        if(!ZmPref.validateEmail(emailStrArray[i])) return false;
+    }
+    return true;
+};
+
 ZmPref.downloadSinceDisplay =
 function(dateStr) {
 	if (dateStr == "") return 0;
@@ -210,6 +218,23 @@ function(value) {
 ZmPref.int2DurationDay =
 function(intValue) {
 	return intValue != null && intValue != 0 ? intValue + "d" : intValue;
+};
+
+ZmPref.string2EmailList =
+function(value) {
+    var emailList = [];
+    var addr,addrs = AjxEmailAddress.split(value);
+    if (addrs && addrs.length) {
+        for (var i = 0; i < addrs.length; i++) {
+            addr = addrs[i];
+            var email = AjxEmailAddress.parse(addr);
+            if(email) {
+                addr = email.getAddress();
+            }
+            if(addr) emailList.push(addr);
+        }
+    }
+	return emailList;
 };
 
 ZmPref.durationDay2Int =
