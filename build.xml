@@ -1233,6 +1233,7 @@ if (ext == null) ext = "";
 		 <java classname="org.apache.jasper.JspC" fork="true" classpathref="jspc.class.path">
              <arg value="-s" />
              <arg value="-l" />
+             <arg value="-trimSpaces" />
              <arg value="-d" />
              <arg value="${jspc.build.dir}" />
              <arg value="-uriroot" />
