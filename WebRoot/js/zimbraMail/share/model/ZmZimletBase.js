@@ -251,6 +251,7 @@ function(handlerName) {
 /**
  * This method gets called when a single-click is performed.
  *
+ * @param	{Object}	canvas		the canvas
  * @see		#doubleClicked
  */
 ZmZimletBase.prototype.singleClicked = function(canvas) {};
@@ -259,6 +260,7 @@ ZmZimletBase.prototype.singleClicked = function(canvas) {};
  * This method gets called when a double-click is performed. By default, this method
  * will create the default property editor for editing user properties.
  * 
+ * @param	{Object}	canvas		the canvas
  * @see		#singleClicked
  * @see		#createPropertyEditor
  */
@@ -433,18 +435,18 @@ ZmZimletBase.prototype.onMailConfirm = function(confirmView, msg) {};
  * Zimlets should also use the "g" option when constructing their <code><regex></code>.
  *
  * <p>
- * Zimlets should set <code>regex.lastIndex</code> to <code>startIndex</code> and then use <code>regex.exec(content)</code>.
- * 
+ * The return should be an array in the form:
+ *  
  * <pre>
- * var result = zimlet.match(line);
- * result[0] // should be matched string
- * result.index // should be location within line match occurred
+ * result[0...n] // should be matched string(s)
+ * result.index // should be location within line where match occurred
+ * result.input // should be the input parameter content
  * </pre>
  * </p>
  * 
- * @param	{String}	content		the content to perform a match against
+ * @param	{String}	content		the content line to perform a match against
  * @param	{Number}	startIndex	the start index (i.e. where to begin the search)
- * @return	{String}	the first content object match starting from the <code>startIndex</code> if the content matched the specified zimlet handler regular expression; otherwise <code>null</code>
+ * @return	{Array}	the matching content object from the <code>startIndex</code> if the content matched the specified zimlet handler regular expression; otherwise <code>null</code>
  */
 ZmZimletBase.prototype.match =
 function(content, startIndex) {
@@ -460,10 +462,10 @@ function(content, startIndex) {
 /**
  * This method is called when a zimlet content object is clicked.
  *
- * @param	{String}		spanElement		the enclosing span element
+ * @param	{Object}		spanElement		the enclosing span element
  * @param	{String}		contentObjText	the content object text
- * @param	matchContent	the match content
- * @param	event			the event
+ * @param	{Array}		matchContent	the match content
+ * @param	{DwtMouseEvent}	event			the mouse click event
  */
 ZmZimletBase.prototype.clicked =
 function(spanElement, contentObjText, matchContext, event) {
@@ -479,10 +481,10 @@ function(spanElement, contentObjText, matchContext, event) {
 /**
  * This method is called when the tool tip is popping-up.
  *
- * @param	{String}		spanElement		the enclosing span element
- * @param	{String}		contentObjText	the content object text
- * @param	matchContent
- * @param	canvas
+ * @param	{Object}	spanElement		the enclosing span element
+ * @param	{String}	contentObjText	the content object text
+ * @param	{Array}		matchContent	the matched content
+ * @param	{Object}	canvas			the canvas
  */
 ZmZimletBase.prototype.toolTipPoppedUp =
 function(spanElement, contentObjText, matchContext, canvas) {
@@ -507,10 +509,10 @@ function(spanElement, contentObjText, matchContext, canvas) {
 /**
  * This method is called when the tool tip is popping-down.
  *
- * @param	{String}		spanElement		the enclosing span element
+ * @param	{Object}		spanElement		the enclosing span element
  * @param	{String}		contentObjText	the content object text
- * @param	matchContent
- * @param	canvas
+ * @param	{Array}		matchContent	the matched content
+ * @param	{Object}	canvas			the canvas
  * @return	<code>null</code> if the tool tip may be popped-down; otherwise, a string indicating why the tool tip should not be popped-down
  */
 ZmZimletBase.prototype.toolTipPoppedDown =
@@ -542,9 +544,9 @@ function(obj, span, context) {
  * 
  * @param	{ZmZimletBase.PANEL_MENU|ZmZimletBase.CONTENTOBJECT_MENU}	contextMenu		the context menu
  * @param	{String}		menuItemId		the selected menu item Id
- * @param	{String}		spanElement		the enclosing span element
+ * @param	{Object}		spanElement		the enclosing span element
  * @param	{String}		contentObjText	the content object text
- * @param	canvas		the canvas
+ * @param	{Object}		canvas		the canvas
  */
 ZmZimletBase.prototype.menuItemSelected =
 function(contextMenu, menuItemId, spanElement, contentObjText, canvas) {};
