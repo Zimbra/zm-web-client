@@ -1014,7 +1014,7 @@ function(canvasData, url, x, y) {
                 canvas = window.open(browserUrl, this.xmlObj("name"), contentObject.onClick.canvas.props);
         }
         else{
-            var props = canvasData.props || [ "toolbar=yes,location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes"];
+            var props = canvasData.props ? [ canvasData.props ] : [ "toolbar=yes,location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes"];
             if (canvasData.width)
                 props.push("width=" + canvasData.width);
             if (canvasData.height)
