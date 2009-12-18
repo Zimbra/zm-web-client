@@ -720,7 +720,7 @@ function(dayInfo) {
         view.setCompactMode(true);
         view.setCloseDayViewCallback(new AjxCallback(this, this._closeDayView));
         //listener changes
-        view.addViewActionListener(new AjxListener(this, this._viewActionListener));
+        view.addViewActionListener(new AjxListener(this._controller, this._controller._viewActionListener));
         view.addTimeSelectionListener(new AjxListener(this._controller, this._controller._timeSelectionListener));
         view.addSelectionListener(new AjxListener(this, this._dayListSelectionListener));
         view.addActionListener(new AjxListener(this._controller, this._controller._listActionListener));
