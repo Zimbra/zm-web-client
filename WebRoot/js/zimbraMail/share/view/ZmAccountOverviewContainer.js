@@ -209,6 +209,8 @@ function(params) {
 
 		header = this.getHeaderItem(mainAcct);
 		header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, mainAcct));
+
+		this.updateAccountInfo(mainAcct, false, true);
 	}
 
 	// add zimlets at the end of all overviews

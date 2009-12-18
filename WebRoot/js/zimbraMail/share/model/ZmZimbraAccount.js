@@ -116,7 +116,7 @@ function() {
 
 ZmZimbraAccount.prototype.getToolTip =
 function() {
-	if (this.status || this.lastSync) {
+	if (this.status || this.lastSync || this.isMain) {
 		var lastSyncDate = (this.lastSync && this.lastSync != 0)
 			? (new Date(parseInt(this.lastSync))) : null;
 
