@@ -15,15 +15,11 @@
 
 ZmDetailListView = 	function(parent, controller, dropTgt) {
 
-	// save data
-	//this._folderId = null;
-	this._controller = controller;
-
-	// call super constructor
 	var headerList = this._getHeaderList(parent);
-	ZmListView.call(this, {parent:parent, className:"ZmBriefcaseDetailListView", pageless:true,
-					posStyle:DwtControl.ABSOLUTE_STYLE, view:ZmId.VIEW_BRIEFCASE_DETAIL, type:ZmItem.BRIEFCASE_ITEM,
-					controller:controller, headerList:headerList, dropTgt:dropTgt, pageless:true});
+	var params = {parent:parent, className:"ZmBriefcaseDetailListView",
+				  view:ZmId.VIEW_BRIEFCASE_DETAIL,
+				  controller:controller, headerList:headerList, dropTgt:dropTgt};
+	ZmBriefcaseBaseView.call(this, params);
 
 	// create a action menu for the header list
 	this._colHeaderActionMenu = new ZmPopupMenu(this);
@@ -40,7 +36,7 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 	}
 }
 
-ZmDetailListView.prototype = new ZmListView;
+ZmDetailListView.prototype = new ZmBriefcaseBaseView;
 ZmDetailListView.prototype.constructor = ZmDetailListView;
 
 ZmDetailListView.prototype.toString =
@@ -150,53 +146,4 @@ function(array, type) {
 	for (var i = 0; i < array.length; i++) {
 		array[i]._type = type;
 	}
-};
-
-ZmDetailListView.prototype.getTitle =
-function() {
-	//TODO: title is the name of the current folder
-	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
-};
-
-//for ZimbraDnD to do make even more generic
-ZmDetailListView.prototype.processUploadFiles =
-function() {
-	var files = [];
-	var ulEle = document.getElementById('zdnd_ul');
-    if (ulEle) {
-        for (var i = 0; i < ulEle.childNodes.length; i++) {
-            var liEle = ulEle.childNodes[i];
-            var inputEl = liEle.childNodes[0];
-            if (inputEl.name != "_attFile_") continue;
-            if (!inputEl.value) continue;
-            var file = {
-                fullname: inputEl.value,
-                name: inputEl.value.replace(/^.*[\\\/:]/, "")
-            };
-            files.push(file);
-         }
-   }
-   return files;
-}
-
-ZmDetailListView.prototype.uploadFiles =
-function() {
-    var attachDialog = appCtxt.getUploadDialog();
-    var app = this._controller.getApp();
-    attachDialog._uploadCallback = new AjxCallback(app, app._handleUploadNewItem);
-    var files = this.processUploadFiles();
-    attachDialog.uploadFiles(files, document.getElementById("zdnd_form"), {id:this._controller._currentFolder});
-};
-
-ZmDetailListView.prototype._getToolTip =
-function(params) {
-	if (!params.item) { return; }
-	return this._controller.getItemTooltip(params.item, this);
-};
-
-//end zimbradnd
-
-ZmDetailListView.prototype._getItemCountType =
-function() {
-	return null;
 };

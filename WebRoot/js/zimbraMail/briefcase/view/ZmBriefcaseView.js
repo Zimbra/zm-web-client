@@ -14,9 +14,10 @@
  */
 ZmBriefcaseView = function(parent, controller, dropTgt) {
 
-	ZmListView.call(this, {parent:parent, className:"ZmBriefcaseView", posStyle:DwtControl.ABSOLUTE_STYLE,
-					view:ZmId.VIEW_BRIEFCASE, type:ZmItem.BRIEFCASE_ITEM, controller:controller,
-					dropTgt:dropTgt, pageless:true});
+	var params = {parent:parent, className:"ZmBriefcaseView",
+				  view:ZmId.VIEW_BRIEFCASE, controller:controller,
+				  dropTgt:dropTgt};
+	ZmBriefcaseBaseView.call(this, params);
 	
 	this._controller = controller;
 
@@ -26,10 +27,9 @@ ZmBriefcaseView = function(parent, controller, dropTgt) {
 	this._setAllowSelection();
 	
 	this.setDropTarget(dropTgt);
-//	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-//	this.setDragSource(this._dragSrc);
-}
-ZmBriefcaseView.prototype = new ZmListView;
+};
+
+ZmBriefcaseView.prototype = new ZmBriefcaseBaseView;
 ZmBriefcaseView.prototype.constructor = ZmBriefcaseView;
 
 ZmBriefcaseView.prototype.toString =
@@ -180,15 +180,6 @@ ZmBriefcaseView.prototype.onDelete = function(){
 ZmBriefcaseView.prototype.refresh = function(restUrl){
 };
 
-ZmBriefcaseView.prototype._getToolTip =
-function(params) {
-	if (!params.item) { return null; }
-
-	return ZmBriefcaseController.prototype.getItemTooltip.call(this, params.item, this);
-
-};
-
-
 ZmBriefcaseView.prototype._mouseOverAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
@@ -245,42 +236,6 @@ function() {
 
 	if (this._kbAnchor != null && this.hasFocus())
 		Dwt.addClass(this._kbAnchor, this._kbFocusClass);
-};
-
-//for ZimbraDnD to do make even more generic
-ZmBriefcaseView.prototype.processUploadFiles = function() {
-    var ulEle = document.getElementById('zdnd_ul');
-    var files = [];
-    if (ulEle);
-    {
-        for (var i = 0; i < ulEle.childNodes.length; i++)
-        {
-            var liEle = ulEle.childNodes[i];
-            var inputEle = liEle.childNodes[0];
-            if (inputEle.name != "_attFile_") continue;
-            if (!inputEle.value) continue;
-            var file = {
-                fullname: inputEle.value,
-                name: inputEle.value.replace(/^.*[\\\/:]/, "")
-            };
-            files.push(file);
-         }
-   }
-   return files;
-}
-
-ZmBriefcaseView.prototype.uploadFiles = function(){
-    var attachDialog = appCtxt.getUploadDialog();
-    var app = this._controller.getApp();
-    attachDialog._uploadCallback = new AjxCallback(app, app._handleUploadNewItem);
-    var files = this.processUploadFiles();
-    attachDialog.uploadFiles(files,document.getElementById("zdnd_form"),{id:this._controller._currentFolder});
-};
-//End ZimbraDnD
-
-ZmBriefcaseView.prototype._getItemCountType =
-function() {
-	return null;
 };
 
 // Grab more items if we're within one row of bottom

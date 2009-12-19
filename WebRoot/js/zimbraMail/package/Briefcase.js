@@ -13,14 +13,15 @@
  * ***** END LICENSE BLOCK *****
  */
 /*
- * Package: Notebook
+ * Package: Briefcase
  * 
- * Supports: The Notebook (wiki) application
+ * Supports: The Briefcase application
  * 
  * Loaded:
- * 	- When the user goes to the Notebook application
- * 	- When the user creates a new notebook or page
+ * 	- When the user goes to the Briefcase application
+ * 	- When the user creates a new briefcase or uploaded file
  */
+AjxPackage.require("zimbraMail.briefcase.view.ZmBriefcaseBaseView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmBriefcaseView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmBriefcaseIconView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmDetailListView");

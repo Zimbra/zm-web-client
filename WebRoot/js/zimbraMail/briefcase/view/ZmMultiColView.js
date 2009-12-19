@@ -13,13 +13,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmMultiColView = 	function(parent, className, posStyle, controller, dropTgt) {
+ZmMultiColView = function(parent, controller, dropTgt) {
 
-	if (arguments.length == 0) return;
-
-	className = className || "ZmMultiColView";
-	posStyle = posStyle || Dwt.ABSOLUTE_STYLE;
-	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
+	DwtComposite.call(this, {parent:parent, className:"ZmMultiColView", posStyle:Dwt.ABSOLUTE_STYLE});
 
 	this._controller = controller;
 
@@ -50,15 +46,20 @@ ZmMultiColView.prototype.toString = function() {
 	return "ZmMultiColView";
 };
 
+// The next few funcs are passed to a component list view
 ZmMultiColView.prototype.getTitle =
 function() {
-	//TODO: title is the name of the current folder
-	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
+	return this._listPart[0].getTitle();
 };
 
-ZmMultiColView.prototype.getController =
+ZmMultiColView.prototype.processUploadFiles =
 function() {
-	return this._controller;
+	return this._listPart[0].processUploadFiles();
+};
+
+ZmMultiColView.prototype.uploadFiles =
+function() {
+	return this._listPart[0].uploadFiles();
 };
 
 ZmMultiColView.prototype._fileTreeListener =
@@ -384,37 +385,6 @@ function() {
 	this._noOfCol++;
 	return div;
 };
-
-//for ZimbraDnD to do make even more generic
-ZmMultiColView.prototype.processUploadFiles = function() {
-    var ulEle = document.getElementById('zdnd_ul');
-    var files = [];
-    if (ulEle);
-    {
-        for (var i = 0; i < ulEle.childNodes.length; i++)
-        {
-            var liEle = ulEle.childNodes[i];
-            var inputEle = liEle.childNodes[0];
-            if (inputEle.name != "_attFile_") continue;
-            if (!inputEle.value) continue;
-            var file = {
-                fullname: inputEle.value,
-                name: inputEle.value.replace(/^.*[\\\/:]/, "")
-            };
-            files.push(file);
-         }
-   }
-   return files;
-}
-
-ZmMultiColView.prototype.uploadFiles = function(){
-    var attachDialog = appCtxt.getUploadDialog();
-    var app = this._controller.getApp();
-    attachDialog._uploadCallback = new AjxCallback(app, app._handleUploadNewItem);
-    var files = this.processUploadFiles();
-    attachDialog.uploadFiles(files,document.getElementById("zdnd_form"),{id:this._controller._currentFolder});
-};
-//end zimbradnd
 
 ZmMultiColView.prototype._checkItemCount =
 function() {

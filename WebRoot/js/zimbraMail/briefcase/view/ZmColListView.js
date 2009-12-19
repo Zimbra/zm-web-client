@@ -15,17 +15,15 @@
 
 ZmColListView =	function(parent, controller, dropTgt, index) {
 
-	// save data
-	//this._folderId = null;
 	this._controller = controller;
 	var view = ZmId.VIEW_BRIEFCASE_COLUMN;
-	controller._currentView = view;//cdel
+	controller._currentView = view;
 	this._colIdx = index;
 
-	ZmListView.call(this, {parent:parent, className:"ZmColListView",
-						   view:view, type:ZmItem.BRIEFCASE_ITEM, id:ZmId.getViewId(view, index),
-						   controller:controller, headerList:this._getHeaderList(parent),
-						   dropTgt:dropTgt, pageless:true});
+	var params = {parent:parent, className:"ZmColListView", dropTgt:dropTgt,
+				  view:view, id:ZmId.getViewId(view, index), posStyle:DwtControl.STATIC_STYLE,
+				  controller:controller, headerList:this._getHeaderList(parent)};
+	ZmBriefcaseBaseView.call(this, params);
 	
 	// create a action menu for the header list
 	
@@ -34,7 +32,7 @@ ZmColListView =	function(parent, controller, dropTgt, index) {
 	this._controller._addListListeners(this);	
 }
 
-ZmColListView.prototype = new ZmListView;
+ZmColListView.prototype = new ZmBriefcaseBaseView;
 ZmColListView.prototype.constructor = ZmColListView;
 
 ZmColListView.prototype.toString = function() {
@@ -101,12 +99,6 @@ ZmColListView.__typify = function(array, type) {
 	}
 };
 
-ZmColListView.prototype.getTitle =
-function() {
-	//TODO: title is the name of the current folder
-	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
-};
-
 ZmColListView.prototype._itemClicked =
 function(clickedEl, ev) {
 	this._controller._listView[ZmId.VIEW_BRIEFCASE_COLUMN] = this;
@@ -167,12 +159,6 @@ function(ev, div) {
 		}
 	}
 	return true;
-};
-
-ZmColListView.prototype._getToolTip =
-function(params) {
-	if (!params.item) { return; }
-	return this._controller.getItemTooltip(params.item, this);
 };
 
 ZmColListView.prototype._getScrollDiv =

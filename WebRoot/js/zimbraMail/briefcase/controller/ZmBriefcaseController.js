@@ -46,9 +46,9 @@ function() {
 
 // Constants
 ZmBriefcaseController._VIEWS = {};
-ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE] = ZmBriefcaseView;
-ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_DETAIL] = ZmDetailListView;
-ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_COLUMN] = ZmMultiColView;
+ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE] = "ZmBriefcaseView";
+ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_DETAIL] = "ZmDetailListView";
+ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_COLUMN] = "ZmMultiColView";
 
 // Stuff for the View menu
 ZmBriefcaseController.GROUP_BY_ICON = {};
@@ -253,9 +253,9 @@ function() {
 ZmBriefcaseController.prototype._createNewView =
 function(view) {
 	if (!this._listView[view]) {
-		var viewCtor = ZmBriefcaseController._VIEWS[view];
+		var viewCtor = eval(ZmBriefcaseController._VIEWS[view]);
 		if (view == ZmId.VIEW_BRIEFCASE_COLUMN) {
-			this._parentView[view] = new viewCtor(this._container, null, null, this, this._dropTgt);
+			this._parentView[view] = new viewCtor(this._container, this, this._dropTgt);
 			var listView = this._listView[view] = this._parentView[view].getListView();
 			listView.setDragSource(this._dragSrc);
 			return listView;
