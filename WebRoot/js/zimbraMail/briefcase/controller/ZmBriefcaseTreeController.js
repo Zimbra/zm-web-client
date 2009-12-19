@@ -80,6 +80,11 @@ function(actionMenu, type, id) {
 	}
 };
 
+ZmBriefcaseTreeController.prototype._getAllowedSubTypes =
+function() {
+	return ZmTreeController.prototype._getAllowedSubTypes.call(this);
+};
+
 ZmBriefcaseTreeController.__isAllowed =
 function(organizer, perm) {
 	var allowed = true;

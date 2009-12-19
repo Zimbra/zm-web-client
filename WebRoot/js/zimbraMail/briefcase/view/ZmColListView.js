@@ -25,8 +25,6 @@ ZmColListView =	function(parent, controller, dropTgt, index) {
 				  controller:controller, headerList:this._getHeaderList(parent)};
 	ZmBriefcaseBaseView.call(this, params);
 	
-	// create a action menu for the header list
-	
 	//adding the listeners in constructors so that we get listener events
 	//for all new columns created on fly
 	this._controller._addListListeners(this);	
@@ -43,6 +41,22 @@ ZmColListView.prototype.toString = function() {
 
 ZmColListView.KEY_ID = "_keyId";
 
+ZmColListView.prototype.set =
+function(list, sortField) {
+
+	// show subfolders at top since virtual paging makes them hard to see
+	if (!this._itemsToAdd) {
+		var subs = this._controller._getSubfolders();
+		if (subs.length) {
+			for (var i = subs.length - 1; i >= 0; i--) {
+				list.add(subs[i], 0);
+			}
+		}
+	}
+
+	ZmBriefcaseBaseView.prototype.set.apply(this, arguments);
+};
+
 // Protected methods
 
 ZmColListView.prototype._getHeaderList =
@@ -52,14 +66,17 @@ function(parent) {
 
 ZmColListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
-	var contentType = item.contentType;
-	if(contentType && contentType.match(/;/)) {
-			contentType = contentType.split(";")[0];
-	}
-	var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
-	var icon = mimeInfo ? mimeInfo.image : "UnknownDoc" ;
-	if(item.isFolder){
+
+	var icon;
+	if (item.isFolder) {
 		icon = "Folder";
+	} else {
+		var contentType = item.contentType;
+		if (contentType && contentType.match(/;/)) {
+			contentType = contentType.split(";")[0];
+		}
+		var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
+		icon = mimeInfo ? mimeInfo.image : "UnknownDoc";
 	}
 
 	idx = this._getTable(htmlArr, idx, params);
@@ -68,12 +85,12 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
 	htmlArr[idx++] = AjxImg.getImageHtml(icon);
 	htmlArr[idx++] = "</center></td>";
-	htmlArr[idx++] = "<td style='vertical-align:middle;' width='100%' id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>&nbsp;";
-	htmlArr[idx++] =    AjxStringUtil.htmlEncode(item.name);
+	htmlArr[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item,ZmItem.F_SUBJECT) + "'>&nbsp;";
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
 	htmlArr[idx++] = "</td>";
 
-    htmlArr[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>";
-    if(item.tags.length > 0){
+    htmlArr[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item,ZmItem.F_SUBJECT)+"'>";
+    if (item.tags && item.tags.length) {
 	    idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
     }
 	htmlArr[idx++] = "</td>";
@@ -101,17 +118,19 @@ ZmColListView.__typify = function(array, type) {
 
 ZmColListView.prototype._itemClicked =
 function(clickedEl, ev) {
+
 	this._controller._listView[ZmId.VIEW_BRIEFCASE_COLUMN] = this;
 	ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
 	var items = this.getSelection();
 	
 	this.parent.removeChildColumns(this._colIdx);
 	this.parent.setCurrentListView(this);				
-	if(items && items.length ==1){
-		if(items[0].isFolder){
-			this.parent.expandFolder(items[0].id);
-		}else{
-			this.parent.showFileProps(items[0]);
+	if (items && items.length == 1) {
+		var item = items[0];
+		if (item.isFolder) {
+			this.parent.expandFolder(item.id);
+		} else {
+			this.parent.showFileProps(item);
 		}
 	}
 };

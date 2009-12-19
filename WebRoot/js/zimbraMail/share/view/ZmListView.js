@@ -798,7 +798,7 @@ function(params) {
 ZmListView.prototype._getTagToolTip =
 function(item) {
 	if (!item) { return; }
-	var numTags = item.tags.length;
+	var numTags = item.tags && item.tags.length;
 	if (!numTags) { return; }
 	var account = appCtxt.multiAccounts ? item.account : null;
 	var tagList = appCtxt.getTagTree(account);

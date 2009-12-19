@@ -318,6 +318,32 @@ function(objects) {
 	return objects.id;
 };
 
+ZmBriefcaseController.prototype._getSubfolders =
+function(folderId) {
+
+	var folderId = folderId || this._currentSearch.folderId;
+	var folder = folderId && appCtxt.getById(folderId);
+	var subfolders = [];
+	if (folder) {
+		var children = folder.children;
+		for (var i = 0, len = children.size(); i < len; i++) {
+			var briefcase = children.get(i);
+			var item = this.getItemById(briefcase.id);
+			if (!item) {
+				item = new ZmBriefcaseItem();
+			}
+			item.id = briefcase.id;
+			item.name = briefcase.name;
+			item.folderId = folderId;
+			item.isFolder = true;
+			subfolders.push(item);
+		}
+	}
+
+	return subfolders;
+};
+
+
 // view management
 
 ZmBriefcaseController.prototype.show =
@@ -331,7 +357,7 @@ function(results, folderId) {
 	this._list = results.getResults(ZmItem.BRIEFCASE_ITEM);
 	this._list.setHasMore(results.getAttribute("more"));
 
-	ZmListController.prototype.show.call(this, results);
+	ZmListController.prototype.show.call(this, results, this._currentView);
 
 	this._setup(this._currentView);
 
@@ -479,24 +505,6 @@ function(searchResp, folderId) {
 		}
 	}
 
-	// recursive search not done yet : workaround
-	var folder = appCtxt.getById(folderId);
-	if (folder) {
-		var children = folder.children;
-		var size = children.size();
-		for (var i = 0; i < size; i++) {
-			var briefcase = children.get(i);
-			var item = this.getItemById(briefcase.id);
-			if (!item) {
-				item = new ZmBriefcaseItem();
-			}
-			item.id = briefcase.id;
-			item.name = briefcase.name;
-			item.folderId = folderId;
-			item.isFolder = true;
-			items.add(item);
-		}
-	}
 
 	items.hasMore = searchResp.more;
 

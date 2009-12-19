@@ -184,12 +184,18 @@ function() {
 
 ZmMultiColView.prototype.expandFolder =
 function(folderId) {
+
 	var listView  = this.addColumn();
 	if(this._currentListView) {
 		this._currentListView.setNextColumn(listView);
 		listView.setPreviousColumn(this._currentListView);
 	}
 	this._currentListView = listView;
+
+	this._controller._listView[ZmId.VIEW_BRIEFCASE_COLUMN] = listView;
+	this._controller._app.search(appCtxt.getById(folderId));
+	return;
+
 	var callback = new AjxCallback(this,this.showFolderContents,[listView,folderId]);
 	this._controller.getItemsInFolder(folderId,callback);
 };
@@ -206,14 +212,13 @@ ZmMultiColView.prototype.set =
 function(list) {
 	var len = this._listPart.length;
 	var listView = null;
-	if(len == 0){
+	if (len == 0){
 		this._currentListView = listView = this.addColumn();
-
-	}else{
-		if(!this._controller.isRefreshing()){
+	} else {
+		if (!this._controller.isRefreshing()) {
 			this._currentListView  = listView = this._listPart[0];
 			this.removeChildColumns(0);
-		}else{
+		} else {
 			listView = this._currentListView;
 			this.removeChildColumns(listView.getColumnIndex());
 		}
