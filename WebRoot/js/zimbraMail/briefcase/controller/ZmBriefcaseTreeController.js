@@ -17,7 +17,7 @@ ZmBriefcaseTreeController = function(type) {
 
 	ZmFolderTreeController.call(this, (type || ZmOrganizer.BRIEFCASE));
 
-	this._listeners[ZmOperation.NEW_BRIEFCASEITEM] = new AjxListener(this, this._newListener);
+	this._listeners[ZmOperation.NEW_BRIEFCASE] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_BRIEFCASE] = new AjxListener(this, this._shareBriefcaseListener);
 	this._listeners[ZmOperation.MOUNT_BRIEFCASE] = new AjxListener(this, this._mountBriefcaseListener);
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
@@ -53,7 +53,7 @@ function(actionMenu, type, id) {
 		var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE);
 		menuItem.setEnabled(!isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
 
-		menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASEITEM);
+		menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
 		menuItem.setText(ZmMsg.newFolder);
 		menuItem.setImage("NewSection");
 		menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR));
@@ -98,7 +98,7 @@ function(organizer, perm) {
 // Returns a list of desired header action menu operations
 ZmBriefcaseTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	var ops = [ZmOperation.NEW_BRIEFCASEITEM];
+	var ops = [ZmOperation.NEW_BRIEFCASE];
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.MOUNT_BRIEFCASE);
 	}
@@ -114,7 +114,7 @@ function() {
 // Returns a list of desired action menu operations
 ZmBriefcaseTreeController.prototype._getActionMenuOps =
 function() {
-	var ops = [ZmOperation.NEW_BRIEFCASEITEM];
+	var ops = [ZmOperation.NEW_BRIEFCASE];
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.MOUNT_BRIEFCASE);
 	}
