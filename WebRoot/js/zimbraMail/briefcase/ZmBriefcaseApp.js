@@ -382,16 +382,17 @@ function(callback) {
 };
 
 ZmBriefcaseApp.prototype.search =
-function(folder, callback, accountName) {
+function(folderId, callback, accountName, noRender) {
 
-	folder = folder || appCtxt.getById(ZmOrganizer.ID_BRIEFCASE);
+	var folder = appCtxt.getById(folderId || ZmOrganizer.ID_BRIEFCASE);
 	var params = {
 		query:			folder.createQuery(),
 		types:			[ZmItem.BRIEFCASE_ITEM],
 		limit:			this.getLimit(),
 		searchFor:		ZmId.ITEM_BRIEFCASE,
 		callback:		callback,
-		accountName:	(accountName || (folder && folder.account && folder.account.name))
+		accountName:	(accountName || (folder && folder.account && folder.account.name)),
+		noRender:		noRender
 	};
 	var sc = appCtxt.getSearchController();
 	sc.searchAllAccounts = false;
@@ -439,7 +440,7 @@ function() {
 
 ZmBriefcaseApp.prototype.createFromAttachment =
 function(msgId, partId,name) {
-	var loadCallback = new AjxCallback(this,this._handleCreateFromAttachment,[msgId,partId,name]);
+	var loadCallback = new AjxCallback(this, this._handleCreateFromAttachment, [msgId, partId, name]);
 	AjxDispatcher.require(["BriefcaseCore","Briefcase"], false, loadCallback);
 };
 
@@ -468,7 +469,8 @@ function(dlg, msgId, partId) {
 ZmBriefcaseApp.prototype._chooserCallback =
 function(msgId, partId, name, folder) {
 	var callback = new AjxCallback(this, this.handleDuplicateCheck, [msgId, partId, name, folder.id]);
-	this.getBriefcaseController().getItemsInFolder(folder.id, callback);
+	this.search(folder, callback);
+//	this.getBriefcaseController().getItemsInFolder(folder.id, callback);
 };
 
 ZmBriefcaseApp.prototype.handleDuplicateCheck =

@@ -15,7 +15,9 @@
 
 ZmBriefcaseTabView = function(parent,className,posStyle) {
 
-    if (arguments.length == 0) return;
+	var ac = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+	this._app = ac.getApp(ZmApp.BRIEFCASE);
+	this.view = ZmId.VIEW_BRIEFCASE_ICON;
 
     DwtTabViewPage.call(this,parent,className,Dwt.STATIC_STYLE);
 
@@ -40,7 +42,9 @@ ZmBriefcaseTabView.prototype.hideMe = function(){
 };
 
 //Create UI for Briefcase Tab UI
-ZmBriefcaseTabView.prototype._createHtml = function(){
+ZmBriefcaseTabView.prototype._createHtml =
+function() {
+
     this._contentEl =  this.getContentHtmlElement();
     this._tableID = Dwt.getNextId();
     this._folderTreeCellId = Dwt.getNextId();
@@ -59,25 +63,32 @@ ZmBriefcaseTabView.prototype._createHtml = function(){
     
     this.showBriefcaseTreeView();
 
-    var bController = this._briefcaseController = AjxDispatcher.run("GetBriefcaseController");    
-    var params = {parent: bController._container, className: "BriefcaseTabBox BriefcaseList", posStyle: DwtControl.ABSOLUTE_STYLE, view: ZmId.VIEW_BRIEFCASE_ICON, type: ZmItem.ATT, controller: bController};
-    var bcView = this._tabBriefcaseView = new ZmBriefcaseIconView(params);
-    bcView.reparentHtmlElement(this._folderListId);
-    bcView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
-    Dwt.setPosition(bcView.getHtmlElement(),Dwt.RELATIVE_STYLE);
-    //this.showFolder(ZmOrganizer.ID_BRIEFCASE);
+	var loadCallback = new AjxCallback(this, this._createHtml1);
+	AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback);
+};
+
+ZmBriefcaseTabView.prototype._createHtml1 =
+function() {
+	var bc = this._controller = new ZmBriefcaseController(this._app._container, this._app);
+    var params = {parent:bc._container, className:"BriefcaseTabBox BriefcaseList", view:this.view,
+				  controller:bc};
+    var lv = this._listView = this._controller._listView[this.view] = new ZmBriefcaseIconView(params);
+    lv.reparentHtmlElement(this._folderListId);
+    lv.addSelectionListener(new AjxListener(this, this._listSelectionListener));
+    Dwt.setPosition(lv.getHtmlElement(),Dwt.RELATIVE_STYLE);
 };
 
 ZmBriefcaseTabView.prototype.setSize =
 function(width, height) {
+
     DwtTabViewPage.prototype.setSize.call(this, width, height);
     var size = this.getSize();
 
-    var treeWidth = size.x*0.40;
-    var listWidth = size.x-treeWidth;
-    var newHeight = height-15;
+    var treeWidth = size.x * 0.40;
+    var listWidth = size.x - treeWidth;
+    var newHeight = height - 15;
     this._overview.setSize(treeWidth, newHeight);
-    this._tabBriefcaseView.setSize(listWidth-5, newHeight);
+    this._listView.setSize(listWidth - 5, newHeight);
     return this;
 };
 
@@ -85,33 +96,33 @@ function(width, height) {
 ZmBriefcaseTabView.prototype.showFolder =
 function(folderId) {
     this._folderId = folderId;
-    var bController = this._briefcaseController;
-    var callback = new AjxCallback(this,this.showFolderContents,[folderId]);
-    bController.getItemsInFolder(folderId,callback);
+    var callback = new AjxCallback(this, this.showFolderContents, [folderId]);
+	this._app.search(folderId, callback, null, true);
 };
 
 ZmBriefcaseTabView.prototype.showFolderContents =
-function(folderId,items) {
-    if(items){
-        this._list = items;
-    }else{
-        this._list = new ZmList(ZmItem.BRIEFCASE_ITEM);
-    }
-    var bcView = this._tabBriefcaseView;
-    bcView.set(folderId, this._list);
+function(folderId, results) {
+	var searchResult = results.getResponse();
+	if (searchResult) {
+		var list = this._controller._list = searchResult.getResults(ZmItem.BRIEFCASE_ITEM);
+		this._controller._list.setHasMore(searchResult.getAttribute("more"));
+		ZmListController.prototype.show.call(this._controller, searchResult, ZmId.VIEW_BRIEFCASE_ICON);
+		this._listView.set(list);
+	}
 };
 
 ZmBriefcaseTabView.prototype._listSelectionListener =
 function(ev) {
     if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
         var item = ev.item;
-        if(item && item.isFolder){
+        if (item && item.isFolder){
             this.showFolder(item.id);
         }
     }
 };
 
-ZmBriefcaseTabView.prototype._handleKeys = function(ev){
+ZmBriefcaseTabView.prototype._handleKeys =
+function(ev){
     var key = DwtKeyEvent.getCharCode(ev);
     return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
 };
@@ -123,27 +134,24 @@ function() {
 
 ZmBriefcaseTabView.prototype.uploadFiles =
 function(attachDialog, docIds) {
-    if(!docIds){
+
+    if (!docIds) {
         docIds = [];
-        var bcView = this._tabBriefcaseView;
-        var items =bcView.getSelection();
-        if(!items || (items.length == 0)) {
+        var items = this._listView.getSelection();
+        if (!items || (items.length == 0)) {
             var attachDialog = appCtxt.getAttachDialog();
             attachDialog.setFooter(ZmMsg.attachSelectMessage);
             return;
         }
-        for(var i in items) {
+        for (var i in items) {
             docIds.push({id: items[i].id, ct: items[i].contentType, s: items[i].size});
         }
-
     }
 
-    if(!(docIds instanceof Array)){
-        docIds = [docIds];
-    }
+	docIds = AjxUtil.toArray(docIds);
 
     var callback = attachDialog.getUploadCallback();
-    if(callback) {
+    if (callback) {
         callback.run(AjxPost.SC_OK, null, docIds);
     }
 };

@@ -373,47 +373,6 @@ function(results, folderId) {
 	this._resetNavToolBarButtons(this._currentView);
 };
 
-ZmBriefcaseController.prototype.showFolderContents =
-function(items) {
-	// populate list
-	if (items) {
-		// filter briefcase items
-		this._list = new ZmList(ZmItem.MIXED, this._currentSearch);
-		this._list.setHasMore(items.hasMore);
-		var temp_arr = items ? items.getArray() : null;
-		if (temp_arr) {
-			for (var i=0; i < temp_arr.length ; i++) {
-				var r = temp_arr[i];
-				var org = appCtxt.getById(r.folderId);
-				if (org && org instanceof ZmBriefcase) {
-					this._list.add(r);
-				}
-			}
-		}
-	} else {
-		this._list = new ZmList(ZmItem.BRIEFCASE_ITEM);
-
-		if (this._object) {
-			var item = new ZmBriefcaseItem();
-			item.id = this._object;
-			this._list.add(item);
-		}
-	}
-
-	// switch view
-	var view = this._currentView;
-	if (!view) {
-		view = this._defaultView(items.hasFolder);
-		this._forceSwitch = true;
-	}
-
-	this.switchView(view, this._forceSwitch);
-
-	if (!this._forceSwitch) {
-		this._setViewContents(this._currentView);
-	}
-};
-
 ZmBriefcaseController.prototype.switchView =
 function(view, force) {
 	var viewChanged = force || view != this._currentView;
@@ -434,26 +393,6 @@ function(view, force) {
 		this._resetNavToolBarButtons(view);
 	}
 	Dwt.setTitle(this.getCurrentView().getTitle());
-};
-
-ZmBriefcaseController.prototype.searchCallback =
-function(callback,folderId,results) {
-	var response = results.getResponse();
-	var items = [];
-	if (response) {
-		this._list = response.getResults(ZmItem.BRIEFCASE_ITEM);
-		items = this._list.getArray();
-		for (var i=0; i<items.length; i++) {
-			if (items[i].folderId!=folderId) {
-				items[i].remoteFolderId = items[i].folderId;
-				items[i].folderId = folderId;
-			}
-		}
-	}
-
-	if (callback) {
-		callback.run(items);
-	}
 };
 
 ZmBriefcaseController.prototype.searchFolder =
@@ -514,12 +453,6 @@ function(searchResp, folderId) {
 ZmBriefcaseController.prototype.getItemById =
 function(itemId) {
 	return (this._idMap[itemId] ? this._idMap[itemId].item : null);
-};
-
-ZmBriefcaseController.prototype.getItemsInFolder =
-function(folderId, callback) {
-	folderId = folderId || ZmOrganizer.ID_BRIEFCASE;
-	this.searchFolder(folderId, callback);
 };
 
 ZmBriefcaseController.prototype._dragListener =
@@ -1093,3 +1026,71 @@ function(folderId, force) {
 	var callback = new AjxCallback(this, this.showFolderContents);
 	this.getItemsInFolder(folderId, callback);
 };
+
+ZmBriefcaseController.prototype.showFolderContentsXXX =
+function(items) {
+	// populate list
+	if (items) {
+		// filter briefcase items
+		this._list = new ZmList(ZmItem.MIXED, this._currentSearch);
+		this._list.setHasMore(items.hasMore);
+		var temp_arr = items ? items.getArray() : null;
+		if (temp_arr) {
+			for (var i=0; i < temp_arr.length ; i++) {
+				var r = temp_arr[i];
+				var org = appCtxt.getById(r.folderId);
+				if (org && org instanceof ZmBriefcase) {
+					this._list.add(r);
+				}
+			}
+		}
+	} else {
+		this._list = new ZmList(ZmItem.BRIEFCASE_ITEM);
+
+		if (this._object) {
+			var item = new ZmBriefcaseItem();
+			item.id = this._object;
+			this._list.add(item);
+		}
+	}
+
+	// switch view
+	var view = this._currentView;
+	if (!view) {
+		view = this._defaultView(items.hasFolder);
+		this._forceSwitch = true;
+	}
+
+	this.switchView(view, this._forceSwitch);
+
+	if (!this._forceSwitch) {
+		this._setViewContents(this._currentView);
+	}
+};
+
+ZmBriefcaseController.prototype.searchCallbackXXX =
+function(callback,folderId,results) {
+	var response = results.getResponse();
+	var items = [];
+	if (response) {
+		this._list = response.getResults(ZmItem.BRIEFCASE_ITEM);
+		items = this._list.getArray();
+		for (var i=0; i<items.length; i++) {
+			if (items[i].folderId!=folderId) {
+				items[i].remoteFolderId = items[i].folderId;
+				items[i].folderId = folderId;
+			}
+		}
+	}
+
+	if (callback) {
+		callback.run(items);
+	}
+};
+
+ZmBriefcaseController.prototype.getItemsInFolderXXX =
+function(folderId, callback) {
+	folderId = folderId || ZmOrganizer.ID_BRIEFCASE;
+	this.searchFolder(folderId, callback);
+};
+

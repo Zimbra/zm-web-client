@@ -14,11 +14,11 @@
  */
 
 ZmBriefcaseIconView = function(params) {
-	ZmListView.call(this, params);
+	ZmBriefcaseBaseView.call(this, params);
 	this.getHtmlElement().style.backgroundColor = "white";
 }
 
-ZmBriefcaseIconView.prototype = new ZmListView;
+ZmBriefcaseIconView.prototype = new ZmBriefcaseBaseView;
 ZmBriefcaseIconView.prototype.constructor = ZmBriefcaseIconView;
 
 ZmBriefcaseIconView.prototype.toString =
@@ -83,6 +83,7 @@ function(item, params) {
 	return div;
 };
 
+/*
 ZmBriefcaseIconView.prototype.set =
 function(folderId, list) {
     var element = this.getHtmlElement();
@@ -93,6 +94,7 @@ function(folderId, list) {
     }
     DwtListView.prototype.set.call(this,itemsList);
 };
+*/
 
 ZmBriefcaseIconView.prototype.getTitle =
 function() {

@@ -107,11 +107,11 @@ ZmMultiColView.prototype.addColumn =
 function(dropTgt) {
 
 	var idx = this._colIndex++;
-	this._colIds[idx] = Dwt.getNextId();
+	var divId = this._colIds[idx] = [ZmId.VIEW_BRIEFCASE_COLUMN, "col", idx].join(DwtId.SEP);
 
 	var el = this.getHtmlElement();
 
-	if(!this._table){
+	if (!this._table) {
 		this._tableId = Dwt.getNextId();
 		el.innerHTML = ['<table cellpadding=0 cellspacing=0 id="',this._tableId,'"><tbody><tr></tr></tbody></table>'].join("");
 		this._table = document.getElementById(this._tableId);
@@ -123,8 +123,12 @@ function(dropTgt) {
 	div.id = this._colIds[idx];
 
 	this._colDivs[idx] = div;
-	this._listPart[idx] = new ZmColListView(this, this._controller, dropTgt, idx);
+	var lv = new ZmColListView(this, this._controller, dropTgt, idx);
+	this._listPart[idx] = lv;
 	this._listPart[idx].reparentHtmlElement(this._colIds[idx]);
+
+	// so that scroll event gets handed to lv (div is its parent element and gets the event)
+	DwtControl.ALL_BY_ID[divId] = lv;
 
 	return this._listPart[idx];
 };
@@ -191,21 +195,9 @@ function(folderId) {
 		listView.setPreviousColumn(this._currentListView);
 	}
 	this._currentListView = listView;
-
 	this._controller._listView[ZmId.VIEW_BRIEFCASE_COLUMN] = listView;
-	this._controller._app.search(appCtxt.getById(folderId));
-	return;
-
-	var callback = new AjxCallback(this,this.showFolderContents,[listView,folderId]);
-	this._controller.getItemsInFolder(folderId,callback);
-};
-
-
-ZmMultiColView.prototype.showFolderContents =
-function(listView, folderId, items) {
-	listView.set(items);
-	this._sizeChildren();
-	this.scrollToEnd();
+	this._controller._refreshInProgress = true;
+	this._controller._app.search(folderId);
 };
 
 ZmMultiColView.prototype.set =
@@ -389,9 +381,4 @@ function() {
 	cell.appendChild(div);
 	this._noOfCol++;
 	return div;
-};
-
-ZmMultiColView.prototype._checkItemCount =
-function() {
-	return this._currentListView._checkItemCount();
 };
