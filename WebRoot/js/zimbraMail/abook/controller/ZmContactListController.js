@@ -268,9 +268,9 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
 			ZmOperation.SEP,
-			ZmOperation.TAG_MENU,
-			ZmOperation.SEP,
-			ZmOperation.VIEW_MENU];
+			ZmOperation.TAG_MENU];
+//			ZmOperation.SEP,
+//			ZmOperation.VIEW_MENU];
 };
 
 ZmContactListController.prototype._getActionMenuOps =
@@ -346,14 +346,14 @@ ZmContactListController.prototype._initializeToolBar =
 function(view) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
-		this._setupViewMenu(view, true);
+//		this._setupViewMenu(view, true);
 		this._setNewButtonProps(view, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
 		this._setupPrintMenu(view);
 		this._toolbar[view].addFiller();
 		this._initializeNavToolBar(view);
 		appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar[view], this, view], {waitUntilLoaded:true});
 	} else {
-		this._setupViewMenu(view, false);
+//		this._setupViewMenu(view, false);
 	}
 };
 
