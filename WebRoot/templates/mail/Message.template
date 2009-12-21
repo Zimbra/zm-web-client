@@ -355,3 +355,10 @@
 	<div style="padding:3px">${text}</div>
 </template>
 
+<template id='mail.Message#viewMessage'>
+	<table width='100%' cellspacing='0' cellpadding='1'>
+		<tr>
+			<td class='NoResults'><br><$= ZmMsg.viewMessage $></td>
+		</tr>
+	</table>
+</template>

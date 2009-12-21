@@ -164,12 +164,7 @@ function(msg) {
 	this._msg = msg;
 
 	if (!msg) {
-		var htmlArr = [];
-		var idx = 0;
-		htmlArr[idx++] = "<table width='100%' cellspacing='0' cellpadding='1'><tr><td class='NoResults'><br>";
-		htmlArr[idx++] = ZmMsg.viewMessage;
-		htmlArr[idx++] = "</td></tr></table>";
-		contentDiv.innerHTML = htmlArr.join("");
+		contentDiv.innerHTML = AjxTemplate.expand("mail.Message#viewMessage");
 		this.noTab = true;
 		return;
 	}
@@ -214,8 +209,11 @@ function(msg) {
 					var name = appCtxt.multiAccounts
 						? ([calendar.name, " (", calendar.getAccount().getDisplayName(), ")"].join(""))
 						: calendar.name;
-					var option = new DwtSelectOptionData(calendar.id, name, null, null, icon);
-					this._inviteMoveSelect.addOption(option, calendar.nId == ZmOrganizer.ID_CALENDAR);
+					var isSelected = (calendar.account && msg.account)
+						? (calendar.account == msg.account && calendar.nId == ZmOrganizer.ID_CALENDAR)
+						: calendar.nId == ZmOrganizer.ID_CALENDAR;
+					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null, icon);
+					this._inviteMoveSelect.addOption(option);
 				}
 			}
 			this._inviteMoveSelect.setVisible(visible);
