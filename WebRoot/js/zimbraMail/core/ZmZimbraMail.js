@@ -671,6 +671,8 @@ function() {
 			this.sendClientEventNotify(ZmZimbraMail.UI_LOAD_END);
 
 			if (AjxEnv.isPrism) {
+				this._firstTimeNetworkChange = true;
+
 				var nc = new ZimbraNetworkChecker();
 				nc.addEventListener("offline", function(e) { appCtxt.getAppController().handleNetworkChange(false); }, false);
 				nc.addEventListener("online", function(e) { appCtxt.getAppController().handleNetworkChange(true); }, false);
@@ -685,7 +687,11 @@ function() {
 ZmZimbraMail.prototype.handleNetworkChange =
 function(online) {
 	if (online) {
-		this.setStatusMsg(ZmMsg.networkChangeOnline);
+		if (!this._firstTimeNetworkChange) {
+			this.setStatusMsg(ZmMsg.networkChangeOnline);
+		} else {
+			this._firstTimeNetworkChange = false;
+		}
 		this.sendClientEventNotify(ZmZimbraMail.UI_NETWORK_UP);
 	} else {
 		this.setStatusMsg(ZmMsg.networkChangeOffline, ZmStatusView.LEVEL_WARNING);
