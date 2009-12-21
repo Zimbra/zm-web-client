@@ -164,7 +164,7 @@ function(respEl) {
 
 ZmSearchResult._sortGalResults =
 function(a, b) {
-	var af = a.getFileAs().toLowerCase();
-	var bf = b.getFileAs().toLowerCase();
+	var af = a.getFileAs && a.getFileAs().toLowerCase();
+	var bf = b.getFileAs && b.getFileAs().toLowerCase();
 	return af < bf ? -1 : (af > bf ? 1 : 0);
 };
