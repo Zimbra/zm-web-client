@@ -1035,8 +1035,10 @@ function(parent) {
 
 	var item = parent.getOp(ZmOperation.SPAM);
 	if (item) {
-		var folder = appCtxt.getById(this._getSearchFolderId());
-		var inSpamFolder = (folder && folder.nId == ZmFolder.ID_SPAM);
+		var folderId = this._getSearchFolderId();
+		var folder = appCtxt.getById(folderId);
+		var inSpamFolder = ((folder && folder.nId == ZmFolder.ID_SPAM) ||
+							(!folder && folderId == ZmFolder.ID_SPAM)); // fall back
 		item.setText(inSpamFolder ? ZmMsg.notJunk : ZmMsg.junk);
 		item.setImage(inSpamFolder ? 'Inbox' : 'JunkMail');
 		if (item.setToolTipContent) {
@@ -1258,7 +1260,14 @@ ZmMailListController.prototype._spamListener =
 function(ev) {
 	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
 	var items = this._listView[this._currentView].getSelection();
-	var folder = appCtxt.getById(this._getSearchFolderId());
+	var searchFolderId = this._getSearchFolderId();
+	if (appCtxt.multiAccounts) {
+		var item = items[0];
+		if (item && item.account) {
+			searchFolderId = ZmOrganizer.getSystemId(searchFolderId, item.account);
+		}
+	}
+	var folder = appCtxt.getById(searchFolderId);
 	var markAsSpam = (folder && folder.nId != ZmFolder.ID_SPAM);
 	this._doSpam(items, markAsSpam);
 };
