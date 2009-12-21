@@ -366,9 +366,9 @@ function(id, mode, content) {
         // General options
         mode :  (mode == DwtHtmlEditor.HTML)? "exact" : "none",
         elements:  id,
-        plugins : "table",
+        plugins : "ztable,table",
         theme : "advanced",
-        theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,table",
+        theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols",
         theme_advanced_buttons2: "",
         theme_advanced_buttons3: "",
         theme_advanced_buttons4: "",
