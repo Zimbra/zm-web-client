@@ -316,9 +316,18 @@ function(contentType, name, winName) {
 		folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
 	}
 
-	var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId;
+	var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + (window.isTinyMCE ? "&editor=tinymce" : "");
 	var winname = winName || name;
-	window.open(url, winname);
+	window.open(url, winname, ZmBriefcaseApp.getDocWindowFeatures());
+};
+
+ZmBriefcaseApp.getDocWindowFeatures =
+function() {
+    return [
+        "width=",(screen.width || 640),",",
+        "height=",(screen.height || 480),",",
+        "fullscreen=yes"
+    ].join("");
 };
 
 ZmBriefcaseApp.prototype.getEditURLForContentType =
