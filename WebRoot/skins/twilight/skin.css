@@ -17,7 +17,7 @@ body, #skin_container_splash_screen	{
 }
 
 #skin_container_links a {
-	color: white;
+	color: #ffffff;
 }
 
 #skin_container_links a:hover {
@@ -28,7 +28,6 @@ body, #skin_container_splash_screen	{
 #skin_container_tree_top,
 #skin_container_tree_top_offline {
 	background: #6f1616 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
-	text-align:center;
 	color: #ffffff;
 }
 
@@ -36,18 +35,8 @@ body, #skin_container_splash_screen	{
 	color: #ffffff;
 }
 
-#skin_spacing_tree {
-	background-color: transparent;
-}
-
-#skin_td_tree {
-	border: 0;
-}
-
-#skin_container_search {	
-	background: #d5d5d3 url("@SkinImgDir@/search_bg.png") top left repeat-x;
-	color: #d5d5d3;	
-	border: 0;
+#skin_container_search {
+	background: #cdcdcb url("@SkinImgDir@/search_bg.png") top left repeat-x;
 }
 
 #skin_border_app_chooser {
@@ -76,25 +65,25 @@ body, #skin_container_splash_screen	{
 .Row-selected-disabled {
 	background-color: #fff;
 	border-color: #e5e5e5;
-	border-top-color: #fff;
+	border-top-color: #ffffff;
 }
 
-.ZmTaskbar{
+.ZmTaskbar {
 	height:30px; 
 	background: #6f1616 url("@SkinImgDir@/app_header_bg.png") repeat-x top left;
 	border: 0;
-	color: #fff;
+	color: #ffffff;
 }
 
 .ZmTaskbarButtonParent .ZToolbarButtonTable .ZWidgetTitle {
-	color: #fff;
+	color: #ffffff;
 }
 
 .ZButtonBorder,
 .ZHover .ZButtonBorder,
 .ZActive .ZButtonBorder,
 .ZSelected .ZButtonBorder {
-	border: 1px solid #999;
+	border: 1px solid #999999;
 }
 
 .LightWindowOuterContainer .DwtDialogTitle {
@@ -104,7 +93,7 @@ body, #skin_container_splash_screen	{
 
 .ZOptionsSectionMain {
 	background: #e5e5e5;
-	padding:1em;
+	padding: 1em;
 }
 
 .ZmCalViewMgr,
@@ -113,7 +102,7 @@ body, #skin_container_splash_screen	{
 .ZmNotebookPageView,
 .ZmEditContactView .contactHeaderTable,
 .DwtListView {
-	background-color: #fff;
+	background-color: #ffffff;
 }
 
 .ZmContactInfoView .contactHeaderTable {
@@ -131,7 +120,7 @@ body, #skin_container_splash_screen	{
 	background-color: #e5e5e5;
 }
 
-.ZHover .ZTabBorder{
+.ZHover .ZTabBorder {
 	@AppTabBorder-hover@
 }
 
@@ -142,8 +131,4 @@ body, #skin_container_splash_screen	{
 	background: @lighten(AltC,50)@ url("@SkinImgDir@/sidebar_inbox_header_bg.png") top left repeat-x;
 	border-bottom: 1px solid #CCCCCC;
 	border-top: 0px;
-}
-
-.ZAppTab {
-	border-bottom: 1px so
 }
