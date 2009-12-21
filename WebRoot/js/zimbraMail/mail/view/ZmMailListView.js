@@ -303,6 +303,7 @@ function(viewId, headerList) {
 			// unless user is showing global inbox. Ugh.
 			if (appCtxt.multiAccounts &&
 				appCtxt.inStartup &&
+				appCtxt.accountList.size(true) > 2 &&
 				appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
 				header.indexOf(ZmItem.F_ACCOUNT) != -1)
 			{
