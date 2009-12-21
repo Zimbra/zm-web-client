@@ -43,6 +43,8 @@ ZmApp.UPSELL_SETTING[ZmApp.VOICE]	= ZmSetting.VOICE_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.VOICE]		= 80;
 ZmApp.QS_ARG[ZmApp.VOICE]			= "voice";
 
+ZmVoiceApp.overviewFallbackApp		= ZmApp.PORTAL;
+
 ZmVoiceApp.prototype = new ZmApp;
 ZmVoiceApp.prototype.constructor = ZmVoiceApp;
 
@@ -426,7 +428,8 @@ function(items, op, attributes, callback, errorCallback) {
 };
 
 ZmVoiceApp.prototype.launch =
-function(params, callback) {	this._showApp(params, callback);
+function(params, callback) {
+	this._showApp(params, callback);
 };
 
 ZmVoiceApp.prototype._showApp =
@@ -439,28 +442,39 @@ function(params, callback) {
 ZmVoiceApp.prototype._handleLoadLaunch =
 function(callback) {
     var respCallback = new AjxCallback(this, this._handleResponseLoadLaunchGotInfo, callback);
-    var errorCallback = new AjxCallback(this, this._handleErrorLoadLaunchGotInfo);
+    var errorCallback = new AjxCallback(this, this._handleErrorLoadLaunchGotInfo, callback);
     this.getVoiceInfo(respCallback, errorCallback);
 };
 
 ZmVoiceApp.prototype._handleErrorLoadLaunchGotInfo =
-function(ex) {
+function(callback, ex) {
+	var returnValue;
 	if (ex.code == "voice.SECONDARY_NOT_ALLOWED") {
-		if (!this._showingSecondaryMessage) {
-			this._showingSecondaryMessage = true;
-			var view = new DwtControl({parent:appCtxt.getShell(), posStyle:Dwt.ABSOLUTE_STYLE});
-			view.setScrollStyle(DwtControl.SCROLL);		
-			view.getHtmlElement().innerHTML = ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
-			var elements = {};
-			elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = view;
-			var viewName = "VoiceMessage";
-			this._appViewMgr.createView(viewName, this._name, elements, null, true);
-			this._appViewMgr.pushView(viewName);
-		}
-		return true;
+		this._showUpsellMessage();
+		returnValue = true;
+	} else {
+		returnValue = false;
 	}
-	return false;
+	this.setOverviewPanelContent(false);
+	if (callback instanceof AjxCallback)
+		callback.run();
+	return returnValue;
 };
+
+ZmVoiceApp.prototype._showUpsellMessage =
+function() {
+	if (!this._showingSecondaryMessage) {
+		this._showingSecondaryMessage = true;
+		var view = new DwtControl({parent:appCtxt.getShell(), posStyle:Dwt.ABSOLUTE_STYLE});
+		view.setScrollStyle(DwtControl.SCROLL);
+		view.getHtmlElement().innerHTML = ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
+		var elements = {};
+		elements[ZmAppViewMgr.C_APP_CONTENT] = view;
+		var viewName = "VoiceMessage";
+		this.createView({viewId: viewName, appName: this._name, elements: elements, isAppView: true});
+		this.pushView(viewName, true);
+	}
+}
 
 ZmVoiceApp.prototype._handleResponseLoadLaunchGotInfo =
 function(callback, response) {
@@ -509,6 +523,15 @@ function(soapDoc) {
 		node.setAttribute(i, this._storeprincipal[i]);
 	}
 };
+
+ZmVoiceApp.prototype.setOverviewPanelContent = function(reset) {
+	if (this._showingSecondaryMessage && ZmVoiceApp.overviewFallbackApp) { // We should display the overview of the fallback app (usually PORTAL) when showing the upsell message
+		var fallbackApp = appCtxt.getApp(ZmVoiceApp.overviewFallbackApp);
+		if (fallbackApp)
+			return fallbackApp.setOverviewPanelContent(reset);
+	}
+	return ZmApp.prototype.setOverviewPanelContent.call(this, reset);
+}
 
 ZmVoiceApp.prototype.redoSearch =
 function() {
