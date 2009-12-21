@@ -267,8 +267,9 @@ function(components, doFit, noSetZ) {
 					// if the container has bounds, fit the component to them now
 					//	this prevents resize flash when laying out containers
 					var bounds = this._getContainerBounds(cid);
+					var toolbarExists = Boolean(this._components[ZmAppViewMgr.C_TOOLBAR_TOP]);
 					if (bounds) {
-						comp.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+						comp.setBounds(bounds.x, bounds.y, bounds.width, bounds.height, toolbarExists);
 					}
 				}
 			}
@@ -849,7 +850,8 @@ function(components, isIeTimerHack) {
 					
 					// save bounds
 					this._contBounds[cid] = contBds;
-					comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
+					var toolbarExists = Boolean(this._components[ZmAppViewMgr.C_TOOLBAR_TOP]);
+					comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height, toolbarExists);
 				}
 			}
 		}
@@ -894,7 +896,7 @@ function(view) {
 	var height = sz.y ? sz.y : topToolbar.getHtmlElement().clientHeight;
 	topToolbar.setBounds(0, 0, this._shellSz.x, height);
 	var appContent = this._components[ZmAppViewMgr.C_APP_CONTENT] || this._components[ZmAppViewMgr.C_APP_CONTENT_FULL];
-	appContent.setBounds(0, height, this._shellSz.x, this._shellSz.y - height);
+	appContent.setBounds(0, height, this._shellSz.x, this._shellSz.y - height, Boolean(topToolbar));
 };
 
 // Tries to hide the given view. First checks to see if the view has a callback

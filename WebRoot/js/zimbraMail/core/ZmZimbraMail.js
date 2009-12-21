@@ -730,7 +730,9 @@ function(params) {
 		startApp = ZmApp.QS_ARG_R[params.app.toLowerCase()];
 		// make sure app given in QS is actually enabled
 		var setting = ZmApp.SETTING[startApp];
-		if (setting && !appCtxt.get(setting, null, account)) {
+		var upsellSetting = ZmApp.UPSELL_SETTING[startApp];
+
+		if (setting && !appCtxt.get(setting, null, account) && (!upsellSetting || !appCtxt.get(upsellSetting))) { // an app is valid if it's enabled or has its upsell enabled
 			startApp = null;
 		}
 	}
@@ -750,7 +752,7 @@ function(params) {
 				break;
 			}
 		}
-		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : defaultStartApp;
+		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : this._getDefaultStartAppName(account);
 	}
 
 	// parse query string, in case we are coming in with a deep link	
@@ -762,6 +764,26 @@ function(params) {
 	params.startApp = startApp;
 	params.qsParams = qsParams;
 };
+
+ZmZimbraMail.prototype._getDefaultStartAppName =
+function(account) {
+	account = account || (appCtxt.multiAccounts && appCtxt.accountList.mainAccount) || null;
+	
+	for (var app in ZmApp.DEFAULT_SORT) {
+		ZmApp.DEFAULT_APPS.push(app);
+	}
+	ZmApp.DEFAULT_APPS.sort(function(a, b) {
+		return ZmZimbraMail.hashSortCompare(ZmApp.DEFAULT_SORT, a, b);
+	});
+	var defaultStartApp = null;
+	for (var i = 0; i < ZmApp.DEFAULT_APPS.length; i++) {
+		var app = ZmApp.DEFAULT_APPS[i];
+		var setting = ZmApp.SETTING[app];
+		if (!setting || appCtxt.get(setting, null, account)) {
+			return app;
+		}
+	}
+}
 
 /**
 * Performs a 'running restart' of the app by clearing state and calling the startup method.
@@ -1377,6 +1399,9 @@ function(appName, force, callback, errorCallback, params) {
 			appCtxt.get(ZmApp.UPSELL_SETTING[appName]))
 		{
 			this._createUpsellView(appName);
+			if (callback) {
+				callback.run();
+			}
 		}
 		else
 		{
@@ -2150,12 +2175,13 @@ function(appName) {
 	htmlArr[idx++] = "'>";
 	el.innerHTML = htmlArr.join("");
 	var elements = {};
-	elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = upsellView;
+	elements[ZmAppViewMgr.C_APP_CONTENT] = upsellView;
 	var viewName = [appName, "upsell"].join("_");
 	this._appViewMgr.createView({viewId:viewName, appName:appName, elements:elements, isTransient:true});
 	this._appViewMgr.pushView(viewName);
     var title = [ZmMsg.zimbraTitle, appName].join(": ");
-    Dwt.setTitle(title);    
+    Dwt.setTitle(title);
+	appCtxt.getApp(this._getDefaultStartAppName()).setOverviewPanelContent(false);
 };
 
 ZmZimbraMail._createDummyDBG =

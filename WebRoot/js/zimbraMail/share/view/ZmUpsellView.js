@@ -43,7 +43,10 @@ function(x, y, width, height, showToolbar) {
 ZmUpsellView.prototype._getToolbarHeight =
 function() {
     var topToolbar = appCtxt.getAppViewMgr().getCurrentViewComponent(ZmAppViewMgr.C_TOOLBAR_TOP);
-    var sz = topToolbar.getSize();
-    var height = sz.y ? sz.y : topToolbar.getHtmlElement().clientHeight;
-    return height;
+	if (topToolbar) {
+		var sz = topToolbar.getSize();
+		var height = sz.y ? sz.y : topToolbar.getHtmlElement().clientHeight;
+		return height;
+	}
+	return 0;
 };
