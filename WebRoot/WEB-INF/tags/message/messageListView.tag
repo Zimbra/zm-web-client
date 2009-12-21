@@ -57,41 +57,55 @@
 <tr>
 <td class='List'>
     <table width="100%" cellpadding="2" cellspacing="0">
-        <tr>
-            <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
+		<tr>
+            <th class='CB' nowrap='nowrap'>
+                <input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
+            </th>
                 <c:if test="${mailbox.features.flagging}">
-            <th class='Img' nowrap><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
+            <th class='Img' nowrap='nowrap'>
+                <app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
+            </th>
                 </c:if>
-                <c:if test="${mailbox.features.mailPriority}">
-            <th class='ImgNarrow' nowrap='nowrap' width='12'><app:img src="startup/ImgPriorityHigh_list.gif" altkey="ALT_PRIORITY"/></th>
+            <c:if test="${mailbox.features.mailPriority}">
+            <th class='ImgNarrow' nowrap='nowrap' width='12'>
+                <app:img src="startup/ImgPriorityHigh_list.gif" altkey="ALT_PRIORITY"/>
+            </th>
             </c:if>
             <c:if test="${mailbox.features.tagging}">
-            <th class='Img' nowrap><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/>
-                </c:if>
-            <th class='MsgStatusImg' nowrap>&nbsp;
+            <th class='Img' nowrap='nowrap'>
+                <app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/>
+            </th>
+            </c:if>
+            <th class='MsgStatusImg' nowrap='nowrap'>&nbsp;</th>
             <th width="10%">
                     <zm:newSortUrl var="fromSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
                 <a href="${fn:escapeXml(fromSortUrl)}">
                     <fmt:message key="${useTo ? 'to' : 'from'}"/>
                 </a>
-            <th width="1%" nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+            </th>
+            <th class='Img' nowrap='nowrap' width='20'>
+                <app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+            </th>
             <th nowrap>
                     <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
                 <a href="${fn:escapeXml(subjectSortUrl)}">
                     <fmt:message key="subject"/>
                 </a>
-
+            </th>
                 <c:if test="${!context.isFolderSearch}">
-            <th width="1%" nowrap><fmt:message key="folder"/>
+            <th width="5%" nowrap='nowrap'>
+                <fmt:message key="folder"/>
+            </th>
                 </c:if>
-            <th width="1%" nowrap><fmt:message key="size"/>
-            <th width="1%" nowrap>
-                    <zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'dateDesc' or empty context.ss)? 'dateAsc' : 'dateDesc'}"/>
+            <th width="5%" nowrap='nowrap'><fmt:message key="size"/></th>
+            <th width="5%" nowrap='nowrap'>
+                <zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'dateDesc' or empty context.ss)? 'dateAsc' : 'dateDesc'}"/>
                 <a href="${fn:escapeXml(dateSortUrl)}">
                     <fmt:message key="received"/>
                 </a>
+            </th>
         </tr>
-    </table>
+	</table>
     <table width="100%" cellpadding="2" cellspacing="0">
         <tbody id="mess_list_tbody">
             <c:set value="${context.searchResult.hits[0].id}" var="cid"/>
@@ -107,22 +121,22 @@
                 <c:if test="${empty selectedRow and hit.messageHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
                 <tr onclick='zSelectRow(event,"A${status.index}","C${status.index}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'} ${hit.messageHit.isUnread ? ' Unread':''}${ selectedRow eq status.index ? ' RowSelected' : ''}'>
-                    <td class='CB' nowrap><input id="C${status.index}" type=checkbox name="id" value="${hit.messageHit.id}"></td>
+                    <td class='CB' nowrap='nowrap'><input id="C${status.index}" type=checkbox name="id" value="${hit.messageHit.id}"></td>
                     <c:if test="${mailbox.features.flagging}">
                         <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
                     </c:if>
                     <c:if test="${mailbox.features.mailPriority}">
-                        <td class='ImgNarrow'><app:priorityImage high="${hit.messageHit.isHighPriority}" low="${hit.messageHit.isLowPriority}"/></td>
+                        <td class='ImgNarrow' width='12'><app:priorityImage high="${hit.messageHit.isHighPriority}" low="${hit.messageHit.isLowPriority}"/></td>
                     </c:if>
                     <c:if test="${mailbox.features.tagging}">
                         <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                     </c:if>
                     <td class='MsgStatusImg' align="center"><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
-                    <td><%-- allow wrap --%>
+                    <td width='10%'><%-- allow wrap --%>
                         <c:set var="dispAddr" value="${zm:truncate(hit.messageHit.displayAddresses,20,true)}"/>${fn:escapeXml(empty dispAddr ? unknownRecipient :  dispAddr)}
                     </td>
                     <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
-                    <td > <%-- allow this col to wrap --%>
+                    <td> <%-- allow this col to wrap --%>
 
                         <a href="${fn:escapeXml(currentItemUrl)}" id="A${status.index}">
                             <c:set var="subj" value="${empty hit.messageHit.subject ? noSubject : hit.messageHit.subject}"/>
@@ -144,10 +158,10 @@
                         </c:if>
                     </td>
                     <c:if test="${!context.isFolderSearch}">
-                        <td nowrap>${fn:escapeXml(zm:getFolderName(pageContext, hit.messageHit.folderId))}</td>
+                        <td nowrap='nowrap' width='5%'>${fn:escapeXml(zm:getFolderName(pageContext, hit.messageHit.folderId))}</td>
                     </c:if>
-                    <td nowrap>${fn:escapeXml(zm:displaySize(pageContext, hit.messageHit.size))}
-                    <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}
+                    <td nowrap='nowrap' width='5%'>${fn:escapeXml(zm:displaySize(pageContext, hit.messageHit.size))}</td>
+                    <td nowrap='nowrap' width='5%'>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}</td>
                 </tr>
             </c:forEach>
         </tbody>
