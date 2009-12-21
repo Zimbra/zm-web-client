@@ -239,6 +239,11 @@ function() {
 	}
 	return null;
 };
+ZmZimbraAccount.prototype.isError =
+function() {
+	return (this.status == ZmZimbraAccount.STATUS_AUTHFAIL ||
+			this.status == ZmZimbraAccount.STATUS_ERROR);
+};
 
 ZmZimbraAccount.prototype.getIcon =
 function() {
@@ -270,9 +275,10 @@ function() {
 // offline use only:
 ZmZimbraAccount.prototype.showErrorMessage =
 function() {
-	if (this.status != ZmZimbraAccount.STATUS_ERROR) { return; }
+	if (!this.isError()) { return; }
 
-	var dialog = appCtxt.getErrorDialog();
+	var dialog = (this.status == ZmZimbraAccount.STATUS_ERROR)
+		? appCtxt.getErrorDialog() : appCtxt.getMsgDialog();
 
 	// short message
 	var msg = this.getZdMsg(this.code);
@@ -281,30 +287,33 @@ function() {
 	}
 	dialog.setMessage(msg);
 
-	// detailed message
-	var html = [];
-	var i = 0;
-	if (this.errorMessage) {
+	if (this.status == ZmZimbraAccount.STATUS_ERROR) {
+		// detailed message
+		var html = [];
+		var i = 0;
+		if (this.errorMessage) {
+			html[i++] = "<p><b>";
+			html[i++] = ZdMsg.DebugMsg;
+			html[i++] = "</b>: ";
+			html[i++] = this.errorMessage;
+			html[i++] = "</p>";
+		}
+
+		if (this.errorDetail) {
+			html[i++] = "<p><b>";
+			html[i++] = ZdMsg.DebugStack;
+			html[i++] = "</b>:</p><p><pre>";
+			html[i++] = this.errorDetail;
+			html[i++] = "</pre></p>";
+		}
+
 		html[i++] = "<p><b>";
-		html[i++] = ZdMsg.DebugMsg;
-		html[i++] = "</b>: ";
-		html[i++] = this.errorMessage;
-		html[i++] = "</p>";
+		html[i++] = ZdMsg.DebugActionNote;
+		html[i++] = "</b></p>";
+
+		dialog.setDetailString(html.join(""));
 	}
 
-	if (this.errorDetail) {
-		html[i++] = "<p><b>";
-		html[i++] = ZdMsg.DebugStack;
-		html[i++] = "</b>:</p><p><pre>";
-		html[i++] = this.errorDetail;
-		html[i++] = "</pre></p>";
-	}
-
-	html[i++] = "<p><b>";
-	html[i++] = ZdMsg.DebugActionNote;
-	html[i++] = "</b></p>";
-
-	dialog.setDetailString(html.join(""));
 	dialog.popup(null, true);
 };
 

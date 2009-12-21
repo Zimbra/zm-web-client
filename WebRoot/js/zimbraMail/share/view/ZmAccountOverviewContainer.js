@@ -130,6 +130,10 @@ function(params) {
 					header.setText(this._getAccountHeaderLabel(acct));
 				}
 			}
+
+			if (header._extraCell) {
+				header._extraCell.onclick = AjxCallback.simpleClosure(this._handleStatusClick, this, acct);
+			}
 		}
 
 		this.updateAccountInfo(acct, true, true);
@@ -506,6 +510,12 @@ function(ev) {
 
 			var account = appCtxt.accountList.getAccount(data);
 			if (account) {
+
+				// don't process click if user clicked on error status icon
+				if ((ev.target.parentNode == ev.item._extraCell) && account.isError()) {
+					return;
+				}
+
 				sc.searchAllAccounts = false;
 				appCtxt.accountList.setActiveAccount(account);
 
@@ -778,4 +788,9 @@ function(folderId, opId) {
 	}
 
 	bc.run();
+};
+
+ZmAccountOverviewContainer.prototype._handleStatusClick =
+function(account, ev) {
+	account.showErrorMessage();
 };
