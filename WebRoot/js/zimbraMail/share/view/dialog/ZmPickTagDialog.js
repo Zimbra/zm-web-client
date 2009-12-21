@@ -50,6 +50,8 @@ function() {
 
 ZmPickTagDialog.prototype.popup = 
 function(params) {
+
+	params = params || {};
 	this._account = params.account;
 
 	if (appCtxt.multiAccounts && params.account) {
