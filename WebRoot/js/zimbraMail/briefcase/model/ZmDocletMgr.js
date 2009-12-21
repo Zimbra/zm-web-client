@@ -64,6 +64,12 @@ function(files, status, guids, name, content, ct) {
         asyncMode:true,
         callback:callback
     };
+
+    if(window.opener && window.opener.appCtxt) {
+        parentAppCtxt = window.opener.appCtxt;
+        var acct = parentAppCtxt.getActiveAccount();
+        params.accountName = (acct && acct.id != ZmAccountList.DEFAULT_ID) ? acct.name : null;
+    }
     this.sendRequest(params);
 };
 
