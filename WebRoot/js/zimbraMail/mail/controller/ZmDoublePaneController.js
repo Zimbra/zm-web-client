@@ -110,6 +110,7 @@ function(view, force) {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
 	}
 	this._resetNavToolBarButtons(this._currentView);
+	this._toolbar[view].adjustSize();
 };
 
 
@@ -760,4 +761,5 @@ function(text) {
 	if (this._itemCountText[ZmSetting.RP_BOTTOM]) {
 		this._itemCountText[ZmSetting.RP_BOTTOM].setText(rpr ? "" : text);
 	}
+	this._toolbar[this._currentView].adjustSize();
 };

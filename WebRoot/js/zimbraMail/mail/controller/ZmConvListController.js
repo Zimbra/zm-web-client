@@ -85,6 +85,7 @@ function(view, force) {
 			appCtxt.set(ZmSetting.CONVERSATION_ORDER, view);
 			this._mailListView.redoExpansion();
 		}
+		this._toolbar[view].adjustSize();
 	} else {
 		ZmDoublePaneController.prototype.switchView.apply(this, arguments);
 	}
