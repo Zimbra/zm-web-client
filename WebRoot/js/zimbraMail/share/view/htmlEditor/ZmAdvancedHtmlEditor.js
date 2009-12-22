@@ -283,7 +283,8 @@ function(parent, posStyle, content, mode, withAce) {
         var callback = new AjxCallback(this, this.initEditorManager, [id, mode, content]);
         var data = {
             name: "tiny_mce",
-            path: appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH + "/tiny_mce.js" ,
+            path: appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH + "/tiny_mce.js",
+            extension: ".js",
             method: AjxPackage.METHOD_XHR_SYNC,
             async: false,
             callback: null,
