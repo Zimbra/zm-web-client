@@ -104,6 +104,9 @@ function(files) {
 };
 
 ZmDocsEditView.prototype.setFooterInfo = function(item){
+
+    if(!this._locationEl) return;
+
 	var content;
 	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
     
