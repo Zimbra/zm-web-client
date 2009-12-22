@@ -14,21 +14,31 @@
  */
 
 /**
- * Creates an empty ZmDialog.
- * @constructor
+ * @overview
+ * 
+ * This file contains a dialog.
+ * 
+ */
+
+/**
  * @class
  * This class is a base class for miscellaneous organizer-related dialogs. An instance
  * of this class can be re-used to show different overviews.
  *
  * @author Conrad Damon
  *
- * @param parent			[DwtControl]	parent widget
- * @param msgDialog			[DwtMsgDialog]*	message dialog
- * @param className			[string]*		CSS class
- * @param title				[string]*		dialog title
- * @param standardButtons	[array]*		list of standard buttons to show
- * @param extraButtons		[Array]*		buttons to show in addition to standard set
- * @param view				[DwtControl]*	dialog contents
+ * @param {Hash}	params		a hash of parameters
+ * <ul>
+ * <li>parent	[DwtControl]	the parent widget</li>
+ * <li>msgDialog		[DwtMsgDialog]*			the message dialog</li>
+ * <li>className		[String]*			the CSS class name</li>
+ * <li>title		[String]*			the dialog title</li>
+ * <li>standardButtons	[Array|constant]	an array of standard buttons to include. Defaults to {@link DwtDialog.OK_BUTTON} and {@link DwtDialog.CANCEL_BUTTON}.</li>
+ * <li>extraButtons		[Array]  			a list of {@link DwtDialog_ButtonDescriptor} objects describing custom buttons to add to the dialog</li>
+ * <li>view				[DwtControl]*			the dialog contents</li>
+ * </ul>
+ * 
+ * @extends	DwtDialog
  */
 ZmDialog = function(params) {
 	if (arguments.length == 0) { return; }
@@ -52,11 +62,20 @@ ZmDialog = function(params) {
 ZmDialog.prototype = new DwtDialog;
 ZmDialog.prototype.constructor = ZmDialog;
 
+/**
+ * @private
+ */
 ZmDialog.prototype._contentHtml =
 function() {
 	return "";
 };
 
+/**
+ * Sets the view for this dialog.
+ * 
+ * @param	{DwtComposite}		newView		the view
+ * @param	{Boolean}		noReset		<code>true</code> to not reset the dialog; <code>false</code> otherwise
+ */
 ZmDialog.prototype.setView =
 function(newView, noReset) {
 	this.reset();
@@ -81,6 +100,10 @@ function() {
 	}
 };
 
+/**
+ * Resets the dialog.
+ * 
+ */
 ZmDialog.prototype.reset =
 function() {
 	if (this._nameField) {
@@ -89,11 +112,17 @@ function() {
 	DwtDialog.prototype.reset.call(this);
 };
 
+/**
+ * @private
+ */
 ZmDialog.prototype._okButtonListener =
 function() {
 	this.popdown();
 };
 
+/**
+ * @private
+ */
 ZmDialog.prototype._setNameField =
 function(fieldId) {
 	this._nameField = this._focusElement = document.getElementById(fieldId);
@@ -116,6 +145,7 @@ function(fieldId) {
  *        overviewId	[string]*			ID for the overview
  *        noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
  * @param forceSingle	[boolean]*			if true, don't make multi-account overviews
+ * @private
  */
 ZmDialog.prototype._setOverview =
 function(params, forceSingle) {
@@ -170,6 +200,9 @@ function(params, forceSingle) {
 	return overview;
 };
 
+/**
+ * @private
+ */
 ZmDialog.prototype._makeOverviewVisible =
 function(overviewId) {
 	for (var id in this._overview) {
@@ -186,6 +219,7 @@ function(overviewId) {
  * @param treeIds		[array]				list of tree views to show
  * @param omit			[hash]*				IDs of organizers to exclude
  * @param noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
+ * @private
  */
 ZmDialog.prototype._renderOverview =
 function(overview, treeIds, omit, noRootSelect) {
@@ -199,16 +233,25 @@ function(overview, treeIds, omit, noRootSelect) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmDialog.prototype._getOverview =
 function() {
 	return this._overview[this._curOverviewId];
 };
 
+/**
+ * @private
+ */
 ZmDialog.prototype._getInputFields =
 function() {
 	return (this._nameField) ? [this._nameField] : null;
 };
 
+/**
+ * @private
+ */
 ZmDialog.prototype._showError =
 function(msg, loc) {
 	var nLoc = loc || (new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100));
@@ -219,6 +262,9 @@ function(msg, loc) {
 	msgDialog.popup(nLoc);
 };
 
+/**
+ * @private
+ */
 ZmDialog.prototype._getTabGroupMembers =
 function() {
 	return [this._nameField];
