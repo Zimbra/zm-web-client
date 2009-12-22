@@ -207,13 +207,8 @@ function(list) {
 	if (len == 0){
 		this._currentListView = listView = this.addColumn();
 	} else {
-		if (!this._controller.isRefreshing()) {
-			this._currentListView  = listView = this._listPart[0];
-			this.removeChildColumns(0);
-		} else {
-			listView = this._currentListView;
-			this.removeChildColumns(listView.getColumnIndex());
-		}
+		listView = this._currentListView;
+		this.removeChildColumns(listView.getColumnIndex());
 	}
 	this._controller._listView[ZmId.VIEW_BRIEFCASE_COLUMN] = listView;
 	listView.set(list);
