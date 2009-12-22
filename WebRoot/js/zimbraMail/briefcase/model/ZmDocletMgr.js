@@ -65,8 +65,8 @@ function(files, status, guids, name, content, ct) {
         callback:callback
     };
 
-    if(window.opener && window.opener.appCtxt) {
-        parentAppCtxt = window.opener.appCtxt;
+    var parentAppCtxt = window.opener && window.opener.appCtxt;
+	if (parentAppCtxt) {
         var acct = parentAppCtxt.getActiveAccount();
         params.accountName = (acct && acct.id != ZmAccountList.DEFAULT_ID) ? acct.name : null;
     }
@@ -133,6 +133,13 @@ function(files, status, guids, response) {
         }
         // TODO: What to do about other errors?
     }
+
+	// poke parent window to get notifications
+	var parentAppCtxt = window.opener && window.opener.appCtxt;
+	var parentAppCtlr = parentAppCtxt && parentAppCtxt.getAppController();
+	if (parentAppCtlr && !parentAppCtlr.getInstantNotify()) {
+		parentAppCtlr.sendNoOp();
+	}
 
     if (this._saveCallback) {
         //Pass on the conflicts to callback
