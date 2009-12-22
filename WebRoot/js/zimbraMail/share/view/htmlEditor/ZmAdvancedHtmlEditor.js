@@ -367,7 +367,7 @@ function(id, mode, content) {
         // General options
         mode :  (mode == DwtHtmlEditor.HTML)? "exact" : "none",
         elements:  id,
-        plugins : "ztable,table",
+        plugins : "inlinepopups,contextmenu,table,ztable",
         theme : "advanced",
         theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols",
         theme_advanced_buttons2: "",
