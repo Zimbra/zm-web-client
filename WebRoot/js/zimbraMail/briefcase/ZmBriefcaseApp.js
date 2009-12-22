@@ -172,23 +172,6 @@ function() {
 
 // App API
 
-// YYY: do we need this?
-ZmBriefcaseApp.prototype.deleteNotify =
-function(ids, force) {
-
-	if (!ids) { return; }
-	if (!force && this._deferNotifications("delete", ids)) { return; }
-
-	var bc = AjxDispatcher.run("GetBriefcaseController");
-	for (var i = 0; i < ids.length; i++) {
-		var item = bc.getItemById(ids[i]);
-		if (item) {
-			item.notifyDelete();
-			bc.removeItem(item);
-		}
-	}
-};
-
 /**
  * Checks for the creation of a briefcase or a mount point to one, or of an item
  *
@@ -200,74 +183,27 @@ function(creates, force) {
 	if (!creates["folder"] && !creates["doc"] && !creates["link"]) { return; }
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
-	var bc = AjxDispatcher.run("GetBriefcaseController");
-	var needsRefresh = false;
-
 	for (var name in creates) {
 		var list = creates[name];
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
 			if (appCtxt.cacheGet(create.id)) { continue; }
+
 			if (name == "folder") {
 				this._handleCreateFolder(create, ZmOrganizer.BRIEFCASE);
 			} else if (name == "link") {
 				this._handleCreateLink(create, ZmOrganizer.BRIEFCASE);
 			} else if (name == "doc") {
+				var bc = AjxDispatcher.run("GetBriefcaseController");
 				var list = bc.getList();
-//				if (list) {
-//					list.notifyCreate(create);
-//				}
-				if (create.l == bc._currentFolder) {
-					// YYY: new item reruns search - should just add to view
-					needsRefresh = true;
+				if (list) {
+					var item = ZmBriefcaseItem.createFromDom(create, {list:list});
+					if (list.search && list.search.matches && list.search.matches(item)) {
+						list.notifyCreate(create);
+					}
 				}
 			}
 		}
-	}
-	if (needsRefresh) {
-		bc.reloadFolder();
-	}
-};
-
-ZmBriefcaseApp.prototype.modifyNotify =
-function(modifies, force) {
-
-	if (!modifies["doc"]) { return; }
-
-	if (!force && !this._noDefer && this._deferNotifications("modify", modifies)) { return; }
-
-	var briefcaseController = this.getBriefcaseController();
-	var needsRefresh = false;
-
-	for (var name in modifies) {
-		var list = modifies[name];
-		for (var i = 0; i < list.length; i++) {
-			var mod = list[i];
-			var id = mod.id;
-			if (!id) { continue; }
-
-			 if (name == "doc") {
-				DBG.println(AjxDebug.DBG2, "ZmBriefcaseApp: handling modified notif for ID " + id + ", node type = " + name);
-				// REVISIT: Use app context item cache
-				var doc = briefcaseController.getItemById(id);
-				if (doc) {
-					doc.notifyModify(mod);
-					doc.set(mod);
-				}
-				mod._handled = true;
-			} else if (name == "folder") {
-				// YYY: folder mod reruns search - why?
-				var currentFolderId = briefcaseController.getCurrentFolderId();
-				if (appCtxt.getById(id) && (appCtxt.getById(id).nId == currentFolderId || id == currentFolderId)) {
-					needsRefresh = true;
-					mod._handled = true;
-				}
-			 }
-		}
-	}
-
-	if (needsRefresh) {
-		briefcaseController.reloadFolder();
 	}
 };
 
@@ -355,14 +291,7 @@ function(item) {
 ZmBriefcaseApp.prototype._handleNewItem =
 function() {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
-	var callback = new AjxCallback(this, this._handleUploadNewItem);
-	this.getBriefcaseController().__popupUploadDialog(callback, ZmMsg.uploadFileToBriefcase);
-};
-
-ZmBriefcaseApp.prototype._handleUploadNewItem =
-function(folder,filenames) {
-	var bc = this.getBriefcaseController();
-	bc.refreshFolder();
+	this.getBriefcaseController().__popupUploadDialog(null, ZmMsg.uploadFileToBriefcase);
 };
 
 ZmBriefcaseApp.prototype._handleLoadNewBriefcase =
@@ -537,18 +466,4 @@ ZmBriefcaseApp.prototype._createDeferredFolders =
 function(type) {
 	AjxPackage.require("BriefcaseCore");
 	ZmApp.prototype._createDeferredFolders.call(this, type);
-};
-
-// Mendoza line
-
-ZmBriefcaseApp.prototype._handleLoadLaunchXXX =
-function(callback) {
-	this.getBriefcaseController().show(null,true);
-	if (callback) { callback.run(); }
-};
-
-ZmBriefcaseApp.prototype._handleLoadShowSearchResultsXXX =
-function(results, callback) {
-	this.getBriefcaseController().showFolderContents(results.getResults(ZmItem.MIXED));
-	if (callback) { callback.run(); }
 };

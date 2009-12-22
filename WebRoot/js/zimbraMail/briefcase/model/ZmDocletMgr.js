@@ -138,15 +138,6 @@ function(files, status, guids, response) {
         //Pass on the conflicts to callback
         this._saveCallback.run(files, conflicts);
     }
-
-    if(window.opener && window.opener.appCtxt) {
-        parentAppCtxt = window.opener.appCtxt;
-        var app = parentAppCtxt.getApp("Briefcase");
-        if(app) {
-            var briefcaseController = app.getBriefcaseController();
-            briefcaseController.handleRefreshFolder(folderIds);
-        }
-    }
 };
 
 ZmDocletMgr.prototype.setSaveCallback =

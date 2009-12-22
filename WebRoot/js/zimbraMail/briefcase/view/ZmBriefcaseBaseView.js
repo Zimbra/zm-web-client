@@ -32,6 +32,25 @@ function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
+ZmBriefcaseBaseView.prototype._changeListener =
+function(ev) {
+
+	if ((ev.type != this.type) && (ZmList.MIXED != this.type)) { return; }
+
+	var items = ev.getDetail("items");
+
+	if (ev.event == ZmEvent.E_CREATE) {
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
+			this.addItem(item, 0);
+		}
+	} else {
+		ZmListView.prototype._changeListener.call(this, ev);
+	}
+};
+
+
 ZmBriefcaseBaseView.prototype._getToolTip =
 function(params) {
 
@@ -64,8 +83,6 @@ function() {
 ZmBriefcaseBaseView.prototype.uploadFiles =
 function() {
     var attachDialog = appCtxt.getUploadDialog();
-    var app = this._controller.getApp();
-    attachDialog._uploadCallback = new AjxCallback(app, app._handleUploadNewItem);
     var files = this.processUploadFiles();
     attachDialog.uploadFiles(files, document.getElementById("zdnd_form"), {id:this._controller._currentFolder});
 };

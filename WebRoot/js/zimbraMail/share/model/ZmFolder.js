@@ -518,7 +518,7 @@ function(what, folderType) {
 				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
 	} else {
 		// An item or an array of items is being moved
-		var items = (what instanceof Array) ? what : [what];
+		var items = AjxUtil.toArray(what);
 		var item = items[0];
 
 		if (this.nId == ZmOrganizer.ID_ROOT ||									// container can only have folders/searches
@@ -550,6 +550,10 @@ function(what, folderType) {
 					break;
 				} else if (this.nId == ZmFolder.ID_DRAFTS && !items[i].isDraft)	{
 					// only drafts can be moved into Drafts
+					invalid = true;
+					break;
+				} else if (items[i].isReadOnly()) {
+					// cannot move a read-only item
 					invalid = true;
 					break;
 				}

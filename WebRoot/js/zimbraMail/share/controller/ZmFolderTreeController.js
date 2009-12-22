@@ -523,11 +523,16 @@ function(ev) {
 */
 ZmFolderTreeController.prototype._dropListener =
 function(ev) {
+
 	var dropFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
 	var data = ev.srcData.data;
 	var isShiftKey = (ev.shiftKey || ev.uiEvent.shiftKey);
 
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		if (!data) {
+			ev.doIt = false;
+			return;
+		}
 		var type = ev.targetControl.getData(ZmTreeView.KEY_TYPE);
 		if (data instanceof ZmFolder) {
 			ev.doIt = dropFolder.mayContain(data, type) && !dropFolder.disallowSubFolder;
@@ -538,7 +543,7 @@ function(ev) {
 				ev.doIt = dropFolder.mayContain(data, type);
 
 				var action;
-				var actionData = (!(data instanceof Array)) ? [data] : data;
+				var actionData = AjxUtil.toArray(data);
 
 				// walk thru the array and find out what action is allowed
 				for (var i = 0; i < actionData.length; i++) {

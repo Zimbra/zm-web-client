@@ -352,7 +352,6 @@ function(modifies, force) {
 					doc.notifyModify(mod);
 					doc.set(mod);
 				}
-				mod._handled = true;
 			}
 		}
 	}
