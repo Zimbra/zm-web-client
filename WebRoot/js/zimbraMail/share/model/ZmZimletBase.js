@@ -300,6 +300,15 @@ ZmZimletBase.prototype.onFindMsgObjects = function(msg, objMgr) {};
 ZmZimletBase.prototype.onContactView = function(contact, elementId) {};
 
 /**
+ * This method is called by the Zimlet framework when a contact is edited.
+ * 
+ * @param	{ZmEditContactView}	view	the edit contact view
+ * @param	{ZmContact}		contact		the contact being edited
+ * @param	{String}		elementId	the element Id
+ */
+ZmZimletBase.prototype.onContactEdit = function(view, contact, elementId) {};
+
+/**
  * This method is called by the Zimlet framework when application toolbars are initialized.
  * 
  * @param	{ZmApp}				app				the application
@@ -420,6 +429,13 @@ ZmZimletBase.prototype.appendExtraSignature = function(bufferArray) {};
  * @param	{ZmMailMsg}		msg		the message
  */
 ZmZimletBase.prototype.onMailConfirm = function(confirmView, msg) {};
+
+/**
+ * This method is called by the Zimlet framework when a new chat widget is initialized.
+ * 
+ * @param	{ZmChatWidget}		widget		the chat widget
+ */
+ZmZimletBase.prototype.onNewChatWidget = function(widget) {};
 
 
 /*
@@ -1136,6 +1152,23 @@ ZmZimletBase.prototype.appAction = function(appName, active) { };
  * @see		#createApp
  */
 ZmZimletBase.prototype.appLaunch = function(appName) { };
+
+/**
+ * This method by the Zimlet framework when an application bug is pressed.
+ * 
+ * @param	{String} id        the id of the application button
+ */
+ZmZimletBase.prototype.onSelectApp = function(id) { };
+
+/**
+ * This method by the Zimlet framework when an application action occurs.
+ * 
+ * @param	{String}	type        the type of action (for example: "app", "menuitem", "treeitem")
+ * @param	{String}	action		the action
+ * @param	{String}	currentViewId		the current view Id
+ * @param	{String}	lastViewId		the last view Id
+ */
+ZmZimletBase.prototype.onAction = function(id, action, currentViewId, lastViewId) { };
 
 /*
  *
