@@ -266,6 +266,14 @@ function() {
     ].join("");
 };
 
+ZmBriefcaseApp.addEditorParam =
+function(restUrl) {
+    if(restUrl && window.isTinyMCE) {
+        restUrl += (restUrl.match(/\?/) ?  "&editor=tinymce" : "?editor=tinymce");
+    }
+    return restUrl;
+};
+
 ZmBriefcaseApp.prototype.getEditURLForContentType =
 function(contentType) {
 	AjxDispatcher.require("Startup1_1");

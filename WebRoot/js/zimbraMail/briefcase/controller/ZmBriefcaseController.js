@@ -436,6 +436,7 @@ function(ev) {
 			}
 		} else {
 			var restUrl = item.getRestUrl();
+            if(item.isWebDoc()) restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
 			if (restUrl) {
 				window.open(restUrl, item.name, ZmBriefcaseApp.getDocWindowFeatures());
 			}
@@ -490,6 +491,7 @@ function() {
 		if (item && item.isFolder) {
 			this.show(item.id);
 		} else if(restUrl != null) {
+            if(item.isWebDoc()) restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
 			window.open(restUrl, item.name, ZmBriefcaseApp.getDocWindowFeatures());
 		}
 	}

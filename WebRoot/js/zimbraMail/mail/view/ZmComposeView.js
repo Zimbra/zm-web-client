@@ -2026,7 +2026,7 @@ function(composeMode) {
 	this._composeMode = composeMode || defaultCompMode;
 
 	// init html editor
-	if (window.isTinyMCE) {
+	if (window.isTinyMCE || (window.opener && window.opener.isTinyMCE)) {
 		this._htmlEditor = new ZmAdvancedHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 		this._bodyField = document.getElementById(this._bodyFieldId);
