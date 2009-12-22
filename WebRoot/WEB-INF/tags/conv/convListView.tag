@@ -51,6 +51,7 @@
 <tr>
     <td class='List'>
         <table width="100%" cellpadding="2" cellspacing="0">
+			<tbody id="mess_list_tbody">
 			<tr class='Header'>
                 <th class='CB' nowrap='nowrap'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type="checkbox" name="allids"/></th>
                 <c:if test="${mailbox.features.flagging}">
@@ -76,11 +77,11 @@
                         <fmt:message key="received"/>
                     </a></th>
             </tr>
-
+<%--
         </table>
         <table width="100%" cellpadding="2" cellspacing="0">
             <tbody id="mess_list_tbody">
-
+--%>
                 <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                     <c:set var="convHit" value="${hit.conversationHit}"/>
                     <c:choose>

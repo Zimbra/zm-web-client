@@ -57,6 +57,7 @@
 <tr>
 <td class='List'>
     <table width="100%" cellpadding="2" cellspacing="0">
+		<tbody id="mess_list_tbody">
 		<tr>
             <th class='CB' nowrap='nowrap'>
                 <input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
@@ -105,9 +106,9 @@
                 </a>
             </th>
         </tr>
-	</table>
+<%--	</table>
     <table width="100%" cellpadding="2" cellspacing="0">
-        <tbody id="mess_list_tbody">
+        --%>
             <c:set value="${context.searchResult.hits[0].id}" var="cid"/>
             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                 <c:choose>
