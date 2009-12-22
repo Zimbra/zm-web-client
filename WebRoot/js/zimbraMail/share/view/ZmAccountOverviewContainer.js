@@ -218,10 +218,9 @@ function(params) {
 	}
 
 	// add zimlets at the end of all overviews
-	var skip = params.omit && params.omit[ZmOrganizer.ID_ZIMLET];
-	if (!skip && !appCtxt.inStartup) {
-		skip = (appCtxt.getZimletMgr().getPanelZimlets().length == 0);
-	}
+	var skip = ((params.omit && params.omit[ZmOrganizer.ID_ZIMLET]) ||
+				(appCtxt.getZimletMgr().getPanelZimlets().length == 0));
+
 	if (!skip && window[ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]]) {
 		var headerLabel = ZmOrganizer.LABEL[ZmOrganizer.ZIMLET];
 		var headerDataId = params.overviewId = appCtxt.getOverviewId([this.containerId, headerLabel], null);
