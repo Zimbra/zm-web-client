@@ -182,22 +182,6 @@ function(zmObject) {};
 /**
  * @private
  */
-ZmZimletBase.prototype.portletCreated =
-function(portlet) {
-    DBG.println("portlet created: " + portlet.id);
-};
-
-/**
- * @private
- */
-ZmZimletBase.prototype.portletRefreshed =
-function(portlet) {
-    DBG.println("portlet refreshed: " + portlet.id);
-};
-
-/**
- * @private
- */
 ZmZimletBase.prototype._dispatch =
 function(handlerName) {
 	var params = [];
@@ -437,6 +421,30 @@ ZmZimletBase.prototype.onMailConfirm = function(confirmView, msg) {};
  */
 ZmZimletBase.prototype.onNewChatWidget = function(widget) {};
 
+/*
+ * 
+ * Portlet methods
+ */
+
+/**
+ * This method is called by the Zimlet framework when the portlet is created.
+ * 
+ * @param	{ZmPortlet}	portlet		the portlet
+ */
+ZmZimletBase.prototype.portletCreated =
+function(portlet) {
+    DBG.println("portlet created: " + portlet.id);
+};
+
+/**
+ * This method is called by the Zimlet framework when the portlet is refreshed.
+ * 
+ * @param	{ZmPortlet}	portlet		the portlet
+ */
+ZmZimletBase.prototype.portletRefreshed =
+function(portlet) {
+	DBG.println("portlet refreshed: " + portlet.id);
+};
 
 /*
  * 
