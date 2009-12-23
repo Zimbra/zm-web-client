@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -13,6 +13,24 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * 
+ * This file defines the Zimbra Portlet.
+ *
+ */
+
+/**
+ * @class
+ *
+ * This class provides the implementation for a Zimbra Portlet.
+ * 
+ * @param	{ZmList}	list	the list that contains this item (may be <code>null</code>)
+ * @param	{String}	id		the portlet id
+ * @param	{Object}	def		the portlet definition
+ *
+ * @extends	ZmItem
+ */
 ZmPortlet = function(list, id, def) {
     ZmItem.call(this, ZmItem.PORTLET, id, list);
 
@@ -68,15 +86,26 @@ ZmPortlet.prototype.toString = function() { return "ZmPortlet"; }
 // Data
 //
 
-/** The view associated to this portlet. Type is ZmPortletView. */
+/**
+ * The view associated to this portlet. Type is ZmPortletView.
+ *
+ * @private
+ */
 ZmPortlet.prototype.view;
 
+/**
+ * @private
+ */
 ZmPortlet.prototype._refreshActionId = -1;
 
 //
 // Public methods
 //
 
+/**
+ * Refreshes the portlet.
+ * 
+ */
 ZmPortlet.prototype.refresh = function() {
     if (this.view) {
         this._refreshTime = new Date().getTime();
@@ -97,6 +126,11 @@ ZmPortlet.prototype.refresh = function() {
     }
 };
 
+/**
+ * Sets the refresh interval.
+ * 
+ * @param	{int}		interval		the refresh interval (in milliseconds)
+ */
 ZmPortlet.prototype.setRefreshInterval = function(interval) {
     if (this._refreshActionId != -1) {
         clearInterval(this._refreshActionId);
@@ -111,6 +145,11 @@ ZmPortlet.prototype.setRefreshInterval = function(interval) {
     }
 };
 
+/**
+ * Sets the content.
+ * 
+ * @param	{String}	content		the content
+ */
 ZmPortlet.prototype.setContent = function(content) {
     if (this.view) {
         this.view.setContent(content);
@@ -119,6 +158,12 @@ ZmPortlet.prototype.setContent = function(content) {
         DBG.println("no view to set content ("+this.id+")");
     }
 };
+
+/**
+ * Sets the content url.
+ * 
+ * @param	{String}	url		the content url
+ */
 ZmPortlet.prototype.setContentUrl = function(url) {
     if (this.view) {
         this.view.setContentUrl(url);
@@ -128,6 +173,11 @@ ZmPortlet.prototype.setContentUrl = function(url) {
     }
 };
 
+/**
+ * Sets the portlet to "paused".
+ * 
+ * @param	{Boolean}	paused		<code>true</code> to pause the portlet
+ */
 ZmPortlet.prototype.setPaused = function(paused) {
     if (this._refreshActionId != -1 && paused) {
         this._pauseTime = new Date().getTime();
@@ -146,6 +196,9 @@ ZmPortlet.prototype.setPaused = function(paused) {
 // Protected methods
 //
 
+/**
+ * @private
+ */
 ZmPortlet.prototype._resumeRefresh = function() {
     this.refresh();
     this._refreshActionId = setInterval(this._refreshAction, this._refreshInterval);

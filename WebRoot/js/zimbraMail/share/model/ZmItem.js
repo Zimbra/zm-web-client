@@ -14,23 +14,30 @@
  */
 
 /**
- * Creates an item of the given type.
- * @constructor
+ * @overview
+ * 
+ * This file defines an item.
+ */
+
+/**
  * @class
  * An item is a piece of data that may contain user content. Most items are taggable. Currently,
  * the following things are items: conversation, message, attachment, appointment, and contact.
- * <p>
+ * <br/>
+ * <br/>
  * An item typically appears in the context of a containing list. Its event handling
  * is generally handled by the list so we avoid having the same listeners on each item. If we
  * create a context where an item stands alone outside a list context, then the item will have
- * its own listeners and do its own notification handling.</p>
+ * its own listeners and do its own notification handling.
  *
  * @author Conrad Damon
  * 
- * @param type		[constant]		type of object (conv, msg, etc)
- * @param id		[int]			unique ID
- * @param list		[ZmList]		list that contains this item
- * @param noCache	[boolean]*		if true, do not cache this item
+ * @param {constant}	type		type of object (conv, msg, etc)
+ * @param {int}			id			the unique id
+ * @param {ZmList}		list		a list that contains this item
+ * @param {Boolean}		noCache		if <code>true</code>, do not cache this item
+ * 
+ * @extends		ZmModel
  */
 ZmItem = function(type, id, list, noCache) {
 
@@ -145,28 +152,47 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]		= "isLowPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]		= "isHighPriority";
 
 // DnD actions this item is allowed
+
+/**
+ * Defines the "move" action.
+ * 
+ * @see		#getDefaultDndAction
+ */
 ZmItem.DND_ACTION_MOVE = 1 << 0;
+/**
+ * Defines the "copy" action.
+ * 
+ * @see		#getDefaultDndAction
+ */
 ZmItem.DND_ACTION_COPY = 1 << 1;
+/**
+ * Defines the "move & copy" action.
+ * 
+ * @see		#getDefaultDndAction
+ */
 ZmItem.DND_ACTION_BOTH = ZmItem.DND_ACTION_MOVE | ZmItem.DND_ACTION_COPY;
 
-// Used by items (such as calendar or share invites) that have notes
+/**
+ * Defines the notes separator which is used by items
+ * (such as calendar or share invites) that have notes.
+ * 
+ */
 ZmItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
 
 /**
- * Stores information about the given item type.
+ * Registers an item and stores information about the given item type.
  *
- * @param item			[constant]	item type
- * @param app			[constant]	app that handles this item type
- * @param nameKey		[string]	msg key for item name
- * @param pluralameKey	[string]	msg key for plural of item name
- * @param icon			[string]	name of item's icon class
- * @param soapCmd		[string]	SOAP command for acting on this item
- * @param itemClass		[string]	name of class that represents this item
- * @param node			[string]	SOAP response node for this item
- * @param organizer		[constant]	associated organizer
- * @param searchType	[string]	associated type in SearchRequest
- * @param resultsList	[function]	function that returns a ZmList for
- * 									holding search results of this type
+ * @param {constant}	item		the item type
+ * @param {constant}	app			the app that handles this item type
+ * @param {String}		nameKey		the message key for item name
+ * @param {String}		pluralameKey	the message key for plural of item name
+ * @param {String}		icon			the name of item icon class
+ * @param {String}		soapCmd		the SOAP command for acting on this item
+ * @param {String}		itemClass		the name of class that represents this item
+ * @param {String}		node			the SOAP response node for this item
+ * @param {constant}	organizer		the associated organizer
+ * @param {String}		searchType		the associated type in SearchRequest
+ * @param {function}	resultsList		the function that returns a {ZmList} for holding search results of this type
  */
 ZmItem.registerItem =
 function(item, params) {
@@ -194,7 +220,10 @@ function(item, params) {
 };
 
 /**
-* Takes a normalized id or an item id, and returns the item id.
+* Gets an item id by taking a normalized id (or an item id) and returning the item id.
+* 
+* @param	{String}	id		the normalized id
+* @return	{String}	the item id
 */
 ZmItem.getItemId =
 function(id) {
@@ -209,14 +238,23 @@ function(id) {
 };
 
 // abstract methods
+/**
+ * Creates an item.
+ * 
+ * @param	{Hash}	args		the arguments
+ */
 ZmItem.prototype.create = function(args) {};
+/**
+ * Modifies an item.
+ * 
+ * @param	{Hash}	mods		the arguments
+ */
 ZmItem.prototype.modify = function(mods) {};
 
 /**
-* Returns this item if it has the given ID. Used by the app controller for
-* handling notifications.
+* Gets the item by id.
 *
-* @param id		an item ID
+* @param {String}	id		an item id
 */
 ZmItem.prototype.getById =
 function(id) {
@@ -237,6 +275,11 @@ function() {
 	this.tagHash = {};
 };
 
+/**
+ * Caches the item.
+ * 
+ * @return	{Boolean}	<code>true</code> if the item is placed into cache; <code>false</code> otherwise
+ */
 ZmItem.prototype.cache =
 function(){
   if(this.id){
@@ -247,29 +290,43 @@ function(){
 };
 
 /**
-* Returns true is this item has the given tag.
-*
-* @param tagId		a numeric tag ID
-*/
+ * Checks if the item has a given tag.
+ * 
+ * @param {String}		tagId		a numeric tag id to check
+ * @return	{Boolean}	<code>true</code> is this item has the given tag.
+ */
 ZmItem.prototype.hasTag =
 function(tagId) {
 	return (this.tagHash[tagId] == true);
 };
 
 /**
-* Returns ID of the folder that contains this item, if available.
+* Gets the folder id that contains this item, if available.
+* 
+* @return	{String}	the folder id or <code>null</code> for none
 */
 ZmItem.prototype.getFolderId =
 function() {
 	return this.folderId;
 };
 
-/** @deprecated Use getRestUrl. */
+/**
+ * @deprecated
+ * Use getRestUrl
+ * 
+ * @private
+ * @see		#getRestUrl
+ */
 ZmItem.prototype.getUrl =
 function() {
 	return this.getRestUrl();
 };
 
+/**
+ * Gets the rest url for this item.
+ * 
+ * @return	{String}	the url
+ */
 ZmItem.prototype.getRestUrl =
 function() {
 	// return REST URL as seen by server
@@ -290,7 +347,9 @@ function() {
 };
 
 /**
-* Returns the ID of the appropriate tag image for this item.
+* Gets the appropriate tag image info for this item.
+* 
+* @return	{String}	the tag image info
 */
 ZmItem.prototype.getTagImageInfo =
 function() {
@@ -315,10 +374,11 @@ function() {
 };
 
 /**
-* Returns what the default action should be when dragging this item. This method
+* Gets the default action to use when dragging this item. This method
 * is meant to be overloaded for items that are read-only and can only be copied.
 *
-* @param forceCopy		[Boolean]*		If set, default DnD action is a copy
+* @param {Boolean}		forceCopy		If set, default DnD action is a copy
+* @return	{Object}	the action
 */
 ZmItem.prototype.getDefaultDndAction =
 function(forceCopy) {
@@ -328,8 +388,10 @@ function(forceCopy) {
 };
 
 /**
-* This method should be overloaded by the derived object to determine what
-* "read-only" means.
+* Checks if this item is read-only. This method should be
+* overloaded by the derived object to determine what "read-only" means.
+* 
+* @return	{Boolean}	the read-only status
 */
 ZmItem.prototype.isReadOnly =
 function() {
@@ -337,7 +399,9 @@ function() {
 };
 
 /**
- * Returns true if this item is shared (remote).
+ * Checks if this item is shared.
+ * 
+ * @return	{Boolean}	<code>true</code> if this item is shared (remote)
  */
 ZmItem.prototype.isShared =
 function() {
@@ -357,6 +421,7 @@ function() {
 
 /**
 * Handles a delete notification.
+* 
 */
 ZmItem.prototype.notifyDelete =
 function() {
@@ -369,7 +434,7 @@ function() {
 /**
 * Handles a modification notification.
 *
-* @param obj		item with the changed attributes/content
+* @param {Object}	obj		the item with the changed attributes/content
 */
 ZmItem.prototype.notifyModify =
 function(obj) {
@@ -412,8 +477,8 @@ function(obj) {
 /**
  * Applies the given flag change to this item by setting a boolean property.
  *
- * @param flag	[constant]		the flag that changed
- * @param on	[boolean]		true if the flag is now set
+ * @param {constant}	flag	the flag that changed
+ * @param {Boolean}	on		<code>true</code> if the flag is now set
  */
 ZmItem.prototype.flagLocal =
 function(flag, on) {
@@ -421,13 +486,13 @@ function(flag, on) {
 };
 
 /**
- * Applies the given flag change to this item. Both the flags string and the
+ * Sets the given flag change to this item. Both the flags string and the
  * flag properties are affected.
  *
- * @param flag	[constant]		the flag that changed
- * @param on	[boolean]		true if the flag is now set
+ * @param {constant}	flag	the flag that changed
+ * @param {Boolean}	on	<code>true</code> if the flag is now set
  *
- * @return		the new flags string
+ * @return	{String}		the new flags string
  */
 ZmItem.prototype.setFlag =
 function(flag, on) {
@@ -444,11 +509,12 @@ function(flag, on) {
 };
 
 /**
-* Adds or removes the given tag for this item.
-*
-* @param tagId		a numeric tag ID
-* @param doTag		true if tag is being added, false if it is being removed
-*/
+ * Adds or removes the given tag for this item.
+ *
+ * @param {Object}		tagId		a numeric tag ID
+ * @param {Boolean}		doTag		<code>true</code> if tag is being added; <code>false</code> if it is being removed
+ * @return	{Boolean}	<code>true</code> to notify
+ */
 ZmItem.prototype.tagLocal =
 function(tagId, doTag) {
 	var bNotify = false;
@@ -472,6 +538,10 @@ function(tagId, doTag) {
 	return bNotify;
 };
 
+/**
+ * Removes all tags.
+ * 
+ */
 ZmItem.prototype.removeAllTagsLocal =
 function() {
 	this.tags = [];
@@ -481,15 +551,28 @@ function() {
 };
 
 /**
-* Here for completeness, in case an item wants to do something while being deleted.
+* Deletes local, in case an item wants to do something while being deleted.
 */
 ZmItem.prototype.deleteLocal = function() {};
 
+/**
+ * Moves the item.
+ * 
+ * @param	{String}	folderId
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback	the callback on error
+ * @return	{Object}		the result of the move
+ */
 ZmItem.prototype.move =
 function(folderId, callback, errorCallback) {
 	return ZmItem.move(this.id, folderId, callback, errorCallback);
 };
 
+/**
+ * Moves the item.
+ * 
+ * @return	{Object}		the result of the move
+ */
 ZmItem.move =
 function(itemId, folderId, callback, errorCallback, accountName) {
 	var json = {
@@ -516,14 +599,18 @@ function(itemId, folderId, callback, errorCallback, accountName) {
 /**
 * Updates the folder for this item.
 *
-* @param folderId		the new folder ID
+* @param {String}		folderId		the new folder ID
 */
 ZmItem.prototype.moveLocal =
 function(folderId) {
 	this.folderId = folderId;
 };
 
-// Takes a comma-separated list of tag IDs and applies the tags to this item.
+/**
+ * Takes a comma-separated list of tag IDs and applies the tags to this item.
+ * 
+ * @private
+ */
 ZmItem.prototype._parseTags =
 function(str) {	
 	this.tags = [];
@@ -538,7 +625,11 @@ function(str) {
 	}
 };
 
-// Takes a string of flag chars and applies them to this item.
+/**
+ * Takes a string of flag chars and applies them to this item.
+ * 
+ * @private
+ */
 ZmItem.prototype._parseFlags =
 function(str) {
 	this.flags = str;
@@ -551,7 +642,11 @@ function(str) {
 
 // Listener notification
 
-// notify the list as well as this item
+/**
+ * Notify the list as well as this item.
+ * 
+ * @private
+ */
 ZmItem.prototype._notify =
 function(event, details) {
 	ZmModel.prototype._notify.call(this, event, details);
@@ -566,9 +661,11 @@ function(event, details) {
 	}
 };
 
-/*
-* Returns a list of flags that apply to this type of item.
-*/
+/**
+ * Returns a list of flags that apply to this type of item.
+ * 
+ * @private
+ */
 ZmItem.prototype._getFlags =
 function() {
 	return [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH];
