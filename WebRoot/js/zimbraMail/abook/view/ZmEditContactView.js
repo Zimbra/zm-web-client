@@ -1196,6 +1196,8 @@ ZmEditContactViewInputSelect.prototype._createHtmlFromTemplate = function(templa
 			});
 		}
 		this._select.setVisible(this._options.length > 1);
+		if (this._input)
+			this._input.setEnabled(this._select.getValue() != "_NONE");
 	}
 };
 
@@ -1240,6 +1242,12 @@ ZmEditContactViewInputSelect.prototype._handleSelectChange = function(evt) {
 		this.parent._adjustMaximums();
 	}
 	this.setDirty(true);
+	if (this._input) {
+		var enabled = this._select.getValue() != "_NONE";
+		this._input.setEnabled(enabled);
+		if (enabled)
+			this._input.focus();
+	}
 };
 
 // DwtControl methods
