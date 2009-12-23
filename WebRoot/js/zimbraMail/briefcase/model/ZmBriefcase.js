@@ -137,7 +137,7 @@ function(what) {
 
 	if (!invalid) {
 		// An item or an array of items is being moved
-		var items = (what instanceof Array) ? what : [what];
+		var items = AjxUtil.toArray(what);
 		var item = items[0];
 	
 		if (item.type != ZmItem.BRIEFCASE_ITEM) {

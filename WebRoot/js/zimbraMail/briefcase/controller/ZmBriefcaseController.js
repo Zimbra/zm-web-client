@@ -17,7 +17,6 @@ ZmBriefcaseController = function(container, app) {
 	ZmListController.call(this, container, app);
 
 	this._idMap = {};
-	this._parentView = {};
 
 	this._listChangeListener = new AjxListener(this,this._fileListChangeListener);
 	this._listeners[ZmOperation.OPEN_FILE] = new AjxListener(this, this._openFileListener);
@@ -46,9 +45,9 @@ function() {
 
 // Constants
 ZmBriefcaseController._VIEWS = {};
-ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE] = "ZmBriefcaseView";
-ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_DETAIL] = "ZmDetailListView";
-ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_COLUMN] = "ZmMultiColView";
+ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE]			= "ZmBriefcaseView";
+ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_DETAIL]	= "ZmDetailListView";
+ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_COLUMN]	= "ZmMultiColView";
 
 // Stuff for the View menu
 ZmBriefcaseController.GROUP_BY_ICON = {};
@@ -153,8 +152,8 @@ function(parent, num) {
 		}
 	}
 	var isMultiFolder = (noOfFolders > 1);
-	var isShared = this.isShared(this._currentFolder);
-	var isReadOnly = this.isReadOnly(this._currentFolder);
+	var isShared = this.isShared(this._folderId);
+	var isReadOnly = this.isReadOnly(this._folderId);
 	var isItemSelected = (num>0);
 	var isZimbraAccount = appCtxt.getActiveAccount().isZimbraAccount;
 	var isMailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
@@ -225,44 +224,32 @@ function() {
 
 ZmBriefcaseController.prototype._defaultView =
 function() {
-	return ZmId.VIEW_BRIEFCASE_DETAIL;
+	return ZmId.VIEW_BRIEFCASE_COLUMN;
 };
 
 ZmBriefcaseController.prototype._createNewView =
 function(view) {
-	if (!this._listView[view]) {
+
+	var isMultiCol = (view == ZmId.VIEW_BRIEFCASE_COLUMN);
+	var curView = isMultiCol ? this._multiColView : this._listView[view];
+	if (!curView) {
 		var viewCtor = eval(ZmBriefcaseController._VIEWS[view]);
-		if (view == ZmId.VIEW_BRIEFCASE_COLUMN) {
-			this._parentView[view] = new viewCtor(this._container, this, this._dropTgt);
-			var listView = this._listView[view] = this._parentView[view].getListView();
-			listView.setDragSource(this._dragSrc);
-			return listView;
+		if (isMultiCol) {
+			this._multiColView = new viewCtor(this._container, this, this._dropTgt);
+			this._listView[view] = this._multiColView.getListView();
 		} else {
 			this._listView[view] = new viewCtor(this._container, this, this._dropTgt);
 		}
 	}
 	this._listView[view].setDragSource(this._dragSrc);
+
 	return this._listView[view];
 };
 
 ZmBriefcaseController.prototype._setViewContents =
 function(view) {
-	if (view == ZmId.VIEW_BRIEFCASE_COLUMN) {
-		this._parentView[view].set(this._list);
-	} else {
-		this._listView[view].set(this._list);
-	}
-	// Select the appropriate briefcase in the tree view.
-	if (this._object) {
-		var overviewController = appCtxt.getOverviewController();
-		var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
-		var treeView = treeController.getTreeView(this._app.getOverviewId());
-		if (treeView) {
-			var folderId = this._object;
-			var skipNotify = true;
-			treeView.setSelected(folderId, skipNotify);
-		}
-	}
+	var bcv = (view == ZmId.VIEW_BRIEFCASE_COLUMN) ? this._multiColView : this._listView[view];
+	bcv.set(this._list);
 };
 
 ZmBriefcaseController.prototype._getDefaultFocusItem =
@@ -270,21 +257,7 @@ function() {
 	return this._toolbar[this._currentView];
 };
 
-ZmBriefcaseController._itemize =
-function(objects) {
-	if (objects instanceof Array) {
-		var ids = [];
-		for (var i = 0; i < objects.length; i++) {
-			var object = objects[i];
-			if (object.id) {
-				ids.push(object.id);
-			}
-		}
-		return ids.join();
-	}
-	return objects.id;
-};
-
+// Returns a list of subfolders of the given folder, as ZmBriefcaseItem objects
 ZmBriefcaseController.prototype._getSubfolders =
 function(folderId) {
 
@@ -314,13 +287,9 @@ function(folderId) {
 // view management
 
 ZmBriefcaseController.prototype.show =
-function(results, folderId) {
+function(results) {
 
-	if (!(results instanceof ZmSearchResult)) {
-		return this.showXXX(results, folderId);
-	}
-
-	this._folderId = folderId;
+	this._folderId = results && results.search && results.search.folderId;
 	this._list = results.getResults(ZmItem.BRIEFCASE_ITEM);
 	this._list.setHasMore(results.getAttribute("more"));
 
@@ -328,13 +297,14 @@ function(results, folderId) {
 
 	this._setup(this._currentView);
 
-	// reset offset if list view has been created
+	// start fresh with search results
 	var lv = this._listView[this._currentView];
-	if (lv) { lv.offset = 0; }
+	lv.offset = 0;
+	lv._folderId = this._folderId;
 
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this.isMultiColView() ? this._multiColView : lv;
 
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 	this._resetNavToolBarButtons(this._currentView);
@@ -342,9 +312,14 @@ function(results, folderId) {
 
 ZmBriefcaseController.prototype.switchView =
 function(view, force) {
-	var viewChanged = force || view != this._currentView;
+
+	var viewChanged = (force || view != this._currentView);
 
 	if (viewChanged) {
+		if (this.isMultiColView()) {
+			var mcv = this._multiColView;
+			mcv.setCurrentListIndex(mcv._nextIndex - 1);
+		}
 		this._currentView = view;
 		this._setup(view);
 	}
@@ -353,9 +328,7 @@ function(view, force) {
 	if (viewChanged) {
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-		elements[ZmAppViewMgr.C_APP_CONTENT] = (this._currentView == ZmId.VIEW_BRIEFCASE_COLUMN)
-			? this._parentView[this._currentView]
-			: this._listView[this._currentView];
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this.isMultiColView() ? this._multiColView : this._listView[this._currentView];
 		this._setView({view:view, elements:elements, isAppView:true});
 		this._resetNavToolBarButtons(view);
 	}
@@ -374,19 +347,17 @@ function(ev) {
 
 ZmBriefcaseController.prototype.__popupUploadDialog =
 function(callback, title) {
-	if (!this._currentFolder) {
-		this._currentFolder = ZmOrganizer.ID_BRIEFCASE;
-	}
 
-	var isShared = this.isShared(this._currentFolder);
-	var isReadOnly = this.isReadOnly(this._currentFolder);
+	var folderId = this._folderId || ZmOrganizer.ID_BRIEFCASE;
+	var isShared = this.isShared(folderId);
+	var isReadOnly = this.isReadOnly(folderId);
 
 	if (isShared && isReadOnly) {
 		var dialog = appCtxt.getMsgDialog();
 		dialog.setMessage(ZmMsg.errorPermission, DwtMessageDialog.WARNING_STYLE);
 		dialog.popup();
 	} else {
-		var cFolder = appCtxt.getById(this._currentFolder);
+		var cFolder = appCtxt.getById(folderId);
 		appCtxt.getUploadDialog().popup(cFolder, callback, title);
 	}
 };
@@ -484,14 +455,16 @@ function() {
 	var items = view.getSelection();
 	if (!items) { return; }
 
-	items = items instanceof Array ? items : [ items ];
-	for (var i = 0; i<items.length; i++) {
+	items = AjxUtil.toArray(items);
+	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		var restUrl = item.getRestUrl();
 		if (item && item.isFolder) {
 			this.show(item.id);
-		} else if(restUrl != null) {
-            if(item.isWebDoc()) restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
+		} else if (restUrl != null) {
+            if (item.isWebDoc()) {
+				restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
+			}
 			window.open(restUrl, item.name, ZmBriefcaseApp.getDocWindowFeatures());
 		}
 	}
@@ -520,7 +493,7 @@ function() {
 	var items = view.getSelection();
 	if (!items) { return; }
 
-	items = items instanceof Array ? items : [ items ];
+	items = AjxUtil.toArray(items);
 	for (var i = 0; i<items.length; i++) {
 		var item = items[i];
 		var restUrl = item.getRestUrl();
@@ -542,14 +515,6 @@ function(restUrl) {
 
 ZmBriefcaseController.prototype._uploadFileListener =
 function() {
-	if (this.isMultiColView()) {
-		var view = this._listView[this._currentView];
-		var items = view.getSelection();
-		if (items && items.length==1 && items[0].isFolder) {
-			this._parentView[this._currentView].setCurrentListView(view.getNextColumn());
-			this.updateCurrentFolder(items[0].id);
-		}
-	}
 	this._app._handleNewItem();
 };
 
@@ -557,7 +522,7 @@ ZmBriefcaseController.prototype._sendFileListener =
 function(event) {
 	var view = this._listView[this._currentView];
 	var items = view.getSelection();
-	items = items instanceof Array ? items : [ items ];
+	items = AjxUtil.toArray(items);
 
 	var names = [];
 	var urls = [];
@@ -615,7 +580,7 @@ ZmBriefcaseController.prototype._sendFileAsAttachmentListener =
 function(event) {
 	var view = this._listView[this._currentView];
 	var items = view.getSelection();
-	items = items instanceof Array ? items : [ items ];
+	items = AjxUtil.toArray(items);
 
 	var docInfo = [];
 
@@ -749,29 +714,10 @@ function() {
 	return this._parentView[this._currentView];
 };
 
-
-ZmBriefcaseController.prototype._initializeListView =
-function(view) {
-	if(view != ZmId.VIEW_BRIEFCASE_COLUMN){
-		ZmListController.prototype._initializeListView.call(this,view);
-		return;
-	}
-
-	if (!this._listView[view]) {
-		this._listView[view] = this._createNewView(view);
-	}
-};
-
 ZmBriefcaseController.prototype._addListListeners =
 function(colView) {
 	colView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
 	colView.addActionListener(new AjxListener(this, this._listActionListener));
-};
-
-ZmBriefcaseController.prototype.updateCurrentFolder =
-function(folderId) {
-	this._currentFolder = folderId;
-	this._object = folderId;
 };
 
 ZmBriefcaseController.prototype.isMultiColView =
@@ -782,36 +728,6 @@ function() {
 ZmBriefcaseController.prototype.mapSupported =
 function(map) {
 	return (map == "list" && (this._currentView != ZmId.VIEW_BRIEFCASE));
-};
-
-ZmBriefcaseController.prototype.deleteCallback =
-function(ids){
-	if (this.isMultiColView()) {
-		if (!ids) { return; }
-		var itemIds = ids.split(",");
-		var mView = this._parentView[this._currentView];
-		for (var i in itemIds) {
-			var briefcase = appCtxt.getById(itemIds[i]);
-			if (briefcase) {
-				briefcase.notifyDelete();
-			}
-			appCtxt.cacheRemove(itemIds[i]);
-			var col = mView.getColumn(itemIds[i]);
-			if (col) {
-				var prevCol = col.getPreviousColumn();
-				if (prevCol) {
-					mView.removeChildColumns(prevCol.getColumnIndex());
-				}
-			}
-		}
-
-		if (mView) {
-			var listView = mView.getCurrentListView();
-			if (listView) {
-				this.updateCurrentFolder(listView._folderId);
-			}
-		}
-	}
 };
 
 ZmBriefcaseController.prototype.getItemTooltip =
@@ -842,13 +758,6 @@ function(date) {
 	return dateFormatter.format(date);
 };
 
-
-ZmBriefcaseController.prototype.getCurrentFolderId =
-function() {
-	return this._currentFolder;
-};
-
-
 ZmBriefcaseController.prototype._resetToolbarOperations =
 function() {
 	if (this._listView[this._currentView] != null) {
@@ -863,7 +772,7 @@ function() {
 	var items = view.getSelection();
 	if (!items) { return; }
 
-	items = items instanceof Array ? items : [items];
+	items = AjxUtil.toArray(items);
 	for (var i in items) {
 		var item = items[i];
 		var restUrl = item.getRestUrl();

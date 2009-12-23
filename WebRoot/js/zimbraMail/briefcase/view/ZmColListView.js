@@ -20,7 +20,7 @@ ZmColListView =	function(parent, controller, dropTgt, index) {
 	controller._currentView = view;
 	this._colIdx = index;
 
-	var params = {parent:parent, className:"ZmColListView", dropTgt:dropTgt,
+	var params = {parent:parent, dropTgt:dropTgt,
 				  view:view, id:ZmId.getViewId(view, index), posStyle:DwtControl.STATIC_STYLE,
 				  controller:controller, headerList:this._getHeaderList(parent)};
 	ZmBriefcaseBaseView.call(this, params);
@@ -64,35 +64,22 @@ function(parent) {
 	return null;
 };
 
+// This list view has no headers, so we create the entire row here
 ZmColListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
-
-	var icon;
-	if (item.isFolder) {
-		icon = "Folder";
-	} else {
-		var contentType = item.contentType;
-		if (contentType && contentType.match(/;/)) {
-			contentType = contentType.split(";")[0];
-		}
-		var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
-		icon = mimeInfo ? mimeInfo.image : "UnknownDoc";
-	}
 
 	idx = this._getTable(htmlArr, idx, params);
 	idx = this._getRow(htmlArr, idx, item, params);
 	
 	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
-	htmlArr[idx++] = AjxImg.getImageHtml(icon);
+	htmlArr[idx++] = AjxImg.getImageHtml(item.getIcon());
 	htmlArr[idx++] = "</center></td>";
-	htmlArr[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item,ZmItem.F_SUBJECT) + "'>&nbsp;";
+	htmlArr[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_SUBJECT) + "'>&nbsp;";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
 	htmlArr[idx++] = "</td>";
 
     htmlArr[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item,ZmItem.F_SUBJECT)+"'>";
-    if (item.tags && item.tags.length) {
-	    idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
-    }
+    idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
 	htmlArr[idx++] = "</td>";
 
 	htmlArr[idx++] = "</tr></table>";
@@ -100,70 +87,27 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	return idx;
 };
 
-// listeners
-
-ZmColListView.prototype._colHeaderActionListener = function(event) {
-  	// TODO
-};
-
-//
-// Private functions
-//
-
-ZmColListView.__typify = function(array, type) {
-	for (var i = 0; i < array.length; i++) {
-		array[i]._type = type;
-	}
-};
-
 ZmColListView.prototype._itemClicked =
 function(clickedEl, ev) {
 
-	this._controller._listView[ZmId.VIEW_BRIEFCASE_COLUMN] = this;
+	this.parent.setCurrentListIndex(this._colIdx);
 	ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
-	var items = this.getSelection();
-	
-	this.parent.removeChildColumns(this._colIdx);
-	this.parent.setCurrentListView(this);				
-	if (items && items.length == 1) {
-		var item = items[0];
-		if (item.isFolder) {
-			this.parent.expandFolder(item.id);
-		} else {
-			this.parent.showFileProps(item);
+
+	if (ev.button == DwtMouseEvent.LEFT) {
+		this.parent.removeChildColumns(this._colIdx);
+		var items = this.getSelection();
+		if (items && items.length == 1) {
+			var item = items[0];
+			if (item.isFolder) {
+				this.parent.expandFolder(item.id);
+			} else {
+				this.parent.showFileProps(item);
+			}
 		}
 	}
 };
 
-ZmColListView.prototype._resetColWidth =
-function() {
-	return;
-};
-
-ZmColListView.prototype.getColumnIndex =
-function() {
-	return this._colIdx;
-};
-
-ZmColListView.prototype.setNextColumn =
-function(listView) {
-	this._nextColumn = listView;	
-};
-
-ZmColListView.prototype.getNextColumn =
-function( ) {
-	return this._nextColumn;
-};
-
-ZmColListView.prototype.setPreviousColumn =
-function(listView){
-	this._previousColumn = listView;
-};
-
-ZmColListView.prototype.getPreviousColumn =
-function( ) {
-	return this._previousColumn;
-};
+ZmColListView.prototype._resetColWidth = function() {};
 
 ZmColListView.prototype._mouseOverAction =
 function(ev, div) {
@@ -182,5 +126,5 @@ function(ev, div) {
 
 ZmColListView.prototype._getScrollDiv =
 function() {
-	return this.parent._colDivs[this._colIdx];
+	return this.parent._divs[this._colIdx];
 };

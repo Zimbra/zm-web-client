@@ -73,6 +73,27 @@ function() {
     return this.contentType;
 };
 
+ZmBriefcaseItem.prototype.getIcon =
+function(large) {
+
+	if (this.isFolder) {
+		return "Folder";
+	}
+
+	var ct = this.contentType, icon;
+	if (ct && ct.match(/;/)) {
+		ct = ct.split(";")[0];
+	}
+	var mimeInfo = ct ? ZmMimeTable.getInfo(ct) : null;
+	if (large) {
+		icon = mimeInfo ? mimeInfo.imageLarge : "UnknownDoc_48";
+	} else {
+		icon = mimeInfo ? mimeInfo.image : "UnknownDoc" ;
+	}
+
+	return icon;
+};
+
 ZmBriefcaseItem.prototype.isReadOnly =
 function() {
 	// if one of the ancestor is readonly then no chances of childs being writable

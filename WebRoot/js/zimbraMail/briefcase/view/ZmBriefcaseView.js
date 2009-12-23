@@ -52,20 +52,8 @@ ZmBriefcaseView.prototype._createItemHtml =
 function(item, params) {
 	
 	var name = item.name;
-	var contentType = item.contentType;
-	
-	if(contentType && contentType.match(/;/)) {
-			contentType = contentType.split(";")[0];
-	}
-	var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
-	icon = "Img" + ( mimeInfo ? mimeInfo.imageLarge : "UnknownDoc_48");
-
-	if(item.isFolder) {
-		icon = "ImgBriefcase_48";
-	}
-	
-	if(name.length>14){
-		name = name.substring(0,14)+"...";
+	if (name.length > 14) {
+		name = name.substring(0,14) + "...";
 	}
 	
 	var div = document.createElement("div");
@@ -76,8 +64,8 @@ function(item, params) {
 	div1.className = "ZmThumbnailItem";
 	
 	var div2 = document.createElement("div");
-    div2.id = this._getFieldId(item,ZmItem.F_SUBJECT);
-	div2.className = icon+" ZmThumbnailIcon";
+    div2.id = this._getFieldId(item, ZmItem.F_SUBJECT);
+	div2.className = item.getIcon(true) + " ZmThumbnailIcon";
 	
 	div1.appendChild(div2);
 	div.appendChild(div1);
@@ -87,9 +75,9 @@ function(item, params) {
 	
 	var span = document.createElement("span");
 	
-	if(item instanceof ZmBriefcaseItem){
-		span.innerHTML = ['<a href="',item.getRestUrl(),'" target="_blank">',name,'</a>'].join('');
-	}else{
+	if (item instanceof ZmBriefcaseItem) {
+		span.innerHTML = ['<a href="', item.getRestUrl(), '" target="_blank">', name, '</a>'].join('');
+	} else {
 		span.innerHTML = item;
 	}
 	
@@ -139,12 +127,6 @@ function(selectedArray) {
 			this._selectedItems.add(el);
 		}
 	}
-};
-
-ZmBriefcaseView.prototype.getTitle =
-function() {
-	//TODO: title is the name of the current folder
-	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
 ZmBriefcaseView.prototype.getContent =

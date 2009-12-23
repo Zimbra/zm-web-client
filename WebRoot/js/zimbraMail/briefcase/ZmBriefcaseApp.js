@@ -353,8 +353,7 @@ function(results, callback) {
 
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-	var folderId = results && results.search && results.search.folderId;
-	this.getBriefcaseController().show(results, folderId);
+	this.getBriefcaseController().show(results);
 	if (callback) { callback.run(); }
 };
 

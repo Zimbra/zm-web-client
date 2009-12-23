@@ -84,16 +84,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		var icon = params.bContained ? "CheckboxChecked" : "CheckboxUnchecked";
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(item, field));
 	} else if (field == ZmItem.F_TYPE) {
-		var contentType = item.contentType;
-		if (contentType && contentType.match(/;/)) {
-			contentType = contentType.split(";")[0];
-		}
-		var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
-		var icon = mimeInfo ? mimeInfo.image : "UnknownDoc" ;
-		if (item.isFolder) {
-			icon = "Folder";
-		}
-		htmlArr[idx++] = AjxImg.getImageHtml(icon);
+		htmlArr[idx++] = AjxImg.getImageHtml(item.getIcon());
 	} else if (field == ZmItem.F_SUBJECT) {
 		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+AjxStringUtil.htmlEncode(item.name)+"</div>";
 	} else if (field == ZmItem.F_FILE_TYPE) {
@@ -135,15 +126,4 @@ function(htmlArr, idx, item, field, colIdx, params) {
 ZmDetailListView.prototype._colHeaderActionListener =
 function(event) {
   	// TODO
-};
-
-//
-// Private functions
-//
-
-ZmDetailListView.__typify =
-function(array, type) {
-	for (var i = 0; i < array.length; i++) {
-		array[i]._type = type;
-	}
 };
