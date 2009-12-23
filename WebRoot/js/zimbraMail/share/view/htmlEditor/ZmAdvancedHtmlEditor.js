@@ -369,7 +369,7 @@ function(id, mode, content) {
         elements:  id,
         plugins : "inlinepopups,contextmenu,table,ztable",
         theme : "advanced",
-        theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols",
+        theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols",
         theme_advanced_buttons2: "",
         theme_advanced_buttons3: "",
         theme_advanced_buttons4: "",
