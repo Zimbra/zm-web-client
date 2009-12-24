@@ -65,7 +65,7 @@ function(item, params) {
 	
 	var div2 = document.createElement("div");
     div2.id = this._getFieldId(item, ZmItem.F_SUBJECT);
-	div2.className = item.getIcon(true) + " ZmThumbnailIcon";
+	div2.className = "Img" + item.getIcon(true) + " ZmThumbnailIcon";
 	
 	div1.appendChild(div2);
 	div.appendChild(div1);

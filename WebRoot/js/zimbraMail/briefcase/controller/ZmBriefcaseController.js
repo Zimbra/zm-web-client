@@ -644,8 +644,8 @@ function(view) {
 
 ZmBriefcaseController.prototype._setupViewMenu =
 function(view, firstTime) {
-	var btn;
 
+	var btn;
 	if (firstTime) {
 		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 		var menu = btn.getMenu();
@@ -659,16 +659,16 @@ function(view, firstTime) {
 												  style:DwtMenuItem.RADIO_STYLE});
 				mi.setData(ZmOperation.MENUITEM_ID, id);
 				mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-				if (id == this._defaultView())
-					mi.setChecked(true, true);
 			}
 		}
-	} else {
-		// always set the switched view to be the checked menu item
-		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
-		var menu = btn ? btn.getMenu() : null;
-		var mi = menu ? menu.getItemById(ZmOperation.MENUITEM_ID, view) : null;
-		if (mi) { mi.setChecked(true, true); }
+	}
+
+	// select menu item for current view
+	btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+	var menu = btn && btn.getMenu();
+	var mi = menu && menu.getItemById(ZmOperation.MENUITEM_ID, view);
+	if (mi) {
+		mi.setChecked(true, true);
 	}
 
 	// always reset the view menu button icon to reflect the current view
