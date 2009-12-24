@@ -78,6 +78,7 @@ function(search, item, callback, markRead) {
 	// see if we have it cached? Check if conv loaded?
 	var respCallback = new AjxCallback(this, this._handleResponseShow, [item, callback]);
 	this._loadItem(item, this._currentView, respCallback, markRead);
+	this._toolbar[this._currentView].adjustSize();
 };
 
 ZmDoublePaneController.prototype._handleResponseShow =
@@ -110,7 +111,6 @@ function(view, force) {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
 	}
 	this._resetNavToolBarButtons(this._currentView);
-	this._toolbar[view].adjustSize();
 };
 
 
