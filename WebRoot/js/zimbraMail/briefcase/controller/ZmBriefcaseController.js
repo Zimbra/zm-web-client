@@ -318,9 +318,14 @@ function(view, force) {
 	var viewChanged = (force || view != this._currentView);
 
 	if (viewChanged) {
+		var mcv = this._multiColView;
 		if (this.isMultiColView()) {
-			var mcv = this._multiColView;
+			// remember list columns in case we return to col view
 			mcv.setCurrentListIndex(mcv._nextIndex - 1);
+		}
+		if (view == ZmId.VIEW_BRIEFCASE_COLUMN) {
+			// preserve list columns
+			mcv._noReset = true;
 		}
 		this._currentView = view;
 		this._setup(view);

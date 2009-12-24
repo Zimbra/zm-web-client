@@ -44,17 +44,19 @@ ZmColListView.KEY_ID = "_keyId";
 ZmColListView.prototype.set =
 function(list, sortField) {
 
+	var paging = Boolean(this._itemsToAdd);
+	ZmBriefcaseBaseView.prototype.set.apply(this, arguments);
+
 	// show subfolders at top since virtual paging makes them hard to see
-	if (!this._itemsToAdd) {
+	if (!paging) {
 		var subs = this._controller._getSubfolders();
 		if (subs.length) {
 			for (var i = subs.length - 1; i >= 0; i--) {
-				list.add(subs[i], 0);
+				var div = this._createItemHtml(subs[i]);
+				this._addRow(div, 0);
 			}
 		}
 	}
-
-	ZmBriefcaseBaseView.prototype.set.apply(this, arguments);
 };
 
 // Protected methods
