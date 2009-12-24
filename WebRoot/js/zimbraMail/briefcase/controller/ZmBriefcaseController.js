@@ -13,7 +13,9 @@
  * ***** END LICENSE BLOCK *****
  */
 ZmBriefcaseController = function(container, app) {
-	if (arguments.length == 0) { return; }
+
+ 	if (arguments.length == 0) { return; }
+
 	ZmListController.call(this, container, app);
 
 	this._idMap = {};
@@ -398,25 +400,27 @@ function(folderId) {
 
 ZmBriefcaseController.prototype._listSelectionListener =
 function(ev) {
+
 	ZmListController.prototype._listSelectionListener.call(this, ev);
+
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var item = ev.item;
-		if (item && item.isFolder) {
-			if (!this.isMultiColView()) {
-				this.show(item.id);
-			}
-		} else {
-			var restUrl = item.getRestUrl();
-            if(item.isWebDoc()) restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
-			if (restUrl) {
-				window.open(restUrl, item.name, ZmBriefcaseApp.getDocWindowFeatures());
-			}
+		var restUrl = item.getRestUrl();
+		if (item.isWebDoc()) {
+			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
+		}
+		if (restUrl) {
+			window.open(restUrl, item.name, ZmBriefcaseApp.getDocWindowFeatures());
 		}
 	}
 };
 
 ZmBriefcaseController.prototype._listActionListener =
 function(ev) {
+
+	var item = ev.item;
+	if (item && item.isFolder) { return; }
+	
 	ZmListController.prototype._listActionListener.call(this, ev);
 
 	var actionMenu = this.getActionMenu();
@@ -425,7 +429,6 @@ function(ev) {
 		actionMenu.setSelectedItem(0); // menu popped up via keyboard nav
 	}
 
-	var item = ev.item;
 	var op = actionMenu.getOp(ZmOperation.SAVE_FILE);
 	if (op) {
 		op.setEnabled(item && item.isRealFile());
@@ -459,9 +462,7 @@ function() {
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		var restUrl = item.getRestUrl();
-		if (item && item.isFolder) {
-			this.show(item.id);
-		} else if (restUrl != null) {
+		if (restUrl) {
             if (item.isWebDoc()) {
 				restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
 			}
