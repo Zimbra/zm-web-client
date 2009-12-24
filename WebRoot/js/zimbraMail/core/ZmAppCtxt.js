@@ -491,7 +491,7 @@ function() {
 ZmAppCtxt.prototype.getUploadDialog =
 function() {
 	if (!this._uploadDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
+		AjxDispatcher.require(["Extras"]);
 		this._uploadDialog = new ZmUploadDialog(this._shell);
 	}
 	return this._uploadDialog;
