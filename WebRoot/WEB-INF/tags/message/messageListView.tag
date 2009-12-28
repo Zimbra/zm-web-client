@@ -116,7 +116,7 @@
                         <zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" context="${context}" action="compose" id="${hit.messageHit.id}"/>
                     </c:when>
                     <c:otherwise>
-                        <zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="view" context="${context}" id="${hit.messageHit.id}" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                        <zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="${mailbox.prefs.readingPaneEnabled ? 'paneView' : 'view'}" context="${context}" id="${hit.messageHit.id}" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                     </c:otherwise>
                 </c:choose>
                 <c:if test="${empty selectedRow and hit.messageHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
@@ -182,10 +182,9 @@
         <td class='ZhAppContent'>
             <c:set var="extImageUrl" value=""/>
             <c:if test="${empty param.xim}">
-                <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
+                <zm:currentResultUrl var="extImageUrl" value="search" action="paneView" context="${context}" xim="1"/>
             </c:if>
-            <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
-                                 action="compose" paction="view" id="${msg.id}"/>
+            <zm:currentResultUrl var="composeUrl" value="search" context="${context}" action="compose" paction="paneView" id="${msg.id}"/>
             <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
             <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
         </td>

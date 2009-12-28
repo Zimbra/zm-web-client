@@ -40,18 +40,18 @@
     <c:set var="context" value="${context}" />
     <c:set var="csi" value="${param.csi}"/>
     <app:certifiedMessage var="reqHdr"/>
-    <c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneEnabled and not empty cid and (param.action eq 'view' or param.action eq 'view2')}">
+    <c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneEnabled and not empty cid and (param.action eq 'paneView' or param.action eq 'paneView2')}">
         <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" />
         <c:if test="${empty csi}">
             <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
-            <c:if test="${csi ge 0 and (param.action eq 'view' || param.action eq 'view2')}">
+            <c:if test="${csi ge 0}">
                 <zm:getMessage var="msg" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
                 <c:if test="${not empty msg.requestHeader}">
                     <zm:getMessage var="msg" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>                    
                 </c:if>
             </c:if>
         </c:if>
-        <c:if test="${msg eq null and (param.action eq 'view' || param.action eq 'view2')}">
+        <c:if test="${msg eq null}">
             <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
                 <c:set var="csi" value="0"/>
             </c:if>
@@ -101,16 +101,16 @@
                         <c:when test="${convHit.isDraft}">
                             <zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(convHit.id,'-')}" action="compose"/>
                         </c:when>
-			<c:when test="${empty selectedRow and convHit.id == context.currentItem.id and mailbox.prefs.readingPaneEnabled and not empty msg and (param.action eq 'view' or param.action eq 'view2')}">
-                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='convView' index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                        <c:when test="${empty selectedRow and convHit.id == context.currentItem.id and mailbox.prefs.readingPaneEnabled and not empty msg and (param.action eq 'paneView' or param.action eq 'paneView2')}">
+                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${param.action eq 'paneView' ? 'view' : 'view2'}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                         </c:when>
                         <c:otherwise>
-                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${mailbox.prefs.readingPaneEnabled ? (param.action eq 'view' or param.action eq paneView ? 'paneView' : 'paneView2') : (param.action eq 'view' or param.action eq paneView ? 'view' : 'view2')}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                         </c:otherwise>
                     </c:choose>
                     <c:if test="${empty selectedRow and convHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
                     <c:set var="aid" value="A${status.index}"/>
-                    <tr onclick='zSelectRow(event,"${aid}","C${status.index}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'} ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
+                    <tr onclick='zSelectRow(event,"${aid}","C${status.index}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd':'ZhRow'} ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
                         <td class='CB' nowrap><input  id="C${status.index}" type="checkbox" name="id" value="${convHit.id}"></td>
                         <td><%-- allow this column to wrap --%>
                             <c:set var="dispRec" value="${zm:truncate(convHit.displayRecipients,20,true)}"/>${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)} &nbsp;&nbsp; <c:if test="${convHit.messageCount > 1}">(${convHit.messageCount})&nbsp;</c:if>
@@ -158,7 +158,7 @@
      </td>
      <td class='ZhAppColContent' valign="top" width="55%">
          <c:choose>
-             <c:when test="${mailbox.prefs.readingPaneEnabled and not empty msg and (param.action eq 'view' or param.action eq 'view2')}">
+             <c:when test="${mailbox.prefs.readingPaneEnabled and not empty msg and (param.action eq 'paneView' or param.action eq 'paneView2')}">
                  <table width="100%" cellpadding="2" cellspacing="0" class='List'>
                      <tr class='Header'>
                          <!-- <th class='CB' nowrap='nowrap'><input id="OPCHCOLALL" onClick="checkAll(document.zform.idcv,this)" type="checkbox" name="allids"/></th> -->
@@ -166,12 +166,12 @@
                          <th width="1%" nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                      </tr>
                  </table>
-                 <table width=100% cellpadding=0 cellspacing=0>
+                 <table width="100%" cellpadding="0" cellspacing="0">
                      <tr valign="top">
                          <td class=List>
-                             <table width=100% height=100% cellpadding=0 cellspacing=0>
+                             <table width="100%" height="100%" cellpadding="0" cellspacing="0">
                                  <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
-                                     <zm:currentResultUrl var="msgUrl" value="search" action="${hit.id eq msg.id ? 'convView2' : 'view2'}" context="${context}" cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
+                                     <zm:currentResultUrl var="msgUrl" value="search" action="${hit.id eq msg.id ? 'view2' : 'paneView2'}" context="${context}" cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
 
                                      <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != msg.id)) ? ' Unread':''}${hit.id eq msg.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                          <!-- <td class='CB' nowrap><input <c:if test="${hit.id eq msg.id}">checked</c:if> type=checkbox name="idcv" value="${hit.id}"/></td> -->
@@ -211,8 +211,7 @@
                              <c:if test="${empty param.xim and empty msg.requestHeader}">
                                  <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
                              </c:if>
-                             <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
-                                                  action="compose" paction="view" id="${msg.id}"/>
+                             <zm:currentResultUrl var="composeUrl" value="search" context="${context}" action="compose" paction="view" id="${msg.id}"/>
                              <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
                              <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
                          </td>
