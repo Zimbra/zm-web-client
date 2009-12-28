@@ -49,11 +49,10 @@ function(list, sortField) {
 
 	// show subfolders at top since virtual paging makes them hard to see
 	if (!paging) {
-		var subs = this._controller._getSubfolders();
+		var subs = this._folders = this._controller._getSubfolders();
 		if (subs.length) {
 			for (var i = subs.length - 1; i >= 0; i--) {
-				var div = this._createItemHtml(subs[i]);
-				this._addRow(div, 0);
+				this._addFolderRow(subs[i]);
 			}
 		}
 	}
@@ -73,7 +72,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	idx = this._getTable(htmlArr, idx, params);
 	idx = this._getRow(htmlArr, idx, item, params);
 	
-	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
+	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
 	htmlArr[idx++] = AjxImg.getImageHtml(item.getIcon());
 	htmlArr[idx++] = "</center></td>";
 	htmlArr[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_SUBJECT) + "'>&nbsp;";
@@ -87,6 +86,22 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	htmlArr[idx++] = "</tr></table>";
 
 	return idx;
+};
+
+ZmColListView.prototype._addFolderRow =
+function(item, index) {
+	var div = this._createItemHtml(item);
+	this._addRow(div, index || 0);
+	this._setFolderColor(item.folder);
+};
+
+ZmColListView.prototype._setFolderColor =
+function(folder) {
+	var id = this._getFieldId(folder, ZmItem.F_FOLDER);
+	var td = document.getElementById(id);
+	if (td) {
+		AjxImg.setImage(td, folder.getIconWithColor());
+	}
 };
 
 ZmColListView.prototype._itemClicked =
@@ -129,4 +144,64 @@ function(ev, div) {
 ZmColListView.prototype._getScrollDiv =
 function() {
 	return this.parent._divs[this._colIdx];
+};
+
+ZmColListView.prototype._getItemId =
+function(item) {
+	var id = DwtListView.prototype._getItemId.apply(this, arguments);
+	return [id, this._colIdx].join(DwtId.SEP);
+};
+
+ZmColListView.prototype._folderChangeListener =
+function(ev) {
+
+	var org = ev.getDetail("organizers")[0];
+	if (!org) { return; }
+	var item = new ZmBriefcaseFolderItem(org);
+	if (this.folderId && (item.folderId != this.folderId)) { return; }
+
+	var fields = ev.getDetail("fields");
+	if (ev.event == ZmEvent.E_MODIFY) {
+		var id = this._getItemId(org);
+		var div = document.getElementById(id);
+		if (div) {
+			div.innerHTML = this._createItemHtml(item, null, true);
+		}
+		if (fields && fields[ZmOrganizer.F_COLOR]) {
+			this._setFolderColor(org);
+		}
+	} else if (ev.event == ZmEvent.E_CREATE) {
+		var search = this._controller._currentSearch;
+		if (this.folderId || (search && search.matches && search.matches(item))) {
+			var index = this._getFolderSortIndex(org, ZmFolder.sortCompare);
+			this._addFolderRow(item, index);
+			this._folders.splice(index, 0, item);
+		}
+	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+		this.removeItem(item, true);
+		var index = -1;
+		for (var i = 0; i < this._folders.length; i++) {
+			if (this._folders[i].id == item.id) {
+				index = i;
+				break;
+			}
+		}
+		if (index != -1) {
+			this._folders.splice(index, 1);
+		}
+	}
+};
+
+ZmColListView.prototype._getFolderSortIndex =
+function(folder, sortFunction) {
+
+	if (!(this._folders && this._folders.length)) { return 0; }
+
+	for (var i = 0; i < this._folders.length; i++) {
+		var test = sortFunction(folder, this._folders[i]);
+		if (test == -1) {
+			return i;
+		}
+	}
+	return i;
 };

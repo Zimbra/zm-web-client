@@ -2227,7 +2227,7 @@ function(ev) {
 
 	// normalize action
 	var text = (item && item.getText) ? (item.getText() || item._toggleText) : null;
-	if (!text) {
+	if (item && !text) {
 		text = item.getData(ZmOperation.KEY_ID) || item.getData(Dwt.KEY_ID);
 	}
 	if (text) {

@@ -48,7 +48,7 @@ function() {
 	return this._controller;
 };
 
-ZmBriefcaseView.prototype._createItemHtml =
+ZmBriefcaseView.prototype._createItemHtmlXXX =
 function(item, params) {
 	
 	var name = item.name;

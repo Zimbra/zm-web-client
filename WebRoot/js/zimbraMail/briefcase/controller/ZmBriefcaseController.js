@@ -269,16 +269,7 @@ function(folderId) {
 	if (folder) {
 		var children = folder.children;
 		for (var i = 0, len = children.size(); i < len; i++) {
-			var briefcase = children.get(i);
-			var item = this.getItemById(briefcase.id);
-			if (!item) {
-				item = new ZmBriefcaseItem();
-			}
-			item.id = briefcase.id;
-			item.name = briefcase.name;
-			item.folderId = folderId;
-			item.isFolder = true;
-			subfolders.push(item);
+			subfolders.push(new ZmBriefcaseFolderItem(children.get(i)));
 		}
 	}
 
@@ -424,8 +415,19 @@ ZmBriefcaseController.prototype._listActionListener =
 function(ev) {
 
 	var item = ev.item;
-	if (item && item.isFolder) { return; }
-	
+
+	if (item && item.isFolder) {
+		ev.detail = DwtTree.ITEM_ACTIONED;
+		var overviewController = appCtxt.getOverviewController();
+		var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
+		item.setData(ZmTreeView.KEY_TYPE, ZmOrganizer.BRIEFCASE);
+		item.setData(Dwt.KEY_OBJECT, item.folder);
+		item.setData(ZmTreeView.KEY_ID, this._app.getOverviewId());
+		item.setData(Dwt.KEY_ID, item.id);
+		treeController._treeViewListener(ev);
+		return;
+	}
+
 	ZmListController.prototype._listActionListener.call(this, ev);
 
 	var actionMenu = this.getActionMenu();

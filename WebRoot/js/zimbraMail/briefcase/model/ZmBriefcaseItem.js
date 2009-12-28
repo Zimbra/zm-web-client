@@ -13,8 +13,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBriefcaseItem = function(id, list) {
-	ZmItem.call(this, ZmItem.BRIEFCASE_ITEM, id, list);
+ZmBriefcaseItem = function(id, list, noCache) {
+
+	if (arguments.length == 0) { return; }
+
+	ZmItem.call(this, ZmItem.BRIEFCASE_ITEM, id, list, noCache);
 };
 
 ZmBriefcaseItem.prototype = new ZmItem;
@@ -201,4 +204,35 @@ function(data) {
 	if (data.ver) this.version = Number(data.ver);
 	if (data.ct) this.contentType = data.ct.split(";")[0];
 	this._parseTags(data.t);
+};
+
+
+ZmBriefcaseFolderItem = function(folder) {
+
+	ZmBriefcaseItem.call(this, folder.id, null, true);
+
+	this.name = folder.name;
+	this.folderId = folder.parent && folder.parent.id;
+	this.isFolder = true;
+	this.folder = folder;
+
+	this._data = {};
+};
+
+ZmBriefcaseFolderItem.prototype = new ZmBriefcaseItem;
+ZmBriefcaseFolderItem.prototype.constructor = ZmBriefcaseFolderItem;
+
+ZmBriefcaseFolderItem.prototype.toString =
+function() {
+	return "ZmBriefcaseFolderItem";
+};
+
+ZmBriefcaseFolderItem.prototype.getData =
+function(key) {
+	return this._data[key];
+};
+
+ZmBriefcaseFolderItem.prototype.setData =
+function(key, value) {
+  this._data[key] = value;
 };

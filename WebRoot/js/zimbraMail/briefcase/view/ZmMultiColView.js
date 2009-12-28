@@ -32,11 +32,6 @@ ZmMultiColView = function(parent, controller, dropTgt) {
 	this._curListIndex	= 0;	// index of current list column
 	this._curListView	= null;	// list view with current focus
 
-	var folderTree = appCtxt.getFolderTree();
-	if (folderTree) {
-		folderTree.addChangeListener(new AjxListener(this, this._fileTreeListener));
-	}
-
 	this.addListColumn(dropTgt);
 	this._curListView = this._listView[0];
 
@@ -66,29 +61,6 @@ function() {
 ZmMultiColView.prototype.uploadFiles =
 function() {
 	return this._listView[0].uploadFiles();
-};
-
-ZmMultiColView.prototype._fileTreeListener =
-function(ev, treeView) {
-	if (!this._rootFolder)
-		return;
-
-	var fields = ev.getDetail("fields");
-	if (ev.event == ZmEvent.E_MODIFY && fields && fields[ZmOrganizer.F_COLOR]) {
-		var organizers = ev.getDetail("organizers");
-		if (!organizers && ev.source)
-			organizers = [ev.source];
-
-		for (var i = 0; i < organizers.length; i++) {
-			var organizer = organizers[i];
-			var folderId = this._rootFolder.isShared()
-				? appCtxt.getById(this._rootFolder.folderId).id
-				: this._rootFolder.folderId;
-
-			if (organizer.id == folderId)
-				this._setHeaderInfo();
-		}
-	}
 };
 
 ZmMultiColView.prototype._setHeaderInfo =
@@ -186,6 +158,7 @@ function(folderId) {
 	var listView = this.addListColumn();
 	this.setCurrentListIndex(listView._colIdx);
 	this._noReset = true;
+	listView.folderId = folderId;
 	this._controller._app.search(folderId);
 };
 
