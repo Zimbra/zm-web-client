@@ -14,13 +14,17 @@
  */
 
 /**
- * Does nothing.
- * @constructor
+ * @overview
+ * 
+ * This file defines the application context class.
+ *
+ */
+
+/**
  * @class
- * This class is a container for stuff that the overall app may want to know about. That
- * includes environment information (such as whether the browser in use is public), and
- * stuff that is common to the app as a whole (such as tags). The methods are almost all
- * just getters and setters.
+ * 
+ * This class is a container for application context information.
+ * 
  */
 ZmAppCtxt = function() {
 	this._trees = {};
@@ -46,43 +50,79 @@ ZmAppCtxt = function() {
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
 
+/**
+ * Returns a string representation of the application context.
+ * 
+ * @return		{String}		a string representation of the application context
+ */
 ZmAppCtxt.prototype.toString =
 function() {
 	return "ZmAppCtxt";
 };
 
+/**
+ * Sets the application controller.
+ * 
+ * @param	{ZmController}	appController	the controller
+ */
 ZmAppCtxt.prototype.setAppController =
 function(appController) {
 	this._appController = appController;
 };
 
+/**
+ * Gets the application controller.
+ * 
+ * @return	{ZmController}		the controller
+ */
 ZmAppCtxt.prototype.getAppController =
 function() {
 	return this._appController;
 };
 
+/**
+ * Gets the application chooser.
+ * 
+ * @return	{ZmAppChooser}		the chooser
+ */
 ZmAppCtxt.prototype.getAppChooser =
 function() {
 	return this._appController.getAppChooser();
 };
 
+/**
+ * Sets the request manager.
+ * 
+ * @param	{ZmRequestMgr}	requestMgr	the request manager
+ */
 ZmAppCtxt.prototype.setRequestMgr =
 function(requestMgr) {
 	this._requestMgr = requestMgr;
 };
 
+/**
+ * Gets the request manager.
+ * 
+ * @return	{ZmRequestMgr}		the request manager
+ */
 ZmAppCtxt.prototype.getRequestMgr =
 function() {
 	return this._requestMgr;
 };
 
 /**
- * Displays a status message
- * @param msg the message
- * @param level ZmStatusView.LEVEL_INFO, ZmStatusView.LEVEL_WARNING, or ZmStatusView.LEVEL_CRITICAL (optional)
- * @param detail details (optional)
- * @param transitions transitions (optional)
- * @param toast the toast control (optional)
+ * Sets the status message to display.
+ * 
+ * 
+ * @param {Hash}	params	a hash of parameters
+ * <ul>
+ * <li>msg {String}	the status message</li>
+ * <li>level {constant}		the status level {@see ZmStatusView}  (may be <code>null</code>)</li>
+ * <li>detail {String}	the details (may be <code>null</code>)</li>
+ * <li>transitions {Object}	the transitions (may be <code>null</code>)</li>
+ * <li>toast {Object}		the toast control (may be <code>null</code>)</li>
+ * </ul>
+ * 
  */
 ZmAppCtxt.prototype.setStatusMsg =
 function(params) {
@@ -90,6 +130,12 @@ function(params) {
 	this._appController.setStatusMsg(params);
 };
 
+/**
+ * Gets the settings for the given account.
+ * 
+ * @param	{ZmZimbraAccount}	account		the account
+ * @return	{ZmSettings}	the settings
+ */
 ZmAppCtxt.prototype.getSettings =
 function(account) {
 	var al = this.accountList;
@@ -101,6 +147,12 @@ function(account) {
 	return acct && acct.settings;
 };
 
+/**
+ * Sets the settings for the given account.
+ * 
+ * @param	{ZmSettings}	settings		the settings
+ * @param	{ZmZimbraAccount}		account			the account
+ */
 ZmAppCtxt.prototype.setSettings = 
 function(settings, account) {
 	var al = this.accountList;
@@ -114,6 +166,11 @@ function(settings, account) {
 	}
 };
 
+/**
+ * Gets the meta data.
+ * 
+ * @return	{ZmMetaData}		the meta data
+ */
 ZmAppCtxt.prototype.getMetaData =
 function() {
 	if (!this._metaData) {
@@ -123,11 +180,12 @@ function() {
 };
 
 /**
- * Returns the value of a setting.
+ * Gets the value of the given setting.
  *
- * @param id		[constant]		setting ID
- * @param key		[string]*		setting key (for settings that are of the hash type)
- * @param account	[ZmAccount]*	account to get the ZmSettings instance for
+ * @param {constant}	id		the setting id
+ * @param {String}	key			the setting key (for settings that are of the hash type)
+ * @param {ZmZimbraAccount}	account		the account
+ * @return	{Object}		the setting value
  */
 ZmAppCtxt.prototype.get =
 function(id, key, account) {
@@ -138,14 +196,14 @@ function(id, key, account) {
 };
 
 /**
- * Sets the value of a setting.
+ * Sets the value of the given setting.
  *
- * @param id			[constant]			setting ID
- * @param value			[any]				setting value
- * @param key			[string]*			setting key (for settings that are of the hash type)
- * @param setDefault	[boolean]*			if true, also replace setting's default value
- * @param skipNotify	[boolean]*			if true, do not notify setting listeners
- * @param account		[ZmZimbraAccount]*	if set, use this account's setting instead of the currently active account
+ * @param {constant}	id					the setting id
+ * @param {Object}	value					the setting value
+ * @param {String}	key					the setting key (for settings that are of the hash type)
+ * @param {Boolean}	setDefault			if <code>true</code>, also replace setting default value
+ * @param {Boolean}	skipNotify			if <code>true</code>, do not notify setting listeners
+ * @param {ZmZimbraAccount}	account		if set, use this account setting instead of the currently active account
  */
 ZmAppCtxt.prototype.set =
 function(id, value, key, setDefault, skipNotify, account) {
@@ -159,27 +217,54 @@ function(id, value, key, setDefault, skipNotify, account) {
 	}
 };
 
+/**
+ * Gets the application.
+ * 
+ * @param	{String}	appName		the application name
+ * @return	{ZmApp}	the application or <code>null</code> if not found
+ */
 ZmAppCtxt.prototype.getApp =
 function(appName) {
 	return this._appController.getApp(appName);
 };
 
+/**
+ * Gets the name of the current application.
+ * 
+ * @return	{String}		the application name
+ */
 ZmAppCtxt.prototype.getCurrentAppName =
 function() {
 	var context = this.isChildWindow ? parentAppCtxt : this;
 	return context._appController.getActiveApp();
 };
 
+/**
+ * Gets the current application.
+ * 
+ * @return	{ZmApp}		the current application
+ */
 ZmAppCtxt.prototype.getCurrentApp =
 function() {
 	return this.getApp(this.getCurrentAppName());
 };
 
+/**
+ * Gets the application view manager.
+ * 
+ * @return	{ZmAppViewMgr}		the view manager
+ */
 ZmAppCtxt.prototype.getAppViewMgr =
 function() {
 	return this._appController.getAppViewMgr();
 };
 
+/**
+ * Gets the client command handler.
+ * 
+ * @param	{ZmClientCmdHandler}	clientCmdHdlr		not used
+ * @return	{ZmClientCmdHandler}		the command handler
+ */
 ZmAppCtxt.prototype.getClientCmdHandler =
 function(clientCmdHdlr) {
 	if (!this._clientCmdHandler) {
@@ -190,8 +275,10 @@ function(clientCmdHdlr) {
 };
 
 /**
-* Returns a handle to the search bar's controller.
-*/
+ * Gets the search bar controller.
+ * 
+ * @return	{ZmSearchController}	the search controller
+ */
 ZmAppCtxt.prototype.getSearchController =
 function() {
 	if (!this._searchController) {
@@ -201,8 +288,10 @@ function() {
 };
 
 /**
-* Returns a handle to the overview controller.
-*/
+ * Gets the overview controller.
+ * 
+ * @return	{ZmOverviewController}	the overview controller
+ */
 ZmAppCtxt.prototype.getOverviewController =
 function() {
 	if (!this._overviewController) {
@@ -211,6 +300,11 @@ function() {
 	return this._overviewController;
 };
 
+/**
+ * Gets the import/export controller.
+ * 
+ * @return	{ZmImportExportController}	the controller
+ */
 ZmAppCtxt.prototype.getImportExportController = function() {
 	if (!this._importExportController) {
 		AjxDispatcher.require("ImportExport");
@@ -219,6 +313,11 @@ ZmAppCtxt.prototype.getImportExportController = function() {
 	return this._importExportController;
 };
 
+/**
+ * Gets the login dialog.
+ * 
+ * @return	{ZmLoginDialog}		the login dialog
+ */
 ZmAppCtxt.prototype.getLoginDialog =
 function() {
 	if (!this._loginDialog) {
@@ -227,6 +326,11 @@ function() {
 	return this._loginDialog;
 };
 
+/**
+ * Gets the message dialog.
+ * 
+ * @return	{DwtMessageDialog}	the message dialog
+ */
 ZmAppCtxt.prototype.getMsgDialog =
 function() {
 	if (!this._msgDialog) {
@@ -235,6 +339,11 @@ function() {
 	return this._msgDialog;
 };
 
+/**
+ * Gets the yes/no message dialog.
+ * 
+ * @return	{DwtMessageDialog}	the message dialog
+ */
 ZmAppCtxt.prototype.getYesNoMsgDialog =
 function() {
 	if (!this._yesNoMsgDialog) {
@@ -243,6 +352,11 @@ function() {
 	return this._yesNoMsgDialog;
 };
 
+/**
+ * Gets the yes/no/cancel message dialog.
+ * 
+ * @return	{DwtMessageDialog}	the message dialog
+ */
 ZmAppCtxt.prototype.getYesNoCancelMsgDialog =
 function() {
 	if (!this._yesNoCancelMsgDialog) {
@@ -251,6 +365,11 @@ function() {
 	return this._yesNoCancelMsgDialog;
 };
 
+/**
+ * Gets the ok/cancel message dialog.
+ * 
+ * @return	{DwtMessageDialog}	the message dialog
+ */
 ZmAppCtxt.prototype.getOkCancelMsgDialog =
 function() {
 	if (!this._okCancelMsgDialog) {
@@ -259,6 +378,11 @@ function() {
 	return this._okCancelMsgDialog;
 };
 
+/**
+ * Gets the cancel message dialog.
+ * 
+ * @return	{DwtMessageDialog}	the message dialog
+ */
 ZmAppCtxt.prototype.getCancelMsgDialog =
 function() {
 	if (!this._cancelMsgDialog) {
@@ -267,6 +391,11 @@ function() {
 	return this._cancelMsgDialog;
 };
 
+/**
+ * Gets the error dialog.
+ * 
+ * @return	{ZmErrorDialog}	the error dialog
+ */
 ZmAppCtxt.prototype.getErrorDialog = 
 function() {
 	if (!this._errorDialog) {
@@ -276,6 +405,11 @@ function() {
 	return this._errorDialog;
 };
 
+/**
+ * Gets the new tag dialog.
+ * 
+ * @return	{ZmNewTagDialog}	the new tag dialog
+ */
 ZmAppCtxt.prototype.getNewTagDialog =
 function() {
 	if (!this._newTagDialog) {
@@ -284,6 +418,11 @@ function() {
 	return this._newTagDialog;
 };
 
+/**
+ * Gets the rename tag dialog.
+ * 
+ * @return	{ZmRenameTagDialog}		the rename tag dialog
+ */
 ZmAppCtxt.prototype.getRenameTagDialog =
 function() {
 	if (!this._renameTagDialog) {
@@ -293,6 +432,11 @@ function() {
 	return this._renameTagDialog;
 };
 
+/**
+ * Gets the new folder dialog.
+ * 
+ * @return	{ZmNewFolderDialog}		the new folder dialog
+ */
 ZmAppCtxt.prototype.getNewFolderDialog =
 function() {
 	if (!this._newFolderDialog) {
@@ -301,6 +445,11 @@ function() {
 	return this._newFolderDialog;
 };
 
+/**
+ * Gets the new address book dialog.
+ * 
+ * @return	{ZmNewAddrBookDialog}		the new address book dialog
+ */
 ZmAppCtxt.prototype.getNewAddrBookDialog = 
 function() {
 	if (!this._newAddrBookDialog) {
@@ -310,6 +459,11 @@ function() {
 	return this._newAddrBookDialog;
 };
 
+/**
+ * Gets the new calendar dialog.
+ * 
+ * @return	{ZmNewCalendarDialog}		the new calendar dialog
+ */
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
 	if (!this._newCalendarDialog) {
@@ -319,6 +473,11 @@ function() {
 	return this._newCalendarDialog;
 };
 
+/**
+ * Gets the new notebook dialog.
+ * 
+ * @return	{ZmNewNotebookDialog}		the new notebook dialog
+ */
 ZmAppCtxt.prototype.getNewNotebookDialog =
 function() {
 	if (!this._newNotebookDialog) {
@@ -328,6 +487,11 @@ function() {
 	return this._newNotebookDialog;
 };
 
+/**
+ * Gets the new task folder dialog.
+ * 
+ * @return	{ZmNewTaskFolderDialog}		the new task folder dialog
+ */
 ZmAppCtxt.prototype.getNewTaskFolderDialog =
 function() {
 	if (!this._newTaskFolderDialog) {
@@ -337,6 +501,11 @@ function() {
 	return this._newTaskFolderDialog;
 };
 
+/**
+ * Gets the page conflict dialog.
+ * 
+ * @return	{ZmPageConflictDialog}		the page conflict dialog
+ */
 ZmAppCtxt.prototype.getPageConflictDialog =
 function() {
 	if (!this._pageConflictDialog) {
@@ -346,6 +515,11 @@ function() {
 	return this._pageConflictDialog;
 };
 
+/**
+ * Gets the dialog.
+ * 
+ * @return	{DwtDialog}		the dialog
+ */
 ZmAppCtxt.prototype.getDialog =
 function(){
 	if(!this._dialog){
@@ -354,6 +528,11 @@ function(){
 	return this._dialog;
 };
 
+/**
+ * Gets the new search dialog.
+ * 
+ * @return	{ZmNewSearchDialog}		the new search dialog
+ */
 ZmAppCtxt.prototype.getNewSearchDialog =
 function() {
 	if (!this._newSearchDialog) {
@@ -362,6 +541,11 @@ function() {
 	return this._newSearchDialog;
 };
 
+/**
+ * Gets the rename folder dialog.
+ * 
+ * @return	{ZmRenameFolderDialog}		the rename folder dialog
+ */
 ZmAppCtxt.prototype.getRenameFolderDialog =
 function() {
 	if (!this._renameFolderDialog) {
@@ -371,6 +555,11 @@ function() {
 	return this._renameFolderDialog;
 };
 
+/**
+ * Gets the choose folder dialog.
+ * 
+ * @return	{ZmChooseFolderDialog}		the choose folder dialog
+ */
 ZmAppCtxt.prototype.getChooseFolderDialog =
 function() {
 	if (!this._chooseFolderDialog) {
@@ -380,6 +569,11 @@ function() {
 	return this._chooseFolderDialog;
 };
 
+/**
+ * Gets the pick tag dialog.
+ * 
+ * @return	{ZmPickTagDialog}		the pick tag dialog
+ */
 ZmAppCtxt.prototype.getPickTagDialog =
 function() {
 	if (!this._pickTagDialog) {
@@ -389,6 +583,11 @@ function() {
 	return this._pickTagDialog;
 };
 
+/**
+ * Gets the folder notify dialog.
+ * 
+ * @return	{ZmFolderNotifyDialog}		the folder notify dialog
+ */
 ZmAppCtxt.prototype.getFolderNotifyDialog =
 function() {
 	if (!this._folderNotifyDialog) {
@@ -397,6 +596,11 @@ function() {
 	return this._folderNotifyDialog;
 };
 
+/**
+ * Gets the folder properties dialog.
+ * 
+ * @return	{ZmFolderPropsDialog}		the folder properties dialog
+ */
 ZmAppCtxt.prototype.getFolderPropsDialog =
 function() {
 	if (!this._folderPropsDialog) {
@@ -405,6 +609,11 @@ function() {
 	return this._folderPropsDialog;
 };
 
+/**
+ * Gets the link properties dialog.
+ * 
+ * @return	{ZmLinkPropsDialog}		the link properties dialog
+ */
 ZmAppCtxt.prototype.getLinkPropsDialog =
 function() {
 	if (!this._linkPropsDialog) {
@@ -414,6 +623,11 @@ function() {
 	return this._linkPropsDialog;
 };
 
+/**
+ * Gets the share properties dialog.
+ * 
+ * @return	{ZmSharePropsDialog}		the share properties dialog
+ */
 ZmAppCtxt.prototype.getSharePropsDialog =
 function() {
 	if (!this._sharePropsDialog) {
@@ -423,6 +637,11 @@ function() {
 	return this._sharePropsDialog;
 };
 
+/**
+ * Gets the accept share dialog.
+ * 
+ * @return	{ZmAcceptShareDialog}		the accept share dialog
+ */
 ZmAppCtxt.prototype.getAcceptShareDialog =
 function() {
 	if (!this._acceptShareDialog) {
@@ -432,6 +651,11 @@ function() {
 	return this._acceptShareDialog;
 };
 
+/**
+ * Gets the decline share dialog.
+ * 
+ * @return	{ZmDeclineShareDialog}		the decline share dialog
+ */
 ZmAppCtxt.prototype.getDeclineShareDialog =
 function() {
 	if (!this._declineShareDialog) {
@@ -441,6 +665,11 @@ function() {
 	return this._declineShareDialog;
 };
 
+/**
+ * Gets the revoke share dialog.
+ * 
+ * @return	{ZmRevokeShareDialog}		the revoke share dialog
+ */
 ZmAppCtxt.prototype.getRevokeShareDialog =
 function() {
 	if (!this._revokeShareDialog) {
@@ -450,6 +679,11 @@ function() {
 	return this._revokeShareDialog;
 };
 
+/**
+ * Gets the mount folder dialog.
+ * 
+ * @return	{ZmMountFolderDialog}		the mount folder dialog
+ */
 ZmAppCtxt.prototype.getMountFolderDialog =
 function() {
 	if (!this._mountFolderDialog) {
@@ -459,6 +693,11 @@ function() {
 	return this._mountFolderDialog;
 };
 
+/**
+ * Gets the timezone picker dialog.
+ * 
+ * @return	{ZmTimezonePicker}		the timezone picker dialog
+ */
 ZmAppCtxt.prototype.getTimezonePickerDialog =
 function() {
 	if (!this._timezonePickerDialog) {
@@ -469,8 +708,10 @@ function() {
 };
 
 /**
-* Returns the dialog used to add or edit a filter rule.
-*/
+ * Gets the filter rule add/edit dialog.
+ * 
+ * @return	{ZmFilterRuleDialog}		the filter rule add/edit dialog
+ */
 ZmAppCtxt.prototype.getFilterRuleDialog =
 function() {
 	if (!this._filterRuleDialog) {
@@ -480,6 +721,11 @@ function() {
 	return this._filterRuleDialog;
 };
 
+/**
+ * Gets the confirm dialog.
+ * 
+ * @return	{DwtConfirmDialog}		the confirmation dialog
+ */
 ZmAppCtxt.prototype.getConfirmationDialog =
 function() {
 	if (!this._confirmDialog) {
@@ -488,6 +734,11 @@ function() {
 	return this._confirmDialog;
 };
 
+/**
+ * Gets the upload dialog.
+ * 
+ * @return	{ZmUploadDialog}		the upload dialog
+ */
 ZmAppCtxt.prototype.getUploadDialog =
 function() {
 	if (!this._uploadDialog) {
@@ -497,6 +748,11 @@ function() {
 	return this._uploadDialog;
 };
 
+/**
+ * Gets the import dialog.
+ * 
+ * @return	{ZmImportDialog}		the import dialog
+ */
 ZmAppCtxt.prototype.getImportDialog =
 function() {
 	if (!this._importDialog) {
@@ -506,6 +762,11 @@ function() {
 	return this._importDialog;
 };
 
+/**
+ * Gets the attach dialog.
+ * 
+ * @return	{ZmAttachDialog}		the attach dialog
+ */
 ZmAppCtxt.prototype.getAttachDialog =
 function() {
 	if (!this._attachDialog) {
@@ -516,6 +777,11 @@ function() {
 	return this._attachDialog;
 };
 
+/**
+ * Runs the attach dialog callbacks.
+ *
+ * @private
+ */
 ZmAppCtxt.prototype.runAttachDialogCallbacks =
 function() {
 	while(this._attachDialogCallback && this._attachDialogCallback.length > 0) {
@@ -526,6 +792,11 @@ function() {
 	}
 };
 
+/**
+ * Adds the callback to the attachment dialog callbacks.
+ *
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmAppCtxt.prototype.addAttachmentDialogCallback =
 function(callback) {
 	if(!this._attachDialogCallback) {
@@ -534,6 +805,11 @@ function(callback) {
 	this._attachDialogCallback.push(callback);
 };                                              
 
+/**
+ * Gets the upload conflict dialog.
+ *
+ * @return	{ZmUploadConflictDialog}	the upload conflict dialog
+ */
 ZmAppCtxt.prototype.getUploadConflictDialog =
 function() {
 	if (!this._uploadConflictDialog) {
@@ -543,6 +819,11 @@ function() {
 	return this._uploadConflictDialog;
 };
 
+/**
+ * Gets the new briefcase dialog.
+ *
+ * @return	{ZmNewBriefcaseDialog}	the new briefcase dialog
+ */
 ZmAppCtxt.prototype.getNewBriefcaseDialog =
 function() {
 	if (!this._newBriefcaseDialog) {
@@ -552,6 +833,11 @@ function() {
 	return this._newBriefcaseDialog;
 };
 
+/**
+ * Gets the find-and-replace dialog.
+ *
+ * @return	{ZmFindnReplaceDialog}	the find-and-replace dialog
+ */
 ZmAppCtxt.prototype.getReplaceDialog =
 function() {
 	if (!this._replaceDialog) {
@@ -561,6 +847,11 @@ function() {
 	return this._replaceDialog;
 };
 
+/**
+ * Gets the root tab group.
+ *
+ * @return	{DwtTabGroup}	the root tab group
+ */
 ZmAppCtxt.prototype.getRootTabGroup =
 function() {
 	if (this.isChildWindow) {
@@ -575,16 +866,31 @@ function() {
 	return this.isChildWindow ? this._childWinTabGrp : this._rootTabGrp;
 };
 
+/**
+ * Gets the shell.
+ *
+ * @return	{DwtShell}	the shell
+ */
 ZmAppCtxt.prototype.getShell =
 function() {
 	return this._shell;
 };
 
+/**
+ * Sets the shell.
+ *
+ * @param	{DwtShell}	the shell
+ */
 ZmAppCtxt.prototype.setShell =
 function(shell) {
 	this._shell = shell;
 };
 
+/**
+ * Gets the active account.
+ *
+ * @return	{ZmZimbraAccount}	the active account
+ */
 ZmAppCtxt.prototype.getActiveAccount =
 function() {
 	return this.isChildWindow
@@ -592,18 +898,36 @@ function() {
 		: this.accountList.activeAccount;
 };
 
+/**
+ * Gets the identity collection.
+ * 
+ * @param	{ZmZimbraAccount}	account		the account
+ * @return	{ZmIdentityCollection}	the identity collection
+ */
 ZmAppCtxt.prototype.getIdentityCollection =
 function(account) {
 	var context = this.isChildWindow ? window.opener : window;
 	return context.AjxDispatcher.run("GetIdentityCollection", account);
 };
 
+/**
+ * Gets the data source collection.
+ * 
+ * @param	{ZmZimbraAccount}	account		the account
+ * @return	{ZmModel}	the data source collection
+ */
 ZmAppCtxt.prototype.getDataSourceCollection =
 function(account) {
 	var context = this.isChildWindow ? window.opener : window;
 	return context.AjxDispatcher.run("GetDataSourceCollection", account);
 };
 
+/**
+ * Gets the signature collection.
+ * 
+ * @param	{ZmZimbraAccount}	account		the account
+ * @return	{ZmSignatureCollection}	the signature collection
+ */
 ZmAppCtxt.prototype.getSignatureCollection =
 function(account) {
 	var context = this.isChildWindow ? window.opener : window;
@@ -611,8 +935,14 @@ function(account) {
 };
 
 /**
- * Returns one of the main organizer trees: folders, tags, or zimlets.
- * Use ZmFolderTree::getByType() to get a particular type of folder.
+ * Gets the organizer tree.
+ * 
+ * @param	{ZmOrganizer.FOLDER|ZmOrganizer.TAG|ZmOrganizer.ZIMLET}	type	the type
+ * @param	{ZmZimbraAccount}	account		the account
+ * @return	{ZmTree}		the tree
+ * @see		#getFolderTree
+ * @see		#getTagTree
+ * @see		#getZimletTree
  */
 ZmAppCtxt.prototype.getTree =
 function(type, account) {
@@ -629,6 +959,14 @@ function(type, account) {
 	return acct && acct.trees[ZmOrganizer.TREE_TYPE[type]];
 };
 
+/**
+ * Sets the organizer tree.
+ * 
+ * @param	{ZmOrganizer.FOLDER|ZmOrganizer.TAG|ZmOrganizer.ZIMLET}	type	the type
+ * @param	{ZmTree}	tree		the tree
+ * @param	{ZmZimbraAccount}	account		the account
+ * @see		#getTree
+ */
 ZmAppCtxt.prototype.setTree =
 function(type, tree, account) {
 	var al = this.accountList;
@@ -643,27 +981,59 @@ function(type, tree, account) {
 	}
 };
 
+/**
+ * Gets the folder organizer tree.
+ * 
+ * @param	{ZmZimbraAccount}	account		the account
+ * @return	{ZmFolderTree}		the tree
+ * @see		#getTree
+ */
 ZmAppCtxt.prototype.getFolderTree =
 function(account) {
     return this.getTree(ZmOrganizer.FOLDER, account);
 };
 
+/**
+ * Gets the tag organizer tree.
+ * 
+ * @param	{ZmZimbraAccount}	account		the account
+ * @return	{ZmTagTree}		the tree
+ * @see		#getTree
+ */
 ZmAppCtxt.prototype.getTagTree =
 function(account) {
 	return this.getTree(ZmOrganizer.TAG, account);
 };
 
+/**
+ * Gets the zimlet organizer tree.
+ * 
+ * @param	{ZmZimbraAccount}	account		the account
+ * @return	{ZmFolderTree}		the tree
+ * @see		#getTree
+ */
 ZmAppCtxt.prototype.getZimletTree =
 function(account) {
 	return this.getTree(ZmOrganizer.ZIMLET, account);
 };
 
-// Note: the username is an email address
+/**
+ * Gets the username (which is an email address).
+ * 
+ * @param	{ZmZimbraAccount}	account		the account
+ * @return	{String}		the username
+ */
 ZmAppCtxt.prototype.getUsername =
 function(account) { 
 	return this.get(ZmSetting.USERNAME, account);
 };
 
+/**
+ * Gets the user domain.
+ * 
+ * @param	{ZmZimbraAccount}	account		the account
+ * @return	{String}		the user domain
+ */
 ZmAppCtxt.prototype.getUserDomain =
 function(account) {
 	if (!this.userDomain) {
@@ -676,6 +1046,11 @@ function(account) {
 	return this.userDomain;
 };
 
+/**
+ * Gets the upload frame id.
+ * 
+ * @return	{String}		the frame id
+ */
 ZmAppCtxt.prototype.getUploadFrameId =
 function() {
 	if (!this._uploadManagerIframeId) {
@@ -691,6 +1066,11 @@ function() {
 	return this._uploadManagerIframeId;
 };
 
+/**
+ * Gets the upload manager.
+ * 
+ * @return	{Object}		the upload manager
+ */
 ZmAppCtxt.prototype.getUploadManager = 
 function() {
 	if (!this._uploadManager) {
@@ -700,38 +1080,73 @@ function() {
 	return this._uploadManager;
 };
 
+/**
+ * Gets the current search.
+ * 
+ * @return	{ZmSearch}		the current search
+ */
 ZmAppCtxt.prototype.getCurrentSearch =
 function() { 
 	return this.getCurrentApp().currentSearch;
 };
 
+/**
+ * Gets the current view id.
+ * 
+ * @return	{Object}		the current view id
+ */
 ZmAppCtxt.prototype.getCurrentViewId =
 function() {
 	return this.getAppViewMgr().getCurrentViewId();
 };
 
+/**
+ * Gets the current view.
+ * 
+ * @return	{DwtComposite}		the current view
+ */
 ZmAppCtxt.prototype.getCurrentView =
 function() {
 	return this.getAppViewMgr().getCurrentView();
 };
 
+/**
+ * Gets the current controller.
+ * 
+ * @return	{ZmController}		the current controller
+ */
 ZmAppCtxt.prototype.getCurrentController =
 function() {
 	var view = this.getCurrentView();
 	return (view && view.getController) ? view.getController() : null;
 };
 
+/**
+ * Sets the current list.
+ * 
+ * @param	{ZmList}	list		the current list
+ */
 ZmAppCtxt.prototype.setCurrentList =
 function(list) {
 	this._list = list;
 };
 
+/**
+ * Gets the current list.
+ * 
+ * @return	{ZmList}		the current list
+ */
 ZmAppCtxt.prototype.getCurrentList =
 function() {
 	var ctlr = this.getCurrentController();
 	return (ctlr && ctlr.getList) ? ctlr.getList() : this._list ? this._list : null;
 };
 
+/**
+ * Gets a new window.
+ * 
+ * @private
+ */
 ZmAppCtxt.prototype.getNewWindow = 
 function(fullVersion, width, height) {
 	// build url
@@ -766,18 +1181,39 @@ function(fullVersion, width, height) {
 	}
 };
 
+/**
+ * Caches the given key/value set.
+ * 
+ * @param	{Object}	key		the key
+ * @param	{Object}	value	the value
+ * @private
+ */
 ZmAppCtxt.prototype.cacheSet =
 function(key, value) {
 	this._itemCache[key] = value;
 	delete this._itemCacheDeferred[key];
 };
 
+/**
+ * Defers caching the given key set.
+ * 
+ * @param	{Object}	key		the key
+ * @param	{String}	appName	the application name
+ * @private
+ */
 ZmAppCtxt.prototype.cacheSetDeferred =
 function(key, appName) {
 	this._itemCache[key] = this._itemCacheDeferred;
 	this._itemCacheDeferred[key] = appName;
 };
 
+/**
+ * Gets the key from cache.
+ * 
+ * @param	{Object}	key		the key
+ * @return	{Object}	the value
+ * @private
+ */
 ZmAppCtxt.prototype.cacheGet =
 function(key) {
 	var value = this._itemCache[key];
@@ -789,22 +1225,45 @@ function(key) {
 	return value;
 };
 
+/**
+ * Removes the key from cache.
+ * 
+ * @param	{Object}	key		the key
+ * @private
+ */
 ZmAppCtxt.prototype.cacheRemove =
 function(key) {
 	delete this._itemCache[key];
 	delete this._itemCacheDeferred[key];
 };
 
+/**
+ * Gets the key from cache by id.
+ * 
+ * @param	{Object}	id		the id
+ * @return	{Object}	the value
+ * @private
+ */
 ZmAppCtxt.prototype.getById =
 function(id) {
 	return this.cacheGet(id) || (this.isChildWindow && window.opener.appCtxt.getById(id));
 };
 
+/**
+ * Gets the keyboard manager
+ * 
+ * @return	{DwtKeyboardMgr}		the keyboard manager
+ */
 ZmAppCtxt.prototype.getKeyboardMgr =
 function() {
 	return this._shell.getKeyboardMgr();
 };
 
+/**
+ * Gets the history manager.
+ * 
+ * @return	{Object}		the history manager
+ */
 ZmAppCtxt.prototype.getHistoryMgr =
 function() {
 	if (!this._historyMgr) {
@@ -813,16 +1272,31 @@ function() {
 	return this._historyMgr;
 };
 
+/**
+ * Checks if the zimlets are present.
+ * 
+ * @return	{Boolean}		<code>true</code> if zimlets are present
+ */
 ZmAppCtxt.prototype.zimletsPresent =
 function() {
 	return this._zimletsPresent;
 };
 
+/**
+ * Sets if the zimlets are present.
+ * 
+ * @param	{Boolean}	zimletsPresent		if <code>true</code>, zimlets are present
+ */
 ZmAppCtxt.prototype.setZimletsPresent =
 function(zimletsPresent) {
 	this._zimletsPresent = zimletsPresent;
 };
 
+/**
+ * Gets the zimlet manager
+ * 
+ * @return	{ZmZimletMgr}	the zimlet manager
+ */
 ZmAppCtxt.prototype.getZimletMgr =
 function() {
 	if (!this._zimletMgr) {
@@ -833,11 +1307,23 @@ function() {
 	return this._zimletMgr;
 };
 
+/**
+ * Checks if zimlets are loaded.
+ * 
+ * @return	{Boolean}		<code>true</code> if zimlets are loaded
+ */
 ZmAppCtxt.prototype.areZimletsLoaded =
 function() {
 	return this._zimletsLoaded;
 };
 
+/**
+ * Adds a listener to the zimlets loaded event.
+ * 
+ * @param	{AjxCallback}	listener		the listener
+ * @param	{int}		index		the index to where to add the listener
+ * @return	{Boolean}	<code>true</code> if the listener is added; <code>false</code> otherwise
+ */
 ZmAppCtxt.prototype.addZimletsLoadedListener =
 function(listener, index) {
 	if (!this._zimletsLoaded) {
@@ -845,6 +1331,11 @@ function(listener, index) {
 	}
 };
 
+/**
+ * Checks is all zimlets are loaded.
+ * 
+ * @return	{Boolean}	<code>true</code> if all zimlets are loaded
+ */
 ZmAppCtxt.prototype.allZimletsLoaded =
 function() {
 	this._zimletsLoaded = true;
@@ -864,12 +1355,15 @@ function() {
 /**
  * Notifies zimlets if they are present and loaded.
  *
- * @param event				[string]	zimlet event (called as a zimlet function)
- * @param args				[array]		list of args to the function
- * @param options			[hash]*		hash of options:
- *        noChildWindow		[boolean]	if true, skip notify if we are in a child window
- *        waitUntilLoaded	[boolean]	if true and zimlets aren't yet loaded, add a listener
- * 										so that notify happens on load
+ * @param {String}		event		the zimlet event (called as a zimlet function)
+ * @param {Array}		args		a list of args to the function
+ * @param {Hash}	options			a hash of options
+ * 
+ * <ul>
+ * <li>noChildWindow		{Boolean}	if <code>true</code>, skip notify if we are in a child window</li>
+ * <li>waitUntilLoaded	{Boolean}	if <code>true</code> and zimlets are not yet loaded, add a listener so that notify happens on load</li>
+ * </ul>
+ * 
  */
 ZmAppCtxt.prototype.notifyZimlets =
 function(event, args, options) {
@@ -888,6 +1382,11 @@ function(event, args, options) {
 	this.getZimletMgr().notifyZimlets(event, args);
 };
 
+/**
+ * Gets the calendar manager.
+ * 
+ * @return	{ZmCalMgr}	the calendar manager
+ */
 ZmAppCtxt.prototype.getCalManager =
 function() {
 	if (!this._calMgr) {
@@ -896,6 +1395,13 @@ function() {
 	return this._calMgr;
 };
 
+/**
+ * Gets the ACL.
+ * 
+ * @param	{ZmZimbrAccount}	account		the account
+ * @param	{AjxCallback}	callback	the callback
+ * @return	{ZmAccessControlList}	the ACL
+ */
 ZmAppCtxt.prototype.getACL =
 function(account, callback) {
 	var al = this.accountList;
@@ -908,10 +1414,11 @@ function(account, callback) {
 };
 
 /**
- * Returns brief display version of the given shortcut
+ * Gets the shortcut hint.
  *
- * @param keyMap	[string]	key map
- * @param shortcut	[string]	shortcut action
+ * @param {String}		keyMap		the key map
+ * @param {String}		shortcut	the shortcut action
+ * @return	{String}	the hint
  */
 ZmAppCtxt.prototype.getShortcutHint =
 function(keyMap, shortcut) {
@@ -936,6 +1443,11 @@ function(keyMap, shortcut) {
 	return text;
 };
 
+/**
+ * Gets the shortcuts panel.
+ * 
+ * @return	{ZmShortcutsPanel}	the shortcuts panel
+ */
 ZmAppCtxt.prototype.getShortcutsPanel =
 function() {
 	if (!this._shortcutsPanel) {
@@ -947,9 +1459,13 @@ function() {
 };
 
 /**
- * Returns the skin hint for the given argument(s), which will be used to look
- * successively down the properties chain. For example, getSkinHint("a", "b")
- * will return the value of skin.hints.a.b
+ * Gets the skin hint for the given argument(s), which will be used to look
+ * successively down the properties chain.
+ * 
+ * <p>
+ * For example, <code>getSkinHint("a", "b")</code> will return the value of <code>skin.hints.a.b</code>.
+ * 
+ * @return	{String}	the skin hint
  */
 ZmAppCtxt.prototype.getSkinHint =
 function() {
@@ -965,6 +1481,11 @@ function() {
 	return cur;
 };
 
+/**
+ * Gets the auto completer.
+ * 
+ * @return	{ZmAutocomplete}	the auto completer
+ */
 ZmAppCtxt.prototype.getAutocompleter =
 function() {
 	if (!this._autocompleter) {
@@ -974,10 +1495,11 @@ function() {
 };
 
 /**
- * Returns true if the given address belongs to the current user, including aliases.
- *
- * @param addr			[string]		address
- * @param allowLocal	[boolean]*		if true, domain is not required
+ * Checks if my address belongs to the current user (include aliases).
+ * 
+ * @param {String}		addr			the address
+ * @param {Boolean}		allowLocal		if <code>true</code>, domain is not required
+ * @return	{Boolean}		<code>true</code> if the given address belongs to the current user; <code>false</code> otherwise
  */
 ZmAppCtxt.prototype.isMyAddress =
 function(addr, allowLocal) {
@@ -1002,10 +1524,11 @@ function(addr, allowLocal) {
 };
 
 /**
- * Returns an overview ID, prepending account name if we're multi-account.
+ * Gets the overview ID, prepending account name if multi-account.
  *
- * @param parts		[list]			ID components
- * @param account	[ZmAccount]*	account
+ * @param {Array}		parts		an array of id components
+ * @param {ZmAccount}	account		the account
+ * @return	{String}	the id
  */
 ZmAppCtxt.prototype.getOverviewId =
 function(parts, account) {
