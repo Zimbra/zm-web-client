@@ -124,23 +124,6 @@ function(clickedEl, ev) {
 	}
 };
 
-ZmColListView.prototype._resetColWidth = function() {};
-
-ZmColListView.prototype._mouseOverAction =
-function(ev, div) {
-	DwtListView.prototype._mouseOverAction.call(this, ev, div);
-	var id = ev.target.id || div.id;
-	if (!id) return true;
-	
-	if (div) {
-		var item = this.getItemFromElement(div);
-		if(item && !item.isFolder){
-		this.setToolTipContent(this._getToolTip({item:item, ev:ev, div:div}));
-		}
-	}
-	return true;
-};
-
 ZmColListView.prototype._getScrollDiv =
 function() {
 	return this.parent._divs[this._colIdx];

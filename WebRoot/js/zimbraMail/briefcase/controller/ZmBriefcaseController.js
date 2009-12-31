@@ -204,7 +204,7 @@ function(items) {
 			this._confirmDeleteFormatter = new AjxMessageFormat(ZmMsg.confirmDeleteItem);
 		}
 
-		var item = items instanceof Array ? items[0] : items;
+		var item = (items instanceof Array) ? items[0] : items;
 		if (!item) { return; }
 		message = this._confirmDeleteFormatter.format(item.name);
 	}
@@ -336,11 +336,6 @@ function(view, force) {
 ZmBriefcaseController.prototype.getItemById =
 function(itemId) {
 	return (this._idMap[itemId] ? this._idMap[itemId].item : null);
-};
-
-ZmBriefcaseController.prototype._dragListener =
-function(ev) {
-	ZmListController.prototype._dragListener.call(this, ev);
 };
 
 ZmBriefcaseController.prototype.__popupUploadDialog =

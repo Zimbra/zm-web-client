@@ -19,10 +19,6 @@ ZmBriefcaseView = function(parent, controller, dropTgt) {
 				  dropTgt:dropTgt};
 	ZmBriefcaseBaseView.call(this, params);
 	
-	this._controller = controller;
-
-	this._USE_IFRAME = true;
-
 	this._setMouseEventHdlrs(); // needed by object manager
 	this._setAllowSelection();
 	
@@ -37,58 +33,44 @@ function() {
 	return "ZmBriefcaseView";
 };
 
-// Data
-
-ZmBriefcaseView.prototype._controller;
-
 // Public methods
 
-ZmBriefcaseView.prototype.getController =
-function() {
-	return this._controller;
-};
-
-ZmBriefcaseView.prototype._createItemHtmlXXX =
+ZmBriefcaseView.prototype._createItemHtml =
 function(item, params) {
-	
-	var name = item.name;
-	if (name.length > 14) {
-		name = name.substring(0,14) + "...";
-	}
-	
-	var div = document.createElement("div");
-	div.className = "ZmBriefcaseItem";
-	
-	var div1 = document.createElement("div");
-    div1.id = this._getFieldId(item,ZmItem.F_NAME);
-	div1.className = "ZmThumbnailItem";
-	
-	var div2 = document.createElement("div");
-    div2.id = this._getFieldId(item, ZmItem.F_SUBJECT);
-	div2.className = "Img" + item.getIcon(true) + " ZmThumbnailIcon";
-	
-	div1.appendChild(div2);
-	div.appendChild(div1);
-	
-	var div2 = document.createElement("div");
-	div2.className = "ZmThumbnailName";
-	
-	var span = document.createElement("span");
-	
+
+	params.divClass = "ZmBriefcaseItem";
+	var div = this._getDiv(item, params);
+
+	var nameText;
 	if (item instanceof ZmBriefcaseItem) {
-		span.innerHTML = ['<a href="', item.getRestUrl(), '" target="_blank">', name, '</a>'].join('');
+		var name = item.name;
+		if (name.length > 14) {
+			name = name.substring(0, 14) + "...";
+		}
+		nameText = ['<a href="', item.getRestUrl(), '" target="_blank">', name, '</a>'].join('');
 	} else {
-		span.innerHTML = item;
+		nameText = item;
 	}
-	
-	div2.appendChild(span);
-	div.appendChild(div2);
-	
-	if (params.isDragProxy) {
-		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
-	}
-	
-	this.associateItemWithElement(item, div);
+
+	var html = [], idx = 0;
+	var id = this._getFieldId(item, ZmItem.F_NAME);
+	html[idx++] = "<div class='ZmThumbnailItem' id='" + id + "'>";
+	var className = "Img" + item.getIcon(true) + " ZmThumbnailIcon";
+	id = this._getFieldId(item, ZmItem.F_SUBJECT);
+	html[idx++] = "<div class='" + className + "' id='" + id + "'></div>";
+	html[idx++] = "</div>";
+	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width='100%'>";
+	html[idx++] = "<tr>";
+	html[idx++] = "<td align='left'>";
+	html[idx++] = "<div class='ZmThumbnailName'>";
+	html[idx++] = "<span>" + nameText + "</span>";
+	html[idx++] = "</div></td>";
+	html[idx++] = "<td align='right'>";
+	idx = this._getImageHtml(html, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
+	html[idx++] = "</td></tr></table>";
+
+	div.innerHTML = html.join("");
+
 	return div;
 };
 
@@ -106,93 +88,19 @@ function(clickedEl, ev) {
             this._selectedClass,
             this._kbFocusClass,
             this._dndClass,
-            this._rightClickClass//,
-//          this._normalClass
+            this._rightClickClass
         ].join("|") +
         ")\\b", "g"
     );
     
-	DwtListView.prototype._itemClicked.call(this,clickedEl,ev);
-	return;
-};
-
-
-ZmBriefcaseView.prototype.setSelectedItems =
-function(selectedArray) {
-	this.deselectAll();
-	var sz = selectedArray.length;
-	for (var i = 0; i < sz; ++i) {
-		var el = this._getElFromItem(selectedArray[i]);
-		if (el) {
-			this._selectedItems.add(el);
-		}
-	}
-};
-
-ZmBriefcaseView.prototype.getContent =
-function() {
-	return this.getHtmlElement().innerHTML;
-};
-
-ZmBriefcaseView.prototype.setBounds =
-function(x, y, width, height) {
-	ZmListView.prototype.setBounds.call(this, x, y, width, height);	
+	DwtListView.prototype._itemClicked.call(this, clickedEl, ev);
 };
 
 // Protected methods
 
-ZmBriefcaseView.prototype._createHtml = function() {
-	var element = this.getHtmlElement();
-	Dwt.setScrollStyle(element, Dwt.SCROLL);
-};
-
-ZmBriefcaseView.prototype.enableToolbar = function(enable){
-	var toolbar = this._controller._toolbar[view._controller._currentView];
-	toolbar.enable([ZmOperation.TAG_MENU, ZmOperation.DELETE], enable);
-};
-
-ZmBriefcaseView.prototype.onDelete = function(){
-
-	var controller = this._controller;
-	var object = controller._object;
-
-};
-
-
-ZmBriefcaseView.prototype.refresh = function(restUrl){
-};
-
-ZmBriefcaseView.prototype._mouseOverAction =
-function(ev, div) {
-	DwtListView.prototype._mouseOverAction.call(this, ev, div);
-	var id = ev.target.id || div.id;
-	if (!id) return true;
-
-	if (div) {
-		var item = this.getItemFromElement(div);
-		if(item && !item.isFolder){
-		this.setToolTipContent(this._getToolTip({item:item, ev:ev, div:div}));
-		}
-	}
-	return true;
-};
-
-ZmBriefcaseView.prototype._mouseDownListener =
-function(ev) {
-	DwtListView.prototype._mouseDownListener.call(this,ev);	
-	if(this._dndSelection==null){
-	this.deselectAll();	
-	this._controller._resetOpForCurrentView();
-	}
-};
-
-ZmBriefcaseView.prototype._updateDragSelection =
-function(row, select) {
-    // TODO: new style to mark drop target  
-};
-
 ZmBriefcaseView.prototype._addRow =
 function(row, index) {
+
 	if (!row) { return; }
 
 	// bug fix #1894 - check for childNodes length otherwise IE barfs
@@ -204,20 +112,6 @@ function(row, index) {
     } else {
 		this._parentEl.appendChild(row);
 	}
-};
-
-ZmBriefcaseView.prototype.deselectAll =
-function() {
-	var a = this._selectedItems.getArray();
-	var sz = this._selectedItems.size();
-	for (var i = 0; i < sz; i++) {
-        Dwt.delClass(a[i], this._styleRe, this._normalClass);
-    }
-    this._selectedItems.removeAll();
-	this._selAnchor = null;
-
-	if (this._kbAnchor != null && this.hasFocus())
-		Dwt.addClass(this._kbAnchor, this._kbFocusClass);
 };
 
 // Grab more items if we're within one row of bottom

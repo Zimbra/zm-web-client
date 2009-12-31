@@ -63,11 +63,6 @@ function() {
 	return this._listView[0].uploadFiles();
 };
 
-ZmMultiColView.prototype._setHeaderInfo =
-function(clear) {
-
-};
-
 ZmMultiColView.prototype.getListView =
 function(idx) {
 	return (idx >= 0)? this._listView[idx] : this._listView[0];
@@ -159,7 +154,7 @@ function(folderId) {
 	this.setCurrentListIndex(listView._colIdx);
 	this._noReset = true;
 	listView.folderId = folderId;
-	this._controller._app.search(folderId);
+	this._controller._app.search(folderId, null, null, false, true);
 };
 
 ZmMultiColView.prototype.set =

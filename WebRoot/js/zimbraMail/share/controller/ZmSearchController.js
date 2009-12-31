@@ -238,6 +238,7 @@ function(menu) {
  *        prevId		[int]*				ID of last items displayed (for pagination)
  *        prevSortBy	[constant]*			previous sort order (for pagination)
  *        noRender		[boolean]*			if true, results will not be passed to controller
+ *        noClear		[boolean]*			if true, previous results will not be destructed
  *        userText		[boolean]*			true if text was typed by user into search box
  *        callback		[AjxCallback]*		async callback
  *        errorCallback	[AjxCallback]*		async callback to run if there is an exception
@@ -497,7 +498,7 @@ function(params, noRender, callback, errorCallback) {
 	params.types = types;
 	var search = new ZmSearch(params);
 
-	var args = [search, noRender, isMixed, callback, params.noUpdateOverview];
+	var args = [search, noRender, isMixed, callback, params.noUpdateOverview, params.noClear];
 	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, args);
 	if (!errorCallback) {
 		errorCallback = new AjxCallback(this, this._handleErrorDoSearch, [search, isMixed]);
@@ -524,10 +525,11 @@ function(params, noRender, callback, errorCallback) {
  * @param isMixed			[boolean]*		in mixed mode?
  * @param callback			[AjxCallback]*	callback to run after processing search response
  * @param noUpdateOverview	[boolean]*		skip updating the overview
+ * @param noClear			[boolean]*		if true, previous results will not be destructed
  * @param result			[ZmCsfeResult]	search results
  */
 ZmSearchController.prototype._handleResponseDoSearch =
-function(search, noRender, isMixed, callback, noUpdateOverview, result) {
+function(search, noRender, isMixed, callback, noUpdateOverview, noClear, result) {
 	if (this._searchFor == ZmItem.APPT) {
 		this._results = new ZmSearchResult(search);
 		return;
@@ -544,7 +546,7 @@ function(search, noRender, isMixed, callback, noUpdateOverview, result) {
 
 	// bug fix #34776 - don't show search results if user is in the composer
 	if (!noRender) {
-		this._showResults(results, search, isMixed, noUpdateOverview);
+		this._showResults(results, search, isMixed, noUpdateOverview, noClear);
 	}
 
 	if (callback) {
@@ -553,9 +555,9 @@ function(search, noRender, isMixed, callback, noUpdateOverview, result) {
 };
 
 ZmSearchController.prototype._showResults =
-function(results, search, isMixed, noUpdateOverview) {
+function(results, search, isMixed, noUpdateOverview, noClear) {
 	// allow old results to dtor itself
-	if (this._results && (this._results.type == results.type) && this._results.dtor) {
+	if (!noClear && this._results && (this._results.type == results.type) && this._results.dtor) {
 		this._results.dtor();
 	}
 	this._results = results;

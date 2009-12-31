@@ -3721,7 +3721,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	@FontSize-smaller@
 	@FontFamily-html@
 	margin:3px 0pt 0pt 0px;
-	text-align:center;
 	height: 14px;
 	overflow: hidden;
 }

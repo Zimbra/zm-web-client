@@ -82,27 +82,3 @@ function(item, params) {
 	this.associateItemWithElement(item, div);
 	return div;
 };
-
-/*
-ZmBriefcaseIconView.prototype.set =
-function(folderId, list) {
-    var element = this.getHtmlElement();
-
-    var itemsList = list;
-    if(list instanceof ZmList){
-        itemsList = list.getVector();
-    }
-    DwtListView.prototype.set.call(this,itemsList);
-};
-*/
-
-ZmBriefcaseIconView.prototype.getTitle =
-function() {
-	//TODO: title is the name of the current folder
-	return [ZmMsg.zimbraTitle].join(": ");
-};
-
-ZmBriefcaseIconView.prototype.getContent =
-function() {
-	return this.getHtmlElement().innerHTML;
-};

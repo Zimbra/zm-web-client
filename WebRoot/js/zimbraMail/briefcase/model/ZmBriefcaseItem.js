@@ -59,15 +59,18 @@ function(dontIncludeThisName, ignoreCustomDocs) {
 	return url;
 };
 
-ZmBriefcaseItem.prototype.isRealFile = function(){
+ZmBriefcaseItem.prototype.isRealFile =
+function() {
     return (!this.isFolder && !this.isWebDoc());  
 };
 
-ZmBriefcaseItem.prototype.isWebDoc = function(){
+ZmBriefcaseItem.prototype.isWebDoc =
+function() {
     return (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES || this.contentType == ZmMimeTable.APP_ZIMBRA_SPREADSHEET || this.contentType == ZmMimeTable.APP_ZIMBRA_DOC);
 };
 
-ZmBriefcaseItem.prototype.isSlideDoc = function(){
+ZmBriefcaseItem.prototype.isSlideDoc =
+function() {
     return (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES);
 };
 

@@ -328,7 +328,7 @@ function(callback) {
 };
 
 ZmBriefcaseApp.prototype.search =
-function(folderId, callback, accountName, noRender) {
+function(folderId, callback, accountName, noRender, noClear) {
 
 	var folder = appCtxt.getById(folderId || ZmOrganizer.ID_BRIEFCASE);
 	var params = {
@@ -338,7 +338,8 @@ function(folderId, callback, accountName, noRender) {
 		searchFor:		ZmId.ITEM_BRIEFCASE,
 		callback:		callback,
 		accountName:	(accountName || (folder && folder.account && folder.account.name)),
-		noRender:		noRender
+		noRender:		noRender,
+		noClear:		noClear
 	};
 	var sc = appCtxt.getSearchController();
 	sc.searchAllAccounts = false;

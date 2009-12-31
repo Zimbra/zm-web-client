@@ -31,14 +31,18 @@ ZmBriefcaseTabView.prototype.toString = function(){
     return "ZmBriefcaseTabView";
 };
 
-ZmBriefcaseTabView.prototype.showMe = function(){
+ZmBriefcaseTabView.prototype.showMe =
+function() {
     DwtTabViewPage.prototype.showMe.call(this);
-    this.setSize(Dwt.DEFAULT, "235");
+    this.setSize(Dwt.DEFAULT, 235);
+	this._itemCountText.setVisible(true);
     this.showFolder(this._folderId || ZmOrganizer.ID_BRIEFCASE);
 };
 
-ZmBriefcaseTabView.prototype.hideMe = function(){
+ZmBriefcaseTabView.prototype.hideMe =
+function() {
     DwtTabViewPage.prototype.hideMe.call(this);
+	this._itemCountText.setVisible(false);
 };
 
 //Create UI for Briefcase Tab UI
@@ -74,16 +78,24 @@ function() {
 				  controller:bc};
     var lv = this._listView = this._controller._listView[this.view] = new ZmBriefcaseIconView(params);
     lv.reparentHtmlElement(this._folderListId);
-    lv.addSelectionListener(new AjxListener(this, this._listSelectionListener));
     Dwt.setPosition(lv.getHtmlElement(),Dwt.RELATIVE_STYLE);
+
+	var tb = this.parent._tabBar;
+	var el = tb._suffixEl;
+	if (el) {
+		var b = new DwtText({parent:tb, className:"itemCountText", id:this.view + "Text"});
+		this._itemCountText = bc._itemCountText[this.view] = b;
+		b.reparentHtmlElement(el.id);
+		b.getHtmlElement().style.textAlign = "right";
+	}
 };
 
 ZmBriefcaseTabView.prototype.setSize =
 function(width, height) {
 
     DwtTabViewPage.prototype.setSize.call(this, width, height);
-    var size = this.getSize();
 
+    var size = this.getSize();
     var treeWidth = size.x * 0.40;
     var listWidth = size.x - treeWidth;
     var newHeight = height - 15;
@@ -108,17 +120,8 @@ function(folderId, results) {
 		this._controller._list.setHasMore(searchResult.getAttribute("more"));
 		ZmListController.prototype.show.call(this._controller, searchResult, ZmId.VIEW_BRIEFCASE_ICON);
 		this._listView.set(list);
+		this._controller._setItemCountText();
 	}
-};
-
-ZmBriefcaseTabView.prototype._listSelectionListener =
-function(ev) {
-    if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-        var item = ev.item;
-        if (item && item.isFolder){
-            this.showFolder(item.id);
-        }
-    }
 };
 
 ZmBriefcaseTabView.prototype._handleKeys =
@@ -205,7 +208,7 @@ function(ev) {
     if (ev.detail == DwtTree.ITEM_SELECTED) {
         var ti = ev.item;
         var folder = ti.getData(Dwt.KEY_OBJECT);
-        if(folder) {
+        if (folder) {
             this.showFolder(folder.id);
         }
     }
