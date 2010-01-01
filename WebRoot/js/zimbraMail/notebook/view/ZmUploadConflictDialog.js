@@ -168,13 +168,13 @@ ZmUploadConflictDialog.prototype._createUploadHtml = function() {
 
 	var cell = row.insertCell(-1);
 	var id = this._mineId;
-	var text = ZmMsg.mine;
+	var text = ZmMsg.new;
 	var handler = ZmUploadConflictDialog._handleMine;
 	cell.appendChild(this.__createLink(id, text, handler));
 
 	var cell = row.insertCell(-1);
 	var id = this._theirsId;
-	var text = ZmMsg.theirs;
+	var text = ZmMsg.old;
 	var handler = ZmUploadConflictDialog._handleTheirs;
 	cell.appendChild(this.__createLink(id, text, handler));
 
@@ -205,7 +205,7 @@ ZmUploadConflictDialog.prototype.__addFileRow = function(table, file) {
 	var cell = row.insertCell(-1);
 	cell.style.paddingLeft = "2em";
 	var id = this._viewId+(table.rows.length-1);
-	var text = ZmMsg.viewTheirs;
+	var text = ZmMsg.viewOld;
 	var handler = ZmUploadConflictDialog._handleViewTheirs;
 	var object = { dialog: this, file: file };
 	cell.appendChild(this.__createLink(id, text, handler, object));

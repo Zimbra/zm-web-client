@@ -232,9 +232,11 @@ function(files, status, guids) {
 	// create document wrappers
 	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra", null);
 	soapDoc.setMethodAttribute("onerror", "continue");
+	var foundOne = false;
 	for (var i = 0; i < files.length; i++) {
 		var file = files[i];
-		if (file.done) continue;
+		if (file.done) { continue; }
+		foundOne = true;
 
 		var saveDocNode = soapDoc.set("SaveDocumentRequest", null, null, "urn:zimbraMail");
 		saveDocNode.setAttribute("requestId", i);
@@ -252,14 +254,16 @@ function(files, status, guids) {
 		uploadNode.setAttribute("id", file.guid);
 	}
 
-	var callback = new AjxCallback(this, this._uploadSaveDocsResponse, [ files, status, guids ]);
-	var params = {
-		soapDoc:soapDoc,
-		asyncMode:true,
-		callback:callback
-	};
-	var appController = appCtxt.getAppController();
-	appController.sendRequest(params);
+	if (foundOne) {
+		var callback = new AjxCallback(this, this._uploadSaveDocsResponse, [ files, status, guids ]);
+		var params = {
+			soapDoc:soapDoc,
+			asyncMode:true,
+			callback:callback
+		};
+		var appController = appCtxt.getAppController();
+		appController.sendRequest(params);
+	}
 };
 
 ZmUploadDialog.prototype._uploadSaveDocsResponse =
