@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -14,17 +14,19 @@
  */
 
 /**
- * Creates an account object containing meta info about the account
- * @constructor
  * @class
- * An account object is created primarily if a user has added subaccounts that
- * he would like to manage (i.e. family mailbox).
+ * 
+ * Creates an account object containing meta info about the account
+ * An account object is created primarily if a user has added sub-accounts
+ * to manage (i.e. a family mailbox).
  *
  * @author Parag Shah
  *
- * @param id			[string]*		unique ID for this account
- * @param name			[string]*		email address
- * @param visible		[boolean]*		if true, make this account available in the overview (child accounts)
+ * @param {String}		id			the unique ID for this account
+ * @param {String}		name		the email address
+ * @param {Boolean}		visible		if <code>true</code>, make this account available in the overview (i.e. child accounts)
+ *
+ * @extends	ZmAccount
  */
 ZmZimbraAccount = function(id, name, visible) {
 
@@ -40,6 +42,11 @@ ZmZimbraAccount = function(id, name, visible) {
 ZmZimbraAccount.prototype = new ZmAccount;
 ZmZimbraAccount.prototype.constructor = ZmZimbraAccount;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmZimbraAccount.prototype.toString =
 function() {
 	return "ZmZimbraAccount";
@@ -50,17 +57,40 @@ function() {
 // Constants
 //
 
+/**
+ * Defines the "unknown" status.
+ */
 ZmZimbraAccount.STATUS_UNKNOWN	= "unknown";
+/**
+ * Defines the "offline" status.
+ */
 ZmZimbraAccount.STATUS_OFFLINE	= "offline";
+/**
+ * Defines the "online" status.
+ */
 ZmZimbraAccount.STATUS_ONLINE	= "online";
+/**
+ * Defines the "running" status.
+ */
 ZmZimbraAccount.STATUS_RUNNING	= "running";
+/**
+ * Defines the "authentication fail" status.
+ */
 ZmZimbraAccount.STATUS_AUTHFAIL	= "authfail";
+/**
+ * Defines the "error" status.
+ */
 ZmZimbraAccount.STATUS_ERROR	= "error";
 
 //
 // Public methods
 //
 
+/**
+ * Sets the name of the account.
+ * 
+ * @param		{String}	name	the account name
+ */
 ZmZimbraAccount.prototype.setName =
 function(name) {
 	var identity = this.getIdentity();
@@ -69,6 +99,11 @@ function(name) {
 	identity.name = name;
 };
 
+/**
+ * Gets the name of the account.
+ * 
+ * @return		{String}		the account name
+ */
 ZmZimbraAccount.prototype.getName =
 function() {
 	var identity = this.getIdentity();
@@ -82,14 +117,30 @@ function() {
 	return identity.isDefault && name == ZmIdentity.DEFAULT_NAME ? ZmMsg.accountDefault : name;
 };
 
+/**
+ * Sets the email address for this account. This method does nothing. The email address is set
+ * when the object is created.
+ * 
+ * @param	{String}	email 	the email address (ignored)
+ */
 ZmZimbraAccount.prototype.setEmail =
 function(email) {}; // IGNORE
 
+/**
+ * Gets the email address for this account.
+ * 
+ * @return	{String}	the email address
+ */
 ZmZimbraAccount.prototype.getEmail =
 function() {
 	return this.name;
 };
 
+/**
+ * Gets the display name.
+ * 
+ * @return	{String}	the display name
+ */
 ZmZimbraAccount.prototype.getDisplayName =
 function() {
 	if (!this.displayName) {
@@ -101,6 +152,11 @@ function() {
 	return this.displayName;
 };
 
+/**
+ * Gets the identity.
+ * 
+ * @return	{ZmIdentity}	the identity
+ */
 ZmZimbraAccount.prototype.getIdentity =
 function() {
 	if (!appCtxt.isFamilyMbox || this.isMain) {
@@ -114,6 +170,11 @@ function() {
 	return this.dummyIdentity;
 };
 
+/**
+ * Gets the tool tip.
+ * 
+ * @return	{String}		the tool tip
+ */
 ZmZimbraAccount.prototype.getToolTip =
 function() {
 	if (this.status || this.lastSync || this.isMain) {
@@ -133,6 +194,12 @@ function() {
 	return "";
 };
 
+/**
+ * Gets the default color.
+ * 
+ * @return	{String}		the default color
+ * @see		ZmOrganizer
+ */
 ZmZimbraAccount.prototype.getDefaultColor =
 function() {
 	if (this.isMain) {
@@ -150,7 +217,9 @@ function() {
 };
 
 /**
- * Returns true if this account has never been synced
+ * Checks if the account has sync'd.
+ * 
+ * @return	{Boolean}	if <code>true</code>, this account has never been sync'd
  */
 ZmZimbraAccount.prototype.hasNotSynced =
 function() {
@@ -158,13 +227,20 @@ function() {
 };
 
 /**
- * Returns true if this account is currently syncing for the first time
+ * Check is this account is currently sync'ing for the first time.
+ * 
+ * @return	{Boolean}	if <code>true</code>, this account is currently sync'ing for the first time
  */
 ZmZimbraAccount.prototype.isOfflineInitialSync =
 function() {
 	return (appCtxt.isOffline && (!this.lastSync || (this.lastSync && this.lastSync == 0)));
 };
 
+/**
+ * Checks if this account is CalDAV based.
+ * 
+ * @return	{Boolean}	if <code>true</code>, account is CalDAV based
+ */
 ZmZimbraAccount.prototype.isCalDavBased =
 function() {
 	return (this.type == ZmAccount.TYPE_GMAIL ||
@@ -172,8 +248,11 @@ function() {
 };
 
 /**
- * For CalDav based accounts, the default calendar is hidden, so return the
- * first non-default calendar instead.
+ * Gets the default calendar. For CalDAV based accounts, the default calendar is hidden;
+ * therefore, this method returns the first non-default calendar.
+ * 
+ * @return	{Object}		the calendar
+ * @see		ZmZimbraAccount.isCalDavBased
  */
 ZmZimbraAccount.prototype.getDefaultCalendar =
 function() {
@@ -188,6 +267,11 @@ function() {
 	return tree.getById(ZmOrganizer.ID_CALENDAR);
 };
 
+/**
+ * Updates the account status.
+ * 
+ * @private
+ */
 ZmZimbraAccount.prototype.updateState =
 function(acctInfo) {
 	if (this.isMain) { return; } // main account doesn't sync
@@ -227,6 +311,11 @@ function(acctInfo) {
 	}
 };
 
+/**
+ * Gets the status icon.
+ * 
+ * @return	{String}	the status icon
+ */
 ZmZimbraAccount.prototype.getStatusIcon =
 function() {
 	switch (this.status) {
@@ -239,17 +328,33 @@ function() {
 	}
 	return null;
 };
+
+/**
+ * Checks if this account is in error status.
+ * 
+ * @return	{Boolean}	if <code>true</code>, the account is in error status
+ */
 ZmZimbraAccount.prototype.isError =
 function() {
 	return (this.status == ZmZimbraAccount.STATUS_AUTHFAIL ||
 			this.status == ZmZimbraAccount.STATUS_ERROR);
 };
 
+/**
+ * Gets the icon.
+ * 
+ * @return	{String}	the icon
+ */
 ZmZimbraAccount.prototype.getIcon =
 function() {
 	return (this.isMain && appCtxt.isOffline) ? "LocalFolders" : this.icon;
 };
 
+/**
+ * Gets the Zd message.
+ * 
+ * @private
+ */
 ZmZimbraAccount.prototype.getZdMsg =
 function(code) {
 	var msg = ((ZdMsg["client." + code]) || (ZdMsg["exception." + code]));
@@ -259,6 +364,11 @@ function(code) {
 	return msg;
 };
 
+/**
+ * Gets the status message.
+ * 
+ * @return	{String}		the status message
+ */
 ZmZimbraAccount.prototype.getStatusMessage =
 function() {
 	switch (this.status) {
@@ -272,7 +382,13 @@ function() {
 	return "";
 };
 
-// offline use only:
+/**
+ * Shows an error message.
+ * 
+ * Offline use only.
+ * 
+ * @private
+ */
 ZmZimbraAccount.prototype.showErrorMessage =
 function() {
 	if (!this.isError()) { return; }
@@ -317,6 +433,9 @@ function() {
 	dialog.popup(null, true);
 };
 
+/**
+ * @private
+ */
 ZmZimbraAccount.createFromDom =
 function(node) {
 	var acct = new ZmZimbraAccount();
@@ -324,6 +443,11 @@ function(node) {
 	return acct;
 };
 
+/**
+ * Loads the account.
+ * 
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmZimbraAccount.prototype.load =
 function(callback) {
 	if (!this.loaded) {
@@ -372,7 +496,8 @@ function(callback) {
 };
 
 /**
- * Removes any account-specific data stored globally
+ * Unloads the account and removes any account-specific data stored globally.
+ * 
  */
 ZmZimbraAccount.prototype.unload =
 function() {
@@ -382,6 +507,11 @@ function() {
 	}
 };
 
+/**
+ * Sync the account.
+ * 
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmZimbraAccount.prototype.sync =
 function(callback) {
 	var soapDoc = AjxSoapDoc.create("SyncRequest", "urn:zimbraOffline");
@@ -398,6 +528,13 @@ function(callback) {
 	});
 };
 
+/**
+ * Saves the account.
+ * 
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
+ * @param	{Object}	batchCmd		the batch command
+ */
 ZmZimbraAccount.prototype.save =
 function(callback, errorCallback, batchCmd) {
 	return (this.getIdentity().save(callback, errorCallback, batchCmd));
@@ -405,6 +542,8 @@ function(callback, errorCallback, batchCmd) {
 
 /**
  * Saves implicit prefs. Because it's done onunload, the save is sync.
+ * 
+ * @private
  */
 ZmZimbraAccount.prototype.saveImplicitPrefs =
 function() {
@@ -424,9 +563,10 @@ function() {
 };
 
 /**
- * Returns true if this account supports the given app name
+ * Checks if this account supports the given application name
  *
- * @param appName	[String]	Name of the app
+ * @param {String}		appName		the name of the application
+ * @return	{Boolean}	<code>true</code> if account supports the application
  */
 ZmZimbraAccount.prototype.isAppEnabled =
 function(appName) {
@@ -447,6 +587,9 @@ function(appName) {
 // Protected methods
 //
 
+/**
+ * @private
+ */
 ZmZimbraAccount.prototype._handleLoadSettings =
 function(result) {
 	DBG.println(AjxDebug.DBG1, "Account settings successfully loaded for " + this.name);
@@ -480,6 +623,9 @@ function(result) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmZimbraAccount.prototype._handleLoadFolders =
 function(result) {
 	var resp = result.getResponse().GetFolderResponse;
@@ -489,12 +635,18 @@ function(result) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmZimbraAccount.prototype._handleLoadTags =
 function(result) {
 	var resp = result.getResponse().GetTagResponse;
 	appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp, null, this);
 };
 
+/**
+ * @private
+ */
 ZmZimbraAccount.prototype._handleLoadUserInfo =
 function(callback) {
 	this.loaded = true;
@@ -510,11 +662,17 @@ function(callback) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmZimbraAccount.prototype._handleErrorLoad =
 function(ev) {
 	DBG.println(AjxDebug.DBG1, "------- ERROR loading account settings for " + this.name);
 };
 
+/**
+ * @private
+ */
 ZmZimbraAccount.prototype._loadFromDom =
 function(node) {
 	this.id = node.id;
