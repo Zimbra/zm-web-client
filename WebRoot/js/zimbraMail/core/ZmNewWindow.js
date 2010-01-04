@@ -188,8 +188,7 @@ function() {
 	// setup zimlets, Load it first becoz.. zimlets has to get processed first.
 	if (target) {
 		var allzimlets = parentAppCtxt.get(ZmSetting.ZIMLETS);
-		var checkedZimlets = parentAppCtxt.get(ZmSetting.CHECKED_ZIMLETS) || [];
-		var zimletArray = this._settings._getCheckedZimlets(allzimlets, checkedZimlets);
+		var zimletArray = this._settings._getCheckedZimlets(allzimlets);
 		if (this._hasZimletsForTarget(zimletArray, target)) {
 			var zimletMgr = appCtxt.getZimletMgr();
 			var userProps = this._getUserProps();

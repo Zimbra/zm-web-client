@@ -72,7 +72,7 @@ function(id, setup, value) {
 
 ZmZimletsPage.prototype.addCommand  =
 function(batchCommand){
-	var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+	var soapDoc = AjxSoapDoc.create("ModifyZimletPrefsRequest", "urn:zimbraAccount");
 	// LDAP supports multi-valued attrs, so don't serialize list
 	var zimlets = this.getZimlets()._vector.getArray();
 	var settingsObj = appCtxt.getSettings();
@@ -81,17 +81,11 @@ function(batchCommand){
 	for (var i = 0; i < zimlets.length; i++) {
 		if(zimlets[i].isActive()){
 			checked.push(zimlets[i].name);
-			var node = soapDoc.set("pref", zimlets[i].name);
-			node.setAttribute("name", setting.name);
-		}
-	}
+        var node = soapDoc.set("zimlet", null);
+        node.setAttribute("name", zimlets[i].name);
+        node.setAttribute("presence", (zimlets[i].isActive() ? "enabled" : "disabled"));
+    }
 	setting.setValue(checked);
-
-	// If nothing selected add empty pref to override old values
-	if (checked.length <= 0 ) {
-		var node = soapDoc.set("pref", "__ZNULL__");
-		node.setAttribute("name", setting.name);
-	}
 	batchCommand.addNewRequestParams(soapDoc, null/*callback*/, null);
 
 };
@@ -152,17 +146,15 @@ function() {
 ZmZimletsPage._getZimlets =
 function() {
 	var allz = appCtxt.get(ZmSetting.ZIMLETS) || [];
-	var checked = appCtxt.get(ZmSetting.CHECKED_ZIMLETS) || [];
-    var mandatory = appCtxt.get(ZmSetting.MANDATORY_ZIMLETS) || [];
-    var mandatoryStr = "," + mandatory.join(",") + ",";
     var zimlets = new ZmPrefZimlets();
 	for (var i = 0; i <  allz.length; i++) {
 		var name = allz[i].zimlet[0].name;
-        if(mandatoryStr.indexOf(","+name+",") >= 0 ){
+        if(allz[i].zimletContext[0].presence == "mandatory"){
             continue; //skip mandatory zimlets to be shown in prefs        
         }
 		var desc = allz[i].zimlet[0].description;
-		var z = new ZmPrefZimlet(name,(!checked || checked.length <= 0 || (","+checked.join(",")+",").indexOf(","+name+",") >=0 ), desc);
+        var isEnabled = allz[i].zimletContext[0].presence == "enabled";
+		var z = new ZmPrefZimlet(name,isEnabled, desc);
 		zimlets.addPrefZimlet(z);
 	}
     zimlets.sortByName();

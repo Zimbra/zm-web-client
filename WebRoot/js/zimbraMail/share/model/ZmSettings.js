@@ -308,8 +308,7 @@ function(allZimlets, props) {
 	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:allZimlets, isGlobal:true});
 	this.registerSetting("USER_PROPS",	{type:ZmSetting.T_CONFIG, defaultValue:props});
 
-	var checkedZimlets = appCtxt.get(ZmSetting.CHECKED_ZIMLETS) || [];
-	var zimlets = this._getCheckedZimlets(allZimlets, checkedZimlets);
+	var zimlets = this._getCheckedZimlets(allZimlets);
 
 	DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + zimlets.length + " Zimlets");
 	var zimletMgr = appCtxt.getZimletMgr();
@@ -351,17 +350,14 @@ function(allZimlets, props) {
  * Filters a list of zimlets, returned ones that are checked.
  *
  * @param zimlets			[array]		list of zimlet objects
- * @param checkedZimlets	[string]	comma-separated list of zimlet names
  */
 ZmSettings.prototype._getCheckedZimlets =
-function(allZimlets, checkedZimlets) {
+function(allZimlets) {
 
 	var zimlets = [];
-	var checkedEmpty = (!(checkedZimlets && checkedZimlets.length));
-	var checkedHash = AjxUtil.arrayAsHash(checkedZimlets);
 	for (var i = 0; i < allZimlets.length; i++) {
 		var zimletObj = allZimlets[i];
-		if (checkedEmpty || checkedHash[zimletObj.zimlet[0].name]) {
+		if (zimletObj.zimletContext[0].presence != "disabled") {
 			zimlets.push(zimletObj);
 		}
 	}
