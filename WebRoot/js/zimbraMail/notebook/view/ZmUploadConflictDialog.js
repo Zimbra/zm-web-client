@@ -168,7 +168,7 @@ ZmUploadConflictDialog.prototype._createUploadHtml = function() {
 
 	var cell = row.insertCell(-1);
 	var id = this._mineId;
-	var text = ZmMsg.new;
+	var text = ZmMsg._new;
 	var handler = ZmUploadConflictDialog._handleMine;
 	cell.appendChild(this.__createLink(id, text, handler));
 
