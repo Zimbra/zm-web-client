@@ -79,8 +79,9 @@ function(batchCommand){
 	var setting = settingsObj.getSetting(ZmSetting.CHECKED_ZIMLETS);
 	var checked = [];
 	for (var i = 0; i < zimlets.length; i++) {
-		if(zimlets[i].isActive()){
+		if(zimlets[i].isActive()) {
 			checked.push(zimlets[i].name);
+		}
         var node = soapDoc.set("zimlet", null);
         node.setAttribute("name", zimlets[i].name);
         node.setAttribute("presence", (zimlets[i].isActive() ? "enabled" : "disabled"));
