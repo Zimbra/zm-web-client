@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -48,7 +32,7 @@
 <c:set var="ads" value='${message.subject} ${message.fragment}'/>
 
 <app:view mailbox="${mailbox}" selected='mail' title="${message.subject}" context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
-    <zm:currentResultUrl var="currentUrl" action="${param.action}" value="search" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
+    <zm:currentResultUrl var="currentUrl" action="view2" value="search" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
     <form action="${currentUrl}" method="post">
        <table width=100% cellpadding=0 cellspacing=0>
             <tr>
@@ -71,10 +55,8 @@
                                         <td class=List>
                                             <table width=100% height=100% cellpadding=0 cellspacing=0>
                                                 <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
-                                                    <zm:currentResultUrl var="msgUrl" value="search" action="${param.action}" context="${context}"
+                                                    <zm:currentResultUrl var="msgUrl" value="search" action="view2" context="${context}"
                                                                          cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-                                                    <zm:currentResultUrl var="msgSepUrl" value="search" action="${param.action}" context="${context}"
-                                                                         cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="" sc=""/>
                                                     <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != message.id)) ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                                         <td style='border:none' class='CB' nowrap><input <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
                                                         <td style='border:none' class='MsgStatusImg' align=center><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'startup/ImgMsgStatusRead.gif' : hit.messageHit.statusImage}"/></td>
@@ -90,25 +72,18 @@
                                                         </td>
                                                         <td class='Bottom Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                                         <td nowrap colspan=3 class='Bottom'>
-
-                                                            <c:choose>
-
-                                                                <c:when test="${hit.id == message.id}">
-                                                                <a href="${msgSepUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span></a>
+                                                            <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span></a>
+                                                            <c:if test="${hit.id == message.id}">
                                                                 <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                                 <c:if test="${messCursor.hasPrev}">
-                                                                    <zm:currentResultUrl var="prevMsgUrl" value="search" action="${param.action}" context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
+                                                                    <zm:currentResultUrl var="prevMsgUrl" value="search" action="view2" context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
                                                                     <a href="${prevMsgUrl}" ></a>
                                                                 </c:if>
                                                                 <c:if test="${messCursor.hasNext}">
-                                                                    <zm:currentResultUrl var="nextMsgUrl" value="search" action="${param.action}" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
+                                                                    <zm:currentResultUrl var="nextMsgUrl" value="search" action="view2" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
                                                                     <a href="${nextMsgUrl}" ></a>
                                                                 </c:if>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span></a>
-                                                            </c:otherwise>
-                                                            </c:choose>
+                                                            </c:if>
                                                         </td>
                                                     </tr>
                                                 </c:forEach>
@@ -124,7 +99,7 @@
                                             <table width=100% cellpadding=1 cellspacing=0>
                                                 <tr>
                                                     <td>
-                                                        <app:img src="startup/ImgConversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}</span>
+                                                        <app:img src="mail/ImgConversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}</span>
                                                     </td>
                                                     <td align="right">
                                                         <span class='Tags'>
@@ -145,7 +120,7 @@
                                         <td valign=top class='ZhAppContent2'>
                                             <c:set var="extImageUrl" value=""/>
                                             <c:if test="${empty param.xim}">
-                                                <zm:currentResultUrl var="extImageUrl" value="search" context="${context}" action="${param.action}"
+                                                <zm:currentResultUrl var="extImageUrl" value="search" context="${context}" action="view2"
                                                                      cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}" xim="1"/>
                                             </c:if>
                                             <zm:currentResultUrl var="composeUrl" value="search" context="${context}" id="${message.id}"

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,27 +11,31 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
 ZmColListView =	function(parent, controller, dropTgt, index) {
 
+	// save data
+	//this._folderId = null;
 	this._controller = controller;
 	var view = ZmId.VIEW_BRIEFCASE_COLUMN;
-	controller._currentView = view;
+	controller._currentView = view;//cdel
+	ZmListView.call(this, {parent:parent, className:"ZmColListView",
+						   view:view, type:ZmItem.DOCUMENT,
+						   controller:controller, headerList:this._getHeaderList(parent),
+						   dropTgt:dropTgt});
+	
 	this._colIdx = index;
-
-	var params = {parent:parent, dropTgt:dropTgt,
-				  view:view, id:ZmId.getViewId(view, index), posStyle:DwtControl.STATIC_STYLE,
-				  controller:controller, headerList:this._getHeaderList(parent)};
-	ZmBriefcaseBaseView.call(this, params);
+	// create a action menu for the header list
 	
 	//adding the listeners in constructors so that we get listener events
 	//for all new columns created on fly
 	this._controller._addListListeners(this);	
 }
 
-ZmColListView.prototype = new ZmBriefcaseBaseView;
+ZmColListView.prototype = new ZmListView;
 ZmColListView.prototype.constructor = ZmColListView;
 
 ZmColListView.prototype.toString = function() {
@@ -41,23 +46,6 @@ ZmColListView.prototype.toString = function() {
 
 ZmColListView.KEY_ID = "_keyId";
 
-ZmColListView.prototype.set =
-function(list, sortField) {
-
-	var paging = Boolean(this._itemsToAdd);
-	ZmBriefcaseBaseView.prototype.set.apply(this, arguments);
-
-	// show subfolders at top since virtual paging makes them hard to see
-	if (!paging) {
-		var subs = this._folders = this._controller._getSubfolders();
-		if (subs.length) {
-			for (var i = subs.length - 1; i >= 0; i--) {
-				this._addFolderRow(subs[i]);
-			}
-		}
-	}
-};
-
 // Protected methods
 
 ZmColListView.prototype._getHeaderList =
@@ -65,22 +53,26 @@ function(parent) {
 	return null;
 };
 
-// This list view has no headers, so we create the entire row here
 ZmColListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
+	var contentType = item.contentType;
+	if(contentType && contentType.match(/;/)) {
+			contentType = contentType.split(";")[0];
+	}
+	var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
+	var icon = mimeInfo ? mimeInfo.image : "UnknownDoc" ;
+	if(item.isFolder){
+		icon = "Folder";
+	}
 
 	idx = this._getTable(htmlArr, idx, params);
 	idx = this._getRow(htmlArr, idx, item, params);
 	
-	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
-	htmlArr[idx++] = AjxImg.getImageHtml(item.getIcon());
+	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
+	htmlArr[idx++] = AjxImg.getImageHtml(icon);
 	htmlArr[idx++] = "</center></td>";
-	htmlArr[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_SUBJECT) + "'>&nbsp;";
+	htmlArr[idx++] = "<td style='vertical-align:middle;'>&nbsp;";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
-	htmlArr[idx++] = "</td>";
-
-    htmlArr[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item,ZmItem.F_SUBJECT)+"'>";
-    idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
 	htmlArr[idx++] = "</td>";
 
 	htmlArr[idx++] = "</tr></table>";
@@ -88,103 +80,103 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	return idx;
 };
 
-ZmColListView.prototype._addFolderRow =
-function(item, index) {
-	var div = this._createItemHtml(item);
-	this._addRow(div, index || 0);
-	this._setFolderColor(item.folder);
+// listeners
+
+ZmColListView.prototype._colHeaderActionListener = function(event) {
+  	// TODO
 };
 
-ZmColListView.prototype._setFolderColor =
-function(folder) {
-	var id = this._getFieldId(folder, ZmItem.F_FOLDER);
-	var td = document.getElementById(id);
-	if (td) {
-		AjxImg.setImage(td, folder.getIconWithColor());
+//
+// Private functions
+//
+
+ZmColListView.__typify = function(array, type) {
+	for (var i = 0; i < array.length; i++) {
+		array[i]._type = type;
 	}
+};
+
+ZmColListView.prototype.getTitle =
+function() {
+	//TODO: title is the name of the current folder
+	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
+};
+
+ZmColListView.prototype.set =
+function(list) {                           //We set list now, not folder id
+	var element = this.getHtmlElement();
+	if(list instanceof ZmList){
+       var list1 = list.getVector();
+       DwtListView.prototype.set.call(this,list1.clone());
+       return;
+    }
+	
 };
 
 ZmColListView.prototype._itemClicked =
 function(clickedEl, ev) {
-
-	this.parent.setCurrentListIndex(this._colIdx);
+	this._controller._listView[ZmId.VIEW_BRIEFCASE_COLUMN] = this;
 	ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
-
-	if (ev.button == DwtMouseEvent.LEFT) {
-		this.parent.removeChildColumns(this._colIdx);
-		var items = this.getSelection();
-		if (items && items.length == 1) {
-			var item = items[0];
-			if (item.isFolder) {
-				this.parent.expandFolder(item.id);
-			} else {
-				this.parent.showFileProps(item);
-			}
+	var items = this.getSelection();
+	
+	this.parent.removeChildColumns(this._colIdx);
+	this.parent.setCurrentListView(this);				
+	if(items && items.length ==1){
+		if(items[0].isFolder){
+			this.parent.expandFolder(items[0].id);
+		}else{
+			this.parent.showFileProps(items[0]);
 		}
 	}
 };
 
-ZmColListView.prototype._getScrollDiv =
+ZmColListView.prototype._resetColWidth =
 function() {
-	return this.parent._divs[this._colIdx];
+	return;
 };
 
-ZmColListView.prototype._getItemId =
-function(item) {
-	var id = DwtListView.prototype._getItemId.apply(this, arguments);
-	return [id, this._colIdx].join(DwtId.SEP);
+ZmColListView.prototype.getColumnIndex =
+function() {
+	return this._colIdx;
 };
 
-ZmColListView.prototype._folderChangeListener =
-function(ev) {
-
-	var org = ev.getDetail("organizers")[0];
-	if (!org) { return; }
-	var item = new ZmBriefcaseFolderItem(org);
-	if (this.folderId && (item.folderId != this.folderId)) { return; }
-
-	var fields = ev.getDetail("fields");
-	if (ev.event == ZmEvent.E_MODIFY) {
-		var id = this._getItemId(org);
-		var div = document.getElementById(id);
-		if (div) {
-			div.innerHTML = this._createItemHtml(item, null, true);
-		}
-		if (fields && fields[ZmOrganizer.F_COLOR]) {
-			this._setFolderColor(org);
-		}
-	} else if (ev.event == ZmEvent.E_CREATE) {
-		var search = this._controller._currentSearch;
-		if (this.folderId || (search && search.matches && search.matches(item))) {
-			var index = this._getFolderSortIndex(org, ZmFolder.sortCompare);
-			this._addFolderRow(item, index);
-			this._folders.splice(index, 0, item);
-		}
-	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
-		this.removeItem(item, true);
-		var index = -1;
-		for (var i = 0; i < this._folders.length; i++) {
-			if (this._folders[i].id == item.id) {
-				index = i;
-				break;
-			}
-		}
-		if (index != -1) {
-			this._folders.splice(index, 1);
-		}
-	}
+ZmColListView.prototype.setNextColumn =
+function(listView) {
+	this._nextColumn = listView;	
 };
 
-ZmColListView.prototype._getFolderSortIndex =
-function(folder, sortFunction) {
+ZmColListView.prototype.getNextColumn =
+function( ) {
+	return this._nextColumn;
+};
 
-	if (!(this._folders && this._folders.length)) { return 0; }
+ZmColListView.prototype.setPreviousColumn =
+function(listView){
+	this._previousColumn = listView;
+};
 
-	for (var i = 0; i < this._folders.length; i++) {
-		var test = sortFunction(folder, this._folders[i]);
-		if (test == -1) {
-			return i;
+ZmColListView.prototype.getPreviousColumn =
+function( ) {
+	return this._previousColumn;
+};
+
+ZmColListView.prototype._mouseOverAction =
+function(ev, div) {
+	DwtListView.prototype._mouseOverAction.call(this, ev, div);
+	var id = ev.target.id || div.id;
+	if (!id) return true;
+	
+	if (div) {
+		var item = this.getItemFromElement(div);
+		if(item && !item.isFolder){
+		this.setToolTipContent(this._getToolTip(item, ev, div));
 		}
-	}
-	return i;
+	}		
+	return true;
+};
+
+ZmColListView.prototype._getToolTip =
+function(item, ev, div) {
+	if (!item) { return; }
+	return this._controller.getItemTooltip(item, this);
 };

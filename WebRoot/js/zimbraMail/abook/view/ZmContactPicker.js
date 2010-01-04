@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -34,8 +36,8 @@ ZmContactPicker = function(buttonInfo) {
 	this._initialized = false;
 	this._offset = 0;
 	this._defaultQuery = ".";
-	this._list = new AjxVector();
 
+	this._searchRespCallback = new AjxCallback(this, this._handleResponseSearch);
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 };
 
@@ -64,15 +66,12 @@ function() {
 * @param str		[string]*	initial search string
 */
 ZmContactPicker.prototype.popup =
-function(buttonId, addrs, str, account) {
+function(buttonId, addrs, str) {
 	if (!this._initialized) {
-		this._initialize(account);
+		this._initialize();
 		this._initialized = true;
 	}
-	else if (appCtxt.multiAccounts && this._account != account) {
-		this._account = account;
-		this._resetSelectDiv();
-	}
+
 	this._offset = 0;
 
 	var searchFor = this._selectDiv ? this._selectDiv.getValue() : ZmContactsApp.SEARCHFOR_CONTACTS;
@@ -110,7 +109,9 @@ function(buttonId, addrs, str, account) {
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
 
-	this.search(null, null, true);
+	//bug: 33041 - preload canonical list to avoid race condition
+	AjxDispatcher.run("GetContacts");
+	this.search();
 
 	DwtDialog.prototype.popup.call(this);
 };
@@ -123,14 +124,13 @@ function() {
 	// disable search field (hack to fix bleeding cursor)
 	this._searchField.disabled = true;
 	this._contactSource = null;
-	this._list.removeAll();
 
 	DwtDialog.prototype.popdown.call(this);
 };
 
 ZmContactPicker.prototype.search =
-function(colItem, ascending, firstTime, lastId, lastSortVal) {
-	if (!AjxUtil.isSpecified(ascending)) {
+function(colItem, ascending) {
+	if (typeof ascending == "undefined") {
 		ascending = true;
 	}
 
@@ -147,14 +147,14 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 			: ZmId.SEARCH_GAL;
 
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			queryHint = ZmSearchController.generateQueryForShares([ZmId.ITEM_CONTACT]) || "is:local";
+			queryHint = ZmSearchController.generateQueryHint([ZmId.ITEM_CONTACT]) || "is:local";
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
 			queryHint = "is:local";
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_GAL) {
             ascending = true;
         }
 	} else {
-		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)
+		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
 			? ZmItem.CONTACT
 			: ZmId.SEARCH_GAL;
 
@@ -167,43 +167,22 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 
 	// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
 	this._chooser.sourceListView.sortingEnabled = (this._contactSource == ZmItem.CONTACT);
-
 	var params = {
 		obj: this,
 		ascending: ascending,
 		query: query,
 		queryHint: queryHint,
 		offset: this._offset,
-		lastId: lastId,
-		lastSortVal: lastSortVal,
-		respCallback: (new AjxCallback(this, this._handleResponseSearch, [firstTime])),
-		errorCallback: this._searchErrorCallback,
-		accountName: (this._account && this._account.name)
-	};
+		respCallback: this._searchRespCallback,
+		errorCallback: this._searchErrorCallback
+	}
 	ZmContactsHelper.search(params);
 };
 
 ZmContactPicker.prototype._contentHtml =
-function(account) {
-	var showSelect;
-	if (appCtxt.multiAccounts) {
-		var list = appCtxt.accountList.visibleAccounts;
-		for (var i = 0; i < list.length; i++) {
-			var account = list[i];
-			if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, account) &&
-				(appCtxt.get(ZmSetting.GAL_ENABLED, null, account) ||
-				 appCtxt.get(ZmSetting.SHARING_ENABLED, null, account)))
-			{
-				showSelect = true;
-				break;
-			}
-		}
-	} else {
-		showSelect = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-					  (appCtxt.get(ZmSetting.GAL_ENABLED) ||
-					   appCtxt.get(ZmSetting.SHARING_ENABLED)));
-	}
-
+function() {
+	var showSelect = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+					  (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED)));
 	var subs = {
 		id: this._htmlElId,
 		showSelect: showSelect
@@ -212,48 +191,42 @@ function(account) {
 	return (AjxTemplate.expand("abook.Contacts#ZmContactPicker", subs));
 };
 
-ZmContactPicker.prototype._resetSelectDiv =
-function() {
-	this._selectDiv.clearOptions();
-
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)) {
-		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
-
-		if (appCtxt.get(ZmSetting.SHARING_ENABLED, null, this._account))
-			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
-	}
-
-	if (appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account)) {
-		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
-	}
-
-	if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL, null, this._account) ||
-		!appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account))
-	{
-		this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
-	}
-};
-
 // called only when ZmContactPicker is first created. Sets up initial layout.
 ZmContactPicker.prototype._initialize =
-function(account) {
+function() {
 
 	// create static content and append to dialog parent
-	this.setContent(this._contentHtml(account));
+	this.setContent(this._contentHtml());
 
 	this._searchIcon = document.getElementById(this._htmlElId + "_searchIcon");
 
 	// add search button
-	this._searchButton = new DwtButton({parent:this, parentElement:(this._htmlElId+"_searchButton")});
+	var searchCellId = this._htmlElId + "_searchButton";
+	this._searchButton = new DwtButton({parent:this});
 	this._searchButton.setText(ZmMsg.search);
 	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
+	this._searchButton.reparentHtmlElement(searchCellId);
 
 	// add select menu
 	var selectCellId = this._htmlElId + "_listSelect";
 	var selectCell = document.getElementById(selectCellId);
 	if (selectCell) {
-		this._selectDiv = new DwtSelect({parent:this, parentElement:selectCellId});
-		this._resetSelectDiv();
+		this._selectDiv = new DwtSelect({parent:this});
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
+
+			if (appCtxt.get(ZmSetting.SHARING_ENABLED))
+				this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
+		}
+		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+			this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+		}
+
+		if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
+			this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+		}
+
+		this._selectDiv.reparentHtmlElement(selectCellId);
 		this._selectDiv.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	} else {
 		this.setSize("600");
@@ -266,15 +239,17 @@ function(account) {
 
 	// add paging buttons
 	var pageListener = new AjxListener(this, this._pageListener);
-	this._prevButton = new DwtButton({parent:this, parentElement:(this._htmlElId+"_pageLeft")});
+	this._prevButton = new DwtButton({parent:this});
 	this._prevButton.setText(ZmMsg.previous);
 	this._prevButton.setImage("LeftArrow");
 	this._prevButton.addSelectionListener(pageListener);
+	this._prevButton.reparentHtmlElement(this._htmlElId + "_pageLeft");
 
-	this._nextButton = new DwtButton({parent:this, style:DwtLabel.IMAGE_RIGHT, parentElement:(this._htmlElId+"_pageRight")});
+	this._nextButton = new DwtButton({parent:this, style:DwtLabel.IMAGE_RIGHT});
 	this._nextButton.setText(ZmMsg.next);
 	this._nextButton.setImage("RightArrow");
 	this._nextButton.addSelectionListener(pageListener);
+	this._nextButton.reparentHtmlElement(this._htmlElId + "_pageRight");
 
 	var pageContainer = document.getElementById(this._htmlElId + "_paging");
 	if (pageContainer) {
@@ -296,46 +271,17 @@ function(account) {
 ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
 	this._offset = 0;
-	this._list.removeAll();
 	this.search();
 };
 
 ZmContactPicker.prototype._handleResponseSearch =
-function(firstTime, result) {
+function(result) {
 	var resp = result.getResponse();
+	var isGal = (this._contactSource == ZmId.SEARCH_GAL);
 	var more = resp.getAttribute("more");
-	var offset = resp.getAttribute("offset");
-	var isPagingSupported = AjxUtil.isSpecified(offset);
-	var info = resp.getAttribute("info");
-	var expanded = info && info[0].wildcard[0].expanded == "0";
 
-	if (!firstTime && !isPagingSupported &&
-		(expanded || (this._contactSource == ZmId.SEARCH_GAL && more)))
-	{
-		var d = appCtxt.getMsgDialog();
-		d.setMessage(ZmMsg.errorSearchNotExpanded);
-		d.popup();
-		if (expanded) { return; }
-	}
-
-	var list = AjxVector.fromArray(ZmContactsHelper._processSearchResponse(resp));
-
-	if (isPagingSupported) {
-		this._list.merge(offset, list);
-		this._list.hasMore = more;
-	}
-
-	if (list.size() == 0) {
-		this._chooser.sourceListView._setNoResultsHtml();
-	}
-
-	this._showResults(isPagingSupported, more, list);
-};
-
-ZmContactPicker.prototype._showResults =
-function(isPagingSupported, more, list) {
-	// if offset is returned, then this account support gal paging
-	if (this._contactSource == ZmId.SEARCH_GAL && !isPagingSupported) {
+	// GAL results cannot be paged
+	if (isGal) {
 		this._prevButton.setEnabled(false);
 		this._nextButton.setEnabled(false);
 	} else {
@@ -343,8 +289,24 @@ function(isPagingSupported, more, list) {
 		this._nextButton.setEnabled(more);
 	}
 
+	var info = resp.getAttribute("info");
+	var expanded = info && info[0].wildcard[0].expanded == "0";
+
+	if (expanded || (isGal && more)) {
+		var d = appCtxt.getMsgDialog();
+		d.setMessage(ZmMsg.errorSearchNotExpanded);
+		d.popup();
+		if (expanded) { return; }
+	}
+
+	var list = ZmContactsHelper._processSearchResponse(resp);
+
 	this._resetColHeaders(); // bug #2269 - enable/disable sort column per type of search
-	this._chooser.setItems(list);
+	this._chooser.setItems(AjxVector.fromArray(list));
+
+	if (list.length == 0) {
+		this._chooser.sourceListView._setNoResultsHtml();
+	}
 
 	this._searchIcon.className = "ImgSearch";
 	this._searchButton.setEnabled(true);
@@ -360,40 +322,11 @@ ZmContactPicker.prototype._pageListener =
 function(ev) {
 	if (ev.item == this._prevButton) {
 		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
-		this._showResults(true, true, this.getSubList()); // show cached results
-	}
-	else {
-		var lastId;
-		var lastSortVal;
+	} else {
 		this._offset += ZmContactsApp.SEARCHFOR_MAX;
-		var list = this.getSubList();
-		if (!list) {
-			list = this._chooser.sourceListView.getList();
-			var email = (list.size() > 0) ? list.getLast() : null;
-			if (email) {
-				lastId = email.__contact.id;
-				lastSortVal = email.__contact.sf;
-			}
-			this.search(null, null, null, lastId, lastSortVal);
-		} else {
-			var more = this._list.hasMore;
-			if (!more) {
-				more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
-			}
-			this._showResults(true, more, list); // show cached results
-		}
 	}
-};
 
-ZmContactPicker.prototype.getSubList =
-function() {
-	var size = this._list.size();
-
-	var end = (this._offset + ZmContactsApp.SEARCHFOR_MAX > size)
-		? size : (this._offset + ZmContactsApp.SEARCHFOR_MAX);
-
-	return (this._offset < end)
-		? (AjxVector.fromArray(this._list.getArray().slice(this._offset, end))) : null;
+	this.search();
 };
 
 ZmContactPicker.prototype._searchTypeListener =
@@ -431,7 +364,7 @@ ZmContactPicker.prototype._okButtonListener =
 function(ev) {
 	var data = this._chooser.getItems();
 	DwtDialog.prototype._buttonListener.call(this, ev, [data]);
-};
+}
 
 // Call custom popdown method
 ZmContactPicker.prototype._cancelButtonListener =
@@ -442,17 +375,17 @@ function(ev) {
 
 ZmContactPicker._keyPressHdlr =
 function(ev) {
-	var stb = DwtControl.getTargetControl(ev);
+    var stb = DwtControl.getTargetControl(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
 	if (!stb._searchCleared) {
 		stb._searchField.className = stb._searchField.value = "";
 		stb._searchCleared = true;
 	}
-	if (stb._keyPressCallback && (charCode == 13 || charCode == 3)) {
+    if (stb._keyPressCallback && (charCode == 13 || charCode == 3)) {
 		stb._keyPressCallback.run();
-		return false;
+	    return false;
 	}
-	return true;
+    return true;
 };
 
 ZmContactPicker._onclickHdlr =
@@ -506,7 +439,9 @@ function(item, list) {
  * This class creates a specialized source list view for the contact chooser.
  */
 ZmContactChooserSourceListView = function(parent) {
-	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE, view:ZmId.VIEW_CONTACT_SRC});
+	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE,
+								   view:ZmId.VIEW_CONTACT_SRC});
+
 	this.setScrollStyle(Dwt.CLIP);
 };
 
@@ -521,8 +456,8 @@ function() {
 ZmContactChooserSourceListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"Folder", width:ZmMsg.COLUMN_WIDTH_FOLDER_CN}));
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:ZmMsg.COLUMN_WIDTH_NAME_CN}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"Folder", width:20}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:100}));
 	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email}));
 
 	return headerList;
@@ -581,9 +516,9 @@ function() {
 	var headerList = [];
 	var view = this._view;
 	if (this._showType) {
-		headerList.push(new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"ContactsPicker", width:ZmMsg.COLUMN_WIDTH_TYPE_CN}));
+		headerList.push(new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"ContactsPicker", width:20}));
 	}
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:ZmMsg.COLUMN_WIDTH_NAME_CN}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:100}));
 	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email}));
 
 	return headerList;

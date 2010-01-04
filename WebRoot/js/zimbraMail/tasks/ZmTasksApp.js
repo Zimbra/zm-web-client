@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -50,11 +52,9 @@ function() {
 ZmTasksApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_MOUNT_TASK_FOLDER, {textKey:"mountTaskFolder", image:"TaskList"});
-	ZmOperation.registerOp(ZmId.OP_NEW_TASK, {textKey:"newTask", tooltipKey:"newTaskTooltip", image:"NewTask", shortcut:ZmKeyMap.NEW_TASK});
+	ZmOperation.registerOp(ZmId.OP_NEW_TASK, {textKey:"newTask", tooltipKey:"newTaskTooltip", image:"NewTask"});
 	ZmOperation.registerOp(ZmId.OP_NEW_TASK_FOLDER, {textKey:"newTaskFolder", tooltipKey:"newTaskFolderTooltip", image:"NewTaskList"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_TASKFOLDER, {textKey:"shareTaskFolder", image:"TaskList"});
-	ZmOperation.registerOp(ZmId.OP_PRINT_TASK, {textKey:"printTask", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_PRINT_TASKFOLDER, {textKey:"printTaskFolder", image:"Print"}, ZmSetting.PRINT_ENABLED);
 };
 
 ZmTasksApp.prototype._registerItems =
@@ -62,7 +62,6 @@ function() {
 	ZmItem.registerItem(ZmItem.TASK,
 						{app:			ZmApp.TASKS,
 						 nameKey:		"task",
-						 pluralNameKey:	"tasks",
 						 icon:			"TaskList",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmTask",
@@ -71,9 +70,10 @@ function() {
 						 dropTargets:	[ZmOrganizer.TAG, ZmOrganizer.TASKS],
 						 searchType:	"task",
 						 resultsList:
-	   AjxCallback.simpleClosure(function(search) {
-		   return new ZmList(ZmItem.TASK, search);
-	   }, this)
+		   AjxCallback.simpleClosure(function(search) {
+			   AjxDispatcher.require("TasksCore");
+			   return new ZmTaskList(search);
+		   }, this)
 						});
 };
 
@@ -92,14 +92,12 @@ function() {
 							 itemsKey:			"tasks",
                              folderKey:			"tasksFolder",   
                              hasColor:			true,
-							 defaultColor:		ZmOrganizer.C_NONE,
+							 defaultColor:		ZmOrganizer.C_GRAY,
 							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["task"],
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmTaskFolder.sortCompare",
 							 deferrable:		true,
-							 newOp:				ZmOperation.NEW_TASK_FOLDER,
-							 displayOrder:		100,
 							 pathInName:		true
 							});
 };
@@ -116,13 +114,18 @@ function() {
 								});
 };
 
+ZmTasksApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_TASK_FOLDER, ZmOrganizer.TASKS);
+};
+
 ZmTasksApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.NEW_TASK] = "task";
 
 	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_TASK_FOLDER] = "tasksFolder";
+	newOrgOps[ZmOperation.NEW_TASK_FOLDER] = "taskFolder";
 
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_TASK] = ZmOperation.NEW_TASK;
@@ -131,11 +134,11 @@ function() {
 							 {mainPkg:				"Tasks",
 							  nameKey:				"tasks",
 							  icon:					"TaskList",
-							  textPrecedence:		20,
 							  chooserTooltipKey:	"goToTasks",
 							  defaultSearch:		ZmItem.TASK,
 							  organizer:			ZmOrganizer.TASKS,
-							  overviewTrees:		[ZmOrganizer.TASKS, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.TASKS, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  showZimlets:			true,
 							  assistants:			{"ZmTaskAssistant": ["TasksCore", "Tasks"]},
 							  newItemOps:			newItemOps,
 							  newOrgOps:			newOrgOps,
@@ -144,7 +147,8 @@ function() {
 							  gotoActionCode:		ZmKeyMap.GOTO_TASKS,
 							  newActionCode:		ZmKeyMap.NEW_TASK,
 							  chooserSort:			35,
-							  defaultSort:			25
+							  defaultSort:			25,
+							  supportsMultiMbox:	true
 							  });
 };
 
@@ -156,6 +160,11 @@ function(notify) {
 		this._checkReplenishListView._checkReplenish();
 		this._checkReplenishListView = null;
 	}
+};
+
+ZmTasksApp.prototype.refresh =
+function(refresh) {
+	this._handleRefresh();
 };
 
 ZmTasksApp.prototype.handleOp =
@@ -235,22 +244,27 @@ function(params, callback) {
 
 ZmTasksApp.prototype._handleLoadLaunch =
 function(callback) {
-	var acct = this._getExternalAccount();
-	this.search(null, null, null, null, (acct && acct.name));
+	this.search();
 	if (callback) { callback.run(); }
 };
 
 ZmTasksApp.prototype.showSearchResults =
-function(results, callback) {
-	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
+function(results, callback, isGal, folderId) {
+	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback, folderId]);
 	AjxDispatcher.require("Tasks", false, loadCallback, null, true);
 };
 
 ZmTasksApp.prototype._handleLoadShowSearchResults =
-function(results, callback) {
-	var folderId = results && results.search && results.search.folderId;
+function(results, callback, folderId) {
 	this.getTaskListController().show(results, folderId);
 	if (callback) callback.run();
+};
+
+ZmTasksApp.prototype._activateAccordionItem =
+function(accordionItem) {
+	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
+
+	this.search();
 };
 
 // common API shared by calendar app
@@ -294,18 +308,10 @@ function(mailItem, date, subject) {
 
 
 ZmTasksApp.prototype.search =
-function(folder, startDate, endDate, callback, accountName) {
-	var params = {
-		query:			(folder ? folder.createQuery() : "in:tasks"),
-		types:			[ZmItem.TASK],
-		limit:			this.getLimit(),
-		searchFor:		ZmItem.TASK,
-		callback:		callback,
-		accountName:	(accountName || (folder && folder.account && folder.account.name))
-	};
+function(folder, startDate, endDate, callback) {
+	var query = folder ? folder.createQuery() : "in:tasks";
 	var sc = appCtxt.getSearchController();
-	sc.searchAllAccounts = false;
-	sc.search(params);
+	sc.search({query:query, types:[ZmItem.TASK], searchFor:ZmItem.TASK, callback:callback});
 };
 
 

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -57,7 +59,7 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view) {
 	this.addControlListener(new AjxListener(this, this._controlListener));	
 	this._createHtml();
 	this._needsRefresh = true;
-};
+}
 
 ZmCalBaseView.prototype = new DwtComposite;
 ZmCalBaseView.prototype.constructor = ZmCalBaseView;
@@ -76,99 +78,52 @@ ZmCalBaseView.TYPE_ALL_DAY = 8; // all day div area in day view
 ZmCalBaseView.TYPE_SCHED_FREEBUSY = 9; // free/busy union
 ZmCalBaseView.TYPE_DAY_SEP = 10;//allday separator
 
-ZmCalBaseView.headerColorDelta = 0;
-ZmCalBaseView.bodyColorDelta = .5;
-ZmCalBaseView.deepenColorAdjustment = .9;
-ZmCalBaseView.darkThreshold = (256 * 3) / 2;
-ZmCalBaseView.deepenThreshold = .3;
-
-ZmCalBaseView._getColors = function(color) {
-	// generate header and body colors
-	var hs = { bgcolor: AjxColor.darken(color, ZmCalBaseView.headerColorDelta) };
-	var hd = { bgcolor: AjxColor.deepen(hs.bgcolor, ZmCalBaseView.deepenColorAdjustment) };
-	var bs = { bgcolor: AjxColor.lighten(color, ZmCalBaseView.bodyColorDelta)  };
-	var bd = { bgcolor: AjxColor.deepen(bs.bgcolor, ZmCalBaseView.deepenColorAdjustment) };
-
-	// ensure enough difference between background and deeper colors
-	var cs = AjxColor.components(hs.bgcolor);
-	var cd = AjxColor.components(hd.bgcolor);
-	var ss = cs[0]+cs[1]+cs[2];
-	var sd = cd[0]+cd[1]+cd[2];
-	if (ss/sd > 1 - ZmCalBaseView.deepenThreshold) {
-		hs.bgcolor = AjxColor.lighten(hd.bgcolor, ZmCalBaseView.deepenThreshold);
-		bs.bgcolor = AjxColor.lighten(bd.bgcolor, ZmCalBaseView.deepenThreshold);
-	}
-
-	// use light text color for dark backgrounds
-	hs.color = ZmCalBaseView._isDark(hs.bgcolor) && "#ffffff";
-	hd.color = ZmCalBaseView._isDark(hd.bgcolor) && "#ffffff";
-	bs.color = ZmCalBaseView._isDark(bs.bgcolor) && "#ffffff";
-	bd.color = ZmCalBaseView._isDark(bd.bgcolor) && "#ffffff";
-
-	return { standard: { header: hs, body: bs }, deeper: { header: hd, body: bd } };
-};
-
-ZmCalBaseView._toColorsCss =
-function(object) {
-	var a = [ "background-color:",object.bgcolor,";" ];
-	if (object.color) {
-		a.push("color:",object.color,";");
-	}
-	return a.join("");
-};
-
-ZmCalBaseView._isDark =
-function(color) {
-	var c = AjxColor.components(color);
-	return c[0]+c[1]+c[2] < ZmCalBaseView.darkThreshold;
-};
-
 ZmCalBaseView.prototype.getController =
 function() {
 	return this._controller;
-};
+}
 
 ZmCalBaseView.prototype.firstDayOfWeek =
 function() {
 	return appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
-};
+}
 
 ZmCalBaseView.prototype.addViewActionListener =
 function(listener) {
 	this._evtMgr.addListener(ZmCalBaseView.VIEW_ACTION, listener);
-};
+}
 
 ZmCalBaseView.prototype.removeViewActionListener =
 function(listener) {
 	this._evtMgr.removeListener(ZmCalBaseView.VIEW_ACTION, listener);
-};
+}
 
 // BEGIIN LIST-RELATED
 
 ZmCalBaseView.prototype.addSelectionListener = 
 function(listener) {
 	this._evtMgr.addListener(DwtEvent.SELECTION, listener);
-};
+}
 
 ZmCalBaseView.prototype.removeSelectionListener = 
 function(listener) {
 	this._evtMgr.removeListener(DwtEvent.SELECTION, listener);    	
-};
+}
 
 ZmCalBaseView.prototype.addActionListener = 
 function(listener) {
 	this._evtMgr.addListener(DwtEvent.ACTION, listener);
-};
+}
 
 ZmCalBaseView.prototype.removeActionListener = 
 function(listener) {
 	this._evtMgr.removeListener(DwtEvent.ACTION, listener);    	
-};
+}
 
 ZmCalBaseView.prototype.getList = 
 function() {
 	return this._list;
-};
+}
 
 ZmCalBaseView.prototype.associateItemWithElement =
 function (item, element, type, optionalId) {
@@ -208,7 +163,7 @@ function() {
 		a[i].className = this._getStyle(this._getItemData(a[i], "type"));
 	}
 	this._selectedItems.removeAll();
-};
+}
 
 /**
  * Returns a style appropriate to the given item type. Subclasses should override to return
@@ -221,28 +176,55 @@ function() {
  */
 ZmCalBaseView.prototype._getStyle =
 function(type, selected, disabled, item) {
-	return (!selected)
-		? this._normalClass
-		: (disabled ? this._disabledSelectedClass : this._selectedClass);
+	return !selected ? this._normalClass : disabled ? this._disabledSelectedClass : this._selectedClass;
 };
 
-ZmCalBaseView.prototype.getToolTipContent =
+ZmCalBaseView.prototype._mouseOverListener = 
 function(ev) {
 	var div = this.getTargetItemDiv(ev);
-	if (!div) { return null; }
-	if (this._getItemData(div, "type") != ZmCalBaseView.TYPE_APPT) { return null; }
+	if (!div) { return; }
+	
+	this._mouseOverAction(ev, div);
+}
+
+ZmCalBaseView.prototype._mouseOverAction = 
+function(ev, div) {
+	if (this._getItemData(div, "type") != ZmCalBaseView.TYPE_APPT) { return true; }
 
 	var item = this.getItemFromElement(div);
-	return item.getToolTip(this._controller);
-};
+	
+	var obj = DwtControl.getTargetControl(ev);
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev, obj);
+	
+	if (item instanceof ZmAppt) {			
+		this.setToolTipContent(item.getToolTip(this._controller));
+		if (item.otherAttendees && (item._ptstHashMap == null)) {
+			// getDetails of original appt will reset the start date and time
+			// and will break the ui layout
+			var clone = ZmAppt.quickClone(item);
+			var callback = new AjxCallback(this, this._loadParticipantStatus, [clone,item, obj]);
+			var errorCallback = new AjxCallback(this, this._handleParticipantStatusError, [clone, item]);
+			this._toolTipBusy = true;
+			var uid = clone.getUniqueId();
+			this._currentMouseOverApptId  = uid;
+			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.getApptDetails, [clone, callback, errorCallback, uid]),2000);			
+		} else {
+			this._currentMouseOverApptId  = null;
+		}
+	} else {
+		this.setToolTipContent(null);
+	}
+	return true;
+}
 
 ZmCalBaseView.prototype.getApptDetails =
-function(appt, callback, uid) {
-	if (this._currentMouseOverApptId &&
-		this._currentMouseOverApptId == uid)
-	{
+function(appt, callback, errorCallback, uid) {
+	if(!this._currentMouseOverApptId) {	return;	}
+	if(this._currentMouseOverApptId == uid) {	
 		this._currentMouseOverApptId = null;
-		appt.getDetails(null, callback, null, null, true);
+		appt.setNoBusyOverlay(true);
+		appt.getDetails(null, callback, errorCallback);
 	}
 };
 
@@ -258,30 +240,33 @@ function(ev) {
 	//		 being displayed when we re-enter the listview even though
 	//		 we're not over a list item.
 	if (this._getItemData(div, "type") == ZmCalBaseView.TYPE_APPT) {
+		this._toolTipBusy = false;
 		this.setToolTipContent(null);
+		this._currentMouseOverApptId = null;
 	}
 	this._mouseOutAction(ev, div);
-};
+}
 
 ZmCalBaseView.prototype._mouseOutAction = 
 function(ev, div) {
+	
 	return true;
-};
+}
 
 
 ZmCalBaseView.prototype._mouseMoveListener = 
 function(ev) {
-	// do nothing
-};
+	if (!this._clickDiv) { return; }
+}
 
 // XXX: why not use Dwt.findAncestor?
 ZmCalBaseView.prototype._findAncestor =
 function(elem, attr) {
-	while (elem && (elem[attr] == null)) {
+	while (elem && (elem[attr] == null)){
 		elem = elem.parentNode;
 	}
 	return elem;
-};
+}
 
 ZmCalBaseView.prototype._mouseDownListener = 
 function(ev) {
@@ -295,7 +280,7 @@ function(ev) {
 		}
 	}
 	return this._mouseDownAction(ev, div);	
-};
+}
 
 ZmCalBaseView.prototype._mouseDownAction = 
 function(ev, div) {
@@ -318,7 +303,7 @@ function(ev, div) {
 };
 
 ZmCalBaseView.prototype._doubleClickAction = 
-function(ev, div) { return true; };
+function(ev, div) {return true;}
 
 ZmCalBaseView.prototype._doubleClickListener =
 function(ev) {
@@ -335,7 +320,7 @@ function(ev) {
 		}
 	}
 	return this._doubleClickAction(ev, div);
-};
+}
 
 ZmCalBaseView.prototype._itemClicked =
 function(clickedEl, ev) {
@@ -432,19 +417,33 @@ function(ev) {
 
 // END LIST-RELATED
 
-ZmCalBaseView.prototype.getTitle =
+ZmCalBaseView.prototype.setNumDays = 
+function (num) {
+	this._numDays = num;
+};
+
+ZmCalBaseView.prototype.getNumDays = 
+function (num) {
+	return this._numDays;
+};
+
+ZmCalBaseView.prototype.getTitle = 
 function() {
 	return [ZmMsg.zimbraTitle, this.getCalTitle()].join(": ");
-};
+}
 
 ZmCalBaseView.prototype.needsRefresh = 
 function() {
 	return this._needsRefresh;
-};
+}
 
 ZmCalBaseView.prototype.setNeedsRefresh = 
 function(refresh) {
 	 this._needsRefresh = refresh;
+};
+ZmCalBaseView.prototype.needsRefresh =
+function() {
+	return this._needsRefresh;
 };
 
 ZmCalBaseView.prototype._getItemId =
@@ -473,7 +472,7 @@ function(listener) {
 };
 
 ZmCalBaseView.prototype.getRollField =
-function() {
+function(isDouble) {
 	// override.
 	return 0;
 };
@@ -556,7 +555,7 @@ ZmCalBaseView.prototype._updateRange =
 function() { 
 	this._updateDays();
 	this._timeRangeStart = this._days[0].date.getTime();
-	this._timeRangeEnd = this._days[this.numDays-1].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
+	this._timeRangeEnd = this._days[this.getNumDays()-1].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
 };
 
 // override 
@@ -585,7 +584,7 @@ function(list) {
 		newList = list.clone();
 	}
 	this._resetList();
-	this._list = newList;	
+	this._list = newList;
 	if (list) {
 		var size = list.size();
 		if (size != 0) {
@@ -628,7 +627,7 @@ function(appt, html, idx) {
 
 	if (appt.isException) {
 		html[idx++] = "<td>";
-		html[idx++] = AjxImg.getImageHtml("ApptException");
+		html[idx++] = AjxImg.getImageHtml("ApptException")
 		html[idx++] = "</td>";
 	} else if (appt.isRecurring()) {
 		html[idx++] = "<td>";
@@ -680,6 +679,67 @@ function() {
 	return this._title;
 };
 
+//
+// Print methods
+//
+
+/**
+ * Called to generate line summaries for each appointment in the
+ * view's range. 
+ * Do not use this method if you want full details about a single appointment.
+ */
+ZmCalBaseView.prototype.getPrintHtml = 
+function() {
+	var html = new Array();
+	var idx = 0;
+
+	// set up the mini calendar
+	var fdow = this.firstDayOfWeek(); 
+	var miniCal = new DwtCalendar({parent:this, firstDayOfWeek:fdow, hidePrevNextMo:true, readOnly:true});
+	miniCal.setVisible(false);
+	// set the working week as per user pref
+	var workingWeek = []; 
+	for (var i=0; i < 7; i++) { 
+		var d = (i+fdow)%7;
+		workingWeek[i] = (d > 0 && d < 6); 
+	} 
+	miniCal.setWorkingWeek(workingWeek); 
+
+	// set the date to current month
+	var startDate = this._getStartDate();
+	miniCal.setDate(startDate, true);
+
+	html[idx++] = "<div style='width:100%'>";
+	html[idx++] = "<table width=100% cellpadding=3 cellspacing=3 bgcolor='#EEEEEE' style='border: 2px solid black; margin-bottom: 2px'><tr>";
+	html[idx++] = "<td valign=top width=100% style='font-size:22px; font-weight:bold; white-space:nowrap'>";
+	html[idx++] = this._getDateHdrForPrintView();
+	html[idx++] = "</td>";
+	html[idx++] = "<td><div style='width: 140px;'>";
+	html[idx++] = miniCal.getHtmlElement().innerHTML;
+	html[idx++] = "</div></td>";
+	// spacer
+	html[idx++] = "<td width=25>&nbsp;</td>";
+	// set the date to the following month
+	startDate.setMonth(startDate.getMonth() + 1);
+	miniCal.setDate(startDate, true);
+	html[idx++] = "<td><div style='width: 140px'>";
+	html[idx++] = miniCal.getHtmlElement().innerHTML;
+	html[idx++] = "</div></td>";
+	html[idx++] = "</tr></table>";
+	html[idx++] = "</div>";
+	
+	// cleanup
+	this.getHtmlElement().removeChild(miniCal.getHtmlElement());
+	
+	return html.join("");
+};
+
+// override
+ZmCalBaseView.prototype._getDateHdrForPrintView = 
+function() {
+	return "";
+};
+
 ZmCalBaseView.prototype._getStartDate =
 function() {
 	var timeRange = this.getTimeRange();
@@ -697,13 +757,14 @@ function() {};
 ZmCalBaseView.prototype._controlListener =
 function(ev) {
 	if ((ev.oldWidth != ev.newWidth) ||
-		(ev.oldHeight != ev.newHeight))
-	{
+		(ev.oldHeight != ev.newHeight)) {
 		this._layout();
 	}
 };
 
-// override
+/**
+* override
+*/
 ZmCalBaseView.prototype._layout =
 function() {};
 
@@ -721,4 +782,46 @@ function(date, duration, isDblClick, allDay, folderId, shiftKey) {
 	sev.shiftKey = shiftKey;
 	this.notifyListeners(ZmCalBaseView.TIME_SELECTION, this._selectionEvent);
 	sev._isDblClick = false;
+}
+
+//once the message is loaded, attendee participation status will be available
+//need to show this on tooptip
+ZmCalBaseView.prototype._loadParticipantStatus =
+function(item, origItem, obj) {
+	if(!item) {  return; }
+
+	item._updateParticipantStatus();				
+	origItem.setAttendeeToolTipData(item.getAttendeeToolTipData());
+	this.setToolTipContent(item.getToolTip(this._controller, true));
+	var mouseEv = DwtShell.mouseEvent;
+	if(mouseEv && mouseEv.docX > 0 && mouseEv.docY > 0) {
+		this._showToolTipOnDemand(obj, mouseEv.docX, mouseEv.docY);
+		this._toolTipBusy = false;
+	}
 };
+
+//after the attendee status is updated the tooltip has to be shown
+//explicitly
+ZmCalBaseView.prototype._showToolTipOnDemand =
+function(obj, x, y) {
+	if(!obj) return;
+	if (obj.__toolTipContent != null) {
+		var shell = DwtShell.getShell(window);
+		var manager = shell.getHoverMgr();
+		if (((manager.getHoverObject() == obj) && manager.isHovering()) && !DwtMenu.menuShowing()) {
+			manager.reset();
+			manager.setHoverObject(obj);
+			manager.setHoverOverData(obj);
+			manager.setHoverOverDelay(DwtToolTip.TOOLTIP_DELAY);
+			manager.setHoverOverListener(obj._hoverOverListener);
+			manager.hoverOver(x, y);
+		}
+	}
+};
+
+ZmCalBaseView.prototype._handleParticipantStatusError =
+function(item, origItem) {
+	this._toolTipBusy = false;	
+	return;
+};
+

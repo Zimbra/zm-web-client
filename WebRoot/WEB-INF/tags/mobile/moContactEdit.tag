@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" dynamic-attributes="dynattrs" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext" %>
 <%@ attribute name="id" rtexprvalue="true" required="false" %>
@@ -21,10 +5,9 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <c:set var="id" value="${id != null ?id : param.id}"/>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mosearch'}"/>
 <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
@@ -36,7 +19,7 @@
             <fmt:setLocale value='${pageContext.request.locale}' scope='request'/>
         </c:otherwise>
     </c:choose>
-    <fmt:setBundle basename="/messages/ZhMsg" scope='request'/>
+    <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
     <fmt:message var="title" key="contact"/>
     <c:choose>
         <c:when test="${!empty id or requestScope.contactId}">
@@ -47,131 +30,121 @@
         </c:otherwise>
     </c:choose>
 </mo:handleError>
-<fmt:message var="addedit" key="${empty contact ? 'add' : 'edit'}"/>
-<c:set var="title" value="${title} : ${addedit}"  scope="request"/>
-<c:url var="caction" value="${prevUrl}">
+
+<mo:view mailbox="${mailbox}" context="${null}" title="${contact!=null?contact.firstName:''}">
+
+<c:url var="caction" value="${closeUrl}">
     <c:if test="${param.pid!=null}">
         <c:param name="action" value="view"/>
         <c:param name="id" value="${param.pid}"/>
     </c:if>
 </c:url>
-<c:if test="${!fn:containsIgnoreCase(caction, '_back=1')}">
-<c:url value="${caction}" var="caction">
-    <c:param name="_back" value="1"/>
-</c:url>
-</c:if>
-<form action="${currentUrl}" method="post" accept-charset="utf-8" onsubmit="return submitForm(this);">
+<%--<c:set var="factionurl" value="${context_url}?st=contact"/>
+<c:if test="${contact!=null}">
+    <c:set var="factionurl" value="${caction}"/>
+</c:if>--%>
+<form action="${caction}" method="post" accept-charset="utf-8">
+
+
 <input type="hidden" name="doContactAction" value="1"/>
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-<div class="tb tbl">
-    <div class="tr">
-        <span class='zo_tb_submit td'>
-            <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
-                <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
-        </span>
-    </div>
-</div>
-<div class="Stripes cont_view">
-<c:if test="${contact!=null}">
-    <div class="View">
-            <div class="tbl cont_sum_table">
-            <div class="tr">
-                <span class="td Person48">&nbsp;</span>
-                <span class="td">
-                   <div>
-                       <b>${fn:escapeXml(contact.displayFileAs)}</b>
-                   </div>
-                   <c:if test="${not empty contact.jobTitle}">
-                        <div>${fn:escapeXml(contact.jobTitle)}</div>
-                   </c:if>
-                   <c:if test="${not empty contact.company}">
-                        <div>${fn:escapeXml(contact.company)}</div>
-                    </c:if>
-             </span>
-            </div>
-            </div>
-            <c:if test="${contact.isFlagged || (contact.hasTags && mailbox.features.tagging)}">
-            <div class="tbl">
-            <div class="tr nr">
-                <span class="td">
-                <c:if test="${contact.isFlagged}">
-                                &nbsp;<mo:img src="startup/ImgFlagRed.gif" alt="flag"/></c:if>
-                <c:if test="${contact.hasTags and mailbox.features.tagging}">
-                        <c:set var="tags" value="${zm:getTags(pageContext, contact.tagIds)}"/>
-                        <c:forEach items="${tags}" var="tag">
-                        <span><mo:img src="${tag.miniImage}" alt='${fn:escapeXml(tag.name)}'/>
-                                ${fn:escapeXml(tag.name)}</span>
-                        </c:forEach>
-                </c:if>
-                </span>
-            </div>
-          </div>
-          </c:if>
-    </div>
-</c:if>
-<c:if test="${contact==null}">
-    <div class="sectionLbl">
-        <fmt:message key="newContact"/>
-    </div>
-</c:if>
-<div class="View">
-    <div class="tbl">
-        <mo:contactEditField label="AB_FIELD_lastName" contact="${contact}" field="lastName" index="0"/>
-        <mo:contactEditField label="AB_FIELD_firstName" contact="${contact}" field="firstName"/>
-        <mo:contactEditField label="AB_FIELD_jobTitle" contact="${contact}" field="jobTitle"/>
-        <mo:contactEditField label="AB_FIELD_company" contact="${contact}" field="company"/>
-        <mo:contactEditField label="AB_FIELD_email" contact="${contact}" field="email"/>
-        <mo:contactEditField label="AB_FIELD_email2" contact="${contact}" field="email2"/>
-        <mo:contactEditField label="AB_FIELD_email3" contact="${contact}" field="email3"/>
-        <mo:contactEditField label="AB_FIELD_mobilePhone" contact="${contact}" field="mobilePhone"/>
-        <div class="tr nr">
-            <span class="td label"><label for="folderSelect"><fmt:message key="addressBookLabel"/></label></span>
-            <span class="td value">
-                <input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>
-                <select name="folderid" id="folderSelect"><c:set var="count" value="${0}"/>
-                    <zm:forEachFolder var="folder">
-                        <c:if test="${count lt sessionScope.F_LIMIT and folder.isContactCreateTarget}">
-                            <option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or param.folderid eq folder.id or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected="selected"</c:if> value="${folder.id}" />
-                            ${fn:escapeXml(folder.rootRelativePath)}<c:set var="count" value="${count+1}"/>
-                        </c:if>
-                    </zm:forEachFolder>
-                </select>
-            </span>
-        </div>
-    </div>
-</div>
-    <div class="View">
-        <div class="tbl">
-            <mo:contactEditField label="AB_FIELD_workPhone" contact="${contact}" field="workPhone" index="0"/>
-            <mo:contactEditField label="AB_FIELD_workPhone2" contact="${contact}" field="workPhone2"/>
-            <mo:contactEditField label="AB_FIELD_workStreet" contact="${contact}" field="workStreet" address="true"/>
-            <mo:contactEditField label="AB_FIELD_workCity" contact="${contact}" field="workCity"/>
-            <mo:contactEditField label="AB_FIELD_workState" contact="${contact}" field="workState"/>
-            <mo:contactEditField label="AB_FIELD_workPostalCode" contact="${contact}" field="workPostalCode"/>
-            <mo:contactEditField label="AB_FIELD_workCountry" contact="${contact}" field="workCountry"/>
-            <mo:contactEditField label="AB_FIELD_workURL" contact="${contact}" field="workURL"/>
-        </div>
-    </div>
-    <div class="View">
-        <div class="tbl">
-            <mo:contactEditField label="AB_FIELD_homePhone" contact="${contact}" field="homePhone" index="0"/>
-            <mo:contactEditField label="AB_FIELD_homePhone2" contact="${contact}" field="homePhone2"/>
-            <mo:contactEditField label="AB_FIELD_homeStreet" contact="${contact}" field="homeStreet" address="true"/>
-            <mo:contactEditField label="AB_FIELD_homeCity" contact="${contact}" field="homeCity"/>
-            <mo:contactEditField label="AB_FIELD_homeState" contact="${contact}" field="homeState"/>
-            <mo:contactEditField label="AB_FIELD_homePostalCode" contact="${contact}" field="homePostalCode"/>
-            <mo:contactEditField label="AB_FIELD_homeCountry" contact="${contact}" field="homeCountry"/>
-            <mo:contactEditField label="AB_FIELD_homeURL" contact="${contact}" field="homeURL"/>
-        </div>
-    </div>
-</div>
+<table width=100% cellpadding="0" cellspacing="0" border="0" class="Stripes">
+    <%-- <tr>
+        <td>
+            <table width=100% cellspacing="0" cellpadding="0">
+                <tr class='zo_toolbar'>
+                    <td class="searchbar">
+                                      <table cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td style='padding-left:5px' class='zo_tb_submit'>
+                                    <c:if test="${contact!=null}">
+                                        <input name="actionSave" type="submit" value="<fmt:message key="save"/>">
+                                    </c:if>
+                                    <c:if test="${contact==null}">
+                                        <input name="actionAdd" type="submit" value="<fmt:message key="add"/>">
+                                    </c:if>
+                                </td>
+                                <td style='padding-left:5px' class='zo_tb_submit'>
+                                    <input name="actionCancel" ${uiv=='1'?'onclick=zClickLink("_back_to")':''} type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
 
-<div class="tb tbl">
-    <div class="tr">
-        <span class='zo_tb_submit td'>
-            <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a> <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
-        </span>
-    </div>
-</div>
-<input type="hidden" name="id" value="${fn:escapeXml(contact.id)}"/> 
-</form>
+                </tr>
+            </table>
+        </td>
+    </tr>--%>
+<tr>
+    <td>
+	                    <br>
+                        <strong class="Padding">
+                        <c:if test="${contact!=null}">
+                         
+                            <fmt:message key="modify"/>
+                        </c:if>
+                        <c:if test="${contact==null}">
+                            <fmt:message key="add"/>
+                        </c:if> <fmt:message key="contact"/></strong>
+
+                <div class="View">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                                <td class='label' width="35" align=right nowrap="nowrap"> <label for="firstNameField"><fmt:message key="AB_FIELD_firstName"/> <fmt:message key="name"/>: </label></td>
+                                <td><input  id="firstNameField" name="firstName" value="${fn:escapeXml(contact.firstName)}" class="Textarea"/>
+                                </td>
+                            </tr>
+                            </table>
+						</div>
+                <div class="View">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                          <tr>
+                                <td class='label' width=35 align=right nowrap="nowrap"><label for="lastNameField"><fmt:message key="AB_FIELD_lastName"/> <fmt:message key="name"/>: </label></td>
+                                <td>
+                                    <input  id="lastNameField" class="Textarea" name="lastName" value="${fn:escapeXml(contact.lastName)}"/>
+                                </td>
+                            </tr>
+                            </table>
+                            </div>
+                            <div class="View">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                               <tr>
+                                <td class='label' width=35 align=right nowrap="nowrap"><label for="emailField"><fmt:message key="email"/>: </label></td>
+                                <td>
+                                    <input  id="emailField" class="Textarea" name="email" value="${fn:escapeXml(contact.email)}"/>
+                                </td>
+                            </tr>
+                            </table></div>
+                            <div class="View">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                <td class='label' width="32" align=right nowrap="nowrap"><label for="emailField"><fmt:message key="AB_FIELD_mobilePhone"/>: </label></td>
+                                <td><input  id="mobileField" class="Textarea" name="mobilePhone" value="${fn:escapeXml(contact.mobilePhone)}"/>
+                                </td>
+                            </tr>
+                            </table>
+                            </div>
+	<br>
+        <table cellspacing="0" cellpadding="0" align="center">
+                        <tr>
+                            <td>
+                                            <c:if test="${contact!=null}">
+	                                            <input name="actionSave" type="submit" value="<fmt:message key="save"/>">
+											</c:if>
+											<c:if test="${contact==null}">
+	                                            <input name="actionAdd" type="submit" value="<fmt:message key="add"/>">
+											</c:if>
+                                            <input name="actionCancel" onclick='zClickLink("_back_to")' type="button" value="<fmt:message key="cancel"/>">
+                             
+                            </td>
+
+                        </tr>
+                    </table>
+                    <br>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="id" value="${fn:escapeXml(contact.id)}"/>
+    </form>
+<a href="${caction}" id="_back_to" style="display:none;visibility:hidden">back</a>
+</mo:view>

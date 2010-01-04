@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -33,30 +35,19 @@ function() {
 
 ZmNewSearchDialog.prototype.popup =
 function(params) {
-	var account = appCtxt.multiAccounts ? appCtxt.getActiveAccount() : null;
-	var overviewId = this._curOverviewId = (account ? ([this.toString(),account.name].join("-")) : this.toString());
-	var overviewParams = {
-		account: account,
-		treeIds: [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH],
-		fieldId: this._folderTreeCellId,
-		omit: this._omit,
-		overviewId: overviewId
-	};
-	var ov = this._setOverview(overviewParams, true);
-	this._folderTreeView = ov.getTreeView(ZmOrganizer.FOLDER);
-	this._searchTreeView = ov.getTreeView(ZmOrganizer.SEARCH);
-	this._search = params.search;
-	this._searchTreeView.setSelected(appCtxt.getFolderTree(account).root, true);
-	this._isGlobalSearch = appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts;
-
-	if (appCtxt.multiAccounts) {
-		this._searchTreeView.setVisible(true);
-		this._makeOverviewVisible(overviewId);
+	if (!params && params.search) {
+		this._showError(ZmMsg.errorGeneric);
+		return;
 	}
+	this._setOverview({treeIds:[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH], fieldId:this._folderTreeCellId, omit:this._omit});
+	this._folderTreeView = this._getOverview().getTreeView(ZmOrganizer.FOLDER);
+	this._searchTreeView = this._getOverview().getTreeView(ZmOrganizer.SEARCH);
+	this._search = params.search;
+	this._searchTreeView.setSelected(appCtxt.getFolderTree().root, true);
 
 	var overviewDiv = document.getElementById(this._overviewDivId);
 	if (overviewDiv) {
-		Dwt.setVisible(overviewDiv, (params.showOverview && !this._isGlobalSearch));
+		Dwt.setVisible(overviewDiv, params.showOverview)
 	}
 
 	ZmDialog.prototype.popup.call(this);
@@ -64,9 +55,9 @@ function(params) {
 
 ZmNewSearchDialog.prototype._contentHtml = 
 function() {
-	this._nameFieldId 		= this._htmlElId + "_nameField";
-	this._folderTreeCellId 	= this._htmlElId + "_folderTreeCell";
-	this._overviewDivId 	= this._htmlElId + "_overviewDiv";
+	this._nameFieldId = this._htmlElId + "_nameField";
+	this._folderTreeCellId = this._htmlElId + "_folderTreeCell";
+	this._overviewDivId = this._htmlElId + "_overviewDiv";
 
 	return (AjxTemplate.expand("share.Dialogs#NewSearch", {id: this._htmlElId}));
 };
@@ -74,18 +65,20 @@ function() {
 ZmNewSearchDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getSearchData();
-	if (results) {
+	if (results)
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
-	}
 };
 
 ZmNewSearchDialog.prototype._getSearchData =
 function() {
 
+	var msg = null;
+	
 	// make sure a parent was selected
-	var parentFolder = this._isGlobalSearch
-		? appCtxt.getById(ZmOrganizer.ID_ROOT)
-		: this._overview[this._curOverviewId].getSelected();
+	var parentFolder = this._getOverview().getSelected();
+	if (!msg && !parentFolder) {
+		msg = ZmMsg.searchNameNoLocation;
+	}
 
 	// check name for presence and validity
 	var name = AjxStringUtil.trim(this._nameField.value);
@@ -101,16 +94,7 @@ function() {
 		msg = ZmMsg.folderOrSearchNameExists;
 	}
 
-	if (msg) {
-		return this._showError(msg);
-	} else {
-		return {
-			parent: parentFolder,
-			isGlobal: this._isGlobalSearch,
-			name: name,
-			search: this._search
-		};
-	}
+	return (msg ? this._showError(msg) : {parent:parentFolder, name:name, search:this._search});
 };
 
 ZmNewSearchDialog.prototype._enterListener =
@@ -119,13 +103,4 @@ function(ev) {
 	if (results) {
 		this._runEnterCallback(results);
 	}
-};
-
-ZmNewSearchDialog.prototype._getTabGroupMembers =
-function() {
-	var list = [this._nameField];
-	if (this._overview[this._curOverviewId]) {
-		list.push(this._overview[this._curOverviewId]);
-	}
-	return list;
 };

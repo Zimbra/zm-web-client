@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
  * 
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 /*
@@ -23,3 +25,4 @@
  */
 AjxPackage.require("zimbraMail.briefcase.model.ZmBriefcase");
 AjxPackage.require("zimbraMail.briefcase.model.ZmBriefcaseItem");
+AjxPackage.require("zimbraMail.briefcase.model.ZmBriefcaseItemList");

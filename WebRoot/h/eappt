@@ -5,7 +5,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-<fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
 <app:handleError>
     ${zm:clearMessageCache(mailbox)}
     <zm:getMailbox var="mailbox"/>
@@ -96,10 +95,10 @@
                             <td><div class='vertSep'></div></td>
                             <c:choose>
                                 <c:when test="${isNewAppt}">
-                                    <app:button name="actionCancel" id="OPCANCEL" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                                    <app:button name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <app:button name="actionCancel" id="OPCANCEL" src="common/ImgClose.gif" tooltip="close" text="close"/>        
+                                    <app:button name="actionCancel" src="common/ImgClose.gif" tooltip="close" text="close"/>        
                                 </c:otherwise>
                             </c:choose>
 
@@ -109,7 +108,7 @@
                             <app:button name="actionRepeatEdit" src="calendar/ImgApptRecur.gif" tooltip="editRecurrence" text="repeat" disabled="${not editrecur}"/>
                             <c:if test="${mailbox.features.groupcalendarEnabled}">
                                 <td><div class='vertSep'></div></td>
-                                <app:button id="actionContactAdd" name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addAttendeesResourcesFromContacts" text="addAttendeesResourcesFromContacts"/>
+                                <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addAttendeesFromContacts" text="addAttendeesFromContacts"/>
                             </c:if>
 
 
@@ -136,7 +135,7 @@
                                         <app:tagOptions mailbox="${mailbox}" keys="${true}"/>
                                     </select>
                                 </td>
-                                <app:button name="actionGo" tooltip="actionAppointmentGoTT" text="actionGo"/>
+                                <app:button name="actionGo" tooltip="actionConvGoTT" text="actionGo"/>
                                 <td><div class='vertSep'></div></td>
                             </c:if>
 
@@ -156,8 +155,7 @@
         </table>
     </c:set>
 
-    <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8" name="apptForm">
-        <input type="hidden" name="contactLocation" value="personal">
+    <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
         <table width="100%" style="height:100%;" cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
@@ -390,7 +388,7 @@
                                                     </table>
                                                 </td>
                                             </tr>
-                                            <c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneCanonicalId)}">
+                                            <c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneWindowsId)}">
                                                 <c:set var="addedTimeZone" value="true"/>
                                                 <tr>
                                                     <td nowrap align=right>
@@ -399,10 +397,9 @@
                                                     <td>
                                                         <select name="timeZone" id="timeZone">
                                                             <zm:forEachTimeZone var="tz">
-                                                                <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
                                                                 <option
                                                                         <c:if test="${compose.timeZone eq tz.id}">selected</c:if>
-                                                                        value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
+                                                                        value="${fn:escapeXml(tz.id)}">${fn:escapeXml(tz.display)}</option>
                                                             </zm:forEachTimeZone>
                                                         </select>
                                                     </td>
@@ -439,32 +436,15 @@
                                             <td valign='top' width="1%" align="right" nowrap> <label for="attField"><fmt:message key="attendees"/>: </label></td>
                                             <td colspan="2" nowrap>
                                                 <div class="ZhAC ZhACTo">
-                                                    <textarea id="attField" rows="3" style='width:99%' cols="80" name="attendees"><c:forEach items="${compose.attendeesAddrs}" var="anAttendee">${fn:escapeXml(anAttendee.fullAddress)},</c:forEach></textarea>
-                                                    <br><div class='ZhACCont' id="attContainer" style='width:99%;z-index:999;'></div>
+                                                    <textarea id="attField" rows="3" style='width:99%' cols="80"
+                                                              name="attendees">${fn:escapeXml(compose.attendees)}</textarea>
+                                                    <br><div class='ZhACCont' id="attContainer" style='width:99%;'></div>
                                                 </div>
                                             </td>
                                         </tr>
                                     </table>
                                 </td>
                             </tr>
-                            <c:if test="${compose.resourcesAddrs != null and fn:length(compose.resourcesAddrs) > 0}">
-                            <tr>
-                                <td colspan="2">
-                                    <table>
-                                        <tr>
-                                            <td valign='top' width="1%" align="right" nowrap> <fmt:message key="resources"/>: </td>
-                                            <td colspan="2" nowrap>
-                                                <div>
-                                                    <input type="hidden" name="resources" value="${fn:escapeXml(compose.resources)}">
-                                                    <a href="javascript:void(0);" onclick="document.forms['apptForm'].contactLocation.value='resources'; zclick('SactionContactAdd')">
-                                                    ${fn:escapeXml(compose.resources)} </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                            </c:if>    
                         </c:if>
                         <c:set var="firstAttachment" value="${true}"/>
                         <c:if test="${!empty compose.messageAttachments}">
@@ -511,7 +491,7 @@
                                                     </td>
                                                     <td>&nbsp;</td>
                                                     <td>
-                                                        <a target="_blank" href="${url}&disp=i">${fn:escapeXml(pname)}</a>&nbsp;(${zm:displaySize(pageContext,part.size)})
+                                                        <a target="_blank" href="${url}&disp=i">${fn:escapeXml(pname)}</a>&nbsp;(${part.displaySize})
                                                     </td>
                                                 </tr>
                                             </table>
@@ -579,84 +559,6 @@
     </app:autoComplete>
     <SCRIPT TYPE="text/javascript">
     <!--
-
-    /* dirty check */
-    var _fields = {} ;
-    grabFieldValues = function(){
-        var form = document.forms["apptForm"];
-        var _el = form.elements;
-        for ( var _i=0;_i < _el.length; _i++){
-            if((_el[_i].type == "hidden") || (_el[_i].type == "submit")){
-                // do nothing
-            }else if(_el[_i].type == "text"){
-                _fields[_el[_i].name] = _el[_i].value;
-            }else if(_el[_i].type == "radio"){
-                if(_el[_i].checked){
-                    _fields[_el[_i].name] = _el[_i].value+"::"+_el[_i].checked;
-                }
-            }else if(_el[_i].type == "checkbox"){
-                _fields[_el[_i].name] = _el[_i].checked;
-            }else if(_el[_i].type == "select-one"){
-                _fields[_el[_i].name] = _el[_i].options[_el[_i].selectedIndex].value;
-            }else if(_el[_i].type == "textarea"){
-                _fields[_el[_i].name] = _el[_i].value;
-            }
-        }
-    }
-    grabFieldValues();
-    var _form = document.forms["apptForm"];
-
-    var trim = function(strVal){
-        return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
-    }
-
-    checkForChanges = function(){
-        var _el = _form.elements;
-        var _checkFail = false;
-        for ( var _i=0;_i < _el.length; _i++){
-            if(_el[_i].name != null && _el[_i].name != ""){
-                if((_el[_i].type == "hidden") || (_el[_i].type == "submit")){
-                    // do nothing
-                }else if(_el[_i].type == "text"){
-                    if(_fields[_el[_i].name] != _el[_i].value) { _checkFail = true; }
-                }else if(_el[_i].type == "radio"){
-                    if(_el[_i].checked){
-                        if(_fields[_el[_i].name] != _el[_i].value+"::"+_el[_i].checked) { _checkFail = true; }
-                    }
-                }else if(_el[_i].type == "checkbox"){
-                    if(_fields[_el[_i].name] != _el[_i].checked) {_checkFail = true; }
-
-                }else if(_el[_i].type == "select-one"){
-                    if(_fields[_el[_i].name] != _el[_i].options[_el[_i].selectedIndex].value) {_checkFail = true; }
-
-                }else if(_el[_i].type == "textarea"){
-                    if(_fields[_el[_i].name] != _el[_i].value) {_checkFail = true; }
-                }
-            }
-        }
-
-        if(_checkFail){
-            return (confirm("<fmt:message key="optionsExitConfirmation"/>"));
-        } else {
-            return true;
-        }
-    }
-
-    /* List of elements that has to be handled for send */
-    var sendElemts = new Array("SOPCANCEL", "IOPCANCEL");
-    var y;
-    for (y in sendElemts){
-        var _elemA = document.getElementById(sendElemts[y]);
-        _elemA.onclick = function () {
-           return cancelOnbeforeUnload();
-        }
-    }
-
-    var cancelOnbeforeUnload = function(){
-        window.onbeforeunload = null;
-        return checkForChanges();
-    }
-    
     var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
     //-->
    </SCRIPT>

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -40,16 +42,53 @@ function() {
 }
 
 // Calling preferences
-ZmCallFeature.ANONYNOUS_REJECTION = "anoncallrejection";
+ZmCallFeature.ANONYMOUS_REJECTION = "anoncallrejection";
 ZmCallFeature.CALL_FORWARDING = "callforward";
+ZmCallFeature.CALL_FORWARD_NO_ANSWER = "callforwardnoanswer";
 ZmCallFeature.SELECTIVE_CALL_FORWARDING = "selectivecallforward";
-ZmCallFeature.VOICEMAIL_PREFS = "voicemailprefs"
-ZmCallFeature.CALL_FEATURES = [ZmCallFeature.ANONYNOUS_REJECTION, ZmCallFeature.CALL_FORWARDING, ZmCallFeature.VOICEMAIL_PREFS];
+ZmCallFeature.SELECTIVE_CALL_REJECTION = "selectivecallrejection";
+ZmCallFeature.SELECTIVE_CALL_ACCEPTANCE = "selectivecallacceptance";
+ZmCallFeature.VOICEMAIL_PREFS = "voicemailprefs";
+
+ZmCallFeature.CALL_FEATURES = [ZmCallFeature.ANONYMOUS_REJECTION, ZmCallFeature.CALL_FORWARDING, ZmCallFeature.VOICEMAIL_PREFS, ZmCallFeature.CALL_FORWARD_NO_ANSWER, ZmCallFeature.SELECTIVE_CALL_FORWARDING, ZmCallFeature.SELECTIVE_CALL_REJECTION, ZmCallFeature.SELECTIVE_CALL_ACCEPTANCE];
 
 // Voicemail preferences.
 ZmCallFeature.EMAIL_NOTIFICATION = "vmPrefEmailNotifAddress";
-ZmCallFeature.VOICE_FEATURES = [ZmCallFeature.EMAIL_NOTIFICATION];
+ZmCallFeature.ANSWERING_LOCALE   = "vmPrefAnsweringLocale";
+ZmCallFeature.USER_LOCALE        = "vmPrefUserLocale";
+ZmCallFeature.AUTOPLAY           = "vmPrefAutoPlayNewMsgs";
+ZmCallFeature.PROMPT_LEVEL       = "vmPrefPromptLevel";
+ZmCallFeature.ANNOUNCE_DATETIME  = "vmPrefPlayDateAndTimeInMsgEnv";
+ZmCallFeature.SKIP_PIN_ENTRY     = "vmPrefSkipPinEntry";
+ZmCallFeature.GREETING = "vmPrefGreetingType";
+ZmCallFeature.NOTIFICATION_STATUS = "vmPrefEmailNotifStatus";
+ZmCallFeature.TIMEZONE = "vmPrefTimezone";
+ZmCallFeature.PLAY_TUTORIAL = "vmPrefPlayTutorial";
+ZmCallFeature.ANNOUNCE_NAME = "vmPrefPlayCallerNameInMsgEnv";
+ZmCallFeature.VOICE_ITEMS_PER_PAGE = "zimbraPrefVoiceItemsPerPage";
 
+ZmCallFeature.VOICE_FEATURES = [ZmCallFeature.EMAIL_NOTIFICATION, ZmCallFeature.ANSWERING_LOCALE, ZmCallFeature.USER_LOCALE, ZmCallFeature.AUTOPLAY, ZmCallFeature.PROMPT_LEVEL, ZmCallFeature.ANNOUNCE_DATETIME, ZmCallFeature.SKIP_PIN_ENTRY, ZmCallFeature.ANNOUNCE_NAME, ZmCallFeature.PLAY_TUTORIAL, ZmCallFeature.GREETING];
+
+
+ZmCallFeature.LOCALE_ENGLISH = "ENGLISH";
+ZmCallFeature.LOCALE_SPANISH = "SPANISH";
+
+ZmCallFeature.LOCALE_VALUES = [ZmCallFeature.LOCALE_ENGLISH, ZmCallFeature.LOCALE_SPANISH];
+
+
+ZmCallFeature.PROMPT_LEVEL_SHORT = "RAPID";
+ZmCallFeature.PROMPT_LEVEL_MEDIUM = "STANDARD";
+ZmCallFeature.PROMPT_LEVEL_LONG = "EXTENDED";
+
+ZmCallFeature.PROMPT_LEVEL_VALUES = [ZmCallFeature.PROMPT_LEVEL_SHORT, ZmCallFeature.PROMPT_LEVEL_MEDIUM, ZmCallFeature.PROMPT_LEVEL_LONG];
+
+ZmCallFeature.CALL_FORWARD_NO_ANSWER_RINGS_VALUES = [2,3,4,5,6,7,8,9];
+
+ZmCallFeature.EMAIL_NOTIFICATION_MAX_ENTRIES = 25;
+ZmCallFeature.SELECTIVE_CALL_FORWARDING_MAX_ENTRIES = 12;
+ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES = 12;
+ZmCallFeature.SELECTIVE_CALL_ACCEPTANCE_MAX_ENTRIES = 12;
+ZmCallFeature.EMAIL_MAX_LENGTH = 100;
 
 ZmCallFeature.prototype.createProxy = 
 function() {
@@ -60,20 +99,24 @@ function() {
 
 ZmCallFeature.prototype.addVoicemailChangeNode = 
 function(soapDoc, parentNode) {
-	var value = this.isActive ? this.data.value : "";
-	var child = soapDoc.set("pref", value, parentNode);
+	
+	if (this.data.value==="true" || this.data.value==="false") // For voice preferences, this.data.value from the server also represents what we at the client percieve as "isActive". The GUI strictly uses
+		this.data.value = this.isActive ? "true" : "false";// isActive to determine whether checkboxes are on or off, and rather than messing that up, we use this.data.value to set this.isActive 
+								   // (see _loadVoicemailPref(), and set this.data.value on return to the server in this function
+
+	var child = soapDoc.set("pref", this.data.value, parentNode);
 	child.setAttribute("name", this.name);
 };
 
 ZmCallFeature.prototype.addChangeNode = 
 function(soapDoc, phoneNode) {
 	var child = soapDoc.set(this.name, null, phoneNode);
-	this._setBooleanAttrubute(child, "s", this.isSubscribed);
-	this._setBooleanAttrubute(child, "a", this.isActive);
+	this._setBooleanAttribute(child, "s", this.isSubscribed);
+	this._setBooleanAttribute(child, "a", this.isActive);
 	this._addNode(soapDoc, child, this.data);
 };
 
-ZmCallFeature.prototype._setBooleanAttrubute =
+ZmCallFeature.prototype._setBooleanAttribute =
 function(node, name, value) {
 	node.setAttribute(name, value ? "true" : "false");
 };
@@ -90,7 +133,7 @@ function(soapDoc, parentNode, data) {
 				this._addNode(soapDoc, child, obj);
 			} else {
 				if ((typeof obj) == 'boolean') {
-					this._setBooleanAttrubute(parentNode, i, obj)
+					this._setBooleanAttribute(parentNode, i, obj)
 				} else {
 					parentNode.setAttribute(i, obj);
 				}
@@ -137,6 +180,6 @@ function(node) {
 	this.isVoicemailPref = true;
 	this.data.value = node._content;
 	this.isSubscribed = true;
-	this.isActive = Boolean(this.data.value);
+	this.isActive = Boolean(this.data.value) && this.data.value !== "false";
 };
 

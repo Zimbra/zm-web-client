@@ -16,10 +16,11 @@
     <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 </c:otherwise>
 </c:choose>
-<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 
 <zm:computeSearchContext var="context" usecache="true"/>
 <zm:getMailbox var="mailbox"/>
+<app:skin mailbox="${mailbox}" />
+<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <app:composeCheck/>
 
 <%-- bug:35733 Deep linking  --%>
@@ -28,9 +29,9 @@
 		  <c:when test="${param.app eq 'calendar' and mailbox.features.calendar}">
 			  <c:redirect url="/h/calendar" />
 		  </c:when>
-          <c:when test="${param.app eq 'mail' and mailbox.features.mail and not empty param.id}">
-              <c:redirect url="/h/search?st=message&id=${param.id}&action=view" />
-          </c:when>
+		  <c:when test="${param.app eq 'mail' and mailbox.features.mail and not empty param.id}">
+		      <c:redirect url="/h/search?st=message&id=${param.id}&action=view" />
+		  </c:when>
           <c:when test="${param.app eq 'mail' and mailbox.features.mail}">
 			<c:redirect url="/h/search" />
 		  </c:when>
@@ -46,7 +47,7 @@
 		  <c:when test="${param.app eq 'tasks' and mailbox.features.tasks}">
 			  <c:redirect url="/h/search?st=task" />
 		  </c:when>
-	</c:choose>
+	  </c:choose>
 </c:if>
 <%-- end --%>
 
@@ -58,6 +59,7 @@
     <c:set target="${sessionScope.expanded}" property="${param.collapse}" value="collapse"/>
 </c:if>
 <c:set var="toolbar">
+<%--
     <table width=100% cellspacing=0>
         <tr valign='middle'>
             <td class='TbBt'>
@@ -65,13 +67,14 @@
                     <tr>
                         <td>
                             <c:set var="refreshUrl" value="/h/home" />
-                            <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.gif" altkey="refresh"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
+                            <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="/img/arrows/ImgRefresh.gif" altkey="refresh"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
                         </td>
                     </tr>
                 </table>
             </td>
         </tr>
     </table>
+--%>
 </c:set>
 </app:handleError>
 
@@ -126,11 +129,41 @@
                 <td class="ZhHomeCell">
                     <span style="font-weight:bold; font-size:12px;"><c:out value="${mailbox.name}"></c:out><br></span>
                     <a style="text-decoration:none;" href='${url}'>
+<%--
                         ${mailbox.accountInfo.recent}&nbsp;<fmt:message key="new"/>
-						| ${folder.unreadCount}&nbsp;<fmt:message key="unread"/>
+						|
+--%>
+						<fmt:message key="inbox"/>&nbsp;(${folder.unreadCount})&nbsp;<fmt:message key="unread"/>
                     </a>
 				</td>
             </tr>
+			<c:forEach var="dataSource" items="${mailbox.mailbox.allDataSources}">
+				<c:set var="dataSourceFolder" value="${zm:getFolder(pageContext, dataSource.folderId)}"/>
+				<c:url var="url" value="/h/${empty base ? 'search' : base}">
+					<c:param name="sfi" value="${dataSourceFolder.id}"/>
+				</c:url>
+					<tr class="ZhHomeRow">
+						<td class="ZhHomeCell">
+							<span style="font-weight:bold; font-size:12px;">${fn:escapeXml(dataSource.name)}<br></span>
+							<c:set var="dataSourceUnread" value="${dataSourceFolder.unreadCount}"/>
+							<c:if test="${dataSourceFolder.hasChildren}">
+								<c:set var="dataSourceSubFolders" value="${dataSourceFolder.subFolders}"/>
+								<c:forEach var="dataSourceSubFolder" items="${dataSourceSubFolders}">
+									<c:if test="${(dataSourceSubFolder.name eq 'INBOX') or (dataSourceSubFolder.name eq 'Inbox') or (dataSourceSubFolder.name eq 'inbox')}">
+										<c:set var="dataSourceUnread" value="${dataSourceSubFolder.unreadCount}"/>
+										<c:url var="url" value="/h/${empty base ? 'search' : base}">
+											<c:param name="expand" value="${dataSourceFolder.id}"/>
+											<c:param name="sfi" value="${dataSourceSubFolder.id}"/>
+										</c:url>
+									</c:if>
+								</c:forEach>
+							</c:if>
+							<a style="text-decoration:none;" href='${url}'>
+								<fmt:message key="inbox"/>&nbsp;(${dataSourceUnread})&nbsp;<fmt:message key="unread"/>
+							</a>
+						</td>
+					</tr>
+			</c:forEach>
         </table>
     </td>
     </c:if>

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -64,9 +66,9 @@ ZmFolder.ID_AUTO_ADDED							= ZmOrganizer.ID_AUTO_ADDED;
 ZmFolder.ID_TAGS	 							= 8;
 ZmFolder.ID_TASKS								= ZmOrganizer.ID_TASKS;
 ZmFolder.ID_SYNC_FAILURES						= ZmOrganizer.ID_SYNC_FAILURES;
+ZmFolder.ID_ARCHIVE	 							= ZmOrganizer.ID_ARCHIVE;
 ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
 ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
-ZmFolder.ID_ATTACHMENTS                         = ZmOrganizer.ID_ATTACHMENTS;
 
 // system folder names
 ZmFolder.MSG_KEY = {};
@@ -83,10 +85,9 @@ ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]		= "calendar";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]		= "notebook";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_BRIEFCASE]		= "briefcase";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]			= "chats";
-ZmFolder.MSG_KEY[ZmOrganizer.ID_ALL_MAILBOXES]	= "allMailboxes";
 ZmFolder.MSG_KEY[ZmFolder.ID_OUTBOX]			= "outbox";
+ZmFolder.MSG_KEY[ZmFolder.ID_ARCHIVE]			= "localFolders";
 ZmFolder.MSG_KEY[ZmFolder.ID_SYNC_FAILURES]		= "errorReports";
-ZmFolder.MSG_KEY[ZmFolder.ID_ATTACHMENTS]       = "attachments";
 
 // system folder icons
 ZmFolder.ICON = {};
@@ -94,12 +95,11 @@ ZmFolder.ICON[ZmFolder.ID_INBOX]				= "Inbox";
 ZmFolder.ICON[ZmFolder.ID_TRASH]				= "Trash";
 ZmFolder.ICON[ZmFolder.ID_SPAM]					= "SpamFolder";
 ZmFolder.ICON[ZmFolder.ID_SENT]					= "SentFolder";
-ZmFolder.ICON[ZmFolder.ID_SYNC_FAILURES]		= "SendReceive";
+ZmFolder.ICON[ZmFolder.ID_SYNC_FAILURES]		= "SendReceive"; // XXX: need a new icon
 ZmFolder.ICON[ZmFolder.ID_OUTBOX]				= "Outbox";
 ZmFolder.ICON[ZmFolder.ID_DRAFTS]				= "DraftFolder";
 ZmFolder.ICON[ZmFolder.ID_CHATS]				= "ChatFolder";
 ZmFolder.ICON[ZmFolder.ID_LOAD_FOLDERS]			= "Plus";
-ZmFolder.ICON[ZmFolder.ID_ATTACHMENTS]          = "Attachment";
 
 // name to use within the query language
 ZmFolder.QUERY_NAME = {};
@@ -107,6 +107,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_INBOX]			= "inbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TRASH]			= "trash";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]			= "junk";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]			= "sent";
+ZmFolder.QUERY_NAME[ZmFolder.ID_ARCHIVE]		= "Local Folders";
 ZmFolder.QUERY_NAME[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]			= "drafts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]		= "contacts";
@@ -117,11 +118,6 @@ ZmFolder.QUERY_NAME[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= "Error Reports";
 
-ZmFolder.QUERY_ID = {};
-for (var id in ZmFolder.QUERY_NAME) {
-	ZmFolder.QUERY_ID[ZmFolder.QUERY_NAME[id]] = id;
-}
-
 // order within the overview panel
 ZmFolder.SORT_ORDER = {};
 ZmFolder.SORT_ORDER[ZmFolder.ID_INBOX]			= 1;
@@ -129,11 +125,11 @@ ZmFolder.SORT_ORDER[ZmFolder.ID_CHATS]			= 2;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]			= 3;
 ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]			= 4;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]			= 5;
-ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 6;
-ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]			= 7;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SYNC_FAILURES]	= 8;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 9;
-ZmFolder.SORT_ORDER[ZmFolder.ID_ATTACHMENTS]    = 99; // Last
+ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]			= 6;
+ZmFolder.SORT_ORDER[ZmFolder.ID_ARCHIVE]		= 7;
+ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 8;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SYNC_FAILURES]	= 9;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 10;
 
 // character codes for "tcon" attribute in conv action request, which controls
 // which folders are affected
@@ -147,11 +143,10 @@ ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]			= "o";
 // folders that look like mail folders that we don't want to show
 ZmFolder.HIDE_ID = {};
 ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS]			= true;
-ZmFolder.HIDE_ID[ZmOrganizer.ID_NOTIFICATION_MP]= true;
 
 // Hide folders migrated from Outlook mailbox
 ZmFolder.HIDE_NAME = {};
-//ZmFolder.HIDE_NAME["Journal"]		= true;
+//ZmFolder.HIDE_NAME["Journal"]	= true;
 //ZmFolder.HIDE_NAME["Notes"]		= true;
 //ZmFolder.HIDE_NAME["Outbox"]		= true;
 //ZmFolder.HIDE_NAME["Tasks"]		= true;
@@ -181,15 +176,15 @@ function(folderA, folderB) {
 
 	// offline client wants POP folders above all else *unless* we are POP'ing into Inbox
 	if (appCtxt.isOffline) {
-		if (folderA.isDataSource(ZmAccount.TYPE_POP)) {
+		if (folderA.isDataSource(ZmAccount.POP)) {
 			if (folderA.id == ZmFolder.ID_INBOX) return -1;
-			if (folderB.isDataSource(ZmAccount.TYPE_POP)) {
+			if (folderB.isDataSource(ZmAccount.POP)) {
 				if (folderA.name.toLowerCase() > folderB.name.toLowerCase()) { return 1; }
 				if (folderA.name.toLowerCase() < folderB.name.toLowerCase()) { return -1; }
 				return 0;
 			}
 			return -1;
-		} else if (folderB.isDataSource(ZmAccount.TYPE_POP)) {
+		} else if (folderB.isDataSource(ZmAccount.POP)) {
 			return 1;
 		}
 	}
@@ -201,24 +196,6 @@ function(folderA, folderB) {
 	if (ZmFolder.SORT_ORDER[folderA.nId] && !ZmFolder.SORT_ORDER[folderB.nId]) { return -1; }
 	if (folderA.name.toLowerCase() > folderB.name.toLowerCase()) { return 1; }
 	if (folderA.name.toLowerCase() < folderB.name.toLowerCase()) { return -1; }
-	return 0;
-};
-
-ZmFolder.sortComparePath =
-function(folderA, folderB) {
-
-	var pathA = folderA && folderA.getPath(false, false, null, true, true);
-	var pathB = folderB && folderB.getPath(false, false, null, true, true);
-	var check = ZmOrganizer.checkSortArgs(pathA, pathB);
-	if (check != null) { return check; }
-
-	if (ZmFolder.SORT_ORDER[folderA.nId] && ZmFolder.SORT_ORDER[folderB.nId]) {
-		return (ZmFolder.SORT_ORDER[folderA.nId] - ZmFolder.SORT_ORDER[folderB.nId]);
-	}
-	if (!ZmFolder.SORT_ORDER[folderA.nId] && ZmFolder.SORT_ORDER[folderB.nId]) { return 1; }
-	if (ZmFolder.SORT_ORDER[folderA.nId] && !ZmFolder.SORT_ORDER[folderB.nId]) { return -1; }
-	if (pathA.toLowerCase() > pathB.toLowerCase()) { return 1; }
-	if (pathA.toLowerCase() < pathB.toLowerCase()) { return -1; }
 	return 0;
 };
 
@@ -310,7 +287,7 @@ function(callback, errorCallback) {
 		asyncMode: true,
 		callback: callback,
 		errorCallback: errorCallback
-	};
+	}
 	appCtxt.getAppController().sendRequest(params);
 };
 /**
@@ -369,9 +346,7 @@ function(obj, isSearch, skipNotify) {
 	var nId = ZmOrganizer.normalizeId(obj.id);
 	if (nId < ZmOrganizer.FIRST_USER_ID[this.type]) { return; }
 
-	var account = ZmOrganizer.parseId(obj.id).account;
-	var type = isSearch ? "search" : "folder";
-	var folder = ZmFolderTree.createFromJs(this, obj, this.tree, type, null, account);
+	var folder = ZmFolderTree.createFromJs(this, obj, this.tree, isSearch ? "search" : "folder");
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
 
@@ -393,7 +368,7 @@ function(obj) {
 	var details = {};
 	var fields = {};
 	var doNotify = false;
-	if (obj.name != null && this.name != obj.name && obj.id == this.id) {
+	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
 		details.oldPath = this.getPath();
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
@@ -406,11 +381,18 @@ function(obj) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	if (obj.l != null && (!this.parent || (obj.l != this.parent.id))) {
+	if (obj.l != null && (!this.parent || (obj.l != this.parent.id)) && !obj._isRemote) {
 		var newParent = this._getNewParent(obj.l);
 		if (newParent) {
-			details.oldPath = this.getPath();
+			if (newParent.nId == ZmOrganizer.ID_ARCHIVE) {
+				this.isOfflineSyncable = false;
+			} else if (this.parent.nId == ZmOrganizer.ID_ARCHIVE) {
+				this.isOfflineSyncable = true;
+				this.isOfflineSyncing = false;
+			}
 			this.reparent(newParent);
+			this.isOfflineArchive = this.isUnder(ZmOrganizer.ID_ARCHIVE);
+			details.oldPath = this.getPath();
 			this._notify(ZmEvent.E_MOVE, details);
 			obj.l = null;
 		}
@@ -446,7 +428,7 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 	{
 		var name = (useSystemName && this._systemName) ? this._systemName : this.name;
 		if (showUnread && this.numTotal > 0) {
-			name = AjxMessageFormat.format(ZmMsg.folderUnread, [name, this.numTotal]);
+			name = [name, " (", this.numTotal, ")"].join("");
 			if (!noMarkup) {
 				name = ["<span style='font-weight:bold'>", name, "</span>"].join("");
 			}
@@ -460,15 +442,16 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 
 ZmFolder.prototype.getIcon =
 function() {
-	if (this.nId == ZmOrganizer.ID_ROOT)			{ return null; }
-	if (ZmFolder.ICON[this.nId])					{ return ZmFolder.ICON[this.nId]; }
-	if (this.isFeed())								{ return "RSS"; }
-	if (this.isRemote())							{ return "SharedMailFolder"; }
-	if (this.isDataSource(ZmAccount.TYPE_POP))		{ return "POPAccount"; }
+	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
+	if (this.isOfflineArchive)				{ return "ArchiveFolder"; }
+	if (ZmFolder.ICON[this.nId])			{ return ZmFolder.ICON[this.nId]; }
+	if (this.isFeed())						{ return "RSS"; }
+	if (this.isRemote())					{ return "SharedMailFolder"; }
+	if (this.isDataSource(ZmAccount.POP))	{ return "POPAccount"; }
 
 	// make a "best-effort" to map imap folders to a well-known icon
 	// (parent will be the root imap folder)
-	if (this.parent && this.parent.isDataSource(ZmAccount.TYPE_IMAP)) {
+	if (this.parent && this.parent.isDataSource(ZmAccount.IMAP)) {
 		var mappedId = ZmFolder.getIdForName(this.name);
 		if (mappedId) { return ZmFolder.ICON[mappedId] || "Folder"; }
 	}
@@ -514,23 +497,27 @@ function(what, folderType) {
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
 				   (what.id == this.id) ||
 				   (what.disallowSubFolder) ||
-				   (what.account != this.account) ||							// cannot move folders across accounts
-				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
+				   (what.nId == ZmFolder.ID_ARCHIVE) ||
+				   (what.isRemote() && what.parent && what.parent.isRemote()));				// a remote folder can be DnD but not its children
 	} else {
 		// An item or an array of items is being moved
-		var items = AjxUtil.toArray(what);
+		var items = (what instanceof Array) ? what : [what];
 		var item = items[0];
+		var searchFolder = (item.list && item.list.search) ? appCtxt.getById(item.list.search.folderId) : null;
 
 		if (this.nId == ZmOrganizer.ID_ROOT ||									// container can only have folders/searches
-			this.nId == ZmOrganizer.ID_OUTBOX ||								// nothing can be moved to outbox/sync failures folders
-			this.nId == ZmOrganizer.ID_SYNC_FAILURES)
+			this.nId == ZmOrganizer.ID_OUTBOX ||								// nothing can be moved to outbox/sync failures/archive folders
+			this.nId == ZmOrganizer.ID_SYNC_FAILURES ||
+			this.nId == ZmOrganizer.ID_ARCHIVE)
 		{
 			invalid = true;
+		} else if (this.link) {
+			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
 		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;														// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
 			invalid = true;
-		} else if ((item.type == ZmItem.CONV) && item.list && item.list.search && (item.list.search.folderId == this.id)) {
+		} else if (item.type == ZmItem.CONV && searchFolder && searchFolder.nId == this.nId) {
 			invalid = true;														// convs which are a result of a search for this folder
 		} else {																// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
@@ -539,7 +526,7 @@ function(what, folderType) {
 						// can only move contacts into Trash
 						invalid = true;
 						break;
-					} else if (items[i].isMyCard) {
+					} else if (items[i].isMyCard()) {
 						// can't trash my card
 						invalid = true;
 						break;
@@ -552,28 +539,14 @@ function(what, folderType) {
 					// only drafts can be moved into Drafts
 					invalid = true;
 					break;
-				} else if (items[i].isReadOnly()) {
-					// cannot move a read-only item
-					invalid = true;
-					break;
 				}
 			}
 			// items in the "Sync Failures" folder cannot be dragged out
 			if (appCtxt.isOffline && !invalid) {
-				// bug: 41531 - don't allow items to be moved into exchange
-				// account when moving across accounts
-				if (item.account != this.account &&
-					(this.account.type == ZmAccount.TYPE_MSE ||
-					 this.account.type == ZmAccount.TYPE_EXCHANGE))
-				{
+				var cs = appCtxt.getCurrentSearch();
+				var folder = cs ? appCtxt.getById(cs.folderId) : null;
+				if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
 					invalid = true;
-				}
-				else {
-					var cs = appCtxt.getCurrentSearch();
-					var folder = cs && appCtxt.getById(cs.folderId);
-					if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
-						invalid = true;
-					}
 				}
 			}
 			// can't move items to folder they're already in; we're okay if we
@@ -589,9 +562,6 @@ function(what, folderType) {
 					}
 				}
 			}
-		}
-		if (!invalid && this.link) {
-			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
 		}
 	}
 	return !invalid;
@@ -617,21 +587,4 @@ function() {
 ZmFolder.prototype.isInSpam =
 function(){
 	return this.isUnder(ZmFolder.ID_SPAM);
-};
-
-/**
- * Returns true if the given remote folder can be moved into this remote folder.
- * The source and the target folder must belong to the same account. The source
- * must have delete permission and the target must have insert permission.
- *
- * @param folder  [ZmFolder]    source folder
- */
-ZmFolder.prototype._remoteMoveOk =
-function(folder) {
-	if (!this.link || !folder.link || this.zid != folder.zid) { return false; }
-	if (this.id.split(":")[0] != folder.id.split(":")[0]) { return false; }
-	var share = this.shares && this.shares[0];
-	if (!(share && share.isInsert())) { return false; }
-	share = folder.shares && folder.shares[0];
-	return (share && share.isDelete());
 };

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -37,7 +39,7 @@ ZmPreferencesPage = function(parent, section, controller) {
 
 	this._dwtObjects = {};
 	this._tabGroup = new DwtTabGroup(section.id);
-	this._rendered = false; // used by DwtTabViewPage
+	this._rendered = false;
 };
 
 ZmPreferencesPage.prototype = new DwtTabViewPage;
@@ -58,6 +60,12 @@ ZmPreferencesPage.IMPORT_TIMEOUT = 300;
 //
 // Public methods
 //
+
+ZmPreferencesPage.prototype.hasRendered =
+function(account) {
+	var acct = account || appCtxt.getActiveAccount();
+	return (this._hasRendered == acct.name);
+};
 
 ZmPreferencesPage.prototype._replaceControlElement =
 function(elemOrId, control) {
@@ -129,11 +137,12 @@ ZmPreferencesPage.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
 	this._controller._resetOperations(this._controller._toolbar, this._section.id);
+	var dirty = this._controller.isDirty(this._section.id);
+	var activeAcct = appCtxt.getActiveAccount().name;
+	if (this._hasRendered == activeAcct && !dirty) { return; }
 
-	if (this.hasRendered) {
-		if (this._controller.isDirty(this._section.id)) {
-			this._controller.setDirty(this._section.id, false);
-		}
+	if (this._hasRendered == activeAcct) {
+		this._controller.setDirty(this._section.id, false);
 		return;
 	}
 
@@ -155,11 +164,11 @@ ZmPreferencesPage.prototype._getTemplateData =
 function() {
 	var data = {
 		id: this._htmlElId,
-		isEnabled: AjxCallback.simpleClosure(this._isEnabled, this),
-		activeAccount: appCtxt.getActiveAccount()
+		isMultiAccount: (appCtxt.numVisibleAccounts > 1)
 	};
+	data.isEnabled = AjxCallback.simpleClosure(this._isEnabled, this, data);
 	data.expandField = AjxCallback.simpleClosure(this._expandField, this, data);
-
+	
 	return data;
 };
 
@@ -174,7 +183,9 @@ function() {
 
 		// add preference controls
 		var prefs = this._section.prefs || [];
-		var settings = appCtxt.getSettings();
+		var settings = (appCtxt.isOffline && appCtxt.multiAccounts && this._section.id == "GENERAL")
+			? appCtxt.getMainAccount().settings
+			: appCtxt.getSettings();
 
 		for (var i = 0; i < prefs.length; i++) {
 			var id = prefs[i];
@@ -187,8 +198,7 @@ function() {
 
 			// ignore if doesn't meet pre-condition
 			var setup = ZmPref.SETUP[id];
-
-			if (!setup || !this._controller.checkPreCondition(setup)) { continue; }
+			if (!this._controller.checkPreCondition(setup)) { continue; }
 
 			// perform load function
 			if (setup.loadFunction) {
@@ -199,6 +209,9 @@ function() {
 			// save the current value (for checking later if it changed)
 			pref.origValue = this._getPrefValue(id);
 			var value = this._getPrefValue(id, false);
+
+			// we only show this one if it's false
+			if ((id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) && value) { continue; }
 
 			this._prefPresent[id] = true;
 			DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
@@ -279,7 +292,7 @@ function() {
 
 	// finish setup
 	this.setVisible(true);
-	this.hasRendered = true;
+	this._hasRendered = appCtxt.getActiveAccount().name;
 };
 
 ZmPreferencesPage.prototype._addControlsToTabGroup =
@@ -304,7 +317,7 @@ function(id, object) {
 
 ZmPreferencesPage.prototype.getFormObject =
 function(id) {
-	return this._dwtObjects[id];
+	return this._dwtObjects[id]; 
 };
 
 /**
@@ -465,15 +478,65 @@ function(useDefaults) {
 	}
 };
 
-ZmPreferencesPage.prototype.resetOnAccountChange =
-function() {
-	this.hasRendered = false;
-};
-
 ZmPreferencesPage.prototype.isDirty = function() { return false; };
 ZmPreferencesPage.prototype.validate = function() {	return true; };
 ZmPreferencesPage.prototype.addCommand = function(batchCmd) {};
 
+ZmPreferencesPage.prototype.getPostSaveCallback =
+function() {
+	if (this._section.id == "GENERAL" &&
+		appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
+		appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER))
+	{
+		if (this._origDirtyList && this._origDirtyList.length) {
+			return (new AjxCallback(this, this._postSave, [this._origDirtyList]));
+		}
+	}
+    return null;
+};
+
+ZmPreferencesPage.prototype._postSave =
+function(list) {
+	for (var i = 0; i < list.length; i++) {
+		var setting = list[i];
+		if (setting.id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
+			if (setting.value === true) {
+				appCtxt.getAppController().registerMailtoHandler();
+				var cbox = this.getFormObject(ZmSetting.OFFLINE_IS_MAILTO_HANDLER);
+				if (cbox) {
+					cbox.setEnabled(false);
+				}
+			}
+			break;
+		}
+	}
+	this._origDirtyList = null;
+};
+
+ZmPreferencesPage.prototype.getPreSaveCallback =
+function() {
+	// in offline mode, general (aka global) prefs apply to the *parent* account
+	if (appCtxt.isOffline && appCtxt.multiAccounts && this._section.id == "GENERAL") {
+		// just get changed prefs for general/global tab only
+		var prefView = {"GENERAL": this.parent.prefView["GENERAL"]};
+		this._origDirtyList = this.parent.getChangedPrefs(false, false, null, prefView);
+
+		if (this._origDirtyList && this._origDirtyList.length) {
+			return (new AjxCallback(this, this._preSave, [this._origDirtyList]));
+		}
+	}
+	return null;
+};
+
+ZmPreferencesPage.prototype._preSave =
+function(list, continueCallback) {
+	// if we're here, that means we're in offline mode and user changed something in Global tab
+	var accountName = appCtxt.getMainAccount().name;
+	var batchCommand = new ZmBatchCommand(false, accountName);
+	appCtxt.getSettings().save(list, null, batchCommand);
+
+	batchCommand.run(continueCallback);
+};
 
 //
 // Protected methods
@@ -486,7 +549,7 @@ function(templateId, data) {
 	}
 };
 
-/**
+/*
 * Returns the value of the specified pref, massaging it if necessary.
 *
 * @param id			[constant]		pref ID
@@ -494,7 +557,9 @@ function(templateId, data) {
 */
 ZmPreferencesPage.prototype._getPrefValue =
 function(id, useDefault) {
-	var pref = appCtxt.getSettings().getSetting(id);
+	var pref = (appCtxt.isOffline && appCtxt.multiAccounts && this._section.id == "GENERAL")
+		? appCtxt.getMainAccount().settings.getSetting(id)
+		: appCtxt.getSettings().getSetting(id);
 	return useDefault ? pref.getDefaultValue() : pref.getValue();
 };
 
@@ -520,8 +585,7 @@ function(id, setup, value) {
 	return value;
 };
 
-ZmPreferencesPage.prototype._initControl =
-function(id, setup, value) {
+ZmPreferencesPage.prototype._initControl = function(id, setup, value) {
 	// sub-classes can override this to provide initialization
 	// code *before* the actual control is constructed.
 };
@@ -538,11 +602,7 @@ ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var params = {parent:this};
-	for (var p in setup.displayParams) {
-		params[p] = setup.displayParams[p];
-	}
-	var selObj = new DwtSelect(params);
+	var selObj = new DwtSelect({parent:this});
 	this.setFormObject(id, selObj);
 
 	var options = setup.options || setup.displayOptions || setup.choices || [];
@@ -617,7 +677,7 @@ function(id, setup, value) {
 		var optValue = isChoices ? options[i].value : options[i];
 		var optLabel = isChoices ? options[i].label : (isDisplayString ? setup.displayOptions : setup.displayOptions[i]);
 		optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
-		var isSelected = value == optValue;
+		var isSelected = value == optValue; 
 
 		var radioBtn = new DwtRadioButton({parent:container, name:name, checked:isSelected});
 		radioBtn.setText(optLabel);
@@ -647,7 +707,7 @@ function(id, setup, value) {
 	// store radio button group
 	this.setFormObject(id, new DwtRadioButtonGroup(radioIds, selectedId));
 
-	var func = ZmPreferencesPage.__radioGroup_getTabGroupMember;
+	var func = ZmPreferencesPage.__radioGroup_getTabGroupMember; 
 	container.getTabGroupMember = AjxCallback.simpleClosure(func, container, radioIds);
 	return container;
 };
@@ -667,8 +727,7 @@ ZmPreferencesPage.prototype._setupCheckbox =
 function(id, setup, value) {
 	var checkbox = new DwtCheckbox({parent:this, checked:value});
 	this.setFormObject(id, checkbox);
-	var text = setup.displayFunc ? setup.displayFunc() : setup.displayName;
-	var cboxLabel = ZmPreferencesPage.__formatLabel(text, value);
+	var cboxLabel = ZmPreferencesPage.__formatLabel(setup.displayName, value);
 	checkbox.setText(cboxLabel);
 	checkbox.setSelected(value);
 
@@ -894,7 +953,7 @@ function(ev) {
 		var isHttp	= appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_HTTP;
 		var proto	= isHttp ? ZmSetting.PROTO_HTTP : ZmSetting.PROTO_HTTPS;
 		var port	= appCtxt.get(isHttp ? ZmSetting.HTTP_PORT : ZmSetting.HTTPS_PORT);
-		var path	= appContextPath+"/h/changepass";
+		var path	= "/zimbra/h/changepass";
 
 		var publicUrl = appCtxt.get(ZmSetting.PUBLIC_URL);
 		if (publicUrl) {
@@ -924,26 +983,24 @@ function(format, formatSelectObj, ev) {
 
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
-	var overviewId = dialog.getOverviewId(settingId);
 
+	var overviewId = [this.toString(), settingId].join("-");
 	if (settingId == ZmSetting.EXPORT) {
 		AjxDispatcher.require(["ContactsCore", "Contacts"]);
-		dialog.popup({treeIds:			[ZmOrganizer.ADDRBOOK],
-					  overviewId:		overviewId,
-					  omit:				omit,
-					  title:			ZmMsg.chooseAddrBook,
-					  hideNewButton:	true,
-					  appName:			ZmApp.CONTACTS,
-					  description:		ZmMsg.chooseAddrBookToExport});
+		dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK],
+					  overviewId:overviewId,
+					  omit:omit,
+					  title:ZmMsg.chooseAddrBook,
+					  hideNewButton:true,
+					  description:ZmMsg.chooseAddrBookToExport});
 	} else {
 		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
-		dialog.popup({treeIds:			[ZmOrganizer.CALENDAR],
-					  overviewId:		overviewId,
-					  omit:				omit,
-					  title:			ZmMsg.chooseCalendar,
-					  hideNewButton:	true,
-					  appName:			ZmApp.CALENDAR,
-					  description:		ZmMsg.chooseCalendarToExport});
+		dialog.popup({treeIds:[ZmOrganizer.CALENDAR],
+					  overviewId:overviewId,
+					  omit:omit,
+					  title:ZmMsg.chooseCalendar,
+					  hideNewButton:true,
+					  description:ZmMsg.chooseCalendarToExport});
 	}
 };
 
@@ -1084,7 +1141,7 @@ function(dialog, format, subFormat, folder) {
 		var folderName = folder._systemName || AjxStringUtil.urlEncode(folder.getPath());
 		var username = appCtxt.multiAccounts ? (AjxStringUtil.urlComponentEncode(appCtxt.get(ZmSetting.USERNAME))) : "~";
 		var uri = [
-			location.protocol, "//", location.hostname, portPrefix, "/service/home/",
+			location.protocol, "//", document.domain, portPrefix, "/service/home/",
 			username, "/", folderName,
 			"?auth=co&fmt=", format,
 			subFormat ? "&"+format+"fmt="+subFormat : "" // e.g. csvfmt=zimbra-csv
@@ -1117,17 +1174,10 @@ function(ev) {
  * preconditions).
  */
 ZmPreferencesPage.prototype._isEnabled =
-function(prefId1 /* ..., prefIdN */) {
-	for (var i = 0; i < arguments.length; i++) {
+function(data, prefId1 /* ..., prefIdN */) {
+	for (var i = 1; i < arguments.length; i++) {
 		var prefId = arguments[i];
-
-		// setting not created (its app is disabled)
-		if (!prefId) { return false; }
-
-		if (!appCtxt.getActiveAccount().isMain && ZmSetting.IS_GLOBAL[prefId]) {
-			return false;
-		}
-
+		if (!prefId) { return false; }	// setting not created (its app is disabled)
 		if (this._controller.checkPreCondition(ZmPref.SETUP[prefId], prefId)) {
 			return true;
 		}

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -40,7 +42,6 @@ ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_TRAD]	= ZmSetting.GROUP_BY_MESSA
 // view menu
 ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_TRAD]		= "MessageView";
 ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_TRAD]	= "byMessage";
-ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_TRAD]	= ZmKeyMap.VIEW_BY_MSG;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_TRAD);
 
 // Public methods
@@ -80,18 +81,20 @@ function() {
 	return ZmId.VIEW_TRAD;
 };
 
+ZmTradController.prototype._getItemType =
+function() {
+	return ZmItem.MSG;
+};
+
 ZmTradController.prototype._paginate = 
-function(view, bPageForward, convIdx, limit) {
+function(view, bPageForward, convIdx) {
 	view = view ? view : this._currentView;
-	return ZmDoublePaneController.prototype._paginate.call(this, view, bPageForward, convIdx, limit);
+	return ZmDoublePaneController.prototype._paginate.call(this, view, bPageForward, convIdx);
 };
 
 ZmTradController.prototype._resetNavToolBarButtons = 
 function(view) {
-
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
-	if (!this._navToolBar[view]) { return; }
-
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
 };
@@ -99,7 +102,7 @@ function(view) {
 ZmTradController.prototype._getMoreSearchParams = 
 function(params) {
 	// OPTIMIZATION: find out if we need to pre-fetch the first hit message
-	params.fetch = this.isReadingPaneOn();
+	params.fetch = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
 	params.markRead = true;
 };
 
@@ -110,8 +113,7 @@ function(ev) {
 	var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
 	if (!handled && ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
-		var ctlr = AjxDispatcher.run("GetMsgController", item.nId);
-		ctlr.show(item, this._msgControllerMode, respCallback, true);
+		AjxDispatcher.run("GetMsgController").show(item, this._msgControllerMode, respCallback, true);
 	}
 };
 

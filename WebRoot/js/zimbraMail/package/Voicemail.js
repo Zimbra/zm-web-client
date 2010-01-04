@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 /*
@@ -46,11 +48,12 @@ AjxPackage.require("zimbraMail.voicemail.view.ZmSoundPlayer");
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoiceListView");
 AjxPackage.require("zimbraMail.voicemail.view.ZmCallListView");
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoicemailListView");
-AjxPackage.require("zimbraMail.voicemail.view.ZmVoiceOverviewContainer");
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoiceTreeView");
+AjxPackage.require("zimbraMail.voicemail.view.ZmVoicePrefsView");
 
 AjxPackage.require("zimbraMail.voicemail.controller.ZmVoiceListController");
 AjxPackage.require("zimbraMail.voicemail.controller.ZmCallListController");
 AjxPackage.require("zimbraMail.voicemail.controller.ZmVoicemailListController");
 AjxPackage.require("zimbraMail.voicemail.controller.ZmVoiceTreeController");
+AjxPackage.require("zimbraMail.voicemail.controller.ZmVoicePrefsController");
 

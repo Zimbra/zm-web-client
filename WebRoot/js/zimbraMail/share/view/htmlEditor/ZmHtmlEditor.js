@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -26,9 +28,8 @@ ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 	this.ACE_ENABLED = !!withAce;
 	this.ACE_DEBUG = false;
 
-	if (this.ACE_ENABLED) {
+	if (this.ACE_ENABLED)
 		this._ace_componentsLoading = 0;
-	}
 
 	DwtHtmlEditor.call(this, {parent:parent, className:"ZmHtmlEditor", posStyle:posStyle,
 							  content:content, mode:mode, blankIframeSrc:appContextPath+"/public/blank.html"});
@@ -106,8 +107,6 @@ function(mode, convert) {
 		var toolbar = this._toolbars[i];
 		toolbar.setVisible(mode == DwtHtmlEditor.HTML);
 	}
-
-	appCtxt.notifyZimlets("on_htmlEditor_setMode", [this, mode]);
 };
 
 ZmHtmlEditor.prototype.getBodyFieldId =
@@ -138,25 +137,11 @@ function(callback) {
 
 ZmHtmlEditor.prototype._onContentInitialized =
 function() {
-	DwtHtmlEditor.prototype._onContentInitialized.call(this);
 	this._loadExternalStyle("/css/editor.css");
 	this._setFontStyles();
 	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML) {
 		setTimeout(AjxCallback.simpleClosure(this._deserializeAceObjects, this), 100);
 	}
-	if (this._onContentInitializeCallback) {
-		this._onContentInitializeCallback.run();
-	}
-};
-
-ZmHtmlEditor.prototype.addOnContentIntializedListener =
-function(callback) {
-	this._onContentInitializeCallback = callback;
-};
-
-ZmHtmlEditor.prototype.removeOnContentIntializedListener =
-function() {
-	this._onContentInitializeCallback = null;
 };
 
 ZmHtmlEditor.prototype.getContent =
@@ -165,37 +150,19 @@ function(insertFontStyle, onlyInnerContent ) {
 
 	// NOTE: this code is same as base class except we use insertFontStyle
 	// (which shouldnt be in base).
-	var content;
+	var content = null;
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var iframeDoc = this._getIframeDoc();
-		var html = this._pendingContent || (iframeDoc && iframeDoc.body ? (this._getIframeDoc().body.innerHTML) : "");
+		var html = iframeDoc && iframeDoc.body ? (this._getIframeDoc().body.innerHTML) : "";
 		content = this._embedHtmlContent(html, insertFontStyle, onlyInnerContent);
-		if (this.ACE_ENABLED) {
-			content = this._serializeAceObjects(content);
-		}
-	} else {
+        if(this.ACE_ENABLED){
+           content = this._serializeAceObjects(content);
+        }
+    } else {
 		content = document.getElementById(this._textAreaId).value;
 	}
 
 	return content;
-};
-
-ZmHtmlEditor.prototype.checkMisspelledWords =
-function(callback, onExitCallback, errCallback){
-	var text = this.getTextVersion();
-	if (/\S/.test(text)) {
-		AjxDispatcher.require("Extras");
-		this._spellChecker = new ZmSpellChecker(this);
-		this._spellCheck = null;
-		this._spellCheckSuggestionListenerObj = new AjxListener(this, this._spellCheckSuggestionListener);
-		if (!this.onExitSpellChecker) {
-			this.onExitSpellChecker = onExitCallback;
-		}
-		this._spellChecker.check(text, callback, errCallback);
-		return true;
-	}
-
-	return false;
 };
 
 ZmHtmlEditor.prototype.spellCheck =
@@ -217,15 +184,9 @@ function(callback) {
 	return false;
 };
 
-ZmHtmlEditor.prototype.resetSpellCheck =
-function(){
-	this.discardMisspelledWords();
-	this._spellCheckHideModeDiv();
-};
-
 ZmHtmlEditor.prototype.discardMisspelledWords =
 function(keepModeDiv) {
-	if (!this._spellCheck) { return; }
+	if (!this._spellCheck) return;
 
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var doc = this._getIframeDoc();
@@ -238,23 +199,20 @@ function(keepModeDiv) {
 			if (!span) continue;
 
 			p = span.parentNode;
-			while (span.firstChild) {
+			while (span.firstChild)
 				p.insertBefore(span.firstChild, span);
-			}
 			p.removeChild(span);
 		}
 
-		if (!AjxEnv.isIE) {
+		if (!AjxEnv.isIE)
 			doc.body.normalize(); // IE crashes here.
-		} else {
-			doc.body.innerHTML = doc.body.innerHTML; // WTF.
-		}
+		else
+			doc.body.innerHTML = doc.body.innerHTML;
 
 		// remove the spell check styles
 		p = doc.getElementById("ZM-SPELLCHECK-STYLE");
-		if (p) {
+		if (p)
 			p.parentNode.removeChild(p);
-		}
 
 		doc.body.style.display = "";
 		this._unregisterEditorEventHandler(doc, "contextmenu");
@@ -263,11 +221,6 @@ function(keepModeDiv) {
 		var div = document.getElementById(this._spellCheckDivId);
 		var scrollTop = div.scrollTop;
 		var textArea = document.getElementById(this._textAreaId);
-		// bug: 41760 - HACK. Convert the nbsps back to spaces since Gecko seems
-		// to return control characters for HTML entities.
-		if (AjxEnv.isGeckoBased) {
-			div.innerHTML = AjxStringUtil.htmlDecode(div.innerHTML, true);
-		}
 		textArea.value = AjxUtil.getInnerText(div);
 
 		// avoid mem. leaks, hopefully
@@ -282,31 +235,23 @@ function(keepModeDiv) {
 	this._spellCheckDivId = this._spellCheck = null;
 	window.status = "";
 
-	if (!keepModeDiv) {
+	if (!keepModeDiv)
 		this._spellCheckHideModeDiv();
-	}
 
-	if (this.onExitSpellChecker) {
+	if (this.onExitSpellChecker)
 		this.onExitSpellChecker.run();
-	}
 };
 
 ZmHtmlEditor.prototype._resetFormatControls =
-function() {
-
-	this._resetFormatControlDefaults();
-
-	setTimeout(AjxCallback.simpleClosure(this._loadExternalStyle, this, "/css/editor.css"), 250);
-	setTimeout(AjxCallback.simpleClosure(this._setFontStyles, this), 250);
-};
-
-ZmHtmlEditor.prototype._resetFormatControlDefaults =
 function() {
 	this._fontFamilyButton.setText(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
 	this._fontSizeButton.setText(this._getFontSizeLabel(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE)));
 	this._fontColorButton.setColor(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR));
 	this._styleMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.PARAGRAPH, true);
 	this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT, true);
+
+	setTimeout(AjxCallback.simpleClosure(this._loadExternalStyle, this, "/css/editor.css"), 250);
+	setTimeout(AjxCallback.simpleClosure(this._setFontStyles, this), 250);
 };
 
 ZmHtmlEditor.prototype._loadExternalStyle =
@@ -395,18 +340,15 @@ function(words, keepModeDiv) {
 				wordIds[word] = [];
 			wordIds[word].push(id);
 
-			var repl = [
-				prefix,
-				'<span word="',
-				word, '" id="', id, '" class="ZM-SPELLCHECK-MISSPELLED">',
-				word, '</span>',
-				suffix
-				].join("");
-			text = [
-				text.substr(0, m.index),
-				repl,
-				text.substr(m.index + str.length)
-			].join("");
+			var repl = [ prefix,
+				     '<span word="',
+				     word, '" id="', id, '" class="ZM-SPELLCHECK-MISSPELLED">',
+				     word, '</span>',
+				     suffix
+				   ].join("");
+			text = [ text.substr(0, m.index),
+				 repl,
+				 text.substr(m.index + str.length) ].join("");
 
 			// All this crap necessary because the suffix
 			// must be taken into account at the next
@@ -414,7 +356,23 @@ function(words, keepModeDiv) {
 			// constructs (except \b, which sucks).  Oh well.
 			regexp.lastIndex = m.index + repl.length - suffix.length;
 		}
+
 		return text;
+
+// 		return text.replace(regexp, function(str, prefix, word, suffix) {
+// 			// return suggestions[word];
+// 			var id = Dwt.getNextId();
+// 			spanIds[id] = word;
+// 			if (!wordIds[word])
+// 				wordIds[word] = [];
+// 			wordIds[word].push(id);
+// 			return [ prefix,
+// 				 '<span word="',
+// 				 word, '" id="', id, '" class="ZM-SPELLCHECK-MISSPELLED">',
+// 				 word, '</span>',
+// 				 suffix
+// 			       ].join("");
+// 		});
 	};
 
 	var doc;
@@ -424,55 +382,52 @@ function(words, keepModeDiv) {
 	// class="ZM-SPELLCHECK-MISSPELLED">word</span>
 	rec = function(node) {
 		switch (node.nodeType) {
-			case 1: /* ELEMENT */
-				for (var i = node.firstChild; i; i = rec(i));
+		    case 1: /* ELEMENT */
+			for (var i = node.firstChild; i; i = rec(i));
+			node = node.nextSibling;
+			break;
+		    case 3: /* TEXT */
+			if (!/[^\s\xA0]/.test(node.data)) {
 				node = node.nextSibling;
 				break;
-			case 3: /* TEXT */
-				if (!/[^\s\xA0]/.test(node.data)) {
-					node = node.nextSibling;
-					break;
-				}
-				// for correct handling of whitespace we should
-				// not mess ourselves with leading/trailing
-				// whitespace, thus we save it in 2 text nodes.
-				var a = null, b = null;
+			}
+			// for correct handling of whitespace we should
+			// not mess ourselves with leading/trailing
+			// whitespace, thus we save it in 2 text nodes.
+			var a = null, b = null;
 
-				var result = /^[\s\xA0]+/.exec(node.data);
-				if (result) {
-					// a will contain the leading space
-					a = node;
-					node = node.splitText(result[0].length);
-				}
-				result = /[\s\xA0]+$/.exec(node.data);
-				if (result) {
-					// and b will contain the trailing space
-					b = node.splitText(node.data.length - result[0].length);
-				}
+			var result = /^[\s\xA0]+/.exec(node.data);
+			if (result) {
+				// a will contain the leading space
+				a = node;
+				node = node.splitText(result[0].length);
+			}
+			result = /[\s\xA0]+$/.exec(node.data);
+			if (result) {
+				// and b will contain the trailing space
+				b = node.splitText(node.data.length - result[0].length);
+			}
 
-				var text = hiliteWords(node.data, false);
-				text = text.replace(/^ +/, "&nbsp;").replace(/ +$/, "&nbsp;");
-				var div = doc.createElement("div");
-				div.innerHTML = text;
+			var text = hiliteWords(node.data, false);
+			text = text.replace(/^ +/, "&nbsp;").replace(/ +$/, "&nbsp;");
+			var div = doc.createElement("div");
+			div.innerHTML = text;
 
-				// restore whitespace now
-				if (a) {
-					div.insertBefore(a, div.firstChild);
-				}
-				if (b) {
-					div.appendChild(b);
-				}
+			// restore whitespace now
+			if (a)
+				div.insertBefore(a, div.firstChild);
+			if (b)
+				div.appendChild(b);
 
-				var p = node.parentNode;
-				while (div.firstChild) {
-					p.insertBefore(div.firstChild, node);
-				}
-				div = node.nextSibling;
-				p.removeChild(node);
-				node = div;
-				break;
-			default :
-				node = node.nextSibling;
+			var p = node.parentNode;
+			while (div.firstChild)
+				p.insertBefore(div.firstChild, node);
+			div = node.nextSibling;
+			p.removeChild(node);
+			node = div;
+			break;
+		    default :
+			node = node.nextSibling;
 		}
 		return node;
 	};
@@ -490,21 +445,20 @@ function(words, keepModeDiv) {
 
 		body.style.display = "none";	// seems to have a good impact on speed,
 										// since we may modify a lot of the DOM
-		if (!AjxEnv.isIE) {
+		if (!AjxEnv.isIE)
 			body.normalize();
-		} else {
+		else
 			body.innerHTML = body.innerHTML;
-		}
 		rec(body);
-		if (!AjxEnv.isIE) {
+		if (!AjxEnv.isIE)
 			body.normalize();
-		} else {
+		else
 			body.innerHTML = body.innerHTML;
-		}
 		body.style.display = ""; // redisplay the body
 		this._registerEditorEventHandler(doc, "contextmenu");
-	}
-	else { // TEXT mode
+
+	} else { // TEXT mode
+
 		var textArea = document.getElementById(this._textAreaId);
 		var scrollTop = textArea.scrollTop;
 		var size = Dwt.getSize(textArea);
@@ -534,16 +488,14 @@ function(words, keepModeDiv) {
 	this._spellCheckShowModeDiv();
 
 	// save the spell checker context
-	this._spellCheck = {
-		suggestions: suggestions,
-		spanIds: spanIds,
-		wordIds: wordIds
-	};
+	this._spellCheck = { suggestions: suggestions,
+						 spanIds: spanIds,
+						 wordIds: wordIds };
 };
 
 ZmHtmlEditor.prototype.setSize =
 function(x, y) {
-	var div;
+	var div = null;
 	if (this._spellCheckDivId) {
 		div = document.getElementById(this._spellCheckDivId);
 	}
@@ -621,67 +573,68 @@ function(ev) {
 	this.setIndent(ev.item.getData(ZmHtmlEditor._VALUE));
 };
 
-ZmHtmlEditor.prototype._insertLinkListener =
-function() {
-	var dlg = this._insertLinkDialog;
-	if (!dlg) {
-		dlg = this._insertLinkDialog = new DwtDialog({parent:DwtShell.getShell(window), title:ZmMsg.linkProperties});
-		var id = dlg.base_id = Dwt.getNextId();
-		var html = AjxTemplate.expand("share.Dialogs#EditorInsertLink", {id:id});
-		dlg.setContent(html);
+ZmHtmlEditor.prototype._insertLinkListener = function() {
+        var dlg = this._insertLinkDialog;
+        if (!dlg) {
+                dlg = this._insertLinkDialog = new DwtDialog({ parent : DwtShell.getShell(window),
+                                                               title  : ZmMsg.linkProperties });
+                var id = dlg.base_id = Dwt.getNextId();
+                var html = AjxTemplate.expand("share.Dialogs#EditorInsertLink", { id: id });
+                dlg.setContent(html);
 
-		dlg.linkText = new DwtInputField({ parent        : dlg,
-										   size          : 40,
-										   parentElement : id + "_linkTextCont" });
+                dlg.linkText = new DwtInputField({ parent        : dlg,
+                                                   size          : 40,
+                                                   parentElement : id + "_linkTextCont" });
 
-		dlg.linkTarget = new DwtInputField({ parent        : dlg,
-											 size          : 40,
-											 parentElement : id + "_linkTargetCont" });
+                dlg.linkTarget = new DwtInputField({ parent        : dlg,
+                                                     size          : 40,
+                                                     parentElement : id + "_linkTargetCont" });
 
-		function getURL() {
-				var url = dlg.linkTarget.getValue();
-				if (url && !/^(https?|ftp):\x2f\x2f/i.test(url)) {
-					url = "http://" + url;
-					dlg.linkTarget.setValue(url);
-				}
-				return url;
-		};
+                function getURL() {
+                        var url = dlg.linkTarget.getValue();
+                        if (!/^(https?|ftp):\x2f\x2f/i.test(url)) {
+                                url = "http://" + url;
+                                dlg.linkTarget.setValue(url);
+                        }
+                        return url;
+                };
 
-		var btn = new DwtButton({ parent: dlg, parentElement: id + "_testBtnCont" });
-		btn.setText(ZmMsg.testUrl);
-		btn.setToolTipContent(ZmMsg.testUrlTooltip);
-		btn.addSelectionListener(new AjxListener(this, function() {
-			var url = getURL();
-			if (url) {
-				window.open(url);
-			}
-		}));
+                var btn = new DwtButton({ parent: dlg, parentElement: id + "_testBtnCont" });
+                btn.setText(ZmMsg.testUrl);
+                btn.setToolTipContent(ZmMsg.testUrlTooltip);
+                btn.addSelectionListener(new AjxListener(this, function(){
+                        window.open(getURL());
+                }));
 
-		dlg._tabGroup.addMember(dlg.linkText, 0);
-		dlg._tabGroup.addMember(dlg.linkTarget, 1);
-		dlg._tabGroup.addMember(btn, 2);
+                dlg._tabGroup.addMember(dlg.linkText, 0);
+                dlg._tabGroup.addMember(dlg.linkTarget, 1);
+                dlg._tabGroup.addMember(btn, 2);
 
-		dlg.registerCallback(DwtDialog.OK_BUTTON, new AjxListener(this, function(){
-			var url = getURL();
-			var text = dlg.linkText.getValue() || url;
-			dlg.popdown();
-			this.insertLink({ text : text, url  : url });
-		}));
-	}
-	var link = this.getLinkProps();
-	dlg.linkText.setValue(link.text || "");
-	dlg.linkTarget.setValue(link.url || "");
-	dlg.popup();
-	if (/\S/.test(link.text)) {
-		dlg.linkTarget.focus();
-	} else {
-		dlg.linkText.focus();
-	}
+                dlg.registerCallback(DwtDialog.OK_BUTTON, new AjxListener(this, function(){
+	                var url = getURL();
+	                var text = dlg.linkText.getValue();
+                    dlg.popdown();    
+					this.insertLink({ text : text, url  : url });   
+                }));
+        }
+        var link = this.getLinkProps();
+        dlg.linkText.setValue(link.text || "");
+        dlg.linkTarget.setValue(link.url || "");
+        dlg.popup();
+        if (/\S/.test(link.text)) {
+                dlg.linkTarget.focus();
+        } else {
+                dlg.linkText.focus();
+        }
 };
 
 ZmHtmlEditor.prototype._insElementListener =
 function(ev) {
-	this.insertElement(ev.item.getData(ZmHtmlEditor._VALUE));
+	var elType = ev.item.getData(ZmHtmlEditor._VALUE);
+	switch (elType) {
+	    default:
+		this.insertElement(elType);
+	}
 };
 
 ZmHtmlEditor.prototype._justificationListener =
@@ -705,7 +658,7 @@ function(ev) {
 };
 
 ZmHtmlEditor.prototype._createToolbars =
-function(dontCreateButtons) {
+function() {
 	// NOTE: overload this method to place toolbars differently.
 	if (!this._toolbar1) {
 		var tb = this._toolbar1 = new DwtToolBar({parent:this, className:"ZToolbar",
@@ -713,14 +666,13 @@ function(dontCreateButtons) {
 		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 
 		// Default is to have ONE toolbar now
-		if (!dontCreateButtons) {
-			this._createToolBar1(tb);
-			new DwtControl({parent:tb, className:"vertSep"});
-			this._createToolBar2(tb);
-			this._resetFormatControls();
-		}
+		this._createToolBar1(tb);
+		new DwtControl({parent:tb, className:"vertSep"});
+		this._createToolBar2(tb);
 
 		this._toolbars.push(tb);
+
+                this._resetFormatControls();
 	}
 };
 
@@ -730,27 +682,103 @@ function(tb) {
 	this._createFontSizeMenu(tb);
 	this._createStyleMenu(tb);
 	this._createJustifyMenu(tb);
-	new DwtControl({parent:tb, className:"vertSep"});
-	this._createListMenu(tb);
-	this._createIndentMenu(tb);
-	new DwtControl({parent:tb, className:"vertSep"});
-	this._createBUIButtons(tb);
 
-	appCtxt.notifyZimlets("on_htmlEditor_createToolbar1", [this, tb]);
+	new DwtControl({parent:tb, className:"vertSep"});
+
+	this._createListMenu(tb);
+
+	this._createIndentMenu(tb);
+
+	new DwtControl({parent:tb, className:"vertSep"});
+
+    var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
+	var listener = new AjxListener(this, this._fontStyleListener);
+	this._boldButton = new DwtToolBarButton(params);
+	this._boldButton.setImage("Bold");
+	this._boldButton.setToolTipContent(AjxKeys["editor.Bold.summary"]);
+	this._boldButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
+	this._boldButton.addSelectionListener(listener);
+
+	this._italicButton = new DwtToolBarButton(params);
+	this._italicButton.setImage("Italics");
+	this._italicButton.setToolTipContent(AjxKeys["editor.Italic.summary"]);
+	this._italicButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
+	this._italicButton.addSelectionListener(listener);
+
+	this._underlineButton = new DwtToolBarButton(params);
+	this._underlineButton.setImage("Underline");
+	this._underlineButton.setToolTipContent(AjxKeys["editor.Underline.summary"]);
+	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
+	this._underlineButton.addSelectionListener(listener);
+
+	if (!appCtxt.isChildWindow) {
+		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar1", this, tb);
+	}
 };
 
 ZmHtmlEditor.prototype._createToolBar2 =
 function(tb) {
-	this._createFontColorButtons(tb);
+	this._fontColorButton = new ZmHtmlEditorColorPicker(tb,null,"ZToolbarButton");
+	this._fontColorButton.dontStealFocus();
+	this._fontColorButton.setImage("FontColor");
+	this._fontColorButton.showColorDisplay(true);
+	this._fontColorButton.setToolTipContent(ZmMsg.fontColor);
+	this._fontColorButton.addSelectionListener(new AjxListener(this, this._fontColorListener));
+
+	this._fontBackgroundButton = new ZmHtmlEditorColorPicker(tb, null, "ZToolbarButton");
+	this._fontBackgroundButton.dontStealFocus();
+	this._fontBackgroundButton.setImage("FontBackground");
+	this._fontBackgroundButton.showColorDisplay(true);
+	this._fontBackgroundButton.setToolTipContent(ZmMsg.fontBackground);
+	this._fontBackgroundButton.addSelectionListener(new AjxListener(this, this._fontHiliteListener));
+
 	new DwtControl({parent:tb, className:"vertSep"});
-	this._createHorizRuleButton(tb);
-	this._createUrlButton(tb);
-	this._createTableMenu(tb);
+
+	var params = {parent:tb};
+	this._horizRuleButton = new DwtToolBarButton(params);
+	this._horizRuleButton.setImage("HorizRule");
+	this._horizRuleButton.setToolTipContent(ZmMsg.horizRule);
+	this._horizRuleButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
+	this._horizRuleButton.addSelectionListener(new AjxListener(this, this._insElementListener));
+
+        this._insertLinkButton = new DwtToolBarButton(params);
+        this._insertLinkButton.setImage("URL");
+        this._insertLinkButton.setToolTipContent(ZmMsg.insertLink);
+        this._insertLinkButton.addSelectionListener(new AjxListener(this, this._insertLinkListener));
+
+// BEGIN: Table operations
+	var b = new DwtToolBarButton(params);
+	b.setToolTipContent(ZmMsg.insertTable);
+	b.dontStealFocus();
+	b.setImage("Table");
+	var menu = new DwtMenu({parent:b});
+	b.setMenu(menu);
+
+	var item = new DwtMenuItem({parent:menu});
+	item.setText(ZmMsg.insertTable);
+	var grid_menu = new DwtMenu({parent:item, style:DwtMenu.GENERIC_WIDGET_STYLE});
+ 	var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
+ 	grid.addSelectionListener(new AjxListener(this, this._createTableListener));
+ 	item.setMenu(grid_menu);
+	item.setImage("InsertTable");
+
+	new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
+	this.__createTableOperationItems(menu);
+// END: table operations
+
 	if (this.ACE_ENABLED) {
-		this._createSpreadSheetButton(tb);
+		new DwtControl({parent:tb, className:"vertSep"});
+		params.style = 0;
+		var b = new DwtToolBarButton(params);
+		b.setImage("SpreadSheet");
+		b.setData("ACE", "ZmSpreadSheet");
+		b.setToolTipContent(ZmMsg.insertSpreadsheet);
+		b.addSelectionListener(new AjxListener(this, this._menu_insertObject));
 	}
 
-	appCtxt.notifyZimlets("on_htmlEditor_createToolbar2", [this, tb]);
+	if (!appCtxt.isChildWindow) {
+		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar2", this, tb);
+	}
 };
 
 ZmHtmlEditor.prototype.__createTableOperationItems =
@@ -791,22 +819,23 @@ function(menu) {
 	menu.addPopupListener(new AjxListener(this, this.__onTableOperationsPopup));
 };
 
-ZmHtmlEditor.prototype.__onTableOperationsPopup =
-function(menu) {
+ZmHtmlEditor.prototype.__onTableOperationsPopup = function(menu) {
 	this.focus();
 	var table = this.getNearestElement("table");
 	var items = menu._tblItems;
 	for (var i in items) {
 		items[i].setEnabled(!!table);
 	}
-	if (!table) { return; }
+	if (!table)
+		return;
 
 	menu.setData("table", table);
 
 	if (!AjxEnv.isIE) {
 		// Can we split? (the cell has to be a merged cell)
 		var td = this.getNearestElement("td");
-		var splitEnabled = td && ((td.colSpan && td.colSpan > 1) || (td.rowSpan && td.rowSpan > 1));
+		var splitEnabled = td && ((td.colSpan && td.colSpan > 1)
+					  || (td.rowSpan && td.rowSpan > 1));
 		items.splitCells.setEnabled(splitEnabled);
 
 		// Can we merge? (multiple cells are selected and none of them is previously merged)
@@ -819,9 +848,8 @@ function(menu) {
 				for (var j = r.length; --j >= 0;) {
 					var td = r[j];
 					++howMany;
-					if (td.rowSpan > 1 || td.colSpan > 1) {
+					if (td.rowSpan > 1 || td.colSpan > 1)
 						throw "can't merge";
-					}
 				}
 			}
 		} catch(ex) {
@@ -840,20 +868,19 @@ function(ev) {
 	var data = item.getData("TableOperations");
 	this.focus();
 	switch (data) {
-		case "tableProperties":
-			AjxDispatcher.require("Extras");
-			var dlg = ZmTableEditor.getTablePropsDialog(this, this.getNearestElement("table"));
-			dlg.popup();
+	    case "tableProperties":
+	    AjxDispatcher.require("Extras");
+		var dlg = ZmTableEditor.getTablePropsDialog(this, this.getNearestElement("table"));
+		dlg.popup();
 		break;
-
-		case "cellProperties":
-			AjxDispatcher.require("Extras");
-			var dlg = ZmTableEditor.getCellPropsDialog(this, this.getNearestElement("table"), this.getSelectedCells());
-			dlg.popup();
-			break;
-
-		default:
-			this.doTableOperation(data, { table: table, cells: this.getSelectedCells() });
+	    case "cellProperties":
+	    AjxDispatcher.require("Extras");
+		var dlg = ZmTableEditor.getCellPropsDialog(this, this.getNearestElement("table"), this.getSelectedCells());
+		dlg.popup();
+		// alert("Not yet implemented");
+		break;
+	    default:
+		this.doTableOperation(data, { table: table, cells: this.getSelectedCells() });
 	}
 };
 
@@ -877,11 +904,12 @@ function(name, target, data) {
 		.replace(/\x2f*$/, "");
 	var component_url = null;
 
-	// REVISIT: object factory needed when there'll be many components to chose from.
+	// REVISIT: object factory needed when there'll be many components to
+	// chose from.
 	switch (name) {
-		case "ZmSpreadSheet":
-			component_url = [toplevel_url, appContextPath, "/public/Spreadsheet.jsp?localeId=", AjxEnv.DEFAULT_LOCALE].join("");
-			break;
+	    case "ZmSpreadSheet":
+		component_url = [toplevel_url, appContextPath, "/public/Spreadsheet.jsp?localeId=", AjxEnv.DEFAULT_LOCALE].join("");
+		break;
 	}
 
 	if (component_url) {
@@ -891,7 +919,7 @@ function(name, target, data) {
 		this.focus();
 		++this._ace_componentsLoading;
 		if (AjxEnv.isGeckoBased) {
-			Dwt.enableDesignMode(doc, false);
+			doc.designMode = "off";
 		}
 		var ifr = doc.createElement("iframe");
 		ifr.id = "ACE-" + Dwt.getNextId();
@@ -911,15 +939,21 @@ function(name, target, data) {
 			df.appendChild(ifr);
 			df.appendChild(p.cloneNode(true));
 			this._insertNodeAtSelection(df);
-		} else {
+
+			// this causes problems in Firefox too! :-(
+// 			if (!AjxEnv.isIE) {
+// 				ifr.contentWindow.focus();
+// 				ifr.contentWindow.document.focus();
+// 			}
+		} else
 			target.parentNode.replaceChild(ifr, target);
-		}
 		var handler = AjxCallback.simpleClosure(this._ace_finishedLoading, this, ifr, name, data);
 		if (AjxEnv.isIE) {
 			ifr.onreadystatechange = handler;
 		} else {
 			ifr.addEventListener("load", handler, true);
 		}
+		// outer.style.display = "";
 	}
 };
 
@@ -953,9 +987,8 @@ ZmHtmlEditor.prototype._getAceObjects =
 function() {
 	var tmp = this._getIframeDoc().getElementsByTagName("iframe");
 	var a = new Array(tmp.length);
-	for (var i = tmp.length; --i >= 0;) {
+	for (var i = tmp.length; --i >= 0;)
 		a[i] = tmp[i];
-	}
 	return a;
 };
 
@@ -966,55 +999,47 @@ function(html, insertFontStyle, onlyInnerContent) {
 			return DwtHtmlEditor.prototype._embedHtmlContent.call(this, html);
 	}
 
-	if (onlyInnerContent) {
-		var cont = [], idx=0;
+        if(onlyInnerContent){
+                var cont = [], idx=0;
+                cont[idx++] = "<div";
+                if(insertFontStyle){
+                        cont[idx++] = " style='font-family:" + appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+		        cont[idx++] = "; font-size: "+ appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+		        cont[idx++] = "; color: "+appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)+";'";
+                }
+                cont[idx++] = ">";
+                cont[idx++] = html;
+                cont[idx++] = "</div>";
+                return cont.join("");
+        }
 
-		if (insertFontStyle) {
-			cont[idx++] = "<div";
-			cont[idx++] = " style='font-family:";
-			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-			cont[idx++] = "; font-size: ";
-			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-			cont[idx++] = "; color: ";
-			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-			cont[idx++] = ";'>";
-			cont[idx++] = html;
-			cont[idx++] = "</div>";
-		} else {
-			cont[idx++] = html;
-		}
-
-		return cont.join("");
-	}
-
-	var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
-	if (insertFontStyle) {
-		html = this._getFontStyle(html);
-	}
+        var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
+        if (insertFontStyle)
+                html = this._getFontStyle(html);
 	var headContent = this._headContent ? this._headContent.join("") : "";
 
-	return [
-		"<html><head>",
-		p_style, headContent,
+	return ["<html><head>",
+                p_style,
+		headContent,
 		"</head><body>",
 		html,
-		"</body></html>"
-	].join("");
+		"</body></html>"].join("");
 };
 
 ZmHtmlEditor.prototype._getFontStyle =
 function(html) {
 	var a = [], i = 0;
-	a[i++] = "<div style='font-family: ";
+	a[i++] = "<div style='";
+	a[i++] = "font-family: ";
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
 	a[i++] = "; font-size: ";
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 	a[i++] = "; color: ";
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
 	a[i++] = "'>";
-	a[i++] = html;
+        a[i++] = html;
 	a[i++] = "</div>";
-	return a.join("");
+        return a.join("");
 };
 
 ZmHtmlEditor.prototype._serializeAceObjects =
@@ -1038,28 +1063,20 @@ function(done, match, iframeId) {
 		done[component_name] = true;
 		this._headContent.push(win.getHeadHTML());
 	}
-	return [
-		"<div class=\"ACE ",
-		component_name,
-		"\">",
-		html,
-		"<!--",
-		"ACE[",
-		component_name,
-		"]:",
-		data,
-		"-->",
-		"</div>"
-	].join("");
+	return ["<div class=\"ACE ", component_name, "\">",
+	        html,
+	        "<!--",
+	        "ACE[", component_name, "]:", data,
+	        "-->",
+	        "</div>"].join("");
 };
 
 ZmHtmlEditor.prototype._deserializeAceObjects =
 function() {
 	var divs = this._getIframeDoc().getElementsByTagName("div");
 	var tmp = new Array(divs.length);
-	for (var i = 0; i < divs.length; ++i) {
+	for (var i = 0; i < divs.length; ++i)
 		tmp[i] = divs.item(i);
-	}
 	divs = tmp;
 	for (var i = 0; i < divs.length; ++i) {
 		var holder = divs[i];
@@ -1080,110 +1097,12 @@ function() {
 	}
 };
 
-//Editor Buttons
-
-ZmHtmlEditor.prototype._createBUIButtons =
-function(tb) {
-	var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
-	var listener = new AjxListener(this, this._fontStyleListener);
-	this._boldButton = new DwtToolBarButton(params);
-	this._boldButton.setImage("Bold");
-	this._boldButton.setToolTipContent(appCtxt.getShortcutHint("editor", DwtKeyMap.TEXT_BOLD));
-	this._boldButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
-	this._boldButton.addSelectionListener(listener);
-
-	this._italicButton = new DwtToolBarButton(params);
-	this._italicButton.setImage("Italics");
-	this._italicButton.setToolTipContent(appCtxt.getShortcutHint("editor", DwtKeyMap.TEXT_ITALIC));
-	this._italicButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
-	this._italicButton.addSelectionListener(listener);
-
-	this._underlineButton = new DwtToolBarButton(params);
-	this._underlineButton.setImage("Underline");
-	this._underlineButton.setToolTipContent(appCtxt.getShortcutHint("editor", DwtKeyMap.TEXT_UNDERLINE));
-	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
-	this._underlineButton.addSelectionListener(listener);
-
-};
-
-ZmHtmlEditor.prototype._createFontColorButtons =
-function(tb) {
-	this._fontColorButton = new ZmHtmlEditorColorPicker(tb,null,"ZToolbarButton");
-	this._fontColorButton.dontStealFocus();
-	this._fontColorButton.setImage("FontColor");
-	this._fontColorButton.showColorDisplay(true);
-	this._fontColorButton.setToolTipContent(ZmMsg.fontColor);
-	this._fontColorButton.addSelectionListener(new AjxListener(this, this._fontColorListener));
-
-	this._fontBackgroundButton = new ZmHtmlEditorColorPicker(tb, null, "ZToolbarButton");
-	this._fontBackgroundButton.dontStealFocus();
-	this._fontBackgroundButton.setImage("FontBackground");
-	this._fontBackgroundButton.showColorDisplay(true);
-	this._fontBackgroundButton.setToolTipContent(ZmMsg.fontBackground);
-	this._fontBackgroundButton.addSelectionListener(new AjxListener(this, this._fontHiliteListener));
-};
-
-ZmHtmlEditor.prototype._createHorizRuleButton =
-function(tb) {
-	var params = {parent:tb};
-	this._horizRuleButton = new DwtToolBarButton(params);
-	this._horizRuleButton.setImage("HorizRule");
-	this._horizRuleButton.setToolTipContent(ZmMsg.horizRule);
-	this._horizRuleButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
-	this._horizRuleButton.addSelectionListener(new AjxListener(this, this._insElementListener));
-};
-
-ZmHtmlEditor.prototype._createUrlButton =
-function(tb) {
-	var params = {parent:tb};
-	this._insertLinkButton = new DwtToolBarButton(params);
-	this._insertLinkButton.setImage("URL");
-	this._insertLinkButton.setToolTipContent(ZmMsg.insertLink);
-	this._insertLinkButton.addSelectionListener(new AjxListener(this, this._insertLinkListener));
-};
-
-ZmHtmlEditor.prototype._createTableMenu =
-function(tb) {
-	var params = {parent:tb};
-	// BEGIN: Table operations
-	var b = this._tableMenu = new DwtToolBarButton(params);
-	b.setToolTipContent(ZmMsg.insertTable);
-	b.dontStealFocus();
-	b.setImage("Table");
-	var menu = new DwtMenu({parent:b});
-	b.setMenu(menu);
-
-	var item = new DwtMenuItem({parent:menu});
-	item.setText(ZmMsg.insertTable);
-	var grid_menu = new DwtMenu({parent:item, style:DwtMenu.GENERIC_WIDGET_STYLE});
-	var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
-	grid.addSelectionListener(new AjxListener(this, this._createTableListener));
-	item.setMenu(grid_menu);
-	item.setImage("InsertTable");
-
-	new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
-	this.__createTableOperationItems(menu);
-	// END: table operations
-};
-
-ZmHtmlEditor.prototype._createSpreadSheetButton =
-function(tb) {
-	new DwtControl({parent:tb, className:"vertSep"});
-
-	var params = {parent:tb, style:0};
-	var b = new DwtToolBarButton(params);
-	b.setImage("SpreadSheet");
-	b.setData("ACE", "ZmSpreadSheet");
-	b.setToolTipContent(ZmMsg.insertSpreadsheet);
-	b.addSelectionListener(new AjxListener(this, this._menu_insertObject));
-};
-
 ZmHtmlEditor.prototype._createStyleMenu =
 function(tb) {
 	var s = new DwtToolBarButton({parent:tb});
 	// minor hack to set section symbol - avoids d/l'ing an icon :]
 	s.setText("x");
-	s._textEl.innerHTML = "<span style='font-size:13px'>&sect;</span>";
+    s._textEl.innerHTML = "<span style='font-size:13px'>&sect;</span>";
 	s.setToolTipContent(ZmMsg.sections);
 	s.dontStealFocus();
 	var menu = this._styleMenu = new ZmPopupMenu(s);
@@ -1196,7 +1115,7 @@ function(tb) {
 		{ label:ZmMsg.heading4, 	id:DwtHtmlEditor.H4},
 		{ label:ZmMsg.heading5, 	id:DwtHtmlEditor.H5},
 		{ label:ZmMsg.heading6, 	id:DwtHtmlEditor.H6},
-		{ label:ZmMsg.address,		id:DwtHtmlEditor.ADDRESS},
+		{ label:ZmMsg.addressLabel,	id:DwtHtmlEditor.ADDRESS},
 		{ label:ZmMsg.preformatted,	id:DwtHtmlEditor.PREFORMATTED} ];
 
 	for (var i = 0; i < menuItems.length; i++) {
@@ -1211,45 +1130,55 @@ function(tb) {
 	s.setMenu(menu);
 };
 
+
+
 ZmHtmlEditor.prototype._createListMenu =
 function(tb) {
-	var b = this._listMenuButton = new DwtToolBarButton({parent:tb});
+
+    var b = new DwtToolBarButton({parent:tb});
 	b.dontStealFocus();
 	b.setImage("BulletedList");
 	b.setToolTipContent(ZmMsg.bulletedList);
 
-	var listListener = new AjxListener(this, this._insElementListener);
-	var menu = this._listMenu = new ZmPopupMenu(b);
-	var bulletListMenu = this._bulletListMenuItem = menu.createMenuItem(DwtHtmlEditor.UNORDERED_LIST, {image:"BulletedList", style:DwtMenuItem.SELECT_STYLE});
-	bulletListMenu.addSelectionListener(listListener);
-	bulletListMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNORDERED_LIST);
+    var listListener = new AjxListener(this, this._insElementListener);
 
-	var numberListMenu = this._numberListMenuItem = menu.createMenuItem(DwtHtmlEditor.ORDERED_LIST, {image:"NumberedList", style:DwtMenuItem.SELECT_STYLE});
-	numberListMenu.addSelectionListener(listListener);
-	numberListMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ORDERED_LIST);
+    var menu = this._listMenu = new ZmPopupMenu(b);
 
-	b.setMenu(menu);
+    var bulletListMenu = this._bulletListMenuItem = menu.createMenuItem(DwtHtmlEditor.UNORDERED_LIST, {image:"BulletedList", style:DwtMenuItem.SELECT_STYLE});
+    bulletListMenu.addSelectionListener(listListener);
+    bulletListMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNORDERED_LIST);
+
+    var numberListMenu = this._numberListMenuItem = menu.createMenuItem(DwtHtmlEditor.ORDERED_LIST, {image:"NumberedList", style:DwtMenuItem.SELECT_STYLE});
+    numberListMenu.addSelectionListener(listListener);
+    numberListMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ORDERED_LIST);
+
+    b.setMenu(menu);
+
 };
+
 
 ZmHtmlEditor.prototype._createIndentMenu =
 function(tb) {
-	var b = this._indentMenuButton = new DwtToolBarButton({parent:tb});
+
+    var b = new DwtToolBarButton({parent:tb});
 	b.dontStealFocus();
 	b.setImage("Outdent");
 	b.setToolTipContent(ZmMsg.indentTooltip);
 
-	var listener = new AjxListener(this, this._indentListener);
-	var menu = this._indentMenu = new ZmPopupMenu(b);
+    var listener = new AjxListener(this, this._indentListener);
 
-	var indentMenu = this._indentMenuItem = menu.createMenuItem(DwtHtmlEditor.OUTDENT, {image:"Outdent", style:DwtMenuItem.SELECT_STYLE});
-	indentMenu.addSelectionListener(listener);
-	indentMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.OUTDENT);
+    var menu = this._indentMenu = new ZmPopupMenu(b);
 
-	var outdentMenu = this._outdentMenuItem = menu.createMenuItem(DwtHtmlEditor.INDENT, {image:"Indent", style:DwtMenuItem.SELECT_STYLE});
-	outdentMenu.addSelectionListener(listener);
-	outdentMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.INDENT);
+    var indentMenu = this._indentMenuItem = menu.createMenuItem(DwtHtmlEditor.OUTDENT, {image:"Outdent", style:DwtMenuItem.SELECT_STYLE});
+    indentMenu.addSelectionListener(listener);
+    indentMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.OUTDENT);
 
-	b.setMenu(menu);
+    var outdentMenu = this._outdentMenuItem = menu.createMenuItem(DwtHtmlEditor.INDENT, {image:"Indent", style:DwtMenuItem.SELECT_STYLE});
+    outdentMenu.addSelectionListener(listener);
+    outdentMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.INDENT);
+
+    b.setMenu(menu);
+
 };
 
 ZmHtmlEditor.prototype._createJustifyMenu =
@@ -1271,9 +1200,8 @@ function(tb) {
 		var mi = menu.createMenuItem(item.id, {image:item.image, style:DwtMenuItem.RADIO_STYLE});
 		mi.addSelectionListener(listener);
 		mi.setData(ZmHtmlEditor._VALUE, item.id);
-		if (i == 0) {
+		if (i == 0)
 			mi.setChecked(true, true);
-		}
 	}
 
 	b.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
@@ -1331,63 +1259,65 @@ function(fontSize) {
 
 ZmHtmlEditor.prototype._rteStateChangeListener =
 function(ev) {
+
 	this._boldButton.setSelected(ev.isBold);
-	this._underlineButton.setSelected(ev.isUnderline);
-	this._italicButton.setSelected(ev.isItalic);
-	if (this._strikeThruButton) {
-		this._strikeThruButton.setSelected(ev.isStrikeThru);
-	}
-	if (this._subscriptButton) {
-		this._subscriptButton.setSelected(ev.isSubscript);
-	}
-	if (this._superscriptButton) {
-		this._superscriptButton.setSelected(ev.isSuperscript);
-	}
-	if (ev.color) {
-		this._fontColorButton.setColor(ev.color);
-	}
-	if (ev.backgroundColor) {
-		this._fontBackgroundButton.setColor(ev.backgroundColor);
-	}
-	if (ev.style) {
-		this._styleMenu.checkItem(ZmHtmlEditor._VALUE, ev.style, true);
-	}
+ 	this._underlineButton.setSelected(ev.isUnderline);
+ 	this._italicButton.setSelected(ev.isItalic);
+ 	if (this._strikeThruButton)
+ 		this._strikeThruButton.setSelected(ev.isStrikeThru);
+ 	if (this._subscriptButton)
+ 		this._subscriptButton.setSelected(ev.isSubscript);
+ 	if (this._superscriptButton)
+ 		this._superscriptButton.setSelected(ev.isSuperscript);
 
-	if (!AjxEnv.isIE) {
-		// Bug 20171
-		// For reasons not known to humanity, the following code resets the undo stack in IE.
-		// It seems to have something to do with modifying the DOM.  The setText() calls use
-		// innerHTML, but it's not about innerHTML, since I tried using DOM methods as well
-		// to modify the text (createTextNode/removeChild/appendChild).  Nothing works.
-		// I therefore disable this code for IE, trusting it's better to have working undo
-		// and an un-updated toolbar, rather than the other way around.
+ 	if (ev.color)
+ 		this._fontColorButton.setColor(ev.color);
 
-		if (ev.fontFamily) {
-			var id = ev.fontFamily;
-			var name = ZmHtmlEditor.FONT_FAMILY[id] && ZmHtmlEditor.FONT_FAMILY[id].name;
-			name = name || ZmHtmlEditor.__makeFontName(id);
-			this._fontFamilyButton.setText(name);
-		}
+ 	if (ev.backgroundColor)
+ 		this._fontBackgroundButton.setColor(ev.backgroundColor);
 
-		if (ev.fontSize) {
-			var mi = this._fontSizeButton.getMenu().getItem(ev.fontSize-1);
-			this._fontSizeButton.setText(mi.getText());
-		}
-	}
+ 	if (ev.style)
+ 		this._styleMenu.checkItem(ZmHtmlEditor._VALUE, ev.style, true);
 
-	this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, ev.justification, true);
+        if (!AjxEnv.isIE) {
+
+                // Bug 20171
+
+                // For reasons not known to humanity, the following code resets the undo stack in IE.
+                // It seems to have something to do with modifying the DOM.  The setText() calls use
+                // innerHTML, but it's not about innerHTML, since I tried using DOM methods as well
+                // to modify the text (createTextNode/removeChild/appendChild).  Nothing works.
+
+                // I therefore disable this code for IE, trusting it's better to have working undo
+                // and an un-updated toolbar, rather than the other way around.  I'll commit suicide
+                // next; if you find a better solution please tell my son after about 12 years.  >:)
+
+ 	        if (ev.fontFamily) {
+				var id = ev.fontFamily;
+				var name = ZmHtmlEditor.FONT_FAMILY[id] && ZmHtmlEditor.FONT_FAMILY[id].name;
+				name = name || ZmHtmlEditor.__makeFontName(id);
+				this._fontFamilyButton.setText(name);
+			}
+
+			 if (ev.fontSize) {
+ 		        var mi = this._fontSizeButton.getMenu().getItem(ev.fontSize-1);
+ 		        this._fontSizeButton.setText(mi.getText());
+ 	        }
+
+        }
+
+ 	this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, ev.justification, true);
 };
 
 ZmHtmlEditor.prototype._settingChangeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_SETTING) { return; }
+	if (ev.type != ZmEvent.S_SETTING) return;
 
 	var id = ev.source.id;
 	if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR ||
 		id == ZmSetting.COMPOSE_INIT_FONT_FAMILY ||
 		id == ZmSetting.COMPOSE_INIT_FONT_SIZE)
 	{
-		this._resetFormatControlDefaults();
 		this._fontStyle = null;
 	}
 };
@@ -1395,40 +1325,18 @@ function(ev) {
 ZmHtmlEditor.prototype._handleEditorEvent =
 function(ev) {
 	var rv = this._eventCallback ? this._eventCallback.run(ev) : true;
-	if (rv) {
+	if (rv)
 		rv = DwtHtmlEditor.prototype._handleEditorEvent.call(this, ev);
-	}
-
-	// Bug 28308 - browser focus can get stuck in editor; flail around setting focus
-	// until focus is back in sync
-	if (AjxEnv.isSafari && ev.type == "keydown") {
-		var kbMgr = DwtShell.getShell(window).getKeyboardMgr();
-		if (kbMgr.__focusObj != this) {
-			DBG.println(AjxDebug.DBG1, "HTML editor has a focus issue!!!");
-			var focusObj = kbMgr.__focusObj;
-			var searchCtlr = appCtxt.getSearchController();
-			var searchField = searchCtlr && searchCtlr.getSearchToolbar().getSearchField();
-			if (searchField) {
-				searchField.focus();
-				kbMgr.grabFocus(kbMgr.__focusObj);
-			}
-			kbMgr.grabFocus(focusObj);
-			rv = DwtKeyboardMgr.__keyDownHdlr(ev);
-		}
-	}
-
-	if (this._TIMER_spell) {
+	if (this._TIMER_spell)
 		clearTimeout(this._TIMER_spell);
-	}
 	var self = this;
 	if (this._spellCheck) {
 		var dw;
 		// This probably sucks.
-		if (/mouse|context|click|select/i.test(ev.type)) {
+		if (/mouse|context|click|select/i.test(ev.type))
 			dw = new DwtMouseEvent(true);
-		} else {
+		else
 			dw = new DwtUiEvent(true);
-		}
 		dw.setFromDhtmlEvent(ev);
 		this._TIMER_spell = setTimeout(function() {
 			self._handleSpellCheckerEvents(dw);
@@ -1459,18 +1367,21 @@ function() {
 	var size = this.getSize();
 
 	if (!this._spellCheckModeDivId) {
+
 		var div = document.createElement("div");
 		div.className = "SpellCheckModeDiv";
 		div.id = this._spellCheckModeDivId = Dwt.getNextId();
 		var html = new Array();
 		var i = 0;
-		html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td style='width:25'>";
+		html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
+		html[i++] = "<td style='width:25'>"
 		html[i++] = AjxImg.getImageHtml("SpellCheck");
 		html[i++] = "</td><td style='white-space:nowrap'><span class='SpellCheckLink'>";
 		html[i++] = ZmMsg.resumeEditing;
 		html[i++] = "</span> | <span class='SpellCheckLink'>";
 		html[i++] = ZmMsg.checkAgain;
-		html[i++] = "</span></td></tr></table>";
+		html[i++] = "</span></td>";
+		html[i++] = "</tr></table>";
 		div.innerHTML = html.join("");
 
 		var editable = document.getElementById((this._spellCheckDivId || this.getBodyFieldId()));
@@ -1481,19 +1392,18 @@ function() {
 		Dwt.setHandler(el[0], "onclick", ZmHtmlEditor._spellCheckResumeEditing);
 		Dwt.associateElementWithObject(el[1], this);
 		Dwt.setHandler(el[1], "onclick", ZmHtmlEditor._spellCheckAgain);
-	}
-	else {
+	} else {
 		document.getElementById(this._spellCheckModeDivId).style.display = "";
 	}
+	// this.parent._resetBodySize();
 	this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 2));
 };
 
 ZmHtmlEditor.prototype._spellCheckHideModeDiv =
 function() {
 	var size = this.getSize();
-	if (this._spellCheckModeDivId) {
+	if (this._spellCheckModeDivId)
 		document.getElementById(this._spellCheckModeDivId).style.display = "none";
-	}
 	this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 2));
 };
 
@@ -1502,8 +1412,8 @@ function(ev) {
 	var self = this;
 	var item = ev.item;
 	var orig = item.getData("orig");
-	if (!orig) { return; }
-
+	if (!orig)
+		return;
 	var val = item.getData(ZmHtmlEditor._VALUE);
 	var plainText = this._mode == DwtHtmlEditor.TEXT;
 	var fixall = item.getData("fixall");
@@ -1667,20 +1577,20 @@ function(ev) {
 					item.addSelectionListener(self._spellCheckSuggestionListenerObj);
 				}
 			} else {
-				item = menu.createMenuItem("clear", {text:ZmMsg.noSuggestions, className:"ZMenuItem ZmSpellMenuItem"});
+                item = menu.createMenuItem("clear", {text:ZmMsg.noSuggestions, className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("value", "");
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
 				menu.createSeparator();
 
-				item = menu.createMenuItem("clear", {text:ZmMsg.clearText, className:"ZMenuItem ZmSpellMenuItem"});
+                item = menu.createMenuItem("clear", {text:ZmMsg.clearText, className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("value", "");
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
 				item.addSelectionListener(self._spellCheckSuggestionListenerObj);
-			}
+            }
 			return menu;
 		};
 		sc.menu = makeMenu(0, this);
@@ -1726,8 +1636,8 @@ function(words) {
 		if (misspelled == null || misspelled.length == 0) {
 			appCtxt.setStatusMsg(ZmMsg.noMisspellingsFound, ZmStatusView.LEVEL_INFO);
 		} else {
-			var msg = AjxMessageFormat.format(ZmMsg.misspellingsResult, misspelled.length);
-			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+            var msg = AjxMessageFormat.format(ZmMsg.misspellingsResult, misspelled.length);
+            appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 
 			this.highlightMisspelledWords(misspelled);
 			wordsFound = true;
@@ -1746,22 +1656,22 @@ function(words) {
 // overwrites the base class' _enableDesignMode in order to work around Gecko problems
 ZmHtmlEditor.prototype._enableDesignMode =
 function(doc) {
-	if (!doc) { return; }
-
-	if (!(AjxEnv.isGeckoBased && this.ACE_ENABLED)) {
+	if (!doc)
+		return;
+	if (!(AjxEnv.isGeckoBased && this.ACE_ENABLED))
 		return DwtHtmlEditor.prototype._enableDesignMode.call(this, doc);
-	}
 	// Gecko needs special attention here. (https://bugzilla.mozilla.org/show_bug.cgi?id=326600)
+	// :-(
 
-	if (!this._hasGeckoFocusHacks) {
+	if (!this._hasGeckoFocusHacks)
 		this.__enableGeckoFocusHacks();
-	}
 
 	// -- findings suggest that Firefox loses these events on certain
 	//    occasions (i.e. iframe.style.display = "none"), so we DO need to
 	//    add them multiple times.  Crap.
 	this._getIframeWin().addEventListener("blur", this._designModeHack_blur, true);
 	this._getIframeWin().addEventListener("focus", this._designModeHack_focus, true);
+	// this._getIframeWin().addEventListener("mousedown", this._designModeHack_focus, true);
 };
 
 // this should be called ONLY ONCE (if !this._hasGeckoFocusHacks)
@@ -1780,20 +1690,18 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 
 	this._designModeHack_blur = AjxCallback.simpleClosure(
 		function(ev) {
-			if (state < 0) { return; }
-
+			if (state < 0)
+				return;
 			//console.log("BLUR!");
 			var enableFocus = false;
 			var dwtev = DwtShell.mouseEvent;
 			dwtev.setFromDhtmlEvent(ev, true);
 
-			//bug: 24782 - we dont have option to get info related to toolbar button selection
-			var kbMgr = appCtxt.getKeyboardMgr();
-			if (kbMgr && kbMgr.__focusObj) {
-				for (var i = 0; i < this._toolbars.length; i++) {
-					if ((kbMgr.__focusObj == this._toolbars[i]) ||
-						(kbMgr.__focusObj.parent == this._toolbars[i]))
-					{
+            //bug: 24782 - we dont have option to get info related to toolbar button selection
+			var kbMgr = DwtShell.getShell(window).getKeyboardMgr();
+			if(kbMgr && kbMgr.__focusObj) {
+				for (var i = 0; i < this._toolbars.length; i++){
+					if((kbMgr.__focusObj == this._toolbars[i]) || (kbMgr.__focusObj.parent == this._toolbars[i])){
 						enableFocus = true;
 						break;
 					}
@@ -1802,10 +1710,10 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 			enableToolbars.call(this, enableFocus);
 
 			var doc = this._getIframeDoc();
-			Dwt.enableDesignMode(doc, false);
+			doc.designMode = "off";
 			state = -1;
-			if (this._ace_componentsLoading > 0) { return; }
-
+			if (this._ace_componentsLoading > 0)
+				return;
 			try {
 				var sel = this._getIframeWin().getSelection();
 				var i = 0, r;
@@ -1831,13 +1739,17 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 			var doc = this._getIframeDoc();
 			var sel = this._getIframeWin().getSelection();
 			enableToolbars.call(this, true);
-			if (this._ace_componentsLoading > 0) { return; }
-
-			Dwt.enableDesignMode(doc, true);
+			if (this._ace_componentsLoading > 0)
+				return;
+			// Probably a regression of FF 1.5.0.1/Linux requires us to
+			// reset event handlers here (Zimbra bug: 6545).
+//  			if (AjxEnv.isGeckoBased && (AjxEnv.isLinux || AjxEnv.isMac))
+//  				this._registerEditorEventHandlers(document.getElementById(this._iFrameId), doc);
+			doc.designMode = "on";
 			if (!bookmark || bookmark.length == 0) {
 				r = doc.createRange();
-				r.selectNodeContents(doc.body);
-				r.collapse(true);
+ 				r.selectNodeContents(doc.body);
+ 				r.collapse(true);
 				bookmark = [ r ];
 			}
 			sel.removeAllRanges();
@@ -1850,8 +1762,8 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 };
 
 ZmHtmlEditorColorPicker = function(parent,style,className) {
-	DwtButtonColorPicker.call(this, parent,style,className);
-};
+    DwtButtonColorPicker.call(this, parent,style,className);
+}
 ZmHtmlEditorColorPicker.prototype = new DwtButtonColorPicker;
 ZmHtmlEditorColorPicker.prototype.constructor = ZmHtmlEditorColorPicker;
 

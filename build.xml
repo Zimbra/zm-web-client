@@ -67,12 +67,8 @@
     <property name="ffext.jarfile" value="zimbradnd.jar"/>
     <property name="ffext.xpifile" value="ZimbraDnD.xpi"/>
     <property name="ffext.build.dir" location="ffext/build"/>
-    <property name="ffext.src.dir" value="ffext/src/zimbradnd"/>
+    <property name="ffext.src.dir" value="ffext/src"/>
 
-    <!-- TINY_MCE INTEGRATION -->
-    <property name="tinymce.version" value="3.2.6"/>
-    <property name="tinymce.zplugins.dir" value="${web.dir}/tiny_mce_plugins"/>
-        
     <!-- Tasks -->
 
     <taskdef resource="net/sf/antcontrib/antlib.xml">
@@ -109,7 +105,7 @@
 			<equals arg1="${zimbra.buildinfo.type}" arg2="NETWORK" />
 		</condition>
         <property name='common.web.includes' value='${custom.web.includes},js/**,css/**'/>
-        <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**,**/AjxTimezoneData.js,tiny_mce_plugins/**'/>
+        <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**,**/AjxTimezoneData.js'/>
         <property name='common.jsp.includes' value='${custom.jsp.includes},**'/>
         <property name='common.jsp.excludes' value='${custom.jsp.excludes}'/>
         <property name='common.img.includes' value='${custom.img.includes},**'/>
@@ -154,7 +150,7 @@
         <property name='skins.dir' value='${web.dir}/skins'/>
         <property name='help.dir' value='${web.dir}/help'/>
         <property name='build.help.dir' value='${build.web.dir}/help'/>
-        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**,tiny_mce/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**'/>
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
@@ -182,7 +178,7 @@
         <property name='skins.dir' value='${web.dir}/admin_skins'/>
         <property name='adminhelp.dir' value='${web.dir}/adminhelp'/>
         <property name='build.adminhelp.dir' value='${build.web.dir}/adminhelp'/>
-        <property name='web.includes' value='${common.web.includes},migrationwizard/**,yui/**'/>
+        <property name='web.includes' value='${common.web.includes},migrationwizard/**'/>
         <property name='web.excludes' value='${common.web.excludes},js/zimbraMail/**'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes'
@@ -224,11 +220,10 @@
             <classes dir='${web.dir}' includes='messages/**,keys/**'/>
             <lib dir='${lib.dir}' includes='gifencoder.jar'/>
             <lib dir='${webinf.lib.dir}'/>
+            <lib dir='${common.build.dir}' includes='zimbracommon.jar'/>
             <lib dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
             <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
             <zipfileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.files}'/>
-            <!--tiny_mce-->
-            <zipfileset dir='${tinymce.zplugins.dir}' includes='**' prefix='tiny_mce/${tinymce.version}/plugins'/>
 			<zipfileset refid='customer.web.fileset'/>
             <zipfileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}' prefix='public'/>
             <!-- For customer jsp files
@@ -253,10 +248,6 @@
         </copy>
         <copy todir='${webapp.dir}/public' verbose='${sync.verbose}'>
             <fileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}'/>
-        </copy>
-        <!--tiny_mce-->
-        <copy todir='${webapp.dir}/tiny_mce/${tinymce.version}/plugins' verbose='${sync.verbose}'>
-            <fileset dir='${tinymce.zplugins.dir}' includes='**'/>
         </copy>
         <!--<copy todir='${webapp.dir}/img' verbose='${sync.verbose}'>-->
             <!--<fileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}'/>-->
@@ -433,7 +424,7 @@
 
     <target name='compile' depends='init,external'>
         <mkdir dir='${build.classes.dir}'/>
-        <javac destdir="${build.classes.dir}" classpathref="class.path" debug="true" target="1.5">
+        <javac destdir="${build.classes.dir}" classpathref="class.path" debug="true">
             <src location='${java.dir}'/>
         </javac>
     </target>
@@ -645,7 +636,7 @@
 		<antcall target='images-merge'>
 			<param name='srcdir' value='${build.img.dir}' />
 			<param name='destdir' value='${build.img.dir}' />
-			<param name='csspath' value='@AppContextPath@/img/' />
+			<param name='csspath' value='/${deploy.app}/img/' />
 		</antcall>
 		<!-- merge skin images -->
 		<dirset id='this.build.skins.dirset' dir='${build.skin.dir}' includes='*' />
@@ -657,7 +648,7 @@
 				<antcall target="images-merge">
 					<param name='srcdir' value='${build.skin.dir}/@{skinname}/img' />
 					<param name='destdir' value='${build.skin.dir}/@{skinname}/img' />
-					<param name='csspath' value='@AppContextPath@/skins/@{skinname}/img/' />
+					<param name='csspath' value='/${deploy.app}/skins/@{skinname}/img/' />
 				</antcall>
 			</sequential>
 		</for>
@@ -669,7 +660,19 @@
 			<fileset dir='${customer.img.dir}' includes='**/favicon.ico,**/apple-touch-icon.png'/>
 		</copy>
 	</target>
-
+	<!-- add skins to global config (zimbraInstalledSkin) -->
+	<target name="reset-skins-config">
+        <java classname="com.zimbra.cs.account.ProvUtil" fork="true" classpathref="class.path" failonerror="true">
+            <arg line="mcf zimbraInstalledSkin ''"/>
+        </java>	
+		<dirset id='this.build.skins.dirset' dir='${build.skin.dir}' includes='*' />
+		<pathconvert property='this.build.skins.files' refid='this.build.skins.dirset' pathsep=','>
+			<flattenmapper />
+		</pathconvert>
+		<foreach target='add-skin-to-config' list='${this.build.skins.files}' param='arg'/>
+	</target>
+	
+	<!--<foreach target='add-skin-to-config' list='${jam-files.list}' param='arg'/> -->
 	<target name='images-merge'>
 		<!-- delete output files if files changed -->
 		<dependset>
@@ -682,8 +685,7 @@
 			<then>
 				<!-- default locale images -->
 				<imagemerge destdir='${destdir}' disable='true'
-							cssfile='${build.css.filename}' csspath='${csspath}'
-							jsfile='${build.css.filename}.js'>
+							cssfile='${build.css.filename}' csspath='${csspath}'>
 					<dirset dir='${srcdir}' includes='*' excludes='?*_??,?*_??_??' />
 				</imagemerge>
 				<replace token="@jsVersion@" value="${build.simpleDate}" file='${destdir}/${build.css.filename}'/>
@@ -699,8 +701,7 @@
 							<then>
 								<imagemerge destdir='${destdir}' disable='true'
 											cssfile='${build.css.file}_@{locale}${build.css.ext}'
-											csspath='${csspath}'
-											jsfile='${build.css.filename}.js'>
+											csspath='${csspath}'>
 									<dirset dir='${srcdir}' includes='?*_@{locale}' />
 								</imagemerge>
 								<replace token="@jsVersion@" value="${build.simpleDate}"
@@ -736,8 +737,7 @@
         <echo message='Merging images for skin ${skindir}'/>
         <echo/>
         <imagemerge destdir='${build.this.skin.dir}'
-                    cssfile='${build.css.filename}' csspath='@AppContextPath@/skins/${skindir}/img/'
-					jsfile='${build.css.filename}.js'>
+                    cssfile='${build.css.filename}' csspath='/${deploy.app}/skins/${skindir}/img/'>
             <dirset dir='${skinbasedir}/skins/${skindir}' includes='img/**'/>
         </imagemerge>
 
@@ -774,7 +774,7 @@
                     />
             <fileset dir='${build.web.dir}' includes='skins/${skinname}/**'/>
             <fileset dir='${customer.web.dir}' includes='portals/${skinname}/**'/>
-            <fileset dir='${customer.web.dir}' includes='${custom.web.jsp.includes},h/**,m/**,js/**'/>
+            <fileset dir='${customer.web.dir}' includes='${custom.web.jsp.includes},h/**,m/**'/>
             <fileset dir='${customer.web.dir}' includes='WEB-INF/**'/>
         </zip>
     </target>
@@ -1007,14 +1007,14 @@ if (ext == null) ext = "";
                         <copy tofile="@{var}${nodebug.ext}" file='@{var}'/>
                         <echo>Stripping debug to @{var}${nodebug.ext}</echo>
                         <replaceregexp byline="true">
-                            <regexp pattern="^\s*DBG\.\w+\(.*\);\s*$"/>
+                            <regexp pattern="DBG\.\w+\(.*\);"/>
                             <substitution expression=" "/>
                             <fileset file="@{var}${nodebug.ext}"/>
                         </replaceregexp>
                         <echo>Minimizing to @{var}${jsmin.ext}</echo>
 	                    <try>
 	                        <block>
-		                        <java jar="${common.lib.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true"
+		                        <java jar="${common.lib.dir}/yuicompressor-2.3.4.jar" fork="true" failonerror="true"
 		                              output="${build.dir}/yui-compress.out">
 		                            <arg value="--line-break"/>
 		                            <arg value="0"/>
@@ -1037,7 +1037,7 @@ if (ext == null) ext = "";
                         <echo>Prepending Copyright to @{var}${license.ext}</echo>
                         <concat destfile="@{var}${license.ext}" fixlastline="true">
                             <header filtering="no" trimleading="yes">
-                                /* Copyright (C) 2005-2009 Zimbra Inc. http://www.zimbra.com/ */
+                                // Copyright (C) 2005-2009 Zimbra Inc. http://www.zimbra.com/
                             </header>
                             <fileset file='@{var}${jsmin.ext}'/>
                         </concat>
@@ -1061,7 +1061,7 @@ if (ext == null) ext = "";
 		<for list="${files}" param="filename">
 			<sequential>
 				<echo>Testing file: @{filename}</echo>
-				<java jar="${common.lib.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true">
+				<java jar="${common.lib.dir}/yuicompressor-2.3.4.jar" fork="true" failonerror="true">
 				    <arg value="--line-break"/>
 				    <arg value="0"/>
 				    <arg value="--type"/>
@@ -1106,7 +1106,7 @@ if (ext == null) ext = "";
         <unzip dest='${webapp.dir}' src="${webapp.file}"/>
 
         <antcall target='webxml-deploy-replace'/>
-
+    	
         <ant dir="${server.dir}" target="start-jetty" inheritAll="false"/>
     </target>
 
@@ -1123,7 +1123,6 @@ if (ext == null) ext = "";
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailURL%%" value="/zimbra"/>
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailPort%%" value="7070"/>
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailSSLPort%%" value="7443"/>
-    	<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailTrustedIP%%" value=""/>
     </target>
 
     <target name='clean' depends='customer-init'>
@@ -1224,7 +1223,7 @@ if (ext == null) ext = "";
          <fileset dir="${server.dist.dir}/jetty/common/lib" includes="zimbracommon.jar"/>
          <fileset dir="${server.build.dir}" includes="zimbrastore.jar"/>
          <fileset dir="${lib.dir}" includes="standard.jar,servlet-api.jar"/>
-         <fileset dir="${common.lib.dir}" includes="*.jar"/>
+         <fileset dir="${common.lib.dir}" includes="jetty-util*.jar,commons-collections*.jar"/>
          <fileset dir="${jspc.src.dir}/WEB-INF/lib" includes="*.jar"/>
      </path>
 
@@ -1233,7 +1232,6 @@ if (ext == null) ext = "";
 		 <java classname="org.apache.jasper.JspC" fork="true" classpathref="jspc.class.path">
              <arg value="-s" />
              <arg value="-l" />
-             <arg value="-trimSpaces" />
              <arg value="-d" />
              <arg value="${jspc.build.dir}" />
              <arg value="-uriroot" />
@@ -1255,7 +1253,7 @@ if (ext == null) ext = "";
 	</target>
 
 	<target name="jspc.offline_precompile">
-		<fileset id='jspc.fileset' dir='${jspc.src.dir}' includes="desktop/*.jsp,public/*.jsp"/>
+		<fileset id='jspc.fileset' dir='${jspc.src.dir}' includes="desktop/*.jsp"/>
 		<pathconvert property='jspc.filelist' refid='jspc.fileset' pathsep=',' />
 
 		<mkdir dir="${jspc.build.dir}"/>
@@ -1263,19 +1261,13 @@ if (ext == null) ext = "";
 	</target>
 
      <target name="jspc.compile">
-         <javac destdir="${jspc.build.dir}" optimize="off" debug="on" srcdir="${jspc.build.dir}" classpathref="jspc.class.path" target="1.5">
-             <include name="**" />
-         </javac>
-     </target>
-
-     <target name="jspc.optcompile">
-         <javac destdir="${jspc.build.dir}" optimize="on" debug="off" srcdir="${jspc.build.dir}" classpathref="jspc.class.path" target="1.5">
+         <javac destdir="${jspc.build.dir}" optimize="off" debug="on" srcdir="${jspc.build.dir}" classpathref="jspc.class.path">
              <include name="**" />
          </javac>
      </target>
 
      <target name="jspc.build" depends="jspc.precompile,jspc.compile"/>
-     <target name="jspc.offline_build" depends="jspc.offline_precompile,jspc.optcompile"/>
+     <target name="jspc.offline_build" depends="jspc.offline_precompile,jspc.compile"/>
 
      <target name="jspc.deploy" depends="jspc.build">
      	<mkdir dir="/opt/zimbra/jetty/work/zimbra/jsp"/>
@@ -1291,4 +1283,10 @@ if (ext == null) ext = "";
          </delete>
      </target>
 
+	<target name='add-skin-to-config'>
+		<echo message="mcf +zimbraInstalledSkin ${arg}"/>
+        <java classname="com.zimbra.cs.account.ProvUtil" fork="true" classpathref="class.path" failonerror="true">
+            <arg line="mcf +zimbraInstalledSkin ${arg}"/>
+        </java>	
+	</target>
 </project>

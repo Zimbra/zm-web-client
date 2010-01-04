@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -157,13 +159,7 @@ function(compNum) {
 	return this.components[cn] ? this.components[cn].alarm : null;
 };
 
-ZmInvite.prototype.getInviteMethod =
-function(compNum) {
-	var cn = compNum || 0;
-	return this.components[cn] ? this.components[cn].method : null;
-};
-
-ZmInvite.prototype.getOrganizerEmail =
+ZmInvite.prototype.getOrganizerEmail = 
 function(compNum) {
 	var cn = compNum || 0;
 	return (this.components[cn] && this.components[cn].or && this.components[cn].or.url)
@@ -238,12 +234,6 @@ function(compNum) {
 		}
 	}
 	return list;
-};
-
-ZmInvite.prototype.getExceptId =
-function(compNum) {
-	var cn = compNum || 0;
-	return (this.components[cn] && this.components[cn].exceptId) ? this.components[cn].exceptId[0] : null;
 };
 
 ZmInvite.prototype.getStatus =
@@ -400,11 +390,8 @@ function(compNum) {
 };
 
 ZmInvite.prototype.getDurationText =
-function(compNum, emptyAllDay, startOnly, isText) {
+function(compNum, emptyAllDay,startOnly) {
 	var component = this.components[compNum];
-    var sdt = this.getServerStartDate(compNum);
-    var edt = this.getServerEndDate(compNum);
-    if(!sdt && !edt) return "";
 	if (this.isAllDayEvent(compNum)) {
 		if (emptyAllDay) {
 			return "";
@@ -434,25 +421,22 @@ function(compNum, emptyAllDay, startOnly, isText) {
 		var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 
 		var sd = this.getServerStartDate(compNum);
-        var a = [];
-        if(sd){
-		    a = [ dateFormatter.format(sd), isText ? " " : "<br>" ];
-            if (startOnly) {
-			    a.push(timeFormatter.format(sd));
-		    }
-		    else {
-                var ed = this.getServerEndDate(compNum);
-                if(ed){
-                    var startHour = timeFormatter.format(sd);
-                    var endHour = timeFormatter.format(ed);
 
-                    if (!ZmInvite._hoursFormatter) {
-                        ZmInvite._hoursFormatter = new AjxMessageFormat(ZmMsg.durationHours);
-                    }
-                    a.push(ZmInvite._hoursFormatter.format( [ startHour, endHour ] ));
-                }
-		    }
-        }
+		var a = [ dateFormatter.format(sd), "<br>" ];
+		if (startOnly) {
+			a.push(timeFormatter.format(sd));
+		} 
+		else {
+			var ed = this.getServerEndDate(compNum);
+		
+			var startHour = timeFormatter.format(sd);
+			var endHour = timeFormatter.format(ed);
+			
+			if (!ZmInvite._hoursFormatter) {
+				ZmInvite._hoursFormatter = new AjxMessageFormat(ZmMsg.durationHours);
+			}
+			a.push(ZmInvite._hoursFormatter.format( [ startHour, endHour ] ));
+		}
 		return a.join("");
 	}
 };
@@ -554,75 +538,6 @@ function() {
 	return this._toolTip;
 };
 
-ZmInvite.prototype.getSummary =
-function(isHtml) {
-	var compNum = 0;
-
-    var orgName = this.getOrganizerName(compNum);
-	var whenSummary = this.getDurationText(compNum, false, false, true);
-    var locationSummary = this.getLocation(compNum);
-
-	if (this.isRecurring(compNum)) {
-		if (!this._recurBlurb) {
-			AjxDispatcher.require("CalendarCore");
-			var recur = new ZmRecurrence();
-			recur.setRecurrenceRules(this.getRecurrenceRules(compNum), this.getServerStartDate(compNum));
-			this._recurBlurb = recur.getBlurb();
-		}
-	}
-    var recurSummary =  this._recurBlurb;
-
-	var buf = [];
-	var i = 0;
-
-	if (!this._summaryHtmlLineFormatter) {
-		this._summaryHtmlLineFormatter = new AjxMessageFormat("<tr><th align='left'>{0}</th><td>{1} {2}</td></tr>");
-		this._summaryTextLineFormatter = new AjxMessageFormat("{0} {1} {2}");
-	}
-	var formatter = isHtml ? this._summaryHtmlLineFormatter : this._summaryTextLineFormatter;
-
-    var params = [];
-    
-	if (isHtml) {
-		buf[i++] = "<p>\n<table border='0'>\n";
-	}
-
-
-	if (orgName) {
-		params = [ZmMsg.organizerLabel, orgName, ""];
-		buf[i++] = formatter.format(params);
-		buf[i++] = "\n";
-	}
-
-	if (whenSummary) {
-		params = [ZmMsg.whenLabel, whenSummary, ""];
-		buf[i++] = formatter.format(params);
-		buf[i++] = "\n";
-	}
-
-    if (locationSummary) {
-        params = [ZmMsg.locationLabel, locationSummary, ""];
-        buf[i++] = formatter.format(params);
-        buf[i++] = "\n";
-    }
-
-    if (recurSummary) {
-        params = [ZmMsg.repeatLabel, recurSummary, ""];
-        buf[i++] = formatter.format(params);
-        buf[i++] = "\n";
-    }
-
-	if (isHtml) {
-		buf[i++] = "</table>\n";
-	}
-	buf[i++] = isHtml ? "<div>" : "\n\n";
-	buf[i++] = ZmItem.NOTES_SEPARATOR;
-	// bug fix #7835 - add <br> after DIV otherwise Outlook lops off 1st char
-	buf[i++] = isHtml ? "</div><br>" : "\n\n";
-
-	return buf.join("");
-};
-
 /** Adds a row to the tool tip. */
 ZmInvite.prototype._addEntryRow =
 function(field, data, html, idx, wrap, width, asIs) {
@@ -652,11 +567,4 @@ function() {
 	}
 	
 	return false;
-};
-
-ZmInvite.prototype.hasInviteReplyMethod =
-function(compNum) {
-    var methodName = this.getInviteMethod(compNum);
-    var publishOrRequest = (methodName == ZmCalendarApp.METHOD_REQUEST || methodName == ZmCalendarApp.METHOD_PUBLISH);
-    return ((methodName == null) || publishOrRequest);
 };

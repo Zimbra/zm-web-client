@@ -1,23 +1,8 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="theBody" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="parentId" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="iframeUrl" rtexprvalue="true" required="true" type="java.lang.String" %>
+<%@ attribute name="noiframe" rtexprvalue="true" required="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -28,11 +13,24 @@
 	<iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="${fn:escapeXml(iframeUrl)}"></iframe>
 </noscript>
 <c:choose>
-<c:when test="${fn:length(theBody) gt 100000 and not empty iframeUrl }">
+<c:when test="${fn:length(theBody) gt 100000}">
     <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="${fn:escapeXml(iframeUrl)}"></iframe>    
 </c:when>
     <c:otherwise>
 <script type="text/javascript">
+    <c:if test="${not empty noiframe}">
+    (function() {
+		var divElem = document.createElement("div");
+        divElem.style.width = "100%";
+        divElem.scrolling = "no";
+		divElem.marginWidth = 0;
+		divElem.marginHeight = 0;
+		divElem.border = 0;
+        divElem.innerHTML = "${zm:jsEncode(theBody)}";
+        document.getElementById("${parentId}").appendChild(divElem);
+	})();
+    </c:if>
+    <c:if test="${empty noiframe}">
 	(function() {
 		var isKonqueror = /KHTML/.test(navigator.userAgent);
 		var isIE = ( /MSIE/.test(navigator.userAgent) && !/(Opera|Gecko|KHTML)/.test(navigator.userAgent) );
@@ -58,7 +56,7 @@
 				}
                     var i_frame = iframe;
                 //alert(b.scrollHeight+"|"+iframe.offsetHeight);
-                var _delay = isIE ? 100 : 0 ;
+                var _delay = isIE ? 300 : 0 ;
                 setTimeout(function(){ i_frame.style.height = b.scrollHeight + 30 + "px";}, _delay);
             }
 		};
@@ -68,7 +66,7 @@
 		doc.write("${zm:jsEncode(theBody)}");
 		doc.close();
 		try {
-			if (window.YAHOO && window.zimbraKeydownHandler && window.zimbraKeypressHandler) {
+			if (YAHOO && zimbraKeydownHandler && zimbraKeypressHandler) {
 				YAHOO.util.Event.addListener(doc, "keydown", zimbraKeydownHandler);
 				YAHOO.util.Event.addListener(doc, "keypress", zimbraKeypressHandler);
 			}
@@ -82,6 +80,7 @@
 		function onIframeLoad() { if (isKonqueror) setTimeout(resizeAndNullIframe, 100); else if (!isIE || iframe.readyState == "complete") resizeAndNullIframe();};
 		if (isIE) iframe.onreadystatechange = onIframeLoad; else iframe.onload = onIframeLoad;
 	})();
+    </c:if>
 </script>
 </c:otherwise>
 </c:choose>

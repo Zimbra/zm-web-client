@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -20,10 +22,6 @@ ZmCalendarApp = function(container) {
 	if (!appCtxt.isOffline) {
 		this._addSettingsChangeListeners();
 	}
-
-	// resource cache
-	this._resByName = {};
-	this._resByEmail = {};
 };
 
 // Organizer and item-related constants
@@ -51,7 +49,6 @@ ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_WEEK]		= ZmId.VIEW_CAL_WEEK;
 ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_WORK_WEEK]	= ZmId.VIEW_CAL_WORK_WEEK;
 ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_MONTH]		= ZmId.VIEW_CAL_MONTH;
 ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_SCHEDULE]	= ZmId.VIEW_CAL_SCHEDULE;
-ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_LIST]		= ZmId.VIEW_CAL_LIST;
 
 ZmCalendarApp.COLORS = [];
 // these need to match CSS rules
@@ -80,11 +77,6 @@ ZmCalendarApp.STATUS_NEED				= "NEED";		// vtodo
 ZmCalendarApp.STATUS_TENT				= "TENT";		// vevent
 ZmCalendarApp.STATUS_WAIT				= "WAITING";	// vtodo					[outlook]
 
-ZmCalendarApp.METHOD_CANCEL				= "CANCEL";
-ZmCalendarApp.METHOD_PUBLISH			= "PUBLISH";
-ZmCalendarApp.METHOD_REPLY				= "REPLY";
-ZmCalendarApp.METHOD_REQUEST			= "REQUEST";
-
 ZmCalendarApp.prototype = new ZmApp;
 ZmCalendarApp.prototype.constructor = ZmCalendarApp;
 
@@ -108,29 +100,21 @@ function() {
 ZmCalendarApp.prototype._registerSettings =
 function(settings) {
 	var settings = settings || appCtxt.getSettings();
-	settings.registerSetting("CAL_ALWAYS_SHOW_MINI_CAL",	{name: "zimbraPrefCalendarAlwaysShowMiniCal", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
-	settings.registerSetting("CAL_APPT_VISIBILITY",			{name: "zimbraPrefCalendarApptVisibility", type: ZmSetting.T_PREF, dataType: ZmSetting.D_STRING, defaultValue: "public", isGlobal:true});
+	settings.registerSetting("CAL_ALWAYS_SHOW_MINI_CAL",	{name: "zimbraPrefCalendarAlwaysShowMiniCal", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("CAL_EXPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
-	settings.registerSetting("CAL_FIRST_DAY_OF_WEEK",		{name: "zimbraPrefCalendarFirstDayOfWeek", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0, isGlobal:true});
+	settings.registerSetting("CAL_FIRST_DAY_OF_WEEK",		{name: "zimbraPrefCalendarFirstDayOfWeek", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0});
 	settings.registerSetting("CAL_FREE_BUSY_ACL",			{type: ZmSetting.T_PREF, defaultValue:ZmSetting.ACL_ALL});
 	settings.registerSetting("CAL_FREE_BUSY_ACL_USERS",		{type: ZmSetting.T_PREF});
 	settings.registerSetting("CAL_IMPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("CAL_INVITE_ACL",				{type: ZmSetting.T_PREF, defaultValue:ZmSetting.ACL_ALL});
 	settings.registerSetting("CAL_INVITE_ACL_USERS",		{type: ZmSetting.T_PREF});
-	settings.registerSetting("CAL_REMINDER_NOTIFY_SOUNDS",	{name: "zimbraPrefCalendarReminderSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
-	settings.registerSetting("CAL_REMINDER_NOTIFY_BROWSER",	{name: "zimbraPrefCalendarReminderFlashTitle", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
-	settings.registerSetting("CAL_REMINDER_NOTIFY_TOASTER",	{name: "zimbraPrefCalendarToasterEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
-	settings.registerSetting("CAL_REMINDER_WARNING_TIME",	{name: "zimbraPrefCalendarApptReminderWarningTime", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0, isGlobal:true});
-	settings.registerSetting("CAL_SHOW_TIMEZONE",			{name: "zimbraPrefUseTimeZoneListInCalendar", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
-	settings.registerSetting("CAL_USE_QUICK_ADD",			{name: "zimbraPrefCalendarUseQuickAdd", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
-	settings.registerSetting("CALENDAR_INITIAL_VIEW",		{name: "zimbraPrefCalendarInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CAL_DAY, isGlobal:true});
-	settings.registerSetting("DELETE_INVITE_ON_REPLY",		{name: "zimbraPrefDeleteInviteOnReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
-	settings.registerSetting("ENABLE_APPL_ICAL_DELEGATION", {name: "zimbraPrefAppleIcalDelegationEnabled",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
-	settings.registerSetting("CAL_AUTO_ADD_INVITES",		{name: "zimbraPrefCalendarAutoAddInvites",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	settings.registerSetting("CAL_SEND_INV_DENIED_REPLY",	{name: "zimbraPrefCalendarSendInviteDeniedAutoReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	settings.registerSetting("CAL_INV_FORWARDING_ADDRESS",	{name: "zimbraPrefCalendarForwardInvitesTo", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST, isGlobal:true});
-	settings.registerSetting("CAL_SHOW_PAST_DUE_REMINDERS",	{name: "zimbraPrefCalendarShowPastDueReminders", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
-	settings.registerSetting("CAL_SHOW_CALENDAR_WEEK",		{name: "zimbraPrefShowCalendarWeek", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
+	settings.registerSetting("CAL_REMINDER_NOTIFY_SOUNDS",	{name: "zimbraPrefCalendarReminderSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("CAL_REMINDER_NOTIFY_BROWSER",	{name: "zimbraPrefCalendarReminderFlashTitle", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("CAL_REMINDER_WARNING_TIME",	{name: "zimbraPrefCalendarApptReminderWarningTime", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0});
+	settings.registerSetting("CAL_SHOW_TIMEZONE",			{name: "zimbraPrefUseTimeZoneListInCalendar", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("CAL_USE_QUICK_ADD",			{name: "zimbraPrefCalendarUseQuickAdd", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	settings.registerSetting("CALENDAR_INITIAL_VIEW",		{name: "zimbraPrefCalendarInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CAL_DAY});
+	settings.registerSetting("DELETE_INVITE_ON_REPLY",		{name: "zimbraPrefDeleteInviteOnReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 };
 
 ZmCalendarApp.prototype._registerPrefs =
@@ -138,15 +122,11 @@ function() {
 	var sections = {
 		CALENDAR: {
 			title: ZmMsg.calendar,
-			icon: "CalendarApp",
 			templateId: "prefs.Pages#Calendar",
 			priority: 80,
 			precondition: ZmSetting.CALENDAR_ENABLED,
 			prefs: [
 				ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL,
-				ZmSetting.CAL_AUTO_ADD_INVITES,
-				ZmSetting.CAL_SEND_INV_DENIED_REPLY,
-				ZmSetting.CAL_APPT_VISIBILITY,
 				ZmSetting.CAL_EXPORT,
 				ZmSetting.CAL_FIRST_DAY_OF_WEEK,
 				ZmSetting.CAL_IMPORT,
@@ -157,23 +137,21 @@ function() {
 				ZmSetting.CAL_USE_QUICK_ADD,
 				ZmSetting.CALENDAR_INITIAL_VIEW,
 				ZmSetting.DELETE_INVITE_ON_REPLY,
-				ZmSetting.ENABLE_APPL_ICAL_DELEGATION,
 				ZmSetting.CAL_FREE_BUSY_ACL,
 				ZmSetting.CAL_FREE_BUSY_ACL_USERS,
 				ZmSetting.CAL_INVITE_ACL,
-				ZmSetting.CAL_INVITE_ACL_USERS,
-				ZmSetting.CAL_REMINDER_NOTIFY_TOASTER,
-				ZmSetting.CAL_INV_FORWARDING_ADDRESS,
-				ZmSetting.CAL_SHOW_PAST_DUE_REMINDERS,
-				ZmSetting.CAL_SHOW_CALENDAR_WEEK
+				ZmSetting.CAL_INVITE_ACL_USERS
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
-				AjxDispatcher.require("Alert");
 				return new ZmCalendarPrefsPage(parent, section, controller);
 			}
 		}
 	};
+
+	if (appCtxt.isOffline) {
+		sections["CALENDAR"].prefs.push(ZmSetting.OFFLINE_CALENDAR_TOASTER_ENABELD);
+	}
 
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
@@ -183,17 +161,7 @@ function() {
 		displayName:		ZmMsg.alwaysShowMiniCal,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
-
-	ZmPref.registerPref("CAL_AUTO_ADD_INVITES", {
-		displayName:		ZmMsg.autoAddInvites,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
-	ZmPref.registerPref("CAL_SEND_INV_DENIED_REPLY", {
-		displayName:		ZmMsg.sendInvDeniedAutoReply,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
+	
 	ZmPref.registerPref("CAL_EXPORT", {
 		displayName:		ZmMsg.exportToICS,
 		displayContainer:	ZmPref.TYPE_EXPORT
@@ -237,22 +205,22 @@ function() {
 		displayOptions:		[ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore],
 		options:			[0, 1, 5, 10, 15, 30, 45, 60]
 	});
-
+	
 	ZmPref.registerPref("CAL_SHOW_TIMEZONE", {
 		displayName:		ZmMsg.shouldShowTimezone,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
-
+	
 	ZmPref.registerPref("CAL_USE_QUICK_ADD", {
 	 	displayName:		ZmMsg.useQuickAdd,
 	 	displayContainer:	ZmPref.TYPE_CHECKBOX
 	 });
 	
 	ZmPref.registerPref("CALENDAR_INITIAL_VIEW", {
-		displayName:		ZmMsg.calendarInitialView,
-		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewList, ZmMsg.calViewSchedule],
-		options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_LIST, ZmSetting.CAL_SCHEDULE]
+	 	displayName:		ZmMsg.calendarInitialView,
+	 	displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewSchedule],
+		options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_SCHEDULE]
 	});
 	
 	ZmPref.registerPref("CAL_REMINDER_NOTIFY_SOUNDS", {
@@ -270,51 +238,22 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
-	ZmPref.registerPref("ENABLE_APPL_ICAL_DELEGATION", {
-		displayName: ZmMsg.enableAppleICalDelegation,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
-	ZmPref.registerPref("CAL_REMINDER_NOTIFY_TOASTER", {
-		displayFunc:		function() { AjxDispatcher.require("Alert"); return ZmDesktopAlert.getInstance().getDisplayText(); },
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
-	ZmPref.registerPref("CAL_APPT_VISIBILITY", {
-		displayName:		ZmMsg.calendarInitialApptVisibility,
-		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg._public, ZmMsg._private],
-		options:			[ZmSetting.CAL_VISIBILITY_PUB, ZmSetting.CAL_VISIBILITY_PRIV]
-	});
-
-	ZmPref.registerPref("CAL_INV_FORWARDING_ADDRESS", {
-		displayName:		ZmMsg.inviteForwardingAddress,
-		displayContainer:	ZmPref.TYPE_INPUT,
-		validationFunction: ZmPref.validateEmailList,
-        valueFunction:      ZmPref.string2EmailList,
-		errorMessage:		ZmMsg.invalidEmail
-	});
-
-	ZmPref.registerPref("CAL_SHOW_PAST_DUE_REMINDERS", {
-		displayName: ZmMsg.apptPastDueReminderLabel,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
-	ZmPref.registerPref("CAL_SHOW_CALENDAR_WEEK", {
-		displayName: ZmMsg.showWeekNumber,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
+	if (appCtxt.isOffline) {
+		ZmPref.registerPref("OFFLINE_CALENDAR_TOASTER_ENABELD", {
+			displayName:		(AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup),
+			displayContainer:	ZmPref.TYPE_CHECKBOX
+		});
+	}
 };
 
 ZmCalendarApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp(ZmId.OP_CAL_LIST_VIEW, {textKey:"list", tooltipKey:"viewCalListTooltip", image:"CalListView", shortcut:ZmKeyMap.CAL_LIST_VIEW});
-	ZmOperation.registerOp(ZmId.OP_CAL_REFRESH, {textKey:"refresh", tooltipKey:"calRefreshTooltip", image:"Refresh", shortcut:ZmKeyMap.REFRESH});
+	ZmOperation.registerOp(ZmId.OP_CAL_REFRESH, {textKey:"refresh", tooltipKey:"calRefreshTooltip", image:"Refresh"});
 	ZmOperation.registerOp(ZmId.OP_CAL_VIEW_MENU, {textKey:"view", image:"Appointment"}, null,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmCalendarApp.addCalViewMenu, parent);
 	}));
-	ZmOperation.registerOp(ZmId.OP_DAY_VIEW, {textKey:"viewDay", tooltipKey:"viewDayTooltip", image:"DayView", shortcut:ZmKeyMap.CAL_DAY_VIEW});
+	ZmOperation.registerOp(ZmId.OP_DAY_VIEW, {textKey:"viewDay", tooltipKey:"viewDayTooltip", image:"DayView"});
 	ZmOperation.registerOp(ZmId.OP_EDIT_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_EDIT_REPLY_CANCEL);
 	ZmOperation.registerOp(ZmId.OP_EDIT_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark"});
@@ -326,39 +265,26 @@ function() {
 			ZmOperation.addDeferredMenu(ZmCalendarApp.addInviteReplyMenu, parent);
 	}));
 	ZmOperation.registerOp(ZmId.OP_INVITE_REPLY_TENTATIVE, {textKey:"editReply", image:"QuestionMark"});
-	ZmOperation.registerOp(ZmId.OP_MONTH_VIEW, {textKey:"viewMonth", tooltipKey:"viewMonthTooltip", image:"MonthView", shortcut:ZmKeyMap.CAL_MONTH_VIEW});
+	ZmOperation.registerOp(ZmId.OP_MONTH_VIEW, {textKey:"viewMonth", tooltipKey:"viewMonthTooltip", image:"MonthView"});
 	ZmOperation.registerOp(ZmId.OP_MOUNT_CALENDAR, {textKey:"mountCalendar", image:"GroupSchedule"});
 	ZmOperation.registerOp(ZmId.OP_NEW_ALLDAY_APPT, {textKey:"newAllDayAppt", tooltipKey:"newAllDayApptTooltip", image:"NewAppointment"});
-	ZmOperation.registerOp(ZmId.OP_NEW_APPT, {textKey:"newAppt", tooltipKey:"newApptTooltip", image:"NewAppointment", shortcut:ZmKeyMap.NEW_APPT});
-	ZmOperation.registerOp(ZmId.OP_NEW_CALENDAR, {textKey:"newCalendar", image:"NewAppointment", tooltipKey: "newCalendarTooltip", shortcut:ZmKeyMap.NEW_CALENDAR});
+	ZmOperation.registerOp(ZmId.OP_NEW_APPT, {textKey:"newAppt", tooltipKey:"newApptTooltip", image:"NewAppointment"});
+	ZmOperation.registerOp(ZmId.OP_NEW_CALENDAR, {textKey:"newCalendar", image:"NewAppointment"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT_NOTIFY, {textKey:"notifyOrganizerLabel", image:"Check"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT_IGNORE, {textKey:"dontNotifyOrganizerLabel", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_CANCEL);
 	ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE, {textKey:"replyDecline", image:"Cancel"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE_NOTIFY, {textKey:"notifyOrganizerLabel", image:"Cancel"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE_IGNORE, {textKey:"dontNotifyOrganizerLabel", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_MODIFY);
 	ZmOperation.registerOp(ZmId.OP_REPLY_NEW_TIME, {textKey:"replyNewTime", image:"NewTime"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE_NOTIFY, {textKey:"notifyOrganizerLabel", image:"QuestionMark"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE_IGNORE, {textKey:"dontNotifyOrganizerLabel", image:"QuestionMark"});
-	ZmOperation.registerOp(ZmId.OP_SCHEDULE_VIEW, {textKey:"viewSchedule", tooltipKey:"viewScheduleTooltip", image:"GroupSchedule", shortcut:ZmKeyMap.CAL_SCHEDULE_VIEW});
+	ZmOperation.registerOp(ZmId.OP_SCHEDULE_VIEW, {textKey:"viewSchedule", tooltipKey:"viewScheduleTooltip", image:"GroupSchedule"});
 	ZmOperation.registerOp(ZmId.OP_SEARCH_MAIL, {textKey:"searchMail", image:"SearchMail"}, ZmSetting.MAIL_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_CALENDAR, {textKey:"shareCalendar", image:"CalendarFolder"});
-	ZmOperation.registerOp(ZmId.OP_TODAY, {textKey:"today", tooltipKey:"todayTooltip", image:"Date", shortcut:ZmKeyMap.TODAY});
+	ZmOperation.registerOp(ZmId.OP_TODAY, {textKey:"today", tooltipKey:"todayTooltip", image:"Date"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPOINTMENT, {textKey:"viewAppointment", image:"Appointment"});
-	ZmOperation.registerOp(ZmId.OP_OPEN_APPT_INSTANCE, {textKey:"openApptInstance", image:"Appointment"});
-	ZmOperation.registerOp(ZmId.OP_OPEN_APPT_SERIES, {textKey:"openApptSeries", image:"Appointment"});
-	ZmOperation.registerOp(ZmId.OP_DELETE_APPT_INSTANCE, {textKey:"deleteApptInstance", image:"Delete"});
-	ZmOperation.registerOp(ZmId.OP_DELETE_APPT_SERIES, {textKey:"deleteApptSeries", image:"Delete"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPT_INSTANCE, {textKey:"apptInstance", image:"Appointment"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPT_SERIES, {textKey:"apptSeries", image:"Appointment"});
-	ZmOperation.registerOp(ZmId.OP_WEEK_VIEW, {textKey:"viewWeek", tooltipKey:"viewWeekTooltip", image:"WeekView", shortcut:ZmKeyMap.CAL_WEEK_VIEW});
-	ZmOperation.registerOp(ZmId.OP_WORK_WEEK_VIEW, {textKey:"viewWorkWeek", tooltipKey:"viewWorkWeekTooltip", image:"WorkWeekView", shortcut:ZmKeyMap.CAL_WORK_WEEK_VIEW});
-	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT, {textKey:"forward", tooltipKey:"forward", image:"Forward"});	
-	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT_INSTANCE, {textKey:"forwardInstance", tooltipKey:"forwardInstance", image:"Forward"});
-	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT_SERIES, {textKey:"forwardSeries", tooltipKey:"forwardSeries", image:"Forward"});	
+	ZmOperation.registerOp(ZmId.OP_WEEK_VIEW, {textKey:"viewWeek", tooltipKey:"viewWeekTooltip", image:"WeekView"});
+	ZmOperation.registerOp(ZmId.OP_WORK_WEEK_VIEW, {textKey:"viewWorkWeek", tooltipKey:"viewWorkWeekTooltip", image:"WorkWeekView"});
 };
 
 ZmCalendarApp.prototype._registerItems =
@@ -408,12 +334,10 @@ function() {
 							 hasColor:			true,
 							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["appointment"],
-							 folderKey:			"calendar",
+							 folderKey:			"calendarFolder",
 							 mountKey:			"mountCalendar",
 							 createFunc:		"ZmCalendar.create",
 							 compareFunc:		"ZmCalendar.sortCompare",
-							 newOp:				ZmOperation.NEW_CALENDAR,
-							 displayOrder:		100,
 							 deferrable:		true
 							});
 };
@@ -428,6 +352,11 @@ function() {
 								 setting:		ZmSetting.CALENDAR_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_APPOINTMENT)
 								});
+};
+
+ZmCalendarApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_CALENDAR, ZmOrganizer.CALENDAR);
 };
 
 ZmCalendarApp.prototype._registerApp =
@@ -446,12 +375,12 @@ function() {
 							 {mainPkg:				"Calendar",
 							  nameKey:				"calendar",
 							  icon:					"CalendarApp",
-							  textPrecedence:		60,
 							  chooserTooltipKey:	"goToCalendar",
 							  viewTooltipKey:		"displayCalendar",
 							  defaultSearch:		ZmItem.APPT,
 							  organizer:			ZmOrganizer.CALENDAR,
-							  overviewTrees:		[ZmOrganizer.CALENDAR, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.CALENDAR, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  showZimlets:			true,
 							  assistants:			{"ZmAppointmentAssistant":	["CalendarCore", "Calendar", "CalendarAppt"],
 							  						 "ZmCalendarAssistant":		["CalendarCore", "Calendar", "CalendarAppt"]},
 							  newItemOps:			newItemOps,
@@ -462,7 +391,8 @@ function() {
 							  newActionCode:		ZmKeyMap.NEW_APPT,
 							  chooserSort:			30,
 							  defaultSort:			20,
-							  upsellUrl:			ZmSetting.CALENDAR_UPSELL_URL
+							  upsellUrl:			ZmSetting.CALENDAR_UPSELL_URL,
+							  supportsMultiMbox:	true
 							  });
 };
 
@@ -477,6 +407,7 @@ function(refresh) {
 	if (!appCtxt.inStartup) {
 		AjxDispatcher.run("GetCalController").refreshHandler(refresh);
 	}
+	this._handleRefresh();
 };
 
 ZmCalendarApp.prototype.deleteNotify =
@@ -509,10 +440,10 @@ function(creates, force) {
 			} else if (name == "appt") {
 				AjxDispatcher.run("GetCalController").notifyCreate(create);
 			}
-
-			if ((name == "folder" || name == "link") && this._calController) {
+             
+			if((name == "folder" || name == "link") && this._calController) {
 				this._calController._updateCheckedCalendars();
-			}
+			}			
 		}
 	}
 };
@@ -593,9 +524,7 @@ function(params, callback) {
 		}
 	}
 
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		this.initResources();
-	}
+	this.initResources();
 
 	cc.show(view, sd);
 	if (callback) {
@@ -604,7 +533,7 @@ function(params, callback) {
 };
 
 ZmCalendarApp.prototype.showSearchResults =
-function(results, callback) {
+function(results, callback, isGal, folderId) {
 	// calls ZmSearchController's _handleLoadShowResults
 	if (callback) {
 		callback.run();
@@ -614,8 +543,8 @@ function(results, callback) {
 ZmCalendarApp.prototype.activate =
 function(active) {
 	ZmApp.prototype.activate.apply(this, arguments);
-
-	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+	
+	if(appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		var show = active || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
 		AjxDispatcher.run("ShowMiniCalendar", show);
 	}
@@ -648,11 +577,11 @@ function() {
 
 ZmCalendarApp.prototype.getReminderController =
 function() {
-	if (!this._reminderController) {
+    if (!this._reminderController) {
 		AjxDispatcher.require("CalendarCore");
-		var calMgr = appCtxt.getCalManager();
-		this._reminderController = calMgr.getReminderController();
-		this._reminderController._calController = this.getCalController();
+        var calMgr = appCtxt.getCalManager();
+        this._reminderController = calMgr.getReminderController();
+        this._reminderController._calController = this.getCalController();
 	}
 	return this._reminderController;
 };
@@ -677,7 +606,7 @@ function() {
 		this._equipment = new ZmResourceList(ZmCalBaseItem.EQUIPMENT);
 		this._equipment.isCanonical = true;
 	}
-};
+}
 
 ZmCalendarApp.prototype.loadResources =
 function() {
@@ -702,8 +631,8 @@ function() {
 */
 ZmCalendarApp.prototype.getLocations = 
 function() {
-	this.initResources();
-	return this._locations;
+    this.initResources();
+    return this._locations;
 };
 
 /**
@@ -715,23 +644,37 @@ function() {
 	return this._equipment;
 };
 
+ZmCalendarApp.prototype._setMiniCalForActiveAccount =
+function() {
+	// do nothing since calendar handles mini cal on its own
+};
+
+ZmCalendarApp.prototype._activateAccordionItem =
+function(accordionItem) {
+	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
+
+	this.getCalController().handleMailboxChange();
+};
+
 /**
  * returns the list of checked calendar Ids, gets the list from deferred folders
  * to keep things lite when calendar packages are not loaded
+ *
+ * @localOnly       decides whether shared folders needs to be excluded
 */
 ZmCalendarApp.prototype.getCheckedCalendarFolderIds =
-function() {
+function(localOnly) {
 	var folderIds = [];
 	if (AjxDispatcher.loaded("CalendarCore")) {
-		folderIds = this.getCalController().getCheckedCalendarFolderIds();
+		folderIds = this.getCalController().getCheckedCalendarFolderIds(localOnly);
 	} else {
-		// will be used in reminder dialog
+		//will be used in reminder dialog
 		this._folderNames = {};
 		for (var i = 0; i < this._deferredFolders.length; i++) {
 			var params = this._deferredFolders[i];
 			var str = (params && params.obj && params.obj.f) ? params.obj.f : "";
 			if (str && (str.indexOf(ZmOrganizer.FLAG_CHECKED) != -1)) {
-				if (params.obj.zid != null) {
+				if (localOnly && (params.obj.zid != null)) {
 					continue;
 				}
 				folderIds.push(params.obj.id);
@@ -803,98 +746,13 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener) {
 	return dateButton;
 };
 
-/**
- * creates a new button with a reminder options as its menu
- * @parent						parent this DwtButton gets appended to
- * @buttonId 					buttonId to fetch inside DOM and append DwtButton to
- * @buttonListener			    AjxListener to call when date button is pressed
- * @menuSelectionListener	    AjxListener to call when date is selected in DwtCalendar
-*/
-ZmCalendarApp.createReminderButton =
-function(parent, buttonId, buttonListener, menuSelectionListener) {
-	// create button
-	var reminderButton = new DwtButton({parent:parent});
-	reminderButton.addDropDownSelectionListener(buttonListener);
-	reminderButton.setData(Dwt.KEY_ID, buttonId);
-	if (AjxEnv.isIE) {
-		reminderButton.setSize("20");
-	}
-
-	// create menu for button
-	var reminderMenu = new DwtMenu({parent:reminderButton, style:DwtMenu.DROPDOWN_STYLE});
-	reminderMenu.setSize("150");
-	reminderMenu._table.width = "100%";
-	reminderButton.setMenu(reminderMenu, true);
-
-
-	var displayOptions = [
-		ZmMsg.apptRemindNever,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNDaysBefore,
-		ZmMsg.apptRemindNDaysBefore,
-		ZmMsg.apptRemindNDaysBefore,
-		ZmMsg.apptRemindNDaysBefore,
-		ZmMsg.apptRemindNWeeksBefore,
-		ZmMsg.apptRemindNWeeksBefore
-	];
-
-	var	options = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080, 1440, 2880, 4320, 5760, 10080, 20160];
-	var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
-	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
-
-	for (var j = 0; j < options.length; j++) {
-		var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], labels[j]);
-		var mi = new DwtMenuItem({parent: reminderMenu, style: DwtMenuItem.NO_STYLE});
-		mi.setText(optLabel);
-		mi.setData("value", options[j]);
-		if(menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
-	}
-
-	// reparent and cleanup
-	reminderButton.reparentHtmlElement(buttonId);
-	delete buttonId;
-
-	return reminderButton;
-};
-
-/**
- * returns summary of reminder info from the reminder minutes 
- * @param reminderMinutes - no of minutes before which reminder should be shown
- */
-ZmCalendarApp.getReminderSummary =
-function(reminderMinutes) {
-
-	var hoursConvertable = ((reminderMinutes%60) == 0);
-	var daysConvertable  = ((reminderMinutes%(60*24)) == 0);
-	var weeksConvertable = ((reminderMinutes%(60*24*7)) == 0);
-
-	if (reminderMinutes == 0)	{ return ZmMsg.apptRemindNever; }
-	if (weeksConvertable)		{ return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNWeeksBefore, reminderMinutes/(60*24*7)); }
-	if (daysConvertable)		{ return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNDaysBefore, reminderMinutes/(60*24)); }
-	if (hoursConvertable)		{ return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNHoursBefore, reminderMinutes/60); }
-
-	return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNMinutesBefore, reminderMinutes);
-};
-
 ZmCalendarApp._settingChangeListener =
 function(cal, ev) {
-	if (ev.type != ZmEvent.S_SETTING) { return; }
+	if (ev.type != ZmEvent.S_SETTING) return;
 
 	var setting = ev.source;
-	if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK) {
+	if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK)
 		cal.setFirstDayOfWeek(setting.getValue());
-	}
 };
 
 ZmCalendarApp.prototype._newCalendarCallback =
@@ -929,10 +787,7 @@ function(parent) {
  */
 ZmCalendarApp.addCalViewMenu =
 function(parent) {
-	var list = [
-		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
-		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW, ZmOperation.SCHEDULE_VIEW
-	];
+	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
 	var menu = new ZmActionMenu({parent:parent, menuItems:list});
 	parent.setMenu(menu);
 	return menu;
@@ -942,131 +797,4 @@ ZmCalendarApp.__formatLabel =
 function(prefLabel, prefValue) {
 	prefLabel = prefLabel || "";
 	return prefLabel.match(/\{/) ? AjxMessageFormat.format(prefLabel, prefValue) : prefLabel;
-};
-
-/**
- * parses given string and return reminder info containing units and exact value
- * @param reminderString - reminder string eg. "20 minutes before"
- */
-ZmCalendarApp.parseReminderString =
-function(reminderString) {
-	var reminderFormats = {};
-	reminderFormats[ZmMsg.apptRemindNDaysBefore]	= ZmCalItem.REMINDER_UNIT_DAYS;
-	reminderFormats[ZmMsg.apptRemindNMinutesBefore]	= ZmCalItem.REMINDER_UNIT_MINUTES;
-	reminderFormats[ZmMsg.apptRemindNHoursBefore]	= ZmCalItem.REMINDER_UNIT_HOURS;
-	reminderFormats[ZmMsg.apptRemindNWeeksBefore]	= ZmCalItem.REMINDER_UNIT_WEEKS;
-
-	reminderString = AjxStringUtil.trim(reminderString);
-	var formattedString = reminderString;
-	var reminderValue = formattedString.replace(/\D/g, "");
-	reminderValue = AjxStringUtil.trim(reminderValue);
-
-	// junk content returns empty reminder (None)
-	if (reminderValue == "") {
-		return {
-			reminderValue: "",
-			reminderUnits: ZmCalItem.REMINDER_NONE
-		};
-	}
-	if (reminderValue.indexOf(" ") >= 0) {
-		reminderValue = reminderValue.split(" ")[0];
-	}
-
-	// look for standard reminder formats strings
-	for (var pattern in  reminderFormats) {
-		var formattedContent = ZmCalendarApp.__formatLabel(pattern, reminderValue);
-		if(formattedContent != "" && formattedContent.toLowerCase() == reminderString.toLowerCase()) {
-			return  {reminderValue: reminderValue, reminderUnits: reminderFormats[pattern]};
-		}
-	}
-
-	var reminderHours = parseInt(reminderValue);
-
-	var remUnitStrings = {};
-	remUnitStrings[ZmCalItem.REMINDER_UNIT_MINUTES] = AjxMsg.minute;
-	remUnitStrings[ZmCalItem.REMINDER_UNIT_HOURS] = AjxMsg.hour;
-	remUnitStrings[ZmCalItem.REMINDER_UNIT_DAYS] = AjxMsg.day;
-	remUnitStrings[ZmCalItem.REMINDER_UNIT_WEEKS] = AjxMsg.week;
-
-	//look for matching units
-	var reminderUnits = ZmCalItem.REMINDER_UNIT_HOURS;
-	for(var i in remUnitStrings) {
-		if(formattedString.indexOf(remUnitStrings[i]) >= 0) {
-			reminderUnits = i;
-			break;
-		}
-	}
-	return {reminderValue: reminderHours ? reminderHours : 0,  reminderUnits: reminderUnits};
-};
-
-ZmCalendarApp.convertReminderUnits =
-function(reminderValue, reminderUnits) {
-	switch (reminderUnits) {
-		case ZmCalItem.REMINDER_UNIT_MINUTES:	return reminderValue;
-		case ZmCalItem.REMINDER_UNIT_HOURS:		return reminderValue*60;
-		case ZmCalItem.REMINDER_UNIT_DAYS:		return reminderValue*60*24;
-		case ZmCalItem.REMINDER_UNIT_WEEKS:		return reminderValue*60*24*7;
-		default: 								return 0;
-	}
-};
-
-ZmCalendarApp.prototype.updateResourceCache =
-function(resource) {
-	var name = resource.getFullName();
-	if (name) {
-		this._resByName[name.toLowerCase()] = resource;
-	}
-	var email = resource.getEmail();
-	if (email) {
-		this._resByEmail[email.toLowerCase()] = resource;
-	}
-};
-
-ZmCalendarApp.prototype._addSettingsChangeListeners =
-function() {
-	ZmApp.prototype._addSettingsChangeListeners.call(this);
-
-	if (!this._settingsListener) {
-		this._settingsListener = new AjxListener(this, this._settingsChangeListener);
-	}
-
-	var settings = appCtxt.getSettings();
-	settings.getSetting(ZmSetting.CAL_SHOW_CALENDAR_WEEK).addChangeListener(this._settingListener);
-	settings.addChangeListener(this._settingsListener);
-};
-
-/**
- * Settings listener to process changed settings.
- */
-ZmCalendarApp.prototype._settingsChangeListener =
-function(ev) {
-	if (ev.type != ZmEvent.S_SETTINGS) { return; }
-
-	var list = ev.getDetail("settings");
-	if (!(list && list.length)) { return; }
-
-	for (var i = 0; i < list.length; i++) {
-		var setting = list[i];
-		if (setting.id == ZmSetting.CAL_SHOW_CALENDAR_WEEK) {
-			var controller = AjxDispatcher.run("GetCalController").recreateMiniCalendar();
-			var calMgr = appCtxt.getCalManager();
-			calMgr.highlightMiniCal();
-		}
-	}
-};
-
-ZmCalendarApp.prototype.showDayView =
-function(date) {
-	var calController = AjxDispatcher.run("GetCalController");
-	var miniCalendar = calController.getMiniCalendar();
-	calController.setDate(date, 0, miniCalendar.getForceRollOver());
-	if (!calController._viewVisible) {
-		calController.show(ZmId.VIEW_CAL_DAY);
-	}
-};
-
-ZmCalendarApp.prototype.getDateToolTip =
-function(date) {
-	var cc = AjxDispatcher.run("GetCalController");
-	return cc.getDayToolTipText(date);
 };

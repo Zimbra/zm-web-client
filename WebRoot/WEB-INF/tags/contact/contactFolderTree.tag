@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
@@ -37,7 +21,7 @@
              </c:url>
              <th style='width:20px'><a href="${fn:escapeXml(toggleUrl)}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}"/></a></th>
             <th class='Header'><fmt:message key="addressBooks"/></th>
-            <th style="width:30px" align='right' class='ZhTreeEdit'>
+            <th width='1%' nowrap align='right' class='ZhTreeEdit'>
                 <c:url value="/h/maddrbooks" var="mabUrl">
                     <c:if test="${not empty param.sfi}">
                         <c:param name="sfi" value="${param.sfi}"/>
@@ -50,9 +34,11 @@
         <c:if test="${expanded}">
 			<c:set var="myCard" value="${mailbox.myCard}"/>
 			<c:set var="myCardSelected" value="${not empty myCard and myCard.id eq param.id and not empty param.actionEdit}" scope="request"/>
-
-            <app:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
-			<c:if test="${not empty myCard}">
+            <app:overviewFolder types="contact" folder="${mailbox.contacts}"/>
+            <app:doContactFolderTree skiproot="${true}" parentid="${mailbox.contacts.id}" skipsystem="false"/>
+            <app:overviewFolder types="contact" folder="${mailbox.autoContacts}"/>
+            <app:doContactFolderTree skiproot="${true}" parentid="${mailbox.autoContacts.id}" skipsystem="false"/>
+            <c:if test="${not empty myCard}">
 				<app:myCardFolder myCard="${myCard}"/>
 			</c:if>
             <app:overviewFolder types="contact" folder="${mailbox.trash}"/>

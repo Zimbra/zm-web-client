@@ -1,12 +1,12 @@
 <template id="share.App#UserInfo">
-	<$ if (data.adminUrl) { $>
-		<span class="skin_yahoo_admin_link"><a target="_blank" href="${adminUrl}"><$= ZmMsg.adminLinkLabel $></a></span>&nbsp;&nbsp;&nbsp;&nbsp;
+	<$ if (appCtxt.get(ZmSetting.IS_DOMAIN_ADMIN) && appCtxt.get(ZmSetting.ADMIN_REFERENCE)) { $>
+		<a target="_new" href="<$=appCtxt.get(ZmSetting.ADMIN_REFERENCE)$>"><$= ZmMsg.adminLinkLabel $></a>&nbsp;<font color="gray">|</font>&nbsp;
 	<$ } $>
-
-	<$ if (appCtxt.isOffline) { $>
+    <$ if (appCtxt.isOffline) { $>
+		<a href='http://www.yahoo.com' target='_blank'><$= ZmMsg.yahooYahoo $></a>&nbsp;<font color="gray">|</font>&nbsp;
+		<a href='http://my.yahoo.com' target='_blank'><$= ZmMsg.yahooMyYahoo $></a>&nbsp;<font color='gray'>|</font>&nbsp;
 		<a href='#logoff' onclick='ZmZimbraMail._onClickLogOff();return false'><$= ZmMsg.setup $></a>&nbsp;<font color="gray">|</font>&nbsp;
 	<$ } $>
-
 	<a href='#help' onclick='ZmZimbraMail.helpLinkCallback();return false'><$= ZmMsg.help $></a>
 
 	<!-- HACK HACK HACK -->
@@ -18,15 +18,12 @@
 				container.innerHTML = "";
 			}
 		}
-		else {
-			<!-- WTF? -->
-			var isAdmin = appCtxt.getSettings().getInfoResponse.attrs._attrs["zimbraIsAdminAccount"];
-			if (!isAdmin) {
-				var container = document.getElementById("admin_link_or");
-				if (container) {
-					container.style.display = "none";
-				}
-			}
-		}
-	$>
+        var isAdmin = appCtxt.getSettings().getInfoResponse.attrs._attrs["zimbraIsAdminAccount"];
+        if(!isAdmin){
+                var container = document.getElementById("admin_link_or");
+                if (container) {
+                    container.style.display="none";
+                }
+        }
+    $>
 </template>

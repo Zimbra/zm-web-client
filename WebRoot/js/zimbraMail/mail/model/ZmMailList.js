@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -58,125 +60,76 @@ function() {
  * remove the conv row(s) from the list view (even if the conv still matches the
  * search).
  *
- * @param params		[hash]			hash of params:
- *        items			[array]			a list of items to move
- *        folder		[ZmFolder]		destination folder
- *        attrs			[hash]			additional attrs for SOAP command
- *        callback		[AjxCallback]*	callback to run after each sub-request
- *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
- *        count			[int]*			starting count for number of items processed
+ * @param items		[Array]			a list of items to move
+ * @param folder	[ZmFolder]		destination folder
+ * @param attrs		[Object]		additional attrs for SOAP command
  */
 ZmMailList.prototype.moveItems =
-function(params) {
-
+function(items, folder, attrs) {
 	if (this.type != ZmItem.CONV) {
-		return ZmList.prototype.moveItems.apply(this, arguments);
+		ZmList.prototype.moveItems.call(this, items, folder, attrs);
+		return;
 	}
+	
+	var attrs = {};
+	attrs.tcon = this._getTcon();
+	attrs.l = folder.id;
+	var action = (folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
+	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
+	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback});
+};
 
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback"]);
-
-	var params1 = AjxUtil.hashCopy(params);
-
-	params1.attrs = {};
-	params1.attrs.tcon = this._getTcon();
-	params1.attrs.l = params.folder.id;
-	params1.action = (params.folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
-	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
-
-	// Reset accountName for multi-account to be the respective account if we're
-	// moving a draft out of Trash.
-	if (appCtxt.multiAccounts &&
-		params.items[0].isDraft && params.folder.id == ZmFolder.ID_DRAFTS)
-	{
-		params1.accountName = items[0].account.name;
+ZmMailList.prototype._handleResponseMoveItems =
+function(folder, result) {
+	var movedItems = result.getResponse();	
+	if (movedItems && movedItems.length) {
+		this.moveLocal(movedItems, folder.id);
+		for (var i = 0; i < movedItems.length; i++) {
+			movedItems[i].moveLocal(folder.id);
+		}
+		// note: this happens before we process real notifications
+		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
 	}
-
-	this._itemAction(params1);
 };
 
 /**
- * Marks items as "spam" or "not spam". If they're marked as "not spam", a target folder
- * may be provided.
- * @param params		[hash]			hash of params:
- *        items			[array]			a list of items
- *        markAsSpam	[boolean]		if true, mark as "spam"
- *        folder		[ZmFolder]		destination folder
- *        childWin		[window]*		the child window this action is happening in
- *        callback		[AjxCallback]*	callback to run after each sub-request
- *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
- *        count			[int]*			starting count for number of items processed
- */
+* Marks items as "spam" or "not spam". If they're marked as "not spam", a target folder
+* may be provided.
+*
+* @param items			[Array]			a list of items to move
+* @param markAsSpam		[boolean]		if true, mark as "spam"
+* @param folder			[ZmFolder]*		destination folder
+*/
 ZmMailList.prototype.spamItems = 
-function(params) {
-
-	var items = params.items = AjxUtil.toArray(params.items);
-
-	if (appCtxt.multiAccounts) {
-		var accounts = this._filterItemsByAccount(items);
-		this._spamAccountItems(accounts, params);
-	} else {
-		this._spamItems(params);
-	}
-};
-
-ZmMailList.prototype._spamAccountItems =
-function(accounts, params) {
-	var items;
-	for (var i in accounts) {
-		items = accounts[i];
-		break;
-	}
-
-	if (items) {
-		delete accounts[i];
-
-		params.accountName = appCtxt.accountList.getAccount(i).name;
-		params.items = items;
-		params.callback = new AjxCallback(this, this._spamAccountItems, [accounts, params]);
-
-		this._spamItems(params);
-	}
-};
-
-ZmMailList.prototype._spamItems =
-function(params) {
-	params = Dwt.getParams(arguments, ["items", "markAsSpam", "folder", "childWin"]);
-
-	var params1 = AjxUtil.hashCopy(params);
-
+function(items, markAsSpam, folder) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		return this._mixedAction("spamItems", params);
+		this._mixedAction("spamItems", [items, markAsSpam, folder]);
+		return;
 	}
 
-	params1.action = params.markAsSpam ? "spam" : "!spam";
-	params1.attrs = {};
-	params1.attrs.tcon = this._getTcon();
-	if (params.folder) {
-		params1.attrs.l = params.folder.id;
-	}
+	var action = markAsSpam ? "spam" : "!spam";
 
-	params1.callback = new AjxCallback(this, this._handleResponseSpamItems, params);
-	this._itemAction(params1);
+	var attrs = {};
+	attrs.tcon = this._getTcon();
+	if (folder) attrs.l = folder.id;
+
+	var respCallback = new AjxCallback(this, this._handleResponseSpamItems, [markAsSpam, folder]);
+	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback});
 };
 
 ZmMailList.prototype._handleResponseSpamItems =
-function(params, result) {
-
+function(markAsSpam, folder, result) {
 	var movedItems = result.getResponse();
 	if (movedItems && movedItems.length) {
-		var folderId = params.markAsSpam ? ZmFolder.ID_SPAM : (params.folder ? params.folder.id : ZmFolder.ID_INBOX);
+		folderId = markAsSpam ? ZmFolder.ID_SPAM : (folder ? folder.id : ZmFolder.ID_INBOX);
 		this.moveLocal(movedItems, folderId);
 		for (var i = 0; i < movedItems.length; i++) {
 			movedItems[i].moveLocal(folderId);
 		}
 		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
 
-		if (params.childWin) {
-			params.childWin.close();
-		}
-	}
-	if (params.callback) {
-		params.callback.run(result);
+		var msg = markAsSpam ? ZmMsg.markedAsJunk : ZmMsg.markedAsNotJunk;
+		appCtxt.setStatusMsg(AjxMessageFormat.format(msg, movedItems.length));
 	}
 };
 
@@ -185,35 +138,31 @@ function(params, result) {
  * other folders. If we're in conv mode in Trash, we add a constraint of "t",
  * meaning that the action is only applied to items (msgs) in the Trash.
  *
- * @param params		[hash]			hash of params:
- *        items			[Array]			list of items to delete
- *        hardDelete	[boolean]		whether to force physical removal of items
- *        attrs			[Object]		additional attrs for SOAP command
- *        childWin		[window]*		the child window this action is happening in
+ * @param items			[Array]			list of items to delete
+ * @param hardDelete	[boolean]		whether to force physical removal of items
+ * @param attrs			[Object]		additional attrs for SOAP command
  */
 ZmMailList.prototype.deleteItems =
-function(params) {
-
-	params = Dwt.getParams(arguments, ["items", "hardDelete", "attrs", "childWin"]);
-
+function(items, hardDelete, attrs) {
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
 		var searchFolder = this.search ? appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isHardDelete()) {
 			var instantOn = appCtxt.getAppController().getInstantNotify();
+			var errorCallback;
 			if (instantOn) {
 				// bug fix #32005 - disable instant notify for ops that might take awhile
 				appCtxt.getAppController().setInstantNotify(false);
-				params.errorCallback = new AjxCallback(this, this._handleErrorDeleteItems);
+				errorCallback = new AjxCallback(this, this._handleErrorDeleteItems);
 			}
 
-			params.attrs = params.attrs || {};
-			params.attrs.tcon = ZmFolder.TCON_CODE[searchFolder.nId];
-			params.action = "delete";
-			params.callback = new AjxCallback(this, this._handleResponseDeleteItems, instantOn);
-			return this._itemAction(params);
+			attrs = attrs || {};
+			attrs.tcon = ZmFolder.TCON_CODE[searchFolder.nId];
+			var respCallback = new AjxCallback(this, this._handleResponseDeleteItems, instantOn);
+			this._itemAction({items:items, action:"delete", attrs:attrs, callback:respCallback, errorCallback:errorCallback});
+			return;
 		}
 	}
-	ZmList.prototype.deleteItems.call(this, params);
+	ZmList.prototype.deleteItems.call(this, items, hardDelete, attrs);
 };
 
 ZmMailList.prototype._handleResponseDeleteItems =
@@ -239,32 +188,18 @@ function() {
 };
 
 /*
- * Only make the request for items whose state will be changed.
- *
- * @param params		[hash]				hash of params:
- *        items			[array]				a list of items to mark read/unread
- *        value			[boolean]			if true, mark items read
- *        callback		[AjxCallback]*		callback to run after each sub-request
- *        finalCallback	[AjxCallback]*		callback to run after all items have been processed
- *        count			[int]*				starting count for number of items processed
+ * Only make the request for items whose state will be changed. 
  */
 ZmMailList.prototype.markRead =
-function(params) {
-
-	var items = AjxUtil.toArray(params.items);
-
+function(items, on) {
 	var items1 = [];
 	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		if ((item.type == ZmItem.CONV && item.hasFlag(ZmItem.FLAG_UNREAD, params.value)) || (item.isUnread == params.value)) {
-			items1.push(item);
+		if (items[i].isUnread == on) {
+			items1.push(items[i]);
 		}
 	}
-
 	if (items1.length) {
-		params.items = items1;
-		params.op = "read";
-		this.flagItems(params);
+		this.flagItems(items1, "read", on);
 	}
 };
 
@@ -281,7 +216,7 @@ function(items) {
 ZmMailList.prototype.moveLocal =
 function(items, folderId) {
 	ZmList.prototype.moveLocal.call(this, items, folderId);
-	if (folderId != ZmFolder.ID_TRASH) { return; }
+	if (folderId != ZmFolder.ID_TRASH) return;
 
 	var flaggedItems = [];
 	for (var i = 0; i < items.length; i++) {
@@ -295,7 +230,9 @@ function(items, folderId) {
 
 ZmMailList.prototype.notifyCreate = 
 function(convs, msgs) {
-
+	var searchFolder = this.search
+		? (appCtxt.getActiveAccount().isMain ? this.search.folderId : ZmOrganizer.getSystemId(this.search.folderId))
+		: null;
 	var createdItems = [];
 	var newConvs = [];
 	var newMsgs = [];
@@ -305,14 +242,14 @@ function(convs, msgs) {
 	var fields = {};
 	var sortBy = this.search ? this.search.sortBy : null;
 	var sortIndex = {};
-	if ((this.type == ZmItem.CONV) && this.search && this.search.matches) {
+	if (this.type == ZmItem.CONV && searchFolder) {
 
 		// handle new convs first so we can set their fragments later from new msgs
 		for (var id in convs) {
 			if (this.getById(id)) { continue; }	// already have this conv
 			newConvId[id] = convs[id];
 			var conv = convs[id];
-			if (this.search.matches(conv) && !conv.ignoreJunkTrash()) {
+			if (conv.folders && conv.folders[searchFolder]) {
 				// a new msg for this conv matches current search
 				conv.list = this;
 				newConvs.push(conv);
@@ -323,7 +260,7 @@ function(convs, msgs) {
 		for (var id in msgs) {
 			var msg = msgs[id];
 			var cid = msg.cid;
-			var msgMatches = this.search.matches(msg) && !msg.ignoreJunkTrash();
+			var msgMatches = (msg.folderId == searchFolder);
 			var conv = newConvId[cid] || this.getById(cid);
 			if (msgMatches) {
 				if (!conv) {
@@ -334,7 +271,7 @@ function(convs, msgs) {
 						if (msg._convCreateNode._newId) {
 							msg._convCreateNode.id = msg._convCreateNode._newId;
 						}
-						conv = ZmConv.createFromDom(msg._convCreateNode, args);
+						conv = ZmConv.createFromDom(msg._convCreateNode, args)
 					} else {
 						conv = appCtxt.getById(cid) || ZmConv.createFromMsg(msg, args);
 					}
@@ -358,6 +295,7 @@ function(convs, msgs) {
 					flaggedItems.push(conv);
 				}
 				// if the new msg matches current search, update conv date, fragment, and sort order
+				// TODO: handle simple tag searches
 				if (msgMatches) {
 					msg.inHitList = true;
 					if (conv.fragment != msg.fragment) {
@@ -389,7 +327,7 @@ function(convs, msgs) {
 					newMsgs.push(msg);
 				}
 			} else { // MLV (traditional)
-				if (this.search.matches && this.search.matches(msg) && !msg.ignoreJunkTrash()) {
+				if (msg.folderId == searchFolder) {
 					msg.list = this;
 					newMsgs.push(msg);
 				}
@@ -553,19 +491,16 @@ function() {
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
 	for (var i = 0; i < folders.length; i++) {
 		var name = ZmFolder.QUERY_NAME[folders[i]];
-		if (!(this.search && this.search.hasFolderTerm(name))) {
+		if (!(this.search && this.search.hasFolderTerm(name)))
 			chars.push(ZmFolder.TCON_CODE[folders[i]]);
-		}
 	}
 
 	return chars.join("");
 };
 
-// If this list is the result of a search that is constrained by the read
-// status, and the user has marked all read in a folder, redo the search.
 ZmMailList.prototype._folderTreeChangeListener = 
 function(ev) {
-	if (this.size() == 0) { return; }
+	if (this.size() == 0) return;
 
 	var flag = ev.getDetail("flag");
 	var view = appCtxt.getCurrentViewId();
@@ -573,9 +508,8 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_FLAGS && (flag == ZmItem.FLAG_UNREAD)) {
 		if (this.type == ZmItem.CONV) {
-			if (view == ZmId.VIEW_CONVLIST && ctlr._currentSearch.hasUnreadTerm) {
+			if (view == ZmId.VIEW_CONVLIST && ctlr._currentSearch.hasUnreadTerm)
 				this._redoSearch(ctlr);
-			}
 		} else if (this.type == ZmItem.MSG) {
 			if (view == ZmId.VIEW_TRAD && ctlr._currentSearch.hasUnreadTerm) {
 				this._redoSearch(ctlr);

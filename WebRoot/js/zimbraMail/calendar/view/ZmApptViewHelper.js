@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -175,79 +177,6 @@ function(date, list, controller, noheader, emptyMsg) {
 	return html.toString();
 };
 
-/**
- * Returns a list of calendars based on certain conditions. Especially useful
- * for multi-account
- *
- * @param folderSelect	[DwtSelect]		DwtSelect object to populate
- * @param folderRow		[HTMLElement]	Table row element to show/hide
- * @param calendarOrgs	[Object]		Hash map of calendar ID to calendar owner
- * @param calItem		[ZmCalItem]		a ZmAppt or ZmTask object
- */
-ZmApptViewHelper.populateFolderSelect =
-function(folderSelect, folderRow, calendarOrgs, calItem) {
-	// get calendar folders (across all accounts)
-	var org = ZmOrganizer.ITEM_ORGANIZER[calItem.type];
-	var data = [];
-	var folderTree;
-	var accounts = appCtxt.accountList.visibleAccounts;
-	for (var i = 0; i < accounts.length; i++) {
-		var acct = accounts[i];
-
-		var appEnabled = ZmApp.SETTING[ZmItem.APP[calItem.type]];
-		if ((appCtxt.multiAccounts && acct.isMain) ||
-			!appCtxt.get(appEnabled, null, acct))
-		{
-			continue;
-		}
-
-		folderTree = appCtxt.getFolderTree(acct);
-		data = data.concat(folderTree.getByType(org));
-	}
-
-	// add the local account last for multi-account
-	if (appCtxt.multiAccounts) {
-		folderTree = appCtxt.getFolderTree(appCtxt.accountList.mainAccount);
-		data = data.concat(folderTree.getByType(org));
-	}
-
-	folderSelect.clearOptions();
-	calendarOrgs = {};
-
-	for (var i = 0; i < data.length; i++) {
-		var cal = data[i];
-
-		if (cal.noSuchFolder || cal.isFeed() || (cal.link && cal.isReadOnly())) { continue; }
-
-		if (appCtxt.multiAccounts &&
-			cal.nId == ZmOrganizer.ID_CALENDAR &&
-			cal.getAccount().isCalDavBased())
-		{
-			continue;
-		}
-
-		var id = cal.link ? cal.getRemoteId() : cal.id;
-		calendarOrgs[id] = cal.owner;
-
-		// bug: 28363 - owner attribute is not available for shared sub folders
-		if (cal.isRemote() && !cal.owner && cal.parent && cal.parent.isRemote()) {
-			calendarOrgs[id] = cal.parent.getOwner();
-		}
-
-		var selected = ((calItem.folderId == cal.id) || (calItem.folderId == id ) || (calItem.folderId == cal.nId));
-		var icon = appCtxt.multiAccounts ? cal.account.getIcon() : null;
-		var name = appCtxt.multiAccounts
-			? ([cal.getName(), " (", cal.getAccount().getDisplayName(), ")"].join(""))
-			: cal.getName();
-		var option = new DwtSelectOption(id, selected, name, null, null, icon);
-		folderSelect.addOption(option, selected);
-	}
-
-
-	var len = folderSelect.size();
-	Dwt.setVisible(folderRow, len > 1);
-};
-
 /*
  * Takes a string, AjxEmailAddress, or contact/resource and returns
  * a ZmContact or a ZmResource. If the attendee cannot be found in
@@ -260,26 +189,22 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
  * @param strictEmail	[boolean]*		if true, new attendee will not be created from email address
  */
 ZmApptViewHelper.getAttendeeFromItem =
-function(item, type, strictText, strictEmail, checkForAvailability) {
+function(item, type, strictText, strictEmail) {
 
 	if (!item || !type) return null;
 
-	if (type == ZmCalBaseItem.LOCATION && !ZmApptViewHelper._locations) {
-		var locations = ZmApptViewHelper._locations = appCtxt.getApp(ZmApp.CALENDAR).getLocations();
-        if(!locations.isLoaded) {
-            locations.load();
-        }
+	if (!ZmApptViewHelper._contacts) {
+		ZmApptViewHelper._contacts = AjxDispatcher.run("GetContacts");
+	}
+	if (!ZmApptViewHelper._locations) {
+		ZmApptViewHelper._locations = appCtxt.getApp(ZmApp.CALENDAR).getLocations();
+	}
+	if (!ZmApptViewHelper._equipment) {
+		ZmApptViewHelper._equipment = appCtxt.getApp(ZmApp.CALENDAR).getEquipment();
+	}
 
-	}
-	if (type == ZmCalBaseItem.EQUIPMENT && !ZmApptViewHelper._equipment) {
-		var equipment = ZmApptViewHelper._equipment = appCtxt.getApp(ZmApp.CALENDAR).getEquipment();
-        if(!equipment.isLoaded) {
-            equipment.load();
-        }                
-	}
-	
 	var attendee = null;
-	if (item.type == ZmItem.CONTACT) {
+	if (item instanceof ZmContact) {
 		// it's already a contact or resource, return it as is
 		attendee = item;
 	} else if (item instanceof AjxEmailAddress) {
@@ -297,7 +222,7 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 			}
 		}
 
-		if (!checkForAvailability && !attendee && !strictEmail) {
+		if (!attendee && !strictEmail) {
 			// AjxEmailAddress has name and email, init a new contact/resource from those
 			attendee = (type == ZmCalBaseItem.PERSON) ? new ZmContact(null) :
 													new ZmResource(type);
@@ -312,7 +237,7 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 	 		var addr = email.getAddress();
 	 		// is it a contact/resource we already know about?
 			attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
-			if (!checkForAvailability && !attendee && !strictEmail) {
+			if (!attendee && !strictEmail) {
 				if (type == ZmCalBaseItem.PERSON) {
 					attendee = new ZmContact(null);
 				} else if (type == ZmCalBaseItem.LOCATION) {
@@ -321,10 +246,26 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 					attendee = new ZmResource(null, ZmApptViewHelper._equipment, ZmCalBaseItem.EQUIPMENT);
 				}
 				attendee.initFromEmail(email, true);
-			} else if (attendee && type == ZmCalBaseItem.PERSON) {
+			} else if (type == ZmCalBaseItem.PERSON) {
 				// remember actual address (in case it's email2 or email3)
 				attendee._inviteAddress = addr;
 			}
+		} else if (type != ZmCalBaseItem.PERSON) {
+			// check if it's a location or piece of equipment we know by name
+			if (ZmApptViewHelper._locations) {
+				attendee = ZmApptViewHelper._locations.getResourceByName(item);
+			}
+			if (!attendee && ZmApptViewHelper._equipment) {
+				attendee = ZmApptViewHelper._equipment.getResourceByName(item);
+			}
+		}
+		// non-email string: initialize as a resource if it's a location, since
+		// those can be free-text
+		if (!attendee && type == ZmCalBaseItem.LOCATION && !strictText && ZmApptViewHelper._locations) {
+			attendee = new ZmResource(null, ZmApptViewHelper._locations, ZmCalBaseItem.LOCATION);
+			attendee.setAttr(ZmResource.F_name, item);
+			attendee.setAttr(ZmResource.F_type, ZmResource.ATTR_LOCATION);
+			ZmApptViewHelper._locations.updateHashes(attendee);
 		}
 	}
 	return attendee;
@@ -332,14 +273,12 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 
 ZmApptViewHelper._getAttendeeFromAddr =
 function(addr, type) {
-
 	var attendee = null;
-	if (type == ZmCalBaseItem.PERSON) {
-		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-		attendee = contactsApp && contactsApp.getContactByEmail(addr);
-	} else if (type == ZmCalBaseItem.LOCATION) {
-        attendee = ZmApptViewHelper._locations.getResourceByEmail(addr);
-	} else if (type == ZmCalBaseItem.EQUIPMENT) {
+	if ((type == ZmCalBaseItem.PERSON) && ZmApptViewHelper._contacts) {
+		attendee = ZmApptViewHelper._contacts.getContactByEmail(addr);
+	} else if ((type == ZmCalBaseItem.LOCATION) && ZmApptViewHelper._locations) {
+		attendee = ZmApptViewHelper._locations.getResourceByEmail(addr);
+	} else if ((type == ZmCalBaseItem.EQUIPMENT) && ZmApptViewHelper._equipment) {
 		attendee = ZmApptViewHelper._equipment.getResourceByEmail(addr);
 	}
 	return attendee;
@@ -357,7 +296,7 @@ function(organizer) {
 	return new AjxEmailAddress(orgAddress, null, orgName);
 };
 
-/**
+/*
 * Creates a string from a list of attendees/locations/resources. If an item
 * doesn't have a name, its address is used.
 *
@@ -386,40 +325,27 @@ function(list, type, includeDisplayName) {
 };
 
 ZmApptViewHelper._allDayItemHtml =
-function(appt, id, bodyStyle, controller) {
+function(appt, id, body_style, controller) {
 	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 	var isAccepted = appt.ptst == ZmCalBaseItem.PSTATUS_ACCEPT;
-	var calendar = appt.getFolder();
-	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
-	var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
-	bodyStyle += ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
+	var color = ZmCalendarApp.COLORS[controller.getCalendarColor(appt.folderId)];
 	var subs = {
 		id: id,
-		headerStyle: headerStyle,
-		bodyStyle: bodyStyle,
+		body_style: body_style,
 		newState: isNew ? "_new" : "",
+		headerColor: color + (isNew ? "Dark" : "Light"),
+		bodyColor: color + (isNew ? "" : "Bg"),
 		name: AjxStringUtil.htmlEncode(appt.getName()),
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),
 		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
-		icon: appt.isPrivate() ? "ReadOnly" : null,
-		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba)
+		icon: appt.isPrivate() ? "ReadOnly" : null
 	};
     return AjxTemplate.expand("calendar.Calendar#calendar_appt_allday", subs);
 };
 
-ZmApptViewHelper._getShowAsColorFromId =
-function(id) {
-	switch(id) {
-		case "F": return "ZmScheduler-free";
-		case "B": return "ZmScheduler-busy";
-		case "T": return "ZmScheduler-tentative";
-		case "O": return "ZmScheduler-outOfOffice";
-	}
-	return "ZmScheduler-busy";
-};
 
 /**
 * Creates up to three separate DwtSelects for the time (hour, minute, am|pm)

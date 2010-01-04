@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,35 +11,25 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
 /**
- * @overview
- * 
- * This file contains a dialog.
- * 
- */
-
-/**
+ * Creates an empty ZmDialog.
+ * @constructor
  * @class
- * This class is a base class for miscellaneous organizer-related dialogs. An instance
- * of this class can be re-used to show different overviews.
+ * This class is a base class for miscellaneous organizer-related dialogs.
  *
  * @author Conrad Damon
  *
- * @param {Hash}	params		a hash of parameters
- * <ul>
- * <li>parent	[DwtControl]	the parent widget</li>
- * <li>msgDialog		[DwtMsgDialog]*			the message dialog</li>
- * <li>className		[String]*			the CSS class name</li>
- * <li>title		[String]*			the dialog title</li>
- * <li>standardButtons	[Array|constant]	an array of standard buttons to include. Defaults to {@link DwtDialog.OK_BUTTON} and {@link DwtDialog.CANCEL_BUTTON}.</li>
- * <li>extraButtons		[Array]  			a list of {@link DwtDialog_ButtonDescriptor} objects describing custom buttons to add to the dialog</li>
- * <li>view				[DwtControl]*			the dialog contents</li>
- * </ul>
- * 
- * @extends	DwtDialog
+ * @param parent			[DwtControl]	parent widget
+ * @param msgDialog			[DwtMsgDialog]*	message dialog
+ * @param className			[string]*		CSS class
+ * @param title				[string]*		dialog title
+ * @param standardButtons	[array]*		list of standard buttons to show
+ * @param extraButtons		[Array]*		buttons to show in addition to standard set
+ * @param view				[DwtControl]*	dialog contents
  */
 ZmDialog = function(params) {
 	if (arguments.length == 0) { return; }
@@ -55,27 +46,17 @@ ZmDialog = function(params) {
 
 	this._overview = {};
 	this._opc = appCtxt.getOverviewController();
-
-	this._baseTabGroupSize = this._tabGroup.size();
+	this._tabGroupComplete = false;
 };
 
 ZmDialog.prototype = new DwtDialog;
 ZmDialog.prototype.constructor = ZmDialog;
 
-/**
- * @private
- */
 ZmDialog.prototype._contentHtml =
 function() {
 	return "";
 };
 
-/**
- * Sets the view for this dialog.
- * 
- * @param	{DwtComposite}		newView		the view
- * @param	{Boolean}		noReset		<code>true</code> to not reset the dialog; <code>false</code> otherwise
- */
 ZmDialog.prototype.setView =
 function(newView, noReset) {
 	this.reset();
@@ -89,21 +70,18 @@ function(newView, noReset) {
 
 ZmDialog.prototype.popup =
 function() {
-	// Bug 38281: for multiuse dialogs, we need to re-add the discretionary
-	// tab stops to the base list (the dialog buttons)
-	this._tabGroup.__members._array.splice(this._baseTabGroupSize);
-	this._tabGroup.addMember(this._getTabGroupMembers());
-
-	DwtDialog.prototype.popup.call(this);
-	if (this._focusElement) {
-		appCtxt.getKeyboardMgr().grabFocus(this._focusElement);
+	if (!this._tabGroupComplete) {
+		// tab group filled in here rather than in the constructor b/c we need
+		// all the content fields to have been created
+		var members = this._getTabGroupMembers();
+		for (var i = 0; i < members.length; i++) {
+			this._tabGroup.addMember(members[i], i);
+		}
+		this._tabGroupComplete = true;
 	}
+	DwtDialog.prototype.popup.call(this);
 };
 
-/**
- * Resets the dialog.
- * 
- */
 ZmDialog.prototype.reset =
 function() {
 	if (this._nameField) {
@@ -112,23 +90,27 @@ function() {
 	DwtDialog.prototype.reset.call(this);
 };
 
-/**
- * @private
- */
 ZmDialog.prototype._okButtonListener =
 function() {
 	this.popdown();
 };
 
-/**
- * @private
- */
 ZmDialog.prototype._setNameField =
 function(fieldId) {
-	this._nameField = this._focusElement = document.getElementById(fieldId);
-	if (this._enterListener) {
-		this.addEnterListener(new AjxListener(this, this._enterListener));
+	this._nameField = document.getElementById(fieldId);
+	if (this._nameField) {
+		this._focusElementId = fieldId;
 	}
+	this.addEnterListener(new AjxListener(this, this._enterListener));
+};
+
+/**
+ * Returns a unique ID for this dialog's overview.
+ */
+ZmDialog.prototype.getOverviewId =
+function() {
+	var base = this.toString();
+	return appCtxt.multiAccounts ? [base, appCtxt.getActiveAccount().name].join(":") : base;
 };
 
 /**
@@ -144,69 +126,31 @@ function(fieldId) {
  *        fieldId		[string]			DOM ID of element that contains overview
  *        overviewId	[string]*			ID for the overview
  *        noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
- * @param forceSingle	[boolean]*			if true, don't make multi-account overviews
- * @private
+ *        account		[ZmZimbraAccount]*	account this overview belongs to
  */
 ZmDialog.prototype._setOverview =
-function(params, forceSingle) {
-	// multi-account uses overview container
-	if (appCtxt.multiAccounts && !forceSingle) {
-		// use overviewId as the containerId; container will assign overviewId's
-		var containerId = this._curOverviewId = params.overviewId;
-		var ovContainer = this._opc.getOverviewContainer(containerId);
-		if (!ovContainer) {
-			var overviewParams = {
-				overviewClass:	"dialogOverviewContainer",
-				headerClass:	"DwtTreeItem",
-				noTooltips:		true,
-				treeStyle:		params.treeStyle,
-				treeIds:		params.treeIds,
-				overviewTrees:	params.overviewTrees,
-				omit:			params.omit,
-				omitPerAcct:	params.omitPerAcct,
-				selectable:		params.selectable
-			};
-			var containerParams = {
-				appName: params.appName,
-				containerId: containerId
-			};
-			ovContainer = this._opc.createOverviewContainer(containerParams, overviewParams);
-			ovContainer.setSize(Dwt.DEFAULT, "200");
-			document.getElementById(params.fieldId).appendChild(ovContainer.getHtmlElement());
-		}
-		return ovContainer;
-	}
-
-	// single-account overview handling
-	var overviewId = this._curOverviewId = params.overviewId;
+function(params) {
+	var overviewId = params.overviewId || this.getOverviewId();
 	var overview = this._opc.getOverview(overviewId);
 	if (!overview) {
 		var ovParams = {
-			overviewId:		overviewId,
-			overviewClass:	"dialogOverview",
-			headerClass:	"DwtTreeItem",
-			noTooltips:		true,
-			treeStyle:		params.treeStyle,
-			treeIds:		params.treeIds,
-			account:		params.account
+			overviewId: overviewId,
+			overviewClass: "dialogOverview",
+			headerClass: "DwtTreeItem",
+			noTooltips: true
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
-		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect);
+		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect, params.account);
 		document.getElementById(params.fieldId).appendChild(overview.getHtmlElement());
+	} else if (params.account) {
+		overview.account = params.account;
 	}
-
-	this._makeOverviewVisible(overviewId);
-
-	return overview;
-};
-
-/**
- * @private
- */
-ZmDialog.prototype._makeOverviewVisible =
-function(overviewId) {
-	for (var id in this._overview) {
-		this._overview[id].setVisible(id == overviewId);
+	// make the current overview the only visible one
+	if (overviewId != this._curOverviewId) {
+		for (var id in this._overview) {
+			this._overview[id].setVisible(id == overviewId);
+		}
+		this._curOverviewId = overviewId;
 	}
 };
 
@@ -219,39 +163,32 @@ function(overviewId) {
  * @param treeIds		[array]				list of tree views to show
  * @param omit			[hash]*				IDs of organizers to exclude
  * @param noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
- * @private
+ * @param account		[ZmZimbraAccount]*	account this overview belongs to
  */
 ZmDialog.prototype._renderOverview =
-function(overview, treeIds, omit, noRootSelect) {
-	overview.set(treeIds, omit);
+function(overview, treeIds, omit, noRootSelect, account) {
+	overview.set(treeIds, omit, account);
 	if (!noRootSelect) {
 		for (var i = 0; i < treeIds.length; i++) {
 			var treeView = overview.getTreeView(treeIds[i]);
-			var hi = treeView && treeView.getHeaderItem();
-			if (hi) hi.enableSelection(true);
+			if (treeView) {
+				var hi = treeView.getHeaderItem();
+				if (hi) hi.enableSelection(true);
+			}
 		}
 	}
 };
 
-/**
- * @private
- */
 ZmDialog.prototype._getOverview =
 function() {
 	return this._overview[this._curOverviewId];
 };
 
-/**
- * @private
- */
 ZmDialog.prototype._getInputFields =
 function() {
 	return (this._nameField) ? [this._nameField] : null;
 };
 
-/**
- * @private
- */
 ZmDialog.prototype._showError =
 function(msg, loc) {
 	var nLoc = loc || (new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100));
@@ -262,9 +199,6 @@ function(msg, loc) {
 	msgDialog.popup(nLoc);
 };
 
-/**
- * @private
- */
 ZmDialog.prototype._getTabGroupMembers =
 function() {
 	return [this._nameField];

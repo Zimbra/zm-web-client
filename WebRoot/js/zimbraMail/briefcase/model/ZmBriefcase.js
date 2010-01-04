@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -18,11 +20,13 @@
 * @constructor
 * @class
 *
+* @author Andy Clark
+*
 * @param id			[int]			numeric ID
 * @param name		[string]		name
 * @param parent		[ZmOrganizer]	parent organizer
 * @param tree		[ZmTree]		tree model that contains this organizer
-* @param color		[constant]		color for this briefcase
+* @param color		[constant]		color for this notebook
 * @param owner		[string]		The owner of this organizer
 * @param zid		[string]*		Zimbra id of owner, if remote share
 * @param rid		[string]*		Remote id of organizer, if remote share
@@ -30,10 +34,10 @@
 */
 ZmBriefcase = function(params) {
 	params.type = ZmOrganizer.BRIEFCASE;
-	ZmFolder.call(this, params);
+	ZmOrganizer.call(this, params);
 }
 
-ZmBriefcase.prototype = new ZmFolder;
+ZmBriefcase.prototype = new ZmOrganizer;
 ZmBriefcase.prototype.constructor = ZmBriefcase;
 
 // Constants
@@ -65,6 +69,18 @@ function() {
 	return "Folder";
 };
 
+ZmBriefcase.prototype.getSearchPath = function() {
+	var serverName = "Briefcase";
+	var clientName = ZmMsg.notebookPersonalName;
+	
+	var path = ZmOrganizer.prototype.getSearchPath.call(this);
+	if (path.match(new RegExp("^"+clientName+"(/)?"))) {
+		path = serverName + path.substring(clientName.length);
+	}
+	
+	return path;
+};
+
 // Callbacks
 
 ZmBriefcase.prototype.notifyCreate =
@@ -80,7 +96,7 @@ function(obj) {
 	ZmOrganizer.prototype.notifyModify.call(this, obj);
 
 	var doNotify = false;
-	var fields = {};
+	var fields = new Object();
 	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
@@ -131,16 +147,17 @@ function(what) {
 		// cannot drag anything onto root folder
 		invalid = true;
 	} else if (this.link) {
-		// cannot drop anything onto a read-only folder
+		// cannot drop anything onto a read-only task folder
 		invalid = this.isReadOnly();
 	}
 
 	if (!invalid) {
 		// An item or an array of items is being moved
-		var items = AjxUtil.toArray(what);
+		var items = (what instanceof Array) ? what : [what];
 		var item = items[0];
 	
-		if (item.type != ZmItem.BRIEFCASE_ITEM) {
+		if ((item.type != ZmItem.BRIEFCASE) && (item.type != ZmItem.DOCUMENT)) {
+			// only tasks are valid for task folders
 			invalid = true;
 		} else {
 			
@@ -157,7 +174,7 @@ function(what) {
 				}
 			}
 		}
-		// attachments from mail can be moved inside briefcase
+		//attachments from mail can be moved inside briefcase
 		if(item && item.msgId && item.partId){
 			invalid = false;
 		}

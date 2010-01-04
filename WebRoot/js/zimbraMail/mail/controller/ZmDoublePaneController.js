@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -35,9 +37,7 @@ ZmDoublePaneController = function(container, mailApp) {
 	
 	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
 	this._listeners[ZmOperation.ADD_FILTER_RULE] = new AjxListener(this, this._filterListener);
-	this._listeners[ZmOperation.CREATE_APPT] = new AjxListener(this, this._createApptListener);
-	this._listeners[ZmOperation.CREATE_TASK] = new AjxListener(this, this._createTaskListener);
-
+	
 	this._listSelectionShortcutDelayAction = new AjxTimedAction(this, this._listSelectionTimedAction);
 };
 
@@ -45,8 +45,6 @@ ZmDoublePaneController.prototype = new ZmMailListController;
 ZmDoublePaneController.prototype.constructor = ZmDoublePaneController;
 
 ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY = 300;
-
-ZmDoublePaneController.RP_IDS = [ZmSetting.RP_BOTTOM, ZmSetting.RP_RIGHT, ZmSetting.RP_OFF];
 
 // Public methods
 
@@ -72,13 +70,9 @@ function(search, item, callback, markRead) {
 	this._item = item;
 	this._setup(this._currentView);
 
-	var listView = this._listView[this._currentView];
-	listView._selectedItem = (listView.getSelectionCount() == 1) ? listView.getSelection()[0] : null;
-
 	// see if we have it cached? Check if conv loaded?
 	var respCallback = new AjxCallback(this, this._handleResponseShow, [item, callback]);
 	this._loadItem(item, this._currentView, respCallback, markRead);
-	this._toolbar[this._currentView].adjustSize();
 };
 
 ZmDoublePaneController.prototype._handleResponseShow =
@@ -89,7 +83,20 @@ function(item, callback, results) {
 
 	var readingPaneOn = this.isReadingPaneOn();
 	if (this._doublePaneView.isMsgViewVisible() != readingPaneOn) {
-		this._doublePaneView.setReadingPane();
+		this._doublePaneView.toggleView();
+	}
+
+	// If there's only one item in the list, go ahead and set focus to it since
+	// there's no use in the one-item list having focus (arrow keys do nothing)
+	if (readingPaneOn && (this._list.size() == 1)) {
+		var msgView = this._doublePaneView._msgView;
+		if (msgView) {
+			appCtxt.getKeyboardMgr().grabFocus(msgView);
+		}
+	} else {
+		if (this._mailListView) {
+			appCtxt.getKeyboardMgr().grabFocus(this._mailListView);
+		}
 	}
 };
 
@@ -101,16 +108,11 @@ function(item, callback, results) {
  */
 ZmDoublePaneController.prototype.switchView =
 function(view, force) {
-	if (view == ZmSetting.RP_OFF ||	view == ZmSetting.RP_BOTTOM || view == ZmSetting.RP_RIGHT) {
-		this._mailListView._colHeaderActionMenu = null;
-		if (view != this._getReadingPanePref()) {
-			this._setReadingPanePref(view);
-			this._doublePaneView.setReadingPane();
-		}
+	if (view == ZmMailListController.READING_PANE_MENU_ITEM_ID) {
+		this._toggleReadingPane(force);
 	} else {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
 	}
-	this._resetNavToolBarButtons(this._currentView);
 };
 
 
@@ -122,13 +124,38 @@ function() {
 	if (this._doublePaneView) {
 		this._doublePaneView.reset();
 	}
-	var lv = this._listView[this._currentView];
-	if (lv) {
-		lv._itemToSelect = lv._selectedItem = null;
-	}
 };
 
-ZmDoublePaneController.prototype._handleResponseSwitchView =
+/**
+ * Shows or hides the reading pane based on the value of the corresponding menu item.
+ *
+ * @param force		[boolean]*		if true, flip state of reading pane
+ */
+ZmDoublePaneController.prototype._toggleReadingPane = 
+function(force) {
+	var viewBtn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+	var menu = viewBtn.getMenu();
+	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, ZmMailListController.READING_PANE_MENU_ITEM_ID);
+	var checked = mi.getChecked();
+	if (force) {
+		checked = !checked;
+		mi.setChecked(checked, true);
+	} else if (this.isReadingPaneOn() == checked) {
+		return;
+	}
+	appCtxt.set(ZmSetting.READING_PANE_ENABLED, checked);
+
+	this._doublePaneView.toggleView();
+
+	// set msg in msg view if reading pane is being shown
+	if (checked) {
+		this._setSelectedItem();
+	}
+
+	this._mailListView._resetColWidth();
+};
+
+ZmDoublePaneController.prototype._handleResponseSwitchView = 
 function(currentMsg) {
 	this._doublePaneView.setMsg(currentMsg);
 };
@@ -140,26 +167,6 @@ function() {
 	return false;
 };
 
-ZmDoublePaneController.prototype.handleKeyAction =
-function(actionCode) {
-
-	DBG.println(AjxDebug.DBG3, "ZmDoublePaneController.handleKeyAction");
-	var lv = this._listView[this._currentView];
-
-	switch (actionCode) {
-
-		case DwtKeyMap.SELECT_NEXT:
-		case DwtKeyMap.SELECT_PREV:
-			if (lv) {
-				return lv.handleKeyAction(actionCode);
-			}
-			break;
-
-		default:
-			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
-	}
-	return true;
-};
 
 // Private and protected methods
 
@@ -183,13 +190,6 @@ function(view) {
 	ZmMailListController.prototype._initialize.call(this, view);
 };
 
-ZmDoublePaneController.prototype._initializeNavToolBar =
-function(view) {
-	this._toolbar[view].addOp(ZmOperation.TEXT);
-	var text = this._itemCountText[ZmSetting.RP_BOTTOM] = this._toolbar[view].getButton(ZmOperation.TEXT);
-	text.addClassName("itemCountText");
-};
-
 ZmDoublePaneController.prototype._getToolBarOps =
 function() {
 	var list = this._standardToolBarOps();
@@ -205,7 +205,7 @@ function() {
 		list.push(ZmOperation.SEP, ZmOperation.DETACH);
 	}
 
-    list.push(ZmOperation.SEP,ZmOperation.VIEW_MENU);
+    list.push(ZmOperation.VIEW_MENU);
 	return list;
 };
 
@@ -223,12 +223,6 @@ function() {
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
 		list.push(ZmOperation.ADD_FILTER_RULE);
 	}
-    if(appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-        list.push(ZmOperation.CREATE_APPT);
-    }
-    if(appCtxt.get(ZmSetting.TASKS_ENABLED)) {
-        list.push(ZmOperation.CREATE_TASK);        
-    }
 	return list;
 };
 
@@ -273,6 +267,9 @@ ZmDoublePaneController.prototype._setViewContents =
 function(view) {
 	this._doublePaneView.setItem(this._item);
 };
+
+// Called after pagination, but we don't want an item to be selected.
+ZmDoublePaneController.prototype._resetSelection = function(idx) {};
 
 ZmDoublePaneController.prototype._displayMsg =
 function(msg) {
@@ -321,29 +318,28 @@ function() {
 };
 
 // Adds a "Reading Pane" checked menu item to a view menu
-ZmDoublePaneController.prototype._setupReadingPaneMenuItems =
+ZmDoublePaneController.prototype._setupReadingPaneMenuItem =
 function(view, menu, checked) {
-
-	if (menu.getItemCount() > 0) {
+	var viewBtn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+	if (!menu) {
+		menu = viewBtn.getMenu();
+		// this means conversations not enabled
+		if (!menu) {
+			menu = new ZmPopupMenu(viewBtn);
+		}
+		viewBtn.setMenu(menu);
+	} else if (menu.getItemCount() > 0) {
 		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
 	}
 
-	var miParams = {text:ZmMsg.readingPaneAtBottom, style:DwtMenuItem.RADIO_STYLE, radioGroupId:"RP"};
-	var ids = ZmDoublePaneController.RP_IDS;
-	var pref = this._getReadingPanePref();
-	for (var i = 0; i < ids.length; i++) {
-		var id = ids[i];
-		if (!menu._menuItems[id]) {
-			miParams.text = ZmMailListController.READING_PANE_TEXT[id];
-			miParams.image = ZmMailListController.READING_PANE_ICON[id];
-			var mi = menu.createMenuItem(id, miParams);
-			mi.setData(ZmOperation.MENUITEM_ID, id);
-			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-			if (id == pref) {
-				mi.setChecked(true, true);
-			}
-		}
+	var id = ZmMailListController.READING_PANE_MENU_ITEM_ID;
+	if (!menu._menuItems[id]) {
+		var mi = menu.createMenuItem(id, {image:"SplitPane", text:ZmMsg.readingPane, style:DwtMenuItem.CHECK_STYLE});
+		mi.setData(ZmOperation.MENUITEM_ID, id);
+		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+		mi.setChecked(checked, true);
 	}
+	return menu;
 };
 
 /*
@@ -397,15 +393,12 @@ function(view) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._doublePaneView;
-	this._doublePaneView.setReadingPane();
-	this._setView({view:view, elements:elements, isAppView:this._isTopLevelView()});
+	this._setView(view, elements, this._isTopLevelView());
 	this._resetNavToolBarButtons(view);
 				
 	// always allow derived classes to reset size after loading
 	var sz = this._doublePaneView.getSize();
 	this._doublePaneView._resetSize(sz.x, sz.y);
-
-	this._resetSelection();
 };
 
 /**
@@ -443,11 +436,9 @@ function(parent, num) {
 	var isMsg = false;
 	var isDraft = false;
 	if (num == 1) {
-		var item = this._mailListView.getSelection()[0];
-		if (item) {
-			isMsg = (item.type == ZmItem.MSG || (item.numMsgs == 1));
-			isDraft = item.isDraft;
-		}
+		var item = this._doublePaneView.getSelection()[0];
+		isMsg = (item.type == ZmItem.MSG || (item.numMsgs == 1));
+		isDraft = item.isDraft;
 	}
 	parent.enable(ZmOperation.SHOW_ORIG, isMsg);
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
@@ -457,7 +448,6 @@ function(parent, num) {
 		parent.enable(ZmOperation.ADD_FILTER_RULE, isMsg && !isSyncFailuresFolder);
 	}
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && isMsg && !isDraft));
-	parent.enable(ZmOperation.TEXT, true);
 };
 
 // top level view means this view is allowed to get shown when user clicks on 
@@ -507,7 +497,7 @@ function(ev) {
 		if (this.isReadingPaneOn()) {
 			// Give the user a chance to zip around the list view via shortcuts without having to
 			// wait for each successively selected msg to load, by waiting briefly for more list
-			// selection shortcut actions. An event will have the 'kbNavEvent' property set if it's
+			// selection shortcut actions. An event will have the 'ersatz' property set if it's
 			// the result of a shortcut.
 			if (ev.kbNavEvent && ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY) {
 				if (this._listSelectionShortcutDelayActionId) {
@@ -559,9 +549,7 @@ function() {
 
 ZmDoublePaneController.prototype._handleResponseSetSelectedItem =
 function(msg) {
-	if (msg) {
-		this._displayMsg(msg);
-	}
+	this._displayMsg(msg);
 };
 
 ZmDoublePaneController.prototype._listActionListener =
@@ -577,21 +565,9 @@ function(ev) {
 	}
 };
 
-ZmDoublePaneController.prototype._doDelete =
-function() {
-	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
-	ZmMailListController.prototype._doDelete.apply(this, arguments);
-};
-
-ZmDoublePaneController.prototype._doMove =
-function() {
-	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
-	ZmMailListController.prototype._doMove.apply(this, arguments);
-};
-
-ZmDoublePaneController.prototype._showOrigListener =
-function() {
-	var msg = this.getMsg();
+ZmDoublePaneController.prototype._showOrigListener = 
+function(ev) {
+	var msg = this._getMsg();
 	if (!msg) { return; }
 
 	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id;
@@ -600,66 +576,33 @@ function() {
 };
 
 ZmDoublePaneController.prototype._filterListener = 
-function() {
+function(ev) {
 	var respCallback = new AjxCallback(this, this._handleResponseFilterListener);
 	var msg = this._getLoadedMsg(null, respCallback);
 };
 
-ZmDoublePaneController.prototype._createApptListener =
-function() {
-	var respCallback = new AjxCallback(this, this._handleResponseNewApptListener);
-	var msg = this._getLoadedMsg(null, respCallback);
-};
-
-ZmDoublePaneController.prototype._createTaskListener = 
-function() {
-	var respCallback = new AjxCallback(this, this._handleResponseNewTaskListener);
-	var msg = this._getLoadedMsg(null, respCallback);
-};
-
-ZmDoublePaneController.prototype._handleResponseNewApptListener =
+ZmDoublePaneController.prototype._handleResponseFilterListener = 
 function(msg) {
 	if (!msg) { return; }
-
-    var calController = AjxDispatcher.run("GetCalController"); 
-    calController.newApptFromMailItem(msg, new Date());    
-};
-
-ZmDoublePaneController.prototype._handleResponseNewTaskListener =
-function(msg) {
-	if (!msg) { return; }
-
-    AjxDispatcher.require(["TasksCore", "Tasks"]);
-    appCtxt.getApp(ZmApp.TASKS).newTaskFromMailItem(msg, new Date());
-};
-
-ZmDoublePaneController.prototype._handleResponseFilterListener =
-function(msg) {
-	if (!msg) { return; }
-
+	
 	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 	var rule = new ZmFilterRule();
-
 	var from = msg.getAddress(AjxEmailAddress.FROM);
 	if (from) {
-		var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM];
-		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, from.address, subjMod);
+		rule.addCondition(new ZmCondition(ZmFilterRule.C_FROM, ZmFilterRule.OP_CONTAINS, from.address));
 	}
 	var cc = msg.getAddress(AjxEmailAddress.CC);
 	if (cc)	{
-		var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_CC];
-		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, cc.address, subjMod);
+		rule.addCondition(new ZmCondition(ZmFilterRule.C_CC, ZmFilterRule.OP_CONTAINS, cc.address));
 	}
 	var subj = msg.subject;
 	if (subj) {
-		var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT];
-		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_IS, subj, subjMod);
+		rule.addCondition(new ZmCondition(ZmFilterRule.C_SUBJECT, ZmFilterRule.OP_IS, subj));
 	}
 	rule.setGroupOp(ZmFilterRule.GROUP_ALL);
-	rule.addAction(ZmFilterRule.A_KEEP);
-
-	var accountName = appCtxt.multiAccounts && msg.account && msg.account.name;
-	appCtxt.getFilterRuleDialog().popup(rule, null, null, accountName);
+	rule.addAction(new ZmAction(ZmFilterRule.A_KEEP));
+	var dialog = appCtxt.getFilterRuleDialog();
+	dialog.popup(rule);
 };
 
 ZmDoublePaneController.prototype._dragListener =
@@ -696,70 +639,4 @@ function(msg) {
 ZmDoublePaneController.prototype.selectFirstItem =
 function() {
 	this._doublePaneView._selectFirstItem();
-};
-
-ZmDoublePaneController.prototype._resetSelection =
-function() {
-	var listView = this._listView[this._currentView];
-	var item = listView && listView._selectedItem;
-	if (item && (listView.getItemIndex(item) != null)) {
-		listView.setSelection(item);
-	}
-};
-
-/**
- * Returns the item that should be selected after a move/delete. Finds
- * the first non-selected item after the first selected item.
- */
-ZmDoublePaneController.prototype._getNextItemToSelect =
-function() {
-	var listView = this._listView[this._currentView];
-	var numSelected = listView.getSelectionCount();
-	if (numSelected) {
-		var selection = listView.getSelection();
-		var selIds = {};
-		for (var i = 0; i < selection.length; i++) {
-			selIds[selection[i].id] = true;
-		}
-		var setting = appCtxt.get(ZmSetting.SELECT_AFTER_DELETE);
-		var goingUp = (setting == ZmSetting.DELETE_SELECT_PREV || (setting == ZmSetting.DELETE_SELECT_ADAPT &&
-						(this.lastListAction == DwtKeyMap.SELECT_PREV || this.lastListAction == ZmKeyMap.PREV_UNREAD)));
-		if (goingUp && (numSelected == 1)) {
-			var idx = listView._getRowIndex(selection[selection.length - 1]);
-			var childNodes = listView._parentEl.childNodes;
-			for (var i = idx - 1; i >= 0; i--) {
-				var item = listView.getItemFromElement(childNodes[i]);
-				if (item && !selIds[item.id] && !(item.cid && selIds[item.cid])) {
-					return item;
-				}
-			}
-			return ZmMailListView.FIRST_ITEM;
-		} else {
-			var idx = listView._getRowIndex(selection[0]);
-			var childNodes = listView._parentEl.childNodes;
-			for (var i = idx + 1; i < childNodes.length; i++) {
-				var item = listView.getItemFromElement(childNodes[i]);
-				if (item && !selIds[item.id] && !(item.cid && selIds[item.cid])) {
-					return item;
-				}
-			}
-			return ZmMailListView.LAST_ITEM;
-		}
-	}
-	return ZmMailListView.FIRST_ITEM;	
-};
-
-ZmDoublePaneController.prototype._setItemCountText =
-function(text) {
-
-	text = text || this._getItemCountText();
-
-	var rpr = (this._getReadingPanePref() == ZmSetting.RP_RIGHT);
-	if (this._itemCountText[ZmSetting.RP_RIGHT]) {
-		this._itemCountText[ZmSetting.RP_RIGHT].setText(rpr ? text : "");
-	}
-	if (this._itemCountText[ZmSetting.RP_BOTTOM]) {
-		this._itemCountText[ZmSetting.RP_BOTTOM].setText(rpr ? "" : text);
-	}
-	this._toolbar[this._currentView].adjustSize();
 };

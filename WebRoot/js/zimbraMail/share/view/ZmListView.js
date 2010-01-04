@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,31 +11,10 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
-/**
- * @constructor
- * @class
- * A list view presents a list of items as rows with fields (columns).
- *
- * @author Parag Shah
- * @author Conrad Damon
- *
- * @param params		[hash]				hash of params:
- *        parent		[DwtComposite] 		parent widget
- *        className		[string]*			CSS class
- *        posStyle		[constant]*			positioning style
- *        id			[string]			HTML ID for element
- *        headerList	[array]*			list of IDs for columns
- *        noMaximize	[boolean]*			if true, all columns are fixed-width (otherwise, one will
- * 											expand to fill available space)
- *        view			[constant]*			ID of view
- *        type			[constant]*			type of item displayed
- *        controller	[ZmListController]	owning controller
- *        dropTgt		[DwtDropTarget]*	drop target
- *        pageless		[boolean]*			if true, enlarge page via scroll rather than pagination
- */
 ZmListView = function(params) {
 
 	if (arguments.length == 0) { return; }
@@ -63,19 +43,7 @@ ZmListView = function(params) {
 	this._handleEventType[this.type] = true;
 	this._disallowSelection = {};
 	this._disallowSelection[ZmItem.F_FLAG] = true;
-	this._selectAllEnabled = false;
-
-	if (params.dropTgt) {
-		var args = {container:this._parentEl, threshold:15, amount:5, interval:10, id:params.id};
-		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [args]);
-		this._dndScrollId = params.id;
-	}
-
-	this._isPageless = params.pageless;
-	if (this._isPageless) {
-		Dwt.setHandler(this._getScrollDiv(), DwtEvent.ONSCROLL, ZmListView.handleScroll);
-	}
-};
+}
 
 ZmListView.prototype = new DwtListView;
 ZmListView.prototype.constructor = ZmListView;
@@ -83,12 +51,7 @@ ZmListView.prototype.constructor = ZmListView;
 ZmListView.prototype.toString =
 function() {
 	return "ZmListView";
-};
-
-
-// Consts
-
-ZmListView.KEY_ID							= "_keyId";
+}
 
 // column widths
 ZmListView.COL_WIDTH_ICON 					= 19;
@@ -104,14 +67,12 @@ ZmListView.FIELD_CLASS[ZmItem.F_ATTACHMENT]	= "Attach";
 ZmListView.ITEM_FLAG_CLICKED 				= DwtListView._LAST_REASON + 1;
 ZmListView.DEFAULT_REPLENISH_THRESHOLD		= 0;
 
-ZmListView.COL_JOIN = "|";
-
 ZmListView.prototype._getHeaderList = function() {};
 
 ZmListView.prototype.getController =
 function() {
 	return this._controller;
-};
+}
 
 ZmListView.prototype.set =
 function(list, sortField) {
@@ -125,43 +86,14 @@ function(list, sortField) {
 		}
 	}
 
-	if (this._isPageless) {
-		if (this._itemsToAdd) {
-			this.addItems(this._itemsToAdd);
-			this._itemsToAdd = null;
-		} else {
-			var lvList = list;
-			if (list instanceof ZmList) {
-				list.addChangeListener(this._listChangeListener);
-				lvList = list.getSubList(0, list.size());
-			}
-			DwtListView.prototype.set.call(this, lvList, sortField);
-		}
-		this._setRowHeight();
+	var subList;
+	if (list instanceof ZmList) {
+		list.addChangeListener(this._listChangeListener);
+		subList = list.getSubList(this.offset, this.getLimit());
 	} else {
-		var subList;
-		if (list instanceof ZmList) {
-			list.addChangeListener(this._listChangeListener);
-			subList = list.getSubList(this.offset, this.getLimit());
-		} else {
-			subList = list;
-		}
-		DwtListView.prototype.set.call(this, subList, sortField);
+		subList = list;
 	}
-	this._rendered = true;
-};
-
-ZmListView.prototype._setRowHeight =
-function() {
-	if (!this._rowHeight) {
-		var row = this._parentEl.firstChild;
-		this._rowHeight = row && Dwt.getSize(row).y;
-	}
-};
-
-ZmListView.prototype.reset =
-function() {
-	this._rendered = false;
+	DwtListView.prototype.set.call(this, subList, sortField);
 };
 
 ZmListView.prototype.setUI =
@@ -171,18 +103,8 @@ function(defaultColumnSort) {
 };
 
 ZmListView.prototype.getLimit =
-function(offset) {
-	if (this._isPageless) {
-		var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
-		return offset ? limit : 2 * limit;
-	} else {
-		return appCtxt.get(ZmSetting.PAGE_SIZE);
-	}
-};
-
-ZmListView.prototype.getPagelessThreshold =
 function() {
-	return Math.ceil(this.getLimit() / 5);
+	return appCtxt.get(ZmSetting.PAGE_SIZE);
 };
 
 ZmListView.prototype.getReplenishThreshold =
@@ -221,17 +143,11 @@ function(ev) {
         // if we've removed it from the view, we should remove it from the reference
         // list as well so it doesn't get resurrected via replenishment *unless*
 		// we're dealing with a canonical list (i.e. contacts)
-		if (ev.event != ZmEvent.E_MOVE || !this._controller._list.isCanonical) {
+		if (ev.event != ZmEvent.E_MOVE || !this._controller._list.isCanonical)
 			this._controller._list.remove(item);
-		}
-		if (!this.allSelected) {
-			if (!this._isPageless) {
-				this._controller._app._checkReplenishListView = this;
-			} else {
-				this._handleResponseCheckReplenish();
-			}
-		}
+		this._controller._app._checkReplenishListView = this;
 		this._controller._resetToolbarOperations();
+		this._controller._restoreFocus(this);
 	}
 };
 
@@ -257,8 +173,8 @@ function() {
 		this._controller._handleEmptyList(this);
 	} else {
 		this._controller._resetNavToolBarButtons(this._controller._getViewType());
+		this._setNextSelection();
 	}
-	this._setNextSelection();
 };
 
 ZmListView.prototype._folderChangeListener =
@@ -306,13 +222,13 @@ function(ev) {
 			}
 		}
 	}
-};
+}
 
 // returns all child divs for this list view
 ZmListView.prototype._getChildren =
 function() {
 	return this._parentEl.childNodes;
-};
+}
 
 // Common routines for createItemHtml()
 
@@ -342,11 +258,11 @@ function(item, field, params) {
 ZmListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_SELECTION) {
-		idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, "TaskCheckbox", this._getFieldId(item, field));
 	} else if (field == ZmItem.F_TYPE) {
 		idx = this._getImageHtml(htmlArr, idx, ZmItem.ICON[item.type], this._getFieldId(item, field));
 	} else if (field == ZmItem.F_FLAG) {
-		idx = this._getImageHtml(htmlArr, idx, this._getFlagIcon(item.isFlagged), this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, item.isFlagged ? "FlagRed" : null, this._getFieldId(item, field));
 	} else if (field == ZmItem.F_TAG) {
 		idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, field));
 	} else if (field == ZmItem.F_ATTACHMENT) {
@@ -387,23 +303,6 @@ function(item, field, imageInfo) {
 	}
 };
 
-ZmListView.prototype._getFragmentSpan =
-function(item) {
-	return ["<span class='ZmConvListFragment' id='",
-			this._getFieldId(item, ZmItem.F_FRAGMENT),
-			"'>", this._getFragmentHtml(item), "</span>"].join("");
-};
-
-ZmListView.prototype._getFragmentHtml =
-function(item) {
-	return [" - ", AjxStringUtil.htmlEncode(item.fragment, true)].join("");
-};
-
-ZmListView.prototype._getFlagIcon =
-function(isFlagged, isMouseover) {
-	return (isFlagged || isMouseover) ? "FlagRed" : "Blank_16";
-};
-
 /**
  * Parse the DOM ID to figure out what got clicked. IDs consist of three to five parts
  * joined by the "|" character.
@@ -422,6 +321,29 @@ function(id) {
 	} else {
 		return null;
 	}
+};
+
+ZmListView.prototype._mouseOverAction =
+function(ev, div) {
+	DwtListView.prototype._mouseOverAction.call(this, ev, div);
+	var id = ev.target.id || div.id;
+	if (!id) { return true; }
+
+	// check if we're hovering over a column header
+	var data = this._data[div.id];
+	var type = data.type;
+	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
+		var itemIdx = data.index;
+		var field = this._headerList[itemIdx]._field;
+		this.setToolTipContent(this._getHeaderToolTip(field, itemIdx));
+	} else {
+		var match = this._parseId(id);
+		if (match && match.field) {
+			var item = this.getItemFromElement(div);
+			this.setToolTipContent(this._getToolTip(match.field, item, ev, div, match));
+		}
+	}
+	return true;
 };
 
 ZmListView.prototype._mouseOutAction =
@@ -444,7 +366,7 @@ function(ev, div) {
 			} else if (m.field == ZmItem.F_FLAG) {
 				var item = this.getItemFromElement(div);
 				if (!item.isFlagged) {
-					AjxImg.setImage(ev.target, this._getFlagIcon(item.isFlagged, false), true);
+					AjxImg.setImage(ev.target, "Blank_16", true);
 				}
 			}
 		}
@@ -477,16 +399,16 @@ function(clickedEl, ev) {
 					var selField = selFieldId ? document.getElementById(selFieldId) : null;
 					if (selField && sel == clickedEl) {
 						var origClass = this._getItemData(sel, "origSelClassName");
-						if (origClass == "ImgCheckboxChecked") {
-							selField.className = "ImgCheckboxUnchecked";
-							this._setItemData(sel, "origSelClassName", "ImgCheckboxUnchecked");
-						} else if (origClass == "ImgCheckboxUnchecked") {
-							selField.className = "ImgCheckboxChecked";
-							this._setItemData(sel, "origSelClassName", "ImgCheckboxChecked");
+						if (origClass == "ImgTaskCheckboxCompleted") {
+							selField.className = "ImgTaskCheckbox";
+							this._setItemData(sel, "origSelClassName", "ImgTaskCheckbox");
+						} else if (origClass == "ImgTaskCheckbox") {
+							selField.className = "ImgTaskCheckboxCompleted";
+							this._setItemData(sel, "origSelClassName", "ImgTaskCheckboxCompleted");
 							return;
 						}
 					} else {
-						if (selField && selField.className == "ImgCheckboxUnchecked") {
+						if (selField && selField.className == "ImgTaskCheckbox") {
 							DwtListView.prototype.deselectAll.call(this);
 						}
 					}
@@ -515,12 +437,11 @@ function(clickedEl, ev) {
 ZmListView.prototype._columnClicked =
 function(clickedCol, ev) {
 	DwtListView.prototype._columnClicked.call(this, clickedCol, ev);
-	this._checkSelectionColumnClicked(clickedCol, ev);
+	this._checkSelectionColumnClicked(clickedCol);
 };
 
 ZmListView.prototype._checkSelectionColumnClicked =
-function(clickedCol, ev) {
-
+function(clickedCol) {
 	if (!appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) { return; }
 
 	var list = this.getList();
@@ -528,21 +449,16 @@ function(clickedCol, ev) {
 	if (size > 0) {
 		var idx = this._data[clickedCol.id].index;
 		var item = this._headerList[idx];
-		if (item && (item._field == ZmItem.F_SELECTION)) {
+		if (item && item._id.indexOf(ZmItem.F_SELECTION) != -1) {
 			var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, item._field);
 			var hdrDiv = document.getElementById(hdrId);
 			if (hdrDiv) {
-				if (hdrDiv.className == "ImgCheckboxChecked") {
-					if (ev.shiftKey && !this.allSelected) {
-						this.selectAll(ev.shiftKey);
-					} else {
-						this.deselectAll();
-						hdrDiv.className = "ImgCheckboxUnchecked";
-					}
+				if (hdrDiv.className == "ImgTaskCheckboxCompleted") {
+					this.deselectAll();
+					hdrDiv.className = "ImgTaskCheckbox";
 				} else {
-					this.allSelected = false;
-					hdrDiv.className = "ImgCheckboxChecked";
-					this.selectAll(ev.shiftKey);
+					hdrDiv.className = "ImgTaskCheckboxCompleted";
+					this.setSelectedItems(this._list.getArray());
 				}
 			}
 		}
@@ -585,7 +501,7 @@ function(obj, bContained) {
 	var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 	var selField = selFieldId ? document.getElementById(selFieldId) : null;
 	if (selField) {
-		selField.className = bContained ? "ImgCheckboxUnchecked" : "ImgCheckboxChecked";
+		selField.className = bContained	? "ImgTaskCheckbox"	: "ImgTaskCheckboxCompleted";
 		this._setItemData(obj, "origSelClassName", selField.className);
 	}
 };
@@ -597,8 +513,8 @@ function(check) {
 	var hdrDiv = hdrId ? document.getElementById(hdrId) : null;
 	if (hdrDiv) {
 		hdrDiv.className = check
-			? "ImgCheckboxChecked"
-			: "ImgCheckboxUnchecked";
+			? "ImgTaskCheckboxCompleted"
+			: "ImgTaskCheckbox";
 	}
 };
 
@@ -611,34 +527,10 @@ function(selectedArray) {
 	}
 };
 
-ZmListView.prototype.selectAll =
-function(allResults) {
-
-	DwtListView.prototype.selectAll.apply(this, arguments);
-
-	if (this._selectAllEnabled) {
-		var curResult = this._controller._activeSearch;
-		if (curResult && curResult.getAttribute("more")) {
-			var toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, this.getList().size());
-			if (allResults) {
-				this.allSelected = true;
-				toastMsg = ZmMsg.allSearchSelected;
-			}
-			appCtxt.setStatusMsg(toastMsg);
-		}
-	}
-};
-
 ZmListView.prototype.deselectAll =
 function() {
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		this._checkSelectedItems(false);
-		this.allSelected = false;
-		var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, ZmItem.F_SELECTION);
-		var hdrDiv = document.getElementById(hdrId);
-		if (hdrDiv) {
-			hdrDiv.className = "ImgCheckboxUnchecked";
-		}
 	}
 
 	DwtListView.prototype.deselectAll.call(this);
@@ -660,77 +552,10 @@ function() {
 	this.setSelectionHdrCbox(false);
 };
 
-ZmListView.prototype._getActionMenuForColHeader =
-function(force) {
-	if (!this._colHeaderActionMenu || force) {
-		// create a action menu for the header list
-		this._colHeaderActionMenu = new ZmPopupMenu(this);
-		var actionListener = new AjxListener(this, this._colHeaderActionListener);
-		for (var i = 0; i < this._headerList.length; i++) {
-			var hCol = this._headerList[i];
-			// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
-			if (hCol._width) {
-				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
-				mi.setData(ZmListView.KEY_ID, hCol._id);
-				mi.setChecked(hCol._visible, true);
-                if (hCol._noRemove) {
-					mi.setEnabled(false);
-				}
-                this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
-			}
-		}
-	}
-	return this._colHeaderActionMenu;
-};
-
-ZmListView.prototype._colHeaderActionListener =
-function(ev) {
-
-	var menuItemId = ev.item.getData(ZmListView.KEY_ID);
-
-	for (var i = 0; i < this._headerList.length; i++) {
-		var col = this._headerList[i];
-		if (col._id == menuItemId) {
-			col._visible = !col._visible;
-			break;
-		}
-	}
-
-	this._relayout();
-};
-
-ZmListView.prototype.getToolTipContent =
-function(ev) {
-	var div = this.getTargetItemDiv(ev);
-	if (!div) { return; }
-	var id = ev.target.id || div.id;
-	if (!id) { return ""; }
-
-	// check if we're hovering over a column header
-	var data = this._data[div.id];
-	var type = data.type;
-	var tooltip;
-	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
-		var itemIdx = data.index;
-		var field = this._headerList[itemIdx]._field;
-		tooltip = this._getHeaderToolTip(field, itemIdx);
-	} else {
-		var match = this._parseId(id);
-		if (match && match.field) {
-			var item = this.getItemFromElement(div);
-			var params = {field:match.field, item:item, ev:ev, div:div, match:match};
-			tooltip = this._getToolTip(params);
-		}
-	}
-	return tooltip;
-};
-
 ZmListView.prototype._getHeaderToolTip =
 function(field, itemIdx, isFolder) {
     var tooltip = null;
-	if (field == ZmItem.F_SELECTION) {
-		tooltip = ZmMsg.selectionColumn;
-	} else if (field == ZmItem.F_FLAG) {
+    if (field == ZmItem.F_FLAG) {
         tooltip = ZmMsg.flag;
     } else if (field == ZmItem.F_PRIORITY){
         tooltip = ZmMsg.priority;
@@ -750,33 +575,21 @@ function(field, itemIdx, isFolder) {
     } else if ( field == ZmItem.F_SIZE){
         tooltip = (this._headerList[itemIdx]._sortable)
                 ? ZmMsg.sortBySize : ZmMsg.sizeToolTip;
-    } else if (field == ZmItem.F_FOLDER) {
-        tooltip = ZmMsg.folder;
     }
-    
     return tooltip;
 };
 
-/**
- * @param params		[hash]			hash of params:
- *        field			[constant]		column ID
- *        item			[ZmItem]*		underlying item
- *        ev			[DwtEvent]*		mouseover event
- *        div			[Element]*		row div
- *        match			[hash]*			fields from div ID
- *        callback		[AjxCallback]*	callback (in case tooltip content retrieval is async)
- */
 ZmListView.prototype._getToolTip =
-function(params) {
-    var tooltip, field = params.field, target = params.ev.target, item = params.item;
+function(field, item, ev, div, match) {
+    var tooltip;
     if (field == ZmItem.F_SELECTION) {
-		this._setItemData(params.div, "origSelClassName", target.className);
-        if (target.className != "ImgCheckboxChecked") {
-            target.className = "ImgCheckboxChecked";
+		this._setItemData(div, "origSelClassName", ev.target.className);
+        if (ev.target.className != "ImgTaskCheckboxCompleted") {
+            ev.target.className = "ImgTaskCheckboxCompleted";
         }
     } else if (field == ZmItem.F_FLAG) {
         if (!item.isFlagged) {
-            AjxImg.setDisabledImage(target, this._getFlagIcon(item.isFlagged, true), true);
+            AjxImg.setDisabledImage(ev.target, "FlagRed", true);
         }
     } else if (field == ZmItem.F_PRIORITY) {
         if (item.isHighPriority) {
@@ -790,18 +603,17 @@ function(params) {
         // disable att tooltip for now, we only get att info once msg is loaded
         // tooltip = this._getAttachmentToolTip(item);
     } else if (field == ZmItem.F_DATE) {
-        tooltip = this._getDateToolTip(item, params.div);
+        tooltip = this._getDateToolTip(item, div);
     }
     return tooltip;
 };
 
 ZmListView.prototype._getTagToolTip =
 function(item) {
-	if (!item) { return; }
-	var numTags = item.tags && item.tags.length;
-	if (!numTags) { return; }
-	var account = appCtxt.multiAccounts ? item.account : null;
-	var tagList = appCtxt.getTagTree(account);
+	if (!item) { return };
+	var numTags = item.tags.length;
+	if (!numTags) { return };
+	var tagList = appCtxt.getTagTree();
 	var tags = item.tags;
 	var html = [];
 	var idx = 0;
@@ -815,7 +627,7 @@ function(item) {
 		html[idx++] = "</td></tr></table>";
 	}
 	return html.join("");
-};
+}
 
 ZmListView.prototype._getAttachmentToolTip =
 function(item) {
@@ -894,7 +706,7 @@ function(clickedEl, ev, button) {
 		}
 	}
 	return true;
-};
+}
 
 ZmListView.prototype._allowFieldSelection =
 function(id, field) {
@@ -909,8 +721,6 @@ function(columnItem, bSortAsc) {
 		case ZmItem.F_FROM:		sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC; break;
 		case ZmItem.F_SUBJECT:	sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC;	break;
 		case ZmItem.F_DATE:		sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;	break;
-		case ZmItem.F_SIZE:		sortBy = bSortAsc ? ZmSearch.SIZE_ASC : ZmSearch.SIZE_DESC;	break;
-		case ZmItem.F_SORTED_BY:sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;	break;
 	}
 
 	if (sortBy) {
@@ -935,6 +745,7 @@ ZmListView.prototype._relayout =
 function() {
 	DwtListView.prototype._relayout.call(this);
 	this._checkColumns();
+	
 };
 
 ZmListView.prototype._checkColumns =
@@ -943,98 +754,11 @@ function() {
 	var fields = [];
 	for (var i = 0; i < numCols; i++) {
 		var headerCol = this._headerList[i];
-		// bug 43540: always skip account header since its a multi-account only
-		// column and we don't want it to sync
-		if (headerCol & headerCol._field != ZmItem.F_ACCOUNT) {
-			fields.push(headerCol._field + (headerCol._visible ? "" : "*"));
-		}
+		fields.push(headerCol._field + (headerCol._visible ? "" : "*"));
 	}
-	var value = fields.join(ZmListView.COL_JOIN);
+	var value = fields.join("|");
 	value = (value == this._defaultCols) ? "" : value;
 	appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
-
+	
 	this._getActionMenuForColHeader(true); // re-create action menu so order is correct
-};
-
-/**
- * Scroll-based paging. Make sure we have at least one page of items below the visible list.
- * 
- * @param ev
- */
-ZmListView.handleScroll =
-function(ev) {
-	var target = DwtUiEvent.getTarget(ev);
-	var lv = DwtControl.findControl(target);
-	if (lv) {
-		lv._checkItemCount();
-	}
-};
-
-/**
- * Figure out if we should fetch some more items, based on where the scroll is. Our goal is to have
- * a certain number available below the bottom of the visible view.
- */
-ZmListView.prototype._checkItemCount =
-function() {
-	var itemsNeeded = this._getItemsNeeded();
-	if (itemsNeeded) {
-		this._controller._paginate(this._view, true, null, itemsNeeded);
-	}
-};
-
-/**
- * Figure out how many items we need to fetch to maintain a decent number
- * below the fold. Nonstandard list views may override.
- */
-ZmListView.prototype._getItemsNeeded =
-function() {
-
-	if (!(this._controller._list && this._controller._list.hasMore()) || !this._list) { return 0; }
-	if (!this._rendered || !this._rowHeight) { return 0; }
-
-	DBG.println(AjxDebug.DBG2, "List view: checking item count");
-	var scrollDiv = this._getScrollDiv();
-	var sh = scrollDiv.scrollHeight, st = scrollDiv.scrollTop, rh = this._rowHeight;
-
-	// view (porthole) height - everything measured relative to its top
-	// prefer clientHeight since (like scrollHeight) it doesn't include borders
-	var h = scrollDiv.clientHeight || Dwt.getSize(scrollDiv).y;
-
-	// where we'd like bottom of list view to be (with extra hidden items at bottom)
-	var target = h + (this.getPagelessThreshold() * this._rowHeight);
-
-	// where bottom of list view is (including hidden items)
-	var bottom = sh - st;
-
-	if (bottom == h) {
-		// handle cases where list view isn't full, but we have more items (eg tall browser, or replenishment)
-		bottom = (this._list.size() * rh) - st;
-		if (st == 0) {
-			// fix list view width since we are getting a scrollbar
-			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._resetColWidth), 100);
-		}
-	}
-	var itemsNeeded = 0;
-	if (bottom < target) {
-		// buffer below visible bottom of list view is not full
-		return Math.max(Math.floor((target - bottom) / rh), this.getLimit(1));
-	}
-};
-
-ZmListView.prototype._getScrollDiv =
-function() {
-	return this._parentEl;
-};
-
-ZmListView.prototype._sizeChildren =
-function(height) {
-	if (DwtListView.prototype._sizeChildren.apply(this, arguments)) {
-		this._checkItemCount();
-	}
-};
-
-// Allow list view classes to override type used in nav text. Return null to say "items".
-ZmListView.prototype._getItemCountType =
-function() {
-	return this.type;
 };

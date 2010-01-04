@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -37,14 +39,11 @@ function() {
 
 ZmSearchResult.prototype.getResults =
 function(type) {
-
-	type = type || this.type;
 	if (!this._results) {
 		// probably got an exception - return an empty list
 		return ZmItem.RESULTS_LIST[type](this.search);
 	}
 	if (type == ZmItem.MIXED) {
-		// mail list - lazy way to make it easy to do mail ops on items
 		var list = new ZmMailList(ZmItem.MIXED, this.search);
 		for (var type in this._results) {
 			var results = this._results[type];
@@ -71,12 +70,8 @@ ZmSearchResult.prototype.set =
 function(respEl) {
 
 	if (!this.search) { return; }
-
 	this._respEl = respEl;
-
-	// <match> objects are returned for autocomplete search, not items; let caller handle them
-	if (this.search.isAutocompleteSearch) { return; }
-
+	
 	var foundType = {};
 	var numTypes = 0;
 	var currentType, defaultType;
@@ -153,8 +148,8 @@ function(respEl) {
 
 	if (numTypes <= 1) {
 		this.type = currentType;
-	} else if (numTypes == 2 && (foundType[ZmItem.PAGE] || foundType[ZmItem.DOCUMENT])) {
-		this.type = ZmItem.PAGE;	// notebook search can return either/both
+	} else if (numTypes == 2 && (currentType == ZmItem.PAGE || currentType == ZmItem.DOCUMENT)) {
+		this.type = ZmItem.PAGE;
 	} else {
 		this.type = appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED) ? ZmItem.MIXED : currentType;
 	}
@@ -164,7 +159,7 @@ function(respEl) {
 
 ZmSearchResult._sortGalResults =
 function(a, b) {
-	var af = a.getFileAs && a.getFileAs().toLowerCase();
-	var bf = b.getFileAs && b.getFileAs().toLowerCase();
+	var af = a.getFileAs().toLowerCase();
+	var bf = b.getFileAs().toLowerCase();
 	return af < bf ? -1 : (af > bf ? 1 : 0);
 };

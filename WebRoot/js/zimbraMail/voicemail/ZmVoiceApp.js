@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -43,8 +45,6 @@ ZmApp.UPSELL_SETTING[ZmApp.VOICE]	= ZmSetting.VOICE_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.VOICE]		= 80;
 ZmApp.QS_ARG[ZmApp.VOICE]			= "voice";
 
-ZmVoiceApp.overviewFallbackApp		= ZmApp.PORTAL;
-
 ZmVoiceApp.prototype = new ZmApp;
 ZmVoiceApp.prototype.constructor = ZmVoiceApp;
 
@@ -60,6 +60,7 @@ function() {
 	AjxDispatcher.setPackageLoadFunction("Voicemail", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.registerMethod("GetVoiceController", "Voicemail", new AjxCallback(this, this.getVoiceController));
 	AjxDispatcher.registerMethod("GetCallListController", "Voicemail", new AjxCallback(this, this.getCallListController));
+	AjxDispatcher.registerMethod("GetVoicePrefsController", ["PreferencesCore", "Preferences", "Voicemail"], new AjxCallback(this, this.GetVoicePrefsController));
 };
 
 ZmVoiceApp.prototype._registerItems =
@@ -67,7 +68,6 @@ function() {
 	ZmItem.registerItem(ZmItem.VOICEMAIL,
 						{app:			ZmApp.VOICE,
 						 nameKey:		"voicemail",
-						 pluralNameKey:	"voicemails",
 						 icon:			"Voicemail",
 						 soapCmd:		"VoiceMsgAction",
 						 itemClass:		"ZmVoicemail",
@@ -84,7 +84,6 @@ function() {
 	ZmItem.registerItem(ZmItem.CALL,
 						{app:			ZmApp.VOICE,
 						 nameKey:		"call",
-						 pluralNameKey:	"calls",
 						 icon:			"Voicemail",
 						 soapCmd:		"VoiceMsgAction",
 						 itemClass:		"ZmCall",
@@ -102,13 +101,15 @@ ZmVoiceApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_CHECK_VOICEMAIL, {textKey:"checkVoicemail", tooltipKey:"checkVoicemailTooltip"});
 	ZmOperation.registerOp(ZmId.OP_CHECK_CALLS, {textKey:"checkCalls", tooltipKey:"checkCallsTooltip"});
-	ZmOperation.registerOp(ZmId.OP_CALL_MANAGER, {textKey:"callManager", tooltipKey:"callManagerTooltip", image:"CallManager", shortcut:ZmKeyMap.CALL_MANAGER});
-	ZmOperation.registerOp(ZmId.OP_MARK_HEARD, {textKey:"markAsHeard", image:"MarkAsHeard", shortcut:ZmKeyMap.MARK_HEARD});
-	ZmOperation.registerOp(ZmId.OP_MARK_UNHEARD, {textKey:"markAsUnheard", image:"MarkAsUnheard", shortcut:ZmKeyMap.MARK_UNHEARD});
+	ZmOperation.registerOp(ZmId.OP_CALL_MANAGER, {textKey:"callManager", tooltipKey:"callManagerTooltip", image:"CallManager"});
+	ZmOperation.registerOp(ZmId.OP_MARK_HEARD, {textKey:"markAsHeard", image:"MarkAsHeard"});
+	ZmOperation.registerOp(ZmId.OP_MARK_UNHEARD, {textKey:"markAsUnheard", image:"MarkAsUnheard"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_BY_DATE, {textKey:"viewByDate"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_BY_EMAIL, {textKey:"replyByEmail", tooltipKey:"replyByEmailTooltip", image:"Reply"});
 	ZmOperation.registerOp(ZmId.OP_FORWARD_BY_EMAIL, {textKey:"forwardByEmail", tooltipKey:"forwardByEmailTooltip", image:"Forward"});
 	ZmOperation.registerOp(ZmId.OP_DOWNLOAD_VOICEMAIL, {textKey: "downloadVoicemail", tooltipKey:"downloadVoicemailTooltip", image:"Save"});
+	ZmOperation.registerOp(ZmId.OP_ADD_CALLER_FORWARD, {textKey:"addCallerToForward"});
+	ZmOperation.registerOp(ZmId.OP_ADD_CALLER_REJECT, {textKey:"addCallerToReject"});
 };
 
 ZmVoiceApp.prototype._registerOrganizers =
@@ -119,14 +120,13 @@ function() {
 							 defaultFolder:		0,
 							 firstUserId:		256,
 							 orgClass:			"ZmVoiceFolder",
-							 orgPackage:		"Voicemail",
+							 orgPackage:		"VoicemailCore",
 							 treeController:	"ZmVoiceTreeController",
 							 labelKey:			"voicemail",
 							 itemsKey:			"messages",
 							 views:				["voicemail"],
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmVoiceFolder.sortCompare",
-							 displayOrder:		100,
 							 deferrable:		false
 							});
 };
@@ -140,7 +140,8 @@ function() {
 							  qsArg:				"voicemail",
 							  chooserTooltipKey:	"goToVoice",
 							  defaultSearch:		ZmId.SEARCH_MAIL,
-							  overviewTrees:		[ZmOrganizer.VOICE],
+							  overviewTrees:		[ZmOrganizer.VOICE, ZmOrganizer.ROSTER_TREE_ITEM],
+							  showZimlets:			true,
 							  searchTypes:			[ZmItem.VOICEMAIL],
 							  gotoActionCode:		ZmKeyMap.GOTO_VOICE,
 							  chooserSort:			15,
@@ -150,13 +151,30 @@ function() {
 };
 
 ZmVoiceApp.prototype._registerPrefs = function() {
+    var sections = {
+        VOICE: {
+            title: ZmMsg.callManager,
+            templateId: "prefs.Pages#Voice",
+            priority: 40,
+            precondition: ZmSetting.VOICE_ENABLED,
+            prefs: [
+                ZmSetting.VOICE_ACCOUNTS 
+            ],
+            manageDirty: true,
+            createView: function(parent, section, controller) {
+                return AjxDispatcher.run("GetVoicePrefsController").getListView();
+            }
+        }
+    };
+    for (var id in sections) {
+        ZmPref.registerPrefSection(id, sections[id]);
+    }
 };
 
 ZmVoiceApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
 	settings.registerSetting("VOICE_PAGE_SIZE", {name:"zimbraPrefVoiceItemsPerPage", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:25});
-	settings.registerSetting("VOICE_PAGE_SIZE_MAX", {name:"zimbraMaxVoiceItemsPerPage", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:100});
 };
 
 // Public methods
@@ -176,32 +194,39 @@ function(modifies) {
 	this._handleModifies(modifies);
 };
 
+ZmVoiceApp.prototype.getOverviewPanelContent =
+function() {
+	if (this._overviewPanelContent) {
+		return this._overviewPanelContent;
+	}
+
+	// create accordion
+	var accordionId = this._name;
+	var opc = appCtxt.getOverviewController();
+	var params = {accordionId:accordionId};
+	this._overviewPanelContent = opc.createAccordion(params);
+	this._overviewPanelContent.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
+
+	if (!this.phones.length) {
+		// GetVoiceInfo hasn't been called yet.
+		var currentApp = appCtxt.getCurrentApp();
+		this.getVoiceInfo(new AjxCallback(this, this._handleResponseGetOverviewPanelContent, [currentApp]));
+	} else {
+		this._createAccordionItems();
+	}
+	return this._overviewPanelContent;
+};
+
+
+ZmVoiceApp.prototype._handleResponseGetOverviewPanelContent =
+function(currentApp) {
+	this._createAccordionItems();
+};
+
 ZmVoiceApp.prototype.getOverviewId =
 function() {
 	var name = this.accordionItem ? this.accordionItem.data.phone.name : "";
-	return [this._name, name].join(":");
-};
-
-ZmVoiceApp.prototype.getOverviewContainer =
-function() {
-	if (!this._overviewContainer) {
-		var containerId = [ZmApp.OVERVIEW_ID, this._name].join("_");
-		var containerParams = {
-			appName: this._name,
-			containerId: containerId,
-			posStyle: Dwt.ABSOLUTE_STYLE,
-			parent: appCtxt.getShell(),
-			controller: this._opc
-		};
-
-		containerParams.id = ZmId.getOverviewContainerId(containerId);
-
-		// the overview container will create overviews for each account
-		this._overviewContainer = this._opc._overviewContainer[containerId] =
-			new ZmVoiceOverviewContainer(containerParams);
-	}
-
-	return this._overviewContainer;
+	return [this.getOverviewPanelContentId(), name].join(":");
 };
 
 ZmVoiceApp.prototype.getVoiceInfo =
@@ -327,6 +352,59 @@ function(phone, foldersObj) {
 	}
 };
 
+ZmVoiceApp.prototype._createAccordionItems =
+function() {
+	var startItem;
+	for (var i = 0; i < this.phones.length; i++) {
+		var data = {lastFolder:null, appName:this._name};
+		var phone = this.phones[i];
+		data.phone = phone;
+		var item = this._overviewPanelContent.addAccordionItem({title:phone.getDisplay(), data:data});
+		if ((phone.name == this._startPhone) || (i == 0)) {
+			startItem = item;
+		}
+	}
+	if (startItem) {
+		this._activateAccordionItem(startItem);
+	}
+};
+
+ZmVoiceApp.prototype._accordionSelectionListener =
+function(ev) {
+	var accordionItem = ev.detail;
+	if (accordionItem == this.accordionItem) { return; }
+	if (accordionItem.data.appName != this._name) { return; }
+
+	// Save most recent search.
+	if (this.accordionItem) {
+		var folder = appCtxt.getCurrentController().getFolder();
+		if (folder && folder.phone == this.accordionItem.data.phone) {
+			this.accordionItem.data.lastFolder = folder;
+		}
+	}
+
+	// Run new search inside of accordion item.
+	this.accordionItem = accordionItem;
+	var folder = this.accordionItem.data.lastFolder;
+	var phone = this.accordionItem.data.phone;
+	if (!folder) {
+		folder = ZmVoiceFolder.get(phone, ZmVoiceFolder.VOICEMAIL_ID);
+	}
+	if (folder) {
+		// Highlight the folder.
+		var overview = this._opc.getOverview(this.getOverviewId());
+		if (overview) {
+			var treeView = overview.getTreeView(ZmOrganizer.VOICE);
+			var treeItem = treeView.getTreeItemById(folder.id);
+			treeView.setSelection(treeItem, true);
+		}
+		
+		// Run search.
+		this.search(folder);
+	}
+	this._activateAccordionItem(accordionItem);
+};
+
 ZmVoiceApp.prototype.search =
 function(folder, callback, sortBy) {
 	var viewType = (folder.getSearchType() == ZmItem.VOICEMAIL) ? ZmId.VIEW_VOICEMAIL : ZmId.VIEW_CALL_LIST;
@@ -340,11 +418,11 @@ function(folder, callback, sortBy) {
 			sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
 		}
 		var searchParams = {
-			soapInfo:	this.soapInfo,
-			types:		AjxVector.fromArray([folder.getSearchType()]),
-			sortBy:		sortBy,
-			query:		folder.getSearchQuery(),
-			limit:		this.getLimit()
+			soapInfo: this.soapInfo,
+			types: AjxVector.fromArray([folder.getSearchType()]),
+			sortBy: sortBy,
+			query: folder.getSearchQuery(),
+			limit: appCtxt.get(ZmSetting.VOICE_PAGE_SIZE)
 		};
 		var search = new ZmSearch(searchParams);
 		var responseCallback = new AjxCallback(this, this._handleResponseSearch, [folder, callback]);
@@ -357,18 +435,13 @@ function(folder, callback, response) {
 	var searchResult = response._data;
 	var list = searchResult.getResults(folder.getSearchType());
 	list.folder = folder;
-	var vc = (folder.getSearchType() == ZmItem.VOICEMAIL)
-		? AjxDispatcher.run("GetVoiceController")
-		: AjxDispatcher.run("GetCallListController");
-	vc.show(searchResult, folder);
-
-	// setup the overview container now that the app has been activated
-	if (!this._overviewContainer.initialized) {
-		var overviewParams = this._getOverviewParams();
-		overviewParams.overviewTrees = this._getOverviewTrees();
-		overviewParams.phones = this.phones;
-		this._overviewContainer.initialize(overviewParams);
+	var voiceController;
+	if (folder.getSearchType() == ZmItem.VOICEMAIL) {
+		voiceController = AjxDispatcher.run("GetVoiceController");
+	} else {
+		voiceController = AjxDispatcher.run("GetCallListController");
 	}
+	voiceController.show(searchResult, folder);
 
 	// Update numUnread & numUnheard in folder.
 	var folderInfo = searchResult.getAttribute("vfi");
@@ -376,15 +449,15 @@ function(folder, callback, response) {
 		folder.notifyModify(folderInfo[0]);
 	}
 
-	if (this._paramId) {
-		var voiceList = vc.getList();
-		var item = voiceList.getById(this._paramId);
-		if (item) {
-			var view = vc.getCurrentView();
-			view.setSelection(item, true);
-			view.setPlaying(item);
-		}
-	}
+    if(this._paramId){
+        var voiceList = voiceController.getList();
+        var vItem = voiceList.getById(this._paramId);
+        if(vItem){
+            var vView = voiceController.getCurrentView();
+            vView.setSelection(vItem, true);
+            vView.setPlaying(vItem);
+        }
+    }
 
 	if (callback) {
 		callback.run(searchResult);
@@ -427,6 +500,14 @@ function(items, op, attributes, callback, errorCallback) {
 	appCtxt.getAppController().sendRequest(params);
 };
 
+ZmVoiceApp.prototype.activate =
+function(active) {
+	if (active && this._showingSecondaryMessage) {
+		this._showApp({}, AjxCallback.NOP);
+	}
+	ZmApp.prototype.activate.call(this, active);
+};
+
 ZmVoiceApp.prototype.launch =
 function(params, callback) {
 	this._showApp(params, callback);
@@ -435,46 +516,36 @@ function(params, callback) {
 ZmVoiceApp.prototype._showApp =
 function(params, callback) {
     this._paramId = (params.qsParams ? params.qsParams.id : null);
-    var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
-    AjxDispatcher.require("Voicemail", true, loadCallback, null, true);
+	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
+	AjxDispatcher.require("Voicemail", true, loadCallback, null, true);
 };
 
 ZmVoiceApp.prototype._handleLoadLaunch =
 function(callback) {
     var respCallback = new AjxCallback(this, this._handleResponseLoadLaunchGotInfo, callback);
-    var errorCallback = new AjxCallback(this, this._handleErrorLoadLaunchGotInfo, callback);
+    var errorCallback = new AjxCallback(this, this._handleErrorLoadLaunchGotInfo);
     this.getVoiceInfo(respCallback, errorCallback);
 };
 
 ZmVoiceApp.prototype._handleErrorLoadLaunchGotInfo =
-function(callback, ex) {
-	var returnValue;
+function(ex) {
 	if (ex.code == "voice.SECONDARY_NOT_ALLOWED") {
-		this._showUpsellMessage();
-		returnValue = true;
-	} else {
-		returnValue = false;
-	}
-	this.setOverviewPanelContent(false);
-	if (callback instanceof AjxCallback)
-		callback.run();
-	return returnValue;
-};
+		if (!this._showingSecondaryMessage) {
+			this._showingSecondaryMessage = true;
 
-ZmVoiceApp.prototype._showUpsellMessage =
-function() {
-	if (!this._showingSecondaryMessage) {
-		this._showingSecondaryMessage = true;
-		var view = new DwtControl({parent:appCtxt.getShell(), posStyle:Dwt.ABSOLUTE_STYLE});
-		view.setScrollStyle(DwtControl.SCROLL);
-		view.getHtmlElement().innerHTML = ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
-		var elements = {};
-		elements[ZmAppViewMgr.C_APP_CONTENT] = view;
-		var viewName = "VoiceMessage";
-		this.createView({viewId: viewName, appName: this._name, elements: elements, isAppView: true});
-		this.pushView(viewName, true);
+			var view = new DwtControl({parent:appCtxt.getShell(), posStyle:Dwt.ABSOLUTE_STYLE});
+			view.setScrollStyle(DwtControl.SCROLL);
+			view.getHtmlElement().innerHTML = ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
+			var elements = {};
+			elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = view;
+			var viewName = "VoiceMessage";
+			this._appViewMgr.createView(viewName, this._name, elements, null, true);
+			this._appViewMgr.pushView(viewName);
+		}
+		return true;
 	}
-}
+	return false;
+};
 
 ZmVoiceApp.prototype._handleResponseLoadLaunchGotInfo =
 function(callback, response) {
@@ -486,18 +557,25 @@ function(callback, response) {
 	}
 };
 
-ZmVoiceApp.prototype.getStartFolder =
+ZmVoiceApp.prototype.setStartPhone =
 function(name) {
-	var which = 0;
-	if (name) {
+	this._startPhone = name;
+};
+
+ZmVoiceApp.prototype.getStartFolder =
+function(phone) {
+	var index = 0;
+	var startPhone = phone || this._startPhone;
+	if (startPhone) {
 		for (var i = 0; i < this.phones.length; i++) {
 			var phone = this.phones[i];
-			if (phone.name == name) {
-				which = i;
+			if (phone.name == startPhone) {
+				index = i;
+				break;
 			}
 		}
 	}
-	return this.phones[which].folderTree.getByName(ZmVoiceFolder.VOICEMAIL);
+	return this.phones[index].folderTree.getByName(ZmVoiceFolder.VOICEMAIL);
 };
 
 ZmVoiceApp.prototype.getVoiceController =
@@ -516,6 +594,16 @@ function() {
 	return this._callListController;
 };
 
+ZmVoiceApp.prototype.GetVoicePrefsController =
+function() {
+	if (!this._voicePrefsController) {
+        var prefsView = AjxDispatcher.run("GetPrefController").getPrefsView();
+        var prefsApp = appCtxt.getApp(ZmApp.PREFERENCES);
+        this._voicePrefsController = new ZmVoicePrefsController(this._container, prefsApp, prefsView);
+	}
+	return this._voicePrefsController;
+};
+
 ZmVoiceApp.prototype.setStorePrincipal =
 function(soapDoc) {
 	var node = soapDoc.set("storeprincipal");
@@ -523,15 +611,6 @@ function(soapDoc) {
 		node.setAttribute(i, this._storeprincipal[i]);
 	}
 };
-
-ZmVoiceApp.prototype.setOverviewPanelContent = function(reset) {
-	if (this._showingSecondaryMessage && ZmVoiceApp.overviewFallbackApp) { // We should display the overview of the fallback app (usually PORTAL) when showing the upsell message
-		var fallbackApp = appCtxt.getApp(ZmVoiceApp.overviewFallbackApp);
-		if (fallbackApp)
-			return fallbackApp.setOverviewPanelContent(reset);
-	}
-	return ZmApp.prototype.setOverviewPanelContent.call(this, reset);
-}
 
 ZmVoiceApp.prototype.redoSearch =
 function() {
@@ -561,7 +640,3 @@ ZmVoiceApp.prototype._handleModifies =
 function(list) {
 };
 
-ZmVoiceApp.prototype._getOverviewTrees =
-function() {
-	return [ZmOrganizer.VOICE];
-};

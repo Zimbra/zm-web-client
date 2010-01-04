@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -73,7 +75,7 @@ ZmUploadConflictDialog.prototype.popup = function(folder, conflicts, callback, l
 };
 
 ZmUploadConflictDialog.prototype.popdown = function() {
-	DwtDialog.prototype.popdown.call(this);
+	ZmDialog.prototype.popdown.call(this);
 	this._conflictCallback = null;
 };
 
@@ -128,9 +130,8 @@ ZmUploadConflictDialog._handleViewTheirs = function(event) {
 	var dialog = object.dialog;
 	var file = object.file;
 
-    //module shared by docs edited in new window - use restUrl directly
 	var winurl = [
-		dialog._uploadFolder.restUrl || dialog._uploadFolder.getRestUrl(),
+		dialog._uploadFolder.getRestUrl(),
 		"/",
 		AjxStringUtil.urlComponentEncode(file.name)
 	].join("");
@@ -168,13 +169,13 @@ ZmUploadConflictDialog.prototype._createUploadHtml = function() {
 
 	var cell = row.insertCell(-1);
 	var id = this._mineId;
-	var text = ZmMsg.new;
+	var text = ZmMsg.mine;
 	var handler = ZmUploadConflictDialog._handleMine;
 	cell.appendChild(this.__createLink(id, text, handler));
 
 	var cell = row.insertCell(-1);
 	var id = this._theirsId;
-	var text = ZmMsg.old;
+	var text = ZmMsg.theirs;
 	var handler = ZmUploadConflictDialog._handleTheirs;
 	cell.appendChild(this.__createLink(id, text, handler));
 
@@ -205,7 +206,7 @@ ZmUploadConflictDialog.prototype.__addFileRow = function(table, file) {
 	var cell = row.insertCell(-1);
 	cell.style.paddingLeft = "2em";
 	var id = this._viewId+(table.rows.length-1);
-	var text = ZmMsg.viewOld;
+	var text = ZmMsg.viewTheirs;
 	var handler = ZmUploadConflictDialog._handleViewTheirs;
 	var object = { dialog: this, file: file };
 	cell.appendChild(this.__createLink(id, text, handler, object));

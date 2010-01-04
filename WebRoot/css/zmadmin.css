@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -367,8 +369,8 @@
 /* Tab button grid */
 .ZaTabBar {
 	@InsetBg@
-	overflow-x:hidden;
-	overflow-y:hidden;
+	overflow-x:auto;
+	overflow-y:visible;
 }
 
 .AdminTitle {
@@ -686,48 +688,4 @@ div.ZaSearchBuilderOptionRemoveAll table  {
 
 .licenseWillExpire {
 	background-color: #FFBB20 ;
-}
-
-/* container (div) for each item in the tree */
-.AdminTreeItem {
-	@TreeItem@
-	@ImagePadding@
-	white-space: nowrap;	/* ??? */
-}
-
-/* text style for name of a normal tree item */
-.AdminTreeItem-Text {
-	@TreeItemText@
-	padding-left:2px;
-}
-.AdminTreeItem-selected {
-	@TreeItem@
-	@ImagePadding@	
-	@TreeItemSpacing-selected@
-	@SelectedBg-blurred@
-}
-
-/* text style for name of a selected and focused tree item */
-.AdminTreeItem-selected-focused {
-	@SelectedBg@
-	@ImagePadding@
-}
-
-/* text style for a right-clicked tree item */
-.AdminTreeItem-actioned {
-	@RightClickBg@
-	@ImagePadding@
-}
-
-/* text style for a tree item when dragged over */
-.AdminTreeItem-dragOver {
-	@DropBg@
-	@DropText@
-	@ImagePadding@
-}
-
-/* text style for tree item that performs action on single click */
-.AdminTreeItem-hover {
-	@ImagePadding@
-	text-decoration: underline;
 }

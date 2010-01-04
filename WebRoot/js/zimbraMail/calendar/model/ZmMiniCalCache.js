@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -60,14 +62,15 @@ function(params) {
 
 	this._setSoapParams(request, params);
 
-	appCtxt.getAppController().sendRequest({
-		jsonObj: jsonObj,
-		asyncMode: true,
-		callback: (new AjxCallback(this, this._getMiniCalResponse, [params])),
-		errorCallback: (new AjxCallback(this, this._handleMiniCalResponseError, [params])),
-		noBusyOverlay: params.noBusyOverlay,
-		accountName: (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null)
-	});
+	if (params.callback) {
+		var respCallback = new AjxCallback(this, this._getMiniCalResponse, [params]);
+		var errorCallback = new AjxCallback(this, this._handleMiniCalResponseError, [params]);
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:params.noBusyOverlay});
+	} else {
+		var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj});
+		var result = new ZmCsfeResult(response, false);
+		return this._getMiniCalResponse(params, result);
+	}
 };
 
 ZmMiniCalCache.prototype.getCacheData =
@@ -76,7 +79,7 @@ function(params) {
 	var cachedData = this._miniCalData[cacheKey];
 	if (cachedData) {
 		return cachedData;
-	}
+	}	
 };
 
 ZmMiniCalCache.prototype._handleMiniCalResponseError =
@@ -89,7 +92,7 @@ function(params, result) {
 		var id = (data && data.itemId && (data.itemId.length>0)) ? data.itemId[0] : null;
 		if (id && appCtxt.getById(id) && this._faultHandler) {
 			var folder = appCtxt.getById(id);
-			folder.noSuchFolder = true;
+			folder.isInvalidFolder = true;
 			this._faultHandler.run(folder);
 			return true;
 		}

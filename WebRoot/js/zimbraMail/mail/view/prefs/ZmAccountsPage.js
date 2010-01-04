@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -82,9 +84,6 @@ function() {
 		REPLY_TO_EMAIL: {
 			displayContainer:	ZmPref.TYPE_COMBOBOX
 		},
-		READ_RECEIPT_TO_ADDR: {
-			displayContainer:	ZmPref.TYPE_INPUT
-		},
 		SIGNATURE: {
 			displayContainer:	ZmPref.TYPE_SELECT
 		},
@@ -93,7 +92,7 @@ function() {
 			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
 			orientation:		ZmPref.ORIENT_HORIZONTAL,
 			displayOptions:		["POP3", "IMAP"], // TODO: i18n
-			options:			[ZmAccount.TYPE_POP, ZmAccount.TYPE_IMAP]
+			options:			[ZmAccount.POP, ZmAccount.IMAP]
 		},
 		USERNAME: {
 			displayContainer:	ZmPref.TYPE_INPUT
@@ -172,17 +171,16 @@ function() {
 		PRIMARY: {
 			id: "PRIMARY",
 			prefs: [
-				"NAME",					// A
-				"HEADER",				//
-				"EMAIL",				// A
-				"VISIBLE",				//
-				"FROM_NAME",			// I
-				"FROM_EMAIL",			// I
-				"REPLY_TO",				// I
-				"REPLY_TO_NAME",		// I
-				"REPLY_TO_EMAIL",		// I
-				"READ_RECEIPT_TO_ADDR",	// I
-				"SIGNATURE"				// I
+				"NAME",				// A
+				"HEADER",
+				"EMAIL",			// A
+				"VISIBLE",			//
+				"FROM_NAME",		// I
+				"FROM_EMAIL",		// I
+				"REPLY_TO",			// I
+				"REPLY_TO_NAME",	// I
+				"REPLY_TO_EMAIL",	// I
+				"SIGNATURE"			// I
 			]
 		},
 		EXTERNAL: {
@@ -209,7 +207,6 @@ function() {
 				"REPLY_TO",					// I
 				"REPLY_TO_NAME",			// I
 				"REPLY_TO_EMAIL",			// I
-				"READ_RECEIPT_TO_ADDR",		// I
 				"SIGNATURE"					// I
 			]
 		},
@@ -223,7 +220,6 @@ function() {
 				"REPLY_TO",					// I
 				"REPLY_TO_NAME",			// I
 				"REPLY_TO_EMAIL",			// I
-				"READ_RECEIPT_TO_ADDR",		// I
 				"SIGNATURE",				// I
 				"WHEN_SENT_TO",				// I
 				"WHEN_SENT_TO_LIST",		// I
@@ -277,7 +273,6 @@ ZmAccountsPage.IDENTITY_PROPS = {
 	"REPLY_TO":				"setReplyTo",
 	"REPLY_TO_NAME":		"setReplyToDisplay",
 	"REPLY_TO_EMAIL":		"setReplyToAddress",
-	"READ_RECEIPT_TO_ADDR":	"readReceiptAddr",
 	"SIGNATURE":			"signature",
 	"WHEN_SENT_TO":			"useWhenSentTo",
 	"WHEN_SENT_TO_LIST":	"whenSentToAddresses",
@@ -303,10 +298,7 @@ function(account, skipUpdate, ignoreProvider) {
 
 	// toggle delete button
 	if (this._deleteButton) {
-		var isEnabled = (appCtxt.isOffline)
-			? (account && account.type == ZmAccount.TYPE_PERSONA)
-			: (account && account.type != ZmAccount.TYPE_ZIMBRA);
-		this._deleteButton.setEnabled(isEnabled);
+		this._deleteButton.setEnabled(account && account.type != ZmAccount.ZIMBRA);
 	}
 
 	// intialize sections
@@ -314,25 +306,24 @@ function(account, skipUpdate, ignoreProvider) {
 		Dwt.setVisible(this._sectionDivs[type], false);
 	}
 
-	// HACK: Attempt to get around an IE update issue.
-	setTimeout(AjxCallback.simpleClosure(this._setAccount2, this, account, skipUpdate, ignoreProvider),0);
-};
-
-ZmAccountsPage.prototype._setAccount2 =
-function(account, skipUpdate, ignoreProvider) {
 	// NOTE: I hide all of the sections first and then show the
 	//       specific section because some of the sections use
 	//       the same div. This avoids double inititalization
 	//       in that case.
 	var isExternal = account instanceof ZmDataSource;
 	var provider = !ignoreProvider && isExternal && account.getProvider();
-	var div = (provider && this._sectionDivs[provider.id]) || this._getSectionDiv(account);
+	var div = (provider && this._sectionDivs[provider.id]) || this._sectionDivs[account.type];
 	if (div) {
 		this._currentAccount = account;
 		Dwt.setVisible(div, true);
 		switch (account.type) {
-			case ZmAccount.TYPE_POP:
-			case ZmAccount.TYPE_IMAP: {
+			case ZmAccount.ZIMBRA: {
+				this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
+				this._setZimbraAccount(account, this._currentSection);
+				break;
+			}
+			case ZmAccount.POP:
+			case ZmAccount.IMAP: {
 				this._currentSection = provider && ZmAccountsPage.SECTIONS[provider.id];
 				this._currentSection = this._currentSection || ZmAccountsPage.SECTIONS["EXTERNAL"];
 				this._setExternalAccount(account, this._currentSection);
@@ -347,14 +338,9 @@ function(account, skipUpdate, ignoreProvider) {
 				}
 				break;
 			}
-			case ZmAccount.TYPE_PERSONA: {
+			case ZmAccount.PERSONA: {
 				this._currentSection = ZmAccountsPage.SECTIONS["PERSONA"];
 				this._setPersona(account, this._currentSection);
-				break;
-			}
-			default: {
-				this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
-				this._setZimbraAccount(account, this._currentSection);
 				break;
 			}
 		}
@@ -365,24 +351,22 @@ function(account, skipUpdate, ignoreProvider) {
 	this._updateList(account);
 
 	var control = this._currentSection && this._currentSection.controls[isExternal ? "EMAIL" : "NAME"];
-
-	// When a hidden field is applied focus(), IE throw's an exception.
-	// Thus checking for isActive()
-	if (control && this.isActive()) {
+    //When a hidden field is applied focus(), IE throw's an exception. Thus checking for isActive()
+    if (control && this.isActive()) {
 		control.focus();
 	}
 };
 
 ZmAccountsPage.prototype.isActive =
 function() {
-	return (this._controller.getTabView().getActiveView().toString() == this.toString());
+    return (this._controller.getTabView().getActiveView().toString() == this.toString());
 };
 
 // ZmPreferencesPage methods
 
 ZmAccountsPage.prototype.showMe =
 function() {
-	var hasRendered = this.hasRendered; // cache before calling base
+	var hasRendered = this.hasRendered(); // cache before calling base
 
 	ZmPreferencesPage.prototype.showMe.apply(this, arguments);
 
@@ -402,7 +386,7 @@ function(useDefaults) {
 	this._currentSection = null;
 
 	// add zimbra accounts (i.e. family mboxes)
-	var mboxes = appCtxt.accountList.getAccounts();
+	var mboxes = appCtxt.getZimbraAccounts();
 	var active = appCtxt.getActiveAccount();
 	for (var j in mboxes) {
 		var acct = mboxes[j];
@@ -474,13 +458,13 @@ function() {
 	for (var i = 0; i < accounts.length; i++) {
 		var account = accounts[i];
 		var type = account.type;
-		var isPrimary = type == ZmAccount.TYPE_ZIMBRA;
-		var isExternal = type == ZmAccount.TYPE_POP || type == ZmAccount.TYPE_IMAP;
-		var isPersona = type == ZmAccount.TYPE_PERSONA;
+		var isPrimary = type == ZmAccount.ZIMBRA;
+		var isExternal = type == ZmAccount.POP || type == ZmAccount.IMAP;
+		var isPersona = type == ZmAccount.PERSONA;
 
 		// bug 21104
 		if (isPersona && (account._new || account._dirty) && 
-			!(account.identity && account.identity.name)) {
+		    !(account.identity && account.identity.name)) {
 			this._errorMsg = ZmMsg.invalidPersonaName;
 			return false;
 		}
@@ -489,46 +473,40 @@ function() {
 			return false;
 		}
 		if (this.__getIdentityValue(account, "REPLY_TO") &&
-			!this.__validateEmail(this.__getIdentityValue(account, "REPLY_TO_EMAIL"))) {
+		    !this.__validateEmail(this.__getIdentityValue(account, "REPLY_TO_EMAIL"))) {
 			return false;
 		}
 		if (isExternal && !this.__validateEmail(this.__getIdentityValue(account, "FROM_EMAIL"))) {
 			return false;
 		}
 		if (isPersona && this.__getIdentityValue(account, "WHEN_SENT_TO") &&
-			!this.__validateEmailList(this.__getIdentityValue(account, "WHEN_SENT_TO_LIST"))) {
+		    !this.__validateEmailList(this.__getIdentityValue(account, "WHEN_SENT_TO_LIST"))) {
 			return false;
 		}
 	}
 	return true;
 };
 
-ZmAccountsPage.prototype.__getAccountValue =
-function(account, id) {
+ZmAccountsPage.prototype.__getAccountValue = function(account, id) {
 	var prop = ZmAccountsPage.ACCOUNT_PROPS[id];
 	if (!prop) return;
-	return (typeof prop == "string") ? account[prop] : account[prop.getter]();
+	return typeof prop == "string" ? account[prop] : account[prop.getter]();
 };
-
-ZmAccountsPage.prototype.__getIdentityValue =
-function(account, id) {
+ZmAccountsPage.prototype.__getIdentityValue = function(account, id) {
 	var prop = ZmAccountsPage.IDENTITY_PROPS[id];
 	if (!prop) return;
 	var identity = account.getIdentity();
 	return identity && (typeof prop == "string" ? identity[prop] : identity[prop]());
 };
 
-ZmAccountsPage.prototype.__validateEmail =
-function(s) {
+ZmAccountsPage.prototype.__validateEmail = function(s) {
 	if (!ZmPref.validateEmail(s)) {
 		this._errorMsg = AjxStringUtil.htmlEncode(AjxMessageFormat.format(ZmMsg.invalidEmail, [s]));
 		return false;
 	}
 	return true;
 };
-
-ZmAccountsPage.prototype.__validateEmailList =
-function(l) {
+ZmAccountsPage.prototype.__validateEmailList = function(l) {
 	var ss = String(l).split(/[,;]/);
 	for (var i = 0; i < ss.length; i++) {
 		var valid = this.__validateEmail(ss[i]);
@@ -544,12 +522,12 @@ function() {
 
 ZmAccountsPage.prototype.getPreSaveCallback =
 function() {
-	return new AjxCallback(this, this._preSave);
+    return new AjxCallback(this, this._preSave);
 };
 
 ZmAccountsPage.prototype.getPostSaveCallback =
 function() {
-	return new AjxCallback(this, this._postSave);
+    return new AjxCallback(this, this._postSave);
 };
 
 ZmAccountsPage.prototype.addCommand =
@@ -560,6 +538,7 @@ function(batchCmd) {
 	//this._setAccountFields(this._currentAccount, this._currentSection);
 
 	// delete accounts
+    var foldersToBeDeleted = [];
 	for (var i = 0; i < this._deletedAccounts.length; i++) {
 		var callback = null;
 		var account = this._deletedAccounts[i];
@@ -569,14 +548,17 @@ function(batchCmd) {
 			var name = account.getName();
 			var folder = root.getByName(name);
 			if (folder && !folder.isSystem()) {
-				callback = new AjxCallback(this, this._promptToDeleteFolder, [folder]);
+                foldersToBeDeleted.push(folder);
 			}
 		}
-		this._deletedAccounts[i].doDelete(callback, null, batchCmd);
 	}
+    callback = new AjxCallback(this, this._promptToDeleteFolder, [foldersToBeDeleted]);
+    for (var i = 0, len = this._deletedAccounts.length; i < len; i++) {
+       this._deletedAccounts[i].doDelete(callback, null, batchCmd);
+    }
 
 	// for multi-account mbox, check if user changed visible flag on subaccounts
-	if (appCtxt.accountList.size() > 1) {
+	if (appCtxt.numAccounts > 1) {
 		this._saveVisibleAccounts(batchCmd);
 	}
 
@@ -615,7 +597,8 @@ function(batchCmd) {
 
 ZmAccountsPage.prototype._testAccounts =
 function(accounts, okCallback, cancelCallback) {
-	this._controller.getTestDialog().popup(accounts, okCallback, cancelCallback);
+	var dialog = this._controller.getTestDialog();
+	dialog.popup(accounts, okCallback, cancelCallback);
 };
 
 // set controls based on account
@@ -623,7 +606,12 @@ function(accounts, okCallback, cancelCallback) {
 ZmAccountsPage.prototype._setZimbraAccount =
 function(account, section) {
 	this._setGenericFields(account, section);
-	this._setIdentityFields(account, section);
+	if (account.isMain || appCtxt.isOffline) {
+		this._enableZimbraAccountFields(account, section, true);
+		this._setIdentityFields(account, section);
+	} else {
+		this._enableZimbraAccountFields(account, section, false);
+	}
 };
 
 ZmAccountsPage.prototype._setExternalAccount =
@@ -688,12 +676,14 @@ function(account) {
 	var displayOptions = pref.displayOptions;
 	var pattern = displayOptions[options[0] == ZmAccountsPage.DOWNLOAD_TO_INBOX ? 1 : 0];
 	var name = this._getControlValue("NAME", section);
-	var text = AjxMessageFormat.format(pattern, name);
+    name = AjxStringUtil.htmlEncode(name,true,true);
+    this._setControlValue("NAME", section,name);
+    var text = AjxMessageFormat.format(pattern, name);
 
 	var radioButton = radioGroup.getRadioButtonByValue(ZmAccountsPage.DOWNLOAD_TO_FOLDER);
 	radioButton.setText(text);
 
-	var isImap = account.type == ZmAccount.TYPE_IMAP;
+	var isImap = account.type == ZmAccount.IMAP;
 	var isInbox = !isImap && account.folderId == ZmOrganizer.ID_INBOX;
 	var value = isInbox ? ZmAccountsPage.DOWNLOAD_TO_INBOX : ZmAccountsPage.DOWNLOAD_TO_FOLDER;
 	this._setControlValue("DOWNLOAD_TO", section, value);
@@ -702,7 +692,7 @@ function(account) {
 
 ZmAccountsPage.prototype._setPortControls =
 function(accountType, connectionType, accountPort) {
-	var isPop = accountType == ZmAccount.TYPE_POP;
+	var isPop = accountType == ZmAccount.POP;
 	var isSsl = connectionType == ZmDataSource.CONNECT_SSL;
 
 	var section = this._currentSection;
@@ -735,7 +725,6 @@ function(account, section) {
 	this._setControlValue("REPLY_TO", section, identity.setReplyTo);
 	this._setControlValue("REPLY_TO_NAME", section, identity.setReplyToDisplay);
 	this._setControlValue("REPLY_TO_EMAIL", section, identity.setReplyToAddress);
-	this._setControlValue("READ_RECEIPT_TO_ADDR", section, identity.readReceiptAddr);
 	this._setControlValue("SIGNATURE", section, identity.signature);
 	this._setControlValue("WHEN_SENT_TO", section, identity.useWhenSentTo);
 	this._setControlValue("WHEN_SENT_TO_LIST", section, identity.whenSentToAddresses);
@@ -783,6 +772,24 @@ function(batchCmd) {
 	}
 };
 
+ZmAccountsPage.prototype._enableZimbraAccountFields =
+function(account, section, enable) {
+	this._setControlEnabled("NAME", section, enable);
+	this._setControlEnabled("VISIBLE", section, !enable);
+
+	for (var i in ZmAccountsPage.IDENTITY_PROPS) {
+		if (i == "FROM_EMAIL") continue;
+		var control = section.controls[i];
+		var setup = ZmAccountsPage.PREFS[i];
+		if (!control || !setup) continue;
+
+		if (!enable) {
+			this._setControlValue(i, section, "");
+		}
+		control.setEnabled(enable);
+	}
+};
+
 ZmAccountsPage.prototype._setReplyToControls =
 function() {
 	var section = this._currentSection;
@@ -824,8 +831,7 @@ function(id, section, value) {
 	}
 };
 
-ZmAccountsPage.prototype._getControlObject =
-function(id, section) {
+ZmAccountsPage.prototype._getControlObject = function(id, section) {
 	return section && section.controls[id];
 };
 
@@ -1052,8 +1058,7 @@ function(ovalue, nvalue) {
 
 // init ui
 
-ZmAccountsPage.prototype._initControl =
-function(id, setup, value, section) {
+ZmAccountsPage.prototype._initControl = function(id, setup, value, section) {
 	ZmPreferencesPage.prototype._initControl.apply(this, arguments);
 	if (id == "PROVIDER" && !setup.options) {
 		var providers = AjxUtil.values(ZmDataSource.getProviders());
@@ -1181,38 +1186,17 @@ ZmAccountsPage.__BY_PROVIDER_NAME = function(a, b) {
 
 ZmAccountsPage.prototype._setupComboBox =
 function(id, setup, value) {
-	if (id == "REPLY_TO_EMAIL") {
-		var addresses = this._getAllAddresses();
-		var accounts = [].concat(appCtxt.getDataSourceCollection().getImapAccounts(), appCtxt.getDataSourceCollection().getPopAccounts());
-		addresses = this._getAddressesFromAccounts(accounts, addresses, true, true);
-		setup.displayOptions = addresses;
-	}
-	return ZmPreferencesPage.prototype._setupComboBox.apply(this, arguments);
+    if (id == "REPLY_TO_EMAIL") {
+        var addresses = this._getAllAddresses(); // Get the addresses we can from _getAllAddresses()
+	
+	// Apparently not all (any?) external account addresses are retrieved from _getAllAddresses(), so we dig them out from DataSource and add them ourselves
+	// this._accounts is not ready at this point
+        var accounts = [].concat(appCtxt.getDataSourceCollection().getImapAccounts(), appCtxt.getDataSourceCollection().getPopAccounts());
+	addresses = this._getAddressesFromAccounts(accounts, addresses, true, true);
+	setup.displayOptions = addresses; // Put 'em in the options list
+    }
+    return ZmPreferencesPage.prototype._setupComboBox.apply(this, arguments);
 };
-
-ZmAccountsPage.prototype._updateComboBox =
-function(id, extras) {
-	var dwtElement = this.getFormObject(id);
-	if (dwtElement && AjxUtil.isFunction(dwtElement.removeAll) && AjxUtil.isFunction(dwtElement.add)) {
-		if (id == "REPLY_TO_EMAIL") {
-			if (!AjxUtil.isArray(extras))
-				extras = AjxUtil.isString(extras) ? [extras] : [];
-
-			var addresses = this._getAllAddresses().concat(extras);
-			var accounts = this._accounts.getArray();
-			addresses = this._getAddressesFromAccounts(accounts, addresses, true, true);
-				    
-			dwtElement.removeAll();
-			for (var i=0; i<addresses.length; i++) {
-				dwtElement.add(addresses[i], addresses[i], false);
-			}
-		}
-	}
-};
-
-
-
-
 
 ZmAccountsPage.prototype._setupCustom =
 function(id, setup, value) {
@@ -1254,6 +1238,26 @@ function(id, setup, value) {
 	return ZmPreferencesPage.prototype._setupCustom.apply(this, arguments);
 };
 
+ZmAccountsPage.prototype._updateComboBox =
+function(id) {
+    var dwtElement = this.getFormObject(id);
+	if (dwtElement && AjxUtil.isFunction(dwtElement.removeAll) && AjxUtil.isFunction(dwtElement.add)) {
+		if (id == "REPLY_TO_EMAIL") {
+			var addresses = this._getAllAddresses(); // Get the addresses we can from _getAllAddresses()
+	
+			// Apparently not all (any?) external account addresses are retrieved from _getAllAddresses(), so we dig them out from this._accounts
+			// this._accounts is ready when the interface has been drawn
+			var accounts = this._accounts.getArray();
+			addresses = this._getAddressesFromAccounts(accounts, addresses, true, true);
+				    
+			dwtElement.removeAll();
+			for (var i=0; i<addresses.length; i++) {
+				dwtElement.add(addresses[i], addresses[i], false);
+			}
+		}
+    }
+};
+
 ZmAccountsPage.prototype._getAllAddresses =
 function() {
 	var username = appCtxt.get(ZmSetting.USERNAME); 
@@ -1270,17 +1274,16 @@ function() {
  * @param addresses	optional array of addresses (as strings) to append to. Defaults to an empty array
 */
 ZmAccountsPage.prototype._getAddressesFromAccounts = function(accounts, addresses, unique, valid) {
-	if (!AjxUtil.isArray(addresses))
-		addresses = [];
-	for (var i=0; i<accounts.length; i++) {
+    if (!AjxUtil.isArray(addresses)) addresses = [];
+    for (var i=0; i<accounts.length; i++) {
 		var account = accounts[i];
 		if (account.isMain || account.enabled) {
 			var address = account.getEmail();
 			if (!AjxUtil.isEmpty(address) && (!valid || AjxUtil.isEmailAddress(address)) && (!unique || AjxUtil.indexOf(addresses, address, false) == -1)) // Make sure we are not adding an empty address and that we are not adding the address twice
 				addresses.push(address);
 		}
-	}
-	return addresses;
+    }
+    return addresses;
 };
 
 ZmAccountsPage.prototype._resetAccountListView =
@@ -1290,7 +1293,7 @@ function(accountOrIndex) {
 	// NOTE: We go backwards so we don't have to adjust index when we remove an item.
 	for (var i = count - 1; i >= 0; i--) {
 		var account = accounts.get(i);
-		if (account.type == ZmAccount.TYPE_ZIMBRA && !account.isMain && !account.visible) {
+		if (account.type == ZmAccount.ZIMBRA && !account.isMain && !account.visible) {
 			accounts.removeAt(i);
 		}
 	}
@@ -1305,8 +1308,7 @@ function(accountOrIndex) {
 		}
 		account = list.get(index);
 	}
-	this._accountListView.setSelection(account || appCtxt.accountList.mainAccount);
-	this._updateReplyToEmail();
+	this._accountListView.setSelection(account || appCtxt.getMainAccount());
 };
 
 ZmAccountsPage.prototype._resetSignatureSelect =
@@ -1355,28 +1357,11 @@ function() {
 
 // account sections
 
-
-ZmAccountsPage.prototype._getSectionDiv =
-function(account) {
-	if (account.type == ZmAccount.TYPE_AOL ||
-		account.type == ZmAccount.TYPE_GMAIL ||
-		account.type == ZmAccount.TYPE_LIVE ||
-		account.type == ZmAccount.TYPE_MSE ||
-		account.type == ZmAccount.TYPE_EXCHANGE ||
-		account.type == ZmAccount.TYPE_YMP ||
-		account.type == ZmAccount.TYPE_ZIMBRA)
-	{
-		return this._sectionDivs[ZmAccount.TYPE_ZIMBRA];
-	}
-
-	return this._sectionDivs[account.type];
-};
-
 ZmAccountsPage.prototype._setupPrimaryDiv =
 function() {
 	var div = document.getElementById(this._htmlElId+"_PRIMARY");
 	if (div) {
-		this._sectionDivs[ZmAccount.TYPE_ZIMBRA] = div;
+		this._sectionDivs[ZmAccount.ZIMBRA] = div;
 		this._createSection("PRIMARY", div);
 	}
 };
@@ -1386,8 +1371,8 @@ function() {
 	// setup generic external account div
 	var div = document.getElementById(this._htmlElId+"_EXTERNAL");
 	if (div) {
-		this._sectionDivs[ZmAccount.TYPE_POP] = div;
-		this._sectionDivs[ZmAccount.TYPE_IMAP] = div;
+		this._sectionDivs[ZmAccount.POP] = div;
+		this._sectionDivs[ZmAccount.IMAP] = div;
 		this._createSection("EXTERNAL", div);
 	}
 
@@ -1405,7 +1390,7 @@ ZmAccountsPage.prototype._setupPersonaDiv =
 function() {
 	var div = document.getElementById(this._htmlElId+"_PERSONA");
 	if (div) {
-		this._sectionDivs[ZmAccount.TYPE_PERSONA] = div;
+		this._sectionDivs[ZmAccount.PERSONA] = div;
 		this._createSection("PERSONA", div);
 	}
 };
@@ -1525,14 +1510,14 @@ function(evt) {
 	this._resetAccountListView(persona);
 };
 
-ZmAccountsPage.prototype._updateList =
-function(account) {
+ZmAccountsPage.prototype._updateList = function(account) {
 	var list = this._accountListView;
 	this._accountListView.setCellContents(account, ZmItem.F_NAME, AjxStringUtil.htmlEncode(account.getName()));
 	this._accountListView.setCellContents(account, ZmItem.F_EMAIL, AjxStringUtil.htmlEncode(account.getEmail()));
 	var provider = ZmDataSource.getProviderForAccount(account);
-	var type = provider ? provider.name : ZmAccount.getTypeName(account.type);
+	var type = provider ? provider.name : ZmAccountsListView.TYPES[account.type]; 
 	this._accountListView.setCellContents(account, ZmItem.F_TYPE, AjxStringUtil.htmlEncode(type));
+	this._updateComboBox("REPLY_TO_EMAIL");
 };
 
 // generic listeners
@@ -1544,7 +1529,7 @@ function(evt) {
 	this._setControlValue("HEADER", this._currentSection, inputEl.value);
 
 	var type = this._currentAccount.type;
-	if (type == ZmAccount.TYPE_POP || type == ZmAccount.TYPE_IMAP) {
+	if (type == ZmAccount.POP || type == ZmAccount.IMAP) {
 		this._setDownloadToFolder(this._currentAccount);
 	}
 };
@@ -1567,7 +1552,6 @@ function(evt) {
 	if (m[2] && dataSource.mailServer == "") {
 		this._setControlValue("HOST", section, m[2]);
 	}
-	this._updateReplyToEmail(email);
 };
 
 ZmAccountsPage.prototype._updateEmailCell =
@@ -1575,31 +1559,21 @@ function(email) {
 	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_EMAIL, AjxStringUtil.htmlEncode(email));
 };
 
-ZmAccountsPage.prototype._updateReplyToEmail =
-function(email) {
-	if (AjxUtil.isEmailAddress(email))
-		this._updateComboBox("REPLY_TO_EMAIL", email);
-	else
-		this._updateComboBox("REPLY_TO_EMAIL");
-}
-
 // data source listeners
 
 ZmAccountsPage.prototype._handleTypeChange =
 function(evt) {
-	var type = ZmAccount.getTypeName(this._getControlValue("ACCOUNT_TYPE", this._currentSection));
+	var type = ZmAccountsListView.TYPES[this._getControlValue("ACCOUNT_TYPE", this._currentSection)] || "???";
 	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_TYPE, AjxStringUtil.htmlEncode(type));
 	this._handleTypeOrSslChange(evt);
 };
 
-ZmAccountsPage.prototype._handleDownloadTo =
-function(evt) {
+ZmAccountsPage.prototype._handleDownloadTo = function(evt) {
 	var isInbox = this._getControlValue("DOWNLOAD_TO", this._currentSection) == ZmAccountsPage.DOWNLOAD_TO_INBOX;
 	this._currentAccount.folderId = isInbox ? ZmOrganizer.ID_INBOX : -1; 
 };
 
-ZmAccountsPage.prototype._handleProviderChange =
-function() {
+ZmAccountsPage.prototype._handleProviderChange = function() {
 	var id = this._getControlValue("PROVIDER", this._currentSection);
 	var dataSource = this._currentAccount;
 
@@ -1635,11 +1609,11 @@ function(evt) {
 	if (dataSource._new) {
 		var type = this._getControlValue("ACCOUNT_TYPE", section);
 		if (!type) {
-			type = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? ZmAccount.TYPE_POP : ZmAccount.TYPE_IMAP;
+			type = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? ZmAccount.POP : ZmAccount.IMAP;
 		}
 		dataSource.setType(type);
 
-		var isPop = type == ZmAccount.TYPE_POP;
+		var isPop = type == ZmAccount.POP;
 		this._setControlEnabled("DELETE_AFTER_DOWNLOAD", this._currentSection, isPop);
 		this._setControlEnabled("DOWNLOAD_TO", this._currentSection, isPop);
 	}
@@ -1652,11 +1626,13 @@ function(evt) {
 
 ZmAccountsPage.prototype._handleUserNameChange =
 function(evt) {
-	var userName = this._getControlValue("USERNAME", this._currentSection);
+	var userName = AjxStringUtil.trim(this._getControlValue("USERNAME", this._currentSection));
 	this._currentAccount.userName = userName;
 	if (!this._getControlValue("EMAIL", this._currentSection)) {
 		var provider = ZmDataSource.getProviderForAccount(this._currentAccount);
-		var email = userName && provider && provider._host ? [userName,provider._host].join("@") : userName;
+		userName = userName && userName.match(/@/) ? userName.replace(/@.*/,"") : userName;
+		var host = provider && provider._host;
+		var email = userName && host ? [userName,host].join("@") : userName;
 		this._updateEmailCell(email);
 	}
 };
@@ -1729,8 +1705,7 @@ function(evt) {
 		this._folderAddCallback = new AjxCallback(this, this._handleFolderAdd);
 	}
 	var dialog = appCtxt.getChooseFolderDialog();
-	var params = {overviewId: dialog.getOverviewId(ZmApp.MAIL), appName:ZmApp.MAIL};
-	ZmController.showDialog(dialog, this._folderAddCallback, params);
+	ZmController.showDialog(dialog, this._folderAddCallback);
 };
 
 ZmAccountsPage.prototype._handleFolderAdd =
@@ -1762,7 +1737,7 @@ function(continueCallback) {
 	var accounts = this._accounts.getArray();
 	for (var i = 0; i < accounts.length; i++) {
 		var account = accounts[i];
-		if (account.type == ZmAccount.TYPE_POP || account.type == ZmAccount.TYPE_IMAP) {
+		if (account.type == ZmAccount.POP || account.type == ZmAccount.IMAP) {
 			if (account._new || account._dirty) {
 				dirtyAccounts.push(account);
 			}
@@ -1772,9 +1747,9 @@ function(continueCallback) {
 	// test for invalid name
 	for (var i = 0; i < dirtyAccounts.length; i++) {
 		var account = dirtyAccounts[i];
-		if (account.type == ZmAccount.TYPE_IMAP && account.name.match(/^\s*inbox\s*$/i)) {
+		if (account.type == ZmAccount.IMAP && account.name.match(/^\s*inbox\s*$/i)) {
 			var params = {
-				msg: AjxMessageFormat.format(ZmMsg.accountNameReserved, [AjxStringUtil.htmlEncode(account.name)]),
+				msg: AjxMessageFormat.format(ZmMsg.accountNameReserved, [account.name]),
 				level: ZmStatusView.LEVEL_CRITICAL
 			};
 			appCtxt.setStatusMsg(params);
@@ -1821,7 +1796,7 @@ function(continueCallback) {
 	var accounts = this._accounts.getArray();
 	for (var i = 0; i < accounts.length; i++) {
 		var account = accounts[i];
-		if (account.type == ZmAccount.TYPE_POP || account.type == ZmAccount.TYPE_IMAP) {
+		if (account.type == ZmAccount.POP || account.type == ZmAccount.IMAP) {
 			if (account.folderId != ZmOrganizer.ID_INBOX) {
 				var name = AjxStringUtil.trim(account.getName());
 				if (!batchCmd) { batchCmd = new ZmBatchCommand(false); }
@@ -1832,7 +1807,7 @@ function(continueCallback) {
 					var folderId = folder.id;
 					if (folderId != ZmOrganizer.ID_INBOX && Number(folderId) < 256) {
 						var params = {
-							msg: AjxMessageFormat.format(ZmMsg.accountNameReserved, [AjxStringUtil.htmlEncode(name)]),
+							msg: AjxMessageFormat.format(ZmMsg.accountNameReserved, [name]),
 							level: ZmStatusView.LEVEL_CRITICAL
 						};
 						appCtxt.setStatusMsg(params);
@@ -1946,16 +1921,32 @@ function(account, resp) {
 	account._needsSync = true;
 };
 
-ZmAccountsPage.prototype._promptToDeleteFolder = function(organizer) {
+ZmAccountsPage.prototype._promptToDeleteFolder = function(organizers) {
+    if(!organizers instanceof Array){
+        organizers = [organizers];
+    }
+    var names = [];
+    for(var i=0, len = organizers.length; i < len-1; i++){
+        names.push(organizers[i].getName());
+    }
+    var last = organizers[i].getName();
 	var dialog = appCtxt.getConfirmationDialog();
-	var prompt = AjxMessageFormat.format(ZmMsg.accountDeleteFolder, [organizer.getName()]);
-	var callback = new AjxCallback(this, this._handleDeleteFolder, [organizer]);
-	dialog.popup(prompt, callback);
+    var callback = new AjxCallback(this, this._handleDeleteFolder, [organizers]);
+    var prompt = AjxMessageFormat.format(ZmMsg.accountDeleteFolder, [last]);
+    if(names.length > 0){
+        prompt = AjxMessageFormat.format(ZmMsg.accountDeleteFolders, [names.join("\", \""),last]);
+    }
+    dialog.popup(prompt, callback);
 };
 
-ZmAccountsPage.prototype._handleDeleteFolder = function(organizer) {
+ZmAccountsPage.prototype._handleDeleteFolder = function(organizers) {
 	var trash = appCtxt.getById(ZmOrganizer.ID_TRASH);
-	organizer.move(trash);
+    if(!organizers instanceof Array){
+        organizers = [organizers];
+    }
+    for(var i=0, len = organizers.length; i <  len; i++){
+	    organizers[i].move(trash);
+    }
 };
 
 
@@ -1979,6 +1970,10 @@ function() {
 			var account = needsSync[i];
 			dsCollection.importMailFor(account.folderId);
 			delete account._needsSync;
+            var origObjFromProxy = account._object_;
+            if(origObjFromProxy){
+                delete origObjFromProxy._needsSync;
+            }
 		}
 	}
 };
@@ -1989,8 +1984,9 @@ function() {
 
 ZmAccountsPage.__ACCOUNT_COMPARATOR =
 function(a, b) {
-	if (a.type == ZmAccount.TYPE_ZIMBRA && (a.isMain || appCtxt.isOffline)) return -1;
-	if (b.type == ZmAccount.TYPE_ZIMBRA && (b.isMain || appCtxt.isOffline)) return 1;
+	var isOfflineMulti = appCtxt.isOffline && appCtxt.multiAccounts;
+	if (a.type == ZmAccount.ZIMBRA && (a.isMain || isOfflineMulti)) return -1;
+	if (b.type == ZmAccount.ZIMBRA && (b.isMain || isOfflineMulti)) return 1;
 	return a.getName().localeCompare(b.getName());
 };
 
@@ -2030,9 +2026,15 @@ function() {
 
 // Constants
 
-ZmAccountsListView.WIDTH_NAME	= ZmMsg.COLUMN_WIDTH_NAME_ACC;
-ZmAccountsListView.WIDTH_STATUS	= ZmMsg.COLUMN_WIDTH_STATUS_ACC;
-ZmAccountsListView.WIDTH_TYPE	= ZmMsg.COLUMN_WIDTH_TYPE_ACC;
+ZmAccountsListView.TYPES = {};
+ZmAccountsListView.TYPES[ZmAccount.ZIMBRA]					= ZmMsg.accountTypePrimary;
+ZmAccountsListView.TYPES[ZmAccount.POP]						= ZmMsg.accountTypePop;
+ZmAccountsListView.TYPES[ZmAccount.IMAP]					= ZmMsg.accountTypeImap;
+ZmAccountsListView.TYPES[ZmAccount.PERSONA]					= ZmMsg.accountTypePersona;
+
+ZmAccountsListView.WIDTH_NAME	= 170;
+ZmAccountsListView.WIDTH_STATUS	= 80;
+ZmAccountsListView.WIDTH_TYPE	= 85;
 
 // Public methods
 
@@ -2044,7 +2046,7 @@ function(account, field) {
 ZmAccountsListView.prototype.setCellContents =
 function(account, field, html) {
 	var el = this.getCellElement(account, field);
-	if (!el) { return; }
+	if (!el) return;
 
 	if (field == ZmItem.F_NAME) {
 		el = document.getElementById(this._getCellId(account, field)+"_name");
@@ -2059,8 +2061,8 @@ function(buffer, i, item, field, col, params) {
 	if (field == ZmItem.F_NAME) {
 		var cellId = this._getCellId(item, field);
 		buffer[i++] = "<div id='";
-		buffer[i++] = cellId;
-		buffer[i++] = "_name'>";
+		buffer[i++] = cellId+"_name";
+		buffer[i++] = "'>";
 		buffer[i++] = AjxStringUtil.htmlEncode(item.getName());
 		buffer[i++] = "</div>";
 		return i;
@@ -2085,9 +2087,10 @@ function(buffer, i, item, field, col, params) {
 		var provider = ZmDataSource.getProviderForAccount(item);
 		var type = provider && AjxStringUtil.htmlEncode(provider.name);
 		if (!type) {
-			type = (item.type == ZmAccount.TYPE_ZIMBRA && !item.isMain && !appCtxt.isOffline)
+			var isOfflineMulti = appCtxt.isOffline && appCtxt.multiAccounts;
+			type = (item.type == ZmAccount.ZIMBRA && !item.isMain && !isOfflineMulti)
 				? ZmMsg.accountTypeSecondary
-				: ZmAccount.getTypeName(item.type);
+				: ZmAccountsListView.TYPES[item.type];
 		}
 		buffer[i++] = type;
 		return i;
@@ -2099,6 +2102,16 @@ ZmAccountsListView.prototype._getCellId =
 function(item, field, params) {
 	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM_CELL, this._view, item.id, field);
 };
+
+/***
+// TODO: handle tooltip hover
+ZmAccountsListView.prototype._getToolTip = function(field, item, ev, div, match) {
+	if (field == ZmItem.F_NAME && item instanceof ZmDataSource && !item.enabled) {
+		return ZmMsg.accountDisabled;
+	}
+	return DwtListView.prototype._getToolTip.apply(this, arguments);
+};
+/***/
 
 ZmAccountsListView.prototype._getHeaderList =
 function() {
@@ -2118,8 +2131,9 @@ ZmAccountsPage._defineClasses =
 function() {
 ZmNewDataSource = function() {
 	var number = ++ZmNewDataSource.ID;
-	this.setType(appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? ZmAccount.TYPE_POP : ZmAccount.TYPE_IMAP);
-	ZmDataSource.call(this, this.type, ("new-dsrc-"+number));
+	var id = "new-dsrc-"+number;
+	this.setType(appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? ZmAccount.POP : ZmAccount.IMAP);
+	ZmDataSource.call(this, this.type, id);
 	this.email = "";
 	this.name = AjxMessageFormat.format(ZmMsg.newExternalAccount, number);
 	this._new = true;
@@ -2149,7 +2163,7 @@ ZmNewDataSource.prototype.ELEMENT_NAME = ZmPopAccount.prototype.ELEMENT_NAME;
 ZmNewDataSource.prototype.setType =
 function(type) {
 	this.type = type;
-	var TYPE = this.type == ZmAccount.TYPE_POP ? ZmPopAccount : ZmImapAccount;
+	var TYPE = this.type == ZmAccount.POP ? ZmPopAccount : ZmImapAccount;
 	this.ELEMENT_NAME = TYPE.prototype.ELEMENT_NAME;
 	this.getDefaultPort = TYPE.prototype.getDefaultPort;
 };

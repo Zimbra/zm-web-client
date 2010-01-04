@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -67,9 +69,9 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 		this._tabIds.push(ZmApptComposeView.TAB_SCHEDULE);
 		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._tabIds.push(ZmApptComposeView.TAB_ATTENDEES);
-			this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
-			this._tabIds.push(ZmApptComposeView.TAB_EQUIPMENT);
 		}
+		this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
+		this._tabIds.push(ZmApptComposeView.TAB_EQUIPMENT);
 	}
 
 	this._initialize();
@@ -120,20 +122,10 @@ function() {
 ZmApptComposeView.prototype.getController =
 function() {
 	return this._controller;
-};
+}
 
 ZmApptComposeView.prototype.set =
 function(appt, mode, isDirty) {
-
-    var isForward = false;
-    if(ZmCalItem.FORWARD_MAPPING[mode]) {
-        isForward = true;
-        this._forwardMode = mode;
-        mode = ZmCalItem.FORWARD_MAPPING[mode];
-    }else {
-        this._forwardMode = undefined;        
-    }
-
 	this._setData = [appt, mode, isDirty];
 	var button = this.getTabButton(this._apptTabKey);
 	if (mode == ZmCalItem.MODE_EDIT_SERIES || appt.getRecurType() != "NON") {
@@ -147,14 +139,12 @@ function(appt, mode, isDirty) {
 		var id = this._tabIds[i];
 		var tabPage = this._tabPages[id];
 		if (!(tabPage instanceof AjxCallback)) {
-			tabPage.initialize(appt, mode, isDirty, isForward);
+			tabPage.initialize(appt, mode, isDirty);
 		}
 	}
 
 	// always switch to appointment tab
 	this.switchToTab(this._apptTabKey);
-    this.setTabVisibility([ZmApptComposeView.TAB_ATTENDEES, ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_EQUIPMENT], !isForward);    
-    this.setTabVisibility([ZmApptComposeView.TAB_ATTENDEES], appt.isOrganizer());
 };
 
 ZmApptComposeView.prototype.cleanup = 
@@ -251,8 +241,7 @@ function(tabKey) {
 	toolbar.enableAll(true);
 	// based on the current tab selected, enable/disable appropriate buttons in toolbar
 	if (tabKey == this._tabKeys[ZmApptComposeView.TAB_APPOINTMENT]) {
-        //disable inputs for appt forwarding
-		this._apptEditView.enableInputs(!this._forwardMode);
+		this._apptEditView.enableInputs(true);
 		this._apptEditView.reEnableDesignMode();
 	} else {
 		var buttons = [ZmOperation.ATTACHMENT];
@@ -321,7 +310,7 @@ ZmApptComposeView.prototype.updateAttendees =
 function(attendees, type, mode, index) {
 	attendees = (attendees instanceof AjxVector) ? attendees.getArray() :
 				(attendees instanceof Array) ? attendees : [attendees];
-	mode = mode || ZmApptComposeView.MODE_REPLACE;
+	mode = mode ? mode : ZmApptComposeView.MODE_REPLACE;
 	if (mode == ZmApptComposeView.MODE_REPLACE) {
 		this._attendees[type] = new AjxVector();
 		this._attendeeKeys[type] = {};
@@ -351,6 +340,16 @@ function(attendees, type, mode, index) {
 ZmApptComposeView.prototype.getTitle = 
 function() {
 	return [ZmMsg.zimbraTitle, ZmMsg.appointment].join(": ");
+};
+
+ZmApptComposeView.prototype.applyCaretHack =
+function() {
+	// Bug #10992: Disable the caret hack when in html mode.
+	// The caret hack removes the html editor from the dom which
+	// causes horrible problems.
+	if (this.getComposeMode() != DwtHtmlEditor.HTML) {
+		DwtTabView.prototype.applyCaretHack.call(this);
+	}
 };
 
 ZmApptComposeView.prototype._getAttendeeKey =
@@ -430,18 +429,6 @@ function() {
 	
 	this._apptEditView.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this.addControlListener(new AjxListener(this, this._controlListener));
-};
-
-ZmApptComposeView.prototype.setTabVisibility =
-function(ids, visible) {
-    for(var i in ids) {
-        var tabKey = this._tabKeys[ids[i]];
-        var tab = tabKey ? this._tabs[tabKey] : null;
-        var button = tab ? tab.button : null;
-        if(button) {
-            button.setVisible(visible);            
-        }
-    }
 };
 
 ZmApptComposeView.prototype._initializeAddTab =

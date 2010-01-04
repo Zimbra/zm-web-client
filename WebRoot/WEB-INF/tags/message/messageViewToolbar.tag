@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ attribute name="cursor" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.NextPrevItemBean"%>
@@ -32,7 +16,7 @@
             <table cellspacing="0" cellpadding="0" class='Tb'>
                 <tr>
                     <td nowrap>
-                        <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}" st="" sc=""/>
+                        <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
                         <zm:currentResultUrl var="delRedirectUrl" value="/h/search" context="${context}" />
                         <input type="hidden" value="${delRedirectUrl}" name="delRedirectUrl" />
                         <a href="${fn:escapeXml(closeurl)}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.gif" alt="close"/> <span>&nbsp;${fn:escapeXml(context.backTo)}&nbsp;</span></a>
@@ -42,11 +26,11 @@
                     <td><div class='vertSep'></div></td>
                     <td  nowrap valign="middle">
                         <select name="folderId"  onchange="zclick('SOPMOVE')">
-                            <option value="" selected><fmt:message key="moveAction"/></option>
-                            <optgroup label=<fmt:message key="actionOptSep"/>>
+                            <option value="" selected/><fmt:message key="moveAction"/>
+                            <option disabled /><fmt:message key="actionOptSep"/>
                             <zm:forEachFolder var="folder">
                                 <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}</option>
+                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}" />${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}
                                 </c:if>
                             </zm:forEachFolder>
                         </select>
@@ -68,7 +52,7 @@
                     <app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionMessageGoTT" text="actionGo" />
                     <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
                         <td><div class='vertSep'></div></td>
-                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.gif"/>
+                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="mail/ImgJunkMail.gif"/>
                     </c:if>
                     <c:if test="${context.isFolderSearch and context.folder.isSpam}">
                         <td><div class='vertSep'></div></td>

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,13 +11,16 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
 ZmFolderPropsDialog = function(parent, className) {
 	className = className || "ZmFolderPropsDialog";
 	var extraButtons;
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
+		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
+	{
 		extraButtons = [
 			new DwtDialog_ButtonDescriptor(ZmFolderPropsDialog.ADD_SHARE_BUTTON, ZmMsg.addShare, DwtDialog.ALIGN_LEFT)
 		];
@@ -24,7 +28,9 @@ ZmFolderPropsDialog = function(parent, className) {
 
 	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.folderProperties, extraButtons:extraButtons});
 
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
+		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
+	{
 		this.registerCallback(ZmFolderPropsDialog.ADD_SHARE_BUTTON, this._handleAddShareButton, this);
 	}
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
@@ -59,11 +65,7 @@ function(organizer) {
 
 	// dont allow "None" option in color picker
 	// bug 22490 removed None option when not in use
-	if (this._color &&
-		organizer.type != ZmOrganizer.FOLDER &&
-		organizer.type != ZmOrganizer.TASKS &&
-		organizer.type != ZmOrganizer.ADDRBOOK)
-	{
+	if (organizer.type != ZmOrganizer.FOLDER && this._color) {
 		this._color.clearOptions();
 		for (var i = 1; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
 			var color = ZmOrganizer.COLOR_CHOICES[i];
@@ -75,11 +77,14 @@ function(organizer) {
 			var color = ZmOrganizer.COLOR_CHOICES[i];
 			this._color.addOption(color.label, false, color.value);
 		}
+		this._color.getMenu().getItem(0).setEnabled(organizer.type == ZmOrganizer.FOLDER);
 	}
 
 	this._handleFolderChange();
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
-		var isVisible = (!organizer.link || organizer.isAdmin());
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
+		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
+	{
+		var isVisible = (!organizer.link || organizer.isAdmin()) && !organizer.isUnder(ZmFolder.ID_ARCHIVE);
 		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, isVisible);
 	}
 
@@ -92,10 +97,8 @@ function(organizer) {
 
 ZmFolderPropsDialog.prototype.popdown =
 function() {
-	if (this._organizer) {
-		this._organizer.removeChangeListener(this._folderChangeListener);
-		this._organizer = null;
-	}
+	this._organizer.removeChangeListener(this._folderChangeListener);
+	this._organizer = null;
 	DwtDialog.prototype.popdown.call(this);
 };
 
@@ -107,33 +110,38 @@ function() {
 };
 
 ZmFolderPropsDialog.prototype._handleEditShare =
-function(event, share) {
-	share = share || Dwt.getObjectFromElement(DwtUiEvent.getTarget(event));
+function(event) {
+	var target = DwtUiEvent.getTarget(event);
+	var share = Dwt.getObjectFromElement(target);
+	var dialog = appCtxt.getFolderPropsDialog();
 	var sharePropsDialog = appCtxt.getSharePropsDialog();
 	sharePropsDialog.popup(ZmSharePropsDialog.EDIT, share.object, share);
 	return false;
 };
 
 ZmFolderPropsDialog.prototype._handleRevokeShare =
-function(event, share) {
-	share = share || Dwt.getObjectFromElement(DwtUiEvent.getTarget(event));
+function(event) {
+	var target = DwtUiEvent.getTarget(event);
+	var share = Dwt.getObjectFromElement(target);
+	var dialog = appCtxt.getFolderPropsDialog();
 	var revokeShareDialog = appCtxt.getRevokeShareDialog();
 	revokeShareDialog.popup(share);
 	return false;
 };
 
 ZmFolderPropsDialog.prototype._handleResendShare =
-function(event, share) {
-
+function(event) {
 	AjxDispatcher.require("Share");
-	share = share || Dwt.getObjectFromElement(DwtUiEvent.getTarget(event));
+	var target = DwtUiEvent.getTarget(event);
+	var share = Dwt.getObjectFromElement(target);
+	var dialog = appCtxt.getFolderPropsDialog();
 
 	// create share info
 	var tmpShare = new ZmShare({object:share.object});
 	tmpShare.grantee.id = share.grantee.id;
-	tmpShare.grantee.email = (share.grantee.type == "guest") ? share.grantee.id : share.grantee.name;
+	tmpShare.grantee.email = (share.grantee.type == "guest")? share.grantee.id : share.grantee.name;
 	tmpShare.grantee.name = share.grantee.name;
-    if (tmpShare.object.isRemote()) {
+    if(tmpShare.object.isRemote()) {
 		tmpShare.grantor.id = tmpShare.object.zid;
 		tmpShare.grantor.email = tmpShare.object.owner;
 		tmpShare.grantor.name = tmpShare.grantor.email;
@@ -149,7 +157,7 @@ function(event, share) {
 	tmpShare.link.view = ZmOrganizer.getViewName(share.object.type);
 	tmpShare.link.perm = share.link.perm;
 
-	if (share.grantee.type == "guest") {
+	if(share.grantee.type == "guest") {
 		if (!this._guestFormatter) {
 			this._guestFormatter = new AjxMessageFormat(ZmMsg.shareWithGuestNotes);
 		}
@@ -270,12 +278,7 @@ function(event) {
 	this._ownerEl.innerHTML = AjxStringUtil.htmlEncode(organizer.owner);
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
 	this._urlEl.innerHTML = organizer.url || "";
-	if (this._color) {
-		this._color.setSelectedValue(organizer.color);
-		var isVisible = (organizer.type != ZmOrganizer.FOLDER ||
-						 (organizer.type == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)));
-		this._props.setPropertyVisible(this._colorId, isVisible);
-	}
+	this._color.setSelectedValue(organizer.color);
 	this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
 
 	var showPerm = organizer.link && organizer.shares && organizer.shares.length > 0;
@@ -286,12 +289,14 @@ function(event) {
 		this._permEl.innerHTML = ZmShare.getRoleActions(role);
 	}
 
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
+		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
+	{
 		this._populateShares(organizer);
 	}
 
 	this._props.setPropertyVisible(this._ownerId, organizer.owner != null);
-	this._props.setPropertyVisible(this._urlId, organizer.url);
+	this._props.setPropertyVisible(this._urlId, organizer.url != null);
 	this._props.setPropertyVisible(this._permId, showPerm);
 
 	Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
@@ -299,73 +304,23 @@ function(event) {
 
 ZmFolderPropsDialog.prototype._populateShares =
 function(organizer) {
-
 	this._sharesGroup.setContent("");
 
-	var displayShares = this._getDisplayShares(organizer);
-
-	var getFolder = false;
-	if (displayShares.length) {
-		for (var i = 0; i < displayShares.length; i++) {
-			var share = displayShares[i];
-			if (!(share.grantee && share.grantee.name)) {
-				getFolder = true;
-			}
-		}
-	}
-
-	if (getFolder) {
-		var respCallback = new AjxCallback(this, this._handleResponseGetFolder, [displayShares]);
-		organizer.getFolder(respCallback);
-	} else {
-		this._handleResponseGetFolder(displayShares);
-	}
-
-
-	this._sharesGroup.setVisible(displayShares.length > 0);
-};
-
-ZmFolderPropsDialog.prototype._getDisplayShares =
-function(organizer) {
-
+	var link = organizer.link;
 	var shares = organizer.shares;
-	var displayShares = [];
-	if ((!organizer.link || organizer.isAdmin()) && shares && shares.length > 0) {
+	var table;
+	if ((!link || organizer.isAdmin()) && shares && shares.length > 0) {
 		AjxDispatcher.require("Share");
-		var userZid = appCtxt.accountList.mainAccount.id;
-		// if a folder was shared with us with admin rights, a share is created since we could share it;
-		// don't show any share that's for us in the list
-		for (var i = 0; i < shares.length; i++) {
-			var share = shares[i];
-			var granteeId = share.grantee && share.grantee.id;
-            var granteeType = share.grantee && share.grantee.type;
-			if ((granteeId && (granteeId != userZid)) || ( granteeType && granteeType == ZmShare.TYPE_PUBLIC) ) {
-				displayShares.push(share);
-			}
-		}
-	}
-
-	return displayShares;
-};
-
-ZmFolderPropsDialog.prototype._handleResponseGetFolder =
-function(displayShares, organizer) {
-
-	if (organizer) {
-		displayShares = this._getDisplayShares(organizer);
-	}
-	
-	if (displayShares.length) {
-		var table = document.createElement("TABLE");
+		table = document.createElement("TABLE");
 		table.border = 0;
 		table.cellSpacing = 0;
 		table.cellPadding = 3;
-		for (var i = 0; i < displayShares.length; i++) {
-			var share = displayShares[i];
+		for (var i = 0; i < shares.length; i++) {
+			var share = shares[i];
 			var row = table.insertRow(-1);
 			var nameEl = row.insertCell(-1);
 			nameEl.style.paddingRight = "15px";
-			var nameText = share.grantee && share.grantee.name;
+			var nameText = share.grantee.name || share.grantee.id;
 			if (share.isAll()) {
 				nameText = ZmMsg.shareWithAll;
 			} else if (share.isPublic()) {
@@ -382,14 +337,14 @@ function(displayShares, organizer) {
 		this._sharesGroup.setElement(table);
 
 		var width = Dwt.DEFAULT;
-		var height = displayShares.length > 5 ? ZmFolderPropsDialog.SHARES_HEIGHT : Dwt.CLEAR;
+		var height = shares.length > 5 ? ZmFolderPropsDialog.SHARES_HEIGHT : Dwt.CLEAR;
 
 		var insetElement = this._sharesGroup.getInsetHtmlElement();
 		Dwt.setScrollStyle(insetElement, Dwt.SCROLL);
 		Dwt.setSize(insetElement, width, height);
 	}
 
-	this._sharesGroup.setVisible(displayShares.length > 0);
+	this._sharesGroup.setVisible(!!(table && table.rows && table.rows.length > 0));
 };
 
 ZmFolderPropsDialog.prototype.__createCmdCells =
@@ -437,6 +392,11 @@ function() {
 	this._nameInputEl.style.width = "20em";
 	this._nameInputEl._dialog = this;
 	var nameElement = this._nameInputEl;
+	if (Dwt.CARET_HACK_ENABLED) {
+		nameElement = document.createElement("DIV");
+		nameElement.style.overflow = "auto";
+		nameElement.appendChild(this._nameInputEl);
+	}
 
 	this._ownerEl = document.createElement("DIV");
 	this._typeEl = document.createElement("DIV");
@@ -471,8 +431,8 @@ function() {
 	this._props.addProperty(ZmMsg.typeLabel, this._typeEl);
 	this._ownerId = this._props.addProperty(ZmMsg.ownerLabel, this._ownerEl);
 	this._urlId = this._props.addProperty(ZmMsg.urlLabel, this._urlEl);
-	this._permId = this._props.addProperty(ZmMsg.permissions, this._permEl);
-	this._colorId = this._props.addProperty(ZmMsg.colorLabel, this._color);
+	this._permId = this._props.addProperty(ZmMsg.permissions, this._permEl)
+	this._props.addProperty(ZmMsg.colorLabel, this._color);
 
 	var propsContainer = document.createElement("DIV");
 	propsContainer.appendChild(this._props.getHtmlElement());
@@ -481,7 +441,9 @@ function() {
 	propsGroup.setElement(propsContainer);
 
 	// setup shares group
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
+		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
+	{
 		this._sharesGroup = new DwtGrouper(view);
 		this._sharesGroup.setLabel(ZmMsg.folderSharing);
 		this._sharesGroup.setVisible(false);
@@ -491,7 +453,9 @@ function() {
 	// add everything to view and return
 	var element = view.getHtmlElement();
 	element.appendChild(propsGroup.getHtmlElement());
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
+		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
+	{
 		element.appendChild(this._sharesGroup.getHtmlElement());
 	}
 

@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
@@ -10,24 +11,20 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
 /**
- * @overview
- * 
- * This class represents a data model which can process change events.
- *
- */
-
-/**
- * @class
- * This class represents a data model which can process change events.
- * 
- * @author Conrad Damon
- *
- * @param {constant}		type	the event source type {@see ZmEvent}
- */
+* Creates a data model.
+* @constructor
+* @class
+* This class represents a data model which can process change events.
+*
+* @author Conrad Damon
+*
+* @param type	[constant]		event source type (see ZmEvent)
+*/
 ZmModel = function(type) {
  	if (arguments.length == 0) return;
 
@@ -35,11 +32,6 @@ ZmModel = function(type) {
 	this._evtMgr = new AjxEventMgr();
 }
 
-/**
- * Returns a string representation of the zimlet.
- * 
- * @return		{String}		a string representation of the zimlet
- */
 ZmModel.prototype.toString = 
 function() {
 	return "ZmModel";
@@ -48,7 +40,7 @@ function() {
 /**
 * Adds a change listener.
 *
-* @param {AjxListener}	listener	the change listener to add
+* @param listener	[AjxListener]	a listener
 */
 ZmModel.prototype.addChangeListener = 
 function(listener) {
@@ -58,7 +50,7 @@ function(listener) {
 /**
 * Removes the given change listener.
 *
-* @param {AjxListener}	listener		the change listener to remove
+* @param listener	[AjxListener]	a listener
 */
 ZmModel.prototype.removeChangeListener = 
 function(listener) {
@@ -67,7 +59,6 @@ function(listener) {
 
 /**
 * Removes all change listeners.
-* 
 */
 ZmModel.prototype.removeAllChangeListeners = 
 function() {
@@ -77,10 +68,8 @@ function() {
 /**
 * Notifies listeners of the given change event.
 *
-* @param {constant}		event		the event type {@see ZmEvent}
-* @param {Hash}			details		additional information
-* 
-* @private
+* @param event		[constant]		event type (see ZmEvent)
+* @param details	[hash]*			additional information
 */
 ZmModel.prototype._notify =
 function(event, details) {
@@ -91,9 +80,6 @@ function(event, details) {
 	}
 };
 
-/**
- * @private
- */
 ZmModel.notifyEach =
 function(list, event, details) {
 	if (!(list && list.length)) { return; }

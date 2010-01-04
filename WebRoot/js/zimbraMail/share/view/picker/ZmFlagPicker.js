@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -29,24 +31,39 @@ function() {
 
 ZmFlagPicker.prototype._setupPicker =
 function(picker) {
-	var tree = this._tree = new DwtTree({parent:picker, style:DwtTree.CHECKEDITEM_STYLE, isCheckedByDefault:false});
+	var tree = this._tree = new DwtTree({parent:picker, style:DwtTree.CHECKEDITEM_STYLE});
 	tree.addSelectionListener(new AjxListener(this, ZmFlagPicker.prototype._treeListener));
+	
+	var ti = this._flagged = new DwtTreeItem({parent:tree});
+	ti.setText(ZmMsg.flagged);
+	ti.setImage("FlagRed");
+	
+	ti = this._unflagged = new DwtTreeItem({parent:tree});
+	ti.setText(ZmMsg.unflagged);
+	ti.setImage("FlagRedDis");
+	
+	tree.addSeparator();
 
-	var ti = this._flagged = new DwtTreeItem({parent:tree, text:ZmMsg.flagged, imageInfo:"FlagRed"});
-	ti = this._unflagged = new DwtTreeItem({parent:tree, text:ZmMsg.unflagged, imageInfo:"FlagDis"});
+	ti = this._read = new DwtTreeItem({parent:tree});
+	ti.setText(ZmMsg.read);
+	ti.setImage("ReadMessage");
+	
+	ti = this._unread = new DwtTreeItem({parent:tree});
+	ti.setText(ZmMsg.unread);
+	ti.setImage("UnreadMessage");	
 
 	tree.addSeparator();
 
-	ti = this._read = new DwtTreeItem({parent:tree, text:ZmMsg.read, imageInfo:"ReadMessage"});
-	ti = this._unread = new DwtTreeItem({parent:tree, text:ZmMsg.unread, imageInfo:"UnreadMessage"});
-
-	tree.addSeparator();
-
-	ti = this._replied = new DwtTreeItem({parent:tree, text:ZmMsg.replied, imageInfo:"Reply"});
-	ti = this._forwarded = new DwtTreeItem({parent:tree, text:ZmMsg.forwarded, imageInfo:"Forward"});
+	ti = this._replied = new DwtTreeItem({parent:tree});
+	ti.setText(ZmMsg.replied);
+	ti.setImage("Reply");
+	
+	ti = this._forwarded = new DwtTreeItem({parent:tree});
+	ti.setText(ZmMsg.forwarded);
+	ti.setImage("Forward");	
 };
 
-ZmFlagPicker.prototype._updateQuery =
+ZmFlagPicker.prototype._updateQuery = 
 function() {
 	var query = [];
 
@@ -70,8 +87,11 @@ function() {
 		query.push("is:forwarded");
 	}
 
-	this.setQuery(query.length ? (query.join(" ")) :  "");
-
+	if (query.length) {
+		this.setQuery(query.join(" "));
+	} else {
+		this.setQuery("");
+	}
 	this.execute();
 };
 

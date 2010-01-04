@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -170,7 +172,7 @@ ZmPicker_Descriptor = function(id, label, image, toolTip, ctor) {
 	this.image = image || ZmPicker.IMAGE[id];
 	this.toolTip = toolTip || ZmMsg[ZmPicker.TT_MSG_KEY[id]] || this.label;
 	this.ctor = ctor;
-};
+}
 
 ZmPicker.prototype.toString = 
 function() {
@@ -246,10 +248,7 @@ function(overviewId, parent, types) {
 		overviewId: overviewId,
 		parent: parent,
 		headerClass: "DwtTreeItem",
-		treeStyle: DwtTree.CHECKEDITEM_STYLE,
-		isCheckedByDefault: false,
-		treeIds: types,
-		account: appCtxt.getActiveAccount()
+		treeStyle: DwtTree.CHECKEDITEM_STYLE
 	};
 	var overview = this._overview = appCtxt.getOverviewController().createOverview(params);
 	overview.set(types);
@@ -267,10 +266,10 @@ ZmPicker.prototype._hideRoot =
 function(type) {
 	var ti = this._treeView[type].getTreeItemById(ZmOrganizer.ID_ROOT);
 	if (!ti) {
-		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT)
 		ti = this._treeView[type].getTreeItemById(rootId);
 	}
-	ti.showCheckBox(false);
+	Dwt.setVisible(ti._checkBoxCell, false);
 	ti.setExpanded(true);
 	ti.setVisible(false, true);
 };

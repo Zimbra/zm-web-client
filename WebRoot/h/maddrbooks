@@ -84,8 +84,8 @@
                                         <c:if test="${not anyInTrash and folder.isInTrash}">
                                             <c:set var="anyInTrash" value="${true}"/>
                                         </c:if>
-										<%-- Kind of hacky here using newAddrBookEnabled to tell whether or not Emailed Contacts are shown... --%>
-										<c:set var="omit" value="${folder.isAutoContacts and not mailbox.features.newAddrBookEnabled}"/>
+										<%-- still hacky to use skin than the old newAddrBookEnabled to tell whether or not Emailed Contacts are shown... --%>
+										<c:set var="omit" value="${folder.isAutoContacts and skin eq 'velodrome2'}"/>
 										<c:if test="${folder.isContactView and not folder.isInTrash and not omit}">
                                             <c:set var="rowColor" value="${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}"/>
                                             <c:set var="selected" value="${selectedFolder.id eq folder.id and not newAddressBook}"/>

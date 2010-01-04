@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -50,7 +52,7 @@ function(searchResult, folder) {
     var elements = {};
     elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
     elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
-    this._setView({view:this._currentView, elements:elements, isAppView:true});
+    this._setView(this._currentView, elements, true);
     this._resetNavToolBarButtons(this._currentView);
 };
 
@@ -76,16 +78,9 @@ function(view) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._toolbar[view].addFiller();
-		this._toolbar[view].addOp(ZmOperation.FILLER);
-		this._initializeNavToolBar(view);
+		var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
+		this._setNavToolBar(tb, view);
 	};
-};
-
-ZmVoiceListController.prototype._initializeNavToolBar =
-function(view) {
-	this._toolbar[view].addOp(ZmOperation.TEXT);
-	var text = this._itemCountText[view] = this._toolbar[view].getButton(ZmOperation.TEXT);
-	text.addClassName("itemCountText");
 };
 
 ZmVoiceListController.prototype._getView = 
@@ -121,17 +116,8 @@ function(ev) {
 
 ZmVoiceListController.prototype._printListener =
 function(ev) {
-	var url;
-	var v = this._getView();
-	if (v.view == ZmId.VIEW_VOICEMAIL) {
-		url = ['/h/printvoicemails?st=voicemail&sq=phone:', v._folder.phone.name, ' in:"', v._folder.name, '"'].join('');
-	} else if (v.view == ZmId.VIEW_CALL_LIST) {
-		url = ['/h/printcalls?st=calllog&sq=phone:', v._folder.phone.name, ' in:"', v._folder.name, '"'].join('');
-	}
-
-	if (url) {
-		window.open(appContextPath+AjxStringUtil.urlEncode(url), "_blank");
-	}
+	var html = this._getView().getPrintHtml();
+	appCtxt.getPrintView().renderHtml(html);
 };
 
 ZmVoiceListController.prototype._callManagerListener =
@@ -168,4 +154,167 @@ function(ev) {
 	}
 
 	actionMenu.popup(0, ev.docX, ev.docY);
+};
+
+ZmVoiceListController.prototype._addToForwardListener = 
+function(ev) {
+	var selection = this._getView().getSelection();
+	var errors = [];
+	var combination = this._getPhoneFromCombination(selection, errors);
+	
+	if (errors.length>0 && AjxUtil.isString(errors[0])) {
+		appCtxt.setStatusMsg(errors[0]);
+	} else if (selection.length>0) {
+		for (var name in combination) {
+			var phone = combination[name].phone;
+			var from = combination[name].addFrom;
+			var callback = new AjxCallback(this, this._modifyCallFeatures, {featureName: ZmCallFeature.SELECTIVE_CALL_FORWARDING, addFrom: from, maxEntries: ZmCallFeature.SELECTIVE_CALL_FORWARDING_MAX_ENTRIES, maxMsg: ZmMsg.selectiveCallForwardingFromErrorMax, mustHaveTo:true, errorMsg:ZmMsg.selectiveCallForwardingErrorCannotAdd, alreadyMsg:ZmMsg.errorPhoneForwardNotUnique, isToMsg: ZmMsg.selectiveCallForwardingFromErrorSameAsTo});
+			phone.getCallFeatures(callback);
+		}
+	}
+};
+
+ZmVoiceListController.prototype._addToRejectListener = 
+function(ev) {
+	var selection = this._getView().getSelection();
+	var errors = [];
+	var combination = this._getPhoneFromCombination(selection, errors);
+	
+	if (errors.length>0 && AjxUtil.isString(errors[0])) {
+		appCtxt.setStatusMsg(errors[0]);
+	} else if (selection.length>0) {
+		for (var name in combination) {
+			var phone = combination[name].phone;
+			var from = combination[name].addFrom;
+			var callback = new AjxCallback(this, this._modifyCallFeatures, {featureName: ZmCallFeature.SELECTIVE_CALL_REJECTION, addFrom: from, maxEntries: ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES, maxMsg: ZmMsg.selectiveCallRejectionFromErrorMax, alreadyMsg: ZmMsg.errorPhoneRejectNotUnique});
+			var errorCallback = new AjxCallback(this, this._getCallFeaturesHandleError);
+			phone.getCallFeatures(callback, errorCallback);
+		}
+	}
+};
+
+ZmVoiceListController.prototype._getPhoneFromCombination = 
+function(selection, errors) {
+	alert("ZmVoiceListController.prototype._getPhoneFromCombination should be overridden by subclasses");
+	return {};
+}
+
+ZmVoiceListController.prototype._checkCanAddToList = 
+function() {
+	alert("ZmVoiceListController.prototype._checkCanAddToList should be overridden by subclasses");
+	return {};
+}
+
+ZmVoiceListController.prototype._getCallFeaturesHandleError = 
+function(exception1/*, ..., exceptionN*/) {
+	for (var i = 0; i < arguments.length; i++) {
+		var exception = arguments[i];
+		var message = exception instanceof AjxException ?
+			  (exception.msg || exception.code) : String(exception);
+		if (exception.code == ZmCsfeException.ACCT_INVALID_ATTR_VALUE || exception.code == ZmCsfeException.INVALID_REQUEST) {
+			// above faults come with technical/cryptic LDAP error msg; input validation
+			// should keep us from getting here
+			message = ZmMsg.invalidPrefValue;
+		}
+		appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
+	}
+};    
+
+
+ZmVoiceListController.prototype._modifyCallFeatures = 
+function(obj, features, phone) {
+	var addPhones = (obj.addFrom instanceof AjxVector) ? obj.addFrom.getArray() : [];
+	var maxEntries = obj.maxEntries;
+	var maxMsg = obj.maxMsg || "";
+	var alreadyMsg = obj.alreadyMsg || "";
+	var errorMsg = obj.errorMsg || null;
+	var mustHaveTo = obj.mustHaveTo;
+	var isToMsg = obj.isToMsg;
+	var feature = features[obj.featureName];
+	
+	if (feature instanceof ZmCallFeature && phone instanceof ZmPhone && addPhones.length > 0) {
+		var result = feature.createProxy();
+		result.data.phone = result.data.phone || [];
+		
+		if (addPhones.length > 0) {
+			var added = 0;
+			var exists;
+			var isTo;
+			for (var i=0; i<addPhones.length; i++) {
+				var from = addPhones[i];
+				var number = ZmPhone.calculateName(from.getDisplay());
+				exists = false;
+				isTo = false;
+				if (number == feature.data.ft) {
+					isTo = true;
+					break;
+				}
+				for (var j=0; j<result.data.phone.length; j++) {
+					if (result.data.phone[j].pn == number) {
+						exists = true;
+						break;
+					}
+				}
+				if (!exists) {
+					if (maxEntries && result.data.phone.length == maxEntries) {
+						appCtxt.setStatusMsg(maxMsg);
+						break;
+					} else {
+						result.data.phone.push({a:true, pn: number});
+						added++;
+					}
+				}
+			}
+			if (added > 0) {
+				if (mustHaveTo && !feature.data.ft) {
+					if (errorMsg)
+						appCtxt.setStatusMsg(errorMsg);
+				} else {
+					result.isActive = true;
+					this._saveFeatures(phone, [result]);
+				}
+			} else if (exists) {
+				appCtxt.setStatusMsg(alreadyMsg);
+			} else if (isTo) {
+				appCtxt.setStatusMsg(isToMsg);
+			}
+		}
+	}
+}
+
+ZmVoiceListController.prototype._saveFeatures =
+function(phone, features) {
+	var batchCommand = new ZmBatchCommand(false);
+	phone.modifyCallFeatures(batchCommand, features);			
+	appCtxt.getSettings().save(false, null, batchCommand);
+	if (batchCommand.size()) {
+		var respCallback = new AjxCallback(this, this._handleResponseSaveListener);
+		var errorCallback = new AjxCallback(this, this._handleResponseSaveError);
+		batchCommand.run(respCallback, errorCallback);
+	}
+}
+
+ZmVoiceListController.prototype._handleResponseSaveListener =
+function(optionsSaved, callback, result) {
+	if (optionsSaved) {
+		appCtxt.setStatusMsg(ZmMsg.optionsSaved);
+	}
+	if (callback) {
+		callback.run(result);
+	}
+}
+
+ZmVoiceListController.prototype._handleResponseSaveError =
+function(exception1/*, ..., exceptionN*/) {
+	for (var i = 0; i < arguments.length; i++) {
+		var exception = arguments[i];
+		var message = exception instanceof AjxException ?
+			  (exception.msg || exception.code) : String(exception);
+		if (exception.code == ZmCsfeException.ACCT_INVALID_ATTR_VALUE || exception.code == ZmCsfeException.INVALID_REQUEST) {
+			// above faults come with technical/cryptic LDAP error msg; input validation
+			// should keep us from getting here
+			message = ZmMsg.invalidPrefValue;
+		}
+		appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
+	}
 };

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -18,11 +20,11 @@ ZmCalMgr = function(container) {
 	this.clearCache();
 	
 	this._listeners = {};
-	this._folderNames = {};
+    this._folderNames = {};
 
-	this._listeners[ZmOperation.NEW_APPT] = new AjxListener(this, this._newApptAction);
-	this._listeners[ZmOperation.NEW_ALLDAY_APPT] = new AjxListener(this, this._newAllDayApptAction);
-	this._listeners[ZmOperation.SEARCH_MAIL] = new AjxListener(this, this._searchMailAction);
+    this._listeners[ZmOperation.NEW_APPT] = new AjxListener(this, this._newApptAction);
+    this._listeners[ZmOperation.NEW_ALLDAY_APPT] = new AjxListener(this, this._newAllDayApptAction);
+    this._listeners[ZmOperation.SEARCH_MAIL] = new AjxListener(this, this._searchMailAction);    
 };
 
 ZmCalMgr.prototype.toString =
@@ -42,16 +44,16 @@ function(date) {
 	var firstDayOfWeek = appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
 
 	this._miniCalendar = new DwtCalendar({parent: this._container, posStyle:DwtControl.ABSOLUTE_STYLE,
-										  firstDayOfWeek: firstDayOfWeek, showWeekNumber: appCtxt.get(ZmSetting.CAL_SHOW_CALENDAR_WEEK)});
+										  firstDayOfWeek: firstDayOfWeek});
 	this._miniCalendar.setDate(date);
 	this._miniCalendar.setScrollStyle(Dwt.CLIP);
 	this._miniCalendar.addSelectionListener(new AjxListener(this, this._miniCalSelectionListener));
 	this._miniCalendar.addActionListener(new AjxListener(this, this._miniCalActionListener));
 	this._miniCalendar.addDateRangeListener(new AjxListener(this, this._miniCalDateRangeListener));
 	this._miniCalendar.setMouseOverDayCallback(new AjxCallback(this, this._miniCalMouseOverDayCallback));
-	this._miniCalendar.setMouseOutDayCallback(new AjxCallback(this, this._miniCalMouseOutDayCallback));
+    this._miniCalendar.setMouseOutDayCallback(new AjxCallback(this, this._miniCalMouseOutDayCallback));
 
-	var list = [];
+    var list = [];
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		list.push("ZmMailMsg");
 		list.push("ZmConv");
@@ -64,8 +66,9 @@ function(date) {
 	this._miniCalendar.setDropTarget(this._miniCalDropTarget);
 
 	var workingWeek = [];
+	var fdow = firstDayOfWeek;
 	for (var i = 0; i < 7; i++) {
-		var d = (i + firstDayOfWeek) % 7;
+		var d = (i + fdow) % 7
 		workingWeek[i] = (d > 0 && d < 6);
 	}
 	this._miniCalendar.setWorkingWeek(workingWeek);
@@ -85,30 +88,32 @@ function(date) {
 
 ZmCalMgr.prototype._miniCalDropTargetListener =
 function(ev) {
-	var calController = this.getCalViewController();
-	calController._miniCalDropTargetListener(ev);
+    var calController = this.getCalViewController();
+    calController._miniCalDropTargetListener(ev);
 };
 
 ZmCalMgr.prototype.getMiniCalendar = 
 function() {
-	if (!this._miniCalendar) {
+	
+	if(!this._miniCalendar) {
 		this._createMiniCalendar();
 	}
 	
-	return this._miniCalendar;
+	return this._miniCalendar;	
 };
 
 ZmCalMgr.prototype._refreshCallback =
 function(list) {
-	this.getReminderController()._refreshCallback(list);
+    var reminderController = this.getReminderController();
+    reminderController._refreshCallback(list);
 };
 
 ZmCalMgr.prototype.getReminderController =
 function() {
-	if (!this._reminderController) {
-		this._reminderController = new ZmReminderController(this);
-	}
-	return this._reminderController;
+   if(!this._reminderController) {
+       this._reminderController = new ZmReminderController(this);
+   }
+   return this._reminderController;
 };
 
 ZmCalMgr.prototype._miniCalSelectionListener =
@@ -121,7 +126,7 @@ function(ev) {
 
 ZmCalMgr.prototype._miniCalActionListener =
 function(ev) {
-	var mm = this._getMiniCalActionMenu();
+    var mm = this._getMiniCalActionMenu();
 	mm.__detail = ev.detail;
 	mm.popup(0, ev.docX, ev.docY);
 };
@@ -158,9 +163,9 @@ function() {
 // Zimlet hack
 ZmCalMgr.prototype.postInitListeners =
 function () {
-	if (ZmZimlet.listeners && ZmZimlet.listeners["ZmCalViewController"]) {
-		for (var ix in ZmZimlet.listeners["ZmCalViewController"]) {
-			if (ZmZimlet.listeners["ZmCalViewController"][ix] instanceof AjxListener) {
+	if(ZmZimlet.listeners && ZmZimlet.listeners["ZmCalViewController"]) {
+		for(var ix in ZmZimlet.listeners["ZmCalViewController"]) {
+			if(ZmZimlet.listeners["ZmCalViewController"][ix] instanceof AjxListener)  {
 				this._listeners[ix] = ZmZimlet.listeners["ZmCalViewController"][ix];
 			} else {
 				this._listeners[ix] = new AjxListener(this, this._proxyListeners, [ZmZimlet.listeners["ZmCalViewController"][ix]]);
@@ -169,16 +174,15 @@ function () {
 	}
 };
 
-// Few zimlets might expect listeners from calendar view controller object
+//Few zimlets might expect listeners from calendar view controller object 
 ZmCalMgr.prototype._proxyListeners =
 function(zimletListener, event) {
-	var calController = this.getCalViewController();
-	return (new AjxListener(calController, zimletListener)).handleEvent(event);
+    var calController = this.getCalViewController();
+    return (new AjxListener(calController, zimletListener)).handleEvent(event);
 };
 
-ZmCalMgr.prototype.isMiniCalCreated =
-function() {
-	return (this._miniCalendar != null);
+ZmCalMgr.prototype.isMiniCalCreated = function() {
+  return (this._miniCalendar != null);
 };
 
 ZmCalMgr.prototype._miniCalDateRangeListener =
@@ -187,9 +191,9 @@ function(ev) {
 	if (viewId == ZmId.VIEW_CAL_APPT || viewId == ZmId.VIEW_CAL) {
 		var calController = this.getCalViewController();
 		calController._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
-	} else {
-		this.highlightMiniCal();
-	}
+	}else {
+        this._miniCalendar.setHilite([], true, true);
+    }
 };
 
 ZmCalMgr.prototype._miniCalMouseOverDayCallback =
@@ -197,15 +201,16 @@ function(control, day) {
 	this._currentMouseOverDay = day;
 	var action = new AjxTimedAction(this, this._getDayToolTipOnDelay, [control, day]);
 	AjxTimedAction.scheduleAction(action, 1000);
+
 };
 
 ZmCalMgr.prototype.getCalViewController = 
 function() {
 	var calController = AjxDispatcher.run("GetCalController");
 	calController._miniCalendar = this._miniCalendar;
-	calController._minicalMenu = this._minicalMenu;
-	calController._miniCalDropTarget = this._miniCalDropTarget;
-	return calController;
+    calController._minicalMenu = this._minicalMenu;
+    calController._miniCalDropTarget = this._miniCalDropTarget;
+    return calController;
 };
 
 ZmCalMgr.prototype._miniCalMouseOutDayCallback =
@@ -215,39 +220,33 @@ function(control) {
 
 ZmCalMgr.prototype._getDayToolTipOnDelay =
 function(control, day) {
-	if (!this._currentMouseOverDay) { return; }
-	if ((this._currentMouseOverDay.getDate() == day.getDate()) &&
-		(this._currentMouseOverDay.getMonth() == day.getMonth()))
-	{
+	if(!this._currentMouseOverDay) { return; }
+	if((this._currentMouseOverDay.getDate() == day.getDate()) && (this._currentMouseOverDay.getMonth() == day.getMonth())) {
 		this._currentMouseOverDay = null;
-        var mouseEv = DwtShell.mouseEvent;
-        if(mouseEv && mouseEv.docX > 0 && mouseEv.docY > 0) {
-            var callback = new AjxCallback(this, this.showTooltip, [control, mouseEv.docX, mouseEv.docY]);
-            this.getCalViewController().getDayToolTipText(day, false, callback);
-        }
+		var calController = this.getCalViewController();
+		var tooltipContent = calController.getDayToolTipText(day);
+		control.setToolTipContent(tooltipContent);
+		var mouseEv = DwtShell.mouseEvent;
+		if(mouseEv && mouseEv.docX > 0 && mouseEv.docY > 0) {
+			var shell = DwtShell.getShell(window);
+			var tooltip = shell.getToolTip();
+			tooltip.setContent(tooltipContent);
+			tooltip.popup(mouseEv.docX, mouseEv.docY);
+			control.__tooltipClosed = false;
+		}
 	}
 };
 
-ZmCalMgr.prototype.showTooltip =
-function(control, x, y, tooltipContent) {
-    control.setToolTipContent(tooltipContent);
-    if(x > 0 && y > 0) {
-        var shell = DwtShell.getShell(window);
-        var tooltip = shell.getToolTip();
-        tooltip.setContent(tooltipContent);
-        tooltip.popup(x, y);
-        control.__tooltipClosed = false;
-    }
-};
+
 
 ZmCalMgr.prototype.getApptSummaries =
 function(params) {
 	var apptVec = this.setSearchParams(params);
 
-	if (apptVec != null && (apptVec instanceof AjxVector)) {
-		return apptVec;
+	if(apptVec != null && (apptVec instanceof AjxVector)) {
+        return apptVec;
 	}
-
+	
 	// this array will hold a list of appts as we collect them from the server
 	this._rawAppts = [];
 
@@ -292,7 +291,7 @@ function(params) {
 	}
 	params.queryHint = query;
 	params.folderIdMapper = folderIdMapper;
-	params.offset = 0;
+	params.offset = 0;	
 };
 
 ZmCalMgr.prototype._search =
@@ -301,18 +300,12 @@ function(params) {
 	var request = jsonObj.SearchRequest;
 
 	this._setSoapParams(request, params);
-
-	var accountName = appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null;
+		
 	if (params.callback) {
-		appCtxt.getAppController().sendRequest({
-			jsonObj: jsonObj,
-			asyncMode: true,
-			callback: (new AjxCallback(this, this._getApptSummariesResponse, [params])),
-			noBusyOverlay: params.noBusyOverlay,
-			accountName: accountName
-		});
+		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [params]);
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
 	} else {
-		var response = appCtxt.getAppController().sendRequest({jsonObj: jsonObj, accountName: accountName});
+		var response = appCtxt.getAppController().sendRequest({jsonObj: jsonObj});
 		var result = new ZmCsfeResult(response, false);
 		return this._getApptSummariesResponse(params, result);
 	}
@@ -325,7 +318,7 @@ function(request, params) {
 	request.calExpandInstStart = params.start;
 	request.calExpandInstEnd = params.end;
 	request.types = ZmSearch.TYPE[ZmItem.APPT];
-	request.offset = params.offset;
+    request.offset = params.offset;
 
 	var query = params.query;
 	if (params.queryHint) {
@@ -347,15 +340,14 @@ function(params, result) {
 	try {
 		resp = result.getResponse();
 	} catch (ex) {
-		if (callback) {
+		if (callback)
 			callback.run(new AjxVector());
-		}
 		return;
 	}
 
 	var searchResp = resp.SearchResponse;
 	var newList = this.processSearchResponse(searchResp, params);
-	if (newList == null) { return; }
+	if(newList == null) { return; }
 
 	if (callback) {
 		callback.run(newList, params.query);
@@ -366,8 +358,9 @@ function(params, result) {
 
 ZmCalMgr.prototype.processSearchResponse = 
 function(searchResp, params) {
+	
 	if(!searchResp) { return; }
-
+	
 	if (searchResp && searchResp.appt && searchResp.appt.length) {
 		this._rawAppts = this._rawAppts != null 
 			? this._rawAppts.concat(searchResp.appt)
@@ -377,7 +370,7 @@ function(searchResp, params) {
 		if (searchResp.more) {
 			var lastAppt = searchResp.appt[searchResp.appt.length-1];
 			if (lastAppt) {
-				params.offset += 500;
+                params.offset += 500;
 				this._search(params);
 				return;
 			}
@@ -388,17 +381,17 @@ function(searchResp, params) {
 	if (this._rawAppts && this._rawAppts.length) {
 		this._list = new ZmList(ZmItem.APPT);
 		for (var i = 0; i < this._rawAppts.length; i++) {
-			DBG.println(AjxDebug.DBG2, "appt[j]:" + this._rawAppts[i].name);
+			DBG.println("appt[j]:" + this._rawAppts[i].name);
 			var apptNode = this._rawAppts[i];
 			var instances = apptNode ? apptNode.inst : null;
 			if (instances) {
 				var args = {list:this._list};
 				for (var j = 0; j < instances.length; j++) {
 					var appt = ZmCalBaseItem.createFromDom(apptNode, args, instances[j]);
-					DBG.println(AjxDebug.DBG2, "lite appt :" + appt);
+					DBG.println("lite appt :" + appt);
 					if (appt) newList.add(appt);
 				}
-			}
+			}			
 		}
 
 	}
@@ -407,34 +400,34 @@ function(searchResp, params) {
 
 ZmCalMgr.prototype.getCalendarName =
 function(folderId) {
-	var app = appCtxt.getApp(ZmApp.CALENDAR);
-	return app.getCalendarName(folderId);
+    var app = appCtxt.getApp(ZmApp.CALENDAR);
+    return app.getCalendarName(folderId);
 };
 
 // Mini calendar action menu listeners, calview controller is loaded and than
 // event handling listener functions are called
 ZmCalMgr.prototype._newApptAction =
 function(ev) {
-	var calController = this.getCalViewController();
-	calController._newApptAction(ev);
+    var calController = this.getCalViewController();
+    calController._newApptAction(ev);
 };
 
 ZmCalMgr.prototype._newAllDayApptAction =
 function(ev) {
-	var calController = this.getCalViewController();
-	calController._newAllDayApptAction(ev);
+    var calController = this.getCalViewController();
+    calController._newAllDayApptAction(ev);
 };
 
 ZmCalMgr.prototype._searchMailAction =
 function(ev) {
-	var calController = this.getCalViewController();
-	calController._searchMailAction(ev);
+    var calController = this.getCalViewController();
+    calController._searchMailAction(ev);
 };
 
 ZmCalMgr.prototype.getCheckedCalendarFolderIds =
 function(localOnly) {
-	var app = appCtxt.getApp(ZmApp.CALENDAR);
-	return app.getCheckedCalendarFolderIds(localOnly);
+    var app = appCtxt.getApp(ZmApp.CALENDAR);
+    return app.getCheckedCalendarFolderIds(localOnly);    
 };
 
 ZmCalMgr.prototype._handleError =
@@ -446,29 +439,4 @@ function(ex) {
 		return true;
 	}
 	return false;
-};
-
-ZmCalMgr.prototype.highlightMiniCal =
-function() {
-	this.getMiniCalCache()._getMiniCalData(this.getMiniCalendarParams());
-};
-
-ZmCalMgr.prototype.getMiniCalendarParams =
-function() {
-	var dr = this.getMiniCalendar().getDateRange();
-	return {
-		start: dr.start.getTime(),
-		end: dr.end.getTime(),
-		fanoutAllDay: true,
-		noBusyOverlay: true,
-		folderIds: this.getCheckedCalendarFolderIds()
-	};
-};
-
-ZmCalMgr.prototype.getMiniCalCache =
-function() {
-	if (!this._miniCalCache) {
-		this._miniCalCache = new ZmMiniCalCache(this);
-	}
-	return this._miniCalCache;
 };

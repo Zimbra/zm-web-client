@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="message" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMessageBean" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
@@ -23,13 +7,11 @@
 <%@ attribute name="externalImageUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="composeUrl" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="newWindowUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
-<%@ attribute name="context" rtexprvalue="true" required="false" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-
 <%--compute body up front, so attachments refereneced in multipart/related don't show up --%>
 <c:set var="body" value="${message.body}"/>
 
@@ -48,7 +30,7 @@
 </c:set>
 <c:if test="${not empty message.invite and mailbox.features.calendar}">
     <c:set var="appt" value="${message.invite.component}"/>
-    <c:set var="showInviteReply" value="${not zm:getFolder(pageContext, message.folderId).isInTrash and not empty message.invite.component and message.invite.hasAcceptableComponent and message.invite.hasInviteReplyMethod}"/>
+    <c:set var="showInviteReply" value="${not zm:getFolder(pageContext, message.folderId).isInTrash and not empty message.invite.component}"/>
 </c:if>
 <c:set var="shareAccepted" value="${not empty message.share and zm:hasShareMountPoint(mailbox, message)}"/>
 <c:set var="showShareInfo" value="${not empty message.share and not shareAccepted}"/>
@@ -157,9 +139,9 @@
                             <tr>
                                 <td nowrap align='right' class='MsgHdrSent'>
                                     <fmt:message var="dateFmt" key="formatDateSent"/>
-                                    <c:if test="${not empty message.displaySentDate}">
-                                        <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${zm:contains(message.displaySentDate,'1969') ? message.receivedDate : message.sentDate}"/>
-                                    </c:if>
+									<c:if test="${not empty message.displaySentDate}"> 
+                                    	<fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${zm:contains(message.displaySentDate,'1969') ? message.receivedDate : message.sentDate}"/>
+									</c:if>
                                 </td>
                             </tr>
                             <c:if test="${message.hasTags or message.isFlagged}">
@@ -193,7 +175,7 @@
                             <c:if test="${not empty message.requestHeader}">
                                 <tr>
                                     <td nowrap align="right" class='MsgHdrAttAnchor'>
-                                        <app:certifiedMessage var="reqHdr" msg="${message}" display="${true}"/>                                                                                
+                                        <app:certifiedMessage var="reqHdr" msg="${message}" display="${true}"/>
                                     </td>
                                 </tr>
                             </c:if>
@@ -267,7 +249,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
                                     <c:if test="${not empty newWindowUrl}">
-                                    <a accesskey='10' target="_blank" href="/h/printmessage?id=${message.id}&amp;${not empty param.xim ? 'xim=':''}1">
+                                    <a accesskey='10' target="_blank" href="${fn:escapeXml(newWindowUrl)}&amp;print=true&amp;xim=1">
                                         <app:img src="startup/ImgPrint.gif" altkey="print" title="print"/>
                                         &nbsp;
                                         <span><fmt:message key="print"/></span>
@@ -283,16 +265,12 @@
                                 <c:if test="${showconvlink and not fn:startsWith(message.conversationId, '-')}">
                                     <td style='padding: 0 2px 0 2px'>
                                         <c:url var="convUrl" value="/h/search">
-                                            <c:param name="action" value="${param.action}"/>
+                                            <c:param name="action" value="view"/>
                                             <c:param name="st" value="conversation"/>
-                                            <c:param name="cid" value="${message.conversationId}"/>
-                                            <c:param name="hideSearchString" value="true"/>
-                                            <c:if test="${!empty context}">
-                                                <c:if test="${!empty context.sfi}"><c:param name='sfi' value='${context.sfi}'/></c:if>
-                                            </c:if>
+                                            <c:param name="sq" value='conv:"${message.conversationId}"'/>
                                         </c:url>
                                         <a id="OPSHOWCONV" href="${fn:escapeXml(convUrl)}">
-                                            <app:img src="startup/ImgConversation.gif" altkey="showConversation" title="showConversation"/>
+                                            <app:img src="mail/ImgConversation.gif" altkey="showConversation" title="showConversation"/>
                                         </a>
                                     </td>
                                 </c:if>

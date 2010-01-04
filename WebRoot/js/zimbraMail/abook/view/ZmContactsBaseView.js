@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -19,7 +21,6 @@ ZmContactsBaseView = function(params) {
 
 	params.posStyle = params.posStyle || Dwt.ABSOLUTE_STYLE;
 	params.type = ZmItem.CONTACT;
-	params.pageless = true;
 	ZmListView.call(this, params);
 
 	this._handleEventType[ZmItem.GROUP] = true;
@@ -35,33 +36,37 @@ function() {
 
 ZmContactsBaseView.prototype.set =
 function(list, sortField, folderId) {
-
-	if (this._itemsToAdd) {
-		this.addItems(this._itemsToAdd);
-		this._itemsToAdd = null;
+	var subList;
+	if (list instanceof ZmContactList) {
+		// compute the sublist based on the folderId if applicable
+		list.addChangeListener(this._listChangeListener);
+		subList = list.getSubList(this.offset, this.getLimit(), folderId);
 	} else {
-		var subList;
-		if (list instanceof ZmContactList) {
-			// compute the sublist based on the folderId if applicable
-			list.addChangeListener(this._listChangeListener);
-			// for accounts where gal paging is not supported, show *all* results
-			subList = (list.isGal && !list.isGalPagingSupported)
-				? list.getVector().clone()
-				: list.getSubList(this.offset, this.getLimit(this.offset), folderId);
-		} else {
-			subList = list;
-		}
-		this._folderId = folderId;
-		DwtListView.prototype.set.call(this, subList, sortField);
+		subList = list;
 	}
-	this._setRowHeight();
-	this._rendered = true;
+    this._folderId = folderId;
+	DwtListView.prototype.set.call(this, subList, sortField);
+};
+
+
+ZmContactsBaseView.prototype.paginate =
+function(contacts, bPageForward) {
+	var offset = this.getNewOffset(bPageForward);
+	var subVector = contacts.getSubList(offset, this.getLimit(), this._controller.getFolderId());
+	ZmListView.prototype.set.call(this, subVector);
+	this.offset = offset;
+	this.setSelection(this.getList().get(0));
 };
 
 ZmContactsBaseView.prototype._setParticipantToolTip =
 function(address) {
 	// XXX: OVERLOADED TO SUPPRESS JS ERRORS..
 	// XXX: REMOVE WHEN IMPLEMENTED - SEE BASE CLASS ZmListView
+};
+
+ZmContactsBaseView.prototype.getLimit =
+function() {
+	return appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
 };
 
 ZmContactsBaseView.prototype.getListView =
@@ -72,6 +77,14 @@ function() {
 ZmContactsBaseView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
+};
+
+
+ZmContactsBaseView.prototype.setSelection =
+function(item, skipNotify) {
+	if (!item) { return; }
+
+	ZmListView.prototype.setSelection.call(this, item, skipNotify);
 };
 
 ZmContactsBaseView.prototype._changeListener =

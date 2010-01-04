@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -22,9 +24,9 @@ ZmCalendarAssistant.prototype.constructor = ZmCalendarAssistant;
 
 ZmCalendarAssistant.prototype.okHandler =
 function(dialog) {
-    var calMgr = appCtxt.getCalManager();
-    calMgr.getMiniCalendar();
-    var cc = calMgr.getCalViewController();
+	var calApp = appCtxt.getApp(ZmApp.CALENDAR);
+	//calApp.activate(true, this._view, this._startDate);	
+	var cc = calApp.getCalController();
 	cc.setDate(this._startDate);
 	// need to call twice due to cal view controller bug
 	cc.show(this._view);
@@ -50,42 +52,36 @@ function(dialog, verb, args) {
 	}
 
 	match = args.match(RegExp("\\b("
-							  +ZmMsg.viewCalForDay+"|"
-							  +ZmMsg.viewCalForWeek+"|"
-							  +ZmMsg.viewCalForWorkWeek+"|"
-							  +ZmMsg.viewCalForList+"|"
-							  +ZmMsg.viewCalForMonth+")\\b"));
+								+ZmMsg.viewCalForDay+"|"
+								+ZmMsg.viewCalForWeek+"|"
+								+ZmMsg.viewCalForWorkWeek+"|"
+								+ZmMsg.viewCalForMonth+")\\b"));
 	var view = (match) ? match[1] : null;
 	var icon;
 	switch (view) {
-		case ZmMsg.viewCalForDay:
-			icon = 'DayView';
-			this._view = ZmId.VIEW_CAL_DAY;
-			view = ZmMsg.viewDay;
-			break;
-		case ZmMsg.viewCalForWeek:
-			icon = 'WeekView';
-			this._view = ZmId.VIEW_CAL_WEEK;
-			view = ZmMsg.viewWeek;
-			break;
-		case ZmMsg.viewCalForWorkWeek:
-			icon = 'WorkWeekView';
-			this._view = ZmId.VIEW_CAL_WORK_WEEK;
-			view = ZmMsg.viewWorkWeek;
-			break;
-		case ZmMsg.viewCalForMonth:
-			icon = 'MonthView';
-			this._view = ZmId.VIEW_CAL_MONTH;
-			view = ZmMsg.viewMonth;
-			break;
-		case ZmMsg.viewCalForList:
-			icon = 'TasksListView';
-			this._view = ZmId.VIEW_CAL_LIST;
-			view = ZmMsg.viewList;
-			break;
-		default:
-			icon = "CalendarApp";
-			this._view = null;
+	case ZmMsg.viewCalForDay:
+		icon = 'DayView';
+		this._view = ZmId.VIEW_CAL_DAY;
+		view = ZmMsg.viewDay;
+		break;
+	case ZmMsg.viewCalForWeek:
+		icon = 'WeekView';
+		this._view = ZmId.VIEW_CAL_WEEK;
+		view = ZmMsg.viewWeek;
+		break;
+	case ZmMsg.viewCalForWorkWeek:
+		icon = 'WorkWeekView';
+		this._view = ZmId.VIEW_CAL_WORK_WEEK;
+		view = ZmMsg.viewWorkWeek;
+		break;
+	case ZmMsg.viewCalForMonth:
+		icon = 'MonthView';
+		this._view = ZmId.VIEW_CAL_MONTH;
+		view = ZmMsg.viewMonth;
+		break;
+	default:
+		icon = "CalendarApp";
+		this._view = null;
 	}
 
 	dialog._setOkButton(AjxMsg.ok, true, true); //, true, icon);

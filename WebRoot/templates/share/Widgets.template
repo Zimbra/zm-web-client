@@ -36,18 +36,6 @@
 	</table>
 </template>
 
-<template id='share.Widgets#ZmAppChooserButton' class='ZAppTab'>
-	<$ var buttonClass = data.buttonClass || "AppTab"; $>
-	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'>
-		<tr>
-			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
-			<td id='${id}_title'		class='ZWidgetTitle'></td>
-			<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
-		</tr>
-	</table>
-</template>
-
-
 <template id='share.Widgets#ZmAppChooserSpacer'>
 	<$ var buttonClass = data.buttonClass || "AppTab"; $>
 	<div class='Z<$=buttonClass$>Spacer'></div>
@@ -82,18 +70,12 @@
 </template>
 
 <template id='share.Widgets#ZmChooseFolderDialog'>
-	<div class='ChooserDialog'>
-		<span id='${id}_folderDescDivId' style='margin: 0; margin-bottom: 2px'></span>
-		<div><$= ZmMsg.chooserDescription $></div>
-		<div id='${id}_inputDivId'></div>
-		<div class='overview' id='${id}_folderTreeDivId'></div>
-	</div>
-</template>
-
-<template id='share.Widgets#ZmPickTagDialog'>
-	<div class='ChooserDialog'>
-		<div style='width:300px'><$= ZmMsg.chooserDescription $></div>
-		<div id='${id}_inputDivId'></div>
-		<div style='background-color:white; width:100%; overflow:auto' id='${id}_tagTreeDivId'></div>
-	</div>
+	<table cellpadding=0 cellspacing=0 border=0 width=100%>
+		<tr>
+			<td class='Label' colspan=2 id='${id}_folderDesc'></td>
+		</tr>
+		<tr>
+			<td colspan=2 id='${id}_folderTreeCell'></td>
+		</tr>
+	</table>
 </template>

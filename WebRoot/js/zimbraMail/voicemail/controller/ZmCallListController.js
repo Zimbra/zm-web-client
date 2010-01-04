@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -17,8 +19,9 @@ ZmCallListController = function(container, app) {
 	if (arguments.length == 0) { return; }
 	
 	ZmVoiceListController.call(this, container, app);
-    this._listeners[ZmOperation.CHECK_CALLS] = new AjxListener(this, this._refreshListener);
-
+    	this._listeners[ZmOperation.CHECK_CALLS] = new AjxListener(this, this._refreshListener);
+	this._listeners[ZmOperation.ADD_CALLER_FORWARD] = new AjxListener(this, this._addToForwardListener);
+	this._listeners[ZmOperation.ADD_CALLER_REJECT] = new AjxListener(this, this._addToRejectListener);
 }
 
 ZmCallListController.prototype = new ZmVoiceListController;
@@ -39,6 +42,11 @@ function() {
 	return ZmId.VIEW_CALL_LIST;
 };
 
+ZmCallListController.prototype._getItemType =
+function() {
+	return ZmItem.CALL;
+};
+
 ZmCallListController.prototype._createNewView = 
 function(view) {
 	return new ZmCallListView(this._container, this);
@@ -57,10 +65,14 @@ function() {
 
 ZmCallListController.prototype._getActionMenuOps =
 function() {
+	var list = [];
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		return [ZmOperation.CONTACT];
+		list.push(ZmOperation.CONTACT);
+		list.push(ZmOperation.SEP);
 	}
-	return null;
+	list.push(ZmOperation.ADD_CALLER_FORWARD);
+	list.push(ZmOperation.ADD_CALLER_REJECT);
+	return list;
 };
 
 ZmCallListController.prototype._initializeToolBar =
@@ -74,11 +86,16 @@ function(parent, num) {
 	ZmVoiceListController.prototype._resetOperations.call(this, parent, num);
 	if (parent) {
 		parent.enableAll(true);
-	}
-	var list = this.getList();
-	parent.enable(ZmOperation.PRINT, list && list.size());
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		parent.enable(ZmOperation.CONTACT, num == 1);
+	
+		var list = this.getList();
+		parent.enable(ZmOperation.PRINT, list && list.size());
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			parent.enable(ZmOperation.CONTACT, num == 1);
+		}
+		var items = this._listView[this._currentView].getSelection();
+		var canAdd = (items && items.length>0) && this._checkCanAddToList();
+		parent.enable(ZmOperation.ADD_CALLER_FORWARD, canAdd);
+		parent.enable(ZmOperation.ADD_CALLER_REJECT, canAdd);
 	}
 };
 
@@ -102,4 +119,50 @@ function(actionCode) {
 	return true;
 };
 
+ZmCallListController.prototype._getPhoneFromCombination = 
+function(selection, errors) {
+	var phoneFromCombination = {};
+	
+	var compareFunction = function() {
+		return ZmPhone.calculateName(this.getDisplay());
+	}
+	
+	for (var i=0; i<selection.length; i++) {
+		var call = selection[i];	
+		var phone = call.getPhone();
+		var contact = call.getCallingParty(this._getView()._getCallType() == ZmVoiceFolder.PLACED_CALL ? ZmVoiceItem.TO : ZmVoiceItem.FROM);
+		var number = ZmPhone.calculateName(contact.getDisplay());
+
+		if (phone.validate(number, errors)) {
+			if (!phoneFromCombination[number])
+				phoneFromCombination[number] = {phone: phone, addFrom: new AjxVector()};
+			
+			if (!phoneFromCombination[number].addFrom.containsLike(contact, compareFunction))
+				phoneFromCombination[number].addFrom.add(contact);
+		}
+	}
+	return phoneFromCombination;
+}
+
+ZmCallListController.prototype._checkCanAddToList = 
+function() {
+	var selection = this._getView().getSelection();
+	if (AjxUtil.isArray(selection)) {
+		for (var i=0; i<selection.length; i++) {
+			var voicemail = this._getView().getSelection()[i];
+			if (voicemail) {
+				var phone = voicemail.getPhone(); // ZmPhone
+				if (phone) {
+					var contact = voicemail.getCallingParty(this._getView()._getCallType() == ZmVoiceFolder.PLACED_CALL ? ZmVoiceItem.TO : ZmVoiceItem.FROM);
+					if (contact) {
+						var number = ZmPhone.calculateName(contact.getDisplay());
+						if (phone.validate(number, []))
+							return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
 

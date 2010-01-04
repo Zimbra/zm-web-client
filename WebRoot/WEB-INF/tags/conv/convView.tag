@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -24,7 +8,6 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <app:certifiedMessage var="reqHdr"/>
-    
     <fmt:message var="emptyFragment" key="fragmentIsEmpty"/>
     <fmt:message var="emptySubject" key="noSubject"/>
     <c:set var="csi" value="${param.csi}"/>
@@ -36,20 +19,14 @@
     <c:if test="${empty csi}">
         <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
         <c:if test="${csi ge 0}">
-            <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
-            <c:if test="${not empty message.requestHeader}">
-                <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>                
-            </c:if>
+            <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}" requestHeaders="${reqHdr}"/>
         </c:if>
     </c:if>
     <c:if test="${message eq null}">
         <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
             <c:set var="csi" value="0"/>
         </c:if>
-        <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
-        <c:if test="${not empty message.requestHeader}">
-            <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>            
-        </c:if>
+        <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}" requestHeaders="${reqHdr}"/>
     </c:if>
 
     <%-- blah, optimize this later --%>
@@ -70,11 +47,11 @@
 <c:set var="ads" value='${message.subject} ${message.fragment}'/>
 
 <app:view mailbox="${mailbox}" title="${message.subject}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
-    <zm:currentResultUrl var="currentUrl" value="search" action="${param.action}" cid="${convSummary.id}" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
+    <zm:currentResultUrl var="currentUrl" value="search" action="view" cid="${convSummary.id}" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
 
     <SCRIPT TYPE="text/javascript">
         <!--
-        var zrc = ${empty context.searchResult ? 0 : context.searchResult.size };
+        var zrc = ${context.searchResult.size};
         var zsr = ${zm:cookInt(selectedRow, 0)};
         var zss = function(r,s) {
             var e = document.getElementById("R"+r);
@@ -157,7 +134,7 @@
                                     <table width="100%" cellpadding="1" cellspacing="0">
                                         <tr>
                                             <td>
-                                                <app:img altkey='ALT_CONVERSATION' src="startup/ImgConversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}</span>
+                                                <app:img altkey='ALT_CONVERSATION' src="mail/ImgConversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}</span>
                                             </td>
                                             <td align="right">
                                                 <span class='Tags'>
@@ -192,21 +169,20 @@
                                                 </c:if>
                                                 <th class='MsgStatusImg' nowrap>&nbsp;
                                                 <th width="10%" nowrap>
-                                                    <zm:currentResultUrl var="fromSortUrl" value="search" action="${param.action}" context="${context}" csi="${param.csi}" css="${param.css eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
+                                                    <zm:currentResultUrl var="fromSortUrl" value="search" action="view" context="${context}" csi="${param.csi}" css="${param.css eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
                                                 <a href="${fn:escapeXml(fromSortUrl)}"><fmt:message key="from"/></a>
                                                 <th class='Img' nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                                                 <th nowrap><fmt:message key="fragment"/>
                                                 <th width="3%" nowrap><fmt:message key="folder"/>
                                                 <th width="3%" nowrap><fmt:message key="size"/>
                                                 <th width="2%" nowrap>
-                                                    <zm:currentResultUrl var="dateSortUrl" value="search" action="${param.action}" context="${context}" csi="${param.csi}" css="${param.css eq 'dateDesc' ? 'dateAsc' : 'dateDesc'}"/>
+                                                    <zm:currentResultUrl var="dateSortUrl" value="search" action="view" context="${context}" csi="${param.csi}" css="${param.css eq 'dateDesc' ? 'dateAsc' : 'dateDesc'}"/>
                                                 <a href="${fn:escapeXml(dateSortUrl)}"><fmt:message key="received"/></a>
                                             </tr>
                                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
-                                                <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='${param.action}' context="${context}"
+                                                <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='view' context="${context}"
                                                                      cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-                                                <zm:currentResultUrl var="msgSepUrl" value="search" action="${param.action}" context="${context}"
-                                                                         cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="message" sc=""/>
+
                                                 <c:if test="${empty selectedRow and hit.id eq message.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
                                                 <c:set var="aid" value="A${hit.id}"/>
@@ -226,24 +202,19 @@
                                                         <c:set var="sender" value="${hit.messageHit.displaySender}"/>${fn:escapeXml(empty sender ? unknownSender : sender)}
                                                     </td>
                                                     <td class='Img' ><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
-                                                    <td><%-- allow this column to wrap --%>
-                                                        <c:choose>
-                                                            <c:when test="${hit.id == message.id}">
-                                                            <a id="${aid}" href="${fn:escapeXml(msgSepUrl)}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
+                                                    <td ><%-- allow this column to wrap --%>
+                                                        <a id="${aid}" href="${fn:escapeXml(msgUrl)}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
+                                                        <c:if test="${hit.id == message.id}">
                                                             <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                             <c:if test="${messCursor.hasPrev}">
-                                                                <zm:currentResultUrl var="prevMsgUrl" value="search" action='${param.action}' context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
+                                                                <zm:currentResultUrl var="prevMsgUrl" value="search" action='view' context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
                                                                 <a href="${fn:escapeXml(prevMsgUrl)}" id="PREV_ITEM"></a>
                                                             </c:if>
                                                             <c:if test="${messCursor.hasNext}">
-                                                                <zm:currentResultUrl var="nextMsgUrl" value="search"  action="${param.action}" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
+                                                                <zm:currentResultUrl var="nextMsgUrl" value="search"  action="view" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
                                                                 <a href="${fn:escapeXml(nextMsgUrl)}" id="NEXT_ITEM"></a>
                                                             </c:if>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <a id="${aid}" href="${fn:escapeXml(msgUrl)}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
-                                                        </c:otherwise>
-                                                        </c:choose>
+                                                        </c:if>
                                                     </td>
                                                     <td nowrap>${fn:escapeXml(zm:getFolderName(pageContext, hit.messageHit.folderId))}</td>
                                                     <td nowrap>${fn:escapeXml(zm:displaySize(pageContext, hit.messageHit.size))}</td>
@@ -255,12 +226,12 @@
                                 </td>
                             </tr>
                                 <c:set var="extImageUrl" value=""/>
-                            <c:if test="${empty param.xim and empty message.requestHeader}">
-                                <zm:currentResultUrl var="extImageUrl" value="search" action="${param.action}" context="${context}"
+                            <c:if test="${empty param.xim}">
+                                <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}"
                                                      cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}" xim="1"/>
                             </c:if>
                                 <zm:currentResultUrl var="composeUrl" value="search" context="${context}" id="${message.id}"
-                                                     action="compose" paction="${param.action}" cid="${convSearchResult.conversationSummary.id}" cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}"/>
+                                                     action="compose" paction="view" cid="${convSearchResult.conversationSummary.id}" cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}"/>
                                <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${message.id}"/>
 
                             <tr>

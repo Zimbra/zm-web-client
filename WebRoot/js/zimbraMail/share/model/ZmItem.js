@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,34 +11,28 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
 /**
- * @overview
- * 
- * This file defines an item.
- */
-
-/**
+ * Creates an item of the given type.
+ * @constructor
  * @class
  * An item is a piece of data that may contain user content. Most items are taggable. Currently,
  * the following things are items: conversation, message, attachment, appointment, and contact.
- * <br/>
- * <br/>
+ * <p>
  * An item typically appears in the context of a containing list. Its event handling
  * is generally handled by the list so we avoid having the same listeners on each item. If we
  * create a context where an item stands alone outside a list context, then the item will have
- * its own listeners and do its own notification handling.
+ * its own listeners and do its own notification handling.</p>
  *
  * @author Conrad Damon
  * 
- * @param {constant}	type		type of object (conv, msg, etc)
- * @param {int}			id			the unique id
- * @param {ZmList}		list		a list that contains this item
- * @param {Boolean}		noCache		if <code>true</code>, do not cache this item
- * 
- * @extends		ZmModel
+ * @param type		[constant]		type of object (conv, msg, etc)
+ * @param id		[int]			unique ID
+ * @param list		[ZmList]		list that contains this item
+ * @param noCache	[boolean]*		if true, do not cache this item
  */
 ZmItem = function(type, id, list, noCache) {
 
@@ -52,10 +47,6 @@ ZmItem = function(type, id, list, noCache) {
 	this.tagHash = {};
 	this.folderId = 0;
 
-	// if this is a shared/remote folder, cache the account it belongs to
-	var parsed = (appCtxt.multiAccounts) ? ZmOrganizer.parseId(id) : null;
-	this.account = parsed && parsed.account;
-
 	if (id && !noCache) {
 		appCtxt.cacheSet(id, this);
 	}
@@ -67,12 +58,10 @@ ZmItem.prototype.constructor = ZmItem;
 
 ZmItem.APP 				= {};	// App responsible for item
 ZmItem.MSG_KEY 			= {};	// Type names
-ZmItem.PLURAL_MSG_KEY 	= {};	// msg key for plural of item name
 ZmItem.ICON 			= {};	// Representative icons
 ZmItem.RESULTS_LIST 	= {};	// Function for creating search results list
 
 // fields that can be part of a displayed item
-ZmItem.F_ACCOUNT		= ZmId.FLD_ACCOUNT;
 ZmItem.F_ATTACHMENT		= ZmId.FLD_ATTACHMENT;
 ZmItem.F_CAPACITY		= ZmId.FLD_CAPACITY;
 ZmItem.F_COMPANY		= ZmId.FLD_COMPANY;
@@ -88,18 +77,15 @@ ZmItem.F_HOME_PHONE		= ZmId.FLD_HOME_PHONE;
 ZmItem.F_ID				= ZmId.FLD_ID;
 ZmItem.F_INDEX			= ZmId.FLD_INDEX;
 ZmItem.F_ITEM_ROW		= ZmId.FLD_ITEM_ROW;
-ZmItem.F_ITEM_ROW_3PANE	= ZmId.FLD_ITEM_ROW_3PANE;
 ZmItem.F_LOCATION		= ZmId.FLD_LOCATION;
 ZmItem.F_NAME			= ZmId.FLD_NAME;
 ZmItem.F_NOTES			= ZmId.FLD_NOTES;
 ZmItem.F_PARTICIPANT	= ZmId.FLD_PARTICIPANT;
 ZmItem.F_PCOMPLETE		= ZmId.FLD_PCOMPLETE;
 ZmItem.F_PRIORITY		= ZmId.FLD_PRIORITY;
-ZmItem.F_RECURRENCE		= ZmId.FLD_RECURRENCE;
 ZmItem.F_SELECTION		= ZmId.FLD_SELECTION;
 ZmItem.F_SELECTION_CELL	= ZmId.FLD_SELECTION_CELL;
 ZmItem.F_SIZE			= ZmId.FLD_SIZE;
-ZmItem.F_SORTED_BY		= ZmId.FLD_SORTED_BY;	// placeholder for 3-pane view
 ZmItem.F_STATUS			= ZmId.FLD_STATUS;
 ZmItem.F_SUBJECT		= ZmId.FLD_SUBJECT;
 ZmItem.F_TAG			= ZmId.FLD_TAG;
@@ -114,91 +100,58 @@ ZmItem.SOAP_CMD = {};
 ZmItem.TAGS_FIELD = 1;
 
 // Item flags
-ZmItem.FLAG_ATTACH				= "a";
-ZmItem.FLAG_FLAGGED				= "f";
-ZmItem.FLAG_FORWARDED			= "w";
-ZmItem.FLAG_ISDRAFT 			= "d";
-ZmItem.FLAG_ISSENT				= "s";
-ZmItem.FLAG_READ_RECEIPT_SENT	= "n";
-ZmItem.FLAG_REPLIED				= "r";
-ZmItem.FLAG_UNREAD				= "u";
-ZmItem.FLAG_LOW_PRIORITY		= "?";
-ZmItem.FLAG_HIGH_PRIORITY		= "!";
-
-ZmItem.ALL_FLAGS = [
-	ZmItem.FLAG_FLAGGED,
-	ZmItem.FLAG_ATTACH,
-	ZmItem.FLAG_UNREAD,
-	ZmItem.FLAG_REPLIED,
-	ZmItem.FLAG_FORWARDED,
-	ZmItem.FLAG_ISSENT,
-	ZmItem.FLAG_READ_RECEIPT_SENT,
-	ZmItem.FLAG_ISDRAFT,
-	ZmItem.FLAG_HIGH_PRIORITY,
-	ZmItem.FLAG_LOW_PRIORITY
-];
+ZmItem.FLAG_ATTACH		= "a";
+ZmItem.FLAG_FLAGGED		= "f";
+ZmItem.FLAG_FORWARDED	= "w";
+ZmItem.FLAG_ISDRAFT 	= "d";
+ZmItem.FLAG_ISSENT		= "s";
+ZmItem.FLAG_REPLIED		= "r";
+ZmItem.FLAG_UNREAD		= "u";
+ZmItem.FLAG_LOW_PRIORITY = "?";
+ZmItem.FLAG_HIGH_PRIORITY = "!";
+ZmItem.ALL_FLAGS = [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH, ZmItem.FLAG_UNREAD,
+					ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_ISSENT, ZmItem.FLAG_ISDRAFT,
+                    ZmItem.FLAG_HIGH_PRIORITY, ZmItem.FLAG_LOW_PRIORITY];
 
 // Map flag to item property
 ZmItem.FLAG_PROP = {};
-ZmItem.FLAG_PROP[ZmItem.FLAG_ATTACH]			= "hasAttach";
-ZmItem.FLAG_PROP[ZmItem.FLAG_FLAGGED]			= "isFlagged";
-ZmItem.FLAG_PROP[ZmItem.FLAG_FORWARDED]			= "isForwarded";
-ZmItem.FLAG_PROP[ZmItem.FLAG_ISDRAFT] 			= "isDraft";
-ZmItem.FLAG_PROP[ZmItem.FLAG_ISSENT]			= "isSent";
-ZmItem.FLAG_PROP[ZmItem.FLAG_READ_RECEIPT_SENT]	= "readReceiptSent";
-ZmItem.FLAG_PROP[ZmItem.FLAG_REPLIED]			= "isReplied";
-ZmItem.FLAG_PROP[ZmItem.FLAG_UNREAD]			= "isUnread";
-ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]		= "isLowPriority";
-ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]		= "isHighPriority";
+ZmItem.FLAG_PROP[ZmItem.FLAG_ATTACH]	= "hasAttach";
+ZmItem.FLAG_PROP[ZmItem.FLAG_FLAGGED]	= "isFlagged";
+ZmItem.FLAG_PROP[ZmItem.FLAG_FORWARDED]	= "isForwarded";
+ZmItem.FLAG_PROP[ZmItem.FLAG_ISDRAFT] 	= "isDraft";
+ZmItem.FLAG_PROP[ZmItem.FLAG_ISSENT]	= "isSent";
+ZmItem.FLAG_PROP[ZmItem.FLAG_REPLIED]	= "isReplied";
+ZmItem.FLAG_PROP[ZmItem.FLAG_UNREAD]	= "isUnread";
+ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]	= "isLowPriority";
+ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]	= "isHighPriority";
 
 // DnD actions this item is allowed
-
-/**
- * Defines the "move" action.
- * 
- * @see		#getDefaultDndAction
- */
 ZmItem.DND_ACTION_MOVE = 1 << 0;
-/**
- * Defines the "copy" action.
- * 
- * @see		#getDefaultDndAction
- */
 ZmItem.DND_ACTION_COPY = 1 << 1;
-/**
- * Defines the "move & copy" action.
- * 
- * @see		#getDefaultDndAction
- */
 ZmItem.DND_ACTION_BOTH = ZmItem.DND_ACTION_MOVE | ZmItem.DND_ACTION_COPY;
 
-/**
- * Defines the notes separator which is used by items
- * (such as calendar or share invites) that have notes.
- * 
- */
+// Used by items (such as calendar or share invites) that have notes
 ZmItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
 
 /**
- * Registers an item and stores information about the given item type.
+ * Stores information about the given item type.
  *
- * @param {constant}	item		the item type
- * @param {constant}	app			the app that handles this item type
- * @param {String}		nameKey		the message key for item name
- * @param {String}		pluralameKey	the message key for plural of item name
- * @param {String}		icon			the name of item icon class
- * @param {String}		soapCmd		the SOAP command for acting on this item
- * @param {String}		itemClass		the name of class that represents this item
- * @param {String}		node			the SOAP response node for this item
- * @param {constant}	organizer		the associated organizer
- * @param {String}		searchType		the associated type in SearchRequest
- * @param {function}	resultsList		the function that returns a {ZmList} for holding search results of this type
+ * @param item			[constant]	item type
+ * @param app			[constant]	app that handles this item type
+ * @param nameKey		[string]	msg key for item name
+ * @param icon			[string]	name of item's icon class
+ * @param soapCmd		[string]	SOAP command for acting on this item
+ * @param itemClass		[string]	name of class that represents this item
+ * @param node			[string]	SOAP response node for this item
+ * @param organizer		[constant]	associated organizer
+ * @param searchType	[string]	associated type in SearchRequest
+ * @param resultsList	[function]	function that returns a ZmList for
+ * 									holding search results of this type
  */
 ZmItem.registerItem =
 function(item, params) {
 	if (params.app)				{ ZmItem.APP[item]					= params.app; }
 	if (params.nameKey)			{ ZmItem.MSG_KEY[item]				= params.nameKey; }
-	if (params.pluralNameKey)	{ ZmItem.PLURAL_MSG_KEY[item]		= params.pluralNameKey; }
 	if (params.icon)			{ ZmItem.ICON[item]					= params.icon; }
 	if (params.soapCmd)			{ ZmItem.SOAP_CMD[item]				= params.soapCmd; }
 	if (params.itemClass)		{ ZmList.ITEM_CLASS[item]			= params.itemClass; }
@@ -220,10 +173,7 @@ function(item, params) {
 };
 
 /**
-* Gets an item id by taking a normalized id (or an item id) and returning the item id.
-* 
-* @param	{String}	id		the normalized id
-* @return	{String}	the item id
+* Takes a normalized id or an item id, and returns the item id.
 */
 ZmItem.getItemId =
 function(id) {
@@ -238,23 +188,15 @@ function(id) {
 };
 
 // abstract methods
-/**
- * Creates an item.
- * 
- * @param	{Hash}	args		the arguments
- */
 ZmItem.prototype.create = function(args) {};
-/**
- * Modifies an item.
- * 
- * @param	{Hash}	mods		the arguments
- */
 ZmItem.prototype.modify = function(mods) {};
+ZmItem.prototype.getPrintHtml = function(preferHtml, callback) {};
 
 /**
-* Gets the item by id.
+* Returns this item if it has the given ID. Used by the app controller for
+* handling notifications.
 *
-* @param {String}	id		an item id
+* @param id		an item ID
 */
 ZmItem.prototype.getById =
 function(id) {
@@ -275,11 +217,6 @@ function() {
 	this.tagHash = {};
 };
 
-/**
- * Caches the item.
- * 
- * @return	{Boolean}	<code>true</code> if the item is placed into cache; <code>false</code> otherwise
- */
 ZmItem.prototype.cache =
 function(){
   if(this.id){
@@ -290,43 +227,29 @@ function(){
 };
 
 /**
- * Checks if the item has a given tag.
- * 
- * @param {String}		tagId		a numeric tag id to check
- * @return	{Boolean}	<code>true</code> is this item has the given tag.
- */
+* Returns true is this item has the given tag.
+*
+* @param tagId		a numeric tag ID
+*/
 ZmItem.prototype.hasTag =
 function(tagId) {
 	return (this.tagHash[tagId] == true);
 };
 
 /**
-* Gets the folder id that contains this item, if available.
-* 
-* @return	{String}	the folder id or <code>null</code> for none
+* Returns ID of the folder that contains this item, if available.
 */
 ZmItem.prototype.getFolderId =
 function() {
 	return this.folderId;
 };
 
-/**
- * @deprecated
- * Use getRestUrl
- * 
- * @private
- * @see		#getRestUrl
- */
+/** @deprecated Use getRestUrl. */
 ZmItem.prototype.getUrl =
 function() {
 	return this.getRestUrl();
 };
 
-/**
- * Gets the rest url for this item.
- * 
- * @return	{String}	the url
- */
 ZmItem.prototype.getRestUrl =
 function() {
 	// return REST URL as seen by server
@@ -337,48 +260,39 @@ function() {
 	// if server doesn't tell us what URL to use, do our best to generate
 	var organizerType = ZmOrganizer.ITEM_ORGANIZER[this.type];
 	var organizer = appCtxt.getById(this.folderId);
-	var url = organizer
-		? ([organizer.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(this.name)].join(""))
-		: null;
+	var url = [
+		organizer.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(this.name)
+	].join("");
 
-	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
+	DBG.println("NO REST URL FROM SERVER. GENERATED URL: " + url);
 
 	return url;
 };
 
 /**
-* Gets the appropriate tag image info for this item.
-* 
-* @return	{String}	the tag image info
+* Returns the ID of the appropriate tag image for this item.
 */
 ZmItem.prototype.getTagImageInfo =
 function() {
 	var tagImageInfo;
-
-	var searchAll = appCtxt.getSearchController().searchAllAccounts;
-	if (!this.tags.length || (!searchAll && this.isShared())) {
+	// bug fix #23317 - dont show tag info for shared items until bug 5210 is fixed
+	if (!this.tags.length || this.isShared()) {
 		tagImageInfo = "Blank_16";
-	}
-	else if (this.tags.length == 1) {
-		var tagId = (this.account && !this.account.isMain)
-			? ([this.account.id, this.tags[0]].join(":"))
-			: (ZmOrganizer.getSystemId(this.tags[0]));
-		var tag = appCtxt.getById(tagId);
-		tagImageInfo = tag ? ZmTag.COLOR_ICON[tag.color] : "Blank_16";
-	}
-	else {
+	} else if (this.tags.length == 1) {
+		var tag = appCtxt.getById(ZmOrganizer.getSystemId(this.tags[0]));
+		var color = tag ? tag.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
+		tagImageInfo = ZmTag.COLOR_ICON[color];
+	} else {
 		tagImageInfo = "TagStack";
 	}
-
 	return tagImageInfo;
 };
 
 /**
-* Gets the default action to use when dragging this item. This method
+* Returns what the default action should be when dragging this item. This method
 * is meant to be overloaded for items that are read-only and can only be copied.
 *
-* @param {Boolean}		forceCopy		If set, default DnD action is a copy
-* @return	{Object}	the action
+* @param forceCopy		[Boolean]*		If set, default DnD action is a copy
 */
 ZmItem.prototype.getDefaultDndAction =
 function(forceCopy) {
@@ -388,10 +302,8 @@ function(forceCopy) {
 };
 
 /**
-* Checks if this item is read-only. This method should be
-* overloaded by the derived object to determine what "read-only" means.
-* 
-* @return	{Boolean}	the read-only status
+* This method should be overloaded by the derived object to determine what
+* "read-only" means.
 */
 ZmItem.prototype.isReadOnly =
 function() {
@@ -399,9 +311,7 @@ function() {
 };
 
 /**
- * Checks if this item is shared.
- * 
- * @return	{Boolean}	<code>true</code> if this item is shared (remote)
+ * Returns true if this item is shared (remote).
  */
 ZmItem.prototype.isShared =
 function() {
@@ -421,7 +331,6 @@ function() {
 
 /**
 * Handles a delete notification.
-* 
 */
 ZmItem.prototype.notifyDelete =
 function() {
@@ -434,7 +343,7 @@ function() {
 /**
 * Handles a modification notification.
 *
-* @param {Object}	obj		the item with the changed attributes/content
+* @param obj		item with the changed attributes/content
 */
 ZmItem.prototype.notifyModify =
 function(obj) {
@@ -447,74 +356,45 @@ function(obj) {
 	if (obj.f != null) {
 		var flags = this._getFlags();
 		var origFlags = {};
-		for (var i = 0; i < flags.length; i++) {
+		for (var i = 0; i < flags.length; i++)
 			origFlags[flags[i]] = this[ZmItem.FLAG_PROP[flags[i]]];
-		}
 		this._parseFlags(obj.f);
 		var changedFlags = [];
 		for (var i = 0; i < flags.length; i++) {
 			var on = this[ZmItem.FLAG_PROP[flags[i]]];
-			if (origFlags[flags[i]] != on) {
+			if (origFlags[flags[i]] != on)
 				changedFlags.push(flags[i]);
-			}
 		}
-		if (changedFlags.length) {
-			this._notify(ZmEvent.E_FLAGS, {flags: changedFlags});
-		}
+		this._notify(ZmEvent.E_FLAGS, {flags: changedFlags});
 	}
 	if (obj.l != null && obj.l != this.folderId) {
-		var details = {oldFolderId:this.folderId};
 		this.moveLocal(obj.l);
 		if (this.list) {
 			this.list.moveLocal([this], obj.l);
 		}
-		this._notify(ZmEvent.E_MOVE, details);
+		this._notify(ZmEvent.E_MOVE);
 	}
 };
 
 // Local change handling
 
 /**
- * Applies the given flag change to this item by setting a boolean property.
- *
- * @param {constant}	flag	the flag that changed
- * @param {Boolean}	on		<code>true</code> if the flag is now set
- */
+* Applies the given flag change to this item.
+*
+* @param flag		the flag that changed
+* @param on			true if the flag is now set
+*/
 ZmItem.prototype.flagLocal =
 function(flag, on) {
 	this[ZmItem.FLAG_PROP[flag]] = on;
 };
 
 /**
- * Sets the given flag change to this item. Both the flags string and the
- * flag properties are affected.
- *
- * @param {constant}	flag	the flag that changed
- * @param {Boolean}	on	<code>true</code> if the flag is now set
- *
- * @return	{String}		the new flags string
- */
-ZmItem.prototype.setFlag =
-function(flag, on) {
-	this.flagLocal(flag, on);
-	var flags = this.flags || "";
-	if (on && flags.indexOf(flag) == -1) {
-		flags = flags + flag;
-	} else if (!on && flags.indexOf(flag) != -1) {
-		flags = flags.replace(flag, "");
-	}
-	this.flags = flags;
-
-	return flags;
-};
-
-/**
- * Adds or removes the given tag for this item.
- *
- * @param {Object}		tagId		a numeric tag ID
- * @param {Boolean}		doTag		<code>true</code> if tag is being added; <code>false</code> if it is being removed
- * @return	{Boolean}	<code>true</code> to notify
- */
+* Adds or removes the given tag for this item.
+*
+* @param tagId		a numeric tag ID
+* @param doTag		true if tag is being added, false if it is being removed
+*/
 ZmItem.prototype.tagLocal =
 function(tagId, doTag) {
 	var bNotify = false;
@@ -538,10 +418,6 @@ function(tagId, doTag) {
 	return bNotify;
 };
 
-/**
- * Removes all tags.
- * 
- */
 ZmItem.prototype.removeAllTagsLocal =
 function() {
 	this.tags = [];
@@ -551,30 +427,15 @@ function() {
 };
 
 /**
-* Deletes local, in case an item wants to do something while being deleted.
+* Here for completeness, in case an item wants to do something while being deleted.
 */
 ZmItem.prototype.deleteLocal = function() {};
 
-/**
- * Moves the item.
- * 
- * @param	{String}	folderId
- * @param	{AjxCallback}	callback		the callback
- * @param	{AjxCallback}	errorCallback	the callback on error
- * @return	{Object}		the result of the move
- */
-ZmItem.prototype.move =
-function(folderId, callback, errorCallback) {
+ZmItem.prototype.move = function(folderId, callback, errorCallback) {
 	return ZmItem.move(this.id, folderId, callback, errorCallback);
 };
 
-/**
- * Moves the item.
- * 
- * @return	{Object}		the result of the move
- */
-ZmItem.move =
-function(itemId, folderId, callback, errorCallback, accountName) {
+ZmItem.move = function(itemId, folderId, callback, errorCallback) {
 	var json = {
 		ItemActionRequest: {
 			_jsns: "urn:zimbraMail",
@@ -590,8 +451,7 @@ function(itemId, folderId, callback, errorCallback, accountName) {
 		jsonObj:		json,
 		asyncMode:		Boolean(callback),
 		callback:		callback,
-		errorCallback:	errorCallback,
-		accountName:	accountName
+		errorCallback:	errorCallback
 	};
 	return appCtxt.getAppController().sendRequest(params);
 };
@@ -599,18 +459,14 @@ function(itemId, folderId, callback, errorCallback, accountName) {
 /**
 * Updates the folder for this item.
 *
-* @param {String}		folderId		the new folder ID
+* @param folderId		the new folder ID
 */
 ZmItem.prototype.moveLocal =
 function(folderId) {
 	this.folderId = folderId;
 };
 
-/**
- * Takes a comma-separated list of tag IDs and applies the tags to this item.
- * 
- * @private
- */
+// Takes a comma-separated list of tag IDs and applies the tags to this item.
 ZmItem.prototype._parseTags =
 function(str) {	
 	this.tags = [];
@@ -625,14 +481,9 @@ function(str) {
 	}
 };
 
-/**
- * Takes a string of flag chars and applies them to this item.
- * 
- * @private
- */
+// Takes a string of flag chars and applies them to this item.
 ZmItem.prototype._parseFlags =
 function(str) {
-	this.flags = str;
 	for (var i = 0; i < ZmItem.ALL_FLAGS.length; i++) {
 		var flag = ZmItem.ALL_FLAGS[i];
 		var on = (str && (str.indexOf(flag) != -1)) ? true : false;
@@ -642,11 +493,7 @@ function(str) {
 
 // Listener notification
 
-/**
- * Notify the list as well as this item.
- * 
- * @private
- */
+// notify the list as well as this item
 ZmItem.prototype._notify =
 function(event, details) {
 	ZmModel.prototype._notify.call(this, event, details);
@@ -661,11 +508,9 @@ function(event, details) {
 	}
 };
 
-/**
- * Returns a list of flags that apply to this type of item.
- * 
- * @private
- */
+/*
+* Returns a list of flags that apply to this type of item.
+*/
 ZmItem.prototype._getFlags =
 function() {
 	return [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH];

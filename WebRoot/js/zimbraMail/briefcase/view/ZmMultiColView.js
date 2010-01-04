@@ -1,39 +1,44 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
+ * Copyright (C) 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
-ZmMultiColView = function(parent, controller, dropTgt) {
+ZmMultiColView = 	function(parent, className, posStyle, controller, dropTgt) {
 
-	DwtComposite.call(this, {parent:parent, className:"ZmMultiColView", posStyle:Dwt.ABSOLUTE_STYLE});
+	if (arguments.length == 0) return;
+
+	className = className || "ZmMultiColView";
+	posStyle = posStyle || Dwt.ABSOLUTE_STYLE;
+	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
 
 	this._controller = controller;
-	this.view = ZmId.VIEW_BRIEFCASE_COLUMN;
 
-	// each column has a TD which contains a DIV which contains a ZmColListView
-	this._divIds	= [];	// HTML ID of containing DIV
-	this._divs		= [];	// containing DIV
-	this._listView	= [];	// ZmColListView
-	this._divCache	= [];	// unused column DIVs
-	this._ctlrList	= [];	// ZmList associated with a list view
+	this._colIds = [];
+	this._colDivs = [];
+	this._listPart = [];
+	this._colIndex = 0;
+	this._currentListView = null;
+	this._noOfCol = 0;
+	this._cellCache = [];
 
-	this._nextIndex		= 0;	// index for new column (also number of columns)
-	this._numDivs		= 0;	// total number of column DIVs (including unused)
-	this._curListIndex	= 0;	// index of current list column
-	this._curListView	= null;	// list view with current focus
+	var folderTree = appCtxt.getFolderTree();
+	if (folderTree) {
+		folderTree.addChangeListener(new AjxListener(this, this._fileTreeListener));
+	}
 
-	this.addListColumn(dropTgt);
-	this._curListView = this._listView[0];
+	this._initialize(controller, dropTgt);
 
 	//override the default style set on DwtControl module
 	var el = this.getHtmlElement();
@@ -47,36 +52,67 @@ ZmMultiColView.prototype.toString = function() {
 	return "ZmMultiColView";
 };
 
-// The next few funcs are passed through to the first list view
 ZmMultiColView.prototype.getTitle =
 function() {
-	return this._listView[0].getTitle();
+	//TODO: title is the name of the current folder
+	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
-ZmMultiColView.prototype.processUploadFiles =
+ZmMultiColView.prototype.getController =
 function() {
-	return this._listView[0].processUploadFiles();
+	return this._controller;
 };
 
-ZmMultiColView.prototype.uploadFiles =
-function() {
-	return this._listView[0].uploadFiles();
+ZmMultiColView.prototype._fileTreeListener =
+function(ev, treeView) {
+	if (!this._rootFolder)
+		return;
+
+	var fields = ev.getDetail("fields");
+	if (ev.event == ZmEvent.E_MODIFY && fields && fields[ZmOrganizer.F_COLOR]) {
+		var organizers = ev.getDetail("organizers");
+		if (!organizers && ev.source)
+			organizers = [ev.source];
+
+		for (var i = 0; i < organizers.length; i++) {
+			var organizer = organizers[i];
+			var folderId = this._rootFolder.isShared()
+				? appCtxt.getById(this._rootFolder.folderId).id
+				: this._rootFolder.folderId;
+
+			if (organizer.id == folderId)
+				this._setHeaderInfo();
+		}
+	}
+};
+
+ZmMultiColView.prototype._setHeaderInfo =
+function(clear) {
+
+};
+
+
+ZmMultiColView.prototype._initialize =
+function(controller, dropTgt) {
+	var div = this.addColumn(dropTgt);
+	this.setCurrentListView(this._listPart[0]);
 };
 
 ZmMultiColView.prototype.getListView =
 function(idx) {
-	return (idx >= 0)? this._listView[idx] : this._listView[0];
+	return (idx >=0 )? this._listPart[idx] : this._listPart[0];
 };
 
-// Adds a column that displays a list of items
-ZmMultiColView.prototype.addListColumn =
+
+ZmMultiColView.prototype.addColumn =
 function(dropTgt) {
 
-	var idx = this._nextIndex++;
-	var divId = this._divIds[idx] = [this.view, "col", idx].join(DwtId.SEP);
+	var idx = this._colIndex++;
+	this._colIds[idx] = Dwt.getNextId();
 
 	var el = this.getHtmlElement();
-	if (!this._table) {
+
+	if(!this._table){
 		this._tableId = Dwt.getNextId();
 		el.innerHTML = ['<table cellpadding=0 cellspacing=0 id="',this._tableId,'"><tbody><tr></tr></tbody></table>'].join("");
 		this._table = document.getElementById(this._tableId);
@@ -85,90 +121,106 @@ function(dropTgt) {
 	}
 
 	var div = this.getColumnDiv();
-	div.id = this._divIds[idx];
-	this._divs[idx] = div;
+	div.id = this._colIds[idx];
 
-	var lv = this._listView[idx] = new ZmColListView(this, this._controller, dropTgt, idx);
-	lv.reparentHtmlElement(this._divIds[idx]);
+	this._colDivs[idx] = div;
+	this._listPart[idx] = new ZmColListView(this, this._controller, dropTgt, idx);
+	this._listPart[idx].reparentHtmlElement(this._colIds[idx]);
 
-	// so that scroll event gets handed to list view (div is its parent element and gets the event)
-	DwtControl.ALL_BY_ID[divId] = lv;
-
-	return lv;
+	return this._listPart[idx];
 };
 
-ZmMultiColView.prototype.removeListColumn =
+ZmMultiColView.prototype.removeColumn =
 function(idx) {
-	var div = this._divs[idx];
-	if (div && div.parentNode) {
-		this._nextIndex--;
+	var div = this._colDivs[idx];
+	if(div && div.parentNode) {
+		this._noOfCol--;
 
 		var cell = div.parentNode;
 		cell.removeChild(div);
 
-		if (this._row) {
+		if(this._row){
 			this._row.deleteCell(cell.cellIndex);
 		}
 
-		var lv = this._listView[idx];
-		if (lv) {
-			lv.dispose();
+		if(this._listPart[idx] && this._listPart[idx] == this._currentListView) {
+			this._currentListView = this._listPart[idx].getPreviousColumn();
 		}
-		delete this._divs[idx];
-		delete this._listView[idx];
+		delete this._colDivs[idx];
+		delete this._listPart[idx];
 	}
 	return idx;
 };
 
+//todo: proper deletion logic
 ZmMultiColView.prototype.removeChildColumns =
 function(idx) {
+	for(var i = idx+1;i<this._listPart.length;i++){
+		this.removeColumn(i);
+	}
 	this.clearFolderProps();
-	for (var i = idx + 1; i < this._listView.length; i++) {
-		this.removeListColumn(i);
+};
+
+ZmMultiColView.prototype.updateColumn =
+function(colView,folderId) {
+
+	if(colView != this._currentListView) return;
+
+	for(var i=0;i<this._colIndex;i++){
+		if(this._listPart[i]!=colView){
+			this._listPart[i].set(folderId);
+		}
 	}
 };
 
-// Set some props in the controller so that it considers the active column to
-// be a regular list view.
-ZmMultiColView.prototype.setCurrentListIndex =
-function(index) {
-
-	this._curListIndex = index;
-	this._curListView = this._listView[index];
-	this._controller._listView[this.view] = this._listView[index];
-	if (this._ctlrList[index]) {
-		this._controller._list = this._ctlrList[index];
-	}
+ZmMultiColView.prototype.setCurrentListView =
+function(colView) {
+	this._currentListView = colView;
 };
 
-ZmMultiColView.prototype.resetColumns =
+ZmMultiColView.prototype.getCurrentListView =
 function() {
-	this.removeChildColumns(0);
-	this.setCurrentListIndex(0);
+	return this._currentListView;
 };
 
 ZmMultiColView.prototype.expandFolder =
 function(folderId) {
+	var listView  = this.addColumn();
+	if(this._currentListView) {
+		this._currentListView.setNextColumn(listView);
+		listView.setPreviousColumn(this._currentListView);
+	}
+	this._currentListView = listView;
+	var callback = new AjxCallback(this,this.showFolderContents,[listView,folderId]);
+	this._controller.getItemsInFolder(folderId,callback);
+};
 
-	var listView = this.addListColumn();
-	this.setCurrentListIndex(listView._colIdx);
-	this._noReset = true;
-	listView.folderId = folderId;
-	this._controller._app.search(folderId, null, null, false, true);
+
+ZmMultiColView.prototype.showFolderContents =
+function(listView,folderId,items) {
+	listView.set(items/*folderId*/);
+	this._sizeChildren();
+	this.scrollToEnd();
 };
 
 ZmMultiColView.prototype.set =
-function(list) {
+function(folderId) {
+	var len = this._listPart.length;
+	var listView = null;
+	if(len == 0){
+		this._currentListView = listView = this.addColumn();
 
-	if (!this._curListView._itemsToAdd && !this._noReset) {
-		this.resetColumns();
-	} else {
-		this.removeChildColumns(this._curListIndex);
+	}else{
+		if(!this._controller.isRefreshing()){
+			this._currentListView  = listView = this._listPart[0];
+			this.removeChildColumns(0);
+		}else{
+			listView = this._currentListView;
+			this.removeChildColumns(listView.getColumnIndex());
+		}
 	}
-	this._noReset = false;
-	this._curListView.set(list);
-	this._ctlrList[this._curListIndex] = list;
-	this.setCurrentListIndex(this._curListIndex);
+	this._controller._listView[ZmId.VIEW_BRIEFCASE_COLUMN] = listView;
+	listView.set(folderId);
 };
 
 ZmMultiColView.prototype.showFileProps =
@@ -179,75 +231,79 @@ function(item) {
 	var el = this.getHtmlElement();
 
 	var div = this.getColumnDiv();
-	div.className = "ZmColListDiv ZmColListDivPad";
+	div.className = "ZmColListDiv  ZmColListDivPad";
 
-	var icon = "Img" + item.getIcon(true);
+	var contentType = item.contentType;
+	if(contentType && contentType.match(/;/)) {
+			contentType = contentType.split(";")[0];
+	}
+	var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
+	var icon = "Img" + ( mimeInfo ? mimeInfo.imageLarge : "UnknownDoc_48");
+
 	var briefcase = appCtxt.getById(item.folderId);
 	var path = briefcase ? briefcase.getPath() : "";
 
 	var name = item.name;
-	if (name.length > 20) {
+	if(name.length > 20){
 		name = name.substring(0,20) + "..";
 	}
 
-	var restURL = item.getRestUrl();
-	var originalRestURL = item.getRestUrl(false, true);
-
-	// commented for bug 32457 :: restURL = this._controller.getApp().fixCrossDomainReference(restUrl);
-	var fileLink = [ '<a href="', restURL, '" target="_blank">', name, '</a>' ].join("");
+	var restUrl = item.getRestUrl();
+	restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
+	var fileLink = [ '<a href="', restUrl, '" target="_blank">', name, '</a>' ].join("");
 
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
 
 	var prop = [
 		{name:ZmMsg.name, value:fileLink},
+		{name:ZmMsg.path, value:path},
+		{name:ZmMsg.size, value:AjxUtil.formatSize(item.size)},
+		{name:ZmMsg.created, value:dateFormatter.format(item.createDate)},
+		{name:ZmMsg.creator, value:item.creator},
+		{name:ZmMsg.modified, value:dateFormatter.format(item.modifyDate)},
+		{name:ZmMsg.modifier, value:item.modifier}
 	];
 
-    if (item.isRealFile() || item.isSlideDoc()) {
-        var actionLink;
-        if (item.isSlideDoc()) {
-            actionLink = [ '<a href="', originalRestURL, "?fmt=html&run=1", '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
-        } else {
-            actionLink = [ '<a href="', originalRestURL, "?disp=a", '" target="_blank">', ZmMsg.saveFile, '</a>' ].join("");
-        }
-        prop.push({name:ZmMsg.action, value:actionLink});
-    }
-
-	prop.push({name:ZmMsg.folder, value:path});
-	var mimeInfo = item.contentType ? ZmMimeTable.getInfo(item.contentType) : null;
-	if (mimeInfo) {
-		prop.push({name:ZmMsg.type, value:mimeInfo.desc});
-	}
-
-    prop = prop.concat([
-		{name:ZmMsg.size,		value:AjxUtil.formatSize(item.size)},
-		{name:ZmMsg.created,	value:dateFormatter.format(item.createDate)},
-		{name:ZmMsg.creator,	value:item.creator},
-		{name:ZmMsg.modified,	value:dateFormatter.format(item.modifyDate)},
-		{name:ZmMsg.modifier,	value:item.modifier}
-    ]);
-
-	var imgSrc = restURL.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.bmp$$/) ? restURL : null;
+	var imgSrc = restUrl.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.bmp$$/) ? restUrl : null;
 
 	var subs = {
-		imgSrc:			imgSrc,
-		icon:			icon,
-		previewId:		Dwt.getNextId(),
-		id:				Dwt.getNextId(),
-		fileProperties:	prop
+		imgSrc: imgSrc,
+		icon: icon,
+		previewId : Dwt.getNextId(),
+		id : Dwt.getNextId(),
+		fileProperties: prop
 	};
 
     div.innerHTML = AjxTemplate.expand("briefcase.Briefcase#file_properties", subs);
 
 	this._folderPropsDiv = div;
+
+	this._controller.updateCurrentFolder(item.folderId);
+	if(this._currentListView) {
+		this._currentListView.setNextColumn(null);
+	}
+
 	this._sizeChildren();
 	this.scrollToEnd();
 };
 
 ZmMultiColView.prototype.clearFolderProps =
 function() {
-	if (this._folderPropsDiv) {
+	//clear the listener : if added
+	if(this._folderPropsDiv){
 		this._folderPropsDiv.parentNode.removeChild(this._folderPropsDiv);
 		this._folderPropsDiv = null;
+		this._noOfCol--;
+	}
+};
+
+ZmMultiColView.prototype.getColumn =
+function(folderId){
+	for(var i in this._listPart){
+		var listView = this._listPart[i];
+		if(listView._folderId == folderId){
+			return listView;
+		}
 	}
 };
 
@@ -261,20 +317,20 @@ function(x, y, width, height) {
 ZmMultiColView.prototype._sizeChildren =
 function() {
 	var size = Dwt.getSize(this.getHtmlElement());
-	for (var i in this._divs) {
-		Dwt.setSize(this._divs[i], Dwt.DEFAULT, size.y);
+	for(var i in this._colDivs){
+		Dwt.setSize(this._colDivs[i],Dwt.DEFAULT,size.y);
 	}
-	for (var i in this._divCache) {
-		Dwt.setSize(this._divCache[i],Dwt.DEFAULT, size.y);
+	for(var i in this._cellCache){
+		Dwt.setSize(this._cellCache[i],Dwt.DEFAULT,size.y);
 	}
-	if (this._folderPropsDiv) {
-		Dwt.setSize(this._folderPropsDiv, Dwt.DEFAULT, size.y);
+	if(this._folderPropsDiv){
+		Dwt.setSize(this._folderPropsDiv,Dwt.DEFAULT,size.y);
 	}
 };
 
 ZmMultiColView.prototype.scrollToEnd =
 function() {
-	if (this._divCache.length > 0) { return; }
+	if(this._cellCache.length > 0) { return; }
 	var el = this.getHtmlElement();
 	el.scrollLeft = el.scrollWidth;
 };
@@ -282,35 +338,66 @@ function() {
 ZmMultiColView.prototype.getColumnDiv =
 function() {
 
-	if (!this._row) { return; }
+	if(!this._row) return;
 
 	var size = Dwt.getSize(this.getHtmlElement());
-	var limit = Math.max(Math.floor(size.x / 250), 4);
+	var limit = Math.max(Math.floor(size.x/250),4);
 
-	if (this._numDivs < limit) {
-		var neededCols = limit - this._numDivs;
-		for (var i = 0; i < neededCols; i++) {
-			this._divCache.push(this.createDiv());
+	if(this._noOfCol < limit){
+		var neededCols = limit-this._noOfCol;
+		for(var i=0;i<(neededCols);i++) {
+			var div = this.createDiv();
+			this._cellCache.push(div);
 		}
-		return this._divCache.shift();
-	} else if (this._divCache.length > 0) {
-		return this._divCache.shift();
-	} else {
-		return this.createDiv();
+		return this._cellCache.shift();
+
+	}else if(this._cellCache.length > 0){
+		return this._cellCache.shift();
+	}else{
+		var div = this.createDiv();
+		return div;
 	}
 };
 
 ZmMultiColView.prototype.createDiv =
 function() {
-
-	if (!this._row) { return; }
-
+	if(!this._row) return;
 	var cell = this._row.insertCell(this._row.cells.length);
 	cell.className = "ZmColListCell";
 	var div = document.createElement("div");
 	div.className = "ZmColListDiv";
 	cell.appendChild(div);
-	this._numDivs++;
-
+	this._noOfCol++;
 	return div;
 };
+
+//for ZimbraDnD to do make even more generic
+ZmMultiColView.prototype.processUploadFiles = function() {
+    var ulEle = document.getElementById('zdnd_ul');
+    var files = [];
+    if (ulEle);
+    {
+        for (var i = 0; i < ulEle.childNodes.length; i++)
+        {
+            var liEle = ulEle.childNodes[i];
+            var inputEle = liEle.childNodes[0];
+            if (inputEle.name != "_attFile_") continue;
+            if (!inputEle.value) continue;
+            var file = {
+                fullname: inputEle.value,
+                name: inputEle.value.replace(/^.*[\\\/:]/, "")
+            };
+            files.push(file);
+         }
+   }
+   return files;
+}
+
+ZmMultiColView.prototype.uploadFiles = function(){
+    var attachDialog = appCtxt.getUploadDialog();
+    var app = this._controller.getApp();
+    attachDialog._uploadCallback = new AjxCallback(app, app._handleUploadNewItem);
+    var files = this.processUploadFiles();
+    attachDialog.uploadFiles(files,document.getElementById("zdnd_form"),{id:this._controller._currentFolder});
+};
+//end zimbradnd

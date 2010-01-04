@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -34,7 +36,7 @@
 ZmCalendar = function(params) {
 	params.type = ZmOrganizer.CALENDAR;
 	ZmOrganizer.call(this, params);
-};
+}
 
 ZmCalendar.prototype = new ZmOrganizer;
 ZmCalendar.prototype.constructor = ZmCalendar;
@@ -68,14 +70,15 @@ function(params, ex) {
 		msg = AjxMessageFormat.format(ZmMsg.calFeedInvalid, params.url);
 		ZmOrganizer._showErrorMsg(msg);
 		return true;
+	} else {
+		return ZmOrganizer._handleErrorCreate(params, ex);
 	}
-	return ZmOrganizer._handleErrorCreate(params, ex);
 };
 
 ZmCalendar.prototype.getIcon = 
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
-	if (this.link)							{ return "SharedCalendarFolder"; }
+	if (this.link)							{ return "GroupSchedule"; }
 	return "CalendarFolder";
 };
 
@@ -106,61 +109,12 @@ function(checked, result) {
 	var treeController = overviewController.getTreeController(this.type);
 	var overviewId = appCtxt.getCurrentApp().getOverviewId();
 	var treeView = treeController.getTreeView(overviewId);
-
-	if (treeView && this.id && treeView._treeItemHash[this.id]) {
+	
+	if(treeView && this.id && treeView._treeItemHash[this.id]) {
 		treeView._treeItemHash[this.id].setChecked(checked);
 	}
+	
 };
-
-/**
- * Returns true if the given object(s) may be placed in this folder.
- *
- * @param what		[object]	object(s) to possibly move into this folder (item or organizer)
- */
-ZmCalendar.prototype.mayContain =
-function(what) {
-	if (!what) { return true; }
-
-	if (!(what instanceof ZmCalendar)) {
-		var invalid = false;
-
-        //exclude the deleted folders
-        if(this.noSuchFolder) return invalid;
-
-		if (this.nId == ZmOrganizer.ID_ROOT) {
-			// cannot drag anything onto root folder
-			invalid = true;
-		} else if (this.link) {
-			// cannot drop anything onto a read-only addrbook
-			invalid = this.isReadOnly();
-		}
-
-		if (!invalid) {
-			// An item or an array of items is being moved
-			var items = (what instanceof Array) ? what : [what];
-			var item = items[0];
-
-			// can't move items to folder they're already in; we're okay if
-			// we have one item from another folder
-			if (item.folderId) {
-				invalid = true;
-				for (var i = 0; i < items.length; i++) {
-					var folder = appCtxt.getById(items[i].folderId);
-					if (item.viewMode == ZmCalItem.MODE_NEW || folder != this) {
-						invalid = false;
-						break;
-					}
-				}
-			}
-		}
-
-		return !invalid;
-	}
-
-	// sub-folders are not allowed in calendars
-	return false;
-};
-
 
 // Callbacks
 
@@ -187,32 +141,12 @@ function(obj) {
 		fields["excludeFreeBusy"] = true;
 		doNotify = true;
 	}
-
+	
 	if (doNotify) {
 		this._notify(ZmEvent.E_MODIFY, {fields: fields});
 	}
 };
 
-ZmCalendar.prototype.notifyDelete =
-function(obj) {
-
-    if(this.isRemote() && !this._deleteAction){
-        var overviewController = appCtxt.getOverviewController();
-        var treeController = overviewController.getTreeController(this.type);
-        var overviewId = appCtxt.getCurrentApp().getOverviewId();
-        var treeView = treeController.getTreeView(overviewId);
-        var node = treeView.getTreeItemById(this.id);        
-        this.noSuchFolder = true;
-        node.setText(this.getName(true));
-    }else{
-        ZmOrganizer.prototype.notifyDelete.call(this, obj);
-    }
-};
-
-ZmCalendar.prototype._delete = function(){
-    this._deleteAction = true;
-    ZmOrganizer.prototype._delete.call(this);
-};
 
 // Static methods
 
@@ -224,13 +158,13 @@ function(name) {
 ZmCalendar.sortCompare = 
 function(calA, calB) {
 	var check = ZmOrganizer.checkSortArgs(calA, calB);
-	if (check != null) { return check; }
+	if (check != null) return check;
 
 	// links appear after personal calendars
 	if (calA.link != calB.link) {
 		return calA.link ? 1 : -1;
 	}
-
+	
 	// sort by calendar name
 	var calAName = calA.name.toLowerCase();
 	var calBName = calB.name.toLowerCase();

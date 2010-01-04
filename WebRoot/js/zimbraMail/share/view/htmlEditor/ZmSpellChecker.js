@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -37,12 +39,12 @@ function() {
 };
 
 ZmSpellChecker.prototype.check =
-function(text, callback, errCallback) {
+function(text, callback) {
 	var soapDoc = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
 	soapDoc.getMethod().appendChild(soapDoc.getDoc().createTextNode(text));
 
 	var callback = new AjxCallback(this, this._checkCallback, callback);
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errCallback});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
 };
 
 ZmSpellChecker.prototype._checkCallback =

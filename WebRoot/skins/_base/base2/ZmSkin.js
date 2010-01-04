@@ -1,19 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 function ZmSkin(hints) {
     this.hints = this.mergeObjects(ZmSkin.hints, hints);
 }
@@ -30,6 +14,7 @@ ZmSkin.hints = {
 	banner:			{ position:"static", url: "@LogoURL@"},		// == "logo"
 	userInfo:		{ position:"static"},
 	search:		  	{ position:"static" },
+	webSearch:	  	{ position:"static", containers: "skin_spacing_web_search" },
 	quota:		  	{ position:"static" },
 	presence:	  	{ width:"40px", height: "24px" },
 	appView:		{ position:"static" },
@@ -58,9 +43,9 @@ ZmSkin.hints = {
 	appChooser:		{ position:"static", direction: "LR" },
 	toast:		 	{ location: "N", 
 					  transitions: [
-							{ type: "slide-in", step: 1, duration: 10 },
-							{ type: "pause", duration: 2500 },
-							{ type: "slide-out", step: -1, duration: 25 }
+							{ type: "fade-in", step: 10, duration: 200 },
+							{ type: "pause", duration: 1000 },
+							{ type: "fade-out", step: -10, duration: 500 }
 						] 
 					},
 	fullScreen:     { containers : ["!skin_td_tree", "!skin_td_tree_app_sash"] },
@@ -180,6 +165,41 @@ ZmSkin.prototype = {
 		return this._getEl("skin_container_sidebar_ad");
 	},
 	
+	searchWeb : function(what) {
+        var searchUrl = ZmMsg["ysearchURL"];
+        if(!searchUrl || searchUrl == "" || searchUrl == undefined){
+            searchUrl = "http://search.yahoo.com";
+        }
+        if(what != "Search the Web..."){ searchUrl += '/search?p='+what+'&fr=zim-maila', '_blank';}
+        window.open(searchUrl);
+	},
+	
+	searchWebKey : function(event, field) {
+		event = event || window.event;
+		var code = event.keyCode;		// TODO: cross-platform me!
+		if (code == 13) {
+			skin.searchWeb(field.value);
+		}
+		return true;
+	},
+	
+	searchWebFocus : function(event, field) {
+		event = event || window.event;	
+		if (!skin._searchWebInitialValue) skin._searchWebInitialValue = field.value;
+		if (field.value == skin._searchWebInitialValue) {
+			field.value = "";
+			field.parentNode.className = "DwtInputField";
+		}
+	},
+	
+	searchWebBlur : function(event, field) {
+		event = event || window.event;	
+		if (field.value == "") {
+			field.value = skin._searchWebInitialValue;
+			field.parentNode.className = "DwtInputField-hint";
+		}
+	},
+	
 	//
 	// Protected methods
 	//
@@ -198,8 +218,8 @@ ZmSkin.prototype = {
 		}
 		else {
 			var tagName = el.tagName;
-			if (tagName == "TD" && !document.all)		value = "table-cell";
-			else if (tagName == "TR" && !document.all) 	value = "table-row";
+			if (tagName == "TD" && document.all == null)		value = "table-cell";
+			else if (tagName == "TR" && document.all == null) 	value = "table-row";
 			else value = "block";
 		}
 		el.style.display = value;
@@ -231,9 +251,9 @@ ZmSkin.prototype = {
 		}
 	},
 	
-	_reflowApp : function() {
+	_reflowApp : function(resetToolbar) {
 		if (window._zimbraMail) {
-			window._zimbraMail.getAppViewMgr().fitAll();
+			window._zimbraMail.getAppViewMgr().fitAll(resetToolbar);
 		}
 	},
 	

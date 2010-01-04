@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -21,41 +23,33 @@
  *
  * @author Conrad Damon
  * 
- * @param params				[hash]				hash of params:
- *        parent				[DwtControl]		the tree's parent widget
- *        type					[constant]			organizer type
- *        className				[string]*			CSS class
- *        posStyle				[constant]*			positioning style
- *        overviewId			[constant]*			overview ID
- *        headerClass			[string]*			CSS class for header item
- *        dragSrc				[DwtDragSource]*	drag source
- *        dropTgt				[DwtDropTarget]*	drop target
- *        treeStyle				[constant]*			tree style (see DwtTree)
- *        isCheckedByDefault	[boolean]*			default state of "checked" tree style
- *        allowedTypes			[hash]*				org types this tree may display
- *        allowedSubTypes		[hash]*				org types this tree may display below top level
+ * @param params			[hash]				hash of params:
+ *        parent			[DwtControl]		the tree's parent widget
+ *        type				[constant]			organizer type
+ *        className			[string]*			CSS class
+ *        posStyle			[constant]*			positioning style
+ *        overviewId		[constant]*			overview ID
+ *        headerClass		[string]*			CSS class for header item
+ *        dragSrc			[DwtDragSource]*	drag source
+ *        dropTgt			[DwtDropTarget]*	drop target
+ *        treeStyle			[constant]*			tree style (see DwtTree)
+ *        allowedTypes		[hash]*				org types this tree may display
+ *        allowedSubTypes	[hash]*				org types this tree may display below top level
  */
 ZmTreeView = function(params) {
 
 	if (arguments.length == 0) { return; }
 
-	DwtTree.call(this, {
-		parent: params.parent,
-		parentElement: params.parentElement,
-		style: params.treeStyle,
-		isCheckedByDefault: params.isCheckedByDefault,
-		className: (params.className || "OverviewTree"),
-		posStyle: params.posStyle,
-		id: params.id
-	});
+	var className = params.className || "OverviewTree";
+	var treeStyle = params.treeStyle || DwtTree.SINGLE_STYLE;
+	DwtTree.call(this, {parent:params.parent, style:treeStyle, className:className,
+						posStyle:params.posStyle, id:params.id});
 
 	this._headerClass = params.headerClass ? params.headerClass : "overviewHeader";
 	this.overviewId = params.overviewId;
 	this.type = params.type;
 	this.allowedTypes = params.allowedTypes;
 	this.allowedSubTypes = params.allowedSubTypes;
-
-	this._overview = appCtxt.getOverviewController().getOverview(this.overviewId);
 	
 	this._dragSrc = params.dragSrc;
 	this._dropTgt = params.dropTgt;
@@ -135,18 +129,9 @@ function(params) {
 
 	// create header item
 	var root = this._dataTree.root;
-	var isMultiAcctSubHeader = (appCtxt.multiAccounts && (this.type == ZmOrganizer.SEARCH || this.type == ZmOrganizer.TAG));
-	var imageInfo = this._getHeaderTreeItemImage();
-	var ti = this._headerItem = new DwtHeaderTreeItem({
-		parent:				this,
-		className:			isMultiAcctSubHeader ? "DwtTreeItem" : this._headerClass,
-		imageInfo:			imageInfo,
-		id:					ZmId.getTreeItemId(this.overviewId, null, this.type),
-		button:				isMultiAcctSubHeader ? null : params.newButton,
-		dndScrollCallback:	this._overview._dndScrollCallback,
-		dndScrollId:		this.overviewId,
-		selectable:			(appCtxt.multiAccounts && this.type != ZmOrganizer.SEARCH && this.type != ZmOrganizer.TAG)
-	});
+	var treeItemId = ZmId.getTreeItemId(this.overviewId, null, this.type);
+	var ti = this._headerItem = new DwtTreeItem({parent:this, className:this._headerClass, id:treeItemId});
+	ti.enableSelection(false); // by default, disallow selection
 	ti._isHeader = true;
 	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];
 	if (name) {
@@ -166,14 +151,8 @@ function(params) {
 	params.organizer = root;
 	this._render(params);
 	ti.setExpanded(!params.collapsed, null, true);
-
-	if (!appCtxt.multiAccounts) {
-		this.addSeparator();
-	}
-
-	if (appCtxt.getSkinHint("noOverviewHeaders") ||
-		this._hideHeaderTreeItem())
-	{
+	this.addSeparator();
+	if (appCtxt.get(ZmSetting.SKIN_HINTS, "noOverviewHeaders")) {
 		ti.setVisible(false, true);
 	}
 };
@@ -197,34 +176,49 @@ function() {
 };
 
 /**
- * Returns the currently selected organizer(s) - if tree view is checkbox style,
- * return value is an Array otherwise, a single DwtTreeItem object is returned.
+ * Returns the currently selected organizer. There can only be one.
  */
 ZmTreeView.prototype.getSelected =
 function() {
-	if (this.isCheckedStyle) {
-		var selected = [];
-		var header = this.getHeaderItem();
-		this._getCheckedItems(header, selected);
-		return selected;
-	} else {
-		return (this.getSelectionCount() != 1)
-			? null : this.getSelection()[0].getData(Dwt.KEY_OBJECT);
-	}
+	if (this.getSelectionCount() != 1) { return null; }
+	return this.getSelection()[0].getData(Dwt.KEY_OBJECT);
 };
 
 /**
  * Selects the tree item for the given organizer.
  *
  * @param organizer		[ZmOrganizer]	the organizer to select, or its ID
- * @param skipNotify	[boolean]*		whether to skip notifications
- * @param noFocus		[boolean]*		if true, select item but don't set focus to it
+ * @param skipNotify		[boolean]*		whether to skip notifications
  */
 ZmTreeView.prototype.setSelected =
-function(organizer, skipNotify, noFocus) {
+function(organizer, skipNotify) {
 	var id = ZmOrganizer.getSystemId((organizer instanceof ZmOrganizer) ? organizer.id : organizer);
 	if (!id || !this._treeItemHash[id]) { return; }
-	this.setSelection(this._treeItemHash[id], skipNotify, false, noFocus);
+	this.setSelection(this._treeItemHash[id], skipNotify);
+};
+
+/**
+ * Shows/hides checkboxes if treeview is checkbox style
+ * 
+ * @param show	[boolean]	if true, show checkboxes
+ */
+ZmTreeView.prototype.showCheckboxes =
+function(show, treeItems) {
+	if (!this._isCheckedStyle()) { return; }
+
+	treeItems = treeItems || this.getHeaderItem().getItems();
+	if (treeItems && treeItems.length) {
+		for (var i = 0; i < treeItems.length; i++) {
+			var ti = treeItems[i];
+			if (ti._isSeparator) continue;
+			ti.showCheckBox(show);
+			ti.enableSelection(!show);
+			var subItems = ti.getItems();
+			if (subItems.length > 0) {
+				this.showCheckboxes(show, subItems);
+			}
+		}
+	}
 };
 
 
@@ -252,19 +246,9 @@ ZmTreeView.prototype._render =
 function(params) {
 	var org = params.organizer;
 	var children = org.children.getArray();
-	if (org.isDataSource(ZmAccount.TYPE_IMAP)) {
+	if (org.isDataSource(ZmAccount.IMAP)) {
 		children.sort(ZmImapAccount.sortCompare);
-	} else if (ZmTreeView.COMPARE_FUNC[this.type]) {
-		if (appCtxt.isOffline && this.type == ZmOrganizer.SEARCH) {
-			var local = [];
-			for (var j = 0; j < children.length; j++) {
-				var child = children[j];
-				if (child && child.type == ZmOrganizer.SEARCH && !child.isOfflineGlobalSearch) {
-					local.push(child);
-				}
-			}
-			children = local;
-		}
+	} else {
 		children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
 	}
 	DBG.println(AjxDebug.DBG3, "Render: " + org.name + ": " + children.length);
@@ -283,6 +267,11 @@ function(params) {
 				proxy.treeNode = null;
 				proxy.organizer = child;
 				this._render(proxy);
+				continue; 
+			}
+			// if this is a tree view of saved searches, make sure to only show saved searches
+			// that are for one of the given types
+			if ((child.type == ZmOrganizer.SEARCH) && params.searchTypes && !child._typeMatch(params.searchTypes)) {
 				continue;
 			}
 			if (this._allowedTypes && !this._allowedTypes[child.type]) {
@@ -295,18 +284,9 @@ function(params) {
 			}
 		}
 
-		if (child.numTotal == 0 && (child.nId == ZmFolder.ID_SYNC_FAILURES)) {
+		// bug fix #29342 - hide sync failures folder if there are no messages in it
+		if (child.nId == ZmFolder.ID_SYNC_FAILURES && child.numTotal == 0) {
 			continue;
-		}
-
-		var parentNode = params.treeNode;
-
-		// bug: 43067 - reparent calendars for caldav-based accounts
-		if (appCtxt.multiAccounts &&
-			child.getAccount().isCalDavBased() &&
-			child.parent.nId == ZmOrganizer.ID_CALENDAR)
-		{
-			parentNode = parentNode.parent;
 		}
 
 		// if there's a large number of folders to display, make user click on special placeholder
@@ -323,23 +303,20 @@ function(params) {
 				var orgs = ZmMsg[ZmOrganizer.LABEL[this.type]].toLowerCase();
 				child = new ZmFolder({id:ZmFolder.ID_LOAD_FOLDERS, name:AjxMessageFormat.format(ZmMsg.showRemainingFolders, orgs)});
 				child._tooltip = AjxMessageFormat.format(ZmMsg.showRemainingFoldersTooltip, [(children.length - i), orgs]);
-				var ti = this._addNew(parentNode, child);
-				ti.enableSelection(true);
-				if (this.isCheckedStyle) {
-					ti.showCheckBox(false);
-				}
+				var ti = this._addNew(params.treeNode, child);
+                ti.enableSelection(true);
 				params.startPos = i;
 				child._showFoldersCallback = new AjxCallback(this, this._showRemainingFolders, [params]);
 				return;
 			}
 		}
-
+		
 		// NOTE: Separates public and shared folders
 		if ((org.nId == ZmOrganizer.ID_ROOT) && child.link && addSep) {
 			params.treeNode.addSeparator();
 			addSep = false;
 		}
-		this._addNew(parentNode, child, null, params.noTooltips, params.omit);
+		this._addNew(params.treeNode, child, null, params.noTooltips, params.omit);
 		numItems++;
 	}
 };
@@ -361,7 +338,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 	var dss = dsColl && dsColl.getByFolderId(organizer.nId);
 	var ds = (dss && dss.length > 0) ? dss[0] : null;
 
-	if (ds && ds.type == ZmAccount.TYPE_IMAP) {
+	if (ds && ds.type == ZmAccount.IMAP) {
 		ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:this._headerClass});
 		ti.enableSelection(false);
 	} else {
@@ -373,15 +350,14 @@ function(parentNode, organizer, index, noTooltips, omit) {
 				stack.push(parentOrganizer);
 				parentOrganizer = parentOrganizer.parent;
 			}
+			var parentId;
 			while (parentOrganizer = stack.pop()) {
 				parentNode = this.getTreeItemById(parentOrganizer.parent.id);
 				parentNode = new DwtTreeItem({
 					parent: parentNode,
 					text: parentOrganizer.getName(),
-					imageInfo: parentOrganizer.getIconWithColor(),
+					imageInfo: parentOrganizer.getIcon(),
 					forceNotifySelection: true,
-					dndScrollCallback: this._overview._dndScrollCallback,
-					dndScrollId: this.overviewId,
 					id: ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
 				});
 				parentNode.setData(Dwt.KEY_ID, parentOrganizer.id);
@@ -395,20 +371,12 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			parent:parentNode,
 			index:index,
 			text:organizer.getName(this._showUnread),
-			dndScrollCallback: this._overview._dndScrollCallback,
-			dndScrollId: this.overviewId,
-			imageInfo:organizer.getIconWithColor(),
+			imageInfo:organizer.getIcon(),
+			extraInfo: ((appCtxt.isOffline && organizer.isOfflineSyncable && organizer.isOfflineSyncing) ? "SyncStatusOn" : null),
 			id:ZmId.getTreeItemId(this.overviewId, organizer.id)
 		};
 		// now add item
 		ti = new DwtTreeItem(params);
-	}
-
-	if (appCtxt.multiAccounts &&
-		(organizer.type == ZmOrganizer.SEARCH ||
-		 organizer.type == ZmOrganizer.TAG))
-	{
-		ti.addClassName("DwtTreeItemChildDiv");
 	}
 
 	ti.setDndText(organizer.getName());
@@ -439,7 +407,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 		this._render({treeNode:ti, organizer:organizer, omit:omit});
 	}
 
-	if (ds && ds.type == ZmAccount.TYPE_IMAP) {
+	if (ds && ds.type == ZmAccount.IMAP) {
 		ti.setExpanded(!appCtxt.get(ZmSetting.COLLAPSE_IMAP_TREES));
 	}
 
@@ -482,7 +450,7 @@ function(id) {
 };
 
 ZmTreeView.prototype.findNext =
-function(treeItem, treeItems, i) {
+function(treeItem,treeItems,i) {
 	for (var j = i + 1; j < treeItems.length; j++) {
 		var next = treeItems[j];
 		if (next && next.getData) {
@@ -525,46 +493,3 @@ function(params) {
 			}
 		}), 100);
 };
-
-ZmTreeView.prototype._getNextTreeItem =
-function(next) {
-	var nextItem = DwtTree.prototype._getNextTreeItem.apply(this, arguments);
-	return nextItem || this._overview._getNextTreeItem(next, this);
-};
-
-ZmTreeView.prototype._hideHeaderTreeItem =
-function() {
-	return (appCtxt.multiAccounts && appCtxt.accountList.visibleAccounts.length>1 &&
-			(this.type == ZmOrganizer.FOLDER ||
-			 this.type == ZmOrganizer.ADDRBOOK ||
-			 this.type == ZmOrganizer.CALENDAR ||
-			 this.type == ZmOrganizer.TASKS ||
-			 this.type == ZmOrganizer.NOTEBOOK ||
-			 this.type == ZmOrganizer.BRIEFCASE ||
-			 this.type == ZmOrganizer.PREF_PAGE ||
-			 this.type == ZmOrganizer.ZIMLET));
-};
-
-ZmTreeView.prototype._getHeaderTreeItemImage =
-function() {
-	if (appCtxt.multiAccounts) {
-		if (this.type == ZmOrganizer.SEARCH)	{ return "SearchFolder"; }
-		if (this.type == ZmOrganizer.TAG)		{ return "TagStack"; }
-	}
-	return null;
-};
-
-/** Recursively checks if item and children are checked */
-ZmTreeView.prototype._getCheckedItems =
-function(item, selected) {
-	if (item && (item instanceof DwtTreeItem)) {
-		if (item.getChecked()) {
-			selected.push(item.getData(Dwt.KEY_OBJECT));
-		}
-		var items = item.getItems();
-		for (var i = 0; i < items.length; i++) {
-			this._getCheckedItems(items[i], selected);
-		}
-	}
-};
-

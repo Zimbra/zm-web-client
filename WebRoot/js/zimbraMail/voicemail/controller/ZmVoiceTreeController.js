@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
  * 
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -17,7 +19,7 @@ ZmVoiceTreeController = function() {
 
 	ZmFolderTreeController.call(this, ZmOrganizer.VOICE);
 	this._voiceApp = appCtxt.getApp(ZmApp.VOICE);
-};
+}
 
 ZmVoiceTreeController.prototype = new ZmFolderTreeController;
 ZmVoiceTreeController.prototype.constructor = ZmVoiceTreeController;
@@ -30,9 +32,8 @@ function() {
 };
 
 ZmVoiceTreeController.prototype.getDataTree =
-function(overviewId) {
-	var phone = (overviewId instanceof ZmPhone)
-		? overviewId : this._opc.getOverview(overviewId).phone;
+function(phone) {
+	phone = phone || this._voiceApp.accordionItem.data.phone;
 	var dataTree = this._dataTree[phone.name];
 	if (!dataTree) {
 		dataTree = this._dataTree[phone.name] = phone.folderTree;
@@ -91,9 +92,9 @@ function(ev) {
 	var folder = ev.item.getData(Dwt.KEY_OBJECT);
 	if ((folder instanceof ZmVoiceFolder) && (folder.callType == ZmVoiceFolder.TRASH)) {
 		return ZmTreeController.prototype._getActionMenu.call(this, ev);
+	} else {
+		return null;
 	}
-
-	return null;
 };
 
 // Returns a list of desired action menu operations

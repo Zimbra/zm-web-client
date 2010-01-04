@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -21,52 +23,10 @@ ZmTaskListController = function(container, app) {
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
-	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
-	this._listeners[ZmOperation.PRINT_TASK] = new AjxListener(this, this._printTaskListener);
-	this._listeners[ZmOperation.PRINT_TASKFOLDER] = new AjxListener(this, this._printTaskFolderListener);
-
-	this._currentTaskView = ZmId.VIEW_TASK_ALL;
 };
 
 ZmTaskListController.prototype = new ZmListController;
 ZmTaskListController.prototype.constructor = ZmTaskListController;
-
-
-// Consts
-ZmTaskListController.VIEWS = [
-	ZmId.VIEW_TASK_NOT_STARTED,
-	ZmId.VIEW_TASK_COMPLETED,
-	ZmId.VIEW_TASK_IN_PROGRESS,
-	ZmId.VIEW_TASK_WAITING,
-	ZmId.VIEW_TASK_DEFERRED,
-	ZmId.VIEW_TASK_ALL
-];
-
-ZmTaskListController.ICON = {};
-ZmTaskListController.ICON[ZmId.VIEW_TASK_NOT_STARTED]		= "TaskViewNotStarted";
-ZmTaskListController.ICON[ZmId.VIEW_TASK_COMPLETED]			= "TaskViewCompleted";
-ZmTaskListController.ICON[ZmId.VIEW_TASK_IN_PROGRESS]		= "TaskViewInProgress";
-ZmTaskListController.ICON[ZmId.VIEW_TASK_WAITING]			= "TaskViewWaiting";
-ZmTaskListController.ICON[ZmId.VIEW_TASK_DEFERRED]			= "TaskViewDeferred";
-ZmTaskListController.ICON[ZmId.VIEW_TASK_ALL]				= "TaskList";
-
-ZmTaskListController.MSG_KEY = {};
-ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_NOT_STARTED]	= "notStarted";
-ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_COMPLETED]		= "completed";
-ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_IN_PROGRESS]	= "inProgress";
-ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_WAITING]		= "waitingOn";
-ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_DEFERRED]		= "deferred";
-ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_ALL]			= "all";
-
-ZmTaskListController.SOAP_STATUS = {};
-ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_NOT_STARTED]= "NEED";
-ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_COMPLETED]	= "COMP";
-ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_IN_PROGRESS]= "INPR";
-ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_WAITING]	= "WAITING";
-ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_DEFERRED]	= "DEFERRED";
-
-
-// Public methods
 
 ZmTaskListController.prototype.toString =
 function() {
@@ -74,19 +34,26 @@ function() {
 };
 
 ZmTaskListController.prototype.show =
-function(results, folderId) {
+function(list, folderId) {
 
-	this._folderId = folderId;
+	// XXX: will "list" ever be ZmTaskList?
+	if (list instanceof ZmTaskList)
+	{
+		this._list = list;			// set as canonical list of contacts
+		this._list._isShared = false;		// this list is not a search of shared items
+	}
+	else if (list instanceof ZmSearchResult)
+	{
+		this._list = list.getResults(ZmItem.TASK);
 
-	this._list = results.getResults(ZmItem.TASK);
+		// XXX: WHY?
+		// find out if we just searched for a shared address book
+		var folder = appCtxt.getById(folderId);
+		this._list._isShared = folder ? folder.link : false;
+		this._list.setHasMore(list.getAttribute("more"));
+	}
 
-	// XXX: WHY?
-	// find out if we just searched for a shared tasks folder
-	var folder = appCtxt.getById(folderId);
-	this._list._isShared = folder ? folder.link : false;
-	this._list.setHasMore(results.getAttribute("more"));
-
-	ZmListController.prototype.show.call(this, results);
+	ZmListController.prototype.show.call(this, list);
 
 	this._setup(this._currentView);
 
@@ -98,35 +65,11 @@ function(results, folderId) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
 
-	this._setView({view:this._currentView, elements:elements, isAppView:true});
+	this._setView(this._currentView, elements, true);
 
 	this._setTabGroup(this._tabGroups[this._currentView]);
+	this._restoreFocus();
 	this._resetNavToolBarButtons(this._currentView);
-};
-
-ZmTaskListController.prototype.switchView =
-function(view) {
-	if (this._currentTaskView == view) { return; }
-
-	this._currentTaskView = view;
-
-	// always reset the view menu button icon to reflect the current view
-	var btn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
-	btn.setImage(ZmTaskListController.ICON[view]);
-
-	var sc = appCtxt.getSearchController();
-	var soapStatus = ZmTaskListController.SOAP_STATUS[view];
-	sc.redoSearch(appCtxt.getCurrentSearch(), false, {allowableTaskStatus:soapStatus});
-};
-
-ZmTaskListController.prototype.getAllowableTaskStatus =
-function() {
-	var tb = this._toolbar && this._toolbar[this._currentView];
-	var menu = tb ? tb.getButton(ZmOperation.VIEW_MENU).getMenu() : null;
-	var mi = menu ? menu.getSelectedItem(DwtMenuItem.RADIO_STYLE) : null;
-	var id = mi ? mi.getData(ZmOperation.MENUITEM_ID) : ZmId.VIEW_TASK_ALL;
-
-	return ZmTaskListController.SOAP_STATUS[id];
 };
 
 ZmTaskListController.prototype.getKeyMapName =
@@ -154,11 +97,6 @@ function(actionCode) {
 	}
 };
 
-ZmTaskListController.prototype.mapSupported =
-function(map) {
-	return (map == "list");
-};
-
 ZmTaskListController.prototype.quickSave =
 function(name, callback) {
 	var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
@@ -183,14 +121,35 @@ function(name, callback) {
 	task.save(null, callback);
 };
 
+// default callback before a view is shown - enable/disable nav buttons
+ZmTaskListController.prototype._preShowCallback =
+function(view, viewPushed) {
+	if (view == ZmId.VIEW_TASKLIST) {
+		return ZmListController.prototype._preShowCallback.call(this, view, viewPushed);
+	}
+	return true;
+};
+
 ZmTaskListController.prototype._defaultView =
 function() {
 	return ZmId.VIEW_TASKLIST;
 };
 
+ZmTaskListController.prototype._getItemType =
+function() {
+	return ZmItem.TASK;
+};
+
 ZmTaskListController.prototype._getViewType =
 function() {
 	return this._currentView;
+};
+
+ZmTaskListController.prototype._getMoveParams =
+function() {
+	var params = ZmListController.prototype._getMoveParams.call(this);
+	params.overviewId = "ZmTaskListController";
+	return params;
 };
 
 ZmTaskListController.prototype._createNewView =
@@ -206,17 +165,13 @@ function(view) {
 
 ZmTaskListController.prototype._getToolBarOps =
 function() {
-	return [
-		ZmOperation.NEW_MENU,
-		ZmOperation.SEP,
-		ZmOperation.EDIT,
-		ZmOperation.SEP,
-		ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
-		ZmOperation.SEP,
-		ZmOperation.TAG_MENU,
-		ZmOperation.SEP,
-		ZmOperation.VIEW_MENU
-	];
+	return [ZmOperation.NEW_MENU,
+			ZmOperation.SEP,
+			ZmOperation.EDIT,
+			ZmOperation.SEP,
+			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
+			ZmOperation.SEP,
+			ZmOperation.TAG_MENU];
 };
 
 ZmTaskListController.prototype._initializeToolBar =
@@ -226,82 +181,17 @@ function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
 	this._setNewButtonProps(view, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
-	this._setupPrintMenu(view);
-	this._setupViewMenu(view);
-
-	this._toolbar[view].getButton(ZmOperation.DELETE).setToolTipContent(ZmMsg.hardDeleteTooltip);
 
 	this._toolbar[view].addFiller();
-	this._initializeNavToolBar(view);
-};
-
-ZmTaskListController.prototype._initializeNavToolBar =
-function(view) {
-	this._toolbar[view].addOp(ZmOperation.TEXT);
-	var text = this._itemCountText[view] = this._toolbar[view].getButton(ZmOperation.TEXT);
-	text.addClassName("itemCountText");
-};
-
-ZmTaskListController.prototype._setupPrintMenu =
-function(view) {
-	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT);
-	if (!printButton) { return; }
-
-	printButton.setToolTipContent(ZmMsg.printMultiTooltip);
-	printButton.noMenuBar = true;
-	var menu = new ZmPopupMenu(printButton);
-	printButton.setMenu(menu);
-
-	var id = ZmOperation.PRINT_TASK;
-	var mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
-	mi.setData(ZmOperation.MENUITEM_ID, id);
-	mi.addSelectionListener(this._listeners[ZmOperation.PRINT_TASK]);
-
-	id = ZmOperation.PRINT_TASKFOLDER;
-	mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
-	mi.setData(ZmOperation.MENUITEM_ID, id);
-	mi.addSelectionListener(this._listeners[ZmOperation.PRINT_TASKFOLDER]);
-};
-
-ZmTaskListController.prototype._setupViewMenu =
-function(view) {
-	var btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
-	var menu = btn.getMenu();
-	if (!menu) {
-		menu = new ZmPopupMenu(btn);
-		btn.setMenu(menu);
-		for (var i = 0; i < ZmTaskListController.VIEWS.length; i++) {
-			var id = ZmTaskListController.VIEWS[i];
-			if (id == ZmId.VIEW_TASK_ALL) {
-				new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
-			}
-			var params = {
-				image:ZmTaskListController.ICON[id],
-				text:ZmMsg[ZmTaskListController.MSG_KEY[id]],
-				style:DwtMenuItem.RADIO_STYLE
-			};
-			var mi = menu.createMenuItem(id, params);
-			mi.setData(ZmOperation.MENUITEM_ID, id);
-			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-
-			if (id == ZmId.VIEW_TASK_ALL) { // "all" is the default
-				mi.setChecked(true, true);
-			}
-		}
-		btn.setImage(ZmTaskListController.ICON[ZmId.VIEW_TASK_ALL]);
-	}
+	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
+	this._setNavToolBar(tb, view);
 };
 
 ZmTaskListController.prototype._getActionMenuOps =
 function() {
-	return [
-		ZmOperation.EDIT,
-		ZmOperation.SEP,
-		ZmOperation.TAG_MENU,
-		ZmOperation.DELETE,
-		ZmOperation.MOVE,
-		ZmOperation.PRINT_TASK
-	];
+	var list = [ZmOperation.EDIT, ZmOperation.SEP];
+	list = list.concat(this._standardActionMenuOps());
+	return list;
 };
 
 ZmTaskListController.prototype._getTagMenuMsg =
@@ -324,19 +214,6 @@ function(parent, num) {
 		parent.enable(ZmOperation.EDIT, canEdit && num == 1);
 		parent.enable(ZmOperation.TAG_MENU, (!isShare && num > 0));
 	}
-	var printButton = (parent instanceof ZmButtonToolBar) ? parent.getButton(ZmOperation.PRINT) : null;
-	var printMenu = printMenu && printButton.getMenu();
-	var printMenuItem = printMenu && printMenu.getItem(1);
-	if (printMenuItem) {
-		var text = (folderId != null) ? ZmMsg.printTaskFolder : ZmMsg.printResults;
-		printMenuItem.setText(text);
-	}
-
-	var printOp = (parent instanceof ZmActionMenu) ? ZmOperation.PRINT_TASK : ZmOperation.PRINT;
-	parent.enable(printOp, num > 0);
-
-	parent.enable(ZmOperation.VIEW_MENU, true);
-	parent.enable(ZmOperation.TEXT, true);
 };
 
 ZmTaskListController.prototype._doDelete =
@@ -404,11 +281,12 @@ function(task) {
 
 	calItemView.set(task, ZmId.VIEW_TASKLIST);
 	this._resetOperations(this._toolbar[viewId], 1); // enable all buttons
+	this._navToolBar[viewId].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
 
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[viewId];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[viewId];
-	this._setView({view:viewId, elements:elements, pushOnly:true});
+	this._setView(viewId, elements, null, null, true);
 };
 
 ZmTaskListController.prototype._showTaskEditView =
@@ -437,7 +315,7 @@ function(task, mode) {
 		this._typeDialog = new ZmCalItemTypeDialog(this._shell);
 		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener, [task, mode]));
 	}
-	this._typeDialog.initialize(task, mode, ZmItem.TASK);
+	this._typeDialog.initialize(task, mode);
 	this._typeDialog.popup();
 };
 
@@ -462,7 +340,7 @@ function(task, mode, ev) {
 ZmTaskListController.prototype._newListener =
 function(ev, op, params) {
 	params = params || {};
-	params.folderId = this._list.search.folderId;
+	params.folderId = /*this._list.folderId ||*/ this._list.search.folderId;
 	ZmListController.prototype._newListener.call(this, ev, op, params);
 };
 
@@ -488,61 +366,16 @@ function(ev) {
 	this._editTask(task);
 };
 
-ZmTaskListController.prototype._printTaskListener =
-function(ev) {
-	var listView = this._listView[this._currentView];
-	var items = listView.getSelection();
-	var taskIds = [];
-	for (var i = 0; i < items.length; i++) {
-		taskIds.push(items[i].invId);
-	}
-
-	var url = ("/h/printtasks?id=" + taskIds.join(","));
-	window.open(appContextPath+url, "_blank");
-};
-
-ZmTaskListController.prototype._printListener =
-function(ev) {
-    this._printTaskListener(ev);
-};
-
-ZmTaskListController.prototype._printTaskFolderListener =
-function(ev) {
-	var url;
-	if (this._folderId) {
-		url = "/h/printtasks?st=task&sfi=" + this._folderId;
-	} else {
-		var taskIds = [];
-		var list = this._list.getArray();
-		for (var i = 0; i < list.length; i++) {
-			taskIds.push(list[i].invId);
-		}
-		url = ("/h/printtasks?id=" + taskIds.join(","));
-	}
-	window.open(appContextPath+url, "_blank");
-};
-
 ZmTaskListController.prototype._setViewContents =
 function(view) {
 	// load tasks into the given view and perform layout.
-	var lv = this._listView[view];
-	lv.set(this._list, ZmItem.F_DATE);
+	this._listView[view].set(this._list, ZmItem.F_DATE);
 
-	if (lv.offset == 0) {
-		var list = this._list.getVector();
-		if (list.size()) this._listView[view].setSelection(list.get(0));
-	}
+	var list = this._list.getVector();
+	if (list.size()) this._listView[view].setSelection(list.get(0));
 };
 
 ZmTaskListController.prototype._getMoveDialogTitle =
 function(num) {
 	return (num == 1) ? ZmMsg.moveTask : ZmMsg.moveTasks;
-};
-
-// Move stuff to a new folder.
-ZmTaskListController.prototype._moveCallback =
-function(folder) {
-	this._doMove(this._pendingActionData, folder);
-	this._clearDialog(appCtxt.getChooseFolderDialog());
-	this._pendingActionData = null;
 };

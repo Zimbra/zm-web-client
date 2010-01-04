@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
@@ -32,7 +16,7 @@
                 <tr>
                     <td nowrap>
                         <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
+                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
                     <td>
@@ -49,13 +33,6 @@
                         </c:otherwise>
                     </c:choose>
                     <td><div class='vertSep'></div></td>
-                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-                        <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-                    </td>
-                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-                        <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-                    </td>
-                    <td><div class='vertSep'></div></td>
                     <td nowrap>
                         <select name="folderId" onchange="zclick('SOPMOVE')">
                             <option value="" selected/><fmt:message key="moveAction"/>
@@ -68,8 +45,9 @@
                         </select>
                     </td>
                     <app:button  id="${keys ? 'OPMOVE' :''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
-                    <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
                     <td><div class='vertSep'></div></td>
+
+                    <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
                     <td nowrap>
                         <select name="actionOp" onchange="zclick('SOPGO')">
                             <option value="" selected/><fmt:message key="moreActions"/>

@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" import="java.util.Date,java.text.*" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -118,14 +102,6 @@
 			</tr>
 		</table>
 	</td>
-</tr>
-<tr valign="middle">
-    <td class='ZOptionsTableLabel'>
-        <fmt:message key="optionsReadingPane"/>:
-    </td>
-    <td>
-        <app:optCheckbox boxfirst="true" label="alwaysShowReadingPane" pref="zimbraPrefReadingPaneEnabled" checked="${mailbox.prefs.readingPaneEnabled}"/>
-    </td>
 </tr>
 <app:optSeparator/>
 <tr>
@@ -263,13 +239,12 @@
 		 <td class='ZOptionsTableLabel'>
 			<fmt:message key="startDate"/> :
 		</td>
-        <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT" var="editDateFmt"/>
-        <td style='padding-left:20px'>
+		<td style='padding-left:20px'>
 			<c:set var="fromDate" value="${fn:escapeXml(mailbox.prefs.outOfOfficeFromDate)}" />
 			<c:if test="${not empty fromDate}">
 				<c:catch var="parseError">
 					<fmt:parseDate pattern="yyyyMMddHHmmss'Z'" value="${fromDate}" var="parsedDate"  />
-					<fmt:formatDate value="${parsedDate}" pattern="${editDateFmt}" var="fmtDate" />
+					<fmt:formatDate value="${parsedDate}" pattern="MM/dd/yyyy" var="fmtDate" />
 				</c:catch>
 				<c:if test="${not empty parseError}">
 					<c:set var="fmtDate" value="" />
@@ -288,7 +263,7 @@
 			<c:if test="${not empty untilDate}">
 				<c:catch var="parseError2">
 					<fmt:parseDate pattern="yyyyMMddHHmmss'Z'" value="${untilDate}" var="parsedDate"  />
-					<fmt:formatDate value="${parsedDate}" pattern="${editDateFmt}" var="fmtDate" />
+					<fmt:formatDate value="${parsedDate}" pattern="MM/dd/yyyy" var="fmtDate" />
 				</c:catch>
 				<c:if test="${not empty parseError2}">
 					<c:set var="fmtDate" value="" />

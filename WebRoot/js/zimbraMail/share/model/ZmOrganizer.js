@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -24,29 +26,26 @@
 *
 * @author Conrad Damon
 *
-* @param type		[constant]			organizer type
-* @param id			[int]				numeric ID
-* @param name		[string]			name
-* @param parent		[ZmOrganizer]		parent organizer
-* @param tree		[ZmTree]			tree model that contains this organizer
-* @param color		[constant]			color for this organizer
-* @param rgb		[string]			color for this organizer, as HTML RGB value
-* @param link		[boolean]*			whether this organizer is shared
-* @param numUnread	[int]*				number of unread items for this organizer
-* @param numTotal	[int]*				number of items for this organizer
-* @param sizeTotal	[int]*				total size of organizer's items
-* @param url		[string]*			URL for this organizer's feed
-* @param owner		[string]* 			Owner for this organizer
-* @param zid		[string]*			Zimbra ID of owner, if remote folder
-* @param rid		[string]*			Remote ID of organizer, if remote folder
-* @param restUrl	[string]*			REST URL of this organizer.
-* @param newOp		[string]*			Name of operation run by button in overview header
-* @param account	[ZmZimbraAccount]*	Account this organizer belongs to
+* @param type		[constant]		organizer type
+* @param id			[int]			numeric ID
+* @param name		[string]		name
+* @param parent		[ZmOrganizer]	parent organizer
+* @param tree		[ZmTree]		tree model that contains this organizer
+* @param color		[constant]		color for this organizer
+* @param link		[boolean]*		whether this organizer is shared
+* @param numUnread	[int]*			number of unread items for this organizer
+* @param numTotal	[int]*			number of items for this organizer
+* @param sizeTotal	[int]*			total size of organizer's items
+* @param url		[string]*		URL for this organizer's feed
+* @param owner		[string]* 		Owner for this organizer
+* @param zid		[string]*		Zimbra ID of owner, if remote folder
+* @param rid		[string]*		Remote ID of organizer, if remote folder
+* @param restUrl	[string]*		REST URL of this organizer.
 */
 ZmOrganizer = function(params) {
 
 	if (arguments.length == 0) { return; }
-
+	
 	this.type = params.type;
 	var id = this.id = params.id;
 	this.nId = ZmOrganizer.normalizeId(id);
@@ -60,33 +59,17 @@ ZmOrganizer = function(params) {
 	this.url = params.url;
 	this.owner = params.owner;
 	this.link = params.link || (Boolean(params.zid)) || (this.parent && this.parent.link);
-	this.isMountpoint = params.link;
 	this.zid = params.zid;
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
-	this.account = params.account;
-    this.perm = params.perm;
+	if (params.perm) {
+		this.setPermissions(params.perm);
+	}
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
-	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
 
 	var color = (this.parent && !params.color) ? this.parent.color : params.color;
-	this.color = color ||
-				 ZmOrganizer.ORG_COLOR[id] ||
-				 ZmOrganizer.ORG_COLOR[this.nId] ||
-				 ZmOrganizer.DEFAULT_COLOR[this.type] ||
-				 ZmOrganizer.C_NONE;
-	// NOTE: The server should not send a color parameter if a custom RGB
-	// NOTE: has been set. In other words, the color parameter will only
-	// NOTE: be specified if explicitly set that way and not as an explicit
-	// NOTE: RGB value.
-	this.rgb = ZmOrganizer.COLOR_VALUES[params.color] || params.rgb;
-
-	if (appCtxt.isOffline && !this.account && this.id == this.nId) {
-		this.account = appCtxt.accountList.mainAccount;
-	}
-
-	// for offline, POP accounts are not allowed to create subfolders
-	this.disallowSubFolder = appCtxt.isOffline && this.account && this.account.type == ZmAccount.TYPE_POP;
+	this.color = color || ZmOrganizer.ORG_COLOR[id] || ZmOrganizer.ORG_COLOR[this.nId] ||
+				 ZmOrganizer.DEFAULT_COLOR[this.type] || ZmOrganizer.C_NONE;
 
 	if (id && params.tree) {
 		appCtxt.cacheSet(id, this);
@@ -103,7 +86,6 @@ ZmOrganizer = function(params) {
 ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
-ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 
 // folder IDs defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT				= 1;
@@ -117,15 +99,13 @@ ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
 ZmOrganizer.ID_BRIEFCASE		= 16;
-ZmOrganizer.ID_ALL_MAILBOXES	= 249;
-ZmOrganizer.ID_NOTIFICATION_MP	= 250;
 ZmOrganizer.ID_SYNC_FAILURES	= 252;		// offline only
+ZmOrganizer.ID_ARCHIVE    		= 253;		// offline only
 ZmOrganizer.ID_OUTBOX    		= 254;		// offline only
 ZmOrganizer.ID_ZIMLET			= -1000;	// zimlets need a range.  start from -1000 incrementing up.
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 ZmOrganizer.ID_MY_CARD			= -15;
-ZmOrganizer.ID_ATTACHMENTS		= -17;		// Attachments View
 
 // fields that can be part of a displayed organizer
 ZmOrganizer.F_NAME				= "name";
@@ -133,20 +113,17 @@ ZmOrganizer.F_UNREAD			= "unread";
 ZmOrganizer.F_TOTAL				= "total";
 ZmOrganizer.F_SIZE				= "size";
 ZmOrganizer.F_COLOR				= "color";
-ZmOrganizer.F_RGB				= "rgb";
 ZmOrganizer.F_QUERY				= "query";
 ZmOrganizer.F_SHARES			= "shares";
 ZmOrganizer.F_FLAGS				= "flags";
 ZmOrganizer.F_REST_URL			= "rest";
-ZmOrganizer.F_PERMS				= "perms";
-ZmOrganizer.F_RNAME				= "rname";	// remote name
 
 // server representation of org flags
 ZmOrganizer.FLAG_CHECKED			= "#";
 ZmOrganizer.FLAG_DISALLOW_SUBFOLDER	= "o";
 ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY	= "b";
 ZmOrganizer.FLAG_IMAP_SUBSCRIBED	= "*";
-ZmOrganizer.FLAG_OFFLINE_GLOBAL		= "g";
+ZmOrganizer.FLAG_OFFLINE_ARCHIVE	= "@";
 ZmOrganizer.FLAG_OFFLINE_SYNCABLE	= "y";
 ZmOrganizer.FLAG_OFFLINE_SYNCING	= "~";
 ZmOrganizer.ALL_FLAGS = [
@@ -154,7 +131,7 @@ ZmOrganizer.ALL_FLAGS = [
 	ZmOrganizer.FLAG_IMAP_SUBSCRIBED,
 	ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY,
 	ZmOrganizer.FLAG_DISALLOW_SUBFOLDER,
-	ZmOrganizer.FLAG_OFFLINE_GLOBAL,
+	ZmOrganizer.FLAG_OFFLINE_ARCHIVE,
 	ZmOrganizer.FLAG_OFFLINE_SYNCABLE,
 	ZmOrganizer.FLAG_OFFLINE_SYNCING
 ];
@@ -165,7 +142,7 @@ ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_CHECKED]				= "isChecked";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_IMAP_SUBSCRIBED]		= "imapSubscribed";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY]	= "excludeFreeBusy";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_DISALLOW_SUBFOLDER]	= "disallowSubFolder";
-ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_OFFLINE_GLOBAL]		= "isOfflineGlobalSearch";
+ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_OFFLINE_ARCHIVE]		= "isOfflineArchive";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_OFFLINE_SYNCABLE]	= "isOfflineSyncable";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_OFFLINE_SYNCING]		= "isOfflineSyncing";
 
@@ -190,19 +167,6 @@ ZmOrganizer.C_GRAY				= 8;
 ZmOrganizer.C_ORANGE			= 9;
 ZmOrganizer.MAX_COLOR			= ZmOrganizer.C_ORANGE;
 ZmOrganizer.ORG_DEFAULT_COLOR 	= ZmOrganizer.C_ORANGE;
-
-ZmOrganizer.COLOR_VALUES = [
-	null,
-	ZmMsg.colorBlue,
-	ZmMsg.colorCyan,
-	ZmMsg.colorGreen,
-	ZmMsg.colorPurple,
-	ZmMsg.colorRed,
-	ZmMsg.colorYellow,
-	ZmMsg.colorPink,
-	ZmMsg.colorGray,
-	ZmMsg.colorOrange
-];
 
 // color names
 ZmOrganizer.COLOR_TEXT = {};
@@ -246,28 +210,15 @@ ZmOrganizer.CREATE_FUNC 	= {};		// function that creates this organizer
 ZmOrganizer.LABEL 			= {};		// msg key for text for tree view header item
 ZmOrganizer.ITEMS_KEY 		= {};		// msg key for text describing contents
 ZmOrganizer.TREE_TYPE 		= {};		// type of server data tree that contains this type of organizer
-ZmOrganizer.VIEWS 			= {};		// views by org type
-ZmOrganizer.VIEW_HASH		= {};		// view hash by org type
+ZmOrganizer.VIEWS 			= {};		// views by type
 ZmOrganizer.TYPE 			= {};		// types by view (reverse map of above)
 ZmOrganizer.FOLDER_KEY 		= {};		// keys for label "[org] folder"
 ZmOrganizer.MOUNT_KEY 		= {};		// keys for label "mount [org]"
 ZmOrganizer.DEFERRABLE 		= {};		// creation can be deferred to app launch
 ZmOrganizer.PATH_IN_NAME	= {};		// if true, provide full path when asked for name
 ZmOrganizer.OPEN_SETTING	= {};		// setting that controls whether the tree view is open
-ZmOrganizer.NEW_OP			= {};		// name of operation for new button in tree header (optional)
-ZmOrganizer.DISPLAY_ORDER	= {};		// sort number to determine order of tree view (optional)
-ZmOrganizer.HIDE_EMPTY		= {};		// if true, hide tree header if tree is empty
 
 ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
-
-// allowed permission bits
-ZmOrganizer.PERM_READ		= "r";
-ZmOrganizer.PERM_WRITE		= "w";
-ZmOrganizer.PERM_INSERT		= "i";
-ZmOrganizer.PERM_DELETE		= "d";
-ZmOrganizer.PERM_ADMIN		= "a";
-ZmOrganizer.PERM_WORKFLOW	= "x";
-ZmOrganizer.PERM_PRIVATE	= "p";
 
 // Abstract methods
 
@@ -297,10 +248,9 @@ ZmOrganizer.PERM_PRIVATE	= "p";
  *        createFunc		[string]	name of function for creating this org
  *        compareFunc		[string]	name of function for comparing instances of this org
  *        deferrable		[boolean]	true if creation can be deferred to app launch
+ *        shortcutKey		[string]	letter encoding of this org type for custom shortcuts
  *        pathInName		[boolean]	if true, provide full path when asked for name
  *        openSetting		[const]		setting that controls whether the tree view is open
- *        displayOrder		[int]		A number that is used when sorting the display of trees. (Lower number means higher display.)
- *        hideEmpty			[boolean]	if true, hide tree header if tree is empty
  */
 ZmOrganizer.registerOrg =
 function(org, params) {
@@ -327,34 +277,32 @@ function(org, params) {
 	if (params.deferrable)		{ ZmOrganizer.DEFERRABLE[org]			= params.deferrable; }
 	if (params.pathInName)		{ ZmOrganizer.PATH_IN_NAME[org]			= params.pathInName; }
 	if (params.openSetting)		{ ZmOrganizer.OPEN_SETTING[org]			= params.openSetting; }
-	if (params.newOp)			{ ZmOrganizer.NEW_OP[org]				= params.newOp; }
-	if (params.displayOrder)	{ ZmOrganizer.DISPLAY_ORDER[org]		= params.displayOrder; }
-	if (params.hideEmpty)		{ ZmOrganizer.HIDE_EMPTY[org]			= params.hideEmpty; }
 
-	if (!appCtxt.isChildWindow || params.childWindow ) {
+	if (!appCtxt.isChildWindow) {
 		if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }
 		if (params.treeController)	{ ZmOverviewController.CONTROLLER[org]	= params.treeController; }
 	}
 
-	ZmOrganizer.TREE_TYPE[org] = params.treeType || org; // default to own type
-	ZmOrganizer.CREATE_FUNC[org] = params.createFunc || "ZmOrganizer.create";
+	ZmOrganizer.TREE_TYPE[org] = params.treeType || org;	// default to own type
 
-	if (params.views) {
-		ZmOrganizer.VIEW_HASH[org] = AjxUtil.arrayAsHash(ZmOrganizer.VIEWS[org]);
-	}
+	ZmOrganizer.CREATE_FUNC[org]	= params.createFunc || "ZmOrganizer.create";
 
 	if (params.hasColor) {
-		ZmOrganizer.DEFAULT_COLOR[org] = (params.defaultColor != null)
-			? params.defaultColor
-			: ZmOrganizer.ORG_DEFAULT_COLOR;
+		ZmOrganizer.DEFAULT_COLOR[org]	= (params.defaultColor != null) ? params.defaultColor :
+																		  ZmOrganizer.ORG_DEFAULT_COLOR;
 	}
-
+	
 	if (params.orgColor) {
 		for (var id in params.orgColor) {
 			ZmOrganizer.ORG_COLOR[id] = params.orgColor[id];
 		}
 	}
-
+	
+	if (params.shortcutKey) {
+		ZmShortcut.ORG_KEY[org] = params.shortcutKey;
+		ZmShortcut.ORG_TYPE[params.shortcutKey] = org;
+	}
+	
 	if (params.dropTargets) {
 		if (!ZmApp.DROP_TARGETS[params.app]) {
 			ZmApp.DROP_TARGETS[params.app] = {};
@@ -381,8 +329,7 @@ function(params) {
 	// set attributes
 	params.view = params.view || ZmOrganizer.VIEWS[type] ? ZmOrganizer.VIEWS[type][0] : null;
 	for (var i in params) {
-		if (i == "type" || i == "errorCallback" || i == "account") { continue; }
-
+		if (i == "type" || i == "errorCallback") { continue; }
 		var value = params[i];
 		if (i == "color") {
 			// no need to save color if missing or default
@@ -395,12 +342,7 @@ function(params) {
 		}
 	}
 
-	return appCtxt.getAppController().sendRequest({
-		jsonObj: jsonObj,
-		asyncMode: true,
-		accountName: (params.account && params.account.name),
-		errorCallback: errorCallback
-	});
+	return appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, errorCallback:errorCallback});
 };
 
 ZmOrganizer._handleErrorCreate =
@@ -431,45 +373,67 @@ function(msg) {
 	msgDialog.popup();
 };
 
-ZmOrganizer.getFolder =
-function(id, callback, batchCmd) {
-	var jsonObj = {GetFolderRequest:{_jsns:"urn:zimbraMail"}};
-	var request = jsonObj.GetFolderRequest;
-	request.folder = {l:id};
-	var respCallback = new AjxCallback(null, ZmOrganizer._handleResponseGetFolder, [callback]);
-	if (batchCmd) {
-		batchCmd.addRequestParams(jsonObj, respCallback);
-	} else {
-		appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
-	}
-};
-
-ZmOrganizer._handleResponseGetFolder =
-function(callback, result) {
-	var resp = result.getResponse().GetFolderResponse;
-	var folderObj = (resp && resp.folder && resp.folder[0]) ||
-					(resp && resp.link && resp.link[0]);
-	var folder;
-	if (folderObj) {
-		folder = appCtxt.getById(folderObj.id);
-		if (folder) {
-			folder.clearShares();
-			folder._setSharesFromJs(folderObj);
-		} else {
-			var parent = appCtxt.getById(folderObj.l);
-			folder = ZmFolderTree.createFromJs(parent, folderObj, appCtxt.getFolderTree(), "folder");
+/**
+ * This method creates a sub-tree of organizers of a given view type
+ * as specified by a path (e.g. "foo/bar/baz").
+ *
+ * @param path			[string]		Path of new folder.
+ * @param attrs			[object]		Attributes of the folder object
+ *										to set at creation. If no view
+ *										is specified, the view of this
+ *										organizer is used.
+ * @param callback		[AjxCallback]	Optional. The first argument
+ *										passed to the post-processing
+ *										callback will be the last organizer
+ *										object created in the path.
+ * @param errorCallback	[AjxCallback]	Optional.
+ */
+/*** TODO ***
+// make static
+ZmOrganizer.prototype.createPath =
+function(path, attrs, callback, errorCallback) {
+	var organizer = this;
+	if (path.match(/^\//)) {
+		while (organizer.id != ZmOrganizer.ID_ROOT) {
+			organizer = organizer.parent;
 		}
+		path = path.substr(1);
 	}
-	if (callback) {
-		callback.run(folder);
+	var parts = path.replace(/\/$/,"").split('/');
+	var rest = parts.slice(1).join('/');
+	var name = parts[0];
+
+	var child = this.getChild(name);
+	if (child) {
+		child.createPath(rest, attrs, callback, errorCallback, postCallback);
+	}
+
+	var createCallback = new AjxCallback(this, this._handleCreatePath, [callback]);
+	var createPostCallback = new AjxCallback(this, this._handlePostCreatePath, [rest, attrs, callback, errorCallback]);
+	this.create(name, attrs, createCallback, errorCallback, createPostCallback);
+};
+ZmOrganizer.prototype._handleCreatePath =
+function(callback, result) {
+	// NOTE: The user callback is not called at each
+	//       folder creation stage; rather, it is called
+	//       at the end and is passed the leaf organizer
+	//       so that it can operate on it.
+	//if (callback) {
+	//	callback.run(result);
+	//}
+};
+ZmOrganizer.prototype._handlePostCreatePath =
+function(path, attrs, callback, errorCallback, response) {
+	var folderId = response.CreateFolderResponse.folder.id;
+	var organizer = appCtxt.getById(folderId);
+	if (path != "") {
+		organizer.create(path, attrs, callback, errorCallback, postCallback);
+	}
+	else if (callback) {
+		callback.run(organizer, response);
 	}
 };
-
-ZmOrganizer.prototype.getFolder =
-function(callback, batchCmd) {
-	ZmOrganizer.getFolder(this.id, callback, batchCmd);
-};
-
+/***/
 
 // Static methods
 
@@ -574,13 +538,12 @@ function(id, type) {
 ZmOrganizer.parseId =
 function(id, result) {
 	result = result || {};
-	if (id == null) { return result; }
-	var idx = (typeof id == "string") ? id.indexOf(":") : -1;
+	var idx = id.indexOf(":");
 	if (idx == -1) {
-		result.account = appCtxt.accountList.mainAccount;
-		result.id = id;
+		result.account = appCtxt.getMainAccount();
+		result.id = id ;
 	} else {
-		result.account = appCtxt.accountList.getAccount(id.substring(0, idx));
+		result.account = appCtxt.getAccount(id.substring(0, idx));
 		result.id = id.substr(idx + 1);
 	}
 	return result;
@@ -603,17 +566,14 @@ function() {
 */
 ZmOrganizer.prototype.getName = 
 function(showUnread, maxLength, noMarkup, useSystemName) {
-	if (this.nId == ZmFolder.ID_ROOT) {
-		return (ZmOrganizer.LABEL[this.type])
-			? ZmMsg[ZmOrganizer.LABEL[this.type]] : "";
-	}
-	var name = (useSystemName && this._systemName)
-		? this._systemName : this.name || "";
-	if (ZmOrganizer.PATH_IN_NAME[this.type] && this.path) {
-		name = [this.path, name].join("/");
-	}
-	name = (maxLength && name.length > maxLength)
-		? name.substring(0, maxLength - 3) + "..." : name;
+    if (this.nId == ZmFolder.ID_ROOT) {
+		return ZmOrganizer.LABEL[this.type] ? ZmMsg[ZmOrganizer.LABEL[this.type]] : "";
+    }
+	var name = (useSystemName && this._systemName) ? this._systemName : this.name || "";
+    if (ZmOrganizer.PATH_IN_NAME[this.type] && this.path) {
+    	name = [this.path, name].join("/");
+    }
+	name = (maxLength && name.length > maxLength) ? name.substring(0, maxLength - 3) + "..." : name;
 	return this._markupName(name, showUnread, noMarkup);
 };
 
@@ -634,7 +594,7 @@ function(includeRoot, showUnread, maxLength, noMarkup, useSystemName) {
 		path = parent.getName(showUnread, maxLength, noMarkup, useSystemName) + ZmFolder.SEP + path;
 		parent = parent.parent;
 	}
-
+	
 	return path;
 };
 
@@ -647,8 +607,12 @@ ZmOrganizer.prototype.getToolTip =
 function(force) {
 	if (!this._tooltip || force) {
 		var itemText = this._getItemsText();
-		var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};
-		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
+		if (this.numTotal) {
+			var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};
+			this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
+		} else {
+			this._tooltip = AjxMessageFormat.format(ZmMsg.noItems, itemText);
+		}
 	}
 	return this._tooltip;
 };
@@ -656,8 +620,7 @@ function(force) {
 /** Returns the full path, suitable for use in search expressions. */
 ZmOrganizer.prototype.getSearchPath =
 function() {
-	return (this.nId != ZmOrganizer.ID_ROOT)
-		? this.getPath(null, null, null, true, true) : "/";
+	return (this.nId != ZmOrganizer.ID_ROOT) ? this.getPath(null, null, null, true, true) : "/";
 };
 
 /** @deprecated Use getRestUrl. */
@@ -683,13 +646,14 @@ function() {
 
 ZmOrganizer.prototype.getRestUrl =
 function() {
-	// return REST URL as seen by the GetInfoResponse
-	var restUrl = appCtxt.get(ZmSetting.REST_URL);
-	if (restUrl) {
-		return ([restUrl, "/", AjxStringUtil.urlEncode(this.getSearchPath())].join(""));
-	}
-
-	// return REST URL as seen by server
+    //return REST URL as seen by the GetInfoResponse
+    var restUrl = appCtxt.get(ZmSetting.REST_URL);
+    if(restUrl){
+        restUrl = [restUrl,"/",AjxStringUtil.urlEncode(this.getSearchPath())].join("");
+        return restUrl;
+    }
+    
+    // return REST URL as seen by server
 	if (this.restUrl) {
 		return this.restUrl;
 	}
@@ -698,11 +662,10 @@ function() {
 	var loc = document.location;
 	var uname = this.owner || appCtxt.get(ZmSetting.USERNAME);
 	var host = loc.host;
-	var m = uname.match(/^(.*)@(.*)$/);
 
+	var m = uname.match(/^(.*)@(.*)$/);
 	uname = (m && m[1]) || uname;
 	host = (m && m[2]) || host;
-
 	// REVISIT: What about port? For now assume other host uses same port
 	if (loc.port && loc.port != 80) {
 		host = host + ":" + loc.port;
@@ -713,21 +676,9 @@ function() {
 		AjxStringUtil.urlEncode(this.getSearchPath())
 	].join("");
 
-	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
+	DBG.println("NO REST URL FROM SERVER. GENERATED URL: " + url);
 
 	return url;
-};
-
-ZmOrganizer.prototype.getAccount =
-function() {
-	if (appCtxt.multiAccounts) {
-		if (!this.account) {
-			this.account = ZmOrganizer.parseId(this.id).account;
-		}
-		return this.account;
-	}
-
-	return (this.account || appCtxt.accountList.mainAccount);
 };
 
 ZmOrganizer.prototype.getShares =
@@ -782,13 +733,20 @@ function() {
 	return false;
 };
 
-ZmOrganizer.prototype.getIcon = function() {};
-
-ZmOrganizer.prototype.getIconWithColor = function() {
-	var icon = this.getIcon() || "";
-	var color = this.rgb || this.color;
-	return color ? [icon,color].join(",color=") : icon;
+// XXX: temp method until we get better *server* support post Birdseye! (see bug #4434)
+// DO NOT REMOVE OR I WILL HUNT YOU DOWN AND SHOOT YOU.
+ZmOrganizer.prototype.setPermissions =
+function(permission) {
+	if (this.shares == null) {
+		AjxDispatcher.require("Share");
+		this.addShare(new ZmShare({parent:this, perm:permission}));
+	} else {
+		var share = this.getMainShare();
+		share.perm = permission;
+	}
 };
+
+ZmOrganizer.prototype.getIcon = function() {};
 
 // Actions
 
@@ -812,22 +770,15 @@ ZmOrganizer.prototype.setColor =
 function(color, callback, errorCallback) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) { return; }
-
+    /*if (color == ZmOrganizer.DEFAULT_COLOR[this.type]) {
+		color = 0;
+	}*/
 	this._organizerAction({action: "color", attrs: {color: color}, callback: callback, errorCallback: errorCallback});
 };
 
-ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback) {
-	if (this.rgb == rgb) { return; }
-	this._organizerAction({action: "color", attrs: {rgb: rgb}, callback: callback, errorCallback: errorCallback});
-};
-
-/**
- * Though it's possible to use this method to change just about any folder
- * attribute, it should only be used to set multiple attributes at once since it
- * has extra overhead on the server.
- *
- * @param attrs
- */
+// Though it's possible to use this method to change just about any folder attribute,
+// it should only be used to set multiple attributes at once since it has extra
+// overhead on the server.
 ZmOrganizer.prototype.update =
 function(attrs) {
 	this._organizerAction({action: "update", attrs: attrs});
@@ -840,17 +791,13 @@ function(attrs) {
 */
 ZmOrganizer.prototype.move =
 function(newParent) {
-	var newId = (newParent.nId > 0)
-		? newParent.id
-		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
-
+	var newId = (newParent.nId > 0) ? newParent.id : ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	if ((newId == this.id || newId == this.parent.id) ||
 		(this.type == ZmOrganizer.FOLDER && (ZmOrganizer.normalizeId(newId, this.type) == ZmFolder.ID_SPAM)) ||
 		(newParent.isChildOf(this)))
 	{
 		return;
 	}
-
 	if (newId == ZmOrganizer.ID_TRASH) {
 		this._organizerAction({action: "trash"});
 	}
@@ -861,9 +808,9 @@ function(newParent) {
 
 /**
 * Deletes an organizer. If it's a folder, the server deletes any contents and/or
-* subfolders. If it's Trash or Spam, the server deletes and re-creates the
-* folder. In that case, we don't bother to remove it from the UI (and we ignore
-* creates on system folders).
+* subfolders. If it's Trash or Spam, the server deletes and re-creates the folder.
+* In that case, we don't bother to remove it from the UI (and we ignore creates on
+* system folders).
 */
 ZmOrganizer.prototype._delete =
 function() {
@@ -877,35 +824,28 @@ function() {
 	this._organizerAction({action: action});
 };
 
-ZmOrganizer.prototype.empty = 
-function(doRecursive, batchCmd) {
-	doRecursive = doRecursive || false;
-
+ZmOrganizer.prototype._empty = 
+function() {
+	DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
-					 (this.nId == ZmFolder.ID_SPAM ||
-					  this.nId == ZmFolder.ID_TRASH ||
-					  this.nId == ZmFolder.ID_CHATS ||
-					  this.nId == ZmOrganizer.ID_SYNC_FAILURES));
-
+					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH || this.nId == ZmOrganizer.ID_SYNC_FAILURES));
 	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)
-	if (this.isSystem() && !isEmptyOp) { return; }
+	if (this.isSystem() && !isEmptyOp) return;
 
-	var params = {action:"empty", batchCmd:batchCmd};
-	params.attrs = (this.nId == ZmFolder.ID_TRASH)
-		? {recursive:true}
-		: {recursive:doRecursive};
-
+	var params = {action:"empty"};
+	if (this.id == ZmFolder.ID_TRASH) {
+		params.attrs = {recursive:"true"};
+	}
 	if (this.isRemote()) {
 		params.id = this.getRemoteId();
 	}
-
 	this._organizerAction(params);
 };
 
 ZmOrganizer.prototype.markAllRead =
-function(batchCmd) {
+function() {
 	var id = this.isRemote() ? this.getRemoteId() : null;
-	this._organizerAction({action: "read", id: id, attrs: {l: this.id}, batchCmd:batchCmd});
+	this._organizerAction({action: "read", id: id, attrs: {l: this.id}});
 };
 
 ZmOrganizer.prototype.sync =
@@ -917,26 +857,21 @@ function() {
 
 ZmOrganizer.prototype.notifyDelete =
 function() {
-	// select next reasonable organizer if the currently selected organizer is
-	// the one being deleted or is a descendent of the one being deleted
-	var tc = appCtxt.getOverviewController().getTreeController(this.type);
-	var treeView = tc.getTreeView(appCtxt.getCurrentApp().getOverviewId());
-
-	// treeview returns array of organizers for checkbox style trees
-	var organizers = treeView && treeView.getSelected();
-	if (organizers) {
-		if (!(organizers instanceof Array)) organizers = [organizers];
-		for (var i in organizers) {
-			var organizer = organizers[i];
-			if (organizer && (organizer == this || organizer.isChildOf(this))) {
-				var folderId = this.parent.id;
-				if (this.parent.nId == ZmOrganizer.ID_ROOT) {
-					folderId = ZmOrganizer.getSystemId(ZmOrganizer.DEFAULT_FOLDER[this.type]);
-				}
-				var skipNotify = false;
-				treeView.setSelected(folderId, skipNotify);
-			}
+	// select next reasonable organizer if the currently selected
+	// organizer is the one being deleted or is a descendent of the
+	// one being deleted
+	var overviewController = appCtxt.getOverviewController();
+	var treeController = overviewController.getTreeController(this.type);
+	var overviewId = appCtxt.getCurrentApp().getOverviewId();
+	var treeView = treeController.getTreeView(overviewId);
+	var organizer = treeView && treeView.getSelected();
+	if (organizer && (organizer == this || organizer.isChildOf(this))) {
+		var folderId = this.parent.id;
+		if (this.parent.nId == ZmOrganizer.ID_ROOT) {
+			folderId = ZmOrganizer.getSystemId(ZmOrganizer.DEFAULT_FOLDER[this.type]);
 		}
+		var skipNotify = false;
+		treeView.setSelected(folderId, skipNotify);
 	}
 
 	// perform actual delete
@@ -946,7 +881,7 @@ function() {
 
 ZmOrganizer.prototype.notifyCreate = function() {};
 
-/**
+/*
 * Handle modifications to fields that organizers have in general. Note that
 * the notification object may contain multiple notifications.
 *
@@ -958,17 +893,11 @@ function(obj, details) {
 	var doNotify = false;
 	var details = details || {};
 	var fields = {};
-	if (obj.name != null && (this.name != obj.name || this.id != obj.id)) {
-		if (obj.id == this.id) {
-			details.oldName = this.name;
-			this.name = obj.name;
-			fields[ZmOrganizer.F_NAME] = true;
-			this.parent.children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
-		} else {
-			// rename of a remote folder
-			details.newName = obj.name;
-			fields[ZmOrganizer.F_RNAME] = true;
-		}
+	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
+		details.oldName = this.name;
+		this.name = obj.name;
+		fields[ZmOrganizer.F_NAME] = true;
+		this.parent.children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
 		doNotify = true;
 	}
 	if (obj.u != null && this.numUnread != obj.u) {
@@ -986,16 +915,10 @@ function(obj, details) {
 		fields[ZmOrganizer.F_SIZE] = true;
 		doNotify = true;
 	}
-	if ((obj.rgb != null || obj.color != null) && !obj._isRemote) {
+	if (obj.color != null && !obj._isRemote) {
 		var color = ZmOrganizer.checkColor(obj.color);
 		if (this.color != color) {
 			this.color = color;
-			fields[ZmOrganizer.F_COLOR] = true;
-		}
-		if (obj.rgb != this.rgb) {
-			this.rgb = obj.rgb;
-			fields[ZmOrganizer.F_RBG] = true;
-			// NOTE: Denote color change for code looking at "color" property.
 			fields[ZmOrganizer.F_COLOR] = true;
 		}
 		doNotify = true;
@@ -1027,13 +950,6 @@ function(obj, details) {
 		fields[ZmOrganizer.F_SHARES] = true;
 		doNotify = true;
 	}
-	if (obj.perm && obj._isRemote) {
-		fields[ZmOrganizer.F_PERMS] = true;
-		doNotify = true;
-
-		// clear acl-related flags so they are recalculated
-		this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
-	}
 
 	// Send out composite MODIFY change event
 	if (doNotify) {
@@ -1041,15 +957,13 @@ function(obj, details) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	if (this.parent && obj.l != null && obj.l != this.parent.id) {
+	if (this.parent && obj.l != null && obj.l != this.parent.id && !obj._isRemote) {
 		var newParent = this._getNewParent(obj.l);
-		if (newParent) {
-			this.reparent(newParent);
-			this._notify(ZmEvent.E_MOVE);
-			// could be moving search between Folders and Searches - make sure
-			// it has the correct tree
-			this.tree = newParent.tree;
-		}
+		this.reparent(newParent);
+		this._notify(ZmEvent.E_MOVE);
+		// could be moving search between Folders and Searches - make sure
+		// it has the correct tree
+		this.tree = newParent.tree;
 	}
 };
 
@@ -1184,10 +1098,11 @@ function(id) {
 };
 
 /**
-* Returns the first organizer found with the given name, starting from the root.
-*
-* @param name		the name to search for
-*/
+ * Returns the first organizer found with the given name, starting from the root.
+ *
+ * @param name		[String]		the name to search for
+ * @param skipImap	[Boolean]*		If true, skips imap datasources during name lookup
+ */
 ZmOrganizer.prototype.getByName =
 function(name, skipImap) {
 	return this._getByName(name.toLowerCase(), skipImap);
@@ -1212,9 +1127,7 @@ function(type, list) {
 	}
 	var a = this.children.getArray();
 	for (var i = 0; i < a.length; i++) {
-		if (a[i]) {
-			a[i]._getByType(type, list);
-		}
+		a[i]._getByType(type, list);
 	}
 };
 
@@ -1245,7 +1158,7 @@ function(path, useSystemName) {
 			return organizer;
 		}
 	}
-	return null;
+	return null;	
 };
 
 /**
@@ -1285,7 +1198,7 @@ function(parentId) {
 
 ZmOrganizer.prototype.isUnder =
 function(id) {
-	if (this.nId == id || (this.isRemote() && this.rid == id)) { return true; }
+	if (this.nId == id) { return true; }
 
 	var parent = this.parent;
 	while (parent && parent.nId != ZmOrganizer.ID_ROOT) {
@@ -1302,75 +1215,42 @@ function() {
 	return this.isUnder(ZmOrganizer.ID_TRASH);
 };
 
-ZmOrganizer.prototype.isPermAllowed =
-function(perm) {
-	if (this.perm) {
-		var positivePerms = this.perm.replace(/-./g, "");
-		return (positivePerms.indexOf(perm) != -1);
-	}
-	return false;
-};
-
 ZmOrganizer.prototype.isReadOnly =
 function() {
-	if (this._isReadOnly == null) {
+	if (!this._isReadOnly) {
 		var share = this.getMainShare();
-		this._isReadOnly = (share != null)
-			? (this.isRemote() && !share.isWrite())
-			: (this.isRemote() && this.isPermAllowed(ZmOrganizer.PERM_READ) && !this.isPermAllowed(ZmOrganizer.PERM_WRITE));
+		this._isReadOnly = (this.isRemote() && share && !share.isWrite());
 	}
 	return this._isReadOnly;
 };
 
 ZmOrganizer.prototype.isAdmin =
 function() {
-	if (this._isAdmin == null) {
+	if (!this._isAdmin) {
 		var share = this.getMainShare();
-		this._isAdmin = (share != null)
-			? (this.isRemote() && share.isAdmin())
-			: (this.isRemote() && this.isPermAllowed(ZmOrganizer.PERM_ADMIN));
+		this._isAdmin = (this.isRemote() && share && share.isAdmin());
 	}
 	return this._isAdmin;
 };
 
 ZmOrganizer.prototype.hasPrivateAccess =
 function() {
-	if (this._hasPrivateAccess == null) {
+	if (!this._hasPrivateAccess) {
 		var share = this.getMainShare();
-		this._hasPrivateAccess = (share != null)
-			? (this.isRemote() && share.hasPrivateAccess())
-			: (this.isRemote() && this.isPermAllowed(ZmOrganizer.PERM_PRIVATE));
+		this._hasPrivateAccess = (this.isRemote() && share && share.hasPrivateAccess());
 	}
 	return this._hasPrivateAccess;
 };
 
-/**
- * Returns true if this organizer is "remote". That applies to mountpoints (links),
- * the folders they represent, and any subfolders we know about.
- */
 ZmOrganizer.prototype.isRemote =
 function() {
 	if (this._isRemote == null) {
 		if (this.zid != null) {
 			this._isRemote = true;
 		} else {
-			if (appCtxt.multiAccounts) {
-				var account = this.account;
-				var parsed = ZmOrganizer.parseId(this.id);
-
-				if (!account) {
-					if (parsed.account && parsed.account.isMain) {
-						this._isRemote = false;
-						return this._isRemote;
-					} else {
-						account = appCtxt.getActiveAccount();
-					}
-				}
-				this._isRemote = (parsed.account && (parsed.account != account));
-			} else {
-				var id = String(this.id);
-				this._isRemote = ((id.indexOf(":") != -1) && (id.indexOf(appCtxt.getActiveAccount().id) != 0));
-			}
+			var acct = appCtxt.getActiveAccount();
+			var id = String(this.id);
+			this._isRemote = ((id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0));
 		}
 	}
 	return this._isRemote;
@@ -1397,8 +1277,8 @@ function () {
 * Returns true if this folder maps to a datasource. If type is given, returns
 * true if folder maps to a datasource *and* is of the given type.
 *
-* @param		type			[Int]*		Either ZmAccount.TYPE_POP or ZmAccount.TYPE_IMAP
-* @param		checkParent		[Boolean]*	walk up the parent chain
+* @type			[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
+* @checkParent	[Boolean]*	walk up the parent chain
 */
 ZmOrganizer.prototype.isDataSource =
 function(type, checkParent) {
@@ -1411,12 +1291,12 @@ function(type, checkParent) {
 * returns non-null result only if folder maps to datasource(s) *and* is of the
 * given type.
 *
-* @param		type			[Int]*		Either ZmAccount.TYPE_POP or ZmAccount.TYPE_IMAP
-* @param		checkParent		[Boolean]*	walk up the parent chain
+* @type			[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
+* @checkParent	[Boolean]*	walk up the parent chain
 */
 ZmOrganizer.prototype.getDataSources =
 function(type, checkParent) {
-	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) { return null; }
+	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) { return null };
 
 	var dsc = appCtxt.getDataSourceCollection();
 	var dataSources = dsc.getByFolderId(this.nId, type);
@@ -1466,27 +1346,14 @@ function(params) {
 	actionNode.setAttribute("op", params.action);
 	actionNode.setAttribute("id", params.id || this.id);
 	for (var attr in params.attrs) {
-		if (AjxEnv.isIE) {
-			params.attrs[attr] += ""; //To string
-		}
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, params);
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
 	} else {
-		var accountName;
-		if (appCtxt.multiAccounts) {
-			accountName = (this.account) 
-				? this.account.name : appCtxt.accountList.mainAccount.name;
-		}
-		appCtxt.getAppController().sendRequest({
-			soapDoc: soapDoc,
-			asyncMode: true,
-			accountName: accountName,
-			callback: respCallback,
-			errorCallback: params.errorCallback
-		});
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
+											    callback:respCallback, errorCallback:params.errorCallback});
 	}
 };
 
@@ -1509,7 +1376,7 @@ function(name, skipImap) {
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
 		if (organizer = a[i]._getByName(name, skipImap)) {
-			if (skipImap && organizer.isDataSource(ZmAccount.TYPE_IMAP, true)) {
+			if (skipImap && organizer.isDataSource(ZmAccount.IMAP, true)) {
 				continue;
 			}
 			return organizer;
@@ -1523,7 +1390,7 @@ ZmOrganizer.prototype._parseFlags =
 function(str) {
 	for (var i = 0; i < ZmOrganizer.ALL_FLAGS.length; i++) {
 		var flag = ZmOrganizer.ALL_FLAGS[i];
-		this[ZmOrganizer.FLAG_PROP[flag]] = (Boolean(str && (str.indexOf(flag) != -1)));
+		this[ZmOrganizer.FLAG_PROP[flag]] = (str && (str.indexOf(flag) != -1)) ? true : false;
 	}
 };
 
@@ -1587,7 +1454,7 @@ function(name, showUnread, noMarkup) {
 		name = AjxStringUtil.htmlEncode(name, true);
 	}
 	if (showUnread && this.numUnread > 0) {
-        name = AjxMessageFormat.format(ZmMsg.folderUnread, [name, this.numUnread]);
+		name = [name, " (", this.numUnread, ")"].join("");
 		if (!noMarkup) {
 			name = ["<span style='font-weight:bold'>", name, "</span>"].join("");
 		}

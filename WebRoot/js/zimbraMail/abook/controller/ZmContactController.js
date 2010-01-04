@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -33,6 +35,10 @@ function() {
 
 ZmContactController.prototype.show =
 function(contact, isDirty) {
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.CONTACTS).getOverviewPanelContent().setEnabled(false);
+	}
+
 	this._contact = contact;
 	this._currentView = this._getViewType();
 	if (isDirty) this._contactDirty = true;
@@ -45,7 +51,7 @@ function(contact, isDirty) {
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	this._setView({view:this._currentView, elements:elements, isTransient:true});
+	this._setView(this._currentView, elements, false, false, false, true);
 };
 
 ZmContactController.prototype.getKeyMapName =
@@ -112,7 +118,7 @@ ZmContactController.prototype._getViewType =
 function() {
 	if (this._contact.isGroup()) {
 		return ZmId.VIEW_GROUP; 
-	} else if (this._contact.isMyCard) {
+	} else if (this._contact.isMyCard && this._contact.isMyCard()) {
 		return ZmId.VIEW_MY_CARD;
 	} else {
 		return ZmId.VIEW_CONTACT;
@@ -124,13 +130,13 @@ function(view) {
 	if (!this._listView[view]) {
 		switch (view) {
 			case ZmId.VIEW_CONTACT:
-		    	this._listView[view] = new ZmEditContactView(this._container, this, false);
+		    	this._listView[view] = new ZmContactView(this._container, this, false);
 				break;
 			case ZmId.VIEW_GROUP:
 		    	this._listView[view] = new ZmGroupView(this._container, this);
 				break;
 			case ZmId.VIEW_MY_CARD:
-		    	this._listView[view] = new ZmEditContactView(this._container, this, true);
+		    	this._listView[view] = new ZmContactView(this._container, this, true);
 				break;
 		}
 	}
@@ -140,10 +146,8 @@ ZmContactController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
-	var tb = this._toolbar[view];
-
 	// change the cancel button to "close" if editing existing contact
-	var cancelButton = tb.getButton(ZmOperation.CANCEL);
+	var cancelButton = this._toolbar[view].getButton(ZmOperation.CANCEL);
 	if (this._contact.id == undefined || this._contact.isGal) {
 		cancelButton.setText(ZmMsg.cancel);
 		cancelButton.setImage("Cancel");
@@ -151,18 +155,6 @@ function(view) {
 		cancelButton.setText(ZmMsg.close);
 		cancelButton.setImage("Close");
 	}
-
-	var printButton = tb.getButton(ZmOperation.PRINT);
-	if (printButton) {
-		printButton.setText(ZmMsg.print);
-	}
-
-    var saveButton = tb.getButton(ZmOperation.SAVE);
-    if (saveButton) {
-        saveButton.setToolTipContent(ZmMsg.saveContactTooltip);
-    }
-
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
 
 ZmContactController.prototype._getTagMenuMsg =
@@ -178,7 +170,13 @@ function(view) {
 		delete this._contactDirty;
 	}
 
-	this._tabGroup = cv.getTabGroupMember();
+	if (cv._contactTabView) {
+		// create a tab group for the first tab
+		var tabIdx = cv._contactTabView.getCurrentTab();
+		if (!this._tabGroups[view][tabIdx]) {
+			this._tabGroup = this._createTabGroup(tabIdx);
+		}
+	}
 };
 
 ZmContactController.prototype._createTabGroup =
@@ -223,7 +221,7 @@ function(parent, num) {
 		ZmListController.prototype._resetOperations.call(this, parent, num);
 	}
 
-	if (this._contact.isMyCard) {
+	if (this._contact.isMyCard()) {
 		parent.enable([ZmOperation.DELETE], false);
 	}
 };
@@ -272,7 +270,7 @@ function(ev, bIsPopCallback) {
 		else
 		{
 			if (contact.id && !contact.isGal) {
-				if (view.isEmpty() && !contact.isMyCard) { //If contact empty, alert the user
+				if (view.isEmpty() && !contact.isMyCard()) { //If contact empty, alert the user
                     var ed = appCtxt.getMsgDialog();
                     ed.setMessage(ZmMsg.emptyContactSave, DwtMessageDialog.CRITICAL_STYLE);
                     ed.popup();
@@ -280,11 +278,12 @@ function(ev, bIsPopCallback) {
                     bIsPopCallback = true;
                 } else {
 					this._doModify(contact, mods);
+                    if (appCtxt.zimletsPresent()) {
+                        appCtxt.getZimletMgr().notifyZimlets("onContactModified", ZmZimletContext._translateZMObject(contact), mods);
+                    }
                 }
 			} else {
-				var clc = AjxDispatcher.run("GetContactListController");
-				var list = (clc && clc.getList()) || new ZmContactList(null);
-				this._doCreate(list, mods);
+				this._doCreate(AjxDispatcher.run("GetContacts"), mods);
 			}
 		}
 	} else {
@@ -312,12 +311,6 @@ function(ev, bIsPopCallback) {
 ZmContactController.prototype._cancelListener = 
 function(ev) {
 	this._app.popView();
-};
-
-ZmContactController.prototype._printListener =
-function(ev) {
-	var url = "/h/printcontacts?id=" + this._contact.id;
-	window.open(appContextPath+url, "_blank");
 };
 
 ZmContactController.prototype._doDelete = 
@@ -349,6 +342,13 @@ function(view, force) {
 	ps.popup(view._getDialogXY());
 	
 	return false;
+};
+
+ZmContactController.prototype._postHideCallback =
+function() {
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.CONTACTS).getOverviewPanelContent().setEnabled(true);
+	}
 };
 
 ZmContactController.prototype._preUnloadCallback =

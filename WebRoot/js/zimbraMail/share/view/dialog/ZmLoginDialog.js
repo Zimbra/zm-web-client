@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -94,6 +96,7 @@ function(username, bReloginMode) {
 
 ZmLoginDialog.prototype.setVisible = 
 function(visible, transparentBg) {
+	this.applyCaretHack();
 	DwtComposite.prototype.setVisible.call(this, visible);
 
 	// Disable keyboard nav for re-login dialog
@@ -124,11 +127,6 @@ function(visible, transparentBg) {
 	}
 
 	Dwt.setHandler(this.getHtmlElement(), DwtEvent.ONKEYDOWN, ZLoginFactory.handleKeyPress);
-
-	var passwordField = ZLoginFactory.get(ZLoginFactory.PASSWORD_ID);
-	if (passwordField && passwordField.focus) {
-		passwordField.focus();
-	}
 };
 
 ZmLoginDialog.prototype.addChild =
@@ -158,15 +156,9 @@ function() {
 
 ZmLoginDialog._loginListener =
 function(target) {
-	// Get the dialog instance.
-	var element = target;
-	while (element) {
-		var object = DwtControl.fromElement(element);
-		if (object instanceof ZmLoginDialog) {
-			object._loginSelListener();
-			break;
-		}
-		element = element.parentNode;
+	var dialog = DwtControl.fromElement(target);
+	if (dialog) {
+		dialog._loginSelListener();
 	}
 };
 

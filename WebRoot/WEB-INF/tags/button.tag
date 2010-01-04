@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="src" rtexprvalue="true" required="false" %>
 <%@ attribute name="tooltip" rtexprvalue="true" required="false" %>
@@ -36,9 +20,13 @@
 </c:choose>
 <c:if test="${width}"><c:set var="width" value="${width}"/></c:if>
 <c:if test="${not empty src}">
-    <td height="100%" nowrap="nowrap" valign="middle"><input ${extra} <c:if test="${not empty id}">id="I${id}"</c:if> <c:if test="${disabled}">disabled </c:if> name="${name}" type="image" src="<app:imgurl value='${src}' />" <c:if test="${not empty tooltip}">alt="${fn:escapeXml(tooltip)}" title="${fn:escapeXml(tooltip)}" </c:if> <c:if test="${not empty clazz}">class='${clazz}'</c:if>></td>
+    <td height="100%" nowrap="nowrap" valign="middle" style="padding: 0 0px 0 2px;">
+        <input ${extra} <c:if test="${not empty id}">id="I${id}"</c:if> <c:if test="${disabled}">disabled </c:if> name="${name}" type="image" src="<app:imgurl value='${src}' />" <c:if test="${not empty tooltip}">alt="${fn:escapeXml(tooltip)}" title="${fn:escapeXml(tooltip)}" </c:if> <c:if test="${not empty clazz}">class='${clazz}'</c:if>>
+    </td>
 </c:if>
 <c:if test="${not empty text}">
-    <td height="100%" <c:if test="${not empty width}">width="${width}"</c:if>  valign="middle" class="IEbutton"><input align=left ${extra} <c:if test="${not empty id}">id="S${id}"</c:if> <c:if test="${disabled}">disabled class='ImgDisabled' </c:if> <c:if test="${not empty clazz}">class="${clazz}"</c:if> name="${name}" type="submit" value="${fn:escapeXml(text)}" <c:if test="${not empty tooltip}">title="${fn:escapeXml(tooltip)}"</c:if>></td>
+    <td height="100%" <c:if test="${not empty width}">width="${width}"</c:if>  valign="middle" style="padding: 0px 0px 0px 2px;">
+        <input align=left ${extra} <c:if test="${not empty id}">id="S${id}"</c:if> <c:if test="${disabled}">disabled class='ImgDisabled' </c:if> <c:if test="${not empty clazz}">class="${clazz}"</c:if>  name="${name}" type="submit" value="${fn:escapeXml(text)}"  <c:if test="${not empty tooltip}">title="${fn:escapeXml(tooltip)}"</c:if>>
+    </td>
 </c:if>
     

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -24,12 +26,14 @@ ZmVoicemailListController = function(container, app) {
 	this._listeners[ZmOperation.FORWARD_BY_EMAIL] = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.MARK_HEARD] = new AjxListener(this, this._markHeardListener);
 	this._listeners[ZmOperation.MARK_UNHEARD] = new AjxListener(this, this._markUnheardListener);
+	this._listeners[ZmOperation.ADD_CALLER_FORWARD] = new AjxListener(this, this._addToForwardListener);
+	this._listeners[ZmOperation.ADD_CALLER_REJECT] = new AjxListener(this, this._addToRejectListener);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 
 	this._markingHeard = {}; // Prevents repeated markHeard requests during playback.
-}
+};
 ZmVoicemailListController.prototype = new ZmVoiceListController;
 ZmVoicemailListController.prototype.constructor = ZmVoicemailListController;
 
@@ -44,7 +48,7 @@ function(searchResult, folder) {
 		this._getView().stopPlaying(true);
 	}
 	this._markingHeard = {};
-	ZmVoiceListController.prototype.show.call(this, searchResult, folder)
+	ZmVoiceListController.prototype.show.call(this, searchResult, folder);
 };
 
 ZmVoicemailListController.prototype._defaultView =
@@ -55,6 +59,11 @@ function() {
 ZmVoicemailListController.prototype._getViewType = 
 function() {
 	return ZmId.VIEW_VOICEMAIL;
+};
+
+ZmVoicemailListController.prototype._getItemType =
+function() {
+	return ZmItem.VOICEMAIL;
 };
 
 ZmVoicemailListController.prototype._createNewView = 
@@ -99,6 +108,9 @@ function() {
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.DOWNLOAD_VOICEMAIL);
 	list.push(ZmOperation.DELETE);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.ADD_CALLER_FORWARD);
+	list.push(ZmOperation.ADD_CALLER_REJECT);
 	return list;
 };
 
@@ -153,6 +165,11 @@ function(parent, num) {
 			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.del, "Delete");
 		}
 	}
+
+	var items = this._listView[this._currentView].getSelection();
+	var canAdd = (items && items.length>0) && this._checkCanAddToList();
+	parent.enable(ZmOperation.ADD_CALLER_FORWARD, canAdd);
+	parent.enable(ZmOperation.ADD_CALLER_REJECT, canAdd);
 };
 
 ZmVoicemailListController.prototype.getKeyMapName =
@@ -261,15 +278,15 @@ function(ev) {
 	var folderId = folderType + "-" + phone.name;
 	var destination = phone.folderTree.getById(folderId);
 	var list = items[0].list;
-	list.moveItems({items:items, folder:destination});
+	list.moveItems(items, destination);
 };
 
 // This is being called directly by ZmVoiceList.
 ZmVoicemailListController.prototype._handleResponseMoveItems = 
-function(params) {
+function(items) {
 	var view = this._getView();
-	for (var i = 0, count = params.items.length; i < count; i++) {
-		view.removeItem(params.items[i]);
+	for(var i = 0, count = items.length; i < count; i++) {
+		view.removeItem(items[i]);
 	}
 	this._checkReplenish();
 	this._resetToolbarOperations();
@@ -426,3 +443,49 @@ function(event) {
 		appCtxt.setStatusMsg(event.errorDetail, ZmStatusView.LEVEL_CRITICAL);
 	}
 };
+
+ZmVoicemailListController.prototype._getPhoneFromCombination = 
+function(selection, errors) {
+	var phoneFromCombination = {};
+	
+	var compareFunction = function() {
+		return this.name;
+	}
+	
+	for (var i=0; i<selection.length; i++) {
+		var voicemail = selection[i];	
+		var phone = voicemail.getPhone();
+		var from = voicemail.getCallingParty(ZmVoiceItem.FROM);
+	
+		if (phone.validate(from.name, errors)) {
+			if (!phoneFromCombination[phone.name])
+				phoneFromCombination[phone.name] = {phone: phone, addFrom: new AjxVector()};
+			
+			if (!phoneFromCombination[phone.name].addFrom.containsLike(from, compareFunction))
+				phoneFromCombination[phone.name].addFrom.add(from);
+		}
+	}
+	return phoneFromCombination;
+}
+
+ZmVoicemailListController.prototype._checkCanAddToList = 
+function() {
+	var selection = this._getView().getSelection();
+	if (AjxUtil.isArray(selection)) {
+		for (var i=0; i<selection.length; i++) {
+			var voicemail = this._getView().getSelection()[i];
+			if (voicemail) {
+				var phone = voicemail.getPhone(); // ZmPhone
+				if (phone) {
+					var from = voicemail.getCallingParty(ZmVoiceItem.FROM); // ZmCallingParty
+					if (from) {
+						var number = ZmPhone.calculateName(from.getDisplay());
+						if (phone.validate(number, []))
+							return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}

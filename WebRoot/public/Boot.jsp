@@ -2,7 +2,7 @@
 <%--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
-Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+Copyright (C) 2006, 2007 Zimbra, Inc.
 
 The contents of this file are subject to the Yahoo! Public License
 Version 1.0 ("License"); you may not use this file except in
@@ -35,11 +35,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 
     String ext = (String)request.getAttribute("fileExtension");
     if (ext == null) ext = "";
-
-    String offline = (String)request.getAttribute("offline");
-    if (offline == null) offline = application.getInitParameter("offlineMode");
-    boolean isOfflineMode = offline != null && offline.equals("true");
-
 %>
 <!-- bootstrap classes -->
 <% if (isDevMode) { %>
@@ -47,7 +42,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 <% } else { %>
 	<script type="text/javascript">
 	<jsp:include>
-		<jsp:attribute name='page'>/js/Boot_all.js<%= isDevMode || isOfflineMode ? "" : ".min" %></jsp:attribute>
+		<jsp:attribute name='page'>/js/Boot_all.js<%= isDevMode ? "" : ".min" %></jsp:attribute>
 	</jsp:include>
 	</script>
 <% } %>

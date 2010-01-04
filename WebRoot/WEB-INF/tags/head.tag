@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="scriptless" %>
 <%@ attribute name="title" rtexprvalue="true" required="false" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
@@ -44,44 +28,50 @@
 		<link rel="stylesheet" type="text/css" href="${cssurl}">
     </c:if>
 
-    <style type="text/css" media="screen">
-        .dragoverclass{
-            background-color:orange;
-        }
-        .proxy{
-            background-color : #cecece;
-            border : 2px solid #ccc;
-            cursor : move;
-            color : #000;
-        }
-        .proxy a {
-            text-decoration : none;
-        }
-    </style>
-	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
-	<c:if test="${empty favIconUrl}">
-        <fmt:message key="favIconUrl" var="favIconUrl"/>
-	</c:if>
+    <script type="text/javascript" src="../yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js"></script>
+
+    <c:if test="${(param.action eq 'compose' and (mailbox.prefs.composeFormat eq 'html' or mailbox.prefs.forwardReplyInOriginalFormat)) or (param.selected eq 'signatures')}">
+        
+        <link rel="stylesheet" type="text/css" href="../yui/2.5.1/assets/skins/sam/skin.css" />
+        <script type="text/javascript" src="../yui/2.5.1/element/element-beta-min.js"></script>
+        <!-- Needed for Menus, Buttons and Overlays used in the Toolbar -->
+        <script src="../yui/2.5.1/container/container_core-min.js"></script>
+
+        <script src="../yui/2.5.1/menu/menu-min.js"></script>
+
+        <script src="../yui/2.5.1/button/button-min.js"></script>
+        <!-- Source file for Rich Text Editor-->
+        <script src="../yui/2.5.1/editor/editor-beta-min.js"></script>
+
+
+		<script src="../yui/spellcheck/spellcheck.js"></script>
+		<style type="text/css" media="screen">
+			.yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck span.yui-toolbar-icon {
+				background-image: url( ../yui/spellcheck/img/ImgSpellCheck.gif );
+				background-position: 1px 0px;
+				top: 1px;
+				left: 4px;
+			}
+			.yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck-selected span.yui-toolbar-icon {
+				background-image: url( ../yui/spellcheck/img/ImgSpellCheck.gif );
+				background-position: 1px 0px;
+				top: 1px;
+				left: 4px;
+			}
+			.yui-spellcheck-list {
+				cursor: pointer;
+			}
+			.yui-skin-sam .yui-editor-panel .yui-spellcheck-list li {
+				padding-left: 5px;
+			}
+		</style>
+    </c:if>
+
+    <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
     <jsp:doBody/>
 
-    <script type="text/javascript">
-
-        function checkAll(cb, allbox) {
-            if (cb.length)
-                for (i = 0; i < cb.length; i++)
-                    cb[i].checked = allbox.checked;
-            else
-                cb.checked = allbox.checked;
-        }
-
-    </script>
-	<script type="text/javascript" src="../yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js"></script>
-    <c:if test="${param.selected eq 'signatures'}">
-        <app:yuiInclude/>
-    </c:if>
-    
-	<c:set var="mailidlesessiontimeout" value="${mailbox.attrs.zimbraMailIdleSessionTimeout[0]}"/>
+    <c:set var="mailidlesessiontimeout" value="${mailbox.attrs.zimbraMailIdleSessionTimeout[0]}"/>
     <c:set var="timeinmillisec" value=""/>
     <c:if test="${not empty mailidlesessiontimeout}">
         <c:set var="timeoutduration" value="${fn:substring(mailidlesessiontimeout,fn:length(mailidlesessiontimeout)-1, -1)}"/>
@@ -131,4 +121,16 @@
         </c:if>
     </c:if>
     
+
+    <script type="text/javascript">
+
+        function checkAll(cb, allbox) {
+            if (cb.length)
+                for (i = 0; i < cb.length; i++)
+                    cb[i].checked = allbox.checked;
+            else
+                cb.checked = allbox.checked;
+        }
+
+    </script>
 </head>

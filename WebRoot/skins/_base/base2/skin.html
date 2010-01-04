@@ -16,6 +16,20 @@
 						<td id='skin_spacing_search'>
 							<div id='skin_container_search' class='skin_container'></div>
 						</td>
+						<td id='skin_spacing_web_search'>
+							<div id='skin_container_web_search' class='skin_container'>
+								<table width=100% cellspacing=0 cellpadding=0>
+									<tr>
+										<td width='100%' class='DwtInputField-hint'>
+											<input id='skin_search_web_input' value='Search the Web...' style='width:100%;' onfocus='skin.searchWebFocus(event,this)' onblur='skin.searchWebBlur(event,this)' onkeypress='return skin.searchWebKey(event, this)'>
+										</td>
+										<td style='padding-left:3px;'>
+											<button class='DwtButton' style='height:24px' onclick='skin.searchWeb(skin._getEl("skin_search_web_input").value)'><div class='ImgWebSearch'></div></button>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</td>
 						<td id='skin_container_links' class='skin_table'>
 						</td>
 					</tr>
@@ -39,17 +53,24 @@
 								<tr>
 									<td id='skin_spacing_tree_top'>
 										<div id='skin_container_tree_top' class='skin_container'>
-											<div id='skin_container_username' class='skin_container'></div>
-											<div id='skin_container_quota' class='skin_container'></div>
-										</div>
-										<div id='skin_container_tree_top_offline' class='skin_container'>
-											<table border=0 cellpadding=0 cellspacing=0 width=100%>
+											<table class='skin_table' cellspacing=0 cellpadding=0 border=0>
 												<tr>
-													<td><div id='skin_container_account' class='skin_container'></div></td>
-													<td width=16><div id='skin_container_network' class='skin_container'></div></td>
+													<td style="align:center;">
+														<div id='skin_container_offline_status'></div>
+														<div id='skin_container_username' class='skin_container'></div>
+														<div id='skin_container_quota' class='skin_container'></div>
+													</td>
+													<td width="1%" style="align:center;">
+														<div id='skin_container_presence'></div>
+													</td>
 												</tr>
 											</table>
 										</div>
+									</td>
+								</tr>
+								<tr>
+									<td id='skin_spacing_current_app'>
+										<div id='skin_container_current_app' class='skin_container'></div>
 									</td>
 								</tr>
 								<tr id='skin_tr_tree_top_ad' class='skin_outer_ad'>
@@ -96,11 +117,6 @@
 										<div id='skin_container_app_main' class='skin_container'></div>
 									</td>
 								</tr>
-								<tr id='skin_tr_taskbar'>
-									<td id='skin_spacing_taskbar'>
-										<div id='skin_container_taskbar' class='skin_container'/>
-									</td>
-								</tr>
 							</table>
 						</td>
 						<td id='skin_td_sidebar_ad' class='skin_outer_ad'>
@@ -117,4 +133,5 @@
 		</tr>
 	</table>
 </div>
+<script>document.getElementById('skin_search_web_input').value = ZmMsg.searchWebPrompt</script>
 <!-- END SKIN -->

@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -32,12 +16,14 @@
 <c:choose>
     <c:when test="${zm:actionSet(param, 'actionDelete')}">
         <zm:trashVoiceMail var="result" phone="${phone}" id="${ids}"/>
-		<c:redirect url="/h/search">
+		<c:url var="url" value="/h/search">
 			<c:param name="st" value="voicemail"/>
 			<c:param name="sq" value="phone:${phone} in:\"Voicemail Inbox\""/>
 			<c:param name="action" value="actionMessageMovedTrash"/>
 			<c:param name="doVoiceMailListViewAction" value="1"/>
-		</c:redirect>
+		</c:url>
+		<zm:redirect url="${url}"/>
+
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionUndelete')}">
         <zm:untrashVoiceMail var="result" phone="${phone}" id="${ids}"/>
@@ -105,7 +91,7 @@
                 <fmt:param value="${result.idCount}"/>
             </fmt:message>
         </app:status>
-	</c:when>
+    </c:when>
     <c:when test="${zm:actionSet(param, 'actionMarkUnheard')}">
         <zm:markVoiceMailHeard var="result" phone="${phone}" id="${ids}" heard="false"/>
         <app:status>
@@ -114,6 +100,54 @@
             </fmt:message>
         </app:status>
     </c:when>
+
+    <c:when test="${zm:actionSet(param, 'actionAddToForward')}">
+	<zm:addToForwardFeature var="result" phone="${phone}" voiceId="${paramValues.voiceId}" error="error" max="12"/>
+	<c:set var="selectiveCallForwardingFrom" scope="session" value="${null}"/>
+	<c:set var="selectiveCallForwardingFetched" scope="session" value="${false}"/>
+	<c:choose>
+	    <c:when test="${result==1}">
+	        <app:status><fmt:message key="actionCallerAddedToForwardSi"/></app:status>
+	    </c:when>
+	    <c:when test="${result>1}">
+	        <app:status><fmt:message key="actionCallerAddedToForwardPl">
+		    <fmt:param value="${result}"/>
+		</fmt:message></app:status>
+	    </c:when>
+	    <c:when test="${error=='voice.SELECTIVE_CALL_FORWARD_ALREADY_IN_LIST'}">
+	        <app:status><fmt:message key="actionCallerAlreadyInForward"/></app:status>
+	    </c:when>
+	    <c:otherwise>
+		<app:status style="Error">
+		<fmt:message key="actionCallerAddForwardError"/>
+		</app:status>
+	    </c:otherwise>
+	</c:choose>
+    </c:when>
+																										    
+    <c:when test="${zm:actionSet(param, 'actionAddToReject')}">
+	<zm:addToRejectFeature var="result" phone="${phone}" voiceId="${paramValues.voiceId}" error="error" max="12"/>
+        <c:choose>
+	    <c:when test="${result==1}">
+	        <app:status><fmt:message key="actionCallerAddedToRejectSi"/></app:status>
+	    </c:when>
+	    <c:when test="${result>1}">
+	        <app:status><fmt:message key="actionCallerAddedToRejectPl">
+	            <fmt:param value="${result}"/>
+	        </fmt:message></app:status>
+	    </c:when>
+	    <c:when test="${error=='voice.SELECTIVE_CALL_REJECT_ALREADY_IN_LIST'}">
+	        <app:status><fmt:message key="actionCallerAlreadyInReject"/></app:status>
+	    </c:when>
+	    <c:otherwise>
+	        <app:status style="Error">
+	            <%-- ${error} --%>
+	            <fmt:message key="actionCallerAddRejectError"/>
+	        </app:status>
+	    </c:otherwise>
+        </c:choose>
+    </c:when>
+
 	<c:otherwise>
 		<app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
 	</c:otherwise>

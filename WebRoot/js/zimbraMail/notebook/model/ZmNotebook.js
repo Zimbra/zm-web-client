@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -86,11 +88,9 @@ ZmNotebook.prototype.getSearchPath = function() {
 ZmNotebook.prototype.notifyCreate =
 function(obj) {
 	var notebook = ZmFolderTree.createFromJs(this, obj, this.tree);
-	if (notebook) {
-		var index = ZmOrganizer.getSortIndex(notebook, ZmNotebook.sortCompare);
-		this.children.add(notebook, index);
-		notebook._notify(ZmEvent.E_CREATE);
-	}
+	var index = ZmOrganizer.getSortIndex(notebook, ZmNotebook.sortCompare);
+	this.children.add(notebook, index);
+	notebook._notify(ZmEvent.E_CREATE);
 };
 
 ZmNotebook.prototype.notifyModify =
@@ -183,24 +183,4 @@ function(callback, name, response) {
 		this.notifyModify(obj);
 	}
 	callback.run(response);
-};
-
-ZmNotebook.prototype.createQuery =
-function(pathOnly) {
-    if (!this.isRemote() && this.isSystem()) {
-		var qName = ZmFolder.QUERY_NAME[this.nId];
-		return pathOnly
-			? qName
-			: ("in:" + (qName || ('"'+this.name+'"')));
-	}
-
-	var path = this.name;
-	var f = this.parent;
-	while (f && (f.nId != ZmFolder.ID_ROOT) && f.name.length) {
-		var name = f.isSystem() ? ZmFolder.QUERY_NAME[f.nId] : f.name;
-		path = name + "/" + path;
-		f = f.parent;
-	}
-	path = '"' + path + '"';
-	return pathOnly ? path : ("in:" + path);
 };

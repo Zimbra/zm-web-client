@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -88,9 +72,18 @@
         </td>
         <td>
             <select name="zimbraPrefTimeZoneId" id="timeZone">
-                <c:set var="tzpref" value="${mailbox.prefs.timeZoneCanonicalId}"/>
+                <c:set var="tzpref" value="${mailbox.prefs.timeZoneWindowsId}"/>
+                <c:set var="added" value=""/>
                 <zm:forEachTimeZone var="tz">
-                    <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
+                    <c:set var="count" value="1"/>
+                    <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.javaId}"/>
+                    <c:set var="toBeAdded" value="${tz.javaId}:${count}"/>
+                    <c:if test="${fn:contains(added,toBeAdded)}">
+                        <c:set var="count" value="${count+1}"/>
+                        <c:set var="key" value="${tz.javaId}_${count}"/>
+                        <fmt:message var="displayName" bundle='${AjxMsg}' key="${key}"/>
+                    </c:if>
+                    <c:set var="added" value="${added},${tz.javaId}:${count}"/>
                     <option
                             <c:if test="${tzpref eq tz.id}">selected</c:if>
                             value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>

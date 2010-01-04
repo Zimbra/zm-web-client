@@ -1,19 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
- */
 BODY						{	margin:0px; 				}
 
 
@@ -49,9 +33,13 @@ BODY						{	margin:0px; 				}
 #skin_container_logo					{	width:@TreeStartWidth@;			}
 	
 /** Search box **/	
-#skin_spacing_search					{	width:100%; padding:0px 10px 4px @cssValue(HSashContainer,width)@;			}
+#skin_spacing_search					{	width:66%; padding:0px 10px 4px @cssValue(HSashContainer,width)@;			}
 #skin_container_search					{	@SkinBorderSearch@	}
 
+/** Web Search box **/	
+#skin_spacing_web_search				{	width:33%; padding:0px 10px 4px 10px;		}
+#skin_container_web_search				{	@SkinBorderWebSearch@	}
+	
 	
 
 /** Search Builder & its toolbar **/
@@ -64,17 +52,6 @@ BODY						{	margin:0px; 				}
 /** combined username/quota **/
 #skin_spacing_tree_top					{	text-align:center;	}
 #skin_container_tree_top				{	@SkinBorderUsername@	}
-#skin_container_tree_top_offline		{
-	@SkinBorderUsername@
-	display:none;
-	height: auto !important;
-	text-align: left !important;
-	padding:2px 2px 2px 4px;
-}
-
-#skin_container_account					{	font-weight: bold; }
-
-#skin_container_links					{	padding: 0px 25px 0px 35px; }
 
 /** User Name section **/
 #skin_container_username				{	height:auto; padding-top:2px;	}
@@ -87,8 +64,8 @@ BODY						{	margin:0px; 				}
 #skin_spacing_current_app				{}
 #skin_container_current_app				{	@SkinBorderCurrentApp@		}
 
-#skin_container_adminlink				{	padding-right: 7px			}
-
+#skin_container_switch					{ padding-right: 8px;			}
+#skin_container_switch,
 #skin_td_switch_offline,
 #skin_container_help,
 #skin_container_logoff					{
@@ -127,6 +104,14 @@ BODY						{	margin:0px; 				}
 	z-index:1;
 	height:30px;
 }
+#skin_container_offline_status			{	
+	position:absolute; 
+	left:10px;
+	top:6px;
+	width:16px;
+	height:16px;
+}
+
 
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar			{	}
@@ -219,13 +204,13 @@ BODY						{	margin:0px; 				}
 
 .ZmAppChooser					{	margin:0px !important; 		}
 
-.ZAppTabBorder                  {   @AppTabRoundCorners@        }
 .ZAppTabBorder .ZLeftIcon 		{	padding-left:5px;			}
 .ZAppTabBorder .ZWidgetTitle 	{	padding-right:10px;			}
 
 .ZSelectedPrev .ZAppTabBorder 	{	@AppTabBorder-selectedPrev@	}
 .ZSelectedNext .ZAppTabBorder	{	@AppTabBorder-selectedNext@	}
 .ZFirstItem .ZAppTabBorder 		{	@AppTabBorder-first@		}
+.ZLastItem .ZAppTabBorder 		{	@AppTabBorder-last@			}
 .ZAppTabSpacer 					{	@AppTab@ @AppTabSpacer@		}
 
 
@@ -316,7 +301,6 @@ BODY						{	margin:0px; 				}
 .DwtInputField-hint TEXTAREA {
 	@TextArea@
 	@InputField-hint@
-
 }
 
 .DwtInputField-errorhint INPUT[type="text"],
@@ -350,10 +334,6 @@ TEXTAREA
 	cursor:default;
 }
 
-.BannerTextQuota-MultiAccount {
-	padding-top:5px;
-}
-
 
 /* styles for the HTML client */
 INPUT[type="text"],
@@ -371,3 +351,5 @@ SELECT						{	@FieldBorder@	}
 
 .ZhRow TD,
 .ZhRowOdd TD				{	border-width:0 0 1 0 !important; padding-left:3px !important;	}
+
+

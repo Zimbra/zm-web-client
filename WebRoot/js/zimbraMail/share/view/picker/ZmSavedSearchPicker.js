@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -18,7 +20,7 @@ ZmSavedSearchPicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.SEARCH);
 
     this._checkedItems = new AjxVector();
-};
+}
 
 ZmSavedSearchPicker._OVERVIEW_ID = "ZmSavedSearchPicker";
 
@@ -30,14 +32,14 @@ ZmPicker.CTOR[ZmPicker.SEARCH] = ZmSavedSearchPicker;
 ZmSavedSearchPicker.prototype.toString = 
 function() {
 	return "ZmSavedSearchPicker";
-};
+}
 
 ZmSavedSearchPicker.prototype._setupPicker =
 function(parent) {
 	var overviewId = ZmSavedSearchPicker._OVERVIEW_ID + "_" + Dwt.getNextId();
 	this._setOverview(overviewId, parent, [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH]);
 	this._twiddle();
-};
+}
 
 ZmSavedSearchPicker.prototype._updateQuery = 
 function() {
@@ -60,7 +62,7 @@ function() {
 		this._searchId = this._checkedItems.get(0).searchId;
 	this.setQuery(query);
 	this.execute();
-};
+}
 
 ZmSavedSearchPicker.prototype._treeListener =
 function(ev) {
@@ -75,7 +77,7 @@ function(ev) {
  		}
 		this._updateQuery();
  	}
-};
+}
 
 // Take the checkboxes away from folders, and make sure saved searches are visible
 ZmSavedSearchPicker.prototype._twiddle =
@@ -103,4 +105,4 @@ function() {
 			}
 		}
 	}
-};
+}

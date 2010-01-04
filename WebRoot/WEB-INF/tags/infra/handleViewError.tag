@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="scriptless" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
@@ -43,10 +27,15 @@
             <jsp:forward page="/h/compose"/>
         </c:when>
         <c:otherwise>
-            <div align="center">
-                <h4><fmt:message key="${error.code}"/></h4>
+            <body>
+                <center>
+                    <h4>
+                        <body>
+                <center>
+                    <h4>An Unknown error occured. Please <a href="<c:url value='/?client=standard' />">click here</a> to go back to client home.</h4>
                     <!-- ${fn:escapeXml(error.id)} -->
-            </div>                
+                </center>
+                </body>
         </c:otherwise>
     </c:choose>
 </c:if>

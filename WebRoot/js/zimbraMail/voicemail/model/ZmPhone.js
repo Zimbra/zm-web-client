@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -25,12 +27,18 @@ ZmPhone = function() {
 	this.used = null;				// Amount of quota used.
 	this.limit = null;				// Quota size.
 	this.folderTree = null;			// Folders
-};
+}
 
 ZmPhone.prototype.toString = 
 function() {
 	return "ZmPhone";
-};
+}
+
+ZmPhone.CHECK_INTERNATIONAL = /^0\d*/;
+ZmPhone.CHECK_EXTENSION = /^(1?\d{3})?555\d*/;
+ZmPhone.CHECK_911 = /^1?911\d*/;
+ZmPhone.CHECK_411 = /^1?411\d*/;
+ZmPhone.CHECK_VALID = /^1?[2-9]\d{9}$/;
 
 ZmPhone.calculateDisplay =
 function(name) {
@@ -44,18 +52,18 @@ function(name) {
 	} else if ((name.length == 11) && (name.charAt(0) == '1')) {
 		doIt = true;
 		offset = 1;
+	} else if (name.length == 7) {
+		doIt = true;
+		offset = -3;
 	}
 	if (doIt) {
-		var array = [
-			"(",
-			name.substring(offset, offset + 3),
-			") ",
-			name.substring(offset + 3, offset + 6),
-			"-",
-			name.substring(offset + 6, offset + 10)
-		];
+		var array = [];
+		if (offset>0) array.push(name.substring(0, offset)+"-");
+		if (offset>-3) array.push("(", name.substring(offset, offset + 3), ") ");
+		array.push(name.substring(offset + 3, offset + 6), "-",	name.substring(offset + 6, offset + 10));
 		return array.join("");
 	} else {
+// TODO: How to handle other numbers????	
 		return name;
 	}
 };
@@ -65,11 +73,73 @@ function(display) {
 	return display.replace(/[^\d]/g, '');
 };
 
+ZmPhone.calculateFullName =
+function(display) {
+	var name = ZmPhone.calculateName(display);
+	return (/^1/.exec(name)) ? name : "1" + name;
+};
+
+ZmPhone.calculateNonFullName =
+function(display) {
+	return ZmPhone.calculateName(display).replace(/^1/, "");
+};
+
 ZmPhone.isValid =
 function(str) {
 	var nameLength = ZmPhone.calculateName(str).length;
-	return (7 <= nameLength) && (nameLength <= 20) && !/[^0-9()\-\s\+]/.exec(str);
+	return (7 <= nameLength) && (nameLength <= 20) && !/[^0-9()\-\s\+\.]/.exec(str);
 };
+
+ZmPhone.prototype.validate =
+function(number, errors) {
+	if (AjxUtil.isNumber(number))
+		number = ""+number;
+	if (!AjxUtil.isString(number)) {
+		errors.push(ZmMsg.errorPhoneInvalid);
+		return false;
+	}
+	
+	number = ZmPhone.calculateName(number);
+	
+	if (number == this.name) {
+		errors.push(ZmMsg.errorPhoneIsOwn);
+		return false;
+	}
+	
+	if (ZmPhone.CHECK_INTERNATIONAL.test(number)) {
+		errors.push(ZmMsg.errorPhoneIsInternational);
+		return false;
+	}
+	
+	if (number.length >= 3) {
+		var areacode = (number.length==11)? number.substring(1, 4) : number.substring(0, 3);
+		if (areacode == "900" || areacode == "500" || areacode == "700" || areacode == "976") {
+			errors.push(ZmMsg.errorPhoneInvalidAreaCode);
+			return false;
+		}
+	}
+	
+	if (ZmPhone.CHECK_EXTENSION.test(number)) {
+		errors.push(ZmMsg.errorPhoneInvalidExtension);
+		return false;
+	}
+	
+	if (ZmPhone.CHECK_911.test(number)) {
+		errors.push(ZmMsg.errorPhoneIs911);
+		return false;
+	}
+	
+	if (ZmPhone.CHECK_411.test(number)) {
+		errors.push(ZmMsg.errorPhoneIs411);
+		return false;
+	}
+		
+	if (!ZmPhone.CHECK_VALID.test(number)) {
+		errors.push(ZmMsg.errorPhoneInvalid);
+		return false;
+	}
+	return true;
+}
 
 ZmPhone.prototype.getDisplay =
 function() {
@@ -117,20 +187,20 @@ function(callback, errorCallback) {
 			callback.run(this._features, this);
 		}
 	} else {
-		var soapDoc = AjxSoapDoc.create("GetVoiceFeaturesRequest", "urn:zimbraVoice");
+	    var soapDoc = AjxSoapDoc.create("GetVoiceFeaturesRequest", "urn:zimbraVoice");
 		appCtxt.getApp(ZmApp.VOICE).setStorePrincipal(soapDoc);
 		var node = soapDoc.set("phone");
-		node.setAttribute("name", this.name);
-		for (var i in this._features) {
-			var feature = this._features[i];
-			if (feature.isSubscribed && !feature.isVoicemailPref) {
-				soapDoc.set(feature.name, null, node);
-			}
-		}
-		var respCallback = new AjxCallback(this, this._handleResponseGetVoiceFeatures, callback);
-		var params = {
-			soapDoc: soapDoc,
-			asyncMode: true,
+	    node.setAttribute("name", this.name);
+	    for (var i in this._features) {
+	    	var feature = this._features[i];
+	    	if (feature.isSubscribed && !feature.isVoicemailPref) {
+		    	soapDoc.set(feature.name, null, node);
+	    	}
+	    }
+	    var respCallback = new AjxCallback(this, this._handleResponseGetVoiceFeatures, callback);
+	    var params = {
+	    	soapDoc: soapDoc, 
+	    	asyncMode: true,
 			callback: respCallback,
 			errorCallback: errorCallback
 		};
@@ -141,7 +211,7 @@ function(callback, errorCallback) {
 ZmPhone.prototype._handleResponseGetVoiceFeatures = 
 function(callback, response) {
 	var features = response._data.GetVoiceFeaturesResponse.phone[0];
-	for (var i in features) {
+	for(var i in features) {
 		if (i == ZmCallFeature.VOICEMAIL_PREFS) {
 			var voicemailPrefs = features[i][0].pref;
 			this._loadVoicemailPrefs(voicemailPrefs);
@@ -160,7 +230,7 @@ function(callback, response) {
 
 ZmPhone.prototype._loadVoicemailPrefs = 
 function(voicemailPrefs) {
-	for (var i = 0, count = voicemailPrefs.length; i < count; i++) {
+	for(var i = 0, count = voicemailPrefs.length; i < count; i++) {
 		var obj = voicemailPrefs[i];
 		var feature = this._features[obj.name];
 		if (feature) {
@@ -189,18 +259,43 @@ function(batchCommand, newFeatures, callback) {
 	var node = soapDoc.set("phone");
 	node.setAttribute("name", this.name);
 	var voicemailPrefsNode = null;
-	for (var i = 0, count = newFeatures.length; i < count; i++) {
-		if (newFeatures[i].isVoicemailPref) {
-			if (!voicemailPrefsNode) {
-				voicemailPrefsNode = soapDoc.set(ZmCallFeature.VOICEMAIL_PREFS, null, node);
+
+	var allFeatures = [];
+	for (var i=0; i<newFeatures.length; i++) {
+		if (newFeatures[i].isSubscribed)
+			allFeatures.push(newFeatures[i]);
+	}
+
+	// Add features from this._features that are not already in newFeatures
+	for (var name in this._features) {
+		if (this._features[name].isVoicemailPref && this._features[name].isSubscribed) {
+			var found = false;
+			for (var i = 0, count = allFeatures.length; i < count; i++) {
+				if (allFeatures[i].name == name) {
+					found = true;
+					break;
+				}
 			}
-			newFeatures[i].addVoicemailChangeNode(soapDoc, voicemailPrefsNode);
-		} else {
-			newFeatures[i].addChangeNode(soapDoc, node);
+			if (!found) {
+				allFeatures.push(this._features[name]);
+			}
 		}
 	}
-	var respCallback = new AjxCallback(this, this._handleResponseModifyVoiceFeatures, [newFeatures, callback]);
-	batchCommand.addNewRequestParams(soapDoc, respCallback);
+
+	if (allFeatures.length > 0) {
+		for (var i = 0, count = allFeatures.length; i < count; i++) {
+			if (allFeatures[i].isVoicemailPref) {
+				if (!voicemailPrefsNode) {
+					voicemailPrefsNode = soapDoc.set(ZmCallFeature.VOICEMAIL_PREFS, null, node);
+				}
+				allFeatures[i].addVoicemailChangeNode(soapDoc, voicemailPrefsNode);
+			} else {
+				allFeatures[i].addChangeNode(soapDoc, node);
+			}
+		}
+		var respCallback = new AjxCallback(this, this._handleResponseModifyVoiceFeatures, [newFeatures, callback]);
+		batchCommand.addNewRequestParams(soapDoc, respCallback);
+	}
 };
 
 ZmPhone.prototype._handleResponseModifyVoiceFeatures = 

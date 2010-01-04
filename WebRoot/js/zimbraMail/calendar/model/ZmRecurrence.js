@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 ZmRecurrence = function(calItem) {
@@ -31,8 +33,6 @@ ZmRecurrence = function(calItem) {
 	this.repeatWeekday			= false; 										// set to true if freq = "DAI" and custom repeats every weekday
 	this.repeatWeeklyDays		= [];	 										// SU|MO|TU|WE|TH|FR|SA
 	this.repeatYearlyMonthsList	= 1; 											// list of numbers representing months (usually, just one month)
-
-    this._cancelRecurIds        = {};                                           //list of recurIds to be excluded
 };
 
 ZmRecurrence.prototype.toString =
@@ -71,10 +71,8 @@ function(soapDoc, inv) {
 		c.setAttribute("num", this.repeatEndCount);
 	}
 
-	if (this.repeatCustom != "1") {
-        this.setExcludes(soapDoc, recur);
+	if (this.repeatCustom != "1")
 		return;
-    }
 
 	if (this.repeatType == ZmRecurrence.DAILY) {
 		if (this.repeatWeekday) {
@@ -147,33 +145,7 @@ function(soapDoc, inv) {
 			var bmd = soapDoc.set("bymonthday", null, rule);
 			bmd.setAttribute("modaylist", this.repeatCustomMonthDay);
 		}
-
 	}
-
-    this.setExcludes(soapDoc, recur);
-};
-
-ZmRecurrence.prototype.setExcludes =
-function(soapDoc, recur) {
-    if(!this._cancelRecurIds) return;
-
-    var exclude;
-    var dates;
-
-    for(var i in this._cancelRecurIds) {
-
-        if(!this._cancelRecurIds[i]) continue;
-
-        if(!exclude && !dates) {
-            exclude = soapDoc.set("exclude", null, recur);
-            dates = soapDoc.set("dates", null, exclude);
-        }
-
-        var ridZ = i;
-        var dtval = soapDoc.set("dtval", null, dates);
-        var s = soapDoc.set("s", null, dtval);
-        s.setAttribute("d", ridZ);
-    }
 };
 
 ZmRecurrence.prototype.getBlurb =
@@ -399,7 +371,7 @@ ZmRecurrence.prototype.setRecurrenceStartTime =
 function(startTime) {
 	
 	this._startDate.setTime(startTime);
-    this.repeatCustomMonthDay	= this._startDate.getDate();    
+	this.repeatCustomMonthDay = this._startDate.getDate(); 
 	
 	if (this.repeatType == ZmRecurrence.NONE) return;
 
@@ -413,36 +385,4 @@ function(startTime) {
     } else if (this.repeatType == ZmRecurrence.YEARLY) {
 		this.repeatYearlyMonthsList = this._startDate.getMonth() + 1;	
 	}
-};
-
-ZmRecurrence.prototype.setRecurrenceRules =
-function(recurRules, startDate) {
-
-    if (recurRules)
-        this.parse(recurRules);    
-
-    if(!startDate) return;
-
-    if (this.repeatWeeklyDays == null) {
-        this.repeatWeeklyDays = [ZmCalItem.SERVER_WEEK_DAYS[startDate.getDay()]];
-    }
-    if (this.repeatMonthlyDayList == null) {
-        this.repeatMonthlyDayList = [startDate.getDate()];
-    }
-
-};
-
-ZmRecurrence.prototype.addCancelRecurId =
-function(ridZ) {
-    this._cancelRecurIds[ridZ] = true;        
-};
-
-ZmRecurrence.prototype.isInstanceCanceled =
-function(ridZ) {
-    return this._cancelRecurIds[ridZ];
-};
-
-ZmRecurrence.prototype.removeCancelRecurId =
-function(ridZ) {
-    this._cancelRecurIds[ridZ] = null;
 };

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -19,10 +21,10 @@
  * note, if wanted. This control can be used from within the various
  * share dialogs to add reply capabilities.
  */
-ZmShareReply = function(parent, className, options) {
+ZmShareReply = function(parent, className) {
 	className = className || "ZmShareReply";
 	DwtComposite.call(this, {parent:parent, className:className});
-	this._initControl(options);
+	this._initControl();
 };
 
 ZmShareReply.prototype = new DwtComposite;
@@ -96,10 +98,9 @@ function(event) {
 };
 
 ZmShareReply.prototype._initControl =
-function(options) {
+function() {
 	this._replyType = new DwtSelect({parent:this});
-    options = options || ZmShareReply.DEFAULT_OPTIONS;
-    this.setReplyOptions(options);
+	this.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
 	this._replyType.addChangeListener(new AjxListener(this, this._handleReplyType));
 	
 	var doc = document;
@@ -113,6 +114,9 @@ function(options) {
 	this._replyStandardMailNoteEl.innerHTML = ZmMsg.sendMailAboutShareNote;
 	
 	var div = doc.createElement("DIV");
+	if (Dwt.CARET_HACK_ENABLED) {
+		div.style.overflowY="auto";
+	}
 	this._replyNoteEl = doc.createElement("TEXTAREA");
 	this._replyNoteEl.cols = 50;
 	this._replyNoteEl.rows = 4;

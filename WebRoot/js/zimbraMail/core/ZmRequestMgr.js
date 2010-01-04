@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -88,8 +90,6 @@ function() {
  *        skipAuthCheck			[boolean]*		don't check if auth token has changed
  *        resend				[constant]*		reason for resending request
  *        sensitive				[boolean]*		attempt to use secure conn to protect data
- *        noSession				[boolean]*		if true, no session info is included
- *        restUri				[string]*		REST URI to send the request to
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
@@ -177,31 +177,22 @@ function(params) {
 	var accountName = params.accountName;
 	if (!accountName) {
 		var acct = appCtxt.getActiveAccount();
-		accountName = (acct && acct.id != ZmAccountList.DEFAULT_ID) ? acct.name : null;
+		accountName = (acct && acct.id != ZmZimbraAccount.DEFAULT_ID) ? acct.name : null;
 	}
-	var cmdParams, methodName;
-
-	if (params.restUri) {
-		cmdParams =	{	restUri:			params.restUri,
-						asyncMode:			params.asyncMode,
-						callback:			asyncCallback
-					};
-	} else {
-		cmdParams = {	jsonObj:			params.jsonObj,
-						soapDoc:			params.soapDoc,
-						accountName:		accountName,
-						useXml:				this._useXml,
-						changeToken:		(accountName ? null : this._changeToken),
-						asyncMode:			params.asyncMode,
-						callback:			asyncCallback,
-						logRequest:			this._logRequest,
-						highestNotifySeen:	this._highestNotifySeen,
-						skipAuthCheck:		params.skipAuthCheck,
-						resend:				params.resend,
-						noSession:			params.noSession
-					};
-		methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
-	}
+	var cmdParams = {
+		jsonObj:params.jsonObj,
+		soapDoc:params.soapDoc,
+		accountName:accountName,
+		useXml:this._useXml,
+		changeToken:(accountName ? null : this._changeToken),
+		asyncMode:params.asyncMode,
+		callback:asyncCallback,
+		logRequest:this._logRequest,
+		highestNotifySeen:this._highestNotifySeen,
+		skipAuthCheck:params.skipAuthCheck,
+		resend:params.resend
+	};
+	var methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
 
 	appCtxt.currentRequestParams = params;
 	DBG.println(AjxDebug.DBG2, "sendRequest(" + reqId + "): " + methodName);
@@ -225,14 +216,15 @@ function(params) {
 	this._pendingRequests[reqId] = command;
 
 	try {
-		var response = params.restUri ? command.invokeRest(cmdParams) : command.invoke(cmdParams);
+		var response = command.invoke(cmdParams);
 		command.state = ZmRequestMgr._SENT;
 	} catch (ex) {
 		this._handleResponseSendRequest(params, new ZmCsfeResult(ex, true));
 		return;
 	}
 
-	return (params.asyncMode) ? reqId : (this._handleResponseSendRequest(params, response));
+	return (params.asyncMode)
+		? reqId : (this._handleResponseSendRequest(params, response));
 };
 
 ZmRequestMgr.prototype._handleResponseSendRequest =
@@ -260,7 +252,7 @@ function(params, result) {
 
 	var response;
 	try {
-		if (params.asyncMode && !params.restUri) {
+		if (params.asyncMode) {
 			response = result.getResponse(); // may throw exception
 		} else {
 			// for sync responses, manually throw exception if necessary
@@ -270,9 +262,7 @@ function(params, result) {
 				response = result;
 			}
 		}
-		if (response.Header) {
-			this._handleHeader(response.Header);
-		}
+		this._handleHeader(response.Header);
 	} catch (ex) {
 		DBG.println(AjxDebug.DBG2, "Request " + params.reqId + " got an exception");
 		if (params.errorCallback) {
@@ -284,15 +274,13 @@ function(params, result) {
 			this._handleException(ex, params);
 		}
 		var hdr = result.getHeader();
-		if (hdr) {
-			this._handleHeader(hdr);
-			this._handleNotifications(hdr);
-		}
+		this._handleHeader(hdr);
+		this._handleNotifications(hdr);
 		this._clearPendingRequest(params.reqId);
 		return;
 	}
 
-	if (params.asyncMode && !params.restUri) {
+	if (params.asyncMode) {
 		result.set(response.Body);
 	}
 
@@ -378,7 +366,7 @@ function(hdr) {
 	if (hdr && hdr.context.zdsync && hdr.context.zdsync.account) {
 		var acctList = hdr.context.zdsync.account;
 		for (var i = 0; i < acctList.length; i++) {
-			var acct = appCtxt.accountList.getAccount(acctList[i].id);
+			var acct = appCtxt.getAccount(acctList[i].id);
 			if (acct) {
 				acct.updateState(acctList[i]);
 			}
@@ -506,12 +494,12 @@ function(type, unread, obj, objType, account) {
 	if (tree) {
 		tree.reset();
 	} else {
-		tree = isTag ? new ZmTagTree(account) : new ZmFolderTree();
+		tree = isTag ? new ZmTagTree() : new ZmFolderTree();
 	}
 	appCtxt.setTree(type, tree, account);
 	tree.addChangeListener(this._unreadListener);
 	tree.getUnreadHash(unread);
-	tree.loadFromJs(obj, objType, account);
+	tree.loadFromJs(obj, objType);
 };
 
 // To handle notifications, we keep track of all the models in use. A model could
@@ -580,12 +568,11 @@ function(creates) {
 	
 			DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
 			if (name == "tag") {
-				var account = appCtxt.multiAccounts && ZmOrganizer.parseId(create.id).account;
-				var tagTree = appCtxt.getTagTree(account);
+				var tagTree = appCtxt.getTagTree();
 				if (tagTree) {
 					tagTree.root.notifyCreate(create);
 				}
-			} else if (name == "folder" || name == "search" || name == "link") {
+			} else if (name == "folder" || name == "search") {
 				var parentId = create.l;
 				var parent = appCtxt.getById(parentId);
 				if (parent && parent.type != ZmOrganizer.TAG) { // bug #37148
@@ -609,13 +596,15 @@ function(modifies) {
 
 	for (var name in modifies) {
 		if (name == "mbx") {
+			// bug fix #26318 - only update quota for the active account
 			var mboxes = modifies[name];
 			for (var i = 0; i < mboxes.length; i++) {
 				var mbox = mboxes[i];
-				var acctId = mbox.acct;
-				var account = acctId && appCtxt.accountList.getAccount(acctId);
-				var setting = appCtxt.getSettings(account).getSetting(ZmSetting.QUOTA_USED);
-				setting.notifyModify({_name:name, s:mbox.s, account:account});
+				var acct = mbox.acct;
+				if (!acct || (acct && acct == appCtxt.getActiveAccount().id)) {
+					var setting = appCtxt.getSettings().getSetting(ZmSetting.QUOTA_USED);
+					setting.notifyModify({_name:name, s:mbox.s});
+				}
 			}
 			continue;
 		}
@@ -637,7 +626,7 @@ function(modifies) {
 			}
 
 			if (item) {
-				mod._isRemote = (name == "folder" && item.link);	// remote subfolder
+				mod._isRemote = (name == "folder" && item.link);
 				item.notifyModify(mod);
 			}
 		}

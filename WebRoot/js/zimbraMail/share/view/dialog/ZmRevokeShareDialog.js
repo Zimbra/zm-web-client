@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -38,8 +40,9 @@ function(share) {
 
 	var isPubShare = share.isPublic();
 
-	var params = isPubShare ? ZmMsg.shareWithPublic : (share.grantee.name || ZmMsg.userUnknown);
-	this._confirmMsgEl.innerHTML = this._formatter.format(params);
+	var params = isPubShare ? ZmMsg.shareWithPublic : (share.grantee.name || share.grantee.id);
+	var message = this._formatter.format(params);
+	this._confirmMsgEl.innerHTML = message;
 
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
@@ -61,7 +64,7 @@ ZmRevokeShareDialog.prototype._yesButtonCallback =
 function() {
 	var share = this._share;
 	var replyType = this._reply.getReplyType();
-	var sendMail = !(share.isAll() || share.isPublic() || share.invalid); 
+	var sendMail = !(share.isAll() || share.isPublic()); 
 	if (replyType != ZmShareReply.NONE && sendMail) {
 		// initialize rest of share information
 		share.grantee.email = share.grantee.name || share.grantee.id;

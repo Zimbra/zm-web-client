@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 /*
@@ -35,6 +37,7 @@ AjxPackage.require("zimbraMail.notebook.view.wiklet.ZmWikletContext");
 AjxPackage.require("zimbraMail.notebook.view.wiklet.ZmWikletProcessor");
 
 AjxPackage.require("zimbraMail.notebook.view.ZmNewNotebookDialog");
+AjxPackage.require("zimbraMail.notebook.view.ZmUploadDialog");
 AjxPackage.require("zimbraMail.notebook.view.ZmImportDialog");
 AjxPackage.require("zimbraMail.notebook.view.ZmUploadConflictDialog");
 AjxPackage.require("zimbraMail.notebook.view.ZmPageConflictDialog");

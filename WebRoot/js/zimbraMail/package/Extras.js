@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 /*
@@ -18,6 +20,7 @@
  * Supports: Miscellaneous rarely-used functionality
  * 	- DwtSpinner: used by ZmTableEditor
  *  - ZmClientCmdHandler: handles special search cmds
+ * 	- ZmPrintView: print an item or a list of items
  * 	- ZmChooseFolderDialog: export contacts, tie identity to folder,
  *							pop mail to folder, move mail or folder,
  *							create a filter, create a folder shortcut
@@ -33,12 +36,13 @@ AjxPackage.require("ajax.util.AjxDlgUtil");
 
 AjxPackage.require("zimbraMail.core.ZmClientCmdHandler");
 
+AjxPackage.require("zimbraMail.share.view.ZmPrintView");
+
 AjxPackage.require("zimbraMail.share.view.dialog.ZmDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmChooseFolderDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmRenameFolderDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmRenameTagDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmPickTagDialog");
-AjxPackage.require("zimbraMail.share.view.dialog.ZmUploadDialog");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmTableEditor");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmSpellChecker");

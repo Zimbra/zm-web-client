@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="message" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMessageBean" %>
 <%@ attribute name="invite" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZInvite" %>
@@ -52,7 +36,7 @@
 <fmt:message var="noSubject" key="noSubject"/>
 
 <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
-<fmt:message bundle='${AjxMsg}' key='${zm:getCanonicalId(timezone)}' var='timezoneStr' scope='request' />
+<fmt:message bundle='${AjxMsg}' key='${zm:getJavaId(timezone)}' var='timezoneStr' scope='request' />
 
 <c:set var="isPart" value="${!empty message.partName}"/>
 <table cellpadding=0 cellspacing=0 width=100% class='Compose'>
@@ -121,7 +105,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                     ${fn:escapeXml(zm:getApptDateBlurb(pageContext, timezone, startDate.time, endDate.time, appt.allDay))}
-                                    &nbsp;<span class='ZhCalTimeZone'>${fn:escapeXml(fn:startsWith(timezoneStr,"???") ? (zm:getCanonicalId(timezone)) : timezoneStr)}</span>
+                                    &nbsp;<span class='ZhCalTimeZone'>${fn:escapeXml(fn:startsWith(timezoneStr,"???") ? (zm:getWindowsId(timezone)) : timezoneStr)}</span>
                                 </td>
                             </tr>
                             <c:if test="${appt.exception}">
@@ -177,31 +161,6 @@
                                     </td>
                                 </tr>
                             </c:if>
-                            <c:if test="${not empty message.attachments}">
-                                <tr>
-                                    <td class='MsgHdrName'>
-                                       <fmt:message key="attachments"/>
-                                        :
-                                    </td>
-                                    <td class='MsgHdrValue'valign="top">
-                                        <c:forEach var="part" items="${message.attachments}">
-                                            <c:if test="${!part.isMssage}">
-                                                <c:set var="pname" value="${part.displayName}"/>
-                                                <c:if test="${empty pname}"><fmt:message key="unknownContentType" var="pname"><fmt:param value="${part.contentType}"/></fmt:message></c:if>
-                                                <c:set var="url" value="/service/home/~/?id=${message.id}&amp;part=${part.partName}&amp;auth=co"/>
-                                                <fmt:message var="_b" key="b"/>
-                                                <fmt:message var="_kb" key="kb"/>
-                                                <fmt:message var="_mb" key="mb"/>
-                                                <fmt:message var="_gb" key="gb"/>
-                                                ${fn:escapeXml(pname)}&nbsp;
-                                                (${zm:displaySize(pageContext, part.size)})&nbsp;
-                                                <a href="${url}&amp;disp=a"><fmt:message key="download"/></a>
-                                                <br><p style="margin: 3px"></p>
-                                            </c:if>
-                                        </c:forEach>
-                                    </td>
-                               </tr>
-                           </c:if>
                         </table>
                     </td>
                     <td valign='top'>
@@ -234,11 +193,6 @@
                             </tr>
                         </table>
                     </td>
-                </tr>
-                <tr>
-                    <td>
-
-                        </td>
                 </tr>
             </table>
         </td>

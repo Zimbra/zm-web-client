@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -39,17 +41,28 @@ function(folder, source) {
 
 ZmRenameFolderDialog.prototype._contentHtml = 
 function() {
-	this._nameFieldId = this._htmlElId + "_name";
-	var subs = {id:this._htmlElId, newLabel:ZmMsg.newName};
-	return AjxTemplate.expand("share.Dialogs#ZmRenameDialog", subs);
+	this._nameFieldId = Dwt.getNextId();
+	var html = [];
+	var idx = 0;
+	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
+	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>";
+	html[idx++] = ZmMsg.newName;
+	html[idx++] = ": </td></tr><tr><td>";
+    html[idx++] = Dwt.CARET_HACK_BEGIN;
+	html[idx++] = "<input type='text' autocomplete='off' class='Field' id='";
+	html[idx++] = this._nameFieldId;
+	html[idx++] = "' />"
+    html[idx++] = Dwt.CARET_HACK_END;
+	html[idx++] = "</td></tr></table>";
+	
+	return html.join("");
 };
 
 ZmRenameFolderDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getFolderData();
-	if (results) {
+	if (results)
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
-	}
 };
 
 ZmRenameFolderDialog.prototype._getFolderData =
@@ -70,7 +83,7 @@ function() {
 };
 
 ZmRenameFolderDialog.prototype._enterListener =
-function(ev) {
+function (ev){
 	var results = this._getFolderData();
 	if (results) {
 		this._runEnterCallback(results);

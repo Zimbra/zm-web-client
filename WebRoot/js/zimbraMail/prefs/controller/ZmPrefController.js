@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -38,7 +40,7 @@ ZmPrefController = function(container, prefsApp) {
 	this._dirty = {};
 };
 
-ZmPrefController.prototype = new ZmController;
+ZmPrefController.prototype = new ZmController();
 ZmPrefController.prototype.constructor = ZmPrefController;
 
 ZmPrefController.prototype.toString = 
@@ -78,21 +80,9 @@ function() {
 */
 ZmPrefController.prototype.getFilterRulesController =
 function() {
-	if (!this._filterRulesController) {
+	if (!this._filterRulesController)
 		this._filterRulesController = new ZmFilterRulesController(this._container, this._app, this._prefsView);
-	}
 	return this._filterRulesController;
-};
-
-/**
-* Returns the mobile devices controller.
-*/
-ZmPrefController.prototype.getMobileDevicesController =
-function() {
-	if (!this._mobileDevicesController) {
-		this._mobileDevicesController = new ZmMobileDevicesController(this._container, this._app, this._prefsView);
-	}
-	return this._mobileDevicesController;
 };
 
 /**
@@ -150,24 +140,19 @@ function(actionCode) {
 	DBG.println("ZmPrefController.handleKeyAction");
 	switch (actionCode) {
 
-		case ZmKeyMap.CANCEL:
+        case ZmKeyMap.CANCEL:
 			this._backListener();
 			break;
 
-		case ZmKeyMap.SAVE:
-			this._saveListener();
-			break;
+        case ZmKeyMap.SAVE:
+            this._saveListener();
+            break;
 
-		default:
+        default:
 			return ZmController.prototype.handleKeyAction.call(this, actionCode);
 			break;
 	}
 	return true;
-};
-
-ZmPrefController.prototype.mapSupported =
-function(map) {
-	return (map == "tabView");
 };
 
 ZmPrefController.prototype.getTabView =
@@ -185,29 +170,7 @@ function(view) {
 	return this._dirty[view];
 };
 
-/**
- * Public method called to save prefs - does not check for dirty flag.
- *
- * @param callback	[AjxCallback]	async callback
- * @param noPop		[boolean]		if true, don't pop view after save
- *
- * TODO: shouldn't have to call getChangedPrefs() twice
- */
-ZmPrefController.prototype.save =
-function(callback, noPop) {
-	// perform pre-save ops, if needed
-	var preSaveCallbacks = this._prefsView.getPreSaveCallbacks();
-	if (preSaveCallbacks && preSaveCallbacks.length > 0) {
-		var continueCallback = new AjxCallback(this, this._doPreSave);
-		continueCallback.args = [continueCallback, preSaveCallbacks, callback, noPop];
-		this._doPreSave.apply(this, continueCallback.args);
-	}
-	else { // do basic save
-		this._doSave(callback, noPop);
-	}
-};
-
-/**
+/*
 * Enables/disables toolbar buttons.
 *
 * @param parent		[ZmButtonToolBar]	the toolbar
@@ -215,13 +178,13 @@ function(callback, noPop) {
 */
 ZmPrefController.prototype._resetOperations =
 function(parent, view) {
-	var section = ZmPref.getPrefSectionMap()[view];
-	var manageChanges = section && section.manageChanges;
-	parent.enable(ZmOperation.SAVE, !manageChanges);
+    var section = ZmPref.getPrefSectionMap()[view];
+    var manageChanges = section && section.manageChanges; 
+    parent.enable(ZmOperation.SAVE, !manageChanges);
 	parent.enable(ZmOperation.CANCEL, appCtxt.getAppViewMgr()._hidden.length > 0);
 };
 
-/**
+/*
 * Creates the prefs view, with a tab for each preferences page.
 */
 ZmPrefController.prototype._setView = 
@@ -236,8 +199,8 @@ function() {
 		this._prefsView = new ZmPrefView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE, controller:this});
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
-		this._app.createView({viewId:this._currentView, elements:elements, callbacks:callbacks, isAppView:true});
+		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = this._prefsView;
+		this._app.createView(this._currentView, elements, callbacks, true);
 		this._initializeTabGroup();
 	}
 };
@@ -290,7 +253,19 @@ function(ev, callback, noPop) {
 		return;
 	}
 
-	this.save(callback, noPop);
+	// perform pre-save ops, if needed
+	var preSaveCallbacks = this._prefsView.getPreSaveCallbacks();
+	if (preSaveCallbacks && preSaveCallbacks.length > 0) {
+		var continueCallback = new AjxCallback(this, this._doPreSave);
+		continueCallback.args = [continueCallback, preSaveCallbacks, callback, noPop];
+		this._doPreSave.apply(this, continueCallback.args);
+	}
+
+	// do basic save
+	else {
+		this._doSave(callback, noPop);
+	}
+
 };
 
 ZmPrefController.prototype._doPreSave =
@@ -355,7 +330,7 @@ function(exception1/*, ..., exceptionN*/) {
 			// should keep us from getting here
 			message = ZmMsg.invalidPrefValue;
 		}
-		appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
+		appCtxt.setStatusMsg(AjxStringUtil.htmlEncode(message,true,true), ZmStatusView.LEVEL_CRITICAL);
 	}
 };
 
@@ -411,33 +386,35 @@ function() {
 		var tabKey = this._prefsView.getCurrentTab();
 		var viewPage = this._prefsView.getTabView(tabKey);
 		if (viewPage) {
-			// bug: 42399 - the active account may not be "owned" by what is
-			// initially shown in prefs
-			var active = appCtxt.accountList.activeAccount;
-			if (!this._activeAccount) {
-				this._activeAccount = active;
-			}
-			else if (this._activeAccount != active) {
-				appCtxt.accountList.setActiveAccount(this._activeAccount);
-			}
-
 			viewPage.showMe();
 		}
+
+		// add account name to toolbar
+		if (!this._acctInfoContainer) {
+			this._toolbar.addFiller();
+			this._acctInfoContainer = new DwtComposite({parent:this._toolbar});
+		}
+		this._acctInfoContainer.getHtmlElement().innerHTML = [
+			"<span class='ZOptionsAcctName'>",
+			ZmMsg.accountLabel, " ",
+			appCtxt.getActiveAccount().getDisplayName(),
+			"</span>"].join("");
 	}
-	return true; // *always* return true!
+	// *always* return true!
+	return true;
 };
 
 ZmPrefController.prototype._postShowCallback =
 function() {
 	ZmController.prototype._postShowCallback.call(this);
-	// NOTE: Some pages need to know when they are being shown again in order to
-	//       display the state correctly.
+	// NOTE: Some pages need to know when they are being shown
+	//       again in order to display the state correctly.
 	this._prefsView.reset();
 };
 
 ZmPrefController.prototype.popShield =
 function() {
-	if (!this._prefsView.isDirty()) { return true; }
+	if (!this._prefsView.isDirty()) return true;
 
 	var ps = this._popShield = appCtxt.getYesNoCancelMsgDialog();
 	ps.reset();

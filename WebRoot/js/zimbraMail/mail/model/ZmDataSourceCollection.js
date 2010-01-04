@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -138,10 +140,10 @@ ZmDataSourceCollection.prototype.getByFolderId = function(folderId, type) {
 
 ZmDataSourceCollection.prototype.add = function(item) {
 	this._itemMap[item.id] = item;
-	if (item.type == ZmAccount.TYPE_POP) {
+	if (item.type == ZmAccount.POP) {
 		this._pop3Map[item.id] = item;
 	}
-	else if (item.type == ZmAccount.TYPE_IMAP) {
+	else if (item.type == ZmAccount.IMAP) {
 		this._imapMap[item.id] = item;
 	}
 	appCtxt.getIdentityCollection().add(item.getIdentity());
@@ -298,11 +300,11 @@ function(sourceMap, delayMs, result) {
 			if (sourceMap[dsrc.id]) {
 				delete sourceMap[dsrc.id];
 				if (dsrc.success) {
-					var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadSuccess, source.name);
+					var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadSuccess, AjxStringUtil.htmlEncode(source.name));
 					appCtxt.setStatusMsg(message);
 				}
 				else {
-					var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadFailure, source.name);
+					var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadFailure, AjxStringUtil.htmlEncode(source.name));
 					appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
 					var dialog = appCtxt.getErrorDialog();
 					dialog.setMessage(message, dsrc.error, DwtMessageDialog.CRITICAL_STYLE);

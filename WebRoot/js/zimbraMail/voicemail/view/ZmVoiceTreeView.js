@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -60,6 +62,10 @@ function(organizer) {
 	item.setData(Dwt.KEY_OBJECT, organizer);
 	item.setData(ZmTreeView.KEY_ID, this.overviewId);
 	item.setData(ZmTreeView.KEY_TYPE, this.type);
+
+	// DwtAccordion voodoo
+	var overview = appCtxt.getOverviewController().getOverview(ZmZimbraMail._OVERVIEW_ID);
+	item.reparentHtmlElement(overview.getBody(organizer.accordionItemId));
 
 	this._treeItemHash[organizer.id] = item;
 	return item;

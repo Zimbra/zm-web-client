@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -22,18 +24,17 @@ ZmMailMsgView = function(params) {
 
 	this._mode = params.mode;
 	this._controller = params.controller;
-	this._viewId = (this._controller && this._controller.sessionId) ? ZmId.VIEW_MSG + this._controller.sessionId: ZmId.VIEW_MSG;
 
-	this._displayImagesId	= ZmId.getViewId(this._viewId, ZmId.MV_DISPLAY_IMAGES, this._mode);
-	this._msgTruncatedId	= ZmId.getViewId(this._viewId, ZmId.MV_MSG_TRUNC, this._mode);
-	this._infoBarId			= ZmId.getViewId(this._viewId, ZmId.MV_INFO_BAR, this._mode);
-	this._tagRowId			= ZmId.getViewId(this._viewId, ZmId.MV_TAG_ROW, this._mode);
-	this._tagCellId			= ZmId.getViewId(this._viewId, ZmId.MV_TAG_CELL, this._mode);
-	this._attLinksId		= ZmId.getViewId(this._viewId, ZmId.MV_ATT_LINKS, this._mode);
+	this._displayImagesId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_DISPLAY_IMAGES, this._mode);
+	this._msgTruncatedId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_MSG_TRUNC, this._mode);
+	this._infoBarId			= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_INFO_BAR, this._mode);
+	this._tagRowId			= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_TAG_ROW, this._mode);
+	this._tagCellId			= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_TAG_CELL, this._mode);
+	this._attLinksId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_ATT_LINKS, this._mode);
 
 	// expand/collapse vars
 	this._expandHeader = true;
-	this._expandDivId = ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_DIV, this._mode);
+	this._expandDivId = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_DIV, this._mode);
 
 	//this.SCROLL_WITH_IFRAME = ZmMailMsgView.SCROLL_WITH_IFRAME;
 	this._scrollWithIframe = ZmMailMsgView.SCROLL_WITH_IFRAME; // Making it local var
@@ -51,7 +52,11 @@ ZmMailMsgView = function(params) {
 	}
 
 	this._setMouseEventHdlrs(); // needed by object manager
-	this._objectManager = true;
+
+	// XXX: for now, turn off object handling in new window
+	if (!appCtxt.isChildWindow) {
+		this._objectManager = true;
+	}
 
 	this._changeListener = new AjxListener(this, this._msgChangeListener);
 	this.addListener(DwtEvent.ONSELECTSTART, new AjxListener(this, this._selectStartListener));
@@ -61,18 +66,10 @@ ZmMailMsgView = function(params) {
 	if (!appCtxt.isOffline) {
 		this._setAllowSelection();
 	}
-
-	this.noTab = true;
-};
+}
 
 ZmMailMsgView.prototype = new DwtComposite;
 ZmMailMsgView.prototype.constructor = ZmMailMsgView;
-
-
-// displays any additional headers in messageView
-//pass ZmMailMsgView.displayAdditionalHdrsInMsgView[<actualHeaderName>] = <DisplayName>
-//pass ZmMailMsgView.displayAdditionalHdrsInMsgView["X-Mailer"] = "Sent Using:"
-ZmMailMsgView.displayAdditionalHdrsInMsgView = {};
 
 
 // Consts
@@ -93,8 +90,6 @@ ZmMailMsgView.OBJ_SIZE_HTML 		= 50; // similar for HTML emails.
 ZmMailMsgView.REPLY_INVITE_EVENT	= "inviteReply";
 ZmMailMsgView.SHARE_EVENT 			= "share";
 ZmMailMsgView.IMG_FIX_RE			= new RegExp("(<img\\s+.*dfsrc\\s*=\\s*)[\"']http[^'\"]+part=([\\d\\.]+)[\"']([^>]*>)", "gi");
-ZmMailMsgView.SETHEIGHT_MAX_TRIES	= 3;
-
 
 // Public methods
 
@@ -164,8 +159,12 @@ function(msg) {
 	this._msg = msg;
 
 	if (!msg) {
-		contentDiv.innerHTML = AjxTemplate.expand("mail.Message#viewMessage");
-		this.noTab = true;
+		var htmlArr = [];
+		var idx = 0;
+		htmlArr[idx++] = "<table width='100%' cellspacing='0' cellpadding='1'><tr><td class='NoResults'><br>";
+		htmlArr[idx++] = ZmMsg.viewMessage;
+		htmlArr[idx++] = "</td></tr></table>";
+		contentDiv.innerHTML = htmlArr.join("");
 		return;
 	}
 
@@ -174,51 +173,32 @@ function(msg) {
 		: new Date(msg.date);
 
 	var invite = msg.invite;
-	var ac = window.parentAppCtxt || window.appCtxt;
 
-	if ((ac.get(ZmSetting.CALENDAR_ENABLED) || ac.multiAccounts) &&
-		(invite && invite.type != "task"))
+	if ((appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
+		invite && invite.type != "task" &&
+		!appCtxt.isChildWindow)
 	{
-		if (!invite.isEmpty() &&
-			invite.hasAcceptableComponents() &&
-			invite.hasInviteReplyMethod() &&
-			msg.folderId != ZmFolder.ID_TRASH)
+		if (!invite.isEmpty() && invite.hasAcceptableComponents() &&
+			msg.folderId != ZmFolder.ID_TRASH &&
+			appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
 		{
 			var topToolbar = this._getInviteToolbar();
 			topToolbar.reparentHtmlElement(contentDiv);
 			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
-			var cc = ac.getApp(ZmApp.CALENDAR).getCalController();
-			var calendars = cc.getCalendars(true, msg.account);
-
-			if (appCtxt.multiAccounts) {
-				var accounts = ac.accountList.visibleAccounts;
-				for (var i = 0; i < accounts.length; i++) {
-					var acct = accounts[i];
-					if (acct == msg.account || !ac.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
-					calendars = calendars.concat(cc.getCalendars(true, acct));
-				}
-			}
-
-			var visible = (calendars.length > 1 || appCtxt.multiAccounts);
+			var calendars = appCtxt.getApp(ZmApp.CALENDAR).getCalController().getCalendars();
+			var visible = calendars.length > 1;
 			if (visible) {
 				this._inviteMoveSelect.clearOptions();
 				for (var i = 0; i < calendars.length; i++) {
 					var calendar = calendars[i];
-					var icon = appCtxt.multiAccounts ? calendar.account.getIcon() : null;
-					var name = appCtxt.multiAccounts
-						? ([calendar.name, " (", calendar.getAccount().getDisplayName(), ")"].join(""))
-						: calendar.name;
-					var isSelected = (calendar.account && msg.account)
-						? (calendar.account == msg.account && calendar.nId == ZmOrganizer.ID_CALENDAR)
-						: calendar.nId == ZmOrganizer.ID_CALENDAR;
-					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null, icon);
-					this._inviteMoveSelect.addOption(option);
+					this._inviteMoveSelect.addOption(calendar.name, calendar.id == ZmOrganizer.ID_CALENDAR, calendar.id);
 				}
 			}
 			this._inviteMoveSelect.setVisible(visible);
 			this._lastApptFolder = ZmOrganizer.ID_CALENDAR;
 			this._hasInviteToolbar = true;
+			this.enableInviteReplyMenus(invite.shouldRsvp());
 		}
 	}
 	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
@@ -229,7 +209,7 @@ function(msg) {
 		var action = msg.share.action;
 		var isNew = action == ZmShare.NEW;
 		var isEdit = action == ZmShare.EDIT;
-		var isDataSource = (appCtxt.getById(msg.folderId).isDataSource(null, true) && (msg.folderId != ZmFolder.ID_INBOX));
+		var isDataSource = appCtxt.getById(msg.folderId).isDataSource(null, true);
 
 		if (!isDataSource &&
 			(isNew || (isEdit && !this.__hasMountpoint(msg.share))) &&
@@ -243,7 +223,6 @@ function(msg) {
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
 	this._renderMessage(msg, contentDiv, respCallback);
-	this.noTab = AjxEnv.isIE;
 };
 
 ZmMailMsgView.prototype.__hasMountpoint =
@@ -280,6 +259,43 @@ function(origText) {
 		// than parsing the DOM.
 		DBG.timePt("START - highlight objects on-demand, text msg.");
 		this._lazyCreateObjectManager();
+		var msgSizeKB = origText.length / 1024;
+		if (msgSizeKB >= ZmMailMsgView.OBJ_SIZE_TEXT) {
+			// break large text into chunks
+			console.log("splitting into chunks");
+			var chunks = [];
+			var chunkSizeB = ZmMailMsgView.OBJ_SIZE_TEXT * 512; // 25K chunks
+			var offset = 0;
+			var before = new Date().getTime();
+			while (offset + chunkSizeB < origText.length) {
+				for (var i = offset + chunkSizeB; i < origText.length; i++) {
+					// break at newline so that highlighters can work correctly
+					var c = origText.charCodeAt(i);
+					if (c == 10 || c == 13) { // \r or \n
+						chunks.push(origText.substring(offset, i));
+						offset = i + 1;
+						break;
+					}
+				}
+			}
+			if (offset < origText.length) {
+				chunks.push(origText.substr(offset));
+			}
+			var after = new Date().getTime();
+			console.log(chunks.length," chunks took ",after-before," ms");
+
+			console.log("highlighting objects in the chunks");
+			for (var i = 0; i < chunks.length; i++) {
+				var before = new Date().getTime();
+				chunks[i] = this._objectManager.findObjects(origText, true, null, true);
+				chunks[i] = chunks[i].replace(/^ /mg, "&nbsp;")
+					.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
+					.replace(/\n/g, "<br>");
+				var after = new Date().getTime();
+				console.dir("chunk ",i," took ",after-before," ms");
+			}
+			return;
+		}
 		var html = this._objectManager.findObjects(origText, true, null, true);
 		html = html.replace(/^ /mg, "&nbsp;")
 			.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
@@ -363,28 +379,11 @@ function (listener) {
 
 ZmMailMsgView.prototype._getInviteToolbar =
 function() {
+
 	if (this._inviteToolbar) { return this._inviteToolbar; }
 
-	var operationButtonIds = [
-		ZmOperation.REPLY_ACCEPT,
-		ZmOperation.REPLY_TENTATIVE,
-		ZmOperation.REPLY_DECLINE
-	];
-	var replyButtonIds = [
-		ZmOperation.INVITE_REPLY_ACCEPT,
-		ZmOperation.INVITE_REPLY_TENTATIVE,
-		ZmOperation.INVITE_REPLY_DECLINE
-	];
-	var notifyOperationButtonIds = [
-		ZmOperation.REPLY_ACCEPT_NOTIFY,
-		ZmOperation.REPLY_TENTATIVE_NOTIFY,
-		ZmOperation.REPLY_DECLINE_NOTIFY
-	];
-	var ignoreOperationButtonIds = [
-		ZmOperation.REPLY_ACCEPT_IGNORE,
-		ZmOperation.REPLY_TENTATIVE_IGNORE,
-		ZmOperation.REPLY_DECLINE_IGNORE
-	];
+	var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
+	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
 	var params = {
 		parent: this,
 		buttons: operationButtonIds,
@@ -396,36 +395,38 @@ function() {
 	};
 	this._inviteToolbar = new ZmButtonToolBar(params);
 
-	var listener = new AjxListener(this, this._inviteToolBarListener);
+	var inviteToolBarListener = new AjxListener(this, this._inviteToolBarListener);
 	operationButtonIds = this._inviteToolbar.opList;
 	for (var i = 0; i < operationButtonIds.length; i++) {
 		var id = operationButtonIds[i];
 
-		// HACK: IE doesn't support multiple classnames.
+		// HACK for IE, which doesn't support multiple classnames. If I
+		// just change the styles, the hovered class overrides the basic
+		// hovered class definition, thus I have to change what the
+		// hovered class name will be for the buttons in the toolbar.
 		var button = this._inviteToolbar.getButton(id);
 		button._hoverClassName = button._className + "-" + DwtCssStyle.HOVER;
 		button._activeClassName = button._className + "-" + DwtCssStyle.ACTIVE;
 
-		this._inviteToolbar.addSelectionListener(id, listener);
+		this._inviteToolbar.addSelectionListener(id, inviteToolBarListener);
 
-		var standardItems = [notifyOperationButtonIds[i], replyButtonIds[i], ignoreOperationButtonIds[i]];
+		var standardItems = [id, replyButtonIds[i]];
 		var menu = new ZmActionMenu({parent:button, menuItems:standardItems});
 		standardItems = menu.opList;
 		for (var j = 0; j < standardItems.length; j++) {
 			var menuItem = menu.getItem(j);
-			menuItem.addSelectionListener(listener);
+			menuItem.addSelectionListener(inviteToolBarListener);
 		}
 		button.setMenu(menu);
 	}
 
 	this._inviteToolbar.addFiller();
-	var label = new DwtText({parent: this._inviteToolbar, className: "DwtText InviteSelectLabel"});
-	label.setSize(100, DwtControl.DEFAULT);
+	var label = new DwtText({ parent: this._inviteToolbar });
 	label.setText(AjxMessageFormat.format(ZmMsg.makeLabel, [ZmMsg.calendar]));
 
-	this._inviteToolbar.addSpacer();
-
-	this._inviteMoveSelect = new DwtSelect({parent: this._inviteToolbar});
+	var select = new DwtSelect({ parent: this._inviteToolbar });
+	select.addChangeListener(new AjxListener(this, this._moveAppt));
+	this._inviteMoveSelect = select;
 
 	return this._inviteToolbar;
 };
@@ -434,22 +435,15 @@ ZmMailMsgView.prototype.enableInviteReplyMenus =
 function(enable) {
 	if (!this._inviteToolbar) { return; }
 
-	var operationButtonIds = [
-		ZmOperation.REPLY_ACCEPT,
-		ZmOperation.REPLY_TENTATIVE,
-		ZmOperation.REPLY_DECLINE
-	];
-	var replyButtonIds = [
-		ZmOperation.INVITE_REPLY_ACCEPT,
-		ZmOperation.INVITE_REPLY_TENTATIVE,
-		ZmOperation.INVITE_REPLY_DECLINE
-	];
+	var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
+	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
+
 	for (var i = 0; i < operationButtonIds.length; i++) {
 		var button = this._inviteToolbar.getButton(operationButtonIds[i]);
-		if (button) {
+		if(button) {
 			var menu = button.getMenu();
 			var menuItem = menu.getMenuItem(replyButtonIds[i]);
-			if (menuItem) {
+			if(menuItem) {
 				menuItem.setEnabled(enable);
 			}
 		}
@@ -464,11 +458,6 @@ function(ev) {
 	if (ofolder == nfolder) return;
 
 	var itemId = this._msg.invite.components[0].apptId;
-	this.moveApptItem(itemId, ofolder, nfolder, select);
-};
-
-ZmMailMsgView.prototype.moveApptItem =
-function(itemId, ofolder, nfolder, select) {
 	var callback = new AjxCallback(this, this._handleMoveApptResponse, [ofolder, nfolder]);
 	var errorCallback = new AjxCallback(this, this._handleMoveApptError, [ofolder, nfolder, select]);
 	ZmItem.move(itemId, nfolder, callback, errorCallback);
@@ -493,6 +482,7 @@ function(ofolder, nfolder, select, resp) {
 
 ZmMailMsgView.prototype._getShareToolbar =
 function() {
+
 	if (this._shareToolbar) { return this._shareToolbar; }
 
 	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
@@ -507,16 +497,19 @@ function() {
 	};
 	this._shareToolbar = new ZmButtonToolBar(params);
 
-	var listener = new AjxListener(this, this._shareToolBarListener);
+	var shareToolBarListener = new AjxListener(this, this._shareToolBarListener);
 	for (var i = 0; i < buttonIds.length; i++) {
 		var id = buttonIds[i];
 
-		// HACK: IE doesn't support multiple class names.
+		// HACK for IE, which doesn't support multiple classnames. If I
+		// just change the styles, the hovered class overrides the basic
+		// hovered class definition, thus I have to change what the
+		// hovered class name will be for the buttons in the toolbar.
 		var b = this._shareToolbar.getButton(id);
 		b._hoverClassName = b._className + "-" + DwtCssStyle.HOVER;
 		b._activeClassName = b._className + "-" + DwtCssStyle.ACTIVE;
 
-		this._shareToolbar.addSelectionListener(id, listener);
+		this._shareToolbar.addSelectionListener(id, shareToolBarListener);
 	}
 
 	return this._shareToolbar;
@@ -539,11 +532,40 @@ function(msg, oldMsg) {
 	this.getHtmlElement().scrollTop = 0;
 
 	// notify zimlets that a new message has been opened
-	appCtxt.notifyZimlets("onMsgView", [msg, oldMsg, this]);
-
-	if (!msg.isDraft && msg.readReceiptRequested) {
-		this._controller.sendReadReceipt(msg);
+	if (appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("onMsgView", msg, oldMsg, this);
 	}
+};
+
+// Values in this hash MUST be null or RegExp.  If "null" is passed, then that
+// CSS rule will be dropped regardless the value.  If a RegExp is passed, then
+// the rule is removed only if its value matches the RegExp.  Useful for cases
+// like "position", where we can safely support most values except "fixed".
+ZmMailMsgView._dangerousCSS = {
+
+// It' doesn't make too much sense to cleanup the style if we're using an IFRAME
+
+// 	// clearly, we can't display background image-s :-(
+// 	// in the future we should provide a way for end-users to see them on demand,
+// 	// but at this time, ban.
+// 	backgroundImage       : null,
+// 	backgroundAttachment  : null,
+
+// 	// position: fixed can cause real trouble with browsers that support it
+// 	position              : /fixed/i,
+
+// 	// negative margins can get an element out of the containing DIV.
+// 	// let's ban them
+// 	marginLeft            : /^-/,
+// 	marginRight           : /^-/,
+// 	marginTop             : /^-/,
+// 	marginBottom          : /^-/,
+
+// 	// all of the above being banned, zIndex could as well stay... but better not.
+// 	zIndex                : null,
+
+// 	// not sure this is good
+// 	whiteSpace            : null
 };
 
 ZmMailMsgView._URL_RE = /^((https?|ftps?):\x2f\x2f.+)$/;
@@ -568,30 +590,17 @@ function() {
 // This is needed for Gecko only: for some reason, clicking on a local
 // link will open the full Zimbra chrome in the iframe :-( so we fake
 // a scroll to the link target here. (bug 7927)
-ZmMailMsgView.__localLinkClicked =
-function(msgView, ev) {
+ZmMailMsgView.__localLinkClicked = function(msgView, ev) {
 	// note that this function is called in the context of the link
 	var id = this.getAttribute("href");
 	var el = null;
 	var doc = this.ownerDocument;
-
-	if (id.substr(0, 1) == "#") {
-		id = id.substr(1);
+	if (/^#(.*)$/.test(id)) {
+		id = RegExp.$1;
 		el = doc.getElementById(id);
-		if (!el) {
-			try {
-				el = doc.getElementsByName(id)[0];
-			} catch(ex) {}
-		}
-		if (!el) {
-			id = decodeURIComponent(id);
-			el = doc.getElementById(id);
-			if (!el) {
-				try {
-					el = doc.getElementsByName(id)[0];
-				} catch(ex) {}
-			}
-		}
+		if (!el) try {
+			el = doc.getElementsByName(id)[0];
+		} catch(ex) {};
 	}
 
 	// attempt #1: doesn't work at all -- we're not scrolling with the IFRAME :-(
@@ -611,13 +620,11 @@ function(msgView, ev) {
 	// (that is the whole msgView).  Note we have to take
 	// into account the headers, "display images", etc --
 	// so we add iframe.offsetTop/Left.
-	if (el) {
-		var div = msgView.getHtmlElement();
-		var iframe = document.getElementById(msgView._iframeId);
-		var pos = Dwt.getLocation(el);
-		div.scrollTop = pos.y + iframe.offsetTop - 20; // fuzz factor necessary for unknown reason :-(
-		div.scrollLeft = pos.x + iframe.offsetLeft;
-	}
+	var div = msgView.getHtmlElement();
+	var iframe = document.getElementById(msgView._iframeId);
+	var pos = Dwt.getLocation(el);
+	div.scrollTop = pos.y + iframe.offsetTop - 20; // fuzz factor necessary for unknown reason :-(
+	div.scrollLeft = pos.x + iframe.offsetLeft;
 	ev.stopPropagation();
 	ev.preventDefault();
 	return false;
@@ -726,25 +733,15 @@ function(msg, idoc) {
 	return !hasExternalImages;
 };
 
-ZmMailMsgView.prototype._fixMultipartRelatedImagesRecurse =
-function(msg, node) {
+ZmMailMsgView.prototype._fixMultipartRelatedImagesRecurse = function(msg, node) {
 	var hasExternalImages = false;
-
-	function recurse(node){
-		var child = node.firstChild;
-		while (child) {
-			if (child.nodeType == AjxUtil.ELEMENT_NODE) {
-				hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, child, "background") || hasExternalImages;
-				recurse(child);
-			}
-			child = child.nextSibling;
+	var child = node.firstChild;
+	while (child) {
+		if (child.nodeType == AjxUtil.ELEMENT_NODE) {
+			hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, child, "background") || hasExternalImages;
 		}
+		child = child.nextSibling;
 	}
-
-	if(node.innerHTML.indexOf("dfbackground") != -1){
-		recurse(node);
-	}
-
 	return hasExternalImages;
 };
 
@@ -752,29 +749,22 @@ ZmMailMsgView.__unfangInternalImage =
 function(msg, elem, aname) {
 	var df_aname = "df"+aname;
 	var avalue = elem.getAttribute(df_aname);
+	var ovalue = avalue;
 	if (avalue) {
 		if (avalue.substr(0,4) == "cid:") {
 			var cid = "<" + avalue.substr(4) + ">";
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
 			if (avalue) {
 				elem.setAttribute(aname, avalue);
-				//elem.setAttribute(df_aname, avalue)
-				return false;
-			}else{
-                //Since dfsrc="cid:xxxx", it cannot be external url
-                return false;
-            }
-		} else if (avalue.substring(0,4) == "doc:") {
-			avalue = [appCtxt.get(ZmSetting.REST_URL), ZmFolder.SEP, avalue.substring(4)].join('');
-			if (avalue) {
-				elem.setAttribute(aname, avalue);
+				elem.setAttribute(df_aname, ovalue)
 				return false;
 			}
-		} else if (avalue.indexOf("//") == -1) { // check for content-location verison
+		}
+		else if (avalue.indexOf("//") == -1) { // check for content-location verison
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, avalue);
 			if (avalue) {
 				elem.setAttribute(aname, avalue);
-				//elem.setAttribute(df_aname, avalue)
+				elem.setAttribute(df_aname, ovalue)
 				return false;
 			}
 		}
@@ -841,12 +831,12 @@ function(origText) {
 			ZmMailMsgView._resetIframeHeight(self, document.getElementById(self._iframeId));
 		}, 3);
 		return false;
-	}
+	};
 	// avoid closure memory leaks
 	(function() {
 		var infoBarDiv = document.getElementById(self._infoBarId);
 		if (infoBarDiv) {
-			self._highlightObjectsId = ZmId.getViewId(this._viewId, ZmId.MV_HIGHLIGHT_OBJ, self._mode);
+			self._highlightObjectsId = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HIGHLIGHT_OBJ, self._mode);
 			var subs = {
 				id: self._highlightObjectsId,
 				text: ZmMsg.objectsNotDisplayed,
@@ -861,21 +851,10 @@ function(origText) {
 	})();
 };
 
-ZmMailMsgView.prototype._stripHtmlComments =
-function(html) {
-	// bug: 38273 - Remove HTML Comments <!-- -->
-	// But make sure not to remove inside style|script tags.
-	var regex =  /<(?:!(?:--[\s\S]*?--\s*)?(>)\s*|(?:script|style|SCRIPT|STYLE)[\s\S]*?<\/(?:script|style|SCRIPT|STYLE)>)/g;
-	html = html.replace(regex,function(m, $1) {
-		return $1 ? '':m;
-	});
-	return html;
-};
-
 ZmMailMsgView.prototype._makeIframeProxy =
 function(container, html, isTextMsg, isTruncated) {
 	// bug fix #4943
-	if (html == null) { html = ""; }
+	if (html == null) html = "";
 
 	var displayImages;
 	if (!isTextMsg &&
@@ -921,7 +900,7 @@ function(container, html, isTextMsg, isTruncated) {
 			html = "<html><head></head><body>" + html + "</body></html>";
 		}
 	} else {
-		html = this._stripHtmlComments(html);
+		html = html.replace(/<!--(.|\n)*?-->/g, ""); 							// remove comments
 		if (this._objectManager) {
 			// this callback will post-process the HTML after the IFRAME is created
 			if (msgSize <= ZmMailMsgView.OBJ_SIZE_HTML)
@@ -956,7 +935,7 @@ function(container, html, isTextMsg, isTruncated) {
 	var params = {
 		parent: this,
 		className: "MsgBody",
-		id: ZmId.getViewId(this._viewId, ZmId.MV_MSG_BODY, this._mode),
+		id: ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_MSG_BODY, this._mode),
 		hidden: true,
 		html: html,
 		styles: inner_styles,
@@ -1006,23 +985,20 @@ function(container, html, isTextMsg, isTruncated) {
 		this._htmlBody = idoc.body.innerHTML;
 
 		// TODO: only call this if top-level is multipart/related?
-		// setup the click handler for the images
 		var didAllImages = this._fixMultipartRelatedImages(this._msg, idoc);
-		if (didAllImages) {
-			if (displayImages) {
-				displayImages.style.display = "none";
-			}
-		} else {
-			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
-			if (displayImages) {
-				Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
-			}
-			else if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) ||
-					 (this._msg && this._msg.showImages))
-			{
-				func.call();
-			}
-		}
+
+		// setup the click handler for the images
+        var didAllImages = this._fixMultipartRelatedImages(this._msg, idoc);
+        if(didAllImages){
+            if(displayImages) displayImages.style.display = "none";
+        }else{
+            var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
+            if(displayImages){
+               Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
+            }else if(appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || (this._msg && this._msg.showImages)){
+               func.call();
+            }
+        }
 	}
 
 	if (msgTruncated) {
@@ -1048,46 +1024,12 @@ function(msg, container, callback) {
 	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
 	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
 	var sentBy = (sender && sender.address) ? sender : addr;
-	var sentByAddr = String(sentBy);
+	var sentByAddr = sentBy.address; // non-objectified version
 	var sentByIcon = cl	? (cl.getContactByEmail(sentByAddr) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
-	var additionalHdrs = [];
-	if (msg.attrs) {
-		for (var hdrName in ZmMailMsgView.displayAdditionalHdrsInMsgView) {
-			if (msg.attrs[hdrName]) {
-				additionalHdrs.push({hdrName:ZmMailMsgView.displayAdditionalHdrsInMsgView[hdrName], hdrVal: msg.attrs[hdrName]});
-			}
-		}
-	}
-
-	// find addresses we may need to search for contacts for, so that we can
-	// aggregate them into a single search
-	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-	if (contactsApp) {
-		var lookupAddrs = [];
-		if (sentBy) { lookupAddrs.push(sentBy); }
-		if (obo) { lookupAddrs.push(obo); }
-		for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
-			var type = ZmMailMsg.ADDRS[i];
-			if (type == AjxEmailAddress.SENDER) { continue; }
-			var addrs = msg.getAddresses(type).getArray();
-			for (var j = 0; j < addrs.length; j++) {
-				if (addrs[j]) {
-					lookupAddrs.push(addrs[j].address);
-				}
-			}
-		}
-		if (lookupAddrs.length > 1) {
-			contactsApp.setAddrLookupGroup(lookupAddrs);
-		}
-	}
 
 	if (this._objectManager) {
 		this._lazyCreateObjectManager();
-
-		// notify zimlets that we're finding objects in the message
-		appCtxt.notifyZimlets("onFindMsgObjects", [msg, this._objectManager, this]);
-
 		this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
 											ZmObjectManager.ATTR_CURRENT_DATE,
 											this._dateObjectHandlerDate);
@@ -1099,6 +1041,7 @@ function(msg, container, callback) {
 			obo		= this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
 		}
 	} else {
+		subject = AjxStringUtil.htmlEncode(subject);
 		sentBy = AjxStringUtil.htmlEncode(sentBy.toString());
 		if (obo) {
 			obo = AjxStringUtil.htmlEncode(obo.toString());
@@ -1133,8 +1076,7 @@ function(msg, container, callback) {
 			participants.push({ prefix: prefix, partStr: partStr });
 		}
 	}
-
-	var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
+    var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var attachmentsCount = msg.getAttachmentLinks(true, isTextView).length;
 	var hasAttachments = attachmentsCount != 0;
 
@@ -1144,16 +1086,16 @@ function(msg, container, callback) {
 	var folder = appCtxt.getById(msg.folderId);
 	var isSyncFailureMsg = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
 
-	this._hdrTableId		= ZmId.getViewId(this._viewId, ZmId.MV_HDR_TABLE, this._mode);
-	var closeBtnCellId		= hasHeaderCloseBtn ? ZmId.getViewId(this._viewId, ZmId.MV_CLOSE_BTN_CELL, this._mode) : null;
-	var reportBtnCellId		= ZmId.getViewId(this._viewId, ZmId.MV_REPORT_BTN_CELL, this._mode);
-	this._expandRowId		= ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_ROW, this._mode);
-	var expandHeaderId		= ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_HDR, this._mode);
+	this._hdrTableId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE, this._mode);
+	var closeBtnCellId		= hasHeaderCloseBtn ? ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_CLOSE_BTN_CELL, this._mode) : null;
+	var reportBtnCellId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_REPORT_BTN_CELL, this._mode);
+	this._expandRowId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_ROW, this._mode);
+	var expandHeaderId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_HDR, this._mode);
 
 	var subs = {
 		id                : this._htmlElId,
 		hdrTableId        : this._hdrTableId,
-		hdrTableTopRowId  : ZmId.getViewId(this._viewId, ZmId.MV_HDR_TABLE_TOP_ROW, this._mode),
+		hdrTableTopRowId  : ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE_TOP_ROW, this._mode),
 		closeBtnCellId    : closeBtnCellId,
 		reportBtnCellId   : reportBtnCellId,
 		expandRowId       : this._expandRowId,
@@ -1169,15 +1111,14 @@ function(msg, container, callback) {
 		participants      : participants,
 		hasAttachments    : hasAttachments,
 		attachmentsCount  : attachmentsCount,
-		isSyncFailureMsg  : isSyncFailureMsg,
-		additionalHdrs	  : additionalHdrs
+		isSyncFailureMsg  : isSyncFailureMsg
 	};
 
 	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
 
 	var el = container || this.getHtmlElement();
 	el.appendChild(Dwt.parseHtmlFragment(html));
-	this._headerElement = Dwt.byId(this._htmlElId + "_headerElement");
+
 
 	/**************************************************************************/
 	/* Add to DOM based on Id's used to generate HTML via templates           */
@@ -1232,15 +1173,7 @@ function(msg, container, callback) {
 				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
 					html.push("<pre>", AjxStringUtil.htmlEncode(bp.content, true), "</pre>");
 				} else {
-					if (appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
-						html.push(bp.content);
-					} else {
-						// bug fix #31840 - convert HTML to text
-						var div = document.createElement("div");
-						div.innerHTML = bp.content;
-						var convert = AjxStringUtil.convertHtml2Text(div);
-						html.push("<pre>", AjxStringUtil.htmlEncode(convert), "</pre>");
-					}
+					html.push(bp.content);
 				}
 			}
 		}
@@ -1265,10 +1198,10 @@ function(msg, container, callback) {
 					});
 				}
 				this._makeIframeProxy(el, c, false, bodyPart.truncated);
-			} else if (ZmMimeTable.isRenderableImage(bodyPart.ct)) {
-				var html = ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bodyPart.part, "'>"].join("");
-				this._makeIframeProxy(el, html, false);
-			} else {
+			} else if(ZmMimeTable.isRenderableImage(bodyPart.ct)){
+                var html = ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bodyPart.part, "'>"].join("");
+                this._makeIframeProxy(el, html, false);
+			}else {
 				// otherwise, get the text part if necessary
 				if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
 					// try to go retrieve the text part
@@ -1298,8 +1231,21 @@ function(el, bodyPart, callback, result, isTruncated) {
 	// text, otherwise, get the html part if one exists
 	if (content == null) {
 		if (bodyPart.ct == ZmMimeTable.TEXT_CAL) {
-			// NOTE: IE doesn't match multi-line regex, even when explicitly
-			// specifying the "m" attribute.
+			// NOTE: If there's only a text/calendar part, then fall
+			//       back to the description line(s) in the vcal content.
+			/***
+			var regex = /DESCRIPTION:(.*(?:\r\n\s+.*)*)/;
+			var results = regex.exec(bodyPart.content);
+			if (results && results.length > 1) {
+				content = results[1];
+				content = content.replace(/\r\n\s+/g," ");
+				content = content.replace(/\\t/g, "\t");
+				content = content.replace(/\\n/g, "\n");
+				content = content.replace(/\\(.)/g, "$1");
+			}
+			/***/
+			// NOTE: IE doesn't match my multi-line regex, even when
+			//       explicitly specifying the "m" attribute.
 			var lines = bodyPart.content.split(/\r\n/);
 			var desc = [];
 			for (var i = 0; i < lines.length; i++) {
@@ -1323,8 +1269,8 @@ function(el, bodyPart, callback, result, isTruncated) {
 				content = content.replace(/\\n/g, "\n");
 				content = content.replace(/\\(.)/g, "$1");
 			}
-		}
-		else if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
+			/***/
+		} else if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
 			// bug fix #8960 - convert the html content to text using the DOM
 			var div = document.createElement("div");
 			div.innerHTML = bodyPart.content;
@@ -1333,10 +1279,7 @@ function(el, bodyPart, callback, result, isTruncated) {
 	}
 
 	this._makeIframeProxy(el, (content || ""), true, isTruncated);
-
-	this._setAttachmentLinks();
-	this._expandRows(this._expandHeader);
-};
+}
 
 ZmMailMsgView.prototype._setTags =
 function(msg) {
@@ -1375,7 +1318,7 @@ function(msg) {
 	}
 	ta.sort(ZmTag.sortCompare);
 
-	var html = [];
+	var html = new Array();
 	var i = 0;
 
 	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
@@ -1421,10 +1364,9 @@ function(msg) {
 
 ZmMailMsgView.prototype._setAttachmentLinks =
 function() {
-
 	var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var attLinks = this._msg.getAttachmentLinks(true, isTextView);
-	var el = document.getElementById(this._attLinksId + "_container");
+	var el = document.getElementById(this._attLinksId + "_tr");
 	if (el) {
 		el.style.display = attLinks.length == 0 ? "none" : "";
 	}
@@ -1436,21 +1378,26 @@ function() {
 
 	var htmlArr = [];
 	var idx = 0;
-	var imageAttsFound = 0;
 
-	var attColumns = (this._controller.isReadingPaneOn() && this._controller.isReadingPaneOnRight())
-		? 1 : ZmMailMsgView.ATTC_COLUMNS;
 	var dividx = idx;	// we might get back here
 	htmlArr[idx++] = "<table id='" + this._attLinksId + "_table' border=0 cellpadding=0 cellspacing=0>";
 
 	var rows = 0;
+	if (attLinks.length > 1) {
+		htmlArr[idx++] = "<tr><td colspan=";
+		htmlArr[idx++] = ZmMailMsgView.ATTC_COLUMNS;
+		htmlArr[idx++] = ">";
+		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), this._msg.id, attLinks);
+		htmlArr[idx++] = "</td></tr>";
+		rows++;
+	}
+
 	for (var i = 0; i < attLinks.length; i++) {
 		var att = attLinks[i];
 
-		if ((i % attColumns) == 0) {
-			if (i != 0) {
+		if ((i % ZmMailMsgView.ATTC_COLUMNS) == 0) {
+			if (i != 0)
 				htmlArr[idx++] = "</tr>";
-			}
 			htmlArr[idx++] = "<tr>";
 			++rows;
 		}
@@ -1482,41 +1429,32 @@ function() {
 			htmlArr[idx++] = "&nbsp;(";
 			if (att.size) {
 				htmlArr[idx++] = att.size;
-				htmlArr[idx++] = ") ";
+				if (att.htmlLink || att.vcardLink || att.briefcaseLink)
+					htmlArr[idx++] = ", ";
 			}
 			if (att.htmlLink) {
 				htmlArr[idx++] = att.htmlLink;
-				htmlArr[idx++] = ZmMsg.preview;
+				htmlArr[idx++] = ZmMsg.viewAsHtml;
 				htmlArr[idx++] = "</a>";
 			} else if (att.vcardLink) {
 				htmlArr[idx++] = att.vcardLink;
-				htmlArr[idx++] = ZmMsg.addressBook;
-				htmlArr[idx++] = "</a>";
-			}
-			if (att.download) {
-				if (att.htmlLink || att.vcardLink) {
-					htmlArr[idx++] = " | ";
-				}
-				htmlArr[idx++] = att.download;
-				htmlArr[idx++] = ZmMsg.download;
+				htmlArr[idx++] = ZmMsg.addToAddrBook;
 				htmlArr[idx++] = "</a>";
 			}
 			if (att.briefcaseLink) {
-				if (att.htmlLink || att.vcardLink || att.download) {
-					htmlArr[idx++] = " | ";
-				}
+				if (att.htmlLink || att.vcardLink)
+					htmlArr[idx++] = ", ";
+
 				htmlArr[idx++] = att.briefcaseLink;
 				htmlArr[idx++] = ZmMsg.addToBriefcase;
 				htmlArr[idx++] = "</a>";
 			}
+			if (att.download) {
+				if (att.size || att.htmlLink || att.vcardLink || att.briefcaseLink)
+					htmlArr[idx++] = ", ";
 
-			// bug: 233 - remove attachment support
-			if (att.removeLink) {
-				if (att.briefcaseLink || att.htmlLink || att.vcardLink || att.download) {
-					htmlArr[idx++] = " | ";
-				}
-				htmlArr[idx++] = att.removeLink;
-				htmlArr[idx++] = ZmMsg.remove;
+				htmlArr[idx++] = att.download;
+				htmlArr[idx++] = ZmMsg.download;
 				htmlArr[idx++] = "</a>";
 			}
 
@@ -1528,47 +1466,39 @@ function() {
 					for (handlerId in contentHandlers) {
 						handlerFunc = contentHandlers[handlerId];
 						if (handlerFunc) {
-							htmlArr[idx++] = " | " + handlerFunc.call(this,att);
+							htmlArr[idx++] = ", " + handlerFunc.call(this,att);
 						}
 					}
 				}
 			}
+
+			htmlArr[idx++] = ")";
 		}
 
 		htmlArr[idx++] = "</td></tr></table>";
 		htmlArr[idx++] = "</td>";
-
-		if (att.ct.indexOf("image") != -1) {
-			++imageAttsFound;
-		}
 	}
-
 	// limit display size.  seems like an attc. row has exactly 16px; we set it
 	// to 56px so that it becomes obvious that there are more attachments.
 	if (this._limitAttachments != 0 && rows > ZmMailMsgView._limitAttachments) {
+		//Commented for bug 12995 if (ZmMailMsgView.LIMIT_ATTACHMENTS != 0 && rows > ZmMailMsgView.LIMIT_ATTACHMENTS) {
 		htmlArr[dividx] = "<div style='height:";
-		htmlArr[dividx] = this._attcMaxSize;
+		htmlArr[dividx] = this._attcMaxSize;//ZmMailMsgView.ATTC_MAX_SIZE;
 		htmlArr[dividx] = "px; overflow:auto;' />";
 	}
 	htmlArr[idx++] = "</tr></table>";
-
-	if (attLinks.length > 1) {
-		imageAttsFound = imageAttsFound > 1;
-		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(this._msg.id, attLinks, imageAttsFound);
-	}
 
 	var attLinksDiv = document.getElementById(this._attLinksId);
 	attLinksDiv.innerHTML = htmlArr.join("");
 };
 
-// AttachmentLink Handlers
-ZmMailMsgView.prototype.addAttachmentLinkHandler =
-function(contentType,handlerId,handlerFunc){
-	if (!ZmMailMsgView._attachmentHandlers) {
+//AttachmentLink Handlers
+ZmMailMsgView.prototype.addAttachmentLinkHandler = function(contentType,handlerId,handlerFunc){
+	if(!ZmMailMsgView._attachmentHandlers){
 		ZmMailMsgView._attachmentHandlers = {};
 	}
 
-	if (!ZmMailMsgView._attachmentHandlers[contentType]) {
+	if(!ZmMailMsgView._attachmentHandlers[contentType]){
 		ZmMailMsgView._attachmentHandlers[contentType] = {};
 	}
 
@@ -1580,13 +1510,7 @@ function(contentType,handlerId,handlerFunc){
 ZmMailMsgView.prototype._inviteToolBarListener =
 function(ev) {
 	ev._inviteReplyType = ev.item.getData(ZmOperation.KEY_ID);
-	var folderId = ZmOrganizer.ID_CALENDAR;
-	if (this._inviteMoveSelect && this._inviteMoveSelect.getValue()) {
-		folderId = this._inviteMoveSelect.getValue();
-	}
-	ev._inviteReplyFolderId = folderId;
 	ev._inviteComponentId = null;
-	ev._msg = this._msg;
 	this.notifyListeners(ZmMailMsgView.REPLY_INVITE_EVENT, ev);
 };
 
@@ -1610,7 +1534,7 @@ ZmMailMsgView.prototype._msgChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_MSG) { return; }
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
-		if (ev.source == this._msg && (appCtxt.getCurrentViewId() == this._viewId)) {
+		if (ev.source == this._msg && (appCtxt.getCurrentViewId() == ZmId.VIEW_MSG)) {
 			this._controller._app.popView();
 		}
 	} else if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
@@ -1633,9 +1557,8 @@ function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
 		var tag = ev.getDetail("organizers")[0];
 		var img = document.getElementById(this._tagCellId +  ZmDoublePaneView._TAG_IMG + tag.id);
-		if (img) {
+		if (img)
 			AjxImg.setImage(img, ZmTag.COLOR_ICON[tag.color]);
-		}
 	}
 
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY) {
@@ -1671,10 +1594,6 @@ function(expand) {
 		}
 		this._addressRows = null;
 	}
-	var attContainer = document.getElementById(this._attLinksId + "_container");
-	if (attContainer) {
-		Dwt.setVisible(attContainer, expand);
-	}
 	if (this._scrollWithIframe) {
 		var iframe = document.getElementById(this._iframeId);
 		if (iframe)
@@ -1685,7 +1604,7 @@ function(expand) {
 ZmMailMsgView.prototype._closeButtonListener =
 function(ev) {
 	// bug fix #30835 - prism triggers this listener twice for some reason :/
-	if (!appCtxt.isOffline || (this._viewId == appCtxt.getCurrentViewId())) {
+	if (this._mode == appCtxt.getCurrentViewId()) {
 		this._controller._backListener();
 	}
 };
@@ -1708,12 +1627,12 @@ function(msg, ev) {
 
 	var respCallback = new AjxCallback(this, this._sendReportCallback, msg);
 	var errorCallback = new AjxCallback(this, this._sendReportError);
-	proxy.send(false, respCallback, errorCallback, null, true);
+	proxy.send(null, null, respCallback, errorCallback, null, true);
 };
 
 ZmMailMsgView.prototype._sendReportCallback =
 function(msg) {
-	this._controller._doDelete([msg], true);
+	this._controller._doDelete(msg, true);
 };
 
 ZmMailMsgView.prototype._sendReportError =
@@ -1727,16 +1646,33 @@ function() {
 ZmMailMsgView.prototype._msgTagClicked =
 function(tagId) {
 	var tag = appCtxt.getById(tagId);
-	appCtxt.getSearchController().search({query: tag.createQuery()});
+	var query = 'tag:"' + tag.name + '"';
+	var searchController = appCtxt.getSearchController();
+	searchController.search({query: query});
 };
 
 ZmMailMsgView.prototype._handleMsgTruncated =
 function() {
-	// remember that the user clicked this link
-	this._msg.viewEntireMessage = true;
+	var params = {
+		sender: appCtxt.getAppController(),
+		msgId: this._msg.id,
+		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+		callback: (new AjxCallback(this, this._handleResponseMsgTruncated)),
+		noBusyOverlay: true,
+		noTruncate: true
+	};
+	ZmMailMsg.fetchMsg(params);
+};
 
-	var url = ("/h/message?id=" + this._msg.id);
-	window.open(appContextPath+url, "_blank");
+ZmMailMsgView.prototype._handleResponseMsgTruncated =
+function(result) {
+	// parse temp message (we dont want to cache a huge msg)
+	var node = result.getResponse().GetMsgResponse.m[0];
+	var msg = new ZmMailMsg(node.id, null, true);
+	msg._loadFromDom(node);
+	msg.showImages = this._msg.showImages;
+
+	appCtxt.getPrintView().render(msg, true);
 };
 
 // Focus management - just pass through to native element's focus()
@@ -1761,16 +1697,169 @@ function() {
 
 // Static methods
 
-ZmMailMsgView._swapIdAndSrc =
-function (image, i, len, msg, idoc, iframe, view) {
-	// Fix for IE: Over HTTPS, http src urls for images might cause an issue.
-	try {
-		image.src = image.getAttribute("dfsrc");
+ZmMailMsgView.getPrintHtml =
+function(msg, preferHtml, callback) {
+	if (!(msg.toString() == "ZmMailMsg")) { return; }
+
+	if (!msg._loaded) {
+		var jsonObj = {GetMsgRequest:{_jsns:"urn:zimbraMail"}};
+		var request = jsonObj.GetMsgRequest;
+		request.m = {id:msg.id};
+		if (preferHtml) {
+			request.m.html = 1;
+		}
+		var respCallback = new AjxCallback(null, ZmMailMsgView._handleResponseGetPrintHtml, [msg, preferHtml, callback]);
+		window._zimbraMail.sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+	} else {
+		if (callback) {
+			ZmMailMsgView._printMessage(msg, preferHtml, callback);
+		} else {
+			return ZmMailMsgView._printMessage(msg, preferHtml);
+		}
 	}
-	catch (ex) {
-		// do nothing
+};
+
+ZmMailMsgView._handleResponseGetPrintHtml =
+function(msg, preferHtml, callback, result) {
+	var resp = result.getResponse().GetMsgResponse;
+	msg._loadFromDom(resp.m[0]);
+	ZmMailMsgView._printMessage(msg, preferHtml, callback);
+};
+
+ZmMailMsgView._printMessage =
+function(msg, preferHtml, callback) {
+	var html = [];
+	var idx = 0;
+
+	html[idx++] = "<div style='width: 100%; background-color: #EEEEEE'>";
+	html[idx++] = "<table border=0 width=100%><tr>";
+
+	// print SUBJECT and DATE
+	html[idx++] = "<td><font size=+1>";
+	html[idx++] = msg.subject;
+	html[idx++] = "</font></td><td align=right><font size=+1>";
+	html[idx++] = msg.sentDate
+		? (new Date(msg.sentDate)).toLocaleString()
+		: (new Date(msg.date)).toLocaleString();
+	html[idx++] = "</font></td></tr></table>";
+	html[idx++] = "<table border=0 width=100%>";
+
+	// print all address types
+	for (var j = 0; j < ZmMailMsg.ADDRS.length; j++) {
+		var addrs = msg.getAddresses(ZmMailMsg.ADDRS[j]);
+		var len = addrs.size();
+		if (len > 0) {
+			html[idx++] = "<tr><td nowrap='nowrap' valign=top style='text-align:right; font-size:14px'>";
+			html[idx++] = AjxMessageFormat.format(ZmMsg.makeLabel, ZmMsg[AjxEmailAddress.TYPE_STRING[ZmMailMsg.ADDRS[j]]]);
+			html[idx++] = " </td><td width=100% style='font-size: 14px'>";
+			for (var i = 0; i < len; i++) {
+				html[idx++] = i > 0 ? AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR) : "";
+				html[idx++] = addrs.get(i).address;
+			}
+			html[idx++] = "</td></tr>";
+		}
 	}
 
+	// bug fix# 3928
+	var attachments = msg.attachments;
+	for (var i = 0; i < attachments.length; i++) {
+		var attach = attachments[i];
+		if (!msg.isRealAttachment(attach))
+			continue;
+
+		var label = attach.name || attach.filename || (ZmMsg.unknown + " <" + attach.ct + ">");
+
+		// get size info in any
+		var sizeText = "";
+		var size = attach.s;
+		if (size && size > 0) {
+			if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
+			else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;";
+			else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;";
+		}
+
+		html[idx++] = "<tr><td nowrap='nowrap' style='font-size:14px'>";
+		if (i == 0) {
+			html[idx++] = ZmMsg.attachments;
+			html[idx++] = ":";
+		}
+		html[idx++] = "</td><td valign=top style='font-size:13px'>";
+		html[idx++] = AjxStringUtil.htmlEncode(label);
+		html[idx++] = "&nbsp;";
+		html[idx++] = sizeText;
+		html[idx++] = "</td></tr>";
+	}
+
+	html[idx++] = "</table>";
+	html[idx++] = "</div><div style='padding: 10px; font-size: 12px'>";
+
+	// finally, print content
+	var bodyParts = msg.getBodyParts();
+	for (var i = 0; i < bodyParts.length; i++) {
+		var content = "";
+		var bodyPart = bodyParts[i];
+		if (bodyPart.ct == ZmMimeTable.TEXT_HTML && preferHtml) {
+			html[idx++] = ZmMailMsgView._fixMultipartRelatedImagesInContent(msg, bodyPart.content);
+		} else {
+			if (ZmMimeTable.isRenderableImage(bodyPart.ct)) {
+				html[idx++] = "<img class='InlineImage' src='";
+				html[idx++] = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+				html[idx++] = "&id=";
+				html[idx++] = msg.id;
+				html[idx++] = "&part=";
+				html[idx++] = bodyPart.part;
+				html[idx++] = "'>";
+			} else {
+				if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
+					content = msg.getTextPart();
+					if (!content && bodyPart.content && bodyPart.ct == ZmMimeTable.TEXT_HTML) {
+						var div = document.createElement("div");
+						div.innerHTML = bodyPart.content;
+						content = AjxStringUtil.convertHtml2Text(div);
+					}
+				} else {
+					content = bodyPart.content;
+				}
+				html[idx++] = "<span style='font-family: monospace'>";
+				html[idx++] = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(content, true));
+				html[idx++] = "</span>";
+			}
+		}
+	}
+
+	html[idx++] = "</div>";
+
+    html = html.join("");
+
+    //Fix Inline Images
+    html = ZmMailMsgView._fixMultipartRelatedImagesInContent(msg, html);
+
+    //Fix External Images
+    html = ZmMailMsgView._fixExternalImagesInContent(html);
+    
+	if (callback) {
+		var result = new ZmCsfeResult(html);
+		callback.run(result);
+	} else {
+		return html;
+	}
+};
+
+ZmMailMsgView._fixMultipartRelatedImagesInContent = function(msg, content) {
+	return content.replace(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
+		return "src=" + q + msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, ("<" + cid + ">")) + q;
+	});
+};
+
+ZmMailMsgView._fixExternalImagesInContent = function(content){
+    return content.replace(/(<img\s+.*)(dfsrc)(\s*=\s*[^>]*>)/ig, function(match, beforeDfsrc, dfsrc, afterDfsrc){
+        return beforeDfsrc+"src"+afterDfsrc;
+    });
+};
+
+ZmMailMsgView._swapIdAndSrc =
+function (image, i, len, msg, idoc, iframe, view) {
+	image.src = image.getAttribute("dfsrc");
 	if (i == len - 1) {
 		if (msg) {
 			msg.setHtmlContent(idoc.documentElement.innerHTML);
@@ -1782,56 +1871,50 @@ function (image, i, len, msg, idoc, iframe, view) {
 ZmMailMsgView.prototype._onloadIframe =
 function(dwtIframe) {
 	var iframe = dwtIframe.getIframe();
-	try { iframe.onload = null; } catch(ex) {}
+	try { iframe.onload = null; } catch(ex) {};
 	ZmMailMsgView._resetIframeHeight(this, iframe);
 };
+
+ZmMailMsgView.SETHEIGHT_MAX_TRIES = 3;
 
 ZmMailMsgView._resetIframeHeight =
 function(self, iframe, attempt) {
 	var h;
 	if (self._scrollWithIframe) {
-		h = self.getH();
-		function subtract(el) {
+		h = self.getH() - 7;
+		function substract(el) {
 			if (el) {
-				if (typeof el == "string") {
+				if (typeof el == "string")
 					el = document.getElementById(el);
-				}
-				if (el) {
+				if (el)
 					h -= Dwt.getSize(el).y;
-				}
 			}
-		}
-		subtract(self._headerElement);
-		subtract(self._displayImagesId);
-		subtract(self._highlightObjectsId);
+		};
+		substract(self._hdrTableId);
+		substract(self._displayImagesId);
+		substract(self._highlightObjectsId);
 		if (self._isMsgTruncated) {
-			subtract(self._msgTruncatedId);
+			substract(self._msgTruncatedId);
 		}
 		if (self._hasInviteToolbar && self._inviteToolbar) {
-			subtract(self._inviteToolbar.getHtmlElement());
+			substract(self._inviteToolbar.getHtmlElement());
 		}
 		if (self._hasShareToolbar && self._shareToolbar) {
-			subtract(self._shareToolbar.getHtmlElement());
+			substract(self._shareToolbar.getHtmlElement());
 		}
 		iframe.style.height = h + "px";
 	} else {
-		if (attempt == null) { attempt = 0; }
+		if (attempt == null)
+			attempt = 0;
 		try {
-			if (!iframe.contentWindow ||
-				!iframe.contentWindow.document ||
-				(AjxEnv.isFirefox3up && attempt == 0))
-			{
-				if (attempt < ZmMailMsgView.SETHEIGHT_MAX_TRIES) {
-					attempt++;
+			if ( !iframe.contentWindow || !iframe.contentWindow.document || ( AjxEnv.isFirefox3up && attempt == 0 ) ) {
+				if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
 					self._resetIframeHeightOnTimer(iframe, attempt);
-				}
 				return; // give up
 			}
 		} catch(ex) {
-			if (attempt < ZmMailMsgView.SETHEIGHT_MAX_TRIES) {
-				attempt++;
+			if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
 				self._resetIframeHeightOnTimer(iframe, attempt++); // for IE
-			}
 			return; // give up
 		}
 
@@ -1898,39 +1981,31 @@ function(myId, tagId) {
 };
 
 ZmMailMsgView._detachCallback =
-function(isRfc822, result) {
-    var appCtxt = window.parentAppCtxt || window.appCtxt;
+function(result) {
 	var resp = result.getResponse().GetMsgResponse;
-	var list = appCtxt.getApp(ZmApp.MAIL).getMailListController().getList();
-	var msg = new ZmMailMsg(resp.m[0].id, list, true); // do not cache this temp msg
+	var msg = new ZmMailMsg(resp.m[0].id, null, true);	// do not cache this temp msg
 	msg._loadFromDom(resp.m[0]);
-	msg._loaded = true; // bug fix #8868 - force load for rfc822 msgs since they may not return any content
-	msg.readReceiptRequested = false; // bug #36247 - never allow read receipt for rfc/822 message
+	// bug fix #8868 - force load for rfc822 msgs since they may not return any content
+	msg._loaded = true;
 
-	ZmMailMsgView.detachMsgInNewWindow(msg, isRfc822);
+	ZmMailMsgView.detachMsgInNewWindow(msg);
 };
 
 ZmMailMsgView.detachMsgInNewWindow =
-function(msg, isRfc822) {
+function(msg) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var newWinObj = appCtxt.getNewWindow(true);
 	newWinObj.command = "msgViewDetach";
-	newWinObj.params = { msg:msg, isRfc822:isRfc822 };
+	newWinObj.params = { msg:msg };
 };
 
 ZmMailMsgView.rfc822Callback =
 function(msgId, msgPartId) {
-	var isRfc822 = Boolean((msgPartId != null));
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var params = {
-		sender: appCtxt.getAppController(),
-		msgId: msgId,
-		partId: msgPartId,
-		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-		markRead: true,
-		callback: (new AjxCallback(null, ZmMailMsgView._detachCallback, [isRfc822]))
-	};
-	ZmMailMsg.fetchMsg(params);
+	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	var sender = appCtxt.getAppController();
+	var callback = new AjxCallback(null, ZmMailMsgView._detachCallback);
+	ZmMailMsg.fetchMsg({ sender:sender, msgId:msgId, partId:msgPartId, getHtml:getHtml, markRead:true, callback:callback });
 };
 
 ZmMailMsgView.contactIconCallback =
@@ -1944,102 +2019,36 @@ function(addr, icon) {
 	} else {
 		AjxDispatcher.require(["ContactsCore", "Contacts"], false);
 		var contact = new ZmContact(null);
-		var email = AjxEmailAddress.parse(addr);
-		contact.initFromEmail(email);
-		AjxDispatcher.run("GetContactController").show(contact, true);
+		contact.initFromEmail(addr);
+		AjxDispatcher.run("GetContactController").show(contact);
 	}
 };
 
 ZmMailMsgView.vcardCallback =
-function(msgId, partId) {
+function(msgId, vcardPartId) {
 	ZmZimbraMail.unloadHackCallback();
 
-	var ac = window.parentAppCtxt || window.appCtxt;
-	ac.getApp(ZmApp.CONTACTS).createFromVCard(msgId, partId);
-};
-
-ZmMailMsgView.removeAttachmentCallback =
-function(msgId, partIds) {
-	ZmZimbraMail.unloadHackCallback();
-
-	if (!(partIds instanceof Array)) { partIds = [partIds]; }
-
-	var msg = (partIds.length > 1)
-		? ZmMsg.attachmentConfirmRemoveAll
-		: ZmMsg.attachmentConfirmRemove;
-
-	var dlg = appCtxt.getYesNoMsgDialog();
-	dlg.registerCallback(DwtDialog.YES_BUTTON, ZmMailMsgView._removeAttachmentCallback, null, [msgId, partIds]);
-	dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-	dlg.popup();
-};
-
-ZmMailMsgView._removeAttachmentCallback =
-function(msgId, partIds) {
-	appCtxt.getYesNoMsgDialog().popdown();
-
-	var jsonObj = {RemoveAttachmentsRequest: {_jsns:"urn:zimbraMail"}};
-	var request = jsonObj.RemoveAttachmentsRequest;
-	request.m = { id: msgId, part: partIds.join(",") };
-
-	var searchParams = {
-		jsonObj: jsonObj,
-		asyncMode: true,
-		callback: (new AjxCallback(null, ZmMailMsgView._handleRemoveAttachment)),
-		noBusyOverlay: true
-	};
-	return appCtxt.getAppController().sendRequest(searchParams);
-};
-
-ZmMailMsgView._handleRemoveAttachment =
-function(result) {
-	var ac = window.parentAppCtxt || window.appCtxt;
-
-	// cache this actioned ID so we can reset selection to it once the CREATE
-	// notifications have been processed.
-	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
-	ac.getApp(ZmApp.MAIL).getMailListController().actionedMsgId = msgNode.id;
-
-	if (appCtxt.isChildWindow) {
-		var msgView = appCtxt.getAppController().getAppViewMgr().getCurrentView();
-		var msg = msgView._msg;
-		msg.attachments.length = 0;
-		msg._loadFromDom(msgNode);
-		msgView._msg = null;
-		msgView.set(msg);
-	}
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
+	appCtxt.getApp(ZmApp.CONTACTS).createFromVCard(msgId, vcardPartId);
 };
 
 ZmMailMsgView._buildZipUrl =
-function(itemId, attachments, viewAllImages) {
-	var url = [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", itemId, "&part="].join("");
-	var parts = [];
+function(csfeUrl, itemId, attachments) {
+	var url = csfeUrl + "&id=" + itemId + "&part=";
 	for (var j = 0; j < attachments.length; j++) {
-		parts.push(attachments[j].part);
-	}
-	var partsStr = parts.join(",");
-	var params = { url:(url+partsStr), partIds:partsStr, itemId:itemId };
-	if (viewAllImages) {
-		params.viewAllUrl = "/h/viewimages?id="+itemId;
+		url += attachments[j].part;
+		if (j <= attachments.length) {
+			url += ",";
+		}
 	}
 
-	return AjxTemplate.expand("mail.Message#AllAttachments", params);
+	return AjxTemplate.expand("mail.Message#DownloadAll", {url:url});
 };
 
 ZmMailMsgView.briefcaseCallback =
 function(msgId, partId, name) {
 	ZmZimbraMail.unloadHackCallback();
 
-	// force create deferred folders if not created
-	AjxDispatcher.require("BriefcaseCore");
-	var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
-	var briefcaseApp = aCtxt.getApp(ZmApp.BRIEFCASE);
-	briefcaseApp._createDeferredFolders();
-
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	appCtxt.getApp(ZmApp.BRIEFCASE).createFromAttachment(msgId, partId, name);
-};
-
-ZmMailMsgView.prototype.deactivate =
-function() {
-	this._controller.inactive = true;
 };

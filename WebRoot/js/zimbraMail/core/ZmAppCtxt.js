@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,119 +11,69 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
 /**
- * @overview
- * 
- * This file defines the application context class.
- *
- */
-
-/**
+ * Does nothing.
+ * @constructor
  * @class
- * 
- * This class is a container for application context information.
- * 
+ * This class is a container for stuff that the overall app may want to know about. That
+ * includes environment information (such as whether the browser in use is public), and
+ * stuff that is common to the app as a whole (such as tags). The methods are almost all
+ * just getters and setters.
  */
 ZmAppCtxt = function() {
 	this._trees = {};
-
-	this.accountList = new ZmAccountList();
+	this._accounts = {};
 	// create dummy account for startup
-	this.accountList.add(new ZmZimbraAccount(ZmAccountList.DEFAULT_ID, null, false));
+	this._accounts[ZmZimbraAccount.DEFAULT_ID] = new ZmZimbraAccount(ZmZimbraAccount.DEFAULT_ID, null, false);
 
 	// public properties
 	this.inStartup = false;				// true if we are starting app (set in ZmZimbraMail)
 	this.currentRequestParams = null;	// params of current SOAP request (set in ZmRequestMgr)
 	this.rememberMe = null;
-	this.userDomain = "";
 
 	// account-specific
-	this.isFamilyMbox = false;
 	this.multiAccounts = false;
-
-	this._evtMgr = new AjxEventMgr();
-	this._itemCache = {};
-	this._itemCacheDeferred = {};
+	this.numAccounts = 1;				// init to 1 b/c there is always a main account
+	this.numVisibleAccounts = 0;
+	this.userDomain = "";
 };
 
-ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
-
-/**
- * Returns a string representation of the application context.
- * 
- * @return		{String}		a string representation of the application context
- */
 ZmAppCtxt.prototype.toString =
 function() {
 	return "ZmAppCtxt";
 };
 
-/**
- * Sets the application controller.
- * 
- * @param	{ZmController}	appController	the controller
- */
 ZmAppCtxt.prototype.setAppController =
 function(appController) {
 	this._appController = appController;
 };
 
-/**
- * Gets the application controller.
- * 
- * @return	{ZmController}		the controller
- */
 ZmAppCtxt.prototype.getAppController =
 function() {
 	return this._appController;
 };
 
-/**
- * Gets the application chooser.
- * 
- * @return	{ZmAppChooser}		the chooser
- */
-ZmAppCtxt.prototype.getAppChooser =
-function() {
-	return this._appController.getAppChooser();
-};
-
-/**
- * Sets the request manager.
- * 
- * @param	{ZmRequestMgr}	requestMgr	the request manager
- */
 ZmAppCtxt.prototype.setRequestMgr =
 function(requestMgr) {
 	this._requestMgr = requestMgr;
 };
 
-/**
- * Gets the request manager.
- * 
- * @return	{ZmRequestMgr}		the request manager
- */
 ZmAppCtxt.prototype.getRequestMgr =
 function() {
 	return this._requestMgr;
 };
 
 /**
- * Sets the status message to display.
- * 
- * 
- * @param {Hash}	params	a hash of parameters
- * <ul>
- * <li>msg {String}	the status message</li>
- * <li>level {constant}		the status level {@see ZmStatusView}  (may be <code>null</code>)</li>
- * <li>detail {String}	the details (may be <code>null</code>)</li>
- * <li>transitions {Object}	the transitions (may be <code>null</code>)</li>
- * <li>toast {Object}		the toast control (may be <code>null</code>)</li>
- * </ul>
- * 
+ * Displays a status message
+ * @param msg the message
+ * @param level ZmStatusView.LEVEL_INFO, ZmStatusView.LEVEL_WARNING, or ZmStatusView.LEVEL_CRITICAL (optional)
+ * @param detail details (optional)
+ * @param transitions transitions (optional)
+ * @param toast the toast control (optional)
  */
 ZmAppCtxt.prototype.setStatusMsg =
 function(params) {
@@ -130,141 +81,79 @@ function(params) {
 	this._appController.setStatusMsg(params);
 };
 
-/**
- * Gets the settings for the given account.
- * 
- * @param	{ZmZimbraAccount}	account		the account
- * @return	{ZmSettings}	the settings
- */
 ZmAppCtxt.prototype.getSettings =
 function(account) {
-	var al = this.accountList;
-	var id = account
-		? account.id
-		: al.activeAccount ? al.activeAccount.id : ZmAccountList.DEFAULT_ID;
-
-	var acct = al.getAccount(id);
-	return acct && acct.settings;
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
+	return this._accounts[id] ? this._accounts[id].settings : null;
 };
 
-/**
- * Sets the settings for the given account.
- * 
- * @param	{ZmSettings}	settings		the settings
- * @param	{ZmZimbraAccount}		account			the account
- */
 ZmAppCtxt.prototype.setSettings = 
 function(settings, account) {
-	var al = this.accountList;
-	var id = account
-		? account.id
-		: al.activeAccount ? al.activeAccount.id : ZmAccountList.DEFAULT_ID;
-
-	var acct = al.getAccount(id);
-	if (acct) {
-		acct.settings = settings;
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
+	if (this._accounts[id]) {
+		this._accounts[id].settings = settings;
 	}
 };
 
 /**
- * Gets the meta data.
- * 
- * @return	{ZmMetaData}		the meta data
- */
-ZmAppCtxt.prototype.getMetaData =
-function() {
-	if (!this._metaData) {
-		this._metaData = new ZmMetaData();
-	}
-	return this._metaData;
-};
-
-/**
- * Gets the value of the given setting.
+ * Returns the value of a setting.
  *
- * @param {constant}	id		the setting id
- * @param {String}	key			the setting key (for settings that are of the hash type)
- * @param {ZmZimbraAccount}	account		the account
- * @return	{Object}		the setting value
+ * @param id		[constant]		setting ID
+ * @param key		[string]*		setting key (for settings that are of the hash type)
+ * @param account	[ZmAccount]*	account to get the ZmSettings instance for
  */
 ZmAppCtxt.prototype.get =
 function(id, key, account) {
-	// for offline, global settings always come from the "local" parent account
-	var acct = (this.isOffline && ZmSetting.IS_GLOBAL[id])
-		? this.accountList.mainAccount : account;
-	return this.getSettings(acct).get(id, key);
+	// for offline / multi-account, global settings should always come from the
+	// invisible parent account
+	if (this.isOffline && this.multiAccounts && ZmSetting.IS_GLOBAL[id]) {
+		return this.getSettings(this.getMainAccount()).get(id, key);
+	}
+	return this.getSettings(account).get(id, key);
 };
 
 /**
- * Sets the value of the given setting.
+ * Returns the value of a setting.
  *
- * @param {constant}	id					the setting id
- * @param {Object}	value					the setting value
- * @param {String}	key					the setting key (for settings that are of the hash type)
- * @param {Boolean}	setDefault			if <code>true</code>, also replace setting default value
- * @param {Boolean}	skipNotify			if <code>true</code>, do not notify setting listeners
- * @param {ZmZimbraAccount}	account		if set, use this account setting instead of the currently active account
+ * @param id			[constant]		setting ID
+ * @param value			[any]			setting value
+ * @param key			[string]*		setting key (for settings that are of the hash type)
+ * @param setDefault	[boolean]*		if true, also replace setting's default value
+ * @param skipNotify	[boolean]*		if true, do not notify setting listeners
  */
 ZmAppCtxt.prototype.set =
-function(id, value, key, setDefault, skipNotify, account) {
-	// for offline, global settings always come from "parent" account
-	var acct = (this.isOffline && ZmSetting.IS_GLOBAL[id])
-		? this.accountList.mainAccount : account;
-	var setting = this.getSettings(acct).getSetting(id);
+function(id, value, key, setDefault, skipNotify) {
+	// for offline / multi-account, global settings should always come from the
+	// invisible parent account
+	var setting = (this.isOffline && this.multiAccounts && ZmSetting.IS_GLOBAL[id])
+		? this.getSettings(this.getMainAccount()).getSetting(id)
+		: this.getSettings().getSetting(id);
 
 	if (setting) {
 		setting.setValue(value, key, setDefault, skipNotify);
 	}
 };
 
-/**
- * Gets the application.
- * 
- * @param	{String}	appName		the application name
- * @return	{ZmApp}	the application or <code>null</code> if not found
- */
 ZmAppCtxt.prototype.getApp =
 function(appName) {
 	return this._appController.getApp(appName);
 };
 
-/**
- * Gets the name of the current application.
- * 
- * @return	{String}		the application name
- */
 ZmAppCtxt.prototype.getCurrentAppName =
 function() {
-	var context = this.isChildWindow ? parentAppCtxt : this;
-	return context._appController.getActiveApp();
+	return this._appController.getActiveApp();
 };
 
-/**
- * Gets the current application.
- * 
- * @return	{ZmApp}		the current application
- */
 ZmAppCtxt.prototype.getCurrentApp =
 function() {
 	return this.getApp(this.getCurrentAppName());
 };
 
-/**
- * Gets the application view manager.
- * 
- * @return	{ZmAppViewMgr}		the view manager
- */
 ZmAppCtxt.prototype.getAppViewMgr =
 function() {
 	return this._appController.getAppViewMgr();
 };
 
-/**
- * Gets the client command handler.
- * 
- * @param	{ZmClientCmdHandler}	clientCmdHdlr		not used
- * @return	{ZmClientCmdHandler}		the command handler
- */
 ZmAppCtxt.prototype.getClientCmdHandler =
 function(clientCmdHdlr) {
 	if (!this._clientCmdHandler) {
@@ -275,10 +164,8 @@ function(clientCmdHdlr) {
 };
 
 /**
- * Gets the search bar controller.
- * 
- * @return	{ZmSearchController}	the search controller
- */
+* Returns a handle to the search bar's controller.
+*/
 ZmAppCtxt.prototype.getSearchController =
 function() {
 	if (!this._searchController) {
@@ -288,10 +175,8 @@ function() {
 };
 
 /**
- * Gets the overview controller.
- * 
- * @return	{ZmOverviewController}	the overview controller
- */
+* Returns a handle to the overview controller.
+*/
 ZmAppCtxt.prototype.getOverviewController =
 function() {
 	if (!this._overviewController) {
@@ -300,11 +185,6 @@ function() {
 	return this._overviewController;
 };
 
-/**
- * Gets the import/export controller.
- * 
- * @return	{ZmImportExportController}	the controller
- */
 ZmAppCtxt.prototype.getImportExportController = function() {
 	if (!this._importExportController) {
 		AjxDispatcher.require("ImportExport");
@@ -313,11 +193,6 @@ ZmAppCtxt.prototype.getImportExportController = function() {
 	return this._importExportController;
 };
 
-/**
- * Gets the login dialog.
- * 
- * @return	{ZmLoginDialog}		the login dialog
- */
 ZmAppCtxt.prototype.getLoginDialog =
 function() {
 	if (!this._loginDialog) {
@@ -326,11 +201,6 @@ function() {
 	return this._loginDialog;
 };
 
-/**
- * Gets the message dialog.
- * 
- * @return	{DwtMessageDialog}	the message dialog
- */
 ZmAppCtxt.prototype.getMsgDialog =
 function() {
 	if (!this._msgDialog) {
@@ -339,11 +209,6 @@ function() {
 	return this._msgDialog;
 };
 
-/**
- * Gets the yes/no message dialog.
- * 
- * @return	{DwtMessageDialog}	the message dialog
- */
 ZmAppCtxt.prototype.getYesNoMsgDialog =
 function() {
 	if (!this._yesNoMsgDialog) {
@@ -352,11 +217,6 @@ function() {
 	return this._yesNoMsgDialog;
 };
 
-/**
- * Gets the yes/no/cancel message dialog.
- * 
- * @return	{DwtMessageDialog}	the message dialog
- */
 ZmAppCtxt.prototype.getYesNoCancelMsgDialog =
 function() {
 	if (!this._yesNoCancelMsgDialog) {
@@ -365,11 +225,6 @@ function() {
 	return this._yesNoCancelMsgDialog;
 };
 
-/**
- * Gets the ok/cancel message dialog.
- * 
- * @return	{DwtMessageDialog}	the message dialog
- */
 ZmAppCtxt.prototype.getOkCancelMsgDialog =
 function() {
 	if (!this._okCancelMsgDialog) {
@@ -378,24 +233,6 @@ function() {
 	return this._okCancelMsgDialog;
 };
 
-/**
- * Gets the cancel message dialog.
- * 
- * @return	{DwtMessageDialog}	the message dialog
- */
-ZmAppCtxt.prototype.getCancelMsgDialog =
-function() {
-	if (!this._cancelMsgDialog) {
-		this._cancelMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.CANCEL_BUTTON]});
-	}
-	return this._cancelMsgDialog;
-};
-
-/**
- * Gets the error dialog.
- * 
- * @return	{ZmErrorDialog}	the error dialog
- */
 ZmAppCtxt.prototype.getErrorDialog = 
 function() {
 	if (!this._errorDialog) {
@@ -405,11 +242,6 @@ function() {
 	return this._errorDialog;
 };
 
-/**
- * Gets the new tag dialog.
- * 
- * @return	{ZmNewTagDialog}	the new tag dialog
- */
 ZmAppCtxt.prototype.getNewTagDialog =
 function() {
 	if (!this._newTagDialog) {
@@ -418,11 +250,6 @@ function() {
 	return this._newTagDialog;
 };
 
-/**
- * Gets the rename tag dialog.
- * 
- * @return	{ZmRenameTagDialog}		the rename tag dialog
- */
 ZmAppCtxt.prototype.getRenameTagDialog =
 function() {
 	if (!this._renameTagDialog) {
@@ -432,11 +259,6 @@ function() {
 	return this._renameTagDialog;
 };
 
-/**
- * Gets the new folder dialog.
- * 
- * @return	{ZmNewFolderDialog}		the new folder dialog
- */
 ZmAppCtxt.prototype.getNewFolderDialog =
 function() {
 	if (!this._newFolderDialog) {
@@ -445,11 +267,6 @@ function() {
 	return this._newFolderDialog;
 };
 
-/**
- * Gets the new address book dialog.
- * 
- * @return	{ZmNewAddrBookDialog}		the new address book dialog
- */
 ZmAppCtxt.prototype.getNewAddrBookDialog = 
 function() {
 	if (!this._newAddrBookDialog) {
@@ -457,13 +274,8 @@ function() {
 		this._newAddrBookDialog = new ZmNewAddrBookDialog(this._shell);
 	}
 	return this._newAddrBookDialog;
-};
+}
 
-/**
- * Gets the new calendar dialog.
- * 
- * @return	{ZmNewCalendarDialog}		the new calendar dialog
- */
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
 	if (!this._newCalendarDialog) {
@@ -473,11 +285,6 @@ function() {
 	return this._newCalendarDialog;
 };
 
-/**
- * Gets the new notebook dialog.
- * 
- * @return	{ZmNewNotebookDialog}		the new notebook dialog
- */
 ZmAppCtxt.prototype.getNewNotebookDialog =
 function() {
 	if (!this._newNotebookDialog) {
@@ -487,11 +294,6 @@ function() {
 	return this._newNotebookDialog;
 };
 
-/**
- * Gets the new task folder dialog.
- * 
- * @return	{ZmNewTaskFolderDialog}		the new task folder dialog
- */
 ZmAppCtxt.prototype.getNewTaskFolderDialog =
 function() {
 	if (!this._newTaskFolderDialog) {
@@ -501,11 +303,6 @@ function() {
 	return this._newTaskFolderDialog;
 };
 
-/**
- * Gets the page conflict dialog.
- * 
- * @return	{ZmPageConflictDialog}		the page conflict dialog
- */
 ZmAppCtxt.prototype.getPageConflictDialog =
 function() {
 	if (!this._pageConflictDialog) {
@@ -515,11 +312,24 @@ function() {
 	return this._pageConflictDialog;
 };
 
-/**
- * Gets the dialog.
- * 
- * @return	{DwtDialog}		the dialog
- */
+ZmAppCtxt.prototype.getNewImDialog =
+function() {
+	if (!this._newImDialog) {
+		AjxDispatcher.require("IM");
+		this._newImDialog = new ZmNewImDialog(this._shell);
+	}
+	return this._newImDialog;
+};
+
+ZmAppCtxt.prototype.getNewRosterItemDialog =
+function() {
+	if (!this._newRosterItemDialog) {
+		AjxDispatcher.require("IM");
+		this._newRosterItemDialog = new ZmNewRosterItemDialog(this._shell);
+	}
+	return this._newRosterItemDialog;
+};
+
 ZmAppCtxt.prototype.getDialog =
 function(){
 	if(!this._dialog){
@@ -528,11 +338,15 @@ function(){
 	return this._dialog;
 };
 
-/**
- * Gets the new search dialog.
- * 
- * @return	{ZmNewSearchDialog}		the new search dialog
- */
+ZmAppCtxt.prototype.getIMGatewayLoginDialog =
+function() {
+	if (!this._imGatewayLoginDialog) {
+		AjxDispatcher.require("IM");
+		this._imGatewayLoginDialog = new ZmExternalGatewayDlg(this._shell);
+	}
+	return this._imGatewayLoginDialog;
+};
+
 ZmAppCtxt.prototype.getNewSearchDialog =
 function() {
 	if (!this._newSearchDialog) {
@@ -541,11 +355,6 @@ function() {
 	return this._newSearchDialog;
 };
 
-/**
- * Gets the rename folder dialog.
- * 
- * @return	{ZmRenameFolderDialog}		the rename folder dialog
- */
 ZmAppCtxt.prototype.getRenameFolderDialog =
 function() {
 	if (!this._renameFolderDialog) {
@@ -555,11 +364,6 @@ function() {
 	return this._renameFolderDialog;
 };
 
-/**
- * Gets the choose folder dialog.
- * 
- * @return	{ZmChooseFolderDialog}		the choose folder dialog
- */
 ZmAppCtxt.prototype.getChooseFolderDialog =
 function() {
 	if (!this._chooseFolderDialog) {
@@ -569,11 +373,6 @@ function() {
 	return this._chooseFolderDialog;
 };
 
-/**
- * Gets the pick tag dialog.
- * 
- * @return	{ZmPickTagDialog}		the pick tag dialog
- */
 ZmAppCtxt.prototype.getPickTagDialog =
 function() {
 	if (!this._pickTagDialog) {
@@ -583,24 +382,6 @@ function() {
 	return this._pickTagDialog;
 };
 
-/**
- * Gets the folder notify dialog.
- * 
- * @return	{ZmFolderNotifyDialog}		the folder notify dialog
- */
-ZmAppCtxt.prototype.getFolderNotifyDialog =
-function() {
-	if (!this._folderNotifyDialog) {
-		this._folderNotifyDialog = new ZmFolderNotifyDialog(this._shell);
-	}
-	return this._folderNotifyDialog;
-};
-
-/**
- * Gets the folder properties dialog.
- * 
- * @return	{ZmFolderPropsDialog}		the folder properties dialog
- */
 ZmAppCtxt.prototype.getFolderPropsDialog =
 function() {
 	if (!this._folderPropsDialog) {
@@ -609,11 +390,6 @@ function() {
 	return this._folderPropsDialog;
 };
 
-/**
- * Gets the link properties dialog.
- * 
- * @return	{ZmLinkPropsDialog}		the link properties dialog
- */
 ZmAppCtxt.prototype.getLinkPropsDialog =
 function() {
 	if (!this._linkPropsDialog) {
@@ -623,11 +399,6 @@ function() {
 	return this._linkPropsDialog;
 };
 
-/**
- * Gets the share properties dialog.
- * 
- * @return	{ZmSharePropsDialog}		the share properties dialog
- */
 ZmAppCtxt.prototype.getSharePropsDialog =
 function() {
 	if (!this._sharePropsDialog) {
@@ -637,11 +408,6 @@ function() {
 	return this._sharePropsDialog;
 };
 
-/**
- * Gets the accept share dialog.
- * 
- * @return	{ZmAcceptShareDialog}		the accept share dialog
- */
 ZmAppCtxt.prototype.getAcceptShareDialog =
 function() {
 	if (!this._acceptShareDialog) {
@@ -651,11 +417,6 @@ function() {
 	return this._acceptShareDialog;
 };
 
-/**
- * Gets the decline share dialog.
- * 
- * @return	{ZmDeclineShareDialog}		the decline share dialog
- */
 ZmAppCtxt.prototype.getDeclineShareDialog =
 function() {
 	if (!this._declineShareDialog) {
@@ -665,11 +426,6 @@ function() {
 	return this._declineShareDialog;
 };
 
-/**
- * Gets the revoke share dialog.
- * 
- * @return	{ZmRevokeShareDialog}		the revoke share dialog
- */
 ZmAppCtxt.prototype.getRevokeShareDialog =
 function() {
 	if (!this._revokeShareDialog) {
@@ -679,11 +435,6 @@ function() {
 	return this._revokeShareDialog;
 };
 
-/**
- * Gets the mount folder dialog.
- * 
- * @return	{ZmMountFolderDialog}		the mount folder dialog
- */
 ZmAppCtxt.prototype.getMountFolderDialog =
 function() {
 	if (!this._mountFolderDialog) {
@@ -694,24 +445,8 @@ function() {
 };
 
 /**
- * Gets the timezone picker dialog.
- * 
- * @return	{ZmTimezonePicker}		the timezone picker dialog
- */
-ZmAppCtxt.prototype.getTimezonePickerDialog =
-function() {
-	if (!this._timezonePickerDialog) {
-		AjxDispatcher.require("Share");
-		this._timezonePickerDialog = new ZmTimezonePicker(this._shell);
-	}
-	return this._timezonePickerDialog;
-};
-
-/**
- * Gets the filter rule add/edit dialog.
- * 
- * @return	{ZmFilterRuleDialog}		the filter rule add/edit dialog
- */
+* Returns the dialog used to add or edit a filter rule.
+*/
 ZmAppCtxt.prototype.getFilterRuleDialog =
 function() {
 	if (!this._filterRuleDialog) {
@@ -721,11 +456,6 @@ function() {
 	return this._filterRuleDialog;
 };
 
-/**
- * Gets the confirm dialog.
- * 
- * @return	{DwtConfirmDialog}		the confirmation dialog
- */
 ZmAppCtxt.prototype.getConfirmationDialog =
 function() {
 	if (!this._confirmDialog) {
@@ -734,25 +464,15 @@ function() {
 	return this._confirmDialog;
 };
 
-/**
- * Gets the upload dialog.
- * 
- * @return	{ZmUploadDialog}		the upload dialog
- */
 ZmAppCtxt.prototype.getUploadDialog =
 function() {
 	if (!this._uploadDialog) {
-		AjxDispatcher.require(["Extras"]);
+		AjxDispatcher.require(["NotebookCore", "Notebook"]);
 		this._uploadDialog = new ZmUploadDialog(this._shell);
 	}
 	return this._uploadDialog;
 };
 
-/**
- * Gets the import dialog.
- * 
- * @return	{ZmImportDialog}		the import dialog
- */
 ZmAppCtxt.prototype.getImportDialog =
 function() {
 	if (!this._importDialog) {
@@ -762,11 +482,6 @@ function() {
 	return this._importDialog;
 };
 
-/**
- * Gets the attach dialog.
- * 
- * @return	{ZmAttachDialog}		the attach dialog
- */
 ZmAppCtxt.prototype.getAttachDialog =
 function() {
 	if (!this._attachDialog) {
@@ -777,11 +492,6 @@ function() {
 	return this._attachDialog;
 };
 
-/**
- * Runs the attach dialog callbacks.
- *
- * @private
- */
 ZmAppCtxt.prototype.runAttachDialogCallbacks =
 function() {
 	while(this._attachDialogCallback && this._attachDialogCallback.length > 0) {
@@ -792,11 +502,6 @@ function() {
 	}
 };
 
-/**
- * Adds the callback to the attachment dialog callbacks.
- *
- * @param	{AjxCallback}	callback		the callback
- */
 ZmAppCtxt.prototype.addAttachmentDialogCallback =
 function(callback) {
 	if(!this._attachDialogCallback) {
@@ -805,11 +510,6 @@ function(callback) {
 	this._attachDialogCallback.push(callback);
 };                                              
 
-/**
- * Gets the upload conflict dialog.
- *
- * @return	{ZmUploadConflictDialog}	the upload conflict dialog
- */
 ZmAppCtxt.prototype.getUploadConflictDialog =
 function() {
 	if (!this._uploadConflictDialog) {
@@ -819,11 +519,6 @@ function() {
 	return this._uploadConflictDialog;
 };
 
-/**
- * Gets the new briefcase dialog.
- *
- * @return	{ZmNewBriefcaseDialog}	the new briefcase dialog
- */
 ZmAppCtxt.prototype.getNewBriefcaseDialog =
 function() {
 	if (!this._newBriefcaseDialog) {
@@ -833,11 +528,6 @@ function() {
 	return this._newBriefcaseDialog;
 };
 
-/**
- * Gets the find-and-replace dialog.
- *
- * @return	{ZmFindnReplaceDialog}	the find-and-replace dialog
- */
 ZmAppCtxt.prototype.getReplaceDialog =
 function() {
 	if (!this._replaceDialog) {
@@ -847,11 +537,6 @@ function() {
 	return this._replaceDialog;
 };
 
-/**
- * Gets the root tab group.
- *
- * @return	{DwtTabGroup}	the root tab group
- */
 ZmAppCtxt.prototype.getRootTabGroup =
 function() {
 	if (this.isChildWindow) {
@@ -864,176 +549,145 @@ function() {
 		}
 	}
 	return this.isChildWindow ? this._childWinTabGrp : this._rootTabGrp;
-};
+}
 
-/**
- * Gets the shell.
- *
- * @return	{DwtShell}	the shell
- */
 ZmAppCtxt.prototype.getShell =
 function() {
 	return this._shell;
 };
 
-/**
- * Sets the shell.
- *
- * @param	{DwtShell}	the shell
- */
 ZmAppCtxt.prototype.setShell =
 function(shell) {
 	this._shell = shell;
 };
 
-/**
- * Gets the active account.
- *
- * @return	{ZmZimbraAccount}	the active account
- */
-ZmAppCtxt.prototype.getActiveAccount =
+ZmAppCtxt.prototype.setAccount =
+function(account) {
+	this._accounts[account.id] = account;
+	if (account.isMain) {
+		this._mainAccountId = account.id;
+	}
+	this.numAccounts++;
+};
+
+ZmAppCtxt.prototype.getZimbraAccounts =
 function() {
-	return this.isChildWindow
-		? parentAppCtxt.accountList.activeAccount
-		: this.accountList.activeAccount;
+	return this._accounts;
+};
+
+ZmAppCtxt.prototype.getAccount =
+function(id) {
+	return this._accounts[id];
 };
 
 /**
- * Gets the identity collection.
- * 
- * @param	{ZmZimbraAccount}	account		the account
- * @return	{ZmIdentityCollection}	the identity collection
+ * Returns the main account for a multi-mbox login
+ *
+ * @param checkOfflineMode		[Boolean]	set to true if we want the first
+ * non-main account. Applies to only when in offline mode since offline hides
+ * the main account in a multi mbox scenario.
  */
+ZmAppCtxt.prototype.getMainAccount =
+function(checkOfflineMode) {
+	for (var id in this._accounts) {
+		var account = this._accounts[id];
+		// if checking for offline mode, return the first non-main account
+		if (checkOfflineMode && appCtxt.isOffline && appCtxt.multiAccounts) {
+			if (!account.isMain) { return account; }
+			continue;
+		}
+		if (account.isMain) { return account; }
+	}
+	return this._accounts[ZmZimbraAccount.DEFAULT_ID];
+};
+
+/**
+ * Makes the given account the active one, which will then be used
+ * when fetching any account-specific data such as settings or folder
+ * tree. The account goes and fetches its data if necessary.
+ *
+ * @param account	[ZmZimbraAccount]		account to make active
+ * @param callback	[AjxCallback]*	client callback
+ */
+ZmAppCtxt.prototype.setActiveAccount =
+function(account, callback) {
+	this._activeAccount = account;
+	this._activeAccount.load(callback);
+	if (this._evtMgr) {
+		this._evt = this._evt || new ZmEvent();
+		this._evt.account = account;
+		this._evtMgr.notifyListeners("ACCOUNT", this._evt);
+	}
+};
+
+ZmAppCtxt.prototype.getActiveAccount =
+function() {
+	return this.isChildWindow ? parentAppCtxt._activeAccount : this._activeAccount;
+};
+
+ZmAppCtxt.prototype.addActiveAcountListener =
+function(listener, index) {
+	this._evtMgr = this._evtMgr || new AjxEventMgr();
+	return this._evtMgr.addListener("ACCOUNT", listener, index);
+};
+
 ZmAppCtxt.prototype.getIdentityCollection =
 function(account) {
 	var context = this.isChildWindow ? window.opener : window;
 	return context.AjxDispatcher.run("GetIdentityCollection", account);
 };
 
-/**
- * Gets the data source collection.
- * 
- * @param	{ZmZimbraAccount}	account		the account
- * @return	{ZmModel}	the data source collection
- */
 ZmAppCtxt.prototype.getDataSourceCollection =
 function(account) {
 	var context = this.isChildWindow ? window.opener : window;
 	return context.AjxDispatcher.run("GetDataSourceCollection", account);
 };
 
-/**
- * Gets the signature collection.
- * 
- * @param	{ZmZimbraAccount}	account		the account
- * @return	{ZmSignatureCollection}	the signature collection
- */
 ZmAppCtxt.prototype.getSignatureCollection =
 function(account) {
 	var context = this.isChildWindow ? window.opener : window;
 	return context.AjxDispatcher.run("GetSignatureCollection", account);
 };
 
-/**
- * Gets the organizer tree.
- * 
- * @param	{ZmOrganizer.FOLDER|ZmOrganizer.TAG|ZmOrganizer.ZIMLET}	type	the type
- * @param	{ZmZimbraAccount}	account		the account
- * @return	{ZmTree}		the tree
- * @see		#getFolderTree
- * @see		#getTagTree
- * @see		#getZimletTree
- */
 ZmAppCtxt.prototype.getTree =
 function(type, account) {
 	if (this.isChildWindow) {
 		return parentAppCtxt.getTree(type, account);
 	}
-
-	var al = this.accountList;
-	var id = account
-		? account.id
-		: al.activeAccount ? al.activeAccount.id : ZmAccountList.DEFAULT_ID;
-
-	var acct = al.getAccount(id);
-	return acct && acct.trees[ZmOrganizer.TREE_TYPE[type]];
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
+	var acct = this._accounts[id];
+	return acct ? acct.trees[ZmOrganizer.TREE_TYPE[type]] : null;
 };
 
-/**
- * Sets the organizer tree.
- * 
- * @param	{ZmOrganizer.FOLDER|ZmOrganizer.TAG|ZmOrganizer.ZIMLET}	type	the type
- * @param	{ZmTree}	tree		the tree
- * @param	{ZmZimbraAccount}	account		the account
- * @see		#getTree
- */
 ZmAppCtxt.prototype.setTree =
 function(type, tree, account) {
-	var al = this.accountList;
-	var id = account
-		? account.id
-		: al.activeAccount ? al.activeAccount.id : ZmAccountList.DEFAULT_ID;
-
-
-	var acct = this.accountList.getAccount(id);
-	if (acct) {
-		acct.trees[type] = tree;
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
+	if (this._accounts[id]) {
+		this._accounts[id].trees[type] = tree;
 	}
 };
 
-/**
- * Gets the folder organizer tree.
- * 
- * @param	{ZmZimbraAccount}	account		the account
- * @return	{ZmFolderTree}		the tree
- * @see		#getTree
- */
 ZmAppCtxt.prototype.getFolderTree =
 function(account) {
-    return this.getTree(ZmOrganizer.FOLDER, account);
+	return this.getTree(ZmOrganizer.FOLDER, account);
 };
 
-/**
- * Gets the tag organizer tree.
- * 
- * @param	{ZmZimbraAccount}	account		the account
- * @return	{ZmTagTree}		the tree
- * @see		#getTree
- */
 ZmAppCtxt.prototype.getTagTree =
 function(account) {
 	return this.getTree(ZmOrganizer.TAG, account);
 };
 
-/**
- * Gets the zimlet organizer tree.
- * 
- * @param	{ZmZimbraAccount}	account		the account
- * @return	{ZmFolderTree}		the tree
- * @see		#getTree
- */
 ZmAppCtxt.prototype.getZimletTree =
 function(account) {
 	return this.getTree(ZmOrganizer.ZIMLET, account);
 };
 
-/**
- * Gets the username (which is an email address).
- * 
- * @param	{ZmZimbraAccount}	account		the account
- * @return	{String}		the username
- */
+// Note: the username is an email address
 ZmAppCtxt.prototype.getUsername =
 function(account) { 
 	return this.get(ZmSetting.USERNAME, account);
 };
 
-/**
- * Gets the user domain.
- * 
- * @param	{ZmZimbraAccount}	account		the account
- * @return	{String}		the user domain
- */
 ZmAppCtxt.prototype.getUserDomain =
 function(account) {
 	if (!this.userDomain) {
@@ -1046,11 +700,6 @@ function(account) {
 	return this.userDomain;
 };
 
-/**
- * Gets the upload frame id.
- * 
- * @return	{String}		the frame id
- */
 ZmAppCtxt.prototype.getUploadFrameId =
 function() {
 	if (!this._uploadManagerIframeId) {
@@ -1066,11 +715,6 @@ function() {
 	return this._uploadManagerIframeId;
 };
 
-/**
- * Gets the upload manager.
- * 
- * @return	{Object}		the upload manager
- */
 ZmAppCtxt.prototype.getUploadManager = 
 function() {
 	if (!this._uploadManager) {
@@ -1080,97 +724,69 @@ function() {
 	return this._uploadManager;
 };
 
-/**
- * Gets the current search.
- * 
- * @return	{ZmSearch}		the current search
- */
+ZmAppCtxt.prototype.getCurrentAppToolbar =
+function() { 
+	return this._currentAppToolbar;
+};
+
+ZmAppCtxt.prototype.setCurrentAppToolbar =
+function(toolbar) {
+	this._currentAppToolbar = toolbar;
+};
+
 ZmAppCtxt.prototype.getCurrentSearch =
 function() { 
 	return this.getCurrentApp().currentSearch;
 };
 
-/**
- * Gets the current view id.
- * 
- * @return	{Object}		the current view id
- */
 ZmAppCtxt.prototype.getCurrentViewId =
 function() {
 	return this.getAppViewMgr().getCurrentViewId();
 };
 
-/**
- * Gets the current view.
- * 
- * @return	{DwtComposite}		the current view
- */
 ZmAppCtxt.prototype.getCurrentView =
 function() {
 	return this.getAppViewMgr().getCurrentView();
 };
 
-/**
- * Gets the current controller.
- * 
- * @return	{ZmController}		the current controller
- */
 ZmAppCtxt.prototype.getCurrentController =
 function() {
 	var view = this.getCurrentView();
 	return (view && view.getController) ? view.getController() : null;
 };
 
-/**
- * Sets the current list.
- * 
- * @param	{ZmList}	list		the current list
- */
 ZmAppCtxt.prototype.setCurrentList =
 function(list) {
 	this._list = list;
 };
 
-/**
- * Gets the current list.
- * 
- * @return	{ZmList}		the current list
- */
 ZmAppCtxt.prototype.getCurrentList =
 function() {
 	var ctlr = this.getCurrentController();
 	return (ctlr && ctlr.getList) ? ctlr.getList() : this._list ? this._list : null;
 };
 
-/**
- * Gets a new window.
- * 
- * @private
- */
 ZmAppCtxt.prototype.getNewWindow = 
-function(fullVersion, width, height) {
+function(fullVersion) {
 	// build url
 	var url = [];
 	var i = 0;
 	url[i++] = document.location.protocol;
 	url[i++] = "//";
-	url[i++] = location.hostname;
+	url[i++] = document.domain;
 	url[i++] = (!location.port || location.port == "80") ? "" : (":" + location.port);
 	url[i++] = appContextPath;
 	url[i++] = "/public/launchNewWindow.jsp?skin=";
 	url[i++] = appCurrentSkin;
 	url[i++] = "&localeId=";
 	url[i++] = AjxEnv.DEFAULT_LOCALE || "";
-	if (fullVersion) {
+	if (fullVersion)
 		url[i++] = "&full=1";
-	}
 	if (appDevMode) {
 		url[i++] = "&dev=1";
 	}
 
-	width = width || 705;
-	height = height || 465;
-	var args = ["height=", height, ",width=", width, ",location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no"].join("");
+	var args = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
 	var newWin = window.open(url.join(""), "_blank", args);
 
 	if (!newWin) {
@@ -1181,89 +797,42 @@ function(fullVersion, width, height) {
 	}
 };
 
-/**
- * Caches the given key/value set.
- * 
- * @param	{Object}	key		the key
- * @param	{Object}	value	the value
- * @private
- */
+ZmAppCtxt.prototype.setItemCache =
+function(cache) {
+	this._itemCache = cache;
+};
+
+ZmAppCtxt.prototype.getItemCache =
+function() {
+	return this._itemCache;
+};
+
 ZmAppCtxt.prototype.cacheSet =
 function(key, value) {
-	this._itemCache[key] = value;
-	delete this._itemCacheDeferred[key];
+	if (this._itemCache)
+		this._itemCache.set(key, value);
 };
 
-/**
- * Defers caching the given key set.
- * 
- * @param	{Object}	key		the key
- * @param	{String}	appName	the application name
- * @private
- */
-ZmAppCtxt.prototype.cacheSetDeferred =
-function(key, appName) {
-	this._itemCache[key] = this._itemCacheDeferred;
-	this._itemCacheDeferred[key] = appName;
-};
-
-/**
- * Gets the key from cache.
- * 
- * @param	{Object}	key		the key
- * @return	{Object}	the value
- * @private
- */
 ZmAppCtxt.prototype.cacheGet =
 function(key) {
-	var value = this._itemCache[key];
-	if (value === this._itemCacheDeferred) {
-		var appName = this._itemCacheDeferred[key];
-		this.getApp(appName).createDeferred();
-		value = this._itemCache[key];
-	}
-	return value;
+	return this._itemCache ? this._itemCache.get(key) : null;
 };
 
-/**
- * Removes the key from cache.
- * 
- * @param	{Object}	key		the key
- * @private
- */
 ZmAppCtxt.prototype.cacheRemove =
 function(key) {
-	delete this._itemCache[key];
-	delete this._itemCacheDeferred[key];
+	this._itemCache.clear(key);
 };
 
-/**
- * Gets the key from cache by id.
- * 
- * @param	{Object}	id		the id
- * @return	{Object}	the value
- * @private
- */
 ZmAppCtxt.prototype.getById =
 function(id) {
-	return this.cacheGet(id) || (this.isChildWindow && window.opener.appCtxt.getById(id));
+	return this._itemCache && this._itemCache.get(id) || (this.isChildWindow ? window.opener.appCtxt.getById(id) : null);
 };
 
-/**
- * Gets the keyboard manager
- * 
- * @return	{DwtKeyboardMgr}		the keyboard manager
- */
 ZmAppCtxt.prototype.getKeyboardMgr =
 function() {
 	return this._shell.getKeyboardMgr();
 };
 
-/**
- * Gets the history manager.
- * 
- * @return	{Object}		the history manager
- */
 ZmAppCtxt.prototype.getHistoryMgr =
 function() {
 	if (!this._historyMgr) {
@@ -1272,73 +841,27 @@ function() {
 	return this._historyMgr;
 };
 
-/**
- * Checks if the zimlets are present.
- * 
- * @return	{Boolean}		<code>true</code> if zimlets are present
- */
 ZmAppCtxt.prototype.zimletsPresent =
 function() {
 	return this._zimletsPresent;
 };
 
-/**
- * Sets if the zimlets are present.
- * 
- * @param	{Boolean}	zimletsPresent		if <code>true</code>, zimlets are present
- */
 ZmAppCtxt.prototype.setZimletsPresent =
 function(zimletsPresent) {
 	this._zimletsPresent = zimletsPresent;
 };
 
-/**
- * Gets the zimlet manager
- * 
- * @return	{ZmZimletMgr}	the zimlet manager
- */
 ZmAppCtxt.prototype.getZimletMgr =
 function() {
 	if (!this._zimletMgr) {
 		AjxDispatcher.require("Zimlet");
-		if (!this._zimletMgr) // Must re-check here, because if this function is called a second time before the "Zimlet" package is loaded, both calls want to set this._zimletMgr, which must NEVER happen (Issue first located in bug #41338)
-			this._zimletMgr = new ZmZimletMgr();
+		this._zimletMgr = new ZmZimletMgr();
 	}
 	return this._zimletMgr;
 };
 
-/**
- * Checks if zimlets are loaded.
- * 
- * @return	{Boolean}		<code>true</code> if zimlets are loaded
- */
-ZmAppCtxt.prototype.areZimletsLoaded =
-function() {
-	return this._zimletsLoaded;
-};
-
-/**
- * Adds a listener to the zimlets loaded event.
- * 
- * @param	{AjxCallback}	listener		the listener
- * @param	{int}		index		the index to where to add the listener
- * @return	{Boolean}	<code>true</code> if the listener is added; <code>false</code> otherwise
- */
-ZmAppCtxt.prototype.addZimletsLoadedListener =
-function(listener, index) {
-	if (!this._zimletsLoaded) {
-		return this._evtMgr.addListener(ZmAppCtxt._ZIMLETS_EVENT, listener, index);
-	}
-};
-
-/**
- * Checks is all zimlets are loaded.
- * 
- * @return	{Boolean}	<code>true</code> if all zimlets are loaded
- */
 ZmAppCtxt.prototype.allZimletsLoaded =
 function() {
-	this._zimletsLoaded = true;
 	if (this._zimletMgr && !this.isChildWindow && appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
 		var portletMgr = this.getApp(ZmApp.PORTAL).getPortletMgr();
 		if (portletMgr) {
@@ -1346,47 +869,20 @@ function() {
 		}
 	}
 
-	if (this._evtMgr.isListenerRegistered(ZmAppCtxt._ZIMLETS_EVENT)) {
-		this._evtMgr.notifyListeners(ZmAppCtxt._ZIMLETS_EVENT, new ZmEvent());
-		this._evtMgr.removeAll(ZmAppCtxt._ZIMLETS_EVENT);
+	if (this.isOffline && !this.multiAccounts) {
+		this.getAppController().setInstantNotify(true);
 	}
 };
 
-/**
- * Notifies zimlets if they are present and loaded.
- *
- * @param {String}		event		the zimlet event (called as a zimlet function)
- * @param {Array}		args		a list of args to the function
- * @param {Hash}	options			a hash of options
- * 
- * <ul>
- * <li>noChildWindow		{Boolean}	if <code>true</code>, skip notify if we are in a child window</li>
- * <li>waitUntilLoaded	{Boolean}	if <code>true</code> and zimlets are not yet loaded, add a listener so that notify happens on load</li>
- * </ul>
- * 
- */
-ZmAppCtxt.prototype.notifyZimlets =
-function(event, args, options) {
-
-	var context = this.isChildWindow ? parentAppCtxt : this;
-
-	if (options && options.noChildWindow && this.isChildWindow) { return; }
-
-	if (!context.areZimletsLoaded()) {
-		if (options && options.waitUntilLoaded) {
-			context.addZimletsLoadedListener(new AjxListener(this, this.notifyZimlets, [event, args]));
-		}
-		return;
+ZmAppCtxt.prototype.getPrintView =
+function() {
+	if (!this._printView) {
+		AjxDispatcher.require("Extras");
+		this._printView = new ZmPrintView();
 	}
-
-	this.getZimletMgr().notifyZimlets(event, args);
+	return this._printView;
 };
 
-/**
- * Gets the calendar manager.
- * 
- * @return	{ZmCalMgr}	the calendar manager
- */
 ZmAppCtxt.prototype.getCalManager =
 function() {
 	if (!this._calMgr) {
@@ -1395,150 +891,8 @@ function() {
 	return this._calMgr;
 };
 
-/**
- * Gets the ACL.
- * 
- * @param	{ZmZimbrAccount}	account		the account
- * @param	{AjxCallback}	callback	the callback
- * @return	{ZmAccessControlList}	the ACL
- */
 ZmAppCtxt.prototype.getACL =
 function(account, callback) {
-	var al = this.accountList;
-	var id = account
-		? account.id
-		: al.activeAccount ? al.activeAccount.id : ZmAccountList.DEFAULT_ID;
-
-	var acct = al.getAccount(id);
-	return acct && acct.acl;
-};
-
-/**
- * Gets the shortcut hint.
- *
- * @param {String}		keyMap		the key map
- * @param {String}		shortcut	the shortcut action
- * @return	{String}	the hint
- */
-ZmAppCtxt.prototype.getShortcutHint =
-function(keyMap, shortcut) {
-	
-	var text = null;
-	keyMap = keyMap || "global";
-	while (!text && keyMap) {
-		var scKey = [keyMap, shortcut, "display"].join(".");
-		var text = AjxKeys[scKey] || ZmKeys[scKey];
-		if (text) {
-			var list = text.split(/;\s*/);
-			var sc = list[0];	// use first shortcut in list
-			if (!sc) { return null; }
-			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toLowerCase(); });
-			text = [" [", sc.replace(",", ""), "]"].join("");
-		} else {
-			var key = [keyMap, "INHERIT"].join(".");
-			keyMap = AjxKeys[key] || ZmKeys[key];
-		}
-	}
-
-	return text;
-};
-
-/**
- * Gets the shortcuts panel.
- * 
- * @return	{ZmShortcutsPanel}	the shortcuts panel
- */
-ZmAppCtxt.prototype.getShortcutsPanel =
-function() {
-	if (!this._shortcutsPanel) {
-		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
-		var style = this.isChildWindow ? ZmShortcutList.WINDOW_STYLE : ZmShortcutList.PANEL_STYLE;
-		this._shortcutsPanel = new ZmShortcutsPanel(style);
-	}
-	return this._shortcutsPanel;
-};
-
-/**
- * Gets the skin hint for the given argument(s), which will be used to look
- * successively down the properties chain.
- * 
- * <p>
- * For example, <code>getSkinHint("a", "b")</code> will return the value of <code>skin.hints.a.b</code>.
- * 
- * @return	{String}	the skin hint
- */
-ZmAppCtxt.prototype.getSkinHint =
-function() {
-	if (arguments.length == 0) return "";
-	
-	var cur = skin && skin.hints;
-	if (!cur) { return ""; }
-	for (var i = 0; i < arguments.length; i++) {
-		var arg = arguments[i];
-		if (!cur[arg]) { return ""; }
-		cur = cur[arg];
-	}
-	return cur;
-};
-
-/**
- * Gets the auto completer.
- * 
- * @return	{ZmAutocomplete}	the auto completer
- */
-ZmAppCtxt.prototype.getAutocompleter =
-function() {
-	if (!this._autocompleter) {
-		this._autocompleter = new ZmAutocomplete();
-	}
-	return this._autocompleter;
-};
-
-/**
- * Checks if my address belongs to the current user (include aliases).
- * 
- * @param {String}		addr			the address
- * @param {Boolean}		allowLocal		if <code>true</code>, domain is not required
- * @return	{Boolean}		<code>true</code> if the given address belongs to the current user; <code>false</code> otherwise
- */
-ZmAppCtxt.prototype.isMyAddress =
-function(addr, allowLocal) {
-
-	if (allowLocal && (addr.indexOf('@') == -1)) {
-		addr = [addr, this.getUserDomain()].join("@");
-	}
-	
-	if (addr == this.get(ZmSetting.USERNAME)) {
-		return true;
-	}
-
-	var aliases = this.get(ZmSetting.MAIL_ALIASES);
-	if (aliases && aliases.length) {
-		for (var i = 0; i < aliases.length; i++) {
-			if (addr == aliases[i])
-				return true;
-		}
-	}
-
-	return false;
-};
-
-/**
- * Gets the overview ID, prepending account name if multi-account.
- *
- * @param {Array}		parts		an array of id components
- * @param {ZmAccount}	account		the account
- * @return	{String}	the id
- */
-ZmAppCtxt.prototype.getOverviewId =
-function(parts, account) {
-
-	var id = (parts instanceof Array) ? parts.join("_") : parts;
-
-	if (appCtxt.multiAccounts && (account !== null)) {
-		account = account || appCtxt.getActiveAccount();
-		id = [account.name, id].join(":");
-	}
-
-	return id;
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
+	return this._accounts[id] && this._accounts[id].acl;
 };

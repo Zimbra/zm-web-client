@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -44,10 +46,11 @@ function() {
 
 ZmAttachmentPicker.prototype._newType =
 function(tree, atts) {
-	var ti = new DwtTreeItem({parent:tree, text:atts[0].desc, imageInfo:atts[0].image});
-	ti.setChecked(false, true);
+	var ti = new DwtTreeItem({parent:tree});
+	ti.setImage(atts[0].image);
 	ti.setData(ZmAttachmentPicker.ATT_KEY, atts[0].desc);
-	var types = [];
+	ti.setText(atts[0].desc);
+	var types = new Array();
 	for (var i = 0; i < atts.length; i++) {
 		types.push(atts[i].type);
 	}
@@ -111,9 +114,11 @@ function(parent) {
 	html[idx++] = "'><hr /><table border=0><tr><td width=1%>";
 	html[idx++] = ZmMsg.filename;
 	html[idx++] = "</td><td>";
+	html[idx++] = Dwt.CARET_HACK_BEGIN;
 	html[idx++] = "<input type='text' autocomplete='off' nowrap style='width:90%' id='";
 	html[idx++] = fileInputId;
 	html[idx++] = "'>";
+	html[idx++] = Dwt.CARET_HACK_END;
 	html[idx++] = "</td></tr></table></div>";
 	html[idx++] = "<div id='";
 	html[idx++] = treeId;
@@ -143,11 +148,11 @@ function(attachTypeList, tree, treeId) {
 	var attachments = attachTypeList.getAttachments();
 	this._attsByDesc = {};
 	var attDesc = [];
-	var curDesc;
+	var curDesc = null;
 	for (var i = 0; i < attachments.length; i++) {
 		var desc = attachments[i].desc;
 		if (desc != curDesc) {
-			this._attsByDesc[desc] = [];
+			this._attsByDesc[desc] = new Array();
 			attDesc.push(desc);
 		}
 		this._attsByDesc[desc].push(attachments[i]);

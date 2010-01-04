@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
  * 
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -17,16 +19,16 @@ ZmPortletMgr = function() {
     this._portlets = {};
     this._loadedZimlets = {};
     this._delayedPortlets = {};
-};
+}
 
 //
 // Public methods
 //
 
-ZmPortletMgr.prototype.createPortlets = function(global, manifest) {
+ZmPortletMgr.prototype.createPortlets = function(global) {
 	global = global != null ? global : false;
 	var portletsCreated = [];
-    manifest = manifest || appCtxt.getApp(ZmApp.PORTAL).getManifest();
+    var manifest = appCtxt.getApp(ZmApp.PORTAL).getManifest();
     if (manifest) {
         var portalDef = manifest.portal;
         var portletDefs = portalDef && portalDef.portlets;
@@ -53,16 +55,18 @@ ZmPortletMgr.prototype.createPortlet = function(id, portletDef) {
     this._portlets[id] = portlet;
 
     // notify portlet creation or add to list to notify later
-	var name = portlet.zimletName;
-	if (this._loadedZimlets[name]) {
-		this._portletCreated(portlet);
-	}
-	else if (name) {
-		if (!this._delayedPortlets[name]) {
-			this._delayedPortlets[name] = [];
-		}
-		this._delayedPortlets[name].push(portlet);
-	}
+    if (portlet.zimlet) {
+        if (typeof portlet.zimlet != "string" || this._loadedZimlets[portlet.zimlet]) {
+            this._portletCreated(portlet);
+        }
+        else {
+            var zimletName = portlet.zimletName;
+            if (!this._delayedPortlets[zimletName]) {
+                this._delayedPortlets[zimletName] = [];
+            }
+            this._delayedPortlets[zimletName].push(portlet);
+        }
+    }
 
     return portlet;
 };

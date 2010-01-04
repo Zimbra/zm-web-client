@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -63,7 +65,7 @@ ZmNotebookController.prototype.switchView = function(view, force) {
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 
         //bug: 30036 if the search result notebookpage view should not be set as app view
-        this._setView({view:view, elements:elements, isAppView:!(this._fromSearch  && (view == ZmId.VIEW_NOTEBOOK_PAGE))});
+        this._setView(view, elements, !(this._fromSearch  && (view == ZmId.VIEW_NOTEBOOK_PAGE)));
 	}
 	Dwt.setTitle(this.getCurrentView().getTitle());
 };
@@ -97,7 +99,12 @@ ZmNotebookController.prototype._getBasicToolBarOps =
 function() {
 	var list = [ZmOperation.NEW_MENU];
 	list.push(ZmOperation.REFRESH, ZmOperation.EDIT);
-    list.push(ZmOperation.BROWSE_FOLDER);
+        list.push(ZmOperation.BROWSE_FOLDER);
+    if(appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+		list.push(ZmOperation.SEP);
+		list.push(ZmOperation.IMPORT_FILE);
+		list.push(ZmOperation.SEP);
+	}
     return list;
 };
 
@@ -193,7 +200,7 @@ ZmNotebookController.prototype._doDelete = function(items,delcallback) {
 		var organizer = appCtxt.getById(page.id);
 		if(organizer) {
 			var callback = new AjxCallback(treeController, treeController._deleteListener2, [ organizer ]);
-			var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, organizer.name);
+			var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, AjxStringUtil.htmlEncode(organizer.name));
 			var dialog = appCtxt.getConfirmationDialog();
 			dialog.popup(message, callback);
 			return;
@@ -208,7 +215,7 @@ ZmNotebookController.prototype._doDelete = function(items,delcallback) {
 		}
 
 		var item = items instanceof Array ? items[0] : items;
-		message = this._confirmDeleteFormatter.format(item.name);
+		message = this._confirmDeleteFormatter.format(AjxStringUtil.htmlEncode(item.name));
 	}
 	var callback = new AjxCallback(this, this._doDelete2, [items,delcallback]);
 	dialog.popup(message, callback);
@@ -276,6 +283,30 @@ ZmNotebookController.prototype._setViewContents = function(view) {
 	}
 };
 
+/*** TODO: This will be exposed later.
+ZmNotebookController.prototype._setViewMenu = function(view) {
+	var appToolbar = appCtxt.getCurrentAppToolbar();
+	var menu = appToolbar.getViewMenu(view);
+	if (!menu) {
+		var listener = this._listeners[ZmOperation.VIEW];
+
+		menu = new ZmPopupMenu(appToolbar.getViewButton());
+
+		var item = menu.createMenuItem(ZmNotebookApp.PAGE, {image:"Page", text:ZmMsg.notebookPageView, style:DwtMenuItem.RADIO_STYLE});
+		item.setData(ZmOperation.MENUITEM_ID, ZmId.VIEW_NOTEBOOK_PAGE);
+		item.addSelectionListener(listener);
+
+		var item = menu.createMenuItem(ZmNotebookApp.FILE, {image:"Folder", text:ZmMsg.notebookFileView, style:DwtMenuItem.RADIO_STYLE});
+		item.setData(ZmOperation.MENUITEM_ID, ZmId.VIEW_NOTEBOOK_FILE);
+		item.addSelectionListener(listener);
+	}
+
+	var item = menu.getItemById(ZmOperation.MENUITEM_ID, view);
+	item.setChecked(true, true);
+
+	appToolbar.setViewMenu(view, menu);
+};
+/***/
 
 // listeners
 
@@ -476,7 +507,7 @@ ZmNotebookController.prototype._detachListener = function(event) {
 ZmNotebookController.prototype._browseFolderListener = function() {
         var folderId = this._object ? this._object.getFolderId() : ZmNotebookItem.DEFAULT_FOLDER;
         var folder = appCtxt.getById(folderId);
-        appCtxt.getSearchController().search({ query: folder.createQuery(), types: [ZmItem.PAGE, ZmItem.DOCUMENT] }); // FIXME: is there a better way to browse a folder?
+        appCtxt.getSearchController().search({ query: "in:" + (ZmFolder.QUERY_NAME[folder.id] || folder.name)}); // FIXME: is there a better way to browse a folder?
 };
 
 ZmNotebookController.prototype._getDefaultFocusItem =
@@ -489,28 +520,6 @@ ZmNotebookController.prototype.gotoPage =
 function(pageRef) {
 
 };
-
-ZmNotebookController.prototype.getItemTooltip =
-function(item, listView) {
-    var dateStr = this._getDateInLocaleFormat(item.modifyDate);
-    var prop = [
-		{name:ZmMsg.briefcasePropName, value:item.name},
-		{name:ZmMsg.briefcasePropSize, value:AjxUtil.formatSize(item.size)},
-		{name:ZmMsg.briefcasePropModified, value:(item.modifyDate ? dateStr+"" : "")}
-	];
-
-	var subs = {
-		fileProperties: prop,
-		tagTooltip: listView._getTagToolTip(item)
-	};
-    return AjxTemplate.expand("briefcase.Briefcase#Tooltip", subs);
-};
-
-ZmNotebookController.prototype._getDateInLocaleFormat =
-function(date) {
-    var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
-    return dateFormatter.format(date);
-}
 
 //
 // Private functions

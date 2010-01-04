@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
  * 
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 /*
@@ -24,6 +26,7 @@
 AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
 
 AjxPackage.require("zimbraMail.tasks.model.ZmTaskFolder");
+AjxPackage.require("zimbraMail.tasks.model.ZmTaskList");
 AjxPackage.require("zimbraMail.tasks.model.ZmTask");
 
 AjxPackage.require("zimbraMail.tasks.controller.ZmTaskListController");

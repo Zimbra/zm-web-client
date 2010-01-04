@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,16 +11,12 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
 ZmTag = function(params) {
 	params.type = ZmOrganizer.TAG;
-	// bug 41850
-	var rgb = String(params.rgb).toUpperCase();
-	if (params.color == 9 && rgb != "#FF8000") {
-		params.color = ZmTag.__OLD_COLORS[rgb] || ZmOrganizer.DEFAULT_COLOR[params.type];
-	}
 	ZmOrganizer.call(this, params);
 };
 
@@ -51,33 +48,17 @@ ZmTag.ID_REPLIED	= 35;
 ZmTag.ID_FORWARDED	= 36;
 ZmTag.ID_ATTACHED	= 37;
 
-// bug 41850
-ZmTag.__OLD_COLORS = {
-	"#000000": 0, "#0000FF": 1, "#008284": 2, "#008200": 3, "#840084": 4,
-	"#FF0000": 5, "#848200": 6, "#FF0084": 7, "#848284": 8, "#FF8000": 9
-};
-
 /**
 * Tags come from back end as a flat list, and we manually create a root tag, so all tags
 * have the root as parent. If tags ever have a tree structure, then this should do what
 * ZmFolder does (recursively create children).
 */
 ZmTag.createFromJs =
-function(parent, obj, tree, sorted, account) {
+function(parent, obj, tree, sorted) {
 	var nId = ZmOrganizer.normalizeId(obj.id);
 	if (nId < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]) { return; }
-
-	var params = {
-		id: obj.id,
-		name: obj.name,
-		color: ZmTag.checkColor(obj.color),
-		rgb: obj.rgb,
-		parent: parent,
-		tree: tree,
-		numUnread: obj.u,
-		account: account
-	};
-	var tag = new ZmTag(params);
+	var tag = new ZmTag({id: obj.id, name: obj.name, color: ZmTag.checkColor(obj.color),
+						 parent: parent, tree: tree, numUnread: obj.u});
 	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
 	parent.children.add(tag, index);
 
@@ -97,11 +78,10 @@ function(tagA, tagB) {
 ZmTag.checkName =
 function(name) {
 	var msg = ZmOrganizer.checkName(name);
-	if (msg) { return msg; }
+	if (msg) return msg;
 
-	if (name.indexOf('\\') == 0) {
+	if (name.indexOf('\\') == 0)
 		return AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(name));
-	}
 
 	return null;
 };
@@ -122,7 +102,7 @@ function(params) {
 		tagNode.setAttribute("color", color);
 	}
 	var errorCallback = new AjxCallback(null, ZmTag._handleErrorCreate, params);
-	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback, accountName:params.accountName});
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
 };
 
 ZmTag._handleErrorCreate =
@@ -140,11 +120,6 @@ function(params, ex) {
 ZmTag.prototype.getIcon = 
 function() {
 	return (this.id == ZmOrganizer.ID_ROOT) ? null : ZmTag.COLOR_ICON[this.color];
-};
-
-ZmTag.prototype.createQuery =
-function() {
-	return ['tag:"', this.name, '"'].join("");
 };
 
 ZmTag.prototype.getToolTip = function() {};

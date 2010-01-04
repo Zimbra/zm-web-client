@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,22 +11,27 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 ZmBriefcaseView = function(parent, controller, dropTgt) {
 
-	var params = {parent:parent, className:"ZmBriefcaseView",
-				  view:ZmId.VIEW_BRIEFCASE, controller:controller,
-				  dropTgt:dropTgt};
-	ZmBriefcaseBaseView.call(this, params);
+	ZmListView.call(this, {parent:parent, className:"ZmBriefcaseView", posStyle:DwtControl.ABSOLUTE_STYLE,
+					view:ZmId.VIEW_BRIEFCASE, type:ZmItem.DOCUMENT, controller:controller,
+					dropTgt:dropTgt});
 	
+	this._controller = controller;
+
+	this._USE_IFRAME = true;
+
 	this._setMouseEventHdlrs(); // needed by object manager
 	this._setAllowSelection();
 	
 	this.setDropTarget(dropTgt);
-};
-
-ZmBriefcaseView.prototype = new ZmBriefcaseBaseView;
+//	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+//	this.setDragSource(this._dragSrc);
+}
+ZmBriefcaseView.prototype = new ZmListView;
 ZmBriefcaseView.prototype.constructor = ZmBriefcaseView;
 
 ZmBriefcaseView.prototype.toString =
@@ -33,44 +39,68 @@ function() {
 	return "ZmBriefcaseView";
 };
 
+// Data
+
+ZmBriefcaseView.prototype._controller;
+
 // Public methods
+
+ZmBriefcaseView.prototype.getController =
+function() {
+	return this._controller;
+};
 
 ZmBriefcaseView.prototype._createItemHtml =
 function(item, params) {
-
-	params.divClass = "ZmBriefcaseItem";
-	var div = this._getDiv(item, params);
-
-	var nameText;
-	if (item instanceof ZmBriefcaseItem) {
-		var name = item.name;
-		if (name.length > 14) {
-			name = name.substring(0, 14) + "...";
-		}
-		nameText = ['<a href="', item.getRestUrl(), '" target="_blank">', name, '</a>'].join('');
-	} else {
-		nameText = item;
+	
+	var name = item.name;
+	var contentType = item.contentType;
+	
+	if(contentType && contentType.match(/;/)) {
+			contentType = contentType.split(";")[0];
 	}
+	var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
+	icon = "Img" + ( mimeInfo ? mimeInfo.imageLarge : "UnknownDoc_48");
 
-	var html = [], idx = 0;
-	var id = this._getFieldId(item, ZmItem.F_NAME);
-	html[idx++] = "<div class='ZmThumbnailItem' id='" + id + "'>";
-	var className = "Img" + item.getIcon(true) + " ZmThumbnailIcon";
-	id = this._getFieldId(item, ZmItem.F_SUBJECT);
-	html[idx++] = "<div class='" + className + "' id='" + id + "'></div>";
-	html[idx++] = "</div>";
-	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width='100%'>";
-	html[idx++] = "<tr>";
-	html[idx++] = "<td align='left'>";
-	html[idx++] = "<div class='ZmThumbnailName'>";
-	html[idx++] = "<span>" + nameText + "</span>";
-	html[idx++] = "</div></td>";
-	html[idx++] = "<td align='right'>";
-	idx = this._getImageHtml(html, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
-	html[idx++] = "</td></tr></table>";
-
-	div.innerHTML = html.join("");
-
+	if(item.isFolder) {
+		icon = "ImgBriefcase_48";
+	}
+	
+	if(name.length>14){
+		name = name.substring(0,14)+"...";
+	}
+	
+	var div = document.createElement("div");
+	div.className = "ZmBriefcaseItem";
+	
+	var div1 = document.createElement("div");
+	div1.className = "ZmThumbnailItem";
+	
+	var div2 = document.createElement("div");
+	div2.className = icon+" ZmThumbnailIcon";
+	
+	div1.appendChild(div2);
+	div.appendChild(div1);
+	
+	var div2 = document.createElement("div");
+	div2.className = "ZmThumbnailName";
+	
+	var span = document.createElement("span");
+	
+	if(item instanceof ZmBriefcaseItem){
+		span.innerHTML = ['<a href="',item.getRestUrl(),'" target="_blank">',name,'</a>'].join('');
+	}else{
+		span.innerHTML = item;
+	}
+	
+	div2.appendChild(span);
+	div.appendChild(div2);
+	
+	if (params.isDragProxy) {
+		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
+	}
+	
+	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
 	return div;
 };
 
@@ -88,19 +118,117 @@ function(clickedEl, ev) {
             this._selectedClass,
             this._kbFocusClass,
             this._dndClass,
-            this._rightClickClass
+            this._rightClickClass//,
+//          this._normalClass
         ].join("|") +
         ")\\b", "g"
     );
     
-	DwtListView.prototype._itemClicked.call(this, clickedEl, ev);
+	DwtListView.prototype._itemClicked.call(this,clickedEl,ev);
+	return;
+};
+
+
+ZmBriefcaseView.prototype.setSelectedItems =
+function(selectedArray) {
+	this.deselectAll();
+	var sz = selectedArray.length;
+	for (var i = 0; i < sz; ++i) {
+		var el = this._getElFromItem(selectedArray[i]);
+		if (el) {
+			this._selectedItems.add(el);
+		}
+	}
+};
+
+ZmBriefcaseView.prototype.set =
+function(list) {              //We set list now, not folder id
+	var element = this.getHtmlElement();
+	if(list instanceof ZmList){
+       var list1 = list.getVector();
+       DwtListView.prototype.set.call(this,list1.clone());
+       return;
+    }
+	
+};
+
+ZmBriefcaseView.prototype.getTitle =
+function() {
+	//TODO: title is the name of the current folder
+	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
+};
+
+ZmBriefcaseView.prototype.getContent =
+function() {
+	return this.getHtmlElement().innerHTML;
+};
+
+ZmBriefcaseView.prototype.setBounds =
+function(x, y, width, height) {
+	ZmListView.prototype.setBounds.call(this, x, y, width, height);	
 };
 
 // Protected methods
 
+ZmBriefcaseView.prototype._createHtml = function() {
+	var element = this.getHtmlElement();
+	Dwt.setScrollStyle(element, Dwt.SCROLL);
+};
+
+ZmBriefcaseView.prototype.enableToolbar = function(enable){
+	var toolbar = this._controller._toolbar[view._controller._currentView];
+	toolbar.enable([ZmOperation.TAG_MENU, ZmOperation.DELETE], enable);
+};
+
+ZmBriefcaseView.prototype.onDelete = function(){
+
+	var controller = this._controller;
+	var object = controller._object;
+
+};
+
+
+ZmBriefcaseView.prototype.refresh = function(restUrl){
+};
+
+ZmBriefcaseView.prototype._getToolTip =
+function(item, ev, div) {
+	if (!item) { return; }
+	return this._controller.getItemTooltip(item, this);
+};
+
+
+ZmBriefcaseView.prototype._mouseOverAction =
+function(ev, div) {
+	DwtListView.prototype._mouseOverAction.call(this, ev, div);
+	var id = ev.target.id || div.id;
+	if (!id) return true;
+	
+	if (div) {
+		var item = this.getItemFromElement(div);
+		if(item && !item.isFolder){
+		this.setToolTipContent(this._getToolTip(item, ev, div));
+		}
+	}		
+	return true;
+};
+
+ZmBriefcaseView.prototype._mouseDownListener =
+function(ev) {
+	DwtListView.prototype._mouseDownListener.call(this,ev);	
+	if(this._dndSelection==null){
+	this.deselectAll();	
+	this._controller._resetOpForCurrentView();
+	}
+};
+
+ZmBriefcaseView.prototype._updateDragSelection =
+function(row, select) {
+    // TODO: new style to mark drop target  
+};
+
 ZmBriefcaseView.prototype._addRow =
 function(row, index) {
-
 	if (!row) { return; }
 
 	// bug fix #1894 - check for childNodes length otherwise IE barfs
@@ -114,14 +242,47 @@ function(row, index) {
 	}
 };
 
-// Grab more items if we're within one row of bottom
-ZmBriefcaseView.prototype._getItemsNeeded =
+ZmBriefcaseView.prototype.deselectAll =
 function() {
+	var a = this._selectedItems.getArray();
+	var sz = this._selectedItems.size();
+	for (var i = 0; i < sz; i++) {
+        Dwt.delClass(a[i], this._styleRe, this._normalClass);
+    }
+    this._selectedItems.removeAll();
+	this._selAnchor = null;
 
-	if (!(this._controller._list && this._controller._list.hasMore()) || !this._list) { return 0; }
-	if (!this._rendered) { return 0; }
-
-	var scrollDiv = this._parentEl;
-	var fromBottom = (scrollDiv.scrollHeight - (scrollDiv.scrollTop + scrollDiv.clientHeight));
-	return (fromBottom <= this._rowHeight) ? this.getLimit(1) : 0;
+	if (this._kbAnchor != null && this.hasFocus())
+		Dwt.addClass(this._kbAnchor, this._kbFocusClass);
 };
+
+//for ZimbraDnD to do make even more generic
+ZmBriefcaseView.prototype.processUploadFiles = function() {
+    var ulEle = document.getElementById('zdnd_ul');
+    var files = [];
+    if (ulEle);
+    {
+        for (var i = 0; i < ulEle.childNodes.length; i++)
+        {
+            var liEle = ulEle.childNodes[i];
+            var inputEle = liEle.childNodes[0];
+            if (inputEle.name != "_attFile_") continue;
+            if (!inputEle.value) continue;
+            var file = {
+                fullname: inputEle.value,
+                name: inputEle.value.replace(/^.*[\\\/:]/, "")
+            };
+            files.push(file);
+         }
+   }
+   return files;
+}
+
+ZmBriefcaseView.prototype.uploadFiles = function(){
+    var attachDialog = appCtxt.getUploadDialog();
+    var app = this._controller.getApp();
+    attachDialog._uploadCallback = new AjxCallback(app, app._handleUploadNewItem);
+    var files = this.processUploadFiles();
+    attachDialog.uploadFiles(files,document.getElementById("zdnd_form"),{id:this._controller._currentFolder});
+};
+//End ZimbraDnD

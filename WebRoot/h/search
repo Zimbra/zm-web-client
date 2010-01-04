@@ -17,49 +17,46 @@
     </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
+    <app:composeCheck/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
     <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
-    <%-- Compose, temp draft cleanup--%>
-    <c:if test="${param.action ne 'compose' and not empty sessionScope.temp_draftid}">
-        <zm:deleteMessage var="result" id="${sessionScope.temp_draftid}"/>
-        <c:remove var="temp_draftid" scope="session"/>
-    </c:if>
+
 <%-- Deep linking  --%>
   <c:if test="${not empty param.app}">
 	  <c:choose>
 		  <c:when test="${param.app eq 'calendar' and mailbox.features.calendar}">
-			<c:redirect url="/h/calendar" />
+			  <c:redirect url="/h/calendar" />
 		  </c:when>
 		  <c:when test="${param.app eq 'mail' and mailbox.features.mail and not empty param.id}">
-			<c:redirect url="/h/search?st=message&id=${param.id}&action=view" />
+		      <c:redirect url="/h/search?st=message&id=${param.id}&action=view" />
 		  </c:when>
-		  <c:when test="${param.app eq 'mail' and mailbox.features.mail}">
+          <c:when test="${param.app eq 'mail' and mailbox.features.mail}">
 			<c:redirect url="/h/search" />
 		  </c:when>
-		  <c:when test="${param.app eq 'voice' and mailbox.features.voice and not empty param.id}">
-		            <c:catch var="ex">
-		               <c:if test="${not empty param.phone}">
-		                   <zm:computeSearchContext var="voicesearch" usecache="true" types="voicemail" query="phone:${param.phone}"/>
-		                   <c:set var="matches" value="${false}"/>
-		                   <c:forEach items="${voicesearch.searchResult.hits}" var="hit" varStatus="status">
-		                       <c:if test="${hit.voiceMailItemHit.id eq param.id}">
-		                           <c:set var="matches" value="${true}"/>
-		                           <c:redirect url="/h/search?st=voicemail&action=listen&phone=${param.phone}&voiceId=${hit.voiceMailItemHit.serialize}"/>
-		                       </c:if>    
-		                   </c:forEach>
-		                   <c:if test="${empty voicesearch.searchResult.hits or matches eq false}">
-		                        <c:redirect url="/h/search?st=voicemail&sq=phone:${param.phone}"/>
-		                   </c:if>
-		               </c:if>
-		               <c:if test="${empty param.phone}">
-		                    <c:set var="firstPhoneAcc" value="${zm:getFirstPhoneAccount(pageContext)}"/>
-		                    <c:redirect url="/h/search?st=voicemail&action=listen&phone=${firstPhoneAcc.phone.name}&voiceId=${param.id}"/>
-		               </c:if>
-		            </c:catch>
-		            <c:if test="${!empty ex}">
-		               <c:redirect url="/h/search?st=voicemail" />
-		            </c:if>
-		  </c:when>	
+          <c:when test="${param.app eq 'voice' and mailbox.features.voice and not empty param.id}">
+            <c:catch var="ex">
+               <c:if test="${not empty param.phone}">
+                   <zm:computeSearchContext var="voicesearch" usecache="true" types="voicemail" query="phone:${param.phone}"/>
+                   <c:set var="matches" value="${false}"/>
+                   <c:forEach items="${voicesearch.searchResult.hits}" var="hit" varStatus="status">
+                       <c:if test="${hit.voiceMailItemHit.id eq param.id}">
+                           <c:set var="matches" value="${true}"/>
+                           <c:redirect url="/h/search?st=voicemail&action=listen&phone=${param.phone}&voiceId=${hit.voiceMailItemHit.serialize}"/>
+                       </c:if>    
+                   </c:forEach>
+                   <c:if test="${empty voicesearch.searchResult.hits or matches eq false}">
+                        <c:redirect url="/h/search?st=voicemail&sq=phone:${param.phone}"/>
+                   </c:if>
+               </c:if>
+               <c:if test="${empty param.phone}">
+                    <c:set var="firstPhoneAcc" value="${zm:getFirstPhoneAccount(pageContext)}"/>
+                    <c:redirect url="/h/search?st=voicemail&action=listen&phone=${firstPhoneAcc.phone.name}&voiceId=${param.id}"/>
+               </c:if>
+            </c:catch>
+            <c:if test="${!empty ex}">
+               <c:redirect url="/h/search?st=voicemail" />
+            </c:if>
+		  </c:when>
 		  <c:when test="${param.app eq 'voice' and mailbox.features.voice}">
 			<c:redirect url="/h/search?st=voicemail" />
 		  </c:when>
@@ -69,16 +66,10 @@
 		  <c:when test="${param.app eq 'contacts' and mailbox.features.contacts}">
 			  <c:redirect url="/h/search?st=contact" />
 		  </c:when>
-          <c:when test="${param.app eq 'gal' and mailbox.features.gal}">
-			  <c:redirect url="/h/search?st=gal" />
-		  </c:when>
 		  <c:when test="${param.app eq 'tasks' and mailbox.features.tasks}">
 			  <c:redirect url="/h/search?st=task" />
 		  </c:when>
-          	  <c:when test="${param.app eq 'briefcases' and mailbox.features.briefcases}">
-			  <c:redirect url="/h/search?st=briefcase" />
-		 </c:when>
-      </c:choose>
+	  </c:choose>
   </c:if>
   <c:if test="${not empty param.view}">
 	  <c:if test="${param.view eq 'compose'}">
@@ -118,9 +109,6 @@
     </c:if>
      <%-- switch based on context search types --%>
      <c:choose>
-         <c:when test="${param.action eq 'compose'}">
-             <app:composeCheck/>
-         </c:when>
          <c:when test="${not empty param.doConvListViewAction}">
              <app:convListViewAction/>
          </c:when>
@@ -132,12 +120,6 @@
          </c:when>
          <c:when test="${not empty param.doTaskAction}">
              <app:taskAction/>
-         </c:when>
-         <c:when test="${param.action eq 'newbrief'}">
-             <app:newBriefCheck/>
-         </c:when>
-          <c:when test="${not empty param.doBriefcaseAction}">
-             <app:briefcaseListViewAction/>
          </c:when>
          <c:when test="${not empty param.doContactListViewAction or param.action eq 'newcontact' or param.action eq 'newcontactgroup'}">
              <app:contactListViewAction/>
@@ -179,10 +161,9 @@
     </c:if>
 
     <zm:computeSearchContext var="context" usecache="true"/>
+
 </app:handleError>
 <c:if test="${param.mesg eq 'welcome'}">
-    <c:set var="refreshSkin" value="${true}" scope="request"/>
-    <c:remove var="skin" scope="session"/>
     <app:status style="info" html="true">
         <fmt:message key="htmlWelcomeMesg"/>
     </app:status>
@@ -210,45 +191,19 @@
     <c:when test="${context.isConversationSearch and action eq 'view2'}">
         <app:convView2 context="${context}"/>
     </c:when>
-    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled and action eq 'paneView'}">
-        <app:convColumnView context="${context}"/>
-    </c:when>
-    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled and action eq 'paneView2'}">
-        <app:convColumnView context="${context}"/>
-    </c:when>
-    <c:when test="${context.isConversationSearch and !mailbox.prefs.readingPaneEnabled and action eq 'paneView'}">
-        <app:convView context="${context}"/>
-    </c:when>
-    <c:when test="${context.isConversationSearch and !mailbox.prefs.readingPaneEnabled and action eq 'paneView2'}">
-        <app:convView2 context="${context}"/>
-    </c:when>
-    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled}">
-        <app:convColumnView context="${context}"/>
-    </c:when>
     <c:when test="${context.isConversationSearch}">
         <app:convListView context="${context}"/>
     </c:when>
-
     <c:when test="${context.isMessageSearch and action eq 'view'}">
         <app:messageView context="${context}"/>
-    </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneEnabled and action eq 'paneView'}">
-        <app:messageColumnView context="${context}"/>
-    </c:when>
-    <c:when test="${context.isMessageSearch and !mailbox.prefs.readingPaneEnabled and action eq 'paneView'}">
-        <app:messageView context="${context}"/>
-    </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneEnabled}">
-        <app:messageColumnView context="${context}"/>
     </c:when>
     <c:when test="${context.isMessageSearch}">
         <app:messageListView context="${context}"/>
     </c:when>
-
     <c:when test="${context.isContactSearch and action eq 'view'}">
         <app:contactView context="${context}"/>
     </c:when>
-    <c:when test="${context.isContactSearch or context.isGALSearch}">
+    <c:when test="${context.isContactSearch}">
         <app:contactListView context="${context}"/>
     </c:when>
     <c:when test="${context.isTaskSearch}">
@@ -262,15 +217,6 @@
     </c:when>
     <c:when test="${context.isCallSearch}">
         <app:callListView context="${context}"/>
-    </c:when>
-    <c:when test="${context.isBriefcaseSearch and (param.view eq 'dv' or empty param.view)}">
-        <app:briefcaseListView context="${context}"/>
-    </c:when>
-    <c:when test="${context.isBriefcaseSearch and param.view eq 'ev'}">
-        <app:briefcaseExplorerView context="${context}"/>
-    </c:when>
-    <c:when test="${context.isWikiSearch}">
-        <app:notebookRestView context="${context}"/>
     </c:when>
     <c:otherwise>
         <fmt:message key="error" var="title"/>

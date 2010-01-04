@@ -5,6 +5,36 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+
+
+<%
+	// Set to expire far in the past.
+	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
+
+	// Set standard HTTP/1.1 no-cache headers.
+	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+
+	// Set standard HTTP/1.0 no-cache header.
+	response.setHeader("Pragma", "no-cache");
+%><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!--
+ launchZCS.jsp
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+-->
 <%!
 	private static String protocolMode = null;
 	private static String httpPort = null;
@@ -39,37 +69,8 @@
 
     ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
     String skin = authResult.getSkin();
-%>
-<app:skinAndRedirect defaultSkin="${skin}" />
-<%
-	// Set to expire far in the past.
-	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
-	// Set standard HTTP/1.1 no-cache headers.
-	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-
-	// Set standard HTTP/1.0 no-cache header.
-	response.setHeader("Pragma", "no-cache");
-%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-<!--
- launchZCS.jsp
- * ***** BEGIN LICENSE BLOCK *****
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * ***** END LICENSE BLOCK *****
--->
-<%	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
+	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
 	if (localePref != null && localePref.size() > 0) {
 		request.setAttribute("localeId", localePref.get(0));
 	}
@@ -97,7 +98,6 @@
 	String vers = getAttribute(request, "version", "");
 
 	String prodMode = getAttribute(request, "prodMode", "");
-	String editor = getParameter(request, "editor", "");
 
 	String ext = getAttribute(request, "fileExtension", null);
 	if (ext == null || isDevMode) ext = "";
@@ -129,9 +129,9 @@
 	pageContext.setAttribute("isProdMode", !prodMode.equals(""));
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
-	pageContext.setAttribute("editor", editor);
 %>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<app:skin defaultSkin="${skin}" />
 <fmt:setLocale value='${locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request" force="true" />
 <title><fmt:message key="zimbraTitle"/></title>
@@ -144,10 +144,7 @@
 		<c:param name="customerDomain"	value="${param.customerDomain}" />
 	</c:if>		
 </c:url>" rel="stylesheet" type="text/css" />
-<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
-<c:if test="${empty favIconUrl}">
-	<fmt:message key="favIconUrl" var="favIconUrl"/>
-</c:if>
+<fmt:message key="favIconUrl" var="favIconUrl"/>
 <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 <script>
 	appContextPath = "${zm:jsEncode(contextPath)}";
@@ -165,18 +162,6 @@
 	<jsp:param name="skin" value="${skin}" />
 </jsp:include>
 
-<!-- image overlays and masks -->
-<script>
-<jsp:include page="/img/images.css.js" />
-<jsp:include page="/skins/${skin}/img/images.css.js" />
-document.write("<DIV style='display:none'>");
-for (var id in AjxImgData) {
-	var data = AjxImgData[id];
-	if (data.f) data.f = data.f.replace(/@AppContextPath@/,appContextPath);
-	document.write("<IMG id='",id,"' src='",data.d||data.f,"'>");
-}
-document.write("</DIV>");
-</script>
 
 <!--
   --
@@ -217,7 +202,7 @@ document.write("</DIV>");
 	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
 	<c:if test="${param.client ne 'advanced'}">
 		var enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
-		var unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari3up);
+		var unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari3);
 		if (enforceMinDisplay && unsupported) {
 			switchToStandardClient();
 		}
@@ -230,7 +215,7 @@ document.write("</DIV>");
 	String allPackages = "Startup1_1,Startup1_2";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
-    		extraPackages = "Leaks,Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,IMCore,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,ZimletApp,Portal,Alert,ImportExport,BrowserPlus";
+    		extraPackages = "Leaks,Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,IMCore,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal,Alert,ImportExport";
     	}
     	allPackages += "," + extraPackages;
     }
@@ -306,6 +291,7 @@ for (var pkg in window.AjxTemplateMsg) {
 		if (!prodMode || debugLevel) {
 			AjxDispatcher.require("Debug");
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
+			AjxWindowOpener.HELPER_URL = "${contextPath}/public/frameOpenerHelper.jsp";
 			// figure out the debug level
 			if (debugLevel == 't') {
 				DBG.showTiming(true);
@@ -319,16 +305,14 @@ for (var pkg in window.AjxTemplateMsg) {
 		var protocolMode = "<%=protocolMode%>";
 
         <c:set var="types" value="${requestScope.authResult.attrs.zimbraFeatureConversationsEnabled[0] eq 'FALSE' ? 'message' : requestScope.authResult.prefs.zimbraPrefGroupMailBy[0]}"/>
-        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${not empty app and app ne 'mail' or isOfflineMode ? false : true}" itemsperpage="50" types="${types}"/>
+        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${not empty app and app ne 'mail' ? false : true}" itemsperpage="${requestScope.authResult.prefs.zimbraPrefMailItemsPerPage[0]}" types="${types}"/>
         var batchInfoResponse = ${getInfoJSON};
 
         <c:if test="${not empty app and app eq 'calendar'}">
         <zm:calSearchJSON var="calSearchJSON" authtoken="${requestScope.authResult.authToken}" timezone="${requestScope.tz}" itemsperpage="500" types="appointment"/>
         window.inlineCalSearchResponse = ${calSearchJSON};
         </c:if>
-        <c:if test="${editor eq 'tinymce'}">
-        window.isTinyMCE = true; 
-        </c:if>
+
 		<c:if test="${isLeakDetectorOn}">
 		AjxLeakDetector.begin();
 		</c:if>

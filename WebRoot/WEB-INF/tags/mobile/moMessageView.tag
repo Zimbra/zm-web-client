@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -21,7 +5,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mosearch'}"/>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true"
@@ -42,26 +26,103 @@
     <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
 </mo:handleError>
 
+<mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" scale="${true}">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+    <td>
+        <mo:msgToolbar mid="${msg.id}" urlTarget="${context_url}" context="${context}" keys="false"/>
+    </td>
+</tr>
+<tr class="Stripes">
+    <td class='zo_appt_view'>
+        <c:set var="extImageUrl" value=""/>
+        <c:if test="${empty param.xim}">
+            <zm:currentResultUrl var="extImageUrl" id="${msg.id}" value="${context_url}" action="view"
+                                 context="${context}" xim="1"/>
+        </c:if>
+        <zm:currentResultUrl var="composeUrl" value="${context_url}" context="${context}"
+                             action="compose" paction="view" id="${msg.id}"/>
+        <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
+        <mo:displayMessage mailbox="${mailbox}" message="${msg}" externalImageUrl="${extImageUrl}"
+                           showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
+    </td>
+</tr>
+<tr>
+<td>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}" mview="1"
                      action="view" id="${msg.id}"/>
-<c:set var="title" value="${zm:truncate(msg.subject,20,true)}" scope="request"/>
-<form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
+<form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
-<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
-<mo:msgToolbar mid="${msg.id}" urlTarget="${context_url}" context="${context}" keys="false" isTop="${true}" msg="${msg}" mailbox="${mailbox}"/>
-            <div class="Stripes">
-                <c:set var="extImageUrl" value=""/>
-                <c:if test="${empty param.xim}">
-                    <zm:currentResultUrl var="extImageUrl" id="${msg.id}" value="${context_url}" action="view"
-                                         context="${context}" xim="1"/>
-                </c:if>
-                <zm:currentResultUrl var="composeUrl" value="${context_url}" context="${context}"
-                                     action="compose" paction="view" id="${msg.id}"/>
-                <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
-                <mo:displayMessage mailbox="${mailbox}" message="${msg}" externalImageUrl="${extImageUrl}"
-                                   showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
-            </div>
-        
-    <mo:msgToolbar mid="${msg.id}" urlTarget="${context_url}" context="${context}" keys="false" isTop="${false}" msg="${msg}" mailbox="${mailbox}"/>
+<script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
+<table width="100%" cellspacing="0" cellpadding="2">
+<tr class='zo_action'>
+    <td colspan="2" class="Stripes">
+        <div class="View">
+        <table cellspacing="2" cellpadding="2" width="100%" border="0">
+                    <tr class="zo_m_list_row">
+                        <td><c:set var="inTrash" value="${zm:getFolder(pageContext, msg.folderId).isInTrash}"/>
+                            <c:choose>
+                                <c:when test="${inTrash}">
+                                    <input name="actionHardDelete" type="submit" value="<fmt:message key="delete"/>"/>    
+                                </c:when>
+                                <c:otherwise>
+                                    <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                                </c:otherwise>
+                            </c:choose>
+                            <%--<input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>--%>
+                           <select name="anAction" onchange="document.getElementById('actions').submit();">
+                               <option value="" selected="selected"><fmt:message key="moreActions"/></option>
+                               <optgroup label="Mark">
+                                   <c:if test="${msg.isUnread}">
+                                        <option value="actionMarkRead">Read</option>
+                                   </c:if>
+                                   <c:if test="${not msg.isUnread}">
+                                        <option value="actionMarkUnread">Unread</option>
+                                   </c:if>
+                               </optgroup>
+                               <optgroup label="Flag">
+                                   <c:if test="${not msg.isFlagged}">
+                                    <option value="actionFlag">Add</option>
+                                   </c:if>
+                                   <c:if test="${msg.isFlagged}">
+                                        <option value="actionUnflag">Remove</option>
+                                   </c:if>
+                              </optgroup>
+                              <optgroup label="<fmt:message key="moveAction"/>">
+                                <zm:forEachFolder var="folder">
+                                    <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+                                        <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
+                                    </c:if>
+                                </zm:forEachFolder>
+                              </optgroup>
+                               <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+                               <c:set var="tagsToAdd" value="${zm:getAvailableTags(pageContext,msg.tagIds,true)}"/>
+                               <c:set var="tagsToRemove" value="${zm:getAvailableTags(pageContext,msg.tagIds,false)}"/>
+                               <optgroup label="<fmt:message key="MO_actionAddTag"/>">
+                                <c:forEach var="atag" items="${tagsToAdd}">
+                                <option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option>
+                                </c:forEach>
+                               </optgroup>
+                               <optgroup label="<fmt:message key="MO_actionRemoveTag"/>">
+                                <c:forEach var="atag" items="${tagsToRemove}">
+                                <option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option>
+                                </c:forEach>
+                               </optgroup>
+                               </c:if>
+                           </select>
+                           <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+                        </td>
+                    </tr>
+                </table>
+        </div>    
+    </td>
+</tr>
+</table>
 </form>
+</td>
+</tr>
+</table>
+
+</mo:view>

@@ -1,7 +1,8 @@
-	/*
+/*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -47,25 +49,24 @@ function() {
  * Loads the folder or the zimlet tree.
  */
 ZmFolderTree.prototype.loadFromJs =
-function(rootObj, elementType, account) {
+function(rootObj, elementType) {
 	this.root = (elementType == "zimlet")
 		? ZmZimlet.createFromJs(null, rootObj, this)
-		: ZmFolderTree.createFromJs(null, rootObj, this, elementType, null, account);
+		: ZmFolderTree.createFromJs(null, rootObj, this, elementType);
 };
 
 /**
  * Generic function for creating a folder. Handles any organizer type that comes
  * in the folder list.
  * 
- * @param parent		[ZmFolder]			parent folder
- * @param obj			[object]			JSON with folder data
- * @param tree			[ZmFolderTree]		containing tree
- * @param elementType	[string]			type of containing JSON element
- * @param path			[array]				list of path elements
- * @param account		[ZmZimbraAccount]*	account this folder belongs to
+ * @param parent		[ZmFolder]		parent folder
+ * @param obj			[object]		JSON with folder data
+ * @param tree			[ZmFolderTree]	containing tree
+ * @param elementType	[string]		type of containing JSON element
+ * @param path			[array]			list of path elements
  */
 ZmFolderTree.createFromJs =
-function(parent, obj, tree, elementType, path, account) {
+function(parent, obj, tree, elementType, path) {
 	if (!(obj && obj.id)) { return; }
 
 	var folder;
@@ -87,42 +88,27 @@ function(parent, obj, tree, elementType, path, account) {
 			numUnread: obj.u,
 			query: obj.query,
 			types: types,
-			sortBy: obj.sortBy,
-			account: account
+			sortBy: (obj.sortBy ? ZmSearch.SORT_BY_MAP[obj.sortBy] : null)
 		};
 		folder = new ZmSearchFolder(params);
 		ZmFolderTree._fillInFolder(folder, obj, path);
-		ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, account);
+		ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType);
 	} else {
-		var type = obj.view
-			? (ZmOrganizer.TYPE[obj.view])
-			: (parent ? parent.type : ZmOrganizer.FOLDER);
-
+		var type = obj.view ? ZmOrganizer.TYPE[obj.view] : parent ? parent.type : ZmOrganizer.FOLDER;
 		if (!type) {
 			DBG.println(AjxDebug.DBG1, "No known type for view " + obj.view);
 			return;
 		}
-		// let's avoid deferring folders for offline since multi-account folder deferring is hairy
-		var hasGrants = (obj.acl && obj.acl.grant && obj.acl.grant.length > 0);
-		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type] && !appCtxt.isOffline && !hasGrants) {
+		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type]) {
 			var app = appCtxt.getApp(ZmOrganizer.APP[type]);
-			var defParams = {
-				type:			type,
-				parent:			parent,
-				obj:			obj,
-				tree:			tree,
-				path:			path,
-				elementType:	elementType,
-				account:		account
-			};
-			app.addDeferredFolder(defParams);
+			app.addDeferredFolder({type:type, parent:parent, obj:obj, tree:tree, path:path, elementType:elementType});
 		} else {
 			var pkg = ZmOrganizer.ORG_PACKAGE[type];
 			if (pkg) {
 				AjxDispatcher.require(pkg);
 			}
-			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path, elementType, account);
-			ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, account);
+			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path, elementType);
+			ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType);
 		}
 	}
 
@@ -130,7 +116,7 @@ function(parent, obj, tree, elementType, path, account) {
 };
 
 ZmFolderTree._traverse =
-function(folder, obj, tree, path, elementType, account) {
+function(folder, obj, tree, path, elementType) {
 
 	var isRoot = (folder.nId == ZmOrganizer.ID_ROOT);
 	if (obj.folder && obj.folder.length) {
@@ -139,7 +125,7 @@ function(folder, obj, tree, path, elementType, account) {
 		}
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folderObj = obj.folder[i];
-			var childFolder = ZmFolderTree.createFromJs(folder, folderObj, tree, (elementType || "folder"), path, account);
+			var childFolder = ZmFolderTree.createFromJs(folder, folderObj, tree, (elementType || "folder"), path);
 			if (folder && childFolder) {
 				folder.children.add(childFolder);
 			}
@@ -155,7 +141,7 @@ function(folder, obj, tree, path, elementType, account) {
 		}
 		for (var i = 0; i < obj.search.length; i++) {
 			var searchObj = obj.search[i];
-			var childSearch = ZmFolderTree.createFromJs(folder, searchObj, tree, "search", path, account);
+			var childSearch = ZmFolderTree.createFromJs(folder, searchObj, tree, "search", path);
 			if (childSearch) {
 				folder.children.add(childSearch);
 			}
@@ -168,7 +154,7 @@ function(folder, obj, tree, path, elementType, account) {
 	if (obj.link && obj.link.length) {
 		for (var i = 0; i < obj.link.length; i++) {
 			var link = obj.link[i];
-			var childFolder = ZmFolderTree.createFromJs(folder, link, tree, "link", path, account);
+			var childFolder = ZmFolderTree.createFromJs(folder, link, tree, "link", path);
 			if (childFolder) {
 				folder.children.add(childFolder);
 			}
@@ -177,7 +163,7 @@ function(folder, obj, tree, path, elementType, account) {
 };
 
 ZmFolderTree.createFolder =
-function(type, parent, obj, tree, path, elementType, account) {
+function(type, parent, obj, tree, path, elementType) {
 	var orgClass = eval(ZmOrganizer.ORG_CLASS[type]);
 	if (!orgClass) { return null; }
 
@@ -189,7 +175,6 @@ function(type, parent, obj, tree, path, elementType, account) {
 		parent: 	parent,
 		tree: 		tree,
 		color: 		obj.color,
-		rgb:		obj.rgb,
 		owner: 		obj.owner,
 		zid: 		obj.zid,
 		rid: 		obj.rid,
@@ -199,8 +184,7 @@ function(type, parent, obj, tree, path, elementType, account) {
 		numTotal: 	obj.n,
 		sizeTotal: 	obj.s,
 		perm: 		obj.perm,
-		link: 		elementType == "link",
-		account:	account
+		link: 		elementType == "link"
 	};
 
 	var folder = new orgClass(params);
@@ -296,8 +280,9 @@ function(organizer, dialog) {
 	appCtxt.getAppController()._clearDialog(dialog);
 };
 
+// This method is used to retrieve permissions on folders that can be *shared*
 /**
- * Issues a BatchRequest of GetFolderRequest's for existing mountpoints that don't have
+ * Issues a BatchRequest of GetFolderRequest's for mountpoints that dont have 
  * permissions set.
  *
  * @param type				[Integer]		ZmItem type constant
@@ -326,9 +311,7 @@ function(params) {
 		var respCallback = new AjxCallback(this, this._handleResponseGetShares, [params.callback, params.skipNotify]);
 		appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
 	} else {
-		if (params.callback) {
-			params.callback.run();
-		}
+		if (params.callback) { params.callback.run(); }
 	}
 };
 
@@ -339,7 +322,8 @@ function(type) {
 
 	for (var j = 0; j < orgs.length; j++) {
 		var org = orgs[j];
-		if (!ZmFolderTree.IS_PARSED[org]) { continue; }
+		if (!ZmFolderTree.IS_PARSED[org])
+			continue;
 
 		var items = this.getByType(org);
 
@@ -365,15 +349,20 @@ function(callback, skipNotify, result) {
 			if (link) {
 				var mtpt = appCtxt.getById(link.id);
 				if (mtpt) {
-					mtpt._setSharesFromJs(link);
+					var acl = link.acl && link.acl.length && link.acl[0];
+					if (acl && acl.grant && acl.grant.length) {
+						for (var j = 0; j < acl.grant.length; j++) {
+							mtpt.addShare(ZmShare.createFromJs(mtpt, acl.grant[j]));
+						}
+					}
+					mtpt.setPermissions(link.perm);
 				}
 
 				if (link.folder && link.folder.length > 0) {
 					var parent = appCtxt.getById(link.id);
 					if (parent) {
-						// TODO: only goes one level deep - should we recurse?
 						for (var j = 0; j < link.folder.length; j++) {
-							if (appCtxt.getById(link.folder[j].id)) { continue; }
+							if (appCtxt.getById(link.folder[j].id)) continue;
 							parent.notifyCreate(link.folder[j], false, skipNotify);
 						}
 					}
@@ -382,9 +371,7 @@ function(callback, skipNotify, result) {
 		}
 	}
 
-	if (callback) {
-		callback.run();
-	}
+	if (callback) { callback.run(); }
 };
 
 /*

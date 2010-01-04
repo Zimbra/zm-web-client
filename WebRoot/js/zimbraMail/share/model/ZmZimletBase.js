@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,54 +11,29 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
-/**
- * @overview
- * 
- * This file defines the Zimlet Handler Object.
+/** All Zimlet Objects should inherit from this base class.  It provides
+ * default implementation for Zimlet Object functions.  Zimlet developer may
+ * wish to override some functions in order to provide custom functionality.
  *
- */
-
-/**
- * @class
- *
- * This class provides the default implementation for Zimlet functions. A Zimlet developer may
- * wish to override some functions in order to provide custom functionality. All Zimlet Handler Objects should extend this base class.
- * <br />
- * <br />
- * <code>function com_zimbra_myZimletHandlerObject() { };</code>
- * <br />
- * <br />
- * <code>
- * com_zimbra_myZimletHandlerObject.prototype = new ZmZimletBase();
- * com_zimbra_myZimletHandlerObject.prototype.constructor = com_zimbra_myZimletHandlerObject;
- * </code>
- * 
- * @extends	ZmObjectHandler
- * @see		#init
+ * @author Mihai Bazon
  */
 ZmZimletBase = function() {
-	// do nothing
-};
+	// For Zimlets, the ZmObjectHandler constructor is a no-op.  Zimlets
+	// don't receive any arguments in constructor.  In the init() function
+	// below we call ZmObjectHandler.init() in order to set some arguments.
+}
 
-/**
- * This defines the Panel Menu (see {@link #menuItemSelected}).
- */
 ZmZimletBase.PANEL_MENU = 1;
-/**
- * This defines the Content Object Menu (see {@link #menuItemSelected}).
- */
 ZmZimletBase.CONTENTOBJECT_MENU = 2;
 
 ZmZimletBase.PROXY = "/service/proxy?target=";
 
 ZmZimletBase.prototype = new ZmObjectHandler();
 
-/**
- * @private
- */
 ZmZimletBase.prototype._init =
 function(zimletContext, shell) {
 	this._passRpcErrors = false;
@@ -79,109 +55,93 @@ function(zimletContext, shell) {
 	}
 };
 
-/**
- * This method is called by the Zimlet framework to indicate that
- * the zimlet it being initialized. This method can be overridden to initialize the zimlet.
- * 
- */
+/// Override this function in order to initialize Zimlet internals.  The base
+/// class function should stay no-op.
 ZmZimletBase.prototype.init = function() {};
 
-/**
- * Returns a string representation of the zimlet.
- * 
- * @return		{String}		a string representation of the zimlet
- */
 ZmZimletBase.prototype.toString =
 function() {
 	return this.name;
 };
 
-/**
- * Gets the shell for the zimlet.
- * 
- * @return	{DwtShell}		the shell
- */
 ZmZimletBase.prototype.getShell =
 function() {
 	return this._dwtShell;
 };
 
-/**
- * Adds an item to the search toolbar drop-down. A listener (if specified)
- * will be called when the item is selected.
- * 
- * @param	{String}	icon		the icon (style class) to use or <code>null</code> for no icon
- * @param	{String}	label		the label for the item
- * @param	{AjxListener}	listener		the listener or <code>null</code> for none
- * @param	{String}	id			the unique id of the item to add
- * @return	<code>null</code> if item not created
- */
+/// Adds a new item in the search domain drop-down.  Pass an icon
+/// class (null for no icon), a label and optionally a listener that
+/// will be called when the item is selected.
 ZmZimletBase.prototype.addSearchDomainItem =
 function(icon, label, listener, id) {
 	var searchToolbar = appCtxt.getSearchController().getSearchToolbar();
 	return searchToolbar ? searchToolbar.createCustomSearchBtn(icon, label, listener, id) : null;
 };
 
-/**
- * Gets the text field value entered in the search bar.
- * 
- * @return	{String}		the search field value or <code>null</code> for none
- */ 
+/// Returns the text entered in the search bar
 ZmZimletBase.prototype.getSearchQuery =
 function() {
 	var searchToolbar = appCtxt.getSearchController().getSearchToolbar();
 	return searchToolbar ? searchToolbar.getSearchFieldValue() : null;
 };
 
-/**
- * Gets the zimlet manager.
- * 
- * @return	{ZmZimletMgr}		the zimlet manager
- */
 ZmZimletBase.prototype.getZimletManager =
 function() {
 	return appCtxt.getZimletMgr();
 };
 
-/**
- * @private
- */
 ZmZimletBase.prototype.xmlObj =
 function(key) {
 	return !key ? this._zimletContext : this._zimletContext.getVal(key);
 };
 
 
-/*
- * 
- *  Panel Item Methods
- *  
- */
+/* Panel Item Methods */
 
-/**
- * This method is called when an item is dragged on the Zimlet drop target
- * in the panel. This method is only called for the valid types that the
- * Zimlet accepts as defined by the <code><dragSource></code> Zimlet Definition File XML.
- *
- * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmNotebook|ZmTask}	zmObject		the dragged object
- * @return	<code>true</code> if the drag should be allowed; otherwise, <code>false</code>
- */
+
+// This method is called when an item is dragged on the Zimlet drop target as
+// realized in the UI. It is invoked from within the <dragSource> element. This
+// method is only called for the valid types that the Zimlet accepts. This
+// method can perform additional validation based on semantic information
+// beyond the type of the object being dragged onto the Zimlet. This method
+// defines the following formal parameters:
+//
+// - zmObject
+//
+// Return true if the drag should be allowed, false otherwise.
 ZmZimletBase.prototype.doDrag =
 function(zmObject) {
 	return true;
 };
 
-/**
- * This method is called when an item is dropped on the Zimlet in the panel.
- * 
- * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmNotebook|ZmTask}	zmObject		the dropped object
- */
+// This method is called when an item is dropped on the Zimlet item as realized
+// in the UI. At this point the Zimlet should perform the actions it needs to
+// for the drop. This method defines the following formal parameters:
+//
+// - zmObject
+// - canvas
 ZmZimletBase.prototype.doDrop =
 function(zmObject) {};
 
-/**
- * @private
- */
+ZmZimletBase.prototype.portletCreated =
+function(portlet) {
+    DBG.println("portlet created: " + portlet.id);
+};
+
+ZmZimletBase.prototype.portletRefreshed =
+function(portlet) {
+    DBG.println("portlet refreshed: " + portlet.id);
+};
+
+// This method is called when the Zimlet panel item is double clicked. This
+// method defines the following formal parameters:
+//
+// - canvas
+ZmZimletBase.prototype.doubleClicked =
+function(canvas) {
+	this.createPropertyEditor();
+};
+
 ZmZimletBase.prototype._dispatch =
 function(handlerName) {
 	var params = [];
@@ -232,246 +192,37 @@ function(handlerName) {
 	return this.xmlObj().callHandler(handlerName, params);
 };
 
-/**
- * This method gets called when a single-click is performed.
- *
- * @param	{Object}	canvas		the canvas
- * @see		#doubleClicked
- */
+// Similar to doubleClicked, but called upon a single click.  Note that this
+// might be called once or twice in the case of a dbl. click too.
 ZmZimletBase.prototype.singleClicked = function(canvas) {};
 
-/**
- * This method gets called when a double-click is performed. By default, this method
- * will create the default property editor for editing user properties.
- * 
- * @param	{Object}	canvas		the canvas
- * @see		#singleClicked
- * @see		#createPropertyEditor
- */
-ZmZimletBase.prototype.doubleClicked =
-function(canvas) {
-	this.createPropertyEditor();
-};
-
-/*
- *
- * Application hook methods.
- * 
- */
-
-/**
- * This method is called by the Zimlet framework when a user clicks-on a message in the mail application.
- * 
- * @param	{ZmMailMsg}		msg		the clicked message
- * @param	{ZmMailMsg}		oldMsg	the previous clicked message or <code>null</code> if this is the first message clicked
- */
+// Called when a new message is being viewed.
+// msg and oldMsg are ZmMailMsg objects; oldMsg can be null.
 ZmZimletBase.prototype.onMsgView = function(msg, oldMsg) {};
 
-/**
- * This method is called by the Zimlet framework when a user clicks-on a message in either the message or conversation view).
- * 
- * @param	{ZmMailMsg}			msg			the clicked message
- * @param	{ZmObjectManager}	objMgr		the object manager
- */
-ZmZimletBase.prototype.onFindMsgObjects = function(msg, objMgr) {};
+/* Content Object methods */
 
-/**
- * This method is called by the Zimlet framework when a contact is clicked-on in the contact list view.
- * 
- * @param	{ZmContact}		contact		the contact being viewed
- * @param	{String}		elementId	the element Id
- */
-ZmZimletBase.prototype.onContactView = function(contact, elementId) {};
+// This method is called when content (e.g. a mail message) is being
+// parsed. The match method may be called multiple times for a given piece of
+// content and should apply whatever pattern matching is required to identify
+// objects in the content. This method defines the following formal parameters
+//
+// Returns non-null result in the format of String.match if text on the line matched this
+// handlers regular expression.
+// i.e: var result = zimlet.match(line);
+// result[0] should be matched string
+// result.index should be location within line match occured
+// Zimlets can also set result.context which will be passed back to them during the
+//  various method calls (toolTipPoppedUp, clicked, etc)
+//
+// Zimlets should set regex.lastIndex to startIndex and then use regex.exec(content).
+// they should also use the "g" option when constructing their regex.
 
-/**
- * This method is called by the Zimlet framework when a contact is edited.
- * 
- * @param	{ZmEditContactView}	view	the edit contact view
- * @param	{ZmContact}		contact		the contact being edited
- * @param	{String}		elementId	the element Id
- */
-ZmZimletBase.prototype.onContactEdit = function(view, contact, elementId) {};
-
-/**
- * This method is called by the Zimlet framework when application toolbars are initialized.
- * 
- * @param	{ZmApp}				app				the application
- * @param	{ZmButtonToolBar}	toolbar			the toolbar
- * @param	{ZmController}		controller		the application controller
- * @param	{String}			viewId			the view Id
- */
-ZmZimletBase.prototype.initializeToolbar = function(app, toolbar, controller, viewId) {};
-
-/**
- * This method is called by the Zimlet framework when showing an application view.
- * 
- * @param	{String}		view		the name of the view
- */
-ZmZimletBase.prototype.onShowView = function(view) {};
-
-/**
- * This method is called by the Zimlet framework when a search is performed.
- * 
- * @param	{String}		queryStr		the search query string
- */
-ZmZimletBase.prototype.onSearch = function(queryStr) {};
-
-/**
- * This method is called by the Zimlet framework when the search button is clicked.
- * 
- * @param	{String}		queryStr		the search query string
- * @see		#onKeyPressSearchField
- */
-ZmZimletBase.prototype.onSearchButtonClick = function(queryStr) {};
-
-/**
- * This method is called by the Zimlet framework when enter is pressed in the search field.
- * 
- * @param	{String}		queryStr		the search query string
- * @see		#onSearchButtonClick
- */
-ZmZimletBase.prototype.onKeyPressSearchField = function(queryStr) {};
-
-/**
- * This method gets called by the Zimlet framework when the action menu is initialized on the from/sender of an email message.
- * 
- * @param	{ZmController}		controller		the controller
- * @param	{ZmActionMenu}		actionMenu		the action menu
- */
-ZmZimletBase.prototype.onParticipantActionMenuInitialized = function(controller, actionMenu) {};
-
-/**
- * This method gets called by the Zimlet framework when the action menu is initialized
- * on the subject/fragment of an email message.
- * 
- * <p>
- * This method is called twice:
- * <ul>
- * <li>The first-time a right-click is performed on a message in Conversation View.</li>
- * <li>The first-time a right-click is performed on a message in Message View.</li>
- * </ul>
- * </p>
- * 
- * @param	{ZmController}		controller		the controller
- * @param	{ZmActionMenu}		actionMenu		the action menu
- */
-ZmZimletBase.prototype.onActionMenuInitialized = function(controller, actionMenu) {};
-
-/**
- * This method is called by the Zimlet framework when an email message is flagged.
- * 
- * @param	{ZmMailMsg[]|ZmConv[]}		items		an array of items
- * @param	{Boolean}		on		<code>true</code> if the flag is being set; <code>false</code> if the flag is being unset
- */
-ZmZimletBase.prototype.onMailFlagClick = function(items, on) {};
-
-/**
- * This method is called by the Zimlet framework when an email message is tagged.
- * 
- * @param	{ZmMailMsg[]|ZmConv[]}		items		an array of items
- * @param	{ZmTag}			tag			the tag
- * @param	{Boolean}		doTag		<code>true</code> if the tag is being set; <code>false</code> if the tag is being removed
- */
-ZmZimletBase.prototype.onTagAction = function(items, tag, doTag) {};
-
-/**
- * This method is called by the Zimlet framework when a message is about to be sent.
- * 
- * <p>
- * To fail the error check, the zimlet must return a <code>boolAndErrorMsgArray</code> array
- * with the following syntax:
- * <br />
- * <br />
- * <code>{hasError:&lt;true or false&gt;, errorMsg:&lt;error msg&gt;, zimletName:&lt;zimlet name&gt;}</code>
- *</p>
- *
- * @param	{ZmMailMsg}		msg		the message
- * @param	{Array}		boolAndErrorMsgArray	the error messages, if any
- */
-ZmZimletBase.prototype.emailErrorCheck = function(msg, boolAndErrorMsgArray) {};
-
-/**
- * This method is called by the Zimlet framework when adding a signature to an email message.
- * 
- * <p>
- * To append extra signature information, the zimlet should push text into the <code>bufferArray</code>.
- * 
- * <pre>
- * bufferArray.push("Have fun, write a Zimlet!");
- * </pre>
- * </p>
- * 
- * @param	{ZmMailMsg}		contact		the clicked message
- * @param	{ZmMailMsg}		oldMsg	the previous clicked message or <code>null</code> if this is the first message clicked
- */
-ZmZimletBase.prototype.appendExtraSignature = function(bufferArray) {};
-
-/**
- * This method is called by the Zimlet framework when the message confirmation dialog is presented.
- * 
- * @param	{ZmMailConfirmView}		confirmView		the confirm view
- * @param	{ZmMailMsg}		msg		the message
- */
-ZmZimletBase.prototype.onMailConfirm = function(confirmView, msg) {};
-
-/**
- * This method is called by the Zimlet framework when a new chat widget is initialized.
- * 
- * @param	{ZmChatWidget}		widget		the chat widget
- */
-ZmZimletBase.prototype.onNewChatWidget = function(widget) {};
-
-/*
- * 
- * Portlet methods
- */
-
-/**
- * This method is called by the Zimlet framework when the portlet is created.
- * 
- * @param	{ZmPortlet}	portlet		the portlet
- */
-ZmZimletBase.prototype.portletCreated =
-function(portlet) {
-    DBG.println("portlet created: " + portlet.id);
-};
-
-/**
- * This method is called by the Zimlet framework when the portlet is refreshed.
- * 
- * @param	{ZmPortlet}	portlet		the portlet
- */
-ZmZimletBase.prototype.portletRefreshed =
-function(portlet) {
-	DBG.println("portlet refreshed: " + portlet.id);
-};
-
-/*
- * 
- * Content Object methods
- * 
- */
-
-/**
- * This method is called when content (e.g. a mail message) is being parsed.
- * The match method may be called multiple times for a given piece of content and
- * should apply the pattern matching as defined for a given zimlet <code><regex></code>.
- * Zimlets should also use the "g" option when constructing their <code><regex></code>.
- *
- * <p>
- * The return should be an array in the form:
- *  
- * <pre>
- * result[0...n] // should be matched string(s)
- * result.index // should be location within line where match occurred
- * result.input // should be the input parameter content
- * </pre>
- * </p>
- * 
- * @param	{String}	content		the content line to perform a match against
- * @param	{Number}	startIndex	the start index (i.e. where to begin the search)
- * @return	{Array}	the matching content object from the <code>startIndex</code> if the content matched the specified zimlet handler regular expression; otherwise <code>null</code>
- */
+//
+// - content - The content against which to perform a match
+// - startIndex - Index in the content at which to begin the search
+//
+// Return the first content object match in the content starting from startIndex
 ZmZimletBase.prototype.match =
 function(content, startIndex) {
 	if(!this.RE) {return null;}
@@ -483,38 +234,44 @@ function(content, startIndex) {
 	return ret;
 };
 
-/**
- * This method is called when a zimlet content object is clicked.
- *
- * @param	{Object}		spanElement		the enclosing span element
- * @param	{String}		contentObjText	the content object text
- * @param	{Array}		matchContent	the match content
- * @param	{DwtMouseEvent}	event			the mouse click event
- */
+// The clicked method is called when a Zimlet content object is clicked on by
+// the user. This method defines the following formal parameters
+//
+// - spanElement
+// - contentObjText
+// - matchContext
+// - event
 ZmZimletBase.prototype.clicked =
 function(spanElement, contentObjText, matchContext, event) {
 	var c = this.xmlObj("contentObject.onClick");
 	if (c && c.actionUrl) {
-		var obj = this._createContentObj(contentObjText, matchContext);
-        var x = event.docX;
-        var y = event.docY;
-        this.xmlObj().handleActionUrl(c.actionUrl, c.canvas, obj, null, x, y);
+		var obj = { objectContent: contentObjText };
+		if (matchContext && (matchContext instanceof Array)) {
+			for (var i = 0; i < matchContext.length; ++i) {
+				obj["$"+i] = matchContext[i];
+			}
+		}
+		this.xmlObj().handleActionUrl(c.actionUrl, c.canvas, obj);
 	}
 };
 
-/**
- * This method is called when the tool tip is popping-up.
- *
- * @param	{Object}	spanElement		the enclosing span element
- * @param	{String}	contentObjText	the content object text
- * @param	{Array}		matchContent	the matched content
- * @param	{Object}	canvas			the canvas
- */
+// This method is called when the tool tip is being popped up. This method
+// defines the following formal parameters:
+//
+// - spanElement
+// - contentObjText
+// - matchContext
+// - canvas
 ZmZimletBase.prototype.toolTipPoppedUp =
 function(spanElement, contentObjText, matchContext, canvas) {
 	var c = this.xmlObj("contentObject");
 	if (c && c.toolTip) {
-		var obj = this._createContentObj(contentObjText, matchContext);
+		var obj = { objectContent: contentObjText };
+		if (matchContext) {
+			for (var i = 0; i < matchContext.length; ++i) {
+				obj["$"+i] = matchContext[i];
+			}
+		}
 		var txt;
 		if (c.toolTip instanceof Object &&
 		    c.toolTip.actionUrl) {
@@ -530,22 +287,20 @@ function(spanElement, contentObjText, matchContext, canvas) {
 	}
 };
 
-/**
- * This method is called when the tool tip is popping-down.
- *
- * @param	{Object}		spanElement		the enclosing span element
- * @param	{String}		contentObjText	the content object text
- * @param	{Array}		matchContent	the matched content
- * @param	{Object}	canvas			the canvas
- * @return	<code>null</code> if the tool tip may be popped-down; otherwise, a string indicating why the tool tip should not be popped-down
- */
+// This method is called when the user is popping down a sticky tool tip. It
+// defines the following formal parameters:
+//
+// - spanElement
+// - contentObjText
+// - matchContext
+// - canvas
+//
+// Returns null if the tool tip may be popped down, else return a string
+// indicating why the tool tip should not be popped down
 ZmZimletBase.prototype.toolTipPoppedDown =
 function(spanElement, contentObjText, matchContext, canvas) {
 };
 
-/**
- * @private
- */
 ZmZimletBase.prototype.getActionMenu =
 function(obj, span, context) {
 	if (this._zimletContext._contentActionMenu instanceof AjxCallback) {
@@ -557,49 +312,31 @@ function(obj, span, context) {
 	return this._zimletContext._contentActionMenu;
 };
 
-/*
- *
- * Common methods
- * 
- */
+/* Common methods */
 
-/**
- * This method is called when a context menu item is selected.
- * 
- * @param	{ZmZimletBase.PANEL_MENU|ZmZimletBase.CONTENTOBJECT_MENU}	contextMenu		the context menu
- * @param	{String}		menuItemId		the selected menu item Id
- * @param	{Object}		spanElement		the enclosing span element
- * @param	{String}		contentObjText	the content object text
- * @param	{Object}		canvas		the canvas
- */
+
+// The menuItemSelected method is called when a context menu item is selected
+// by the user. It defines the following formal parameters:
+//
+// - contextMenu - Identifies the context menu from which the item was
+//   selected. This may be ZmZimletBase.PANEL_MENU or ZmZimletBase.CONTENTOBJECT_MENU
+// - menuItemId - This is the ID that is provided in the <menuItem> elements id attribute
+// - spanElement
+// - contentObjText
+// - canvas
 ZmZimletBase.prototype.menuItemSelected =
 function(contextMenu, menuItemId, spanElement, contentObjText, canvas) {};
 
-/**
- * This method is called if there are <code><userProperties></code> elements specified in the
- * Zimlet Definition File. When the zimlet panel item is double-clicked, the property
- * editor will be presented to the user.
- * 
- * <p>
- * This method creates the property editor for the set of <code><property></code> elements defined
- * in the <code><userProperties></code> element. The default implementation of this
- * method will auto-create a property editor based on the attributes of the user properties.
- * </p>
- * <p>
- * Override this method if a custom property editor is required.
- * </p>
- * 
- * @param	{AjxCallback}	callback	the callback method for saving user properties
- */
+// This method is called by the Zimlet framework if there is a <userProperties>
+// element specified in the Zimlet definition file, and if the editor attribute
+// of that element is set to custom. This methods responsibility is to create
+// property editor for set of properties defined in the <userProperties>
+// element.
 ZmZimletBase.prototype.createPropertyEditor =
 function(callback) {
 	var userprop = this.xmlObj().userProperties;
 
 	if (!userprop) {return;}
-
-    for (var i = 0; i < userprop.length; ++i) {
-        userprop[i].label = this._zimletContext.processMessage(userprop[i].label);
-	}
 
 	if (!this._dlg_propertyEditor) {
 		var view = new DwtComposite(this.getShell());
@@ -621,19 +358,11 @@ function(callback) {
 };
 
 
-/*
- *
- * Helper methods
- * 
- */
+/* Helper methods */
 
 
 /**
- * Displays the specified error message in the standard error dialog.
- * 
- * @param	{String}	msg		the error message to display
- * @param	{String}	data	the error message details
- * @param	{String}	title	the error message dialog title
+ * Displays the given error message in the standard error dialog.
  */
 ZmZimletBase.prototype.displayErrorMessage =
 function(msg, data, title) {
@@ -645,43 +374,21 @@ function(msg, data, title) {
 	dlg.popup(null, true);
 };
 
-/**
- * Displays the specified status message.
- * 
- * @param	{String}	msg		the status message to display
- */
 ZmZimletBase.prototype.displayStatusMessage =
 function(msg) {
 	appCtxt.setStatusMsg(msg);
 };
 
-/**
- * Gets the fully qualified resource Url.
- *
- * @param	{String}	resourceName	the resource name
- * @return	{String}	the fully qualified resource Url
- */
 ZmZimletBase.prototype.getResource =
 function(resourceName) {
 	return this.xmlObj().getUrl() + resourceName;
 };
 
-/**
- * @private
- */
 ZmZimletBase.prototype.getType =
 function() {
 	return this.type;
 };
 
-/**
- * This method is called when a request finishes.
- * 
- * @param	{AjxCallback}	callback	the callback method or <code>null</code> for none
- * @parm	{Boolean}	passErrors	<code>true</code> to pass errors to the error display; <code>null</code> or <code>false</code> otherwise
- * @see		#sendRequest()
- * @private
- */
 ZmZimletBase.prototype.requestFinished =
 function(callback, passErrors, xmlargs) {
 	this.resetIcon();
@@ -694,17 +401,6 @@ function(callback, passErrors, xmlargs) {
 		callback.run(xmlargs);
 };
 
-/**
- * Sends the request content (via Ajax) to the specified server.
- * 
- * @param	{String}	requestStr		the request content to send
- * @param	{String}	serverURL		the server url
- * @param	{String[]}	requestHeaders	the request headers (may be <code>null</code>)
- * @param	{AjxCallback}	callback	the callback for asynchronous requests or <code>null</code> for none
- * @param	{Boolean}	useGet		<code>true</code> to use HTTP GET; <code>null</code> or <code>false</code> otherwise
- * @param	{Boolean}	passErrors	<code>true</code> to pass errors; <code>null</code> or <code>false</code> otherwise
- * @return	the return value
- */
 ZmZimletBase.prototype.sendRequest =
 function(requestStr, serverURL, requestHeaders, callback, useGet, passErrors) {
 	if (passErrors == null)
@@ -718,46 +414,17 @@ function(requestStr, serverURL, requestHeaders, callback, useGet, passErrors) {
 	return AjxRpc.invoke(requestStr, serverURL, requestHeaders, our_callback, useGet);
 };
 
-/**
- * Enables the specified context menu item.
- * 
- * @param	{ZmZimletBase.PANEL_MENU|ZmZimletBase.CONTENTOBJECT_MENU}	contextMenu		the context menu
- * @param	{String}		menuItemId		the menu item Id
- * @param	{Boolean}		enabled			<code>true</code> to enable the menu item; <code>false</code> to disable the menu item
- */
 ZmZimletBase.prototype.enableContextMenuItem =
 function(contextMenu, menuItemId, enabled) {};
 
-/**
- * Gets the configuration property.
- * 
- * @param	{String}		propertyName	the name of the property to retrieve
- * @return	{String}	the value of the property or <code>null</code> if no such property exists
- */
 ZmZimletBase.prototype.getConfigProperty =
 function(propertyName) {};
 
-/**
- * Gets the user property.
- * 
- * @param	{String}	propertyName the name of the property to retrieve
- * @return	{String}	the value of the property or <code>null</code> if no such property exists 
- */
 ZmZimletBase.prototype.getUserProperty =
 function(propertyName) {
 	return this.xmlObj().getPropValue(propertyName);
 };
 
-/**
- * Sets the value of a given user property
- * 
- * @param	{String}	propertyName	the name of the property
- * @param	{String}	value			the property value
- * @param	{Boolean}	save			if <code>true</code>, the property will be saved (along with any other modified properties) 
- * @param	{AjxCallback}	callback	the callback to invoke after the user properties save
- * @throws	ZimletException		if no such property exists or if the value is not valid for the property type
- * @see		#saveUserProperties
- */
 ZmZimletBase.prototype.setUserProperty =
 function(propertyName, value, save, callback) {
 	this.xmlObj().setPropValue(propertyName, value);
@@ -766,10 +433,10 @@ function(propertyName, value, save, callback) {
 };
 
 /**
- * This method is called by the zimlet framework prior to user properties being saved.
- *
- * @param	{String[]}	props		the properties
- * @return	{Boolean}	<code>true</code> if properties are valid; otherwise, <code>false</code> or {String} if an error message will be displayed in the standard error dialog.
+ * This will be called by the framework when userProperties are about to be
+ * saved.  Returns true if prefs are OK, false or string otherwise.  If a
+ * string is returned, an error message will be displayed in the standard
+ * dialog.
  */
 ZmZimletBase.prototype.checkProperties =
 function(props) {
@@ -777,12 +444,8 @@ function(props) {
 };
 
 /**
- * Sets the busy icon. The Zimlet framework usually calls this method during SOAP
- * calls to provide some end-user feedback.
- * 
- * The default is a animated icon.
- * 
- * @private
+ * Called by the framework usually during SOAP calls to provide some end-user
+ * feedback.  The default is a nice animated icon defined in Zimbra.
  */
 ZmZimletBase.prototype.setBusyIcon =
 function() {
@@ -790,10 +453,8 @@ function() {
 };
 
 /**
- * Sets the zimlet icon in the panel.
- * 
- * @param	{String}	icon		the icon (style class) for the zimlet
- * @private
+ * Call this function to change the Zimlet's icon in the panel tree.  Called by
+ * the framework to provide visual feedback during sendRequest() calls.
  */
 ZmZimletBase.prototype.setIcon =
 function(icon) {
@@ -801,6 +462,10 @@ function(icon) {
 		return;
 	this.xmlObj().icon = icon;
 	var treeView = appCtxt.getAppViewMgr().getCurrentViewComponent(ZmAppViewMgr.C_TREE);
+    //For offline Accordion setup, zimlets fail here.
+    if(treeView instanceof DwtAccordion){
+        treeView = treeView.getItem(appCtxt.getActiveAccount().itemId).control.getTreeView(ZmOrganizer.ZIMLET);        
+    }
 	var treeItem = treeView && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
 	if (treeItem) {
 		treeItem.setImage(icon);
@@ -808,21 +473,14 @@ function(icon) {
 };
 
 /**
- * Resets the imlet icon to the one specified in the Zimle Definition File (if originally set).
- * 
- * @private
+ * This resets the Zimlet icon to the one originally specified in the XML file,
+ * if any.
  */
 ZmZimletBase.prototype.resetIcon =
 function() {
 	this.setIcon(this._origIcon);
 };
 
-/**
- * Saves the user properties.
- * 
- * @param	{AjxCallback}	callback		the callback to invoke after the save
- * @return	{String}		an empty string or an error message
- */
 ZmZimletBase.prototype.saveUserProperties =
 function(callback) {
 	var soapDoc = AjxSoapDoc.create("ModifyPropertiesRequest", "urn:zimbraAccount");
@@ -868,23 +526,11 @@ function(callback) {
 	return "";
 };
 
-/**
- * Gets the user property info for the specified property.
- * 
- * @param	{String}	propertyName		the property
- * @return	{String}	the value of the user property
- */
 ZmZimletBase.prototype.getUserPropertyInfo =
 function(propertyName) {
 	return this.xmlObj().getProp(propertyName);
 };
 
-/**
- * Gets the message property.
- * 
- * @param	{String}	msg		the message
- * @return	{String}	the message property or <code>"???" + msg + "???"</code> if not found
- */
 ZmZimletBase.prototype.getMessage =
 function(msg) {
 	//Missing properties should not be catastrophic.
@@ -892,27 +538,16 @@ function(msg) {
 	return p ? p[msg] : '???'+msg+'???';
 };
 
-/**
- * Gets the message properties.
- * 
- * @return	{String[]}		an array of message properties
- */
 ZmZimletBase.prototype.getMessages =
 function() {
 	return window[this.xmlObj().name] || {};
 };
 
-/**
- * @private
- */
 ZmZimletBase.prototype.getConfig =
 function(configName) {
 	return this.xmlObj().getConfig(configName);
 };
 
-/**
- * @private
- */
 ZmZimletBase.prototype.getBoolConfig =
 function(key, defaultValue) {
 	var val = AjxStringUtil.trim(this.getConfig(key));
@@ -932,9 +567,6 @@ function(key, defaultValue) {
 	return val;
 };
 
-/**
- * @private
- */
 ZmZimletBase.prototype.setEnabled =
 function(enabled) {
 	if (arguments.length == 0)
@@ -942,47 +574,27 @@ function(enabled) {
 	this.__zimletEnabled = enabled;
 };
 
-/**
- * @private
- */
 ZmZimletBase.prototype.getEnabled =
 function() {
 	return this.__zimletEnabled;
 };
 
-/**
- * Gets the current username.
- *
- * @return	{String}		the current username
- */
 ZmZimletBase.prototype.getUsername =
 function() {
 	return appCtxt.get(ZmSetting.USERNAME);
 };
 
-/**
- *Gets the current user id.
- *
- * @return	{String}	the current user id
- */
 ZmZimletBase.prototype.getUserID =
 function() {
 	return appCtxt.get(ZmSetting.USERID);
 };
 
-/**
- * Creates DOM safe ids.
- * 
- * @private
- */
+// Make DOM safe id's
 ZmZimletBase.encodeId =
 function(s) {
 	return s.replace(/[^A-Za-z0-9]/g, "");
 };
 
-/**
- * @private
- */
 ZmZimletBase.prototype.hoverOver =
 function(object, context, x, y, span) {
 	var shell = DwtShell.getShell(window);
@@ -992,9 +604,6 @@ function(object, context, x, y, span) {
 	tooltip.popup(x, y, true);
 };
 
-/**
- * @private
- */
 ZmZimletBase.prototype.hoverOut =
 function(object, context, span) {
 	var shell = DwtShell.getShell(window);
@@ -1003,14 +612,9 @@ function(object, context, span) {
 	this.toolTipPoppedDown(span, object, context, document.getElementById("zimletTooltipDiv"));
 };
 
-/**
- * @private
- */
 ZmZimletBase.prototype.makeCanvas =
-function(canvasData, url, x, y) {
-	if(canvasData && canvasData.length)
-        canvasData = canvasData[0];    
-    var canvas = null;
+function(canvasData, url) {
+	var canvas = null;
 	var div;
 
 	div = document.createElement("div");
@@ -1031,14 +635,14 @@ function(canvasData, url, x, y) {
 		if (browserUrl == null)
 			browserUrl = appContextPath+"/public/blank.html";
 		var contentObject = this.xmlObj("contentObject");
-        if(contentObject && !canvasData.width && contentObject.onClick ) {
+        if(contentObject && !canvasData.width) {
             if(contentObject.onClick.canvas.props == "")
                 canvas = window.open(browserUrl);
             else if(contentObject.onClick.canvas.props != "")
                 canvas = window.open(browserUrl, this.xmlObj("name"), contentObject.onClick.canvas.props);
         }
         else{
-            var props = canvasData.props ? [ canvasData.props ] : [ "toolbar=yes,location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes"];
+            var props = canvasData.props || [ "toolbar=yes,location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes"];
             if (canvasData.width)
                 props.push("width=" + canvasData.width);
             if (canvasData.height)
@@ -1080,31 +684,10 @@ function(canvasData, url, x, y) {
 		}
 		canvas.popup();
 		break;
-
-        case "tooltip":
-        var shell = DwtShell.getShell(window);
-	    var canvas = shell.getToolTip();
-	    canvas.setContent('<div id="zimletTooltipDiv" />', true);
-        var el = document.createElement("iframe");
-        el.setAttribute("width",canvasData.width);
-        el.setAttribute("height",canvasData.height);
-        el.setAttribute("style","border:0px");        
-        el.src = url;
-        document.getElementById("zimletTooltipDiv").appendChild(el);
-        canvas.popup(x, y, true);
-        break;
-    }
+	}
 	return canvas;
 };
 
-/**
- * This method will apply and XSL transformation to an XML document. For example, content
- * returned from a services call.
- * 
- * @param	{String}	xsltUrl		the URL to the XSLT style sheet
- * @param	{String|AjxXmlDoc}	doc		the XML document to apply the style sheet
- * @return	the XML document representing the transformed document
- */
 ZmZimletBase.prototype.applyXslt =
 function(xsltUrl, doc) {
 	var xslt = this.xmlObj().getXslt(xsltUrl);
@@ -1118,102 +701,15 @@ function(xsltUrl, doc) {
 	return AjxXmlDoc.createFromDom(ret);
 };
 
-/**
- * Creates a "tab" application and registers this zimlet to
- * receive {@link #appAction} and {@link #appLaunch} events.
- * 
- * @param	{String}	label	the label to use on the application tab
- * @param	{String}	image	the image (style class) to use on the application tab
- * @param	{String}	tooltip	the tool tip to display when hover-over the application tab
- * @return	{String}	the name of the newly created application
- */
-ZmZimletBase.prototype.createApp =
-function(label, image, tooltip) {
+/* Internal functions -- overriding is not recommended */
 
-	AjxDispatcher.require("ZimletApp");
-
-	var appName = [this.name, Dwt.getNextId()].join("_");
-	var controller = appCtxt.getAppController();
-	controller.getAppChooser().addButton(appName, {text:label, image:image, tooltip:tooltip});
-
-	// TODO: Do we have to call ZmApp.registerApp?
-
-	var app = new ZmZimletApp(appName, this, DwtShell.getShell(window));
-	controller.addApp(app);
-
-	return appName;
-};
-
-/**
- * This method gets called each time the "tab" application is opened or closed.
- * 
- * @param	{String} appName        the application name
- * @param	{Boolean} active        if <code>true</code>, the application status is open; otherwise, <code>false</code>
- * @see		#createApp
- */
-ZmZimletBase.prototype.appAction = function(appName, active) { };
-
-/**
- * This method gets called when the "tab" application is opened for the first time.
- * 
- * @param    {String} appName        the application name
- * @see		#createApp
- */
-ZmZimletBase.prototype.appLaunch = function(appName) { };
-
-/**
- * This method by the Zimlet framework when an application bug is pressed.
- * 
- * @param	{String} id        the id of the application button
- */
-ZmZimletBase.prototype.onSelectApp = function(id) { };
-
-/**
- * This method by the Zimlet framework when an application action occurs.
- * 
- * @param	{String}	type        the type of action (for example: "app", "menuitem", "treeitem")
- * @param	{String}	action		the action
- * @param	{String}	currentViewId		the current view Id
- * @param	{String}	lastViewId		the last view Id
- */
-ZmZimletBase.prototype.onAction = function(id, action, currentViewId, lastViewId) { };
-
-/*
- *
- * Internal functions -- overriding is not recommended
- * 
- */
-
-/**
- * Creates the object that describes the match, and is passed around to url generation routines
- * 
- * @private
- */
-ZmZimletBase.prototype._createContentObj =
-function(contentObjText, matchContext) {
-	var obj = { objectContent: contentObjText };
-	if (matchContext && (matchContext instanceof Array)) {
-		for (var i = 0; i < matchContext.length; ++i) {
-			obj["$"+i] = matchContext[i];
-		}
-	}
-	return obj;
-};
-
-/**
- * @private
- */
 ZmZimletBase.prototype._createDialog =
 function(params) {
 	params.parent = this.getShell();
 	return new ZmDialog(params);
 };
 
-/**
- * Overrides default ZmObjectHandler methods for Zimlet API compat
- * 
- * @private
- */
+/* Overrides default ZmObjectHandler methods for Zimlet API compat */
 ZmZimletBase.prototype._getHtmlContent =
 function(html, idx, obj, context) {
 	if (obj instanceof AjxEmailAddress) {
@@ -1228,11 +724,7 @@ function(html, idx, obj, context) {
 	return idx;
 };
 
-/**
- * Accepts only one conversation object.
- * 
- * @private
- */
+//Accepts only one conversation object 
 ZmZimletBase.prototype.getMsgsForConv =
 function(callback, convObj){
 
@@ -1247,9 +739,6 @@ function(callback, convObj){
 	conv.loadMsgs({fetchAll:true}, ajxCallback);
 };
 
-/**
- * @private
- */
 ZmZimletBase.prototype._handleTranslatedConv =
 function(callback, conv) {
 	if (callback) {

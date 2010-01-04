@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -24,25 +26,25 @@ ZmPref = function(id, name, dataType) {
 ZmPref.prototype = new ZmSetting;
 ZmPref.prototype.constructor = ZmPref;
 
-ZmPref.KEY_ID				= "prefId_";
+ZmPref.KEY_ID = "prefId_";
 
-ZmPref.TYPE_STATIC			= "STATIC"; // static text
-ZmPref.TYPE_INPUT			= "INPUT";
-ZmPref.TYPE_CHECKBOX		= "CHECKBOX";
-ZmPref.TYPE_COLOR			= "COLOR";
-ZmPref.TYPE_RADIO_GROUP		= "RADIO_GROUP";
-ZmPref.TYPE_SELECT			= "SELECT";
-ZmPref.TYPE_COMBOBOX		= "COMBOBOX";
-ZmPref.TYPE_TEXTAREA		= "TEXTAREA";
-ZmPref.TYPE_PASSWORD		= "PASSWORD";
-ZmPref.TYPE_IMPORT			= "IMPORT";
-ZmPref.TYPE_EXPORT			= "EXPORT";
-ZmPref.TYPE_SHORTCUTS		= "SHORTCUTS";
-ZmPref.TYPE_CUSTOM			= "CUSTOM";
-ZmPref.TYPE_LOCALES			= "LOCALES";
+ZmPref.TYPE_STATIC		= "STATIC"; // static text
+ZmPref.TYPE_INPUT		= "INPUT";
+ZmPref.TYPE_CHECKBOX	= "CHECKBOX";
+ZmPref.TYPE_COLOR		= "COLOR";
+ZmPref.TYPE_RADIO_GROUP	= "RADIO_GROUP";
+ZmPref.TYPE_SELECT		= "SELECT";
+ZmPref.TYPE_COMBOBOX	= "COMBOBOX";
+ZmPref.TYPE_TEXTAREA	= "TEXTAREA";
+ZmPref.TYPE_PASSWORD	= "PASSWORD";
+ZmPref.TYPE_IMPORT		= "IMPORT";
+ZmPref.TYPE_EXPORT		= "EXPORT";
+ZmPref.TYPE_SHORTCUTS	= "SHORTCUTS";
+ZmPref.TYPE_CUSTOM		= "CUSTOM";
+ZmPref.TYPE_LOCALES     = "LOCALES";
 
-ZmPref.ORIENT_VERTICAL		= "vertical";
-ZmPref.ORIENT_HORIZONTAL	= "horizontal";
+ZmPref.ORIENT_VERTICAL      = "vertical";
+ZmPref.ORIENT_HORIZONTAL    = "horizontal";
 
 // custom functions for loading and validation
 
@@ -61,19 +63,15 @@ function(setup) {
 ZmPref.loadCsvFormats =
 function(setup){
     var formats = appCtxt.get(ZmSetting.AVAILABLE_CSVFORMATS);
-	if (!formats._options) {
-		var options = formats._options = [];
-		var displayOptions = formats._displayOptions = [];
-		for(var i=0; i<formats.length; i++){
-			options.push(formats[i]);
-		}
-		options.sort(ZmPref.__BY_CSVFORMAT);
-		for(var i=0; i < options.length; i++){
-			displayOptions.push((ZmMsg[options[i]] || options[i]));
-		}
+	var options = setup.options = [];
+	var displayOptions = setup.displayOptions = [];
+    for(var i=0; i<formats.length; i++){
+        options.push(formats[i]);
 	}
-	setup.options = formats._options;
-	setup.displayOptions = formats._displayOptions;
+	options.sort(ZmPref.__BY_CSVFORMAT);
+	for(var i=0; i < options.length; i++){
+        displayOptions.push((ZmMsg[options[i]] || options[i]));
+    }
 };
 ZmPref.__BY_CSVFORMAT = function(a, b) {
 	if (a.match(/^zimbra/)) return -1;
@@ -83,23 +81,6 @@ ZmPref.__BY_CSVFORMAT = function(a, b) {
 	return a.localeCompare(b);
 };
 
-ZmPref.loadPageSizes =
-function(setup) {
-	var max = (setup.maxSetting && appCtxt.get(setup.maxSetting)) || 100;
-	var list = [];
-	for (var i = 0; i < ZmPref.PAGE_SIZES.length; i++) {
-		var num = parseInt(ZmPref.PAGE_SIZES[i]);
-		if (num <= max) {
-			list.push(ZmPref.PAGE_SIZES[i]);
-		}
-	}
-	if (max > ZmPref.PAGE_SIZES[ZmPref.PAGE_SIZES.length - 1]) {
-		list.push(String(max));
-	}
-	setup.displayOptions = setup.options = list;
-};
-ZmPref.PAGE_SIZES = ["10", "25", "50", "100", "250", "500", "1000"];
-
 ZmPref.validateEmail =
 function(emailStr) {
 	if (emailStr) {
@@ -107,14 +88,6 @@ function(emailStr) {
 		return emailStr.match(/\@localhost$/i) || AjxEmailAddress.parse(emailStr) != null;
 	}
 	return true;
-};
-
-ZmPref.validateEmailList =
-function(emailStrArray) {
-    for(var i in emailStrArray) {
-        if(!ZmPref.validateEmail(emailStrArray[i])) return false;
-    }
-    return true;
 };
 
 ZmPref.downloadSinceDisplay =
@@ -178,7 +151,9 @@ function(value) {
 		if (n < 10)
 			a[i] = "0" + n;
 	}
-	return (a.join("") + "Z");
+	var gmt = a.join("") + "Z";
+	// console.log("GMT date: %o, local: %o", gmt, value);
+	return gmt;
 };
 
 ZmPref.dateGMT2Local =
@@ -218,23 +193,6 @@ function(value) {
 ZmPref.int2DurationDay =
 function(intValue) {
 	return intValue != null && intValue != 0 ? intValue + "d" : intValue;
-};
-
-ZmPref.string2EmailList =
-function(value) {
-    var emailList = [];
-    var addr,addrs = AjxEmailAddress.split(value);
-    if (addrs && addrs.length) {
-        for (var i = 0; i < addrs.length; i++) {
-            addr = addrs[i];
-            var email = AjxEmailAddress.parse(addr);
-            if(email) {
-                addr = email.getAddress();
-            }
-            if(addr) emailList.push(addr);
-        }
-    }
-	return emailList;
 };
 
 ZmPref.durationDay2Int =
@@ -433,7 +391,6 @@ function(prefsId, list) {
  * Available properties are:
  *
  * displayName			descriptive text
- * displayFunc			A function that returns the descriptive text. Only implemented for checkboxes.
  * displayContainer		type of form input: checkbox, select, input, or textarea
  * options				values for a select input
  * displayOptions		text for the select input's values
@@ -443,16 +400,14 @@ function(prefsId, list) {
  */
 ZmPref.SETUP = {};
 
-ZmPref.registerPref =
-function(id, params) {
+ZmPref.registerPref = function(id, params) {
 	ZmPref.SETUP[id] = params;
 };
-
 /** Clears all of the preference sections. */
 ZmPref.clearPrefSections =
 function() {
-	ZmPref._prefSectionMap = {};
-	ZmPref._prefSectionArray = null;
+    ZmPref._prefSectionMap = {};
+    ZmPref._prefSectionArray = null;
 };
 
 /**
@@ -490,62 +445,60 @@ function() {
  */
 ZmPref.registerPrefSection =
 function(id, params) {
-	if (!id || !params) { return; }
+    if (!id || !params) return;
 
-	// set template for section
-	var templateId = params.templateId || id;
-	if (!templateId.match(/#/)) {
-		templateId = ["prefs.Pages",templateId].join("#");
-	}
-	params.templateId = templateId;
-	params.id = id;
+    // set template for section
+    var templateId = params.templateId || id;
+    if (!templateId.match(/#/)) {
+        templateId = ["prefs.Pages",templateId].join("#");
+    }
+    params.templateId = templateId;
+    params.id = id;
 
-	// save section
-	appCtxt.set(ZmSetting.PREF_SECTIONS, params, id);
-	ZmPref._prefSectionArray = null;
+    // save section
+    ZmPref._prefSectionMap[id] = params;
+    ZmPref._prefSectionArray = null;
 };
 
 ZmPref.unregisterPrefSection =
 function(id) {
-	appCtxt.set(ZmSetting.PREF_SECTIONS, null, id);
+	delete ZmPref._prefSectionMap[id];
 	ZmPref._prefSectionArray = null;
 };
 
 /** Returns the pref sections map. */
 ZmPref.getPrefSectionMap =
 function() {
-	return appCtxt.get(ZmSetting.PREF_SECTIONS);
+    return ZmPref._prefSectionMap;
 };
 
 /** Returns a sorted array of pref sections (based on priority). */
 ZmPref.getPrefSectionArray =
 function() {
-	if (!ZmPref._prefSectionArray) {
-		ZmPref._prefSectionArray = [];
-		var prefSectionMap = appCtxt.get(ZmSetting.PREF_SECTIONS);
-		for (var id in prefSectionMap) {
-			ZmPref._prefSectionArray.push(prefSectionMap[id]);
-		}
-		ZmPref._prefSectionArray.sort(ZmPref.__BY_PRIORITY);
-	}
-	return ZmPref._prefSectionArray;
+    if (!ZmPref._prefSectionArray) {
+        ZmPref._prefSectionArray = [];
+        for (var id in ZmPref._prefSectionMap) {
+            ZmPref._prefSectionArray.push(ZmPref._prefSectionMap[id]);
+        }
+        ZmPref._prefSectionArray.sort(ZmPref.__BY_PRIORITY);
+    }
+    return ZmPref._prefSectionArray;
 };
 
 /** Returns the section that contains the specified pref. */
 ZmPref.getPrefSectionWithPref =
 function(prefId) {
-	var prefSectionMap = appCtxt.get(ZmSetting.PREF_SECTIONS);
-	for (var sectionId in prefSectionMap) {
-		var section = prefSectionMap[sectionId];
-		if (section.prefs == null) continue;
+    for (var sectionId in ZmPref._prefSectionMap) {
+        var section = ZmPref._prefSectionMap[sectionId];
+        if (!section.prefs) continue;
 
-		for (var i = 0; i < section.prefs.length; i++) {
-			if (section.prefs[i] == prefId) {
-				return section;
-			}
-		}
-	}
-	return null;
+        for (var i = 0; i < section.prefs.length; i++) {
+            if (section.prefs[i] == prefId) {
+                return section;
+            }
+        }
+    }
+    return null;
 };
 
 /** Returns true if <em>all</em> of the preconditions pass. */
@@ -560,7 +513,7 @@ function(pre1 /* ..., preN */) {
 		}
 	}
 	return true;
-};
+}
 
 // Make sure the pref sections are init'd
 ZmPref.clearPrefSections();
@@ -571,5 +524,6 @@ ZmPref.clearPrefSections();
 
 ZmPref.__BY_PRIORITY =
 function(a, b) {
-	return Number(a.priority) - Number(b.priority);
+    return Number(a.priority) - Number(b.priority);
 };
+

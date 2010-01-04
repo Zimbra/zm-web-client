@@ -55,6 +55,7 @@
             </c:choose>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionCancel')}">
+            <app:optVoice mailbox="${mailbox}"/><%-- May be removed when we find a better solution to clear the session for optVoice --%>
             <zm:checkCrumb crumb="${param.crumb}"/>
             <c:choose>
                 <c:when test="${prevApp eq 'contacts'}" >
@@ -81,6 +82,19 @@
                         <c:param name="st" value="${prevApp}"/>
                     </c:redirect>
                 </c:when>
+            </c:choose>
+        </c:when>
+        <c:when test="${zm:actionSet(param, 'actionVoiceAddNotification') || zm:actionSet(param, 'actionVoiceRemoveNotification') || zm:actionSet(param, 'actionVoiceClearNotification') || 
+			zm:actionSet(param, 'addSelectiveForwarding') || zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') || zm:actionSet(param, 'actionVoiceRemoveSelectiveForwarding') || zm:actionSet(param, 'actionVoiceClearSelectiveForwarding') ||
+			zm:actionSet(param, 'addSelectiveRejection') || zm:actionSet(param, 'actionVoiceAddSelectiveRejection') || zm:actionSet(param, 'actionVoiceRemoveSelectiveRejection')}">
+	    <zm:checkCrumb crumb="${param.crumb}"/>
+            <c:choose>
+               <c:when test="${selected eq 'voice'}">
+                   <app:optVoiceAction accountindex="0" />
+               </c:when>
+               <c:otherwise>
+                   <app:optAction selected="${selected}"/>
+               </c:otherwise>
             </c:choose>
         </c:when>
         <c:when test="${selected eq 'signatures'}">
@@ -136,7 +150,7 @@
                 </c:when>
                 <c:when test="${zm:actionSet(param, 'actionEditFilter')}">
                     <zm:checkCrumb crumb="${param.crumb}"/>
-                    <zm:modifyFilterRule originalname="${zm:cook(param.origname)}" rule="${postRule}"/>
+                    <zm:modifyFilterRule originalname="${zm:cook(param.origname)}"  rule="${postRule}"/>
                     <c:set var="filterSave" value="success" scope="request"/>
                 </c:when>
             </c:choose>
@@ -218,6 +232,13 @@
                                 <app:optTabs mailbox="${mailbox}" selected="${selected}" prev="${prevApp}"/>
                             </td>
                         </tr>
+			<c:if test="${selected=='voice'}">
+			 <tr>
+                            <td class='ZhVoiceSubTabs'>
+                                <app:optVoiceTabs mailbox="${mailbox}" selected="${selected}" prev="${prevApp}"/>
+                            </td>
+                        </tr>
+			</c:if>
                         <tr>
                             <td class='TbBottom'>
                                 <app:optSubToolbar selected="${selected}"/>
@@ -284,14 +305,13 @@
     <app:keyboard cache="options" globals="true" tags="true" folders="true" calendars="true" contacts="true" mailbox="${mailbox}"/>
 
 </app:view>
-<script type="text/javascript">
-var _fields = {};
+<script type="text/javascript" >
+var _fields = {} ;
 
 var trim = function(strVal){
     return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
 }
 
-var _fields = {} ;
 grabFieldValues = function(){
     var form = document.forms["optionsForm"];
     var _el = form.elements;
@@ -312,7 +332,6 @@ grabFieldValues = function(){
             _fields[_el[_i].name] = _el[_i].value;
         }
     }
-
 	<c:if test="${param.selected eq 'signatures'}">
 	   setTimeout("grabSignatures()",1000);
 	</c:if>

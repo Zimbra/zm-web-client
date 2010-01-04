@@ -1,25 +1,28 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
 ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, scheduleMode) {
 	if (arguments.length == 0) { return; }
 
+	numDays = numDays || 1;
 	view = view || ZmId.VIEW_CAL_DAY;
 	// set before call to parent
 	this._scheduleMode = scheduleMode;
-	this.numDays = numDays || 1;
+	this.setNumDays(numDays);
 	this._daySepWidth = scheduleMode ? 2 : 1;									// width of separator between days
 	this._columns = [];
 	this._layoutMap = [];
@@ -30,7 +33,7 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	this.setDropTarget(dropTgt);
 	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
-};
+}
 
 ZmCalColView.prototype = new ZmCalBaseView;
 ZmCalColView.prototype.constructor = ZmCalColView;
@@ -52,9 +55,11 @@ ZmCalColView._OPACITY_APPT_BUSY = 100;
 ZmCalColView._OPACITY_APPT_TENTATIVE = 60;
 
 ZmCalColView._HOURS_DIV_WIDTH = 55; // width of div holding hours text (1:00am, etc)
-ZmCalColView._UNION_DIV_WIDTH = 40; // width of div holding union in sched view
+ZmCalColView._UNION_DIV_WIDTH = 30; // width of div holding union in sched view
 
 ZmCalColView._ALL_DAY_SEP_HEIGHT = 5; // height of separator between all day appts and body
+
+ZmCalColView._SCROLLBAR_WIDTH = 22;
 
 ZmCalColView._SCROLL_PRESSURE_FUDGE = 10; // pixels for scroll pressure around top/bottom
 
@@ -77,16 +82,16 @@ function() {
 };
 
 ZmCalColView.prototype.getRollField =
-function() {
+function(isDouble) {
 	switch(this.view) {
 		case ZmId.VIEW_CAL_WORK_WEEK:
 		case ZmId.VIEW_CAL_WEEK:
-			return AjxDateUtil.WEEK;
+			return isDouble ? AjxDateUtil.MONTH : AjxDateUtil.WEEK;
 			break;
 		case ZmId.VIEW_CAL_DAY:
 		case ZmId.VIEW_CAL_SCHEDULE:
 		default:
-			return AjxDateUtil.DAY;
+			return isDouble ? AjxDateUtil.WEEK : AjxDateUtil.DAY;
 			break;
 	}
 };
@@ -99,6 +104,222 @@ function(div) {
 ZmCalColView.prototype.dragDeselect =
 function(div) {
 	// do nothing
+};
+
+ZmCalColView.prototype.getPrintHtml =
+function() {
+	var html = new Array();
+	var idx = 0;
+
+	var timeRange = this.getTimeRange();
+	var startDate = new Date(timeRange.start);
+	var endDate = new Date(timeRange.end);
+
+	// print the common header for calendar by calling base class
+	html[idx++] = ZmCalBaseView.prototype.getPrintHtml.call(this);
+	html[idx++] = "<div style='width:100%'>";
+	html[idx++] = "<table width=100% border=0 cellpadding=1 cellspacing=1 style='border:2px solid black'>";
+
+	var list = this.getList();
+	var numAppts = list ? list.size() : 0;
+	var nextDay = new Date(startDate);
+	var numDays = this.getNumDays();
+
+	// single day print out requires all details for each appointment
+	if (numDays == 1) {
+		this._loadDetailsForAppts(list, numAppts);
+	}
+
+	var columnFormatter = DwtCalendar.getDateFormatter();
+	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+	for (var i = 0; i < numDays; i++) {
+		html[idx++] = "<tr><td width=100%>";
+		if (numDays > 1) {
+			// XXX: set the styles inline so we force the printer to acknowledge them!
+			var style = "background-color:#EEEEEE; text-align:center; font-family:Arial; font-size:14px; font-weight:bold; border:1px solid #EEEEEE;";
+			html[idx++] = "<div style='" + style + "'>";
+			html[idx++] = columnFormatter.format(nextDay);
+			html[idx++] = "</div>";
+		}
+
+		// print out all the appointments for this day
+		var inTable = false;
+		for (var j = 0; j < numAppts; j++) {
+			var appt = list.get(j);
+			var apptStartTime = appt.startDate.getTime();
+			var apptEndTime = appt.endDate.getTime();
+			var dayTime = nextDay.getTime();
+			if ( (appt.startDate.getDate() == nextDay.getDate()) || ((dayTime >= apptStartTime) && (dayTime < apptEndTime)) || numDays == 1) {
+				var loc = appt.getLocation();
+				var status = appt.getParticipantStatusStr();
+				if (appt.isAllDayEvent()) {
+					// XXX: this is bad HTML but the browsers do the right thing and help us out
+					html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100% style='border:1px solid black'>";
+					html[idx++] = "<tr><td style='font-family:Arial; font-size:13px; width:100%;'>";
+					html[idx++] = "<b>" + appt.getName() + "</b>";
+					if (loc)
+						html[idx++] = " (" + loc + ")";
+					html[idx++] = " [" + status + "]";
+					// print more detail if we're printing a single day
+					if (numDays == 1) {
+						html[idx++] = this._printApptDetails(appt);
+					}
+					html[idx++] = "</td></tr></table>";
+				} else {
+					if (!inTable) {
+						inTable = true;
+						html[idx++] = "<table border=0>";
+					}
+					var startTime = timeFormatter.format(appt.startDate);
+					var endTime = timeFormatter.format(appt.endDate);
+					style = "font-family:Arial; font-size:13px; vertical-align:top;"
+					html[idx++] = "<tr>";
+					html[idx++] = "<td align=right style='" + style + "'><b>" + startTime + "</b></td>";
+					html[idx++] = "<td valign=top> - </td>";
+					html[idx++] = "<td align=right style='" + style + "'><b>" + endTime + "</b></td>";
+					html[idx++] = "<td style='" + style + "'>";
+					html[idx++] = appt.getName();
+					if (loc) {
+						html[idx++] = " (" + loc + ")";
+					}
+					html[idx++] = " [" + status + "]";
+					html[idx++] = "</td></tr>";
+
+					if (numDays == 1) {
+						html[idx++] = "<tr><td></td><td></td><td></td><td>";
+						html[idx++] = this._printApptDetails(appt);
+						html[idx++] = "</td></tr>";
+					}
+
+					// spacer
+					html[idx++] = "<tr><td><br></td></tr>";
+				}
+			}
+		}
+		if (inTable)
+			html[idx++] = "</table>";
+
+		html[idx++] = "<br><br></td></tr>";
+
+		nextDay.setDate(nextDay.getDate() + 1);
+	}
+	html[idx++] = "</table>";
+	html[idx++] = "</div>";
+
+	return html.join("");
+};
+
+// Helper function that collects all appointments that dont have details loaded
+// and makes batch request to go fetch them. Used for printing.
+ZmCalColView.prototype._loadDetailsForAppts =
+function(list, numAppts) {
+	var makeBatchReq = false;
+	var needToLoad = {};
+	var apptHash = {};
+
+	// collect all appointments that dont have details loaded yet
+	for (var i = 0; i < numAppts; i++) {
+		var appt = list.get(i);
+		if (appt.message == null) {
+			appt.message = new ZmMailMsg(appt.invId);
+			needToLoad[appt.invId] = appt.message;
+			apptHash[appt.invId] = appt;
+			makeBatchReq = true;
+		}
+	}
+
+	if (makeBatchReq) {
+		// set up batch request call
+		var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
+		var request = jsonObj.BatchRequest;
+		var msgRequests = request.GetMsgRequest = [];
+		for (var i in needToLoad) {
+			var msgRequest = {_jsns:"urn:zimbraMail"};
+			msgRequest.m = {id:i};
+			msgRequests.push(msgRequest);
+		}
+
+		var command = new ZmCsfeCommand();
+		var resp = command.invoke({jsonObj:jsonObj}).Body.BatchResponse.GetMsgResponse;
+
+		for (var i = 0; i < resp.length; i++) {
+			var msgNode = resp[i].m[0];
+			var msg = needToLoad[msgNode.id];
+			if (msg) {
+				msg._loadFromDom(msgNode);
+				// parse ZmMailMsg into ZmAppt
+				var appt = apptHash[msgNode.requestId];
+				if (appt) {
+					appt.setFromMessage(msg);
+				}
+			}
+		}
+	}
+};
+
+ZmCalColView.prototype._printApptDetails =
+function(appt) {
+	var html = new Array();
+	var idx = 0;
+	var style= "font-family:Arial; font-size:12px; vertical-align:top;";
+
+	html[idx++] = "<table border=0 width=100%>";
+
+	var organizer = appt.getOrganizer();
+	var attendees = appt.getAttendeesText(ZmCalBaseItem.PERSON);
+
+	if (organizer && attendees) {
+		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.organizerLabel + "</u></td>";
+		html[idx++] = "<td style='" + style + "'>" + appt.getOrganizer() + "</td></tr>";
+		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.attendeesLabel + "</u></td>";
+		html[idx++] = "<td style='" + style + "'>" + attendees + "</td></tr>";
+	}
+
+	var attachments = appt.getAttachments();
+	if (attachments) {
+		html[idx++] = "<tr>";
+		html[idx++] = "<td width=1% style='" + style + "'><u>" + ZmMsg.attachmentsLabel + "</u></td>";
+		html[idx++] = "<td style='" + style + "'>";
+		for (var i = 0; i < attachments.length; i++) {
+			 html[idx++] = attachments[i].filename;
+			 if (i != attachments.length-1)
+			 	html[idx++] = ", ";
+		}
+		html[idx++] = "</td></tr>";
+	}
+
+	var notes = appt.getNotesPart();
+	if (notes) {
+		style= "font-family:Arial; font-size:11px; vertical-align:top; margin-top:3px";
+		html[idx++] = "<tr><td colspan=2 style='" + style + "'>" + AjxStringUtil.nl2br(notes) + "</td></tr>";
+	}
+
+	html[idx++] = "</table>";
+
+	return html.join("");
+};
+
+ZmCalColView.prototype._getDateHdrForPrintView =
+function() {
+	var header = "";
+	var timeRange = this.getTimeRange();
+	var startDate = new Date(timeRange.start);
+
+	if (this.getNumDays() > 1) {
+		var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.LONG);
+		var endDate = new Date(timeRange.end - AjxDateUtil.MSEC_PER_DAY);
+		var startWeek = formatter.format(startDate);
+		var endWeek = formatter.format(endDate);
+		header = startWeek + " - " + endWeek;
+	} else {
+		var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
+		header = [
+			formatter.format(startDate),
+			"<br><font size=-1>", AjxDateUtil._getWeekday(startDate), "</font>"
+		].join("");
+	}
+
+	return header;
 };
 
 ZmCalColView.prototype._dateUpdate =
@@ -186,7 +407,7 @@ function(appt) {
 	if (this._scheduleMode) {
 		this._updateUnionData(appt);
 	}
-};
+}
 
 ZmCalColView.prototype._resetCalendarData =
 function() {
@@ -338,9 +559,10 @@ function(hour) {
 
 ZmCalColView.prototype._updateTitle =
 function() {
+	var numDays = this.getNumDays();
 	var dayFormatter = DwtCalendar.getDayFormatter();
 
-	if (this.numDays == 1) {
+	if (numDays == 1) {
 		var colFormatter = DwtCalendar.getDateFormatter();
 		var date = this._date;
 		this._title = this._scheduleMode
@@ -348,7 +570,7 @@ function() {
 			: dayFormatter.format(date);
 	} else {
 		var first = this._days[0].date;
-		var last = this._days[this.numDays-1].date;
+		var last = this._days[numDays-1].date;
 		this._title = [
 			dayFormatter.format(first), " - ", dayFormatter.format(last)
 		].join("");
@@ -357,9 +579,9 @@ function() {
 
 ZmCalColView.prototype._dayTitle =
 function(date) {
-	var formatter = this.numDays == 1
-		? DwtCalendar.getDateLongFormatter()
-		: DwtCalendar.getDateFormatter();
+	var formatter = this.getNumDays() == 1
+				? DwtCalendar.getDateLongFormatter()
+				: DwtCalendar.getDateFormatter();
 	return formatter.format(date);
 };
 
@@ -395,9 +617,10 @@ function() {
 	var today = new Date();
 	today.setHours(0,0,0,0);
 
-	var lastDay = this.numDays - 1;
+	var numDays = this.getNumDays();
+	var lastDay = numDays - 1;
 
-	for (var i=0; i < this.numDays; i++) {
+	for (var i=0; i < numDays; i++) {
 		var day = this._days[i] = {};
 		day.index = i;
 		day.date = new Date(d);
@@ -412,15 +635,7 @@ function() {
 			this.associateItemWithElement(null, te, ZmCalBaseView.TYPE_DAY_HEADER, id, {dayIndex:i});
 			te.className = day.isToday ? 'calendar_heading_day_today' : 'calendar_heading_day';
 		}
-
-        var oldDate = d.getDate();
-        d.setDate(d.getDate() + 1);
-        if(oldDate == d.getDate()) {
-            //daylight saving problem
-            d.setHours(0,0,0,0);
-            d.setTime(d.getTime() + AjxDateUtil.MSEC_PER_DAY);
-        }
-
+		d.setDate(d.getDate()+1);
 	}
 	var te = document.getElementById(this._headerYearId);
 	te.innerHTML = this._days[0].date.getFullYear();
@@ -477,17 +692,12 @@ function(div, allDay, folderId) {
 	Dwt.setSize(div, 10, 10);// will be resized
 	div.className = this._getStyle(null, true);
 	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DND);
-	var calendar = appCtxt.getById(folderId);
-	var headerColor = calendar.rgb ? AjxColor.deepen(AjxColor.darken(calendar.rgb,ZmCalBaseView.headerColorDelta)) : "";
-	var bodyColor = calendar.rgb ? AjxColor.deepen(AjxColor.lighten(calendar.rgb,ZmCalBaseView.bodyColorDelta)) : "";
-	var bodyColor = calendar.rgb ? AjxColor.deepen(AjxColor.lighten(calendar.rgb,ZmCalBaseView.bodyColorDelta)) : "";
 	var subs = {
 		id: div.id,
 		newState: "",
-		headerColor: calendar.rgb ? "" : (color + "Light"),
-		bodyColor: calendar.rgb ? "" : (color + "Bg"),
-		headerStyle: calendar.rgb ? "background-color: "+headerColor+";" : "",
-		bodyStyle: calendar.rgb ? "background-color: "+bodyColor+";" : "",
+		headerColor: color + "Light",
+		bodyColor: color + "Bg",
+		body_style: "",
 		name: AjxStringUtil.htmlEncode(ZmMsg.newAppt),
 		starttime: "",
 		endtime: "",
@@ -562,16 +772,12 @@ function(appt) {
 		apptName = appt.getDurationText(true, true) + " - " + apptName;
 	}
 
-	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
-	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
-	var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
-	var bodyStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
-
 	var subs = {
 		id: id,
+		body_style: "",
 		newState: isNew ? "_new" : "",
-		headerStyle: headerStyle,
-		bodyStyle: bodyStyle,
+		headerColor: color + (isNew ? "Dark" : "Light"),
+		bodyColor: color + (isNew ? "" : "Bg"),
 		name: apptName,
 		starttime: appt.getDurationText(true, true),
 		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate)),
@@ -579,8 +785,7 @@ function(appt) {
 		status: (appt.isOrganizer() ? "" : appt.getParticipantStatusStr()),
 		icon: ((appt.isPrivate()) ? "ReadOnly" : null),
 		tagIcon: tagIcon,
-		hideTime: is60,
-		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba)
+		hideTime: is60
 	};
 
 	var template;
@@ -589,7 +794,7 @@ function(appt) {
 		var bs = "";
 		if (!this.isStartInView(appt._orig)) bs = "border-left:none;";
 		if (!this.isEndInView(appt._orig)) bs += "border-right:none;";
-		if (bs != "") subs.bodyStyle += bs;
+		if (bs != "") subs.body_style = "style='"+bs+"'";
 	} else if (is30) {
 		template = "calendar_appt_30";
 	} else if (appt._fanoutNum > 0) {
@@ -620,7 +825,6 @@ function(appt) {
 	}
 	return div;
 };
-
 
 // TODO: i18n
 ZmCalColView.prototype._createHoursHtml =
@@ -681,8 +885,9 @@ function(abook) {
 
 	this._allDayRows = new Array();
 
+	var numDays = this.getNumDays();
 	if (!this._scheduleMode) {
-		for (var i =0; i < this.numDays; i++) {
+		for (var i =0; i < numDays; i++) {
 			this._columns[i] = {
 				index: i,
 				dayIndex: i,
@@ -728,7 +933,7 @@ function(abook) {
 	// all day headings
 	html.append("<div id='", this._allDayHeadingDivId, "' class=calendar_heading style='position:absolute'>");
 	if (!this._scheduleMode) {
-		for (var i =0; i < this.numDays; i++) {
+		for (var i =0; i < this.getNumDays(); i++) {
 			html.append("<div id='", this._columns[i].titleId, "' class=calendar_heading_day style='position:absolute;'></div>");
 		}
 	}
@@ -736,7 +941,7 @@ function(abook) {
 
 	// divs to separate day headings
 	if (!this._scheduleMode) {
-		for (var i =0; i < this.numDays; i++) {
+		for (var i =0; i < numDays; i++) {
 			html.append("<div id='", this._columns[i].headingDaySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
 		}
 	}
@@ -776,7 +981,7 @@ function(abook) {
 	html.append("<div id='", this._timeSelectionDivId, "' class='calendar_time_selection' style='position:absolute; display:none;'></div>");
 	html.append("<div id='", this._newApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");
 	if (!this._scheduleMode) {
-		for (var i =0; i < this.numDays; i++) {
+		for (var i =0; i < numDays; i++) {
 		  html.append("<div id='", this._columns[i].daySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
 		}
 	}
@@ -1019,7 +1224,7 @@ function() {
 	var rowY = ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD + 2;
 	for (var i=0; i < rows.length; i++) {
 		var row = rows[i];
-		var num = this._scheduleMode ? this._numCalendars : this.numDays;
+		var num = this._scheduleMode ? this._numCalendars : this.getNumDays();
 		for (var j=0; j < num; j++) {
 			var slot = row[j];
 			if (slot.data) {
@@ -1068,11 +1273,9 @@ function(apptDiv, w, h) {
 
 	// get the inner div that should be sized and set its width/height
 	var apptBodyDiv = document.getElementById(apptDiv.id + "_body");
-    if(apptBodyDiv != null) {
-	    fw = w + ZmCalColView._APPT_WIDTH_FUDGE;
-	    fh = h + ZmCalColView._APPT_HEIGHT_FUDGE;
-	    Dwt.setSize(	apptBodyDiv, fw >= 0 ? fw : 0, fh >= 0 ? fh : 0);
-    }
+	fw = w + ZmCalColView._APPT_WIDTH_FUDGE;
+	fh = h + ZmCalColView._APPT_HEIGHT_FUDGE;
+	Dwt.setSize(	apptBodyDiv, fw >= 0 ? fw : 0, fh >= 0 ? fh : 0);
 };
 
 ZmCalColView.prototype._layoutAppt =
@@ -1238,7 +1441,7 @@ function(id, x, y, w, h) {
 
 ZmCalColView.prototype._calcColWidth =
 function(bodyWidth, numCols, horzScroll) {
-//	var sbwfudge = (AjxEnv.isIE ? 1 : 0) + (horzScroll ? 0 : Dwt.SCROLLBAR_WIDTH);
+//	var sbwfudge = (AjxEnv.isIE ? 1 : 0) + (horzScroll ? 0 : ZmCalColView._SCROLLBAR_WIDTH);
 	var sbwfudge = 0;
 	return dayWidth = Math.floor((bodyWidth-sbwfudge)/numCols) - (this._daySepWidth == 1 ? 0 : 1);
 };
@@ -1284,7 +1487,7 @@ function(refreshApptLayout) {
 
 	this._horizontalScrollbar(needHorzScroll);
 	var sbwfudge = AjxEnv.isIE ? 1 : 0;
-	var dayWidth = this._calcColWidth(this._apptBodyDivWidth - Dwt.SCROLLBAR_WIDTH, numCols);
+	var dayWidth = this._calcColWidth(this._apptBodyDivWidth - ZmCalColView._SCROLLBAR_WIDTH, numCols);
 
 	if (needHorzScroll) this._apptBodyDivWidth -= 18;
 	var scrollFudge = needHorzScroll ? 20 : 0; // need all day to be a little wider then grid
@@ -1404,7 +1607,7 @@ ZmCalColView.prototype._getUnionToolTip =
 function(i) {
 	// cache it...
 	var tooltip = this._unionBusyDataToolTip[i];
-	if (tooltip) { return tooltip; }
+	if (tooltip) return tooltip;
 
 	var data = this._unionBusyData[i];
 	if (!data instanceof Object) return null;
@@ -1412,7 +1615,7 @@ function(i) {
 	var html = new AjxBuffer();
 	html.append("<table cellpadding=2 cellspacing=0 border=0>");
 	var checkedCals = this._controller.getCheckedCalendarFolderIds();
-	for (var i = 0; i < checkedCals.length; i++) {
+	for (var i=0; i < checkedCals.length; i++) {
 		var fid = checkedCals[i];
 		if (data[fid]) {
 			var cal = this._controller.getCalendar(fid);
@@ -1532,21 +1735,13 @@ function (ev){
 
 ZmCalColView.prototype._mouseOverAction =
 function(ev, div) {
+	ZmCalBaseView.prototype._mouseOverAction.call(this, ev, div);
 	var type = this._getItemData(div, "type");
 	if (type == ZmCalBaseView.TYPE_DAY_HEADER) {
 		div.style.textDecoration = "underline";
-	}
-};
-
-ZmCalColView.prototype.getToolTipContent =
-function(ev) {
-	var div = this.getTargetItemDiv(ev);
-	var type = this._getItemData(div, "type");
-	if (type == ZmCalBaseView.TYPE_SCHED_FREEBUSY) {
+	} else if (type == ZmCalBaseView.TYPE_SCHED_FREEBUSY) {
 		var index = this._getItemData(div, "index");
-		return this._getUnionToolTip(index);
-	} else {
-		return ZmCalBaseView.prototype.getToolTipContent.apply(this, arguments);
+		this.setToolTipContent(this._getUnionToolTip(index));
 	}
 };
 
@@ -1570,7 +1765,7 @@ function(ev, div) {
 		var date = this._days[dayIndex].date;
 		var cc = appCtxt.getCurrentController();
 
-		if (this.numDays > 1) {
+		if (this.getNumDays() > 1) {
 			cc.setDate(date);
 			cc.show(ZmId.VIEW_CAL_DAY);
 		} else {
@@ -2246,20 +2441,20 @@ function(list, skipMiniCalUpdate) {
 	this._preSet();
 	this._selectedItems.removeAll();
 	var newList = list;
-	if (list && (list == this._list)) {
+	if(list && (list == this._list)) {
 		newList = list.clone();
 	}
 	this._resetList();
 	this._list = newList;
-	var timeRange = this.getTimeRange();
+	var timeRange = this.getTimeRange();	
 	if (list) {
 		var size = list.size();
-		DBG.println(AjxDebug.DBG2,"list.size:"+size);
+		DBG.println(AjxDebug.DBG2,"list.size:"+size + "," + timeRange.start + "," + timeRange.end);
 		if (size != 0) {
 			this._computeApptLayout();
 			for (var i=0; i < size; i++) {
 				var ao = list.get(i);
-				if (ao && ao.isInRange(timeRange.start, timeRange.end)) {
+				if(ao && ao.isInRange(timeRange.start, timeRange.end)) {
 					this.addAppt(ao);
 				}
 			}

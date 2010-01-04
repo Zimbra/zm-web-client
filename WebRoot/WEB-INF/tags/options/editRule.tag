@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="rule" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZFilterRule" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
@@ -442,7 +426,7 @@ action_stop                         stop checkbox (true)
 <tr>
     <td colspan="1">
             <input type=checkbox name="action_stop" value="true"
-                <c:if test="${hasStop or requestScope.stopChecked}"> CHECKED </c:if>>
+                <c:if test="${hasStop}"> CHECKED </c:if>>
     </td>
     <td colspan="3">
     <fmt:message key="EFILT_ACTION_STOP"/>

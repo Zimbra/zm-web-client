@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 ZmStatusView = function(parent, className, posStyle, id) {
@@ -91,12 +93,12 @@ function(work) {
 	}
 };
 
-ZmStatusView.getImageHtml =
+ZmStatusView.getImageHtml32 =
 function(work) {
 	switch (work.level) {
-		case ZmStatusView.LEVEL_CRITICAL:	return "Critical";
-		case ZmStatusView.LEVEL_WARNING:	return "Warning";
-		default: 							return "Success";
+		case ZmStatusView.LEVEL_CRITICAL:	return "Critical_32";
+		case ZmStatusView.LEVEL_WARNING:	return "Warning_32";
+		default: 							return "Information_32";
 	}
 };
 
@@ -109,7 +111,7 @@ function() {
     if (!work) { return; }
 
     var level = ZmStatusView.getClass(work);
-    var icon = ZmStatusView.getImageHtml(work);
+    var icon = ZmStatusView.getImageHtml32(work);
 
     this._toast = work.toast;
 	this._toast.popup(level, work.msg, icon, null, work.transitions);
@@ -136,9 +138,6 @@ ZmToast = function(parent, id) {
     this._funcs["fade"] = AjxCallback.simpleClosure(this.__fade, this);
     this._funcs["fade-in"] = this._funcs["fade"];
     this._funcs["fade-out"] = this._funcs["fade"];
-    this._funcs["slide"] = AjxCallback.simpleClosure(this.__slide, this);
-    this._funcs["slide-in"] = this._funcs["slide"];
-    this._funcs["slide-out"] = this._funcs["slide"];
     this._funcs["next"] = AjxCallback.simpleClosure(this.transition, this);
 }
 ZmToast.prototype = new DwtComposite;
@@ -153,25 +152,18 @@ function() {
 ZmToast.FADE = { type: "fade" };
 ZmToast.FADE_IN = { type: "fade-in" };
 ZmToast.FADE_OUT = { type: "fade-out" };
-ZmToast.SLIDE = { type: "slide" };
-ZmToast.SLIDE_IN = { type: "slide-in" };
-ZmToast.SLIDE_OUT = { type: "slide-out" };
 ZmToast.PAUSE = { type: "pause" };
 ZmToast.IDLE = {type: "idle" };
 ZmToast.SHOW = {type: "show" };
 
-//ZmToast.DEFAULT_TRANSITIONS = [ ZmToast.FADE_IN, ZmToast.PAUSE, ZmToast.FADE_OUT ];
-ZmToast.DEFAULT_TRANSITIONS = [ ZmToast.SLIDE_IN, ZmToast.PAUSE, ZmToast.SLIDE_OUT ];
+ZmToast.DEFAULT_TRANSITIONS = [ ZmToast.FADE_IN, ZmToast.PAUSE, ZmToast.FADE_OUT ];
 
 ZmToast.DEFAULT_STATE = {};
 ZmToast.DEFAULT_STATE["position"] = { location: "C" }; // center
 ZmToast.DEFAULT_STATE["pause"] = { duration: 1200 };
 ZmToast.DEFAULT_STATE["fade"] = { duration: 100, multiplier: 1 };
-ZmToast.DEFAULT_STATE["fade-in"] = { start: 0, end: 99, step: 10, duration: 200, multiplier: 1 };
-ZmToast.DEFAULT_STATE["fade-out"] = { start: 99, end: 0, step: -10, duration: 200, multiplier: 1 };
-ZmToast.DEFAULT_STATE["slide"] = { duration: 100, multiplier: 1 };
-ZmToast.DEFAULT_STATE["slide-in"] = { start: -40, end: 0, step: 1, duration: 100, multiplier: 1 };
-ZmToast.DEFAULT_STATE["slide-out"] = { start: 0, end: -40, step: -1, duration: 100, multiplier: 1 };
+ZmToast.DEFAULT_STATE["fade-in"] = { start: 0, end: 99, step: 10, duration: 100, multiplier: 1 };
+ZmToast.DEFAULT_STATE["fade-out"] = { start: 99, end: 0, step: -10, duration: 100, multiplier: 1 };
 
 ZmToast.LEVEL_RE = /\b(ZToastCrit|ZToastWarn|ZToastInfo)\b/g;
 
@@ -208,8 +200,8 @@ function(level, text, icon, loc, customTransitions) {
     }
 
     // get transitions
-    var location = appCtxt.getSkinHint("toast", "location") || loc;
-    var transitions = customTransitions || appCtxt.getSkinHint("toast", "transitions") || ZmToast.DEFAULT_TRANSITIONS;
+    var location = appCtxt.get(ZmSetting.SKIN_HINTS, "toast.location") || loc;
+    var transitions = customTransitions || appCtxt.get(ZmSetting.SKIN_HINTS, "toast.transitions") || ZmToast.DEFAULT_TRANSITIONS;
 
 	transitions = [].concat( {type:"position", location:location}, transitions, {type:"hide"} );
 
@@ -244,7 +236,7 @@ function() {
     var state = this._state = this._createState(transition);
 
     var el = this.getHtmlElement();
-    //Dwt.setOpacity(el, state.opacity);
+    Dwt.setOpacity(el, state.opacity);
     Dwt.setLocation(el, state.x, state.y);
 
     this._funcs[transition.type || "next"]();
@@ -276,24 +268,11 @@ function(transition) {
             state[name] = defaults[name];
         }
     }
-    var el = this.getHtmlElement();
-    
+
 	switch (state.type) {
         case "fade-in":
-            Dwt.setOpacity(el, 0);
-            Dwt.setLocation(el, null, 0);
-            state.value = state.start;
-            break;
 		case "fade-out":
-		case "fade":
-            Dwt.setLocation(el, null, 0);
-            state.value = state.start;
-            break;
-        case "slide-in":
-		case "slide-out":
-		case "slide":{
-            Dwt.setLocation(el, null, -36);
-            Dwt.setOpacity(el, 100);
+		case "fade": {
             state.value = state.start;
             break;
         }
@@ -323,7 +302,7 @@ function() {
 
     var location = this._state.location || "C";
     switch (location.toUpperCase()) {
-        case 'N': y = 0-tsize.y; break;
+        case 'N': y = 0; break;
         case 'S': y = bsize.y - tsize.y; break;
         case 'E': x = bsize.x - tsize.x; break;
         case 'W': x = 0; break;
@@ -427,38 +406,6 @@ function() {
         var duration = this._state.duration;
         var delta = duration / Math.abs(step);
         this._actionId = setInterval(this._funcs["fade"], delta);
-    }
-
-    this._state.value += step;
-    this._state.step *= this._state.multiplier;
-};
-
-ZmToast.prototype.__slide =
-function() {
-    var top = this._state.value;
-    var step = this._state.step;
-
-    var isOver = step > 0 ? top >= this._state.end : top <= this._state.end;
-    if (isOver) {
-        top = this._state.end;
-    }
-
-    var el = this.getHtmlElement();
-    //Dwt.setOpacity(el, opacity);
-    Dwt.setLocation(el, null, top);
-    //el.style.top = top+'px';
-
-
-    if (isOver) {
-        this.__clear();
-        setTimeout(this._funcs["next"], 0);
-        return;
-    }
-
-    if (this._actionId == -1) {
-        var duration = this._state.duration;
-        var delta = duration / Math.abs(step);
-        this._actionId = setInterval(this._funcs["slide"], delta);
     }
 
     this._state.value += step;

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -96,8 +98,10 @@ function() {
 	html.append("<tr><td colspan=3>", ZmMsg.enterCommand, "&nbsp;<span class='ZmAsstField' id='", this._commandTitleId, "'></span></td></tr>");	
 	//html.append("<tr><td colspan=3 id='", this._commandTitleId, "'>", ZmMsg.enterCommand, "</td></tr>");		
 	html.append("<tr><td colspan=3><div>");
+	html.append(Dwt.CARET_HACK_BEGIN);
 	html.append("<textarea rows=", AjxEnv.isIE ? "3" : "2", " style='width:100%' id='",this._commandId,"'>");
 	html.append("</textarea>");
+	html.append(Dwt.CARET_HACK_END);
 	html.append("</div></td></tr>");
 	html.append("<tr><td colspan=3><div class=horizSep></div></td></tr>");
 	html.append("<tr><td colspan=3><div id='", this._contentId, "'></div></td></tr>");

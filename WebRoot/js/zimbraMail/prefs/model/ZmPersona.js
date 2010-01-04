@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,14 +11,14 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
 ZmPersona = function(identity, list) {
 	if (arguments.length == 0) { return; }
 	
-	ZmAccount.call(this, ZmAccount.TYPE_PERSONA, identity.id, null, list);
-
+	ZmAccount.call(this, ZmAccount.PERSONA, identity.id, null, list);
 	identity.sendFromDisplay = identity.sendFromDisplay || appCtxt.get(ZmSetting.DISPLAY_NAME);
 	identity.sendFromAddress = identity.sendFromAddress || appCtxt.get(ZmSetting.USERNAME);
 	this.identity = identity;
@@ -30,6 +31,11 @@ function() {
 	return "ZmPersona";
 };
 
+//
+// Constants
+//
+
+ZmAccount.PERSONA = "PERSONA";
 
 //
 // Public methods
