@@ -27,7 +27,7 @@
 <%-- Deep linking  --%>
   <c:if test="${not empty param.app}">
 	  <c:choose>
-		  <c:when test="${param.app eq 'calendar' and mailbox.features.calendar}">
+		  <c:when test="${param.app eq 'calendar' and (mailbox.features.calendar or mailbox.features.calendarUpsell)}">
 			<c:redirect url="/h/calendar" />
 		  </c:when>
 		  <c:when test="${param.app eq 'mail' and mailbox.features.mail and not empty param.id}">
