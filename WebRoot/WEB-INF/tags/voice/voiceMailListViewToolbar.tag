@@ -40,7 +40,7 @@
 		<td nowrap>
 			<c:choose>
 				<c:when test="${context.searchResult.size > 0}">
-					<zm:currentResultUrl var="printUrl" value="/h/printvoicemails" context="${context}" refresh="true" />
+					<zm:currentResultUrl var="printUrl" value="/h/printvoicemails" context="${context}" />
 					<a id="OPPRINT" target="_blank" href="${printUrl}"><app:img src="startup/ImgPrint.gif" altkey="actionPrint"/></a>
 				</c:when>
 				<c:otherwise>
