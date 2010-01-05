@@ -658,6 +658,7 @@ ZmListView.prototype._setNoResultsHtml =
 function() {
 	DwtListView.prototype._setNoResultsHtml.call(this);
 	this.setSelectionHdrCbox(false);
+	this._rendered = true;
 };
 
 ZmListView.prototype._getActionMenuForColHeader =
@@ -1037,4 +1038,25 @@ function(height) {
 ZmListView.prototype._getItemCountType =
 function() {
 	return this.type;
+};
+
+/**
+ * Returns true if the given item is in this view's list. Note that the view's list may
+ * be only part of the controller's list (the currently visible page).
+ *
+ * @param item		[string | ZmItem]		item ID, or item to check for
+ */
+ZmListView.prototype.hasItem =
+function(item) {
+	var id = (typeof item == "string") ? item : item && item.id;
+	var len = this._list.size();
+	if (id && this._list && len) {
+		for (var i = 0; i < len; i++) {
+			var item = this._list.get(i);
+			if (item && item.id == id) {
+				return true;
+			}
+		}
+	}
+	return false;
 };

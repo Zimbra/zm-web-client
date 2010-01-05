@@ -470,8 +470,8 @@ function() {
 // All items in the list view are gone - show "No Results" and clear reading pane
 ZmDoublePaneController.prototype._handleEmptyList =
 function(listView) {
-	ZmMailListController.prototype._handleEmptyList.apply(this, arguments);
 	this.reset();
+	ZmMailListController.prototype._handleEmptyList.apply(this, arguments);
 };
 
 // List listeners
@@ -560,7 +560,11 @@ function() {
 ZmDoublePaneController.prototype._handleResponseSetSelectedItem =
 function(msg) {
 	if (msg) {
-		this._displayMsg(msg);
+		// make sure list view has this msg
+		var lv = this._listView[this._currentView];
+		if (lv.hasItem(msg)) {
+			this._displayMsg(msg);
+		}
 	}
 };
 

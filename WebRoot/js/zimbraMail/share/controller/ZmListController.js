@@ -1566,6 +1566,9 @@ function(params, actionParams) {
 				var text = AjxMessageFormat.format(ZmMsg.itemsProcessed, [this._continuation.totalItems, ZmMsg[msgKey]]);
 				appCtxt.setStatusMsg(text);
 				lv.deselectAll();
+				if (params.allDoneCallback) {
+					params.allDoneCallback.run();
+				}
 			}
 			this._continuation = {count:0, totalItems:0};
 		}
@@ -1573,9 +1576,6 @@ function(params, actionParams) {
 		if (dialog) {
 			dialog.popdown();
 			ZmList.progressDialog = null;
-		}
-		if (params.allDoneCallback) {
-			params.allDoneCallback.run();
 		}
 	}
 };
