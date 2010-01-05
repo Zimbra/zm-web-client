@@ -883,6 +883,10 @@ function(items, markAsSpam, folder) {
 
 ZmMailListController.prototype._inviteReplyHandler =
 function(ev) {
+
+	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
+	appCtxt.getAppController().focusContentPane();
+	
 	var type = ev._inviteReplyType;
     var folderId = ev._inviteReplyFolderId || ZmOrganizer.ID_CALENDAR;
 	var compId = ev._inviteComponentId;
