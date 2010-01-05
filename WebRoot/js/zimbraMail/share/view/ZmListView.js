@@ -149,6 +149,11 @@ function(list, sortField) {
 		DwtListView.prototype.set.call(this, subList, sortField);
 	}
 	this._rendered = true;
+
+	// check in case there are more items but no scrollbar
+	if (this._isPageless) {
+		this._checkItemCount();
+	}
 };
 
 ZmListView.prototype._setRowHeight =
