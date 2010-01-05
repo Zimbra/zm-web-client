@@ -469,7 +469,7 @@ function() {
 		view.setScrollStyle(DwtControl.SCROLL);
 		view.getHtmlElement().innerHTML = ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
 		var elements = {};
-		elements[ZmAppViewMgr.C_APP_CONTENT] = view;
+		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = view;
 		var viewName = "VoiceMessage";
 		this.createView({viewId: viewName, appName: this._name, elements: elements, isAppView: true});
 		this.pushView(viewName, true);
