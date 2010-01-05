@@ -585,8 +585,9 @@ function(attId, isDraft, dummyMsg) {
 			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);
 			relatedPart.children.add(textPart);
 			top.children.add(relatedPart);
-
-			forwardAttIds = this._mergeInlineAndForwardAtts(msg, forwardAttIds);
+            // bug: 43156 
+            // Commented as we now show inline attachments as part of forward attachments.
+			//forwardAttIds = this._mergeInlineAndForwardAtts(msg, forwardAttIds);
 		} else {
 			if (this._extraParts) {
 				top.setContentType(ZmMimeTable.MULTI_ALT);
@@ -1818,6 +1819,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 					body = bodyPart ? this._getTextPart(bodyPart, true) : null;
 				}
 			} else {
+                hasInlineImages = msg.hasInlineImagesInMsgBody();
 				// grab text part out of the body part
 				bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML, true);
 				body = bodyPart ? this._getTextPart(bodyPart) : null;

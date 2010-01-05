@@ -1290,6 +1290,18 @@ function(){
     this.findAttsFoundInMsgBodyDone = true;
 };
 
+ZmMailMsg.prototype.hasInlineImagesInMsgBody =
+function(){
+    var body = this.getBodyPart(ZmMimeTable.TEXT_HTML);
+    if(body){
+        body = AjxUtil.isString(body) ? body : body.content;
+        if(body && body.search(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig) != -1){
+            return true;
+        }
+    }
+    return false;
+};
+
 /**
  * Returns an array of objects containing meta info about attachments to be used
  * to build href's by the caller
