@@ -24,6 +24,7 @@
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
 <c:set var="useMobile" value="${ua.isiPhone or ua.isiPod}"/>
+<c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
 <c:catch var="loginException">
     <c:choose>
@@ -44,13 +45,13 @@
             <c:redirect url="${logoutRedirectUrl}"/>
             </c:if>
         </c:when>
-        <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
+        <c:when test="${(param.loginOp eq 'login') && !(empty trimmedUserName) && !(empty param.password)}">
         	<c:choose>
-	        	<c:when test="${(fn:indexOf(param.username,'@') == -1) and !(empty param.customerDomain)}">
-	        		<c:set var="fullUserName" value="${param.username}@${param.customerDomain}"/>
+	        	<c:when test="${(fn:indexOf(trimmedUserName,'@') == -1) and !(empty param.customerDomain)}">
+	        		<c:set var="fullUserName" value="${trimmedUserName}@${param.customerDomain}"/>
 			    </c:when>
 			    <c:otherwise>
-			    	<c:set var="fullUserName" value="${param.username}"/>
+			    	<c:set var="fullUserName" value="${trimmedUserName}"/>
 			    </c:otherwise>
 		    </c:choose>        
 		    <c:choose>
