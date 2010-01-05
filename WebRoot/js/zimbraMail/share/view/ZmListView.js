@@ -1053,11 +1053,12 @@ function() {
  */
 ZmListView.prototype.hasItem =
 function(item) {
+
 	var id = (typeof item == "string") ? item : item && item.id;
-	var len = this._list.size();
-	if (id && this._list && len) {
-		for (var i = 0; i < len; i++) {
-			var item = this._list.get(i);
+	if (id && this._list) {
+		var a = this._list.getArray();
+		for (var i = 0, len = a.length; i < len; i++) {
+			var item = a[i];
 			if (item && item.id == id) {
 				return true;
 			}

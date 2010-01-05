@@ -562,7 +562,8 @@ function(msg) {
 	if (msg) {
 		// make sure list view has this msg
 		var lv = this._listView[this._currentView];
-		if (lv.hasItem(msg)) {
+		var id = (lv.type == ZmItem.CONV) ? msg.cid : msg.id;
+		if (lv.hasItem(id)) {
 			this._displayMsg(msg);
 		}
 	}
