@@ -204,7 +204,8 @@ function() {
 				ZmSetting.SKIN_NAME,
 				ZmSetting.CLIENT_TYPE,
 				ZmSetting.DEFAULT_TIMEZONE,
-				ZmSetting.OFFLINE_IS_MAILTO_HANDLER
+				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
+				ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED // offline
 			]
 		},
 		COMPOSING: {
@@ -428,6 +429,14 @@ function() {
 			displayName:		ZmMsg.offlineAllowMailTo,
 			displayContainer:	ZmPref.TYPE_CHECKBOX
 		});
+
+		// only offer "enable notebooks" pref if a ZCS account exists
+		if (appCtxt.accountList.accountTypeExists(ZmAccount.TYPE_ZIMBRA)) {
+			ZmPref.registerPref("OFFLINE_NOTEBOOK_SYNC_ENABLED", {
+				displayName:		ZmMsg.enableDocuments,
+				displayContainer:	ZmPref.TYPE_CHECKBOX
+			});
+		}
 	}
 
 	// Polling Interval Options - Dynamically constructed according to MIN_POLLING_INTERVAL,POLLING_INTERVAL

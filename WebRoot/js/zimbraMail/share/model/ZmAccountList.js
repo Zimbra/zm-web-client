@@ -226,6 +226,16 @@ function() {
 	return false;
 };
 
+ZmAccountList.prototype.accountTypeExists =
+function(type) {
+	for (var i = 0; i < this.visibleAccounts.length; i++) {
+		var acct = this.visibleAccounts[i];
+		if (acct.type == type) { return true; }
+	}
+
+	return false;
+};
+
 ZmAccountList.prototype.syncAll =
 function(callback) {
 	var list = (new Array()).concat(this.visibleAccounts);
@@ -276,6 +286,10 @@ function(settings, obj) {
 
 	if (appCtxt.isOffline) {
 		account.displayName = ZmMsg.localFolders;
+
+		if (appCtxt.get(ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED)) {
+			appCtxt.set(ZmSetting.NOTEBOOK_ENABLED, true, null, null, true);
+		}
 	}
 
 	// second, create all child accounts if applicable
