@@ -226,10 +226,18 @@ function() {
 	return false;
 };
 
+/**
+ * Returns true if there is at least one of the given account types in the
+ * account list. Note: if the given account type is ZCS, the local parent
+ * account is NOT included when searching the account list.
+ *
+ * @param type	[String]		Type of account to check
+ */
 ZmAccountList.prototype.accountTypeExists =
 function(type) {
 	for (var i = 0; i < this.visibleAccounts.length; i++) {
 		var acct = this.visibleAccounts[i];
+		if (type == ZmAccount.TYPE_ZIMBRA && acct.isMain) { continue; }
 		if (acct.type == type) { return true; }
 	}
 
