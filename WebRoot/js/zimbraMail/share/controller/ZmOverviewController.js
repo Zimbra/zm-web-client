@@ -147,5 +147,6 @@ function(treeId) {
 ZmOverviewController.prototype.getTreeView =
 function(overviewId, treeId) {
 	if (!overviewId || !treeId) { return null; }
+	if (!this.getOverview(overviewId)) { return null; }
 	return this.getOverview(overviewId).getTreeView(treeId);
 };
