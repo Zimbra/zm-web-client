@@ -1925,7 +1925,7 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 			appt.setOrigTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 		}
 
-		appt.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+		if(!appt.getTimezone()) appt.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [callback]);
 		var respErrCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [errorCallback]);
 		appCtxt.getShell().setBusy(true);
