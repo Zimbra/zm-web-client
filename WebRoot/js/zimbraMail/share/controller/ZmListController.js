@@ -1170,6 +1170,7 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	if (lv._isPageless) {
 		lv._itemsToAdd = items;
 	}
+	var wasEmpty = (lv._isPageless && (lv.size() == 0));
 
 	this._setViewContents(view);
 
@@ -1188,6 +1189,8 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	// bug fix #5134 - some views may not want to reset the current selection
 	if (!ignoreResetSelection && !lv._isPageless) {
 		this._resetSelection(selectedIdx);
+	} else if (wasEmpty) {
+		lv._setNextSelection();
 	}
 
 	appCtxt.getAppController().focusContentPane();
@@ -1226,6 +1229,7 @@ function(listView) {
 		listView.removeAll(true);
 		listView._setNoResultsHtml();
 		this._resetNavToolBarButtons(this._currentView);
+		listView._checkItemCount();
 	}
 };
 
