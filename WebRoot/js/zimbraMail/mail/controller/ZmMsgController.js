@@ -116,6 +116,7 @@ function() {
 	this._setView(viewParams);
 	avm.setTabTitle(this.viewId, buttonText);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
+	this._resetNavToolBarButtons(this._currentView);
 };
 
 ZmMsgController.prototype.getKeyMapName =
@@ -289,7 +290,6 @@ function(view, next) {
 	var controller = AjxDispatcher.run(ZmMsgController.MODE_TO_CONTROLLER[this._mode]);
 	if (controller) {
 		controller.pageItemSilently(this._msg, next);
-		this._resetNavToolBarButtons(view);
 	}
 };
 
