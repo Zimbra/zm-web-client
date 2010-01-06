@@ -364,12 +364,12 @@ ZmNewWindow.prototype.setStatusMsg =
 function(params) {
 	// bug: 26478. Changed status msg to be displayed within the child window.
 	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
-	if (AjxEnv.isIE) {
+	/*if (AjxEnv.isIE) {
 		if (typeof params == "string") {
 			params = {msg: params};
 		}
 		params.transitions = [ZmToast.SHOW, ZmToast.PAUSE];
-	}
+	}*/
 	this._statusView.setStatusMsg(params);
 };
 
