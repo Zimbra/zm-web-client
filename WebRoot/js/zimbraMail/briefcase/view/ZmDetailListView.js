@@ -67,10 +67,10 @@ function(parent) {
 	}	
 	headers.push(
 		new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"GenericDoc", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.icon}),
-		new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg._name}),
+		new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg._name, sortable:ZmItem.F_SUBJECT}),
 		new DwtListHeaderItem({field:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmMsg.COLUMN_WIDTH_TYPE_DLV}),
-		new DwtListHeaderItem({field:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE_DLV}),
-		new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.date, width:ZmMsg.COLUMN_WIDTH_DATE_DLV}),
+		new DwtListHeaderItem({field:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE_DLV, sortable:ZmItem.F_SIZE}),
+		new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.date, width:ZmMsg.COLUMN_WIDTH_DATE_DLV, sortable:ZmItem.F_DATE}),
 		new DwtListHeaderItem({field:ZmItem.F_FROM, text:ZmMsg.owner, width:ZmMsg.COLUMN_WIDTH_OWNER_DLV}),
 		new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER_DLV})
 	);
@@ -123,7 +123,22 @@ function(htmlArr, idx, item, field, colIdx, params) {
 
 // listeners
 
-ZmDetailListView.prototype._colHeaderActionListener =
-function(event) {
-  	// TODO
+ZmDetailListView.prototype._sortColumn =
+function(columnItem, bSortAsc) {
+
+	// call base class to save the new sorting pref
+	ZmBriefcaseBaseView.prototype._sortColumn.apply(this, arguments);
+
+	var query = this._controller.getSearchString();
+	var queryHint = this._controller.getSearchStringHint();
+
+	if (this._sortByString && (query || queryHint)) {
+		var params = {
+			query:		query,
+			queryHint:	queryHint,
+			types:		[ZmItem.BRIEFCASE_ITEM],
+			sortBy:		this._sortByString
+		};
+		appCtxt.getSearchController().search(params);
+	}
 };
