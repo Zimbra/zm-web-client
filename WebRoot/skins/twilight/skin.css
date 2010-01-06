@@ -138,9 +138,13 @@ body, #skin_container_splash_screen	{
 	background-color: #f3f3f3;
 }
 
-.ZmContactInfoView .contactHeaderTable{
+.ZmContactInfoView .contactHeaderTable, .ZmEditContactView .contactHeaderTable{
 	background: #ececec url("@SkinImgDir@/message_header_bg.png") repeat-x top left;
 	border-bottom: 2px groove #999; 
+}
+
+.ZmEditContactView .ZButtonBorder{
+	background: none;
 }
 
 .AlphabetBarTable .DwtButton{
