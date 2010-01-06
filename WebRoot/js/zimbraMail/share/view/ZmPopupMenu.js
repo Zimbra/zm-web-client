@@ -54,6 +54,8 @@ function() {
 	return "ZmPopupMenu";
 };
 
+ZmPopupMenu.MENU_ITEM_ID_KEY = "menuItemId";
+
 ZmPopupMenu.prototype.addSelectionListener =
 function(menuItemId, listener, index) {
 	var menuItem = this._menuItems[menuItemId];
@@ -129,6 +131,7 @@ function(id, params) {
 	}
 
 	mi.setEnabled(params.enabled !== false);
+	mi.setData(ZmPopupMenu.MENU_ITEM_ID_KEY, id);
 
 	return mi;
 };

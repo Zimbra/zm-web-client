@@ -36,11 +36,22 @@ function() {
 	return "ZmSpellChecker";
 };
 
+/**
+ * Checks spelling.
+ *
+ * @param textOrParams  [object|string] The text to check or an object with
+ *                                      "text" and "ignore" properties.
+ * @param callback      [AjxCallback]*  Callback for success.
+ * @param errCallback   [AjxCallback]*  Callback for failure.
+ */
 ZmSpellChecker.prototype.check =
-function(text, callback, errCallback) {
+function(textOrParams, callback, errCallback) {
+	var params = typeof textOrParams == "string" ? { text: textOrParams } : textOrParams;
 	var soapDoc = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
-	soapDoc.getMethod().appendChild(soapDoc.getDoc().createTextNode(text));
-
+	soapDoc.getMethod().appendChild(soapDoc.getDoc().createTextNode(params.text));
+	if (params.ignore) {
+		soapDoc.getMethod().setAttribute("ignore", params.ignore);
+	}
 	var callback = new AjxCallback(this, this._checkCallback, callback);
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errCallback});
 };
