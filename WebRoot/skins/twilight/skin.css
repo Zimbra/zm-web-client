@@ -137,3 +137,28 @@ body, #skin_container_splash_screen	{
 .ZmOverview{
 	background-color: #f3f3f3;
 }
+
+.ZmContactInfoView .contactHeaderTable{
+	background: #ececec url("@SkinImgDir@/message_header_bg.png") repeat-x top left;
+	border-bottom: 2px groove #999; 
+}
+
+.AlphabetBarTable .DwtButton{
+	background-color: #e5e5e5;
+	border: none;
+	-moz-border-radius: none;
+}
+
+.AlphabetBarTable .DwtButton-hover{
+	background-color: #949494;
+	color: white;
+	border: none;
+	-moz-border-radius: 4px;
+}
+
+.AlphabetBarTable .DwtButton-active{
+	background-color: #404040;
+	color: white;
+	border: none;
+	-moz-border-radius: 4px;
+}
