@@ -87,7 +87,6 @@ function(settings) {
 	settings.registerSetting("AUTOCOMPLETE_LIMIT",				{name: "zimbraContactAutoCompleteMaxResults", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:20});
 	settings.registerSetting("AUTOCOMPLETE_SHARE",				{name: "zimbraPrefShareContactsInAutoComplete", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("AUTOCOMPLETE_SHARED_ADDR_BOOKS",	{name: "zimbraPrefSharedAddrBookAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	settings.registerSetting("CONTACTS_VIEW",					{name: "zimbraPrefContactsInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CV_LIST, isGlobal:true});
 	settings.registerSetting("EXPORT",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("GAL_AUTOCOMPLETE",				{name: "zimbraPrefGalAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("IMPORT",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
@@ -108,7 +107,6 @@ function() {
 				ZmSetting.AUTO_ADD_ADDRESS,
 				ZmSetting.AUTOCOMPLETE_SHARE,
 				ZmSetting.AUTOCOMPLETE_SHARED_ADDR_BOOKS,
-				ZmSetting.CONTACTS_VIEW,
 				ZmSetting.EXPORT,
 				ZmSetting.GAL_AUTOCOMPLETE,
 				ZmSetting.INITIALLY_SEARCH_GAL,
@@ -133,13 +131,6 @@ function() {
 	ZmPref.registerPref("AUTOCOMPLETE_SHARED_ADDR_BOOKS", {
 		displayName:		ZmMsg.autocompleteSharedAddrBooks,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
-	ZmPref.registerPref("CONTACTS_VIEW", {
-		displayName:		ZmMsg.viewContacts,
-	 	displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.detailedCards, ZmMsg.contactList],
-		options:			[ZmSetting.CV_CARDS, ZmSetting.CV_LIST]
 	});
 
 	ZmPref.registerPref("EXPORT", {
@@ -934,13 +925,6 @@ function(ev) {
 	var list = ev.getDetail("settings");
 	if (!(list && list.length)) { return; }
 
-	var view = clc._getViewType();
-	for (var i = 0; i < list.length; i++) {
-		var setting = list[i];
-		if (setting.id == ZmSetting.CONTACTS_VIEW) {
-			view = clc._defaultView();
-		}
-	}
-
-	clc.switchView(view, force, this._initialized, true);
+	//var view = clc._getViewType();
+	//clc.switchView(view, force, this._initialized, true);
 };
