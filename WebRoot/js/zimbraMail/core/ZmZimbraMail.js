@@ -2181,7 +2181,7 @@ function(appName) {
 	htmlArr[idx++] = "'>";
 	el.innerHTML = htmlArr.join("");
 	var elements = {};
-	elements[ZmAppViewMgr.C_APP_CONTENT] = upsellView;
+	elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = upsellView;
 	var viewName = [appName, "upsell"].join("_");
 	this._appViewMgr.createView({viewId:viewName, appName:appName, elements:elements, isTransient:true});
 	this._appViewMgr.pushView(viewName);
