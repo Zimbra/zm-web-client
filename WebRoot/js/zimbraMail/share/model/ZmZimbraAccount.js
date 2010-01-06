@@ -595,7 +595,10 @@ function(result) {
 	DBG.println(AjxDebug.DBG1, "Account settings successfully loaded for " + this.name);
 
 	// set account type
-	this.type = appCtxt.get(ZmSetting.OFFLINE_ACCOUNT_FLAVOR, null, this);
+	this.type = appCtxt.isOffline
+		? appCtxt.get(ZmSetting.OFFLINE_ACCOUNT_FLAVOR, null, this)
+		: ZmAccount.TYPE_ZIMBRA;
+
 	this.isZimbraAccount = this.type == ZmAccount.TYPE_ZIMBRA;
 
 	// set icon now that we know the type
@@ -619,7 +622,7 @@ function(result) {
 
 	// read receipts are not currently allowed for non zimbra accounts
 	if (!this.isZimbraAccount) {
-		appCtxt.set(ZmSetting.MAIL_READ_RECEIPT_ENABLED, false);
+		appCtxt.set(ZmSetting.MAIL_READ_RECEIPT_ENABLED, false, null, null, null, this);
 	}
 };
 

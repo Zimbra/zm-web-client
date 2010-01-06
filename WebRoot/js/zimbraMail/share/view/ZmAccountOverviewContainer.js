@@ -218,10 +218,11 @@ function(params) {
 	}
 
 	// add zimlets at the end of all overviews
-	var skip = ((params.omit && params.omit[ZmOrganizer.ID_ZIMLET]) ||
-				(appCtxt.getZimletMgr().getPanelZimlets().length == 0));
+	var skip = params.omit && params.omit[ZmOrganizer.ID_ZIMLET];
 
-	if (!skip && window[ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]]) {
+	if (!skip && window[ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]] &&
+		this._appName != ZmApp.PREFERENCES)
+	{
 		var headerLabel = ZmOrganizer.LABEL[ZmOrganizer.ZIMLET];
 		var headerDataId = params.overviewId = appCtxt.getOverviewId([this.containerId, headerLabel], null);
 		var headerParams = {
@@ -325,7 +326,9 @@ function(parent, data) {
 		parent.getOp(ZmOperation.MARK_ALL_READ).setVisible(false);
 		emptyFolderOp.setVisible(false);
 		parent.getOp(this._newOp).setVisible(false);
-		parent.getOp(ZmOperation.SYNC).setVisible(false);
+		if (appCtxt.isOffline) {
+			parent.getOp(ZmOperation.SYNC).setVisible(false);
+		}
 		parent.getOp(ZmOperation.DELETE).setVisible(true);
 		return;
 	}
@@ -336,7 +339,9 @@ function(parent, data) {
 	parent.getOp(ZmOperation.MARK_ALL_READ).setVisible(!isAcctType);
 	emptyFolderOp.setVisible(false);
 	parent.getOp(this._newOp).setVisible(isAcctType && data != ZmOrganizer.ID_ALL_MAILBOXES);
-	parent.getOp(ZmOperation.SYNC).setVisible(isAcctType && (!acct || (acct && !acct.isMain)));
+	if (appCtxt.isOffline) {
+		parent.getOp(ZmOperation.SYNC).setVisible(isAcctType && (!acct || (acct && !acct.isMain)));
+	}
 	parent.getOp(ZmOperation.DELETE).setVisible(false);
 
 	if (isAcctType) {
@@ -394,7 +399,7 @@ function(params, account, showBackgroundColor, headerClassName) {
 		var omit = params.omitPerAcct
 			? params.omitPerAcct[account.id] : params.omit;
 
-		var headerLabel = (this._appName == ZmApp.PREFERENCES && account.isMain)
+		var headerLabel = (this._appName == ZmApp.PREFERENCES && account.isMain && appCtxt.isOffline)
 			? ZmMsg.allAccounts : account.getDisplayName();
 
 		var headerParams = {
@@ -678,13 +683,15 @@ function() {
 	if (!this._actionMenu) {
 		var orgType = ZmApp.ORGANIZER[this._appName];
 		this._newOp = ZmOrganizer.NEW_OP[orgType];
-		var ops = [
-			this._newOp,
-			ZmOperation.SYNC,
-			ZmOperation.MARK_ALL_READ,
-			ZmOperation.EMPTY_FOLDER,
-			ZmOperation.DELETE
-		];
+
+		var ops = [this._newOp];
+		if (appCtxt.isOffline) {
+			ops.push(ZmOperation.SYNC);
+		}
+		ops.push(ZmOperation.MARK_ALL_READ,
+				ZmOperation.EMPTY_FOLDER,
+				ZmOperation.DELETE);
+
 		this._actionMenu = new AjxCallback(this, this._createActionMenu, [ops]);
 	}
 };

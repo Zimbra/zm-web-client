@@ -624,6 +624,9 @@ ZmAccountsPage.prototype._setZimbraAccount =
 function(account, section) {
 	this._setGenericFields(account, section);
 	this._setIdentityFields(account, section);
+	if (appCtxt.isFamilyMbox) {
+		this._setControlEnabled("VISIBLE", section, !account.isMain);
+	}
 };
 
 ZmAccountsPage.prototype._setExternalAccount =
@@ -1527,12 +1530,10 @@ function(evt) {
 
 ZmAccountsPage.prototype._updateList =
 function(account) {
-	var list = this._accountListView;
-	this._accountListView.setCellContents(account, ZmItem.F_NAME, AjxStringUtil.htmlEncode(account.getName()));
-	this._accountListView.setCellContents(account, ZmItem.F_EMAIL, AjxStringUtil.htmlEncode(account.getEmail()));
-	var provider = ZmDataSource.getProviderForAccount(account);
-	var type = provider ? provider.name : ZmAccount.getTypeName(account.type);
-	this._accountListView.setCellContents(account, ZmItem.F_TYPE, AjxStringUtil.htmlEncode(type));
+	var lv = this._accountListView;
+	lv.setCellContents(account, ZmItem.F_NAME, AjxStringUtil.htmlEncode(account.getName()));
+	lv.setCellContents(account, ZmItem.F_EMAIL,AjxStringUtil.htmlEncode(account.getEmail()));
+	lv.setCellContents(account, ZmItem.F_TYPE, AjxStringUtil.htmlEncode(lv._getAccountType(account)));
 };
 
 // generic listeners
@@ -1577,11 +1578,12 @@ function(email) {
 
 ZmAccountsPage.prototype._updateReplyToEmail =
 function(email) {
-	if (AjxUtil.isEmailAddress(email))
+	if (AjxUtil.isEmailAddress(email)) {
 		this._updateComboBox("REPLY_TO_EMAIL", email);
-	else
+	} else {
 		this._updateComboBox("REPLY_TO_EMAIL");
-}
+	}
+};
 
 // data source listeners
 
@@ -2082,14 +2084,7 @@ function(buffer, i, item, field, col, params) {
 		return i;
 	}
 	if (field == ZmItem.F_TYPE) {
-		var provider = ZmDataSource.getProviderForAccount(item);
-		var type = provider && AjxStringUtil.htmlEncode(provider.name);
-		if (!type) {
-			type = (item.type == ZmAccount.TYPE_ZIMBRA && !item.isMain && !appCtxt.isOffline)
-				? ZmMsg.accountTypeSecondary
-				: ZmAccount.getTypeName(item.type);
-		}
-		buffer[i++] = type;
+		buffer[i++] = this._getAccountType(item);
 		return i;
 	}
 	return DwtListView.prototype._getCellContents.apply(this, arguments);
@@ -2108,6 +2103,20 @@ function() {
 		new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.emailAddr}),
 		new DwtListHeaderItem({field:ZmItem.F_TYPE, text:ZmMsg.type, width:ZmAccountsListView.WIDTH_TYPE})
 	];
+};
+
+ZmAccountsListView.prototype._getAccountType =
+function(account) {
+	var provider = ZmDataSource.getProviderForAccount(account);
+	var type = provider && AjxStringUtil.htmlEncode(provider.name);
+	if (!type) {
+		if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox) {
+			type = account.isMain ? ZmMsg.accountTypePrimary : ZmMsg.accountTypeSecondary;
+		} else {
+			type = ZmAccount.getTypeName(account.type);
+		}
+	}
+	return type;
 };
 
 //

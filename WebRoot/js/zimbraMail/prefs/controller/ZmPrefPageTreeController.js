@@ -108,6 +108,10 @@ function(account, sectionId) {
 		return false;
 	}
 
+	if (appCtxt.isFamilyMbox && !account.isMain && sectionId == "CONTACTS") {
+		return false;
+	}
+
 	if (appCtxt.isOffline) {
 		if (account.isMain) {
 			if (sectionId == "FILTERS" ||

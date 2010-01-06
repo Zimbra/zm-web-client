@@ -292,7 +292,7 @@ and the container element is replaced with that control.
 						</tr>
 					<$ } $>
 
-					<$ if (!appCtxt.multiAccounts || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
+					<$ if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 						<$ if (data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
 							<tr>
 								<td class='ZOptionsLabel'>
@@ -413,7 +413,7 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-	<$ if (!appCtxt.multiAccounts || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
+	<$ if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 		<table border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -791,7 +791,7 @@ and the container element is replaced with that control.
 						</tr>
 					<$ } $>
 
-					<$ if (!appCtxt.multiAccounts || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
+					<$ if (!appCtxt.multiAccounts || (appCtxt.isFamilyMbox && data.activeAccount.isMain) || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 						<$ if (data.isEnabled(ZmSetting.INITIALLY_SEARCH_GAL)) { $>
 							<tr>
 								<td class='ZOptionsLabel'>&nbsp;</td>
@@ -805,7 +805,7 @@ and the container element is replaced with that control.
 		</table>
 	<$ } $>
 
-	<$ if (!appCtxt.multiAccounts || !data.activeAccount.isMain) {$>
+	<$ if (!appCtxt.multiAccounts || (appCtxt.isFamilyMbox && data.activeAccount.isMain) || !data.activeAccount.isMain) {$>
 		<table border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -846,7 +846,7 @@ and the container element is replaced with that control.
 
 <template id='prefs.Pages#Accounts'>
 	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
-			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
 	</div>
 
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
@@ -941,7 +941,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'><$=ZmMsg.accountNameLabel$></td>
 						<td class='ZOptionsField'><input id='${id}_PRIMARY_NAME' tabindex='1020'></td>
 					</tr>
-					<$ if (appCtxt.isFamilyMbox && !appCtxt.getActiveAccount().isMain) { $>
+					<$ if (appCtxt.isFamilyMbox) { $>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.isVisible$>:</td>
 							<td class='ZOptionsField'><span id='${id}_PRIMARY_VISIBLE' tabindex='1021'></span></td>
