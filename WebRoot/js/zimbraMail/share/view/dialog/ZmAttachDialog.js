@@ -100,12 +100,18 @@ function() {
 
 ZmAttachDialog.prototype._okButtonListener =
 function() {
+
+    var okButton = this.getButton(DwtDialog.OK_BUTTON);
+    okButton.setEnabled(false);
+
 	var okListener = this._okListeners[this._tabView.getCurrentTab()];
 	if (okListener) {
 		okListener.run(this);
 	} else {
 		this._defaultOkCallback.run();
 	}
+    
+     okButton.setEnabled(true);
 };
 
 // Create HTML Container
