@@ -115,6 +115,10 @@ function() {
 
 ZmListView.prototype.set =
 function(list, sortField) {
+
+	this._sortByString = this._controller._currentSearch && this._controller._currentSearch.sortBy;
+	appCtxt.set(ZmSetting.SORTING_PREF, this._sortByString, this.view);
+
 	this.setSelectionHdrCbox(false);
 
 	// bug fix #28595 - in multi-account, reset tag list change listeners
