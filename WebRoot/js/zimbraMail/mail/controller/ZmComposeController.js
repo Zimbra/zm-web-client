@@ -383,9 +383,9 @@ function(attId, docIds, draftType, callback) {
 		? this._composeView.getFromAccount().name : this._accountName;
 
 	if (isDraft) {
-		if (appCtxt.isOffline) {
+		if (appCtxt.multiAccounts) {
 			// for offline, save drafts based on account owner of From: dropdown
-			acctName = ac.accountList.getAccount(msg.offlineFromValue.accountId).name;
+			acctName = ac.accountList.getAccount(msg.fromSelectValue.accountId).name;
 		} else {
 			acctName = ac.getActiveAccount().name;
 		}

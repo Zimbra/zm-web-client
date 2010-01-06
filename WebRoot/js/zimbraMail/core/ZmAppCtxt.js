@@ -190,7 +190,7 @@ function() {
 ZmAppCtxt.prototype.get =
 function(id, key, account) {
 	// for offline, global settings always come from the "local" parent account
-	var acct = (this.isOffline && ZmSetting.IS_GLOBAL[id])
+	var acct = (appCtxt.multiAccounts && ZmSetting.IS_GLOBAL[id])
 		? this.accountList.mainAccount : account;
 	return this.getSettings(acct).get(id, key);
 };

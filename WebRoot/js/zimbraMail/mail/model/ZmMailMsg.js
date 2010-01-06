@@ -1689,9 +1689,9 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		}
 
 		var addr, displayName = null;
-		if (this.offlineFromValue) {
-			addr = this.offlineFromValue.addr.address;
-			displayName = this.offlineFromValue.addr.name;
+		if (this.fromSelectValue) {
+			addr = this.fromSelectValue.addr.address;
+			displayName = this.fromSelectValue.addr.name;
 		} else {
 			if (onBehalfOf) {
 				addr = accountName;

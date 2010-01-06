@@ -165,7 +165,7 @@
 	<$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $> 
 	<!-- header -->
 	<table id='${headerId}' border=0 cellpadding=2 cellspacing=2 width=100%>
-		<$ if (appCtxt.isOffline) { $>
+		<$ if (appCtxt.multiAccounts) { $>
 			<tr>
 				<td align=right valign=top style='<$=labelStyle$>'>
 					<$=ZmMsg.fromLabel$>

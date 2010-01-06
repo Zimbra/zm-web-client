@@ -686,7 +686,7 @@ function(attId, isDraft, dummyMsg) {
 	}
 
 	if (this._fromSelect) {
-		msg.offlineFromValue = this._fromSelect.getSelectedOption();
+		msg.fromSelectValue = this._fromSelect.getSelectedOption();
 	}
 
 	/**
@@ -1435,7 +1435,9 @@ function() {
 ZmComposeView.prototype.getFromAccount =
 function() {
 	var ac = window.parentAppCtxt || window.appCtxt;
-	return this._fromSelect ? ac.accountList.getAccount(this._fromSelect.getSelectedOption().accountId) : ac.accountList.defaultAccount || ac.accountList.activeAccount || ac.accountList.mainAccount;
+	return this._fromSelect
+		? (ac.accountList.getAccount(this._fromSelect.getSelectedOption().accountId))
+		: (ac.accountList.defaultAccount || ac.accountList.activeAccount || ac.accountList.mainAccount);
 };
 
 // Private / protected methods
@@ -2159,7 +2161,7 @@ function(templateId, data) {
 	this._setEventHandler(data.subjectInputId, "onBlur");
 	this._setEventHandler(data.subjectInputId, "onFocus");
 
-	if (appCtxt.isOffline) {
+	if (appCtxt.multiAccounts) {
 		if (!this._fromSelect) {
 			this._fromSelect = new DwtSelect({parent:this, parentElement:data.fromSelectId});
 			this._fromSelect.addChangeListener(new AjxListener(this, this._handleFromListener));
@@ -2501,10 +2503,10 @@ function(msg) {
 
 	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
-		if (acct.isMain) { continue; }
+		if (appCtxt.isOffline && acct.isMain) { continue; }
 
 		var identities = ac.getIdentityCollection(acct).getIdentities();
-		if (ac.get(ZmSetting.OFFLINE_SMTP_ENABLED, null, acct)) {
+		if (ac.isFamilyMbox || ac.get(ZmSetting.OFFLINE_SMTP_ENABLED, null, acct)) {
 			for (var j = 0; j < identities.length; j++) {
 				identity = identities[j];
 
