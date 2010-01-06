@@ -1429,9 +1429,10 @@ function(mailtoParams) {
 	if (this._canSaveDraft()) {
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
-		} else {
-			this._composeView.reset(false);
 		}
+
+        this._composeView.reset(false);
+
 		if (!mailtoParams) {
 			appCtxt.getAppViewMgr().showPendingView(true);
 		}
