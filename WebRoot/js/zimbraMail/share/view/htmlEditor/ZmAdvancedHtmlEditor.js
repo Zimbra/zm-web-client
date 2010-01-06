@@ -367,7 +367,7 @@ function(id, mode, content) {
         // General options
         mode :  (mode == DwtHtmlEditor.HTML)? "exact" : "none",
         elements:  id,
-        plugins : "inlinepopups,contextmenu,table,ztable",
+        plugins : "table,ztable,inlinepopups,contextmenu",
         theme : "advanced",
         theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols",
         theme_advanced_buttons2: "",
@@ -375,6 +375,7 @@ function(id, mode, content) {
         theme_advanced_buttons4: "",
         theme_advanced_toolbar_location : "top",
         theme_advanced_toolbar_align : "left",
+        theme_advanced_resizing : true,
         convert_urls : false,
         verify_html : false,
         content_css : false,
