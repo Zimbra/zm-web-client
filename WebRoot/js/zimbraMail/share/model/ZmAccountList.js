@@ -286,6 +286,7 @@ function(settings, obj) {
 	account.visible = true;
 	account.settings = settings;
 	account.type = ZmAccount.TYPE_ZIMBRA;
+	account.icon = "AccountZimbra";
 
 	this._accounts[account.id] = account;
 	delete this._accounts[ZmAccountList.DEFAULT_ID];

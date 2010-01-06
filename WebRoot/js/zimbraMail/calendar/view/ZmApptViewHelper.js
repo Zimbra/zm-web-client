@@ -195,7 +195,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 		var acct = accounts[i];
 
 		var appEnabled = ZmApp.SETTING[ZmItem.APP[calItem.type]];
-		if ((appCtxt.multiAccounts && acct.isMain) ||
+		if ((appCtxt.isOffline && acct.isMain) ||
 			!appCtxt.get(appEnabled, null, acct))
 		{
 			continue;
@@ -206,7 +206,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 	}
 
 	// add the local account last for multi-account
-	if (appCtxt.multiAccounts) {
+	if (appCtxt.isOffline) {
 		folderTree = appCtxt.getFolderTree(appCtxt.accountList.mainAccount);
 		data = data.concat(folderTree.getByType(org));
 	}
@@ -234,7 +234,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 			calendarOrgs[id] = cal.parent.getOwner();
 		}
 
-		var selected = ((calItem.folderId == cal.id) || (calItem.folderId == id ) || (calItem.folderId == cal.nId));
+		var selected = ((calItem.folderId == cal.id) || (calItem.folderId == id));
 		var icon = appCtxt.multiAccounts ? cal.account.getIcon() : null;
 		var name = appCtxt.multiAccounts
 			? ([cal.getName(), " (", cal.getAccount().getDisplayName(), ")"].join(""))
