@@ -133,3 +133,7 @@ body, #skin_container_splash_screen	{
 	border-bottom: 1px solid #CCCCCC;
 	border-top: 0px;
 }
+
+.ZmOverview{
+	background-color: #f3f3f3;
+}
