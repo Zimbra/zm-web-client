@@ -1542,7 +1542,7 @@ function(ev) {
 			var params = {
 				soapDoc: soapDoc,
 				asyncMode: true,
-				callback: new AjxCallback(appCtxt, appCtxt.setStatusMsg, ["Word added to dictionary"])
+				callback: new AjxCallback(appCtxt, appCtxt.setStatusMsg, [ZmMsg.wordAddedToDictionary])
 			};
 			appCtxt.getAppController().sendRequest(params);
 			break;
