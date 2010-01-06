@@ -736,7 +736,6 @@ ZmSignatureEditor = function(parent) {
 
 ZmSignatureEditor.prototype = new ZmHtmlEditor;
 ZmSignatureEditor.prototype.constructor = ZmSignatureEditor;
-ZmSignatureEditor.prototype.TEXTAREA_CLASSNAME = "ZmSignatureEditorTextArea";
 
 ZmSignatureEditor.prototype._createToolbars =
 function() {
