@@ -65,7 +65,7 @@ ZmZimbraMail.addAppListener(ZmApp.PREFERENCES, ZmAppEvent.PRE_LAUNCH, new AjxLis
 ZmPreferencesApp.prototype.launch =
 function(params, callback) {
 	// first time launch of prefs app should reset active app to "local" account
-	if (appCtxt.isOffline) {
+	if (appCtxt.multiAccounts) {
 		appCtxt.accountList.setActiveAccount(appCtxt.accountList.mainAccount);
 	}
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);

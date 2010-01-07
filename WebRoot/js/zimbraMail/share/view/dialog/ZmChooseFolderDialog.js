@@ -73,6 +73,10 @@ function(params) {
 	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
 
+		if (params.forceSingle && acct != appCtxt.getActiveAccount()) {
+			continue;
+		}
+
 		var omit = omitPerAcct[acct.id] = params.omit || {};
 		omit[ZmFolder.ID_DRAFTS] = true;
 		omit[ZmFolder.ID_OUTBOX] = true;
@@ -132,7 +136,8 @@ function(params) {
 		noRootSelect:	params.noRootSelect,
 		treeStyle:		params.treeStyle || DwtTree.SINGLE_STYLE,	// we don't want checkboxes!
 		appName:		params.appName,
-		selectable:		false
+		selectable:		false,
+		forceSingle:	params.forceSingle
 	};
 
 	// make sure the requisite packages are loaded
@@ -157,9 +162,9 @@ function(params) {
 
 ZmChooseFolderDialog.prototype._doPopup =
 function(params) {
-	var ov = this._setOverview(params);
+	var ov = this._setOverview(params, params.forceSingle);
 
-	if (appCtxt.multiAccounts) {
+	if (appCtxt.multiAccounts && !params.forceSingle) {
 		// ov is an overview container, and overviewId is the containerId
 		this._multiAcctOverviews[params.overviewId] = ov;
 		for (var i in this._multiAcctOverviews) {
@@ -395,11 +400,14 @@ function(visible) {
 
 ZmChooseFolderDialog.prototype._getOverview =
 function() {
+	var ov;
 	if (appCtxt.multiAccounts) {
-		return this._opc.getOverviewContainer(this._curOverviewId);
+		ov = this._opc.getOverviewContainer(this._curOverviewId);
 	}
 
-	return ZmDialog.prototype._getOverview.call(this);
+	// this covers the case where we're in multi-account mode, but dialog was
+	// popped up in "forceSingle" mode
+	return (ov || ZmDialog.prototype._getOverview.call(this));
 };
 
 ZmChooseFolderDialog.prototype._treeViewSelectionListener =
@@ -410,7 +418,7 @@ function(ev) {
 		return;
 	}
 
-	if (appCtxt.multiAccounts) {
+	if (this._getOverview() instanceof ZmAccountOverviewContainer) {
 		if (ev.detail == DwtTree.ITEM_DBL_CLICKED &&
 			ev.item instanceof DwtHeaderTreeItem)
 		{

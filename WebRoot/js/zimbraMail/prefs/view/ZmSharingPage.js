@@ -564,14 +564,8 @@ function(listView, listViewDivId) {
 // make sure user is not looking for folders shared from their account
 ZmSharingView.prototype._validateOwner =
 function(value) {
-
 	if (!value) { return true; }
-
-	if (appCtxt.isMyAddress(value, true)) {
-		return false;
-	}
-
-	return true;
+	return (appCtxt.isMyAddress(value, true)) ? false: true;
 };
 
 // Note that in the handler call, "this" is set to the form
@@ -598,15 +592,35 @@ function(ev) {
 ZmSharingView.prototype._showChooser =
 function(orgType) {
 
-	var dialog = appCtxt.getChooseFolderDialog();
-	var params = {treeIds: 			[orgType],
-				  overviewId:		dialog.getOverviewId(ZmOrganizer.APP[orgType]),
-				  title:			ZmMsg.chooseFolder,
-				  skipReadOnly:		true,
-				  skipRemote:		true,
-				  hideNewButton:	true,
-				  appName:			ZmOrganizer.APP[orgType],
-				  noRootSelect:		true};
+	// In multi-account, sharing page gets its own choose-folder dialog since it 
+	// only shows the active account's overview. Otherwise, we have to juggle
+	// overviews with between single/multiple overview trees. Ugh.
+	var dialog;
+	if (appCtxt.multiAccounts) {
+		if (!this._chooseFolderDialog) {
+			AjxDispatcher.require("Extras");
+			this._chooseFolderDialog = new ZmChooseFolderDialog(appCtxt.getShell());
+		}
+		dialog = this._chooseFolderDialog;
+	} else {
+		dialog = appCtxt.getChooseFolderDialog();
+	}
+
+	var overviewId = dialog.getOverviewId(ZmOrganizer.APP[orgType]);
+	if (appCtxt.multiAccounts) {
+		overviewId = [overviewId, "-", this.toString(), "-", appCtxt.getActiveAccount().name].join("");
+	}
+	var params = {
+		treeIds: [orgType],
+		overviewId: overviewId,
+		title: ZmMsg.chooseFolder,
+		skipReadOnly: true,
+		skipRemote: true,
+		hideNewButton: true,
+		appName: ZmOrganizer.APP[orgType],
+		noRootSelect: true,
+		forceSingle: true
+	};
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._folderSelectionCallback, this, [dialog]);
 	dialog.popup(params);
@@ -766,7 +780,10 @@ ZmSharingListView = function(params) {
 ZmSharingListView.prototype = new DwtListView;
 ZmSharingListView.prototype.constructor = ZmSharingListView;
 
-ZmSharingListView.prototype.toString = function() { return "ZmSharingListView"; }
+ZmSharingListView.prototype.toString =
+function() {
+	return "ZmSharingListView";
+};
 
 ZmSharingListView.prototype._getHeaderList =
 function() {
