@@ -272,6 +272,18 @@ function(ev) {
 	}
 	this._chooseFolderDialog.reset();
 	this._chooseFolderDialog.registerCallback(DwtDialog.OK_BUTTON, this._runFilterOkCallback, this, this._chooseFolderDialog);
+
+	// bug 42725: always omit shared folders
+	var omit = {};
+	var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
+	var children = tree.root.children.getArray();
+	for (var i = 0; i < children.length; i++) {
+		var child = children[i];
+		if (child.type == ZmOrganizer.FOLDER && child.isRemote()) {
+			omit[child.id] = true;
+		}
+	}
+
 	var params = {
 		treeIds:		[ZmOrganizer.FOLDER],
 		title:			ZmMsg.chooseFolder,
@@ -280,7 +292,8 @@ function(ev) {
 		skipReadOnly:	true,
 		hideNewButton:	true,
 		treeStyle:		DwtTree.CHECKEDITEM_STYLE,
-		appName:		ZmApp.MAIL
+		appName:		ZmApp.MAIL,
+		omit:			omit
 	};
 	this._chooseFolderDialog.popup(params);
 
