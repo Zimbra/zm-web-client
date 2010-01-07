@@ -131,8 +131,10 @@ function(list, sortField) {
 
 	if (this._isPageless) {
 		if (this._itemsToAdd) {
-			this.addItems(this._itemsToAdd);
-			this._itemsToAdd = null;
+			if (this._itemsToAdd.length) {
+				this.addItems(this._itemsToAdd);
+				this._itemsToAdd = null;
+			}
 		} else {
 			var lvList = list;
 			if (list instanceof ZmList) {

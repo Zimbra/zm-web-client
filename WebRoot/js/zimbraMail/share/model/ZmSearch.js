@@ -56,6 +56,9 @@ ZmSearch = function(params) {
 
 		if (this.query || this.queryHint) {
 			this._parseQuery();
+			if (this.querySortOrder) {
+				this.sortBy = this.querySortOrder;
+			}
 		}
 	}
 	this.isGalSearch = false;
@@ -634,7 +637,7 @@ function() {
 	return limit;
 };
 
-ZmSearch.IS_OP	= {"in":true, "inid":true, "is":true, "tag":true};
+ZmSearch.IS_OP	= {"in":true, "inid":true, "is":true, "tag":true, "sort":true};
 ZmSearch.COND	= {"and":" && ", "or":" || ", "not":" !"};
 ZmSearch.EOW	= {" ":true, ":":true, "(":true, ")":true};
 ZmSearch.FLAG = {};
@@ -781,6 +784,8 @@ function() {
 				var test = ZmSearch.FLAG[t.arg];
 				if (!test) { return; }
 				func.push(test);
+			} else if (t.op == "sort") {
+				this.querySortOrder = t.arg;
 			}
 			numTerms++;
 			term = t;
