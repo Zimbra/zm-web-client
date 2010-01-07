@@ -49,7 +49,7 @@ ZmTreeView = function(params) {
 		id: params.id
 	});
 
-	this._headerClass = params.headerClass ? params.headerClass : "overviewHeader";
+	this._headerClass = params.headerClass || "overviewHeader";
 	this.overviewId = params.overviewId;
 	this.type = params.type;
 	this.allowedTypes = params.allowedTypes;
@@ -362,7 +362,9 @@ function(parentNode, organizer, index, noTooltips, omit) {
 	var ds = (dss && dss.length > 0) ? dss[0] : null;
 
 	if (ds && ds.type == ZmAccount.TYPE_IMAP) {
-		ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:this._headerClass});
+		var cname = appCtxt.isFamilyMbox ? null : this._headerClass;
+		var icon = appCtxt.isFamilyMbox ? "AccountIMAP" : null;
+		ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:cname, imageInfo:icon});
 		ti.enableSelection(false);
 	} else {
 		// create parent chain
