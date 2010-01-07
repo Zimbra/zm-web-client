@@ -1329,6 +1329,8 @@ ZmListController.prototype._resetNavToolBarButtons =
 function(view) {
 
 	var lv = this._listView[view];
+	if (!lv) { return; }
+
 	if (lv._isPageless) {
 		this._setItemCountText();
 	}
