@@ -83,6 +83,13 @@ ZmShare.DELETE	= "delete";
 ZmShare.ACCEPT	= "accept";
 ZmShare.DECLINE	= "decline";
 ZmShare.NOTIFY  = "notify";
+ZmShare.RESEND	= "resend";
+ZmShare.REVOKE	= "revoke";
+
+ZmShare.ACTION_LABEL = {};
+ZmShare.ACTION_LABEL[ZmShare.EDIT]		= ZmMsg.edit;
+ZmShare.ACTION_LABEL[ZmShare.RESEND]	= ZmMsg.resend;
+ZmShare.ACTION_LABEL[ZmShare.REVOKE]	= ZmMsg.revoke;
 
 // allowed permission bits
 ZmShare.PERM_READ		= "r";
@@ -347,7 +354,8 @@ function(result) {
 
 ZmShare.prototype.revoke = 
 function(callback) {
-	var actionAttrs = { zid: this.isPublic() ? ZmShare.ZID_PUBLIC : this.grantee.id };
+	var isAllShare = this.grantee && (this.grantee.type == ZmShare.TYPE_ALL);
+	var actionAttrs = { zid: this.isPublic() ? ZmShare.ZID_PUBLIC : isAllShare ? ZmShare.ZID_ALL : this.grantee.id };
 	var respCallback = new AjxCallback(this, this._handleResponseRevoke, [callback]);
 	this._shareAction("!grant", actionAttrs, null, respCallback);
 };

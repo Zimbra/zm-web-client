@@ -337,10 +337,11 @@ function(organizer) {
 		// don't show any share that's for us in the list
 		for (var i = 0; i < shares.length; i++) {
 			var share = shares[i];
-			var granteeId = share.grantee && share.grantee.id;
-            var granteeType = share.grantee && share.grantee.type;
-			if ((granteeId && (granteeId != userZid)) || ( granteeType && granteeType == ZmShare.TYPE_PUBLIC) ) {
-				displayShares.push(share);
+			if (share.grantee) {
+				var granteeId = share.grantee.id;
+				if ((share.grantee.type != ZmShare.TYPE_USER) || (share.grantee.id != userZid)) {
+					displayShares.push(share);
+				}
 			}
 		}
 	}
@@ -354,7 +355,7 @@ function(displayShares, organizer) {
 	if (organizer) {
 		displayShares = this._getDisplayShares(organizer);
 	}
-	
+
 	if (displayShares.length) {
 		var table = document.createElement("TABLE");
 		table.border = 0;
@@ -395,32 +396,29 @@ function(displayShares, organizer) {
 ZmFolderPropsDialog.prototype.__createCmdCells =
 function(row, share) {
 	var type = share.grantee.type;
-	if (type == ZmShare.TYPE_ALL || type == ZmShare.TYPE_DOMAIN || !share.link.role) {
+	if (type == ZmShare.TYPE_DOMAIN || !share.link.role) {
 		var cell = row.insertCell(-1);
 		cell.colSpan = 3;
 		cell.innerHTML = ZmMsg.configureWithAdmin;
 		return;
 	}
 
-	var labels = [ZmMsg.edit, ZmMsg.revoke, ZmMsg.resend];
-	var actions = [this._handleEditShare, this._handleRevokeShare, this._handleResendShare];
+	var actions = [ZmShare.EDIT, ZmShare.REVOKE, ZmShare.RESEND];
+	var handlers = [this._handleEditShare, this._handleRevokeShare, this._handleResendShare];
 
-	for (var i = 0; i < labels.length; i++) {
+	for (var i = 0; i < actions.length; i++) {
+		var action = actions[i];
 		var cell = row.insertCell(-1);
 
-		var action = actions[i];
 		// public shares have no editable fields, and sent no mail
-		if (share.isPublic() &&
-			(action == this._handleEditShare || action == this._handleResendShare))
-		{
-			continue;
-		}
+		var isAllShare = share.grantee && (share.grantee.type == ZmShare.TYPE_ALL);
+		if ((isAllShare || share.isPublic()) && (action == ZmShare.EDIT || action == ZmShare.RESEND)) { continue; }
 
 		var link = document.createElement("A");
 		link.href = "#";
-		link.innerHTML = labels[i];
+		link.innerHTML = ZmShare.ACTION_LABEL[action];
 
-		Dwt.setHandler(link, DwtEvent.ONCLICK, action);
+		Dwt.setHandler(link, DwtEvent.ONCLICK, handlers[i]);
 		Dwt.associateElementWithObject(link, share);
 
 		cell.appendChild(link);

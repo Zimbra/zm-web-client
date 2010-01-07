@@ -32,18 +32,25 @@ ZmRevokeShareDialog.prototype.constructor = ZmRevokeShareDialog;
 
 // Public methods
 
+ZmRevokeShareDialog.prototype.toString =
+function() {
+	return "ZmRevokeShareDialog";
+};
+
 ZmRevokeShareDialog.prototype.popup =
 function(share) {
 	this._share = share;
 
 	var isPubShare = share.isPublic();
+	var isAllShare = share.grantee && (share.grantee.type == ZmShare.TYPE_ALL);
 
-	var params = isPubShare ? ZmMsg.shareWithPublic : (share.grantee.name || ZmMsg.userUnknown);
+	var params = isPubShare ? ZmMsg.shareWithPublic : isAllShare ? ZmMsg.shareWithAll :
+					(share.grantee.name || ZmMsg.userUnknown);
 	this._confirmMsgEl.innerHTML = this._formatter.format(params);
 
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
-	this._reply.setVisible(!isPubShare);
+	this._reply.setVisible(!isPubShare && !isAllShare);
 
 	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.YES_BUTTON, true);

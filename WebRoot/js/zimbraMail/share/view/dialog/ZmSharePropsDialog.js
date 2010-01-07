@@ -49,6 +49,11 @@ ZmSharePropsDialog.prototype._mode = ZmSharePropsDialog.NEW;
 
 // Public methods
 
+ZmSharePropsDialog.prototype.toString =
+function() {
+	return "ZmSharePropsDialog";
+};
+
 ZmSharePropsDialog.prototype.popup =
 function(mode, object, share) {
 
