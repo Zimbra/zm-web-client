@@ -820,23 +820,6 @@
 		</table>
 	</center>
 </template>
-
-<template id="abook.Contacts#ZmContactViewMyCardTabs" tabs="myCardHome,myCardWork"></template>
-
-<template id="abook.Contacts#ZmContactView_myCardWork">
-    <!-- Use the standard work tab contents. Other skins can override this. -->
-    <$
-        _i = AjxTemplate.expand("abook.Contacts#ZmContactView_work", data, buffer);
-    $>
-</template>
-<template id="abook.Contacts#ZmContactView_myCardHome">
-    <!-- Use the standard home tab contents. Other skins can override this. -->
-    <$
-		_i = AjxTemplate.expand("abook.Contacts#ZmContactView_home", data, buffer);
-    $>
-</template>
-
-
 		
 
 <!----------------------------------------------------------------------------->

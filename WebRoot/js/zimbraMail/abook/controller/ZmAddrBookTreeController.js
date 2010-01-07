@@ -96,8 +96,6 @@ function(parent, type, id) {
 		parent.enableAll(false);
         parent.enable(ZmOperation.DELETE, hasContent);
 		deleteText = ZmMsg.emptyTrash;
-	} else if (nId == ZmOrganizer.ID_MY_CARD){
-		parent.enableAll(false);
 	} else {
 		parent.enableAll(true);
 		if (addrBook) {
@@ -200,10 +198,7 @@ function(ev) {
 */
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
-	if (folder.id == ZmOrganizer.ID_MY_CARD) {
-		var respCallback = new AjxCallback(this, this._handleResponseGetMyCard);
-		this._app.getMyCard(respCallback);
-	} else if (folder.type == ZmOrganizer.SEARCH) {
+	if (folder.type == ZmOrganizer.SEARCH) {
 		// if the clicked item is a search (within the folder tree), hand
 		// it off to the search tree controller
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
@@ -229,11 +224,6 @@ function(folder) {
 			clc.getParentView().getAlphabetBar().reset();
 		}
 	}
-};
-
-ZmAddrBookTreeController.prototype._handleResponseGetMyCard =
-function(contact) {
-	AjxDispatcher.run("GetContactController").show(contact);
 };
 
 ZmAddrBookTreeController.prototype._handleSearchResponse =

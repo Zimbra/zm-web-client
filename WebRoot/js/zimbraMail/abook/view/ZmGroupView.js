@@ -502,8 +502,7 @@ function() {
 
 		for (var i = 0; i < folders.length; i++) {
 			var folder = folders[i];
-			if (folder.nId == ZmFolder.ID_ROOT || folder.nId == ZmOrganizer.ID_MY_CARD ||
-				folder.isInTrash() || folder.isReadOnly()) {
+			if (folder.nId == ZmFolder.ID_ROOT || folder.isInTrash() || folder.isReadOnly()) {
 				continue;
 			}
 

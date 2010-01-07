@@ -274,7 +274,6 @@ function() {
 	if (syncIssuesFolder) {
 		this._omit[syncIssuesFolder.id] = true;
 	}
-	this._omit[ZmOrganizer.ID_MY_CARD] = true;
 	this._omit[ZmOrganizer.ID_ZIMLET] = true;
 };
 

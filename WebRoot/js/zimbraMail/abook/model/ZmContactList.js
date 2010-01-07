@@ -46,8 +46,6 @@ ZmContactList = function(search, isGal, type) {
 	this._emailToContact = this._app._byEmail;
 	this._imAddressToContact = this._app._byIM;
 	this._phoneToContact = this._app._byPhone;
-	
-	this._myCard = null;
 };
 
 ZmContactList.prototype = new ZmList;
@@ -498,16 +496,6 @@ function(item, details) {
 ZmContactList.prototype.createLocal =
 function(item) {
 	this._updateHashes(item, true);
-};
-
-ZmContactList.prototype.getMyCard =
-function() {
-    if (this._myCard) {
-        this._realizeContact(this._myCard);
-        return this._myCard;
-    } else {
-        return null;
-    }
 };
 
 ZmContactList.prototype._updateHashes =

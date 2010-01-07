@@ -112,8 +112,6 @@ ZmContactController.prototype._getViewType =
 function() {
 	if (this._contact.isGroup()) {
 		return ZmId.VIEW_GROUP; 
-	} else if (this._contact.isMyCard) {
-		return ZmId.VIEW_MY_CARD;
 	} else {
 		return ZmId.VIEW_CONTACT;
 	}
@@ -124,13 +122,10 @@ function(view) {
 	if (!this._listView[view]) {
 		switch (view) {
 			case ZmId.VIEW_CONTACT:
-		    	this._listView[view] = new ZmEditContactView(this._container, this, false);
+		    	this._listView[view] = new ZmEditContactView(this._container, this);
 				break;
 			case ZmId.VIEW_GROUP:
 		    	this._listView[view] = new ZmGroupView(this._container, this);
-				break;
-			case ZmId.VIEW_MY_CARD:
-		    	this._listView[view] = new ZmEditContactView(this._container, this, true);
 				break;
 		}
 	}
@@ -222,10 +217,6 @@ function(parent, num) {
 	} else {
 		ZmListController.prototype._resetOperations.call(this, parent, num);
 	}
-
-	if (this._contact.isMyCard) {
-		parent.enable([ZmOperation.DELETE], false);
-	}
 };
 
 ZmContactController.prototype._saveListener =
@@ -272,7 +263,7 @@ function(ev, bIsPopCallback) {
 		else
 		{
 			if (contact.id && !contact.isGal) {
-				if (view.isEmpty() && !contact.isMyCard) { //If contact empty, alert the user
+				if (view.isEmpty()) { //If contact empty, alert the user
                     var ed = appCtxt.getMsgDialog();
                     ed.setMessage(ZmMsg.emptyContactSave, DwtMessageDialog.CRITICAL_STYLE);
                     ed.popup();

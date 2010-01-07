@@ -13,7 +13,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmEditContactView = function(parent, controller, isMyCardView) {
+ZmEditContactView = function(parent, controller) {
 	if (arguments.length == 0) return;
 
 	var form = {
@@ -49,7 +49,6 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 	this._tagList = appCtxt.getTagTree();
 	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
-	this._isMyCardView = isMyCardView;
 
 	this.setScrollStyle(Dwt.SCROLL);
 };

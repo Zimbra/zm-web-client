@@ -327,7 +327,7 @@ function(dlg) {
 	var folders = folderTree.getByType(ZmOrganizer.ADDRBOOK);
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
-		if ((folder.link && folder.isReadOnly()) || (folder.id == ZmOrganizer.ID_MY_CARD)) {
+		if (folder.link && folder.isReadOnly()) {
 			omit[folder.id] = true;
 		}
 	}
@@ -722,14 +722,6 @@ function(result) {
 
 ZmContactListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
-	// Disallow my card delete.
-	for (var i = 0, count = items.length; i < count; i++) {
-		if (items[i].isMyCard) {
-			appCtxt.setStatusMsg(ZmMsg.errorMyCardDelete, ZmStatusView.LEVEL_WARNING);
-			return;
-		}
-	}
-
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
 
 	// if more contacts to show,
@@ -745,15 +737,6 @@ function(items, hardDelete, attrs) {
 
 ZmContactListController.prototype._moveListener =
 function(ev) {
-	// Disallow my card move.
-	var items = this._listView[this._currentView].getSelection();
-	for (var i = 0, count = items.length; i < count; i++) {
-		if (items[i].isMyCard) {
-			appCtxt.setStatusMsg(ZmMsg.errorMyCardMove, ZmStatusView.LEVEL_WARNING);
-			return;
-		}
-	}
-
 	ZmListController.prototype._moveListener.call(this, ev);
 };
 

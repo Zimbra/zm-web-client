@@ -539,10 +539,6 @@ function(what, folderType) {
 						// can only move contacts into Trash
 						invalid = true;
 						break;
-					} else if (items[i].isMyCard) {
-						// can't trash my card
-						invalid = true;
-						break;
 					}
 				} else if (items[i].isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS)) {
 					// can move drafts into Trash or Drafts

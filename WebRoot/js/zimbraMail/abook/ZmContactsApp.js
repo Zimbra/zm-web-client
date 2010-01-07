@@ -379,28 +379,6 @@ function() {
 ZmContactsApp.prototype.activate =
 function(active) {
 	ZmApp.prototype.activate.apply(this, arguments);
-	if (!this._myCardChecked) {
-		var myCardSupport = appCtxt.getSkinHint("myCardSupport");
-		if (myCardSupport) {
-			var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
-			var params = {
-				id: ZmOrganizer.ID_MY_CARD,
-				name: ZmMsg.myCard,
-				parent: root,
-				tree: root.tree,
-				type: ZmOrganizer.ADDRBOOK,
-				numTotal: 1
-			};
-			var addrBook = new ZmAddrBook(params);
-			root.children.add(addrBook);
-			addrBook._notify(ZmEvent.E_CREATE);
-
-			// enable selection (ZmFolderTreeController creates tree as CHECKED style by default :| )
-			var ti = appCtxt.getOverviewController().getOverview(this.getOverviewId()).getTreeItemById(addrBook.id, ZmOrganizer.ADDRBOOK);
-			ti.enableSelection(true);
-		}
-		this._myCardChecked = true;
-	}
 };
 
 ZmContactsApp.prototype.launch =
@@ -861,26 +839,6 @@ ZmContactsApp.prototype.createFromVCard =
 function(msgId, vcardPartId) {
 	var contact = new ZmContact(null);
 	contact.createFromVCard(msgId, vcardPartId);
-};
-
-ZmContactsApp.prototype.getMyCard =
-function(callback) {
-    if (this._myCard) {
-		this._myCard = this._realizeContact(this._myCard);
-		callback.run(this._myCard);
-    } else {
-		var sc = appCtxt.getSearchController();
-		var respCallback = new AjxCallback(this, this._handleResponseGetMyCard, [callback]);
-		sc.search({query:"#cardOwner:isMyCard", types:[ZmItem.CONTACT], noRender:true, callback:respCallback});
-	}
-};
-
-ZmContactsApp.prototype._handleResponseGetMyCard =
-function(callback, result) {
-	var resp = result.getResponse();
-	var cl = resp && resp.getResults(ZmItem.CONTACT);
-	this._myCard = cl ? cl.get(0) : null;
-	callback.run(this._myCard);
 };
 
 ZmContactsApp.prototype.getContactListController =

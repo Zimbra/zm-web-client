@@ -595,7 +595,6 @@ function() {
 	if (this.isGal)			{ return "GALContact"; }
 	if (this.isShared())	{ return "SharedContact"; }
 	if (this.isGroup())		{ return "Group"; }
-	if (this.isMyCard)		{ return "MyCard"; }
 	return "Contact";
 };
 
@@ -1243,7 +1242,6 @@ function(node) {
 	if (node.email3) this.attr[ZmContact.F_email3] = node.email3;
 
 	this.type = (this.attr[ZmContact.F_dlist] != null) ? ZmItem.GROUP : ZmItem.CONTACT;
-	this.isMyCard = Boolean(this.attr[ZmContact.MC_cardOwner] == "isMyCard");
 
 	// check if the folderId is found in our address book (otherwise, we assume
 	// this contact to be a shared contact)
