@@ -31,7 +31,7 @@ ZmSharePropsDialog = function(shell, className) {
 
 	// set view
 	this.setView(this._createView());
-    this._tabGroupComplete = false;
+	this._tabGroupComplete = false;
 };
 
 ZmSharePropsDialog.prototype = new DwtDialog;
@@ -95,10 +95,10 @@ function(mode, object, share) {
 		this._inheritEl.checked = share ? share.link.inh : isNewShare;
 	}
 
-    if (!this._tabGroupComplete) {
-        this._tabGroup.addMember(this._granteeInput, 0);
-        this._tabGroupComplete = true;
-    }
+	if (!this._tabGroupComplete) {
+		this._tabGroup.addMember(this._granteeInput, 0);
+		this._tabGroupComplete = true;
+	}
 
 	var perm = share && share.link.perm;
 
@@ -249,10 +249,10 @@ function(event) {
 				for (var i = 0; i < addrs.length; i++) {
 					// bug fix #26428 - exclude me from list of addresses
 					var addr = addrs[i];
-                    var email = AjxEmailAddress.parse(addr);
-                    if(email) {
-                        addr = email.getAddress();
-                    }
+					var email = AjxEmailAddress.parse(addr);
+					if (email) {
+						addr = email.getAddress();
+					}
 					if (appCtxt.isMyAddress(addr)) { continue; }
 
 					var share = this._setUpShare();
@@ -271,7 +271,8 @@ function(event) {
 	}
 	
 	// Since we may be sharing with multiple users, use a batch command
-	var batchCmd = new ZmBatchCommand();
+	var accountName = appCtxt.multiAccounts ? this._object.getAccount().name : null;
+	var batchCmd = new ZmBatchCommand(null, accountName);
 	var perm = this._getPermsFromRole();
 	var pw = isGuestShare && this._passwordInput.getValue();
 	for (var i = 0; i < shares.length; i++) {

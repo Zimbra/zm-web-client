@@ -411,9 +411,10 @@ function(mode, addrs, owner) {
 		addrs.add(new AjxEmailAddress(email, AjxEmailAddress.TO));
 	}
 	var msg = this._createMsg(mode, false, addrs, owner);
+	var accountName = appCtxt.multiAccounts ? this.object.getAccount().name : null;
 
 	// send message
-	msg.send();
+	msg.send(null, null, null, accountName);
 };
 
 ZmShare.prototype.composeMessage =

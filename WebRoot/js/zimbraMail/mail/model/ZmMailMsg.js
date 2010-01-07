@@ -1707,7 +1707,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		}
 		addrNodes.push(node);
 
-		if (!ac.isOffline && ( !isDraft || onBehalfOf )) {
+		if (!ac.multiAccounts && (!isDraft || onBehalfOf)) {
 			// the main account is *always* the sender
 			addrNodes.push({t:"s", a:mainAcct});
 		}
