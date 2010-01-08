@@ -216,6 +216,7 @@ function(msg) {
 					this._inviteMoveSelect.addOption(option);
 				}
 			}
+            this._inviteMoveLabel.setVisible(visible);
 			this._inviteMoveSelect.setVisible(visible);
 			this._lastApptFolder = ZmOrganizer.ID_CALENDAR;
 			this._hasInviteToolbar = true;
@@ -422,6 +423,7 @@ function() {
 	var label = new DwtText({parent: this._inviteToolbar, className: "DwtText InviteSelectLabel"});
 	label.setSize(100, DwtControl.DEFAULT);
 	label.setText(AjxMessageFormat.format(ZmMsg.makeLabel, [ZmMsg.calendar]));
+    this._inviteMoveLabel = label;
 
 	this._inviteToolbar.addSpacer();
 
