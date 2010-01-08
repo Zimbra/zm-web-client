@@ -454,24 +454,30 @@ function(callback, result) {
 
 	appCtxt.getDataSourceCollection().add(this);
 
-	var overviewId = appCtxt.getApp(ZmApp.MAIL).getOverviewId();
-	var treeView = appCtxt.getOverviewController().getTreeView(overviewId, ZmOrganizer.FOLDER);
-	var fid = appCtxt.getActiveAccount().isMain ? this.folderId : ZmOrganizer.getSystemId(this.folderId);
-	var treeItem = treeView ? treeView.getTreeItemById(fid) : null;
-	if (treeItem) {
-		// reset the icon in the tree view if POP account since the first time it
-		// was created, we didnt know it was a data source
-		if (this.type == ZmAccount.TYPE_POP && this.folderId != ZmFolder.ID_INBOX) {
-			treeItem.setImage("POPAccount");
-		}
-		else if (this.type == ZmAccount.TYPE_IMAP) {
-			// change imap folder to a tree header since folder is first created
-			// without knowing its a datasource
-			treeItem.dispose();
-			var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
-			var parentNode = treeView.getTreeItemById(rootId);
-			var organizer = appCtxt.getById(this.folderId);
-			treeView._addNew(parentNode, organizer);
+	var apps = [ZmApp.MAIL, ZmApp.PORTAL];
+	for (var i=0; i<apps.length; i++) {
+		var app = appCtxt.getApp(apps[i]);
+		if (app) {
+			var overviewId = appCtxt.getApp(apps[i]).getOverviewId();
+			var treeView = appCtxt.getOverviewController().getTreeView(overviewId, ZmOrganizer.FOLDER);
+			var fid = appCtxt.getActiveAccount().isMain ? this.folderId : ZmOrganizer.getSystemId(this.folderId);
+			var treeItem = treeView ? treeView.getTreeItemById(fid) : null;
+			if (treeItem) {
+				// reset the icon in the tree view if POP account since the first time it
+				// was created, we didnt know it was a data source
+				if (this.type == ZmAccount.TYPE_POP && this.folderId != ZmFolder.ID_INBOX) {
+					treeItem.setImage("POPAccount");
+				}
+				else if (this.type == ZmAccount.TYPE_IMAP) {
+					// change imap folder to a tree header since folder is first created
+					// without knowing its a datasource
+					treeItem.dispose();
+					var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
+					var parentNode = treeView.getTreeItemById(rootId);
+					var organizer = appCtxt.getById(this.folderId);
+					treeView._addNew(parentNode, organizer);
+				}
+			}
 		}
 	}
 
