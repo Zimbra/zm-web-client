@@ -305,6 +305,7 @@ function(organizer, dialog) {
  * @param skipNotify		[Boolean]*		skip notify after fetching permissions
  * @param folderIds			[Array]*		list of folder Id's to fetch permissions for
  * @param noBusyOverlay		[Boolean]*		don't block the UI while fetching permissions
+ * @param accountName		[String]*		account to issue request under
  */
 ZmFolderTree.prototype.getPermissions =
 function(params) {
@@ -324,7 +325,13 @@ function(params) {
 		}
 
 		var respCallback = new AjxCallback(this, this._handleResponseGetShares, [params.callback, params.skipNotify]);
-		appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
+		appCtxt.getRequestMgr().sendRequest({
+			soapDoc: soapDoc, 
+			asyncMode: true,
+			callback: respCallback,
+			noBusyOverlay: params.noBusyOverlay,
+			accountName: params.accountName
+		});
 	} else {
 		if (params.callback) {
 			params.callback.run();

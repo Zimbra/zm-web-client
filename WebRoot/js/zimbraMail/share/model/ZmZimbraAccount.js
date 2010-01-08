@@ -657,7 +657,7 @@ function(callback) {
 	// bug fix #33168 - get perms for all mountpoints in account
 	var folderTree = appCtxt.getFolderTree(this);
 	if (folderTree) {
-		folderTree.getPermissions({noBusyOverlay:true});
+		folderTree.getPermissions({noBusyOverlay:true, accountName:this.name});
 	}
 
 	if (callback) {
