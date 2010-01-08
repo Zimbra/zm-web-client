@@ -120,20 +120,7 @@ function(params) {
 
 		header = this.getHeaderItem(acct);
 		if (header) {
-			if (this._appName == ZmApp.PREFERENCES) {
-				header.setExpanded(true, false, true);
-				header.enableSelection(false);
-			} else {
-				var isExpanded = appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct);
-				header.setExpanded(isExpanded);
-				if (!isExpanded) {
-					header.setText(this._getAccountHeaderLabel(acct));
-				}
-			}
-
-			if (header._extraCell) {
-				header._extraCell.onclick = AjxCallback.simpleClosure(this._handleStatusClick, this, acct);
-			}
+			this._setupHeader(header, acct);
 		}
 
 		this.updateAccountInfo(acct, true, true);
@@ -446,6 +433,32 @@ function(headerParams, omit, overviewParams, showBackgroundColor) {
 	// finally set treeviews for this overview
 	var treeIds = overviewParams.overviewTrees || overviewParams.treeIds;
 	ov.set(treeIds, omit);
+};
+
+ZmAccountOverviewContainer.prototype._setupHeader =
+function(header, acct) {
+	// always expand header in prefs app, otherwise follow implicit user pref
+	if (this._appName == ZmApp.PREFERENCES) {
+		header.setExpanded(true, false, true);
+		header.enableSelection(false);
+	} else {
+		var isExpanded = appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct);
+		header.setExpanded(isExpanded);
+		if (!isExpanded) {
+			header.setText(this._getAccountHeaderLabel(acct));
+		}
+	}
+
+	// add onclick support
+	if (header._extraCell) {
+		header._extraCell.onclick = AjxCallback.simpleClosure(this._handleStatusClick, this, acct);
+	}
+
+	// add DnD support
+	var dropTgt = this._controller.getTreeController(ZmOrganizer.FOLDER).getDropTarget();
+	var root = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, acct);
+	header.setDropTarget(dropTgt);
+	header.setData(Dwt.KEY_OBJECT, appCtxt.getById(root));
 };
 
 /**
