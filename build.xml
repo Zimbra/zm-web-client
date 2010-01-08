@@ -8,6 +8,12 @@
 
 	<property file="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/build-custom.properties" />
 
+    <property name="webxml.zimbraAdminURL" value="/zimbraAdmin" />
+    <property name="webxml.zimbraMailURL" value="/zimbra" />
+    <property name="webxml.zimbraMailPort" value="7070" />
+    <property name="webxml.zimbraMailSSLPort" value="7443" />
+    <property name="webxml.zimbraMailTrustedIP" value="" />
+
 	<property name='common.dir' value='../ZimbraCommon'/>
     <property name='common.lib.dir' value='${common.dir}/jars'/>
     <property name='common.build.dir' value='${common.dir}/build'/>
@@ -657,7 +663,10 @@
 				<antcall target="images-merge">
 					<param name='srcdir' value='${build.skin.dir}/@{skinname}/img' />
 					<param name='destdir' value='${build.skin.dir}/@{skinname}/img' />
-					<param name='csspath' value='@AppContextPath@/skins/@{skinname}/img/' />
+                    <!-- NOTE: @AppContextPath@ needs to be escaped here because -->
+                    <!-- NOTE: it is used within a for loop which treats @xyz@ as -->
+                    <!-- NOTE: property replacements for each iteration. -->
+					<param name='csspath' value='\@AppContextPath@/skins/@{skinname}/img/' />
 				</antcall>
 			</sequential>
 		</for>
@@ -1119,11 +1128,11 @@ if (ext == null) ext = "";
 
     <target name='webxml-deploy-replace' depends='init'>
         <!-- replace %%xyz%% tokens -->
-        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraAdminURL%%" value="/zimbraAdmin"/>
-        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailURL%%" value="/zimbra"/>
-        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailPort%%" value="7070"/>
-        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailSSLPort%%" value="7443"/>
-    	<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailTrustedIP%%" value=""/>
+        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraAdminURL%%" value="${webxml.zimbraAdminURL}"/>
+        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailURL%%" value="${webxml.zimbraMailURL}"/>
+        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailPort%%" value="${webxml.zimbraMailPort}"/>
+        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailSSLPort%%" value="${webxml.zimbraMailSSLPort}"/>
+    	<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailTrustedIP%%" value="${webxml.zimbraMailTrustedIP}"/>
     </target>
 
     <target name='clean' depends='customer-init'>
