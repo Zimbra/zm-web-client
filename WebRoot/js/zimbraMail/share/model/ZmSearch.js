@@ -625,7 +625,7 @@ function() {
 		limit = appCtxt.get(ZmSetting.AUTOCOMPLETE_LIMIT);
 	} else {
 		var type = this.types && this.types.get(0);
-		var app = appCtxt.getApp(ZmItem.APP[type]);
+		var app = appCtxt.getApp(ZmItem.APP[type]) || appCtxt.getCurrentApp();
 		if (app && app.getLimit) {
 			limit = app.getLimit(this.offset);
 		} else {
