@@ -986,31 +986,20 @@ function(msg, identity) {
 	var composeMode = DwtHtmlEditor.TEXT;
 
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		if ((this._action == ZmOperation.REPLY ||
-			this._action == ZmOperation.REPLY_ALL ||
-			this._action == ZmOperation.FORWARD_INLINE ||
-			this._action == ZmOperation.REPLY_ACCEPT ||
-			this._action == ZmOperation.REPLY_CANCEL ||
-			this._action == ZmOperation.REPLY_DECLINE ||
-			this._action == ZmOperation.REPLY_TENTATIVE) && identity)
-		{
-			var bComposeSameFormat = appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
-			var bComposeAsFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
-			if ((!bComposeSameFormat && bComposeAsFormat == ZmSetting.COMPOSE_HTML) ||
-			    (bComposeSameFormat && msg.isHtmlMail()))
-			{
+		if (this._action == ZmOperation.NEW_MESSAGE) {
+			if (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) {
 				composeMode = DwtHtmlEditor.HTML;
 			}
-		}
-		else if (this._action == ZmOperation.NEW_MESSAGE)
-		{
-			if (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML)
+		} else if (this._action == ZmOperation.DRAFT) {
+			if (msg.isHtmlMail()) {
 				composeMode = DwtHtmlEditor.HTML;
-		}
-		else if (this._action == ZmOperation.DRAFT)
-		{
-			if (msg.isHtmlMail())
+			}
+		} else if (identity) {
+			var sameFormat = appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
+			var asFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+			if ((!sameFormat && asFormat == ZmSetting.COMPOSE_HTML) ||  (sameFormat && msg.isHtmlMail())) {
 				composeMode = DwtHtmlEditor.HTML;
+			}
 		}
 	}
 
