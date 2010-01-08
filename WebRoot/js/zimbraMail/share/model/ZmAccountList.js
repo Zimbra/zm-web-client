@@ -244,6 +244,19 @@ function(type) {
 	return false;
 };
 
+/**
+ * This method "resolves" the given folder ID based on whether its an ID of a
+ * system folder (less than 255) to that of the default account since the main
+ * "local" account only contains the Trash folder.
+ *
+ * @param folderId		[String]	Folder ID to resolve
+ */
+ZmAccountList.prototype.resolveFolderId =
+function(folderId) {
+	return (folderId.indexOf(":") == -1 && folderId < 255 && folderId != ZmFolder.ID_TRASH)
+		? ZmOrganizer.getSystemId(folderId, this.defaultAccount) : folderId;
+};
+
 ZmAccountList.prototype.syncAll =
 function(callback) {
 	var list = (new Array()).concat(this.visibleAccounts);

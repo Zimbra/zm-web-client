@@ -815,7 +815,7 @@ function() {
 	if (term && this.isMultiAccount()) {
 		if (term.op == "in" || term.op == "inid") {
 			var result = ZmOrganizer.parseId(term.arg);
-			this.folderId = result.id;
+			this.folderId = appCtxt.accountList.resolveFolderId(result.id);
 		}
 	}
 };
