@@ -42,8 +42,8 @@ ZmCalListView.prototype.constructor = ZmCalListView;
 
 
 // Consts
-ZmCalListView.DEFAULT_CALENDAR_PERIOD	= AjxDateUtil.MSEC_PER_DAY*14;			// 14 days
-ZmCalListView.DEFAULT_SEARCH_PERIOD		= AjxDateUtil.MSEC_PER_DAY*31;			// 31 days
+ZmCalListView.DEFAULT_CALENDAR_PERIOD	= AjxDateUtil.MSEC_PER_DAY * 21;			// 3 weeks
+ZmCalListView.DEFAULT_SEARCH_PERIOD		= AjxDateUtil.MSEC_PER_DAY * 31;			// 1 month
 ZmCalListView.COL_WIDTH_DATE			= ZmMsg.COLUMN_WIDTH_DATE_CAL;
 ZmCalListView.COL_WIDTH_LOCATION		= ZmMsg.COLUMN_WIDTH_LOCATION_CAL;
 ZmCalListView.COL_WIDTH_STATUS			= ZmMsg.COLUMN_WIDTH_STATUS_CAL;
@@ -97,8 +97,8 @@ function(date, duration, roll) {
 
 	var d = new Date(date.getTime());
 	d.setHours(0, 0, 0, 0);
-	this._timeRangeStart = d.getTime();
-	this._timeRangeEnd = d.getTime() + ZmCalListView.DEFAULT_CALENDAR_PERIOD;
+	this._timeRangeStart = d.getTime() - (AjxDateUtil.MSEC_PER_DAY * 7);
+	this._timeRangeEnd = this._timeRangeStart + ZmCalListView.DEFAULT_CALENDAR_PERIOD;
 
 	this._updateTitle();
 
