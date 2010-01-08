@@ -458,7 +458,7 @@ function(callback, result) {
 	for (var i=0; i<apps.length; i++) {
 		var app = appCtxt.getApp(apps[i]);
 		if (app) {
-			var overviewId = appCtxt.getApp(apps[i]).getOverviewId();
+			var overviewId = app.getOverviewId();
 			var treeView = appCtxt.getOverviewController().getTreeView(overviewId, ZmOrganizer.FOLDER);
 			var fid = appCtxt.getActiveAccount().isMain ? this.folderId : ZmOrganizer.getSystemId(this.folderId);
 			var treeItem = treeView ? treeView.getTreeItemById(fid) : null;
