@@ -514,7 +514,7 @@ function(what, folderType) {
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
 				   (what.id == this.id) ||
 				   (what.disallowSubFolder) ||
-				   (what.account != this.account) ||							// cannot move folders across accounts
+				   (appCtxt.multiAccounts && what.getAccount() != this.getAccount()) || // cannot move folders across accounts
 				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
 	} else {
 		// An item or an array of items is being moved
