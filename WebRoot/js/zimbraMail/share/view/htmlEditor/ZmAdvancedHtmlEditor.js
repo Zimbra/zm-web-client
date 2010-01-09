@@ -378,6 +378,9 @@ function(id, mode, content) {
         theme_advanced_resizing : true,
         convert_urls : false,
         verify_html : false,
+        force_br_newlines : true,
+        forced_root_block : '',
+        force_p_newlines : false,
         content_css : false,
         editor_css: editorCSS,        
         setup : function(ed) {
