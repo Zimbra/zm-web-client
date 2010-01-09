@@ -768,7 +768,13 @@ function(propertyName, value, save, callback) {
 /**
  * This method is called by the zimlet framework prior to user properties being saved.
  *
- * @param	{String[]}	props		the properties
+ * @param	{Array}	props		an array of objects with the following properties:
+ * <ul>
+ * <li>label {String} the property label</li>
+ * <li>name {String} the property name</li>
+ * <li>type {String} the property type</li>
+ * <li>value {String} the property value</li>
+ * </ul>
  * @return	{Boolean}	<code>true</code> if properties are valid; otherwise, <code>false</code> or {String} if an error message will be displayed in the standard error dialog.
  */
 ZmZimletBase.prototype.checkProperties =
