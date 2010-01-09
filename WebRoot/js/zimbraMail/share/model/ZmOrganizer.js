@@ -1094,7 +1094,7 @@ function(name) {
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
-		if (a[i].name && (a[i].name.toLowerCase() == name)) {
+		if (a[i] && a[i].name && (a[i].name.toLowerCase() == name)) {
 			return a[i];
 		}
 	}

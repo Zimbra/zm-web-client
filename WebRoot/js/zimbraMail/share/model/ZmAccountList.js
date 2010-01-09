@@ -344,7 +344,6 @@ function() {
 ZmAccountList.prototype.saveImplicitPrefs =
 function() {
 	for (var i = 0; i < this.visibleAccounts.length; i++) {
-		var trees = this.visibleAccounts[i].trees;
 		this.visibleAccounts[i].saveImplicitPrefs();
 	}
 };

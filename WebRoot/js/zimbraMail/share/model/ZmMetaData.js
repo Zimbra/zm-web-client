@@ -69,7 +69,7 @@ function(section, key, value, batchCommand, callback, errorCallback) {
 			asyncMode: true,
 			callback: callback,
 			errorCallback: errorCallback,
-			accountName: (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount : null)
+			accountName: (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null)
 		};
 
 		appCtxt.getAppController().sendRequest(params);

@@ -27,9 +27,12 @@ function(cmdStr, searchController) {
 	
 	if (cmdStr == "") { return; }
 	
-	cmdStr = cmdStr.toLowerCase();
 	var argv = cmdStr.split(/\s/);
 	var arg0 = argv[0];
+
+	if (arg0 != "modify") {
+		cmdStr = cmdStr.toLowerCase();
+	}
 
 	var func = this["execute_"+arg0];
 	if (func) {
@@ -148,9 +151,7 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 
 ZmClientCmdHandler.prototype.execute_get =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	if (!cmdArg1) return;
-	var item = cmdArg1;
-	if (item == "version") {
+	if (cmdArg1 && cmdArg1 == "version") {
 		alert("Client Information\n\n" +
 			  "Client Version: " + appCtxt.get(ZmSetting.CLIENT_VERSION) + "\n" +
 			  "Client Release: " + appCtxt.get(ZmSetting.CLIENT_RELEASE) + "\n" +
@@ -216,8 +217,7 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 
 ZmClientCmdHandler.prototype.execute_log =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	var type = cmdArg1;
-	var text = AjxUtil.LOG[type].join("<br/>");
+	var text = AjxUtil.LOG[cmdArg1].join("<br/>");
 	var msgDialog = appCtxt.getMsgDialog();
 	msgDialog.reset();
 	msgDialog.setMessage(text, DwtMessageDialog.INFO_STYLE);
@@ -248,4 +248,24 @@ function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */)
 	errDialog.setMessage("Error Message!", "Details!!", DwtMessageDialog.WARNING_STYLE);
 	errDialog.popup();
 
+};
+
+ZmClientCmdHandler.prototype.execute_modify =
+function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
+	var settings = appCtxt.getSettings();
+	var id = cmdArg1 && settings.getSettingByName(cmdArg1);
+	if (id) {
+		var setting = settings.getSetting(id);
+		setting.setValue(cmdArg2 || setting.getDefaultValue());
+		if (ZmSetting.IS_IMPLICIT[setting.id]) {
+			appCtxt.accountList.saveImplicitPrefs();
+		} else {
+			settings.save([setting]);
+		}
+	}
+
+	var dialog = appCtxt.getYesNoMsgDialog();
+	dialog.registerCallback(DwtDialog.YES_BUTTON, settings._refreshBrowserCallback, settings, [dialog]);
+	dialog.setMessage(ZmMsg.accountChangeRestart, DwtMessageDialog.WARNING_STYLE);
+	dialog.popup();
 };
