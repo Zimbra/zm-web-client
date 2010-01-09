@@ -276,6 +276,7 @@ function(parent, posStyle, content, mode, withAce) {
     var textEl = document.createElement("textarea");
     textEl.setAttribute("id", id);
     textEl.setAttribute("name", id);
+    textEl.className = "DwtHtmlEditorTextArea"; 
     htmlEl.appendChild(textEl);
     this._textAreaId = id;
 
