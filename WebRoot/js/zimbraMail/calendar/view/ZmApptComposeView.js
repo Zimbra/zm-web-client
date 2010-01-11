@@ -525,6 +525,11 @@ function(ev) {
 	var vec = chooser.getItems();
 	var type = this._tabPages[this._curTabId].type;
 	this.updateAttendees(vec.getArray(), type);
+    if(type == ZmCalBaseItem.LOCATION) {
+        var location = ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.LOCATION].getArray(), ZmCalBaseItem.LOCATION);
+        var apptTab = this._tabPages[ZmApptComposeView.TAB_APPOINTMENT];
+        apptTab.setApptLocation(location);
+    }
 };
 
 ZmApptComposeView.prototype._controlListener = 

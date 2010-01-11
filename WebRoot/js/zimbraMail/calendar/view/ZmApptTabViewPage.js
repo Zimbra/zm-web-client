@@ -117,3 +117,7 @@ function() {
 	this._editView.toggleAllDayField();
 };
 
+ZmApptTabViewPage.prototype.setApptLocation =
+function(val) {
+	this._editView.setApptLocation(val);
+};

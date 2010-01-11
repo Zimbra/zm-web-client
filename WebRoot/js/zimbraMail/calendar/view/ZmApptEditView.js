@@ -878,6 +878,11 @@ function() {
 	this._addResourcesDiv();
 };
 
+ZmApptEditView.prototype.setApptLocation =
+function(val) {
+    this._attInputField[ZmCalBaseItem.LOCATION].setValue(val);
+};
+
 ZmApptEditView.prototype._handleAttendeeField =
 function(type, useException) {
 	if (!this._activeInputField) { return; }
