@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004-2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -14,21 +14,30 @@
  */
 
 /**
- * Creates a toolbar.
- * @const
+ * @overview
+ * 
+ * This file defines a toolbar.
+ *
+ */
+
+/**
  * @class
- * This class represents a basic toolbar which can add buttons, manage listeners, and
+ * Creates a toolbar. This class represents a basic toolbar which can add buttons, manage listeners, and
  * enable/disabled its buttons.
  *
  * @author Conrad Damon
  *
- * @param params		[hash]				hash of params:
- *        parent		[DwtComposite]		the containing widget
- *        className		[string]*			CSS class
- *        posStyle		[constant]*			positioning style
- *        id			[string]*			an explicit ID to use for the control's HTML element
- *        controller	[ZmController]*		owning controller
- *        refElementId	[string]*			ID of element that contains toolbar
+ * @param {Hash}	params		a hash of parameters
+ * <ul>
+ * <li>parent		{@link DwtComposite}		the containing widget
+ * <li>className	{String}			the CSS class
+ * <li>posStyle		{constant}			the positioning style
+ * <li>id			{String}			an explicit ID to use for the control's HTML element
+ * <li>controller	{@link ZmController}		the owning controller
+ * <li>refElementId	{String}	the id of element that contains toolbar
+ * </ul>
+ *        
+ * @extends	DwtToolBar
  */
 ZmToolBar = function(params) {
 	if (arguments.length == 0) return;
@@ -49,11 +58,22 @@ ZmToolBar = function(params) {
 ZmToolBar.prototype = new DwtToolBar;
 ZmToolBar.prototype.constructor = ZmToolBar;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmToolBar.prototype.toString = 
 function() {
 	return "ZmToolBar";
 };
 
+/**
+ * Adds a selection listener.
+ * 
+ * @param	{String}	buttonId	the button id
+ * @param	{AjxListener}	listener	the listener
+ */
 ZmToolBar.prototype.addSelectionListener =
 function(buttonId, listener) {
 	var button = this._buttons[buttonId];
@@ -62,6 +82,12 @@ function(buttonId, listener) {
 	}
 };
 
+/**
+ * Removes a selection listener.
+ * 
+ * @param	{String}	buttonId	the button id
+ * @param	{AjxListener}	listener	the listener
+ */
 ZmToolBar.prototype.removeSelectionListener =
 function(buttonId, listener) {
 	var button = this._buttons[buttonId];
@@ -70,22 +96,35 @@ function(buttonId, listener) {
 	}
 };
 
+/**
+ * Gets the button.
+ * 
+ * @param	{String}	buttonId	the button id
+ * @return	{ZmAppButton}	the button
+ */
 ZmToolBar.prototype.getButton =
 function(buttonId) {
 	return this._buttons[buttonId];
 };
 
+/**
+ * Sets the data.
+ * 
+ * @param	{String}	buttonId	the button id
+ * @param	{String}	key		the data key
+ * @param	{Object}	data	the data
+ */
 ZmToolBar.prototype.setData = 
 function(buttonId, key, data) {
 	this._buttons[buttonId].setData(key, data);
 };
 
 /**
-* Enables/disables buttons.
-*
-* @param ids		a list of button IDs
-* @param enabled	whether to enable the buttons
-*/
+ * Enables or disables the specified buttons.
+ *
+ * @param {Array}	ids		a list of button ids
+ * @param {Boolean}	enabled	<code>true</code> to enable the buttons
+ */
 ZmToolBar.prototype.enable =
 function(ids, enabled) {
 	ids = (ids instanceof Array) ? ids : [ids];
@@ -96,6 +135,11 @@ function(ids, enabled) {
 	}
 };
 
+/**
+ * Enables or disables all buttons.
+ * 
+ * @param {Boolean}	enabled	<code>true</code> to enable the buttons
+ */
 ZmToolBar.prototype.enableAll =
 function(enabled) {
 	for (var i in this._buttons) {
@@ -104,23 +148,26 @@ function(enabled) {
 };
 
 /**
- * Adds a button to this toolbar.
+ * Creates a button and adds the button to this toolbar.
  *
- * @param params		[hash]			hash of params:
- *        id			[string]		button ID
- *        constructor	[function]*		Constructor for button object (default is DwtToolBarButton)
- *        template		[string]*		button template
- *        text			[string]*		button text
- *        tooltip		[string]*		button tooltip text
- *        image			[string]*		icon class for the button
- *        disImage		[string]*		disabled version of icon
- *        enabled		[boolean]*		if true, button is enabled
- *        className		[constant]*		CSS class name
- *        style			[constant]*		button style
- *        index			[int]*			position at which to add the button
- *        shortcut		[constant]*		shortcut ID (from ZmKeyMap) for showing hint
- *        menu			[AjxCallback or DwtMenu]*	Menu creation callback (recommended) or menu
- *        menuAbove		[boolean]*		true to popup menu above the button.
+ * @param {Hash}	params		a hash of parameters:
+ * <ul>
+ * <li>id			{String}		the button id
+ * <li>constructor	{function}		the constructor for button object (default is {@link DwtToolBarButton})
+ * <li>template		{String}		the button template
+ * <li>text			{String}		the button text
+ * <li>tooltip		{String}		the button tooltip text
+ * <li>image		{String}		the icon class for the button
+ * <li>disImage		{String}		the disabled version of icon
+ * <li>enabled		{Boolean}		if <code>true</code>, button is enabled
+ * <li>className		{constant}		the CSS class name
+ * <li>style			{constant}		the button style
+ * <li>index			{int}			the position at which to add the button
+ * <li>shortcut		{constant}		the shortcut id (from {@link ZmKeyMap}) for showing hint
+ * <li>menu			{@link AjxCallback} or {@link DwtMenu}	the menu creation callback (recommended) or menu
+ * <li>menuAbove	{Boolean}	<code>true</code> to popup menu above the button.
+ * </ul>
+ * 
  */
 ZmToolBar.prototype.createButton =
 function(id, params) {
@@ -153,6 +200,9 @@ ZmToolBar.prototype.SEPARATOR_TEMPLATE = "share.Widgets#ZmToolBarSeparator";
 // Protected methods
 //
 
+/**
+ * @private
+ */
 ZmToolBar.prototype._createButton =
 function(params, className) {
 	var ctor = params.ctor || DwtToolBarButton;
@@ -170,14 +220,18 @@ function(params, className) {
 	return button;
 };
 
+/**
+ * @private
+ */
 ZmToolBar.prototype._buttonId =
 function(button) {
 	return button.getData("_buttonId");
 };
 
 /**
- * Creates an ordered list of which bits of text or images get removed when
- * we need space.
+ * Creates an ordered list of which bits of text or images get removed when we need space.
+ * 
+ * @private
  */
 ZmToolBar.prototype._createPrecedenceList =
 function() {
@@ -200,8 +254,9 @@ function() {
 };
 
 /**
- * Checks this toolbar's width and compares it to the width of its container to see if it fits.
+ * Adjusts the toolbar size. Checks the toolbar width and compares the width of the container to see if it fits.
  * If it does not, we remove text and/or images in the specified order until the toolbar fits.
+ * 
  */
 ZmToolBar.prototype.adjustSize =
 function() {
@@ -268,8 +323,13 @@ function() {
 // The following overrides are so that we check our width after a call to a function that
 // may affect our size.
 
-// setSize() is called by the app view manager's fitToContainer(), which happens during
-// initial layout as well as in response to the user changing the browser size.
+/**
+ * Sets the size. This method is called by the application view manager <code>fitToContainer()</code>,
+ * which happens during initial layout as well as in response to the user changing the browser size.
+ * 
+ * @param	{int}	width	the width (in pixels)
+ * @param	{int}	height	the height (in pixels)
+ */
 ZmToolBar.prototype.setSize =
 function(width, height) {
 	DBG.println("tb", "------ setSize " + width + " x " + height);
@@ -280,12 +340,18 @@ function(width, height) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmToolBar.prototype._addItem =
 function(type, element, index) {
 	DwtToolBar.prototype._addItem.apply(this, arguments);
 	this.adjustSize();
 };
 
+/**
+ * @private
+ */
 ZmToolBar.prototype._removeItem =
 function(type, element, index) {
 	DwtToolBar.prototype._removeItem.apply(this, arguments);

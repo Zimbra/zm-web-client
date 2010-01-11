@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -14,16 +14,21 @@
  */
 
 /**
- * Creates a new app object.
- * @constructor
- * @class
- * This class is a base class for app classes. "App" is a useful abstraction for a set of related
- * functionality, such as mail, address book, or calendar. Looked at another way, an app is a 
- * collection of one or more controllers.
+ * @overview
+ * 
+ * This file defines a Zimbra Application.
  *
- * @param name				[string]		the name of the app
- * @param container			[DwtControl]	control that contains components
- * @param parentController	[ZmController]*	parent window controller (set by the child window)
+ */
+
+/**
+ * @class
+ * This object represents a Zimbra Application. This class is a base class for app classes.
+ * "App" is a useful abstraction for a set of related functionality, such as mail,
+ * address book, or calendar. Looked at another way, an app is a collection of one or more controllers.
+ * 
+ * @param	{String}	name		the application name
+ * @param	{DwtControl}	container	the control that contains components
+ * @param	{ZmController}	parentController	the parent window controller (set by the child window)
  */
 ZmApp = function(name, container, parentController) {
 
@@ -112,6 +117,11 @@ ZmApp.DEFAULT_APPS			= [];	// ordered list
 
 ZmApp.OVERVIEW_ID			= "main";	// ID for main overview
 
+/**
+ * Initializes the application.
+ * 
+ * @private
+ */
 ZmApp.initialize =
 function() {
 	if (appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
@@ -121,7 +131,7 @@ function() {
 };
 
 /**
- * Stores information about an app. Note: Setting a value that evaluates to
+ * Registers and stores information about an app. Note: Setting a value that evaluates to
  * false (such as 0 or an empty string) will not do anything.
  * 
  * @param app				[constant]	app ID
@@ -149,6 +159,8 @@ function() {
  *        defaultSort		[int]		controls order in which app is chosen as default start app
  *        trashViewOp		[constant]	menu choice for "Show Only ..." in Trash view
  *        upsellUrl			[string]	URL for content of upsell
+ *        
+ * @private
  */
 ZmApp.registerApp =
 function(app, params) {
@@ -220,6 +232,11 @@ function(app, params) {
 
 // Public instance methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmApp.prototype.toString = 
 function() {
 	return "ZmApp";
@@ -246,63 +263,118 @@ ZmApp.prototype.refresh					= function(refresh) {};					// run when a <refresh> 
 ZmApp.prototype.handleOp				= function(op, params) {};				// handle an operation
 
 /**
-* Returns the app's name.
-*/
+ * Gets the application name.
+ * 
+ * @return	{String}	the name
+ */
 ZmApp.prototype.getName =
 function() {
 	return this._name;
 };
 
+/**
+ * Gets the application display name.
+ * 
+ * @return	{String}	the display name
+ */
 ZmApp.prototype.getDisplayName =
 function() {
 	return ZmMsg[ZmApp.NAME[this._name]];
 };
 
-// only have set if different from the default
+/**
+ * Gets the initial search type.
+ * 
+ * @return	{Object}	<code>null</code> since only set if different from the default
+ */
 ZmApp.prototype.getInitialSearchType =
 function() {
 	return null;
 };
 
-// limit for search triggered by app launch or overview click
+/**
+ * Gets the limit for the search triggered by the application launch or an overview click.
+ * 
+ * @return	{int}	the limit
+ */
 ZmApp.prototype.getLimit =
 function(offset) {
 	return appCtxt.get(ZmSetting.PAGE_SIZE);
 };
 
-// Convenience functions that call through to app view manager. See ZmAppViewMgr for details.
-
+/**
+ * Sets the application view.
+ * 
+ * @param		{String}	view		the view
+ * @see		ZmAppViewMgr
+ */
 ZmApp.prototype.setAppView =
 function(view) {
 	this._appViewMgr.setAppView(this._name, view);
 };
 
+/**
+ * Creates the application view.
+ * 
+ * @param		{hash}	params		a hash of parameters
+ * @see		ZmAppViewMgr
+ */
 ZmApp.prototype.createView =
 function(params) {
 	params.appName = this._name;
 	return this._appViewMgr.createView(params);
 };
 
+/**
+ * Pushes the application view.
+ * 
+ * @param	{String}	name	the view name
+ * @param	{Boolean}	force	<code>true</code> to force the view onto the stack
+ * @see		ZmAppViewMgr
+ */
 ZmApp.prototype.pushView =
 function(name, force) {
 	return this._appViewMgr.pushView(name, force);
 };
 
+/**
+ * Pops the application view.
+ * 
+ * @param	{Boolean}	force	<code>true</code> to force the view off the stack
+ */
 ZmApp.prototype.popView =
 function(force) {
 	return this._appViewMgr.popView(force);
 };
 
+/**
+ * Sets the application view.
+ * 
+ * @param	{String}	name	the view name
+ * @param	{Boolean}	force	<code>true</code> to force the view
+ * @see		ZmAppViewMgr
+ */
 ZmApp.prototype.setView =
 function(name, force) {
 	return this._appViewMgr.setView(name, force);
 };
 
+/**
+ * Stages the application view.
+ * 
+ * @param	{String}	name	the view name
+ * @see		ZmAppViewMgr
+ */
 ZmApp.prototype.stageView =
 function(name) {
 	return this._appViewMgr.setView(name);
 };
 
+/**
+ * Adds a deferred folder.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ */
 ZmApp.prototype.addDeferredFolder =
 function(params) {
 	var id = params.obj && params.obj.id;
@@ -313,6 +385,12 @@ function(params) {
 	}
 };
 
+/**
+ * Gets the remote folder ids.
+ * 
+ * @param	{Object}	account		the account
+ * @return	{Array}		an array of {String} ids
+ */
 ZmApp.prototype.getRemoteFolderIds =
 function(account) {
 	// XXX: optimize by caching this list? It would have to be cleared anytime
@@ -340,8 +418,10 @@ function(account) {
 
 /**
  * Creates the overview content for this app. The default implementation creates
- * a ZmOverview with standard options. Other apps may want to use different
- * options, or create a DwtComposite instead.
+ * a {@link ZmOverview} with standard options. Other apps may want to use different
+ * options, or create a {@link DwtComposite} instead.
+ * 
+ * @return	{String}	the content
  */
 ZmApp.prototype.getOverviewPanelContent =
 function() {
@@ -355,6 +435,11 @@ function() {
 	return this._overviewPanelContent;
 };
 
+/**
+ * Gets the overview container.
+ * 
+ * @return	{ZmOverview}		the overview container
+ */
 ZmApp.prototype.getOverviewContainer =
 function() {
 	if (!this._overviewContainer) {
@@ -373,9 +458,9 @@ function() {
 };
 
 /**
- * Sets the overview tree to display this app's particular overview content.
+ * Sets the overview tree to display overview content for this application.
  * 
- * @param reset		[boolean]*		if true, clear the content first
+ * @param {Boolean}	reset		if <code>true</code>, clear the content first
  */
 ZmApp.prototype.setOverviewPanelContent =
 function(reset) {
@@ -395,7 +480,9 @@ function(reset) {
 };
 
 /**
- * Returns the current ZmOverview, if any. Subclasses should ensure that a ZmOverview is returned.
+ * Gets the current overview, if any. Subclasses should ensure that a {@link ZmOverview} is returned.
+ * 
+ * @return	{ZmOverview}	the overview
  */
 ZmApp.prototype.getOverview =
 function() {
@@ -405,7 +492,7 @@ function() {
 /**
  * Resets the current overview, preserving expansion.
  * 
- * @param overviewId	[string]*		ID of overview to reset
+ * @param {String}		overviewId	the id of overview to reset
  */
 ZmApp.prototype.resetOverview =
 function(overviewId) {
@@ -438,7 +525,10 @@ function(overviewId) {
 };
 
 /**
- * Returns the ID of the current ZmOverview, if any.
+ * Gets the overview id of the current {@link ZmOverview}, if any.
+ * 
+ * @param	{Object}	account		the account
+ * @return	{String}	the id
  */
 ZmApp.prototype.getOverviewId =
 function(account) {
@@ -447,6 +537,8 @@ function(account) {
 
 /**
  * Returns a hash of params with the standard overview options.
+ * 
+ * @private
  */
 ZmApp.prototype._getOverviewParams =
 function() {
@@ -479,6 +571,8 @@ function() {
  * Returns the list of trees to show in the overview for this app. Don't show
  * Folders unless mail is enabled. Other organizer types won't be created unless
  * their apps are enabled, so we don't need to check for them.
+ * 
+ * @private
  */
 ZmApp.prototype._getOverviewTrees =
 function() {
@@ -500,6 +594,9 @@ function() {
 	return newList;
 };
 
+/**
+ * @private
+ */
 ZmApp.prototype._addSettingsChangeListeners =
 function() {
 	if (!this._settingListener) {
@@ -517,6 +614,9 @@ function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmApp.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
@@ -541,9 +641,10 @@ function(ev) {
 };
 
 /**
- * Provides a mechanism for an app to add to search params.
+ * Gets the search parameters.
  * 
- * @param params	[hash]*		a hash of arguments for the search (see ZmSearchController::search)
+ * @param {Hash}	params	a hash of arguments for the search
+ * @see		ZmSearchController
  */
 ZmApp.prototype.getSearchParams =
 function(params) {
@@ -553,6 +654,8 @@ function(params) {
 /**
  * Default function to run after an app's core package has been loaded. It assumes that the
  * classes that define items and organizers for this app are in the core package.
+ * 
+ * @private
  */
 ZmApp.prototype._postLoadCore =
 function() {
@@ -563,6 +666,8 @@ function() {
 
 /**
  * Default function to run after an app's main package has been loaded.
+ * 
+ * @private
  */
 ZmApp.prototype._postLoad =
 function(type) {
@@ -572,6 +677,9 @@ function(type) {
 	this._handleDeferredNotifications();
 };
 
+/**
+ * @private
+ */
 ZmApp.prototype._setupDropTargets =
 function() {
 	var appTargets = ZmApp.DROP_TARGETS[this._name];
@@ -593,6 +701,9 @@ function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmApp.prototype.createDeferred = function() {
 	var types = ZmOrganizer.APP2ORGANIZER[this._name] || [];
 	for (var i = 0; i < types.length; i++) {
@@ -605,6 +716,8 @@ ZmApp.prototype.createDeferred = function() {
 
 /**
  * Lazily create folders received in the initial <refresh> block.
+ * 
+ * @private
  */
 ZmApp.prototype._createDeferredFolders =
 function(type) {
@@ -618,6 +731,9 @@ function(type) {
 	this._clearDeferredFolders();
 };
 
+/**
+ * @private
+ */
 ZmApp.prototype._clearDeferredFolders =
 function() {
 	this._deferredFolders = [];
@@ -632,6 +748,8 @@ function() {
  * @param data	[array]		list of notifications
  * 
  * TODO: revisit use of MAIN_PKG, it's hokey
+ * 
+ * @private
  */
 ZmApp.prototype._deferNotifications =
 function(type, data) {
@@ -645,6 +763,9 @@ function(type, data) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmApp.prototype._handleDeferredNotifications =
 function() {
 	var dns = this._deferredNotifications;
@@ -660,14 +781,21 @@ function() {
 	}
 };
 
-// depending on "Always in New Window" option and whether Shift key is pressed,
-// determine whether action should be in new window or not
+/**
+ * Depending on "Always in New Window" option and whether Shift key is pressed,
+ * determine whether action should be in new window or not.
+ * 
+ * @private
+ */
 ZmApp.prototype._inNewWindow =
 function(ev) {
 	var setting = appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
 	return !ev ? setting : ((!setting && ev && ev.shiftKey) || (setting && ev && !ev.shiftKey));
 };
 
+/**
+ * @private
+ */
 ZmApp.prototype._handleCreateFolder =
 function(create, org) {
 	var parent = appCtxt.getById(create.l);
@@ -677,6 +805,9 @@ function(create, org) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmApp.prototype._handleCreateLink =
 function(create, org) {
 	var parent = appCtxt.getById(create.l);
@@ -690,8 +821,11 @@ function(create, org) {
 // Abstract/protected methods
 
 /**
-* Launches an app, which creates a view and shows it.
-*/
+ * Launches the application.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmApp.prototype.launch =
 function(params, callback) {
 	this.createDeferred();
@@ -701,8 +835,10 @@ function(params, callback) {
 };
 
 /**
-* Run when the activation state of an app changes.
-*/
+ * Activates the application.
+ * 
+ * @param	{Boolean}	active	<code>true</code> if the application is active
+ */
 ZmApp.prototype.activate =
 function(active) {
 	this._active = active;
@@ -713,23 +849,28 @@ function(active) {
 };
 
 /**
-* Returns true if this is the active app.
-*/
+ * Checks if the application is active.
+ * 
+ * @return	{Boolean}	<code>true</code> if the application is active
+ */
 ZmApp.prototype.isActive =
 function() {
 	return this._active;
 };
 
 /**
-* Clears an app's state.
-*/
+ * Resets the application state.
+ * 
+ * @return	{Boolean}	<code>true</code> if the application is active
+ */
 ZmApp.prototype.reset =
 function(active) {
 };
 
 /**
-* Starts an alert on the app tab.
-*/
+ * Starts an alert on the application tab.
+ * 
+ */
 ZmApp.prototype.startAlert =
 function() {
 	AjxDispatcher.require("Alert");
@@ -738,8 +879,8 @@ function() {
 };
 
 /**
-* Stops an alert on the app tab.
-*/
+ * Stops an alert on the application tab.
+ */
 ZmApp.prototype.stopAlert =
 function() {
 	if (this._alert) {
@@ -747,6 +888,9 @@ function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmApp.prototype._notifyRendered =
 function() {
 	if (!this._hasRendered) {
@@ -755,6 +899,9 @@ function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmApp.prototype._getExternalAccount =
 function() {
 

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -13,13 +13,36 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * 
+ * This file defines a Zimlet Application.
+ *
+ */
+
+/**
+ * @class
+ * This object represents a Zimlet Application.
+ * 
+ * @param	{String}	name		the application name
+ * @param	{Object}	zimlet		the zimlet
+ * @param	{DwtControl}	container	the container
+ * 
+ * @extends	ZmApp
+ */
 ZmZimletApp = function(name, zimlet, container) {
 	ZmApp.call(this, name, container);
 	this._zimlet = zimlet;
 };
+
 ZmZimletApp.prototype = new ZmApp;
 ZmZimletApp.prototype.constructor = ZmZimletApp;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmZimletApp.prototype.toString = function() {
 	return "ZmZimletApp";
 };
@@ -28,6 +51,11 @@ ZmZimletApp.prototype.toString = function() {
 // Public methods
 //
 
+/**
+ * Gets the controller.
+ * 
+ * @return	{ZmZimletAppController}		the controller
+ */
 ZmZimletApp.prototype.getController = function() {
 	if (!this._controller) {
 		this._controller = new ZmZimletAppController(this.getName(), this._container, this);
@@ -35,22 +63,43 @@ ZmZimletApp.prototype.getController = function() {
 	return this._controller;
 };
 
+/**
+ * Gets the toolbar.
+ * 
+ * @return	{ZmToolbar}		the toolbar
+ */
 ZmZimletApp.prototype.getToolbar = function() {
 	return this.getController().getToolbar();
 };
 
 // convenience methods
 
+/**
+ * Sets the content on the view.
+ * 
+ * @param	{String}	html	the HTML content
+ */
 ZmZimletApp.prototype.setContent = function(html) {
 	this.getController().getView().setContent(html);
 };
 
+/**
+ * Sets the view.
+ * 
+ * @param	{Object}	view	the view
+ */
 ZmZimletApp.prototype.setView = function(view) {
 	this.getController().getView().setView(view);
 };
 
 // ZmApp methods
 
+/**
+ * Launches the application.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmZimletApp.prototype.launch = function(params, callback) {
 	this.getController().show();
 	ZmApp.prototype.launch.call(this, params);
@@ -62,6 +111,12 @@ ZmZimletApp.prototype.launch = function(params, callback) {
 	}
 };
 
+/**
+ * Activates the application.
+ * 
+ * @param	{Boolean}	active	<code>true</code> if active; <code>false</code> otherwise
+ * @param	{String}	viewId	the view id
+ */
 ZmZimletApp.prototype.activate = function(active, viewId) {
 	ZmApp.prototype.activate.apply(this, arguments);
 	if (this._zimlet.appActive) {

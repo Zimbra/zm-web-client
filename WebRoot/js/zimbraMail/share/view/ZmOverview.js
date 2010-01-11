@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007-2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -14,32 +14,42 @@
  */
 
 /**
- * Creates an overview.
- * @constructor
+ * @overview
+ * 
+ * This file defines an overview, which holds tree views.
+ *
+ */
+
+/**
  * @class
- * An overview is a DwtComposite that holds tree views.
+ * Creates an overview. An overview is a {@link DwtComposite} that holds tree views.
  * 
  * @author Conrad Damon
  *
- * @param params 				[hash]					hash of params:
- *        id					[string]*				ID for the HTML element
- *        overviewId			[string]				overview ID
- *        treeIds				[array]					array of organizer types that may be displayed in this overview
- *        account				[ZmZimbraAccount]		account this overview belongs to
- *        parent				[DwtControl]*			containing widget
- *        overviewClass			[string]*				class name for overview DIV
- *        posStyle				[constant]*				positioning style for overview DIV
- *        scroll				[constant]*				scrolling style for overview DIV
- *        selectionSupported	[boolean]*				true if left-click selection is supported
- *        actionSupported		[boolean]*				true if right-click action menus are supported
- *        dndSupported			[boolean]*				true if drag-and-drop is supported
- *        headerClass			[string]*				class name for header item
- *        showUnread			[boolean]*				if true, unread counts will be shown
- *        showNewButtons		[boolean]*				if true, tree headers may have buttons for creating new organizers
- *        treeStyle				[constant]*				default display style for tree views
- *        isCheckedByDefault	[boolean]*				default state for "checked" deiplay style
- *        noTooltips			[boolean]*				if true, don't show tooltips for tree items
- * @param controller			[ZmOverviewController]	the overview controller
+ * @param {Hash}	params 				a hash of parameters
+ * <ul>
+ * <li>id {String}	the id for the HTML element</li>
+ * <li>overviewId {String}	the overview id
+ * <li>treeIds {Array}	an array of organizer types that may be displayed in this overview
+ * <li>account				{@link ZmZimbraAccount}	the account this overview belongs to
+ * <li>parent				{@link DwtControl}	the containing widget
+ * <li>overviewClass			{String}				the class name for overview DIV
+ * <li>posStyle				{constant}				the positioning style for overview DIV
+ * <li>scroll				{constant}				the scrolling style for overview DIV
+ * <li>selectionSupported {Boolean}			<code>true</code> left-click selection is supported
+ * <li>actionSupported		{Boolean}		<code>true</code> if right-click action menus are supported
+ * <li>dndSupported			{Boolean}		<code>true</code> if drag-and-drop is supported
+ * <li>headerClass			{String}			the class name for header item
+ * <li>showUnread			{Boolean}				if <code>true</code>, unread counts will be shown
+ * <li>showNewButtons		{Boolean}				if <code>true</code>, tree headers may have buttons for creating new organizers
+ * <li>treeStyle			{constant}				the default display style for tree views
+ * <li>isCheckedByDefault	{Boolean}				the default state for "checked" display style
+ * <li>noTooltips			{Boolean}				if <code>true</code>, do not show toolt ips for tree items
+ * </ul>
+ * 
+ * @param {ZmOverviewController}	controller			the overview controller
+ * 
+ * @extends	DwtComposite
  */
 ZmOverview = function(params, controller) {
 
@@ -89,13 +99,21 @@ ZmOverview = function(params, controller) {
 ZmOverview.prototype = new DwtComposite;
 ZmOverview.prototype.constructor = ZmOverview;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmOverview.prototype.toString =
 function() {
 	return "ZmOverview";
 };
 
 /**
- * Returns the id of the parent element for the given tree.
+ * Gets the parent element for the given tree id.
+ * 
+ * @param	{String}	treeId		the tree id
+ * @return	{Object}	the tree parent element
  */
 ZmOverview.prototype.getTreeParent =
 function(treeId) {
@@ -105,8 +123,8 @@ function(treeId) {
 /**
  * Displays the given list of tree views in this overview.
  *
- * @param treeIds		[array]				list of organizer types
- * @param omit			[hash]*				hash of organizer IDs to ignore
+ * @param {Array}	treeIds		an array of organizer ids
+ * @param {Hash}	omit		the hash of organizer ids to ignore
  */
 ZmOverview.prototype.set =
 function(treeIds, omit) {
@@ -123,8 +141,8 @@ function(treeIds, omit) {
  * necessary. The tree view is cleared before it is set. The tree view inherits options
  * from this overview.
  * 
- * @param treeId	[constant]			organizer ID
- * @param omit		[hash]*				hash of organizer IDs to ignore
+ * @param {String}	treeId	the organizer ID
+ * @param {Hash}	omit	a hash of organizer ids to ignore
  */
 ZmOverview.prototype.setTreeView =
 function(treeId, omit) {
@@ -148,22 +166,33 @@ function(treeId, omit) {
 	this._treeHash[treeId] = treeController.show(params); // render tree view
 };
 
+/**
+ * Gets the tree view.
+ * 
+ * @param	{String}	treeId		the tree id
+ * @return	{Object}	the tree view
+ */
 ZmOverview.prototype.getTreeView =
 function(treeId) {
 	return this._treeHash[treeId];
 };
 
+/**
+ * Gets the tree views.
+ * 
+ * @return	{Array}	an array of tree ids
+ */
 ZmOverview.prototype.getTreeViews =
 function() {
 	return this._treeIds;
 };
 
 /**
- * Searches the tree views for the tree item
- * whose data object has the given ID and type.
+ * Searches the tree views for the tree item whose data object has the given ID and type.
  * 
- * @param id			[int]			ID to look for
- * @param type			[constant]*		item must also have this type
+ * @param {int}	id			the id to look for
+ * @param {Constant}	type			the item must also have this type
+ * @return	{Object}	the item or <code>null</code> if not found
  */
 ZmOverview.prototype.getTreeItemById =
 function(id, type) {
@@ -182,6 +211,9 @@ function(id, type) {
 
 /**
 * Returns the first selected item within this overview.
+* 
+* @param	{Boolean}	typeOnly	<code>true</code> to return the type only
+* @return	{Object}	the item (or type if <code>typeOnly</code>) or <code>null</code> if not found
 */
 ZmOverview.prototype.getSelected =
 function(typeOnly) {
@@ -200,8 +232,8 @@ function(typeOnly) {
 /**
  * Selects the item with the given ID within the given tree in this overview.
  *
- * @param id	[string]		item ID
- * @param type	[constant]*		tree type
+ * @param {String}	id	the item id
+ * @param {constant}	type	the tree type
  */
 ZmOverview.prototype.setSelected =
 function(id, type) {
@@ -224,11 +256,11 @@ function(id, type) {
 };
 
 /**
- * Given a tree item, deselects all items in the overview's
+ * Given a tree item, de-selects all items in the overview's
  * other tree views, enforcing single selection within the overview.
  * Passing a null argument will clear selection in all tree views.
  *
- * @param treeItem			[DwtTreeItem]
+ * @param {DwtTreeItem}	treeItem		the tree item
  */
 ZmOverview.prototype.itemSelected =
 function(treeItem) {
@@ -262,12 +294,18 @@ function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmOverview.prototype._initialize =
 function() {
 	// do nothing. 
 	// - called by DwtTreeItem b/c it thinks its adding another tree item
 };
 
+/**
+ * @private
+ */
 ZmOverview.prototype._focus =
 function() {
 	var item = this._selectedTreeItem;
@@ -283,6 +321,9 @@ function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmOverview.prototype._blur =
 function() {
 	var item = this._selectedTreeItem;
@@ -296,8 +337,10 @@ function() {
  * tree immediately after/before the given one. Used to handle tree item selection that
  * spans trees.
  *
- * @param next		[boolean]		if true, look for next item as opposed to previous item
- * @param tree		[ZmTreeView]    tree that we are just leaving
+ * @param {Boolean}	next		if <code>true</code>, look for next item as opposed to previous item
+ * @param {ZmTreeView}	tree		the tree that we are just leaving
+ *
+ * @private
  */
 ZmOverview.prototype._getNextTreeItem =
 function(next, tree) {
