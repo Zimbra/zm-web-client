@@ -450,7 +450,9 @@ function() {
 
     var diff = (currentTime - this._nextAlarmTime);
 
-    if(diff > 2*AjxDateUtil.MSEC_PER_DAY) {
+    //reminder controller takes 1 minute interval for house keeping schedule
+    //if the diff is greater than 2 minutes (safer deadline) mark the alarm as old
+    if(diff > 2*60*1000) {
         return true;
     }
     return false;
