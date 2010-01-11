@@ -15,8 +15,7 @@
 
 ZmBriefcaseTabView = function(parent,className,posStyle) {
 
-	var ac = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
-	this._app = ac.getApp(ZmApp.BRIEFCASE);
+	this._app = appCtxt.getApp(ZmApp.BRIEFCASE);
 	this.view = ZmId.VIEW_BRIEFCASE_ICON;
 
     DwtTabViewPage.call(this,parent,className,Dwt.STATIC_STYLE);
@@ -73,7 +72,7 @@ function() {
 
 ZmBriefcaseTabView.prototype._createHtml1 =
 function() {
-	var bc = this._controller = new ZmBriefcaseController(this._app._container, this._app);
+	var bc = this._controller = AjxDispatcher.run("GetBriefcaseController");
     var params = {parent:bc._container, className:"BriefcaseTabBox BriefcaseList", view:this.view,
 				  controller:bc};
     var lv = this._listView = this._controller._listView[this.view] = new ZmBriefcaseIconView(params);
