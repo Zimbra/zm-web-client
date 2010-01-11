@@ -252,7 +252,7 @@ function(contentType, name, winName) {
 		folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
 	}
 
-	var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + (window.isTinyMCE ? "&editor=tinymce" : "");
+	var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + (window.isTinyMCE ? "&editor=tinymce" : "") + "&skin=" + appCurrentSkin;
 	var winname = winName || name;
 	window.open(url, winname, ZmBriefcaseApp.getDocWindowFeatures());
 };

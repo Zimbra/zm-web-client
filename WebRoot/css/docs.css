@@ -14,11 +14,11 @@
  *
  * */
 
-.ZDToolBar { background-color: #bfb39b; padding:3px;}
+.ZDToolBar { @ChromeBg@ padding:3px; @Text@}
 
 .ZDUtilToolBar { background-color: #bccbd6;}
 
-.ZDEditToolBar { background-color: #ddd6c6; padding:3px; }
+.ZDEditToolBar { @ToolbarBg@ padding:3px; }
 
 .ZDQtbToolBar { padding:4px; height:75px; }
 
@@ -55,3 +55,5 @@
 .Qttable1 tr {
     background-color:white;
 }
+
+.defaultSkin table {background:transparent !important;}
