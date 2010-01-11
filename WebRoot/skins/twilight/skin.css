@@ -166,3 +166,9 @@ body, #skin_container_splash_screen	{
 	border: none;
 	-moz-border-radius: 4px;
 }
+
+.ZmEditContactViewDetailsButton {
+	border: 1px solid #ECECEC;
+	background-color: @WidgetBgColor@;
+	cursor: pointer;
+}
