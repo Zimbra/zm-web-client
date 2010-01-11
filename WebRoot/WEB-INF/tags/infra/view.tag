@@ -116,7 +116,7 @@
 				</table>
 			</td>
 		</c:if>
-		<td colspan="3">
+		<td colspan="3" valign="top">
 			<table cellpadding="0" cellspacing="0" border="0" width="100%">
 			<tr>
 			<td valign="bottom" nowrap="nowrap"><app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}' nofiller="${true}"/></td>
@@ -129,6 +129,7 @@
 			</td>
 			</tr>
 			</table>
+			<jsp:doBody/>
 		</td>
 	</tr>
 	<tr>
@@ -139,7 +140,7 @@
 				<tr>
 </c:if>
 		<td valign="top" colspan="3">
-		<jsp:doBody/>
+		
 	</td>
 	<c:if test="${adsOn}" >
 						<td valign="top" style="border-top: 1px solid #98adbe; width: 180px;">
