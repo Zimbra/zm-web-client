@@ -531,10 +531,10 @@ function(params) {
 	if (toMove.length) {
 		if (appCtxt.multiAccounts) {
 			var accounts = this._filterItemsByAccount(toMove);
-			this._deleteAccountItems(accounts, params);
 			if (!params.callback) {
 				params.callback = new AjxCallback(this, this._deleteAccountItems, [accounts, params]);
 			}
+			this._deleteAccountItems(accounts, params);
 		}
 		else {
 			params.items = toMove;
