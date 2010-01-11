@@ -1359,7 +1359,9 @@ function() {
 
 ZmMailListController.prototype._handleSyncAll =
 function() {
-	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES)) {
+	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
+		appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
+	{
 		this._app.getOverviewContainer().highlightAllMboxes();
 	}
 };
