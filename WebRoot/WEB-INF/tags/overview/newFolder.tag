@@ -267,6 +267,7 @@
     </c:if>
 
     <c:if test="${calendar}">
+        <c:if test="${not link}">
         <tr>
               <td>&nbsp;</td>
               <td nowrap>
@@ -274,7 +275,7 @@
                       <tr>
                           <td>
                               <input id="exclude" name='newFolderExcludeFlag' type='checkbox' <c:if test="${newFolderExcludeFlag eq 'b'}">checked</c:if> value="b">
-                          </td
+                          </td>
                           <td>&nbsp;</td>
                           <td>
                               <label for="exclude"><fmt:message key="excludeFromFreeBusyTimes"/></label>
@@ -283,7 +284,7 @@
                   </table>
               </td>
           </tr>
-
+        </c:if>
           <tr>
               <td>&nbsp;</td>
               <td nowrap>
