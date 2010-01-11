@@ -756,7 +756,10 @@ function() {
 		this._createHorizRuleButton(tb);
 		this._createUrlButton(tb);
 		this._createUrlImageButton(tb);
-		this._createImageButton(tb);
+
+        if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
+            this._createImageButton(tb);
+        }
 
 		this._resetFormatControls();
 	}
@@ -785,7 +788,7 @@ function(ev) {
 
 ZmSignatureEditor.prototype._insertImagesListener =
 function(ev) {
-	AjxDispatcher.require("BriefcaseCore");
+	AjxDispatcher.require("BriefcaseCore");    
 	appCtxt.getApp(ZmApp.BRIEFCASE)._createDeferredFolders();
 
 	var callback = new AjxCallback(this, this._imageUploaded);
