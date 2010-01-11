@@ -666,7 +666,7 @@
                     <!-- NOTE: @AppContextPath@ needs to be escaped here because -->
                     <!-- NOTE: it is used within a for loop which treats @xyz@ as -->
                     <!-- NOTE: property replacements for each iteration. -->
-					<param name='csspath' value='\@AppContextPath@/skins/@{skinname}/img/' />
+					<param name='csspath' value='@@AppContextPath@/skins/@{skinname}/img/' />
 				</antcall>
 			</sequential>
 		</for>
