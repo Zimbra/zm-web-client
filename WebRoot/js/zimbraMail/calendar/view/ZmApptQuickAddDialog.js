@@ -86,6 +86,7 @@ function(appt) {
 	}
 	this._showAsSelect.setSelectedValue("B");
 	this._privacySelect.setSelectedValue("PUB");
+    this._calendarOrgs = {};
 	ZmApptViewHelper.populateFolderSelect(this._folderSelect, this._folderRow, this._calendarOrgs, appt);
 	this._repeatSelect.setSelectedValue("NON");
 	this._repeatDescField.innerHTML = "";

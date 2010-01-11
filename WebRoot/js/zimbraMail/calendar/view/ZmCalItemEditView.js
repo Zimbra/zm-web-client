@@ -312,6 +312,7 @@ function(tabGroup) {
 
 ZmCalItemEditView.prototype._reset =
 function(calItem, mode, firstTime) {
+    this._calendarOrgs = {};
 	ZmApptViewHelper.populateFolderSelect(this._folderSelect, this._folderRow, this._calendarOrgs, calItem);
 
 	this.enableInputs(true);

@@ -212,8 +212,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 	}
 
 	folderSelect.clearOptions();
-	calendarOrgs = {};
-
+    
 	for (var i = 0; i < data.length; i++) {
 		var cal = data[i];
 
