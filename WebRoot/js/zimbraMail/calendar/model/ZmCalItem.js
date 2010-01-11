@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005-2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,6 +11,25 @@
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
+ */
+ 
+/**
+ * @overview
+ * 
+ * This file defines a Zimbra calendar item.
+ *
+ */
+
+/**
+ * @class
+ * This class represents a calendar item.
+ *
+ * @param	{constant}	type		the item type
+ * @param	{Object}	list		the list
+ * @param	{int}	id				the task id
+ * @param	{String}	folderId	the folder id
+ *
+ * @extends ZmCalBaseItem
  */
 ZmCalItem = function(type, list, id, folderId) {
 	if (arguments.length == 0) { return; }
@@ -28,6 +47,11 @@ ZmCalItem = function(type, list, id, folderId) {
 ZmCalItem.prototype = new ZmCalBaseItem;
 ZmCalItem.prototype.constructor = ZmCalItem;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmCalItem.prototype.toString =
 function() {
 	return "ZmCalItem";
@@ -35,18 +59,57 @@ function() {
 
 // Consts
 
+/**
+ * Defines the "new" mode.
+ */
 ZmCalItem.MODE_NEW					    = 1;
+/**
+ * Defines the "edit" mode.
+ */
 ZmCalItem.MODE_EDIT					    = 2;
+/**
+ * Defines the "edit single instance" mode.
+ */
 ZmCalItem.MODE_EDIT_SINGLE_INSTANCE	    = 3;
+/**
+ * Defines the "edit series" mode.
+ */
 ZmCalItem.MODE_EDIT_SERIES			    = 4;
+/**
+ * Defines the "delete" mode.
+ */
 ZmCalItem.MODE_DELETE				    = 5;
+/**
+ * Defines the "delete instance" mode.
+ */
 ZmCalItem.MODE_DELETE_INSTANCE		    = 6;
+/**
+ * Defines the "delete series" mode.
+ */
 ZmCalItem.MODE_DELETE_SERIES		    = 7;
+/**
+ * Defines the "new from quick" mode.
+ */
 ZmCalItem.MODE_NEW_FROM_QUICKADD 	    = 8;
+/**
+ * Defines the "get" mode.
+ */
 ZmCalItem.MODE_GET					    = 9;
+/**
+ * Defines the "forward" mode.
+ */
 ZmCalItem.MODE_FORWARD				    = 10;
+/**
+ * Defines the "forward single instance" mode.
+ */
 ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE	= 11;
+/**
+ * Defines the "forward series" mode.
+ */
 ZmCalItem.MODE_FORWARD_SERIES			= 12;
+/**
+ * Defines the "last" mode index constant.
+ */
 ZmCalItem.MODE_LAST					    = 12;
 
 ZmCalItem.FORWARD_MAPPING = {};
@@ -54,64 +117,250 @@ ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD]                   = ZmCalItem.
 ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE]   = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
 ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD_SERIES]            = ZmCalItem.MODE_EDIT_SERIES;
 
+/**
+ * Defines the "low" priority.
+ */
 ZmCalItem.PRIORITY_LOW				= 9;
+/**
+ * Defines the "normal" priority.
+ */
 ZmCalItem.PRIORITY_NORMAL			= 5;
+/**
+ * Defines the "high" priority.
+ */
 ZmCalItem.PRIORITY_HIGH				= 1;
 
+/**
+ * Defines the "chair" role.
+ */
 ZmCalItem.ROLE_CHAIR				= "CHA";
+/**
+ * Defines the "required" role.
+ */
 ZmCalItem.ROLE_REQUIRED				= "REQ";
+/**
+ * Defines the "optional" role.
+ */
 ZmCalItem.ROLE_OPTIONAL				= "OPT";
+/**
+ * Defines the "non-participant" role.
+ */
 ZmCalItem.ROLE_NON_PARTICIPANT		= "NON";
 
 ZmCalItem.SERVER_WEEK_DAYS			= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
 ZmCalItem.ATTACHMENT_CHECKBOX_NAME	= "__calAttCbox__";
 
+/**
+ * Defines "minutes "reminder units.
+ */
 ZmCalItem.REMINDER_UNIT_MINUTES     = "minutes";
+/**
+ * Defines "hours" reminder units.
+ */
 ZmCalItem.REMINDER_UNIT_HOURS       = "hours";
+/**
+ * Defines "days" reminder units.
+ */
 ZmCalItem.REMINDER_UNIT_DAYS        = "days";
+/**
+ * Defines "weeks" reminder units.
+ */
 ZmCalItem.REMINDER_UNIT_WEEKS       = "weeks";
+/**
+ * Defines "none" reminder.
+ */
 ZmCalItem.REMINDER_NONE             = "none";
 
 // Getters
 
+/**
+ * @private
+ */
 ZmCalItem.prototype.getCompNum			= function() { return this.compNum || "0"; };
-ZmCalItem.prototype.getFolder			= function() { };						// override if necessary
-ZmCalItem.prototype.getOrganizer 		= function() { return this.organizer || ""; };
-ZmCalItem.prototype.getSentBy           = function() { return this.sentBy || ""; };
-ZmCalItem.prototype.getOrigStartDate 	= function() { return this._origStartDate || this.startDate; };
-ZmCalItem.prototype.getOrigStartTime 	= function() { return this.getOrigStartDate().getTime(); };
-ZmCalItem.prototype.getOrigTimezone     = function() { return this._origTimezone || this.timezone; };
-ZmCalItem.prototype.getRecurBlurb		= function() { return this._recurrence.getBlurb(); };
-ZmCalItem.prototype.getRecurrence		= function() { return this._recurrence; };
-ZmCalItem.prototype.getRecurType		= function() { return this._recurrence.repeatType; };
-ZmCalItem.prototype.getTimezone         = function() { return this.timezone; };
-ZmCalItem.prototype.getSummary			= function(isHtml) { };					// override if necessary
-ZmCalItem.prototype.getToolTip			= function(controller) { };				// override if necessary
 
+/**
+ * Gets the folder.
+ * 
+ * @return	{Object}	the folder
+ */
+ZmCalItem.prototype.getFolder			= function() { };						// override if necessary
+
+/**
+ * Gets the organizer.
+ * 
+ * @return	{String}	the organizer
+ */
+ZmCalItem.prototype.getOrganizer 		= function() { return this.organizer || ""; };
+
+/**
+ * Gets the sent by.
+ * 
+ * @return	{String}	the sent by
+ */
+ZmCalItem.prototype.getSentBy           = function() { return this.sentBy || ""; };
+
+/**
+ * Gets the original start date.
+ * 
+ * @return	{Date}	the original start date
+ */
+ZmCalItem.prototype.getOrigStartDate 	= function() { return this._origStartDate || this.startDate; };
+
+/**
+ * Gets the original start time.
+ * 
+ * @return	{Date}	the original start time
+ */
+ZmCalItem.prototype.getOrigStartTime 	= function() { return this.getOrigStartDate().getTime(); };
+
+/**
+ * Gets the original timezone.
+ * 
+ * @return	{Date}	the original timezone
+ */
+ZmCalItem.prototype.getOrigTimezone     = function() { return this._origTimezone || this.timezone; };
+
+/**
+ * Gets the recurrence "blurb".
+ * 
+ * @return	{String}	the recurrence blurb
+ * @see		ZmRecurrence
+ */
+ZmCalItem.prototype.getRecurBlurb		= function() { return this._recurrence.getBlurb(); };
+
+/**
+ * Gets the recurrence.
+ * 
+ * @return	{ZmRecurrence}	the recurrence
+ */
+ZmCalItem.prototype.getRecurrence		= function() { return this._recurrence; };
+
+/**
+ * Gets the recurrence "type".
+ * 
+ * @return	{String}	the recurrence type
+ * @see		ZmRecurrence
+ */
+ZmCalItem.prototype.getRecurType		= function() { return this._recurrence.repeatType; };
+
+/**
+ * Gets the timezone.
+ * 
+ * @return	{String}	the timezone
+ */
+ZmCalItem.prototype.getTimezone         = function() { return this.timezone; };
+
+/**
+ * Gets the summary.
+ * 
+ * @param	{Boolean}	isHtml		<code>true</code> to return as html
+ * @return	{String}	the summary
+ */
+ZmCalItem.prototype.getSummary			= function(isHtml) { };					// override if necessary
+
+/**
+ * Gets the tool tip.
+ * 
+ * @param	{ZmController}		controller		the controller
+ * @return	{String}	the tool tip
+ */
+ZmCalItem.prototype.getToolTip			= function(controller) { };				// override if necessary
+/**
+ * Checks if this item has a custom recurrence.
+ * 
+ * @return	{Boolean}	<code>true</code> for a custom recurrence
+ */
 ZmCalItem.prototype.isCustomRecurrence 	= function() { return this._recurrence.repeatCustom == "1" || this._recurrence.repeatEndType != "N"; };
+/**
+ * Checks if this item is an organizer.
+ * 
+ * @return	{Boolean}	<code>true</code> for an organizer
+ */
 ZmCalItem.prototype.isOrganizer 		= function() { return (typeof(this.isOrg) === 'undefined') || (this.isOrg == true); };
+/**
+ * Checks if this item is recurring.
+ * 
+ * @return	{Boolean}	<code>true</code> for recurrence
+ */
 ZmCalItem.prototype.isRecurring 		= function() { return (this.recurring || (this._rawRecurrences != null)); };
+/**
+ * Checks if this item has attachments.
+ * 
+ * @return	{Boolean}	<code>true</code> if this item has attachments
+ */
 ZmCalItem.prototype.hasAttachments 		= function() { return this.getAttachments() != null; };
+/**
+ * Checks if this item has attendee type.
+ * 
+ * @return	{Boolean}	always returns <code>false</code>; override if necessary
+ */
 ZmCalItem.prototype.hasAttendeeForType	= function(type) { return false; };		// override if necessary
+/**
+ * Checks if this item has attendees.
+ * 
+ * @return	{Boolean}	always returns <code>false</code>; override if necessary
+ */
 ZmCalItem.prototype.hasAttendees    	= function() { return false; }; 		// override if necessary
+/**
+ * Checks if this item has person attendees.
+ * 
+ * @return	{Boolean}	always returns <code>false</code>; override if necessary
+ */
 ZmCalItem.prototype.hasPersonAttendees	= function() { return false; };			// override if necessary
 
 // Setters
+/**
+ * Sets all day event.
+ * 
+ * @param	{Boolean}	isAllDay	<code>true</code> for an all day event
+ */
 ZmCalItem.prototype.setAllDayEvent 		= function(isAllDay) 	{ this.allDayEvent = isAllDay ? "1" : "0"; };
+/**
+ * Sets the name.
+ * 
+ * @param	{String}	newName			the name
+ */
 ZmCalItem.prototype.setName 			= function(newName) 	{ this.name = newName; };
+/**
+ * Sets the organizer.
+ * 
+ * @param	{String}	organizer			the organizer
+ */
 ZmCalItem.prototype.setOrganizer 		= function(organizer) 	{ this.organizer = organizer != "" ? organizer : null; };
+/**
+ * Sets the repeat type.
+ * 
+ * @param	{constant}	repeatType			the repeat type
+ */
 ZmCalItem.prototype.setRecurType		= function(repeatType)	{ this._recurrence.repeatType = repeatType; };
+/**
+ * Sets the item type.
+ * 
+ * @param	{constant}	newType			the item type
+ */
 ZmCalItem.prototype.setType 			= function(newType) 	{ this.type = newType; };
+/**
+ * Sets the original timezone.
+ * 
+ * @param	{Object}	timezone		the timezone
+ */
 ZmCalItem.prototype.setOrigTimezone     = function(timezone)    { this._origTimezone = timezone; };
 
+/**
+ * Sets the folder id.
+ * 
+ * @param	{String}	folderId		the folder id
+ */
 ZmCalItem.prototype.setFolderId =
 function(folderId) {
 	this.folderId = folderId || ZmOrganizer.ID_CALENDAR;
 };
 
-// Returns the "local" folder Id even for remote folders. Otherwise, just use
-// this.folderId if you dont care.
+/**
+ * Gets the "local" folder id even for remote folders. Otherwise, just use <code>this.folderId</code>.
+ * 
+ */
 ZmCalItem.prototype.getLocalFolderId =
 function() {
 	var fid = this.folderId;
@@ -123,6 +372,12 @@ function() {
 	return fid;
 };
 
+/**
+ * Sets the end date.
+ * 
+ * @param	{Date}	endDate		the end date
+ * @param	{Boolean}	keepCache	<code>true</code> to keep the cache; <code>false</code> to reset the cache
+ */
 ZmCalItem.prototype.setEndDate =
 function(endDate, keepCache) {
 	this.endDate = new Date(endDate instanceof Date ? endDate.getTime(): endDate);
@@ -130,6 +385,12 @@ function(endDate, keepCache) {
 		this._resetCached();
 };
 
+/**
+ * Sets the start date.
+ * 
+ * @param	{Date}	startDate		the start date
+ * @param	{Boolean}	keepCache	<code>true</code> to keep the cache; <code>false</code> to reset the cache
+ */
 ZmCalItem.prototype.setStartDate =
 function(startDate, keepCache) {
 	if (this._origStartDate == null && this.startDate != null) {
@@ -147,6 +408,12 @@ function(startDate, keepCache) {
 	}
 };
 
+/**
+ * Sets the timezone.
+ * 
+ * @param	{Object}	timezone	the timezone
+ * @param	{Boolean}	keepCache	<code>true</code> to keep the cache; <code>false</code> to reset the cache
+ */
 ZmCalItem.prototype.setTimezone =
 function(timezone, keepCache) {
 	if (this._origTimezone == null) {
@@ -159,8 +426,9 @@ function(timezone, keepCache) {
 };
 
 /**
- * This method sets the view mode, and resets any other fields that should not
- * be set for that view mode.
+ * Sets the view mode, and resets any other fields that should not be set for that view mode.
+ * 
+ * @param	{constant}	mode		the mode (see <code>ZmCalItem.MODE_</code> constants)
  */
 ZmCalItem.prototype.setViewMode =
 function(mode) {
@@ -171,10 +439,14 @@ function(mode) {
 };
 
 /**
- * Walks the notesParts array looking for the first part that matches given
- * content type - for now, returns the content (but we could just return the
- * whole part?)
-*/
+ * Gets the notes part. This method will walk the notesParts array looking for
+ * the first part that matches given content type.
+ * 
+ * @param	{constant}	contentType		the content type (see {@link ZmMimeTable.TEXT_PLAIN})	
+ * @return	{String}	the content
+ * 
+ * @see	ZmMimeTable
+ */
 ZmCalItem.prototype.getNotesPart =
 function(contentType) {
 	if (this.notesTopPart) {
@@ -199,7 +471,11 @@ function(contentType) {
 	}
 };
 
-// returns "owner" of remote/shared calItem folder this calItem belongs to
+/**
+ * Gets the remote folder owner.
+ * 
+ * @return {String}	the "owner" of remote/shared item folder this item belongs to
+ */
 ZmCalItem.prototype.getRemoteFolderOwner =
 function() {
 	// bug fix #18855 - dont return the folder owner if moving betw. accounts
@@ -218,6 +494,11 @@ function() {
 	return owner;
 };
 
+/**
+ * Checks if the item is read-only.
+ * 
+ * @return	{Boolean}	<code>true</code> if the item is read-only
+ */
 ZmCalItem.prototype.isReadOnly =
 function() {
 	var folder = this.getFolder();
@@ -236,6 +517,9 @@ function() {
 	return (!this.isOrganizer() || (share && !share.isWrite()));
 };
 
+/**
+ * Resets the repeat weekly days.
+ */
 ZmCalItem.prototype.resetRepeatWeeklyDays =
 function() {
 	if (this.startDate) {
@@ -243,6 +527,9 @@ function() {
 	}
 };
 
+/**
+ * Resets the repeat monthly day months list.
+ */
 ZmCalItem.prototype.resetRepeatMonthlyDayList =
 function() {
 	if (this.startDate) {
@@ -250,11 +537,17 @@ function() {
 	}
 };
 
+/**
+ * Resets the repeat yearly months list.
+ */
 ZmCalItem.prototype.resetRepeatYearlyMonthsList =
 function(mo) {
 	this._recurrence.repeatYearlyMonthsList = mo;
 };
 
+/**
+ * Resets the repeat custom day of week.
+ */
 ZmCalItem.prototype.resetRepeatCustomDayOfWeek =
 function() {
 	if (this.startDate) {
@@ -262,6 +555,13 @@ function() {
 	}
 };
 
+/**
+ * Checks if the item is overlapping.
+ * 
+ * @param	{ZmCalItem}	other		the other item to check
+ * @param	{Boolean}	checkFolder	<code>true</code> to check the folder id
+ * @return	{Boolean}	<code>true</code> if the items overlap; <code>false</code> if the items do not overlap or the item folder ids do not match
+ */
 ZmCalItem.prototype.isOverlapping =
 function(other, checkFolder) {
 	if (checkFolder && this.folderId != other.folderId) { return false; }
@@ -274,6 +574,13 @@ function(other, checkFolder) {
 	return (tst < oet) && (tet > ost);
 };
 
+/**
+ * Checks if this item is in range.
+ * 
+ * @param	{Date}	startTime	the start range
+ * @param	{Date}	endTime	the end range
+ * @return	{Boolean}	<code>true</code> if the item is in range
+ */
 ZmCalItem.prototype.isInRange =
 function(startTime, endTime) {
 	var tst = this.getStartTime();
@@ -281,6 +588,9 @@ function(startTime, endTime) {
 	return (tst < endTime && tet > startTime);
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype.parseAlarmData =
 function() {
 	if (!this.alarmData) { return; }
@@ -295,6 +605,9 @@ function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype.parseAlarm =
 function(tmp) {
 	if (!tmp) { return; }
@@ -326,7 +639,11 @@ function(tmp) {
 };
 
 /**
- * return true if the start time of this appt is within range
+ * Checks if the start date is in range.
+ * 
+ * @param	{Date}	startTime	the start time of the range
+ * @param	{Date}	endTime		the end time of the range
+ * @return {Boolean}	<code>true</code> if the start date of this item is within range
  */
 ZmCalItem.prototype.isStartInRange =
 function(startTime, endTime) {
@@ -335,7 +652,11 @@ function(startTime, endTime) {
 };
 
 /**
- * return true if the end time of this appt is within range
+ * Checks if the end date is in range.
+ * 
+ * @param	{Date}	startTime	the start time of the range
+ * @param	{Date}	endTime		the end time of the range
+ * @return {Boolean}	<code>true</code> if the end date of this item is within range
  */
 ZmCalItem.prototype.isEndInRange =
 function(startTime, endTime) {
@@ -343,6 +664,14 @@ function(startTime, endTime) {
 	return (tet <= endTime && tet > startTime);
 };
 
+/**
+ * Sets the date range.
+ * 
+ * @param	{Hash}	rangeObject		a hash of <code>startDate</code> and <code>endDate</code>
+ * @param	{Object}	instance	not used
+ * @param	{Object}	parentValue	not used
+ * @param	{Object}	refPath	not used
+ */
 ZmCalItem.prototype.setDateRange =
 function (rangeObject, instance, parentValue, refPath) {
 	var s = rangeObject.startDate;
@@ -351,13 +680,23 @@ function (rangeObject, instance, parentValue, refPath) {
 	this.startDate.setTime(rangeObject.startDate.getTime());
 };
 
+/**
+ * Gets the date range.
+ * 
+ * @param	{Object}	instance	not used
+ * @param	{Object}	current		not used
+ * @param	{Object}	refPath		not used
+ * @return	{Hash}	a hash of <code>startDate</code> and <code>endDate</code>
+ */
 ZmCalItem.prototype.getDateRange =
 function(instance, current, refPath) {
 	return { startDate:this.startDate, endDate: this.endDate };
 };
 
 /**
- * accepts a comma delimeted string of ids
+ * Sets the attachments.
+ * 
+ * @param	{String}	ids		a comma delimited string of ids
  */
 ZmCalItem.prototype.setAttachments =
 function(ids) {
@@ -370,6 +709,11 @@ function(ids) {
 	}
 };
 
+/**
+ * Gets the attachments.
+ * 
+ * @return	{Array}	an array of attachments or <code>null</code> for none
+ */
 ZmCalItem.prototype.getAttachments =
 function() {
 	var attachs = this.message ? this.message.attachments : null;
@@ -386,6 +730,11 @@ function() {
 	return null;
 };
 
+/**
+ * Removes an attachment.
+ * 
+ * @param	{Object}	part	the attachment part to remove
+ */
 ZmCalItem.prototype.removeAttachment =
 function(part) {
 	if (this._validAttachments && this._validAttachments.length > 0) {
@@ -398,12 +747,22 @@ function(part) {
 	}
 };
 
+/**
+ * Gets the start hour in short date format.
+ * 
+ * @return	{String}	the start hour
+ */
 ZmCalItem.prototype.getShortStartHour =
 function() {
 	var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 	return formatter.format(this.startDate);
 };
 
+/**
+ * Gets the unique start date.
+ * 
+ * @return	{Date}	the start date
+ */
 ZmCalItem.prototype.getUniqueStartDate =
 function() {
 	if (this._uniqueStartDate == null && this.uniqStartTime) {
@@ -412,6 +771,11 @@ function() {
 	return this._uniqueStartDate;
 };
 
+/**
+ * Gets the unique end date.
+ * 
+ * @return	{Date}	the end date
+ */
 ZmCalItem.prototype.getUniqueEndDate =
 function() {
 	if (this._uniqueEndDate == null && this.uniqStartTime) {
@@ -420,6 +784,16 @@ function() {
 	return this._uniqueEndDate;
 };
 
+/**
+ * Gets the details.
+ * 
+ * @param	{constant}	viewMode	the view mode
+ * @param	{AjxCallback}	callback	the callback
+ * @param	{AjxCallback}	errorCallback	the callback on error
+ * @param	{Boolean}	ignoreOutOfDate		<code>true</code> to ignore out of date items
+ * @param	{Boolean}	noBusyOverlay		<code>true</code> for no busy overlay
+ * @param	{ZmBatchCommand}	batchCmd			set if part of a batch operation
+ */
 ZmCalItem.prototype.getDetails =
 function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay, batchCmd) {
 	var mode = viewMode || this.viewMode;
@@ -454,6 +828,9 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay, batc
 	}
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._handleResponseGetDetails =
 function(mode, message, callback, result) {
 	// msg content should be text, so no need to pass callback to setFromMessage()
@@ -461,6 +838,9 @@ function(mode, message, callback, result) {
 	if (callback) callback.run(result);
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._handleErrorGetDetails =
 function(mode, callback, errorCallback, ex) {
 	if (ex.code == "mail.INVITE_OUT_OF_DATE") {
@@ -483,6 +863,9 @@ function(mode, callback, errorCallback, ex) {
 	return false;
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._handleErrorGetDetails2 =
 function(mode, callback, errorCallback, result) {
 	// Update invId and force a message reload
@@ -493,6 +876,14 @@ function(mode, callback, errorCallback, result) {
 	this.getDetails(mode, callback, errorCallback, ignoreOutOfDate);
 };
 
+/**
+ * Sets the from message.
+ * 
+ * @param	{String}	message		the message
+ * @param	{constant}	viewMode	the view mode
+ * 
+ * @private
+ */
 ZmCalItem.prototype.setFromMessage =
 function(message, viewMode) {
 	if (message == this._currentlyLoaded) { return; }
@@ -513,8 +904,16 @@ function(message, viewMode) {
 	this._currentlyLoaded = message;
 };
 
-// This method gets called when a mail item is dragged onto the minical and we
-// need to load the mail item and parse the right parts to show in ZmCalItemEditView
+/**
+ * Sets the from mail message. This method gets called when a mail item
+ * is dragged onto the item and we
+ * need to load the mail item and parse the right parts to show in {@link ZmCalItemEditView}.
+ * 
+ * @param	{String}	message		the message
+ * @param	{String}	subject		the subject
+ * 
+ * @private
+ */
 ZmCalItem.prototype.setFromMailMessage =
 function(message, subject) {
 	this.name = subject;
@@ -524,6 +923,11 @@ function(message, subject) {
 	this.invId = message.id;
 };
 
+/**
+ * Sets the notes (text/plain).
+ * 
+ * @param	{String}	notes		the notes
+ */
 ZmCalItem.prototype.setTextNotes =
 function(notes) {
 	this.notesTopPart = new ZmMimePart();
@@ -531,6 +935,9 @@ function(notes) {
 	this.notesTopPart.setContent(notes);
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._setTimeFromMessage =
 function(message, viewMode) {
 	// if instance of recurring appointment, start date is generated from unique
@@ -571,11 +978,17 @@ function(message, viewMode) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._setExtrasFromMessage =
 function(message) {
 	// override
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._setRecurrence =
 function(message) {
 	var recurRules = message.invite.getRecurrenceRules();
@@ -590,8 +1003,12 @@ function(message) {
 		this.resetRepeatMonthlyDayList();
 };
 
-// We are removing starting 2 \n's for the bug 21823
-// XXX - this does not look very efficient :/
+/**
+ * We are removing starting 2 \n's for the bug 21823
+ * XXX - this does not look very efficient
+ * 
+ * @private
+ */
 ZmCalItem.prototype._getCleanHtml2Text = 
 function(dwtIframe) {
 	var textContent;
@@ -610,6 +1027,9 @@ function(dwtIframe) {
 	return textContent;
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._setNotes =
 function(message) {
 	var text = message.getBodyPart(ZmMimeTable.TEXT_PLAIN);
@@ -661,21 +1081,33 @@ function(message) {
 	}
 };
 
+/**
+ * Gets the mail notification option.
+ * 
+ * @return	{Boolean}	<code>true</code> if the mail notification is set; <code>false</code> otherwise
+ */
 ZmCalItem.prototype.getMailNotificationOption =
 function() {
     return this._sendNotificationMail;
 };
 
+/**
+ * Sets the mail notification option.
+ * 
+ * @param	{Boolean}	sendNotificationMail	<code>true</code> to set the mail notification
+ */
 ZmCalItem.prototype.setMailNotificationOption =
 function(sendNotificationMail) {
     this._sendNotificationMail = sendNotificationMail;    
 };
 
 /**
- * @param attachmentId 		[string]*		ID of the already uploaded attachment
- * @param callback 			[AjxCallback]*	callback triggered once request for appointment save is complete
- * @param errorCallback 	[AjxCallback]*	callback triggered if error during appointment save request
- * @param notifyList 		[Array]*		optional sublist of attendees to be notified (if different from original list of attendees)
+ * Saves the item.
+ * 
+ * @param {String}	attachmentId 		the id of the already uploaded attachment
+ * @param {AjxCallback}		callback 			the callback triggered once request for appointment save is complete
+ * @param {AjxCallback}		errorCallback		the callback triggered if error during appointment save request
+ * @param {Array}	notifyList 		the optional sublist of attendees to be notified (if different from original list of attendees)
 */
 ZmCalItem.prototype.save =
 function(attachmentId, callback, errorCallback, notifyList) {
@@ -726,6 +1158,9 @@ function(attachmentId, callback, errorCallback, notifyList) {
 	this._sendRequest(soapDoc, accountName, callback, errorCallback);
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._setAlarmData = 
 function(soapDoc, comp) {
 	if (this._reminderMinutes == 0 || this._reminderMinutes == null) {
@@ -744,6 +1179,9 @@ function(soapDoc, comp) {
 	this._addXPropsToAlarm(soapDoc, alarm);
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._setReminderUnits =
 function(rel) {
     rel.setAttribute("m", this._reminderMinutes ? this._reminderMinutes:0);
@@ -752,6 +1190,9 @@ function(rel) {
     rel.setAttribute("neg", "1");
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._addXPropsToAlarm =
 function(soapDoc, alarmNode) {
 	if (!this.alarmData) { return; }
@@ -761,6 +1202,9 @@ function(soapDoc, alarmNode) {
 	this._setAlarmXProps(alarmInst, soapDoc, alarmNode);
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._setAlarmXProps =
 function(alarmInst, soapDoc, alarmNode)  {
    var xprops = (alarmInst && alarmInst.xprop) ? alarmInst.xprop : null;
@@ -781,11 +1225,22 @@ function(alarmInst, soapDoc, alarmNode)  {
 	}
 };
 
+/**
+ * Sets reminder minutes.
+ * 
+ * @param	{int}	minutes		the minutes
+ */
 ZmCalItem.prototype.setReminderMinutes =
 function(minutes) {
 	this._reminderMinutes = minutes;
 };
 
+/**
+ * Sets the reminder units
+ * 
+ * @param	{int}	reminderValue		the reminder value
+ * @param	{int}	reminderUnits		the reminder units
+ */
 ZmCalItem.prototype.setReminderUnits =
 function(reminderValue, reminderUnits) {
     if(!reminderValue) {
@@ -799,11 +1254,11 @@ function(reminderValue, reminderUnits) {
 /**
  * Deletes/cancels appointment/invite
  *
- * @param mode				[Integer]			what kind of delete op is this?
- * @param msg				[ZmMailMsg]			message to be sent in lieu of delete
- * @param callback			[AjxCallback]*		callback to trigger after delete
- * @param errorCallback		[AjxCallback]*		error callback to trigger
- * @param batchCmd			[ZmBatchCommand]*	set if part of a batch op.
+ * @param {int}	mode		designated what kind of delete op is this?
+ * @param {ZmMailMsg}		msg				the message to be sent in lieu of delete
+ * @param {AjxCallback}		callback			the callback to trigger after delete
+ * @param {AjxCallback}		errorCallback	the error callback to trigger
+ * @param {ZmBatchCommand}	batchCmd		set if part of a batch operation
  */
 ZmCalItem.prototype.cancel =
 function(mode, msg, callback, errorCallback, batchCmd) {
@@ -834,6 +1289,9 @@ function(mode, msg, callback, errorCallback, batchCmd) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype.showBlobMissingDlg =
 function() {
 	var msgDialog = appCtxt.getMsgDialog();
@@ -841,6 +1299,9 @@ function() {
 	msgDialog.popup();
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._handleCancelError = 
 function(mode, callback, errorCallback, ex) {
 
@@ -863,11 +1324,17 @@ function(mode, callback, errorCallback, ex) {
 	return false;
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype.setCancelFutureInstances =
 function(cancelFutureInstances) {
     this._cancelFutureInstances = cancelFutureInstances;    
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._doCancel =
 function(mode, callback, msg, batchCmd, result) {
 
@@ -953,6 +1420,11 @@ function(mode, callback, msg, batchCmd, result) {
 	}
 };
 
+/**
+ * Gets the mail from address.
+ * 
+ * @return	{String}	the address
+ */
 ZmCalItem.prototype.getMailFromAddress =
 function() {
     var mailFromAddress = appCtxt.get(ZmSetting.MAIL_FROM_ADDRESS);
@@ -964,20 +1436,33 @@ function() {
 // Returns canned text for meeting invites.
 // - Instances of recurring meetings should send out information that looks very
 //   much like a simple appointment.
+/**
+ * Gets the summary as text.
+ * 
+ * @return	{String}	the summary
+ */
 ZmCalItem.prototype.getTextSummary =
 function() {
 	return this.getSummary(false);
 };
 
+/**
+ * Gets the summary as HTML.
+ * 
+ * @return	{String}	the summary
+ */
 ZmCalItem.prototype.getHtmlSummary =
 function() {
 	return this.getSummary(true);
 };
 
 /**
- * @param attach		generic Object contain meta info about the attachment
- * @param hasCheckbox	whether to insert a checkbox prior to the attachment
-*/
+ * Gets the attach list as HTML.
+ * 
+ * @param {Object}		attach		a generic Object contain meta info about the attachment
+ * @param {Boolean}		hasCheckbox		<code>true</code> to insert a checkbox prior to the attachment
+ * @return	{String}	the HTML
+ */
 ZmCalItem.prototype.getAttachListHtml =
 function(attach, hasCheckbox) {
 	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
@@ -1065,6 +1550,9 @@ function(attach, hasCheckbox) {
 
 // Private / Protected methods
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._getTextSummaryTime =
 function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	var showingTimezone = appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
@@ -1104,7 +1592,11 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	return buf.join("");
 };
 
-// Uses indexOf() rather than a regex since IE didn't split on the regex correctly.
+/**
+ * Uses indexOf() rather than a regex since IE didn't split on the regex correctly.
+ * 
+ * @private
+ */
 ZmCalItem.prototype._trimNotesSummary =
 function(notes, isHtml) {
 	if (notes) {
@@ -1120,6 +1612,9 @@ function(notes, isHtml) {
 	return AjxStringUtil.trim(notes);
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._resetCached =
 function() {
 	delete this._startTimeUniqId; this._startTimeUniqId = null;
@@ -1127,11 +1622,17 @@ function() {
 	delete this.tooltip; this.tooltip = null;
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._getTTDay =
 function(d) {
 	return DwtCalendar.getDayFormatter().format(d);
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._addInviteAndCompNum =
 function(soapDoc) {
 	if (this.viewMode == ZmCalItem.MODE_EDIT_SERIES || this.viewMode == ZmCalItem.MODE_DELETE_SERIES) {
@@ -1157,6 +1658,9 @@ function(soapDoc) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._getDefaultBlurb =
 function(cancel, isHtml) {
 	var buf = [];
@@ -1191,16 +1695,25 @@ function(cancel, isHtml) {
 
 // Server request calls
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._getSoapForMode =
 function(mode, isException) {
 	// override
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._getInviteFromError =
 function(result) {
 	// override
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._setSimpleSoapAttributes =
 function(soapDoc, attachmentId, notifyList, accountName) {
 
@@ -1289,6 +1802,9 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	return {'inv': inv, 'm': m};
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._addExtrasToSoap =
 function(soapDoc, inv, comp) {
 	if (this.priority) {
@@ -1297,6 +1813,9 @@ function(soapDoc, inv, comp) {
 	comp.setAttribute("status", this.status);
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._addXPropsToSoap =
 function(soapDoc, inv, comp) {
 	var message = this.message ? this.message : null;
@@ -1320,6 +1839,9 @@ function(soapDoc, inv, comp) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._addXParamToSoap = 
 function(soapDoc, xprop, xparams) {
 	if (!xparams) { return; }
@@ -1338,6 +1860,9 @@ function(soapDoc, xprop, xparams) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._addDateTimeToSoap =
 function(soapDoc, inv, comp) {
 	// always(?) set all day
@@ -1385,6 +1910,9 @@ function(soapDoc, inv, comp) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, accountName) {
 	// if this appt is on-behalf-of, set the from address to that person
@@ -1395,6 +1923,9 @@ function(soapDoc, inv, m, notifyList, accountName) {
     }
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._addNotesToSoap =
 function(soapDoc, m, cancel) {
 
@@ -1435,11 +1966,17 @@ function(soapDoc, m, cancel) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype.setIncludeEditReply =
 function(includeEditReply) {
 	this._includeEditReply = includeEditReply;
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._sendRequest =
 function(soapDoc, accountName, callback, errorCallback) {
 	var responseName = soapDoc.getMethod().nodeName.replace("Request", "Response");
@@ -1447,6 +1984,9 @@ function(soapDoc, accountName, callback, errorCallback) {
 	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, accountName:accountName, callback:respCallback, errorCallback:errorCallback});
 };
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._loadFromDom =
 function(calItemNode, instNode) {
 	ZmCalBaseItem.prototype._loadFromDom.call(this, calItemNode, instNode);
@@ -1471,6 +2011,9 @@ function(calItemNode, instNode) {
 
 // Callbacks
 
+/**
+ * @private
+ */
 ZmCalItem.prototype._handleResponseSend =
 function(respName, callback, result) {
 	var resp = result.getResponse();
@@ -1498,6 +2041,13 @@ function(respName, callback, result) {
 
 // Static methods
 
+/**
+ * Gets the priority label.
+ * 
+ * @param	{int}	priority		the priority (see <code>ZmCalItem.PRIORITY_</code> constants)
+ * @return	{String}	the priority label
+ * 
+ */
 ZmCalItem.getLabelForPriority =
 function(priority) {
 	switch (priority) {
@@ -1508,6 +2058,13 @@ function(priority) {
 	}
 };
 
+/**
+ * Gets the priority image.
+ * 
+ * @param	{ZmTask}	task	the task
+ * @param	{int}	id		the id
+ * @return	{String}	the priority image
+ */
 ZmCalItem.getImageForPriority =
 function(task, id) {
 	switch (task.priority) {
@@ -1523,6 +2080,14 @@ function(task, id) {
 	}
 };
 
+/**
+ * Gets the status label.
+ * 
+ * @param	{int}	status		the status (see <code>ZmCalendarApp.STATUS_</code> constants)
+ * @return	{String}	the status label
+ * 
+ * @see	ZmCalendarApp
+ */
 ZmCalItem.getLabelForStatus =
 function(status) {
 	switch (status) {
@@ -1536,6 +2101,14 @@ function(status) {
 	return "";
 };
 
+/**
+ * Gets the participation status label.
+ * 
+ * @param	{int}	status		the status (see <code>ZmCalBaseItem.PSTATUS_</code> constants)
+ * @return	{String}	the status label
+ * 
+ * @see	ZmCalBaseItem
+ */
 ZmCalItem.getLabelForParticipationStatus =
 function(status) {
 	switch (status) {
@@ -1551,6 +2124,14 @@ function(status) {
 	return "";
 };
 
+/**
+ * Gets the participation status icon.
+ * 
+ * @param	{int}	status		the status (see <code>ZmCalBaseItem.PSTATUS_</code> constants)
+ * @return	{String}	the status icon or an empty string if status not set
+ * 
+ * @see	ZmCalBaseItem
+ */
 ZmCalItem.getParticipationStatusIcon =
 function(status) {
 	switch (status) {
@@ -1566,6 +2147,9 @@ function(status) {
 	return "";
 };
 
+/**
+ * @private
+ */
 ZmCalItem._getTTDay =
 function(d, format) {
 	format = format || AjxDateFormat.SHORT;

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2008-2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,6 +11,24 @@
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
+ */
+
+/**
+ * @overview
+ * 
+ * This file defines a base calendar item.
+ *
+ */
+
+/**
+ * @class
+ * This class represents the base calendar item.
+ * 
+ * @param	{constant}	type	the item type
+ * @param	{Array}	list		the list
+ * @param	{String}	id		the id
+ * @param	{String}	folderId	the folder id
+ * @extends	ZmItem
  */
 ZmCalBaseItem = function(type, list, id, folderId) {
 	if (arguments.length == 0) { return; }
@@ -40,6 +58,11 @@ ZmCalBaseItem = function(type, list, id, folderId) {
 ZmCalBaseItem.prototype = new ZmItem;
 ZmCalBaseItem.prototype.constructor = ZmCalBaseItem;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmCalBaseItem.prototype.toString =
 function() {
 	return "ZmCalBaseItem";
@@ -53,13 +76,37 @@ ZmCalBaseItem.LOCATION				= "LOCATION";
 ZmCalBaseItem.EQUIPMENT				= "EQUIPMENT";
 ZmCalBaseItem.FORWARD				= "FORWARD";
 
+/**
+ * Defines the "accept" participant status.
+ */
 ZmCalBaseItem.PSTATUS_ACCEPT		= "AC";			// vevent, vtodo
+/**
+ * Defines the "declined" participant status.
+ */
 ZmCalBaseItem.PSTATUS_DECLINED		= "DE";			// vevent, vtodo
+/**
+ * Defines the "deferred" participant status.
+ */
 ZmCalBaseItem.PSTATUS_DEFERRED		= "DF";			// vtodo					[outlook]
+/**
+ * Defines the "delegated" participant status.
+ */
 ZmCalBaseItem.PSTATUS_DELEGATED		= "DG";			// vevent, vtodo
+/**
+ * Defines the "needs action" participant status.
+ */
 ZmCalBaseItem.PSTATUS_NEEDS_ACTION	= "NE";			// vevent, vtodo
+/**
+ * Defines the "completed" participant status.
+ */
 ZmCalBaseItem.PSTATUS_COMPLETED		= "CO";			// vtodo
+/**
+ * Defines the "tentative" participant status.
+ */
 ZmCalBaseItem.PSTATUS_TENTATIVE		= "TE";			// vevent, vtodo
+/**
+ * Defines the "waiting" participant status.
+ */
 ZmCalBaseItem.PSTATUS_WAITING		= "WA";			// vtodo					[outlook]
 
 ZmCalBaseItem.FBA_TO_PTST = {
@@ -77,12 +124,12 @@ ZmCalBaseItem._pstatusString = {
 };
 
 /**
-* Compares two appts. sort by (starting date, duration)
-* sort methods.
-*
-* @param a		an appt
-* @param b		an appt
-*/
+ * Compares two appointments by start time and duration.
+ *
+ * @param {ZmCalBaseItem}	a		an appointment
+ * @param {ZmCalBaseItem}	b		an appointment
+ * @return	{int}	1 if start time "a" is after "b" or duration "a" is shorter than "b"; 1 if start time "b" is after "a" or duration "b" is shorter than "a"; 0 if both are the same 
+ */
 ZmCalBaseItem.compareByTimeAndDuration =
 function(a, b) {
 	if (a.getStartTime() > b.getStartTime()) 	return 1;
@@ -92,6 +139,11 @@ function(a, b) {
 	return 0;
 };
 
+/**
+ * Creates the item from the DOM.
+ * 
+ * @private
+ */
 ZmCalBaseItem.createFromDom =
 function(apptNode, args, instNode) {
 	var appt = new ZmCalBaseItem(ZmItem.APPT, args.list);
@@ -99,18 +151,62 @@ function(apptNode, args, instNode) {
 	return appt;
 };
 
+/**
+ * Gets the name (the "subject").
+ * 
+ * @return	{String}	the name
+ */
 ZmCalBaseItem.prototype.getName 		= function() { return this.name || ""; };			// name (aka Subject) of appt
+
+/**
+ * Gets the end time.
+ * 
+ * @return	{Date}	the end time
+ */
 ZmCalBaseItem.prototype.getEndTime 		= function() { return this.endDate.getTime(); }; 	// end time in ms
+
+/**
+ * Gets the start time.
+ * 
+ * @return	{Date}	the start time
+ */
 ZmCalBaseItem.prototype.getStartTime 	= function() { return this.startDate.getTime(); }; 	// start time in ms
+
+/**
+ * Gets the duration.
+ * 
+ * @return	{int}	the duration (in milliseconds)
+ */
 ZmCalBaseItem.prototype.getDuration 	= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
+/**
+ * Gets the location.
+ * 
+ * @return	{String}	the location
+ */
 ZmCalBaseItem.prototype.getLocation		= function() { return this.location || ""; };
+/**
+ * Checks if the item is an all day event.
+ * 
+ * @return	{Boolean}	<code>true</code> if all day event
+ */
 ZmCalBaseItem.prototype.isAllDayEvent	= function() { return this.allDayEvent == "1"; };
 
+/**
+ * Gets the participant status as a string.
+ * 
+ * @return	{String}	the participant status
+ */
 ZmCalBaseItem.prototype.getParticipantStatusStr =
 function() { 
 	return ZmCalBaseItem._pstatusString[this.ptst]; 
 };
 
+/**
+ * Gets the unique id for this item.
+ * 
+ * @param	{Boolean}	useStartTime	<code>true</code> to use the start time
+ * @return	{String}	the unique id
+ */
 ZmCalBaseItem.prototype.getUniqueId =
 function(useStartTime) {
 	if (useStartTime) {
@@ -127,7 +223,12 @@ function(useStartTime) {
 };
 
 /**
- * true if startDate and endDate are on different days
+ * Checks if this item is multi-day.
+ * 
+ * @return	{Boolean}	<code>true</code> if start date and end date are on different days
+ * 
+ * @see		#getStartTime
+ * @see		#getEndTime
  */
 ZmCalBaseItem.prototype.isMultiDay =
 function() {
@@ -144,6 +245,13 @@ function() {
 		   (start.getFullYear() != end.getFullYear());
 };
 
+/**
+ * Gets the duration text.
+ * 
+ * @param	{Boolean}	emptyAllDay		<code>true</code> to return empty string if all day event
+ * @param	{Boolean}	startOnly		<code>true</code> use start date only
+ * @return	{String}	the duration text
+ */
 ZmCalBaseItem.prototype.getDurationText =
 function(emptyAllDay,startOnly) {
 	var isAllDay = this.isAllDayEvent();
@@ -166,6 +274,11 @@ function(emptyAllDay,startOnly) {
 	return AjxMessageFormat.format(pattern, [this.startDate, this.endDate, ""]);
 };
 
+/**
+ * Checks if alarm is in range (based on current time).
+ * 
+ * @return	{Boolean}	<code>true</code> if the alarm is in range
+ */
 ZmCalBaseItem.prototype.isAlarmInRange =
 function() {
 	if (!this.alarmData) { return false; }
@@ -182,12 +295,24 @@ function() {
     return (currentTime >= this._nextAlarmTime); 
 };
 
+/**
+ * Adjusts milliseconds.
+ * 
+ * @param	{int}	s		the seconds
+ * @param	{int}	tzo		the timezone offset
+ * @return	{int}	the resulting milliseconds
+ */
 ZmCalBaseItem.prototype.adjustMS =
 function(s, tzo) {
     var adjustMs = this.isAllDayEvent() ? (tzo + new Date(s).getTimezoneOffset()*60*1000) : 0;
     return parseInt(s, 10) + adjustMs;
 };
 
+/**
+ * Checks if this is an alarm instance.
+ * 
+ * @return	{Boolean}	<code>true</code> if this is an alarm instance
+ */
 ZmCalBaseItem.prototype.isAlarmInstance =
 function() {
     if (!this.alarmData) { return false; }
@@ -198,11 +323,19 @@ function() {
     return (this._alarmInstStart == this.startDate.getTime());
 };
 
+/**
+ * Checks if this item has alarm data.
+ * 
+ * @return	{Boolean}	 <code>true</code> if item has alarm data
+ */
 ZmCalBaseItem.prototype.hasAlarmData =
 function() {
 	return (this.alarmData !=  null);
 };
 
+/**
+ * @private
+ */
 ZmCalBaseItem.prototype._loadFromDom =
 function(calItemNode, instNode) {
 
@@ -251,21 +384,33 @@ function(calItemNode, instNode) {
 	this.location = this._getAttr(calItemNode, instNode, "loc");
 };
 
+/**
+ * @private
+ */
 ZmCalBaseItem.prototype._getDefaultFolderId =
 function() {
 	return ZmOrganizer.ID_CALENDAR;
 };
 
+/**
+ * @private
+ */
 ZmCalBaseItem.prototype._getAttr =
 function(calItem, inst, name) {
 	return inst[name] != null ? inst[name] : calItem[name];
 };
 
+/**
+ * @private
+ */
 ZmCalBaseItem.prototype._addLocationToSoap =
 function(inv) {
 	inv.setAttribute("loc", this.getLocation());
 };
 
+/**
+ * @private
+ */
 ZmCalBaseItem._getTTHour =
 function(d) {
 	var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
@@ -278,12 +423,21 @@ function() {
 	return (this.alarmData[0].loc || "");
 };
 
-
+/**
+ * Gets the reminder name.
+ * 
+ * @return	{String}	the reminder name or empty string if not set
+ */
 ZmCalBaseItem.prototype.getReminderName =
 function() {
 	return (this.alarmData[0].name || "");
 };
 
+/**
+ * Checks if the alarm is old (based on current time).
+ * 
+ * @return	{Boolean}	<code>true</code> if the alarm is old
+ */
 ZmCalBaseItem.prototype.isAlarmOld =
 function() {
 	if (!this.alarmData) { return false; }

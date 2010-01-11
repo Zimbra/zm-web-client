@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2006-2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -14,14 +14,24 @@
  */
 
 /**
+ * @overview
+ * 
+ * This file defines a Zimbra Task.
  *
- * @constructor
+ */
+
+/**
  * @class
- *
+ * 
+ * This class represents a zimbra task.
+ * 
  * @author Parag Shah
  *
- * @param id		[int]			numeric ID
- * @param name		[string]		name
+ * @param	{Object}	list		the list
+ * @param	{int}	id				the task id
+ * @param	{String}	folderId	the folder id
+ * 
+ * @extends    ZmCalItem
  */
 ZmTask = function(list, id, folderId) {
 	ZmCalItem.call(this, ZmItem.TASK, list, id, folderId);
@@ -38,12 +48,18 @@ ZmTask.prototype.constructor = ZmTask;
 
 
 // Consts
+
+/**
+ * @private
+ */
 ZmTask.PCOMPLETE_INT = 10;
 
 /**
-* Used to make our own copy because the form will modify the date object by
-* calling its setters instead of replacing it with a new date object.
-*/
+ * Used to make our own copy because the form will modify the date object by
+ * calling its setters instead of replacing it with a new date object.
+ * 
+ * @private
+ */
 ZmTaskClone = function() { };
 ZmTask.quickClone =
 function(task) {
@@ -61,7 +77,11 @@ function(task) {
 	return newTask;
 };
 
-// XXX: set start/end intervals for instNode
+/**
+ * Sets start/end intervals for instNode
+ * 
+ * @private
+ */
 ZmTask.createFromDom =
 function(taskNode, args, instNode) {
 	// NOTE: passing ID implies this item should get cached!
@@ -74,25 +94,47 @@ function(taskNode, args, instNode) {
 
 // Public Methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTask.prototype.toString =
 function() {
 	return "ZmTask";
 };
 
-// Getters
-ZmTask.prototype.getIcon				= function() { return "Task"; };
+/**
+ * Gets the icon.
+ * 
+ * @return	{String}	the icon
+ */
+ZmTask.prototype.getIcon = function() { return "Task"; };
+
+/**
+ * Gets the folder.
+ * 
+ * @return	{ZmTaskFolder}	the folder
+ */
 ZmTask.prototype.getFolder =
 function() {
 	return appCtxt.getById(this.folderId);
 };
 
+/**
+ * Gets the summary.
+ * 
+ * @private
+ */
 ZmTask.prototype.getSummary =
 function(isHtml) {
 	// TODO
 };
 
 /**
-* Returns HTML for a tool tip for this appt.
+* Gets the tool tip.
+* 
+* @private
 */
 ZmTask.prototype.getToolTip =
 function(controller) {
@@ -100,6 +142,9 @@ function(controller) {
 	DBG.println("------------ TODO: getTooltip! --------------");
 };
 
+/**
+ * @private
+ */
 ZmTask.prototype.notifyModify =
 function(obj) {
 	ZmItem.prototype.notifyModify.call(this, obj);
@@ -112,15 +157,69 @@ function(obj) {
 	this._notify(ZmEvent.E_MODIFY, obj);
 };
 
+/**
+ * Checks if this task is past due.
+ * 
+ * @return	{Boolean}	<code>true</code> if the task is past due
+ */
 ZmTask.prototype.isPastDue =
 function() {
 	return (this.endDate && ((new Date()).getTime() > this.endDate.getTime()));
 };
 
+/**
+ * Checks if the task is complete.
+ * 
+ * @return	{Boolean}	<code>true</code> if the task is complete
+ */
 ZmTask.prototype.isComplete =
 function() {
 	return (this.pComplete == 100) || (this.status == ZmCalendarApp.STATUS_COMP);
 };
+
+/**
+ * Gets the percent complete (between 0 and 100).
+ * 
+ * @return	{int}	the percentage complete
+ */
+ZmTask.prototype.getPercentComplete =
+function() {
+	return this.pComplete;
+};
+
+/**
+ * Gets the status.
+ * 
+ * @return	{int}		the status
+ * 
+ * @see	ZmCalendarApp.STATUS_COMP
+ * @see	ZmCalendarApp.STATUS_DEFR
+ * @see	ZmCalendarApp.STATUS_INPR
+ * @see	ZmCalendarApp.STATUS_NEED
+ * @see	ZmCalendarApp.STATUS_WAIT
+ * 
+ * @see	ZmCalItem.getLabelForStatus
+ */
+ZmTask.prototype.getStatus =
+function() {
+	return	this.status;
+}
+
+/**
+ * Gets the priority.
+ * 
+ * @return	{int}		the priority
+ * 
+ * @see	ZmCalItem.PRIORITY_LOW
+ * @see	ZmCalItem.PRIORITY_NORMAL
+ * @see	ZmCalItem.PRIORITY_HIGH
+ * @see	ZmCalItem.getLabelForPriority
+ * @see	ZmCalItem.getImageForPriority
+ */
+ZmTask.prototype.getPriority =
+function() {
+	return	this.priority;
+}
 
 /**
 * Simplify deleting/canceling of Tasks by just not worrying about attendees,
@@ -130,6 +229,8 @@ function() {
 *
 * @param mode		[Int]				Required constant. Usually ZmCalItem.MODE_DELETE
 * @param batchCmd	[ZmBatchCommand]	Required API for batch request
+* 
+* @private
 */
 ZmTask.prototype.cancel =
 function(mode, batchCmd) {
@@ -141,7 +242,11 @@ function(mode, batchCmd) {
 	batchCmd.addRequestParams(soapDoc);
 };
 
-// returns "owner" of remote/shared calItem folder this calItem belongs to
+/**
+ * Gets the "owner" of remote/shared calItem folder this calItem belongs to.
+ * 
+ * @return	{ZmFolder}		the folder
+ */
 ZmTask.prototype.getRemoteFolderOwner =
 function() {
 	// bug fix #18855 - dont return the folder owner if moving betw. accounts
@@ -155,11 +260,17 @@ function() {
 
 // Private/protected methods
 
+/**
+ * @private
+ */
 ZmTask.prototype._getDefaultFolderId =
 function() {
 	return ZmOrganizer.ID_TASKS;
 };
 
+/**
+ * @private
+ */
 ZmTask.prototype._loadFromDom =
 function(node, instNode) {
 	var inv = node.inv ? node.inv[0] : null
@@ -208,6 +319,9 @@ function(node, instNode) {
 	if (node.t)	this._parseTags(node.t);
 };
 
+/**
+ * @private
+ */
 ZmTask.prototype._getAttr =
 function(node, comp, name) {
 	if (node[name] != null) return node[name];
@@ -215,11 +329,17 @@ function(node, comp, name) {
 	return null;
 };
 
+/**
+ * @private
+ */
 ZmTask.prototype._setExtrasFromMessage =
 function(message) {
 	this.location = message.invite.getLocation();
 };
 
+/**
+ * @private
+ */
 ZmTask.prototype._getSoapForMode =
 function(mode, isException) {
 	switch (mode) {
@@ -247,6 +367,9 @@ function(mode, isException) {
 	return null;
 };
 
+/**
+ * @private
+ */
 ZmTask.prototype._addExtrasToSoap =
 function(soapDoc, inv, comp) {
 	ZmCalItem.prototype._addExtrasToSoap.call(this, soapDoc, inv, comp);
@@ -256,6 +379,9 @@ function(soapDoc, inv, comp) {
 	// TODO - set "completed" if applicable
 };
 
+/**
+ * @private
+ */
 ZmTask.prototype._getInviteFromError =
 function(result) {
 	return (result._data.GetTaskResponse.task[0].inv[0]);
