@@ -1220,6 +1220,7 @@ function(ev) {
 		this._composeView._setAddresses(op, AjxEmailAddress.TO, this._toOverride);
 	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
 		this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE));
+		this._switchInclude(this._curIncOption);
 	} else {
 		if (this._composeView.isDirty() &&
 			this._curIncOption != ZmOperation.INC_NONE && this._curIncOption != ZmOperation.INC_ATTACHMENT) {

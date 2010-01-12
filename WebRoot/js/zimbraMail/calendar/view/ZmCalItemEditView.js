@@ -490,21 +490,14 @@ function(calItem, mode) {
 	}
 };
 
-ZmCalItemEditView.WRAP_LENGTH = 72;
-
 ZmCalItemEditView.prototype.formatContent =
 function(body, composingHtml) {
 
     var includePref = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
-    var prefix = appCtxt.get(ZmSetting.REPLY_PREFIX);
     if (includePref == ZmSetting.INCLUDE_PREFIX || includePref == ZmSetting.INCLUDE_PREFIX_FULL) {
-
         var preface = (composingHtml ? '<br>' : '\n');
-        if (composingHtml) {
-            prefix = AjxStringUtil.htmlEncode(prefix);
-        }
-        var sep = composingHtml ? '<br>' : '\n';
-        var wrapParams = {text:body, len:ZmCalItemEditView.WRAP_LENGTH, pre:prefix + " ", eol:sep, htmlMode:composingHtml};        
+		var wrapParams = ZmHtmlEditor.getWrapParams(composingHtml);
+		wrapParams.text = body;
         body = preface + AjxStringUtil.wordWrap(wrapParams);
     }
     return body;

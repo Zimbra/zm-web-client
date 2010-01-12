@@ -91,7 +91,6 @@ ZmComposeView.SUBJ_PREFIX_RE			= new RegExp("^\\s*(Re|Fw|Fwd|" + ZmMsg.re + "|" 
 ZmComposeView.QUOTED_CONTENT_RE			= new RegExp("^----- ", "m");
 ZmComposeView.HTML_QUOTED_CONTENT_RE	= new RegExp("<br>----- ", "i");
 ZmComposeView.ADDR_SETTING				= {}; // XXX: may not be necessary anymore?
-ZmComposeView.WRAP_LENGTH				= 72;
 
 ZmComposeView.OP = {};
 ZmComposeView.OP[AjxEmailAddress.TO]	= ZmId.CMP_TO;
@@ -1700,7 +1699,8 @@ function(action, msg, subjOverride) {
 
 ZmComposeView.prototype._setBody =
 function(action, msg, extraBodyText, incOption, nosig) {
-	var composingHtml = this._composeMode == DwtHtmlEditor.HTML;
+
+	var composingHtml = (this._composeMode == DwtHtmlEditor.HTML);
 
 	// XXX: consolidate this code later.
 	var isDraft = action == ZmOperation.DRAFT;
@@ -1745,7 +1745,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		sig = this.getSignatureContentSpan(null, null, account);
 		sigStyle = sig ? ac.get(ZmSetting.SIGNATURE_STYLE, null, account) : null;
 	}
-	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? (sig) : "";
+	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig : "";
 	var isInviteForward = false;
 
 	// get reply/forward prefs as necessary
@@ -1790,17 +1790,17 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				var part = parts[k];
 				// bug: 28741
 				if (ZmMimeTable.isRenderableImage(part.ct)) {
-					bodyArr.push([crlf,"[",part.ct,":",(part.filename||"..."),"]",crlf].join(""));
+					bodyArr.push([crlf, "[", part.ct, ":", (part.filename || "..."), "]", crlf].join(""));
 					hasInlineImages = true;
-				} else if(part.filename && part.cd == "inline") {   //Inline attachments
+				} else if (part.filename && part.cd == "inline") {   //Inline attachments
 					var attInfo = ZmMimeTable.getInfo(part.ct);
 					attInfo = attInfo ? attInfo.desc : part.ct;
-					bodyArr.push([crlf,"[",attInfo,":",(part.filename||"..."),"]",crlf].join(""));
+					bodyArr.push([crlf, "[", attInfo, ":", (part.filename||"..."), "]", crlf].join(""));
 					hasInlineAtts = true;
-				} else if(part.ct == ZmMimeTable.TEXT_PLAIN) {
+				} else if (part.ct == ZmMimeTable.TEXT_PLAIN) {
 					bodyArr.push( composingHtml ? AjxStringUtil.convertToHtml(part.content) : part.content );
-				} else if(part.ct == ZmMimeTable.TEXT_HTML) {
-					if(composingHtml){
+				} else if (part.ct == ZmMimeTable.TEXT_HTML) {
+					if (composingHtml){
 						bodyArr.push(part.content);
 					} else {
 						var div = document.createElement("div");
@@ -1846,7 +1846,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		}
 
 		if (isInviteForward || (incOption == ZmSetting.INCLUDE)) {
-			var msgText = ((action == ZmOperation.FORWARD_INLINE) || isInviteForward) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
+			var msgText = ((action == ZmOperation.FORWARD_INLINE) || isInviteForward) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
 			var preface = this._includedPreface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
 			var text = [preface, crlf].join("");
 			for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
@@ -1878,14 +1878,13 @@ function(action, msg, extraBodyText, incOption, nosig) {
 			}
 			this._includedPreface = preface;
 			preface = preface + (composingHtml ? '<br>' : '\n');
-			var prefix = appCtxt.get(ZmSetting.REPLY_PREFIX);
-			if (composingHtml) {
-				prefix = AjxStringUtil.htmlEncode(prefix);
-			}
-			var sep = composingHtml ? '<br>' : '\n';
-			var wrapParams = {text:body, len:ZmComposeView.WRAP_LENGTH, pre:prefix + " ", eol:sep, htmlMode:composingHtml};
+
+			var wrapParams = ZmHtmlEditor.getWrapParams(composingHtml);
+			var prefix = wrapParams.pre, sep = wrapParams.eol;
+			wrapParams.text = body;
 
 			if (incOption == ZmSetting.INCLUDE_PREFIX) {
+				var text;
 				value += leadingText + preface + AjxStringUtil.wordWrap(wrapParams);
 			}
 			else if (incOption == ZmSetting.INCLUDE_PREFIX_FULL) {
@@ -1904,7 +1903,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				wrapParams.len = 120; // headers tend to be longer
 				headers = AjxStringUtil.wordWrap(wrapParams);
 				wrapParams.text = body;
-				wrapParams.len = ZmComposeView.WRAP_LENGTH;
+				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
 				value += leadingText + preface + headers + (composingHtml ? sep : '') + prefix + sep + AjxStringUtil.wordWrap(wrapParams);
 			}
 			else if (incOption == ZmSetting.INCLUDE_SMART) {

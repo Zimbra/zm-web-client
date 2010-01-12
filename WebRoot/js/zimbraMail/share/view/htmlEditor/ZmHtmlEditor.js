@@ -75,6 +75,7 @@ ZmHtmlEditor.FONT_FAMILY = {};
 ZmHtmlEditor.ACE_IFRAME_RE = new RegExp("<iframe\\s+.*?\\bid\\s*=\\s*[\"']?(ace-[^\"'\\s]*).*?>.*?</iframe(\\s.*?)?>", "ig");
 
 
+
 // Public methods
 
 ZmHtmlEditor.prototype.toString =
@@ -338,6 +339,11 @@ function(path) {
 		if (AjxEnv.isGeckoBased || AjxEnv.isSafari) {
 			style_url = document.baseURI.replace(
 					/^(https?:\x2f\x2f[^\x2f]+).*$/, "$1") + style_url;
+		}
+		// servlet caches CSS unless there's a debug param
+		var debugLevel = DBG && DBG.getDebugLevel();
+		if (debugLevel) {
+			style_url = style_url + "&debug=" + debugLevel; 
 		}
 		style.href = style_url;
 		var head = doc.getElementsByTagName("head")[0];
@@ -1919,6 +1925,28 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 			bookmark = null;
 			state = 1;
 		}, this);
+};
+
+ZmHtmlEditor.WRAP_LENGTH		= 72;
+ZmHtmlEditor.HTML_QUOTE_PRE		= '<blockquote style="border-left:2px solid ' +
+									 AjxStringUtil.HTML_QUOTE_COLOR +
+									 ';margin-left:5px;padding-left:5px;">';
+ZmHtmlEditor.HTML_QUOTE_POST	= '</blockquote><br/>';
+
+// returns a standard set of params for wrapping text of HTML content
+ZmHtmlEditor.getWrapParams =
+function(htmlMode) {
+
+	var params = {};
+
+	params.htmlMode	= htmlMode;
+	params.pre		= htmlMode ? "" : appCtxt.get(ZmSetting.REPLY_PREFIX) + " ";
+	params.len		= ZmHtmlEditor.WRAP_LENGTH;
+	params.eol		= htmlMode ? '<br>' : '\n';
+	params.before	= htmlMode ? ZmHtmlEditor.HTML_QUOTE_PRE : "";
+	params.after	= htmlMode ? ZmHtmlEditor.HTML_QUOTE_POST : "";
+
+	return params;
 };
 
 ZmHtmlEditorColorPicker = function(parent,style,className) {
