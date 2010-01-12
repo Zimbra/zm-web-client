@@ -1095,7 +1095,9 @@ function(startDate, duration, folderId, mailItem) {
 				}
 			} else if (appCtxt.multiAccounts) {
 				// calendar app has no notion of "active" app, so always set to default calendar
-				var calId = appCtxt.accountList.mainAccount.getDefaultCalendar().id;
+				var calId = appCtxt.isOffline
+					? appCtxt.getActiveAccount().getDefaultCalendar().id
+					: appCtxt.accountList.mainAccount.getDefaultCalendar().id;
 				newAppt.setFolderId(calId);
 			}
 		}
