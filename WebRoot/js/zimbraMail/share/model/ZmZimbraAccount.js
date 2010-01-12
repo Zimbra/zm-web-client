@@ -182,8 +182,18 @@ function() {
 			? (new Date(parseInt(this.lastSync))) : null;
 
 		var quota = appCtxt.get(ZmSetting.QUOTA_USED, null, this);
+		var lastSync;
+		if (!lastSyncDate) {
+			// this means, we've synced but server lost the last sync timestamp
+			if (quota > 0) {
+				lastSync = ZmMsg.unknown;
+			}
+		} else {
+			lastSync = AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate);
+		}
+
 		var params = {
-			lastSync: (lastSyncDate ? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null),
+			lastSync: lastSync,
 			hasNotSynced: this.hasNotSynced(),
 			status: this.getStatusMessage(),
 			quota: AjxUtil.formatSize(quota, false, 1)
@@ -223,7 +233,9 @@ function() {
  */
 ZmZimbraAccount.prototype.hasNotSynced =
 function() {
-	return (this.isOfflineInitialSync() && this.status == ZmZimbraAccount.STATUS_UNKNOWN);
+	return (this.isOfflineInitialSync() && 
+			this.status == ZmZimbraAccount.STATUS_UNKNOWN &&
+			appCtxt.get(ZmSetting.QUOTA_USED, null, this) == 0);
 };
 
 /**
