@@ -466,6 +466,9 @@ function(mode, convert) {
             var content = convert ? AjxStringUtil.convertToHtml(textArea.value)	: textArea.value;
             doc.body.innerHTML = content;
             this._pendingContent = content;
+            //important: tinymce expects html markup in textarea so it might treat email
+            //address in <user1@testdomain.com> as tag
+            textArea.value = "";
         } else {
             var content = convert ? AjxStringUtil.convertToHtml(textArea.value)	: textArea.value;
             this._pendingContent = content;
