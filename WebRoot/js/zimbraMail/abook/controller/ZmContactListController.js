@@ -546,7 +546,7 @@ ZmContactListController.prototype._participantComposeListener =
 function(ev) {
 
     var selection = this._listView[this._currentView].getSelection();
-    if(selection.length == 0){
+    if (selection.length == 0 && this._actionEv) {
         selection.push(this._actionEv.contact);
     }
     var name = '', contact, email;
