@@ -43,7 +43,8 @@ ZmZimletApp.prototype.constructor = ZmZimletApp;
  * 
  * @return		{String}		a string representation of the object
  */
-ZmZimletApp.prototype.toString = function() {
+ZmZimletApp.prototype.toString =
+function() {
 	return "ZmZimletApp";
 };
 
@@ -56,7 +57,8 @@ ZmZimletApp.prototype.toString = function() {
  * 
  * @return	{ZmZimletAppController}		the controller
  */
-ZmZimletApp.prototype.getController = function() {
+ZmZimletApp.prototype.getController =
+function() {
 	if (!this._controller) {
 		this._controller = new ZmZimletAppController(this.getName(), this._container, this);
 	}
@@ -68,7 +70,8 @@ ZmZimletApp.prototype.getController = function() {
  * 
  * @return	{ZmToolbar}		the toolbar
  */
-ZmZimletApp.prototype.getToolbar = function() {
+ZmZimletApp.prototype.getToolbar =
+function() {
 	return this.getController().getToolbar();
 };
 
@@ -79,7 +82,8 @@ ZmZimletApp.prototype.getToolbar = function() {
  * 
  * @param	{String}	html	the HTML content
  */
-ZmZimletApp.prototype.setContent = function(html) {
+ZmZimletApp.prototype.setContent =
+function(html) {
 	this.getController().getView().setContent(html);
 };
 
@@ -88,7 +92,8 @@ ZmZimletApp.prototype.setContent = function(html) {
  * 
  * @param	{Object}	view	the view
  */
-ZmZimletApp.prototype.setView = function(view) {
+ZmZimletApp.prototype.setView =
+function(view) {
 	this.getController().getView().setView(view);
 };
 
@@ -97,10 +102,11 @@ ZmZimletApp.prototype.setView = function(view) {
 /**
  * Launches the application.
  * 
- * @param	{Hash}	params		a hash of parameters
+ * @param	{Hash}			params			a hash of parameters
  * @param	{AjxCallback}	callback		the callback
  */
-ZmZimletApp.prototype.launch = function(params, callback) {
+ZmZimletApp.prototype.launch =
+function(params, callback) {
 	this.getController().show();
 	ZmApp.prototype.launch.call(this, params);
 	if (this._zimlet.appLaunch) {
@@ -117,9 +123,30 @@ ZmZimletApp.prototype.launch = function(params, callback) {
  * @param	{Boolean}	active	<code>true</code> if active; <code>false</code> otherwise
  * @param	{String}	viewId	the view id
  */
-ZmZimletApp.prototype.activate = function(active, viewId) {
+ZmZimletApp.prototype.activate =
+function(active, viewId) {
 	ZmApp.prototype.activate.apply(this, arguments);
 	if (this._zimlet.appActive) {
 		this._zimlet.appActive(this.getName(), active);
 	}
 };
+
+/**
+ * Sets the overview tree to display overview content for this application.
+ *
+ * @param {Boolean}	reset		if <code>true</code>, clear the content first
+ */
+ZmZimletApp.prototype.setOverviewPanelContent =
+function(reset) {
+	if (reset) {
+		this._overviewPanelContent = null;
+		this._overviewContainer = null;
+	}
+
+	// only set overview panel content if not in full screen mode
+	var avm = appCtxt.getAppViewMgr();
+	if (!avm.isFullScreen()) {
+		avm.setComponent(ZmAppViewMgr.C_TREE, this.getOverviewPanelContent());
+	}
+};
+

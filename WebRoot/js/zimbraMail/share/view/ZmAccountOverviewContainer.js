@@ -104,7 +104,9 @@ function(params) {
 		// skip the main account in offline mode since we'll add it at the end
 		if (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES) { continue; }
 
-		params.omit = {};
+		if (!params.omit) {
+			params.omit = {};
+		}
 		if (acct.type == ZmAccount.TYPE_POP) {
 			params.omit[ZmFolder.ID_SPAM]   = true;
 			params.omit[ZmFolder.ID_SENT]   = true;
@@ -194,9 +196,10 @@ function(params) {
 
 	// add the "local" account last
 	if (appCtxt.isOffline && this._appName != ZmApp.PREFERENCES) {
-		params.omit = {};
-		params.selectable = false;
-		this._addAccount(params, mainAcct, showBackgroundColor, "ZmOverviewLocalHeader");
+		var params2 = AjxUtil.hashCopy(params);
+		params2.omit = {};
+		params2.selectable = false;
+		this._addAccount(params2, mainAcct, showBackgroundColor, "ZmOverviewLocalHeader");
 
 		header = this.getHeaderItem(mainAcct);
 		header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, mainAcct));
@@ -206,6 +209,10 @@ function(params) {
 
 	// add zimlets at the end of all overviews
 	var skip = params.omit && params.omit[ZmOrganizer.ID_ZIMLET];
+
+	if (!appCtxt.inStartup && !skip && appCtxt.getZimletMgr().getPanelZimlets().length == 0) {
+		skip = true;
+	}
 
 	if (!skip && window[ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]] &&
 		this._appName != ZmApp.PREFERENCES)
