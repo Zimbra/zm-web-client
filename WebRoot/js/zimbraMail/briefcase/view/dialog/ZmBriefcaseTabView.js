@@ -72,7 +72,11 @@ function() {
 
 ZmBriefcaseTabView.prototype._createHtml1 =
 function() {
-	var bc = this._controller = AjxDispatcher.run("GetBriefcaseController");
+
+ 	var ac = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+ 	this._app = ac.getApp(ZmApp.BRIEFCASE);
+	var bc = this._controller = new ZmBriefcaseController(this._app._container, this._app);
+
     var params = {parent:bc._container, className:"BriefcaseTabBox BriefcaseList", view:this.view,
 				  controller:bc};
     var lv = this._listView = this._controller._listView[this.view] = new ZmBriefcaseIconView(params);
@@ -98,8 +102,11 @@ function(width, height) {
     var treeWidth = size.x * 0.40;
     var listWidth = size.x - treeWidth;
     var newHeight = height - 15;
-    this._overview.setSize(treeWidth, newHeight);
-    this._listView.setSize(listWidth - 5, newHeight);
+	if (this._overview) {
+		this._overview.setSize(treeWidth, newHeight);
+		this._listView.setSize(listWidth - 5, newHeight);
+	}
+	
     return this;
 };
 

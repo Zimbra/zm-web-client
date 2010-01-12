@@ -361,11 +361,13 @@ function(path) {
 ZmHtmlEditor.prototype._setFontStyles =
 function() {
 	var doc = this._getIframeDoc();
-	var style = doc.body.style;
+	var style = doc.body && doc.body.style;
 
-	style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-	style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-	style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+	if (style) {
+		style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+		style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+		style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+	}
 };
 
 ZmHtmlEditor.prototype.highlightMisspelledWords =
