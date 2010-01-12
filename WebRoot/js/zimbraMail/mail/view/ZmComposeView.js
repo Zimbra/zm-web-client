@@ -2510,7 +2510,8 @@ function(msg) {
 				identity = identities[j];
 
 				var addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
-				var option = new DwtSelectOption(identity.id, false, addr.toString(), null, null, acct.getIcon());
+				var icon = appCtxt.isFamilyMbox ? null : acct.getIcon();
+				var option = new DwtSelectOption(identity.id, false, addr.toString(), null, null, icon);
 				option.addr = addr;
 				option.accountId = acct.id;
 
