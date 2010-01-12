@@ -327,7 +327,7 @@ function(params) {
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash({parent:this._shell, style:DwtSash.HORIZONTAL_STYLE,
 															 className:"console_inset_app_l", threshold:20, id:ZmId.MAIN_SASH});
 		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
-		if (!appCtxt.multiAccounts) {
+		if (!appCtxt.isOffline) {
 			this._components[ZmAppViewMgr.C_USER_INFO] = this._userNameField =
 				this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO, ZmId.USER_NAME);
 			this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField =
@@ -678,7 +678,7 @@ function() {
 				nc.addEventListener("online", function(e) { appCtxt.getAppController().handleNetworkChange(true); }, false);
 			}
 		}
-		if (appCtxt.multiAccounts && appCtxt.isOffline) {
+		if (appCtxt.isOffline) {
 			this._resetUserInfo();
 		}
 	}
