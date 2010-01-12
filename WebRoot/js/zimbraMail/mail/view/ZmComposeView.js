@@ -1888,6 +1888,8 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				value += leadingText + preface + AjxStringUtil.wordWrap(wrapParams);
 			}
 			else if (incOption == ZmSetting.INCLUDE_PREFIX_FULL) {
+				var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
+				var preface = this._includedPreface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
 				var headers = [];
 				for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
 					var h = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
@@ -1899,12 +1901,19 @@ function(action, msg, extraBodyText, incOption, nosig) {
 						headers.push(h);
 					}
 				}
-				wrapParams.text = headers.join(crlf);
-				wrapParams.len = 120; // headers tend to be longer
-				headers = AjxStringUtil.wordWrap(wrapParams);
-				wrapParams.text = body;
-				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
-				value += leadingText + preface + headers + (composingHtml ? sep : '') + prefix + sep + AjxStringUtil.wordWrap(wrapParams);
+				if (composingHtml) {
+					wrapParams.text = headers.join(crlf) + sep + sep + body;
+					var bodyText = AjxStringUtil.wordWrap(wrapParams);
+					value += leadingText + preface + bodyText;
+				} else {
+					wrapParams.text = headers.join(crlf);
+					wrapParams.len = 120; // headers tend to be longer
+					var headerText = AjxStringUtil.wordWrap(wrapParams);
+					wrapParams.text = body;
+					wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
+					var bodyText = AjxStringUtil.wordWrap(wrapParams);
+					value += leadingText + preface + sep + sep + headerText + prefix + sep + bodyText;
+				}
 			}
 			else if (incOption == ZmSetting.INCLUDE_SMART) {
 				var chunks = AjxStringUtil.getTopLevel(body);

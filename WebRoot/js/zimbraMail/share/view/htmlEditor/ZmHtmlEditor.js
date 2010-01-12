@@ -1944,7 +1944,7 @@ function(htmlMode) {
 	params.htmlMode	= htmlMode;
 	params.pre		= htmlMode ? "" : appCtxt.get(ZmSetting.REPLY_PREFIX) + " ";
 	params.len		= ZmHtmlEditor.WRAP_LENGTH;
-	params.eol		= htmlMode ? '<br>' : '\n';
+	params.eol		= htmlMode ? '<br/>' : '\n';
 	params.before	= htmlMode ? ZmHtmlEditor.HTML_QUOTE_PRE : "";
 	params.after	= htmlMode ? ZmHtmlEditor.HTML_QUOTE_POST : "";
 
