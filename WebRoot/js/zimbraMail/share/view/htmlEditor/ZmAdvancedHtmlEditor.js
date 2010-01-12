@@ -109,18 +109,76 @@ function() {
 };
 
 ZmAdvancedHtmlEditor.prototype.getContent =
-function() {
+function(insertFontStyle, onlyInnerContent) {
     var field = this.getContentField();
     if(this._mode == DwtHtmlEditor.HTML) {
         var editor = this.getEditor();
+        var content;
         if(editor) {
-            return editor.getContent();
+            content = editor.getContent();
         }else {
-            return this._pendingContent || "";
+            content = this._pendingContent || "";
         }
+        content = this._embedHtmlContent(content, insertFontStyle, onlyInnerContent);
+        return content;
     }else {
         return field.value;
     }
+};
+
+ZmAdvancedHtmlEditor.prototype._embedHtmlContent =
+function(html, insertFontStyle, onlyInnerContent) {
+	if (!insertFontStyle && !onlyInnerContent) {
+			return [ "<html><body>", html, "</body></html>" ].join("");
+	}
+
+	if (onlyInnerContent) {
+		var cont = [], idx=0;
+
+		if (insertFontStyle) {
+			cont[idx++] = "<div";
+			cont[idx++] = " style='font-family:";
+			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+			cont[idx++] = "; font-size: ";
+			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+			cont[idx++] = "; color: ";
+			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+			cont[idx++] = ";'>";
+			cont[idx++] = html;
+			cont[idx++] = "</div>";
+		} else {
+			cont[idx++] = html;
+		}
+
+		return cont.join("");
+	}
+
+	var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
+	if (insertFontStyle) {
+		html = this._getFontStyle(html);
+	}
+	return [
+		"<html><head>",
+		p_style,
+		"</head><body>",
+		html,
+		"</body></html>"
+	].join("");
+};
+
+ZmAdvancedHtmlEditor.prototype._getFontStyle =
+function(html) {
+	var a = [], i = 0;
+	a[i++] = "<div style='font-family: ";
+	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+	a[i++] = "; font-size: ";
+	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+	a[i++] = "; color: ";
+	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+	a[i++] = "'>";
+	a[i++] = html;
+	a[i++] = "</div>";
+	return a.join("");
 };
 
 ZmAdvancedHtmlEditor.prototype.setContent =
