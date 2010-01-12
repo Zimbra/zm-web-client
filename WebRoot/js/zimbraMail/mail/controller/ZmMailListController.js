@@ -884,8 +884,10 @@ function(items, markAsSpam, folder) {
 ZmMailListController.prototype._inviteReplyHandler =
 function(ev) {
 
+	var ac = window.parentAppCtxt || window.appCtxt;
+
 	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
-	appCtxt.getAppController().focusContentPane();
+	ac.getAppController().focusContentPane();
 	
 	var type = ev._inviteReplyType;
     var folderId = ev._inviteReplyFolderId || ZmOrganizer.ID_CALENDAR;
@@ -899,7 +901,6 @@ function(ev) {
 	}
 	else
 	{
-		var ac = window.parentAppCtxt || window.appCtxt;
 		var accountName = ac.multiAccounts && ac.accountList.mainAccount.name;
 		var resp = this._sendInviteReply(type, compId, null, accountName, null, ev._msg, folderId);
 		if (resp && appCtxt.isChildWindow) {

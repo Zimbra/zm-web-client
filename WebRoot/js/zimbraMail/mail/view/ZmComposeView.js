@@ -1593,20 +1593,22 @@ function(action, type, override) {
 			 action == ZmOperation.REPLY_ALL ||
 			 this._isInviteReply(action))
 	{
+		var ac = window.parentAppCtxt || window.appCtxt;
+
 		// Prevent user's login name and aliases from going into To: or Cc:
 		var used = {};
 		var account = appCtxt.multiAccounts && this._msg.account;
-		var uname = appCtxt.get(ZmSetting.USERNAME, null, account);
+		var uname = ac.get(ZmSetting.USERNAME, null, account);
 		if (uname) {
 			used[uname.toLowerCase()] = true;
 		}
-		var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES, null, account);
+		var aliases = ac.get(ZmSetting.MAIL_ALIASES, null, account);
 		for (var i = 0, count = aliases.length; i < count; i++) {
 			used[aliases[i].toLowerCase()] = true;
 		}
 
 		// Check for Canonical Address's
-		var defaultIdentity = appCtxt.getIdentityCollection(account).defaultIdentity;
+		var defaultIdentity = ac.getIdentityCollection(account).defaultIdentity;
 		if (defaultIdentity && defaultIdentity.sendFromAddress) {
 			// Note: sendFromAddress is same as appCtxt.get(ZmSetting.USERNAME)
 			// if the account does not have any Canonical Address assigned.
