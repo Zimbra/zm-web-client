@@ -272,7 +272,7 @@ function() {
 	this._searchTableId	= Dwt.getNextId();
 
 	this._chooserSourceListViewDivId	= Dwt.getNextId();
-	this._chooserButtonsDivId	= Dwt.getNextId();
+	this._chooserButtonsDivId			= Dwt.getNextId();
 	this._chooserTargetListViewDivId	= Dwt.getNextId();
 
 	var fields = ZmApptChooserTabViewPage.SEARCH_FIELDS[this.type];
@@ -294,8 +294,9 @@ function() {
 	html[i++] = this._searchTableId;
 	html[i++] = "'>";
 
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=3><tr>";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=3>";
 
+	// 2 fields per row
 	for (var j = 0; j < fields.length; j++) {
 		var isEven = ((j % 2) == 0);
 		if (isEven) {
@@ -305,18 +306,7 @@ function() {
 		var addButton = (j == 1);
 		var addMultLocsCheckbox = (this.type == ZmCalBaseItem.LOCATION && j == fields.length - 1);
 		i = this._getSearchFieldHtml(sf, html, i, addButton, addMultLocsCheckbox);
-		if (!isEven || j == fields.length - 1) {
-			if (this.type == ZmCalBaseItem.PERSON) {
-				this._prevButtonId = Dwt.getNextId();
-				this._nextButtonId = Dwt.getNextId();
-				html[i++] = "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
-				html[i++] = "<td id='";
-				html[i++] = this._prevButtonId;
-				html[i++] = "'></td><td id='";
-				html[i++] = this._nextButtonId;
-				html[i++] = "'></td>";
-			}
-
+		if (!isEven) {
 			html[i++] = "</tr>";
 		}
 	}
@@ -359,8 +349,9 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 		// no need for source select if not more than one choice to choose from
 		var showSelect = false;
 		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
+			if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 				showSelect = true;
+			}
 		}
 
 		if (!showSelect) {
@@ -387,8 +378,16 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 
 	if (addButton) {
 		this._searchBtnTdId	= Dwt.getNextId();
+		this._prevButtonId = Dwt.getNextId();
+		this._nextButtonId = Dwt.getNextId();
 		html[i++] = "<td id='";
 		html[i++] = this._searchBtnTdId;
+		html[i++] = "'></td>";
+		html[i++] = "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
+		html[i++] = "<td id='";
+		html[i++] = this._prevButtonId;
+		html[i++] = "'></td><td id='";
+		html[i++] = this._nextButtonId;
 		html[i++] = "'></td>";
 	}
 	else if (addMultLocsCheckbox) {
@@ -488,8 +487,8 @@ function(tabGroup) {
 
 ZmApptChooserTabViewPage.prototype._searchButtonListener =
 function(ev) {
+	this._offset = 0;
 	if (this.type == ZmCalBaseItem.PERSON) {
-		this._offset = 0;
 		this.searchContacts();
 	} else {
 		this.searchCalendarResources();
@@ -514,7 +513,11 @@ function(ev) {
 		this._offset += ZmContactsApp.SEARCHFOR_MAX;
 	}
 
-	this.searchContacts();
+	if (this.type == ZmCalBaseItem.PERSON) {
+		this.searchContacts();
+	} else {
+		this.searchCalendarResources();
+	}
 };
 
 /*
@@ -529,7 +532,7 @@ function() {
 			var pSize = this.parent.getSize();
 			this.resize(pSize.x, pSize.y);
 		}
-                this._chooser.setItems(attendees, DwtChooserListView.TARGET);
+		this._chooser.setItems(attendees, DwtChooserListView.TARGET);
 	} else {
 		this._chooser.reset(DwtChooserListView.TARGET);
 	}
@@ -657,13 +660,27 @@ function(sortBy) {
 	}
 	var params = {
 		sortBy: sortBy,
-		offset: 0,
+		offset: this._offset,
 		limit: ZmContactsApp.SEARCHFOR_MAX,
 		conds: conds,
 		attrs: ZmApptChooserTabViewPage.ATTRS[this.type]
 	};
 	var search = new ZmSearch(params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearchCalendarResources)});
+};
+
+ZmApptChooserTabViewPage.prototype._handleResponseSearchCalendarResources =
+function(result) {
+	var resp = result.getResponse();
+	if (this._prevButton && this._nextButton) {
+		var more = resp.getAttribute("more");
+		this._prevButton.setEnabled(this._offset > 0);
+		this._nextButton.setEnabled(more);
+	}
+	resp = resp.getResults(ZmItem.RESOURCE).getVector();
+	this._fillFreeBusy(resp, AjxCallback.simpleClosure(function(items) {
+		this._chooser.setItems(items);
+	}, this));
 };
 
 ZmApptChooserTabViewPage.prototype._getTimeFrame =
@@ -763,15 +780,6 @@ function(item, view) {
 	if (element) {
 		element.innerHTML = item.__fbStatus.txt;
 	}
-};
-
-ZmApptChooserTabViewPage.prototype._handleResponseSearchCalendarResources =
-function(result) {
-	var resp = result.getResponse();
-	resp = resp.getResults(ZmItem.RESOURCE).getVector();
-	this._fillFreeBusy(resp, AjxCallback.simpleClosure(function(items) {
-		this._chooser.setItems(items);
-	}, this));
 };
 
 ZmApptChooserTabViewPage.prototype._getDefaultFocusItem =

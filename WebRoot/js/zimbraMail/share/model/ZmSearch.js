@@ -194,6 +194,7 @@ function(params) {
 					condEl.setAttribute("value", cond.value);
 				}
 			}
+			method.setAttribute("offset", this.offset || 0);
 			this.limit = this.limit || ZmSearch.DEFAULT_LIMIT;
 			method.setAttribute("limit", this.limit);
 		} else {
@@ -307,6 +308,7 @@ function(params) {
 					cond.push({attr:c.attr, op:c.op, value:c.value});
 				}
 			}
+			request.offset = this.offset || 0;
 			this.limit = this.limit || ZmSearch.DEFAULT_LIMIT;
 			request.limit = this.limit;
 		} else {
