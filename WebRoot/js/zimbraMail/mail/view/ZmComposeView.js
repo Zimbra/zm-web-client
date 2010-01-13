@@ -2018,6 +2018,11 @@ function(extraBodyText) {
 	}
 };
 
+ZmComposeView.prototype.isTinyMCEEnabled =
+function() {
+    return window.isTinyMCE || (window.opener && window.opener.isTinyMCE);
+};
+
 /**
 * This should be called only once for when compose view loads first time around
 */
@@ -2044,7 +2049,7 @@ function(composeMode) {
 	this._composeMode = composeMode || defaultCompMode;
 
 	// init html editor
-	if (window.isTinyMCE || (window.opener && window.opener.isTinyMCE)) {
+	if (this.isTinyMCEEnabled()) {
 		this._htmlEditor = new ZmAdvancedHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 		this._bodyField = document.getElementById(this._bodyFieldId);
