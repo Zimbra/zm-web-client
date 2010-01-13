@@ -35,6 +35,7 @@ ZmResourceList = function(resType, search) {
 	this._nameToResource = {};
 	this._emailToResource = {};
 	this._acMatchFields = ZmResourceList.AC_FIELDS;
+	this._galAutocompleteEnabled = true;
 };
 
 ZmResourceList.ATTRS =
@@ -75,7 +76,6 @@ function(result) {
 	}
 	//bug:16436 this._loaded changed to this.isLoaded 
 	this.isLoaded = true;
-	this._galAutocompleteEnabled = false;
 };
 
 ZmResourceList.prototype.updateHashes = 

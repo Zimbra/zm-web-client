@@ -438,7 +438,7 @@ function(width) {
 
 	this._attInputField = {};
 
-    if(this.GROUP_CALENDAR_ENABLED) {
+    if (this.GROUP_CALENDAR_ENABLED) {
         // add attendee input field
 	    var params = {parent: this, type: DwtInputField.STRING, skipCaretHack: true, rows: 3, parentElement: (this._htmlElId + "_person")};
     	var input = this._attInputField[ZmCalBaseItem.PERSON] = new DwtInputField(params);
@@ -482,10 +482,9 @@ function(width) {
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 
 
-    if(this.GROUP_CALENDAR_ENABLED) {
+    if (this.GROUP_CALENDAR_ENABLED) {
         this._requestResponsesCheckbox = document.getElementById(this._htmlElId + "_requestResponses");
     }
-
 
     // timezone DwtSelect
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
@@ -544,7 +543,8 @@ function() {
 			dataClass: app,
 			dataLoader: app.getLocations,
 			matchValue: ZmContactsApp.AC_VALUE_NAME,
-			compCallback: acCallback
+			compCallback: acCallback,
+			options: {galOnly:true, galType:ZmContactList.AC_RESOURCE}
 		};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._attInputField[ZmCalBaseItem.LOCATION].getInputElement());
