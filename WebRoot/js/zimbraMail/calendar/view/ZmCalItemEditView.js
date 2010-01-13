@@ -603,7 +603,8 @@ function(width) {
 	if (window.isTinyMCE) {
 		this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode);
 		this._notesHtmlEditor.addOnContentIntializedListener(new AjxCallback(this,this.resizeNotesEditor));
-		this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
+        //tinymce editor issue: reparenting the container breaks the editor
+		//this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
 		// bug: 19079 to avoid access denied exception set some content which corrects the doc domain
 		this._notesHtmlEditor.setContent("");
 	} else {
