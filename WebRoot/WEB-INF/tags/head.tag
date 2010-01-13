@@ -104,20 +104,23 @@
                 var logouturl = "<c:url value="/?loginOp=logout"/>";
                 var timeoutinmillisec = "<c:out value="${timeinmillisec}"/>";
                 var logouttimeout = null;
-
+                var MAX_TIMEOUT = 20 * 24 * 60 * 60 * 1000;
+                
                 var initIdleSessionTimeOut = function() {
                     clearIdleSessionTimeOut();
                     setIdleSessionTimeOut();
                 }
-
                 var setIdleSessionTimeOut = function() {
-                    if(timeoutinmillisec != null) {
+                    if(timeoutinmillisec != null && timeoutinmillisec != "") {
+                        if(parseInt(timeoutinmillisec) > MAX_TIMEOUT) {
+                            timeoutinmillisec = MAX_TIMEOUT;
+                        }
                         logouttimeout = setTimeout(function() {
                             window.location.href = logouturl;
-                        }, timeoutinmillisec);
+                        }, parseInt(timeoutinmillisec));
                     }
                 }
-
+                
                 var clearIdleSessionTimeOut = function() {
                     if(logouttimeout != null) clearTimeout(logouttimeout);
                 }
