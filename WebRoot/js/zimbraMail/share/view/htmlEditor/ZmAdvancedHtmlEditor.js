@@ -352,6 +352,9 @@ function(parent, posStyle, content, mode, withAce) {
     Dwt.setHandler(textEl, DwtEvent.ONBLUR, AjxCallback.simpleClosure(this.setFocusStatus, this, false, true));
     this._editorContainer.setFocusMember(textEl);
 
+
+    if(content != null) this.setPendingContent(content);    
+
     if(!window.tinyMCE) {
         var callback = new AjxCallback(this, this.initEditorManager, [id, mode, content]);
         var data = {
@@ -421,7 +424,7 @@ function(id, mode, content) {
         obj.initDefaultFontSize(ed);
     };
 
-    function initTinyMCEEditor(ed) {
+    function onTinyMCEEditorInit(ed) {
         obj.initDefaultFontSize(ed);
         tinymce.dom.Event.add(ed.getWin(), 'focus', function(e) {
             obj.setFocusStatus(true);
@@ -474,7 +477,7 @@ function(id, mode, content) {
         editor_css: editorCSS,        
         setup : function(ed) {
             ed.onLoadContent.add(handleContentLoad);
-            ed.onInit.add(initTinyMCEEditor);
+            ed.onInit.add(onTinyMCEEditorInit);
         }
     });
 
