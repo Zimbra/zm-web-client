@@ -23,7 +23,7 @@ ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 
     this.isTinyMCE = window.isTinyMCE;
     this._mode = mode;
-
+    this._hasFocus = {};
     this.initTinyMCEEditor(parent, posStyle, content, mode, withAce);
 };
 
@@ -86,14 +86,22 @@ function(x, y) {
     //todo: handle spellcheck ids 
 };
 
+ZmAdvancedHtmlEditor.prototype.editorContainerFocus =
+function() {
+    DBG.println("focus on container");
+    this.focus();
+};
+
 ZmAdvancedHtmlEditor.prototype.focus =
 function() {
     var editor = this.getEditor();
     if(editor){
         editor.focus();
+        this.setFocusStatus(true);
     }else {
         var bodyField = this.getContentField();
         if(bodyField) bodyField.focus();
+        this.setFocusStatus(true, true);
     }
 };
 
@@ -281,12 +289,14 @@ function(tryOnTimer) {
 	}
 };
 
+ZmAdvancedHtmlEditor.prototype.getEditorContainer =
+function() {
+    return this._editorContainer;    
+};
 
 ZmAdvancedHtmlEditor.prototype.hasFocus =
 function() {
-    var editor = this.getEditor();
-    return this._editorContainer ? this._editorContainer.hasFocus() : false;
-    //todo: need to handle focus
+    return Boolean(this._hasFocus[this._mode]);
 };
 
 ZmAdvancedHtmlEditor.prototype._getIframeDoc =
@@ -326,7 +336,7 @@ function() {
 ZmAdvancedHtmlEditor.prototype.initTinyMCEEditor =
 function(parent, posStyle, content, mode, withAce) {
 
-    this._editorContainer = new DwtComposite({parent: parent, posStyle: posStyle, mode: mode, content: content, withAce: withAce, className:"ZmHtmlEditor"});
+    this._editorContainer = new ZmEditorContainer({parent: parent, posStyle: posStyle, mode: mode, content: content, withAce: withAce, className:"ZmHtmlEditor"});
     var htmlEl = this._editorContainer.getHtmlElement();
 
     //textarea on which html editor is constructed
@@ -334,9 +344,13 @@ function(parent, posStyle, content, mode, withAce) {
     var textEl = document.createElement("textarea");
     textEl.setAttribute("id", id);
     textEl.setAttribute("name", id);
-    textEl.className = "DwtHtmlEditorTextArea"; 
+    textEl.className = "DwtHtmlEditorTextArea";
     htmlEl.appendChild(textEl);
     this._textAreaId = id;
+
+    Dwt.setHandler(textEl, DwtEvent.ONFOCUS, AjxCallback.simpleClosure(this.setFocusStatus, this, true, true));
+    Dwt.setHandler(textEl, DwtEvent.ONBLUR, AjxCallback.simpleClosure(this.setFocusStatus, this, false, true));
+    this._editorContainer.setFocusMember(textEl);
 
     if(!window.tinyMCE) {
         var callback = new AjxCallback(this, this.initEditorManager, [id, mode, content]);
@@ -391,6 +405,12 @@ function(ed) {
     }
 };
 
+ZmAdvancedHtmlEditor.prototype.setFocusStatus =
+function(hasFocus, isTextModeFocus) {
+    var mode = isTextModeFocus ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML;
+    this._hasFocus[mode] = hasFocus;
+};
+
 ZmAdvancedHtmlEditor.prototype.initEditorManager =
 function(id, mode, content) {
 
@@ -398,10 +418,20 @@ function(id, mode, content) {
 
     function handleContentLoad(ed) {
         obj.onLoadContent(ed);
+        obj.initDefaultFontSize(ed);
     };
 
-    function initFontStyles(ed) {
+    function initTinyMCEEditor(ed) {
         obj.initDefaultFontSize(ed);
+        tinymce.dom.Event.add(ed.getWin(), 'focus', function(e) {
+            obj.setFocusStatus(true);
+        });
+        tinymce.dom.Event.add(ed.getWin(), 'blur', function(e) {
+            obj.setFocusStatus(false);
+        });
+
+        var ec = obj.getEditorContainer();
+        ec.setFocusMember(ed.getWin());
     };
 
     var urlParts = AjxStringUtil.parseURL(location.href);
@@ -444,7 +474,7 @@ function(id, mode, content) {
         editor_css: editorCSS,        
         setup : function(ed) {
             ed.onLoadContent.add(handleContentLoad);
-            ed.onInit.add(initFontStyles);
+            ed.onInit.add(initTinyMCEEditor);
         }
     });
 
@@ -469,6 +499,7 @@ function(mode, convert) {
             //important: tinymce expects html markup in textarea so it might treat email
             //address in <user1@testdomain.com> as tag
             textArea.value = "";
+            this._editorContainer.setFocusMember(editor.getWin());
         } else {
             var content = convert ? AjxStringUtil.convertToHtml(textArea.value)	: textArea.value;
             this._pendingContent = content;
@@ -481,6 +512,7 @@ function(mode, convert) {
 
         tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);
         textArea.value = textContent;
+        this._editorContainer.setFocusMember(textArea);
     }
 };
 
@@ -1275,4 +1307,27 @@ function() {
 	} else {
 		return this._getIframeWin().getSelection();
 	}
+};
+
+
+ZmEditorContainer = function(params) {
+	if (arguments.length == 0) { return; }
+	params = Dwt.getParams(arguments, ZmEditorContainer.PARAMS);
+
+	DwtComposite.call(this, params);
+};
+
+ZmEditorContainer.PARAMS = ["parent", "className", "posStyle", "content", "mode", "blankIframeSrc"];
+
+ZmEditorContainer.prototype = new DwtComposite();
+ZmEditorContainer.prototype.constructor = ZmEditorContainer;
+
+ZmEditorContainer.prototype.setFocusMember =
+function(member) {
+    this._focusMember = member;
+};
+
+ZmEditorContainer.prototype._focus =
+function() {
+    if(this._focusMember) this._focusMember.focus();
 };

@@ -578,6 +578,10 @@ function() {
 	tg.addMember(this._composeView._subjectField);
 	var mode = this._composeView.getComposeMode();
 	var member = (mode == DwtHtmlEditor.TEXT) ? this._composeView._bodyField : this._composeView.getHtmlEditor();
+    if(window.isTinyMCE) {
+        var htmlEditor = this._composeView.getHtmlEditor();
+        member = htmlEditor.getEditorContainer();
+    }
 	tg.addMember(member);
 };
 
