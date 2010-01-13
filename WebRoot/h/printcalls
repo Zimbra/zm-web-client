@@ -24,7 +24,7 @@
 <html>
 <app:head mailbox="${mailbox}"/>
 
-<body style='background-color:white;'>
+<body style='background:white;'>
     <div class='ZhCallListPrintView'>
         <table><tr>
             <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>

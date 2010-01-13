@@ -25,7 +25,7 @@
 </app:handleError>
 <html>
 <app:head mailbox="${mailbox}"/>
-<body style='background-color:white;'>
+<body style='background:white;'>
 <style>
     .contactHeader, .ZhFolderHeader {
         font-size: small !important;

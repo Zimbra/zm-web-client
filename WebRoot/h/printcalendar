@@ -51,7 +51,7 @@
     <link rel="stylesheet" type="text/css" href="${cssurl}">
     
 </head>
-<body style='background-color:white;'>
+<body style='background:white;'>
 <table width="90%" align="center">
     <tr>
         <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>

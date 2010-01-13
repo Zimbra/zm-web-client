@@ -21,7 +21,7 @@
 </app:handleError>
 <html>
 <app:head mailbox="${mailbox}"/>
-<body style='background-color:white;'>
+<body style='background:white;'>
 <div class='ZhCallListPrintView'>
 <table cellpadding="0" cellspacing="5"  width="100%">
 	<tr>
