@@ -193,7 +193,7 @@ ZmAdvancedHtmlEditor.prototype.setContent =
 function(content) {
     if(this._mode == DwtHtmlEditor.HTML) {
         var editor = this.getEditor();
-        if(editor) {
+        if(editor && this._editorInitialized) {
             editor.setContent(content);
         }else {
             this._pendingContent = content;
@@ -308,7 +308,7 @@ function() {
 ZmAdvancedHtmlEditor.prototype._getIframeWin =
 function() {
     var editor = this.getEditor();
-    return editor ? editor.getWin() : null; 
+    return editor ? editor.getWin() : null;
 };
 
 ZmAdvancedHtmlEditor.prototype.clear =
@@ -351,7 +351,6 @@ function(parent, posStyle, content, mode, withAce) {
     Dwt.setHandler(textEl, DwtEvent.ONFOCUS, AjxCallback.simpleClosure(this.setFocusStatus, this, true, true));
     Dwt.setHandler(textEl, DwtEvent.ONBLUR, AjxCallback.simpleClosure(this.setFocusStatus, this, false, true));
     this._editorContainer.setFocusMember(textEl);
-
 
     if(content != null) this.setPendingContent(content);    
 
@@ -435,6 +434,8 @@ function(id, mode, content) {
 
         var ec = obj.getEditorContainer();
         ec.setFocusMember(ed.getWin());
+
+        obj._editorInitialized = true;
     };
 
     var urlParts = AjxStringUtil.parseURL(location.href);
@@ -449,8 +450,6 @@ function(id, mode, content) {
     }
 
     if(tinymce.dom && tinymce.dom.Event) tinymce.dom.Event.domLoaded = true; 
-
-    this.setPendingContent(content || "");
 
     var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
     var editorCSS = appContextPath + "/css/editor_ui.css?v=" + window.cacheKillerVersion + "&skin=" + appCurrentSkin + "&locale=" + locale;
