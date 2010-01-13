@@ -2020,7 +2020,7 @@ function(extraBodyText) {
 
 ZmComposeView.prototype.isTinyMCEEnabled =
 function() {
-    return window.isTinyMCE || (window.opener && window.opener.isTinyMCE);
+    return window.isTinyMCE;
 };
 
 /**

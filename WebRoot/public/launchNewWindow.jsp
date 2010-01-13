@@ -1,7 +1,8 @@
 <%@ page session="false" %>
 <%@ page import='java.util.Locale' %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %><%
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
@@ -68,6 +69,8 @@
 	String ext = getAttribute(request, "fileExtension", null);
 	if (ext == null || isDevMode) ext = "";
 
+    String offlineMode = getParameter(request, "offline", application.getInitParameter("offlineMode"));
+
 	Locale locale = request.getLocale();
     String localeId = (String)request.getAttribute("localeId");
 	if (localeId == null) {
@@ -91,6 +94,7 @@
 	pageContext.setAttribute("ext", ext);
 	pageContext.setAttribute("vers", vers);
 	pageContext.setAttribute("locale", locale);
+    pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));    
 	pageContext.setAttribute("isDevMode", isDevMode);
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 %>
@@ -110,6 +114,9 @@
 	// NOTE: Force zimlets to load individually to avoid aggregation!
 	appExtension   = "js";
 	appDevMode     = true;
+    <c:if test="${isOfflineMode}">
+    isTinyMCE      = true;
+    </c:if>
 </script>
 <script>
 <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
