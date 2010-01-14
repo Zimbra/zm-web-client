@@ -14,7 +14,9 @@
  *
  * */
 
-.ZDToolBar { @ChromeBg@ padding:3px; @Text@}
+.ZDToolBar { @AppTabBorder-normal@; padding:3px;}
+
+.ZDToolBar .ZWidgetTitle { @Text@}
 
 .ZDUtilToolBar { background-color: #bccbd6;}
 
