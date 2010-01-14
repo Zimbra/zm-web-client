@@ -758,9 +758,24 @@ function() {
 	this._mainShare = null;
 };
 
+// returns the share granted to the current user
 ZmOrganizer.prototype.getMainShare =
 function() {
-	return this._mainShare || (this.shares && this.shares.length && this.shares[0]);
+	if (!this._mainShare) {
+		var curAcct = appCtxt.getActiveAccount();
+		var curZid = curAcct && curAcct.id;
+		if (curZid && this.shares && this.shares.length) {
+			for (var i = 0; i < this.shares.length; i++) {
+				var share = this.shares[i];
+				var id = share && share.grantee && share.grantee.id;
+				if (id && id == curZid) {
+					this._mainShare = share;
+					break;
+				}
+			}
+		}
+	}
+	return this._mainShare;
 };
 
 ZmOrganizer.prototype.supportsSharing =
