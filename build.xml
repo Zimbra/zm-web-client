@@ -1223,81 +1223,92 @@ if (ext == null) ext = "";
 
 
     <!-- JSP PRECOMPILE STUFF -->
-     <property name="jspc.src.dir" value="${build.dir}/WebRoot" />
-     <property name="jspc.build.dir" value="${build.dist.dir}/jetty/work/zimbra/jsp" />
+    <property name="jspc.src.dir" value="${build.dir}/WebRoot" />
+    <property name="jspc.build.dir" value="${build.dist.dir}/jetty/work/zimbra/jsp" />
 
-     <path id='jspc.class.path'>
-         <pathelement path="${server.dist.dir}/jetty/resources" />
-         <fileset dir="${lib.dir}/jsp-2.1" includes="*.jar"/>
-     	 <fileset dir="${taglib.build.dir}" includes="zimbrataglib.jar"/>
-         <fileset dir="${server.dist.dir}/jetty/common/lib" includes="zimbracommon.jar"/>
-         <fileset dir="${server.build.dir}" includes="zimbrastore.jar"/>
-         <fileset dir="${lib.dir}" includes="standard.jar,servlet-api.jar"/>
-         <fileset dir="${common.lib.dir}" includes="*.jar"/>
-         <fileset dir="${jspc.src.dir}/WEB-INF/lib" includes="*.jar"/>
-     </path>
+    <path id='jspc.class.path'>
+        <pathelement path="${server.dist.dir}/jetty/resources" />
+        <fileset dir="${lib.dir}/jsp-2.1" includes="*.jar"/>
+        <fileset dir="${taglib.build.dir}" includes="zimbrataglib.jar"/>
+        <fileset dir="${server.dist.dir}/jetty/common/lib" includes="zimbracommon.jar"/>
+        <fileset dir="${server.build.dir}" includes="zimbrastore.jar"/>
+        <fileset dir="${lib.dir}" includes="standard.jar,servlet-api.jar"/>
+        <fileset dir="${common.lib.dir}" includes="*.jar"/>
+        <fileset dir="${jspc.src.dir}/WEB-INF/lib" includes="*.jar"/>
+    </path>
 
-     <target name="jspc">
-		<echo>Pre-compiling ${param.jspfile}</echo>
-		 <java classname="org.apache.jasper.JspC" fork="true" classpathref="jspc.class.path">
-             <arg value="-s" />
-             <arg value="-l" />
-             <arg value="-trimSpaces" />
-             <arg value="-d" />
-             <arg value="${jspc.build.dir}" />
-             <arg value="-uriroot" />
-             <arg value="${jspc.src.dir}" />
-             <arg value="${param.jspfile}" />
-         </java>
-     </target>
+    <target name="jspc">
+        <echo>Pre-compiling ${param.jspfiles}</echo>
+        <java classname="org.apache.jasper.JspC" fork="true" classpathref="jspc.class.path">
+            <arg value="-l" />
+            <arg value="-s" />
+            <arg value="-trimSpaces" />
+            <arg value="-d" />
+            <arg value="${jspc.build.dir}" />
+            <arg value="-uriroot" />
+            <arg value="${jspc.src.dir}" />
+            <arg line="${param.jspfiles}" />
+        </java>
+    </target>
 
-	<target name="jspc.precompile">
-		<mkdir dir="${jspc.src.dir}"/>
-		<copy todir="${jspc.src.dir}">
-			<fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp,WEB-INF/**"/>
-		</copy>
-		<fileset id='jspc.fileset' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp,desktop/*.jsp"/>
-		<pathconvert property='jspc.filelist' refid='jspc.fileset' pathsep=',' />
+    <target name="jspc.precompile">
+        <mkdir dir="${jspc.build.dir}"/>
+        <mkdir dir="${jspc.src.dir}"/>
+        <copy todir="${jspc.src.dir}">
+            <fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp,WEB-INF/**"/>
+        </copy>
+        <fileset id='jspc.fileset1' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**"/>
+        <pathconvert property='jspc.files1' refid='jspc.fileset1' pathsep=' ' />
+        <antcall target="jspc">
+            <param name="param.jspfiles" value="${jspc.files1}" />
+        </antcall>
+        <fileset id='jspc.fileset2' dir='${jspc.src.dir}' includes="m/**,public/*.jsp"/>
+        <pathconvert property='jspc.files2' refid='jspc.fileset2' pathsep=' ' />
+        <antcall target="jspc">
+            <param name="param.jspfiles" value="${jspc.files2}" />
+        </antcall>
+    </target>
 
-		<mkdir dir="${jspc.build.dir}"/>
-		<foreach target='jspc' list='${jspc.filelist}' param='param.jspfile' />
-	</target>
+    <target name="jspc.offline_precompile">
+        <mkdir dir="${jspc.build.dir}"/>
+        <mkdir dir="${jspc.src.dir}"/>
+        <copy todir="${jspc.src.dir}">
+            <fileset dir='${web.dir}' includes="h/print*,h/rest,WEB-INF/**" excludes="h/printcalls,h/printvoicemails" />
+        </copy>
+        <fileset id='jspc.fileset' dir='${jspc.src.dir}' includes="h/*,desktop/*.jsp"/>
+        <pathconvert property='jspc.files' refid='jspc.fileset' pathsep=' ' />
+        <antcall target="jspc">
+            <param name="param.jspfiles" value="${jspc.files}" />
+        </antcall>
+    </target>
 
-	<target name="jspc.offline_precompile">
-		<fileset id='jspc.fileset' dir='${jspc.src.dir}' includes="desktop/*.jsp,public/*.jsp"/>
-		<pathconvert property='jspc.filelist' refid='jspc.fileset' pathsep=',' />
+    <target name="jspc.compile">
+        <javac destdir="${jspc.build.dir}" optimize="off" debug="on" srcdir="${jspc.build.dir}" classpathref="jspc.class.path" target="1.5">
+            <include name="**" />
+        </javac>
+    </target>
 
-		<mkdir dir="${jspc.build.dir}"/>
-		<foreach target='jspc' list='${jspc.filelist}' param='param.jspfile' />
-	</target>
+    <target name="jspc.optcompile">
+        <javac destdir="${jspc.build.dir}" optimize="on" debug="off" srcdir="${jspc.build.dir}" classpathref="jspc.class.path" target="1.5">
+            <include name="**" />
+        </javac>
+    </target>
 
-     <target name="jspc.compile">
-         <javac destdir="${jspc.build.dir}" optimize="off" debug="on" srcdir="${jspc.build.dir}" classpathref="jspc.class.path" target="1.5">
-             <include name="**" />
-         </javac>
-     </target>
+    <target name="jspc.build" depends="jspc.precompile,jspc.compile"/>
+    <target name="jspc.offline_build" depends="jspc.offline_precompile,jspc.optcompile"/>
 
-     <target name="jspc.optcompile">
-         <javac destdir="${jspc.build.dir}" optimize="on" debug="off" srcdir="${jspc.build.dir}" classpathref="jspc.class.path" target="1.5">
-             <include name="**" />
-         </javac>
-     </target>
-
-     <target name="jspc.build" depends="jspc.precompile,jspc.compile"/>
-     <target name="jspc.offline_build" depends="jspc.offline_precompile,jspc.optcompile"/>
-
-     <target name="jspc.deploy" depends="jspc.build">
-     	<mkdir dir="/opt/zimbra/jetty/work/zimbra/jsp"/>
+    <target name="jspc.deploy" depends="jspc.build">
+        <mkdir dir="/opt/zimbra/jetty/work/zimbra/jsp"/>
         <copy todir="/opt/zimbra/jetty/work/zimbra/jsp" overwrite="true">
             <fileset dir="${jspc.build.dir}"/>
         </copy>
-     </target>
+    </target>
 
-     <target name="jspc.clean">
-         <delete>
-             <fileset dir="${jspc.src.dir}" />
-             <fileset dir="${jspc.build.dir}" />
-         </delete>
-     </target>
+    <target name="jspc.clean">
+        <delete>
+            <fileset dir="${jspc.src.dir}" />
+            <fileset dir="${jspc.build.dir}" />
+        </delete>
+    </target>
 
 </project>
