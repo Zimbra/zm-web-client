@@ -13,6 +13,22 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * 
+ * This file defines the zimbra application chooser.
+ *
+ */
+
+/**
+ * @class
+ * This class represents a zimbra application chooser. The chooser is the "tab application" toolbar shown
+ * in the Zimbra Web Client. The toolbar buttons are represented as "tabs".
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends	ZmToolBar
+ */
 ZmAppChooser = function(params) {
 
 	params.className = params.className || "ZmAppChooser";
@@ -43,6 +59,11 @@ ZmAppChooser = function(params) {
 ZmAppChooser.prototype = new ZmToolBar;
 ZmAppChooser.prototype.constructor = ZmAppChooser;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmAppChooser.prototype.toString =
 function() {
 	return "ZmAppChooser";
@@ -60,7 +81,7 @@ ZmApp.CHOOSER_SORT[ZmAppChooser.SPACER]			= 160;
 ZmApp.CHOOSER_SORT[ZmAppChooser.B_HELP]			= 170;
 ZmApp.CHOOSER_SORT[ZmAppChooser.B_LOGOUT]		= 190;
 
-// hard code help/logout since they arent real "apps"
+// hard code help/logout since they are not real "apps"
 ZmApp.ICON[ZmAppChooser.B_HELP]					= "Help";
 ZmApp.ICON[ZmAppChooser.B_LOGOUT]				= "Logoff";
 ZmApp.CHOOSER_TOOLTIP[ZmAppChooser.B_HELP]		= "goToHelp";
@@ -79,12 +100,32 @@ ZmAppChooser.prototype.SPACER_TEMPLATE = "dwt.Widgets#ZmAppChooserSpacer";
 //
 // Public methods
 //
-
+/**
+ * Adds a selection listener.
+ * 
+ * @param	{AjxListener}	listener	the listener
+ */
 ZmAppChooser.prototype.addSelectionListener =
 function(listener) {
 	this.addListener(DwtEvent.SELECTION, listener);
 };
 
+/**
+ * Adds a button to the toolbar.
+ * 
+ * @param	{String}	id		the button id
+ * @param	{Hash}		params		a hash of parameters
+ * <ul>
+ * <li>params.text</li>
+ * <li>params.image</li>
+ * <li>params.index</li>
+ * <li>params.tooltip</li>
+ * <li>params.textPrecedence</li>
+ * <li>params.imagePrecedence</li>
+ * </ul>
+ * 
+ * @return	{ZmAppButton}		the newly created button
+ */
 ZmAppChooser.prototype.addButton =
 function(id, params) {
 
@@ -106,6 +147,11 @@ function(id, params) {
 	return button;
 };
 
+/**
+ * Removes a button.
+ * 
+ * @param	{String}	id		the id of the button to remove
+ */
 ZmAppChooser.prototype.removeButton =
 function(id) {
 	var button = this._buttons[id];
@@ -120,6 +166,23 @@ function(id) {
 	}
 };
 
+/**
+ * Replaces a button.
+ * 
+ * @param	{String}	oldId		the old button id
+ * @param	{String}	newId		the new button id
+ * @param	{Hash}		params		a hash of parameters
+ * <ul>
+ * <li>params.text</li>
+ * <li>params.image</li>
+ * <li>params.index</li>
+ * <li>params.tooltip</li>
+ * <li>params.textPrecedence</li>
+ * <li>params.imagePrecedence</li>
+ * </ul>
+ * 
+ * @return	{ZmAppButton}		the newly created button
+ */
 ZmAppChooser.prototype.replaceButton =
 function(oldId, newId, params) {
 	if (!this._buttons[oldId]) { return; }
@@ -128,11 +191,22 @@ function(oldId, newId, params) {
 	return this.addButton(newId, params);
 };
 
+/**
+ * Gets the button.
+ * 
+ * @param	{String}	id		the button id
+ * @return	{ZmAppButton}		the button or <code>null</code> if not found
+ */
 ZmAppChooser.prototype.getButton =
 function(id) {
 	return this._buttons[id];
 };
 
+/**
+ * Sets the specified button as selected.
+ * 
+ * @param	{String}	id		the button id
+ */
 ZmAppChooser.prototype.setSelected =
 function(id) {
 	var oldBtn = this._buttons[this._selectedId];
@@ -165,12 +239,18 @@ function(id) {
 	this._selectedId = id;
 };
 
+/**
+ * @private
+ */
 ZmAppChooser.prototype._createButton =
 function(id) {
 	this.addButton(id, {text:ZmMsg[ZmApp.NAME[id]], image:ZmApp.ICON[id], tooltip:ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]],
 						textPrecedence:ZmApp.TEXT_PRECEDENCE[id], imagePrecedence:ZmApp.IMAGE_PRECEDENCE[id]});
 };
 
+/**
+ * @private
+ */
 ZmAppChooser.prototype._handleButton =
 function(evt) {
 	this.notifyListeners(DwtEvent.SELECTION, evt);

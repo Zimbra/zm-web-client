@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * 
+ * This file defines the Zimbra controller.
+ *
+ */
+
+/**
+ * @class
+ * This class represents a zimbra application controller.
+ * 
+ * @param	{Object}	container		the application container
+ * @param	{ZmApp}		app				the application
+ */
 ZmController = function(container, app) {
 
 	if (arguments.length == 0) { return; }
@@ -29,21 +43,42 @@ ZmController = function(container, app) {
 
 // Abstract methods
 
+/**
+ * @private
+ */
 ZmController.prototype._setView =
 function() {
 };
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmController.prototype.toString = 
 function() {
 	return "ZmController";
 };
 
+/**
+ * Gets the application.
+ * 
+ * @return	{ZmApp}		the application
+ */
 ZmController.prototype.getApp = function() {
 	return this._app;
 };
 
+/**
+ * Pops-up the error dialog.
+ * 
+ * @param	{String}	msg		the error msg
+ * @param	{Object}	ex		the exception
+ * @param	{Boolean}	noExecReset		not used
+ * @param	{Boolean}	hideReportButton		<code>true</code> to hide the "Send error report" button
+ */
 ZmController.prototype.popupErrorDialog = 
 function(msg, ex, noExecReset, hideReportButton)  {
 	// popup alert
@@ -80,21 +115,43 @@ function(msg, ex, noExecReset, hideReportButton)  {
 	errorDialog.popup(null, hideReportButton);
 };
 
+/**
+ * Sets the current view.
+ * 
+ * @param	{Object}	view		the view
+ */
 ZmController.prototype.setCurrentView =
 function(view) {
 	this._currentView = view;
 };
 
+/**
+ * Gets the current view.
+ * 
+ * @return	{Object}	the view
+ */
 ZmController.prototype.getCurrentView =
 function() {
 	return this._currentView;
 };
 
+/**
+ * Gets the key map name.
+ * 
+ * @return	{String}	the key map name
+ */
 ZmController.prototype.getKeyMapName =
 function() {
 	return "Global";
 };
 
+/**
+ * Handles the key action.
+ * 
+ * @param	{constant}		actionCode		the action code
+ * @see		ZmApp.ACTION_CODES_R
+ * @see		ZmKeyMap
+ */
 ZmController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
@@ -173,6 +230,9 @@ function(actionCode) {
 	return true;
 };
 
+/**
+ * @private
+ */
 ZmController._searchSelectionCallback =
 function(dialog, searchFolder) {
 	if (searchFolder) {
@@ -181,6 +241,9 @@ function(dialog, searchFolder) {
 	dialog.popdown();
 };
 
+/**
+ * @private
+ */
 ZmController._visitOrgCallback =
 function(dialog, orgType, org) {
 	if (org) {
@@ -193,16 +256,20 @@ function(dialog, orgType, org) {
 };
 
 /**
- * Returns true if shortcuts for the given map are supported for this view. For example, given the map
- * "tabView", a controller that creates a tab view would return true.
+ * Checks if shortcuts for the given map are supported for this view. For example, given the map
+ * "tabView", a controller that creates a tab view would return <code>true</code>.
  *
- * @param map	[string]	name of a map, presumably one from DwtKeyMap
+ * @param {String}	map		the name of a map (see {@link DwtKeyMap})
+ * @return	{Boolean}		<code>true</code> if shortcuts are supported
  */
 ZmController.prototype.mapSupported =
 function(map) {
 	return false;
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._newListener =
 function(ev, op) {
 	switch (op) {
@@ -221,6 +288,9 @@ function(ev, op) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._newFolderCallback =
 function(parent, name, color, url) {
 	// REVISIT: Do we really want to close the dialog before we
@@ -232,6 +302,9 @@ function(parent, name, color, url) {
 	oc.getTreeController(ZmOrganizer.FOLDER)._doCreate(parent, name, color, url);
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._newTagCallback =
 function(params) {
 	appCtxt.getNewTagDialog().popdown();
@@ -239,6 +312,9 @@ function(params) {
 	oc.getTreeController(ZmOrganizer.TAG)._doCreate(params);
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._createTabGroup =
 function(name) {
 	name = name ? name : this.toString();
@@ -246,16 +322,29 @@ function(name) {
 	return this._tabGroup;
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._setTabGroup =
 function(tabGroup) {
 	this._tabGroup = tabGroup;
 };
 
+/**
+ * Gets the tab group.
+ * 
+ * @return	{Object}	the tab group
+ */
 ZmController.prototype.getTabGroup =
 function() {
 	return this._tabGroup;
 };
 
+/**
+ * Gets the new folder callback.
+ * 
+ * @return	{AjxCallback}	the callback
+ */
 ZmController.prototype.getNewFolderCallback =
 function() {
 	if (!this._newFolderCb) {
@@ -264,8 +353,11 @@ function() {
 	return this._newFolderCb;
 };
 
-// Remember the currently focused item before this view is hidden. Typically
-// called by a preHideCallback.
+/**
+ * Remember the currently focused item before this view is hidden. Typically called by a preHideCallback.
+ * 
+ * @private
+ */
 ZmController.prototype._saveFocus = 
 function() {
 	var currentFocusMember = appCtxt.getRootTabGroup().getFocusMember();
@@ -274,9 +366,12 @@ function() {
 	return this._savedFocusMember;
 };
 
-// Make our tab group the current app view tab group, and restore focus to
-// whatever had it last time we were visible. Typically called by a
-// postShowCallback.
+/**
+ * Make our tab group the current app view tab group, and restore focus to
+ * whatever had it last time we were visible. Typically called by a postShowCallback.
+ * 
+ * @private
+ */
 ZmController.prototype._restoreFocus = 
 function(focusItem, noFocus) {
 
@@ -302,12 +397,18 @@ function(focusItem, noFocus) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._getDefaultFocusItem = 
 function() {
 	var myTg = this.getTabGroup();
 	return myTg ? myTg.getFirstMember(true) : null;
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._preHideCallback = 
 function() {
 	DBG.println(AjxDebug.DBG2, "ZmController.prototype._preHideCallback");
@@ -315,6 +416,9 @@ function() {
 	return true;
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._postShowCallback = 
 function() {
 	DBG.println(AjxDebug.DBG2, "ZmController.prototype._postShowCallback");
@@ -324,6 +428,8 @@ function() {
 
 /**
  * Common exception handling entry point for sync and async commands.
+ * 
+ * @private
  */
 ZmController.prototype._handleError =
 function(ex, continuation) {
@@ -336,8 +442,10 @@ function(ex, continuation) {
  * auth-expired exception results in the display of a login dialog. After the
  * user logs in, we use the continuation to re-run the request that failed.
  * 
- * @param ex				[AjxException]		the exception
- * @param continuation		[object]*			original request params
+ * @param {AjxException}	ex				the exception
+ * @param {Hash}	continuation		the original request params
+ * 
+ * @private
  */
 ZmController.prototype._handleException =
 function(ex, continuation) {
@@ -410,8 +518,10 @@ function(ex, continuation) {
 /**
  * Takes the user to a login form.
  * 
- * @param reloginMode		[boolean]*		if true, user is re-authenticating
- * @param continuation		[object]*		original request params
+ * @param {Boolean}		reloginMode		if <code>true</code>, user is re-authenticating
+ * @param {Hash}	continuation		the original request params
+ * 
+ * @private
  */
 ZmController.prototype._handleLogin =
 function(reloginMode, continuation) {
@@ -438,6 +548,9 @@ function(reloginMode, continuation) {
 	} catch (ex) {}
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._loginCallback =
 function(continuation, username, password, rememberMe) {
 	this._doAuth(continuation, username, password, rememberMe);
@@ -454,6 +567,8 @@ function(continuation, username, password, rememberMe) {
  * @param username			[string]		user name
  * @param password			[string]		user password
  * @param rememberMe		[boolean]*		if true, preserve user's auth token
+ * 
+ * @private
  */
 ZmController.prototype._doAuth = 
 function(continuation, username, password, rememberMe) {
@@ -462,6 +577,9 @@ function(continuation, username, password, rememberMe) {
 	auth.execute(username, password, respCallback);
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._handleResponseDoAuth =
 function(continuation, rememberMe, result) {
 	try {
@@ -495,6 +613,9 @@ function(continuation, rememberMe, result) {
 	}	
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._hideLoginDialog =
 function() {
 	var loginDialog = appCtxt.getLoginDialog();
@@ -509,6 +630,8 @@ function() {
  * remove the auth cookie (that way, if the current user doesn't relogin, the other
  * user can continue with the new auth token). If the user hasn't changed, do nothing -
  * we can just continue to use the new auth token.
+ * 
+ * @private
  */
 ZmController.prototype._handleResponseGetInfo =
 function(result) {
@@ -539,6 +662,9 @@ function(result) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._hideSendReportBtn =
 function(ex) {
 	return (ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS ||
@@ -551,14 +677,28 @@ function(ex) {
 			ex.code == ZmCsfeException.OFFLINE_ONLINE_ONLY_OP);
 };
 
-/*********** Msg dialog Callbacks */
+//
+// Msg dialog Callbacks
+//
 
+/**
+ * @private
+ */
 ZmController.prototype._errorDialogCallback =
 function() {
 	appCtxt.getErrorDialog().popdown();
 };
 
-// Pop up a dialog. Since it's a shared resource, we need to reset first.
+/**
+ * Shows a dialog. Since the dialog is a shared resource, a dialog reset is performed.
+ * 
+ * @param	{DwtDialog}		dialog		the dialog
+ * @param	{AjxCallback}	callback	the callback
+ * @param	{Hash}		params		a hash of parameters
+ * @param	{ZmAccount}	account		the account
+ * 
+ * @see DwtDialog#reset
+ */
 ZmController.showDialog = 
 function(dialog, callback, params, account) {
 	dialog.reset(account);
@@ -566,21 +706,29 @@ function(dialog, callback, params, account) {
 	dialog.popup(params, account);
 };
 
-// Pop down the dialog and clear any pending actions (initiated from an action menu).
+/**
+ * Pop down the dialog and clear any pending actions (initiated from an action menu).
+ * 
+ * @private
+ */
 ZmController.prototype._clearDialog =
 function(dialog) {
 	dialog.popdown();
 	this._pendingActionData = null;
 };
 
+/**
+ * @private
+ */
 ZmController.prototype._menuPopdownActionListener = function() {};
 
 /**
- * Controller for a view that shows up in a tab within the app chooser bar. So far, only
- * mail has those (compose, send confirmation, and msg view).
+ * Sets the session id and view id (using the type and session id).
+ * Controller for a view that shows up in a tab within the app chooser bar.
+ * Currently only mail views exist: compose, send confirmation, and msg view.
  *
- * @param type
- * @param sessionId
+ * @param {String}		type		the type
+ * @param {String}	sessionId		the sesion id
  */
 ZmController.prototype.setSessionId =
 function(type, sessionId) {
@@ -588,6 +736,13 @@ function(type, sessionId) {
 	this.viewId = [type, this.sessionId].join("");
 };
 
+/**
+ * Checks if the view is transient.
+ * 
+ * @param	{Object}	oldView		the old view
+ * @param	{Object}	newView		the new view
+ * @return	{Boolean}		<code>true</code> if the controller is transient.
+ */
 ZmController.prototype.isTransient =
 function(oldView, newView) {
 	return false;
