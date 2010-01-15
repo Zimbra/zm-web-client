@@ -1221,7 +1221,6 @@ if (ext == null) ext = "";
         <zip destfile="${ffext.build.dir}/${ffext.xpifile}" basedir="${ffext.build.dir}"/>
     </target>
 
-
     <!-- JSP PRECOMPILE STUFF -->
     <property name="jspc.src.dir" value="${build.dir}/WebRoot" />
     <property name="jspc.build.dir" value="${build.dist.dir}/jetty/work/zimbra/jsp" />
@@ -1269,19 +1268,6 @@ if (ext == null) ext = "";
         </antcall>
     </target>
 
-    <target name="jspc.offline_precompile">
-        <mkdir dir="${jspc.build.dir}"/>
-        <mkdir dir="${jspc.src.dir}"/>
-        <copy todir="${jspc.src.dir}">
-            <fileset dir='${web.dir}' includes="h/print*,h/rest,WEB-INF/**" excludes="h/printcalls,h/printvoicemails" />
-        </copy>
-        <fileset id='jspc.fileset' dir='${jspc.src.dir}' includes="h/*,desktop/*.jsp"/>
-        <pathconvert property='jspc.files' refid='jspc.fileset' pathsep=' ' />
-        <antcall target="jspc">
-            <param name="param.jspfiles" value="${jspc.files}" />
-        </antcall>
-    </target>
-
     <target name="jspc.compile">
         <javac destdir="${jspc.build.dir}" optimize="off" debug="on" srcdir="${jspc.build.dir}" classpathref="jspc.class.path" target="1.5">
             <include name="**" />
@@ -1295,7 +1281,6 @@ if (ext == null) ext = "";
     </target>
 
     <target name="jspc.build" depends="jspc.precompile,jspc.compile"/>
-    <target name="jspc.offline_build" depends="jspc.offline_precompile,jspc.optcompile"/>
 
     <target name="jspc.deploy" depends="jspc.build">
         <mkdir dir="/opt/zimbra/jetty/work/zimbra/jsp"/>
