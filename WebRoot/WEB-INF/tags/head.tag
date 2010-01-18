@@ -103,35 +103,38 @@
             <c:if test="${timeoutduration eq 'd'}">
                 <c:set var="timeinmillisec" value="${(timeoutvalue * 24 * 3600 * 1000)}"/>
            </c:if>
-            <script type="text/javascript">
+           <script type="text/javascript">
 
-                var logouturl = "<c:url value="/?loginOp=logout"/>";
-                var timeoutinmillisec = "<c:out value="${timeinmillisec}"/>";
-                var logouttimeout = null;
+		                var logouturl = "<c:url value="/?loginOp=logout"/>";
+		                var timeoutinmillisec = "<c:out value="${timeinmillisec}"/>";
+		                var logouttimeout = null;
+		                var MAX_TIMEOUT = 20 * 24 * 60 * 60 * 1000;
 
-                var initIdleSessionTimeOut = function() {
-                    clearIdleSessionTimeOut();
-                    setIdleSessionTimeOut();
-                }
+		                var initIdleSessionTimeOut = function() {
+		                    clearIdleSessionTimeOut();
+		                    setIdleSessionTimeOut();
+		                }
+		                var setIdleSessionTimeOut = function() {
+		                    if(timeoutinmillisec != null && timeoutinmillisec != "") {
+		                        if(parseInt(timeoutinmillisec) > MAX_TIMEOUT) {
+		                            timeoutinmillisec = MAX_TIMEOUT;
+		                        }
+		                        logouttimeout = setTimeout(function() {
+		                            window.location.href = logouturl;
+		                        }, parseInt(timeoutinmillisec));
+		                    }
+		                }
 
-                var setIdleSessionTimeOut = function() {
-                    if(timeoutinmillisec != null) {
-                        logouttimeout = setTimeout(function() {
-                            window.location.href = logouturl;
-                        }, timeoutinmillisec);
-                    }
-                }
+		                var clearIdleSessionTimeOut = function() {
+		                    if(logouttimeout != null) clearTimeout(logouttimeout);
+		                }
 
-                var clearIdleSessionTimeOut = function() {
-                    if(logouttimeout != null) clearTimeout(logouttimeout);
-                }
+		                YAHOO.util.Event.addListener(document, "click", initIdleSessionTimeOut);
+		                YAHOO.util.Event.addListener(document, "keypress", initIdleSessionTimeOut);
 
-                YAHOO.util.Event.addListener(document, "click", initIdleSessionTimeOut);
-                YAHOO.util.Event.addListener(document, "keypress", initIdleSessionTimeOut);
+		                initIdleSessionTimeOut();
 
-                initIdleSessionTimeOut();
-                
-            </script>
+		  </script> 
         </c:if>
     </c:if>
     
