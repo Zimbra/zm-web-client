@@ -2865,7 +2865,7 @@ ZmComposeView.prototype._spellCheckShieldOkListener =
 function(msgDialog, words, ev){
 
 	this._controller._toolbar.enableAll(true);
-
+    this.enableInputs(true);
 	this._controller.toggleSpellCheckButton(true);
 	this._htmlEditor.discardMisspelledWords();
 
