@@ -799,7 +799,8 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay, batc
 	var mode = viewMode || this.viewMode;
 
 	var seriesMode = mode == ZmCalItem.MODE_EDIT_SERIES;
-	if (this.message == null) {
+    var fetchSeriesMsg = (seriesMode && this.message && !this.message.seriesMode);
+	if (this.message == null || fetchSeriesMsg) {
 		var id = seriesMode ? (this.seriesInvId || this.invId) : this.invId;
 		this.message = new ZmMailMsg(id);
 		if (this._orig) {
@@ -835,6 +836,7 @@ ZmCalItem.prototype._handleResponseGetDetails =
 function(mode, message, callback, result) {
 	// msg content should be text, so no need to pass callback to setFromMessage()
 	this.setFromMessage(message, mode);
+    message.seriesMode = (mode == ZmCalItem.MODE_EDIT_SERIES);
 	if (callback) callback.run(result);
 };
 
