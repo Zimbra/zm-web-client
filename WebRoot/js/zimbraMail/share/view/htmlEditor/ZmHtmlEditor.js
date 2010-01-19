@@ -1546,7 +1546,7 @@ function(ev) {
 			// add word to user's personal dictionary
 			var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
 			var prefEl = soapDoc.set("pref", val);
-			prefEl.setAttribute("name", "zimbraPrefSpellIgnoreWord");
+			prefEl.setAttribute("name", "+zimbraPrefSpellIgnoreWord");
 			var params = {
 				soapDoc: soapDoc,
 				asyncMode: true,
