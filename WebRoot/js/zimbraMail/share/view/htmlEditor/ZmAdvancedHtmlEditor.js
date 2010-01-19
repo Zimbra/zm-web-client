@@ -394,6 +394,25 @@ function() {
 	this._onContentInitializeCallback = null;
 };
 
+ZmAdvancedHtmlEditor.prototype._handleEditorKeyEvent =
+function(ev, ed) {
+	var retVal = true;
+
+	var cmd = null;
+	if (DwtKeyEvent.isKeyPressEvent(ev)) {
+        if (DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
+			// pass to keyboard mgr for kb nav
+			retVal = DwtKeyboardMgr.__keyDownHdlr(ev);
+		}
+	}
+
+	if (window.DwtIdleTimer) {
+		DwtIdleTimer.resetIdle();
+	}
+
+	return retVal;
+};
+
 ZmAdvancedHtmlEditor.prototype.onLoadContent =
 function(ed) {
     var pendingContent = this.getPendingContent();
@@ -438,6 +457,10 @@ function(id, mode, content) {
         obj._editorInitialized = true;
     };
 
+    function onEditorKeyPress(ed, e) {
+        return obj._handleEditorKeyEvent(e, ed);  
+    };
+
     var urlParts = AjxStringUtil.parseURL(location.href);
 
     //important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
@@ -477,6 +500,8 @@ function(id, mode, content) {
         setup : function(ed) {
             ed.onLoadContent.add(handleContentLoad);
             ed.onInit.add(onTinyMCEEditorInit);
+            ed.onKeyPress.add(onEditorKeyPress);
+
         }
     });
 
