@@ -774,14 +774,14 @@ function(folderId, htmlElementId) {
 	var htmlEl = folder ? document.getElementById(htmlElementId) : null;
 	var listview = htmlEl ? DwtControl.fromElement(htmlEl) : null;
 	if (listview) {
-		var callback = new AjxCallback(listview, listview._handleToggleSync);
+		var callback = new AjxCallback(listview, listview._handleToggleSync, [folder]);
 		folder.toggleSyncOffline(callback);
 	}
 };
 
 ZmMailListView.prototype._handleToggleSync =
-function() {
-	appCtxt.getAppController().sendSync();
+function(folder) {
+	folder.getAccount().sync();
 	// bug fix #27846 - just clear the list view and let instant notify populate
 	this.removeAll(true);
 };
