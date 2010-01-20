@@ -21,6 +21,7 @@
 <zm:computeSearchContext var="context" usecache="true"/>
 <zm:getMailbox var="mailbox"/>
 <app:composeCheck/>
+<app:keyboard cache="home" globals="true" mailbox="${mailbox}" folders="true"/>
 
 <%-- bug:35733 Deep linking  --%>
 <c:if test="${not empty param.app}">
