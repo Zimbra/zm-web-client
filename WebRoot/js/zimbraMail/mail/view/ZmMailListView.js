@@ -752,7 +752,7 @@ function(ev) {
 
 ZmMailListView.prototype._getNoResultsMessage =
 function() {
-	if (appCtxt.isOffline) {
+	if (appCtxt.isOffline && !appCtxt.getSearchController().searchAllAccounts) {
 		// offline folders which are "syncable" but currently not syncing should
 		// display a different message
 		var fid = ZmOrganizer.getSystemId(this._controller._getSearchFolderId());
