@@ -1532,7 +1532,7 @@ function(attach, hasCheckbox) {
 			html[i++] = attach.part;
 			html[i++] = "&view=html'>";
 			html[i++] = ZmMsg.preview;
-			html[i++] = "</a>";
+			html[i++] = "</a>&nbsp;";
 		}
 		if (attach.ct != ZmMimeTable.MSG_RFC822) {
 			html[i++] = "<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' ";
