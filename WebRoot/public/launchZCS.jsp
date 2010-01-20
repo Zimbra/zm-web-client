@@ -207,6 +207,7 @@ document.write("</DIV>");
   --
   --
   -->
+<div style='display:none;'>
 <jsp:include page="Boot.jsp"/>
 <script>
 	AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";
@@ -389,5 +390,6 @@ for (var pkg in window.AjxTemplateMsg) {
     AjxCore.addOnloadListener(launch);
     AjxCore.addOnunloadListener(ZmZimbraMail.unload);
 </script>
+</div>
 </body>
 </html>
