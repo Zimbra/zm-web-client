@@ -115,6 +115,7 @@
             <zm:bindKey message="global.GoToOptions" id="TAB_OPTIONS"/>
             <c:if test="${folders}">
             <zm:bindKey message="overview.folders" id="MFOLDERS"/>
+            <zm:bindKey message="mfolders.NewFolder" url="mfolders?actionNewFolder"/>
             <zm:bindKey message="mail.GoToFolder" alias="gotofolder"/>
             <c:if test="${mailbox.features.savedSearches}">
             <zm:bindKey message="global.SavedSearch" alias="search"/>
