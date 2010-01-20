@@ -172,3 +172,5 @@ body, #skin_container_splash_screen	{
 	background-color: @WidgetBgColor@;
 	cursor: pointer;
 }
+
+.ZDEditToolBar { background: #e5e5e5; padding:3px; }
