@@ -492,6 +492,7 @@ function(id, mode, content) {
         theme_advanced_resizing : true,
         convert_urls : false,
         verify_html : false,
+        gecko_spellcheck : true,
         force_br_newlines : true,
         forced_root_block : '',
         force_p_newlines : false,
