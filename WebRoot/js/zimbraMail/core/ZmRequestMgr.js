@@ -470,8 +470,9 @@ function(refresh) {
 	}
 
 	var unread = {};
-	this._loadTree(ZmOrganizer.TAG, unread, refresh.tags);
-	this._loadTree(ZmOrganizer.FOLDER, unread, refresh.folder[0], "folder");
+	var main = appCtxt.multiAccounts ? appCtxt.accountList.mainAccount : null;
+	this._loadTree(ZmOrganizer.TAG, unread, refresh.tags, null, main);
+	this._loadTree(ZmOrganizer.FOLDER, unread, refresh.folder[0], "folder", main);
 
 	// Run any app-requested refresh routines
 	this._controller.runAppFunction("refresh", false, refresh);

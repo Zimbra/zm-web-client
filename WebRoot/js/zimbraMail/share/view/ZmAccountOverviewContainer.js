@@ -104,9 +104,8 @@ function(params) {
 		// skip the main account in offline mode since we'll add it at the end
 		if (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES) { continue; }
 
-		if (!params.omit) {
-			params.omit = {};
-		}
+		params.omit = {};
+
 		if (acct.type == ZmAccount.TYPE_POP) {
 			params.omit[ZmFolder.ID_SPAM]   = true;
 			params.omit[ZmFolder.ID_SENT]   = true;
