@@ -107,6 +107,19 @@ function(respEl) {
 		// process JS eval result for SearchResponse
 		var types = this.search.types.getArray();
 		defaultType = types[0];
+
+		// bug fix #44232 - resolve default type if none provided
+		if (!defaultType) {
+			var allTypes = AjxUtil.values(ZmList.NODE);
+			for (var i = 0; i < allTypes.length; i++) {
+				var t = allTypes[i];
+				if (respEl[t]) {
+					defaultType =  ZmList.ITEM_TYPE[t];
+					break;
+				}
+			}
+		}
+
 		for (var i = 0; i < types.length; i++) {
 			var type = types[i];
 			var data = respEl[ZmList.NODE[type]];
@@ -138,7 +151,7 @@ function(respEl) {
 			}
 		}
 	}
-	if (!count) {
+	if (!count && defaultType) {
 		this._results[defaultType] = ZmItem.RESULTS_LIST[defaultType](this.search);
 	}
 	if ((isGalSearch || this.search.isGalAutocompleteSearch) && this._results[ZmItem.CONTACT]) {
