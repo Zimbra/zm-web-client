@@ -260,7 +260,7 @@ function(params) {
 
 	this._setSoapParams(request, params);
 
-	var accountName = appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null;
+	var accountName = params.accountName || (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null);
 	if (params.callback) {
 		appCtxt.getAppController().sendRequest({
 			jsonObj: jsonObj,
