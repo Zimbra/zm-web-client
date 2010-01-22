@@ -305,7 +305,8 @@ function(params) {
 
 	params.items = AjxUtil.toArray(params.items);
 
-	if (params.action == "update") {
+	if (params.op == "update") {
+		params.action = params.op;
 		params.attrs = {f:params.value};
 	} else {
 		params.action = params.value ? params.op : "!" + params.op;
