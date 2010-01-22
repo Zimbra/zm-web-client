@@ -161,13 +161,11 @@ function(miniCalResponse, data) {
 	if (!miniCalResponse) { return; }
 
 	for (var i = 0; i < miniCalResponse.length; i++) {
-		if (miniCalResponse[i] && miniCalResponse[i].date) {
-			var dates = miniCalResponse[i].date;
-			if (dates) {
-				for (var i = 0; i < dates.length; i++) {
-					if (dates[i]._content) {
-						data.push(dates[i]._content);
-					}
+		var dates = (miniCalResponse[i] && miniCalResponse[i].date);
+		if (dates) {
+			for (var i = 0; i < dates.length; i++) {
+				if (dates[i]._content) {
+					data.push(dates[i]._content);
 				}
 			}
 		}

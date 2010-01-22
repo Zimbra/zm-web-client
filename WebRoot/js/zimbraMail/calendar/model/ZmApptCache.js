@@ -283,6 +283,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 	// *always* recreate the accounts list, otherwise we dispose its contents
 	// before the view has a chance to remove the corresponding elements
 	this._accountsSearchList = new AjxVector();
+	this._accountsMiniCalList = [];
 
 	this._doBatchRequest(searchParams, miniCalParams, reminderSearchParams);
 };
@@ -397,11 +398,15 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 	if (miniCalResp) {
 		var data = [];
 		miniCalCache.processBatchResponse(miniCalResp, data);
-		miniCalCache.highlightMiniCal(data);
-		miniCalCache.updateCache(miniCalParams, data);
+		if (!appCtxt.multiAccounts) {
+			miniCalCache.highlightMiniCal(data);
+			miniCalCache.updateCache(miniCalParams, data);
 
-		if (miniCalParams.callback) {
-			miniCalParams.callback.run(data);
+			if (miniCalParams.callback) {
+				miniCalParams.callback.run(data);
+			}
+		} else {
+			this._accountsMiniCalList = this._accountsMiniCalList.concat(data);
 		}
 	}
 
@@ -412,6 +417,10 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 			} else if (searchParams.callback) {
 				searchParams.callback.run(this._accountsSearchList);
 			}
+		}
+
+		if (appCtxt.multiAccounts) {
+			this._highliteMiniCal(miniCalCache, miniCalParams);
 		}
 		return;
 	}
@@ -432,11 +441,25 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 	if (searchParams.accountFolderIds.length > 0) {
 		this._doBatchRequest(searchParams, miniCalParams);
 	} else {
+		if (appCtxt.multiAccounts) {
+			this._highliteMiniCal(miniCalCache, miniCalParams);
+		}
+
 		if (searchParams.callback) {
 			searchParams.callback.run(this._accountsSearchList, null, searchParams.query);
 		} else {
 			return this._accountsSearchList;
 		}
+	}
+};
+
+ZmApptCache.prototype._highliteMiniCal =
+function(miniCalCache, miniCalParams) {
+	miniCalCache.highlightMiniCal(this._accountsMiniCalList);
+	miniCalCache.updateCache(miniCalParams, this._accountsMiniCalList);
+
+	if (miniCalParams.callback) {
+		miniCalParams.callback.run(this._accountsMiniCalList);
 	}
 };
 
