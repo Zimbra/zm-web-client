@@ -115,7 +115,7 @@ ZmBriefcaseTabView.prototype.showFolder =
 function(folderId) {
     this._folderId = folderId;
     var callback = new AjxCallback(this, this.showFolderContents, [folderId]);
-	this._app.search(folderId, callback, null, true);
+	this._app.search({folderId:folderId, callback:callback, noRender:true});
 };
 
 ZmBriefcaseTabView.prototype.showFolderContents =

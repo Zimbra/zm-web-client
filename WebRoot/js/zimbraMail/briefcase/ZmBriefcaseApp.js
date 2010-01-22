@@ -327,23 +327,33 @@ function(callback) {
 	if (callback) { callback.run(); }
 };
 
+/**
+ * @param params			[hash]			hash of params:
+ *        folderId			[string]*		ID of briefcase folder to search in
+ *        query				[string]*		query to send (overrides folderId)
+ *        callback			[AjxCallback]*	callback
+ *        accountName		[string]*
+ *        noRender			[boolean]*		if true, do not display results
+ *        noClear			[boolean]*		if true, do not destruct previous search results
+ */
 ZmBriefcaseApp.prototype.search =
-function(folderId, callback, accountName, noRender, noClear) {
+function(params) {
 
-	var folder = appCtxt.getById(folderId || ZmOrganizer.ID_BRIEFCASE);
-	var params = {
-		query:			folder.createQuery(),
+	params = params || {};
+	var folder = appCtxt.getById(params.folderId || ZmOrganizer.ID_BRIEFCASE);
+	var searchParams = {
+		query:			params.query || folder.createQuery(),
 		types:			[ZmItem.BRIEFCASE_ITEM],
 		limit:			this.getLimit(),
 		searchFor:		ZmId.ITEM_BRIEFCASE,
-		callback:		callback,
-		accountName:	(accountName || (folder && folder.account && folder.account.name)),
-		noRender:		noRender,
-		noClear:		noClear
+		callback:		params.callback,
+		accountName:	(params.accountName || (folder && folder.account && folder.account.name)),
+		noRender:		params.noRender,
+		noClear:		params.noClear
 	};
 	var sc = appCtxt.getSearchController();
 	sc.searchAllAccounts = false;
-	sc.search(params);
+	sc.search(searchParams);
 };
 
 ZmBriefcaseApp.prototype.showSearchResults =
@@ -415,12 +425,13 @@ function(dlg, msgId, partId) {
 ZmBriefcaseApp.prototype._chooserCallback =
 function(msgId, partId, name, folder) {
 	var callback = new AjxCallback(this, this.handleDuplicateCheck, [msgId, partId, name, folder.id]);
-	this.search(folder, callback);
-//	this.getBriefcaseController().getItemsInFolder(folder.id, callback);
+	var query = [folder.createQuery(), name].join(" ");
+	this.search({query:query, callback:callback});
 };
 
 ZmBriefcaseApp.prototype.handleDuplicateCheck =
-function(msgId, partId, name, folderId,items) {
+function(msgId, partId, name, folderId, results) {
+
 	var bController = this.getBriefcaseController();
 	if (bController.isReadOnly(folderId)) {
 		ZmOrganizer._showErrorMsg(ZmMsg.errorPermission);
@@ -435,13 +446,14 @@ function(msgId, partId, name, folderId,items) {
 
 	var itemFound = false;
 
+	var searchResult = results.getResponse();
+	var items = searchResult && searchResult.getResults(ZmItem.BRIEFCASE_ITEM);
 	if (items instanceof ZmList) {
 		items = items.getArray();
 	}
 
-	for (var i in items) {
-		var item = items[i];
-		if (item.name == name) {
+	for (var i = 0, len = items.length; i < len; i++) {
+		if (items[i].name == name) {
 			itemFound = true;
 			break;
 		}

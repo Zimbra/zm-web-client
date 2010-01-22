@@ -141,7 +141,7 @@ function() {
 // Method that is run when a tree item is left-clicked
 ZmBriefcaseTreeController.prototype._itemClicked =
 function(folder) {
-	appCtxt.getApp(ZmApp.BRIEFCASE).search(folder.id);
+	appCtxt.getApp(ZmApp.BRIEFCASE).search({folderId:folder.id});
 };
 
 // Listener callbacks
