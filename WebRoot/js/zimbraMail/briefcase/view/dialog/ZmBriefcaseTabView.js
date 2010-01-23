@@ -73,8 +73,7 @@ function() {
 ZmBriefcaseTabView.prototype._createHtml1 =
 function() {
 
- 	var ac = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
- 	this._app = ac.getApp(ZmApp.BRIEFCASE);
+ 	this._app = appCtxt.getApp(ZmApp.BRIEFCASE);
 	var bc = this._controller = new ZmBriefcaseController(this._app._container, this._app);
 
     var params = {parent:bc._container, className:"BriefcaseTabBox BriefcaseList", view:this.view,
