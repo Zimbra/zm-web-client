@@ -1126,7 +1126,7 @@ function(xsltUrl, doc) {
 
 /**
  * Creates a "tab" application and registers this zimlet to
- * receive {@link #appAction} and {@link #appLaunch} events.
+ * receive {@link #appActive} and {@link #appLaunch} events.
  * 
  * @param	{String}	label	the label to use on the application tab
  * @param	{String}	image	the image (style class) to use on the application tab
@@ -1157,7 +1157,7 @@ function(label, image, tooltip) {
  * @param	{Boolean} active        if <code>true</code>, the application status is open; otherwise, <code>false</code>
  * @see		#createApp
  */
-ZmZimletBase.prototype.appAction = function(appName, active) { };
+ZmZimletBase.prototype.appActive = function(appName, active) { };
 
 /**
  * This method gets called when the "tab" application is opened for the first time.
@@ -1168,7 +1168,7 @@ ZmZimletBase.prototype.appAction = function(appName, active) { };
 ZmZimletBase.prototype.appLaunch = function(appName) { };
 
 /**
- * This method by the Zimlet framework when an application bug is pressed.
+ * This method by the Zimlet framework when an application button is pressed.
  * 
  * @param	{String} id        the id of the application button
  */
