@@ -300,10 +300,10 @@ function(params) {
 		}
 
 		var parentNode = params.treeNode;
+		var account = appCtxt.multiAccounts && child.getAccount();
 
 		// bug: 43067 - reparent calendars for caldav-based accounts
-		if (appCtxt.multiAccounts &&
-			child.getAccount().isCalDavBased() &&
+		if (account && account.isCalDavBased() &&
 			child.parent.nId == ZmOrganizer.ID_CALENDAR)
 		{
 			parentNode = parentNode.parent;
