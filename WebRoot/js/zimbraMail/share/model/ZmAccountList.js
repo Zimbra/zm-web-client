@@ -347,3 +347,27 @@ function() {
 		this.visibleAccounts[i].saveImplicitPrefs();
 	}
 };
+
+ZmAccountList.prototype.getTooltipForVirtualFolder =
+function(folderId) {
+	var numTotal = 0;
+	var sizeTotal = 0;
+
+	for (var i = 0; i < this.visibleAccounts.length; i++) {
+		var acct = this.visibleAccounts[i];
+		var fid = ZmOrganizer.getSystemId(folderId, acct);
+		var folder = appCtxt.getById(fid);
+		if (folder) {
+			numTotal += folder.numTotal;
+			sizeTotal += folder.sizeTotal;
+		}
+	}
+
+	var subs = {
+		itemText: ZmMsg.messages,
+		numTotal: numTotal,
+		sizeTotal: sizeTotal
+	};
+
+	return AjxTemplate.expand("share.App#FolderTooltip", subs);
+};

@@ -185,7 +185,7 @@ function() {
 		var lastSync;
 		if (!lastSyncDate) {
 			// this means, we've synced but server lost the last sync timestamp
-			if (quota > 0) {
+			if (quota > 0 && !this.isMain) {
 				lastSync = ZmMsg.unknown;
 			}
 		} else {

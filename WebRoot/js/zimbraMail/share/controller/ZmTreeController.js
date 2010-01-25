@@ -817,6 +817,9 @@ function(ev, treeView, overviewId) {
 			if (!fields) { return; }
 			if (fields[ZmOrganizer.F_TOTAL] || fields[ZmOrganizer.F_SIZE]) {
 				node.setToolTipContent(organizer.getToolTip(true));
+				if (appCtxt.multiAccounts && organizer.type == ZmOrganizer.FOLDER) {
+					appCtxt.getApp(ZmApp.MAIL).getOverviewContainer().updateTooltip(organizer.nId);
+				}
 			}
 			var parentNode = this._getParentNode(organizer, ev, overviewId);
 			if (!parentNode) { return; }

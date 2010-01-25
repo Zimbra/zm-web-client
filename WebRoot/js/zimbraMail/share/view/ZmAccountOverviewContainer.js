@@ -166,6 +166,7 @@ function(params) {
 			ti.setData(Dwt.KEY_ID, folderId);
 			ti.addClassName("DwtTreeItemChildDiv");
 			ti._initialize(null, true);
+			ti.setToolTipContent(appCtxt.accountList.getTooltipForVirtualFolder(folderId));
 		}
 
 		// add global searches
@@ -307,6 +308,14 @@ function(organizer) {
 			var text = this._getFolderLabel(organizer.nId, this._allMailboxesTreeHeader.__origText);
 			this._allMailboxesTreeHeader.setText(text);
 		}
+	}
+};
+
+ZmAccountOverviewContainer.prototype.updateTooltip =
+function(folderId) {
+	var ti = this._allMailboxesTreeHeader && this._vFolderTreeItemMap[folderId];
+	if (ti) {
+		ti.setToolTipContent(appCtxt.accountList.getTooltipForVirtualFolder(folderId));
 	}
 };
 
