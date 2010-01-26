@@ -1563,7 +1563,10 @@ function(ev, div) {
 
 ZmCalColView.prototype._mouseUpAction =
 function(ev, div) {
-	ZmCalBaseView.prototype._mouseUpAction.call(this, ev, div);
+
+//	ZmCalBaseView.prototype._mouseUpAction.call(this, ev, div);
+	if (Dwt.ffScrollbarCheck(ev)) { return false; }
+
 	var type = this._getItemData(div, "type");
 	if (type == ZmCalBaseView.TYPE_DAY_HEADER && !this._scheduleMode) {
 		var dayIndex = this._getItemData(div, "dayIndex");
@@ -1624,7 +1627,10 @@ function(ev, div, dblclick) {
 
 ZmCalColView.prototype._mouseDownAction =
 function(ev, div) {
+
 	//ZmCalBaseView.prototype._mouseDownAction.call(this, ev, div);
+	if (Dwt.ffScrollbarCheck(ev)) { return false; }
+
 	var type = this._getItemData(div, "type");
 	switch (type) {
 		case ZmCalBaseView.TYPE_APPT_BOTTOM_SASH:
@@ -2045,8 +2051,11 @@ function(ev, sash) {
 		startY: ev.docY
 	};
 
-	if (isTop) data.startDate = new Date(appt.getStartTime());
-	else data.endDate = new Date(appt.getEndTime());
+	if (isTop) {
+		data.startDate = new Date(appt.getStartTime());
+	} else {
+		data.endDate = new Date(appt.getEndTime());
+	}
 
 	//TODO: only create one of these and change data each time...
 	var capture = new DwtMouseEventCapture({

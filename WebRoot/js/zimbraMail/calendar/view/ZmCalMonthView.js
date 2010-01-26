@@ -664,6 +664,9 @@ function(date, list, controller, noheader) {
 
 ZmCalMonthView.prototype._mouseDownAction = 
 function(ev, div) {
+
+	if (Dwt.ffScrollbarCheck(ev)) { return false; }
+
 	var type = this._getItemData(div, "type");
 	switch (type) {
 		case ZmCalBaseView.TYPE_MONTH_DAY:

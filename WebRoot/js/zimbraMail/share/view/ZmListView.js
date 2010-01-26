@@ -435,6 +435,16 @@ function(id) {
 	}
 };
 
+ZmListView.prototype._mouseDownAction =
+function(ev, div) {
+	return !Dwt.ffScrollbarCheck(ev);
+};
+
+ZmListView.prototype._mouseUpAction =
+function(ev, div) {
+	return !Dwt.ffScrollbarCheck(ev);
+};
+
 ZmListView.prototype._mouseOutAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOutAction.call(this, ev, div);
