@@ -37,6 +37,7 @@ ZmZimbraAccount = function(id, name, visible) {
 	this.trees = {};
 	this.loaded = false;
 	this.acl = new ZmAccessControlList();
+	this.metaData = new ZmMetaData(this);
 };
 
 ZmZimbraAccount.prototype = new ZmAccount;
@@ -485,12 +486,15 @@ function(callback) {
 
 		// load user settings retrieved from server now
 		var loadCallback = new AjxCallback(this, this._handleLoadSettings);
-		this.settings.loadUserSettings(loadCallback, null, this.name, null, null, command);
+		this.settings.loadUserSettings(loadCallback, null, this.name, null, command);
 
 		// get tag info for this account *FIRST* - otherwise, root ID get overridden
 		var tagDoc = AjxSoapDoc.create("GetTagRequest", "urn:zimbraMail");
 		var tagCallback = new AjxCallback(this, this._handleLoadTags);
 		command.addNewRequestParams(tagDoc, tagCallback);
+
+		// get meta data for this account
+		this.loadMetaData(null, command);
 
 		// get folder info for this account
 		var folderDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
@@ -505,6 +509,12 @@ function(callback) {
 	else if (callback) {
 		callback.run();
 	}
+};
+
+ZmZimbraAccount.prototype.loadMetaData =
+function(callback, batchCommand) {
+	var metaDataCallback = new AjxCallback(this, this._handleLoadMetaData, [callback]);
+	this.metaData.load(metaDataCallback, batchCommand);
 };
 
 /**
@@ -565,12 +575,14 @@ function() {
 	var list = [];
 	for (var id in ZmSetting.CHANGED_IMPLICIT) {
 		var setting = this.settings ? this.settings.getSetting(id) : null;
-		if (setting && (setting.getValue(null, true) != setting.origValue)) {
+		if (setting && (setting.getValue() != setting.origValue)) {
+			if (ZmSetting.IS_GLOBAL[setting.id] && !this.isMain) { continue; }
 			list.push(setting);
 		}
 	}
-	if (list && list.length) {
-		this.settings.save(list, null, null, this.name);
+
+	if (list.length > 0) {
+		this.settings.save(list, null, null, this);
 	}
 };
 
@@ -592,6 +604,7 @@ function(appName) {
 		case ZmApp.PREFERENCES:	return appCtxt.get(ZmSetting.OPTIONS_ENABLED, 	null, this);
 		case ZmApp.TASKS:		return appCtxt.get(ZmSetting.TASKS_ENABLED, 	null, this);
 	}
+	return false;
 };
 
 
@@ -670,6 +683,20 @@ function(callback) {
 	var folderTree = appCtxt.getFolderTree(this);
 	if (folderTree) {
 		folderTree.getPermissions({noBusyOverlay:true, accountName:this.name});
+	}
+
+	if (callback) {
+		callback.run();
+	}
+};
+
+/**
+ * @private
+ */
+ZmZimbraAccount.prototype._handleLoadMetaData =
+function(callback, sections) {
+	for (var i in sections) {
+		this.settings.createFromJs(sections[i]);
 	}
 
 	if (callback) {

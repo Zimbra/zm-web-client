@@ -192,6 +192,14 @@ function(params) {
 			}
 		}
 		searchTi.setVisible(searchTi.getItemCount() > 0);
+
+		// bug #43734 - set expand/collapse state based on user's pref
+		if (appCtxt.get(ZmSetting.OFFLINE_SAVED_SEARCHES_TREE_OPEN)) {
+			searchTi.setExpanded(true, null, true);
+		}
+		if (appCtxt.get(ZmSetting.OFFLINE_ALL_MAILBOXES_TREE_OPEN)) {
+			allTi.setExpanded(true, null, true);
+		}
 	}
 
 	// add the "local" account last
@@ -627,7 +635,10 @@ function(ev) {
 
 	var acct;
 	if (header) {
-		if (header.__isSearch) { return; }
+		if (header.__isSearch) {
+			appCtxt.set(ZmSetting.OFFLINE_SAVED_SEARCHES_TREE_OPEN, expanded);
+			return;
+		}
 
 		var data = header.getData(Dwt.KEY_ID);
 		if (data == ZmOrganizer.ID_ALL_MAILBOXES) {
@@ -635,6 +646,10 @@ function(ev) {
 				? header.__origText
 				: this._getFolderLabel(ZmOrganizer.ID_INBOX, header.__origText);
 			header.setText(text);
+
+			// bug #43734 - remember expand/collapse state
+			appCtxt.set(ZmSetting.OFFLINE_ALL_MAILBOXES_TREE_OPEN, expanded);
+
 			return;
 		}
 

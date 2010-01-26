@@ -172,12 +172,11 @@ function(id) {
  * @param errorCallback 	[AjxCallback]*		callback to run error is received
  * @param accountName		[String]*			name of account to load settings for
  * @param response			[object]*			pre-determined JSON response object
- * @param metaData			[object]*			meta data specific to ZWC
  * @param batchCommand		[ZmBatchCommand]*	set if part of a batch request
  */
 ZmSettings.prototype.loadUserSettings =
-function(callback, errorCallback, accountName, response, metaData, batchCommand) {
-	var args = [callback, accountName, metaData];
+function(callback, errorCallback, accountName, response, batchCommand) {
+	var args = [callback, accountName];
 
 	if (batchCommand) {
 		var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
@@ -197,7 +196,7 @@ function(callback, errorCallback, accountName, response, metaData, batchCommand)
 };
 
 ZmSettings.prototype._handleResponseLoadUserSettings =
-function(callback, accountName, metaData, result) {
+function(callback, accountName, result) {
 	var obj = this.getInfoResponse = result.getResponse().GetInfoResponse;
 
 	if (obj.name) 			{ this._settings[ZmSetting.USERNAME].setValue(obj.name); }
@@ -214,11 +213,6 @@ function(callback, accountName, metaData, result) {
 	}
 	if (obj.attrs && obj.attrs._attrs) {
 		this.createFromJs(obj.attrs._attrs);
-	}
-	if (metaData) {
-		for (var i in metaData) {
-			this.createFromJs(metaData[i]);
-		}
 	}
 
 	if (!accountName) {
@@ -419,13 +413,12 @@ function(response) {
 ZmSettings.prototype._handleResponseGetAvailableCsvFormats =
 function(result){
 	var formats = result.getResponse().GetAvailableCsvFormatsResponse.csv;
-	var setting = appCtxt.accountList.mainAccount.settings.getSetting(ZmSetting.AVAILABLE_CSVFORMATS);
 	if (formats && formats.length) {
-		var csvformat;
-		for (var i=0; i<formats.length; i++) {
+		var setting = appCtxt.accountList.mainAccount.settings.getSetting(ZmSetting.AVAILABLE_CSVFORMATS);
+		for (var i = 0; i < formats.length; i++) {
 			setting.setValue(formats[i].name);
 		}
-	};
+	}
 };
 
 /**
@@ -434,12 +427,13 @@ function(result){
  * @param list			[array]				a list of ZmSetting
  * @param callback		[AjxCallback]		callback to run after response is received
  * @param batchCommand	[ZmBatchCommand]*	batch command
- * @param acctName		[String]*			name of the account to save under
+ * @param account		[ZmZimbraAccount]*	the account to save under
  */
 ZmSettings.prototype.save =
-function(list, callback, batchCommand, acctName) {
-	if (!(list && list.length)) return;
+function(list, callback, batchCommand, account) {
+	if (!(list && list.length)) { return; }
 
+	var acct = account || appCtxt.getActiveAccount();
 	var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
 	var gotOne = false;
 	var metaData = [];
@@ -447,6 +441,8 @@ function(list, callback, batchCommand, acctName) {
 		var setting = list[i];
 		if (setting.type == ZmSetting.T_METADATA) {
 			metaData.push(setting);
+			// update the local meta data
+			acct.metaData.update(setting.section, setting.name, setting.getValue());
 			continue;
 		} else if (setting.type != ZmSetting.T_PREF) {
 			DBG.println(AjxDebug.DBG1, "*** Attempt to modify non-pref: " + setting.id + " / " + setting.name);
@@ -479,12 +475,9 @@ function(list, callback, batchCommand, acctName) {
 
 	if (metaData.length > 0) {
 		var metaDataCallback = new AjxCallback(this, this._handleResponseSaveMetaData, [metaData]);
-		for (var i = 0; i < metaData.length; i++) {
-			var data = metaData[i];
-			appCtxt.getMetaData().set(data.section, data.name, data.value, batchCommand, metaDataCallback);
-		}
+		acct.metaData.save(null, metaDataCallback, batchCommand);
 	}
-
+ 
 	if (gotOne) {
 		var respCallback;
 		var asyncMode = false;
@@ -495,7 +488,7 @@ function(list, callback, batchCommand, acctName) {
 		if (batchCommand) {
 			batchCommand.addNewRequestParams(soapDoc, respCallback);
 		} else {
-			appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:asyncMode, callback:respCallback, accountName:acctName});
+			appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:asyncMode, callback:respCallback, accountName:acct.name});
 		}
 	}
 };
@@ -758,6 +751,8 @@ function() {
 	this.registerSetting("OFFLINE_REMOTE_SERVER_URI",		{name:"offlineRemoteServerUri", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING});
 	this.registerSetting("OFFLINE_REPORT_EMAIL",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:"zdesktop-report@zimbra.com", isGlobal:true});
 	this.registerSetting("OFFLINE_SHOW_ALL_MAILBOXES",		{name:"offlineShowAllMailboxes", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, section:ZmSetting.M_OFFLINE, isGlobal:true});
+	this.registerSetting("OFFLINE_ALL_MAILBOXES_TREE_OPEN",	{name:"offlineAllMailboxesTreeOpen", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, section:ZmSetting.M_OFFLINE, isGlobal:true, isImplicit:true});
+	this.registerSetting("OFFLINE_SAVED_SEARCHES_TREE_OPEN",{name:"offlineSavedSearchesTreeOpen", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, section:ZmSetting.M_OFFLINE, isGlobal:true, isImplicit:true});
 	this.registerSetting("OFFLINE_SMTP_ENABLED",			{name:"zimbraDataSourceSmtpEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("OFFLINE_SUPPORTS_MAILTO",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("OFFLINE_SUPPORTS_DOCK_UPDATE",	{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});

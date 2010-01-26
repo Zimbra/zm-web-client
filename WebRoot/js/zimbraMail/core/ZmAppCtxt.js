@@ -167,19 +167,6 @@ function(settings, account) {
 };
 
 /**
- * Gets the meta data.
- * 
- * @return	{ZmMetaData}		the meta data
- */
-ZmAppCtxt.prototype.getMetaData =
-function() {
-	if (!this._metaData) {
-		this._metaData = new ZmMetaData();
-	}
-	return this._metaData;
-};
-
-/**
  * Gets the value of the given setting.
  *
  * @param {constant}	id		the setting id
