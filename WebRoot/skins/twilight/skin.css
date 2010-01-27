@@ -138,10 +138,6 @@ body, #skin_container_splash_screen	{
 	border-top: 0px;
 }
 
-.ZmOverview{
-	background-color: #f3f3f3;
-}
-
 .ZmContactInfoView .contactHeaderTable, .ZmEditContactView .contactHeaderTable{
 	background: #ececec url("@SkinImgDir@/message_header_bg.png") repeat-x top left;
 	border-bottom: 2px groove #999; 
