@@ -95,7 +95,6 @@ ZmKeyMap.EXPAND_ALL			= "ExpandAll";
 ZmKeyMap.FLAG				= "Flag";
 ZmKeyMap.FOCUS_CONTENT_PANE	= "FocusContentPane";
 ZmKeyMap.FOCUS_SEARCH_BOX	= "FocusSearchBox";
-ZmKeyMap.FOCUS_WEB_SEARCH_BOX	= "FocusWebSearchBox";
 ZmKeyMap.FORWARD			= "Forward";
 ZmKeyMap.GOTO_CALENDAR		= "GoToCalendar";
 ZmKeyMap.GOTO_CONTACTS		= "GoToContacts";

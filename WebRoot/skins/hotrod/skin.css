@@ -13,8 +13,6 @@
  * ***** END LICENSE BLOCK *****
  */
 
- #skin_container_web_search{padding: 2px;}
- 
  #IFDEF MSIE
   #skin_container_search{padding-top: 3px;}
  #ENDIF 
