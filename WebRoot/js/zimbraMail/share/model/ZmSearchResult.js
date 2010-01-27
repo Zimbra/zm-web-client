@@ -114,7 +114,10 @@ function(respEl) {
 			for (var i = 0; i < allTypes.length; i++) {
 				var t = allTypes[i];
 				if (respEl[t]) {
-					defaultType =  ZmList.ITEM_TYPE[t];
+					defaultType = ZmList.ITEM_TYPE[t];
+					if (types && types.length == 0) {
+						types = [defaultType];
+					}
 					break;
 				}
 			}
