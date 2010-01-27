@@ -14,11 +14,19 @@
  */
 
 /**
+ * @overview
+ * 
+ * This file defines a domain.
+ *
+ */
+
+/**
  * Creates an empty domain tree.
- * @constructor
  * @class
  * This class represents a collection of domains that have shown up in email addresses.
  * It's not actually parsed into tree form, so it's just a flat list.
+ * 
+ * @extends		ZmModel
  */
 ZmDomainTree = function() {
 	ZmModel.call(this);
@@ -29,24 +37,33 @@ ZmDomainTree.prototype.constructor = ZmDomainTree;
 
 ZmDomainTree._searchResults = {};
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmDomainTree.prototype.toString = 
 function() {
 	return "ZmDomainTree";
 };
 
+/**
+ * Gets the root domain.
+ * 
+ * @return	{ZmDomain}	the domain
+ */
 ZmDomainTree.prototype.getRootDomain =
 function() {
 	return this._rootDomain;
 };
 
 /**
- * [DEPRECATED - use ZmDomainTree.search() instead]
- * 
  * Loads all domains underneath the root domain of this tree.
  * 
- * @param callback		[AjxCallback]*		callback to run when response is received
+ * @param {AjxCallback}	callback		the callback to run when response is received
  * 
- * @deprecated
+ * @deprecated		use {@link ZmDomainTree.search} instead
+ * @see		#search
  */
 ZmDomainTree.prototype.load =
 function(callback) {
@@ -59,6 +76,9 @@ function(callback) {
 	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
 
+/**
+ * @private
+ */
 ZmDomainTree.prototype._handleResponseLoad =
 function(callback, result) {
 	var domains = result.getResponse().BrowseResponse.bd;
@@ -74,11 +94,11 @@ function(callback, result) {
 };
 
 /**
- * Returns a sorted list of domains matching the given string (if any).
+ * Gets a sorted list of domains matching the given string (if any).
  * 
- * @param str			[string]			string to search for
- * @param limit			[int]*				max number of domains to return
- * @param callback		[AjxCallback]		callback to run when response is received
+ * @param {String}	str			the string to search for
+ * @param {int}	limit			the max number of domains to return
+ * @param {AjxCallback}	callback		the callback to run when response is received
  */
 ZmDomainTree.search =
 function(str, limit, callback) {
@@ -103,6 +123,9 @@ function(str, limit, callback) {
 	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
 
+/**
+ * @private
+ */
 ZmDomainTree._handleResponseSearch =
 function(str, callback, result) {
 	var domains = result.getResponse().BrowseResponse.bd;
@@ -119,7 +142,8 @@ function(str, callback, result) {
 };
 
 /**
- * Clears the search results cache.
+ * Resets and clears the search results cache.
+ * 
  */
 ZmDomainTree.reset =
 function() {

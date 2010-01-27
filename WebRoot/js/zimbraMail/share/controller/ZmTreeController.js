@@ -14,17 +14,24 @@
  */
 
 /**
+ * @overview
+ * This file defines a tree controller.
+ *
+ */
+
+/**
  * Creates a tree controller.
- * @constructor
  * @class
  * This class is a base class for controllers for organizers. Those are
  * represented by trees, both as data and visually. This class uses the support provided by
- * ZmOperation. Each type of organizer has a singleton tree controller which manages all 
+ * {@link ZmOperation}. Each type of organizer has a singleton tree controller which manages all 
  * the tree views of that type.
  *
  * @author Conrad Damon
  * 
- * @param type		[constant]		type of organizer we are displaying/controlling
+ * @param {constant}	type		the type of organizer we are displaying/controlling
+ * 
+ * @extends	ZmController
  */
 ZmTreeController = function(type) {
 
@@ -106,6 +113,9 @@ ZmTreeController.prototype._dropListener = function() {};
 // Returns an appropriate title for the "Move To" dialog
 ZmTreeController.prototype._getMoveDialogTitle = function() {};
 
+/**
+ * @private
+ */
 ZmTreeController.prototype._resetOperation =
 function(parent, id, text, image, enabled, visible) {
 	var op = parent && parent.getOp(id);
@@ -117,6 +127,9 @@ function(parent, id, text, image, enabled, visible) {
 	if (visible != null) op.setVisible(visible);
 };
 
+/**
+ * @private
+ */
 ZmTreeController.prototype._resetButtonPerSetting =
 function(parent, op, isSupported) {
 	var button = parent.getOp(op);
@@ -134,6 +147,11 @@ function(parent, op, isSupported) {
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTreeController.prototype.toString =
 function() {
 	return "ZmTreeController";
@@ -142,15 +160,15 @@ function() {
 /**
  * Displays the tree of this type.
  *
- * @param params		[hash]		hash of params:
- *        overviewId	[constant]	overview ID
- *        showUnread	[boolean]*	if true, unread counts will be shown
- *        omit			[Object]*	hash of organizer IDs to ignore
- *        include		[object]*	hash of organizer IDs to include
- *        forceCreate	[boolean]*	if true, tree view will be created
- *        app			[string]*	app that owns the overview
- *        hideEmpty		[boolean]*	if true, don't show header if there is no data
- *        noTooltips	[boolean]*	if true, don't show tooltips for tree items
+ * @param {Hash}	params		a hash of parameters
+ * @param	{constant}	params.overviewId		the overview ID
+ * @param	{Boolean}	params.showUnread		if <code>true</code>, unread counts will be shown
+ * @param	{Object}	params.omit				a hash of organizer IDs to ignore
+ * @param	{Object}	params.include			a hash of organizer IDs to include
+ * @param	{Boolean}	params.forceCreate		if <code>true</code>, tree view will be created
+ * @param	{String}	params.app				the app that owns the overview
+ * @param	{Boolean}	params.hideEmpty		if <code>true</code>, don't show header if there is no data
+ * @param	{Boolean}	params.noTooltips	if <code>true</code>, don't show tooltips for tree items
  */
 ZmTreeController.prototype.show =
 function(params) {
@@ -191,10 +209,11 @@ function(params) {
 };
 
 /**
- * Returns the tree view for the given overview.
+ * Gets the tree view for the given overview.
  *
- * @param overviewId	[constant]			overview ID
- * @param force			[boolean]*			force tree view creation
+ * @param {constant}	overviewId	the overview ID
+ * @param {Boolean}	force			<code>true</code> to force tree view creation
+ * @return	{ZmTreeView}		the tree view
  */
 ZmTreeController.prototype.getTreeView =
 function(overviewId, force) {
@@ -208,12 +227,12 @@ function(overviewId, force) {
 /**
  * Clears the tree view for the given overview.
  *
- * @param overviewId		[constant]	overview ID
+ * @param {constant}		overviewId		the overview ID
  *
- * TODO: remove change listener if last tree view cleared
  */
 ZmTreeController.prototype.clearTreeView =
 function(overviewId) {
+	// TODO: remove change listener if last tree view cleared
 	if (this._treeView[overviewId]) {
 		this._treeView[overviewId].dispose();
 		delete this._treeView[overviewId];
@@ -221,13 +240,21 @@ function(overviewId) {
 };
 
 /**
- * Returns this controller's drop target.
+ * Gets the controller drop target.
+ * 
+ * @return	{DwtDropTarget}	the drop target
  */
 ZmTreeController.prototype.getDropTarget =
 function() {
 	return this._dropTgt;
 };
 
+/**
+ * Gets the data tree.
+ * 
+ * @param	{ZmZimbraAccount}	account		the account
+ * @return	{Object}	the data tree
+ */
 ZmTreeController.prototype.getDataTree =
 function(account) {
 	account = account || appCtxt.getActiveAccount();
@@ -246,7 +273,9 @@ function(account) {
 /**
  * Sets up the params for the new button in the header item
  *
- * @param params		[Object]	param hash
+ * @param {Hash}	params		a hash of parameters
+ * 
+ * @private
  */
 ZmTreeController.prototype._setupNewOp =
 function(params) {
@@ -290,8 +319,10 @@ function(overviewId) {
  * Performs any little fixups after the tree view is first created
  * and shown.
  *
- * @param overviewId		[constant]		overview ID
- * @param account			[ZmZimbraAccount]*	current account
+ * @param {constant}	overviewId		the overview ID
+ * @param {ZmZimbraAccount}	account			the current account
+ * 
+ * @private
  */
 ZmTreeController.prototype._postSetup =
 function(overviewId, account) {
@@ -314,9 +345,11 @@ function(overviewId, account) {
 /**
  * Takes care of the tree item's color and/or checkbox.
  *
- * @param treeItem	[DwtTreeItem]		tree item
- * @param organizer	[ZmOrganizer]		organizer it represents
- * @param treeView	[ZmTreeView]		tree view this organizer belongs to
+ * @param {DwtTreeItem}	treeItem	the tree item
+ * @param {ZmOrganizer}	organizer	the organizer it represents
+ * @param {ZmTreeView}	treeView	the tree view this organizer belongs to
+ * 
+ * @private
  */
 ZmTreeController.prototype._fixupTreeNode =
 function(treeItem, organizer, treeView) {
@@ -369,7 +402,9 @@ function(treeItem, organizer) {
 /**
  * Lazily creates a tree view of this type, using options from the overview.
  *
- * @param overviewId		[constant]	overview ID
+ * @param {constant}	overviewId		the overview ID
+ * 
+ * @private
  */
 ZmTreeController.prototype._initializeTreeView =
 function(overviewId) {
@@ -395,6 +430,9 @@ function(overviewId) {
 	return treeView;
 };
 
+/**
+ * @private
+ */
 ZmTreeController.prototype._createTreeView =
 function(params) {
 	return new ZmTreeView(params);
@@ -404,6 +442,8 @@ function(params) {
  * Creates up to two action menus, one for the tree view's header item, and
  * one for the rest of the items. Note that each of these two menus is a
  * singleton, shared among the tree views of this type.
+ * 
+ * @private
  */
 ZmTreeController.prototype._initializeActionMenus =
 function() {
@@ -424,6 +464,8 @@ function() {
 
 /**
  * Instantiates the header action menu if necessary.
+ * 
+ * @private
  */
 ZmTreeController.prototype._getHeaderActionMenu =
 function(ev) {
@@ -436,6 +478,8 @@ function(ev) {
 
 /**
  * Instantiates the action menu if necessary.
+ * 
+ * @private
  */
 ZmTreeController.prototype._getActionMenu =
 function(ev) {
@@ -449,8 +493,10 @@ function(ev) {
 /**
  * Creates and returns an action menu, and sets its listeners.
  *
- * @param parent		[DwtControl]	menu's parent widget
- * @param menuItems		[Array]*		list of menu items
+ * @param {DwtControl}	parent		the menu parent widget
+ * @param {Array}	menuItems		the list of menu items
+ * 
+ * @private
  */
 ZmTreeController.prototype._createActionMenu =
 function(parent, menuItems) {
@@ -472,6 +518,8 @@ function(parent, menuItems) {
 /**
  * Determines which types of organizer may be displayed at the top level. By default,
  * the tree shows its own type.
+ * 
+ * @private
  */
 ZmTreeController.prototype._getAllowedTypes =
 function() {
@@ -483,6 +531,8 @@ function() {
 /**
  * Determines which types of organizer may be displayed below the top level. By default,
  * the tree shows its own type.
+ * 
+ * @private
  */
 ZmTreeController.prototype._getAllowedSubTypes =
 function() {
@@ -496,10 +546,12 @@ function() {
 /**
  * Creates a new organizer and adds it to the tree of that type.
  *
- * @param params	[hash]			hash of params:
- *        type		[constant]		type of organizer
- *        parent	[ZmOrganizer]	parent of the new organizer
- *        name		[string]		name of the new organizer
+ * @param {Hash}	params	a hash of parameters
+ * @param {constant}	params.type		the type of organizer
+ * @param {ZmOrganizer}	params.parent	parent of the new organizer
+ * @param {String}	params.name		the name of the new organizer
+ *        
+ * @private
  */
 ZmTreeController.prototype._doCreate =
 function(params) {
@@ -514,13 +566,19 @@ function(params) {
 /**
  * Deletes an organizer and removes it from the tree.
  *
- * @param organizer		[ZmOrganizer]	organizer to delete
+ * @param {ZmOrganizer}	organizer		the organizer to delete
  */
 ZmTreeController.prototype._doDelete =
 function(organizer) {
 	organizer._delete();
 };
 
+/**
+ * 
+ * @param {ZmOrganizer}	organizer		the organizer
+ *
+ * @private
+ */
 ZmTreeController.prototype._doEmpty =
 function(organizer) {
     var recursive = false;
@@ -539,8 +597,10 @@ function(organizer) {
 /**
  * Renames an organizer.
  *
- * @param organizer	[ZmOrganizer]	organizer to rename
- * @param name		[string]		new name of the organizer
+ * @param {ZmOrganizer}	organizer	the organizer to rename
+ * @param {String}	name		the new name of the organizer
+ * 
+ * @private
  */
 ZmTreeController.prototype._doRename =
 function(organizer, name) {
@@ -550,8 +610,10 @@ function(organizer, name) {
 /**
  * Moves an organizer to a new folder.
  *
- * @param organizer	[ZmOrganizer]	organizer to move
- * @param folder		[ZmFolder]		target folder
+ * @param {ZmOrganizer}	organizer	the organizer to move
+ * @param {ZmFolder}	folder		the target folder
+ * 
+ * @private
  */
 ZmTreeController.prototype._doMove =
 function(organizer, folder) {
@@ -561,7 +623,9 @@ function(organizer, folder) {
 /**
  * Marks an organizer's items as read.
  *
- * @param organizer	[ZmOrganizer]	organizer
+ * @param {ZmOrganizer}	organizer	the organizer
+ * 
+ * @private
  */
 ZmTreeController.prototype._doMarkAllRead =
 function(organizer) {
@@ -571,7 +635,9 @@ function(organizer) {
 /**
  * Syncs an organizer to its feed (URL).
  *
- *  @param organizer	[ZmOrganizer]	organizer
+ *  @param {ZmOrganizer}	organizer	the organizer
+ *  
+ *  @private
  */
 ZmTreeController.prototype._doSync =
 function(organizer) {
@@ -586,7 +652,9 @@ function(organizer) {
  * will be performed. A right click generates an action event, which pops up an
  * action menu if supported.
  *
- * @param ev		[DwtUiEvent]	the UI event
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
  */
 ZmTreeController.prototype._treeViewListener =
 function(ev) {
@@ -641,6 +709,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmTreeController.prototype._handleItemSelection =
 function(ev, overview, treeItem, item) {
 	// left click or selection via shortcut
@@ -676,6 +747,9 @@ function(ev, overview, treeItem, item) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmTreeController.prototype._itemSelected =
 function(item) {
 	if (item && item._showFoldersCallback) {
@@ -690,12 +764,17 @@ function(item) {
  * Allows subclass to overload in case something needs to be done before
  * processing tree item selection in a multi-account environment. Otherwise,
  * do the normal tree item selection.
+ * 
+ * @private
  */
 ZmTreeController.prototype._handleMultiAccountItemSelection =
 function(ev, overview, treeItem, item) {
 	this._handleItemSelection(ev, overview, treeItem, item);
 };
 
+/**
+ * @private
+ */
 ZmTreeController.prototype._treeSelectionTimedAction =
 function(item, overview) {
 	if (overview._treeSelectionShortcutDelayActionId) {
@@ -707,7 +786,9 @@ function(item, overview) {
 /**
  * Propagates a change in tree state to other trees of the same type in app overviews.
  * 
- * @param ev		[ZmTreeEvent]	a tree event
+ * @param {ZmTreeEvent}	ev		a tree event
+ * 
+ * @private
  */
 ZmTreeController.prototype._treeListener =
 function(ev) {
@@ -729,7 +810,9 @@ function(ev) {
  * Handles changes to the underlying model. The change is propagated to
  * all the tree views known to this controller.
  *
- * @param ev		[ZmEvent]	a change event
+ * @param {ZmEvent}	ev		a change event
+ * 
+ * @private
  */
 ZmTreeController.prototype._treeChangeListener =
 function(ev) {
@@ -742,9 +825,11 @@ function(ev) {
 /**
  * Handles a change event for one tree view.
  *
- * @	param ev				[ZmEvent]		a change event
- * @param treeView		[ZmTreeView]	a tree view
- * @param overviewId		[constant]		overview ID
+ * @param {ZmEvent}	ev				a change event
+ * @param {ZmTreeView}	treeView		a tree view
+ * @param {constant}	overviewId		overview ID
+ * 
+ * @private
  */
 ZmTreeController.prototype._changeListener =
 function(ev, treeView, overviewId) {
@@ -869,10 +954,12 @@ function(organizer, ev, overviewId) {
  * Makes a request to add a new item to the tree, returning true if the item was
  * actually added, or false if it was omitted.
  *
- * @param treeView		[ZmTreeView]	a tree view
- * @param parentNode	[DwtTreeItem]	node under which to add the new one
- * @param organizer		[ZmOrganizer]	organizer for the new node
- * @param idx			[int]*			position at which to add the new node
+ * @param {ZmTreeView}	treeView		the tree view
+ * @param {DwtTreeItem}	parentNode	the node under which to add the new one
+ * @param {ZmOrganizer}	organizer		the organizer for the new node
+ * @param {int}	idx			the position at which to add the new node
+ * 
+ * @private
  */
 ZmTreeController.prototype._addNew =
 function(treeView, parentNode, organizer, idx) {
@@ -882,8 +969,10 @@ function(treeView, parentNode, organizer, idx) {
 /**
  * Pops up the appropriate "New ..." dialog.
  *
- * @param ev		[DwtUiEvent]			the UI event
- * @param account	[ZmZimbraAccount]*		Optional. Used by multi-account mbox
+ * @param {DwtUiEvent}	ev		the UI event
+ * @param {ZmZimbraAccount}	account	used by multi-account mailbox (optional)
+ * 
+ * @private
  */
 ZmTreeController.prototype._newListener =
 function(ev, account) {
@@ -908,7 +997,9 @@ function(ev, account) {
 /**
  * Pops up the appropriate "Rename ..." dialog.
  *
- * @param ev		[DwtUiEvent]	the UI event
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
  */
 ZmTreeController.prototype._renameListener =
 function(ev) {
@@ -924,14 +1015,18 @@ function(ev) {
 /**
  * Deletes an organizer.
  *
- * @param ev		[DwtUiEvent]	the UI event
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
  */
 ZmTreeController.prototype._deleteListener =
 function(ev) {
 	this._doDelete(this._getActionedOrganizer(ev));
 };
 
-
+/**
+ * @private
+ */
 ZmTreeController.prototype._emptyListener =
 function(ev) {
 	this._doEmpty(this._getActionedOrganizer(ev));
@@ -940,7 +1035,9 @@ function(ev) {
 /**
  * Moves an organizer into another folder.
  *
- * @param ev		[DwtUiEvent]	the UI event
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
  */
 ZmTreeController.prototype._moveListener =
 function(ev) {
@@ -953,6 +1050,9 @@ function(ev) {
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
 };
 
+/**
+ * @private
+ */
 ZmTreeController.prototype._getMoveParams =
 function(dlg) {
 	var omit = {};
@@ -969,9 +1069,11 @@ function(dlg) {
 };
 
 /**
- * Expands the tree below the actioned node.
+ * Expands the tree below the action'd node.
  *
- * @param ev		[DwtUiEvent]	the UI event
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
  */
 ZmTreeController.prototype._expandAllListener =
 function(ev) {
@@ -984,7 +1086,9 @@ function(ev) {
 /**
  * Mark's an organizer's contents as read.
  *
- * @param ev		[DwtUiEvent]	the UI event
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
  */
 ZmTreeController.prototype._markAllReadListener =
 function(ev) {
@@ -994,7 +1098,9 @@ function(ev) {
 /**
  * Syncs all the organizers to its feed (URL).
  *
- * @param ev		[DwtUiEvent]	the UI event
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
  */
 ZmTreeController.prototype._syncAllListener =
 function(ev) {
@@ -1021,7 +1127,9 @@ function(ev) {
 /**
  * Syncs an organizer to its feed (URL).
  *
- * @param ev		[DwtUiEvent]	the UI event
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
  */
 ZmTreeController.prototype._syncListener =
 function(ev) {
@@ -1029,6 +1137,9 @@ function(ev) {
 	this._syncFeeds(f);
 };
 
+/**
+ * @private
+ */
 ZmTreeController.prototype._syncFeeds =
 function(f) {
 	if (f.isFeed()) {
@@ -1047,7 +1158,9 @@ function(f) {
 /**
  * Brings up a dialog for editing organizer properties.
  *
- * @param ev		[DwtUiEvent]	the UI event
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
  */
 ZmTreeController.prototype._editPropsListener = 
 function(ev) {
@@ -1058,7 +1171,9 @@ function(ev) {
 /**
  * Handles a drag event by setting the source data.
  *
- * @param ev		[DwtDragEvent]		a drag event
+ * @param {DwtDragEvent}	ev		a drag event
+ * 
+ * @private
  */
 ZmTreeController.prototype._dragListener =
 function(ev) {
@@ -1072,6 +1187,8 @@ function(ev) {
 /**
  * Called when a dialog we opened is closed. Sets the style of the actioned
  * tree item from "actioned" back to its normal state.
+ * 
+ * @private
  */
 ZmTreeController.prototype._menuPopdownActionListener = 
 function() {
@@ -1091,9 +1208,11 @@ function() {
 /**
  * Called when a "New ..." dialog is submitted to create the organizer.
  *
- * @param params	[hash]			hash of params:
- *        organizer	[ZmOrganizer]	parent organizer
- *        name		[string]		the name of the new organizer
+ * @param {Hash}	params	a hash of parameters
+ * @param {ZmOrganizer}	params.organizer	the parent organizer
+ * @param {String}  params.name	the name of the new organizer
+ * 
+ * @private
  */
 ZmTreeController.prototype._newCallback =
 function(params) {
@@ -1104,8 +1223,10 @@ function(params) {
 /**
  * Called when a "Rename ..." dialog is submitted to rename the organizer.
  *
- * @param organizer		[ZmOrganizer]	the organizer
- * @param name			[string]		the new name of the organizer
+ * @param {ZmOrganizer}	organizer		the organizer
+ * @param {String}	name		the new name of the organizer
+ * 
+ * @private
  */
 ZmTreeController.prototype._renameCallback =
 function(organizer, name) {
@@ -1116,7 +1237,9 @@ function(organizer, name) {
 /**
  * Called when a "Move To ..." dialog is submitted to move the organizer.
  *
- * @param folder		[ZmFolder]		the target folder
+ * @param {ZmFolder}	folder		the target folder
+ * 
+ * @private
  */
 ZmTreeController.prototype._moveCallback =
 function(folder) {
@@ -1127,7 +1250,9 @@ function(folder) {
 /**
  * Called if a user has agreed to go ahead and delete an organizer.
  *
- * @param organizer	[ZmOrganizer]	organizer to delete
+ * @param {ZmOrganizer}	organizer	the organizer to delete
+ * 
+ * @private
  */
 ZmTreeController.prototype._deleteShieldYesCallback =
 function(organizer) {
@@ -1135,6 +1260,9 @@ function(organizer) {
 	this._clearDialog(this._deleteShield);
 };
 
+/**
+ * @private
+ */
 ZmTreeController.prototype._emptyShieldYesCallback = 
 function(organizer) {
 	this._doEmpty(organizer);
@@ -1149,7 +1277,9 @@ function(organizer) {
  * for tree item events; it won't work for action menu item events, since action
  * menus are children of the shell.
  *
- * @param ev		[DwtUiEvent]	the UI event
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
  */
 ZmTreeController.prototype._getActionedOrganizer =
 function(ev) {
@@ -1173,7 +1303,9 @@ function(ev) {
  * Shows or hides the tree view. It is hidden only if there is no data, and we
  * have been told to hide empty tree views of this type.
  * 
- * @param overviewId		[constant]		overview ID
+ * @param {constant}	overviewId		the overview ID
+ * 
+ * @private
  */
 ZmTreeController.prototype._checkTreeView =
 function(overviewId) {

@@ -14,12 +14,17 @@
  */
 
 /**
+ * @overview
+ * This file defines the tag tree controller.
+ *
+ */
+
+/**
  * Creates a tag tree controller.
- * @constructor
  * @class
  * This class controls a tree display of tags.
  *
- * @author Conrad Damon
+ * @extends	ZmTreeController
  */
 ZmTagTreeController = function() {
 
@@ -36,14 +41,23 @@ ZmTagTreeController.prototype.constructor = ZmTagTreeController;
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTagTreeController.prototype.toString = 
 function() {
 	return "ZmTagTreeController";
 };
 
-/*
-* Adds listeners for the color change menu items.
-*/
+/**
+ * Adds listeners for the color change menu items.
+ * 
+ * @return	{ZmActionMenu}		the action menu
+ * 
+ * @private
+ */
 ZmTagTreeController.prototype._getActionMenu =
 function() {
 	var menu = ZmTreeController.prototype._getActionMenu.call(this);
@@ -61,10 +75,10 @@ function() {
 };
 
 /**
-* Enables/disables operations based on context.
+* Resets and enables/disables operations based on context.
 *
-* @param parent		the widget that contains the operations
-* @param id			the currently selected/activated organizer
+* @param {Object}		parent		the widget that contains the operations
+* @param {Object}		id			the currently selected/activated organizer
 */
 ZmTagTreeController.prototype.resetOperations = 
 function(parent, type, id) {
@@ -80,17 +94,21 @@ function(parent, type, id) {
 
 // Private/protected methods
 
-/*
-* Returns ops available for "Tags" container.
-*/
+/**
+ * Returns ops available for "Tags" container.
+ * 
+ * @private
+ */
 ZmTagTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [ZmOperation.NEW_TAG, ZmOperation.BROWSE];
 };
 
-/*
-* Returns ops available for tags.
-*/
+/**
+ * Returns ops available for tags.
+ * 
+ * @private
+ */
 ZmTagTreeController.prototype._getActionMenuOps =
 function() {
 	return [
@@ -102,17 +120,21 @@ function() {
 	];
 };
 
-/*
-* Returns a "New Tag" dialog.
-*/
+/**
+ * Returns a "New Tag" dialog.
+ * 
+ * @private
+ */
 ZmTagTreeController.prototype._getNewDialog =
 function() {
 	return appCtxt.getNewTagDialog();
 };
 
-/*
-* Returns a "Rename Tag" dialog.
-*/
+/**
+ * Returns a "Rename Tag" dialog.
+ * 
+ * @private
+ */
 ZmTagTreeController.prototype._getRenameDialog =
 function() {
 	return appCtxt.getRenameTagDialog();
@@ -120,12 +142,14 @@ function() {
 
 // Actions
 
-/*
-* Called when a left click occurs (by the tree view listener). A search for items with
-* the tag will be performed.
-*
-* @param tag		[ZmTag]		tag that was clicked
-*/
+/**
+ * Called when a left click occurs (by the tree view listener). A search for items with
+ * the tag will be performed.
+ *
+ * @param {ZmTag}	tag		the tag that was clicked
+ * 
+ * @private
+ */
 ZmTagTreeController.prototype._itemClicked =
 function(tag) {
 	var searchFor;
@@ -149,12 +173,14 @@ function(tag) {
 
 // Listeners
 
-/*
-* Deletes a tag. A dialog will first be displayed asking the user if they
-* are sure they want to delete the tag.
-*
-* @param ev		[DwtUiEvent]	the UI event
-*/
+/**
+ * Deletes a tag. A dialog will first be displayed asking the user if they
+ * are sure they want to delete the tag.
+ *
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
+ */
 ZmTagTreeController.prototype._deleteListener = 
 function(ev) {
 	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
@@ -167,11 +193,13 @@ function(ev) {
 	ds.popup();
 };
 
-/*
-* Changes a tag's color.
-*
-* @param ev		[DwtUiEvent]	the UI event
-*/
+/**
+ * Changes the color of a tag.
+ *
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
+ */
 ZmTagTreeController.prototype._colorListener = 
 function(ev) {
 	var tag = this._getActionedOrganizer(ev);
@@ -180,6 +208,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmTagTreeController.prototype._browseListener =
 function(ev){
 	var folder = this._getActionedOrganizer(ev);
@@ -189,14 +220,16 @@ function(ev){
 	}
 };
 
-/*
-* Handles the potential drop of something onto a tag. Only items may be dropped.
-* The source data is not the items themselves, but an object with the items (data)
-* and their controller, so they can be moved appropriately. Dropping an item onto
-* a tag causes the item to be tagged.
-*
-* @param ev		[DwtDropEvent]		the drop event
-*/
+/**
+ * Handles the potential drop of something onto a tag. Only items may be dropped.
+ * The source data is not the items themselves, but an object with the items (data)
+ * and their controller, so they can be moved appropriately. Dropping an item onto
+ * a tag causes the item to be tagged.
+ *
+ * @param {DwtDropEvent}	ev		the drop event
+ * 
+ * @private
+ */
 ZmTagTreeController.prototype._dropListener =
 function(ev) {
 	var data = ev.srcData.data;
@@ -221,13 +254,15 @@ function(ev) {
 	}
 };
 
-/*
-* Handles a color change event.
-*
-* @param ev				[ZmEvent]		a change event
-* @param treeView		[ZmTreeView]	a tree view
-* @param overviewId		[constant]		overview ID
-*/
+/**
+ * Handles a color change event.
+ *
+ * @param {ZmEvent}		ev				the change event
+ * @param {ZmTreeView}	treeView		the tree view
+ * @param {constant}	overviewId		the overview ID
+ * 
+ * @private
+ */
 ZmTagTreeController.prototype._changeListener =
 function(ev, treeView, overviewId) {
 	var fields = ev.getDetail("fields");
@@ -244,6 +279,9 @@ function(ev, treeView, overviewId) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmTagTreeController.prototype._setTreeItemColor =
 function(treeItem, organizer) {
 };

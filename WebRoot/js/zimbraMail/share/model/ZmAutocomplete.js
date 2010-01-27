@@ -14,10 +14,16 @@
  */
 
 /**
+ * @overview
+ * 
+ * This file defines authentication.
+ *
+ */
+
+/**
  * Creates and initializes support for server-based autocomplete.
- * @constructor
  * @class
- * Manages autocompletion via AutoCompleteRequest calls to the server. Currently limited
+ * This class manages auto-completion via <code><AutoCompleteRequest></code> calls to the server. Currently limited
  * to matching against only one type among people, locations, and equipment.
  *
  * @author Conrad Damon
@@ -69,6 +75,11 @@ ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_GROUP]	= "Group";
 // cache control
 ZmAutocomplete.GAL_RESULTS_TTL		= 900000;	// time-to-live for cached GAL autocomplete results
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmAutocomplete.prototype.toString =
 function() {
 	return "ZmAutocomplete";
@@ -78,11 +89,11 @@ function() {
  * Returns a list of matching contacts for a given string. The first name, last
  * name, full name, first/last name, and email addresses are matched against.
  *
- * @param str		[string]					string to match against
- * @param callback	[AjxCallback]				callback to run with results
- * @param aclv		[ZmAutocompleteListView]*	needed to show wait msg
- * @param options	[hash]*						additional options:
- * @param account	[ZmZimbraAccount]*			account to fetch cached items from
+ * @param {String}	str		the string to match against
+ * @param {AjxCallback}	callback	the callback to run with results
+ * @param {ZmAutocompleteListView}	aclv		the needed to show wait msg
+ * @param {Hash}	options		additional options
+ * @param {ZmZimbraAccount}	account	the account to fetch cached items from
  */
 ZmAutocomplete.prototype.autocompleteMatch =
 function(str, callback, aclv, options, account) {
@@ -103,7 +114,9 @@ function(str, callback, aclv, options, account) {
 	var respCallback = new AjxCallback(this, this._handleResponseAutocompleteMatch, [str, callback]);
 	this._doAutocomplete(str, aclv, options, acType, respCallback, account);
 };
-
+/**
+ * @private
+ */
 ZmAutocomplete.prototype._handleResponseAutocompleteMatch =
 function(str, callback, list) {
 	// return results - we check str against curAcStr because we want to make sure
@@ -122,6 +135,8 @@ function(str, callback, list) {
  * @param acType	[constant]					type of result to match
  * @param callback	[AjxCallback]				callback to run with results
  * @param account	[ZmZimbraAccount]*			accout to fetch from
+ * 
+ * @private
  */
 ZmAutocomplete.prototype._doAutocomplete =
 function(str, aclv, options, acType, callback, account) {
@@ -157,6 +172,9 @@ function(str, aclv, options, acType, callback, account) {
 	this._acRequests[str] = search.execute(searchParams);
 };
 
+/**
+ * @private
+ */
 ZmAutocomplete.prototype._handleResponseDoAutocomplete =
 function(str, aclv, options, acType, callback, account, result) {
 
@@ -200,6 +218,8 @@ function(str, aclv, options, acType, callback, account, result) {
 
 /**
  * Handle timeout.
+ * 
+ * @private
  */
 ZmAutocomplete.prototype._handleErrorDoAutocomplete =
 function(str, aclv, ex) {
@@ -213,7 +233,11 @@ function(str, aclv, ex) {
 };
 
 /**
- * Sort autocomplete list by ranking scores.
+ * Sort auto-complete list by ranking scores.
+ * 
+ * @param	{ZmAutocomplete}	a		the auto-complete list
+ * @param	{ZmAutocomplete}	b		the auto-complete list
+ * @return	{int}	0 if the lists match; 1 if "a" is before "b"; -1 if "b" is before "a"
  */
 ZmAutocomplete.acSortCompare =
 function(a, b) {
@@ -224,9 +248,10 @@ function(a, b) {
 
 
 /**
- * Returns true if the given string is a valid email.
+ * Checks if the given string is a valid email.
  *
- * @param str	[string]	a string
+ * @param {String}	str		a string
+ * @return	{Boolean}	<code>true</code> if a valid email
  */
 ZmAutocomplete.prototype.isComplete =
 function(str) {
@@ -237,7 +262,8 @@ function(str) {
  * Quick completion of a string when there are no matches. Appends the
  * user's domain to the given string.
  *
- * @param str	[string]	text that was typed in
+ * @param {String}	 str	the text that was typed in
+ * @return	{String}	the string
  */
 ZmAutocomplete.prototype.quickComplete =
 function(str) {
@@ -263,6 +289,12 @@ function(str) {
 	}
 };
 
+/**
+ * Clears the cache.
+ * 
+ * @param	{String}	type		the type
+ * @param	{ZmAccount}	account		the account
+ */
 ZmAutocomplete.prototype.clearCache =
 function(type, account) {
 	var acct = account || appCtxt.getActiveAccount();
@@ -284,6 +316,8 @@ function(type, account) {
  * @param cacheable		[boolean]*			server indication of cacheability
  * @param baseCache		[hash]*				cache that is superset of this one
  * @param account		[ZmZimbraAccount]*	account to check cache against
+ * 
+ * @private
  */
 ZmAutocomplete.prototype._cacheResults =
 function(str, acType, list, hasGal, cacheable, baseCache, account) {
@@ -300,6 +334,9 @@ function(str, acType, list, hasGal, cacheable, baseCache, account) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmAutocomplete.prototype._checkCache =
 function(str, acType, account) {
 
@@ -353,6 +390,8 @@ function(str, acType, account) {
  * @param acType			[constant]			type of result to match
  * @param checkCacheable	[boolean]			if true, make sure results are cacheable
  * @param account			[ZmZimbraAccount]*	account to fetch cached results from
+ * 
+ * @private
  */
 ZmAutocomplete.prototype._getCachedResults =
 function(str, acType, checkCacheable, account) {
@@ -376,6 +415,9 @@ function(str, acType, checkCacheable, account) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmAutocomplete.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
@@ -388,12 +430,14 @@ function(ev) {
 
 
 /**
- * Autocomplete result, with fields for the caller to look at, and fields to
+ * Creates an auto-complete match.
+ * @class
+ * This class represents an auto-complete result, with fields for the caller to look at, and fields to
  * help with further matching.
  *
- * @param match			[object]		JSON match object, or ZmContact
- * @param options		[hash]			matching options
- * @param isContact		[boolean]		if true, provided match is a ZmContact
+ * @param {Object}	match			the JSON match object, or {@see ZmContact}
+ * @param {Object}	options		the matching options
+ * @param {Boolean}	isContact		if <code>true</code>, provided match is a {@see ZmContact}
  */
 ZmAutocompleteMatch = function(match, options, isContact) {
 
@@ -441,15 +485,21 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 		? this.type : ZmAutocomplete.AC_TYPE_CONTACT;
 };
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmAutocompleteMatch.prototype.toString =
 function() {
 	return "ZmAutocompleteMatch";
 };
 
 /**
- * Returns true if the given string matches this autocomplete result.
+ * Matches the given string to this auto-complete result.
  *
- * @param str
+ * @param {String}	str		the string
+ * @return	{Boolean}	<code>true</code> if the given string matches this result
  */
 ZmAutocompleteMatch.prototype.matches =
 function(str) {
@@ -471,14 +521,11 @@ function(str) {
 	return false;
 };
 
-
-
-
 /**
- * This class supports autocomplete for our query language.
- *
- * Each search operator that is supported has an associated handler. A handler is a hash which contains the info
- * needed for autocomplete. A handler can have the following properties:
+ * Creates a search auto-complete.
+ * @class
+ * This class supports auto-complete for our query language. Each search operator that is supported has an associated handler.
+ * A handler is a hash which contains the info needed for auto-complete. A handler can have the following properties:
  *
  * 		listType		A handler needs a list of objects to autocomplete against. By default, that list is
  * 						identified by the operator. If more than one operator uses the same list, their handlers
@@ -491,6 +538,7 @@ function(str) {
  * 		matchText		Function that returns a string to place in the input when the item is selected. Defaults to
  * 						the 'op:' plus the value of the 'text' attribute.
  * 		quoteMatch		If true, the text that goes into matchText will be place in double quotes.
+ * 
  */
 ZmSearchAutocomplete = function() {
 
@@ -544,6 +592,9 @@ ZmSearchAutocomplete.ICON["attachment"]	= "Attachment";
 ZmSearchAutocomplete.ICON["phone"]		= "Telephone";
 ZmSearchAutocomplete.ICON["url"]		= "URL";
 
+/**
+ * @private
+ */
 ZmSearchAutocomplete.prototype._registerHandler =
 function(op, params) {
 	var loadFunc = params.loader || this._loadFunc[params.listType];
@@ -554,14 +605,12 @@ function(op, params) {
 /**
  * Returns a list of matches for a given query operator.
  *
- * @param str		[string]					string to match against
- * @param callback	[AjxCallback]				callback to run with results
- * @param aclv		[ZmAutocompleteListView]*	needed to show wait msg
- * @param options	[hash]*						additional options:
- *        type		[constant]*					type of result to match; default is
- * 												ZmAutocomplete.AC_TYPE_CONTACT; other valid values
- * 												are for location or equipment
- *        needItem	[boolean]*					if true, return a ZmItem as part of match result
+ * @param {String}	str		the string to match against
+ * @param {AjxCallback}	callback	the callback to run with results
+ * @param ZmAutocompleteListView	aclv		needed to show wait msg
+ * @param {Hash}	options		a hash of additional options
+ * @param {constant} options.type		type of result to match; default is {@link ZmAutocomplete.AC_TYPE_CONTACT}; other valid values are for location or equipment
+ * @param	{Boolean}	options.needItem	if <code>true</code>, return a {@link ZmItem} as part of match result
  */
 ZmSearchAutocomplete.prototype.autocompleteMatch =
 function(str, callback, aclv, options) {
@@ -595,6 +644,9 @@ function(str, callback, aclv, options) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSearchAutocomplete.prototype._getMatches =
 function(op, str) {
 
@@ -629,11 +681,17 @@ function(op, str) {
 	return results;
 };
 
+/**
+ * @private
+ */
 ZmSearchAutocomplete.prototype._handleResponseLoad =
 function(op, str, callback) {
 	callback.run(this._getMatches(op, str));
 };
 
+/**
+ * @private
+ */
 ZmSearchAutocomplete.prototype._loadTags =
 function(listType, callback) {
 
@@ -649,6 +707,9 @@ function(listType, callback) {
 	if (callback) {	callback.run();	}
 };
 
+/**
+ * @private
+ */
 ZmSearchAutocomplete.prototype._loadFolders =
 function(listType, callback) {
 
@@ -664,6 +725,9 @@ function(listType, callback) {
 	if (callback) {	callback.run();	}
 };
 
+/**
+ * @private
+ */
 ZmSearchAutocomplete.prototype._loadFlags =
 function(listType, callback) {
 
@@ -677,6 +741,9 @@ function(listType, callback) {
 	if (callback) { callback.run(); }
 };
 
+/**
+ * @private
+ */
 ZmSearchAutocomplete.prototype._loadObjects =
 function(listType, callback) {
 
@@ -692,6 +759,9 @@ function(listType, callback) {
 	if (callback) { callback.run(); }
 };
 
+/**
+ * @private
+ */
 ZmSearchAutocomplete.prototype._loadTypes =
 function(listType, callback) {
 
@@ -701,6 +771,9 @@ function(listType, callback) {
 	attachTypeList.load(respCallback);
 };
 
+/**
+ * @private
+ */
 ZmSearchAutocomplete.prototype._handleResponseLoadTypes =
 function(attachTypeList, listType, callback) {
 
@@ -708,6 +781,9 @@ function(attachTypeList, listType, callback) {
 	if (callback) { callback.run(); }
 };
 
+/**
+ * @private
+ */
 ZmSearchAutocomplete.prototype._folderTreeChangeListener =
 function(ev) {
 	var fields = ev.getDetail("fields");
@@ -722,6 +798,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSearchAutocomplete.prototype._tagTreeChangeListener =
 function(ev) {
 	var fields = ev.getDetail("fields");

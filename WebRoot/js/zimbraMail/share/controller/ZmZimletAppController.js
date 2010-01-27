@@ -13,6 +13,23 @@
  * ***** END LICENSE BLOCK *****
  */
 
+
+/**
+ * @overview
+ * This file defines a zimlet app controller.
+ *
+ */
+
+/**
+ * Creates a zimlet app controller.
+ * @class
+ * This class represents a zimlet application controller.
+ * 
+ * @param	{String}	name		the application name
+ * @param	{Object}	container	the container
+ * @param	{ZmApp}		app			the app
+ * @extends		ZmController
+ */
 ZmZimletAppController = function(name, container, app) {
 	if (arguments.length == 0) { return; }
 	ZmController.call(this, container, app);
@@ -22,6 +39,11 @@ ZmZimletAppController = function(name, container, app) {
 ZmZimletAppController.prototype = new ZmController;
 ZmZimletAppController.prototype.constructor = ZmZimletAppController;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmZimletAppController.prototype.toString = function() {
 	return "ZmZimletAppController";
 };
@@ -30,9 +52,13 @@ ZmZimletAppController.prototype.toString = function() {
 // Public methods
 //
 
-// convenience methods
-
-ZmZimletAppController.prototype.getView = function() {
+/**
+ * Gets the view.
+ * 
+ * @return	{ZmZimletAppView}	the view
+ */
+ZmZimletAppController.prototype.getView =
+function() {
 	if (!this._view) {
 		// create components
 		this._view = new ZmZimletAppView(this._container, this);
@@ -56,13 +82,20 @@ ZmZimletAppController.prototype.getView = function() {
 	return this._view;
 };
 
+/**
+ * Gets the toolbar.
+ * 
+ * @return	{ZmToolBar}	the tool bar
+ */
 ZmZimletAppController.prototype.getToolbar = function() {
 	this.getView();
 	return this._toolbar;
 };
 
-// ZmAppController methods
-
+/**
+ * Shows the controller.
+ * 
+ */
 ZmZimletAppController.prototype.show = function() {
 	this.getView();
 	this._app.pushView(this._getViewType());
@@ -72,6 +105,9 @@ ZmZimletAppController.prototype.show = function() {
 // Protected methods
 //
 
+/**
+ * @private
+ */
 ZmZimletAppController.prototype._getViewType = function() {
 	return this._name;
 };

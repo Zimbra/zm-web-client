@@ -13,6 +13,22 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * 
+ * This file defines a tag tree controller.
+ *
+ */
+
+/**
+ * Creates a browse tree controller.
+ * @class
+ * This class defines a browse controller.
+ * 
+ * @param	{Object}	parent		the parent
+ * 
+ * @extends		ZmController
+ */
 ZmBrowseController = function(parent) {
 
 	ZmController.call(this, null);
@@ -41,11 +57,19 @@ ZmBrowseController = function(parent) {
 ZmBrowseController.prototype = new ZmController;
 ZmBrowseController.prototype.constructor = ZmBrowseController;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmBrowseController.prototype.toString =
 function() {
 	return "ZmBrowseController";
 };
 
+/**
+ * @private
+ */
 ZmBrowseController.prototype._getPickers =
 function() {
 	var list = ZmPicker.DEFAULT_PICKERS;
@@ -68,16 +92,31 @@ function() {
 	return list;
 };
 
+/**
+ * Gets the browse view.
+ * 
+ * @return	{ZmBrowseView}		the browse view
+ */
 ZmBrowseController.prototype.getBrowseView =
 function() {
 	return (appCtxt.get(ZmSetting.BROWSE_ENABLED)) ? this._browseView : null;
 };
 
+/**
+ * Checks if the browse view is visible.
+ * 
+ * @return	{Boolean}	<code>true</code> if the browse view is visible; <code>false</code> otherwise
+ */
 ZmBrowseController.prototype.getBrowseViewVisible =
 function() {
 	return this._browseViewVisible;
 };
 
+/**
+ * Sets the browse view visible state.
+ * 
+ * @param	{Boolean}	visible	<code>true</code> if the browse view is visible; <code>false</code> otherwise
+ */
 ZmBrowseController.prototype.setBrowseViewVisible =
 function(visible) {
 	if (this._browseViewVisible == visible) {return;}
@@ -119,12 +158,14 @@ function(visible) {
 	browseButton.setSelected(visible);
 };
 
-/*
-* The point of the mess below is to safely construct queries. Some pickers (right now, just
-* the basic picker) may have multiple instances that join their queries with OR instead of
-* AND (represented as a space). In that case, we need parens around each of the picker
-* queries as well as around the query for the type of picker, in order to protect the OR.
-*/
+/**
+ * The point of the mess below is to safely construct queries. Some pickers (right now, just
+ * the basic picker) may have multiple instances that join their queries with OR instead of
+ * AND (represented as a space). In that case, we need parens around each of the picker
+ * queries as well as around the query for the type of picker, in order to protect the OR.
+ * 
+ * @private
+ */
 ZmBrowseController.prototype._updateQuery =
 function(doSearch) {
 	var queries = {};
@@ -183,21 +224,33 @@ function(doSearch) {
 	}
 }
 
+/**
+ * @private
+ */
 ZmBrowseController.prototype._executeQuery =
 function() {
 	appCtxt.getSearchController().search({query: this._query, searchId: this._searchId});
 };
 
+/**
+ * @private
+ */
 ZmBrowseController.prototype._resetListener =
 function(ev) {
 	this.removeAllPickers();
 };
 
+/**
+ * @private
+ */
 ZmBrowseController.prototype._closeListener =
 function(ev) {
 	this.setBrowseViewVisible(false);
 };
 
+/**
+ * @private
+ */
 ZmBrowseController.prototype.removeAllPickers =
 function(ev) {
 	this._browseView.removeAllPickers();
@@ -205,6 +258,12 @@ function(ev) {
 	this._resetPickers();
 };
 
+/**
+ * Adds the picker.
+ * 
+ * @param	{String}	id		the picker id
+ * @return	{ZmPicker}	the picker or <code>null</code> for none
+ */
 ZmBrowseController.prototype.addPicker =
 function(id) {
 	if (ZmPicker.LIMIT[id] != -1 && this._pickers[id].size() >= ZmPicker.LIMIT[id]) {return;}
@@ -232,12 +291,18 @@ function(id) {
 	return picker;
 };
 
+/**
+ * @private
+ */
 ZmBrowseController.prototype._addPickerListener =
 function(ev) {
 	var id = ev.item.getData(ZmPicker.KEY_ID);
 	this.addPicker(id);
 };
 
+/**
+ * @private
+ */
 ZmBrowseController.prototype._pickerCloseListener =
 function(ev) {
     var b = ev.item;
@@ -257,12 +322,18 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmBrowseController.prototype._clearQuery =
 function() {
 	this._query = "";
 	appCtxt.getSearchController().setSearchField("");
 };
 
+/**
+ * @private
+ */
 ZmBrowseController.prototype._pickerListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_PICKER) {return;}
@@ -273,6 +344,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmBrowseController.prototype._resetPickers =
 function() {
 	this._pickers = {};

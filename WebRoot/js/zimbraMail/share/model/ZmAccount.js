@@ -21,8 +21,8 @@
  */
 
 /**
+ * Creates the account.
  * @class
- * 
  * This class represents an account.
  * 
  * @param	{constant}	type	the account type (see <code>ZmAccount.TYPE_</code> constants)

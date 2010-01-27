@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file defines the search controller.
+ *
+ */
+
+/**
+ * Creates a search controller.
+ * @class
+ * This class represents the search controller.
+ * 
+ * @param {DwtControl}	container	the top-level container
+ * @extends	ZmController
+ */
 ZmSearchController = function(container) {
 
 	ZmController.call(this, container);
@@ -32,26 +46,45 @@ ZmSearchController = function(container) {
 ZmSearchController.prototype = new ZmController;
 ZmSearchController.prototype.constructor = ZmSearchController;
 
-
 // Consts
 ZmSearchController.QUERY_ISREMOTE = "is:remote OR is:local";
 
-
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmSearchController.prototype.toString =
 function() {
 	return "ZmSearchController";
 };
 
+/**
+ * Gets the search panel.
+ * 
+ * @return	{Object}	the panel
+ */
 ZmSearchController.prototype.getSearchPanel =
 function() {
 	return this._searchPanel;
 };
 
+/**
+ * Gets the search tool bar.
+ * 
+ * @return	{ZmButtonToolBar}		the tool bar
+ */
 ZmSearchController.prototype.getSearchToolbar =
 function() {
 	return this._searchToolBar;
 };
 
+/**
+ * Performs a search by date.
+ * 
+ * @param	{Date}	d		the date or <code>d</code> for now
+ * @param	{String}	searchFor	the search for string
+ */
 ZmSearchController.prototype.dateSearch =
 function(d, searchFor) {
 	d = d || new Date();
@@ -62,6 +95,11 @@ function(d, searchFor) {
 	this.search({query:query, types:[groupBy], searchFor: searchFor});
 };
 
+/**
+ * Performs a search by from address.
+ * 
+ * @param	{String}	address		the from address
+ */
 ZmSearchController.prototype.fromSearch =
 function(address) {
 	// always search for mail when doing a "from: <address>" search
@@ -73,16 +111,23 @@ function(address) {
 	this.search({query:query.join(" OR "), types:[groupBy]});
 };
 
+/**
+ * Shows the browse view by from name.
+ * 
+ * @param	{String}	name	the name
+ */
 ZmSearchController.prototype.fromBrowse =
 function(name) {
 	// showBrowseView() may need load of Browse package
 	var loadCallback = new AjxCallback(this, this._handleLoadFromBrowse, [name]);
 	this.showBrowseView(true, loadCallback);
 };
+
 /**
+ * Shows the browse picker.
  *
- * @param pickers Array of pickers to show browser with
- * @param showBasic
+ * @param {Array}	pickers a array of pickers to show browser with
+ * @param {Boolean}	showBasic		<code>true</code> to show basic picker
  */
 ZmSearchController.prototype.showBrowsePickers =
 function(pickers, showBasic) {
@@ -104,6 +149,9 @@ function(pickers, showBasic) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._handleLoadFromBrowse =
 function(name, bv) {
 	this.setDefaultSearchType(ZmId.SEARCH_MAIL);
@@ -120,8 +168,8 @@ function(name, bv) {
  * callback to run subsequent code. By default, the display of the panel is
  * toggled.
  * 
- * @param forceShow		[boolean]*		if true, show panel
- * @param callback		[AjxCallback]*	callback to run after display is done
+ * @param {Boolean}	forceShow		if <code>true</code>, show panel
+ * @param {AjxCallback}	callback		the callback to run after display is done
  */
 ZmSearchController.prototype.showBrowseView =
 function(forceShow, callback) {
@@ -137,6 +185,9 @@ function(forceShow, callback) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._handleLoadShowBrowseView =
 function(callback) {
 	var bvc = this._browseViewController = new ZmBrowseController(this._searchPanel);
@@ -146,11 +197,21 @@ function(callback) {
 	}
 };
 
+/**
+ * Gets the browse view.
+ * 
+ * @return	{Object}	the browse view
+ */
 ZmSearchController.prototype.getBrowseView =
 function() {
 	return (this._browseViewController && this._browseViewController.getBrowseView());
 };
 
+/**
+ * Sets the search field.
+ * 
+ * @param	{String}	searchString	the search string
+ */
 ZmSearchController.prototype.setSearchField =
 function(searchString) {
 	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && this._searchToolBar) {
@@ -160,6 +221,11 @@ function(searchString) {
 	}
 };
 
+/**
+ * Gets the search field value.
+ * 
+ * @return	{String}	the search field value or an empty string
+ */
 ZmSearchController.prototype.getSearchFieldValue =
 function() {
 	return this._searchToolBar ? this._searchToolBar.getSearchFieldValue() : "";
@@ -173,9 +239,9 @@ function(enabled) {
 };
 
 /**
- * Provides a programmatic way to set the search type.
+ * Sets the default type. This method provides a programmatic way to set the search type.
  *
- * @param type		the search type to set as the default
+ * @param {Object}	type		the search type to set as the default
  */
 ZmSearchController.prototype.setDefaultSearchType =
 function(type) {
@@ -186,6 +252,9 @@ function(type) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._setView =
 function() {
 	// Create search panel - a composite is needed because the search builder
@@ -208,6 +277,9 @@ function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._addMenuListeners =
 function(menu) {
 	// Menu listeners
@@ -227,22 +299,23 @@ function(menu) {
 /**
  * Performs a search and displays the results.
  *
- * @param params		[hash]				hash of params:
- *        query			[string]			search string
- *        searchFor		[constant]*			semantic type to search for
- *        types			[Array]*			item types to search for
- *        sortBy		[constant]*			sort constraint
- *        offset		[int]*				starting point in list of matching items
- *        limit			[int]*				maximum number of items to return
- *        searchId		[int]*				ID of owning search folder (if any)
- *        prevId		[int]*				ID of last items displayed (for pagination)
- *        prevSortBy	[constant]*			previous sort order (for pagination)
- *        noRender		[boolean]*			if true, results will not be passed to controller
- *        noClear		[boolean]*			if true, previous results will not be destructed
- *        userText		[boolean]*			true if text was typed by user into search box
- *        callback		[AjxCallback]*		async callback
- *        errorCallback	[AjxCallback]*		async callback to run if there is an exception
- *        response		[object]*			canned JSON response (no request will be made)
+ * @param {Hash}	params		a hash of parameters
+ * @param {String}	params.query	the search string
+ * @param {constant}	params.searchFor	the semantic type to search for
+ * @param {Array}	params.types		the item types to search for
+ * @param {constant}	params.sortBy		the sort constraint
+ * @param {int}	params.offset	the starting point in list of matching items
+ * @param {int}	params.limit	the maximum number of items to return
+ * @param {int}	params.searchId	the ID of owning search folder (if any)
+ * @param {int}	params.prevId	the ID of last items displayed (for pagination)
+ * @param {constant}	params.prevSortBy	previous sort order (for pagination)
+ * @param {Boolean}	params.noRender	if <code>true</code>, results will not be passed to controller
+ * @param {Boolean}	params.noClear	if <code>true</code>, previous results will not be destroyed
+ * @param {Boolean}	params.userText	if <code>true</code>, text was typed by user into search box
+ * @param {AjxCallback}	params.callback		the async callback
+ * @param {AjxCallback}	params.errorCallback	the async callback to run if there is an exception
+ * @param	{Object}	params.response		the canned JSON response (no request will be made)
+ * 
  */
 ZmSearchController.prototype.search =
 function(params) {
@@ -262,6 +335,9 @@ function(params) {
 	this._doSearch(params, params.noRender, respCallback, params.errorCallback);
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._handleResponseSearch =
 function(callback, result) {
 	if (callback) {
@@ -273,11 +349,11 @@ function(callback, result) {
  * Performs the given search. It takes a ZmSearch, rather than constructing one out of the currently selected menu
  * choices. Aside from re-executing a search, it can be used to perform a canned search.
  *
- * @param search		[ZmSearch]			search object
- * @param noRender		[boolean]*			if true, results will not be passed to controller
- * @param changes		[Object]*			hash of changes to make to search
- * @param callback		[AjxCallback]*		async callback
- * @param errorCallback	[AjxCallback]*		async callback to run if there is an exception
+ * @param {ZmSearch}	search		the search object
+ * @param {Boolean}		noRender		if <code>true</code>, results will not be passed to controller
+ * @param {Object}	changes		the hash of changes to make to search
+ * @param {AjxCallback}	callback		the async callback
+ * @param {AjxCallback}	errorCallback	the async callback to run if there is an exception
  */
 ZmSearchController.prototype.redoSearch =
 function(search, noRender, changes, callback, errorCallback) {
@@ -308,6 +384,10 @@ function(search, noRender, changes, callback, errorCallback) {
 	this._doSearch(params, noRender, callback, errorCallback);
 };
 
+/**
+ * Resets search for all accounts.
+ * 
+ */
 ZmSearchController.prototype.resetSearchAllAccounts =
 function() {
 	var button = this.searchAllAccounts && this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
@@ -327,8 +407,9 @@ function() {
 };
 
 /**
- * This is used by the offline client to "reset" the toolbar whenever user
+ * Resets the search toolbar. This is used by the offline client to "reset" the toolbar whenever user
  * switches between accounts.
+ * 
  */
 ZmSearchController.prototype.resetSearchToolbar =
 function() {
@@ -340,11 +421,14 @@ function() {
 };
 
 /**
- * Assembles a list of item types to return based on a search menu value (which can
+ * Gets the item types. Assembles a list of item types to return based on a search menu value (which can
  * be passed in).
  *
- * @param params			[Object]		a hash of arguments for the search (see search() method)
- * TODO: APPS
+ * @param {Hash}	params			a hash of arguments for the search
+ * @param {String}	params.searchFor	the string for.
+ * @return	{AjxVector}		a list of types
+ * 
+ * @see		#search
  */
 ZmSearchController.prototype.getTypes =
 function(params) {
@@ -383,7 +467,7 @@ function(params) {
  * make sure that item is not already selected, so selection should only occur for a query
  * manually run by the user.
  *
- * @param searchObj		[ZmSearch]		the current search
+ * @param {ZmSearch}	searchObj		the current search
  */
 ZmSearchController.prototype.updateOverview =
 function(searchObj) {
@@ -411,6 +495,9 @@ function(searchObj) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._getSuitableSortBy =
 function(types) {
 	var sortBy;
@@ -439,10 +526,18 @@ function(types) {
 /**
  * Performs the search.
  *
- * @param params		[hash]			a hash of params for the search (see search() method)
- * @param noRender		[boolean]*		if true, the search results will not be rendered
- * @param callback		[AjxCallback]*	callback
- * @param errorCallback	[AjxCallback]*	error callback
+ * @param {Hash}	params		a hash of params for the search
+ * @param {String}	params.searchFor	the search for
+ * @param {String}	params.query	the search query
+ * @param {String}	params.userText	the user text
+ * @param {Array}	params.type		an array of types
+ * @param {Boolean}	noRender		if <code>true</code>, the search results will not be rendered
+ * @param {AjxCallback}	callback		the callback
+ * @param {AjxCallback}	errorCallback	the error callback
+ * 
+ * @see	#search
+ * 
+ * @private
  */
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
@@ -520,13 +615,13 @@ function(params, noRender, callback, errorCallback) {
 /**
  * Takes the search result and hands it to the appropriate controller for display.
  *
- * @param search			[ZmSearch]		contains search info used to run search against server
- * @param noRender			[boolean]		skip rendering results
- * @param isMixed			[boolean]*		in mixed mode?
- * @param callback			[AjxCallback]*	callback to run after processing search response
- * @param noUpdateOverview	[boolean]*		skip updating the overview
- * @param noClear			[boolean]*		if true, previous results will not be destructed
- * @param result			[ZmCsfeResult]	search results
+ * @param {ZmSearch}	search			contains search info used to run search against server
+ * @param {Boolean}		noRender		<code>true</code> to skip rendering results
+ * @param {Boolean}	isMixed				<code>true</code> if in mixed mode
+ * @param {AjxCallback}	callback		the callback to run after processing search response
+ * @param {Boolean}	noUpdateOverview	<code>true</code> to skip updating the overview
+ * @param {Boolean}		noClear			if <code>true</code>, previous results will not be destructed
+ * @param {ZmCsfeResult}	result			the search results
  */
 ZmSearchController.prototype._handleResponseDoSearch =
 function(search, noRender, isMixed, callback, noUpdateOverview, noClear, result) {
@@ -554,6 +649,9 @@ function(search, noRender, isMixed, callback, noUpdateOverview, noClear, result)
 	}
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._showResults =
 function(results, search, isMixed, noUpdateOverview, noClear) {
 	// allow old results to dtor itself
@@ -581,6 +679,9 @@ function(results, search, isMixed, noUpdateOverview, noClear) {
 	app.showSearchResults(results, loadCallback);
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._handleLoadShowResults =
 function(results, search, noUpdateOverview) {
 	appCtxt.setCurrentList(results.getResults(results.type));
@@ -590,13 +691,15 @@ function(results, search, noUpdateOverview) {
 	DBG.timePt("render search results");
 };
 
-/*
-* Handle a few minor errors where we show an empty result set and issue a
-* status message to indicate why the query failed. Those errors are: no such
-* folder, no such tag, and bad query. If it's a "no such folder" error caused
-* by the deletion of a folder backing a mountpoint, we pass it along for
-* special handling by ZmZimbraMail.
-*/
+/**
+ * Handle a few minor errors where we show an empty result set and issue a
+ * status message to indicate why the query failed. Those errors are: no such
+ * folder, no such tag, and bad query. If it's a "no such folder" error caused
+ * by the deletion of a folder backing a mountpoint, we pass it along for
+ * special handling by ZmZimbraMail.
+ * 
+ * @private
+ */
 ZmSearchController.prototype._handleErrorDoSearch =
 function(search, isMixed, ex) {
 	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
@@ -620,6 +723,8 @@ function(search, isMixed, ex) {
  * Provides a string to add to the query when the search includes shared items.
  * 
  * @param types		[array]		list of item types
+ * 
+ * @private
  */
 ZmSearchController.generateQueryForShares =
 function(types, account) {
@@ -646,16 +751,22 @@ function(types, account) {
 	return null;
 };
 
-/*********** Search Field Callback */
-
+/**
+ * Search Field Callback
+ *
+ * @private
+ */
 ZmSearchController.prototype._searchFieldCallback =
 function(queryString) {
 	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	this.search({query: queryString, userText: true, getHtml: getHtml});
 };
 
-/*********** Search Bar Callbacks */
-
+/**
+ * Search Bar Callbacks
+ * 
+ * @private
+ */
 ZmSearchController.prototype._searchButtonListener =
 function(ev) {
 	// find out if the custom search menu item is selected and pass it the query
@@ -679,11 +790,17 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._browseButtonListener =
 function(ev) {
 	this.showBrowseView();
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._saveButtonListener =
 function(ev) {
 	var stc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.SEARCH);
@@ -698,6 +815,9 @@ function(ev) {
 	ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._searchMenuListener =
 function(ev, id) {
 	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
@@ -790,6 +910,9 @@ function(ev, id) {
 	btn.setToolTipContent(tooltip);
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._getSharedImage =
 function(selItem) {
 	var selItemId = selItem && selItem.getData(ZmSearchToolBar.MENUITEM_ID);
@@ -798,6 +921,9 @@ function(selItem) {
 		: ZmSearchToolBar.ICON[ZmId.SEARCH_SHARED];
 };
 
+/**
+ * @private
+ */
 ZmSearchController.prototype._getNormalizedId =
 function(id) {
 	var nid = id;

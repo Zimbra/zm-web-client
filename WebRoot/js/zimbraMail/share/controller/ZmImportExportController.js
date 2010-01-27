@@ -13,12 +13,31 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file defines the import/export controller.
+ *
+ */
+
+/**
+ * Creates an import/export controller.
+ * @class
+ * This class represents an import/export controller.
+ * 
+ * @extends		ZmController
+ */
 ZmImportExportController = function() {
 	ZmController.call(this, null);
 };
+
 ZmImportExportController.prototype = new ZmController;
 ZmImportExportController.prototype.constructor = ZmImportExportController;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmImportExportController.prototype.toString = function() {
 	return "ZmImportExportController";
 };
@@ -29,12 +48,32 @@ ZmImportExportController.prototype.toString = function() {
 
 ZmImportExportController.IMPORT_TIMEOUT = 300;
 
+/**
+ * Defines the "CSV" type.
+ * @type {String}
+ */
 ZmImportExportController.TYPE_CSV = "csv";
+/**
+ * Defines the "ICS" type.
+ * @type {String}
+ */
 ZmImportExportController.TYPE_ICS = "ics";
+/**
+ * Defines the "TGZ" type.
+ * @type {String}
+ */
 ZmImportExportController.TYPE_TGZ = "tgz";
 
+/**
+ * Defines the default type.
+ * 
+ * @see		ZmImportExportController.TYPE_TGZ
+ */
 ZmImportExportController.TYPE_DEFAULT = ZmImportExportController.TYPE_TGZ;
 
+/**
+ * Defines the sub-type default array
+ */
 ZmImportExportController.SUBTYPE_DEFAULT = {};
 ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_TGZ] = ZmImportExportController.SUBTYPE_ZIMBRA_TGZ;
 ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_CSV] = ZmImportExportController.SUBTYPE_ZIMBRA_CSV;
@@ -71,19 +110,21 @@ ZmImportExportController.__FAULT_ARGS_MAPPING = {
 
 /**
  * Imports user data as specified in the <code>params</code> object.
- * @param params		[object]	Parameters:
- *        form			[Element]	Form containing file input field.
- *        folderId		[string]	Folder id for import. If not specified,
- * 									assumes import to root folder.
- *        type			[string]*	Type. Defaults to <code>TYPE_TGZ</code>.
- *        subType		[string]*	Sub-type. Defaults to <code>SUBTYPE_DEFAULT[type]</code>.
- *        resolve		[string]*	Resolve duplicates: "" (ignore), "modify", "replace", "reset".
- * 									Defaults to ignore.
- *        views			[string]*	Comma-separated list of views.
- *        callback		[AjxCallback]*	Callback for success.
- *        errorCallback	[AjxCallback]*	Callback for errors.
+ * 
+ * @param {Hash}	params			a hash of parameters
+ * @param {Element}	params.form		the form containing file input field
+ * @param {String}	params.folderId	the folder id for import. If not specified, assumes import to root folder.
+ * @param {String}	params.type		the type (defaults to {@link TYPE_TGZ})
+ * @param {String}	params.subType	the sub-type (defaults to <code>SUBTYPE_DEFAULT[type]</code>)
+ * @param {String}	params.resolve	resolve duplicates: "" (ignore), "modify", "replace", "reset" (defaults to ignore).
+ * @param {String}	params.views	a comma-separated list of views
+ * @param {AjxCallback}	callback	the callback for success
+ * @param {AjxCallback}	errorCallback	the callback for errors
+ *        
+ * @return	{Boolean}	<code>true</code> if the import is successful
  */
-ZmImportExportController.prototype.importData = function(params) {
+ZmImportExportController.prototype.importData =
+function(params) {
 	// error checking
 	params = params || {};
 	var folderId = params.folderId || -1;
@@ -137,17 +178,18 @@ ZmImportExportController.prototype.importData = function(params) {
 /**
  * Exports user data as specified in the <code>params</code> object.
  *
- * @param params		[object]	Parameters:
- *        folderId		[string]	Folder id for export. If not specified,
- * 									assumes all folders want to be exported.
- *        type			[string]*	Type. Defaults to <code>TYPE_TGZ</code>.
- *        subType		[string]*	Sub-type. Defaults to <code>SUBTYPE_DEFAULT[type]</code>.
- *        views			[string]*	Comma-separated list of views.
- *        filename		[string]*	Filename for exported file.
- *        searchFilter	[string]*	Search filter.
- *        skipMeta      [boolean]*  True to skip export of meta-data.
- *        callback		[AjxCallback]*	Callback for success.
- *        errorCallback	[AjxCallback]*	Callback for errors.
+ * @param {Hash}	params		a hash of parameters
+ * @param {String}	params.folderId		the folder id for export. If not specified, all folders want to be exported.
+ * @param {String}	params.type			the type (defaults to {@link TYPE_TGZ})
+ * @param {String}	params.subType		the sub-type (defaults to <code>SUBTYPE_DEFAULT[type]</code>)
+ * @param {String}	params.views		a comma-separated list of views
+ * @param {String}	params.filename		the filename for exported file
+ * @param {String}	params.searchFilter	the search filter
+ * @param {Boolean} params.skipMeta		if <code>true</code>, skip export of meta-data
+ * @param {AjxCallback}	callback	the callback for success
+ * @param {AjxCallback}	errorCallback	the callback for errors
+ *        
+ * @return	{Boolean}	<code>true</code> if the export is successful
  */
 ZmImportExportController.prototype.exportData = function(params) {
 	// error checking
@@ -182,14 +224,22 @@ ZmImportExportController.prototype.exportData = function(params) {
 // Protected methods
 //
 
-ZmImportExportController.prototype._doImportData = function(params) {
+/**
+ * @private
+ */
+ZmImportExportController.prototype._doImportData =
+function(params) {
 	if (params.folderId == -1 && params.defaultType != ZmImportExportController.TYPE_TGZ) {
 		return this._doImportSelectFolder(params);
 	}
 	return this._doImport(params);
 };
 
-ZmImportExportController.prototype._doImportSelectFolder = function(params) {
+/**
+ * @private
+ */
+ZmImportExportController.prototype._doImportSelectFolder =
+function(params) {
 	var dialog = appCtxt.getChooseFolderDialog();
 	dialog.reset();
 	dialog.setTitle(ZmMsg._import);
@@ -227,12 +277,20 @@ ZmImportExportController.prototype._doImportSelectFolder = function(params) {
 	}
 };
 
-ZmImportExportController.prototype._doImportSelectFolderDone = function(params, organizer) {
+/**
+ * @private
+ */
+ZmImportExportController.prototype._doImportSelectFolderDone =
+function(params, organizer) {
 	params.folderId = organizer.id;
 	this._doImport(params);
 };
 
-ZmImportExportController.prototype._doImport = function(params) {
+/**
+ * @private
+ */
+ZmImportExportController.prototype._doImport =
+function(params) {
 	// create custom callback function for this import request
 	var funcName = "ZmImportExportController__callback__"+Dwt.getNextId("import");
 	window[funcName] = AjxCallback.simpleClosure(this._handleImportResponse, this, funcName, params);
@@ -271,6 +329,9 @@ ZmImportExportController.prototype._doImport = function(params) {
 	return true;
 };
 
+/**
+ * @private
+ */
 ZmImportExportController.prototype._handleImportResponse =
 function(funcName, params, type, fault1 /* , ... , faultN */) {
 	// gather error/warning messages
@@ -310,7 +371,11 @@ function(funcName, params, type, fault1 /* , ... , faultN */) {
 	iframe.parentNode.removeChild(iframe);
 };
 
-ZmImportExportController.__faultArgs = function(array) {
+/**
+ * @private
+ */
+ZmImportExportController.__faultArgs =
+function(array) {
 	var args = {};
 	for (var i = 0; array && i < array.length; i++) {
 		args[array[i].n] = array[i]._content;
@@ -318,18 +383,30 @@ ZmImportExportController.__faultArgs = function(array) {
 	return args;
 };
 
-ZmImportExportController.prototype._confirmImportReset = function(params) {
+/**
+ * @private
+ */
+ZmImportExportController.prototype._confirmImportReset =
+function(params) {
 	this._cancelImportReset();
 	this._doImportData(params);
 };
 
-ZmImportExportController.prototype._cancelImportReset = function() {
+/**
+ * @private
+ */
+ZmImportExportController.prototype._cancelImportReset =
+function() {
 	var dialog = appCtxt.getOkCancelMsgDialog();
 	dialog.reset();
 	dialog.popdown();
 };
 
-ZmImportExportController.prototype._doExportData = function(params) {
+/**
+ * @private
+ */
+ZmImportExportController.prototype._doExportData =
+function(params) {
 	var type = params.type;
 	var isTGZ = type == ZmImportExportController.TYPE_TGZ;
 	var isCSV = type == ZmImportExportController.TYPE_CSV;
@@ -367,7 +444,11 @@ ZmImportExportController.prototype._doExportData = function(params) {
 	form.submit();
 };
 
-ZmImportExportController.prototype._importSuccess = function(callback) {
+/**
+ * @private
+ */
+ZmImportExportController.prototype._importSuccess =
+function(callback) {
 	if (callback) {
 		callback.run(true);
 	}
@@ -375,7 +456,11 @@ ZmImportExportController.prototype._importSuccess = function(callback) {
 	return true;
 };
 
-ZmImportExportController.prototype._importWarnings = function(callback, messages) {
+/**
+ * @private
+ */
+ZmImportExportController.prototype._importWarnings =
+function(callback, messages) {
 	if (callback) {
 		callback.run(false);
 	}
@@ -399,7 +484,11 @@ ZmImportExportController.prototype._importWarnings = function(callback, messages
 	return true;
 };
 
-ZmImportExportController.prototype._importError = function(errorCallback, message) {
+/**
+ * @private
+ */
+ZmImportExportController.prototype._importError =
+function(errorCallback, message) {
 	if (errorCallback) {
 		errorCallback.run(false);
 	}
@@ -408,7 +497,11 @@ ZmImportExportController.prototype._importError = function(errorCallback, messag
 	return true;
 };
 
-ZmImportExportController.prototype._exportSuccess = function(callback) {
+/**
+ * @private
+ */
+ZmImportExportController.prototype._exportSuccess =
+function(callback) {
 	if (callback) {
 		callback.run(true);
 	}
@@ -416,7 +509,11 @@ ZmImportExportController.prototype._exportSuccess = function(callback) {
 	return true;
 };
 
-ZmImportExportController.prototype._exportError = function(errorCallback) {
+/**
+ * @private
+ */
+ZmImportExportController.prototype._exportError =
+function(errorCallback) {
 	if (errorCallback) {
 		errorCallback.run(false);
 	}
@@ -428,13 +525,21 @@ ZmImportExportController.prototype._exportError = function(errorCallback) {
 // Private methods
 //
 
-ZmImportExportController.__showMessage = function(msg, level) {
+/**
+ * @private
+ */
+ZmImportExportController.__showMessage =
+function(msg, level) {
 	var dialog = appCtxt.getErrorDialog();
 	dialog.setMessage(msg, null, level);
 	dialog.popup(null, true);
 };
 
-ZmImportExportController.__createForm = function(action, params, method) {
+/**
+ * @private
+ */
+ZmImportExportController.__createForm =
+function(action, params, method) {
 	var form = document.createElement("FORM");
 	form.action = action;
 	form.method = method || "GET";
@@ -452,7 +557,11 @@ ZmImportExportController.__createForm = function(action, params, method) {
 	return form;
 };
 
-ZmImportExportController.__createIframe = function(form, onload, onerror) {
+/**
+ * @private
+ */
+ZmImportExportController.__createIframe =
+function(form, onload, onerror) {
 	var id = Dwt.getNextId() + "_iframe";
 	var iframe;
 	if (AjxEnv.isIE) {

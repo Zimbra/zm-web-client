@@ -14,24 +14,31 @@
  */
 
 /**
- * Creates a new, empty list controller. It must be initialized before it can be used.
- * @constructor
+ * @overview
+ * This file defines the list controller.
+ *
+ */
+
+/**
+ * Creates a new, empty list controller. This controller must be initialized before it can be used.
  * @class
- * This class is a base class for any controller that manages lists of items (eg mail or
- * contacts). It consolidates handling of list functionality (eg selection) and of common
+ * This class is a base class for any controller that manages lists of items (for example, mail or
+ * contacts). It consolidates handling of list functionality (for example, selection) and of common
  * operations such as tagging and deletion. Operations may be accessed by the user through
- * either the toolbar or an action menu. The public method show() gets everything going,
+ * either the tool bar or an action menu. The public method show() gets everything going,
  * and then the controller just handles events.
  *
- * <p>Support is also present for handling multiple views (eg contacts).</p>
+ * <p>Support is also present for handling multiple views (for example, contacts).</p>
  *
- *   <p>Controllers for single items may extend this class, since the functionality needed is
+ * <p>Controllers for single items may extend this class, since the functionality needed is
  *  virtually the same. An item can be thought of as the degenerate form of a list.</p>
  *
- *  @author Conrad Damon
+ * @author Conrad Damon
  *
- * @param container	containing shell
- * @param app		containing app
+ * @param {Object}		container	the containing shell
+ * @param {ZmApp}		app		the containing application
+ * 
+ * @extends		ZmController
  */
 ZmListController = function(container, app) {
 
@@ -91,6 +98,11 @@ ZmListController.CONTINUATION_SEARCH_ITEMS = 500;
 
 // public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmListController.prototype.toString =
 function() {
 	return "ZmListController";
@@ -100,8 +112,8 @@ function() {
 * Performs some setup for displaying the given search results in a list view. Subclasses will need
 * to do the actual display work, typically by calling the list view's set() method.
 *
-* @param searchResults		a ZmSearchResult
-* @param view				view type to use
+* @param {ZmSearchResult}	searchResults		the search results
+* @param {DwtComposite}		view				the view type to use
 */
 ZmListController.prototype.show	=
 function(searchResults, view) {
@@ -115,31 +127,61 @@ function(searchResults, view) {
 	this.maxPage = 1;
 };
 
+/**
+ * Gets the search string.
+ * 
+ * @return	{String}	the search string
+ */
 ZmListController.prototype.getSearchString =
 function() {
 	return this._currentSearch ? this._currentSearch.query : "";
 };
 
+/**
+ * Gets the search string hint.
+ * 
+ * @return	{String}	the search string hint
+ */
 ZmListController.prototype.getSearchStringHint =
 function() {
 	return this._currentSearch ? this._currentSearch.queryHint : "";
 };
 
+/**
+ * Gets the current view.
+ * 
+ * @return	{ZmListView}	the view
+ */
 ZmListController.prototype.getCurrentView =
 function() {
 	return this._listView[this._currentView];
 };
 
+/**
+ * Gets the current tool bar.
+ * 
+ * @return	{ZmButtonToolbar}		the toolbar
+ */
 ZmListController.prototype.getCurrentToolbar =
 function() {
 	return this._toolbar[this._currentView];
 };
 
+/**
+ * Gets the list.
+ * 
+ * @return	{ZmList}		the list
+ */
 ZmListController.prototype.getList =
 function() {
 	return this._list;
 };
 
+/**
+ * Sets the list.
+ * 
+ * @param	{ZmList}	newList		the new list
+ */
 ZmListController.prototype.setList =
 function(newList) {
 	if (newList != this._list && (newList instanceof ZmList)) {
@@ -151,11 +193,13 @@ function(newList) {
 };
 
 /**
- * <strong>Note:</strong>
- * This is a bit of a HACK that is an attempt to overcome an
+ * Sets the "has more" state.
+ * 
+ * <strong>Note:</strong> This is a bit of a HACK that is an attempt to overcome an
  * offline issue. The problem is during initial sync when more
- * messages come in: the forward navigation arrow doesn't get
- * enabled.
+ * messages come in: the forward navigation arrow doesn't get enabled.
+ * 
+ * @param	{Boolean}	hasMore		<code>true</code> if has more
  */
 ZmListController.prototype.setHasMore =
 function(hasMore) {
@@ -166,6 +210,12 @@ function(hasMore) {
 	}
 };
 
+/**
+ * Handles the key action.
+ * 
+ * @param	{constant}	actionCode		the action code
+ * @return	{Boolean}	<code>true</code> if the action is handled
+ */
 ZmListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
@@ -263,14 +313,22 @@ ZmListController.prototype._getActionMenuOps 	= function() {};
 
 // private and protected methods
 
-// Creates basic elements and sets the toolbar and action menu
+/**
+ * Creates basic elements and sets the toolbar and action menu.
+ * 
+ * @private
+ */
 ZmListController.prototype._setup =
 function(view) {
 	this._initialize(view);
 	this._resetOperations(this._toolbar[view], 0);
 };
 
-// Creates the basic elements: toolbar, list view, and action menu
+/**
+ * Creates the basic elements: toolbar, list view, and action menu.
+ *
+ * @private
+ */
 ZmListController.prototype._initialize =
 function(view) {
 	this._initializeToolBar(view);
@@ -281,6 +339,9 @@ function(view) {
 // Below are functions that return various groups of operations, for cafeteria-style
 // operation selection.
 
+/**
+ * @private
+ */
 ZmListController.prototype._standardToolBarOps =
 function() {
 	return [ZmOperation.NEW_MENU,
@@ -288,11 +349,17 @@ function() {
 			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT];
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._standardActionMenuOps =
 function() {
 	return [ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT];
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._participantOps =
 function() {
 	var ops = [ZmOperation.SEARCH, ZmOperation.BROWSE];
@@ -312,7 +379,11 @@ function() {
 	return ops;
 };
 
-// toolbar: buttons and listeners
+/**
+ * Initializes the toolbar buttons and listeners.
+ * 
+ * @private
+ */
 ZmListController.prototype._initializeToolBar =
 function(view) {
 	if (this._toolbar[view]) { return; }
@@ -358,7 +429,11 @@ function(view) {
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
 
-// list view and its listeners
+/**
+ * Initializes list view and its listeners.
+ * 
+ * @private
+ */
 ZmListController.prototype._initializeListView =
 function(view) {
 	if (this._listView[view]) { return; }
@@ -368,7 +443,11 @@ function(view) {
 	this._listView[view].addActionListener(new AjxListener(this, this._listActionListener));
 };
 
-// action menu: menu items and listeners
+/**
+ * Initializes action menu: menu items and listeners
+ * 
+ * @private
+ */
 ZmListController.prototype._initializeActionMenu =
 function() {
 	if (this._actionMenu) { return; }
@@ -383,6 +462,9 @@ function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._addMenuListeners =
 function(menu) {
 	var menuItems = menu.opList;
@@ -395,6 +477,9 @@ function(menu) {
 	menu.addPopdownListener(this._menuPopdownListener);
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._initializeTabGroup =
 function(view) {
 	if (this._tabGroups[view]) return;
@@ -417,6 +502,8 @@ function(view) {
  *        isTransient	[boolean]*		this view doesn't go on the hidden stack
  *        stageView		[boolean]*		stage the view rather than push it
  *        tabParams		[hash]*			button params; view is opened in app tab instead of being stacked
+ *        
+ * @private
  */
 ZmListController.prototype._setView =
 function(params) {
@@ -455,8 +542,12 @@ function(params) {
 
 // List listeners
 
-// List selection event - handle flagging if a flag icon was clicked, otherwise
-// reset the toolbar based on how many items are selected.
+/**
+ * List selection event - handle flagging if a flag icon was clicked, otherwise
+ * reset the toolbar based on how many items are selected.
+ * 
+ * @private
+ */
 ZmListController.prototype._listSelectionListener =
 function(ev) {
 	if (ev.field == ZmItem.F_FLAG) {
@@ -474,10 +565,14 @@ function(ev) {
 	}
 };
 
-// List action event - set the dynamic tag menu, and enable operations in the
-// action menu based on the number of selected items. Note that the menu is not
-// actually popped up here; that's left up to the subclass, which should
-// override this function.
+/**
+ * List action event - set the dynamic tag menu, and enable operations in the
+ * action menu based on the number of selected items. Note that the menu is not
+ * actually popped up here; that's left up to the subclass, which should
+ * override this function.
+ * 
+ * @private
+ */
 ZmListController.prototype._listActionListener =
 function(ev) {
 	this._actionEv = ev;
@@ -501,9 +596,11 @@ function() {
  * Create some new thing, via a dialog. If just the button has been pressed (rather than
  * a menu item), the action taken depends on the app.
  *
- * @param ev		[DwtUiEvent]	UI event
- * @param op		[constant]		operation ID
- * @param newWin	[boolean]		true if we're in a separate window
+ * @param {DwtUiEvent}	ev		the ui event
+ * @param {constant}	op		the operation ID
+ * @param {Boolean}		newWin	<code>true</code> if in a separate window
+ * 
+ * @private
  */
 ZmListController.prototype._newListener =
 function(ev, op, params) {
@@ -523,8 +620,12 @@ function(ev, op, params) {
 	}
 };
 
-// Tag button has been pressed. We don't tag anything (since no tag has been selected),
-// we just show the dynamic tag menu.
+/**
+ * Tag button has been pressed. We don't tag anything (since no tag has been selected),
+ * we just show the dynamic tag menu.
+ * 
+ * @private
+ */
 ZmListController.prototype._tagButtonListener =
 function(ev) {
 	var toolbar = this._toolbar[this._currentView];
@@ -533,7 +634,11 @@ function(ev) {
 	}
 };
 
-// Tag/untag items.
+/**
+ * Tag/untag items.
+ * 
+ * @private
+ */
 ZmListController.prototype._tagListener =
 function(ev) {
 	if (appCtxt.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
@@ -559,7 +664,11 @@ function(ev) {
 	}
 };
 
-// Called after tag selection via dialog
+/**
+ * Called after tag selection via dialog.
+ * 
+ * @private
+ */
 ZmListController.prototype._tagSelectionCallback =
 function(items, dialog, tag) {
 	if (tag) {
@@ -568,7 +677,11 @@ function(items, dialog, tag) {
 	dialog.popdown();
 };
 
-// overload if you want to print in a different way
+/**
+ * overload if you want to print in a different way.
+ * 
+ * @private
+ */
 ZmListController.prototype._printListener =
 function(ev) {
 	var listView = this._listView[this._currentView];
@@ -582,13 +695,21 @@ function(ev) {
 	this._app.popView();
 };
 
-// Delete one or more items.
+/**
+ * Delete one or more items.
+ * 
+ * @private
+ */
 ZmListController.prototype._deleteListener =
 function(ev) {
 	this._doDelete(this._listView[this._currentView].getSelection());
 };
 
-// Move button has been pressed, show the dialog.
+/**
+ * Move button has been pressed, show the dialog.
+ * 
+ * @private
+ */
 ZmListController.prototype._moveListener =
 function(ev, list) {
 	this._pendingActionData = list || (this._listView[this._currentView].getSelection());
@@ -600,6 +721,9 @@ function(ev, list) {
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._getMoveParams =
 function(dlg) {
 	var org = ZmApp.ORGANIZER[this._app._name] || ZmOrganizer.FOLDER;
@@ -614,7 +738,11 @@ function(dlg) {
 	};
 };
 
-// Switch to selected view.
+/**
+ * Switch to selected view.
+ * 
+ * @private
+ */
 ZmListController.prototype._viewMenuItemListener =
 function(ev) {
 	if (ev.detail == DwtMenuItem.CHECKED ||
@@ -626,6 +754,9 @@ function(ev) {
 
 // Navbar listeners
 
+/**
+ * @private
+ */
 ZmListController.prototype._navBarListener =
 function(ev) {
 	// skip listener for non-current views
@@ -640,21 +771,33 @@ function(ev) {
 
 // Participant listeners
 
-// Search based on email address
+/**
+ * Search based on email address.
+ * 
+ * @private
+ */
 ZmListController.prototype._participantSearchListener =
 function(ev) {
 	var name = this._actionEv.address.getAddress();
 	appCtxt.getSearchController().fromSearch(name);
 };
 
-// Browse based on email address
+/**
+ * Browse based on email address.
+ * 
+ * @private
+ */
 ZmListController.prototype._participantBrowseListener =
 function(ev) {
 	var name = this._actionEv.address.getAddress();
 	appCtxt.getSearchController().fromBrowse(name);
 };
 
-// Compose message to participant
+/**
+ * Compose message to participant.
+ * 
+ * @private
+ */
 ZmListController.prototype._participantComposeListener =
 function(ev) {
 	var name = this._actionEv.address.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR;
@@ -662,13 +805,20 @@ function(ev) {
 								  toOverride: name});
 };
 
-// If there's a contact for the participant, edit it, otherwise add it.
+/**
+ * If there's a contact for the participant, edit it, otherwise add it.
+ * 
+ * @private
+ */
 ZmListController.prototype._participantContactListener =
 function(ev) {
 	var loadCallback = new AjxCallback(this, this._handleLoadParticipantContactListener);
 	AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._handleLoadParticipantContactListener =
 function() {
 	var cc = AjxDispatcher.run("GetContactController");
@@ -685,6 +835,9 @@ function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._createNewContact =
 function(ev) {
 	var contact = new ZmContact(null);
@@ -692,6 +845,9 @@ function(ev) {
 	return contact;
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._loadContactCallback =
 function(resp, contact) {
 	AjxDispatcher.run("GetContactController").show(contact);
@@ -699,6 +855,9 @@ function(resp, contact) {
 
 // Drag and drop listeners
 
+/**
+ * @private
+ */
 ZmListController.prototype._dragListener =
 function(ev) {
 	if (ev.action == DwtDragEvent.SET_DATA) {
@@ -706,12 +865,16 @@ function(ev) {
 	}
 };
 
-// The list view as a whole is the drop target, since it's the lowest-level widget. Still, we
-// need to find out which item got dropped onto, so we get that from the original UI event
-// (a mouseup). The header is within the list view, but not an item, so it's not a valid drop
-// target. One drawback of having the list view be the drop target is that we can't exercise
-// fine-grained control on what's a valid drop target. If you enter via an item and then drag to
-// the header, it will appear to be valid.
+/**
+ * The list view as a whole is the drop target, since it's the lowest-level widget. Still, we
+ * need to find out which item got dropped onto, so we get that from the original UI event
+ * (a mouseup). The header is within the list view, but not an item, so it's not a valid drop
+ * target. One drawback of having the list view be the drop target is that we can't exercise
+ * fine-grained control on what's a valid drop target. If you enter via an item and then drag to
+ * the header, it will appear to be valid.
+ * 
+ * @private
+ */
 ZmListController.prototype._dropListener =
 function(ev) {
 	var view = this._listView[this._currentView];
@@ -743,7 +906,11 @@ function(ev) {
 
 // Dialog callbacks
 
-// Created a new tag, now apply it.
+/**
+ * Created a new tag, now apply it.
+ * 
+ * @private
+ */
 ZmListController.prototype._tagChangeListener =
 function(ev) {
 	// only process if current view is this view!
@@ -759,7 +926,11 @@ function(ev) {
 
 // new organizer callbacks
 
-// Move stuff to a new folder.
+/**
+ * Move stuff to a new folder.
+ * 
+ * @private
+ */
 ZmListController.prototype._moveCallback =
 function(folder) {
 	this._doMove(this._pendingActionData, folder);
@@ -769,7 +940,11 @@ function(folder) {
 
 // Data handling
 
-// Flag/unflag an item
+/**
+ * Flag/unflag an item
+ * 
+ * @private
+ */
 ZmListController.prototype._doFlag =
 function(items, on) {
 
@@ -791,7 +966,11 @@ function(items, on) {
 	list.flagItems(params);
 };
 
-// Tag/untag items
+/**
+ * Tag/untag items
+ * 
+ * @private
+ */
 ZmListController.prototype._doTag =
 function(items, tag, doTag) {
 
@@ -803,7 +982,11 @@ function(items, tag, doTag) {
 	list.tagItems(params);
 };
 
-// Remove all tags for given items
+/**
+ * Remove all tags for given items
+ * 
+ * @private
+ */
 ZmListController.prototype._doRemoveAllTags =
 function(items) {
 
@@ -821,6 +1004,8 @@ function(items) {
 * @param items			[Array]			list of items to delete
 * @param hardDelete		[boolean]*		if true, physically delete items
 * @param attrs			[Object]*		additional attrs for SOAP command
+* 
+* @private
 */
 ZmListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
@@ -835,13 +1020,14 @@ function(items, hardDelete, attrs) {
 };
 
 /**
-* Moves a list of items to the given folder. Any item already in that folder is excluded.
-*
-* @param items		[Array]			a list of items to move
-* @param folder		[ZmFolder]		destination folder
-* @param attrs		[Object]		additional attrs for SOAP command
-@ @param isShiftKey	[boolean]		true if forcing a copy action
-*/
+ * Moves a list of items to the given folder. Any item already in that folder is excluded.
+ *
+ * @param {Array}	items		a list of items to move
+ * @param {ZmFolder}	folder		the destination folder
+ * @param {Object}	attrs		the additional attrs for SOAP command
+ * @param {Boolean}		isShiftKey	<code>true</code> if forcing a copy action
+ * @private
+ */
 ZmListController.prototype._doMove =
 function(items, folder, attrs, isShiftKey) {
 
@@ -879,23 +1065,33 @@ function(items, folder, attrs, isShiftKey) {
 /**
  * Decides whether an item is movable
  *
- * @param item			[Object]	item to be checked
- * @param isShiftKey	[Boolean]*	true if forcing a copy (not a move)
- * @param folder		[ZmFolder]	folder this item belongs under
+ * @param {Object}	item			the item to be checked
+ * @param {Boolean}		isShiftKey	<code>true</code> if forcing a copy (not a move)
+ * @param {ZmFolder}	folder		the folder this item belongs under
+ * 
+ * @private
  */
 ZmListController.prototype._isItemMovable =
 function(item, isShiftKey, folder) {
 	return (!isShiftKey && !item.isReadOnly() && !folder.isReadOnly());
 };
 
-// Modify an item
+/**
+ * Modify an item.
+ * 
+ * @private
+ */
 ZmListController.prototype._doModify =
 function(item, mods) {
 	var list = item.list || this._list;
 	list.modifyItem(item, mods);
 };
 
-// Create an item. We need to be passed a list since we may not have one.
+/**
+ * Create an item. We need to be passed a list since we may not have one.
+ * 
+ * @private
+ */
 ZmListController.prototype._doCreate =
 function(list, args) {
 	list.create(args);
@@ -903,14 +1099,15 @@ function(list, args) {
 
 // Miscellaneous
 
-/*
-* Adds the same listener to all of the items in a button or menu item's submenu.
-* By default, propagates the listener for the given operation.
-*
-* @param parent		[DwtControl]		parent toolbar or menu
-* @param op			[constant]			operation (button or menu item)
-* @param listener	[AjxListener]*		listener to propagate
-*/
+/**
+ * Adds the same listener to all of the items in a button or menu item's submenu.
+ * By default, propagates the listener for the given operation.
+ *
+ * @param {DwtControl}	parent		the parent toolbar or menu
+ * @param {constant}	op			the operation (button or menu item)
+ * @param {AjxListener}	listener	the listener to propagate
+ * @private
+ */
 ZmListController.prototype._propagateMenuListeners =
 function(parent, op, listener) {
 	if (!parent) { return; }
@@ -926,7 +1123,11 @@ function(parent, op, listener) {
 	}
 };
 
-// Add listener to tag menu
+/**
+ * Add listener to tag menu
+ * 
+ * @private
+ */
 ZmListController.prototype._setupTagMenu =
 function(parent) {
 	if (!parent) return;
@@ -940,7 +1141,11 @@ function(parent) {
 	}
 };
 
-// Dynamically build the tag menu based on selected items and their tags.
+/**
+ * Dynamically build the tag menu based on selected items and their tags.
+ * 
+ * @private
+ */
 ZmListController.prototype._setTagMenu =
 function(parent) {
 	if (!parent) return;
@@ -972,7 +1177,11 @@ function(parent) {
 	}
 };
 
-// Set up the New button based on the current app.
+/**
+ * Set up the New button based on the current app.
+ * 
+ * @private
+ */
 ZmListController.prototype._setNewButtonProps =
 function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 	var newButton = this._toolbar[view].getButton(ZmOperation.NEW_MENU);
@@ -983,7 +1192,11 @@ function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 	}
 };
 
-// Sets text to "add" or "edit" based on whether a participant is a contact or not.
+/**
+ * Sets text to "add" or "edit" based on whether a participant is a contact or not.
+ * 
+ * @private
+ */
 ZmListController.prototype._setContactText =
 function(isContact) {
 	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
@@ -992,7 +1205,11 @@ function(isContact) {
 	ZmOperation.setOperation(this.getActionMenu(), ZmOperation.CONTACT, newOp, newText);
 };
 
-// Resets the available options on a toolbar or action menu.
+/**
+ * Resets the available options on a toolbar or action menu.
+ * 
+ * @private
+ */
 ZmListController.prototype._resetOperations =
 function(parent, num) {
 	if (!parent) return;
@@ -1015,13 +1232,21 @@ function(parent, num) {
 	}
 };
 
-// Resets the available options on the toolbar
+/**
+ * Resets the available options on the toolbar.
+ * 
+ * @private
+ */
 ZmListController.prototype._resetToolbarOperations =
 function() {
 	this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
 };
 
-// this method gets overloaded if folder id is retrieved another way
+/**
+ * This method gets overloaded if folder id is retrieved another way
+ * 
+ * @private
+ */
 ZmListController.prototype._getSearchFolderId =
 function() {
 	return (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
@@ -1029,6 +1254,9 @@ function() {
 
 // Pagination
 
+/**
+ * @private
+ */
 ZmListController.prototype._cacheList =
 function(search, offset) {
 
@@ -1041,6 +1269,9 @@ function(search, offset) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._search =
 function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 	var params = {
@@ -1064,24 +1295,26 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 	appCtxt.getSearchController().redoSearch(search, true, null, callback);
 };
 
-/*
-* Gets next or previous page of items. The set of items may come from the
-* cached list, or from the server (using the current search as a base).
-* <p>
-* The loadIndex is the index'd item w/in the list that needs to be loaded -
-* initiated only when user is in CV and pages a conversation that has not
-* been loaded yet.</p>
-* <p>
-* Note that this method returns a value even though it may make an
-* asynchronous SOAP request. That's possible as long as no caller
-* depends on the results of that request. Currently, the only caller that
-* looks at the return value acts on it only if no request was made.</p>
-*
-* @param view		[constant]		current view
-* @param forward	[boolean]		if true, get next page rather than previous
-* @param loadIndex	[int]			index of item to show
-* @param limit		[int]*			number of items to fetch
-*/
+/**
+ * Gets next or previous page of items. The set of items may come from the
+ * cached list, or from the server (using the current search as a base).
+ * <p>
+ * The loadIndex is the index'd item w/in the list that needs to be loaded -
+ * initiated only when user is in CV and pages a conversation that has not
+ * been loaded yet.</p>
+ * <p>
+ * Note that this method returns a value even though it may make an
+ * asynchronous SOAP request. That's possible as long as no caller
+ * depends on the results of that request. Currently, the only caller that
+ * looks at the return value acts on it only if no request was made.</p>
+ *
+ * @param {constant}	view		the current view
+ * @param {Boolean}	forward		if <code>true</code>, get next page rather than previous
+ * @param {int}		loadIndex	the index of item to show
+ * @param {int}	limit		the number of items to fetch
+ * 
+ * @private
+ */
 ZmListController.prototype._paginate =
 function(view, forward, loadIndex, limit) {
 
@@ -1140,15 +1373,17 @@ function(view, forward, loadIndex, limit) {
 	}
 };
 
-/*
-* Updates the list and the view after a new page of items has been retrieved.
-*
-* @param view					[constant]		current view
-* @param saveSelection			[boolean]		if true, maintain current selection
-* @param loadIndex				[int]			index of item to show
-* @param result					[ZmCsfeResult]	result of SOAP request
-* @param ignoreResetSelection	[boolean] 		if true, dont reset selection
-*/
+/**
+ * Updates the list and the view after a new page of items has been retrieved.
+ *
+ * @param {constant}	view				the current view
+ * @param {Boolean}	saveSelection			if <code>true</code>, maintain current selection
+ * @param {int}	loadIndex				the index of item to show
+ * @param {ZmCsfeResult}	result			the result of SOAP request
+ * @param {Boolean}	ignoreResetSelection	if <code>true</code>, do not reset selection
+ * 
+ * @private
+ */
 ZmListController.prototype._handleResponsePaginate =
 function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 
@@ -1197,11 +1432,17 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	this._searchPending = false;
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._getMoreSearchParams =
 function(params) {
 	// overload me if more params are needed for SearchRequest
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._checkReplenish =
 function(callback) {
 	var view = this._listView[this._currentView];
@@ -1220,7 +1461,11 @@ function(callback) {
 	}
 };
 
-// All items in the list view are gone - show "No Results"
+/**
+ * All items in the list view are gone - show "No Results".
+ * 
+ * @private
+ */
 ZmListController.prototype._handleEmptyList =
 function(listView) {
 	if (this.currentPage > 1) {
@@ -1233,6 +1478,9 @@ function(listView) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._replenishList =
 function(view, replCount, callback) {
 	// determine if there are any more items to replenish with
@@ -1253,6 +1501,9 @@ function(view, replCount, callback) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._resetSelection =
 function(idx) {
 	var list = this._listView[this._currentView].getList();
@@ -1263,13 +1514,15 @@ function(idx) {
 	}
 };
 
-/*
-* Requests replCount items from the server to replenish current listview
-*
-* @param view		[constant]		current view to replenish
-* @param replCount 	[int]			number of items to replenish
-* @param callback	[AjxCallback]	async callback
-*/
+/**
+ * Requests replCount items from the server to replenish current listview.
+ *
+ * @param {constant}	view		the current view to replenish
+ * @param {int}	replCount 	the number of items to replenish
+ * @param {AjxCallback}	callback	the async callback
+ * 
+ * @private
+ */
 ZmListController.prototype._getMoreToReplenish =
 function(view, replCount, callback) {
 	if (this._list.hasMore()) {
@@ -1287,6 +1540,9 @@ function(view, replCount, callback) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._handleResponseGetMoreToReplenish =
 function(view, callback, result) {
 	var searchResult = result.getResponse();
@@ -1325,6 +1581,9 @@ function(toolbar, view) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._resetNavToolBarButtons =
 function(view) {
 
@@ -1353,6 +1612,9 @@ function(view) {
 	this._navToolBar[view].setText(this._getNavText(view));
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype.enablePagination =
 function(enabled, view) {
 	if (!this._navToolBar[view]) { return; }
@@ -1364,6 +1626,9 @@ function(enabled, view) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._getNavText =
 function(view) {
 	var se = this._getNavStartEnd(view);
@@ -1374,6 +1639,9 @@ function(view) {
 	return AjxMessageFormat.format(msgText, [se.start, se.end, total]);
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._getNavStartEnd =
 function(view) {
 	var lv = this._listView[view];
@@ -1389,6 +1657,9 @@ function(view) {
 	return (start && end) ? {start:start, end:end} : null;
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._getNumTotal =
 function() {
 	var folderId = this._getSearchFolderId();
@@ -1401,10 +1672,12 @@ function() {
 	return null;
 };
 
-/*
-* Creates the New menu's drop down menu the first time the drop down arrow is used,
-* then removes itself as a listener.
-*/
+/**
+ * Creates the New menu's drop down menu the first time the drop down arrow is used,
+ * then removes itself as a listener.
+ * 
+ * @private
+ */
 ZmListController._newDropDownListener =
 function(event) {
 	var toolbar = this;
@@ -1422,11 +1695,17 @@ function(event) {
 	delete toolbar._ZmListController_newDropDownListener;
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._getDefaultFocusItem =
 function() {
 	return this._listView[this._currentView];
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype.getActionMenu =
 function() {
 	if (!this._actionMenu) {
@@ -1441,12 +1720,17 @@ function() {
 /**
  * Returns the context for the action menu created by this controller (used to create
  * an ID for the menu).
+ * 
+ * @private
  */
 ZmListController.prototype._getMenuContext =
 function() {
 	return this._app && this._app._name;
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._getItemCountText =
 function() {
 
@@ -1471,7 +1755,11 @@ function() {
 	}
 };
 
-// sets the text that shows the number of items, if we are pageless
+/**
+ * Sets the text that shows the number of items, if we are pageless.
+ * 
+ * @private
+ */
 ZmListController.prototype._setItemCountText =
 function(text) {
 
@@ -1486,10 +1774,12 @@ function(text) {
  * Records total items and last item before we do any more searches. Adds a couple
  * params to the args for the list action method.
  *
- * @param actionMethod		[function]		controller action method
- * @param args				[array]			arg list for above (except for items arg)
- * @param params			[hash]			params that will be passed to list action method
- * @param allDoneCallback	[AjxCallback]	callback to run after all items processed
+ * @param {function}		actionMethod		the controller action method
+ * @param {Array}	args				an arg list for above (except for items arg)
+ * @param {Hash}		params			the params that will be passed to list action method
+ * @param {AjxCallback}	allDoneCallback	the callback to run after all items processed
+ * 
+ * @private
  */
 ZmListController.prototype._setupContinuation =
 function(actionMethod, args, params, allDoneCallback) {
@@ -1518,10 +1808,12 @@ function(actionMethod, args, params, allDoneCallback) {
  * array of items retrieved by the search is prepended to the callback's argument list before it
  * is run.
  *
- * @param params			[hash]			hash of params:
- *        actionCallback	[AjxCallback]	callback with action to be performed on search results
- *        allDoneCallback	[AjxCallback]*	callback to run when we're all done
- * @param actionParams		[hash]			params from ZmList._itemAction, added when this is called
+ * @param {Hash}	params			a hash of parameters
+ * @param {AjxCallback}	actionCallback		the callback with action to be performed on search results
+ * @param {AjxCallback} allDoneCallback		the callback to run when we're all done
+ * @param {Hash}	actionParams		the params from <code>ZmList._itemAction</code>, added when this is called
+ * 
+ * @private
  */
 ZmListController.prototype._continueAction =
 function(params, actionParams) {
@@ -1586,6 +1878,9 @@ function(params, actionParams) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._handleResponseContinueAction =
 function(actionCallback, result) {
 
@@ -1603,6 +1898,9 @@ function(actionCallback, result) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmListController.prototype._checkItemCount =
 function() {
 	var lv = this._listView[this._currentView];

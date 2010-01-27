@@ -14,12 +14,19 @@
  */
 
 /**
- * Creates a saved search tree controller.
- * @constructor
+ * @overview
+ * This file defines the search tree controller.
+ *
+ */
+
+/**
+ * Creates a search tree controller.
  * @class
  * This class controls a tree display of saved searches.
  *
  * @author Conrad Damon
+ * 
+ * @extends		ZmFolderTreeController
  */
 ZmSearchTreeController = function() {
 
@@ -36,19 +43,26 @@ ZmSearchTreeController.APP_JOIN_CHAR = "-";
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmSearchTreeController.prototype.toString = 
 function() {
 	return "ZmSearchTreeController";
 };
 
 /**
- * Displays the tree of this type.
+ * Shows the tree of this type.
  *
- * @param overviewId		[constant]			overview ID
- * @param showUnread		[boolean]*			if true, unread counts will be shown
- * @param omit				[Object]*			hash of organizer IDs to ignore
- * @param forceCreate		[boolean]*			if true, tree view will be created
- * @param account			[ZmZimbraAccount]*	account we're showing tree for (if not currently active account)
+ * @param	{Hash}	params		a hash of parameters
+ * @param	{String}	params.overviewId		the overview ID
+ * @param	{Boolean}	params.showUnread		if <code>true</code>, unread counts will be shown
+ * @param	{Object}	params.omit			a hash of organizer IDs to ignore
+ * @param	{Boolean}	params.forceCreate	if <code>true</code>, tree view will be created
+ * @param	{ZmZimbraAccount}	params.account	the account to show tree for (if not currently active account)
+ * 
  */
 ZmSearchTreeController.prototype.show =
 function(params) {
@@ -74,16 +88,22 @@ function(params) {
 	return this._treeView[id];
 };
 
+/**
+ * Gets the tree style.
+ * 
+ * @return	{Object}	the tree style or <code>null</code> if not set
+ */
 ZmSearchTreeController.prototype.getTreeStyle =
 function() {
 	return null;
 };
 
 /**
-* Enables/disables operations based on context.
+* Resets and enables/disables operations based on context.
 *
-* @param parent		the widget that contains the operations
-* @param id			the currently selected/activated organizer
+* @param {Object}	parent		the widget that contains the operations
+* @param {constant}	type		the type
+* @param {String}	id			the currently selected/activated organizer
 */
 ZmSearchTreeController.prototype.resetOperations =
 function(parent, type, id) {
@@ -92,13 +112,18 @@ function(parent, type, id) {
 	parent.enable(ZmOperation.EXPAND_ALL, (search.size() > 0));
 };
 
+/**
+ * @private
+ */
 ZmSearchTreeController.prototype._newListener =
 function(ev){
 	AjxDispatcher.require("Browse");
 	appCtxt.getSearchController().showBrowseView();
 };
 
-
+/**
+ * @private
+ */
 ZmSearchTreeController.prototype._browseListener =
 function(ev){
     var search = this._getActionedOrganizer(ev);
@@ -113,6 +138,8 @@ function(ev){
 
 /**
  * Returns ops available for "Searches" container.
+ * 
+ * @private
  */
 ZmSearchTreeController.prototype._getHeaderActionMenuOps =
 function() {
@@ -122,6 +149,8 @@ function() {
 
 /**
  * Returns ops available for saved searches.
+ * 
+ * @private
  */
 ZmSearchTreeController.prototype._getActionMenuOps =
 function() {
@@ -131,7 +160,11 @@ function() {
 			ZmOperation.EXPAND_ALL];
 };
 
-// override the ZmFolderTreeController override
+/**
+ * override the ZmFolderTreeController override.
+ * 
+ * @private
+ */
 ZmSearchTreeController.prototype._getAllowedSubTypes =
 function() {
 	return ZmTreeController.prototype._getAllowedSubTypes.call(this);
@@ -139,6 +172,8 @@ function() {
 
 /**
  * Returns a "New Saved Search" dialog.
+ * 
+ * @private
  */
 ZmSearchTreeController.prototype._getNewDialog =
 function() {
@@ -149,7 +184,9 @@ function() {
  * Called when a left click occurs (by the tree view listener). The saved
  * search will be run.
  *
- * @param searchFolder		ZmSearchFolder		search that was clicked
+ * @param {ZmSearchFolder}		searchFolder		the search that was clicked
+ * 
+ * @private
  */
 ZmSearchTreeController.prototype._itemClicked =
 function(searchFolder) {
@@ -161,6 +198,9 @@ function(searchFolder) {
 	appCtxt.getSearchController().redoSearch(searchFolder.search, false, {getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML)});
 };
 
+/**
+ * @private
+ */
 ZmSearchTreeController.prototype._getMoveParams =
 function(dlg) {
 	var params = ZmTreeController.prototype._getMoveParams.apply(this, arguments);
@@ -173,6 +213,8 @@ function(dlg) {
 
 /**
  * Returns a title for moving a saved search.
+ * 
+ * @private
  */
 ZmSearchTreeController.prototype._getMoveDialogTitle =
 function() {
@@ -184,7 +226,9 @@ function() {
  * searches that belong to the owning app, and we have been told to hide empty
  * tree views of this type.
  * 
- * @param overviewId		[constant]			overview ID
+ * @param {constant}	overviewId		the overview ID
+ * 
+ * @private
  */
 ZmSearchTreeController.prototype._checkTreeView =
 function(overviewId) {

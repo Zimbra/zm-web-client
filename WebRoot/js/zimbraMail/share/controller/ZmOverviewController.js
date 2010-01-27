@@ -14,18 +14,24 @@
  */
 
 /**
- * Creates an overview controller.
- * @constructor
- * @class
- * This singleton class manages overviews, each of which has a unique ID.
- * An overview is a set of tree views. When the overview is created, various
+ * @overview
+ * This file defines the overview controller.
+ *
+ */
+
+/**
+ * Creates an overview as a set of tree views. When the overview is created, various
  * characteristics of its tree views can be provided. Each type of tree view
  * has a corresponding tree controller (also a singleton), which is lazily
  * created.
+ * @class
+ * This singleton class manages overviews, each of which has a unique ID.
  *
  * @author Conrad Damon
  * 
- * @param container	[DwtControl]	top-level container
+ * @param {DwtControl}	container	the top-level container
+ * 
+ * @extends		ZmController
  */
 ZmOverviewController = function(container) {
 	ZmController.call(this, container);
@@ -44,6 +50,11 @@ ZmOverviewController.DEFAULT_FOLDER_ID = ZmFolder.ID_INBOX;
 ZmOverviewController.prototype = new ZmController;
 ZmOverviewController.prototype.constructor = ZmOverviewController;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmOverviewController.prototype.toString = 
 function() {
 	return "ZmOverviewController";
@@ -53,8 +64,8 @@ function() {
  * Creates a new overview container with the given options. Used when mailbox
  * has multiple accounts.
  *
- * @param containerParams	hash of params (see ZmOverviewContainer)
- * @param overviewParams	hash of params (see ZmOverview)
+ * @param {Hash}	containerParams	a hash of params (see {@link ZmOverviewContainer})
+ * @param {Hash}	overviewParams	a hash of params (see {@link ZmOverview})
  */
 ZmOverviewController.prototype.createOverviewContainer =
 function(containerParams, overviewParams) {
@@ -76,7 +87,7 @@ function(containerParams, overviewParams) {
 /**
  * Creates a new overview with the given options.
  *
- * @param params			[Object]	hash of params (see ZmOverview)
+ * @param {Hash}	params			a hash of params (see {@link ZmOverview})
  */
 ZmOverviewController.prototype.createOverview =
 function(params) {
@@ -87,9 +98,10 @@ function(params) {
 };
 
 /**
- * Returns the overview container for the given appName.
+ * Gets the overview container for the given app.
  *
- * @param containerId		[String]*	container ID (defaults to current app name)
+ * @param {String}	containerId		the container ID (defaults to current app name)
+ * @return	{ZmOverviewContainer}	the container
  */
 ZmOverviewController.prototype.getOverviewContainer =
 function(containerId) {
@@ -98,9 +110,10 @@ function(containerId) {
 };
 
 /**
- * Returns the overview with the given ID.
+ * Gets the overview with the given id.
  *
- * @param overviewId		[constant]	overview ID
+ * @param {String}	overviewId		the overview id
+ * @return	{ZmOverview}	the overview
  */
 ZmOverviewController.prototype.getOverview =
 function(overviewId) {
@@ -108,10 +121,12 @@ function(overviewId) {
 };
 
 /**
- * Returns the given tree controller.
+ * Gets the tree controller.
  *
- * @param treeId		[constant]		organizer type
- * @param noCreate		[boolean]*		if true, only return an already created controller
+ * @param {String}	treeId		the tree id
+ * @param {Boolean}	noCreate		if <code>true</code>, only return an already created controller
+ * 
+ * @return	{ZmTreeController}	the tree controller
  */
 ZmOverviewController.prototype.getTreeController =
 function(treeId, noCreate) {
@@ -129,9 +144,10 @@ function(treeId, noCreate) {
 };
 
 /**
- * Returns the tree data (ZmTree) for the given organizer type.
+ * Gets the tree data for the given organizer type.
  *
- * @param treeId		[constant]		organizer type
+ * @param {String}	treeId		the tree id
+ * @return {ZmTree}		the tree
  */
 ZmOverviewController.prototype.getTreeData =
 function(treeId) {
@@ -139,10 +155,11 @@ function(treeId) {
 };
 
 /**
- * Returns the given tree view in the given overview.
+ * Gets the tree view in the given overview.
  *
- * @param overviewId		[constant]	overview ID
- * @param treeId			[constant]	organizer type
+ * @param {String}	overviewId		the overview id
+ * @param {String}	treeId			the organizer type
+ * @return	{ZmTreeView}	the tree view or <code>null</code> if not found
  */
 ZmOverviewController.prototype.getTreeView =
 function(overviewId, treeId) {

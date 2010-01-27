@@ -14,14 +14,20 @@
  */
 
 /**
- * Creates an empty event of the given type.
- * @constructor
- * @class
- * @param type [constant]	the source of the event
+ * @overview
  * 
+ * This file defines an event.
+ *
+ */
+
+/**
+ * Creates an empty event of the given type.
+ * @class
  * This class represents an event that encapsulates some sort of change to a model (data).
- * The event has a data type (eg conversation), an event type (eg delete), a source (the
+ * The event has a data type (for example, conversation), an event type (for example, delete), a source (the
  * data object generating the event), and a hash of arbitrary information (details).
+ * 
+ * @param {constant}		type	the source of the event
  */
 ZmEvent = function(type) {
 
@@ -46,30 +52,65 @@ ZmEvent.S_MOUNTPOINT	= "MOUNTPOINT";
 ZmEvent.S_ZIMLET		= "ZIMLET";
 
 // Event types
+/**
+ * Defines the "create" event type.
+ */
 ZmEvent.E_CREATE		= "CREATE";
+/**
+ * Defines the "delete" event type.
+ */
 ZmEvent.E_DELETE		= "DELETE";
+/**
+ * Defines the "modify" event type.
+ */
 ZmEvent.E_MODIFY		= "MODIFY";
+/**
+ * Defines the "load" event type.
+ */
 ZmEvent.E_LOAD			= "LOAD";
+/**
+ * Defines the "remove" event type.
+ */
 ZmEvent.E_REMOVE		= "REMOVE";
+/**
+ * Defines the "remove all" event type.
+ */
 ZmEvent.E_REMOVE_ALL	= "REMOVE ALL";
+/**
+ * Defines the "move" event type.
+ */
 ZmEvent.E_MOVE			= "MOVE";
+/**
+ * Defines the "flags" event type.
+ */
 ZmEvent.E_FLAGS			= "FLAGS";
+/**
+ * Defines the "tags" event type.
+ */
 ZmEvent.E_TAGS			= "TAGS";
+/**
+ * Defines the "zimlets" event type.
+ */
 ZmEvent.E_ZIMLETS		= "ZIMLET";
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmEvent.prototype.toString = 
 function() {
 	return "ZmEvent";
 };
 
 /**
-* Sets the event type and source.
-*
-* @param event		event type
-* @param source		object that generated the event (typically "this")
-*/
+ * Sets the event type and source.
+ *
+ * @param {constant}	event	the event type (see <code>ZmEvent.E_</code> constants)
+ * @param {Object}	source		the object that generated the event (typically "this")
+ */
 ZmEvent.prototype.set =
 function(event, source) {
 	this.event = event;
@@ -78,32 +119,32 @@ function(event, source) {
 };
 
 /**
-* Adds an arbitrary bit of info to the event.
-*
-* @param field		the detail's name
-* @param value		the detail's value
-*/
+ * Adds info to the event details.
+ *
+ * @param {String}		field		the detail name
+ * @param {Object}		value		the detail value
+ */
 ZmEvent.prototype.setDetail =
 function(field, value) {
 	this._details[field] = value;
 };
 
 /**
-* Returns an arbitrary bit of info from the event.
-*
-* @param field		the detail's name
-*/
+ * Gets info from the event details.
+ *
+ * @param {String}	field		the detail field name
+ * @return	{Object}	the details
+ */
 ZmEvent.prototype.getDetail =
 function(field) {
 	return this._details[field];
 };
 
 /**
-* looks for a detail with a name of "items", and returns it, or an
-* empty array if it doesn't exist.
-*
-* @param field		the detail's name
-*/
+ * Gets items by checking for a detail with a name of "items" and returning it.
+ * 
+ * @return	{Array}		an array of items or empty array if "items" does not exist
+ */
 ZmEvent.prototype.getItems =
 function() {
     var items = this._details["items"];
@@ -111,18 +152,20 @@ function() {
 };
 
 /**
-* Sets the event details. Any existing details will be lost.
-*
-* @param details	a hash representing event details
-*/
+ * Sets the event details. Any existing details will be lost.
+ *
+ * @param {Hash}	details		a hash representing event details
+ */
 ZmEvent.prototype.setDetails =
 function(details) {
 	this._details = details ? details : {};
 };
 
 /**
-* Returns the event details.
-*/
+ * Gets the event details.
+ * 
+ * @return	{Hash}	the event details
+ */
 ZmEvent.prototype.getDetails =
 function() {
 	return this._details;

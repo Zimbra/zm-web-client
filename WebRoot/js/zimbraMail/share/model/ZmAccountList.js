@@ -14,7 +14,16 @@
  */
 
 /**
- * Used to store and manage a list of accounts for this mailbox.
+ * @overview
+ * 
+ * This file defines a list of accounts.
+ *
+ */
+
+/**
+ * Creates the account list.
+ * @class
+ * This class is used to store and manage a list of accounts for a mailbox.
  *
  * @author Parag Shah
  */
@@ -39,21 +48,32 @@ ZmAccountList.DEFAULT_ID = "main";
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmAccountList.prototype.toString =
 function() {
 	return "ZmAccountList";
 };
 
 /**
- * Returns the number of accounts for this mailbox
+ * Gest the number of accounts for this mailbox.
  *
- * @param visible	[Boolean]*		If true, returns the number of visible accounts for this mailbox
+ * @param {Boolean}	visible	if <code>true</code>, include the number of visible accounts for this mailbox
+ * @return	{int}	the number of accounts for this mailbox
  */
 ZmAccountList.prototype.size =
 function(visible) {
 	return (visible) ? this.visibleAccounts.length : this._count;
 };
 
+/**
+ * Adds the account.
+ * 
+ * @param	{ZmAccount}	account		the account
+ */
 ZmAccountList.prototype.add =
 function(account) {
 	this._accounts[account.id] = account;
@@ -68,16 +88,33 @@ function(account) {
 	}
 };
 
+/**
+ * Gets the accounts.
+ * 
+ * @return	{Array}	an array of {ZmAccount} objects
+ */
 ZmAccountList.prototype.getAccounts =
 function() {
 	return this._accounts;
 };
 
+/**
+ * Gets the account by id.
+ * 
+ * @param	{String]	id		the id
+ * @return	{ZmAccount}	the account
+ */
 ZmAccountList.prototype.getAccount =
 function(id) {
 	return id ? this._accounts[id] : this.mainAccount;
 };
 
+/**
+ * Gets the account by name.
+ * 
+ * @param	{String}	name	the name
+ * @return	{ZmAccount}	the account
+ */
 ZmAccountList.prototype.getAccountByName =
 function(name) {
 	for (var i in this._accounts) {
@@ -88,6 +125,12 @@ function(name) {
 	return null;
 };
 
+/**
+ * Gets the account by email.
+ * 
+ * @param	{String}	email	the email
+ * @return	{ZmAccount}	the account
+ */
 ZmAccountList.prototype.getAccountByEmail =
 function(email) {
 	for (var i in this._accounts) {
@@ -99,10 +142,11 @@ function(email) {
 };
 
 /**
- * Returns the cumulative item count of all accounts for the given folder ID
+ * Gets the cumulative item count of all accounts for the given folder ID.
  *
- * @param folderId		[String]	folder ID
- * @param checkUnread	[Boolean]*	if true, checks the unread count instead of item count
+ * @param {String}	folderId		the folder id
+ * @param {Boolean}	checkUnread		if <code>true</code>, checks the unread count instead of item count
+ * @return	{int}	the item count
  */
 ZmAccountList.prototype.getItemCount =
 function(folderId, checkUnread) {
@@ -121,6 +165,13 @@ function(folderId, checkUnread) {
 	return count;
 };
 
+/**
+ * Generates a query.
+ * 
+ * @param {String}	folderId		the folder id
+ * @param	{Array}	types		the types
+ * @return	{String}	the query
+ */
 ZmAccountList.prototype.generateQuery =
 function(folderId, types) {
 	// XXX: for now, let's just search for *one* type at a time
@@ -146,11 +197,14 @@ function(folderId, types) {
 /**
  * Loads each visible account serially by requesting the following requests from
  * the server in a batch request:
- * - GetInfoRequest
- * - GetTafReqyuest
- * - GetFolderRequest
- *
- * @param callback		[AjxCallback]*	the callback to trigger once all accounts have been loaded
+ * 
+ * <ul>
+ * <li>GetInfoRequest</li>
+ * <li>GetTafReqyuest</li>
+ * <li>GetFolderRequest</li>
+ * </ul>
+ * 
+ * @param {AjxCallback}	callback		the callback to trigger once all accounts have been loaded
  */
 ZmAccountList.prototype.loadAccounts =
 function(callback) {
@@ -158,6 +212,9 @@ function(callback) {
 	this._loadAccount(list, callback);
 };
 
+/**
+ * @private
+ */
 ZmAccountList.prototype._loadAccount =
 function(accounts, callback) {
 	var acct = accounts.shift();
@@ -183,13 +240,12 @@ function(accounts, callback) {
 	}
 };
 
-
 /**
- * Makes the given account the active one, which will then be used when fetching
+ * Sets the given account as the active one, which will then be used when fetching
  * any account-specific data such as settings or folder tree.
  *
- * @param account		[ZmZimbraAccount]	account to make active
- * @param skipNotify	[Boolean]*			skip notify if true
+ * @param {ZmZimbraAccount}	account		the account to make active
+ * @param {Boolean}	skipNotify		if <code>true</code>, skip notify
  */
 ZmAccountList.prototype.setActiveAccount =
 function(account, skipNotify) {
@@ -203,14 +259,21 @@ function(account, skipNotify) {
 	}
 };
 
+/**
+ * Adds an active account listener.
+ * 
+ * @param	{AjxListener}	listener		the listener
+ * @param	{int}	index		the index where to insert the listener
+ */
 ZmAccountList.prototype.addActiveAcountListener =
 function(listener, index) {
 	return this._evtMgr.addListener("ACCOUNT", listener, index);
 };
 
 /**
- * Returns true if any of the non-main, visible accounts is currently doing an
- * initial sync.
+ * Checks if any of the non-main, visible accounts is currently doing an initial sync.
+ * 
+ * @return	{Boolean}	<code>true</code> if any of the non-main accounts are doing initial sync
  */
 ZmAccountList.prototype.isInitialSyncing =
 function() {
@@ -227,11 +290,12 @@ function() {
 };
 
 /**
- * Returns true if there is at least one of the given account types in the
+ * Checks if there is at least one of the given account types in the
  * account list. Note: if the given account type is ZCS, the local parent
  * account is NOT included when searching the account list.
  *
- * @param type	[String]		Type of account to check
+ * @param {String}	type	the type of account to check
+ * @return	{Boolean}	<code>true</code> if the account exists
  */
 ZmAccountList.prototype.accountTypeExists =
 function(type) {
@@ -245,11 +309,12 @@ function(type) {
 };
 
 /**
- * This method "resolves" the given folder ID based on whether its an ID of a
+ * Resolves the given folder ID based on whether its an ID of a
  * system folder (less than 255) to that of the default account since the main
  * "local" account only contains the Trash folder.
  *
- * @param folderId		[String]	Folder ID to resolve
+ * @param {String}	folderId		the folder id to resolve
+ * @return	{Boolean}	<code>true</code> if the given folder is a system folder
  */
 ZmAccountList.prototype.resolveFolderId =
 function(folderId) {
@@ -257,12 +322,20 @@ function(folderId) {
 		? ZmOrganizer.getSystemId(folderId, this.defaultAccount) : folderId;
 };
 
+/**
+ * Syncs all visible accounts.
+ * 
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmAccountList.prototype.syncAll =
 function(callback) {
 	var list = (new Array()).concat(this.visibleAccounts);
 	this._sendSync(list, callback);
 };
 
+/**
+ * @private
+ */
 ZmAccountList.prototype._sendSync =
 function(accounts, callback) {
 	var acct = accounts.shift();
@@ -284,8 +357,8 @@ function(accounts, callback) {
  * mailbox is enabled, that account is a parent account with dominion over child
  * accounts. If offline, the main account is the "local" account.
  *
- * @param settings	[ZmSettings]	settings for the main account
- * @param obj		[Object]		JSON obj containing meta info about the main account and its children
+ * @param {ZmSettings}	settings	the settings for the main account
+ * @param {Object}	obj		the JSON obj containing meta info about the main account and its children
  */
 ZmAccountList.prototype.createAccounts =
 function(settings, obj) {
@@ -329,6 +402,10 @@ function(settings, obj) {
 	}
 };
 
+/**
+ * Resets the trees.
+ * 
+ */
 ZmAccountList.prototype.resetTrees =
 function() {
 	for (var i = 0; i < this.visibleAccounts.length; i++) {
@@ -341,6 +418,10 @@ function() {
 	}
 };
 
+/**
+ * Saves the implicit preferences on the visible accounts.
+ * 
+ */
 ZmAccountList.prototype.saveImplicitPrefs =
 function() {
 	for (var i = 0; i < this.visibleAccounts.length; i++) {
@@ -348,6 +429,12 @@ function() {
 	}
 };
 
+/**
+ * Gets the tooltip for the folder.
+ * 
+ * @param	{String}	folderId	the folder id
+ * @return	{String]	the tooltip
+ */
 ZmAccountList.prototype.getTooltipForVirtualFolder =
 function(folderId) {
 	var numTotal = 0;

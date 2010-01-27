@@ -12,7 +12,19 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+/**
+ * @overview
+ * This file defines a zimlet tree controller.
+ *
+ */
 
+/**
+ * Creates a zimlet tree controller.
+ * @class
+ * This class represents a zimlet tree controller.
+ * 
+ * @extends		ZmTreeController
+ */
 ZmZimletTreeController = function() {
 
 	ZmTreeController.call(this, ZmOrganizer.ZIMLET);
@@ -24,10 +36,18 @@ ZmZimletTreeController = function() {
 ZmZimletTreeController.prototype = new ZmTreeController;
 ZmZimletTreeController.prototype.constructor = ZmZimletTreeController;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmZimletTreeController.prototype.toString = function() {
 	return "ZmZimletTreeController";
 };
 
+/**
+ * @private
+ */
 ZmZimletTreeController.prototype._browseListener =
 function(ev){
     var folder = this._getActionedOrganizer(ev);
@@ -41,16 +61,23 @@ function(ev){
 // Public methods
 
 /**
-* Enables/disables operations based on context.
-*
-* @param parent		the widget that contains the operations
-* @param id			the currently selected/activated organizer
-*/
+ * Resets and enables/disables operations based on context.
+ *
+ * @param {Object}	parent		the widget that contains the operations
+ * @param {constant}	type	the type
+ * @param {Objct}	id			the currently selected/activated organizer
+ */
 ZmZimletTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	parent.enable(ZmOperation.BROWSE, true);
 };
 
+/**
+ * Adds a selection listener.
+ * 
+ * @param	{constant}	overviewId	the overview id
+ * @param	{AjxListener}	listener		the listener to add
+ */
 ZmZimletTreeController.prototype.addSelectionListener =
 function(overviewId, listener) {
 	// Each overview gets its own event manager
@@ -63,6 +90,12 @@ function(overviewId, listener) {
 	this._eventMgrs[overviewId].addListener(DwtEvent.SELECTION, listener);
 };
 
+/**
+ * Removes the selection listener.
+ * 
+ * @param	{constant}	overviewId	the overview id
+ * @param	{AjxListener}	listener		the listener to remove
+ */
 ZmZimletTreeController.prototype.removeSelectionListener =
 function(overviewId, listener) {
 	if (this._eventMgrs[overviewId]) {
@@ -70,10 +103,11 @@ function(overviewId, listener) {
 	}
 };
 
-
-
 // Protected methods
 
+/**
+ * @private
+ */
 ZmZimletTreeController.prototype._postSetup =
 function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
@@ -86,14 +120,23 @@ function(overviewId) {
 	}
 };
 
+/**
+ * Sets the tool tip text.
+ * 
+ * @param	{object}	item		the item
+ */
 ZmZimletTreeController.prototype.setToolTipText =
 function (item) {
 	var zimlet = item.getData(Dwt.KEY_OBJECT);
 	if (zimlet) zimlet.setToolTipText(item);
 };
 
-// ZmTreeController removes existing DwtTreeItem object then add a new one on ZmEvent.E_MODIFY,
-// wiping out any properties set on the object. 
+/**
+ * ZmTreeController removes existing DwtTreeItem object then add a new one on ZmEvent.E_MODIFY,
+ * wiping out any properties set on the object.
+ * 
+ * @private
+ */
 ZmZimletTreeController.prototype._changeListener =
 function(ev, treeView, overviewId) {
 	ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
@@ -109,21 +152,35 @@ function(ev, treeView, overviewId) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmZimletTreeController.prototype._getDataTree =
 function() {
 	return appCtxt.getZimletTree();
 };
 
-// Returns a list of desired header action menu operations
+/**
+ * Returns a list of desired header action menu operations.
+ * 
+ * @private
+ */
 ZmZimletTreeController.prototype._getHeaderActionMenuOps = function() {
 	return [ZmOperation.BROWSE];
 };
 
-// Returns a list of desired action menu operations
+/**
+ * Returns a list of desired action menu operations.
+ * 
+ * @private
+ */
 ZmZimletTreeController.prototype._getActionMenuOps = function() {
 	return null;
 };
 
+/**
+ * @private
+ */
 ZmZimletTreeController.prototype._getActionMenu = function(ev) {
 	var z = ev.item.getData(Dwt.KEY_OBJECT);
 	// z is here a ZmZimlet
@@ -133,11 +190,21 @@ ZmZimletTreeController.prototype._getActionMenu = function(ev) {
 	}
 };
 
+/**
+ * Gets the tree style.
+ * 
+ * @return	{constant}	the style
+ * @see		DwtTree.SINGLE_STYLE
+ */
 ZmZimletTreeController.prototype.getTreeStyle = function() {
 	return DwtTree.SINGLE_STYLE;
 };
 
-// Method that is run when a tree item is left-clicked
+/**
+ * Method that is run when a tree item is left-clicked.
+ * 
+ * @private
+ */
 ZmZimletTreeController.prototype._itemClicked = function(z) {
 	if (z.id == ZmZimlet.ID_ZIMLET_ROOT) { return; }
 
@@ -153,6 +220,9 @@ ZmZimletTreeController.prototype._itemClicked = function(z) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmZimletTreeController.prototype._itemDblClicked = function(z) {
 	if (z.id == ZmZimlet.ID_ZIMLET_ROOT) { return; }
 
@@ -164,7 +234,11 @@ ZmZimletTreeController.prototype._itemDblClicked = function(z) {
 	z.getZimletContext().callHandler("_dispatch", [ "doubleClicked" ]);
 };
 
-// Handles a drop event
+/**
+ * Handles a drop event.
+ * 
+ * @private
+ */
 ZmZimletTreeController.prototype._dropListener = function(ev) {
 	var z = ev.targetControl.getData(Dwt.KEY_OBJECT);
 	if (!z) {
@@ -222,7 +296,11 @@ ZmZimletTreeController.prototype._dropListener = function(ev) {
  	}
 };
 
-// Handles a drag event
+/**
+ * Handles a drag event.
+ * 
+ * @private
+ */
 ZmZimletTreeController.prototype._dragListener = function(ev) {
 	// for now there's nothing defined in the spec to allow this
 	ev.operation = Dwt.DND_DROP_NONE;

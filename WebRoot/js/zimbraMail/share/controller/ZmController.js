@@ -16,13 +16,14 @@
 /**
  * @overview
  * 
- * This file defines the Zimbra controller.
+ * This file defines an application controller.
  *
  */
 
 /**
+ * Creates a controller. 
  * @class
- * This class represents a zimbra application controller.
+ * This class represents an application controller.
  * 
  * @param	{Object}	container		the application container
  * @param	{ZmApp}		app				the application
@@ -698,6 +699,7 @@ function() {
  * @param	{ZmAccount}	account		the account
  * 
  * @see DwtDialog#reset
+ * @see DwtDialog#popup
  */
 ZmController.showDialog = 
 function(dialog, callback, params, account) {

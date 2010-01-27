@@ -14,15 +14,21 @@
  */
 
 /**
+ * @overview
+ * 
+ * This file defines a folder tree controller.
+ *
+ */
+
+/**
  * Creates a folder tree controller.
- * @constructor
  * @class
  * This class controls a tree display of folders.
  *
- * @author Conrad Damon
+ * @param {Constant}	type			the type of organizer we are displaying/controlling ({@link ZmOrganizer.FOLDER} or {@link ZmOrganizer.SEARCH})
+ * @param {DwtDropTarget}		dropTgt		the drop target for this type
  * 
- * @param type		[constant]		type of organizer we are displaying/controlling (folder or search)
- * @param dropTgt	[DwtDropTgt]*	drop target for this type
+ * @extends		ZmTreeController
  */
 ZmFolderTreeController = function(type, dropTgt) {
 
@@ -44,14 +50,23 @@ ZmFolderTreeController.prototype.constructor = ZmFolderTreeController;
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmFolderTreeController.prototype.toString =
 function() {
 	return "ZmFolderTreeController";
 };
 
 /**
-* Displays a folder tree. Certain folders are hidden.
-*/
+ * Shows the folder tree with certain folders hidden.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * @param	{Array}	params.omit	an array of ids to omit
+ * @param	{Object}	params.account		the account
+ */
 ZmFolderTreeController.prototype.show =
 function(params) {
 	var omit = params.omit || {};
@@ -72,10 +87,10 @@ function(params) {
 };
 
 /**
-* Enables/disables operations based on context.
+* Resets and enables/disables operations based on context.
 *
-* @param parent		[DwtControl]	the widget that contains the operations
-* @param id			[int]			ID of the currently selected/activated organizer
+* @param {DwtControl}	parent		the widget that contains the operations
+* @param {int}			id			the id of the currently selected/activated organizer
 */
 ZmFolderTreeController.prototype.resetOperations =
 function(parent, type, id) {
@@ -211,9 +226,11 @@ function(parent, type, id) {
 
 // Private methods
 
-/*
-* Returns ops available for "Folders" container.
-*/
+/**
+ * Returns ops available for "Folders" container.
+ * 
+ * @private
+ */
 ZmFolderTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [
@@ -225,9 +242,11 @@ function() {
 	];
 };
 
-/*
-* Returns ops available for folder items.
-*/
+/**
+ * Returns ops available for folder items.
+ * 
+ * @private
+ */
 ZmFolderTreeController.prototype._getActionMenuOps =
 function() {
 	return [
@@ -246,6 +265,9 @@ function() {
 	];
 };
 
+/**
+ * @private
+ */
 ZmFolderTreeController.prototype._getAllowedSubTypes =
 function() {
 	var types = {};
@@ -254,9 +276,11 @@ function() {
 	return types;
 };
 
-/*
-* Returns a "New Folder" dialog.
-*/
+/**
+ * Returns a "New Folder" dialog.
+ * 
+ * @private
+ */
 ZmFolderTreeController.prototype._getNewDialog =
 function() {
 	return appCtxt.getNewFolderDialog();
@@ -264,6 +288,8 @@ function() {
 
 /**
  * Returns a "Rename Folder" dialog.
+ * 
+ * @private
  */
 ZmFolderTreeController.prototype._getRenameDialog =
 function() {
@@ -275,7 +301,9 @@ function() {
  * was clicked may be a search, since those can appear in the folder tree. The
  * appropriate search will be performed.
  *
- * @param folder		[ZmOrganizer]		folder or search that was clicked
+ * @param {ZmOrganizer}		folder		the folder or search that was clicked
+ * 
+ * @private
  */
 ZmFolderTreeController.prototype._itemClicked =
 function(folder) {
@@ -336,12 +364,18 @@ function(folder) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmFolderTreeController.prototype._syncAccount =
 function(dialog, account) {
 	dialog.popdown();
 	account.sync();
 };
 
+/**
+ * @private
+ */
 ZmFolderTreeController.prototype._getPermissionsResponse =
 function(params) {
 	appCtxt.getSearchController().search(params);
@@ -350,6 +384,9 @@ function(params) {
 
 // Actions
 
+/**
+ * @private
+ */
 ZmFolderTreeController.prototype._doSync =
 function(folder) {
 	var dsc = AjxDispatcher.run("GetDataSourceCollection");
@@ -364,6 +401,9 @@ function(folder) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmFolderTreeController.prototype._syncFeeds =
 function(folder) {
 	if (!appCtxt.isOffline && folder && !folder.isFeed()) {
@@ -381,12 +421,15 @@ function(folder) {
 };
 
 /**
- * Makes a request to add a new item to the tree.
+ * Adds the new item to the tree.
  *
- * @param treeView		[ZmTreeView]	a tree view
- * @param parentNode	[DwtTreeItem]	node under which to add the new one
- * @param organizer		[ZmOrganizer]	organizer for the new node
- * @param idx			[int]*			position at which to add the new node
+ * @param {ZmTreeView}		treeView		a tree view
+ * @param {DwtTreeItem}		parentNode		the node under which to add the new one
+ * @param {ZmOrganizer}		organizer		the organizer for the new node
+ * @param {int}				idx				theposition at which to add the new node
+ * @return	{DwtTreeItem}	the resulting item
+ * 
+ * @private
  */
 ZmFolderTreeController.prototype._addNew =
 function(treeView, parentNode, organizer, idx) {
@@ -398,13 +441,15 @@ function(treeView, parentNode, organizer, idx) {
 
 // Listeners
 
-/*
-* Deletes a folder. If the folder is in Trash, it is hard-deleted. Otherwise, it
-* is moved to Trash (soft-delete). If the folder is Trash or Junk, it is emptied.
-* A warning dialog will be shown before the Junk folder is emptied.
-*
-* @param ev		[DwtUiEvent]	the UI event
-*/
+/**
+ * Deletes a folder. If the folder is in Trash, it is hard-deleted. Otherwise, it
+ * is moved to Trash (soft-delete). If the folder is Trash or Junk, it is emptied.
+ * A warning dialog will be shown before the Junk folder is emptied.
+ *
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
+ */
 ZmFolderTreeController.prototype._deleteListener =
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
@@ -442,14 +487,16 @@ function(ev) {
 	}
 };
 
-/*
-* Empties a folder.
-* It removes all the items in the folder except sub-folders.
-* If the folder is Trash, it empties even the sub-folders.
-* A warning dialog will be shown before any folder is emptied.
-*
-* @param ev		[DwtUiEvent]	the UI event
-*/
+/**
+ * Empties a folder.
+ * It removes all the items in the folder except sub-folders.
+ * If the folder is Trash, it empties even the sub-folders.
+ * A warning dialog will be shown before any folder is emptied.
+ *
+ * @param {DwtUiEvent}		ev		the UI event
+ * 
+ * @private
+ */
 ZmFolderTreeController.prototype._emptyListener =
 function(ev) {
 	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
@@ -472,13 +519,13 @@ function(ev) {
 	}
 };
 
-
-
-/*
-* Toggles on/off flag for syncing IMAP folder with server. Only for offline use.
-*
-* @param ev		[DwtUiEvent]	the UI event
-*/
+/**
+ * Toggles on/off flag for syncing IMAP folder with server. Only for offline use.
+ *
+ * @param {DwtUiEvent}	ev	the UI event
+ * 
+ * @private
+ */
 ZmFolderTreeController.prototype._syncOfflineFolderListener =
 function(ev) {
 	var folder = this._getActionedOrganizer(ev);
@@ -487,6 +534,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmFolderTreeController.prototype._browseListener =
 function(ev){
 	var folder = this._getActionedOrganizer(ev);
@@ -496,11 +546,13 @@ function(ev){
 	}
 };
 
-/*
-* Don't allow dragging of system folders.
-*
-* @param ev		[DwtDragEvent]		the drag event
-*/
+/**
+ * Don't allow dragging of system folders.
+ *
+ * @param {DwtDragEvent}	ev		the drag event
+ * 
+ * @private
+ */
 ZmFolderTreeController.prototype._dragListener =
 function(ev) {
 	if (ev.action == DwtDragEvent.DRAG_START) {
@@ -512,15 +564,17 @@ function(ev) {
 	}
 };
 
-/*
-* Handles the potential drop of something onto a folder. When something is dragged over
-* a folder, returns true if a drop would be allowed. When something is actually dropped,
-* performs the move. If items are being dropped, the source data is not the items
-* themselves, but an object with the items (data) and their controller, so they can be
-* moved appropriately.
-*
-* @param ev		[DwtDropEvent]		the drop event
-*/
+/**
+ * Handles the potential drop of something onto a folder. When something is dragged over
+ * a folder, returns true if a drop would be allowed. When something is actually dropped,
+ * performs the move. If items are being dropped, the source data is not the items
+ * themselves, but an object with the items (data) and their controller, so they can be
+ * moved appropriately.
+ *
+ * @param {DwtDropEvent}	ev		the drop event
+ * 
+ * @private
+ */
 ZmFolderTreeController.prototype._dropListener =
 function(ev) {
 
@@ -573,12 +627,18 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmFolderTreeController.prototype._shareFolderListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
 };
 
+/**
+ * @private
+ */
 ZmFolderTreeController.prototype._mountFolderListener =
 function(ev) {
 	appCtxt.getMountFolderDialog().popup(ZmOrganizer.FOLDER);
@@ -587,9 +647,12 @@ function(ev) {
 
 // Miscellaneous
 
-/*
-* Returns a title for moving a folder.
-*/
+/**
+ * Returns a title for moving a folder.
+ * 
+ * @return	{String}	the title
+ * @private
+ */
 ZmFolderTreeController.prototype._getMoveDialogTitle =
 function() {
 	return AjxMessageFormat.format(ZmMsg.moveFolder, this._pendingActionData.name);

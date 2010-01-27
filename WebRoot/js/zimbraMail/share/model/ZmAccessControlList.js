@@ -14,33 +14,50 @@
  */
 
 /**
+ * @overview
+ * 
+ * This file defines an access control list and associated classes.
+ *
+ */
+
+/**
  * Creates an empty access control list (ACL).
- * @constructor
  * @class
- * An access control list is a collection of access control entries (ACE's). Each entry contains
+ * An access control list is a collection of access control entries (ACEs). Each entry contains
  * information about a certain permission applied by the current user to another user or users
  * for a particular type of action. So far, there are two types of rights that are managed in
  * this way:
  * 
- * 		viewFreeBusy	governs whether other users may view this user's free/busy information
- * 		invite			whether an invite from other users will automatically create a tentative
- * 						appointment on this user's calendar
+ * <ul>
+ * <li>viewFreeBusy	governs whether other users may view this user's free/busy information</li>
+ * <li>invite			whether an invite from other users will automatically create a tentative appointment on this user's calendar</li>
+ * </ul>
  * 
- * Note that shared organizers (ZmShare) manage rights (read/write/manage) in their own way.
+ * Note: that shared organizers ({@link ZmShare}) manage rights (read/write/manage) in their own way.
  * 
  * @author Conrad Damon
  * 
- * @param aces		[array]*		list of ZmAccessControlEntry objects
+ * @param {Array}	aces		the list of {@link ZmAccessControlEntry} objects
  */
 ZmAccessControlList = function(aces) {
 	this._aces = {};
 }
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmAccessControlList.prototype.toString =
 function() {
 	return "ZmAccessControlList";
 };
 
+/**
+ * Loads the list.
+ * 
+ * @param	{function}	callback	the function to callback after the loaded
+ */
 ZmAccessControlList.prototype.load =
 function(callback) {
 	var jsonObj = {GetPermissionRequest:{_jsns:"urn:zimbraMail"}};
@@ -48,6 +65,9 @@ function(callback) {
 	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
 
+/**
+ * @private
+ */
 ZmAccessControlList.prototype._handleResponseLoad =
 function(callback, result) {
 	var response = result.getResponse();
@@ -62,11 +82,25 @@ function(callback, result) {
 	}
 };
 
+/**
+ * Gets the access control entry by right
+ * 
+ * @param	{String}	right		the right
+ * @return	{ZmAccessControlEntry}	the entry
+ */
 ZmAccessControlList.prototype.getACLByRight =
 function(right) {
 	return this._aces[right];
 };
 
+/**
+ * Gets the grantee type.
+ * 
+ * @param	{String}	right		the right
+ * @return	{constant}	the grantee type
+ * 
+ * @see		ZmSetting
+ */
 ZmAccessControlList.prototype.getGranteeType =
 function(right) {
 	var aces = this._aces[right];
@@ -114,6 +148,13 @@ function(right) {
 	return gt;
 };
 
+/**
+ * Gets the access control entry by grantee type.
+ * 
+ * @param	{String}	right	the right
+ * @param	{constant}	gt		the grantee type
+ * @return	{Array}	an array of {ZmAccessControlEntry} objects
+ */
 ZmAccessControlList.prototype.getACLByGranteeType =
 function(right, gt) {
 	var aces = this._aces[right];
@@ -130,6 +171,12 @@ function(right, gt) {
 	return list;
 };
 
+/**
+ * Gets the grantees.
+ * 
+ * @param	{String}	right	the right
+ * @return	{Array}		an array of grantees
+ */
 ZmAccessControlList.prototype.getGrantees =
 function(right) {
 	var aces = this._aces[right];
@@ -146,6 +193,12 @@ function(right) {
 	return list;
 };
 
+/**
+ * Gets the grantees info.
+ * 
+ * @param	{String}	right		the right
+ * @return	{Array}	an arry of grantree info
+ */
 ZmAccessControlList.prototype.getGranteesInfo =
 function(right) {
 	var aces = this._aces[right];
@@ -162,16 +215,40 @@ function(right) {
 	return list;
 };
 
+/**
+ * Grants permissions on the access control entries.
+ * 
+ * @param	{Array}	aces		an array of {ZmAccessControlEntry} objects
+ * @param	{function}	callback	the callback
+ * @param	{Boolean}	batchCmd	<code>true</code> to submit as a batch command
+ */
 ZmAccessControlList.prototype.grant =
 function(aces, callback, batchCmd) {
 	this._setPerms(aces, false, callback, batchCmd);
 };
 
+/**
+ * Revokes and denies permissions the access control entries.
+ * 
+ * @param	{Array}	aces		an array of {ZmAccessControlEntry} objects
+ * @param	{function}	callback	the callback
+ * @param	{Boolean}	batchCmd	<code>true</code> to submit as a batch command
+ */
 ZmAccessControlList.prototype.revoke =
 function(aces, callback, batchCmd) {
 	this._setPerms(aces, true, callback, batchCmd);
 };
 
+/**
+ * Sets the permissions.
+ * 
+ * @param	{Array}	aces		an array of {ZmAccessControlEntry} objects
+ * @param	{Boolean}	revoke	<code>true</code> to deny; <code>false</code> to grant
+ * @param	{function}	callback	the callback
+ * @param	{Boolean}	batchCmd	<code>true</code> to submit as a batch command
+ *
+ * @private
+ */
 ZmAccessControlList.prototype._setPerms =
 function(aces, revoke, callback, batchCmd) {
 	var reqName = revoke ? "RevokePermissionRequest" : "GrantPermissionRequest";
@@ -199,6 +276,9 @@ function(aces, revoke, callback, batchCmd) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmAccessControlList.prototype._handleResponseSetPerms =
 function(revoke, callback, result) {
 	var response = result.getResponse();
@@ -222,6 +302,11 @@ function(revoke, callback, result) {
 	}
 };
 
+/**
+ * Adds the entry to the ACL.
+ * 
+ * @param	{ZmAccessControlEntry}	ace	the entry to add
+ */
 ZmAccessControlList.prototype.add =
 function(ace) {
 	if (!ace) { return; }
@@ -232,6 +317,11 @@ function(ace) {
 	this._aces[right].push(ace);
 };
 
+/**
+ * Removes the entry to the ACL.
+ * 
+ * @param	{ZmAccessControlEntry}	ace	the entry to remove
+ */
 ZmAccessControlList.prototype.remove =
 function(ace) {
 	if (!ace) { return; }
@@ -247,6 +337,12 @@ function(ace) {
 	this._aces[ace.right] = newList;
 };
 
+/**
+ * Updates the entry to the ACL.
+ * 
+ * @param	{ZmAccessControlEntry}	ace	the entry to update
+ * @param	{Boolean}	removeEnty	not used
+ */
 ZmAccessControlList.prototype.update =
 function(ace, removeEntry) {
 	if (!ace || !ace.right) { return; }
@@ -272,13 +368,24 @@ function(ace, removeEntry) {
 	}
 };
 
-
-
+/**
+ * Cleans up the ACL.
+ * 
+ */
 ZmAccessControlList.prototype.cleanup =
 function() {
 	this._aces = {};
 };
 
+/**
+ * Sorts the ACL by grantee.
+ * 
+ * @param	{Hash}	a		grantee "a"
+ * @param	{String}	a.grantee	the grantee
+ * @param	{Hash}	b		grantee "b"
+ * @param	{Hash}	b.grantee		grantee "b"
+ * @return	{int}	0 if "a" and "b" are the same; 1 if "a" is before "b"; -1 if "b" is before "a"
+ */
 ZmAccessControlList.sortByGrantee =
 function(a, b) {
     var granteeA = a.grantee;
@@ -293,17 +400,16 @@ function(a, b) {
 
 /**
  * Creates an access control entry.
- * @constructor
  * @class
  * An access control entry encapsulates the permission information pertaining to a user or users
  * regarding a certain right.
  * 
- * @param params		[hash]		hash of params:
- *        right			[string]	action governed by this ACE
- *        grantee		[string]*	account name of user or group permission applies to
- *        zid			[string]	ZID of grantee
- *        granteeType	[constant]	type of grantee - one of ZmSetting.ACL_*
- *        negative		[boolean]*	if true, permission is denied by this ACE
+ * @param {Hash}	params		a hash of parameters
+ * @param	{String}	params.right		the action governed by this ACE
+ * @param	{String}	params.grantee		the account name of user or group permission applies to
+ * @param	{String}	params.zid			the ZID of grantee
+ * @param	{constant}	params.granteeType	type of grantee (see <code>ZmSetting.ACL_</code> constants)
+ * @param	{Boolean}	params.negative		if <code>true</code>, permission is denied by this ACE
  */
 ZmAccessControlEntry =
 function(params) {
@@ -314,11 +420,27 @@ function(params) {
 	this.negative = params.negative;
 }
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmAccessControlEntry.prototype.toString =
 function() {
 	return "ZmAccessControlEntry";
 };
 
+/**
+ * Creates an entry from the DOM object.
+ * 
+ * @param	{Hash}	obj		the DOM object
+  * @param	{String}	obj.right		the action governed by this ACE
+ * @param	{String}	obj.d		the account name of user or group permission applies to
+ * @param	{String}	obj.zid			the ZID of grantee
+ * @param	{constant}	obj.gt		the type of grantee (see <code>ZmSetting.ACL_</code> constants)
+ * @param	{Boolean}	obj.deny		if <code>1</code>, permission is denied by this ACE
+* @return	{ZmAccessControlEntry}	the newly created entry
+ */
 ZmAccessControlEntry.createFromDom =
 function(obj) {
 	var params = {};
