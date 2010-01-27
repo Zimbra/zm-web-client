@@ -154,7 +154,7 @@ function(folderId) {
 	this.setCurrentListIndex(listView._colIdx);
 	this._noReset = true;
 	listView.folderId = folderId;
-	this._controller._app.search(folderId, null, null, false, true);
+	this._controller._app.search({folderId:folderId, noClear:true});
 };
 
 ZmMultiColView.prototype.set =
