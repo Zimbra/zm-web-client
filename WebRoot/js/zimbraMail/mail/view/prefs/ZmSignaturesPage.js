@@ -861,7 +861,9 @@ function() {
 	delete inputId;
 
 	dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this,function() {
-		this.insertImage(this._imgSelField.value);
+        var imgUrl = this._imgSelField.value;
+        if(imgUrl != '')
+		    this.insertImage(imgUrl);
 		dlg.popdown();
 	}));
 
