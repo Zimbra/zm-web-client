@@ -572,6 +572,15 @@ function(what, folderType) {
 					}
 				}
 			}
+
+			// bug #42890 - disable moving to shared folders across accounts
+			// until server bug is fixed
+			if (appCtxt.multiAccounts && this.isRemote() &&
+				what.account && this.getAccount().id != what.account.id)
+			{
+				invalid = true;
+			}
+
 			// can't move items to folder they're already in; we're okay if we
 			// have one item from another folder
 			if (!invalid) {

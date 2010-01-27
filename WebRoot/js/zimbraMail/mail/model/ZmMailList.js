@@ -83,12 +83,17 @@ function(params) {
 	params1.action = (params.folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
 	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
 
-	// Reset accountName for multi-account to be the respective account if we're
-	// moving a draft out of Trash.
-	if (appCtxt.multiAccounts &&
-		params.items[0].isDraft && params.folder.id == ZmFolder.ID_DRAFTS)
-	{
-		params1.accountName = items[0].account.name;
+	if (appCtxt.multiAccounts) {
+		// Reset accountName for multi-account to be the respective account if we're
+		// moving a draft out of Trash.
+		// OR,
+		// check if we're moving to a shared folder, in which case, always send
+		// request on-behalf-of the account the item originally belongs to.
+		if ((params.items[0].isDraft && params.folder.id == ZmFolder.ID_DRAFTS) ||
+			(params.folder.isRemote()))
+		{
+			params1.accountName = params.items[0].account.name;
+		}
 	}
 
 	this._itemAction(params1);
