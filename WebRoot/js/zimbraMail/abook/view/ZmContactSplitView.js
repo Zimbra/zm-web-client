@@ -131,6 +131,9 @@ function() {
 	if (this._contactView) {
 		this._contactView.getHtmlElement().innerHTML = "";
 	}
+	if (this._contactGroupView) {
+		this._contactGroupView.getHtmlElement().innerHTML = "";
+	}
 
 	this._setHeaderInfo(true);
 };
