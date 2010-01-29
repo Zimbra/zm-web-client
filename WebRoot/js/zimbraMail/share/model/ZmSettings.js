@@ -14,17 +14,23 @@
  */
 
 /**
+ * @overview
+ * This file defines the settings class.
+ */
+
+/**
  * Creates a collection of settings with default values. If no app context is given,
  * then this is a skeletal, non-live version of settings which can provide default
  * settings and parse SOAP settings.
- * @constructor
  * @class
  * This class is a collection of various sorts of settings: config values, preferences,
  * and COS features. Each setting has an ID which can be used to retrieve it.
  *
  * @author Conrad Damon
  *
- * @param noInit	[boolean]*		if true, skip initialization
+ * @param {Boolean}	noInit	if <code>true</code>, skip initialization
+ * 
+ * @extends		ZmModel
  */
 ZmSettings = function(noInit) {
 
@@ -46,12 +52,12 @@ ZmSettings.prototype.constructor = ZmSettings;
 /**
  * Creates a new setting and adds it to the settings.
  *
- * @param id			[string]		unique ID of the setting
- * @param params		[hash]*			hash of params:
- *        name			[string]		the name of the pref or attr on the server
- *        type			[constant]		config, pref, or COS
- *        dataType		[constant]		string, int, or boolean (defaults to string)
- *        defaultValue	[any]			default value
+ * @param {String}		id			the unique ID of the setting
+ * @param {Hash}	params		a hash of parameters
+ * @param {String}	params.name			the name of the pref or attr on the server
+ * @param {constant}	params.type		config, pref, or COS
+ * @param {constant}	params.dataType	string, int, or boolean (defaults to string)
+ * @param {Object}	params.defaultValue	the default value
  */
 ZmSettings.prototype.registerSetting =
 function(id, params) {
@@ -63,11 +69,20 @@ function(id, params) {
 	return setting;
 };
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmSettings.prototype.toString =
 function() {
 	return "ZmSettings";
 };
 
+/**
+ * Initializes the settings.
+ * 
+ */
 ZmSettings.prototype.initialize =
 function() {
 	this._initialize();
@@ -91,30 +106,33 @@ function() {
 };
 
 /**
-* Returns the value of the given setting.
-*
-* @param id		the numeric ID of the setting
-*/
+ * Gets the value of the given setting.
+ *
+ * @param {int}	id		the numeric ID of the setting
+ * @param	{String}	key		the key
+ * @return	{Object}	the value or <code>null</code> for none
+ */
 ZmSettings.prototype.get =
 function(id, key) {
 	return (id && this._settings[id]) ? this._settings[id].getValue(key) : null;
 };
 
 /**
-* Returns the ZmSetting object for the given setting.
-*
-* @param id		the numeric ID of the setting
-*/
+ * Gets the setting.
+ *
+ * @param {int}	id		the numeric ID of the setting
+ * @return	{ZmSetting}	the setting
+ */
 ZmSettings.prototype.getSetting =
 function(id) {
 	return this._settings[id];
 };
 
 /**
-* Populates settings values.
-*
-* @param list		a hash of preference or attribute values
-*/
+ * Populates settings values.
+ *
+ * @param {Hash}	list		a hash of preference or attribute values
+ */
 ZmSettings.prototype.createFromJs =
 function(list) {
 	for (var i in list) {
@@ -141,9 +159,10 @@ function(list) {
 };
 
 /**
- * Returns the ID of the setting that is associated with the given server-side setting, if any.
+ * Gets the setting that is associated with the given server-side setting, if any.
  * 
- * @param name	[string]	server-side setting name, eg "zimbraFeatureContactsEnabled"
+ * @param {String}	name	the server-side setting name (for example, "zimbraFeatureContactsEnabled")
+ * @return	{ZmSetting}	the setting
  */
 ZmSettings.prototype.getSettingByName =
 function(name) {
@@ -151,11 +170,12 @@ function(name) {
 };
 
 /**
- * Returns true if the given ID was received from the server. Use this method
+ * Checks if the given ID was received from the server. Use this method
  * to determine whether this ID is supported by a ZCS server. Currently used by
- * desktop since it can "talk" to both v5 and v6 ZCS.
+ * ZDesktop since it can "talk" to both v5 and v6 ZCS.
  *
- * @param id	[string]	ZmSetting ID
+ * @param {String}	id	the setting ID
+ * @return	{Boolean}	<code>true</code> if the attribute is supported
  */
 ZmSettings.prototype.attrExists =
 function(id) {
@@ -168,11 +188,11 @@ function(id) {
  * Retrieves the preferences, COS settings, and metadata for the current user.
  * All the data gets stored into the settings collection.
  *
- * @param callback 			[AjxCallback]*		callback to run after response is received
- * @param errorCallback 	[AjxCallback]*		callback to run error is received
- * @param accountName		[String]*			name of account to load settings for
- * @param response			[object]*			pre-determined JSON response object
- * @param batchCommand		[ZmBatchCommand]*	set if part of a batch request
+ * @param {AjxCallback}	callback 			the callback to run after response is received
+ * @param {AjxCallback}	errorCallback 	the callback to run error is received
+ * @param {String}	accountName		the name of account to load settings for
+ * @param {Object}	response			the pre-determined JSON response object
+ * @param {ZmBatchCommand}	batchCommand		set if part of a batch request
  */
 ZmSettings.prototype.loadUserSettings =
 function(callback, errorCallback, accountName, response, batchCommand) {
@@ -195,6 +215,9 @@ function(callback, errorCallback, accountName, response, batchCommand) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSettings.prototype._handleResponseLoadUserSettings =
 function(callback, accountName, result) {
 	var obj = this.getInfoResponse = result.getResponse().GetInfoResponse;
@@ -299,6 +322,9 @@ function(callback, accountName, result) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSettings.prototype._loadZimlets =
 function(allZimlets, props) {
 
@@ -348,6 +374,8 @@ function(allZimlets, props) {
  * Filters a list of zimlets, returned ones that are checked.
  *
  * @param zimlets			[array]		list of zimlet objects
+ * 
+ * @private
  */
 ZmSettings.prototype._getCheckedZimlets =
 function(allZimlets) {
@@ -363,6 +391,11 @@ function(allZimlets) {
 	return zimlets;
 };
 
+/**
+ * Loads the preference data.
+ * 
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmSettings.prototype.loadPreferenceData =
 function(callback) {
 	// force main account (in case multi-account) since locale/skins are global
@@ -383,6 +416,9 @@ function(callback) {
 	command.run(callback);
 };
 
+/**
+ * @private
+ */
 ZmSettings.prototype._handleResponseLoadAvailableSkins =
 function(result) {
 	var resp = result.getResponse().GetAvailableSkinsResponse;
@@ -396,6 +432,9 @@ function(result) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSettings.prototype._handleResponseGetAllLocales =
 function(response) {
 	var locales = response._data.GetAvailableLocalesResponse.locale;
@@ -410,6 +449,9 @@ function(response) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSettings.prototype._handleResponseGetAvailableCsvFormats =
 function(result){
 	var formats = result.getResponse().GetAvailableCsvFormatsResponse.csv;
@@ -424,10 +466,10 @@ function(result){
 /**
  * Saves one or more settings.
  *
- * @param list			[array]				a list of ZmSetting
- * @param callback		[AjxCallback]		callback to run after response is received
- * @param batchCommand	[ZmBatchCommand]*	batch command
- * @param account		[ZmZimbraAccount]*	the account to save under
+ * @param {Array}		list			a list of {ZmSetting} objects
+ * @param {AjxCallback}	callback		the callback to run after response is received
+ * @param {ZmBatchCommand}	batchCommand	the batch command
+ * @param {ZmZimbraAccount}	account		the account to save under
  */
 ZmSettings.prototype.save =
 function(list, callback, batchCommand, account) {
@@ -493,6 +535,9 @@ function(list, callback, batchCommand, account) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSettings.prototype._handleResponseSaveMetaData =
 function(list, result) {
 	for (var i = 0; i < list.length; i++) {
@@ -502,6 +547,9 @@ function(list, result) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSettings.prototype._handleResponseSave =
 function(list, callback, result) {
 	var resp = result.getResponse();
@@ -521,7 +569,11 @@ function(list, callback, result) {
 	}
 };
 
-// Set defaults which are determined dynamically (which can't be set in static code).
+/**
+ * Set defaults which are determined dynamically (which can't be set in static code).
+ * 
+ * @private
+ */
 ZmSettings.prototype._setDefaults =
 function() {
 	var value = AjxUtil.formatUrl({host:location.hostname, path:"/service/soap/", qsReset:true});
@@ -557,6 +609,8 @@ function() {
 
 /**
  * Loads the standard settings and their default values.
+ * 
+ * @private
  */
 ZmSettings.prototype._initialize =
 function() {
@@ -730,6 +784,9 @@ function() {
 	this.registerSetting("ZIMLET_TREE_OPEN",				{name:"zimbraPrefZimletTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isImplicit:true});
 };
 
+/**
+ * @private
+ */
 ZmSettings.prototype._registerZimletsSettings =
 function() {
 	// zimlet-specific
@@ -738,6 +795,9 @@ function() {
     this.registerSetting("MANDATORY_ZIMLETS",		        {name:"zimbraZimletMandatoryZimlets", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 };
 
+/**
+ * @private
+ */
 ZmSettings.prototype._registerOfflineSettings =
 function() {
 	if (!appCtxt.isOffline) { return; }
@@ -762,6 +822,9 @@ function() {
 	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com/desktop2/"});
 };
 
+/**
+ * @private
+ */
 ZmSettings.prototype._changeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
@@ -794,6 +857,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSettings.prototype._newSkinYesCallback =
 function(skin, dialog) {
 	dialog.popdown();
@@ -803,6 +869,9 @@ function(skin, dialog) {
 	ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };
 
+/**
+ * @private
+ */
 ZmSettings.prototype._refreshBrowserCallback =
 function(dialog) {
 	dialog.popdown();

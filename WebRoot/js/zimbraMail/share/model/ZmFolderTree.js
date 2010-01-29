@@ -14,15 +14,23 @@
  */
 
 /**
+ * @overview
+ * 
+ * This file defines a folder tree.
+ *
+ */
+
+/**
  * Creates an empty folder tree.
- * @constructor
  * @class
  * This class represents a tree of folders. It may be typed, in which case
  * the folders are all of that type, or untyped.
  * 
  * @author Conrad Damon
  * 
- * @param type		[constant]*		organizer type
+ * @param {constant}	type		the organizer type
+ * 
+ * @extends	ZmTree
  */
 ZmFolderTree = function(type) {
 	ZmTree.call(this, type);
@@ -38,6 +46,11 @@ ZmFolderTree.IS_PARSED = {};
 
 // Public Methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmFolderTree.prototype.toString =
 function() {
 	return "ZmFolderTree";
@@ -45,6 +58,10 @@ function() {
 
 /**
  * Loads the folder or the zimlet tree.
+ * 
+ * @param	{Object}		rootObj		the root object
+ * @param	{String}		elementType		the element type
+ * @param	{ZmZimbraAccount}		account		the account
  */
 ZmFolderTree.prototype.loadFromJs =
 function(rootObj, elementType, account) {
@@ -57,12 +74,12 @@ function(rootObj, elementType, account) {
  * Generic function for creating a folder. Handles any organizer type that comes
  * in the folder list.
  * 
- * @param parent		[ZmFolder]			parent folder
- * @param obj			[object]			JSON with folder data
- * @param tree			[ZmFolderTree]		containing tree
- * @param elementType	[string]			type of containing JSON element
- * @param path			[array]				list of path elements
- * @param account		[ZmZimbraAccount]*	account this folder belongs to
+ * @param {ZmFolder}	parent		the parent folder
+ * @param {Object}	obj			the JSON with folder data
+ * @param {ZmFolderTree}	tree			the containing tree
+ * @param {String}	elementType		the type of containing JSON element
+ * @param {Array}	path			the list of path elements
+ * @param {ZmZimbraAccount}	account		the account this folder belongs to
  */
 ZmFolderTree.createFromJs =
 function(parent, obj, tree, elementType, path, account) {
@@ -129,6 +146,9 @@ function(parent, obj, tree, elementType, path, account) {
 	return folder;
 };
 
+/**
+ * @private
+ */
 ZmFolderTree._traverse =
 function(folder, obj, tree, path, elementType, account) {
 
@@ -176,6 +196,17 @@ function(folder, obj, tree, path, elementType, account) {
 	}
 };
 
+/**
+ * Creates the folder.
+ * 
+ * @param {String}	type		the folder type
+ * @param {ZmFolder}	parent		the parent folder
+ * @param {Object}	obj			the JSON with folder data
+ * @param {ZmFolderTree}	tree			the containing tree
+ * @param {Array}	path			the list of path elements
+ * @param {String}	elementType		the type of containing JSON element
+ * @param {ZmZimbraAccount}	account		the account this folder belongs to
+ */
 ZmFolderTree.createFolder =
 function(type, parent, obj, tree, path, elementType, account) {
 	var orgClass = eval(ZmOrganizer.ORG_CLASS[type]);
@@ -210,6 +241,9 @@ function(type, parent, obj, tree, path, elementType, account) {
 	return folder;
 };
 
+/**
+ * @private
+ */
 ZmFolderTree._fillInFolder =
 function(folder, obj, path) {
 	if (path && path.length) {
@@ -223,24 +257,37 @@ function(folder, obj, path) {
 	folder._setSharesFromJs(obj);
 };
 
+/**
+ * Gets the folder by type.
+ * 
+ * @param	{String}	type	the type
+ * @return	{ZmFolder}	the folder or <code>null</code> if not found
+ */
 ZmFolderTree.prototype.getByType =
 function(type) {
 	return this.root ? this.root.getByType(type) : null;
 };
 
+/**
+ * Gets the folder by path.
+ * 
+ * @param	{String}	path	the path
+ * @param	{Boolean}	useSystemName		<code>true</code> to use the system name
+ * @return	{ZmFolder}	the folder or <code>null</code> if not found
+ */
 ZmFolderTree.prototype.getByPath =
 function(path, useSystemName) {
 	return this.root ? this.root.getByPath(path, useSystemName) : null;
 };
 
-/*
+/**
  * Handles a missing link by marking its organizer as not there, redrawing it in
  * any tree views, and asking to delete it.
  *
- * @param organizerType		[int]		the type of organizer (constants defined in ZmOrganizer)
- * @param zid				[string]	the zid of the missing folder
- * @param rid				[string]	the rid of the missing folder
- *
+ * @param {int}	organizerType		the type of organizer (constants defined in {@link ZmOrganizer})
+ * @param {String}	zid			the zid of the missing folder
+ * @param {String}	rid			the rid of the missing folder
+ * @return	{Boolean}	<code>true</code> if the error is handled
  */
 ZmFolderTree.prototype.handleNoSuchFolderError =
 function(organizerType, zid, rid) {
@@ -271,13 +318,12 @@ function(organizerType, zid, rid) {
 	return handled;
 };
 
-/*
-* Takes care of letting the user know that a linked organizer generated a "no such folder",
-* error, giving him a chance to delete it.
-*
-* @param organizer	[ZmOrganizer]	organizer
-*
-*/
+/**
+ * Handles no such folder. The user will be notified that a linked organizer generated a "no such folder",
+ * error, giving the user a chance to delete the folder.
+ *
+ * @param {ZmOrganizer}	organizer	the organizer
+ */
 ZmFolderTree.prototype.handleDeleteNoSuchFolder =
 function(organizer) {
 	var ds = appCtxt.getYesNoMsgDialog();
@@ -289,7 +335,12 @@ function(organizer) {
 	ds.popup();
 };
 
-// Handles the "Yes" button in the delete organizer dialog.
+/**
+ * Handles the "Yes" button in the delete organizer dialog.
+ * 
+ * @param	{ZmOrganizer}	organizer		the organizer
+ * @param	{ZmDialog}		dialog		the dialog
+ */
 ZmFolderTree.prototype._deleteOrganizerYesCallback =
 function(organizer, dialog) {
 	organizer._delete();
@@ -297,15 +348,16 @@ function(organizer, dialog) {
 };
 
 /**
- * Issues a BatchRequest of GetFolderRequest's for existing mountpoints that don't have
- * permissions set.
+ * Issues a <code>&lt;BatchRequest&gt;</code> of <code>&lt;GetFolderRequest&gt;</code>s for existing
+ * mountpoints that do not have permissions set.
  *
- * @param type				[Integer]		ZmItem type constant
- * @param callback			[AjxCallback]*	callback to trigger after fetching permissions
- * @param skipNotify		[Boolean]*		skip notify after fetching permissions
- * @param folderIds			[Array]*		list of folder Id's to fetch permissions for
- * @param noBusyOverlay		[Boolean]*		don't block the UI while fetching permissions
- * @param accountName		[String]*		account to issue request under
+ * @param	{Hash}	params	a hash of parameters
+ * @param {int}	params.type			the {@link ZmItem} type constant
+ * @param {AjxCallback}	params.callback			the callback to trigger after fetching permissions
+ * @param {Boolean}	params.skipNotify		<code>true</code> to skip notify after fetching permissions
+ * @param {Array}	params.folderIds			the list of folder Id's to fetch permissions for
+ * @param {Boolean}	params.noBusyOverlay		<code>true</code> to not block the UI while fetching permissions
+ * @param {String}	params.accountName		the account to issue request under
  */
 ZmFolderTree.prototype.getPermissions =
 function(params) {
@@ -339,6 +391,9 @@ function(params) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmFolderTree.prototype._getItemsWithoutPerms =
 function(type) {
 	var needPerms = [];
@@ -360,6 +415,9 @@ function(type) {
 	return needPerms;
 };
 
+/**
+ * @private
+ */
 ZmFolderTree.prototype._handleResponseGetShares =
 function(callback, skipNotify, result) {
 	var batchResp = result.getResponse().BatchResponse;
@@ -394,11 +452,11 @@ function(callback, skipNotify, result) {
 	}
 };
 
-/*
+/**
  * Handles errors that come back from the GetShares batch request.
  *
- * @param organizerTypes	[array]		the types of organizer (constants defined in ZmOrganizer)
- * @param batchResp			[object]	the response
+ * @param {Array}	organizerTypes	the types of organizer (constants defined in {@link ZmOrganizer})
+ * @param {Object}	batchResp			the response
  *
  */
 ZmFolderTree.prototype._handleErrorGetShares =
@@ -422,11 +480,11 @@ function(batchResp) {
 	}
 };
 
-/*
+/**
  * Handles missing links by marking the organizers as not there
  *
- * @param zids				[array]		the zids of the missing folders
- * @param rids				[array]		the rids of the missing folders. rids and zids must have the same length
+ * @param {Array}	zids		the zids of the missing folders
+ * @param {Array}	rids		the rids of the missing folders. rids and zids must have the same length
  *
  */
 ZmFolderTree.prototype._markNoSuchFolder =
@@ -445,6 +503,9 @@ function(zids, rids) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmFolderTree.prototype._sortFolder =
 function(folder) {
 	var children = folder.children;

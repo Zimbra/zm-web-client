@@ -13,6 +13,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file defines the tag class.
+ */
+
+/**
+ * Creates a tag
+ * @class
+ * This class represents a tag.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * @extends	ZmOrganizer
+ */
 ZmTag = function(params) {
 	params.type = ZmOrganizer.TAG;
 	// bug 41850
@@ -26,6 +39,11 @@ ZmTag = function(params) {
 ZmTag.prototype = new ZmOrganizer;
 ZmTag.prototype.constructor = ZmTag;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTag.prototype.toString = 
 function() {
 	return "ZmTag";
@@ -58,10 +76,12 @@ ZmTag.__OLD_COLORS = {
 };
 
 /**
-* Tags come from back end as a flat list, and we manually create a root tag, so all tags
-* have the root as parent. If tags ever have a tree structure, then this should do what
-* ZmFolder does (recursively create children).
-*/
+ * Tags come from back end as a flat list, and we manually create a root tag, so all tags
+ * have the root as parent. If tags ever have a tree structure, then this should do what
+ * ZmFolder does (recursively create children).
+ * 
+ * @private
+ */
 ZmTag.createFromJs =
 function(parent, obj, tree, sorted, account) {
 	var nId = ZmOrganizer.normalizeId(obj.id);
@@ -84,6 +104,13 @@ function(parent, obj, tree, sorted, account) {
 	return tag;
 };
 
+/**
+ * Compares the tags by name.
+ * 
+ * @param	{ZmTag}	tagA		the first tag
+ * @param	{ZmTag}	tagB		the second tag
+ * @return	{int}	0 if the tag names match (case-insensitive); 1 if "a" is before "b"; -1 if "b" is before "a"
+ */
 ZmTag.sortCompare = 
 function(tagA, tagB) {
 	var check = ZmOrganizer.checkSortArgs(tagA, tagB);
@@ -94,6 +121,12 @@ function(tagA, tagB) {
 	return 0;
 };
 
+/**
+ * Checks the tag name.
+ * 
+ * @param	{String}	name		the name
+ * @return	{String}	<code>null</code> if the name is valid or a error message
+ */
 ZmTag.checkName =
 function(name) {
 	var msg = ZmOrganizer.checkName(name);
@@ -106,12 +139,23 @@ function(name) {
 	return null;
 };
 
+/**
+ * Checks the color.
+ * 
+ * @param	{String}	color	the color
+ * @return	{Number}	the valid color
+ */
 ZmTag.checkColor =
 function(color) {
 	color = Number(color);
 	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR)) ? color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 };
 
+/**
+ * Creates a tag.
+ * 
+ * @param	{Hash}	params	a hash of parameters
+ */
 ZmTag.create =
 function(params) {
 	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
@@ -125,6 +169,9 @@ function(params) {
 	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback, accountName:params.accountName});
 };
 
+/**
+ * @private
+ */
 ZmTag._handleErrorCreate =
 function(params, ex) {
 	if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
@@ -137,24 +184,47 @@ function(params, ex) {
 	return false;
 };
 
+/**
+ * Gets the icon.
+ * 
+ * @return	{String}	the icon or <code>null</code> for no icon
+ */
 ZmTag.prototype.getIcon = 
 function() {
 	return (this.id == ZmOrganizer.ID_ROOT) ? null : ZmTag.COLOR_ICON[this.color];
 };
 
+/**
+ * Creates a query for this tag.
+ * 
+ * @return	{String}	the tag query
+ */
 ZmTag.prototype.createQuery =
 function() {
 	return ['tag:"', this.name, '"'].join("");
 };
 
+/**
+ * Gets the tool tip.
+ * 
+ * @return	{String}	the tool tip
+ */
 ZmTag.prototype.getToolTip = function() {};
 
+/**
+ * @private
+ */
 ZmTag.prototype.notifyCreate =
 function(obj) {
 	var child = ZmTag.createFromJs(this, obj, this.tree, true);
 	child._notify(ZmEvent.E_CREATE);
 };
 
+/**
+ * Checks if the tag supports sharing.
+ * 
+ * @return	{Boolean}	always returns <code>false</code>. Tags cannot be shared.
+ */
 ZmTag.prototype.supportsSharing =
 function() {
 	// tags cannot be shared

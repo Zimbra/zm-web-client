@@ -14,36 +14,41 @@
  */
 
 /**
+ * @overview
+ * The file defines a search class.
+ * 
+ */
+
+/**
  * Creates a new search with the given properties.
- * @constructor
  * @class
  * This class represents a search to be performed on the server. It has properties for
  * the different search parameters that may be used. It can be used for a regular search,
- * or to search within a conv. The results are returned via a callback.
+ * or to search within a conversation. The results are returned via a callback.
  *
- * @param params					[hash]			hash of params:
- *        query						[string]		query string
- *        queryHint					[string]*		query string that gets appended to the query but not something the user needs to know about
- *        types						[AjxVector]		item types to search for
- *        sortBy					[constant]*		sort order
- *        offset					[int]*			starting point within result set
- *        limit						[int]*			number of results to return
- *        getHtml					[boolean]*		if true, return HTML part for inlined msg
- *        contactSource				[constant]*		where to search for contacts (GAL or personal)
- *        isGalAutocompleteSearch	[boolean]*		if true, autocomplete against GAL
- *        galType					[constant]*		type of GAL autocomplete (account or resource)
- *        lastId					[int]*			ID of last item displayed (for pagination)
- *        lastSortVal				[string]*		value of sort field for above item
- *        fetch						[boolean]*		if true, fetch first hit message
- *        searchId					[int]*			ID of owning search folder (if any)
- *        conds						[array]*		list of search conditions (SearchCalendarResourcesRequest)
- *        attrs						[array]*		list of attributes to return (SearchCalendarResourcesRequest)
- *        field						[string]*		field to search within (instead of default)
- *        soapInfo					[object]*		object with method, namespace, response, and additional attribute fields for creating soap doc
- *        response					[object]*		canned JSON response (no request will be made)
- *        folders					[array]*		list of folders for autocomplete
- *        allowableTaskStatus		[array]*		list of task status types to return (assuming one of the values for "types" is "task")
- *        accountName				[String]*		account name to run this search against
+ * @param {Hash}		params		a hash of parameters
+ * @param      {String}	params.query				the query string
+ * @param	{String}	params.queryHint			the query string that gets appended to the query but not something the user needs to know about
+ * @param	{AjxVector}	params.types				the item types to search for
+ * @param	{constant}	params.sortBy				the sort order
+ * @param	{int}	params.offset					the starting point within result set
+ * @param	{int}	params.limit					the number of results to return
+ * @param	{Boolean}	params.getHtml				if <code>true</code>, return HTML part for inlined msg
+ * @param	{constant}	params.contactSource				where to search for contacts (GAL or personal)
+ * @param	{Boolean}	params.isGalAutocompleteSearch			if <code>true</code>, autocomplete against GAL
+ * @param	{constant}	params.galType				the type of GAL autocomplete (account or resource)
+ * @param	{int}	params.lastId					the ID of last item displayed (for pagination)
+ * @param	{String}	params.lastSortVal			the value of sort field for above item
+ * @param	{Boolean}	params.fetch				if <code>true</code>, fetch first hit message
+ * @param	{int}	params.searchId				the ID of owning search folder (if any)
+ * @param	{Array}	params.conds					the list of search conditions (<code><SearchCalendarResourcesRequest></code>)
+ * @param	{Array}	params.attrs					the list of attributes to return (<code><SearchCalendarResourcesRequest></code>)
+ * @param	{String}	params.field				the field to search within (instead of default)
+ * @param	{Object}	params.soapInfo			the object with method, namespace, response, and additional attribute fields for creating soap doc
+ * @param	{Object}	params.response			the canned JSON response (no request will be made)
+ * @param	{Array}	params.folders					the list of folders for autocomplete
+ * @param	{Array}	params.allowableTaskStatus		the list of task status types to return (assuming one of the values for "types" is "task")
+ * @param	{String}	params.accountName			the account name to run this search against
  */
 ZmSearch = function(params) {
 
@@ -113,6 +118,11 @@ ZmSearch.DUE_DATE_ASC	= "taskDueAsc";
 ZmSearch.UNREAD_QUERY_RE = new RegExp('\\bis:\\s*(un)?read\\b', "i");
 ZmSearch.IS_ANYWHERE_QUERY_RE = new RegExp('\\bis:\\s*anywhere\\b', "i");
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmSearch.prototype.toString =
 function() {
 	return "ZmSearch";
@@ -130,12 +140,14 @@ function(params) {
 /**
  * Creates a SOAP request that represents this search and sends it to the server.
  *
- * @param params		[hash]				hash of params:
- *        callback		[AjxCallback]*		callback to run when response is received
- *        errorCallback	[AjxCallback]*		callback to run if there is an exception
- *        batchCmd		[ZmBatchCommand]*	batch command that contains this request
- *        timeout		[int]*				timeout value (in seconds)
- *        noBusyOverlay	[boolean]*			if true, don't use the busy overlay
+ * @param {Hash}	params		a hash of parameters
+ * @param {AjxCallback}	params.callback		the callback to run when response is received
+ * @param {AjxCallback}	params.errorCallback	the callback to run if there is an exception
+ * @param {ZmBatchCommand}	params.batchCmd		the batch command that contains this request
+ * @param {int}	params.timeout		the timeout value (in seconds)
+ * @param {Boolean}	params.noBusyOverlay	if <code>true</code>, don't use the busy overlay
+ * 
+ * @private
  */
 ZmSearch.prototype._executeSoap =
 function(params) {
@@ -251,12 +263,14 @@ function(params) {
 /**
  * Creates a JSON request that represents this search and sends it to the server.
  *
- * @param params		[hash]				hash of params:
- *        callback		[AjxCallback]*		callback to run when response is received
- *        errorCallback	[AjxCallback]*		callback to run if there is an exception
- *        batchCmd		[ZmBatchCommand]*	batch command that contains this request
- *        timeout		[int]*				timeout value (in seconds)
- *        noBusyOverlay	[boolean]*			if true, don't use the busy overlay
+ * @param {Hash}	params		a hash of parameters
+ * @param {AjxCallback}	params.callback		the callback to run when response is received
+ * @param {AjxCallback}	params.errorCallback	the callback to run if there is an exception
+ * @param {ZmBatchCommand}	params.batchCmd		the batch command that contains this request
+ * @param {int}	params.timeout		the timeout value (in seconds)
+ * @param {Boolean}	params.noBusyOverlay	if <code>true</code>, don't use the busy overlay
+ * 
+ * @private
  */
 ZmSearch.prototype._executeJson =
 function(params) {
@@ -398,7 +412,9 @@ function(params) {
 };
 
 /**
- * Converts the response into a ZmSearchResult and passes it along.
+ * Converts the response into a {ZmSearchResult} and passes it along.
+ * 
+ * @private
  */
 ZmSearch.prototype._handleResponseExecute =
 function(callback, result) {
@@ -421,14 +437,14 @@ function(callback, result) {
 };
 
 /**
- * Fetches a conv from the server.
+ * Fetches a conversation from the server.
  *
- * @param params		[hash]				hash of params:
- *        cid			[string]*			conv ID
- *        callback		[AjxCallback]*		callback to run with result
- *        fetchId		[string]*			ID of msg to load
- *        markRead		[boolean]*			if true, mark msg read
- *        noTruncate	[boolean]*			if true, do not limit size of msg
+ * @param {Hash}	params		a hash of parameters
+ * @param {String}	params.cid			the conv ID
+ * @param {AjxCallback}	params.callback		the callback to run with result
+ * @param {String}	params.fetchId		the ID of msg to load
+ * @param {Boolean}	params.markRead		if <code>true</code>, mark msg read
+ * @param {Boolean}	params.noTruncate	if <code>true</code>, do not limit size of msg
  */
 ZmSearch.prototype.getConv =
 function(params) {
@@ -468,6 +484,9 @@ function(params) {
 	appCtxt.getAppController().sendRequest(searchParams);
 };
 
+/**
+ * @private
+ */
 ZmSearch.prototype._handleResponseGetConv =
 function(callback, result) {
 	var response = result.getResponse().SearchConvResponse;
@@ -481,8 +500,10 @@ function(callback, result) {
 };
 
 /**
-* Returns a title that summarizes this search.
-*/
+ * Gets a title that summarizes this search.
+ * 
+ * @return	{String}	the title
+ */
 ZmSearch.prototype.getTitle =
 function() {
 	var where;
@@ -502,6 +523,11 @@ function() {
 		: ([ZmMsg.zimbraTitle, ZmMsg.searchResults].join(": "));
 };
 
+/**
+ * Checks if this search is multi-account.
+ * 
+ * @return	{Boolean}	<code>true</code> if multi-account
+ */
 ZmSearch.prototype.isMultiAccount =
 function() {
 	if (!this._isMultiAccount) {
@@ -512,6 +538,9 @@ function() {
 	return this._isMultiAccount;
 };
 
+/**
+ * @private
+ */
 ZmSearch.prototype._getStandardMethod =
 function(soapDoc) {
 
@@ -564,6 +593,9 @@ function(soapDoc) {
 	return method;
 };
 
+/**
+ * @private
+ */
 ZmSearch.prototype._getStandardMethodJson = 
 function(req) {
 
@@ -615,6 +647,9 @@ function(req) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmSearch.prototype._getLimit =
 function() {
 
@@ -670,6 +705,8 @@ ZmSearch.FLAG["unreplied"]		= "!item.isReplied";
  *
  * Compound terms such as "in:(inbox or sent)" are not handled. Anything that invokes
  * a text search (such as "in:inbox xml") is not handled.
+ * 
+ * @private
  */
 ZmSearch.prototype._parseQuery =
 function() {
@@ -823,7 +860,9 @@ function() {
 /**
  * Returns the fully-qualified ID for the given folder path.
  *
- * @param path
+ * @param {String}	path	the path
+ * 
+ * @private
  */
 ZmSearch.prototype._getFolderId =
 function(path) {
@@ -853,6 +892,9 @@ function(path) {
 	return folderId;
 };
 
+/**
+ * @private
+ */
 ZmSearch.prototype._getTagId =
 function(name) {
 	var tagTree = appCtxt.getTagTree();
@@ -864,6 +906,11 @@ function(name) {
 	}
 };
 
+/**
+ * Checks if the search has a folder term.
+ * 
+ * @return	{Boolean}	<code>true</code> if the search has a folder term
+ */
 ZmSearch.prototype.hasFolderTerm =
 function(path) {
 	if (!path) { return false; }
@@ -872,6 +919,12 @@ function(path) {
 	return (regEx.test(this.query) && !regExNot.test(this.query));
 };
 
+/**
+ * Replaces the folder term.
+ * 
+ * @param	{String}	oldPath		the old path
+ * @param	{String}	newPath		the new path
+ */
 ZmSearch.prototype.replaceFolderTerm =
 function(oldPath, newPath) {
 	if (!(oldPath && newPath)) { return; }
@@ -879,6 +932,11 @@ function(oldPath, newPath) {
 	this.query = this.query.replace(regEx, "$1" + newPath + "$3");
 };
 
+/**
+ * Checks if the search has a tag term.
+ * 
+ * @return	{Boolean}	<code>true</code> if the search has a tag term
+ */
 ZmSearch.prototype.hasTagTerm =
 function(name) {
 	if (!name) { return false; }
@@ -887,6 +945,12 @@ function(name) {
 	return (regEx.test(this.query) && !regExNot.test(this.query));
 };
 
+/**
+ * Replaces the tag term.
+ * 
+ * @param	{String}	oldName		the old name
+ * @param	{String}	newName		the new name
+ */
 ZmSearch.prototype.replaceTagTerm =
 function(oldName, newName) {
 	if (!(oldName && newName)) { return; }

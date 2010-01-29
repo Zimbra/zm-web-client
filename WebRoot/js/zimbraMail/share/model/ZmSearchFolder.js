@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file defines a search folder class.
+ */
+
+/**
+ * Creates the search folder.
+ * @class
+ * This class represents a search folder.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends	ZmFolder
+ */
 ZmSearchFolder = function(params) {
 	params.type = ZmOrganizer.SEARCH;
 	ZmFolder.call(this, params);
@@ -31,6 +45,11 @@ ZmSearchFolder = function(params) {
 
 ZmSearchFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
 
+/**
+ * Creates a search folder.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ */
 ZmSearchFolder.create =
 function(params) {
 	var soapDoc = AjxSoapDoc.create("CreateSearchFolderRequest", "urn:zimbraMail");
@@ -69,11 +88,21 @@ function(params) {
 ZmSearchFolder.prototype = new ZmFolder;
 ZmSearchFolder.prototype.constructor = ZmSearchFolder;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmSearchFolder.prototype.toString =
 function() {
 	return "ZmSearchFolder";
 };
 
+/**
+ * Gets the icon.
+ * 
+ * @return	{String}	the icon
+ */
 ZmSearchFolder.prototype.getIcon = 
 function() {
 	return (this.nId == ZmOrganizer.ID_ROOT)
@@ -81,15 +110,21 @@ function() {
 		: (this.isOfflineGlobalSearch ? "GlobalSearchFolder" : "SearchFolder");
 };
 
+/**
+ * Gets the tool tip.
+ * 
+ */
 ZmSearchFolder.prototype.getToolTip = function() {};
 
-/*
-* Returns the organizer with the given ID. Looks in this organizer's tree first.
-* Since a search folder may have either a regular folder or another search folder
-* as its parent, we may need to get the parent folder from another type of tree.
-*
-* @param parentId	[int]		ID of the organizer to find
-*/
+/**
+ * Returns the organizer with the given ID. Looks in this organizer's tree first.
+ * Since a search folder may have either a regular folder or another search folder
+ * as its parent, we may need to get the parent folder from another type of tree.
+ *
+ * @param {int}	parentId	the ID of the organizer to find
+ * 
+ * @private
+ */
 ZmSearchFolder.prototype._getNewParent =
 function(parentId) {
 	var parent = appCtxt.getById(parentId);

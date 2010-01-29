@@ -14,9 +14,19 @@
  */
 
 /**
- * A mountpoint organizer. This class can be used to represent generic
- * mountpoints in an overview tree but is mostly used as a utility to
- * create mountpoints.
+ * @overview
+ * This file defines a mountpoint organizer class.
+ */
+
+/**
+ * Creates a mountpoint organizer.
+ * @class
+ * This class represents a mountpoint organizer. This class can be used to represent generic
+ * mountpoints in an overview tree but is mostly used as a utility to create mountpoints.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends		ZmOrganizer
  */
 ZmMountpoint = function(params) {
 	params.type = ZmOrganizer.MOUNTPOINT;
@@ -33,13 +43,21 @@ ZmMountpoint.__CREATE_PARAMS = { "l":1, "name":1, "zid":1, "rid":1, "owner":1, "
 
 // Public Methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmMountpoint.prototype.toString =
 function() {
 	return "ZmMountpoint";
 };
 
 /**
- * @param params		[Object]		A hash of the request attributes and values.
+ * Creates the mountpoint.
+ * 
+ * @param {Hash}	params		a hash of parameters
+ * @param	{String}	params.name		the name
  */
 ZmMountpoint.create =
 function(params, callback) {
@@ -58,6 +76,9 @@ function(params, callback) {
 											errorCallback:errorCallback});
 };
 
+/**
+ * @private
+ */
 ZmMountpoint._handleCreateError =
 function(name, response) {
 

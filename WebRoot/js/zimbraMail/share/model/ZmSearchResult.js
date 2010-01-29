@@ -13,17 +13,37 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the search result class.
+ */
+
+/**
+ * Creates the search result
+ * @class
+ * This class represents a search result.
+ * 
+ * @param	{ZmSearch}	search		the search
+ */
 ZmSearchResult = function(search) {
 	if (!search) { return; }
 	this._results = {};
 	this.search = search;
 };
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmSearchResult.prototype.toString = 
 function() {
 	return "ZmSearchResult";
 };
 
+/**
+ * @private
+ */
 ZmSearchResult.prototype.dtor = 
 function() {
 	for (var type in this._results) {
@@ -35,6 +55,12 @@ function() {
 	this._results = null;
 };
 
+/**
+ * Gets the results.
+ * 
+ * @param	{constant}	type	the type
+ * @return	{Array}	an array of results
+ */
 ZmSearchResult.prototype.getResults =
 function(type) {
 
@@ -62,11 +88,22 @@ function(type) {
 	}
 };
 
+/**
+ * Gets the attribute.
+ * 
+ * @param	{String}	name		the attribute name
+ * @return	{Object}	the attribute
+ */
 ZmSearchResult.prototype.getAttribute = 
 function(name) {
 	return this._respEl ? this._respEl[name] : null;
 };
 
+/**
+ * Sets the response.
+ * 
+ * @private
+ */
 ZmSearchResult.prototype.set =
 function(respEl) {
 
@@ -178,6 +215,9 @@ function(respEl) {
 	return this.type;
 };
 
+/**
+ * @private
+ */
 ZmSearchResult._sortGalResults =
 function(a, b) {
 	var af = a.getFileAs && a.getFileAs().toLowerCase();

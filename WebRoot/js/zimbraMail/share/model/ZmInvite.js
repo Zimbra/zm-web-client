@@ -14,12 +14,18 @@
  */
 
 /**
-* Class encompasing an invite to a calendar appt.
-* @constructor
-* @class
-* 
-* @author
-*/
+ * @overview
+ * This file defines a calendar appointment invite.
+ *
+ */
+
+/**
+ * Creates an invite.
+ * @class
+ * This class represents an invite to a calendar appointment.
+ * 
+ * @extends	ZmModel
+ */
 ZmInvite = function() {
 	ZmModel.call(this);
 };
@@ -27,18 +33,31 @@ ZmInvite = function() {
 ZmInvite.prototype = new ZmModel;
 ZmInvite.prototype.constructor = ZmInvite;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmInvite.prototype.toString = 
 function() {
 	return "ZmInvite: name=" + this.name + " id=" + this.id;
 };
 
 /**
- * function that will be used to send requests.
- * This should be set via ZmInvite.setSendFunction.
+ * Function that will be used to send requests. This should be set via ZmInvite.setSendFunction.
+ * 
+ * @private
  */
 ZmInvite._sendFun = null;
 
 // Class methods
+
+/**
+ * Creates the invite from the DOM.
+ * 
+ * @param	{Object}	node	the node
+ * @return	{ZmInvite}	the newly created invite
+ */
 ZmInvite.createFromDom = 
 function(node) {
 	var invite = new ZmInvite();
@@ -102,29 +121,53 @@ function(node) {
 	return invite;
 };
 
+/**
+ * Sets the message id.
+ * 
+ * @param	{String}	id		the message id
+ */
 ZmInvite.prototype.setMessageId = 
 function (id) {
 	this.msgId = id;
 };
 
-/*
- * mail item id on appt instance
+/**
+ * Gets the message id.
+ * 
+ * @return	{String}	the message id
  */
 ZmInvite.prototype.getMessageId = 
 function() {
 	return this.msgId;
 };
 
+/**
+ * Gets the component.
+ * 
+ * @param	{String}	id	the component id
+ * @return	{Object}	the component
+ */
 ZmInvite.prototype.getComponent = 
 function(id) {
 	return this.components[id];
 };
 
+/**
+ * Gets the components.
+ * 
+ * @return	{Array}	an array of components
+ */
 ZmInvite.prototype.getComponents = 
 function () {
 	return this.components;
 };
 
+/**
+ * Gets the component by uid.
+ * 
+ * @param	{String}	uid		the component uid
+ * @return	{Object}	the component
+ */
 ZmInvite.prototype.getComponentByUid = 
 function(uid) {
 	for (var i = 0 ; i < components.length ; ++i) {
@@ -134,35 +177,70 @@ function(uid) {
 	}
 };
 
+/**
+ * Checks if the invite has multiple components.
+ * 
+ * @return	{Boolean}	<code>true</code> if the invite has one or more components
+ */
 ZmInvite.prototype.hasMultipleComponents = 
 function() {
 	return (this.components.length > 1);
 };
 
+/**
+ * Checks if the invite has other attendees.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{Boolean}	<code>true</code> if the invite has more than one other attendee
+ */
 ZmInvite.prototype.hasOtherAttendees =
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn].at && this.components[cn].at.length > 0;
 };
 
+/**
+ * Gets the event name.
+ *  
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the name or <code>null</code> for none
+ */
 ZmInvite.prototype.getEventName = 
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn] ? this.components[cn].name : null;
 };
 
+/**
+ * Gets the alarm.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the alarm or <code>null</code> for none
+ */
 ZmInvite.prototype.getAlarm = 
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn] ? this.components[cn].alarm : null;
 };
 
+/**
+ * Gets the invite method.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String} the method or <code>null</code> for none
+ */
 ZmInvite.prototype.getInviteMethod =
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn] ? this.components[cn].method : null;
 };
 
+/**
+ * Gets the organizer email.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the organizer email or <code>null</code> for none
+ */
 ZmInvite.prototype.getOrganizerEmail =
 function(compNum) {
 	var cn = compNum || 0;
@@ -170,6 +248,12 @@ function(compNum) {
 		? (this.components[cn].or.url.replace("MAILTO:", "")) : null;
 };
 
+/**
+ * Gets the organizer name.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the organizer name or <code>null</code> for none
+ */
 ZmInvite.prototype.getOrganizerName = 
 function(compNum) {
 	var cn = compNum || 0;
@@ -177,6 +261,12 @@ function(compNum) {
 		? (this.components[cn].or.d || this.components[cn].or.url) : null;
 };
 
+/**
+ * Gets the sent by.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the sent by or <code>null</code> for none
+ */
 ZmInvite.prototype.getSentBy =
 function(compNum) {
 	var cn = compNum || 0;
@@ -184,24 +274,48 @@ function(compNum) {
 		? this.components[cn].or.sentBy : null;
 };
 
+/**
+ * Checks if is organizer.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{Boolean}	<code>true</code> if is organizer
+ */
 ZmInvite.prototype.isOrganizer =
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn] ? (!!this.components[cn].isOrg) : false;
 };
 
+/**
+ * Gets the RSVP.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the RSVP or <code>null</code> for none
+ */
 ZmInvite.prototype.shouldRsvp =
 function(compNum){
 	var cn = compNum || 0;
 	return this.components[cn] ? this.components[cn].rsvp : null;
 };
 
+/**
+ * Gets the recurrence.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{ZmRecurrence}	the recurrence
+ */
 ZmInvite.prototype.getRecurrenceRules = 
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn].recur;
 };
 
+/**
+ * Gets the attendees.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{Array}	an array of attendees or an empty array for none
+ */
 ZmInvite.prototype.getAttendees =
 function(compNum) {
 	var cn = compNum || 0;
@@ -218,12 +332,24 @@ function(compNum) {
 	return list;
 };
 
+/**
+ * Gets the replies.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the reply
+ */
 ZmInvite.prototype.getReplies =
 function(compNum) {
 	var cn = compNum || 0;
 	return (this.replies && this.replies[cn]) ? this.replies[cn].reply : null;
 };
 
+/**
+ * Gets the resources.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{Array}	an array of resources
+ */
 ZmInvite.prototype.getResources =
 function(compNum) {
 	var cn = compNum || 0;
@@ -240,41 +366,83 @@ function(compNum) {
 	return list;
 };
 
+/**
+ * Gets the except id.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the except id
+ */
 ZmInvite.prototype.getExceptId =
 function(compNum) {
 	var cn = compNum || 0;
 	return (this.components[cn] && this.components[cn].exceptId) ? this.components[cn].exceptId[0] : null;
 };
 
+/**
+ * Gets the status.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return {String}	the status
+ */
 ZmInvite.prototype.getStatus =
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn].status;
 };
 
+/**
+ * Checks if the invite is empty.
+ * 
+ * @return	{Boolean}	<code>true</code> if the invite is empty
+ */
 ZmInvite.prototype.isEmpty =
 function() {
 	return Boolean(this.components.empty);
 };
 
+/**
+ * Checks if the invite is an exception.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{Boolean}	<code>true</code> if exception
+ */
 ZmInvite.prototype.isException = 
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn] ? this.components[cn].ex : false;
 };
 
+/**
+ * Checks if the invite is recurring.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{Boolean}	<code>true</code> if recurring
+ * @see		#getRecurrenceRules
+ */
 ZmInvite.prototype.isRecurring =
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn] ? this.components[cn].recur : false;
 };
 
+/**
+ * Checks if the invite is an all day event.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{Boolean}	<code>true</code> if an all day event
+ */
 ZmInvite.prototype.isAllDayEvent = 
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn] ? this.components[cn].allDay == "1" : false;
 };
 
+/**
+ * Checks if the invite is multi-day.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{Boolean}	<code>true</code> if the invite is multi-day
+ */
 ZmInvite.prototype.isMultiDay =
 function(compNum) {
 	var cn = compNum || 0;
@@ -283,6 +451,12 @@ function(compNum) {
 	return (sd.getDate() != ed.getDate()) || (sd.getMonth() != ed.getMonth()) || (sd.getFullYear() != ed.getFullYear());
 };
 
+/**
+ * Gets the description html.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the description html or <code>null</code> for none
+ */
 ZmInvite.prototype.getComponentDescriptionHtml =
 function(compNum) {
     var cn = compNum || 0;    
@@ -292,6 +466,12 @@ function(compNum) {
 	return content;
 };
 
+/**
+ * Gets the description.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the description or <code>null</code> for none
+ */
 ZmInvite.prototype.getComponentDescription =
 function(compNum) {
     var cn = compNum || 0;    
@@ -301,6 +481,12 @@ function(compNum) {
 	return content;
 };
 
+/**
+ * Gets the server end time.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the end time
+ */
 ZmInvite.prototype.getServerEndTime =
 function(compNum) {
 	var cn = compNum || 0;
@@ -346,6 +532,12 @@ function(compNum) {
 	return this._serverEndTime;
 };
 
+/**
+ * Gets the server end date.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{Date}	the end date
+ */
 ZmInvite.prototype.getServerEndDate =
 function(compNum) {
 	var cn = compNum || 0;
@@ -355,6 +547,12 @@ function(compNum) {
 	return this._serverEndDate;
 };
 
+/**
+ * Gets the server start time.
+ *
+ * @param	{int}	compNum		the component number
+ * @return	{Date}	the start time
+ */
 ZmInvite.prototype.getServerStartTime = 
 function(compNum) {
 	var cn = compNum || 0;
@@ -362,6 +560,12 @@ function(compNum) {
 		? this.components[cn].s[0].d : null;
 };
 
+/**
+ * Gets the server start date.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{Date}	the start date
+ */
 ZmInvite.prototype.getServerStartDate =
 function(compNum) {
 	var cn = compNum || 0;
@@ -371,6 +575,12 @@ function(compNum) {
 	return this._serverStartDate;
 };
 
+/**
+ * Gets the server start time timezone.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the timezone
+ */
 ZmInvite.prototype.getServerStartTimeTz = 
 function(compNum) {
 	var cn = compNum || 0;
@@ -385,6 +595,12 @@ function(compNum) {
 	return this._serverStartTimeZone;
 };
 
+/**
+ * Gets the server end time timezone.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the timezone
+ */
 ZmInvite.prototype.getServerEndTimeTz = 
 function(compNum) {
 	var cn = compNum || 0;
@@ -399,6 +615,15 @@ function(compNum) {
 	return this._serverEndTimeZone;
 };
 
+/**
+ * Gets the duration text.
+ * 
+ * @param	{int}	compNum		the component number
+ * @param	{Boolean}	emptyAllDay		<code>true</code> to return an empty string "" if all day event.
+ * @param	{Boolean}	startOnly		<code>true</code> to include start only
+ * @param	{Boolean}	isText			<code>true</code> to return as text, not html
+ * @return	{String}	the duration
+ */
 ZmInvite.prototype.getDurationText =
 function(compNum, emptyAllDay, startOnly, isText) {
 	var component = this.components[compNum];
@@ -457,30 +682,60 @@ function(compNum, emptyAllDay, startOnly, isText) {
 	}
 };
 
+/**
+ * Gets the name.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the name
+ */
 ZmInvite.prototype.getName = 
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn] ? this.components[cn].name : null;
 };
 
+/**
+ * Gets the free busy.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the free busy
+ */
 ZmInvite.prototype.getFreeBusy =
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn] ? this.components[cn].fb : null;
 };
 
+/**
+ * Gets the privacy.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the privacy
+ */
 ZmInvite.prototype.getPrivacy =
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn] ? this.components[cn]["class"] : null;
 };
 
+/**
+ * Gets the x-prop.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the x-prop
+ */
 ZmInvite.prototype.getXProp =
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn] ? this.components[cn]["xprop"] : null;
 };
 
+/**
+ * Gets the location.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the location
+ */
 ZmInvite.prototype.getLocation =
 function(compNum) {
 	var cn = compNum || 0;
@@ -488,11 +743,13 @@ function(compNum) {
 };
 
 /** 
- * Returns HTML for a tool tip for this invite. 
+ * Gets the tool tip in HTML for this invite.
+ * 
  * <p>
- * <strong>Note:</strong>
- * This method assumes that there are currently one and only one
- * component object on the invite.
+ * <strong>Note:</strong> This method assumes that there are currently one and only one component object on the invite.
+ * </p>
+ * 
+ * @return	{String}	the tool tip
  */
 ZmInvite.prototype.getToolTip =
 function() {
@@ -554,6 +811,12 @@ function() {
 	return this._toolTip;
 };
 
+/**
+ * Gets the summary.
+ * 
+ * @param	{Boolean}	isHtml	<code>true</code> to return summary as HTML
+ * @return	{String}	the summary
+ */
 ZmInvite.prototype.getSummary =
 function(isHtml) {
 	var compNum = 0;
@@ -623,7 +886,11 @@ function(isHtml) {
 	return buf.join("");
 };
 
-/** Adds a row to the tool tip. */
+/**
+ * Adds a row to the tool tip.
+ * 
+ * @private
+ */
 ZmInvite.prototype._addEntryRow =
 function(field, data, html, idx, wrap, width, asIs) {
 	if (data != null && data != "") {
@@ -643,6 +910,11 @@ function(field, data, html, idx, wrap, width, asIs) {
 	return idx;
 };
 
+/**
+ * Checks the invite has acceptable components.
+ * 
+ * @return	{Boolean}	<code>true</code> if the invite has acceptable components
+ */
 ZmInvite.prototype.hasAcceptableComponents =
 function() {	
 	for(var i  in this.components) {
@@ -654,6 +926,12 @@ function() {
 	return false;
 };
 
+/**
+ * Checks the invite has a reply method.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{Boolean}	<code>true</code> if the invite has a reply method
+ */
 ZmInvite.prototype.hasInviteReplyMethod =
 function(compNum) {
     var methodName = this.getInviteMethod(compNum);

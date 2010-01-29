@@ -16,13 +16,13 @@
 /**
  * @overview
  * 
- * This file contains the ZmObjectHandler base class.
+ * This file contains the zimlet object handler base class.
  * 
  */
 
 /**
+ * Creates the object handler.
  * @class
- *
  * This class defines the default implementation for a zimlet object handler.
  * <br />
  * <br />
@@ -156,8 +156,8 @@ function(content, startIndex) {
  * </pre>
  * 
  * Handlers can also set result.context which will be passed back to
- * them during the various method calls (getToolTipText, etc). Handlers should set
- * regex.lastIndex to startIndex and then use regex.exec(content). Handlers should
+ * them during the various method calls ({@link #getToolTipText}, etc). Handlers should set
+ * regex.lastIndex to startIndex and then use <code>regex.exec(content)</code>. Handlers should
  * also use the "g" option when constructing their regex.
  */
 ZmObjectHandler.prototype.match =
@@ -166,7 +166,7 @@ function(content, startIndex) {
 };
 
 /**
- * Generates content inside the <code><span></code> tag.
+ * Generates content inside the <code>&lt;span&gt;</code> tag.
  * 
  * @return	{Number}	the content index
  * @private
@@ -178,7 +178,7 @@ function(html, idx, obj, context, spanId) {
 };
 
 /**
- * Generates the <code><span></code> tag.
+ * Generates the <code>&lt;span&gt;</code> tag.
  * 
  * @return	{Number}	the content index
  * @private
@@ -249,7 +249,7 @@ function(obj, span, context) {
  * @param		{String}	span		the span element
  * @param		{Object}	ev			the event
  * @param		{Object}	context		the context
- * @see		#clicked()
+ * @see		#clicked
  */
 ZmObjectHandler.prototype.selected =
 function(obj, span, ev, context) {

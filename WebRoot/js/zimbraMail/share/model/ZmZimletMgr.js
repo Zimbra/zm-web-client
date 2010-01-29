@@ -13,6 +13,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the Zimlet manager class.
+ */
+
+/**
+ * Creates the Zimlet manager.
+ * @class
+ * This class represents the Zimlet manager.
+ * 
+ */
 ZmZimletMgr = function() {
 	this._ZIMLETS = [];
 	this._ZIMLETS_BY_ID = {};
@@ -23,6 +34,11 @@ ZmZimletMgr = function() {
 
 ZmZimletMgr.prototype.constructor = ZmZimletMgr;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmZimletMgr.prototype.toString =
 function() {
 	return "ZmZimletMgr";
@@ -38,11 +54,25 @@ ZmZimletMgr._RE_REMOTE = /^((https?|ftps?):\x2f\x2f|\x2f)/;
 // Public methods
 //
 
+/**
+ * Checks if the manager is loaded.
+ * 
+ * @return	{Boolean}	<code>true</code> if loaded
+ */
 ZmZimletMgr.prototype.isLoaded =
 function() {
 	return this.loaded;
 };
 
+/**
+ * Loads the zimlets.
+ * 
+ * @param	{Array}	zimletArray		an array of {@link ZmZimlet} objects
+ * @param	{Array}	userProps		an array of properties
+ * @param	{String}	target		the target
+ * @param	{AjxCallback}	callback	the callback
+ * @param	{Boolean}	sync		<code>true</code> for synchronous
+ */
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps, target, callback, sync) {
 	if (!zimletArray || !zimletArray.length) {
@@ -57,6 +87,9 @@ function(zimletArray, userProps, target, callback, sync) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmZimletMgr.prototype._loadZimlets =
 function(zimletArray, userProps, target, callback, sync) {
 	var z;
@@ -107,6 +140,9 @@ function(zimletArray, userProps, target, callback, sync) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmZimletMgr.prototype._resetOverviewTree =
 function() {
 	var zimletTree = appCtxt.getZimletTree();
@@ -123,6 +159,11 @@ function() {
 	}
 };
 
+/**
+ * Gets the panel zimlets.
+ * 
+ * @return	{Array}	an array of {@link ZmZimlet} objects
+ */
 ZmZimletMgr.prototype.getPanelZimlets =
 function() {
 	var panelZimlets = [];
@@ -135,6 +176,11 @@ function() {
 	return panelZimlets;
 };
 
+/**
+ * Gets the indexed zimlets.
+ * 
+ * @return	{Array}	an array of {@link ZmZimlet} objects
+ */
 ZmZimletMgr.prototype.getIndexedZimlets =
 function() {
 	var indexedZimlets = [];
@@ -147,6 +193,11 @@ function() {
 	return indexedZimlets;
 };
 
+/**
+ * Gets the portlet zimlets.
+ * 
+ * @return	{Array}	an array of {@link ZmZimlet} objects
+ */
 ZmZimletMgr.prototype.getPortletZimlets =
 function() {
 	if (!this._portletArray) {
@@ -163,12 +214,24 @@ function() {
 	return this._portletArray;
 };
 
+/**
+ * Gets the portlets hash.
+ * 
+ * @return	{Hash}	the portlets hash
+ */
 ZmZimletMgr.prototype.getPortletZimletsHash =
 function() {
 	this.getPortletZimlets();
 	return this._portletMap;
 };
 
+/**
+ * Registers the content zimlet.
+ * 
+ * @param	{ZmZimlet}	zimletObj		the zimlet
+ * @param	{constant}	type			the type
+ * @param	{constant}	priority		the priority
+ */
 ZmZimletMgr.prototype.registerContentZimlet =
 function(zimletObj, type, priority) {
 	var i = this._CONTENT_ZIMLETS.length;
@@ -178,26 +241,53 @@ function(zimletObj, type, priority) {
 	DBG.println(AjxDebug.DBG2, "Zimlets - registerContentZimlet(): " + this._CONTENT_ZIMLETS[i]._zimletContext.name);
 };
 
+/**
+ * Gets the content zimlets.
+ * 
+ * @return	{Array}	an array of {@link ZmZimlet} objects
+ */
 ZmZimletMgr.prototype.getContentZimlets =
 function() {
 	return this._CONTENT_ZIMLETS;
 };
 
+/**
+ * Gets the zimlets.
+ * 
+ * @return	{Array}	an array of {@link ZmZimlet} objects
+ */
 ZmZimletMgr.prototype.getZimlets =
 function() {
 	return this._ZIMLETS;
 };
 
+/**
+ * Gets the zimlets hash.
+ * 
+ * @return	{Hash}	as hash of zimlets
+ */
 ZmZimletMgr.prototype.getZimletsHash =
 function() {
 	return this._ZIMLETS_BY_ID;
 };
 
+/**
+ * Checks if the zimlet exists.
+ * 
+ * @param	{String}	name		the name
+ * @return	{ZmZimlet}	the zimlet
+ */
 ZmZimletMgr.prototype.zimletExists =
 function(name) {
 	return this._ZIMLETS_BY_ID[name];
 };
 
+/**
+ * Gets the zimlet.
+ * 
+ * @param	{String}	name		the name
+ * @return	{ZmZimlet}	the zimlet
+ */
 ZmZimletMgr.prototype.getZimletByName =
 function(name) {
 	for (var i = 0; i < this._ZIMLETS.length; i++) {
@@ -210,6 +300,12 @@ function(name) {
     return null;
 };
 
+/**
+ * Handles zimlet notification.
+ * 
+ * @param	{Object}	event	the event
+ * @param	{Object}	args	the arguments
+ */
 ZmZimletMgr.prototype.notifyZimlets =
 function(event, args) {
 	if (args && (!(args instanceof Array))) { args = [args]; }
@@ -224,16 +320,18 @@ function(event, args) {
 	}
 };
 
-/*
-* Processes a request (from core-zcs to zimlets) and returns value of the
-* first zimlet that serves the request.
-* PS: 
-* - Requestor must handle 'null' value
-* - stores/caches the zimlet for a given request to improve performance.
-* - also stores _requestNotHandledByAnyZimlet if no zimlet handles this
-*	request(in the current session), again to improve performance.
-* e.g: appCtxt.getZimletMgr().processARequest("getMailCellStyle", item, field)
-*/
+/**
+ * Processes a request (from core-zcs to zimlets) and returns value of the
+ * first zimlet that serves the request.
+ * PS: 
+ * - Requestor must handle 'null' value
+ * - stores/caches the zimlet for a given request to improve performance.
+ * - also stores _requestNotHandledByAnyZimlet if no zimlet handles this
+ *	request(in the current session), again to improve performance.
+ * e.g: appCtxt.getZimletMgr().processARequest("getMailCellStyle", item, field)
+ * 
+ * @private
+ */
 ZmZimletMgr.prototype.processARequest =
 function(request) {
 	if (this._requestNotHandledByAnyZimlet[request]) { return null; }
@@ -267,6 +365,9 @@ function(request) {
 // Protected methods
 //
 
+/**
+ * @private
+ */
 ZmZimletMgr.prototype._getZimletNames =
 function(zimletArray) {
 	var array = new Array(zimletArray ? zimletArray.length : 0);
@@ -276,6 +377,9 @@ function(zimletArray) {
 	return array;
 };
 
+/**
+ * @private
+ */
 ZmZimletMgr.prototype._loadIncludes =
 function(zimletArray, zimletNames, callback) {
 	var includes = this.__getIncludes(zimletArray, zimletNames, true);
@@ -284,6 +388,9 @@ function(zimletArray, zimletNames, callback) {
 	AjxInclude(includes, null, includesCallback, ZmZimletBase.PROXY);
 };
 
+/**
+ * @private
+ */
 ZmZimletMgr.prototype._finished_loadIncludes =
 function(zimletNames, callback) {
 	if (!appCtxt.isChildWindow) {
@@ -318,6 +425,9 @@ function(zimletNames, callback) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmZimletMgr.prototype._finished_loadIncludes2 =
 function(callback) {
 	appCtxt.allZimletsLoaded();
@@ -327,6 +437,9 @@ function(callback) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmZimletMgr.prototype._loadStyles =
 function(zimletArray, zimletNames) {
 	var head = document.getElementsByTagName("head")[0];
@@ -349,6 +462,9 @@ function(zimletArray, zimletNames) {
 // Private methods
 //
 
+/**
+ * @private
+ */
 ZmZimletMgr.prototype.__getIncludes =
 function(zimletArray, zimletNames, isJS) {
 	// add remote urls
@@ -412,6 +528,11 @@ function(zimletArray, zimletNames, isJS) {
 	return includes;
 };
 
+/**
+ * Renames the zimlets label.
+ * 
+ * @private
+ */
 ZmZimletMgr.prototype.renameZimletsLabel =
 function() {
 	var treeController = appCtxt.getOverviewController().getTreeController("ZIMLET");
@@ -425,6 +546,11 @@ function() {
 	}
 };
 
+/**
+ * Changes the zimlet label.
+ * 
+ * @param	{Object}	item		the item
+ */
 ZmZimletMgr.prototype.changeZimletLabel =
 function(item) {
 	var zimlet = item.getData(Dwt.KEY_OBJECT);

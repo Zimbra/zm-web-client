@@ -14,10 +14,14 @@
  */
 
 /**
+ * @overview
+ * This file contains the zimbra account class.
+ */
+
+/**
+ * Creates an account object containing meta info about the account.
  * @class
- * 
- * Creates an account object containing meta info about the account
- * An account object is created primarily if a user has added sub-accounts
+ * This class represents an account. This object is created primarily if a user has added sub-accounts
  * to manage (i.e. a family mailbox).
  *
  * @author Parag Shah

@@ -28,6 +28,7 @@
  * @param	{constant}	type	the account type (see <code>ZmAccount.TYPE_</code> constants)
  * @param	{String}	id		the account id
  * @param	{String}	name	the account name
+ * @see		ZmAccount
  */
 ZmAccount = function(type, id, name) {
 	if (arguments.length == 0) { return; }
@@ -93,6 +94,8 @@ ZmAccount.TYPE_ZIMBRA	= "Zimbra";
  * 
  * @param	{constant}	type		the type (see <code>ZmAccount.TYPE_</code> constants)
  * @return	{String}	the name or unknown
+ * 
+ * @see		ZmAccount
  */
 ZmAccount.getTypeName =
 function(type) {

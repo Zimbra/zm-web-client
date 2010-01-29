@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the Zimlet context class.
+ */
+
+/**
+ * Creates the Zimlet context.
+ * @class
+ * This class represents the Zimlet context.
+ * 
+ * @param	{String}	id		the id
+ * @param	{ZmZimletBase}	zimlet	the Zimlet
+ * 
+ */
 ZmZimletContext = function(id, zimlet) {
 
 	// sanitize JSON here
@@ -134,19 +148,23 @@ ZmZimletContext.RE_SCAN_MSG = /(^|[^\\])\$\{msg\.([\$a-zA-Z0-9_]+)\}/g;
 
 ZmZimletContext.__RE_SCAN_SETTING = /\$\{setting\.([\$a-zA-Z0-9_]+)\}/g;
 
+/**
+ * @private
+ */
 ZmZimletContext._isArray =
 function(obj){
     return (!AjxUtil.isUndefined(obj) && appCtxt.isChildWindow && obj.length && AjxUtil.isFunction(obj.sort) && AjxUtil.isFunction(obj.unshift) );
 };
 
-/** This function creates a 'sane' JSON object, given one returned by the
+/**
+ * This function creates a 'sane' JSON object, given one returned by the
  * Zimbra server.
- *
+ *<p>
  * It will basically remove unnecessary arrays and create String objects for
  * those tags that have text data, so that we don't need to dereference lots of
- * arrays and use _content.  It does the job that the server should do.  *grin*
- *
- * BIG FAT WARNING: usage of an attribute named "length" may give weird
+ * arrays and use _content. It does the job that the server should do.  *grin*
+ * </p>
+ * <b>WARNING</b>: usage of an attribute named "length" may give sporadic
  * results, since we convert tags that have text content to Strings.
  *
  * @param obj -- array or object, whatever was given by server
@@ -154,6 +172,8 @@ function(obj){
  * @param wantarray_re -- RegExp that matches tags that must remain an array
  *
  * @return -- sanitized object
+ * 
+ * @private
  */
 ZmZimletContext.sanitize =
 function(obj, tag, wantarray_re) {
@@ -189,6 +209,11 @@ function(obj, tag, wantarray_re) {
 	return doit(obj, tag);
 };
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmZimletContext.prototype.toString =
 function() {
 	return "ZmZimletContext - " + this.name;
@@ -197,6 +222,8 @@ function() {
 /**
  * <strong>Note:</strong>
  * This method is called by ZmZimletMgr#_finished_loadIncludes.
+ * 
+ * @private
  */
 ZmZimletContext.prototype._finished_loadIncludes =
 function() {
@@ -246,28 +273,54 @@ function() {
 	DBG.println(AjxDebug.DBG2, "Zimlets - init() complete: " + this.name);
 };
 
+/**
+ * @private
+ */
 ZmZimletContext.prototype._finished_loadIncludes2 =
 function() {
 	appCtxt.getApp(ZmApp.PORTAL).getPortletMgr().zimletLoaded(this);
 };
 
+/**
+ * Gets the organizer.
+ * 
+ * @return	{ZmOrganizer}	the organizer
+ */
 ZmZimletContext.prototype.getOrganizer =
 function() {
 	// this._organizer is a ZmZimlet and is set in ZmZimlet.createFromJs
 	return this._organizer;
 };
 
+/**
+ * Gets the URL.
+ * 
+ * @return	{String}	the URL
+ */
 ZmZimletContext.prototype.getUrl =
 function() {
 	return this._url;
 };
 
+/**
+ * Gets the value.
+ * 
+ * @param	{String}	key		the key
+ * @return	{Object}	the value
+ */
 ZmZimletContext.prototype.getVal =
 function(key) {
 	var zim = this.json.zimlet;    
 	return eval("zim." + key);
 };
 
+/**
+ * Calls the handler.
+ * 
+ * @param	{String}	funcname		the function
+ * @param	{Hash}		args			the arguments
+ * @return	{Object}	the results or <code>null</code> for none
+ */
 ZmZimletContext.prototype.callHandler =
 function(funcname, args) {
 	if (this.handlerObject) {
@@ -285,6 +338,9 @@ function(funcname, args) {
 	return null;
 };
 
+/**
+ * @private
+ */
 ZmZimletContext.prototype._translateUserProp =
 function() {
 	var a = this.userProperties = this.userProperties.property;
@@ -293,6 +349,13 @@ function() {
 	}
 };
 
+/**
+ * Sets the property.
+ * 
+ * @param	{String}	name		the name
+ * @param	{Object}	val			the value
+ * 
+ */
 ZmZimletContext.prototype.setPropValue =
 function(name, val) {
 	if (!this._propsById[name]) {
@@ -303,16 +366,31 @@ function(name, val) {
 	this._propsById[name].value = val;
 };
 
+/**
+ * Gets the property.
+ * 
+ * @param	{String}	name		the name
+ * @return	{Object}	value
+ */
 ZmZimletContext.prototype.getPropValue =
 function(name) {
 	return this._propsById[name] && this._propsById[name].value;
 };
 
+/**
+ * Gets the property.
+ * 
+ * @param	{String}	name		the name
+ * @return	{Object}	the property
+ */
 ZmZimletContext.prototype.getProp =
 function(name) {
 	return this._propsById[name];
 };
 
+/**
+ * @private
+ */
 ZmZimletContext.prototype._translateConfig =
 function() {
 	if (!this.config) { return; }
@@ -333,6 +411,12 @@ function() {
 	}
 };
 
+/**
+ * Gets the config.
+ * 
+ * @param	{String}	name		the config
+ * @return	{Object}	the config
+ */
 ZmZimletContext.prototype.getConfig =
 function(name) {
 
@@ -350,6 +434,11 @@ function(name) {
 	return null;
 };
 
+/**
+ * Gets the panel action menu.
+ * 
+ * @return	{ZmActionMenu}	the menu
+ */
 ZmZimletContext.prototype.getPanelActionMenu =
 function() {
 	if (this._panelActionMenu instanceof AjxCallback) {
@@ -358,6 +447,9 @@ function() {
 	return this._panelActionMenu;
 };
 
+/**
+ * @private
+ */
 ZmZimletContext.prototype._makeMenu =
 function(obj) {
 	var menu = new ZmActionMenu({parent:DwtShell.getShell(window), menuItems:ZmOperation.NONE});
@@ -375,6 +467,9 @@ function(obj) {
 	return menu;
 };
 
+/**
+ * @private
+ */
 ZmZimletContext.prototype._handleMenuItemSelected =
 function(ev) {
 	var data = ev.item.getData("xmlMenuItem");
@@ -385,6 +480,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmZimletContext.prototype.process =
 function(str, obj, props) {
 	if (obj) {
@@ -397,11 +495,17 @@ function(str, obj, props) {
 	return str;
 };
 
+/**
+ * @private
+ */
 ZmZimletContext.prototype.processString =
 function(str, obj) {
 	return this.replaceObj(ZmZimletContext.RE_SCAN_OBJ, str, obj);
 };
 
+/**
+ * @private
+ */
 ZmZimletContext.prototype.processMessage =
 function(str) {
 	// i18n files load async so if not defined skip translation
@@ -413,6 +517,9 @@ function(str) {
 	return this.replaceObj(ZmZimletContext.RE_SCAN_MSG, str, props);
 };
 
+/**
+ * @private
+ */
 ZmZimletContext.prototype.replaceObj =
 function(re, str, obj) {
 	return String(str).replace(re,
@@ -443,11 +550,17 @@ function(re, str, obj) {
 		});
 };
 
+/**
+ * @private
+ */
 ZmZimletContext.__replaceSetting =
 function($0, name) {
 	return appCtxt.get(name);
 };
 
+/**
+ * @private
+ */
 ZmZimletContext.prototype.makeURL =
 function(actionUrl, obj, props) {
 	// All URL's to have REST substitutions
@@ -482,6 +595,8 @@ function(actionUrl, obj, props) {
  * @param div
  * @param x
  * @param y
+ * 
+ * @private
  */
 ZmZimletContext.prototype.handleActionUrl =
 function(actionUrl, canvas, obj, div, x, y) {
@@ -502,6 +617,9 @@ function(actionUrl, canvas, obj, div, x, y) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmZimletContext._translateZMObject =
 function(obj) {
 	// XXX Assumes all dragged objects are of the same type
@@ -510,6 +628,9 @@ function(obj) {
 		? ZmZimletContext._zmObjectTransformers[type](obj) : obj;
 };
 
+/**
+ * @private
+ */
 ZmZimletContext._zmObjectTransformers = {
 
 	"ZmMailMsg" : function(o) {
@@ -683,6 +804,12 @@ ZmZimletContext._zmObjectTransformers = {
 	}
 };
 
+/**
+ * Gets the xslt.
+ * 
+ * @param	{String}	url		the URL
+ * @return	{AjxXslt}	the xslt
+ */
 ZmZimletContext.prototype.getXslt =
 function(url) {
 	if (!this._xslt) {
@@ -695,6 +822,9 @@ function(url) {
 	return this._xslt[realurl];
 };
 
+/**
+ * @private
+ */
 ZmZimletContext.prototype._rpcCallback =
 function(xslt, canvas, result) {
 	var html, resp = result.xml;
@@ -717,6 +847,9 @@ function(xslt, canvas, result) {
 	canvas.innerHTML = html;
 };
 
+/**
+ * @private
+ */
 ZmZimletContext._getMsgBody =
 function(o) {
 	var body = o.getTextPart();

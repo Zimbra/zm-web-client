@@ -14,13 +14,18 @@
  */
 
 /**
+ * @overview
+ * This file contains a share class.
+ */
+
+/**
  * Creates a share with the given information about the sharer, the sharee, and
  * what is being shared.
- * @constructor
  * @class
  * A share comprises information about an object that is shared by one user with
  * another user. Currently, only organizers may be shared.
- * <p>
+ * <br/>
+ * <br/>
  * XML representation:
  * <pre>
  * &lt;!ELEMENT share (grantee,grantor,link)>
@@ -43,16 +48,19 @@
  * &lt;!ATTLIST link name CDATA #REQUIRED>
  * &lt;!ATTLIST link view (appointment|...) #REQUIRED>
  * &lt;!ATTLISt link perm CDATA #REQUIRED>
- * </pre></p>
+ * </pre>
  *
  * @author Andy Clark
  * 
- * @param object		[object]		what is being shared
- * @param granteeType	[constant]*		sharee (everyone, or a single user)
- * @param granteeId		[string]*		a unique ID for the grantee
- * @param granteeName	[string]*		grantee's name
- * @param perm			[constant]*		grantee's permissions on the shared object
- * @param inherit		[boolean]*		if true, children inherit share info
+ * @param	{Hash}	params		a hash of parameters
+ * @param {Object}	params.object		the object being shared
+ * @param {constant}	params.granteeType	the grantee type (see <code>ZmShare.TYPE_</code> constants) (everyone, or a single user)
+ * @param {String}	params.granteeId		a unique ID for the grantee
+ * @param {String}	params.granteeName	the grantee's name
+ * @param {String}	granteePwd			the grantee's password
+ * @param {constant}	params.perm		the grantee's permissions on the shared object
+ * @param {Boolean}	params.inherit		if <code>true</code>, children inherit share info
+ * @param {Boolean}	params.invalid		if <code>true</code>, the share is invalid
  */
 ZmShare = function(params) {
 
@@ -77,13 +85,53 @@ ZmShare.URI = "urn:zimbraShare";
 ZmShare.VERSION = "0.1";
 
 // actions
+/**
+ * Defines the "new" action.
+ * 
+ * @type {String}
+ */
 ZmShare.NEW		= "new";
+/**
+ * Defines the "edit" action.
+ * 
+ * @type {String}
+ */
 ZmShare.EDIT	= "edit";
+/**
+ * Defines the "delete" action.
+ * 
+ * @type {String}
+ */
 ZmShare.DELETE	= "delete";
+/**
+ * Defines the "accept" action.
+ * 
+ * @type {String}
+ */
 ZmShare.ACCEPT	= "accept";
+/**
+ * Defines the "decline" action.
+ * 
+ * @type {String}
+ */
 ZmShare.DECLINE	= "decline";
+/**
+ * Defines the "notify" action.
+ * 
+ * @type {String}
+ */
 ZmShare.NOTIFY  = "notify";
+/**
+ * Defines the "resend" action.
+ * 
+ * @type {String}
+ */
 ZmShare.RESEND	= "resend";
+/**
+ * Defines the "revoke" action.
+ * 
+ * @type {String}
+ */
 ZmShare.REVOKE	= "revoke";
 
 ZmShare.ACTION_LABEL = {};
@@ -92,23 +140,62 @@ ZmShare.ACTION_LABEL[ZmShare.RESEND]	= ZmMsg.resend;
 ZmShare.ACTION_LABEL[ZmShare.REVOKE]	= ZmMsg.revoke;
 
 // allowed permission bits
+/**
+ * Defines the "read" allowed permission.
+ */
 ZmShare.PERM_READ		= "r";
+/**
+ * Defines the "write" allowed permission.
+ */
 ZmShare.PERM_WRITE		= "w";
+/**
+ * Defines the "insert" allowed permission.
+ */
 ZmShare.PERM_INSERT		= "i";
+/**
+ * Defines the "delete" allowed permission.
+ */
 ZmShare.PERM_DELETE		= "d";
+/**
+ * Defines the "admin" allowed permission.
+ */
 ZmShare.PERM_ADMIN		= "a";
+/**
+ * Defines the "workflow" allowed permission.
+ */
 ZmShare.PERM_WORKFLOW	= "x";
+/**
+ * Defines the "private" allowed permission.
+ */
 ZmShare.PERM_PRIVATE	= "p";
 
 // virtual permissions
 ZmShare.PERM_CREATE_SUBDIR	= "c";
 
 // restricted permission bits
+/**
+ * Defines the "no read" restricted permission.
+ */
 ZmShare.PERM_NOREAD		= "-r";
+/**
+ * Defines the "no write" restricted permission.
+ */
 ZmShare.PERM_NOWRITE	= "-w";
+/**
+ * Defines the "no insert" restricted permission.
+ */
 ZmShare.PERM_NOINSERT	= "-i";
+/**
+ * Defines the "no delete" restricted permission.
+ */
 ZmShare.PERM_NODELETE	= "-d";
+/**
+ * Defines the "no admin" restricted permission.
+ */
 ZmShare.PERM_NOADMIN	= "-a";
+/**
+ * Defines the "no workflow" restricted permission.
+ */
 ZmShare.PERM_NOWORKFLOW	= "-x";
 
 // allowed permission names
@@ -129,9 +216,29 @@ ZmShare.PERMS[ZmShare.PERM_NOADMIN]		= ZmMsg.shareActionNoAdmin;
 ZmShare.PERMS[ZmShare.PERM_NOWORKFLOW]	= ZmMsg.shareActionNoWorkflow;
 
 // role permissions
+/**
+ * Defines the "none" role.
+ * 
+ * @type {String}
+ */
 ZmShare.ROLE_NONE		= "NONE";
+/**
+ * Defines the "viewer" role.
+ * 
+ * @type {String}
+ */
 ZmShare.ROLE_VIEWER		= "VIEWER";
+/**
+ * Defines the "manager" role.
+ * 
+ * @type {String}
+ */
 ZmShare.ROLE_MANAGER	= "MANAGER";
+/**
+ * Defines the "admin" role.
+ * 
+ * @type {String}
+ */
 ZmShare.ROLE_ADMIN		= "ADMIN";
 
 // role names
@@ -147,12 +254,47 @@ ZmShare.ROLE_PERMS[ZmShare.ROLE_VIEWER]		= "r";
 ZmShare.ROLE_PERMS[ZmShare.ROLE_MANAGER]	= "rwidx";
 ZmShare.ROLE_PERMS[ZmShare.ROLE_ADMIN]		= "rwidxa";
 
+/**
+ * Defines the "all" type.
+ * 
+ * @type {String}
+ */
 ZmShare.TYPE_ALL	= "all";
+/**
+ * Defines the "user" type.
+ * 
+ * @type {String}
+ */
 ZmShare.TYPE_USER	= "usr";
+/**
+ * Defines the "group" type.
+ * 
+ * @type {String}
+ */
 ZmShare.TYPE_GROUP	= "grp";
+/**
+ * Defines the "domain" type.
+ * 
+ * @type {String}
+ */
 ZmShare.TYPE_DOMAIN	= "dom";
+/**
+ * Defines the "COS" type.
+ * 
+ * @type {String}
+ */
 ZmShare.TYPE_COS	= "cos";
+/**
+ * Defines the "guest" type.
+ * 
+ * @type {String}
+ */
 ZmShare.TYPE_GUEST	= "guest";
+/**
+ * Defines the "public" type.
+ * 
+ * @type {String}
+ */
 ZmShare.TYPE_PUBLIC	= "pub";
 
 ZmShare.ZID_ALL = "00000000-0000-0000-0000-000000000000";
@@ -175,11 +317,23 @@ ZmShare._XML = null;
 
 // Utility methods
 
+/**
+ * Gets the role name.
+ * 
+ * @param	{constant}	role		the role (see <code>ZmShare.ROLE_</code> constants)
+ * @return	{String}	the name
+ */
 ZmShare.getRoleName =
 function(role) {
 	return ZmShare.ROLE_TEXT[role] || ZmMsg.shareRoleCustom;
 };
 
+/**
+ * Gets the role actions.
+ * 
+ * @param	{constant}	role		the role (see <code>ZmShare.ROLE_</code> constants)
+ * @return	{String}	the actions
+ */
 ZmShare.getRoleActions =
 function(role) {
 	var perm = ZmShare.ROLE_PERMS[role];
@@ -205,6 +359,12 @@ ZmShare.ACTIONS[ZmShare.ROLE_ADMIN]		= ZmShare.getRoleActions(ZmShare.ROLE_ADMIN
 
 // Static methods
 
+/**
+ * Creates the share from the DOM.
+ * 
+ * @param	{Object}	doc		the document
+ * @return	{ZmShare}	the resulting share
+ */
 ZmShare.createFromDom =
 function(doc) {
 	// NOTE: This code initializes share info from the Zimbra share format, v0.1
@@ -245,12 +405,21 @@ function(doc) {
 
 // Public methods
 
-
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmShare.prototype.toString =
 function() {
 	return "ZmShare";
 };
 
+/**
+ * Sets the permission.
+ * 
+ * @param	{constant}	perm		the permission (see <code>ZmShare.PERM_</code> constants)
+ */
 ZmShare.prototype.setPermissions =
 function(perm) {
 	this.link.perm = perm;
@@ -258,9 +427,10 @@ function(perm) {
 };
 
 /**
- * Returns true if the given permission exists on this share.
+ * Checks if the given permission exists on this share.
  * 
- * @param perm	[constant]	A single permission attribute (e.g. "r")
+ * @param	{constant}	perm		the permission (see <code>ZmShare.PERM_</code> constants)
+ * @return	{Boolean}	<code>true</code> if the permission is allowed on this share
  */
 ZmShare.prototype.isPermAllowed =
 function(perm) {
@@ -272,10 +442,11 @@ function(perm) {
 };
 
 /**
- * Returns true if the given permission is restricted for this share.
+ * Checks if the given permission is restricted for this share.
  *
- * @param perm	[constant]	A single permission attribute (e.g. "r")
-*/
+ * @param	{constant}	perm		the permission (see <code>ZmShare.PERM_</code> constants)
+ * @return	{Boolean}	<code>true</code> if the permission is restricted on this share
+ */
 ZmShare.prototype.isPermRestricted =
 function(perm) {
 	if (this.link.perm) {
@@ -285,16 +456,61 @@ function(perm) {
 };
 
 // Methods that return whether a particular permission exists on this share
+/**
+ * Checks if the read permission exists on this share.
+ * 
+ * @return	{Boolean}	<code>true</code> if the read permission is allowed on this share
+ * @see ZmShare.PERM_READ
+ */
 ZmShare.prototype.isRead = function() { return this.isPermAllowed(ZmShare.PERM_READ); };
+/**
+ * Checks if the write permission exists on this share.
+ * 
+ * @return	{Boolean}	<code>true</code> if the write permission is allowed on this share
+ * @see ZmShare.PERM_WRITE
+ */
 ZmShare.prototype.isWrite = function() { return this.isPermAllowed(ZmShare.PERM_WRITE); };
+/**
+ * Checks if the insert permission exists on this share.
+ * 
+ * @return	{Boolean}	<code>true</code> if the insert permission is allowed on this share
+ * @see ZmShare.PERM_INSERT
+ */
 ZmShare.prototype.isInsert = function() { return this.isPermAllowed(ZmShare.PERM_INSERT); };
+/**
+ * Checks if the delete permission exists on this share.
+ * 
+ * @return	{Boolean}	<code>true</code> if the delete permission is allowed on this share
+ * @see ZmShare.PERM_DELETE
+ */
 ZmShare.prototype.isDelete = function() { return this.isPermAllowed(ZmShare.PERM_DELETE); };
+/**
+ * Checks if the admin permission exists on this share.
+ * 
+ * @return	{Boolean}	<code>true</code> if the admin permission is allowed on this share
+ * @see ZmShare.PERM_ADMIN
+ */
 ZmShare.prototype.isAdmin = function() { return this.isPermAllowed(ZmShare.PERM_ADMIN); };
+/**
+ * Checks if the workflow permission exists on this share.
+ * 
+ * @return	{Boolean}	<code>true</code> if the workflow permission is allowed on this share
+ * @see ZmShare.PERM_WORKFLOW
+ */
 ZmShare.prototype.isWorkflow = function() { return this.isPermAllowed(ZmShare.PERM_WORKFLOW); };
+/**
+ * Checks if the private permission exists on this share.
+ * 
+ * @return	{Boolean}	<code>true</code> if the private permission is allowed on this share
+ * @see ZmShare.PERM_PRIVATE
+ */
 ZmShare.prototype.hasPrivateAccess = function() { return this.isPermAllowed(ZmShare.PERM_PRIVATE); };
 
 // Protected static methods
 
+/**
+ * @private
+ */
 ZmShare._getFolderType =
 function(view) {
 	var folderKey = (view && ZmOrganizer.FOLDER_KEY[ZmOrganizer.TYPE[view]]) || "folder";
@@ -304,6 +520,12 @@ function(view) {
 
 // Static methods
 
+/**
+ * Creates the share from JS.
+ * 
+ * @param	
+ * @return	{ZmShare}	the resulting share
+ */
 ZmShare.createFromJs =
 function(parent, grant) {
 	return new ZmShare({object:parent, granteeType:grant.gt, granteeId:grant.zid,
@@ -312,32 +534,74 @@ function(parent, grant) {
 };
 
 // Public methods
-
+/**
+ * Checks if the grantee type is "all".
+ * 
+ * @return	{Boolean}	<code>true</code> if type "all"
+ * @see		ZmShare.TYPE_ALL
+ */
 ZmShare.prototype.isAll =
 function() {
 	return this.grantee.type == ZmShare.TYPE_ALL;
 };
+/**
+ * Checks if the grantee type is "user".
+ * 
+ * @return	{Boolean}	<code>true</code> if type "user"
+ * @see		ZmShare.TYPE_USER
+ */
 ZmShare.prototype.isUser =
 function() {
 	return this.grantee.type == ZmShare.TYPE_USER;
 };
+/**
+ * Checks if the grantee type is "group".
+ * 
+ * @return	{Boolean}	<code>true</code> if type "group"
+ * @see		ZmShare.TYPE_GROUP
+ */
 ZmShare.prototype.isGroup =
 function() {
 	return this.grantee.type == ZmShare.TYPE_GROUP;
 };
+/**
+ * Checks if the grantee type is "domain".
+ * 
+ * @return	{Boolean}	<code>true</code> if type "domain"
+ * @see		ZmShare.TYPE_DOMAIN
+ */
 ZmShare.prototype.isDomain =
 function() {
 	return this.grantee.type == ZmShare.TYPE_DOMAIN;
 };
+/**
+ * Checks if the grantee type is "guest".
+ * 
+ * @return	{Boolean}	<code>true</code> if type "guest"
+ * @see		ZmShare.TYPE_GUEST
+ */
 ZmShare.prototype.isGuest =
 function() {
 	return this.grantee.type == ZmShare.TYPE_GUEST;
 };
+/**
+ * Checks if the grantee type is "public".
+ * 
+ * @return	{Boolean}	<code>true</code> if type "public"
+ * @see		ZmShare.TYPE_PUBLIC
+ */
 ZmShare.prototype.isPublic =
 function() {
 	return (this.grantee.type == ZmShare.TYPE_PUBLIC);
 };
 
+/**
+ * Grants the permission.
+ * 
+ * @param	{constant}	perm	the permission (see <code>ZmShare.PERM_</code> constants)
+ * @param	{String}	pw		
+ * @param	{ZmBatchCommand}	batchCmd	the batch command
+ */
 ZmShare.prototype.grant =
 function(perm, pw, batchCmd) {
 	this.link.perm = perm;
@@ -345,6 +609,9 @@ function(perm, pw, batchCmd) {
 	this._shareAction("grant", null, {perm: perm, pw: pw}, respCallback, batchCmd);
 };
 
+/**
+ * @private
+ */
 ZmShare.prototype._handleResponseGrant =
 function(result) {
 	var action = result.getResponse().FolderActionResponse.action;
@@ -352,6 +619,11 @@ function(result) {
 	this.grantee.email = action.d;
 };
 
+/**
+ * Revokes the share.
+ * 
+ * @param	{AjxCallback}	callback	the callback
+ */
 ZmShare.prototype.revoke = 
 function(callback) {
 	var isAllShare = this.grantee && (this.grantee.type == ZmShare.TYPE_ALL);
@@ -360,6 +632,13 @@ function(callback) {
 	this._shareAction("!grant", actionAttrs, null, respCallback);
 };
 
+/**
+ * Revokes multiple shares.
+ * 
+ * @param	{AjxCallback}	callback	the callback
+ * @param	{Object}	args		not used
+ * @param	{ZmBatchCommand}	batchCmd	the batch command
+ */
 ZmShare.prototype.revokeMultiple =
 function(callback, args, batchCmd) {
 	var actionAttrs = { zid: this.isPublic() ? ZmShare.ZID_PUBLIC : this.grantee.id };
@@ -367,6 +646,9 @@ function(callback, args, batchCmd) {
 	this._shareAction("!grant", actionAttrs, null, respCallback, batchCmd);
 };
 
+/**
+ * @private
+ */
 ZmShare.prototype._handleResponseRevoke =
 function(callback) {
 	if (callback) {
@@ -374,6 +656,10 @@ function(callback) {
 	}
 };
 
+/**
+ * Accepts the share.
+ * 
+ */
 ZmShare.prototype.accept = 
 function(name, color, replyType, notes, callback, owner) {
 	var respCallback = new AjxCallback(this, this._handleResponseAccept, [replyType, notes, callback, owner]);
@@ -391,6 +677,9 @@ function(name, color, replyType, notes, callback, owner) {
 	ZmMountpoint.create(params, respCallback);
 };
 
+/**
+ * @private
+ */
 ZmShare.prototype._handleResponseAccept =
 function(replyType, notes, callback, owner) {
 
@@ -410,6 +699,13 @@ function(replyType, notes, callback, owner) {
 	}
 };
 
+/**
+ * Sends a message.
+ * 
+ * @param	{constant}	mode	the request mode
+ * @param	{AjxVector}	addrs	a vector of {@link AjxEmailAddress} objects or <code>null</code> to send to the grantee
+ * @param	{String}	owner	the message owner
+ */
 ZmShare.prototype.sendMessage =
 function(mode, addrs, owner) {
 	// generate message
@@ -425,6 +721,13 @@ function(mode, addrs, owner) {
 	msg.send(null, null, null, accountName);
 };
 
+/**
+ * Composes a message.
+ * 
+ * @param	{constant}	mode	the request mode
+ * @param	{AjxVector}	addrs	a vector of {@link AjxEmailAddress} objects or <code>null</code> to send to the grantee
+ * @param	{String}	owner	the message owner
+ */
 ZmShare.prototype.composeMessage =
 function(mode, addrs, owner) {
 	// generate message
@@ -448,7 +751,11 @@ function(mode, addrs, owner) {
 
 // Protected methods
 
-// text formatters
+/**
+ * text formatters
+ * 
+ * @private
+ */
 ZmShare._getText =
 function(mode) {
 	if (!ZmShare._TEXT) {
@@ -463,7 +770,11 @@ function(mode) {
 	return ZmShare._TEXT[mode];
 };
 	
-// html formatters
+/**
+ * html formatters
+ * 
+ * @private
+ */
 ZmShare._getHtml =
 function(mode) {
 	if (!ZmShare._HTML) {
@@ -478,6 +789,9 @@ function(mode) {
 	return ZmShare._HTML[mode];
 };
 
+/**
+ * @private
+ */
 ZmShare._getHtmlNote =
 function() {
 	if (!ZmShare._HTML_NOTE) {
@@ -486,7 +800,11 @@ function() {
 	return ZmShare._HTML_NOTE;
 };
 
-// xml formatter
+/**
+ * xml formatter
+ * 
+ * @private
+ */
 ZmShare._getXml =
 function() {
 	if (!ZmShare._XML) {
@@ -506,9 +824,10 @@ function() {
 
 /**
  * General method for handling the SOAP call. 
- * <p>
- * <strong>Note:</strong>
- * Exceptions need to be handled by calling method.
+ * 
+ * <strong>Note:</strong> Exceptions need to be handled by calling method.
+ * 
+ * @private
  */
 ZmShare.prototype._shareAction =
 function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
@@ -549,6 +868,9 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmShare.prototype._handleResponseShareAction =
 function(callback, result) {
 	if (callback) {
@@ -556,6 +878,9 @@ function(callback, result) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmShare.prototype._handleErrorShareAction =
 function(ex) {
 	var message = ZmMsg.unknownError;
@@ -572,6 +897,9 @@ function(ex) {
 	return true;
 };
 
+/**
+ * @private
+ */
 ZmShare.prototype._createMsg =
 function(mode, isCompose, addrs, owner) {
 	// generate message
@@ -609,6 +937,9 @@ function(mode, isCompose, addrs, owner) {
 	return msg;
 };
 
+/**
+ * @private
+ */
 ZmShare.prototype._createTextPart =
 function(mode, isCompose) {
 	var formatter = ZmShare._getText(mode);
@@ -625,6 +956,9 @@ function(mode, isCompose) {
 	return mimePart;
 };
 
+/**
+ * @private
+ */
 ZmShare.prototype._createHtmlPart =
 function(mode, isCompose) {
 	var formatter = ZmShare._getHtml(mode);
@@ -642,6 +976,9 @@ function(mode, isCompose) {
 	return mimePart;
 };
 
+/**
+ * @private
+ */
 ZmShare.prototype._createXmlPart =
 function(mode) {
 	var folder = (appCtxt.isOffline) ? appCtxt.getFolderTree().getByPath(this.link.name) : null;
@@ -671,6 +1008,9 @@ function(mode) {
 	return mimePart;
 };
 
+/**
+ * @private
+ */
 ZmShare.prototype._createContent =
 function(formatter) {
 	var role = ZmShare._getRoleFromPerm(this.link.perm);
@@ -685,6 +1025,9 @@ function(formatter) {
 	return formatter.format(params);
 };
 
+/**
+ * @private
+ */
 ZmShare._getRoleFromPerm =
 function(perm) {
 	if (!perm) { return ZmShare.ROLE_NONE; }
@@ -706,10 +1049,10 @@ function(perm) {
  * Revokes all grants for the given zid (one whose account has been
  * removed).
  *
- * @param zid			[string]			zimbra ID
- * @param granteeType	[constant]			grantee type
- * @param callback		[AjxCallback]*		client callback
- * @param batchCmd		[ZmBatchCommand]*	batch command
+ * @param {String}	zid			the zimbra ID
+ * @param {constant}	granteeType	the grantee type (see <code>ZmShare.TYPE_</code> constants)
+ * @param {AjxCallback}	callback		the client callback
+ * @param {ZmBatchCommand}	batchCmd		the batch command
  */
 ZmShare.revokeOrphanGrants =
 function(zid, granteeType, callback, batchCmd) {
@@ -734,6 +1077,9 @@ function(zid, granteeType, callback, batchCmd) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmShare._handleResponseRevokeOrphanGrants =
 function(callback) {
 	if (callback) {

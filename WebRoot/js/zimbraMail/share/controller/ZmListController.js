@@ -195,14 +195,14 @@ function(newList) {
 /**
  * Sets the "has more" state.
  * 
- * <strong>Note:</strong> This is a bit of a HACK that is an attempt to overcome an
- * offline issue. The problem is during initial sync when more
- * messages come in: the forward navigation arrow doesn't get enabled.
- * 
  * @param	{Boolean}	hasMore		<code>true</code> if has more
  */
 ZmListController.prototype.setHasMore =
 function(hasMore) {
+	// Note: This is a bit of a HACK that is an attempt to overcome an
+	// offline issue. The problem is during initial sync when more
+	// messages come in: the forward navigation arrow doesn't get enabled.
+	
 	if (hasMore) {
 		// bug: 30546
 		this._list.setHasMore(hasMore);

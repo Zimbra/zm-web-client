@@ -14,25 +14,32 @@
  */
 
 /**
+ * @overview
+ * This file defines a list of items.
+ */
+
+/**
  * Creates an empty list of items of the given type.
- * @constructor
  * @class
- * This class represents a list of items (ZmItem objects). Any SOAP method that can be
+ * This class represents a list of items ({@link ZmItem} objects). Any SOAP method that can be
  * applied to a list of item IDs is represented here, so that we can perform an action
  * on multiple items with just one CSFE call. For the sake of convenience, a hash 
  * matching item IDs to items is maintained. Items are assumed to have an 'id'
  * property.
- * <p>
+ * <br/>
+ * <br/>
  * The calls are made asynchronously. We are assuming that any action taken will result
  * in a notification, so the action methods generally do not have an async callback 
  * chain and thus are leaf nodes. An exception is moving conversations. We don't
  * know enough from the ensuing notifications (which only indicate that messages have
- * moved), we need to update the UI based on the response.</p>
+ * moved), we need to update the UI based on the response.
  *
  * @author Conrad Damon
  * 
- * @param type		[constant]		item type
- * @param search	[ZmSearch]*		search that generated this list
+ * @param {constant}	type		the item type
+ * @param {ZmSearch}	search	the search that generated this list
+ * 
+ * @extends	ZmModel
  */
 ZmList = function(type, search) {
 
@@ -68,11 +75,22 @@ ZmList.ITEM_TYPE = {};
 // how many items to act on at a time via a server request
 ZmList.CHUNK_SIZE = 100;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmList.prototype.toString = 
 function() {
 	return "ZmList";
 };
 
+/**
+ * Gets the item.
+ * 
+ * @param	{int}	index		the index
+ * @return	{ZmItem}	the index
+ */
 ZmList.prototype.get =
 function(index) {
 	return this._vector.get(index);
@@ -81,8 +99,8 @@ function(index) {
 /**
  * Adds an item to the list.
  *
- * @param item	the item to add
- * @param index	the index at which to add the item (defaults to end of list)
+ * @param {ZmItem}	item	the item to add
+ * @param {int}	index	the index at which to add the item (defaults to end of list)
  */
 ZmList.prototype.add = 
 function(item, index) {
@@ -95,7 +113,7 @@ function(item, index) {
 /**
  * Removes an item from the list.
  *
- * @param item	the item to remove
+ * @param {ZmItem}	item	the item to remove
  */
 ZmList.prototype.remove = 
 function(item) {
@@ -107,14 +125,17 @@ function(item) {
 
 /**
  * Creates an item from the given arguments. A subclass may override
- * sortIndex() to add it to a particular point in the list. By default, it
+ * <code>sortIndex()</code> to add it to a particular point in the list. By default, it
  * will be added at the end.
  *
+ * <p>
  * The item will invoke a SOAP call, which generates a create notification from the
  * server. That will be handled by notifyCreate(), which will call _notify()
  * so that views can be updated.
+ * </p>
  *
- * @param args	arbitrary hash of args to pass along
+ * @param {Hash}	args	a hash of arugments to pass along to the item constructor
+ * @return	{ZmItem}	the newly created item
  */
 ZmList.prototype.create =
 function(args) {
@@ -130,6 +151,8 @@ function(args) {
 
 /**
  * Returns the number of items in the list.
+ * 
+ * @return	{int}	the number of items
  */
 ZmList.prototype.size = 
 function() {
@@ -138,6 +161,9 @@ function() {
 
 /**
  * Returns the index of the given item in the list.
+ * 
+ * @param	{ZmItem}	item		the item
+ * @return	{int}	the index
  */
 ZmList.prototype.indexOf = 
 function(item) {
@@ -145,7 +171,9 @@ function(item) {
 };
 
 /**
- * Returns true if there are more items for this search.
+ * Gets if there are more items for this search.
+ * 
+ * @return	{Boolean}	<code>true</code> if there are more items
  */
 ZmList.prototype.hasMore = 
 function() {
@@ -155,7 +183,7 @@ function() {
 /**
  * Sets the "more" flag for this list.
  *
- * @param bHasMore	whether there are more items
+ * @param {Boolean}	bHasMore	<code>true</code> if there are more items
  */
 ZmList.prototype.setHasMore = 
 function(bHasMore) {
@@ -164,6 +192,8 @@ function(bHasMore) {
 
 /**
  * Returns the list as an array.
+ * 
+ * @return	{Array}	an array of {ZmItem} objects
  */
 ZmList.prototype.getArray =
 function() {
@@ -171,7 +201,9 @@ function() {
 };
 
 /**
- * Returns the list as a AjxVector.
+ * Returns the list as a vector.
+ * 
+ * @return	{AjxVector}	a vector of {ZmItem} objects
  */
 ZmList.prototype.getVector =
 function() {
@@ -179,9 +211,11 @@ function() {
 };
 
 /**
- * Returns the item with the given ID.
+ * Gets the item with the given id.
  *
- * @param id		an item ID
+ * @param {String}	id		an item id
+ * 
+ * @return	{ZmItem}	the item
  */
 ZmList.prototype.getById =
 function(id) {
@@ -189,7 +223,8 @@ function(id) {
 };
 
 /**
- * Clears the list, including its ID hash.
+ * Clears the list, including the id hash.
+ * 
  */
 ZmList.prototype.clear =
 function() {
@@ -212,7 +247,7 @@ function() {
  * node in the response should represent an item of the list's type. Items are added
  * in the order they are received; no sorting is done.
  *
- * @param respNode	an XML node whose children are item nodes
+ * @param {Object}	respNode	an XML node whose children are item nodes
  */
 ZmList.prototype.set = 
 function(respNode) {
@@ -235,8 +270,8 @@ function(respNode) {
 /**
  * Adds an item to the list from the given XML node.
  *
- * @param node	an XML node
- * @param args	an optional list of arguments to pass to the item's creation function
+ * @param {Object}	node	an XML node
+ * @param {Hash}	args	an optional list of arguments to pass to the item contructor
  */
 ZmList.prototype.addFromDom = 
 function(node, args) {
@@ -251,10 +286,11 @@ function(node, args) {
 };
 
 /**
- * Returns a vector containing a subset of items of this list.
+ * Gets a vector containing a subset of items of this list.
  *
- * @param offset		[int]		starting index
- * @param limit		[int]		size of sublist
+ * @param {int}		offset		the starting index
+ * @param {int}		limit		the size of sublist
+ * @return	{AjxVector}	the vector
  */
 ZmList.prototype.getSubList = 
 function(offset, limit) {
@@ -267,6 +303,12 @@ function(offset, limit) {
 	return subVector;
 };
 
+/**
+ * Caches the list.
+ * 
+ * @param	{int}	offset	the index
+ * @param	{AjxVector}	newList		the new list
+ */
 ZmList.prototype.cache = 
 function(offset, newList) {
 	this.getVector().merge(offset, newList);
@@ -284,15 +326,15 @@ function(offset, newList) {
 // Actions
 
 /**
- * Sets/unsets a flag for each of a list of items.
+ * Sets and unsets a flag for each of a list of items.
  *
- * @param params		[hash]				hash of params:
- *        items			[array]				a list of items to set/unset a flag for
- *        op			[string]			the name of the flag operation ("flag" or "read")
- *        value			[boolean|string]*	whether to set the flag, or for "update" the flags string
- *        callback		[AjxCallback]*		callback to run after each sub-request
- *        finalCallback	[AjxCallback]*		callback to run after all items have been processed
- *        count			[int]*				starting count for number of items processed
+ * @param {Hash}	params		a hash of parameters
+ * @param	{Array}       params.items			a list of items to set/unset a flag for
+ * @param	{String}	params.op			the name of the flag operation ("flag" or "read")
+ * @param	{Boolean|String}	params.value			whether to set the flag, or for "update" the flags string
+ * @param	{AjxCallback}	params.callback		the callback to run after each sub-request
+ * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
+ * @param	{int}		params.count			the starting count for number of items processed
  */
 ZmList.prototype.flagItems =
 function(params) {
@@ -319,13 +361,13 @@ function(params) {
  * Tags or untags a list of items. A sanity check is done first, so that items
  * aren't tagged redundantly, and so we don't try to remove a nonexistent tag.
  *
- * @param params		[hash]			hash of params:
- *        items			[array]			a list of items to tag/untag
- *        tagId			[string]		the tag to add/remove from each item
- *        doTag			[boolean]		true if adding the tag, false if removing it
- *        callback		[AjxCallback]*	callback to run after each sub-request
- *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
- *        count			[int]*			starting count for number of items processed
+ * @param {Hash}	params		a hash of parameters
+ * @param {Array}	params.items			a list of items to tag/untag
+ * @param {String}	params.tagId			the tag to add/remove from each item
+ * @param {Boolean}	params.doTag			<code>true</code> if adding the tag, <code>false</code> if removing it
+ * @param {AjxCallback}	params.callback		the callback to run after each sub-request
+ * @param {AjxCallback}	params.finalCallback	the callback to run after all items have been processed
+ * @param {int}			params.count			the starting count for number of items processed
  */
 ZmList.prototype.tagItems =
 function(params) {
@@ -361,13 +403,12 @@ function(params) {
 /**
  * Removes all tags from a list of items.
  *
- * @param params		[hash]			hash of params:
- *        items			[array]			a list of items to tag/untag
- *        callback		[AjxCallback]*	callback to run after each sub-request
- *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
- *        count			[int]*			starting count for number of items processed
+ * @param {Hash}	params		a hash of parameters
+ * @param	{Array}	params.items			a list of items to tag/untag
+ * @param	{AjxCallback}	params.callback		the callback to run after each sub-request
+ * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
+ * @param	{int}	params.count			the starting count for number of items processed
  */
-
 ZmList.prototype.removeAllTags = 
 function(params) {
 
@@ -403,13 +444,13 @@ function(params) {
  * search.
  * </p>
  *
- * @param params		[hash]			hash of params:
- *        items			[array]			a list of items to move
- *        folder		[ZmFolder]		destination folder
- *        attrs			[hash]			additional attrs for SOAP command
- *        callback		[AjxCallback]*	callback to run after each sub-request
- *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
- *        count			[int]*			starting count for number of items processed
+ * @param {Hash}	params		a hash of parameters
+ * @param	{Array}		params.items			a list of items to move
+ * @param	{ZmFolder}	params.folder		the destination folder
+ * @param	{Hash}	params.attrs			the additional attrs for SOAP command
+ * @param	{AjxCallback}	params.callback		the callback to run after each sub-request
+ * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
+ * @param	{int}	params.count			the starting count for number of items processed
  */
 ZmList.prototype.moveItems =
 function(params) {
@@ -438,6 +479,9 @@ function(params) {
 	this._itemAction(params);
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._handleResponseMoveItems =
 function(params, result) {
 
@@ -458,12 +502,12 @@ function(params, result) {
 /**
  * Copies a list of items to the given folder.
  *
- * @param params		[hash]			hash of params:
- *        items			[array]			a list of items to move
- *        folder		[ZmFolder]		destination folder
- *        attrs			[hash]			additional attrs for SOAP command
- *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
- *        count			[int]*			starting count for number of items processed
+ * @param {Hash}	params		the hash of parameters
+ * @param	{Array}       params.items		a list of items to move
+ * @param	{ZmFolder}	params.folder		the destination folder
+ * @param	{Hash}	params.attrs			the additional attrs for SOAP command
+ * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
+ * @param	{int}	params.count		the starting count for number of items processed
  */
 ZmList.prototype.copyItems =
 function(params) {
@@ -479,6 +523,9 @@ function(params) {
 	this._itemAction(params);
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._handleResponseCopyItems =
 function(params, result) {
 	var resp = result.getResponse();
@@ -493,13 +540,13 @@ function(params, result) {
  * moves it to the Trash (soft delete). However, if it's already in the Trash,
  * it will be removed from the data store (hard delete).
  *
- * @param params		[hash]			hash of params:
- *        items			[Array]			list of items to delete
- *        hardDelete	[boolean]		whether to force physical removal of items
- *        attrs			[Object]		additional attrs for SOAP command
- *        childWin		[window]*		the child window this action is happening in
- *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
- *        count			[int]*			starting count for number of items processed
+ * @param {Hash}	params		a hash of parameters
+ * @param	{Array}	params.items			list of items to delete
+ * @param	{Boolean}	params.hardDelete	<code>true</code> to force physical removal of items
+ * @param	{Object}	params.attrs			additional attrs for SOAP command
+ * @param	{window}	params.childWin		the child window this action is happening in
+ * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
+ * @param	{int}	params.count			the starting count for number of items processed
  */
 ZmList.prototype.deleteItems =
 function(params) {
@@ -552,6 +599,9 @@ function(params) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._deleteAccountItems =
 function(accounts, params) {
 	var items;
@@ -571,6 +621,9 @@ function(accounts, params) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._filterItemsByAccount =
 function(items) {
 	// separate out the items based on which account they belong to
@@ -586,6 +639,9 @@ function(items) {
 	return accounts;
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._handleDeleteNewWindowResponse =
 function(childWin, result) {
 	if (childWin) {
@@ -596,8 +652,9 @@ function(childWin, result) {
 /**
  * Applies the given list of modifications to the item.
  *
- * @param item			item to modify
- * @param mods			hash of new properties
+ * @param {ZmItem}	item			the item to modify
+ * @param {Hash}	mods			hash of new properties
+ * @param	{AjxCallback}	callback	the callback
  */
 ZmList.prototype.modifyItem =
 function(item, mods, callback) {
@@ -606,6 +663,11 @@ function(item, mods, callback) {
 
 // Notification handling
 
+/**
+ * Create notification.
+ * 
+ * @param	{Object}	node		not used
+ */
 ZmList.prototype.notifyCreate =
 function(node) {
 	var obj = eval(ZmList.ITEM_CLASS[this.type]);
@@ -620,7 +682,20 @@ function(node) {
 // Local change handling
 
 // These generic methods allow a derived class to perform the appropriate internal changes
+
+/**
+ * Modifies the items (local).
+ * 
+ * @param	{Array}	items		an array of items
+ * @param	{Object}	mods	a hash of properties to modify
+ */
 ZmList.prototype.modifyLocal 		= function(items, mods) {};
+
+/**
+ * Creates the item (local).
+ * 
+ * @param	{ZmItem}	item	the item to create
+ */
 ZmList.prototype.createLocal 		= function(item) {};
 
 // These are not currently used; will need support in ZmItem if they are.
@@ -629,6 +704,11 @@ ZmList.prototype.tagLocal 			= function(items, tag, state) {};
 ZmList.prototype.removeAllTagsLocal = function(items) {};
 
 // default action is to remove each deleted item from this list
+/**
+ * Deletes the items (local).
+ * 
+ * @param	{Array}	items		an array of items
+ */
 ZmList.prototype.deleteLocal =
 function(items) {
 	for (var i = 0; i < items.length; i++) {
@@ -637,6 +717,12 @@ function(items) {
 };
 
 // default action is to remove each moved item from this list
+/**
+ * Moves the items (local).
+ * 
+ * @param	{Array}	items		an array of items
+ * @param	{String}	folderId	the folder id
+ */
 ZmList.prototype.moveLocal = 
 function(items, folderId) {
 	for (var i = 0; i < items.length; i++) {
@@ -647,16 +733,16 @@ function(items, folderId) {
 /**
  * Performs an action on items via a SOAP request.
  *
- * @param params			[Object]			list of parameters
- *        items				[Array]				list of items to act upon
- *        action			[string]			SOAP operation
- *        attrs				[Object]*			hash of additional attrs for SOAP request
- *        callback			[AjxCallback]*		async callback
- *        finalCallback		[AjxCallback]*		callback to run after all items have been processed
- *        errorCallback		[AjxCallback]*		async error callback
- *        accountName		[String]*			account to send request on behalf of
- *        count				[int]*				starting count for number of items processed
- * @param batchCmd			[ZmBatchCommand]*	If set, request data is added to batch request
+ * @param {Hash}	params			a hash of parameters
+ * @param	{Array}	params.items				a list of items to act upon
+ * @param	{String}	params.action			the SOAP operation
+ * @param	{Object}	params.attrs				a hash of additional attrs for SOAP request
+ * @param	{AjxCallback}	params.callback			the async callback
+ * @param	{AjxCallback}	params.finalCallback		the callback to run after all items have been processed
+ * @param	{AjxCallback}	params.errorCallback		the async error callback
+ * @param	{String}	params.accountName		the account to send request on behalf of
+ * @param	{int}	params.count				the starting count for number of items processed
+ * @param {ZmBatchCommand}	batchCmd			if set, request data is added to batch request
  */
 ZmList.prototype._itemAction =
 function(params, batchCmd) {
@@ -737,6 +823,9 @@ function(params, batchCmd) {
 	this._doAction(params1);
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._handleResponseItemAction =
 function(callback, items, result) {
 	if (callback) {
@@ -745,6 +834,9 @@ function(callback, items, result) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._doAction =
 function(params) {
 
@@ -775,6 +867,9 @@ function(params) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._handleResponseDoAction =
 function(params, result) {
 
@@ -829,7 +924,9 @@ function(params, result) {
  * Cancel current server request if there is one, and set flag to
  * stop cascade of requests.
  *
- * @param params
+ * @param {Hash}	params	a hash of parameters
+ * 
+ * @private
  */
 ZmList.prototype._cancelAction =
 function(params) {
@@ -852,6 +949,8 @@ function(params) {
  * using ItemActionRequest. But we still want to call the appropriate method for
  * each item type, so that any overridden methods get called. So for now, it's
  * easier to do the requests separately.
+ * 
+ * @private
  */
 ZmList.prototype._mixedAction =
 function(method, params) {
@@ -874,6 +973,9 @@ function(method, params) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._getTypedItems =
 function(items) {
 	var typedItems = {};
@@ -887,7 +989,11 @@ function(items) {
 	return typedItems;
 };
 
-// Grab the IDs out of a list of items, and return them as both a string and a hash.
+/**
+ * Grab the IDs out of a list of items, and return them as both a string and a hash.
+ * 
+ * @private
+ */
 ZmList.prototype._getIds =
 function(list) {
 
@@ -911,24 +1017,37 @@ function(list) {
 	return {hash:idHash, list:ids};
 };
 
-// Returns the index at which the given item should be inserted into this list.
-// Subclasses should override to return a meaningful value.
+/**
+ * Returns the index at which the given item should be inserted into this list.
+ * Subclasses should override to return a meaningful value.
+ * 
+ * @private
+ */
 ZmList.prototype._sortIndex = 
 function(item) {
 	return 0;
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._redoSearch = 
 function(ctlr) {
 	var sc = appCtxt.getSearchController();
 	sc.redoSearch(ctlr._currentSearch);
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._getActionNamespace =
 function() {
 	return "urn:zimbraMail";
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._folderTreeChangeListener = 
 function(ev) {
 	if (ev.type != ZmEvent.S_FOLDER) return;
@@ -959,6 +1078,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmList.prototype._tagTreeChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_TAG) { return; }

@@ -14,8 +14,12 @@
  */
 
 /**
+ * @overview
+ * This file defines an organizer.
+ */
+
+/**
 * Creates an empty organizer.
-* @constructor
 * @class
 * This class represents an "organizer", which is something used to classify or contain
 * items. So far, that's either a tag or a folder. Tags and folders are represented as
@@ -24,24 +28,25 @@
 *
 * @author Conrad Damon
 *
-* @param type		[constant]			organizer type
-* @param id			[int]				numeric ID
-* @param name		[string]			name
-* @param parent		[ZmOrganizer]		parent organizer
-* @param tree		[ZmTree]			tree model that contains this organizer
-* @param color		[constant]			color for this organizer
-* @param rgb		[string]			color for this organizer, as HTML RGB value
-* @param link		[boolean]*			whether this organizer is shared
-* @param numUnread	[int]*				number of unread items for this organizer
-* @param numTotal	[int]*				number of items for this organizer
-* @param sizeTotal	[int]*				total size of organizer's items
-* @param url		[string]*			URL for this organizer's feed
-* @param owner		[string]* 			Owner for this organizer
-* @param zid		[string]*			Zimbra ID of owner, if remote folder
-* @param rid		[string]*			Remote ID of organizer, if remote folder
-* @param restUrl	[string]*			REST URL of this organizer.
-* @param newOp		[string]*			Name of operation run by button in overview header
-* @param account	[ZmZimbraAccount]*	Account this organizer belongs to
+* @param	{Hash}	params		a hash of parameters
+* @param {constant}	params.type		the organizer type
+* @param {int}		params.id			the numeric ID
+* @param {String}	params.name		the name
+* @param {ZmOrganizer}	params.parent		the parent organizer
+* @param {ZmTree}	params.tree		the tree model that contains this organizer
+* @param {constant}	params.color		the color for this organizer
+* @param {String}	params.rgb		the color for this organizer, as HTML RGB value
+* @param {Boolean}	params.link		<code>true</code> if this organizer is shared
+* @param {int}	params.numUnread	the number of unread items for this organizer
+* @param {int}	params.numTotal	the number of items for this organizer
+* @param {int}	params.sizeTotal	the total size of organizer's items
+* @param {String}	params.url		the URL for this organizer's feed
+* @param {String}	params.owner		the owner for this organizer
+* @param {String}	params.zid		the Zimbra ID of owner, if remote folder
+* @param {String}	params.rid		the remote ID of organizer, if remote folder
+* @param {String}	params.restUrl	the REST URL of this organizer.
+* @param {String}	params.newOp		the name of operation run by button in overview header
+* @param {ZmZimbraAccount}	params.account	the account this organizer belongs to
 */
 ZmOrganizer = function(params) {
 
@@ -273,33 +278,33 @@ ZmOrganizer.PERM_PRIVATE	= "p";
 /**
  * Stores information about the given organizer type.
  * 
- * @param org				[constant]	organizer type
- * @param params			[hash]		hash of params:
- *        app				[constant]	app that handles this org type
- *        nameKey			[string]	msg key for org name
- *        precondition		[constant]	setting that this org type depends on
- *        defaultFolder		[int]		ID of default folder for this org
- *        soapCmd			[string]	SOAP command for acting on this org
- *        firstUserId		[int]		minimum ID for a user instance of this org
- *        orgClass			[string]	name of constructor for this org
- *        orgPackage		[string]	name of smallest package with org class
- *        treeController	[string]	name of associated tree controller
- *        labelKey			[string]	msg key for label in overview
- *        itemsKey			[string]	msg key for text describing contents
- *        hasColor			[boolean]	true if org has color associated with it
- *        defaultColor		[constant]	default color for org in overview
- *        orgColor			[array]		color override by ID (in pairs)
- *        treeType			[constant]	type of data tree (from server) that contains this org
- *        views				[string]	associated folder views (JSON)
- *        folderKey			[string]	msg key for folder props dialog
- *        mountKey			[string]	msg key for folder mount dialog
- *        createFunc		[string]	name of function for creating this org
- *        compareFunc		[string]	name of function for comparing instances of this org
- *        deferrable		[boolean]	true if creation can be deferred to app launch
- *        pathInName		[boolean]	if true, provide full path when asked for name
- *        openSetting		[const]		setting that controls whether the tree view is open
- *        displayOrder		[int]		A number that is used when sorting the display of trees. (Lower number means higher display.)
- *        hideEmpty			[boolean]	if true, hide tree header if tree is empty
+ * @param {constant}	org				the organizer type
+ * @param {Hash}	params			a hash of parameters
+ * @param	{constant}	app				the app that handles this org type
+ * @param	{String}	nameKey			the msg key for org name
+ * @param	{constant}	precondition		the setting that this org type depends on
+ * @param	{int}	defaultFolder		the folder ID of default folder for this org
+ * @param	{String}	soapCmd			the SOAP command for acting on this org
+ * @param	{int}	firstUserId		the minimum ID for a user instance of this org
+ * @param	{String}	orgClass			the name of constructor for this org
+ * @param	{String}	orgPackage		the name of smallest package with org class
+ * @param	{String}	treeController	the name of associated tree controller
+ * @param	{String}	labelKey			the msg key for label in overview
+ * @param	{String}	itemsKey			the msg key for text describing contents
+ * @param	{Boolean}	hasColor			<code>true</code> if org has color associated with it
+ * @param	{constant}	defaultColor		the default color for org in overview
+ * @param	{Array}	orgColor			the color override by ID (in pairs)
+ * @param	{constant}	treeType			the type of data tree (from server) that contains this org
+ * @param	{String}	views				the associated folder views (JSON)
+ * @param	{String}	folderKey			the msg key for folder props dialog
+ * @param	{String}	mountKey			the msg key for folder mount dialog
+ * @param	{String}	createFunc		the name of function for creating this org
+ * @param	{String}	compareFunc		the name of function for comparing instances of this org
+ * @param	{Boolean}	deferrable		if <code>true</code>, creation can be deferred to app launch
+ * @param	{Boolean}	pathInName		if <code>true</code>, provide full path when asked for name
+ * @param	{constant}	openSetting		the setting that controls whether the tree view is open
+ * @param	{int}	displayOrder		the number that is used when sorting the display of trees. (Lower number means higher display.)
+ * @param	{Boolean}	hideEmpty			if <code>true</code>, hide tree header if tree is empty
  */
 ZmOrganizer.registerOrg =
 function(org, params) {
@@ -365,10 +370,10 @@ function(org, params) {
 ZmOrganizer.sortCompare = function(organizerA, organizerB) {};
 
 /**
- * Generic function for creating an organizer via CreateFolderRequest. Attribute pairs can
+ * Creates an organizer via <code>&lt;CreateFolderRequest&gt;</code>. Attribute pairs can
  * be passed in and will become attributes of the folder node in the request.
  * 
- * @param params	[hash]			attribute pairs
+ * @param {Hash}	params	a hash of parameters
  */
 ZmOrganizer.create =
 function(params) {
@@ -402,6 +407,9 @@ function(params) {
 	});
 };
 
+/**
+ * @private
+ */
 ZmOrganizer._handleErrorCreate =
 function(params, ex) {
 	if (!params.url && !params.name) { return false; }
@@ -422,6 +430,9 @@ function(params, ex) {
 	return false;
 };
 
+/**
+ * @private
+ */
 ZmOrganizer._showErrorMsg =
 function(msg) {
 	var msgDialog = appCtxt.getMsgDialog();
@@ -430,6 +441,13 @@ function(msg) {
 	msgDialog.popup();
 };
 
+/**
+ * Gets the folder.
+ * 
+ * @param	{String}	id		the folder id
+ * @param	{AjxCallback}	callback	the callback
+ * @param	{ZmBatchCommand}	batchCmd	the batch command or <code>null</code> for none
+ */
 ZmOrganizer.getFolder =
 function(id, callback, batchCmd) {
 	var jsonObj = {GetFolderRequest:{_jsns:"urn:zimbraMail"}};
@@ -443,6 +461,9 @@ function(id, callback, batchCmd) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmOrganizer._handleResponseGetFolder =
 function(callback, result) {
 	var resp = result.getResponse().GetFolderResponse;
@@ -464,6 +485,12 @@ function(callback, result) {
 	}
 };
 
+/**
+ * Gets the folder.
+ * 
+ * @param	{AjxCallback}	callback	the callback
+ * @param	{ZmBatchCommand}	batchCmd	the batch command or <code>null</code> for none
+ */
 ZmOrganizer.prototype.getFolder =
 function(callback, batchCmd) {
 	ZmOrganizer.getFolder(this.id, callback, batchCmd);
@@ -472,18 +499,23 @@ function(callback, batchCmd) {
 
 // Static methods
 
+/**
+ * Gets the view name by organizer type.
+ * 
+ * @param	{String}	organizerType		the organizer type
+ * @return	{String}	the view
+ */
 ZmOrganizer.getViewName =
 function(organizerType) {
 	return ZmOrganizer.VIEWS[organizerType][0];
 };
 
 /**
-* Checks an organizer (folder or tag) name for validity. Returns an error message if the
-* name is invalid and null if the name is valid. Note that a name, rather than a path, is
-* checked.
-*
-* @param name		an organizer name
-*/
+ * Checks an organizer (folder or tag) name for validity.
+ *
+ * @param {String}	name		an organizer name
+ * @return	{String}	<code>null</code> if the name is valid or an error message if the name is invalid
+ */
 ZmOrganizer.checkName =
 function(name) {
 	if (name.length == 0) {	return ZmMsg.nameEmpty; }
@@ -500,14 +532,14 @@ function(name) {
 };
 
 /**
-* Checks a URL (a folder or calendar feed, for example) for validity.
-*
-* TODO: be friendly and prepend "http://" when it's missing
-*
-* @param url	[string]	a URL
-*/
+ * Checks a URL (a folder or calendar feed, for example) for validity.
+ *
+ * @param {String}	url	a URL
+ * @return	{String}	<code>null</code> if valid or an error message
+ */
 ZmOrganizer.checkUrl =
 function(url) {
+	// TODO: be friendly and prepend "http://" when it's missing
 	if (!url.match(/^[a-zA-Z]+:\/\/.*$/i)) {
 		return ZmMsg.errorUrlMissing;
 	}
@@ -515,6 +547,9 @@ function(url) {
 	return null;
 };
 
+/**
+ * @private
+ */
 ZmOrganizer.checkSortArgs =
 function(orgA, orgB) {
 	if (!orgA && !orgB) return 0;
@@ -523,6 +558,9 @@ function(orgA, orgB) {
 	return null;
 };
 
+/**
+ * @private
+ */
 ZmOrganizer.checkColor =
 function(color) {
 	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR))
@@ -530,13 +568,14 @@ function(color) {
 };
 
 /**
- * Returns the system ID for the given system ID and account. Unless this
+ * Gets the system ID for the given system ID and account. Unless this
  * is a child account, the system ID is returned unchanged. For child
  * accounts, the ID consists of the account ID and the local ID.
  * 
- * @param id		[int]				ID of a system organizer
- * @param account	[ZmZimbraAccount]*	an account
- * @param force		[Boolean]*			generate the fully qualified ID even if this is the main account
+ * @param {int}	id		the ID of a system organizer
+ * @param {ZmZimbraAccount}	account	the account
+ * @param {Boolean}		force		<code>true</code> to generate the fully qualified ID even if this is the main account
+ * @return	{String}	the ID
  */
 ZmOrganizer.getSystemId =
 function(id, account, force) {
@@ -549,12 +588,13 @@ function(id, account, force) {
 };
 
 /**
- * Strips the account ID portion from a system ID for a child account, which
+ * Normalizes the id by stripping the account ID portion from a system ID for a child account, which
  * can then be used to check against known system IDs. Any non-system ID is
  * returned unchanged (if type is provided).
  *
- * @param id	[string]		ID of an organizer
- * @param type	[constant]		type of organizer
+ * @param {String}	id	ID of an organizer
+ * @param {constant}	type	the type of organizer
+ * @return	{String}	the resulting id
  */
 ZmOrganizer.normalizeId =
 function(id, type) {
@@ -567,8 +607,9 @@ function(id, type) {
 /**
  * Parses an id into an object with fields for account and normalized id
  *
- * @param id		[string]		ID of an organizer
- * @param result	[Object]		Optional object in which the result is stored
+ * @param {String}	id		the ID of an organizer
+ * @param {Object}	result	an optional object in which the result is stored
+ * @return	{Object}	the resulting ID
  */
 ZmOrganizer.parseId =
 function(id, result) {
@@ -587,18 +628,24 @@ function(id, result) {
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmOrganizer.prototype.toString = 
 function() {
 	return "ZmOrganizer";
 };
 
 /**
-* Returns the name of this organizer.
+* Gets the name of this organizer.
 *
-* @param showUnread		whether to display the number of unread items (in parens)
-* @param maxLength		length in chars to truncate the name to
-* @param noMarkup		if true, don't return any HTML
-* @param useSystemName	if true, don't use translated version of name
+* @param {Boolean}	showUnread		<code>true</code> to display the number of unread items (in parens)
+* @param {int}	maxLength		the length (in chars) to truncate the name to
+* @param {Boolean}	noMarkup		if <code>true</code>, don't return any HTML
+* @param {Boolean}	useSystemName	if <code>true</code>, don't use translated version of name
+* @return	{String}	the name
 */
 ZmOrganizer.prototype.getName = 
 function(showUnread, maxLength, noMarkup, useSystemName) {
@@ -617,13 +664,14 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 };
 
 /**
-* Returns the full path as a string.
+* Gets the full path as a string.
 *
-* @param includeRoot	[boolean]*	whether to include root name at the beginning of the path
-* @param showUnread		[boolean]*	whether to display the number of unread items (in parens)
-* @param maxLength		[int]*		length in chars to truncate the name to
-* @param noMarkup		[boolean]*	if true, don't return any HTML
-* @param useSystemName	[boolean]*	if true, use untranslated version of system folder names
+* @param {Boolean}	includeRoot		<code>true</code> to include root name at the beginning of the path
+* @param {Boolean}	showUnread		<code>true</code> to display the number of unread items (in parens)
+* @param {int}	maxLength		the length (in chars) to truncate the name to
+* @param {Boolean}	noMarkup		if <code>true</code>, do not return any HTML
+* @param {Boolean}	useSystemName	if <code>true</code>, use untranslated version of system folder names
+* @return	{String}	the path
 */
 ZmOrganizer.prototype.getPath = 
 function(includeRoot, showUnread, maxLength, noMarkup, useSystemName) {
@@ -638,9 +686,10 @@ function(includeRoot, showUnread, maxLength, noMarkup, useSystemName) {
 };
 
 /**
- * Folder tooltip shows number of items and total size.
+ * Gets the tooltip. The tooltip shows number of items and total size.
  *
- * @param force		[boolean]*		if true, don't use cached tooltip
+ * @param {Boolean}	force		if <code>true</code>, don't use cached tooltip
+ * @return	{String}	the tooltip
  */
 ZmOrganizer.prototype.getToolTip =
 function(force) {
@@ -652,24 +701,44 @@ function(force) {
 	return this._tooltip;
 };
 
-/** Returns the full path, suitable for use in search expressions. */
+/**
+ * Gets the full path, suitable for use in search expressions.
+ *
+ * @return	{String}	the path
+ */
 ZmOrganizer.prototype.getSearchPath =
 function() {
 	return (this.nId != ZmOrganizer.ID_ROOT)
 		? this.getPath(null, null, null, true, true) : "/";
 };
 
-/** @deprecated Use getRestUrl. */
+/**
+ * Gets the URL.
+ * 
+ * @return	{String}	the URL
+ * 
+ * @deprecated use {@link getRestUrl}
+ */
 ZmOrganizer.prototype.getUrl =
 function() {
 	return this.getRestUrl();
 };
 
+/**
+ * Gets the sync URL.
+ * 
+ * @return		{String}	the URL
+ */
 ZmOrganizer.prototype.getSyncUrl =
 function() {
 	return url;
 };
 
+/**
+ * Gets the remote ID.
+ * 
+ * @return	{String}	the ID
+ */
 ZmOrganizer.prototype.getRemoteId =
 function() {
 	if (!this._remoteId) {
@@ -680,6 +749,11 @@ function() {
 	return this._remoteId;
 };
 
+/**
+ * Gets the REST URL.
+ * 
+ * @return	{String}	the URL
+ */
 ZmOrganizer.prototype.getRestUrl =
 function() {
 	// return REST URL as seen by the GetInfoResponse
@@ -717,6 +791,11 @@ function() {
 	return url;
 };
 
+/**
+ * Gets the account.
+ * 
+ * @return	{ZmZimbraAccount}	the account
+ */
 ZmOrganizer.prototype.getAccount =
 function() {
 	if (appCtxt.multiAccounts) {
@@ -729,11 +808,21 @@ function() {
 	return (this.account || appCtxt.accountList.mainAccount);
 };
 
+/**
+ * Gets the shares.
+ * 
+ * @return	{Array}	an array of shares
+ */
 ZmOrganizer.prototype.getShares =
 function() {
 	return this.shares;
 };
 
+/**
+ * Adds the share.
+ * 
+ * @param	{Object}	share		the share to add
+ */
 ZmOrganizer.prototype.addShare =
 function(share) {
 	this.shares = this.shares || [];
@@ -747,6 +836,10 @@ function(share) {
 	}
 };
 
+/**
+ * Clears all shares.
+ * 
+ */
 ZmOrganizer.prototype.clearShares =
 function() {
 	if (this.shares && this.shares.length) {
@@ -758,7 +851,11 @@ function() {
 	this._mainShare = null;
 };
 
-// returns the share granted to the current user
+/**
+ * Gets the share granted to the current user.
+ * 
+ * @return	{String}	the main share
+ */
 ZmOrganizer.prototype.getMainShare =
 function() {
 	if (!this._mainShare) {
@@ -778,26 +875,51 @@ function() {
 	return this._mainShare;
 };
 
+/**
+ * Checks if the organizer supports sharing.
+ * 
+ * @return	{Boolean}	<code>true</code> if the organizer supports sharing
+ */
 ZmOrganizer.prototype.supportsSharing =
 function() {
 	// overload per organizer type
 	return true;
 };
 
+/**
+ * Checks if the organizer supports pulbic access.
+ * 
+ * @return	{Boolean}	<code>true</code> if the organizer supports public access
+ */
 ZmOrganizer.prototype.supportsPublicAccess =
 function() {
 	// overload per organizer type
 	return true;
 };
 
+/**
+ * Checks if the organizer supports private permission.
+ * 
+ * @return	{Boolean}	<code>true</code> if the organizer supports private permission
+ */
 ZmOrganizer.prototype.supportsPrivatePermission =
 function() {
 	// overload per organizer type
 	return false;
 };
 
+/**
+ * Gets the icon.
+ * 
+ * @return	{String}	the icon
+ */
 ZmOrganizer.prototype.getIcon = function() {};
 
+/**
+ * Gets the icon with color
+ * 
+ * @return	{String}	the icon
+ */
 ZmOrganizer.prototype.getIconWithColor = function() {
 	var icon = this.getIcon() || "";
 	var color = this.rgb || this.color;
@@ -807,8 +929,13 @@ ZmOrganizer.prototype.getIconWithColor = function() {
 // Actions
 
 /**
-* Assigns the organizer a new name.
-*/
+ * Renames the organizer.
+ * 
+ * @param	{String}	name		the name
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
+ * @param	{ZmBatchCommand}	batchCmd		the batch command
+ */
 ZmOrganizer.prototype.rename =
 function(name, callback, errorCallback, batchCmd) {
 	if (name == this.name) { return; }
@@ -822,6 +949,13 @@ function(name, callback, errorCallback, batchCmd) {
 	this._organizerAction(params);
 };
 
+/**
+ * Sets the color.
+ * 
+ * @param	{String}	color		the color
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
+ */
 ZmOrganizer.prototype.setColor =
 function(color, callback, errorCallback) {
 	var color = ZmOrganizer.checkColor(color);
@@ -830,17 +964,24 @@ function(color, callback, errorCallback) {
 	this._organizerAction({action: "color", attrs: {color: color}, callback: callback, errorCallback: errorCallback});
 };
 
+/**
+ * Sets the RGB color.
+ * 
+ * @param	{Object}	rgb		the rgb
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
+ */
 ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback) {
 	if (this.rgb == rgb) { return; }
 	this._organizerAction({action: "color", attrs: {rgb: rgb}, callback: callback, errorCallback: errorCallback});
 };
 
 /**
- * Though it's possible to use this method to change just about any folder
+ * Updates the folder. Although it is possible to use this method to change just about any folder
  * attribute, it should only be used to set multiple attributes at once since it
  * has extra overhead on the server.
  *
- * @param attrs
+ * @param {Hash}	attrs		the attributes
  */
 ZmOrganizer.prototype.update =
 function(attrs) {
@@ -848,10 +989,10 @@ function(attrs) {
 };
 
 /**
-* Assigns the organizer a new parent, moving it within its tree.
-*
-* @param newParent		the new parent of this organizer
-*/
+ * Assigns the organizer a new parent, moving it within its tree.
+ *
+ * @param {ZmOrganizer}		newParent		the new parent of this organizer
+ */
 ZmOrganizer.prototype.move =
 function(newParent) {
 	var newId = (newParent.nId > 0)
@@ -874,11 +1015,12 @@ function(newParent) {
 };
 
 /**
-* Deletes an organizer. If it's a folder, the server deletes any contents and/or
-* subfolders. If it's Trash or Spam, the server deletes and re-creates the
-* folder. In that case, we don't bother to remove it from the UI (and we ignore
-* creates on system folders).
-*/
+ * Deletes an organizer. If it's a folder, the server deletes any contents and/or
+ * subfolders. If the organizer is "Trash" or "Spam", the server deletes and re-creates the
+ * folder. In that case, we do not bother to remove it from the UI (and we ignore
+ * creates on system folders).
+ * 
+ */
 ZmOrganizer.prototype._delete =
 function() {
 	DBG.println(AjxDebug.DBG1, "deleting: " + this.name + ", ID: " + this.id);
@@ -891,6 +1033,12 @@ function() {
 	this._organizerAction({action: action});
 };
 
+/**
+ * Empties the organizer.
+ * 
+ * @param	{Boolean}	doRecursive		<code>true</code> to recursively empty the organizer
+ * @param	{ZmBatchCommand}	batchCmd	the batch command
+ */
 ZmOrganizer.prototype.empty = 
 function(doRecursive, batchCmd) {
 	doRecursive = doRecursive || false;
@@ -916,12 +1064,21 @@ function(doRecursive, batchCmd) {
 	this._organizerAction(params);
 };
 
+/**
+ * Marks all items as "read".
+ * 
+ * @param	{ZmBatchCommand}	batchCmd	the batch command
+ */
 ZmOrganizer.prototype.markAllRead =
 function(batchCmd) {
 	var id = this.isRemote() ? this.getRemoteId() : null;
 	this._organizerAction({action: "read", id: id, attrs: {l: this.id}, batchCmd:batchCmd});
 };
 
+/**
+ * Synchronizes the organizer.
+ * 
+ */
 ZmOrganizer.prototype.sync =
 function() {
 	this._organizerAction({action: "sync"});
@@ -929,6 +1086,10 @@ function() {
 
 // Notification handling
 
+/**
+ * Handles delete notification.
+ * 
+ */
 ZmOrganizer.prototype.notifyDelete =
 function() {
 	// select next reasonable organizer if the currently selected organizer is
@@ -958,14 +1119,17 @@ function() {
 	this._notify(ZmEvent.E_DELETE);
 };
 
+/**
+ * Handles create notification.
+ */
 ZmOrganizer.prototype.notifyCreate = function() {};
 
 /**
-* Handle modifications to fields that organizers have in general. Note that
+* Handles modifications to fields that organizers have in general. Note that
 * the notification object may contain multiple notifications.
 *
-* @param obj		[object]	a "modified" notification
-* @param details	[hash]*		event details
+* @param {Object}	obj		a "modified" notification
+* @param {Hash}	details	the event details
 */
 ZmOrganizer.prototype.notifyModify =
 function(obj, details) {
@@ -1070,11 +1234,15 @@ function(obj, details) {
 // Local change handling
 
 /**
- * Cleans up a deleted organizer:
- * 	- remove from parent's list of children
- * 	- remove from item cache
- * 	- perform above two steps for each child
- * 	- clear list of children
+ * Deletes the organizer (local). Cleans up a deleted organizer:
+ * 
+ * <ul>
+ * <li>remove from parent's list of children</li>
+ * <li>remove from item cache</li>
+ * <li>perform above two steps for each child</li>
+ * <li>clear list of children</li>
+ * </ul>
+ * 
  */
 ZmOrganizer.prototype.deleteLocal =
 function() {
@@ -1089,19 +1257,21 @@ function() {
 };
 
 /**
-* Returns true if this organizer has a child with the given name.
-*
-* @param name		the name of the organizer to look for
-*/
+ * Checks if the organizer has a child with the given name.
+ *
+ * @param {String}	name		the name of the organizer to look for
+ * @return	{Boolean}	<code>true</code> if the organizer has a child
+ */
 ZmOrganizer.prototype.hasChild =
 function(name) {
 	return (this.getChild(name) != null);
 };
 
 /**
-* Returns the child with the given name, or null if no child has the name.
+* Gets the child with the given name
 *
-* @param name		the name of the organizer to look for
+* @param {String}	name		the name of the organizer to look for
+* @return	{String}	the name of the child or <code>null</code> if no child has the name
 */
 ZmOrganizer.prototype.getChild =
 function(name) {
@@ -1118,9 +1288,10 @@ function(name) {
 };
 
 /**
-* Returns the child with the given path, or null if no child has the path.
+* Gets the child with the given path
 *
-* @param path		the path of the organizer to look for
+* @param {String}	path		the path of the organizer to look for
+* @return	{String}	the child or <code>null</code> if no child has the path
 */
 ZmOrganizer.prototype.getChildByPath =
 function(path) {
@@ -1152,9 +1323,9 @@ function(path) {
 
 /**
  * Changes the parent of this organizer. Note that the new parent passed
- * in may be null, which makes this organizer an orphan.
+ * in may be <code>null</code>, which makes this organizer an orphan.
  * 
- * @param newParent		[ZmOrganizer]*		new parent
+ * @param {ZmOrganizer}	newParent		the new parent
  */
 ZmOrganizer.prototype.reparent =
 function(newParent) {
@@ -1168,12 +1339,13 @@ function(newParent) {
 };
 
 /**
-* Returns the organizer with the given ID, searching recursively through
-* child organizers. The preferred method for getting an organizer by ID
-* is to use appCtxt.getById().
-*
-* @param id		the ID to search for
-*/
+ * Gets the organizer with the given ID, searching recursively through
+ * child organizers. The preferred method for getting an organizer by ID
+ * is to use <code>appCtxt.getById()</code>.
+ *
+ * @param {String}	id		the ID to search for
+ * @return	{ZmOrganizer}	the organizer or <code>null</code> if not found
+ */
 ZmOrganizer.prototype.getById =
 function(id) {
 	if (this.link && id && typeof(id) == "string") {
@@ -1198,20 +1370,22 @@ function(id) {
 };
 
 /**
-* Returns the first organizer found with the given name, starting from the root.
-*
-* @param name		the name to search for
-*/
+ * Gets the first organizer found with the given name, starting from the root.
+ *
+ * @param {String}	name		the name to search for
+ * @return	{ZmOrganizer}	the organizer
+ */
 ZmOrganizer.prototype.getByName =
 function(name, skipImap) {
 	return this._getByName(name.toLowerCase(), skipImap);
 };
 
 /**
-* Returns a list of organizers with the given type
-*
-* @param type			[constant]	the desired organizer type
-*/
+ * Gets a list of organizers with the given type.
+ *
+ * @param {constant}	type			the desired organizer type
+ * @return	{Array}	an array of {ZmOrganizer} objects
+ */
 ZmOrganizer.prototype.getByType =
 function(type) {
 	var list = [];
@@ -1219,6 +1393,9 @@ function(type) {
 	return list;
 };
 
+/**
+ * @private
+ */
 ZmOrganizer.prototype._getByType =
 function(type, list) {
 	if (this.type == type) {
@@ -1233,17 +1410,22 @@ function(type, list) {
 };
 
 /**
-* Returns the organizer with the given path
-*
-* @param path			[string]	the path to search for
-* @param useSystemName	[boolean]*	if true, use untranslated version of system folder names
-*/
+ * Gets the organizer with the given path.
+ *
+ * @param {String}	path			the path to search for
+ * @param {Boolean}	useSystemName	if <code>true</code>, use untranslated version of system folder names
+ * @return	{ZmOrganizer}	the organizer	
+ */
 ZmOrganizer.prototype.getByPath =
 function(path, useSystemName) {
 	return this._getByPath(path.toLowerCase(), useSystemName);
 };
 
-// Test the path of this folder and then descendants against the given path, case insensitively
+/**
+ * Test the path of this folder and then descendants against the given path, case insensitively.
+ * 
+ * @private
+ */
 ZmOrganizer.prototype._getByPath =
 function(path, useSystemName) {
 	if (this.nId == ZmFolder.ID_TAGS) { return null; }
@@ -1263,18 +1445,21 @@ function(path, useSystemName) {
 };
 
 /**
-* Returns the number of children of this organizer.
-*/
+ * Gets the number of children of this organizer.
+ * 
+ * @return	{int}	the size
+ */
 ZmOrganizer.prototype.size =
 function() {
 	return this.children.size();
 };
 
 /**
-* Returns true if the given organizer is a descendant of this one.
-*
-* @param organizer		a possible descendant of ours
-*/
+ * Checks if the given organizer is a descendant of this one.
+ *
+ * @param {ZmOrganizer}	organizer		a possible descendant of ours
+ * @return	{Boolean}	<code>if the given organizer is a descendant; <code>false</code> otherwise
+ */
 ZmOrganizer.prototype.isChildOf =
 function (organizer) {
 	var parent = this.parent;
@@ -1287,16 +1472,25 @@ function (organizer) {
 	return false;
 };
 
-/*
-* Returns the organizer with the given ID. Looks in this organizer's tree.
-*
-* @param parentId	[int]		ID of the organizer to find
-*/
+/**
+ * Gets the organizer with the given ID (looks in this organizer tree).
+ *
+ * @param {int}	parentId	the ID of the organizer to find
+ * @return	{ZmOrganizer}	the organizer
+ * 
+ * @private
+ */
 ZmOrganizer.prototype._getNewParent =
 function(parentId) {
 	return appCtxt.getById(parentId);
 };
 
+/**
+ * Checks if the organizer with the given ID is under this organizer.
+ * 
+ * @param	{String}	id		the ID
+ * @return	{Boolean}	<code>true</code> if the organizer is under this organizer
+ */
 ZmOrganizer.prototype.isUnder =
 function(id) {
 	if (this.nId == id || (this.isRemote() && this.rid == id)) { return true; }
@@ -1311,11 +1505,21 @@ function(id) {
 	return false;
 };
 
+/**
+ * Checks if this organizer is in "Trash".
+ * 
+ * @return	{Boolean}	<code>true</code> if in "Trash"
+ */
 ZmOrganizer.prototype.isInTrash =
 function() {
 	return this.isUnder(ZmOrganizer.ID_TRASH);
 };
 
+/**
+ * Checks if permissions are allowed.
+ * 
+ * @return	{Boolean}	<code>true</code> if permissions are allowed
+ */
 ZmOrganizer.prototype.isPermAllowed =
 function(perm) {
 	if (this.perm) {
@@ -1325,6 +1529,11 @@ function(perm) {
 	return false;
 };
 
+/**
+ * Checks if the organizer is read-only.
+ * 
+ * @return	{Boolean}	<code>true</code> if read-only
+ */
 ZmOrganizer.prototype.isReadOnly =
 function() {
 	if (this._isReadOnly == null) {
@@ -1336,6 +1545,11 @@ function() {
 	return this._isReadOnly;
 };
 
+/**
+ * Checks if admin.
+ * 
+ * @return	{Boolean}	<code>true</code> if this organizer is admin
+ */
 ZmOrganizer.prototype.isAdmin =
 function() {
 	if (this._isAdmin == null) {
@@ -1347,6 +1561,11 @@ function() {
 	return this._isAdmin;
 };
 
+/**
+ * Checks if the organizer has private access.
+ * 
+ * @return	{Boolean}	<code>true</code> if has private access
+ */
 ZmOrganizer.prototype.hasPrivateAccess =
 function() {
 	if (this._hasPrivateAccess == null) {
@@ -1359,8 +1578,10 @@ function() {
 };
 
 /**
- * Returns true if this organizer is "remote". That applies to mountpoints (links),
+ * Checks if the organizer is "remote". That applies to mountpoints (links),
  * the folders they represent, and any subfolders we know about.
+ * 
+ * @return	{Boolean}	<code>true</code> if the organizer is "remote"
  */
 ZmOrganizer.prototype.isRemote =
 function() {
@@ -1391,16 +1612,20 @@ function() {
 };
 
 /**
-* Returns true is this is a system tag or folder.
-*/
+ * Checks if the organizer is a system tag or folder.
+ * 
+ * @return	{Boolean}	<code>true</code> if system tag or folder
+ */
 ZmOrganizer.prototype.isSystem =
 function () {
 	return (this.nId < ZmOrganizer.FIRST_USER_ID[this.type]);
 };
 
 /**
-* Returns true if this organizer gets its contents from an external feed.
-*/
+ * Checks if the organizer gets its contents from an external feed.
+ * 
+ * @return	{Boolean}	<code>true</code>  if from external feed
+ */
 ZmOrganizer.prototype.isFeed =
 function () {
 	return Boolean(this.url);
@@ -1408,12 +1633,13 @@ function () {
 
 
 /**
-* Returns true if this folder maps to a datasource. If type is given, returns
-* true if folder maps to a datasource *and* is of the given type.
-*
-* @param		type			[Int]*		Either ZmAccount.TYPE_POP or ZmAccount.TYPE_IMAP
-* @param		checkParent		[Boolean]*	walk up the parent chain
-*/
+ * Checks if this folder maps to a datasource. If type is given, returns
+ * true if folder maps to a datasource *and* is of the given type.
+ *
+ * @param	{int}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
+ * @param	{Boolean}	checkParent		if <code>true</code>, walk-up the parent chain
+ * @return	{Boolean}	<code>true</code> if this folder maps to a datasource
+ */
 ZmOrganizer.prototype.isDataSource =
 function(type, checkParent) {
 	var dss = this.getDataSources(type, checkParent);
@@ -1421,13 +1647,14 @@ function(type, checkParent) {
 };
 
 /**
-* Returns the data sources this folder maps to (or null). If type is given,
-* returns non-null result only if folder maps to datasource(s) *and* is of the
-* given type.
-*
-* @param		type			[Int]*		Either ZmAccount.TYPE_POP or ZmAccount.TYPE_IMAP
-* @param		checkParent		[Boolean]*	walk up the parent chain
-*/
+ * Gets the data sources this folder maps to. If type is given,
+ * returns non-null result only if folder maps to datasource(s) *and* is of the
+ * given type.
+ *
+ * @param	{int}	type			the type (see {@link ZmAccount.TYPE_POP} or {@link ZmAccount.TYPE_IMAP})
+ * @param	{Boolean}	checkParent		if <code>true</code>, walk-up the parent chain
+ * @return	{Array}	the data sources this folder maps to or <code>null</code> for none
+ */
 ZmOrganizer.prototype.getDataSources =
 function(type, checkParent) {
 	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) { return null; }
@@ -1444,11 +1671,21 @@ function(type, checkParent) {
 	return dataSources;
 };
 
+/**
+ * Gets the owner.
+ * 
+ * @return	{String}	the owner
+ */
 ZmOrganizer.prototype.getOwner =
 function() {
 	return (this.owner || appCtxt.get(ZmSetting.USERNAME));
 };
 
+/**
+ * Gets the sort index.
+ * 
+ * @return	{int}	the sort index
+ */
 ZmOrganizer.getSortIndex =
 function(child, sortFunction) {
 	if (!(child && child.parent && sortFunction)) { return null; }
@@ -1462,16 +1699,18 @@ function(child, sortFunction) {
 	return i;
 };
 
-/*
-* Sends a request to the server. Note that it's done asynchronously, but
-* there is no callback given. Hence, an organizer action is the last thing
-* done before returning to the event loop. The result of the action is
-* handled via notifications.
-*
-* @param action		[string]			operation to perform
-* @param attrs		[Object]			hash of additional attributes to set in the request
-* @param batchCmd	[ZmBatchCommand]*	batch command that contains this request
-*/
+/**
+ * Sends a request to the server. Note that it's done asynchronously, but
+ * there is no callback given. Hence, an organizer action is the last thing
+ * done before returning to the event loop. The result of the action is
+ * handled via notifications.
+ *
+ * @param {String}	action		the operation to perform
+ * @param {Hash}	attrs		a hash of additional attributes to set in the request
+ * @param {ZmBatchCommand}	batchCmd	the batch command that contains this request
+ * 
+ * @private
+ */
 ZmOrganizer.prototype._organizerAction =
 function(params) {
 	var cmd = ZmOrganizer.SOAP_CMD[this.type];
@@ -1504,6 +1743,9 @@ function(params) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmOrganizer.prototype._handleResponseOrganizerAction =
 function(params, result) {
 	if (params.callback) {
@@ -1511,7 +1753,11 @@ function(params, result) {
 	}
 };
 
-// Test the name of this organizer and then descendants against the given name, case insensitively
+/**
+ * Test the name of this organizer and then descendants against the given name, case insensitively.
+ * 
+ * @private
+ */
 ZmOrganizer.prototype._getByName =
 function(name, skipImap) {
 	if (this.name && name == this.name.toLowerCase()) {
@@ -1532,7 +1778,11 @@ function(name, skipImap) {
 	return null;
 };
 
-// Takes a string of flag chars and applies them to this organizer.
+/**
+ * Takes a string of flag chars and applies them to this organizer.
+ * 
+ * @private
+ */
 ZmOrganizer.prototype._parseFlags =
 function(str) {
 	for (var i = 0; i < ZmOrganizer.ALL_FLAGS.length; i++) {
@@ -1541,7 +1791,11 @@ function(str) {
 	}
 };
 
-// Converts this organizer's flag-related props into a string of flag chars.
+/**
+ * Converts this organizer's flag-related props into a string of flag chars.
+ * 
+ * @private
+ */
 ZmOrganizer.prototype._setFlags =
 function() {
 	var flags = "";
@@ -1555,16 +1809,29 @@ function() {
 	return flags;
 };
 
+/**
+ * Adds a change listener.
+ * 
+ * @param	{AjxListener}	the listener
+ */
 ZmOrganizer.prototype.addChangeListener =
 function(listener) {
 	this.tree.addChangeListener(listener);
 };
 
+/**
+ * Removes a change listener.
+ * 
+ * @param	{AjxListener}	the listener
+ */
 ZmOrganizer.prototype.removeChangeListener =
 function(listener) {
 	this.tree.removeChangeListener(listener);
 };
 
+/**
+ * @private
+ */
 ZmOrganizer.prototype._setSharesFromJs =
 function(obj) {
 	if (obj.acl && obj.acl.grant && obj.acl.grant.length > 0) {
@@ -1576,7 +1843,11 @@ function(obj) {
 	}
 };
 
-// Handle notifications through the tree
+/**
+ * Handle notifications through the tree.
+ * 
+ * @private
+ */
 ZmOrganizer.prototype._notify =
 function(event, details) {
 	if (details) {
@@ -1589,12 +1860,14 @@ function(event, details) {
 };
 
 /**
-* Returns a marked-up version of the name.
-*
-* @param name			the name to mark up
-* @param showUnread		whether to display the number of unread items (in parens)
-* @param noMarkup		if true, don't return any HTML
-*/
+ * Gets a marked-up version of the name.
+ *
+ * @param {String}	name			the name to mark up
+ * @param {Boolean}	showUnread		if <code>true</code>, display the number of unread items (in parens)
+ * @param {Boolean}	noMarkup		if <code>true</code>, do not return any HTML
+ * 
+ * @private
+ */
 ZmOrganizer.prototype._markupName = 
 function(name, showUnread, noMarkup) {
 	if (!noMarkup) {
@@ -1612,6 +1885,9 @@ function(name, showUnread, noMarkup) {
 	return name;
 };
 
+/**
+ * @private
+ */
 ZmOrganizer.prototype._getItemsText =
 function() {
 	var result = ZmMsg[ZmOrganizer.ITEMS_KEY[this.type]];

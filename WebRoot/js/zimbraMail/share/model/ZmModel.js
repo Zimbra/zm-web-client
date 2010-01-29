@@ -21,6 +21,7 @@
  */
 
 /**
+ * Creates the data model.
  * @class
  * This class represents a data model which can process change events.
  * 

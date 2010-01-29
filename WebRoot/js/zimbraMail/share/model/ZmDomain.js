@@ -95,7 +95,7 @@ function() {
 /**
  * Gets the sub-domains.
  * 
- * @return	{Array}	an array of {ZmDomain} objects (sorted)
+ * @return	{Array}	an array of {@link ZmDomain} objects (sorted)
  */
 ZmDomain.prototype.getSortedSubDomains = 
 function() {

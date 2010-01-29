@@ -14,17 +14,21 @@
  */
 
 /**
- * Object mananger class - use this class to hilite objects w/in a given view
- * @constructor
+ * @overview
+ * This file contains the object manager.
+ * 
+ */
+
+/**
+ * Creates an object manager.
  * @class
- *
+ * This class is used to high-light objects within a given view.
+ * 
  * @author Kevin Henrikson
  *
- * @param view			the view this manager is going to hilite for
- * @param selectCallback AjxCallback triggered when user clicks on hilited object
- * 						(provide if you want to do something before the clicked
- * 						on object opens its corresponding view)
- * @param skipHandlers 	true to avoid adding the standard handlers
+ * @param {DwtComposite}	view			the view this manager is going to high-light for
+ * @param {AjxCallback}	selectCallback  the callback triggered when user clicks on high-light object (provide if you want to do something before the clicked on object opens its corresponding view)
+ * @param {Boolean}	skipHandlers 	<code>true</code> to avoid adding the standard handlers
  */
 ZmObjectManager = function(view, selectCallback, skipHandlers) {
 
@@ -65,6 +69,13 @@ ZmObjectManager.ATTR_CURRENT_DATE = "currentDate";
 
 ZmObjectManager._autohandlers = [];
 
+/**
+ * Registers the handler.
+ * 
+ * @param	{Object}	obj		the object
+ * @param	{constant}	type	the type
+ * @param	{constant}	priority	the priority
+ */
 ZmObjectManager.registerHandler =
 function(obj, type, priority) {
 	if (typeof obj == "string") {
@@ -84,7 +95,9 @@ function(obj, type, priority) {
 	}
 };
 
-// not sure this function is useful.
+/**
+ * @private
+ */
 ZmObjectManager.unregisterHandler =
 function(obj) {
 	if (typeof obj == "string") {
@@ -99,11 +112,21 @@ function(obj) {
 	}
 };
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmObjectManager.prototype.toString =
 function() {
 	return "ZmObjectManager";
 };
 
+/**
+ * Gets the handlers.
+ * 
+ * @return	{Array}	an array of {@link ZmObjectHandler} objects
+ */
 ZmObjectManager.prototype.getHandlers =
 function() {
 	if (!this.initialized && appCtxt.zimletsPresent()) {
@@ -119,6 +142,13 @@ function() {
 	return this._objectHandlers;
 };
 
+/**
+ * Adds the handler.
+ * 
+ * @param	{ZmObjectHandler}	h		the handler
+ * @param	{constant}			type	the type
+ * @param	{constant}		priority	the priority
+ */
 ZmObjectManager.prototype.addHandler =
 function(h, type, priority) {
 	type = type || (h.getTypeName() ? h.getTypeName() : "none");
@@ -130,6 +160,12 @@ function(h, type, priority) {
 	oh[type].push(h);
 };
 
+/**
+ * Removes the handler.
+ * 
+ * @param	{ZmObjectHandler}	h		the handler
+ * @param	{constant}			type	the type
+ */
 ZmObjectManager.prototype.removeHandler =
 function(h, type) {
 	type = type || (h.getTypeName() ? h.getTypeName() : "none");
@@ -144,6 +180,10 @@ function(h, type) {
 	}
 };
 
+/**
+ * Sorts the handlers.
+ * 
+ */
 ZmObjectManager.prototype.sortHandlers =
 function() {
 	this._allObjectHandlers = [];
@@ -160,6 +200,9 @@ function() {
 	this._allObjectHandlers.sort(ZmObjectManager.__byPriority);
 };
 
+/**
+ * @private
+ */
 ZmObjectManager.prototype._addAutoHandlers =
 function() {
 	var c = ZmObjectManager._autohandlers, i, obj, prio;
@@ -182,11 +225,20 @@ function() {
 	}
 };
 
+/**
+ * Resets the objects.
+ * 
+ */
 ZmObjectManager.prototype.reset =
 function() {
 	this._objects = {};
 };
 
+/**
+ * Sets the view.
+ * 
+ * @param	{DwtComposite}		view		the view
+ */
 ZmObjectManager.prototype.setView =
 function(view) {
 	if (view != null && appCtxt.getZimletMgr().isLoaded()) {
@@ -204,16 +256,29 @@ function(view) {
 	this._view = view;
 };
 
+/**
+ * Gets the count of objects.
+ * 
+ * @return	{int}	the count
+ */
 ZmObjectManager.prototype.objectsCount =
 function() {
 	return (appCtxt.zimletsPresent()) ? appCtxt.getZimletMgr().getContentZimlets().length : 0;
 };
 
+/**
+ * Gets the image attachment handler.
+ * 
+ * @return	{ZmImageAttachmentObjectHandler}	the handler
+ */
 ZmObjectManager.prototype.getImageAttachmentHandler =
 function() {
 	return this._imageAttachmentHandler;
 };
 
+/**
+ * @private
+ */
 ZmObjectManager.prototype._getAjxEmailAddress =
 function(obj){
     if(appCtxt.isChildWindow && obj.isAjxEmailAddress){ //Making sure child window knows its type AjxEmailAddress
@@ -222,8 +287,15 @@ function(obj){
     return obj;
 };
 
-// type is optional.. if you know what type of content is being passed in, set the
-// type param so we dont have to figure out what kind of content we're dealing with
+/**
+ * Finds objects.
+ * 
+ * @param	{String}	content		the content
+ * @param	{Boolean}	htmlEncode	<code>true</code> to HTML encode the content
+ * @param	{constant}	type		the type
+ * @param	{Boolean}	isTextMsg	<code>true</code> if is text msg
+ * @return	{String}	the object
+ */
 ZmObjectManager.prototype.findObjects =
 function(content, htmlEncode, type, isTextMsg) {
 	if  (!content) {return "";}
@@ -326,8 +398,13 @@ function(content, htmlEncode, type, isTextMsg) {
 };
 
 
-//Added this customized method for the sake of ZmMailMsgView performance.
-//TODO: Integrate this method to findObjectsInNode()
+/**
+ * Added this customized method for the sake of ZmMailMsgView performance.
+ * 
+ * TODO: Integrate this method to findObjectsInNode()
+ * 
+ * @private
+ */
 ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 
     var objectManager = this;
@@ -440,6 +517,9 @@ ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 
 };
 
+/**
+ * @private
+ */
 ZmObjectManager.prototype.findObjectsInNode =
 function(node, re_discard, re_allow, callbacks) {
 	var objectManager = this, doc = node.ownerDocument, tmpdiv = doc.createElement("div");
@@ -562,7 +642,12 @@ function(node, re_discard, re_allow, callbacks) {
 };
 
 /**
- * go through the content and return the result of the object handler's match call.
+ * Finds content by going through the content and return the result of the object handler's match call.
+ * 
+ * @param	{String}	content		the content
+ * @param	{constant}	type		the content type
+ * @return	{String}	the object
+ * @private
  */
 ZmObjectManager.prototype.findMatch =
 function(content, type) {
@@ -612,11 +697,15 @@ function(content, type) {
 	return lowestResult;
 };
 
-// Dives recursively into the given DOM node.  Creates ObjectHandlers in text
-// nodes and cleans the mess in element nodes.  Discards by default "script",
-// "link", "object", "style", "applet" and "iframe" (most of them shouldn't
-// even be here since (1) they belong in the <head> and (2) are discarded on
-// the server-side, but we check, just in case..).
+/**
+ * Dives recursively into the given DOM node.  Creates ObjectHandlers in text
+ * nodes and cleans the mess in element nodes.  Discards by default "script",
+ * "link", "object", "style", "applet" and "iframe" (most of them shouldn't
+ * even be here since (1) they belong in the <head> and (2) are discarded on
+ * the server-side, but we check, just in case).
+ *
+ * @private
+ */
 ZmObjectManager.prototype.processHtmlNode =
 function(node, handlers, discard, ignore) {
 	var doc = node.ownerDocument;
@@ -745,6 +834,13 @@ function(node, handlers, discard, ignore) {
 	return node.nextSibling;
 };
 
+/**
+ * Sets handler attribute.
+ * 
+ * @param	{String}	type		the type
+ * @param	{String}	name		the attribute name
+ * @param	{Object}	value		the value
+ */
 ZmObjectManager.prototype.setHandlerAttr =
 function(type, name, value) {
     var handlers = this.getHandlers()[type];
@@ -755,6 +851,11 @@ function(type, name, value) {
 	}
 };
 
+/**
+ * Generates the span.
+ * 
+ * @private
+ */
 ZmObjectManager.prototype.generateSpan =
 function(handler, html, idx, obj, context) {
 	var id = this._objectIdPrefix + Dwt.getNextId();
@@ -762,6 +863,9 @@ function(handler, html, idx, obj, context) {
 	return handler.generateSpan(html, idx, obj, id, context);
 };
 
+/**
+ * @private
+ */
 ZmObjectManager.prototype._findObjectSpan =
 function(e) {
 	while (e && (!e.id || e.id.indexOf(this._objectIdPrefix) !== 0)) {
@@ -770,6 +874,9 @@ function(e) {
 	return e;
 };
 
+/**
+ * @private
+ */
 ZmObjectManager.prototype._mouseOverListener =
 function(ev) {
 	var span = this._findObjectSpan(ev.target);
@@ -796,6 +903,9 @@ function(ev) {
 	return false;
 };
 
+/**
+ * @private
+ */
 ZmObjectManager.prototype._mouseOutListener =
 function(ev) {
 	var span = this._findObjectSpan(ev.target);
@@ -814,6 +924,9 @@ function(ev) {
 	return false;
 };
 
+/**
+ * @private
+ */
 ZmObjectManager.prototype._mouseMoveListener =
 function(ev) {
 	ev._returnValue = true;
@@ -834,12 +947,18 @@ function(ev) {
 	return false;
 };
 
+/**
+ * @private
+ */
 ZmObjectManager.prototype._rightClickListener =
 function(ev) {
 	ev.button = DwtMouseEvent.RIGHT;
 	return this._mouseDownListener(ev);
 };
 
+/**
+ * @private
+ */
 ZmObjectManager.prototype._mouseDownListener =
 function(ev) {
 
@@ -889,6 +1008,9 @@ function(ev) {
 	return false;
 };
 
+/**
+ * @private
+ */
 ZmObjectManager.prototype._mouseUpListener =
 function(ev) {
 	ev._returnValue = true;
@@ -903,6 +1025,9 @@ function(ev) {
 	return false;
 };
 
+/**
+ * @private
+ */
 ZmObjectManager.prototype._handleHoverOver =
 function(event) {
 	if (!(event && event.object)) { return; }
@@ -917,6 +1042,9 @@ function(event) {
 	handler.hoverOver(object, context, x, y, span);
 };
 
+/**
+ * @private
+ */
 ZmObjectManager.prototype._handleHoverOut =
 function(event) {
 	if (!(event && event.object)) { return; }
@@ -931,6 +1059,9 @@ function(event) {
 
 // Private static functions
 
+/**
+ * @private
+ */
 ZmObjectManager.__byPriority =
 function(a, b) {
 	return (b._prio < a._prio) - (a._prio < b._prio);

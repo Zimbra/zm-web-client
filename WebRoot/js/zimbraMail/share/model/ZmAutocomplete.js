@@ -23,7 +23,7 @@
 /**
  * Creates and initializes support for server-based autocomplete.
  * @class
- * This class manages auto-completion via <code><AutoCompleteRequest></code> calls to the server. Currently limited
+ * This class manages auto-completion via <code>&lt;AutoCompleteRequest&gt;</code> calls to the server. Currently limited
  * to matching against only one type among people, locations, and equipment.
  *
  * @author Conrad Damon
@@ -435,9 +435,9 @@ function(ev) {
  * This class represents an auto-complete result, with fields for the caller to look at, and fields to
  * help with further matching.
  *
- * @param {Object}	match			the JSON match object, or {@see ZmContact}
+ * @param {Object}	match			the JSON match object or a {@link ZmContact} object
  * @param {Object}	options		the matching options
- * @param {Boolean}	isContact		if <code>true</code>, provided match is a {@see ZmContact}
+ * @param {Boolean}	isContact		if <code>true</code>, provided match is a {@link ZmContact}
  */
 ZmAutocompleteMatch = function(match, options, isContact) {
 
@@ -527,17 +527,19 @@ function(str) {
  * This class supports auto-complete for our query language. Each search operator that is supported has an associated handler.
  * A handler is a hash which contains the info needed for auto-complete. A handler can have the following properties:
  *
- * 		listType		A handler needs a list of objects to autocomplete against. By default, that list is
+ * <ul>
+ * <li><b>listType</b> - A handler needs a list of objects to autocomplete against. By default, that list is
  * 						identified by the operator. If more than one operator uses the same list, their handlers
- * 						should use this property to identify the list.
- * 		loader			Function that populates the list of objects. Lists used by more than one operator provide
- * 						their loader separately.
- * 		text			Function that returns a string value of data, to autocomplete against and to display in the
- * 						autocomplete list.
- * 		icon			Function that returns an icon to display in the autocomplete list.
- * 		matchText		Function that returns a string to place in the input when the item is selected. Defaults to
- * 						the 'op:' plus the value of the 'text' attribute.
- * 		quoteMatch		If true, the text that goes into matchText will be place in double quotes.
+ * 						should use this property to identify the list.</li>
+ * <li><b>loader</b> - Function that populates the list of objects. Lists used by more than one operator provide
+ * 						their loader separately.</li>
+ * <li><b>text</b> - Function that returns a string value of data, to autocomplete against and to display in the
+ * 						autocomplete list.</li>
+ * <li><b>icon</b> - Function that returns an icon to display in the autocomplete list.</li>
+ * <li><b>matchText</b> - Function that returns a string to place in the input when the item is selected. Defaults to
+ * 						the 'op:' plus the value of the 'text' attribute.</li>
+ * <li><b>quoteMatch</b> - If <code>true</code>, the text that goes into matchText will be place in double quotes.</li>
+ * </ul>
  * 
  */
 ZmSearchAutocomplete = function() {
@@ -607,7 +609,7 @@ function(op, params) {
  *
  * @param {String}	str		the string to match against
  * @param {AjxCallback}	callback	the callback to run with results
- * @param ZmAutocompleteListView	aclv		needed to show wait msg
+ * @param {ZmAutocompleteListView}	aclv		needed to show wait msg
  * @param {Hash}	options		a hash of additional options
  * @param {constant} options.type		type of result to match; default is {@link ZmAutocomplete.AC_TYPE_CONTACT}; other valid values are for location or equipment
  * @param	{Boolean}	options.needItem	if <code>true</code>, return a {@link ZmItem} as part of match result

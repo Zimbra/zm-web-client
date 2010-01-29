@@ -14,14 +14,14 @@
  */
 /**
  * @overview
- * This file defines a zimlet tree controller.
+ * This file defines a Zimlet tree controller.
  *
  */
 
 /**
- * Creates a zimlet tree controller.
+ * Creates a Zimlet tree controller.
  * @class
- * This class represents a zimlet tree controller.
+ * This class represents a Zimlet tree controller.
  * 
  * @extends		ZmTreeController
  */

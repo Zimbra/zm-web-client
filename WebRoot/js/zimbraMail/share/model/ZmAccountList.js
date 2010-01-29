@@ -101,7 +101,7 @@ function() {
 /**
  * Gets the account by id.
  * 
- * @param	{String]	id		the id
+ * @param	{String}	id		the id
  * @return	{ZmAccount}	the account
  */
 ZmAccountList.prototype.getAccount =
@@ -199,9 +199,9 @@ function(folderId, types) {
  * the server in a batch request:
  * 
  * <ul>
- * <li>GetInfoRequest</li>
- * <li>GetTafReqyuest</li>
- * <li>GetFolderRequest</li>
+ * <li><code><GetInfoRequest></code></li>
+ * <li><code><GetTafReqyuest></code></li>
+ * <li><code><GetFolderRequest></code></li>
  * </ul>
  * 
  * @param {AjxCallback}	callback		the callback to trigger once all accounts have been loaded
@@ -430,10 +430,10 @@ function() {
 };
 
 /**
- * Gets the tooltip for the folder.
+ * Gets the tool tip for the folder.
  * 
  * @param	{String}	folderId	the folder id
- * @return	{String]	the tooltip
+ * @return	{String}	the tool tip
  */
 ZmAccountList.prototype.getTooltipForVirtualFolder =
 function(folderId) {

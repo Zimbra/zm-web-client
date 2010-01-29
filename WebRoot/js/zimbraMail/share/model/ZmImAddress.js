@@ -13,10 +13,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
-// centralize the representation of IM addresses, since they will be
-// used in both contacts, IM and probably in a Zimlet that recognizes
-// them in email.
+/**
+ * @overview
+ * This file defines an IM address.
+ *
+ */
 
+/**
+ * 
+ * @class
+ * This class represents an IM address and is used to centralize the representation of IM addresses,
+ * since they will be used in both contacts, IM and probably in a Zimlet that recognizes them in email.
+ * 
+ */
 ZmImAddress = {
 
     IM_SERVICES : [

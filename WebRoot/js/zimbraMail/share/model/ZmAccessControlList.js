@@ -29,8 +29,8 @@
  * this way:
  * 
  * <ul>
- * <li>viewFreeBusy	governs whether other users may view this user's free/busy information</li>
- * <li>invite			whether an invite from other users will automatically create a tentative appointment on this user's calendar</li>
+ * <li><b>viewFreeBusy</b> - governs whether other users may view this user's free/busy information</li>
+ * <li><b>invite</b> - determines whether an invite from other users will automatically create a tentative appointment on this user's calendar</li>
  * </ul>
  * 
  * Note: that shared organizers ({@link ZmShare}) manage rights (read/write/manage) in their own way.
@@ -56,7 +56,7 @@ function() {
 /**
  * Loads the list.
  * 
- * @param	{function}	callback	the function to callback after the loaded
+ * @param	{AjxCallback}	callback	the function to callback after the loaded
  */
 ZmAccessControlList.prototype.load =
 function(callback) {
@@ -83,7 +83,7 @@ function(callback, result) {
 };
 
 /**
- * Gets the access control entry by right
+ * Gets the access control entry by right.
  * 
  * @param	{String}	right		the right
  * @return	{ZmAccessControlEntry}	the entry
@@ -218,8 +218,8 @@ function(right) {
 /**
  * Grants permissions on the access control entries.
  * 
- * @param	{Array}	aces		an array of {ZmAccessControlEntry} objects
- * @param	{function}	callback	the callback
+ * @param	{Array}	aces		an array of {@link ZmAccessControlEntry} objects
+ * @param	{AjxCallback}	callback	the callback
  * @param	{Boolean}	batchCmd	<code>true</code> to submit as a batch command
  */
 ZmAccessControlList.prototype.grant =
@@ -230,8 +230,8 @@ function(aces, callback, batchCmd) {
 /**
  * Revokes and denies permissions the access control entries.
  * 
- * @param	{Array}	aces		an array of {ZmAccessControlEntry} objects
- * @param	{function}	callback	the callback
+ * @param	{Array}	aces		an array of {@link ZmAccessControlEntry} objects
+ * @param	{AjxCallback}	callback	the callback
  * @param	{Boolean}	batchCmd	<code>true</code> to submit as a batch command
  */
 ZmAccessControlList.prototype.revoke =
@@ -242,9 +242,9 @@ function(aces, callback, batchCmd) {
 /**
  * Sets the permissions.
  * 
- * @param	{Array}	aces		an array of {ZmAccessControlEntry} objects
+ * @param	{Array}	aces		an array of {@link ZmAccessControlEntry} objects
  * @param	{Boolean}	revoke	<code>true</code> to deny; <code>false</code> to grant
- * @param	{function}	callback	the callback
+ * @param	{AjxCallback}	callback	the callback
  * @param	{Boolean}	batchCmd	<code>true</code> to submit as a batch command
  *
  * @private
@@ -410,6 +410,7 @@ function(a, b) {
  * @param	{String}	params.zid			the ZID of grantee
  * @param	{constant}	params.granteeType	type of grantee (see <code>ZmSetting.ACL_</code> constants)
  * @param	{Boolean}	params.negative		if <code>true</code>, permission is denied by this ACE
+ * @see		ZmSetting
  */
 ZmAccessControlEntry =
 function(params) {

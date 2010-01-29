@@ -13,10 +13,26 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the timezone class.
+ */
+
+/**
+ * Creates a timezone
+ * @class
+ * This class represents a timezone.
+ * 
+ */
 ZmTimezone = function() {}
 
 // Static methods
 
+/**
+ * Gets the default timezone.
+ * 
+ * @return	{AjxTimezone}	the timezone
+ */
 ZmTimezone.getDefault =
 function() {
 	var shell = DwtShell.getShell(window);
@@ -24,6 +40,11 @@ function() {
 	return (serverId) ? AjxTimezone.getClientId(serverId) : AjxTimezone.DEFAULT;
 };
 
+/**
+ * Gets the default rule.
+ * 
+ * @return	{String}	the rule
+ */
 ZmTimezone.getDefaultRule =
 function() {
 	return AjxTimezone.getRule(ZmTimezone.getDefault());
@@ -33,18 +54,12 @@ function() {
  * This function mirrors the <code>AjxSoapDoc#set</code> method
  * to add a timezone element at the specific place within the
  * given SOAP document. The added element takes the form of the
- * <code>&lt;tz></code> element as defined for SearchRequest
- * in ZimbraServer/docs/soap.txt.
- * </pre>
+ * <code>&lt;tz></code> element as defined for <code>&lt;SearchRequest&gt;</code>.
  *
- * @param request			[object|AjxSoapDoc]	The JSON request object, or soap document.
- * @param timezoneClientId	[string]			The client identifer.
- * @param parentNode		[Node]				(optional) The parent
- * 												node at which to add.
- * @param skipKnownTimezone	[boolean]			(optional) If set,
- *												doesn't add the "tz"
- *												element if it's one of
- *												the known set.
+ * @param {object|AjxSoapDoc}	request			the JSON request object or SOAP document
+ * @param {String}	timezoneClientId	the client identifier
+ * @param {Node}	parentNode		(optional) the parent node at which to add
+ * @param {Boolean}	skipKnownTimezone	(optional) if <code>true</code>, does not add the "tz" element if it's one of the known set
  */
 ZmTimezone.set =
 function(request, timezoneClientId, parentNode, skipKnownTimezone) {
@@ -60,6 +75,9 @@ function(request, timezoneClientId, parentNode, skipKnownTimezone) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmTimezone._setSoap =
 function(soapDoc, timezoneClientId, parentNode, timezone) {
 	var tz = soapDoc.set("tz", null, parentNode);
@@ -87,6 +105,9 @@ function(soapDoc, timezoneClientId, parentNode, timezone) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmTimezone._setJson =
 function(request, timezoneClientId, timezone) {
 	var id = AjxTimezone.getServerId(timezoneClientId);

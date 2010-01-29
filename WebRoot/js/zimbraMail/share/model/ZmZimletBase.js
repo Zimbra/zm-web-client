@@ -27,12 +27,12 @@
  * wish to override some functions in order to provide custom functionality. All Zimlet Handler Objects should extend this base class.
  * <br />
  * <br />
- * <code>function com_zimbra_myZimletHandlerObject() { };</code>
+ * <code>function com_zimbra_myZimlet_HandlerObject() { };</code>
  * <br />
  * <br />
  * <code>
- * com_zimbra_myZimletHandlerObject.prototype = new ZmZimletBase();
- * com_zimbra_myZimletHandlerObject.prototype.constructor = com_zimbra_myZimletHandlerObject;
+ * com_zimbra_myZimlet_HandlerObject.prototype = new ZmZimletBase();
+ * com_zimbra_myZimlet_HandlerObject.prototype.constructor = com_zimbra_myZimlet_HandlerObject;
  * </code>
  * 
  * @extends	ZmObjectHandler
@@ -114,7 +114,7 @@ function() {
  * @param	{String}	label		the label for the item
  * @param	{AjxListener}	listener		the listener or <code>null</code> for none
  * @param	{String}	id			the unique id of the item to add
- * @return	<code>null</code> if item not created
+ * @return	{ZmButtonToolBar}	<code>null</code> if item not created
  */
 ZmZimletBase.prototype.addSearchDomainItem =
 function(icon, label, listener, id) {
@@ -161,10 +161,10 @@ function(key) {
 /**
  * This method is called when an item is dragged on the Zimlet drop target
  * in the panel. This method is only called for the valid types that the
- * Zimlet accepts as defined by the <code><dragSource></code> Zimlet Definition File XML.
+ * Zimlet accepts as defined by the <code>&lt;dragSource&gt;</code> Zimlet Definition File XML.
  *
  * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmNotebook|ZmTask}	zmObject		the dragged object
- * @return	<code>true</code> if the drag should be allowed; otherwise, <code>false</code>
+ * @return	{Boolean}	<code>true</code> if the drag should be allowed; otherwise, <code>false</code>
  */
 ZmZimletBase.prototype.doDrag =
 function(zmObject) {
@@ -455,8 +455,8 @@ function(portlet) {
 /**
  * This method is called when content (e.g. a mail message) is being parsed.
  * The match method may be called multiple times for a given piece of content and
- * should apply the pattern matching as defined for a given zimlet <code><regex></code>.
- * Zimlets should also use the "g" option when constructing their <code><regex></code>.
+ * should apply the pattern matching as defined for a given zimlet <code>&lt;regex&gt;</code>.
+ * Zimlets should also use the "g" option when constructing their <code>&lt;regex&gt;</code>.
  *
  * <p>
  * The return should be an array in the form:
@@ -537,7 +537,7 @@ function(spanElement, contentObjText, matchContext, canvas) {
  * @param	{String}		contentObjText	the content object text
  * @param	{Array}		matchContent	the matched content
  * @param	{Object}	canvas			the canvas
- * @return	<code>null</code> if the tool tip may be popped-down; otherwise, a string indicating why the tool tip should not be popped-down
+ * @return	{String}	<code>null</code> if the tool tip may be popped-down; otherwise, a string indicating why the tool tip should not be popped-down
  */
 ZmZimletBase.prototype.toolTipPoppedDown =
 function(spanElement, contentObjText, matchContext, canvas) {
@@ -576,13 +576,13 @@ ZmZimletBase.prototype.menuItemSelected =
 function(contextMenu, menuItemId, spanElement, contentObjText, canvas) {};
 
 /**
- * This method is called if there are <code><userProperties></code> elements specified in the
+ * This method is called if there are <code>&lt;userProperties&gt;</code> elements specified in the
  * Zimlet Definition File. When the zimlet panel item is double-clicked, the property
  * editor will be presented to the user.
  * 
  * <p>
- * This method creates the property editor for the set of <code><property></code> elements defined
- * in the <code><userProperties></code> element. The default implementation of this
+ * This method creates the property editor for the set of <code>&lt;property&gt;</code> elements defined
+ * in the <code>&lt;userProperties&gt;</code> element. The default implementation of this
  * method will auto-create a property editor based on the attributes of the user properties.
  * </p>
  * <p>
@@ -703,7 +703,7 @@ function(callback, passErrors, xmlargs) {
  * @param	{AjxCallback}	callback	the callback for asynchronous requests or <code>null</code> for none
  * @param	{Boolean}	useGet		<code>true</code> to use HTTP GET; <code>null</code> or <code>false</code> otherwise
  * @param	{Boolean}	passErrors	<code>true</code> to pass errors; <code>null</code> or <code>false</code> otherwise
- * @return	the return value
+ * @return	{Object}	the return value
  */
 ZmZimletBase.prototype.sendRequest =
 function(requestStr, serverURL, requestHeaders, callback, useGet, passErrors) {

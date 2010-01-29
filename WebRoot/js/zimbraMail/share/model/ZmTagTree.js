@@ -13,6 +13,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the tag tree class.
+ */
+
+/**
+ * Creates the tag tree
+ * @class
+ * This class represents the tag tree.
+ * 
+ * @param	{ZmZimbraAccount}	account		the account
+ * @extends	ZmTree
+ */
 ZmTagTree = function(account) {
 	ZmTree.call(this, ZmOrganizer.TAG);
 	var id = (account)
@@ -35,11 +48,19 @@ ZmTagTree.COLOR_LIST = [
 	ZmOrganizer.C_GREEN
 ];
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTagTree.prototype.toString = 
 function() {
 	return "ZmTagTree";
 };
 
+/**
+ * @private
+ */
 ZmTagTree.prototype.loadFromJs =
 function(tagsObj, type, account) {
 	if (!tagsObj || !tagsObj.tag || !tagsObj.tag.length) { return; }
@@ -53,6 +74,12 @@ function(tagsObj, type, account) {
 	}
 };
 
+/**
+ * Gets the tag by index.
+ * 
+ * @param	{int}	idx		the index
+ * @return	{ZmTag}	the tag
+ */
 ZmTagTree.prototype.getByIndex =
 function(idx) {
 	var list = this.asList();	// tag at index 0 is root
@@ -61,6 +88,9 @@ function(idx) {
 	}
 };
 
+/**
+ * Resets the tree.
+ */
 ZmTagTree.prototype.reset =
 function() {
 	this.root = new ZmTag({id: ZmTag.ID_ROOT, tree: this});

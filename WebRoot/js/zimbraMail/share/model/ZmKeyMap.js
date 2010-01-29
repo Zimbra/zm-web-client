@@ -14,20 +14,27 @@
  */
 
 /**
+ * @overview
+ * This file defines the key map.
+ */
+
+/**
  * Creates a key map for the ZCS application.
- * @constructor
  * @class
  * This class maps keys to actions for the ZCS application. There is a global key map
  * with bindings that apply to any key not handled by the current controller; these
  * global bindings apply across applications (mail, contacts, etc). Key bindings that
  * are context-dependent are tied to a particular controller. If that controller has
  * control, then those bindings will be used.
- * <p>
- * Bindings are passed in via the ZmKeys object, which is populated from a properties
+ * <br/>
+ * <br/>
+ * Bindings are passed in via the <code>ZmKeys</code> object, which is populated from a properties
  * file. The identifiers used in the properties file must match those used here.
  * 
  * @author Ross Dargahi
  * @author Conrad Damon
+ * 
+ * @extends		DwtKeyMap
  */
 ZmKeyMap = function() {
 	
@@ -270,11 +277,14 @@ function() {
 };
 
 /**
- * Returns true if this map is valid. A map may have a precondition,
+ * Checks if this map is valid. A map may have a precondition,
  * which is either a setting that must be true, or a function that returns
  * true.
  *
- * @param mapName	[string]	name of map
+ * @param {String}	mapName	the name of map
+ * @return	{Boolean}	<code>true</code> if the map is valid
+ * 
+ * @private
  */
 ZmKeyMap.prototype._checkMap =
 function(mapName) {
@@ -292,12 +302,15 @@ function(mapName) {
 };
 
 /**
- * Returns true if this action is valid. A map or an action may have a precondition,
+ * Checks if this action is valid. A map or an action may have a precondition,
  * which is either a setting that must be true, or a function that returns
  * true.
  *
- * @param mapName	[string]	name of map
- * @param action	[string]	action to check
+ * @param {String} mapName	the name of map
+ * @param {String} action	the action to check
+ * @return	{Boolean}	<code>true</code> if the action is valid
+ * 
+ * @private
  */
 ZmKeyMap.prototype._checkAction =
 function(mapName, action) {

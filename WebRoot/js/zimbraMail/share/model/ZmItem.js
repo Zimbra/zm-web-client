@@ -15,11 +15,11 @@
 
 /**
  * @overview
- * 
  * This file defines an item.
  */
 
 /**
+ * Creates an item.
  * @class
  * An item is a piece of data that may contain user content. Most items are taggable. Currently,
  * the following things are items: conversation, message, attachment, appointment, and contact.
@@ -183,16 +183,17 @@ ZmItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
  * Registers an item and stores information about the given item type.
  *
  * @param {constant}	item		the item type
- * @param {constant}	app			the app that handles this item type
- * @param {String}		nameKey		the message key for item name
- * @param {String}		pluralameKey	the message key for plural of item name
- * @param {String}		icon			the name of item icon class
- * @param {String}		soapCmd		the SOAP command for acting on this item
- * @param {String}		itemClass		the name of class that represents this item
- * @param {String}		node			the SOAP response node for this item
- * @param {constant}	organizer		the associated organizer
- * @param {String}		searchType		the associated type in SearchRequest
- * @param {function}	resultsList		the function that returns a {ZmList} for holding search results of this type
+ * @param	{Hash}	params			a hash of parameters
+ * @param {constant}	params.app			the app that handles this item type
+ * @param {String}		params.nameKey		the message key for item name
+ * @param {String}		params.pluralameKey	the message key for plural of item name
+ * @param {String}		params.icon			the name of item icon class
+ * @param {String}		params.soapCmd		the SOAP command for acting on this item
+ * @param {String}		params.itemClass		the name of class that represents this item
+ * @param {String}		params.node			the SOAP response node for this item
+ * @param {constant}	params.organizer		the associated organizer
+ * @param {String}		params.searchType		the associated type in SearchRequest
+ * @param {function}	params.resultsList		the function that returns a {@link ZmList} for holding search results of this type
  */
 ZmItem.registerItem =
 function(item, params) {
@@ -252,16 +253,21 @@ ZmItem.prototype.create = function(args) {};
 ZmItem.prototype.modify = function(mods) {};
 
 /**
-* Gets the item by id.
-*
-* @param {String}	id		an item id
-*/
+ * Gets the item by id.
+ *
+ * @param {String}	id		an item id
+ * @return	{ZmItem}	the item
+ */
 ZmItem.prototype.getById =
 function(id) {
 	if (id == this.id)
 		return this;
 };
 
+/**
+ * Clears the item.
+ * 
+ */
 ZmItem.prototype.clear =
 function() {
 	this._evtMgr.removeAll(ZmEvent.L_MODIFY);
@@ -420,9 +426,9 @@ function() {
 // Notification handling
 
 /**
-* Handles a delete notification.
-* 
-*/
+ * Handles a delete notification.
+ * 
+ */
 ZmItem.prototype.notifyDelete =
 function() {
 	this.deleteLocal();
@@ -432,10 +438,10 @@ function() {
 };
 
 /**
-* Handles a modification notification.
-*
-* @param {Object}	obj		the item with the changed attributes/content
-*/
+ * Handles a modification notification.
+ *
+ * @param {Object}	obj		the item with the changed attributes/content
+ */
 ZmItem.prototype.notifyModify =
 function(obj) {
 	// empty string is meaningful here, it means no tags
@@ -551,8 +557,8 @@ function() {
 };
 
 /**
-* Deletes local, in case an item wants to do something while being deleted.
-*/
+ * Deletes local, in case an item wants to do something while being deleted.
+ */
 ZmItem.prototype.deleteLocal = function() {};
 
 /**
@@ -597,10 +603,10 @@ function(itemId, folderId, callback, errorCallback, accountName) {
 };
 
 /**
-* Updates the folder for this item.
-*
-* @param {String}		folderId		the new folder ID
-*/
+ * Updates the folder for this item.
+ *
+ * @param {String}		folderId		the new folder ID
+ */
 ZmItem.prototype.moveLocal =
 function(folderId) {
 	this.folderId = folderId;

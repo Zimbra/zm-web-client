@@ -14,27 +14,36 @@
  */
 
 /**
-* Creates a folder.
-* @constructor
-* @class
-* This class represents a folder, which may contain mail. At some point, folders may be
-* able to contain contacts and/or appointments.
-*
-* @author Conrad Damon
-*
-* @param id			[int]			numeric ID
-* @param name		[string]		name
-* @param parent		[ZmOrganizer]	parent folder
-* @param tree		[ZmTree]		tree model that contains this folder
-* @param numUnread	[int]*			number of unread items for this folder
-* @param numTotal	[int]*			number of items for this folder
-* @param sizeTotal	[int]*			total size of folder's items
-* @param url		[string]*		URL for this folder's feed
-* @param owner		[string]* 		Owner for this organizer
-* @param zid		[string]*		Zimbra ID of owner, if remote folder
-* @param rid		[string]*		Remote ID of organizer, if remote folder
-* @param restUrl	[string]*		The REST URL of this organizer.
-*/
+ * @overview
+ * 
+ * This file defines a folder.
+ *
+ */
+
+/**
+ * Creates a folder.
+ * @class
+ * This class represents a folder, which may contain mail. At some point, folders may be
+ * able to contain contacts and/or appointments.
+ *
+ * @author Conrad Damon
+ *
+ * @param	{Hash}	params		a hash of parameters
+ * @param {int}	params.id		the numeric ID
+ * @param {String}	params.name		the name
+ * @param {ZmOrganizer}	params.parent	the parent folder
+ * @param {ZmTree}	params.tree		the tree model that contains this folder
+ * @param {int}	params.numUnread	the number of unread items for this folder
+ * @param {int}	params.numTotal		the number of items for this folder
+ * @param {int}	params.sizeTotal	the total size of folder's items
+ * @param {String}	params.url		the URL for this folder's feed
+ * @param {String}	params.owner	the Owner for this organizer
+ * @param {String}	params.zid		the Zimbra ID of owner, if remote folder
+ * @param {String}	params.rid		the Remote ID of organizer, if remote folder
+ * @param {String}	params.restUrl	the REST URL of this organizer
+ * 
+ * @extends		ZmOrganizer
+ */
 ZmFolder = function(params) {
 	if (arguments.length == 0) { return; }
 	params.type = params.type || ZmOrganizer.FOLDER;
@@ -168,12 +177,13 @@ ZmFolder.QUERY_ID = {};
 })();
 
 /**
-* Comparison function for folders. Intended for use on a list of user folders
-* through a call to Array.sort().
-*
-* @param	folderA		a folder
-* @param	folderB		a folder
-*/
+ * Comparison function for folders. Intended for use on a list of user folders
+ * through a call to <code>Array.sort()</code>.
+ *
+ * @param {ZmFolder}	folderA		a folder
+ * @param {ZmFolder}	folderB		a folder
+ * @return	{int} 0 if the folders match
+ */
 ZmFolder.sortCompare =
 function(folderA, folderB) {
 	var check = ZmOrganizer.checkSortArgs(folderA, folderB);
@@ -204,6 +214,13 @@ function(folderA, folderB) {
 	return 0;
 };
 
+/**
+ * Compares the folders by path.
+ * 
+ * @param {ZmFolder}	folderA		a folder
+ * @param {ZmFolder}	folderB		a folder
+ * @return	{int} 0 if the folders match
+ */
 ZmFolder.sortComparePath =
 function(folderA, folderB) {
 
@@ -223,13 +240,12 @@ function(folderA, folderB) {
 };
 
 /**
-* Checks a folder name for validity. Returns an error message if the
-* name is invalid and null if the name is valid. Note that a name, rather than a path, is
-* checked.
-*
-* @param name		[string]		a folder name
-* @param parent		[ZmFolder]*		parent folder
-*/
+ * Checks a folder name for validity. Note: that a name, rather than a path, is checked.
+ *
+ * @param {String}	name		the folder name
+ * @param {ZmFolder}	parent		the parent folder
+ * @return	{String} an error message if the name is invalid; <code>null</code>if the name is valid. 
+ */
 ZmFolder.checkName =
 function(name, parent) {
 	var error = ZmOrganizer.checkName(name);
@@ -254,8 +270,11 @@ function(name, parent) {
 };
 
 /**
-* Helper method which returns the "well-known" ID for a given folder name
-*/
+ * Gets the "well-known" ID for a given folder name.
+ * 
+ * @param	{String}	folderName	the folder name
+ * @return	{String}	the id or <code>null</code> if not found
+ */
 ZmFolder.getIdForName =
 function(folderName) {
 	var name = folderName.toLowerCase();
@@ -267,13 +286,22 @@ function(folderName) {
 	return null;
 };
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmFolder.prototype.toString =
 function() {
 	return "ZmFolder";
 };
 
-// User can move a folder to Trash even if there's already a folder there with the
-// same name. We find a new name for this folder and rename it before the move.
+/**
+ * Moves a folder. A user can move a folder to "Trash" even if there is already a folder in "Trash" with the
+ * same name. A new name will be generated for this folder and a rename is performed before the move.
+ * 
+ * @param	{ZmFolder}	newParent		the new parent
+ */
 ZmFolder.prototype.move =
 function(newParent) {
 	var origName = this.name;
@@ -288,12 +316,12 @@ function(newParent) {
 };
 
 /**
- * Sends FolderActionRequest to turn syncing on/off for IMAP folders. Currently,
+ * Sends <code>&lt;FolderActionRequest&gt;</code> to turn sync'ing on/off for IMAP folders. Currently,
  * this is only used by Offline/ZDesktop client
  *
- * @param syncIt		[Boolean]		flag indicating whether to sync this folder
- * @param callback		[AjxCallback]*	callback to call once server request is successful
- * @param errorCallback	[AjxCallback]*	callback to call if server returns error
+ * @param {Boolean}	syncIt		the flag indicating whether to sync this folder
+ * @param {AjxCallback}	callback		the callback to call once server request is successful
+ * @param {AjxCallback}	errorCallback	the callback to call if server returns error
  */
 ZmFolder.prototype.toggleSyncOffline =
 function(callback, errorCallback) {
@@ -313,8 +341,11 @@ function(callback, errorCallback) {
 	};
 	appCtxt.getAppController().sendRequest(params);
 };
+
 /**
- * Recursivce search for folders if it has feeds in it.
+ * Checks folders recursively for feeds.
+ * 
+ * @return	{Boolean}	<code>true</code> for feeds
  */
 ZmFolder.prototype.hasFeeds =
 function() {
@@ -333,6 +364,12 @@ function() {
 	return false;
 };
 
+/**
+ * Checks if the folder has search.
+ * 
+ * @param	{String}	id	not used
+ * @return	{Boolean}	<code>true</code> if has search
+ */
 ZmFolder.prototype.hasSearch =
 function(id) {
 	if (this.type == ZmOrganizer.SEARCH) { return true; }
@@ -348,6 +385,11 @@ function(id) {
 	return false;
 };
 
+/**
+ * Checks if the folder supports public access.
+ * 
+ * @return	{Boolean}	always returns <code>false</code>
+ */
 ZmFolder.prototype.supportsPublicAccess =
 function() {
 	// mail folders cannot be accessed outside of ZCS
@@ -355,14 +397,14 @@ function() {
 };
 
 /**
-* Handles the creation of a folder or search folder. This folder is the parent
-* of the newly created folder. A folder may hold a folder or search folder,
-* and a search folder may hold another search folder.
-*
-* @param obj		[Object]	a JS folder object from the notification
-* @param isSearch	[boolean]	true if the created object is a search folder
-* @param skipNotify	[boolean]	true if notifying client should be ignored
-*/
+ * Handles the creation of a folder or search folder. This folder is the parent
+ * of the newly created folder. A folder may hold a folder or search folder,
+ * and a search folder may hold another search folder.
+ *
+ * @param {Object}	obj		a JS folder object from the notification
+ * @param {Boolean}	isSearch	<code>true</code> if the created object is a search folder
+ * @param {Boolean}	skipNotify	<code>true</code> if notifying client should be ignored
+ */
 ZmFolder.prototype.notifyCreate =
 function(obj, isSearch, skipNotify) {
 	// ignore creates of system folders
@@ -380,14 +422,14 @@ function(obj, isSearch, skipNotify) {
 	}
 };
 
-/*
-* Provide some extra info in the change event about the former state
-* of the folder. Note that we null out the field after setting up the
-* change event, so the notification isn't also sent when the parent
-* class's method is called.
-*
-* @param obj	[Object]	a "modified" notification
-*/
+/**
+ * Provide some extra info in the change event about the former state
+ * of the folder. Note that we null out the field after setting up the
+ * change event, so the notification isn't also sent when the parent
+ * class's method is called.
+ *
+ * @param {Object}	obj	a "modified" notification
+ */
 ZmFolder.prototype.notifyModify =
 function(obj) {
 	var details = {};
@@ -419,6 +461,12 @@ function(obj) {
 	ZmOrganizer.prototype.notifyModify.apply(this, [obj]);
 };
 
+/**
+ * Creates a query.
+ * 
+ * @param	{Boolean}	pathOnly	<code>true</code> if to use the path only
+ * @return	{String}	the query
+ */
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
 	if (!this.isRemote() && this.isSystem()) {
@@ -439,6 +487,16 @@ function(pathOnly) {
 	return pathOnly ? path : ("in:" + path);
 };
 
+/**
+ * Gets the name.
+ * 
+ * @param	{Boolean}	 showUnread		<code>true</code> to show unread
+ * @param	{int}		maxLength		the max length
+ * @param	{Boolean}	noMarkup		<code>true</code> to not include markup
+ * @param	{Boolean}	useSystemName	<code>true</code> to use the system name
+ * 
+ * @return	{String}	the name
+ */
 ZmFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup, useSystemName) {
 	if (this.nId == ZmFolder.ID_DRAFTS ||
@@ -458,6 +516,11 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 	}
 };
 
+/**
+ * Gets the icon.
+ * 
+ * @return	{String}	the icon
+ */
 ZmFolder.prototype.getIcon =
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)			{ return null; }
@@ -480,24 +543,28 @@ function() {
 * Returns true if the given object(s) may be placed in this folder.
 *
 * If the object is a folder, check that:
-* - We are not the immediate parent of the folder
-* - We are not a child of the folder
-* - We are not Spam or Drafts
-* - We don't already have a child with the folder's name (unless we are in Trash)
-* - We are not moving a regular folder into a search folder
-* - We are not moving a search folder into the Folders container
-* - We are not moving a folder into itself
+* <ul>
+* <li>We are not the immediate parent of the folder</li>
+* <li>We are not a child of the folder</li>
+* <li>We are not Spam or Drafts</li>
+* <li>We don't already have a child with the folder's name (unless we are in Trash)</li>
+* <li>We are not moving a regular folder into a search folder</li>
+* <li>We are not moving a search folder into the Folders container</li>
+* <li>We are not moving a folder into itself</li>
+* </ul>
 *
 * If the object is an item or a list or items, check that:
-* - We are not the Folders container
-* - We are not a search folder
-* - The items aren't already in this folder
-* - A contact can only be moved to Trash
-* - A draft can be moved to Trash or Drafts
-* - Non-drafts cannot be moved to Drafts
+* <ul>
+* <li>We are not the Folders container</li>
+* <li>We are not a search folder</li>
+* <li>The items aren't already in this folder</li>
+* <li>A contact can only be moved to Trash</li>
+* <li> A draft can be moved to Trash or Drafts</li>
+* <li>Non-drafts cannot be moved to Drafts</li>
+* </ul>
 *
-* @param what		[object]	object(s) to possibly move into this folder (item or organizer)
-* @param folderType	[constant]	contextual folder type (for tree view root items)
+* @param {Object}	what		the object(s) to possibly move into this folder (item or organizer)
+* @param {constant}	folderType	the contextual folder type (for tree view root items)
 */
 ZmFolder.prototype.mayContain =
 function(what, folderType) {
@@ -603,33 +670,44 @@ function(what, folderType) {
 };
 
 /**
-* Returns true if the folder is the one dealing with Outlook sync issues
-*
-*/
+ * Checks if this is the sync issues folder.
+ * 
+ * @return	{Boolean}	<code>true</code> if the folder is the one dealing with Outlook sync issues
+ */
 ZmFolder.prototype.isSyncIssuesFolder =
 function() {
 	return (this.name == ZmFolder.SYNC_ISSUES);
 };
 
 /**
- * Returns true if deleting items w/in this folder should be hard deleted.
+ * Checks if this folder required hard delete.
+ * 
+ * @return	{Boolean}	<code>true</code> if deleting items w/in this folder should be hard deleted.
  */
 ZmFolder.prototype.isHardDelete =
 function() {
 	return (this.isInTrash() || this.isInSpam() || (appCtxt.isOffline && this.isUnder(ZmOrganizer.ID_SYNC_FAILURES)));
 };
 
+/**
+ * Checks if this folder is in spam folder.
+ * 
+ * @return	{Boolean}	<code>true</code> if in spam
+ */
 ZmFolder.prototype.isInSpam =
 function(){
 	return this.isUnder(ZmFolder.ID_SPAM);
 };
 
 /**
- * Returns true if the given remote folder can be moved into this remote folder.
+ *
+ * @param {ZmFolder}	folder  the source folder
+ * 
+ * @return {Boolean}	<code>true/code> if the given remote folder can be moved into this remote folder.
  * The source and the target folder must belong to the same account. The source
  * must have delete permission and the target must have insert permission.
- *
- * @param folder  [ZmFolder]    source folder
+ * 
+ * @private
  */
 ZmFolder.prototype._remoteMoveOk =
 function(folder) {

@@ -14,8 +14,12 @@
  */
 
 /**
+ * @overview
+ * This file contains a setting class.
+ */
+
+/**
  * Creates a setting.
- * @constructor
  * @class
  * This class represents a single setting. A setting's default value never changes; it
  * is available in case the user wishes to restore the current value to the default.
@@ -24,14 +28,16 @@
  *
  * @author Conrad Damon
  * 
- * @param id				a unique ID
- * @param params			hash:
- *        name				the name of the pref or attr on the server
- *        type				config, pref, or COS
- *        dataType			string, int, or boolean
- *        defaultValue		default value
- *        isGlobal			true if this setting is global across accounts
- *        isImplicit		true if this setting is not represented in Preferences
+ * @param {String}	id				a unique ID
+ * @param {Hash}	params			a hash of parameters
+ * @param {String}	params.name				the name of the pref or attr on the server
+ * @param {constant}	params.type			config, pref, or COS (see <code>ZmSetting.T_</code> constants)
+ * @param {constant}	params.dataType			string, int, or boolean
+ * @param {Object}	params.defaultValue		the default value
+ * @param {Boolean}	params.isGlobal			if <code>true</code>, this setting is global across accounts
+ * @param {Boolean}	params.isImplicit		if <code>true</code>, this setting is not represented in Preferences
+ * 
+ * @extends		ZmModel
  */
 ZmSetting = function(id, params) {
 
@@ -68,10 +74,25 @@ ZmSetting.prototype = new ZmModel;
 ZmSetting.prototype.constructor = ZmSetting;
 
 // setting types
+/**
+ * Defines the "config" type.
+ */
 ZmSetting.T_CONFIG		= "config";
+/**
+ * Defines the "COS" type.
+ */
 ZmSetting.T_COS			= "cos";
+/**
+ * Defines the "meta-data" type.
+ */
 ZmSetting.T_METADATA	= "meta";
+/**
+ * Defines the "pref" type.
+ */
 ZmSetting.T_PREF		= "pref";
+/**
+ * Defines the "pseudo" type.
+ */
 ZmSetting.T_PSEUDO		= "pseudo";
 
 // metadata sections
@@ -192,16 +213,22 @@ ZmSetting.IS_IMPLICIT = {};
 // hash of implicit settings that have been changed during the current session
 ZmSetting.CHANGED_IMPLICIT = {};
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmSetting.prototype.toString =
 function() {
 	return this.name + ": " + this.value;
 };
 
 /**
- * Returns the current value of this setting.
+ * Gets the current value of this setting.
  *
- * @param key			[string]*		optional key for use by hash table data type
- * @param serialize		[boolean]*		if true, serialize non-string value into string
+ * @param {String}	key			the optional key for use by hash table data type
+ * @param {Boolean}	serialize		if <code>true</code>, serialize non-string value into string
+ * @return	{Object}	the value
  */
 ZmSetting.prototype.getValue =
 function(key, serialize) {
@@ -238,10 +265,11 @@ function(key, serialize) {
 };
 
 /**
-* Retrns the default value of this setting.
-*
-* @param key 			optional key for use by hash table data type
-*/
+ * Gets the default value of this setting.
+ *
+ * @param {String}	key 			the optional key for use by hash table data type
+ * @return	{Object}	the value
+ */
 ZmSetting.prototype.getDefaultValue =
 function(key) {
 	return key ? this.defaultValue[key] : this.defaultValue;
@@ -250,11 +278,11 @@ function(key) {
 /**
  * Sets the current value of this setting, performing any necessary data type conversion.
  *
- * @param value			the new value for the setting
- * @param key 			optional key for use by hash table data type
- * @param setDefault		if true, also set the default value
- * @param skipNotify		if true, don't notify listeners
- * @param skipImplicit		if true, don't check for change to implicit pref
+ * @param {Object}	value			the new value for the setting
+ * @param {String}	key 			optional key for use by hash table data type
+ * @param {Boolean}	setDefault		if <code>true</code>, also set the default value
+ * @param {Boolean}	skipNotify		if <code>true</code>, do not notify listeners
+ * @param {Boolean}	skipImplicit		if <code>true</code>, do not check for change to implicit pref
  */
 ZmSetting.prototype.setValue =
 function(value, key, setDefault, skipNotify, skipImplicit) {
@@ -329,6 +357,11 @@ function(value, key, setDefault, skipNotify, skipImplicit) {
 	}
 };
 
+/**
+ * Handles modify notification.
+ * 
+ * @param	{Object}	obj		the object
+ */
 ZmSetting.prototype.notifyModify = 
 function(obj) {
 	if (this.id == ZmSetting.QUOTA_USED && obj._name == "mbx" && obj.s != null) {
