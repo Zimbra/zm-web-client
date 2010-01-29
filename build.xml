@@ -42,6 +42,8 @@
     <property name='lib.dir' value='jars'/>
     <property name='img.dir' value='${web.dir}/img'/>
 
+	<property name="jsdoctoolkit.dir" location="${lib.dir}/jsdoc-toolkit-2.3.0" />
+
     <property name='webinf.dir' value='${web.dir}/WEB-INF'/>
     <property name='webinf.lib.dir' value='${webinf.dir}/lib'/>
 
@@ -57,6 +59,10 @@
     <property name='build.help.dir' value='${build.web.dir}/help'/>
     <property name='build.adminhelp.dir' value='${build.web.dir}/adminhelp'/>
     <property name='build.dist.dir' value='${build.dir}/dist'/>
+
+	<property name='build.docs.dir' value='${build.dir}/docs'/>
+	<property name='build.jsapi-docs.dir' value='${build.docs.dir}/jsapi-doc'/>
+    <property name='build.jsapi-inventory.dir' value='${build.docs.dir}/jsapi-inventory'/>
 
     <property name='build.img.dir' value='${build.web.dir}/img'/>
 	<property name="build.css.file" value="images"/>
@@ -1141,7 +1147,51 @@ if (ext == null) ext = "";
         <delete dir='${customer.build.dir}' />
     </target>
 
-
+	<!-- JavaScript API Documentation Tasks -->
+	<target name="generate-jsapi-doc" >
+	  <java jar="${jsdoctoolkit.dir}/jsrun.jar" fork="true" failonerror="true">
+	    <arg value="${jsdoctoolkit.dir}/app/run.js"/>
+	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-doc"/>
+	    <arg value="-d=${build.jsapi-docs.dir}"/>
+	    <arg value="-r=4"/>
+	    <arg value="${js.dir}/zimbraMail/core"/>
+	    <arg value="${js.dir}/zimbraMail/share/model"/>
+	    <arg value="${js.dir}/zimbraMail/share/controller"/>
+	    <arg value="${js.dir}/zimbraMail/share/view/ZmAppChooser.js"/>
+	    <arg value="${js.dir}/zimbraMail/share/view/ZmAppButton.js"/>
+	    <arg value="${js.dir}/zimbraMail/share/view/ZmOverview.js"/>
+	    <arg value="${js.dir}/zimbraMail/share/view/ZmToolBar.js"/>
+	    <arg value="${js.dir}/zimbraMail/share/view/ZmZimletApp.js"/>
+		<arg value="${js.dir}/zimbraMail/share/view/dialog/ZmDialog.js"/>
+	    <arg value="${js.dir}/zimbraMail/calendar/model/ZmCalBaseItem.js"/>
+	    <arg value="${js.dir}/zimbraMail/calendar/model/ZmCalItem.js"/>
+	    <arg value="${js.dir}/zimbraMail/portal/model/ZmPortlet.js"/>
+	    <arg value="${js.dir}/zimbraMail/tasks/model/ZmTask.js"/>
+	    <arg value="${js.dir}/zimbra/common/ZmErrorDialog.js"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtButton.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtBaseDialog.js"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtComposite.js"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtControl.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtDialog.js"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtLabel.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtMessageDialog.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtToolBar.js"/>
+	  </java>
+	</target>
+	
+	<target name="generate-jsapi-inventory" >
+	  <java jar="${jsdoctoolkit.dir}/jsrun.jar" fork="true" failonerror="true">
+	    <arg value="${jsdoctoolkit.dir}/app/run.js"/>
+	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-inventory"/>
+	    <arg value="-d=${build.jsapi-inventory.dir}"/>
+	    <arg value="-r=4"/>
+	    <arg value="-s"/>
+	    <arg value="${js.dir}/zimbraMail/core"/>
+	    <arg value="${js.dir}/zimbraMail/share/model"/>
+	    <arg value="${js.dir}/zimbraMail/share/controller"/>
+	  </java>
+	</target>
+	
     <!-- image tasks -->
 
     <target name='sorticons' depends='images-init'>
