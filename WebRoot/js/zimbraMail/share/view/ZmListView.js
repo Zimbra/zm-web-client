@@ -769,9 +769,11 @@ function(field, itemIdx, isFolder) {
     } else if (field == ZmItem.F_FROM) {
         tooltip = (this._headerList[itemIdx]._sortable)
                 ? (isFolder && (isFolder.sent || isFolder.drafts)) ? ZmMsg.sortByTo : ZmMsg.sortByFrom : (isFolder && (isFolder.sent || isFolder.drafts)) ? ZmMsg.to : ZmMsg.from ;
-    } else if ( field == ZmItem.F_SIZE){
+    } else if (field == ZmItem.F_SIZE){
         tooltip = (this._headerList[itemIdx]._sortable)
                 ? ZmMsg.sortBySize : ZmMsg.sizeToolTip;
+	} else if (field == ZmItem.F_ACCOUNT) {
+		tooltip = ZmMsg.account;
     } else if (field == ZmItem.F_FOLDER) {
         tooltip = ZmMsg.folder;
     }
