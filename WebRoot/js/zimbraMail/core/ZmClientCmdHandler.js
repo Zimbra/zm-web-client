@@ -13,11 +13,28 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the command handler class.
+ */
+
+/**
+ * Creates the client. command handler
+ * @class
+ * This class represents a client command handler.
+ */
 ZmClientCmdHandler = function() {
 	this._settings = {};
 	this._dbg = window.DBG;	// trick to fool minimizer regex
 };
 
+/**
+ * Executes the command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute =
 function(cmdStr, searchController) {
 
@@ -41,6 +58,13 @@ function(cmdStr, searchController) {
 	}
 };
 
+/**
+ * Executes the command with debug.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_debug =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	if (!cmdArg1 || !this._dbg) { return; }
@@ -55,6 +79,13 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 };
 
+/**
+ * Executes the command with debug trace.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_debugtrace =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	if (!cmdArg1) return;
@@ -72,6 +103,13 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 };
 
+/**
+ * Executes the command with debug support info.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_support =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	if (!cmdArg1) return;
@@ -89,6 +127,13 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	appCtxt.getAppController().restart(this._settings);
 };
 
+/**
+ * Executes the instant notify "ON" command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_instant_notify =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	if (typeof cmdArg1 == "undefined") {
@@ -103,6 +148,13 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 };
 
+/**
+ * Executes the poll interval command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_poll =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	if (!cmdArg1) return;
@@ -115,13 +167,35 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 };
 
+/**
+ * Executes the no op command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_noop =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	appCtxt.getAppController().sendNoOp();
 	this._alert("Sent NoOpRequest");
 };
+
+/**
+ * Executes the no op command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_nop = ZmClientCmdHandler.prototype.noop;
 
+/**
+ * Executes the assistant command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_a =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	if (!this._assistantDialog) {
@@ -132,16 +206,37 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	this._assistantDialog.popup();
 };
 
+/**
+ * Executes the reminder refresh command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_rr =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	appCtxt.getApp(ZmApp.CALENDAR).getReminderController().refresh();
 };
 
+/**
+ * Executes the reminder housekeeping command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_rh =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	appCtxt.getApp(ZmApp.CALENDAR).getReminderController()._housekeepingAction();
 };
 
+/**
+ * Executes the toast command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_toast =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	appCtxt.setStatusMsg("Your options have been saved.", ZmStatusView.LEVEL_INFO);
@@ -149,6 +244,13 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	appCtxt.setStatusMsg("Message not sent.", ZmStatusView.LEVEL_CRITICAL);
 };
 
+/**
+ * Executes the get version/release/date command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_get =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	if (cmdArg1 && cmdArg1 == "version") {
@@ -159,18 +261,41 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 };
 
+/**
+ * Executes the refresh command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_refresh = 
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	ZmCsfeCommand.setSessionId(null);
 	appCtxt.getAppController().sendNoOp();
 };
 
+/**
+ * Executes the re-login command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ * @param	{Object}	[cmdArg2]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_relogin =
 function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
 	ZmCsfeCommand.clearAuthToken();
 	appCtxt.getAppController().sendNoOp();
 };
 
+/**
+ * Executes the alert command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ * @param	{Object}	[cmdArg2]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_alert =
 function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
 	//  $set:alert [sound/browser/app] [delay in seconds]
@@ -191,6 +316,13 @@ function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */)
 	setTimeout(doIt, Number(cmdArg2) * 1000);
 };
 
+/**
+ * Executes the leak detector command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_leak =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	if (!window.AjxLeakDetector) {
@@ -201,11 +333,25 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 };
 
+/**
+ * Executes the tabs command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_tabs =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	appCtxt.getRootTabGroup().dump(AjxDebug.DBG1);
 };
 
+/**
+ * Executes the Yahoo! IM command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_ymid =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	var settings = appCtxt.getSettings(),
@@ -215,6 +361,13 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	this._alert("Done");
 };
 
+/**
+ * Executes the log command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_log =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	var text = AjxUtil.LOG[cmdArg1].join("<br/>");
@@ -224,6 +377,13 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	msgDialog.popup();
 };
 
+/**
+ * Executes the compose command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_compose =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	var mailApp = appCtxt.getApp(ZmApp.MAIL);
@@ -237,11 +397,22 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmClientCmdHandler.prototype._alert =
 function(msg, level) {
 	appCtxt.setStatusMsg(msg, level);
 };
 
+/**
+ * Executes the error command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ * @param	{Object}	[cmdArg2]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_error =
 function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
 	var errDialog = appCtxt.getErrorDialog();
@@ -250,6 +421,14 @@ function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */)
 
 };
 
+/**
+ * Executes the modify command.
+ * 
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ * @param	{Object}	[cmdArg2]		command arguments
+ */
 ZmClientCmdHandler.prototype.execute_modify =
 function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
 	var settings = appCtxt.getSettings();

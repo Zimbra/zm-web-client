@@ -14,16 +14,24 @@
  */
 
 /**
+ * @overview
+ * This file contains the operation class.
+ * 
+ */
+
+/**
+ * Creates the operation object.
  * @class
  * This class provides the idea of an "operation", which is a user-initiated action
  * exposed through a button or menu item. Many operations (such as Delete) are shared
  * across applications/controllers. An operation gets defined by specifying its name,
- * tooltip, and image. Then controllers can simply select which operations they'd like
+ * tool tip, and image. Then controllers can simply select which operations they'd like
  * to support.
- * <p>
- * The two primary clients of this class are ZmButtonToolBar and ZmActionMenu. Clients 
- * should support createOp() and getOp() methods. See the two aforementioned clients for
- * examples.</p>
+ * <br/>
+ * <br/>
+ * The two primary clients of this class are {@link ZmButtonToolBar} and {@link ZmActionMenu}. Clients 
+ * should support {@link #createOp} and {@link #getOp} methods. See the two aforementioned clients for
+ * examples.
  * 
  * @author Conrad Damon
  */
@@ -58,13 +66,13 @@ ZmOperation.CALLBACK = {};
 /**
  * Defines the aspects of an operation, and the ID that refers to it.
  * 
- * @param op		[string]		name of the operation
- * @param text		[string]*		msg key for button or menu item text
- * @param tooltip	[string]*		msg key for tooltip text
- * @param image		[string]*		icon class for the button or menu item
- * @param disImage	[string]*		disabled version of image; defaults to image + "Dis"
- * @param setting	[constant]*		setting which acts as a precondition for this operation
- * @param callback	[AjxCallback]*	additional code to run after this operation has been created
+ * @param {String}	op		the name of the operation
+ * @param {String}	text		the msg key for button or menu item text
+ * @param {String}	tooltip	the msg key for tooltip text
+ * @param {String}	image		the icon class for the button or menu item
+ * @param {String}	disImage	the disabled version of image; defaults to image + "Dis"
+ * @param {constant}	setting	the setting which acts as a precondition for this operation
+ * @param {AjxCallback}	callback	the callback to run after this operation has been created
  */
 ZmOperation.registerOp =
 function(op, params, setting, callback) {
@@ -87,7 +95,8 @@ ZmOperation.NEW_ORG_KEY		= {};
 ZmOperation._operationDesc = {};
 
 /**
- * Creates standard operations.
+ * Initializes and creates standard operations.
+ * 
  */
 ZmOperation.initialize =
 function() {
@@ -171,13 +180,14 @@ function() {
  * created.
  * <p>
  * To override or add properties to a particular operation, pass in a hash of properties and
- * values as a value in overrides, with the operation ID as the key.</p>
+ * values as a value in overrides, with the operation ID as the key.
+ * </p>
  *
- * @param parent		[DwtComposite]		the containing widget (toolbar or menu)
- * @param operations	[array]*			a list of operation IDs
- * @param overrides		[hash]*				hash of overrides by op ID
+ * @param {DwtComposite}	parent		the containing widget (toolbar or menu)
+ * @param {Array}	operations	a list of operation IDs
+ * @param {Hash}	overrides		a hash of overrides by op ID
  *
- * @returns						a hash of operations by ID
+ * @returns	{Hash}	a hash of operations by ID
  */
 ZmOperation.createOperations =
 function(parent, operations, overrides) {
@@ -185,8 +195,12 @@ function(parent, operations, overrides) {
 	return obj._createOperations(parent, operations, overrides);
 }
 
-// Done through an object so that we can have more than one invocation going without
-// sharing memory (eg, creating New submenu).
+/**
+ * Done through an object so that we can have more than one invocation going
+ * without sharing memory (eg, creating New submenu).
+ * 
+ * @private
+ */
 ZmOperation.prototype._createOperations =
 function(parent, operations, overrides) {
 	if (operations == ZmOperation.NONE) {
@@ -211,8 +225,8 @@ function(parent, operations, overrides) {
 * in to use as a base, with overridden properties passed in a hash. A new operation
 * can be defined by passing its properties in a hash.
 *
-* @param baseId		[string]*		ID of an existing operation
-* @param overrides	[hash]*			property overrides for the operation
+* @param {String}	baseId		the ID of an existing operation
+* @param {Hash}	overrides	the property overrides for the operation
 */
 ZmOperation.defineOperation =
 function(baseId, overrides) {
@@ -241,11 +255,13 @@ function(baseId, overrides) {
 };
 
 /**
-* Returns the value of a given property for a given operation.
-*
-* @param id		[string]		operation ID
-* @param prop	[string]		name of an operation property
-*/
+ * Gets the value of a given property for a given operation.
+ *
+ * @param {String}	id		the operation ID
+ * @param {String}	prop	the name of an operation property
+ * 
+ * @return	{Object}	the value
+ */
 ZmOperation.getProp =
 function(id, prop) {
 	var value = null;
@@ -260,11 +276,25 @@ function(id, prop) {
 	return value;
 };
 
+/**
+ * Checks if the operation is a separator or spacer.
+ * 
+ * @param	{String}	id		the id
+ * @return	{Boolean}	<code>true</code> if the operation is a spacer
+ */
 ZmOperation.isSep =
 function(id) {
 	return (id == ZmOperation.SEP || id == ZmOperation.SPACER || id == ZmOperation.FILLER);
 };
 
+/**
+ * Adds the operation.
+ * 
+ * @param {DwtComposite}	parent		the containing widget (toolbar or menu)
+ * @param	{String}		id		the id
+ * @param	{Hash}		opHash		a hash
+ * @param	{String}	[index]		the index
+ */
 ZmOperation.addOperation =
 function(parent, id, opHash, index) {
 
@@ -297,12 +327,25 @@ function(parent, id, opHash, index) {
 	}
 };
 
+/**
+ * Adds a deferred menu.
+ * 
+ * @param	{function}	addMenuFunc		the add menu function
+ * @param {DwtComposite}	parent		the containing widget (toolbar or menu)
+ */
 ZmOperation.addDeferredMenu =
 function(addMenuFunc, parent) {
 	var callback = new AjxCallback(null, addMenuFunc, parent);
 	parent.setMenu(callback);
 };
 
+/**
+ * Removes the operation.
+ * 
+ * @param {DwtComposite}	parent		the containing widget (toolbar or menu)
+ * @param	{String}	id		the id
+ * @param	{Hash}	opHash		a hash
+ */
 ZmOperation.removeOperation =
 function(parent, id, opHash) {
 	parent.getOp(id).dispose();
@@ -310,15 +353,15 @@ function(parent, id, opHash) {
 }
 
 /**
-* Replaces the attributes of one operation with those of another, wholly or in part.
-*
-* @param parent		parent widget
-* @param oldOp		ID of operation to replace
-* @param newOp		ID of new operation to get replacement attributes from
-* @param text		new text (overrides text of newOp)
-* @param image		new image (overrides image of newOp)
-* @param disImage	new disabled image (overrides that of newOp)
-*/
+ * Replaces the attributes of one operation with those of another, wholly or in part.
+ *
+ * @param {DwtComposite}	parent		the parent widget
+ * @param {String}	oldOp		the ID of operation to replace
+ * @param {String}	newOp		the ID of new operation to get replacement attributes from
+ * @param {String}	text		the new text (overrides text of newOp)
+ * @param {String}	image		the new image (overrides image of newOp)
+ * @param {String}	disImage	the new disabled image (overrides that of newOp)
+ */
 ZmOperation.setOperation =
 function(parent, oldOp, newOp, text, image, disImage) {
 	var op = parent.getOp(oldOp);
@@ -332,6 +375,9 @@ function(parent, oldOp, newOp, text, image, disImage) {
  * Takes a list of operations and removes any who have a corresponding setting that's
  * not set. Also deals with the fact that you don't want a separator or a spacer unless
  * there's stuff on either side of it.
+ * 
+ * @param	{Array}	list		a list of {ZmOperation} objects
+ * @return	{Array}		a list of {ZmOperation} objects
  */
 ZmOperation.filterOperations =
 function(list) {
@@ -377,11 +423,12 @@ function(list) {
 };
 
 /**
-* Adds a "New" submenu. Overrides are used because we don't want "New" at the
-* beginning of each label.
-*
-* @param parent		parent widget
-*/
+ * Adds a "New" submenu. Overrides are used because we don't want "New" at the
+ * beginning of each label.
+ *
+ * @param {DwtComposite}		parent		the parent widget
+ * @return	{ZmActionMenu}	the menu
+ */
 ZmOperation.addNewMenu =
 function(parent) {
 	var list = ZmOperation.NEW_ITEM_OPS;
@@ -404,10 +451,11 @@ function(parent) {
 };
 
 /**
-* Adds a "Tag" submenu for tagging items.
-*
-* @param parent		parent widget (a toolbar or action menu)
-*/
+ * Adds a "Tag" submenu for tagging items.
+ *
+ * @param {DwtComposite}	parent		parent widget (a toolbar or action menu)
+ * @return	{ZmTagMenu}	the menu
+ */
 ZmOperation.addTagMenu =
 function(parent) {
 	var tagMenu = new ZmTagMenu(parent);
@@ -418,7 +466,8 @@ function(parent) {
 /**
  * Adds a color submenu for choosing tag color.
  *
- * @param parent		parent widget (a toolbar or action menu)
+ * @param {DwtComposite}	parent		parent widget (a toolbar or action menu)
+ * @return	{ZmPopupMenu}	the menu
  */
 ZmOperation.addColorMenu =
 function(parent) {
@@ -434,12 +483,13 @@ function(parent) {
 };
 
 /**
- * Returns the tooltip for the operation with the given ID. If the operation has a shortcut associated
+ * Gets the tooltip for the operation with the given ID. If the operation has a shortcut associated
  * with it, a shortcut hint is appended to the end of the tooltip.
  *
- * @param id		[string]	operation ID
- * @param keyMap	[string]	key map (for resolving shortcut)
- * @param tooltip	[string]*	tooltip override
+ * @param {String}	id		the operation ID
+ * @param {String}	keyMap	the key map (for resolving shortcut)
+ * @param {String}	tooltip	the tooltip override
+ * @return	{String}	the tool tip
  */
 ZmOperation.getToolTip =
 function(id, keyMap, tooltip) {

@@ -14,16 +14,24 @@
  */
 
 /**
- * Creates a controller to run ZmNewWindow. Do not call directly, instead use
- * the run() factory method.
- * @constructor
+ * @overview
+ * This file contains the new window class.
+ */
+
+/**
+ * Creates a controller to run <code>ZmNewWindow</code>. Do not call directly, instead use
+ * the <code>run()</code> factory method.
  * @class
  * This class is the controller for a window created outside the main client
- * window. It is a very stripped down and specialized version of ZmZimbraMail.
+ * window. It is a very stripped down and specialized version of {@link ZmZimbraMail}.
  * The child window is single-use; it does not support switching among multiple
  * views.
  *
  * @author Parag Shah
+ * 
+ * @extends	ZmController
+ * 
+ * @see		#run
  */
 ZmNewWindow = function() {
 
@@ -48,15 +56,22 @@ ZmNewWindow = function() {
 ZmNewWindow.prototype = new ZmController;
 ZmNewWindow.prototype.constructor = ZmNewWindow;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmNewWindow.prototype.toString =
 function() {
 	return "ZmNewWindow";
 };
+
 // Public methods
 
 /**
- * Sets up ZmNewWindow, and then starts it by calling its constructor. It is assumed that the
+ * Sets up new window and then starts it by calling its constructor. It is assumed that the
  * CSFE is on the same host.
+ * 
  */
 ZmNewWindow.run =
 function() {
@@ -128,9 +143,12 @@ function(ev) {
 /**
  * Presents a view based on a command passed through the window object. Possible commands are:
  *
- * compose			compose window launched in child window
- * composeDetach		compose window detached from client
- * msgViewDetach		msg view detached from client
+ * <ul>
+ * <li><b>compose</b> compose window launched in child window</li>
+ * <li><b>composeDetach</b> compose window detached from client</li>
+ * <li><b>msgViewDetach</b> msg view detached from client</li>
+ * </ul>
+ * 
  */
 ZmNewWindow.prototype.startup =
 function() {
@@ -202,6 +220,9 @@ function() {
 	this._createView();
 };
 
+/**
+ * @private
+ */
 ZmNewWindow.prototype._createView =
 function() {
 
@@ -270,6 +291,8 @@ function() {
 /**
  * HACK: This should go away once we have a cleaner server solution that
  *       allows us to get just those zimlets for the specified target.
+ *       
+ * @private
  */
 ZmNewWindow.prototype._hasZimletsForTarget =
 function(zimletArray, target) {
@@ -284,6 +307,9 @@ function(zimletArray, target) {
 	return false;
 };
 
+/**
+ * @private
+ */
 ZmNewWindow.prototype._getUserProps =
 function() {
 	var userPropsArray = parentAppCtxt.get(ZmSetting.USER_PROPS);
@@ -309,14 +335,23 @@ function() {
 	return userPropsArray;
 };
 
+/**
+ * Cancels the request.
+ * 
+ * @param	{String}	reqId		the request id
+ * @param	{AjxCallback}	errorCallback		the callback
+ * @param	{Boolean}	noBusyOverlay	if <code>true</code>, do not show a busy overlay
+ */
 ZmNewWindow.prototype.cancelRequest =
 function(reqId, errorCallback, noBusyOverlay) {
 	return window.parentController ? window.parentController.cancelRequest(reqId, errorCallback, noBusyOverlay) : null;
 };
 
 /**
-* Pass server requests to the main controller.
-*/
+ * Sends the server requests to the main controller.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ */
 ZmNewWindow.prototype.sendRequest =
 function(params) {
 	// bypass error callback to get control over exceptions in the childwindow.
@@ -324,6 +359,9 @@ function(params) {
 	return window.parentController ? window.parentController.sendRequest(params) : null;
 };
 
+/**
+ * @private
+ */
 ZmNewWindow.prototype._handleException =
 function(errCallback, ex) {
 	var handled = false;
@@ -336,6 +374,14 @@ function(errCallback, ex) {
 	return true;
 };
 
+/**
+ * Popup the error dialog.
+ * 
+ * @param	{String}	msg		the message
+ * @param	{AjxException}	ex	the exception
+ * @param	{Boolean}	noExecReset
+ * @param	{Boolean}	hideReportButton
+ */
 ZmNewWindow.prototype.popupErrorDialog =
 function(msg, ex, noExecReset, hideReportButton)  {
 	// Since ex is from parent window, all the types seems like objects, so need
@@ -358,8 +404,10 @@ function(msg, ex, noExecReset, hideReportButton)  {
 };
 
 /**
-* Set status messages via the main controller, so they show up in the client's status area.
-*/
+ * Set status messages via the main controller, so they show up in the client's status area.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ */
 ZmNewWindow.prototype.setStatusMsg =
 function(params) {
 	// bug: 26478. Changed status msg to be displayed within the child window.
@@ -374,10 +422,11 @@ function(params) {
 };
 
 /**
-* Returns a handle to the given app.
-*
-* @param appName	an app name
-*/
+ * Gets a handle to the given app.
+ *
+ * @param {String}	appName		the app name
+ * @return	{ZmApp}		the application
+ */
 ZmNewWindow.prototype.getApp =
 function(appName) {
 	if (!this._apps[appName]) {
@@ -387,8 +436,10 @@ function(appName) {
 };
 
 /**
-* Returns a handle to the app view manager.
-*/
+ * Gets a handle to the app view manager.
+ * 
+ * @return	{ZmAppViewMgr}	the view manager
+ */
 ZmNewWindow.prototype.getAppViewMgr =
 function() {
 	return this._appViewMgr;
@@ -397,11 +448,21 @@ function() {
 // App view mgr calls this, we don't need it to do anything.
 ZmNewWindow.prototype.setActiveApp = function() {};
 
+/**
+ * Gets the key map manager.
+ * 
+ * @return	{DwtKeyMapMgr}	the key map manager
+ */
 ZmNewWindow.prototype.getKeyMapMgr =
 function() {
 	return this._kbMgr;
 };
 
+/**
+ * Gets the key map name.
+ * 
+ * @return	{String}	the key map name
+ */
 ZmNewWindow.prototype.getKeyMapName =
 function() {
 	var ctlr = appCtxt.getCurrentController();
@@ -411,6 +472,13 @@ function() {
 	return "Global";
 };
 
+/**
+ * Handles the key action.
+ * 
+ * @param	{Object}	actionCode		the action code
+ * @param	{Object}	ev		the event
+ * @return	{Boolean}	<code>true</code> if the action is handled
+ */
 ZmNewWindow.prototype.handleKeyAction =
 function(actionCode, ev) {
 	var ctlr = appCtxt.getCurrentController();
@@ -428,7 +496,9 @@ function(actionCode, ev) {
  * Instantiates enabled apps. An optional argument may be given limiting the set
  * of apps that may be created.
  *
- * @param apps	[hash]*		the set of apps to create
+ * @param {Hash}	apps	the set of apps to create
+ * 
+ * @private
  */
 ZmNewWindow.prototype._createEnabledApps =
 function(apps) {
@@ -453,7 +523,11 @@ function(apps) {
 	}
 };
 
-// Creates an app object, which doesn't necessarily do anything just yet.
+/**
+ * Creates an app object, which doesn't necessarily do anything just yet.
+ * 
+ * @private
+ */
 ZmNewWindow.prototype._createApp =
 function(appName) {
 	if (this._apps[appName]) return;
@@ -461,6 +535,9 @@ function(appName) {
 	this._apps[appName] = new appClass(this._shell, window.parentController);
 };
 
+/**
+ * @private
+ */
 ZmNewWindow.prototype._deepCopyMsg =
 function(msg) {
 	// initialize new ZmSearch if applicable
@@ -535,6 +612,9 @@ function(msg) {
 
 // Static Methods
 
+/**
+ * @private
+ */
 ZmNewWindow._confirmExitMethod =
 function(ev) {
 	if (window.parentController &&

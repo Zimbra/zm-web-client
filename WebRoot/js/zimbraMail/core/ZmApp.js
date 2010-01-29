@@ -16,19 +16,21 @@
 /**
  * @overview
  * 
- * This file defines a Zimbra Application.
+ * This file defines a Zimbra Application class.
  *
  */
 
 /**
+ * Creates the application.
  * @class
- * This object represents a Zimbra Application. This class is a base class for app classes.
+ * This object represents a Zimbra Application. This class is a base class for application classes.
  * "App" is a useful abstraction for a set of related functionality, such as mail,
  * address book, or calendar. Looked at another way, an app is a collection of one or more controllers.
  * 
  * @param	{String}	name		the application name
  * @param	{DwtControl}	container	the control that contains components
  * @param	{ZmController}	parentController	the parent window controller (set by the child window)
+ * 
  */
 ZmApp = function(name, container, parentController) {
 
@@ -134,31 +136,31 @@ function() {
  * Registers and stores information about an app. Note: Setting a value that evaluates to
  * false (such as 0 or an empty string) will not do anything.
  * 
- * @param app				[constant]	app ID
- * @param params			[hash]		hash of params:
- *        mainPkg			[string]	main package that contains the app
- *        nameKey			[string]	msg key for app name
- *        icon				[string]	name of app icon class
- *        textPrecedence	[int]		order for removing button text
- *        imagePrecedence	[int]		order for removing button image
- *        chooserTooltipKey	[string]	msg key for app tooltip
- *        viewTooltipKey	[string]	msg key for app view menu tooltip
- *        defaultSearch		[constant]	type of item to search for in the app
- *        organizer			[constant]	main organizer for this app
- *        overviewTrees		[array]		list of tree IDs to show in overview
- *        hideZimlets		[boolean]	if true, hide Zimlet tree in overview
- *        assistants		[hash]		hash of assistant class names and required packages
- *        searchTypes		[array]		list of types of saved searches to show in overview
- *        gotoActionCode	[constant]	key action for jumping to this app
- *        newActionCode		[constant]	default "new" action code
- *        actionCodes		[hash]		keyboard actions mapped to operations
- *        newItemOps		[hash]		IDs of operations that create a new item, and their text keys
- *        newOrgOps			[hash]		IDs of operations that create a new organizer, and their text keys
- *        qsViews			[array]		list of views to handle in query string
- *        chooserSort		[int]		controls order of apps in app chooser toolbar
- *        defaultSort		[int]		controls order in which app is chosen as default start app
- *        trashViewOp		[constant]	menu choice for "Show Only ..." in Trash view
- *        upsellUrl			[string]	URL for content of upsell
+ * @param {constant}	app				the app ID
+ * @param {Hash}	params			a hash of parameters
+ * @param params.mainPkg			[string]	main package that contains the app
+ * @param params.nameKey			[string]	msg key for app name
+ * @param params.icon				[string]	name of app icon class
+ * @param params.textPrecedence	[int]		order for removing button text
+ * @param params.imagePrecedence	[int]		order for removing button image
+ * @param params.chooserTooltipKey	[string]	msg key for app tooltip
+ * @param params.viewTooltipKey	[string]	msg key for app view menu tooltip
+ * @param params.defaultSearch		[constant]	type of item to search for in the app
+ * @param params.organizer			[constant]	main organizer for this app
+ * @param params.overviewTrees		[array]		list of tree IDs to show in overview
+ * @param params.hideZimlets		[boolean]	if true, hide Zimlet tree in overview
+ * @param params.assistants		[hash]		hash of assistant class names and required packages
+ * @param params.searchTypes		[array]		list of types of saved searches to show in overview
+ * @param params.gotoActionCode	[constant]	key action for jumping to this app
+ * @param params.newActionCode		[constant]	default "new" action code
+ * @param params.actionCodes		[hash]		keyboard actions mapped to operations
+ * @param params.newItemOps		[hash]		IDs of operations that create a new item, and their text keys
+ * @param params.newOrgOps			[hash]		IDs of operations that create a new organizer, and their text keys
+ * @param params.qsViews			[array]		list of views to handle in query string
+ * @param params.chooserSort		[int]		controls order of apps in app chooser toolbar
+ * @param params.defaultSort		[int]		controls order in which app is chosen as default start app
+ * @param params.trashViewOp		[constant]	menu choice for "Show Only ..." in Trash view
+ * @param params.upsellUrl			[string]	URL for content of upsell
  *        
  * @private
  */
@@ -316,8 +318,9 @@ function(view) {
 /**
  * Creates the application view.
  * 
- * @param		{hash}	params		a hash of parameters
+ * @param		{Hash}	params		a hash of parameters
  * @see		ZmAppViewMgr
+ * @see		ZmAppViewMgr#createView
  */
 ZmApp.prototype.createView =
 function(params) {
@@ -330,7 +333,7 @@ function(params) {
  * 
  * @param	{String}	name	the view name
  * @param	{Boolean}	force	<code>true</code> to force the view onto the stack
- * @see		ZmAppViewMgr
+ * @see		ZmAppViewMgr#pushView
  */
 ZmApp.prototype.pushView =
 function(name, force) {
@@ -341,6 +344,7 @@ function(name, force) {
  * Pops the application view.
  * 
  * @param	{Boolean}	force	<code>true</code> to force the view off the stack
+ * @see		ZmAppViewMgr#popView
  */
 ZmApp.prototype.popView =
 function(force) {
@@ -352,7 +356,7 @@ function(force) {
  * 
  * @param	{String}	name	the view name
  * @param	{Boolean}	force	<code>true</code> to force the view
- * @see		ZmAppViewMgr
+ * @see		ZmAppViewMgr#setView
  */
 ZmApp.prototype.setView =
 function(name, force) {
@@ -363,7 +367,7 @@ function(name, force) {
  * Stages the application view.
  * 
  * @param	{String}	name	the view name
- * @see		ZmAppViewMgr
+ * @see		ZmAppViewMgr#setView
  */
 ZmApp.prototype.stageView =
 function(name) {
@@ -527,7 +531,7 @@ function(overviewId) {
 /**
  * Gets the overview id of the current {@link ZmOverview}, if any.
  * 
- * @param	{Object}	account		the account
+ * @param	{ZmZimbraAccount}	account		the account
  * @return	{String}	the id
  */
 ZmApp.prototype.getOverviewId =

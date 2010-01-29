@@ -14,15 +14,19 @@
  */
 
 /**
+ * @overview
+ * This file contains the request manager class.
+ */
+
+/**
  * Creates a request manager.
- * @constructor
  * @class
  * This class manages the sending of requests to the server, and handles the
  * responses, including refresh blocks and notifications.
  *
  * @author Conrad Damon
  * 
- * @param controller	[ZmController]	main controller
+ * @param {ZmController}	controller	the main controller
  */
 ZmRequestMgr = function(controller) {
 
@@ -61,6 +65,11 @@ ZmRequestMgr.RETRY_ON_EXCEPTION[ZmCsfeException.EMPTY_RESPONSE] = true;
 
 ZmRequestMgr._nextReqId = 1;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmRequestMgr.prototype.toString =
 function() {
 	return "ZmRequestMgr";
@@ -74,22 +83,22 @@ function() {
  * handled the exception, and false if standard exception handling should still
  * be performed.
  *
- * @param params				[hash]			hash of params:
- *        soapDoc				[AjxSoapDoc]	SOAP document that represents the request
- *        jsonObj				[object]		JSON object that represents the request (alternative to soapDoc)
- *        asyncMode				[boolean]*		if true, request will be made asynchronously
- *        callback				[AjxCallback]*	next callback in chain for async request
- *        errorCallback			[AjxCallback]*	callback to run if there is an exception
- *        continueCallback		[AjxCallback]*	callback to run after user re-auths
- *        timeout				[int]*			timeout value (in seconds)
- *        noBusyOverlay			[boolean]*		if true, don't use the busy overlay
- *        accountName			[string]*		name of account to execute on behalf of
- *        response				[object]*		pre-determined response (no request will be made)
- *        skipAuthCheck			[boolean]*		don't check if auth token has changed
- *        resend				[constant]*		reason for resending request
- *        sensitive				[boolean]*		attempt to use secure conn to protect data
- *        noSession				[boolean]*		if true, no session info is included
- *        restUri				[string]*		REST URI to send the request to
+ * @param {Hash}	params				a hash of parameters
+ * @param {AjxSoapDoc}	params.soapDoc				the SOAP document that represents the request
+ * @param {Object}	params.jsonObj				the JSON object that represents the request (alternative to soapDoc)
+ * @param {Boolean}	params.asyncMode				if <code>true</code>, request will be made asynchronously
+ * @param {AjxCallback}	params.callback				the next callback in chain for async request
+ * @param {AjxCallback}	params.errorCallback			the callback to run if there is an exception
+ * @param {AjxCallback}	params.continueCallback		the callback to run after user re-auths
+ * @param {int}	params.timeout				the timeout value (in seconds)
+ * @param {Boolean}	params.noBusyOverlay			if <code>true</code>, don't use the busy overlay
+ * @param {String}	params.accountName			the name of account to execute on behalf of
+ * @param {Object}	params.response				the pre-determined response (no request will be made)
+ * @param {Boolean}	params.skipAuthCheck			if <code>true</code>, do not check if auth token has changed
+ * @param {constant}	params.resend				the reason for resending request
+ * @param {Boolean}	params.sensitive				if <code>true</code>, attempt to use secure conn to protect data
+ * @param {Boolean}	params.noSession				if <code>true</code>, no session info is included
+ * @param {String}	params.restUri				the REST URI to send the request to
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
@@ -235,6 +244,9 @@ function(params) {
 	return (params.asyncMode) ? reqId : (this._handleResponseSendRequest(params, response));
 };
 
+/**
+ * @private
+ */
 ZmRequestMgr.prototype._handleResponseSendRequest =
 function(params, result) {
 	var isCannedResponse = (params.response != null);
@@ -317,6 +329,13 @@ function(params, result) {
 	}
 };
 
+/**
+ * Cancels the request.
+ * 
+ * @param	{String}	reqId		the request id
+ * @param	{AjxCallback}	errorCallback		the callback
+ * @param	{Boolean}	noBusyOverlay	if <code>true</code>, do not show busy overlay
+ */
 ZmRequestMgr.prototype.cancelRequest =
 function(reqId, errorCallback, noBusyOverlay) {
 	if (!this._pendingRequests[reqId]) { return; }
@@ -335,6 +354,9 @@ function(reqId, errorCallback, noBusyOverlay) {
 	this._clearPendingRequest(reqId);
 };
 
+/**
+ * @private
+ */
 ZmRequestMgr.prototype._clearPendingRequest =
 function(reqId) {
 	var request = this._pendingRequests[reqId];
@@ -351,10 +373,12 @@ function(reqId) {
 
 /**
  * Handles a response's SOAP header, except for notifications. Updates our
- * change token, and processes a <refresh> block if there is one (happens
+ * change token, and processes a <code>&lt;refresh&gt;</code> block if there is one (happens
  * when a new session is created on the server).
  *
- * @param hdr	[object]	a SOAP header
+ * @param {Object}	hdr	a SOAP header
+ * 
+ * @private
  */
 ZmRequestMgr.prototype._handleHeader =
 function(hdr) {
@@ -390,8 +414,8 @@ function(hdr) {
  * For transient network exceptions, retry the request after a small delay.
  * We will only retry a limited number of times.
  * 
- * @param ex			[AjxException]		the exception
- * @param params		[object]*			original request params
+ * @param {AjxException}	ex			the exception
+ * @param {Hash}	params		a hash of the original request params
  */
 ZmRequestMgr.prototype._handleException =
 function(ex, params) {
@@ -416,9 +440,11 @@ function(ex, params) {
 };
 
 /**
- * Handles the <notify> block of a response's SOAP header.
+ * Handles the <code>&lt;notify&gt;</code> block of a response's SOAP header.
  *
- * @param hdr	[object]	a SOAP header
+ * @param {Object}	hdr	a SOAP header
+ * 
+ * @private
  */
 ZmRequestMgr.prototype._handleNotifications =
 function(hdr) {
@@ -439,11 +465,12 @@ function(hdr) {
 };
 
 /**
- * A <refresh> block is returned in a SOAP response any time the session ID has 
+ * A <code>&lt;refresh&gt;</code> block is returned in a SOAP response any time the session ID has 
  * changed. It always happens on the first SOAP command (GetInfoRequest).
  * After that, it happens after a session timeout. 
  * 
- * @param refresh	[object]	refresh block (JSON)
+ * @param {Object}	refresh	the refresh block (JSON)
+ * @private
  */
 ZmRequestMgr.prototype._refreshHandler =
 function(refresh) {
@@ -480,6 +507,8 @@ function(refresh) {
 
 /**
  * User has accepted reload due to change in server version.
+ * 
+ * @private
  */
 ZmRequestMgr.prototype._reloadYesCallback =
 function(dialog) {
@@ -492,6 +521,8 @@ function(dialog) {
 
 /**
  * User has canceled reload due to change in server version.
+ * 
+ * @private
  */
 ZmRequestMgr.prototype._reloadNoCallback =
 function(dialog, refresh) {
@@ -500,6 +531,9 @@ function(dialog, refresh) {
 	this._refreshHandler(refresh);
 };
 
+/**
+ * @private
+ */
 ZmRequestMgr.prototype._loadTree =
 function(type, unread, obj, objType, account) {
 	var isTag = (type == ZmOrganizer.TAG);
@@ -515,9 +549,13 @@ function(type, unread, obj, objType, account) {
 	tree.loadFromJs(obj, objType, account);
 };
 
-// To handle notifications, we keep track of all the models in use. A model could
-// be an item, a list of items, or an organizer tree. Currently we never get an
-// organizer by itself.
+/**
+ * To handle notifications, we keep track of all the models in use. A model could
+ * be an item, a list of items, or an organizer tree. Currently we never get an
+ * organizer by itself.
+ * 
+ * @private
+ */
 ZmRequestMgr.prototype._notifyHandler =
 function(notify) {
 	DBG.println(AjxDebug.DBG2, "Handling NOTIFY");
@@ -540,7 +578,9 @@ function(notify) {
  * be nulled out. The generic handling here will be applied to the rest - the item is
  * retrieved from the item cache and told it has been deleted.
  *
- * @param deletes	[object]	node containing all 'deleted' notifications
+ * @param {Object}	deletes	the node containing all 'deleted' notifications
+ * 
+ * @private
  */
 ZmRequestMgr.prototype._handleDeletes =
 function(deletes) {
@@ -565,7 +605,9 @@ function(deletes) {
  * create handlers, which will mark any create nodes that they handle. Remaining
  * creates are handled here.
  * 
- * @param creates	[object]	node containing all 'created' notifications
+ * @param {Object}	creates	the node containing all 'created' notifications
+ * 
+ * @private
  */
 ZmRequestMgr.prototype._handleCreates =
 function(creates) {
@@ -601,7 +643,9 @@ function(creates) {
  * First, we run any app modify handlers, which will mark any nodes that
  * they handle. Remaining modify notifications are handled here.
  * 
- * @param modifies	[object]	node containing all 'modified' notifications
+ * @param {Object}	modifies	the node containing all 'modified' notifications
+ * 
+ * @private
  */
 ZmRequestMgr.prototype._handleModifies =
 function(modifies) {
@@ -649,9 +693,11 @@ function(modifies) {
  * Returns a list of objects that have the given parent, flattening child
  * arrays in the process. It also saves each child's name into it.
  *
- * @param parent	[object]	notification subnode
+ * @param {Object}	parent	the notification subnode
  *
  * TODO: remove this func (still used by ZmMailApp::_adjustNotifies)
+ * 
+ * @private
  */
 ZmRequestMgr._getObjList =
 function(parent) {
@@ -674,7 +720,9 @@ function(parent) {
 /**
  * Changes browser title if it's a folder or tag whose unread count has changed.
  *
- * @param ev
+ * @param ev	the event
+ * 
+ * @private
  */
 ZmRequestMgr.prototype._unreadChangeListener =
 function(ev) {

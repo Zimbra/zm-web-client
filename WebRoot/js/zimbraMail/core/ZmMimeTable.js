@@ -13,6 +13,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the mime table information utility class.
+ * 
+ */
+
+/**
+ * Creates the mime table class
+ * @class
+ * This class represents a mime table that contains utility methods for managing mime types.
+ * 
+ */
 ZmMimeTable = function() {
 };
 
@@ -125,6 +137,12 @@ function(type, createIfUndefined) {
 	return entry;
 };
 
+/**
+ * Checks if the type is ignored.
+ * 
+ * @param	{constant}	type		the type
+ * @return	{Boolean}	<code>true</code> if the type is ignored
+ */
 ZmMimeTable.isIgnored = 
 function(type) {
 	return (type == ZmMimeTable.MULTI_ALT ||
@@ -135,6 +153,12 @@ function(type) {
 			type == ZmMimeTable.APP_MS_TNEF2);
 };
 
+/**
+ * Checks if the type is renderable.
+ * 
+ * @param	{constant}	type		the type
+ * @return	{Boolean}	<code>true</code> if the type is renderable
+ */
 ZmMimeTable.isRenderable =
 function(type) {
 	return (type == ZmMimeTable.TEXT_HTML ||
@@ -144,6 +168,12 @@ function(type) {
 			type == ZmMimeTable.IMG_PNG);
 };
 
+/**
+ * Checks if the type is a renderable image.
+ * 
+ * @param	{constant}	type		the type
+ * @return	{Boolean}	<code>true</code> if the type is a renderable image
+ */
 ZmMimeTable.isRenderableImage =
 function(type) {
 	return (type == ZmMimeTable.IMG_JPEG ||
@@ -151,6 +181,12 @@ function(type) {
 			type == ZmMimeTable.IMG_PNG);
 };
 
+/**
+ * Checks if the type has an HTML version.
+ * 
+ * @param	{constant}	type		the type
+ * @return	{Boolean}	<code>true</code> if the type has an HTML version
+ */
 ZmMimeTable.hasHtmlVersion =
 function(type) {
 	return (!(ZmMimeTable.isIgnored(type) ||

@@ -21,8 +21,8 @@
  */
 
 /**
+ * Creates an application context.
  * @class
- * 
  * This class is a container for application context information.
  * 
  */
@@ -115,12 +115,11 @@ function() {
  * 
  * 
  * @param {Hash}	params	a hash of parameters
- * <ul>
- * <li>msg {String}	the status message</li>
- * <li>level {constant}		the status level {@see ZmStatusView}  (may be <code>null</code>)</li>
- * <li>detail {String}	the details (may be <code>null</code>)</li>
- * <li>transitions {Object}	the transitions (may be <code>null</code>)</li>
- * <li>toast {Object}		the toast control (may be <code>null</code>)</li>
+ * @param	{String}	params.msg 		the status message
+ * @param	{constant}	params.level	the status level {@link ZmStatusView}  (may be <code>null</code>)
+ * @param	{String}	params.detail 	the details (may be <code>null</code>)
+ * @param	{Object}	params.transitions 	the transitions (may be <code>null</code>)
+ * @param	{Object}	params.toast	the toast control (may be <code>null</code>)
  * </ul>
  * 
  */
@@ -1080,7 +1079,7 @@ function() {
 /**
  * Gets the current view id.
  * 
- * @return	{Object}		the current view id
+ * @return	{String}		the current view id
  */
 ZmAppCtxt.prototype.getCurrentViewId =
 function() {
@@ -1132,7 +1131,9 @@ function() {
 /**
  * Gets a new window.
  * 
- * @private
+ * @param	{Boolean}	fullView		<code>true</code> to include the full version
+ * @param	{int}		width			the width
+ * @param	{int}		height			the height
  */
 ZmAppCtxt.prototype.getNewWindow = 
 function(fullVersion, width, height) {
@@ -1227,7 +1228,7 @@ function(key) {
 /**
  * Gets the key from cache by id.
  * 
- * @param	{Object}	id		the id
+ * @param	{String}	id		the id
  * @return	{Object}	the value
  * @private
  */
@@ -1249,7 +1250,7 @@ function() {
 /**
  * Gets the history manager.
  * 
- * @return	{Object}		the history manager
+ * @return	{AjxHistoryMgr}		the history manager
  */
 ZmAppCtxt.prototype.getHistoryMgr =
 function() {
@@ -1345,11 +1346,8 @@ function() {
  * @param {String}		event		the zimlet event (called as a zimlet function)
  * @param {Array}		args		a list of args to the function
  * @param {Hash}	options			a hash of options
- * 
- * <ul>
- * <li>noChildWindow		{Boolean}	if <code>true</code>, skip notify if we are in a child window</li>
- * <li>waitUntilLoaded	{Boolean}	if <code>true</code> and zimlets are not yet loaded, add a listener so that notify happens on load</li>
- * </ul>
+ * @param {Boolean}	options.noChildWindow		if <code>true</code>, skip notify if we are in a child window
+ * @param	{Boolean}	options.waitUntilLoaded	if <code>true</code> and zimlets are not yet loaded, add a listener so that notify happens on load
  * 
  */
 ZmAppCtxt.prototype.notifyZimlets =
@@ -1451,6 +1449,7 @@ function() {
  * 
  * <p>
  * For example, <code>getSkinHint("a", "b")</code> will return the value of <code>skin.hints.a.b</code>.
+ * </p>
  * 
  * @return	{String}	the skin hint
  */
@@ -1513,7 +1512,7 @@ function(addr, allowLocal) {
 /**
  * Gets the overview ID, prepending account name if multi-account.
  *
- * @param {Array}		parts		an array of id components
+ * @param {Array}		parts		an array of {String} id components
  * @param {ZmAccount}	account		the account
  * @return	{String}	the id
  */

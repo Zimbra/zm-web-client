@@ -14,32 +14,45 @@
  */
 
 /**
+ * @overview
+ * This file contains ids.
+ * 
+ */
+
+/**
+ * Constructor
+ * @class
  * This class is responsible for providing unique, predictable IDs for HTML elements.
  * That way, code outside the client can easily locate particular elements.
- * 
+ * <br/>
+ * <br/>
  * Not every element that has an associated JS object will have a known ID. Those are
  * allocated only for elements it would be useful to locate: major components of the UI,
  * toolbars, buttons, views, menus, some menu items, some selects, and miscellaneous other
  * components.
- * 
+ * <br/>
+ * <br/>
  * Unless noted otherwise, a getElementById() on any of the non-skin IDs will return a DIV. One exception
  * is input fields. The ID is given to the DwtInputField's actual INPUT, rather than to the
  * DIV that contains it. Most other exceptions are table-related: TABLE, TR, and TD.
- * 
+ * <br/>
+ * <br/>
  * There is a simple naming scheme for the IDs themselves. Each ID starts with a "z" followed
  * by one to a few letters that indicate the type of object (widget) represented by the element:
  * 
- * 		z		a component that is not a special-purpose widget listed below
- * 		ztb		a toolbar
- * 		zb		a button
- * 		zi		an input field
- * 		zm		a menu
- * 		zmi		a menu item
- * 		zs		a select
- * 		zov		an overview
- * 		zt		a tree
- * 		zti		a tree item
- * 		ztih	a tree item header
+ * <ul>
+ * <li><b>z</b> a component that is not a special-purpose widget listed below</li>
+ * <li><b>ztb</b> 		a toolbar (see {@link ZmId.WIDGET})</li>
+ * <li><b>zb</b> 		a button (see {@link ZmId.WIDGET_TOOLBAR})</li>
+ * <li><b>zi</b> 		an input field (see {@link ZmId.WIDGET_INPUT})</li>
+ * <li><b>zm</b> 		a menu (see {@link ZmId.WIDGET_MENU})</li>
+ * <li><b>zmi</b> 		a menu item (see {@link ZmId.WIDGET_MENU_ITEM})</li>
+ * <li><b>zs</b> 		a select (see {@link ZmId.WIDGET_SELECT})</li>
+ * <li><b>zov</b> 		an overview (see {@link ZmId.WIDGET_OVERVIEW})</li>
+ * <li><b>zt</b> 		a tree (see {@link ZmId.WIDGET_TREE})</li>
+ * <li><b>zti</b> 		a tree item (see {@link ZmId.WIDGET_TREE_ITEM})</li>
+ * <li><b>ztih</b> 	a tree item header (see {@link ZmId.WIDGET_TREE_ITEM_HDR})</li>
+ *</ul>
  *
  * The skin defines its own container IDs starting with "skin_", which we provide constants for here.
  * 
@@ -52,19 +65,61 @@ ZmId = function() {};
 //
 
 // widget types (used to prefix IDs)
+/**
+ * Defines the "generic element" widget type prefix.
+ */
 ZmId.WIDGET					= "z";			// generic element
+/**
+ * Defines the "view within content area" widget type prefix.
+ */
 ZmId.WIDGET_VIEW			= "zv";			// view within content area
+/**
+ * Defines the "toolbar" widget type prefix.
+ */
 ZmId.WIDGET_TOOLBAR			= "ztb";		// toolbar
+/**
+ * Defines the "button" widget type prefix.
+ */
 ZmId.WIDGET_BUTTON			= "zb";			// button
+/**
+ * Defines the "text input or textarea" widget type prefix.
+ */
 ZmId.WIDGET_INPUT			= "zi";			// text input or textarea
+/**
+ * Defines the "menu" widget type prefix.
+ */
 ZmId.WIDGET_MENU			= "zm";			// menu
+/**
+ * Defines the "menu item" widget type prefix.
+ */
 ZmId.WIDGET_MENU_ITEM		= "zmi";		// menu item
+/**
+ * Defines the "dropdown select" widget type prefix.
+ */
 ZmId.WIDGET_SELECT			= "zs";			// dropdown select
+/**
+ * Defines the "collection of overview" widget type prefix.
+ */
 ZmId.WIDGET_OVERVIEW_CNTR	= "zovc";		// collection of overviews
+/**
+ * Defines the "collection of tree views" widget type prefix.
+ */
 ZmId.WIDGET_OVERVIEW		= "zov";		// collection of tree views
+/**
+ * Defines the "tree view" widget type prefix.
+ */
 ZmId.WIDGET_TREE			= "zt";			// tree view
+/**
+ * Defines the "root tree item" widget type prefix.
+ */
 ZmId.WIDGET_TREE_ITEM_HDR	= "ztih";		// root tree item
+/**
+ * Defines the "tree item (node)" widget type prefix.
+ */
 ZmId.WIDGET_TREE_ITEM		= "zti";		// tree item (node)
+/**
+ * Defines the "tab button" widget type prefix.
+ */
 ZmId.WIDGET_TAB				= "ztab";		// tab button
 
 //
@@ -136,10 +191,13 @@ ZmId.APP_CHOOSER			= "ztb_appChooser";		// app chooser toolbar
 /**
  * Generates the ID for a toolbar.
  * 
- * Examples: ztb|CLV ztb|TV|Nav ztb|CV|Inv
+ * <p>
+ * Examples: <code>ztb|CLV ztb|TV|Nav ztb|CV|Inv</code>
+ * </p>
  * 
- * @param context	[string]	toolbar context (ID of owning view)
- * @param tbType	[const]*	type of toolbar (eg invite or nav)
+ * @param {String}	context		the toolbar context (ID of owning view)
+ * @param {constant}	tbType	the type of toolbar (for example, invite or nav)
+ * @return	{String}	the id
  */
 ZmId.getToolbarId =
 function(context, tbType) {
@@ -155,11 +213,14 @@ ZmId.TB_SHARE	= "Shr";
  * Generates the ID for a button. Intended for use with the top toolbar, nav toolbar,
  * and invite toolbar.
  * 
- * Examples: zb|CLV|CHECK_MAIL zb|TV|REPLY zb|COMPOSE|SEND zb|CLV|Nav|PAGE_FORWARD
+ * <p>
+ * Examples: <code>zb|CLV|CHECK_MAIL zb|TV|REPLY zb|COMPOSE|SEND zb|CLV|Nav|PAGE_FORWARD</code>
+ * </p>
  * 
- * @param context	[string]	toolbar context (ID of owning view)
- * @param op		[const]		the button operation
- * @param tbType	[const]*	type of toolbar (eg invite or nav)
+ * @param {String}	context	the toolbar context (ID of owning view)
+ * @param {constant}	op	the button operation
+ * @param {constant}	tbType	the type of toolbar (eg invite or nav)
+ * @return	{String}	the id
  */
 ZmId.getButtonId =
 function(context, op, tbType) {
@@ -169,10 +230,13 @@ function(context, op, tbType) {
 /**
  * Generates the ID for an action menu.
  * 
- * Examples: zm|CLV zm|Contacts zm|TV|Par
+ * <p>
+ * Examples: <code>zm|CLV zm|Contacts zm|TV|Par</code>
+ * </p>
  * 
- * @param context		[string]	menu context (eg ID of owning view, or app)
- * @param menuType		[const]*	type of menu (eg participant)
+ * @param {String}	context		the menu context (eg ID of owning view, or app)
+ * @param {constant}	menuType		the type of menu (eg participant)
+ * @return	{String}	the id
  */
 ZmId.getMenuId =
 function(context, menuType) {
@@ -186,11 +250,14 @@ ZmId.MENU_DRAFTS		= "Dra";
 /**
  * Generates the ID for a menu item in an action menu.
  * 
- * Examples: zmi|CLV|REPLY_ALL zmi|TV|Par|SEARCH
+ * <p>
+ * Examples: <code>zmi|CLV|REPLY_ALL zmi|TV|Par|SEARCH</code>
+ * </p>
  * 
- * @param context		[string]	menu context
- * @param op			[const]		the menu operation
- * @param menuType		[const]*	type of menu (eg participant)
+ * @param {String}	context		the menu context
+ * @param {constant}	op			the menu operation
+ * @param {constant}	menuType		the type of menu (eg participant)
+ * @return	{String}	the id
  */
 ZmId.getMenuItemId =
 function(context, op, menuType) {
@@ -200,7 +267,8 @@ function(context, op, menuType) {
 /**
  * Generates the ID for an overview container.
  *
- * @param overviewContainerId	[string]	overview container ID
+ * @param {String}	overviewContainerId		the overview container ID
+ * @return	{String}	the id
  */
 ZmId.getOverviewContainerId =
 function(overviewContainerId) {
@@ -210,9 +278,12 @@ function(overviewContainerId) {
 /**
  * Generates the ID for an overview.
  * 
- * Examples: zov|Mail zov|ZmChooseFolderDialog-ZmListController zov|ZmPickTagDialog
+ * <p>
+ * Examples: <code>zov|Mail zov|ZmChooseFolderDialog-ZmListController zov|ZmPickTagDialog</code>
+ * </p>
  * 
- * @param overviewId	[string]	overview ID
+ * @param {String}	overviewId	the overview ID
+ * @return	{String}	the id
  */
 ZmId.getOverviewId =
 function(overviewId) {
@@ -222,10 +293,13 @@ function(overviewId) {
 /**
  * Generates the ID for a tree within an overview.
  * 
- * Examples: zt|Mail|FOLDER zt|ZmPickTagDialog|TAG
+ * <p>
+ * Examples: <code>zt|Mail|FOLDER zt|ZmPickTagDialog|TAG</code>
+ * </p>
  * 
- * @param overviewId	[string]	overview ID
- * @param orgType 		[string]	organizer type (ZmId.ORG_*)
+ * @param {String}	overviewId	the overview ID
+ * @param {String}	orgType 		the organizer type (see <code>ZmId.ORG_</code> constants)
+ * @return	{String}	the id
  */
 ZmId.getTreeId =
 function(overviewId, orgType) {
@@ -233,20 +307,23 @@ function(overviewId, orgType) {
 };
 
 /**
- * Returns a tree item ID based on the underlying organizer and the overview ID (since the same
+ * Generates a tree item ID based on the underlying organizer and the overview ID (since the same
  * organizer may be represented as tree items in more than one overview). Some sample IDs:
  * 
- * 		zti|Mail|2				Inbox
- * 		zti|Mail|172			user-created item in mail overview
- * 		zti|Contacts|7			system Contacts folder
- * 		zti|Calendar|304		user-created item in calendar overview
- * 		ztih|Mail|FOLDER		Folders header in mail overview
+ * <ul>
+ * <li><b>zti|Mail|2</b> Inbox</li>
+ * <li><b>zti|Mail|172</b>			user-created item in mail overview</li>
+ * <li><b>zti|Contacts|7</b>			system Contacts folder</li>
+ * <li><b>zti|Calendar|304</b>		user-created item in calendar overview</li>
+ * <li><b>ztih|Mail|FOLDER</b>		Folders header in mail overview</li>
+ * </ul>
  * 
  * Constants for some system folder tree items have been provided as a convenience.
  * 
- * @param overviewId	[string]		unique ID for overview
- * @param organizerId	[ZmOrganizer]	ID of the data object backing tree item
- * @param type			[const]*		organizer type (for headers only)
+ * @param {String}	overviewId	the unique ID for overview
+ * @param {ZmOrganizer}	organizerId	the ID of the data object backing tree item
+ * @param {constant}	type			the organizer type (for headers only)
+ * @return	{String}	the id
  */
 ZmId.getTreeItemId =
 function(overviewId, organizerId, type) {
@@ -259,16 +336,19 @@ function(overviewId, organizerId, type) {
 };
 
 /**
- * Returns an ID for a view that fills the content area, or for a component of that
+ * Generates an ID for a view that fills the content area, or for a component of that
  * view. A context should be provided if the view is not a singleton (for example,
  * message view may appear within several double-pane views). The component name
  * is not joined with the "|" character in order to preserve backward compatibility.
  * 
- * Examples: zv|COMPOSE zv|TV zv|TV|MSG zv|TV|MSG_hdrTable
+ * <p>
+ * Examples: <code>zv|COMPOSE zv|TV zv|TV|MSG zv|TV|MSG_hdrTable</code>
+ * </p>
  * 
- * @param viewId		[constant]		view identifier (ZmId.VIEW_*)
- * @param component		[constant]*		component identifier (ZmId.MV_*)
- * @param context		[constant]*		ID of owning view
+ * @param {constant}	viewId		the view identifier (see <code>ZmId.VIEW_</code> constants)
+ * @param {constant}	component		the component identifier (see <code>ZmId.MV_</code> constants)
+ * @param {constant}	context		the ID of owning view
+ * @return	{String}	the id
  */
 ZmId.getViewId =
 function(viewId, component, context) {
@@ -277,13 +357,16 @@ function(viewId, component, context) {
 };
 
 /**
- * Returns an ID for the compose view, or for a component within the compose view. Since
+ * Generates an ID for the compose view, or for a component within the compose view. Since
  * only one compose view is created, there is no need for a context to make the ID unique.
  * The component name is not joined with the "|" character for backward compatibility.
  * 
- * Examples: z|ComposeView z|ComposeView_header z|ComposeView_to_row
+ * <p>
+ * Examples: <code>z|ComposeView z|ComposeView_header z|ComposeView_to_row</code>
+ * </p>
  * 
- * @param component		[constant]*		component identifier (ZmId.CMP_*)
+ * @param {constant}	component		component identifier (see <code>ZmId.CMP_</code> constants)
+ * @return	{String}	the id
  */
 ZmId.getComposeViewId =
 function(component) {
@@ -292,34 +375,44 @@ function(component) {
 };
 
 /**
- * Returns an ID for a tab (actually the tab button in the tab bar).
+ * Generates an ID for a tab (actually the tab button in the tab bar).
  * 
+ * <p>
  * Tab contexts and names:
  * 
- * 		VIEW_PREF			General, Mail, Composing, Signatures, Address Book,
- * 							Accounts, Mail Filters, Calendar, Shortcuts
- * 		VIEW_CONTACT		personal, work, home, other, notes
- * 		VIEW_APPOINTMENT	details, schedule, attendees, locations, equipment
- * 		VIEW_SHORTCUTS		list, ZmId.ORG_FOLDER, ZmId.ORG_SEARCH, ZmId.ORG_TAG
+ * <ul>
+ * <li><b>VIEW_PREF</b>			General, Mail, Composing, Signatures, Address Book,
+ * 							Accounts, Mail Filters, Calendar, Shortcuts</li>
+ * <li><b>VIEW_CONTACT</b>		personal, work, home, other, notes</li>
+ * <li><b>VIEW_APPOINTMENT</b>	details, schedule, attendees, locations, equipment</li>
+ * <li><b>VIEW_SHORTCUTS</b>		list, {@link ZmId.ORG_FOLDER}, {@link ZmId.ORG_SEARCH}, {@link ZmId.ORG_TAG}</li>
+ * </ul>
+ * </p>
  * 
- * @param context		[constant]		owning view identifier (ZmId.VIEW_*)
- * @param tabName		[string]		name of tab
+ * @param {constant}	context		the owning view identifier (see <code>ZmId.VIEW_</code> constants)
+ * @param {String}	tabName		[string]		name of tab
+ * @return	{String}	the id
  */
 ZmId.getTabId =
 function(context, tabName) {
 	return DwtId._makeId(ZmId.WIDGET_TAB, context, tabName);
 };
 
-/** Returns an ID for a pref page tab. */
+/**
+ * Generates an ID for a pref page tab.
+ *
+ * @param	{String}	tabKey		the tab key
+ * @return	{String}	the id
+ */
 ZmId.getPrefPageId = function(tabKey) {
 	return "PREF_PAGE_"+tabKey;
 };
 
-/**************************************************************************
+/*
  * 
  * Gettings IDs for different areas of ZCS
  * 
- **************************************************************************/
+ */
 
 /*
  * ------------
@@ -439,7 +532,7 @@ ZmId.TREEITEM_NOTEBOOK				= "zti|Notebook|12";
 ZmId.TREEITEM_TASKS					= "zti|Tasks|15";
 ZmId.TREEITEM_BRIEFCASE				= "zti|Briefcase|16";
 
-/**
+/*
  * -----------
  * Top toolbar
  * -----------
@@ -458,7 +551,7 @@ ZmId.TREEITEM_BRIEFCASE				= "zti|Briefcase|16";
  * 		ZmId.getButtonId(ZmId.VIEW_TRAD, ZmId.OP_PAGE_FORWARD, ZmId.TB_NAV)
  */
 
-/**
+/*
  * -----
  * Views
  * -----
@@ -471,7 +564,7 @@ ZmId.TREEITEM_BRIEFCASE				= "zti|Briefcase|16";
  * 		ZmId.getViewId(ZmId.VIEW_CONVLIST)
  */
 
-/**
+/*
  * ------------
  * Message view
  * ------------
@@ -530,7 +623,7 @@ ZmId.MV_TAG_ROW				= "_tagRow";			// TR for tags
 ZmId.MV_TAG_CELL			= "_tagCell";			// TD for tags
 ZmId.MV_MSG_BODY			= "_body";				// DIV that contains content iframe
 
-/**
+/*
  * ------------
  * Compose view
  * ------------
@@ -590,23 +683,56 @@ ZmId.CMP_TO					= "TO";
 ZmId.CMP_CC					= "CC";
 ZmId.CMP_BCC				= "BCC";
 
-/**************************************************************************
+/*
  * 
  * Constants used to generate IDs
  * 
- **************************************************************************/
+ */
 
 // apps
+/**
+ * Defines the "briefcase" application.
+ */
 ZmId.APP_BRIEFCASE		= "Briefcase";
+/**
+ * Defines the "calendar" application.
+ */
 ZmId.APP_CALENDAR		= "Calendar";
+/**
+ * Defines the "contacts" application.
+ */
 ZmId.APP_CONTACTS		= "Contacts";
+/**
+ * Defines the "IM" application.
+ */
 ZmId.APP_IM				= "IM";
+/**
+ * Defines the "mail" application.
+ */
 ZmId.APP_MAIL			= "Mail";
+/**
+ * Defines the "mixed" application.
+ */
 ZmId.APP_MIXED			= "Mixed";
+/**
+ * Defines the "notebook" application.
+ */
 ZmId.APP_NOTEBOOK		= "Notebook";
+/**
+ * Defines the "portal" application.
+ */
 ZmId.APP_PORTAL			= "Portal";
+/**
+ * Defines the "preferences" application.
+ */
 ZmId.APP_PREFERENCES	= "Options";
+/**
+ * Defines the "tasks" application.
+ */
 ZmId.APP_TASKS			= "Tasks";
+/**
+ * Defines the "voice" application.
+ */
 ZmId.APP_VOICE			= "Voice";
 
 // views - often used as context for ID
@@ -687,17 +813,53 @@ ZmId.ITEM_TASK			= "TASK";
 ZmId.ITEM_VOICEMAIL		= "VOICEMAIL";
 
 // organizer types
+/**
+ * Defines the "address book" organizer.
+ */
 ZmId.ORG_ADDRBOOK			= "ADDRBOOK";
+/**
+ * Defines the "briefcase" organizer.
+ */
 ZmId.ORG_BRIEFCASE			= "BRIEFCASE";
+/**
+ * Defines the "calendar" organizer.
+ */
 ZmId.ORG_CALENDAR			= "CALENDAR";
+/**
+ * Defines the "folder" organizer.
+ */
 ZmId.ORG_FOLDER				= "FOLDER";
+/**
+ * Defines the "notebook" organizer.
+ */
 ZmId.ORG_NOTEBOOK			= "NOTEBOOK";
+/**
+ * Defines the "roster tree item" organizer.
+ */
 ZmId.ORG_ROSTER_TREE_ITEM	= "ROSTER_TREE_ITEM";
+/**
+ * Defines the "roster tree group" organizer.
+ */
 ZmId.ORG_ROSTER_TREE_GROUP	= "ROSTER_TREE_GROUP";
+/**
+ * Defines the "search" organizer.
+ */
 ZmId.ORG_SEARCH				= "SEARCH";
+/**
+ * Defines the "tag" organizer.
+ */
 ZmId.ORG_TAG				= "TAG";
+/**
+ * Defines the "tasks" organizer.
+ */
 ZmId.ORG_TASKS				= "TASKS";
+/**
+ * Defines the "zimlet" organizer.
+ */
 ZmId.ORG_ZIMLET				= "ZIMLET";
+/**
+ * Defines the "preferences page" organizer.
+ */
 ZmId.ORG_PREF_PAGE			= "PREF_PAGE";
 
 // fields of an item
