@@ -136,7 +136,7 @@ function() {
 		this._updateSignature();
 	}
 
-	return this.getNewSignatures().length > 0 ||
+	return this.getNewSignatures(true).length > 0 ||
 		   this.getDeletedSignatures().length > 0 ||
 		   this.getModifiedSignatures().length > 0;
 };
@@ -147,7 +147,7 @@ function() {
 		this._updateSignature();
 	}
 
-	var signatures = this.getAllSignatures();
+	var signatures = this.getAllSignatures(true);
 	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
 	for (var i = 0; i < signatures.length; i++) {
 		var signature = signatures[i];
@@ -328,10 +328,6 @@ function(select) {
 
 	var newName = this._sigName.getValue();
 	var isNameModified = newName != oldSignature.name;
-	if (newName.replace(/\s*/g,"") == "") {
-		newName = this._sigName._origName;
-		isNameModified = true;
-	}
 
 	oldSignature.name = newName;
 
@@ -569,6 +565,9 @@ function(signature) {
 	signature = signature || this._selSignature;
 	this._sigList.removeItem(signature);
 	delete this._signatureComps[signature.id];
+	if (!signature._new) {
+		this._deletedSignatures[signature.id] = signature;
+	}
 };
 
 ZmSignaturesPage.prototype._handleDeleteButton =
@@ -592,11 +591,6 @@ function(evt) {
 		newSig.name = signature.name;
 
 		this._addSignature(newSig);
-	}
-
-	// clean-up state
-	if (!signature._new) {
-		this._deletedSignatures[signature.id] = signature;
 	}
 };
 
@@ -861,9 +855,9 @@ function() {
 	delete inputId;
 
 	dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this,function() {
-        var imgUrl = this._imgSelField.value;
-        if(imgUrl != '')
-		    this.insertImage(imgUrl);
+		var imgUrl = this._imgSelField.value;
+		if(imgUrl != '')
+			this.insertImage(imgUrl);
 		dlg.popdown();
 	}));
 
