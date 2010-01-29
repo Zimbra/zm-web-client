@@ -45,20 +45,37 @@ ZmColListView.prototype.set =
 function(list, sortField) {
 
 	var paging = Boolean(this._itemsToAdd);
-	ZmBriefcaseBaseView.prototype.set.apply(this, arguments);
-
-	// show subfolders at top since virtual paging makes them hard to see
-	if (!paging) {
-		var subs = this._folders = this._controller._getSubfolders();
-		if (subs.length) {
-			for (var i = subs.length - 1; i >= 0; i--) {
-				this._addFolderRow(subs[i]);
-			}
-		}
-	}
+    if(!paging) {
+       //Add sub folders to the list
+       var subs = this._folders = this._controller._getSubfolders();
+       var subsLen = subs ? subs.length : 0;
+       for(var i=0; i<subsLen; i++){
+           list.add(subs[i], 0);
+       } 		    
+    };
+	ZmBriefcaseBaseView.prototype.set.call(this, list, sortField);
 };
 
 // Protected methods
+
+ZmColListView.prototype._renderList = 
+function(list, noResultsOk, doAdd) {
+
+    DwtListView.prototype._renderList.apply(this, arguments);
+
+    var paging = Boolean(this._itemsToAdd);
+    var list = this.getList();
+    if(!paging && list && list.size() > 0){
+        //Change colors of the Folders
+        for(var i=0; i< list.size(); i++){
+            var item = list.get(i);
+            if(item.isFolder && item.folder){
+                this._setFolderColor(item.folder);
+            }
+        }
+    }
+
+};
 
 ZmColListView.prototype._getHeaderList =
 function(parent) {
