@@ -238,6 +238,12 @@
         <zm:bindKey message="mail.Flag" func="zflag"/>
         <zm:bindKey message="mail.UnFlag" func="zunflag"/>
     </c:if>
+    
+    <c:if test="${mailbox.prefs.readingPaneEnabled and not empty msg and param.action eq 'paneView'}">
+        <zm:bindKey message="mail.Reply" id="OPREPLY"/>
+        <zm:bindKey message="mail.ReplyAll" id="OPREPLYALL"/>
+        <zm:bindKey message="mail.Forward" id="OPFORW"/>
+    </c:if>
     <zm:bindKey message="mail.MarkRead" func="zread"/>
     <zm:bindKey message="mail.MarkUnread" func="zunread"/>
     <zm:bindKey message="mail.Spam" func="zjunk"/>
