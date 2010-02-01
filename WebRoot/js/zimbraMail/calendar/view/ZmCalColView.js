@@ -20,7 +20,7 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	// set before call to parent
 	this._scheduleMode = scheduleMode;
 	this.numDays = numDays || 1;
-	this._daySepWidth = scheduleMode ? 2 : 1;									// width of separator between days
+	this._daySepWidth = 2;														// width of separator between days
 	this._columns = [];
 	this._layoutMap = [];
 	this._unionBusyDivIds = [];													// div ids for layingout union
