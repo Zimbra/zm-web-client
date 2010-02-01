@@ -114,7 +114,14 @@
         <td class='Tab ${selected=='compose' ? 'TabSelected' :'TabNormal'}'>
             <c:choose>
                 <c:when test="${not empty context}">
-                    <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
+                    <c:choose>
+                        <c:when test="${selected=='voice' && param.action=='listen'}">
+                            <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose" voiceId="${param.voiceId}" phone="${param.phone}"/>
+                        </c:when>
+                        <c:otherwise>
+                            <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
+                        </c:otherwise>
+                    </c:choose>
                 </c:when>
                 <c:otherwise>
                     <c:url var="composeUrl" value="/h/search?action=compose"/>
