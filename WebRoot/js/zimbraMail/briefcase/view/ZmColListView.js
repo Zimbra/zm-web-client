@@ -54,6 +54,7 @@ function(list, sortField) {
        } 		    
     };
 	ZmBriefcaseBaseView.prototype.set.call(this, list, sortField);
+    this.focus();
 };
 
 // Protected methods
