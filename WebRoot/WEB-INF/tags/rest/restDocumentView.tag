@@ -120,7 +120,7 @@
 
 </head>
 
-<body>
+<body class="editorBody">
 
 <noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
 
