@@ -29,7 +29,6 @@
 	<c:set var="selectedRow" value="${not empty param.selectedRow ? param.selectedRow : 0}"/>
 </app:handleError>
 <app:view editmode="${voiceStatus eq 'false' ? 'true' : ''}" mailbox="${mailbox}" title="${title}" selected='voice' voice="true" folders="false" tags="false" searches="false" context="${context}" keys="true">
-	<!-- ${lastErrorCode} -->
 	<c:if test="${lastErrorCode eq 'voice.SECONDARY_NOT_ALLOWED'}">
 		<div style="padding-left:22px">
 			<fmt:message key="voice.SECONDARY_NOT_ALLOWED_VOICE"/>
