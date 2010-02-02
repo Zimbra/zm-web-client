@@ -265,6 +265,15 @@ function(params) {
 			}
 			children = local;
 		}
+		// IE loses type info on the children array - the props are there and it can be iterated,
+		// but a function call like sort() blows up. So create an array local to child win.
+		if (appCtxt.isChildWindow && AjxEnv.isIE) {
+			var children1 = [];
+			for (var i = 0, len = children.length; i < len; i++) {
+				children1.push(children[i]);
+			}
+			children = children1;
+		}
 		children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
 	}
 	DBG.println(AjxDebug.DBG3, "Render: " + org.name + ": " + children.length);
