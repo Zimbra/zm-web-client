@@ -797,12 +797,15 @@ function() {
 		}
 	}
 
-	if (fail || (!endOk && !appCtxt.isOffline)) { return; }
+	if (fail) { return; }
 
 	// check for term at end
 	if ((pos == query.length) && op && word) {
 		tokens.push({isTerm:true, op:op, arg:word});
+		endOk = true;
 	}
+
+	if (!endOk && !appCtxt.isOffline) { return; }
 
 	var numTerms = 0, id, term;
 	var func = ["return Boolean("];
