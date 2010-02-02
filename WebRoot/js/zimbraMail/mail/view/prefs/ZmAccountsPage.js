@@ -2108,15 +2108,7 @@ function() {
 ZmAccountsListView.prototype._getAccountType =
 function(account) {
 	var provider = ZmDataSource.getProviderForAccount(account);
-	var type = provider && AjxStringUtil.htmlEncode(provider.name);
-	if (!type) {
-		if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox) {
-			type = account.isMain ? ZmMsg.accountTypePrimary : ZmMsg.accountTypeSecondary;
-		} else {
-			type = ZmAccount.getTypeName(account.type);
-		}
-	}
-	return type;
+	return (provider && AjxStringUtil.htmlEncode(provider.name)) || (account.isMain ? ZmMsg.accountTypePrimary : ZmAccount.getTypeName(account.type));
 };
 
 //
