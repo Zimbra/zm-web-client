@@ -948,15 +948,21 @@ function(ev) {
 		d.setHours(curr.getHours());
 		d.setMinutes(curr.getMinutes());
 	}
+    //bug:44423, Action Menu needs to select appropriate Calendar
+    var calendarId = null;
+    if(this._viewActionMenu && this._viewActionMenu._calendarId){
+        calendarId = this._viewActionMenu._calendarId;
+        this._viewActionMenu._calendarId = null;
+    }
 
-	var loadCallback = new AjxCallback(this, this._handleLoadNewApptAction, [d]);
+	var loadCallback = new AjxCallback(this, this._handleLoadNewApptAction, [d, calendarId]);
 	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
 };
 
 ZmCalViewController.prototype._handleLoadNewApptAction =
-function(d) {
+function(d, calendarId) {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
-	this.newAppointmentHelper(d);
+	this.newAppointmentHelper(d, null, calendarId);
 };
 
 ZmCalViewController.prototype._searchMailAction =
@@ -975,14 +981,21 @@ function(ev) {
 	else d = this._viewMgr ? this._viewMgr.getDate() : null;
 	if (d == null) d = new Date();
 
-	var loadCallback = new AjxCallback(this, this._handleLoadNewAllDayApptAction, [d]);
+    //bug:44423, Action Menu needs to select appropriate Calendar
+    var calendarId = null;
+    if(this._viewActionMenu && this._viewActionMenu._calendarId){
+        calendarId = this._viewActionMenu._calendarId;
+        this._viewActionMenu._calendarId = null;
+    }
+
+	var loadCallback = new AjxCallback(this, this._handleLoadNewAllDayApptAction, [d, calendarId]);
 	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
 };
 
 ZmCalViewController.prototype._handleLoadNewAllDayApptAction =
-function(d) {
+function(d, calendarId) {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
-	this.newAllDayAppointmentHelper(d);
+	this.newAllDayAppointmentHelper(d, null, calendarId);
 };
 
 ZmCalViewController.prototype._postShowCallback =
@@ -2461,6 +2474,16 @@ function(ev) {
 			}
 		}
 	}
+
+    if(this._viewVisible && this._currentView == ZmId.VIEW_CAL_SCHEDULE){
+        var view = this._viewMgr.getView(this._currentView);
+        var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, ev.target, true);
+        var col = view._getColFromX(gridLoc.x);
+        this._viewActionMenu._calendarId = (col && col.cal) ? col.cal.id : null;
+    }else{
+        this._viewActionMenu._calendarId = null;
+    }
+
 	this._viewActionMenu.__view = ev.item;
 	this._viewActionMenu.popup(0, ev.docX, ev.docY);
 };
