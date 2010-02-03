@@ -278,10 +278,10 @@ function(event) {
 	}
 	this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
 
-	var showPerm = organizer.link && organizer.shares && organizer.shares.length > 0;
+	var showPerm = organizer.isMountpoint;
 	if (showPerm) {
 		AjxDispatcher.require("Share");
-		var share = organizer.getMainShare();
+		var share = ZmShare.getShareFromLink(organizer);
 		var role = share && share.link && share.link.role;
 		this._permEl.innerHTML = ZmShare.getRoleActions(role);
 	}

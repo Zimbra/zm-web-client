@@ -1834,6 +1834,9 @@ function(listener) {
  */
 ZmOrganizer.prototype._setSharesFromJs =
 function(obj) {
+
+	// a folder object will have an acl with grants if this user has
+	// shared it, or if it has been shared to this user with admin rights
 	if (obj.acl && obj.acl.grant && obj.acl.grant.length > 0) {
 		AjxDispatcher.require("Share");
 		for (var i = 0; i < obj.acl.grant.length; i++) {

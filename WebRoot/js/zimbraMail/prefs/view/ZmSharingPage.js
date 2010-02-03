@@ -208,7 +208,7 @@ function(result) {
 		var shares = resp[i].share;
 		if (!(shares && shares.length)) { continue; }
 		for (var j = 0; j < shares.length; j++) {
-			var share = ZmSharingView.getShareFromShareInfo(shares[j]);
+			var share = ZmShare.getShareFromShareInfo(shares[j]);
 			if (share.mounted) {
 				mounts.push(share);
 			}
@@ -232,7 +232,7 @@ function(shares) {
 	if (shares && shares.length) {
 		for (var i = 0; i < shares.length; i++) {
 			// convert share info to ZmShare
-			var share = ZmSharingView.getShareFromShareInfo(shares[i]);
+			var share = ZmShare.getShareFromShareInfo(shares[i]);
 			if (!share.mounted) {
 				pending.push(share);
 			}
@@ -283,7 +283,7 @@ function() {
 		var folder = list[i];
 		if (folder.shares && folder.shares.length) {
 			for (var j = 0; j < folder.shares.length; j++) {
-				var share = ZmSharingView.getShareFromGrant(folder.shares[j]);
+				var share = ZmShare.getShareFromGrant(folder.shares[j]);
 				if (share.invalid) {
 					invalid.push(share);
 				}
@@ -364,119 +364,6 @@ function(domId, handler) {
 		var dlg = appCtxt.getFolderPropsDialog();
 		return dlg[handler](null, share);
 	}
-};
-
-/**
- * Creates or updates a ZmShare from share info that comes in JSON form from
- * GetShareInfoResponse.
- *
- * @param shareInfo	[object]		JSON representing share info
- * @param share		[ZmShare]*		share to update
- */
-ZmSharingView.getShareFromShareInfo =
-function(shareInfo, share) {
-
-	share = share || new ZmShare();
-
-	// grantee is the user, or a group they belong to
-	share.grantee = share.grantee || {};
-	if (shareInfo.granteeName)	{ share.grantee.name	= shareInfo.granteeName; }
-	if (shareInfo.granteeId)	{ share.grantee.id		= shareInfo.granteeId; }
-	if (shareInfo.granteeType)	{ share.grantee.type	= shareInfo.granteeType; }
-
-	// grantor is the owner of the shared folder
-	share.grantor = share.grantor || {};
-	if (shareInfo.ownerEmail)	{ share.grantor.email	= shareInfo.ownerEmail; }
-	if (shareInfo.ownerName)	{ share.grantor.name	= shareInfo.ownerName; }
-	if (shareInfo.ownerId)		{ share.grantor.id		= shareInfo.ownerId; }
-
-	// link is the shared folder
-	share.link = share.link || {};
-	share.link.view	= shareInfo.view || "message";
-	if (shareInfo.folderId)		{ share.link.id		= shareInfo.folderId; }
-	if (shareInfo.folderPath)	{ share.link.path	= shareInfo.folderPath; }
-	if (shareInfo.folderPath)	{ share.link.name	= shareInfo.folderPath.substr(shareInfo.folderPath.lastIndexOf("/") + 1); }
-	if (shareInfo.rights)		{ share.setPermissions(shareInfo.rights); }
-
-	// mountpoint is the local folder, if the share has been accepted and mounted
-	if (shareInfo.mid) {
-		share.mounted		= true;
-		share.mountpoint	= share.mountpoint || {};
-		share.mountpoint.id	= shareInfo.mid;
-		var mtpt = appCtxt.getById(share.mountpoint.id);
-		if (mtpt) {
-			share.mountpoint.name = mtpt.getName();
-			share.mountpoint.path = mtpt.getPath();
-		}
-	}
-
-	share.action	= "new";
-	share.version	= "0.1";
-
-	share.type = ZmSharingView.SHARE;
-
-	return share;
-};
-
-/**
- * Creates or updates a ZmShare from a ZmOrganizer that's a mountpoint. The grantee is
- * the current user.
- *
- * @param link		[ZmFolder]		mountpoint
- * @param share		[ZmShare]*		share to update
- */
-ZmSharingView.getShareFromLink =
-function(link, share) {
-
-	share = share || new ZmShare();
-
-	// grantor is the owner of the shared folder
-	share.grantor = share.grantor || {};
-	if (link.owner)	{ share.grantor.email	= link.owner; }
-	if (link.zid)	{ share.grantor.id		= link.zid; }
-
-	// link is the shared folder
-	share.link = share.link || {};
-	share.link.view	= ZmOrganizer.VIEWS[link.type];
-	if (link.rid)	{ share.link.id = link.rid; }
-
-	var linkShare = link.getMainShare();
-	share.link.name = linkShare ? linkShare.link.name : link.name;
-	share.setPermissions(linkShare ? linkShare.link.perm : link.perm);
-
-	// mountpoint is the local folder
-	share.mounted = true;
-	share.mountpoint = share.mountpoint || {};
-	share.mountpoint.id		= link.id;
-	share.mountpoint.name	= link.getName();
-	share.mountpoint.path	= link.getPath();
-
-	share.action	= "new";
-	share.version	= "0.1";
-
-	share.type = ZmSharingView.SHARE;
-
-	return share;
-};
-
-/**
- * Updates a ZmShare that represents a grant
- *
- * @param share		[ZmShare]		folder grant
- * @param oldShare	[ZmShare]*		share to update
- */
-ZmSharingView.getShareFromGrant =
-function(share, oldShare) {
-
-	share.link = share.link || {};
-	share.link.id	= share.object && (share.object.nId || share.object.id);
-	share.link.path = share.object && share.object.getPath();
-	share.link.name = share.object && share.object.getName();
-
-	share.type = ZmSharingView.GRANT;
-	share.domId = oldShare && oldShare.domId;
-
-	return share;
 };
 
 ZmSharingView.prototype._initialize =
@@ -887,7 +774,7 @@ function(ev) {
 			var mtpt = organizers[0];
 			if (!mtpt.link) { return; }
 			var share = this.sharingView._shareByKey[[mtpt.zid, mtpt.rid].join(":")];
-			share = ZmSharingView.getShareFromLink(mtpt, share);	// update share
+			share = ZmShare.getShareFromLink(mtpt, share);	// update share
 		}
 		if (!share) { return; }
 		if (ev.event == ZmEvent.E_CREATE) {
