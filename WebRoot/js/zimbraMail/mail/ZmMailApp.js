@@ -1423,19 +1423,19 @@ function(urlQueryStr){
 	urlQueryStr = urlQueryStr || '';
 
 	var match = urlQueryStr.match(/\bto=([^&]+)/);
-	var to = match ? decodeURIComponent(match[1]) : null;
+	var to = match ? AjxStringUtil.urlComponentDecode(match[1]) : null;
 
 	match = urlQueryStr.match(/\bsubject=([^&]+)/);
-	var subject = match ? (decodeURIComponent(match[1]).replace(/\+/g, " ")) : null;
+	var subject = match ? (AjxStringUtil.urlComponentDecode(match[1]).replace(/\+/g, " ")) : null;
 
 	match = urlQueryStr.match(/\bcc=([^&]+)/);
-	var cc = match ? decodeURIComponent(match[1]) : null;
+	var cc = match ? AjxStringUtil.urlComponentDecode(match[1]) : null;
 
 	match = urlQueryStr.match(/\bbcc=([^&]+)/);
-	var bcc = match ? decodeURIComponent(match[1]) : null;
+	var bcc = match ? AjxStringUtil.urlComponentDecode(match[1]) : null;
 
 	match = urlQueryStr.match(/\bbody=([^&]+)/);
-	var body = match ? (decodeURIComponent(match[1]).replace(/\+/g, " ")) : null;
+	var body = match ? (AjxStringUtil.urlComponentDecode(match[1]).replace(/\+/g, " ")) : null;
 
 	return {
 		to: to,
