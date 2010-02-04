@@ -116,7 +116,7 @@
                 <c:when test="${not empty context}">
                     <c:choose>
                         <c:when test="${selected=='voice' && param.action=='listen'}">
-                            <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose" voiceId="${param.voiceId}" phone="${param.phone}"/>
+                            <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose" voiceId="${param.voiceId}" phone="${param.phone}" hideSearchString="true"/>
                         </c:when>
                         <c:otherwise>
                             <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
