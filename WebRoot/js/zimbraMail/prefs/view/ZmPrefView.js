@@ -433,4 +433,14 @@ function() {
 ZmPrefView.prototype.selectSection =
 function(sectionId) {
 	this.switchToTab(this._tabId[sectionId]);
+
+	// Mark the correct organizer entry
+	var tree = appCtxt.getTree(ZmOrganizer.PREF_PAGE);
+	var organizer = tree && tree.getById(ZmId.getPrefPageId(sectionId));
+	if (organizer) {
+		var treeController = appCtxt.getOverviewController().getTreeController(ZmOrganizer.PREF_PAGE);
+		var treeView = treeController && treeController.getTreeView(appCtxt.getCurrentApp().getOverviewId());
+		if (treeView)
+			treeView.setSelected(organizer, true, false);
+	}
 };
