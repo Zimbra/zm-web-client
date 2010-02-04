@@ -528,12 +528,8 @@ function(params, result) {
 		this.setPollInterval(true);
 	} else {
 		// bug fix #34342 - always register mailto handler for mac
-		try {
-			if (AjxEnv.isMac && window.platform && window.platform.isRegisteredProtocolHandler("mailto")) {
-				this.registerMailtoHandler();
-			}
-		} catch(ex) {
-			// do nothing.
+		if (AjxEnv.isMac) {
+			this.registerMailtoHandler();
 		}
 	}
 
@@ -1121,7 +1117,8 @@ function() {
 ZmZimbraMail.prototype.registerMailtoHandler =
 function() {
 	if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
-		appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER))
+		appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER) &&
+		window.platform && window.platform.isRegisteredProtocolHandler)
 	{
 		try { // add try/catch - see bug #33870
 			// register mailto: handler

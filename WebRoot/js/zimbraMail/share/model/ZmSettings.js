@@ -254,16 +254,6 @@ function(callback, accountName, result) {
 			if (setting) {
 				setting.setValue(true);
 			}
-			setting = this._settings[ZmSetting.OFFLINE_IS_MAILTO_HANDLER];
-			try { // add try/catch - see bug #33870
-				if (setting && !window.platform.isRegisteredProtocolHandler("mailto")) {
-					setting.setValue(false);
-				}
-			} catch(ex) {
-				// mailto handling is not supported if registering protocol handler fails 
-				setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
-				setting.setValue(false);
-			}
 		}
 	}
 
