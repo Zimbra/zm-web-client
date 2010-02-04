@@ -262,7 +262,11 @@ function() {
 	this._searchPanel = new DwtComposite({parent:this._container, className:"SearchPanel", posStyle:Dwt.ABSOLUTE_STYLE});
 	this._searchToolBar = new ZmSearchToolBar(this._searchPanel, ZmId.SEARCH_TOOLBAR);
 
-	this._createTabGroup().addMember(this._searchToolBar.getSearchField());
+	this._createTabGroup();
+	this._tabGroup.addMember(this._searchToolBar.getSearchField());
+	var buttons = this._searchToolBar.getButtons();
+	for (var i=0; i<buttons.length; i++)
+		this._tabGroup.addMember(buttons[i]);
 
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);

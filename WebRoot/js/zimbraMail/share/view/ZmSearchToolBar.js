@@ -191,6 +191,11 @@ function(buttonId) {
 	return null;
 };
 
+ZmSearchToolBar.prototype.getButtons =
+function() {
+	return AjxUtil.collapseList([this._searchMenuButton, this._searchButton, this._saveButton, this._browseButton, this._customSearchBtn]);
+}
+
 ZmSearchToolBar.prototype.focus =
 function() {
 	if (this._searchField) {
