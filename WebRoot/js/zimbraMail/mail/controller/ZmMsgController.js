@@ -109,14 +109,17 @@ function() {
 	var curView = avm.getCurrentViewId();
 	var tabId = (curView && curView.indexOf(ZmId.VIEW_MSG) == 0) ? ZmMsgController.viewToTab[curView] : Dwt.getNextId();
 	ZmMsgController.viewToTab[this.viewId] = tabId;
-	var tabCallback = new AjxCallback(this, this._tabCallback);
-	var tabParams = {id:tabId, image:"MessageView", textPrecedence:85, tooltip:ZmMsgController.DEFAULT_TAB_TEXT, tabCallback:tabCallback};
-	var viewParams = {view:this._currentView, elements:elements, clear:appCtxt.isChildWindow, tabParams:tabParams};
+	var viewParams = {view:this._currentView, elements:elements, clear:appCtxt.isChildWindow, tabParams:this._getTabParams(tabId, new AjxCallback(this, this._tabCallback))};
 	var buttonText = (this._msg && this._msg.subject) ? AjxStringUtil.htmlEncode(this._msg.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT)) : ZmMsgController.DEFAULT_TAB_TEXT;
 	this._setView(viewParams);
 	avm.setTabTitle(this.viewId, buttonText);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
 	this._resetNavToolBarButtons(this._currentView);
+};
+
+ZmMsgController.prototype._getTabParams =
+function(tabId, tabCallback) {
+	return {id:tabId, image:"MessageView", textPrecedence:85, tooltip:ZmMsgController.DEFAULT_TAB_TEXT, tabCallback: tabCallback};
 };
 
 ZmMsgController.prototype.getKeyMapName =

@@ -514,9 +514,7 @@ function(initHide, composeMode) {
 	this._initializeToolBar();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-	this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks,
-						 tabParams:{id:this.tabId, image:"NewMessage",
-						 textPrecedence:75, tooltip:ZmComposeController.DEFAULT_TAB_TEXT}});
+	this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
 	if (initHide) {
 		this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 		this._composeView.enableInputs(false);
@@ -525,6 +523,11 @@ function(initHide, composeMode) {
 	if (this._composeView.identitySelect) {
 		this._composeView.identitySelect.addChangeListener(new AjxListener(this, this._identityChangeListener, [true]));
 	}
+};
+
+ZmComposeController.prototype._getTabParams =
+function() {
+	return {id:this.tabId, image:"NewMessage", textPrecedence:75, tooltip:ZmComposeController.DEFAULT_TAB_TEXT};
 };
 
 ZmComposeController.prototype._identityChangeListener =
