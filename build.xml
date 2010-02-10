@@ -1148,17 +1148,18 @@ if (ext == null) ext = "";
     </target>
 
 	<!-- JavaScript API Documentation Tasks -->
-	<target name="generate-jsapi-doc" >
+	<target name="generate-jsapi-zimbra-doc" >
 	  <java jar="${jsdoctoolkit.dir}/jsrun.jar" fork="true" failonerror="true">
 	    <arg value="${jsdoctoolkit.dir}/app/run.js"/>
 	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-doc"/>
-	    <arg value="-d=${build.jsapi-docs.dir}"/>
+	    <arg value="-d=${build.jsapi-docs.dir}/zimbra"/>
 	    <arg value="-r=4"/>
+	    <arg value="${js.dir}/zimbra/common/ZmErrorDialog.js"/>
 	    <arg value="${js.dir}/zimbraMail/core"/>
 	    <arg value="${js.dir}/zimbraMail/share/model"/>
 	    <arg value="${js.dir}/zimbraMail/share/controller"/>
-	    <arg value="${js.dir}/zimbraMail/share/view/ZmAppChooser.js"/>
 	    <arg value="${js.dir}/zimbraMail/share/view/ZmAppButton.js"/>
+	    <arg value="${js.dir}/zimbraMail/share/view/ZmAppChooser.js"/>
 	    <arg value="${js.dir}/zimbraMail/share/view/ZmOverview.js"/>
 	    <arg value="${js.dir}/zimbraMail/share/view/ZmToolBar.js"/>
 	    <arg value="${js.dir}/zimbraMail/share/view/ZmZimletApp.js"/>
@@ -1167,7 +1168,15 @@ if (ext == null) ext = "";
 	    <arg value="${js.dir}/zimbraMail/calendar/model/ZmCalItem.js"/>
 	    <arg value="${js.dir}/zimbraMail/portal/model/ZmPortlet.js"/>
 	    <arg value="${js.dir}/zimbraMail/tasks/model/ZmTask.js"/>
-	    <arg value="${js.dir}/zimbra/common/ZmErrorDialog.js"/>
+	  </java>
+	</target>
+	
+	<target name="generate-jsapi-ajax-doc" >
+	  <java jar="${jsdoctoolkit.dir}/jsrun.jar" fork="true" failonerror="true">
+	    <arg value="${jsdoctoolkit.dir}/app/run.js"/>
+	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-doc"/>
+	    <arg value="-d=${build.jsapi-docs.dir}/ajax"/>
+	    <arg value="-r=4"/>
 	    <arg value="${js.dir}/ajax/dwt/widgets/DwtButton.js"/>
 		<arg value="${js.dir}/ajax/dwt/widgets/DwtBaseDialog.js"/>
 	    <arg value="${js.dir}/ajax/dwt/widgets/DwtComposite.js"/>
