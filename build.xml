@@ -61,8 +61,10 @@
     <property name='build.dist.dir' value='${build.dir}/dist'/>
 
 	<property name='build.docs.dir' value='${build.dir}/docs'/>
-	<property name='build.jsapi-docs.dir' value='${build.docs.dir}/jsapi-doc'/>
+	<property name='build.jsapi-zimbra-doc.dir' value='${build.docs.dir}/jsapi-zimbra-doc'/>
     <property name='build.jsapi-inventory.dir' value='${build.docs.dir}/jsapi-inventory'/>
+	<property name='jsapi-zimbra-doc.file' value='${build.docs.dir}/jsapi-zimbra-doc.zip'/>
+	<property name='jsapi-inventory.file' value='${build.docs.dir}/jsapi-inventory.zip'/>
 
     <property name='build.img.dir' value='${build.web.dir}/img'/>
 	<property name="build.css.file" value="images"/>
@@ -1148,12 +1150,30 @@ if (ext == null) ext = "";
     </target>
 
 	<!-- JavaScript API Documentation Tasks -->
-	<target name="generate-jsapi-zimbra-doc" >
+	<target name="clean-jsapi-zimbra-doc" >
+        <delete dir="${build.jsapi-zimbra-doc.dir}"/>
+        <delete file="${jsapi-zimbra-doc.file}"/>
+	</target>
+
+	<target name="clean-jsapi-inventory" >
+        <delete dir="${build.jsapi-inventory.dir}"/>
+        <delete file="${jsapi-inventory.file}"/>
+	</target>
+
+	<target name="generate-jsapi-zimbra-doc" depends="clean-jsapi-zimbra-doc">
 	  <java jar="${jsdoctoolkit.dir}/jsrun.jar" fork="true" failonerror="true">
 	    <arg value="${jsdoctoolkit.dir}/app/run.js"/>
 	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-doc"/>
-	    <arg value="-d=${build.jsapi-docs.dir}/zimbra"/>
+	    <arg value="-d=${build.jsapi-zimbra-doc.dir}"/>
 	    <arg value="-r=4"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtButton.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtBaseDialog.js"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtComposite.js"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtControl.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtDialog.js"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtLabel.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtMessageDialog.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtToolBar.js"/>
 	    <arg value="${js.dir}/zimbra/common/ZmErrorDialog.js"/>
 	    <arg value="${js.dir}/zimbraMail/core"/>
 	    <arg value="${js.dir}/zimbraMail/share/model"/>
@@ -1170,25 +1190,8 @@ if (ext == null) ext = "";
 	    <arg value="${js.dir}/zimbraMail/tasks/model/ZmTask.js"/>
 	  </java>
 	</target>
-	
-	<target name="generate-jsapi-ajax-doc" >
-	  <java jar="${jsdoctoolkit.dir}/jsrun.jar" fork="true" failonerror="true">
-	    <arg value="${jsdoctoolkit.dir}/app/run.js"/>
-	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-doc"/>
-	    <arg value="-d=${build.jsapi-docs.dir}/ajax"/>
-	    <arg value="-r=4"/>
-	    <arg value="${js.dir}/ajax/dwt/widgets/DwtButton.js"/>
-		<arg value="${js.dir}/ajax/dwt/widgets/DwtBaseDialog.js"/>
-	    <arg value="${js.dir}/ajax/dwt/widgets/DwtComposite.js"/>
-	    <arg value="${js.dir}/ajax/dwt/widgets/DwtControl.js"/>
-		<arg value="${js.dir}/ajax/dwt/widgets/DwtDialog.js"/>
-	    <arg value="${js.dir}/ajax/dwt/widgets/DwtLabel.js"/>
-		<arg value="${js.dir}/ajax/dwt/widgets/DwtMessageDialog.js"/>
-		<arg value="${js.dir}/ajax/dwt/widgets/DwtToolBar.js"/>
-	  </java>
-	</target>
-	
-	<target name="generate-jsapi-inventory" >
+
+	<target name="generate-jsapi-inventory" depends="clean-jsapi-inventory">
 	  <java jar="${jsdoctoolkit.dir}/jsrun.jar" fork="true" failonerror="true">
 	    <arg value="${jsdoctoolkit.dir}/app/run.js"/>
 	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-inventory"/>
@@ -1201,6 +1204,16 @@ if (ext == null) ext = "";
 	  </java>
 	</target>
 	
+	<target name="package-jsapi-zimbra-doc" depends="generate-jsapi-zimbra-doc">
+		<zip destfile="${jsapi-zimbra-doc.file}"
+		       basedir="${build.jsapi-zimbra-doc.dir}" />
+	</target>
+
+	<target name="package-jsapi-inventory" depends="generate-jsapi-inventory">
+		<zip destfile="${jsapi-inventory.file}"
+		       basedir="${build.jsapi-inventory.dir}" />
+	</target>
+
     <!-- image tasks -->
 
     <target name='sorticons' depends='images-init'>
