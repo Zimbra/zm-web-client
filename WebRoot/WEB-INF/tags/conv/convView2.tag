@@ -87,12 +87,12 @@
                                                             </c:if>
                                                         </td>
                                                         <td class='Bottom Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
-                                                        <td nowrap colspan=3 class='Bottom'>
+                                                        <td nowrap colspan=3 class='Bottom'><c:if test="${not mailbox.prefs.showFragments}"> &nbsp; </c:if>
 
                                                             <c:choose>
 
-                                                                <c:when test="${hit.id == message.id}">
-                                                                <a href="${msgSepUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span></a>
+                                                           <c:when test="${hit.id == message.id}">
+                                                                <c:if test="${mailbox.prefs.showFragments}"><a href="${msgSepUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span></a></c:if>
                                                                 <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                                 <c:if test="${messCursor.hasPrev}">
                                                                     <zm:currentResultUrl var="prevMsgUrl" value="search" action="${param.action}" context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
@@ -104,7 +104,7 @@
                                                                 </c:if>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span></a>
+                                                                <c:if test="${mailbox.prefs.showFragments}"><a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span></a></c:if>
                                                             </c:otherwise>
                                                             </c:choose>
                                                         </td>
@@ -164,7 +164,7 @@
                 </td>
             </tr>
         </table>
-
+        
         <input type="hidden" name="doMessageAction" value="1"/>
     </form>
 </app:view>
