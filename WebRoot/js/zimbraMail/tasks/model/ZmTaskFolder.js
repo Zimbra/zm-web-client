@@ -14,23 +14,31 @@
  */
 
 /**
-*
-* @constructor
-* @class
-*
-* @author Parag Shah
-*
-* @param id			[int]			numeric ID
-* @param name		[string]		name
-* @param parent		[ZmOrganizer]	parent organizer
-* @param tree		[ZmTree]		tree model that contains this organizer
-* @param color
-* @param url		[string]*		URL for this organizer's feed
-* @param owner
-* @param zid		[string]*		Zimbra id of owner, if remote share
-* @param rid		[string]*		Remote id of organizer, if remote share
-* @param restUrl	[string]*		The REST URL of this organizer.
-*/
+ * @overview
+ * This file contains the task folder class.
+ */
+
+/**
+ * Creates the task folder.
+ * @class
+ * This class represents a task folder.
+ * 
+ * @author Parag Shah
+ *
+ * @param	{Hash}	params		a hash of parameters
+ * @param {int}	params.id			the numeric ID
+ * @param {String}	params.name		the name
+ * @param {ZmOrganizer}	params.parent		the parent organizer
+ * @param {ZmTree}	params.tree		the tree model that contains this organizer
+ * @param {String}	params.color	the color
+ * @param {String}	params.url		the URL for this organizer's feed
+ * @param {String}	params.owner	the owner
+ * @param {String}	params.zid		the Zimbra id of owner, if remote share
+ * @param {String}	params.rid		the remote id of organizer, if remote share
+ * @param {String}	params.restUrl	[the REST URL of this organizer.
+ * 
+ * @extends		ZmFolder
+ */
 ZmTaskFolder = function(params) {
 	params.type = ZmOrganizer.TASKS;
 	ZmFolder.call(this, params);
@@ -41,6 +49,11 @@ ZmTaskFolder.prototype.constructor = ZmTaskFolder;
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTaskFolder.prototype.toString =
 function() {
 	return "ZmTaskFolder";
@@ -59,6 +72,13 @@ function() {
 	return true;
 };
 
+/**
+ * Sets the free/busy.
+ * 
+ * @param	{AjxCallback}		callback		the callback
+ * @param	{AjxCallback}		errorCallback		the error callback
+ * @param	{Boolean}		exclude		checks to exclose free busy
+ */
 ZmTaskFolder.prototype.setFreeBusy =
 function(exclude, callback, errorCallback) {
 	if (this.excludeFreeBusy == exclude) return;
@@ -139,11 +159,25 @@ function(obj) {
 
 // Static methods
 
+/**
+ * Checks the name for validity
+ * 
+ * @return	{String}	an error message if the name is invalid; <code>null</code> if the name is valid.
+ */
 ZmTaskFolder.checkName =
 function(name) {
 	return ZmFolder.checkName(name);
 };
 
+/**
+ * Comparison function for folders. Intended for use on a list of user folders
+ * through a call to <code>Array.sort()</code>.
+ * 
+ * @param	{ZmTaskFolder}	calA		item A
+ * @param	{ZmTaskFolder}	calB		item B
+ * 
+ * @return	{int}	0 if the folders match
+ */
 ZmTaskFolder.sortCompare =
 function(calA, calB) {
 	var check = ZmOrganizer.checkSortArgs(calA, calB);

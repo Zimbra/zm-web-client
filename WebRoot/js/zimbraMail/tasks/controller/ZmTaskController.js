@@ -14,15 +14,22 @@
  */
 
 /**
+ * @overview
+ * This file contains the task controller class.
+ * 
+ */
+
+/**
  * Creates a new appointment controller to manage appointment creation/editing.
- * @constructor
  * @class
  * This class manages appointment creation/editing.
  *
  * @author Parag Shah
  *
- * @param container	[DwtComposite]	the containing element
- * @param calApp	[ZmApp]			a handle to the [calendar|task] application
+ * @param {DwtComposite}	container	the containing element
+ * @param {ZmApp}	app	a handle to the [{@link ZmCalendarApp}|{@link ZmTasksApp}] application
+ * 
+ * @extends		ZmCalItemComposeController
  */
 ZmTaskController = function(container, app) {
 	if (arguments.length == 0) { return; }
@@ -32,6 +39,11 @@ ZmTaskController = function(container, app) {
 ZmTaskController.prototype = new ZmCalItemComposeController;
 ZmTaskController.prototype.constructor = ZmTaskController;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTaskController.prototype.toString =
 function() {
 	return "ZmTaskController";
@@ -86,7 +98,13 @@ function() {
 	return "ZmTaskController";
 };
 
-// returns true if moving given appt from local to remote folder or vice versa
+/**
+ * Checks if the tasks is moving from local to remote folder (or vice versa).
+ * 
+ * @param	{ZmTask}	task			the task
+ * @param	{String}	newFolderId		the folder id
+ * @return	{Boolean}	<code>true</code> if moving from local to remote folder
+ */
 ZmTaskController.prototype.isMovingBetwAccounts =
 function(task, newFolderId) {
 	var isMovingBetw = false;
@@ -105,7 +123,6 @@ function(task, newFolderId) {
 };
 
 // Private / Protected methods
-
 
 ZmTaskController.prototype._getViewType =
 function() {

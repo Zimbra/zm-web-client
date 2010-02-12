@@ -13,6 +13,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the task list controller class.
+ */
+
+/**
+ * Creates the task list controller.
+ * @class
+ * This class represents the task list controller.
+ * 
+ * @param {DwtComposite}	container	the containing element
+ * @param {ZmApp}	app	a handle to the [{@link ZmCalendarApp}|{@link ZmTasksApp}] application
+ * 
+ * @extends		ZmListController
+ */
 ZmTaskListController = function(container, app) {
 
 	ZmListController.call(this, container, app);
@@ -58,6 +73,9 @@ ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_WAITING]		= "waitingOn";
 ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_DEFERRED]		= "deferred";
 ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_ALL]			= "all";
 
+/**
+ * Defines the status.
+ */
 ZmTaskListController.SOAP_STATUS = {};
 ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_NOT_STARTED]= "NEED";
 ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_COMPLETED]	= "COMP";
@@ -68,6 +86,11 @@ ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_DEFERRED]	= "DEFERRED";
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTaskListController.prototype.toString =
 function() {
 	return "ZmTaskListController";
@@ -104,6 +127,11 @@ function(results, folderId) {
 	this._resetNavToolBarButtons(this._currentView);
 };
 
+/**
+ * Switches the view.
+ * 
+ * @param	{DwtComposite}		view		the view
+ */
 ZmTaskListController.prototype.switchView =
 function(view) {
 	if (this._currentTaskView == view) { return; }
@@ -119,6 +147,11 @@ function(view) {
 	sc.redoSearch(appCtxt.getCurrentSearch(), false, {allowableTaskStatus:soapStatus});
 };
 
+/**
+ * Gets the task status.
+ * 
+ * @return	{constant}	the status (see {@link ZmTaskListController.SOAP_STATUS})
+ */
 ZmTaskListController.prototype.getAllowableTaskStatus =
 function() {
 	var tb = this._toolbar && this._toolbar[this._currentView];
@@ -159,6 +192,14 @@ function(map) {
 	return (map == "list");
 };
 
+/**
+ * Saves the task.
+ * 
+ * @param		{String}	name		the task name
+ * @param		{AjxCallback}	callback	the save callback
+ * 
+ * @see	ZmTask
+ */
 ZmTaskListController.prototype.quickSave =
 function(name, callback) {
 	var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;

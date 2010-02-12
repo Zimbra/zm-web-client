@@ -13,6 +13,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the task tree controller class.
+ */
+
+/**
+ * Creates the task tree controller.
+ * @class
+ * This class represents the task tree controller.
+ * 
+ * @extends		ZmFolderTreeController
+ */
 ZmTaskTreeController = function() {
 
 	ZmFolderTreeController.call(this, ZmOrganizer.TASKS);
@@ -28,8 +40,11 @@ ZmTaskTreeController = function() {
 ZmTaskTreeController.prototype = new ZmFolderTreeController;
 ZmTaskTreeController.prototype.constructor = ZmTaskTreeController;
 
-
-// Public Methods
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTaskTreeController.prototype.toString =
 function() {
 	return "ZmTaskTreeController";
@@ -123,13 +138,15 @@ function(organizer) {
 	this._doDelete(organizer);
 };
 
-/*
-* Called when a left click occurs (by the tree view listener). The folder that
-* was clicked may be a search, since those can appear in the folder tree. The
-* appropriate search will be performed.
-*
-* @param folder		ZmOrganizer		folder or search that was clicked
-*/
+/**
+ * Called when a left click occurs (by the tree view listener). The folder that
+ * was clicked may be a search, since those can appear in the folder tree. The
+ * appropriate search will be performed.
+ *
+ * @param {ZmOrganizer}		folder		folder or search that was clicked
+ * 
+ * @private
+ */
 ZmTaskTreeController.prototype._itemClicked =
 function(folder) {
 	appCtxt.getApp(ZmApp.TASKS).search(folder);

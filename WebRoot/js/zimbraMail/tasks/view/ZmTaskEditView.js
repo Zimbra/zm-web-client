@@ -13,6 +13,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the edit task view classes.
+ */
+
+/**
+ * Creates the edit task view.
+ * @class
+ * This class represents the edit task view.
+ * 
+ * @param	{DwtComposite}	parent		the parent
+ * @param	{ZmTaskController}		controller		the controller
+ * 
+ * @extends		ZmCalItemEditView
+ */
 ZmTaskEditView = function(parent, controller) {
 	ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE);
 };
@@ -23,11 +38,21 @@ ZmTaskEditView.prototype.constructor = ZmTaskEditView;
 
 // Consts
 
+/**
+ * Defines the priority values.
+ * 
+ * @see		ZmCalItem
+ */
 ZmTaskEditView.PRIORITY_VALUES = [
 	ZmCalItem.PRIORITY_LOW,
 	ZmCalItem.PRIORITY_NORMAL,
 	ZmCalItem.PRIORITY_HIGH ];
 
+/**
+ * Defines the status values.
+ * 
+ * @see		ZmCalendarApp
+ */
 ZmTaskEditView.STATUS_VALUES = [
 	ZmCalendarApp.STATUS_NEED,
 	ZmCalendarApp.STATUS_COMP,
@@ -42,11 +67,19 @@ ZmTaskEditView.DIALOG_Y = 100;
 
 // Public Methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTaskEditView.prototype.toString =
 function() {
 	return "ZmTaskEditView";
 };
 
+/**
+ * @private
+ */
 ZmTaskEditView.prototype.set =
 function(calItem, mode, isDirty) {
 	this.initialize(calItem, mode, isDirty);
@@ -58,6 +91,11 @@ function(calItem, mode, isDirty) {
 	}
 };
 
+/**
+ * Gets the controller.
+ * 
+ * @return	{ZmTaskController}		the controller
+ */
 ZmTaskEditView.prototype.getController =
 function() {
 	return this._controller;

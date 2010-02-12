@@ -13,6 +13,22 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the task list view classes.
+ */
+
+/**
+ * Creates the task list view.
+ * @class
+ * This class represents the task list view.
+ * 
+ * @param	{DwtComposite}	parent		the parent
+ * @param	{ZmTaskController}		controller		the controller
+ * @param	{DwtDropTarget}	dropTgt		the drop target	
+ * 
+ * @extends		ZmListView
+ */
 ZmTaskListView = function(parent, controller, dropTgt) {
 	var headerList = this._getHeaderList(parent);
 	var params = {parent:parent, posStyle:Dwt.ABSOLUTE_STYLE, view:ZmId.VIEW_TASKLIST, pageless:true,
@@ -29,8 +45,13 @@ ZmTaskListView.COL_WIDTH_STATUS		= ZmMsg.COLUMN_WIDTH_STATUS_TLV;
 ZmTaskListView.COL_WIDTH_PCOMPLETE	= ZmMsg.COLUMN_WIDTH_PCOMPLETE_TLV;
 ZmTaskListView.COL_WIDTH_DATE_DUE	= ZmMsg.COLUMN_WIDTH_DATE_DUE_TLV;
 
-
 // Public Methods
+
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTaskListView.prototype.toString =
 function() {
 	return "ZmTaskListView";
@@ -42,6 +63,11 @@ function(width, height) {
 	this._resetColWidth();
 };
 
+/**
+ * Saves the new task.
+ * 
+ * @param	{Boolean}	keepFocus		if <code>true</code>, keep focus after the save
+ */
 ZmTaskListView.prototype.saveNewTask =
 function(keepFocus) {
 	if (this._newTaskInputEl && Dwt.getVisibility(this._newTaskInputEl)) {
@@ -76,6 +102,11 @@ function(actionCode, ev) {
 		DwtListView.prototype.handleKeyAction.call(this,actionCode,ev);
 	}
 };
+
+/**
+ * Discards the task.
+ * 
+ */
 ZmTaskListView.prototype.discardNewTask =
 function() {
 	if (this._newTaskInputEl && Dwt.getVisibility(this._newTaskInputEl)) {
@@ -86,6 +117,11 @@ function() {
 	}
 };
 
+/**
+ * Gets the title.
+ * 
+ * @return	{String}		the title
+ */
 ZmTaskListView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");

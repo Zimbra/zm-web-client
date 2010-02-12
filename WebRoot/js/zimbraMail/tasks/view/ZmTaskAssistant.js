@@ -13,6 +13,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains a task assistant class.
+ */
+
+/**
+ * Creates the task assistant.
+ * @class
+ * This class represents a task assistant.
+ * 
+ * 
+ * @extends		ZmAssistant
+ */
 ZmTaskAssistant = function() {
 	ZmAssistant.call(this, ZmMsg.createNewTask, ZmMsg.ASST_CMD_TASK, ZmMsg.ASST_CMD_SUM_TASK);
 };
@@ -20,6 +33,11 @@ ZmTaskAssistant = function() {
 ZmTaskAssistant.prototype = new ZmAssistant();
 ZmTaskAssistant.prototype.constructor = ZmTaskAssistant;
 
+/**
+ * Initializes the assistant.
+ * 
+ * @param	{ZmDialog}	dialog		the dialog
+ */
 ZmTaskAssistant.prototype.initialize =
 function(dialog) {
 	ZmAssistant.prototype.initialize.call(this, dialog);
@@ -50,6 +68,11 @@ function() {
 	return ZmMsg.ASST_TASK_HELP;
 };
 
+/**
+ * Gets the task.
+ * 
+ * @return	{ZmTask}		the task
+ */
 ZmTaskAssistant.prototype.getTask =
 function() {
 	var task = new ZmTask();
@@ -82,7 +105,8 @@ function() {
  * [...] matched as location
  *
  * everything left "lunch with satish" is taken as subject
- *
+ * 
+ * @private
  */
 ZmTaskAssistant.prototype.handle =
 function(dialog, verb, args) {

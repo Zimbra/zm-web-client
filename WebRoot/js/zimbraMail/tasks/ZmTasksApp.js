@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the task application class.
+ */
+
+/**
+ * Creates the task application.
+ * @class
+ * This class represents the task application.
+ * 
+ * @param	{DwtControl}	container		the container
+ * 
+ * @extends		ZmApp
+ */
 ZmTasksApp = function(container) {
 	ZmApp.call(this, ZmApp.TASKS, container);
 };
@@ -32,6 +46,11 @@ ZmApp.QS_ARG[ZmApp.TASKS]		= "tasks";
 ZmTasksApp.prototype = new ZmApp;
 ZmTasksApp.prototype.constructor = ZmTasksApp;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTasksApp.prototype.toString =
 function() {
 	return "ZmTasksApp";
@@ -191,10 +210,11 @@ function() {
 };
 
 /**
- * Checks for the creation of an address book or a mount point to one. Regular
- * contact creates are handed to the canonical list.
+ * Checks for the creation of a tasks folder or a mount point to one.
  *
- * @param creates	[hash]		hash of create notifications
+ * @param {Hash}	creates		a hash of create notifications
+ * @param	{Boolean}	force	if <code>true</code>, force the create
+ * 
  */
 ZmTasksApp.prototype.createNotify =
 function(creates, force) {
@@ -240,6 +260,12 @@ function(callback) {
 	if (callback) { callback.run(); }
 };
 
+/**
+ * Shows the search results.
+ * 
+ * @param	{Hash}	results		the search results
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmTasksApp.prototype.showSearchResults =
 function(results, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
@@ -254,11 +280,22 @@ function(results, callback) {
 };
 
 // common API shared by calendar app
+
+/**
+ * Gets the list controller.
+ * 
+ * @return	{ZmTaskListController}	the controller
+ */
 ZmTasksApp.prototype.getListController =
 function() {
 	return this.getTaskListController();
 };
 
+/**
+ * Gets the list controller.
+ * 
+ * @return	{ZmTaskListController}	the controller
+ */
 ZmTasksApp.prototype.getTaskListController =
 function() {
 	if (!this._taskListController) {
@@ -267,6 +304,11 @@ function() {
 	return this._taskListController;
 };
 
+/**
+ * Gets the controller.
+ * 
+ * @return	{ZmTaskController}	the controller
+ */
 ZmTasksApp.prototype.getTaskController =
 function() {
 	if (!this._taskController) {
@@ -275,6 +317,12 @@ function() {
 	return this._taskController;
 };
 
+/**
+ * Creates a task from a mail item.
+ * 
+ * @param	{ZmMailMsg}		msg		the message
+ * @param	{Date}			date	the date
+ */
 ZmTasksApp.prototype.newTaskFromMailItem =
 function(msg, date) {
 	var subject = msg.subject || "";
@@ -284,6 +332,9 @@ function(msg, date) {
 	msg.load({getHtml:false, callback:new AjxCallback(this, this._msgLoadedCallback, [msg, date, subject])});
 };
 
+/**
+ * @private
+ */
 ZmTasksApp.prototype._msgLoadedCallback =
 function(mailItem, date, subject) {
 	var t = new ZmTask();
@@ -292,7 +343,15 @@ function(mailItem, date, subject) {
 	this.getTaskController().show(t, ZmCalItem.MODE_NEW);
 };
 
-
+/**
+ * Performs a search.
+ * 
+ * @param	{ZmFolder}		folder		the folder
+ * @param	{Date}			startDate	the start date
+ * @param	{Date}			endDate		the end date
+ * @param	{AjxCallback}	callback	the callback
+ * @param	{String}		accountName	the account name
+ */
 ZmTasksApp.prototype.search =
 function(folder, startDate, endDate, callback, accountName) {
 	var params = {
@@ -308,9 +367,9 @@ function(folder, startDate, endDate, callback, accountName) {
 	sc.search(params);
 };
 
-
-// Callback
-
+/**
+ * @private
+ */
 ZmTasksApp.prototype._newTaskFolderCallback =
 function(parent, name, color) {
 	var dialog = appCtxt.getNewTaskFolderDialog();

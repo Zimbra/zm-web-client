@@ -15,15 +15,13 @@
 
 /**
  * @overview
- * 
- * This file defines a Zimbra Task.
- *
+ * This file defines a task.
  */
 
 /**
  * @class
  * 
- * This class represents a zimbra task.
+ * This class represents a task.
  * 
  * @author Parag Shah
  *
@@ -78,9 +76,13 @@ function(task) {
 };
 
 /**
- * Sets start/end intervals for instNode
+ * Creates a task from the DOM.
  * 
- * @private
+ * @param	{Object}	taskNode	the task
+ * @param	{Hash}		args		arguments
+ * @param	{Object}	instNode	(not used)
+ * 
+ * @return	{ZmTask}		the task
  */
 ZmTask.createFromDom =
 function(taskNode, args, instNode) {

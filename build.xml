@@ -1189,7 +1189,7 @@ if (ext == null) ext = "";
 	    <arg value="${js.dir}/zimbraMail/calendar/model/ZmCalBaseItem.js"/>
 	    <arg value="${js.dir}/zimbraMail/calendar/model/ZmCalItem.js"/>
 	    <arg value="${js.dir}/zimbraMail/portal/model/ZmPortlet.js"/>
-	    <arg value="${js.dir}/zimbraMail/tasks/model/ZmTask.js"/>
+	    <arg value="${js.dir}/zimbraMail/tasks"/>
 	  </java>
 	</target>
 
@@ -1206,6 +1206,7 @@ if (ext == null) ext = "";
 	    <arg value="${js.dir}/zimbraMail/core"/>
 	    <arg value="${js.dir}/zimbraMail/share/model"/>
 	    <arg value="${js.dir}/zimbraMail/share/controller"/>
+	    <arg value="${js.dir}/zimbraMail/tasks"/>
 	  </java>
 	</target>
 	
