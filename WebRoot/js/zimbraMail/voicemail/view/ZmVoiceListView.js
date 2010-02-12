@@ -205,7 +205,7 @@ function(ev, div) {
 	if (type == DwtListView.TYPE_HEADER_ITEM) {
 		var hdr = this.getItemFromElement(div);
 		if (hdr && hdr._field) {
-			tooltip = this._getHeaderTooltip(hdr._field);
+			tooltip = this._getHeaderToolTip(hdr._field);
 		}
 	} else if (type == DwtListView.TYPE_LIST_ITEM) {
 		var match = this._parseId(id);

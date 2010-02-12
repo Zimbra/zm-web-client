@@ -272,7 +272,7 @@ function(voicemail) {
 	return voicemail.isHighPriority ? "<div class='ImgTaskHigh'></div>" : "";
 };
 
-ZmVoicemailListView.prototype._getHeaderTooltip =
+ZmVoicemailListView.prototype._getHeaderToolTip =
 function(prefix) {
 	switch (prefix) {
 		case ZmVoicemailListView.F_PRIORITY: 	return ZmMsg.priority; break;
