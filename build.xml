@@ -1175,6 +1175,8 @@ if (ext == null) ext = "";
 		<arg value="${js.dir}/ajax/dwt/widgets/DwtMessageDialog.js"/>
 		<arg value="${js.dir}/ajax/dwt/widgets/DwtToolBar.js"/>
 	    <arg value="${js.dir}/zimbra/common/ZmErrorDialog.js"/>
+	    <arg value="${js.dir}/zimbra/csfe"/>
+	    <arg value="${js.dir}/zimbraMail/abook"/>
 	    <arg value="${js.dir}/zimbraMail/core"/>
 	    <arg value="${js.dir}/zimbraMail/share/model"/>
 	    <arg value="${js.dir}/zimbraMail/share/controller"/>
@@ -1198,6 +1200,9 @@ if (ext == null) ext = "";
 	    <arg value="-d=${build.jsapi-inventory.dir}"/>
 	    <arg value="-r=4"/>
 	    <arg value="-s"/>
+	    <arg value="${js.dir}/zimbra/common/ZmErrorDialog.js"/>
+	    <arg value="${js.dir}/zimbra/csfe"/>
+	    <arg value="${js.dir}/zimbraMail/abook"/>
 	    <arg value="${js.dir}/zimbraMail/core"/>
 	    <arg value="${js.dir}/zimbraMail/share/model"/>
 	    <arg value="${js.dir}/zimbraMail/share/controller"/>
