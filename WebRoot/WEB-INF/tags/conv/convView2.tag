@@ -166,5 +166,6 @@
         </table>
         
         <input type="hidden" name="doMessageAction" value="1"/>
+        <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     </form>
 </app:view>
