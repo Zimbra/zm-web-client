@@ -13,6 +13,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the contact assistant class.
+ */
+
+/**
+ * Creates a contact assistant.
+ * @class
+ * This class represents a contact assistant.
+ * 
+ * @extends	ZmAssistant
+ */
 ZmContactAssistant = function() {
 	ZmAssistant.call(this, ZmMsg.createNewContact, ZmMsg.ASST_CMD_CONTACT, ZmMsg.ASST_CMD_SUM_CONTACT);
 	this._commandIndex = {};	
@@ -29,6 +41,9 @@ ZmContactAssistant = function() {
 ZmContactAssistant.prototype = new ZmAssistant();
 ZmContactAssistant.prototype.constructor = ZmContactAssistant;
 
+/**
+ * @private
+ */
 ZmContactAssistant.prototype._lookupField =
 function(key) {
 	key = key.toLowerCase();
@@ -102,6 +117,9 @@ ZmContactAssistant._CONTACT_OBJECT_ORDER = [
 	ZmAssistant._BRACKETS, ZmObjectManager.PHONE, ZmObjectManager.URL, ZmObjectManager.EMAIL
 ];
 
+/**
+ * @private
+ */
 ZmContactAssistant.prototype.extraButtonHandler =
 function(dialog) {
 	var cc = AjxDispatcher.run("GetContactController");
@@ -109,6 +127,9 @@ function(dialog) {
 	return true;
 };
 
+/**
+ * @private
+ */
 ZmContactAssistant.prototype.okHandler =
 function(dialog) {
 	var cn = this.getContact();
@@ -116,6 +137,11 @@ function(dialog) {
 	return true;
 };
 
+/**
+ * Gets the help.
+ * 
+ * @return	{String}	the help HTML
+ */
 ZmContactAssistant.prototype.getHelp =
 function() {
 	if (this._helpCommand == null) {
@@ -148,6 +174,9 @@ ZmContactAssistant._ADDR_FIELDS = {
 	work: [ ZmContact.F_workStreet, ZmContact.F_workCity, ZmContact.F_workState, ZmContact.F_workPostalCode, ZmContact.F_workCountry]		
 };
 
+/**
+ * @private
+ */
 ZmContactAssistant.prototype._parseAddress =
 function(addr, type) {
 	var fields = ZmContactAssistant._ADDR_FIELDS[type];
@@ -158,6 +187,11 @@ function(addr, type) {
 	}
 };
 
+/**
+ * Gets the contact.
+ * 
+ * @return	{ZmContact}	the contact
+ */
 ZmContactAssistant.prototype.getContact =
 function() {
 	var contact = new ZmContact(null);
@@ -169,6 +203,9 @@ function() {
 	return contact;
 };
 
+/**
+ * @private
+ */
 ZmContactAssistant.prototype._capitalize =
 function(v) {
 	var words = v.split(/\s+/);
@@ -176,6 +213,9 @@ function(v) {
 	return words.join(" ");
 };
 
+/**
+ * @private
+ */
 ZmContactAssistant.prototype.handle =
 function(dialog, verb, args) {
 	dialog._setOkButton(AjxMsg.ok, true, true); // true, "NewContact");

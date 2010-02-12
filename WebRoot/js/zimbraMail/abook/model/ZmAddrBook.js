@@ -14,22 +14,31 @@
  */
 
 /**
-* 
-* @constructor
-* @class
-*
-* @author Parag Shah
-*
-* @param id			[int]			numeric ID
-* @param name		[string]		name
-* @param parent		[ZmOrganizer]	parent organizer
-* @param tree		[ZmTree]		tree model that contains this organizer
-* @param color		[int]			color of this address book
-* @param owner		[string]*		owner of the address book (if shared)
-* @param zid 		[string]*		the share ID of a shared addrbook
-* @param rid		[string]*		the remote folder id of a shared addrbook
-* @param restUrl	[string]*		The REST URL of this organizer.
-*/
+ * @overview
+ * This file contains the address book class.
+ */
+
+/**
+ * Creates an address book.
+ * @constructor
+ * @class
+ * This class represents an address book.
+ * 
+ * @author Parag Shah
+ *
+ * @param	{Hash}	params		a hash of parameters
+ * @param {int}	params.id			a numeric ID
+ * @param {String}	params.name		[string]	the name
+ * @param {ZmOrganizer}	params.parent		the parent organizer
+ * @param {ZmTree}	params.tree		a tree model that contains this organizer
+ * @param {int}	params.color		the color of this address book
+ * @param {String}	params.owner	the owner of the address book (if shared)
+ * @param {String}	params.zid 		the the share ID of a shared address book
+ * @param {String}	params.rid		the the remote folder id of a shared address book
+ * @param {String}	params.restUrl	the REST URL of this organizer
+ * 
+ * @extends		ZmFolder
+ */
 ZmAddrBook = function(params) {
 	params.type = ZmOrganizer.ADDRBOOK;
 	ZmFolder.call(this, params);
@@ -45,6 +54,13 @@ ZmAddrBook.ID_ADDRESSBOOK = ZmOrganizer.ID_ADDRBOOK; 							// XXX: may not be n
 
 // Static methods
 
+/**
+ * Sorts the address books.
+ * 
+ * @param	{ZmAddrBook}	addrBookA		the address book
+ * @param	{ZmAddrBook}	addrBookB		the address book
+ * @return	{int}	0 if the address books are the same; 1 if "a" is before "b"; -1 if "b" is before "a"
+ */
 ZmAddrBook.sortCompare = 
 function(addrBookA, addrBookB) {
 	var check = ZmOrganizer.checkSortArgs(addrBookA, addrBookB);
@@ -69,6 +85,11 @@ function(addrBookA, addrBookB) {
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmAddrBook.prototype.toString = 
 function() {
 	return "ZmAddrBook";
@@ -83,12 +104,20 @@ function() {
 	return "ContactsFolder";
 };
 
+/**
+ * Checks if the address book supports public access.
+ * 
+ * @return	{Boolean}		always returns <code>true</code>
+ */
 ZmAddrBook.prototype.supportsPublicAccess =
 function() {
 	// AddrBook's can be accessed outside of ZCS (i.e. REST)
 	return true;
 };
 
+/**
+ * @private
+ */
 ZmAddrBook.prototype.mayContain =
 function(what) {
 	if (!what) return true;
@@ -137,6 +166,9 @@ function(what) {
 
 // Callbacks
 
+/**
+ * @private
+ */
 ZmAddrBook.prototype.notifyCreate =
 function(obj, isSearch, skipNotify) {
 	// ignore creates of system folders

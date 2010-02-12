@@ -13,6 +13,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the contact cards view class.
+ */
+
+/**
+ * Creates a contact cards view.
+ * @class
+ * This class represents a contact cards view.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * @extends		ZmContactsBaseView
+ */
 ZmContactCardsView = function(params) {
 
 	params.className = params.className || "ZmContactCardsView";
@@ -55,23 +68,42 @@ ZmContactCardsView.CARD_NAME = "__contactCard__";
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmContactCardsView.prototype.toString = 
 function() {
 	return "ZmContactCardsView";
 };
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype.replenish = 
 function(list) {
 	ZmContactsBaseView.prototype.replenish.call(this, list);
 	this._layout();
 };
 
-// lets just try to optimally layout all the cards by not letting base class do its thing
+/**
+ * lets just try to optimally layout all the cards by not letting base class do its thing
+ * 
+ * @private
+ */
 ZmContactCardsView.prototype.setUI =
 function(defaultColumnSort) {
 	// do nothing
 };
 
+/**
+ * Sets the cards view contacts.
+ * 
+ * @param	{Array}	contacts		an array of {@link ZmContact} objects
+ * @param	{String}	sortField	the sort field name
+ * @param	{String}	folderId	the folder id
+ */
 ZmContactCardsView.prototype.set = 
 function(contacts, sortField, folderId) {
 
@@ -95,7 +127,11 @@ function(contacts, sortField, folderId) {
 	this._alphabetBar.enable(!contacts.isGal);
 };
 
-// Pretend row height is half since we have two cards to a row.
+/**
+ * Pretend row height is half since we have two cards to a row.
+ *
+ * @private
+ */
 ZmContactCardsView.prototype._setRowHeight =
 function() {
 	if (!this._rowHeight) {
@@ -104,6 +140,11 @@ function() {
 	}
 };
 
+/**
+ * Gets the alphabet bar.
+ * 
+ * @return	{ZmContactAlphabetBar}	the alphabet bar
+ */
 ZmContactCardsView.prototype.getAlphabetBar =
 function() {
 	return this._alphabetBar;
@@ -112,11 +153,17 @@ function() {
 
 // Private / protected methods
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype._generateObject =
 function(data, type) {
 	return this._objectManager.findObjects(data, true, type);
 };
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype._createItemHtml =
 function(contact, params) {
 
@@ -162,6 +209,9 @@ function(contact, params) {
 	return div;
 };
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype._layout =
 function() {
 	this._resetListView();
@@ -197,12 +247,19 @@ function() {
 	this._setRowHeight();
 };
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype._setNoResultsHtml =
 function() {
 	// overload and ignore
 };
 
-// overload this protected method so we can keep the alphabet bar around
+/**
+ * overload this protected method so we can keep the alphabet bar around
+ * 
+ * @private
+ */
 ZmContactCardsView.prototype._resetListView =
 function() {
 	var cards = document.getElementsByName(ZmContactCardsView.CARD_NAME);
@@ -220,6 +277,9 @@ function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype._modifyContact =
 function(ev) {
 	// always call base class first to resort list if necessary
@@ -230,7 +290,11 @@ function(ev) {
 	this._layout();
 };
 
-// we overload this base class method since cards view is unconventional
+/**
+ * we overload this base class method since cards view is unconventional.
+ * 
+ * @private
+ */
 ZmContactCardsView.prototype._getElFromItem = 
 function(item) {
 	var children = document.getElementsByName(ZmContactCardsView.CARD_NAME);
@@ -244,6 +308,9 @@ function(item) {
 	return null;
 };
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype._setDragProxyState =
 function(dropAllowed) {
 	if (this._dndImg || !AjxEnv.isLinux) {
@@ -257,6 +324,9 @@ function(dropAllowed) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype._handleResponseLoad =
 function(result, contact) {
 	var div = document.getElementById(this._getItemId(contact));
@@ -265,6 +335,9 @@ function(result, contact) {
 	div.innerHTML = newDiv.innerHTML;
 };
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype._getSiblingElement =
 function(element, next){
 	var item = this.getItemFromElement(this._kbAnchor);
@@ -280,6 +353,9 @@ function(element, next){
 
 // Listeners
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype._mouseDownListener = 
 function(ev) {
 	var div = ev.target;
@@ -294,6 +370,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype._changeListener =
 function(ev) {
 	// need custom handling for delete (can't just remove row)
@@ -310,6 +389,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype._controlListener =
 function(ev) {
 	if (ev.newWidth < 0 || ev.oldWidth == ev.newWidth) { return; }
@@ -321,6 +403,9 @@ function(ev) {
 	this._layout();
 };
 
+/**
+ * @private
+ */
 ZmContactCardsView.prototype._addrbookTreeListener =
 function(ev, treeView) {
 	var fields = ev.getDetail("fields");
@@ -331,6 +416,9 @@ function(ev, treeView) {
 
 // Static methods
 
+/**
+ * @private
+ */
 ZmContactCardsView._loadContact =
 function(cell, contactId) {
 	var contact = appCtxt.cacheGet(contactId);
@@ -345,6 +433,9 @@ function(cell, contactId) {
 	cell.parentNode.parentNode.removeChild(cell.parentNode);
 };
 
+/**
+ * @private
+ */
 ZmContactCardsView._moreDetailsCallback =
 function(contactId) {
 	var contact = appCtxt.getById(contactId);

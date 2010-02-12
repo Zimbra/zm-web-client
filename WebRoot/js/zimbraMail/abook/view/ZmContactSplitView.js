@@ -13,10 +13,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
-//////////////////////////////////////////////////////////////////////////////
-// ZmContactSplitView
-// - parent for the simple list view and xform view
-//////////////////////////////////////////////////////////////////////////////
+/**
+ * @overview
+ * This file contains the contact split view class.
+ */
+
+/**
+ * Creates a contact split view.
+ * @class
+ * This class represents the contact split view.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * @extends	DwtComposite
+ */
 ZmContactSplitView = function(params) {
 	if (arguments.length == 0) { return; }
 
@@ -45,46 +54,89 @@ ZmContactSplitView = function(params) {
 ZmContactSplitView.prototype = new DwtComposite;
 ZmContactSplitView.prototype.constructor = ZmContactSplitView;
 
-
 // Consts
 ZmContactSplitView.ALPHABET_HEIGHT = 35;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmContactSplitView.prototype.toString =
 function() {
 	return "ZmContactSplitView";
 };
 
+/**
+ * Gets the list view.
+ * 
+ * @return	{ZmContactSimpleView}	the list view
+ */
 ZmContactSplitView.prototype.getListView =
 function() {
 	return this._listPart;
 };
 
+/**
+ * Gets the controller.
+ * 
+ * @return	{ZmContactController}	the controller
+ */
 ZmContactSplitView.prototype.getController =
 function() {
 	return this._controller;
 };
 
+/**
+ * Gets the alphabet bar.
+ * 
+ * @return	{ZmContactAlphabetBar}	the alphabet bar
+ */
 ZmContactSplitView.prototype.getAlphabetBar =
 function() {
 	return this._alphabetBar;
 };
 
+/**
+ * Sets the view size.
+ * 
+ * @param	{int}	width		the width (in pixels)
+ * @param	{int}	height		the height (in pixels)
+ */
 ZmContactSplitView.prototype.setSize =
 function(width, height) {
 	DwtComposite.prototype.setSize.call(this, width, height);
 	this._sizeChildren(width, height);
 };
 
+/**
+ * Gets the title.
+ * 
+ * @return	{String}	the title
+ */
 ZmContactSplitView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
+/**
+ * Gets the size limit.
+ * 
+ * @param	{int}	offset		the offset
+ * @return	{int}	the size
+ */
 ZmContactSplitView.prototype.getLimit =
 function(offset) {
 	return this._listPart.getLimit(offset);
 };
 
+/**
+ * Sets the contact.
+ * 
+ * @param	{ZmContact}	contact		the contact
+ * @param	{Boolean}	isGal		<code>true</code> if is GAL
+ * 
+ */
 ZmContactSplitView.prototype.setContact =
 function(contact, isGal) {
 
@@ -108,6 +160,9 @@ function(contact, isGal) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype._handleResponseLoad =
 function(isGal, oldContact, resp, contact) {
 	if (contact.id == this._contact.id) {
@@ -115,12 +170,19 @@ function(isGal, oldContact, resp, contact) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype._handleErrorLoad =
 function(ex) {
 	this.clear();
 	// TODO - maybe display some kind of error?
 };
 
+/**
+ * Clears the view.
+ * 
+ */
 ZmContactSplitView.prototype.clear =
 function() {
 	var groupDiv = document.getElementById(this._contactBodyId);
@@ -138,11 +200,19 @@ function() {
 	this._setHeaderInfo(true);
 };
 
+/**
+ * Enables the alphabet bar.
+ * 
+ * @param	{Boolean}	enable		if <code>true</code>, enable the alphabet bar
+ */
 ZmContactSplitView.prototype.enableAlphabetBar =
 function(enable) {
 	this._alphabetBar.enable(enable);
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype._initialize =
 function(controller, dropTgt) {
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitView", {id:this._htmlElId});
@@ -182,11 +252,17 @@ function(controller, dropTgt) {
 	this._objectManager = new ZmObjectManager(this._contactView);
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype._tabStateChangeListener =
 function(ev) {
 	this._setContact(this._contact, this._isGalSearch);
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype._sizeChildren =
 function(width, height) {
 
@@ -204,6 +280,9 @@ function(width, height) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype._contactChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_CONTACT ||
@@ -216,6 +295,9 @@ function(ev) {
 	this._setContact(ev.source);
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype._addrbookTreeListener =
 function(ev, treeView) {
 	if (!this._contact) { return; }
@@ -240,11 +322,17 @@ function(ev, treeView) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype.__findObjects =
 function(objectManager, data, type, encodeHTML) {
 	return objectManager.findObjects(data, encodeHTML, type);
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype._setContact =
 function(contact, isGal, oldContact) {
 	var folderId = contact.folderId;
@@ -292,12 +380,18 @@ function(contact, isGal, oldContact) {
 	this._setHeaderInfo();
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype._resetVisibility =
 function(isGroup) {
 	this._contactView.setVisible(!isGroup);
 	this._contactGroupView.setVisible(isGroup);
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype._getTagHtml =
 function() {
 	var html = [];
@@ -328,6 +422,9 @@ function() {
 	return html.join("");
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype._setHeaderInfo =
 function(clear) {
 	// set tags
@@ -337,6 +434,9 @@ function(clear) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView.prototype._tagChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_TAG) { return; }
@@ -352,6 +452,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactSplitView._tagClicked =
 function(tagId) {
 	var sc = appCtxt.getSearchController();
@@ -363,10 +466,14 @@ function(tagId) {
 	}
 };
 
-//////////////////////////////////////////////////////////////////////////////
-// ZmContactSimpleView
-// - a simple contact list view (contains only full name)
-//////////////////////////////////////////////////////////////////////////////
+/**
+ * Creates a simple view.
+ * @class
+ * This class represents a simple contact list view (contains only full name).
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * @extends		ZmContactsBaseView
+ */
 ZmContactSimpleView = function(params) {
 
 	params.view = ZmId.VIEW_CONTACT_SIMPLE;
@@ -380,11 +487,23 @@ ZmContactSimpleView = function(params) {
 ZmContactSimpleView.prototype = new ZmContactsBaseView;
 ZmContactSimpleView.prototype.constructor = ZmContactSimpleView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmContactSimpleView.prototype.toString =
 function() {
 	return "ZmContactSimpleView";
 };
 
+/**
+ * Sets the list.
+ * 
+ * @param	{ZmContactList}		list		the list
+ * @param	{String}	defaultColumnSort		the sort field
+ * @param	{String}	folderId		the folder id
+ */
 ZmContactSimpleView.prototype.set =
 function(list, defaultColumnSort, folderId) {
 	var fid = folderId || this._controller.getFolderId();
@@ -397,6 +516,12 @@ function(list, defaultColumnSort, folderId) {
 	this.parent.enableAlphabetBar(!(list && list.isGal));
 };
 
+/**
+ * Sets the selection.
+ * 
+ * @param	{Object}	item		the item
+ * @param	{Boolean}	skipNotify	<code>true</code> to skip notification
+ */
 ZmContactSimpleView.prototype.setSelection =
 function(item, skipNotify) {
 	// clear the right, content pane if no item to select
@@ -407,6 +532,9 @@ function(item, skipNotify) {
 	ZmContactsBaseView.prototype.setSelection.call(this, item, skipNotify);
 };
 
+/**
+ * @private
+ */
 ZmContactSimpleView.prototype._setNoResultsHtml =
 function() {
 
@@ -428,6 +556,9 @@ function() {
 	this.parent.clear();
 };
 
+/**
+ * @private
+ */
 ZmContactSimpleView.prototype._changeListener =
 function(ev) {
 	ZmContactsBaseView.prototype._changeListener.call(this, ev);
@@ -444,6 +575,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactSimpleView.prototype._modifyContact =
 function(ev) {
 	ZmContactsBaseView.prototype._modifyContact.call(this, ev);
@@ -471,6 +605,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactSimpleView.prototype._layout =
 function() {
 	// explicitly remove each child (setting innerHTML causes mem leak)
@@ -495,8 +632,10 @@ function() {
  * just an icon and name. The mixed list view has headers, and the row can
  * be built in the standard way.
  *
- * @param contact	[ZmContact]		contact to display
- * @param params	[hash]*			optional params
+ * @param {ZmContact}	contact	the contact to display
+ * @param {Hash}	params	a hash of optional parameters
+ * 
+ * @private
  */
 ZmContactSimpleView.prototype._createItemHtml =
 function(contact, params) {
@@ -580,6 +719,9 @@ function(contact, params) {
 };
 
 // mixed view
+/**
+ * @private
+ */
 ZmContactSimpleView.prototype._getCellContents =
 function(htmlArr, idx, contact, field, colIdx, params) {
 	if (field == ZmItem.F_FROM) {
@@ -597,6 +739,9 @@ function(htmlArr, idx, contact, field, colIdx, params) {
 	return idx;
 };
 
+/**
+ * @private
+ */
 ZmContactSimpleView.prototype._getToolTip =
 function(params) {
 	return (params.item && (params.field == ZmItem.F_FROM)) ?
@@ -604,6 +749,9 @@ function(params) {
 			ZmContactsBaseView.prototype._getToolTip.apply(this, arguments);
 };
 
+/**
+ * @private
+ */
 ZmContactSimpleView.prototype._getDateToolTip =
 function(item, div) {
 	div._dateStr = div._dateStr || this._getDateToolTipText(item.modified, ["<b>", ZmMsg.lastModified, "</b><br>"].join(""));

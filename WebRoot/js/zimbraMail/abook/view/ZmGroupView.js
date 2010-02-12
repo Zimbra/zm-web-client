@@ -13,6 +13,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the contact group view classes.
+ */
+
+/**
+ * Creates the group view.
+ * @class
+ * This class represents the contact group view.
+ * 
+ * @param	{DwtComposite}	parent		the parent
+ * @param	{ZmContactController}		controller		the controller
+ * 
+ * @extends		DwtComposite
+ */
 ZmGroupView = function(parent, controller) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, {parent:parent, className:"ZmContactView", posStyle:DwtControl.ABSOLUTE_STYLE});
@@ -31,6 +46,11 @@ ZmGroupView = function(parent, controller) {
 ZmGroupView.prototype = new DwtComposite;
 ZmGroupView.prototype.constructor = ZmGroupView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmGroupView.prototype.toString =
 function() {
 	return "ZmGroupView";
@@ -46,11 +66,21 @@ ZmGroupView.DIALOG_Y = 100;
 // need this since contact view now derives from list controller
 ZmGroupView.prototype.getList = function() { return null; }
 
+/**
+ * Gets the contact.
+ * 
+ * @return	{ZmContact}	the contact
+ */
 ZmGroupView.prototype.getContact =
 function() {
 	return this._contact;
 };
 
+/**
+ * Gets the controller.
+ * 
+ * @return	{ZmContactController}	the controller
+ */
 ZmGroupView.prototype.getController =
 function() {
 	return this._controller;
@@ -810,11 +840,15 @@ function(ev) {
 
 
 /**
-* Creates a group list view for search results
-* @constructor
-* @class
-*
-* @param parent			[ZmGroupView]	containing widget
+ * Creates a group list view for search results
+ * @constructor
+ * @class
+ *
+ * @param {ZmGroupView}		parent			containing widget
+ * 
+ * @extends		DwtListView
+ * 
+ * @private
 */
 ZmGroupListView = function(parent) {
 	if (arguments.length == 0) { return; }
@@ -859,12 +893,17 @@ function(clickedEl, ev) {
 
 
 /**
-* Creates a group members list view
-* @constructor
-* @class
-*
-* @param parent			[ZmGroupView]	containing widget
-*/
+ * Creates a group members list view
+ * @constructor
+ * @class
+ *
+ * @param {ZmGroupView}	parent			containing widget
+ * 
+ * @extends		ZmGroupListView
+ * 
+ * 
+ * @private
+ */
 ZmGroupMembersListView = function (parent) {
 	if (arguments.length == 0) { return; }
 	ZmGroupListView.call(this, parent);

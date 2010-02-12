@@ -25,7 +25,7 @@
  * This class is a base class for any controller that manages lists of items (for example, mail or
  * contacts). It consolidates handling of list functionality (for example, selection) and of common
  * operations such as tagging and deletion. Operations may be accessed by the user through
- * either the tool bar or an action menu. The public method show() gets everything going,
+ * either the tool bar or an action menu. The public method {@link #show} gets everything going,
  * and then the controller just handles events.
  *
  * <p>Support is also present for handling multiple views (for example, contacts).</p>
@@ -35,7 +35,7 @@
  *
  * @author Conrad Damon
  *
- * @param {Object}		container	the containing shell
+ * @param {DwtControl}		container	the containing shell
  * @param {ZmApp}		app		the containing application
  * 
  * @extends		ZmController
@@ -109,12 +109,12 @@ function() {
 };
 
 /**
-* Performs some setup for displaying the given search results in a list view. Subclasses will need
-* to do the actual display work, typically by calling the list view's set() method.
-*
-* @param {ZmSearchResult}	searchResults		the search results
-* @param {DwtComposite}		view				the view type to use
-*/
+ * Performs some setup for displaying the given search results in a list view. Subclasses will need
+ * to do the actual display work, typically by calling the list view's {@link #set} method.
+ *
+ * @param {ZmSearchResult}	searchResults		the search results
+ * @param {DwtComposite}		view				the view type to use
+ */
 ZmListController.prototype.show	=
 function(searchResults, view) {
 	this._currentView = view || this._defaultView();

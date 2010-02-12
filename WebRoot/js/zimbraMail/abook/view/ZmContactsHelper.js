@@ -14,8 +14,16 @@
  */
 
 /**
+ * @overview
+ * This file contains a contact helper class.
+ * 
+ */
+
+/**
+ * Default constructor for helper class.
+ * @class
  * Miscellaneous contacts-related utility functions. So far, mostly things that
- * ZmContactPicker and ZmGroupView both need to perform a contacts search and
+ * {@link ZmContactPicker} and {@link ZmGroupView} both need to perform a contacts search and
  * display results in a list view.
  *
  * @author Conrad Damon
@@ -26,15 +34,16 @@ ZmContactsHelper = function() {};
  * Performs a contact search (in either personal contacts or in the GAL) and populates
  * the source list view with the results.
  *
- * @param obj			[object]		object that is doing the search
- * @param query			[String]		query string to search on
- * @param queryHint		[String]*		query hint (i.e. searching shared folders)
- * @param ascending		[boolean]*		if true, sort in ascending order
- * @param lastId		[int]*			ID of last item displayed (for pagination)
- * @param lastSortVal	[string]*		value of sort field for above item
- * @param respCallback	[AjxCallback]*	callback to call once response comes back from server
- * @param errorCallback	[AjxCallback]*	callback to call if error returned from server
- * @param accountName	[String]*		account to make search request on behalf of
+ * @param	{Hash}	params		a hash of parameters
+ * @param {Object}	params.obj			the object that is doing the search
+ * @param {String}	params.query			the query string to search on
+ * @param {String}	params.queryHint		the query hint (i.e. searching shared folders)
+ * @param {Boolean}	params.ascending		if <code>true</code>, sort in ascending order
+ * @param {int}	params.lastId		the ID of last item displayed (for pagination)
+ * @param {String}	params.lastSortVal	the value of sort field for above item
+ * @param {AjxCallback}	params.respCallback	the callback to call once response comes back from server
+ * @param {AjxCallback}	params.errorCallback	the callback to call if error returned from server
+ * @param {String}	params.accountName	the account to make search request on behalf of
  */
 ZmContactsHelper.search =
 function(params) {
@@ -54,7 +63,11 @@ function(params) {
 	search.execute({callback:params.respCallback, errorCallback:params.errorCallback});
 };
 
-// Take the contacts and create a list of their email addresses (a contact may have more than one)
+/**
+ * Take the contacts and create a list of their email addresses (a contact may have more than one)
+ * 
+ * @private
+ */
 ZmContactsHelper._processSearchResponse = 
 function(resp) {
 	var vec = resp.getResults(ZmItem.CONTACT);
@@ -78,6 +91,9 @@ function(resp) {
 	return list;
 };
 
+/**
+ * @private
+ */
 ZmContactsHelper._addContactToList = 
 function(list, contact, addr, isGroup) {
 	var email = new AjxEmailAddress(addr, null, contact.getFileAs(), null, isGroup);
@@ -87,7 +103,11 @@ function(list, contact, addr, isGroup) {
 	list.push(email);
 };
 
-// The items are AjxEmailAddress objects
+/**
+ * The items are AjxEmailAddress objects
+ * 
+ * @private
+ */
 ZmContactsHelper._getEmailField =
 function(html, idx, item, field, colIdx) {
 	if (field == ZmItem.F_TYPE) {

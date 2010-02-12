@@ -13,6 +13,22 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the contact controller class.
+ * 
+ */
+
+/**
+ * Creates the contact controller.
+ * @class
+ * This class represents the contact controller.
+ * 
+ * @param	{DwtControl}	container		the container
+ * @param	{ZmContactsApp}	abApp	the contacts application
+ * 
+ * @extends		ZmListController
+ */
 ZmContactController = function(container, abApp) {
 
 	ZmListController.call(this, container, abApp);
@@ -26,11 +42,22 @@ ZmContactController = function(container, abApp) {
 ZmContactController.prototype = new ZmListController();
 ZmContactController.prototype.constructor = ZmContactController;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmContactController.prototype.toString =
 function() {
 	return "ZmContactController";
 };
 
+/**
+ * Shows the contact.
+ * 
+ * @param	{ZmContact}	contact		the contact
+ * @param	{Boolean}	isDirty		<code>true</code> to mark the contact as dirty	
+ */
 ZmContactController.prototype.show =
 function(contact, isDirty) {
 	this._contact = contact;
@@ -69,6 +96,14 @@ function(actionCode) {
 	return true;
 };
 
+/**
+ * Changes the tab group.
+ * 
+ * @param	{int}	tabIdx		the tab index
+ * @param	{int}	prevTabIdx	the previous tab index
+ * 
+ * @see		DwtTabGroup
+ */
 ZmContactController.prototype.changeTabGroup =
 function(tabIdx, prevTabIdx) {
 	var tg = this._tabGroups[this._currentView][tabIdx];
@@ -83,6 +118,11 @@ function(tabIdx, prevTabIdx) {
 	rootTg.replaceMember(prevTg, tg);
 };
 
+/**
+ * Enables the toolbar.
+ * 
+ * @param	{Boolean}	enable	<code>true</code> to enable
+ */
 ZmContactController.prototype.enableToolbar =
 function(enable) {
 	if (enable) {
@@ -94,6 +134,9 @@ function(enable) {
 
 // Private methods (mostly overrides of ZmListController protected methods)
 
+/**
+ * @private
+ */
 ZmContactController.prototype._getToolBarOps =
 function() {
 	return [ZmOperation.SAVE, ZmOperation.CANCEL,
@@ -103,11 +146,17 @@ function() {
 			ZmOperation.TAG_MENU];
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._getActionMenuOps =
 function() {
 	return null;
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._getViewType =
 function() {
 	if (this._contact.isGroup()) {
@@ -117,6 +166,9 @@ function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view]) {
@@ -131,6 +183,9 @@ function(view) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
@@ -160,11 +215,17 @@ function(view) {
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._getTagMenuMsg =
 function() {
 	return ZmMsg.AB_TAG_CONTACT;
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._setViewContents =
 function(view) {
 	var cv = this._listView[view];
@@ -176,6 +237,9 @@ function(view) {
 	this._tabGroup = cv.getTabGroupMember();
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._createTabGroup =
 function(tabIdx) {
 	var tgName = this.toString() + "_" + tabIdx;
@@ -191,6 +255,9 @@ function(tabIdx) {
 	return tg;
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._initializeTabGroup =
 function(view) {
 	if (this._tabGroups[view]) { return; }
@@ -199,11 +266,17 @@ function(view) {
 	this._tabGroups[view] = {};
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._paginate =
 function(view, bPageForward) {
 	// TODO? - page to next/previous contact
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._resetOperations =
 function(parent, num) {
 	if (!parent) return;
@@ -219,6 +292,9 @@ function(parent, num) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._saveListener =
 function(ev, bIsPopCallback) {
 
@@ -300,17 +376,26 @@ function(ev, bIsPopCallback) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._cancelListener = 
 function(ev) {
 	this._app.popView();
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._printListener =
 function(ev) {
 	var url = "/h/printcontacts?id=" + this._contact.id;
 	window.open(appContextPath+url, "_blank");
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._doDelete = 
 function(items, hardDelete, attrs, skipPostProcessing) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
@@ -322,6 +407,9 @@ function(items, hardDelete, attrs, skipPostProcessing) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._preHideCallback =
 function(view, force) {
 	if (force) return true;
@@ -342,11 +430,17 @@ function(view, force) {
 	return false;
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._preUnloadCallback =
 function(view) {
 	return !this._listView[this._currentView].isDirty();
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._popShieldYesCallback =
 function() {
 	this._saveListener(null, true);
@@ -355,6 +449,9 @@ function() {
 	this._listView[this._currentView].cleanup();
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
@@ -362,11 +459,17 @@ function() {
 	this._listView[this._currentView].cleanup();
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._menuPopdownActionListener = 
 function(ev) {
 	// bug fix #3719 - do nothing
 };
 
+/**
+ * @private
+ */
 ZmContactController.prototype._getDefaultFocusItem = 
 function() {
 	return this._listView[this._currentView]._getDefaultFocusItem();

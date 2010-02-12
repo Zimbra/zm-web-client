@@ -461,10 +461,25 @@ ZmId.SEARCH_ADVANCED		= "ADV";				// open/close the search builder
 ZmId.SEARCH_LOCAL			= "LOCAL";				// added by the "local" zimlet
 
 // menu item (also see ZmId.ITEM_*)
+/**
+ * Defines the "all accounts" search type.
+ */
 ZmId.SEARCH_ALL_ACCOUNTS	= "ALL_ACCOUNTS";		// all accounts
+/**
+ * Defines the "any" search type.
+ */
 ZmId.SEARCH_ANY				= "ANY";				// all item types
+/**
+ * Defines the "GAL" search type.
+ */
 ZmId.SEARCH_GAL				= "GAL";				// GAL contacts
+/**
+ * Defines the "mail" search type.
+ */
 ZmId.SEARCH_MAIL			= "MAIL";				// mail items
+/**
+ * Defines the "shared" search type.
+ */
 ZmId.SEARCH_SHARED			= "SHARED";				// include shared items
 
 /*

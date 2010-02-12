@@ -14,23 +14,30 @@
  */
 
 /**
+ * @overview
+ * This file contains the contact list class.
+ * 
+ */
+
+/**
  * Create a new, empty contact list.
- * @constructor
  * @class
  * This class represents a list of contacts. In general, the list is the result of a
- * search. It may be the result of a GetContactsRequest, which returns all of the user's
+ * search. It may be the result of a <code>&lt;GetContactsRequest&gt;</code>, which returns all of the user's
  * local contacts. That list is considered to be canonical.
  * <p>
- * Loading of all local contacts has been optimized by delaying the creation of ZmContact objects until
+ * Loading of all local contacts has been optimized by delaying the creation of {@link ZmContact} objects until
  * they are needed. That has a big impact on IE, and not much on Firefox. Loading a subset
  * of attributes did not have much impact on load time, probably because a large majority
  * of contacts contain only those minimal fields.</p>
  *
  * @author Conrad Damon
  *
- * @param search	[ZmSearch]*		search that generated this list
- * @param isGal		[boolean]*		if true, this is a list of GAL contacts
- * @param type		[constant]*		item type
+ * @param {ZmSearch}	search	the search that generated this list
+ * @param {Boolean}	isGal		if <code>true</code>, this is a list of GAL contacts
+ * @param {constant}	type		the item type
+ * 
+ * @extends		ZmList
  */
 ZmContactList = function(search, isGal, type) {
 
@@ -63,11 +70,19 @@ ZmContactList.FIELD_SPLIT_CHAR		= '\u001D';	// char for splitting contact into f
 ZmContactList.IS_CONTACT_FIELD = {"id":true, "l":true, "d":true, "fileAsStr":true, "rev":true};
 
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmContactList.prototype.toString =
 function() {
 	return "ZmContactList";
 };
 
+/**
+ * @private
+ */
 ZmContactList.prototype.addLoadedCallback =
 function(callback) {
 	if (this.isLoaded) {
@@ -80,6 +95,9 @@ function(callback) {
 	this._loadedCallbacks.push(callback);
 };
 
+/**
+ * @private
+ */
 ZmContactList.prototype._finishLoading =
 function() {
 	DBG.timePt("done loading " + this.size() + " contacts");
@@ -93,11 +111,14 @@ function() {
 };
 
 /**
-* Retrieves the contacts from the back end, and parses the response. The list is then sorted.
-* This method is used only by the canonical list of contacts, in order to load their content.
-* <p>
-* Loading a minimal set of attributes did not result in a significant performance gain.</p>
-*/
+ * Retrieves the contacts from the back end, and parses the response. The list is then sorted.
+ * This method is used only by the canonical list of contacts, in order to load their content.
+ * <p>
+ * Loading a minimal set of attributes did not result in a significant performance gain.
+ * </p>
+ * 
+ * @private
+ */
 ZmContactList.prototype.load =
 function(callback, errorCallback, accountName) {
 	// only the canonical list gets loaded
@@ -111,6 +132,9 @@ function(callback, errorCallback, accountName) {
 	appCtxt.getAppController().sendRequest(params);
 };
 
+/**
+ * @private
+ */
 ZmContactList.prototype._handleResponseLoad =
 function(callback, result) {
 	DBG.timePt("got contact list");
@@ -139,6 +163,9 @@ function(callback, result) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactList.prototype._addContact =
 function(contact) {
 
@@ -159,13 +186,15 @@ function(contact) {
 	this.add(contact);
 };
 
-/*
-* Converts an anonymous contact object (contained by the JS returned by load request)
-* into a ZmContact, and updates the containing list if it is the canonical one.
-*
-* @param contact	[object]	a contact
-* @param idx		[int]*		index of contact in canonical list
-*/
+/**
+ * Converts an anonymous contact object (contained by the JS returned by load request)
+ * into a ZmContact, and updates the containing list if it is the canonical one.
+ *
+ * @param {Object}	contact		a contact
+ * @param {int}	idx		the index of contact in canonical list
+ * 
+ * @private
+ */
 ZmContactList.prototype._realizeContact =
 function(contact, idx) {
 	if (contact instanceof ZmContact) { return contact; }
@@ -185,11 +214,13 @@ function(contact, idx) {
 	return realContact;
 };
 
-/*
-* Finds the array index for the contact with the given ID.
-*
-* @param id		[int]		a contact ID
-*/
+/**
+ * Finds the array index for the contact with the given ID.
+ *
+ * @param {int}	id		the contact ID
+ * @return	{int}	the index
+ * @private
+ */
 ZmContactList.prototype._getIndexById =
 function(id) {
 	var a = this.getArray();
@@ -202,12 +233,13 @@ function(id) {
 };
 
 /**
-* Override in order to make sure the contacts have been realized. We don't
-* call realizeContact() since this is not the canonical list.
-*
-* @param offset		[int]		starting index
-* @param limit		[int]		size of sublist
-*/
+ * Override in order to make sure the contacts have been realized. We don't
+ * call realizeContact() since this is not the canonical list.
+ *
+ * @param {int}	offset		the starting index
+ * @param {int}	limit		the size of sublist
+ * @return	{AjxVector}	a vector of {@link ZmContact} objects
+ */
 ZmContactList.prototype.getSubList =
 function(offset, limit, folderId) {
 	if (folderId && this.isCanonical) {
@@ -247,11 +279,11 @@ function(offset, limit, folderId) {
 };
 
 /**
-* Override in order to make sure the contact has been realized. Canonical list only.
-* Returns a ZmContact.
-*
-* @param id		[int]		a contact ID
-*/
+ * Override in order to make sure the contact has been realized. Canonical list only.
+ *
+ * @param {int}	id		the contact ID
+ * @return	{ZmContact}	the contact or <code>null</code> if not found
+ */
 ZmContactList.prototype.getById =
 function(id) {
 	if (!id || !this.isCanonical) return null;
@@ -261,10 +293,11 @@ function(id) {
 };
 
 /**
-* Returns the contact with the given address, if any. Canonical list only.
-*
-* @param address	[string]	an email address
-*/
+ * Gets the contact with the given address, if any (canonical list only).
+ *
+ * @param {String}	address	an email address
+ * @return	{ZmContact}	the contact or <code>null</code> if not found
+ */
 ZmContactList.prototype.getContactByEmail =
 function(address) {
 	if (!address || !this.isCanonical) return null;
@@ -279,6 +312,12 @@ function(address) {
 	}
 };
 
+/**
+ * Gets the contact.
+ * 
+ * @param	{String}	addr		the IM address
+ * @return	{ZmContact}	the contact or <code>null</code> if not found
+ */
 ZmContactList.prototype.getContactByIMAddress =
 function(addr) {
 	var contact = this._imAddressToContact[addr.toLowerCase()];
@@ -286,12 +325,11 @@ function(addr) {
 };
 
 /**
-* Returns information about the contact with the given phone number, if any.
-* Canonical list only.
-*
-* @param phone	[string]	a phone number
-* @return	[Object]	an object with contact = the contact & field = the field with the matching phone number
-*/
+ * Gets information about the contact with the given phone number, if any (canonical list only).
+ *
+ * @param {String}	phone	the phone number
+ * @return	{Hash}	an object with <code>contact</code> = the contact & <code>field</code> = the field with the matching phone number
+ */
 ZmContactList.prototype.getContactByPhone =
 function(phone) {
 	if (!phone || !this.isCanonical) return null;
@@ -311,15 +349,14 @@ function(phone) {
  * <p>
  * This method calls the base class for normal "moves" UNLESS we're dealing w/
  * shared items (or folder) in which case we must send a CREATE request for the
- * given folder to the server followed by a hard delete of the shared contact
- * (this is temporary, until we get better server support).
+ * given folder to the server followed by a hard delete of the shared contact.
  * </p>
  *
- * @param params		[hash]			hash of params:
- *        items			[array]			a list of items to move
- *        folder		[ZmFolder]		destination folder
- *        attrs			[hash]			additional attrs for SOAP command
- *        outOfTrash	[boolean]		if true, we are moving contacts out of Trash
+ * @param {Hash}	params		a hash of parameters
+ * @param	{Array}       params.items			a list of items to move
+ * @param	{ZmFolder}	params.folder		the destination folder
+ * @param	{Hash}	       params.attrs		the additional attrs for SOAP command
+ * @param	{Boolean}	params.outOfTrash	if <code>true</code>, we are moving contacts out of trash
  */
 ZmContactList.prototype.moveItems =
 function(params) {
@@ -377,6 +414,9 @@ function(params) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactList.prototype._handleResponseMoveBatchCmd =
 function(result) {
 	var resp = result.getResponse().BatchResponse.ContactActionResponse;
@@ -392,6 +432,9 @@ function(result) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactList.prototype._handleResponseLoadMove =
 function(moveBatchCmd, hardMove) {
 	var deleteCmd = new AjxCallback(this, this._itemAction, [{items:hardMove, action:"delete"}]);
@@ -401,11 +444,17 @@ function(moveBatchCmd, hardMove) {
 	moveBatchCmd.run(respCallback);
 };
 
+/**
+ * @private
+ */
 ZmContactList.prototype._handleResponseBatchLoad =
 function(batchCmd, folder, result, contact) {
 	batchCmd.add(this._getCopyCmd(contact, folder));
 };
 
+/**
+ * @private
+ */
 ZmContactList.prototype._getCopyCmd =
 function(contact, folder) {
 	var temp = new ZmContact(null, this);
@@ -420,10 +469,10 @@ function(contact, folder) {
 /**
  * Deletes contacts after checking that this is not a GAL list.
  *
- * @param params		[hash]			hash of params:
- *        items			[Array]			list of items to delete
- *        hardDelete	[boolean]		whether to force physical removal of items
- *        attrs			[Object]		additional attrs for SOAP command
+ * @param {Hash}	params		a hash of parameters
+ * @param	{Array}	       params.items			the list of items to delete
+ * @param	{Boolean}	params.hardDelete	if <code>true</code>, force physical removal of items
+ * @param	{Object}	params.attrs			the additional attrs for SOAP command
  */
 ZmContactList.prototype.deleteItems =
 function(params) {
@@ -434,11 +483,22 @@ function(params) {
 	ZmList.prototype.deleteItems.call(this, params);
 };
 
+/**
+ * Sets the is GAL flag.
+ * 
+ * @param	{Boolean}	isGal		<code>true</code> if contact list is GAL
+ */
 ZmContactList.prototype.setIsGal =
 function(isGal) {
 	this.isGal = isGal;
 };
 
+/**
+ * Moves the items.
+ * 
+ * @param	{Array}	items		an array of {@link ZmContact} objects
+ * @param	{String}	folderId	the folder id
+ */
 ZmContactList.prototype.moveLocal =
 function(items, folderId) {
 	// don't remove any contacts from the canonical list
@@ -451,6 +511,11 @@ function(items, folderId) {
 	}
 };
 
+/**
+ * Deletes the items.
+ * 
+ * @param	{Array}	items		an array of {@link ZmContact} objects
+ */
 ZmContactList.prototype.deleteLocal =
 function(items) {
 	ZmList.prototype.deleteLocal.call(this, items);
@@ -459,7 +524,11 @@ function(items) {
 	}
 };
 
-// Handle modified contact.
+/**
+ * Handle modified contact.
+ * 
+ * @private
+ */
 ZmContactList.prototype.modifyLocal =
 function(item, details) {
 	if (details) {
@@ -493,11 +562,19 @@ function(item, details) {
 	}
 };
 
+/**
+ * Creates the item local.
+ * 
+ * @param	{ZmContact}	item		the item
+ */
 ZmContactList.prototype.createLocal =
 function(item) {
 	this._updateHashes(item, true);
 };
 
+/**
+ * @private
+ */
 ZmContactList.prototype._updateHashes =
 function(contact, doAdd) {
 
@@ -556,13 +633,21 @@ function(contact, doAdd) {
 	}
 };
 
-// Strips all non-digit characters from a phone number.
+/**
+ * Strips all non-digit characters from a phone number.
+ * 
+ * @private
+ */
 ZmContactList.prototype._getPhoneDigits =
 function(phone) {
 	return phone.replace(/[^\d]/g, '');
 };
 
-// Returns the position at which the given contact should be inserted in this list.
+/**
+ * Returns the position at which the given contact should be inserted in this list.
+ * 
+ * @private
+ */
 ZmContactList.prototype._sortIndex =
 function(contact) {
 	var a = this._vector.getArray();
@@ -574,6 +659,9 @@ function(contact) {
 	return a.length;
 };
 
+/**
+ * @private
+ */
 ZmContactList.prototype._handleResponseModifyItem =
 function(item, result) {
 	// NOTE: we overload and do nothing b/c base class does more than we want

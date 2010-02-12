@@ -13,6 +13,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the edit contact view classes.
+ */
+
+/**
+ * Creates the edit contact view.
+ * @class
+ * This class represents the edit contact view.
+ * 
+ * @param	{DwtComposite}	parent		the parent
+ * @param	{ZmContactController}		controller		the controller
+ * 
+ * @extends		DwtForm
+ */
 ZmEditContactView = function(parent, controller) {
 	if (arguments.length == 0) return;
 
@@ -56,12 +71,22 @@ ZmEditContactView = function(parent, controller) {
 ZmEditContactView.prototype = new DwtForm;
 ZmEditContactView.prototype.constructor = ZmEditContactView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmEditContactView.prototype.toString = function() {
 	return "ZmEditContactView";
 };
 
 // form information that you can override
 
+/**
+ * Gets the form items.
+ * 
+ * @return	{Hash}	a hash of form items
+ */
 ZmEditContactView.prototype.getFormItems = function() {
 	if (!this._formItems) {
 		this._formItems = [
@@ -143,16 +168,18 @@ ZmEditContactView.prototype.getFormItems = function() {
 };
 
 /**
- * Returns the form item with the given id.
+ * Gets the form item with the given id.
  * <p>
  * <strong>Note:</strong>
  * This method is especially useful as a way to modify the default
  * set of form items without redeclaring the entire form declaration.
  *
- * @param id        [string] Form item identifier.
- * @param formItems [Array]  (Optional) The list of form items. If not
+ * @param {String}	id        [string] Form item identifier.
+ * @param {Array}	[formItems] the list of form items. If not
  *                           specified, the form items array returned
- *                           by <code>getFormItems()</code> is used.
+ *                           by {@link #getFormItems} is used.
+ *                           
+ * @return	{Array}	the form items or <code>null</code> for none
  */
 ZmEditContactView.prototype.getFormItemById = function(id, formItems) {
 	formItems = formItems || this.getFormItems() || [];
@@ -163,10 +190,20 @@ ZmEditContactView.prototype.getFormItemById = function(id, formItems) {
 	return null;
 };
 
+/**
+ * Gets the email options.
+ * 
+ * @return	{Object}	returns <code>null</code>
+ */
 ZmEditContactView.prototype.getEmailOptions = function() {
 	return null;
 };
 
+/**
+ * Gets the phone options.
+ * 
+ * @return	{Array}	an array of phone options
+ */
 ZmEditContactView.prototype.getPhoneOptions = function() {
 	return [
 		{ value: ZmContact.F_mobilePhone, label: ZmMsg.phoneLabelMobile },
@@ -185,6 +222,11 @@ ZmEditContactView.prototype.getPhoneOptions = function() {
 	];
 };
 
+/**
+ * Gets the IM options.
+ * 
+ * @return	{Array}	an array of IM options
+ */
 ZmEditContactView.prototype.getIMOptions = function() {
 	return [
 		{ value: "local", label: ZmMsg.imGateway_xmpp },
@@ -195,6 +237,11 @@ ZmEditContactView.prototype.getIMOptions = function() {
 	];
 };
 
+/**
+ * Gets the address options.
+ * 
+ * @return	{Array}	an array of address options
+ */
 ZmEditContactView.prototype.getAddressOptions = function() {
 	return [
 		{ value: "home", label: ZmMsg.home },
@@ -203,6 +250,11 @@ ZmEditContactView.prototype.getAddressOptions = function() {
 	];
 };
 
+/**
+ * Gets the URL options.
+ * 
+ * @return	{Array}	an array of URL options
+ */
 ZmEditContactView.prototype.getURLOptions = function() {
 	return [
 		{ value: ZmContact.F_homeURL, label: ZmMsg.home },
@@ -211,6 +263,11 @@ ZmEditContactView.prototype.getURLOptions = function() {
 	];
 };
 
+/**
+ * Gets the other options.
+ * 
+ * @return	{Array}	an array of other options
+ */
 ZmEditContactView.prototype.getOtherOptions = function() {
 	return [
 		{ value: ZmContact.F_birthday, label: ZmMsg.AB_FIELD_birthday },
@@ -219,6 +276,11 @@ ZmEditContactView.prototype.getOtherOptions = function() {
 	];
 };
 
+/**
+ * Gets the "file as" options.
+ * 
+ * @return	{Array}	an array of "file as" options
+ */
 ZmEditContactView.prototype.getFileAsOptions = function() {
 	return [
 		{ value: ZmContact.FA_LAST_C_FIRST, label: ZmMsg.AB_FILE_AS_lastFirst },
@@ -304,6 +366,12 @@ ZmEditContactView.prototype.TEMPLATE = "abook.Contacts#ZmEditContactView";
 // Public methods
 //
 
+/**
+ * Sets the contact.
+ * 
+ * @param	{ZmContact}	contact		the contact
+ * @param	{Boolean}	isDirty		<code>true</code> if the contact is dirty
+ */
 ZmEditContactView.prototype.set = function(contact, isDirty) {
 	if (typeof arguments[0] == "string") {
 		DwtForm.prototype.set.apply(this, arguments);
@@ -387,10 +455,20 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 	appCtxt.notifyZimlets("onContactEdit", [this, this._contact, this._htmlElId]);
 };
 
+/**
+ * Gets the contact.
+ * 
+ * @return	{ZmContact}	the contact
+ */
 ZmEditContactView.prototype.getContact = function() {
 	return this._contact;
 };
 
+/**
+ * Gets the modified attributes.
+ * 
+ * @return	{Hash}	a hash of attributes
+ */
 ZmEditContactView.prototype.getModifiedAttrs = function() {
 	var itemIds = this.getDirtyItems();
 	var counts = {};
@@ -489,10 +567,18 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 	return attributes;
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.__trimNumber = function(s) {
 	return s.replace(/\d+$/,"");
 };
 
+/**
+ * Checks if the view is empty.
+ * 
+ * @return	{Boolean}	<code>true</code> if the view is empty
+ */
 ZmEditContactView.prototype.isEmpty = function() {
 	for (var id in this._items) {
 		var item = this._items[id];
@@ -502,10 +588,17 @@ ZmEditContactView.prototype.isEmpty = function() {
 	return true;
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype.enableInputs = function(bEnable) {
 	// ignore
 };
 
+/**
+ * Cleanup the view.
+ * 
+ */
 ZmEditContactView.prototype.cleanup = function() {
 	this._contact = null;
 };
@@ -514,8 +607,18 @@ ZmEditContactView.prototype.cleanup = function() {
 // ZmListController methods
 //
 
+/**
+ * Gets the list.
+ * 
+ * @return	{ZmContactList}	the list	
+ */
 ZmEditContactView.prototype.getList = function() { return null; };
 
+/**
+ * Gets the controller.
+ * 
+ * @return	{ZmContactController}	the controller
+ */
 ZmEditContactView.prototype.getController = function() {
 	return this._controller;
 };
@@ -529,6 +632,11 @@ ZmEditContactView.prototype.getSelectionCount = function() {
 	return 1;
 };
 
+/**
+ * Gets the title.
+ * 
+ * @return	{String}	the title
+ */
 ZmEditContactView.prototype.getTitle = function() {
 	return [ZmMsg.zimbraTitle, ZmMsg.contact].join(": ");
 };
@@ -544,6 +652,9 @@ ZmEditContactView.prototype._handleResponseCheckReplenish = function() {};
 // Protected methods
 //
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype._getFullName = function() {
 	var contact = {
 		fileAs: this.getValue("FILE_AS"),
@@ -553,10 +664,16 @@ ZmEditContactView.prototype._getFullName = function() {
 	return ZmContact.computeFileAs(contact) || ZmMsg.noName;
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype._getDefaultFocusItem = function() {
 	return this.getControl("FIRST");
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype._setFolder = function(organizerOrId) {
 	var organizer = organizerOrId instanceof ZmOrganizer ? organizerOrId : appCtxt.getById(organizerOrId);
 	this.setLabel("FOLDER", organizer.getName());
@@ -566,6 +683,9 @@ ZmEditContactView.prototype._setFolder = function(organizerOrId) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype._getDialogXY =
 function() {
 	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
@@ -574,6 +694,9 @@ function() {
 
 // listeners
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype._handleDirty = function() {
 	var items = this.getDirtyItems();
 	// toggle save
@@ -586,6 +709,9 @@ ZmEditContactView.prototype._handleDirty = function() {
 	this.setValue('DEBUG', items.join(', '));
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype._handleDetailCheck = function(itemId, id) {
 	this.setValue(itemId, !this.getValue(itemId));
 	this.update();
@@ -595,6 +721,9 @@ ZmEditContactView.prototype._handleDetailCheck = function(itemId, id) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype._handleFileAsChange = function() {
 	var fa = this.getValue("FILE_AS");
 	var showCompany =
@@ -615,6 +744,9 @@ ZmEditContactView.prototype._handleFileAsChange = function() {
 	}
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype._handleFolderButton = function(ev) {
 	var dialog = appCtxt.getChooseFolderDialog();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, new AjxCallback(this, this._handleChooseFolder));
@@ -633,12 +765,18 @@ ZmEditContactView.prototype._handleFolderButton = function(ev) {
 	dialog.popup(params);
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype._handleChooseFolder = function(organizer) {
 	var dialog = appCtxt.getChooseFolderDialog();
 	dialog.popdown();
 	this._setFolder(organizer);
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype._contactChangeListener = function(ev) {
 	if (ev.type != ZmEvent.S_CONTACT) return;
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
@@ -647,6 +785,9 @@ ZmEditContactView.prototype._contactChangeListener = function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype._tagChangeListener = function(ev) {
 	if (ev.type != ZmEvent.S_TAG) { return; }
 
@@ -665,6 +806,9 @@ ZmEditContactView.prototype._tagChangeListener = function(ev) {
 // Private methods
 //
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype.__getDetailsMenu = function() {
 	var menu = new DwtMenu({parent:this.getControl("DETAILS"),style:DwtMenu.POPUP_STYLE});
 	var ids = ZmEditContactView.SHOW_ID_PREFIXES;
@@ -690,6 +834,9 @@ ZmEditContactView.prototype.__getDetailsMenu = function() {
 	return count > 2 ? menu : null;
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype.__initRowsControl =
 function(nattrs,id,prefixes,onlyvalue,listAttrs,skipSetValue) {
 	var array = [];
@@ -710,6 +857,9 @@ function(nattrs,id,prefixes,onlyvalue,listAttrs,skipSetValue) {
 	return array;
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype.__initRowsOther =
 function(nattrs,id,prefixes,onlyvalue,listAttrs) {
 	var array = this.__initRowsControl.call(this,nattrs,id,prefixes,onlyvalue,listAttrs,true);
@@ -748,6 +898,9 @@ function(nattrs,id,prefixes,onlyvalue,listAttrs) {
 	this.setValue(id, array);
 };
 
+/**
+ * @private
+ */
 ZmEditContactView.prototype.__initRowsAddress = function(nattrs,id,listAttrs) {
 	var array = [];
 	var prefixes = ZmEditContactView.ADDR_PREFIXES;
@@ -776,6 +929,9 @@ ZmEditContactView.prototype.__initRowsAddress = function(nattrs,id,listAttrs) {
 
 // functions
 
+/**
+ * @private
+ */
 ZmEditContactView.__clearAddressAttributes = function(attributes, prefix, count) {
 	var suffixes = ZmEditContactView.ADDR_SUFFIXES;
 	for (var i = 0; i < suffixes.length; i++) {
@@ -788,7 +944,17 @@ ZmEditContactView.__clearAddressAttributes = function(attributes, prefix, count)
 //
 // Class: ZmEditContactViewImage
 //
-
+/**
+ * Creates the contact view image.
+ * @class
+ * This class represents a contact view image.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends		DwtControl
+ * 
+ * @private
+ */
 ZmEditContactViewImage = function(params) {
 	if (arguments.length == 0) return;
 	params.className = params.className || "ZmEditContactViewImage";
@@ -822,6 +988,12 @@ ZmEditContactViewImage = function(params) {
 ZmEditContactViewImage.prototype = new DwtControl;
 ZmEditContactViewImage.prototype.constructor = ZmEditContactViewImage;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ * @private
+ */
 ZmEditContactViewImage.prototype.toString = function() {
 	return "ZmEditContactViewImage";
 };
@@ -833,6 +1005,12 @@ ZmEditContactViewImage.IMAGE_URL = "/service/content/proxy?aid=@aid@";
 
 // Public methods
 
+/**
+ * Sets the image value.
+ * 
+ * @param	{String}	value	the image src value
+ * @private
+ */
 ZmEditContactViewImage.prototype.setValue = function(value) {
 	this._src = value;
 	if (!value) {
@@ -848,12 +1026,21 @@ ZmEditContactViewImage.prototype.setValue = function(value) {
 	this.parent.setDirty("IMAGE", true);
 };
 
+/**
+ * Gets the value.
+ * 
+ * @return	{String}	the image src value
+ * @private
+ */
 ZmEditContactViewImage.prototype.getValue = function() {
 	return this._src;
 };
 
 // Protected methods
 
+/**
+ * @private
+ */
 ZmEditContactViewImage.prototype._imageLoaded = function() {
 	this._imgEl.removeAttribute("width");
 	this._imgEl.removeAttribute("height");
@@ -862,6 +1049,9 @@ ZmEditContactViewImage.prototype._imageLoaded = function() {
     this._imgEl.setAttribute(w>h ? 'width' : 'height', 48);
 };
 
+/**
+ * @private
+ */
 ZmEditContactViewImage.prototype._chooseImage = function() {
 	var dialog = appCtxt.getUploadDialog();
 	dialog.setAllowedExtensions(["png","jpg","jpeg","gif"]);
@@ -874,6 +1064,9 @@ ZmEditContactViewImage.prototype._chooseImage = function() {
 	dialog.popup(folder, callback, title, location, oneFileOnly, noResolveAction);
 };
 
+/**
+ * @private
+ */
 ZmEditContactViewImage.prototype._handleImageSaved = function(folder, filenames, files) {
 	var dialog = appCtxt.getUploadDialog();
 	dialog.popdown();
@@ -881,6 +1074,9 @@ ZmEditContactViewImage.prototype._handleImageSaved = function(folder, filenames,
 	this.parent.update();
 };
 
+/**
+ * @private
+ */
 ZmEditContactViewImage.prototype._createElement = function() {
 	return document.createElement("FIELDSET");
 };
@@ -889,6 +1085,17 @@ ZmEditContactViewImage.prototype._createElement = function() {
 // Class: ZmEditContactViewRows
 //
 
+/**
+ * Creates the contact view rows.
+ * @class
+ * This class represents the contact view rows.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends		DwtFormRows
+ * 
+ * @private
+ */
 ZmEditContactViewRows = function(params) {
 	if (arguments.length == 0) return;
 	if (!params.formItemDef) params.formItemDef = {};
@@ -913,6 +1120,12 @@ ZmEditContactViewRows = function(params) {
 ZmEditContactViewRows.prototype = new DwtFormRows;
 ZmEditContactViewRows.prototype.constructor = ZmEditContactViewRows;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ * @private
+ */
 ZmEditContactViewRows.prototype.toString = function() {
 	return "ZmEditContactViewRows";
 };
@@ -924,11 +1137,24 @@ ZmEditContactViewRows.prototype.setDirty = function() {
 	this.parent.setDirty(this._itemDef.id, this.isDirty());
 };
 
+/**
+ * Checks if the row of the given type is at maximum.
+ * 
+ * @param	{constant}	type		the type
+ * @return	{Boolean}	<code>true</code> if at maximum
+ * @private
+ */
 ZmEditContactViewRows.prototype.isMaxedOut = function(type) {
 	var maximums = this._maximums && this._maximums[type];
 	return maximums != null && maximums.count >= maximums.max;
 };
 
+/**
+ * Checks if all rows are at maximum.
+ * 
+ * @return	{Boolean}	<code>true</code> if at maximum
+ * @private
+ */
 ZmEditContactViewRows.prototype.isAllMaxedOut = function() {
 	if (!this._options || this._options.length == 0) return false;
 	// determine which ones are maxed out
@@ -945,6 +1171,17 @@ ZmEditContactViewRows.prototype.isAllMaxedOut = function() {
 // Class: ZmEditContactViewInputSelectRows
 //
 
+/**
+ * Creates the input select rows.
+ * @class
+ * This class represents the input select rows for the contact view.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends		ZmEditContactViewRows
+ * 
+ * @private
+ */
 ZmEditContactViewInputSelectRows = function(params) {
 	if (arguments.length == 0) return;
 	ZmEditContactViewRows.apply(this, arguments);
@@ -952,16 +1189,34 @@ ZmEditContactViewInputSelectRows = function(params) {
 ZmEditContactViewInputSelectRows.prototype = new ZmEditContactViewRows;
 ZmEditContactViewInputSelectRows.prototype.constructor = ZmEditContactViewInputSelectRows;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ * @private
+ */
 ZmEditContactViewInputSelectRows.prototype.toString = function() {
 	return "ZmEditContactViewInputSelectRows";
 };
 
 // DwtFormRows methods
 
+/**
+ * Gets the max rows.
+ * 
+ * @return	{int}	the maximum rows
+ * @private
+ */
 ZmEditContactViewInputSelectRows.prototype.getMaxRows = function() {
 	return this.isAllMaxedOut() ? this.getRowCount() : Number.MAX_VALUE;
 };
 
+/**
+ * Sets the value.
+ * 
+ * @param	{Array|String}		array		an array of {String} values
+ * @private
+ */
 ZmEditContactViewInputSelectRows.prototype.setValue = function(array) {
 	if (arguments[0] instanceof Array) {
 		DwtFormRows.prototype.setValue.apply(this, arguments);
@@ -976,6 +1231,13 @@ ZmEditContactViewInputSelectRows.prototype.setValue = function(array) {
 	}
 };
 
+/**
+ * Adds a row.
+ * 
+ * @param		{ZmItem}	itemDef		the item definition (not used)
+ * @param	{int}	index		the index to add the row at
+ * @private
+ */
 ZmEditContactViewInputSelectRows.prototype.addRow = function(itemDef, index) {
 	DwtFormRows.prototype.addRow.apply(this, arguments);
 	index = index != null ? index : this.getRowCount() - 1;
@@ -997,12 +1259,21 @@ ZmEditContactViewInputSelectRows.prototype.addRow = function(itemDef, index) {
 	}
 };
 
+/**
+ * Removes a row.
+ * 
+ * @param	{String}		indexOrId	the row index or item id
+ * @private
+ */
 ZmEditContactViewInputSelectRows.prototype.removeRow = function(indexOrId) {
 	var adjust = this._subtract(indexOrId);
 	DwtFormRows.prototype.removeRow.apply(this, arguments);
 	if (adjust) this._adjustMaximums();
 };
 
+/**
+ * @private
+ */
 ZmEditContactViewInputSelectRows.prototype._setControlIds = function(rowId, index) {
 	DwtFormRows.prototype._setControlIds.call(this, rowId, index);
 	var item = this._items[rowId];
@@ -1014,6 +1285,9 @@ ZmEditContactViewInputSelectRows.prototype._setControlIds = function(rowId, inde
 
 // Protected methods
 
+/**
+ * @private
+ */
 ZmEditContactViewInputSelectRows.prototype._subtract = function(indexOrId) {
 	var value = this.getValue(indexOrId);
 	return this._subtractType(value && value.type);
@@ -1079,6 +1353,17 @@ ZmEditContactViewInputSelectRows.prototype._resetMaximums = function() {
 // Class: ZmEditContactViewInputSelect
 //
 
+/**
+ * Creates the contact view input select.
+ * @class
+ * This class represents an input select.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends		DwtComposite
+ * 
+ * @private
+ */
 ZmEditContactViewInputSelect = function(params) {
 	if (arguments.length == 0) return;
 	this._formItemId = params.formItemDef.id;
@@ -1093,6 +1378,12 @@ ZmEditContactViewInputSelect = function(params) {
 ZmEditContactViewInputSelect.prototype = new DwtComposite;
 ZmEditContactViewInputSelect.prototype.constructor = ZmEditContactViewInputSelect;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ * @private
+ */
 ZmEditContactViewInputSelect.prototype.toString = function() {
 	return "ZmEditContactViewInputSelect";
 };
@@ -1103,6 +1394,12 @@ ZmEditContactViewInputSelect.prototype.TEMPLATE = "abook.Contacts#ZmEditContactV
 
 // Public methods
 
+/**
+ * Sets the value.
+ * 
+ * @param	{Object}	value		the value
+ * @private
+ */
 ZmEditContactViewInputSelect.prototype.setValue = function(value) {
 	var hasOptions = this._options.length > 0;
 	var inputValue = hasOptions ? value && value.value : value;
@@ -1113,6 +1410,13 @@ ZmEditContactViewInputSelect.prototype.setValue = function(value) {
 		this._select.setSelectedValue((value && value.type) || this._options[0].value);
 	}
 };
+
+/**
+ * Gets the value.
+ * 
+ * @return	{Object}		the value
+ * @private
+ */
 ZmEditContactViewInputSelect.prototype.getValue = function() {
 	var hasOptions = this._options.length > 0;
 	var inputValue = this._input ? this._input.getValue() : "";
@@ -1122,12 +1426,26 @@ ZmEditContactViewInputSelect.prototype.getValue = function() {
 	} : inputValue;
 };
 
+/**
+ * Sets the dirty flag.
+ * 
+ * @param	{Boolean}	dirty		(not used)
+ * @private
+ */
 ZmEditContactViewInputSelect.prototype.setDirty = function(dirty) {
 	if (this.parent instanceof DwtForm) {
 		this.parent.setDirty(true);
 	}
 };
 
+/**
+ * Checks if the two items are equal.
+ * 
+ * @param	{Object}	a		item a
+ * @param	{Object}	b		item b
+ * 
+ * @private
+ */
 ZmEditContactViewInputSelect.equals = function(a, b) {
 	if (a === b) return true;
 	if (!a || !b) return false;
@@ -1259,6 +1577,17 @@ ZmEditContactViewInputSelect.prototype.getTabGroupMember = function() {
 // Class: ZmEditContactViewOther
 //
 
+/**
+ * Creates the contact view other.
+ * @class
+ * This class represents the contact view other field.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends		ZmEditContactViewInputSelect
+ * 
+ * @private
+ */
 ZmEditContactViewOther = function(params) {
 	if (arguments.length == 0) return;
 	ZmEditContactViewInputSelect.apply(this, arguments);
@@ -1268,6 +1597,12 @@ ZmEditContactViewOther = function(params) {
 ZmEditContactViewOther.prototype = new ZmEditContactViewInputSelect;
 ZmEditContactViewOther.prototype.constructor = ZmEditContactViewOther;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ * @private
+ */
 ZmEditContactViewOther.prototype.toString = function() {
 	return "ZmEditContactViewOther";
 };
@@ -1280,10 +1615,23 @@ ZmEditContactViewOther.prototype.DATE_ATTRS = { "birthday": true, "anniversary":
 
 // Public methods
 
+/**
+ * Sets the value.
+ * 
+ * @param	{Object}	value		the value
+ * @private
+ */
 ZmEditContactViewOther.prototype.setValue = function(value) {
 	ZmEditContactViewInputSelect.prototype.setValue.apply(this, arguments);
 	this._resetPicker();
 };
+
+/**
+ * Gets the value.
+ * 
+ * @return	{Object}	the value
+ * @private
+ */
 ZmEditContactViewOther.prototype.getValue = function() {
 	return {
 		type: this._select.getValue() || this._select.getText(),
@@ -1363,7 +1711,17 @@ ZmEditContactViewOther.prototype._handleDateSelection = function(calendar) {
 //
 // Class: ZmEditContactViewIM
 //
-
+/**
+ * Creates the contact view IM field.
+ * @class
+ * This class represents the contact view IM field.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends		ZmEditContactViewInputSelect
+ * 
+ * @private
+ */
 ZmEditContactViewIM = function(params) {
 	if (arguments.length == 0) return;
 	ZmEditContactViewInputSelect.apply(this, arguments);
@@ -1371,6 +1729,12 @@ ZmEditContactViewIM = function(params) {
 ZmEditContactViewIM.prototype = new ZmEditContactViewInputSelect;
 ZmEditContactViewIM.prototype.constructor = ZmEditContactViewIM;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ * @private
+ */
 ZmEditContactViewIM.prototype.toString = function() {
 	return "ZmEditContactViewIM";
 };
@@ -1394,7 +1758,17 @@ ZmEditContactViewIM.prototype.getValue = function() {
 //
 // Class: ZmEditContactViewAddress
 //
-
+/**
+ * Creates the contact view address input field.
+ * @class
+ * This class represents the address input field.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends		ZmEditContactViewInputSelect
+ * 
+ * @private
+ */
 ZmEditContactViewAddress = function(params) {
 	if (arguments.length == 0) return;
 	ZmEditContactViewInputSelect.call(this, params);
@@ -1402,6 +1776,12 @@ ZmEditContactViewAddress = function(params) {
 ZmEditContactViewAddress.prototype = new ZmEditContactViewInputSelect;
 ZmEditContactViewAddress.prototype.constructor = ZmEditContactViewAddress;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ * @private
+ */
 ZmEditContactViewAddress.prototype.toString = function() {
 	return "ZmEditContactViewAddress";  
 };

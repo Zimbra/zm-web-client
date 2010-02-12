@@ -14,6 +14,12 @@
  */
 
 /**
+ * @overview
+ * This file contains the contact picker classes.
+ * 
+ */
+
+/**
  * Creates a dialog that lets the user select addresses from a contact list.
  * @constructor
  * @class
@@ -24,7 +30,9 @@
  *
  * @author Conrad Damon
  * 
- * @param buttonInfo		[array]			transfer button IDs and labels
+ * @param {Array}	buttonInfo		the transfer button IDs and labels
+ * 
+ * @extends		DwtDialog
  */
 ZmContactPicker = function(buttonInfo) {
 
@@ -48,6 +56,11 @@ ZmContactPicker.CHOOSER_HEIGHT = 300;
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmContactPicker.prototype.toString =
 function() {
 	return "ZmContactPicker";
@@ -59,9 +72,9 @@ function() {
 * passed in. The address button that was used to popup the dialog is set
 * as the active button.
 *
-* @param buttonId	[string]*	button ID of the button that called us
-* @param addrs		[hash]*		hash of 3 vectors (one for each type of address)
-* @param str		[string]*	initial search string
+* @param {String}	buttonId	the button ID of the button that called us
+* @param {Hash}	addrs		a hash of 3 vectors (one for each type of address)
+* @param {String}	str		initial search string
 */
 ZmContactPicker.prototype.popup =
 function(buttonId, addrs, str, account) {
@@ -116,8 +129,9 @@ function(buttonId, addrs, str, account) {
 };
 
 /**
-* Closes the dialog
-*/
+ * Closes the dialog.
+ * 
+ */
 ZmContactPicker.prototype.popdown =
 function() {
 	// disable search field (hack to fix bleeding cursor)
@@ -128,6 +142,11 @@ function() {
 	DwtDialog.prototype.popdown.call(this);
 };
 
+/**
+ * Performs a search.
+ * 
+ * @private
+ */
 ZmContactPicker.prototype.search =
 function(colItem, ascending, firstTime, lastId, lastSortVal) {
 	if (!AjxUtil.isSpecified(ascending)) {
@@ -183,6 +202,9 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 	ZmContactsHelper.search(params);
 };
 
+/**
+ * @private
+ */
 ZmContactPicker.prototype._contentHtml =
 function(account) {
 	var showSelect;
@@ -212,6 +234,9 @@ function(account) {
 	return (AjxTemplate.expand("abook.Contacts#ZmContactPicker", subs));
 };
 
+/**
+ * @private
+ */
 ZmContactPicker.prototype._resetSelectDiv =
 function() {
 	this._selectDiv.clearOptions();
@@ -234,7 +259,11 @@ function() {
 	}
 };
 
-// called only when ZmContactPicker is first created. Sets up initial layout.
+/**
+ * called only when ZmContactPicker is first created. Sets up initial layout.
+ * 
+ * @private
+ */
 ZmContactPicker.prototype._initialize =
 function(account) {
 
@@ -293,6 +322,9 @@ function(account) {
 
 // Listeners
 
+/**
+ * @private
+ */
 ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
 	this._offset = 0;
@@ -300,6 +332,9 @@ function(ev) {
 	this.search();
 };
 
+/**
+ * @private
+ */
 ZmContactPicker.prototype._handleResponseSearch =
 function(firstTime, result) {
 	var resp = result.getResponse();
@@ -350,12 +385,18 @@ function(isPagingSupported, more, list) {
 	this._searchButton.setEnabled(true);
 };
 
+/**
+ * @private
+ */
 ZmContactPicker.prototype._handleErrorSearch =
 function() {
 	this._searchButton.setEnabled(true);
 	return false;
 };
 
+/**
+ * @private
+ */
 ZmContactPicker.prototype._pageListener =
 function(ev) {
 	if (ev.item == this._prevButton) {
@@ -385,6 +426,11 @@ function(ev) {
 	}
 };
 
+/**
+ * Gets a sub-list of contacts.
+ * 
+ * @return	{AjxVector}		a vector of {ZmContact} objects
+ */
 ZmContactPicker.prototype.getSubList =
 function() {
 	var size = this._list.size();
@@ -396,6 +442,9 @@ function() {
 		? (AjxVector.fromArray(this._list.getArray().slice(this._offset, end))) : null;
 };
 
+/**
+ * @private
+ */
 ZmContactPicker.prototype._searchTypeListener =
 function(ev) {
 	var oldValue = ev._args.oldValue;
@@ -406,6 +455,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactPicker.prototype._resetColHeaders =
 function() {
 	var slv = this._chooser.sourceListView;
@@ -426,20 +478,31 @@ function() {
 	slv.createHeaderHtml(sortable);
 };
 
-// Done choosing addresses, add them to the compose form
+/**
+ * Done choosing addresses, add them to the compose form.
+ * 
+ * @private
+ */
 ZmContactPicker.prototype._okButtonListener =
 function(ev) {
 	var data = this._chooser.getItems();
 	DwtDialog.prototype._buttonListener.call(this, ev, [data]);
 };
 
-// Call custom popdown method
+/**
+ * Call custom popdown method.
+ * 
+ * @private
+ */
 ZmContactPicker.prototype._cancelButtonListener =
 function(ev) {
 	DwtDialog.prototype._buttonListener.call(this, ev);
 	this.popdown();
 };
 
+/**
+ * @private
+ */
 ZmContactPicker._keyPressHdlr =
 function(ev) {
 	var stb = DwtControl.getTargetControl(ev);
@@ -455,6 +518,9 @@ function(ev) {
 	return true;
 };
 
+/**
+ * @private
+ */
 ZmContactPicker._onclickHdlr =
 function(ev) {
 	var stb = DwtControl.getTargetControl(ev);
@@ -467,11 +533,17 @@ function(ev) {
 /***********************************************************************************/
 
 /**
-* This class creates a specialized chooser for the contact picker.
-*
-* @param parent			[DwtComposite]	the contact picker
-* @param buttonInfo		[array]			transfer button IDs and labels
-*/
+ * Creates a contact chooser.
+ * @class
+ * This class creates a specialized chooser for the contact picker.
+ *
+ * @param {DwtComposite}	parent			the contact picker
+ * @param {Array}		buttonInfo		transfer button IDs and labels
+ * 
+ * @extends		DwtChooser
+ * 
+ * @private
+ */
 ZmContactChooser = function(params) {
 	DwtChooser.call(this, params);
 };
@@ -479,22 +551,30 @@ ZmContactChooser = function(params) {
 ZmContactChooser.prototype = new DwtChooser;
 ZmContactChooser.prototype.constructor = ZmContactChooser;
 
+/**
+ * @private
+ */
 ZmContactChooser.prototype._createSourceListView =
 function() {
 	return new ZmContactChooserSourceListView(this);
 };
 
+/**
+ * @private
+ */
 ZmContactChooser.prototype._createTargetListView =
 function() {
 	return new ZmContactChooserTargetListView(this, (this._buttonInfo.length > 1));
 };
 
-/*
-* The item is a AjxEmailAddress. Its address is used for comparison.
-*
-* @param item	[AjxEmailAddress]	an email address
-* @param list	[AjxVector]			list to check in
-*/
+/**
+ * The item is a AjxEmailAddress. Its address is used for comparison.
+ *
+ * @param {AjxEmailAddress}	item	an email address
+ * @param {AjxVector}	list	list to check in
+ * 
+ * @private
+ */
 ZmContactChooser.prototype._isDuplicate =
 function(item, list) {
 	return list.containsLike(item, item.getAddress);
@@ -503,7 +583,15 @@ function(item, list) {
 /***********************************************************************************/
 
 /**
+ * Creates a source list view.
+ * @class
  * This class creates a specialized source list view for the contact chooser.
+ * 
+ * @param {DwtComposite}	parent			the contact picker
+ * 
+ * @extends		DwtChooserListView
+ * 
+ * @private
  */
 ZmContactChooserSourceListView = function(parent) {
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE, view:ZmId.VIEW_CONTACT_SRC});
@@ -513,11 +601,20 @@ ZmContactChooserSourceListView = function(parent) {
 ZmContactChooserSourceListView.prototype = new DwtChooserListView;
 ZmContactChooserSourceListView.prototype.constructor = ZmContactChooserSourceListView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ * @private
+ */
 ZmContactChooserSourceListView.prototype.toString =
 function() {
 	return "ZmContactChooserSourceListView";
 };
 
+/**
+ * @private
+ */
 ZmContactChooserSourceListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
@@ -528,6 +625,9 @@ function() {
 	return headerList;
 };
 
+/**
+ * @private
+ */
 ZmContactChooserSourceListView.prototype._mouseOverAction =
 function(ev, div) {
 	DwtChooserListView.prototype._mouseOverAction.call(this, ev, div);
@@ -549,6 +649,9 @@ function(ev, div) {
 	return true;
 };
 
+/**
+ * @private
+ */
 ZmContactChooserSourceListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	return ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, params);
@@ -557,7 +660,15 @@ function(html, idx, item, field, colIdx, params) {
 /***********************************************************************************/
 
 /**
+ * Creates the target list view.
+ * @class
  * This class creates a specialized target list view for the contact chooser.
+ * 
+ * @param {DwtComposite}	parent			the contact picker
+ * @param {constant}		showType		the show type
+ * @extends		DwtChooserListView
+ * 
+ * @private
  */
 ZmContactChooserTargetListView = function(parent, showType) {
 	this._showType = showType; // call before base class since base calls getHeaderList
@@ -571,11 +682,19 @@ ZmContactChooserTargetListView = function(parent, showType) {
 ZmContactChooserTargetListView.prototype = new DwtChooserListView;
 ZmContactChooserTargetListView.prototype.constructor = ZmContactChooserTargetListView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmContactChooserTargetListView.prototype.toString =
 function() {
 	return "ZmContactChooserTargetListView";
 };
 
+/**
+ * @private
+ */
 ZmContactChooserTargetListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
@@ -592,7 +711,11 @@ function() {
 ZmContactChooserTargetListView.prototype._mouseOverAction =
 ZmContactChooserSourceListView.prototype._mouseOverAction;
 
-// The items are AjxEmailAddress objects
+/**
+ * The items are AjxEmailAddress objects.
+ * 
+ * @private
+ */
 ZmContactChooserTargetListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_TYPE) {

@@ -14,8 +14,13 @@
  */
 
 /**
+ * @overview
+ * This file contains the contact class.
+ */
+
+if (!window.ZmContact) {
+/**
  * Creates an empty contact.
- * @constructor
  * @class
  * This class represents a contact (typically a person) with all its associated versions
  * of email address, home and work addresses, phone numbers, etc. Contacts can be filed/sorted
@@ -25,13 +30,15 @@
  * Most of a contact's data is kept in attributes. These include name, phone, etc. Meta-data and
  * data common to items are not kept in attributes. These include flags, tags, folder, and
  * modified/created dates. Since the attribute data for contacts is loaded only once, a contact
- * gets its attribute values from that canonical list.</p>
+ * gets its attribute values from that canonical list.
+ * </p>
  *
- * @param id		[int]*				unique ID
- * @param list		[ZmContactList]*	list that contains this contact
- * @param type		[constant]*			item type
+ * @param {int}	id		the unique ID
+ * @param {ZmContactList}	list		the list that contains this contact
+ * @param {constant}	type		the item type
+ * 
+ * @extends		ZmItem
  */
-if (!window.ZmContact) {
 ZmContact = function(id, list, type) {
 	if (arguments.length == 0) { return; }
 
@@ -266,23 +273,27 @@ ZmContact.updateFieldConstants();
  * entry.
  * <p>
  * <strong>Note:</strong>
- * In most cases, ZmContact.getAttributeName(field,index)
- * is a better choice.
+ * In most cases, {@link ZmContact#getAttributeName} is a better choice.
  */
 ZmContact.IS_ADDONE = {};
 ZmContact.IS_ADDONE[ZmContact.F_custom] = true;
 ZmContact.IS_ADDONE[ZmContact.F_imAddress] = true;
 
 /**
- * Returns an indexed attribute name taking into account if the field
+ * Gets an indexed attribute name taking into account if the field
  * with index 1 should append the "1" or not. Code should call this
- * function in lieu of accessing ZmContact.IS_ADDONE directly.
+ * function in lieu of accessing {@link ZmContact.IS_ADDONE} directly.
  */
 ZmContact.getAttributeName = function(name, index) {
 	index = index || 1;
 	return index > 1 || ZmContact.IS_ADDONE[name] ? name+index : name;
 };
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmContact.prototype.toString =
 function() {
 	return "ZmContact";
@@ -291,11 +302,12 @@ function() {
 // Class methods
 
 /**
-* Creates a contact from an XML node.
-*
-* @param node		a "cn" XML node
-* @param args		args to pass to the constructor
-*/
+ * Creates a contact from an XML node.
+ *
+ * @param {Object}	node		a "cn" XML node
+ * @param {Hash}	args		args to pass to the constructor
+ * @return	{ZmContact}	the contact
+ */
 ZmContact.createFromDom =
 function(node, args) {
 	// check global cache for this item first
@@ -313,12 +325,13 @@ function(node, args) {
 };
 
 /**
-* Compares two contacts based on how they are filed. Intended for use by
-* sort methods.
-*
-* @param a		[object]		a contact
-* @param b		[object]		a contact
-*/
+ * Compares two contacts based on how they are filed. Intended for use by
+ * sort methods.
+ *
+ * @param {ZmContact}		a		a contact
+ * @param {ZmContact}		b		a contact
+ * @return	{int}	0 if the contacts are the same; 1 if "a" is before "b"; -1 if "b" is before "a"
+ */
 ZmContact.compareByFileAs =
 function(a, b) {
 	var aFileAs = (a instanceof ZmContact) ? a.getFileAs(true) : ZmContact.computeFileAs(a._attrs).toLowerCase();
@@ -330,10 +343,10 @@ function(a, b) {
 };
 
 /**
-* Figures out the filing string for the contact according to the chosen method.
-*
-* @param contact	[hash]		a set of contact attributes
-*/
+ * Figures out the filing string for the contact according to the chosen method.
+ *
+ * @param {ZmContact|Hash}	contact		a contact or a hash of contact attributes
+ */
 ZmContact.computeFileAs =
 function(contact) {
 	var attr = (contact instanceof ZmContact) ? contact.getAttrs() : contact;
@@ -400,8 +413,14 @@ function(contact) {
 };
 
 /**
-* Name printing helper.  e.g. First Last
-*/
+ * Name printing helper "First Last".
+ * 
+ * @param	{String}	first		the first name
+ * @param	{String}	last		the last name
+ * @param	{String}	fullname		the fullname
+ * @param	{String}	nickname		the nickname
+ * @return	{String}	the name format
+ */
 ZmContact.fileAsFirstLast =
 function(first, last, fullname, nickname) {
 	if (first && last)
@@ -410,8 +429,14 @@ function(first, last, fullname, nickname) {
 };
 
 /**
-* Name printing helper.  e.g. Last, First
-*/
+ * Name printing helper "Last, First".
+ * 
+ * @param	{String}	first		the first name
+ * @param	{String}	last		the last name
+ * @param	{String}	fullname		the fullname
+ * @param	{String}	nickname		the nickname
+ * @return	{String}	the name format
+ */
 ZmContact.fileAsLastFirst =
 function(first, last, fullname, nickname) {
 	if (first && last)
@@ -420,8 +445,12 @@ function(first, last, fullname, nickname) {
 };
 
 /**
-* Name printing helper.  e.g. Name (Company)
-*/
+ * Name printing helper "Name (Company)".
+ * 
+ * @param	{String}	name		the contact name
+ * @param	{String}	company		the company
+ * @return	{String}	the name format
+ */
 ZmContact.fileAsNameCompany =
 function(name, company) {
 	if (name && company)
@@ -432,8 +461,12 @@ function(name, company) {
 };
 
 /**
-* Name printing helper.  e.g. Company (Name)
-*/
+ * Name printing helper "Company (Name)".
+ * 
+ * @param	{String}	name		the contact name
+ * @param	{String}	company		the company
+ * @return	{String}	the name format
+ */
 ZmContact.fileAsCompanyName =
 function(name, company) {
 	if (company && name)
@@ -444,18 +477,31 @@ function(name, company) {
 };
 
 /**
-* Basically prepends "8:" to the given custom fileAs str
-*
-* @param customFileAs	[hash]		a set of contact attributes
-*/
+ * Computes the custom file as string by prepending "8:" to the given custom fileAs string.
+ * 
+ * @param {Hash}	customFileAs	a set of contact attributes
+ * @return	{String}	the name format
+ */
 ZmContact.computeCustomFileAs =
 function(customFileAs) {
 	return [ZmContact.FA_CUSTOM, ":", customFileAs].join("");
 };
 
-/* These next few static methods handle a contact that is either an anonymous
-*  object or an actual ZmContact. The former is used to optimize loading. The
-*  anonymous object is upgraded to a ZmContact when needed. */
+/*
+ * 
+ * These next few static methods handle a contact that is either an anonymous
+ * object or an actual ZmContact. The former is used to optimize loading. The
+ * anonymous object is upgraded to a ZmContact when needed.
+ *  
+ */
+
+/**
+ * Gets an attribute.
+ * 
+ * @param	{ZmContact}	contact		the contact
+ * @param	{String}	attr		the attribute
+ * @return	{Object}	the attribute value or <code>null</code> for none
+ */
 ZmContact.getAttr =
 function(contact, attr) {
 	return (contact instanceof ZmContact)
@@ -470,10 +516,9 @@ function(contact, attr) {
  * then the "foo2" attribute will be renamed to "foo" in the
  * returned object.
  *
- * @param attrs  [object] The attributes to normalize.
- * @param prefix [string] (Optional) If specified, only the
- *                        the attributes that match the given
- *                        prefix will be returned.
+ * @param {Hash}	attrs  a hash of attributes to normalize.
+ * @param {String}	[prefix] if specified, only the the attributes that match the given prefix will be returned
+ * @return	{Hash}	a hash of normalized attributes
  */
 ZmContact.getNormalizedAttrs = function(attrs, prefix) {
 	var nattrs = {};
@@ -503,6 +548,13 @@ ZmContact.__BY_ATTRIBUTE = function(a, b) {
 	return aa[1] == bb[1] ? Number(aa[2]) - Number(bb[2]) : aa[1].localeCompare(bb[1]);
 };
 
+/**
+ * Sets the attribute.
+ * 
+ * @param	{ZmContact}	contact		the contact
+ * @param	{String}	attr		the attribute
+ * @param	{Object}	value		the attribute value
+ */
 ZmContact.setAttr =
 function(contact, attr, value) {
 	if (contact instanceof ZmContact)
@@ -511,6 +563,12 @@ function(contact, attr, value) {
 		contact._attrs[attr] = value;
 };
 
+/**
+ * Checks if the contact is in the trash.
+ * 
+ * @param	{ZmContact}	contact		the contact
+ * @return	{Boolean}	<code>true</code> if in trash
+ */
 ZmContact.isInTrash =
 function(contact) {
 	var folderId = (contact instanceof ZmContact) ? contact.folderId : contact.l;
@@ -518,6 +576,9 @@ function(contact) {
 	return (folder && folder.isInTrash());
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype.load =
 function(callback, errorCallback, batchCmd) {
 	var jsonObj = {GetContactsRequest:{_jsns:"urn:zimbraMail"}};
@@ -538,6 +599,9 @@ function(callback, errorCallback, batchCmd) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype._handleLoadResponse =
 function(callback, result) {
 	var resp = result.getResponse().GetContactsResponse;
@@ -550,11 +614,19 @@ function(callback, result) {
 		callback.run(resp.cn[0], this);
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype.clear =
 function() {
 	// bug fix #41666 - override base class method and do nothing
 };
 
+/**
+ * Checks if the contact attributes are empty.
+ * 
+ * @return	{Boolean}	<code>true</code> if empty
+ */
 ZmContact.prototype.isEmpty =
 function() {
 	for (var i in this.attr) {
@@ -563,11 +635,21 @@ function() {
 	return true;
 };
 
+/**
+ * Checks if the contact is shared.
+ * 
+ * @return	{Boolean}	<code>true</code> if shared
+ */
 ZmContact.prototype.isShared =
 function() {
 	return this.addrbook && this.addrbook.link;
 };
 
+/**
+ * Checks if the contact is read-only.
+ * 
+ * @return	{Boolean}	<code>true</code> if read-only
+ */
 ZmContact.prototype.isReadOnly =
 function() {
 	if (this.isGal) { return true; }
@@ -577,12 +659,22 @@ function() {
 		: false;
 };
 
+/**
+ * Checks if the contact is a group.
+ * 
+ * @return	{Boolean}	<code>true</code> if a group
+ */
 ZmContact.prototype.isGroup =
 function() {
 	return Boolean(this.getAttr(ZmContact.F_dlist) || this.type == ZmItem.GROUP);
 };
 
 // parses "dlist" attr into AjxEmailAddress objects stored in 3 vectors (all, good, and bad)
+/**
+ * Gets the group members.
+ * 
+ * @return	{AjxVector}		the group members or <code>null</code> if not group
+ */
 ZmContact.prototype.getGroupMembers =
 function() {
 	return this.isGroup()
@@ -590,6 +682,11 @@ function() {
 		: null;
 };
 
+/**
+ * Gets the icon.
+ * 
+ * @return	{String}	the icon
+ */
 ZmContact.prototype.getIcon =
 function() {
 	if (this.isGal)			{ return "GALContact"; }
@@ -598,6 +695,11 @@ function() {
 	return "Contact";
 };
 
+/**
+ * Gets the folder id.
+ * 
+ * @return	{String}		the folder id	
+ */
 ZmContact.prototype.getFolderId =
 function() {
 	return this.isShared()
@@ -605,28 +707,44 @@ function() {
 		: this.folderId;
 };
 
+/**
+ * Gets the attribute.
+ * 
+ * @param	{String}	name		the attribute name
+ * @return	{String}	the value
+ */
 ZmContact.prototype.getAttr =
 function(name) {
 	var val = this.attr[name];
 	return val ? ((val instanceof Array) ? val[0] : val) : "";
 };
 
+/**
+ * Sets the attribute.
+ * 
+ * @param	{String}	name		the attribute name
+ * @param	{String}	value		the attribute value
+ */
 ZmContact.prototype.setAttr =
 function(name, value) {
 	this.attr[name] = value;
 };
 
+/**
+ * Removes the attribute.
+ * 
+ * @param	{String}	name		the attribute name
+ */
 ZmContact.prototype.removeAttr =
 function(name) {
 	delete this.attr[name];
 };
 
 /**
- * Returns the contact's attributes.
+ * Gets the contact attributes.
  *
- * @param prefix [string] (Optional) If specified, only the
- *                        the attributes that match the given
- *                        prefix will be returned.
+ * @param {String}	[prefix] if specified, only the the attributes that match the given prefix will be returned
+ * @return	{Hash}	a hash of attribute/value pairs
  */
 ZmContact.prototype.getAttrs = function(prefix) {
 	var attrs = this.attr;
@@ -642,7 +760,7 @@ ZmContact.prototype.getAttrs = function(prefix) {
 };
 
 /**
- * Returns a normalized set of attributes where the attribute
+ * Gets a normalized set of attributes where the attribute
  * names have been re-numbered as needed. For example, if the
  * attributes contains a "foo2" but no "foo", then the "foo2"
  * attribute will be renamed to "foo" in the returned object.
@@ -652,9 +770,10 @@ ZmContact.prototype.getAttrs = function(prefix) {
  * cached temporarily as needed instead of being called
  * for each normalized attribute that is needed.
  * 
- * @param prefix [string] (Optional) If specified, only the
+ * @param {String}	[prefix]		if specified, only the
  *                        the attributes that match the given
  *                        prefix will be returned.
+ * @return	{Hash}	a hash of attribute/value pairs
  */
 ZmContact.prototype.getNormalizedAttrs = function(prefix) {
 	return ZmContact.getNormalizedAttrs(this.attr, prefix);
@@ -662,13 +781,13 @@ ZmContact.prototype.getNormalizedAttrs = function(prefix) {
 
 /**
 * Creates a contact from the given set of attributes. Used to create contacts on
-* the fly (rather than by loading them). This method is called by a list's create()
+* the fly (rather than by loading them). This method is called by a list's <code>create()</code>
 * method.
 * <p>
 * If this is a GAL contact, we assume it is being added to the contact list.</p>
 *
-* @param attr		[hash]				attr/value pairs for this contact
-* @param batchCmd	[ZmBatchCommand]*	batch command that contains this request
+* @param {Hash}	attr			the attribute/value pairs for this contact
+* @param {ZmBatchCommand}	batchCmd	the batch command that contains this request
 */
 ZmContact.prototype.create =
 function(attr, batchCmd) {
@@ -703,6 +822,9 @@ function(attr, batchCmd) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype._handleResponseCreate =
 function(attr, isBatchMode, result) {
 	// dont bother processing creates when in batch mode (just let create
@@ -731,6 +853,12 @@ function(attr, isBatchMode, result) {
 	}
 };
 
+/**
+ * Creates a contct from a VCF part of a message.
+ * 
+ * @param	{String}	msgId		the message
+ * @param	{String}	vcardPartId	the vcard part id
+ */
 ZmContact.prototype.createFromVCard =
 function(msgId, vcardPartId) {
 	var jsonObj = {CreateContactRequest:{_jsns:"urn:zimbraMail"}};
@@ -747,22 +875,28 @@ function(msgId, vcardPartId) {
 	appCtxt.getAppController().sendRequest(params);
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype._handleResponseCreateVCard =
 function(result) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.contactCreated);
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype._handleErrorCreateVCard =
 function(ex) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateContact, ZmStatusView.LEVEL_CRITICAL);
 };
 
 /**
-* Updates contact attributes.
-*
-* @param attr		[hash]			set of attributes and their new values
-* @param callback	[AjxCallback]	callback
-*/
+ * Updates contact attributes.
+ *
+ * @param {Hash}	attr		a set of attributes and new values
+ * @param {AjxCallback}	callback	the callback
+ */
 ZmContact.prototype.modify =
 function(attr, callback) {
 	if (this.list.isGal) { return; }
@@ -789,6 +923,9 @@ function(attr, callback) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype._handleResponseModify =
 function(attr, callback, result) {
 	var resp = result.getResponse().ModifyContactResponse;
@@ -809,11 +946,17 @@ function(attr, callback, result) {
 	//       takes care of everything
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype._handleResponseMove =
 function(resp) {
 	this._notify(ZmEvent.E_MODIFY, resp);
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype._setFolder =
 function(newFolderId) {
 	var folder = appCtxt.getById(this.folderId);
@@ -835,6 +978,9 @@ function(newFolderId) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype.notifyModify =
 function(obj) {
 	ZmItem.prototype.notifyModify.call(this, obj);
@@ -880,6 +1026,9 @@ function(obj) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype.notifyDelete =
 function() {
 	ZmItem.prototype.notifyDelete.call(this);
@@ -887,11 +1036,11 @@ function() {
 };
 
 /**
-* Sets this contacts email address.
-*
-* @param email		[object]		an AjxEmailAddress, or an email string
-* @param strictName	[boolean]*		if true, don't try to set name from user portion of address
-*/
+ * Initializes this contact using an email address.
+ *
+ * @param {AjxEmailAddress|String}	email		an email address or an email string
+ * @param {Boolean}	strictName	if <code>true</code>, do not try to set name from user portion of address
+ */
 ZmContact.prototype.initFromEmail =
 function(email, strictName) {
 	if (email instanceof AjxEmailAddress) {
@@ -902,11 +1051,22 @@ function(email, strictName) {
 	}
 };
 
+/**
+ * Initializes this contact using a phone number.
+ *
+ * @param {String}	phone		the phone string
+ * @param {String}	field		the field or company phone if <code>null</code>
+ */
 ZmContact.prototype.initFromPhone =
 function(phone, field) {
 	this.setAttr(field || ZmContact.F_companyPhone, phone);
 };
 
+/**
+ * Gets the email address.
+ * 
+ * @return	the email address
+ */
 ZmContact.prototype.getEmail =
 function() {
 	return (this.getAttr(ZmContact.F_email) ||
@@ -917,6 +1077,11 @@ function() {
 			this.getAttr(ZmContact.F_workEmail3));
 };
     
+/**
+ * Gets the IM address.
+ * 
+ * @return	the IM address
+ */
 ZmContact.prototype.getIMAddress =
 function() {
 	return this.getAttr(ZmContact.F_imAddress1) ||
@@ -924,6 +1089,11 @@ function() {
 		   this.getAttr(ZmContact.F_imAddress3);
 };
 
+/**
+ * Gets the IM buddy.
+ * 
+ * @return	the IM buddy
+ */
 ZmContact.prototype.getBuddy =
 function() {
 	var buddy;
@@ -937,13 +1107,22 @@ function() {
 	return buddy;
 };
 
+/**
+ * Gets the IM presence.
+ * 
+ * @return	{Object}	the presence
+ */
 ZmContact.prototype.getImPresence =
 function() {
 	var buddy = this.getBuddy();
 	return (buddy) ? buddy.getPresence() : null;
 };
 
-// returns a list (array) of all valid emails for this contact
+/**
+ * Gets the emails.
+ * 
+ * @return	{Array}	 an array of all valid emails for this contact
+ */
 ZmContact.prototype.getEmails =
 function() {
 	var emails = [];
@@ -960,8 +1139,10 @@ function() {
 };
 
 /**
-* Returns the full name.
-*/
+ * Gets the full name.
+ * 
+ * @return	{String}	the full name
+ */
 ZmContact.prototype.getFullName =
 function() {
 	if (!this._fullName) {
@@ -998,12 +1179,17 @@ function() {
 };
 
 /**
-* Returns HTML for a tool tip for this contact.
-* XXX: we dont cache tooltip info anymore since its too dynamic :/
-*      i.e. IM status can change anytime so always rebuild tooltip and bug 13834
-*/
+ * Gets the tool tip for this contact.
+ * 
+ * @param	{String}	email		the email address
+ * @param	{Boolean}	isGal		(not used)
+ * @param	{String}	hint		the hint text
+ * @return	{String}	the tool tip in HTML
+ */
 ZmContact.prototype.getToolTip =
 function(email, isGal, hint) {
+	// XXX: we dont cache tooltip info anymore since its too dynamic :/
+	// i.e. IM status can change anytime so always rebuild tooltip and bug 13834
 	var subs = {
 		contact: this,
 		entryTitle: this.getFileAs(),
@@ -1015,8 +1201,11 @@ function(email, isGal, hint) {
 };
 
 /**
-* Returns the filing string for this contact, computing it if necessary.
-*/
+ * Gets the filing string for this contact, computing it if necessary.
+ * 
+ * @param	{Boolean}	lower		<code>true</code> to use lower case
+ * @return	{String}	the file as string
+ */
 ZmContact.prototype.getFileAs =
 function(lower) {
 	// update/null if modified
@@ -1031,12 +1220,21 @@ function(lower) {
 	return lower ? this._fileAsLC : this._fileAs;
 };
 
+/**
+ * Gets the header.
+ * 
+ * @return	{String}	the header
+ */
 ZmContact.prototype.getHeader =
 function() {
 	return this.id ? this.getFileAs() : ZmMsg.newContact;
 };
 
-//XYZ: Get Image URL
+/**
+ * Get the image URL.
+ * 
+ * @return	{String}	the image URL
+ */
 ZmContact.prototype.getImageUrl =
 function() {
   	var image = this.getAttr(ZmContact.F_image);
@@ -1045,10 +1243,13 @@ function() {
   	return  [msgFetchUrl, "&id=", this.id, "&part=", image.part, "&t=", (new Date()).getTime()].join("");
 };
 
-
-// company field has a getter b/c fileAs may be the Company name so
-// company field should return "last, first" name instead *or*
-// prepend the title if fileAs is not Company (assuming it exists)
+/**
+ * Gets the company field. Company field has a getter b/c fileAs may be the Company name so
+ * company field should return "last, first" name instead *or* prepend the title
+ * if fileAs is not Company (assuming it exists).
+ * 
+ * @return	{String}	the company
+ */
 ZmContact.prototype.getCompanyField =
 function() {
 
@@ -1098,24 +1299,47 @@ function() {
 	return val.join("");
 };
 
+/**
+ * Gets the work address.
+ * 
+ * @param	{Object}	instance		(not used)
+ * @return	{String}	the work address
+ */
 ZmContact.prototype.getWorkAddrField =
 function(instance) {
 	var attrs = this.getAttrs();
 	return this._getAddressField(attrs.workStreet, attrs.workCity, attrs.workState, attrs.workPostalCode, attrs.workCountry);
 };
 
+/**
+ * Gets the home address.
+ * 
+ * @param	{Object}	instance		(not used)
+ * @return	{String}	the home address
+ */
 ZmContact.prototype.getHomeAddrField =
 function(instance) {
 	var attrs = this.getAttrs();
 	return this._getAddressField(attrs.homeStreet, attrs.homeCity, attrs.homeState, attrs.homePostalCode, attrs.homeCountry);
 };
 
+/**
+ * Gets the other address.
+ * 
+ * @param	{Object}	instance		(not used)
+ * @return	{String}	the other address
+ */
 ZmContact.prototype.getOtherAddrField =
 function(instance) {
 	var attrs = this.getAttrs();
 	return this._getAddressField(attrs.otherStreet, attrs.otherCity, attrs.otherState, attrs.otherPostalCode, attrs.otherCountry);
 };
 
+/**
+ * Gets the address book.
+ * 
+ * @return	{ZmAddrBook}	the address book
+ */
 ZmContact.prototype.getAddressBook =
 function() {
 	if (!this.addrbook) {
@@ -1124,6 +1348,9 @@ function() {
 	return this.addrbook;
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype._getAddressField =
 function(street, city, state, zipcode, country) {
 	if (street == null && city == null && state == null && zipcode == null && country == null) return null;
@@ -1160,7 +1387,11 @@ function(street, city, state, zipcode, country) {
 	return html.join("");
 };
 
-// Sets the full name based on an email address.
+/**
+ * Sets the full name based on an email address.
+ * 
+ * @private
+ */
 ZmContact.prototype._initFullName =
 function(email, strictName) {
 	var name = email.getName();
@@ -1179,10 +1410,13 @@ function(email, strictName) {
 	}
 };
 
-// Tries to extract a set of name components from the given text, with the
-// given list of possible delimiters. The first delimiter contained in the
-// text will be used. If none are found, the first delimiter in the list is
-// used.
+/**
+ * Tries to extract a set of name components from the given text, with the
+ * given list of possible delimiters. The first delimiter contained in the
+ * text will be used. If none are found, the first delimiter in the list is used.
+ * 
+ * @private
+ */
 ZmContact.prototype._setFullName =
 function(text, delims) {
 	var delim = delims[0];
@@ -1202,6 +1436,9 @@ function(text, delims) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContact.prototype._addRequestAttr =
 function(attrs, name, value) {
 	var a = {n:name};
@@ -1218,13 +1455,21 @@ function(attrs, name, value) {
 	attrs.push(a);
 };
 
-// Reset computed fields.
+/**
+ * Reset computed fields.
+ * 
+ * @private
+ */
 ZmContact.prototype._resetCachedFields =
 function() {
 	this._fileAs = this._fileAsLC = this._fullName = null;
 };
 
-// Parse contact node.
+/**
+ * Parse contact node.
+ * 
+ * @private
+ */
 ZmContact.prototype._loadFromDom =
 function(node) {
 	this.isLoaded = true;
@@ -1264,11 +1509,12 @@ function(node) {
 };
 
 /**
-* Returns display text for an attendee. Prefers name over email.
-*
-* @param type		[constant]		attendee type
-* @param shortForm	[boolean]*		if true, return only name or email
-*/
+ * Gets display text for an attendee. Prefers name over email.
+ *
+ * @param {constant}	type		the attendee type
+ * @param {Boolean}	shortForm		if <code>true</code>, return only name or email
+ * @return	{String}	the attendee
+ */
 ZmContact.prototype.getAttendeeText =
 function(type, shortForm) {
 	var text = "";
@@ -1284,6 +1530,12 @@ function(type, shortForm) {
 	return text;
 };
 
+/**
+ * Gets the unknown fields.
+ * 
+ * @param	{function}	[sortByNameFunc]	sort by function
+ * @return	{Array}	an array of field name/value pairs
+ */
 ZmContact.prototype.getUnknownFields = function(sortByNameFunc) {
 	var map = ZmContact.__FIELD_MAP;
 	if (!map) {
@@ -1302,6 +1554,13 @@ ZmContact.prototype.getUnknownFields = function(sortByNameFunc) {
 	return this.getFields(fields, sortByNameFunc);
 };
 
+/**
+ * Gets the fields.
+ * 
+ * @param	{Array}	field		the fields
+ * @param	{function}	[sortByNameFunc]	sort by function
+ * @return	{Array}	an array of field name/value pairs
+ */
 ZmContact.prototype.getFields = function(fields, sortByNameFunc) {
 	// TODO: [Q] Should sort function handle just the field names or the attribute names?
 	var selection;

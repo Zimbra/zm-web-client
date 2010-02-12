@@ -14,13 +14,20 @@
  */
 
 /**
+ * @overview
+ * This file contains the address book tree controller class.
+ * 
+ */
+
+/**
  * Creates an address book tree controller.
- * @constructor
  * @class
  * This class is a controller for the tree view used by the address book 
- * application. This class uses the support provided by ZmOperation. 
+ * application. This class uses the support provided by {@link ZmOperation}. 
  *
  * @author Parag Shah
+ * 
+ * @extends		ZmFolderTreeController
  */
 ZmAddrBookTreeController = function() {
 
@@ -40,11 +47,22 @@ ZmAddrBookTreeController.prototype.constructor = ZmAddrBookTreeController;
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmAddrBookTreeController.prototype.toString =
 function() {
 	return "ZmAddrBookTreeController";
 };
 
+/**
+ * Shows the controller and returns the resulting tree view.
+ * 
+ * @param	{Hash}	params		 a hash of parameters
+ * @return	{ZmTreeView}	the tree view
+ */
 ZmAddrBookTreeController.prototype.show =
 function(params) {
 	params.include = {};
@@ -61,6 +79,9 @@ function(params) {
 	return treeView;
 };
 
+/**
+ * @private
+ */
 ZmAddrBookTreeController.prototype._trashChangeListener =
 function(treeView, ev) {
 	var organizers = ev.getDetail("organizers");
@@ -84,7 +105,11 @@ function(treeView, ev) {
 	}
 };
 
-// Enables/disables operations based on the given organizer ID
+/**
+ * Enables/disables operations based on the given organizer ID.
+ * 
+ * @private
+ */
 ZmAddrBookTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;
@@ -124,6 +149,9 @@ function(parent, type, id) {
 
 // Protected methods
 
+/**
+ * @private
+ */
 ZmAddrBookTreeController.prototype._getAllowedSubTypes =
 function() {
 	var types = {};
@@ -132,7 +160,11 @@ function() {
 	return types;
 };
 
-// Returns a list of desired header action menu operations
+/**
+ * Returns a list of desired header action menu operations.
+ * 
+ * @private
+ */
 ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [];
@@ -145,7 +177,11 @@ function() {
 	return ops;
 };
 
-// Returns a list of desired action menu operations
+/**
+ * Returns a list of desired action menu operations.
+ * 
+ * @private
+ */
 ZmAddrBookTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [];
@@ -161,15 +197,21 @@ function() {
 	return ops;
 };
 
-/*
-* Returns a title for moving a folder.
-*/
+/**
+ * Returns a title for moving a folder.
+ * 
+ * @private
+ */
 ZmAddrBookTreeController.prototype._getMoveDialogTitle =
 function() {
 	return AjxMessageFormat.format(ZmMsg.moveAddrBook, this._pendingActionData.name);
 };
 
-// Returns the dialog for organizer creation
+/**
+ * Returns the dialog for organizer creation.
+ * 
+ * @private
+ */
 ZmAddrBookTreeController.prototype._getNewDialog =
 function() {
 	return appCtxt.getNewAddrBookDialog();
@@ -178,24 +220,32 @@ function() {
 
 // Listeners
 
+/**
+ * @private
+ */
 ZmAddrBookTreeController.prototype._shareAddrBookListener = 
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
 };
 
+/**
+ * @private
+ */
 ZmAddrBookTreeController.prototype._mountAddrBookListener =
 function(ev) {
 	appCtxt.getMountFolderDialog().popup(ZmOrganizer.ADDRBOOK);
 };
 
-/*
-* Called when a left click occurs (by the tree view listener). The folder that
-* was clicked may be a search, since those can appear in the folder tree. The
-* appropriate search will be performed.
-*
-* @param folder		ZmOrganizer		folder or search that was clicked
-*/
+/**
+ * Called when a left click occurs (by the tree view listener). The folder that
+ * was clicked may be a search, since those can appear in the folder tree. The
+ * appropriate search will be performed.
+ *
+ * @param {ZmOrganizer}	folder		the folder or search that was clicked
+ * 
+ * @private
+ */
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
 	if (folder.type == ZmOrganizer.SEARCH) {
@@ -226,6 +276,9 @@ function(folder) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmAddrBookTreeController.prototype._handleSearchResponse =
 function(folder, result) {
 	// bug fix #19307 - Trash is special when in Contacts app since it

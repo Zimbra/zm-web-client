@@ -14,8 +14,12 @@
  */
 
 /**
+ * @overview
+ * This file contains the contact list controller class.
+ */
+
+/**
  * Creates an empty contact list controller.
- * @constructor
  * @class
  * This class manages list views of contacts. So far there are two different list
  * views, one that shows the contacts in a traditional list format, and the other
@@ -25,8 +29,10 @@
  * @author Roland Schemers
  * @author Conrad Damon
  * 
- * @param container		containing shell
- * @param contactsApp	containing app
+ * @param {DwtControl}		container	the containing shell
+ * @param {ZmApp}		app		the containing application
+ * 
+ * @extends	ZmListController
  */
 ZmContactListController = function(container, contactsApp) {
 
@@ -65,6 +71,11 @@ ZmContactListController.SEARCH_TYPE_ANYWHERE	= 1 << 3;
 
 ZmContactListController.VIEWS = [ZmId.VIEW_CONTACT_SIMPLE, ZmId.VIEW_CONTACT_CARDS];
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmContactListController.prototype.toString =
 function() {
 	return "ZmContactListController";
@@ -72,6 +83,13 @@ function() {
 
 // Public methods
 
+/**
+ * Shows the search results.
+ * 
+ * @param	{Object}	searchResult		the search results
+ * @param	{Boolean}	isGalSearch		<code>true</code> if results from GAL search
+ * @param	{String}	folderId		the folder id
+ */
 ZmContactListController.prototype.show =
 function(searchResult, isGalSearch, folderId) {
 	this._searchType = isGalSearch
@@ -132,10 +150,10 @@ function(searchResult, isGalSearch, folderId) {
  * shows a list of contacts on the left and the selected contact on the right;
  * the "cards" view shows contacts as business cards.
  * 
- * @param view			[constant]		view to show
- * @param force			[boolean]*		if true, render view even if it's the current view
- * @param initialized	[boolean]*		if true, app has been initialized
- * @param stageView		[boolean]*		if true, stage the view but don't push it
+ * @param {constant}	view			the view to show
+ * @param {Boolean}	force			if <code>true</code>, render view even if it's the current view
+ * @param {Boolean}	initialized		if <code>true</code>, app has been initialized
+ * @param {Boolean}	stageView		if <code>true</code>, stage the view but don't push it
  */
 ZmContactListController.prototype.switchView =
 function(view, force, initialized, stageView) {
@@ -178,21 +196,42 @@ function(view, force, initialized, stageView) {
 	}
 };
 
+/**
+ * Gets the folder id.
+ * 
+ * @return	{String}	the folder id
+ */
 ZmContactListController.prototype.getFolderId =
 function() {
 	return this._folderId;
 };
 
+/**
+ * Checks if the search is a GAL search.
+ * 
+ * @return	{Boolean}	<code>true</code> if GAL search
+ */
 ZmContactListController.prototype.isGalSearch =
 function() {
 	return ((this._searchType & ZmContactListController.SEARCH_TYPE_GAL) != 0);
 };
 
+/**
+ * Gets the parent view.
+ * 
+ * @return	{DwtComposite}	the view
+ */
 ZmContactListController.prototype.getParentView =
 function() {
 	return this._parentView[this._currentView];
 };
 
+/**
+ * Search the alphabet.
+ * 
+ * @param	{String}	letter		the letter
+ * @param	{String}	endLetter	the end letter
+ */
 ZmContactListController.prototype.searchAlphabet =
 function(letter, endLetter) {
 	var folderId = this._folderId || ZmFolder.ID_CONTACTS;
@@ -213,6 +252,9 @@ function(letter, endLetter) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._getMoreSearchParams =
 function(params) {
 	params.endSortVal = this._activeSearch && this._activeSearch.search && this._activeSearch.search.endSortVal; 
@@ -251,6 +293,9 @@ function(actionCode) {
 	return true;
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype.mapSupported =
 function(map) {
 	return (map == "list");
@@ -260,6 +305,9 @@ function(map) {
 // Private and protected methods
 
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._getToolBarOps =
 function() {
 	return [ZmOperation.NEW_MENU,
@@ -273,6 +321,9 @@ function() {
 //			ZmOperation.VIEW_MENU];
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._getActionMenuOps =
 function() {
 	var list = this._participantOps();
@@ -284,11 +335,17 @@ function() {
 	return list;
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._getViewType =
 function() {
 	return this._currentView;
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._defaultView =
 function() {
 	return (appCtxt.get(ZmSetting.CONTACTS_VIEW) == "cards")
@@ -296,6 +353,9 @@ function() {
 		: ZmId.VIEW_CONTACT_SIMPLE;
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._createNewView =
 function(view) {
 	var params = {parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE,
@@ -307,16 +367,25 @@ function(view) {
 	return listView;
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._getTagMenuMsg =
 function(num) {
 	return (num == 1) ? ZmMsg.AB_TAG_CONTACT : ZmMsg.AB_TAG_CONTACTS;
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._getMoveDialogTitle =
 function(num) {
 	return (num == 1) ? ZmMsg.AB_MOVE_CONTACT : ZmMsg.AB_MOVE_CONTACTS;
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._getMoveParams =
 function(dlg) {
 	var params = ZmListController.prototype._getMoveParams.apply(this, arguments);
@@ -337,11 +406,17 @@ function(dlg) {
 	return params;
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._getSearchFolderId = 
 function() {
 	return this._folderId;
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._initializeToolBar =
 function(view) {
 	if (!this._toolbar[view]) {
@@ -357,6 +432,9 @@ function(view) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._initializeNavToolBar =
 function(view) {
 	this._toolbar[view].addOp(ZmOperation.TEXT);
@@ -364,6 +442,9 @@ function(view) {
 	text.addClassName("itemCountText");
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._initializeActionMenu =
 function(view) {
 	ZmListController.prototype._initializeActionMenu.call(this);
@@ -376,6 +457,9 @@ function(view) {
 	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT);
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._initializeAlphabetBar =
 function(view) {
 	if (view == this._currentView) { return; }
@@ -391,7 +475,11 @@ function(view) {
 	}
 };
 
-// Load contacts into the given view and perform layout.
+/**
+ * Load contacts into the given view and perform layout.
+ * 
+ * @private
+ */
 ZmContactListController.prototype._setViewContents =
 function(view) {
 	DBG.timePt("setting list");
@@ -399,7 +487,11 @@ function(view) {
 	DBG.timePt("done setting list");
 };
 
-// Create menu for View button and add listeners.
+/**
+ * Create menu for View button and add listeners.
+ * 
+ * @private
+ */
 ZmContactListController.prototype._setupViewMenu =
 function(view, firstTime) {
 	var btn;
@@ -433,6 +525,9 @@ function(view, firstTime) {
 	btn.setImage(ZmContactListController.ICON[view]);
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._setupPrintMenu =
 function(view) {
 	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT);
@@ -454,7 +549,11 @@ function(view) {
 	mi.addSelectionListener(this._listeners[ZmOperation.PRINT_ADDRBOOK]);
 };
 
-// Resets the available options on a toolbar or action menu.
+/**
+ * Resets the available options on a toolbar or action menu.
+ * 
+ * @private
+ */
 ZmContactListController.prototype._resetOperations =
 function(parent, num) {
 	var printMenuItem;
@@ -507,12 +606,19 @@ function(parent, num) {
 
 // List listeners
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._participantSearchListener = function(ev) {
 	var addresses = this._actionEv.contact.getEmails();
 	appCtxt.getSearchController().fromSearch(addresses);
 };
 
-// Double click displays a contact.
+/**
+ * Double click displays a contact.
+ * 
+ * @private
+ */
 ZmContactListController.prototype._listSelectionListener =
 function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
@@ -530,6 +636,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._newListener =
 function(ev, op, params) {
 	if (!ev && !op) { return; }
@@ -541,7 +650,11 @@ function(ev, op, params) {
     }
 };
 
-// Compose message to participant
+/**
+ * Compose message to participant.
+ * 
+ * @private
+ */
 ZmContactListController.prototype._participantComposeListener =
 function(ev) {
 
@@ -564,7 +677,11 @@ function(ev) {
 								  toOverride: name});
 };
 
-// Get info on selected contact to provide context for action menu.
+/**
+ * Get info on selected contact to provide context for action menu.
+ * 
+ * @private
+ */
 ZmContactListController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
@@ -597,6 +714,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._dropListener =
 function(ev) {
 	var view = this._listView[this._currentView];
@@ -613,12 +733,18 @@ function(ev) {
 	ZmListController.prototype._dropListener.call(this, ev);
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._editListener =
 function(ev) {
 	var contact = this._listView[this._currentView].getSelection()[0];
 	AjxDispatcher.run("GetContactController").show(contact, false);
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._printContactListener =
 function(ev) {
 	var contacts = this._listView[this._currentView].getSelection();
@@ -630,6 +756,9 @@ function(ev) {
 	window.open(appContextPath+url, "_blank");
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._printAddrBookListener =
 function(ev) {
 	var url;
@@ -656,6 +785,9 @@ function(ev) {
 
 // Callbacks
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._preShowCallback =
 function(view) {
 	if ((this._searchType & ZmContactListController.SEARCH_TYPE_NEW) != 0) {
@@ -667,6 +799,9 @@ function(view) {
 	return true;
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._doMove =
 function(items, folder, attrs, isShiftKey) {
 
@@ -711,6 +846,9 @@ function(items, folder, attrs, isShiftKey) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._handleMoveFromGal =
 function(result) {
 	var resp = result.getResponse().BatchResponse.CreateContactResponse;
@@ -720,6 +858,9 @@ function(result) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
@@ -735,11 +876,17 @@ function(items, hardDelete, attrs) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._moveListener =
 function(ev) {
 	ZmListController.prototype._moveListener.call(this, ev);
 };
 
+/**
+ * @private
+ */
 ZmContactListController.prototype._checkReplenish =
 function() {
 	// reset the listview

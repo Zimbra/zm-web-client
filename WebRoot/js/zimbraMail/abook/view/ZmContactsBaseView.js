@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the contacts base view classes.
+ */
+
+/**
+ * Creates the base view.
+ * @class
+ * This class represents the base view.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends		ZmListView
+ */
 ZmContactsBaseView = function(params) {
 
 	if (arguments.length == 0) { return; }
@@ -28,11 +42,23 @@ ZmContactsBaseView = function(params) {
 ZmContactsBaseView.prototype = new ZmListView;
 ZmContactsBaseView.prototype.constructor = ZmContactsBaseView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmContactsBaseView.prototype.toString =
 function() {
 	return "ZmContactsBaseView";
 };
 
+/**
+ * Sets the list.
+ * 
+ * @param	{ZmContactList}		list		the list
+ * @param	{String}	sortField		the sort field
+ * @param	{String}	folderId		the folder id
+ */
 ZmContactsBaseView.prototype.set =
 function(list, sortField, folderId) {
 
@@ -63,22 +89,38 @@ function(list, sortField, folderId) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactsBaseView.prototype._setParticipantToolTip =
 function(address) {
 	// XXX: OVERLOADED TO SUPPRESS JS ERRORS..
 	// XXX: REMOVE WHEN IMPLEMENTED - SEE BASE CLASS ZmListView
 };
 
+/**
+ * Gets the list view.
+ * 
+ * @return	{ZmContactsBaseView}	the list view
+ */
 ZmContactsBaseView.prototype.getListView =
 function() {
 	return this;
 };
 
+/**
+ * Gets the title.
+ * 
+ * @return	{String}	the view title
+ */
 ZmContactsBaseView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
+/**
+ * @private
+ */
 ZmContactsBaseView.prototype._changeListener =
 function(ev) {
 	var folderId = this._controller.getFolderId();
@@ -122,6 +164,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactsBaseView.prototype._modifyContact =
 function(ev) {
 	// if fileAs changed, resort the internal list
@@ -131,6 +176,9 @@ function(ev) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactsBaseView.prototype._setNextSelection =
 function() {
 	// set the next appropriate selected item
@@ -177,7 +225,15 @@ function() {
 	this.setSelection(item);
 };
 
-	
+/**
+ * Creates the alphabet bar.
+ * @class
+ * This class represents the contact alphabet bar.
+ * 
+ * @param {DwtComposite}	parent			the parent
+ * 
+ * @extends		DwtComposite
+ */
 ZmContactAlphabetBar = function(parent) {
 
 	DwtComposite.call(this, {parent:parent});
@@ -192,11 +248,21 @@ ZmContactAlphabetBar = function(parent) {
 ZmContactAlphabetBar.prototype = new DwtComposite;
 ZmContactAlphabetBar.prototype.constructor = ZmContactAlphabetBar;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmContactAlphabetBar.prototype.toString =
 function() {
 	return "ZmContactAlphabetBar";
 };
 
+/**
+ * Enables the bar.
+ * 
+ * @param	{Boolean}	enable		if <code>true</code>, enable the bar
+ */
 ZmContactAlphabetBar.prototype.enable =
 function(enable) {
 	this._enabled = enable;
@@ -207,11 +273,21 @@ function(enable) {
 	}
 };
 
+/**
+ * Checks if the bar is enabled.
+ * 
+ * @return	{Boolean}	<code>true</code> if enabled
+ */
 ZmContactAlphabetBar.prototype.enabled =
 function() {
 	return this._enabled;
 };
 
+/**
+ * Resets the bar.
+ * 
+ * @param	{Object}	useCell		the cell or <code>null</code>
+ */
 ZmContactAlphabetBar.prototype.reset =
 function(useCell) {
 	var cell = useCell || this._all;
@@ -221,6 +297,11 @@ function(useCell) {
 	this.setSelected(cell, true);
 };
 
+/**
+ * Sets the button index.
+ * 
+ * @param	{int}	index		the index
+ */
 ZmContactAlphabetBar.prototype.setButtonByIndex =
 function(index) {
 	var table = document.getElementById(this._alphabetBarId);
@@ -230,11 +311,22 @@ function(index) {
 	}
 };
 
+/**
+ * Gets the current cell.
+ * 
+ * @return	{Object}	the cell
+ */
 ZmContactAlphabetBar.prototype.getCurrent =
 function() {
 	return this._current;
 };
 
+/**
+ * Sets the cell as selected.
+ * 
+ * @param	{Object}	cell	the cell
+ * @param	{Boolean}	selected	if <code>true</code>, set as selected
+ */
 ZmContactAlphabetBar.prototype.setSelected =
 function(cell, selected) {
 	cell.className = selected
@@ -242,6 +334,9 @@ function(cell, selected) {
 		: "DwtButton AlphabetBarCell";
 };
 
+/**
+ * @private
+ */
 ZmContactAlphabetBar.prototype._createHtml =
 function() {
 	this._alphabetBarId = this._htmlElId + "_alphabet";
@@ -256,6 +351,9 @@ function() {
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
 };
 
+/**
+ * @private
+ */
 ZmContactAlphabetBar._alphabetClicked =
 function(cell, letter, endLetter) {
 	// get reference to alphabet bar - ugh
@@ -267,6 +365,9 @@ function(cell, letter, endLetter) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactAlphabetBar._onMouseOver =
 function(cell) {
 	// get reference to alphabet bar - ugh
@@ -276,6 +377,9 @@ function(cell) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmContactAlphabetBar._onMouseOut =
 function(cell) {
 	// get reference to alphabet bar - ugh
