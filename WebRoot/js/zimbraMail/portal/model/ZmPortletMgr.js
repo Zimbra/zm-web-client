@@ -13,6 +13,14 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the portlet manager.
+ * @class
+ * This class represents the portlet manager.
+ * 
+ * @see		ZmPortalApp
+ * @see		ZmPortlet
+ */
 ZmPortletMgr = function() {
     this._portlets = {};
     this._loadedZimlets = {};
@@ -23,6 +31,12 @@ ZmPortletMgr = function() {
 // Public methods
 //
 
+/**
+ * Creates the portlets.
+ * 
+ * @param	{Boolean}	global			if <code>true</code>, create global portlets
+ * @param	{Object}	manifest		the portal manifest
+ */
 ZmPortletMgr.prototype.createPortlets = function(global, manifest) {
 	global = global != null ? global : false;
 	var portletsCreated = [];
@@ -47,6 +61,14 @@ ZmPortletMgr.prototype.createPortlets = function(global, manifest) {
     return portletsCreated;
 };
 
+/**
+ * Creates the portlet.
+ * 
+ * @param	{String}	id		the portlet id
+ * @param	{Object}	portletDef		the portlet definition
+ * 
+ * @return	{ZmPortlet}	the newly created portlet
+ */
 ZmPortletMgr.prototype.createPortlet = function(id, portletDef) {
     // create portlet
     var portlet = new ZmPortlet(null, id, portletDef);
@@ -67,10 +89,21 @@ ZmPortletMgr.prototype.createPortlet = function(id, portletDef) {
     return portlet;
 };
 
+/**
+ * Gets the portlets.
+ * 
+ * @return	{Array}		an array of {@link ZmPortlet} objects
+ */
 ZmPortletMgr.prototype.getPortlets = function() {
     return this._portlets;
 };
 
+/**
+ * Gets the portlet by id.
+ * 
+ * @param	{String}	id		the portlet id
+ * @return	{ZmPortlet}	the portlet
+ */
 ZmPortletMgr.prototype.getPortletById = function(id) {
     return this._portlets[id];
 };
@@ -78,6 +111,8 @@ ZmPortletMgr.prototype.getPortletById = function(id) {
 /**
  * This method is called by ZmZimletContext after the source code for
  * the zimlet is loaded.
+ * 
+ * @private
  */
 ZmPortletMgr.prototype.zimletLoaded = function(zimletCtxt) {
     this._loadedZimlets[zimletCtxt.name] = true;
@@ -96,6 +131,8 @@ ZmPortletMgr.prototype.zimletLoaded = function(zimletCtxt) {
  * This method is called after all of the zimlets have been loaded. It is
  * a way for the portlet manager to know that there are no more zimlets
  * expected.
+ * 
+ * @private
  */
 ZmPortletMgr.prototype.allZimletsLoaded = function() {
 	for (var name in this._portlets) {

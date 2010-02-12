@@ -13,6 +13,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the portal application.
+ * @class
+ * This class represents the portal application.
+ * 
+ * @param	{DwtControl}	container		the container
+ * @param	{ZmPortalController}	parentController		the controller
+ * 
+ * @extends		ZmApp
+ */
 ZmPortalApp = function(container, parentController) {
 	ZmApp.call(this, ZmApp.PORTAL, container, parentController);
 }
@@ -20,6 +30,11 @@ ZmPortalApp = function(container, parentController) {
 ZmPortalApp.prototype = new ZmApp;
 ZmPortalApp.prototype.constructor = ZmPortalApp;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmPortalApp.prototype.toString = function() {
 	return "ZmPortalApp";
 };
@@ -41,6 +56,9 @@ ZmPortalApp.prototype._registerApp = function() {
 // Constants
 //
 
+/**
+ * Defines the "portal" application.
+ */
 ZmApp.PORTAL                    = ZmId.APP_PORTAL;
 ZmApp.CLASS[ZmApp.PORTAL]		= "ZmPortalApp";
 ZmApp.SETTING[ZmApp.PORTAL]		= ZmSetting.PORTAL_ENABLED;
@@ -56,6 +74,10 @@ ZmPortalApp.__PORTLET_ID = 0;
 // Public methods
 //
 
+/**
+ * Refreshes the portlets.
+ * 
+ */
 ZmPortalApp.prototype.refreshPortlets = function() {
     var mgr = this.getPortletMgr();
     var portlets = mgr.getPortlets();
@@ -82,6 +104,12 @@ ZmPortalApp.prototype.activate = function(active) {
 	ZmApp.prototype.activate.call(this, active);
 };
 
+/**
+ * Gets the portal manifest.
+ * 
+ * @param	{AjxCallback}		callback		the callback to call after the manifest is loaded
+ * @return	{Object}		the manifest
+ */
 ZmPortalApp.prototype.getManifest = function(callback) {
     if (!this._manifest) {
         // load the portal manifest
@@ -150,6 +178,11 @@ ZmPortalApp.prototype._handleLoadManifest = function(callback, req) {
     }
 };
 
+/**
+ * Gets the portal controller.
+ * 
+ * @return	{ZmPortalController}	the controller
+ */
 ZmPortalApp.prototype.getPortalController = function() {
 	AjxDispatcher.require("Portal");
 	if (!this._portalController) {
@@ -158,6 +191,11 @@ ZmPortalApp.prototype.getPortalController = function() {
 	return this._portalController;
 };
 
+/**
+ * Gets the portlet manager.
+ * 
+ * @return	{ZmPortletMgr}		the portlet manager
+ */
 ZmPortalApp.prototype.getPortletMgr = function() {
 	AjxDispatcher.require("Portal");
     if (!this._portletMgr) {

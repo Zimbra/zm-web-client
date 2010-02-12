@@ -15,21 +15,20 @@
 
 /**
  * @overview
- * 
- * This file defines the Zimbra Portlet.
- *
+ * This file defines the portlet.
  */
 
 /**
  * @class
- *
- * This class provides the implementation for a Zimbra Portlet.
+ * This class provides the implementation for portlet for use in the portal application.
  * 
  * @param	{ZmList}	list	the list that contains this item (may be <code>null</code>)
  * @param	{String}	id		the portlet id
  * @param	{Object}	def		the portlet definition
  *
  * @extends	ZmItem
+ * 
+ * @see		ZmPortalApp
  */
 ZmPortlet = function(list, id, def) {
     ZmItem.call(this, ZmItem.PORTLET, id, list);
@@ -176,7 +175,7 @@ ZmPortlet.prototype.setContentUrl = function(url) {
 /**
  * Sets the portlet to "paused".
  * 
- * @param	{Boolean}	paused		<code>true</code> to pause the portlet
+ * @param	{Boolean}	paused		if <code>true</code>, pause the portlet
  */
 ZmPortlet.prototype.setPaused = function(paused) {
     if (this._refreshActionId != -1 && paused) {

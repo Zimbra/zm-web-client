@@ -13,6 +13,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the portal controller class.
+ */
+
+/**
+ * Creates the portal controller.
+ * @class
+ * This class represents the portal controller.
+ * 
+ * @param {DwtComposite}	container	the containing element
+ * @param	{ZmPortalApp}	app			the application
+ * 
+ * @extends		ZmListController
+ */
 ZmPortalController = function(container, app) {
 	if (arguments.length == 0) { return; }
 	ZmListController.call(this, container, app);
@@ -26,6 +41,11 @@ ZmPortalController = function(container, app) {
 ZmPortalController.prototype = new ZmListController;
 ZmPortalController.prototype.constructor = ZmPortalController;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmPortalController.prototype.toString = function() {
 	return "ZmPortalController";
 };
@@ -44,6 +64,11 @@ ZmPortalController.prototype.show = function() {
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 };
 
+/**
+ * Sets the paused flag for the portlets.
+ * 
+ * @param	{Boolean}	paused		if <code>true</code>, pause the portlets
+ */
 ZmPortalController.prototype.setPaused = function(paused) {
     var view = this._listView[this._currentView];
     var portletIds = view && view.getPortletIds();

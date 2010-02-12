@@ -13,6 +13,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the portal view.
+ * @class
+ * This class represents the portal view.
+ * 
+ * @param {DwtComposite}	container	the containing element
+ * @param	{ZmPortalApp}	app			the application
+ * @param	{DwtDropTarget}	dropTgt		the drop target
+ * 
+ * @extends		ZmListView
+ */
 ZmPortalView = function(parent, controller, dropTgt) {
 	var headerList = this._getHeaderList();
 	ZmListView.call(this, {parent:parent, className:"ZmPortalView",
@@ -24,6 +35,11 @@ ZmPortalView = function(parent, controller, dropTgt) {
 ZmPortalView.prototype = new ZmListView;
 ZmPortalView.prototype.constructor = ZmPortalView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmPortalView.prototype.toString = function() {
 	return "ZmPortalView";
 };
@@ -32,6 +48,11 @@ ZmPortalView.prototype.toString = function() {
 // Public methods
 //
 
+/**
+ * Gets the portlet ids.
+ * 
+ * @return	{Array}		an array of portlet ids
+ */
 ZmPortalView.prototype.getPortletIds = function() {
     return this._portletIds || [];
 };
@@ -68,6 +89,11 @@ ZmPortalView.prototype._initializeView2 = function(manifest) {
 	this._rendered = true;
 };
 
+/**
+ * Gets the view title.
+ * 
+ * @return	{String}	the title
+ */
 ZmPortalView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");

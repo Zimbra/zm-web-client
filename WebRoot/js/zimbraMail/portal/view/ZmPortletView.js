@@ -13,6 +13,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the portlet view.
+ * @class
+ * This class represents the portlet view.
+ * 
+ * @param	{Element}		parentEl		the parent element
+ * @param	{ZmPortlet}		portlet			the portlet
+ * @param	{String}		className		the class name
+ * 
+ * @extends		DwtComposite
+ */
 ZmPortletView = function(parentEl, portlet, className) {
     className = className || "ZmPortlet";
     DwtComposite.call(this, {parent:DwtShell.getShell(window), className:className, posStyle:DwtControl.STATIC_STYLE});
@@ -36,6 +47,11 @@ ZmPortletView = function(parentEl, portlet, className) {
 ZmPortletView.prototype = new DwtComposite;
 ZmPortletView.prototype.constructor = ZmPortletView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmPortletView.prototype.toString = function() {
     return "ZmPortletView";
 };
@@ -44,11 +60,23 @@ ZmPortletView.prototype.toString = function() {
 // Public methods
 //
 
+/**
+ * Sets the icon.
+ * 
+ * @param	{String}	icon		the icon
+ * 
+ * @see		AjxImg.setImage
+ */
 ZmPortletView.prototype.setIcon = function(icon) {
     if (icon == null || !this._iconEl) return;
     AjxImg.setImage(this._iconEl, icon);
 };
 
+/**
+ * Sets the title.
+ * 
+ * @param	{String}		title		the title
+ */
 ZmPortletView.prototype.setTitle = function(title) {
     if (title == null || !this._titleEl) return;
     this._titleEl.innerHTML = title;
@@ -67,6 +95,11 @@ ZmPortletView.prototype.setContent = function(content) {
     }
 };
 
+/**
+ * Sets the content URL as an iframe.
+ * 
+ * @param	{String}	url		the url
+ */
 ZmPortletView.prototype.setContentUrl = function(url) {
     if (!url) return;
 
