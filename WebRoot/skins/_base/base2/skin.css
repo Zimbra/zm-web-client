@@ -211,6 +211,11 @@ BODY						{	margin:0px; 				}
 	overflow: hidden !important;
 }
 
+.BannerTextUserOffline {
+	text-align: left;
+	padding-left: 3px;
+}
+
 
 
 /* App Chooser and App Tab Overrides -- TODO: Merge into main */
