@@ -488,7 +488,7 @@ function(zimletArray, zimletNames, isJS) {
         }        
 		// add cache killer to each url
 		var query = isDevZimlet
-			? ("?debug=1&v="+new Date().getTime())
+			? ("?debug=1&v="+new Date().getTime()+"&")
 			: ("?v="+cacheKillerVersion+"&");
         	query += ((languageId ? "language=" + languageId : "")+"&");
         	query += ((countryId ? "country=" + countryId : ""));
