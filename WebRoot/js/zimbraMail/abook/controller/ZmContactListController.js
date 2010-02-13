@@ -825,14 +825,20 @@ function(items, folder, attrs, isShiftKey) {
 
 	var moveOutFolder = appCtxt.getById(this.getFolderId());
 	var outOfTrash = (moveOutFolder && moveOutFolder.isInTrash() && !folder.isInTrash());
-	var list = outOfTrash ? this._list : (items[0].list || this._list);
 
+    var allDoneCallback = new AjxCallback(this, this._checkItemCount);
 	if (move.length) {
-		list.moveItems({items:move, folder:folder, attrs:attrs, outOfTrash:outOfTrash});
+        var params = {items:move, folder:folder, attrs:attrs, outOfTrash:outOfTrash};
+        var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
+        list = outOfTrash ? this._list : list;
+		list.moveItems(params);
 	}
 
 	if (copy.length) {
-		list.copyItems({items:copy, folder:folder, attrs:attrs});
+        var params = {items:copy, folder:folder, attrs:attrs};
+        var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
+        list = outOfTrash ? this._list : list;
+		list.copyItems(params);
 	}
 
 	if (moveFromGal.length) {

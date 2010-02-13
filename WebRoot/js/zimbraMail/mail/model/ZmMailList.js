@@ -81,6 +81,12 @@ function(params) {
 	params1.attrs.tcon = this._getTcon();
 	params1.attrs.l = params.folder.id;
 	params1.action = (params.folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
+    if (params1.folder.id == ZmFolder.ID_TRASH) {
+        params1.actionText = ZmMsg.actionTrash;
+    } else {
+        params1.actionText = ZmMsg.actionMove;
+        params1.actionArg = params1.folder.getName(false, false, true);
+    }
 	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
 
 	if (appCtxt.multiAccounts) {
@@ -159,6 +165,7 @@ function(params) {
 	if (params.folder) {
 		params1.attrs.l = params.folder.id;
 	}
+    params1.actionText = params.markAsSpam ? ZmMsg.actionMarkAsJunk : ZmMsg.actionMarkAsNotJunk;
 
 	params1.callback = new AjxCallback(this, this._handleResponseSpamItems, params);
 	this._itemAction(params1);
@@ -214,6 +221,7 @@ function(params) {
 			params.attrs = params.attrs || {};
 			params.attrs.tcon = ZmFolder.TCON_CODE[searchFolder.nId];
 			params.action = "delete";
+            params.actionText = ZmMsg.actionDelete;
 			params.callback = new AjxCallback(this, this._handleResponseDeleteItems, instantOn);
 			return this._itemAction(params);
 		}
@@ -269,6 +277,7 @@ function(params) {
 	if (items1.length) {
 		params.items = items1;
 		params.op = "read";
+        params.actionText = params.value ? ZmMsg.actionMarkRead : ZmMsg.actionMarkUnread;
 		this.flagItems(params);
 	}
 };

@@ -403,6 +403,8 @@ function(tasks) {
 		batchCmd.add(cmd);
 	}
 	batchCmd.run();
+	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, tasks.length, ZmItem.TASK);
+	appCtxt.setStatusMsg(summary);
 };
 
 ZmTaskListController.prototype._editTask =

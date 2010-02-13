@@ -215,7 +215,7 @@ function() {
 	ZmItem.registerItem(ZmItem.CONTACT,
 						{app:			ZmApp.CONTACTS,
 						 nameKey:		"contact",
-						 pluralNameKey:	"contacts",
+						 countKey:  	"typeContact",
 						 icon:			"Contact",
 						 soapCmd:		"ContactAction",
 						 itemClass:		"ZmContact",
@@ -232,6 +232,7 @@ function() {
 
 	ZmItem.registerItem(ZmItem.GROUP,
 						{nameKey:	"group",
+						 countKey:	"typeContactGroup",
 						 icon:		"Group",
 						 soapCmd:	"ContactAction"
 						});

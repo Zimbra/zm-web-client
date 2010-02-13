@@ -366,6 +366,7 @@ function() {
 	ZmItem.registerItem(ZmItem.APPT,
 						{app:			ZmApp.CALENDAR,
 						 nameKey:		"appointment",
+                         countKey:      "typeAppointment",
 						 icon:			"Appointment",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmAppt",

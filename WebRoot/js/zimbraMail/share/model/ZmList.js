@@ -335,6 +335,7 @@ function(offset, newList) {
  * @param	{AjxCallback}	params.callback		the callback to run after each sub-request
  * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
  * @param	{int}		params.count			the starting count for number of items processed
+ * @param   {String}    params.actionText   pattern for generating action summary
  */
 ZmList.prototype.flagItems =
 function(params) {
@@ -363,7 +364,8 @@ function(params) {
  *
  * @param {Hash}	params		a hash of parameters
  * @param {Array}	params.items			a list of items to tag/untag
- * @param {String}	params.tagId			the tag to add/remove from each item
+ * @param {String}  params.tagId            ID of tag to add/remove
+ * @param {String}	params.tag  			the tag to add/remove from each item (optional)
  * @param {Boolean}	params.doTag			<code>true</code> if adding the tag, <code>false</code> if removing it
  * @param {AjxCallback}	params.callback		the callback to run after each sub-request
  * @param {AjxCallback}	params.finalCallback	the callback to run after all items have been processed
@@ -374,9 +376,11 @@ function(params) {
 
 	params = Dwt.getParams(arguments, ["items", "tagId", "doTag"]);
 
+    var tagId = params.tagId || (params.tag && params.tag.id);
+
 	// for multi-account mbox, normalize tagId
 	if (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain) {
-		params.tagId = ZmOrganizer.normalizeId(params.tagId);
+		tagId = ZmOrganizer.normalizeId(tagId);
 	}
 
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
@@ -386,7 +390,7 @@ function(params) {
 	// only tag items that don't have the tag, and untag ones that do
 	// always tag a conv, because we don't know if all items in the conv have the tag yet
 	var items = AjxUtil.toArray(params.items);
-	var items1 = [], doTag = params.doTag, tagId = params.tagId;
+	var items1 = [], doTag = params.doTag;
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		if ((doTag && (!item.hasTag(tagId) || item.type == ZmItem.CONV)) ||	(!doTag && item.hasTag(tagId))) {
@@ -396,6 +400,8 @@ function(params) {
 	params.items = items1;
 	params.attrs = {tag:tagId};
 	params.action = doTag ? "tag" : "!tag";
+    params.actionText = doTag ? ZmMsg.actionTag : ZmMsg.actionUntag;
+    params.actionArg = params.tag && params.tag.name;
 
 	this._itemAction(params);
 };
@@ -431,6 +437,7 @@ function(params) {
 	params.items = items1;
 	params.action = "update";
 	params.attrs = {t: ""};
+    params.actionText = ZmMsg.actionRemoveTags;
 
 	this._itemAction(params);
 };
@@ -465,6 +472,12 @@ function(params) {
 	params.attrs = params.attrs || {};
 	params.attrs.l = params.folder.id;
 	params.action = "move";
+    if (params.folder.id == ZmFolder.ID_TRASH) {
+        params.actionText = ZmMsg.actionTrash;
+    } else {
+        params.actionText = ZmMsg.actionMove;
+        params.actionArg = params.folder.getName(false, false, true);
+    }
 
 	// bug: 42865 - make a copy of params
 	var proxyParams = {};
@@ -518,6 +531,8 @@ function(params) {
 	params.attrs = params.attrs || {};
 	params.attrs.l = params.folder.id;
 	params.action = "copy";
+    params.actionText = ZmMsg.actionCopied;
+    params.actionArg = params.folder.getName(false, false, true);
 	params.callback = new AjxCallback(this, this._handleResponseCopyItems, params);
 
 	this._itemAction(params);
@@ -595,6 +610,7 @@ function(params) {
 	if (toDelete.length) {
 		params.items = toDelete;
 		params.action = "delete";
+        params.actionText = ZmMsg.actionDelete;
 		this._itemAction(params);
 	}
 };
@@ -806,7 +822,9 @@ function(params, batchCmd) {
 		finalCallback:	params.finalCallback,
 		errorCallback:	params.errorCallback,
 		batchCmd:		batchCmd,
-		numItems:		params.count || 0
+		numItems:		params.count || 0,
+        actionText:		params.actionText,
+        actionArg:      params.actionArg
 	};
 
 	var dialog = ZmList.progressDialog;
@@ -890,14 +908,16 @@ function(params, result) {
 			if (params.callback) {
 				params.callback.run(items, result);
 			}
+
+            var summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
 			if (dialog) {
-				var msgKey = ZmItem.PLURAL_MSG_KEY[params.type] || "items";
-				var text = AjxMessageFormat.format(ZmMsg.itemsProcessed, [params.numItems, ZmMsg[msgKey]]);
-				dialog.setContent(text.toLowerCase());
+				dialog.setContent(summary);
 				if (!dialog.isPoppedUp()) {
 					dialog.popup();
 				}
-			}
+			} else {
+                params.actionSummary = summary;
+            }
 		}
 	}
 
@@ -907,7 +927,7 @@ function(params, result) {
 	} else {
 		params.reqId = null;
 		if (params.finalCallback) {
-			// finalCallback is responsible for clearing dialog
+			// finalCallback is responsible for showing status or clearing dialog
 			DBG.println("sa", "item action running finalCallback");
 			params.finalCallback.run(params);
 		} else {
@@ -915,9 +935,18 @@ function(params, result) {
 			if (dialog) {
 				dialog.popdown();
 				ZmList.progressDialog = null;
-			}
+			} else if (actionParams.actionSummary) {
+				appCtxt.setStatusMsg(actionParams.actionSummary);
+            }
 		}
 	}
+};
+
+ZmList.getActionSummary =
+function(text, num, type, arg) {
+    text = text || ZmMsg.actionProcessed;
+    var typeText = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
+    return AjxMessageFormat.format(text, [num, typeText, arg]);
 };
 
 /**

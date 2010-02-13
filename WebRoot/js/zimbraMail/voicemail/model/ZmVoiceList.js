@@ -52,6 +52,12 @@ function(params) {
 	params.attrs.phone = this.folder.phone.name;
 	params.attrs.l = params.folder.id;
 	params.action = "move";
+    if (params.folder.id == ZmFolder.ID_TRASH) {
+        params.actionText = ZmMsg.actionTrash;
+    } else {
+        params.actionText = ZmMsg.actionMove;
+        params.actionArg = params.folder.getName(false, false, true);
+    }
 	params.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
 
 	this._itemAction(params);

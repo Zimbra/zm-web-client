@@ -67,7 +67,7 @@ ZmItem.prototype.constructor = ZmItem;
 
 ZmItem.APP 				= {};	// App responsible for item
 ZmItem.MSG_KEY 			= {};	// Type names
-ZmItem.PLURAL_MSG_KEY 	= {};	// msg key for plural of item name
+ZmItem.COUNT_KEY    	= {};	// msg key that handles plural
 ZmItem.ICON 			= {};	// Representative icons
 ZmItem.RESULTS_LIST 	= {};	// Function for creating search results list
 
@@ -186,20 +186,20 @@ ZmItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
  * @param	{Hash}	params			a hash of parameters
  * @param {constant}	params.app			the app that handles this item type
  * @param {String}		params.nameKey		the message key for item name
- * @param {String}		params.pluralameKey	the message key for plural of item name
+ * @param {String}		params.countKey 	the message key for plural of item name
  * @param {String}		params.icon			the name of item icon class
  * @param {String}		params.soapCmd		the SOAP command for acting on this item
- * @param {String}		params.itemClass		the name of class that represents this item
+ * @param {String}		params.itemClass	the name of class that represents this item
  * @param {String}		params.node			the SOAP response node for this item
- * @param {constant}	params.organizer		the associated organizer
- * @param {String}		params.searchType		the associated type in SearchRequest
- * @param {function}	params.resultsList		the function that returns a {@link ZmList} for holding search results of this type
+ * @param {constant}	params.organizer	the associated organizer
+ * @param {String}		params.searchType	the associated type in SearchRequest
+ * @param {function}	params.resultsList	the function that returns a {@link ZmList} for holding search results of this type
  */
 ZmItem.registerItem =
 function(item, params) {
 	if (params.app)				{ ZmItem.APP[item]					= params.app; }
 	if (params.nameKey)			{ ZmItem.MSG_KEY[item]				= params.nameKey; }
-	if (params.pluralNameKey)	{ ZmItem.PLURAL_MSG_KEY[item]		= params.pluralNameKey; }
+	if (params.countKey)	    { ZmItem.COUNT_KEY[item]		    = params.countKey; }
 	if (params.icon)			{ ZmItem.ICON[item]					= params.icon; }
 	if (params.soapCmd)			{ ZmItem.SOAP_CMD[item]				= params.soapCmd; }
 	if (params.itemClass)		{ ZmList.ITEM_CLASS[item]			= params.itemClass; }

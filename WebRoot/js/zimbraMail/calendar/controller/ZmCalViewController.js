@@ -1303,6 +1303,8 @@ function() {
 		}
 	}
 	batchCmd.run();
+	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, batchCmd.size(), ZmItem.APPT);
+	appCtxt.setStatusMsg(summary);
 };
 
 ZmCalViewController.prototype._divvyItems =
@@ -1504,6 +1506,8 @@ function() {
 	if (this._viewMgr.getCurrentViewName() == ZmId.VIEW_CAL_APPT) {
 		this._viewMgr.getCurrentView().close();
 	}
+	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, 1, ZmItem.APPT);
+	appCtxt.setStatusMsg(summary);
 };
 
 /**

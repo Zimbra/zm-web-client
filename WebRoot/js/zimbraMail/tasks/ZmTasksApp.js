@@ -81,7 +81,7 @@ function() {
 	ZmItem.registerItem(ZmItem.TASK,
 						{app:			ZmApp.TASKS,
 						 nameKey:		"task",
-						 pluralNameKey:	"tasks",
+						 countKey:  	"typeTask",
 						 icon:			"TaskList",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmTask",

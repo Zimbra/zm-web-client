@@ -394,7 +394,7 @@ function(params) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoadMove, [moveBatchCmd, hardMove]);
 			loadBatchCmd.run(respCallback);
 		} else {
-			var deleteCmd = new AjxCallback(this, this._itemAction, [{items:hardMove, action:"delete"}]);
+			var deleteCmd = new AjxCallback(this, this._itemAction, [{items:hardMove, action:"delete", actionText:ZmMsg.actionDelete}]);
 			moveBatchCmd.add(deleteCmd);
 
 			var respCallback = new AjxCallback(this, this._handleResponseMoveBatchCmd);
@@ -407,6 +407,12 @@ function(params) {
 		params.attrs = params.attrs || {};
 		params.attrs.l = params.folder.id;
 		params.action = "move";
+        if (params.folder.id == ZmFolder.ID_TRASH) {
+            params.actionText = ZmMsg.actionTrash;
+        } else {
+            params.actionText = ZmMsg.actionMove;
+            params.actionArg = params.folder.getName(false, false, true);
+        }
 		params.callback = params.outOfTrash && new AjxCallback(this, this._handleResponseMoveItems, params);
 		params.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
 

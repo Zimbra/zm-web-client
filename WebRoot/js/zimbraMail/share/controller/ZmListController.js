@@ -962,6 +962,7 @@ function(items, on) {
 	}
 
 	var params = {items:items1, op:"flag", value:on};
+    params.actionText = on ? ZmMsg.actionFlag : ZmMsg.actionUnflag;
 	var list = this._setupContinuation(this._doFlag, [on], params);
 	list.flagItems(params);
 };
@@ -977,7 +978,7 @@ function(items, tag, doTag) {
 	items = AjxUtil.toArray(items);
 	if (!items.length) { return; }
 
-	var params = {items:items, tagId:tag.id, doTag:doTag};
+	var params = {items:items, tag:tag, doTag:doTag};
 	var list = this._setupContinuation(this._doTag, [tag, doTag], params);
 	list.tagItems(params);
 };
@@ -1743,17 +1744,12 @@ function() {
 	var size = list.size();
 	var total = this._getNumTotal();
 	var num = total || size;
-	var typeKey;
-	if (type) {
-		typeKey = (num == 1) ? ZmItem.MSG_KEY[type] : ZmItem.PLURAL_MSG_KEY[type];
-	} else {
-		typeKey = (num == 1) ? "item" : "items";
-	}
-	if (total) {
-		return AjxMessageFormat.format(ZmMsg.itemCount1, [size, total, ZmMsg[typeKey]]);
+    var typeText = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
+	if (total && (num != total)) {
+		return AjxMessageFormat.format(ZmMsg.itemCount1, [size, total, typeText]);
 	} else {
 		var sizeText = list.size() + (this._list.hasMore() ? "+" : "");
-		return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, ZmMsg[typeKey]]);
+		return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, typeText]);
 	}
 };
 
@@ -1862,8 +1858,7 @@ function(params, actionParams) {
 		if (contResult) {
 			if (lv.allSelected) {
 				// items beyond page were acted on, give user a total count
-				var msgKey = ZmItem.PLURAL_MSG_KEY[contResult.type] || "items";
-				var text = AjxMessageFormat.format(ZmMsg.itemsProcessed, [this._continuation.totalItems, ZmMsg[msgKey]]);
+                var text = ZmList.getActionSummary(actionParams.actionText, this._continuation.totalItems, contResult.type, actionParams.actionArg);
 				appCtxt.setStatusMsg(text);
 				lv.deselectAll();
 				if (params.allDoneCallback) {
@@ -1872,11 +1867,14 @@ function(params, actionParams) {
 			}
 			this._continuation = {count:0, totalItems:0};
 		}
+
 		var dialog = ZmList.progressDialog;
 		if (dialog) {
 			dialog.popdown();
 			ZmList.progressDialog = null;
-		}
+		} else if (actionParams.actionSummary) {
+            appCtxt.setStatusMsg(actionParams.actionSummary);
+        }
 	}
 };
 
