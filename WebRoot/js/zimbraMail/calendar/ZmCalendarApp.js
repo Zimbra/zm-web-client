@@ -721,10 +721,10 @@ function() {
  * to keep things lite when calendar packages are not loaded
 */
 ZmCalendarApp.prototype.getCheckedCalendarFolderIds =
-function() {
+function(localOnly) {
 	var folderIds = [];
 	if (AjxDispatcher.loaded("CalendarCore")) {
-		folderIds = this.getCalController().getCheckedCalendarFolderIds();
+		folderIds = this.getCalController().getCheckedCalendarFolderIds(localOnly);
 	} else {
 		// will be used in reminder dialog
 		this._folderNames = {};
@@ -732,7 +732,7 @@ function() {
 			var params = this._deferredFolders[i];
 			var str = (params && params.obj && params.obj.f) ? params.obj.f : "";
 			if (str && (str.indexOf(ZmOrganizer.FLAG_CHECKED) != -1)) {
-				if (params.obj.zid != null) {
+				if (localOnly && params.obj.zid != null) {
 					continue;
 				}
 				folderIds.push(params.obj.id);
