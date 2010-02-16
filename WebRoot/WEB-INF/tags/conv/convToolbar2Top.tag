@@ -72,6 +72,8 @@
     <tr>
         <td align=left class=TbBt>
             <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
+            <zm:currentResultUrl var="delRedirectUrl" value="/h/search" context="${context}" />
+            <input type="hidden" value="${delRedirectUrl}" name="delRedirectUrl" />
             <a href="${closeurl}" <c:if test="${keys}"></c:if>>${fn:escapeXml(context.backTo)}</a>
             ${requestScope.cvToolbar2TopCache}
         </td>
