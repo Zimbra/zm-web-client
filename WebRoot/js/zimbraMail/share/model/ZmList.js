@@ -935,8 +935,8 @@ function(params, result) {
 			if (dialog) {
 				dialog.popdown();
 				ZmList.progressDialog = null;
-			} else if (actionParams.actionSummary) {
-				appCtxt.setStatusMsg(actionParams.actionSummary);
+			} else if (params.actionSummary) {
+				appCtxt.setStatusMsg(params.actionSummary);
             }
 		}
 	}
