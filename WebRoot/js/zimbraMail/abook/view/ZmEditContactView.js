@@ -1257,6 +1257,12 @@ ZmEditContactViewInputSelectRows.prototype.addRow = function(itemDef, index) {
 			}
 		}
 	}
+	
+	if (this._rowCount >= this._maxRows) {
+		for (var i = 0; i < this._rowCount; i++) {
+			this.setVisible(this._items[i]._addId, false);
+		}
+	}
 };
 
 /**
