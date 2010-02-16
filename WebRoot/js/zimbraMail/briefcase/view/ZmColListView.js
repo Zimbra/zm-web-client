@@ -13,6 +13,23 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * 
+ */
+
+/**
+ * Creates the briefcase column list view.
+ * @class
+ * This class represents the briefcase view.
+ * 
+ * @param	{ZmControl}		parent		the parent
+ * @param	{ZmBriefcaseController}	controller		the controller
+ * @param	{DwtDropTarget}		dropTgt		the drop target
+ * @param	{int}		index		the index
+ * 
+ * @extends		ZmBriefcaseBaseView
+ */
 ZmColListView =	function(parent, controller, dropTgt, index) {
 
 	this._controller = controller;
@@ -33,6 +50,11 @@ ZmColListView =	function(parent, controller, dropTgt, index) {
 ZmColListView.prototype = new ZmBriefcaseBaseView;
 ZmColListView.prototype.constructor = ZmColListView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmColListView.prototype.toString = function() {
 	return "ZmColListView";
 };

@@ -13,6 +13,22 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * 
+ */
+
+/**
+ * Creates the briefcase detail list view.
+ * @class
+ * This class represents the briefcase detail list view.
+ * 
+ * @param	{ZmControl}		parent		the parent
+ * @param	{ZmBriefcaseController}	controller		the controller
+ * @param	{DwtDropTarget}		dropTgt		the drop target
+ * 
+ * @extends		ZmBriefcaseBaseView
+ */
 ZmDetailListView = 	function(parent, controller, dropTgt) {
 
 	var headerList = this._getHeaderList(parent);
@@ -39,6 +55,11 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 ZmDetailListView.prototype = new ZmBriefcaseBaseView;
 ZmDetailListView.prototype.constructor = ZmDetailListView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmDetailListView.prototype.toString =
 function() {
 	return "ZmDetailListView";

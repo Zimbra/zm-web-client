@@ -13,6 +13,23 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the briefcase tree controller class.
+ * 
+ */
+
+/**
+ * Creates the briefcase tree controller.
+ * @class
+ * This class is a controller for the tree view used by the briefcase application.
+ *
+ * @param	{constant}	type		the organizer (see {@link ZmOrganizer.BRIEFCASE})
+ * 
+ * @author Parag Shah
+ * 
+ * @extends		ZmFolderTreeController
+ */
 ZmBriefcaseTreeController = function(type) {
 
 	ZmFolderTreeController.call(this, (type || ZmOrganizer.BRIEFCASE));
@@ -28,6 +45,11 @@ ZmBriefcaseTreeController = function(type) {
 ZmBriefcaseTreeController.prototype = new ZmFolderTreeController;
 ZmBriefcaseTreeController.prototype.constructor = ZmBriefcaseTreeController;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmBriefcaseTreeController.prototype.toString =
 function() {
 	return "ZmBriefcaseTreeController";
@@ -133,6 +155,13 @@ function() {
 	return appCtxt.getNewBriefcaseDialog();
 };
 
+/**
+ * Gets the tree style.
+ * 
+ * @return	{constant}	the style
+ * 
+ * @see		DwtTree.SINGLE_STYLE
+ */
 ZmBriefcaseTreeController.prototype.getTreeStyle =
 function() {
 	return DwtTree.SINGLE_STYLE;

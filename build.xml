@@ -1177,6 +1177,7 @@ if (ext == null) ext = "";
 	    <arg value="${js.dir}/zimbra/common/ZmErrorDialog.js"/>
 	    <arg value="${js.dir}/zimbra/csfe"/>
 	    <arg value="${js.dir}/zimbraMail/abook"/>
+	    <arg value="${js.dir}/zimbraMail/briefcase"/>
 	    <arg value="${js.dir}/zimbraMail/core"/>
 	    <arg value="${js.dir}/zimbraMail/portal"/>
 	    <arg value="${js.dir}/zimbraMail/share/model"/>
@@ -1203,6 +1204,7 @@ if (ext == null) ext = "";
 	    <arg value="${js.dir}/zimbra/common/ZmErrorDialog.js"/>
 	    <arg value="${js.dir}/zimbra/csfe"/>
 	    <arg value="${js.dir}/zimbraMail/abook"/>
+	    <arg value="${js.dir}/zimbraMail/briefcase"/>
 	    <arg value="${js.dir}/zimbraMail/core"/>
 	    <arg value="${js.dir}/zimbraMail/portal"/>
 	    <arg value="${js.dir}/zimbraMail/share/model"/>

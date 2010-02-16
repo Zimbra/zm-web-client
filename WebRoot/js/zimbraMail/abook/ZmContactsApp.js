@@ -53,6 +53,9 @@ ZmEvent.S_CONTACT				= ZmId.ITEM_CONTACT;
 ZmEvent.S_GROUP					= ZmId.ITEM_GROUP;
 ZmItem.CONTACT					= ZmEvent.S_CONTACT;
 ZmItem.GROUP					= ZmEvent.S_GROUP;
+/**
+ * Defines the "address book" organizer.
+ */
 ZmOrganizer.ADDRBOOK			= ZmId.ORG_ADDRBOOK;
 
 // App-related constants

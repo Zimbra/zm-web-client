@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the briefcase base view.
+ * @class
+ * This class represents the base view.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * @param	{ZmControl}		params.parent		the parent
+ * @param	{String}	params.className		the class name
+ * @param	{constant}	params.view		the view
+ * @param	{ZmBriefcaseController}	params.controller		the controller
+ * @param	{DwtDropTarget}		params.dropTgt		the drop target
+ * 
+ * @extends		ZmListView
+ */
 ZmBriefcaseBaseView = function(params) {
 
 	if (arguments.length == 0) { return; }
@@ -26,6 +40,11 @@ ZmBriefcaseBaseView = function(params) {
 ZmBriefcaseBaseView.prototype = new ZmListView;
 ZmBriefcaseBaseView.prototype.constructor = ZmBriefcaseBaseView;
 
+/**
+ * Gets the title.
+ * 
+ * @return	{String}	the title
+ */
 ZmBriefcaseBaseView.prototype.getTitle =
 function() {
 	//TODO: title is the name of the current folder
@@ -79,7 +98,11 @@ function() {
 	return null;
 };
 
-// Support DnD file uploading (see dnd zimlet)
+/**
+ * Uploads files from drag-and-drop.
+ * 
+ * @private
+ */
 ZmBriefcaseBaseView.prototype.uploadFiles =
 function() {
     var attachDialog = appCtxt.getUploadDialog();
@@ -87,6 +110,9 @@ function() {
     attachDialog.uploadFiles(files, document.getElementById("zdnd_form"), {id:this._controller._currentFolder});
 };
 
+/**
+ * @private
+ */
 ZmBriefcaseBaseView.prototype.processUploadFiles =
 function() {
 	var files = [];

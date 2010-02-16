@@ -13,6 +13,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a doclet manager.
+ * @class
+ * This class represents a doclet manager.
+ * 
+ */
 ZmDocletMgr = function() {
 };
 
@@ -73,6 +79,14 @@ function(files, status, guids, name, content, ct) {
     this.sendRequest(params);
 };
 
+/**
+ * Sends the request.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @see			ZmRequestMgr
+ * @see			ZmRequestMgr.sendRequest
+ */
 ZmDocletMgr.prototype.sendRequest =
 function(params) {
     if(!this._requestMgr) {

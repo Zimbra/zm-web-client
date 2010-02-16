@@ -13,6 +13,24 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * 
+ */
+
+/**
+ * Creates a briefcase item.
+ * @class
+ * This class represents a briefcase item.
+ * 
+ * @param {int}			id			the unique id
+ * @param {ZmList}		list		a list that contains this item
+ * @param {Boolean}		noCache		if <code>true</code>, do not cache this item
+
+ * @extends		ZmItem
+ * 
+ * @see		ZmBriefcase
+ */
 ZmBriefcaseItem = function(id, list, noCache) {
 
 	if (arguments.length == 0) { return; }
@@ -23,6 +41,11 @@ ZmBriefcaseItem = function(id, list, noCache) {
 ZmBriefcaseItem.prototype = new ZmItem;
 ZmBriefcaseItem.prototype.constructor = ZmBriefcaseItem;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmBriefcaseItem.prototype.toString =
 function() {
 	return "ZmBriefcaseItem";
@@ -31,6 +54,14 @@ function() {
 
 // Static functions
 
+/**
+ * Creates a briefcase item from the dom.
+ * 
+ * @param	{Object}	node		the node
+ * @param	{Hash}		args		a hash of arguments
+ * 
+ * @return	{ZmBriefcaseItem}	the briefcase item
+ */
 ZmBriefcaseItem.createFromDom =
 function(node, args) {
 	var item = new ZmBriefcaseItem(node.id, args.list);
@@ -40,13 +71,26 @@ function(node, args) {
 
 // Public methods
 
+/**
+ * Gets the path.
+ * 
+ * @param	{Boolean}	dontIncludeThisName		if <code>true</code>, do not include this item name in the path
+ * @return	{String}	the path
+ */
 ZmBriefcaseItem.prototype.getPath =
 function(dontIncludeThisName) {
 	var briefcase = appCtxt.getById(this.folderId);
 	var name = !dontIncludeThisName ? this.name : "";
 	return [briefcase.getPath(), "/", name].join("");
 };
-                                                                               
+                      
+/**
+ * Gets the REST URL.
+ * 
+ * @param	{Boolean}	dontIncludeThisName		if <code>true</code>, do not include this item name in the path
+ * @param	{Boolean}	ignoreCustomDocs		if <code>true</code>, ignore custom docs
+ * @return	{String}	the REST URL
+ */
 ZmBriefcaseItem.prototype.getRestUrl =
 function(dontIncludeThisName, ignoreCustomDocs) {
 	var url = ZmItem.prototype.getRestUrl.call(this);
@@ -59,26 +103,52 @@ function(dontIncludeThisName, ignoreCustomDocs) {
 	return url;
 };
 
+/**
+ * Checks if this item is a real file.
+ * 
+ * @return	{Boolean}	<code>true</code> if this item is a real file (not a web doc or folder)
+ */
 ZmBriefcaseItem.prototype.isRealFile =
 function() {
     return (!this.isFolder && !this.isWebDoc());  
 };
 
+/**
+ * Checks if this item is a web doc.
+ * 
+ * @return	{Boolean}	<code>true</code> if this item is a web doc
+ */
 ZmBriefcaseItem.prototype.isWebDoc =
 function() {
     return (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES || this.contentType == ZmMimeTable.APP_ZIMBRA_SPREADSHEET || this.contentType == ZmMimeTable.APP_ZIMBRA_DOC);
 };
 
+/**
+ * Checks if this item is a slide doc.
+ * 
+ * @return	{Boolean}	<code>true</code> if this item is a slide doc
+ */
 ZmBriefcaseItem.prototype.isSlideDoc =
 function() {
     return (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES);
 };
 
+/**
+ * Gets the content type.
+ * 
+ * @return	{String}	the content type
+ */
 ZmBriefcaseItem.prototype.getContentType =
 function() {
     return this.contentType;
 };
 
+/**
+ * Gets the icon.
+ * 
+ * @param	{Boolean}	large		if <code>true</code>, return the large icon
+ * @return	{String}	the icon
+ */
 ZmBriefcaseItem.prototype.getIcon =
 function(large) {
 
@@ -100,6 +170,11 @@ function(large) {
 	return icon;
 };
 
+/**
+ * Checks if this item is read only.
+ * 
+ * @return	{Boolean}	<code>true</code> if this item is read only
+ */
 ZmBriefcaseItem.prototype.isReadOnly =
 function() {
 	// if one of the ancestor is readonly then no chances of childs being writable
@@ -117,6 +192,11 @@ function() {
 	return isReadOnly;
 };
 
+/**
+ * Gets the briefcase folder.
+ * 
+ * @return	{ZmBriefcase}	the folder
+ */
 ZmBriefcaseItem.prototype.getBriefcaseFolder =
 function() {
 	if (!this._briefcase) {
@@ -130,12 +210,25 @@ function() {
 	return this._briefcase;
 };
 
+/**
+ * Checks if this item is shared.
+ * 
+ * @return	{Boolean}	<code>true</code> if this item is shared
+ */
 ZmBriefcaseItem.prototype.isShared =
 function() {
 	var briefcase = this.getBriefcaseFolder();
 	return briefcase && briefcase.link;
 };
 
+/**
+ * Creates an item from an attachment.
+ * 
+ * @param	{String}	msgId		the message
+ * @param	{String}	partId		the message part
+ * @param	{String}	name		the item name
+ * @param	{String}	folderId		the folder id
+ */
 ZmBriefcaseItem.prototype.createFromAttachment =
 function(msgId, partId, name, folderId) {
 	var acctId = appCtxt.getActiveAccount().id;
@@ -167,6 +260,11 @@ function(ex) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateFile, ZmStatusView.LEVEL_CRITICAL);
 };
 
+/**
+ * Gets the folder.
+ * 
+ * @return	{ZmFolder}		the folder
+ */
 ZmBriefcaseItem.prototype.getFolder =
 function() {
 	return appCtxt.getById(this.folderId);

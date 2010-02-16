@@ -13,6 +13,15 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the briefcase icon view.
+ * @class
+ * This class represents the briefcase icon view.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends		ZmBriefcaseBaseView
+ */
 ZmBriefcaseIconView = function(params) {
 	ZmBriefcaseBaseView.call(this, params);
 	this.getHtmlElement().style.backgroundColor = "white";
@@ -21,6 +30,11 @@ ZmBriefcaseIconView = function(params) {
 ZmBriefcaseIconView.prototype = new ZmBriefcaseBaseView;
 ZmBriefcaseIconView.prototype.constructor = ZmBriefcaseIconView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmBriefcaseIconView.prototype.toString =
 function() {
 	return "ZmBriefcaseIconView";

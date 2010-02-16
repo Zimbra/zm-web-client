@@ -13,6 +13,22 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * 
+ */
+
+/**
+ * Creates the briefcase multi-column view.
+ * @class
+ * This class represents the briefcase multi-column  view.
+ * 
+ * @param	{ZmControl}		parent		the parent
+ * @param	{ZmBriefcaseController}	controller		the controller
+ * @param	{DWtDropTarget}		dropTgt		the drop target
+ * 
+ * @extends		ZmBriefcaseBaseView
+ */
 ZmMultiColView = function(parent, controller, dropTgt) {
 
 	DwtComposite.call(this, {parent:parent, className:"ZmMultiColView", posStyle:Dwt.ABSOLUTE_STYLE});
@@ -43,6 +59,11 @@ ZmMultiColView = function(parent, controller, dropTgt) {
 ZmMultiColView.prototype = new DwtComposite;
 ZmMultiColView.prototype.constructor = ZmMultiColView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmMultiColView.prototype.toString = function() {
 	return "ZmMultiColView";
 };
@@ -63,12 +84,23 @@ function() {
 	return this._listView[0].uploadFiles();
 };
 
+/**
+ * Gets the list view.
+ * 
+ * @param	{int}	idx		the index
+ * @return	{ZmColListView}		the list view
+ */
 ZmMultiColView.prototype.getListView =
 function(idx) {
 	return (idx >= 0)? this._listView[idx] : this._listView[0];
 };
 
-// Adds a column that displays a list of items
+/**
+ * Adds a column that displays a list of items.
+ * 
+ * @param	{DwtDropTarget}		dropTgt		the drop target
+ * @return	{ZmColListView}	the list view
+ */
 ZmMultiColView.prototype.addListColumn =
 function(dropTgt) {
 
@@ -97,6 +129,11 @@ function(dropTgt) {
 	return lv;
 };
 
+/**
+ * Removes the list column.
+ * 
+ * @param	{int}	idx		the index
+ */
 ZmMultiColView.prototype.removeListColumn =
 function(idx) {
 	var div = this._divs[idx];
@@ -141,6 +178,9 @@ function(index) {
 	}
 };
 
+/**
+ * Resets the columns.
+ */
 ZmMultiColView.prototype.resetColumns =
 function() {
 	this.removeChildColumns(0);

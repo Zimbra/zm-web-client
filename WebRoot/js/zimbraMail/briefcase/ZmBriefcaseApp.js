@@ -13,6 +13,23 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the briefcase application class.
+ */
+
+/**
+ * Creates and initializes the briefcase application.
+ * @class
+ * The briefcase application manages the creation and display of briefcase items.
+ * 
+ * @param	{DwtControl}	container		the container
+ * @param	{ZmController}	parentController	the parent controller
+ * 
+ * @author Conrad Damon
+ * 
+ * @extends		ZmApp
+ */
 ZmBriefcaseApp = function(container, parentController) {
 	ZmApp.call(this, ZmApp.BRIEFCASE, container, parentController);
 };
@@ -26,9 +43,15 @@ ZmBriefcaseApp.prototype.constructor = ZmBriefcaseApp;
 ZmEvent.S_BRIEFCASE_ITEM			= ZmId.ITEM_BRIEFCASE;
 ZmItem.BRIEFCASE_ITEM				= ZmEvent.S_BRIEFCASE_ITEM;
 ZmItem.BRIEFCASE					= ZmItem.BRIEFCASE_ITEM;	// back-compatibility
+/**
+ * Defines the "briefcase" organizer.
+ */
 ZmOrganizer.BRIEFCASE				= ZmId.ORG_BRIEFCASE;
 
 // App-related constants
+/**
+ * Defines the "briefcase" application.
+ */
 ZmApp.BRIEFCASE						= ZmId.APP_BRIEFCASE;
 ZmApp.CLASS[ZmApp.BRIEFCASE]		= "ZmBriefcaseApp";
 ZmApp.SETTING[ZmApp.BRIEFCASE]		= ZmSetting.BRIEFCASE_ENABLED;
@@ -36,7 +59,11 @@ ZmApp.LOAD_SORT[ZmApp.BRIEFCASE]	= 65;
 ZmApp.QS_ARG[ZmApp.BRIEFCASE]		= "briefcase";
 ZmApp.BUTTON_ID[ZmApp.BRIEFCASE]	= ZmId.BRIEFCASE_APP;
 
-
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmBriefcaseApp.prototype.toString =
 function() {
 	return "ZmBriefcaseApp";
@@ -176,7 +203,9 @@ function() {
 /**
  * Checks for the creation of a briefcase or a mount point to one, or of an item
  *
- * @param creates	[hash]		hash of create notifications
+ * @param {Hash}	creates		a hash of create notifications
+ * 
+ * @private
  */
 ZmBriefcaseApp.prototype.createNotify =
 function(creates, force) {
@@ -242,6 +271,13 @@ function(op) {
 	}
 };
 
+/**
+ * Creates a new document.
+ * 
+ * @param	{String}	contentType		the content type
+ * @param	{String}	new				the document name
+ * @param	{String}	winName			the name of the popup doc window
+ */
 ZmBriefcaseApp.prototype.newDoc =
 function(contentType, name, winName) {
 	var overviewController = appCtxt.getOverviewController();
@@ -258,6 +294,11 @@ function(contentType, name, winName) {
 	window.open(url, winname, ZmBriefcaseApp.getDocWindowFeatures());
 };
 
+/**
+ * Gets the popup doc window features.
+ * 
+ * @return	{String}	 the window features
+ */
 ZmBriefcaseApp.getDocWindowFeatures =
 function() {
     return [
@@ -267,6 +308,13 @@ function() {
     ].join("");
 };
 
+/**
+ * Adds the editor parameter to the REST URL.
+ * 
+ * @param	{String}	restUrl		the REST URL
+ * @return	{String}	the resulting REST URL
+ * @private
+ */
 ZmBriefcaseApp.addEditorParam =
 function(restUrl) {
     if(restUrl && window.isTinyMCE) {
@@ -275,6 +323,13 @@ function(restUrl) {
     return restUrl;
 };
 
+/**
+ * Gets the edit URL.
+ * 
+ * @param	{String}	contentType		the content type
+ * 
+ * @return	{String}	the URL
+ */
 ZmBriefcaseApp.prototype.getEditURLForContentType =
 function(contentType) {
 	AjxDispatcher.require("Startup1_1");
@@ -288,6 +343,12 @@ function(contentType) {
 	return (appContextPath + "/public/" + editPage);
 };
 
+/**
+ * Checks if the item is a doclet.
+ * 
+ * @param	{ZmBriefcaseItem}	item		the item
+ * @return	{Boolean}	<code>true</code> if the item is a doclet
+ */
 ZmBriefcaseApp.prototype.isDoclet =
 function(item) {
 	var contentType = item.getContentType();
@@ -329,13 +390,15 @@ function(callback) {
 };
 
 /**
- * @param params			[hash]			hash of params:
- *        folderId			[string]*		ID of briefcase folder to search in
- *        query				[string]*		query to send (overrides folderId)
- *        callback			[AjxCallback]*	callback
- *        accountName		[string]*
- *        noRender			[boolean]*		if true, do not display results
- *        noClear			[boolean]*		if true, do not destruct previous search results
+ * Performs a search.
+ * 
+ * @param {Hash}	params			a hash of parameters
+ * @param {String}	params.folderId			the ID of briefcase folder to search in
+ * @param {String}	[params.query]				the query to send (overrides folderId)
+ * @param {AjxCallback}	[params.callback]			the callback
+ * @param {String}	[params.accountName]		the account name
+ * @param {Boolean}	[params.noRender]			if <code>true</code>, do not display results
+ * @param {Boolean}	[params.noClear]			if <code>true</code>, do not destroy previous search results
  */
 ZmBriefcaseApp.prototype.search =
 function(params) {
@@ -357,6 +420,12 @@ function(params) {
 	sc.search(searchParams);
 };
 
+/**
+ * Shows the search results.
+ * 
+ * @param	{Object}	results	the results
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmBriefcaseApp.prototype.showSearchResults =
 function(results, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
@@ -374,6 +443,12 @@ function(active) {
 };
 
 // return enough for us to get a scroll bar since we are pageless
+/**
+ * Gets the limit for the search triggered by the application launch or an overview click.
+ * 
+ * @param	{Boolean}	offset	if <code>true</code> app has offset
+ * @return	{int}	the limit
+ */
 ZmBriefcaseApp.prototype.getLimit =
 function(offset) {
 	var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
@@ -469,6 +544,9 @@ function(msgId, partId, name, folderId, results) {
 	}
 };
 
+/**
+ * @private
+ */
 ZmBriefcaseApp.prototype.fixCrossDomainReference =
 function(url, restUrlAuthority) {
 	var urlParts = AjxStringUtil.parseURL(url);

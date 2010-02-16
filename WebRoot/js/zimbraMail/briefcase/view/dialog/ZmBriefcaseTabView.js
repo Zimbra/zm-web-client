@@ -13,6 +13,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the briefcase tab view.
+ * @class
+ * This class represents the briefcase tab view.
+ * 
+ * @param	{ZmControl}		parent	the parent
+ * @param	{String}		className		the class name
+ * @param	{constant}		posStyle		the position style
+ * 
+ * @extends		DwtTabViewPage
+ * 
+ * @see			Dwt.STATIC_STYLE
+ */
 ZmBriefcaseTabView = function(parent,className,posStyle) {
 
 	this._app = appCtxt.getApp(ZmApp.BRIEFCASE);
@@ -26,10 +39,19 @@ ZmBriefcaseTabView = function(parent,className,posStyle) {
 ZmBriefcaseTabView.prototype = new DwtTabViewPage;
 ZmBriefcaseTabView.prototype.constructor = ZmBriefcaseTabView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmBriefcaseTabView.prototype.toString = function(){
     return "ZmBriefcaseTabView";
 };
 
+/**
+ * Shows this view.
+ * 
+ */
 ZmBriefcaseTabView.prototype.showMe =
 function() {
     DwtTabViewPage.prototype.showMe.call(this);
@@ -38,6 +60,10 @@ function() {
     this.showFolder(this._folderId || ZmOrganizer.ID_BRIEFCASE);
 };
 
+/**
+ * Hides this view.
+ * 
+ */
 ZmBriefcaseTabView.prototype.hideMe =
 function() {
     DwtTabViewPage.prototype.hideMe.call(this);
@@ -109,7 +135,11 @@ function(width, height) {
     return this;
 };
 
-
+/**
+ * Shows the folder.
+ * 
+ * @param	{String}	folderId		the folder id
+ */
 ZmBriefcaseTabView.prototype.showFolder =
 function(folderId) {
     this._folderId = folderId;
@@ -117,6 +147,12 @@ function(folderId) {
 	this._app.search({folderId:folderId, callback:callback, noRender:true});
 };
 
+/**
+ * Shows the folder contents.
+ * 
+ * @param	{String}	folderId		the folder id
+ * @param	{Object}	results			the results
+ */
 ZmBriefcaseTabView.prototype.showFolderContents =
 function(folderId, results) {
 	var searchResult = results.getResponse();

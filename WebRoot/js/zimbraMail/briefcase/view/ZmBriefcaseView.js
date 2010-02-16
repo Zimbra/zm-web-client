@@ -12,6 +12,23 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+
+/**
+ * @overview
+ * 
+ */
+
+/**
+ * Creates the briefcase view.
+ * @class
+ * This class represents the briefcase view.
+ * 
+ * @param	{ZmControl}		parent		the parent
+ * @param	{ZmBriefcaseController}	controller		the controller
+ * @param	{DwtDropTarget}		dropTgt		the drop target
+ * 
+ * @extends		ZmBriefcaseBaseView
+ */
 ZmBriefcaseView = function(parent, controller, dropTgt) {
 
 	var params = {parent:parent, className:"ZmBriefcaseView",
@@ -28,6 +45,11 @@ ZmBriefcaseView = function(parent, controller, dropTgt) {
 ZmBriefcaseView.prototype = new ZmBriefcaseBaseView;
 ZmBriefcaseView.prototype.constructor = ZmBriefcaseView;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmBriefcaseView.prototype.toString =
 function() {
 	return "ZmBriefcaseView";

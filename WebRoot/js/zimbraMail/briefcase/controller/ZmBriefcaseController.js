@@ -12,6 +12,25 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+
+/**
+ * @overview
+ * This file contains the briefcase controller class.
+ * 
+ */
+
+/**
+ * Creates the briefcase controller.
+ * @class
+ * This class represents the briefcase controller for the content view used by the briefcase application.
+ *
+ * @author Parag Shah
+ *
+ * @param	{DwtControl}	container		the container
+ * @param	{ZmBriefcaseApp}	abApp	the briefcase application
+ * 
+ * @extends		ZmListController
+ */
 ZmBriefcaseController = function(container, app) {
 
  	if (arguments.length == 0) { return; }
@@ -40,6 +59,11 @@ ZmBriefcaseController = function(container, app) {
 ZmBriefcaseController.prototype = new ZmListController;
 ZmBriefcaseController.prototype.constructor = ZmBriefcaseController;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmBriefcaseController.prototype.toString =
 function() {
 	return "ZmBriefcaseController";
@@ -279,6 +303,11 @@ function(folderId) {
 
 // view management
 
+/**
+ * Shows the search results.
+ * 
+ * @param	{Object}	results		the search results
+ */
 ZmBriefcaseController.prototype.show =
 function(results) {
 
@@ -303,6 +332,12 @@ function(results) {
 	this._resetNavToolBarButtons(this._currentView);
 };
 
+/**
+ * Change how briefcase items are displayed.
+ * 
+ * @param {constant}	view			the view to show
+ * @param {Boolean}	force			if <code>true</code>, render view even if it's the current view
+ */
 ZmBriefcaseController.prototype.switchView =
 function(view, force) {
 
