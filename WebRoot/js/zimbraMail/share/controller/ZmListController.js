@@ -1403,8 +1403,10 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	var selectedIdx = selItem ? lv.getItemIndex(selItem) : -1;
 
 	var items = searchResult && searchResult.getResults().getArray();
-	if (lv._isPageless) {
+	if (lv._isPageless && items && items.length) {
 		lv._itemsToAdd = items;
+	} else {
+		lv._itemsToAdd = null;
 	}
 	var wasEmpty = (lv._isPageless && (lv.size() == 0));
 
@@ -1858,8 +1860,7 @@ function(params, actionParams) {
 		if (contResult) {
 			if (lv.allSelected) {
 				// items beyond page were acted on, give user a total count
-                var text = ZmList.getActionSummary(actionParams.actionText, this._continuation.totalItems, contResult.type, actionParams.actionArg);
-				appCtxt.setStatusMsg(text);
+                actionParams.actionSummary = ZmList.getActionSummary(actionParams.actionText, this._continuation.totalItems, contResult.type, actionParams.actionArg);
 				lv.deselectAll();
 				if (params.allDoneCallback) {
 					params.allDoneCallback.run();
