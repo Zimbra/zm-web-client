@@ -79,6 +79,11 @@ function(list, sortField) {
     this.focus();
 };
 
+ZmColListView.prototype.getController =
+function() {
+	return this._controller;
+};
+
 // Protected methods
 
 ZmColListView.prototype._renderList = 

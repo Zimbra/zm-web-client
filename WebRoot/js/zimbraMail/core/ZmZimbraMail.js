@@ -2328,7 +2328,7 @@ function(actionCode, ev) {
 			var ctlr = appCtxt.getCurrentController();
 			var testMaps = ["list", "editor", "tabView"];
 			for (var i = 0; i < testMaps.length; i++) {
-				if (ctlr.mapSupported(testMaps[i])) {
+				if (ctlr && ctlr.mapSupported(testMaps[i])) {
 					col3.maps.push(testMaps[i]);
 				}
 			}
