@@ -117,9 +117,6 @@ ZmContactAssistant._CONTACT_OBJECT_ORDER = [
 	ZmAssistant._BRACKETS, ZmObjectManager.PHONE, ZmObjectManager.URL, ZmObjectManager.EMAIL
 ];
 
-/**
- * @private
- */
 ZmContactAssistant.prototype.extraButtonHandler =
 function(dialog) {
 	var cc = AjxDispatcher.run("GetContactController");
@@ -127,9 +124,6 @@ function(dialog) {
 	return true;
 };
 
-/**
- * @private
- */
 ZmContactAssistant.prototype.okHandler =
 function(dialog) {
 	var cn = this.getContact();
@@ -137,11 +131,6 @@ function(dialog) {
 	return true;
 };
 
-/**
- * Gets the help.
- * 
- * @return	{String}	the help HTML
- */
 ZmContactAssistant.prototype.getHelp =
 function() {
 	if (this._helpCommand == null) {

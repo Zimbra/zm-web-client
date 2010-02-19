@@ -13,6 +13,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates the call assistant.
+ * @class
+ * This class represents a call assistant.
+ * 
+ * @extends		ZmAssistant
+ */
 ZmCallAssistant = function() {
 	ZmAssistant.call(this, ZmMsg.call, ZmMsg.ASST_CMD_CALL);
 };
@@ -30,7 +41,6 @@ function(dialog, verb, args) {
 	dialog._setOkButton(AjxMsg.ok, true, true);
 };
 
-// called first time dialog switches to this assistant
 ZmCallAssistant.prototype.initialize =
 function(dialog) {
 	var html = new AjxBuffer();

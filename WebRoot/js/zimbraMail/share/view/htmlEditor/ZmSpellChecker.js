@@ -15,34 +15,34 @@
 
 /**
  * Makes server request to check spelling of given text.
- * @constructor
- * @class
- * Use this class to check spelling of any text via check() method.
+ * Use this class to check spelling of any text via {@link check} method.
  *
- * TODO: we may want to move this class out into its own file later...
- *
+ * TODO: we may want to move this class out into its own file later for public use...
+ * 
  * @author Mihai Bazon
  * 
- * @param parent		the parent needing spell checking
+ * @param {DwtHtmlEditor}	parent		the parent needing spell checking
  */
 ZmSpellChecker = function(parent) {
 	this._parent = parent;
 };
 
-
-// Public methods
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmSpellChecker.prototype.toString =
 function() {
 	return "ZmSpellChecker";
 };
 
 /**
- * Checks spelling.
+ * Checks the spelling.
  *
- * @param textOrParams  [object|string] The text to check or an object with
- *                                      "text" and "ignore" properties.
- * @param callback      [AjxCallback]*  Callback for success.
- * @param errCallback   [AjxCallback]*  Callback for failure.
+ * @param {Object|String}	textOrParams  the text to check or an object with "text" and "ignore" properties
+ * @param {AjxCallback}		callback      the callback for success
+ * @param {AjxCallback}		errCallback   	the error callback
  */
 ZmSpellChecker.prototype.check =
 function(textOrParams, callback, errCallback) {

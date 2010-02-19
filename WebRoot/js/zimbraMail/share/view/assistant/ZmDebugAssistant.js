@@ -13,6 +13,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates the debug assistant.
+ * @class
+ * This class represents a debug assistant.
+ * 
+ * @extends		ZmAssistant
+ */
 ZmDebugAssistant = function() {
 	ZmAssistant.call(this, "Debugging Info", ".debug");
 	this._dbg = window.DBG;	// trick to fool minimizer regex

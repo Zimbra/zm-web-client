@@ -23,7 +23,7 @@
  * This class represents an assistant.
  * 
  * @param	{String}	title		the title
- * @param	{ZmCsfeCommand}	command		the command
+ * @param	{String}	command		the command
  * @param	{String}	commandSummary		the summary
  */
 ZmAssistant = function(title, command, commandSummary) {
@@ -49,6 +49,12 @@ ZmAssistant._handlers = {};
 ZmAssistant._commands = [];
 ZmAssistant._allCommands = []; // inclde . commands
 
+/**
+ * Registers the handler.
+ * 
+ * @param	{ZmAssistant}		handler		the handler
+ * @param	{String}			[name]		the name
+ */
 ZmAssistant.register = 
 function(handler, name) {
 	if (name == null) name = handler.getCommand();
@@ -62,6 +68,13 @@ function(handler, name) {
 	}
 };
 
+/**
+ * Matches the word.
+ * 
+ * @param	{String}	word		the word
+ * @param	{Array}		words		an array of words
+ * @return	{Array} an array of matched words or an empty array for none
+ */
 ZmAssistant.matchWord = 
 function(word, words) {
 	if (words == null) words = ZmAssistant._allCommands;
@@ -77,17 +90,32 @@ function(word, words) {
 	return matched;
 };
 
+/**
+ * Gets the handler by name.
+ * 
+ * @param	{String}	name		the name
+ * @return	{ZmAsssitant}		the handler
+ */
 ZmAssistant.getHandler = 
 function(name) {
 	return ZmAssistant._handlers[name];	
 };
 
+/**
+ * Gets the handler commands.
+ * 
+ * @return	{Array}	an array of {String} commands
+ */
 ZmAssistant.getHandlerCommands = 
 function() {
 	return ZmAssistant._commands;
 };
 
-// called first time dialog switches to this assistant
+/**
+ * Initializes the assistant and is called first time dialog switches to this assistant.
+ * 
+ * @param	{ZmAssistantDialog}		dialog		the dialog
+ */
 ZmAssistant.prototype.initialize =
 function(dialog) {
 	var html = new AjxBuffer();
@@ -97,42 +125,87 @@ function(dialog) {
 	dialog.setAssistantContent(html.toString());
 };
 
-// called when dialog switches away from this assistant
+/**
+ * Finishes the assistant and is called when dialog switches away from this assistant.
+ * 
+ * @param	{ZmAssistantDialog}		dialog		the dialog
+ */
 ZmAssistant.prototype.finish =
 function(dialog) {
 	this._clearFields();
 };
 
+/**
+ * Gets the title.
+ * 
+ * @return	{String}		the title
+ */
 ZmAssistant.prototype.getTitle =
 function() {
 	return this._title;
 };
 
+/**
+ * Gets the command.
+ * 
+ * @return	{String}		the command
+ */
 ZmAssistant.prototype.getCommand =
 function() {
 	return this._command;
 };
 
+/**
+ * Gets the command summary.
+ * 
+ * @return	{String}		the command summary
+ */
 ZmAssistant.prototype.getCommandSummary =
 function() {
 	return this._commandSummary;
 };
 
+/**
+ * Handles the verb.
+ * 
+ * @param	{ZmAssistantDialog}		the dialog
+ * @param	{String}		verb	the verb
+ * @param	{Hash}			line	arguments
+ * 
+ * @private
+ */
 ZmAssistant.prototype.handle =
 function(dialog, verb, line) {
 	//override
 };
 
+/**
+ * Handles the OK event.
+ * 
+ * @param	{ZmAssistantDialog}		the dialog
+ * @return	{Boolean}	<code>true</code> if the event is handled
+ */
 ZmAssistant.prototype.okHandler =
 function(dialog) {
 	return true; //override
 };
 
+/**
+ * Gets the help.
+ * 
+ * @return	{String}	the help HTML
+ */
 ZmAssistant.prototype.getHelp = 
 function() {
 	return null; //override
 };
 
+/**
+ * Handles the extra button event.
+ * 
+ * @param	{ZmAssistantDialog}		the dialog
+ * @return	{Boolean}	<code>true</code> if the event is handled
+ */
 ZmAssistant.prototype.extraButtonHandler =
 function(dialog) {
 	return true; //override

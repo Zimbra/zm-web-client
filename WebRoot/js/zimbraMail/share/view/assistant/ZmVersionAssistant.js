@@ -13,6 +13,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates the version assistant.
+ * @class
+ * This class represents a version assistant.
+ * 
+ * @extends		ZmAssistant
+ */
 ZmVersionAssistant = function() {
 	ZmAssistant.call(this, "Client Version Information", ".version");
 };
