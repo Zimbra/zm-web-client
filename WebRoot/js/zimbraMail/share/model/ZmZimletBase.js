@@ -1246,9 +1246,10 @@ function(html, idx, obj, context) {
 };
 
 /**
- * Accepts only one conversation object.
+ * Gets the mail messages for the conversation.
  * 
- * @private
+ * @param	{AjxCallback}		callback		the callback method
+ * @param	{ZmConv}		conv			the conversation
  */
 ZmZimletBase.prototype.getMsgsForConv =
 function(callback, convObj){
