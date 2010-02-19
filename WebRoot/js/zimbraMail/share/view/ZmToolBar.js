@@ -15,27 +15,25 @@
 
 /**
  * @overview
- * 
  * This file defines a toolbar.
  *
  */
 
 /**
+ * Creates a toolbar.
  * @class
- * Creates a toolbar. This class represents a basic toolbar which can add buttons, manage listeners, and
+ * This class represents a basic toolbar which can add buttons, manage listeners, and
  * enable/disabled its buttons.
  *
  * @author Conrad Damon
  *
  * @param {Hash}	params		a hash of parameters
- * <ul>
- * <li>parent		{@link DwtComposite}		the containing widget
- * <li>className	{String}			the CSS class
- * <li>posStyle		{constant}			the positioning style
- * <li>id			{String}			an explicit ID to use for the control's HTML element
- * <li>controller	{@link ZmController}		the owning controller
- * <li>refElementId	{String}	the id of element that contains toolbar
- * </ul>
+ * @param	{DwtComposite}	params.parent		the containing widget
+ * @param	{String}	params.className	the CSS class
+ * @param	{constant}	params.posStyle		the positioning style
+ * @param	{String}	params.id			an explicit ID to use for the control's HTML element
+ * @param	{ZmController}	params.controller	the owning controller
+ * @param	{String}	params.refElementId	the id of element that contains toolbar
  *        
  * @extends	DwtToolBar
  */
@@ -123,7 +121,7 @@ function(buttonId, key, data) {
  * Enables or disables the specified buttons.
  *
  * @param {Array}	ids		a list of button ids
- * @param {Boolean}	enabled	<code>true</code> to enable the buttons
+ * @param {Boolean}	enabled	if <code>true</code>, enable the buttons
  */
 ZmToolBar.prototype.enable =
 function(ids, enabled) {
@@ -138,7 +136,7 @@ function(ids, enabled) {
 /**
  * Enables or disables all buttons.
  * 
- * @param {Boolean}	enabled	<code>true</code> to enable the buttons
+ * @param {Boolean}	enabled			if <code>true</code>, enable the buttons
  */
 ZmToolBar.prototype.enableAll =
 function(enabled) {
@@ -152,20 +150,20 @@ function(enabled) {
  *
  * @param {Hash}	params		a hash of parameters:
  * <ul>
- * <li>id			{String}		the button id
- * <li>constructor	{function}		the constructor for button object (default is {@link DwtToolBarButton})
- * <li>template		{String}		the button template
- * <li>text			{String}		the button text
- * <li>tooltip		{String}		the button tooltip text
- * <li>image		{String}		the icon class for the button
- * <li>disImage		{String}		the disabled version of icon
- * <li>enabled		{Boolean}		if <code>true</code>, button is enabled
- * <li>className		{constant}		the CSS class name
- * <li>style			{constant}		the button style
- * <li>index			{int}			the position at which to add the button
- * <li>shortcut		{constant}		the shortcut id (from {@link ZmKeyMap}) for showing hint
- * <li>menu			{@link AjxCallback} or {@link DwtMenu}	the menu creation callback (recommended) or menu
- * <li>menuAbove	{Boolean}	<code>true</code> to popup menu above the button.
+ * @param id			{String}		the button id
+ * @param {function}	constructor	the constructor for button object (default is {@link DwtToolBarButton})
+ * @param {String}	template		the button template
+ * @param {String}	text			the button text
+ * @param {String}	tooltip		the button tooltip text
+ * @param {String}	image		the icon class for the button
+ * @param {String}	disImage	the disabled version of icon
+ * @param {Boolean}	enabled		if <code>true</code>, button is enabled
+ * @param {String}	className	the CSS class name
+ * @param {String}	style		the button style
+ * @param {int}	index			the position at which to add the button
+ * @param {constant}	shortcut		the shortcut id (from {@link ZmKeyMap}) for showing hint
+ * @param {AjxCallback|DwtMenu}	menu				the menu creation callback (recommended) or menu
+ * @param {Boolean}	menuAbove	if <code>true</code>, popup menu above the button.
  * </ul>
  * 
  */

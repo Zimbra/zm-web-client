@@ -14,20 +14,25 @@
  */
 
 /**
-* Creates an empty tag menu.
-* @constructor
-* @class
-* This class represents a menu structure of tags that can be added to or removed
-* from item(s). Based on the items passed in when it renders, it presents a 
-* list of tags that can be added (any tag all the items don't already have), and a
-* list of tags that can be removed (tags that any of the items have).
-* <p>
-* Since the content is set every time it is displayed, the tag menu doesn't need
-* a change listener.</p>
-*
-* @param parent		[DwtControl]	parent widget
-* @param controller	[ZmController]*		owning controller
-*/
+ * @overview
+ */
+
+/**
+ * Creates an empty tag menu.
+ * @class
+ * This class represents a menu structure of tags that can be added to or removed
+ * from item(s). Based on the items passed in when it renders, it presents a 
+ * list of tags that can be added (any tag all the items don't already have), and a
+ * list of tags that can be removed (tags that any of the items have).
+ * <p>
+ * Since the content is set every time it is displayed, the tag menu doesn't need
+ * a change listener.</p>
+ *
+ * @param {DwtControl}	parent		the parent widget
+ * @param {ZmController}	controller	the owning controller
+ * 
+ * @extends		ZmPopupMenu
+ */
 ZmTagMenu = function(parent, controller) {
 
 	// create a menu (though we don't put anything in it yet) so that parent widget shows it has one

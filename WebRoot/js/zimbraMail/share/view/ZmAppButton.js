@@ -15,7 +15,6 @@
 
 /**
  * @overview
- * 
  * This file defines the tab application button.
  *
  */
@@ -24,14 +23,17 @@
  * @class
  * This class represents a button that behaves like a "tab" button, designed specifically for the row of
  * applications buttons at the top of the Zimbra Web Client interface.
- * 
+ * <p>
  * Limitations:
  * <ul>
  * <li>cannot have a menu</li>
  * <li>does not support enabled/disabled</li>
  * </ul>
+ * </p>
  * 
  * @author Conrad Damon
+ * 
+ * @param	{Hash}		params		a hash of parameters
  * 
  * @extends		DwtButton
  */
@@ -69,11 +71,6 @@ ZmAppButton.prototype.TEMPLATE = "share.Widgets#ZmAppChooserButton";
 //
 // Public methods
 //
-/**
- * Sets the button as selected.
- * 
- * @param	{Boolean}	selected		<code>true</code> if the button is selected
- */
 ZmAppButton.prototype.setSelected =
 function(selected) {
     this.isSelected = selected;
@@ -94,24 +91,11 @@ function(state) {
     DwtButton.prototype.setDisplayState.call(this, state);
 };
 
-/**
- * Gets the key map name.
- * 
- * @return	{String}	the key map name
- */
 ZmAppButton.prototype.getKeyMapName =
 function() {
 	return "ZmAppButton";
 };
 
-/**
- * Handles a key action event.
- * 
- * @param	{Object}		actionCode		the action code
- * @param	{Object}		ev		the event
- * @return	{Boolean}		<code>true</code> if the event is handled; <code>false</code> otherwise
- * @see		DwtKeyMap
- */
 ZmAppButton.prototype.handleKeyAction =
 function(actionCode, ev) {
 

@@ -13,6 +13,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * This class represents the export view.
+ * 
+ * @extends		ZmImportExportBaseView
+ */
 ZmExportView = function(params) {
 	if (arguments.length == 0) { return; }
 	// setup form

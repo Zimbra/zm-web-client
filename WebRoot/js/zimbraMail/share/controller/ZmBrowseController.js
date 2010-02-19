@@ -25,7 +25,7 @@
  * @class
  * This class defines a browse controller.
  * 
- * @param	{Object}	parent		the parent
+ * @param	{DwtComposite}	parent		the parent
  * 
  * @extends		ZmController
  */
@@ -115,7 +115,7 @@ function() {
 /**
  * Sets the browse view visible state.
  * 
- * @param	{Boolean}	visible	<code>true</code> if the browse view is visible; <code>false</code> otherwise
+ * @param	{Boolean}	visible		if <code>true</code>, the browse view is visible; <code>false</code> otherwise
  */
 ZmBrowseController.prototype.setBrowseViewVisible =
 function(visible) {

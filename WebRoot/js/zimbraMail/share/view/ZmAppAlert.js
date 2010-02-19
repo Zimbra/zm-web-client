@@ -15,19 +15,27 @@
 
 
 /**
- * Alert class that hilites and flashes an app tab.
+ * This class represents an alert that highlights and flashes an application tab.
  *
- * @param app ZmApp
+ * @param {ZmApp}		app 		the application
  */
 ZmAppAlert = function(app) {
 	this.app = app;
 };
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmAppAlert.prototype.toString =
 function() {
 	return "ZmAppAlert";
 };
 
+/**
+ * Starts the alert.
+ */
 ZmAppAlert.prototype.start =
 function() {
 	if (!this.app.isActive()) {
@@ -35,6 +43,9 @@ function() {
 	}
 };
 
+/**
+ * Stops the alert.
+ */
 ZmAppAlert.prototype.stop =
 function() {
 	this._getAppButton().showAlert(false);

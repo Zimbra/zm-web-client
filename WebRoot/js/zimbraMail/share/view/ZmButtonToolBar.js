@@ -14,26 +14,30 @@
  */
 
 /**
+ * @overview
+ */
+/**
  * Creates a toolbar with the given buttons.
- * @constructor
  * @class
  * This class represents a toolbar that contains buttons.
  * It can be easily created using a set of standard operations, and/or custom buttons
- * can be provided. This class is designed for use with items (ZmItem), so it can for
- * example contain a button with a tab submenu. See also ZmActionMenu.
+ * can be provided. This class is designed for use with items ({@link ZmItem}), so it can for
+ * example contain a button with a tab submenu. See also {@link ZmActionMenu}.
  *
  * @author Conrad Damon
  *
- * @param params			[hash]				hash of params:
- *        parent			[DwtComposite]		the containing widget
- *        buttons			[array]*			a list of operation IDs
- *        posStyle			[constant]*			positioning style
- *        className			[string]*			CSS class name
- *        buttonClassName	[string]*			CSS class name for buttons
- *        overrides			[hash]*				hash of overrides by op ID
- *        context			[const]*			vcontextID (used to generate button IDs)
- *        toolbarType		[const]*			toolbar type (used to generate button IDs)
- *        controller		[ZmController]*		owning controller
+ * @param {Hash}	params			a hash of parameters
+ * @param	       {DwtComposite}	params.parent		the containing widget
+ * @param	{Array}	params.buttons			a list of operation IDs
+ * @param	{constant}	params.posStyle			the positioning style
+ * @param	{String}	params.className			the CSS class name
+ * @param	{Stirng}	params.buttonClassName	the CSS class name for buttons
+ * @param	{Hash}	params.overrides			a hash of overrides by op ID
+ * @param	{constant}	params.context			the vcontextID (used to generate button IDs)
+ * @param	{constant}	params.toolbarType		the toolbar type (used to generate button IDs)
+ * @param	{ZmController}	params.controller		the owning controller
+ * 
+ * @extends		ZmToolBar
  */
 ZmButtonToolBar = function(params) {
 	if (arguments.length == 0) return;
@@ -75,16 +79,16 @@ function() {
 /**
  * Creates a button and adds its operation ID as data.
  * 
- * @param id			[string]		name of the operation
- * @param params		[hash]			hash of params:
- *        text			[string]*		button text
- *        tooltip		[string]*		button tooltip text
- *        image			[string]*		icon class for the button
- *        disImage		[string]*		disabled version of icon
- *        enabled		[boolean]*		if true, button is enabled
- *        className		[constant]*		CSS class name
- *        style			[constant]*		button style
- *        index			[int]*			position at which to add the button
+ * @param {String}	id			the name of the operation
+ * @param {Hash}	params		a hash of parameters
+ * @param	params.text			a button text
+ * @param	params.tooltip		a button tooltip text
+ * @param	params.image			a icon class for the button
+ * @param	params.disImage		a disabled version of icon
+ * @param	params.enabled		if <code>true</code>, button is enabled
+ * @param	params.className		the CSS class name
+ * @param	params.style			thebutton style
+ * @param	params.index			the position at which to add the button
  */
 ZmButtonToolBar.prototype.createOp =
 function(id, params) {
@@ -122,18 +126,21 @@ function(id) {
 };
 
 /**
-* Returns the button with the given ID.
-*
-* @param id		an operation ID
-*/
+ * Gets the button.
+ *
+ * @param {constant}	id		the button
+ * @return	{DwtButton}	the button
+ */
 ZmButtonToolBar.prototype.getOp =
 function(id) {
 	return this.getButton(id);
 };
 
 /**
-* Returns the menu's tag submenu, if any.
-*/
+ * Gets the menu tag sub-menu (if any).
+ * 
+ * @return	{DwtMenu}		the menu
+ */
 ZmButtonToolBar.prototype.getTagMenu =
 function() {
 	var button = this.getButton(ZmOperation.TAG_MENU);

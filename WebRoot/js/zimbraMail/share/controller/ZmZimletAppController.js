@@ -26,7 +26,7 @@
  * This class represents a zimlet application controller.
  * 
  * @param	{String}	name		the application name
- * @param	{Object}	container	the container
+ * @param	{ZmComposite}	container	the container
  * @param	{ZmApp}		app			the app
  * @extends		ZmController
  */

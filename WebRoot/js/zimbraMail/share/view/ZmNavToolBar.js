@@ -14,19 +14,22 @@
  */
 
 /**
+ * Creates a navigation tool bar.
+ * @class
  * Navigation toolbar for the client. This toolbar is affected by every 
  * push/pop of a view and must be context sensitive since it can custom apply 
  * to any view. A new class was created since nav toolbar may be expanded in 
  * the future (i.e. to incl. a text input indicating current page, etc)
  *
- * @param params			[hash]				hash of params:
- *        parent			[DwtComposite]		the containing widget
- *        posStyle			[constant]*			positioning style
- *        className			[string]*			CSS class name
- *        hasText			[boolean]*			true (default) if this toolbar includes text in the middle
- *        context			[const]*			view ID (used to generate button IDs)
+ * @param {Hash}	params			a hash of parameters
+ * @param {DwtComposite}	params.parent			the containing widget
+ * @param {constant}	params.posStyle			the positioning style
+ * @param {String}	params.className			the CSS class name
+ * @param {Boolean}	params.hasText			if <code>true</code>, this toolbar includes text in the middle
+ * @param {constant}	params.context			the view ID (used to generate button IDs)
+ * 
+ * @extends	ZmButtonToolBar
  */
-
 ZmNavToolBar = function(params) {
 
 	params.className = params.className || "ZmNavToolBar";
@@ -49,11 +52,12 @@ function() {
 };
 
 /**
-* Enables/disables buttons.
-*
-* @param ids		a list of button IDs
-* @param enabled	whether to enable the buttons
-*/
+ * Enables/disables buttons.
+ *
+ * @param {Array}	ids		a list of button IDs
+ * @param {Boolean}	enabled	if <code>true</code>, enable the buttons
+ * 
+ */
 ZmNavToolBar.prototype.enable =
 function(ids, enabled) {
 	ZmButtonToolBar.prototype.enable.call(this, ids, enabled);
@@ -70,6 +74,12 @@ function(ids, enabled) {
 	}
 };
 
+/**
+ * Sets the tool tip for the button.
+ * 
+ * @param	{String}	buttonId		the button id
+ * @param	{String}	tooltip			the tool tip
+ */
 ZmNavToolBar.prototype.setToolTip = 
 function(buttonId, tooltip) {
 	var button = this.getButton(buttonId);
@@ -77,6 +87,11 @@ function(buttonId, tooltip) {
 		button.setToolTipContent(tooltip);
 };
 
+/**
+ * Sets the text.
+ * 
+ * @param	{String}	text		the text
+ */
 ZmNavToolBar.prototype.setText =
 function(text) {
 	if (!this._textButton) return;

@@ -13,6 +13,14 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * 
+ * @extends		DwtComposite
+ */
 ZmSearchToolBar = function(parent, id) {
 
 	DwtComposite.call(this, {parent:parent, className:"ZmSearchToolbar", id:id});

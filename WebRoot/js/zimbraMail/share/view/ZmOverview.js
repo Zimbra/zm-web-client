@@ -27,26 +27,23 @@
  * @author Conrad Damon
  *
  * @param {Hash}	params 				a hash of parameters
- * <ul>
- * <li>id {String}	the id for the HTML element</li>
- * <li>overviewId {String}	the overview id
- * <li>treeIds {Array}	an array of organizer types that may be displayed in this overview
- * <li>account				{@link ZmZimbraAccount}	the account this overview belongs to
- * <li>parent				{@link DwtControl}	the containing widget
- * <li>overviewClass			{String}				the class name for overview DIV
- * <li>posStyle				{constant}				the positioning style for overview DIV
- * <li>scroll				{constant}				the scrolling style for overview DIV
- * <li>selectionSupported {Boolean}			<code>true</code> left-click selection is supported
- * <li>actionSupported		{Boolean}		<code>true</code> if right-click action menus are supported
- * <li>dndSupported			{Boolean}		<code>true</code> if drag-and-drop is supported
- * <li>headerClass			{String}			the class name for header item
- * <li>showUnread			{Boolean}				if <code>true</code>, unread counts will be shown
- * <li>showNewButtons		{Boolean}				if <code>true</code>, tree headers may have buttons for creating new organizers
- * <li>treeStyle			{constant}				the default display style for tree views
- * <li>isCheckedByDefault	{Boolean}				the default state for "checked" display style
- * <li>noTooltips			{Boolean}				if <code>true</code>, do not show toolt ips for tree items
- * </ul>
- * 
+ * @param	{String}	params.id 	the id for the HTML element
+ * @param	{String}	params.overviewId 	the overview id
+ * @param	{Array}	params.treeIds an array of organizer types that may be displayed in this overview
+ * @param	{ZmZimbraAccount}	params.account		the account this overview belongs to
+ * @param	{DwtControl}	params.parent			the containing widget
+ * @param	{String}	params.overviewClass		the class name for overview DIV
+ * @param	{constant}	params.posStyle				the positioning style for overview DIV
+ * @param	{constant}	params.scroll				the scrolling style for overview DIV
+ * @param	{Boolean}	params.selectionSupported <code>true</code> left-click selection is supported
+ * @param	{Boolean}	params.actionSupported		<code>true</code> if right-click action menus are supported
+ * @param	{Boolean}	params.dndSupported			<code>true</code> if drag-and-drop is supported
+ * @param	{String}	params.headerClass			the class name for header item
+ * @param	{Boolean}	params.showUnread			if <code>true</code>, unread counts will be shown
+ * @param	{Boolean}	params.showNewButtons		if <code>true</code>, tree headers may have buttons for creating new organizers
+ * @param	{constant}	params.treeStyle			the default display style for tree views
+ * @param	{Boolean}	params.isCheckedByDefault	the default state for "checked" display style
+ * @param	{Boolean}	params.noTooltips			if <code>true</code>, do not show toolt ips for tree items
  * @param {ZmOverviewController}	controller			the overview controller
  * 
  * @extends	DwtComposite
@@ -191,7 +188,7 @@ function() {
  * Searches the tree views for the tree item whose data object has the given ID and type.
  * 
  * @param {int}	id			the id to look for
- * @param {Constant}	type			the item must also have this type
+ * @param {constant}	type			the item must also have this type
  * @return	{Object}	the item or <code>null</code> if not found
  */
 ZmOverview.prototype.getTreeItemById =
@@ -212,7 +209,7 @@ function(id, type) {
 /**
 * Returns the first selected item within this overview.
 * 
-* @param	{Boolean}	typeOnly	<code>true</code> to return the type only
+* @param	{Boolean}	typeOnly	if <code>true</code>, return the type only
 * @return	{Object}	the item (or type if <code>typeOnly</code>) or <code>null</code> if not found
 */
 ZmOverview.prototype.getSelected =

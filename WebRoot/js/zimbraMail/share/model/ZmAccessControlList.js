@@ -197,7 +197,7 @@ function(right) {
  * Gets the grantees info.
  * 
  * @param	{String}	right		the right
- * @return	{Array}	an arry of grantree info
+ * @return	{Array}	an array of grantree info
  */
 ZmAccessControlList.prototype.getGranteesInfo =
 function(right) {

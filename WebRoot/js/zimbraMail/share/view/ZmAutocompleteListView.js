@@ -14,26 +14,30 @@
  */
 
 /**
+ * @overview
+ * 
+ */
+
+/**
  * Creates a new autocomplete list. The list isn't populated or displayed until some
  * autocompletion happens. Takes a data class and loader, so that when data is needed (it's
  * loaded lazily), the loader can be called on the data class.
- * @constructor
  * @class
  * This class implements autocomplete functionality. It has two main parts: matching data based
  * on keystroke events, and displaying/managing the list of matches. This class is theoretically
- * neutral concerning the data that gets matched (as long as its class has an autocompleteMatch()
+ * neutral concerning the data that gets matched (as long as its class has an <code>autocompleteMatch()</code>
  * method), and the field that it's being called from.
  * <p>
- * The data class's autocompleteMatch() method should returns a list of matches, where each match is
+ * The data class's <code>autocompleteMatch()</code> method should returns a list of matches, where each match is
  * an object with the following properties:</p>
- * <table border="1">
- * <tr><td>data</td><td>the object being matched</td></tr>
+ * <table border="1" width="50%">
+ * <tr><td width="15%">data</td><td>the object being matched</td></tr>
  * <tr><td>text</td><td>the text to display for this object in the list</td></tr>
- * <tr><td>[key1]</td><td>a string that may be used to replace the typed text<td></tr>
- * <tr><td>[keyN]</td><td>a string that may be used to replace the typed text<td></tr>
+ * <tr><td>[key1]</td><td>a string that may be used to replace the typed text</td></tr>
+ * <tr><td>[keyN]</td><td>a string that may be used to replace the typed text</td></tr>
  * </table>
  * </p><p>
- * The data class will also need a method isUniqueValue(str), which returns true if the given string
+ * The data class will also need a method <code>isUniqueValue(str)</code>, which returns true if the given string
  * maps to a single match.
  * </p><p>
  * The calling client also specifies the key in the match result for the string that will be used
@@ -46,21 +50,23 @@
  * 
  * @author Conrad Damon
  *
- * @param params			[hash]				hash of params:
- *        matchValue		[string]			name of field in match result to use for completion
- *        dataClass			[function]			the class that has the data loader
- *        dataLoader		[function]*			a method of dataClass that returns data to match against
- *        parent			[DwtComposite]*		the control that created this list (defaults to shell)
- *        className			[string]*			CSS class
- *        delims			[array]*			list of delimiters (which separate tokens such as addresses)
- *        delimCodes		[array]*			list of delimiter key codes
- *        separator			[string]*			separator (gets added to the end of a match)
- *        compCallback		[AjxCallback]*		callback into client to notify it that completion happened
- *        keyDownCallback	[AjxCallback]*		additional client ONKEYDOWN handler
- *        keyPressCallback	[AjxCallback]*		additional client ONKEYPRESS handler
- *        keyUpCallback		[AjxCallback]*		additional client ONKEYUP handler
- *        enterCallback		[AjxCallback]*		client handler for Enter key
- *        options			[hash]*				additional options for autocompleteMatch() in data class
+ * @param {Hash}	params			a hash of parameters
+ * @param	{String}	matchValue		the name of field in match result to use for completion
+ * @param	{function}	dataClass			the class that has the data loader
+ * @param	{function}	dataLoader		a method of dataClass that returns data to match against
+ * @param	{DwtComposite}	parent			the control that created this list (defaults to shell)
+ * @param	{String}	className			the CSS class
+ * @param	{Array}	delims			the list of delimiters (which separate tokens such as addresses)
+ * @param	{Array}	delimCodes		the list of delimiter key codes
+ * @param	{String}	separator		the separator (gets added to the end of a match)
+ * @param	{AjxCallback}	compCallback		the callback into client to notify it that completion happened
+ * @param	{AjxCallback}	keyDownCallback	the additional client ONKEYDOWN handler
+ * @param	{AjxCallback}	keyPressCallback	the additional client ONKEYPRESS handler
+ * @param	{AjxCallback}	keyUpCallback	the additional client ONKEYUP handler
+ * @param	{AjxCallback}	enterCallback		the client handler for Enter key
+ * @param	{Hash}	options			the additional options for autocompleteMatch() in data class
+ * 
+ * @extends		DwtComposite
  */
 ZmAutocompleteListView = function(params) {
 
@@ -118,6 +124,11 @@ ZmAutocompleteListView.WAIT_ID = "wait";
 
 // Public static methods
 
+/**
+ * Handles the on key down event.
+ * 
+ * @param	{Event}	event		the event
+ */
 ZmAutocompleteListView.onKeyDown =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
@@ -131,6 +142,11 @@ function(ev) {
 	return result;
 };
 
+/**
+ * Handles the on key press event.
+ * 
+ * @param	{Event}	event		the event
+ */
 ZmAutocompleteListView.onKeyPress =
 function(ev) {
 	DwtKeyEvent.geckoCheck(ev);
@@ -145,6 +161,11 @@ function(ev) {
 	return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 };
 
+/**
+ * Handles the on key up event.
+ * 
+ * @param	{Event}	event		the event
+ */
 ZmAutocompleteListView.onKeyUp =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
@@ -163,6 +184,8 @@ function(ev) {
 * handle this event for those (which it will do before we get the keyup event).
 *
 * @param ev		the key event
+* 
+* @private
 */
 ZmAutocompleteListView._onKeyDown =
 function(ev) {
@@ -192,6 +215,8 @@ function(ev) {
 * "onkeydown" nor "onkeypress" arrives after the form field has been updated.
 *
 * @param ev		the key event
+* 
+* @private
 */
 ZmAutocompleteListView._onKeyUp =
 function(ev) {
@@ -298,8 +323,10 @@ function(ev) {
 /**
  * Invokes or prevents the browser's default behavior (which is to echo the typed key).
  * 
- * @param echo	[boolean]		if true, echo the key
- * @param ev	[Event]			the UI event
+ * @param {Boolean}	echo	if <code>true</code>, echo the key
+ * @param {Event}	ev	the UI event
+ * 
+ * @private
  */
 ZmAutocompleteListView._echoKey =
 function(echo, ev) {
@@ -307,7 +334,11 @@ function(echo, ev) {
 	return echo;
 };
 
-// Hides list if there is a click elsewhere.
+/**
+ * Hides list if there is a click elsewhere.
+ * 
+ * @private
+ */
 ZmAutocompleteListView._outsideMouseDownListener =
 function(ev) {
 	var curList = ZmAutocompleteListView._activeAcList;
@@ -323,21 +354,33 @@ function(ev) {
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmAutocompleteListView.prototype.toString = 
 function() {
 	return "ZmAutocompleteListView";
 };
 
+/**
+ * Sets the active account.
+ * 
+ * @param	{ZmAccount}		account		the account
+ */
 ZmAutocompleteListView.prototype.setActiveAccount =
 function(account) {
 	this._activeAccount = account;
 };
 
 /**
-* Adds autocompletion to the given field by setting key event handlers.
-*
-* @param element		an HTML element
-*/
+ * Adds autocompletion to the given field by setting key event handlers.
+ *
+ * @param {Element}	element		an HTML element
+ * 
+ * @private
+ */
 ZmAutocompleteListView.prototype.handle =
 function(element) {
 	element._acListViewId = this._internalId;
@@ -347,11 +390,13 @@ function(element) {
 };
 
 /**
-* Autocomplete typed text. Should be called by a handler for a keyboard event.
-*
-* @param element	the element (some sort of text field) doing autocomplete
-* @param loc		where to popup the list, if appropriate
-*/
+ * Autocomplete typed text. Should be called by a handler for a keyboard event.
+ *
+ * @param {Element}	element	the element (some sort of text field) doing autocomplete
+ * @param {Object}	loc		where to popup the list, if appropriate
+ * 
+ * @private
+ */
 ZmAutocompleteListView.prototype.autocomplete =
 function(info) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: autocomplete");
@@ -377,8 +422,8 @@ function(info) {
 };
 
 /**
-* Resets the state of the autocomplete list.
-*/
+ * Resets the state of the autocomplete list.
+ */
 ZmAutocompleteListView.prototype.reset =
 function() {
 	this._matches = null;
@@ -401,6 +446,8 @@ function() {
 *
 * @param key		a numeric key code
 * @param isDelim	true if a single delimiter key was typed
+* 
+* @private
 */
 ZmAutocompleteListView.prototype.handleAction =
 function(key, isDelim) {
@@ -426,6 +473,12 @@ function(key, isDelim) {
 	}
 };
 
+/**
+ * Sets the waiting status.
+ * 
+ * @param	{Boolean}	on		if <code>true</code>, turn waiting "on"
+ * 
+ */
 ZmAutocompleteListView.prototype.setWaiting =
 function(on) {
 	if (on) {
@@ -445,7 +498,11 @@ function(on) {
 
 // Private methods
 
-// Called as a timed action, after a sufficient pause in typing within an address field.
+/**
+ * Called as a timed action, after a sufficient pause in typing within an address field.
+ * 
+ * @private
+ */
 ZmAutocompleteListView.prototype._autocompleteAction =
 function(ev) {
 	DBG.println(AjxDebug.DBG2, "performing autocomplete");
@@ -463,11 +520,12 @@ function(ev) {
 };
 
 /**
-* Displays the current matches in a popup list, selecting the first.
-*
-* @param show	whether to display the list
-* @param loc	where to display the list
-*/
+ * Displays the current matches in a popup list, selecting the first.
+ *
+ * @param {Boolean}	show	if <code>true</code>, display the list
+ * @param {String}	loc		where to display the list
+ * 
+ */
 ZmAutocompleteListView.prototype.show =
 function(show, loc) {
 	DBG.println(AjxDebug.DBG3, "autocomplete show: " + show);

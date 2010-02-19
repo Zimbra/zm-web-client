@@ -14,26 +14,32 @@
  */
 
 /**
- * @constructor
+ * @overview
+ * 
+ */
+
+/**
+ * Creates a list view.
  * @class
  * A list view presents a list of items as rows with fields (columns).
  *
  * @author Parag Shah
  * @author Conrad Damon
  *
- * @param params		[hash]				hash of params:
- *        parent		[DwtComposite] 		parent widget
- *        className		[string]*			CSS class
- *        posStyle		[constant]*			positioning style
- *        id			[string]			HTML ID for element
- *        headerList	[array]*			list of IDs for columns
- *        noMaximize	[boolean]*			if true, all columns are fixed-width (otherwise, one will
- * 											expand to fill available space)
- *        view			[constant]*			ID of view
- *        type			[constant]*			type of item displayed
- *        controller	[ZmListController]	owning controller
- *        dropTgt		[DwtDropTarget]*	drop target
- *        pageless		[boolean]*			if true, enlarge page via scroll rather than pagination
+ * @param {Hash}	params		a hash of parameters
+ * @param {DwtComposite}	params.parent		the parent widget
+ * @param {String}	params.className		the CSS class
+ * @param {constant}	params.posStyle		the positioning style
+ * @param {String}	params.id			the HTML ID for element
+ * @param {Array}	params.headerList	the list of IDs for columns
+ * @param {Boolean}	params.noMaximize	if <code>true</code>, all columns are fixed-width (otherwise, one will expand to fill available space)
+ * @param {constant}	params.view			the ID of view
+ * @param {constant}	params.type			the type of item displayed
+ * @param {ZmListController}	params.controller	the owning controller
+ * @param {DwtDropTarget}	params.dropTgt		the drop target
+ * @param {Boolean}	params.pageless		if <code>true</code>, enlarge page via scroll rather than pagination
+ *        
+ * @extends		DwtListView
  */
 ZmListView = function(params) {
 
@@ -108,6 +114,11 @@ ZmListView.COL_JOIN = "|";
 
 ZmListView.prototype._getHeaderList = function() {};
 
+/**
+ * Gets the controller.
+ * 
+ * @return	{ZmListController}		the list controller
+ */
 ZmListView.prototype.getController =
 function() {
 	return this._controller;
@@ -181,6 +192,12 @@ function(defaultColumnSort) {
 	this._resetColWidth();	// reset column width in case scrollbar is set
 };
 
+/**
+ * Gets the limit value.
+ * 
+ * @param	{Boolean}	offset		if <code>true</code>, offset
+ * @return	{int}	the limit page size
+ */
 ZmListView.prototype.getLimit =
 function(offset) {
 	if (this._isPageless) {
@@ -191,11 +208,21 @@ function(offset) {
 	}
 };
 
+/**
+ * Gets the pageless threshold.
+ * 
+ * @return	{int}		the pageless threshold
+ */
 ZmListView.prototype.getPagelessThreshold =
 function() {
 	return Math.ceil(this.getLimit() / 5);
 };
 
+/**
+ * Gets the replenish threshold.
+ * 
+ * @return	{int}	the replenish threshold
+ */
 ZmListView.prototype.getReplenishThreshold =
 function() {
 	return ZmListView.DEFAULT_REPLENISH_THRESHOLD;
@@ -598,6 +625,13 @@ function(clickedEl, bContained, ev) {
 	this._controller._resetToolbarOperations();
 };
 
+/**
+ * Sets the selection checkbox.
+ * 
+ * @param	{Element}	obj		the item element object
+ * @param	{Boolean}	bContained		(not used)
+ * 
+ */
 ZmListView.prototype.setSelectionCbox =
 function(obj, bContained) {
 	if (!obj) { return; }
@@ -611,6 +645,11 @@ function(obj, bContained) {
 	}
 };
 
+/**
+ * Sets the selection header checkbox.
+ * 
+ * @param	{Boolean}	check		if <code>true</code>, check the header checkbox
+ */
 ZmListView.prototype.setSelectionHdrCbox =
 function(check) {
 	var col = this._headerHash ? this._headerHash[ZmItem.F_SELECTION] : null;
@@ -623,6 +662,11 @@ function(check) {
 	}
 };
 
+/**
+ * Sets the selected items.
+ * 
+ * @param	{Array}	selectedArray		an array of {Element} objects to select
+ */
 ZmListView.prototype.setSelectedItems =
 function(selectedArray) {
 	DwtListView.prototype.setSelectedItems.call(this, selectedArray);
@@ -632,6 +676,11 @@ function(selectedArray) {
 	}
 };
 
+/**
+ * Selects all items.
+ * 
+ * @param	{Boolean}	allResults		if <code>true</code>, set all search selected
+ */
 ZmListView.prototype.selectAll =
 function(allResults) {
 
@@ -650,6 +699,10 @@ function(allResults) {
 	}
 };
 
+/**
+ * Deselects all items.
+ * 
+ */
 ZmListView.prototype.deselectAll =
 function() {
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
@@ -721,6 +774,12 @@ function(ev) {
 	this._relayout();
 };
 
+/**
+ * Gets the tool tip content.
+ * 
+ * @param	{Object}	ev		the hover event
+ * @return	{String}	the tool tip content
+ */
 ZmListView.prototype.getToolTipContent =
 function(ev) {
 	var div = this.getTargetItemDiv(ev);
@@ -789,6 +848,8 @@ function(field, itemIdx, isFolder) {
  *        div			[Element]*		row div
  *        match			[hash]*			fields from div ID
  *        callback		[AjxCallback]*	callback (in case tooltip content retrieval is async)
+ *        
+ * @private
  */
 ZmListView.prototype._getToolTip =
 function(params) {
@@ -1064,10 +1125,11 @@ function() {
 };
 
 /**
- * Returns true if the given item is in this view's list. Note that the view's list may
+ * Checks if the given item is in this view's list. Note that the view's list may
  * be only part of the controller's list (the currently visible page).
  *
- * @param item		[string | ZmItem]		item ID, or item to check for
+ * @param {String|ZmItem}	item		the item ID, or item to check for
+ * @return	{Boolean}	<code>true</code> if the item is in the list
  */
 ZmListView.prototype.hasItem =
 function(item) {

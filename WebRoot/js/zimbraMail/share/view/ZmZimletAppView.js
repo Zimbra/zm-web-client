@@ -13,6 +13,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * 
+ * @extends		DwtComposite
+ */
 ZmZimletAppView = function(parent, controller) {
 	DwtComposite.call(this, {parent:parent, posStyle:DwtControl.ABSOLUTE_STYLE });
 };

@@ -13,11 +13,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
 
 /**
- * Alert class that hilites and flashes an account's accordian item.
+ * Creates the account alert.
+ * @class
+ * This class represents an alert that highlights and flashes an account accordion item.
  *
- * @param app ZmApp
+ * @param {ZmAccount}		account		the account
+ * 
+ * @extends		ZmAlert
  */
 ZmAccountAlert = function(account) {
 	ZmAlert.call(this);
@@ -29,11 +36,23 @@ ZmAccountAlert = function(account) {
 ZmAccountAlert.prototype = new ZmAlert;
 ZmAccountAlert.prototype.constructor = ZmAccountAlert;
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmAccountAlert.prototype.toString =
 function() {
 	return "ZmAccountAlert";
 };
 
+/**
+ * Gets the alert by account. If the alert does not exist for the specified account, a new 
+ * alert is created
+ * 
+ * @param	{ZmAccount}	account		the account
+ * @return	{ZmAccountAlert}		the alert
+ */
 ZmAccountAlert.get =
 function(account) {
 	ZmAccountAlert.INSTANCES = ZmAccountAlert.INSTANCES || {};
@@ -43,6 +62,11 @@ function(account) {
 	return ZmAccountAlert.INSTANCES[account.id];
 };
 
+/**
+ * Starts the alert.
+ * 
+ * @param		{ZmApp}		app		the application
+ */
 ZmAccountAlert.prototype.start =
 function(app) {
 	if (this.account != appCtxt.getActiveAccount()) {
@@ -53,6 +77,10 @@ function(app) {
 	}
 };
 
+/**
+ * Stops the alert.
+ * 
+ */
 ZmAccountAlert.prototype.stop =
 function() {
 	this._started = false;

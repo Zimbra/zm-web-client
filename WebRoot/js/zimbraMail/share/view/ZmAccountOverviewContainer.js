@@ -14,14 +14,19 @@
  */
 
 /**
+ * @overview
+ */
+
+/**
  * Creates an overview container for a multi-account mailbox.
- * @constructor
  * @class
  * Creates a header tree item for an account if mailbox has multiple accounts
- * configured. For each account header, a ZmOverview is added a child. If mbox
+ * configured. For each account header, a {@link ZmOverview} is added a child. If mailbox
  * only has one account configured, no account header is created and the
- * ZmOverview is added as a child of the container.
+ * {@link ZmOverview} is added as a child of the container.
  *
+ * @param	{Hash}	params		a hash of parameters
+ * 
  * @author Parag Shah
  */
 ZmAccountOverviewContainer = function(params) {
@@ -50,6 +55,11 @@ ZmAccountOverviewContainer.VIRTUAL_FOLDERS = [
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmAccountOverviewContainer.prototype.toString =
 function() {
 	return "ZmAccountOverviewContainer";
@@ -61,9 +71,9 @@ function(account) {
 };
 
 /**
- * Expands the given account only (collapses all other accounts)
+ * Expands the given account only (collapses all other accounts).
  *
- * @param account
+ * @param {ZmAccount}	account		the account to expand
  */
 ZmAccountOverviewContainer.prototype.expandAccountOnly =
 function(account) {
@@ -90,6 +100,12 @@ function() {
 	return selected;
 };
 
+/**
+ * Initializes the account overview.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ */
 ZmAccountOverviewContainer.prototype.initialize =
 function(params) {
 
@@ -245,6 +261,11 @@ function(params) {
 	this._initializeActionMenu();
 };
 
+/**
+ * Adds a search folder.
+ * 
+ * @param	{ZmFolder}		folder		the folder
+ */
 ZmAccountOverviewContainer.prototype.addSearchFolder =
 function(folder) {
 	if (!this._searchTreeHeader) { return; }
@@ -265,11 +286,12 @@ function(folder) {
 
 /**
  * Sets/updates the account-level status icon next to account name tree header.
- * This only applies to app-based overview containers (i.e. not dialogs)
+ * This only applies to app-based overview containers (i.e. not dialogs). Also resets the
+ * tooltip for the account header tree item.
  *
- * Also resets the tooltip for the account header tree item.
- *
- * @param account	[ZmZimbraAccount]*		account to update status icon for
+ * @param {ZmZimbraAccount}	account		the account to update status icon for
+ * @param	{Boolean}	updateStatus	if <code>true</code>, update the status
+ * @param	{Boolean}	updateTooltip	if <code>true</code>, update the tool tip
  */
 ZmAccountOverviewContainer.prototype.updateAccountInfo =
 function(account, updateStatus, updateTooltip) {
@@ -294,6 +316,11 @@ function(account, updateStatus, updateTooltip) {
 	}
 };
 
+/**
+ * Updates the label.
+ * 
+ * @param	{ZmOrganizer}	organizer		the organizer
+ */
 ZmAccountOverviewContainer.prototype.updateLabel =
 function(organizer) {
 	// update account header if necessary
@@ -317,6 +344,12 @@ function(organizer) {
 	}
 };
 
+/**
+ * Updates the tool tip.
+ * 
+ * @param	{String}	folderId		the folder id
+ * 
+ */
 ZmAccountOverviewContainer.prototype.updateTooltip =
 function(folderId) {
 	var ti = this._allMailboxesTreeHeader && this._vFolderTreeItemMap[folderId];

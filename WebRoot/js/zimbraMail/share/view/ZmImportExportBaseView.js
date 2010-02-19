@@ -13,6 +13,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * This class represents the export base view.
+ * 
+ * @extends		DwtForm
+ */
 ZmImportExportBaseView = function(params) {
 	if (arguments.length == 0) return;
 	DwtForm.call(this, params);
@@ -270,6 +275,11 @@ ZmImportExportDataTypes.prototype.getValue = function() {
 	return types.join(",");
 };
 
+/**
+ * Checks if "all" is selected.
+ * 
+ * @return	{Boolean}	<code>true</code> if all is selected
+ */
 ZmImportExportDataTypes.prototype.isAllSelected = function() {
 	var children = this.getChildren();
 	for (var i = 0; i < children.length; i++) {

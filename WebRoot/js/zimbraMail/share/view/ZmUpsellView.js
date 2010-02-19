@@ -13,6 +13,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * 
+ * @extends		DwtControl
+ */
 ZmUpsellView = function(params) {
 	DwtControl.call(this, params);
 }

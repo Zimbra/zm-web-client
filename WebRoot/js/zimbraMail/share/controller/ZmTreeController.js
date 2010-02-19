@@ -212,7 +212,7 @@ function(params) {
  * Gets the tree view for the given overview.
  *
  * @param {constant}	overviewId	the overview ID
- * @param {Boolean}	force			<code>true</code> to force tree view creation
+ * @param {Boolean}	force			if <code>true</code>, force tree view creation
  * @return	{ZmTreeView}		the tree view
  */
 ZmTreeController.prototype.getTreeView =

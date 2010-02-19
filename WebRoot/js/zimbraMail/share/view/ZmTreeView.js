@@ -14,26 +14,31 @@
  */
 
 /**
+ * @overview
+ */
+
+/**
  * Creates an empty tree view.
- * @constructor
  * @class
  * This class displays data in a tree structure.
  *
  * @author Conrad Damon
  * 
- * @param params				[hash]				hash of params:
- *        parent				[DwtControl]		the tree's parent widget
- *        type					[constant]			organizer type
- *        className				[string]*			CSS class
- *        posStyle				[constant]*			positioning style
- *        overviewId			[constant]*			overview ID
- *        headerClass			[string]*			CSS class for header item
- *        dragSrc				[DwtDragSource]*	drag source
- *        dropTgt				[DwtDropTarget]*	drop target
- *        treeStyle				[constant]*			tree style (see DwtTree)
- *        isCheckedByDefault	[boolean]*			default state of "checked" tree style
- *        allowedTypes			[hash]*				org types this tree may display
- *        allowedSubTypes		[hash]*				org types this tree may display below top level
+ * @param {Hash}	params				the hash of parameters
+ * @param {DwtControl}	params.parent				the tree's parent widget
+ * @param {constant}	params.type				the organizer type
+ * @param {String}	params.className				the CSS class
+ * @param {constant}	params.posStyle				the positioning style
+ * @param {constant}	params.overviewId			theoverview ID
+ * @param {String}	params.headerClass			the CSS class for header item
+ * @param {DwtDragSource}	params.dragSrc				the drag source
+ * @param {DwtDropTarget}	params.dropTgt				the drop target
+ * @param {constant}	params.treeStyle				tree style (see {@link DwtTree})
+ * @param {Boolean}	params.isCheckedByDefault	sets the default state of "checked" tree style
+ * @param {Hash}	params.allowedTypes			a hash of org types this tree may display
+ * @param {Hash}	params.allowedSubTypes		a hash of org types this tree may display below top level
+ * 
+ * @extends		DwtTree
  */
 ZmTreeView = function(params) {
 
@@ -82,9 +87,10 @@ ZmTreeView.MAX_ITEMS = 50;
  * Finds the correct position for an organizer within a node, given
  * a sort function.
  *
- * @param node			[DwtTreeItem]	node under which organizer is to be added
- * @param organizer		[ZmOrganizer]	organizer
- * @param sortFunction	[method]		method for comparing two organizers
+ * @param {DwtTreeItem}	node			the node under which organizer is to be added
+ * @param {ZmOrganizer}	organizer		the organizer
+ * @param {function}	sortFunction	the function for comparing two organizers
+ * @return	{int}	the index
  */
 ZmTreeView.getSortIndex =
 function(node, organizer, sortFunction) {
@@ -108,6 +114,11 @@ ZmTreeView.prototype.constructor = ZmTreeView;
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmTreeView.prototype.toString = 
 function() {
 	return "ZmTreeView";
@@ -116,15 +127,15 @@ function() {
 /**
  * Populates the tree view with the given data and displays it.
  *
- * @param params		[hash]			hash of params:
- *        dataTree		[ZmTree]		data in tree form
- *        showUnread	[boolean]*		if true, show unread counts
- *        omit			[object]*		hash of organizer IDs to ignore
- *        include		[object]*		hash of organizer IDs to include
- *        omitParents	[boolean]*		do NOT insert parent nodes as needed
- *        searchTypes	[hash]*			types of saved searches to show
- *        noTooltips	[boolean]*		if true, don't show tooltips for tree items
- *        collapsed		[boolean]*		if true, initially leave the root collapsed
+ * @param {Hash}	params		a hash of parameters
+ * @param   {ZmTree}	params.dataTree		data in tree form
+ * @param	{Boolean}	params.showUnread	if <code>true</code>, show unread counts
+ * @param	{Hash}	params.omit			a hash of organizer IDs to ignore
+ * @param	{Hash}	params.include		a hash of organizer IDs to include
+ * @param	{Boolean}	params.omitParents	if <code>true</code>, do NOT insert parent nodes as needed
+ * @param	{Hash}	params.searchTypes	the types of saved searches to show
+ * @param	{Boolean}	params.noTooltips	if <code>true</code>, don't show tooltips for tree items
+ * @param	{Boolean}	params.collapsed		if <code>true</code>, initially leave the root collapsed
  */
 ZmTreeView.prototype.set =
 function(params) {
@@ -179,9 +190,10 @@ function(params) {
 };
 
 /**
- * Returns the tree item that represents the organizer with the given ID.
+ * Gets the tree item that represents the organizer with the given ID.
  *
- * @param id		[int]	an organizer ID
+ * @param {int}		id		an organizer ID
+ * @return	{DwtTreeItem}		the item
  */
 ZmTreeView.prototype.getTreeItemById =
 function(id) {
@@ -189,7 +201,10 @@ function(id) {
 };
 
 /**
- * Returns the tree view's header node
+ * Gets the tree view's header node.
+ * 
+ * @param {int}		id		an organizer ID
+ * @return	{DwtHeaderTreeItem}		the item
  */
 ZmTreeView.prototype.getHeaderItem =
 function() {
@@ -197,8 +212,10 @@ function() {
 };
 
 /**
- * Returns the currently selected organizer(s) - if tree view is checkbox style,
- * return value is an Array otherwise, a single DwtTreeItem object is returned.
+ * Gets the currently selected organizer(s). If tree view is checkbox style,
+ * return value is an {Array} otherwise, a single {DwtTreeItem} object is returned.
+ * 
+ * @return	{Array|DwtTreeItem}		the selected item(s)
  */
 ZmTreeView.prototype.getSelected =
 function() {
@@ -216,9 +233,9 @@ function() {
 /**
  * Selects the tree item for the given organizer.
  *
- * @param organizer		[ZmOrganizer]	the organizer to select, or its ID
- * @param skipNotify	[boolean]*		whether to skip notifications
- * @param noFocus		[boolean]*		if true, select item but don't set focus to it
+ * @param {ZmOrganizer}	organizer		the organizer to select, or its ID
+ * @param {Boolean}	skipNotify	if <code>true</code>, skip notifications
+ * @param {Boolean}	noFocus		if <code>true</code>, select item but don't set focus to it
  */
 ZmTreeView.prototype.setSelected =
 function(organizer, skipNotify, noFocus) {
@@ -247,6 +264,8 @@ function(organizer, skipNotify, noFocus) {
  * TODO: Add logic to support display of folders that are not normally allowed in
  * 		this tree, but that have children (orphans) of an allowed type
  * TODO: Only sort folders we're showing (requires two passes).
+ * 
+ * @private
  */
 ZmTreeView.prototype._render =
 function(params) {
@@ -361,6 +380,8 @@ function(params) {
  * @param index			[int]*			position at which to add the new node
  * @param noTooltips	[boolean]*		if true, don't show tooltips for tree items
  * @param omit			[Object]*		hash of system folder IDs to ignore
+ * 
+ * @private
  */
 ZmTreeView.prototype._addNew =
 function(parentNode, organizer, index, noTooltips, omit) {
@@ -459,10 +480,11 @@ function(parentNode, organizer, index, noTooltips, omit) {
 
 
 /**
- * Returns the data (an organizer) from the tree item nearest the one
+ * Gets the data (an organizer) from the tree item nearest the one
  * associated with the given ID.
  *
- * @param id	[int]	an organizer ID
+ * @param {int}	id	an organizer ID
+ * @return	{Object}	the data or <code>null</code> for none
  */
 ZmTreeView.prototype.getNextData =
 function(id) {
@@ -518,6 +540,8 @@ function(treeItem, treeItems, i) {
  * Renders a chunk of tree items, using a timer so that the browser doesn't get overloaded.
  * 
  * @param params	[hash]		hash of params (see _render)
+ * 
+ * @private
  */
 ZmTreeView.prototype._showRemainingFolders =
 function(params) {

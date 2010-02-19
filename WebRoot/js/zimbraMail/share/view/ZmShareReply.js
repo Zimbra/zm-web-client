@@ -14,10 +14,21 @@
  */
 
 /**
+ * @overview
+ */
+
+/**
+ * Creates a share reply widget.
+ * @class
  * This class implements a share reply query box and additional input 
  * controls to allow the user to specify the reply type and quick reply 
  * note, if wanted. This control can be used from within the various
  * share dialogs to add reply capabilities.
+ * 
+ * @param	{DwtControl}	parent		the parent
+ * @param	{String}		className	the class name
+ * @param	{Array}	options			an array of options
+ * @extends		DwtComposite
  */
 ZmShareReply = function(parent, className, options) {
 	className = className || "ZmShareReply";
@@ -29,10 +40,21 @@ ZmShareReply.prototype = new DwtComposite;
 ZmShareReply.prototype.constructor = ZmShareReply;
 
 // Constants
-
+/**
+ * Defines the "none" reply type.
+ */
 ZmShareReply.NONE		= 0;
+/**
+ * Defines the "standard" reply type.
+ */
 ZmShareReply.STANDARD	= 1;
+/**
+ * Defines the "quick" reply type.
+ */
 ZmShareReply.QUICK		= 2;
+/**
+ * Defines the "compose" reply type.
+ */
 ZmShareReply.COMPOSE	= 3;
 
 ZmShareReply.DEFAULT_OPTIONS = [
@@ -47,6 +69,11 @@ ZmShareReply._LABELS[ZmShareReply.COMPOSE]	= ZmMsg.sendComposedMailAboutShare;
 
 // Public methods
 
+/**
+ * Sets the reply type.
+ * 
+ * @param	{constant}	type		the type
+ */
 ZmShareReply.prototype.setReplyType =
 function(type) {
 	this._replyType.setSelectedValue(type);
@@ -54,21 +81,41 @@ function(type) {
 	Dwt.setVisible(this._replyNoteEl, type == ZmShareReply.QUICK);
 };
 
+/**
+ * Gets the reply type.
+ * 
+ * @return	{constant}		the reply type
+ */
 ZmShareReply.prototype.getReplyType =
 function() {
 	return this._replyType.getValue();
 };
 
+/**
+ * Sets the reply note.
+ * 
+ * @param	{String}	note		the note
+ */
 ZmShareReply.prototype.setReplyNote =
 function(note) {
 	this._replyNoteEl.value = note;
 };
 
+/**
+ * Gets the reply note.
+ * 
+ * @return	{String}		the reply note
+ */
 ZmShareReply.prototype.getReplyNote =
 function() {
 	return this._replyNoteEl.value;
 };
 
+/**
+ * Sets the reply options.
+ * 
+ * @param	{Array}	options		an array of options
+ */
 ZmShareReply.prototype.setReplyOptions =
 function(options) {
 	if (this._replyOptions == options) return;
@@ -82,6 +129,11 @@ function(options) {
 	}
 };
 
+/**
+ * Gets the reply options.
+ * 
+ * @return	{Array}	an array of options
+ */
 ZmShareReply.prototype.getReplyOptions =
 function() {
 	return this._replyOptions;

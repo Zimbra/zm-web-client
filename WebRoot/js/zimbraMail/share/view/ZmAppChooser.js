@@ -115,14 +115,12 @@ function(listener) {
  * 
  * @param	{String}	id		the button id
  * @param	{Hash}		params		a hash of parameters
- * <ul>
- * <li>params.text</li>
- * <li>params.image</li>
- * <li>params.index</li>
- * <li>params.tooltip</li>
- * <li>params.textPrecedence</li>
- * <li>params.imagePrecedence</li>
- * </ul>
+ * @param	{String}	params.text			the text
+ * @param	{String}	params.image		the image
+ * @param	{int}	params.index		the index
+ * @param	{String}	params.tooltip		the tool top
+ * @param	{String}	params.textPrecedence	the image precedence
+ * @param	{String}	params.imagePrecedence		the image precedence
  * 
  * @return	{ZmAppButton}		the newly created button
  */
@@ -172,14 +170,12 @@ function(id) {
  * @param	{String}	oldId		the old button id
  * @param	{String}	newId		the new button id
  * @param	{Hash}		params		a hash of parameters
- * <ul>
- * <li>params.text</li>
- * <li>params.image</li>
- * <li>params.index</li>
- * <li>params.tooltip</li>
- * <li>params.textPrecedence</li>
- * <li>params.imagePrecedence</li>
- * </ul>
+ * @param	{String}	params.text		the text
+ * @param	{String}	params.image	the image
+ * @param	{int}	params.index		the index
+ * @param	{String}	params.tooltip			the tool tip
+ * @param	{String}	params.textPrecedence	the text display precedence
+ * @param	{String}	params.imagePrecedence	the image display precedence
  * 
  * @return	{ZmAppButton}		the newly created button
  */
@@ -191,12 +187,6 @@ function(oldId, newId, params) {
 	return this.addButton(newId, params);
 };
 
-/**
- * Gets the button.
- * 
- * @param	{String}	id		the button id
- * @return	{ZmAppButton}		the button or <code>null</code> if not found
- */
 ZmAppChooser.prototype.getButton =
 function(id) {
 	return this._buttons[id];

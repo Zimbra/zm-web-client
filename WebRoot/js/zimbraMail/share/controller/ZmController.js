@@ -25,7 +25,7 @@
  * @class
  * This class represents an application controller.
  * 
- * @param	{Object}	container		the application container
+ * @param	{ZmComposite}	container		the application container
  * @param	{ZmApp}		app				the application
  */
 ZmController = function(container, app) {
@@ -76,9 +76,9 @@ ZmController.prototype.getApp = function() {
  * Pops-up the error dialog.
  * 
  * @param	{String}	msg		the error msg
- * @param	{Object}	ex		the exception
- * @param	{Boolean}	noExecReset		not used
- * @param	{Boolean}	hideReportButton		<code>true</code> to hide the "Send error report" button
+ * @param	{ZmCsfeException}	ex		the exception
+ * @param	{Boolean}	noExecReset		(not used)
+ * @param	{Boolean}	hideReportButton		if <code>true</code>, hide the "Send error report" button
  */
 ZmController.prototype.popupErrorDialog = 
 function(msg, ex, noExecReset, hideReportButton)  {
@@ -119,7 +119,7 @@ function(msg, ex, noExecReset, hideReportButton)  {
 /**
  * Sets the current view.
  * 
- * @param	{Object}	view		the view
+ * @param	{DwtComposite}	view		the view
  */
 ZmController.prototype.setCurrentView =
 function(view) {
@@ -129,7 +129,7 @@ function(view) {
 /**
  * Gets the current view.
  * 
- * @return	{Object}	the view
+ * @return	{DwtComposite}	the view
  */
 ZmController.prototype.getCurrentView =
 function() {
@@ -150,6 +150,8 @@ function() {
  * Handles the key action.
  * 
  * @param	{constant}		actionCode		the action code
+ * @return	{Boolean}	<code>true</code> if the key action is handled
+ * 
  * @see		ZmApp.ACTION_CODES_R
  * @see		ZmKeyMap
  */

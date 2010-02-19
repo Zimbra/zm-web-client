@@ -15,6 +15,9 @@
 
 /**
  * Abstract base class of flashing alerts.
+ * @class
+ * This is an abstract base class of flashing alerts.
+ * 
  */
 ZmAlert = function() {
 	this._isLooping = false;

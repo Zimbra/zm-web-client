@@ -14,8 +14,11 @@
  */
 
 /**
- * Singleton alert class that alerts the user by flashing
- * the favicon and document title. 
+ * Creates the browser alert.
+ * @class
+ * Singleton alert class that alerts the user by flashing the favicon and document title.
+ * 
+ * @extends		ZmAlert
  */
 ZmBrowserAlert = function() {
 	ZmAlert.call(this);
@@ -42,11 +45,21 @@ function() {
 	return "ZmBrowserAlert";
 };
 
+/**
+ * Gets an instance of the browser alert.
+ * 
+ * @return	{ZmBrowserAlert}	the browser alert
+ */
 ZmBrowserAlert.getInstance =
 function() {
 	return ZmBrowserAlert.INSTANCE = ZmBrowserAlert.INSTANCE || new ZmBrowserAlert();
 };
 
+/**
+ * Starts the alert.
+ * 
+ * @param	{String}	altTitle		the alternate title
+ */
 ZmBrowserAlert.prototype.start =
 function(altTitle) {
 	if (this._isLooping) {
@@ -62,6 +75,10 @@ function(altTitle) {
 	}
 };
 
+/**
+ * Stops the alert.
+ * 
+ */
 ZmBrowserAlert.prototype.stop =
 function() {
 	this._stopLoop();

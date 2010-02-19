@@ -59,7 +59,7 @@ function() {
  * @param	{Hash}	params		a hash of parameters
  * @param	{String}	params.overviewId		the overview ID
  * @param	{Boolean}	params.showUnread		if <code>true</code>, unread counts will be shown
- * @param	{Object}	params.omit			a hash of organizer IDs to ignore
+ * @param	{Array}	params.omit				a hash of organizer IDs to ignore
  * @param	{Boolean}	params.forceCreate	if <code>true</code>, tree view will be created
  * @param	{ZmZimbraAccount}	params.account	the account to show tree for (if not currently active account)
  * 
@@ -101,7 +101,7 @@ function() {
 /**
 * Resets and enables/disables operations based on context.
 *
-* @param {Object}	parent		the widget that contains the operations
+* @param {ZmControl}	parent		the widget that contains the operations
 * @param {constant}	type		the type
 * @param {String}	id			the currently selected/activated organizer
 */

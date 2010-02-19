@@ -14,14 +14,19 @@
  */
 
 /**
+ * @overview
+ */
+
+/**
  * Creates an overview container.
  * @constructor
  * @class
  * Creates a header tree item for an account if mailbox has multiple accounts
- * configured. For each account header, a ZmOverview is added a child. If mbox
+ * configured. For each account header, a {@link ZmOverview} is added a child. If mailbox
  * only has one account configured, no account header is created and the
- * ZmOverview is added as a child of the container.
+ * {@link ZmOverview} is added as a child of the container.
  *
+ * @param	{Hash}	params		a hash of parameters
  * @author Parag Shah
  */
 ZmOverviewContainer = function(params) {
@@ -52,26 +57,52 @@ function() {
 	return "ZmOverviewContainer";
 };
 
+/**
+ * Initializes the overview container.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ */
 ZmOverviewContainer.prototype.initialize =
 function(params) {
 	// overload
 };
 
+/**
+ * Gets the overview.
+ * 
+ * @param	{String}	overviewId		the overview id
+ * @return	{ZmOverview}		the overview
+ */
 ZmOverviewContainer.prototype.getOverview =
 function(overviewId) {
 	return this._overview[overviewId];
 };
 
+/**
+ * Gets the overviews.
+ * 
+ * @return	{Array}	an array of {ZmOverview} objects
+ */
 ZmOverviewContainer.prototype.getOverviews =
 function() {
 	return this._overview;
 };
 
+/**
+ * Gets the header item.
+ * 
+ * 
+ */
 ZmOverviewContainer.prototype.getHeaderItem =
 function() {
 	// overload
 };
 
+/**
+ * Gets the selected overview.
+ * 
+ * @return	{ZmOverview}	the overview
+ */
 ZmOverviewContainer.prototype.getSelected =
 function() {
 	var selected;
@@ -94,6 +125,11 @@ function(exception) {
 	this._deselectAllTreeViews(exception);
 };
 
+/**
+ * Sets the overview trees.
+ * 
+ * @param	{Array}		treeIds		an array of tree ids
+ */
 ZmOverviewContainer.prototype.setOverviewTrees =
 function(treeIds) {
 	for (var i in this._overview) {
@@ -101,6 +137,11 @@ function(treeIds) {
 	}
 };
 
+/**
+ * Resets the operations.
+ * 
+ * 
+ */
 ZmOverviewContainer.prototype.resetOperations =
 function(parent, acctId) {
 	// overload me

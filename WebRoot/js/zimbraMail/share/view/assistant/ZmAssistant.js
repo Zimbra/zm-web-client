@@ -13,6 +13,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates the assistant.
+ * @class
+ * This class represents an assistant.
+ * 
+ * @param	{String}	title		the title
+ * @param	{ZmCsfeCommand}	command		the command
+ * @param	{String}	commandSummary		the summary
+ */
 ZmAssistant = function(title, command, commandSummary) {
 	if (arguments.length == 0) { return; }
 	this._objectManager = new ZmObjectManager();

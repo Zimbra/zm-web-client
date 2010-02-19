@@ -64,8 +64,8 @@ function() {
  * Shows the folder tree with certain folders hidden.
  * 
  * @param	{Hash}	params		a hash of parameters
- * @param	{Array}	params.omit	an array of ids to omit
- * @param	{Object}	params.account		the account
+ * @param	{Array}	params.omit		an array of folder ids to omit
+ * @param	{ZmAccount}	params.account		the account
  */
 ZmFolderTreeController.prototype.show =
 function(params) {

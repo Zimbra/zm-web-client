@@ -15,7 +15,6 @@
 
 /**
  * @overview
- * 
  * This file defines a Zimlet Application.
  *
  */
@@ -25,7 +24,7 @@
  * This object represents a Zimlet Application.
  * 
  * @param	{String}	name		the application name
- * @param	{Object}	zimlet		the zimlet
+ * @param	{ZmZimlet}	zimlet		the zimlet
  * @param	{DwtControl}	container	the container
  * 
  * @extends	ZmApp
@@ -90,7 +89,7 @@ function(html) {
 /**
  * Sets the view.
  * 
- * @param	{Object}	view	the view
+ * @param	{DwtComposite}	view	the view
  */
 ZmZimletApp.prototype.setView =
 function(view) {
@@ -120,7 +119,7 @@ function(params, callback) {
 /**
  * Activates the application.
  * 
- * @param	{Boolean}	active	<code>true</code> if active; <code>false</code> otherwise
+ * @param	{Boolean}	active	if <code>true</code>, active; <code>false</code> otherwise
  * @param	{String}	viewId	the view id
  */
 ZmZimletApp.prototype.activate =

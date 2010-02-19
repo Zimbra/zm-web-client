@@ -12,6 +12,23 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+
+/**
+ * @overview
+ */
+
+/**
+ * Creates the status view.
+ * @class
+ * This class represents the status view.
+ * 
+ * @param	{DwtControl}	parent		the parent
+ * @param	{String}		className	the class name
+ * @param	{constant}	posStyle		the position style
+ * @param	{String}	id			the id
+ * 
+ * @extends		DwtControl
+ */
 ZmStatusView = function(parent, className, posStyle, id) {
 
 	DwtControl.call(this, {parent:parent, className:(className || "ZmStatus"), posStyle:posStyle, id:id});
@@ -25,9 +42,17 @@ ZmStatusView.prototype.constructor = ZmStatusView;
 
 
 // Constants
-
+/**
+ * Defines the "informational" status level.
+ */
 ZmStatusView.LEVEL_INFO 			= 1;	// informational
+/**
+ * Defines the "warning" status level.
+ */
 ZmStatusView.LEVEL_WARNING			= 2;	// warning
+/**
+ * Defines the "critical" status level.
+ */
 ZmStatusView.LEVEL_CRITICAL			= 3;	// critical
 
 ZmStatusView.MSG_PARAMS = ["msg", "level", "detail", "transitions", "toast"];
@@ -40,12 +65,13 @@ function() {
 };
 
 /**
- * Displays a status message 
- * @param msg the message
- * @param level ZmStatusView.LEVEL_INFO, ZmStatusView.LEVEL_WARNING, or ZmStatusView.LEVEL_CRITICAL (optional) 
- * @param detail details (optional)
- * @param transitions transitions (optional)
- * @param toast the toast control (optional)
+ * Displays a status message.
+ * 
+ * @param {String}	msg the message
+ * @param {constant}	[level] 		the level (see {@link ZmStatusView}<code>.LEVEL_</code> constants) 
+ * @param {String}	[detail] 		the details
+ * @param {String}	[transitions] the transitions (see {@link ZmToast})
+ * @param {String}	[toast] 	the toast control
  */
 ZmStatusView.prototype.setStatusMsg =
 function(params) {
@@ -79,9 +105,14 @@ function() {
     return false;
 };
 
-
 // Static functions
 
+/**
+ * Gets the style class name based on status level.
+ * 
+ * @param	{ZmStatusView}		work		the view
+ * @return	{String}		the class
+ */
 ZmStatusView.getClass =
 function(work) {
 	switch (work.level) {
@@ -91,6 +122,12 @@ function(work) {
 	}
 };
 
+/**
+ * Gets the image based on status level.
+ * 
+ * @param	{ZmStatusView}		work		the view
+ * @return	{String}		the image
+ */
 ZmStatusView.getImageHtml =
 function(work) {
 	switch (work.level) {
@@ -120,6 +157,13 @@ function() {
 // ZmToast
 //
 
+/**
+ * Creates the "toaster".
+ * @class
+ * This class represents the "toaster".
+ * 
+ * @extends		DwtComposite
+ */
 ZmToast = function(parent, id) {
 	if (arguments.length == 0) { return; }
 
@@ -149,15 +193,41 @@ function() {
 };
 
 // Constants
-
+/**
+ * Defines the "fade" transition.
+ */
 ZmToast.FADE = { type: "fade" };
+/**
+ * Defines the "fade-in" transition.
+ */
 ZmToast.FADE_IN = { type: "fade-in" };
+/**
+ * Defines the "fade-out" transition.
+ */
 ZmToast.FADE_OUT = { type: "fade-out" };
+/**
+ * Defines the "slide" transition.
+ */
 ZmToast.SLIDE = { type: "slide" };
+/**
+ * Defines the "slide-in" transition.
+ */
 ZmToast.SLIDE_IN = { type: "slide-in" };
+/**
+ * Defines the "slide-out" transition.
+ */
 ZmToast.SLIDE_OUT = { type: "slide-out" };
+/**
+ * Defines the "pause" transition.
+ */
 ZmToast.PAUSE = { type: "pause" };
+/**
+ * Defines the "idle" transition.
+ */
 ZmToast.IDLE = {type: "idle" };
+/**
+ * Defines the "show" transition.
+ */
 ZmToast.SHOW = {type: "show" };
 
 //ZmToast.DEFAULT_TRANSITIONS = [ ZmToast.FADE_IN, ZmToast.PAUSE, ZmToast.FADE_OUT ];

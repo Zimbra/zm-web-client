@@ -13,6 +13,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates the browser tool bar.
+ * @class
+ * This class represents the browse tool bar.
+ * 
+ * @param	{DwtControl}	parent		the parent
+ * @param	{Array}		pickers			an array of {ZmPicker} objects
+ * @extends		ZmToolBar
+ */
 ZmBrowseToolBar = function(parent, pickers) {
 
 	ZmToolBar.call(this, {parent:parent, className:"ZmBrowseToolBar"});

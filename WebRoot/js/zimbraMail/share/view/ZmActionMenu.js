@@ -14,24 +14,29 @@
  */
 
 /**
-  * Creates an action menu with the given menu items.
-  * @constructor
-  * @class ZmActionMenu
-  * This class represents an action menu, which is a popup menu with a few added features.
-  * It can be easily created using a set of standard operations, and/or custom menu items
-  * can be provided. This class is designed for use with items (ZmItem), so it can for
-  * example contain a tab submenu. See also ZmButtonToolBar.
-  *
-  * @author Conrad Damon
-  *
-  * @param params		[hash]				hash of params:
-  *        parent		[DwtComposite]		the containing widget
-  *        controller	[ZmController]*		owning controller
-  *        menuItems	[array]*			a list of operation IDs
-  *        overrides	[hash]*				hash of overrides by op ID
-  *        context		[string]*			context (used to create ID)
-  *        menuType		[const]*			menu type (used to generate menu item IDs)
-  */
+ * @overview
+ */
+
+/**
+ * Creates an action menu with the given menu items.
+ * @class
+ * This class represents an action menu, which is a popup menu with a few added features.
+ * It can be easily created using a set of standard operations, and/or custom menu items
+ * can be provided. This class is designed for use with items ({@link ZmItem}), so it can for
+ * example contain a tab submenu. See also {@link ZmButtonToolBar}.
+ *
+ * @author Conrad Damon
+ *
+ * @param {Hash}	params		a hash of parameters
+ * @param {DwtComposite}	params.parent		the containing widget
+ * @param {ZmController}	params.controller	the owning controller
+ * @param {Array}	params.menuItems	a list of operation IDs
+ * @param {Hash}	params.overrides	a hash of overrides by op ID
+ * @param {String}	params.context		the context (used to create ID)
+ * @param {constant}	params.menuType		the menu type (used to generate menu item IDs)
+ * 
+ * @extends		ZmPopupMenu
+ */
 ZmActionMenu = function(params) {
 
     var id = params.context ? ZmId.getMenuId(params.context, params.menuType) : null;
@@ -57,6 +62,11 @@ ZmActionMenu.prototype.constructor = ZmActionMenu;
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmActionMenu.prototype.toString = 
 function() {
 	return "ZmActionMenu";
@@ -65,14 +75,17 @@ function() {
 /**
  * Creates a menu item and adds its operation ID as data.
  * 
- * @param id			[string]		name of the operation
- *        text			[string]*		menu item text
- *        image			[string]*		icon class for the menu item
- *        disImage		[string]*		disabled version of icon
- *        enabled		[boolean]*		if true, menu item is enabled
- *        style			[constant]*		menu item style
- *        radioGroupId	[string]*		ID of radio group for this menu item
- *        shortcut		[constant]*		shortcut ID (from ZmKeyMap) for showing hint
+ * @param {String}	id			the name of the operation
+ * @param	{Hash}	params		a hash of parameters
+ * @param  {String}	params.text			the menu item text
+ * @param {String}	params.image			the icon class for the menu item
+ * @param {String}	params.disImage		the disabled version of icon
+ * @param {Boolean}	params.enabled		if <code>true</code>, menu item is enabled
+ * @param {constant}	params.style			the menu item style
+ * @param {String}	params.radioGroupId	the ID of radio group for this menu item
+ * @param {constant}	params.shortcut		the shortcut ID (from {@link ZmKeyMap}) for showing hint
+ * 
+ * @private
  */
 ZmActionMenu.prototype.createOp =
 function(id, params) {
@@ -94,18 +107,22 @@ function(id) {
 };
 
 /**
-* Returns the menu item with the given ID.
-*
-* @param id		an operation ID
-*/
+ * Gets the menu item with the given ID.
+ *
+ * @param {constant}	id		an operation ID
+ * @return	{DwtMenuItem}	the menu item
+ * @see		ZmOperation
+ */
 ZmActionMenu.prototype.getOp =
 function(id) {
 	return this.getMenuItem(id);
 };
 
 /**
-* Returns the menu's tag submenu, if any.
-*/
+ * Gets the menu tag sub-menu (if any).
+ * 
+ * @return	{DwtMenu}		the menu
+ */
 ZmActionMenu.prototype.getTagMenu =
 function() {
 	var menuItem = this.getMenuItem(ZmOperation.TAG_MENU);

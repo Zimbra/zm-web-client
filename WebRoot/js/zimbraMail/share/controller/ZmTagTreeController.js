@@ -78,7 +78,7 @@ function() {
 * Resets and enables/disables operations based on context.
 *
 * @param {Object}		parent		the widget that contains the operations
-* @param {Object}		id			the currently selected/activated organizer
+* @param {String}		id			the currently selected/activated organizer
 */
 ZmTagTreeController.prototype.resetOperations = 
 function(parent, type, id) {

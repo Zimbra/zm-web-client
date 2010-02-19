@@ -14,18 +14,23 @@
  */
 
 /**
+ * @overview
+ */
+
+/**
  * Creates a popup menu.
- * @const
  * @class
  * This class represents a basic popup menu which can add menu items, manage listeners, and
  * enable/disabled its menu items.
  *
  * @author Conrad Damon
  *
- * @param parent		[DwtComposite]		the containing widget
- * @param className		[string]*			CSS class
- * @param id			[string]*			an explicit ID to use for the control's HTML element
- * @param controller	[ZmController]*		owning controller
+ * @param {DwtComposite}	parent		the containing widget
+ * @param {String}	className		the CSS class
+ * @param {String}	id			an explicit ID to use for the control's HTML element
+ * @param {ZmController}	controller	the owning controller
+ * 
+ * @extends		DwtMenu
  */
 ZmPopupMenu = function(parent, className, id, controller) {
 
@@ -56,6 +61,13 @@ function() {
 
 ZmPopupMenu.MENU_ITEM_ID_KEY = "menuItemId";
 
+/**
+ * Adds a section listener.
+ * 
+ * @param	{String}		menuItemId		the menu item id
+ * @param	{AjxListener}	listener		the selection listener
+ * @param	{int}		index				the index where to insert the listener
+ */
 ZmPopupMenu.prototype.addSelectionListener =
 function(menuItemId, listener, index) {
 	var menuItem = this._menuItems[menuItemId];
@@ -64,6 +76,12 @@ function(menuItemId, listener, index) {
 	}
 };
 
+/**
+ * Removes a section listener.
+ * 
+ * @param	{String}		menuItemId		the menu item id
+ * @param	{AjxListener}	listener		the selection listener
+ */
 ZmPopupMenu.prototype.removeSelectionListener =
 function(menuItemId, listener) {
 	var menuItem = this._menuItems[menuItemId];
@@ -81,11 +99,11 @@ function(delay, x, y, kbGenerated) {
 };
 
 /**
-* Enables/disables menu items.
-*
-* @param ids		a list of menu item IDs
-* @param enabled	whether to enable the menu items
-*/
+ * Enables/disables menu items.
+ *
+ * @param {Array}	ids		a list of menu item IDs
+ * @param {Boolean}		enabled	if <code>true</code>, enable the menu items
+ */
 ZmPopupMenu.prototype.enable =
 function(ids, enabled) {
 	ids = (ids instanceof Array) ? ids : [ids];
@@ -96,6 +114,11 @@ function(ids, enabled) {
 	}
 };
 
+/**
+ * Enables/disables all menu items.
+ *
+ * @param {Boolean}		enabled	if <code>true</code>, enable the menu items
+ */
 ZmPopupMenu.prototype.enableAll =
 function(enabled) {
 	for (var i in this._menuItems) {
@@ -104,17 +127,19 @@ function(enabled) {
 };
 
 /**
- * Adds a menu item to this menu.
+ * Creates a menu item and adds the item to this menu.
  *
- * @param params		[hash]			hash of params:
- *        id			[string]		menu item ID
- *        text			[string]*		menu item text
- *        image			[string]*		icon class for the or menu item
- *        disImage		[string]*		disabled version of icon
- *        enabled		[boolean]*		if true, menu item is enabled
- *        style			[constant]*		menu item style
- *        radioGroupId	[string]*		ID of radio group for this menu item
- *        shortcut		[constant]*		shortcut ID (from ZmKeyMap) for showing hint
+ * @param {String}	id			the menu item ID
+ * @param {Hash}	params		a hash of parameters
+ * @param {String}	text		the menu item text
+ * @param {String}	image		the icon class for the or menu item
+ * @param {String}	disImage	disabled version of icon
+ * @param {Boolean}	enabled		if <code>true</code>, menu item is enabled
+ * @param {constant}	style			the menu item style
+ * @param {String}	radioGroupId	the ID of radio group for this menu item
+ * @param {constant}	shortcut		the shortcut ID (from {@link ZmKeyMap}) for showing hint
+ * 
+ * @see		DwtMenuItem
  */
 ZmPopupMenu.prototype.createMenuItem =
 function(id, params) {
@@ -137,16 +162,21 @@ function(id, params) {
 };
 
 /**
-* Returns the menu item with the given ID.
-*
-* @param id		an operation ID
-*/
+ * Gets the menu item with the given ID.
+ *
+ * @param {String}	id		an operation ID
+ * @return	{DwtMenuItem}		the menu item
+ */
 ZmPopupMenu.prototype.getMenuItem =
 function(id) {
 	return this._menuItems[id];
 };
 
-
+/**
+ * Creates a menu item separator.
+ * 
+ * @return	{DwtMenuItem}	the separator menu item
+ */
 ZmPopupMenu.prototype.createSeparator =
 function() {
 	new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});

@@ -13,10 +13,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
-// simple widget to allow input of one IM address.  Services are
-// displayed in a drop-down.  Service types, labels and parsing
-// routines are defined in ../model/ZmImAddress.js
-
+// 
+/**
+ * Creates an IM address entry widget.
+ * @class
+ * This class is a simple widget to allow input of one IM address.  Services are
+ * displayed in a drop-down.  Service types, labels and parsing
+ * routines are defined in {@link ZmImAddress}.
+ * 
+ * @param {DwtComposite}	parent		the containing widget
+ *
+ * @extends		DwtComposite
+ */
 ZmImAddressEntry = function(parent) {
         DwtComposite.call(this, {parent:parent, className:"ZmImAddressEntry"});
         this._init();
@@ -65,6 +73,12 @@ ZmImAddressEntry.prototype._init = function() {
 	dropTgt.addDropListener(new AjxListener(this, this._dropListener));
 };
 
+/**
+ * Sets the value.
+ * 
+ * @param	{String}	addr		the address
+ * @see		ZmImAddress.parse
+ */
 ZmImAddressEntry.prototype.setValue = function(addr) {
         addr = ZmImAddress.parse(addr);
         this._selectService.setSelectedValue(addr ? addr.service : "_NONE");
@@ -72,6 +86,11 @@ ZmImAddressEntry.prototype.setValue = function(addr) {
         this._inputScreenName.setEnabled(!!addr);
 };
 
+/**
+ * Gets the value.
+ * 
+ * @return	{ZmImAddress}		the address
+ */
 ZmImAddressEntry.prototype.getValue = function() {
         return ZmImAddress.make(this._selectService.getValue(),
                                 this._inputScreenName.getValue());

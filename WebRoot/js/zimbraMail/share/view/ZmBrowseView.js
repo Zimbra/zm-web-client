@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates the browse view.
+ * @class
+ * This class represents the browse view.
+ * 
+ * @param	{DwtComposite}		parent		the parent
+ * @param	{AjxVector}		pickers		the pickers (not used)
+ * 
+ * @extends		DwtComposite
+ */
 ZmBrowseView = function(parent, pickers) {
 
 	DwtComposite.call(this, {parent:parent, className:"ZmBrowseView", posStyle:DwtControl.ABSOLUTE_STYLE});
@@ -30,22 +44,44 @@ function() {
 	return "ZmBrowseView";
 }
 
+/**
+ * Gets the toolbar.
+ * 
+ * @return	{ZmToolBar}		the tool bar
+ */
 ZmBrowseView.prototype.getToolBar = 
 function() {
 	return this._toolbar;
 }
 
+/**
+ * Adds the picker.
+ * 
+ * @param	{ZmPicker}		picker		the picker
+ * @param	{String}	id		the id (not used)
+ * 
+ */
 ZmBrowseView.prototype.addPicker =
 function(picker, id) {
     this._pickers.add(picker);
     this.layout();
 }
 
+/**
+ * Gets the pickers.
+ * 
+ * @return	{AxjVector}	 a list of {@link ZmPicker} objects
+ */
 ZmBrowseView.prototype.getPickers = 
 function() {
 	return this._pickers;
 }
 
+/**
+ * Removes the picker.
+ * 
+ * @param	{ZmPicker}	picker		the picker
+ */
 ZmBrowseView.prototype.removePicker =
 function(picker) {
 	var p = this._pickers;
@@ -57,6 +93,10 @@ function(picker) {
     }
 }
 
+/**
+ * Removes all pickers.
+ * 
+ */
 ZmBrowseView.prototype.removeAllPickers =
 function() {
 	var p = this._pickers;
@@ -67,6 +107,11 @@ function() {
     }
 }
 
+/**
+ * Performs a layout of the view.
+ * 
+ * @return	{ZmBrowseView}	the resulting view
+ */
 ZmBrowseView.prototype.layout =
 function() {
 	if (!this.getVisible())
