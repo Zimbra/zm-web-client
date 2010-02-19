@@ -1131,16 +1131,27 @@ function(xsltUrl, doc) {
  * @param	{String}	label	the label to use on the application tab
  * @param	{String}	image	the image (style class) to use on the application tab
  * @param	{String}	tooltip	the tool tip to display when hover-over the application tab
+ * @param	{int}		[index]	the index to insert the tab (must be > 0). 0 is first location. Default is last location.
  * @return	{String}	the name of the newly created application
  */
 ZmZimletBase.prototype.createApp =
-function(label, image, tooltip) {
+function(label, image, tooltip, index) {
 
 	AjxDispatcher.require("ZimletApp");
 
 	var appName = [this.name, Dwt.getNextId()].join("_");
 	var controller = appCtxt.getAppController();
-	controller.getAppChooser().addButton(appName, {text:label, image:image, tooltip:tooltip});
+
+	var params = {
+			text:label,
+			image:image,
+			tooltip:tooltip
+		};
+	
+	if (index != null && index >= 0)
+		params.index = index;
+
+	controller.getAppChooser().addButton(appName, params);
 
 	// TODO: Do we have to call ZmApp.registerApp?
 
