@@ -108,8 +108,6 @@ function(params) {
 
 		if (acct.type == ZmAccount.TYPE_POP) {
 			params.omit[ZmFolder.ID_SPAM]   = true;
-			params.omit[ZmFolder.ID_SENT]   = true;
-			params.omit[ZmFolder.ID_DRAFTS] = true;
 			params.omit[ZmFolder.ID_OUTBOX] = true;
 		}
 
