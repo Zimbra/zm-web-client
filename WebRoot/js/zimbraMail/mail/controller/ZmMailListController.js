@@ -748,7 +748,7 @@ function(params) {
 
 	var action = params.action;
 	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD)	{
-		action = params.action = (appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INCLUDE_ATTACH)
+		action = params.action = (appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INC_ATTACH)
 			? ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
 		// bug 40908 - invitation should be forwarded as attachment
 		if (msg.isInvite()) {
@@ -779,6 +779,7 @@ function(params) {
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, params);
+	// TODO: pointless to load msg when forwarding as att
 	this._getLoadedMsg(params, respCallback);
 };
 

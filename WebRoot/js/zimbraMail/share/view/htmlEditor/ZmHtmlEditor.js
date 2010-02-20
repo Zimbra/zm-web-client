@@ -1937,12 +1937,13 @@ ZmHtmlEditor.HTML_QUOTE_POST	= '</blockquote><br/>';
 
 // returns a standard set of params for wrapping text of HTML content
 ZmHtmlEditor.getWrapParams =
-function(htmlMode) {
+function(htmlMode, incOptions) {
 
+	incOptions = incOptions || {};
 	var params = {};
 
 	params.htmlMode	= htmlMode;
-	params.pre		= htmlMode ? "" : appCtxt.get(ZmSetting.REPLY_PREFIX) + " ";
+	params.pre		= (htmlMode || !incOptions.prefix) ? "" : appCtxt.get(ZmSetting.REPLY_PREFIX) + " ";
 	params.len		= ZmHtmlEditor.WRAP_LENGTH;
 	params.eol		= htmlMode ? '<br/>' : '\n';
 	params.before	= htmlMode ? ZmHtmlEditor.HTML_QUOTE_PRE : "";

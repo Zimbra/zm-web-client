@@ -365,6 +365,47 @@ function(value) {
 	return value;
 };
 
+ZmPref.setIncludeOrig =
+function(pref, value, list) {
+
+	pref.setValue(value);
+    pref.origValue = pref.getValue(null, false);
+	var settings = [ZmSetting.REPLY_INCLUDE_WHAT, ZmSetting.REPLY_USE_PREFIX, ZmSetting.REPLY_INCLUDE_HEADERS];
+	var settingsHash = AjxUtil.arrayAsHash(settings);
+	var mainSetting = ZmSetting.REPLY_INCLUDE_ORIG;
+	if (!settingsHash[pref.id]) {
+		settings = [ZmSetting.FORWARD_INCLUDE_WHAT, ZmSetting.FORWARD_USE_PREFIX, ZmSetting.FORWARD_INCLUDE_HEADERS];
+		mainSetting = ZmSetting.FORWARD_INCLUDE_ORIG;
+	}
+
+	var values = AjxUtil.map(settings, function(setting) { return appCtxt.get(setting); });
+	var key = values.join("|");
+	var newValue = ZmMailApp.INC_MAP_REV[key];
+	var prefToChange = appCtxt.getSettings().getSetting(mainSetting);
+	prefToChange.setValue(newValue);
+	list.push(prefToChange);
+};
+
+ZmPref.onChangeIncludeWhat =
+function(ev) {
+	var nv = ev._args.newValue;
+	var ov = ev._args.oldValue;
+	var newAllowOptions = (nv == ZmSetting.INC_BODY || nv == ZmSetting.INC_SMART);
+	var oldAllowOptions = (ov == ZmSetting.INC_BODY || ov == ZmSetting.INC_SMART);
+	if (newAllowOptions != oldAllowOptions) {
+		var select = ev._args.selectObj;
+		var optionIds = (select._name == ZmSetting.REPLY_INCLUDE_WHAT) ?
+							[ZmSetting.REPLY_USE_PREFIX, ZmSetting.REPLY_INCLUDE_HEADERS] :
+							[ZmSetting.FORWARD_USE_PREFIX, ZmSetting.FORWARD_INCLUDE_HEADERS];
+		for (var i = 0; i < optionIds.length; i++) {
+			var cbox = select.parent._dwtObjects[optionIds[i]];
+			if (cbox) {
+				cbox.setVisible(newAllowOptions);
+			}
+		}
+	}
+};
+
 // Comparators
 
 ZmPref.__BY_NUMBER =

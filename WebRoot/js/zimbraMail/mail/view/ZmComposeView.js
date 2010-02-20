@@ -1704,257 +1704,130 @@ function(action, msg, subjOverride) {
 };
 
 ZmComposeView.prototype._setBody =
-function(action, msg, extraBodyText, incOption, nosig) {
+function(action, msg, extraBodyText, incOptions, nosig) {
 
-	var composingHtml = (this._composeMode == DwtHtmlEditor.HTML);
+	var htmlMode = (this._composeMode == DwtHtmlEditor.HTML);
 
-	// XXX: consolidate this code later.
-	var isDraft = action == ZmOperation.DRAFT;
-	var isShare = action == ZmOperation.SHARE;
-	var isInviteReply = action == ZmOperation.REPLY_ACCEPT ||
-						action == ZmOperation.REPLY_DECLINE ||
-						action == ZmOperation.REPLY_TENTATIVE ||
-						action == ZmOperation.REPLY_NEW_TIME;
-	if (isDraft || isShare || isInviteReply) {
-		var body = "";
-		if (composingHtml) {
-			body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
-			// if no html part exists, just grab the text
-			// (but make sure to preserve whitespace and newlines!)
-			if (!AjxUtil.isString(body)) {
-				if (body) {
-					body = body.content;
-				} else {
-					var bodyPart = msg.getBodyPart();
-					body = bodyPart ? (AjxStringUtil.convertToHtml(bodyPart.content)) : null;
-				}
-			}
+	var isInviteReply = (action == ZmOperation.REPLY_ACCEPT ||
+						 action == ZmOperation.REPLY_DECLINE ||
+						 action == ZmOperation.REPLY_TENTATIVE ||
+						 action == ZmOperation.REPLY_NEW_TIME);
+	var isInviteForward = (msg && msg.isInvite() && (action == ZmOperation.FORWARD_INLINE || action == ZmOperation.FORWARD_ATT));
+
+	// get reply/forward prefs as necessary
+	if (!incOptions) {
+		var isReply = (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
+		if (isReply || isInviteReply) {
+			incOptions = {what:		appCtxt.get(ZmSetting.REPLY_INCLUDE_WHAT),
+						  prefix:	appCtxt.get(ZmSetting.REPLY_USE_PREFIX),
+						  headers:	appCtxt.get(ZmSetting.REPLY_INCLUDE_HEADERS)};
+		} else if (isInviteForward) {
+			action = this._action = ZmOperation.FORWARD_INLINE;
+		} else if (action == ZmOperation.FORWARD_INLINE) {
+			incOptions = {what:		ZmSetting.INC_BODY,
+						  prefix:	appCtxt.get(ZmSetting.FORWARD_USE_PREFIX),
+						  headers:	appCtxt.get(ZmSetting.FORWARD_INCLUDE_HEADERS)};
+		} else if (action == ZmOperation.FORWARD_ATT) {
+			incOptions = {what:		ZmSetting.INC_ATTACH};
+		} else if (action == ZmOperation.NEW_MESSAGE) {
+			incOptions = {what:		ZmSetting.INC_NONE};
 		} else {
-			var bodyPart = msg.getBodyPart();
-			body = bodyPart ? bodyPart.content : null;
+			incOptions = {};
 		}
-		this._htmlEditor.setContent(body);
+	}
+	if (incOptions.what == ZmSetting.INC_NONE || incOptions.what == ZmSetting.INC_ATTACH) {
+		incOptions.prefix = incOptions.headers = false;
+	}
+	if (incOptions.what == ZmSetting.INC_ATTACH && !this._msg) {
+		incOptions.what = ZmSetting.INC_NONE;
+	}
 
-		if (!isInviteReply) {
-			var showInlineAtts = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
-			this._showForwardField(msg, action, null, showInlineAtts);
-			this._fixMultipartRelatedImages_onTimer(msg);
-			return;
+	var crlf = htmlMode ? "<br>" : ZmMsg.CRLF;
+	var crlf2 = htmlMode ? "<br><br>" : ZmMsg.CRLF2;
+	var sigPre = "", body = "", headers = [], preface = "", value = "";
+
+	var bodyInfo = {};
+	var what = incOptions.what;
+	if (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART) {
+		bodyInfo = this._getBodyContent(msg, htmlMode);
+		body = bodyInfo.body;
+		// Bug 7160: Strip off the ~*~*~*~ from invite replies.
+		if (isInviteReply) {
+			body = body.replace(ZmItem.NOTES_SEPARATOR, "");
 		}
 	}
 
-	var sigStyle;
-	var sig;
+	var sigStyle, sig;
 	var account = appCtxt.multiAccounts && this.getFromAccount();
 	var ac = window.parentAppCtxt || window.appCtxt;
 	if (!nosig && ac.get(ZmSetting.SIGNATURES_ENABLED, null, account)) {
 		sig = this.getSignatureContentSpan(null, null, account);
 		sigStyle = sig ? ac.get(ZmSetting.SIGNATURE_STYLE, null, account) : null;
 	}
-	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig : "";
-	var isInviteForward = false;
+	var sigPre = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig + crlf : "";
+	var preText = sigPre + (extraBodyText || "");
 
-	// get reply/forward prefs as necessary
-	if (!incOption) {
-		var isReply = (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
-		if (isReply || isInviteReply) {
-			incOption = appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
-		} else if (action == ZmOperation.FORWARD_INLINE) {
-			incOption = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
-			if (incOption == ZmSetting.INCLUDE_ATTACH) {
-				incOption = ZmSetting.INCLUDE;
+	if (incOptions.headers) {
+		for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
+			var hdr = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
+			if (hdr) {
+				if (htmlMode){
+					hdr = AjxStringUtil.convertToHtml(hdr);
+				}
+				headers.push(hdr);
 			}
-		} else if (action == ZmOperation.FORWARD_ATT) {
-			incOption = ZmSetting.INCLUDE_ATTACH;
-			isInviteForward = (msg && msg.isInvite());
 		}
 	}
 
-	var hasInlineImages = false;
-	var hasInlineAtts   = false;
-	this._msgAttId = null;
-	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
-		value = extraBodyText ? extraBodyText + value : value;
-	} else if (!isInviteForward && (incOption == ZmSetting.INCLUDE_ATTACH) && this._msg) {
-		value = extraBodyText ? extraBodyText + value : value;
+	DBG.println("inc", "inc options: " + [incOptions.what, incOptions.prefix, incOptions.headers].join(" / "));
+
+	if (action == ZmOperation.REPLY_CANCEL) {
+		var cancelledParts = [crlf];
+		var inv = msg && msg.invite;
+		if (inv) {
+			cancelledParts.push(ZmMsg.subjectLabel + " " + (msg.subject || inv.getName()) + crlf);
+			cancelledParts.push(ZmMsg.organizer + ": " + inv.getOrganizerName() + crlf);
+			var sd = msg._instanceDate || inv.getServerStartDate();
+			cancelledParts.push(ZmMsg.time + ": " + sd + crlf);
+			var loc = inv.getLocation();
+			if (loc) {
+				cancelledParts.push(ZmMsg.locationLabel + " " + loc + crlf);
+			}
+		}
+		cancelledParts.push(crlf + ZmItem.NOTES_SEPARATOR);
+		value += crlf2 + cancelledParts.join("");
+	} else if (incOptions.what == ZmSetting.INC_NONE) {
+		value = "";
+	} else if (incOptions.what == ZmSetting.INC_ATTACH) {
 		this._msgAttId = this._msg.id;
-	} else if (!this._msgIds) {
-		if (isInviteForward) {
-			this._msgAttId = this._msg.id;
-		}
-		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
-		var crlf2 = composingHtml ? "<br><br>" : ZmMsg.CRLF2;
-		var leadingText = extraBodyText ? extraBodyText + crlf : crlf;
-		var body;
-		var bodyPart;
-
-		// bug fix #7271 - if we have multiple body parts, append them all first
-		var parts = msg.getBodyParts();
-		if (parts && parts.length > 1) {
-			var bodyArr = [];
-			for (var k = 0; k < parts.length; k++) {
-				var part = parts[k];
-				// bug: 28741
-				if (ZmMimeTable.isRenderableImage(part.ct)) {
-					bodyArr.push([crlf, "[", part.ct, ":", (part.filename || "..."), "]", crlf].join(""));
-					hasInlineImages = true;
-				} else if (part.filename && part.cd == "inline") {   //Inline attachments
-					var attInfo = ZmMimeTable.getInfo(part.ct);
-					attInfo = attInfo ? attInfo.desc : part.ct;
-					bodyArr.push([crlf, "[", attInfo, ":", (part.filename||"..."), "]", crlf].join(""));
-					hasInlineAtts = true;
-				} else if (part.ct == ZmMimeTable.TEXT_PLAIN) {
-					bodyArr.push( composingHtml ? AjxStringUtil.convertToHtml(part.content) : part.content );
-				} else if (part.ct == ZmMimeTable.TEXT_HTML) {
-					if (composingHtml){
-						bodyArr.push(part.content);
-					} else {
-						var div = document.createElement("div");
-						div.innerHTML = part.content;
-						bodyArr.push(AjxStringUtil.convertHtml2Text(div));
-					}
-				}
-			}
-			body = bodyArr.join(crlf);
-		} else {
-			if (composingHtml) {
-				body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
-				if (body) {
-					body = AjxUtil.isString(body) ? body : body.content;
-				} else {
-					// if no html part exists, just grab the text
-					bodyPart = msg.getBodyPart();
-					body = bodyPart ? this._getTextPart(bodyPart, true) : null;
-				}
+	} else {
+		var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
+		var preface = this._includedPreface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
+		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
+		if (incOptions.what == ZmSetting.INC_BODY) {
+			var space = htmlMode ? "" : crlf2;
+			if (htmlMode) {
+				wrapParams.text = headers.join(crlf) + crlf2 + body;
+				var bodyText = AjxStringUtil.wordWrap(wrapParams);
+				value = preText + preface + bodyText;
 			} else {
-                hasInlineImages = msg.hasInlineImagesInMsgBody();
-				// grab text part out of the body part
-				bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML, true);
-				body = bodyPart ? this._getTextPart(bodyPart) : null;
+				wrapParams.text = headers.join(crlf);
+				wrapParams.len = 120; // headers tend to be longer
+				var headerText = AjxStringUtil.wordWrap(wrapParams);
+				wrapParams.text = body;
+				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
+				var bodyText = AjxStringUtil.wordWrap(wrapParams);
+				value = preText + space + preface + crlf2 + headerText + crlf + bodyText;
 			}
-		}
-
-		body = body || ""; // prevent from printing "null" if no body found
-
-		if ((action == ZmOperation.FORWARD_INLINE ||
-			 action == ZmOperation.REPLY ||
-			 action == ZmOperation.REPLY_ALL) &&
-			bodyPart && AjxUtil.isObject(bodyPart) && bodyPart.truncated)
-		{
-			body += composingHtml
-				? ("<br><br>" + ZmMsg.messageTruncated + "<br><br>")
-				: ("\n\n" + ZmMsg.messageTruncated + "\n\n");
-		}
-
-		// Bug 7160: Strip off the ~*~*~*~ from invite replies.
-		if (isInviteReply) {
-			body = body.replace(ZmItem.NOTES_SEPARATOR, "");
-		}
-
-		if (isInviteForward || (incOption == ZmSetting.INCLUDE)) {
-			var msgText = ((action == ZmOperation.FORWARD_INLINE) || isInviteForward) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
-			var preface = this._includedPreface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
-			var text = [preface, crlf].join("");
-			for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
-				var hdr = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
-				if (hdr) {
-					if (composingHtml){
-						hdr = AjxStringUtil.convertToHtml(hdr);
-					}
-					text += (hdr + crlf);
-				}
+		} else if (incOptions.what == ZmSetting.INC_SMART) {
+			var chunks = AjxStringUtil.getTopLevel(body);
+			chunks.unshift(headers.join(crlf));
+			for (var i = 0; i < chunks.length; i++) {
+				wrapParams.text = chunks[i];
+				chunks[i] = AjxStringUtil.wordWrap(wrapParams);
 			}
-			body = text + crlf + body;
-			value += leadingText + body;
-		} else if (body.length > 0) {
-			var from = msg.getAddress(AjxEmailAddress.FROM);
-			if (!from && msg.isSent) {
-				from = appCtxt.get(ZmSetting.USERNAME);
-			}
-			var preface = "";
-			if (from) {
-				if (!ZmComposeView._replyPrefixFormatter) {
-					ZmComposeView._replyPrefixFormatter = new AjxMessageFormat(ZmMsg.replyPrefix);
-				}
-				var fromText = from.toString();
-				if (composingHtml) {
-					fromText = AjxStringUtil.htmlEncode(fromText);
-				}
-				preface = ZmComposeView._replyPrefixFormatter.format(fromText);
-			}
-			this._includedPreface = preface;
-			preface = preface + (composingHtml ? '<br>' : '\n');
-
-			var wrapParams = ZmHtmlEditor.getWrapParams(composingHtml);
-			var prefix = wrapParams.pre, sep = wrapParams.eol;
-			wrapParams.text = body;
-
-			if (incOption == ZmSetting.INCLUDE_PREFIX) {
-				var text;
-				value += leadingText + preface + AjxStringUtil.wordWrap(wrapParams);
-			}
-			else if (incOption == ZmSetting.INCLUDE_PREFIX_FULL) {
-				var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
-				var preface = this._includedPreface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
-				var headers = [];
-				for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
-					var h = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
-					if (h) {
-						h = h.replace(/\n+$/, "");
-						if (composingHtml){
-							h = AjxStringUtil.convertToHtml(h);
-						}
-						headers.push(h);
-					}
-				}
-				if (composingHtml) {
-					wrapParams.text = headers.join(crlf) + sep + sep + body;
-					var bodyText = AjxStringUtil.wordWrap(wrapParams);
-					value += leadingText + preface + bodyText;
-				} else {
-					wrapParams.text = headers.join(crlf);
-					wrapParams.len = 120; // headers tend to be longer
-					var headerText = AjxStringUtil.wordWrap(wrapParams);
-					wrapParams.text = body;
-					wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
-					var bodyText = AjxStringUtil.wordWrap(wrapParams);
-					value += leadingText + preface + sep + sep + headerText + prefix + sep + bodyText;
-				}
-			}
-			else if (incOption == ZmSetting.INCLUDE_SMART) {
-				var chunks = AjxStringUtil.getTopLevel(body);
-				for (var i = 0; i < chunks.length; i++) {
-					wrapParams.text = chunks[i];
-					chunks[i] = AjxStringUtil.wordWrap(wrapParams);
-				}
-				var text = chunks.length ? chunks.join(sep + sep) : body;
-				value += leadingText + preface + text;
-			}
-			else if (action == ZmOperation.REPLY_ACCEPT ||
-					 action == ZmOperation.REPLY_DECLINE ||
-					 action == ZmOperation.REPLY_TENTATIVE)
-			{
-				// bug 5122: always show original meeting details
-				var bp = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-				wrapParams.text = bp ? (bp.content.replace(/\r\n/g, "\n")) : "";
-				value = preface + AjxStringUtil.wordWrap(wrapParams);
-			}
-			else if (action == ZmOperation.REPLY_CANCEL) {
-				cancelledParts = [ leadingText ];
-				cancelledParts.push(crlf);
-				var inv = (msg) ? msg.invite : null;
-				if (inv) {
-					cancelledParts.push(ZmMsg.subjectLabel+" "+ (msg.subject || inv.getName()) +crlf);
-					cancelledParts.push(ZmMsg.organizer + ": " + inv.getOrganizerName() + crlf);
-					var sd = inv.getServerStartDate();
-					if(msg._instanceDate) {
-						sd = msg._instanceDate;
-					}
-					cancelledParts.push(ZmMsg.time + ": " + sd + crlf);
-				}
-				cancelledParts.push(ZmItem.NOTES_SEPARATOR);
-				value = cancelledParts.join("");
-			}
+			var text = chunks.length ? chunks.join(crlf + crlf) : body;
+			value = preText + space + preface + crlf2 + text;
 		}
 	}
 
@@ -1966,7 +1839,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 	if (!nosig && sigStyle == ZmSetting.SIG_INTERNET) {
 		this.addSignature(value);
 	} else {
-		value = value || (composingHtml ? "<br>" : "");
+		value = value || (htmlMode ? "<br>" : "");
 		this._htmlEditor.setContent(value);
 	}
 
@@ -1974,14 +1847,73 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		this._fixMultipartRelatedImages_onTimer(msg);
 	}
 
-	hasInlineImages = hasInlineImages || !appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	this._showForwardField(msg, action, incOption, hasInlineImages, hasInlineAtts);
+	var hasInlineImages = (bodyInfo && bodyInfo.hasInlineImages) || !appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	this._showForwardField(msg, action, incOptions, hasInlineImages, bodyInfo && bodyInfo.hasInlineAtts);
+};
+
+ZmComposeView.prototype._getBodyContent =
+function(msg, htmlMode) {
+
+	var body, bodyPart, hasInlineImages, hasInlineAtts;
+
+	// bug fix #7271 - if we have multiple body parts, append them all first
+	var parts = msg.getBodyParts();
+	if (parts && parts.length > 1) {
+		var bodyArr = [];
+		for (var k = 0; k < parts.length; k++) {
+			var part = parts[k];
+			// bug: 28741
+			if (ZmMimeTable.isRenderableImage(part.ct)) {
+				bodyArr.push([crlf, "[", part.ct, ":", (part.filename || "..."), "]", crlf].join(""));
+				hasInlineImages = true;
+			} else if (part.filename && part.cd == "inline") {   //Inline attachments
+				var attInfo = ZmMimeTable.getInfo(part.ct);
+				attInfo = attInfo ? attInfo.desc : part.ct;
+				bodyArr.push([crlf, "[", attInfo, ":", (part.filename||"..."), "]", crlf].join(""));
+				hasInlineAtts = true;
+			} else if (part.ct == ZmMimeTable.TEXT_PLAIN) {
+				bodyArr.push( htmlMode ? AjxStringUtil.convertToHtml(part.content) : part.content );
+			} else if (part.ct == ZmMimeTable.TEXT_HTML) {
+				if (htmlMode){
+					bodyArr.push(part.content);
+				} else {
+					var div = document.createElement("div");
+					div.innerHTML = part.content;
+					bodyArr.push(AjxStringUtil.convertHtml2Text(div));
+				}
+			}
+		}
+		body = bodyArr.join(crlf);
+	} else {
+		if (htmlMode) {
+			body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
+			if (body) {
+				body = AjxUtil.isString(body) ? body : body.content;
+			} else {
+				// if no html part exists, just grab the text
+				bodyPart = msg.getBodyPart();
+				body = bodyPart ? this._getTextPart(bodyPart, true) : null;
+			}
+		} else {
+			hasInlineImages = msg.hasInlineImagesInMsgBody();
+			// grab text part out of the body part
+			bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML, true);
+			body = bodyPart ? this._getTextPart(bodyPart) : null;
+		}
+	}
+
+	if (bodyPart && AjxUtil.isObject(bodyPart) && bodyPart.truncated) {
+		var crlf2 = htmlMode ? "<br><br>" : ZmMsg.CRLF2;
+		body += crlf2 + ZmMsg.messageTruncated + crlf2;
+	}
+
+	return {body:body || "", bodyPart:bodyPart, hasInlineImages:hasInlineImages, hasInlineAtts:hasInlineAtts};
 };
 
 ZmComposeView.prototype.resetBody =
-function(action, msg, extraBodyText, incOption, nosig) {
+function(action, msg, extraBodyText, incOptions, nosig) {
 	this.cleanupAttachments(true);
-	this._setBody(action, msg, extraBodyText, incOption, nosig);
+	this._setBody(action, msg, extraBodyText, incOptions, nosig);
 	this._origFormValue = this._formValue();
 	this._resetBodySize();
 };
@@ -2431,11 +2363,11 @@ function() {
 };
 
 ZmComposeView.prototype._showForwardField =
-function(msg, action, replyPref, includeInlineImages, includeInlineAtts) {
+function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 
 	var html = "";
 	if (!(this._msgIds && this._msgIds.length) &&
-		(replyPref == ZmSetting.INCLUDE_ATTACH || action == ZmOperation.FORWARD_ATT))
+		((incOptions && incOptions.what == ZmSetting.INC_ATTACH) || action == ZmOperation.FORWARD_ATT))
 	{
 		html = AjxTemplate.expand("mail.Message#ForwardOneMessage", {message:msg});
 		this._attachCount = 1;

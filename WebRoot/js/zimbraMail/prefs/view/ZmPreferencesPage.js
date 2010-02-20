@@ -256,6 +256,9 @@ function() {
 			// add control to form
 			if (control) {
 				this._replaceControlElement(elem, control);
+				if (setup.changeFunction && control.addChangeListener) {
+					control.addChangeListener(setup.changeFunction);
+				}
 			}
 		}
 
@@ -698,7 +701,7 @@ function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 	var params = {
 		parent: this, type: setup.type ? setup.type : DwtInputField.STRING, initialValue: value, size: setup.cols || 40,
-		rows: setup.rows, wrap: setup.wrap, maxLen:setup.maxLen
+		rows: setup.rows, wrap: setup.wrap, maxLen:setup.maxLen, hint:setup.hint
 	};
 	var input = new DwtInputField(params);
 	this.setFormObject(id, input);

@@ -374,32 +374,35 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 			}
 		}
 		
-		var unchanged = !this._prefChanged(pref.dataType, origValue, value);
-
-		// don't try to update on server if it's client-side pref
-		var addToList = (!unchanged && (pref.name != null));
-		if (dirtyCheck && addToList) {
-			return true;
-		}
-
-		if (!unchanged) {
-			var maxLength = setup ? setup.maxLength : null;
-			var validationFunc = setup ? setup.validationFunction : null;
+		if (this._prefChanged(pref.dataType, origValue, value)) {
 			var isValid = true;
-			if (!noValidation && maxLength && (value.length > maxLength)) {
-				isValid = false;
-			} else if (!noValidation && validationFunc) {
-				isValid = validationFunc(value);
+			if (!noValidation) {
+				var maxLength = setup ? setup.maxLength : null;
+				var validationFunc = setup ? setup.validationFunction : null;
+				if (!noValidation && maxLength && (value.length > maxLength)) {
+					isValid = false;
+				} else if (!noValidation && validationFunc) {
+					isValid = validationFunc(value);
+				}
 			}
 			if (isValid) {
-				pref.setValue(value);
-				if (addToList) {
-					list.push(pref);
-				}
+                if (!dirtyCheck) {
+                    if (setup.setFunction) {
+                        setup.setFunction(pref, value, list);
+                    } else {
+                        pref.setValue(value);
+                        if (pref.name) {
+                            list.push(pref);
+                        }
+                    }
+                }
 			} else {
 				errors.push(AjxMessageFormat.format(setup.errorMessage, value));
 			}
 			this._controller.setDirty(view, true);
+			if (dirtyCheck) {
+				return true;
+			}
 		}
 	}
 };

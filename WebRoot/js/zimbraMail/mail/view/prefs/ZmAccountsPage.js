@@ -67,7 +67,8 @@ function() {
 			displayName:		ZmMsg.accountSubHeader
 		},
 		EMAIL: {
-			displayContainer:	ZmPref.TYPE_INPUT
+			displayContainer:	ZmPref.TYPE_INPUT,
+			hint:				ZmMsg.exampleEmailAddr
 		},
 		VISIBLE: {
 			displayContainer:	ZmPref.TYPE_CHECKBOX
@@ -77,10 +78,12 @@ function() {
 			displayContainer:	ZmPref.TYPE_CHECKBOX
 		},
 		REPLY_TO_NAME: {
-			displayContainer:	ZmPref.TYPE_INPUT
+			displayContainer:	ZmPref.TYPE_INPUT,
+			hint:				ZmMsg.exampleEmailName
 		},
 		REPLY_TO_EMAIL: {
-			displayContainer:	ZmPref.TYPE_COMBOBOX
+			displayContainer:	ZmPref.TYPE_COMBOBOX,
+			hint:				ZmMsg.emailAddr
 		},
 		READ_RECEIPT_TO_ADDR: {
 			displayContainer:	ZmPref.TYPE_INPUT
@@ -99,7 +102,8 @@ function() {
 			displayContainer:	ZmPref.TYPE_INPUT
 		},
 		HOST: {
-			displayContainer:	ZmPref.TYPE_INPUT
+			displayContainer:	ZmPref.TYPE_INPUT,
+			hint:				ZmMsg.exampleMailServer
 		},
 		PASSWORD: {
 			// TODO: rename ZmPref.TYPE_PASSWORD to TYPE_CHANGE_PASSWORD
@@ -138,10 +142,12 @@ function() {
 		},
 		// Persona
 		FROM_NAME: {
-			displayContainer:	ZmPref.TYPE_INPUT
+			displayContainer:	ZmPref.TYPE_INPUT,
+			hint:				ZmMsg.exampleEmailName
 		},
 		FROM_EMAIL: {
-			displayContainer:	ZmPref.TYPE_SELECT
+			displayContainer:	ZmPref.TYPE_SELECT,
+			hint:				ZmMsg.emailAddr
 		},
 		WHEN_SENT_TO: {
 			displayName:		ZmMsg.personaWhenSentTo,
@@ -155,7 +161,8 @@ function() {
 			displayContainer:	ZmPref.TYPE_CHECKBOX
 		},
 		WHEN_IN_FOLDER_LIST: {
-			displayContainer:	ZmPref.TYPE_INPUT
+			displayContainer:	ZmPref.TYPE_INPUT,
+			hint:				ZmMsg.exampleFolderNames
 		},
 		WHEN_IN_FOLDER_BUTTON: {
 			displayContainer:	ZmPref.TYPE_CUSTOM

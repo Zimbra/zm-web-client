@@ -260,7 +260,7 @@
 			</td>
 			<td class='nobreak'></td>
 			<td>
-				<b><$= message.subject || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b>
+				<b><$= message.subject || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b>&nbsp;
 				<span class='ZmConvListFragment'><$= message.getFragment(35) $></span>
 			</td>
 		</tr>

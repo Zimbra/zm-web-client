@@ -220,10 +220,14 @@ function() {
 				ZmSetting.COMPOSE_INIT_FONT_COLOR,
 				ZmSetting.COMPOSE_INIT_FONT_FAMILY,
 				ZmSetting.COMPOSE_INIT_FONT_SIZE,
-				ZmSetting.FORWARD_INCLUDE_ORIG,
+				ZmSetting.FORWARD_INCLUDE_WHAT,
+				ZmSetting.FORWARD_USE_PREFIX,
+				ZmSetting.FORWARD_INCLUDE_HEADERS,
 				ZmSetting.NEW_WINDOW_COMPOSE,
 				ZmSetting.AUTO_SAVE_DRAFT_INTERVAL,
-				ZmSetting.REPLY_INCLUDE_ORIG,
+				ZmSetting.REPLY_INCLUDE_WHAT,
+				ZmSetting.REPLY_USE_PREFIX,
+				ZmSetting.REPLY_INCLUDE_HEADERS,
 				ZmSetting.REPLY_PREFIX,
 				ZmSetting.SAVE_TO_SENT,
                 ZmSetting.COMPOSE_SAME_FORMAT,
@@ -355,28 +359,44 @@ function() {
 		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 
-	ZmPref.registerPref("FORWARD_INCLUDE_ORIG", {
+    ZmPref.registerPref("DEFAULT_TIMEZONE", {
+        displayName:		ZmMsg.selectTimezone,
+        displayContainer:	ZmPref.TYPE_SELECT,
+        displayParams:		{ cascade: false },
+        displayOptions:		AjxTimezone.getZonePreferences(),
+        options:			AjxTimezone.getZonePreferencesOptions()
+    });
+
+    ZmPref.registerPref("EXPORT_FOLDER", {
+        displayContainer:	ZmPref.TYPE_CUSTOM
+    });
+
+    ZmPref.registerPref("EXPORT_BUTTON", {
+        displayName:		ZmMsg._export,
+        displayContainer:	ZmPref.TYPE_CUSTOM
+    });
+
+	ZmPref.registerPref("FORWARD_INCLUDE_WHAT", {
 		displayName:		ZmMsg.forwardInclude,
 		displayContainer:	ZmPref.TYPE_SELECT,
-                displayOptions:		[ZmMsg.includeInBody, ZmMsg.includePrefix, ZmMsg.includePrefixFull, ZmMsg.includeOriginalAsAttach],
-                options:		[ZmSetting.INCLUDE, ZmSetting.INCLUDE_PREFIX, ZmSetting.INCLUDE_PREFIX_FULL, ZmSetting.INCLUDE_ATTACH]
+		displayOptions:		[ZmMsg.includeInBody, ZmMsg.includeOriginalAsAttach],
+		options:			[ZmSetting.INC_BODY, ZmSetting.INC_ATTACH],
+        setFunction:		ZmPref.setIncludeOrig,
+		changeFunction:		ZmPref.onChangeIncludeWhat
 	});
 
-	ZmPref.registerPref("DEFAULT_TIMEZONE", {
-		displayName:		ZmMsg.selectTimezone,
-		displayContainer:	ZmPref.TYPE_SELECT,
-		displayParams:		{ cascade: false },
-		displayOptions:		AjxTimezone.getZonePreferences(),
-		options:			AjxTimezone.getZonePreferencesOptions()
+	ZmPref.registerPref("FORWARD_USE_PREFIX", {
+		displayName:		ZmMsg.usePrefix,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+        setFunction:		ZmPref.setIncludeOrig
 	});
 
-	ZmPref.registerPref("EXPORT_FOLDER", {
-		displayContainer:	ZmPref.TYPE_CUSTOM
+	ZmPref.registerPref("FORWARD_INCLUDE_HEADERS", {
+		displayName:		ZmMsg.includeHeaders,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+        setFunction:		ZmPref.setIncludeOrig
 	});
-	ZmPref.registerPref("EXPORT_BUTTON", {
-		displayName:		ZmMsg._export,
-		displayContainer:	ZmPref.TYPE_CUSTOM
-	});
+
 	ZmPref.registerPref("IMPORT_FOLDER", {
 		loadFunction:       ZmPref.loadCsvFormats,
 		displayContainer:	ZmPref.TYPE_CUSTOM
@@ -490,21 +510,31 @@ function() {
 		validationFunction:  ZmPref.validatePollingInterval
 	});
 
-	ZmPref.registerPref("REPLY_INCLUDE_ORIG", {
+	ZmPref.registerPref("REPLY_INCLUDE_WHAT", {
 		displayName:		ZmMsg.replyInclude,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		[ZmMsg.dontInclude,
 							ZmMsg.includeInBody,
-							ZmMsg.includePrefix,
-							ZmMsg.includePrefixFull,
-							ZmMsg.includeOriginalAsAttach,
-							ZmMsg.smartInclude],
-		options:			[ZmSetting.INCLUDE_NONE,
-							ZmSetting.INCLUDE,
-							ZmSetting.INCLUDE_PREFIX,
-							ZmSetting.INCLUDE_PREFIX_FULL,
-							ZmSetting.INCLUDE_ATTACH,
-							ZmSetting.INCLUDE_SMART]
+							ZmMsg.smartInclude,
+							ZmMsg.includeOriginalAsAttach],
+		options:			[ZmSetting.INC_NONE,
+							ZmSetting.INC_BODY,
+							ZmSetting.INC_SMART,
+							ZmSetting.INC_ATTACH],
+		setFunction:		ZmPref.setIncludeOrig,
+		changeFunction:		ZmPref.onChangeIncludeWhat
+	});
+
+	ZmPref.registerPref("REPLY_USE_PREFIX", {
+		displayName:		ZmMsg.usePrefix,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		setFunction:		ZmPref.setIncludeOrig
+	});
+
+	ZmPref.registerPref("REPLY_INCLUDE_HEADERS", {
+		displayName:		ZmMsg.includeHeaders,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		setFunction:		ZmPref.setIncludeOrig
 	});
 
 	ZmPref.registerPref("REPLY_PREFIX", {
@@ -516,11 +546,8 @@ function() {
 
 	ZmPref.registerPref("SAVE_TO_SENT", {
 		displayName:		ZmMsg.saveToSent,
-		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		orientation:		ZmPref.ORIENT_VERTICAL,
-		precondition:		ZmSetting.MAIL_ENABLED,
-		displayOptions:		[ ZmMsg.saveToSent, ZmMsg.saveToSentNOT ],
-		options:			[ true, false ]
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		ZmSetting.MAIL_ENABLED
 	});
 
 	ZmPref.registerPref("SEARCH_INCLUDES_SPAM", {

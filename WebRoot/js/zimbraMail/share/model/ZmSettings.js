@@ -29,7 +29,7 @@
  * @author Conrad Damon
  *
  * @param {Boolean}	noInit	if <code>true</code>, skip initialization
- * 
+ *
  * @extends		ZmModel
  */
 ZmSettings = function(noInit) {
@@ -38,7 +38,7 @@ ZmSettings = function(noInit) {
 
 	this._settings = {};	// settings by ID
 	this._nameToId = {};	// map to get from server setting name to setting ID
-	
+
 	this.getInfoResponse = null; // Cached GetInfoResponse for lazy creation of identities, etc.
 
 	if (!noInit) {
@@ -71,7 +71,7 @@ function(id, params) {
 
 /**
  * Returns a string representation of the object.
- * 
+ *
  * @return		{String}		a string representation of the object
  */
 ZmSettings.prototype.toString =
@@ -81,7 +81,7 @@ function() {
 
 /**
  * Initializes the settings.
- * 
+ *
  */
 ZmSettings.prototype.initialize =
 function() {
@@ -160,7 +160,7 @@ function(list) {
 
 /**
  * Gets the setting that is associated with the given server-side setting, if any.
- * 
+ *
  * @param {String}	name	the server-side setting name (for example, "zimbraFeatureContactsEnabled")
  * @return	{ZmSetting}	the setting
  */
@@ -243,9 +243,7 @@ function(callback, accountName, result) {
 		appCtxt.accountList.createAccounts(this, obj);
 
 		// for offline, find out whether this client supports prism-specific features
-		if (appCtxt.isOffline && AjxEnv.isPrism && window.platform &&
-			(AjxEnv.isMac || AjxEnv.isWindows))
-		{
+		if (appCtxt.isOffline && AjxEnv.isPrism && window.platform && (AjxEnv.isMac || AjxEnv.isWindows)) {
 			var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
 			if (setting) {
 				setting.setValue(true);
@@ -303,6 +301,22 @@ function(callback, accountName, result) {
 		} else {
 			appCtxt.allZimletsLoaded();
 		}
+	}
+
+	var value = appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
+	if (value) {
+		var list = ZmMailApp.INC_MAP[value];
+		appCtxt.set(ZmSetting.REPLY_INCLUDE_WHAT, list[0]);
+		appCtxt.set(ZmSetting.REPLY_USE_PREFIX, list[1]);
+		appCtxt.set(ZmSetting.REPLY_INCLUDE_HEADERS, list[2]);
+	}
+
+	var value = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
+	if (value) {
+		var list = ZmMailApp.INC_MAP[value];
+		appCtxt.set(ZmSetting.FORWARD_INCLUDE_WHAT, list[0]);
+		appCtxt.set(ZmSetting.FORWARD_USE_PREFIX, list[1]);
+		appCtxt.set(ZmSetting.FORWARD_INCLUDE_HEADERS, list[2]);
 	}
 
 	// DONE
@@ -364,7 +378,7 @@ function(allZimlets, props) {
  * Filters a list of zimlets, returned ones that are checked.
  *
  * @param zimlets			[array]		list of zimlet objects
- * 
+ *
  * @private
  */
 ZmSettings.prototype._getCheckedZimlets =
@@ -383,7 +397,7 @@ function(allZimlets) {
 
 /**
  * Loads the preference data.
- * 
+ *
  * @param	{AjxCallback}	callback		the callback
  */
 ZmSettings.prototype.loadPreferenceData =
@@ -468,9 +482,10 @@ function(list, callback, batchCommand, account) {
 	var acct = account || appCtxt.getActiveAccount();
 	var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
 	var gotOne = false;
-	var metaData = [];
+	var metaData = [], done = {};
 	for (var i = 0; i < list.length; i++) {
 		var setting = list[i];
+        if (done[setting.id]) { continue; }
 		if (setting.type == ZmSetting.T_METADATA) {
 			metaData.push(setting);
 			// update the local meta data
@@ -502,6 +517,7 @@ function(list, callback, batchCommand, account) {
 			node.setAttribute("name", setting.name);
 		}
 
+        done[setting.id] = true;
 		gotOne = true;
 	}
 
@@ -509,7 +525,7 @@ function(list, callback, batchCommand, account) {
 		var metaDataCallback = new AjxCallback(this, this._handleResponseSaveMetaData, [metaData]);
 		acct.metaData.save(null, metaDataCallback, batchCommand);
 	}
- 
+
 	if (gotOne) {
 		var respCallback;
 		var asyncMode = false;
@@ -561,7 +577,7 @@ function(list, callback, result) {
 
 /**
  * Set defaults which are determined dynamically (which can't be set in static code).
- * 
+ *
  * @private
  */
 ZmSettings.prototype._setDefaults =
@@ -599,7 +615,7 @@ function() {
 
 /**
  * Loads the standard settings and their default values.
- * 
+ *
  * @private
  */
 ZmSettings.prototype._initialize =

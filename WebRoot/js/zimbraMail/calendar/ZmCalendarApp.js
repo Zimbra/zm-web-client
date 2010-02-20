@@ -292,7 +292,8 @@ function() {
 		displayContainer:	ZmPref.TYPE_INPUT,
 		validationFunction: ZmPref.validateEmailList,
         valueFunction:      ZmPref.string2EmailList,
-		errorMessage:		ZmMsg.invalidEmail
+		errorMessage:		ZmMsg.invalidEmail,
+		hint:				ZmMsg.enterEmailAddress
 	});
 
 	ZmPref.registerPref("CAL_SHOW_PAST_DUE_REMINDERS", {

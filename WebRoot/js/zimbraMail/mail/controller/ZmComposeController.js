@@ -51,6 +51,7 @@ ZmComposeController = function(container, mailApp) {
 
 	this._autoSaveTimer = null;
 	this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
+	this._curIncOption = {};
 };
 
 ZmComposeController.prototype = new ZmController();
@@ -89,20 +90,16 @@ function() {
 	ZmComposeController.RADIO_GROUP[ZmOperation.FORMAT_HTML]		= 2;
 	ZmComposeController.RADIO_GROUP[ZmOperation.FORMAT_TEXT]		= 2;
 	ZmComposeController.RADIO_GROUP[ZmOperation.INC_ATTACHMENT]		= 3;
-	ZmComposeController.RADIO_GROUP[ZmOperation.INC_NO_PREFIX]		= 3;
+    ZmComposeController.RADIO_GROUP[ZmOperation.INC_BODY]	    	= 3;
 	ZmComposeController.RADIO_GROUP[ZmOperation.INC_NONE]			= 3;
-	ZmComposeController.RADIO_GROUP[ZmOperation.INC_PREFIX]			= 3;
-	ZmComposeController.RADIO_GROUP[ZmOperation.INC_PREFIX_FULL]	= 3;
 	ZmComposeController.RADIO_GROUP[ZmOperation.INC_SMART]			= 3;
 
-	// translate between include preferences and operations
+	// translate between include settings and operations
 	ZmComposeController.INC_OP = {};
-	ZmComposeController.INC_OP[ZmSetting.INCLUDE_ATTACH]		= ZmOperation.INC_ATTACHMENT;
-	ZmComposeController.INC_OP[ZmSetting.INCLUDE]				= ZmOperation.INC_NO_PREFIX;
-	ZmComposeController.INC_OP[ZmSetting.INCLUDE_NONE]			= ZmOperation.INC_NONE;
-	ZmComposeController.INC_OP[ZmSetting.INCLUDE_PREFIX]		= ZmOperation.INC_PREFIX;
-	ZmComposeController.INC_OP[ZmSetting.INCLUDE_PREFIX_FULL]	= ZmOperation.INC_PREFIX_FULL;
-	ZmComposeController.INC_OP[ZmSetting.INCLUDE_SMART]			= ZmOperation.INC_SMART;
+	ZmComposeController.INC_OP[ZmSetting.INC_ATTACH]		= ZmOperation.INC_ATTACHMENT;
+	ZmComposeController.INC_OP[ZmSetting.INC_BODY]			= ZmOperation.INC_BODY;
+	ZmComposeController.INC_OP[ZmSetting.INC_NONE]			= ZmOperation.INC_NONE;
+	ZmComposeController.INC_OP[ZmSetting.INC_SMART]			= ZmOperation.INC_SMART;
 	ZmComposeController.INC_MAP = {};
 	for (var i in ZmComposeController.INC_OP) {
 		ZmComposeController.INC_MAP[ZmComposeController.INC_OP[i]] = i;
@@ -114,6 +111,11 @@ function() {
 	ZmComposeController.OPTIONS_TT[ZmOperation.REPLY_ALL]		= "replyOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_ATT]		= "forwardOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_INLINE]	= "forwardOptions";
+
+	ZmComposeController.OP_CHECK = {};
+	ZmComposeController.OP_CHECK[ZmOperation.REQUEST_READ_RECEIPT] 	= true;
+	ZmComposeController.OP_CHECK[ZmOperation.USE_PREFIX] 			= true;
+	ZmComposeController.OP_CHECK[ZmOperation.INCLUDE_HEADERS] 		= true;
 };
 
 //
@@ -894,11 +896,13 @@ function(action) {
 		list.push(ZmOperation.FORMAT_HTML, ZmOperation.FORMAT_TEXT, ZmOperation.SEP);
 	}
 	if (isReply) {
-		list.push(ZmOperation.SEP, ZmOperation.INC_NONE, ZmOperation.INC_ATTACHMENT, ZmOperation.INC_NO_PREFIX,
-			  ZmOperation.INC_PREFIX, ZmOperation.INC_PREFIX_FULL, ZmOperation.INC_SMART);
+        list.push(ZmOperation.SEP, ZmOperation.INC_NONE, ZmOperation.INC_BODY, ZmOperation.INC_SMART, ZmOperation.INC_ATTACHMENT);
 	} else if (isForward) {
-		list.push(ZmOperation.SEP, ZmOperation.INC_ATTACHMENT, ZmOperation.INC_NO_PREFIX, ZmOperation.INC_PREFIX, ZmOperation.INC_PREFIX_FULL);
+        list.push(ZmOperation.SEP, ZmOperation.INC_BODY, ZmOperation.INC_ATTACHMENT);
 	}
+    if (isReply || isForward) {
+        list.push(ZmOperation.SEP, ZmOperation.USE_PREFIX, ZmOperation.INCLUDE_HEADERS);
+    }
 
 	// add read receipt
 	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
@@ -917,7 +921,7 @@ function(action) {
 		var op = list[i];
 		if (op == ZmOperation.SEP) { continue; }
 		overrides[op] = {};
-		if (op == ZmOperation.REQUEST_READ_RECEIPT) {
+		if (ZmComposeController.OP_CHECK[op]) {
 			overrides[op].style = DwtMenuItem.CHECK_STYLE;
 		} else {
 			overrides[op].style = DwtMenuItem.RADIO_STYLE;
@@ -949,6 +953,7 @@ function(action) {
 
 ZmComposeController.prototype._setOptionsMenu =
 function(composeMode, identity) {
+
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	button.setToolTipContent(ZmMsg[ZmComposeController.OPTIONS_TT[this._action]]);
 	var menu = this._optionsMenu[this._action];
@@ -971,14 +976,27 @@ function(composeMode, identity) {
 		}
 	}
 
+	// menu defaults to current prefs
 	var isReply = (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL);
 	var isForward = (this._action == ZmOperation.FORWARD_ATT || this._action == ZmOperation.FORWARD_INLINE);
 	if (identity && (isReply || isForward)) {
-		var includePref = isReply
-			? appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG)
-			: appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
-		this._curIncOption = ZmComposeController.INC_OP[includePref];
-		menu.checkItem(ZmOperation.KEY_ID, this._curIncOption, true);
+		var pref1 = isReply ? ZmSetting.REPLY_INCLUDE_WHAT : ZmSetting.FORWARD_INCLUDE_WHAT;
+		var pref2 = isReply ? ZmSetting.REPLY_USE_PREFIX : ZmSetting.FORWARD_USE_PREFIX;
+		var pref3 = isReply ? ZmSetting.REPLY_INCLUDE_HEADERS : ZmSetting.FORWARD_INCLUDE_HEADERS;
+
+		var what = this._curIncOption.what = appCtxt.get(pref1);
+		var usePrefix = this._curIncOption.prefix = appCtxt.get(pref2);
+		var incHeaders = this._curIncOption.headers = appCtxt.get(pref3);
+
+		menu.checkItem(ZmOperation.KEY_ID, ZmComposeController.INC_OP[what], true);
+		var mi = menu.getOp(ZmOperation.USE_PREFIX);
+		if (mi) {
+			mi.setChecked(usePrefix, true);
+		}
+		mi = menu.getOp(ZmOperation.INCLUDE_HEADERS);
+		if (mi) {
+			mi.setChecked(incHeaders, true);
+		}
 		if (isReply) {
 			menu.checkItem(ZmOperation.KEY_ID, this._action, true);
 		}
@@ -989,6 +1007,7 @@ function(composeMode, identity) {
 
 ZmComposeController.prototype._getComposeMode =
 function(msg, identity) {
+
 	// depending on COS/user preference set compose format
 	var composeMode = DwtHtmlEditor.TEXT;
 
@@ -1208,8 +1227,8 @@ function(ev) {
 
 ZmComposeController.prototype._optionsListener =
 function(ev) {
-	var op = ev.item.getData(ZmOperation.KEY_ID);
 
+	var op = ev.item.getData(ZmOperation.KEY_ID);
 	if (op == ZmOperation.REQUEST_READ_RECEIPT) { return; }
 
 	// Click on "Options" button.
@@ -1220,17 +1239,37 @@ function(ev) {
 		return;
 	}
 
-	// the rest are radio buttons, we only care when they're selected
-	if (ev.detail != DwtMenuItem.CHECKED) { return; }
+	// ignore UNCHECKED for radio buttons
+	if (ev.detail != DwtMenuItem.CHECKED && !ZmComposeController.OP_CHECK[op]) { return; }
 
 	if (op == ZmOperation.REPLY || op == ZmOperation.REPLY_ALL) {
 		this._composeView._setAddresses(op, AjxEmailAddress.TO, this._toOverride);
 	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
 		this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE));
-		this._switchInclude(this._curIncOption);
+		this._switchInclude();
 	} else {
-		if (this._composeView.isDirty() &&
-			this._curIncOption != ZmOperation.INC_NONE && this._curIncOption != ZmOperation.INC_ATTACHMENT) {
+		var menu = this._optionsMenu[this._action];
+		if (op == ZmOperation.USE_PREFIX || op == ZmOperation.INCLUDE_HEADERS) {
+		   var mi = menu.getOp(op);
+		   if (op == ZmOperation.USE_PREFIX) {
+			   this._curIncOption.prefix = mi.getChecked();
+		   } else {
+			   this._curIncOption.headers = mi.getChecked();
+		   }
+		} else if (ZmComposeController.INC_MAP[op]) {
+			this._curIncOption.what = ZmComposeController.INC_MAP[op];
+		}
+		var curWhat = this._curIncOption.what;
+		var allowOptions = (curWhat == ZmSetting.INC_BODY || curWhat == ZmSetting.INC_SMART);
+		var mi = menu.getOp(ZmOperation.USE_PREFIX);
+		if (mi) {
+			mi.setEnabled(allowOptions);
+		}
+		mi = menu.getOp(ZmOperation.INCLUDE_HEADERS);
+		if (mi) {
+			mi.setEnabled(allowOptions);
+		}
+		if (this._composeView.isDirty() && allowOptions) {
 
 			// warn user of possible lost content
 			if (!this._switchIncludeDialog) {
@@ -1241,39 +1280,35 @@ function(ev) {
 			this._switchIncludeDialog.registerCallback(DwtDialog.OK_BUTTON, this._switchIncludeOkCallback, this, op);
 			this._switchIncludeDialog.popup(this._composeView._getDialogXY());
 		} else {
-			this._switchInclude(op);
+			this._switchInclude();
 		}
 	}
 };
 
 ZmComposeController.prototype._switchInclude =
-function(op) {
-	var incOption = ZmComposeController.INC_MAP[op];
-	if (incOption) {
-		var curText = this._getBodyContent();
-		if (this._curIncOption == ZmOperation.INC_NO_PREFIX || this._curIncOption == ZmOperation.INC_PREFIX ||
-			this._curIncOption == ZmOperation.INC_PREFIX_FULL ||
-		    this._curIncOption == ZmOperation.INC_SMART) {
-			var idx = curText.indexOf(this._composeView._includedPreface.replace(/\s+$/, ""));
-			if (idx) {
-				var crlf = (this._composeView.getComposeMode() == DwtHtmlEditor.HTML) ? "<br>" : "\\r?\\n";
-				var regEx = new RegExp(crlf + "+$", "i");
-				curText = curText.substring(0, idx).replace(regEx, "");
-			}
-		}
+function() {
 
-		// forwarding actions are tied to inc option
-		if (this._action == ZmOperation.FORWARD_INLINE && incOption == ZmOperation.INC_ATTACHMENT) {
-			this._action = ZmOperation.FORWARD_ATT;
+	var curText = "";
+	var what = this._curIncOption.what;
+	if (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART) {
+		curText = this._getBodyContent();
+		var idx = curText.indexOf(this._composeView._includedPreface.replace(/\s+$/, ""));
+		if (idx) {
+			var crlf = (this._composeView.getComposeMode() == DwtHtmlEditor.HTML) ? "<br>" : "\\r?\\n";
+			var regEx = new RegExp(crlf + "+$", "i");
+			curText = curText.substring(0, idx).replace(regEx, "");
 		}
-		if (this._action == ZmOperation.FORWARD_ATT && incOption != ZmOperation.INC_ATTACHMENT) {
-			this._action = ZmOperation.FORWARD_INLINE;
-		}
-
-		this._composeView.resetBody(this._action, this._msg, curText, incOption,
-									true /* don't reattach signature (bug 26831) */);
-		this._curIncOption = ZmComposeController.INC_OP[incOption];
 	}
+
+	// forwarding actions are tied to inc option
+	if (this._action == ZmOperation.FORWARD_INLINE && what == ZmSetting.INC_ATTACH) {
+		this._action = ZmOperation.FORWARD_ATT;
+	}
+	if (this._action == ZmOperation.FORWARD_ATT && what != ZmSetting.INC_ATTACH) {
+		this._action = ZmOperation.FORWARD_INLINE;
+	}
+
+	this._composeView.resetBody(this._action, this._msg, curText, this._curIncOption, true);
 };
 
 ZmComposeController.prototype._detachListener =
@@ -1462,7 +1497,7 @@ function() {
 ZmComposeController.prototype._switchIncludeOkCallback =
 function(op) {
 	this._switchIncludeDialog.popdown();
-	this._switchInclude(op);
+	this._switchInclude();
 };
 
 ZmComposeController.prototype._switchIncludeCancelCallback =
