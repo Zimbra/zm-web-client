@@ -365,7 +365,8 @@ function(account, skipUpdate, ignoreProvider) {
 				break;
 			}
 		}
-		this._tabGroup.addMember(this._currentSection.tabGroup);
+		if (!this._tabGroup.contains(this._currentSection.tabGroup))
+			this._tabGroup.addMember(this._currentSection.tabGroup);
 	}
 
 	// update list cells
