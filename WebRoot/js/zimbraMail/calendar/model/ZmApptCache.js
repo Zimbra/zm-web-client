@@ -278,6 +278,14 @@ function(params) {
 	}
 };
 
+ZmApptCache.prototype._initAccountLists =
+function(){
+    if(!this._accountsSearchList){
+        this._accountsSearchList = new AjxVector();
+        this._accountsMiniCalList = [];
+    }
+};
+
 ZmApptCache.prototype.batchRequest =
 function(searchParams, miniCalParams, reminderSearchParams) {
 	// *always* recreate the accounts list, otherwise we dispose its contents
@@ -386,6 +394,8 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 	var miniCalResp = batchResp && batchResp.GetMiniCalResponse;
 	var searchResp = batchResp && batchResp.SearchResponse;
 
+    this._initAccountLists();
+
 	if (batchResp && batchResp.Fault) {
 		if (this._processErrorCode(batchResp)) {
 			if (searchParams.accountFolderIds.length > 0) {
@@ -438,7 +448,7 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 	var list = this.processSearchResponse(searchResp[0], searchParams);
 	this._accountsSearchList.addList(list);
 
-	if (searchParams.accountFolderIds.length > 0) {
+	if (searchParams.accountFolderIds && searchParams.accountFolderIds.length > 0) {
 		this._doBatchRequest(searchParams, miniCalParams);
 	} else {
 		if (appCtxt.multiAccounts) {
