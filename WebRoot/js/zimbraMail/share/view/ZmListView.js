@@ -16,7 +16,7 @@
 ZmListView = function(params) {
 
 	if (arguments.length == 0) { return; }
-	
+
 	params.id = params.id || ZmId.getViewId(params.view);
 	DwtListView.call(this, params);
 
@@ -344,6 +344,16 @@ function(ev, div) {
 	return true;
 };
 
+ZmListView.prototype._mouseDownAction =
+function(ev, div) {
+	return !Dwt.ffScrollbarCheck(ev);
+};
+
+ZmListView.prototype._mouseUpAction =
+function(ev, div) {
+	return !Dwt.ffScrollbarCheck(ev);
+};
+
 ZmListView.prototype._mouseOutAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOutAction.call(this, ev, div);
@@ -617,7 +627,7 @@ function(item) {
 	var idx = 0;
     for (var i = 0; i < numTags; i++) {
 		var tag = tagList.getById(tags[i]);
-        if (!tag) { continue; }        
+        if (!tag) { continue; }
         html[idx++] = "<table><tr><td>";
 		html[idx++] = AjxImg.getImageHtml(ZmTag.COLOR_ICON[tag.color]);
 		html[idx++] = "</td><td valign='middle'>";
@@ -743,7 +753,7 @@ ZmListView.prototype._relayout =
 function() {
 	DwtListView.prototype._relayout.call(this);
 	this._checkColumns();
-	
+
 };
 
 ZmListView.prototype._checkColumns =
@@ -757,6 +767,6 @@ function() {
 	var value = fields.join("|");
 	value = (value == this._defaultCols) ? "" : value;
 	appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
-	
+
 	this._getActionMenuForColHeader(true); // re-create action menu so order is correct
 };
