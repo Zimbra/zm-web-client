@@ -218,3 +218,8 @@ function(what) {
 
 	return !invalid;
 };
+
+ZmBriefcase.prototype.supportsPublicAccess =
+function() {
+	return true;
+};
