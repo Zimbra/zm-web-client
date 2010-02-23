@@ -401,20 +401,19 @@ function() {
  * of the newly created folder. A folder may hold a folder or search folder,
  * and a search folder may hold another search folder.
  *
- * @param {Object}	obj		a JS folder object from the notification
- * @param {Boolean}	isSearch	<code>true</code> if the created object is a search folder
- * @param {Boolean}	skipNotify	<code>true</code> if notifying client should be ignored
+ * @param {Object}	obj				a JS folder object from the notification
+ * @param {String}	elementType		the type of containing JSON element
+ * @param {Boolean}	skipNotify		<code>true</code> if notifying client should be ignored
  */
 ZmFolder.prototype.notifyCreate =
-function(obj, isSearch, skipNotify) {
+function(obj, elementType, skipNotify) {
 	// ignore creates of system folders
 	var nId = ZmOrganizer.normalizeId(obj.id);
 	if (nId < ZmOrganizer.FIRST_USER_ID[this.type]) { return; }
 
 	var account = ZmOrganizer.parseId(obj.id).account;
-	var type = isSearch ? "search" : "folder";
-	var folder = ZmFolderTree.createFromJs(this, obj, this.tree, type, null, account);
-	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
+	var folder = ZmFolderTree.createFromJs(this, obj, this.tree, elementType, null, account);
+	var index = ZmOrganizer.getSortIndex(folder, eval(ZmTreeView.COMPARE_FUNC[this.type]));
 	this.children.add(folder, index);
 
 	if (!skipNotify) {
@@ -711,6 +710,7 @@ function(){
  */
 ZmFolder.prototype._remoteMoveOk =
 function(folder) {
+	if (!this.isRemote() && folder.isMountpoint) { return true; }
 	if (!this.link || !folder.link || this.zid != folder.zid) { return false; }
 	if (this.id.split(":")[0] != folder.id.split(":")[0]) { return false; }
 	var share = this.shares && this.shares[0];

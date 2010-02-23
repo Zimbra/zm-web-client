@@ -632,7 +632,7 @@ function(creates) {
 				var parentId = create.l;
 				var parent = appCtxt.getById(parentId);
 				if (parent && parent.type != ZmOrganizer.TAG) { // bug #37148
-					parent.notifyCreate(create, (name == "search"));
+					parent.notifyCreate(create, name);
 				}
 			}
 		}

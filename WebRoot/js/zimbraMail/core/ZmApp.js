@@ -804,7 +804,7 @@ ZmApp.prototype._handleCreateFolder =
 function(create, org) {
 	var parent = appCtxt.getById(create.l);
 	if (parent && (ZmOrganizer.VIEWS[org][create.view])) {
-		parent.notifyCreate(create);
+		parent.notifyCreate(create, "folder");
 		create._handled = true;
 	}
 };
@@ -817,7 +817,7 @@ function(create, org) {
 	var parent = appCtxt.getById(create.l);
 	var view = create.view || "message";
 	if (parent && parent.supportsSharing() && (ZmOrganizer.VIEW_HASH[org][view])) {
-		parent.notifyCreate(create);
+		parent.notifyCreate(create, "link");
 		create._handled = true;
 	}
 };

@@ -78,16 +78,6 @@ function() {
 	return "Folder";
 };
 
-// Callbacks
-
-ZmBriefcase.prototype.notifyCreate =
-function(obj) {
-	var briefcase = ZmFolderTree.createFromJs(this, obj, this.tree);
-	var index = ZmOrganizer.getSortIndex(briefcase, ZmBriefcase.sortCompare);
-	this.children.add(briefcase, index);
-	briefcase._notify(ZmEvent.E_CREATE);
-};
-
 ZmBriefcase.prototype.notifyModify =
 function(obj) {
 	ZmOrganizer.prototype.notifyModify.call(this, obj);

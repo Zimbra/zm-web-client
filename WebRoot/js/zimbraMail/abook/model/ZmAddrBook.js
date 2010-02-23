@@ -162,23 +162,3 @@ function(what) {
 
 	return true;
 };
-
-
-// Callbacks
-
-/**
- * @private
- */
-ZmAddrBook.prototype.notifyCreate =
-function(obj, isSearch, skipNotify) {
-	// ignore creates of system folders
-	var nId = ZmOrganizer.normalizeId(obj.id);
-	if (nId < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.ADDRBOOK]) { return; }
-
-	var ab = ZmFolderTree.createFromJs(this, obj, this.tree);
-	var index = ZmOrganizer.getSortIndex(ab, ZmAddrBook.sortCompare);
-	this.children.add(ab, index);
-	if (!skipNotify) {
-		ab._notify(ZmEvent.E_CREATE);
-	}
-};
