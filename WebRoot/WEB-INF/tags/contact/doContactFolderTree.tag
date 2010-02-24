@@ -24,18 +24,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-<c:set var="done" value="${false}"/>
-<zm:forEachFolder var="folder" skiproot="${skiproot}" parentid="${parentid}" skipsystem="${skipsystem}" expanded="${sessionScope.expanded}" skiptopsearch="${skiptopsearch}">
+<zm:forEachFolder var="folder" skiproot="${skiproot}" parentid="${parentid}" skipsystem="${skipsystem}" expanded="${sessionScope.expanded}" skiptopsearch="${skiptopsearch}" skiptrash="${skiptrash}">
     <c:if test="${folder.isContactView}">
-
-        <c:if test="${table and not done}">
-            <table width="100%" cellpadding="0" cellspacing="0" style="padding-top:5px">
-            <c:set var="done" value="${true}"/>
-        </c:if>
-        <app:overviewFolder folder="${folder}" types="contact"/>
+        <app:contactFolder folder="${folder}"/>
     </c:if>
 </zm:forEachFolder>
 
-<c:if test="${done}">
- </table>
-</c:if>
