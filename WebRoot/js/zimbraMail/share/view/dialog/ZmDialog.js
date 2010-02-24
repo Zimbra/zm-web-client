@@ -15,12 +15,12 @@
 
 /**
  * @overview
- * 
  * This file contains a dialog.
  * 
  */
 
 /**
+ * Creates a dialog.
  * @class
  * This class is a base class for miscellaneous organizer-related dialogs. An instance
  * of this class can be re-used to show different overviews.
@@ -28,15 +28,13 @@
  * @author Conrad Damon
  *
  * @param {Hash}	params		a hash of parameters
- * <ul>
- * <li>parent	[DwtControl]	the parent widget</li>
- * <li>msgDialog		[DwtMsgDialog]*			the message dialog</li>
- * <li>className		[String]*			the CSS class name</li>
- * <li>title		[String]*			the dialog title</li>
- * <li>standardButtons	[Array|constant]	an array of standard buttons to include. Defaults to {@link DwtDialog.OK_BUTTON} and {@link DwtDialog.CANCEL_BUTTON}.</li>
- * <li>extraButtons		[Array]  			a list of {@link DwtDialog_ButtonDescriptor} objects describing custom buttons to add to the dialog</li>
- * <li>view				[DwtControl]*			the dialog contents</li>
- * </ul>
+ * @param	{DwtControl}	params.parent		the parent widget
+ * @param	{DwtMsgDialog}	params.msgDialog		the message dialog
+ * @param	{String}	params.className		the CSS class name
+ * @param	{String}	params.title		the dialog title
+ * @param	{Array|constant}	params.standardButtons		an array of standard buttons to include. Defaults to {@link DwtDialog.OK_BUTTON} and {@link DwtDialog.CANCEL_BUTTON}.
+ * @param	{Array}	params.extraButtons		a list of {@link DwtDialog_ButtonDescriptor} objects describing custom buttons to add to the dialog
+ * @param	{DwtControl}	params.view				the dialog contents
  * 
  * @extends	DwtDialog
  */
@@ -74,7 +72,7 @@ function() {
  * Sets the view for this dialog.
  * 
  * @param	{DwtComposite}		newView		the view
- * @param	{Boolean}		noReset		<code>true</code> to not reset the dialog; <code>false</code> otherwise
+ * @param	{Boolean}		noReset		if <code>true</code>, do not reset the dialog; <code>false</code> otherwise
  */
 ZmDialog.prototype.setView =
 function(newView, noReset) {
@@ -100,10 +98,6 @@ function() {
 	}
 };
 
-/**
- * Resets the dialog.
- * 
- */
 ZmDialog.prototype.reset =
 function() {
 	if (this._nameField) {

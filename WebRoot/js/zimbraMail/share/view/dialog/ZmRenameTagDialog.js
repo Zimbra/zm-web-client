@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a rename tag dialog.
+ * @class
+ * This class represents a rename tag dialog.
+ * 
+ * @param	{DwtComposite}	parent		the parent
+ * @param	{String}	className		the class name
+ *  
+ * @extends		ZmDialog
+ */
 ZmRenameTagDialog = function(parent, className) {
 
 	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameTag});
@@ -28,6 +42,12 @@ function() {
 	return "ZmRenameTagDialog";
 };
 
+/**
+ * Pops-up the dialog.
+ * 
+ * @param	{ZmTag}		tag		the tag
+ * @param	{Object}		[source]	(not used)
+ */
 ZmRenameTagDialog.prototype.popup =
 function(tag, source) {
 	ZmDialog.prototype.popup.call(this);

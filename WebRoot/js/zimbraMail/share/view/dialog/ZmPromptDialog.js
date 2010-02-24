@@ -13,6 +13,24 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a prompt dialog.
+ * @class
+ * This class represents a prompt dialog.
+ * 
+ * @param	{Hash}	args	a hash of arguments
+ * @param	{Array}	args.buttons		an array of buttons (default is [{@link DwtDialog.OK_BUTTON}, {@link DwtDialog.CANCEL_BUTTON}])
+ * @param	{String}	args.password	the password
+ *  
+ * @extends		ZmDialog
+ * 
+ * @see		ZmPromptDialog.getInstance
+ * @see		ZmPromptDialog.getPasswordInstance
+ */
 ZmPromptDialog = function(args) {
 	args.buttons = args.buttons || [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON];
 	this._password = args.password;
@@ -31,6 +49,11 @@ function() {
 	return "ZmPromptDialog";
 };
 
+/**
+ * Gets an instance of the prompt dialog.
+ * 
+ * @return	{ZmPromptDialog}		the dialog
+ */
 ZmPromptDialog.getInstance =
 function() {
 	if (!ZmPromptDialog._INSTANCE) {
@@ -39,6 +62,11 @@ function() {
 	return ZmPromptDialog._INSTANCE;
 };
 
+/**
+ * Gets an instance of the prompt dialog.
+ * 
+ * @return	{ZmPromptDialog}	the dialog
+ */
 ZmPromptDialog.getPasswordInstance =
 function() {
 	if (!ZmPromptDialog._PASSWORD_INSTANCE) {
@@ -48,13 +76,13 @@ function() {
 };
 
 /**
- * Pops up the dialog.
+ * Pops-up the dialog.
  *  
- * @param params				[hash]			hash of params:
- *        title					[String]		Dialog box title
- *        label					[String]		Label next to the dialog's input field
- *        value					[String]		Initial value of input field
- *        callback				[AjxCallback]	Callback to run when ok button is pressed
+ * @param {Hash}	params				a hash of parameters
+ * @param {String}      params.title					the dialog box title
+ * @param {String}	params.label					the label next to the dialog's input field
+ * @param {String}	params.value					the initial value of input field
+ * @param {AjxCallback}	params.callback			the callback to run when ok button is pressed
  */
 ZmPromptDialog.prototype.popup =
 function(params) {

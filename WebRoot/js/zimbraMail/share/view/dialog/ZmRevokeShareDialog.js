@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a revoke share dialog.
+ * @class
+ * This class represents a revoke share dialog.
+ * 
+ * @param	{DwtComposite}	parent		the parent
+ * @param	{String}	className		the class name
+ *  
+ * @extends		DwtDialog
+ */
 ZmRevokeShareDialog = function(parent, className) {
 	className = className || "ZmRevokeShareDialog";
 	var title = ZmMsg.revokeShare;
@@ -37,6 +51,11 @@ function() {
 	return "ZmRevokeShareDialog";
 };
 
+/**
+ * Pops-up the dialog.
+ * 
+ * @param	{ZmShare}	share		the share
+ */
 ZmRevokeShareDialog.prototype.popup =
 function(share) {
 	this._share = share;

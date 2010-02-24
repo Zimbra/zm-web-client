@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a folder notification dialog.
+ * @class
+ * This class represents a folder notification dialog.
+ * 
+ * @param	{DwtControl}	parent		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		DwtDialog
+ */
 ZmFolderNotifyDialog = function(parent, className) {
 
     className = className || "ZmFolderNotifyDialog";
@@ -48,6 +62,11 @@ function() {
 	return "ZmFolderNotifyDialog";
 };
 
+/**
+ * Pops-up the notification dialog.
+ * 
+ * @param	{ZmOrganizer}	organizer		the organizer
+ */
 ZmFolderNotifyDialog.prototype.popup =
 function(organizer) {
 

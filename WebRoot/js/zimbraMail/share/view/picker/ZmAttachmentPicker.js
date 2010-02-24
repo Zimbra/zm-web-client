@@ -13,6 +13,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates an attachment picker control.
+ * @class
+ * This class represents an attachment picker control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * 
+ * @extends		ZmPicker
+ * @see			ZmPicker.ATTACHMENT
+ */
 ZmAttachmentPicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.ATTACHMENT);
     this._checkedItems = {};

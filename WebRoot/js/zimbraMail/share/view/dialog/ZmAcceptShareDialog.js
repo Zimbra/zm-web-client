@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates an "accept share" dialog.
+ * @class
+ * This class represents an "accept share" dialog.
+ * 
+ * @param	{DwtControl}	parent		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		DwtDialog
+ */
 ZmAcceptShareDialog = function(parent, className) {
 	className = className || "ZmAcceptShareDialog";
 	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.acceptShare,
@@ -41,6 +55,12 @@ ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_ADMIN]	= ZmMsg.acceptShareDetailsAdmin
 
 // Public methods
 
+/**
+ * Pops-up the dialog.
+ * 
+ * @param	{ZmShare}		share		the share
+ * @param	{String}		fromAddr	the from address
+ */
 ZmAcceptShareDialog.prototype.popup =
 function(share, fromAddr) {
 
@@ -74,6 +94,11 @@ function(share, fromAddr) {
 	DwtDialog.prototype.popup.call(this);
 };
 
+/**
+ * Sets the accept listener.
+ * 
+ * @param	{AjxListener}		listener		the listener
+ */
 ZmAcceptShareDialog.prototype.setAcceptListener =
 function(listener) {
 	this.removeAllListeners(ZmAcceptShareDialog.ACCEPT);

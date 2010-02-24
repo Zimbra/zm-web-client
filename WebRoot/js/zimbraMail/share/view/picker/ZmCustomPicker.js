@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a custom picker control.
+ * @class
+ * This class represents a custom picker control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * 
+ * @extends		ZmPicker
+ * @see			ZmPicker.CUSTOM
+ */
 ZmCustomPicker = function(parent) {
 
 	ZmPicker.call(this, parent);

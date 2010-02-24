@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a share properties dialog.
+ * @class
+ * This class represents a share properties dialog.
+ * 
+ * @param	{DwtComposite}	shell		the parent
+ * @param	{String}	className		the class name
+ *  
+ * @extends		DwtDialog
+ */
 ZmSharePropsDialog = function(shell, className) {
 	className = className || "ZmSharePropsDialog";
 	DwtDialog.call(this, {parent:shell, className:className, title:ZmMsg.shareProperties});
@@ -39,8 +53,13 @@ ZmSharePropsDialog.prototype.constructor = ZmSharePropsDialog;
 
 
 // Constants
-
+/**
+ * Defines the "new" mode.
+ */
 ZmSharePropsDialog.NEW	= ZmShare.NEW;
+/**
+ * Defines the "edit" mode.
+ */
 ZmSharePropsDialog.EDIT	= ZmShare.EDIT;
 
 // Data
@@ -54,6 +73,13 @@ function() {
 	return "ZmSharePropsDialog";
 };
 
+/**
+ * Pops-up the dialog.
+ * 
+ * @param	{constant}	mode		the mode
+ * @param	{ZmOrganizer}	object	the organizer object
+ * @param	{ZmShare}	share		the share
+ */
 ZmSharePropsDialog.prototype.popup =
 function(mode, object, share) {
 

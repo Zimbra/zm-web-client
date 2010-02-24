@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a login dialog.
+ * @class
+ * This class represents a login dialog.
+ * 
+ * @param	{DwtControl}	parent		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		DwtComposite
+ */
 ZmLoginDialog = function(parent, className) {
 	
     className = className || "ZmLoginDialog";
@@ -66,17 +80,30 @@ function(func, obj, args) {
 	this._callback = new AjxCallback(obj, func, args);
 };
 
+/**
+ * Clears the user and password fields.
+ * 
+ */
 ZmLoginDialog.prototype.clearAll =
 function() {
 	ZLoginFactory.get(ZLoginFactory.USER_ID).value = "";
 	ZLoginFactory.get(ZLoginFactory.PASSWORD_ID).value = "";
 };
 
+/**
+ * Clears the password field.
+ * 
+ */
 ZmLoginDialog.prototype.clearPassword =
 function() {
 	ZLoginFactory.get(ZLoginFactory.PASSWORD_ID).value = "";
 };
 
+/**
+ * Sets the error message.
+ * 
+ * @param	{String}	errorStr		the error string
+ */
 ZmLoginDialog.prototype.setError =
 function(errorStr) {
 	if (errorStr && errorStr.length) {
@@ -86,6 +113,12 @@ function(errorStr) {
 	}
 };
 
+/**
+ * Sets the focus.
+ * 
+ * @param	{String}		username		the username
+ * @param	{Boolean}		bReloginMode	if <code>true</code>, relogin mode
+ */
 ZmLoginDialog.prototype.setFocus =
 function(username, bReloginMode) {
 	ZLoginFactory.showUserField(username);

@@ -13,6 +13,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates an assistant dialog.
+ * @class
+ * This class represents an assistant dialog.
+ * 
+ * @extends		DwtDialog
+ */
 ZmAssistantDialog = function() {
 
 	var helpButton = new DwtDialog_ButtonDescriptor(ZmAssistantDialog.HELP_BUTTON, ZmMsg.help, DwtDialog.ALIGN_LEFT);
@@ -42,6 +53,12 @@ ZmAssistantDialog = function() {
 ZmAssistantDialog.prototype = new DwtDialog;
 ZmAssistantDialog.prototype.constructor = ZmAssistantDialog;
 
+/**
+ * Initializes the assistants.
+ * 
+ * @see		ZmDebugAssistant
+ * @see		ZmVersionAssistant
+ */
 ZmAssistantDialog.initializeAssistants = function() {
 	if (!ZmAssistantDialog._handlerInit) {
 		ZmAssistant.register(new ZmVersionAssistant());
@@ -105,12 +122,22 @@ function() {
 	return html.toString();
 };
 
+/**
+ * Sets the assistant HTML content.
+ * 
+ * @param	{String}	html		the HTML content
+ */
 ZmAssistantDialog.prototype.setAssistantContent =
 function(html) {
 	var contentDivEl = document.getElementById(this._contentId);
 	contentDivEl.innerHTML = html;
 };
 
+/**
+ * Gets the assistant <code><div></code> element.
+ * 
+ * @return	{Element}		the <code><div></code> element
+ */
 ZmAssistantDialog.prototype.getAssistantDiv =
 function(html) {
 	return document.getElementById(this._contentId);
@@ -230,10 +257,6 @@ function(title, visible, enabled) {
 	//if (setImage) ok.setImage(image);
 };
 
-/**
-* Clears the conditions and actions table before popdown so we don't keep
-* adding to them.
-*/
 ZmAssistantDialog.prototype.popdown =
 function() {
 	DwtDialog.prototype.popdown.call(this);
@@ -278,6 +301,14 @@ function() {
 	this.popdown();
 };
 
+/**
+ * Displays a message dialog
+ * 
+ * @param	{String}		message		the message
+ * @param	{constant}		style		the message style
+ * 
+ * @private
+ */
 ZmAssistantDialog.prototype.messageDialog =
 function(message, style) {
 	var msgDialog = appCtxt.getMsgDialog();

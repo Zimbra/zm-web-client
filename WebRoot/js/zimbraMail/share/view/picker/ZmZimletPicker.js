@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a zimlet picker control.
+ * @class
+ * This class represents a zimlet picker control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * 
+ * @extends		ZmPicker
+ * @see			ZmPicker.ZIMLET
+ */
 ZmZimletPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.ZIMLET);

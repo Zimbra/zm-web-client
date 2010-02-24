@@ -1166,6 +1166,9 @@ if (ext == null) ext = "";
 	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-doc"/>
 	    <arg value="-d=${build.jsapi-zimbra-doc.dir}"/>
 	    <arg value="-r=4"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtComposite.js"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtControl.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtDialog.js"/>
 	    <arg value="${js.dir}/ajax/dwt/widgets/DwtButton.js"/>
 		<arg value="${js.dir}/ajax/dwt/widgets/DwtBaseDialog.js"/>
 	    <arg value="${js.dir}/ajax/dwt/widgets/DwtComposite.js"/>

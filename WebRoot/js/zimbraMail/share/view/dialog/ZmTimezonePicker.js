@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a timezone dialog.
+ * @class
+ * This class represents a timezone dialog.
+ * 
+ * @param	{DwtComposite}	parent		the parent
+ * @param	{String}	className		the class name
+ *  
+ * @extends		DwtDialog
+ */
 ZmTimezonePicker = function(parent, className) {
 
     var buttons = [ ZmTimezonePicker.SAVE_BUTTON ];
@@ -118,6 +132,12 @@ function() {
     }
 };
 
+/**
+ * Updates the selected timezone.
+ * 
+ * @param	{Hash}	dateInfo		a hash of date information
+ * @param	{ZmTimezone}	timezone		the timezone
+ */
 ZmTimezonePicker.prototype.updateTimezone =
 function(dateInfo) {
 	this._tzoneSelect.setSelectedValue(dateInfo.timezone);

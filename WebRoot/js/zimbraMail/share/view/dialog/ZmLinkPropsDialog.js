@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a link folder dialog.
+ * @class
+ * This class represents a link folder dialog.
+ * 
+ * @param	{DwtControl}	shell		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		DwtDialog
+ */
 ZmLinkPropsDialog = function(shell, className) {
 	className = className || "ZmLinkPropsDialog";
 	DwtDialog.call(this, {parent:shell, className:className, title:ZmMsg.linkProperties});
@@ -29,6 +43,14 @@ ZmLinkPropsDialog.prototype.constructor = ZmLinkPropsDialog;
 
 // Public methods
 
+/**
+ * Pops-up the dialog.
+ * 
+ * @param	{Hash}	linkInfo		a hash of link information
+ * @param	{String}	linkInfo.url	the link URL
+ * @param	{String}	linkInfo.text	the link text
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmLinkPropsDialog.prototype.popup =
 function(linkInfo, callback) {
 	this._linkInfo = linkInfo || {};

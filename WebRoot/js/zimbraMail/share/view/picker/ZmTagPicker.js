@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a tag picker control.
+ * @class
+ * This class represents a tag picker control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * 
+ * @extends		ZmPicker
+ * @see			ZmPicker.TAG
+ */
 ZmTagPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.TAG);

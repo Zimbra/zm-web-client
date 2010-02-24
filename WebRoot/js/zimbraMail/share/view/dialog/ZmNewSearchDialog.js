@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a new search dialog.
+ * @class
+ * This class represents a new search dialog.
+ * 
+ * @param	{DwtControl}	parent		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		ZmDialog
+ */
 ZmNewSearchDialog = function(parent, className) {
 
 	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.saveSearch});
@@ -31,6 +45,14 @@ function() {
 	return "ZmNewSearchDialog";
 };
 
+/**
+ * Pops-up the dialog.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * @param	{String}	params.search		the search
+ * @param	{Boolean}	params.showOverview	if <code>true</code>, make the overview visible
+ * 
+ */
 ZmNewSearchDialog.prototype.popup =
 function(params) {
 	var account = appCtxt.multiAccounts ? appCtxt.getActiveAccount() : null;

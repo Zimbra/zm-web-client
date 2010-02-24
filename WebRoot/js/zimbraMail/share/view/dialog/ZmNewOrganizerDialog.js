@@ -13,6 +13,22 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a new organizer dialog.
+ * @class
+ * This class represents a new organizer dialog.
+ * 
+ * @param	{DwtControl}	parent		the parent
+ * @param	{String}	className		the class name
+ * @param	{String}	title		the title
+ * @param	{constant}	type		the organizer type
+ * 
+ * @extends		ZmDialog
+ */
 ZmNewOrganizerDialog = function(parent, className, title, type) {
 	if (arguments.length == 0) return;
 	
@@ -32,9 +48,10 @@ function() {
 // Public methods
 
 /**
- * Popup the dialog.
+ * Pops-up the dialog.
  * 
- * @param folder	[ZmFolder]*		folder to select initially
+ * @param {ZmFolder}	folder		the folder to select initially
+ * @param	{ZmAccount}	account		the account
  */
 ZmNewOrganizerDialog.prototype.popup =
 function(folder, account) {
@@ -104,6 +121,11 @@ function(folder, account) {
 	ZmDialog.prototype.popup.call(this);
 };
 
+/**
+ * Resets the dialog.
+ * 
+ * @param	{ZmAccount}	account		the account
+ */
 ZmNewOrganizerDialog.prototype.reset =
 function(account) {
 	ZmDialog.prototype.reset.apply(this, arguments);

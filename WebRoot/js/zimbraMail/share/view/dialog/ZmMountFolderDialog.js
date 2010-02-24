@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a mount folder dialog.
+ * @class
+ * This class represents a mount folder dialog.
+ * 
+ * @param	{DwtControl}	shell		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		DwtDialog
+ */
 ZmMountFolderDialog = function(shell, className) {
 	className = className || "ZmMountFolderDialog";
 	var title = ZmMsg[ZmOrganizer.MOUNT_KEY[ZmOrganizer.FOLDER]];
@@ -40,6 +54,14 @@ ZmMountFolderDialog.prototype.constructor = ZmMountFolderDialog;
 
 // Public methods
 
+/**
+ * Pops-up the dialog.
+ * 
+ * @param	{constant}	organizerType	the organizer type
+ * @param	{constant}	folderId		the organizer id
+ * @param	{String}	user			the user
+ * @param	{String}	path		the folder mount path
+ */
 ZmMountFolderDialog.prototype.popup =
 function(organizerType, folderId, user, path) {
 	// remember values

@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates an upload dialog.
+ * @class
+ * This class represents an upload dialog.
+ * 
+ * @param	{DwtComposite}	shell		the parent
+ * @param	{String}	className		the class name
+ *  
+ * @extends		DwtDialog
+ */
 ZmUploadDialog = function(shell, className) {
 	className = className || "ZmUploadDialog";
 	var title = ZmMsg.uploadDocs;
@@ -48,13 +62,23 @@ ZmUploadDialog.prototype._uploadCallback;
 ZmUploadDialog.prototype._extensions;
 
 // Public methods
-
+/**
+ * Enables the link title option.
+ * 
+ * @param	{Boolean}	enabled		if <code>true</code>, to enbled the link title option
+ */
 ZmUploadDialog.prototype.enableLinkTitleOption =
 function(enabled) {
     this._showLinkTitleText = enabled;    
 };
 
-ZmUploadDialog.prototype.setAllowedExtensions = function(array) {
+/**
+ * Sets allowed extensions.
+ * 
+ * @param	{Array}		array		an array of extensions
+ */
+ZmUploadDialog.prototype.setAllowedExtensions =
+function(array) {
 	this._extensions = array;
 	if (array) {
 		for (var i = 0; i < array.length; i++) {
@@ -63,7 +87,8 @@ ZmUploadDialog.prototype.setAllowedExtensions = function(array) {
 	}
 };
 
-ZmUploadDialog.prototype.popup = function(folder, callback, title, loc, oneFileOnly, noResolveAction) {
+ZmUploadDialog.prototype.popup =
+function(folder, callback, title, loc, oneFileOnly, noResolveAction) {
 	this._uploadFolder = folder;
 	this._uploadCallback = callback;
 
@@ -96,7 +121,8 @@ ZmUploadDialog.prototype.popup = function(folder, callback, title, loc, oneFileO
 	DwtDialog.prototype.popup.call(this, loc);
 };
 
-ZmUploadDialog.prototype.popdown = function() {
+ZmUploadDialog.prototype.popdown =
+function() {
 	/***
 	// NOTE: Do NOT set these values to null! The conflict dialog will
 	//       call back to this dialog after it's hidden to process the
@@ -109,7 +135,8 @@ ZmUploadDialog.prototype.popdown = function() {
 };
 
 //to give explicitly the uploadForm, files to upload and folderId used for breifcase
-ZmUploadDialog.prototype.uploadFiles = function(files,uploadForm,folder) {
+ZmUploadDialog.prototype.uploadFiles =
+function(files,uploadForm,folder) {
 
     if (files.length == 0) {
 		return;

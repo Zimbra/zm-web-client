@@ -13,6 +13,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
+
+/**
+ * @overview
+ */
+
+/**
+ * Creates a domain picker control.
+ * @class
+ * This class represents a domain picker control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * 
+ * @extends		ZmPicker
+ * @see			ZmPicker.DOMAIN
+ */
 ZmDomainPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.DOMAIN);
@@ -54,6 +69,8 @@ function(ev) {
 /**
  * Handler to run on input into the text box. Waits for a pause of 300ms, then
  * runs a domain search and displays the results.
+ * 
+ * @private
  */
 ZmDomainPicker._onKeyUp =
 function(ev) {

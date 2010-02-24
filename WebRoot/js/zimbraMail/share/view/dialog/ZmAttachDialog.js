@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates an attachment dialog.
+ * @class
+ * This class represents an attachment dialog.
+ * 
+ * @param	{DwtControl}	shell		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		DwtDialog
+ */
 ZmAttachDialog = function(shell, className) {
 
 	className = className || "ZmAttachDialog";
@@ -52,12 +66,24 @@ ZmAttachDialog = function(shell, className) {
 ZmAttachDialog.prototype = new DwtDialog;
 ZmAttachDialog.prototype.constructor = ZmAttachDialog;
 
+/**
+ * Defines the "my computer" tab key.
+ */
 ZmAttachDialog.TABKEY_MYCOMPUTER	= "MY_COMPUTER";
+/**
+ * Defines the "briefcase" tab key.
+ */
 ZmAttachDialog.TABKEY_BRIEFCASE		= "BRIEFCASE";
 
 
 //Listeners
 
+/**
+ * Adds a cancel button listener.
+ * 
+ * @param	{constant}		tabKey		the tab key (see <code>TABKEY_</code> constants)
+ * @param	{AjxListener|AjxCallback}	cancelCallbackOrListener		the listener
+ */
 ZmAttachDialog.prototype.addCancelListener =
 function(tabKey, cancelCallbackOrListener) {
 	if (cancelCallbackOrListener &&
@@ -83,6 +109,12 @@ function() {
 	}
 };
 
+/**
+ * Adds a OK button listener.
+ * 
+ * @param	{constant}		tabKey		the tab key (see <code>TABKEY_</code> constants)
+ * @param	{AjxListener|AjxCallback}	cancelCallbackOrListener		the listener
+ */
 ZmAttachDialog.prototype.addOkListener =
 function(tabKey, okCallbackOrListener) {
 	if (okCallbackOrListener &&
@@ -131,12 +163,18 @@ function(view) {
 	this._setFooterSection(view);
 };
 
+/**
+ * @private
+ */
 ZmAttachDialog.prototype.stateChangeListener =
 function(ev) {
 	// Reset Inline Options Here
 	this._resetInlineOption();
 };
 
+/**
+ * @private
+ */
 ZmAttachDialog.prototype.tabChangeListener =
 function(ev) {
 	this.setFooter("");
@@ -161,6 +199,11 @@ function(view) {
 	this._footer = document.getElementById(div.id);
 };
 
+/**
+ * Sets the footer content.
+ * 
+ * @param	{String}	html		the HTML footer content
+ */
 ZmAttachDialog.prototype.setFooter =
 function(html) {
 	if (typeof html == "string") {
@@ -170,6 +213,11 @@ function(html) {
 	}
 };
 
+/**
+ * Gets the tab view.
+ * 
+ * @return	{ZmAttachTabView}	the tab view
+ */
 ZmAttachDialog.prototype.getTabView =
 function() {
 	return this._tabView;
@@ -237,6 +285,12 @@ function() {
 	return this._uploadCallback;
 };
 
+/**
+ * Uploads the attachments.
+ * 
+ * @param	{AjxCallback}		callback		the callback
+ * @param	{Object}			uploadForm		the upload form
+ */
 ZmAttachDialog.prototype.upload =
 function(callback, uploadForm) {
 	if (!callback) {

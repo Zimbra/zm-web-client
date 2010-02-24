@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a date picker control.
+ * @class
+ * This class represents a date picker control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * 
+ * @extends		ZmPicker
+ * @see			ZmPicker.DATE
+ */
 ZmDatePicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.DATE);
 };
@@ -71,7 +85,10 @@ function(parent) {
 	this._updateQuery();
 };
 
-// Set date for second instance of date picker to 3 months back, select "after"
+/**
+ * Set date for second instance of date picker to 3 months back, select "after".
+ * 
+ */
 ZmDatePicker.prototype.secondDate =
 function() {
 	this._select.setSelected(0);

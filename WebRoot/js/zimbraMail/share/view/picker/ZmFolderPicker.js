@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a folder picker control.
+ * @class
+ * This class represents a folder picker control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * 
+ * @extends		ZmPicker
+ * @see			ZmPicker.FOLDER
+ */
 ZmFolderPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.FOLDER);

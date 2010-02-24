@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a basic picker control.
+ * @class
+ * This class represents a basic picker control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * 
+ * @extends		ZmPicker
+ * @see			ZmPicker.BASIC
+ */
 ZmBasicPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.BASIC);
@@ -110,24 +124,44 @@ function(parent) {
 	this._inTrash = this._setupCheckbox(inTrashId);
 };
 
+/**
+ * Sets the "from" value of the query.
+ * 
+ * @param	{String}	from		the from value
+ */
 ZmBasicPicker.prototype.setFrom =
 function(from) {
 	this._from.value = from;
 	this._updateQuery();
 };
 
+/**
+ * Sets the "to" value of the query.
+ * 
+ * @param	{String}	from		the to value
+ */
 ZmBasicPicker.prototype.setTo =
 function(to) {
 	this._to.value = to;
 	this._updateQuery();
 };
 
+/**
+ * Sets the "subject" value of the query.
+ * 
+ * @param	{String}	from		the subject value
+ */
 ZmBasicPicker.prototype.setSubject =
 function(subject) {
 	this._subject.value = subject;
 	this._updateQuery();
 };
 
+/**
+ * Sets the "content" value of the query.
+ * 
+ * @param	{String}	from		the content value
+ */
 ZmBasicPicker.prototype.setContent =
 function(content) {
 	this._content.value = content;

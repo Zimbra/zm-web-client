@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a new folder dialog.
+ * @class
+ * This class represents a new folder dialog.
+ * 
+ * @param	{DwtControl}	parent		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		ZmNewOrganizerDialog
+ */
 ZmNewFolderDialog = function(parent, className) {
 	var title = ZmMsg.createNewFolder;
 	var type = ZmOrganizer.FOLDER;

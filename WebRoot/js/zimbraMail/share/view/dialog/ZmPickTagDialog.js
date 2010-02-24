@@ -14,14 +14,19 @@
  */
 
 /**
+ * @overview
+ */
+
+/**
  * Creates a dialog for choosing a tag.
- * @constructor
  * @class
  * This class presents the user with their list of tags in a tree view so that they
  * can choose one. There is a text input that can be used to filter the list.
  *
- * @param parent
- * @param className
+ * @param	{DwtControl}	parent		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends	ZmDialog
  */
 ZmPickTagDialog = function(parent, className) {
 
@@ -48,6 +53,12 @@ function() {
 	return "ZmPickTagDialog";
 };
 
+/**
+ * Pops-up the dialog.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * @param	{ZmAccount}	params.account		the account
+ */
 ZmPickTagDialog.prototype.popup = 
 function(params) {
 

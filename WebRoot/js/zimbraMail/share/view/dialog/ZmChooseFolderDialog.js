@@ -14,8 +14,18 @@
  */
 
 /**
- * This singleton class presents a dialog with various trees so that the
- * user can choose a folder.
+ * @overview
+ */
+
+/**
+ * Creates a dialog with various trees so a user can select a folder.
+ * @class
+ * This class represents choose folder dialog.
+ * 
+ * @param	{DwtControl}	shell		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		ZmDialog
  */
 ZmChooseFolderDialog = function(parent, className) {
 	var newButton = new DwtDialog_ButtonDescriptor(ZmChooseFolderDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
@@ -49,17 +59,17 @@ function() {
  * able to create different sorts of overviews based on what the calling function
  * wants. By default, we show the folder tree view.
  * 
- * @param params				[hash]*			hash of params:
- *        data					[object]		array of items, a folder, an item, or null
- *        treeIds				[array]			list of trees to show
- *        overviewId			[string]*		overview ID
- *        omit					[hash]*			IDs to not show
- *        title					[string]*		dialog title
- *        description			[string]*		description of what the user is selecting
- *        skipReadOnly			[boolean]* 		if true, read-only folders will not be displayed
- *        skipRemote			[boolean]*		if true, remote folders (mountpoints) will not be displayed
- *        hideNewButton 		[boolean]*		if true, New button will not be shown
- *        noRootSelect			[boolean]*		if true, don't make root tree item(s) selectable
+ * @param {Hash}	params				a hash of parameters
+ * @param	{Object}	params.data					a array of items, a folder, an item or <code>null</code>
+ * @param	{Array}	params.treeIds				a list of trees to show
+ * @param	{String}	params.overviewId			the overview ID
+ * @param	{Hash}	params.omit					a list IDs to not show
+ * @param	{String}	params.title					the dialog title
+ * @param	{String}	params.description			the description of what the user is selecting
+ * @param	{Boolean}	params.skipReadOnly		if <code>true</code>, read-only folders will not be displayed
+ * @param	{Boolean}	params.skipRemote			if <code>true</code>, remote folders (mountpoints) will not be displayed
+ * @param	{Boolean}	params.hideNewButton 		if <code>true</code>, new button will not be shown
+ * @param	{Boolean}	params.noRootSelect			if <code>true</code>, do not make root tree item(s) selectable
  */
 ZmChooseFolderDialog.prototype.popup =
 function(params) {

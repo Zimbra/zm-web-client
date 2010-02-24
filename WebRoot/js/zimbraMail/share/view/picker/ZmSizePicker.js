@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a size picker control.
+ * @class
+ * This class represents a size picker control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * 
+ * @extends		ZmPicker
+ * @see			ZmPicker.SIZE
+ */
 ZmSizePicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.SIZE);
 };

@@ -13,6 +13,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
+
+/**
+ * @overview
+ */
+
+/**
+ * Creates a saved search picker control.
+ * @class
+ * This class represents a saved search picker control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * 
+ * @extends		ZmPicker
+ * @see			ZmPicker.SEARCH
+ */
 ZmSavedSearchPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.SEARCH);

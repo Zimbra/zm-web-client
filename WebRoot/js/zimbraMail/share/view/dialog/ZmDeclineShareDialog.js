@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates an "decline share" dialog.
+ * @class
+ * This class represents "decline share" dialog.
+ * 
+ * @param	{DwtControl}	shell		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		DwtDialog
+ */
 ZmDeclineShareDialog = function(parent, className) {
 	className = className || "ZmDeclineShareDialog";
 	var title = ZmMsg.declineShare;
@@ -42,6 +56,12 @@ ZmDeclineShareDialog.prototype.constructor = ZmDeclineShareDialog;
 
 // Public methods
 
+/**
+ * Pops-up the dialog.
+ * 
+ * @param	{ZmShare}		share		the share
+ * @param	{String}		fromAddr	the from address
+ */
 ZmDeclineShareDialog.prototype.popup =
 function(share, fromAddr) {
 	this._share = share;
@@ -55,6 +75,11 @@ function(share, fromAddr) {
 	DwtDialog.prototype.popup.call(this);
 };
 
+/**
+ * Sets the decline listener.
+ * 
+ * @param	{AjxListener}		listener		the listener
+ */
 ZmDeclineShareDialog.prototype.setDeclineListener =
 function(listener) {
 	this.removeAllListeners(ZmShare.DECLINE);

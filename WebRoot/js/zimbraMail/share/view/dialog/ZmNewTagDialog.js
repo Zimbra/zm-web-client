@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a new tag dialog.
+ * @class
+ * This class represents a new tag dialog.
+ * 
+ * @param	{DwtControl}	parent		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		ZmDialog
+ */
 ZmNewTagDialog = function(parent, className) {
 	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.createNewTag});
 
@@ -30,6 +44,12 @@ function() {
 	return "ZmNewTagDialog";
 };
 
+/**
+ * Pops-up the dialog.
+ * 
+ * @param	{ZmOrganizer}	org		the organizer
+ * @param	{ZmAccount}		account	the account
+ */
 ZmNewTagDialog.prototype.popup =
 function(org, account) {
 	if (this._accountSelect) {

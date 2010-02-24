@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a folder properties dialog.
+ * @class
+ * This class represents a folder properties dialog.
+ * 
+ * @param	{DwtControl}	parent		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		DwtDialog
+ */
 ZmFolderPropsDialog = function(parent, className) {
 	className = className || "ZmFolderPropsDialog";
 	var extraButtons;
@@ -52,6 +66,11 @@ function() {
 	return "ZmFolderPropsDialog";
 };
 
+/**
+ * Pops-up the properties dialog.
+ * 
+ * @param	{ZmOrganizer}	organizer		the organizer
+ */
 ZmFolderPropsDialog.prototype.popup =
 function(organizer) {
 	this._organizer = organizer;

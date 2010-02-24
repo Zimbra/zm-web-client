@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a "find-and-replace" dialog.
+ * @class
+ * This class represents a "find-and-replace" dialog.
+ * 
+ * @param	{DwtControl}	shell		the parent
+ * @param	{String}	className		the class name
+ * 
+ * @extends		DwtDialog
+ */
 ZmFindnReplaceDialog = function(shell, className) {
 	className = className || "ZmFindnReplaceDialog";
 	
@@ -78,6 +92,12 @@ ZmFindnReplaceDialog.REPLACE_ALL_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 // Public methods
 
+/**
+ * Pops-up the dialog.
+ * 
+ * @param	{Hash}		editorInfo		a hash of editor info
+ * @param	{AjxCallback}	callback	the callback
+ */
 ZmFindnReplaceDialog.prototype.popup =
 function(editorInfo, callback) {
 	this._editorInfo = editorInfo || {};
@@ -153,6 +173,11 @@ function() {
 	this.replaceAction('all',false);
 };
 
+/**
+ * Shows an informational message.
+ * 
+ * @param	{String}	msg		the message
+ */
 ZmFindnReplaceDialog.prototype.showInfoMsg =
 function(msg) {
 	if(!this.msgEl){
@@ -161,7 +186,8 @@ function(msg) {
 	this.msgEl.innerHTML = msg;
 };
 
-ZmFindnReplaceDialog.prototype.replaceAction = function(mode,findOnly)
+ZmFindnReplaceDialog.prototype.replaceAction =
+function(mode,findOnly)
 {
 	var findVal = this._findInput.getValue();
 	var replaceVal = (findOnly? null : this._replaceInput.getValue());

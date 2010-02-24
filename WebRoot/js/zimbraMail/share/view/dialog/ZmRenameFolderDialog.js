@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a rename folder dialog.
+ * @class
+ * This class represents a rename folder dialog.
+ * 
+ * @param	{DwtComposite}	parent		the parent
+ * @param	{String}	className		the class name
+ *  
+ * @extends		ZmDialog
+ */
 ZmRenameFolderDialog = function(parent, className) {
 
 	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameFolder});
@@ -28,6 +42,12 @@ function() {
 	return "ZmRenameFolderDialog";
 };
 
+/**
+ * Pops-up the dialog.
+ * 
+ * @param	{ZmFolder}		folder		the folder
+ * @param	{Object}		[source]	(not used)
+ */
 ZmRenameFolderDialog.prototype.popup =
 function(folder, source) {
 	ZmDialog.prototype.popup.call(this);

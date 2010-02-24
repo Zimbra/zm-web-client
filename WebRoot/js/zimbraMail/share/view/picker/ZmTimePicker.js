@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a time picker control.
+ * @class
+ * This class represents a time picker control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * 
+ * @extends		ZmPicker
+ * @see			ZmPicker.TIME
+ */
 ZmTimePicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.TIME);

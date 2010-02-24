@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a flag picker control.
+ * @class
+ * This class represents a flag picker control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * 
+ * @extends		ZmPicker
+ * @see			ZmPicker.FLAG
+ */
 ZmFlagPicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.FLAG);
 };

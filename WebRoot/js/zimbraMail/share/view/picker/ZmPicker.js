@@ -13,6 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ */
+
+/**
+ * Creates a picker control.
+ * @class
+ * This class represents a picker (i.e. "selection") control.
+ * 
+ * @param		{DwtControl}	parent		the parent
+ * @param		{constant}		id		the id
+ * 
+ * @extends		DwtComposite
+ */
 ZmPicker = function(parent, id) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, {parent:parent, className:"ZmPicker", posStyle:DwtControl.ABSOLUTE_STYLE});
@@ -42,17 +56,53 @@ ZmPicker.prototype = new DwtComposite;
 ZmPicker.prototype.constructor = ZmPicker;
 
 var i = 1;
+/**
+ * Defines the "attachment" picker id.
+ */
 ZmPicker.ATTACHMENT	= i++;
+/**
+ * Defines the "basic" picker id.
+ */
 ZmPicker.BASIC		= i++;
+/**
+ * Defines the "custom" picker id.
+ */
 ZmPicker.CUSTOM		= i++;
+/**
+ * Defines the "date" picker id.
+ */
 ZmPicker.DATE		= i++;
+/**
+ * Defines the "domain" picker id.
+ */
 ZmPicker.DOMAIN		= i++;
+/**
+ * Defines the "flag" picker id.
+ */
 ZmPicker.FLAG		= i++;
+/**
+ * Defines the "folder" picker id.
+ */
 ZmPicker.FOLDER		= i++;
+/**
+ * Defines the "zimlet" picker id.
+ */
 ZmPicker.ZIMLET		= i++;
+/**
+ * Defines the "search" picker id.
+ */
 ZmPicker.SEARCH		= i++;
+/**
+ * Defines the "size" picker id.
+ */
 ZmPicker.SIZE		= i++;
+/**
+ * Defines the "tag" picker id.
+ */
 ZmPicker.TAG		= i++;
+/**
+ * Defines the "time" picker id.
+ */
 ZmPicker.TIME		= i++;
 ZmPicker.RESET		= i++;	// not really a picker
 ZmPicker.CLOSE		= i++;	// not really a picker
@@ -172,6 +222,11 @@ ZmPicker_Descriptor = function(id, label, image, toolTip, ctor) {
 	this.ctor = ctor;
 };
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
 ZmPicker.prototype.toString = 
 function() {
 	return "ZmPicker";
@@ -181,21 +236,41 @@ ZmPicker.prototype._setupPicker  = function() {};
 ZmPicker.prototype._updateQuery  = function() {};
 ZmPicker.prototype._treeListener  = function() {};
 
+/**
+ * Sets the picker title.
+ * 
+ * @param	{String}	text		the title
+ */
 ZmPicker.prototype.setTitle =
 function(text) {
     this._label.setText(text);
 };
 
+/**
+ * Sets the picker image.
+ * 
+ * @param	{String}	imageInfo		the image
+ */
 ZmPicker.prototype.setImage =
 function(imageInfo) {
     this._label.setImage(imageInfo);
 };
 
+/**
+ * Gets the close button.
+ * 
+ * @return	{DwtButton}		the button
+ */
 ZmPicker.prototype.getCloseButton = 
 function() {
 	return this._close;
 };
 
+/**
+ * Sets the picker enabled/disabled.
+ * 
+ * @return	{Boolean}		enabled		if <code>true</code>, enable the picker
+ */
 ZmPicker.prototype.setEnabled =
 function(enabled) {
    DwtControl.prototype.setEnabled.call(this, enabled);
@@ -204,11 +279,21 @@ function(enabled) {
 	    this._picker.setEnabled(enabled);
 };
 
+/**
+ * Adds a picker listener.
+ * 
+ * @param	{AjxListener}	listener		the listener to add
+ */
 ZmPicker.prototype.addPickerListener =
 function(listener) {
 	this.addListener(ZmEvent.L_PICKER, listener);
 };
 
+/**
+ * Removes the listener.
+ * 
+ * @param	{AjxListener}	listener		the listener to remove
+ */
 ZmPicker.prototype.removePickerListener =
 function(listener) {
 	this.removeListener(ZmEvent.L_PICKER, listener);
@@ -231,6 +316,10 @@ function(query) {
 	}
 };
 
+/**
+ * Disposes of the picker.
+ * 
+ */
 ZmPicker.prototype.dispose =
 function() {
 	DwtComposite.prototype.dispose.call(this);
