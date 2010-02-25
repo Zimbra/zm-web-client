@@ -108,14 +108,19 @@ ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE	= 11;
  */
 ZmCalItem.MODE_FORWARD_SERIES			= 12;
 /**
+ * Defines the "forward" mode.
+ */
+ZmCalItem.MODE_FORWARD_INVITE			= 13;
+/**
  * Defines the "last" mode index constant.
  */
-ZmCalItem.MODE_LAST					    = 12;
+ZmCalItem.MODE_LAST					    = 13;
 
 ZmCalItem.FORWARD_MAPPING = {};
 ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD]                   = ZmCalItem.MODE_EDIT;
 ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE]   = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
 ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD_SERIES]            = ZmCalItem.MODE_EDIT_SERIES;
+ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD_INVITE]            = ZmCalItem.MODE_EDIT;
 
 /**
  * Defines the "low" priority.
@@ -947,7 +952,7 @@ function(message, viewMode) {
 	// only the original start time.
 	var start = message.invite.getServerStartTime();
 	var end = message.invite.getServerEndTime();
-	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
+	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || viewMode == ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE) {
 		var usd = this.getUniqueStartDate();
 		if (usd) this.setStartDate(usd);
 
@@ -963,7 +968,7 @@ function(message, viewMode) {
 	this.endsInUTC = end && start ? end.charAt(start.length-1) == "Z" : null;
 
 	// record timezone
-	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || viewMode == ZmCalItem.MODE_DELETE_INSTANCE) {
+	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || viewMode == ZmCalItem.MODE_DELETE_INSTANCE || viewMode == ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE) {
 		this.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 	}
 	else {

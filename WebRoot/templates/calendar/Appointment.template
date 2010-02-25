@@ -102,7 +102,7 @@
 									</td>
 								</tr>
 								<$ if(data.isAppt) { $>
-									<tr>
+									<tr id='${id}_reminder_options'>
 										<td valign=top class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'></nobr><$= ZmMsg.reminderLabel $></td>
 										<td valign=top colspan=10 align='left' id='${id}_reminderSelectContainer'>
                                             <table border=0 cellpadding=0 cellspacing=0><tr>
@@ -123,11 +123,11 @@
 						<!-- appointment attendees / resources -->
 						<table border=0 width=100%>
 							<tr id='${id}_organizer_options'>
-								<td width='1%' align='right' valign='top' class='ZmApptTabViewPageField'><$= ZmMsg.organizerLabel $></td>
+								<td width='1%' align='right' valign='top' class='ZmApptTabViewPageField'><legend><$= ZmMsg.organizerLabel $></legend></td>
 								<td id='${id}_organizer'></td>
 							</tr>
 							<tr>
-								<td rowspan='2' width='1%' align='right' valign='top' class='ZmApptTabViewPageField'><$= ZmMsg.attendeesLabel $></td>
+								<td rowspan='2' width='1%' align='right' valign='top' class='ZmApptTabViewPageField'><legend><$= ZmMsg.attendeesLabel $></legend></td>
 								<td id='${id}_person'></td>
 							</tr>
 							<tr id='${id}_notification_options'>

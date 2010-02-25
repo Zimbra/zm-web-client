@@ -323,6 +323,12 @@ function(calItem, mode) {
 	this._initTzSelect();
 	this._resetTimezoneSelect(calItem, isAllDayAppt);
 
+
+    this._startTimeSelect.setEnabled(!this._isForward);
+    this._endTimeSelect.setEnabled(!this._isForward);
+    this._startDateButton.setEnabled(!this._isForward);
+    this._endDateButton.setEnabled(!this._isForward);
+
 	// attendees
 	var tp;
 	var attendees = calItem.getAttendees(ZmCalBaseItem.PERSON);

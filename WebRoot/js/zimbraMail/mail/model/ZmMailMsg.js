@@ -785,7 +785,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 
 	var inv = this._origMsg.invite;
 	if (this.getAddress(AjxEmailAddress.TO) == null && !inv.isOrganizer()) {
-		var to = inv.getSentBy() || inv.getOrganizerEmail();
+		var to = inv.getOrganizerEmail() || inv.getSentBy();
         if(to == null) {
             var ac = window.parentAppCtxt || window.appCtxt;
             var mainAcct = ac.accountList.mainAccount.getEmail();

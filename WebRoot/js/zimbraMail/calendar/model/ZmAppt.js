@@ -413,6 +413,21 @@ function(message, subject) {
 	this._attendees[ZmCalBaseItem.PERSON] = addrs.getArray();
 };
 
+
+ZmAppt.prototype.setFromMailMessageInvite =
+function(message) {
+    var invite = message.invite;
+    var viewMode = (!invite.isRecurring()) ? ZmCalItem.MODE_FORWARD : ZmCalItem.MODE_FORWARD_SERIES;
+
+    if(invite.isRecurring() && invite.isException()) {
+        viewMode = ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE;
+    }
+
+    this.setFromMessage(message, viewMode);
+    this.forwardInviteMsgId = message.id;
+    this.name = ZmMsg.fwd + ": " + message.subject;
+};
+
 ZmAppt.prototype.isPrivate =
 function() {
 	return (this.privacy != "PUB");
@@ -607,6 +622,9 @@ function(mode, isException) {
 		case ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE:
 			return "ForwardAppointmentRequest";
 
+		case ZmCalItem.MODE_FORWARD_INVITE:
+			return "ForwardAppointmentInviteRequest";
+
 		case ZmCalItem.MODE_GET:
 			return "GetAppointmentRequest";
 	}
@@ -799,6 +817,41 @@ function(result) {
 };
 
 
+ZmAppt.prototype.forwardInvite =
+function(callback, errorCallback, mode) {
+    var soapDoc = AjxSoapDoc.create(this._getSoapForMode(ZmCalItem.MODE_FORWARD_INVITE, this.isException), "urn:zimbraMail");
+
+    if(this.forwardInviteMsgId) {
+        soapDoc.setMethodAttribute("id", this.forwardInviteMsgId);
+    }
+
+    var m = soapDoc.set("m");
+    soapDoc.set("su", this.name, m);
+    this._addNotesToSoap(soapDoc, m, false);
+
+    var accountName = this.getRemoteFolderOwner();
+    var calendar = this.getFolder();
+    var acctName = calendar.account && calendar.account.name;
+    var isOnBehalfOf = accountName && acctName && acctName != accountName;
+
+    var mailFromAddress = this.getMailFromAddress();
+    if (this.isOrganizer() && !accountName && mailFromAddress) {
+        var e = soapDoc.set("e", null, m);
+        e.setAttribute("a", mailFromAddress);
+        e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+    }
+
+    var addrs = this._fwdAddrs;
+    if (addrs.gotAddress && addrs[AjxEmailAddress.TO]) {
+        var toAddrs = addrs[AjxEmailAddress.TO].all.getArray();
+        for (var i in toAddrs) {
+            this._addAddressToSoap(soapDoc, m, toAddrs[i].address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
+        }
+    }
+
+    this._sendRequest(soapDoc, accountName, callback, errorCallback);
+};
+
 ZmAppt.prototype.forward =
 function(callback, errorCallback) {
 	var mode = ZmCalItem.MODE_FORWARD;
@@ -810,6 +863,11 @@ function(callback, errorCallback) {
 	} else if(this.viewMode == ZmCalItem.MODE_EDIT_SERIES) {
 		mode = ZmCalItem.MODE_FORWARD_SERIES;
 	}
+
+    if(this.forwardInviteMsgId) {
+        this.forwardInvite(callback, errorCallback, mode);
+        return;
+    }
 
 	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode, this.isException), "urn:zimbraMail");
 

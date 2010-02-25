@@ -328,6 +328,9 @@ function(calItem, mode, firstTime) {
     var forwardOptions = document.getElementById(this._htmlElId + "_forward_options");
     if(forwardOptions) Dwt.setVisible(forwardOptions, this._isForward);
 
+    var reminderOptions = document.getElementById(this._htmlElId + "_reminder_options");
+    if(reminderOptions) Dwt.setVisible(reminderOptions, !this._isForward);
+
 	// if first time reset'ing, delay saving form value since all widgets
 	// (i.e. html editor) may not have finished initializing yet.
     if (firstTime || this._notesHtmlModeFirstTime) {   // Also, handling HTML mode specially as it takes some time to initialize.

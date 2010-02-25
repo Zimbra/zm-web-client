@@ -644,6 +644,15 @@ function() {
 	return this._amPmSelect ? this._amPmSelect.getSelectedIndex() : 0;
 };
 
+ZmTimeSelect.prototype.setEnabled =
+function(enabled) {
+   DwtComposite.prototype.setEnabled.call(this, enabled);
+
+   this._hourSelect.setEnabled(enabled);
+   this._minuteSelect.setEnabled(enabled);
+   this._amPmSelect.setEnabled(enabled);
+};
+
 ZmTimeSelect.prototype._createSelects =
 function() {
 	this._hourSelectId = Dwt.getNextId();

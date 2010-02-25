@@ -56,10 +56,17 @@ function(calItem, mode, isDirty) {
 
 ZmApptComposeController.prototype.forwardCalItem =
 function(appt) {
-    //todo: to address input validation    
-    appt.forward();
+    //todo: to address input validation
+    var callback = new AjxCallback(this, this._handleForwardInvite);
+    appt.forward(callback);
     return true;
 };
+
+ZmApptComposeController.prototype._handleForwardInvite =
+function() {
+    appCtxt.setStatusMsg(ZmMsg.forwardInviteSent);
+};
+
 
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
@@ -559,4 +566,9 @@ function(appt, attId, dlg) {
 
 ZmApptComposeController.prototype.closeView = function() {
    this._closeView();    
+};
+
+ZmApptComposeController.prototype.forwardInvite =
+function(newAppt) {
+    this.show(newAppt, ZmCalItem.MODE_FORWARD_INVITE);
 };

@@ -254,6 +254,7 @@ function(tabKey) {
         //disable inputs for appt forwarding
 		this._apptEditView.enableInputs(!this._forwardMode);
 		this._apptEditView.reEnableDesignMode();
+        toolbar.enable([ZmOperation.ATTACHMENT], !this._forwardMode);
 	} else {
 		var buttons = [ZmOperation.ATTACHMENT];
 		if (!appCtxt.isOffline) {
@@ -268,6 +269,7 @@ function(tabKey) {
 		toolbar.enable(buttons, false);
 		this._apptEditView.enableInputs(false);
 	}
+
 	if (this._curTabId && (this._curTabId != this._tabIdByKey[tabKey])) {
 		this._tabPages[this._curTabId].tabBlur();
 	}

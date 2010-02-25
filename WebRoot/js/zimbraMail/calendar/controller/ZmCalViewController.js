@@ -1072,6 +1072,11 @@ function(ev) {
 	}
 };
 
+ZmCalViewController.prototype.newApptObject =
+function(startDate, duration, folderId, mailItem) {
+    return this._newApptObject(startDate, duration, folderId, mailItem);
+};
+
 ZmCalViewController.prototype._newApptObject =
 function(startDate, duration, folderId, mailItem) {
 	var newAppt = new ZmAppt();

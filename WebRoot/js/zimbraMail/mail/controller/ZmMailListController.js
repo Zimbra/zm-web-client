@@ -750,7 +750,7 @@ function(params) {
 	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD)	{
 		action = params.action = (appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INC_ATTACH)
 			? ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
-		// bug 40908 - invitation should be forwarded as attachment
+
 		if (msg.isInvite()) {
 			action = params.action = ZmOperation.FORWARD_ATT;
 		}
@@ -795,6 +795,15 @@ function(params, msg) {
 	// special handling for multiple forward action
 	var action = params.action;
 	if (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE) {
+
+        // bug 43428 - invitation should be forwarded using apt forward view        
+        if(msg.isInvite()) {
+            var newAppt = AjxDispatcher.run("GetCalController").newApptObject(new Date(), null, null, msg);
+            newAppt.setFromMailMessageInvite(msg);
+            AjxDispatcher.run("GetApptComposeController").forwardInvite(newAppt);
+            return;
+        }
+
 		// reset the action if user is forwarding multiple mail items inline
 		var cview = this._listView[this._currentView];
 		var selection, selCount;
