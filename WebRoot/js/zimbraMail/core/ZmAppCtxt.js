@@ -15,7 +15,6 @@
 
 /**
  * @overview
- * 
  * This file defines the application context class.
  *
  */

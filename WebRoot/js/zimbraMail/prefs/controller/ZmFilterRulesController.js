@@ -15,14 +15,16 @@
 
 /**
  * Creates a new, empty filter rules controller.
- * @constructor
  * @class
- * Manages the filter rules page, which has a button toolbar and a list view of the rules.
+ * This class represents the filter rules controller. This controller manages
+ * the filter rules page, which has a button toolbar and a list view of the rules.
  *
  * @author Conrad Damon
  *
- * @param container		[DwtShell]			the shell
- * @param prefsApp		[ZmPreferencesApp]	the preferences app
+ * @param {DwtShell}		container		the shell
+ * @param {ZmPreferencesApp}	prefsApp		the preferences application
+ * 
+ * @extends		ZmController
  */
 ZmFilterRulesController = function(container, prefsApp, prefsView) {
 
@@ -51,13 +53,21 @@ function() {
 };
 
 /**
-* Returns the filter rules view, which comprises a toolbar and a list view.
-*/
+ * Gets the filter rules view, which is comprised of a toolbar and a list view.
+ * 
+ * @return	{ZmFilterRulesView}		the filter rules view
+ */
 ZmFilterRulesController.prototype.getFilterRulesView =
 function() {
 	return this._filterRulesView;
 };
 
+/**
+ * Initializes the controller.
+ * 
+ * @param	{ZmToolBar}	toolbar		the toolbar
+ * @param	{ZmListView}	listView		the list view
+ */
 ZmFilterRulesController.prototype.initialize =
 function(toolbar, listView) {
 	// always reset the the rules to make sure we get the right one for the *active* account
@@ -125,10 +135,12 @@ function(selectedIndex, result) {
 };
 
 /**
-* Handles left-clicking on a rule. Double click opens up a rule for editing.
-*
-* @ev		[DwtEvent]		the click event
-*/
+ * Handles left-clicking on a rule. Double click opens up a rule for editing.
+ *
+ * @param	{DwtEvent}	ev		the click event
+ * 
+ * @private
+ */
 ZmFilterRulesController.prototype._listSelectionListener =
 function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
@@ -146,6 +158,11 @@ function(ev) {
 	actionMenu.popup(0, ev.docX, ev.docY);
 };
 
+/**
+ * Gets the action menu.
+ * 
+ * @return	{ZmActionMenu}		the action menu
+ */
 ZmFilterRulesController.prototype.getActionMenu =
 function() {
 	if (!this._actionMenu) {

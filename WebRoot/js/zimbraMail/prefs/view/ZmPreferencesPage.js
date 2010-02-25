@@ -19,13 +19,15 @@
  * @class
  * This class represents a single page of preferences available by selecting one of the
  * preference tabs. During construction, skeletal HTML is created. The preferences
- * aren't added until the page becomes visible.
+ * are not added until the page becomes visible.
  *
  * @author Conrad Damon
  * 
- * @param parent			[DwtControl]				the containing widget
- * @param section			[object]					which page we are
- * @param controller		[ZmPrefController]			prefs controller
+ * @param {DwtControl}	parent			the containing widget
+ * @param {object}	section			the page
+ * @param {ZmPrefController}	controller		the prefs controller
+ * 
+ * @extends		DwtTabViewPage
  */
 ZmPreferencesPage = function(parent, section, controller) {
 	if (arguments.length == 0) return;
@@ -121,10 +123,11 @@ function(elemOrId) {
 };
 
 /**
-* Fills the page with preferences that belong to this page, if that hasn't been done
-* already. Note that this is an override of DwtTabViewPage.showMe(), so that it's
-* called only when the tab is selected and the page becomes visible.
-*/
+ * Fills the page with preferences that belong to this page, if that has not been done
+ * already. Note this method is only called when the tab
+ * is selected and the page becomes visible.
+ * 
+ */
 ZmPreferencesPage.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
@@ -311,11 +314,12 @@ function(id) {
 };
 
 /**
- * Returns the value of the preference control.
+ * Gets the value of the preference control.
  *
- * @param id		[string]		The preference identifier.
- * @param setup		[object]		(Optional) The preference descriptor.
- * @param control	[DwtControl|*]	(Optional) The preference control.
+ * @param {String}		id		the preference id
+ * @param {Object}	[setup]		the preference descriptor
+ * @param {DwtControl}	[control]	the preference control
+ * @return	{String}	the value
  */
 ZmPreferencesPage.prototype.getFormValue =
 function(id, setup, control) {
@@ -363,10 +367,10 @@ function(id, setup, control) {
 /**
  * Sets the value of the preference control.
  *
- * @param id		[string]		The preference identifier.
- * @param value		[ANY]			The preference value.
- * @param setup		[object]		(Optional) The preference descriptor.
- * @param control	[DwtControl|*]	(Optional) The preference control.
+ * @param {String}	id		the preference id
+ * @param {Object}	value		the preference value
+ * @param {Object}	[setup]		the preference descriptor
+ * @param {DwtControl}	[control]	the preference control
  */
 ZmPreferencesPage.prototype.setFormValue =
 function(id, value, setup, control) {
@@ -436,6 +440,11 @@ function(id, value, setup, control) {
 	}
 };
 
+/**
+ * Gets the title.
+ * 
+ * @return	{String}	the title
+ */
 ZmPreferencesPage.prototype.getTitle =
 function() {
 	return this._title;
@@ -446,11 +455,6 @@ function() {
 	return this._tabGroup;
 };
 
-/**
-* Resets the form fields to the prefs' current values.
-*
-* @param useDefaults	[boolean]	if true, fields are reset to prefs' default values
-*/
 ZmPreferencesPage.prototype.reset =
 function(useDefaults) {
 	var settings = appCtxt.getSettings();
@@ -473,10 +477,20 @@ function() {
 	this.hasRendered = false;
 };
 
+/**
+ * Checks if the data is dirty.
+ * 
+ * @return	{Boolean}	<code>true</code> if the data is dirty
+ */
 ZmPreferencesPage.prototype.isDirty = function() { return false; };
 ZmPreferencesPage.prototype.validate = function() {	return true; };
-ZmPreferencesPage.prototype.addCommand = function(batchCmd) {};
 
+/**
+ * Adds the modify command to the given batch command.
+ * 
+ * @param	{ZmBatchCommand}		batchCmd		the batch command
+ */
+ZmPreferencesPage.prototype.addCommand = function(batchCmd) {};
 
 //
 // Protected methods
@@ -490,11 +504,13 @@ function(templateId, data) {
 };
 
 /**
-* Returns the value of the specified pref, massaging it if necessary.
-*
-* @param id			[constant]		pref ID
-* @param useDefault	[boolean]		if true, use pref's default value
-*/
+ * Returns the value of the specified pref, massaging it if necessary.
+ *
+ * @param id			[constant]		pref ID
+ * @param useDefault	[boolean]		if true, use pref's default value
+ * 
+ * @private
+ */
 ZmPreferencesPage.prototype._getPrefValue =
 function(id, useDefault) {
 	var pref = appCtxt.getSettings().getSetting(id);
@@ -1152,6 +1168,8 @@ function(data, prefId) {
  * Formats a label. If the label contains a replacement parameter (e.g. {0}),
  * then it is formatted using AjxMessageFormat with the current value for this
  * label.
+ * 
+ * @private
  */
 ZmPreferencesPage.__formatLabel =
 function(prefLabel, prefValue) {

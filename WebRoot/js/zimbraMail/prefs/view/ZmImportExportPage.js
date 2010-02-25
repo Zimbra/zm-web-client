@@ -13,6 +13,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the import/export page.
+ * @class
+ * This class represents the import/export page.
+ * 
+ * @param {DwtControl}	parent			the containing widget
+ * @param {Object}	section			the page
+ * @param {ZmPrefController}	controller		the prefs controller
+ * 
+ * @extends	ZmPreferencesPage
+ * 
+ * @private
+ */
 ZmImportExportPage = function(parent, section, controller) {
 	ZmPreferencesPage.apply(this, arguments);
 };
@@ -29,7 +42,8 @@ function () {
 // ZmPreferencesPage methods
 //
 
-ZmImportExportPage.prototype.reset = function(useDefaults) {
+ZmImportExportPage.prototype.reset =
+function(useDefaults) {
 	ZmPreferencesPage.prototype.reset.apply(this, arguments);
 	var button = this.getFormObject("IMPORT_BUTTON");
 	if (button) {

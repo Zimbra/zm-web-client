@@ -13,7 +13,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
-// "Private" constructor. Use ZmLocale.create().
+/**
+ * Default constructor.
+ * @class
+ * This class represents a locale.
+ * 
+ * @param	{String}	id		the id
+ * @param	{String}	name	the name
+ * @param	{String}	image	the image
+ * 
+ * @see		ZmLocale.create
+ */
 ZmLocale = function(id, name, image) {
 	this.id = id;
 	this.name = name;
@@ -23,6 +33,12 @@ ZmLocale = function(id, name, image) {
 ZmLocale.localeMap = {};
 ZmLocale.languageMap = {};
 
+/**
+ * Creates the locale.
+ * 
+ * @param	{String}	id		the locale id (for example, <code>en_US</code>)
+ * @param	{String}	name	the locale name
+ */
 ZmLocale.create =
 function(id, name) {
 	var index = id.indexOf("_");
@@ -50,7 +66,11 @@ function(id, name) {
 	}
 };
 
-// Returns true if there are more than one selectable locale.
+/**
+ * Checks if there are more than one selectable locale.
+ * 
+ * @return	{Boolean}	<code>true</code> if there are more than one selectable locale
+ */
 ZmLocale.hasChoices =
 function() {
 	var count = 0;
@@ -66,6 +86,11 @@ function() {
 	return false;
 };
 
+/**
+ * Gets the image.
+ * 
+ * @return	{String}	the image
+ */
 ZmLocale.prototype.getImage =
 function() {
 	return this._image || this._getLanguageImage();

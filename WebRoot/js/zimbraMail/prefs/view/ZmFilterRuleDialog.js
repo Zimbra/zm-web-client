@@ -26,6 +26,8 @@
  * in.</p>
  *
  * @author Conrad Damon
+ * 
+ * @extends		DwtDialog
  */
 ZmFilterRuleDialog = function() {
 
@@ -66,13 +68,13 @@ ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH		= 120;
 ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH	= 20;
 
 /**
- * Shows the dialog and displays either a given rule for editing, or a dummy
+ * Pops-up the dialog and displays either a given rule for editing, or a dummy
  * rule that is the base for adding a new rule.
  *
- * @param rule				[ZmFilterRule]*		rule to edit
- * @param editMode			[boolean]*			if true, we are editing a rule
- * @param referenceRule		[ZmFilterRule]*		rule after which to add new rule
- * @param accountName		[String]*			name of the account to
+ * @param {ZmFilterRule}	rule				the rule to edit
+ * @param {Boolean}	editMode			if <code>true</code>, we are editing a rule
+ * @param {ZmFilterRule}	referenceRule		the rule after which to add new rule
+ * @param {String}	accountName		the name of the account
  */
 ZmFilterRuleDialog.prototype.popup =
 function(rule, editMode, referenceRule, accountName) {
@@ -112,23 +114,30 @@ function(rule, editMode, referenceRule, accountName) {
 };
 
 /**
-* Clears the conditions and actions table before popdown so we don't keep
-* adding to them.
-*/
+ * Pops-down the dialog. Clears the conditions and actions table before popdown
+ * so we don't keep adding to them.
+ */
 ZmFilterRuleDialog.prototype.popdown =
 function() {
 	this._clearTables();
 	DwtDialog.prototype.popdown.call(this);
 };
 
+/**
+ * Gets the tab group member.
+ * 
+ * @return	{DwtTabGroup}		the tab group
+ */
 ZmFilterRuleDialog.prototype.getTabGroupMember =
 function() {
 	return this._tabGroup;
 };
 
 /**
-* Returns HTML that forms the basic framework of the dialog.
-*/
+ * Gets the HTML that forms the basic framework of the dialog.
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._contentHtml =
 function() {
 	// identifiers
@@ -217,14 +226,16 @@ function() {
 };
 
 /**
-* Draws a table of conditions or actions. Returns the ID of the last row added.
-*
-* @param rule			[ZmFilterRule]		source rule
-* @param isCondition	[boolean]			true if we're drawing conditions (as opposed to actions)
-* @param tableId		[String]			Dwt Id representing the parent table
-* @param rowData		[Object]			meta data used to figure out which Dwt widget to create
-* @param tabGroup		[DwtTabGroup]		tab group for focus
-*/
+ * Draws a table of conditions or actions. Returns the ID of the last row added.
+ *
+ * @param {ZmFilterRule}	rule			the source rule
+ * @param {Boolean}	isCondition		if <code>true</code>, we're drawing conditions (as opposed to actions)
+ * @param {String}	tableId		the DWT id representing the parent table
+ * @param {Object}	rowData		the meta data used to figure out which DWT widget to create
+ * @param {DwtTabGroup}	tabGroup		tab group for focus
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._renderTable =
 function(rule, isCondition, tableId, rowData, tabGroup) {
 	var table = document.getElementById(tableId);
@@ -265,13 +276,15 @@ function(rule, isCondition, tableId, rowData, tabGroup) {
 };
 
 /**
-* Returns the HTML for a single condition or action row.
-*
-* @param data			[object]	an object containing meta info about the filter rule condition or action
-* @param test			[String]	type of test condition (headerTest, sizeTest, bodyTest, etc)
-* @param isCondition	[boolean]	true if we're rendering a condition row
-* @param rowId			[String]	Unique ID representing this row
-*/
+ * Gets the HTML for a single condition or action row.
+ *
+ * @param {Object}	data			an object containing meta info about the filter rule condition or action
+ * @param {String}	test			the type of test condition (headerTest, sizeTest, bodyTest, etc)
+ * @param {Boolean}	isCondition		if <code>true</code>, we're rendering a condition row
+ * @param {String}	rowId		the unique ID representing this row
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._getRowHtml =
 function(data, test, isCondition, rowId) {
 	var conf;
@@ -361,10 +374,12 @@ function() {
 };
 
 /**
-* Adds a new condition or action row to its table.
-*
-* @param isCondition	[boolean]	true if we're adding a condition row
-*/
+ * Adds a new condition or action row to its table.
+ *
+ * @param {Boolean}	isCondition	if <code>true</code>, we're adding a condition row
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._addRow =
 function(isCondition) {
 	var rule = ZmFilterRule.getDummyRule();
@@ -383,12 +398,14 @@ function(isCondition) {
 };
 
 /**
-* Removes a condition or action row from its table. Also cleans up any DWT
-* objects the row was using.
-*
-* @param rowId			[string]	ID of the row to remove
-* @param isCondition	[boolean]	true if we're removing a condition row
-*/
+ * Removes a condition or action row from its table. Also cleans up any DWT
+ * objects the row was using.
+ *
+ * @param {String}	rowId			the ID of the row to remove
+ * @param {Boolean}	isCondition		if <code>true</code>, we're removing a condition row
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._removeRow =
 function(rowId, isCondition) {
 	var row = document.getElementById(rowId);
@@ -407,20 +424,22 @@ function(rowId, isCondition) {
 };
 
 /**
-* Creates an input widget and returns HTML for a table cell that will contain it.
-* The config for a condition or action is based on its main operator; for conditions
-* it's called subject ("from", "body", etc), and for actions it's just called the
-* action ("keep", "fileinto", etc). Each one of those has its own particular inputs.
-* This method creates one of those inputs.
-*
-* @param conf		[hash or boolean]	the config for this subject or action; boolean if rendering
-*										the actual subject or action (means "isCondition")
-* @param field		[string]			name of the input field
-* @param options	[array]				if the field type is a select, its options
-* @param rowData	[Object]			current value of the field, if any
-* @param testType	[String]			type of test condition (i.e. headerTest, attachmentTest, bodyTest, etc)
-* @param rowId		[string]			ID of the containing row
-*/
+ * Creates an input widget and returns HTML for a table cell that will contain it.
+ * The config for a condition or action is based on its main operator; for conditions
+ * it's called subject ("from", "body", etc), and for actions it's just called the
+ * action ("keep", "fileinto", etc). Each one of those has its own particular inputs.
+ * This method creates one of those inputs.
+ *
+ * @param {Hash|Boolean}	conf		the config for this subject or action; boolean if rendering
+ *										the actual subject or action (means "isCondition")
+ * @param {String}	field		the name of the input field
+ * @param {Array}	options		if the field type is a select, its options
+ * @param {Object}	rowData	the current value of the field, if any
+ * @param {String}	testType	the type of test condition (i.e. headerTest, attachmentTest, bodyTest, etc)
+ * @param {String}	rowId		the ID of the containing row
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._createRowComponent =
 function(conf, field, options, rowData, testType, rowId) {
 	var tabGroup = this._getCurrentTabScope();
@@ -654,11 +673,13 @@ function(isMainSelect, testType, field, rowData) {
 };
 
 /**
-* Returns HTML for the + and - buttons at the end of each row.
-*
-* @param rowId			[string]	ID of the row that gets the buttons
-* @param isCondition	[boolean]	true if we're adding them to a condition row
-*/
+ * Returns HTML for the + and - buttons at the end of each row.
+ *
+ * @param {String}	rowId			the ID of the row that gets the buttons
+ * @param {Boolean}	isCondition		the <code>true</code>, we're adding them to a condition row
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._getPlusMinusHtml =
 function(rowId, isCondition) {
 	var tabGroup = this._getCurrentTabScope();
@@ -687,11 +708,13 @@ function(rowId, isCondition) {
 };
 
 /**
-* If there's only one row, disable its Minus button (since removing it would
-* leave the user with nothing).
-*
-* @param isCondition	[boolean]	true if we're checking a condition row
-*/
+ * If there's only one row, disable its Minus button (since removing it would
+ * leave the user with nothing).
+ *
+ * @param {Boolean}	isCondition	if <code>true</code>, we're checking a condition row
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._resetOperations =
 function(isCondition) {
 	var tableId = isCondition ? this._conditionsTableId : this._actionsTableId;
@@ -711,11 +734,13 @@ function(isCondition) {
 };
 
 /**
-* Update the inputs for a row based on the subject (condition), or action name.
-* The old row is removed, and a new row is created and inserted.
-*
-* @param ev		[DwtEvent]		event (from DwtSelect)
-*/
+ * Update the inputs for a row based on the subject (condition), or action name.
+ * The old row is removed, and a new row is created and inserted.
+ *
+ * @param {DwtEvent}	ev		the event (from {@link DwtSelect})
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._rowChangeListener =
 function(ev) {
 	var newValue = ev._args.newValue;
@@ -770,12 +795,14 @@ function(ev) {
 };
 
 /**
-* For the "Header Named" input only - hide the last input field (value) if the
-* selected op is "exists" or "does not exist", since those are unary ops which
-* don't take a value.
-*
-* @param ev		[DwtEvent]		event (from DwtSelect)
-*/
+ * For the "Header Named" input only - hide the last input field (value) if the
+ * selected op is "exists" or "does not exist", since those are unary ops which
+ * don't take a value.
+ *
+ * @param {DwtEvent}	ev		the event (from {@link DwtSelect})
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._opsChangeListener =
 function(ev) {
 	var rowId = ev._args.selectObj.getData(ZmFilterRuleDialog.ROW_ID);
@@ -786,10 +813,12 @@ function(ev) {
 };
 
 /**
-* Updates the calendar button text with a date that's just been selected.
-*
-* @param ev		[DwtEvent]		event (from DwtCalendar)
-*/
+ * Updates the calendar button text with a date that's just been selected.
+ *
+ * @param {DwtEvent}	ev		the event (from {@link DwtCalendar})
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._dateListener =
 function(ev) {
 	var cal = ev.item;
@@ -801,10 +830,12 @@ function(ev) {
 };
 
 /**
-* Adds or removes a condition/action row.
-*
-* @param ev		[DwtEvent]		event
-*/
+ * Adds or removes a condition/action row.
+ *
+ * @param {DwtEvent}	ev		the event
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._plusMinusListener =
 function(ev) {
 	var button = ev.item;
@@ -820,10 +851,12 @@ function(ev) {
 };
 
 /**
-* Pops up one of two dialogs, for choosing a folder or a tag.
-* 
-* @param ev		[DwtEvent]		event
-*/
+ * Pops up one of two dialogs, for choosing a folder or a tag.
+ * 
+ * @param {DwtEvent}	ev		the event
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._browseListener =
 function(ev) {
 	var type = ev.item.getData(ZmFilterRuleDialog.BROWSE_TYPE);
@@ -839,11 +872,13 @@ function(ev) {
 };
 
 /**
-* Changes the text of a button to the folder/tag that the user just chose.
-*
-* @param	button		[DwtButton]		the browse button
-* @param	organizer	[ZmOrganizer]	the folder or tag that was chosen
-*/
+ * Changes the text of a button to the folder/tag that the user just chose.
+ *
+ * @param	{DwtButton}	button		the browse button
+ * @param	{ZmOrganizer}	organizer	the folder or tag that was chosen
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._browseSelectionCallback =
 function(button, organizer) {
 	var type = button.getData(ZmFilterRuleDialog.BROWSE_TYPE);
@@ -863,10 +898,12 @@ function(button, organizer) {
 };
 
 /**
-* Attaches input widgets to the DOM tree based on placeholder IDs.
-*
-* @param rowId	[String]*	ID of a single row to add inputs to
-*/
+ * Attaches input widgets to the DOM tree based on placeholder IDs.
+ *
+ * @param {String}	rowId	the ID of a single row to add inputs to
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._addDwtObjects =
 function(rowId) {
 	for (var id in this._inputs) {
@@ -885,10 +922,12 @@ function(rowId) {
 };
 
 /**
-* Destroys input widgets.
-*
-* @param rowId	[String]*	ID of a single row to clean up
-*/
+ * Destroys input widgets.
+ *
+ * @param {String}	rowId		the ID of a single row to clean up
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._removeDwtObjects =
 function(rowId) {
 	for (var id in this._inputs) {
@@ -903,10 +942,10 @@ function(rowId) {
 };
 
 /**
-* Saves the newly created/edited rule.
-*
-* @param ev		[DwtEvent]		event
-*/
+ * Saves the newly created/edited rule.
+ *
+ * @param {DwtEvent}	ev		the event
+ */
 ZmFilterRuleDialog.prototype._okButtonListener =
 function(ev) {
 
@@ -991,10 +1030,12 @@ function() {
 };
 
 /**
-* Creates an Object based on the values of a condition row.
-*
-* @param rowId	[string]	row ID
-*/
+ * Creates an Object based on the values of a condition row.
+ *
+ * @param {String}	rowId	the row ID
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._getConditionFromRow =
 function(rowId) {
 	var inputs = this._inputs[rowId];
@@ -1028,10 +1069,12 @@ function(rowId) {
 };
 
 /**
-* Returns an Object based on the values of an action row.
-*
-* @param rowId	[string]	row ID
-*/
+ * Returns an Object based on the values of an action row.
+ *
+ * @param {String}	rowId	the row ID
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._getActionFromRow =
 function(rowId) {
 	var inputs = this._inputs[rowId];
@@ -1043,13 +1086,15 @@ function(rowId) {
 };
 
 /**
-* Retrieves the value of an input based on what type it is. For all but text
-* inputs, we can get it from a DWT object.
-*
-* @param inputs		[object]	the inputs for one row
-* @param conf		[object]	config info for this row's subject or action name
-* @param field		[string]	current input field
-*/
+ * Retrieves the value of an input based on what type it is. For all but text
+ * inputs, we can get it from a DWT object.
+ *
+ * @param {Object}	inputs		the the inputs for one row
+ * @param {Object}	conf		the config info for this row's subject or action name
+ * @param {String}	field		the current input field
+ * 
+ * @private
+ */
 ZmFilterRuleDialog.prototype._getInputValue =
 function(inputs, conf, field) {
 	var type = conf[field];
@@ -1079,6 +1124,8 @@ function(inputs, conf, field) {
 *
 * @param row			[element]	a table row (TR)
 * @param isCondition	[boolean]	true if the row is a condition row
+* 
+* @private
 */
 ZmFilterRuleDialog.prototype._getIndexForRow =
 function(row, isCondition) {
@@ -1093,6 +1140,8 @@ function(row, isCondition) {
 
 /**
 * Buses tables, hopes to make it big in movies some day.
+* 
+* @private
 */
 ZmFilterRuleDialog.prototype._clearTables =
 function() {
@@ -1111,6 +1160,8 @@ function() {
 * Returns true if the condition has the necessary parts, an error message otherwise.
 *
 * @param condition	[Object]	condition
+* 
+* @private
 */
 ZmFilterRuleDialog.prototype._checkCondition =
 function(condition) {

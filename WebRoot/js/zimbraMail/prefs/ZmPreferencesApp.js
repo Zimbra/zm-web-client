@@ -14,9 +14,19 @@
  */
 
 /**
+ * @overview
+ */
+
+/**
+ * Creates the preferences application.
  * @class
- * Application for the preferences UI. This is where the preferences
+ * This class represents the application for the preferences UI. This is where the preferences
  * hook into the overall application.
+ * 
+ * @param	{DwtControl}	container	the control that contains components
+ * @param	{ZmController}	parentController	the parent window controller (set by the child window)
+ * 
+ * @extends		ZmApp
  */
 ZmPreferencesApp = function(container, parentController) {
 	ZmApp.call(this, ZmApp.PREFERENCES, container, parentController);
@@ -30,6 +40,9 @@ ZmEvent.S_FILTER					= "FILTER";
 ZmEvent.S_PREF_ZIMLET				= "PREF_ZIMLET";
 
 // App-related constants
+/**
+ * Defines the "preferences" application.
+ */
 ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES;
 ZmApp.CLASS[ZmApp.PREFERENCES]		= "ZmPreferencesApp";
 ZmApp.SETTING[ZmApp.PREFERENCES]	= ZmSetting.OPTIONS_ENABLED;
@@ -74,6 +87,11 @@ function(params, callback) {
 
 // Public methods
 
+/**
+ * Gets the preferences controller.
+ * 
+ * @return	{ZmPrefController}	the controller
+ */
 ZmPreferencesApp.prototype.getPrefController =
 function() {
 	if (!this._prefController) {
@@ -83,6 +101,11 @@ function() {
 	return this._prefController;
 };
 
+/**
+ * Gets the filter controller.
+ * 
+ * @return	{ZmFilterController}	the controller
+ */
 ZmPreferencesApp.prototype.getFilterController =
 function() {
 	if (!this._filterController) {
@@ -91,6 +114,12 @@ function() {
 	return this._filterController;
 };
 
+/**
+ * Gets the filter rules.
+ * 
+ * @param	{String}	[accountName]		the account name or <code>null</code> to use the active account
+ * @return	{ZmFilterRules}		the filter rules
+ */
 ZmPreferencesApp.prototype.getFilterRules =
 function(accountName) {
 	var ac = window.parentAppCtxt || window.appCtxt;

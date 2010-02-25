@@ -22,14 +22,27 @@
  *
  * @author Conrad Damon
  *
- * @param name			[string]	rule name
- * @param active		[boolean]*	true if the rule is enabled
- * @param filterActions	[Object]	filter action data as raw json object
- * @param filterTests	[Object]	filter conditions data as raw json object
+ * @param {String}	name			the rule name
+ * @param {Boolean}	active		if <code>true</code>, if the rule is enabled
+ * @param {Object}	filterActions	the filter action data as raw json object
+ * @param {Object}	filterTests	the filter conditions data as raw json object
+ * 
  */
 ZmFilterRule = function(name, active, filterActions, filterTests) {
+	/**
+     * The name of the filter rule.
+     * @type String
+     */
 	this.name = name;
+	/**
+	 * The filter rule actions.
+	 * @type	Object
+	 */
 	this.actions = filterActions || (new Object());
+	/**
+	 * The filter rules conditions.
+	 * @type	Object
+	 */
 	this.conditions = filterTests || (new Object());
 	this.active = (active !== false);
 	if (!filterTests) {
@@ -41,15 +54,36 @@ ZmFilterRule = function(name, active, filterActions, filterTests) {
 
 ZmFilterRule._nextId = 1;
 
+/**
+ * Defines the "group any" operator.
+ */
 ZmFilterRule.GROUP_ANY = "anyof";
+/**
+ * Defines the "group all" operator.
+ */
 ZmFilterRule.GROUP_ALL = "allof";
 
 // Display widgets for various rule properties
 var i = 1;
+/**
+ * Defines the "input" type.
+ */
 ZmFilterRule.TYPE_INPUT			= i++;
+/**
+ * Defines the "select" type.
+ */
 ZmFilterRule.TYPE_SELECT		= i++;
+/**
+ * Defines the "calendar" type.
+ */
 ZmFilterRule.TYPE_CALENDAR		= i++;
+/**
+ * Defines the "folder picker" type.
+ */
 ZmFilterRule.TYPE_FOLDER_PICKER	= i++;
+/**
+ * Defines the "tag picker" type.
+ */
 ZmFilterRule.TYPE_TAG_PICKER	= i++;
 
 // Conditions (subjects)
@@ -195,22 +229,25 @@ ZmFilterRule.MATCHING_OPS = [
 ];
 
 /**
-* Conditions
-*
-* The key is also known as the condition's "subject". It is the field of an email message that 
-* the condition is tested against.
-*
-* subjectMod	Type of input widget for the subjectModifier, which is a specifier or 
-*				modifier for the subject (such as which address to look at)
-* smOptions		List of possible values for the subjectModifier (SELECT type)
-* ops			Type of input widget for choosing the comparator
-* opsOptions	List of possible comparators for this subject (SELECT type)
-* value			Type of input widget for specifying the value
-* vOptions		List of possible values (SELECT type)
-* valueMod		Type of input widget for the valueModifier, which is a specifier or 
-*				modifier for the value (such as units for size)
-* vmOptions		List of possible values for the valueModifier (SELECT type)
-*/
+ * This defines a hash of conditions. Each condition is a hash of parameters. The key of the hash
+ * is also known as the condition "subject". It is the field of an email message that 
+ * the condition is tested against.
+ * 
+ * <p>
+ * The condition parameters are:
+ * <ul>
+ * <li><b>subjectMod</b>	Type of input widget for the subjectModifier, which is a specifier or 
+ *				modifier for the subject (such as which address to look at)</li>
+ * <li><b>smOptions</b>		List of possible values for the subjectModifier ({@link ZmFilterRule.TYPE_SELECT})</li>
+ * <li><b>ops</b>			Type of input widget for choosing the comparator</li>
+ * <li><b>opsOptions</b>	List of possible comparators for this subject ({@link ZmFilterRule.TYPE_SELECT} type)</li>
+ * <li><b>value</b>			Type of input widget for specifying the value</li>
+ * <li><b>vOptions</b>		List of possible values ({@link ZmFilterRule.TYPE_SELECT} type)</li>
+ * <li><b>valueMod</b>		Type of input widget for the valueModifier, which is a specifier or 
+ *				modifier for the value (such as units for size)</li>
+ * <li><b>vmOptions</b>		List of possible values for the valueModifier ({@link ZmFilterRule.TYPE_SELECT} type)</li>
+ * </ul>
+ */
 ZmFilterRule.CONDITIONS = {};
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_FROM] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
@@ -298,20 +335,62 @@ ZmFilterRule.IS_HEADER[ZmFilterRule.C_HEADER]	= true;
 
 // Actions
 var i = 1;
+/**
+ * Defines the "keep" action type.
+ */
 ZmFilterRule.A_KEEP		= i++;
+/**
+ * Defines the "folder" action type.
+ */
 ZmFilterRule.A_FOLDER	= i++;
+/**
+ * Defines the "discard" action type.
+ */
 ZmFilterRule.A_DISCARD	= i++;
+/**
+ * Defines the "stop" action type.
+ */
 ZmFilterRule.A_STOP		= i++;
+/**
+ * Defines the "flag" action type.
+ */
 ZmFilterRule.A_FLAG		= i++;
+/**
+ * Defines the "tag" action type.
+ */
 ZmFilterRule.A_TAG		= i++;
+/**
+ * Defines the "forward" action type.
+ */
 ZmFilterRule.A_FORWARD	= i++;
 
+/**
+ * Defines the "keep" action name.
+ */
 ZmFilterRule.A_NAME_KEEP						= "actionKeep";
+/**
+ * Defines the "file into a folder" action name.
+ */
 ZmFilterRule.A_NAME_FOLDER						= "actionFileInto";
+/**
+ * Defines the "discard" action name.
+ */
 ZmFilterRule.A_NAME_DISCARD						= "actionDiscard";
+/**
+ * Defines the "stop" action name.
+ */
 ZmFilterRule.A_NAME_STOP						= "actionStop";
+/**
+ * Defines the "flag" action name.
+ */
 ZmFilterRule.A_NAME_FLAG						= "actionFlag";
+/**
+ * Defines the "tag" action name.
+ */
 ZmFilterRule.A_NAME_TAG							= "actionTag";
+/**
+ * Defines the "forward" action name.
+ */
 ZmFilterRule.A_NAME_FORWARD						= "actionRedirect";
 
 ZmFilterRule.A_VALUE = {};
@@ -338,17 +417,20 @@ ZmFilterRule.A_LABEL[ZmFilterRule.A_FLAG]		= ZmMsg.mark;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_TAG]		= ZmMsg.tagWith;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_FORWARD]	= ZmMsg.forwardToAddress;
 
-/*
-* Actions
-*
-* The key is known as the action's "name". It may or may not take an argument.
-*
-* param			[constant]		type of input widget for the action's argument
-* pOptions		[hash]*			name/value pairs for args
-* precondition	[constant]*		setting that must be enabled for action to be available
-* 								(preconditions are set by ZmFilterRulesController, after
-* 								 settings are available)
-*/
+/**
+ * This defines a hash of actions. The hash key is known as the action "name".
+ * It may or may not take an argument.
+ * 
+ * <p>
+ * The action parameters are:
+ * <ul>
+ * <li><b>param</b>			the type of input widget for the action's argument</li>
+ * <li><b>pOptions</b>		the name/value pairs for args</li>
+ * <li><b>precondition</b>	the setting that must be enabled for action to be available
+ * 								(preconditions are set by ZmFilterRulesController, after
+ * 								 settings are available)</li>
+ * </ul>
+ */
 ZmFilterRule.ACTIONS = {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_KEEP] = {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_DISCARD] = {};
@@ -393,18 +475,20 @@ function() {
 };
 
 /**
-* Returns the rule's condition grouping operator.
-*/
+ * Gets the rule condition grouping operator.
+ * 
+ * @return	{constant}	the operator (see <code>ZmFilterRule.GROUP_</code> constants)
+ */
 ZmFilterRule.prototype.getGroupOp =
 function() {
 	return this.conditions.condition;
 };
 
 /**
-* Sets the rule's condition grouping operator to "any" or "all".
-*
-* @param groupOp	[constant]		grouping operator
-*/
+ * Sets the rule condition grouping operator to "any" or "all".
+ *
+ * @param {constant}	groupOp		the grouping operator (see <code>ZmFilterRule.GROUP_</code> constants)
+ */
 ZmFilterRule.prototype.setGroupOp =
 function(groupOp) {
 	this.conditions.condition = groupOp || ZmFilterRule.GROUP_ANY;
@@ -421,19 +505,21 @@ function(testType, comparator, value, subjectMod) {
 };
 
 /**
-* Clears the rule's conditions list.
-*/
+ * Clears the rule conditions list.
+ * 
+ */
 ZmFilterRule.prototype.clearConditions =
 function() {
 	this.conditions = {};
 };
 
 /**
-* Adds an action to the rule's actions list.
-*
-* @param actionType	[Const]		action type (i.e. actionKeep, actionDiscard, etc)
-* @param value		[String]	value for the action
-*/
+ * Adds an action to the rule actions list.
+ *
+ * @param {constant}		actionType	the action type (see <code>ZmFilterRule.A_</code> constants)
+ * @param {String}	value		the value for the action
+ * 
+ */
 ZmFilterRule.prototype.addAction =
 function(actionType, value) {
 	var action = ZmFilterRule.A_VALUE[actionType];
@@ -446,16 +532,19 @@ function(actionType, value) {
 };
 
 /**
-* Clears the rule's actions list.
-*/
+ * Clears the rule actions list.
+ * 
+ */
 ZmFilterRule.prototype.clearActions =
 function() {
 	this.actions = {};
 };
 
 /**
-* Returns true if the rule is enabled.
-*/
+ * Checks if the if the rule is enabled.
+ * 
+ * @return	{Boolean}	<code>true</code> if the rule is enabled
+ */
 ZmFilterRule.prototype.hasValidAction =
 function() {
 	for (var i in this.actions) {

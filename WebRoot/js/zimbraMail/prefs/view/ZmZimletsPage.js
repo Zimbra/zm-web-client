@@ -21,9 +21,14 @@
  * zimlets. User can see all the simlets those are enabled by admin for his account.
  * Out of these available zimlets user can choose some or all for his account.
  *
- *
  * @author Rajendra Patil
  *
+ * @param {DwtControl}	parent			the containing widget
+ * @param {Object}	section			the page
+ * @param {ZmPrefController}	controller		the prefs controller
+ * 
+ * @extends		ZmPreferencesPage
+ * @private
  */
 ZmZimletsPage = function(parent, section, controller) {
 	ZmPreferencesPage.call(this, parent, section, controller);
@@ -60,6 +65,9 @@ function(){
 	}
 };
 
+/**
+ * @private
+ */
 ZmZimletsPage.prototype._setupCustom =
 function(id, setup, value) {
 	if (id == ZmSetting.CHECKED_ZIMLETS) {
@@ -136,6 +144,13 @@ function() {
 	return r;
 };
 
+/**
+ * Gets the zimlet preferences.
+ * 
+ * @return	{ZmPrefZimlets}	the zimlets
+ * 
+ * @private
+ */
 ZmZimletsPage.prototype.getZimlets =
 function() {
 	if (!this._zimlets) {

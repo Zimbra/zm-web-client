@@ -13,6 +13,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the mobile devices page.
+ * @class
+ * This class represents the mobile devices page.
+ * 
+ * @param {DwtControl}	parent			the containing widget
+ * @param {Object}	section			the page
+ * @param {ZmPrefController}	controller		the prefs controller
+ * 
+ * @extends	ZmPreferencesPage
+ * 
+ * @private
+ */
 ZmMobileDevicesPage = function(parent, section, controller) {
 	ZmPreferencesPage.apply(this, arguments);
 
@@ -30,6 +43,9 @@ function () {
 
 // ZmPreferencesPage methods
 
+/**
+ * @private
+ */
 ZmMobileDevicesPage.prototype.showMe =
 function() {
 	ZmPreferencesPage.prototype.showMe.apply(this, arguments);
@@ -69,10 +85,17 @@ function(useDefaults) {
 
 
 /**
- * A list view that displays user's mobile devices. The data is in the form of a
- * list of ZmDevices.
+ * Creates a mobile device list.
+ * @class
+ * A list view that displays user mobile devices. The data is in the form of a
+ * list of {@link ZmMobileDevice} objects.
  *
- * @param params	[hash]			hash of params:
+ * @param {Hash}	params	a hash of parameters
+ * 
+ * 
+ * @extends		DwtListView
+ * 
+ * @private
  */
 ZmMobileDeviceListView = function(params) {
 

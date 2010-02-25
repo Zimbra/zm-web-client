@@ -1166,9 +1166,6 @@ if (ext == null) ext = "";
 	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-doc"/>
 	    <arg value="-d=${build.jsapi-zimbra-doc.dir}"/>
 	    <arg value="-r=4"/>
-	    <arg value="${js.dir}/ajax/dwt/widgets/DwtComposite.js"/>
-	    <arg value="${js.dir}/ajax/dwt/widgets/DwtControl.js"/>
-		<arg value="${js.dir}/ajax/dwt/widgets/DwtDialog.js"/>
 	    <arg value="${js.dir}/ajax/dwt/widgets/DwtButton.js"/>
 		<arg value="${js.dir}/ajax/dwt/widgets/DwtBaseDialog.js"/>
 	    <arg value="${js.dir}/ajax/dwt/widgets/DwtComposite.js"/>
@@ -1183,6 +1180,7 @@ if (ext == null) ext = "";
 	    <arg value="${js.dir}/zimbraMail/briefcase"/>
 	    <arg value="${js.dir}/zimbraMail/core"/>
 	    <arg value="${js.dir}/zimbraMail/portal"/>
+	    <arg value="${js.dir}/zimbraMail/prefs"/>
 	    <arg value="${js.dir}/zimbraMail/share"/>
 	    <arg value="${js.dir}/zimbraMail/calendar/model/ZmCalBaseItem.js"/>
 	    <arg value="${js.dir}/zimbraMail/calendar/model/ZmCalItem.js"/>
@@ -1203,6 +1201,7 @@ if (ext == null) ext = "";
 	    <arg value="${js.dir}/zimbraMail/briefcase"/>
 	    <arg value="${js.dir}/zimbraMail/core"/>
 	    <arg value="${js.dir}/zimbraMail/portal"/>
+	    <arg value="${js.dir}/zimbraMail/prefs"/>
 	    <arg value="${js.dir}/zimbraMail/share"/>
 	    <arg value="${js.dir}/zimbraMail/tasks"/>
 	  </java>

@@ -13,6 +13,15 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a personna.
+ * @class
+ * This class represents a personna.
+ * 
+ * @param	{ZmIdentity}		identity		the identity
+ * @param	{Object}		list		the list
+ * @extends		ZmAccount
+ */
 ZmPersona = function(identity, list) {
 	if (arguments.length == 0) { return; }
 	

@@ -30,9 +30,13 @@
  *
  * @author Conrad Damon
  * 
- * @param parent			[DwtControl]				the containing widget
- * @param section			[object]					which page we are
- * @param controller		[ZmPrefController]			prefs controller
+ * @param {DwtControl}	parent			the containing widget
+ * @param {object}	section			the page
+ * @param {ZmPrefController}	controller		the prefs controller
+ * 
+ * @extends		ZmPreferencesPage
+ * 
+ * @private
  */
 ZmShortcutsPage = function(parent, section, controller) {
 	ZmPreferencesPage.apply(this, arguments);
@@ -140,6 +144,8 @@ function() {
  *        title		[string]*	text for column header
  *        type		[constant]	app or sys
  *        sort		[boolean]*	if true, sort list of maps based on .sort values in props file
+ *        
+ * @private
  */
 ZmShortcutList.prototype._renderShortcuts =
 function(cols) {
@@ -313,6 +319,8 @@ function(key, style) {
  *
  * @param base		[string]	base style
  * @param style		[string]	style modifier
+ * 
+ * @private
  */
 ZmShortcutList._getClass =
 function(base, style) {

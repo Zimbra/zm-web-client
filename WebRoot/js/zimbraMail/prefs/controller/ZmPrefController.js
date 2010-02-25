@@ -17,12 +17,15 @@
  * Creates a new, empty preferences controller.
  * @constructor
  * @class
- * Manages the options pages.
+ * This class represents the preferences controller. This controller manages
+ * the options pages.
  *
  * @author Conrad Damon
  *
- * @param container		the shell
- * @param prefsApp		the preferences app
+ * @param {DwtShell}		container		the shell
+ * @param {ZmPreferencesApp}	prefsApp		the preferences application
+ * 
+ * @extends		ZmController
  */
 ZmPrefController = function(container, prefsApp) {
 
@@ -47,8 +50,8 @@ function() {
 };
 
 /**
-* Displays the tabbed options pages.
-*/
+ * Shows the tab options pages.
+ */
 ZmPrefController.prototype.show = 
 function() {
 	this._setView();
@@ -57,14 +60,20 @@ function() {
 };
 
 /**
-* Returns the prefs view (a view with tabs).
-*/
+ * Gets the preferences view (a view with tabs).
+ * 
+ * @return	{ZmPrefView}		the preferences view
+ */
 ZmPrefController.prototype.getPrefsView =
 function() {
 	return this._prefsView;
 };
 
-/** Returns the account test dialog. */
+/**
+ * Gets the account test dialog.
+ * 
+ * @return	{ZmAccountTestDialog}	the account test dialog
+ */
 ZmPrefController.prototype.getTestDialog =
 function() {
 	if (!this._testDialog) {
@@ -74,8 +83,10 @@ function() {
 };
 
 /**
-* Returns the filter rules controller.
-*/
+ * Gets the filter rules controller.
+ * 
+ * @return	{ZmFilterRulesController}	the filter rules controller
+ */
 ZmPrefController.prototype.getFilterRulesController =
 function() {
 	if (!this._filterRulesController) {
@@ -85,8 +96,10 @@ function() {
 };
 
 /**
-* Returns the mobile devices controller.
-*/
+ * Gets the mobile devices controller.
+ * 
+ * @return	{ZmMobileDevicesController}	the mobile devices controller
+ */
 ZmPrefController.prototype.getMobileDevicesController =
 function() {
 	if (!this._mobileDevicesController) {
@@ -102,6 +115,8 @@ function() {
  *
  * @param obj			[object]	an object, possibly with a "precondition" property.
  * @param precondition	[object]*	explicit precondition to check
+ * 
+ * @private
  */
 ZmPrefController.prototype.checkPreCondition =
 function(obj, precondition) {
@@ -170,6 +185,13 @@ function(map) {
 	return (map == "tabView");
 };
 
+/**
+ * Gets the tab view.
+ * 
+ * @return	{ZmPrefView}		the preferences view
+ * 
+ * @see		#getPrefsView
+ */
 ZmPrefController.prototype.getTabView =
 function() {
 	return this.getPrefsView();
@@ -188,10 +210,12 @@ function(view) {
 /**
  * Public method called to save prefs - does not check for dirty flag.
  *
- * @param callback	[AjxCallback]	async callback
- * @param noPop		[boolean]		if true, don't pop view after save
+ * @param {AjxCallback}	callback	the async callback
+ * @param {Boolean}	noPop		if <code>true</code>, do not pop view after save
  *
  * TODO: shouldn't have to call getChangedPrefs() twice
+ * 
+ * @private
  */
 ZmPrefController.prototype.save =
 function(callback, noPop) {
@@ -208,11 +232,13 @@ function(callback, noPop) {
 };
 
 /**
-* Enables/disables toolbar buttons.
-*
-* @param parent		[ZmButtonToolBar]	the toolbar
-* @param view		[constant]			current view (tab)
-*/
+ * Enables/disables toolbar buttons.
+ *
+ * @param {ZmButtonToolBar}	parent		the toolbar
+ * @param {constant}	view		the current view (tab)
+ * 
+ * @private
+ */
 ZmPrefController.prototype._resetOperations =
 function(parent, view) {
 	var section = ZmPref.getPrefSectionMap()[view];
@@ -222,8 +248,10 @@ function(parent, view) {
 };
 
 /**
-* Creates the prefs view, with a tab for each preferences page.
-*/
+ * Creates the prefs view, with a tab for each preferences page.
+ * 
+ * @private
+ */
 ZmPrefController.prototype._setView = 
 function() {
 	if (!this._prefsView) {
@@ -242,9 +270,11 @@ function() {
 	}
 };
 
-/*
-* Initializes the toolbar and sets up the listeners.
-*/
+/**
+ * Initializes the toolbar and sets up the listeners.
+ * 
+ * @private
+ */
 ZmPrefController.prototype._initializeToolBar = 
 function () {
 	if (this._toolbar) return;
@@ -280,6 +310,8 @@ function () {
  * @param noPop		[boolean]		if true, don't pop view after save
  * 
  * TODO: shouldn't have to call getChangedPrefs() twice
+ * 
+ * @private
  */
 ZmPrefController.prototype._saveListener = 
 function(ev, callback, noPop) {

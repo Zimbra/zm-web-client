@@ -17,9 +17,16 @@
  * Creates an empty mobile device object.
  * @constructor
  * @class
- *
+ * This class represents  mobile device.
+ * 
  * @author Parag Shah
  *
+ * @param	{Hash}		params		a hash of parameters
+ * @param	{Date}		params.lastPolicyUpdate		the last policy update time
+ * @param	{Date}		params.firstReqReceived		the first request received time
+ * @param	{Date}		params.remoteWipeAckTime		the remote wipe acknowledged time
+ * @param	{Date}		params.remoteWipeReqTime		the remote wipe requested time
+ * @param	{constant}	params.status			the status (see <code>ZmMobileDevice.STATUS_</code>)
  */
 ZmMobileDevice = function(params) {
 	this.lastPolicyUpdate = params.lastPolicyUpdate;
@@ -37,10 +44,25 @@ ZmMobileDevice = function(params) {
 
 // Consts
 
+/**
+ * Defines the "need provision" status.
+ */
 ZmMobileDevice.STATUS_NEED_PROVISION		= 0;
+/**
+ * Defines the "OK" status.
+ */
 ZmMobileDevice.STATUS_OK					= 1;
+/**
+ * Defines the "suspended" status.
+ */
 ZmMobileDevice.STATUS_SUSPENDED				= 2;
+/**
+ * Defines the "remote wipe requested" status.
+ */
 ZmMobileDevice.STATUS_REMOTE_WIPE_REQUESTED	= 3;
+/**
+ * Defines the "remote wipe complete" status.
+ */
 ZmMobileDevice.STATUS_REMOTE_WIPE_COMPLETE	= 4;
 
 
@@ -51,12 +73,22 @@ function() {
 	return "ZmMobileDevice";
 };
 
+/**
+ * Gets the status.
+ * 
+ * @return	{constant}	the status (see <code>ZmMobileDevice.STATUS_</code> constants)
+ */
 ZmMobileDevice.prototype.getStatus =
 function() {
 	return (!this.provisionable && this.status == ZmMobileDevice.STATUS_NEED_PROVISION)
 		? ZmMobileDevice.STATUS_OK : this.status;
 };
 
+/**
+ * Gets the status string.
+ * 
+ * @return	{String}	the status string
+ */
 ZmMobileDevice.prototype.getStatusString =
 function() {
 	var status = this.getStatus();
@@ -71,21 +103,41 @@ function() {
 	return "";
 };
 
+/**
+ * Gets the last policy update time as a string.
+ * 
+ * @return	{String}	the last policy update string
+ */
 ZmMobileDevice.prototype.getLastPolicyUpdateString =
 function() {
 	return this.lastPolicyUpdate ? AjxDateUtil.computeDateTimeString(new Date(this.lastPolicyUpdate*1000)) : "";
 };
 
+/**
+ * Gets the first request received time as a string.
+ * 
+ * @return	{String}	the first request received string
+ */
 ZmMobileDevice.prototype.getFirstReqReceivedString =
 function() {
 	return this.firstReqReceived ? AjxDateUtil.computeDateTimeString(new Date(this.firstReqReceived*1000)) : "";
 };
 
+/**
+ * Gets the remote wipe acknowledged time as a string.
+ * 
+ * @return	{String}	the remote wipe acknowledged string
+ */
 ZmMobileDevice.prototype.getRemoteWipeAckTimeString =
 function() {
 	return this.remoteWipeAckTime ? AjxDateUtil.computeDateTimeString(new Date(this.remoteWipeAckTime*1000)) : "";
 };
 
+/**
+ * Gets the remote wipe requested time as a string.
+ * 
+ * @return	{String}	the remote wipe requested string
+ */
 ZmMobileDevice.prototype.getRemoteWipeReqTimeString =
 function() {
 	return this.remoteWipeReqTime ? AjxDateUtil.computeDateTimeString(new Date(this.remoteWipeReqTime*1000)) : "";

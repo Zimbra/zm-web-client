@@ -13,6 +13,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a preferences page tree controller.
+ * @class
+ * This class represents the preferences page tree controller.
+ * 
+ * @extends		ZmTreeController
+ */
 ZmPrefPageTreeController = function() {
 	ZmTreeController.apply(this, arguments);
 };

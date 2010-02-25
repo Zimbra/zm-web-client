@@ -18,12 +18,16 @@
  * @constructor
  * @class
  * This class represents a single page of preferences available by selecting one of the
- * preference tabs. During construction, skeletal HTML is created. The preferences
+ * preference tabs. During construction, skeleton HTML is created. The preferences
  * aren't added until the page becomes visible.
  *
- * @param parent			[DwtControl]				the containing widget
- * @param section			[constant]					which preferences page we are
- * @param controller		[ZmPrefController]			prefs controller
+ * @param {DwtControl}	parent			the containing widget
+ * @param {constant}	section			the preferences page
+ * @param {ZmController}	controller		the prefs controller
+ * 
+ * @extends		DwtTabViewPage
+ * 
+ * @private
  */
 ZmPrefSection = function(parent, section, controller) {
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
@@ -73,6 +77,11 @@ function() {
     }
 };
 
+/**
+ * Gets the title.
+ * 
+ * @return	{String}		the title
+ */
 ZmPrefSection.prototype.getTitle =
 function() {
 	return this._title;

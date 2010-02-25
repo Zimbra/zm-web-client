@@ -14,15 +14,23 @@
  */
 
 /**
+ * @overview
+ */
+
+/**
+ * Creates the mobile devices controller.
  * @constructor
  * @class
- * Manages the mobile devices page, which has a button toolbar and a list view of the devices.
+ * This class represents the mobile devices controller. This controller manages the
+ * mobile devices page, which has a button toolbar and a list view of the devices.
  *
  * @author Parag Shah
  *
- * @param container		[DwtShell]			the shell
- * @param prefsApp		[ZmPreferencesApp]	the preferences app
- * @param prefsView		[ZmPrefView]		the preferences view
+ * @param {DwtShell}	container		the shell
+ * @param {ZmPreferencesApp}	prefsApp		the preferences app
+ * @param {ZmPrefView}	prefsView		the preferences view
+ * 
+ * @extends		ZmController
  */
 ZmMobileDevicesController = function(container, prefsApp, prefsView) {
 
@@ -41,6 +49,12 @@ function() {
 	return "ZmMobileDevicesController";
 };
 
+/**
+ * Initializes the controller.
+ * 
+ * @param	{ZmToolBar}	toolbar		the toolbar
+ * @param	{ZmListView}	listView		the list view
+ */
 ZmMobileDevicesController.prototype.initialize =
 function(toolbar, listView) {
 	// init toolbar
@@ -94,10 +108,12 @@ function(results) {
 };
 
 /**
-* Handles left-clicking on a rule. Double click opens up a rule for editing.
-*
-* @ev		[DwtEvent]		the click event
-*/
+ * Handles left-clicking on a rule. Double click opens up a rule for editing.
+ *
+ * @param	{DwtEvent}	ev		the click event
+ * 
+ * @private
+ */
 ZmMobileDevicesController.prototype._listSelectionListener =
 function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {

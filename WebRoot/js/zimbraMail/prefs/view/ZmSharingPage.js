@@ -17,14 +17,17 @@
  * Creates a preferences page for displaying shares.
  * @constructor
  * @class
- * This class is a ZmPreferencesPage that contains a ZmSharingView, which shows shares
- * in two list views.
+ * This class contains a {@link ZmSharingView}, which shows shares in two list views.
  *
  * @author Conrad Damon
  *
- * @param parent			[DwtControl]				the containing widget
- * @param section			[object]					which page we are
- * @param controller		[ZmPrefController]			prefs controller
+ * @param {DwtControl}	parent			the containing widget
+ * @param {Object}	section			the page
+ * @param {ZmPrefController}	controller		the prefs controller
+ * 
+ * @extends		ZmPreferencesPage
+ * 
+ * @private
  */
 ZmSharingPage = function(parent, section, controller) {
 	ZmPreferencesPage.apply(this, arguments);
@@ -94,9 +97,13 @@ function() {
  * ZmShare's on folders that have been shared by the user, and folders that have been mounted by the
  * user.
  *
- * @param params	[hash]				hash of params:
- *        parent	[ZmSharingPage]		owning prefs page
- *        pageId	[string]			ID of prefs page's HTML element
+ * @param {Hash}	params	a hash of parameters
+ * @param {ZmSharingPage}		params.parent	the owning prefs page
+ * @param {String}	params.pageId	the ID of prefs page's HTML element
+ * 
+ * @extends		DwtComposite
+ * 
+ * @private
  */
 ZmSharingView = function(params) {
 
@@ -141,6 +148,8 @@ ZmSharingView.prototype.toString = function() { return "ZmSharingView"; };
  *
  * @param owner					[string]*		address of account to check for shares from
  * @param userButtonClicked		[boolean]*		if true, user pressed "Find Shares" button
+ * 
+ * @private
  */
 ZmSharingView.prototype.findShares =
 function(owner, userButtonClicked) {
@@ -165,6 +174,8 @@ function(owner, userButtonClicked) {
 };
 /**
  * Displays a list of shares that have been accepted/mounted by the user.
+ * 
+ * @private
  */
 ZmSharingView.prototype.showMounts =
 function() {
@@ -223,7 +234,9 @@ function(result) {
 /**
  * Displays shares that are pending (have not yet been mounted).
  *
- * @param shares	[array]		list of JSON share info objects from GetShareInfoResponse	
+ * @param shares	[array]		list of JSON share info objects from GetShareInfoResponse
+ * 
+ * @private
  */
 ZmSharingView.prototype.showPendingShares =
 function(shares) {
@@ -245,6 +258,8 @@ function(shares) {
 /**
  * Displays grants (folders shared by the user) in a list view. Grants show up as shares
  * in folders owned by the user.
+ * 
+ * @private
  */
 ZmSharingView.prototype.showGrants =
 function() {
@@ -526,6 +541,8 @@ function(chooserDialog, org) {
  *   1. by name of owner
  *   2. by name of group it was shared with, if any
  *   3. by path of shared folder
+ *   
+ * @private
  */
 ZmSharingView.sortCompareShare =
 function(a, b) {
@@ -561,6 +578,8 @@ function(a, b) {
  * Sorts shares in the following order:
  *   1. by name of who it was shared with
  *   2. by path of shared folder
+ *   
+ * @private
  */
 ZmSharingView.sortCompareGrant =
 function(a, b) {
@@ -593,6 +612,8 @@ function(ev) {
  * changes through. The preferences app sends the notifications here.
  *
  * @param modifies		[hash]		notifications
+ * 
+ * @private
  */
 ZmSharingView.prototype.notifyModify =
 function(modifies) {
@@ -637,6 +658,8 @@ function(modifies) {
  * If we get a refresh block from the server, redraw all three list views.
  *
  * @param refresh	[object]	the refresh block JSON
+ * 
+ * @private
  */
 ZmSharingView.prototype.refresh =
 function(refresh) {
@@ -648,10 +671,14 @@ function(refresh) {
  * A list view that displays some form of shares, either with or by the user. The data
  * is in the form of a list of ZmShare's.
  *
- * @param params	[hash]			hash of params:
- *        type		[constant]		SHARE (shared with user) or GRANT (shared by user)
- *        view		[ZmSharingView]	owning view
- *        status	[constant]		pending or mounted
+ * @param {Hash}	params	a hash of parameters
+ * @param	{constant}		params.type		the SHARE (shared with user) or GRANT (shared by user)
+ * @param	{ZmSharingView}		params.view		the owning view
+ * @param	{constant}		params.status	the pending or mounted
+ *       
+ * @extends		DwtListView
+ * 
+ * @private
  */
 ZmSharingListView = function(params) {
 
@@ -826,6 +853,8 @@ function(ev) {
  * @param share		[ZmShare]		share
  * @param html		[array]			HTML content
  * @param idx		[int]			index
+ * 
+ * @private
  */
 ZmSharingListView.prototype._addActionLinks =
 function(share, html, idx) {
@@ -858,6 +887,8 @@ function(share, html, idx) {
  * @param share			[ZmShare]		a share
  * @param list			[array]			list of shares
  * @param compareFunc	[function]		compare function
+ * 
+ * @private
  */
 ZmSharingListView.prototype._getIndex =
 function(share, list, compareFunc) {

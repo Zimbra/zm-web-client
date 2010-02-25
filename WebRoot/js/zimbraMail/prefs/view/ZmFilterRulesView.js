@@ -13,6 +13,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the filter rules view.
+ * @class
+ * This class represents the filters tab view in preferences application.
+ * 
+ * @param	{DwtComposite}	parent		the parent widget
+ * @param	{ZmController}	controller	the controller
+ *
+ * @extends		DwtTabViewPage
+ * 
+ * @see		ZmPreferencesApp
+ */
 ZmFilterRulesView = function(parent, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage ZmFilterRulesView");
@@ -73,21 +85,41 @@ function() {
 	this.hasRendered = true;
 };
 
+/**
+ * Gets the title.
+ * 
+ * @return	{String}	the title
+ */
 ZmFilterRulesView.prototype.getTitle =
 function() {
 	return this._title;
 };
 
+/**
+ * Gets the toolbar.
+ * 
+ * @return	{ZmButtonToolBar}		the toolbar
+ */
 ZmFilterRulesView.prototype.getToolbar =
 function() {
 	return this._toolbar;
 };
 
+/**
+ * Gets the list view.
+ * 
+ * @return	{DwtListView}	the list view
+ */
 ZmFilterRulesView.prototype.getListView =
 function() {
 	return this._listView;
 };
 
+/**
+ * Gets the tab group.
+ * 
+ * @return	{DwtTabGroup}		the tab group
+ */
 ZmFilterRulesView.prototype.getTabGroupMember =
 function() {
 	return this._tabGroup;
@@ -102,10 +134,16 @@ function() {
 };
 
 /**
- * ZmFilterListView
+ * Creates the filter list view.
+ * @class
+ * This class represents the filter list view.
  *
- * @param parent
- * @param controller
+ * @param	{DwtComposite}	parent		the parent widget
+ * @param	{ZmController}	controller	the controller
+ * 
+ * @extends		DwtListView
+ * 
+ * @private
  */
 ZmFilterListView = function(parent, controller) {
 	var headerList = this._getHeaderList();
@@ -135,6 +173,8 @@ function() {
  * is "tag" and tagging is disabled, don't show the rule).
  *
  * @param list
+ * 
+ * @private
  */
 ZmFilterListView.prototype.set =
 function(list) {
@@ -179,7 +219,9 @@ function(html, idx, item, field, colIdx, params) {
  * In general, we just re-display all the rules when anything changes, rather
  * than trying to update a particular row.
  *
- * @param ev		[DwtEvent]	event
+ * @param {DwtEvent}	ev		the event
+ * 
+ * @private
  */
 ZmFilterListView.prototype._changeListener =
 function(ev) {
@@ -193,10 +235,12 @@ function(ev) {
 };
 
 /**
-* Handles click of 'active' checkbox by toggling the rule's active state.
-*
-* @param ev			[DwtEvent]	click event
-*/
+ * Handles click of 'active' checkbox by toggling the rule's active state.
+ *
+ * @param {DwtEvent}	ev		the event
+ * 
+ * @private
+ */
 ZmFilterListView._activeStateChange =
 function(ev) {
 	var target = DwtUiEvent.getTarget(ev);
@@ -210,14 +254,16 @@ function(ev) {
 };
 
 /**
-* Override so that we don't change selection when the 'active' checkbox is clicked.
-* Also contains a hack for IE for handling a click of the 'active' checkbox, because
-* the ONCHANGE handler was only getting invoked on every other checkbox click for IE.
-*
-* @param clickedEl	[Element]	list DIV that received the click
-* @param ev			[DwtEvent]	click event
-* @param button		[constant]	button that was clicked
-*/
+ * Override so that we don't change selection when the 'active' checkbox is clicked.
+ * Also contains a hack for IE for handling a click of the 'active' checkbox, because
+ * the ONCHANGE handler was only getting invoked on every other checkbox click for IE.
+ *
+ * @param {Element}	clickedEl	the list DIV that received the click
+ * @param {DwtEvent}	ev			the click event
+ * @param {constant}	button		the button that was clicked
+ * 
+ * @private
+ */
 ZmFilterListView.prototype._allowLeftSelection =
 function(clickedEl, ev, button) {
 	// We only care about mouse events

@@ -21,10 +21,12 @@
  *
  * @author Conrad Damon
  *
- * @param params		[hash]				hash of params:
- *        parent		[DwtComposite] 		parent widget
- *        posStyle		[constant]*			positioning style
- *        controller	[ZmController]		owning controller
+ * @param {Hash}	params		a hash of parameters
+ * @param  {DwtComposite}	parent		the parent widget
+ * @param {constant}	posStyle		the positioning style
+ * @param {ZmController}	controller	the owning controller
+ * 
+ * @extends		DwtTabView
  */
 ZmPrefView = function(params) {
 
@@ -52,9 +54,6 @@ function () {
 	return "ZmPrefView";
 };
 
-/**
-* Returns this view's controller.
-*/
 ZmPrefView.prototype.getController =
 function() {
 	return this._controller;
@@ -74,10 +73,6 @@ function(sectionOrId) {
 	return this._tabId[sectionId];
 };
 
-/**
-* Displays a set of tabs, one for each preferences page. The first tab will have
-* its page rendered.
-*/
 ZmPrefView.prototype.show =
 function() {
 	if (this.hasRendered) { return; }
@@ -157,6 +152,8 @@ function(sectionId) {
  *
  * @param section   [object]    The section to add.
  * @param index     [number]    (Optional) The index where to add.
+ * 
+ * @private
  */
 ZmPrefView.prototype._addSection =
 function(section, index) {
@@ -242,6 +239,8 @@ function(view) {
  *    continueCallback.run(success);
  * };
  * </pre>
+ *
+ * @return	{Array}	an array of {AjxCallback} objects
  */
 ZmPrefView.prototype.getPreSaveCallbacks =
 function() {
@@ -264,6 +263,8 @@ function() {
  * <code>getPostSaveCallback</code> method and it returns a callback, the pref
  * controller will call it after performing any save. This is done for each page
  * that returns a callback.
+ * 
+ * @return	{Array}	an array of {AjxCallback} objects
  */
 ZmPrefView.prototype.getPostSaveCallbacks =
 function() {
@@ -280,15 +281,16 @@ function() {
 };
 
 /**
+ * Gets the changed preferences. Each prefs page is checked in
+ * turn. This method can also be used to check simply whether <em>_any_</em>
+ * prefs have changed, in which case it short-circuits as soon as it finds one that has changed.
  *
- * Each prefs page is checked in turn. This method can also be used to check
- * simply whether _any_ prefs have changed, in which case it short-circuits as
- * soon as it finds one that has changed.
- *
- * @param dirtyCheck		[boolean]* 			if true, only check if any prefs have changed
- * @param noValidation		[boolean]*			if true, don't perform any validation
- * @param batchCommand		[ZmBatchCommand]*	if not null, add soap docs to this batch command
-*/
+ * @param {Boolean}	dirtyCheck		if <code>true</code>, only check if any prefs have changed
+ * @param {Boolean}	noValidation		if <code>true</code>, don't perform any validation
+ * @param {ZmBatchCommand}	batchCommand		if not <code>null</code>, add soap docs to this batch command
+ * 
+ * @return	{Array|Boolean}	an array of {ZmPref} objects or <code>false</code> if no changed prefs
+ */
 ZmPrefView.prototype.getChangedPrefs =
 function(dirtyCheck, noValidation, batchCommand) {
 	var list = [];
@@ -423,16 +425,21 @@ function(type, origValue, value) {
 };
 
 /**
-* Returns true if any pref has changed.
-*/
+ * Checks if any preference has changed.
+ * 
+ * @return	{Boolean}	<code>true</code> if any preference has changed
+ */
 ZmPrefView.prototype.isDirty =
 function() {
 	return this.getChangedPrefs(true, true);
 };
 
 /**
-* Selects the section (tab) with the given id.
-*/
+ * Selects the section (tab) with the given id.
+ * 
+ * @param	{String}	sectionId		the section id
+ * 
+ */
 ZmPrefView.prototype.selectSection =
 function(sectionId) {
 	this.switchToTab(this._tabId[sectionId]);

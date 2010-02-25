@@ -15,18 +15,21 @@
 
 /**
  * Creates a preferences section. This is a "pseudo" organizer for
- * the preferences app's tree view.
+ * the preferences application tree view.
  * @constructor
  * @class
- *
- * @param params    [object]    Construction parameters:
- *      id			[int]			numeric ID
- *      name		[string]		name
- *      parent		[ZmOrganizer]	parent folder
- *      tree		[ZmTree]		tree model that contains this folder
- *      pageId		[string]		ID of pref page
- *      icon		[string]		Icon name.
- *      tooltip		[string]		Tooltip text.
+ * This class represents the preference page in the preferences application.
+ * 
+ * @param {Hash}	params    a hash of parameters
+ * @param	{int}	     params.id			the numeric ID
+ * @param	{String}	params.name		the name
+ * @param	{ZmOrganizer}	params.parent		the parent folder
+ * @param	{ZmTree}	params.tree		the tree model that contains this folder
+ * @param	{String}	params.pageId		the ID of pref page
+ * @param	{String}	params.icon		the icon name
+ * @param	{String}	params.tooltip		the tool tip text
+ * 
+ * @extends		ZmOrganizer
  */
 ZmPrefPage = function(params) {
 	if (arguments.length == 0) { return; }
