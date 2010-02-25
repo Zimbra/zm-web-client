@@ -79,7 +79,6 @@ ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH	= 20;
 ZmFilterRuleDialog.prototype.popup =
 function(rule, editMode, referenceRule, accountName) {
 	// always make sure we have the right rules container in case of multi-mbox
-	this._accountName = accountName;
 	this._rules = AjxDispatcher.run("GetFilterRules", accountName);
 	this._rules.loadRules(); // make sure rules are loaded (for when we save)
 	this._inputs = {};
@@ -863,27 +862,29 @@ function(ev) {
 	var isFolder = (type == ZmFilterRule.TYPE_FOLDER_PICKER);
 	var dialog = isFolder ? appCtxt.getChooseFolderDialog()	: appCtxt.getPickTagDialog();
 	var overviewId = isFolder ? dialog.getOverviewId(ZmApp.MAIL) : null;
-	var account = appCtxt.accountList.getAccountByName(this._accountName);
+	if (appCtxt.multiAccounts) {
+		overviewId = [overviewId, "-", appCtxt.getActiveAccount().name].join("");
+	}
 
 	dialog.reset();
 	dialog.setTitle((type == ZmFilterRule.TYPE_FOLDER_PICKER) ? ZmMsg.chooseFolder : ZmMsg.chooseTag);
-	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, ev.item);
-	dialog.popup({overviewId:overviewId, appName:ZmApp.MAIL, account:account});
+	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, [ev.item, dialog]);
+	dialog.popup({overviewId:overviewId, appName:ZmApp.MAIL, forceSingle:true});
 };
 
 /**
  * Changes the text of a button to the folder/tag that the user just chose.
  *
- * @param	{DwtButton}	button		the browse button
+ * @param	{DwtButton}		button		the browse button
+ * @param	{ZmDialog}		dialog		the folder or tag dialog that is popped up
  * @param	{ZmOrganizer}	organizer	the folder or tag that was chosen
  * 
  * @private
  */
 ZmFilterRuleDialog.prototype._browseSelectionCallback =
-function(button, organizer) {
+function(button, dialog, organizer) {
 	var type = button.getData(ZmFilterRuleDialog.BROWSE_TYPE);
 	var isFolder = (type == ZmFilterRule.TYPE_FOLDER_PICKER);
-	var dialog = isFolder ? appCtxt.getChooseFolderDialog() : appCtxt.getPickTagDialog();
 	if (organizer) {
 		// Bug 24425, don't allow root folder selection
 		if (isFolder && organizer.nId == ZmFolder.ID_ROOT) { return; }

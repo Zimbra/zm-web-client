@@ -328,7 +328,6 @@ function(ev) {
 		dialog.setMessage(ZmMsg.filterForwardActionWarning);
 		dialog.popup();
 	}
-
 };
 
 ZmFilterRulesController.prototype._runFilterOkCallback =
