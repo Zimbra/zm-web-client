@@ -1805,11 +1805,10 @@ function(action, msg, extraBodyText, incOptions, nosig) {
 		var preface = this._includedPreface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
 		if (incOptions.what == ZmSetting.INC_BODY) {
-			var space = htmlMode ? "" : crlf2;
 			if (htmlMode) {
 				wrapParams.text = headers.join(crlf) + crlf2 + body;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
-				value = preText + preface + bodyText;
+				value = preText + crlf2 + preface + bodyText;
 			} else {
 				wrapParams.text = headers.join(crlf);
 				wrapParams.len = 120; // headers tend to be longer
@@ -1817,7 +1816,7 @@ function(action, msg, extraBodyText, incOptions, nosig) {
 				wrapParams.text = body;
 				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
-				value = preText + space + preface + crlf2 + headerText + crlf + bodyText;
+				value = preText + crlf2 + preface + crlf2 + headerText + crlf + bodyText;
 			}
 		} else if (incOptions.what == ZmSetting.INC_SMART) {
 			var chunks = AjxStringUtil.getTopLevel(body);
