@@ -1039,18 +1039,21 @@ function() {
 
 ZmComposeController.prototype._setFormat =
 function(mode) {
+
 	if (mode == this._composeView.getComposeMode())	{ return; }
 
-	if ((this._composeView.isDirty() || this._action == ZmOperation.DRAFT))
-	{
+	var cv = this._composeView;
+	var dirty = cv.isDirty();
+	if (dirty || this._action == ZmOperation.DRAFT) {
 		if (!this._formatWarningDialog) {
 			this._formatWarningDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 		}
-		this._formatWarningDialog.registerCallback(DwtDialog.OK_BUTTON, this._formatOkCallback, this, [mode]);
-		this._formatWarningDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._formatCancelCallback, this);
+		var fwDlg = this._formatWarningDialog;
+		fwDlg.registerCallback(DwtDialog.OK_BUTTON, this._formatOkCallback, this, [mode]);
+		fwDlg.registerCallback(DwtDialog.CANCEL_BUTTON, this._formatCancelCallback, this);
 		var msg  = (mode == DwtHtmlEditor.TEXT) ? ZmMsg.switchToText : ZmMsg.switchToHtml;
-		this._formatWarningDialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-		this._formatWarningDialog.popup(this._composeView._getDialogXY());
+		fwDlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+		fwDlg.popup(cv._getDialogXY());
 	} else {
 		// bug 26658: remove the signature before changing mode, and
 		//            add it back after
@@ -1059,12 +1062,15 @@ function(mode) {
 			this.setSelectedSignature("");
 			this._composeView.applySignature(this._getBodyContent(), tmp);
 		}
-		this._composeView.setComposeMode(mode);
+		cv.setComposeMode(mode);
 		if (tmp) {
 			this.setSelectedSignature(tmp);
-			this._composeView.applySignature(this._getBodyContent(), tmp);
+			cv.applySignature(this._getBodyContent(), tmp);
 		}
+		return true;
 	}
+
+	return false;
 };
 
 ZmComposeController.prototype._processSendMsg =
@@ -1245,8 +1251,9 @@ function(ev) {
 	if (op == ZmOperation.REPLY || op == ZmOperation.REPLY_ALL) {
 		this._composeView._setAddresses(op, AjxEmailAddress.TO, this._toOverride);
 	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
-		this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE));
-		this._switchInclude();
+		if (this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE))) {
+			this._switchInclude();
+		}
 	} else {
 		var menu = this._optionsMenu[this._action];
 		if (op == ZmOperation.USE_PREFIX || op == ZmOperation.INCLUDE_HEADERS) {
@@ -1402,6 +1409,7 @@ ZmComposeController.prototype._formatOkCallback =
 function(mode) {
 	this._formatWarningDialog.popdown();
 	this._composeView.setComposeMode(mode);
+	this._composeView._dirtyModeSwitch = true;
 };
 
 ZmComposeController.prototype._formatCancelCallback =

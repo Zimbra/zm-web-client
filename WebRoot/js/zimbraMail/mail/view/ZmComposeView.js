@@ -812,8 +812,9 @@ function(composeMode) {
 
 		// for now, always reset message body size
 		this._resetBodySize();
+
 		// recalculate form value since HTML mode inserts HTML tags
-		this._origFormValue = this._formValue();
+		this._setFormValue();
 
 		// swap new body field into tab group
 		var newMember = (composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
@@ -904,7 +905,7 @@ function(msgDraft) {
 	this._showForwardField(msgDraft, ZmOperation.DRAFT);
 	this._resetBodySize();
 	// save form state (to check for change later)
-	this._origFormValue = this._formValue();
+	this._setFormValue();
 };
 
 ZmComposeView.prototype._handleInline =
@@ -1063,7 +1064,7 @@ function(bEnableInputs) {
 	this._resetBodySize();
 
 	this._msgAttId = null;
-	this._origFormValue = "";
+	this._clearFormValue();
 
 	// reset dirty shields
 	this._noSubjectOkay = this._badAddrsOkay = this._spellCheckOkay = false;
@@ -1384,6 +1385,8 @@ function(incAddrs, incSubject) {
 		return false;
 	}
 
+	if (this._dirtyModeSwitch) { return true; }
+
 	var curFormValue = this._formValue(incAddrs, incSubject);
 
 	// empty subject and body => not dirty
@@ -1395,7 +1398,6 @@ function(incAddrs, incSubject) {
 		return false;
 	}
 
-	// subject or body has changed => dirty
 	return (curFormValue != this._origFormValue);
 };
 
@@ -1913,7 +1915,7 @@ ZmComposeView.prototype.resetBody =
 function(action, msg, extraBodyText, incOptions, nosig) {
 	this.cleanupAttachments(true);
 	this._setBody(action, msg, extraBodyText, incOptions, nosig);
-	this._origFormValue = this._formValue();
+	this._setFormValue();
 	this._resetBodySize();
 };
 
@@ -1978,6 +1980,7 @@ function(composeMode) {
 	var defaultCompMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	this._composeMode = composeMode || defaultCompMode;
+	this._clearFormValue();
 
 	// init html editor
 	if (this.isTinyMCEEnabled()) {
@@ -2850,6 +2853,12 @@ function(msgDialog, ev){
 ZmComposeView.prototype._setFormValue =
 function() {
 	this._origFormValue = this._formValue();
+};
+
+ZmComposeView.prototype._clearFormValue =
+function() {
+	this._origFormValue = "";
+	this._dirtyModeSwitch = false;
 };
 
 ZmComposeView.prototype._focusHtmlEditor =
