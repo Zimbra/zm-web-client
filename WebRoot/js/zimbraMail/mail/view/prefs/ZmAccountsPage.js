@@ -327,46 +327,50 @@ function(account, skipUpdate, ignoreProvider) {
 
 ZmAccountsPage.prototype._setAccount2 =
 function(account, skipUpdate, ignoreProvider) {
-	// NOTE: I hide all of the sections first and then show the
-	//       specific section because some of the sections use
-	//       the same div. This avoids double inititalization
-	//       in that case.
+	// NOTE: hide all sections first, then show the specific section b/c some
+	// sections use same div. This avoids double inititalization in that case.
 	var isExternal = account instanceof ZmDataSource;
 	var provider = !ignoreProvider && isExternal && account.getProvider();
 	var div = (provider && this._sectionDivs[provider.id]) || this._getSectionDiv(account);
 	if (div) {
 		this._currentAccount = account;
 		Dwt.setVisible(div, true);
-		switch (account.type) {
-			case ZmAccount.TYPE_POP:
-			case ZmAccount.TYPE_IMAP: {
-				this._currentSection = provider && ZmAccountsPage.SECTIONS[provider.id];
-				this._currentSection = this._currentSection || ZmAccountsPage.SECTIONS["EXTERNAL"];
-				this._setExternalAccount(account, this._currentSection);
-				if (ignoreProvider) {
-					this._setControlValue("PROVIDER", this._currentSection, "");
-				}
-				if (!skipUpdate) {
-					var password = this._getControlObject("PASSWORD", this._currentSection);
-					if (password) {
-						password.setShowPassword(false);
+		if (appCtxt.multiAccounts) {
+			this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
+			this._setZimbraAccount(account, this._currentSection);
+		} else {
+			switch (account.type) {
+				case ZmAccount.TYPE_POP:
+				case ZmAccount.TYPE_IMAP: {
+					this._currentSection = provider && ZmAccountsPage.SECTIONS[provider.id];
+					this._currentSection = this._currentSection || ZmAccountsPage.SECTIONS["EXTERNAL"];
+					this._setExternalAccount(account, this._currentSection);
+					if (ignoreProvider) {
+						this._setControlValue("PROVIDER", this._currentSection, "");
 					}
+					if (!skipUpdate) {
+						var password = this._getControlObject("PASSWORD", this._currentSection);
+						if (password) {
+							password.setShowPassword(false);
+						}
+					}
+					break;
 				}
-				break;
-			}
-			case ZmAccount.TYPE_PERSONA: {
-				this._currentSection = ZmAccountsPage.SECTIONS["PERSONA"];
-				this._setPersona(account, this._currentSection);
-				break;
-			}
-			default: {
-				this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
-				this._setZimbraAccount(account, this._currentSection);
-				break;
+				case ZmAccount.TYPE_PERSONA: {
+					this._currentSection = ZmAccountsPage.SECTIONS["PERSONA"];
+					this._setPersona(account, this._currentSection);
+					break;
+				}
+				default: {
+					this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
+					this._setZimbraAccount(account, this._currentSection);
+					break;
+				}
 			}
 		}
-		if (!this._tabGroup.contains(this._currentSection.tabGroup))
+		if (!this._tabGroup.contains(this._currentSection.tabGroup)) {
 			this._tabGroup.addMember(this._currentSection.tabGroup);
+		}
 	}
 
 	// update list cells
@@ -1369,18 +1373,9 @@ function() {
 
 ZmAccountsPage.prototype._getSectionDiv =
 function(account) {
-	if (account.type == ZmAccount.TYPE_AOL ||
-		account.type == ZmAccount.TYPE_GMAIL ||
-		account.type == ZmAccount.TYPE_LIVE ||
-		account.type == ZmAccount.TYPE_MSE ||
-		account.type == ZmAccount.TYPE_EXCHANGE ||
-		account.type == ZmAccount.TYPE_YMP ||
-		account.type == ZmAccount.TYPE_ZIMBRA)
-	{
-		return this._sectionDivs[ZmAccount.TYPE_ZIMBRA];
-	}
-
-	return this._sectionDivs[account.type];
+	return appCtxt.multiAccounts
+		? this._sectionDivs[ZmAccount.TYPE_ZIMBRA]
+		: this._sectionDivs[account.type];
 };
 
 ZmAccountsPage.prototype._setupPrimaryDiv =
