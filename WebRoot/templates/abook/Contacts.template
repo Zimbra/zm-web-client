@@ -84,31 +84,31 @@
 		</tr>
 		<tr valign=top>
 			<td class=rowLabel><$=ZmMsg.emailLabel$></td>
-			<td><div id="${id}_EMAIL" tabindex="500"></div></td>
+			<td class=rowValue><div id="${id}_EMAIL" tabindex="500"></div></td>
 		</tr>
 		<tr valign=top>
 			<td class=rowLabel><$=ZmMsg.phoneLabel$></td>
-			<td><div id="${id}_PHONE" tabindex="600"></div></td>
+			<td class=rowValue><div id="${id}_PHONE" tabindex="600"></div></td>
 		</tr>
 		<tr valign=top>
 			<td class=rowLabel><$=ZmMsg.imLabel$></td>
-			<td><div id="${id}_IM" tabindex="700"></div></td>
+			<td class=rowValue><div id="${id}_IM" tabindex="700"></div></td>
 		</tr>
 		<tr valign=top>
 			<td class=rowLabel><$=ZmMsg.addressLabel$></td>
-			<td><div id="${id}_ADDRESS" tabindex="800"></div></td>
+			<td class=rowValue><div id="${id}_ADDRESS" tabindex="800"></div></td>
 		</tr>
 		<tr valign=top>
 			<td class=rowLabel><$=ZmMsg.urlLabel$></td>
-			<td><div id="${id}_URL" tabindex="900"></div></td>
+			<td class=rowValue><div id="${id}_URL" tabindex="900"></div></td>
 		</tr>
 		<tr valign=top>
 			<td class=rowLabel><$=ZmMsg.otherLabel$></td>
-			<td><div id="${id}_OTHER" tabindex="1000"></div></td>
+			<td class=rowValue><div id="${id}_OTHER" tabindex="1000"></div></td>
 		</tr>
 		<tr valign=top>
 			<td class=rowLabel><$=ZmMsg.notesLabel$></td>
-			<td style='padding-left:3'><div id="${id}_NOTES" tabindex="1100"></div></td>
+			<td class=rowValue style='padding-left:3'><div id="${id}_NOTES" tabindex="1100"></div></td>
 		</tr>
 	</table>
 </template>
@@ -542,7 +542,7 @@
 <template id="abook.Contacts#SplitView_address_value">
 	<tr valign=top>
 		<td class=rowLabel><$= data.seenone ? "" : data.label $></td>
-		<td id='${id}_<$=data.name$>'>
+		<td id='${id}_<$=data.name$>' class=rowValue>
 			<$ var address = data.address;
 			if (address.Street) { $>
 				<div><$=address.Street$></div>
@@ -560,7 +560,7 @@
 				<div><$=address.Country$></div>
 			<$ } $>
 		</td>
-		<td style='color:gray'>&nbsp;<$= data.type $></td>
+		<td style='color:gray' class='rowType'>&nbsp;<$= data.type $></td>
 	</tr>
 </template>
 
@@ -674,11 +674,11 @@
 
 		<tr valign=top>
 			<td class=rowLabel><$= data.seenone ? "" : data.label $></td>
-			<td id='${id}_<$=name$>' <$ data.type ? "" : "colspan=2" $>>
+			<td id='${id}_<$=name$>' <$ data.type ? "" : "colspan=2" $> class=rowValue>
 				<$= value $>
 			</td>
 			<$ if (data.type) { $>
-				<td style='color:gray'>&nbsp;<$= data.type $></td>
+				<td style='color:gray' class='rowType'>&nbsp;<$= data.type $></td>
 			<$ } $>
 		</tr>
 

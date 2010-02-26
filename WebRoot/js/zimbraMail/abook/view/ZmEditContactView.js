@@ -1409,11 +1409,13 @@ ZmEditContactViewInputSelect.prototype.TEMPLATE = "abook.Contacts#ZmEditContactV
 ZmEditContactViewInputSelect.prototype.setValue = function(value) {
 	var hasOptions = this._options.length > 0;
 	var inputValue = hasOptions ? value && value.value : value;
-	if (this._input) {
-		this._input.setValue(inputValue || "");
-	}
 	if (hasOptions && this._select) {
 		this._select.setSelectedValue((value && value.type) || this._options[0].value);
+	}
+	if (this._input) {
+		if (this._select)
+			this._input.setEnabled(this._select.getValue() != "_NONE");
+		this._input.setValue(inputValue || "");
 	}
 };
 
