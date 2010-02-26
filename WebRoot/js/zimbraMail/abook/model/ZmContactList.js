@@ -404,19 +404,20 @@ function(params) {
 
 	// for "soft" moves, handle moving out of Trash differently
 	if (softMove.length > 0) {
-		params.attrs = params.attrs || {};
-		params.attrs.l = params.folder.id;
-		params.action = "move";
-        if (params.folder.id == ZmFolder.ID_TRASH) {
-            params.actionText = ZmMsg.actionTrash;
+		var params1 = AjxUtil.hashCopy(params);
+		params1.attrs = params.attrs || {};
+		params1.attrs.l = params.folder.id;
+		params1.action = "move";
+        if (params1.folder.id == ZmFolder.ID_TRASH) {
+            params1.actionText = ZmMsg.actionTrash;
         } else {
-            params.actionText = ZmMsg.actionMove;
-            params.actionArg = params.folder.getName(false, false, true);
+            params1.actionText = ZmMsg.actionMove;
+            params1.actionArg = params.folder.getName(false, false, true);
         }
-		params.callback = params.outOfTrash && new AjxCallback(this, this._handleResponseMoveItems, params);
-		params.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
+		params1.callback = params.outOfTrash && new AjxCallback(this, this._handleResponseMoveItems, params);
+		params1.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
 
-		this._itemAction(params);
+		this._itemAction(params1);
 	}
 };
 

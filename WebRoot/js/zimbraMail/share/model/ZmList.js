@@ -468,28 +468,23 @@ function(params) {
 		return this._mixedAction("moveItems", params);
 	}
 
-	params.items = AjxUtil.toArray(params.items);
-	params.attrs = params.attrs || {};
-	params.attrs.l = params.folder.id;
-	params.action = "move";
-    if (params.folder.id == ZmFolder.ID_TRASH) {
-        params.actionText = ZmMsg.actionTrash;
+	var params1 = AjxUtil.hashCopy(params);
+	params1.items = AjxUtil.toArray(params.items);
+	params1.attrs = params.attrs || {};
+	params1.attrs.l = params.folder.id;
+	params1.action = "move";
+    if (params1.folder.id == ZmFolder.ID_TRASH) {
+        params1.actionText = ZmMsg.actionTrash;
     } else {
-        params.actionText = ZmMsg.actionMove;
-        params.actionArg = params.folder.getName(false, false, true);
+        params1.actionText = ZmMsg.actionMove;
+        params1.actionArg = params.folder.getName(false, false, true);
     }
 
-	// bug: 42865 - make a copy of params
-	var proxyParams = {};
-	for (var key in params) {
-		proxyParams[key] = params[key];
-	}
-
 	if (this.type == ZmItem.MIXED) {
-		params.callback = new AjxCallback(this, this._handleResponseMoveItems, proxyParams);
+		params1.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
 	}
 
-	this._itemAction(params);
+	this._itemAction(params1);
 };
 
 /**

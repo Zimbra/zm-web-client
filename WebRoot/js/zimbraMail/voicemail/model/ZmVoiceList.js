@@ -48,19 +48,20 @@ function(params) {
 
 	params = Dwt.getParams(arguments, ["items", "folder", "attrs"]);
 
-	params.attrs = params.attrs || {};
-	params.attrs.phone = this.folder.phone.name;
-	params.attrs.l = params.folder.id;
-	params.action = "move";
-    if (params.folder.id == ZmFolder.ID_TRASH) {
-        params.actionText = ZmMsg.actionTrash;
+	var params1 = AjxUtil.hashCopy(params);
+	params1.attrs = params.attrs || {};
+	params1.attrs.phone = this.folder.phone.name;
+	params1.attrs.l = params.folder.id;
+	params1.action = "move";
+    if (params1.folder.id == ZmFolder.ID_TRASH) {
+        params1.actionText = ZmMsg.actionTrash;
     } else {
-        params.actionText = ZmMsg.actionMove;
-        params.actionArg = params.folder.getName(false, false, true);
+        params1.actionText = ZmMsg.actionMove;
+        params1.actionArg = params.folder.getName(false, false, true);
     }
-	params.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
+	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
 
-	this._itemAction(params);
+	this._itemAction(params1);
 };
 
 // The voice server isn't sending notifications. This callback updates
