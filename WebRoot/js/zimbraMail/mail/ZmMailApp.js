@@ -1430,6 +1430,7 @@ function(results, callback) {
 ZmMailApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
 	var controller = (results.type == ZmItem.MSG) ? this.getTradController() : this.getConvListController();
+	this.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[controller._getViewType()]);
 	controller.show(results);
 	if (this._forceMsgView) {
 		controller.selectFirstItem();
