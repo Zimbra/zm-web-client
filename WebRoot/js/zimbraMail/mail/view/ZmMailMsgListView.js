@@ -248,7 +248,8 @@ function(item, colIdx) {
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, "16");
 	}
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, "16");
+	if (appCtxt.get("FLAGGING_ENABLED"))
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, "16");
 	htmlArr[idx++] = "</tr></table>";
 
 	// second row
@@ -360,9 +361,11 @@ ZmMailMsgListView.prototype._getHeaderList =
 function(parent, controller) {
 	var headers;
 	if (this.isMultiColumn(controller)) {
-		headers = [
-			ZmItem.F_SELECTION,
-			ZmItem.F_FLAG,
+		headers = [];
+		headers.push(ZmItem.F_SELECTION);
+		if (appCtxt.get("FLAGGING_ENABLED"))
+			headers.push(ZmItem.F_FLAG);
+		headers.push(
 			ZmItem.F_PRIORITY,
 			ZmItem.F_TAG,
 			ZmItem.F_STATUS,
@@ -371,7 +374,7 @@ function(parent, controller) {
 			ZmItem.F_SUBJECT,
 			ZmItem.F_FOLDER,
 			ZmItem.F_SIZE
-		];
+		);
 		if (appCtxt.accountList.size(true) > 2) {
 			headers.push(ZmItem.F_ACCOUNT);
 		}
