@@ -49,16 +49,7 @@
                     <option value="flag"/><fmt:message key="actionAddFlag"/>
                     <option value="unflag"/><fmt:message key="actionRemoveFlag"/>
                     </c:if>
-                    <option disabled /><fmt:message key="actionOptSep"/>
-                    <option disabled /><fmt:message key="actionAddTag"/>
-                    <zm:forEachTag var="tag">
-                        <option value="t:${tag.id}" />${fn:escapeXml(tag.name)}
-                    </zm:forEachTag>
-                    <option disabled /><fmt:message key="actionOptSep"/>
-                    <option disabled /><fmt:message key="actionRemoveTag"/>
-                    <zm:forEachTag var="tag">
-                        <option value="u:${tag.id}" />${fn:escapeXml(tag.name)}
-                    </zm:forEachTag>
+                    <app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
                 </select>
                 <input class='tbButton' type="submit" name="action" value="<fmt:message key="actionGo"/>">
         &nbsp;&nbsp;
