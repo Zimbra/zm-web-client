@@ -646,7 +646,8 @@
 		attrs: data.attrs,
 		encode: AjxStringUtil.nl2br,
 		seenone: false,
-		label: ZmMsg.notesLabel, name: ZmContact.F_notes
+		label: ZmMsg.notesLabel,
+		name: ZmContact.F_notes
 	};
 	$>
 	<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
@@ -674,7 +675,7 @@
 
 		<tr valign=top>
 			<td class=rowLabel><$= data.seenone ? "" : data.label $></td>
-			<td id='${id}_<$=name$>' <$ data.type ? "" : "colspan=2" $> class=rowValue>
+			<td id='${id}_<$=name$>' <$= data.type ? "" : "colspan=2" $> class=rowValue>
 				<$= value $>
 			</td>
 			<$ if (data.type) { $>

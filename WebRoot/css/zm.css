@@ -3897,6 +3897,20 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	font-weight: bold;
 }
 
+.ZmEditContactView .rowValue, .ZmContactSplitView .rowValue {
+	padding:.25em .5em;
+	width: 150px;
+}
+
+.ZmEditContactView .rowValue, .ZmContactSplitView .rowValue[colspan] {
+	padding:.25em .5em;
+	width: auto;
+}
+
+.ZmEditContactView .rowType, .ZmContactSplitView .rowType {
+	padding:.25em .5em;
+}
+
 .itemSortIcon {
 	padding-left: 7px;
 	width: 100%;
