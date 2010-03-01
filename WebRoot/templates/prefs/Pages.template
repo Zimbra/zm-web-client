@@ -412,29 +412,31 @@ and the container element is replaced with that control.
 	</table>
 
 	<$ if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
-		<table border=0 cellspacing=0 cellpadding=0 width=100%>
-			<tr class='ZOptionsHeaderRow'>
-				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.junkMailOptions$></td>
-				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-			</tr>
-		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-			<tr>
-				<td class='ZOptionsSectionMain'>
-					<table width=100%>
-						<tr>
-							<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.blackListLabel$></td>
-							<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.whiteListLabel$></td>
-						</tr>
-						<tr>
-							<td class='ZOptionsField'><div id='${id}_MAIL_BLACKLIST'></div></td>
-							<td class='ZOptionsField'><div id='${id}_MAIL_WHITELIST'></div></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
+		<$ if (appCtxt.get(ZmSetting.MAIL_BLACKLIST_MAX_NUM_ENTRIES) > 0 || appCtxt.get(ZmSetting.MAIL_WHITELIST_MAX_NUM_ENTRIES) > 0) { $>
+			<table border=0 cellspacing=0 cellpadding=0 width=100%>
+				<tr class='ZOptionsHeaderRow'>
+					<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+					<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.junkMailOptions$></td>
+					<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+				</tr>
+			</table>
+			<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+				<tr>
+					<td class='ZOptionsSectionMain'>
+						<table width=100%>
+							<tr>
+								<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.blackListLabel$></td>
+								<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.whiteListLabel$></td>
+							</tr>
+							<tr>
+								<td class='ZOptionsField'><div id='${id}_MAIL_BLACKLIST'></div></td>
+								<td class='ZOptionsField'><div id='${id}_MAIL_WHITELIST'></div></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		<$ } $>
 	<$ } $>
 
 	<$ if (data.isEnabled(ZmSetting.POP_ENABLED)) { $>
