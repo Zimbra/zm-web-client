@@ -22,13 +22,12 @@
  *
  * @author Parag Shah
  * @author Conrad Damon
- */
-
-/**
- * ZmApptViewHelper
+ *
  * - Helper methods shared by several views associated w/ creating new appointments.
  *   XXX: move to new files when fully baked!
-*/
+ *   
+ * @private
+ */
 ZmApptViewHelper = function() {
 };
 
@@ -41,11 +40,11 @@ ZmApptViewHelper.REPEAT_OPTIONS = [
 	{ label: ZmMsg.custom, 				value: "CUS", 	selected: false }];
 
 /**
-* Returns an object with the indices of the currently selected time fields.
-*
-* @param tabView	[DwtTabView]	ZmApptTabViewPage or DwtSchedTabViewPage
-* @param dateInfo	[object]		hash of date info to fill in
-*/
+ * Gets an object with the indices of the currently selected time fields.
+ *
+ * @param {ZmApptTabViewPage|DwtSchedTabViewPage}	tabView		the tab view
+ * @param {Hash}	dateInfo	a hash of date info to fill in
+ */
 ZmApptViewHelper.getDateInfo =
 function(tabView, dateInfo) {
 	dateInfo.startDate = tabView._startDateField.value;

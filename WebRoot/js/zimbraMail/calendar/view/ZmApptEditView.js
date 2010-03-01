@@ -12,6 +12,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+
 /**
  * Creates a new calendar item edit view.
  * @constructor
@@ -21,10 +22,14 @@
  *
  * @author Parag Shah
  *
- * @param parent			[DwtControl]				some container
- * @param attendees			[hash]						attendees/locations/equipment
- * @param dateInfo			[object]					hash of date info
- * @param controller		[ZmController]				the compose controller for this view
+ * @param {DwtControl}	parent			some container
+ * @param {Hash}	attendees			attendees/locations/equipment
+ * @param {Object}	dateInfo			a hash of date info
+ * @param {ZmController}	controller		the compose controller for this view
+ * 
+ * @extends		ZmCalItemEditView
+ * 
+ * @private
  */
 ZmApptEditView = function(parent, attendees, controller, dateInfo) {
 

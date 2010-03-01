@@ -14,18 +14,24 @@
  */
 
 /**
- *	The strategy for the calendar is to leverage the list view stuff by creating a single
- *	view (i.e. ZmCalViewMgr) and have it manage the schedule views (e.g. week, month) and
- *	a single calendar view (the calendar widget to the right). Each of the schedule views
- *	will be a list view that are managed by the ZmCalViewMgr.
+ * Creates the calendar view controller.
+ * @class
+ * The strategy for the calendar is to leverage the list view stuff by creating a single
+ * view (i.e. {@link ZmCalViewMgr}) and have it manage the schedule views (e.g. week, month) and
+ * a single calendar view (the calendar widget to the right). Each of the schedule views
+ * will be a list view that are managed by the {@link ZmCalViewMgr}.
+ * <p>
+ * To do this we have to trick the {@link ZmListController}. Specifically we have only one toolbar and
+ * directly manipulate this._toolbar elements to point to a single instance of the toolbar. We also
+ * directly override the {@link ZmListControl.initializeToolBar} method.
  *
- *	To do this we have to trick the ZmListController. Specifically we have only one toolbar and
- *	directly manipulate this._toolbar elements to point to a single instance of the toolbar. We also
- *	directly replace:
- *
- *	ZmListControl.prototype.initializeToolBar
+ * @param {DwtComposite}	container	the containing element
+ * @param {ZmCalendarApp}	calApp		the handle to the calendar application
+ * 
+ * @extends		ZmListController
+ * 
+ * @see	ZmListControl.initializeToolBar
  */
-
 ZmCalViewController = function(container, calApp) {
 	ZmListController.call(this, container, calApp);
 
@@ -131,6 +137,11 @@ function() {
 	return ZmCalendarApp.VIEW_FOR_SETTING[view] || ZmId.VIEW_CAL_WORK_WEEK;
 };
 
+/**
+ * Gets the first day of week setting.
+ * 
+ * @return	{int}	the first day of week index
+ */
 ZmCalViewController.prototype.firstDayOfWeek =
 function() {
 	return appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
@@ -236,6 +247,11 @@ function(viewId, startDate, skipMaintenance) {
 	}
 };
 
+/**
+ * Gets the calendar tree controller.
+ * 
+ * @return	{ZmCalendarTreeController}		the controller
+ */
 ZmCalViewController.prototype.getCalTreeController =
 function() {
 	return this._calTreeController;
@@ -257,6 +273,12 @@ function(startDate) {
 	DBG.timePt("created view manager");
 };
 
+/**
+ * Gets the checked calendars.
+ * 
+ * @param	{String}	overviewId		the overview id
+ * @return	{Array}		an array of {ZmCalendar} objects
+ */
 ZmCalViewController.prototype.getCheckedCalendars =
 function() {
 	if (!this._checkedCalendars) {
@@ -265,6 +287,12 @@ function() {
 	return this._checkedCalendars;
 };
 
+/**
+ * Gets the checked calendar folder ids.
+ * 
+ * @param	{Boolean}	localOnly		if <code>true</code>, include local calendars only
+ * @return	{Array}		an array of folder ids
+ */
 ZmCalViewController.prototype.getCheckedCalendarFolderIds =
 function(localOnly) {
 	if (!this._checkedCalendarIds) {
@@ -421,11 +449,24 @@ function(ev) {
 	}
 };
 
+/**
+ * Gets the calendar by folder id.
+ * 
+ * @param	{String}	folderId		the folder id
+ * @return	{ZmCalendar}	the calendar
+ */
 ZmCalViewController.prototype.getCalendar =
 function(folderId) {
 	return appCtxt.getById(folderId);
 };
 
+/**
+ * Gets the calendar for the specified account.
+ * 
+ * @param	{Boolean}	includeLinks		if <code>true</code>, include links
+ * @param	{ZmAccount}	account			the account
+ * @return	{Array}	an array of {ZmCalendar} objects
+ */
 ZmCalViewController.prototype.getCalendars =
 function(includeLinks, account) {
 	this._updateCheckedCalendars();
@@ -457,6 +498,12 @@ function() {
 	return ZmOrganizer.ID_CALENDAR;
 };
 
+/**
+ * Gets the calendar color.
+ * 
+ * @param	{String}	folderId		the folder id
+ * @return	{String}	the color
+ */
 ZmCalViewController.prototype.getCalendarColor =
 function(folderId) {
 	if (!folderId) { return ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.CALENDAR]; }
@@ -728,7 +775,8 @@ function(ev) {
 /**
  * Creates the mini-calendar widget that sits below the overview.
  * 
- * @param date		[Date]*		date to highlight (defaults to today)
+ * @param {Date}		date		the date to highlight (defaults to today)
+ * @private
  */
 ZmCalViewController.prototype._createMiniCalendar =
 function(date) {
@@ -842,14 +890,14 @@ function(ev) {
 	}
 };
 
-/*
+/**
  * This method will create a new appointment from a conversation/mail message. In the case
  * of a conversation, the appointment will be populated by the first message in the
  * conversation (or matched msg in the case of a search). This method is asynchronous and
  * will return immediately if the mail message must load in the background.
  *
- * @param mailItem This may either be a ZmConv or a ZmMailMsg.
- * @param date The date/time for the appointment
+ * @param {ZmConv|ZmMailMsg}	mailItem the may either be a conversation of message
+ * @param {Date}	date 	the date/time for the appointment
  */
 ZmCalViewController.prototype.newApptFromMailItem =
 function(mailItem, date) {
@@ -867,11 +915,11 @@ function(mailItem, date, subject) {
 	this.newAppointment(newAppt, ZmCalItem.MODE_NEW);
 };
 
-/*
+/**
  * This method will create a new appointment from a contact.
  *
- * @param contact ZmContact
- * @param date The date/time for the appointment
+ * @param {ZmContact}		contact the contact
+ * @param {Date}	date 	the date/time for the appointment
  */
 ZmCalViewController.prototype.newApptFromContact =
 function(contact, date) {
@@ -900,11 +948,11 @@ function(contact, date) {
 	}
 };
 
-/*
+/**
  * This method will create a new appointment from an email address.
  *
- * @param emailAddr	email address
- * @param date The date/time for the appointment
+ * @param {String}	emailAddr	the email address
+ * @param {Date}	date 	the date/time for the appointment
  */
 ZmCalViewController.prototype.newApptFromEmailAddr =
 function(emailAddr, date) {
@@ -1021,6 +1069,13 @@ function(viewId, forward) {
 	this.setDate(d, 0, true);
 };
 
+/**
+ * Sets the date.
+ * 
+ * @param	{Date}		date		the date
+ * @param	{int}		duration	the duration
+ * @param	{Boolean}	roll		if <code>true</code>, roll
+ */
 ZmCalViewController.prototype.setDate =
 function(date, duration, roll) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
@@ -1229,6 +1284,8 @@ function(items, op) {
 
 /**
  * Override the ZmListController method.
+ * 
+ * @private
  */
 ZmCalViewController.prototype._doDelete =
 function(items, hardDelete, attrs, op) {
@@ -1520,6 +1577,8 @@ function() {
  * unique appointments (removes instances)
  *
  * @param list		[Array]		List of *recurring* appointments
+ * 
+ * @private
  */
 ZmCalViewController.prototype._dedupeSeries =
 function(list) {
@@ -1566,6 +1625,8 @@ function(num) {
  *
  * @param appt		[ZmAppt]	This can be a single appt object or a *list* of appts
  * @param mode		[Integer]	Constant describing what kind of appointments we're dealing with
+ * 
+ * @private
  */
 ZmCalViewController.prototype._showTypeDialog =
 function(appt, mode) {
@@ -1710,6 +1771,12 @@ function() {
 	return this._timezonePicker;
 };
 
+/**
+ * Edits the appointment.
+ * 
+ * @param	{ZmAppt}		appt		the appointment
+ * @param	{constant}		mode		the mode
+ */
 ZmCalViewController.prototype.editAppointment =
 function(appt, mode) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
@@ -1854,15 +1921,17 @@ function(appt, mode) {
 	this._app.getApptComposeController().show(appt, mode);
 };
 
-/*
-* appt - appt to change
-* startDate - new date or null to leave alone
-* endDate - new or null to leave alone
-* changeSeries - if recurring, change the whole series
-*
-* TODO: change this to work with _handleException, and take callback so view can
-*       restore appt location/size on failure
-*/
+/**
+ * appt - appt to change
+ * startDate - new date or null to leave alone
+ * endDate - new or null to leave alone
+ * changeSeries - if recurring, change the whole series
+ *
+ * TODO: change this to work with _handleException, and take callback so view can
+ *       restore appt location/size on failure
+ *       
+ * @private
+ */
 ZmCalViewController.prototype.dndUpdateApptDate =
 function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
 	appt.dndUpdate = true;
@@ -1977,6 +2046,13 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 	if (callback) callback.run(result);
 };
 
+/**
+ * Gets the day tool tip text.
+ * 
+ * @param	{Date}		date		the date
+ * @param	{Boolean}	noheader	if <code>true</code>, do not include tool tip header
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmCalViewController.prototype.getDayToolTipText =
 function(date, noheader, callback) {
 	try {
@@ -2275,6 +2351,8 @@ function(menu) {
 
 /**
  * Overrides ZmListController.prototype._getViewActionMenuOps
+ * 
+ * @private
  */
 ZmCalViewController.prototype._getViewActionMenuOps =
 function () {
@@ -2285,6 +2363,8 @@ function () {
 
 /**
  * Overrides ZmListController.prototype._initializeActionMenu
+ * 
+ * @private
  */
 ZmCalViewController.prototype._initializeActionMenu =
 function() {
@@ -2342,7 +2422,11 @@ function(menuItems) {
 	return actionMenu;
 };
 
-/** The <code>this</code> in this method is the menu item. */
+/**
+ * The <code>this</code> in this method is the menu item.
+ * 
+ * @private
+ */
 ZmCalViewController.prototype._recurringMenuPopup =
 function(ev) {
 	if (!this.getEnabled()) { return; }
@@ -2354,6 +2438,8 @@ function(ev) {
 
 /**
  * Overrides ZmListController.prototype._getActionMenuOptions
+ * 
+ * @private
  */
 ZmCalViewController.prototype._getActionMenuOps =
 function(recurrenceMode) {
@@ -2531,16 +2617,19 @@ function(soapDoc) {
 };
 
 /**
-* Caller is responsible for exception handling. caller should also not modify
-* appts in this list directly.
-*
-* @param	start 			[long]			start time in MS
-* @param	end				[long]			end time in MS
-* @param	fanoutAllDay	[Boolean]*
-* @param	folderIds		[Array]*		list of calendar folder Id's (null means use checked calendars in overview)
-* @param	callback		[AjxCallback]*	callback triggered once search results are returned
-* @param	noBusyOverlay	[Boolean]*		dont show veil during search
-*/
+ * Caller is responsible for exception handling. caller should also not modify
+ * appts in this list directly.
+ *
+ * @param	{Hash}		params		a hash of parameters
+ * @param	{long}	params.start 			the start time (in milliseconds)
+ * @param	{long}	params.end				the end time (in milliseconds)
+ * @param	{Boolean}	params.fanoutAllDay	if <code>true</code>, 
+ * @param	{Array}	params.folderIds		the list of calendar folder Id's (null means use checked calendars in overview)
+ * @param	{AjxCallback}	params.callback		the callback triggered once search results are returned
+ * @param	{Boolean}	params.noBusyOverlay	if <code>true</code>, do not show veil during search
+ * 
+ * @private
+ */
 ZmCalViewController.prototype.getApptSummaries =
 function(params) {
 	if (!params.folderIds) {
@@ -2913,6 +3002,8 @@ function() {
  * Returns a reference to the singleton message controller, used to send mail (in our case,
  * invites and their replies). If mail is disabled, we create our own ZmMsgController so that
  * we don't load the mail package.
+ * 
+ * @private
  */
 ZmCalViewController.prototype._getMsgController =
 function() {
@@ -2947,6 +3038,12 @@ function() {
 	return this._miniCalCache;
 };
 
+/**
+ * Gets the calendar name.
+ * 
+ * @param	{String}	folderId		the folder id
+ * @return	{String}	the name
+ */
 ZmCalViewController.prototype.getCalendarName =
 function(folderId) {
 	var cal = appCtxt.getById(folderId);

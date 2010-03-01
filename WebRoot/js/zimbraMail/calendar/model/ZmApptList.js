@@ -14,10 +14,12 @@
  */
 
 /**
- * Create a new, empty appt list.
+ * Create a new, empty appointment list.
  * @constructor
  * @class
- * This class represents a list of appts.
+ * This class represents a list of appointments.
+ * 
+ * @extends		ZmList
  */
 ZmApptList = function() {
 	ZmList.call(this, ZmItem.APPT);
@@ -58,7 +60,12 @@ function(vec) {
 	vec.sort(ZmCalBaseItem.compareByTimeAndDuration);
 };
 
-// merge all the sorted vectors in the specified array into a single sorted vector
+/**
+ * Merges all the sorted vectors in the specified array into a single sorted vector.
+ * 
+ * @param	{AjxVector}	vecArray		the array
+ * @return	{AjxVector}	the resulting array
+ */
 ZmApptList.mergeVectors = 
 function(vecArray) {
 	var result = new AjxVector();	
@@ -91,8 +98,12 @@ function(apptList, startTime, endTime, fanoutAllDay, includeReminders) {
 	return result;
 };
 
-// fanout multi-day appoints into multiple single day appts. This has nothing to do with recurrence...
-// TODO: should be more efficient by not fanning out appts in if part of the while if they are not in the range.
+/**
+ * fanout multi-day appoints into multiple single day appts. This has nothing to do with recurrence...
+ * TODO: should be more efficient by not fanning out appts in if part of the while if they are not in the range.
+ * 
+ * @private
+ */
 ZmApptList._fanout =
 function(orig, result, startTime, endTime, fanoutAllDay, includeReminders) {
 	var appt = ZmAppt.quickClone(orig);
@@ -161,8 +172,13 @@ function(orig, result, startTime, endTime, fanoutAllDay, includeReminders) {
 	}
 };
 
-// given an app list, return a new appt list containing only appts in the given range.
-// doesn't clone appts
+/**
+ * Gets a new appointment list containing only appointment in the given range.
+ * 
+ * @param	{Date}	startTime		the start time
+ * @param	{Date}	endTime		the end time
+ * @author {ZmApptList}	the new list
+ */
 ZmApptList.prototype.getSubset =
 function(startTime, endTime) {
 	var result  = new ZmApptList();

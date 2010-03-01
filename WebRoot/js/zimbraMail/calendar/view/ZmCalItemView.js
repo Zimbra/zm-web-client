@@ -14,20 +14,24 @@
  */
 
 /**
-* Creates an empty calItem view used to display read-only calendar items.
-* @constructor
-* @class
-* Simple read-only view of an appointment or task. It looks more or less like a
-* message - the notes have their own area at the bottom, and everything else
-* goes into a header section at the top.
-*
-* @author Parag Shah
-* @author Conrad Damon
-*
-* @param parent		[DwtComposite]	parent widget
-* @param posStyle	[constant]		positioning style
-* @param controller	[ZmController]	owning controller
-*/
+ * Creates an empty calItem view used to display read-only calendar items.
+ * @constructor
+ * @class
+ * Simple read-only view of an appointment or task. It looks more or less like a
+ * message - the notes have their own area at the bottom, and everything else
+ * goes into a header section at the top.
+ *
+ * @author Parag Shah
+ * @author Conrad Damon
+ *
+ * @param {DwtComposite}	parent		the parent widget
+ * @param {constant}	posStyle	the positioning style
+ * @param {ZmController}	controller	the owning controller
+ * 
+ * @extends		ZmMailMsgView
+ * 
+ * @private
+ */
 ZmCalItemView = function(parent, posStyle, controller) {
 	if (arguments.length == 0) return;
 
@@ -188,24 +192,25 @@ function(invId, partId) {
 	ZmMailMsgView.rfc822Callback(invId, partId);
 };
 
-
-
-
 /**
-* Creates an empty appointment view.
-* @constructor
-* @class
-* Simple read-only view of an appointment. It looks more or less like a message -
-* the notes have their own area at the bottom, and everything else goes into a
-* header section at the top.
-*
-* @author Parag Shah
-* @author Conrad Damon
-*
-* @param parent		[DwtComposite]	parent widget
-* @param posStyle	[constant]		positioning style
-* @param controller	[ZmController]	owning controller
-*/
+ * Creates an empty appointment view.
+ * @constructor
+ * @class
+ * Simple read-only view of an appointment. It looks more or less like a message -
+ * the notes have their own area at the bottom, and everything else goes into a
+ * header section at the top.
+ *
+ * @author Parag Shah
+ * @author Conrad Damon
+ *
+ * @param {DwtComposite}	parent		the parent widget
+ * @param {constant}	posStyle	the positioning style
+ * @param {ZmController}	controller	the owning controller
+ * 
+ * @extends		ZmCalItemView
+ * 
+ * @private
+ */
 ZmApptView = function(parent, posStyle, controller) {
 
 	ZmCalItemView.call(this, parent, posStyle, controller);

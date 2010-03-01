@@ -12,6 +12,15 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+
+/**
+ * Creates a recurrence object.
+ * @class
+ * This class represents a recurrence pattern.
+ * 
+ * @param	{ZmCalItem}	calItem		the calendar item
+ * 
+ */
 ZmRecurrence = function(calItem) {
 	this._startDate 			= (calItem && calItem.startDate) ? calItem.startDate : (new Date());
 
@@ -40,15 +49,38 @@ function() {
 	return "ZmRecurrence";
 };
 
+/**
+ * Defines the "none" recurrence.
+ */
 ZmRecurrence.NONE		= "NON";
+/**
+ * Defines the "daily" recurrence.
+ */
 ZmRecurrence.DAILY		= "DAI";
+/**
+ * Defines the "weekly" recurrence.
+ */
 ZmRecurrence.WEEKLY		= "WEE";
+/**
+ * Defines the "monthly" recurrence.
+ */
 ZmRecurrence.MONTHLY	= "MON";
+/**
+ * Defines the "yearly" recurrence.
+ */
 ZmRecurrence.YEARLY		= "YEA";
 
-
+/**
+ * Defines the "day" week day selection.
+ */
 ZmRecurrence.RECURRENCE_DAY = -1;
+/**
+ * Defines the "weekend" week day selection.
+ */
 ZmRecurrence.RECURRENCE_WEEKEND = -2;
+/**
+ * Defines the "weekday" week day selection.
+ */
 ZmRecurrence.RECURRENCE_WEEKDAY = -3
 
 ZmRecurrence.prototype.setSoap =
@@ -176,6 +208,11 @@ function(soapDoc, recur) {
     }
 };
 
+/**
+ * Gets the recurrence blurb.
+ * 
+ * @return	{String}	the blurb text
+ */
 ZmRecurrence.prototype.getBlurb =
 function() {
 	if (this.repeatType == ZmRecurrence.NONE)

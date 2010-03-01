@@ -14,23 +14,26 @@
  */
 
 /**
-* 
-* @constructor
-* @class
-*
-* @author Andy Clark
-*
-* @param id			[int]			numeric ID
-* @param name		[string]		name
-* @param parent		[ZmOrganizer]	parent organizer
-* @param tree		[ZmTree]		tree model that contains this organizer
-* @param color		[constant]		color for this calendar
-* @param url		[string]*		URL for this organizer's feed
-* @param owner		[string]*		ownder of this calendar
-* @param zid		[string]*		Zimbra id of owner, if remote share
-* @param rid		[string]*		Remote id of organizer, if remote share
-* @param restUrl	[string]*		The REST URL of this organizer.
-*/
+ * Creates a calendar.
+ * @constructor
+ * @class
+ *
+ * @author Andy Clark
+ *
+ * @param	{Hash}	params		a hash of parameters
+ * @param {int}	params.id			the numeric ID
+ * @param {String}	params.name		the name
+ * @param {ZmOrganizer}	params.parent		the parent organizer
+ * @param {ZmTree}	params.tree		the tree model that contains this organizer
+ * @param {constant}	params.color		the color for this calendar
+ * @param {String}	params.url		the URL for this organizer's feed
+ * @param {String}	params.owner		the owner of this calendar
+ * @param {String}	params.zid		the Zimbra id of owner, if remote share
+ * @param {String}	params.rid		the remote id of organizer, if remote share
+ * @param {String}	params.restUrl	the REST URL of this organizer
+ * 
+ * @extends		ZmOrganizer
+ */
 ZmCalendar = function(params) {
 	params.type = ZmOrganizer.CALENDAR;
 	ZmOrganizer.call(this, params);
@@ -55,6 +58,8 @@ function() {
  * Creates a new calendar. The color and flags will be set later in response
  * to the create notification. This function is necessary because calendar
  * creation needs custom error handling.
+ * 
+ * @param	{Hash}	params		a hash of parameters
  */
 ZmCalendar.create =
 function(params) {
@@ -72,6 +77,11 @@ function(params, ex) {
 	return ZmOrganizer._handleErrorCreate(params, ex);
 };
 
+/**
+ * Gets the icon.
+ * 
+ * @return	{String}	the icon
+ */
 ZmCalendar.prototype.getIcon = 
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
@@ -79,6 +89,13 @@ function() {
 	return "CalendarFolder";
 };
 
+/**
+ * Sets the free/busy.
+ * 
+ * @param	{Boolean}	exclude		if <code>true</code>, exclude free busy
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
+ */
 ZmCalendar.prototype.setFreeBusy = 
 function(exclude, callback, errorCallback) {
 	if (this.excludeFreeBusy == exclude) { return; }
@@ -113,9 +130,10 @@ function(checked, result) {
 };
 
 /**
- * Returns true if the given object(s) may be placed in this folder.
+ * Checks if the given object(s) may be placed in this folder.
  *
- * @param what		[object]	object(s) to possibly move into this folder (item or organizer)
+ * @param {Object}	what		the object(s) to possibly move into this folder (item or organizer)
+ * @return	{Boolean}	<code>true</code> if the object may be placed in this folder
  */
 ZmCalendar.prototype.mayContain =
 function(what) {
@@ -216,6 +234,12 @@ ZmCalendar.prototype._delete = function(){
 
 // Static methods
 
+/**
+ * Checks the calendar name.
+ * 
+ * @param	{String}	name		the name to check
+ * @return	{String}	the valid calendar name
+ */
 ZmCalendar.checkName =
 function(name) {
 	return ZmOrganizer.checkName(name);

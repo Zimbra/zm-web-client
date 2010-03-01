@@ -12,6 +12,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+
 /**
  * Creates a new tab view that can be used to choose attendees, locations, or equipment.
  * @constructor
@@ -22,10 +23,12 @@
  *
  * @author Conrad Damon
  *
- * @param parent		[DwtComposite]				the element that created this view
- * @param attendees		[hash]						attendees/locations/equipment
- * @param controller	[ZmApptComposeController]	the appt compose controller
- * @param type			[constant]					chooser page type
+ * @param {DwtComposite}	parent		the element that created this view
+ * @param {Hash}	attendees		the attendees/locations/equipment
+ * @param {ZmApptComposeController}	controller	the appt compose controller
+ * @param {constant}	type			the chooser page type
+ * 
+ * @extends		DwtTabViewPage
  */
 ZmApptChooserTabViewPage = function(parent, attendees, controller, type) {
 
@@ -250,10 +253,10 @@ function() {
 };
 
 /**
-* Enables/disables multiple locations.
-*
-* @param enable		[boolean]	if true, allow multiple locations
-*/
+ * Enables/disables multiple locations.
+ *
+ * @param {Boolean}	enable		if <code>true</code>, allow multiple locations
+ */
 ZmApptChooserTabViewPage.prototype.enableMultipleLocations =
 function(enable) {
 	if (this._multLocsCheckboxId) {
@@ -582,13 +585,13 @@ function() {
 };
 
 /**
-* Performs a contact search (in either personal contacts or in the GAL) and populates
-* the source list view with the results.
-*
-* @param sortBy			[constant]		ID of column to sort by
-* @param lastId		    [int]*			ID of last item displayed (for pagination)
-* @param lastSortVal	[string]*		value of sort field for above item
-*/
+ * Performs a contact search (in either personal contacts or in the GAL) and populates
+ * the source list view with the results.
+ *
+ * @param {constant}	sortBy			the ID of column to sort by
+ * @param {int}	lastId		   the ID of last item displayed (for pagination)
+ * @param {String}	lastSortVal	the value of sort field for above item
+ */
 ZmApptChooserTabViewPage.prototype.searchContacts =
 function(sortBy, lastId, lastSortVal) {
 	var id = this._searchFieldIds[ZmApptChooserTabViewPage.SF_ATT_NAME];
@@ -881,13 +884,18 @@ function(ev) {
 	this.resize(pSize.x, pSize.y); // force resize to adjust chooser layout
 };
 
-/***********************************************************************************/
+// *********************
 
 /**
+ * @class
  * This class creates a specialized chooser for the attendee picker.
  *
- * @param parent			[DwtComposite]	the attendee tab view
- * @param buttonInfo		[array]			transfer button IDs and labels
+ * @param {DwtComposite}	parent			the attendee tab view
+ * @param {Array}		buttonInfo		transfer button IDs and labels
+ * 
+ * @extends		DwtChooser
+ * 
+ * @private
  */
 ZmApptChooser = function(parent, buttonInfo) {
 	var selectStyle = (parent.type == ZmCalBaseItem.LOCATION) ? DwtChooser.SINGLE_SELECT : null;
@@ -949,11 +957,13 @@ function(event, details) {
 };
 
 /**
-* The item is a ZmContact or ZmResource. Its address is used for comparison.
-*
-* @param item	[ZmContact]			ZmContact or ZmResource
-* @param list	[AjxVector]			list to check against
-*/
+ * The item is a {@link ZmContact} or {@link ZmResource}. Its address is used for comparison.
+ *
+ * @param {ZmContact}	item	the ZmContact or ZmResource
+ * @param {AjxVector}	list	list to check against
+ * 
+ * @private
+ */
 ZmApptChooser.prototype._isDuplicate =
 function(item, list) {
 	return list.containsLike(item, item.getEmail);
@@ -963,9 +973,13 @@ function(item, list) {
  * This class creates a specialized source list view for the contact chooser. The items
  * it manages are of type ZmContact or its subclass ZmResource.
  *
- * @param parent		[DwtChooser]	chooser that owns this list view
- * @param type			[constant]		list view type (source or target)
- * @param chooserType	[constant]		type of owning chooser (attendee/location/resource)
+ * @param {DwtChooser}	parent		chooser that owns this list view
+ * @param {constant}	type			list view type (source or target)
+ * @param {constant}	chooserType		type of owning chooser (attendee/location/resource)
+ * 
+ * @extends		DwtChooserListView
+ * 
+ * @private
  */
 ZmApptChooserListView = function(parent, type, chooserType) {
 

@@ -13,6 +13,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the calendar view manager.
+ * @class
+ * This class represents the calendar view manager.
+ * 
+ * @param {DwtShell}	parent			the element that created this view
+ * @param {ZmController}		controller		the controller
+ * @param {DwtDropTarget}	dropTgt			the drop target
+ * 
+ * @extends		DwtComposite
+ */
 ZmCalViewMgr = function(parent, controller, dropTgt) {
 
 	DwtComposite.call(this, {parent:parent, className:"ZmCalViewMgr", posStyle:Dwt.ABSOLUTE_STYLE});

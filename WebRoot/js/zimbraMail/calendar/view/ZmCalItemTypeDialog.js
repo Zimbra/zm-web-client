@@ -14,13 +14,17 @@
  */
 
 /**
-* Simple dialog allowing user to choose between an Instance or Series for an appointment
-* @constructor
-* @class
-*
-* @author Parag Shah
-* @param parent			the element that created this view
-*/
+ * Simple dialog allowing user to choose between an Instance or Series for an appointment
+ * @constructor
+ * @class
+ *
+ * @author Parag Shah
+ * @param parent			the element that created this view
+ * 
+ * @extends		DwtDialog
+ * 
+ * @private
+ */
 ZmCalItemTypeDialog = function(parent) {
 
 	DwtDialog.call(this, {parent:parent});

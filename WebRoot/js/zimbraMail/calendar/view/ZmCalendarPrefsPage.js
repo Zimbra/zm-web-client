@@ -22,9 +22,13 @@
  *
  * @author Conrad Damon
  *
- * @param parent			[DwtControl]				the containing widget
- * @param section			[object]					which page we are
- * @param controller		[ZmPrefController]			prefs controller
+ * @param {DwtControl}	parent			the containing widget
+ * @param {Object}	section			which page we are
+ * @param {ZmPrefController}	controller		the prefs controller
+ * 
+ * @extends		ZmPreferencesPage
+ * 
+ * @private
  */
 ZmCalendarPrefsPage = function(parent, section, controller) {
 
@@ -101,9 +105,7 @@ function() {
 	}
 };
 
-/**
- * Sets values for calendar ACL-related settings.
- */
+// Sets values for calendar ACL-related settings.
 ZmCalendarPrefsPage.prototype._setACLValues =
 function(setting, right) {
 	var gt = this._acl.getGranteeType(right);

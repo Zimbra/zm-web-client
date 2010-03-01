@@ -14,13 +14,19 @@
  */
 
 /**
- * Creates a new reminder controller to manage the reminder dialog and status area
+ * Creates a new reminder controller to manage the reminder dialog and status area.
+ * @class
  *
- * need following timed actions:
- * 1) one for refreshing our "cache" of upcoming appts to notify on
- * 2) one for when to next popup the reminder dialog. 
+ * This controller uses the following timed actions:
+ * <ol>
+ * <li>one for refreshing our "cache" of upcoming appts to notify on</li>
+ * <li>one for when to next popup the reminder dialog. 
  *    by default, next appt start time minus lead time pref (i..e, 5 minutes before).
- *    but, also could be controlled by snooze prefs.
+ *    but, also could be controlled by snooze prefs.</li>
+ * </ol>
+ * 
+ * @param	{ZmCalViewController}		calController		the controller
+ * 
  */
 ZmReminderController = function(calController) {
 	this._calController = calController;
@@ -42,8 +48,17 @@ ZmReminderController = function(calController) {
 
 ZmReminderController.prototype.constructor = ZmReminderController;
 
+/**
+ * Defines the "active" reminder state.
+ */
 ZmReminderController._STATE_ACTIVE = 1; // appt was in reminder, never dismissed
+/**
+ * Defines the "dismissed" reminder state.
+ */
 ZmReminderController._STATE_DISMISSED = 2; // appt was in reminder, and was dismissed
+/**
+ * Defines the "snoozed" reminder state.
+ */
 ZmReminderController._STATE_SNOOZED = 3; // appt was in reminder, and was snoozed
 
 ZmReminderController._CACHE_RANGE = 24; // range of appts to grab 24 hours (-1, +23)
@@ -77,10 +92,12 @@ function(ev) {
 };
 
 /**
-* called when: (1) app first loads, (2) on refresh blocks, (3) after appt cache is cleared. Our
-* _apptState info will keep us from popping up the same appt again if we aren't supposed to
-* (at least for the duration of the app)
-*/
+ * called when: (1) app first loads, (2) on refresh blocks, (3) after appt cache is cleared. Our
+ * _apptState info will keep us from popping up the same appt again if we aren't supposed to
+ * (at least for the duration of the app)
+ * 
+ * @private
+ */
 ZmReminderController.prototype.refresh =
 function() {
 	if (this._warningTime == 0) { return; }
@@ -99,6 +116,11 @@ function() {
 	this._refreshActionId = AjxTimedAction.scheduleAction(this._refreshTimedAction, (AjxDateUtil.MSEC_PER_HOUR * ZmReminderController._CACHE_REFRESH));
 };
 
+/**
+ * Gets the search time range.
+ * 
+ * @return	{Hash}	a hash of parameters
+ */
 ZmReminderController.prototype.getSearchTimeRange =
 function() {
 	var endOfDay = new Date();
@@ -145,9 +167,11 @@ function() {
 };
 
 /**
-* called after we get upcoming appts from server. Save list,
-* and call housekeeping. 
-*/
+ * called after we get upcoming appts from server. Save list,
+ * and call housekeeping.
+ * 
+ * @private
+ */
 ZmReminderController.prototype._refreshCallback =
 function(list) {
 	if (this._refreshDelay > 0) {
@@ -220,9 +244,11 @@ function(uid) {
 };
 
 /**
-* go through list to see if we should add any cachedAppts to activeAppts and
-* popup the dialog or not.
-*/
+ * go through list to see if we should add any cachedAppts to activeAppts and
+ * popup the dialog or not.
+ * 
+ * @private
+ */
 ZmReminderController.prototype._housekeepingAction =
 function() {
 	DBG.println(AjxDebug.DBG2, "reminder house keeping action...");
@@ -351,8 +377,12 @@ function(list) {
 };
 
 /**
-* called when an appointment (individually or as part of "dismiss all") is removed from reminders
-*/
+ * Dismisses an appointment. This method is called when
+ * an appointment (individually or as part of "dismiss all") is removed from reminders.
+ * 
+ * @param	{AjxVector|Array}	list	a list of {@link ZmAppt} objects
+ * @param	{AjxCallback}		callback		a callback
+ */
 ZmReminderController.prototype.dismissAppt =
 function(list, callback) {
 	var appt;
@@ -369,6 +399,12 @@ function(list, callback) {
 	this.dismissApptRequest(list, callback);
 };
 
+/**
+ * Snoozes the appointments.
+ * 
+ * @param	{AjxVector}	list	a list of {@link ZmAppt} objects
+ * @return	{Array}	an array of snoozed apt ids
+ */
 ZmReminderController.prototype.snoozeAppt =
 function(list) {
 	var snoozedIds = [];
@@ -477,6 +513,11 @@ ZmReminderController.prototype._handleErrorDismissAppt =
 function(list, callback, response) {
 };
 
+/**
+ * Gets the reminder dialog.
+ * 
+ * @return	{ZmReminderDialog}	the dialog
+ */
 ZmReminderController.prototype.getReminderDialog =
 function() {
 	if (this._reminderDialog == null) {

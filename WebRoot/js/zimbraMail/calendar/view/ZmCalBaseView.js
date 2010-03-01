@@ -143,7 +143,7 @@ function(listener) {
 	this._evtMgr.removeListener(ZmCalBaseView.VIEW_ACTION, listener);
 };
 
-// BEGIIN LIST-RELATED
+// BEGIN LIST-RELATED
 
 ZmCalBaseView.prototype.addSelectionListener = 
 function(listener) {
@@ -218,6 +218,8 @@ function() {
  * @param selected	[boolean]*		if true, return a style for an item that has been selected
  * @param disabled	[boolean]*		if true, return a style for an item that has been disabled
  * @param item		[object]*		item behind the div
+ * 
+ * @private
  */
 ZmCalBaseView.prototype._getStyle =
 function(type, selected, disabled, item) {

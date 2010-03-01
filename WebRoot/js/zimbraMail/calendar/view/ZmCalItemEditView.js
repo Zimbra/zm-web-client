@@ -21,11 +21,15 @@
  *
  * @author Parag Shah
  *
- * @param parent			[DwtControl]				some container
- * @param attendees			[hash]*						attendees/locations/equipment
- * @param controller		[ZmController]				the compose controller for this view
- * @param dateInfo			[object]*					hash of date info
- * @param posStyle			[String]*					[static|relative|absolute]
+ * @param {DwtControl}	parent			the container
+ * @param {Hash}	attendees			the attendees/locations/equipment
+ * @param {ZmController}	controller		the compose controller for this view
+ * @param {Object}	dateInfo			a hash of date info
+ * @param {static|relative|absolute}	posStyle			the position style
+ * 
+ * @extends	DwtComposite
+ * 
+ * @private
  */
 ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle) {
 	if (arguments.length == 0) { return; }
@@ -80,6 +84,11 @@ function() {
 	return this._rendered;
 };
 
+/**
+ * Gets the calendar item.
+ * 
+ * @return	{ZmCalItem}	the item
+ */
 ZmCalItemEditView.prototype.getCalItem =
 function(attId) {
 	// attempt to submit attachments first!
@@ -143,8 +152,10 @@ function(bEnableInputs) {
 };
 
 /**
-/* @param excludeAttendees		check for dirty fields excluding the attendees field
-*/
+ * Checks for dirty fields.
+ * 
+ * @param {Boolean}	excludeAttendees		if <code>true</code> check for dirty fields excluding the attendees field
+ */
 ZmCalItemEditView.prototype.isDirty =
 function(excludeAttendees) {
 	var formValue = excludeAttendees && this._origFormValueMinusAttendees
@@ -156,6 +167,11 @@ function(excludeAttendees) {
 		   (this._formValue(excludeAttendees) != formValue);
 };
 
+/**
+ * Checks if reminder only is changed.
+ * 
+ * @return	{Boolean}	<code>true</code> if reminder only changed
+ */
 ZmCalItemEditView.prototype.isReminderOnlyChanged =
 function() {
 
@@ -211,9 +227,14 @@ function() {
 
 /**
  * Adds an attachment (file input field) to the appointment view. If none
- * already exist, creates the attachments container. If @attach param provided,
- * user is opening an existing appointment w/ an attachment and therefore
- * display differently
+ * already exist, creates the attachments container. If <code>attach</code> parameters is
+ * provided, user is opening an existing appointment w/ an attachment and therefore
+ * display differently.
+ * 
+ * @param	{ZmCalItem}	calItem		the calendar item
+ * @param	{Object}	attach		the attachment
+ * 
+ * @private
  */
 ZmCalItemEditView.prototype.addAttachmentField =
 function(calItem, attach) {
@@ -290,9 +311,6 @@ function() {
 	return this._notesHtmlEditor;
 };
 
-/**
-* Returns a joined string of email addresses.
-*/
 ZmCalItemEditView.prototype.getOrganizer =
 function() {
 	var folderId = this._folderSelect.getValue();

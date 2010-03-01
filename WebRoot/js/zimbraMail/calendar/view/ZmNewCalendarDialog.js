@@ -93,6 +93,8 @@ function() {
  * <li> URL
  * <li> excludeFB
  * </ul>
+ * 
+ * @private
  */
 ZmNewCalendarDialog.prototype._getFolderData =
 function() {
@@ -104,7 +106,9 @@ function() {
 };
 
 /**
- * @Override Added for tabindexing checkboxes.  
+ * @Override Added for tabindexing checkboxes.
+ * 
+ * @private
  */
 //For bug 21985
 ZmNewCalendarDialog.prototype._getTabGroupMembers =

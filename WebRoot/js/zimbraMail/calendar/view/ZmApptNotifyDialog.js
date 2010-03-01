@@ -20,6 +20,10 @@
 *
 * @author Parag Shah
 * @param parent			the element that created this view
+* 
+* 
+* @extends		ZmController
+* @private
 */
 ZmApptNotifyDialog = function(parent) {
 
@@ -30,7 +34,7 @@ ZmApptNotifyDialog = function(parent) {
 	this._cacheFields();
 };
 
-ZmApptNotifyDialog.prototype = new DwtDialog;
+ZmApptNotifyDialog.prototype = new ZmController;
 ZmApptNotifyDialog.prototype.constructor = ZmApptNotifyDialog;
 
 // Public methods

@@ -21,8 +21,10 @@
  *
  * @author Parag Shah
  *
- * @param container	[DwtComposite]	the containing element
- * @param app		[ZmApp]			a handle to the [calendar|task] application
+ * @param {DwtComposite}	container		the containing element
+ * @param {ZmApp}	app		a handle to the [{@link ZmCalendarApp}|{@link ZmTaskApp}] application
+ * 
+ * @extends		ZmController
  */
 ZmCalItemComposeController = function(container, app) {
 	if (arguments.length == 0) { return; }
@@ -93,16 +95,31 @@ function() {
 	return false;
 };
 
+/**
+ * Gets the toolbar.
+ * 
+ * @return	{ZmButtonToolBar}	the toolbar
+ */
 ZmCalItemComposeController.prototype.getToolbar =
 function() {
 	return this._toolbar;
 };
 
+/**
+ * Saves the calendar item.
+ * 
+ * @param	{String}	attId		the item id
+ */
 ZmCalItemComposeController.prototype.saveCalItem =
 function(attId) {
 	// override
 };
 
+/**
+ * Toggles the spell check button.
+ * 
+ * @param	{Boolean}	toggled		if <code>true</code>, select the spell check button 
+ */
 ZmCalItemComposeController.prototype.toggleSpellCheckButton =
 function(toggled) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
@@ -198,7 +215,11 @@ function() {
 	return this._composeView;
 };
 
-// inits check mark for menu item depending on compose mode preference
+/**
+ * inits check mark for menu item depending on compose mode preference.
+ * 
+ * @private
+ */
 ZmCalItemComposeController.prototype.setFormatBtnItem =
 function(skipNotify, composeMode) {
 	var mode;

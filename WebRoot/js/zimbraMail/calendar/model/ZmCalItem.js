@@ -15,7 +15,6 @@
  
 /**
  * @overview
- * 
  * This file defines a Zimbra calendar item.
  *
  */
@@ -25,7 +24,7 @@
  * This class represents a calendar item.
  *
  * @param	{constant}	type		the item type
- * @param	{Object}	list		the list
+ * @param	{ZmList}	list		the list
  * @param	{int}	id				the task id
  * @param	{String}	folderId	the folder id
  *
@@ -252,7 +251,7 @@ ZmCalItem.prototype.getRecurType		= function() { return this._recurrence.repeatT
 /**
  * Gets the timezone.
  * 
- * @return	{String}	the timezone
+ * @return	{AjxTimezone}	the timezone
  */
 ZmCalItem.prototype.getTimezone         = function() { return this.timezone; };
 
@@ -365,6 +364,7 @@ function(folderId) {
 /**
  * Gets the "local" folder id even for remote folders. Otherwise, just use <code>this.folderId</code>.
  * 
+ * @return	{ZmFolder|String}		the folder or folder id
  */
 ZmCalItem.prototype.getLocalFolderId =
 function() {
@@ -381,7 +381,7 @@ function() {
  * Sets the end date.
  * 
  * @param	{Date}	endDate		the end date
- * @param	{Boolean}	keepCache	<code>true</code> to keep the cache; <code>false</code> to reset the cache
+ * @param	{Boolean}	keepCache	if <code>true</code>, keep the cache; <code>false</code> to reset the cache
  */
 ZmCalItem.prototype.setEndDate =
 function(endDate, keepCache) {
@@ -394,7 +394,7 @@ function(endDate, keepCache) {
  * Sets the start date.
  * 
  * @param	{Date}	startDate		the start date
- * @param	{Boolean}	keepCache	<code>true</code> to keep the cache; <code>false</code> to reset the cache
+ * @param	{Boolean}	keepCache	if <code>true</code>, keep the cache; <code>false</code> to reset the cache
  */
 ZmCalItem.prototype.setStartDate =
 function(startDate, keepCache) {
@@ -416,8 +416,8 @@ function(startDate, keepCache) {
 /**
  * Sets the timezone.
  * 
- * @param	{Object}	timezone	the timezone
- * @param	{Boolean}	keepCache	<code>true</code> to keep the cache; <code>false</code> to reset the cache
+ * @param	{AjxTimezone}	timezone	the timezone
+ * @param	{Boolean}	keepCache	if <code>true</code>, keep the cache; <code>false</code> to reset the cache
  */
 ZmCalItem.prototype.setTimezone =
 function(timezone, keepCache) {
@@ -795,8 +795,8 @@ function() {
  * @param	{constant}	viewMode	the view mode
  * @param	{AjxCallback}	callback	the callback
  * @param	{AjxCallback}	errorCallback	the callback on error
- * @param	{Boolean}	ignoreOutOfDate		<code>true</code> to ignore out of date items
- * @param	{Boolean}	noBusyOverlay		<code>true</code> for no busy overlay
+ * @param	{Boolean}	ignoreOutOfDate		if <code>true</code>, ignore out of date items
+ * @param	{Boolean}	noBusyOverlay		if <code>true</code>, no busy overlay
  * @param	{ZmBatchCommand}	batchCmd			set if part of a batch operation
  */
 ZmCalItem.prototype.getDetails =

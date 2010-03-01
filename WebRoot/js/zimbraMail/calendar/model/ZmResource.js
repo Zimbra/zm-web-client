@@ -13,6 +13,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a resource.
+ * @class
+ * This class represents a resource.
+ * 
+ * @param	{String}	id		the id
+ * @param	{ZmList}	list	the list
+ * @param	{constant}	resType		the resource type
+ * 
+ * @extends		ZmContact
+ * @see		ZmCalBaseItem
+ */
 ZmResource = function(id, list, resType) {
 	id = id ? id : Dwt.getNextId();
 	ZmContact.call(this, id, list, ZmItem.RESOURCE);
@@ -59,27 +71,42 @@ function() {
 	return "ZmResource";
 };
 
+/**
+ * Checks if the resource is a location.
+ * 
+ * @return	{Boolean}	<code>true</code> if is location
+ */
 ZmResource.prototype.isLocation =
 function() {
 	return (this.resType == ZmCalBaseItem.LOCATION);
 };
 
+/**
+ * Gets the resource email.
+ * 
+ * @return	{String}	the email
+ */
 ZmResource.prototype.getEmail =
 function() {
 	var attr = this.getAttr(ZmResource.F_mail);
 	return attr instanceof Array ? attr[0] : attr;
 };
 
+/**
+ * Gets the resource full name.
+ * 
+ * @return	{String}	the full name
+ */
 ZmResource.prototype.getFullName =
 function() {
 	return this.getAttr(ZmResource.F_name);
 };
 
 /**
-* 
-*
-* @param email	[object]	a AjxEmailAddress, or an email string
-*/
+ * Initializes from an email address.
+ *
+ * @param {AjxEmailAddress|String}	email	an email address object an email string
+ */
 ZmResource.prototype.initFromEmail =
 function(email) {
 	if (email instanceof AjxEmailAddress) {

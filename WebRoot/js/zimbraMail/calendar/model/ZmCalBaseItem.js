@@ -15,7 +15,6 @@
 
 /**
  * @overview
- * 
  * This file defines a base calendar item.
  *
  */
@@ -25,7 +24,7 @@
  * This class represents the base calendar item.
  * 
  * @param	{constant}	type	the item type
- * @param	{Array}	list		the list
+ * @param	{ZmList}	list		the list
  * @param	{String}	id		the id
  * @param	{String}	folderId	the folder id
  * @extends	ZmItem
@@ -70,9 +69,17 @@ function() {
 
 
 // consts
-
+/**
+ * Defines the "person" resource type.
+ */
 ZmCalBaseItem.PERSON				= "PERSON";
+/**
+ * Defines the "location" resource type.
+ */
 ZmCalBaseItem.LOCATION				= "LOCATION";
+/**
+ * Defines the "equipment" resource type.
+ */
 ZmCalBaseItem.EQUIPMENT				= "EQUIPMENT";
 ZmCalBaseItem.FORWARD				= "FORWARD";
 
@@ -204,7 +211,7 @@ function() {
 /**
  * Gets the unique id for this item.
  * 
- * @param	{Boolean}	useStartTime	<code>true</code> to use the start time
+ * @param	{Boolean}	useStartTime	if <code>true</code>, use the start time
  * @return	{String}	the unique id
  */
 ZmCalBaseItem.prototype.getUniqueId =
@@ -248,8 +255,8 @@ function() {
 /**
  * Gets the duration text.
  * 
- * @param	{Boolean}	emptyAllDay		<code>true</code> to return empty string if all day event
- * @param	{Boolean}	startOnly		<code>true</code> use start date only
+ * @param	{Boolean}	emptyAllDay		if <code>true</code>, return empty string if all day event
+ * @param	{Boolean}	startOnly		if <code>true</code>, use start date only
  * @return	{String}	the duration text
  */
 ZmCalBaseItem.prototype.getDurationText =

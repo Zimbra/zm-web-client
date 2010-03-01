@@ -22,8 +22,12 @@
  *
  * @author Conrad Damon
  *
- * @param resType	[constant]		type of resources (location or equipment)
- * @param search	[ZmSearch]*		search that generated this list
+ * @param {constant}	resType	the type of resources (location or equipment)
+ * @param {ZmSearch}	search	the search that generated this list
+ * 
+ * @extends		ZmContactList
+ * 
+ * @see		ZmCalBaseItem
  */
 ZmResourceList = function(resType, search) {
 	ZmContactList.call(this, search, true, ZmItem.RESOURCE);
@@ -47,6 +51,11 @@ function() {
 	return "ZmResourceList";
 };
 
+/**
+ * Loads the list.
+ * 
+ * @param	{ZmBatchCommand}	batchCmd		the batch command
+ */
 ZmResourceList.prototype.load =
 function(batchCmd) {
 	var conds = [];
@@ -61,6 +70,11 @@ function(batchCmd) {
     }
 };
 
+/**
+ * Searches the calendar resources.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ */
 ZmResourceList.prototype.searchCalResources =
 function(params) {
     var soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
@@ -131,12 +145,13 @@ function(node, args) {
 };
 
 /**
-* Returns the resource with the given name, if any. Canonical list only.
-* Since names aren't guaranteed to be unique, this returns the last resource
-* with the given name.
-*
-* @param name	[string]	a resource name
-*/
+ * Gets the resource with the given name, if any. Canonical list only.
+ * Since names aren't guaranteed to be unique, this returns the last resource
+ * with the given name.
+ *
+ * @param {String}	name	the resource name
+ * @return	{ZmResource}	the resource or <code>null</code> if not found
+ */
 ZmResourceList.prototype.getResourceByName = 
 function(name) {
 	if (!name || !this.isCanonical) return null;
@@ -145,10 +160,11 @@ function(name) {
 };
 
 /**
-* Returns the resource with the given address, if any. Canonical list only.
-*
-* @param address	[string]	an email address
-*/
+ *Gets the resource with the given address, if any. Canonical list only.
+ *
+ * @param {String}	address	an email address
+ * @return	{ZmResource}	the resource or <code>null</code> if not found
+ */
 ZmResourceList.prototype.getResourceByEmail = 
 function(address) {
 	if (!address || !this.isCanonical) return null;

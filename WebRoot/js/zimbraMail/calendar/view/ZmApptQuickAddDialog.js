@@ -27,7 +27,10 @@
  *
  * @author Parag Shah
  * 
- * @param parent				parent widget (the shell)
+ * @param {ZmShell}		parent				parent widget (the shell)
+ * 
+ * @extends		ZmQuickAddDialog
+ * 
  */
 ZmApptQuickAddDialog = function(parent) {
 	// create extra "more details" button to be added at the footer of DwtDialog
@@ -94,6 +97,11 @@ function(appt) {
 	this._locations = [];
 };
 
+/**
+ * Gets the appointment.
+ * 
+ * @return	{ZmAppt}	the appointment
+ */
 ZmApptQuickAddDialog.prototype.getAppt = 
 function() {
 	// create a copy of the appointment so we dont muck w/ the original

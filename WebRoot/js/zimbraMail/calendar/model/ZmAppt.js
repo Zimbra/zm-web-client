@@ -12,6 +12,22 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+
+/**
+ * @overview
+ * This file defines an appointment.
+ *
+ */
+
+/**
+ * @class
+ * This class represents a calendar item.
+ *
+ * @param	{ZmList}	list		the list
+ * @param	{Boolean}	noinit		if <code>true</code>, do not initialize the appointment
+ *
+ * @extends ZmCalItem
+ */
 ZmAppt = function(list, noinit) {
 
 	ZmCalItem.call(this, ZmItem.APPT, list);
@@ -56,21 +72,50 @@ function() {
 	return "ZmAppt";
 };
 
+/**
+ * Gets the attendees.
+ * 
+ * @param	{constant}		type		the type
+ * @return	{Array}		an array of attendee objects
+ * 
+ * @see		ZmCalBaseItem.PERSON
+ * @see		ZmCalBaseItem.LOCATION
+ * @see		ZmCalBaseItem.EQUIPMENT
+ */
 ZmAppt.prototype.getAttendees =
 function(type) {
 	return this._attendees[type];
 };
 
+/**
+ * Gets the attendee as text.
+ * 
+ * @param	{constant}		type		the type
+ * @param	{Boolean}		inclDispName		if <code>true</code>, include the display name
+ * 
+ * @return	{String}	the attendee string
+ */
 ZmAppt.prototype.getAttendeesText =
 function(type, inclDispName) {
 	return ZmApptViewHelper.getAttendeesString(this._attendees[type], type, inclDispName);
 };
 
+/**
+ * Checks if the appointment has attendees of the specified type.
+ * 
+ * @param	{constant}		type		the type
+ * @return	{Boolean}	<code>true</code> if the appointment has 1 or more attendees
+ */
 ZmAppt.prototype.hasAttendeeForType =
 function(type) {
 	return (this._attendees[type].length > 0);
 };
 
+/**
+ * Checks if the appointment has any attendees.
+ * 
+ * @return	{Boolean}	<code>true</code> if the appointment has 1 or more attendees
+ */
 ZmAppt.prototype.hasAttendees =
 function() {
 	return this.hasAttendeeForType(ZmCalBaseItem.PERSON) ||
@@ -86,9 +131,11 @@ function(addrs) {
 // Public methods
 
 /**
-* Used to make our own copy because the form will modify the date object by 
-* calling its setters instead of replacing it with a new date object.
-*/
+ * Used to make our own copy because the form will modify the date object by 
+ * calling its setters instead of replacing it with a new date object.
+ * 
+ * @private
+ */
 ZmApptClone = function() { };
 ZmAppt.quickClone = 
 function(appt) {
@@ -121,15 +168,22 @@ function(apptNode, args, instNode) {
 	return appt;
 };
 
+/**
+ * Gets the folder.
+ * 
+ * @return	{ZmFolder}		the folder
+ */
 ZmAppt.prototype.getFolder =
 function() {
 	return appCtxt.getById(this.folderId);
 };
 
 /**
- * Returns a tooltip for this appt. If it needs to make a server call, returns a callback instead.
+ * Gets the tool tip. If it needs to make a server call, returns a callback instead.
  *
- * @param controller	[ZmController]
+ * @param {ZmController}	controller	the controller
+ * 
+ * @return	{Hash|String}	the callback {Hash} or tool tip
  */
 ZmAppt.prototype.getToolTip =
 function(controller) {
@@ -225,6 +279,12 @@ function(val) {
 	return str;
 };
 
+/**
+ * Gets the summary.
+ * 
+ * @param	{Boolean}	isHtml		if <code>true</code>, format as html
+ * @return	{String}	the summary
+ */
 ZmAppt.prototype.getSummary =
 function(isHtml) {
 	var orig = this._orig || this;
@@ -385,7 +445,8 @@ function(isHtml) {
 /**
 * Sets the attendees (person, location, or equipment) for this appt.
 *
-* @param list	[array]		list of email string, AjxEmailAddress, ZmContact, or ZmResource
+* @param {Array}	list	the list of email {String}, {@link AjxEmailAddress}, {@link ZmContact}, or {@link ZmResource}
+* @param	{constant}	type		the type
 */
 ZmAppt.prototype.setAttendees =
 function(list, type) {
@@ -428,6 +489,11 @@ function(message) {
     this.name = ZmMsg.fwd + ": " + message.subject;
 };
 
+/**
+ * Checks if the appointment is private.
+ * 
+ * @return	{Boolean}	<code>true</code> if the appointment is private
+ */
 ZmAppt.prototype.isPrivate =
 function() {
 	return (this.privacy != "PUB");

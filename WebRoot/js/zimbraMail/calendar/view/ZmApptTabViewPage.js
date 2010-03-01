@@ -21,10 +21,13 @@
  *
  * @author Parag Shah
  *
- * @param parent			[DwtComposite]				the appt compose view
- * @param attendees			[hash]						attendees/locations/equipment
- * @param controller		[ZmApptComposeController]	the appt compose controller
- * @param dateInfo			[object]					hash of date info
+ * @param {DwtComposite}	parent			the appt compose view
+ * @param {Hash}	attendees			the attendees/locations/equipment
+ * @param {ZmApptComposeController}	controller		the appt compose controller
+ * @param {Hash}	dateInfo			the hash of date info
+ * 
+ * @extends		DwtTabViewPage
+ * @private
  */
 ZmApptTabViewPage = function(parent, attendees, controller, dateInfo) {
 	if (arguments.length == 0) return;

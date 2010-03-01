@@ -21,8 +21,10 @@
  *
  * @author Parag Shah
  * 
- * @param parent			the element that created this view
- * @param className 		optional class name for this view
+ * @param {ZmControl}	parent			the element that created this view
+ * @param {String}	className 		optional class name for this view
+ * 
+ * @extends		DwtDialog
  */
 ZmApptRecurDialog = function(parent, className) {
 
@@ -107,11 +109,21 @@ function(startDate, endDate, repeatType, appt) {
 	}
 };
 
+/**
+ * Gets the selected repeat value.
+ * 
+ * @return	{constant}	the repeat value
+ */
 ZmApptRecurDialog.prototype.getSelectedRepeatValue = 
 function() {
 	return this._repeatSelect.getValue();
 };
 
+/**
+ * Sets repeat end values.
+ * 
+ * @param	{ZmAppt}	appt		the appointment
+ */
 ZmApptRecurDialog.prototype.setRepeatEndValues = 
 function(appt) {
 	var recur = appt._recurrence;
@@ -124,6 +136,11 @@ function(appt) {
 		recur.repeatEndDate = AjxDateUtil.simpleParseDateStr(this._endByField.getValue());
 };
 
+/**
+ * Sets custom daily values.
+ * 
+ * @param	{ZmAppt}	appt		the appointment
+ */
 ZmApptRecurDialog.prototype.setCustomDailyValues = 
 function(appt) {
 	var recur = appt._recurrence;
@@ -145,6 +162,11 @@ function(appt) {
 	}
 };
 
+/**
+ * Sets custom weekly values.
+ * 
+ * @param	{ZmAppt}	appt		the appointment
+ */
 ZmApptRecurDialog.prototype.setCustomWeeklyValues =
 function(appt) {
 	var recur = appt._recurrence;
@@ -207,6 +229,11 @@ function(appt) {
     }
 };
 
+/**
+ * Sets custom monthly values.
+ * 
+ * @param	{ZmAppt}	appt		the appointment
+ */
 ZmApptRecurDialog.prototype.setCustomMonthlyValues =
 function(appt) {
 	var recur = appt._recurrence;
@@ -265,6 +292,11 @@ function(appt) {
     }
 };
 
+/**
+ * Sets custom yearly values.
+ * 
+ * @param	{ZmAppt}	appt		the appointment
+ */
 ZmApptRecurDialog.prototype.setCustomYearlyValues =
 function(appt) {
 	appt._recurrence.repeatCustom = "1";
@@ -1402,9 +1434,7 @@ function(radioName) {
 	return null;
 };
 
-/**
- * depending on the repeat type, populates repeat section as necessary
-*/
+// depending on the repeat type, populates repeat section as necessary
 ZmApptRecurDialog.prototype._populateForEdit = 
 function(appt) {
 
@@ -1496,7 +1526,14 @@ function(appt) {
 	}
 };
 
-
+/**
+ * Gets the week day selection.
+ * 
+ * @param	{String}	repeatCustomDays		the repeat custom days
+ * 
+ * @return	{constant}	the week day selection (see <code>ZmRecurrence.RECURRENCE_</code> constants
+ * @see	ZmRecurrence
+ */
 ZmApptRecurDialog.prototype.getRecurrenceWeekDaySelection =
 function(repeatCustomDays) {
 

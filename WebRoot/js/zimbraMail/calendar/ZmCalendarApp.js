@@ -13,6 +13,22 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @overview
+ * This file contains the calendar application class.
+ */
+
+/**
+ * Creates and initializes the calendar application.
+ * @class
+ * The calendar application manages the creation and display of appointments.
+ * 
+ * @param	{DwtControl}	container		the container
+ * 
+ * @author Conrad Damon
+ * 
+ * @extends		ZmApp
+ */
 ZmCalendarApp = function(container) {
 
 	ZmApp.call(this, ZmApp.CALENDAR, container);
@@ -31,9 +47,15 @@ ZmEvent.S_APPT				= ZmId.ITEM_APPOINTMENT;
 ZmEvent.S_RESOURCE			= ZmId.ITEM_RESOURCE;
 ZmItem.APPT					= ZmEvent.S_APPT;
 ZmItem.RESOURCE				= ZmEvent.S_RESOURCE;
+/**
+ * Defines the "calendar" organizer.
+ */
 ZmOrganizer.CALENDAR		= ZmId.ORG_CALENDAR;
 
 // App-related constants
+/**
+ * Defines the "calendar" application.
+ */
 ZmApp.CALENDAR							= ZmId.APP_CALENDAR;
 ZmApp.CLASS[ZmApp.CALENDAR]				= "ZmCalendarApp";
 ZmApp.SETTING[ZmApp.CALENDAR]			= ZmSetting.CALENDAR_ENABLED;
@@ -491,7 +513,9 @@ function(ids, force) {
  * Checks for the creation of a calendar or a mount point to one, or an
  * appointment.
  * 
- * @param creates	[hash]		hash of create notifications
+ * @param {Hash}	creates	a hash of create notifications
+ * 
+ * @private
  */
 ZmCalendarApp.prototype.createNotify =
 function(creates, force) {
@@ -623,6 +647,12 @@ function(active) {
 	}
 };
 
+/**
+ * Shows the mini-calendar.
+ * 
+ * @param	{Boolean}	show		if <code>true</code>, show the mini-calendar
+ * @param	{int}	delay			the delay (in seconds)
+ */
 ZmCalendarApp.prototype.showMiniCalendar =
 function(show, delay) {
 	var mc = AjxDispatcher.run("GetCalController").getMiniCalendar(delay);
@@ -634,11 +664,23 @@ function(show, delay) {
 };
 
 // common API shared by tasks app
+/**
+ * Gets the list controller.
+ * 
+ * @return	{ZmCalViewController}		the controller
+ * 
+ * @see		#getCalController
+ */
 ZmCalendarApp.prototype.getListController =
 function() {
 	return this.getCalController();
 };
 
+/**
+ * Gets the calendar controller.
+ * 
+ * @return	{ZmCalViewController}		the controller
+ */
 ZmCalendarApp.prototype.getCalController =
 function() {
 	if (!this._calController) {
@@ -648,6 +690,11 @@ function() {
 	return this._calController;
 };
 
+/**
+ * Gets the reminder controller.
+ * 
+ * @return	{ZmReminderController}	the controller
+ */
 ZmCalendarApp.prototype.getReminderController =
 function() {
 	if (!this._reminderController) {
@@ -659,6 +706,11 @@ function() {
 	return this._reminderController;
 };
 
+/**
+ * Gets the appointment compose controller.
+ * 
+ * @return	{ZmApptComposeController}	the controller
+ */
 ZmCalendarApp.prototype.getApptComposeController = 
 function() {
 	if (!this._apptController) {
@@ -700,8 +752,10 @@ function() {
 };
 
 /**
-* Returns a ZmResourceList of known locations.
-*/
+ * Gets a list of locations.
+ * 
+ * @return	{ZmResourceList}	the resource list
+ */
 ZmCalendarApp.prototype.getLocations = 
 function() {
 	this.initResources();
@@ -709,8 +763,10 @@ function() {
 };
 
 /**
-* Returns a ZmResourceList of known equipment.
-*/
+ * Gets a list of equipment.
+ * 
+ * @return	{ZmResourceList}	the resource list
+ */
 ZmCalendarApp.prototype.getEquipment = 
 function() {
 	this.initResources();
@@ -718,9 +774,12 @@ function() {
 };
 
 /**
- * returns the list of checked calendar Ids, gets the list from deferred folders
- * to keep things lite when calendar packages are not loaded
-*/
+ * Gets the list of checked calendar ids. If calendar packages are not loaded,
+ * gets the list from deferred folder ids.
+ * 
+ * @param	{Boolean}		localOnly	if <code>true</code>, use local calendar only
+ * @return	{Array}	an array of ids
+ */
 ZmCalendarApp.prototype.getCheckedCalendarFolderIds =
 function(localOnly) {
 	var folderIds = [];
@@ -748,10 +807,11 @@ function(localOnly) {
 };
 
 /**
- * returns the name of the calendar with specified id
+ * Gets the name of the calendar with specified id.
  *
- * @id      id of the calendar
-*/
+ * @param	{String}	id		the id of the calendar
+ * @return	{String}	the name
+ */
 ZmCalendarApp.prototype.getCalendarName =
 function(id) {
 	// _folderNames are used when deferred folders are not created and calendar
@@ -760,13 +820,13 @@ function(id) {
 };
 
 /**
- * creates a new button with a DwtCalendar as its menu
- * @document 					the DOM document
- * @parent						parent this DwtButton gets appended to
- * @buttonId 					buttonId to fetch inside DOM and append DwtButton to
- * @dateButtonListener			AjxListener to call when date button is pressed
- * @dateCalSelectionListener	AjxListener to call when date is selected in DwtCalendar
-*/
+ * Creates a new button with a {@link DwtCalendar} as the menu.
+ * 
+ * @param	{DwtComposite}	parent						the parent
+ * @param	{String}	buttonId 					the button id to fetch inside DOM and append DwtButton to
+ * @param	{AjxListener}	dateButtonListener			the listener to call when date button is pressed
+ * @param	{AjxListener}	dateCalSelectionListener	the listener to call when date is selected in {@link DwtCalendar}
+ */
 ZmCalendarApp.createMiniCalButton =
 function(parent, buttonId, dateButtonListener, dateCalSelectionListener) {
 	// create button
@@ -806,12 +866,13 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener) {
 };
 
 /**
- * creates a new button with a reminder options as its menu
- * @parent						parent this DwtButton gets appended to
- * @buttonId 					buttonId to fetch inside DOM and append DwtButton to
- * @buttonListener			    AjxListener to call when date button is pressed
- * @menuSelectionListener	    AjxListener to call when date is selected in DwtCalendar
-*/
+ * Creates a new button with a reminder options as its menu.
+ * 
+ * @param	{DwtComposite}	parent						the parent
+ * @param	{String}	buttonId 					the button id to fetch inside DOM and append DwtButton to
+ * @param	{AjxListener}	buttonListener			the listener to call when date button is pressed
+ * @param	{AjxListener}	menuSelectionListener	the listener to call when date is selected in {@link DwtCalendar}
+ */
 ZmCalendarApp.createReminderButton =
 function(parent, buttonId, buttonListener, menuSelectionListener) {
 	// create button
@@ -871,8 +932,10 @@ function(parent, buttonId, buttonListener, menuSelectionListener) {
 };
 
 /**
- * returns summary of reminder info from the reminder minutes 
- * @param reminderMinutes - no of minutes before which reminder should be shown
+ * Gets the summary of reminder info from the reminder minutes.
+ * 
+ * @param {int}	reminderMinutes		the number of minutes before which reminder should be shown
+ * @return	{String}		the summary
  */
 ZmCalendarApp.getReminderSummary =
 function(reminderMinutes) {
@@ -913,7 +976,8 @@ function(parent, name, color, url, excludeFb) {
 /**
  * Adds an invite actions submenu for accept/decline/tentative.
  *
- * @param parent		parent widget (a toolbar or action menu)
+ * @param {ZmButtonToolBar|ZmActionMenu}	parent		the parent widget
+ * @return	{ZmActionMenu}	the action menu
  */
 ZmCalendarApp.addInviteReplyMenu =
 function(parent) {
@@ -923,11 +987,11 @@ function(parent) {
 	return menu;
 };
 
-
 /**
  * Adds an invite actions submenu for accept/decline/tentative.
  *
- * @param parent		parent widget (a toolbar or action menu)
+ * @param {ZmButtonToolBar|ZmActionMenu}	parent		the parent widget
+ * @return	{ZmActionMenu}	the action menu
  */
 ZmCalendarApp.addCalViewMenu =
 function(parent) {
@@ -947,8 +1011,11 @@ function(prefLabel, prefValue) {
 };
 
 /**
- * parses given string and return reminder info containing units and exact value
- * @param reminderString - reminder string eg. "20 minutes before"
+ * Parses the given string and return reminder info containing units and exact value
+ * 
+ * @param reminderString 	reminder string eg. "20 minutes before"
+ * 
+ * @private
  */
 ZmCalendarApp.parseReminderString =
 function(reminderString) {

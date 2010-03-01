@@ -14,18 +14,20 @@
  */
 
 /**
-* Simple dialog allowing user to choose between an Instance or Series for an appointment
-* @constructor
-* @class
-*
-* @author Parag Shah
-* @param params			[hash]				hash of params:
-*        parent			[DwtComposite] 		parent widget (the shell)
-*        title			[string]*			title of dialog
-*        confirmMsg 	[string]*			dialog confirmation message 
-*        choiceLabel1	[string]*			label value for choice 1
-*        choiceLabel2	[string]*			label value for choice 2 
-*/
+ * Creates a dialog allowing user to choose between an Instance or Series for an appointment.
+ * @constructor
+ * @class
+ *
+ * @author Parag Shah
+ * @param {Hash}	params			a hash of parameters
+ * @param {DwtComposite}      params.parent			a parent widget (the shell)
+ * @param {String}	params.title			a title of dialog
+ * @param {String}	params.confirmMsg 	a dialog confirmation message 
+ * @param {String}	params.choiceLabel1	a label value for choice 1
+ * @param {String}	params.choiceLabel2	a label value for choice 2
+ * 
+ * @extends	DwtDialog
+ */
 ZmApptDeleteNotifyDialog = function(params) {
 
     params = Dwt.getParams(arguments, ZmApptDeleteNotifyDialog.PARAMS);
@@ -55,6 +57,12 @@ function() {
 	return "ZmApptDeleteNotifyDialog";
 };
 
+/**
+ * Initializes the dialog.
+ * 
+ * @param	{ZmAppt}	appt		the appointment
+ * @param	{String}	attId		the id
+ */
 ZmApptDeleteNotifyDialog.prototype.initialize =
 function(appt, attId) {
 	this._appt = appt;
@@ -74,6 +82,11 @@ function() {
 	return this._attId;
 };
 
+/**
+ * Checks if the default option is checked.
+ * 
+ * @return	{Boolean}	<code>true</code> if the default option is checked
+ */
 ZmApptDeleteNotifyDialog.prototype.isDefaultOptionChecked =
 function() {
 	return this._defaultRadio.checked;

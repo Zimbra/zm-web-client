@@ -13,6 +13,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates an appointment assistant.
+ * @class
+ * This class represents an appointment assistant.
+ * 
+ * @extends		ZmAssistant
+ */
 ZmAppointmentAssistant = function() {
 	ZmAssistant.call(this, ZmMsg.createNewAppt, ZmMsg.ASST_CMD_APPOINTMENT, ZmMsg.ASST_CMD_SUM_APPOINTMENT);
 };
@@ -51,6 +58,11 @@ function() {
 	return ZmMsg.ASST_APPT_HELP;
 };
 
+/**
+ * Gets the appointment.
+ * 
+ * @return	{ZmAppt}		the appointment
+ */
 ZmAppointmentAssistant.prototype.getAppt =
 function() {
 	var appt = new ZmAppt();
@@ -88,6 +100,8 @@ function() {
  * 
  * everything left "lunch with satish" is taken as subject
  * 
+ * 
+ * @private
  */
 ZmAppointmentAssistant.prototype.handle =
 function(dialog, verb, args) {

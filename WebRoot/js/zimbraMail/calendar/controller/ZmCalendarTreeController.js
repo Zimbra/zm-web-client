@@ -13,6 +13,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a calendar tree controller.
+ * @constructor
+ * @class
+ * This class manages the calendar tree controller.
+ *
+ * @author Parag Shah
+ *
+ * @extends		ZmTreeController
+ */
 ZmCalendarTreeController = function() {
 
 	ZmTreeController.call(this, ZmOrganizer.CALENDAR);
@@ -39,6 +49,12 @@ function() {
 
 // Public methods
 
+/**
+ * Gets the checked calendars.
+ * 
+ * @param	{String}	overviewId		the overview id
+ * @return	{Array}		an array of {@link ZmCalendar} objects
+ */
 ZmCalendarTreeController.prototype.getCheckedCalendars =
 function(overviewId) {
 	var calendars = [];
@@ -54,7 +70,13 @@ function(overviewId) {
 
 	return calendars;
 };
-
+/**
+ * Gets the owned calendars.
+ * 
+ * @param	{String}	overviewId		the overview id
+ * @param	{String}	owner		the owner
+ * @return	{Array}		an array of {@link ZmCalendar} objects
+ */
 ZmCalendarTreeController.prototype.getOwnedCalendars =
 function(overviewId, owner) {
 	var calendars = [];

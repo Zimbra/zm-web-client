@@ -25,10 +25,12 @@
  *
  * @author Parag Shah
  *
- * @param parent			[DwtShell]					the element that created this view
- * @param className 		[string]*					class name for this view
- * @param calApp			[ZmCalendarApp]				a handle to the owning calendar application
- * @param controller		[ZmApptComposeController]	the controller for this view
+ * @param {DwtShell}	parent			the element that created this view
+ * @param {String}	className 		class name for this view
+ * @param {ZmCalendarApp}	calApp			a handle to the owning calendar application
+ * @param {ZmApptComposeController}	controller		the controller for this view
+ * 
+ * @extends		DwtTabView
  */
 ZmApptComposeView = function(parent, className, calApp, controller) {
 
@@ -75,10 +77,25 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 	this._initialize();
 };
 
+/**
+ * Defines the "appointment" tab.
+ */
 ZmApptComposeView.TAB_APPOINTMENT	= "details";
+/**
+ * Defines the "schedule" tab.
+ */
 ZmApptComposeView.TAB_SCHEDULE		= "schedule";
+/**
+ * Defines the "attendees" tab.
+ */
 ZmApptComposeView.TAB_ATTENDEES		= "attendees";
+/**
+ * Defines the "locations" tab.
+ */
 ZmApptComposeView.TAB_LOCATIONS		= "locations";
+/**
+ * Defines the "equipment" tab.
+ */
 ZmApptComposeView.TAB_EQUIPMENT		= "equipment";
 
 ZmApptComposeView.TAB_NAME = {};
@@ -238,8 +255,9 @@ function() {
 };
 
 /**
-* Adds an attachment file upload field to the compose form.
-*/
+ * Adds an attachment file upload field to the compose form.
+ * 
+ */
 ZmApptComposeView.prototype.addAttachmentField =
 function() {
 	this._apptEditView.addAttachmentField();
@@ -311,14 +329,16 @@ function(tabKey) {
 };
 
 /**
-* Updates the set of attendees for this appointment, by adding attendees or by
-* replacing the current list (with a clone of the one passed in).
-*
-* @param attendees	[object]		attendee(s) as string, array, or AjxVector
-* @param type		[constant]		attendee type (attendee/location/equipment)
-* @param mode		[constant]*		replace (default) or add
-* @param index		[int]*			index at which to add attendee
-*/
+ * Updates the set of attendees for this appointment, by adding attendees or by
+ * replacing the current list (with a clone of the one passed in).
+ *
+ * @param attendees	[object]		attendee(s) as string, array, or AjxVector
+ * @param type		[constant]		attendee type (attendee/location/equipment)
+ * @param mode		[constant]*		replace (default) or add
+ * @param index		[int]*			index at which to add attendee
+ * 
+ * @private
+ */
 ZmApptComposeView.prototype.updateAttendees =
 function(attendees, type, mode, index) {
 	attendees = (attendees instanceof AjxVector) ? attendees.getArray() :
@@ -381,7 +401,7 @@ function(attendee, type) {
 /**
 * Adds a change listener.
 *
-* @param listener	[AjxListener]	a listener
+* @param {AjxListener}	listener	a listener
 */
 ZmApptComposeView.prototype.addChangeListener = 
 function(listener) {
@@ -391,7 +411,7 @@ function(listener) {
 /**
 * Removes the given change listener.
 *
-* @param listener	[AjxListener]	a listener
+* @param {AjxListener}	listener	a listener
 */
 ZmApptComposeView.prototype.removeChangeListener = 
 function(listener) {

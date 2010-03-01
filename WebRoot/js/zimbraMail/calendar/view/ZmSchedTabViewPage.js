@@ -64,10 +64,25 @@ ZmSchedTabViewPage.prototype.constructor = ZmSchedTabViewPage;
 
 ZmSchedTabViewPage.FREEBUSY_NUM_CELLS		= 48;
 
+/**
+ * Defines the "free" status.
+ */
 ZmSchedTabViewPage.STATUS_FREE				= 1;
+/**
+ * Defines the "busy" status.
+ */
 ZmSchedTabViewPage.STATUS_BUSY				= 2;
+/**
+ * Defines the "tentative" status.
+ */
 ZmSchedTabViewPage.STATUS_TENTATIVE			= 3;
+/**
+ * Defines the "out" status.
+ */
 ZmSchedTabViewPage.STATUS_OUT				= 4;
+/**
+ * Defines the "unknown" status.
+ */
 ZmSchedTabViewPage.STATUS_UNKNOWN			= 5;
 
 // Pre-cache the status css class names

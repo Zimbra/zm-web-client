@@ -21,8 +21,10 @@
  *
  * @author Parag Shah
  *
- * @param container	[DwtComposite]	the containing element
- * @param app		[ZmCalendarApp]	a handle to the calendar application
+ * @param {DwtComposite}	container	the containing element
+ * @param {ZmCalendarApp}	app		the handle to the calendar application
+ * 
+ * @extends		ZmCalItemComposeController
  */
 ZmApptComposeController = function(container, app) {
 
@@ -54,6 +56,12 @@ function(calItem, mode, isDirty) {
 	this._setComposeTabGroup();
 };
 
+/**
+ * Forwards the calendar item.
+ * 
+ * @param	{ZmAppt}	appt		the appointment
+ * @return	{Boolean}	<code>true</code> indicates the forward is executed
+ */
 ZmApptComposeController.prototype.forwardCalItem =
 function(appt) {
     //todo: to address input validation
@@ -197,7 +205,11 @@ function(appt, callback) {
     }
 };
 
-//JSON request is used to make easy re-use of "comp" elements from GetRecurResponse
+/**
+ * JSON request is used to make easy re-use of "comp" elements from GetRecurResponse.
+ * 
+ * @private
+ */
 ZmApptComposeController.prototype._checkResourceConflictsJSON =
 function(appt, callback, recurInfo) {
 
@@ -258,7 +270,11 @@ function(soapDoc, recurInfo) {
     }
 };
 
-//Soap Request is used when "comp" has to be generated from appt
+/**
+ * Soap Request is used when "comp" has to be generated from appt.
+ * 
+ * @private
+ */
 ZmApptComposeController.prototype._checkResourceConflictsSoap =
 function(appt, callback, recurInfo) {
 
@@ -292,9 +308,10 @@ function(appt, callback, recurInfo) {
 };
 
 /**
- * Retrieve the recurrence definition of an appointment
- * @param appt - appointment object
- * @param callback - callback module after getting recurrence info
+ * Gets the recurrence definition of an appointment.
+ * 
+ * @param {ZmAppt}	appt 	the appointment
+ * @param {AjxCallback}	callback 		the callback module after getting recurrence info
  */
 ZmApptComposeController.prototype.getRecurInfo =
 function(appt, recurInfoCallback) {
@@ -311,6 +328,8 @@ function(appt, recurInfoCallback) {
 
 /**
  * Handle Response for GetRecurRequest call
+ * 
+ * @private
  */
 ZmApptComposeController.prototype._handleRecurInfo =
 function(appt, callback, result) {
