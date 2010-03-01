@@ -1178,11 +1178,12 @@ if (ext == null) ext = "";
 	    <arg value="${js.dir}/zimbra/csfe"/>
 	    <arg value="${js.dir}/zimbraMail/abook"/>
 	    <arg value="${js.dir}/zimbraMail/briefcase"/>
+	    <arg value="${js.dir}/zimbraMail/calendar"/>
 	    <arg value="${js.dir}/zimbraMail/core"/>
+	    <arg value="${js.dir}/zimbraMail/mail"/>
 	    <arg value="${js.dir}/zimbraMail/portal"/>
 	    <arg value="${js.dir}/zimbraMail/prefs"/>
 	    <arg value="${js.dir}/zimbraMail/share"/>
-	    <arg value="${js.dir}/zimbraMail/calendar"/>
 	    <arg value="${js.dir}/zimbraMail/tasks"/>
 	  </java>
 	</target>
@@ -1200,6 +1201,7 @@ if (ext == null) ext = "";
 	    <arg value="${js.dir}/zimbraMail/briefcase"/>
 	    <arg value="${js.dir}/zimbraMail/calendar"/>
 	    <arg value="${js.dir}/zimbraMail/core"/>
+	    <arg value="${js.dir}/zimbraMail/mail"/>
 	    <arg value="${js.dir}/zimbraMail/portal"/>
 	    <arg value="${js.dir}/zimbraMail/prefs"/>
 	    <arg value="${js.dir}/zimbraMail/share"/>

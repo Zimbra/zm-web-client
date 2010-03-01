@@ -20,8 +20,10 @@
  * This class represents a conversation, which is a collection of mail messages
  * which have the same subject.
  *
- * @param id		[int]			unique ID
- * @param list		[ZmMailList]	list that contains this conversation
+ * @param {int}	id		a unique ID
+ * @param {ZmMailList}		list		a list that contains this conversation
+ * 
+ * @extends		ZmMailItem
  */
 ZmConv = function(id, list) {
 
@@ -45,6 +47,10 @@ function() {
 
 /**
  * Creates a conv from its JSON representation.
+ * 
+ * @param	{Object}	node		the node
+ * @param	{Hash}		args		a hash of arguments
+ * @return	{ZmConv}		the conversation
  */
 ZmConv.createFromDom =
 function(node, args) {
@@ -55,6 +61,10 @@ function(node, args) {
 
 /**
  * Creates a conv from msg data.
+ * 
+ * @param	{ZmMailMsg}		msg		the message
+ * @param	{Hash}		args		a hash of arguments
+ * @return	{ZmConv}		the conversation
  */
 ZmConv.createFromMsg =
 function(msg, args) {
@@ -70,16 +80,15 @@ function(msg, args) {
  * should be used when in a search context, for example when expanding a conv that is the result
  * of a search.
  *
- * @param params			[hash]			hash of params:
- *        query				[string]*		query used to retrieve this conv
- *        sortBy			[constant]*		sort constraint
- *        offset			[int]*			position of first msg to return
- *        limit				[int]*			how many msgs to return
- *        getHtml			[boolean]*		if true, return HTML part for inlined msg
- *        getFirstMsg		[boolean]*		if true, retrieve the content of the first matching msg
- *											in the conv as a side effect of the search
- *        markRead			[boolean]*		if true, mark that msg read
- * @param callback			[AjxCallback]*	callback to run with results
+ * @param {Hash}	params			a hash of parameters
+ * @param {String}      params.query				the query used to retrieve this conv
+ * @param {constant}      params.sortBy			the sort constraint
+ * @param {int}      params.offset			the position of first msg to return
+ * @param {int}      params.limit				the number of msgs to return
+ * @param {Boolean}      params.getHtml			if <code>true</code>, return HTML part for inlined msg
+ * @param {Boolean}      params.getFirstMsg		if <code>true</code>, retrieve the content of the first matching msg in the conv as a side effect of the search
+ * @param  {Boolean}     params.markRead			if <code>true</code>, mark that msg read
+ * @param {AjxCallback} callback			the callback to run with results
  */
 ZmConv.prototype.load =
 function(params, callback) {
@@ -163,10 +172,10 @@ function(params, callback, result) {
  * messages, including their content. Note that it is not search-based, and uses
  * GetConvRequest rather than SearchConvRequest.
  * 
- * @param params		[hash]				hash of params:
- *        fetchAll		[boolean]*			if true, fetch content of all msgs
- * @param callback		[AjxCallback]		callback
- * @param batchCmd		[ZmBatchCommand]*	batch cmd that contains this request
+ * @param {Hash}	params		a hash of parameters
+ * @param {Boolean}      params.fetchAll		if <code>true</code>, fetch content of all msgs
+ * @param {AjxCallback}	callback		the callback
+ * @param {ZmBatchCommand}	batchCmd		the batch cmd that contains this request
  */
 ZmConv.prototype.loadMsgs =
 function(params, callback, batchCmd) {
@@ -218,6 +227,11 @@ function(callback, result) {
 	if (callback) { callback.run(result); }
 };
 
+/**
+ * Removes the message.
+ * 
+ * @param	{ZmMailMsg}		msg		the message to remove
+ */
 ZmConv.prototype.removeMsg =
 function(msg) {
 	if (this.msgs) {
@@ -247,6 +261,11 @@ function() {
 	ZmMailItem.prototype.clear.call(this);
 };
 
+/**
+ * Checks if the conversation is read only.
+ * 
+ * @return	{Boolean}	<code>true</code> if the conversation is read only
+ */
 ZmConv.prototype.isReadOnly =
 function() {
 	var folderId = this.getFolderId();
@@ -258,12 +277,13 @@ function() {
 };
 
 /**
- * Returns true if this conversation has a msg that matches the given search.
+ * Checks if this conversation has a message that matches the given search.
  * If the search is not present or not matchable, the provided default value is
  * returned.
  *
- * @param search			[ZmSearch]		search to match against
- * @param defaultValue		[boolean]		value to return if search is not matchable
+ * @param {ZmSearch}	search			the search to match against
+ * @param {Object}	defaultValue		the value to return if search is not matchable
+ * @return	{Boolean|Object}	<code>true</code> if this conversation has the message
  */
 ZmConv.prototype.hasMatchingMsg =
 function(search, defaultValue) {
@@ -293,6 +313,8 @@ function() {
 * TODO: Bundle MODIFY notifs (should bubble up to parent handlers as well)
 *
 * @param obj		item with the changed attributes/content
+* 
+* @private
 */
 ZmConv.prototype.notifyModify =
 function(obj) {
@@ -331,11 +353,12 @@ function(obj) {
 };
 
 /**
- * Returns true if any of the msgs within this conv has the given value for
- * the given flag. If the conv hasn't been loaded, looks at the conv-level flag.Å
+ * Checks if any of the msgs within this conversation has the given value for
+ * the given flag. If the conv hasn't been loaded, looks at the conv-level flag.
  *
- * @param flag		[constant]		ZmItem.FLAG_*
- * @param value		[boolean]		test value
+ * @param {constant}	flag		the flag (see <code>ZmItem.FLAG_</code> constants)
+ * @param {Boolean}	value		the test value
+ * @return	{Boolean}	<code>true</code> if the flag exists
  */
 ZmConv.prototype.hasFlag =
 function(flag, value) {
@@ -379,9 +402,11 @@ function(flags) {
 };
 
 /**
-* Figure out if any tags have been added or removed by comparing what we have now with what
-* our messages have.
-*/
+ * Figure out if any tags have been added or removed by comparing what we have now with what
+ * our messages have.
+ * 
+ * @private
+ */
 ZmConv.prototype._checkTags = 
 function() {
 	var newTags = {};
@@ -437,19 +462,21 @@ function(offset, ascending) {
 };
 
 /**
- * Returns the first matching msg of this conv, loading the conv msg list if necessary. If the
+ * Gets the first matching msg of this conv, loading the conv msg list if necessary. If the
  * msg itself hasn't been loaded we also load the conv. The conv load is a SearchConvRequest
  * which fetches the content of the first matching msg and returns it via a callback. If no
  * callback is provided, the conv will not be loaded - if it already has a msg list, the msg
  * will come from there; otherwise, a skeletal msg with an ID is returned. Note that a conv
  * always has at least one msg.
  * 
- * @param params	[hash]	hash of params:
- *        query				[string]*		query used to retrieve this conv
- *        sortBy			[constant]*		sort constraint
- *        offset			[int]*			position of first msg to return
- *        limit				[int]*			how many msgs to return
- * @param callback			[AjxCallback]*	callback to run with results
+ * @param {Hash}	params	a hash of parameters
+ * @param {String}      params.query				the query used to retrieve this conv
+ * @param {constant}      params.sortBy			the sort constraint
+ * @param {int}	      params.offset			the position of first msg to return
+ * @param {int}	params.limit				the number of msgs to return
+ * @param {AjxCallback}	callback			the callback to run with results
+ * 
+ * @return	{ZmMailMsg}	the message
  */
 ZmConv.prototype.getFirstHotMsg =
 function(params, callback) {
@@ -585,6 +612,8 @@ function(ev) {
 /**
  * Returns a result created from this conv's data that looks as if it were the result
  * of an actual SOAP request.
+ * 
+ * @private
  */
 ZmConv.prototype._createResult =
 function() {

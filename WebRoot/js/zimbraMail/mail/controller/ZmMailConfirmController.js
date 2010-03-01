@@ -15,11 +15,14 @@
 
 /**
  * Creates a new controller to show mail send confirmation.
- * @class ZmMailConfirmController
  * @constructor
- *
- * @param container		the containing element
- * @param mailApp		a handle to the mail application
+ * @class
+ * This class represents the mail confirmation controller.
+ * 
+ * @param {ZmComposite}		container		the containing shell
+ * @param {ZmMailApp}		mailApp			the containing app
+ * 
+ * @extends		ZmController
  */
 ZmMailConfirmController = function(container, mailApp) {
 
@@ -35,9 +38,11 @@ function() {
 };
 
 /**
- * Shows confimation that the message was sent.
+ * Shows the confirmation that the message was sent.
  *
- * @param msg			[ZmMailMsg]*	the message that was sent
+ * @param {ZmMailMsg}	msg			the message that was sent
+ * @param	{constant}	composeViewId		the compose view id
+ * @param	{constant}	composeTabId		the compose tab id
  */
 ZmMailConfirmController.prototype.showConfirmation =
 function(msg, composeViewId, composeTabId) {

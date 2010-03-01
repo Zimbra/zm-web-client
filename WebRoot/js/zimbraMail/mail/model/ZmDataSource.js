@@ -13,6 +13,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a data source.
+ * @class
+ * This class represents a data source.
+ * 
+ * @param	{constant}	type	the account type (see <code>ZmAccount.TYPE_</code> constants)
+ * @param	{String}	id		the id
+ * 
+ * @extends		ZmAccount
+ */
 ZmDataSource = function(type, id) {
 	if (arguments.length == 0) { return; }
 	ZmAccount.call(this, type, id);
@@ -30,8 +40,13 @@ function() {
 //
 // Constants
 //
-
+/**
+ * Defines the "cleartext" connection type.
+ */
 ZmDataSource.CONNECT_CLEAR = "cleartext";
+/**
+ * Defines the "ssl" connection type.
+ */
 ZmDataSource.CONNECT_SSL = "ssl";
 ZmDataSource.CONNECT_DEFAULT = ZmDataSource.CONNECT_CLEAR;
 
@@ -234,6 +249,15 @@ function(callback, errorCallback, batchCommand) {
 	return appCtxt.getAppController().sendRequest(params);
 };
 
+/**
+ * Tests the data source connection.
+ * 
+ * @param	{AjxCallback}		callback		the callback
+ * @param	{AjxCallback}		errorCallback		the error callback
+ * @param	{ZmBatchCommand}		batchCommand		the batch command
+ * @param	{Boolean}	noBusyOverlay		if <code>true</code>, do not show busy overlay
+ * @return	{Object}	the response
+ */
 ZmDataSource.prototype.testConnection =
 function(callback, errorCallback, batchCommand, noBusyOverlay) {
 	var soapDoc = AjxSoapDoc.create("TestDataSourceRequest", "urn:zimbraMail");
@@ -263,6 +287,11 @@ function(callback, errorCallback, batchCommand, noBusyOverlay) {
 	return appCtxt.getAppController().sendRequest(params);
 };
 
+/**
+ * Gets the port.
+ * 
+ * @return	{int}	port
+ */
 ZmDataSource.prototype.getPort =
 function() {
 	return this.port || this.getDefaultPort();
@@ -349,28 +378,15 @@ ZmDataSource.prototype.getProvider = function() {
  * specify default values for data sources. This can be used to show the
  * user a list of known email providers (e.g. Yahoo! Mail) to pre-fill the
  * account information.
- * <p>
- * The <i>provider</i> parameter is an anonymous JavaScript object with
- * the following properties:
- * <ul>
- * <li>Required:
- *  <ul>
- *  <li><i>id</i> - A unique identifier for this provider.
- *  <li><i>name</i> - The name of this provider to display to the user.
- *  </ul>
- * <li>Optional:
- *  <ul>
- *  <li><i>type</i> - Type: "POP" or "IMAP".
- *  <li><i>connectionType</i> - Connection type: "cleartext" or "ssl".
- *  <li><i>host</i> - The server.
- *  <li><i>port</i> - The port. Leave blank if provider uses default for
- *                    specified <i>connectionType</i>.
- *  <li><i>pollingInterval</i> - Polling interval.
- *  <li><i>leaveOnServer</i> - Leave message on server (POP only).
- *  </ul>
- * </ul>
  *
- * @param provider  [object]    Provider information.
+ * @param {Hash}	provider  a hash of provider information
+ * @param	{String}	provider.id		a unique identifier for this provider
+ * @param	{String}	provider.name	the name of this provider to display to the user
+ * @param	{String}	[provider.type]		the type (see <code>ZmAccount.TYPE_</code> constants)
+ * @param	{String}	[provider.connectionType]	the connection type (see <code>ZmDataSource.CONNECT_</code> constants)
+ * @param	{String}	[provider.host]	the server
+ * @param	{String}	[provider.pollingInterval]		the polling interval
+ * @param	{Boolean}	[provider.leaveOnServer]	if <code>true</code>, leave message on server (POP only)
  */
 ZmDataSource.addProvider = function(provider) {
 	var providers = ZmDataSource.getProviders();
@@ -400,17 +416,38 @@ ZmDataSource.addProvider = function(provider) {
 	}
 };
 
-ZmDataSource.getProviders = function() {
+/**
+ * Gets the providers.
+ * 
+ * @return	{Array}		an array of providers
+ */
+ZmDataSource.getProviders =
+function() {
 	if (!ZmDataSource._providers) {
 		ZmDataSource._providers = {};
 	}
 	return ZmDataSource._providers;
 };
 
-ZmDataSource.getProviderForAccount = function(account) {
+/**
+ * Gets the provider.
+ * 
+ * @param	{ZmAccount}	account		the account
+ * @return	{Hash}		the provider or <code>null</code> for none
+ */
+ZmDataSource.getProviderForAccount =
+function(account) {
 	return ZmDataSource.getProviderForHost(account.mailServer);
 };
-ZmDataSource.getProviderForHost = function(host) {
+
+/**
+ * Gets the provider.
+ * 
+ * @param	{String}	host		the host
+ * @return	{Hash}		the provider or <code>null</code> for none
+ */
+ZmDataSource.getProviderForHost =
+function(host) {
 	var providers = ZmDataSource.getProviders();
 	for (var id in providers) {
 		hasProviders = true;
@@ -422,6 +459,9 @@ ZmDataSource.getProviderForHost = function(host) {
 	return null;
 };
 
+/**
+ * Removes all providers.
+ */
 ZmDataSource.removeAllProviders = function() {
 	delete ZmDataSource._providers;
 };

@@ -15,10 +15,14 @@
 
 /**
  * Creates a new controller to show mail send confirmation.
- * @class ZmMailConfirmView
- * @constructor
- * @param parent		[DwtControl]		the element that created this view
- * @param controller	[ZmController]		controller managing this view
+ * @class
+ * 
+ * @param {DwtControl}	parent		the element that created this view
+ * @param {ZmController}	controller	the controller managing this view
+ * 
+ * @extends		DwtComposite
+ * 
+ * @private
  */
 ZmMailConfirmView = function(parent, controller) {
 
@@ -50,6 +54,8 @@ ZmMailConfirmView.prototype.toString = function() {
 
 /**
  * Adds a listener for the Create Contacts button.
+ * 
+ * @param	{AjxListener}	listener		the listener
  */
 ZmMailConfirmView.prototype.addNewContactsListener =
 function(listener) {
@@ -59,7 +65,7 @@ function(listener) {
 /**
  * Shows confirmation that the message was sent.
  *
- * @param msg			[ZmMailMsg]*	the message that was sent
+ * @param {ZmMailMsg}	msg			the message that was sent
  */
 ZmMailConfirmView.prototype.showConfirmation =
 function(msg) {

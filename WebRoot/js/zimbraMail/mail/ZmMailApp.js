@@ -14,13 +14,23 @@
  */
 
 /**
+ * @overview
+ * This file contains the mail application class.
+ */
+
+/**
  * Creates and initializes the mail application.
  * @constructor
  * @class
  * The mail app manages and displays mail messages. Messages may be grouped
  * into conversations. New messages are created through a composer.
  *
+ * @param	{DwtControl}	container		the container
+ * @param	{ZmController}	parentController	the parent window controller (set by the child window)
+ * 
  * @author Conrad Damon
+ * 
+ * @extends		ZmApp
  */
 ZmMailApp = function(container, parentController) {
 	ZmApp.call(this, ZmApp.MAIL, container, parentController);
@@ -57,6 +67,9 @@ ZmItem.DATA_SOURCE			= ZmEvent.S_DATA_SOURCE;
 ZmOrganizer.FOLDER			= ZmEvent.S_FOLDER;
 
 // App-related constants
+/**
+ * Defines the "mail" application.
+ */
 ZmApp.MAIL									= ZmId.APP_MAIL;
 ZmApp.CLASS[ZmApp.MAIL]						= "ZmMailApp";
 ZmApp.SETTING[ZmApp.MAIL]					= ZmSetting.MAIL_ENABLED;
@@ -613,6 +626,10 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 };
+
+/**
+ * @private
+ */
 ZmMailApp.validateForwardEmail =
 function(emailStr) {
 	if (!emailStr || emailStr == "") {
@@ -627,6 +644,9 @@ function(emailStr) {
 	return ZmPref.validateEmail(emailStr);
 };
 
+/**
+ * @private
+ */
 ZmMailApp.validateMailLocalDeliveryDisabled =
 function(checked) {
 	if (!checked) { return true; }
@@ -637,6 +657,9 @@ function(checked) {
 	return (input != null && input.isValid());
 };
 
+/**
+ * @private
+ */
 ZmMailApp.validateSendNotification =
 function(checked) {
 	if (!checked) { return true; }
@@ -652,6 +675,8 @@ function(checked) {
  * combination of an empty away msg and a checked box for "send away message". Since a
  * pref is validated only if it changes, we have to have validation functions for both
  * prefs.
+ * 
+ * @private
  */
 ZmMailApp.validateVacationMsg =
 function(awayMsg) {
@@ -663,6 +688,9 @@ function(awayMsg) {
 	return (input && !input.isSelected());
 };
 
+/**
+ * @private
+ */
 ZmMailApp.validateVacationMsgEnabled =
 function(checked) {
 	if (!checked) { return true; }
@@ -675,6 +703,9 @@ function(checked) {
 	return (awayMsg && (awayMsg.length > 0));
 };
 
+/**
+ * @private
+ */
 ZmMailApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_ADD_FILTER_RULE, {textKey:"newFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
@@ -726,6 +757,9 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_USE_PREFIX, {textKey:"usePrefix"});
 };
 
+/**
+ * @private
+ */
 ZmMailApp.prototype._registerItems =
 function() {
 	ZmItem.registerItem(ZmItem.CONV,
@@ -777,6 +811,9 @@ function() {
 						});
 };
 
+/**
+ * @private
+ */
 ZmMailApp.prototype._setupSearchToolbar =
 function() {
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
@@ -845,6 +882,7 @@ function(result) {
  *		modified:	c {id:-676, _newId: 678}
  * 					m {id:676, cid:678}
  *
+ * @private
  */
 ZmMailApp.prototype.preNotify =
 function(notify) {
@@ -965,6 +1003,8 @@ function(notify) {
  * make sure a create notification is relevant before creating a mail item.</p>
  *
  * @param creates	[hash]		hash of create notifications
+ * 
+ * @private
  */
 ZmMailApp.prototype.createNotify =
 function(creates, force) {
@@ -1068,9 +1108,11 @@ function(creates) {
  *  	- we are currently in a mail view
  *		- the view is the result of a matchable search
  *
- * @param creates		[hash]					JSON create objects
- * @param list			[ZmMailList]			mail list to notify
- * @param controller	[ZmMailListController]	controller that owns list
+ * @param {Hash}	creates		the JSON create objects
+ * @param {ZmMailList}	list			the mail list to notify
+ * @param {ZmMailListController}	controller	the controller that owns list
+ * 
+ * @private
  */
 ZmMailApp.prototype._checkList =
 function(creates, list, controller) {
@@ -1112,14 +1154,16 @@ function(creates, list, controller) {
 /**
  * Handles the creates for the given type of mail item.
  *
- * @param creates	[array]			list of JSON create nodes
- * @param type		[constant]		mail item type
- * @param items		[hash]			hash of created mail items
- * @param currList	[ZmMailList]	list currently being displayed to user
- * @param sortBy	[constant]		sort order
- * @param convs		[hash]			convs, so we can update folders from msgs
+ * @param {Array}	creates	a list of JSON create nodes
+ * @param {constant}	type		the mail item type
+ * @param {Hash}	items		a hash of created mail items
+ * @param {ZmMailList}	currList	the list currently being displayed to user
+ * @param {constant}	sortBy	the sort order
+ * @param {Hash}	convs		the convs, so we can update folders from msgs
  *
- * @return	a hash with booleans gotItem and gotAlertMessage
+ * @return	{Hash}	a hash with booleans gotItem and gotAlertMessage
+ * 
+ * @private
  */
 ZmMailApp.prototype._checkType =
 function(creates, type, items, currList, sortBy, convs) {
@@ -1251,11 +1295,6 @@ function(inNewWindow) {
 
 // Public methods
 
-/**
- * Creates the overview content for this app. The default implementation creates
- * a ZmOverview with standard options. Other apps may want to use different
- * options, or create a DwtComposite instead.
- */
 ZmMailApp.prototype.getOverviewPanelContent =
 function() {
 	var firstTime = !this._overviewPanelContent;
@@ -1339,6 +1378,8 @@ function(params, ex) {
  *
  * @param callback
  * @param ex
+ * 
+ * @private
  */
 ZmMailApp.prototype._handleErrorMsgLoad =
 function(callback, ex) {
@@ -1363,6 +1404,14 @@ function(msg, callback) {
 	}
 };
 
+/**
+ * Performs a mail search.
+ * 
+ * @param	{String}	query		the query
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{Object}	response	the response
+ * @param	{constant}	type		the type
+ */
 ZmMailApp.prototype.mailSearch =
 function(query, callback, response, type) {
 	var account = appCtxt.isOffline && appCtxt.inStartup && appCtxt.accountList.defaultAccount;
@@ -1421,6 +1470,12 @@ function(params) {
 	return params;
 };
 
+/**
+ * Shows the search results.
+ * 
+ * @param	{Object}	results		the results
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmMailApp.prototype.showSearchResults =
 function(results, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
@@ -1526,6 +1581,11 @@ function(callback, queryStr) {
 	this._notifyRendered();
 };
 
+/**
+ * Gets the controller.
+ * 
+ * @return	{ZmDoublePaneController}	the controller
+ */
 ZmMailApp.prototype.getConvListController =
 function() {
 	if (!this._convListController) {
@@ -1534,6 +1594,11 @@ function() {
 	return this._convListController;
 };
 
+/**
+ * Gets the message controller.
+ * 
+ * @return	{ZmMsgController}		the controller
+ */
 ZmMailApp.prototype.getConvController =
 function() {
 	if (!this._convController) {
@@ -1542,6 +1607,11 @@ function() {
 	return this._convController;
 };
 
+/**
+ * Gets the controller.
+ * 
+ * @return	{ZmDoublePaneController}	the controller
+ */
 ZmMailApp.prototype.getTradController =
 function() {
 	if (!this._tradController) {
@@ -1550,11 +1620,21 @@ function() {
 	return this._tradController;
 };
 
+/**
+ * Gets the message controller.
+ * 
+ * @return	{ZmMsgController}		the controller
+ */
 ZmMailApp.prototype.getMsgController =
 function(sessionId) {
 	return this.getSessionController(ZmId.VIEW_MSG, "ZmMsgController", sessionId);
 };
 
+/**
+ * Gets the controller.
+ * 
+ * @return	{ZmComposeController}	the controller
+ */
 ZmMailApp.prototype.getComposeController =
 function(sessionId) {
 	return this.getSessionController(ZmId.VIEW_COMPOSE, "ZmComposeController", sessionId);
@@ -1604,6 +1684,11 @@ function(sessionId) {
 	return this.getSessionController(ZmId.VIEW_MAIL_CONFIRM, "ZmMailConfirmController", sessionId);
 };
 
+/**
+ * Gets the mail list controller.
+ * 
+ * @return	{ZmDoublePaneController}	the controller
+ */
 ZmMailApp.prototype.getMailListController =
 function() {
 	var groupMailBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
@@ -1611,6 +1696,11 @@ function() {
 													  AjxDispatcher.run("GetTradController");
 };
 
+/**
+ * Gets the attachment controller.
+ * 
+ * @return	{ZmAttachmentsController}		the controller
+ */
 ZmMailApp.prototype.getAttachmentsController =
 function() {
 	if (!this._attachmentsController) {
@@ -1622,20 +1712,26 @@ function() {
 /**
  * Begins a compose session by presenting a form to the user.
  *
- * @param action		[constant]		new message, reply, forward, or an invite action
- * @param inNewWindow	[boolean]*		if true, we are in detached window
- * @param msg			[ZmMailMsg]*	the original message (reply/forward), or address (new message)
- * @param toOverride 	[string]*		initial value for To: field
- * @param subjOverride 	[string]*		initial value for Subject: field
- * @param extraBodyText [string]*		canned text to prepend to body (invites)
- * @param callback		[AjxCallback]*	callback to run after view has been set
- * @param accountName	[string]*		on-behalf-of From address
+ * @param	{Hash}	params			a hash of parameters
+ * @param {constant}	params.action		the new message, reply, forward, or an invite action
+ * @param {Boolean}	params.inNewWindow		if <code>true</code>, we are in detached window
+ * @param {ZmMailMsg}	params.msg			the original message (reply/forward), or address (new message)
+ * @param {String}	params.toOverride 	the initial value for To: field
+ * @param {String}	params.subjOverride 	the initial value for Subject: field
+ * @param {String}	params.extraBodyText the canned text to prepend to body (invites)
+ * @param {AjxCallback}	params.callback		the callback to run after view has been set
+ * @param {String}	params.accountName	the on-behalf-of From address
  */
 ZmMailApp.prototype.compose =
 function(params) {
 	AjxDispatcher.run("GetComposeController").doAction(params);
 };
 
+/**
+ * Sets the new mail notice.
+ * 
+ * @param	{ZmOrganizer}	organizer		the organizer
+ */
 ZmMailApp.prototype.setNewMailNotice =
 function(organizer) {
 	var appChooser = appCtxt.getAppChooser();
@@ -1667,9 +1763,11 @@ function(organizer) {
 };
 
 /**
-* Convenience method to convert "group mail by" between server (string)
-* and client (int constant) versions.
-*/
+ * Gets the "group mail by" setting. This is a convenience method to
+ * convert "group mail by" between server (string) and client (int constant) versions.
+ * 
+ * @return	{String}	the group by mail setting
+ */
 ZmMailApp.prototype.getGroupMailBy =
 function() {
 	var groupBy = this._groupBy[appCtxt.getActiveAccount().name];
@@ -1691,10 +1789,11 @@ function(offset) {
 };
 
 /**
-* Adds a "Reply" submenu for replying to sender or all.
-*
-* @param parent		parent widget (a toolbar or action menu)
-*/
+ * Adds a "Reply" submenu for replying to sender or all.
+ *
+ * @param {ZmToolBar|ZmActionMenu}	parent		the parent widget (a toolbar or action menu)
+ * @return	{ZmActionMenu}	the menu
+ */
 ZmMailApp.addReplyMenu =
 function(parent) {
 	var list = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
@@ -1704,10 +1803,11 @@ function(parent) {
 };
 
 /**
-* Adds a "Forward" submenu for forwarding inline or as attachment
-*
-* @param parent		parent widget (a toolbar or action menu)
-*/
+ * Adds a "Forward" submenu for forwarding inline or as attachment.
+ *
+ * @param {ZmToolBar|ZmActionMenu}	parent		the parent widget (a toolbar or action menu)
+ * @return	{ZmActionMenu}	the menu
+ */
 ZmMailApp.addForwardMenu =
 function(parent) {
 	var list = [ZmOperation.FORWARD_INLINE, ZmOperation.FORWARD_ATT];
@@ -1716,6 +1816,12 @@ function(parent) {
 	return menu;
 };
 
+/**
+ * Adds a data source collection.
+ * 
+ * @param	{ZmAccount}		account		the account
+ * @return	{ZmDataSourceCollection}	the data source collection
+ */
 ZmMailApp.prototype.getDataSourceCollection =
 function(account) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
@@ -1730,6 +1836,12 @@ function(account) {
 	return this._dataSourceCollection[activeAcct];
 };
 
+/**
+ * Gets the identity collection.
+ * 
+ * @param	{ZmAccount}		account		the account
+ * @return	{ZmIdentityCollection}	the identity collection
+ */
 ZmMailApp.prototype.getIdentityCollection =
 function(account) {
 	// child window always gets its own identitiy collection
@@ -1749,6 +1861,12 @@ function(account) {
 	return this._identityCollection[activeAcct];
 };
 
+/**
+ * Gets the signature collection.
+ * 
+ * @param	{ZmAccount}		account		the account
+ * @return	{ZmSignatureCollection}	the signature collection
+ */
 ZmMailApp.prototype.getSignatureCollection =
 function(account) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
@@ -1801,6 +1919,8 @@ function(ev) {
  * Settings listener. Process changed settings as a group, so that we
  * don't redo the search more than once if more than one relevant mail
  * setting has changed.
+ * 
+ * @private
  */
 ZmMailApp.prototype._settingsChangeListener =
 function(ev) {

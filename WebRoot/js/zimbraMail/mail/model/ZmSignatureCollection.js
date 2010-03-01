@@ -13,6 +13,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a signature collection.
+ * @class
+ * This class represents a signature collection.
+ * 
+ * @extends		ZmModel
+ */
 ZmSignatureCollection = function() {
 	ZmModel.call(this, ZmEvent.S_SIGNATURE);
 	this._idMap = {};
@@ -31,7 +38,11 @@ function() {
 //
 // Public methods
 //
-
+/**
+ * Adds the signature.
+ * 
+ * @param	{ZmSignature}	signature		the signature to add
+ */
 ZmSignatureCollection.prototype.add =
 function(signature) {
 	if (!this._idMap[signature.id]) {
@@ -42,6 +53,11 @@ function(signature) {
 	}
 };
 
+/**
+ * Removes the signature.
+ * 
+ * @param	{ZmSignature}	signature		the signature to remove
+ */
 ZmSignatureCollection.prototype.remove =
 function(signature) {
 	if (this._idMap[signature.id]) {
@@ -52,11 +68,21 @@ function(signature) {
 	}
 };
 
+/**
+ * Gets the count of signatures.
+ * 
+ * @return	{int}		the size
+ */
 ZmSignatureCollection.prototype.getSize =
 function() {
 	return this._size;
 };
 
+/**
+ * Gets the signatures.
+ * 
+ * @return	{Array}	an array of {@link ZmSignature} objects
+ */
 ZmSignatureCollection.prototype.getSignatures =
 function() {
 	return AjxUtil.values(this._idMap);
@@ -81,11 +107,23 @@ function() {
 	return options;
 };
 
+/**
+ * Gets the signature by id.
+ * 
+ * @param	{String}	id		the signature
+ * @return	{ZmSignature} the signature
+ */
 ZmSignatureCollection.prototype.getById =
 function(id) {
 	return this._idMap[id];
 };
 
+/**
+ * Gets the signature by name.
+ * 
+ * @param	{String}	name		the signature
+ * @return	{ZmSignature} the signature
+ */
 ZmSignatureCollection.prototype.getByName =
 function(name) {
 	var lname = name.toLowerCase();

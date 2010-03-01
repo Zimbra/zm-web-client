@@ -21,8 +21,10 @@
  *
  * @author Conrad Damon
  * 
- * @param container		the containing element
- * @param mailApp		a handle to the mail application
+ * @param {ZmComposite}	container	the containing shell
+ * @param {ZmMailApp}	mailApp			the containing app
+ * 
+ * @extends		ZmController
  */
 ZmComposeController = function(container, mailApp) {
 
@@ -69,8 +71,17 @@ function() {
 ZmComposeController.SIGNATURE_KEY = "sigKeyId";
 
 // Constants for defining the reason for saving a draft message.
+/**
+ * Defines the "none" draft type reason.
+ */
 ZmComposeController.DRAFT_TYPE_NONE		= "none";
+/**
+ * Defines the "manual" draft type reason.
+ */
 ZmComposeController.DRAFT_TYPE_MANUAL	= "manual";
+/**
+ * Defines the "auto" draft type reason.
+ */
 ZmComposeController.DRAFT_TYPE_AUTO		= "auto";
 
 ZmComposeController.DEFAULT_TAB_TEXT = ZmMsg.compose;
@@ -127,6 +138,8 @@ function() {
 * the parent window). Otherwise, after the child window is closed, the parent
 * window is still referencing the child window's compose controller, which has
 * been unloaded!!
+* 
+* @private
 */
 ZmComposeController.prototype.dispose =
 function() {
@@ -140,14 +153,16 @@ function() {
 /**
  * Begins a compose session by presenting a form to the user.
  *
- * @param action		[constant]		new message, reply, forward, or an invite action
- * @param inNewWindow	[boolean]*		if true, we are in detached window
- * @param msg			[ZmMailMsg]*	the original message (reply/forward), or address (new message)
- * @param toOverride 	[string]*		initial value for To: field
- * @param subjOverride 	[string]*		initial value for Subject: field
- * @param extraBodyText [string]*		canned text to prepend to body (invites)
- * @param callback		[AjxCallback]*	callback to run after view has been set
- * @param accountName	[string]*		on-behalf-of From address
+ * @param	{Hash}	params		a hash of parameters
+ * @param {constant}	params.action		the new message, reply, forward, or an invite action
+ * @param {Boolean}	params.inNewWindow		if <code>true</code>, we are in detached window
+ * @param {ZmMailMsg}	params.msg			the original message (reply/forward), or address (new message)
+ * @param {String}	params.toOverride 	the initial value for To: field
+ * @param {String}	params.subjOverride 	the initial value for Subject: field
+ * @param {String}	params.extraBodyText the canned text to prepend to body (invites)
+ * @param {AjxCallback}	params.callback		the callback to run after view has been set
+ * @param {String}	params.accountName	the on-behalf-of From address
+ * @param {String}	accountName	[string]*		on-behalf-of From address
  */
 ZmComposeController.prototype.doAction =
 function(params) {
@@ -173,6 +188,12 @@ function(params) {
 	}
 };
 
+/**
+ * Toggles the spell check button.
+ * 
+ * @param	{Boolean}	selected		if <code>true</code>, toggle the spell check to "selected"
+ * 
+ */
 ZmComposeController.prototype.toggleSpellCheckButton =
 function(selected) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
@@ -182,8 +203,9 @@ function(selected) {
 };
 
 /**
-* Detaches compose view to child window
-*/
+ * Detaches compose view to child window.
+ * 
+ */
 ZmComposeController.prototype.detach =
 function() {
 	// bug fix #7192 - disable detach toolbar button
@@ -309,6 +331,8 @@ function() {
 /**
  * This method gets called if user clicks on mailto link while compose view is
  * already being used.
+ * 
+ * @private
  */
 ZmComposeController.prototype.resetComposeForMailto =
 function(params) {
@@ -329,24 +353,34 @@ function(params) {
 };
 
 /**
-* Sends the message represented by the content of the compose view.
-*/
+ * Sends the message represented by the content of the compose view.
+ * 
+ * @param	{String}	attId		the id
+ * @param	{constant}	draftType		the draft type (see <code>ZmComposeController.DRAFT_TYPE_</code> constants)
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmComposeController.prototype.sendMsg =
 function(attId, draftType, callback) {
 	return this._sendMsg(attId, null, draftType, callback);
 };
 
 /**
-* Sends the message represented by the content of the compose view with specified docIds as attachment.
-*/
+ * Sends the message represented by the content of the compose view with specified docIds as attachment.
+ * 
+ * @param	{Array}	docIds		the document Ids
+ * @param	{constant}	draftType		the draft type (see <code>ZmComposeController.DRAFT_TYPE_</code> constants)
+ * @param	{AjxCallback}	callback		the callback
+ */
 ZmComposeController.prototype.sendDocs =
 function(docIds, draftType, callback) {
 	return this._sendMsg(null, docIds, draftType, callback);
 };
 
 /**
-* Sends the message represented by the content of the compose view.
-*/
+ * Sends the message represented by the content of the compose view.
+ * 
+ * @private
+ */
 ZmComposeController.prototype._sendMsg =
 function(attId, docIds, draftType, callback) {
 
@@ -497,11 +531,13 @@ function(ex) {
 };
 
 /**
-* Creates a new ZmComposeView if one does not already exist
-*
-* @param initHide	Set to true if compose view should be initially rendered
-*					off screen (used as an optimization to preload this view)
-*/
+ * Creates a new ZmComposeView if one does not already exist
+ *
+ * @param initHide	Set to true if compose view should be initially rendered
+ *					off screen (used as an optimization to preload this view)
+ *
+ * @private
+ */
 ZmComposeController.prototype.initComposeView =
 function(initHide, composeMode) {
 	if (this._composeView) { return; }
@@ -570,6 +606,8 @@ function(ev) {
  * Sets the tab stops for the compose form. All address fields are added; they're
  * not actual tab stops unless they're visible. The textarea for plain text and
  * the HTML editor for HTML compose are swapped in and out depending on the mode.
+ * 
+ * @private
  */
 ZmComposeController.prototype._setComposeTabGroup =
 function() {
@@ -654,6 +692,11 @@ function(map) {
 	return (map == "editor");
 };
 
+/**
+ * Gets the selected signature.
+ * 
+ * @return	{String}	the selected signature key or <code>null</code> if none selected
+ */
 ZmComposeController.prototype.getSelectedSignature =
 function() {
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
@@ -664,6 +707,11 @@ function() {
 	}
 };
 
+/**
+ * Gets the selected signature.
+ * 
+ * @param	{String}	value 	the selected signature key
+ */
 ZmComposeController.prototype.setSelectedSignature =
 function(value) {
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);

@@ -58,13 +58,15 @@ function() {
  * remove the conv row(s) from the list view (even if the conv still matches the
  * search).
  *
- * @param params		[hash]			hash of params:
+ * @param {Hash}	params		a hash of parameters
  *        items			[array]			a list of items to move
  *        folder		[ZmFolder]		destination folder
  *        attrs			[hash]			additional attrs for SOAP command
  *        callback		[AjxCallback]*	callback to run after each sub-request
  *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
  *        count			[int]*			starting count for number of items processed
+ *        
+ * @private
  */
 ZmMailList.prototype.moveItems =
 function(params) {
@@ -108,7 +110,7 @@ function(params) {
 /**
  * Marks items as "spam" or "not spam". If they're marked as "not spam", a target folder
  * may be provided.
- * @param params		[hash]			hash of params:
+ * @param {Hash}	params		a hash of parameters
  *        items			[array]			a list of items
  *        markAsSpam	[boolean]		if true, mark as "spam"
  *        folder		[ZmFolder]		destination folder
@@ -116,6 +118,7 @@ function(params) {
  *        callback		[AjxCallback]*	callback to run after each sub-request
  *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
  *        count			[int]*			starting count for number of items processed
+ * @private
  */
 ZmMailList.prototype.spamItems = 
 function(params) {
@@ -197,11 +200,13 @@ function(params, result) {
  * other folders. If we're in conv mode in Trash, we add a constraint of "t",
  * meaning that the action is only applied to items (msgs) in the Trash.
  *
- * @param params		[hash]			hash of params:
- *        items			[Array]			list of items to delete
- *        hardDelete	[boolean]		whether to force physical removal of items
- *        attrs			[Object]		additional attrs for SOAP command
- *        childWin		[window]*		the child window this action is happening in
+ * @param {Hash}		params		a hash of parameters
+ * @param  {Array}     params.items			list of items to delete
+ * @param {Boolean}      params.hardDelete	whether to force physical removal of items
+ * @param {Object}      params.attrs			additional attrs for SOAP command
+ * @param {window}       params.childWin		the child window this action is happening in
+ *        
+ * @private
  */
 ZmMailList.prototype.deleteItems =
 function(params) {
@@ -251,15 +256,17 @@ function() {
 	appCtxt.getAppController().setInstantNotify(true);
 };
 
-/*
+/**
  * Only make the request for items whose state will be changed.
  *
- * @param params		[hash]				hash of params:
+ * @param {Hash}	params		a hash of parameters
  *        items			[array]				a list of items to mark read/unread
  *        value			[boolean]			if true, mark items read
  *        callback		[AjxCallback]*		callback to run after each sub-request
  *        finalCallback	[AjxCallback]*		callback to run after all items have been processed
  *        count			[int]*				starting count for number of items processed
+ *        
+ * @private
  */
 ZmMailList.prototype.markRead =
 function(params) {
@@ -475,11 +482,12 @@ function() {
 };
 
 /**
- * Returns the first msg in the list which was marked by the server as matching
+ * Gets the first msg in the list which was marked by the server as matching
  * the search used to create the list.
  * 
- * @param offset	[int]*		starting point within list
- * @param limit		[int]*		ending point within list
+ * @param {int}	offset	the starting point within list
+ * @param {int}	limit		the ending point within list
+ * @return	{ZmMailMsg}		the message
  */
 ZmMailList.prototype.getFirstHit =
 function(offset, limit) {

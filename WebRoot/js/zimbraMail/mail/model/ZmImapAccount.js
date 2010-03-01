@@ -13,6 +13,15 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates an IMAP account.
+ * @class
+ * This class represents an IMAP account.
+ * 
+ * @param	{String}	id		the id
+ * 
+ * @extends		ZmDataSource
+ */
 ZmImapAccount = function(id) {
 	ZmDataSource.call(this, ZmAccount.TYPE_IMAP, id);
 };
@@ -22,8 +31,17 @@ ZmImapAccount.prototype.constructor = ZmImapAccount;
 
 
 // Constants
-
+/**
+ * Defines the "cleartext" port.
+ * 
+ * @type	int
+ */
 ZmImapAccount.PORT_CLEAR	= 143;
+/**
+ * Defines the "ssl" port.
+ * 
+ * @type	int
+ */
 ZmImapAccount.PORT_SSL		= 993;
 ZmImapAccount.PORT_DEFAULT	= ZmImapAccount.PORT_CLEAR;
 
@@ -40,6 +58,11 @@ function() {
 	return "ZmImapAccount";
 };
 
+/**
+ * Gets the default port.
+ * 
+ * @return	{int}		the port
+ */
 ZmImapAccount.prototype.getDefaultPort =
 function() {
 	return (this.connectionType == ZmDataSource.CONNECT_SSL)
@@ -47,9 +70,13 @@ function() {
 };
 
 /**
-* Comparison function for *IMAP* folders. Since IMAP folderId's are *not* well-
-* known, we have to compare their names instead of their ID's.
-*/
+ * Comparison function for *IMAP* folders. Since IMAP folderId's are *not* well-
+ * known, we have to compare their names instead of their ID's.
+ * 
+ * @param	{ZmFolder}	folderA
+ * @param	{ZmFolder}	folderB
+ * @return	{int}	0 if the folders are the same; 1 if "a" is before "b"; -1 if "b" is before "a"
+ */
 ZmImapAccount.sortCompare =
 function(folderA, folderB) {
 	var check = ZmOrganizer.checkSortArgs(folderA, folderB);

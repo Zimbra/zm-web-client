@@ -13,6 +13,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the attachments controller.
+ * @class
+ * This class represents an attachments controller.
+ * 
+ * @param	{ZmComposite}	container		the container
+ * @param	{ZmMailApp}		app				the application
+ * 
+ * @extends		ZmController
+ * 
+ */
 ZmAttachmentsController = function(container, app) {
 
     if (arguments.length == 0) { return; }

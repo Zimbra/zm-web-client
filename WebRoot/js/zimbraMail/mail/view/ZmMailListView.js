@@ -234,6 +234,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 
 /**
  * Called by the controller whenever the reading pane preference changes
+ * 
+ * @private
  */
 ZmMailListView.prototype.reRenderListView =
 function() {
@@ -599,6 +601,8 @@ function(address, callback, contact) {
  * @param field		[constant]	column identifier
  * @param colIdx	[int]		index of column (starts at 0)
  * @param params	[hash]*		hash of optional params
+ * 
+ * @private
  */
 ZmMailListView.prototype._getCell =
 function(htmlArr, idx, item, field, colIdx, params) {
@@ -885,6 +889,8 @@ function() {
 
 /**
  * Returns the next item to select, typically set by the controller.
+ * 
+ * @private
  */
 ZmMailListView.prototype._getItemToSelect =
 function() {

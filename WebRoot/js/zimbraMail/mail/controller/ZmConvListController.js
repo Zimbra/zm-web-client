@@ -23,8 +23,10 @@
  *
  * @author Conrad Damon
  *
- * @param container	containing shell
- * @param mailApp	containing app
+ * @param {ZmComposite}	container	the containing shell
+ * @param {ZmMailApp}	mailApp			the containing app
+ * 
+ * @extends		ZmDoublePaneController
  */
 ZmConvListController = function(container, mailApp) {
 	ZmDoublePaneController.call(this, container, mailApp);
@@ -56,12 +58,10 @@ function() {
 };
 
 /**
-* Displays the given conversation in a two-pane view. The view is actually
-* created in _loadItem(), since it is a scheduled method and must execute
-* last.
-*
-* @param search		[ZmSearchResult]	the current search results
-*/
+ * Displays the given conversation in a two-pane view.
+ *
+ * @param {ZmSearchResult}	search		the current search results
+ */
 ZmConvListController.prototype.show =
 function(search) {
 	this._list = search.getResults(ZmItem.CONV);
@@ -173,6 +173,8 @@ function(actionCode) {
  * Override to handle paging among msgs within an expanded conv.
  * 
  * TODO: handle msg paging (current item is expandable msg)
+ * 
+ * @private
  */
 ZmConvListController.prototype.pageItemSilently =
 function(currentItem, forward) {

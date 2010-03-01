@@ -28,6 +28,8 @@
  * will get a + icon, and that message is expandable.</p>
  *
  * @author Conrad Damon
+ * 
+ * @private
  */
 ZmConvDoublePaneView = function(params) {
 
@@ -55,6 +57,8 @@ function(params) {
  * This class is a ZmMailListView which can display both convs and msgs.
  * It handles expanding convs as well as paging additional messages in. Message rows are
  * inserted after the row of the owning conv.
+ * 
+ * @private
  */
 ZmConvListView = function(params) {
 
@@ -133,6 +137,8 @@ function(item) {
 
 /**
  * Called by the controller whenever the reading pane preference changes
+ * 
+ * @private
  */
 ZmConvListView.prototype.reRenderListView =
 function() {
@@ -146,7 +152,7 @@ function() {
 /**
  * Overrides DwtListView.getList to optionally include any visible msgs.
  *
- * @param allItems	[boolean]*	if true, include visible msgs
+ * @param {Boolean}	allItems	if <code>true</code>, include visible msgs
  */
 ZmConvListView.prototype.getList =
 function(allItems) {
@@ -456,6 +462,8 @@ function(params) {
 /**
  * @param conv		[ZmConv]		conv that owns the messages we will display
  * @param msg		[ZmMailMsg]*	msg that is the anchor for paging in more msgs
+ * 
+ * @private
  */
 ZmConvListView.prototype._expand =
 function(conv, msg) {
@@ -558,6 +566,8 @@ function(ids, show) {
 /**
  * Make sure that the given item has a set of expanded rows. If you expand an item
  * and then page away and back, the DOM is reset and your rows are gone.
+ * 
+ * @private
  */
 ZmConvListView.prototype._rowsArePresent =
 function(item) {
@@ -579,6 +589,8 @@ function(item) {
  * page and there are more msgs.
  *
  * @param item		[ZmMailItem]	conv or msg to check
+ * 
+ * @private
  */
 ZmConvListView.prototype._isExpandable =
 function(item) {

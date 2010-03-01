@@ -13,6 +13,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the identity collection.
+ * @class
+ * This class represents the identity collection
+ * 
+ * @extends		ZmModel
+ */
 ZmIdentityCollection = function() {
 	ZmModel.call(this, ZmEvent.S_IDENTITY);
 	this.defaultIdentity = null;
@@ -35,12 +42,23 @@ function() {
 // Public methods
 //
 
+/**
+ * Gets the count of identities.
+ * 
+ * @return	{int}		the size
+ */
 ZmIdentityCollection.prototype.getSize =
 function() {
 	// bug: 30009
 	return this.getIdentities().length;
 };
 
+/**
+ * Gets the identities.
+ * 
+ * @param	{Object}	sort		(not used)
+ * @return	{Array}		an array of {ZmIdentity} objects
+ */
 ZmIdentityCollection.prototype.getIdentities =
 function(sort) {
 	var identity, i = 0, result = [], isOffline = appCtxt.isOffline;
@@ -56,11 +74,23 @@ function(sort) {
 	return result;
 };
 
+/**
+ * Gets the identity by id.
+ * 
+ * @param	{String}	id	the identity id
+ * @return	{ZmIdentity}	the identity
+ */
 ZmIdentityCollection.prototype.getById =
 function(id) {
 	return this._idToIdentity[id];
 };
 
+/**
+ * Gets the identity by name.
+ * 
+ * @param	{String}	name		the identity name
+ * @return	{ZmIdentity}	the identity
+ */
 ZmIdentityCollection.prototype.getByName =
 function(name) {
 	name = name.toLowerCase();
@@ -73,6 +103,11 @@ function(name) {
 	return null;
 };
 
+/**
+ * Adds the identity to the collection.
+ * 
+ * @param	{ZmIdentity}	identity		the identity
+ */
 ZmIdentityCollection.prototype.add =
 function(identity) {
 	if (!this._idToIdentity[identity.id]) {
@@ -87,6 +122,11 @@ function(identity) {
 	}
 };
 
+/**
+ * Removes the identity from the collection.
+ * 
+ * @param	{ZmIdentity}	identity		the identity
+ */
 ZmIdentityCollection.prototype.remove =
 function(identity) {
 	if (this._idToIdentity[identity.id]) {

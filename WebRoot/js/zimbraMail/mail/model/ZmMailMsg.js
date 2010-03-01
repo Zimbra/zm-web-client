@@ -15,7 +15,6 @@
 
 /**
  * @overview
- * 
  * This file defines the mail message.
  */
 
@@ -24,7 +23,7 @@
  * @class
  * Creates a new (empty) mail message.
  *
- * @param {Number}		id			the unique ID
+ * @param {int}		id			the unique ID
  * @param {Array}		list		the list that contains this message
  * @param {Boolean}		noCache		if <code>true</code>, do not cache this message; <code>false</code> otherwise
  * 
@@ -56,13 +55,37 @@ ZmMailMsg.ADDRS = [AjxEmailAddress.FROM, AjxEmailAddress.TO, AjxEmailAddress.CC,
 
 ZmMailMsg.COMPOSE_ADDRS = [AjxEmailAddress.TO, AjxEmailAddress.CC, AjxEmailAddress.BCC];
 
+/**
+ * Defines the "from" header.
+ */
 ZmMailMsg.HDR_FROM		= AjxEmailAddress.FROM;
+/**
+ * Defines the "to" header.
+ */
 ZmMailMsg.HDR_TO		= AjxEmailAddress.TO;
+/**
+ * Defines the "cc" header.
+ */
 ZmMailMsg.HDR_CC		= AjxEmailAddress.CC;
+/**
+ * Defines the "bcc" header.
+ */
 ZmMailMsg.HDR_BCC		= AjxEmailAddress.BCC;
+/**
+ * Defines the "reply-to" header.
+ */
 ZmMailMsg.HDR_REPLY_TO	= AjxEmailAddress.REPLY_TO;
+/**
+ * Defines the "sender" header.
+ */
 ZmMailMsg.HDR_SENDER	= AjxEmailAddress.SENDER;
+/**
+ * Defines the "date" header.
+ */
 ZmMailMsg.HDR_DATE		= "DATE";
+/**
+ * Defines the "subject" header.
+ */
 ZmMailMsg.HDR_SUBJECT	= "SUBJECT";
 
 ZmMailMsg.HDR_KEY = new Object();
@@ -112,19 +135,19 @@ ZmMailMsg.requestHeaders = {};
 /**
  * Fetches a message from the server.
  *
- * @param params		[hash]				hash of params:
- *        sender		[ZmZimbraMail]		provides access to sendRequest()
- *        msgId			[int]				ID of the msg to be fetched.
- *        partId 		[int]* 				msg part ID (if retrieving attachment part, i.e. rfc/822)
- *        ridZ   		[int]* 				RECURRENCE-ID in Z (UTC) timezone
- *        getHtml		[boolean]*			if true, try to fetch html from the server
- *        markRead		[boolean]*			if true, mark msg read
- *        callback		[AjxCallback]*		async callback
- *        errorCallback	[AjxCallback]*		async error callback
- *        noBusyOverlay	[boolean]*			don't put up busy overlay during request
- *        noTruncate	[boolean]*			don't truncate message body
- *        batchCmd		[ZmBatchCommand]*	if set, request gets added to this batch command
- *        accountName	[String]*			name of the account to send request on behalf of
+ * @param {Hash}	params		a hash of parameters
+ * @param {ZmZimbraMail}      params.sender		the provides access to sendRequest()
+ * @param {int}	params.msgId			the ID of the msg to be fetched.
+ * @param {int}	      params.partId 		the msg part ID (if retrieving attachment part, i.e. rfc/822)
+ * @param {int}	      params.ridZ   		the RECURRENCE-ID in Z (UTC) timezone
+ * @param {Boolean}      params.getHtml		if <code>true</code>, try to fetch html from the server
+ * @param {Boolean}      params.markRead		if <code>true</code>, mark msg read
+ * @param {AjxCallback}	params.callback		the async callback
+ * @param {AjxCallback}	      params.errorCallback	the async error callback
+ * @param {Boolean}	      params.noBusyOverlay	if <code>true</code>, do not put up busy overlay during request
+ * @param {Boolean}	      params.noTruncate	if <code>true</code>, do not truncate message body
+ * @param {ZmBatchCommand}      params.batchCmd		if set, request gets added to this batch command
+ * @param {String}      params.accountName	the name of the account to send request on behalf of
  */
 ZmMailMsg.fetchMsg =
 function(params) {
@@ -187,14 +210,16 @@ function() {
 // Getters
 
 /**
-* Returns a vector of addresses of the given type
-*
-* @param type			[constant]	an email address type
-* @param used			[hash]		array of addresses that have been used. If not null,
-*									then this method will omit those addresses from the
-* 									returned vector and will populate used with the additional new addresses
-* @param addAsContact	[boolean]	true if emails should be converted to ZmContacts
-*/
+ * Gets a vector of addresses of the given type.
+ *
+ * @param {constant}	type			an email address type
+ * @param {Hash}	used			an array of addresses that have been used. If not <code>null</code>,
+ *									then this method will omit those addresses from the
+ * 									returned vector and will populate used with the additional new addresses
+ * @param {Boolean}	addAsContact	if <code>true</code>, emails should be converted to {@link ZmContact} objects
+ * 
+ * @return	{AjxVector}	a vection of email address
+ */
 ZmMailMsg.prototype.getAddresses =
 function(type, used, addAsContact) {
 	if (!used) {
@@ -224,11 +249,13 @@ function(type, used, addAsContact) {
 };
 
 /**
-* Returns a Reply-To address if there is one, otherwise the From address
-* unless this message was sent by the user, in which case, it is the To
-* field (but only in the case of Reply All). A list is returned, since
-* theoretically From and Reply To can have multiple addresses.
-*/
+ * Gets a Reply-To address if there is one, otherwise the From address
+ * unless this message was sent by the user, in which case, it is the To
+ * field (but only in the case of Reply All). A list is returned, since
+ * theoretically From and Reply To can have multiple addresses.
+ * 
+ * @return	{AjxVector}	an array of {@link AjxEmailAddress} objects
+ */
 ZmMailMsg.prototype.getReplyAddresses =
 function(mode, aliases) {
 
@@ -271,16 +298,22 @@ function() {
 };
 
 /**
-* Returns the first address in the vector of addresses of the given type
-*/
+ * Gets the first address in the vector of addresses of the given type.
+ * 
+ * @param	{constant}		type		the type
+ * @return	{String}	the address
+ */
 ZmMailMsg.prototype.getAddress =
 function(type) {
 	return this._addrs[type].get(0);
 };
 
 /**
-* Returns the fragment. If maxLen is given, will truncate fragment to maxLen and add ellipsis
-*/
+ * Gets the fragment. If maxLen is given, will truncate fragment to maxLen and add ellipsis.
+ * 
+ * @param	{int}	maxLen		the maximum length
+ * @return	{String}	the fragment
+ */
 ZmMailMsg.prototype.getFragment =
 function(maxLen) {
 	var frag = this.fragment;
@@ -293,6 +326,11 @@ function(maxLen) {
 	return frag;
 };
 
+/**
+ * Checks if the message is read only.
+ * 
+ * @return	{Boolean}	<code>true</code> if read only
+ */
 ZmMailMsg.prototype.isReadOnly =
 function() {
 	if (!this._isReadOnly) {
@@ -302,6 +340,12 @@ function() {
 	return this._isReadOnly;
 };
 
+/**
+ * Gets the header string.
+ * 
+ * @param	{constant}	hdr		the header (see <code>ZmMailMsg.HDR_</code> constants)
+ * @return	{String}	the value
+ */
 ZmMailMsg.prototype.getHeaderStr =
 function(hdr) {
 	if (hdr == ZmMailMsg.HDR_DATE) {
@@ -322,8 +366,10 @@ function(hdr) {
 };
 
 /**
-* Returns true if this message has html parts
-*/
+ * Checks if this message has html parts.
+ * 
+ * @return	{Boolean}	<code>true</code> if this message has HTML
+ */
 ZmMailMsg.prototype.isHtmlMail =
 function() {
 	return this.getBodyPart(ZmMimeTable.TEXT_HTML) != null;
@@ -332,11 +378,11 @@ function() {
 // Setters
 
 /**
-* Sets the vector of addresses of the given type to the given vector of addresses
-*
-* @param type	the address type
-* @param addrs	a vector of addresses
-*/
+ * Sets the vector of addresses of the given type to the given vector of addresses
+ *
+ * @param {constant}		type	the address type
+ * @param {AjxVector}		addrs	a vector of {@link AjxEmailAddress}	objects
+ */
 ZmMailMsg.prototype.setAddresses =
 function(type, addrs) {
 	this._onChange("address", type, addrs);
@@ -344,11 +390,11 @@ function(type, addrs) {
 };
 
 /**
-* Sets the vector of addresses of the given type to the address given
-*
-* @param type	the address type
-* @param addr	an address
-*/
+ * Sets the vector of addresses of the given type to the address given.
+ *
+ * @param {constant}	type	the address type
+ * @param {AjxEmailAddress}	addr	an address
+ */
 ZmMailMsg.prototype.setAddress =
 function(type, addr) {
 	this._onChange("address", type, addr);
@@ -359,6 +405,7 @@ function(type, addr) {
 
 /**
  * Clears out all the address vectors.
+ * 
  */
 ZmMailMsg.prototype.clearAddresses =
 function() {
@@ -369,11 +416,11 @@ function() {
 };
 
 /**
-* Adds the given vector of addresses to the vector of addresses of the given type
-*
-* @param type	the address type
-* @param addrs	a vector of addresses
-*/
+ * Adds the given vector of addresses to the vector of addresses of the given type
+ *
+ * @param {constant}	type	the address type
+ * @param {AjxVector}	addrs	a vector of {@link AjxEmailAddress} objects
+ */
 ZmMailMsg.prototype.addAddresses =
 function(type, addrs) {
 	var size = addrs.size();
@@ -383,10 +430,10 @@ function(type, addrs) {
 };
 
 /**
-* Adds the given address to the vector of addresses of the given type
-*
-* @param addr	an address
-*/
+ * Adds the given address to the vector of addresses of the given type
+ *
+ * @param {AjxEmailAddress}	addr	an address
+ */
 ZmMailMsg.prototype.addAddress =
 function(addr) {
 	var type = addr.type || AjxEmailAddress.TO;
@@ -394,10 +441,10 @@ function(addr) {
 };
 
 /**
-* Sets the subject
-*
-* @param	subject
-*/
+ * Sets the subject
+ *
+ * @param	{String}	subject		the subject
+ */
 ZmMailMsg.prototype.setSubject =
 function(subject) {
 	this._onChange("subject", subject);
@@ -405,10 +452,10 @@ function(subject) {
 };
 
 /**
-* Sets the message's top part to the given MIME part
-*
-* @param part	a MIME part
-*/
+ * Sets the message's top part to the given MIME part
+ *
+ * @param {String}	part	a MIME part
+ */
 ZmMailMsg.prototype.setTopPart =
 function(part) {
 	this._onChange("topPart", part);
@@ -416,10 +463,13 @@ function(part) {
 };
 
 /**
- * Note: It's assumed by other parts of the code that this._bodyParts
- * is an array of the node properties of ZmMimePart, <em>not</em> the
- * ZmMimePart objects themselves. Therefore, the caller must pass in
- * an array like [ part.node, ... ].
+ * Sets the body parts. Note: It's assumed by other parts of the code that body parts
+ * is an array of the node properties of {@link ZmMimePart}, <em>not</em> the
+ * {@link ZmMimePart} objects themselves. Therefore, the caller must pass in
+ * an array like <code>[ part.node, ... ]</code>.
+ * 
+ * @param	{Array}	parts		an array of parts
+ * 
  */
 ZmMailMsg.prototype.setBodyParts =
 function(parts) {
@@ -430,7 +480,7 @@ function(parts) {
 /**
 * Sets the ID of any attachments which have already been uploaded.
 *
-* @param id		an attachment ID
+* @param {String}	id		an attachment ID
 */
 ZmMailMsg.prototype.addAttachmentId =
 function(id) {
@@ -441,6 +491,13 @@ function(id) {
 	this.attId = id;
 };
 
+/**
+ * Adds an inline attachment.
+ * 
+ * @param	{String}	cid		the content id
+ * @param	{String}	aid		the attachment id
+ * @param	{String}	part		the part
+ */
 ZmMailMsg.prototype.addInlineAttachmentId =
 function (cid,aid,part) {
 	if (!this._inlineAtts) {
@@ -454,6 +511,14 @@ function (cid,aid,part) {
 	}
 };
 
+/**
+ * Adds an inline document attachment.
+ * 
+ * @param	{String}	cid		the content id
+ * @param	{String}	docId		the document id
+ * @param	{String}	docpath		the document path
+ * @param	{String}	part		the part
+ */
 ZmMailMsg.prototype.addInlineDocAttachment =
 function (cid, docId, docpath, part) {
 	if (!this._inlineDocAtts) {
@@ -476,18 +541,32 @@ function(inlineAtts){
 	}
 };
 
+/**
+ * Gets the inline attachments.
+ * 
+ * @return	{Array}	an array of attachments
+ */
 ZmMailMsg.prototype.getInlineAttachments =
 function() {
 	return this._inlineAtts || [];
 };
 
+
+/**
+ * Gets the inline document attachments.
+ * 
+ * @return	{Array}	an array of attachments
+ */
 ZmMailMsg.prototype.getInlineDocAttachments =
 function() {
 	return this._inlineDocAtts || [];
 };
 
 /**
- * Looks through this msg's attachments for one with the given CID.
+ * Finds the attachment in this message for the given CID.
+ * 
+ * @param	{String}	cid		the content id
+ * @return	{Object}	the attachment or <code>null</code> if not found
  */
 ZmMailMsg.prototype.findInlineAtt =
 function(cid) {
@@ -502,10 +581,10 @@ function(cid) {
 };
 
 /**
-* Sets the IDs of messages to attach (as a forward)
-*
-* @param ids	[Array]		list of mail message IDs
-*/
+ * Sets the IDs of messages to attach (as a forward)
+ *
+ * @param {Array}	ids	a list of mail message IDs
+ */
 ZmMailMsg.prototype.setMessageAttachmentId =
 function(ids) {
 	this._onChange("messageAttachmentId", ids);
@@ -513,11 +592,10 @@ function(ids) {
 };
 
 /**
-* Sets the IDs of docs to attach 
-*
-* @param ids	[Array]		list of document IDs
-*/
-
+ * Sets the IDs of docs to attach 
+ *
+ * @param {Array}	ids	a list of document IDs
+ */
 ZmMailMsg.prototype.setDocumentAttachmentId =
 function(ids) {
 	this._onChange("documentAttachmentId", ids);
@@ -535,7 +613,7 @@ function(id) {
 /**
 * Sets the list of attachment (message part) IDs to be forwarded
 *
-* @param ids	[Array]		list of attachment IDs
+* @param {Array}	ids		a list of attachment IDs
 */
 ZmMailMsg.prototype.setForwardAttIds =
 function(ids) {
@@ -550,8 +628,9 @@ function(ids) {
  * are available will be used. The message node is not always fully populated, since it
  * may have been created as part of getting a conversation.
  *
- * @param node		a message node
- * @param args		hash of input args
+ * @param {Object}	node		a message node
+ * @param {Hash}	args		a hash of arguments
+ * @return	{ZmMailMsg}		the message
  */
 ZmMailMsg.createFromDom =
 function(node, args) {
@@ -564,16 +643,16 @@ function(node, args) {
  * Gets the full message object from the back end based on the current message ID, and
  * fills in the message.
  *
- * @param params		[hash]				hash of params:
- *        getHtml		[boolean]*			if true, try to fetch html from the server
- *        markRead		[boolean]*			if true, mark msg read
- *        forceLoad		[boolean]*			if true, get msg from server
- *        callback		[AjxCallback]*		async callback
- *        errorCallback	[AjxCallback]*		async error callback
- *        noBusyOverlay	[boolean]*			don't put up busy overlay during request
- *        noTruncate	[boolean]*			don't set max limit on size of msg body
- *        batchCmd		[ZmBatchCommand]*	if set, request gets added to this batch command
- *        accountName	[String]*			name of the account to send request on behalf of
+ * @param {Hash}	params		a hash of parameters
+ * @param {Boolean}      params.getHtml		if <code>true</code>, try to fetch html from the server
+ * @param {Boolean}      params.markRead		if <code>true</code>, mark msg read
+ * @param {Boolean}      params.forceLoad		if <code>true</code>, get msg from server
+ * @param {AjxCallback}      params.callback		the async callback
+ * @param {AjxCallback}      params.errorCallback	the async error callback
+ * @param {Boolean}      params.noBusyOverlay	if <code>true</code>, do not put up busy overlay during request
+ * @param {Boolean}      params.noTruncate	if <code>true</code>, do not set max limit on size of msg body
+ * @param {ZmBatchCommand}      params.batchCmd		if set, request gets added to this batch command
+ * @param {String}      params.accountName	the name of the account to send request on behalf of
  */
 ZmMailMsg.prototype.load =
 function(params) {
@@ -628,10 +707,14 @@ function() {
 };
 
 /**
-* @param contentType	[String]	either "text/plain" or "text/html"
-* @param useOriginal	[Boolean]*	dont grab the copy w/ the images defanged
-*									(only applies when contentType is "text/html")
-*/
+ * Gets the body parts.
+ * 
+ * @param {String}	contentType	the content type ("text/plain" or "text/html")
+ * @param {Boolean}	useOriginal	if <code>true</code>, do not grab the copy w/ the images defanged
+ *									(only applies when contentType is "text/html")
+ *
+ * @return	{String}	the body
+ */
 ZmMailMsg.prototype.getBodyPart =
 function(contentType, useOriginal) {
 
@@ -659,6 +742,11 @@ function(contentType, useOriginal) {
 	}
 };
 
+/**
+ * Gets the body content.
+ * 
+ * @return	{String}	the content or <code>null</code> for none
+ */
 ZmMailMsg.prototype.getBodyContent =
 function() {
 	if (this._loaded) {
@@ -669,6 +757,11 @@ function() {
 	return null;
 };
 
+/**
+ * Gets the text part.
+ * 
+ * @param	{AjxCallback}		callback		the callback
+ */
 ZmMailMsg.prototype.getTextPart =
 function(callback) {
 	var bodyPart = this.getBodyPart();
@@ -698,17 +791,34 @@ function(callback, result) {
 	if (callback) callback.run(result, bodyPart.truncated);
 };
 
+/**
+ * Sets the html content.
+ * 
+ * @param	{String}	content		the content
+ */
 ZmMailMsg.prototype.setHtmlContent =
 function(content) {
 	this._onChange("htmlContent", content);
 	this._htmlBody = content;
 };
 
+/**
+ * Sets the invite description.
+ * 
+ * @param {String}	contentType	the content type ("text/plain" or "text/html")
+ * @param	{String}	content		the content
+ */
 ZmMailMsg.prototype.setInviteDescriptionContent =
 function(contentType, content) {
 	this._inviteDescBody[contentType] = content;
 };
 
+/**
+ * Gets the invite description content.
+ * 
+ * @param {String}	contentType	the content type ("text/plain" or "text/html")
+ * @return	{String}	the content
+ */
 ZmMailMsg.prototype.getInviteDescriptionContent =
 function(contentType) {
 
@@ -894,14 +1004,14 @@ function(nfolder, resp) {
 };
 
 /**
- * Sends the message out into the world.
+ * Sends the message.
  *
- * @param isDraft				[Boolean]*		is this a draft we're saving?
- * @param callback				[AjxCallback]*	callback to trigger after send
- * @param errorCallback			[AjxCallback]*	error callback to trigger
- * @param accountName			[String]*		account to send on behalf of
- * @param noSave				[Boolean]*		if set, a copy will *not* be saved to sent regardless of account/identity settings
- * @param requestReadReceipt	[Boolean]*		if set, a read receipt is sent to *all* recipients
+ * @param {Boolean}	isDraft				if <code>true</code>, this a draft
+ * @param {AjxCallback}	callback			the callback to trigger after send
+ * @param {AjxCallback}	errorCallback	the error callback to trigger
+ * @param {String}	accountName			the account to send on behalf of
+ * @param {Boolean}	noSave				if set, a copy will *not* be saved to sent regardless of account/identity settings
+ * @param {Boolean}	requestReadReceipt	if set, a read receipt is sent to *all* recipients
  */
 ZmMailMsg.prototype.send =
 function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt) {
@@ -1171,6 +1281,8 @@ function(request, isDraft, accountName, requestReadReceipt) {
  *        isDraft				[boolean]		true if this message is a draft
  *        callback				[AjxCallback]	async callback
  *        errorCallback			[AjxCallback]	async error callback
+ *        
+ * @private
  */
 ZmMailMsg.prototype._sendMessage =
 function(params) {
@@ -1305,7 +1417,9 @@ function(){
 /**
  * Returns an array of objects containing meta info about attachments to be used
  * to build href's by the caller
-*/
+ * 
+ * @private
+ */
 ZmMailMsg.prototype.getAttachmentLinks =
 function(findHits, includeInlineImages, includeInlineAtts) {
 	this._attLinks = [];
@@ -1812,6 +1926,11 @@ function(what, a, b, c) {
 	}
 };
 
+/**
+ * Gets the status icon.
+ * 
+ * @return	{String}	the icon
+ */
 ZmMailMsg.prototype.getStatusIcon =
 function() {
 
@@ -1837,6 +1956,11 @@ function() {
 	return "MsgStatusRead";
 };
 
+/**
+ * Gets the status tool tip.
+ * 
+ * @return	{String}	the tool tip
+ */
 ZmMailMsg.prototype.getStatusTooltip =
 function() {
 

@@ -22,8 +22,10 @@
  *
  * @author Conrad Damon
  *
- * @param container	containing shell
- * @param mailApp	containing app
+ * @param {ZmComposite}		container		the containing shell
+ * @param {ZmMailApp}		mailApp			the containing app
+ * 
+ * @extends		ZmListController
  */
 ZmMailListController = function(container, mailApp) {
 
@@ -143,8 +145,8 @@ function() {
 /**
  * Handles switching views based on action from view menu.
  *
- * @param view		[constant]		the id of the new view
- * @param force		[boolean]		if true, always redraw view
+ * @param {constant}	view		the id of the new view
+ * @param {Boolean}	force		if <code>true</code>, always redraw view
  */
 ZmMailListController.prototype.switchView =
 function(view, force) {
@@ -167,11 +169,21 @@ function(view, force) {
 ZmMailListController.prototype._setupReadingPaneMenuItems = function() {};
 ZmMailListController.prototype._setupConvOrderMenuItems = function() {};
 
+/**
+ * Checks if the reading pane is "on".
+ * 
+ * @return	{Boolean}	<code>true</code> if the reading pane is "on"
+ */
 ZmMailListController.prototype.isReadingPaneOn =
 function() {
 	return (this._getReadingPanePref() != ZmSetting.RP_OFF);
 };
 
+/**
+ * Checks if the reading pane is "on" right.
+ * 
+ * @return	{Boolean}	<code>true</code> if the reading pane is "on" right.
+ */
 ZmMailListController.prototype.isReadingPaneOnRight =
 function() {
 	return (this._getReadingPanePref() == ZmSetting.RP_RIGHT);
@@ -341,6 +353,11 @@ function(map) {
 	return (map == "list");
 };
 
+/**
+ * Sends the read receipt.
+ * 
+ * @param	{ZmMailMsg}		msg			the message
+ */
 ZmMailListController.prototype.sendReadReceipt =
 function(msg) {
 	if (!appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || msg.readReceiptSent || msg.isSent) {
@@ -685,6 +702,8 @@ function(ev) {
  *    convs/msgs selected for mark as read
  *
  * If all these conditions are met, a callback to run sendReadReceipt() is returned.
+ * 
+ * @private
  */
 ZmMailListController.prototype._getMarkReadCallback =
 function() {
@@ -1107,7 +1126,10 @@ function(parent) {
 };
 
 /**
- * Returns the selected msg.
+ * Gets the selected message.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * @return	{ZmMailMsg|ZmConv}		the selected message
  */
 ZmMailListController.prototype.getMsg =
 function(params) {
@@ -1117,6 +1139,8 @@ function(params) {
 
 /**
  * Returns the selected msg, ensuring that it's loaded.
+ * 
+ * @private
  */
 ZmMailListController.prototype._getLoadedMsg =
 function(params, callback) {
@@ -1508,8 +1532,10 @@ function(menu, hasUnread, hasRead) {
 * We want the underlying view (CLV or MLV) to update itself silently as it
 * feeds the next/prev conv/msg to its respective controller.
 *
-* @param currentItem	[ZmItem]	current item
-* @param forward		[boolean]	if true, get next item rather than previous
+* @param {ZmItem}	currentItem	the current item
+* @param {Boolean}	forward		if <code>true</code>, get next item rather than previous
+* 
+* @private
 */
 ZmMailListController.prototype.pageItemSilently =
 function(currentItem, forward) {
@@ -1537,15 +1563,17 @@ function(currentItem, forward) {
 	return list[itemIdx];
 };
 
-/*
-* Selects and displays an item that has been loaded into a page that's
-* not visible (eg getting the next conv from within the last conv on a page).
-*
-* @param view			[constant]		current view
-* @param saveSelection	[boolean]		if true, maintain current selection
-* @param loadIndex		[int]			index of item to show
-* @param result			[ZmCsfeResult]	result of SOAP request
-*/
+/**
+ * Selects and displays an item that has been loaded into a page that's
+ * not visible (eg getting the next conv from within the last conv on a page).
+ *
+ * @param view			[constant]		current view
+ * @param saveSelection	[boolean]		if true, maintain current selection
+ * @param loadIndex		[int]			index of item to show
+ * @param result			[ZmCsfeResult]	result of SOAP request
+ * 
+ * @private
+ */
 ZmMailListController.prototype._handleResponsePaginate =
 function(view, saveSelection, loadIndex, offset, result) {
 	ZmListController.prototype._handleResponsePaginate.apply(this, arguments);
@@ -1582,6 +1610,8 @@ function(items, tag, doTag) {
  * @param which		[constant]		DwtKeyMap constant for selecting next/previous/first/last
  * @param type		[constant]*		if present, only return this type of item
  * @param noBump	[boolean]*		if true, start with currently selected item
+ * 
+ * @private
  */
 ZmMailListController.prototype._getUnreadItem =
 function(which, type, noBump) {

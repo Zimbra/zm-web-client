@@ -23,8 +23,10 @@
  * @author Parag Shah
  * @author Conrad Damon
  * 
- * @param container	containing shell
- * @param mailApp	containing app 
+ * @param {ZmComposite}	container	the containing shell
+ * @param {ZmMailApp}	mailApp			the containing app
+ * 
+ * @extends		ZmMailListController
  */
 ZmMsgController = function(container, mailApp) {
 
@@ -53,10 +55,10 @@ function() {
 /**
  * Displays a message in the single-pane view.
  *
- * @param msg		[ZmMailMsg]		the message to display
- * @param mode		[const]			owning view ID
- * @param callback	[AjxCallback]*	client callback
- * @param markRead	[boolean]*		if true, mark msg read
+ * @param {ZmMailMsg}	msg		the message to display
+ * @param {constant}	mode		the owning view ID
+ * @param {AjxCallback}	callback	the client callback
+ * @param {Boolean}	markRead	if <code>true</code>, mark msg read
  */
 ZmMsgController.prototype.show = 
 function(msg, mode, callback, markRead) {
@@ -89,11 +91,13 @@ function(callback, result) {
 };
 
 /**
-* Called by ZmNewWindow.unload to remove tag list listener (which resides in 
-* the parent window). Otherwise, after the child window is closed, the parent 
-* window is still referencing the child window's msg controller, which has
-* been unloaded!!
-*/
+ * Called by ZmNewWindow.unload to remove tag list listener (which resides in 
+ * the parent window). Otherwise, after the child window is closed, the parent 
+ * window is still referencing the child window's msg controller, which has
+ * been unloaded!!
+ * 
+ * @private
+ */
 ZmMsgController.prototype.dispose = 
 function() {
 	this._tagList.removeChangeListener(this._tagChangeLstnr);

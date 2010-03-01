@@ -13,6 +13,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the data source collection.
+ * @class
+ * This class represents a data source collection.
+ * 
+ * @extends		ZmModel
+ */
 ZmDataSourceCollection = function() {
     ZmModel.call(this, ZmEvent.S_DATA_SOURCE);
 	this._initialized = false;
@@ -42,14 +49,30 @@ ZmDataSourceCollection.prototype.getItemsFor = function(folderId) {
     return accounts;
 };
 
+/**
+ * Gets the POP accounts.
+ * 
+ * @return	{Array}	an array of {@link ZmPopAccount} objects
+ */
 ZmDataSourceCollection.prototype.getPopAccounts = function() {
     return AjxUtil.values(this._pop3Map);
 };
 
+/**
+ * Gets the IMAP accounts.
+ * 
+ * @return	{Array}	an array of {@link ZmImapAccount} objects
+ */
 ZmDataSourceCollection.prototype.getImapAccounts = function() {
     return AjxUtil.values(this._imapMap);
 };
 
+/**
+ * Gets the POP accounts.
+ * 
+ * @param	{String}	folderId		the folder id
+ * @return	{Array}	an array of {@link ZmPopAccount} objects
+ */
 ZmDataSourceCollection.prototype.getPopAccountsFor = function(folderId) {
     var accounts = [];
     for (var id in this._pop3Map) {
@@ -61,6 +84,12 @@ ZmDataSourceCollection.prototype.getPopAccountsFor = function(folderId) {
     return accounts;
 };
 
+/**
+ * Gets the IMAP accounts.
+ * 
+ * @param	{String}	folderId		the folder id
+ * @return	{Array}	an array of {@link ZmImapAccount} objects
+ */
 ZmDataSourceCollection.prototype.getImapAccountsFor = function(folderId) {
     var accounts = [];
     for (var id in this._imapMap) {
@@ -119,10 +148,13 @@ ZmDataSourceCollection.prototype.getById = function(id) {
 };
 
 /**
- * Returns list of data sources associated with the given folder ID.
+ * Gets a list of data sources associated with the given folder ID.
  *
- * @param folderId		[String]	the folderId we want to get data source for
- * @param type			[String]*	type of datasource we're looking for (either "POP" or "IMAP")
+ * @param {String}	folderId		[String]	the folderId
+ * @param {constant}	type			the type of data source (see <code>ZmAccount.TYPE_</code> constants)
+ * @return	{Array}	an array of items
+ * 
+ * @see	ZmAccount
  */
 ZmDataSourceCollection.prototype.getByFolderId = function(folderId, type) {
 	var list = [];

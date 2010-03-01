@@ -22,8 +22,10 @@
  *
  * @author Parag Shah
  * 
- * @param container	containing shell
- * @param mailApp	containing app
+ * @param {ZmComposite}	container	the containing shell
+ * @param {ZmMailApp}	mailApp			the containing app
+ * 
+ * @extends		ZmMailListController
  */
 ZmDoublePaneController = function(container, mailApp) {
 
@@ -59,10 +61,11 @@ function() {
  * Displays the given item in a two-pane view. The view is actually
  * created in _loadItem(), since it must execute last.
  *
- * @param search	[ZmSearch]		the current search results
- * @param item		[ZmItem]		a generic item
- * @param callback	[AjxCallback]*	client callback
- * @param markRead	[boolean]*		if true, mark msg read
+ * @param {ZmSearch}	search	the current search results
+ * @param {ZmItem}	item		a generic item
+ * @param {AjxCallback}	callback	the client callback
+ * @param {Boolean}	markRead	if <code>true</code>, mark msg read
+ * 
  */
 ZmDoublePaneController.prototype.show =
 function(search, item, callback, markRead) {
@@ -93,12 +96,6 @@ function(item, callback, results) {
 	}
 };
 
-/**
- * Handles switching mail views.
- *
- * @param view		[constant]*		the id of the new view
- * @param force		[boolean]		if true, always redraw view
- */
 ZmDoublePaneController.prototype.switchView =
 function(view, force) {
 	if (view == ZmSetting.RP_OFF ||	view == ZmSetting.RP_BOTTOM || view == ZmSetting.RP_RIGHT) {
@@ -113,10 +110,9 @@ function(view, force) {
 	this._resetNavToolBarButtons(this._currentView);
 };
 
-
 /**
-* Clears the conversation view, which actually just clears the message view.
-*/
+ * Clears the conversation view, which actually just clears the message view.
+ */
 ZmDoublePaneController.prototype.reset =
 function() {
 	if (this._doublePaneView) {
@@ -256,9 +252,7 @@ function(num) {
 	return (num == 1) ? ZmMsg.moveMessage : ZmMsg.moveMessages;
 };
 
-/**
- * Add reading pane to focus ring.
- */
+// Add reading pane to focus ring
 ZmDoublePaneController.prototype._initializeTabGroup =
 function(view) {
 	if (this._tabGroups[view]) return;
@@ -346,7 +340,7 @@ function(view, menu, checked) {
 	}
 };
 
-/*
+/**
  * Displays a list of messages. If passed a conv, loads its message
  * list. If passed a list, simply displays it. The first message will be 
  * selected, which will trigger a message load/display.
@@ -355,6 +349,8 @@ function(view, menu, checked) {
  * @param view		[constant]					owning view type
  * @param callback	[AjxCallback]*				client callback
  * @param markRead	[boolean]*					if true, mark msg read
+ * 
+ * @private
  */
 ZmDoublePaneController.prototype._loadItem =
 function(item, view, callback, markRead) {
@@ -417,6 +413,8 @@ function(view) {
  * overlay blocks the receipt of the second click.
  * 
  * @param msg	[ZmMailMsg]		msg to load
+ * 
+ * @private
  */
 ZmDoublePaneController.prototype._doGetMsg =
 function(msg) {

@@ -23,8 +23,10 @@
  *
  * @author Conrad Damon
  * 
- * @param container	containing shell
- * @param mailApp	containing app
+ * @param {ZmComposite}	container	the containing shell
+ * @param {ZmMailApp}	mailApp			the containing app
+ * 
+ * @extends		ZmDoublePaneController
  */
 ZmConvController = function(container, mailApp) {
 
@@ -52,11 +54,11 @@ function() {
  * created in _loadConv(), since it is a scheduled method and must execute
  * last.
  *
- * @param activeSearch		[ZmSearch]				the current search results
- * @param conv				[ZmConv]				a conversation
- * @param parentController	[ZmMailController]*		controller that called this method
- * @param callback			[AjxCallback]*			client callback
- * @param markRead			[boolean]*				if true, mark msg read
+ * @param {ZmSearch}	activeSearch		the current search results
+ * @param {ZmConv}	conv				a conversation
+ * @param {ZmMailController}	parentController	the controller that called this method
+ * @param {AjxCallback}	callback			the client callback
+ * @param {Boolean}	markRead		if <code>true</code>, mark msg read
  */
 ZmConvController.prototype.show =
 function(activeSearch, conv, parentController, callback, markRead) {

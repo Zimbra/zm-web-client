@@ -20,9 +20,14 @@
  * This class provides a form for composing a message.
  *
  * @author Conrad Damon
- * @param parent		[DwtControl]		the element that created this view
- * @param controller	[ZmController]		controller managing this view
- * @param composeMode 	[constant]			passed in so detached window knows which mode to be in on startup
+ * 
+ * @param {DwtControl}	parent		the element that created this view
+ * @param {ZmController}	controller	the controller managing this view
+ * @param {constant}	composeMode 	passed in so detached window knows which mode to be in on startup
+ * 
+ * @extends		DwtComposite
+ * 
+ * @private
  */
 ZmComposeView = function(parent, controller, composeMode) {
 
@@ -101,19 +106,20 @@ ZmComposeView.OP[AjxEmailAddress.BCC]	= ZmId.CMP_BCC;
 // Public methods
 
 /**
-* Sets the current view, based on the given action. The compose form is
-* created and laid out and everything is set up for interaction with the user.
-*
-* @param action				[constant]		new message, reply, forward, or an invite action
-* @param identity			[ZmIdentity]	the identity sending the message
-* @param msg				[ZmMailMsg]*	the original message (reply/forward), or address (new message)
-* @param toOverride			[string]*		initial value for To: field
-* @param subjOverride		[string]*		initial value for Subject: field
-* @param extraBodyText		[string]*		canned text to prepend to body (invites)
-* @param msgIds				[Array]*		list of msg Id's to be added as attachments
-* @param identity			[ZmIdentity]*	identity to use for this compose
-* @param accountName		[string]*		on-behalf-of From address
-*/
+ * Sets the current view, based on the given action. The compose form is
+ * created and laid out and everything is set up for interaction with the user.
+ *
+ * @param	{Hash}	params		a hash of parameters
+ * @param {constant}	params.action				new message, reply, forward, or an invite action
+ * @param {ZmIdentity}	params.identity			the identity sending the message
+ * @param {ZmMailMsg}	params.msg				the original message (reply/forward), or address (new message)
+ * @param {String}	params.toOverride			initial value for To: field
+ * @param {String}	params.subjOverride		initial value for Subject: field
+ * @param {String}	params.extraBodyText		canned text to prepend to body (invites)
+ * @param {Array}	params.msgIds				list of msg Id's to be added as attachments
+ * @param {ZmIdentity}	params.identity			identity to use for this compose
+ * @param {String}	params.accountName		on-behalf-of From address
+ */
 ZmComposeView.prototype.set =
 function(params) {
 	var action = this._action = params.action;
@@ -214,10 +220,12 @@ function(params) {
 };
 
 /**
-* Called automatically by the attached ZmMailMsg object when data is
-* changed, in order to support Zimlets modify subject or other values
-* (bug: 10540)
-*/
+ * Called automatically by the attached ZmMailMsg object when data is
+ * changed, in order to support Zimlets modify subject or other values
+ * (bug: 10540)
+ * 
+ * @private
+ */
 ZmComposeView.prototype._onMsgDataChange =
 function(what, val) {
 	if (what == "subject") {
@@ -241,6 +249,11 @@ function() {
 	return this._htmlEditor;
 };
 
+/**
+ * Gets the title.
+ * 
+ * @return	{String}	the title
+ */
 ZmComposeView.prototype.getTitle =
 function() {
 	var text;
@@ -253,7 +266,11 @@ function() {
 	return [ZmMsg.zimbraTitle, text].join(": ");
 };
 
-// returns the field values for each of the addr fields
+/**
+ * Gets the field values for each of the addr fields.
+ * 
+ * @return	{Array}	an array of addresses
+ */
 ZmComposeView.prototype.getRawAddrFields =
 function() {
 	var addrs = {};
@@ -300,6 +317,8 @@ function() {
 * Saves *ALL* form value data to test against whether user made any changes
 * since canceling SendMsgRequest. If user attempts to send again, we compare
 * form data with this value and if not equal, send a new UID otherwise, re-use.
+* 
+* @private
 */
 ZmComposeView.prototype._backupForm =
 function() {
@@ -688,7 +707,7 @@ function(attId, isDraft, dummyMsg) {
 		msg.fromSelectValue = this._fromSelect.getSelectedOption();
 	}
 
-	/**
+	/*
 	* finally, check for any errors via zimlets..
 	* A Zimlet can listen to emailErrorCheck action to perform further check and
 	* alert user about the error just before sending email. We will be showing
@@ -767,13 +786,15 @@ function(msg, docIds) {
 };
 
 /**
-* Sets an address field.
-*
-* @param type	the address type
-* @param addr	the address string
-*
-* XXX: if addr empty, check if should hide field
-*/
+ * Sets an address field.
+ *
+ * @param type	the address type
+ * @param addr	the address string
+ *
+ * XXX: if addr empty, check if should hide field
+ * 
+ * @private
+ */
 ZmComposeView.prototype.setAddress =
 function(type, addr) {
 	addr = addr ? addr : "";
@@ -929,6 +950,8 @@ function(msg) {
 /**
  * Twiddle the img tags so that the HTML editor can display the images. Instead of
  * a cid (which is relevant only within the MIME msg), point to the img with a URL.
+ * 
+ * @private
  */
 ZmComposeView.prototype._fixMultipartRelatedImages =
 function(msg, idoc) {
@@ -1031,8 +1054,10 @@ function() {
 };
 
 /**
-* Revert compose view to a clean state (usually called before popping compose view)
-*/
+ * Revert compose view to a clean state (usually called before popping compose view).
+ * 
+ * @param	{Boolean}	bEnableInputs		if <code>true</code>, enable the input fields
+ */
 ZmComposeView.prototype.reset =
 function(bEnableInputs) {
 	this.backupForm = null;
@@ -1101,6 +1126,8 @@ function(bEnable) {
  * Adds an extra MIME part to the message. The extra parts will be
  * added, in order, to the end of the parts after the primary message
  * part.
+ * 
+ * @private
  */
 ZmComposeView.prototype.addMimePart =
 function(mimePart) {
@@ -1127,9 +1154,11 @@ function(signature, sigContent, account) {
 /**
  * Called when the user selects something from the Signature menu.
  *
- * @param content				[String]*
- * @param replaceSignatureId	[String]
- * @param account				[ZmZimbraAccount]*
+ * @param {String}	content				the content
+ * @param {String}	replaceSignatureId	the signature id
+ * @param {ZmZimbraAccount}	account				the account
+ * 
+ * @private
  */
 ZmComposeView.prototype.applySignature =
 function(content, replaceSignatureId, account) {
@@ -1236,6 +1265,8 @@ function(signatureId) {
  * This method is only used to add an
  *
  * @content 			optional content to use
+ * 
+ * @private
  */
 ZmComposeView.prototype.addSignature =
 function(content) {
@@ -1375,6 +1406,8 @@ function() {
 *
 * @param incAddrs		takes addresses into consideration
 * @param incSubject		takes subject into consideration
+* 
+* @private
 */
 ZmComposeView.prototype.isDirty =
 function(incAddrs, incSubject) {
@@ -1957,8 +1990,10 @@ function() {
 };
 
 /**
-* This should be called only once for when compose view loads first time around
-*/
+ * This should be called only once for when compose view loads first time around
+ * 
+ * @private
+ */
 ZmComposeView.prototype._initialize =
 function(composeMode) {
 	// init address field objects

@@ -12,6 +12,15 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+
+/**
+ * Creates an identity.
+ * @class
+ * This class represents an identity.
+ * 
+ * @param	{String}	name		the identity name
+ * 
+ */
 ZmIdentity = function(name) {
 	this.name = name;
 	this.id = "";
@@ -46,18 +55,57 @@ ZmIdentity.BOOLEAN					= 3;
 ZmIdentity.DEFAULT_NAME 			= "DEFAULT";
 
 var i = 0;
+/**
+ * Defines the "name" field id.
+ */
 ZmIdentity.NAME 					= i++;
+/**
+ * Defines the "send from display" field id.
+ */
 ZmIdentity.SEND_FROM_DISPLAY		= i++;
+/**
+ * Defines the "send from address" field id.
+ */
 ZmIdentity.SEND_FROM_ADDRESS		= i++;
+/**
+ * Defines the "set reply to" field id.
+ */
 ZmIdentity.SET_REPLY_TO				= i++;
+/**
+ * Defines the "set reply to display" field id.
+ */
 ZmIdentity.SET_REPLY_TO_DISPLAY		= i++;
+/**
+ * Defines the "set reply to address" field id.
+ */
 ZmIdentity.SET_REPLY_TO_ADDRESS		= i++;
+/**
+ * Defines the "read receipt to address" field id.
+ */
 ZmIdentity.READ_RECEIPT_TO_ADDR		= i++;
+/**
+ * Defines the "signature" field id.
+ */
 ZmIdentity.SIGNATURE				= i++;
+/**
+ * Defines the "use when sent to" field id.
+ */
 ZmIdentity.USE_WHEN_SENT_TO			= i++;
+/**
+ * Defines the "when sent to addresses" field id.
+ */
 ZmIdentity.WHEN_SENT_TO_ADDRESSES	= i++;
+/**
+ * Defines the "use when in folder" field id.
+ */
 ZmIdentity.USE_WHEN_IN_FOLDER		= i++;
+/**
+ * Defines the "when in folder ids" field id.
+ */
 ZmIdentity.WHEN_IN_FOLDERIDS		= i++;
+/**
+ * Defines the "is default" field id.
+ */
 ZmIdentity.IS_DEFAULT				= i++;
 delete i;
 
@@ -90,26 +138,59 @@ ZmIdentity.addField(ZmIdentity.WHEN_IN_FOLDERIDS, { name: "whenInFolderIds", soa
 
 // Public methods
 
+/**
+ * Gets the field.
+ * 
+ * @param	{constant}	fieldId		the id
+ * @return	{Object}	the value
+ */
 ZmIdentity.prototype.getField =
 function(fieldId) {
 	return this[ZmIdentity.FIELDS[fieldId].name];
 };
 
+/**
+ * Sets the field.
+ * 
+ * @param	{constant}	fieldId		the id
+ * @param	{Object}	value		the value
+ */
 ZmIdentity.prototype.setField =
 function(fieldId, value) {
 	this[ZmIdentity.FIELDS[fieldId].name] = value;
 };
 
+/**
+ * Creates the identity.
+ * 
+ * @param	{AjxCallback}		callback		the callback
+ * @param	{AjxCallback}		errorCallback		the error callback
+ * @param	{ZmBatchCommand}		batchCmd		the batch command
+ */
 ZmIdentity.prototype.create =
 function(callback, errorCallback, batchCmd) {
 	return this._doRequest("Create", this._handleCreateResponse, callback, errorCallback, batchCmd);
 };
 
+/**
+ * Saves the identity.
+ * 
+ * @param	{AjxCallback}		callback		the callback
+ * @param	{AjxCallback}		errorCallback		the error callback
+ * @param	{ZmBatchCommand}		batchCmd		the batch command
+ */
 ZmIdentity.prototype.save =
 function(callback, errorCallback, batchCmd) {
 	return this._doRequest("Modify", this._handleSaveResponse, callback, errorCallback, batchCmd);
 };
 
+/**
+ * Deletes the identity.
+ * 
+ * @param	{AjxCallback}		callback		the callback
+ * @param	{AjxCallback}		errorCallback		the error callback
+ * @param	{ZmBatchCommand}		batchCmd		the batch command
+ */
 ZmIdentity.prototype.doDelete =
 function(callback, errorCallback, batchCmd) {
 	return this._doRequest("Delete", this._handleDeleteResponse, callback, errorCallback, batchCmd);

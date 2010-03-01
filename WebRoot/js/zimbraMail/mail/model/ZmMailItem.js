@@ -20,10 +20,12 @@
  * This class represents a mail item, which may be a conversation or a mail
  * message.
  *
- * @param type		[constant]		type of object (conv or msg)
- * @param id		[int]			unique ID
- * @param list		[ZmMailList]	list that contains this mail item
- * @param noCache	[boolean]*		if true, do not cache this item
+ * @param {constant}	type		the type of object (conv or msg)
+ * @param {int}	id		the unique ID
+ * @param {ZmMailList}	list		the list that contains this mail item
+ * @param {Boolean}	noCache		if <code>true</code>, do not cache this item
+ * 
+ * @extends		ZmItem
  */
 ZmMailItem = function(type, id, list, noCache) {
 
@@ -58,6 +60,10 @@ function() {
 	return "ZmMailItem";
 };
 
+/**
+ * Clears this item.
+ * 
+ */
 ZmMailItem.prototype.clear =
 function() {
 	this._clearParticipants();
@@ -128,14 +134,21 @@ function(node) {
 	}
 };
 
+/**
+ * Gets the email addresses of the participants.
+ * 
+ * @return	{Array}	an array of email addresses
+ */
 ZmMailItem.prototype.getEmails =
 function() {
 	return this.participants.map("address");
 };
 
 /**
- * Returns true if this item is in Junk or Trash and the user is not including
+ * Checks if this item is in Junk or Trash and the user is not including
  * those in search results.
+ * 
+ * @return	{Boolean}	<code>true</code> if this item is in the Junk or Trash folder
  */
 ZmMailItem.prototype.ignoreJunkTrash =
 function() {

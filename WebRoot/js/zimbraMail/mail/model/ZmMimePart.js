@@ -13,6 +13,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a mime part.
+ * @class
+ * This class represents a mime part.
+ * 
+ * @extends		ZmModel
+ */
 ZmMimePart = function() {
 	
 	ZmModel.call(this, ZmEvent.S_ATT);
@@ -36,11 +43,23 @@ function(node, args) {
 	return mimePart;
 };
 
+/**
+ * Gets the content.
+ * 
+ * @return		{String}	content.
+ */
 ZmMimePart.prototype.getContent = 
 function() {
 	return this.node.content;
 };
 
+/**
+ * Gets the content by type.
+ * 
+ * @param	{String}	contentType		the content type
+ * @return	{String}	the content
+ * 
+ */
 ZmMimePart.prototype.getContentForType = 
 function(contentType) {
 	var topChildren = this.children.getArray();
@@ -57,31 +76,61 @@ function(contentType) {
 	return null;
 };
 
+/**
+ * Sets the content.
+ * 
+ * @param	{String}	content		the content
+ */
 ZmMimePart.prototype.setContent = 
 function(content) {
 	this.node.content = content;
 };
 
+/**
+ * Gets the content disposition.
+ * 
+ * @return	{String}	the content disposition
+ */
 ZmMimePart.prototype.getContentDisposition =
 function() {
 	return this.node.cd;
 };
 
+/**
+ * Gets the content type.
+ * 
+ * @return	{String}	the content type
+ */
 ZmMimePart.prototype.getContentType =
 function() {
 	return this.node.ct;
 };
 
+/**
+ * Sets the content type.
+ * 
+ * @param	{String}	ct		the content type
+ */
 ZmMimePart.prototype.setContentType =
 function(ct) {
 	this.node.ct = ct;
 };
 
+/**
+ * Sets the is body flag.
+ * 
+ * @param	{Boolean}	isBody		if <code>true</code>, this part is the body
+ */
 ZmMimePart.prototype.setIsBody = 
 function(isBody) {
 	this.node.body = isBody;
 };
 
+/**
+ * Gets the filename.
+ * 
+ * @return	{String}	the filename
+ */
 ZmMimePart.prototype.getFilename =
 function() {
 	return this.node.filename;

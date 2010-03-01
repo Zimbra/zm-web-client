@@ -13,6 +13,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a signature.
+ * @class
+ * This class represents a signature.
+ * 
+ * 
+ */
 ZmSignature = function(id) {
 	this.id = id;
 };
@@ -24,9 +31,21 @@ ZmSignature.prototype.toString = function() {
 //
 // Data
 //
-
+/**
+ * The name property.
+ * @type	String
+ */
 ZmSignature.prototype.name = "";
+/**
+ * The content type property.
+ * @type	String
+ * @see		ZmMimeTable
+ */
 ZmSignature.prototype.contentType = ZmMimeTable.TEXT_PLAIN;
+/**
+ * The value property.
+ * @type	String
+ */
 ZmSignature.prototype.value = "";
 
 //
@@ -42,8 +61,15 @@ ZmSignature.createFromJson = function(object) {
 //
 // Public methods
 //
-
-ZmSignature.prototype.create = function(callback, errorCallback, batchCmd) {
+/**
+ * Creates the signature.
+ * 
+ * @param	{AjxCallback}		callback		the callback
+ * @param	{AjxCallback}		errorCallback		the error callback
+ * @param	{ZmBatchCommand}		batchCmd		the batch command
+ */
+ZmSignature.prototype.create =
+function(callback, errorCallback, batchCmd) {
 	var respCallback = callback ? new AjxCallback(this, this._handleCreateResponse, [callback]) : null;
 	var resp = this._sendRequest("CreateSignatureRequest", false, respCallback, errorCallback, batchCmd);
 	if (!callback && !batchCmd) {
@@ -51,7 +77,15 @@ ZmSignature.prototype.create = function(callback, errorCallback, batchCmd) {
 	}
 };
 
-ZmSignature.prototype.save = function(callback, errorCallback, batchCmd) {
+/**
+ * Saves the signature.
+ * 
+ * @param	{AjxCallback}		callback		the callback
+ * @param	{AjxCallback}		errorCallback		the error callback
+ * @param	{ZmBatchCommand}		batchCmd		the batch command
+ */
+ZmSignature.prototype.save =
+function(callback, errorCallback, batchCmd) {
 	var respCallback = callback ? new AjxCallback(this, this._handleModifyResponse, [callback]) : null;
 	var resp = this._sendRequest("ModifySignatureRequest", false, respCallback, errorCallback, batchCmd);
 	if (!callback && !batchCmd) {
@@ -59,6 +93,13 @@ ZmSignature.prototype.save = function(callback, errorCallback, batchCmd) {
 	}
 };
 
+/**
+ * Deletes the signature.
+ * 
+ * @param	{AjxCallback}		callback		the callback
+ * @param	{AjxCallback}		errorCallback		the error callback
+ * @param	{ZmBatchCommand}		batchCmd		the batch command
+ */
 ZmSignature.prototype.doDelete = function(callback, errorCallback, batchCmd) {
 	var respCallback = callback ? new AjxCallback(this, this._handleDeleteResponse, [callback]) : null;
 	var resp = this._sendRequest("DeleteSignatureRequest", true, respCallback, errorCallback, batchCmd);
@@ -67,6 +108,11 @@ ZmSignature.prototype.doDelete = function(callback, errorCallback, batchCmd) {
 	}
 };
 
+/**
+ * Sets the signature from JSON object.
+ * 
+ * @param	{Object}	object		the object
+ */
 ZmSignature.prototype.setFromJson = function(object) {
 	this.name = object.name || this.name;
 	var content = object.content && object.content[0];
@@ -76,10 +122,21 @@ ZmSignature.prototype.setFromJson = function(object) {
 	}
 };
 
+/**
+ * Gets the content type.
+ * 
+ * @return	{String}	the content type
+ */
 ZmSignature.prototype.getContentType = function(){
     return this.contentType;
 };
 
+/**
+ * Sets the content type.
+ * 
+ * @param	{String}	ct		the content type
+ * @see		ZmMimeTable
+ */
 ZmSignature.prototype.setContentType = function(ct){
     this.contentType = ct || ZmMimeTable.TEXT_PLAIN;  
 };
@@ -90,8 +147,9 @@ ZmSignature.prototype.setContentType = function(ct){
  *									content-type. If not specified,
  *									the signature text is returned in
  *									the original format.
+ *
+ * @private
  */
-
 ZmSignature.prototype.getValue = function(outputType) {
 	
     var isHtml = this.contentType == ZmMimeTable.TEXT_HTML;

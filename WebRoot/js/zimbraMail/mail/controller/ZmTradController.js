@@ -23,8 +23,12 @@
  *
  * @author Parag Shah
  * 
- * @param container	containing shell
- * @param mailApp	containing app
+ * @param {ZmComposite}	container	the containing shell
+ * @param {ZmMailApp}	mailApp			the containing app
+ * 
+ * @extends		ZmDoublePaneController
+ * 
+ * @private
  */
 ZmTradController = function(container, mailApp) {
 	ZmDoublePaneController.call(this, container, mailApp);
@@ -50,13 +54,6 @@ function() {
 	return "ZmTradController";
 };
 
-/**
-* Displays the given conversation in a two-pane view. The view is actually
-* created in _loadItem(), since it is a scheduled method and must execute
-* last.
-*
-* @param search		[ZmSearchResult]	the current search results
-*/
 ZmTradController.prototype.show =
 function(search) {
 	this._list = search.getResults(ZmItem.MSG);
