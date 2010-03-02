@@ -1918,6 +1918,7 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._showApptForwardComposeView =
 function(appt, mode) {
+    appt.name = ZmMsg.fwd + ": " + appt.name;
 	this._app.getApptComposeController().show(appt, mode);
 };
 

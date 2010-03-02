@@ -271,6 +271,7 @@ function(tabKey) {
 	if (tabKey == this._tabKeys[ZmApptComposeView.TAB_APPOINTMENT]) {
         //disable inputs for appt forwarding
 		this._apptEditView.enableInputs(!this._forwardMode);
+        this._apptEditView.enableSubjectField(true);        
 		this._apptEditView.reEnableDesignMode();
         toolbar.enable([ZmOperation.ATTACHMENT], !this._forwardMode);
 	} else {

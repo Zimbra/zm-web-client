@@ -911,7 +911,7 @@ function(callback, errorCallback, mode) {
     if (addrs.gotAddress && addrs[AjxEmailAddress.TO]) {
         var toAddrs = addrs[AjxEmailAddress.TO].all.getArray();
         for (var i in toAddrs) {
-            this._addAddressToSoap(soapDoc, m, toAddrs[i].address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
+            this._addAddressToSoap(soapDoc, m, toAddrs[i].address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], toAddrs[i].name);
         }
     }
 
@@ -995,7 +995,7 @@ function(callback, errorCallback) {
 	if (addrs.gotAddress && addrs[AjxEmailAddress.TO]) {
 		var toAddrs = addrs[AjxEmailAddress.TO].all.getArray();
 		for (var i in toAddrs) {
-			this._addAddressToSoap(soapDoc, m, toAddrs[i].address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
+			this._addAddressToSoap(soapDoc, m, toAddrs[i].address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], toAddrs[i].name);
 		}
 	}
 
@@ -1003,8 +1003,9 @@ function(callback, errorCallback) {
 };
 
 ZmAppt.prototype._addAddressToSoap =
-function(soapDoc, m, addr, type) {
+function(soapDoc, m, addr, type, name) {
 	var e = soapDoc.set("e", null, m);
 	e.setAttribute("a", addr);
 	e.setAttribute("t", type);
+    if(name) e.setAttribute("p", name);
 };

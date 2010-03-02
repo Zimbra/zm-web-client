@@ -151,6 +151,11 @@ function(bEnableInputs) {
 	this._endDateField.disabled = !bEnableInputs;
 };
 
+ZmCalItemEditView.prototype.enableSubjectField =
+function(bEnableInputs) {
+	this._subjectField.setEnabled(bEnableInputs);
+};
+
 /**
  * Checks for dirty fields.
  * 
