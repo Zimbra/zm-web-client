@@ -236,6 +236,10 @@ function(params) {
 		skip = true;
 	}
 
+	if (!skip) {
+		AjxDispatcher.require("Zimlet");
+	}
+
 	if (!skip && window[ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]] &&
 		this._appName != ZmApp.PREFERENCES)
 	{
