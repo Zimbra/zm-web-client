@@ -432,18 +432,20 @@ function() {
 ZmItem.prototype.notifyDelete =
 function() {
 	this.deleteLocal();
-	if (this.list)
+	if (this.list) {
 		this.list.deleteLocal([this]);
+	}
 	this._notify(ZmEvent.E_DELETE);
 };
 
 /**
  * Handles a modification notification.
  *
- * @param {Object}	obj		the item with the changed attributes/content
+ * @param {Object}	obj			the item with the changed attributes/content
+ * @param {boolean}	batchMode	if true, return event type and don't notify
  */
 ZmItem.prototype.notifyModify =
-function(obj) {
+function(obj, batchMode) {
 	// empty string is meaningful here, it means no tags
 	if (obj.t != null) {
 		this._parseTags(obj.t);
@@ -474,7 +476,12 @@ function(obj) {
 		if (this.list) {
 			this.list.moveLocal([this], obj.l);
 		}
-		this._notify(ZmEvent.E_MOVE, details);
+		if (batchMode) {
+			delete obj.l;			// folder has been handled
+			return ZmEvent.E_MOVE;
+		} else {
+			this._notify(ZmEvent.E_MOVE, details);
+		}
 	}
 };
 

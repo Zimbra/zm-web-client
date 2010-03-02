@@ -1222,6 +1222,15 @@ function(creates, type, items, currList, sortBy, convs) {
 	return result;
 };
 
+ZmMailApp.prototype.modifyNotify =
+function(modifies, force) {
+	if (!modifies["m"] && !modifies["c"]) { return; }
+	if (!force && !this._noDefer && this._deferNotifications("modify", modifies)) { return; }
+
+	this._batchNotify(modifies["m"]);
+	this._batchNotify(modifies["c"]);
+};
+
 ZmMailApp.prototype.postNotify =
 function(notify) {
 	var lv = this._checkReplenishListView;

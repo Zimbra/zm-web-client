@@ -253,14 +253,21 @@ function(ev) {
 		}
 	}
 
+	// move/delete support batch notification mode
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
-		DBG.println(AjxDebug.DBG2, "ZmListView: DELETE or MOVE");
-        this.removeItem(item, true);
-        // if we've removed it from the view, we should remove it from the reference
-        // list as well so it doesn't get resurrected via replenishment *unless*
-		// we're dealing with a canonical list (i.e. contacts)
-		if (ev.event != ZmEvent.E_MOVE || !this._controller._list.isCanonical) {
-			this._controller._list.remove(item);
+		var items = ev.batchMode ? this._getItemsFromBatchEvent(ev) : [item];
+		for (var i = 0, len = items.length; i < len; i++) {
+			var item = items[i];
+			this.removeItem(item, true, ev.batchMode);
+			// if we've removed it from the view, we should remove it from the reference
+			// list as well so it doesn't get resurrected via replenishment *unless*
+			// we're dealing with a canonical list (i.e. contacts)
+			if (ev.event != ZmEvent.E_MOVE || !this._controller._list.isCanonical) {
+				this._controller._list.remove(item);
+			}
+		}
+		if (ev.batchMode) {
+			this._fixAlternation(0);
 		}
 		if (!this.allSelected) {
 			if (!this._isPageless) {
@@ -281,6 +288,26 @@ function(ev) {
 		item = (items && items.length) ? items[0] : null;
 	}
 	return item;
+};
+
+ZmListView.prototype._getItemsFromBatchEvent =
+function(ev) {
+
+	if (!ev.batchMode) { return []; }
+
+	var items = ev.items;
+	if (!items) {
+		items = [];
+		var notifs = ev.getDetail("notifs");
+		if (notifs && notifs.length) {
+			for (var i = 0, len = notifs.length; i < len; i++) {
+				var mod = notifs[i];
+				items.push(mod.item || appCtxt.cacheGet(mod.id));
+			}
+		}
+	}
+
+	return items;
 };
 
 ZmListView.prototype._checkReplenish =

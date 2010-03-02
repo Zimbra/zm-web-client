@@ -81,7 +81,7 @@ function() {
 };
 
 ZmMailItem.prototype.notifyModify =
-function(obj) {
+function(obj, batchMode) {
 	var fields = {};
 	if (obj.e && obj.e.length) {
 		this._clearParticipants();
@@ -93,7 +93,7 @@ function(obj) {
 		this._notify(ZmEvent.E_MODIFY, {fields:fields});
 	}
 
-	ZmItem.prototype.notifyModify.call(this, obj);
+	return ZmItem.prototype.notifyModify.apply(this, arguments);
 };
 
 ZmMailItem.prototype._initializeParticipants =

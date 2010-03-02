@@ -119,6 +119,8 @@ ZmApp.DEFAULT_APPS			= [];	// ordered list
 
 ZmApp.OVERVIEW_ID			= "main";	// ID for main overview
 
+ZmApp.BATCH_NOTIF_LIMIT = 25;	// threshold for doing batched change notifications
+
 /**
  * Initializes the application.
  * 
@@ -782,6 +784,45 @@ function() {
 		} else if (dn.type == "modify") {
 			this.modifyNotify(dn.data, true);
 		}
+	}
+};
+
+/**
+ * Notify change listeners with a list of notifications, rather than a single
+ * item, so that they can optimize. For example, a list view can wait to
+ * fix its alternation of dark and light rows until after all the moved ones
+ * have been taken out, rather than after the removal of each row.
+ *
+ * @param mods	{Array}		list of notification objects
+ */
+ZmApp.prototype._batchNotify =
+function(mods) {
+
+	if (!(mods && mods.length >= ZmApp.BATCH_NOTIF_LIMIT)) { return; }
+
+	var notifs = {}, item;
+	for (var i = 0, len = mods.length; i < len; i++) {
+		var mod = mods[i];
+		item = appCtxt.cacheGet(mod.id);
+		if (item) {
+			var ev = item.notifyModify(mod, true);
+			if (ev) {
+				if (!notifs[ev]) {
+					notifs[ev] = [];
+				}
+				mod.item = item;
+				notifs[ev].push(mod);
+			}
+		}
+	}
+
+	var list = item.list;
+	if (!list) { return; }
+	list._evt.batchMode = true;
+	list._evt.item = item;	// placeholder - change listeners like it to be there
+	for (var ev in notifs) {
+		var details = {notifs:notifs[ev]};
+		list._notify(ev, details);
 	}
 };
 

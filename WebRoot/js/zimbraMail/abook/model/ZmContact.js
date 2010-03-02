@@ -982,8 +982,13 @@ function(newFolderId) {
  * @private
  */
 ZmContact.prototype.notifyModify =
-function(obj) {
-	ZmItem.prototype.notifyModify.call(this, obj);
+function(obj, batchMode) {
+
+	var result = ZmItem.prototype.notifyModify.apply(this, arguments);
+	appCtxt.getAutocompleter().clearCache(ZmAutocomplete.AC_TYPE_CONTACT);
+	if (result) {
+		return result;
+	}
 
 	// cache old fileAs/fullName before resetting them
 	var oldFileAs = this.getFileAs();
@@ -1018,8 +1023,6 @@ function(obj) {
 	this.list.modifyLocal(obj, details);
 	this._notify(ZmEvent.E_MODIFY, obj);
 
-	appCtxt.getAutocompleter().clearCache(ZmAutocomplete.AC_TYPE_CONTACT);
-	
 	var buddy = this.getBuddy();
 	if (buddy) {
 		buddy._notifySetName(buddy.name);	// trigger a refresh

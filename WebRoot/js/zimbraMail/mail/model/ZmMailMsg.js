@@ -1981,12 +1981,12 @@ function() {
 };
 
 ZmMailMsg.prototype.notifyModify =
-function(obj) {
+function(obj, batchMode) {
 	if (obj.cid != null) {
 		this.cid = obj.cid;
 	}
 
-	ZmMailItem.prototype.notifyModify.apply(this, arguments);
+	return ZmMailItem.prototype.notifyModify.apply(this, arguments);
 };
 
 ZmMailMsg.prototype.isResourceInvite =

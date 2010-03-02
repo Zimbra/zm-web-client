@@ -706,31 +706,35 @@ function(ev) {
 	
 	// msg moved or deleted
 	if (!isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
-		var	conv = appCtxt.getById(item.cid);
-		handled = true;
-		if (conv) {
-			if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
-				// msg marked as Junk, or hard-deleted
-				// TODO: handle expandable msg removal
-				conv.removeMsg(item);
-				if (this._isExpandable(conv) && conv.numMsgs == 1) {
-					this._setImage(conv, ZmItem.F_EXPAND, null);
-					this._removeMsgRows(conv.id);
-				}
-				this.removeItem(item, true);	// remove msg row
-				this._controller._app._checkReplenishListView = this;
-			} else {
-				if (!(conv.hasMatchingMsg(this._controller._app.currentSearch), true)) {
-					this._list.remove(conv);				// view has sublist of controller list
-					this._controller._list.remove(conv);	// complete list
-					ev.item = item = conv;
-					isConv = true;
-					handled = false;
+		var items = ev.batchMode ? this._getItemsFromBatchEvent(ev) : [item];
+		for (var i = 0, len = items.length; i < len; i++) {
+			var item = items[i];
+			var	conv = appCtxt.getById(item.cid);
+			handled = true;
+			if (conv) {
+				if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
+					// msg marked as Junk, or hard-deleted
+					// TODO: handle expandable msg removal
+					conv.removeMsg(item);
+					if (this._isExpandable(conv) && conv.numMsgs == 1) {
+						this._setImage(conv, ZmItem.F_EXPAND, null);
+						this._removeMsgRows(conv.id);
+					}
+					this.removeItem(item, true, ev.batchMode);	// remove msg row
+					this._controller._app._checkReplenishListView = this;
 				} else {
-					// normal case: just change folder name for msg
-					this._changeFolderName(item, ev.getDetail("oldFolderId"));
-					if (ev.event == ZmEvent.E_MOVE && (item.folderId == ZmFolder.ID_TRASH)) {
-						this._setNextSelection();
+					if (!(conv.hasMatchingMsg(this._controller._app.currentSearch), true)) {
+						this._list.remove(conv);				// view has sublist of controller list
+						this._controller._list.remove(conv);	// complete list
+						ev.item = item = conv;
+						isConv = true;
+						handled = false;
+					} else {
+						// normal case: just change folder name for msg
+						this._changeFolderName(item, ev.getDetail("oldFolderId"));
+						if (ev.event == ZmEvent.E_MOVE && (item.folderId == ZmFolder.ID_TRASH)) {
+							this._setNextSelection();
+						}
 					}
 				}
 			}
@@ -739,10 +743,9 @@ function(ev) {
 
 	// conv moved or deleted	
 	if (isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
-		// conv move: remove msg rows
-		this._removeMsgRows(item.id);
-		if (this._list.size() <= 1) {
-			// XXX: clear msg pane
+		var items = ev.batchMode ? this._getItemsFromBatchEvent(ev) : [item];
+		for (var i = 0, len = items.length; i < len; i++) {
+			this._removeMsgRows(items[i].id);	// conv move: remove msg rows
 		}
 	}
 
@@ -835,8 +838,11 @@ function(ev) {
 	}
 
 	if (!handled) {
-		isConv ? ZmMailListView.prototype._changeListener.apply(this, arguments) :
-				 ZmMailMsgListView.prototype._changeListener.apply(this, arguments);
+		if (isConv) {
+			ZmMailListView.prototype._changeListener.apply(this, arguments);
+		} else {
+			ZmMailMsgListView.prototype._changeListener.apply(this, arguments);
+		}
 	}
 };
 

@@ -317,7 +317,7 @@ function() {
 * @private
 */
 ZmConv.prototype.notifyModify =
-function(obj) {
+function(obj, batchMode) {
 	var fields = {};
 	// a conv's ID can change if it's a virtual conv becoming real; 'this' will be
 	// the old conv; if we can, we switch to using the new conv, which will be more
@@ -349,7 +349,7 @@ function(obj) {
 		this._notify(ZmEvent.E_MODIFY, {fields : fields});
 	}
 
-	ZmMailItem.prototype.notifyModify.apply(this, arguments);
+	return ZmMailItem.prototype.notifyModify.apply(this, arguments);
 };
 
 /**

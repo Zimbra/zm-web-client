@@ -379,6 +379,14 @@ function(creates, force) {
 	}
 };
 
+ZmContactsApp.prototype.modifyNotify =
+function(modifies, force) {
+	if (!modifies["cn"]) { return; }
+	if (!force && !this._noDefer && this._deferNotifications("modify", modifies)) { return; }
+
+	this._batchNotify(modifies["cn"]);
+};
+
 /**
  * @private
  */

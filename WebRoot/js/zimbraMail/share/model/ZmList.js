@@ -72,8 +72,8 @@ ZmList.NODE = {};
 // item types based on node name (reverse map of above)
 ZmList.ITEM_TYPE = {};
 
-// how many items to act on at a time via a server request
-ZmList.CHUNK_SIZE = 100;
+ZmList.CHUNK_SIZE	= 100;	// how many items to act on at a time via a server request
+ZmList.CHUNK_PAUSE	= 500;	// how long to pause to allow UI to catch up
 
 /**
  * Returns a string representation of the object.
@@ -497,9 +497,18 @@ function(params, result) {
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, params.folder.id);
 		for (var i = 0; i < movedItems.length; i++) {
-			movedItems[i].moveLocal(params.folder.id);
+			var item = movedItems[i];
+			var details = {oldFolderId:item.folderId};
+			item.moveLocal(params.folder.id);
+			ZmModel.prototype._notify.call(item, ZmEvent.E_MOVE, details);
 		}
-		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
+		// batched change notification
+		var item = movedItems[0];
+		var list = item.list;
+		list._evt.batchMode = true;
+		list._evt.item = item;	// placeholder
+		list._evt.items = movedItems;
+		list._notify(ZmEvent.E_MOVE, details);
 	}
 
 	if (params.callback) {
@@ -918,7 +927,7 @@ function(params, result) {
 
 	if (params.ids.length && !params.cancelled) {
 		DBG.println("sa", "item action setting up next chunk, remaining: " + params.ids.length);
-		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._doAction, [params]), 100);
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._doAction, [params]), ZmItem.CHUNK_PAUSE);
 	} else {
 		params.reqId = null;
 		if (params.finalCallback) {

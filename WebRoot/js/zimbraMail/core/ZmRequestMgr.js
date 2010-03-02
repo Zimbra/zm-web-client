@@ -674,6 +674,7 @@ function(modifies) {
 
 			// bug fix #31991 - for contact modifies, check the contact list
 			// Since we lazily create ZmContact items, it wont be in the global cache.
+			// TODO: move to contacts app
 			if (!item && name == "cn" && AjxDispatcher.loaded("ContactsCore")) {
 				var capp = appCtxt.getApp(ZmApp.CONTACTS);
 				if (capp.isContactListLoaded()) {
@@ -695,7 +696,7 @@ function(modifies) {
  *
  * @param {Object}	parent	the notification subnode
  *
- * TODO: remove this func (still used by ZmMailApp::_adjustNotifies)
+ * TODO: remove this func (still used by ZmMailApp::preNotify)
  * 
  * @private
  */
