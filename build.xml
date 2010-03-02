@@ -1166,6 +1166,15 @@ if (ext == null) ext = "";
 	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-doc"/>
 	    <arg value="-d=${build.jsapi-zimbra-doc.dir}"/>
 	    <arg value="-r=4"/>
+	    <arg value="${js.dir}/ajax/boot/AjxCallback.js"/>
+	    <arg value="${js.dir}/ajax/core/AjxColor.js"/>
+	    <arg value="${js.dir}/ajax/core/AjxException.js"/>
+	    <arg value="${js.dir}/ajax/events/AjxListener.js"/>
+	    <arg value="${js.dir}/ajax/net/AjxRpc.js"/>
+	    <arg value="${js.dir}/ajax/net/AjxRpcRequest.js"/>
+	    <arg value="${js.dir}/ajax/soap/AjxSoapDoc.js"/>
+	    <arg value="${js.dir}/ajax/util/AjxStringUtil.js"/>
+	    <arg value="${js.dir}/ajax/util/AjxVector.js"/>
 	    <arg value="${js.dir}/ajax/dwt/widgets/DwtButton.js"/>
 		<arg value="${js.dir}/ajax/dwt/widgets/DwtBaseDialog.js"/>
 	    <arg value="${js.dir}/ajax/dwt/widgets/DwtComposite.js"/>
@@ -1195,6 +1204,23 @@ if (ext == null) ext = "";
 	    <arg value="-d=${build.jsapi-inventory.dir}"/>
 	    <arg value="-r=4"/>
 	    <arg value="-s"/>
+	    <arg value="${js.dir}/ajax/boot/AjxCallback.js"/>
+	    <arg value="${js.dir}/ajax/core/AjxColor.js"/>
+	    <arg value="${js.dir}/ajax/core/AjxException.js"/>
+	    <arg value="${js.dir}/ajax/events/AjxListener.js"/>
+	    <arg value="${js.dir}/ajax/net/AjxRpc.js"/>
+	    <arg value="${js.dir}/ajax/net/AjxRpcRequest.js"/>
+	    <arg value="${js.dir}/ajax/soap/AjxSoapDoc.js"/>
+	    <arg value="${js.dir}/ajax/util/AjxStringUtil.js"/>
+	    <arg value="${js.dir}/ajax/util/AjxVector.js"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtButton.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtBaseDialog.js"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtComposite.js"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtControl.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtDialog.js"/>
+	    <arg value="${js.dir}/ajax/dwt/widgets/DwtLabel.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtMessageDialog.js"/>
+		<arg value="${js.dir}/ajax/dwt/widgets/DwtToolBar.js"/>
 	    <arg value="${js.dir}/zimbra/common/ZmErrorDialog.js"/>
 	    <arg value="${js.dir}/zimbra/csfe"/>
 	    <arg value="${js.dir}/zimbraMail/abook"/>

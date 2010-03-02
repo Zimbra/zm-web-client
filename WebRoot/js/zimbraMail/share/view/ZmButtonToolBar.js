@@ -16,6 +16,7 @@
 /**
  * @overview
  */
+
 /**
  * Creates a toolbar with the given buttons.
  * @class
@@ -58,6 +59,10 @@ ZmButtonToolBar = function(params) {
 		buttons = null;
 	}
 	// weed out disabled ops, save list of ones that make it
+	/**
+	 * The operation list property.
+	 * @type Array
+	 */
 	this.opList = ZmOperation.filterOperations(buttons);
 	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
 
@@ -81,14 +86,14 @@ function() {
  * 
  * @param {String}	id			the name of the operation
  * @param {Hash}	params		a hash of parameters
- * @param	params.text			a button text
- * @param	params.tooltip		a button tooltip text
- * @param	params.image			a icon class for the button
- * @param	params.disImage		a disabled version of icon
- * @param	params.enabled		if <code>true</code>, button is enabled
- * @param	params.className		the CSS class name
- * @param	params.style			thebutton style
- * @param	params.index			the position at which to add the button
+ * @param {String}	params.text			a button text
+ * @param {String}	params.tooltip		a button tooltip text
+ * @param {String}	params.image			a icon class for the button
+ * @param {String}	params.disImage		a disabled version of icon
+ * @param {Boolean}	params.enabled		if <code>true</code>, button is enabled
+ * @param {String}	params.className		the CSS class name
+ * @param {String}	params.style			thebutton style
+ * @param {int} params.index			the position at which to add the button
  */
 ZmButtonToolBar.prototype.createOp =
 function(id, params) {
@@ -113,12 +118,25 @@ function(id, params) {
 	return b;
 };
 
+/**
+ * Adds the operation.
+ * 
+ * @param	{String}	id		the id
+ * @param	{int}		index	the index
+ */
 ZmButtonToolBar.prototype.addOp =
 function(id, index) {
 	ZmOperation.addOperation(this, id, this._buttons, index);
 	AjxUtil.arrayAdd(this.opList, id, index);
 };
 
+/**
+ * Removes the operation.
+ * 
+ * @param	{String}	id		the id
+ * 
+ * @see ZmOperation
+ */
 ZmButtonToolBar.prototype.removeOp =
 function(id) {
 	ZmOperation.removeOperation(this, id, this._buttons);
@@ -130,6 +148,8 @@ function(id) {
  *
  * @param {constant}	id		the button
  * @return	{DwtButton}	the button
+ * 
+ * @see ZmOperation
  */
 ZmButtonToolBar.prototype.getOp =
 function(id) {
@@ -139,7 +159,7 @@ function(id) {
 /**
  * Gets the menu tag sub-menu (if any).
  * 
- * @return	{DwtMenu}		the menu
+ * @return	{ZmTagMenu}		the menu
  */
 ZmButtonToolBar.prototype.getTagMenu =
 function() {

@@ -16,7 +16,6 @@
 /**
  * @overview
  * This file defines a toolbar.
- *
  */
 
 /**
@@ -148,24 +147,21 @@ function(enabled) {
 /**
  * Creates a button and adds the button to this toolbar.
  *
+ * @param {String}	id			the button id
  * @param {Hash}	params		a hash of parameters:
- * <ul>
- * @param id			{String}		the button id
- * @param {function}	constructor	the constructor for button object (default is {@link DwtToolBarButton})
- * @param {String}	template		the button template
- * @param {String}	text			the button text
- * @param {String}	tooltip		the button tooltip text
- * @param {String}	image		the icon class for the button
- * @param {String}	disImage	the disabled version of icon
- * @param {Boolean}	enabled		if <code>true</code>, button is enabled
- * @param {String}	className	the CSS class name
- * @param {String}	style		the button style
- * @param {int}	index			the position at which to add the button
- * @param {constant}	shortcut		the shortcut id (from {@link ZmKeyMap}) for showing hint
- * @param {AjxCallback|DwtMenu}	menu				the menu creation callback (recommended) or menu
- * @param {Boolean}	menuAbove	if <code>true</code>, popup menu above the button.
- * </ul>
- * 
+ * @param {function}	params.constructor	the constructor for button object (default is {@link DwtToolBarButton})
+ * @param {String}	params.template		the button template
+ * @param {String}	params.text			the button text
+ * @param {String}	params.tooltip		the button tooltip text
+ * @param {String}	params.image		the icon class for the button
+ * @param {String}	params.disImage	the disabled version of icon
+ * @param {Boolean}	params.enabled		if <code>true</code>, button is enabled
+ * @param {String}	params.className	the CSS class name
+ * @param {String}	params.style		the button style
+ * @param {int}	params.index			the position at which to add the button
+ * @param {constant}	params.shortcut		the shortcut id (from {@link ZmKeyMap}) for showing hint
+ * @param {AjxCallback|DwtMenu}	params.menu				the menu creation callback (recommended) or menu
+ * @param {Boolean}	params.menuAbove	if <code>true</code>, popup menu above the button.
  */
 ZmToolBar.prototype.createButton =
 function(id, params) {

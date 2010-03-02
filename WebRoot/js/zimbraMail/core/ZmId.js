@@ -767,13 +767,29 @@ ZmId.VIEW_CAL_SCHEDULE			= "CLS";
 ZmId.VIEW_CAL_WEEK				= "CLW";
 ZmId.VIEW_CAL_WORK_WEEK			= "CLWW";
 ZmId.VIEW_CALL_LIST				= "CLIST";
+/**
+ * Defines the "compose" view.
+ * @type String
+ */
 ZmId.VIEW_COMPOSE				= "COMPOSE";
 ZmId.VIEW_CONTACT_CARDS			= "CNC";
 ZmId.VIEW_CONTACT_SIMPLE 		= "CNS";
 ZmId.VIEW_CONTACT_SRC			= "CNSRC";
 ZmId.VIEW_CONTACT_TGT			= "CNTGT";
+/**
+ * Defines the "contact" view.
+ * @type String
+ */
 ZmId.VIEW_CONTACT				= "CN";
+/**
+ * Defines the "conversation list" mail view.
+ * @type String
+ */
 ZmId.VIEW_CONVLIST 				= "CLV";
+/**
+ * Defines the "conversation" view.
+ * @type String
+ */
 ZmId.VIEW_CONV 					= "CV";
 ZmId.VIEW_FILTER_RULES			= "FRV";
 ZmId.VIEW_GROUP					= "GRP";
@@ -784,6 +800,10 @@ ZmId.VIEW_LOADING				= "LOADING";
 ZmId.VIEW_MAIL_CONFIRM			= "MAILCONFIRM";
 ZmId.VIEW_MIXED					= "MX";
 ZmId.VIEW_MOBILE_DEVICES		= "MD";
+/**
+ * Defines the "message" view.
+ * @type String
+ */
 ZmId.VIEW_MSG 					= "MSG";
 ZmId.VIEW_NOTEBOOK_FILE			= "NBF";
 ZmId.VIEW_NOTEBOOK_PAGE_EDIT	= "NBPE";
@@ -805,6 +825,10 @@ ZmId.VIEW_TASK_DEFERRED 		= "TKVD";
 ZmId.VIEW_TASK_ALL				= "TKVA";
 ZmId.VIEW_TASKEDIT				= "TKE";
 ZmId.VIEW_TASKLIST				= "TKL";
+/**
+ * Defines the "traditional" mail view.
+ * @type String
+ */
 ZmId.VIEW_TRAD 					= "TV";
 ZmId.VIEW_VOICEMAIL				= "VM";
 ZmId.VIEW_ATTACHMENTS           = "AV";
