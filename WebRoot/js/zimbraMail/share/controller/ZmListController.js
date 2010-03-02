@@ -1395,10 +1395,11 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 
 	this._cacheList(searchResult, offset);
 
-	this._resetOperations(this._toolbar[view], 0);
+	var lv = this._listView[this._currentView];
+	var num = lv._isPageless ? lv.getSelectionCount() : 0;
+	this._resetOperations(this._toolbar[view], num);
 
 	// remember selected index if told to
-	var lv = this._listView[this._currentView];
 	var selItem = saveSelection ? lv.getSelection()[0] : null;
 	var selectedIdx = selItem ? lv.getItemIndex(selItem) : -1;
 
