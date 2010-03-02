@@ -188,6 +188,11 @@ function(msg) {
 			topToolbar.reparentHtmlElement(contentDiv);
 			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
+            if(this._respondOnBehalfLabel) {
+                this._respondOnBehalfLabel.innerHTML = msg.cif ? AjxMessageFormat.format(ZmMsg.onBehalfOfText, [msg.cif]) : "";
+                Dwt.setVisible(this._respondOnBehalfLabel, new Boolean(msg.cif));
+            }
+
 			var cc = ac.getApp(ZmApp.CALENDAR).getCalController();
 			var calendars = cc.getCalendars(true, msg.account);
 
@@ -419,10 +424,14 @@ function() {
 		button.setMenu(menu);
 	}
 
+    this._respondOnBehalfLabel = this._inviteToolbar.addFiller();
+    
 	this._inviteToolbar.addFiller();
-	var label = new DwtText({parent: this._inviteToolbar, className: "DwtText InviteSelectLabel"});
+
+    var label = new DwtText({parent: this._inviteToolbar, className: "DwtText InviteSelectLabel"});
 	label.setSize(100, DwtControl.DEFAULT);
 	label.setText(AjxMessageFormat.format(ZmMsg.makeLabel, [ZmMsg.calendar]));
+
     this._inviteMoveLabel = label;
 
 	this._inviteToolbar.addSpacer();
