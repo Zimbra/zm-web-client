@@ -2954,6 +2954,7 @@ function(actionCode) {
 		case ZmKeyMap.CAL_WORK_WEEK_VIEW:
 		case ZmKeyMap.CAL_MONTH_VIEW:
 		case ZmKeyMap.CAL_SCHEDULE_VIEW:
+		case ZmKeyMap.CAL_LIST_VIEW:
 			this.show(ZmCalViewController.ACTION_CODE_TO_VIEW[actionCode]);
 			break;
 
