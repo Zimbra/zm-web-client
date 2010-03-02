@@ -25,13 +25,8 @@ body, #skin_container_splash_screen	{
 	text-decoration: underline;
 }
 
-#skin_container_tree_top,
-#skin_container_tree_top_offline {
+#skin_container_tree_top {
 	background: #6f1616 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
-	color: #ffffff;
-}
-
-#skin_container_account {
 	color: #ffffff;
 }
 

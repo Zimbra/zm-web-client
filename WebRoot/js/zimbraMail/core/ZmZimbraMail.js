@@ -714,8 +714,8 @@ function() {
 				this._firstTimeNetworkChange = true;
 
 				var nc = new ZimbraNetworkChecker();
-				nc.addEventListener("offline", function(e) { appCtxt.getAppController().handleNetworkChange(false); }, false);
-				nc.addEventListener("online", function(e) { appCtxt.getAppController().handleNetworkChange(true); }, false);
+				nc.addEventListener("offline", function(e) { window["appCtxt"].getAppController().handleNetworkChange(false); }, false);
+				nc.addEventListener("online", function(e) { window["appCtxt"].getAppController().handleNetworkChange(true); }, false);
 			}
 		}
 	}
@@ -738,10 +738,7 @@ function(online) {
 		this.sendClientEventNotify(ZmZimbraMail.UI_NETWORK_DOWN);
 	}
 
-	var networkEl = document.getElementById("skin_container_network");
-	if (networkEl) {
-		networkEl.innerHTML = !online ? AjxImg.getImageHtml("Disconnect") : "";
-	}
+	this._userNameField.getHtmlElement().innerHTML = AjxTemplate.expand('share.App#NetworkStatus', {online:online});
 };
 
 /**

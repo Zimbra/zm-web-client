@@ -28,8 +28,7 @@ body	{  @ChromeBg@ }
 	text-decoration: none;
 }
 
-#skin_container_tree_top,	
-#skin_container_tree_top_offline {
+#skin_container_tree_top {
 	background: #b4a24b url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
 	text-align:center;
 }
