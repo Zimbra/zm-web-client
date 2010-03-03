@@ -37,6 +37,10 @@ ZmZimbraAccount = function(id, name, visible) {
 	ZmAccount.call(this, null, id, name);
 
 	this.visible = (visible !== false);
+	/**
+	 * The account settings.
+	 * @type	ZmSettings
+	 */
 	this.settings = null;
 	this.trees = {};
 	this.loaded = false;

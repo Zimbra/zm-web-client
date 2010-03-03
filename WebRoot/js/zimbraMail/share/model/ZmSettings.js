@@ -108,7 +108,7 @@ function() {
 /**
  * Gets the value of the given setting.
  *
- * @param {int}	id		the numeric ID of the setting
+ * @param {String}	id		the ID of the setting
  * @param	{String}	key		the key
  * @return	{Object}	the value or <code>null</code> for none
  */
@@ -120,7 +120,7 @@ function(id, key) {
 /**
  * Gets the setting.
  *
- * @param {int}	id		the numeric ID of the setting
+ * @param {String}	id		the ID of the setting
  * @return	{ZmSetting}	the setting
  */
 ZmSettings.prototype.getSetting =
@@ -162,7 +162,7 @@ function(list) {
  * Gets the setting that is associated with the given server-side setting, if any.
  *
  * @param {String}	name	the server-side setting name (for example, "zimbraFeatureContactsEnabled")
- * @return	{ZmSetting}	the setting
+ * @return	{String}	the setting id
  */
 ZmSettings.prototype.getSettingByName =
 function(name) {
