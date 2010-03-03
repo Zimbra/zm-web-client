@@ -800,7 +800,7 @@ function(mods) {
 
 	if (!(mods && mods.length >= ZmApp.BATCH_NOTIF_LIMIT)) { return; }
 
-	var notifs = {}, item;
+	var notifs = {}, item, gotOne = false;
 	for (var i = 0, len = mods.length; i < len; i++) {
 		var mod = mods[i];
 		item = appCtxt.cacheGet(mod.id);
@@ -812,9 +812,12 @@ function(mods) {
 				}
 				mod.item = item;
 				notifs[ev].push(mod);
+				gotOne = true;
 			}
 		}
 	}
+
+	if (!gotOne || !item) { return; }
 
 	var list = item.list;
 	if (!list) { return; }
