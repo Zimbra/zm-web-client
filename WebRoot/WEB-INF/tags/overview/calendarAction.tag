@@ -133,7 +133,7 @@
                 </app:status>
             </c:when>
             <c:otherwise>
-                <zm:emptyFolder id="${uploader.params.folderEmptyId}"/>
+                <zm:emptyFolder id="${folder.canonicalId}"/>
                 <c:set var="folderName" value="${zm:getFolderName(pageContext, uploader.params.folderEmptyId)}"/>
                 <app:status>
                     <fmt:message key="calendarEmptied">
