@@ -12,15 +12,18 @@ import org.json.*;
  */
 public	class	ZmChangeLogUtil {
 	
-	private	static	final	String		ARG_WORKING_DIR = "-wd";
-	private	static	final	String		ARG_DELIVERY_DIR = "-dd";
+	public	static	final	String		KEY_ADDED = "ADDED";
+	public	static	final	String		KEY_REMOVED = "REMOVED";
+	
+	private	static	final	String		ARG_DELIVERY_DIR = "-delivery";
+	private	static	final	String		ARG_TEMPLATE_DIR = "-template";
 	private	static	final	String		ARG_PREVIOUS_INVENTORY = "-pi";
 	private	static	final	String		ARG_CURRENT_INVENTORY = "-ci";
 	private	static	final	String		ARG_PREVIOUS_LABEL = "-pl";
 	private	static	final	String		ARG_CURRENT_LABEL = "-cl";
 
-	private	static	String	workingDirectory = null;
 	private	static	String	deliveryDirectory = null;
+	private	static	String	templateDirectory = null;
 	private	static	String	previousInventory = null;
 	private	static	String	currentInventory = null;
 	private	static	String	previousLabel = null;
@@ -34,13 +37,13 @@ public	class	ZmChangeLogUtil {
 	private static void readArguments(String[] args) {
 		int	argPos = 0;
 		
-		if (args[argPos].equals(ARG_WORKING_DIR)) {
-			workingDirectory = args[++argPos];
+		if (args[argPos].equals(ARG_DELIVERY_DIR)) {
+			deliveryDirectory = args[++argPos];
 			argPos++;
 		}
 
-		if (args[argPos].equals(ARG_DELIVERY_DIR)) {
-			deliveryDirectory = args[++argPos];
+		if (args[argPos].equals(ARG_TEMPLATE_DIR)) {
+			templateDirectory = args[++argPos];
 			argPos++;
 		}
 
@@ -115,8 +118,9 @@ public	class	ZmChangeLogUtil {
 			JSONObject obj = (JSONObject)classes.get(i);
 			String link = obj.getString("link");
 			String className = obj.getString("className");
+			String packageName = obj.getString("package");
 			
-			inventory.addClass(className, link);
+			inventory.addClass(className, packageName, link);
 		}
 		
 		return	inventory;		
@@ -145,7 +149,6 @@ public	class	ZmChangeLogUtil {
 
 			// read the JSON information for constructor info
 			JSONObject constrObj = (JSONObject)jsonObj.getJSONObject("constructor");
-			System.out.println(constrObj);
 			try {
 				boolean isPrivateConstructor = constrObj.getBoolean("isPrivate");
 				boolean isInnerConstructor = constrObj.getBoolean("isInner");
@@ -187,6 +190,102 @@ public	class	ZmChangeLogUtil {
 		return	inventory;		
 	}
 	
+	private	static	Map<String,Object>	generateDiffList(Collection prevList, Collection curList) {
+		List removedList = new LinkedList();
+
+		Iterator it = prevList.iterator();
+		while (it.hasNext()) {
+			Object obj = it.next();
+			
+			if (curList.contains(obj))
+				curList.remove(obj);
+			else
+				removedList.add(obj);
+		}
+			
+		HashMap diffList = new HashMap();
+				
+		diffList.put (KEY_ADDED, curList); // added
+		diffList.put (KEY_REMOVED, removedList); // removed
+		
+		return	diffList;
+	}
+	
+	/**
+	 * Generates a map of added and removed class differences between the two inventories.
+	 * 
+	 * @param	prevInventory		the previous inventory
+	 * @param	currentInventory		the current inventory
+	 * @return	a map of added and removed classes
+	 */
+	private	static	Map	generateDiffClassList(Inventory previousInventory, Inventory currentInventory) {
+		Collection<JsClass> currentClasses = currentInventory.getClasses();
+		Collection<JsClass> previousClasses = previousInventory.getClasses();
+
+		return	generateDiffList(previousClasses, currentClasses);
+	}
+	
+	/**
+	 * Generates a list of modified class differences between the two inventories.
+	 * 
+	 * @param	prevInventory		the previous inventory
+	 * @param	currentInventory		the current inventory
+	 * @return	a list of modified classes
+	 */
+	private	static	List<ModifiedJsClass>	generateModifiedClassList(Inventory previousInventory, Inventory currentInventory) {
+		LinkedList modifiedClasses = new LinkedList();
+		
+		List<JsClass> currentClasses = currentInventory.getClasses();
+		List<JsClass> previousClasses = previousInventory.getClasses();
+
+		// only check for modification of previously existing classes
+		currentClasses.retainAll(previousClasses);
+
+		Iterator it = currentClasses.iterator();
+		while (it.hasNext()) {
+			JsClass clazz = (JsClass)it.next();
+
+			int index = previousClasses.indexOf(clazz);
+			JsClass prevClazz = (JsClass)previousClasses.get(index);
+
+			// generate diff property list
+			List<JsClass.Property> currentProperties = clazz.getProperties();
+			List<JsClass.Property> previousProperties = prevClazz.getProperties();
+			Map modifiedProperties = generateDiffList(previousProperties, currentProperties);
+
+			// generate diff method list
+			List<JsClass.Method> currentMethods = clazz.getMethods();
+			List<JsClass.Method> previousMethods = prevClazz.getMethods();
+			Map modifiedMethods = generateDiffList(previousMethods, currentMethods);
+
+			ModifiedJsClass mod = new ModifiedJsClass(clazz.getName(), clazz.getPackage());
+			mod.setModifiedProperties(modifiedProperties);
+			mod.setModifiedMethods(modifiedMethods);
+
+			// only check for modification of previously existing methods
+			currentMethods = clazz.getMethods();
+			previousMethods = prevClazz.getMethods();
+			currentMethods.retainAll(previousMethods);
+
+			// generate changed methods
+			Iterator itt = currentMethods.iterator();
+			while (itt.hasNext()) {
+				JsClass.Method meth = (JsClass.Method)itt.next();
+				
+				int midx = previousMethods.indexOf(meth);
+				JsClass.Method prevMeth = (JsClass.Method)previousMethods.get(midx);
+				
+				if (meth.isChanged(prevMeth))
+					mod.addChangedMethod(meth.getName(), meth.getSignature(), prevMeth.getSignature());
+			}
+			
+			if (mod.isModified())
+				modifiedClasses.add(mod);
+		}
+		
+		return	modifiedClasses;
+	}
+	
 	/**
 	 * Reads the inventory file.
 	 * 
@@ -217,15 +316,19 @@ public	class	ZmChangeLogUtil {
 	 */
     public static void main(String[] args) throws Exception {
     	
-    	for (int i=0; i < args.length; i++)
-    		System.out.println(args[i]);
-    	
        	readArguments(args);
        	
        	Inventory prevInventory = readInventory(previousLabel, previousInventory);
        	Inventory currInventory = readInventory(currentLabel, currentInventory);
        	
-       	prevInventory.dump();
-       	currInventory.dump();
+       	Map	 diffClasses = generateDiffClassList(prevInventory, currInventory);
+       	
+       	List<JsClass> addedClasses = (List<JsClass>)diffClasses.get(KEY_ADDED);
+       	List<JsClass> removedClasses = (List<JsClass>)diffClasses.get(KEY_REMOVED);
+
+       	List<ModifiedJsClass> modifiedClasses = generateModifiedClassList(prevInventory, currInventory);
+
+       	ChangeLogTemplate template = new ChangeLogTemplate(previousLabel, currentLabel, templateDirectory, deliveryDirectory);
+       	template.writeTemplate(addedClasses, removedClasses, modifiedClasses);
     }
 }

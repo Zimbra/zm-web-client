@@ -36,12 +36,13 @@ public	class	Inventory {
 	 * Adds the class to the inventory.
 	 * 
 	 * @param	className		the class name
+	 * @param	packageName		the package name
 	 * @param	link			the link to the class JSON definition
 	 * @return	the newly added class
 	 */
-	public	JsClass		addClass(String className, String link) {
+	public	JsClass		addClass(String className, String packageName, String link) {
 		
-		JsClass clazz = new JsClass(className, link);
+		JsClass clazz = new JsClass(className, packageName, link);
 		
 		this.classes.put(className, clazz);
 		
@@ -62,10 +63,10 @@ public	class	Inventory {
 	 * 
 	 * @return	the classes
 	 */
-	public	Collection<JsClass>		getClasses() {
+	public	List<JsClass>		getClasses() {
 		Collection c = this.classes.values();
 		
-		return	Collections.unmodifiableCollection(c);
+		return	new LinkedList(c);
 	}
 
 	public	void	dump() {
@@ -84,6 +85,9 @@ public	class	Inventory {
 			JsClass clazz = (JsClass)it.next();
 			buf.append("    Class: ");
 			buf.append(clazz.getName());
+			buf.append(" (");
+			buf.append(clazz.getPackage());
+			buf.append(")");
 			buf.append("\n");
 			
 			JsClass.Method constructorMethod = clazz.getConstructor();

@@ -11,6 +11,7 @@ import java.util.*;
 public	class	JsClass {
 
 	private	String	name;
+	private	String	packageName;
 	private	String	link;
 	
 	private	Method	constructorMethod = null;
@@ -20,11 +21,14 @@ public	class	JsClass {
 	/**
 	 * Constructor.
 	 * 
-	 * @param	label		the label
+	 * @param	name		the class name
+	 * @param	packageName	the package name
+	 * @param	link		the link
 	 */
-	public	JsClass(String name, String link) {
+	public	JsClass(String name, String packageName, String link) {
 		
-		this.name = name;	
+		this.name = name;
+		this.packageName = packageName;
 		this.link = link;
 		
 	}
@@ -36,6 +40,15 @@ public	class	JsClass {
 	 */
 	public	String	getName() {
 		return	this.name;
+	}
+
+	/**
+	 * Gets the class package name.
+	 * 
+	 * @return	the class package name
+	 */
+	public	String	getPackage() {
+		return	this.packageName;
 	}
 
 	/**
@@ -122,10 +135,10 @@ public	class	JsClass {
 	 * 
 	 * @return	a collection of {@link Method} objects
 	 */
-	public	Collection<Method>		getMethods() {
+	public	List<Method>		getMethods() {
 		Collection c = this.methods.values();
 		
-		return	Collections.unmodifiableCollection(c);
+		return	new LinkedList(c);
 	}
 
 	/**
@@ -133,10 +146,24 @@ public	class	JsClass {
 	 * 
 	 * @return	a collection of {@link Property} objects
 	 */
-	public	Collection<Property>		getProperties() {
+	public	List<Property>		getProperties() {
 		Collection c = this.properties.values();
 		
-		return	Collections.unmodifiableCollection(c);
+		return	new LinkedList(c);
+	}
+
+	/**
+	 * Compares the object.
+	 * 
+	 */
+	public	boolean	equals(Object obj) {
+		if (obj instanceof JsClass) {
+			JsClass clazz = (JsClass)obj;
+			String testName = clazz.getName();
+			return	this.getName().equals(testName);
+		}
+		
+		return false;
 	}
 
 	/**
@@ -192,6 +219,21 @@ public	class	JsClass {
 		public	String	getName() {
 			return	this.name;
 		}
+		
+		/**
+		 * Compares the object.
+		 * 
+		 */
+		public	boolean	equals(Object obj) {
+			if (obj instanceof Property) {
+				Property prop = (Property)obj;
+				String testName = prop.getName();
+				return	this.getName().equals(testName);
+			}
+			
+			return false;
+		}
+
 	} // end inner Property class
 
 	/**
@@ -221,6 +263,21 @@ public	class	JsClass {
 			return	this.signature;
 		}
 	
+		/**
+		 * Checks if the method is changed by comparing signatures.
+		 */
+		public	boolean	isChanged(Method method) {
+			if (getName().equals(method.getName()) == false)
+				return	false;
+
+			String	compSig = method.getSignature();
+
+			if (getSignature().equals(compSig) == false)
+				return	true;
+			
+			return	false;
+		}
+		
 	} // end inner Method class
 	
 } // end Inventory class

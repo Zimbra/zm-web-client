@@ -2,13 +2,16 @@
 	
 	<property name="src.dir" location="src" />
 	<property name="src.java.dir" location="${src.dir}/java" />
+	<property name="src.html.dir" location="${src.dir}/html" />
 	<property name="build.dir" location="build" />
     <property name="build.classes.dir" location="${build.dir}/classes" />
 
 	<property name='zimbra-web-client.build.dir' location='../../build'/>
 	<property name='zimbra-web-client.build.docs.dir' location='${zimbra-web-client.build.dir}/docs'/>
 
-    <property name="working.dir" location="${zimbra-web-client.build.docs.dir}/jsapi-changelog" />
+    <property name="output.dir" location="${zimbra-web-client.build.docs.dir}/jsapi-changelog" />
+
+    <property name="change-log.zip" location="${zimbra-web-client.build.docs.dir}/jsapi-changelog.zip" />
 
 	<path id="src.java.path">
 		<pathelement location="${src.java.dir}" />
@@ -25,21 +28,28 @@
 	</target>
 
 	<target name="generate-changelog" depends="compile">
-		<mkdir dir="${working.dir}" />
-		  <java classname="com.zimbra.jsapi.ZmChangeLogUtil" fork="true" failonerror="true">
+		<mkdir dir="${output.dir}" />
+		<copy todir="${output.dir}">
+			<fileset dir="${src.html.dir}" />
+		</copy>
+		<java classname="com.zimbra.jsapi.ZmChangeLogUtil" fork="true" failonerror="true">
 		  	<classpath>
 		  		<pathelement path="${build.classes.dir}" />
 		  	</classpath>
-		    <arg line="-wd ${working.dir}"/>
-		    <arg line="-dd ${zimbra-web-client.build.docs.dir}"/>
+		    <arg line="-delivery ${output.dir}"/>
+		    <arg line="-template ${src.html.dir}"/>
 		    <arg line="-pi jsapi-inventory.zip"/>
 		    <arg line="-ci ${zimbra-web-client.build.docs.dir}/jsapi-inventory.zip"/>
 		    <arg line="-pl 6.0.6"/>
 		    <arg line="-cl 6.0.7"/>
-		  </java>
+		</java>
+		<zip destfile="${change-log.zip}">
+			<fileset dir="${output.dir}" />
+		</zip>
 	</target>
 
 	<target name="clean" description="Removes build dir">
+		<delete dir="${output.dir}" />
 		<delete dir="${build.dir}" />
 	</target>
 </project>
