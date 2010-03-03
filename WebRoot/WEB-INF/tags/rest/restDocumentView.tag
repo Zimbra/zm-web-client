@@ -32,7 +32,7 @@
 </c:if>
 
 <c:set var="isDevMode" value="${not empty requestScope.mode and requestScope.mode eq 'mjsf'}" scope="request"/>
-<c:set var="isTinyMce" value="${not empty param.editor and param.editor eq 'tinymce'}" scope="request"/>
+<c:set var="isTinyMce" value="${true}" scope="request"/>
 <c:set var="isSkinDebugMode" value="${not empty requestScope.mode} and ${requestScope.mode eq 'skindebug'}" scope="request"/>
 
 <c:set var="packages" value="Ajax,Startup1_1,Startup1_2,Startup2,Docs" scope="request"/>

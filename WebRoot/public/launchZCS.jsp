@@ -97,7 +97,7 @@
 	String vers = getAttribute(request, "version", "");
 
 	String prodMode = getAttribute(request, "prodMode", "");
-	String editor = getParameter(request, "editor", "");
+	String editor = "tinymce"; // enabled tinymce getParameter(request, "editor", "");
 
 	String ext = getAttribute(request, "fileExtension", null);
 	if (ext == null || isDevMode) ext = "";
@@ -327,8 +327,9 @@ for (var pkg in window.AjxTemplateMsg) {
         <zm:calSearchJSON var="calSearchJSON" authtoken="${requestScope.authResult.authToken}" timezone="${requestScope.tz}" itemsperpage="500" types="appointment"/>
         window.inlineCalSearchResponse = ${calSearchJSON};
         </c:if>
+        /*enabled tinyMCE */
         <c:if test="${editor eq 'tinymce'}">
-        window.isTinyMCE = true; 
+            window.isTinyMCE = true;
         </c:if>
 		<c:if test="${isLeakDetectorOn}">
 		AjxLeakDetector.begin();
