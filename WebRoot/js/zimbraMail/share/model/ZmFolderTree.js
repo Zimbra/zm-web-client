@@ -430,6 +430,8 @@ function(callback, skipNotify, result) {
 			if (link) {
 				var mtpt = appCtxt.getById(link.id);
 				if (mtpt) {
+					// update the mtpt perms with the updated link perms
+					mtpt.perm = link.perm;
 					mtpt._setSharesFromJs(link);
 				}
 
