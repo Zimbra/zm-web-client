@@ -49,6 +49,7 @@
 	</target>
 
 	<target name="clean" description="Removes build dir">
+		<delete file="${change-log.zip}" />
 		<delete dir="${output.dir}" />
 		<delete dir="${build.dir}" />
 	</target>
