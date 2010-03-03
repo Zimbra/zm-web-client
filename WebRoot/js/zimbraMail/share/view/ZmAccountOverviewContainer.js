@@ -555,11 +555,13 @@ function(ev) {
 	}
 
 	var item = this._actionedHeaderItem = ev.item;
+
+	// do nothing if zimlet/search is clicked
+	if (item && (item.__isZimlet || item.__isSearch)) { return; }
+
 	var data = item && item.getData(Dwt.KEY_ID);
 
 	if (ev.detail == DwtTree.ITEM_ACTIONED && appCtxt.getApp(this._appName)) {	// right click
-		if (item.__isZimlet || item.__isSearch) { return; } 					// do nothing if zimlet/search is right-clicked
-
 		var actionMenu = this._getActionMenu(data);
 		if (actionMenu) {
 			this.resetOperations(actionMenu, data);
