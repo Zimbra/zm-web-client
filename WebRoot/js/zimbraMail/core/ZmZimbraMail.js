@@ -1586,8 +1586,9 @@ function(callback, appName) {
  * current app toolbar and the overview. The previous and newly current apps are
  * notified of the change. This method is called after a new view is pushed.
  *
- * @param {constant}	appName		the newly current app
- * @param {constant}	view		the newly current view
+ * @param {constant}	appName		the app
+ * @param {constant}	view		the view
+ * @param	{Boolean}	isTabView	if <code>true</code>, the app has a tab view
  */
 ZmZimbraMail.prototype.setActiveApp =
 function(appName, view, isTabView) {
