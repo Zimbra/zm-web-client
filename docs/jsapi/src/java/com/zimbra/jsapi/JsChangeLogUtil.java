@@ -1,3 +1,18 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+
 package	com.zimbra.jsapi;
 
 import java.io.*;
@@ -10,7 +25,7 @@ import org.json.*;
  * @author sposetti
  *
  */
-public	class	ZmChangeLogUtil {
+public	class	JsChangeLogUtil {
 	
 	public	static	final	String		KEY_ADDED = "ADDED";
 	public	static	final	String		KEY_REMOVED = "REMOVED";
@@ -103,7 +118,7 @@ public	class	ZmChangeLogUtil {
 	 * @param	zipFile			the inventory bundle to read
 	 * @return	the inventory
 	 */
-	private	static	Inventory	loadClasses(Inventory inventory, ZipFile zipFile) 
+	private	static	JsInventory	loadClasses(JsInventory inventory, ZipFile zipFile) 
 	throws IOException, JSONException {
 		
 		// read the index file for the class list
@@ -133,7 +148,7 @@ public	class	ZmChangeLogUtil {
 	 * @param	zipFile			the inventory bundle to read
 	 * @return	the inventory
 	 */
-	private	static	Inventory	loadClassDefinitions(Inventory inventory, ZipFile zipFile)
+	private	static	JsInventory	loadClassDefinitions(JsInventory inventory, ZipFile zipFile)
 	throws IOException, JSONException {
 		
 		Collection classes = inventory.getClasses();
@@ -218,7 +233,7 @@ public	class	ZmChangeLogUtil {
 	 * @param	currentInventory		the current inventory
 	 * @return	a map of added and removed classes
 	 */
-	private	static	Map	generateDiffClassList(Inventory previousInventory, Inventory currentInventory) {
+	private	static	Map	generateDiffClassList(JsInventory previousInventory, JsInventory currentInventory) {
 		Collection<JsClass> currentClasses = currentInventory.getClasses();
 		Collection<JsClass> previousClasses = previousInventory.getClasses();
 
@@ -232,7 +247,7 @@ public	class	ZmChangeLogUtil {
 	 * @param	currentInventory		the current inventory
 	 * @return	a list of modified classes
 	 */
-	private	static	List<ModifiedJsClass>	generateModifiedClassList(Inventory previousInventory, Inventory currentInventory) {
+	private	static	List<ModifiedJsClass>	generateModifiedClassList(JsInventory previousInventory, JsInventory currentInventory) {
 		LinkedList modifiedClasses = new LinkedList();
 		
 		List<JsClass> currentClasses = currentInventory.getClasses();
@@ -293,10 +308,10 @@ public	class	ZmChangeLogUtil {
 	 * @param	investoryFile	the location of the inventory ZIP file
 	 * @return	the resulting inventory
 	 */
-	private	static	Inventory	readInventory(String label, String inventoryFile)
+	private	static	JsInventory	readInventory(String label, String inventoryFile)
 	throws IOException, org.json.JSONException {
 		
-		Inventory inventory = new Inventory(label);
+		JsInventory inventory = new JsInventory(label);
 
 		ZipFile zipFile = new ZipFile(inventoryFile);
 
@@ -312,14 +327,14 @@ public	class	ZmChangeLogUtil {
 	/**
 	 * Main
 	 * 
-	 * @param	args
+	 * @param	args		the utility arguments
 	 */
     public static void main(String[] args) throws Exception {
     	
        	readArguments(args);
        	
-       	Inventory prevInventory = readInventory(previousLabel, previousInventory);
-       	Inventory currInventory = readInventory(currentLabel, currentInventory);
+       	JsInventory prevInventory = readInventory(previousLabel, previousInventory);
+       	JsInventory currInventory = readInventory(currentLabel, currentInventory);
        	
        	Map	 diffClasses = generateDiffClassList(prevInventory, currInventory);
        	
@@ -328,7 +343,7 @@ public	class	ZmChangeLogUtil {
 
        	List<ModifiedJsClass> modifiedClasses = generateModifiedClassList(prevInventory, currInventory);
 
-       	ChangeLogTemplate template = new ChangeLogTemplate(previousLabel, currentLabel, templateDirectory, deliveryDirectory);
+       	JsChangeLogTemplateUtil template = new JsChangeLogTemplateUtil(previousLabel, currentLabel, templateDirectory, deliveryDirectory);
        	template.writeTemplate(addedClasses, removedClasses, modifiedClasses);
     }
 }

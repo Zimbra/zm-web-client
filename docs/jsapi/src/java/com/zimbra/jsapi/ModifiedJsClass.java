@@ -1,3 +1,18 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+
 package	com.zimbra.jsapi;
 
 import java.io.*;
@@ -26,6 +41,15 @@ public	class	ModifiedJsClass {
 	}
 	
 	/**
+	 * Gets the name.
+	 * 
+	 * @return	the name
+	 */
+	public	String	getName() {
+		return	this.name;
+	}
+
+	/**
 	 * Gets the package name.
 	 * 
 	 * @return	the package name
@@ -33,7 +57,7 @@ public	class	ModifiedJsClass {
 	public	String	getPackageName() {
 		return	this.packageName;
 	}
-	
+
 	/**
 	 * Sets the modified properties.
 	 * 
@@ -50,7 +74,7 @@ public	class	ModifiedJsClass {
 	 */
 	public	List	getAddedProperties() {
 		
-		return	(List)this.modifiedProperties.get(ZmChangeLogUtil.KEY_ADDED);
+		return	(List)this.modifiedProperties.get(JsChangeLogUtil.KEY_ADDED);
 	}
 
 	/**
@@ -60,7 +84,7 @@ public	class	ModifiedJsClass {
 	 */
 	public	List	getRemovedProperties() {
 		
-		return	(List)this.modifiedProperties.get(ZmChangeLogUtil.KEY_REMOVED);
+		return	(List)this.modifiedProperties.get(JsChangeLogUtil.KEY_REMOVED);
 	}
 
 	/**
@@ -80,7 +104,7 @@ public	class	ModifiedJsClass {
 	 */
 	public	List	getAddedMethods() {
 		
-		return	(List)this.modifiedMethods.get(ZmChangeLogUtil.KEY_ADDED);
+		return	(List)this.modifiedMethods.get(JsChangeLogUtil.KEY_ADDED);
 	}
 
 	/**
@@ -90,7 +114,7 @@ public	class	ModifiedJsClass {
 	 */
 	public	List	getRemovedMethods() {
 		
-		return	(List)this.modifiedMethods.get(ZmChangeLogUtil.KEY_REMOVED);
+		return	(List)this.modifiedMethods.get(JsChangeLogUtil.KEY_REMOVED);
 	}
 
 	/**
@@ -157,21 +181,27 @@ public	class	ModifiedJsClass {
 		}
 		
 		/**
+		 * Gets the method name.
 		 * 
+		 * @return	the method name
 		 */
 		public	String	getName() {
 			return	this.name;
 		}
 
 		/**
+		 * Gets the new signature.
 		 * 
+		 * @return	the new signature
 		 */
 		public	String	getNewSignature() {
 			return	this.newSignature;
 		}
 
 		/**
+		 * Gets the previous signature.
 		 * 
+		 * @return	the previous signature
 		 */
 		public	String	getPreviousSignature() {
 			return	this.prevSignature;

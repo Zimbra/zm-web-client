@@ -32,7 +32,7 @@
 		<copy todir="${output.dir}">
 			<fileset dir="${src.html.dir}" />
 		</copy>
-		<java classname="com.zimbra.jsapi.ZmChangeLogUtil" fork="true" failonerror="true">
+		<java classname="com.zimbra.jsapi.JsChangeLogUtil" fork="true" failonerror="true">
 		  	<classpath>
 		  		<pathelement path="${build.classes.dir}" />
 		  	</classpath>
