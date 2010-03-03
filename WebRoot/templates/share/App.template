@@ -187,8 +187,12 @@
 <template id='share.App#NetworkStatus'>
 	<table border=0 width=100% cellpadding=0 cellspacing=0>
 		<tr>
-			<td><b><$= ZmMsg.accounts $></b></td>
-			<td align=right><$= AjxImg.getImageHtml(data.online ? "Connect" : "Disconnect") $></td>
+			<td class="ZmNetworkStatus">
+				<$= ZmMsg.accounts $>
+			</td>
+			<td class="ZmNetworkStatusIcon" align=right width=18 onclick="ZmZimbraMail.handleNetworkStatusClick();">
+				<$= AjxImg.getImageHtml(data.online ? "Connect" : "Disconnect") $>
+			</td>
 		</tr>
 	</table>
 </template>

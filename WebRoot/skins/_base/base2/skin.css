@@ -252,8 +252,9 @@ BODY						{	margin:0px; 				}
 }
 
 
-
-
+/* offline */
+.ZmNetworkStatus 		{ font-weight: bold; }
+.ZmNetworkStatusIcon 	{ cursor: pointer; }
 
 /* Input stuff -- adding classes properly -- TODO: put this back into dwt.css  */
 .DwtInputField INPUT[type="text"], 

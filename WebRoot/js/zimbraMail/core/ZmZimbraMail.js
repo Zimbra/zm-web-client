@@ -726,11 +726,21 @@ function() {
  */
 ZmZimbraMail.prototype.handleNetworkChange =
 function(online) {
+	this._isPrismOnline = online;
+
+	if (this._isUserOnline || this._firstTimeNetworkChange) {
+		this._updateNetworkStatus(online);
+	}
+};
+
+ZmZimbraMail.prototype._updateNetworkStatus =
+function(online) {
 	if (online) {
 		if (!this._firstTimeNetworkChange) {
 			this.setStatusMsg(ZmMsg.networkChangeOnline);
 		} else {
 			this._firstTimeNetworkChange = false;
+			this._isUserOnline = online;
 		}
 		this.sendClientEventNotify(ZmZimbraMail.UI_NETWORK_UP);
 	} else {
@@ -2030,6 +2040,17 @@ function() {
 		appCtlr._requestMgr.cancelRequest(appCtlr._pollRequest);
 	}
 	return okToExit;
+};
+
+ZmZimbraMail.handleNetworkStatusClick =
+function() {
+	var ac = window["appCtxt"].getAppController();
+
+	// if already offline, then ignore this click
+	if (!ac._isPrismOnline) { return; }
+
+	ac._isUserOnline = !ac._isUserOnline;
+	ac._updateNetworkStatus(ac._isUserOnline);
 };
 
 /**
