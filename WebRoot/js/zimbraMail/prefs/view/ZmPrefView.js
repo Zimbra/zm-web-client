@@ -158,7 +158,7 @@ function(sectionId) {
 ZmPrefView.prototype._addSection =
 function(section, index) {
 	// does the section meet the precondition?
-	if (!appCtxt.multiAccounts && !this._controller.checkPreCondition(section)) { return; }
+	if ((!appCtxt.multiAccounts || (appCtxt.multiAccounts && appCtxt.getActiveAccount().isMain)) && !this._controller.checkPreCondition(section)) { return; }
 
 	// create pref page's view
 	var view = (section.createView)
