@@ -37,10 +37,22 @@ ZmZimletContext = function(id, zimlet) {
 	this.ctxt = zimlet.zimletContext;
 	this.config = zimlet.zimletConfig;
 	zimlet = zimlet.zimlet[0];
+	/**
+	 * The zimlet name.
+	 * @type String
+	 */
 	this.name = zimlet.name;
 	this._url = this.ctxt[0].baseUrl;
 	this.priority = this.ctxt[0].priority;
+	/**
+	 * The zimlet description.
+	 * @type String
+	 */
 	this.description = zimlet.description;
+	/**
+	 * The zimlet version.
+	 * @type String
+	 */
 	this.version = zimlet.version;
 	this.includes = this.json.zimlet.include || [];
 	this.includes.push([appContextPath, "/messages/", this.name, ".js?v=", cacheKillerVersion].join(""));
@@ -320,6 +332,8 @@ function(key) {
  * @param	{String}	funcname		the function
  * @param	{Hash}		args			the arguments
  * @return	{Object}	the results or <code>null</code> for none
+ * 
+ * @private
  */
 ZmZimletContext.prototype.callHandler =
 function(funcname, args) {
@@ -412,10 +426,10 @@ function() {
 };
 
 /**
- * Gets the config.
+ * Gets the configuration value.
  * 
- * @param	{String}	name		the config
- * @return	{Object}	the config
+ * @param	{String}	name		the config key name
+ * @return	{Object}	the config value or <code>null</code> if not set
  */
 ZmZimletContext.prototype.getConfig =
 function(name) {

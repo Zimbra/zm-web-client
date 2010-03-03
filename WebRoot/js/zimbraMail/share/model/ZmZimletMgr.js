@@ -57,7 +57,7 @@ ZmZimletMgr._RE_REMOTE = /^((https?|ftps?):\x2f\x2f|\x2f)/;
 /**
  * Checks if the manager is loaded.
  * 
- * @return	{Boolean}	<code>true</code> if loaded
+ * @return	{Boolean}	<code>true</code> if loaded; <code>false</code> otherwise
  */
 ZmZimletMgr.prototype.isLoaded =
 function() {
@@ -72,6 +72,8 @@ function() {
  * @param	{String}	target		the target
  * @param	{AjxCallback}	callback	the callback
  * @param	{Boolean}	sync		<code>true</code> for synchronous
+ * 
+ * @private
  */
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps, target, callback, sync) {
@@ -162,7 +164,7 @@ function() {
 /**
  * Gets the panel zimlets.
  * 
- * @return	{Array}	an array of {@link ZmZimlet} objects
+ * @return	{Array}	an array of objects
  */
 ZmZimletMgr.prototype.getPanelZimlets =
 function() {
@@ -179,7 +181,7 @@ function() {
 /**
  * Gets the indexed zimlets.
  * 
- * @return	{Array}	an array of {@link ZmZimlet} objects
+ * @return	{Array}	an array of objects
  */
 ZmZimletMgr.prototype.getIndexedZimlets =
 function() {
@@ -196,7 +198,7 @@ function() {
 /**
  * Gets the portlet zimlets.
  * 
- * @return	{Array}	an array of {@link ZmZimlet} objects
+ * @return	{Array}	an array of objects
  */
 ZmZimletMgr.prototype.getPortletZimlets =
 function() {
@@ -231,6 +233,8 @@ function() {
  * @param	{ZmZimlet}	zimletObj		the zimlet
  * @param	{constant}	type			the type
  * @param	{constant}	priority		the priority
+ * 
+ * @private
  */
 ZmZimletMgr.prototype.registerContentZimlet =
 function(zimletObj, type, priority) {
@@ -244,7 +248,7 @@ function(zimletObj, type, priority) {
 /**
  * Gets the content zimlets.
  * 
- * @return	{Array}	an array of {@link ZmZimlet} objects
+ * @return	{Array}	an array of objects
  */
 ZmZimletMgr.prototype.getContentZimlets =
 function() {
@@ -254,7 +258,7 @@ function() {
 /**
  * Gets the zimlets.
  * 
- * @return	{Array}	an array of {@link ZmZimlet} objects
+ * @return	{Array}	an array of {@link ZmZimletContext} objects
  */
 ZmZimletMgr.prototype.getZimlets =
 function() {
@@ -275,7 +279,7 @@ function() {
  * Checks if the zimlet exists.
  * 
  * @param	{String}	name		the name
- * @return	{ZmZimlet}	the zimlet
+ * @return	{ZmZimletContext}	the zimlet or <code>null</code> if not found
  */
 ZmZimletMgr.prototype.zimletExists =
 function(name) {
@@ -286,7 +290,7 @@ function(name) {
  * Gets the zimlet.
  * 
  * @param	{String}	name		the name
- * @return	{ZmZimlet}	the zimlet
+ * @return	{ZmZimletContext}	the zimlet or <code>null</code> if not found
  */
 ZmZimletMgr.prototype.getZimletByName =
 function(name) {
@@ -305,6 +309,8 @@ function(name) {
  * 
  * @param	{Object}	event	the event
  * @param	{Object}	args	the arguments
+ * 
+ * @private
  */
 ZmZimletMgr.prototype.notifyZimlets =
 function(event, args) {
