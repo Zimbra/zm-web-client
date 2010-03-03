@@ -840,6 +840,10 @@ function(ev) {
 		ids.push(contacts[i].id);
 	}
 	var url = "/h/printcontacts?id=" + ids.join(",");
+    if(this.isGalSearch()) {
+        url = "/h/printcontacts?id=" + ids.join("&id=");
+        url = url + "&st=gal";
+    }
 	window.open(appContextPath+url, "_blank");
 };
 
@@ -865,7 +869,13 @@ function(ev) {
 		// XXX: won't this run into GET limits for large addrbooks? would be better to have
 		// URL that prints all contacts (maybe "id=all")
 		url = "/h/printcontacts?id=" + ids.join(",");
+        if(this.isGalSearch()) {
+            url = "/h/printcontacts?id=" + ids.join("&id=");
+        }
 	}
+    if(this.isGalSearch()) {
+        url = url + "&st=gal";
+    }
 	window.open(appContextPath+url, "_blank");
 };
 
