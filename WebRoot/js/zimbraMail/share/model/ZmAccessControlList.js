@@ -57,6 +57,8 @@ function() {
  * Loads the list.
  * 
  * @param	{AjxCallback}	callback	the function to callback after the loaded
+ * 
+ * @private
  */
 ZmAccessControlList.prototype.load =
 function(callback) {
@@ -97,7 +99,7 @@ function(right) {
  * Gets the grantee type.
  * 
  * @param	{String}	right		the right
- * @return	{constant}	the grantee type
+ * @return	{constant}	the grantee type (see <code>ZmSetting.ACL_</code> constants)
  * 
  * @see		ZmSetting
  */
@@ -152,8 +154,8 @@ function(right) {
  * Gets the access control entry by grantee type.
  * 
  * @param	{String}	right	the right
- * @param	{constant}	gt		the grantee type
- * @return	{Array}	an array of {ZmAccessControlEntry} objects
+ * @param	{constant}	gt		the grantee type (see <code>ZmSetting.ACL_</code> constants)
+ * @return	{Array}	an array of {@link ZmAccessControlEntry} objects
  */
 ZmAccessControlList.prototype.getACLByGranteeType =
 function(right, gt) {
@@ -197,7 +199,7 @@ function(right) {
  * Gets the grantees info.
  * 
  * @param	{String}	right		the right
- * @return	{Array}	an array of grantree info
+ * @return	{Array}	an array of grantree info objects (obj.grantee, obj.zid)
  */
 ZmAccessControlList.prototype.getGranteesInfo =
 function(right) {
@@ -435,12 +437,12 @@ function() {
  * Creates an entry from the DOM object.
  * 
  * @param	{Hash}	obj		the DOM object
-  * @param	{String}	obj.right		the action governed by this ACE
+ * @param	{String}	obj.right		the action governed by this ACE
  * @param	{String}	obj.d		the account name of user or group permission applies to
  * @param	{String}	obj.zid			the ZID of grantee
  * @param	{constant}	obj.gt		the type of grantee (see <code>ZmSetting.ACL_</code> constants)
  * @param	{Boolean}	obj.deny		if <code>1</code>, permission is denied by this ACE
-* @return	{ZmAccessControlEntry}	the newly created entry
+ * @return	{ZmAccessControlEntry}	the newly created entry
  */
 ZmAccessControlEntry.createFromDom =
 function(obj) {

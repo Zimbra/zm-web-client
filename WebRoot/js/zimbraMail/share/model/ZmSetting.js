@@ -110,10 +110,30 @@ ZmSetting.D_NONE		= "NONE";	// placeholder setting
 
 // constants used as setting values
 // TODO: these should be defined in their respective apps
+/**
+ * Defines the "all" ACL grantee type.
+ * @type String
+ */
 ZmSetting.ACL_AUTH				= "all";
+/**
+ * Defines the "group" ACL grantee type.
+ * @type String
+ */
 ZmSetting.ACL_GROUP				= "grp";
+/**
+ * Defines the "none" ACL grantee type.
+ * @type String
+ */
 ZmSetting.ACL_NONE				= "none";
+/**
+ * Defines the "public" ACL grantee type.
+ * @type String
+ */
 ZmSetting.ACL_PUBLIC			= "pub";
+/**
+ * Defines the "user" ACL grantee type.
+ * @type String
+ */
 ZmSetting.ACL_USER				= "usr";
 ZmSetting.CAL_DAY				= "day";
 ZmSetting.CAL_LIST				= "list";

@@ -44,6 +44,10 @@ ZmZimbraAccount = function(id, name, visible) {
 	this.settings = null;
 	this.trees = {};
 	this.loaded = false;
+	/**
+	 * The account Access Control List.
+	 * @type	ZmAccessControlList
+	 */
 	this.acl = new ZmAccessControlList();
 	this.metaData = new ZmMetaData(this);
 };
