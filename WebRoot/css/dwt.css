@@ -217,7 +217,8 @@
 
 .DwtTreeItem .imageCell,
 .DwtTreeItem-selected .imageCell,
-.DwtTreeItem-selected-focused .imageCell {
+.DwtTreeItem-selected-focused .imageCell,
+.DwtTreeItem-actioned .imageCell {
 	@ImagePadding@
 	white-space: nowrap;	/* ??? */
 }
