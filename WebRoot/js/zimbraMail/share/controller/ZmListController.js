@@ -93,7 +93,7 @@ ZmListController.prototype.constructor = ZmListController;
 
 // When performing a search action (bug 10317) on all items (including those not loaded),
 // number of items to load on each search to work through all results. Should be a multiple
-// of ZmList.CHUNK_SIZE.
+// of ZmList.CHUNK_SIZE. Make sure to test if you change these.
 ZmListController.CONTINUATION_SEARCH_ITEMS = 500;
 
 // public methods
@@ -951,14 +951,18 @@ function(items, on) {
 	items = AjxUtil.toArray(items);
 	if (!items.length) { return; }
 
-	if (on !== true && on !== false) {
-		on = !items[0].isFlagged;
-	}
-	var items1 = [];
-	for (var i = 0; i < items.length; i++) {
-		if (items[i].isFlagged != on) {
-			items1.push(items[i]);
+	if (items[0] instanceof ZmItem) {
+		if (on !== true && on !== false) {
+			on = !items[0].isFlagged;
 		}
+		var items1 = [];
+		for (var i = 0; i < items.length; i++) {
+			if (items[i].isFlagged != on) {
+				items1.push(items[i]);
+			}
+		}
+	} else {
+		items1 = items;
 	}
 
 	var params = {items:items1, op:"flag", value:on};
@@ -1037,15 +1041,19 @@ function(items, folder, attrs, isShiftKey) {
 
 	var move = [];
 	var copy = [];
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		if (!item.folderId || item.folderId != folder.id) {
-			if (!this._isItemMovable(item, isShiftKey, folder)) {
-				copy.push(item);
-			} else {
-				move.push(item);
+	if (items[0] instanceof ZmItem) {
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if (!item.folderId || item.folderId != folder.id) {
+				if (!this._isItemMovable(item, isShiftKey, folder)) {
+					copy.push(item);
+				} else {
+					move.push(item);
+				}
 			}
 		}
+	} else {
+		move = items;
 	}
 
 	var params = {folder:folder, attrs:attrs};
@@ -1775,10 +1783,10 @@ function(text) {
  * Records total items and last item before we do any more searches. Adds a couple
  * params to the args for the list action method.
  *
- * @param {function}		actionMethod		the controller action method
- * @param {Array}	args				an arg list for above (except for items arg)
- * @param {Hash}		params			the params that will be passed to list action method
- * @param {AjxCallback}	allDoneCallback	the callback to run after all items processed
+ * @param {function}	actionMethod		the controller action method
+ * @param {Array}		args				an arg list for above (except for items arg)
+ * @param {Hash}		params				the params that will be passed to list action method
+ * @param {AjxCallback}	allDoneCallback		the callback to run after all items processed
  * 
  * @private
  */
@@ -1789,6 +1797,7 @@ function(actionMethod, args, params, allDoneCallback) {
 	params.finalCallback = new AjxCallback(this, this._continueAction,
 										  {actionCallback:actionCallback, allDoneCallback:allDoneCallback});
 	params.count = this._continuation.count;
+	params.idsOnly = true;
 
 	var items = params.items;
 	var list = (items && (items instanceof Array) && items.length && items[0].list) || this._list;
@@ -1828,14 +1837,15 @@ function(params, actionParams) {
 		var cs = this._currentSearch;
 		var limit = ZmListController.CONTINUATION_SEARCH_ITEMS;
 		var searchParams = {
-			query: this.getSearchString(),
-			queryHint: this.getSearchStringHint(),
-			types: cs.types,
-			sortBy: cs.sortBy,
-			limit: limit
+			query:		this.getSearchString(),
+			queryHint:	this.getSearchStringHint(),
+			types:		cs.types,
+			sortBy:		cs.sortBy,
+			limit:		limit,
+			idsOnly:	true
 		};
 
-		var list = contResult ? contResult.getResults().getArray() : this._list.getArray();
+		var list = contResult ? contResult.getResults() : this._list.getArray();
 		var lastItem = this._continuation.lastItem;
 		if (!lastItem) {
 			lastItem = list && list[list.length - 1];
@@ -1870,13 +1880,7 @@ function(params, actionParams) {
 			this._continuation = {count:0, totalItems:0};
 		}
 
-		var dialog = ZmList.progressDialog;
-		if (dialog) {
-			dialog.popdown();
-			ZmList.progressDialog = null;
-		} else if (actionParams.actionSummary) {
-            appCtxt.setStatusMsg(actionParams.actionSummary);
-        }
+		ZmList.killProgressDialog(actionParams.actionSummary);
 	}
 };
 
@@ -1887,16 +1891,18 @@ ZmListController.prototype._handleResponseContinueAction =
 function(actionCallback, result) {
 
 	this._continuation.result = result.getResponse();
-	var items = this._continuation.result.getResults().getArray();
+	var items = this._continuation.result.getResults();
 	DBG.println("sa", "continuation search results: " + items.length);
 	if (items.length) {
 		this._continuation.lastItem = items[items.length - 1];
 		this._continuation.totalItems += items.length;
-		DBG.println("sa", "continuation last item ID: " + this._continuation.lastItem.id);
+		DBG.println("sa", "continuation last item: " + this._continuation.lastItem.id);
 		actionCallback.args = actionCallback.args || [];
 		actionCallback.args.unshift(items);
 		DBG.println("sa", "calling continuation action on search results");
 		actionCallback.run();
+	} else {
+		DBG.println(AjxDebug.DBG1, "Continuation with empty search results!");
 	}
 };
 

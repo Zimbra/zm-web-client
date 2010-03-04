@@ -259,7 +259,8 @@ function() {
 /**
  * Only make the request for items whose state will be changed.
  *
- * @param {Hash}	params		a hash of parameters
+ * @param {Hash}		params		a hash of parameters
+ *
  *        items			[array]				a list of items to mark read/unread
  *        value			[boolean]			if true, mark items read
  *        callback		[AjxCallback]*		callback to run after each sub-request
@@ -273,12 +274,17 @@ function(params) {
 
 	var items = AjxUtil.toArray(params.items);
 
-	var items1 = [];
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		if ((item.type == ZmItem.CONV && item.hasFlag(ZmItem.FLAG_UNREAD, params.value)) || (item.isUnread == params.value)) {
-			items1.push(item);
+	var items1;
+	if (items[0] && items[0] instanceof ZmItem) {
+		items1 = [];
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if ((item.type == ZmItem.CONV && item.hasFlag(ZmItem.FLAG_UNREAD, params.value)) || (item.isUnread == params.value)) {
+				items1.push(item);
+			}
 		}
+	} else {
+		items1 = items;
 	}
 
 	if (items1.length) {

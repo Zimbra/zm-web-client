@@ -371,22 +371,26 @@ function(params) {
 
 	// if the folder we're moving contacts to is a shared folder, then dont bother
 	// checking whether each item is shared or not
-	for (var i = 0; i < params.items.length; i++) {
-		var contact = params.items[i];
+	if (params.items[0] && params.items[0] instanceof ZmItem) {
+		for (var i = 0; i < params.items.length; i++) {
+			var contact = params.items[i];
 
-		if (contact.isReadOnly()) { continue; }
+			if (contact.isReadOnly()) { continue; }
 
-		if (contact.isShared() || params.folder.link) {
-			hardMove.push(contact);
-			if (contact.isLoaded) {
-				moveBatchCmd.add(this._getCopyCmd(contact, params.folder));
+			if (contact.isShared() || params.folder.link) {
+				hardMove.push(contact);
+				if (contact.isLoaded) {
+					moveBatchCmd.add(this._getCopyCmd(contact, params.folder));
+				} else {
+					contact.load(null,null);
+					moveBatchCmd.add(this._getCopyCmd(contact, params.folder));
+				}
 			} else {
-                contact.load(null,null);
-                moveBatchCmd.add(this._getCopyCmd(contact, params.folder));
-            }
-		} else {
-			softMove.push(contact);
+				softMove.push(contact);
+			}
 		}
+	} else {
+		softMove = params.items;
 	}
 
 	if (hardMove.length > 0) {

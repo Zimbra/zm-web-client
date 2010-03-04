@@ -361,6 +361,7 @@ function(callback, result) {
  */
 ZmSearchController.prototype.redoSearch =
 function(search, noRender, changes, callback, errorCallback) {
+
 	var params = {};
 	params.query		= search.query;
 	params.queryHint	= search.queryHint;
@@ -378,6 +379,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.soapInfo		= search.soapInfo;
 	params.accountName	= search.accountName;
 	params.searchFor	= this._searchFor;
+	params.idsOnly		= search.idsOnly;
 
 	if (changes) {
 		for (var key in changes) {

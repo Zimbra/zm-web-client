@@ -27,28 +27,29 @@
  * or to search within a conversation. The results are returned via a callback.
  *
  * @param {Hash}		params		a hash of parameters
- * @param      {String}	params.query				the query string
- * @param	{String}	params.queryHint			the query string that gets appended to the query but not something the user needs to know about
- * @param	{AjxVector}	params.types				the item types to search for
- * @param	{constant}	params.sortBy				the sort order
- * @param	{int}	params.offset					the starting point within result set
- * @param	{int}	params.limit					the number of results to return
- * @param	{Boolean}	params.getHtml				if <code>true</code>, return HTML part for inlined msg
- * @param	{constant}	params.contactSource				where to search for contacts (GAL or personal)
- * @param	{Boolean}	params.isGalAutocompleteSearch			if <code>true</code>, autocomplete against GAL
- * @param	{constant}	params.galType				the type of GAL autocomplete (account or resource)
- * @param	{int}	params.lastId					the ID of last item displayed (for pagination)
- * @param	{String}	params.lastSortVal			the value of sort field for above item
- * @param	{Boolean}	params.fetch				if <code>true</code>, fetch first hit message
- * @param	{int}	params.searchId				the ID of owning search folder (if any)
- * @param	{Array}	params.conds					the list of search conditions (<code><SearchCalendarResourcesRequest></code>)
- * @param	{Array}	params.attrs					the list of attributes to return (<code><SearchCalendarResourcesRequest></code>)
- * @param	{String}	params.field				the field to search within (instead of default)
- * @param	{Object}	params.soapInfo			the object with method, namespace, response, and additional attribute fields for creating soap doc
- * @param	{Object}	params.response			the canned JSON response (no request will be made)
- * @param	{Array}	params.folders					the list of folders for autocomplete
- * @param	{Array}	params.allowableTaskStatus		the list of task status types to return (assuming one of the values for "types" is "task")
- * @param	{String}	params.accountName			the account name to run this search against
+ * @param   {String}	params.query					the query string
+ * @param	{String}	params.queryHint				the query string that gets appended to the query but not something the user needs to know about
+ * @param	{AjxVector}	params.types					the item types to search for
+ * @param	{constant}	params.sortBy					the sort order
+ * @param	{int}		params.offset					the starting point within result set
+ * @param	{int}		params.limit					the number of results to return
+ * @param	{Boolean}	params.getHtml					if <code>true</code>, return HTML part for inlined msg
+ * @param	{constant}	params.contactSource			where to search for contacts (GAL or personal)
+ * @param	{Boolean}	params.isGalAutocompleteSearch	if <code>true</code>, autocomplete against GAL
+ * @param	{constant}	params.galType					the type of GAL autocomplete (account or resource)
+ * @param	{int}		params.lastId					the ID of last item displayed (for pagination)
+ * @param	{String}	params.lastSortVal				the value of sort field for above item
+ * @param	{Boolean}	params.fetch					if <code>true</code>, fetch first hit message
+ * @param	{int}		params.searchId					the ID of owning search folder (if any)
+ * @param	{Array}		params.conds					the list of search conditions (<code><SearchCalendarResourcesRequest></code>)
+ * @param	{Array}		params.attrs					the list of attributes to return (<code><SearchCalendarResourcesRequest></code>)
+ * @param	{String}	params.field					the field to search within (instead of default)
+ * @param	{Object}	params.soapInfo					the object with method, namespace, response, and additional attribute fields for creating soap doc
+ * @param	{Object}	params.response					the canned JSON response (no request will be made)
+ * @param	{Array}		params.folders					the list of folders for autocomplete
+ * @param	{Array}		params.allowableTaskStatus		the list of task status types to return (assuming one of the values for "types" is "task")
+ * @param	{String}	params.accountName				the account name to run this search against
+ * @params	{Boolean}	params.idsOnly					if <code>true</code>, response returns item IDs only
  */
 ZmSearch = function(params) {
 
@@ -634,6 +635,10 @@ function(req) {
 
 	// always set limit
 	req.limit = this._getLimit();
+
+	if (this.idsOnly) {
+		req.resultMode = "IDS";
+	}
 
 	// and of course, always set the query and append the query hint if
 	// applicable only use query hint if this is not a "simple" search

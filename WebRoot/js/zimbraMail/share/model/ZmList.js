@@ -328,14 +328,14 @@ function(offset, newList) {
 /**
  * Sets and unsets a flag for each of a list of items.
  *
- * @param {Hash}	params		a hash of parameters
- * @param	{Array}       params.items			a list of items to set/unset a flag for
- * @param	{String}	params.op			the name of the flag operation ("flag" or "read")
+ * @param 	{Hash}				params					a hash of parameters
+ * @param	{Array}     		params.items			a list of items to set/unset a flag for
+ * @param	{String}			params.op				the name of the flag operation ("flag" or "read")
  * @param	{Boolean|String}	params.value			whether to set the flag, or for "update" the flags string
- * @param	{AjxCallback}	params.callback		the callback to run after each sub-request
- * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
- * @param	{int}		params.count			the starting count for number of items processed
- * @param   {String}    params.actionText   pattern for generating action summary
+ * @param	{AjxCallback}		params.callback			the callback to run after each sub-request
+ * @param	{AjxCallback}		params.finalCallback	the callback to run after all items have been processed
+ * @param	{int}				params.count			the starting count for number of items processed
+ * @param   {String}    		params.actionText   	pattern for generating action summary
  */
 ZmList.prototype.flagItems =
 function(params) {
@@ -362,12 +362,12 @@ function(params) {
  * Tags or untags a list of items. A sanity check is done first, so that items
  * aren't tagged redundantly, and so we don't try to remove a nonexistent tag.
  *
- * @param {Hash}	params		a hash of parameters
- * @param {Array}	params.items			a list of items to tag/untag
- * @param {String}  params.tagId            ID of tag to add/remove
- * @param {String}	params.tag  			the tag to add/remove from each item (optional)
- * @param {Boolean}	params.doTag			<code>true</code> if adding the tag, <code>false</code> if removing it
- * @param {AjxCallback}	params.callback		the callback to run after each sub-request
+ * @param {Hash}		params					a hash of parameters
+ * @param {Array}		params.items			a list of items to tag/untag
+ * @param {String}  	params.tagId            ID of tag to add/remove
+ * @param {String}		params.tag  			the tag to add/remove from each item (optional)
+ * @param {Boolean}		params.doTag			<code>true</code> if adding the tag, <code>false</code> if removing it
+ * @param {AjxCallback}	params.callback			the callback to run after each sub-request
  * @param {AjxCallback}	params.finalCallback	the callback to run after all items have been processed
  * @param {int}			params.count			the starting count for number of items processed
  */
@@ -391,11 +391,15 @@ function(params) {
 	// always tag a conv, because we don't know if all items in the conv have the tag yet
 	var items = AjxUtil.toArray(params.items);
 	var items1 = [], doTag = params.doTag;
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		if ((doTag && (!item.hasTag(tagId) || item.type == ZmItem.CONV)) ||	(!doTag && item.hasTag(tagId))) {
-			items1.push(item);
+	if (items[0] && items[0] instanceof ZmItem) {
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if ((doTag && (!item.hasTag(tagId) || item.type == ZmItem.CONV)) ||	(!doTag && item.hasTag(tagId))) {
+				items1.push(item);
+			}
 		}
+	} else {
+		items1 = items;
 	}
 	params.items = items1;
 	params.attrs = {tag:tagId};
@@ -409,11 +413,11 @@ function(params) {
 /**
  * Removes all tags from a list of items.
  *
- * @param {Hash}	params		a hash of parameters
- * @param	{Array}	params.items			a list of items to tag/untag
- * @param	{AjxCallback}	params.callback		the callback to run after each sub-request
+ * @param	{Hash}			params					a hash of parameters
+ * @param	{Array}			params.items			a list of items to tag/untag
+ * @param	{AjxCallback}	params.callback			the callback to run after each sub-request
  * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
- * @param	{int}	params.count			the starting count for number of items processed
+ * @param	{int}			params.count			the starting count for number of items processed
  */
 ZmList.prototype.removeAllTags = 
 function(params) {
@@ -427,11 +431,15 @@ function(params) {
 
 	var items = AjxUtil.toArray(params.items);
 	var items1 = [];
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		if (item.tags && item.tags.length) {
-			items1.push(item);
+	if (items[0] && items[0] instanceof ZmItem) {
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if (item.tags && item.tags.length) {
+				items1.push(item);
+			}
 		}
+	} else {
+		items1 = items;
 	}
 
 	params.items = items1;
@@ -451,13 +459,13 @@ function(params) {
  * search.
  * </p>
  *
- * @param {Hash}	params		a hash of parameters
- * @param	{Array}		params.items			a list of items to move
- * @param	{ZmFolder}	params.folder		the destination folder
- * @param	{Hash}	params.attrs			the additional attrs for SOAP command
- * @param	{AjxCallback}	params.callback		the callback to run after each sub-request
+ * @param	{Hash}			params					a hash of parameters
+ * @param	{Array}			params.items			a list of items to move
+ * @param	{ZmFolder}		params.folder			the destination folder
+ * @param	{Hash}			params.attrs			the additional attrs for SOAP command
+ * @param	{AjxCallback}	params.callback			the callback to run after each sub-request
  * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
- * @param	{int}	params.count			the starting count for number of items processed
+ * @param	{int}			params.count			the starting count for number of items processed
  */
 ZmList.prototype.moveItems =
 function(params) {
@@ -494,7 +502,7 @@ ZmList.prototype._handleResponseMoveItems =
 function(params, result) {
 
 	var movedItems = result.getResponse();
-	if (movedItems && movedItems.length) {
+	if (movedItems && movedItems.length && (movedItems[0] instanceof ZmItem)) {
 		this.moveLocal(movedItems, params.folder.id);
 		for (var i = 0; i < movedItems.length; i++) {
 			var item = movedItems[i];
@@ -581,15 +589,19 @@ function(params) {
 	// figure out which items should be moved to Trash, and which should actually be deleted
 	var toMove = [];
 	var toDelete = [];
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		var folderId = item.getFolderId();
-		var folder = appCtxt.getById(folderId);
-		if (params.hardDelete || (folder && folder.isHardDelete())) {
-			toDelete.push(item);
-		} else {
-			toMove.push(item);
+	if (items[0] && items[0] instanceof ZmItem) {
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			var folderId = item.getFolderId();
+			var folder = appCtxt.getById(folderId);
+			if (params.hardDelete || (folder && folder.isHardDelete())) {
+				toDelete.push(item);
+			} else {
+				toMove.push(item);
+			}
 		}
+	} else {
+		toMove = items;
 	}
 
 	params.callback = params.childWin && new AjxCallback(this._handleDeleteNewWindowResponse, params.childWin);
@@ -648,14 +660,20 @@ ZmList.prototype._filterItemsByAccount =
 function(items) {
 	// separate out the items based on which account they belong to
 	var accounts = {};
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		var acctId = item.account.id;
-		if (!accounts[acctId]) {
-			accounts[acctId] = [];
+	if (items[0] && items[0] instanceof ZmItem) {
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			var acctId = item.account.id;
+			if (!accounts[acctId]) {
+				accounts[acctId] = [];
+			}
+			accounts[acctId].push(item);
 		}
-		accounts[acctId].push(item);
+	} else {
+		var id = appCtxt.accountList.mainAccount.id;
+		accounts[id] = items;
 	}
+
 	return accounts;
 };
 
@@ -780,10 +798,15 @@ function(params, batchCmd) {
 		return;
 	}
 
+	DBG.println("sa", "ITEM ACTION: " + idList.length + " items");
 	var type;
-	if (this.type == ZmItem.MIXED)			{ type = this._mixedType; }
-	else if (params.items.length == 1)		{ type = params.items[0].type; }
-	else 									{ type = this.type; }
+	if (this.type == ZmItem.MIXED) {
+		type = this._mixedType;
+	} else if (params.items.length == 1 && params.items[0] && params.items[0].type) {
+		type = params.items[0].type;
+	} else {
+		type = this.type;
+	}
 	if (!type) { return; }
 
 	// set accountName for multi-account to be the main "local" account since we
@@ -837,9 +860,6 @@ function(params, batchCmd) {
 			dialog = ZmList.progressDialog = appCtxt.getCancelMsgDialog();
 			dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._cancelAction, [params1]));
 		}
-	} else if (dialog) {
-		dialog.unregisterCallback(DwtDialog.CANCEL_BUTTON);
-		ZmList.progressDialog = null;
 	}
 
 	this._doAction(params1);
@@ -883,8 +903,7 @@ function(params) {
 		} else {
 			reqParams.soapDoc = params.request;
 		}
-		DBG.println("sa", "* item action: " + list.length + " items");
-		DBG.println("sa", "items: " + list);
+		DBG.println("sa", "*** do action: " + list.length + " items");
 		params.reqId = appCtxt.getAppController().sendRequest(reqParams);
 	}
 };
@@ -896,6 +915,7 @@ ZmList.prototype._handleResponseDoAction =
 function(params, result) {
 
 	var dialog = ZmList.progressDialog;
+	var summary;
 	var response = result.getResponse();
 	var resp = response[ZmItem.SOAP_CMD[params.type] + "Response"];
 	if (resp && resp.action) {
@@ -913,14 +933,12 @@ function(params, result) {
 				params.callback.run(items, result);
 			}
 
-            var summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
+            summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
 			if (dialog) {
 				dialog.setContent(summary);
 				if (!dialog.isPoppedUp()) {
 					dialog.popup();
 				}
-			} else {
-                params.actionSummary = summary;
             }
 		}
 	}
@@ -930,19 +948,35 @@ function(params, result) {
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._doAction, [params]), ZmItem.CHUNK_PAUSE);
 	} else {
 		params.reqId = null;
+		params.actionSummary = summary;
 		if (params.finalCallback) {
 			// finalCallback is responsible for showing status or clearing dialog
 			DBG.println("sa", "item action running finalCallback");
 			params.finalCallback.run(params);
 		} else {
 			DBG.println("sa", "no final callback");
-			if (dialog) {
-				dialog.popdown();
-				ZmList.progressDialog = null;
-			} else if (params.actionSummary) {
-				appCtxt.setStatusMsg(params.actionSummary);
-            }
+			ZmList.killProgressDialog(params.actionSummary);
 		}
+	}
+};
+
+/**
+ * If there is a progress dialog, kill it. Show the given summary as status.
+ *
+ * @param summary	text that summarizes the recent action
+ */
+ZmList.killProgressDialog =
+function(summary) {
+
+	DBG.println("sa", "kill progress dialog");
+	var dialog = ZmList.progressDialog;
+	if (dialog) {
+		dialog.unregisterCallback(DwtDialog.CANCEL_BUTTON);
+		dialog.popdown();
+		ZmList.progressDialog = null;
+	}
+	if (summary) {
+		appCtxt.setStatusMsg(summary);
 	}
 };
 
@@ -969,6 +1003,11 @@ function(params) {
 	}
 	if (params.finalCallback) {
 		params.finalCallback.run(params);
+	} else {
+		var dialog = ZmList.progressDialog;
+		if (dialog && dialog.isPoppedUp()) {
+			dialog.popdown();
+		}
 	}
 };
 

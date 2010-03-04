@@ -82,6 +82,8 @@ function(type) {
 			}
 		}
 		return list;
+	} else if (this.search.idsOnly) {
+		return this._results;
 	} else {
 		// if we don't have results for the requested type, the search was probably for the wrong type
 		return this._results[type] ? this._results[type] : ZmItem.RESULTS_LIST[type](this.search);
@@ -140,6 +142,9 @@ function(respEl) {
 			}
 			count = data.length;
 		}
+	} else if (this.search.idsOnly) {
+		this._results = respEl.hit || [];
+		return;
 	} else {
 		// process JS eval result for SearchResponse
 		var types = this.search.types.getArray();
