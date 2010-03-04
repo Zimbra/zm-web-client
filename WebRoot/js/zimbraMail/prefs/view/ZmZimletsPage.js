@@ -169,8 +169,9 @@ function() {
             continue; //skip mandatory zimlets to be shown in prefs        
         }
 		var desc = allz[i].zimlet[0].description;
+		var label = allz[i].zimlet[0].label;
         var isEnabled = allz[i].zimletContext[0].presence == "enabled";
-		var z = new ZmPrefZimlet(name,isEnabled, desc);
+		var z = new ZmPrefZimlet(name,isEnabled,desc,label);
 		zimlets.addPrefZimlet(z);
 	}
     zimlets.sortByName();
@@ -342,17 +343,25 @@ function(desc) {
  * @param active
  * @param desc
  */
-ZmPrefZimlet = function(name, active, desc) {
+ZmPrefZimlet = function(name, active, desc, label) {
 	this.name = name;
 	this.active = (active !== false);
 	this.desc = desc;
+	this.label = label;
 	this._origStatus = this.active;
+};
+
+ZmPrefZimlet.prototype.getNameWithoutPrefix	=
+function() {
+	if (this.label != null && this.label.length > 0)
+		return	this.label;
+
+	return this.name.substring(this.name.lastIndexOf("_")+1);
 };
 
 ZmPrefZimlet.prototype.isActive			= function() { return this.active; };
 ZmPrefZimlet.prototype.setActive		= function(active) { this.active = active; };
 ZmPrefZimlet.prototype.getName			= function() { return this.name; };
-ZmPrefZimlet.prototype.getNameWithoutPrefix			= function() { return this.name.substring(this.name.lastIndexOf("_")+1); };
 ZmPrefZimlet.prototype.setName			= function(name) { this.name = name; };
 ZmPrefZimlet.prototype.getDescription	= function() { return this.desc; };
 ZmPrefZimlet.prototype.setDescription	= function(desc){ this.desc = desc; };

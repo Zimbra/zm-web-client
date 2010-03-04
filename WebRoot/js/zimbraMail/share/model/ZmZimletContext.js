@@ -54,6 +54,7 @@ ZmZimletContext = function(id, zimlet) {
 	 * @type String
 	 */
 	this.version = zimlet.version;
+	this.label = zimlet.label;
 	this.includes = this.json.zimlet.include || [];
 	this.includes.push([appContextPath, "/messages/", this.name, ".js?v=", cacheKillerVersion].join(""));
 	this.includeCSS = this.json.zimlet.includeCSS;
