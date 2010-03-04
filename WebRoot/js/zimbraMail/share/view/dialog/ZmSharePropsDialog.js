@@ -327,7 +327,7 @@ function(shares, result) {
 	var ignore = this._getFaultyEmails(result);
 	var replyType = this._reply.getReplyType();
 	if (replyType != ZmShareReply.NONE) {
-		var notes = replyType == ZmShareReply.QUICK ? this._reply.getReplyNote() : "";
+		var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
 		// TODO: Need to turn this into a batch request
 		for (var i = 0; i < shares.length; i++) {
 			var share = shares[i];
@@ -381,9 +381,7 @@ function(shares, result) {
 				}
 
 				var password = this._passwordInput.getValue();
-
-				var args = [url, email, password];
-				notes = [this._guestFormatter.format(args), notes ].join("\n\n");
+				notes = this._guestFormatter.format([url, email, password]);
 			}
 			tmpShare.notes = notes;
 
