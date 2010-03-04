@@ -192,6 +192,8 @@ public	class	JsClass {
 		buf.append("[jsclass");
 		buf.append(";name=");
 		buf.append(getName());
+		buf.append(";link=");
+		buf.append(getLink());
 		buf.append(";hashCode=");
 		buf.append(hashCode());
 		buf.append(";methodCount=");

@@ -17,6 +17,8 @@ package	com.zimbra.jsapi;
 
 import java.io.*;
 import java.util.*;
+import java.util.zip.*;
+import org.json.*;
 
 /**
  * 
@@ -25,28 +27,216 @@ import java.util.*;
  */
 public	class	JsInventory {
 
-	private	String	label;
-	private	Map		classes = Collections.synchronizedMap(new HashMap());
+	private	static	final	String			FILE_MANIFEST = "manifest.json";
+	private	static	final	String			FILE_INDEX = "index.json";
+	
+	static	final	String		KEY_ADDED = "ADDED";
+	static	final	String		KEY_REMOVED = "REMOVED";
+
+	private	String	version;
+	private	String	release;
+	private	String	date;
+	private	List<JsClass>		classes = Collections.synchronizedList(new LinkedList());
 	
 	/**
 	 * Constructor.
 	 * 
-	 * @param	label		the label
+	 * @param	version		the build version
+	 * @param	date		the build date
+	 * @param	release		the build release
 	 */
-	public	JsInventory(String label) {
-		
-		this.label = label;	
+	private	JsInventory(String version, String date, String release) {
+		this.version = version;
+		this.release = release;
+		this.date = date;
 	}
 	
 	/**
-	 * Gets the inventory label.
+	 * Creates the inventory.
 	 * 
-	 * @return	the inventory label
+	 * @param	investoryFile	the location of the inventory ZIP file
+	 * @return	the newly created inventory
 	 */
-	public	String	getLabel() {
-		return	this.label;
+	public	static	JsInventory	create(String inventoryFile)
+	throws IOException, JSONException {
+	
+		ZipFile zipFile = new ZipFile(inventoryFile);
+
+		// read inventory manifest
+		JsInventory inventory = initialize(zipFile);
+
+		// load the classes
+		inventory.loadClasses(zipFile);
+
+		// load the class definitions
+		inventory.loadClassDefinitions(zipFile);
+
+		return	inventory;
 	}
 	
+	/**
+	 * Loads the classes list for into the inventory.
+	 * 
+	 * @param	inventory		the inventory
+	 * @param	zipFile			the inventory bundle to read
+	 * @return	the inventory
+	 */
+	private	static	JsInventory	initialize(ZipFile zipFile) 
+	throws IOException, JSONException {
+		
+		ZipEntry	manifestFileEntry = zipFile.getEntry(FILE_MANIFEST);
+		
+		String 	entryStr = readEntryAsString(zipFile, manifestFileEntry);
+
+		JSONObject jsonObj = new JSONObject(entryStr);
+		String buildVersion = jsonObj.getString("build.version");
+		String buildDate = jsonObj.getString("build.date");
+		String buildRelease = jsonObj.getString("build.release");
+
+		return	new JsInventory(buildVersion, buildDate, buildRelease);
+	}
+
+	/**
+	 * Loads the classes list for into the inventory.
+	 * 
+	 * @param	zipFile			the inventory bundle to read
+	 */
+	private		void	loadClasses(ZipFile zipFile) 
+	throws IOException, JSONException {
+		
+		// read the index file for the class list
+		ZipEntry	classesFileEntry = zipFile.getEntry(FILE_INDEX);
+		
+		String 	entryStr = readEntryAsString(zipFile, classesFileEntry);
+		
+		// read the JSON information for class info
+		JSONObject jsonObj = new JSONObject(entryStr);
+		JSONArray classes = jsonObj.getJSONArray("classes");
+		for (int i=0; i < classes.length(); i++) {
+			JSONObject obj = (JSONObject)classes.get(i);
+			String link = obj.getString("link");
+			String className = obj.getString("className");
+			String packageName = obj.getString("package");
+			
+			addClass(className, packageName, link);
+		}
+		
+	}
+	
+	/**
+	 * Loads the classes list for into the inventory.
+	 * 
+	 * @param	zipFile			the inventory bundle to read
+	 */
+	private		void	loadClassDefinitions(ZipFile zipFile)
+	throws IOException, JSONException {
+		
+		Collection classes = getClasses();
+		Iterator it = classes.iterator();
+		while (it.hasNext()) {
+			JsClass clazz = (JsClass)it.next();
+
+			ZipEntry	classFileEntry = zipFile.getEntry(clazz.getLink());
+
+			String 	entryStr = readEntryAsString(zipFile, classFileEntry);
+
+			JSONObject jsonObj = new JSONObject(entryStr);
+
+			// read the JSON information for constructor info
+			JSONObject constrObj = (JSONObject)jsonObj.getJSONObject("constructor");
+			try {
+				boolean isPrivateConstructor = constrObj.getBoolean("isPrivate");
+				boolean isInnerConstructor = constrObj.getBoolean("isInner");
+				String signatureConstructor = constrObj.getString("signature");
+				clazz.setConstructor(signatureConstructor, isPrivateConstructor, isInnerConstructor);
+			} catch (JSONException je) {
+				// ignore...some class don't have a constructor
+			}
+
+			// read the JSON information for methods info
+			JSONArray methods = jsonObj.getJSONArray("methods");
+			for (int i=0; i < methods.length(); i++) {
+				JSONObject obj = (JSONObject)methods.get(i);
+
+				String name = obj.getString("name");
+				String signature = obj.getString("signature");
+				boolean isPrivate = obj.getBoolean("isPrivate");
+				boolean isInner = obj.getBoolean("isInner");
+				boolean isStatic = obj.getBoolean("isStatic");
+				
+				clazz.addMethod(name, signature, isPrivate, isInner, isStatic);
+			}
+
+			// read the JSON information for properties info
+			JSONArray properties = jsonObj.getJSONArray("properties");
+			for (int i=0; i < properties.length(); i++) {
+				JSONObject obj = (JSONObject)properties.get(i);
+
+				String name = obj.getString("name");
+				boolean isPrivate = obj.getBoolean("isPrivate");
+				boolean isInner = obj.getBoolean("isInner");
+				boolean isStatic = obj.getBoolean("isStatic");
+				
+				clazz.addProperty(name, isPrivate, isInner, isStatic);
+			}
+
+		}
+	}
+
+	/**
+	 * Reads the entry as a string.
+	 * 
+	 * @param	zipFile		the zip file
+	 * @param	entry		the zip entry to read
+	 * @return	the string
+	 */
+	private	static	String	readEntryAsString(ZipFile zipFile, ZipEntry zipEntry)
+	throws IOException {
+		StringBuffer sb = new StringBuffer();
+	
+		InputStream is = zipFile.getInputStream(zipEntry);
+		String line = null;
+
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+			while ((line = reader.readLine()) != null) {
+				sb.append(line).append("\n");
+			}
+
+		} finally {
+			is.close();
+		}
+
+		return	sb.toString();
+	}
+
+	/**
+	 * Gets the inventory build version.
+	 * 
+	 * @return	the inventory build version
+	 */
+	public	String	getBuildVersion() {
+		return	this.version;
+	}
+
+	/**
+	 * Gets the inventory build release.
+	 * 
+	 * @return	the inventory build release
+	 */
+	public	String	getBuildRelease() {
+		return	this.release;
+	}
+
+	/**
+	 * Gets the inventory build date.
+	 * 
+	 * @return	the inventory build date
+	 */
+	public	String	getBuildDate() {
+		return	this.date;
+	}
+
 	/**
 	 * Adds the class to the inventory.
 	 * 
@@ -55,11 +245,10 @@ public	class	JsInventory {
 	 * @param	link			the link to the class JSON definition
 	 * @return	the newly added class
 	 */
-	public	JsClass		addClass(String className, String packageName, String link) {
-		
+	private	JsClass		addClass(String className, String packageName, String link) {
 		JsClass clazz = new JsClass(className, packageName, link);
 		
-		this.classes.put(className, clazz);
+		this.classes.add(clazz);
 		
 		return	clazz;
 	}
@@ -76,26 +265,153 @@ public	class	JsInventory {
 	/**
 	 * Gets the classes.
 	 * 
-	 * @return	the classes
+	 * @return	a list of {@link JsClass} objects
 	 */
 	public	List<JsClass>		getClasses() {
-		Collection c = this.classes.values();
-		
-		return	new LinkedList(c);
+		return	new LinkedList(this.classes);
 	}
 
+	/**
+	 * Generates a inventory difference.
+	 * 
+	 * @param	inv		the inventory to compare against
+	 * @return	the differences
+	 */
+	public	Diff		generateDiff(JsInventory inv) {
+	
+       	Map	 diffClasses = generateDiffClassList(this, inv);
+       	
+       	List<JsClass> addedClasses = (List<JsClass>)diffClasses.get(KEY_ADDED);
+       	List<JsClass> removedClasses = (List<JsClass>)diffClasses.get(KEY_REMOVED);
+
+       	List<ModifiedJsClass> modifiedClasses = generateModifiedClassList(this, inv);
+
+       	return	new Diff(addedClasses, removedClasses, modifiedClasses);
+	}
+	
+	/**
+	 * Generates a map of added and removed class differences between the two inventories.
+	 * 
+	 * @param	prevInventory		the previous inventory
+	 * @param	currentInventory		the current inventory
+	 * @return	a map of added and removed classes
+	 */
+	private	static	Map	generateDiffClassList(JsInventory previousInventory, JsInventory currentInventory) {
+		Collection<JsClass> currentClasses = currentInventory.getClasses();
+		Collection<JsClass> previousClasses = previousInventory.getClasses();
+		return	generateDiffList(previousClasses, currentClasses);
+	}
+
+	/**
+	 * Generates a class difference list.
+	 * 
+	 */
+	private	static	Map<String,Object>	generateDiffList(Collection prevList, Collection curList) {
+		List removedList = new LinkedList();
+
+		Iterator it = prevList.iterator();
+		while (it.hasNext()) {
+			Object obj = it.next();
+			
+			if (curList.contains(obj))
+				curList.remove(obj);
+			else
+				removedList.add(obj);
+		}
+			
+		HashMap diffList = new HashMap();
+				
+		diffList.put (KEY_ADDED, curList); // added
+		diffList.put (KEY_REMOVED, removedList); // removed
+		
+		return	diffList;
+	}
+		
+	/**
+	 * Generates a list of modified class differences between the two inventories.
+	 * 
+	 * @param	prevInventory		the previous inventory
+	 * @param	currentInventory		the current inventory
+	 * @return	a list of modified classes
+	 */
+	private	static	List<ModifiedJsClass>	generateModifiedClassList(JsInventory previousInventory, JsInventory currentInventory) {
+		LinkedList modifiedClasses = new LinkedList();
+		
+		List<JsClass> currentClasses = currentInventory.getClasses();
+		List<JsClass> previousClasses = previousInventory.getClasses();
+
+		// only check for modification of previously existing classes
+		currentClasses.retainAll(previousClasses);
+
+		Iterator it = currentClasses.iterator();
+		while (it.hasNext()) {
+			JsClass clazz = (JsClass)it.next();
+
+			int index = previousClasses.indexOf(clazz);
+			JsClass prevClazz = (JsClass)previousClasses.get(index);
+
+			// generate diff property list
+			List<JsClass.Property> currentProperties = clazz.getProperties();
+			List<JsClass.Property> previousProperties = prevClazz.getProperties();
+			Map modifiedProperties = generateDiffList(previousProperties, currentProperties);
+
+			// generate diff method list
+			List<JsClass.Method> currentMethods = clazz.getMethods();
+			List<JsClass.Method> previousMethods = prevClazz.getMethods();
+			Map modifiedMethods = generateDiffList(previousMethods, currentMethods);
+
+			ModifiedJsClass mod = new ModifiedJsClass(clazz.getName(), clazz.getPackage());
+			mod.setModifiedProperties(modifiedProperties);
+			mod.setModifiedMethods(modifiedMethods);
+
+			// only check for modification of previously existing methods
+			currentMethods = clazz.getMethods();
+			previousMethods = prevClazz.getMethods();
+			currentMethods.retainAll(previousMethods);
+
+			// generate changed methods
+			Iterator itt = currentMethods.iterator();
+			while (itt.hasNext()) {
+				JsClass.Method meth = (JsClass.Method)itt.next();
+				
+				int midx = previousMethods.indexOf(meth);
+				JsClass.Method prevMeth = (JsClass.Method)previousMethods.get(midx);
+				
+				if (meth.isChanged(prevMeth))
+					mod.addChangedMethod(meth.getName(), meth.getSignature(), prevMeth.getSignature());
+			}
+			
+			if (mod.isModified())
+				modifiedClasses.add(mod);
+		}
+		
+		return	modifiedClasses;
+	}
+
+	/**
+	 * Dumps the inventory to <code>System.out</code>
+	 * 
+	 */
 	public	void	dump() {
 		StringBuffer buf = new StringBuffer();
 	
 		buf.append("Inventory: ");
-		buf.append(getLabel());
+		buf.append("\n");
+		buf.append("  Version: ");
+		buf.append(getBuildVersion());
+		buf.append("\n");
+		buf.append("  Date: ");
+		buf.append(getBuildDate());
+		buf.append("\n");
+		buf.append("  Release: ");
+		buf.append(getBuildRelease());
 		buf.append("\n");
 		buf.append("Classes (");
 		buf.append(getClassCount());
 		buf.append("): ");
 		buf.append("\n");
 		
-		Iterator it = this.classes.values().iterator();
+		Iterator it = this.classes.iterator();
 		while (it.hasNext()) {
 			JsClass clazz = (JsClass)it.next();
 			buf.append("    Class: ");
@@ -142,8 +458,12 @@ public	class	JsInventory {
 		StringBuffer buf = new StringBuffer();
 		
 		buf.append("[inventory");
-		buf.append(";label=");
-		buf.append(getLabel());
+		buf.append(";build.version=");
+		buf.append(getBuildVersion());
+		buf.append(";build.date=");
+		buf.append(getBuildDate());
+		buf.append(";build.release=");
+		buf.append(getBuildRelease());
 		buf.append(";hashCode=");
 		buf.append(hashCode());
 		buf.append(";classCount=");
@@ -153,4 +473,54 @@ public	class	JsInventory {
 		return	buf.toString();
 	}
 
+	/**
+	 * This class represents an inventory diff.
+	 * 
+	 * @author sposetti
+	 *
+	 */
+	public	class Diff {
+		
+		private	List<JsClass>	addedClasses = new LinkedList();
+		private	List<JsClass>	removedClasses = new LinkedList();
+		private	List<ModifiedJsClass>	modifiedClasses = new LinkedList();
+		
+		/**
+		 * Constructor.
+		 */
+		private	Diff(List addedClasses, List removedClasses, List modifiedClasses) {
+			this.addedClasses = addedClasses;
+			this.removedClasses = removedClasses;
+			this.modifiedClasses = modifiedClasses;
+		}
+		
+		/**
+		 * Gets the added classes.
+		 * 
+		 * @return		a list of {@link JsClass} objects or an empty list for none
+		 */
+		public	List<JsClass>	getAddedClasses() {
+			return	this.addedClasses;
+		}
+
+		/**
+		 * Gets the removed classes.
+		 * 
+		 * @return		a list of {@link JsClass} objects or an empty list for none
+		 */
+		public	List<JsClass>	getRemovedClasses() {
+			return	this.removedClasses;
+		}
+
+		/**
+		 * Gets the modified classes.
+		 * 
+		 * @return		a list of {@link ModifiedJsClass} objects or an empty list for none
+		 */
+		public	List<ModifiedJsClass>	getModifiedClasses() {
+			return	this.modifiedClasses;
+		}
+
+	} // end inner Diff class
+	
 } // end Inventory class

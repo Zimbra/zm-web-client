@@ -36,12 +36,10 @@
 		  	<classpath>
 		  		<pathelement path="${build.classes.dir}" />
 		  	</classpath>
-		    <arg line="-delivery ${output.dir}"/>
-		    <arg line="-template ${src.html.dir}"/>
-		    <arg line="-pi jsapi-inventory.zip"/>
-		    <arg line="-ci ${zimbra-web-client.build.docs.dir}/jsapi-inventory.zip"/>
-		    <arg line="-pl 6.0.6"/>
-		    <arg line="-cl 6.0.7"/>
+		    <arg line="-delivery.dir ${output.dir}"/>
+		    <arg line="-template.dir ${src.html.dir}"/>
+		    <arg line="-baseline.inventory jsapi-inventory.zip"/>
+		    <arg line="-current.inventory ${zimbra-web-client.build.docs.dir}/jsapi-inventory.zip"/>
 		</java>
 		<zip destfile="${change-log.zip}">
 			<fileset dir="${output.dir}" />

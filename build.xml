@@ -1197,7 +1197,15 @@ if (ext == null) ext = "";
 	  </java>
 	</target>
 
-	<target name="generate-jsapi-inventory" depends="clean-jsapi-inventory">
+	<target name="generate-jsapi-inventory" depends="clean-jsapi-inventory,init">
+        <mkdir dir="${build.jsapi-inventory.dir}"/>
+        <echo file="${build.jsapi-inventory.dir}/manifest.json">
+{
+	"build.version": "${zimbra.buildinfo.version}",
+	"build.release": "${zimbra.buildinfo.release}",
+	"build.date": "${zimbra.buildinfo.date}"
+}
+        </echo>
 	  <java jar="${jsdoctoolkit.dir}/jsrun.jar" fork="true" failonerror="true">
 	    <arg value="${jsdoctoolkit.dir}/app/run.js"/>
 	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-inventory"/>

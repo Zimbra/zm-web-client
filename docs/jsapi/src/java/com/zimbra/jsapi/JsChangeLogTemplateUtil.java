@@ -16,6 +16,7 @@
 package	com.zimbra.jsapi;
 
 import java.io.*;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.zip.*;
 import org.json.*;
@@ -29,36 +30,48 @@ public	class	JsChangeLogTemplateUtil {
 	
 	private	static	final	String		TEMPLATE_FILE = "index.html";
 	private	static	final	String		OUTPUT_FILE = "index.html";
-	
-	private	String	previousLabel;
-	private	String	currentLabel;
+
+	private	static	final	String		DOCLINK_CLASS = "http://files.zimbra.com/docs/zimlet/zcs/{0}/jsdocs/symbols/{1}.html";
+
 	private	String	templateDir;
 	private	String	outputDir;
 	
 	/**
 	 * Constructor.
 	 * 
+	 * @param	templateDir		the template directory
+	 * @param	outputDir		the output directory
 	 */
-	public	JsChangeLogTemplateUtil(String previousLabel, String currentLabel, String templateDir, String outputDir) {
-		this.previousLabel = previousLabel;
-		this.currentLabel = currentLabel;
+	public	JsChangeLogTemplateUtil(String templateDir, String outputDir) {
 		this.templateDir = templateDir;
 		this.outputDir = outputDir;
 	}
 	
 	/**
+	 * Writes the changelog.
 	 * 
 	 */
-	public	void	writeTemplate(List<JsClass> addedClasses, List<JsClass> removedClasses, List<ModifiedJsClass> modifiedClasses)
+	public	void	writeChangeLog(JsInventory baselineInv, JsInventory currentInv)
 	throws FileNotFoundException, IOException {
+
+       	JsInventory.Diff diff = baselineInv.generateDiff(currentInv);
+       	
+       	List<JsClass> addedClasses = diff.getAddedClasses();
+       	List<JsClass> removedClasses = diff.getRemovedClasses();
+       	List<ModifiedJsClass> modifiedClasses = diff.getModifiedClasses();
 
 		FileInputStream	tis = new FileInputStream(getTemplateFile());
 
 		String template = readInputStreamAsString(tis);
 		
-		String addedClassesText = getClassesText(addedClasses);
-		String removedClassesText = getClassesText(removedClasses);
-		String modifiedClassesText = getModifiedClassesText(modifiedClasses);
+		String addedClassesText = getClassesText(addedClasses, baselineInv.getBuildVersion());
+		String removedClassesText = getClassesText(removedClasses, currentInv.getBuildVersion());
+		String modifiedClassesText = getModifiedClassesText(modifiedClasses, baselineInv.getBuildVersion());
+		
+		template = template.replaceAll("\\$\\{baseline.version\\}", baselineInv.getBuildVersion());
+		template = template.replaceAll("\\$\\{baseline.date\\}", baselineInv.getBuildDate());
+		template = template.replaceAll("\\$\\{current.version\\}", currentInv.getBuildVersion());
+		template = template.replaceAll("\\$\\{current.date\\}", currentInv.getBuildDate());
 		
 		template = template.replaceAll("\\$\\{classes-added\\}", addedClassesText);
 		template = template.replaceAll("\\$\\{classes-removed\\}", removedClassesText);
@@ -80,6 +93,17 @@ public	class	JsChangeLogTemplateUtil {
 	 * @return	the classes text
 	 */
 	private	String	getClassesText(List<JsClass> classes) {
+		return	this.getClassesText(classes, null);
+	}
+
+	/**
+	 * Gets the classes text.
+	 * 
+	 * @param	classes			a list of classes
+	 * @param	version			the version
+	 * @return	the classes text
+	 */
+	private	String	getClassesText(List<JsClass> classes, String version) {
 		StringBuffer buf = new StringBuffer();
 		
 		buf.append("<ul>");
@@ -90,9 +114,21 @@ public	class	JsChangeLogTemplateUtil {
 		Iterator it = classes.iterator();
 		while (it.hasNext()) {
 			JsClass clazz = (JsClass)it.next();
-			
+
 			buf.append("<li>");
+			if (version != null) {
+				String currClassLink = generateJsDocClassLink(clazz.getName(), version);
+				buf.append("<a href=\"");
+				buf.append(currClassLink);
+				buf.append("\">");
+			}
+			
 			buf.append(clazz.getPackage());
+
+			if (version != null) {
+				buf.append("</a>");
+			}
+
 			buf.append("</li>");
 		}
 		
@@ -146,7 +182,7 @@ public	class	JsChangeLogTemplateUtil {
 	/**
 	 * 
 	 */
-	public	String	getModifiedClassesText(List<ModifiedJsClass> modifiedClassList) {
+	public	String	getModifiedClassesText(List<ModifiedJsClass> modifiedClassList, String currVersion) {
 		StringBuffer buf = new StringBuffer();
 		
 		if (modifiedClassList == null || modifiedClassList.size() <= 0) {
@@ -159,7 +195,7 @@ public	class	JsChangeLogTemplateUtil {
 		while (it.hasNext()) {
 			ModifiedJsClass mod = (ModifiedJsClass)it.next();
 
-			String currClassLink = generateJsDocClassLink(mod.getName(), this.currentLabel);
+			String currClassLink = generateJsDocClassLink(mod.getName(), currVersion);
 			
 			buf.append("<ul>");
 			buf.append("<li><h4><a href=\"");
@@ -171,7 +207,7 @@ public	class	JsChangeLogTemplateUtil {
 				buf.append("<ul>");
 
 					// write added properties
-					buf.append("<li><b>PROPERTIES: ADDED</b>");
+					buf.append("<li><b>PROPERTIES ADDED</b>");
 					buf.append("<ul style=\"padding-left:15px\">");
 
 					List addedProperties = mod.getAddedProperties();
@@ -190,7 +226,7 @@ public	class	JsChangeLogTemplateUtil {
 					buf.append("</li>");
 
 					// write removed properties
-					buf.append("<li><b>PROPERTIES: REMOVED</b>");
+					buf.append("<li><b>PROPERTIES REMOVED</b>");
 					buf.append("<ul style=\"padding-left:15px\">");
 
 					List removedProperties = mod.getRemovedProperties();
@@ -209,7 +245,7 @@ public	class	JsChangeLogTemplateUtil {
 					buf.append("</li>");
 
 					// write added methods
-					buf.append("<li><b>METHODS: ADDED</b>");
+					buf.append("<li><b>METHODS ADDED</b>");
 					buf.append("<ul style=\"padding-left:15px\">");
 
 					List addedMethods = mod.getAddedMethods();
@@ -228,7 +264,7 @@ public	class	JsChangeLogTemplateUtil {
 					buf.append("</li>");
 
 					// write removed methods
-					buf.append("<li><b>METHODS: REMOVED</b>");
+					buf.append("<li><b>METHODS REMOVED</b>");
 					buf.append("<ul style=\"padding-left:15px\">");
 
 					List removedMethods = mod.getRemovedMethods();
@@ -247,7 +283,7 @@ public	class	JsChangeLogTemplateUtil {
 					buf.append("</li>");
 
 					// write changed methods
-					buf.append("<li><b>METHODS: MODIFIED</b>");
+					buf.append("<li><b>METHODS MODIFIED</b>");
 					buf.append("<ul style=\"padding-left:15px\">");
 
 					List changedMethods = mod.getChangedMethods();
@@ -262,7 +298,7 @@ public	class	JsChangeLogTemplateUtil {
 						buf.append("</i>");
 
 						buf.append("<ul style=\"padding-left:15px\">");
-						buf.append("<li>Previous Signature: <i>");
+						buf.append("<li>Baseline Signature: <i>");
 						buf.append(meth.getName());
 						buf.append(meth.getPreviousSignature());
 						buf.append("</i></li>");
@@ -293,15 +329,6 @@ public	class	JsChangeLogTemplateUtil {
 	 * @return	the link
 	 */
 	private		static	String	generateJsDocClassLink(String className, String version) {
-		
-		StringBuffer buf = new StringBuffer();
-		
-		buf.append("http://files.zimbra.com/docs/zimlet/zcs/");
-		buf.append(version);
-		buf.append("/jsdocs/symbols/");
-		buf.append(className);
-		buf.append(".html");
-		
-		return	buf.toString();
+		return	MessageFormat.format(DOCLINK_CLASS, new Object[] {version, className});
 	}
 }
