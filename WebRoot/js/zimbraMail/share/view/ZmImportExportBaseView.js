@@ -167,15 +167,17 @@ ZmImportExportBaseView.prototype._folderButton_onclick = function() {
 	var dialog = appCtxt.getChooseFolderDialog();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._handleFolderDialogOkCallback);
 	var type = this.getValue("TYPE") || ZmImportExportController.TYPE_TGZ;
+	var acctName = appCtxt.multiAccounts ? appCtxt.getActiveAccount().name : "";
 	var params = {
 		treeIds:		this._TREES[type],
-		overviewId:		dialog.getOverviewId([this.toString(), type].join("_")),
+		overviewId:		dialog.getOverviewId([this.toString(), type, acctName].join("_")),
 		description:	"",
 		skipReadOnly:	true,
-		omit:			{}
+		omit:			{},
+		forceSingle:	true,
+		hideNewButton:	(this instanceof ZmExportView)
 	};
 	params.omit[ZmOrganizer.ID_TRASH] = true;
-	params.hideNewButton = this instanceof ZmExportView;
 	dialog.popup(params);
 };
 

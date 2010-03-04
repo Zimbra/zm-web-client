@@ -67,6 +67,11 @@ ZmFilterRuleDialog.INPUT_NUM_CHARS = 15;
 ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH		= 120;
 ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH	= 20;
 
+ZmFilterRuleDialog.prototype.toString =
+function() {
+	return "ZmFilterRuleDialog";
+};
+
 /**
  * Pops-up the dialog and displays either a given rule for editing, or a dummy
  * rule that is the base for adding a new rule.
@@ -863,7 +868,7 @@ function(ev) {
 	var dialog = isFolder ? appCtxt.getChooseFolderDialog()	: appCtxt.getPickTagDialog();
 	var overviewId = isFolder ? dialog.getOverviewId(ZmApp.MAIL) : null;
 	if (appCtxt.multiAccounts) {
-		overviewId = [overviewId, "-", appCtxt.getActiveAccount().name].join("");
+		overviewId = [overviewId, "-", appCtxt.getActiveAccount().name, this.toString()].join("");
 	}
 
 	dialog.reset();

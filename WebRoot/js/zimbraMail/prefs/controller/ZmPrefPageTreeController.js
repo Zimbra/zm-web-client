@@ -124,7 +124,8 @@ function(account, sectionId) {
 			if (sectionId == "FILTERS" ||
 				sectionId == "SHARING" ||
 				sectionId == "SIGNATURES" ||
-				sectionId == "ACCOUNTS")
+				sectionId == "ACCOUNTS" ||
+				sectionId == "IMPORT_EXPORT")
 			{
 				return false;
 			}
@@ -140,14 +141,16 @@ function(account, sectionId) {
 			{
 				return false;
 			}
+			if (sectionId == "IMPORT_EXPORT") {
+				return true;
+			}
 		}
 	}
 
 	return (account.isMain ||
 			(!account.isMain && (sectionId != "GENERAL" &&
 								 sectionId != "SHORTCUTS" &&
-								 sectionId != "PREF_ZIMLETS" &&
-								 sectionId != "IMPORT_EXPORT")
+								 sectionId != "PREF_ZIMLETS")
 			));
 };
 

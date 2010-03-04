@@ -39,9 +39,6 @@ ZmExportView = function(params) {
 			{ id: "FOLDER_BUTTON", type: "DwtButton", label: ZmMsg.browse,
 				onclick: this._folderButton_onclick
 			},
-			{ id: "IGNORE_ARCHIVE", type: "DwtCheckbox", label: ZmMsg.exportIgnoreArchive,
-				enabled: "get('TYPE') == ZmImportExportController.TYPE_TGZ"
-			},
 			{ id: "ADVANCED", type: "DwtCheckbox", label: ZmMsg.advancedSettings,
 				visible: "get('TYPE') == ZmImportExportController.TYPE_TGZ"
 			},
@@ -115,12 +112,6 @@ ZmExportView.prototype.getParams = function() {
 		].join("");
 	}
 
-	// modify search filter
-	var ignoreArchive = this.isRelevant("IGNORE_ARCHIVE") ? this.getValue("IGNORE_ARCHIVE") : false;
-	if (ignoreArchive) {
-		var ignoreFilter = "not under:(Local Folders)";
-		params.searchFilter = params.searchFilter ? [params.searchFilter, ignoreFilter].join(" and ") : ignoreFilter;
-	}
 	return params;
 };
 
@@ -139,10 +130,6 @@ ZmExportView.prototype.update = function() {
 		}
 	}
 	ZmImportExportBaseView.prototype.update.apply(this, arguments);
-	var ignoreArchive = this.getControl("IGNORE_ARCHIVE");
-	if (ignoreArchive) {
-		ignoreArchive.setVisible(this.isRelevant("IGNORE_ARCHIVE"));
-	}
 };
 
 // handlers
@@ -151,9 +138,6 @@ ZmExportView.prototype._folder_onclick = function() {
 	var type = isAll ? ZmImportExportController.TYPE_TGZ : null;
 	type = type || this._getTypeFromFolder(appCtxt.getById(this._folderId));
 	this.setValue("TYPE", type);
-	if (!isAll) {
-		this.setValue("IGNORE_ARCHIVE", false);
-	}
 	this._initSubType(type);
 	this.update();
 };

@@ -143,6 +143,18 @@ function(fieldId) {
  */
 ZmDialog.prototype._setOverview =
 function(params, forceSingle) {
+
+	// when in multi-account mode, hide the old overview since we don't know
+	// whether we want to show an overview container or just a single-account overview.
+	if (appCtxt.multiAccounts) {
+		var oldOverview = this._opc.getOverviewContainer(this._curOverviewId) ||
+						  this._opc.getOverview(this._curOverviewId);
+
+		if (oldOverview) {
+			oldOverview.setVisible(false);
+		}
+	}
+
 	// multi-account uses overview container
 	if (appCtxt.multiAccounts && !forceSingle) {
 		// use overviewId as the containerId; container will assign overviewId's
@@ -168,6 +180,10 @@ function(params, forceSingle) {
 			ovContainer.setSize(Dwt.DEFAULT, "200");
 			document.getElementById(params.fieldId).appendChild(ovContainer.getHtmlElement());
 		}
+
+		// make overview container visible
+		ovContainer.setVisible(true);
+
 		return ovContainer;
 	}
 
