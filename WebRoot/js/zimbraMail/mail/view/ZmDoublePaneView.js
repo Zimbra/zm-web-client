@@ -248,9 +248,15 @@ function(delta) {
 	if (delta > 0) {
 		if (readingPaneOnRight) {
 			// moving sash right
-			this._mailListView.resetSize(this._mailListView.getSize().x + delta, Dwt.DEFAULT);
-			this._msgView.setBounds(this._msgView.getLocation().x + delta, Dwt.DEFAULT,
-									this._msgView.getSize().x - delta, Dwt.DEFAULT);
+			var minMsgViewWidth = 0;
+			var newWidth = this._msgView.getSize().x - delta;
+			if (newWidth > minMsgViewWidth) {
+				this._mailListView.resetSize(this._mailListView.getSize().x + delta, Dwt.DEFAULT);
+				this._msgView.setBounds(this._msgView.getLocation().x + delta, Dwt.DEFAULT,
+										this._msgView.getSize().x - delta, Dwt.DEFAULT);
+			} else {
+				delta = 0;
+			}
 		} else {
 			// moving sash down
 			var newMsgViewHeight = this._msgView.getSize().y - delta;
@@ -277,7 +283,7 @@ function(delta) {
 				}
 				this._minMLVWidth = hdrWidth;
 			}
-			var newWidth = this._mailListView.getSize().x - absDelta;
+			var newWidth = ((AjxEnv.isIE) ? this._vertMsgSash.getLocation().x : this._mailListView.getSize().x) - absDelta;
 			if (newWidth > this._minMLVWidth) {
 				this._mailListView.resetSize(newWidth, Dwt.DEFAULT);
 				this._msgView.setBounds(this._msgView.getLocation().x - absDelta, Dwt.DEFAULT,
