@@ -125,17 +125,13 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		idx = this._getImageHtml(htmlArr, idx, msg.getStatusIcon(), this._getFieldId(msg, field));
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
 		// setup participants list for Sent/Drafts/Outbox folders
-		var folder = appCtxt.getById(this._folderId);
-		if (this._mode == ZmId.VIEW_TRAD && folder &&
-			(folder.isUnder(ZmFolder.ID_SENT) ||
-			 folder.isUnder(ZmFolder.ID_DRAFTS) ||
-			 folder.isUnder(ZmFolder.ID_OUTBOX)))
-		{
+		var isFolder = this._isSentOrDraftsFolder();
+		if (this._mode == ZmId.VIEW_TRAD && (isFolder.sent || isFolder.drafts)) {
 			var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
 	
 			// default to FROM addresses if no TO: found
-            //#Bug:24423 //Removed Defaulting for DRAFTS alone.
-            if (!(folder.isUnder(ZmFolder.ID_DRAFTS) || (addrs && addrs.length))) {
+			//#Bug:24423 //Removed Defaulting for DRAFTS alone.
+			if (!(isFolder.drafts || (addrs && addrs.length))) {
 				addrs = msg.getAddresses(AjxEmailAddress.FROM).getArray();
 			}
 			

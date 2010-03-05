@@ -472,7 +472,7 @@ function() {
 	// XXX: is the code below necessary?
 	// if not in Sent/Drafts, deep dive into query to be certain
 	if (!isSentFolder && !isDraftsFolder) {
-		// check for is:sent or is:draft w/in search query
+		// check for is:sent, in:sent, is:draft or in:draft w/in search query
 		var idx = null, query = null;
 		var curSearch = this._controller._app.currentSearch;
 		if (curSearch) {
@@ -481,8 +481,8 @@ function() {
 		}
 		if (idx) {
 			var prefix = AjxStringUtil.trim(query.substring(0, idx));
-			if (prefix == "is") {
-				var folderStr = AjxStringUtil.trim(query.substring(idx + 1));
+			if (prefix == "is" || prefix == "in") {
+				var folderStr = AjxStringUtil.trim(query.substring(idx + 1), false, "[\\s\"]"); // Trim off whitespace and quotes (bug #45006)
 				isSentFolder = (folderStr == ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]);
 				isDraftsFolder = (folderStr == ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]);
 			}

@@ -1493,6 +1493,7 @@ function(parentId) {
  */
 ZmOrganizer.prototype.isUnder =
 function(id) {
+	id = id.toString();
 	if (this.nId == id || (this.isRemote() && this.rid == id)) { return true; }
 
 	var parent = this.parent;
