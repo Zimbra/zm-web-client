@@ -248,12 +248,15 @@ function(delta) {
 	if (delta > 0) {
 		if (readingPaneOnRight) {
 			// moving sash right
-			var minMsgViewWidth = 0;
-			var newWidth = this._msgView.getSize().x - delta;
-			if (newWidth > minMsgViewWidth) {
-				this._mailListView.resetSize(this._mailListView.getSize().x + delta, Dwt.DEFAULT);
+			var minMsgViewWidth = this._msgView.getMinWidth();
+			var currentMsgWidth = this._msgView.getSize().x;
+			delta = Math.max(0, Math.min(delta, currentMsgWidth - minMsgViewWidth));
+			var newListWidth = ((AjxEnv.isIE) ? this._vertMsgSash.getLocation().x : this._mailListView.getSize().x) + delta;
+
+			if (delta > 0) {
+				this._mailListView.resetSize(newListWidth, Dwt.DEFAULT);
 				this._msgView.setBounds(this._msgView.getLocation().x + delta, Dwt.DEFAULT,
-										this._msgView.getSize().x - delta, Dwt.DEFAULT);
+										currentMsgWidth - delta, Dwt.DEFAULT);
 			} else {
 				delta = 0;
 			}
@@ -283,9 +286,13 @@ function(delta) {
 				}
 				this._minMLVWidth = hdrWidth;
 			}
-			var newWidth = ((AjxEnv.isIE) ? this._vertMsgSash.getLocation().x : this._mailListView.getSize().x) - absDelta;
-			if (newWidth > this._minMLVWidth) {
-				this._mailListView.resetSize(newWidth, Dwt.DEFAULT);
+
+			var currentWidth = ((AjxEnv.isIE) ? this._vertMsgSash.getLocation().x : this._mailListView.getSize().x);
+			absDelta = Math.max(0, Math.min(absDelta, currentWidth - this._minMLVWidth));
+
+			if (absDelta > 0) {
+				delta = -absDelta;
+				this._mailListView.resetSize(currentWidth - absDelta, Dwt.DEFAULT);
 				this._msgView.setBounds(this._msgView.getLocation().x - absDelta, Dwt.DEFAULT,
 										this._msgView.getSize().x + absDelta, Dwt.DEFAULT);
 			} else {

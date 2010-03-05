@@ -320,6 +320,11 @@ function() {
 	return 1;
 };
 
+ZmMailMsgView.prototype.getMinWidth =
+function() {
+	return 20;
+};
+
 ZmMailMsgView.prototype.getMinHeight =
 function() {
 	if (!this._headerHeight) {
