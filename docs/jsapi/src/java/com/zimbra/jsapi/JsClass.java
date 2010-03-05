@@ -26,24 +26,24 @@ import java.util.*;
 public	class	JsClass {
 
 	private	String	name;
-	private	String	packageName;
+	private	String	fullName;
 	private	String	link;
 	
 	private	Method	constructorMethod = null;
-	private	Map		methods = Collections.synchronizedMap(new HashMap());
-	private	Map		properties = Collections.synchronizedMap(new HashMap());
+	private	List	methods = new LinkedList();
+	private	List	properties = new LinkedList();
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param	name		the class name
-	 * @param	packageName	the package name
+	 * @param	fullName	the full name
 	 * @param	link		the link
 	 */
-	public	JsClass(String name, String packageName, String link) {
+	public	JsClass(String name, String fullName, String link) {
 		
 		this.name = name;
-		this.packageName = packageName;
+		this.fullName = fullName;
 		this.link = link;
 		
 	}
@@ -58,12 +58,12 @@ public	class	JsClass {
 	}
 
 	/**
-	 * Gets the class package name.
+	 * Gets the class full name.
 	 * 
-	 * @return	the class package name
+	 * @return	the class full name
 	 */
-	public	String	getPackage() {
-		return	this.packageName;
+	public	String	getFullName() {
+		return	this.fullName;
 	}
 
 	/**
@@ -85,7 +85,7 @@ public	class	JsClass {
 		
 		Property p = new Property(name, isPrivate, isInner, isStatic);
 		
-		this.properties.put(name, p);
+		this.properties.add(p);
 		
 		return	p;
 	}
@@ -100,7 +100,7 @@ public	class	JsClass {
 		
 		Method m = new Method(name, signature, isPrivate, isInner, isStatic);
 		
-		this.methods.put(name, m);
+		this.methods.add(m);
 		
 		return	m;
 	}
@@ -150,10 +150,8 @@ public	class	JsClass {
 	 * 
 	 * @return	a collection of {@link Method} objects
 	 */
-	public	List<Method>		getMethods() {
-		Collection c = this.methods.values();
-		
-		return	new LinkedList(c);
+	public	List<Method>		getMethods() {		
+		return	new LinkedList(this.methods);
 	}
 
 	/**
@@ -162,9 +160,7 @@ public	class	JsClass {
 	 * @return	a collection of {@link Property} objects
 	 */
 	public	List<Property>		getProperties() {
-		Collection c = this.properties.values();
-		
-		return	new LinkedList(c);
+		return	new LinkedList(this.properties);
 	}
 
 	/**
@@ -192,6 +188,8 @@ public	class	JsClass {
 		buf.append("[jsclass");
 		buf.append(";name=");
 		buf.append(getName());
+		buf.append(";fullName=");
+		buf.append(getFullName());
 		buf.append(";link=");
 		buf.append(getLink());
 		buf.append(";hashCode=");

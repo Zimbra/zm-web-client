@@ -26,18 +26,20 @@ import java.util.*;
 public	class	ModifiedJsClass {
 
 	private	String	name;
-	private	String	packageName;
-	private	Map		modifiedProperties = new HashMap();
-	private	Map		modifiedMethods = new HashMap();
-	private	List	changedMethods = new LinkedList();
+	private	String	fullName;
+	private	List<JsClass.Property>	addedProperties = new LinkedList();
+	private	List<JsClass.Property>	removedProperties = new LinkedList();
+	private	List<JsClass.Method>	addedMethods = new LinkedList();
+	private	List<JsClass.Method>	removedMethods = new LinkedList();
+	private	List<ChangedJsMethod>		changedMethods = new LinkedList();
 	
 	/**
 	 * Constructor.
 	 * 
 	 */
-	public	ModifiedJsClass(String name, String packageName) {
+	public	ModifiedJsClass(String name, String fullName) {
 		this.name = name;
-		this.packageName = packageName;
+		this.fullName = fullName;
 	}
 	
 	/**
@@ -50,21 +52,30 @@ public	class	ModifiedJsClass {
 	}
 
 	/**
-	 * Gets the package name.
+	 * Gets the full name.
 	 * 
-	 * @return	the package name
+	 * @return	the full name
 	 */
-	public	String	getPackageName() {
-		return	this.packageName;
+	public	String	getFullName() {
+		return	this.fullName;
 	}
 
 	/**
-	 * Sets the modified properties.
+	 * Sets the added properties.
 	 * 
-	 * @param	modifiedProperties		the modified properties
+	 * @param	addedProperties		the added properties
 	 */
-	public	void	setModifiedProperties(Map modifiedProperties) {
-		this.modifiedProperties = modifiedProperties;
+	public	void	setAddedProperties(List addedProperties) {
+		this.addedProperties = addedProperties;
+	}
+
+	/**
+	 * Sets the removed properties.
+	 * 
+	 * @param	removedProperties		the removed properties
+	 */
+	public	void	setRemovedProperties(List removedProperties) {
+		this.removedProperties = removedProperties;
 	}
 
 	/**
@@ -72,9 +83,9 @@ public	class	ModifiedJsClass {
 	 * 
 	 * @return	the added properties
 	 */
-	public	List	getAddedProperties() {
+	public	List<JsClass.Property>	getAddedProperties() {
 		
-		return	(List)this.modifiedProperties.get(JsChangeLogUtil.KEY_ADDED);
+		return	Collections.unmodifiableList(this.addedProperties);
 	}
 
 	/**
@@ -82,19 +93,9 @@ public	class	ModifiedJsClass {
 	 * 
 	 * @return	the removed properties
 	 */
-	public	List	getRemovedProperties() {
+	public	List<JsClass.Property>	getRemovedProperties() {
 		
-		return	(List)this.modifiedProperties.get(JsChangeLogUtil.KEY_REMOVED);
-	}
-
-	/**
-	 * Gets the changed methods.
-	 * 
-	 * @return	the changed methods
-	 */
-	public	List	getChangedMethods() {
-		
-		return	new LinkedList(this.changedMethods);
+		return	Collections.unmodifiableList(this.removedProperties);
 	}
 
 	/**
@@ -102,9 +103,9 @@ public	class	ModifiedJsClass {
 	 * 
 	 * @return	the added methods
 	 */
-	public	List	getAddedMethods() {
+	public	List<JsClass.Method>	getAddedMethods() {
 		
-		return	(List)this.modifiedMethods.get(JsChangeLogUtil.KEY_ADDED);
+		return	Collections.unmodifiableList(this.addedMethods);
 	}
 
 	/**
@@ -112,18 +113,37 @@ public	class	ModifiedJsClass {
 	 * 
 	 * @return	the removed methods
 	 */
-	public	List	getRemovedMethods() {
+	public	List<JsClass.Method>	getRemovedMethods() {
 		
-		return	(List)this.modifiedMethods.get(JsChangeLogUtil.KEY_REMOVED);
+		return	Collections.unmodifiableList(this.removedMethods);
 	}
 
 	/**
-	 * Sets the modified methods.
+	 * Sets the added methods.
 	 * 
-	 * @param	modifiedMethods		the modified methods
+	 * @param	addedMethods		the added methods
 	 */
-	public	void	setModifiedMethods(Map modifiedMethods) {
-		this.modifiedMethods = modifiedMethods;
+	public	void	setAddedMethods(List addedMethods) {
+		this.addedMethods = addedMethods;
+	}
+
+	/**
+	 * Sets the removed methods.
+	 * 
+	 * @param	removedMethods		the removed methods
+	 */
+	public	void	setRemovedMethods(List removedMethods) {
+		this.removedMethods = removedMethods;
+	}
+
+	/**
+	 * Gets the changed methods.
+	 * 
+	 * @return	the changed methods
+	 */
+	public	List<ChangedJsMethod>	getChangedMethods() {
+		
+		return	Collections.unmodifiableList(this.changedMethods);
 	}
 
 	/**
@@ -135,7 +155,7 @@ public	class	ModifiedJsClass {
 	 */
 	public	void	addChangedMethod(String name, String newSignature, String prevSignature) {
 		
-		ModifiedMethod m = new ModifiedMethod(name, newSignature, prevSignature);
+		ChangedJsMethod m = new ChangedJsMethod(name, newSignature, prevSignature);
 		changedMethods.add(m);
 	}
 
@@ -153,7 +173,7 @@ public	class	ModifiedJsClass {
 			return	true;
 		if (getRemovedMethods().size() > 0)
 			return	true;
-		if (this.changedMethods.size() > 0)
+		if (getChangedMethods().size() > 0)
 			return	true;
 		
 		return	false;
@@ -164,7 +184,7 @@ public	class	ModifiedJsClass {
 	 * @author sposetti
 	 *
 	 */
-	public	class		ModifiedMethod {
+	public	class		ChangedJsMethod {
 		
 		private	String	name;
 		private	String	newSignature;
@@ -174,7 +194,7 @@ public	class	ModifiedJsClass {
 		 * Constructor.
 		 * 
 		 */
-		public	ModifiedMethod(String name, String newSignature, String prevSignature) {
+		public	ChangedJsMethod(String name, String newSignature, String prevSignature) {
 			this.name = name;
 			this.newSignature = newSignature;
 			this.prevSignature = prevSignature;
@@ -207,6 +227,6 @@ public	class	ModifiedJsClass {
 			return	this.prevSignature;
 		}
 
-	} // end inner ModifiedMethod class
+	} // end inner ModifiedJsMethod class
 
 }

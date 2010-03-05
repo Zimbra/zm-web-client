@@ -33,22 +33,22 @@ public	class	JsInventory {
 	static	final	String		KEY_ADDED = "ADDED";
 	static	final	String		KEY_REMOVED = "REMOVED";
 
-	private	String	version;
-	private	String	release;
-	private	String	date;
+	private	String	buildVersion;
+	private	String	buildRelease;
+	private	String	buildDate;
 	private	List<JsClass>		classes = Collections.synchronizedList(new LinkedList());
 	
 	/**
 	 * Constructor.
 	 * 
-	 * @param	version		the build version
-	 * @param	date		the build date
-	 * @param	release		the build release
+	 * @param	buildVersion		the build version
+	 * @param	buildRelease		the build release
+	 * @param	buildDate		the build date
 	 */
-	private	JsInventory(String version, String date, String release) {
-		this.version = version;
-		this.release = release;
-		this.date = date;
+	private	JsInventory(String buildVersion, String buildRelease, String buildDate) {
+		this.buildVersion = buildVersion;
+		this.buildRelease = buildRelease;
+		this.buildDate = buildDate;
 	}
 	
 	/**
@@ -93,7 +93,7 @@ public	class	JsInventory {
 		String buildDate = jsonObj.getString("build.date");
 		String buildRelease = jsonObj.getString("build.release");
 
-		return	new JsInventory(buildVersion, buildDate, buildRelease);
+		return	new JsInventory(buildVersion, buildRelease, buildDate);
 	}
 
 	/**
@@ -216,7 +216,7 @@ public	class	JsInventory {
 	 * @return	the inventory build version
 	 */
 	public	String	getBuildVersion() {
-		return	this.version;
+		return	this.buildVersion;
 	}
 
 	/**
@@ -225,7 +225,7 @@ public	class	JsInventory {
 	 * @return	the inventory build release
 	 */
 	public	String	getBuildRelease() {
-		return	this.release;
+		return	this.buildRelease;
 	}
 
 	/**
@@ -234,7 +234,7 @@ public	class	JsInventory {
 	 * @return	the inventory build date
 	 */
 	public	String	getBuildDate() {
-		return	this.date;
+		return	this.buildDate;
 	}
 
 	/**
@@ -272,22 +272,31 @@ public	class	JsInventory {
 	}
 
 	/**
-	 * Generates a inventory difference.
+	 * Generates an inventory difference.
 	 * 
 	 * @param	inv		the inventory to compare against
-	 * @return	the differences
+	 * @return	the change log data model
 	 */
-	public	Diff		generateDiff(JsInventory inv) {
+	public	Map		generateChangeLogDataModel(JsInventory inv) {
 	
-       	Map	 diffClasses = generateDiffClassList(this, inv);
-       	
+		Map	root = new HashMap();
+		
+		root.put("baseline", this);
+		root.put("comparison", inv);
+
+		Map<String,JsClass>	diffClasses = this.generateDiffClassList(this, inv);
        	List<JsClass> addedClasses = (List<JsClass>)diffClasses.get(KEY_ADDED);
        	List<JsClass> removedClasses = (List<JsClass>)diffClasses.get(KEY_REMOVED);
 
+		root.put("addedClasses", addedClasses);
+		root.put("removedClasses", removedClasses);
+
        	List<ModifiedJsClass> modifiedClasses = generateModifiedClassList(this, inv);
 
-       	return	new Diff(addedClasses, removedClasses, modifiedClasses);
-	}
+		root.put("modifiedClasses", modifiedClasses);
+
+		return	root;
+		}
 	
 	/**
 	 * Generates a map of added and removed class differences between the two inventories.
@@ -360,9 +369,17 @@ public	class	JsInventory {
 			List<JsClass.Method> previousMethods = prevClazz.getMethods();
 			Map modifiedMethods = generateDiffList(previousMethods, currentMethods);
 
-			ModifiedJsClass mod = new ModifiedJsClass(clazz.getName(), clazz.getPackage());
-			mod.setModifiedProperties(modifiedProperties);
-			mod.setModifiedMethods(modifiedMethods);
+			ModifiedJsClass mod = new ModifiedJsClass(clazz.getName(), clazz.getFullName());
+
+			List<JsClass.Property>	addedProperties = (List)modifiedProperties.get(KEY_ADDED);
+			List<JsClass.Property>	removedProperties = (List)modifiedProperties.get(KEY_REMOVED);
+			mod.setAddedProperties(addedProperties);
+			mod.setRemovedProperties(removedProperties);
+
+			List<JsClass.Method>	addedMethods = (List)modifiedMethods.get(KEY_ADDED);
+			List<JsClass.Method>	removedMethods = (List)modifiedMethods.get(KEY_REMOVED);
+			mod.setAddedMethods(addedMethods);
+			mod.setRemovedMethods(removedMethods);
 
 			// only check for modification of previously existing methods
 			currentMethods = clazz.getMethods();
@@ -417,7 +434,7 @@ public	class	JsInventory {
 			buf.append("    Class: ");
 			buf.append(clazz.getName());
 			buf.append(" (");
-			buf.append(clazz.getPackage());
+			buf.append(clazz.getFullName());
 			buf.append(")");
 			buf.append("\n");
 			
@@ -473,54 +490,4 @@ public	class	JsInventory {
 		return	buf.toString();
 	}
 
-	/**
-	 * This class represents an inventory diff.
-	 * 
-	 * @author sposetti
-	 *
-	 */
-	public	class Diff {
-		
-		private	List<JsClass>	addedClasses = new LinkedList();
-		private	List<JsClass>	removedClasses = new LinkedList();
-		private	List<ModifiedJsClass>	modifiedClasses = new LinkedList();
-		
-		/**
-		 * Constructor.
-		 */
-		private	Diff(List addedClasses, List removedClasses, List modifiedClasses) {
-			this.addedClasses = addedClasses;
-			this.removedClasses = removedClasses;
-			this.modifiedClasses = modifiedClasses;
-		}
-		
-		/**
-		 * Gets the added classes.
-		 * 
-		 * @return		a list of {@link JsClass} objects or an empty list for none
-		 */
-		public	List<JsClass>	getAddedClasses() {
-			return	this.addedClasses;
-		}
-
-		/**
-		 * Gets the removed classes.
-		 * 
-		 * @return		a list of {@link JsClass} objects or an empty list for none
-		 */
-		public	List<JsClass>	getRemovedClasses() {
-			return	this.removedClasses;
-		}
-
-		/**
-		 * Gets the modified classes.
-		 * 
-		 * @return		a list of {@link ModifiedJsClass} objects or an empty list for none
-		 */
-		public	List<ModifiedJsClass>	getModifiedClasses() {
-			return	this.modifiedClasses;
-		}
-
-	} // end inner Diff class
-	
 } // end Inventory class
