@@ -157,12 +157,7 @@
                                     <zm:forEachFolder var="folder">
                                         <c:if test="${folder.isContactCreateTarget}">
                                             <option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected </c:if> value="${folder.id}">
-                                            ${zm:getFolderName(pageContext, folder.id) }</option>
-                                            
-                                        </c:if>
-                                        <c:if test="${(folder.isMountPoint) and (folder.isContactView) and (folder.effectivePerm eq 'rwidxc')}">
-                                            <option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.canonicalRemoteId)}">selected </c:if> value="${folder.id}">
-                                            ${zm:getFolderName(pageContext, folder.id)} </option>
+                                            ${zm:getFolderName(pageContext, folder.id) }</option>     
                                         </c:if>
                                     </zm:forEachFolder>
                                 </select>
