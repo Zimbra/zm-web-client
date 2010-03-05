@@ -328,10 +328,10 @@ function(ev, bIsPopCallback) {
 			(contact.isShared() || (newFolder && newFolder.link)))
 		{
 			// update existing contact with new attrs
-			contact.attr = {};
-			for (var a in view._attr) {
-				if (view._attr[a])
-					contact.attr[a] = view._attr[a];
+			for (var a in mods) {
+				if (a != ZmContact.F_folderId) {
+					contact.attr[a] = mods[a];
+				}
 			}
 			// set folder will do the right thing for this shared contact
 			contact._setFolder(newFolderId);
