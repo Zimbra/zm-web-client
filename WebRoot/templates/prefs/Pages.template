@@ -394,6 +394,7 @@ and the container element is replaced with that control.
 						</tr>
 
 						<tr><td colspan=2><hr></td></tr>
+                        <$ } $>
 
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.removeDupesToSelfLabel$></td>
@@ -403,7 +404,6 @@ and the container element is replaced with that control.
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><div id='${id}_DEDUPE_MSG_TO_SELF' tabindex='180'></div></td>
 						</tr>
-						<$ } $>
 
 					<$ } $>
 				</table>
