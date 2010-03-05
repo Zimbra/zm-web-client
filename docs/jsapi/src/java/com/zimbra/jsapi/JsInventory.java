@@ -46,11 +46,28 @@ public	class	JsInventory {
 	 * @param	buildDate		the build date
 	 */
 	private	JsInventory(String buildVersion, String buildRelease, String buildDate) {
+		buildVersion = getMajorVersion(buildVersion);
 		this.buildVersion = buildVersion;
 		this.buildRelease = buildRelease;
 		this.buildDate = buildDate;
 	}
 	
+	/**
+	 * Gets the major version component (for example, "6.05") of the build version.
+	 * 
+	 * @param	version		the version
+	 * @return	the major version component
+	 */
+	private	static	String	getMajorVersion(String version) {
+		if (version != null) {
+			String[] tokens = version.split("\\_");
+			if (tokens != null && tokens.length > 0)
+				return	tokens[0];
+		}
+		
+		return	version;
+	}
+
 	/**
 	 * Creates the inventory.
 	 * 
