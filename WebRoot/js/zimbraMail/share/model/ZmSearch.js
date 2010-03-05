@@ -705,11 +705,12 @@ ZmSearch.FLAG["unreplied"]		= "!item.isReplied";
  * matches this search. If the parsing fails for any reason, the function is not
  * created.
  *
- * If the query is a single term of "in:" or "tag:", then this.folderId or this.tagId
- * will be set.
+ * If the query contains a term of "in:" or "tag:" and has no OR conditionals, then
+ * this.folderId or this.tagId will be set.
  *
- * Compound terms such as "in:(inbox or sent)" are not handled. Anything that invokes
- * a text search (such as "in:inbox xml") is not handled.
+ * Compound terms such as "in:(inbox or sent)" will not result in the creation of
+ * a match function, nor will anything that invokes a text search
+ * (such as "in:inbox xml").
  * 
  * @private
  */
@@ -746,21 +747,21 @@ function() {
 
 
 	var len = query.length;
-	var tokens = [], ch, op, word = "", fail = false, eow = false, endOk = true;
+	var tokens = [], ch, op, word = "", fail = false, eow = false, endOk = true, hasOrTerm = false;
 	var pos = skipSpace(query, 0);
-	while (pos < len && !fail) {
+	while (pos < len) {
 		ch = query.charAt(pos);
 		eow = ZmSearch.EOW[ch];
 
 		if (ch == ":") {
 			if (ZmSearch.IS_OP[word]) {
 				op = word;
-				word = "";
-				pos = skipSpace(query, pos + 1);
-				continue;
 			} else {
 				fail = true;
 			}
+			word = "";
+			pos = skipSpace(query, pos + 1);
+			continue;
 		}
 
 		if (eow) {
@@ -770,9 +771,13 @@ function() {
 				endOk = true;
 			} else if (!op) {
 				if (ZmSearch.COND[word.toLowerCase()]) {
-					tokens.push(ZmSearch.COND[word.toLowerCase()]);
+					var cond = word.toLowerCase();
+					tokens.push(ZmSearch.COND[cond]);
 					word = "";
 					endOk = false;
+					if (cond == "or") {
+						hasOrTerm = true;
+					}
 				} else if (word) {
 					fail = true;
 				}
@@ -802,38 +807,44 @@ function() {
 		}
 	}
 
-	if (fail) { return; }
-
 	// check for term at end
-	if ((pos == query.length) && op && word) {
+	if (!fail && (pos == query.length) && op && word) {
 		tokens.push({isTerm:true, op:op, arg:word});
 		endOk = true;
+	} else if (!op && word) {
+		fail = true;
 	}
 
-	if (!endOk && !appCtxt.isOffline) { return; }
+	fail = fail || !endOk;
 
-	var numTerms = 0, id, term;
+	var folderId, tagId;
 	var func = ["return Boolean("];
 	for (var i = 0, len = tokens.length; i < len; i++) {
 		var t = tokens[i];
 		if (t.isTerm) {
 			if (t.op == "in" || t.op == "inid") {
-				id = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
-				if (!id) { return; }
-				func.push("((item.type == ZmItem.CONV) ? item.folders && item.folders['" + id +"'] : item.folderId == '" + id + "')");
+				if (this.isMultiAccount()) {
+					var result = ZmOrganizer.parseId(t.arg);
+					folderId = result && appCtxt.accountList.resolveFolderId(result.id);
+				} else {
+					folderId = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
+				}
+				if (folderId) {
+					func.push("((item.type == ZmItem.CONV) ? item.folders && item.folders['" + folderId +"'] : item.folderId == '" + folderId + "')");
+				}
 			} else if (t.op == "tag") {
-				id = this._getTagId(t.arg);
-				if (!id) { return; }
-				func.push("item.hasTag('" + id + "')");
+				tagId = this._getTagId(t.arg);
+				if (tagId) {
+					func.push("item.hasTag('" + tagId + "')");
+				}
 			} else if (t.op == "is") {
 				var test = ZmSearch.FLAG[t.arg];
-				if (!test) { return; }
-				func.push(test);
+				if (test) {
+					func.push(test);
+				}
 			} else if (t.op == "sort") {
 				this.querySortOrder = t.arg;
 			}
-			numTerms++;
-			term = t;
 			var next = tokens[i + 1];
 			if (next && (next.isTerm || next == ZmSearch.COND["not"] || next == "(")) {
 				func.push(ZmSearch.COND["and"]);
@@ -844,24 +855,15 @@ function() {
 	}
 	func.push(")");
 
-	try {
-		this.matches = new Function("item", func.join(""));
-	} catch(ex) {}
-
-	if (numTerms == 1) {
-		var t = tokens[0];
-		if (t.op == "in" || t.op == "inid") {
-			this.folderId = id;
-		} else if (t.op == "tag") {
-			this.tagId = id;
-		}
+	if (!fail) {
+		try {
+			this.matches = new Function("item", func.join(""));
+		} catch(ex) {}
 	}
 
-	if (term && this.isMultiAccount()) {
-		if (term.op == "in" || term.op == "inid") {
-			var result = ZmOrganizer.parseId(term.arg);
-			this.folderId = appCtxt.accountList.resolveFolderId(result.id);
-		}
+	if (!hasOrTerm) {
+		this.folderId = folderId;
+		this.tagId = tagId;
 	}
 };
 

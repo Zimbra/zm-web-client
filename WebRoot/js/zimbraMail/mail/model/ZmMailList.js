@@ -580,8 +580,7 @@ function() {
 	var chars = ["-"];
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
 	for (var i = 0; i < folders.length; i++) {
-		var name = ZmFolder.QUERY_NAME[folders[i]];
-		if (!(this.search && this.search.hasFolderTerm(name))) {
+		if (!(this.search && this.search.folderId == folders[i])) {
 			chars.push(ZmFolder.TCON_CODE[folders[i]]);
 		}
 	}
