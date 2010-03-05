@@ -2,7 +2,9 @@
 	
 	<property name="src.dir" location="src" />
 	<property name="src.java.dir" location="${src.dir}/java" />
-	<property name="src.html.dir" location="${src.dir}/html" />
+	<property name="template.dir" location="${src.dir}/template" />
+	<property name="jars.dir" location="jars" />
+	
 	<property name="build.dir" location="build" />
     <property name="build.classes.dir" location="${build.dir}/classes" />
 
@@ -13,8 +15,8 @@
 
     <property name="change-log.zip" location="${zimbra-web-client.build.docs.dir}/jsapi-changelog.zip" />
 
-	<path id="src.java.path">
-		<pathelement location="${src.java.dir}" />
+    <path id="class.path">
+        <fileset dir="${jars.dir}" includes="**/*.jar"/>
 	</path>
 
 	<target name="prepare" >
@@ -22,22 +24,24 @@
 	</target>
 
 	<target name="compile" depends="prepare" description="Compiles the source code">
-		<javac destdir="${build.classes.dir}" debug="true">
-			<src refid="src.java.path" />
+		<javac destdir="${build.classes.dir}" classpathref="class.path" debug="true">
+			<src location="${src.java.dir}" />
 		</javac>
 	</target>
 
 	<target name="generate-changelog" depends="compile">
 		<mkdir dir="${output.dir}" />
 		<copy todir="${output.dir}">
-			<fileset dir="${src.html.dir}" />
+			<fileset dir="${template.dir}">
+				<exclude name="**/*.ftl"/>
+			</fileset>
 		</copy>
-		<java classname="com.zimbra.jsapi.JsChangeLogUtil" fork="true" failonerror="true">
+		<java classname="com.zimbra.jsapi.JsChangeLogUtil" classpathref="class.path" fork="true" failonerror="true">
 		  	<classpath>
 		  		<pathelement path="${build.classes.dir}" />
 		  	</classpath>
-		    <arg line="-delivery.dir ${output.dir}"/>
-		    <arg line="-template.dir ${src.html.dir}"/>
+		    <arg line="-output ${output.dir}"/>
+		    <arg line="-template ${template.dir}"/>
 		    <arg line="-baseline.inventory jsapi-inventory.zip"/>
 		    <arg line="-current.inventory ${zimbra-web-client.build.docs.dir}/jsapi-inventory.zip"/>
 		</java>
