@@ -296,7 +296,7 @@ function() {
 			icon: "POPAccount",
 			title: (appCtxt.isOffline ? ZmMsg.personas : ZmMsg.accounts),
 			templateId: "prefs.Pages#Accounts",
-			priority: 60,
+			priority: 40,
 			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
 			prefs: [
 				ZmSetting.ACCOUNTS
@@ -328,7 +328,7 @@ function() {
 			icon: "MailRule",
 			title: ZmMsg.filterRules,
 			templateId: "prefs.Pages#MailFilters",
-			priority: 70,
+			priority: 50,
 			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)),
 			prefs: [
 				ZmSetting.FILTERS

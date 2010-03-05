@@ -130,7 +130,7 @@ function() {
 			title: ZmMsg.addressBook,
 			icon: "ContactsApp",
 			templateId: "prefs.Pages#Contacts",
-			priority: 50,
+			priority: 70,
 			precondition: ZmSetting.CONTACTS_ENABLED,
 			prefs: [
 				ZmSetting.AUTO_ADD_ADDRESS,
