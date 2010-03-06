@@ -143,9 +143,10 @@ function(useException) {
 };
 
 ZmSchedTabViewPage.prototype.initialize =
-function(appt, mode) {
+function(appt, mode, isDirty, isForward) {
 	this._appt = appt;
 	this._mode = mode;
+    this._isForward = isForward;
 };
 
 ZmSchedTabViewPage.prototype.set =
@@ -168,6 +169,13 @@ function(dateInfo, organizer, attendees) {
 
 	this._setAttendees(organizer, attendees);
 	this._outlineAppt();
+
+    this._startTimeSelect.setEnabled(!this._isForward);
+    this._endTimeSelect.setEnabled(!this._isForward);
+    this._startDateButton.setEnabled(!this._isForward);
+    this._endDateButton.setEnabled(!this._isForward);
+    this._startDateField.disabled = this._isForward;
+    this._endDateField.disabled = this._isForward;
 };
 
 ZmSchedTabViewPage.prototype.cleanup =
