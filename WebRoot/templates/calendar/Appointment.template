@@ -15,8 +15,7 @@
 								<td align=right valign=top style='<$=labelStyle$>'>
 								    <div id='${id}_picker'><$=ZmMsg.toLabel$></div>
 								</td>
-                                <td width='98%' colspan=2>
-                                    <textarea id='${id}_to_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+                                <td width='98%' colspan=2 id='${id}_to_control'>
                                 </td>
 							</tr>
                         </table>

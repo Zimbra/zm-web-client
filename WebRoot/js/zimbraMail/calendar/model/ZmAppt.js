@@ -908,12 +908,21 @@ function(callback, errorCallback, mode) {
     }
 
     var addrs = this._fwdAddrs;
-    if (addrs.gotAddress && addrs[AjxEmailAddress.TO]) {
-        var toAddrs = addrs[AjxEmailAddress.TO].all.getArray();
-        for (var i in toAddrs) {
-            this._addAddressToSoap(soapDoc, m, toAddrs[i].address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], toAddrs[i].name);
+    for (var i = 0; i < addrs.length; i++) {
+        var attendee = addrs[i];
+        var address;
+        if (attendee._inviteAddress) {
+            address = attendee._inviteAddress;
+            delete attendee._inviteAddress;
+        } else {
+            address = attendee.getEmail();
         }
-    }
+        if (!address) continue;
+        if (address instanceof Array) {
+            address = address[0];
+        }
+        this._addAddressToSoap(soapDoc, m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], attendee.getFullName());
+    }    
 
     this._sendRequest(soapDoc, accountName, callback, errorCallback);
 };
@@ -992,14 +1001,23 @@ function(callback, errorCallback) {
 	}
 
 	var addrs = this._fwdAddrs;
-	if (addrs.gotAddress && addrs[AjxEmailAddress.TO]) {
-		var toAddrs = addrs[AjxEmailAddress.TO].all.getArray();
-		for (var i in toAddrs) {
-			this._addAddressToSoap(soapDoc, m, toAddrs[i].address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], toAddrs[i].name);
-		}
-	}
+    for (var i = 0; i < addrs.length; i++) {
+        var attendee = addrs[i];
+        var address;
+        if (attendee._inviteAddress) {
+            address = attendee._inviteAddress;
+            delete attendee._inviteAddress;
+        } else {
+            address = attendee.getEmail();
+        }
+        if (!address) continue;
+        if (address instanceof Array) {
+            address = address[0];
+        }
+        this._addAddressToSoap(soapDoc, m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], attendee.getFullName());
+    }
 
-	this._sendRequest(soapDoc, accountName, callback, errorCallback);
+    this._sendRequest(soapDoc, accountName, callback, errorCallback);
 };
 
 ZmAppt.prototype._addAddressToSoap =
