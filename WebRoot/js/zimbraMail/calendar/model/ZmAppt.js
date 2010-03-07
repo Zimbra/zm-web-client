@@ -535,6 +535,7 @@ function(message) {
 			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, ZmCalBaseItem.PERSON);
 			if (attendee) {
 				attendee.setAttr("participationStatus", ptstReplies[addr] || attendees[i].ptst);
+				attendee.setAttr("role", attendees[i].role || ZmCalItem.ROLE_REQUIRED);
 				this._attendees[ZmCalBaseItem.PERSON].push(attendee);
 				this.origAttendees.push(attendee);
 			}
@@ -827,7 +828,11 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 	if (inv) {
 		at = soapDoc.set("at", null, inv);
 		// for now make attendees optional, until UI has a way of setting this
-		at.setAttribute("role", (type == ZmCalBaseItem.PERSON) ? ZmCalItem.ROLE_REQUIRED : ZmCalItem.ROLE_NON_PARTICIPANT);
+        var role = ZmCalItem.ROLE_NON_PARTICIPANT;
+        if(type == ZmCalBaseItem.PERSON) {
+            role = attendee.getAttr("role") ? attendee.getAttr("role") : ZmCalItem.ROLE_REQUIRED;
+        }
+		at.setAttribute("role", role);
 		
 		var ptst = attendee.getAttr("participationStatus") || ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 		if (notifyList) {

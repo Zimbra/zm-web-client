@@ -420,13 +420,15 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		var selectDiv = document.getElementById(selectId);
 		if (selectDiv) {
 			select = new DwtSelect({parent:this});
-			select.addOption(new DwtSelectOption(ZmCalBaseItem.PERSON, true, null, null, null, "Person"));
-			select.addOption(new DwtSelectOption(ZmCalBaseItem.LOCATION, false, null, null, null, "Location"));
-			select.addOption(new DwtSelectOption(ZmCalBaseItem.EQUIPMENT, false, null, null, null, "Resource"));
+			select.addOption(new DwtSelectOption(ZmCalBaseItem.PERSON, true, ZmMsg.requiredAttendee, null, null, "Person"));
+			select.addOption(new DwtSelectOption(ZmCalItem.ROLE_OPTIONAL, false, ZmMsg.optionalAttendee, null, null, "PriorityLow"));
+			select.addOption(new DwtSelectOption(ZmCalBaseItem.LOCATION, false, ZmMsg.location, null, null, "Location"));
+			select.addOption(new DwtSelectOption(ZmCalBaseItem.EQUIPMENT, false, ZmMsg.resourceAttendee, null, null, "Resource"));
 			select.reparentHtmlElement(selectId);
 			select.addChangeListener(this._selectChangeListener);
 			select.setSize("50");
-			select._schedTableIdx = index;
+			select.setText("");
+            select._schedTableIdx = index;
 			sched.selectObj = select;
 		}
 		// add DwtInputField
@@ -769,8 +771,15 @@ function(index, attendee, type, isOrganizer) {
 	}
 
 	var select = sched.selectObj;
+    var role = attendee.getAttr("role") || ZmCalItem.ROLE_REQUIRED;
+
+    if(type == ZmCalBaseItem.PERSON && role == ZmCalItem.ROLE_OPTIONAL) {
+        type = ZmCalItem.ROLE_OPTIONAL; 
+    }
+
 	if (select) {
 		select.setSelectedValue(type);
+        select.setText("");
 	}
 
 	var ptst = attendee.getAttr("participationStatus") || "NE";
@@ -844,6 +853,7 @@ function(sched, resetSelect, type, noClear) {
 		var select = AjxCore.objectWithId(sched.selectObjId);
 		if (select) {
 			select.setSelectedValue(ZmCalBaseItem.PERSON);
+            select.setText("");
 		}
 	}
 
@@ -1009,9 +1019,19 @@ function(ev) {
 	var select = ev._args.selectObj;
 	if (!select) return;
 
+    select.setText("");
+    
 	var svp = select.parent;
 	var type = select.getValue();
 	var sched = svp._schedTable[select._schedTableIdx];
+
+    if(type == ZmCalItem.PERSON || type == ZmCalItem.ROLE_REQUIRED || type == ZmCalItem.ROLE_OPTIONAL) {
+        if(sched.attendee) {
+               sched.attendee.setAttr("role", (type == ZmCalItem.ROLE_OPTIONAL) ? ZmCalItem.ROLE_OPTIONAL : ZmCalItem.ROLE_REQUIRED); 
+        }
+        type = ZmCalBaseItem.PERSON;
+    }
+
 	if (sched.attType == type) return;
 
 	// reset row
