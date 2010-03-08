@@ -420,8 +420,8 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		var selectDiv = document.getElementById(selectId);
 		if (selectDiv) {
 			select = new DwtSelect({parent:this});
-			select.addOption(new DwtSelectOption(ZmCalBaseItem.PERSON, true, ZmMsg.requiredAttendee, null, null, "Person"));
-			select.addOption(new DwtSelectOption(ZmCalItem.ROLE_OPTIONAL, false, ZmMsg.optionalAttendee, null, null, "PriorityLow"));
+			select.addOption(new DwtSelectOption(ZmCalBaseItem.PERSON, true, ZmMsg.requiredAttendee, null, null, "AttendeesRequired"));
+			select.addOption(new DwtSelectOption(ZmCalItem.ROLE_OPTIONAL, false, ZmMsg.optionalAttendee, null, null, "AttendeesOptional"));
 			select.addOption(new DwtSelectOption(ZmCalBaseItem.LOCATION, false, ZmMsg.location, null, null, "Location"));
 			select.addOption(new DwtSelectOption(ZmCalBaseItem.EQUIPMENT, false, ZmMsg.resourceAttendee, null, null, "Resource"));
 			select.reparentHtmlElement(selectId);
