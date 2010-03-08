@@ -111,21 +111,20 @@ function(params) {
 ZmPrefPageTreeController.prototype._showSection =
 function(account, sectionId) {
 
-	if (appCtxt.multiAccounts && sectionId == "MOBILE") {
-		return false;
-	}
-
 	if (appCtxt.isFamilyMbox && !account.isMain && sectionId == "CONTACTS") {
 		return false;
 	}
 
 	if (appCtxt.isOffline) {
+		if (sectionId == "MOBILE") {
+			return false;
+		}
+
 		if (account.isMain) {
 			if (sectionId == "FILTERS" ||
 				sectionId == "SHARING" ||
 				sectionId == "SIGNATURES" ||
-				sectionId == "ACCOUNTS" ||
-				sectionId == "IMPORT_EXPORT")
+				sectionId == "ACCOUNTS")
 			{
 				return false;
 			}
@@ -141,16 +140,14 @@ function(account, sectionId) {
 			{
 				return false;
 			}
-			if (sectionId == "IMPORT_EXPORT") {
-				return true;
-			}
 		}
 	}
 
 	return (account.isMain ||
 			(!account.isMain && (sectionId != "GENERAL" &&
 								 sectionId != "SHORTCUTS" &&
-								 sectionId != "PREF_ZIMLETS")
+								 sectionId != "PREF_ZIMLETS" &&
+								 sectionId != "IMPORT_EXPORT")
 			));
 };
 

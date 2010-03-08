@@ -588,7 +588,7 @@ function(batchCmd) {
 	}
 
 	// for multi-account mbox, check if user changed visible flag on subaccounts
-	if (appCtxt.accountList.size() > 1) {
+	if (appCtxt.accountList.size(true) > 1) {
 		this._saveVisibleAccounts(batchCmd);
 	}
 

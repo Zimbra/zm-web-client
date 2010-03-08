@@ -59,14 +59,14 @@ function() {
 };
 
 /**
- * Gest the number of accounts for this mailbox.
+ * Gest the number of visible accounts for this mailbox.
  *
- * @param {Boolean}	visible	if <code>true</code>, include the number of visible accounts for this mailbox
- * @return	{int}	the number of accounts for this mailbox
+ * @param	{Boolean}	includeInvisible	if <code>true</code>, include the number of invisible accounts for this mailbox
+ * @return	{int}							the number of accounts for this mailbox
  */
 ZmAccountList.prototype.size =
-function(visible) {
-	return (visible) ? this.visibleAccounts.length : this._count;
+function(includeInvisible) {
+	return (includeInvisible) ? this._count : this.visibleAccounts.length;
 };
 
 /**

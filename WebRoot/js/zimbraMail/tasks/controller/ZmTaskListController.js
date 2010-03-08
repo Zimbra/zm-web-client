@@ -39,7 +39,7 @@ ZmTaskListController = function(container, app) {
 	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
 	this._listeners[ZmOperation.PRINT_TASK] = new AjxListener(this, this._printTaskListener);
 	this._listeners[ZmOperation.PRINT_TASKFOLDER] = new AjxListener(this, this._printTaskFolderListener);
-    this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._syncAllListener);
+	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._syncAllListener);
 
 	this._currentTaskView = ZmId.VIEW_TASK_ALL;
 };
@@ -248,41 +248,41 @@ function(view) {
 
 ZmTaskListController.prototype._getToolBarOps =
 function() {
-    var toolbarOps =  [ZmOperation.NEW_MENU, ZmOperation.SEP];
-    if(appCtxt.isOffline) {
-        /* Add a send/recieve button *only* for ZD */
-        toolbarOps.push(ZmOperation.CHECK_MAIL, ZmOperation.SEP);
-    }
-    toolbarOps.push(ZmOperation.EDIT,
-            ZmOperation.SEP,
-            ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
-            ZmOperation.SEP,
-            ZmOperation.TAG_MENU,
-            ZmOperation.SEP,
-            ZmOperation.VIEW_MENU);
-    return toolbarOps;
+	var toolbarOps =  [ZmOperation.NEW_MENU, ZmOperation.SEP];
+	if(appCtxt.isOffline) {
+		// Add a send/recieve button *only* for ZD
+		toolbarOps.push(ZmOperation.CHECK_MAIL, ZmOperation.SEP);
+	}
+	toolbarOps.push(ZmOperation.EDIT,
+			ZmOperation.SEP,
+			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
+			ZmOperation.SEP,
+			ZmOperation.TAG_MENU,
+			ZmOperation.SEP,
+			ZmOperation.VIEW_MENU);
+	return toolbarOps;
 };
 
 ZmTaskListController.prototype._initializeToolBar =
 function(view) {
-    if (this._toolbar[view]) { return; }
+	if (this._toolbar[view]) { return; }
 
-    ZmListController.prototype._initializeToolBar.call(this, view);
+	ZmListController.prototype._initializeToolBar.call(this, view);
 
-    this._setNewButtonProps(view, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
-    if(appCtxt.isOffline) {
-        this._setupSendRecieveButton(view);
-        if (appCtxt.accountList.size() > 2) {
-            this._setupSendReceiveMenu(view);
-        }
-    }
-    this._setupPrintMenu(view);
-    this._setupViewMenu(view);
+	this._setNewButtonProps(view, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
+	if(appCtxt.isOffline) {
+		this._setupSendRecieveButton(view);
+		if (appCtxt.accountList.size() > 2) {
+			this._setupSendReceiveMenu(view);
+		}
+	}
+	this._setupPrintMenu(view);
+	this._setupViewMenu(view);
 
-    this._toolbar[view].getButton(ZmOperation.DELETE).setToolTipContent(ZmMsg.hardDeleteTooltip);
+	this._toolbar[view].getButton(ZmOperation.DELETE).setToolTipContent(ZmMsg.hardDeleteTooltip);
 
-    this._toolbar[view].addFiller();
-    this._initializeNavToolBar(view);
+	this._toolbar[view].addFiller();
+	this._initializeNavToolBar(view);
 };
 
 ZmTaskListController.prototype._initializeNavToolBar =
@@ -291,39 +291,40 @@ function(view) {
 	var text = this._itemCountText[view] = this._toolbar[view].getButton(ZmOperation.TEXT);
 	text.addClassName("itemCountText");
 };
+
 /**
  * Create a Send/Recieve Button and add listeners
  * @param view
  */
 ZmTaskListController.prototype._setupSendRecieveButton =
 function(view) {
-    var checkMailBtn = this._toolbar[view].getButton(ZmOperation.CHECK_MAIL);
-    var checkMailMsg = appCtxt.isOffline ? ZmMsg.sendReceive : ZmMsg.checkMail;
-    checkMailBtn.setText(checkMailMsg);
+	var checkMailBtn = this._toolbar[view].getButton(ZmOperation.CHECK_MAIL);
+	var checkMailMsg = appCtxt.isOffline ? ZmMsg.sendReceive : ZmMsg.checkMail;
+	checkMailBtn.setText(checkMailMsg);
 
-    var tooltip;
-    if (appCtxt.isOffline) {
-        tooltip = ZmMsg.sendReceive;
-    } else {
-        tooltip = (appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
-                ? ZmMsg.checkMailPrefDefault : ZmMsg.checkMailPrefUpdate;
-    }
-    checkMailBtn.setToolTipContent(tooltip);
+	var tooltip;
+	if (appCtxt.isOffline) {
+		tooltip = ZmMsg.sendReceive;
+	} else {
+		tooltip = (appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
+			? ZmMsg.checkMailPrefDefault : ZmMsg.checkMailPrefUpdate;
+	}
+	checkMailBtn.setToolTipContent(tooltip);
 };
 
 ZmTaskListController.prototype._handleSyncAll =
 function() {
-    if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
-        appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
-    {
-        this._app.getOverviewContainer().highlightAllMboxes();
-    }
+	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
+		appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
+	{
+		this._app.getOverviewContainer().highlightAllMboxes();
+	}
 };
 
 ZmTaskListController.prototype._syncAllListener =
 function(view) {
-    var callback = new AjxCallback(this, this._handleSyncAll);
-    appCtxt.accountList.syncAll(callback);
+	var callback = new AjxCallback(this, this._handleSyncAll);
+	appCtxt.accountList.syncAll(callback);
 };
 
 /**
@@ -334,37 +335,37 @@ function(view) {
 
 ZmTaskListController.prototype._setupSendReceiveMenu =
 function(view) {
-    var btn = this._toolbar[view].getButton(ZmOperation.CHECK_MAIL);
-    if (!btn) { return; }
-    btn.setMenu(new AjxCallback(this, this._setupSendReceiveMenuItems, [this._toolbar, btn]));
+	var btn = this._toolbar[view].getButton(ZmOperation.CHECK_MAIL);
+	if (!btn) { return; }
+	btn.setMenu(new AjxCallback(this, this._setupSendReceiveMenuItems, [this._toolbar, btn]));
 };
 
 ZmTaskListController.prototype._setupSendReceiveMenuItems =
 function(toolbar, btn) {
-    var menu = new ZmPopupMenu(btn, null, null, this);
-    btn.setMenu(menu);
+	var menu = new ZmPopupMenu(btn, null, null, this);
+	btn.setMenu(menu);
 
-    var listener = new AjxListener(this, this._sendReceiveListener);
-    var list = appCtxt.accountList.visibleAccounts;
-    for (var i = 0; i < list.length; i++) {
-        var acct = list[i];
-        if (acct.isMain) { continue; }
+	var listener = new AjxListener(this, this._sendReceiveListener);
+	var list = appCtxt.accountList.visibleAccounts;
+	for (var i = 0; i < list.length; i++) {
+		var acct = list[i];
+		if (acct.isMain) { continue; }
 
-        var id = [ZmOperation.CHECK_MAIL, acct.id].join("-");
-        var mi = menu.createMenuItem(id, {image:acct.getIcon(), text:acct.getDisplayName()});
-        mi.setData(ZmOperation.MENUITEM_ID, acct.id);
-        mi.addSelectionListener(listener);
-    }
+		var id = [ZmOperation.CHECK_MAIL, acct.id].join("-");
+		var mi = menu.createMenuItem(id, {image:acct.getIcon(), text:acct.getDisplayName()});
+		mi.setData(ZmOperation.MENUITEM_ID, acct.id);
+		mi.addSelectionListener(listener);
+	}
 
-    return menu;
+	return menu;
 };
 
 ZmTaskListController.prototype._sendReceiveListener =
 function(ev) {
-    var account = appCtxt.accountList.getAccount(ev.item.getData(ZmOperation.MENUITEM_ID));
-    if (account) {
-        account.sync();
-    }
+	var account = appCtxt.accountList.getAccount(ev.item.getData(ZmOperation.MENUITEM_ID));
+	if (account) {
+		account.sync();
+	}
 };
 
 ZmTaskListController.prototype._setupPrintMenu =

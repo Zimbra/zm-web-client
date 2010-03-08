@@ -564,7 +564,7 @@
 	}
 	$>
 
-	<$ if (appCtxt.accountList.size(true) > 1) { $>
+	<$ if (appCtxt.accountList.size() > 1) { $>
 		<tr valign='top'>
 			<td align='right' style='padding-right:5px;'>
 				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.accountLabel) $></div></b>

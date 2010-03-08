@@ -217,16 +217,38 @@ function(params) {
 	}
 
 	// add the "local" account last
-	if (appCtxt.isOffline && this._appName != ZmApp.PREFERENCES) {
+	if (appCtxt.isOffline) {
 		var params2 = AjxUtil.hashCopy(params);
 		params2.omit = {};
 		params2.selectable = false;
-		this._addAccount(params2, mainAcct, showBackgroundColor, "ZmOverviewLocalHeader");
 
-		header = this.getHeaderItem(mainAcct);
-		header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, mainAcct));
+		if (this._appName != ZmApp.PREFERENCES) {
+			this._addAccount(params2, mainAcct, showBackgroundColor, "ZmOverviewLocalHeader");
 
-		this.updateAccountInfo(mainAcct, false, true);
+			header = this.getHeaderItem(mainAcct);
+			header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, mainAcct));
+
+			this.updateAccountInfo(mainAcct, false, true);
+		}
+		else {
+			var params3 = {
+				parent: this,
+				text: mainAcct.getDisplayName(),
+				imageInfo: mainAcct.getIcon(),
+				selectable: false
+			};
+			var localPrefTi = new DwtTreeItem(params3);
+			localPrefTi._initialize(null, true);
+
+			var globalPrefOverviewId = appCtxt.getOverviewId(this.containerId, mainAcct);
+			var tv = this._overview[globalPrefOverviewId].getTreeView(ZmOrganizer.PREF_PAGE);
+			var importExportTi = tv.getTreeItemById("PREF_PAGE_IMPORT_EXPORT");
+
+			tv.getHeaderItem().removeChild(importExportTi);
+			localPrefTi._addItem(importExportTi);
+			importExportTi.addClassName("DwtTreeItemChildDiv");
+			localPrefTi.setExpanded(true, null, true);
+		}
 	}
 
 	// add zimlets at the end of all overviews
@@ -444,12 +466,18 @@ function(params, account, showBackgroundColor, headerClassName) {
 		var omit = params.omitPerAcct
 			? params.omitPerAcct[account.id] : params.omit;
 
-		var headerLabel = (this._appName == ZmApp.PREFERENCES && account.isMain && appCtxt.isOffline)
-			? ZmMsg.allAccounts : account.getDisplayName();
+		var headerLabel, headerIcon;
+		if (this._appName == ZmApp.PREFERENCES && account.isMain && appCtxt.isOffline) {
+			headerLabel = ZmMsg.allAccounts;
+			headerIcon = "GlobalInbox";
+		} else {
+			headerLabel = account.getDisplayName();
+			headerIcon = account.getIcon()
+		}
 
 		var headerParams = {
 			label: headerLabel,
-			icon: account.getIcon(),
+			icon: headerIcon,
 			dataId: account.id,
 			className: headerClassName
 		};

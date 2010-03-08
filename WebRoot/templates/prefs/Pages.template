@@ -117,7 +117,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_SHOW_SELECTION_CHECKBOX' tabindex='90'></div></td>
 					</tr>
-					<$ if (appCtxt.isOffline && appCtxt.accountList.size(true) > 2) { $>
+					<$ if (appCtxt.isOffline && appCtxt.accountList.size() > 2) { $>
 						<tr>
 							<td class='ZOptionsLabel'></td>
 							<td class='ZOptionsField'><div id='${id}_OFFLINE_SHOW_ALL_MAILBOXES' tabindex='100'></div></td>
@@ -219,7 +219,7 @@ and the container element is replaced with that control.
 
 	<$
 		if (appCtxt.isOffline && data.activeAccount == appCtxt.accountList.defaultAccount) {
-			var size = appCtxt.accountList.size(true);
+			var size = appCtxt.accountList.size();
 			if ((size > 2 && !appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES)) || size == 2) {
 	$>
 				<table border=0 cellspacing=0 cellpadding=0 width=100%>

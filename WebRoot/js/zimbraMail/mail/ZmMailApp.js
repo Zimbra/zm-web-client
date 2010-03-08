@@ -1058,7 +1058,7 @@ function(creates) {
 			if (!acct || (acct && acct.isOfflineInitialSync())) { continue; }
 
 			// for multi-account, highlite the non-active accordion item
-			if (appCtxt.accountList.size(true) > 1) {
+			if (appCtxt.accountList.size() > 1) {
 				ZmAccountAlert.get(acct).start(this);
 			}
 
@@ -1093,7 +1093,7 @@ function(creates) {
 
 				var from = msg.getAddress(AjxEmailAddress.FROM);
 				var email = from.getName() || from.getAddress();
-				var title = (appCtxt.accountList.size(true) > 1)
+				var title = (appCtxt.accountList.size() > 1)
 					? AjxMessageFormat.format(ZmMsg.newMailWithAccount, [email, acct.getDisplayName()])
 					: AjxMessageFormat.format(ZmMsg.newMail, email);
 				ZmDesktopAlert.getInstance().start(title, text);
@@ -1431,7 +1431,7 @@ function(query, callback, response, type) {
 	var sc = appCtxt.getSearchController();
 	var queryHint, noUpdateOverview;
 	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
-		appCtxt.accountList.size(true) > 2)
+		appCtxt.accountList.size() > 2)
 	{
 		query = null;
 		queryHint = appCtxt.accountList.generateQuery(ZmOrganizer.ID_INBOX);
