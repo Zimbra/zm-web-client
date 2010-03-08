@@ -1331,3 +1331,18 @@ margin:26px 24px;
 /* Fix for YUI editor Toolbar Wrap Issue */
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont{padding:0 1.5em 0.5em 1em !important;border-bottom:1px solid #808080;}
 .yui-toolbar-group-indentlist,.yui-toolbar-group-alignment {width: 125px !important;}
+
+
+input[type="text"], 
+input[type="password"] {
+	
+		@InputField-normal@
+	}
+	
+input[disabled] {
+		@InputField-disabled@
+	}
+
+
+	
+	
