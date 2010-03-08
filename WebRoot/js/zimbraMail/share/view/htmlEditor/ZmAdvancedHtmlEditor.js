@@ -29,6 +29,11 @@ ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 
 ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/tiny_mce/3.2.6";
 
+ZmAdvancedHtmlEditor.prototype.toString =
+function() {
+	return "ZmAdvancedHtmlEditor";
+};
+
 ZmAdvancedHtmlEditor.prototype.getEditor =
 function() {
     return  (window.tinyMCE) ? tinyMCE.get(this._bodyTextAreaId) : null;    
@@ -331,6 +336,11 @@ function(id, position) {
 ZmAdvancedHtmlEditor.prototype.getParent =
 function() {
      return this._editorContainer.parent;
+};
+
+ZmAdvancedHtmlEditor.prototype.getInputElement =
+function() {
+     return document.getElementById(this._bodyTextAreaId);
 };
 
 ZmAdvancedHtmlEditor.prototype.initTinyMCEEditor =
