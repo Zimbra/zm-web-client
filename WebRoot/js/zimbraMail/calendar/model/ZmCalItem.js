@@ -1679,7 +1679,7 @@ function(cancel, isHtml) {
 
 	if (cancel) {
 		buf[i++] = singleInstance ? ZmMsg.apptInstanceCanceled : ZmMsg.apptCanceled;
-	} else {
+	} else if(!this.isForwardMode){
 		if (this.viewMode == ZmCalItem.MODE_EDIT ||
 			this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE ||
 			this.viewMode == ZmCalItem.MODE_EDIT_SERIES)
@@ -1690,7 +1690,9 @@ function(cancel, isHtml) {
 		{
 			buf[i++] = ZmMsg.apptNew;
 		}
-	}
+	}else {
+        buf[i++] =  ZmMsg.apptForwarded;
+    }
 
 	if (isHtml) buf[i++] = "</h3>";
 
@@ -1971,6 +1973,22 @@ function(soapDoc, m, cancel) {
 		var html = "<html><body>" + (this._includeEditReply ? hcontent : AjxBuffer.concat(hprefix, hcontent)) + "</body></html>";
 		soapDoc.set("content", html, htmlPart);
 	}
+};
+
+
+/**
+ * Returns a string representation of the invite content.
+ * @param       {Boolean}		isHtml	<code>true</code> to get html content
+ * @return		{String}		a string representation of the invite
+ */
+ZmCalItem.prototype.getInviteDescription =
+function(isHtml) {
+	var hasAttendees = this.hasAttendees();
+	var tprefix = hasAttendees ? this.getSummary(false) : "";
+	var hprefix = hasAttendees ? this.getSummary(true) : "";
+
+    var notes = this.getNotesPart(isHtml ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
+    return AjxBuffer.concat(isHtml ? hprefix : tprefix, notes)    
 };
 
 /**

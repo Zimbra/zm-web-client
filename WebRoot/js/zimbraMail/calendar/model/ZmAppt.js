@@ -898,6 +898,7 @@ function(callback, errorCallback, mode) {
 
     var m = soapDoc.set("m");
     soapDoc.set("su", this.name, m);
+    this.isForwardMode = true;
     this._addNotesToSoap(soapDoc, m, false);
 
     var accountName = this.getRemoteFolderOwner();
@@ -991,6 +992,7 @@ function(callback, errorCallback) {
 
 	var m = soapDoc.set("m");
 	soapDoc.set("su", this.name, m);
+    this.isForwardMode = true;
 	this._addNotesToSoap(soapDoc, m, false);
 
 	var accountName = this.getRemoteFolderOwner();

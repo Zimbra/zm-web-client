@@ -492,6 +492,7 @@ function(calItem) {
 
 ZmCalItemEditView.prototype._setContent =
 function(calItem, mode) {
+    
 	// set notes/content (based on compose mode per user prefs)
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) &&
 		(appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML ||
@@ -501,6 +502,10 @@ function(calItem, mode) {
 		this.setComposeMode(DwtHtmlEditor.HTML);
         var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML)
         if(this._isForward) {
+            var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
+            var crlf2 = "<br><br>";
+            var crlf = "<br>";
+            notesPart = crlf2 + preface + crlf + calItem.getInviteDescription(true);
             notesPart = this.formatContent(notesPart, true);
         }
 		this._notesHtmlEditor.setContent(notesPart);
@@ -510,6 +515,10 @@ function(calItem, mode) {
 		this.setComposeMode(DwtHtmlEditor.TEXT);
         var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
         if(this._isForward) {
+            var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
+            var crlf2 = ZmMsg.CRLF2;
+            var crlf = ZmMsg.CRLF;
+            notesPart = crlf2 + preface + crlf + calItem.getInviteDescription(false);
             notesPart = this.formatContent(notesPart, false);
         }
 		this._notesHtmlEditor.setContent(notesPart);
