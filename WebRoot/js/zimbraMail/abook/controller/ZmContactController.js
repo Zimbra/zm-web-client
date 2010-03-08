@@ -349,9 +349,18 @@ function(ev, bIsPopCallback) {
 					this._doModify(contact, mods);
                 }
 			} else {
-				var clc = AjxDispatcher.run("GetContactListController");
-				var list = (clc && clc.getList()) || new ZmContactList(null);
-				this._doCreate(list, mods);
+                var isEmpty = true;
+                for (var a in mods) {
+                    if (mods[a]) {
+                        isEmpty = false;
+                        break;
+                    }
+                }
+                if (!isEmpty) {
+                    var clc = AjxDispatcher.run("GetContactListController");
+                    var list = (clc && clc.getList()) || new ZmContactList(null);
+                    this._doCreate(list, mods);
+                }
 			}
 		}
 	} else {
