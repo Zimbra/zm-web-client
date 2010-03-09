@@ -135,7 +135,7 @@
                             <tr>
                                 <td nowrap align='right' class='MsgHdrSent'>
                                     <fmt:message var="dateFmt" key="formatDateSent"/>
-                                    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/>
+									<span id="messageDisplayTime"><fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></span>
                                 </td>
                             </tr>
                             <c:if test="${message.hasTags or message.isFlagged}">
@@ -200,3 +200,23 @@
         </td>
     </tr>
 </table>
+<script type="text/javascript">
+<!--
+	var messageUTCTime = '<fmt:formatDate timeZone="GMT" pattern="yyyyMMddHHmmss" value="${message.sentDate}"/>';
+	var displayContainer = document.getElementById("messageDisplayTime");
+	if (messageUTCTime && displayContainer) {
+		var dateStr = messageUTCTime.replace(/[^\d]/g,"");
+		if (dateStr && dateStr.length == 14) {
+			var date = new Date();
+			date.setUTCFullYear(dateStr.substr(0,4));
+			date.setUTCMonth(parseInt(dateStr.substr(4,2), 10)-1);
+			date.setUTCDate(parseInt(dateStr.substr(6,2), 10));
+			date.setUTCHours(parseInt(dateStr.substr(8,2), 10));
+			date.setUTCMinutes(parseInt(dateStr.substr(10,2), 10));
+			date.setUTCSeconds(parseInt(dateStr.substr(12,2), 10));
+			
+			displayContainer.innerHTML = [date.toDateString(), date.toLocaleTimeString()].join(" ");
+		}
+	}
+//-->
+</script>
