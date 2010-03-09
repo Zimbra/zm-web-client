@@ -281,7 +281,23 @@ function(ev, bIsPopCallback) {
                     }
                 }
 			} else {
-				this._doCreate(AjxDispatcher.run("GetContacts"), mods);
+                var isEmpty = true;
+                for (var a in mods) {
+                    if (a == ZmContact.F_folderId) continue;
+                    if (mods[a]) {
+                        isEmpty = false;
+                        break;
+                    }
+                }
+                if (isEmpty) {
+                    var msg = this._currentView == ZmId.VIEW_GROUP
+                        ? ZmMsg.emptyGroup
+                        : ZmMsg.emptyContact;
+                    appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+                }
+                else {
+    				this._doCreate(AjxDispatcher.run("GetContacts"), mods);
+                }
 			}
 		}
 	} else {
