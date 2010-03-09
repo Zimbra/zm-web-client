@@ -126,7 +126,7 @@ function() {
 	// clear out all input fields
 	this._subjectField.setValue("");
 	this._repeatDescField.innerHTML = "";
-	this._notesHtmlEditor.clear();
+	this._notesHtmlEditor.setContent("");
 
 	// reinit non-time sensitive selects option values
 	this._repeatSelect.setSelectedValue(ZmApptViewHelper.REPEAT_OPTIONS[0].value);
