@@ -1897,6 +1897,8 @@ ZmComposeView.prototype._getBodyContent =
 function(msg, htmlMode) {
 
 	var body, bodyPart, hasInlineImages, hasInlineAtts;
+	var crlf = htmlMode ? "<br>" : ZmMsg.CRLF;
+	var crlf2 = htmlMode ? "<br><br>" : ZmMsg.CRLF2;
 
 	// bug fix #7271 - if we have multiple body parts, append them all first
 	var parts = msg.getBodyParts();
@@ -1945,7 +1947,6 @@ function(msg, htmlMode) {
 	}
 
 	if (bodyPart && AjxUtil.isObject(bodyPart) && bodyPart.truncated) {
-		var crlf2 = htmlMode ? "<br><br>" : ZmMsg.CRLF2;
 		body += crlf2 + ZmMsg.messageTruncated + crlf2;
 	}
 
