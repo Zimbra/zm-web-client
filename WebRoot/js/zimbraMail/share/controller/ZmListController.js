@@ -1019,10 +1019,15 @@ function(items, hardDelete, attrs) {
 	if (!items.length) { return; }
 
 	var params = {items:items, hardDelete:hardDelete, attrs:attrs, childWin:appCtxt.isChildWindow && window};
-	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
+	var allDoneCallback = new AjxCallback(this, this._doneDelete);
 	var list = this._setupContinuation(this._doDelete, [hardDelete, attrs], params, allDoneCallback);
 	list.deleteItems(params);
 };
+
+ZmListController.prototype._doneDelete =
+function() {
+	this._checkItemCount();
+}
 
 /**
  * Moves a list of items to the given folder. Any item already in that folder is excluded.
@@ -1057,7 +1062,7 @@ function(items, folder, attrs, isShiftKey) {
 	}
 
 	var params = {folder:folder, attrs:attrs};
-	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
+	var allDoneCallback = new AjxCallback(this, this._doneMove);
 	if (move.length) {
 		params.items = move;
 		var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
@@ -1070,6 +1075,11 @@ function(items, folder, attrs, isShiftKey) {
 		list.copyItems(params);
 	}
 };
+
+ZmListController.prototype._doneMove =
+function() {
+	this._checkItemCount();
+}
 
 /**
  * Decides whether an item is movable
@@ -1871,16 +1881,16 @@ function(params, actionParams) {
 		if (contResult) {
 			if (lv.allSelected) {
 				// items beyond page were acted on, give user a total count
-                actionParams.actionSummary = ZmList.getActionSummary(actionParams.actionText, this._continuation.totalItems, contResult.type, actionParams.actionArg);
+				actionParams.actionSummary = ZmList.getActionSummary(actionParams.actionText, this._continuation.totalItems, contResult.type, actionParams.actionArg);
 				lv.deselectAll();
-				if (params.allDoneCallback) {
-					params.allDoneCallback.run();
-				}
 			}
 			this._continuation = {count:0, totalItems:0};
 		}
-
-		ZmList.killProgressDialog(actionParams.actionSummary);
+		if (params.allDoneCallback) {
+			params.allDoneCallback.run();
+		}
+		// TODO: Remove this comment if ZmList.killProgressDialog really should be gone
+		// ZmList.killProgressDialog(actionParams.actionSummary);
 	}
 };
 
