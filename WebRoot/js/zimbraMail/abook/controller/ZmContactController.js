@@ -269,17 +269,23 @@ ZmContactController.prototype._saveListener =
 function(ev, bIsPopCallback) {
 
 	var view = this._listView[this._currentView];
-
-	// isValid() may throw a String containing error message
-	try {
-		view.isValid();
-	} catch (ex) {
-		if (AjxUtil.isString(ex)) {
-			var ed = appCtxt.getMsgDialog();
-			//var msg = ZmMsg.errorSaving + (ex ? (":<p>" + ex) : ".");
-			var msg = ex ? AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, ex) : ZmMsg.errorSaving;
-			ed.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-			ed.popup();
+	view.validate();
+	if (!view.isValid()) {
+		var invalidItems = view.getInvalidItems();
+		for (var i=0; i<invalidItems.length; i++) {
+			msg = view.getErrorMessage(invalidItems[i]);
+			if (AjxUtil.isString(msg)) {
+				//var msg = ZmMsg.errorSaving + (ex ? (":<p>" + ex) : ".");
+				msg = msg ? AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, msg) : ZmMsg.errorSaving;
+				var ed = appCtxt.getMsgDialog();
+				if (ed) {
+					ed.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+					ed.popup();
+				} else {
+					appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
+				}
+				return;
+			}
 		}
 		return;
 	}

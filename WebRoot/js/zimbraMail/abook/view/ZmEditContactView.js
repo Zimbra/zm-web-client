@@ -139,7 +139,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 				type: "ZmEditContactViewOther", equals:ZmEditContactViewInputSelect.equals, params: {
 					cols: 30, hint: ZmMsg.genericTextHint, options: this.getOtherOptions()
 				}
-			} },
+			}, validator: ZmEditContactViewOther.validator },
 			// other controls
 			{ id: "DETAILS", type: "DwtButton", label: "\u00BB", ignore:true,  // &raquo;
 				className: "ZmEditContactViewDetailsButton",
@@ -1626,6 +1626,35 @@ ZmEditContactViewOther.prototype.toString = function() {
 ZmEditContactViewOther.prototype.TEMPLATE = "abook.Contacts#ZmEditContactViewOther";
 
 ZmEditContactViewOther.prototype.DATE_ATTRS = { "birthday": true, "anniversary": true };
+
+ZmEditContactViewOther.validator = function(item) {
+	if (AjxUtil.isArray(item)) {
+		if (!item.length) return true;
+		var result = [];
+		for (var i=0; i<item.length; i++) {
+			var value = ZmEditContactViewOther.validator(item[i]);
+			if (value || value==="")
+				result.push({type: item[i].type, value: value});
+			else
+				return false;
+		}
+		return result;
+	} else {
+		if (item.type in ZmEditContactViewOther.prototype.DATE_ATTRS || item.type.replace(/^other/,"").toLowerCase() in ZmEditContactViewOther.prototype.DATE_ATTRS) {
+			var dateStr = AjxStringUtil.trim(item.value);
+			if (dateStr.length) {
+				var aDate = AjxDateUtil.simpleParseDateStr(dateStr);
+				if (isNaN(aDate) || aDate == null) {
+					throw ZmMsg.errorDate;
+					// return false;
+				}
+				return [aDate.getMonth() + 1, aDate.getDate(), aDate.getFullYear()].join("/");
+			}
+			return dateStr;
+		}
+		return item.value;
+	}
+}
 
 // Public methods
 
