@@ -500,7 +500,9 @@ function(ex, continuation) {
 		var vid = appCtxt.getCurrentViewId();
 		// only process if we're in one of these views otherwise, do the default
 		if (vid == ZmId.VIEW_CONVLIST || vid == ZmId.VIEW_TRAD) {
-			appCtxt.getApp(ZmApp.MAIL).mailSearch();
+			var mailApp = appCtxt.getApp(ZmApp.MAIL);
+			var callback = appCtxt.isOffline ? new AjxCallback(this, this._handleMailSearch, mailApp) : null;
+			mailApp.mailSearch(null, callback);
 			return;
 		}
 	}
@@ -515,6 +517,13 @@ function(ex, continuation) {
 		}
 		var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
 		this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
+	}
+};
+
+ZmController.prototype._handleMailSearch =
+function(app) {
+	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES)) {
+		app.getOverviewContainer().highlightAllMboxes();
 	}
 };
 

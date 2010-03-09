@@ -281,13 +281,17 @@ function() {
 	return false;
 };
 
-// We don't call ZmController._preHideCallback here because it saves
-// the current focus member, and we want to start over each time
+// We don't call ZmController._preHideCallback here because it saves the current
+// focus member, and we want to start over each time
 ZmComposeController.prototype._preHideCallback =
 function(view, force) {
-	if (force && !this._msgSent && this._autoSaveTimer) {
+	if (force && this._autoSaveTimer) {
 		this._autoSaveTimer.kill();
-		this._autoSaveCallback(true);	// auto-save any time we leave this compose tab
+
+		// auto-save if we leave this compose tab and the message has not yet been sent
+		if (!this._msgSent) {
+			this._autoSaveCallback(true);
+		}
 	}
 	return force ? true : this.popShield();
 };
@@ -299,6 +303,11 @@ function(view) {
 
 ZmComposeController.prototype._postShowCallback =
 function() {
+	// always reset auto save every time this view is shown. This covers the
+	// case where a compose tab is inactive and becomes active when user clicks
+	// on compose tab.
+	this._initAutoSave();
+
 	if (!appCtxt.isChildWindow) {
 		// no need to "restore" focus between windows
 		ZmController.prototype._postShowCallback.call(this);
@@ -817,17 +826,6 @@ function(params) {
 	}
 	cv.reEnableDesignMode();
 
-	if (this._canSaveDraft()) {
-		var autoSaveInterval = appCtxt.get(ZmSetting.AUTO_SAVE_DRAFT_INTERVAL);
-		if (autoSaveInterval) {
-			if (!this._autoSaveTimer) {
-				this._autoSaveTimer = new DwtIdleTimer(autoSaveInterval * 1000, new AjxCallback(this, this._autoSaveCallback));
-			} else {
-				this._autoSaveTimer.resurrect(autoSaveInterval * 1000);
-			}
-		}
-	}
-
 	if (msg && (action == ZmOperation.DRAFT)) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
 	} else {
@@ -919,6 +917,20 @@ function() {
 	}
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, this.viewId], {waitUntilLoaded:true});
+};
+
+ZmComposeController.prototype._initAutoSave =
+function() {
+	if (!this._canSaveDraft()) { return; }
+
+	var autoSaveInterval = appCtxt.get(ZmSetting.AUTO_SAVE_DRAFT_INTERVAL);
+	if (autoSaveInterval) {
+		if (!this._autoSaveTimer) {
+			this._autoSaveTimer = new DwtIdleTimer(autoSaveInterval * 1000, new AjxCallback(this, this._autoSaveCallback));
+		} else {
+			this._autoSaveTimer.resurrect(autoSaveInterval * 1000);
+		}
+	}
 };
 
 ZmComposeController.prototype._setAddSignatureVisibility =
