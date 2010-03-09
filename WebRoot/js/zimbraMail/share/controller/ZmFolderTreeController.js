@@ -159,6 +159,7 @@ function(parent, type, id) {
 		op.setText(emptyText);
 	}
 
+    var isTrash = (nId == ZmOrganizer.ID_TRASH);
 	// are there any external accounts associated to this folder?
 	var button = parent.getOp(ZmOperation.SYNC);
 	if (button) {
@@ -174,7 +175,7 @@ function(parent, type, id) {
 				syncAllButton.setText(ZmMsg.checkAllFeed);
 			}
 		}
-		else if (hasFeeds) {
+		else if (hasFeeds && !isTrash) {
 			if (syncAllButton){
 				syncAllButton.setEnabled(true);
 				syncAllButton.setVisible(true);
@@ -206,7 +207,7 @@ function(parent, type, id) {
 
 	button = parent.getOp(ZmOperation.SYNC_OFFLINE_FOLDER);
 	if (button) {
-		if (!folder.isOfflineSyncable) {
+		if (!folder.isOfflineSyncable || isTrash) {
 			button.setVisible(false);
 		} else {
 			button.setVisible(true);
