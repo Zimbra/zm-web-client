@@ -146,8 +146,7 @@ function(account, sectionId) {
 	return (account.isMain ||
 			(!account.isMain && (sectionId != "GENERAL" &&
 								 sectionId != "SHORTCUTS" &&
-								 sectionId != "PREF_ZIMLETS" &&
-								 sectionId != "IMPORT_EXPORT")
+								 sectionId != "PREF_ZIMLETS")
 			));
 };
 
