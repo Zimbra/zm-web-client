@@ -263,7 +263,9 @@ function(calItem) {
 		var type = this._attTypes[t];
 		calItem.setAttendees(this._attendees[type].getArray(), type);
 	}
-	calItem.location = AjxStringUtil.trim(this._attInputField[ZmCalBaseItem.LOCATION].getValue());
+    var calLoc = AjxStringUtil.trim(this._attInputField[ZmCalBaseItem.LOCATION].getValue());
+     //bug 44858, trimming ';' so that ;; does not appears in outlook, 
+	calItem.location = AjxStringUtil.trim(calLoc, false, ';');
 
 	// set any recurrence rules LAST
 	this._getRecurrence(calItem);
@@ -359,7 +361,7 @@ function(calItem, mode) {
         this._attendees[ZmCalBaseItem.PERSON] = new AjxVector();
     }
 
-	// set the location *label*
+	// set the location *label*    
 	this._attInputField[ZmCalBaseItem.LOCATION].setValue(calItem.getLocation());
 
 	// set the location attendee(s)
