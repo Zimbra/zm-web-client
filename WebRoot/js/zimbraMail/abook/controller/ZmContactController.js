@@ -332,7 +332,13 @@ function(ev, bIsPopCallback) {
                         break;
                     }
                 }
-                if (!isEmpty) {
+                if (isEmpty) {
+                    var msg = this._currentView == ZmId.VIEW_GROUP
+                        ? ZmMsg.emptyGroup
+                        : ZmMsg.emptyContact;
+                    appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+                }
+                else {
                     var clc = AjxDispatcher.run("GetContactListController");
                     var list = (clc && clc.getList()) || new ZmContactList(null);
                     this._doCreate(list, mods);
