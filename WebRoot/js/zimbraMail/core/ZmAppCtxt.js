@@ -26,6 +26,7 @@
  * 
  */
 ZmAppCtxt = function() {
+
 	this._trees = {};
 
 	this.accountList = new ZmAccountList();
@@ -43,8 +44,10 @@ ZmAppCtxt = function() {
 	this.multiAccounts = false;
 
 	this._evtMgr = new AjxEventMgr();
-	this._itemCache = {};
-	this._itemCacheDeferred = {};
+
+	this._itemCache			= {};
+	this._itemCacheDeferred	= {};
+	this._acCache			= {};	// autocomplete
 };
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
@@ -1158,6 +1161,9 @@ function(fullVersion, width, height) {
 	width = width || 705;
 	height = height || 465;
 	var args = ["height=", height, ",width=", width, ",location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no"].join("");
+	if (appDevMode) {
+		args = ["height=", height, ",width=", width, ",location=yes,menubar=yes,resizable=yes,scrollbars=no,status=yes,toolbar=yes"].join("");
+	}
 	var newWin = window.open(url.join(""), "_blank", args);
 
 	if (!newWin) {
@@ -1526,4 +1532,56 @@ function(parts, account) {
 	}
 
 	return id;
+};
+
+/**
+ * Returns the autocomplete cache for the given parameters, optionally creating one.
+ *
+ * @param	{ZmAccount}	account		the account
+ * @param	{String}	acType		item type
+ * @param	{String}	str			autocomplete string
+ * @param	{Boolean}	create		if true, create a cache if none found
+ */
+ZmAppCtxt.prototype.getAutocompleteCache =
+function(account, acType, str, create) {
+
+	var cache = null;
+	var acct = account || this.getActiveAccount();
+	if (acct) {
+		if (this._acCache[acct.id] && this._acCache[acct.id][acType]) {
+			cache = this._acCache[acct.id][acType][str];
+		}
+	}
+	if (!cache && create) {
+		if (acct && !this._acCache[acct.id]) {
+			this._acCache[acct.id] = {};
+		}
+		if (!this._acCache[acct.id][acType]) {
+			this._acCache[acct.id][acType] = {};
+		}
+		cache = this._acCache[acct.id][acType][str] = {};
+	}
+
+	return cache;
+};
+
+/**
+ * Clears the autocomplete cache.
+ *
+ * @param	{String}	type		item type
+ * @param	{ZmAccount}	account		the account
+ */
+ZmAppCtxt.prototype.clearAutocompleteCache =
+function(type, account) {
+
+	var acct = account || appCtxt.getActiveAccount();
+	if (this._acCache[acct.id]) {
+		if (type) {
+			this._acCache[acct.id][type] = {};
+		} else {
+			this._acCache[acct.id][ZmAutocomplete.AC_TYPE_CONTACT]		=	{};
+			this._acCache[acct.id][ZmAutocomplete.AC_TYPE_LOCATION]		=	{};
+			this._acCache[acct.id][ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
+		}
+	}
 };

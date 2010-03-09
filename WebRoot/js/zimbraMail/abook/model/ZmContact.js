@@ -985,7 +985,10 @@ ZmContact.prototype.notifyModify =
 function(obj, batchMode) {
 
 	var result = ZmItem.prototype.notifyModify.apply(this, arguments);
-	appCtxt.getAutocompleter().clearCache(ZmAutocomplete.AC_TYPE_CONTACT);
+
+	var context = window.parentAppCtxt || window.appCtxt;
+	context.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
+
 	if (result) {
 		return result;
 	}
@@ -1035,7 +1038,8 @@ function(obj, batchMode) {
 ZmContact.prototype.notifyDelete =
 function() {
 	ZmItem.prototype.notifyDelete.call(this);
-	appCtxt.getAutocompleter().clearCache(ZmAutocomplete.AC_TYPE_CONTACT);
+	var context = window.parentAppCtxt || window.appCtxt;
+	context.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
 };
 
 /**

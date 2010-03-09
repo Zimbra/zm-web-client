@@ -29,20 +29,9 @@
  * @author Conrad Damon
  */
 ZmAutocomplete = function() {
+
 	this._acRequests = {};		// request mgmt (timeout, cancel)
 	this._acCache = {};			// results cache, grouped by account > type
-
-	// make autocomplete more multi-account friendly
-	var accounts = appCtxt.accountList.visibleAccounts;
-	for (var i = 0; i < accounts.length; i++) {
-		var acct = accounts[i];
-		if (!acct.visible) { continue; }
-
-		this._acCache[acct.id] = {};
-		this._acCache[acct.id][ZmAutocomplete.AC_TYPE_CONTACT]		=	{};
-		this._acCache[acct.id][ZmAutocomplete.AC_TYPE_LOCATION]		=	{};
-		this._acCache[acct.id][ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
-	}
 
 	var galSetting = appCtxt.getSettings().getSetting(ZmSetting.GAL_AUTOCOMPLETE);
 	if (galSetting) { // AddrBook might be disabled
@@ -290,25 +279,6 @@ function(str) {
 };
 
 /**
- * Clears the cache.
- * 
- * @param	{String}	type		the type
- * @param	{ZmAccount}	account		the account
- */
-ZmAutocomplete.prototype.clearCache =
-function(type, account) {
-	var acct = account || appCtxt.getActiveAccount();
-
-	if (type) {
-		this._acCache[acct.id][type] = {};
-	} else {
-		this._acCache[acct.id][ZmAutocomplete.AC_TYPE_CONTACT]		=	{};
-		this._acCache[acct.id][ZmAutocomplete.AC_TYPE_LOCATION]		=	{};
-		this._acCache[acct.id][ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
-	}
-};
-
-/**
  * @param str			[string]			string to match against
  * @param acType		[constant]			type of result to match
  * @param list			[array]				list of matches
@@ -323,9 +293,7 @@ ZmAutocomplete.prototype._cacheResults =
 function(str, acType, list, hasGal, cacheable, baseCache, account) {
 
 	var context = window.parentAppCtxt || window.appCtxt;
-	var acct = account || context.getActiveAccount();
-	var ac = appCtxt.isChildWindow ? context.getAutocompleter() : this;
-	var cache = ac._acCache[acct.id][acType][str] = ac._acCache[acct.id][acType][str] || {};
+	var cache = context.getAutocompleteCache(account, acType, str, true);
 	cache.list = list;
 	// we always cache; flag below indicates whether we can do forward matching
 	cache.cacheable = (baseCache && baseCache.cacheable) || cacheable;
@@ -397,9 +365,7 @@ ZmAutocomplete.prototype._getCachedResults =
 function(str, acType, checkCacheable, account) {
 
 	var context = window.parentAppCtxt || window.appCtxt;
-	var acct = account || context.getActiveAccount();
-	var ac = appCtxt.isChildWindow ? context.getAutocompleter() : this;
-	var cache = ac._acCache[acct.id][acType][str];
+	var cache = context.getAutocompleteCache(account, acType, str);
 	if (cache) {
 		if (checkCacheable && (cache.cacheable === false)) { return null; }
 		if (cache.ts) {

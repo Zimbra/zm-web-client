@@ -371,7 +371,8 @@ function(creates, force) {
 						continue;
 					}
 					clcList.notifyCreate(create);
-					appCtxt.getAutocompleter().clearCache(ZmAutocomplete.AC_TYPE_CONTACT);
+					var context = window.parentAppCtxt || window.appCtxt;
+					context.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
 					create._handled = true;
 				}
 			}
