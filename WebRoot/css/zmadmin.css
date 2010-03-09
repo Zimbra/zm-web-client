@@ -69,10 +69,6 @@
 	position:absolute;
 }
 
-.ZaSplashScreen {
-	@ChromeBg@
-}
-
 
 .Text {
 	font-size:11px;
@@ -144,6 +140,7 @@
 .ZaToolBar {
 	width: 100%;
 	height: 100%;
+	@ToolbarBg@
 }
 
 .userquotaused {
@@ -509,6 +506,11 @@
 	overflow: hidden;
 }
 
+.OverviewTree {
+	@FullWidth@
+	@AppBg@
+}
+
 .LeftGrouperBorder {
 	@FieldSet@
 	padding-left:10px;	/* ??? SIZE */
@@ -571,7 +573,7 @@
 /* normal buttons, like in a dialog */
 .ZaAppTabButton 							{				}
 
-.ZAppTabBorder { margin-top: 2px; }
+/*.ZAppTabBorder { margin-top: 2px; }*/
 
 
 .ZAppTab 									{	@AppTab@	@AppTabSpacing@				}

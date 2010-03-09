@@ -187,9 +187,9 @@
 %>
 <script type="text/javascript">
 AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(pageContext.request.locale)}";
-if(!AjxEnv.isFirefox1up && !AjxEnv.isFirefox3up && !AjxEnv.isFirefox2_0up && !AjxEnv.isNav7 && !AjxEnv.isIE6up && !AjxEnv.isIE7up)
+/*if(!AjxEnv.isFirefox1up && !AjxEnv.isFirefox3up && !AjxEnv.isFirefox2_0up && !AjxEnv.isNav7 && !AjxEnv.isIE6up && !AjxEnv.isIE7up)
 	alert(ZaMsg.ERROR_BROWSER_UNSUPORTED_TXT);
-	
+*/	
 </script>
     <script type="text/javascript" language="JavaScript">
 	   function launch() {
@@ -261,9 +261,8 @@ if(!AjxEnv.isFirefox1up && !AjxEnv.isFirefox3up && !AjxEnv.isFirefox2_0up && !Aj
 		};
 		dispatcher.include(wrappedReq, response);
 	%>
-  <script type="text/javascript" language=Javascript>
-    //skin.hideQuota();
-    skin.hideTreeFooter();
-  </script>
+	<script type="text/javascript">
+    	window.skin.hideSkin();
+    </script>
   </body>
 </html>
