@@ -717,13 +717,13 @@ and the container element is replaced with that control.
 <template id="prefs.Pages#SignatureSplitView">     
     <table border=0 cellpadding=0 cellspacing=5 width='100%'>
         <tr>
-            <td width=200 height='100%' valign=top>
+            <td style="width:150px;min-width:150px" height='100%' valign=top>
                 <table border=0 cellpadding=3 cellspacing=0 width='100%' height='100%'>
                     <tr>
                       <td class='ZOptionsField' align='left' valign='top'><div id='${id}_SIG_ADD' tabindex='30'></div></td>  
                     </tr>
                     <tr>
-                      <td class='ZOptionsField' valign='top' height='150px'><div id='${id}_SIG_LIST' width='100%' tabindex='40'></div></td>
+                      <td class='ZOptionsField' valign='top' height='150px' width='150px'><div id='${id}_SIG_LIST' width='100%' tabindex='40'></div></td>
                     </tr>
                 </table>
             </td>

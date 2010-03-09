@@ -149,11 +149,11 @@ function() {
 
 	var signatures = this.getAllSignatures(true);
 	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
+	var sigregex = new RegExp("^"+ZmMsg.signature+"\\s#(\\d+)$", "i");
 	for (var i = 0; i < signatures.length; i++) {
 		var signature = signatures[i];
 		var isNameEmpty = (signature.name.replace(/\s*/g,"") == "");
 		var isValueEmpty = (signature.value.replace(/\s*/g,"") == "");
-        var sigregex = new RegExp("^"+ZmMsg.signature+"\\s#(\\d+)$", "i");
 		var isNameDefault = signature.name.match(sigregex);
 		if (isNameEmpty && isValueEmpty) {
 			this._deleteSignature(signature);
@@ -167,7 +167,7 @@ function() {
 				? ZmMsg.errorHtmlSignatureTooLong
 				: ZmMsg.errorSignatureTooLong, maxLength);
 			return false;
-		}       		
+		}
 	}
 	return true;
 };
@@ -281,14 +281,14 @@ function() {
 
 	// Make sure they are on the the same level
 	var sigSize = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
-	this._sigList.setSize(Dwt.CLEAR, sigSize.y);
+	this._sigList.setSize(Dwt.DEFAULT, sigSize.y);
 };
 
 ZmSignaturesPage.prototype._resetEditorSize =
 function() {
 	// Adjust Size of the HTML Editor
 	var size = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
-	this._sigEditor.setSize(size.x, size.y);
+	this._sigEditor.setSize(Dwt.CLEAR, size.y);
 };
 
 ZmSignaturesPage.prototype._setupCustom =

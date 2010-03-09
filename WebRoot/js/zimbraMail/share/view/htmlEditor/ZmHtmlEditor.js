@@ -566,48 +566,62 @@ function(words, keepModeDiv) {
 
 ZmHtmlEditor.prototype.setSize =
 function(x, y) {
-	var div;
-	if (this._spellCheckDivId) {
-		div = document.getElementById(this._spellCheckDivId);
-	}
+	var div = this._spellCheckDivId && document.getElementById(this._spellCheckDivId);
+	var main = document.getElementById(this.getBodyFieldId());
 
 	// FUDGE: we must substract borders and paddings - yuck.
 	var delta = this._mode == DwtHtmlEditor.HTML ? 10 : 8;
 
-	x -= delta + 4;
 
-	// subtract spellchecker DIV if applicable
-	if (this._spellCheckModeDivId) {
-		var spellCheckDivHeight = document.getElementById(this._spellCheckModeDivId).offsetHeight;
-		y -= (isNaN(spellCheckDivHeight) ? 0 : spellCheckDivHeight);
-	}
-	if (this._mode == DwtHtmlEditor.HTML && this._toolbars.length > 0) {
-		for (var i = 0; i < this._toolbars.length; i++) {
-			var toolbar = this._toolbars[i];
-			y -= toolbar.getHtmlElement().offsetHeight;
+	if (x == Dwt.CLEAR) {
+		main.style.width = null;
+		if (div) div.style.width = null;
+	} else {
+		x -= delta + 4;
+
+		// bug fix #6786 - normalize width/height if less than zero
+		if (x < 0) x = 0;
+	
+		main.style.width = x + 5 + "px";
+		if (div) {
+			if (!AjxEnv.isIE) {
+				x = x > 4 ? (x-4) : x;
+			}
+			div.style.width = x + "px";
 		}
 	}
 
-	// subtract fudge factor
-	y -= delta;
 
-	// bug fix #6786 - normalize width/height if less than zero
-	if (x < 0) x = 0;
-	if (y < 0) y = 0;
+	if (y == Dwt.CLEAR) {
+		main.style.height = null;
+		if (div) div.style.height = null;
+	} else {
 
-	var main = document.getElementById(this.getBodyFieldId());
-	main.style.width = x + 5 + "px";
-	main.style.height = y + "px";
-	if (div) {
-		if (!AjxEnv.isIE) {
-			x = x > 4 ? (x-4) : x;
-			y = y > 4 ? (y-4) : y;
-		} else {
-			y += 2;
+		// subtract spellchecker DIV if applicable
+		if (this._spellCheckModeDivId) {
+			var spellCheckDivHeight = document.getElementById(this._spellCheckModeDivId).offsetHeight;
+			y -= (isNaN(spellCheckDivHeight) ? 0 : spellCheckDivHeight);
+		}
+		if (this._mode == DwtHtmlEditor.HTML && this._toolbars.length > 0) {
+			for (var i = 0; i < this._toolbars.length; i++) {
+				var toolbar = this._toolbars[i];
+				y -= toolbar.getHtmlElement().offsetHeight;
+			}
 		}
 
-		div.style.width = x + "px";
-		div.style.height = y + "px";
+		// subtract fudge factor
+		y -= delta;
+		if (y < 0) y = 0;
+
+		main.style.height = y + "px";
+		if (div) {
+			if (!AjxEnv.isIE) {
+				y = y > 4 ? (y-4) : y;
+			} else {
+				y += 2;
+			}
+			div.style.height = y + "px";
+		}
 	}
 };
 
