@@ -264,6 +264,14 @@ function(id) {
 		return this;
 };
 
+ZmItem.prototype.getAccount =
+function() {
+	if (!this.account && this.folderId) {
+		this.account = appCtxt.getById(this.folderId).getAccount();
+	}
+	return this.account;
+};
+
 /**
  * Clears the item.
  * 

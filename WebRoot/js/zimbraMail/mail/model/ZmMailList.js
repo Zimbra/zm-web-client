@@ -340,9 +340,11 @@ function(convs, msgs) {
 			newConvId[id] = convs[id];
 			var conv = convs[id];
 			if (this.search.matches(conv) && !conv.ignoreJunkTrash()) {
-				// a new msg for this conv matches current search
-				conv.list = this;
-				newConvs.push(conv);
+				if (!appCtxt.multiAccounts || (appCtxt.multiAccounts && conv.getAccount() == appCtxt.getActiveAccount())) {
+					// a new msg for this conv matches current search
+					conv.list = this;
+					newConvs.push(conv);
+				}
 			}
 		}
 
@@ -351,8 +353,9 @@ function(convs, msgs) {
 			var msg = msgs[id];
 			var cid = msg.cid;
 			var msgMatches = this.search.matches(msg) && !msg.ignoreJunkTrash();
+			var isActiveAccount = (!appCtxt.multiAccounts || (appCtxt.multiAccounts && msg.getAccount() == appCtxt.getActiveAccount()));
 			var conv = newConvId[cid] || this.getById(cid);
-			if (msgMatches) {
+			if (msgMatches && isActiveAccount) {
 				if (!conv) {
 					// msg will have _convCreateNode if it is 2nd msg and caused promotion of virtual conv;
 					// the conv node will have proper count and subject

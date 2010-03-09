@@ -308,6 +308,19 @@ function() {
 			 	    (this.folders[ZmFolder.ID_TRASH] && !appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH))));
 };
 
+ZmConv.prototype.getAccount =
+function() {
+	if (!this.account) {
+		var folderId;
+		for (var i in this.folders) {
+			folderId = i;
+			break;
+		}
+		this.account = appCtxt.getById(this.folderId).getAccount();
+	}
+	return this.account;
+};
+
 /**
 * Handles a modification notification.
 * TODO: Bundle MODIFY notifs (should bubble up to parent handlers as well)
