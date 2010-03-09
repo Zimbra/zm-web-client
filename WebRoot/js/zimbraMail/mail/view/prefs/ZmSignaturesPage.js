@@ -153,9 +153,11 @@ function() {
 		var signature = signatures[i];
 		var isNameEmpty = (signature.name.replace(/\s*/g,"") == "");
 		var isValueEmpty = (signature.value.replace(/\s*/g,"") == "");
+        var sigregex = new RegExp("^"+ZmMsg.signature+"\\s#(\\d+)$", "i");
+		var isNameDefault = signature.name.match(sigregex);
 		if (isNameEmpty && isValueEmpty) {
 			this._deleteSignature(signature);
-		} else if (isNameEmpty || isValueEmpty) {
+		} else if (isNameEmpty || (isValueEmpty && !isNameDefault)) {
 			this._errorMsg = isNameEmpty ? ZmMsg.signatureNameMissingRequired : ZmMsg.signatureValueMissingRequired;
 			return false;
 		}
@@ -165,7 +167,7 @@ function() {
 				? ZmMsg.errorHtmlSignatureTooLong
 				: ZmMsg.errorSignatureTooLong, maxLength);
 			return false;
-		}
+		}       		
 	}
 	return true;
 };
