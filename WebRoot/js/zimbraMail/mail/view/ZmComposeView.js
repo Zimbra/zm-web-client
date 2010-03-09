@@ -1636,7 +1636,7 @@ function(action, type, override) {
 
 		// Prevent user's login name and aliases from going into To: or Cc:
 		var used = {};
-		var account = appCtxt.multiAccounts && this._msg.account;
+		var account = appCtxt.multiAccounts && this._msg.getAccount();
 		var uname = ac.get(ZmSetting.USERNAME, null, account);
 		if (uname) {
 			used[uname.toLowerCase()] = true;

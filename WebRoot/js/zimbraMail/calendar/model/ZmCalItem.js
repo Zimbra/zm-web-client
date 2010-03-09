@@ -816,7 +816,7 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay, batc
 			? (new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]))
 			: errorCallback;
 
-		var acct = appCtxt.isOffline && this.getFolder().account;
+		var acct = appCtxt.isOffline && this.getFolder().getAccount();
 		var params = {
 			callback: respCallback,
 			errorCallback: respErrorCallback,
@@ -1654,9 +1654,9 @@ function(soapDoc) {
 			// bug: 41530 - for offline, make sure id is fully qualified if moving across accounts
 			if (appCtxt.multiAccounts &&
 				this._orig &&
-				this._orig.getFolder().account != this.getFolder().account)
+				this._orig.getFolder().getAccount() != this.getFolder().getAccount())
 			{
-				id = ZmOrganizer.getSystemId(this.invId, this._orig.getFolder().account, true);
+				id = ZmOrganizer.getSystemId(this.invId, this._orig.getFolder().getAccount(), true);
 			}
 
 			soapDoc.setMethodAttribute("id", id);

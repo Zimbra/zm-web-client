@@ -1176,7 +1176,7 @@ function(parent) {
 		var items = this._listView[this._currentView].getSelection();
 		items = AjxUtil.toArray(items);
 
-		var account = (appCtxt.multiAccounts && items.length == 1) ? items[0].account : null;
+		var account = (appCtxt.multiAccounts && items.length == 1) ? items[0].getAccount() : null;
 
 		// fetch tag tree from appctxt (not cache) for multi-account case
 		tagMenu.set(items, appCtxt.getTagTree(account));

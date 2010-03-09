@@ -316,7 +316,12 @@ function() {
 			folderId = i;
 			break;
 		}
-		this.account = appCtxt.getById(this.folderId).getAccount();
+		if (folderId) {
+			this.account = appCtxt.getById(folderId).getAccount();
+		} else {
+			var parsed = ZmOrganizer.parseId(this.id);
+			this.account = parsed && parsed.account;
+		}
 	}
 	return this.account;
 };

@@ -129,7 +129,7 @@ function(bEnableInputs) {
 		//only organizer can edit the attendees
 		var bEnableAttendees = (this._isOrganizer != null) ? this._isOrganizer : bEnableInputs;
 		if (appCtxt.isOffline && bEnableAttendees &&
-			this._calItem && this._calItem.getFolder().account.isMain)
+			this._calItem && this._calItem.getFolder().getAccount().isMain)
 		{
 			bEnableAttendees = false;
 		}

@@ -52,10 +52,6 @@ ZmItem = function(type, id, list, noCache) {
 	this.tagHash = {};
 	this.folderId = 0;
 
-	// if this is a shared/remote folder, cache the account it belongs to
-	var parsed = (appCtxt.multiAccounts) ? ZmOrganizer.parseId(id) : null;
-	this.account = parsed && parsed.account;
-
 	if (id && !noCache) {
 		appCtxt.cacheSet(id, this);
 	}
@@ -266,8 +262,14 @@ function(id) {
 
 ZmItem.prototype.getAccount =
 function() {
-	if (!this.account && this.folderId) {
-		this.account = appCtxt.getById(this.folderId).getAccount();
+	if (!this.account) {
+		if (this.folderId) {
+			var ac = window.parentAppCtxt || window.appCtxt;
+			this.account = ac.getById(this.folderId).getAccount();
+		} else {
+			var parsed = ZmOrganizer.parseId(this.id);
+			this.account = parsed && parsed.account;
+		}
 	}
 	return this.account;
 };

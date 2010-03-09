@@ -100,7 +100,7 @@ function(params) {
 		if ((params.items[0].isDraft && params.folder.id == ZmFolder.ID_DRAFTS) ||
 			(params.folder.isRemote()))
 		{
-			params1.accountName = params.items[0].account.name;
+			params1.accountName = params.items[0].getAccount().name;
 		}
 	}
 
