@@ -1758,6 +1758,9 @@ function(action, msg, extraBodyText, incOptions, nosig) {
 						  headers:	appCtxt.get(ZmSetting.REPLY_INCLUDE_HEADERS)};
 		} else if (isInviteForward) {
 			action = this._action = ZmOperation.FORWARD_INLINE;
+		} else if (action == ZmOperation.DRAFT) {
+			incOptions = {what:			ZmSetting.INC_BODY,
+						  noPreface:	true};
 		} else if (action == ZmOperation.FORWARD_INLINE) {
 			incOptions = {what:		ZmSetting.INC_BODY,
 						  prefix:	appCtxt.get(ZmSetting.FORWARD_USE_PREFIX),
@@ -1836,8 +1839,13 @@ function(action, msg, extraBodyText, incOptions, nosig) {
 	} else if (incOptions.what == ZmSetting.INC_ATTACH) {
 		this._msgAttId = this._msg.id;
 	} else {
-		var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
-		var preface = this._includedPreface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
+		var preface = "";
+		if (incOptions.noPreface) {
+			preText = "";
+		} else {
+			var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
+			preface = this._includedPreface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
+		}
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
 		if (incOptions.what == ZmSetting.INC_BODY) {
 			if (htmlMode) {
