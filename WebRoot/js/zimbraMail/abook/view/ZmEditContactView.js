@@ -154,9 +154,8 @@ ZmEditContactView.prototype.getFormItems = function() {
 				visible: "appCtxt.multiAccounts"
 			},
 			// NOTE: Return false onclick to prevent default action
-			{ id: "VIEW_IMAGE", ignore: true, onclick: "open(get('IMAGE')) && false" },
-			{ id: "REMOVE_IMAGE", ignore: true, onclick: "set('IMAGE','') && false",
-				visible: "get('IMAGE')" },
+			{ id: "VIEW_IMAGE", ignore: true, onclick: "open(get('IMAGE')) && false", visible: "get('IMAGE')" },
+			{ id: "REMOVE_IMAGE", ignore: true, onclick: "set('IMAGE','') && false", visible: "get('IMAGE')" },
 			// pseudo-items
 			{ id: "JOB", notab: true, ignore:true, visible: "get('SHOW_TITLE') && get('SHOW_DEPARTMENT')" },
 			{ id: "TITLE_DEPARTMENT_SEP", notab: true,
@@ -1037,6 +1036,13 @@ ZmEditContactViewImage.prototype.getValue = function() {
 };
 
 // Protected methods
+
+ZmEditContactViewImage.prototype._focus = function() {
+    Dwt.addClass(this.getHtmlElement(), DwtControl.FOCUSED);
+};
+ZmEditContactViewImage.prototype._blur = function() {
+    Dwt.delClass(this.getHtmlElement(), DwtControl.FOCUSED);
+};
 
 /**
  * @private

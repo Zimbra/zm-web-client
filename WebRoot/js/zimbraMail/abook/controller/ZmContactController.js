@@ -97,28 +97,6 @@ function(actionCode) {
 };
 
 /**
- * Changes the tab group.
- * 
- * @param	{int}	tabIdx		the tab index
- * @param	{int}	prevTabIdx	the previous tab index
- * 
- * @see		DwtTabGroup
- */
-ZmContactController.prototype.changeTabGroup =
-function(tabIdx, prevTabIdx) {
-	var tg = this._tabGroups[this._currentView][tabIdx];
-	if (!tg) {
-		tg = this._createTabGroup(tabIdx);
-	}
-
-	this._setTabGroup(tg);
-
-	var rootTg = appCtxt.getRootTabGroup();
-	var prevTg = this._tabGroups[this._currentView][prevTabIdx];
-	rootTg.replaceMember(prevTg, tg);
-};
-
-/**
  * Enables the toolbar.
  * 
  * @param	{Boolean}	enable	<code>true</code> to enable
@@ -234,36 +212,28 @@ function(view) {
 		delete this._contactDirty;
 	}
 
-	this._tabGroup = cv.getTabGroupMember();
+	this._tabGroup = this._tabGroups[view];
 };
 
 /**
  * @private
  */
-ZmContactController.prototype._createTabGroup =
-function(tabIdx) {
-	var tgName = this.toString() + "_" + tabIdx;
-	var tg = this._tabGroups[this._currentView][tabIdx] = new DwtTabGroup(tgName);
-	tg.newParent(appCtxt.getRootTabGroup());
-	tg.addMember(this._toolbar[this._currentView]);
-
-	var list = this._listView[this._currentView]._getTabGroupMembers(tabIdx);
-	for (var i = 0; i < list.length; i++) {
-		tg.addMember(list[i]);
-	}
-
-	return tg;
+ZmContactController.prototype._createTabGroup = function() {
+    var viewId = this._currentView;
+	return this._tabGroups[viewId] = new DwtTabGroup(this.toString() + "_" + viewId);
 };
 
 /**
  * @private
  */
 ZmContactController.prototype._initializeTabGroup =
-function(view) {
-	if (this._tabGroups[view]) { return; }
-
-	// this view has multiple tab groups (since there are multiple tabs)
-	this._tabGroups[view] = {};
+function(viewId) {
+	if (this._tabGroups[viewId]) return;
+    ZmListController.prototype._initializeTabGroup.apply(this, arguments);
+    var toolbar = this._toolbar[viewId];
+    if (toolbar) {
+        this._tabGroups[viewId].addMember(toolbar, 0);
+    }
 };
 
 /**

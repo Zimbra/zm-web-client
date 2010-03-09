@@ -487,7 +487,7 @@ function(view) {
 	this._tabGroups[view] = this._createTabGroup();
 	this._tabGroups[view].newParent(appCtxt.getRootTabGroup());
 	this._toolbar[view].noFocus = true;
-	this._tabGroups[view].addMember(this._listView[view]);
+	this._tabGroups[view].addMember(this._listView[view].getTabGroupMember());
 };
 
 /**
