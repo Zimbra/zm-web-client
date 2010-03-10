@@ -114,8 +114,9 @@
 	// NOTE: Force zimlets to load individually to avoid aggregation!
 	appExtension   = "js";
 	appDevMode     = true;
-    /* enabled tinyMCE */
-    isTinyMCE      = true;
+    <c:if test="${isOfflineMode}">
+        isTinyMCE      = true;
+    </c:if>
 </script>
 <script>
 <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />

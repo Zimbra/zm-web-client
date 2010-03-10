@@ -46,10 +46,9 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         }
         request.setAttribute("packages", "dev");
     }
-    /*enabled tinyMCE */
-    //boolean isTinyMce = getParameter(request, "editor", "").equals("tinymce");
-    boolean isTinyMce = true;
-    
+
+    boolean isTinyMce = getParameter(request, "editor", "").equals("tinymce");
+
     final String SKIN_COOKIE_NAME = "ZM_SKIN";
     String skin = application.getInitParameter("zimbraDefaultSkin");
     Cookie[] cookies = request.getCookies();
