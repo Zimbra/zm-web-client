@@ -818,7 +818,7 @@
 		<table class='AlphabetBarTable' border=0 cellpadding=0 cellspacing=0 width=80% id='${id}_alphabet'>
 			<tr>
 				<$ for (var i = 0; i < data.numLetters; i++) { $>
-					<td _idx='<$= i $>' onclick='ZmContactAlphabetBar._alphabetClicked(this
+					<td _idx='<$= i $>' onclick='ZmContactAlphabetBar.alphabetClicked(this
 						<$ if (i > 0) { $>
 							, "<$= i == 1 ? '0' : data.alphabet[i] $>"
 							<$ if (i+1 < data.numLetters) { $>

@@ -152,10 +152,10 @@ function(view) {
 	if (!this._listView[view]) {
 		switch (view) {
 			case ZmId.VIEW_CONTACT:
-		    	this._listView[view] = new ZmEditContactView(this._container, this);
+				this._listView[view] = new ZmEditContactView(this._container, this);
 				break;
 			case ZmId.VIEW_GROUP:
-		    	this._listView[view] = new ZmGroupView(this._container, this);
+				this._listView[view] = new ZmGroupView(this._container, this);
 				break;
 		}
 	}
@@ -185,10 +185,10 @@ function(view) {
 		printButton.setText(ZmMsg.print);
 	}
 
-    var saveButton = tb.getButton(ZmOperation.SAVE);
-    if (saveButton) {
-        saveButton.setToolTipContent(ZmMsg.saveContactTooltip);
-    }
+	var saveButton = tb.getButton(ZmOperation.SAVE);
+	if (saveButton) {
+		saveButton.setToolTipContent(ZmMsg.saveContactTooltip);
+	}
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
@@ -219,7 +219,7 @@ function(view) {
  * @private
  */
 ZmContactController.prototype._createTabGroup = function() {
-    var viewId = this._currentView;
+	var viewId = this._currentView;
 	return this._tabGroups[viewId] = new DwtTabGroup(this.toString() + "_" + viewId);
 };
 
@@ -229,11 +229,11 @@ ZmContactController.prototype._createTabGroup = function() {
 ZmContactController.prototype._initializeTabGroup =
 function(viewId) {
 	if (this._tabGroups[viewId]) return;
-    ZmListController.prototype._initializeTabGroup.apply(this, arguments);
-    var toolbar = this._toolbar[viewId];
-    if (toolbar) {
-        this._tabGroups[viewId].addMember(toolbar, 0);
-    }
+	ZmListController.prototype._initializeTabGroup.apply(this, arguments);
+	var toolbar = this._toolbar[viewId];
+	if (toolbar) {
+		this._tabGroups[viewId].addMember(toolbar, 0);
+	}
 };
 
 /**
@@ -267,7 +267,7 @@ function(parent, num) {
  */
 ZmContactController.prototype._saveListener =
 function(ev, bIsPopCallback) {
-
+	var fileAsChanged = false;
 	var view = this._listView[this._currentView];
 	view.validate();
 	if (!view.isValid()) {
@@ -316,33 +316,35 @@ function(ev, bIsPopCallback) {
 		{
 			if (contact.id && !contact.isGal) {
 				if (view.isEmpty()) { //If contact empty, alert the user
-                    var ed = appCtxt.getMsgDialog();
-                    ed.setMessage(ZmMsg.emptyContactSave, DwtMessageDialog.CRITICAL_STYLE);
-                    ed.popup();
-                    view.enableInputs(true);
-                    bIsPopCallback = true;
-                } else {
+					var ed = appCtxt.getMsgDialog();
+					ed.setMessage(ZmMsg.emptyContactSave, DwtMessageDialog.CRITICAL_STYLE);
+					ed.popup();
+					view.enableInputs(true);
+					bIsPopCallback = true;
+				} else {
+					// TODO: We may want to set fileAsChanged=true under certain circumstances here, e.g. when the contact name has changed so it would file differently wrt. the alphabet bar
 					this._doModify(contact, mods);
-                }
+				}
 			} else {
-                var isEmpty = true;
-                for (var a in mods) {
-                    if (mods[a]) {
-                        isEmpty = false;
-                        break;
-                    }
-                }
-                if (isEmpty) {
-                    var msg = this._currentView == ZmId.VIEW_GROUP
-                        ? ZmMsg.emptyGroup
-                        : ZmMsg.emptyContact;
-                    appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
-                }
-                else {
-                    var clc = AjxDispatcher.run("GetContactListController");
-                    var list = (clc && clc.getList()) || new ZmContactList(null);
-                    this._doCreate(list, mods);
-                }
+				var isEmpty = true;
+				for (var a in mods) {
+					if (mods[a]) {
+						isEmpty = false;
+						break;
+					}
+				}
+				if (isEmpty) {
+					var msg = this._currentView == ZmId.VIEW_GROUP
+						? ZmMsg.emptyGroup
+						: ZmMsg.emptyContact;
+					appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+				}
+				else {
+					var clc = AjxDispatcher.run("GetContactListController");
+					var list = (clc && clc.getList()) || new ZmContactList(null);
+					fileAsChanged = true;
+					this._doCreate(list, mods);
+				}
 			}
 		}
 	} else {
@@ -365,6 +367,8 @@ function(ev, bIsPopCallback) {
 		this._app.popView(true);
 		view.cleanup();
 	}
+	if (fileAsChanged) // bug fix #45069 - if the contact is new, change the search to "all" instead of displaying contacts beginning with a specific letter
+		ZmContactAlphabetBar.alphabetClicked(null);
 };
 
 /**

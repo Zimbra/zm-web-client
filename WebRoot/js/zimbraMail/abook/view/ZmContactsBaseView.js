@@ -335,6 +335,24 @@ function(cell, selected) {
 };
 
 /**
+ * Sets the cell as selected and performs a new search based on the selection
+ * 
+ * @param	{Object}	cell		the cell
+ * @param	{String}	letter		the letter to begin the search with
+ * @param	{String}	endLetter	the letter to end the search with
+ */
+ZmContactAlphabetBar.alphabetClicked =
+function(cell, letter, endLetter) {
+	// get reference to alphabet bar - ugh
+	var clc = AjxDispatcher.run("GetContactListController");
+	var alphabetBar = clc.getParentView().getAlphabetBar();
+	if (alphabetBar.enabled()) {
+		alphabetBar.reset(cell);
+		clc.searchAlphabet(letter, endLetter);
+	}
+};
+
+/**
  * @private
  */
 ZmContactAlphabetBar.prototype._createHtml =
@@ -349,20 +367,6 @@ function() {
 	};
 
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
-};
-
-/**
- * @private
- */
-ZmContactAlphabetBar._alphabetClicked =
-function(cell, letter, endLetter) {
-	// get reference to alphabet bar - ugh
-	var clc = AjxDispatcher.run("GetContactListController");
-	var alphabetBar = clc.getParentView().getAlphabetBar();
-	if (alphabetBar.enabled()) {
-		alphabetBar.reset(cell);
-		clc.searchAlphabet(letter, endLetter);
-	}
 };
 
 /**
