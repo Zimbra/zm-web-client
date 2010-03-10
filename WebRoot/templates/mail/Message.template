@@ -174,6 +174,15 @@
 					<div id='${fromSelectId}'></div>
 				</td>
 			</tr>
+		<$ } else {$>
+			<tr id='${identityRowId}' style='display:none;'>
+				<td align=right style='<$=labelStyle$>'>
+					<$=ZmMsg.fromLabel$>
+				</td>
+				<td width="96%" colspan=2>
+					<div id='${identitySelectId}'></div>
+				</td>
+			</tr>
 		<$ } $>
 		<tr id='${toRowId}'>
 			<td align=right valign=top style='<$=labelStyle$>'>
@@ -212,14 +221,6 @@
 				<tr>
 					<td style='padding-right:4px;'>
 						<input id='${subjectInputId}' class='subjectField' autocomplete=off>
-					</td>
-					<td id='${identityRowId}' nowrap width='10%' style='display:none;'>
-						<table border=0 cellspacing=0 cellpadding=0>
-							<tr>
-								<td align=right style='<$=labelStyle$>'><$=ZmMsg.accountLabel$>&nbsp;</td>
-								<td width="*"><select id='${identitySelectId}'></select></td>
-							</tr>
-						</table>
 					</td>
 					<$ if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) { $>
 					<td nowrap width='1%'>

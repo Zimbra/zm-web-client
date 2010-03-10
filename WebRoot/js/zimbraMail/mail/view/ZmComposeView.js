@@ -2310,13 +2310,7 @@ function() {
 	var identities = identityCollection.getIdentities();
 	for (var i = 0, count = identities.length; i < count; i++) {
 		var identity = identities[i];
-
-		// bug fix #21497 - skip the *fake* local account if offline and is main
-		var acct = appCtxt.isOffline && appCtxt.accountList.getAccount(identity.id);
-		if (acct && acct.isMain) { continue; }
-
-		var text = this._getIdentityText(identity);
-		options.push(new DwtSelectOptionData(identity.id, text,null,this._getIdentityText(identity,true)));
+		options.push(new DwtSelectOptionData(identity.id, this._getIdentityText(identity)));
 	}
 	return options;
 };
@@ -2508,7 +2502,7 @@ function(msg) {
 				identity = identities[j];
 
 				var addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
-				var icon = appCtxt.isFamilyMbox ? null : acct.getIcon();
+				var icon = appCtxt.isOffline ? acct.getIcon() : null;
 				var option = new DwtSelectOption(identity.id, false, addr.toString(), null, null, icon);
 				option.addr = addr;
 				option.accountId = acct.id;
