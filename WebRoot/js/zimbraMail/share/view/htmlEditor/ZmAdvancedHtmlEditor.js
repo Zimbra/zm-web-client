@@ -127,7 +127,11 @@ function(insertFontStyle, onlyInnerContent) {
 
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var editor = this.getEditor();
-		var content = editor ? editor.getContent() : (this._pendingContent || "");
+        var params = {};
+        if(AjxEnv.isSafari || AjxEnv.isIE) {
+            params.format ='raw';
+        }
+		var content = editor ? editor.getContent(params) : (this._pendingContent || "");
 		content = this._embedHtmlContent(content, insertFontStyle, onlyInnerContent);
 		return content;
 	}
