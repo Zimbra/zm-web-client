@@ -315,7 +315,7 @@ function() {
 	this.setPendingContent(null);
 	var editor = this.getEditor();
 	if (editor) {
-		editor.setContent(null);
+		editor.setContent("");
 	} else {
 		var field = this.getContentField();
 		field.value = "";
