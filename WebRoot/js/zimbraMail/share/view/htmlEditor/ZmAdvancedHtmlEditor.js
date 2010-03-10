@@ -25,6 +25,7 @@ ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 	this._mode = mode;
 	this._hasFocus = {};
 	this.initTinyMCEEditor(parent, posStyle, content, mode, withAce);
+    this._ignoreWords = {};
 };
 
 ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/tiny_mce/3.2.6";
@@ -653,6 +654,28 @@ function() {
 };
 
 /**SpellCheck modules**/
+
+ZmAdvancedHtmlEditor.prototype.checkMisspelledWords =
+function(callback, onExitCallback, errCallback){
+	var text = this.getTextVersion();
+	if (/\S/.test(text)) {
+		AjxDispatcher.require("Extras");
+		this._spellChecker = new ZmSpellChecker(this);
+		this._spellCheck = null;
+		this._spellCheckSuggestionListenerObj = new AjxListener(this, this._spellCheckSuggestionListener);
+		if (!this.onExitSpellChecker) {
+			this.onExitSpellChecker = onExitCallback;
+		}
+		var params = {
+			text: text,
+			ignore: AjxUtil.keys(this._ignoreWords).join()
+		};
+		this._spellChecker.check(params, callback, errCallback);
+		return true;
+	}
+
+	return false;
+};
 
 ZmAdvancedHtmlEditor.prototype.spellCheck =
 function(callback) {
