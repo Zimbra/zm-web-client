@@ -326,7 +326,7 @@ function(folder) {
 			}
 		}
 		var sc = appCtxt.getSearchController();
-		var acct = folder.account;
+		var acct = folder.getAccount();
 
 		var params = {
 			query: folder.createQuery(),

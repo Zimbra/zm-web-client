@@ -663,7 +663,7 @@ function(items) {
 	if (items[0] && items[0] instanceof ZmItem) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			var acctId = item.account.id;
+			var acctId = item.getAccount().id;
 			if (!accounts[acctId]) {
 				accounts[acctId] = [];
 			}

@@ -849,8 +849,7 @@ function(params, msg) {
 		}
 	} else if (appCtxt.isOffline && action == ZmOperation.DRAFT) {
 		var folder = appCtxt.getById(msg.folderId);
-		var account = folder && folder.account;
-		params.accountName = account && account.name;
+		params.accountName = folder && folder.getAccount().name;
 	}
 
 	params.msg = msg;
@@ -1296,8 +1295,8 @@ function(ev) {
 	var searchFolderId = this._getSearchFolderId();
 	if (appCtxt.multiAccounts) {
 		var item = items[0];
-		if (item && item.account) {
-			searchFolderId = ZmOrganizer.getSystemId(searchFolderId, item.account);
+		if (item) {
+			searchFolderId = ZmOrganizer.getSystemId(searchFolderId, item.getAccount());
 		}
 	}
 	var folder = appCtxt.getById(searchFolderId);

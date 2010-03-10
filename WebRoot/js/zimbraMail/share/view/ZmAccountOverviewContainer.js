@@ -351,9 +351,10 @@ ZmAccountOverviewContainer.prototype.updateLabel =
 function(organizer) {
 	// update account header if necessary
 	if (organizer.nId == ZmOrganizer.ID_INBOX) {
-		var header = this.getHeaderItem(organizer.account);
+		var acct = organizer.getAccount();
+		var header = this.getHeaderItem(acct);
 		if (header && !header.getExpanded()) {
-			header.setText(this._getAccountHeaderLabel(organizer.account));
+			header.setText(this._getAccountHeaderLabel(acct));
 		}
 	}
 

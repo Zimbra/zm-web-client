@@ -214,12 +214,13 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
     
 	for (var i = 0; i < data.length; i++) {
 		var cal = data[i];
+		var acct = cal.getAccount();
 
 		if (cal.noSuchFolder || cal.isFeed() || (cal.link && cal.isReadOnly())) { continue; }
 
 		if (appCtxt.multiAccounts &&
 			cal.nId == ZmOrganizer.ID_CALENDAR &&
-			cal.getAccount().isCalDavBased())
+			acct.isCalDavBased())
 		{
 			continue;
 		}
@@ -233,9 +234,9 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 		}
 
 		var selected = ((calItem.folderId == cal.id) || (calItem.folderId == id));
-		var icon = appCtxt.multiAccounts ? cal.account.getIcon() : null;
+		var icon = appCtxt.multiAccounts ? acct.getIcon() : null;
 		var name = appCtxt.multiAccounts
-			? ([cal.getName(), " (", cal.getAccount().getDisplayName(), ")"].join(""))
+			? ([cal.getName(), " (", acct.getDisplayName(), ")"].join(""))
 			: cal.getName();
 		var option = new DwtSelectOption(id, selected, name, null, null, icon);
 		folderSelect.addOption(option, selected);

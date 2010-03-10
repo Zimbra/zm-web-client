@@ -194,13 +194,15 @@ function(msg) {
             }
 
 			var cc = ac.getApp(ZmApp.CALENDAR).getCalController();
-			var calendars = cc.getCalendars(true, msg.account);
+			var msgAcct = msg.getAccount();
+			var calendars = cc.getCalendars(true, msgAcct);
+
 
 			if (appCtxt.multiAccounts) {
 				var accounts = ac.accountList.visibleAccounts;
 				for (var i = 0; i < accounts.length; i++) {
 					var acct = accounts[i];
-					if (acct == msg.account || !ac.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
+					if (acct == msgAcct || !ac.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
 					calendars = calendars.concat(cc.getCalendars(true, acct));
 				}
 			}
@@ -210,12 +212,13 @@ function(msg) {
 				this._inviteMoveSelect.clearOptions();
 				for (var i = 0; i < calendars.length; i++) {
 					var calendar = calendars[i];
-					var icon = appCtxt.multiAccounts ? calendar.account.getIcon() : null;
+					var calAcct = calendar.getAccount();
+					var icon = appCtxt.multiAccounts ? calAcct.getIcon() : null;
 					var name = appCtxt.multiAccounts
-						? ([calendar.name, " (", calendar.getAccount().getDisplayName(), ")"].join(""))
+						? ([calendar.name, " (", calAcct.getDisplayName(), ")"].join(""))
 						: calendar.name;
-					var isSelected = (calendar.account && msg.account)
-						? (calendar.account == msg.account && calendar.nId == ZmOrganizer.ID_CALENDAR)
+					var isSelected = (calAcct && msgAcct)
+						? (calAcct == msgAcct && calendar.nId == ZmOrganizer.ID_CALENDAR)
 						: calendar.nId == ZmOrganizer.ID_CALENDAR;
 					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null, icon);
 					this._inviteMoveSelect.addOption(option);

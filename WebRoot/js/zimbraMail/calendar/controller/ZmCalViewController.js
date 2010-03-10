@@ -1150,8 +1150,8 @@ function(startDate, duration, folderId, mailItem) {
 		newAppt.setFolderId(folderId);
 	} else {
 		// get folderId from mail message if being created off of one
-		if (appCtxt.multiAccounts && mailItem && mailItem.account) {
-			newAppt.setFolderId(mailItem.account.getDefaultCalendar().id);
+		if (appCtxt.multiAccounts && mailItem) {
+			newAppt.setFolderId(mailItem.getAccount().getDefaultCalendar().id);
 		} else {
 			// bug: 27646 case where only one calendar is checked
 			var checkedFolderIds = this.getCheckedCalendarFolderIds();

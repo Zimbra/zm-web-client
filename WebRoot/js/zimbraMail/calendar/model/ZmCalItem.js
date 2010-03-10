@@ -492,8 +492,9 @@ function() {
 	var folder = this.getFolder();
 	var owner = folder && folder.link && folder.owner;
 
-	if (!owner && appCtxt.multiAccounts) {
-		owner = folder.account && folder.account.name;
+	var acct = (!owner && appCtxt.multiAccounts && folder.getAccount());
+	if (acct) {
+		owner = acct.name;
 	}
 
 	return owner;
@@ -510,7 +511,7 @@ function() {
 
 	if (appCtxt.multiAccounts) {
 		var orgAcct = appCtxt.accountList.getAccountByEmail(this.organizer);
-		var calAcct = appCtxt.accountList.getAccountByEmail(folder.account.getEmail());
+		var calAcct = appCtxt.accountList.getAccountByEmail(folder.getAccount().getEmail());
 		if (orgAcct == calAcct) {
 			return false;
 		}
@@ -1729,8 +1730,8 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	var m = this._messageNode = soapDoc.set('m');
 
 	var calendar = this.getFolder();
-	var acctName = calendar.account && calendar.account.name;
-	var isOnBehalfOf = accountName && acctName && acctName != accountName;
+	var acct = calendar.getAccount();
+	var isOnBehalfOf = accountName && acct && acct.name != accountName;
 	m.setAttribute("l", (isOnBehalfOf ? this.getFolder().rid : this.folderId));
 
 	var inv = soapDoc.set("inv", null, m);
@@ -1763,10 +1764,8 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	this._addNotesToSoap(soapDoc, m);
 
 	// set organizer - but not for local account
-	if (!(appCtxt.isOffline && calendar.account.isMain)) {
-		var me = (appCtxt.multiAccounts)
-			? calendar.account.getEmail()
-			: appCtxt.get(ZmSetting.USERNAME);
+	if (!(appCtxt.isOffline && acct.isMain)) {
+		var me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
 		var user = mailFromAddress || me;
 		var organizer = this.organizer || user;
 		var org = soapDoc.set("or", null, comp);

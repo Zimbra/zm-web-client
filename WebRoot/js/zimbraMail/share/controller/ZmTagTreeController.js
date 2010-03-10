@@ -166,7 +166,7 @@ function(tag) {
 		query: tag.createQuery(),
 		searchFor: searchFor,
 		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-		accountName: (tag.account && tag.account.name)
+		accountName: (appCtxt.multiAccounts ? tag.getAccount().name : null)
 	};
 	appCtxt.getSearchController().search(params);
 };

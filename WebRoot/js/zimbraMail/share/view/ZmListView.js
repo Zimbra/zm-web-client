@@ -913,7 +913,7 @@ function(item) {
 	if (!item) { return; }
 	var numTags = item.tags && item.tags.length;
 	if (!numTags) { return; }
-	var account = appCtxt.multiAccounts ? item.account : null;
+	var account = appCtxt.multiAccounts ? item.getAccount() : null;
 	var tagList = appCtxt.getTagTree(account);
 	var tags = item.tags;
 	var html = [];

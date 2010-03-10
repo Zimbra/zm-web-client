@@ -624,9 +624,10 @@ function(what, folderType) {
 			if (appCtxt.isOffline && !invalid) {
 				// bug: 41531 - don't allow items to be moved into exchange
 				// account when moving across accounts
-				if (item.account != this.account &&
-					(this.account.type == ZmAccount.TYPE_MSE ||
-					 this.account.type == ZmAccount.TYPE_EXCHANGE))
+				var acct = this.getAccount();
+				if (item.getAccount() != acct &&
+					(acct.type == ZmAccount.TYPE_MSE ||
+					 acct.type == ZmAccount.TYPE_EXCHANGE))
 				{
 					invalid = true;
 				}
@@ -642,7 +643,7 @@ function(what, folderType) {
 			// bug #42890 - disable moving to shared folders across accounts
 			// until server bug is fixed
 			if (appCtxt.multiAccounts && this.isRemote() &&
-				what.account && this.getAccount().id != what.account.id)
+				what.getAccount && this.getAccount().id != what.getAccount().id)
 			{
 				invalid = true;
 			}

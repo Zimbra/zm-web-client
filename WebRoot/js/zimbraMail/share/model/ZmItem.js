@@ -376,8 +376,8 @@ function() {
 		tagImageInfo = "Blank_16";
 	}
 	else if (this.tags.length == 1) {
-		var tagId = (this.account && !this.account.isMain)
-			? ([this.account.id, this.tags[0]].join(":"))
+		var tagId = (!this.getAccount().isMain)
+			? ([this.getAccount().id, this.tags[0]].join(":"))
 			: (ZmOrganizer.getSystemId(this.tags[0]));
 		var tag = appCtxt.getById(tagId);
 		tagImageInfo = tag ? ZmTag.COLOR_ICON[tag.color] : "Blank_16";

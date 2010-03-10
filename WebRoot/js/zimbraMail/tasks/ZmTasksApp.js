@@ -360,7 +360,7 @@ function(folder, startDate, endDate, callback, accountName) {
 		limit:			this.getLimit(),
 		searchFor:		ZmItem.TASK,
 		callback:		callback,
-		accountName:	(accountName || (folder && folder.account && folder.account.name))
+		accountName:	(accountName || (folder && folder.getAccount().name))
 	};
 	var sc = appCtxt.getSearchController();
 	sc.searchAllAccounts = false;

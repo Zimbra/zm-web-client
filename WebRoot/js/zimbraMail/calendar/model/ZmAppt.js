@@ -465,7 +465,7 @@ function(message, subject) {
 	ZmCalItem.prototype.setFromMailMessage.call(this, message, subject);
 
 	// Only unique names in the attendee list, plus omit our own name
-	var account = appCtxt.multiAccounts && message.account;
+	var account = appCtxt.multiAccounts ? message.getAccount() : null;
 	var used = {};
 	used[appCtxt.get(ZmSetting.USERNAME, null, account)] = true;
 	var addrs = message.getAddresses(AjxEmailAddress.FROM, used, true);
@@ -902,9 +902,8 @@ function(callback, errorCallback, mode) {
     this._addNotesToSoap(soapDoc, m, false);
 
     var accountName = this.getRemoteFolderOwner();
-    var calendar = this.getFolder();
-    var acctName = calendar.account && calendar.account.name;
-    var isOnBehalfOf = accountName && acctName && acctName != accountName;
+    var localAcctName = this.getFolder().getAccount().name
+    var isOnBehalfOf = accountName && localAcctName && localAcctName != accountName;
 
     var mailFromAddress = this.getMailFromAddress();
     if (this.isOrganizer() && !accountName && mailFromAddress) {
@@ -996,9 +995,8 @@ function(callback, errorCallback) {
 	this._addNotesToSoap(soapDoc, m, false);
 
 	var accountName = this.getRemoteFolderOwner();
-	var calendar = this.getFolder();
-	var acctName = calendar.account && calendar.account.name;
-	var isOnBehalfOf = accountName && acctName && acctName != accountName;
+	var localAcctName = this.getFolder().getAccount().name;
+	var isOnBehalfOf = accountName && localAcctName && localAcctName != accountName;
 
 	var mailFromAddress = this.getMailFromAddress();
 	if (this.isOrganizer() && !accountName && mailFromAddress) {

@@ -352,7 +352,7 @@ function() {
 		msg = AjxMessageFormat.format(ZmMsg.errorSubFolderNotAllowed, parentFolder.name);
 	}
 
-	var account = appCtxt.multiAccounts ? (parentFolder.account || appCtxt.accountList.mainAccount) : null;
+	var account = appCtxt.multiAccounts ? parentFolder.getAccount() : null;
 	return (msg ? this._showError(msg) : {l:parentFolder.id, name:name, color:color, url:url, account:account});
 };
 

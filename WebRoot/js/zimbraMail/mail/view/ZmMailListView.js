@@ -222,9 +222,7 @@ function(htmlArr, idx, item, field, colIdx, width, attr) {
 ZmMailListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_ACCOUNT) {
-		if (item.account) {
-			idx = this._getImageHtml(htmlArr, idx, item.account.getIcon(), this._getFieldId(item, field));
-		}
+		idx = this._getImageHtml(htmlArr, idx, item.getAccount().getIcon(), this._getFieldId(item, field));
 	} else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}
@@ -545,7 +543,7 @@ function(params) {
 		}
 	}
 	else if (field == ZmItem.F_ACCOUNT) {
-		tooltip = item.account ? item.account.getDisplayName() : null;
+		tooltip = item.getAccount().getDisplayName();
 	}
 	else {
 		tooltip = ZmListView.prototype._getToolTip.apply(this, arguments);

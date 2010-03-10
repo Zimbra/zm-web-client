@@ -2520,16 +2520,12 @@ function(msg) {
 
 	var selectedIdentity;
 	if (msg) {
-		var folder = appCtxt.getById(msg.folderId);
-		var account = folder && folder.account;
-		if (account) {
-			var coll = ac.getIdentityCollection(account);
-			selectedIdentity = (msg.isDraft)
-				? coll.selectIdentity(msg, AjxEmailAddress.FROM)
-				: coll.selectIdentity(msg);
-			if (!selectedIdentity) {
-				selectedIdentity = coll.defaultIdentity;
-			}
+		var coll = ac.getIdentityCollection(msg.getAccount());
+		selectedIdentity = (msg.isDraft)
+			? coll.selectIdentity(msg, AjxEmailAddress.FROM)
+			: coll.selectIdentity(msg);
+		if (!selectedIdentity) {
+			selectedIdentity = coll.defaultIdentity;
 		}
 	}
 

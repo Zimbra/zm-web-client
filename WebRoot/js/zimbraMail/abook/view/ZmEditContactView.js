@@ -678,7 +678,7 @@ ZmEditContactView.prototype._setFolder = function(organizerOrId) {
 	this.setLabel("FOLDER", organizer.getName());
 	this.setValue("FOLDER", organizer.id);
 	if (appCtxt.multiAccounts) {
-		this.setValue("ACCOUNT", organizer.account.getDisplayName());
+		this.setValue("ACCOUNT", organizer.getAccount().getDisplayName());
 	}
 };
 

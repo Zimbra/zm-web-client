@@ -287,7 +287,7 @@ function(ev) {
 	if (ev.event == ZmEvent.E_CREATE && this._creatingFolder) {
 		var organizers = ev.getDetail("organizers") || (ev.source && [ev.source]);
 		var org = organizers[0];
-		var tv = this._treeView[org.account.id][org.type];
+		var tv = this._treeView[org.getAccount().id][org.type];
 		tv.setSelected(organizers[0], true);
 		this._creatingFolder = false;
 	}

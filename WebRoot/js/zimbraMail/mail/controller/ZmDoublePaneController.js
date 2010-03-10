@@ -661,7 +661,7 @@ function(msg) {
 	rule.setGroupOp(ZmFilterRule.GROUP_ALL);
 	rule.addAction(ZmFilterRule.A_KEEP);
 
-	var accountName = appCtxt.multiAccounts && msg.account && msg.account.name;
+	var accountName = appCtxt.multiAccounts && msg.getAccount().name;
 	appCtxt.getFilterRuleDialog().popup(rule, null, null, accountName);
 };
 

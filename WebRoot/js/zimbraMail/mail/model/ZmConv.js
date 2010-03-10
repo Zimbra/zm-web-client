@@ -137,7 +137,7 @@ function(params, callback) {
 			offset: offset,
 			limit: limit,
 			getHtml: (params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML)),
-			accountName: (appCtxt.multiAccounts && this.account && this.account.name)
+			accountName: (appCtxt.multiAccounts && this.getAccount().name)
 		};
 		var search = this.search = new ZmSearch(searchParams);
 

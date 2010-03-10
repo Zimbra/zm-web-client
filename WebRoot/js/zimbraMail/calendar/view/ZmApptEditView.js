@@ -682,15 +682,14 @@ function(dlg, folder) {
 	ZmCalItemEditView.prototype._folderPickerCallback.call(this, dlg, folder);
 	this._resetAutocompleteListView(folder);
 	if (appCtxt.isOffline) {
-		this._resetAttendeesField(!folder.account.isMain);
+		this._resetAttendeesField(!folder.getAccount().isMain);
 	}
 };
 
 ZmApptEditView.prototype._resetAutocompleteListView =
 function(folder) {
 	if (appCtxt.multiAccounts && this._acContactsList) {
-		var acct = folder.account || appCtxt.accountList.mainAccount;
-		this._acContactsList.setActiveAccount(acct);
+		this._acContactsList.setActiveAccount(folder.getAccount());
 	}
 };
 

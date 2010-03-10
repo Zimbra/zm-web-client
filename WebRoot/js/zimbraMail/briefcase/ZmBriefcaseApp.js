@@ -405,13 +405,14 @@ function(params) {
 
 	params = params || {};
 	var folder = appCtxt.getById(params.folderId || ZmOrganizer.ID_BRIEFCASE);
+	var acct = folder && folder.getAccount();
 	var searchParams = {
 		query:			params.query || folder.createQuery(),
 		types:			[ZmItem.BRIEFCASE_ITEM],
 		limit:			this.getLimit(),
 		searchFor:		ZmId.ITEM_BRIEFCASE,
 		callback:		params.callback,
-		accountName:	(params.accountName || (folder && folder.account && folder.account.name)),
+		accountName:	(params.accountName || (acct && acct.name)),
 		noRender:		params.noRender,
 		noClear:		params.noClear
 	};
