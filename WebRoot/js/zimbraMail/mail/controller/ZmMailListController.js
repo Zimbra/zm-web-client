@@ -899,16 +899,10 @@ function(items, markAsSpam, folder) {
 	items = AjxUtil.toArray(items);
 
 	var params = {items:items, markAsSpam:markAsSpam, folder:folder, childWin:appCtxt.isChildWindow && window};
-	var allDoneCallback = new AjxCallback(this, this._doneSpam);
+	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
 	var list = this._setupContinuation(this._doSpam, [markAsSpam, folder], params, allDoneCallback);
 	list.spamItems(params);
 };
-
-ZmMailListController.prototype._doneSpam =
-function() {
-	this.switchView(this._currentView, true);
-	this._checkItemCount();
-}
 
 ZmMailListController.prototype._inviteReplyHandler =
 function(ev) {
@@ -938,18 +932,6 @@ function(ev) {
 	}
 	return false;
 };
-
-ZmMailListController.prototype._doneDelete =
-function() {
-	this.switchView(this._currentView, true);
-	ZmListController.prototype._doneDelete.call(this);
-}
-
-ZmMailListController.prototype._doneMove =
-function() {
-	this.switchView(this._currentView, true);
-	ZmListController.prototype._doneMove.call(this);
-}
 
 ZmMailListController.prototype._shareHandler =
 function(ev) {
