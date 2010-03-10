@@ -128,9 +128,7 @@ function(insertFontStyle, onlyInnerContent) {
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var editor = this.getEditor();
         var params = {};
-        if(AjxEnv.isSafari || AjxEnv.isIE) {
-            params.format ='raw';
-        }
+        params.format ='raw';
 		var content = editor ? editor.getContent(params) : (this._pendingContent || "");
 		content = this._embedHtmlContent(content, insertFontStyle, onlyInnerContent);
 		return content;
@@ -200,7 +198,7 @@ function(content) {
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var editor = this.getEditor();
 		if (editor && this._editorInitialized) {
-			editor.setContent(content);
+			editor.setContent(content, {format: 'raw'});
 		} else {
 			this._pendingContent = content;
 		}
@@ -319,7 +317,7 @@ function() {
 	this.setPendingContent(null);
 	var editor = this.getEditor();
 	if (editor) {
-		editor.setContent("");
+		editor.setContent("", {format: "raw"});
 	} else {
 		var field = this.getContentField();
 		field.value = "";
@@ -435,7 +433,7 @@ ZmAdvancedHtmlEditor.prototype.onLoadContent =
 function(ed) {
 	var pendingContent = this.getPendingContent();
 	if (pendingContent != null) {
-		ed.setContent(pendingContent);
+		ed.setContent(pendingContent, {format: "raw"});
 		this.setPendingContent(null);
 	}
 
