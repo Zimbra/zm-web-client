@@ -609,15 +609,6 @@ function(force, viewId) {
 	// check if trying to pop non-current view
 	if (viewId && !isPendingView && (this.getCurrentViewId() != viewId)) { return false; }
 
-	if (!this._hidden.length && !this._isNewWindow) {
-		DBG.println(AjxDebug.DBG1, "ERROR: no view to replace popped view");
-		// bug fix #11264 - if logged in w/ view=compose, popView should reload mail app
-		if (location && (location.search.match(/\bview=compose\b/))) {
-			this._controller.activateApp(ZmApp.MAIL);
-		}
-		return false;
-	}
-
 	DBG.println(AjxDebug.DBG1, "popView: " + this._currentView);
 	DBG.println(AjxDebug.DBG2, "hidden (before): " + this._hidden);
 	if (!this._hideView(this._currentView, force)) {
@@ -625,6 +616,20 @@ function(force, viewId) {
 		this._pendingView = null;
 		return false;
 	}
+
+	if (!this._hidden.length && !this._isNewWindow) {
+		DBG.println(AjxDebug.DBG1, "ERROR: no view to replace popped view");
+		// bug fix #11264 - if logged in w/ view=compose, popView should reload mail app
+		if (location && (location.search.match(/\bview=compose\b/))) {
+			// bug fix #45068 - also remove the compose tab after asking to save
+			this._deactivateView(this._views[this._currentView]);
+			if (this._isTabView[this._currentView] && this._tabParams[this._currentView] && this._tabParams[this._currentView].id)
+				appCtxt.getAppChooser().removeButton(this._tabParams[this._currentView].id);
+			this._controller.activateApp(ZmApp.MAIL);
+		}
+		return false;
+	}
+
 	this._deactivateView(this._views[this._currentView]);
 
 	if (this._isTabView[this._currentView]) {
