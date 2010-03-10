@@ -203,7 +203,6 @@ function(id) {
 /**
  * Gets the tree view's header node.
  * 
- * @param {int}		id		an organizer ID
  * @return	{DwtHeaderTreeItem}		the item
  */
 ZmTreeView.prototype.getHeaderItem =
@@ -221,8 +220,14 @@ ZmTreeView.prototype.getSelected =
 function() {
 	if (this.isCheckedStyle) {
 		var selected = [];
-		var header = this.getHeaderItem();
-		this._getCheckedItems(header, selected);
+		// bug #44805 - iterate thru the entire tree item hash in case there are
+		// more than one header items in the tree view (e.g. Imap accounts)
+		for (var i in this._treeItemHash) {
+			var ti = this._treeItemHash[i];
+			if (ti && ti.getChecked()) {
+				selected.push(ti.getData(Dwt.KEY_OBJECT));
+			}
+		}
 		return selected;
 	} else {
 		return (this.getSelectionCount() != 1)
@@ -588,18 +593,3 @@ function() {
 	}
 	return null;
 };
-
-/** Recursively checks if item and children are checked */
-ZmTreeView.prototype._getCheckedItems =
-function(item, selected) {
-	if (item && (item instanceof DwtTreeItem)) {
-		if (item.getChecked()) {
-			selected.push(item.getData(Dwt.KEY_OBJECT));
-		}
-		var items = item.getItems();
-		for (var i = 0; i < items.length; i++) {
-			this._getCheckedItems(items[i], selected);
-		}
-	}
-};
-
