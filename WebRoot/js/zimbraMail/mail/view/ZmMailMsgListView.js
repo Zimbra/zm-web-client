@@ -482,3 +482,14 @@ ZmMailMsgListView.prototype._getParentForColResize =
 function() {
 	return this.parent;
 };
+
+ZmMailMsgListView.prototype._getHeaderToolTip =
+function(field, itemIdx) {
+    if(field == ZmItem.F_FROM){
+        var isFolder = this._isSentOrDraftsFolder();
+        if(isFolder && (isFolder.sent || isFolder.drafts)){
+           return ZmMsg.to;
+        }
+    }
+    return ZmMailListView.prototype._getHeaderToolTip.call(this, field, itemIdx);    
+};
