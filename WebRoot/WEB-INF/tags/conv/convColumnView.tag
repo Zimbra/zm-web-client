@@ -39,7 +39,7 @@
     <c:set var="csi" value="${param.csi}"/>
     <app:certifiedMessage var="reqHdr"/>
     <c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneEnabled and not empty cid and (param.action eq 'paneView' or param.action eq 'paneView2')}">
-        <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" />
+        <zm:searchConv  var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" limit="${-1}" />
         <c:if test="${empty csi}">
             <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
             <c:if test="${csi ge 0}">
@@ -93,6 +93,7 @@
         </table>
         <table width="100%" cellpadding="2" cellspacing="0">
             <tbody id="mess_list_tbody">
+                <c:out value="${param.action}"/>                                         
                 <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                     <c:set var="convHit" value="${hit.conversationHit}"/>
                     <c:choose>
@@ -100,10 +101,10 @@
                             <zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(convHit.id,'-')}" action="compose"/>
                         </c:when>
                         <c:when test="${empty selectedRow and convHit.id == context.currentItem.id and mailbox.prefs.readingPaneEnabled and not empty msg and (param.action eq 'paneView' or param.action eq 'paneView2')}">
-                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${param.action eq 'paneView' ? 'view' : 'view2'}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${zm:contains(param.action, 'paneView') ? 'view' : 'view2'}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                         </c:when>
                         <c:otherwise>
-                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${mailbox.prefs.readingPaneEnabled ? (param.action eq 'view' or param.action eq paneView ? 'paneView' : 'paneView2') : (param.action eq 'view' or param.action eq paneView ? 'view' : 'view2')}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${mailbox.prefs.readingPaneEnabled ? (param.action eq 'view' or param.action eq 'paneView' ? 'paneView' : 'paneView2') : (param.action eq 'view' or param.action eq 'paneView' ? 'view' : 'view2')}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                         </c:otherwise>
                     </c:choose>
                     <c:if test="${empty selectedRow and convHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
@@ -169,7 +170,7 @@
                          <td class=List>
                              <table width="100%" height="100%" cellpadding="0" cellspacing="0">
                                  <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
-                                     <zm:currentResultUrl var="msgUrl" value="search" action="${hit.id eq msg.id ? 'view2' : 'paneView2'}" context="${context}" cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
+                                     <zm:currentResultUrl var="msgUrl" value="search" action="${hit.id eq msg.id ? 'view' : 'paneView2'}" context="${context}" cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
 
                                      <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != msg.id)) ? ' Unread':''}${hit.id eq msg.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                          <!-- <td class='CB' nowrap><input <c:if test="${hit.id eq msg.id}">checked</c:if> type=checkbox name="idcv" value="${hit.id}"/></td> -->
