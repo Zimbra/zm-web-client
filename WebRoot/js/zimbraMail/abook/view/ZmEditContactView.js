@@ -1700,6 +1700,8 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 		this._picker = new DwtButton({parent:this,id:id});
 		this._picker.setImage("CalendarApp");
 		var menu = new DwtMenu({parent:this._picker,style:DwtMenu.CALENDAR_PICKER_STYLE});
+		menu.setSize("150");
+		menu._table.width = "100%";
 		this._picker.setMenu(menu);
 		this._picker.replaceElement(pickerEl);
 		var calendar = new DwtCalendar({parent:menu});
