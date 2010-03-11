@@ -38,7 +38,7 @@
         </c:when>
         <%-- MAIL --%>
         <c:when test="${selected eq 'mail'}">
-            <c:if test="${mailbox.features.conversations}">
+            <c:if test="${mailbox.features.conversations and not empty param.zimbraPrefGroupMailBy}">
                 <zm:pref name="zimbraPrefGroupMailBy" value="${param.zimbraPrefGroupMailBy}"/>
             </c:if>
             <zm:pref name="zimbraPrefMailItemsPerPage" value="${param.zimbraPrefMailItemsPerPage}"/>
