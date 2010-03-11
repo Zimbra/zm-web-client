@@ -27,7 +27,7 @@
     <fmt:message var="emptySubject" key="noSubject"/>
     <c:set var="csi" value="${param.csi}"/>
 
-    <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" limit="${-1}" />
+    <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" />
     <c:set var="convSummary" value="${convSearchResult.conversationSummary}"/>
     <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
     <c:set var="message" value="${null}"/>
@@ -68,7 +68,8 @@
 <c:set var="ads" value='${message.subject} ${message.fragment}'/>
 
 <app:view mailbox="${mailbox}" title="${message.subject}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
-    <zm:currentResultUrl var="currentUrl" value="search" action="${param.action}" cid="${convSummary.id}" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
+    <c:set var="actionVar" value="${empty param.paction ? param.action : param.paction}" />
+    <zm:currentResultUrl var="currentUrl" value="search" action="${actionVar}" cid="${convSummary.id}" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
 
     <SCRIPT TYPE="text/javascript">
         <!--
@@ -190,20 +191,20 @@
                                                 </c:if>
                                                 <th class='MsgStatusImg' nowrap>&nbsp;
                                                 <th width="10%" nowrap>
-                                                    <zm:currentResultUrl var="fromSortUrl" value="search" action="${param.action}" context="${context}" csi="${param.csi}" css="${param.css eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
+                                                    <zm:currentResultUrl var="fromSortUrl" value="search" action="${actionVar}" context="${context}" csi="${param.csi}" css="${param.css eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
                                                 <a href="${fn:escapeXml(fromSortUrl)}"><fmt:message key="from"/></a>
                                                 <th class='Img' nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                                                 <th nowrap><fmt:message key="fragment"/>
                                                 <th width="3%" nowrap><fmt:message key="folder"/>
                                                 <th width="3%" nowrap><fmt:message key="size"/>
                                                 <th width="2%" nowrap>
-                                                    <zm:currentResultUrl var="dateSortUrl" value="search" action="${param.action}" context="${context}" csi="${param.csi}" css="${param.css eq 'dateDesc' ? 'dateAsc' : 'dateDesc'}"/>
+                                                    <zm:currentResultUrl var="dateSortUrl" value="search" action="${actionVar}" context="${context}" csi="${param.csi}" css="${param.css eq 'dateDesc' ? 'dateAsc' : 'dateDesc'}"/>
                                                 <a href="${fn:escapeXml(dateSortUrl)}"><fmt:message key="received"/></a>
                                             </tr>
                                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
-                                                <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='${param.action}' context="${context}"
+                                                <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='${actionVar}' context="${context}"
                                                                      cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-                                                <zm:currentResultUrl var="msgSepUrl" value="search" action="${param.action}" context="${context}"
+                                                <zm:currentResultUrl var="msgSepUrl" value="search" action="${actionVar}" context="${context}"
                                                                          cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="message" sc=""/>
                                                 <c:if test="${empty selectedRow and hit.id eq message.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
@@ -230,11 +231,11 @@
                                                             <a id="${aid}" href="${fn:escapeXml(msgSepUrl)}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
                                                             <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                             <c:if test="${messCursor.hasPrev}">
-                                                                <zm:currentResultUrl var="prevMsgUrl" value="search" action='${param.action}' context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
+                                                                <zm:currentResultUrl var="prevMsgUrl" value="search" action='${actionVar}' context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
                                                                 <a href="${fn:escapeXml(prevMsgUrl)}" id="PREV_ITEM"></a>
                                                             </c:if>
                                                             <c:if test="${messCursor.hasNext}">
-                                                                <zm:currentResultUrl var="nextMsgUrl" value="search"  action="${param.action}" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
+                                                                <zm:currentResultUrl var="nextMsgUrl" value="search"  action="${actionVar}" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
                                                                 <a href="${fn:escapeXml(nextMsgUrl)}" id="NEXT_ITEM"></a>
                                                             </c:if>
                                                         </c:when>
@@ -254,7 +255,7 @@
                             </tr>
                                 <c:set var="extImageUrl" value=""/>
                             <c:if test="${empty param.xim and empty message.requestHeader}">
-                                <zm:currentResultUrl var="extImageUrl" value="search" action="${param.action}" context="${context}"
+                                <zm:currentResultUrl var="extImageUrl" value="search" action="${actionVar}" context="${context}"
                                                      cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}" xim="1"/>
                             </c:if>
                                 <zm:currentResultUrl var="composeUrl" value="search" context="${context}" id="${message.id}"
