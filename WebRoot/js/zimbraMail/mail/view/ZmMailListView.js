@@ -467,25 +467,6 @@ function() {
 	var isSentFolder = folder && (folder.isUnder(ZmFolder.ID_SENT) || folder.isUnder(ZmFolder.ID_OUTBOX));
 	var isDraftsFolder = folder && folder.isUnder(ZmFolder.ID_DRAFTS);
 
-	// XXX: is the code below necessary?
-	// if not in Sent/Drafts, deep dive into query to be certain
-	if (!isSentFolder && !isDraftsFolder) {
-		// check for is:sent, in:sent, is:draft or in:draft w/in search query
-		var idx = null, query = null;
-		var curSearch = this._controller._app.currentSearch;
-		if (curSearch) {
-			query = curSearch.query;
-			idx = query ? query.indexOf(":") : null;
-		}
-		if (idx) {
-			var prefix = AjxStringUtil.trim(query.substring(0, idx));
-			if (prefix == "is" || prefix == "in") {
-				var folderStr = AjxStringUtil.trim(query.substring(idx + 1), false, "[\\s\"]"); // Trim off whitespace and quotes (bug #45006)
-				isSentFolder = (folderStr == ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]);
-				isDraftsFolder = (folderStr == ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]);
-			}
-		}
-	}
 	return {sent:isSentFolder, drafts:isDraftsFolder};
 };
 
