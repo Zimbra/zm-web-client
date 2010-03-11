@@ -92,8 +92,7 @@
             </tr>
         </table>
         <table width="100%" cellpadding="2" cellspacing="0">
-            <tbody id="mess_list_tbody">
-                <c:out value="${param.action}"/>                                         
+            <tbody id="mess_list_tbody">                                        
                 <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                     <c:set var="convHit" value="${hit.conversationHit}"/>
                     <c:choose>
