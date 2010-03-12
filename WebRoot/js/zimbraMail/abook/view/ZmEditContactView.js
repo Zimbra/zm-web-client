@@ -1704,14 +1704,18 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 		menu._table.width = "100%";
 		this._picker.setMenu(menu);
 		this._picker.replaceElement(pickerEl);
+        var listener = new AjxListener(this, this._handleDropDown);
+        this._picker.addSelectionListener(listener);
+        this._picker.addDropDownSelectionListener(listener);
 		var calendar = new DwtCalendar({parent:menu});
 		calendar.setDate(new Date());
 		calendar.setFirstDayOfWeek(appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0);
-		calendar.addSelectionListener(new AjxListener(this,this._handleDateSelection,[calendar]));
+		calendar.addSelectionListener(new AjxListener(this,this._handleDateSelection));
 		tabIndexes.push({
 			tabindex: pickerEl.getAttribute("tabindex") || Number.MAX_VALUE,
 			control: this._picker
 		});
+        this._calendar = calendar;
 	}                                                        
 };
 
@@ -1736,19 +1740,32 @@ ZmEditContactViewOther.prototype._resetPicker = function() {
 	}
 };
 
-ZmEditContactViewOther.prototype._handleDateSelection = function(calendar) {
+ZmEditContactViewOther.prototype._getDateFormatter = function() {
+    if (!this._formatter) {
+        var pattern = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT).toPattern();
+        this._formatter = new AjxDateFormat(pattern);
+        var segments = this._formatter.getSegments();
+        for (var i = 0; i < segments.length; i++) {
+            if (segments[i] instanceof AjxDateFormat.YearSegment) {
+                segments[i] = new AjxDateFormat.YearSegment(this._formatter,"yyyy");
+            }
+        }
+    }
+    return this._formatter;
+};
+
+ZmEditContactViewOther.prototype._handleDropDown = function(evt) {
+    var formatter = this._getDateFormatter();
+    var value = this.getValue().value;
+    var date = formatter.parse(value) || new Date;
+    this._calendar.setDate(date);
+    this._picker.popup();
+};
+
+ZmEditContactViewOther.prototype._handleDateSelection = function() {
+    var formatter = this._getDateFormatter();
 	var value = this.getValue();
-	if (!this._formatter) {
-		var pattern = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT).toPattern();
-		this._formatter = new AjxDateFormat(pattern);
-		var segments = this._formatter.getSegments();
-		for (var i = 0; i < segments.length; i++) {
-			if (segments[i] instanceof AjxDateFormat.YearSegment) {
-				segments[i] = new AjxDateFormat.YearSegment(this._formatter,"yyyy");
-			}
-		}
-	}
-	value.value = this._formatter.format(calendar.getDate());
+	value.value = formatter.format(this._calendar.getDate());
 	this.setValue(value);
 	this.parent.setDirty(true);
 };
