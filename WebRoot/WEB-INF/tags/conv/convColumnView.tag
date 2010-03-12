@@ -82,7 +82,8 @@
                 <th><fmt:message key="arrangedBy"/>:
                     <span><select name="actionSort">
                               <option value="${empty param.ss ? 'dateAsc' : (param.ss eq 'dateAsc' ? 'dateDesc' : 'dateAsc')}" <c:if test="${(empty param.ss) or (param.ss eq 'dateAsc') or (param.ss eq 'dateDesc')}">selected</c:if>/><fmt:message key="date"/>
-                              <option value="${empty param.ss ? 'nameAsc' : (param.ss eq 'nameAsc' ? 'nameDesc' : 'nameAsc')}" <c:if test="${(param.ss eq 'nameAsc') or (param.ss eq 'nameDesc')}">selected</c:if>/> <c:choose><c:when test="${param.sfi==5 or param.sfi==6}"><fmt:message key="to"/></c:when><c:otherwise><fmt:message key="from"/></c:otherwise></c:choose>
+                              <%-- bug 45172:Remove From/To sorting for conversations since it does not give correct results--%>
+                              <%-- <option value="${empty param.ss ? 'nameAsc' : (param.ss eq 'nameAsc' ? 'nameDesc' : 'nameAsc')}" <c:if test="${(param.ss eq 'nameAsc') or (param.ss eq 'nameDesc')}">selected</c:if>/> <c:choose><c:when test="${param.sfi==5 or param.sfi==6}"><fmt:message key="to"/></c:when><c:otherwise><fmt:message key="from"/></c:otherwise></c:choose>--%>
                               <option value="${empty param.ss ? 'subjAsc' : (param.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc')}" <c:if test="${(param.ss eq 'subjAsc') or (param.ss eq 'subjDesc')}">selected</c:if>/> <fmt:message key="subject"/>
                           </select>
                           <input type="submit" value="<fmt:message key='actionGo'/>" name="sortAction"/>

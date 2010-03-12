@@ -191,8 +191,10 @@
                                                 </c:if>
                                                 <th class='MsgStatusImg' nowrap>&nbsp;
                                                 <th width="10%" nowrap>
-                                                    <zm:currentResultUrl var="fromSortUrl" value="search" action="${actionVar}" context="${context}" csi="${param.csi}" css="${param.css eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
-                                                <a href="${fn:escapeXml(fromSortUrl)}"><fmt:message key="from"/></a>
+                                                <%-- bug 45172:Remove From/To sorting for conversations since it does not give correct results--%>
+                                                <%-- <zm:currentResultUrl var="fromSortUrl" value="search" action="${actionVar}" context="${context}" csi="${param.csi}" css="${param.css eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
+                                                <a href="${fn:escapeXml(fromSortUrl)}"><fmt:message key="from"/></a>--%>
+                                                <fmt:message key="from"/>
                                                 <th class='Img' nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                                                 <th nowrap><fmt:message key="fragment"/>
                                                 <th width="3%" nowrap><fmt:message key="folder"/>
