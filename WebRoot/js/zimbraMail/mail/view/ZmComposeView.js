@@ -1869,7 +1869,7 @@ function(action, msg, extraBodyText, incOptions, nosig) {
 				chunks[i] = AjxStringUtil.wordWrap(wrapParams);
 			}
 			var text = chunks.length ? chunks.join(crlf + crlf) : body;
-			value = preText + space + preface + crlf2 + text;
+			value = preText + crlf2 + preface + crlf2 + text;
 		}
 	}
 
