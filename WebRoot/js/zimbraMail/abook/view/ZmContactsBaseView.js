@@ -241,6 +241,7 @@ ZmContactAlphabetBar = function(parent) {
 	this._createHtml();
 
 	this._all = this._current = document.getElementById(this._alphabetBarId).rows[0].cells[0];
+	this._currentLetter = null;
 	this.setSelected(this._all, true);
 	this._enabled = true;
 };
@@ -287,14 +288,19 @@ function() {
  * Resets the bar.
  * 
  * @param	{Object}	useCell		the cell or <code>null</code>
+ * @return	{Boolean}				Whether the cell was changed (false if it was already set to useCell)
  */
 ZmContactAlphabetBar.prototype.reset =
 function(useCell) {
 	var cell = useCell || this._all;
-
-	this.setSelected(this._current, false);
-	this._current = cell;
-	this.setSelected(cell, true);
+	if (cell != this._current) {
+		this.setSelected(this._current, false);
+		this._current = cell;
+		this._currentLetter = useCell ? useCell.innerHTML : null;
+		this.setSelected(cell, true);
+		return true;
+	}
+	return false;
 };
 
 /**
@@ -319,6 +325,16 @@ function(index) {
 ZmContactAlphabetBar.prototype.getCurrent =
 function() {
 	return this._current;
+};
+
+/**
+ * Gets the current cell letter.
+ * 
+ * @return	{String}	the cell letter, or null for "all"
+ */
+ZmContactAlphabetBar.prototype.getCurrentLetter =
+function() {
+	return this._currentLetter;
 };
 
 /**
@@ -347,8 +363,8 @@ function(cell, letter, endLetter) {
 	var clc = AjxDispatcher.run("GetContactListController");
 	var alphabetBar = clc.getParentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
-		alphabetBar.reset(cell);
-		clc.searchAlphabet(letter, endLetter);
+		if (alphabetBar.reset(cell))
+			clc.searchAlphabet(letter, endLetter);
 	}
 };
 

@@ -322,8 +322,11 @@ function(ev, bIsPopCallback) {
 					view.enableInputs(true);
 					bIsPopCallback = true;
 				} else {
-					// TODO: We may want to set fileAsChanged=true under certain circumstances here, e.g. when the contact name has changed so it would file differently wrt. the alphabet bar
+					var contactFileAsBefore = ZmContact.computeFileAs(contact);
+					var contactFileAsAfter = ZmContact.computeFileAs(AjxUtil.hashUpdate(AjxUtil.hashCopy(contact.getAttrs()), mods, true));
 					this._doModify(contact, mods);
+					if (contactFileAsBefore.toLowerCase()[0] != contactFileAsAfter.toLowerCase()[0])
+						fileAsChanged=true;
 				}
 			} else {
 				var isEmpty = true;
