@@ -156,7 +156,7 @@
                     <td><div class='vertSep'></div></td>
                     <td  nowrap valign="middle">
                         <fmt:message key="viewLabel"/>
-                        <select name="actionOp" onchange="zclick('SOPSET')">
+                        <select name="actionOp" id="${keys ? 'actionOp' : ' '}" onchange="${keys ? "zclick('SOPSET')" : "setactionOp(this.value)"}">
                             <c:if test="${!empty param.st}">
                                 <option value="byConv" ${param.st eq 'conversation' ? 'selected=selected' : ''}><fmt:message key="byConversation"/></option>
                                 <option value="byMsg" ${param.st eq 'message' ? 'selected=selected' : ''}><fmt:message key="byMessage"/></option>

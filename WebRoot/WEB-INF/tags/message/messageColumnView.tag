@@ -197,6 +197,10 @@
     var zread = function() { zaction("OPREAD"); }
     var zunread = function() { zaction("OPUNREAD"); }
     var zjunk = function() { zclick("SOPSPAM"); }
+    function setactionOp(val) {
+        document.getElementById("actionOp").value = val;
+        zclick('SOPSET');
+    }
 	function zSelectRow(ev,id,cid) {
 		var t = ev.target || ev.srcElement;
 		if (t&&t.className=="CB") {
