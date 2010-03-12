@@ -582,8 +582,9 @@ ZmMailList.prototype._getTcon =
 function() {
 	var chars = ["-"];
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
+	var searchFolder = this.search && appCtxt.getById(this.search.folderId);
 	for (var i = 0; i < folders.length; i++) {
-		if (!(this.search && this.search.folderId == folders[i])) {
+		if (!(searchFolder && searchFolder.nId == folders[i])) {
 			chars.push(ZmFolder.TCON_CODE[folders[i]]);
 		}
 	}
