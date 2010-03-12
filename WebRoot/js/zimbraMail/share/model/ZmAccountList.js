@@ -59,7 +59,7 @@ function() {
 };
 
 /**
- * Gest the number of visible accounts for this mailbox.
+ * Gets the number of visible accounts for this mailbox.
  *
  * @param	{Boolean}	includeInvisible	if <code>true</code>, include the number of invisible accounts for this mailbox
  * @return	{int}							the number of accounts for this mailbox

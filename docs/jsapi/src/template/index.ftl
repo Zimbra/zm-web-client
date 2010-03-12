@@ -25,14 +25,14 @@
 
 	<div class="container header">
 		<img src="./images/logo.png" width="168" height="40" border="0" alt="Zimbra" title="Zimbra">
-		<h2>Zimlet JavaScript API : Change Log</h2>
+		<h2>ZCS ${comparison.buildVersion} : Zimlet JavaScript API : Change Log</h2>
 	</div>
 
 	<div class="content-wrap">
 	<p>
-	<b>Baseline:</b> ${baseline.buildVersion} (${baseline.buildDate})
+	<b>Current:</b> ${comparison.buildVersion} (${comparison.buildDate})
 	<br />
-	<b>Comparison:</b> ${comparison.buildVersion} (${comparison.buildDate})
+	<b>Baseline:</b> ${baseline.buildVersion} (${baseline.buildDate})
 	</p>
 		<h3>Classes Added</h3>
 		<div style="padding-left:25px">

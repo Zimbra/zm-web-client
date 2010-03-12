@@ -961,9 +961,9 @@ function(params, result) {
 };
 
 /**
- * If there is a progress dialog, kill it. Show the given summary as status.
+ * Kills the progress dialog (if shown). Show the given summary as status.
  *
- * @param summary	text that summarizes the recent action
+ * @param {String}	summary		the text that summarizes the recent action
  */
 ZmList.killProgressDialog =
 function(summary) {

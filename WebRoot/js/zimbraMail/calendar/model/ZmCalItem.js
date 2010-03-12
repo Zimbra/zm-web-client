@@ -1976,8 +1976,9 @@ function(soapDoc, m, cancel) {
 
 
 /**
- * Returns a string representation of the invite content.
- * @param       {Boolean}		isHtml	<code>true</code> to get html content
+ * Gets a string representation of the invite content.
+ * 
+ * @param       {Boolean}		isHtml	if <code>true</code>, get HTML content
  * @return		{String}		a string representation of the invite
  */
 ZmCalItem.prototype.getInviteDescription =

@@ -335,7 +335,7 @@ function(cell, selected) {
 };
 
 /**
- * Sets the cell as selected and performs a new search based on the selection
+ * Sets the cell as selected and performs a new search based on the selection.
  * 
  * @param	{Object}	cell		the cell
  * @param	{String}	letter		the letter to begin the search with
