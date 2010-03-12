@@ -139,10 +139,10 @@ function(ev) {
 			// only add this new contact to the listview if this is a simple
 			// folder search and it belongs!
 			if (folderId && newFolder && folderId == newFolderId) {
-				var currFolder = appCtxt.getById(folderId);
-				var list = (currFolder && currFolder.isRemote()) ? this._controller.getList() : ev.source;
-				var subVector = list.getSubList(this.offset, this.getLimit(), folderId);
-				ZmListView.prototype.set.call(this, subVector);
+				var index = ev.getDetail("sortIndex");
+				if (index != null) {
+					this.addItem(newContact, index);
+				}
 
 				// only relayout if this is cards view
 				if (this instanceof ZmContactCardsView) {

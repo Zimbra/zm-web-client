@@ -504,6 +504,21 @@ function(isGal) {
 	this.isGal = isGal;
 };
 
+ZmContactList.prototype.notifyCreate =
+function(node) {
+	var obj = eval(ZmList.ITEM_CLASS[this.type]);
+	if (obj) {
+		var item = obj.createFromDom(node, {list:this});
+		var index = this._sortIndex(item);
+		// only add if it sorts into this list
+		if (index < this.size()) {
+			this.add(item, index);
+			this.createLocal(item);
+			this._notify(ZmEvent.E_CREATE, {items: [item], sortIndex:index});
+		}
+	}
+};
+
 /**
  * Moves the items.
  * 

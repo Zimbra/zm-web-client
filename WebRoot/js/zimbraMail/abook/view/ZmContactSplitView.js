@@ -640,6 +640,7 @@ function() {
 ZmContactSimpleView.prototype._createItemHtml =
 function(contact, params) {
 
+	params = params || {};
 	if (params.isMixedView) {
 		return ZmContactsBaseView.prototype._createItemHtml.apply(this, arguments);
 	}
