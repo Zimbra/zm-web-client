@@ -1764,7 +1764,7 @@ function() {
 		}
 	}
 
-	if (appCtxt.multiAccounts) { return; }
+	if (appCtxt.isOffline) { return; }
 
 	// quota
 	var usedQuota = (appCtxt.get(ZmSetting.QUOTA_USED)) || 0;
