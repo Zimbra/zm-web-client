@@ -332,8 +332,8 @@ function(isHtml) {
 	// bug fix #29249 - check if location *label* has changed
 	var locationLabel = this.getLocation();
 	var origLocationLabel = orig ? orig.getLocation() : "";
-	if (locationLabel != origLocationLabel) {
-		params = [ZmMsg.locationLabel, locationLabel, isEdit ? ZmMsg.apptModifiedStamp : ""];
+	if (locationLabel != origLocationLabel || this.isForwardMode) {
+		params = [ZmMsg.locationLabel, locationLabel, (isEdit && !this.isForwardMode) ? ZmMsg.apptModifiedStamp : ""];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
@@ -487,6 +487,7 @@ function(message) {
     this.setFromMessage(message, viewMode);
     this.forwardInviteMsgId = message.id;
     this.name = ZmMsg.fwd + ": " + message.subject;
+    this.location = message.invite.getLocation()
 };
 
 /**
@@ -930,6 +931,11 @@ function(callback, errorCallback, mode) {
     }    
 
     this._sendRequest(soapDoc, accountName, callback, errorCallback);
+};
+
+ZmAppt.prototype.setForwardMode =
+function(forwardMode) {
+    this.isForwardMode = forwardMode;
 };
 
 ZmAppt.prototype.forward =

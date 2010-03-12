@@ -812,6 +812,7 @@ function(params, msg) {
         // bug 43428 - invitation should be forwarded using apt forward view        
         if(msg.isInvite()) {
             var newAppt = AjxDispatcher.run("GetCalController").newApptObject(new Date(), null, null, msg);
+            newAppt.setForwardMode(true);
             newAppt.setFromMailMessageInvite(msg);
             AjxDispatcher.run("GetApptComposeController").forwardInvite(newAppt);
             return;
