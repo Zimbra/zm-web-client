@@ -300,6 +300,9 @@ ZmShare.TYPE_PUBLIC	= "pub";
 ZmShare.ZID_ALL = "00000000-0000-0000-0000-000000000000";
 ZmShare.ZID_PUBLIC = "99999999-9999-9999-9999-999999999999";
 
+ZmShare.SHARE = "SHARE";
+ZmShare.GRANT = "GRANT";
+
 // message subjects
 ZmShare._SUBJECTS = {};
 ZmShare._SUBJECTS[ZmShare.NEW] = ZmMsg.shareCreatedSubject;
@@ -1134,7 +1137,7 @@ function(shareInfo, share) {
 	share.action	= "new";
 	share.version	= "0.1";
 
-	share.type = ZmSharingView.SHARE;
+	share.type = ZmShare.SHARE;
 
 	return share;
 };
@@ -1175,7 +1178,7 @@ function(link, share) {
 	share.action	= "new";
 	share.version	= "0.1";
 
-	share.type = ZmSharingView.SHARE;
+	share.type = ZmShare.SHARE;
 
 	return share;
 };
@@ -1194,7 +1197,7 @@ function(share, oldShare) {
 	share.link.path = share.object && share.object.getPath();
 	share.link.name = share.object && share.object.getName();
 
-	share.type = ZmSharingView.GRANT;
+	share.type = ZmShare.GRANT;
 	share.domId = oldShare && oldShare.domId;
 
 	return share;

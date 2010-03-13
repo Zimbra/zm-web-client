@@ -127,9 +127,6 @@ ZmSharingView.ID_FIND_BUTTON	= "findButton";
 ZmSharingView.ID_FOLDER_TYPE	= "folderType";
 ZmSharingView.ID_SHARE_BUTTON	= "shareButton";
 
-ZmSharingView.SHARE = "SHARE";
-ZmSharingView.GRANT = "GRANT";
-
 ZmSharingView.PENDING	= "PENDING";
 ZmSharingView.MOUNTED	= "MOUNTED";
 
@@ -428,13 +425,13 @@ function() {
 	grantFormDiv.appendChild(this._grantForm.getHtmlElement());
 
 	// list views of shares and grants
-	this._pendingShareListView = new ZmSharingListView({parent:this, type:ZmSharingView.SHARE,
+	this._pendingShareListView = new ZmSharingListView({parent:this, type:ZmShare.SHARE,
 		status:ZmSharingView.PENDING, sharingView:this, view:ZmId.VIEW_SHARE_PENDING});
 	this._addListView(this._pendingShareListView, this._pageId + "_pendingShares");
-	this._mountedShareListView = new ZmSharingListView({parent:this, type:ZmSharingView.SHARE,
+	this._mountedShareListView = new ZmSharingListView({parent:this, type:ZmShare.SHARE,
 		status:ZmSharingView.MOUNTED, sharingView:this, view:ZmId.VIEW_SHARE_MOUNTED});
 	this._addListView(this._mountedShareListView, this._pageId + "_mountedShares");
-	this._grantListView = new ZmSharingListView({parent:this, type:ZmSharingView.GRANT,
+	this._grantListView = new ZmSharingListView({parent:this, type:ZmShare.GRANT,
 		sharingView:this, view:ZmId.VIEW_SHARE_GRANTS});
 	this._addListView(this._grantListView, this._pageId + "_sharesBy");
 
@@ -703,15 +700,15 @@ ZmSharingListView.prototype._getHeaderList =
 function() {
 
 	var headerList = [];
-	if (this.type == ZmSharingView.SHARE) {
+	if (this.type == ZmShare.SHARE) {
 		headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_OWNER, text:ZmMsg.sharingOwner, width:ZmMsg.COLUMN_WIDTH_OWNER_SH}));
-	} else if (this.type == ZmSharingView.GRANT) {
+	} else if (this.type == ZmShare.GRANT) {
 		headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_WITH, text:ZmMsg.sharingWith, width:ZmMsg.COLUMN_WIDTH_WITH_SH}));
 	}
 	headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_ITEM, text:ZmMsg.sharingItem}));
 	headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_TYPE, text:ZmMsg.sharingFolderType, width:ZmMsg.COLUMN_WIDTH_TYPE_SH}));
 	headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_ROLE, text:ZmMsg.sharingRole, width:ZmMsg.COLUMN_WIDTH_ROLE_SH}));
-	if (this.type == ZmSharingView.SHARE) {
+	if (this.type == ZmShare.SHARE) {
 		if (this.status == ZmSharingView.PENDING) {
 			headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_ACTIONS, text:ZmMsg.actions, width:ZmMsg.COLUMN_WIDTH_ACTIONS_SH}));
 		} else {
@@ -728,7 +725,7 @@ function() {
 ZmSharingListView.prototype._getItemId =
 function(item) {
 
-	var account = (item.type == ZmSharingView.SHARE) ? item.grantor && item.grantor.id :
+	var account = (item.type == ZmShare.SHARE) ? item.grantor && item.grantor.id :
 													   item.grantee && item.grantee.id;
 	var key = [account, item.link.id].join(":");
 	var id = item.domId;
@@ -778,7 +775,7 @@ function(html, idx, item, field, colIdx, params) {
 	} else if (field == ZmSharingView.F_FOLDER) {
 		html[idx++] = (item.mountpoint && item.mountpoint.path) || "&nbsp;";
 	} else if (field == ZmSharingView.F_ACTIONS) {
-		if (this.type == ZmSharingView.SHARE) {
+		if (this.type == ZmShare.SHARE) {
 			var id = this._getItemId(item);
 			html[idx++] = "<a href='javascript:;' onclick='ZmSharingView._handleAcceptLink(" + '"' + id + '"' + ");'>" + ZmMsg.accept + "</a>";
 		} else {
@@ -795,7 +792,7 @@ function(ev) {
 	var organizers = ev.getDetail("organizers") || [];
 	var fields = ev.getDetail("fields") || {};
 
-	if (this.type == ZmSharingView.SHARE) {
+	if (this.type == ZmShare.SHARE) {
 		var share = ev.getDetail("share");
 		if (!share) {
 			var mtpt = organizers[0];
@@ -838,7 +835,7 @@ function(ev) {
 
 	// Any change to a grant (including create or revoke) results in a wholesale replacement of
 	// the folder's shares, so it's easiest to just redraw the list. Also check for folder rename.
-	if (this.type == ZmSharingView.GRANT) {
+	if (this.type == ZmShare.GRANT) {
 		if ((ev.event = ZmEvent.E_MODIFY && fields[ZmOrganizer.F_SHARES]) ||
 		    (ev.event = ZmEvent.E_MODIFY && fields[ZmOrganizer.F_NAME] && organizers[0].shares)) {
 
