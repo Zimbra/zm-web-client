@@ -193,7 +193,8 @@ ZmConvListView.prototype._initHeaders =
 function() {
 	if (!this._headerInit) {
 		ZmMailListView.prototype._initHeaders.call(this);
-		this._headerInit[ZmItem.F_EXPAND] = {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand};
+		this._headerInit[ZmItem.F_EXPAND]	= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand};
+		this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_MLV, resizeable:true};
 	}
 };
 
@@ -935,4 +936,17 @@ function() {
 		return a[a.length - 1];
 	}
 	return null;
+};
+
+ZmConvListView.prototype._getActionMenuForColHeader =
+function(force) {
+
+	var menu = ZmMailListView.prototype._getActionMenuForColHeader.apply(this, arguments);
+	if (!this.isMultiColumn()) {
+		var mi = this._colHeaderActionMenu.getItemById(ZmItem.F_FROM);
+		if (mi) {
+			mi.setVisible(false);
+		}
+	}
+	return menu;
 };

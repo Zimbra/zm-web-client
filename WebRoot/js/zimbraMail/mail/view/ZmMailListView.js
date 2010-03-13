@@ -485,9 +485,13 @@ function(item, field) {
 ZmMailListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
     var isFolder = this._isSentOrDraftsFolder();
-    return (field == ZmItem.F_STATUS)
-		? ZmMsg.messageStatus
-		: ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx, isFolder);
+	if (field == ZmItem.F_FROM && (isFolder && (isFolder.sent || isFolder.drafts))) {
+	   return ZmMsg.to;
+	} else if (field == ZmItem.F_STATUS) {
+		return ZmMsg.messageStatus;
+	} else {
+		return ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx, isFolder);
+	}
 };
 
 ZmMailListView.prototype._getToolTip =
@@ -686,6 +690,7 @@ function(participants, participantsElided, width) {
 
 ZmMailListView.prototype._getActionMenuForColHeader =
 function(force) {
+
 	if (!this.isMultiColumn()) {
 		if (!this._colHeaderActionMenu || force) {
 			// create a action menu for the header list
@@ -702,6 +707,12 @@ function(force) {
 				mi.setData(ZmListView.KEY_ID, column.field);
 				menu.addSelectionListener(column.field, actionListener);
 			}
+		}
+		var folderInfo = this._isSentOrDraftsFolder();
+		var isSent = (folderInfo && (folderInfo.sent || folderInfo.drafts));
+		var mi = this._colHeaderActionMenu.getItemById(ZmItem.F_FROM);
+		if (mi) {
+			mi.setVisible(!isSent);
 		}
 		return this._colHeaderActionMenu;
 	}
