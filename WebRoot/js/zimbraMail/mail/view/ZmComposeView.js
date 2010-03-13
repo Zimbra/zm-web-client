@@ -1426,7 +1426,8 @@ function(incAddrs, incSubject) {
 	if (curFormValue.match(ZmComposeView.EMPTY_FORM_RE) ||
 		(this._composeMode == DwtHtmlEditor.HTML &&
 		 (curFormValue == "<html><body></body></html>" ||
-		  curFormValue == "<html><body><br></body></html>")))
+		  curFormValue == "<html><body><br></body></html>" ||
+		  curFormValue == '<html><body><br mce_bogus="1"></body></html>')))
 	{
 		return false;
 	}
