@@ -1835,7 +1835,7 @@ function(action, msg, extraBodyText, incOptions, nosig) {
 		cancelledParts.push(crlf + ZmItem.NOTES_SEPARATOR);
 		value += crlf2 + cancelledParts.join("");
 	} else if (incOptions.what == ZmSetting.INC_NONE) {
-		value = "";
+		value = preText;
 	} else if (incOptions.what == ZmSetting.INC_ATTACH) {
 		this._msgAttId = this._msg.id;
 	} else {
