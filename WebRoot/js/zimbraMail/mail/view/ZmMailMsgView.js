@@ -1497,7 +1497,7 @@ function() {
 			htmlArr[idx++] = link;
 		}
 
-		if (att.size || att.htmlLink || att.vcardLink || att.download || att.briefcaseLink) {
+		if (att.size || att.htmlLink || att.vcardLink || att.download || att.briefcaseLink || att.importICSLink) {
 			htmlArr[idx++] = "&nbsp;(";
 			if (att.size) {
 				htmlArr[idx++] = att.size;
@@ -1529,9 +1529,18 @@ function() {
 				htmlArr[idx++] = "</a>";
 			}
 
+            if (att.importICSLink) {
+                if (att.briefcaseLink || att.htmlLink || att.vcardLink || att.download) {
+                    htmlArr[idx++] = " | ";
+                }
+                htmlArr[idx++] = att.importICSLink;
+                htmlArr[idx++] = ZmMsg.addToCalendar;
+                htmlArr[idx++] = "</a>";
+            }
+
 			// bug: 233 - remove attachment support
 			if (att.removeLink) {
-				if (att.briefcaseLink || att.htmlLink || att.vcardLink || att.download) {
+				if (att.briefcaseLink || att.htmlLink || att.vcardLink || att.download || att.importICSLink) {
 					htmlArr[idx++] = " | ";
 				}
 				htmlArr[idx++] = att.removeLink;
@@ -2068,4 +2077,17 @@ function(msgId, partId, name) {
 ZmMailMsgView.prototype.deactivate =
 function() {
 	this._controller.inactive = true;
+};
+
+ZmMailMsgView.addToCalendarCallback =
+function(msgId, partId, name) {
+	ZmZimbraMail.unloadHackCallback();
+
+	// force create deferred folders if not created
+	AjxDispatcher.require("CalendarCore");
+	var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+	var calApp = aCtxt.getApp(ZmApp.CALENDAR);
+	calApp._createDeferredFolders();
+
+	appCtxt.getApp(ZmApp.CALENDAR).importAppointment(msgId, partId, name);
 };

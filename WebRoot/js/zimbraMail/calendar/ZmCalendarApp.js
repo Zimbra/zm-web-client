@@ -1139,3 +1139,65 @@ function(date) {
 	var cc = AjxDispatcher.run("GetCalController");
 	return cc.getDayToolTipText(date);
 };
+
+ZmCalendarApp.prototype.importAppointment =
+function(msgId, partId,name) {
+	var loadCallback = new AjxCallback(this, this._handleImportAppointment, [msgId, partId, name]);
+	AjxDispatcher.require(["CalendarCore","Calendar"], false, loadCallback);
+};
+
+ZmCalendarApp.prototype._handleImportAppointment =
+function(msgId, partId, name) {
+	if (this._deferredFolders.length != 0) {
+		this._createDeferredFolders(ZmApp.CALENDAR);
+	}
+	var dlg = this._copyToDialog = appCtxt.getChooseFolderDialog();
+	var chooseCb = new AjxCallback(this, this._chooserCallback, [msgId, partId, name]);
+	ZmController.showDialog(dlg, chooseCb, this._getCopyParams(dlg, msgId, partId));
+};
+
+ZmCalendarApp.prototype._getCopyParams =
+function(dlg, msgId, partId) {
+	return {
+		data:			{msgId:msgId,partId:partId},
+		treeIds:		[ZmOrganizer.CALENDAR],
+		overviewId:		dlg.getOverviewId(this._name),
+		title:			ZmMsg.addToCalendar,
+		description:	ZmMsg.targetFolder,
+		appName:		ZmApp.CALENDAR
+	};
+};
+
+ZmCalendarApp.prototype._chooserCallback =
+function(msgId, partId, name, folder) {
+
+
+    var jsonObj = {ImportAppointmentsRequest:{_jsns:"urn:zimbraMail"}};
+    var request = jsonObj.ImportAppointmentsRequest;
+    request.l = folder.id;
+    request.ct = "text/calendar";
+
+    var m = request.content = {};
+    m.mid = msgId;
+    m.part = partId;
+
+    var params = {
+        jsonObj: jsonObj,
+        asyncMode: true,
+        callback: (new AjxCallback(this, this._handleImportApptResponse, [folder.id])),
+        errorCallback: (new AjxCallback(this, this._handleImportApptError))
+    };
+    appCtxt.getAppController().sendRequest(params);
+
+};
+
+ZmCalendarApp.prototype._handleImportApptResponse =
+function(folderId,response) {
+	appCtxt.getAppController().setStatusMsg(ZmMsg.addedToCalendar);
+	appCtxt.getChooseFolderDialog().popdown();
+};
+
+ZmCalendarApp.prototype._handleImportApptError =
+function(ex) {
+	appCtxt.getAppController().setStatusMsg(ZmMsg.errorImportAppt, ZmStatusView.LEVEL_CRITICAL);
+};

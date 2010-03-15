@@ -1480,6 +1480,13 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				html[j++] = attach.part;
 				html[j++] = "\"); return false;' class='AttLink'>";
 				props.link = html.join("");
+
+
+                if(appCtxt.get(ZmSetting.CALENDAR_ENABLED) && attach.mp && attach.mp.length==1 && attach.mp[0].ct == ZmMimeTable.TEXT_CAL) {
+                    var onclickStr1 = "ZmMailMsgView.addToCalendarCallback(\"" + this.id + "\",\"" + attach.mp[0].part + "\");";
+                    props.importICSLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
+                }
+                
 			} else {
 				// set the anchor html for the link to this attachment on the server
 				var url = useCL ? attach.cl : (hrefRoot + attach.part);
@@ -1513,6 +1520,12 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					var onclickStr1 = "ZmMailMsgView.briefcaseCallback(\"" + this.id + "\",\"" + attach.part + "\",\""+partLabel+"\");";
 					props.briefcaseLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
 				}
+
+                if(appCtxt.get(ZmSetting.CALENDAR_ENABLED) && attach.ct == ZmMimeTable.TEXT_CAL) {
+                    var onclickStr1 = "ZmMailMsgView.addToCalendarCallback(\"" + this.id + "\",\"" + attach.part + "\");";
+                    props.importICSLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
+                }
+
 
 				if (!useCL) {
 					// check for vcard *first* since we dont care to view it in HTML
