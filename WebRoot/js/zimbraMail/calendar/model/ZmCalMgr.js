@@ -465,7 +465,8 @@ function() {
 		end: dr.end.getTime(),
 		fanoutAllDay: true,
 		noBusyOverlay: true,
-		folderIds: this.getCheckedCalendarFolderIds()
+		folderIds: this.getCheckedCalendarFolderIds(),
+        tz: AjxTimezone.DEFAULT
 	};
 };
 

@@ -107,6 +107,7 @@ ZmMiniCalCache.prototype._setSoapParams =
 function(request, params) {
 	request.s = params.start;
 	request.e = params.end;
+    request.tz = params.tz;
 
 	var folderNode = null;
 	if (params.folderIds && params.folderIds.length) {
@@ -115,6 +116,10 @@ function(request, params) {
 			request.folder.push({id:params.folderIds[i]});
 		}
 	}
+    if(params.tz){
+        request.tz = [];
+        request.tz.push({id:params.tz})
+    }
 };
 
 ZmMiniCalCache.prototype.setFaultHandler =
