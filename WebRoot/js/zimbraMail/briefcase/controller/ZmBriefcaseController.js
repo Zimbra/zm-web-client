@@ -435,8 +435,11 @@ function(ev) {
 		if (item.isWebDoc()) {
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
 		}
+        var name = item.name || 'Briefcase';
+        if(AjxEnv.isIE)
+            name = name.replace(/[^\w]/g,'');
 		if (restUrl) {
-			window.open(restUrl, item.name, ZmBriefcaseApp.getDocWindowFeatures());
+			window.open(restUrl, name, ZmBriefcaseApp.getDocWindowFeatures());
 		}
 	}
 };
