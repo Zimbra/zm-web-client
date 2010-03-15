@@ -66,13 +66,16 @@ function(includeEmpty, includeNonModified) {
 ZmSignaturesPage.prototype.getNewSignatures =
 function(includeEmpty) {
 	var array = [];
+    var sigregex = new RegExp("^"+ZmMsg.signature+"\\s#(\\d+)$", "i");
 	for (var id in this._signatureComps) {
 		var signature = this._signatureComps[id];
 		if (!signature._new) continue;
 
 		var hasName = signature.name.replace(/\s*/g,"") != "";
 		var hasValue = signature.getValue().replace(/\s*/g,"") != "";
-		if (includeEmpty || (hasName && hasValue)) {
+        var isNameDefault = signature.name.match(sigregex);
+                
+		if ((includeEmpty && !isNameDefault) || (hasName && hasValue)) {
 			array.push(signature);
 		}
 	}
