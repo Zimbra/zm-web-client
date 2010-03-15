@@ -1963,11 +1963,11 @@ function(htmlMode, incOptions) {
 	var params = {};
 
 	params.htmlMode	= htmlMode;
-	params.pre		= (htmlMode || !incOptions.prefix) ? "" : appCtxt.get(ZmSetting.REPLY_PREFIX) + " ";
 	params.len		= ZmHtmlEditor.WRAP_LENGTH;
 	params.eol		= htmlMode ? '<br/>' : '\n';
-	params.before	= htmlMode ? ZmHtmlEditor.HTML_QUOTE_PRE : "";
-	params.after	= htmlMode ? ZmHtmlEditor.HTML_QUOTE_POST : "";
+	params.pre		= (htmlMode || !incOptions.prefix) ? "" : appCtxt.get(ZmSetting.REPLY_PREFIX) + " ";
+	params.before	= (htmlMode && incOptions.prefix) ? ZmHtmlEditor.HTML_QUOTE_PRE : "";
+	params.after	= (htmlMode && incOptions.prefix) ? ZmHtmlEditor.HTML_QUOTE_POST : "";
 
 	return params;
 };
