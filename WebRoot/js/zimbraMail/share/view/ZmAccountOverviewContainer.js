@@ -150,7 +150,7 @@ function(params) {
 		var params1 = {
 			parent: this,
 			text: this._getFolderLabel(ZmOrganizer.ID_INBOX, text),
-			imageInfo: "GlobalInbox"
+			imageInfo: "AccountAll"
 		};
 		var showAllMboxes = appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES);
 		var allTi = this._allMailboxesTreeHeader = new DwtTreeItem(params1);
@@ -470,7 +470,7 @@ function(params, account, showBackgroundColor, headerClassName) {
 		var headerLabel, headerIcon;
 		if (this._appName == ZmApp.PREFERENCES && account.isMain && appCtxt.isOffline) {
 			headerLabel = ZmMsg.allAccounts;
-			headerIcon = "GlobalInbox";
+			headerIcon = "AccountAll";
 		} else {
 			headerLabel = account.getDisplayName();
 			headerIcon = account.getIcon()
