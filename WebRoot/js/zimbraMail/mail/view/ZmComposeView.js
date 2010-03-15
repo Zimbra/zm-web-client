@@ -2207,9 +2207,11 @@ function(ev) {
 
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var newOption = this._fromSelect.getOptionWithValue(newVal);
-	var oldOption = this._fromSelect.getOptionWithValue(oldVal);
 	var newAccount = ac.accountList.getAccount(newOption.accountId);
-	var sigId = newAccount.getIdentity().signature;
+	var collection = ac.getIdentityCollection(newAccount);
+	var identity = collection && collection.getById(newVal);
+	var sigId = identity ? identity.signature : collection.defaultIdentity;
+
 	this._controller._accountName = newAccount.name;
 	this._controller.resetSignatureToolbar(sigId, newAccount);
 	this._controller.resetSignature(sigId, newAccount);
@@ -2222,7 +2224,8 @@ function(ev) {
 	// if this message is a saved draft, check whether it needs to be moved
 	// based on newly selected value.
 	if (this._msg && this._msg.isDraft) {
-		var oldAccount = appCtxt.accountList.getAccount(oldOption.accountId);
+		var oldOption = this._fromSelect.getOptionWithValue(oldVal);
+		var oldAccount = ac.accountList.getAccount(oldOption.accountId);
 
 		// cache old info so we know what to delete after new save
 		var msgId = this._origAcctMsgId = this._msg.id;
@@ -2395,11 +2398,21 @@ function() {
 
 ZmComposeView.prototype.getIdentity =
 function() {
+	var ac = window.parentAppCtxt || window.appCtxt;
+
+	if (appCtxt.multiAccounts) {
+		var newVal = this._fromSelect.getValue();
+		var newOption = this._fromSelect.getOptionWithValue(newVal);
+		var newAccount = ac.accountList.getAccount(newOption.accountId);
+		var collection = ac.getIdentityCollection(newAccount);
+		return collection && collection.getById(newVal);
+	}
+
 	if (this.identitySelect) {
-		var identityCollection = appCtxt.getIdentityCollection();
-		var id = this.identitySelect.getValue();
-		var result = identityCollection.getById(id);
-		return result ? result : identityCollection.defaultIdentity;
+		var collection = ac.getIdentityCollection();
+		var val = this.identitySelect.getValue();
+		var identity = collection.getById(val);
+		return identity ? identity : collection.defaultIdentity;
 	}
 };
 
