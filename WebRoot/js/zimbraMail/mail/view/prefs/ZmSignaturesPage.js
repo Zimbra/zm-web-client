@@ -562,6 +562,25 @@ function(ev) {
 	this._addNewSignature();
 };
 
+ZmSignaturesPage.prototype._clearSignature =
+function(signature, keepName, keepValue) {
+	if (!keepName || !keepValue) {
+		signature = signature || this._selSignature;
+		if (!signature._orig) {
+			signature._orig = {
+				name:  signature.name,
+				value: signature.getValue(),
+				contentType:  signature.getContentType()
+			};
+		}
+		if (!keepName)
+			signature.name = this._getNewSignatureName();
+		if (!keepValue)
+			signature.value = "";
+		this._resetSignature(signature);
+	}
+};
+
 ZmSignaturesPage.prototype._deleteSignature =
 function(signature) {
 	signature = signature || this._selSignature;
@@ -586,13 +605,8 @@ function(evt) {
 			this._sigList.setSelection(sel);
 		}
 		this._resetAddButton();
-	}
-	else {
-		var newSig = this._getNewSignature();
-		newSig.id = signature.id;
-		newSig.name = signature.name;
-
-		this._addSignature(newSig);
+	} else {
+		this._clearSignature(signature);
 	}
 };
 
