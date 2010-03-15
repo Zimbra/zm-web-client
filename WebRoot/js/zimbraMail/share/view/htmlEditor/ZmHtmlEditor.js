@@ -570,7 +570,7 @@ function(x, y) {
 	var main = document.getElementById(this.getBodyFieldId());
 
 	// FUDGE: we must substract borders and paddings - yuck.
-	var delta = this._mode == DwtHtmlEditor.HTML ? 10 : 8;
+	var delta = this._mode == DwtHtmlEditor.HTML ? 8 : 10;
 
 
 	if (x == Dwt.CLEAR) {
