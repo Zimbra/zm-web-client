@@ -281,7 +281,7 @@ function() {
 
 	// Make sure they are on the the same level
 	var sigSize = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
-	this._sigList.setSize(Dwt.DEFAULT, sigSize.y);
+	this._sigList.setSize(Dwt.CLEAR, sigSize.y);
 };
 
 ZmSignaturesPage.prototype._resetEditorSize =
@@ -682,7 +682,7 @@ function(value) {
 ZmSignatureListView = function(parent) {
 	if (arguments.length == 0) { return; }
 
-	DwtListView.call(this, {parent:parent, headerList:this._getHeaderList(parent)});
+	DwtListView.call(this, {parent:parent, headerList:this._getHeaderList(parent), className:"ZmSignatureListView"});
 };
 
 ZmSignatureListView.prototype = new DwtListView;

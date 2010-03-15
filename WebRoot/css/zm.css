@@ -2569,6 +2569,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	white-space: nowrap;
 }
 
+.ZmSignatureListView {
+	width: 150px !important;
+}
+
 .ZmFilterRulesView .DwtListView-Rows {
 	/*overflow: visible;*/
 	height: auto;

@@ -278,6 +278,7 @@ function() {
 
 		// create tab-group for all controls on the page
 		this._addControlsToTabGroup(this._tabGroup);
+	} catch (e) {
 	}
 	finally {
 		this._exitTabScope();

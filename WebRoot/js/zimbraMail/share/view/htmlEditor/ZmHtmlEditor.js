@@ -576,7 +576,10 @@ function(x, y) {
 	if (x == Dwt.CLEAR) {
 		main.style.width = null;
 		if (div) div.style.width = null;
-	} else {
+	} else if (x == Dwt.DEFAULT) {
+		main.style.width = "auto";
+		if (div) div.style.width = "auto";
+	} else if (typeof(x) == "number") {
 		x -= delta + 4;
 
 		// bug fix #6786 - normalize width/height if less than zero
@@ -595,7 +598,10 @@ function(x, y) {
 	if (y == Dwt.CLEAR) {
 		main.style.height = null;
 		if (div) div.style.height = null;
-	} else {
+	} else if (y == Dwt.DEFAULT) {
+		main.style.height = "auto";
+		if (div) div.style.height = "auto";
+	} else if (typeof(y) == "number") {
 
 		// subtract spellchecker DIV if applicable
 		if (this._spellCheckModeDivId) {
