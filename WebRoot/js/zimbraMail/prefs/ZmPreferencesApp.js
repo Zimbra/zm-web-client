@@ -229,6 +229,7 @@ function() {
 				ZmSetting.SEARCH_INCLUDES_TRASH,
 				ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES,
 				ZmSetting.SHOW_SEARCH_STRING,
+				ZmSetting.PAGE_SIZE,
 				ZmSetting.SHOW_SELECTION_CHECKBOX,
 				ZmSetting.SKIN_NAME,
 				ZmSetting.CLIENT_TYPE,
@@ -461,6 +462,11 @@ function() {
     ZmPref.registerPref("MAIL_MANDATORY_SPELLCHECK", {
 		displayName:		ZmMsg.mandatorySpellcheck,
 		displayContainer:	ZmPref.TYPE_CHECKBOX		
+	});
+
+	ZmPref.registerPref("PAGE_SIZE", {
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		["25", "50", "100", "200"]
 	});
 
 	ZmPref.registerPref("PASSWORD", {

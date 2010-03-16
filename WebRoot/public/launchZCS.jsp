@@ -320,7 +320,8 @@ for (var pkg in window.AjxTemplateMsg) {
 		var protocolMode = "<%=protocolMode%>";
 
         <c:set var="types" value="${requestScope.authResult.attrs.zimbraFeatureConversationsEnabled[0] eq 'FALSE' ? 'message' : requestScope.authResult.prefs.zimbraPrefGroupMailBy[0]}"/>
-        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${not empty app and app ne 'mail' or isOfflineMode ? false : true}" itemsperpage="50" types="${types}"/>
+		<c:set var="numItems" value="${requestScope.authResult.prefs.zimbraPrefItemsPerVirtualPage[0]}"/>
+        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${not empty app and app ne 'mail' or isOfflineMode ? false : true}" itemsperpage="${numItems * 2}" types="${types}"/>
         var batchInfoResponse = ${getInfoJSON};
 
         <c:if test="${not empty app and app eq 'calendar'}">

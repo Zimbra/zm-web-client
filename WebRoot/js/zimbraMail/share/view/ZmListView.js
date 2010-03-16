@@ -169,8 +169,7 @@ function(list, sortField) {
 
 	// check in case there are more items but no scrollbar
 	if (this._isPageless) {
-		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._checkItemCount), 200);
-		this._checkItemCount();
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._checkItemCount), 1000);
 	}
 };
 

@@ -114,6 +114,10 @@ and the container element is replaced with that control.
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
 					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.pageSizeLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_PAGE_SIZE' tabindex='90'></div></td>
+					</tr>
+					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_SHOW_SELECTION_CHECKBOX' tabindex='90'></div></td>
 					</tr>
