@@ -196,7 +196,7 @@ ZmTaskEditView.prototype._createHTML =
 function() {
 	this._statusCheckboxId 	= this._htmlElId + "_status_cbox";
 	this._repeatDescId		= this._htmlElId + "_repeatDesc";
-
+    this._isAppt = false;
 	var subs = {
 		id: this._htmlElId,
 		height: (this.parent.getSize().y - 30),

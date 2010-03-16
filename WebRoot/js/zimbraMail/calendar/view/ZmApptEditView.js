@@ -461,6 +461,7 @@ function() {
 	this._repeatDescId 		= this._htmlElId + "_repeatDesc";
 	this._startTimeAtLblId  = this._htmlElId + "_startTimeAtLbl";
 	this._endTimeAtLblId	= this._htmlElId + "_endTimeAtLbl";
+    this._isAppt = true; 
 
 	var subs = {
 		id: this._htmlElId,
