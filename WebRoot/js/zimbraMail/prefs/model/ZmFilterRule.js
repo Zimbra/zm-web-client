@@ -170,6 +170,8 @@ ZmFilterRule.OP_AFTER			= i++;
 ZmFilterRule.OP_NOT_AFTER		= i++;
 ZmFilterRule.OP_IN				= i++;
 ZmFilterRule.OP_NOT_IN			= i++;
+ZmFilterRule.OP_IS_REQUESTED	= i++; // invites
+ZmFilterRule.OP_IS_REPLIED		= i++; // invites
 
 // comparator types
 ZmFilterRule.COMP_STRING							= "stringComparison";
@@ -193,6 +195,8 @@ ZmFilterRule.OP_VALUE[ZmFilterRule.OP_OVER]			= "over";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_BEFORE]		= "before";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_AFTER]		= "after";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IN]			= "in";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REQUESTED]	= "anyrequest";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REPLIED]	= "anyreply";
 
 ZmFilterRule.OP_VALUE_MAP = {};
 for (var i in ZmFilterRule.OP_VALUE) {
@@ -220,6 +224,8 @@ ZmFilterRule.OP_LABEL[ZmFilterRule.OP_AFTER]		= ZmMsg.afterLc;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_AFTER]	= ZmMsg.notAfter;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IN]			= ZmMsg.isIn;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_IN]		= ZmMsg.notIn;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_REQUESTED]	= ZmMsg.isRequested;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_REPLIED]	= ZmMsg.isReplied;
 
 // commonly used lists
 ZmFilterRule.MATCHING_OPS = [
@@ -307,7 +313,7 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRBOOK] = {
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_INVITE] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[ZmFilterRule.OP_EXISTS, ZmFilterRule.OP_NOT_EXISTS]
+		opsOptions:	[ZmFilterRule.OP_IS_REQUESTED, ZmFilterRule.OP_IS_REPLIED]
 };
 
 // listed in order we want to display them in the SELECT
@@ -606,6 +612,10 @@ function(testType, comparator, value, subjectMod) {
 			case ZmFilterRule.TEST_DATE:		conditionData.d = value; break;
 			default:							conditionData.value = value; break;
 		}
+	}
+
+	if (testType == ZmFilterRule.TEST_INVITE) {
+		conditionData.method = [{_content:ZmFilterRule.OP_VALUE[comparator]}];
 	}
 
 	return conditionData;

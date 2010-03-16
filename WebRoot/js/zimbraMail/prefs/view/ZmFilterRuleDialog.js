@@ -638,13 +638,19 @@ function(isMainSelect, testType, field, rowData) {
 				dataValue = rowData.value;
 			}
 		}
-		else if (testType == ZmFilterRule.TEST_ATTACHMENT ||
-				 testType == ZmFilterRule.TEST_INVITE)
-		{
+		else if (testType == ZmFilterRule.TEST_ATTACHMENT) {
 			if (field == "ops") {
 				dataValue = (rowData.negative == "1")
 					? ZmFilterRule.OP_NOT_EXISTS
 					: ZmFilterRule.OP_EXISTS;
+			}
+		}
+		else if (testType == ZmFilterRule.TEST_INVITE) {
+			if (field == "ops") {
+				var isRequested = ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REQUESTED];
+				dataValue = (isRequested == rowData.method[0]._content)
+					? ZmFilterRule.OP_IS_REQUESTED
+					: ZmFilterRule.OP_IS_REPLIED;
 			}
 		}
 		else if (testType == ZmFilterRule.TEST_ADDRBOOK) {
