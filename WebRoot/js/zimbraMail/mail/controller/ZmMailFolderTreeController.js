@@ -66,18 +66,23 @@ function(ev) {
 ZmMailFolderTreeController.prototype._dropListener =
 function(ev) {
 	// check for associated data source
-	if (appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) && ev.action == DwtDropEvent.DRAG_DROP) {
+	if ((appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED)) && ev.action == DwtDropEvent.DRAG_DROP) {
 		var item = ev.srcData.data;
 		var organizer = item instanceof ZmOrganizer ? item : null;
 		if (organizer && organizer.isDataSource()) {
-			var accounts = appCtxt.getDataSourceCollection().getPopAccountsFor(organizer.id);
-			var args = [ organizer.getName(), accounts[0].getName() ];
-			var message = AjxMessageFormat.format(ZmMsg.errorMovePopFolder, args);
+			var datasources = appCtxt.getDataSourceCollection();
+			var popAccounts = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? datasources.getPopAccountsFor(organizer.id) : [];
+			var imapAccounts = appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED) ? datasources.getImapAccountsFor(organizer.id) : [];
+		
+			if (popAccounts.length || imapAccounts.length) {
+				var args = [ organizer.getName(), popAccounts.length ? popAccounts[0].getName() : imapAccounts[0].getName() ];
+				var message = AjxMessageFormat.format(popAccounts.length ? ZmMsg.errorMovePopFolder : ZmMsg.errorMoveImapFolder, args);
 
-			var dialog = appCtxt.getMsgDialog();
-			dialog.setMessage(message);
-			dialog.popup();
-			return;
+				var dialog = appCtxt.getMsgDialog();
+				dialog.setMessage(message);
+				dialog.popup();
+				return;
+			}
 		}
 	}
 
