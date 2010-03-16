@@ -199,7 +199,7 @@ function(parent, type, id) {
 				button.setVisible(false);
 			}
 
-			if (!hasFeeds && syncAllButton) {
+			if ((!hasFeeds || isTrash) && syncAllButton) {
 				syncAllButton.setVisible(false);
 			}
 		}
