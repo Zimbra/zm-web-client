@@ -175,9 +175,23 @@ ZmGroupView.prototype.isValid =
 function() {
 	// check for required group name
 	if (this.isDirty() && this.isEmpty(true)) {
-		throw ZmMsg.errorMissingGroup;
+		return false;
 	}
 	return true;
+};
+
+ZmGroupView.prototype.getInvalidItems =
+function() {
+	if (!this.isValid()) {
+		return ["members"];
+	}
+	return [];
+};
+
+ZmGroupView.prototype.getErrorMessage = function(id) {
+	if (!this.isValid() && id=="members") {
+		return ZmMsg.errorMissingGroup;
+	}
 };
 
 ZmGroupView.prototype.enableInputs =

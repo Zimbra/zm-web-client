@@ -269,7 +269,8 @@ ZmContactController.prototype._saveListener =
 function(ev, bIsPopCallback) {
 	var fileAsChanged = false;
 	var view = this._listView[this._currentView];
-	view.validate();
+	if (view instanceof DwtForm)
+		view.validate();
 	if (!view.isValid()) {
 		var invalidItems = view.getInvalidItems();
 		for (var i=0; i<invalidItems.length; i++) {
