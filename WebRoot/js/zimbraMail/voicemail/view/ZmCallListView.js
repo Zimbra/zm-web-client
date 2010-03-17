@@ -41,11 +41,12 @@ function(defaultColumnSort) {
 ZmCallListView.prototype._setColumnHeader = 
 function(fieldId, label) {
 	var headerCol = this._headerHash[fieldId];
+	var index = headerCol._index;
 	var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
 	if (fromColSpan) {
 		fromColSpan.innerHTML = "&nbsp;" + label;
 	}
-	if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(index).setText(label);
+	if (this._colHeaderActionMenu && !AjxUtil.isUndefined(index)) this._colHeaderActionMenu.getItem(index).setText(label);
 };
 
 ZmCallListView.prototype._getHeaderList =
