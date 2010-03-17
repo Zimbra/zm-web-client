@@ -390,10 +390,21 @@ ZmApptView.prototype._getTimeString =
 function(calItem) {
 	var sd = calItem._orig.startDate;
 	var ed = calItem._orig.endDate;
+    var tz = AjxMsg[AjxTimezone.DEFAULT] || AjxTimezone.getServerId(AjxTimezone.DEFAULT)
 
 	if (calItem.isRecurring() && this._mode == ZmCalItem.MODE_EDIT_SERIES) {
 		sd = calItem.startDate;
 		ed = calItem.endDate;
+        var seriesTZ = calItem.getTimezone();
+
+        //convert to client timezone if appt's timezone differs
+        if(seriesTZ != AjxTimezone.getServerId(AjxTimezone.DEFAULT)) {
+            var offset1 = AjxTimezone.getOffset(AjxTimezone.DEFAULT, sd);
+		    var offset2 = AjxTimezone.getOffset(AjxTimezone.getClientId(seriesTZ), sd);
+            sd.setTime(sd.getTime() + (offset1 - offset2)*60*1000);
+            ed.setTime(ed.getTime() + (offset1 - offset2)*60*1000);
+            calItem.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+        }
 	}
 
 	var isAllDay = calItem.isAllDayEvent();
@@ -406,7 +417,7 @@ function(calItem) {
 	var pattern = isAllDay ?
 				  (isMultiDay ? ZmMsg.apptTimeAllDayMulti   : ZmMsg.apptTimeAllDay) :
 				  (isMultiDay ? ZmMsg.apptTimeInstanceMulti : ZmMsg.apptTimeInstance);
-	var params = [sd, ed, AjxMsg[AjxTimezone.DEFAULT] || AjxTimezone.getServerId(AjxTimezone.DEFAULT)];
+	var params = [sd, ed, tz];
 
 	return AjxMessageFormat.format(pattern, params);
 };

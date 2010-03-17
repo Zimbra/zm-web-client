@@ -2258,20 +2258,20 @@ function(ev) {
 
 	var calendar = appt.getFolder();
 	var isSynced = Boolean(calendar.url);
+    var mode = ZmCalItem.MODE_EDIT;
+    var menuItem = ev.item;
+    var menu = menuItem.parent;
+    var id = menu.getData(ZmOperation.KEY_ID);
+    switch(id) {
+        case ZmOperation.VIEW_APPT_INSTANCE:	mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE; break;
+        case ZmOperation.VIEW_APPT_SERIES:		mode = ZmCalItem.MODE_EDIT_SERIES; break;
+    }
+    
 	if (appt.isReadOnly() || isSynced) {
-		// always get details on appt as if we're editing series (since its read only)
 		var clone = ZmAppt.quickClone(appt);
-		var callback = new AjxCallback(this, this._showApptReadOnlyView, [clone, ZmCalItem.MODE_EDIT_SERIES]);
-		clone.getDetails(ZmCalItem.MODE_EDIT_SERIES, callback, this._errorCallback);
+		var callback = new AjxCallback(this, this._showApptReadOnlyView, [clone, mode]);
+		clone.getDetails(mode, callback, this._errorCallback);
 	} else {
-		var mode = ZmCalItem.MODE_EDIT;
-		var menuItem = ev.item;
-		var menu = menuItem.parent;
-		var id = menu.getData(ZmOperation.KEY_ID);
-		switch(id) {
-			case ZmOperation.VIEW_APPT_INSTANCE:	mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE; break;
-			case ZmOperation.VIEW_APPT_SERIES:		mode = ZmCalItem.MODE_EDIT_SERIES; break;
-		}
 		this.editAppointment(appt, mode);
 	}
 };
