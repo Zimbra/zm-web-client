@@ -33,12 +33,14 @@ ZmVoiceTreeController.prototype.getDataTree =
 function(overviewId) {
 	var phone = (overviewId instanceof ZmPhone)
 		? overviewId : this._opc.getOverview(overviewId).phone;
-	var dataTree = this._dataTree[phone.name];
-	if (!dataTree) {
-		dataTree = this._dataTree[phone.name] = phone.folderTree;
-		dataTree.addChangeListener(this._getTreeChangeListener());
+	if (phone) {
+		var dataTree = this._dataTree[phone.name];
+		if (!dataTree) {
+			dataTree = this._dataTree[phone.name] = phone.folderTree;
+			dataTree.addChangeListener(this._getTreeChangeListener());
+		}
+		return dataTree;
 	}
-	return dataTree;
 };
 
 ZmVoiceTreeController.prototype._createTreeView =

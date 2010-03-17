@@ -486,13 +486,19 @@ function(callback, response) {
 	}
 };
 
+ZmVoiceApp.prototype.setStartPhone =
+function(name) {
+	this._startPhone = name;
+};
+
 ZmVoiceApp.prototype.getStartFolder =
 function(name) {
 	var which = 0;
-	if (name) {
+	var startPhone = name || this._startPhone;
+	if (startPhone) {
 		for (var i = 0; i < this.phones.length; i++) {
 			var phone = this.phones[i];
-			if (phone.name == name) {
+			if (phone.name == startPhone) {
 				which = i;
 			}
 		}
