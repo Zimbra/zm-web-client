@@ -1375,7 +1375,7 @@ function() {
 		this._action = ZmOperation.FORWARD_INLINE;
 	}
 
-	this._composeView.resetBody(this._action, this._msg, curText, this._curIncOption, true);
+	this._composeView.resetBody(this._action, this._msg, curText, this._curIncOption);
 };
 
 ZmComposeController.prototype._detachListener =

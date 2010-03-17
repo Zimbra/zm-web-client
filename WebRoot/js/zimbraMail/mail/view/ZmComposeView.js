@@ -1740,7 +1740,7 @@ function(action, msg, subjOverride) {
 };
 
 ZmComposeView.prototype._setBody =
-function(action, msg, extraBodyText, incOptions, nosig) {
+function(action, msg, extraBodyText, incOptions) {
 
 	var htmlMode = (this._composeMode == DwtHtmlEditor.HTML);
 
@@ -1799,7 +1799,7 @@ function(action, msg, extraBodyText, incOptions, nosig) {
 	var sigStyle, sig;
 	var account = appCtxt.multiAccounts && this.getFromAccount();
 	var ac = window.parentAppCtxt || window.appCtxt;
-	if (!nosig && ac.get(ZmSetting.SIGNATURES_ENABLED, null, account)) {
+	if (ac.get(ZmSetting.SIGNATURES_ENABLED, null, account)) {
 		sig = this.getSignatureContentSpan(null, null, account);
 		sigStyle = sig ? ac.get(ZmSetting.SIGNATURE_STYLE, null, account) : null;
 	}
@@ -1852,7 +1852,7 @@ function(action, msg, extraBodyText, incOptions, nosig) {
 			if (htmlMode) {
 				wrapParams.text = headers.join(crlf) + crlf2 + body;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
-				value = preText + crlf2 + preface + bodyText;
+				value = preText + preface + bodyText;
 			} else {
 				wrapParams.text = headers.join(crlf);
 				wrapParams.len = 120; // headers tend to be longer
@@ -1860,7 +1860,7 @@ function(action, msg, extraBodyText, incOptions, nosig) {
 				wrapParams.text = body;
 				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
-				value = preText + crlf2 + preface + crlf2 + headerText + crlf + bodyText;
+				value = preText + preface + crlf2 + headerText + crlf + bodyText;
 			}
 		} else if (incOptions.what == ZmSetting.INC_SMART) {
 			var chunks = AjxStringUtil.getTopLevel(body);
@@ -1870,7 +1870,7 @@ function(action, msg, extraBodyText, incOptions, nosig) {
 				chunks[i] = AjxStringUtil.wordWrap(wrapParams);
 			}
 			var text = chunks.length ? chunks.join(crlf + crlf) : body;
-			value = preText + crlf2 + preface + crlf2 + text;
+			value = preText + preface + crlf2 + text;
 		}
 	}
 
@@ -1879,7 +1879,7 @@ function(action, msg, extraBodyText, incOptions, nosig) {
 		this._fixMultipartRelatedImages_onTimer(msg);
 	}
 
-	if (!nosig && sigStyle == ZmSetting.SIG_INTERNET) {
+	if (sigStyle == ZmSetting.SIG_INTERNET) {
 		this.addSignature(value);
 	} else {
 		value = value || (htmlMode ? "<br>" : "");
@@ -1955,9 +1955,9 @@ function(msg, htmlMode) {
 };
 
 ZmComposeView.prototype.resetBody =
-function(action, msg, extraBodyText, incOptions, nosig) {
+function(action, msg, extraBodyText, incOptions) {
 	this.cleanupAttachments(true);
-	this._setBody(action, msg, extraBodyText, incOptions, nosig);
+	this._setBody(action, msg, extraBodyText, incOptions);
 	this._setFormValue();
 	this._resetBodySize();
 };
