@@ -505,11 +505,6 @@ ZmRosterTreeGroups.prototype.autocompleteMatch = function(str, callback) {
 	callback.run(result);
 };
 
-ZmRosterTreeGroups.prototype.isUniqueValue =
-function(str) {
-	return false;
-};
-
 ZmRosterTreeGroups.prototype.getArray = function() {
         return this._groups;
 };

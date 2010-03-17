@@ -37,9 +37,6 @@
  * <tr><td>[keyN]</td><td>a string that may be used to replace the typed text</td></tr>
  * </table>
  * </p><p>
- * The data class will also need a method <code>isUniqueValue(str)</code>, which returns true if the given string
- * maps to a single match.
- * </p><p>
  * The calling client also specifies the key in the match result for the string that will be used
  * to replace the typed text (also called the "completion string"). For example, the completion 
  * string for matching contacts could be a full address, or just the email.
@@ -618,13 +615,9 @@ function(chunk, callback) {
 
 ZmAutocompleteListView.prototype._handleResponseAutocomplete =
 function(str, chunk, text, start, callback, list) {
+
 	var retValue;
 	var change = false;
-	// see if it's already a complete address
-	if (list && list.length == 1 && (this._dataAPI.isUniqueValue && this._dataAPI.isUniqueValue(str))) {
-		DBG.println(AjxDebug.DBG2, "unique match, hiding autocomplete list");
-		retValue = {text: text, start: start};
-	}
 
 	if (!retValue) {
 		if (list && list.length) {

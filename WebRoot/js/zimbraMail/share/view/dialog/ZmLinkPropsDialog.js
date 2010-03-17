@@ -123,14 +123,6 @@ function(s) {
 	return m;
 };
 
-ZmLinkPropsDialog.prototype.isUniqueValue =
-function(s) {
-	// NOTE: Don't auto fill in single match. This will allow them
-	//       to enter something that doesn't exist yet (but perhaps
-	//       intend to create later).
-	return false;
-};
-
 ZmLinkPropsDialog.prototype._setAcPageCompletion =
 function(text, element, matchObj) {
 	// NOTE: nothing special to be done
