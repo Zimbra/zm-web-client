@@ -74,6 +74,7 @@ function(params) {
 			posStyle: Dwt.STATIC_STYLE,
 			selectionSupported: true,
 			actionSupported: true,
+			dndSupported: true,
 			showUnread: true
 		};
 
