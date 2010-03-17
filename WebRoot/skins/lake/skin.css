@@ -118,3 +118,7 @@ body	{  @ChromeBg@ }
 .ZOptionsSectionTable .ZToolbarButtonTable .ZWidgetTitle {
 	color: #333;
 }
+
+.ZmPickerOverview .DwtCalendarTitle {
+	 color: #ffffff;
+}
