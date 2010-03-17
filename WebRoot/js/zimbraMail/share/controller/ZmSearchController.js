@@ -480,8 +480,11 @@ function(searchObj) {
 	var search = searchObj || appCtxt.getCurrentSearch();
 
 	var id, type;
-	if (search) {
-		if (search.folderId) {
+	if (search && search.numTerms == 1) {
+		if (search.searchId) {
+			id = this._getNormalizedId(search.searchId);
+			type = ZmOrganizer.SEARCH;
+		} else if (search.folderId) {
 			id = this._getNormalizedId(search.folderId);
 			var folderTree = appCtxt.getFolderTree();
 			var folder = folderTree && folderTree.getById(id);
@@ -489,9 +492,6 @@ function(searchObj) {
 		} else if (search.tagId) {
 			id = this._getNormalizedId(search.tagId);
 			type = ZmOrganizer.TAG;
-		} else if (search.searchId) {
-			id = this._getNormalizedId(search.searchId);
-			type = ZmOrganizer.SEARCH;
 		}
 		var app = appCtxt.getCurrentApp();
 		var overview = app && app.getOverview();

@@ -861,6 +861,7 @@ function() {
 		} catch(ex) {}
 	}
 
+	this.numTerms = tokens.length;
 	if (!hasOrTerm) {
 		this.folderId = folderId;
 		this.tagId = tagId;
