@@ -2320,20 +2320,21 @@ function() {
 };
 
 ZmComposeView.prototype._getIdentityText =
-function(identity, justName) {
+function(identity, account) {
 	var name = identity.name;
 	if (identity.isDefault && name == ZmIdentity.DEFAULT_NAME) {
-		name = ZmMsg.accountDefault;
-	}
-	if (justName) {
-		return name;
+		name = account ? account.getDisplayName() : ZmMsg.accountDefault;
 	}
 
 	// default replacement parameters
 	var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
 	var params = [
-		name, ( identity.sendFromDisplay || '' ), identity.sendFromAddress,
-		ZmMsg.accountDefault, appCtxt.get(ZmSetting.DISPLAY_NAME), defaultIdentity.sendFromAddress
+		name,
+		(identity.sendFromDisplay || ''),
+		identity.sendFromAddress,
+		ZmMsg.accountDefault,
+		appCtxt.get(ZmSetting.DISPLAY_NAME),
+		defaultIdentity.sendFromAddress
 	];
 
 	// get appropriate pattern
@@ -2515,10 +2516,10 @@ function(msg) {
 			for (var j = 0; j < identities.length; j++) {
 				identity = identities[j];
 
-				var addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
+				var text = this._getIdentityText(identity, acct);
 				var icon = appCtxt.isOffline ? acct.getIcon() : null;
-				var option = new DwtSelectOption(identity.id, false, addr.toString(), null, null, icon);
-				option.addr = addr;
+				var option = new DwtSelectOption(identity.id, false, text, null, null, icon);
+				option.addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
 				option.accountId = acct.id;
 
 				this._fromSelect.addOption(option);
