@@ -73,6 +73,7 @@ function(params) {
 			scroll: Dwt.CLIP,
 			posStyle: Dwt.STATIC_STYLE,
 			selectionSupported: true,
+			actionSupported: true,
 			showUnread: true
 		};
 
