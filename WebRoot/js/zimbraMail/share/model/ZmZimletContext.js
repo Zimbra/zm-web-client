@@ -169,6 +169,12 @@ function(obj){
     return (!AjxUtil.isUndefined(obj) && appCtxt.isChildWindow && obj.length && AjxUtil.isFunction(obj.sort) && AjxUtil.isFunction(obj.unshift) );
 };
 
+ZmZimletContext._isArrayIE =
+function(obj){
+    //Default Array when borrowed from parent window looses
+    return (AjxEnv.isIE && !AjxUtil.isUndefined(obj) && appCtxt.isChildWindow && obj.length && obj.length>0 && obj[0]);
+}
+
 /**
  * This function creates a 'sane' JSON object, given one returned by the
  * Zimbra server.
@@ -195,7 +201,7 @@ function(obj, tag, wantarray_re) {
 		if (obj instanceof DwtControl) { //Don't recurse into DwtControls, causes too much recursion
 			return obj;
 		}
-		else if (obj instanceof Array || ZmZimletContext._isArray(obj) ) {
+		else if (obj instanceof Array || ZmZimletContext._isArray(obj) || ZmZimletContext._isArrayIE(obj)) {
 			if (obj.length == 1 && !(wantarray_re && wantarray_re.test(tag))) {
 				cool_json = doit(obj[0], tag);
 			} else {
@@ -323,7 +329,7 @@ function() {
  */
 ZmZimletContext.prototype.getVal =
 function(key) {
-	var zim = this.json.zimlet;    
+	var zim = this.json.zimlet;
 	return eval("zim." + key);
 };
 
