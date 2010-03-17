@@ -293,7 +293,7 @@ function() {
 		},
 		ACCOUNTS: {
 			parentId: "MAIL",
-			icon: "POPAccount",
+			icon: "IMAPAccount",
 			title: (appCtxt.isOffline ? ZmMsg.personas : ZmMsg.accounts),
 			templateId: "prefs.Pages#Accounts",
 			priority: 40,
