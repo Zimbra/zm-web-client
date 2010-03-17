@@ -70,7 +70,7 @@ function(htmlArr, idx, voicemail, field, colIdx, params) {
 	return idx;
 };
 
-ZmCallListView.prototype._getHeaderTooltip =
+ZmCallListView.prototype._getHeaderToolTip =
 function(prefix) {
 	if (prefix == ZmVoiceListView.F_CALLER) {
 		var isPlaced = this._getCallType() == ZmVoiceFolder.PLACED_CALL;
