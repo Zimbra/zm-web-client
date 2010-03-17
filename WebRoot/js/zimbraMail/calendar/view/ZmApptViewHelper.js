@@ -650,7 +650,7 @@ function(enabled) {
 
    this._hourSelect.setEnabled(enabled);
    this._minuteSelect.setEnabled(enabled);
-   this._amPmSelect.setEnabled(enabled);
+   if (this._amPmSelect) this._amPmSelect.setEnabled(enabled);
 };
 
 ZmTimeSelect.prototype._createSelects =
