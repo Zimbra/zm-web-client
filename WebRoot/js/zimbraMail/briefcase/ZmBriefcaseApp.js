@@ -502,8 +502,7 @@ function(dlg, msgId, partId) {
 ZmBriefcaseApp.prototype._chooserCallback =
 function(msgId, partId, name, folder) {
 	var callback = new AjxCallback(this, this.handleDuplicateCheck, [msgId, partId, name, folder.id]);
-	var query = [folder.createQuery(), name].join(" ");
-	this.search({query:query, callback:callback});
+	this.search({query:folder.createQuery(), callback:callback});
 };
 
 ZmBriefcaseApp.prototype.handleDuplicateCheck =
