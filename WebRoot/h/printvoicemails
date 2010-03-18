@@ -7,6 +7,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
+    <app:skin mailbox="${mailbox}"/>
     <c:choose>
     <c:when test="${not empty mailbox.prefs.locale}">
         <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
@@ -35,10 +36,10 @@
         <h1>${zm:getVoiceFolderName(pageContext, context.folder)}</h1>
         <table class='ZhCallListPrintTable' cellpadding=2 cellspacing=0 width="80%" >
             <tr class='Header'>
-                <th width="20%"><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/></th>
-                <th width="20%"><fmt:message key="${useTo ? 'to' : 'from'}"/>
-                <th width="20%"><fmt:message key="duration"/></th>
-                <th width="20%"><fmt:message key="received"/></th>
+                <th width="40"><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/></th>
+                <th width="33%"><fmt:message key="${useTo ? 'to' : 'from'}"/>
+                <th width="33%"><fmt:message key="duration"/></th>
+                <th width="33%"><fmt:message key="received"/></th>
             </tr>
 
             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
@@ -55,7 +56,7 @@
 				</td>
 				<td nowrap>${zm:getDisplayCaller(pageContext, hit.voiceMailItemHit.caller)}</td>
                 <td nowrap>${fn:escapeXml(zm:displayDuration(pageContext, hit.voiceMailItemHit.duration))}</td>
-                <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.voiceMailItemHit.date))}</td>
+                <td nowrap>${fn:escapeXml(zm:displayVoiceDate(pageContext, hit.voiceMailItemHit.date))}</td>
             </tr>
             </c:forEach>
         </table>
