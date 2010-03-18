@@ -147,7 +147,7 @@ function(params) {
 		return false;
 	}
 
-	params.ext = params.filename.replace(/^.*\./,"");
+	params.ext = params.filename.replace(/^.*\./,"").toLowerCase();
 	params.defaultType = params.type || ZmImportExportController.EXTS_TYPE[params.ext] || ZmImportExportController.TYPE_DEFAULT;
 	var isZimbra = ZmImportExportController.EXTS_TYPE[params.defaultType] == ZmImportExportController.TYPE_TGZ;
 	var folder = appCtxt.getById(folderId);

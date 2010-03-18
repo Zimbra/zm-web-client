@@ -139,7 +139,7 @@ ZmImportView.prototype._getSubTypeOptions = function(type) {
 
 ZmImportView.prototype._handleFileChange = function(file) {
 	var filename = file.value;
-	var ext = filename.replace(/^.*\./,"");
+	var ext = filename.replace(/^.*\./,"").toLowerCase();
 	var type = ZmImportExportController.EXTS_TYPE[ext];
 	if (type) {
 		this.set("TYPE", type);
