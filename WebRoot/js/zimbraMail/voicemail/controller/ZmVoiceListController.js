@@ -123,10 +123,24 @@ ZmVoiceListController.prototype._printListener =
 function(ev) {
 	var url;
 	var v = this._getView();
+
+	var query = {
+		relative: true,
+		qsArgs: {
+			sq: ['phone:', v._folder.phone.name, ' in:"', v._folder.name, '"'].join('')
+		}
+	};
+
 	if (v.view == ZmId.VIEW_VOICEMAIL) {
-		url = ['/h/printvoicemails?st=voicemail&sq=phone:', v._folder.phone.name, ' in:"', v._folder.name, '"'].join('');
+		query.path = "/h/printvoicemails";
+		query.qsArgs.st = "voicemail";
+		query.qsArgs.sl = this._activeSearch.getResults("VOICEMAIL").folder.numTotal;
+		url = AjxUtil.formatUrl(query);
 	} else if (v.view == ZmId.VIEW_CALL_LIST) {
-		url = ['/h/printcalls?st=calllog&sq=phone:', v._folder.phone.name, ' in:"', v._folder.name, '"'].join('');
+		query.path = "/h/printcalls";
+		query.qsArgs.st = "calllog";
+		query.qsArgs.sl = this._activeSearch.getResults("CALL").folder.numTotal;
+		url = AjxUtil.formatUrl(query);
 	}
 
 	if (url) {
