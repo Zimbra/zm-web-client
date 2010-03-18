@@ -188,22 +188,28 @@ function(msg) {
 			topToolbar.reparentHtmlElement(contentDiv);
 			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
-            if(this._respondOnBehalfLabel) {
-                this._respondOnBehalfLabel.innerHTML = msg.cif ? AjxMessageFormat.format(ZmMsg.onBehalfOfText, [msg.cif]) : "";
-                Dwt.setVisible(this._respondOnBehalfLabel, new Boolean(msg.cif));
-            }
+			if (this._respondOnBehalfLabel) {
+				this._respondOnBehalfLabel.innerHTML = msg.cif ? AjxMessageFormat.format(ZmMsg.onBehalfOfText, [msg.cif]) : "";
+				Dwt.setVisible(this._respondOnBehalfLabel, new Boolean(msg.cif));
+			}
 
 			var cc = ac.getApp(ZmApp.CALENDAR).getCalController();
 			var msgAcct = msg.getAccount();
 			var calendars = cc.getCalendars(true, msgAcct);
-
 
 			if (appCtxt.multiAccounts) {
 				var accounts = ac.accountList.visibleAccounts;
 				for (var i = 0; i < accounts.length; i++) {
 					var acct = accounts[i];
 					if (acct == msgAcct || !ac.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
+					if (appCtxt.isOffline && acct.isMain) { continue; }
+
 					calendars = calendars.concat(cc.getCalendars(true, acct));
+				}
+
+				// always add the local account *last*
+				if (appCtxt.isOffline) {
+					calendars.push(appCtxt.getById(ZmOrganizer.ID_CALENDAR));
 				}
 			}
 

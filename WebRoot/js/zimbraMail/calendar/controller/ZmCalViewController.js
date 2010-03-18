@@ -481,6 +481,9 @@ function(includeLinks, account) {
 		{
 			continue;
 		}
+
+		if (account && organizer.getAccount() != account) { continue; }
+
 		calendars.push(organizer);
 	}
 	calendars.sort(ZmCalViewController.__BY_NAME);
