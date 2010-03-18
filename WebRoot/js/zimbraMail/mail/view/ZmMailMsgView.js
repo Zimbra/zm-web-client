@@ -1160,7 +1160,7 @@ function(msg, container, callback) {
 	}
 
 	var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	var attachmentsCount = msg.getAttachmentLinks(true, isTextView).length;
+	var attachmentsCount = msg.getAttachmentLinks(true, isTextView, true).length;
 	var hasAttachments = attachmentsCount != 0;
 
 	// do we add a close button in the header section?
@@ -1448,7 +1448,7 @@ ZmMailMsgView.prototype._setAttachmentLinks =
 function() {
 
 	var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	var attLinks = this._msg.getAttachmentLinks(true, isTextView);
+	var attLinks = this._msg.getAttachmentLinks(true, isTextView, true);
 	var el = document.getElementById(this._attLinksId + "_container");
 	if (el) {
 		el.style.display = attLinks.length == 0 ? "none" : "";
