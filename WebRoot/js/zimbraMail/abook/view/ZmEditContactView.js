@@ -1770,6 +1770,11 @@ ZmEditContactViewOther.prototype._handleDateSelection = function() {
 	this.parent.setDirty(true);
 };
 
+ZmEditContactViewOther.prototype._handleSelectChange = function(evt) {
+    ZmEditContactViewInputSelect.prototype._handleSelectChange.apply(this, arguments);
+    this._select.focus();
+};
+
 //
 // Class: ZmEditContactViewIM
 //
