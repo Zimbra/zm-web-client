@@ -369,7 +369,7 @@ ZmPref.setIncludeOrig =
 function(pref, value, list) {
 
 	pref.setValue(value);
-    pref.origValue = pref.getValue(null, false);
+    pref.origValue = pref.copyValue();
 	var settings = [ZmSetting.REPLY_INCLUDE_WHAT, ZmSetting.REPLY_USE_PREFIX, ZmSetting.REPLY_INCLUDE_HEADERS];
 	var settingsHash = AjxUtil.arrayAsHash(settings);
 	var mainSetting = ZmSetting.REPLY_INCLUDE_ORIG;

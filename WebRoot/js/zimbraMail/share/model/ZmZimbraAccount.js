@@ -587,8 +587,8 @@ function() {
 	var list = [];
 	for (var id in ZmSetting.CHANGED_IMPLICIT) {
 		var setting = this.settings ? this.settings.getSetting(id) : null;
-		if (setting && (setting.getValue() != setting.origValue)) {
-			if (ZmSetting.IS_GLOBAL[setting.id] && !this.isMain) { continue; }
+		if (ZmSetting.IS_GLOBAL[setting.id] && !this.isMain) { continue; }
+		if (setting && (setting.getValue(null, true) != setting.getOrigValue(null, true))) {
 			list.push(setting);
 		}
 	}

@@ -256,6 +256,7 @@ function() {
  */
 ZmSetting.prototype.getValue =
 function(key, serialize) {
+
 	var value = null;
 	if (this.value != null) {
 		value = key ? this.value[key] : this.value;
@@ -265,27 +266,29 @@ function(key, serialize) {
 		return null;
 	}
 
-	if (serialize) {
-		if (this.dataType == ZmSetting.D_BOOLEAN) {
-			value = value ? "TRUE" : "FALSE";
-		} else if (this.dataType == ZmSetting.D_HASH) {
-			var keys = [];
-			for (var key in value) {
-				keys.push(key);
-			}
-			keys.sort();
-			var pairs = [];
-			for (var j = 0; j < keys.length; j++) {
-				var key = keys[j];
-				pairs.push([key, value[key]].join(":"));
-			}
-			value = pairs.join(",");
-		} else if (this.dataType == ZmSetting.D_LIST) {
-			value = value.join(",");
-		}
+	return serialize ? ZmSetting.serialize(value, this.dataType) : value;
+};
+
+/**
+ * Gets the original value of this setting.
+ *
+ * @param {String}	key			the optional key for use by hash table data type
+ * @param {Boolean}	serialize		if <code>true</code>, serialize non-string value into string
+ * @return	{Object}	the value
+ */
+ZmSetting.prototype.getOrigValue =
+function(key, serialize) {
+
+	var origValue = null;
+	if (this.origValue != null) {
+		origValue = key ? this.origValue[key] : this.origValue;
+	} else if (this.defaultValue != null) {
+		origValue = key ? this.defaultValue[key] : this.defaultValue;
+	} else {
+		return null;
 	}
-	
-	return value;
+
+	return serialize ? ZmSetting.serialize(origValue, this.dataType) : origValue;
 };
 
 /**
@@ -295,8 +298,9 @@ function(key, serialize) {
  * @return	{Object}	the value
  */
 ZmSetting.prototype.getDefaultValue =
-function(key) {
-	return key ? this.defaultValue[key] : this.defaultValue;
+function(key, serialize) {
+	var value = key ? this.defaultValue[key] : this.defaultValue;
+	return serialize ? ZmSetting.serialize(value, this.dataType) : value;
 };
 
 /**
@@ -392,4 +396,40 @@ function(obj) {
 		this.setValue(obj.s);
 		this._notify(ZmEvent.E_MODIFY, {account:obj.account});
 	}
+};
+
+ZmSetting.prototype.copyValue =
+function() {
+
+	if (this.dataType == ZmSetting.D_HASH) {
+		return AjxUtil.hashCopy(this.value);
+	} else if (this.dataType == ZmSetting.D_LIST) {
+		return this.value.concat();
+	} else {
+		return this.value;
+	}
+};
+
+ZmSetting.serialize =
+function(value, dataType) {
+
+	if (dataType == ZmSetting.D_BOOLEAN) {
+		value = value ? "TRUE" : "FALSE";
+	} else if (dataType == ZmSetting.D_HASH) {
+		var keys = [];
+		for (var key in value) {
+			keys.push(key);
+		}
+		keys.sort();
+		var pairs = [];
+		for (var j = 0; j < keys.length; j++) {
+			var key = keys[j];
+			pairs.push([key, value[key]].join(":"));
+		}
+		value = pairs.join(",");
+	} else if (dataType == ZmSetting.D_LIST) {
+		value = value.join(",");
+	}
+
+	return value;
 };

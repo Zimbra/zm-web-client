@@ -1057,7 +1057,7 @@ function() {
 		var headerCol = this._headerList[i];
 		// bug 43540: always skip account header since its a multi-account only
 		// column and we don't want it to sync
-		if (headerCol & headerCol._field != ZmItem.F_ACCOUNT) {
+		if (headerCol && headerCol._field != ZmItem.F_ACCOUNT) {
 			fields.push(headerCol._field + (headerCol._visible ? "" : "*"));
 		}
 	}
