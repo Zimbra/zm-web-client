@@ -105,7 +105,7 @@ ZmImportView.prototype.TEMPLATE = "data.ImportExport#ImportView";
 ZmImportView.prototype.getParams = function() {
 	var form = this.getControl("FORM");
 	var filename = form && form.elements["file"].value;
-	var ext = filename && filename.replace(/^.*\./,"");
+	var ext = filename && filename.replace(/^.*\./,"").toLowerCase();
 	var type = ext || this.getValue("TYPE") || ZmImportExportController.TYPE_TGZ;
 	var isTGZ = type == ZmImportExportController.TYPE_TGZ;
 	var params = {
