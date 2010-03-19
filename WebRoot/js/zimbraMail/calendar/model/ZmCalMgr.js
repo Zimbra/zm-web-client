@@ -43,7 +43,7 @@ function(date) {
 
     //todo: need to use server setting to decide the weekno standard
     var serverId = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-    var useISO8601WeekNo = (serverId && serverId.indexOf("Europe")==0);
+    var useISO8601WeekNo = (serverId && serverId.indexOf("Europe")==0 && serverId != "Europe/London");
 
 	this._miniCalendar = new DwtCalendar({parent: this._container, posStyle:DwtControl.ABSOLUTE_STYLE,
 										  firstDayOfWeek: firstDayOfWeek, showWeekNumber: appCtxt.get(ZmSetting.CAL_SHOW_CALENDAR_WEEK), useISO8601WeekNo: useISO8601WeekNo});
