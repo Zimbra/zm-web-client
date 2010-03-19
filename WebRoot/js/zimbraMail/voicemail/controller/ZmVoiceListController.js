@@ -142,12 +142,12 @@ function(ev) {
 	if (v.view == ZmId.VIEW_VOICEMAIL) {
 		query.path = "/h/printvoicemails";
 		query.qsArgs.st = "voicemail";
-		query.qsArgs.sl = this._activeSearch.getResults("VOICEMAIL").folder.numTotal;
+		query.qsArgs.sl = this._activeSearch.getResults("VOICEMAIL").folder.numTotal || this._activeSearch.getResults("VOICEMAIL").size();
 		url = AjxUtil.formatUrl(query);
 	} else if (v.view == ZmId.VIEW_CALL_LIST) {
 		query.path = "/h/printcalls";
 		query.qsArgs.st = "calllog";
-		query.qsArgs.sl = this._activeSearch.getResults("CALL").folder.numTotal;
+		query.qsArgs.sl = this._activeSearch.getResults("CALL").folder.numTotal || this._activeSearch.getResults("CALL").size();
 		url = AjxUtil.formatUrl(query);
 	}
 
