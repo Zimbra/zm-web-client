@@ -453,7 +453,7 @@ function(i) {
         
         //todo: need to use server setting to decide the weekno standard
         var serverId = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-        var useISO8601WeekNo = (serverId && serverId.indexOf("Europe")==0);
+        var useISO8601WeekNo = (serverId && serverId.indexOf("Europe")==0 && serverId != "Europe/London");
 
         var weekNumber = AjxDateUtil.getWeekNumber(day.date, this.firstDayOfWeek(), null, useISO8601WeekNo);
         var wkId = this._weekNumberIds[i];
