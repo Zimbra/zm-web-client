@@ -59,14 +59,6 @@ function() {
 	return this._folder;
 };
 
-ZmVoiceListController.prototype.setFolder =
-function(folder) {
-	if (this._folder && this._folder != folder) {
-		this._app.search(folder);
-	}
-	this._folder = folder;
-}
-
 ZmVoiceListController.prototype._setViewContents =
 function(viewId) {
 	var view = this._listView[viewId];
@@ -142,12 +134,12 @@ function(ev) {
 	if (v.view == ZmId.VIEW_VOICEMAIL) {
 		query.path = "/h/printvoicemails";
 		query.qsArgs.st = "voicemail";
-		query.qsArgs.sl = this._activeSearch.getResults("VOICEMAIL").folder.numTotal || this._activeSearch.getResults("VOICEMAIL").size();
+		query.qsArgs.sl = this._activeSearch.getResults("VOICEMAIL").folder.numTotal;
 		url = AjxUtil.formatUrl(query);
 	} else if (v.view == ZmId.VIEW_CALL_LIST) {
 		query.path = "/h/printcalls";
 		query.qsArgs.st = "calllog";
-		query.qsArgs.sl = this._activeSearch.getResults("CALL").folder.numTotal || this._activeSearch.getResults("CALL").size();
+		query.qsArgs.sl = this._activeSearch.getResults("CALL").folder.numTotal;
 		url = AjxUtil.formatUrl(query);
 	}
 

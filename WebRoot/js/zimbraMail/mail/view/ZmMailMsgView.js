@@ -2034,9 +2034,13 @@ function(result) {
 	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
 	ac.getApp(ZmApp.MAIL).getMailListController().actionedMsgId = msgNode.id;
 
+	var msgView;
 	var currView = appCtxt.getAppController().getAppViewMgr().getCurrentView();
-	var msgView = appCtxt.isChildWindow 
-		? currView : (currView.getMsgView && currView.getMsgView());
+	if (appCtxt.isChildWindow) {
+		msgView = currView;
+	} else if (appCtxt.getById(msgNode.l).nId == ZmFolder.ID_DRAFTS) {
+		msgView = currView.getMsgView && currView.getMsgView();
+	}
 
 	if (msgView) {
 		var msg = msgView._msg;

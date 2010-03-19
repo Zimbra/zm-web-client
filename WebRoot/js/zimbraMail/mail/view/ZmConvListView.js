@@ -765,6 +765,8 @@ function(ev) {
 		if (this._msgRowIdList[item.cid]) {
 			this._msgRowIdList[item.cid].push(div.id);
 		}
+		this._itemToSelect = item;
+		this._setNextSelection();
 
 		handled = ev.handled = true;
 	}
