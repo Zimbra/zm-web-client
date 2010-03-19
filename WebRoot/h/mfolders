@@ -92,11 +92,13 @@
                                         </td>
                                         <td><div class='vertSep'></div></td>
                                         <%--<app:button id="OPNEWSEARCH" name="actionNewSearchFolder" src="startup/ImgNewFolder.gif" tooltip="folderNewSearchFolder" text="folderNewSearchFolder"/>--%>
-                                        <td>
-                                        <a id="actionNewSearchFolder" href="<c:url value="/h/mfolders?actionNewSearchFolder"/>">
-                                                <app:img src="startup/ImgNewFolder.gif" alt="folderNewSearchFolder"/><span style='padding-left:2px'><fmt:message key="folderNewSearchFolder"/></span>
-                                        </a>
-                                        </td>
+                                        <c:if test="${mailbox.features.savedSearches}">
+                                            <td>
+                                            <a id="actionNewSearchFolder" href="<c:url value="/h/mfolders?actionNewSearchFolder"/>">
+                                                    <app:img src="startup/ImgNewFolder.gif" alt="folderNewSearchFolder"/><span style='padding-left:2px'><fmt:message key="folderNewSearchFolder"/></span>
+                                            </a>
+                                            </td>
+                                        </c:if>
                                     </tr>
                                 </table>
                             </td>
