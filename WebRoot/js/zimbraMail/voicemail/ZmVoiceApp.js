@@ -489,6 +489,7 @@ function(callback, response) {
 ZmVoiceApp.prototype.setStartPhone =
 function(name) {
 	this._startPhone = name;
+	this.getVoiceController().setFolder(this.getStartFolder());
 };
 
 ZmVoiceApp.prototype.getStartFolder =

@@ -59,6 +59,14 @@ function() {
 	return this._folder;
 };
 
+ZmVoiceListController.prototype.setFolder =
+function(folder) {
+	if (this._folder && this._folder != folder) {
+		this._app.search(folder);
+	}
+	this._folder = folder;
+}
+
 ZmVoiceListController.prototype._setViewContents =
 function(viewId) {
 	var view = this._listView[viewId];
