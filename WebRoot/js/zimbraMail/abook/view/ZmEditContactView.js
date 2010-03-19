@@ -1565,7 +1565,7 @@ ZmEditContactViewInputSelect.prototype._handleInputKeyUp = function(input, evt) 
 	return true;
 };
 
-ZmEditContactViewInputSelect.prototype._handleSelectChange = function(evt) {
+ZmEditContactViewInputSelect.prototype._handleSelectChange = function(evt, skipFocus) {
 	var args = evt._args;
 	var adjust1 = this.parent._subtractType(args.oldValue);
 	var adjust2 = this.parent._addType(args.newValue);
@@ -1576,7 +1576,7 @@ ZmEditContactViewInputSelect.prototype._handleSelectChange = function(evt) {
 	if (this._input) {
 		var enabled = this._select.getValue() != "_NONE";
 		this._input.setEnabled(enabled);
-		if (enabled)
+		if (enabled && !skipFocus)
 			this._input.focus();
 	}
 };
@@ -1771,8 +1771,7 @@ ZmEditContactViewOther.prototype._handleDateSelection = function() {
 };
 
 ZmEditContactViewOther.prototype._handleSelectChange = function(evt) {
-    ZmEditContactViewInputSelect.prototype._handleSelectChange.apply(this, arguments);
-    this._select.focus();
+    ZmEditContactViewInputSelect.prototype._handleSelectChange.call(this, evt, true);
 };
 
 //
