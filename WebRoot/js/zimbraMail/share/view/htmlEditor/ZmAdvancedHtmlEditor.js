@@ -130,6 +130,9 @@ function(insertFontStyle, onlyInnerContent) {
         var params = {};
         params.format ='raw';
 		var content = editor ? editor.getContent(params) : (this._pendingContent || "");
+        if(content == '<br mce_bogus="1">' || content == '<br mce_bogus="1"/>') {
+            content = '';
+        }        
 		content = this._embedHtmlContent(content, insertFontStyle, onlyInnerContent);
 		return content;
 	}
