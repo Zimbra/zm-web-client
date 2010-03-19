@@ -432,6 +432,12 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var item = ev.item;
 		var restUrl = item.getRestUrl();
+
+        //added for bug: 45150
+        if(item.isWebDoc() && appCtxt.isOffline) {
+                restUrl = this._app.fixCrossDomainReference(restUrl);
+        }
+
 		if (item.isWebDoc()) {
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
 		}
@@ -503,6 +509,12 @@ function() {
 		var item = items[i];
 		var restUrl = item.getRestUrl();
 		if (restUrl) {
+
+            //added for bug: 45150
+            if(item.isWebDoc() && appCtxt.isOffline) {
+                restUrl = this._app.fixCrossDomainReference(restUrl);
+            }
+
             if (item.isWebDoc()) {
 				restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
 			}

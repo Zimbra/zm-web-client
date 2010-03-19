@@ -69,7 +69,14 @@ function(item, params) {
 		if (name.length > 14) {
 			name = name.substring(0, 14) + "...";
 		}
-		nameText = ['<a href="', item.getRestUrl(), '" target="_blank">', name, '</a>'].join('');
+
+        var restURL = item.getRestUrl();
+        //added for bug: 45150
+        if(item.isWebDoc() && appCtxt.isOffline) {
+            restURL = this._controller.getApp().fixCrossDomainReference(restURL);
+        }
+
+		nameText = ['<a href="', restURL , '" target="_blank">', name, '</a>'].join('');
 	} else {
 		nameText = item;
 	}

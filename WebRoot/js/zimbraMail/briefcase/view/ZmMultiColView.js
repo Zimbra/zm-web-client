@@ -231,10 +231,15 @@ function(item) {
 	}
 
 	var restURL = item.getRestUrl();
-	var originalRestURL = item.getRestUrl(false, true);
+    var originalRestURL = item.getRestUrl(false, true);
 
-	// commented for bug 32457 :: restURL = this._controller.getApp().fixCrossDomainReference(restUrl);
-	var fileLink = [ '<a href="', restURL, '" target="_blank">', name, '</a>' ].join("");
+    //added for bug: 45150
+    if(item.isWebDoc() && appCtxt.isOffline) {
+        restURL = this._controller.getApp().fixCrossDomainReference(restURL);
+        originalRestURL = this._controller.getApp().fixCrossDomainReference(originalRestURL);
+    }
+    
+    var fileLink = [ '<a href="', restURL, '" target="_blank">', name, '</a>' ].join("");
 
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
 
