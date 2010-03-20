@@ -292,7 +292,7 @@ function(str) {
 ZmAutocomplete.prototype._cacheResults =
 function(str, acType, list, hasGal, cacheable, baseCache, account) {
 
-	var context = window.parentAppCtxt || window.appCtxt;
+	var context = AjxEnv.isIE ? window.appCtxt : window.parentAppCtxt || window.appCtxt;
 	var cache = context.getAutocompleteCache(account, acType, str, true);
 	cache.list = list;
 	// we always cache; flag below indicates whether we can do forward matching
@@ -364,7 +364,7 @@ function(str, acType, account) {
 ZmAutocomplete.prototype._getCachedResults =
 function(str, acType, checkCacheable, account) {
 
-	var context = window.parentAppCtxt || window.appCtxt;
+	var context = AjxEnv.isIE ? window.appCtxt : window.parentAppCtxt || window.appCtxt;
 	var cache = context.getAutocompleteCache(account, acType, str);
 	if (cache) {
 		if (checkCacheable && (cache.cacheable === false)) { return null; }
