@@ -370,6 +370,8 @@ function(folder, callback, response) {
 		this._overviewContainer.initialize(overviewParams);
 	}
 
+	this.selectFolderInOverview(folder);
+
 	// Update numUnread & numUnheard in folder.
 	var folderInfo = searchResult.getAttribute("vfi");
 	if (folderInfo) {
@@ -487,9 +489,17 @@ function(callback, response) {
 };
 
 ZmVoiceApp.prototype.setStartPhone =
-function(name) {
+function(name, updateView) {
 	this._startPhone = name;
-	this.getVoiceController().setFolder(this.getStartFolder());
+	if (updateView) {
+		var folder = this.getStartFolder()
+		this.getVoiceController().setFolder(folder, true);
+		if (this.view != ZmId.VIEW_VOICEMAIL)
+			this.pushView(ZmId.VIEW_VOICEMAIL);
+		if (this.getVoiceController().getFolder() != folder)
+			this.search(folder);
+		this.selectFolderInOverview(folder);
+	}
 };
 
 ZmVoiceApp.prototype.getStartFolder =
@@ -505,6 +515,20 @@ function(name) {
 		}
 	}
 	return this.phones[which].folderTree.getByName(ZmVoiceFolder.VOICEMAIL);
+};
+
+ZmVoiceApp.prototype.selectFolderInOverview =
+function(folder) {
+	// Select the folder in the phone's overview (and deselect for all others)
+	var overviews = this._overviewContainer.getOverviews();
+	for (id in overviews) {
+		var overview = overviews[id];
+		if (overview.phone == folder.phone) {
+			overview.setSelected(folder.id, "Voice");
+		} else {
+			overview.itemSelected(null);
+		}
+	}
 };
 
 ZmVoiceApp.prototype.getVoiceController =

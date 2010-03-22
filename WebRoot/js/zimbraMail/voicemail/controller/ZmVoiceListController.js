@@ -60,8 +60,8 @@ function() {
 };
 
 ZmVoiceListController.prototype.setFolder =
-function(folder) {
-	if (this._folder && this._folder != folder) {
+function(folder, skipSearch) {
+	if (!skipSearch && this._folder && this._folder != folder) {
 		this._app.search(folder);
 	}
 	this._folder = folder;
