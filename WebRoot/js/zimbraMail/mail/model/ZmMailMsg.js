@@ -1658,6 +1658,7 @@ function(msgNode) {
 		var params = {attachments: this.attachments, bodyParts: this._bodyParts};
 		this._topPart = ZmMimePart.createFromDom(msgNode.mp, params);
 		this._loaded = this._bodyParts.length > 0 || this.attachments.length > 0;
+        this._cleanupCIds();
 	}
 
 	if (msgNode.shr) {
@@ -1709,6 +1710,19 @@ function(msgNode) {
 			// window, which we dont currently load (re: support).
 		}
 	}
+};
+
+ZmMailMsg.prototype._cleanupCIds = function(atts){
+
+    atts = atts || this.attachments;
+    if(!atts || atts.length == 0) return;
+
+    for(var i=0; i<atts.length; i++){
+        var att = atts[i];
+        if(att.ci && !/^<.+>$/.test(att.ci)){
+            att.ci = '<' + att.ci + '>';
+        }
+    }
 };
 
 ZmMailMsg.prototype.isInvite =
