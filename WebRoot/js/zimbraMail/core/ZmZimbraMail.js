@@ -452,29 +452,6 @@ function() {
 };
 
 /**
- * Handles offline mailto.
- * 
- * @param	{String}	uri		the uri
- * @param	{AjxCallback}	callback		the callback
- * @return	{Boolean}	<code>true</code> if an offline mailto
- */
-ZmZimbraMail.prototype.handleOfflineMailTo =
-function(uri, callback) {
-	if (!appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER)) { return false; }
-
-	var mailApp = this.getApp(ZmApp.MAIL);
-	var idx = (uri.indexOf("mailto"));
-	if (idx >= 0) {
-		var query = "to=" + decodeURIComponent(uri.substring(idx+7));
-		query = query.replace(/\?/g, "&");
-
-		mailApp._showComposeView(callback, query);
-		return true;
-	}
-	return false;
-};
-
-/**
  * @private
  */
 ZmZimbraMail.prototype._handleErrorStartup =
@@ -1133,6 +1110,25 @@ function() {
 			// do nothing
 		}
 	}
+};
+
+/**
+ * @private
+ */
+ZmZimbraMail.prototype.handleOfflineMailTo =
+function(uri, callback) {
+	if (!appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER)) { return false; }
+
+	var mailApp = this.getApp(ZmApp.MAIL);
+	var idx = (uri.indexOf("mailto"));
+	if (idx >= 0) {
+		var query = "to=" + decodeURIComponent(uri.substring(idx+7));
+		query = query.replace(/\?/g, "&");
+
+		mailApp._showComposeView(callback, query);
+		return true;
+	}
+	return false;
 };
 
 /**

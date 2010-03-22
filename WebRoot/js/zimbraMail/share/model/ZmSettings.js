@@ -289,6 +289,13 @@ function(callback, accountName, result) {
 		}
 	}
 
+	if (appCtxt.isOffline &&
+		window.platform && window.platform.isRegisteredProtocolHandler("mailto") &&
+		!appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER))
+	{
+		appCtxt.set(ZmSetting.OFFLINE_IS_MAILTO_HANDLER, true, null, null, true);
+	}
+
 	// load zimlets *only* for the main account
 	if (!accountName) {
 		if (obj.zimlets && obj.zimlets.zimlet) {
