@@ -230,7 +230,7 @@ function(items) {
 
 		var item = (items instanceof Array) ? items[0] : items;
 		if (!item) { return; }
-		message = this._confirmDeleteFormatter.format(item.name);
+		message = this._confirmDeleteFormatter.format(AjxStringUtil.htmlEncode(item.name));
 	}
 	var callback = new AjxCallback(this, this._doDelete2, [items]);
 	dialog.popup(message, callback);
@@ -293,7 +293,9 @@ function(folderId) {
 	if (folder) {
 		var children = folder.children;
 		for (var i = 0, len = children.size(); i < len; i++) {
-			subfolders.push(new ZmBriefcaseFolderItem(children.get(i)));
+            folder = children.get(i);
+            if(folder.type == ZmOrganizer.BRIEFCASE)
+			    subfolders.push(new ZmBriefcaseFolderItem(children.get(i)));
 		}
 	}
 

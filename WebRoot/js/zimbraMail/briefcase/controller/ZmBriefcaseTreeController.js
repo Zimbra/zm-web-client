@@ -71,33 +71,48 @@ function(actionMenu, type, id) {
 		var isTopLevel = (!isRoot && briefcase.parent.id == rootId);
 		var isLink = briefcase.link;
 		var isLinkOrRemote = isLink || briefcase.isRemote();
+        var isTrash = (briefcase.id == ZmFolder.ID_TRASH);
 
-		var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE);
-		menuItem.setEnabled(!isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
+        var deleteText = ZmMsg.del;
+        if (isTrash) {
+            var hasContent = ((briefcase.numTotal > 0) || (briefcase.children && (briefcase.children.size() > 0)));
+            actionMenu.enableAll(false);
+            actionMenu.enable(ZmOperation.DELETE, hasContent);
+            deleteText = ZmMsg.emptyTrash;
+        }else{
+            actionMenu.enableAll(true);
+            var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE);
+            menuItem.setEnabled(!isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
 
-		menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
-		menuItem.setText(ZmMsg.newFolder);
-		menuItem.setImage("NewSection");
-		menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR));
+            menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
+            menuItem.setText(ZmMsg.newFolder);
+            menuItem.setImage("NewSection");
+            menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR));
 
-		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-			isBriefcase = (!isRoot && briefcase.parent.id == rootId);
-			menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_BRIEFCASE);
-			menuItem.setImage(isRoot ? "SharedNotebook" : "SharedSection");
-			menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR));
+            if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+                isBriefcase = (!isRoot && briefcase.parent.id == rootId);
+                menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_BRIEFCASE);
+                menuItem.setImage(isRoot ? "SharedNotebook" : "SharedSection");
+                menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR));
 
-			menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_BRIEFCASE);
-			menuItem.setText(ZmMsg.shareFolder);
-			menuItem.setImage(isBriefcase ? "SharedMailFolder" : "Section");
-			menuItem.setEnabled(!isLinkOrRemote || briefcase.isAdmin());
-		}
+                menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_BRIEFCASE);
+                menuItem.setText(ZmMsg.shareFolder);
+                menuItem.setImage(isBriefcase ? "SharedMailFolder" : "Section");
+                menuItem.setEnabled(!isLinkOrRemote || briefcase.isAdmin());
+            }
+        }
+
+        var op = actionMenu.getOp(ZmOperation.DELETE);
+        if (op) {
+            op.setText(deleteText);
+        }
+
+        // we always enable sharing in case we're in multi-mbox mode
+        this._resetButtonPerSetting(actionMenu, ZmOperation.SHARE_BRIEFCASE, appCtxt.get(ZmSetting.SHARING_ENABLED));
+        this._resetButtonPerSetting(actionMenu, ZmOperation.MOUNT_BRIEFCASE, appCtxt.get(ZmSetting.SHARING_ENABLED));
+
 	}
 
-	if (actionMenu) {
-		// we always enable sharing in case we're in multi-mbox mode
-		this._resetButtonPerSetting(actionMenu, ZmOperation.SHARE_BRIEFCASE, appCtxt.get(ZmSetting.SHARING_ENABLED));
-		this._resetButtonPerSetting(actionMenu, ZmOperation.MOUNT_BRIEFCASE, appCtxt.get(ZmSetting.SHARING_ENABLED));
-	}
 };
 
 ZmBriefcaseTreeController.prototype._getAllowedSubTypes =
@@ -195,21 +210,6 @@ function(ev) {
 	dialog.popup(ZmOrganizer.BRIEFCASE, briefcase.id/*, ...*/);
 };
 
-ZmBriefcaseTreeController.prototype._deleteListener =
-function(ev) {
-	var organizer = this._getActionedOrganizer(ev);
-	var callback = new AjxCallback(this, this._deleteListener2, [organizer]);
-	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteFolder, organizer.name);
-
-	var dialog = appCtxt.getConfirmationDialog();
-	dialog.popup(message, callback);
-};
-
-ZmBriefcaseTreeController.prototype._deleteListener2 =
-function(organizer) {
-	this._doDelete(organizer);
-};
-
 ZmBriefcaseTreeController.prototype._notifyListeners =
 function(overviewId, type, items, detail, srcEv, destEv) {
 	if (this._eventMgrs[overviewId] && this._eventMgrs[overviewId].isListenerRegistered(type)) {
@@ -237,4 +237,36 @@ function(overviewId) {
 		}
 	}
 	return [];
+};
+
+ZmBriefcaseTreeController.prototype._trashChangeListener =
+function(treeView, ev){
+
+    if(ev.type == ZmOrganizer.BRIEFCASE && ev.event == ZmEvent.E_MOVE) {
+
+        var organizers = ev.getDetail("organizers");
+        if (!organizers && ev.source) {
+            organizers = [ev.source];
+        }
+
+        if(organizers)
+            treeView.setSelected(organizers[0], false);
+        
+    }
+};
+
+ZmBriefcaseTreeController.prototype.show =
+function(params) {
+	params.include = {};
+	params.include[ZmFolder.ID_TRASH] = true;
+    params.showUnread = false;
+    var treeView = ZmFolderTreeController.prototype.show.call(this, params);
+
+	// contacts app has its own Trash folder so listen for change events
+	var trash = this.getDataTree().getById(ZmFolder.ID_TRASH);
+	if (trash) {
+		trash.addChangeListener(new AjxListener(this, this._trashChangeListener, treeView));
+	}
+
+	return treeView;
 };
