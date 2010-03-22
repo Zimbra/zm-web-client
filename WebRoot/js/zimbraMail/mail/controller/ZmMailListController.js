@@ -618,6 +618,7 @@ function(ev) {
 		// show drafts menu
 		this._initializeDraftsActionMenu();
 		this._setTagMenu(this._draftsActionMenu);
+        this._resetOperations(this._draftsActionMenu, items.length);
 		this._draftsActionMenu.popup(0, ev.docX, ev.docY);
 	}
 	else if (address && items.length == 1 &&
