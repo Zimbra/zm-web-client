@@ -38,7 +38,7 @@
 
 <template id='calendar.Calendar#calendar_appt_bottom_only' width='10' height='7'>
 	<div id='${id}_body' class='appt_body ${bodyColor}'>
-		<table cellspacing=0 cellpadding=2 style='width:100%;height:100%;${bodyStyle}'>
+		<table cellspacing=0 cellpadding=0 style='width:100%;height:100%;${bodyStyle}'>
 			<tr valign=top>
 				<td width='4px' class='${showAsColor}' ></td>			
 				<td class=appt${newState}_name style='height:100%'>
