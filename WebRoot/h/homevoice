@@ -18,7 +18,16 @@
 <c:when test="${!empty ex}">
 	<body style="background-color:white">
 		<zm:getException var="error" exception="${ex}"/>
-		<p><fmt:message key="${error.code}"/></p>
+		<c:choose>
+			<c:when test="${error.code == 'voice.SECONDARY_NOT_ALLOWED'}">
+				<div class='AccountsUpSell'>
+					<iframe src="http://www.comcast.net/smartzone/szcc_cdv_secondary_access_msg_home" width="100%" scrolling="no" frameborder="0">
+				</div>
+			</c:when>
+			<c:otherwise>
+				<p><fmt:message key="${error.code}"/></p>
+			</c:otherwise>
+		</c:choose>
 	</body>
 </c:when>
 <c:otherwise>
