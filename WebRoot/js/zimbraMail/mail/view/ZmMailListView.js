@@ -821,7 +821,6 @@ function(ev) {
 		// TODO: handle other sort orders, arbitrary insertion points
 		if ((this._isPageless || this.offset == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
 			this.addItem(item, ev.getDetail("sortIndex") || 0);
-			this._setNextSelection();
 
 			if (appCtxt.isOffline && appCtxt.getActiveAccount().isOfflineInitialSync()) {
 				this._controller._app.numEntries++;
