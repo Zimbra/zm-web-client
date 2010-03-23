@@ -1248,13 +1248,7 @@ function(signatureId) {
 	var sig = this._getSignature(signatureId);
 	if (!sig) { return ""; }
 
-	var ac = window.parentAppCtxt || window.appCtxt;
-	var sep = this._getSignatureSeparator();
-	var newLine = this._getSignatureNewLine();
-	var account = appCtxt.multiAccounts && this.getFromAccount();
-	var isAbove = ac.get(ZmSetting.SIGNATURE_STYLE, null, account) == ZmSetting.SIG_OUTLOOK;
-	var isText = this.getHtmlEditor().getMode() == DwtHtmlEditor.TEXT;
-	return isAbove ? [sep, sig/*,  isText ? newLine : ""*/ ].join("") : sep + sig;
+	return this._getSignatureSeparator() + sig;
 };
 
 /**
@@ -1300,13 +1294,13 @@ function(content, sigStyle, sig, newLine) {
 	content = content.replace(re, '');
 
 	if (sigStyle == ZmSetting.SIG_OUTLOOK) {
-		var repl = "----- ";
+		var repl = "----- ";	// TODO: we don't use -----
 		var regexp = new RegExp(re_newlines + repl, "i");
 
 		if (content.match(regexp)) {
 			content = content.replace(regexp, [sig, newLine, repl].join(""));
 		} else {
-			content = [content, sig].join("");
+			content = [sig, content].join("");
 		}
 	} else {
 		content = [content, sig].join("");
@@ -1801,18 +1795,19 @@ function(action, msg, extraBodyText, incOptions) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 	if (ac.get(ZmSetting.SIGNATURES_ENABLED, null, account)) {
 		sig = this.getSignatureContentSpan(null, null, account);
-		sigStyle = sig ? ac.get(ZmSetting.SIGNATURE_STYLE, null, account) : null;
+		sigStyle = sig && ac.get(ZmSetting.SIGNATURE_STYLE, null, account);
 	}
-	var sigPre = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig + crlf : "";
-	var preText = sigPre + (extraBodyText || "");
+	var sigPre = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig : "";
+	extraBodyText = extraBodyText || "";
+	var preText = extraBodyText + sigPre;
+	if (preText.length) {
+		preText += crlf;
+	}
 
 	if (incOptions.headers) {
 		for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
-			var hdr = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
+			var hdr = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i], htmlMode);
 			if (hdr) {
-				if (htmlMode){
-					hdr = AjxStringUtil.convertToHtml(hdr);
-				}
 				headers.push(hdr);
 			}
 		}
@@ -1844,15 +1839,20 @@ function(action, msg, extraBodyText, incOptions) {
 		if (incOptions.noPreface) {
 			preText = "";
 		} else {
-			var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
-			preface = this._includedPreface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
+			if (htmlMode) {
+				preface = "<hr>";
+			} else {
+				var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
+				preface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
+			}
 		}
+		var leadingSpace = sigPre ? "" : crlf2;
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
 		if (incOptions.what == ZmSetting.INC_BODY) {
 			if (htmlMode) {
 				wrapParams.text = headers.join(crlf) + crlf2 + body;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
-				value = preText + preface + bodyText;
+				value = leadingSpace + preText + preface + crlf + bodyText;
 			} else {
 				wrapParams.text = headers.join(crlf);
 				wrapParams.len = 120; // headers tend to be longer
@@ -1860,7 +1860,7 @@ function(action, msg, extraBodyText, incOptions) {
 				wrapParams.text = body;
 				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
-				value = preText + preface + crlf2 + headerText + crlf + bodyText;
+				value = leadingSpace + preText + preface + crlf2 + headerText + crlf + bodyText;
 			}
 		} else if (incOptions.what == ZmSetting.INC_SMART) {
 			var chunks = AjxStringUtil.getTopLevel(body);
@@ -1885,6 +1885,7 @@ function(action, msg, extraBodyText, incOptions) {
 		value = value || (htmlMode ? "<br>" : "");
 		this._htmlEditor.setContent(value);
 	}
+	this._origIncludedContent = this._htmlEditor.getContent();
 
 	if (isHtmlEditorInitd) {
 		this._fixMultipartRelatedImages_onTimer(msg);

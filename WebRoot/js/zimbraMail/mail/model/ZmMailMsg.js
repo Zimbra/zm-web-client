@@ -343,26 +343,34 @@ function() {
 /**
  * Gets the header string.
  * 
- * @param	{constant}	hdr		the header (see <code>ZmMailMsg.HDR_</code> constants)
+ * @param	{constant}	hdr			the header (see <code>ZmMailMsg.HDR_</code> constants)
+ * @param	{boolean}	htmlMode	if true, format as HTML
  * @return	{String}	the value
  */
 ZmMailMsg.prototype.getHeaderStr =
-function(hdr) {
+function(hdr, htmlMode) {
+
+	var key, value;
 	if (hdr == ZmMailMsg.HDR_DATE) {
 		if (this.sentDate) {
 			var formatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
-			return (ZmMailMsg.HDR_KEY[hdr] + ": " + formatter.format(new Date(this.sentDate)));
+			value = formatter.format(new Date(this.sentDate));
 		}
-		return "";
 	} else if (hdr == ZmMailMsg.HDR_SUBJECT) {
-		return this.subject ? (ZmMailMsg.HDR_KEY[hdr] + ": " + this.subject) : "";
+		value = this.subject;
 	} else {
 		var addrs = this.getAddresses(hdr);
-		var addrStr = addrs.toString(", ", true);
-		if (addrStr) {
-			return (ZmMailMsg.HDR_KEY[hdr] + ": " + addrStr);
-		}
+		value = addrs.toString(", ", true);
 	}
+
+	var key = ZmMailMsg.HDR_KEY[hdr] + ": ";
+	if (!value) { return; }
+	if (htmlMode) {
+		key = "<b>" + key + "</b>";
+		value = AjxStringUtil.convertToHtml(value);
+	}
+
+	return key + value;
 };
 
 /**
