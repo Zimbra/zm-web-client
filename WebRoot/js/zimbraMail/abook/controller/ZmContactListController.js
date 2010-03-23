@@ -97,15 +97,17 @@ function(searchResult, isGalSearch, folderId) {
 		? ZmContactListController.SEARCH_TYPE_GAL
 		: ZmContactListController.SEARCH_TYPE_CANONICAL;
 
-    this._folderId = folderId;
-
+	this._folderId = folderId;
+	var selectedContacts;
+	
 	if (searchResult instanceof ZmContactList) {
 		this._list = searchResult;			// set as canonical list of contacts
 		this._list._isShared = false;		// this list is not a search of shared items
 		if (!this._currentView) {
 			this._currentView = this._defaultView();
 		}
-        this._contactSearchResults = false;
+		selectedContacts = this._listView[this._currentView] && this._listView[this._currentView].getSelection();
+		this._contactSearchResults = false;
     } else if (searchResult instanceof ZmSearchResult) {
 		this._searchType |= ZmContactListController.SEARCH_TYPE_NEW;
 		this._list = searchResult.getResults(ZmItem.CONTACT);
@@ -133,17 +135,21 @@ function(searchResult, isGalSearch, folderId) {
 
 		this._list.setHasMore(searchResult.getAttribute("more"));
 
+		selectedContacts = this._listView[this._currentView] && this._listView[this._currentView].getSelection();
 		ZmListController.prototype.show.apply(this, [searchResult, this._currentView]);
-        this._contactSearchResults = true;
-    }
+		this._contactSearchResults = true;
+	}
 
 	// reset offset if list view has been created
 	var view = this._currentView;
 	if (this._listView[view]) {
 		this._listView[view].offset = 0;
 	}
-
 	this.switchView(view, true);
+
+	if (selectedContacts && selectedContacts.length && this._listView[view]) {
+		this._listView[view].setSelection(selectedContacts[0]);
+	}
 };
 
 /**

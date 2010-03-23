@@ -131,6 +131,10 @@ function(ev) {
 
 		if (ev.event == ZmEvent.E_MODIFY) {
 			this._modifyContact(ev);
+			var contact = ev.item || ev._details.items[0];
+			if (contact instanceof ZmContact) {
+				this.setSelection(contact);
+			}
 		} else if (ev.event == ZmEvent.E_CREATE) {
 			var newContact = ev._details.items[0];
 			var newFolder = appCtxt.getById(newContact.folderId);
