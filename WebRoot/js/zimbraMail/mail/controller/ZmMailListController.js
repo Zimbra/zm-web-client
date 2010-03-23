@@ -1329,15 +1329,21 @@ function(ev) {
 	var items = listView.getSelection();
 	items = AjxUtil.toArray(items);
 	var ids = [];
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		// always extract out the msg ids from the conv
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        // always extract out the msg ids from the conv
         if (item.toString() == "ZmConv") {
-			ids.push("C:"+item.id);
-		} else {
-			ids.push(item.id);
-		}
-	}
+            // get msg ID in case of virtual conv.
+            // item.msgIds.length is inconsistent, so checking if conv id is negative.
+            if(appCtxt.isOffline && item.id.split(":")[1]<0){
+                ids.push(item.msgIds[0]);
+            }else{
+                ids.push("C:"+item.id);
+            }
+        } else {
+            ids.push(item.id);
+        }
+    }
     var url = ("/h/printmessage?id=" + ids.join(","));
     if(appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES)){
        url = url+"&xim=1"; 
