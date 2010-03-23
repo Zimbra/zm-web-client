@@ -49,12 +49,15 @@ function(params) {
 	params = Dwt.getParams(arguments, ["items", "folder", "attrs"]);
 
 	var params1 = AjxUtil.hashCopy(params);
+	params1.items = AjxUtil.toArray(params.items);
 	params1.attrs = params.attrs || {};
 	params1.attrs.phone = this.folder.phone.name;
 	params1.attrs.l = params.folder.id;
 	params1.action = "move";
     if (params1.folder.id == ZmFolder.ID_TRASH) {
-        params1.actionText = ZmMsg.actionTrash;
+		if (params1.items.length > 1) {
+	        params1.actionText = ZmMsg.actionTrash;
+		}
     } else {
         params1.actionText = ZmMsg.actionMove;
         params1.actionArg = params.folder.getName(false, false, true);

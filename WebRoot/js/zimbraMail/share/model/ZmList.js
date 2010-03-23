@@ -482,7 +482,9 @@ function(params) {
 	params1.attrs.l = params.folder.id;
 	params1.action = "move";
     if (params1.folder.id == ZmFolder.ID_TRASH) {
-        params1.actionText = ZmMsg.actionTrash;
+		if (params1.items.length > 1) {
+        	params1.actionText = ZmMsg.actionTrash;
+		}
     } else {
         params1.actionText = ZmMsg.actionMove;
         params1.actionArg = params.folder.getName(false, false, true);
@@ -982,7 +984,6 @@ function(summary) {
 
 ZmList.getActionSummary =
 function(text, num, type, arg) {
-    text = text || ZmMsg.actionProcessed;
     var typeText = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
     return AjxMessageFormat.format(text, [num, typeText, arg]);
 };

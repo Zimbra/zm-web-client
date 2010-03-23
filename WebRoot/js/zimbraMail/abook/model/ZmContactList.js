@@ -413,7 +413,9 @@ function(params) {
 		params1.attrs.l = params.folder.id;
 		params1.action = "move";
         if (params1.folder.id == ZmFolder.ID_TRASH) {
-            params1.actionText = ZmMsg.actionTrash;
+			if (softMove.length > 1) {
+	            params1.actionText = ZmMsg.actionTrash;
+			}
         } else {
             params1.actionText = ZmMsg.actionMove;
             params1.actionArg = params.folder.getName(false, false, true);
