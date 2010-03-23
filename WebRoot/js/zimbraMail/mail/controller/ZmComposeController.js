@@ -1355,15 +1355,13 @@ function(ev) {
 ZmComposeController.prototype._switchInclude =
 function() {
 
-	var curText = "";
+	var userText = "";
 	var what = this._curIncOption.what;
 	if (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART) {
-		curText = this._getBodyContent();
-		var idx = curText.indexOf(this._composeView._includedPreface.replace(/\s+$/, ""));
-		if (idx) {
-			var crlf = (this._composeView.getComposeMode() == DwtHtmlEditor.HTML) ? "<br>" : "\\r?\\n";
-			var regEx = new RegExp(crlf + "+$", "i");
-			curText = curText.substring(0, idx).replace(regEx, "");
+		var curText = this._getBodyContent();
+		var idx = curText.indexOf(this._composeView._origIncludedContent);
+		if (idx > 0) {
+			userText = curText.replace(this._composeView._origIncludedContent, "");
 		}
 	}
 
@@ -1375,7 +1373,7 @@ function() {
 		this._action = ZmOperation.FORWARD_INLINE;
 	}
 
-	this._composeView.resetBody(this._action, this._msg, curText, this._curIncOption);
+	this._composeView.resetBody(this._action, this._msg, userText, this._curIncOption);
 };
 
 ZmComposeController.prototype._detachListener =
