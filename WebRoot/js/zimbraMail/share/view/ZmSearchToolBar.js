@@ -364,6 +364,7 @@ function() {
 		var inputEl = this._searchField.getInputElement();
 		inputEl.className = "search_input";
 		this._searchField.reparentHtmlElement(inputFieldId);
+		this._searchField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
 	}
 
 	// add "search types" menu
@@ -498,6 +499,15 @@ function(button, hint, text, image) {
 		button.setImage(image);
 	}
 };
+
+ZmSearchToolBar.prototype._handleKeyUp =
+function(ev) {
+	var code = DwtKeyEvent.getCharCode(ev);
+	if (code == 0x0D) {
+		return this._handleEnterKeyPress(ev);
+	}
+	return true;
+}
 
 ZmSearchToolBar.prototype._handleEnterKeyPress =
 function(ev) {
