@@ -76,6 +76,7 @@ function(params) {
 	}
 
 	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback"]);
+	params.items = AjxUtil.toArray(params.items);
 
 	var params1 = AjxUtil.hashCopy(params);
 
@@ -84,7 +85,9 @@ function(params) {
 	params1.attrs.l = params.folder.id;
 	params1.action = (params.folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
     if (params1.folder.id == ZmFolder.ID_TRASH) {
-        params1.actionText = ZmMsg.actionTrash;
+		if (params1.items.length > 1) {
+	        params1.actionText = ZmMsg.actionTrash;
+		}
     } else {
         params1.actionText = ZmMsg.actionMove;
         params1.actionArg = params1.folder.getName(false, false, true);
@@ -290,7 +293,9 @@ function(params) {
 	if (items1.length) {
 		params.items = items1;
 		params.op = "read";
-        params.actionText = params.value ? ZmMsg.actionMarkRead : ZmMsg.actionMarkUnread;
+		if (items1.length > 1) {
+        	params.actionText = params.value ? ZmMsg.actionMarkRead : ZmMsg.actionMarkUnread;
+		}
 		this.flagItems(params);
 	}
 };
