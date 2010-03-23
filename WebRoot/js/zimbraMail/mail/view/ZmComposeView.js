@@ -1845,6 +1845,7 @@ function(action, msg, extraBodyText, incOptions) {
 		}
 		var leadingSpace = sigPre ? "" : crlf2;
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
+		wrapParams.preserveReturns = true;
 		if (incOptions.what == ZmSetting.INC_BODY) {
 			if (htmlMode) {
 				wrapParams.text = isDraft ? body : headers.join(crlf) + crlf2 + body;

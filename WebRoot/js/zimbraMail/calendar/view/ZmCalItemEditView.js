@@ -533,6 +533,7 @@ function(body, composingHtml) {
         var preface = (composingHtml ? '<br>' : '\n');
 		var wrapParams = ZmHtmlEditor.getWrapParams(composingHtml);
 		wrapParams.text = body;
+		wrapParams.preserveReturns = true;
         body = preface + AjxStringUtil.wordWrap(wrapParams);
     }
     return body;
