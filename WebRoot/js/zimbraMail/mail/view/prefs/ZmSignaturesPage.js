@@ -66,14 +66,13 @@ function(includeEmpty, includeNonModified) {
 ZmSignaturesPage.prototype.getNewSignatures =
 function(includeEmpty) {
 	var array = [];
-    var sigregex = new RegExp("^"+ZmMsg.signature+"\\s#(\\d+)$", "i");
 	for (var id in this._signatureComps) {
 		var signature = this._signatureComps[id];
 		if (!signature._new) continue;
 
 		var hasName = signature.name.replace(/\s*/g,"") != "";
 		var hasValue = signature.getValue().replace(/\s*/g,"") != "";
-        var isNameDefault = signature.name.match(sigregex);
+		var isNameDefault = ZmSignaturesPage.isNameDefault(signature.name);
                 
 		if ((includeEmpty && !isNameDefault) || (hasName && hasValue)) {
 			array.push(signature);
@@ -144,6 +143,13 @@ function() {
 		   this.getModifiedSignatures().length > 0;
 };
 
+
+ZmSignaturesPage.defaultNameRegex = new RegExp("^"+ZmMsg.signature+"\\s#(\\d+)$", "i");
+ZmSignaturesPage.isNameDefault =
+function(name) {
+	return name && name.match(ZmSignaturesPage.defaultNameRegex);
+};
+
 ZmSignaturesPage.prototype.validate =
 function() {
 	if (this._selSignature) {
@@ -152,12 +158,11 @@ function() {
 
 	var signatures = this.getAllSignatures(true);
 	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
-	var sigregex = new RegExp("^"+ZmMsg.signature+"\\s#(\\d+)$", "i");
 	for (var i = 0; i < signatures.length; i++) {
 		var signature = signatures[i];
 		var isNameEmpty = (signature.name.replace(/\s*/g,"") == "");
 		var isValueEmpty = (signature.value.replace(/\s*/g,"") == "");
-		var isNameDefault = signature.name.match(sigregex);
+		var isNameDefault = ZmSignaturesPage.isNameDefault(signature.name);
 		if (isNameEmpty && isValueEmpty) {
 			this._deleteSignature(signature);
 		} else if (isNameEmpty || (isValueEmpty && !isNameDefault)) {
@@ -380,12 +385,12 @@ function(reset) {
 ZmSignaturesPage.prototype._calcAutoSignatureNames =
 function(signatures) {
 	var autoNames = [];
-	var sigregex = "^"+ZmMsg.signature+"\\s#(\\d+)$";
-	sigregex = new RegExp(sigregex, "i");
 	for (var i = 0; i < signatures.length; i++) {
-		if (sigregex.test(signatures[i].name)) {
-			autoNames.push(RegExp.$1);
+		var match = ZmSignaturesPage.defaultNameRegex.exec(signatures[i].name);
+		if (match && match.length>=2) {
+			autoNames.push(match[1]);
 		}
+		ZmSignaturesPage.defaultNameRegex.lastIndex = 0;
 	}
 	autoNames.sort(function(a, b) { return a-b; });
 
@@ -576,7 +581,7 @@ function(signature, keepName, keepValue) {
 				contentType:  signature.getContentType()
 			};
 		}
-		if (!keepName)
+		if (!keepName && !ZmSignaturesPage.isNameDefault(signature.name))
 			signature.name = this._getNewSignatureName();
 		if (!keepValue)
 			signature.value = "";
