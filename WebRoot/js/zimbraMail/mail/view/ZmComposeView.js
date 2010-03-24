@@ -1847,7 +1847,9 @@ function(action, msg, extraBodyText, incOptions) {
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
 		wrapParams.preserveReturns = true;
 		if (incOptions.what == ZmSetting.INC_BODY) {
-			if (htmlMode) {
+			if (isDraft) {
+				value = body;
+			} else if (htmlMode) {
 				wrapParams.text = isDraft ? body : headers.join(crlf) + crlf2 + body;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
 				value = leadingSpace + preText + preface + crlf + bodyText;
@@ -1859,9 +1861,6 @@ function(action, msg, extraBodyText, incOptions) {
 				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
 				value = leadingSpace + preText + preface + crlf2 + headerText + crlf + bodyText;
-			}
-			if (isDraft) {
-				value = bodyText;
 			}
 		} else if (incOptions.what == ZmSetting.INC_SMART) {
 			var chunks = AjxStringUtil.getTopLevel(body);
