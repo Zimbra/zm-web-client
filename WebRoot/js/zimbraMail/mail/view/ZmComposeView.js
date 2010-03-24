@@ -1738,6 +1738,7 @@ function(action, msg, extraBodyText, incOptions) {
 
 	var htmlMode = (this._composeMode == DwtHtmlEditor.HTML);
 
+	var isDraft = (action == ZmOperation.DRAFT);
 	var isInviteReply = (action == ZmOperation.REPLY_ACCEPT ||
 						 action == ZmOperation.REPLY_DECLINE ||
 						 action == ZmOperation.REPLY_TENTATIVE ||
@@ -1753,9 +1754,8 @@ function(action, msg, extraBodyText, incOptions) {
 						  headers:	appCtxt.get(ZmSetting.REPLY_INCLUDE_HEADERS)};
 		} else if (isInviteForward) {
 			action = this._action = ZmOperation.FORWARD_INLINE;
-		} else if (action == ZmOperation.DRAFT) {
-			incOptions = {what:			ZmSetting.INC_BODY,
-						  noPreface:	true};
+		} else if (isDraft) {
+			incOptions = {what:			ZmSetting.INC_BODY};
 		} else if (action == ZmOperation.FORWARD_INLINE) {
 			incOptions = {what:		ZmSetting.INC_BODY,
 						  prefix:	appCtxt.get(ZmSetting.FORWARD_USE_PREFIX),
@@ -1777,6 +1777,7 @@ function(action, msg, extraBodyText, incOptions) {
 
 	var crlf = htmlMode ? "<br>" : ZmMsg.CRLF;
 	var crlf2 = htmlMode ? "<br><br>" : ZmMsg.CRLF2;
+
 	var sigPre = "", body = "", headers = [], preface = "", value = "";
 
 	var bodyInfo = {};
@@ -1836,21 +1837,17 @@ function(action, msg, extraBodyText, incOptions) {
 		this._msgAttId = this._msg.id;
 	} else {
 		var preface = "";
-		if (incOptions.noPreface) {
-			preText = "";
+		if (htmlMode) {
+			preface = "<hr>";
 		} else {
-			if (htmlMode) {
-				preface = "<hr>";
-			} else {
-				var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
-				preface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
-			}
+			var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
+			preface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
 		}
 		var leadingSpace = sigPre ? "" : crlf2;
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
 		if (incOptions.what == ZmSetting.INC_BODY) {
 			if (htmlMode) {
-				wrapParams.text = headers.join(crlf) + crlf2 + body;
+				wrapParams.text = isDraft ? body : headers.join(crlf) + crlf2 + body;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
 				value = leadingSpace + preText + preface + crlf + bodyText;
 			} else {
@@ -1861,6 +1858,9 @@ function(action, msg, extraBodyText, incOptions) {
 				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
 				value = leadingSpace + preText + preface + crlf2 + headerText + crlf + bodyText;
+			}
+			if (isDraft) {
+				value = bodyText;
 			}
 		} else if (incOptions.what == ZmSetting.INC_SMART) {
 			var chunks = AjxStringUtil.getTopLevel(body);
