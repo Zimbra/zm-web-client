@@ -413,13 +413,19 @@ function(appt, attId, response) {
 
 ZmApptComposeController.prototype._handleResourceConflict =
 function(appt, callback, result) {
-    var conflictResponse = result.getResponse().CheckRecurConflictsResponse;
-    var inst = this._conflictingInstances = conflictResponse.inst;
-    if(inst && inst.length > 0) {
-        if(this._conflictCallback) this._conflictCallback.run(inst);
-        this.showConflictDialog(appt, callback, inst);
-    }else if(callback){
-        callback.run();                
+    var conflictExist = false;
+    if(result) {
+        var conflictResponse = result.getResponse().CheckRecurConflictsResponse;
+        var inst = this._conflictingInstances = conflictResponse.inst;
+        if(inst && inst.length > 0) {
+            if(this._conflictCallback) this._conflictCallback.run(inst);
+            this.showConflictDialog(appt, callback, inst);
+            conflictExist = true;
+        }
+    }
+
+    if(!conflictExist && callback){
+        callback.run();
     }
 };
 
