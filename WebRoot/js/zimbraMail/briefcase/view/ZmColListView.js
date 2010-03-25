@@ -233,3 +233,24 @@ function(folder, sortFunction) {
 	}
 	return i;
 };
+
+ZmColListView.prototype._changeListener =
+function(ev){
+
+    ZmBriefcaseBaseView.prototype._changeListener.call(this, ev);
+
+    if(this._controller.isMultiColView()){
+        var multiColView = this._controller._multiColView;
+        var selection = this.getSelection();
+        if(selection && selection.length > 0){
+            selection = selection[0];
+            if(selection.isFolder)
+                multiColView.expandFolder(selection.id);
+            else
+                multiColView.showFileProps(selection);
+        }else{
+            multiColView.clearFolderProps();
+        }
+    }
+
+};
