@@ -494,7 +494,9 @@ function() {
 	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		list.push(ZmOperation.VIEW_FILE_AS_HTML);
 	}
-	list.push(ZmOperation.CREATE_SLIDE_SHOW);
+    if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
+		list.push(ZmOperation.CREATE_SLIDE_SHOW);
+	}	
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
