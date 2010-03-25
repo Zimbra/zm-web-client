@@ -206,6 +206,7 @@ function() {
 	// setup zimlets, Load it first becoz.. zimlets has to get processed first.
 	if (target) {
 		var allzimlets = parentAppCtxt.get(ZmSetting.ZIMLETS);
+		allzimlets = allzimlets || [];
 		var zimletArray = this._settings._getCheckedZimlets(allzimlets);
 		if (this._hasZimletsForTarget(zimletArray, target)) {
 			var zimletMgr = appCtxt.getZimletMgr();
