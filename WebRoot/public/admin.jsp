@@ -93,8 +93,12 @@
     String ext = (String)request.getAttribute("fileExtension");
     if (ext == null) ext = "";
     
-    String skin = "beach";
+    String skin = (String)request.getAttribute("skin");
+    if(skin == null) skin = "beach";
 
+	Cookie skinCookie = new Cookie("ZA_SKIN",skin);
+	response.addCookie(skinCookie);
+	
     //Since we only suppor the beach skin in admin, we will remove the skin related codes.
 	
     String contextPath = request.getContextPath();
@@ -108,7 +112,13 @@
 	pageContext.setAttribute("ext", ext);
 	pageContext.setAttribute("vers", vers);
 	pageContext.setAttribute("isDevMode", isDevMode);
-%><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+%>
+<%
+	Cookie testCookie = new Cookie("ZA_TEST", "true");
+	testCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
+	response.addCookie(testCookie);
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <!--
