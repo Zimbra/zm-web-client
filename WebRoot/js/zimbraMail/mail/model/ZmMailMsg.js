@@ -289,7 +289,7 @@ ZmMailMsg.prototype._getAttendees =
 function() {
 	var attendees = this.invite.components[0].at;
 	var emails = new AjxVector();
-	for (var i = 0; i < attendees ? attendees.length : 0; i++) {
+	for (var i = 0; i < (attendees ? attendees.length : 0); i++) {
 		var at = attendees[i];
 		emails.add(new AjxEmailAddress(at.a, null, null, at.d));
 	}
