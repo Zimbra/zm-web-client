@@ -25,146 +25,146 @@
 <zm:getMailbox var="mailbox"/>
 
 <table width="100%" cellspacing="0" class='Tb'>
-    <tr valign='middle'>
-        <td class='TbBt'>
-            <table cellspacing="0" cellpadding="0" class='Tb'>
-                <tr>
-                    <c:choose>
-                        <c:when test="${context.isFolderSearch and context.folder.isFeed}">
-                            <td><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
-                            <app:button name="actionLoadFeed" src="startup/ImgRefresh.gif" tooltip="checkFeed" text="checkFeed"/>
-                        </c:when>
-                        <c:otherwise>
-                            <td nowrap>
-                                <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                                <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
-                            </td>
-                        </c:otherwise>
-                    </c:choose>
-                    <td><div class='vertSep'></div></td>
-                    <c:if test="${skin ne 'velodrome2'}">
-                        <td nowrap>
-                            <c:choose>
-                                <c:when test="${not empty context}">
-                                    <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:url var="composeUrl" value="/h/search?action=compose"/>
-                                </c:otherwise>
-                            </c:choose>
-                            <a href="${fn:escapeXml(composeUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgNewMessage.gif" altkey="compose"/><span>&nbsp;<fmt:message key="compose"/></span></a>
-                        </td>
-                        <td><div class='vertSep'></div></td>
-                    </c:if>
-                    <c:choose>
-                        <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT" src="startup/ImgDelete.gif"/>
-                        </c:when>
-                        <c:otherwise>
-                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionDelete" text="actionDelete" tooltip="actionTrashTT" src="startup/ImgDelete.gif"/>
-                        </c:otherwise>
-                    </c:choose>
-                    <td><div class='vertSep'></div></td>
-                    <td height="100%" nowrap valign="middle" style="padding: 0 1px 0 1px">
-                        <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-                    </td>
-                    <td height="100%" nowrap valign="middle" style="padding: 0 1px 0 1px">
-                        <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-                    </td>
-                    <td><div class='vertSep'></div></td>
-                    <c:if test="${!context.folder.isDrafts}">
-                        <td  nowrap valign=middle>
-                            <input  type="hidden" value="" id="drag_target_folder" name="dragTargetFolder" />
-                            <input  type="hidden" value="" id="drag_msg_id" name="dragMsgId" />
-                            <select name="folderId" onchange="zclick('SOPMOVE')">
-                                <option value="" selected><fmt:message key="moveAction"/></option>
-                                <optgroup label=<fmt:message key="actionOptSep"/>>
-                                <zm:forEachFolder var="folder">
-                                    <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                        <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}</option>
-                                    </c:if>
-                                </zm:forEachFolder>
-                                </optgroup>
-                            </select>
-                        </td>
-                        <app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
-                        <td><div class='vertSep'></div></td>
-                    </c:if>
-                    <td  nowrap valign=middle>
-                        <select name="actionOp"  onchange="zclick('SOPGO')">
-                            <option value="" selected/><fmt:message key="moreActions"/>
-                            <option <c:if test="${keys}">id="OPREAD" </c:if> value="read"/><fmt:message key="actionMarkRead"/>
-                            <option <c:if test="${keys}">id="OPUNREAD" </c:if> value="unread"/><fmt:message key="actionMarkUnread"/>
-                            <c:if test="${mailbox.features.flagging}">
-                                <option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"/><fmt:message key="actionAddFlag"/>
-                                <option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"/><fmt:message key="actionRemoveFlag"/>
-                            </c:if>
-                            <app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
-                        </select>
-                    </td>
-                    <app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionMessageGoTT" text="actionGo" />
+	<tr valign='middle'>
+		<td class='TbBt'>
+			<table cellspacing="0" cellpadding="0" class='Tb'>
+				<tr>
+					<c:choose>
+						<c:when test="${context.isFolderSearch and context.folder.isFeed}">
+							<td><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
+							<app:button name="actionLoadFeed" src="startup/ImgRefresh.gif" tooltip="checkFeed" text="checkFeed"/>
+						</c:when>
+						<c:otherwise>
+							<td nowrap>
+								<zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
+								<a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
+							</td>
+						</c:otherwise>
+					</c:choose>
+					<td><div class='vertSep'></div></td>
+					<c:if test="${skin ne 'velodrome2'}">
+						<td nowrap>
+							<c:choose>
+								<c:when test="${not empty context}">
+									<zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
+								</c:when>
+								<c:otherwise>
+									<c:url var="composeUrl" value="/h/search?action=compose"/>
+								</c:otherwise>
+							</c:choose>
+							<a href="${fn:escapeXml(composeUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgNewMessage.gif" altkey="compose"/><span>&nbsp;<fmt:message key="compose"/></span></a>
+						</td>
+						<td><div class='vertSep'></div></td>
+					</c:if>
+					<c:choose>
+						<c:when test="${context.isFolderSearch and context.folder.isTrash}">
+							<app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT" src="startup/ImgDelete.gif"/>
+						</c:when>
+						<c:otherwise>
+							<app:button id="${keys ? 'OPDELETE' : ''}" name="actionDelete" text="actionDelete" tooltip="actionTrashTT" src="startup/ImgDelete.gif"/>
+						</c:otherwise>
+					</c:choose>
+					<td><div class='vertSep'></div></td>
+					<td height="100%" nowrap valign="middle" style="padding: 0 1px 0 1px">
+						<input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+					</td>
+					<td height="100%" nowrap valign="middle" style="padding: 0 1px 0 1px">
+						<input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+					</td>
+					<td><div class='vertSep'></div></td>
+					<c:if test="${!context.folder.isDrafts}">
+						<td  nowrap valign=middle>
+							<input  type="hidden" value="" id="drag_target_folder" name="dragTargetFolder" />
+							<input  type="hidden" value="" id="drag_msg_id" name="dragMsgId" />
+							<select name="folderId" onchange="zclick('SOPMOVE')">
+								<option value="" selected><fmt:message key="moveAction"/></option>
+								<optgroup label=<fmt:message key="actionOptSep"/>>
+								<zm:forEachFolder var="folder">
+									<c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+										<option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}</option>
+									</c:if>
+								</zm:forEachFolder>
+								</optgroup>
+							</select>
+						</td>
+						<app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
+						<td><div class='vertSep'></div></td>
+					</c:if>
+					<td  nowrap valign=middle>
+						<select name="actionOp"  onchange="zclick('SOPGO')">
+							<option value="" selected/><fmt:message key="moreActions"/>
+							<option <c:if test="${keys}">id="OPREAD" </c:if> value="read"/><fmt:message key="actionMarkRead"/>
+							<option <c:if test="${keys}">id="OPUNREAD" </c:if> value="unread"/><fmt:message key="actionMarkUnread"/>
+							<c:if test="${mailbox.features.flagging}">
+								<option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"/><fmt:message key="actionAddFlag"/>
+								<option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"/><fmt:message key="actionRemoveFlag"/>
+							</c:if>
+							<app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
+						</select>
+					</td>
+					<app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionMessageGoTT" text="actionGo" />
 
-                    <td><div class='vertSep'></div></td>
-                    <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-                        <app:button id="${keys ? 'OPSPAM' :''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.gif"/>
-                    </c:if>
-                    <c:if test="${context.isFolderSearch and context.folder.isSpam}">
-                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.gif"/>
-                    </c:if>
-                    <c:if test="${context.isFolderSearch}">
-                        <c:choose>
-                            <c:when test="${context.folder.isTrash}">
-                                <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
-                                <app:button extra="onclick='return validatefn();'" name="actionEmpty" src="startup/ImgDelete.gif" tooltip="emptyTrash" text="emptyTrash"/>
-                                <input type="hidden" name="confirmed" value="0"/>
-                                <script type="text/javascript">
-                                    var validatefn = function(){
-                                        if(confirm('<fmt:message key="confirmEmptyTrashFolder"><fmt:param value=""/><fmt:param value=""/><fmt:param value=""/></fmt:message>')){
-                                            if(document.forms.zform.confirmed.length > 1){
-                                                document.forms.zform.confirmed[0].value = "1";
-                                                document.forms.zform.confirmed[1].value = "1";
-                                            }
-                                            return true;
-                                        }else{
-                                            if(document.forms.zform.confirmed.length > 1){
-                                                document.forms.zform.confirmed[0].value = "0";
-                                                document.forms.zform.confirmed[1].value = "0";
-                                            }
-                                            return false;
-                                        }
-                                    }
-                                </script>
-                            </c:when>
-                            <c:when test="${context.folder.isSpam}">
-                                <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
-                                <app:button name="actionEmpty" src="mail/ImgEmptyFolder.gif" tooltip="emptyJunk" text="emptyJunk"/>
-                            </c:when>
-                        </c:choose>
-                    </c:if>
-                    <c:if test="${mailbox.features.conversations}">
-                    <td><div class='vertSep'></div></td>
-                    <td  nowrap valign="middle">
-                        <fmt:message key="viewLabel"/>
-                        <select name="actionOp" id="${keys ? 'actionOp' : ' '}" onchange="${keys ? "zclick('SOPSET')" : "setactionOp(this.value)"}">
-                            <c:if test="${!empty param.st}">
-                                <option value="byConv" ${param.st eq 'conversation' ? 'selected=selected' : ''}><fmt:message key="byConversation"/></option>
-                                <option value="byMsg" ${param.st eq 'message' ? 'selected=selected' : ''}><fmt:message key="byMessage"/></option>
-                            </c:if>
-                            <c:if test="${empty param.st}">
-                                <option value="byConv" ${mailbox.prefs.groupByConversation ? 'selected=selected' : ''}><fmt:message key="byConversation"/></option>
-                                <option value="byMsg" ${mailbox.prefs.groupByMessage ? 'selected=selected' : ''}><fmt:message key="byMessage"/></option>
-                            </c:if>
-                        </select>
-                        <app:button id="${keys ? 'OPSET' : ''}" name="viewAction" text="actionGo" />
-                    </td>
-                    </c:if>
-                </tr>
-            </table>
-        </td>
-        <td nowrap align=right>
-            <app:searchPageLeft keys="${keys}" urlTarget="/h/search" context="${context}"/>
-            <app:searchPageOffset searchResult="${context.searchResult}" max="${context.folder.messageCount}"/>
-            <app:searchPageRight keys="${keys}" urlTarget="/h/search" context="${context}"/>
-        </td>
-    </tr>
+					<td><div class='vertSep'></div></td>
+					<c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+						<app:button id="${keys ? 'OPSPAM' :''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.gif"/>
+					</c:if>
+					<c:if test="${context.isFolderSearch and context.folder.isSpam}">
+						<app:button id="${keys ? 'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.gif"/>
+					</c:if>
+					<c:if test="${context.isFolderSearch}">
+						<c:choose>
+							<c:when test="${context.folder.isTrash}">
+								<td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
+								<app:button extra="onclick='return validatefn();'" name="actionEmpty" src="startup/ImgDelete.gif" tooltip="emptyTrash" text="emptyTrash"/>
+								<input type="hidden" name="confirmed" value="0"/>
+								<script type="text/javascript">
+									var validatefn = function(){
+										if(confirm('<fmt:message key="confirmEmptyTrashFolder"><fmt:param value=""/><fmt:param value=""/><fmt:param value=""/></fmt:message>')){
+											if(document.forms.zform.confirmed.length > 1){
+												document.forms.zform.confirmed[0].value = "1";
+												document.forms.zform.confirmed[1].value = "1";
+											}
+											return true;
+										}else{
+											if(document.forms.zform.confirmed.length > 1){
+												document.forms.zform.confirmed[0].value = "0";
+												document.forms.zform.confirmed[1].value = "0";
+											}
+											return false;
+										}
+									}
+								</script>
+							</c:when>
+							<c:when test="${context.folder.isSpam}">
+								<td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
+								<app:button name="actionEmpty" src="mail/ImgEmptyFolder.gif" tooltip="emptyJunk" text="emptyJunk"/>
+							</c:when>
+						</c:choose>
+					</c:if>
+					<c:if test="${mailbox.features.conversations}">
+					<td><div class='vertSep'></div></td>
+					<td nowrap valign="middle">
+						<fmt:message key="viewLabel"/>
+						<select name="${keys ? 'viewOp' : ' '}" id="${keys ? 'viewOp' : ' '}" onchange="${keys ? "zclick('SOPSET')" : "setviewOp(this.value)"}">
+							<c:if test="${!empty param.st}">
+								<option value="byConv" ${param.st eq 'conversation' ? 'selected=selected' : ''}><fmt:message key="byConversation"/></option>
+								<option value="byMsg" ${param.st eq 'message' ? 'selected=selected' : ''}><fmt:message key="byMessage"/></option>
+							</c:if>
+							<c:if test="${empty param.st}">
+								<option value="byConv" ${mailbox.prefs.groupByConversation ? 'selected=selected' : ''}><fmt:message key="byConversation"/></option>
+								<option value="byMsg" ${mailbox.prefs.groupByMessage ? 'selected=selected' : ''}><fmt:message key="byMessage"/></option>
+							</c:if>
+						</select>
+						<app:button id="${keys ? 'OPSET' : ''}" name="viewAction" text="actionGo" />
+					</td>
+					</c:if>
+				</tr>
+			</table>
+		</td>
+		<td nowrap align="right">
+			<app:searchPageLeft keys="${keys}" context="${context}" urlTarget="/h/search"/>
+			<app:searchPageOffset searchResult="${context.searchResult}" max="${context.folder.messageCount}"/>
+			<app:searchPageRight keys="${keys}" context="${context}" urlTarget="/h/search"/>
+		</td>
+	</tr>
 </table>
