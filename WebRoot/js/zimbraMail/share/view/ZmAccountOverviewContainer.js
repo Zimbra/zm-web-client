@@ -36,6 +36,10 @@ ZmAccountOverviewContainer = function(params) {
 
 	this._vFolderTreeItemMap = {};
 	this._settingChangeListener = new AjxListener(this, this._handleSettingChange);
+
+	var mouseListener = new AjxListener(this, this._mouseListener);
+	this.addListener(DwtEvent.ONMOUSEDOWN, mouseListener);
+	this.addListener(DwtEvent.ONMOUSEUP, mouseListener);
 };
 
 ZmAccountOverviewContainer.prototype = new ZmOverviewContainer;
@@ -738,6 +742,11 @@ function(ev) {
 			header.setText(text);
 		}
 	}
+};
+
+ZmAccountOverviewContainer.prototype._mouseListener =
+function(ev) {
+	return !Dwt.ffScrollbarCheck(ev);
 };
 
 ZmAccountOverviewContainer.prototype._handleSettingChange =
