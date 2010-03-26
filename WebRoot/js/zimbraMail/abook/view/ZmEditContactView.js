@@ -1219,7 +1219,7 @@ ZmEditContactViewInputSelectRows.prototype.toString = function() {
  * @private
  */
 ZmEditContactViewInputSelectRows.prototype.getMaxRows = function() {
-	return this.isAllMaxedOut() ? this.getRowCount() : Number.MAX_VALUE;
+	return this.isAllMaxedOut() ? this.getRowCount() : ZmEditContactViewRows.prototype.getMaxRows.call(this);
 };
 
 /**
