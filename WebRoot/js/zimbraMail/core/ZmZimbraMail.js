@@ -502,10 +502,7 @@ function(params, result) {
 	if (!appCtxt.isOffline) {
 		this.setPollInterval(true);
 	} else {
-		// bug fix #34342 - always register mailto handler for mac
-		if (AjxEnv.isMac) {
-			this.registerMailtoHandler();
-		}
+		this.registerMailtoHandler();
 	}
 
 	window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
@@ -1096,16 +1093,19 @@ function() {
 ZmZimbraMail.prototype.registerMailtoHandler =
 function() {
 	if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
-		appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER) &&
-		window.platform && window.platform.isRegisteredProtocolHandler)
+		appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER) && window.platform)
 	{
 		try { // add try/catch - see bug #33870
-			// register mailto: handler
+			// register mailto handler
+			// bug fix #34342 - always register mailto handler for mac
 			if (AjxEnv.isMac || !window.platform.isRegisteredProtocolHandler("mailto")) {
-				var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
 				var url = appCtxt.get(ZmSetting.OFFLINE_WEBAPP_URI, null, appCtxt.accountList.mainAccount);
-				window.platform.registerProtocolHandler("mailto", url+"&mailto=%s", callback);
+				window.platform.registerProtocolHandler("mailto", url + "&mailto=%s");
 			}
+
+			// register mailto callback
+			var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
+			window.platform.registerProtocolCallback("mailto", callback);
 		} catch(ex) {
 			// do nothing
 		}
