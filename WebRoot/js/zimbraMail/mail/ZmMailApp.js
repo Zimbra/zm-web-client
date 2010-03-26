@@ -1860,7 +1860,9 @@ function(account) {
 
 	if (!this._identityCollection[activeAcct]) {
 		var ic = this._identityCollection[activeAcct] = new ZmIdentityCollection();
-		ic.initialize(appCtxt.getSettings(account).getInfoResponse.identities);
+		var settings = appCtxt.getSettings(account);
+		if (settings)
+			ic.initialize(settings.getInfoResponse.identities);
 	}
 	return this._identityCollection[activeAcct];
 };
