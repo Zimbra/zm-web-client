@@ -581,8 +581,13 @@ ZmEditContactView.__trimNumber = function(s) {
 ZmEditContactView.prototype.isEmpty = function() {
 	for (var id in this._items) {
 		var item = this._items[id];
-		if (this.isIgnore(id)) continue;
-		if (this.getValue(id)) return false;
+		if (this.isIgnore(id) || id == "FILE_AS") continue;
+		var value = this.getValue(id);
+		if (value) {
+			if (!AjxUtil.isArray(value)) return false;
+			for (var i=0; i<value.length; i++)
+				if (value[i].value && value[i].value!=="") return false;
+		}
 	}
 	return true;
 };
