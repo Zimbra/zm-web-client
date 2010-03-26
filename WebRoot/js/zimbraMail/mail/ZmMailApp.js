@@ -156,7 +156,7 @@ function(settings) {
 	settings.registerSetting("END_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("FILTERS_ENABLED",					{name:"zimbraFeatureFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("FILTERS_MAIL_FORWARDING_ENABLED",	{name:"zimbraFeatureMailForwardingInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("FORWARD_INCLUDE_HEADERS",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("FORWARD_INCLUDE_HEADERS",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("FORWARD_INCLUDE_ORIG",			{name:"zimbraPrefForwardIncludeOriginalText", type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY, isGlobal:true});
 	settings.registerSetting("FORWARD_INCLUDE_WHAT",			{type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY});
 	settings.registerSetting("FORWARD_MENU_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -206,7 +206,7 @@ function(settings) {
 	settings.registerSetting("POP_DOWNLOAD_SINCE",				{name:"zimbraPrefPop3DownloadSince", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:""});
 	settings.registerSetting("READING_PANE_LOCATION",			{name:"zimbraPrefReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true, isGlobal:true});
 	settings.registerSetting("READING_PANE_LOCATION_CV",		{name:"zimbraPrefConvReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true});
-	settings.registerSetting("REPLY_INCLUDE_HEADERS",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("REPLY_INCLUDE_HEADERS",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("REPLY_INCLUDE_ORIG",				{name:"zimbraPrefReplyIncludeOriginalText", type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY, isGlobal:true});
 	settings.registerSetting("REPLY_INCLUDE_WHAT",				{type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY});
 	settings.registerSetting("REPLY_MENU_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -1291,15 +1291,10 @@ function(op, params) {
 				inNewWindow = this._inNewWindow(params && params.ev);
 				showLoadingPage = false;
 			}
-			var loadCallback = new AjxCallback(this, this._handleLoadNewMessage, [inNewWindow]);
+			var loadCallback = new AjxCallback(this, this.compose, {action: ZmOperation.NEW_MESSAGE, inNewWindow:inNewWindow});
 			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, showLoadingPage);
 			break;
 	}
-};
-
-ZmMailApp.prototype._handleLoadNewMessage =
-function(inNewWindow) {
-	AjxDispatcher.run("Compose", {action: ZmOperation.NEW_MESSAGE, inNewWindow:inNewWindow});
 };
 
 // Public methods

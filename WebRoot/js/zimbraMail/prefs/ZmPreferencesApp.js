@@ -412,6 +412,7 @@ function() {
 		displayOptions:		[ZmMsg.includeInBody, ZmMsg.includeOriginalAsAttach],
 		options:			[ZmSetting.INC_BODY, ZmSetting.INC_ATTACH],
         setFunction:		ZmPref.setIncludeOrig,
+		initFunction:		ZmPref.initIncludeWhat,
 		changeFunction:		ZmPref.onChangeIncludeWhat
 	});
 
@@ -557,6 +558,7 @@ function() {
 							ZmSetting.INC_SMART,
 							ZmSetting.INC_ATTACH],
 		setFunction:		ZmPref.setIncludeOrig,
+		initFunction:		ZmPref.initIncludeWhat,
 		changeFunction:		ZmPref.onChangeIncludeWhat
 	});
 

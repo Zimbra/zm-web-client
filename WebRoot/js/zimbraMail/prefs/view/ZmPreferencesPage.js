@@ -259,6 +259,9 @@ function() {
 			// add control to form
 			if (control) {
 				this._replaceControlElement(elem, control);
+				if (setup.initFunction) {
+					setup.initFunction(control, value);
+				}
 				if (setup.changeFunction && control.addChangeListener) {
 					control.addChangeListener(setup.changeFunction);
 				}

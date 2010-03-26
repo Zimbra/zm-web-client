@@ -386,6 +386,14 @@ function(pref, value, list) {
 	list.push(prefToChange);
 };
 
+ZmPref.initIncludeWhat =
+function(select, value) {
+	// wait until prefix/headers checkboxes have been created
+	AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() {
+		ZmPref._showIncludeOptions(select, (value == ZmSetting.INC_BODY || value == ZmSetting.INC_SMART));
+	}), 100);
+};
+
 ZmPref.onChangeIncludeWhat =
 function(ev) {
 	var nv = ev._args.newValue;
@@ -393,15 +401,19 @@ function(ev) {
 	var newAllowOptions = (nv == ZmSetting.INC_BODY || nv == ZmSetting.INC_SMART);
 	var oldAllowOptions = (ov == ZmSetting.INC_BODY || ov == ZmSetting.INC_SMART);
 	if (newAllowOptions != oldAllowOptions) {
-		var select = ev._args.selectObj;
-		var optionIds = (select._name == ZmSetting.REPLY_INCLUDE_WHAT) ?
-							[ZmSetting.REPLY_USE_PREFIX, ZmSetting.REPLY_INCLUDE_HEADERS] :
-							[ZmSetting.FORWARD_USE_PREFIX, ZmSetting.FORWARD_INCLUDE_HEADERS];
-		for (var i = 0; i < optionIds.length; i++) {
-			var cbox = select.parent._dwtObjects[optionIds[i]];
-			if (cbox) {
-				cbox.setVisible(newAllowOptions);
-			}
+		ZmPref._showIncludeOptions(ev._args.selectObj, newAllowOptions);
+	}
+};
+
+ZmPref._showIncludeOptions =
+function(select, show) {
+	var optionIds = (select._name == ZmSetting.REPLY_INCLUDE_WHAT) ?
+						[ZmSetting.REPLY_USE_PREFIX, ZmSetting.REPLY_INCLUDE_HEADERS] :
+						[ZmSetting.FORWARD_USE_PREFIX, ZmSetting.FORWARD_INCLUDE_HEADERS];
+	for (var i = 0; i < optionIds.length; i++) {
+		var cbox = select.parent._dwtObjects[optionIds[i]];
+		if (cbox) {
+			cbox.setVisible(show);
 		}
 	}
 };

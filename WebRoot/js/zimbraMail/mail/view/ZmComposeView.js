@@ -170,8 +170,12 @@ function(params) {
 
 	// populate fields based on the action and user prefs
 	this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
-	if (params.ccOverride) this._setAddresses(action, AjxEmailAddress.CC, params.ccOverride);
-	if (params.bccOverride) this._setAddresses(action, AjxEmailAddress.BCC, params.bccOverride);
+	if (params.ccOverride) {
+		this._setAddresses(action, AjxEmailAddress.CC, params.ccOverride);
+	}
+	if (params.bccOverride) {
+		this._setAddresses(action, AjxEmailAddress.BCC, params.bccOverride);
+	}
 	if (obo) {
 		this._setObo(obo);
 	}
@@ -815,15 +819,23 @@ function(type, addr) {
 
 // Sets the mode ZmHtmlEditor should be in.
 ZmComposeView.prototype.setComposeMode =
-function(composeMode) {
-	if (composeMode == DwtHtmlEditor.TEXT ||
-		(composeMode == DwtHtmlEditor.HTML && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))) {
+function(composeMode, switchPreface) {
+
+	var htmlMode = (composeMode == DwtHtmlEditor.HTML);
+	if (!htmlMode || appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 
 		var curMember = (this._composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
-
 		this._composeMode = composeMode;
+		if (!htmlMode && switchPreface) {
+			this._switchPreface();
+		}
 
 		this._htmlEditor.setMode(composeMode, true);
+
+		if (htmlMode && switchPreface) {
+			this._switchPreface();
+		}
+
 		// reset the body field Id and object ref
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 		this._bodyField = document.getElementById(this._bodyFieldId);
@@ -839,7 +851,7 @@ function(composeMode) {
 
 		// swap new body field into tab group
 		var newMember = (composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
-        if(window.isTinyMCE) {
+        if (window.isTinyMCE) {
             curMember = newMember = this._htmlEditor.getEditorContainer();
             this._retryHtmlEditorFocus();
         }
@@ -849,6 +861,9 @@ function(composeMode) {
 			if (composeMode == DwtHtmlEditor.HTML) {
 				this._retryHtmlEditorFocus();
 			}
+		}
+		if (!htmlMode) {
+			AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() { this.getHtmlEditor().moveCaretToTop(); }), 200);
 		}
 	}
 
@@ -1734,7 +1749,7 @@ function(action, msg, subjOverride) {
 };
 
 ZmComposeView.prototype._setBody =
-function(action, msg, extraBodyText, incOptions) {
+function(action, msg, extraBodyText) {
 
 	var htmlMode = (this._composeMode == DwtHtmlEditor.HTML);
 
@@ -1746,6 +1761,7 @@ function(action, msg, extraBodyText, incOptions) {
 	var isInviteForward = (msg && msg.isInvite() && (action == ZmOperation.FORWARD_INLINE || action == ZmOperation.FORWARD_ATT));
 
 	// get reply/forward prefs as necessary
+	var incOptions = this._controller._curIncOptions;
 	if (!incOptions) {
 		var isReply = (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
 		if (isReply || isInviteReply) {
@@ -1767,6 +1783,7 @@ function(action, msg, extraBodyText, incOptions) {
 		} else {
 			incOptions = {};
 		}
+		this._controller._curIncOptions = incOptions;	// pointer, not a copy
 	}
 	if (incOptions.what == ZmSetting.INC_NONE || incOptions.what == ZmSetting.INC_ATTACH) {
 		incOptions.prefix = incOptions.headers = false;
@@ -1801,7 +1818,7 @@ function(action, msg, extraBodyText, incOptions) {
 	var sigPre = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig : "";
 	extraBodyText = extraBodyText || "";
 	var preText = extraBodyText + sigPre;
-	if (preText.length) {
+	if (extraBodyText && !sigPre) {
 		preText += crlf;
 	}
 
@@ -1813,8 +1830,6 @@ function(action, msg, extraBodyText, incOptions) {
 			}
 		}
 	}
-
-	DBG.println("inc", "inc options: " + [incOptions.what, incOptions.prefix, incOptions.headers].join(" / "));
 
 	if (action == ZmOperation.REPLY_CANCEL) {
 		var cancelledParts = [crlf];
@@ -1834,15 +1849,10 @@ function(action, msg, extraBodyText, incOptions) {
 	} else if (incOptions.what == ZmSetting.INC_NONE) {
 		value = preText;
 	} else if (incOptions.what == ZmSetting.INC_ATTACH) {
+		value = preText;
 		this._msgAttId = this._msg.id;
 	} else {
-		var preface = "";
-		if (htmlMode) {
-			preface = "<hr>";
-		} else {
-			var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
-			preface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
-		}
+		var preface = this._getPreface();
 		var leadingSpace = sigPre ? "" : crlf2;
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
 		wrapParams.preserveReturns = true;
@@ -1850,27 +1860,48 @@ function(action, msg, extraBodyText, incOptions) {
 			if (isDraft) {
 				value = body;
 			} else if (htmlMode) {
-				wrapParams.text = isDraft ? body : headers.join(crlf) + crlf2 + body;
+				var headerText = headers.length ? headers.join(crlf) + crlf2 : "";
+				wrapParams.text = isDraft ? body : headerText + body;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
 				value = leadingSpace + preText + preface + crlf + bodyText;
 			} else {
-				wrapParams.text = headers.join(crlf);
-				wrapParams.len = 120; // headers tend to be longer
-				var headerText = AjxStringUtil.wordWrap(wrapParams);
+				var headerText = "";
+				if (headers.length) {
+					wrapParams.text = headers.join(crlf);
+					wrapParams.len = 120; // headers tend to be longer
+					headerText = crlf + AjxStringUtil.wordWrap(wrapParams);
+				}
 				wrapParams.text = body;
 				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
-				value = leadingSpace + preText + preface + crlf2 + headerText + crlf + bodyText;
+				value = leadingSpace + preText + preface + crlf + headerText + crlf + bodyText;
 			}
 		} else if (incOptions.what == ZmSetting.INC_SMART) {
 			var chunks = AjxStringUtil.getTopLevel(body);
-			chunks.unshift(headers.join(crlf));
 			for (var i = 0; i < chunks.length; i++) {
 				wrapParams.text = chunks[i];
 				chunks[i] = AjxStringUtil.wordWrap(wrapParams);
 			}
-			var text = chunks.length ? chunks.join(crlf + crlf) : body;
-			value = preText + preface + crlf2 + text;
+			if (chunks.length) {
+				body = chunks.join(crlf2);
+			}
+			if (htmlMode) {
+				var headerText = headers.length ? headers.join(crlf) + crlf2 : "";
+				wrapParams.text = isDraft ? body : headerText + body;
+				var bodyText = AjxStringUtil.wordWrap(wrapParams);
+				value = leadingSpace + preText + preface + crlf + bodyText;
+			} else {
+				var headerText = "";
+				if (headers.length) {
+					wrapParams.text = headers.join(crlf);
+					wrapParams.len = 120; // headers tend to be longer
+					headerText = crlf + AjxStringUtil.wordWrap(wrapParams);
+				}
+				wrapParams.text = body;
+				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
+				var bodyText = AjxStringUtil.wordWrap(wrapParams);
+				value = leadingSpace + preText + preface + crlf + headerText + crlf + bodyText;
+			}
 		}
 	}
 
@@ -1953,6 +1984,34 @@ function(msg, htmlMode) {
 	}
 
 	return {body:body || "", bodyPart:bodyPart, hasInlineImages:hasInlineImages, hasInlineAtts:hasInlineAtts};
+};
+
+ZmComposeView.prototype._getPreface =
+function(mode, action) {
+
+	mode = mode || this._composeMode;
+	action = action || this._action;
+	var preface;
+	if (mode == DwtHtmlEditor.HTML) {
+		preface = "<hr>";
+	} else {
+		var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
+		preface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
+	}
+	return preface;
+};
+
+// if mode isn't given, assumes mode has already been switched internally
+ZmComposeView.prototype._switchPreface =
+function(mode) {
+
+	mode = mode || this._composeMode;
+	var otherMode = (mode == DwtHtmlEditor.HTML) ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML;
+	var curPreface = this._getPreface(otherMode);
+	var newPreface = this._getPreface(mode);
+	var content = this.getHtmlEditor().getContent();
+	content = content.replace(curPreface, newPreface);
+	this._htmlEditor.setContent(content);
 };
 
 ZmComposeView.prototype.resetBody =
