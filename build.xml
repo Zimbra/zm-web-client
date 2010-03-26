@@ -1174,21 +1174,7 @@ if (ext == null) ext = "";
 	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-doc"/>
 	    <arg value="-d=${build.jsapi-zimbra-doc.dir}"/>
 	    <arg value="-r=4"/>
-	    <arg value="${js.dir}/ajax/boot/AjxCallback.js"/>
-	    <arg value="${js.dir}/ajax/boot/AjxTemplate.js"/>
-	    <arg value="${js.dir}/ajax/core/AjxColor.js"/>
-	    <arg value="${js.dir}/ajax/core/AjxException.js"/>
-	    <arg value="${js.dir}/ajax/dwt/core"/>
-	    <arg value="${js.dir}/ajax/dwt/events/DwtEvent.js"/>
-	    <arg value="${js.dir}/ajax/dwt/graphics"/>
-	    <arg value="${js.dir}/ajax/dwt/keyboard"/>
-	    <arg value="${js.dir}/ajax/dwt/widgets"/>
-	    <arg value="${js.dir}/ajax/events/AjxListener.js"/>
-	    <arg value="${js.dir}/ajax/net/AjxRpc.js"/>
-	    <arg value="${js.dir}/ajax/net/AjxRpcRequest.js"/>
-	    <arg value="${js.dir}/ajax/soap/AjxSoapDoc.js"/>
-	    <arg value="${js.dir}/ajax/util/AjxStringUtil.js"/>
-	    <arg value="${js.dir}/ajax/util/AjxVector.js"/>
+	    <arg value="${js.dir}/ajax"/>
 	    <arg value="${js.dir}/zimbra/common/ZmErrorDialog.js"/>
 	    <arg value="${js.dir}/zimbra/csfe"/>
 	    <arg value="${js.dir}/zimbraMail/abook"/>
@@ -1218,21 +1204,7 @@ if (ext == null) ext = "";
 	    <arg value="-d=${build.jsapi-inventory.dir}"/>
 	    <arg value="-r=4"/>
 	    <arg value="-s"/>
-	    <arg value="${js.dir}/ajax/boot/AjxCallback.js"/>
-	    <arg value="${js.dir}/ajax/boot/AjxTemplate.js"/>
-	    <arg value="${js.dir}/ajax/core/AjxColor.js"/>
-	    <arg value="${js.dir}/ajax/core/AjxException.js"/>
-	    <arg value="${js.dir}/ajax/dwt/core"/>
-	    <arg value="${js.dir}/ajax/dwt/events/DwtEvent.js"/>
-	    <arg value="${js.dir}/ajax/dwt/graphics"/>
-	    <arg value="${js.dir}/ajax/dwt/keyboard"/>
-	    <arg value="${js.dir}/ajax/dwt/widgets"/>
-	    <arg value="${js.dir}/ajax/events/AjxListener.js"/>
-	    <arg value="${js.dir}/ajax/net/AjxRpc.js"/>
-	    <arg value="${js.dir}/ajax/net/AjxRpcRequest.js"/>
-	    <arg value="${js.dir}/ajax/soap/AjxSoapDoc.js"/>
-	    <arg value="${js.dir}/ajax/util/AjxStringUtil.js"/>
-	    <arg value="${js.dir}/ajax/util/AjxVector.js"/>
+	    <arg value="${js.dir}/ajax"/>
 	    <arg value="${js.dir}/zimbra/common/ZmErrorDialog.js"/>
 	    <arg value="${js.dir}/zimbra/csfe"/>
 	    <arg value="${js.dir}/zimbraMail/abook"/>
