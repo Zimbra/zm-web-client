@@ -147,9 +147,11 @@ function(params) {
 	skip = params.omit && params.omit[ZmOrganizer.ID_ALL_MAILBOXES];
 	if (showAllMailboxes && !skip) {
 		var text = ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_ALL_MAILBOXES]];
+		var hdrText = appCtxt.get(ZmSetting.OFFLINE_ALL_MAILBOXES_TREE_OPEN)
+			? text : this._getFolderLabel(ZmOrganizer.ID_INBOX, text);
 		var params1 = {
 			parent: this,
-			text: this._getFolderLabel(ZmOrganizer.ID_INBOX, text),
+			text: hdrText,
 			imageInfo: "AccountAll"
 		};
 		var showAllMboxes = appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES);
