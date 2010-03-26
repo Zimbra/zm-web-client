@@ -344,7 +344,9 @@ function(item, colIdx) {
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, "16", "valign=top");
 	}
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, "16");
+	if (appCtxt.get("FLAGGING_ENABLED")) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, "16");
+	}
 	htmlArr[idx++] = "</tr></table>";
 
 	// second row
