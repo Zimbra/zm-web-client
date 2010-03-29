@@ -321,10 +321,9 @@ function() {
 	var editor = this.getEditor();
 	if (editor) {
 		editor.setContent("", {format: "raw"});
-	} else {
-		var field = this.getContentField();
-		field.value = "";
 	}
+    var field = this.getContentField();
+    if(field) field.value = "";
 };
 
 ZmAdvancedHtmlEditor.prototype.reparentHtmlElement =
