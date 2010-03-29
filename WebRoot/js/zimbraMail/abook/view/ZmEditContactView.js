@@ -1715,7 +1715,7 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 		var calendar = new DwtCalendar({parent:menu});
 		calendar.setDate(new Date());
 		calendar.setFirstDayOfWeek(appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0);
-		calendar.addSelectionListener(new AjxListener(this,this._handleDateSelection));
+		calendar.addSelectionListener(new AjxListener(this,this._handleDateSelection,[calendar]));
 		tabIndexes.push({
 			tabindex: pickerEl.getAttribute("tabindex") || Number.MAX_VALUE,
 			control: this._picker
@@ -1767,10 +1767,11 @@ ZmEditContactViewOther.prototype._handleDropDown = function(evt) {
     this._picker.popup();
 };
 
-ZmEditContactViewOther.prototype._handleDateSelection = function() {
-    var formatter = this._getDateFormatter();
+ZmEditContactViewOther.prototype._handleDateSelection = function(calendar) {
+	if (!calendar) calendar = this._calendar;
+	var formatter = this._getDateFormatter();
 	var value = this.getValue();
-	value.value = formatter.format(this._calendar.getDate());
+	value.value = formatter.format(calendar.getDate());
 	this.setValue(value);
 	this.parent.setDirty(true);
 };
