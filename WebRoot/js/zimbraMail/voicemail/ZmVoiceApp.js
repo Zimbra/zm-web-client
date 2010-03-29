@@ -520,7 +520,7 @@ function(name) {
 ZmVoiceApp.prototype.selectFolderInOverview =
 function(folder) {
 	// Select the folder in the phone's overview (and deselect for all others)
-	var overviews = this._overviewContainer.getOverviews();
+	var overviews = this.getOverviewContainer().getOverviews();
 	for (id in overviews) {
 		var overview = overviews[id];
 		if (overview.phone == folder.phone) {
