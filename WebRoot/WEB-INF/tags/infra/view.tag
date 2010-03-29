@@ -381,9 +381,17 @@
 			</c:forEach>
 
 			<c:if test="${(selected eq 'mail') and mailbox.features.portalEnabled and comcast_adsrvc}">
-
+				<c:set var="action" value="${empty param.paction ? param.action : param.paction}"/>
+				<c:choose>
+				    <c:when test="${not empty context and (context.isMessageSearch or context.isConversationSearch ) and action eq 'view'}">
+				        <c:set var="yahoo_ad_space_id" value="2142030098"/>
+				    </c:when>
+				    <c:otherwise>
+				        <c:set var="yahoo_ad_space_id" value="2142030097"/>                        
+				    </c:otherwise>
+				</c:choose>
 				<td id="_sidebarAd" colspan="1" width="160" valign="top" bgcolor="#f5f5f5" align="center">
-					<iframe src="http://pn2.adserver.yahoo.com/a?f=2022363871&pn=comcast&p=com-mail&l=SKY&c=sh&bg=f5f5f5&no_expandable=1"
+					<iframe src="http://pn2.adserver.yahoo.com/a?f=${yahoo_ad_space_id}&pn=comcast&p=com-mail&l=SKY&c=sh&bg=f5f5f5&no_expandable=1"
 					marginwidth="0"
 					marginheight="0"
 					width="160"
