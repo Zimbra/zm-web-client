@@ -119,9 +119,9 @@ ZmEditContactView.prototype.getFormItems = function() {
 					hint: ZmMsg.phoneNumberHint, cols : 60, options: this.getPhoneOptions()
 				}
 			} },
-			{ id: "IM", type: "ZmEditContactViewInputSelectRows", rowitem: {
-				type: "ZmEditContactViewIM", params: {
-					hint: ZmMsg.imScreenNameHint,  cols: 60, options: this.getIMOptions()
+			{ id: "IM", type: "ZmEditContactViewInputDoubleSelectRows", rowitem: {
+				type: "ZmEditContactViewIM", equals: ZmEditContactViewIM.equals, params: {
+					hint: ZmMsg.imScreenNameHint, cols: 60, options: this.getIMOptions(), options2: this.getIMOptions2()
 				}
 			} },
 			{ id: "ADDRESS", type: "ZmEditContactViewInputSelectRows",
@@ -233,6 +233,15 @@ ZmEditContactView.prototype.getIMOptions = function() {
 		{ value: "aol", label: ZmMsg.imGateway_aol },
 		{ value: "msn", label: ZmMsg.imGateway_msn },
 		{ value: "other", label: ZmMsg.other }
+	];
+};
+
+ZmEditContactView.prototype.getIMOptions2 = function() {
+	return [
+		/*{ value: ZmContact.F_imAddress, label: ZmMsg.AB_FIELD_imAddress },*/
+		{ value: ZmContact.F_imAddress1, label: ZmMsg.AB_FIELD_imAddress1 },
+		{ value: ZmContact.F_imAddress2, label: ZmMsg.AB_FIELD_imAddress2 },
+		{ value: ZmContact.F_imAddress3, label: ZmMsg.AB_FIELD_imAddress3 }
 	];
 };
 
@@ -1592,6 +1601,277 @@ ZmEditContactViewInputSelect.prototype.getTabGroupMember = function() {
 	return this._tabGroup;
 };
 
+/**
+ * Creates the input select rows.
+ * @class
+ * This class represents the input double select rows for the contact view.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends		ZmEditContactViewRows
+ * 
+ * @private
+ */
+ZmEditContactViewInputDoubleSelectRows = function(params) {
+	if (arguments.length == 0) return;
+	ZmEditContactViewInputSelectRows.apply(this, arguments);
+};
+ZmEditContactViewInputDoubleSelectRows.prototype = new ZmEditContactViewInputSelectRows;
+ZmEditContactViewInputDoubleSelectRows.prototype.constructor = ZmEditContactViewInputDoubleSelectRows;
+
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ * @private
+ */
+ZmEditContactViewInputDoubleSelectRows.prototype.toString = function() {
+	return "ZmEditContactViewInputDoubleSelectRows";
+};
+
+//
+// Class: ZmEditContactViewInputDoubleSelect
+//
+
+/**
+ * Creates the contact view input double select.
+ * @class
+ * This class represents an input with two selects.
+ * 
+ * @param	{Hash}	params		a hash of parameters
+ * 
+ * @extends		ZmEditContactViewInputSelect
+ * 
+ * @private
+ */
+
+ZmEditContactViewInputDoubleSelect = function(params) {
+	if (arguments.length == 0) return;
+	this._options2 = params.options2 || [];
+	ZmEditContactViewInputSelect.apply(this, arguments);
+};
+ZmEditContactViewInputDoubleSelect.prototype = new ZmEditContactViewInputSelect;
+ZmEditContactViewInputDoubleSelect.prototype.constructor = ZmEditContactViewInputDoubleSelect;
+
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ * @private
+ */
+ZmEditContactViewInputDoubleSelect.prototype.toString = function() {
+	return "ZmEditContactViewInputDoubleSelect";
+};
+
+// Data
+
+ZmEditContactViewInputDoubleSelect.prototype.TEMPLATE = "abook.Contacts#ZmEditContactViewInputDoubleSelect";
+
+// Public methods
+
+/**
+ * Sets the value.
+ * 
+ * @param	{Object}	value		the value
+ * @private
+ */
+ZmEditContactViewInputDoubleSelect.prototype.setValue = function(value) {
+	var hasOptions = this._options.length > 0;
+	var hasOptions2 = this._options2.length > 0;
+	var inputValue = hasOptions || hasOptions2 ? value && value.value : value;
+	if (hasOptions && this._select) {
+		this._select.setSelectedValue((value && value.type) || this._options[0].value);
+	}
+	if (hasOptions2 && this._select2) {
+		this._select2.setSelectedValue((value && value.type2) || this._options2[0].value);
+	}
+	if (this._input) {
+		if (this._select || this._select2)
+			this._input.setEnabled((this._select && this._select.getValue() != "_NONE") && (this._select2 && this._select2.getValue() != "_NONE"));
+		this._input.setValue(inputValue || "");
+	}
+};
+
+/**
+ * Gets the value.
+ * 
+ * @return	{Object}		the value
+ * @private
+ */
+ZmEditContactViewInputDoubleSelect.prototype.getValue = function() {
+	var hasOptions = this._options.length > 0;
+	var hasOptions2 = this._options2.length > 0;
+	var inputValue = this._input ? this._input.getValue() : "";
+	return hasOptions || hasOptions2 ? {
+		type: this._select ? this._select.getValue() : "",
+		type2: this._select2 ? this._select2.getValue() : "",
+		value: inputValue
+	} : inputValue;
+};
+
+/**
+ * Checks if the two items are equal.
+ * 
+ * @param	{Object}	a		item a
+ * @param	{Object}	b		item b
+ * 
+ * @private
+ */
+ZmEditContactViewInputDoubleSelect.equals = function(a, b) {
+	if (a === b) return true;
+	if (!a || !b) return false;
+	var hasOptions = this._options.length > 0;
+	var hasOptions2 = this._options2.length > 0;
+	if (hasOptions) {
+		if (a.type != b.type || a.value != b.value)
+			return false;
+	}
+	if (hasOptions2) {
+		if (a.type2 != b.type2 || a.value != b.value)
+			return false;
+	}
+	if (!hasOptions && !hasOptions2)
+		if (a != b)
+			return false;
+	return true;
+};
+
+// Hooks
+
+ZmEditContactViewInputDoubleSelect.prototype.enableOptions = function(enabled, enabled2) {
+	if (this._select && this._select.enableOption) {
+		var type = this.getValue().type;
+		for (var id in enabled) {
+			this._select.enableOption(id, id == type || enabled[id]);
+		}
+	}
+	if (this._select2 && this._select2.enableOption) {
+		var type = this.getValue().type2;
+		for (var id in enabled2) {
+			this._select2.enableOption(id, id == type || enabled2[id]);
+		}
+	}
+};
+
+// Protected methods
+
+ZmEditContactViewInputDoubleSelect.prototype._setControlIds = function(rowId, index) {
+	var id = this.getHTMLElId();
+	this._setControlId(this, id+"_value");
+	this._setControlId(this._input, id);
+	this._setControlId(this._select, id+"_select");
+	this._setControlId(this._select2, id+"_select2");
+};
+
+ZmEditContactViewInputDoubleSelect.prototype._setControlId = DwtFormRows.prototype._setControlId;
+
+
+ZmEditContactViewInputDoubleSelect.prototype._createHtmlFromTemplate = function(templateId, data) {
+	DwtComposite.prototype._createHtmlFromTemplate.apply(this, arguments);
+
+	var tabIndexes = this._tabIndexes;
+	var inputEl = document.getElementById(data.id+"_input");
+	if (inputEl) {
+		this._input = this._createInput();
+		this._input.replaceElement(inputEl);
+		if (inputEl.getAttribute("notab") != "true") {
+			tabIndexes.push({
+				tabindex: inputEl.getAttribute("tabindex") || Number.MAX_VALUE,
+				control: this._input
+			});
+		}
+	}
+
+	var selectEl = document.getElementById(data.id+"_select");
+	var hasOptions = this._options.length > 0;
+	if (hasOptions && selectEl) {
+		this._select = this._createSelect(this._options);
+		this._select.addChangeListener(new AjxListener(this, this._handleSelectChange));
+		this._select.replaceElement(selectEl);
+		if (selectEl.getAttribute("notab") != "true") {
+			tabIndexes.push({
+				tabindex: selectEl.getAttribute("tabindex") || Number.MAX_VALUE,
+				control: this._select
+			});
+		}
+		this._select.setVisible(this._options.length > 1);
+	}
+
+	var selectEl2 = document.getElementById(data.id+"_select2");
+	var hasOptions2 = this._options2.length > 0;
+	if (hasOptions2 && selectEl2) {
+		this._select2 = this._createSelect2(this._options2);
+		this._select2.addChangeListener(new AjxListener(this, this._handleSelectChange2));
+		this._select2.replaceElement(selectEl2);
+		if (selectEl2.getAttribute("notab") != "true") {
+			tabIndexes.push({
+				tabindex: selectEl.getAttribute("tabindex") || Number.MAX_VALUE,
+				control: this._select2
+			});
+		}
+		this._select2.setVisible(this._options2.length > 1);
+	}
+
+	if (this._input) {
+		if (this._select || this._select2)
+			this._input.setEnabled((this._select && this._select.getValue() != "_NONE") && (this._select2 && this._select2.getValue() != "_NONE"));
+	}
+};
+
+ZmEditContactViewInputDoubleSelect.prototype._createSelect = function(options) {
+	var id = [this.getHTMLElId(),"select"].join("_");
+	var select = new DwtSelect({parent:this,id:id});
+	for (var i = 0; i < options.length; i++) {
+		var option = options[i];
+		select.addOption(option.label || option.value, i == 0, option.value);
+	}
+	return select;
+};
+
+ZmEditContactViewInputDoubleSelect.prototype._createSelect2 = function(options) {
+	var id = [this.getHTMLElId(),"select2"].join("_");
+	var select = new DwtSelect({parent:this,id:id});
+	for (var i = 0; i < options.length; i++) {
+		var option = options[i];
+		select.addOption(option.label || option.value, i == 0, option.value);
+	}
+	return select;
+};
+
+
+
+ZmEditContactViewInputDoubleSelect.prototype._handleSelectChange = function(evt, skipFocus) {
+	var args = evt._args;
+	var adjust1 = this.parent._subtractType(args.oldValue);
+	var adjust2 = this.parent._addType(args.newValue);
+	if (adjust1 || adjust2) {
+		this.parent._adjustMaximums();
+	}
+	this.setDirty(true);
+	if (this._input) {
+		var enabled = this._select.getValue() != "_NONE";
+		this._input.setEnabled(enabled);
+		if (enabled && !skipFocus)
+			this._input.focus();
+	}
+};
+
+ZmEditContactViewInputDoubleSelect.prototype._handleSelectChange2 = function(evt, skipFocus) {
+	var args = evt._args;
+	var adjust1 = this.parent._subtractType(args.oldValue);
+	var adjust2 = this.parent._addType(args.newValue);
+	if (adjust1 || adjust2) {
+		this.parent._adjustMaximums();
+	}
+	this.setDirty(true);
+	if (this._input) {
+		var enabled = this._select2.getValue() != "_NONE";
+		this._input.setEnabled(enabled);
+		if (enabled && !skipFocus)
+			this._input.focus();
+	}
+};
+
 //
 // Class: ZmEditContactViewOther
 //
@@ -1796,9 +2076,9 @@ ZmEditContactViewOther.prototype._handleSelectChange = function(evt) {
  */
 ZmEditContactViewIM = function(params) {
 	if (arguments.length == 0) return;
-	ZmEditContactViewInputSelect.apply(this, arguments);
+	ZmEditContactViewInputDoubleSelect.apply(this, arguments);
 };
-ZmEditContactViewIM.prototype = new ZmEditContactViewInputSelect;
+ZmEditContactViewIM.prototype = new ZmEditContactViewInputDoubleSelect;
 ZmEditContactViewIM.prototype.constructor = ZmEditContactViewIM;
 
 /**
@@ -1818,13 +2098,33 @@ ZmEditContactViewIM.RE_VALUE = /^(.*?):\/\/(.*)$/;
 // Public methods
 
 ZmEditContactViewIM.prototype.setValue = function(value) {
-	var m = ZmEditContactViewIM.RE_VALUE.exec(value);
-	value = m ? { type:m[1],value:m[2] } : { type:"other",value:value };
-	ZmEditContactViewInputSelect.prototype.setValue.call(this, value);
+	var obj;
+	if (!value || value == "") {
+		obj = { type:"_NONE", value:"", type2: null };
+	} else {
+		var url = value.type ? value.value : value;
+		var m = ZmEditContactViewIM.RE_VALUE.exec(url);
+		obj = m ? { type:m[1], value:m[2], type2: value.type?value.type:null } : { type:"other",value:value, type2: value.type?value.type:null };
+	}
+	ZmEditContactViewInputDoubleSelect.prototype.setValue.call(this, obj);
 };
+
 ZmEditContactViewIM.prototype.getValue = function() {
-	var value = ZmEditContactViewInputSelect.prototype.getValue.call(this);
-	return [value.type, value.value].join("://");
+	var value = ZmEditContactViewInputDoubleSelect.prototype.getValue.call(this);
+	var url = value.type=="_NONE" ? "" : [value.type, value.value].join("://");
+	var obj = value.type2 ? {
+		type: value.type2,
+		value: url
+	} : url;
+	return obj;
+};
+
+ZmEditContactViewIM.equals = function(a,b) {
+	if (a === b) return true;
+	if (!a || !b) return false;
+	return a.type == b.type &&
+           a.type2 == b.type2 &&
+           a.value == b.value;
 };
 
 //
