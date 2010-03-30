@@ -471,9 +471,9 @@ function(attId, docIds, draftType, callback) {
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
-	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
+	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg, msg);
 	var resp = msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt);
-
+	
 	// XXX: temp bug fix #4325 - if resp returned, we're processing sync
 	//      request REVERT this bug fix once mozilla fixes bug #295422!
 	if (resp) {
@@ -490,6 +490,7 @@ function(draftType, msg, callback, result) {
 	if (callback) {
 		callback.run(result);
 	}
+	appCtxt.notifyZimlets("onSendMsgSuccess", [this, msg]);//notify Zimlets on success	
 };
 
 ZmComposeController.prototype._handleResponseCancelOrModifyAppt =
@@ -499,12 +500,13 @@ function() {
 };
 
 ZmComposeController.prototype._handleErrorSendMsg =
-function(ex) {
+function(msg, ex) {
 	this.resetToolbarOperations();
 	this._composeView.enableInputs(true);
 
+	appCtxt.notifyZimlets("onSendMsgFailure", [this, ex, msg]);//notify Zimlets on failure
 	if (!(ex && ex.code)) { return false; }
-
+	
 	var msg = null;
 	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
 		var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
