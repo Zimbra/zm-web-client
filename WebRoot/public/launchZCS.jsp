@@ -218,7 +218,7 @@ document.write("</DIV>");
 	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
 	<c:if test="${param.client ne 'advanced'}">
 		var enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
-		var unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari3up);
+		var unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari4up);
 		if (enforceMinDisplay && unsupported) {
 			switchToStandardClient();
 		}
