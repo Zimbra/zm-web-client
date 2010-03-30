@@ -133,16 +133,17 @@ function(ev) {
 			this._modifyContact(ev);
 			var contact = ev.item || ev._details.items[0];
 			if (contact instanceof ZmContact) {
-				this.setSelection(contact);
+				this.setSelection(contact, false, true);
 			}
 		} else if (ev.event == ZmEvent.E_CREATE) {
 			var newContact = ev._details.items[0];
 			var newFolder = appCtxt.getById(newContact.folderId);
 			var newFolderId = newFolder && (appCtxt.getActiveAccount().isMain ? newFolder.nId : newFolder.id);
+			var visible = ev.getDetail("visible");
 
 			// only add this new contact to the listview if this is a simple
 			// folder search and it belongs!
-			if (folderId && newFolder && folderId == newFolderId) {
+			if (folderId && newFolder && folderId == newFolderId && visible) {
 				var index = ev.getDetail("sortIndex");
 				if (index != null) {
 					this.addItem(newContact, index);
@@ -155,7 +156,10 @@ function(ev) {
 
 				// always select newly added contact if its been added to the
 				// current page of contacts
-				this.setSelection(newContact);
+				this.setSelection(newContact, false, true);
+			} else {
+				this.deselectAll();
+				this.setSelection(newContact, false, true);
 			}
 		} else if (ev.event == ZmEvent.E_DELETE) {
 			// bug fix #19308 - do house-keeping on controller's list so
@@ -167,6 +171,28 @@ function(ev) {
 		}
 	}
 };
+
+ZmContactsBaseView.prototype.setSelection =
+function(item, skipNotify, setPending) {
+	if (!item) { return; }
+
+	var el = this._getElFromItem(item);
+	if (el) {
+		ZmListView.prototype.setSelection.call(this, item, skipNotify);
+		this._pendingSelection = null;
+	} else if (setPending) {
+		this._pendingSelection = {item: item, skipNotify: skipNotify};
+	}
+};
+
+ZmContactsBaseView.prototype.addItems =
+function(itemArray) {
+	ZmListView.prototype.addItems.call(this, itemArray);
+	if (this._pendingSelection && AjxUtil.indexOf(itemArray, this._pendingSelection.item)!=-1) {
+		this.setSelection(this._pendingSelection.item, this._pendingSelection.skipNotify);
+	}
+}
+
 
 /**
  * @private

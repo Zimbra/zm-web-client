@@ -163,6 +163,38 @@ function(callback, result) {
 	}
 };
 
+ZmContactList.prototype.add = 
+function(item, index) {
+	if (!item.id || !this._idHash[item.id]) {
+		this._vector.add(item, index);
+		if (item.id) {
+			this._idHash[item.id] = item;
+		}
+	}
+};
+
+ZmContactList.prototype.cache = 
+function(offset, newList) {
+	var getId = function(){
+		return this.id;
+	}
+	var exists = function(obj) {
+		return this._vector.containsLike(obj, getId);
+	}
+	var unique = newList.sub(exists, this);
+
+	this.getVector().merge(offset, unique);
+	// reparent each item within new list, and add it to ID hash
+	var list = unique.getArray();
+	for (var i = 0; i < list.length; i++) {
+		var item = list[i];
+		item.list = this;
+		if (item.id) {
+			this._idHash[item.id] = item;
+		}
+	}
+};
+
 /**
  * @private
  */
@@ -514,11 +546,13 @@ function(node) {
 		var index = this._sortIndex(item);
 		// only add if it sorts into this list
 		var listSize = this.size();
-		if (index < listSize || listSize == 0) {
+		var visible = false;
+		if (index < listSize || listSize == 0 || (index==listSize && !this._hasMore)) {
 			this.add(item, index);
 			this.createLocal(item);
-			this._notify(ZmEvent.E_CREATE, {items: [item], sortIndex:index});
+			visible = true;
 		}
+		this._notify(ZmEvent.E_CREATE, {items: [item], sortIndex: index, visible: visible});
 	}
 };
 
@@ -582,7 +616,11 @@ function(item, details) {
 	// place in correct position in list
 	if (details.fileAsChanged) {
 		this.remove(contact);
-		this.add(contact, this._sortIndex(contact));
+		var index = this._sortIndex(contact);
+		var listSize = this.size();
+		if (index < listSize || listSize == 0 || (index == listSize && !this._hasMore)) {
+			this.add(contact, index);
+		}
 	}
 
 	// reset addrbook property

@@ -45,6 +45,8 @@ ZmContactListController = function(container, contactsApp) {
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 
+	this._listChangeListener = new AjxListener(this, this._handleListChange);
+
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
 	this._listeners[ZmOperation.PRINT_CONTACT] = new AjxListener(this, this._printContactListener);
@@ -498,6 +500,8 @@ function(view) {
 ZmContactListController.prototype._setViewContents =
 function(view) {
 	DBG.timePt("setting list");
+	this._list.removeChangeListener(this._listChangeListener);
+	this._list.addChangeListener(this._listChangeListener);
 	this._listView[view].set(this._list, null, this._folderId);
 	DBG.timePt("done setting list");
 };
@@ -579,6 +583,15 @@ function(ev) {
     }
 };
 
+ZmContactListController.prototype._handleListChange =
+function(ev) {
+	if (ev.event == ZmEvent.E_MODIFY || ev.event == ZmEvent.E_CREATE) {
+		item = ev && ev._details && ev._details.items && ev._details.items.length && ev._details.items[0];
+		if (item instanceof ZmContact && this._currentView == ZmId.VIEW_CONTACT_SIMPLE) {
+			this._parentView[this._currentView].setContact(item, this.isGalSearch());
+		}
+	}
+};
 
 /**
  * Create menu for View button and add listeners.
