@@ -379,7 +379,7 @@ function(pref, value, list) {
 	}
 
 	var values = AjxUtil.map(settings, function(setting) { return appCtxt.get(setting); });
-	var key = values.join("|");
+	var key = (values[0] == ZmSetting.INC_NONE || values[0] == ZmSetting.INC_ATTACH) ? values[0] : values.join("|");
 	var newValue = ZmMailApp.INC_MAP_REV[key];
 	var prefToChange = appCtxt.getSettings().getSetting(mainSetting);
 	prefToChange.setValue(newValue);
