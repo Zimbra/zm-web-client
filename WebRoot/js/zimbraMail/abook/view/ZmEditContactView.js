@@ -226,7 +226,7 @@ ZmEditContactView.prototype.getPhoneOptions = function() {
  * 
  * @return	{Array}	an array of IM options
  */
-ZmEditContactView.prototype.getIMOptions = function() {
+ZmEditContactView.prototype.getIMOptions2 = function() {
 	return [
 		{ value: "local", label: ZmMsg.imGateway_xmpp },
 		{ value: "yahoo", label: ZmMsg.imGateway_yahoo },
@@ -236,7 +236,7 @@ ZmEditContactView.prototype.getIMOptions = function() {
 	];
 };
 
-ZmEditContactView.prototype.getIMOptions2 = function() {
+ZmEditContactView.prototype.getIMOptions = function() {
 	return [
 		/*{ value: ZmContact.F_imAddress, label: ZmMsg.AB_FIELD_imAddress },*/
 		{ value: ZmContact.F_imAddress1, label: ZmMsg.AB_FIELD_imAddress1 },
@@ -1184,7 +1184,7 @@ ZmEditContactViewRows.prototype.isAllMaxedOut = function() {
 		count += this.isMaxedOut(type) ? 1 : 0;
 	}
 	// are all of the options maxed out?
-	return count == this._options.length;
+	return count >= this._options.length;
 };
 
 //
@@ -1559,7 +1559,11 @@ ZmEditContactViewInputSelect.prototype._createSelect = function(options) {
 	var select = new DwtSelect({parent:this,id:id});
 	for (var i = 0; i < options.length; i++) {
 		var option = options[i];
-		select.addOption(option.label || option.value, i == 0, option.value);
+		var maxedOut = this.parent.isMaxedOut(option.value);
+		select.addOption(option.label || option.value, i == 0 && !maxedOut, option.value);
+		if (maxedOut) {
+			select.enableOption(option.value, false);
+		}
 	}
 	return select;
 };
@@ -1615,6 +1619,18 @@ ZmEditContactViewInputSelect.prototype.getTabGroupMember = function() {
 ZmEditContactViewInputDoubleSelectRows = function(params) {
 	if (arguments.length == 0) return;
 	ZmEditContactViewInputSelectRows.apply(this, arguments);
+
+	var rowitem = params.formItemDef.rowitem;
+	var rowparams = rowitem && rowitem.params;
+	var rowoptions2 = this._options2 = (rowparams && rowparams.options2) || [];
+	for (var i = 0; i < rowoptions2.length; i++) {
+		var option = rowoptions2[i];
+		if (option.max) {
+			if (!this._maximums2) this._maximums2 = {};
+			this._maximums2[option.value] = { max: option.max, count: 0 };
+		}
+	}
+
 };
 ZmEditContactViewInputDoubleSelectRows.prototype = new ZmEditContactViewInputSelectRows;
 ZmEditContactViewInputDoubleSelectRows.prototype.constructor = ZmEditContactViewInputDoubleSelectRows;
@@ -1627,6 +1643,141 @@ ZmEditContactViewInputDoubleSelectRows.prototype.constructor = ZmEditContactView
  */
 ZmEditContactViewInputDoubleSelectRows.prototype.toString = function() {
 	return "ZmEditContactViewInputDoubleSelectRows";
+};
+
+ZmEditContactViewInputDoubleSelectRows.prototype._subtract = function(indexOrId) {
+	var value = this.getValue(indexOrId);
+	var a = this._subtractType(value && value.type);
+	var b = this._subtractType2(value && value.type2);
+	return a && b;
+};
+ZmEditContactViewInputDoubleSelectRows.prototype._subtractType2 = function(type) {
+	if (!this._maximums2 || !this._maximums2[type]) return false;
+	this._maximums2[type].count--;
+	return true;
+};
+ZmEditContactViewInputDoubleSelectRows.prototype._add = function(indexOrId) {
+	var value = this.getValue(indexOrId);
+	var a = this._addType(value && value.type);
+	var b = this._addType2(value && value.type2);
+	return a || b;
+};
+ZmEditContactViewInputDoubleSelectRows.prototype._addType2 = function(type) {
+	if (!this._maximums2 || !this._maximums2[type]) return false;
+	this._maximums2[type].count++;
+	return true;
+};
+
+ZmEditContactViewInputDoubleSelectRows.prototype._adjustMaximums = function() {
+	ZmEditContactViewInputSelectRows.prototype._adjustMaximums.call(this);
+	if (!this._maximums2 || !this._options2) return;
+	// determine which ones are maxed out
+	var enabled = {};
+	var count = 0;
+	for (var i = 0; i < this._options2.length; i++) {
+		var type = this._options2[i].value;
+		var maxed = this.isMaxedOut2(type);
+		enabled[type] = !maxed;
+		count += maxed ? 1 : 0;
+	}
+	// are all of the options maxed out?
+	var allMaxed = count == this._options2.length;
+	// en/disable controls as needed
+	var rowCount = this.getRowCount();
+	for (var i = 0; i < rowCount; i++) {
+		var control = this.getControl(i);
+		if (control.enableOptions) {
+			control.enableOptions(enabled);
+		}
+		// TODO: Will this override the max rows add button visibility?
+		this.setVisible(this._items[i]._addId, !allMaxed);
+	}
+};
+
+// TODO: This is a hack to avoid bad counting error. Should
+// TODO: really find the cause of the error.
+ZmEditContactViewInputDoubleSelectRows.prototype._resetMaximums = function() {
+	ZmEditContactViewInputSelectRows.prototype._resetMaximums.call(this);
+	if (!this._maximums2) return;
+	for (var type in this._maximums2) {
+		this._maximums2[type].count = 0;
+	}
+	var rowCount = this.getRowCount();
+	for (var i = 0; i < rowCount; i++) {
+		var value = this.getValue(i);
+		var maximum = this._maximums2[value && value.type2];
+		if (maximum) {
+			maximum.count++;
+		}
+	}
+};
+
+ZmEditContactViewInputDoubleSelectRows.prototype.addRow = function(itemDef, index) {
+	DwtFormRows.prototype.addRow.apply(this, arguments);
+	index = index != null ? index : this.getRowCount() - 1;
+	var adjust = this._add(index);
+	if (adjust) this._adjustMaximums();
+	var value = this.getValue(index);
+	// select first one that is not maxed out
+
+	var typeChanged = false;
+	if (value && this.isMaxedOut(value.type) && this._options.length > 0 && 
+	    this._maximums[value.type].count > this._maximums[value.type].max) {
+		var options = this._options;
+		for (var i = 0; i < options.length; i++) {
+			var option = options[i];
+			if (!this.isMaxedOut(option.value)) {
+				value.type = option.value;
+				typeChanged = true;
+				break;
+			}
+		}
+	}
+
+	if (value && this.isMaxedOut2(value.type2) && this._options2.length > 0 && 
+	    this._maximums2[value.type2].count > this._maximums2[value.type2].max) {
+		var options = this._options2;
+		for (var i = 0; i < options.length; i++) {
+			var option = options[i];
+			if (!this.isMaxedOut2(option.value)) {
+				value.type2 = option.value;
+				typeChanged = true;
+				break;
+			}
+		}
+	}
+	if (typeChanged)
+		this.setValue(index, value);
+
+	if (this._rowCount >= this._maxRows) {
+		for (var i = 0; i < this._rowCount; i++) {
+			this.setVisible(this._items[i]._addId, false);
+		}
+	}
+};
+
+ZmEditContactViewInputDoubleSelectRows.prototype.isMaxedOut2 = function(type) {
+	var maximums = this._maximums2 && this._maximums2[type];
+	return maximums != null && maximums.count >= maximums.max;
+};
+
+/**
+ * Checks if all rows are at maximum.
+ * 
+ * @return	{Boolean}	<code>true</code> if at maximum
+ * @private
+ */
+ZmEditContactViewInputDoubleSelectRows.prototype.isAllMaxedOut = function() {
+	if (ZmEditContactViewInputSelectRows.prototype.isAllMaxedOut.call(this)) return true;
+	if (!this._options2 || this._options2.length == 0) return false;
+	// determine which ones are maxed out
+	var count = 0;
+	for (var i = 0; i < this._options2.length; i++) {
+		var type = this._options2[i].value;
+		count += this.isMaxedOut2(type) ? 1 : 0;
+	}
+	// are all of the options maxed out?
+	return count >= this._options2.length;
 };
 
 //
@@ -1818,16 +1969,6 @@ ZmEditContactViewInputDoubleSelect.prototype._createHtmlFromTemplate = function(
 	}
 };
 
-ZmEditContactViewInputDoubleSelect.prototype._createSelect = function(options) {
-	var id = [this.getHTMLElId(),"select"].join("_");
-	var select = new DwtSelect({parent:this,id:id});
-	for (var i = 0; i < options.length; i++) {
-		var option = options[i];
-		select.addOption(option.label || option.value, i == 0, option.value);
-	}
-	return select;
-};
-
 ZmEditContactViewInputDoubleSelect.prototype._createSelect2 = function(options) {
 	var id = [this.getHTMLElId(),"select2"].join("_");
 	var select = new DwtSelect({parent:this,id:id});
@@ -1838,8 +1979,6 @@ ZmEditContactViewInputDoubleSelect.prototype._createSelect2 = function(options) 
 	return select;
 };
 
-
-
 ZmEditContactViewInputDoubleSelect.prototype._handleSelectChange = function(evt, skipFocus) {
 	var args = evt._args;
 	var adjust1 = this.parent._subtractType(args.oldValue);
@@ -1849,7 +1988,7 @@ ZmEditContactViewInputDoubleSelect.prototype._handleSelectChange = function(evt,
 	}
 	this.setDirty(true);
 	if (this._input) {
-		var enabled = this._select.getValue() != "_NONE";
+		var enabled = this._select.getValue() != "_NONE" && this._select2.getValue() != "_NONE";
 		this._input.setEnabled(enabled);
 		if (enabled && !skipFocus)
 			this._input.focus();
@@ -1858,14 +1997,14 @@ ZmEditContactViewInputDoubleSelect.prototype._handleSelectChange = function(evt,
 
 ZmEditContactViewInputDoubleSelect.prototype._handleSelectChange2 = function(evt, skipFocus) {
 	var args = evt._args;
-	var adjust1 = this.parent._subtractType(args.oldValue);
-	var adjust2 = this.parent._addType(args.newValue);
+	var adjust1 = this.parent._subtractType2(args.oldValue);
+	var adjust2 = this.parent._addType2(args.newValue);
 	if (adjust1 || adjust2) {
 		this.parent._adjustMaximums();
 	}
 	this.setDirty(true);
 	if (this._input) {
-		var enabled = this._select2.getValue() != "_NONE";
+		var enabled = this._select.getValue() != "_NONE" && this._select2.getValue() != "_NONE";
 		this._input.setEnabled(enabled);
 		if (enabled && !skipFocus)
 			this._input.focus();
@@ -2100,20 +2239,21 @@ ZmEditContactViewIM.RE_VALUE = /^(.*?):\/\/(.*)$/;
 ZmEditContactViewIM.prototype.setValue = function(value) {
 	var obj;
 	if (!value || value == "") {
-		obj = { type:"_NONE", value:"", type2: null };
+		obj = { type2:"_NONE", value:"", type: null };
 	} else {
 		var url = value.type ? value.value : value;
 		var m = ZmEditContactViewIM.RE_VALUE.exec(url);
-		obj = m ? { type:m[1], value:m[2], type2: value.type?value.type:null } : { type:"other",value:value, type2: value.type?value.type:null };
+		obj = m ? { type2:m[1], value:m[2], type: value.type?value.type:null } : { type2: value.type2 || "other", value: url, type: value.type ? value.type : null };
 	}
 	ZmEditContactViewInputDoubleSelect.prototype.setValue.call(this, obj);
 };
 
 ZmEditContactViewIM.prototype.getValue = function() {
 	var value = ZmEditContactViewInputDoubleSelect.prototype.getValue.call(this);
-	var url = value.type=="_NONE" ? "" : [value.type, value.value].join("://");
+	var url = (value.type2=="_NONE" || value.value=="") ? "" : [value.type2, value.value].join("://");
 	var obj = value.type2 ? {
-		type: value.type2,
+		type: value.type,
+		type2: value.type2,
 		value: url
 	} : url;
 	return obj;
