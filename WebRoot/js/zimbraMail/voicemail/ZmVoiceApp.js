@@ -363,6 +363,7 @@ function(folder, callback, response) {
 	vc.show(searchResult, folder);
 
 	// setup the overview container now that the app has been activated
+	this.getOverviewContainer();
 	if (!this._overviewContainer.initialized) {
 		var overviewParams = this._getOverviewParams();
 		overviewParams.overviewTrees = this._getOverviewTrees();

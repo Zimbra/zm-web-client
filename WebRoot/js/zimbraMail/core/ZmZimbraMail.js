@@ -2432,10 +2432,16 @@ function(appName) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = upsellView;
 	var viewName = [appName, "upsell"].join("_");
-	this._appViewMgr.createView({viewId:viewName, appName:appName, elements:elements, isTransient:true});
+	var callbacks = {}
+	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._displayUpsellView);
+	this._appViewMgr.createView({viewId:viewName, appName:appName, elements:elements, isTransient:true, callbacks:callbacks});
 	this._appViewMgr.pushView(viewName);
-    var title = [ZmMsg.zimbraTitle, appName].join(": ");
-    Dwt.setTitle(title);
+};
+
+ZmZimbraMail.prototype._displayUpsellView =
+function(appName) {
+	var title = [ZmMsg.zimbraTitle, appName].join(": ");
+	Dwt.setTitle(title);
 	appCtxt.getApp(this._getDefaultStartAppName()).setOverviewPanelContent(false);
 };
 
