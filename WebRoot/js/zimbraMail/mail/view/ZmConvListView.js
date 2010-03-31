@@ -254,6 +254,28 @@ function(item, params) {
 	}
 };
 
+//apply colors to from and subject cells via zimlet
+ZmConvListView.prototype._getStyleViaZimlet =
+function(field, item) {
+	if (field != "fr" && field != "su" && field != "st")
+		return "";
+
+	if (appCtxt.zimletsPresent() && this._ignoreProcessingGetMailCellStyle == undefined) {
+		if (!this._zimletMgr) {
+			this._zimletMgr = appCtxt.getZimletMgr();//cache zimletMgr
+		}
+		var style = this._zimletMgr.processARequest("getMailCellStyle", item, field);
+		if (style != undefined && style != null) {
+			return style;//set style
+		} else if (style == null && this._zimletMgr.isLoaded()) {
+			//zimlet not available or disabled, set _ignoreProcessingGetMailCellStyle to true
+			//to ignore this entire section for this session
+			this._ignoreProcessingGetMailCellStyle = true;
+		}
+	}
+	return "";
+};
+
 ZmConvListView.prototype._getCell =
 function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_SORTED_BY && item.type == ZmItem.MSG) {
@@ -355,7 +377,9 @@ function(item, colIdx) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, width, "align=right");
 	} else {
 		var exWidth = (item.type == ZmItem.MSG) ? width : (width+15);
-		htmlArr[idx++] = "<td width='" + exWidth + "'></td>";
+		htmlArr[idx++] = "<td width='" + exWidth + "'";
+		htmlArr[idx++] = this._getStyleViaZimlet(ZmItem.F_FROM, item);
+		htmlArr[idx++] = "></td>";
 	}
 
 	// for multi-account, show the account icon for cross mbox search results
