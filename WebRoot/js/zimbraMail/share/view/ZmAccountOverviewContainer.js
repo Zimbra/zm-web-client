@@ -830,7 +830,14 @@ function(menuItems) {
 		actionMenu.addSelectionListener(op, listener);
 	}
 
+	actionMenu.addPopdownListener(new AjxListener(this, this._menuPopdownActionListener));
+
 	return actionMenu;
+};
+
+ZmAccountOverviewContainer.prototype._menuPopdownActionListener =
+function() {
+	this._actionedHeaderItem._setActioned(false);
 };
 
 ZmAccountOverviewContainer.prototype._actionMenuListener =
