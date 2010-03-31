@@ -473,6 +473,7 @@
 		label: ZmMsg.emailLabel
 	};
 	var names = ZmEditContactView.LISTS.EMAIL.attrs;
+	itemlistdata.names = names;
 	for (var i = 0; i < names.length; i++) {
 		itemlistdata.name = names[i];
 		itemlistdata.type = ZmMsg["AB_FIELD_"+names[i]]; $>
@@ -489,6 +490,7 @@
 		label: ZmMsg.phoneLabel
 	};
 	var names = ZmEditContactView.LISTS.PHONE.attrs;
+	itemlistdata.names = names;
 	for (var i = 0; i < names.length; i++) {
 		itemlistdata.name = names[i];
 		itemlistdata.type = ZmMsg["AB_FIELD_"+names[i]]; $>
@@ -504,6 +506,7 @@
 		label: ZmMsg.imLabel
 	};
 	var names = ZmEditContactView.LISTS.IM.attrs;
+	itemlistdata.names = names;
 	for (var i = 0; i < names.length; i++) {
 		itemlistdata.name = names[i];
 		itemlistdata.type = ZmMsg["AB_FIELD_"+names[i]]; $>
@@ -586,6 +589,7 @@
 	types[ZmContact.F_workURL] = ZmMsg.work;
 	types[ZmContact.F_otherURL] = ZmMsg.other;
 	var names = ZmEditContactView.LISTS.URL.attrs;
+	itemlistdata.names = names;
 	for (var i = 0; i < names.length; i++) {
 		var name = names[i]; 
 		itemlistdata.name = name;
@@ -603,6 +607,7 @@
 		label: ZmMsg.otherLabel
 	};
 	var names = ZmEditContactView.LISTS.OTHER.attrs;
+	itemlistdata.names = names;
 	for (var i = 0; i < names.length; i++) {
 		var name = names[i];
 		itemlistdata.name = name;
@@ -656,7 +661,8 @@
 		encode: AjxStringUtil.nl2br,
 		seenone: false,
 		label: ZmMsg.notesLabel,
-		name: ZmContact.F_notes
+		name: ZmContact.F_notes,
+		names: [ZmContact.F_notes]
 	};
 	$>
 	<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
@@ -669,6 +675,7 @@
 	var i = 0;
 	while (true) {
 		var name = ++i > 1 || ZmContact.IS_ADDONE[data.name] ? data.name+i : data.name;
+		if (name != data.name && data.names && AjxUtil.indexOf(data.names,name)!=-1) break;
 		var value = data.attrs[name];
 		if (!value) break;
 		if (!isEmail) {

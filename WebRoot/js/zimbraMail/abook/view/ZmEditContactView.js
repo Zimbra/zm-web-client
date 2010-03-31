@@ -857,6 +857,7 @@ function(nattrs,id,prefixes,onlyvalue,listAttrs,skipSetValue) {
 		var prefix = prefixes[j];
 		for (var i = 1; true; i++) {
 			var a = ZmContact.getAttributeName(prefix, i);
+			if (a != prefix && AjxUtil.indexOf(prefixes, a) != -1) break;
 			var value = nattrs[a];
 			if (!value) break;
 			array.push(onlyvalue ? value : { type:prefix,value:value });
