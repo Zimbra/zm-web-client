@@ -1766,7 +1766,9 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
-					<div id='${id}_SHORTCUT_PRINT' style='float:right;'></div>
+					<div align="right">
+						<div id='${id}_SHORTCUT_PRINT' style='width:80px;'></div>
+					</div>
 					<div id='${id}_SHORTCUT_LIST'></div>
 				</td>
 			</tr>
