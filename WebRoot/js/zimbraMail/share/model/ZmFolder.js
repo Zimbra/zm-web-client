@@ -413,11 +413,13 @@ function(obj, elementType, skipNotify) {
 
 	var account = ZmOrganizer.parseId(obj.id).account;
 	var folder = ZmFolderTree.createFromJs(this, obj, this.tree, elementType, null, account);
-	var index = ZmOrganizer.getSortIndex(folder, eval(ZmTreeView.COMPARE_FUNC[this.type]));
-	this.children.add(folder, index);
+	if (folder) {
+		var index = ZmOrganizer.getSortIndex(folder, eval(ZmTreeView.COMPARE_FUNC[this.type]));
+		this.children.add(folder, index);
 
-	if (!skipNotify) {
-		folder._notify(ZmEvent.E_CREATE);
+		if (!skipNotify) {
+			folder._notify(ZmEvent.E_CREATE);
+		}
 	}
 };
 

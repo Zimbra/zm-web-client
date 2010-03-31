@@ -263,13 +263,19 @@ function(id) {
 ZmItem.prototype.getAccount =
 function() {
 	if (!this.account) {
+		var account;
+
 		if (this.folderId) {
 			var ac = window.parentAppCtxt || window.appCtxt;
-			this.account = ac.getById(this.folderId).getAccount();
-		} else {
-			var parsed = ZmOrganizer.parseId(this.id);
-			this.account = parsed && parsed.account;
+			var folder = ac.getById(this.folderId);
+			account = folder && folder.getAccount();
 		}
+
+		if (!account) {
+			var parsed = ZmOrganizer.parseId(this.id);
+			account = parsed && parsed.account;
+		}
+		this.account = account;
 	}
 	return this.account;
 };

@@ -1186,7 +1186,6 @@ function(creates, type, items, currList, sortBy, convs) {
 			this._maxEntries = mlv && mlv.calculateMaxEntries();
 		}
 		if (this.numEntries > this._maxEntries) {
-			result.hasMore = true;
 			return result;
 		}
 	}

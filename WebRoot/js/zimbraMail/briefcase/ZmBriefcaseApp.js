@@ -215,7 +215,7 @@ function(creates, force) {
 
 	for (var name in creates) {
 		var list = creates[name];
-		for (var i = 0; i < list.length; i++) {
+		for (var i = 0; (list != null) && i < list.length; i++) {
 			var create = list[i];
 			if (appCtxt.cacheGet(create.id)) { continue; }
 
