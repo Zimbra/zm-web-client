@@ -354,7 +354,8 @@ function(params) {
 			} else if (numItems >= ZmTreeView.MAX_ITEMS * 2) {
 				// add placeholder tree item "Show remaining folders"
 				var orgs = ZmMsg[ZmOrganizer.LABEL[this.type]].toLowerCase();
-				child = new ZmFolder({id:ZmFolder.ID_LOAD_FOLDERS, name:AjxMessageFormat.format(ZmMsg.showRemainingFolders, orgs)});
+				var name = AjxMessageFormat.format(ZmMsg.showRemainingFolders, orgs);
+				child = new ZmFolder({id:ZmFolder.ID_LOAD_FOLDERS, name:name, parent:org});
 				child._tooltip = AjxMessageFormat.format(ZmMsg.showRemainingFoldersTooltip, [(children.length - i), orgs]);
 				var ti = this._addNew(parentNode, child);
 				ti.enableSelection(true);
@@ -406,9 +407,11 @@ function(parentNode, organizer, index, noTooltips, omit) {
 		if (!parentNode) {
 			var stack = [];
 			var parentOrganizer = organizer.parent;
-			while ((parentNode = this.getTreeItemById(parentOrganizer.id)) == null) {
-				stack.push(parentOrganizer);
-				parentOrganizer = parentOrganizer.parent;
+			if (parentOrganizer) {
+				while ((parentNode = this.getTreeItemById(parentOrganizer.id)) == null) {
+					stack.push(parentOrganizer);
+					parentOrganizer = parentOrganizer.parent;
+				}
 			}
 			while (parentOrganizer = stack.pop()) {
 				parentNode = this.getTreeItemById(parentOrganizer.parent.id);
