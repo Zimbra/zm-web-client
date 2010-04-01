@@ -1818,7 +1818,7 @@ function(action, msg, extraBodyText) {
 	var sigPre = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig : "";
 	extraBodyText = extraBodyText || "";
 	var preText = extraBodyText + sigPre;
-	if (extraBodyText && !sigPre) {
+	if (preText) {
 		preText += crlf;
 	}
 
@@ -1845,7 +1845,7 @@ function(action, msg, extraBodyText) {
 			}
 		}
 		cancelledParts.push(crlf + ZmItem.NOTES_SEPARATOR);
-		value += crlf2 + cancelledParts.join("");
+		value += crlf + cancelledParts.join("");
 	} else if (incOptions.what == ZmSetting.INC_NONE) {
 		value = preText;
 	} else if (incOptions.what == ZmSetting.INC_ATTACH) {
@@ -1853,6 +1853,7 @@ function(action, msg, extraBodyText) {
 		this._msgAttId = this._msg.id;
 	} else {
 		var preface = this._getPreface();
+		var divider = htmlMode ? preface : preface + crlf;
 		var leadingSpace = sigPre ? "" : crlf2;
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
 		wrapParams.preserveReturns = true;
@@ -1863,18 +1864,18 @@ function(action, msg, extraBodyText) {
 				var headerText = headers.length ? headers.join(crlf) + crlf2 : "";
 				wrapParams.text = isDraft ? body : headerText + body;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
-				value = leadingSpace + preText + preface + crlf + bodyText;
+				value = leadingSpace + preText + divider + bodyText;
 			} else {
 				var headerText = "";
 				if (headers.length) {
 					wrapParams.text = headers.join(crlf);
 					wrapParams.len = 120; // headers tend to be longer
-					headerText = crlf + AjxStringUtil.wordWrap(wrapParams);
+					headerText = AjxStringUtil.wordWrap(wrapParams) + crlf;
 				}
 				wrapParams.text = body;
 				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
-				value = leadingSpace + preText + preface + crlf + headerText + crlf + bodyText;
+				value = leadingSpace + preText + divider + headerText + bodyText;
 			}
 		} else if (incOptions.what == ZmSetting.INC_SMART) {
 			var chunks = AjxStringUtil.getTopLevel(body);
@@ -1889,18 +1890,18 @@ function(action, msg, extraBodyText) {
 				var headerText = headers.length ? headers.join(crlf) + crlf2 : "";
 				wrapParams.text = isDraft ? body : headerText + body;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
-				value = leadingSpace + preText + preface + crlf + bodyText;
+				value = leadingSpace + preText + divider + bodyText;
 			} else {
 				var headerText = "";
 				if (headers.length) {
 					wrapParams.text = headers.join(crlf);
 					wrapParams.len = 120; // headers tend to be longer
-					headerText = crlf + AjxStringUtil.wordWrap(wrapParams);
+					headerText = AjxStringUtil.wordWrap(wrapParams) + crlf;
 				}
 				wrapParams.text = body;
 				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
-				value = leadingSpace + preText + preface + crlf + headerText + crlf + bodyText;
+				value = leadingSpace + preText + divider + headerText + bodyText;
 			}
 		}
 	}
