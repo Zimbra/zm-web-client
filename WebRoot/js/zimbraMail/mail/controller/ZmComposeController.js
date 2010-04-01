@@ -1344,12 +1344,14 @@ function(op) {
 
 	var menu = this._optionsMenu[this._action];
 	if (op == ZmOperation.USE_PREFIX || op == ZmOperation.INCLUDE_HEADERS) {
-	   var mi = menu.getOp(op);
-	   if (op == ZmOperation.USE_PREFIX) {
-		   this._curIncOptions.prefix = mi.getChecked();
-	   } else {
-		   this._curIncOptions.headers = mi.getChecked();
-	   }
+		var mi = menu.getOp(op);
+		if (mi) {
+			if (op == ZmOperation.USE_PREFIX) {
+				this._curIncOptions.prefix = mi.getChecked();
+			} else {
+				this._curIncOptions.headers = mi.getChecked();
+			}
+		}
 	} else if (ZmComposeController.INC_MAP[op]) {
 		this._curIncOptions.what = ZmComposeController.INC_MAP[op];
 	}
