@@ -860,7 +860,8 @@ function() {
 
 	// the way multi-account searches are done, we set the queryHint *only* so
 	// set the folderId if it exists for simple multi-account searches
-	if (!hasOrTerm || (this.isMultiAccount() && !this.query && this.queryHint)) {
+	var isMultiAccountSearch = (appCtxt.multiAccounts && this.isMultiAccount() && !this.query && this.queryHint);
+	if (!hasOrTerm || isMultiAccountSearch) {
 		this.folderId = folderId;
 		this.tagId = tagId;
 	}
