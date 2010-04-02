@@ -857,7 +857,10 @@ function() {
 	}
 
 	this.numTerms = tokens.length;
-	if (!hasOrTerm) {
+
+	// the way multi-account searches are done, we set the queryHint *only* so
+	// set the folderId if it exists for simple multi-account searches
+	if (!hasOrTerm || (this.isMultiAccount() && !this.query && this.queryHint)) {
 		this.folderId = folderId;
 		this.tagId = tagId;
 	}
