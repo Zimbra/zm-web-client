@@ -42,7 +42,6 @@ ZmMailApp = function(container, parentController) {
 	this._dataSourceCollection	= {};
 	this._identityCollection	= {};
 	this._signatureCollection	= {};
-	this._groupBy				= {};
 
 	this.numEntries				= 0; // offline, initial sync
 
@@ -164,7 +163,7 @@ function(settings) {
 	settings.registerSetting("FORWARD_MENU_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("FORWARD_USE_PREFIX",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("GET_MAIL_ACTION",					{name:"zimbraPrefGetMailAction", type:ZmSetting.T_PREF, defaultValue:ZmSetting.GETMAIL_ACTION_DEFAULT, isGlobal:true});
-	settings.registerSetting("GROUP_MAIL_BY",					{name:"zimbraPrefGroupMailBy", type:ZmSetting.T_PREF, defaultValue:ZmSetting.GROUP_BY_MESSAGE, isImplicit:true});
+	settings.registerSetting("GROUP_MAIL_BY",					{name:"zimbraPrefGroupMailBy", type:ZmSetting.T_PREF, defaultValue:ZmSetting.GROUP_BY_MESSAGE, isImplicit:true, isGlobal:true});
 	settings.registerSetting("HTML_SIGNATURE_ENABLED",			{type:ZmSetting.T_PREF,dataType:ZmSetting.D_BOOLEAN,defaultValue:true});
 	settings.registerSetting("IDENTITIES_ENABLED",				{name:"zimbraFeatureIdentitiesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("INITIAL_SEARCH",					{name:"zimbraPrefMailInitialSearch", type:ZmSetting.T_PREF, defaultValue:"in:inbox"});
@@ -1332,7 +1331,7 @@ ZmMailApp.prototype.launch =
 function(params, callback) {
 
 	// set type for initial search
-	this._groupBy[appCtxt.getActiveAccount().name] = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 
 	var query;
 	params = params || {};
@@ -1490,7 +1489,6 @@ function(results, callback) {
 ZmMailApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
 	var controller = (results.type == ZmItem.MSG) ? this.getTradController() : this.getConvListController();
-	this.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[controller._getViewType()]);
 	controller.show(results);
 	if (this._forceMsgView) {
 		controller.selectFirstItem();
@@ -1775,14 +1773,13 @@ function(organizer) {
  */
 ZmMailApp.prototype.getGroupMailBy =
 function() {
-	var groupBy = this._groupBy[appCtxt.getActiveAccount().name];
-	var setting = groupBy || appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	var setting = this._groupBy || appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	return setting ? ZmMailApp.GROUP_MAIL_BY_ITEM[setting] : ZmItem.MSG;
 };
 
 ZmMailApp.prototype.setGroupMailBy =
 function(groupBy) {
-	this._groupBy[appCtxt.getActiveAccount().name] = groupBy;
+	this._groupBy = groupBy;
 	appCtxt.set(ZmSetting.GROUP_MAIL_BY, groupBy);
 };
 

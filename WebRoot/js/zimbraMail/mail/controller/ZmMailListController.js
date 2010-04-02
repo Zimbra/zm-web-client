@@ -154,12 +154,19 @@ function(view, force) {
 		if (appCtxt.multiAccounts) {
 			delete this._showingAccountColumn;
 		}
-		if (view == this._currentView && !force) { return; }
+
+		var localGroupBy = ZmMailListController.GROUP_BY_SETTING[view];
+		var appGroupBy = this._app._groupBy[appCtxt.getActiveAccount().name];
+		if (localGroupBy && (localGroupBy != appGroupBy)) {
+			this._app.setGroupMailBy(localGroupBy);
+		} else if (!force) {
+			return;
+		}
 
 		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
 		var limit = this._listView[this._currentView].getLimit();
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-		var groupByItem = ZmMailListController.GROUP_BY_ITEM[view];
+		var groupByItem = this._app.getGroupMailBy();
 		var params = {types:[groupByItem], offset:0, limit:limit, sortBy:sortBy, getHtml:getHtml};
 		appCtxt.getSearchController().redoSearch(this._app.currentSearch, null, params);
 	}
