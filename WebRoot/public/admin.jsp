@@ -94,16 +94,15 @@
     if (ext == null) ext = "";
     
     String skin = (String)request.getAttribute("skin");
-    if(skin == null) skin = "beach";
-
+	if (skin == null) {
+		skin = application.getInitParameter("zimbraDefaultSkin");
+	}
 	Cookie skinCookie = new Cookie("ZA_SKIN",skin);
 	response.addCookie(skinCookie);
-	
-    //Since we only suppor the beach skin in admin, we will remove the skin related codes.
-	
+		
     String contextPath = request.getContextPath();
     if(contextPath == null || contextPath.equals("/")) {
-		response.sendRedirect(adminUrl+"?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
+		response.sendRedirect(adminUrl+"?mode="+mode+"&version="+vers+"&fileExtension="+ext+"&skin="+skin);    	
     }
 
 	// make variables available in page context (e.g. ${foo})
