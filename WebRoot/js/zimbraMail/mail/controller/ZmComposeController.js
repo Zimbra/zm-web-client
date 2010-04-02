@@ -1028,7 +1028,7 @@ function(composeMode, incOptions) {
 		menu.checkItem(ZmHtmlEditor._VALUE, composeMode, true);
 	}
 
-	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
+	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || appCtxt.multiAccounts) {
 		var mi = menu.getOp(ZmOperation.REQUEST_READ_RECEIPT);
 		if (mi) {
 			// did this draft have "request read receipt" option set?
@@ -1037,6 +1037,10 @@ function(composeMode, incOptions) {
 			} else {
 				// bug: 41329 - always re-init read-receipt option to be off
 				mi.setChecked(false, true);
+			}
+
+			if (appCtxt.multiAccounts) {
+				mi.setEnabled(appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED));
 			}
 		}
 	}
@@ -1061,6 +1065,22 @@ function(composeMode, incOptions) {
 	}
 
 	button.setMenu(menu);
+};
+
+/**
+ * Called in multi-account mode, when an account has been changed
+ */
+ZmComposeController.prototype._resetReadReceipt =
+function(newAccount) {
+	var menu = this._optionsMenu[this._action];
+	var mi = menu && menu.getOp(ZmOperation.REQUEST_READ_RECEIPT);
+	if (mi) {
+		var isEnabled = appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, newAccount);
+		if (!isEnabled) {
+			mi.setChecked(false, true);
+		}
+		mi.setEnabled(isEnabled);
+	}
 };
 
 ZmComposeController.prototype._getComposeMode =

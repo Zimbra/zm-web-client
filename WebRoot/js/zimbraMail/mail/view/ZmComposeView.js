@@ -2276,6 +2276,7 @@ function(ev) {
 	this._controller._accountName = newAccount.name;
 	this._controller.resetSignatureToolbar(sigId, newAccount);
 	this._controller.resetSignature(sigId, newAccount);
+	this._controller._resetReadReceipt(newAccount);
 
 	// reset account for autocomplete to use
 	if (this._acAddrSelectList) {
