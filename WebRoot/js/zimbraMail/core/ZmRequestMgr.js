@@ -734,7 +734,10 @@ function(ev) {
 			var organizer = organizers ? organizers[0] : null;
 			var id = organizer ? (organizer.isSystem() ? organizer.nId : organizer.id) : null;
 			var search = appCtxt.getCurrentSearch();
-			if (search && id && (id == search.folderId || id == search.tagId)) {
+			var searchFolder = appCtxt.multiAccounts && appCtxt.getById(search.folderId);
+			var searchFolderId = (searchFolder && searchFolder.getAccount() == appCtxt.getActiveAccount())
+				? searchFolder.nId : search.folderId;
+			if (search && id && (id == searchFolderId || id == search.tagId)) {
 				Dwt.setTitle(search.getTitle());
 			}
 			var mailApp = appCtxt.getApp(ZmApp.MAIL);
