@@ -290,6 +290,25 @@ function() {
 };
 
 /**
+ * Returns true if any of the visible accounts have the given status
+ *
+ * @param 	{String}		status 		Status to check for
+ */
+ZmAccountList.prototype.isSyncStatus =
+function(status) {
+	for (var i = 0; i < this.visibleAccounts.length; i++) {
+		var acct = this.visibleAccounts[i];
+		if (acct.isMain) { continue; }
+
+		if (acct.status == status) {
+			return true;
+		}
+	}
+
+	return false;
+};
+
+/**
  * Checks if there is at least one of the given account types in the
  * account list. Note: if the given account type is ZCS, the local parent
  * account is NOT included when searching the account list.

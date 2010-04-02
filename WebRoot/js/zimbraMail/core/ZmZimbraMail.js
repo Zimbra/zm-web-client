@@ -1218,8 +1218,9 @@ function(resetBackoff) {
 	if (resetBackoff && this._pollInstantNotifications) {
 		// we *were* backed off -- reset the delay back to 1s fastness
 		var interval = appCtxt.get(ZmSetting.INSTANT_NOTIFY_INTERVAL);
-		if (this._pollInterval > interval)
+		if (this._pollInterval > interval) {
 			this._pollInterval = interval;
+		}
 	}
 
 	if (this._pollInterval && !this._pollRequest) {
@@ -1234,7 +1235,7 @@ function(resetBackoff) {
 
 /**
  * We've finished waiting, do the actual poll itself
- * 
+ *
  * @private
  */
 ZmZimbraMail.prototype._execPoll =
@@ -1260,6 +1261,14 @@ function() {
 			accountName: appCtxt.isOffline && appCtxt.accountList.mainAccount.name
 		};
 		this._pollRequest = this.sendRequest(params);
+
+		// bug #42664 - handle case where sync-status-changes fall between 2 client requests
+		if (appCtxt.isOffline &&
+			!appCtxt.accountList.isInitialSyncing() &&
+			appCtxt.accountList.isSyncStatus(ZmZimbraAccount.STATUS_RUNNING))
+		{
+			this.sendNoOp();
+		}
 	} catch (ex) {
 		this._handleErrorDoPoll(ex); // oops!
 	}
