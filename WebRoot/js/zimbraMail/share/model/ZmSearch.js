@@ -823,12 +823,7 @@ function() {
 		var t = tokens[i];
 		if (t.isTerm) {
 			if (t.op == "in" || t.op == "inid") {
-				if (this.isMultiAccount()) {
-					var result = ZmOrganizer.parseId(t.arg);
-					folderId = result && appCtxt.accountList.resolveFolderId(result.id);
-				} else {
-					folderId = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
-				}
+				folderId = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
 				if (folderId) {
 					func.push("((item.type == ZmItem.CONV) ? item.folders && item.folders['" + folderId +"'] : item.folderId == '" + folderId + "')");
 				}

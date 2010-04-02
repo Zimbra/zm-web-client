@@ -345,7 +345,9 @@ function(convs, msgs) {
 			newConvId[id] = convs[id];
 			var conv = convs[id];
 			if (this.search.matches(conv) && !conv.ignoreJunkTrash()) {
-				if (!appCtxt.multiAccounts || (appCtxt.multiAccounts && conv.getAccount() == appCtxt.getActiveAccount())) {
+				if (!appCtxt.multiAccounts ||
+					(appCtxt.multiAccounts && (this.search.isMultiAccount() || conv.getAccount() == appCtxt.getActiveAccount()))) 
+				{
 					// a new msg for this conv matches current search
 					conv.list = this;
 					newConvs.push(conv);
