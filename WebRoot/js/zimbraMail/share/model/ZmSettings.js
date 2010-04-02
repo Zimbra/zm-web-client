@@ -243,15 +243,20 @@ function(callback, accountName, result) {
 		appCtxt.accountList.createAccounts(this, obj);
 
 		// for offline, find out whether this client supports prism-specific features
-		if (appCtxt.isOffline && AjxEnv.isPrism && window.platform && (AjxEnv.isMac || AjxEnv.isWindows)) {
-			var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
-			if (setting) {
-				setting.setValue(true);
+		if (appCtxt.isOffline) {
+			if (AjxEnv.isPrism && window.platform && (AjxEnv.isMac || AjxEnv.isWindows)) {
+				var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
+				if (setting) {
+					setting.setValue(true);
+				}
+				setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE];
+				if (setting) {
+					setting.setValue(true);
+				}
 			}
-			setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE];
-			if (setting) {
-				setting.setValue(true);
-			}
+
+			// bug #45804 - sharing always enabled for offline
+			appCtxt.set(ZmSetting.SHARING_ENABLED, true);
 		}
 	}
 
