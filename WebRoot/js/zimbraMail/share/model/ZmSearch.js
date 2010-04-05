@@ -61,7 +61,11 @@ ZmSearch = function(params) {
 		this.join						= this.join || ZmSearch.JOIN_AND;
 
 		if (this.query || this.queryHint) {
-			this._parseQuery();
+			if (!this.isGalSearch && !this.isAutocompleteSearch &&
+				!this.isGalAutocompleteSearch && !this.isCalResSearch) {
+
+				this._parseQuery();	// only parse regular searches
+			}
 			if (this.querySortOrder) {
 				this.sortBy = this.querySortOrder;
 			}
