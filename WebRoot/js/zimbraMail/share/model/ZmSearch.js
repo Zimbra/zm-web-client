@@ -791,6 +791,7 @@ function() {
 				pos = results.pos;
 			} else {
 				fail = true;
+                pos = skipSpace(query, pos + 1);
 			}
 		} else if (ch == "(" || ch == ")") {
 			tokens.push(ch);
