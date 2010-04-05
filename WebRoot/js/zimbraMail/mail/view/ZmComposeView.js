@@ -1309,13 +1309,14 @@ function(content, sigStyle, sig, newLine) {
 	content = content.replace(re, '');
 
 	if (sigStyle == ZmSetting.SIG_OUTLOOK) {
-		var repl = "----- ";	// TODO: we don't use -----
+		var repl = "----- ";
 		var regexp = new RegExp(re_newlines + repl, "i");
 
 		if (content.match(regexp)) {
 			content = content.replace(regexp, [sig, newLine, repl].join(""));
 		} else {
-			content = [sig, content].join("");
+			// new message
+			content = [content, sig].join("");
 		}
 	} else {
 		content = [content, sig].join("");
