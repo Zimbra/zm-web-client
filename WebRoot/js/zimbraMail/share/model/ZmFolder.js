@@ -616,10 +616,6 @@ function(what, folderType) {
 					// only drafts can be moved into Drafts
 					invalid = true;
 					break;
-				} else if (items[i].isReadOnly()) {
-					// cannot move a read-only item
-					invalid = true;
-					break;
 				}
 			}
 			// items in the "Sync Failures" folder cannot be dragged out
