@@ -33,9 +33,7 @@ ZmCalendarApp = function(container) {
 
 	ZmApp.call(this, ZmApp.CALENDAR, container);
 
-	if (!appCtxt.isOffline) {
-		this._addSettingsChangeListeners();
-	}
+	this._addSettingsChangeListeners();
 
 	// resource cache
 	this._resByName = {};
