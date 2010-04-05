@@ -22,11 +22,11 @@ body	{  @ChromeBg@ }
 	color: #008fc9;
 }
 
-	#skin_container_links a:hover{
-		color: white; 
-		background-color: #008fc9;
-		text-decoration: none;
-	}
+#skin_container_links a:hover{
+	color: white;
+	background-color: #008fc9;
+	text-decoration: none;
+}
 
 #skin_container_tree_top {
 	background: #0071a1 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
