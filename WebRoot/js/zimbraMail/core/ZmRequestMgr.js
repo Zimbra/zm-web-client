@@ -734,7 +734,7 @@ function(ev) {
 			var organizer = organizers ? organizers[0] : null;
 			var id = organizer ? (organizer.isSystem() ? organizer.nId : organizer.id) : null;
 			var search = appCtxt.getCurrentSearch();
-			var searchFolder = appCtxt.multiAccounts && appCtxt.getById(search.folderId);
+			var searchFolder = search && appCtxt.multiAccounts && appCtxt.getById(search.folderId);
 			var searchFolderId = (searchFolder && searchFolder.getAccount() == appCtxt.getActiveAccount())
 				? searchFolder.nId : search.folderId;
 			if (search && id && (id == searchFolderId || id == search.tagId)) {
