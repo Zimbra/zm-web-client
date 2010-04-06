@@ -423,6 +423,7 @@ function(event) {
 		}
 	}
 	if (event.status == DwtSoundPlugin.ERROR) {
-		appCtxt.setStatusMsg(event.errorDetail, ZmStatusView.LEVEL_CRITICAL);
+		// Popup error
+		// appCtxt.setStatusMsg(event.errorDetail, ZmStatusView.LEVEL_CRITICAL);
 	}
 };
