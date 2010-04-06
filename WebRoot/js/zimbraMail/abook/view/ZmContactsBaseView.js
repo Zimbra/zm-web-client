@@ -391,8 +391,8 @@ ZmContactAlphabetBar.alphabetClicked =
 function(cell, letter, endLetter) {
 	// get reference to alphabet bar - ugh
 	var clc = AjxDispatcher.run("GetContactListController");
-	var alphabetBar = clc.getParentView().getAlphabetBar();
-	if (alphabetBar.enabled()) {
+	var alphabetBar = clc && clc.getParentView() && clc.getParentView().getAlphabetBar();
+	if (alphabetBar && alphabetBar.enabled()) {
 		if (alphabetBar.reset(cell))
 			clc.searchAlphabet(letter, endLetter);
 	}
