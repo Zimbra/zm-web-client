@@ -7,6 +7,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
+    ${zm:clearContactCache(mailbox)}
     <c:choose>
         <c:when test="${not empty mailbox.prefs.locale}">
             <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
