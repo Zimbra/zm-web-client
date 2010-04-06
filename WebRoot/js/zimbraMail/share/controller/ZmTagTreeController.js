@@ -168,7 +168,10 @@ function(tag) {
 		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
 		accountName: (appCtxt.multiAccounts ? tag.getAccount().name : null)
 	};
-	appCtxt.getSearchController().search(params);
+    //Bug:45878 Don't do a multi-account search for tags
+    var sc = appCtxt.getSearchController();
+	sc.searchAllAccounts = false;
+	sc.search(params);
 };
 
 // Listeners
