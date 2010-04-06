@@ -155,7 +155,10 @@
 </c:when>
 
 <c:when test="${skin eq 'velodrome2'}">
-<div class='${requestScope.statusClass}'><app:appStatus/></div>
+<c:if test="${statusBlocking}">
+	<div id="app_st_block_div" class="VeilOverlay" style="z-index:99;"></div>
+</c:if>
+<div class='${requestScope.statusClass}' style="z-index:100;position:relative;"><app:appStatus/></div>
 	<table width="100%" cellspacing="0" cellpadding="0" border="0" height="100%">
 	<tr>
 		<td class='ImgSkin_Chrome_R1' colspan="2">
@@ -439,6 +442,9 @@
 
 
 <c:when test="${skin eq 'zmail'}">
+	<c:if test="${statusBlocking}">
+		<div id="app_st_block_div" class="VeilOverlay" style="z-index:99;"></div>
+	</c:if>
 	<table cellpadding="0" cellspacing="0" border="0" style="border-bottom: 1px solid #C9D7F1;">
 		<tr>
 		<td id='skin_container_app_chooser_lite'>
@@ -491,8 +497,8 @@
 			</td>
 		</tr>
 		</table>
-		<table width="100%" cellpadding="0" cellspacing="0" height="27">
 
+		<table width="100%" cellpadding="0" cellspacing="0" height="27" style="z-index:100;position:relative;">
 		<tr>
 			<td class="Overview">
 
@@ -502,6 +508,7 @@
 			</td>
 		</tr>
 		</table>
+
 		<table cellpadding="0" cellspacing="0" border="0" width="100%">
 
 		<tr>
@@ -539,6 +546,9 @@
 
 </c:when>
 <c:otherwise>
+	<c:if test="${statusBlocking}">
+		<div id="app_st_block_div" class="VeilOverlay" style="z-index:99;"></div>
+	</c:if>
 	<table width="100%" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class='TopContent' colspan="3"  align="right" valign="top"><div style='height:6px'></div></td>
@@ -610,7 +620,7 @@
 				&nbsp;
 			</td>
 			<td align="center" colspan="3">
-				<app:appStatus/>
+				<div style="z-index:100;position:relative;"><app:appStatus/></div>
 			</td>
 		</tr>
 		<tr>

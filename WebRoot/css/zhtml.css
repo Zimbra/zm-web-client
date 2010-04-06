@@ -647,6 +647,14 @@ A:visited { color: blue; }
 .StatusWarning  { @WarningContainer@	@ToastContainer@	}
 .StatusCritical { @CriticalContainer@ 	@ToastContainer@	}
 
+.VeilOverlay {
+	width:100%;
+	height:100%;
+	background-color:white;
+	position:absolute;
+	@HalfOpacity@
+}
+
 /*
  *   Shortcut key display
  */
@@ -1342,7 +1350,3 @@ input[type="password"] {
 input[disabled] {
 		@InputField-disabled@
 	}
-
-
-	
-	

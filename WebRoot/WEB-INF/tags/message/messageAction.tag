@@ -67,7 +67,7 @@
 		</c:when>
 	<c:when test="${zm:actionSet(param, 'actionEmpty') and (param.contextFolderId eq mailbox.trash.id) and (param.confirmed ne '1')}">
 		<zm:checkCrumb crumb="${param.crumb}"/>
-		<app:status html="true">
+		<app:status html="true" block="true">
 			<fmt:message key="confirmEmptyTrashFolder">
 				<fmt:param value="<form style='padding:0px;margin:0px;' action='?doMessageAction=1&actionEmpty=true&${pageContext.request.queryString}' method='post'><input type='hidden' name='confirmed' value='1'/><input type='hidden' name='crumb' value='${fn:escapeXml(mailbox.accountInfo.crumb)}'/><input type='hidden' name='contextFolderId' value='${param.contextFolderId}'/>"/>
 				<fmt:param value="<input type='submit' value='yes'>"/>
