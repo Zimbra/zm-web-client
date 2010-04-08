@@ -294,7 +294,7 @@ function(callback, accountName, result) {
 		}
 	}
 
-	if (appCtxt.isOffline &&
+	if (appCtxt.isOffline && appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
 		window.platform && window.platform.isRegisteredProtocolHandler("mailto") &&
 		!appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER))
 	{
