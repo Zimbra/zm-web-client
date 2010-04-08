@@ -452,11 +452,20 @@ function(callback) {
 ZmVoiceApp.prototype._handleErrorLoadLaunchGotInfo =
 function(callback, ex) {
 	var returnValue;
-	if (ex.code == "voice.SECONDARY_NOT_ALLOWED") {
-		this._showUpsellMessage();
-		returnValue = true;
-	} else {
-		returnValue = false;
+	this._loadError = true;
+	switch (ex.code) {
+		case "voice.SECONDARY_NOT_ALLOWED":
+			this._showUpsellMessage();
+			returnValue = true;
+			break;
+		case "voice.UNABLE_TO_RETRIEVE_PROFILE_SUMMARY":
+		default:
+			var fallbackApp = appCtxt.getApp(ZmVoiceApp.overviewFallbackApp);
+			if (fallbackApp) {
+				fallbackApp.launch();
+			}
+			returnValue = false;
+			break;
 	}
 	this.setOverviewPanelContent(false);
 	if (callback instanceof AjxCallback)
@@ -481,6 +490,7 @@ function() {
 
 ZmVoiceApp.prototype._handleResponseLoadLaunchGotInfo =
 function(callback, response) {
+	this._loadError = false;
 	var startFolder = this.getStartFolder();
 	if (startFolder) {
 		this.search(startFolder, callback);
@@ -557,7 +567,7 @@ function(soapDoc) {
 };
 
 ZmVoiceApp.prototype.setOverviewPanelContent = function(reset) {
-	if (this._showingSecondaryMessage && ZmVoiceApp.overviewFallbackApp) { // We should display the overview of the fallback app (usually PORTAL) when showing the upsell message
+	if ((this._showingSecondaryMessage || this._loadError) && ZmVoiceApp.overviewFallbackApp) { // We should display the overview of the fallback app (usually PORTAL) when showing the upsell message
 		var fallbackApp = appCtxt.getApp(ZmVoiceApp.overviewFallbackApp);
 		if (fallbackApp)
 			return fallbackApp.setOverviewPanelContent(reset);
