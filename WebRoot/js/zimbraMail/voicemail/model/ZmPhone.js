@@ -140,6 +140,7 @@ function(callback, errorCallback) {
 
 ZmPhone.prototype._handleResponseGetVoiceFeatures = 
 function(callback, response) {
+	this._initializeFeatures();
 	var features = response._data.GetVoiceFeaturesResponse.phone[0];
 	for (var i in features) {
 		if (i == ZmCallFeature.VOICEMAIL_PREFS) {
@@ -171,14 +172,17 @@ function(voicemailPrefs) {
 
 ZmPhone.prototype._initializeFeatures = 
 function() {
-	this._features = {};
+	if (!this._features)
+		this._features = {};
 	for(var i = 0, count = ZmCallFeature.CALL_FEATURES.length; i < count; i++) {
 		var name = ZmCallFeature.CALL_FEATURES[i];
-		this._features[name] = new ZmCallFeature(name, false, false);
+		if (!this._features[name])
+			this._features[name] = new ZmCallFeature(name, false, false);
 	}
 	for(var i = 0, count = ZmCallFeature.VOICE_FEATURES.length; i < count; i++) {
 		var name = ZmCallFeature.VOICE_FEATURES[i];
-		this._features[name] = new ZmCallFeature(name, true, this.hasVoiceMail);
+		if (!this._features[name])
+			this._features[name] = new ZmCallFeature(name, true, this.hasVoiceMail);
 	}
 };
 
