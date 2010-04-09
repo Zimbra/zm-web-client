@@ -504,11 +504,12 @@ function(name, updateView) {
 	this._startPhone = name;
 	if (updateView) {
 		var folder = this.getStartFolder()
-		this.getVoiceController().setFolder(folder, true);
 		if (this.view != ZmId.VIEW_VOICEMAIL)
 			this.pushView(ZmId.VIEW_VOICEMAIL);
-		if (this.getVoiceController().getFolder() != folder)
+		if (this.getVoiceController().getFolder() != folder) {
 			this.search(folder);
+			this.getVoiceController().setFolder(folder, true);
+		}
 		this.selectFolderInOverview(folder);
 	}
 };
