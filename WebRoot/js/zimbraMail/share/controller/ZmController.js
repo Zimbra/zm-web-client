@@ -514,6 +514,8 @@ function(ex, continuation) {
 			args = ex.data.itemId;
 		} else if (ex.code == ZmCsfeException.MAIL_SEND_FAILURE) {
 			args = ex.code; // bug fix #5603 - error msg for mail.SEND_FAILURE takes an argument
+		} else if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
+			args = ex.data.name;
 		}
 		var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
 		this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
