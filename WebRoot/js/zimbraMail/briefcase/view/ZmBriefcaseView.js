@@ -60,6 +60,7 @@ function() {
 ZmBriefcaseView.prototype._createItemHtml =
 function(item, params) {
 
+    params = params || {};
 	params.divClass = "ZmBriefcaseItem";
 	var div = this._getDiv(item, params);
 
