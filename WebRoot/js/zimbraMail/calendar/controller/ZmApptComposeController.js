@@ -63,18 +63,31 @@ function(calItem, mode, isDirty) {
  * @return	{Boolean}	<code>true</code> indicates the forward is executed
  */
 ZmApptComposeController.prototype.forwardCalItem =
-function(appt) {
+function(appt, forwardCallback) {
     //todo: to address input validation
-    var callback = new AjxCallback(this, this._handleForwardInvite);
+    var callback = new AjxCallback(this, this._handleForwardInvite, forwardCallback);
     appt.forward(callback);
     return true;
 };
 
 ZmApptComposeController.prototype._handleForwardInvite =
-function() {
+function(forwardCallback) {
     appCtxt.setStatusMsg(ZmMsg.forwardInviteSent);
+    if(forwardCallback) {
+        forwardCallback.run();
+    }
 };
 
+ZmApptComposeController.prototype._badAddrsOkCallback =
+function(dialog, appt) {
+	dialog.popdown();
+    this.forwardCalItem(appt, new AjxCallback(this, this._apptForwardCallback));
+};
+
+ZmApptComposeController.prototype._apptForwardCallback =
+function() {
+    this._app.popView(true);
+};
 
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
@@ -82,6 +95,28 @@ function(attId) {
 	if (appt) {
 
         if(appt.isForward) {
+            var addrs = this._composeView.getForwardAddress();
+
+            //validate empty forward address
+            if (!addrs.gotAddress) {
+                var msgDialog = appCtxt.getMsgDialog();
+                msgDialog.setMessage(ZmMsg.noForwardAddresses, DwtMessageDialog.CRITICAL_STYLE);
+                msgDialog.popup();
+                return false;
+            }
+
+            if (addrs[ZmApptEditView.BAD] && addrs[ZmApptEditView.BAD].size()) {
+                var cd = appCtxt.getOkCancelMsgDialog();
+	            cd.reset();
+                var bad = AjxStringUtil.htmlEncode(addrs[ZmApptEditView.BAD].toString(AjxEmailAddress.SEPARATOR));
+                var msg = AjxMessageFormat.format(ZmMsg.compBadAddresses, bad);
+                cd.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+                cd.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this, [cd,appt]);
+                cd.setVisible(true); // per fix for bug 3209
+                cd.popup();
+                return false;
+            }
+            
             return this.forwardCalItem(appt);
         }
 

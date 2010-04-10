@@ -301,6 +301,11 @@ function(attId) {
 	return this._apptEditView.getCalItem(attId);
 };
 
+ZmApptComposeView.prototype.getForwardAddress =
+function() {
+    return this._apptEditView.getForwardAddress();
+};
+
 ZmApptComposeView.prototype.getApptTab =
 function() {
 	return this._apptTab;

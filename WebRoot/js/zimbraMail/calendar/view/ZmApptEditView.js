@@ -67,6 +67,7 @@ ZmApptEditView.PRIVACY_OPTIONS = [
 //	{ label: ZmMsg.confidential,		value: "CON"					}		// see bug #21205
 ];
 
+ZmApptEditView.BAD						= "_bad_addrs_"
 
 // Public Methods
 
@@ -635,16 +636,26 @@ function() {
     this._forwardToField.setEnabled(true);
 };
 
+ZmApptEditView.prototype.getForwardAddress =
+function() {
+    return this._collectForwardAddrs();
+};
+
 // Grab the good addresses out of the forward to field
 ZmApptEditView.prototype._collectForwardAddrs =
 function() {
     var addrs = {};
+    addrs[ZmApptEditView.BAD] = new AjxVector();
     var val = AjxStringUtil.trim(this._forwardToField.getValue());
     if (val.length == 0) return addrs;
     var result = AjxEmailAddress.parseEmailString(val, AjxEmailAddress.TO, false);
     if (result.all.size() == 0) return addrs;
     addrs.gotAddress = true;
     addrs[AjxEmailAddress.TO] = result;
+    if (result.bad.size()) {
+        addrs[ZmApptEditView.BAD].addList(result.bad);
+        addrs.badType = AjxEmailAddress.TO;
+    }
     return addrs;
 };
 
