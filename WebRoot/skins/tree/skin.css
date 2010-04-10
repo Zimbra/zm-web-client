@@ -47,7 +47,7 @@ body, #skin_container_splash_screen	{
 
 .Row {	background-color: #fff; border-color: #e5e5e5; border-top-width: 0px;}
 
-.RowOdd {	background-color: #fff; border-color: #e5e5e5; border-top-width: 0px;}
+.RowOdd {	border-color: #e5e5e5; border-top-width: 0px;}
 
 .Row-selected, 
 .Row-selected-dragProxy, 
