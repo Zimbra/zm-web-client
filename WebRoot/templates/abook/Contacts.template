@@ -505,6 +505,9 @@
 		attrs: data.attrs, seenone: false,
 		label: ZmMsg.imLabel
 	};
+	if (AjxUtil.isFunction(data.encode.IM)) {
+		itemlistdata.encode = data.encode.IM;
+	}
 	var names = ZmEditContactView.LISTS.IM.attrs;
 	itemlistdata.names = names;
 	for (var i = 0; i < names.length; i++) {

@@ -367,6 +367,8 @@ function(contact, isGal, oldContact) {
 		subs.isGal = isGal;
 		subs.findObjects = AjxCallback.simpleClosure(this.__findObjects, this, this._objectManager);
 		subs.attrs = contact.getNormalizedAttrs();
+		subs.encode = {};
+		subs.encode.IM = AjxCallback.simpleClosure(this._encodeIM, this);
 
 		this._resetVisibility(false);
 
@@ -378,6 +380,18 @@ function(contact, isGal, oldContact) {
 	}
 
 	this._setHeaderInfo();
+};
+
+ZmContactSplitView.IM_RE_VALUE = /^(.*?):\/\/(.*)$/;
+ZmContactSplitView.prototype._encodeIM =
+function(data) {
+	var result = ZmContactSplitView.IM_RE_VALUE.exec(data);
+	if (result) {
+		var params = [result[1], result[2], ZmMsg["AB_FIELD_", result[1]]];
+		return AjxMessageFormat.format(ZmMsg.AB_DISPLAY_IM, params);
+	} else {
+		return data;
+	}
 };
 
 /**
@@ -736,7 +750,6 @@ function(htmlArr, idx, contact, field, colIdx, params) {
 	} else {
 		idx = ZmContactsBaseView.prototype._getCellContents.apply(this, arguments);
 	}
-
 	return idx;
 };
 
