@@ -98,3 +98,7 @@ body, #skin_container_splash_screen	{
 .DwtListView {
 	background-color: #ffffff;
 }
+
+.ZmApptComposeView {
+	@PanelBg@
+}

@@ -12,33 +12,26 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-body	{  @ChromeBg@ }
-
-#skin_outer { background: #d9ecf6 url("@SkinImgDir@/app_bg.png") top left repeat-x;}
-
-#skin_container_splash_screen			{		}
-
-#skin_container_links a{
-	color: #008fc9;
+body {
+	@ChromeBg@
 }
 
-#skin_container_links a:hover{
-	color: white;
-	background-color: #008fc9;
-	text-decoration: none;
+#skin_container_splash_screen {
+	background-color: #1c335f;
+}
+
+#skin_container_links a {
+	color: #1b325f;
+}
+
+#skin_container_links a:hover {
+	background-color: transparent;
+	text-decoration: underline;
 }
 
 #skin_container_tree_top {
-	background: #0071a1 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
+	background: #1d3460 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
 	text-align:center;
-}
-
-#skin_spacing_tree {
-	background-color: transparent;
-}
-
-#skin_td_tree	{	
-	border: 0;
 }
 
 #skin_container_search {	
@@ -53,17 +46,16 @@ body	{  @ChromeBg@ }
 
 #skin_border_app_chooser				{	@SkinBorderAppChooser@ 		}
 
-#skin_container_app_top_toolbar { background: #2f4a71 url("@SkinImgDir@/app_panel_bg.png") top left repeat-x; border:0; }
+#skin_container_app_top_toolbar { background: #1c3360; border:0; }
 
 #ZLoginAppName {
 	color: #ffffff;
 }
 
 .Row {	background-color: #fff; border-color: #e5e5e5; border-top-width: 0px;}
+.RowOdd {	background-color: #ededed; border-color: #e5e5e5; border-top-width: 0px;}
 
-.RowOdd {	background-color: #fff; border-color: #e5e5e5; border-top-width: 0px;}
-
-.Row-selected, 
+.Row-selected,
 .Row-selected-dragProxy, 
 .Row-selected-disabled 		{	background-color: #fff; border-color: #e5e5e5; border-top-color: #fff;}
 
@@ -78,8 +70,8 @@ body	{  @ChromeBg@ }
 	color: #333;
 }
 
-.ZButtonBorder, .ZHover .ZButtonBorder,.ZActive	.ZButtonBorder,.ZSelected .ZButtonBorder {
-  border: 1px solid #b6b6b6;
+.ZAppTab {
+	height: 29px;
 }
 
 .LightWindowOuterContainer .DwtDialogTitle {
@@ -121,4 +113,17 @@ body	{  @ChromeBg@ }
 
 .ZmPickerOverview .DwtCalendarTitle {
 	 color: #ffffff;
+}
+
+.ZmCalViewMgr,
+.calendar_view,
+.ZmContactInfoView,
+.ZmNotebookPageView,
+.ZmEditContactView .contactHeaderTable,
+.DwtListView {
+	background-color: #ffffff;
+}
+
+.ZmApptComposeView {
+	@PanelBg@
 }
