@@ -125,9 +125,6 @@ function(htmlArr, idx, voicemail, field, colIdx, params) {
 		htmlArr[idx++] = this._getCallerNameHtml(voicemail);
 	} else if (field == ZmVoiceListView.F_DATE) {
 		params.now = params.now || new Date();
-		var offsetmsec = AjxTimezone.getOffset(appCtxt.get(ZmSetting.DEFAULT_TIMEZONE), params.now) * 1000;
-		params.now.setTime(params.now.getTime() + offsetmsec);
-
 		htmlArr[idx++] = AjxDateUtil.computeWordyDateStr(params.now, voicemail.date);
 	} else {
 		idx = ZmListView.prototype._getCellContents.call(this, htmlArr, idx, voicemail, field, colIdx, params); 
