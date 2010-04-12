@@ -323,6 +323,11 @@
     </tag-file>
 
     <tag-file>
+        <name>contactIM</name>
+        <path>/WEB-INF/tags/contact/contactIM.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>contactEmail</name>
         <path>/WEB-INF/tags/contact/contactEmail.tag</path>
     </tag-file>
