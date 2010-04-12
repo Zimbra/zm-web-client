@@ -1900,8 +1900,9 @@ function(bStartTimer) {
 
 	// if no timeout value, user's client never times out from inactivity
 	var timeout = appCtxt.get(ZmSetting.IDLE_SESSION_TIMEOUT) * 1000;
-	if (timeout <= 0)
+	if (timeout <= 0) {
 		return;
+	}
 
 	if (bStartTimer) {
 		DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER SET (" + (new Date()).toLocaleString() + ")");
@@ -2079,6 +2080,9 @@ function(ev) {
 		// cancel old timer and start a new one
 		AjxTimedAction.cancelAction(zm._sessionTimerId);
 		var timeout = appCtxt.get(ZmSetting.IDLE_SESSION_TIMEOUT) * 1000;
+		if (timeout <= 0) {
+			return;
+		}
 		zm._sessionTimerId = AjxTimedAction.scheduleAction(zm._sessionTimer, timeout);
 	}
 	DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER RESET (" + (new Date()).toLocaleString() + ")");
