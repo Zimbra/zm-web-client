@@ -1237,6 +1237,7 @@ function(ev) {
 			case ZmId.VIEW_CAL_DAY: 		view = "day"; break;
 			case ZmId.VIEW_CAL_WORK_WEEK:	view = "workWeek"; break;
 			case ZmId.VIEW_CAL_WEEK:		view = "week"; break;
+			case ZmId.VIEW_CAL_SCHEDULE:	view = "schedule"; break;
 			default:						view = "month"; break;				// default is month
 		}
 
