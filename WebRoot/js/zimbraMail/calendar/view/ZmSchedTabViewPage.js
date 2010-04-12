@@ -1025,7 +1025,7 @@ function(ev) {
 	var type = select.getValue();
 	var sched = svp._schedTable[select._schedTableIdx];
 
-    if(type == ZmCalItem.PERSON || type == ZmCalItem.ROLE_REQUIRED || type == ZmCalItem.ROLE_OPTIONAL) {
+    if(type == ZmCalBaseItem.PERSON || type == ZmCalItem.ROLE_REQUIRED || type == ZmCalItem.ROLE_OPTIONAL) {
         if(sched.attendee) {
                sched.attendee.setAttr("role", (type == ZmCalItem.ROLE_OPTIONAL) ? ZmCalItem.ROLE_OPTIONAL : ZmCalItem.ROLE_REQUIRED); 
         }
