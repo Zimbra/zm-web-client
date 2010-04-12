@@ -43,11 +43,15 @@ ZmZimletBase = function() {
 };
 
 /**
- * This defines the Panel Menu (see {@link #menuItemSelected}).
+ * This defines the Panel Menu.
+ * 
+ * @see #menuItemSelected}
  */
 ZmZimletBase.PANEL_MENU = 1;
 /**
- * This defines the Content Object Menu (see {@link #menuItemSelected}).
+ * This defines the Content Object Menu.
+ * 
+ * @see		#menuItemSelected}
  */
 ZmZimletBase.CONTENTOBJECT_MENU = 2;
 
@@ -89,7 +93,7 @@ ZmZimletBase.prototype.init = function() {};
 /**
  * Returns a string representation of the zimlet.
  * 
- * @return		{String}		a string representation of the zimlet
+ * @return		{string}		a string representation of the zimlet
  */
 ZmZimletBase.prototype.toString =
 function() {
@@ -110,10 +114,10 @@ function() {
  * Adds an item to the search toolbar drop-down. A listener (if specified)
  * will be called when the item is selected.
  * 
- * @param	{String}	icon		the icon (style class) to use or <code>null</code> for no icon
- * @param	{String}	label		the label for the item
+ * @param	{string}	icon		the icon (style class) to use or <code>null</code> for no icon
+ * @param	{string}	label		the label for the item
  * @param	{AjxListener}	listener		the listener or <code>null</code> for none
- * @param	{String}	id			the unique id of the item to add
+ * @param	{string}	id			the unique id of the item to add
  * @return	{ZmButtonToolBar}	<code>null</code> if item not created
  */
 ZmZimletBase.prototype.addSearchDomainItem =
@@ -125,7 +129,7 @@ function(icon, label, listener, id) {
 /**
  * Gets the text field value entered in the search bar.
  * 
- * @return	{String}		the search field value or <code>null</code> for none
+ * @return	{string}		the search field value or <code>null</code> for none
  */ 
 ZmZimletBase.prototype.getSearchQuery =
 function() {
@@ -164,7 +168,7 @@ function(key) {
  * Zimlet accepts as defined by the <code>&lt;dragSource&gt;</code> Zimlet Definition File XML.
  *
  * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmNotebook|ZmTask}	zmObject		the dragged object
- * @return	{Boolean}	<code>true</code> if the drag should be allowed; otherwise, <code>false</code>
+ * @return	{boolean}	<code>true</code> if the drag should be allowed; otherwise, <code>false</code>
  */
 ZmZimletBase.prototype.doDrag =
 function(zmObject) {
@@ -279,7 +283,7 @@ ZmZimletBase.prototype.onFindMsgObjects = function(msg, objMgr) {};
  * This method is called by the Zimlet framework when a contact is clicked-on in the contact list view.
  * 
  * @param	{ZmContact}		contact		the contact being viewed
- * @param	{String}		elementId	the element Id
+ * @param	{string}		elementId	the element Id
  */
 ZmZimletBase.prototype.onContactView = function(contact, elementId) {};
 
@@ -288,7 +292,7 @@ ZmZimletBase.prototype.onContactView = function(contact, elementId) {};
  * 
  * @param	{ZmEditContactView}	view	the edit contact view
  * @param	{ZmContact}		contact		the contact being edited
- * @param	{String}		elementId	the element Id
+ * @param	{string}		elementId	the element Id
  */
 ZmZimletBase.prototype.onContactEdit = function(view, contact, elementId) {};
 
@@ -298,28 +302,28 @@ ZmZimletBase.prototype.onContactEdit = function(view, contact, elementId) {};
  * @param	{ZmApp}				app				the application
  * @param	{ZmButtonToolBar}	toolbar			the toolbar
  * @param	{ZmController}		controller		the application controller
- * @param	{String}			viewId			the view Id
+ * @param	{string}			viewId			the view Id
  */
 ZmZimletBase.prototype.initializeToolbar = function(app, toolbar, controller, viewId) {};
 
 /**
  * This method is called by the Zimlet framework when showing an application view.
  * 
- * @param	{String}		view		the name of the view
+ * @param	{string}		view		the name of the view
  */
 ZmZimletBase.prototype.onShowView = function(view) {};
 
 /**
  * This method is called by the Zimlet framework when a search is performed.
  * 
- * @param	{String}		queryStr		the search query string
+ * @param	{string}		queryStr		the search query string
  */
 ZmZimletBase.prototype.onSearch = function(queryStr) {};
 
 /**
  * This method is called by the Zimlet framework when the search button is clicked.
  * 
- * @param	{String}		queryStr		the search query string
+ * @param	{string}		queryStr		the search query string
  * @see		#onKeyPressSearchField
  */
 ZmZimletBase.prototype.onSearchButtonClick = function(queryStr) {};
@@ -327,7 +331,7 @@ ZmZimletBase.prototype.onSearchButtonClick = function(queryStr) {};
 /**
  * This method is called by the Zimlet framework when enter is pressed in the search field.
  * 
- * @param	{String}		queryStr		the search query string
+ * @param	{string}		queryStr		the search query string
  * @see		#onSearchButtonClick
  */
 ZmZimletBase.prototype.onKeyPressSearchField = function(queryStr) {};
@@ -361,7 +365,7 @@ ZmZimletBase.prototype.onActionMenuInitialized = function(controller, actionMenu
  * This method is called by the Zimlet framework when an email message is flagged.
  * 
  * @param	{ZmMailMsg[]|ZmConv[]}		items		an array of items
- * @param	{Boolean}		on		<code>true</code> if the flag is being set; <code>false</code> if the flag is being unset
+ * @param	{boolean}		on		<code>true</code> if the flag is being set; <code>false</code> if the flag is being unset
  */
 ZmZimletBase.prototype.onMailFlagClick = function(items, on) {};
 
@@ -370,7 +374,7 @@ ZmZimletBase.prototype.onMailFlagClick = function(items, on) {};
  * 
  * @param	{ZmMailMsg[]|ZmConv[]}		items		an array of items
  * @param	{ZmTag}			tag			the tag
- * @param	{Boolean}		doTag		<code>true</code> if the tag is being set; <code>false</code> if the tag is being removed
+ * @param	{boolean}		doTag		<code>true</code> if the tag is being set; <code>false</code> if the tag is being removed
  */
 ZmZimletBase.prototype.onTagAction = function(items, tag, doTag) {};
 
@@ -386,7 +390,7 @@ ZmZimletBase.prototype.onTagAction = function(items, tag, doTag) {};
  *</p>
  *
  * @param	{ZmMailMsg}		msg		the message
- * @param	{Array}		boolAndErrorMsgArray	the error messages, if any
+ * @param	{array}		boolAndErrorMsgArray	an array of error messages, if any
  */
 ZmZimletBase.prototype.emailErrorCheck = function(msg, boolAndErrorMsgArray) {};
 
@@ -468,9 +472,9 @@ function(portlet) {
  * </pre>
  * </p>
  * 
- * @param	{String}	content		the content line to perform a match against
- * @param	{Number}	startIndex	the start index (i.e. where to begin the search)
- * @return	{Array}	the matching content object from the <code>startIndex</code> if the content matched the specified zimlet handler regular expression; otherwise <code>null</code>
+ * @param	{string}	content		the content line to perform a match against
+ * @param	{number}	startIndex	the start index (i.e. where to begin the search)
+ * @return	{array}	the matching content object from the <code>startIndex</code> if the content matched the specified zimlet handler regular expression; otherwise <code>null</code>
  */
 ZmZimletBase.prototype.match =
 function(content, startIndex) {
@@ -487,8 +491,8 @@ function(content, startIndex) {
  * This method is called when a zimlet content object is clicked.
  *
  * @param	{Object}		spanElement		the enclosing span element
- * @param	{String}		contentObjText	the content object text
- * @param	{Array}		matchContent	the match content
+ * @param	{string}		contentObjText	the content object text
+ * @param	{array}		matchContent	the match content
  * @param	{DwtMouseEvent}	event			the mouse click event
  */
 ZmZimletBase.prototype.clicked =
@@ -506,8 +510,8 @@ function(spanElement, contentObjText, matchContext, event) {
  * This method is called when the tool tip is popping-up.
  *
  * @param	{Object}	spanElement		the enclosing span element
- * @param	{String}	contentObjText	the content object text
- * @param	{Array}		matchContent	the matched content
+ * @param	{string}	contentObjText	the content object text
+ * @param	{array}		matchContent	the matched content
  * @param	{Object}	canvas			the canvas
  */
 ZmZimletBase.prototype.toolTipPoppedUp =
@@ -534,10 +538,10 @@ function(spanElement, contentObjText, matchContext, canvas) {
  * This method is called when the tool tip is popping-down.
  *
  * @param	{Object}		spanElement		the enclosing span element
- * @param	{String}		contentObjText	the content object text
- * @param	{Array}		matchContent	the matched content
+ * @param	{string}		contentObjText	the content object text
+ * @param	{array}		matchContent	the matched content
  * @param	{Object}	canvas			the canvas
- * @return	{String}	<code>null</code> if the tool tip may be popped-down; otherwise, a string indicating why the tool tip should not be popped-down
+ * @return	{string}	<code>null</code> if the tool tip may be popped-down; otherwise, a string indicating why the tool tip should not be popped-down
  */
 ZmZimletBase.prototype.toolTipPoppedDown =
 function(spanElement, contentObjText, matchContext, canvas) {
@@ -567,9 +571,9 @@ function(obj, span, context) {
  * This method is called when a context menu item is selected.
  * 
  * @param	{ZmZimletBase.PANEL_MENU|ZmZimletBase.CONTENTOBJECT_MENU}	contextMenu		the context menu
- * @param	{String}		menuItemId		the selected menu item Id
+ * @param	{string}		menuItemId		the selected menu item Id
  * @param	{Object}		spanElement		the enclosing span element
- * @param	{String}		contentObjText	the content object text
+ * @param	{string}		contentObjText	the content object text
  * @param	{Object}		canvas		the canvas
  */
 ZmZimletBase.prototype.menuItemSelected =
@@ -599,6 +603,15 @@ function(callback) {
 
     for (var i = 0; i < userprop.length; ++i) {
         userprop[i].label = this._zimletContext.processMessage(userprop[i].label);
+        if (userprop[i].type == "enum") {
+        	var items = userprop[i].item;
+        	for (var i=0; items != null && i < items.length; i++) {
+        		if (items[i] == null)
+        			continue;
+        		var item = items[i];
+        		item.label = this._zimletContext.processMessage(item.label);
+        	}
+        }
 	}
 
 	if (!this._dlg_propertyEditor) {
@@ -631,9 +644,9 @@ function(callback) {
 /**
  * Displays the specified error message in the standard error dialog.
  * 
- * @param	{String}	msg		the error message to display
- * @param	{String}	data	the error message details
- * @param	{String}	title	the error message dialog title
+ * @param	{string}	msg		the error message to display
+ * @param	{string}	data	the error message details
+ * @param	{string}	title	the error message dialog title
  */
 ZmZimletBase.prototype.displayErrorMessage =
 function(msg, data, title) {
@@ -648,7 +661,7 @@ function(msg, data, title) {
 /**
  * Displays the specified status message.
  * 
- * @param	{String}	msg		the status message to display
+ * @param	{string}	msg		the status message to display
  */
 ZmZimletBase.prototype.displayStatusMessage =
 function(msg) {
@@ -658,8 +671,8 @@ function(msg) {
 /**
  * Gets the fully qualified resource Url.
  *
- * @param	{String}	resourceName	the resource name
- * @return	{String}	the fully qualified resource Url
+ * @param	{string}	resourceName	the resource name
+ * @return	{string}	the fully qualified resource Url
  */
 ZmZimletBase.prototype.getResource =
 function(resourceName) {
@@ -678,7 +691,7 @@ function() {
  * This method is called when a request finishes.
  * 
  * @param	{AjxCallback}	callback	the callback method or <code>null</code> for none
- * @parm	{Boolean}	passErrors	<code>true</code> to pass errors to the error display; <code>null</code> or <code>false</code> otherwise
+ * @param	{boolean}	passErrors	<code>true</code> to pass errors to the error display; <code>null</code> or <code>false</code> otherwise
  * @see		#sendRequest()
  * @private
  */
@@ -697,12 +710,12 @@ function(callback, passErrors, xmlargs) {
 /**
  * Sends the request content (via Ajax) to the specified server.
  * 
- * @param	{String}	requestStr		the request content to send
- * @param	{String}	serverURL		the server url
- * @param	{String[]}	requestHeaders	the request headers (may be <code>null</code>)
+ * @param	{string}	requestStr		the request content to send
+ * @param	{string}	serverURL		the server url
+ * @param	{string[]}	requestHeaders	the request headers (may be <code>null</code>)
  * @param	{AjxCallback}	callback	the callback for asynchronous requests or <code>null</code> for none
- * @param	{Boolean}	useGet		<code>true</code> to use HTTP GET; <code>null</code> or <code>false</code> otherwise
- * @param	{Boolean}	passErrors	<code>true</code> to pass errors; <code>null</code> or <code>false</code> otherwise
+ * @param	{boolean}	useGet		<code>true</code> to use HTTP GET; <code>null</code> or <code>false</code> otherwise
+ * @param	{boolean}	passErrors	<code>true</code> to pass errors; <code>null</code> or <code>false</code> otherwise
  * @return	{Object}	the return value
  */
 ZmZimletBase.prototype.sendRequest =
@@ -722,8 +735,8 @@ function(requestStr, serverURL, requestHeaders, callback, useGet, passErrors) {
  * Enables the specified context menu item.
  * 
  * @param	{ZmZimletBase.PANEL_MENU|ZmZimletBase.CONTENTOBJECT_MENU}	contextMenu		the context menu
- * @param	{String}		menuItemId		the menu item Id
- * @param	{Boolean}		enabled			<code>true</code> to enable the menu item; <code>false</code> to disable the menu item
+ * @param	{string}		menuItemId		the menu item Id
+ * @param	{boolean}		enabled			<code>true</code> to enable the menu item; <code>false</code> to disable the menu item
  */
 ZmZimletBase.prototype.enableContextMenuItem =
 function(contextMenu, menuItemId, enabled) {};
@@ -731,8 +744,8 @@ function(contextMenu, menuItemId, enabled) {};
 /**
  * Gets the configuration property.
  * 
- * @param	{String}		propertyName	the name of the property to retrieve
- * @return	{String}	the value of the property or <code>null</code> if no such property exists
+ * @param	{string}		propertyName	the name of the property to retrieve
+ * @return	{string}	the value of the property or <code>null</code> if no such property exists
  */
 ZmZimletBase.prototype.getConfigProperty =
 function(propertyName) {};
@@ -740,8 +753,8 @@ function(propertyName) {};
 /**
  * Gets the user property.
  * 
- * @param	{String}	propertyName the name of the property to retrieve
- * @return	{String}	the value of the property or <code>null</code> if no such property exists 
+ * @param	{string}	propertyName the name of the property to retrieve
+ * @return	{string}	the value of the property or <code>null</code> if no such property exists 
  */
 ZmZimletBase.prototype.getUserProperty =
 function(propertyName) {
@@ -751,9 +764,9 @@ function(propertyName) {
 /**
  * Sets the value of a given user property
  * 
- * @param	{String}	propertyName	the name of the property
- * @param	{String}	value			the property value
- * @param	{Boolean}	save			if <code>true</code>, the property will be saved (along with any other modified properties) 
+ * @param	{string}	propertyName	the name of the property
+ * @param	{string}	value			the property value
+ * @param	{boolean}	save			if <code>true</code>, the property will be saved (along with any other modified properties) 
  * @param	{AjxCallback}	callback	the callback to invoke after the user properties save
  * @throws	ZimletException		if no such property exists or if the value is not valid for the property type
  * @see		#saveUserProperties
@@ -768,14 +781,14 @@ function(propertyName, value, save, callback) {
 /**
  * This method is called by the zimlet framework prior to user properties being saved.
  *
- * @param	{Array}	props		an array of objects with the following properties:
+ * @param	{array}	props		an array of objects with the following properties:
  * <ul>
- * <li>label {String} the property label</li>
- * <li>name {String} the property name</li>
- * <li>type {String} the property type</li>
- * <li>value {String} the property value</li>
+ * <li>props[...].label {string} the property label</li>
+ * <li>props[...].name {string} the property name</li>
+ * <li>props[...].type {string} the property type</li>
+ * <li>props[...].value {string} the property value</li>
  * </ul>
- * @return	{Boolean}	<code>true</code> if properties are valid; otherwise, <code>false</code> or {String} if an error message will be displayed in the standard error dialog.
+ * @return	{boolean}	<code>true</code> if properties are valid; otherwise, <code>false</code> or {String} if an error message will be displayed in the standard error dialog.
  */
 ZmZimletBase.prototype.checkProperties =
 function(props) {
@@ -798,7 +811,7 @@ function() {
 /**
  * Sets the zimlet icon in the panel.
  * 
- * @param	{String}	icon		the icon (style class) for the zimlet
+ * @param	{string}	icon		the icon (style class) for the zimlet
  * @private
  */
 ZmZimletBase.prototype.setIcon =
@@ -814,7 +827,7 @@ function(icon) {
 };
 
 /**
- * Resets the imlet icon to the one specified in the Zimle Definition File (if originally set).
+ * Resets the zimlet icon to the one specified in the Zimlet Definition File (if originally set).
  * 
  * @private
  */
@@ -827,7 +840,7 @@ function() {
  * Saves the user properties.
  * 
  * @param	{AjxCallback}	callback		the callback to invoke after the save
- * @return	{String}		an empty string or an error message
+ * @return	{string}		an empty string or an error message
  */
 ZmZimletBase.prototype.saveUserProperties =
 function(callback) {
@@ -877,8 +890,8 @@ function(callback) {
 /**
  * Gets the user property info for the specified property.
  * 
- * @param	{String}	propertyName		the property
- * @return	{String}	the value of the user property
+ * @param	{string}	propertyName		the property
+ * @return	{string}	the value of the user property
  */
 ZmZimletBase.prototype.getUserPropertyInfo =
 function(propertyName) {
@@ -888,8 +901,8 @@ function(propertyName) {
 /**
  * Gets the message property.
  * 
- * @param	{String}	msg		the message
- * @return	{String}	the message property or <code>"???" + msg + "???"</code> if not found
+ * @param	{string}	msg		the message
+ * @return	{string}	the message property or <code>"???" + msg + "???"</code> if not found
  */
 ZmZimletBase.prototype.getMessage =
 function(msg) {
@@ -901,7 +914,7 @@ function(msg) {
 /**
  * Gets the message properties.
  * 
- * @return	{String[]}		an array of message properties
+ * @return	{string[]}		an array of message properties
  */
 ZmZimletBase.prototype.getMessages =
 function() {
@@ -959,7 +972,7 @@ function() {
 /**
  * Gets the current username.
  *
- * @return	{String}		the current username
+ * @return	{string}		the current username
  */
 ZmZimletBase.prototype.getUsername =
 function() {
@@ -967,9 +980,9 @@ function() {
 };
 
 /**
- *Gets the current user id.
+ * Gets the current user id.
  *
- * @return	{String}	the current user id
+ * @return	{string}	the current user id
  */
 ZmZimletBase.prototype.getUserID =
 function() {
@@ -1107,9 +1120,9 @@ function(canvasData, url, x, y) {
  * This method will apply and XSL transformation to an XML document. For example, content
  * returned from a services call.
  * 
- * @param	{String}	xsltUrl		the URL to the XSLT style sheet
- * @param	{String|AjxXmlDoc}	doc		the XML document to apply the style sheet
- * @return	the XML document representing the transformed document
+ * @param	{string}	xsltUrl		the URL to the XSLT style sheet
+ * @param	{string|AjxXmlDoc}	doc		the XML document to apply the style sheet
+ * @return	{AjxXmlDoc}	the XML document representing the transformed document
  */
 ZmZimletBase.prototype.applyXslt =
 function(xsltUrl, doc) {
@@ -1128,11 +1141,11 @@ function(xsltUrl, doc) {
  * Creates a "tab" application and registers this zimlet to
  * receive {@link #appActive} and {@link #appLaunch} events.
  * 
- * @param	{String}	label	the label to use on the application tab
- * @param	{String}	image	the image (style class) to use on the application tab
- * @param	{String}	tooltip	the tool tip to display when hover-over the application tab
- * @param	{int}		[index]	the index to insert the tab (must be > 0). 0 is first location. Default is last location.
- * @return	{String}	the name of the newly created application
+ * @param	{string}	label	the label to use on the application tab
+ * @param	{string}	image	the image (style class) to use on the application tab
+ * @param	{string}	tooltip	the tool tip to display when hover-over the application tab
+ * @param	{number}		[index]	the index to insert the tab (must be > 0). 0 is first location. Default is last location.
+ * @return	{string}	the name of the newly created application
  */
 ZmZimletBase.prototype.createApp =
 function(label, image, tooltip, index) {
@@ -1164,8 +1177,8 @@ function(label, image, tooltip, index) {
 /**
  * This method gets called each time the "tab" application is opened or closed.
  * 
- * @param	{String} appName        the application name
- * @param	{Boolean} active        if <code>true</code>, the application status is open; otherwise, <code>false</code>
+ * @param	{string} appName        the application name
+ * @param	{boolean} active        if <code>true</code>, the application status is open; otherwise, <code>false</code>
  * @see		#createApp
  */
 ZmZimletBase.prototype.appActive = function(appName, active) { };
@@ -1173,7 +1186,7 @@ ZmZimletBase.prototype.appActive = function(appName, active) { };
 /**
  * This method gets called when the "tab" application is opened for the first time.
  * 
- * @param    {String} appName        the application name
+ * @param    {string} appName        the application name
  * @see		#createApp
  */
 ZmZimletBase.prototype.appLaunch = function(appName) { };
@@ -1181,17 +1194,17 @@ ZmZimletBase.prototype.appLaunch = function(appName) { };
 /**
  * This method by the Zimlet framework when an application button is pressed.
  * 
- * @param	{String} id        the id of the application button
+ * @param	{string} id        the id of the application button
  */
 ZmZimletBase.prototype.onSelectApp = function(id) { };
 
 /**
  * This method by the Zimlet framework when an application action occurs.
  * 
- * @param	{String}	type        the type of action (for example: "app", "menuitem", "treeitem")
- * @param	{String}	action		the action
- * @param	{String}	currentViewId		the current view Id
- * @param	{String}	lastViewId		the last view Id
+ * @param	{string}	type        the type of action (for example: "app", "menuitem", "treeitem")
+ * @param	{string}	action		the action
+ * @param	{string}	currentViewId		the current view Id
+ * @param	{string}	lastViewId		the last view Id
  */
 ZmZimletBase.prototype.onAction = function(id, action, currentViewId, lastViewId) { };
 
