@@ -332,6 +332,7 @@ function(folder, callback, sortBy) {
 	var viewType = (folder.getSearchType() == ZmItem.VOICEMAIL) ? ZmId.VIEW_VOICEMAIL : ZmId.VIEW_CALL_LIST;
 	if ((viewType == ZmId.VIEW_VOICEMAIL) && !folder.phone.hasVoiceMail) {
 		AjxDispatcher.run("GetVoiceController").show(null, folder);
+		this._setupOverviewContainer();
 		if (callback) {
 			callback.run(null);
 		}
@@ -363,13 +364,7 @@ function(folder, callback, response) {
 	vc.show(searchResult, folder);
 
 	// setup the overview container now that the app has been activated
-	this.getOverviewContainer();
-	if (!this._overviewContainer.initialized) {
-		var overviewParams = this._getOverviewParams();
-		overviewParams.overviewTrees = this._getOverviewTrees();
-		overviewParams.phones = this.phones;
-		this._overviewContainer.initialize(overviewParams);
-	}
+	this._setupOverviewContainer();
 
 	this.selectFolderInOverview(folder);
 
@@ -393,6 +388,17 @@ function(folder, callback, response) {
 		callback.run(searchResult);
 	}
 };
+
+ZmVoiceApp.prototype._setupOverviewContainer =
+function() {
+	this.getOverviewContainer();
+	if (!this._overviewContainer.initialized) {
+		var overviewParams = this._getOverviewParams();
+		overviewParams.overviewTrees = this._getOverviewTrees();
+		overviewParams.phones = this.phones;
+		this._overviewContainer.initialize(overviewParams);
+	}
+}
 
 ZmVoiceApp.prototype.markItemsHeard =
 function(items, heard, callback, errorCallback) {
