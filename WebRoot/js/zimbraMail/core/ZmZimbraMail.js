@@ -2433,21 +2433,23 @@ function() {
  */
 ZmZimbraMail.prototype._createUpsellView =
 function(appName) {
-	var upsellView = this._upsellView[appName] = new ZmUpsellView({parent:this._shell, posStyle:Dwt.ABSOLUTE_STYLE, className: 'ZmUpsellView'});
-	var upsellUrl = appCtxt.get(ZmApp.UPSELL_URL[appName]);
-	var el = upsellView.getHtmlElement();
-	var htmlArr = [];
-	var idx = 0;
-    htmlArr[idx++] = "<iframe id='iframe_" + upsellView.getHTMLElId() + "' width='100%' height='100%' frameborder='0' src='";
-	htmlArr[idx++] = upsellUrl;
-	htmlArr[idx++] = "'>";
-	el.innerHTML = htmlArr.join("");
-	var elements = {};
-	elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = upsellView;
 	var viewName = [appName, "upsell"].join("_");
-	var callbacks = {}
-	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._displayUpsellView);
-	this._appViewMgr.createView({viewId:viewName, appName:appName, elements:elements, isTransient:true, callbacks:callbacks});
+	if (!this._upsellView[appName]) {
+		var upsellView = this._upsellView[appName] = new ZmUpsellView({parent:this._shell, posStyle:Dwt.ABSOLUTE_STYLE, className: 'ZmUpsellView'});
+		var upsellUrl = appCtxt.get(ZmApp.UPSELL_URL[appName]);
+		var el = upsellView.getHtmlElement();
+		var htmlArr = [];
+		var idx = 0;
+		htmlArr[idx++] = "<iframe id='iframe_" + upsellView.getHTMLElId() + "' width='100%' height='100%' frameborder='0' src='";
+		htmlArr[idx++] = upsellUrl;
+		htmlArr[idx++] = "'>";
+		el.innerHTML = htmlArr.join("");
+		var elements = {};
+		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = upsellView;
+		var callbacks = {}
+		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._displayUpsellView);
+		this._appViewMgr.createView({viewId:viewName, appName:appName, elements:elements, isTransient:true, callbacks:callbacks});
+	}
 	this._appViewMgr.pushView(viewName);
 };
 
