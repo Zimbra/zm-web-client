@@ -236,6 +236,9 @@ ZmContact.X_FIELDS = [
 	ZmContact.X_fullName
 ];
 
+
+ZmContact.IGNORE_NORMALIZATION = [];
+
 ZmContact.updateFieldConstants = function() {
 
 ZmContact.DISPLAY_FIELDS = [].concat(
@@ -518,9 +521,10 @@ function(contact, attr) {
  *
  * @param {Hash}	attrs  a hash of attributes to normalize.
  * @param {String}	[prefix] if specified, only the the attributes that match the given prefix will be returned
+ * @param {Array}	[ignore] if specified, the attributes that are present in the array will not be normalized
  * @return	{Hash}	a hash of normalized attributes
  */
-ZmContact.getNormalizedAttrs = function(attrs, prefix) {
+ZmContact.getNormalizedAttrs = function(attrs, prefix, ignore) {
 	var nattrs = {};
 	if (attrs) {
 		// normalize attribute numbering
@@ -532,10 +536,14 @@ ZmContact.getNormalizedAttrs = function(attrs, prefix) {
 			// get current count
 			var nprefix = name.replace(/\d+$/,"");
 			if (prefix && prefix != nprefix) continue;
-			if (!a[nprefix]) a[nprefix] = 0;
-			// normalize, if needed
-			var nname = ZmContact.getAttributeName(nprefix, ++a[nprefix]);
-			nattrs[nname] = attrs[name];
+			if (AjxUtil.isArray(ignore) && AjxUtil.indexOf(ignore, nprefix)!=-1) {
+				nattrs[name] = attrs[name];
+			} else {
+				if (!a[nprefix]) a[nprefix] = 0;
+				// normalize, if needed
+				var nname = ZmContact.getAttributeName(nprefix, ++a[nprefix]);
+				nattrs[nname] = attrs[name];
+			}
 		}
 	}
 	return nattrs;
@@ -776,7 +784,7 @@ ZmContact.prototype.getAttrs = function(prefix) {
  * @return	{Hash}	a hash of attribute/value pairs
  */
 ZmContact.prototype.getNormalizedAttrs = function(prefix) {
-	return ZmContact.getNormalizedAttrs(this.attr, prefix);
+	return ZmContact.getNormalizedAttrs(this.attr, prefix, ZmContact.IGNORE_NORMALIZATION);
 };
 
 /**
