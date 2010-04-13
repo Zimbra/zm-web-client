@@ -1756,7 +1756,7 @@ function() {
 	var total = this._getNumTotal();
 	var num = total || size;
     var typeText = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
-	if (total && (num != total)) {
+	if (total && (size != total)) {
 		return AjxMessageFormat.format(ZmMsg.itemCount1, [size, total, typeText]);
 	} else {
 		var sizeText = list.size() + (this._list.hasMore() ? "+" : "");
