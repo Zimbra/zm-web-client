@@ -1288,3 +1288,135 @@ function(callback, conv) {
 	}
 };
 
+
+/**
+ * Gets the metadata based on sectionName
+ * 
+ * @param	{string} sectionName Section name in the form of "zwc:<sectioname>"  e.g. zwc:com_zimbra_myZimlet
+ * @param	{AjxCallback} callback	A callback function	to be called or <code>null</code> for Synchronous(non-ajax) call
+ * @return	the XML document representing the meta data
+ * <pre>example usage: getMailboxMetaData("zwc:com_zimbra_myZimlet_Section1", callback); </pre>
+ */
+ZmZimletBase.prototype.getMailboxMetaData =
+function(sectionName, callback) {
+	var soapDoc = AjxSoapDoc.create("GetMailboxMetadataRequest", "urn:zimbraMail");//request name and urn(always zimbraMail)
+	var secNode = soapDoc.set("meta");
+	secNode.setAttribute("section", sectionName);
+	var asyncMode = true;
+	if (!callback) {
+		asyncMode = false;
+	}
+	return appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:asyncMode, callback:callback});
+};
+
+/**
+ * Deletes all the metadata for a given sectionName or metadata for just the subSection within a given sectionName
+ * 
+ * @param	{string} sectionName Section name in the form of "zwc:<sectioname>"  e.g. zwc:com_zimbra_myZimlet
+ * @param	{string} subSectionName	A unique string representing sub-section within a section that needs to be deleted; <code>null</code> to delete entire meta-data(at the section-level)
+ * @param	{AjxCallback} callback	A callback function	to be called or <code>null</code> for Synchronous(non-ajax) call
+ */
+ZmZimletBase.prototype.deleteMailboxMetaData =
+function(sectionName, subSectionName, callback) {
+	var _attrs = null;
+	var subSectionNameAndDataArray = [];
+	if (subSectionName) {
+		try {
+			var matchFound = false;
+			var response = this.getToMailboxMetaData(sectionName).GetMailboxMetadataResponse.meta[0];
+			if (response._attrs) {
+				_attrs = response._attrs;
+				for (var oKey in _attrs) {
+					if (subSectionName != oKey) {
+						subSectionNameAndDataArray.push({subSectionName:oKey, data:_attrs[oKey]});
+					}
+				}
+			}
+			if (!matchFound) {
+				var errMsg = ZmMsg.subSectionNotFoundInSection.replace("{0}", subSectionName).replace("{1}", sectionName);
+				throw new AjxException(errMsg, AjxException.INTERNAL_ERROR, "deleteMailboxMetaData");
+
+			}
+		} catch(e) {
+			throw new AjxException(AjxException.INTERNAL_ERROR + e, AjxException.INTERNAL_ERROR, "deleteMailboxMetaData");
+		}
+	}
+	return this._doSetMailboxMetaData(sectionName, subSectionNameAndDataArray, callback);
+};
+
+/**
+ * Allows us to save random data in DB (upto 10kb per section). Allows keeping data 
+ * in multiple sub-sections(key-value pair array) within a section. 
+ * 
+ * @param	{string} sectionName Section name in the form of "zwc:<sectioname>"  e.g. zwc:com_zimbra_myZimlet
+ * @param	{array}	props	subSectionNameAndDataArray	An array of key-value hash objects as described below:
+ * <ul>
+ * <li>{string} subSectionName The subsection name or key</li>
+ * <li>{String} data The data/information to be stored in this sub-section</li>
+ * </ul>
+ *
+ * e.g. <code>var subSectionNameAndDataArray = [{subSectionName:"firstName", data:"Raja"}, {subSectionName:"companyName", data:"Zimbra"}]</code>
+ *
+ * @param	{AjxCallback} callback	A callback function	to be called or <code>null</code> for Synchronous(non-ajax) call
+ * @param	{boolean} override  If <code>true</code>, *entire section* and all the data will be wiped-out and replaced by the current subSectionNameAndDataArray data 
+ */
+ZmZimletBase.prototype.setMailboxMetaData =
+function(sectionName, subSectionNameAndDataArray, callback, override) {
+	if (!subSectionNameAndDataArray || subSectionNameAndDataArray.length == 0) {//dont allow deleting section using this function
+		//return "No key=value pair sent. To delete section, use 'deleteMailboxMetaData' API";
+		throw new AjxException(ZmMsg.subSectionNameAndDataArrayEmpty, AjxException.INTERNAL_ERROR, "setMailboxMetaData");
+	}
+	var _attrs = null;
+	if (!override) {
+		try {
+			var response = this.getMailboxMetaData(sectionName).GetMailboxMetadataResponse.meta[0];
+			if (response._attrs) {
+				_attrs = response._attrs;
+				var oldsubSectionNameAndDataArray = [];
+				for (var oKey in _attrs) {
+					var ignore = false;
+					for (var i = 0; i < subSectionNameAndDataArray.length; i++) {
+						var keyVal = subSectionNameAndDataArray[i];
+						if (keyVal.subSectionName == oKey) {
+							ignore = true;
+						}
+					}
+					if (!ignore) {
+						oldsubSectionNameAndDataArray.push({subSectionName:oKey, data:_attrs[oKey]});
+					}
+				}
+				subSectionNameAndDataArray = subSectionNameAndDataArray.concat(oldsubSectionNameAndDataArray);
+			}
+		} catch(e) {
+			throw new AjxException(ZmMsg.exceptionSavingMetaData +e, AjxException.INTERNAL_ERROR, "setMailboxMetaData");
+		}
+	}
+	return this._doSetMailboxMetaData(sectionName, subSectionNameAndDataArray, callback);
+};
+
+/**
+ * @private
+ */
+ZmZimletBase.prototype._doSetMailboxMetaData =
+function(sectionName, subSectionNameAndDataArray, callback) {
+	if (sectionName.indexOf("zwc:") == -1 && sectionName.indexOf("zd:") == -1) {
+		throw new AjxException(ZmMsg.metaDataSectionNameMustHaveNamespace + e, AjxException.INTERNAL_ERROR, "_doSetMailboxMetaData");
+	}
+	var soapDoc = AjxSoapDoc.create("SetMailboxMetadataRequest", "urn:zimbraMail");
+	var doc = soapDoc.getDoc();
+	var secNode = soapDoc.set("meta");// property name
+	secNode.setAttribute("section", sectionName);
+	for (var i = 0; i < subSectionNameAndDataArray.length; i++) {
+		var keyVal = subSectionNameAndDataArray[i];
+		var el = doc.createElement("a");
+		el.setAttribute("n", keyVal.subSectionName);
+		el.appendChild(doc.createTextNode(keyVal.data));
+		secNode.appendChild(el);
+	}
+
+	var asyncMode = true;
+	if (!callback) {
+		asyncMode = false;
+	}
+	return appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:asyncMode, callback:callback});
+};
