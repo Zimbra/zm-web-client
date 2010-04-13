@@ -62,7 +62,6 @@ function() {
  */
 ZmMsgController.prototype.show = 
 function(msg, mode, callback, markRead) {
-
 	this.setMsg(msg);
 	this._mode = mode;
 	this._currentView = this._getViewType();
@@ -89,6 +88,7 @@ function(callback, result) {
 		callback.run();
 	}
 };
+
 
 /**
  * Called by ZmNewWindow.unload to remove tag list listener (which resides in 
@@ -360,4 +360,30 @@ function(oldView, newView) {
 ZmMsgController.prototype._tabCallback =
 function(oldView, newView) {
 	return (oldView && oldView.indexOf(ZmId.VIEW_MSG) == 0);
+};
+
+ZmMsgController.prototype._printListener =
+function(ev) {
+	var ids = [];
+    var item = this._msg;
+	var id;
+    // always extract out the msg ids from the conv
+    if (item.toString() == "ZmConv") {
+        // get msg ID in case of virtual conv.
+        // item.msgIds.length is inconsistent, so checking if conv id is negative.
+        if (appCtxt.isOffline && item.id.split(":")[1]<0) {
+            id = item.msgIds[0];
+        } else {
+            id = "C:" + item.id;
+        }
+    } else {
+		id = item.id;
+        if (item._part) 
+			id += ":" + item._part;
+    }
+    var url = "/h/printmessage?id=" + id;
+    if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES)) {
+       url += "&xim=1"; 
+    }
+	window.open(appContextPath+url, "_blank");
 };

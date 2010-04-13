@@ -59,7 +59,7 @@
     </table>
 </c:if>
 <c:if test="${cid[0] != 'C'}">
-    <zm:getMessage var="message" id="${mid}" markread="false" neuterimages="${empty param.xim}"/>
+    <zm:getMessage var="message" id="${cid[0]}" markread="false" neuterimages="${empty param.xim}" part="${cid[1]}" />
 	<table cellpadding="0" cellspacing="5"  width="100%">
     <tr>
 		<td colspan="2">

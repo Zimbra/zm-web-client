@@ -1392,10 +1392,10 @@ function(op) {
 	}
 
 	// forwarding actions are tied to inc option
-	if (this._action == ZmOperation.FORWARD_INLINE && what == ZmSetting.INC_ATTACH) {
+	if (this._action == ZmOperation.FORWARD_INLINE && this._curIncOptions.what == ZmSetting.INC_ATTACH) {
 		this._action = ZmOperation.FORWARD_ATT;
 	}
-	if (this._action == ZmOperation.FORWARD_ATT && what != ZmSetting.INC_ATTACH) {
+	if (this._action == ZmOperation.FORWARD_ATT && this._curIncOptions.what != ZmSetting.INC_ATTACH) {
 		this._action = ZmOperation.FORWARD_INLINE;
 	}
 
