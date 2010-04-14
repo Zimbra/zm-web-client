@@ -123,6 +123,7 @@ ZmContact.F_workURL					= "workURL";
 ZmContact.X_fileAs					= "fileAs";				// extra fields
 ZmContact.X_firstLast				= "firstLast";
 ZmContact.X_fullName				= "fullName";
+ZmContact.X_vcardXProps             = "vcardXProps";
 ZmContact.MC_cardOwner				= "cardOwner";			// My card fields
 ZmContact.MC_workCardMessage		= "workCardMessage";
 ZmContact.MC_homeCardMessage		= "homeCardMessage";
@@ -233,7 +234,8 @@ ZmContact.MYCARD_FIELDS = [
 ];
 ZmContact.X_FIELDS = [
 	ZmContact.X_firstLast,
-	ZmContact.X_fullName
+	ZmContact.X_fullName,
+    ZmContact.X_vcardXProps
 ];
 
 
