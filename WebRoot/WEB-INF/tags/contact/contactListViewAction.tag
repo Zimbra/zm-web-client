@@ -105,80 +105,42 @@
     <c:otherwise>
         <zm:checkCrumb crumb="${param.crumb}"/>
         <c:choose>
-			<c:when test="${zm:actionSet(param, 'actionCompose')}">
-			                <c:set var="toEmail" value=""/>
-			                <c:forEach items="${paramValues.id}" var="cid">
-			                    <c:if test="${not empty cid}">
-			                        <zm:getContact id="${cid}" var="contact"/>
-			                        <c:set var="homeEmail" value=""/>
-			                        <c:set var="workEmail" value=""/>
-			                        <c:if test="${not empty contact.email}">
-			                            <c:set var="homeEmail" value="${contact.email}"/>
-			                        </c:if>
-			                        <c:if test="${not empty contact.workEmail1}">
-			                            <c:set var="workEmail" value="${contact.workEmail1}"/>
-			                        </c:if>
-			                        <c:if test="${not empty contact.email2 and empty homeEmail and empty workEmail}">
-			                            <c:set var="homeEmail" value="${contact.email2}"/>
-			                        </c:if>
-			                        <c:if test="${not empty contact.workEmail2 and empty homeEmail and empty workEmail}">
-			                            <c:set var="workEmail" value="${contact.workEmail2}"/>
-			                        </c:if>
-			                        <c:if test="${not empty contact.email3 and empty homeEmail and empty workEmail}">
-			                            <c:set var="homeEmail" value="${contact.email3}"/>
-			                        </c:if>
-			                        <c:if test="${not empty contact.workEmail3 and empty homeEmail and empty workEmail}">
-			                            <c:set var="workEmail" value="${contact.workEmail3}"/>
-			                        </c:if>
-			                        <c:if test="${not empty homeEmail}">
-			                             <c:set var="toEmail" value="${homeEmail}${not empty toEmail ? ',' : ''}${not empty toEmail ? toEmail : ''}"/>
-			                        </c:if>
-			                        <c:if test="${empty homeEmail and not empty workEmail}">
-			                             <c:set var="toEmail" value="${workEmail}${not empty toEmail ? ',' : ''}${not empty toEmail ? toEmail : ''}"/>
-			                        </c:if>
-			                    </c:if>
-			                </c:forEach>
-			                <c:redirect url="/h/search">
-			                    <c:param name="action" value="compose"/>
-			                    <c:param name="to" value="${toEmail}"/>
-			                </c:redirect>    
-			            </c:when>
             <c:when test="${zm:actionSet(param, 'actionDelete')}">
                 <zm:requirePost/>
-				<c:choose>
-					<c:when test="${zm:getIsMyCard(pageContext, ids)}">
-						<app:status style="Critical">
-							<fmt:message key="errorMyCardDelete"/>
-						</app:status>
-					</c:when>
-					<c:otherwise>
-						<zm:trashContact  var="result" id="${ids}"/>
-						<app:status>
-							<fmt:message key="actionContactMovedTrash">
-								<fmt:param value="${result.idCount}"/>
-							</fmt:message>
-						</app:status>
-					</c:otherwise>
-				</c:choose>
+                <c:choose>
+                    <c:when test="${zm:getIsMyCard(pageContext, ids)}">
+                        <app:status style="Critical">
+                            <fmt:message key="errorMyCardDelete"/>
+                        </app:status>
+                    </c:when>
+                    <c:otherwise>
+                        <zm:trashContact  var="result" id="${ids}"/>
+                        <app:status>
+                            <fmt:message key="actionContactMovedTrash">
+                                <fmt:param value="${result.idCount}"/>
+                            </fmt:message>
+                        </app:status>
+                    </c:otherwise>
+                </c:choose>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
                 <zm:requirePost/>
-				<c:choose>
-					<c:when test="${zm:getIsMyCard(pageContext, ids)}">
-						<app:status style="Critical">
-							<fmt:message key="errorMyCardDelete"/>
-						</app:status>
-					</c:when>
-					<c:otherwise>
-						<zm:deleteContact  var="result" id="${ids}"/>
-						<app:status>
-							<fmt:message key="actionContactHardDeleted">
-								<fmt:param value="${result.idCount}"/>
-							</fmt:message>
-						</app:status>
-					</c:otherwise>
-				</c:choose>
-			</c:when>
+                <c:choose>
+                    <c:when test="${zm:getIsMyCard(pageContext, ids)}">
+                        <app:status style="Critical">
+                            <fmt:message key="errorMyCardDelete"/>
+                        </app:status>
+                    </c:when>
+                    <c:otherwise>
+                        <zm:deleteContact  var="result" id="${ids}"/>
+                        <app:status>
+                            <fmt:message key="actionContactHardDeleted">
+                                <fmt:param value="${result.idCount}"/>
+                            </fmt:message>
+                        </app:status>
+                    </c:otherwise>
+                </c:choose>
+            </c:when>
             <c:when test="${zm:actionSet(param, 'actionCompose')}">
                 <c:set var="contactIds" value="" />
                 <c:forEach items="${ids}" var="id">
@@ -204,7 +166,34 @@
                             </c:forEach>
                         </c:when>
                         <c:otherwise>
-                            <c:set var="emailIds" value="${contact.email}" />
+                            <c:set var="toEmail" value=""/>
+                            <c:set var="homeEmail" value=""/>
+                            <c:set var="workEmail" value=""/>
+                            <c:if test="${not empty contact.email}">
+                                <c:set var="homeEmail" value="${contact.email}"/>
+                            </c:if>
+                            <c:if test="${not empty contact.workEmail1}">
+                                <c:set var="workEmail" value="${contact.workEmail1}"/>
+                            </c:if>
+                            <c:if test="${not empty contact.email2 and empty homeEmail and empty workEmail}">
+                                <c:set var="homeEmail" value="${contact.email2}"/>
+                            </c:if>
+                            <c:if test="${not empty contact.workEmail2 and empty homeEmail and empty workEmail}">
+                                <c:set var="workEmail" value="${contact.workEmail2}"/>
+                            </c:if>
+                            <c:if test="${not empty contact.email3 and empty homeEmail and empty workEmail}">
+                                <c:set var="homeEmail" value="${contact.email3}"/>
+                            </c:if>
+                            <c:if test="${not empty contact.workEmail3 and empty homeEmail and empty workEmail}">
+                                <c:set var="workEmail" value="${contact.workEmail3}"/>
+                            </c:if>
+                            <c:if test="${not empty homeEmail}">
+                                 <c:set var="toEmail" value="${homeEmail}${not empty toEmail ? ',' : ''}${not empty toEmail ? toEmail : ''}"/>
+                            </c:if>
+                            <c:if test="${empty homeEmail and not empty workEmail}">
+                                 <c:set var="toEmail" value="${workEmail}${not empty toEmail ? ',' : ''}${not empty toEmail ? toEmail : ''}"/>
+                            </c:if>
+                            <c:set var="emailIds" value="${toEmail}" />
                         </c:otherwise>
                     </c:choose>
                     <c:set var="contactIds" value="${contactIds}${sep}${emailIds}" />
@@ -239,22 +228,22 @@
             </c:when>
             <c:when test="${fn:startsWith(folderId, 'm:')}">
                 <c:choose>
-					<c:when test="${zm:getIsMyCard(pageContext, ids)}">
-						<app:status style="Critical">
-							<fmt:message key="errorMyCardMove"/>
-						</app:status>
-					</c:when>
-					<c:otherwise>
-						<c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
-						<zm:moveContact folderid="${folderid}"var="result" id="${ids}"/>
-						<app:status>
-							<fmt:message key="actionContactMoved">
-								<fmt:param value="${result.idCount}"/>
-								<fmt:param value="${zm:getFolderName(pageContext, folderid)}"/>
-							</fmt:message>
-						</app:status>
-					</c:otherwise>
-				</c:choose>
+                    <c:when test="${zm:getIsMyCard(pageContext, ids)}">
+                        <app:status style="Critical">
+                            <fmt:message key="errorMyCardMove"/>
+                        </app:status>
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
+                        <zm:moveContact folderid="${folderid}"var="result" id="${ids}"/>
+                        <app:status>
+                            <fmt:message key="actionContactMoved">
+                                <fmt:param value="${result.idCount}"/>
+                                <fmt:param value="${zm:getFolderName(pageContext, folderid)}"/>
+                            </fmt:message>
+                        </app:status>
+                    </c:otherwise>
+                </c:choose>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionMove')}">
                 <app:status style="Warning"><fmt:message key="actionNoFolderSelected"/></app:status>
