@@ -740,6 +740,7 @@ ZmEditContactView.prototype._handleDetailCheck = function(itemId, id) {
 ZmEditContactView.prototype._handleFileAsChange = function() {
 	var fa = this.getValue("FILE_AS");
 	var showCompany =
+        ZmEditContactView.ALWAYS_SHOW["COMPANY"] ||
 		fa == ZmContact.FA_COMPANY ||
 		fa == ZmContact.FA_LAST_C_FIRST_COMPANY ||
 		fa == ZmContact.FA_FIRST_LAST_COMPANY ||
