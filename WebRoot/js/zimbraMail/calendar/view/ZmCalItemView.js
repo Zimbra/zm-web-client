@@ -285,6 +285,17 @@ function(ev) {
 ZmApptView.prototype.edit =
 function(ev) {
 	var item = this._calItem;
+
+    if(!item.isOrg && !(this._editWarningDialog && this._editWarningDialog.isPoppedUp())){
+        var msgDialog = this._editWarningDialog = appCtxt.getMsgDialog();
+        msgDialog.setMessage(ZmMsg.attendeeEditWarning, DwtMessageDialog.WARNING_STYLE);
+        msgDialog.popup();
+        msgDialog.registerCallback(DwtDialog.OK_BUTTON, this.edit, this);
+        return;
+    }else{
+        this._editWarningDialog.popdown();
+    }
+    
 	var mode = ZmCalItem.MODE_EDIT;
 	if (item.isRecurring()) {
 		mode = this._mode || ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
