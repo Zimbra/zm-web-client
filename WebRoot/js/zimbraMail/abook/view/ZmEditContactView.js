@@ -701,7 +701,7 @@ ZmEditContactView.prototype._setFolder = function(organizerOrId) {
  */
 ZmEditContactView.prototype._getDialogXY =
 function() {
-	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
+	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0, null, true);
 	return new DwtPoint(loc.x + ZmEditContactView.DIALOG_X, loc.y + ZmEditContactView.DIALOG_Y);
 };
 
