@@ -1413,8 +1413,9 @@ function(ev) {
 		}
 
 		if (ev.fontSize) {
-			var mi = this._fontSizeButton.getMenu().getItem(ev.fontSize-1);
-			this._fontSizeButton.setText(mi.getText());
+			var mi = this._fontSizeButton.getMenu().getItem(parseInt(ev.fontSize)-1);
+			if (mi)
+				this._fontSizeButton.setText(mi.getText());
 		}
 	}
 
