@@ -135,7 +135,8 @@ function(ev) {
 	var query = {
 		relative: true,
 		qsArgs: {
-			sq: ['phone:', v._folder.phone.name, ' in:"', v._folder.name, '"'].join('')
+			sq: ['phone:', v._folder.phone.name, ' in:"', v._folder.name, '"'].join(''),
+			clientTime: 1
 		}
 	};
 
@@ -143,13 +144,12 @@ function(ev) {
 		query.path = "/h/printvoicemails";
 		query.qsArgs.st = "voicemail";
 		query.qsArgs.sl = this._activeSearch.getResults("VOICEMAIL").folder.numTotal || this._activeSearch.getResults("VOICEMAIL").size();
-		url = AjxUtil.formatUrl(query);
 	} else if (v.view == ZmId.VIEW_CALL_LIST) {
 		query.path = "/h/printcalls";
 		query.qsArgs.st = "calllog";
 		query.qsArgs.sl = this._activeSearch.getResults("CALL").folder.numTotal || this._activeSearch.getResults("CALL").size();
-		url = AjxUtil.formatUrl(query);
 	}
+	url = AjxUtil.formatUrl(query);
 
 	if (url) {
 		window.open(appContextPath+AjxStringUtil.urlEncode(url), "_blank");
