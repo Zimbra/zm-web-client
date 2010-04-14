@@ -219,7 +219,6 @@ function() {
 	var sections = {
 		GENERAL: {
 			title: ZmMsg.general,
-			description: "[General settings]",
 			templateId: "prefs.Pages#General",
 			priority: 0,
 			prefs: [
