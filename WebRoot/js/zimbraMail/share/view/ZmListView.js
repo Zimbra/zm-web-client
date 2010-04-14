@@ -273,7 +273,9 @@ function(ev) {
 			if (!this._isPageless) {
 				this._controller._app._checkReplenishListView = this;
 			} else {
-				this._handleResponseCheckReplenish();
+				if (!this._replenishTimedAction) // Many rows may be removed quickly, so skip unnecessary replenishes
+					this._replenishTimedAction = new AjxTimedAction(this, this._handleResponseCheckReplenish);
+				AjxTimedAction.scheduleAction(this._replenishTimedAction, 10);
 			}
 		}
 		this._controller._resetToolbarOperations();
@@ -318,6 +320,8 @@ function() {
 
 ZmListView.prototype._handleResponseCheckReplenish =
 function() {
+console.log("ZmListView.prototype._handleResponseCheckReplenish");
+console.log(this._handleResponseCheckReplenish.caller);
 	if (this.size() == 0) {
 		this._controller._handleEmptyList(this);
 	} else {
