@@ -114,6 +114,8 @@ function(calItem) {
 	var editBtnCellId = this._htmlElId + "_editBtnCell";
 	this._hdrTableId = this._htmlElId + "_hdrTable";
 
+    subs.allowEdit = (appCtxt.get(ZmSetting.CAL_APPT_ALLOW_ATTENDEE_EDIT) || calItem.isOrg);
+
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
 

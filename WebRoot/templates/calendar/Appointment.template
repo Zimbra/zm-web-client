@@ -580,11 +580,11 @@
 <template id='calendar.Appointment#ReadOnlyView'>
 	<table border=0 class='MsgHeaderTable' id='${id}_hdrTable' cellspacing=0 cellpadding=0 width=100%>
 		<tr>
-			<$ if(data.isAppt) {$>
+			<$ if(data.isAppt && data.allowEdit) {$>
 				<td id='${id}_editBtnCell' width="20"></td>
 			<$ } $>
 			<td id='${id}_closeBtnCell' width="20"></td>
-			<td class='SubjectCol LabelColValue' colspan='<$= (data.isAppt?98:99) $>' width=100%><$= data.subject $></td>
+			<td class='SubjectCol LabelColValue' colspan='<$= (data.isAppt && data.allowEdit ?98:99) $>' width=100%><$= data.subject $></td>
 		</tr>
 
 		<$ if (data.location) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.location, val:data.location}) $><$ } $>
