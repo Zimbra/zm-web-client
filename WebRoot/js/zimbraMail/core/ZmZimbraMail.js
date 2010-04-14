@@ -354,6 +354,10 @@ function(params) {
 			this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO, ZmId.USER_QUOTA);
 		this._components[ZmAppViewMgr.C_STATUS] = this.statusView =
 			new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
+
+		if (appCtxt.isOffline) {
+			this._initOfflineUserInfo();
+		}
 	}
 
 	this._createEnabledApps();
@@ -722,7 +726,8 @@ function(online) {
 		this.sendClientEventNotify(ZmZimbraMail.UI_NETWORK_DOWN);
 	}
 
-	this._userNameField.getHtmlElement().innerHTML = AjxTemplate.expand('share.App#NetworkStatus', {online:online});
+	this._networkStatusIcon.setToolTipContent(online ? ZmMsg.networkStatusOffline : ZmMsg.networkStatusOnline);
+	this._networkStatusIcon.getHtmlElement().innerHTML = AjxImg.getImageHtml(online ? "Connect" : "Disconnect");
 };
 
 /**
@@ -1744,32 +1749,41 @@ function() {
 	}
 };
 
+ZmZimbraMail.prototype._initOfflineUserInfo =
+function() {
+	var htmlElId = this._userNameField.getHTMLElId();
+	this._userNameField.getHtmlElement().innerHTML = AjxTemplate.expand('share.App#NetworkStatus', {id:htmlElId});
+	this._userNameField.addClassName("BannerTextUserOffline");
+
+	var params = {
+		parent: this._userNameField,
+		parentElement: (htmlElId+"_networkStatusIcon")
+	};
+	this._networkStatusIcon = new DwtComposite(params);
+
+	var topTreeEl = document.getElementById("skin_container_tree_top");
+	if (topTreeEl) {
+		Dwt.setSize(topTreeEl, Dwt.DEFAULT, "20");
+	}
+};
+
 /**
  * Sets the user info.
  *
  */
 ZmZimbraMail.prototype.setUserInfo =
 function() {
-	if (appCtxt.isOffline) {
-		this._userNameField.getHtmlElement().innerHTML = ZmMsg.accounts;
-		this._userNameField.addClassName("BannerTextUserOffline");
-		var topTreeEl = document.getElementById("skin_container_tree_top");
-		if (topTreeEl) {
-			Dwt.setSize(topTreeEl, Dwt.DEFAULT, "20");
-		}
-	} else {
-		// username
-		var login = appCtxt.get(ZmSetting.USERNAME);
-		var username = (appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
-		if (username) {
-			this._userNameField.getHtmlElement().innerHTML =  AjxStringUtil.clipByLength(username, 24);
-			if (AjxEnv.isLinux) {	// bug fix #3355
-				this._userNameField.getHtmlElement().style.lineHeight = "13px";
-			}
+	if (appCtxt.isOffline) { return; }
+
+	// username
+	var login = appCtxt.get(ZmSetting.USERNAME);
+	var username = (appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
+	if (username) {
+		this._userNameField.getHtmlElement().innerHTML =  AjxStringUtil.clipByLength(username, 24);
+		if (AjxEnv.isLinux) {	// bug fix #3355
+			this._userNameField.getHtmlElement().style.lineHeight = "13px";
 		}
 	}
-
-	if (appCtxt.isOffline) { return; }
 
 	// quota
 	var usedQuota = (appCtxt.get(ZmSetting.QUOTA_USED)) || 0;

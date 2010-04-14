@@ -190,8 +190,7 @@
 			<td class="ZmNetworkStatus">
 				<$= ZmMsg.accounts $>
 			</td>
-			<td class="ZmNetworkStatusIcon" align=right width=18 onclick="ZmZimbraMail.handleNetworkStatusClick();">
-				<$= AjxImg.getImageHtml(data.online ? "Connect" : "Disconnect") $>
+			<td class="ZmNetworkStatusIcon" align=right width=18 onclick="ZmZimbraMail.handleNetworkStatusClick();" id="${id}_networkStatusIcon">
 			</td>
 		</tr>
 	</table>
