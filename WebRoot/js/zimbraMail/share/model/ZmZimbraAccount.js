@@ -538,7 +538,8 @@ function(callback) {
 ZmZimbraAccount.prototype.loadMetaData =
 function(callback, batchCommand) {
 	var metaDataCallback = new AjxCallback(this, this._handleLoadMetaData, [callback]);
-	this.metaData.load(metaDataCallback, batchCommand);
+	var sections = [ZmSetting.M_IMPLICIT, ZmSetting.M_OFFLINE];
+	this.metaData.load(sections, metaDataCallback, batchCommand);
 };
 
 /**

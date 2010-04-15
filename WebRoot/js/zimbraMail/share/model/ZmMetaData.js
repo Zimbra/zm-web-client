@@ -19,11 +19,14 @@
  */
 
 /**
- * Stores generic data to the server via <code>&lt;SetMailboxMetadataRequest&gt;</code> and <code>&lt;GetMailboxMetadataRequest&gt;</code>.
+ * Stores generic data to the server via <code>&lt;Set[Mailbox|Custom]MetadataRequest&gt;</code> and
+ * <code>&lt;Get[Mailbox|Custom]MetadataRequest&gt;</code>.
  * @class
  * This class provides a general way to store per-user data using arbitrary
  * key/value pairs. NOTE: the server does not support modifying data so if there
- * are any changes, *all* the data must be re-set per section.
+ * are any changes, *all* the data must be re-set per section. Data can be
+ * written on the mailbox or on an individual mailbox item. If the constructor
+ * receives an itemId, then data will be retrieved/written via [Get|Set]CustomMetadataRequest.
  * <br/>
  * <br/>
  * The section data is mapped into {@link ZmSettings} (based on the key name) to allow
@@ -33,14 +36,16 @@
  * should be added to the list of settings in {@link ZmSettings} with type set to
  * ZmSetting.T_METADATA
  *
- * @param {ZmAccount}	account		the account this meta data belongs to
+ * @param {ZmAccount}	account		Optional. The account this meta data belongs to
+ * @param {String}	itemId		Optional.  If specified, (custom) meta data will be saved on the item
  *
  * @author Parag Shah
  */
-ZmMetaData = function(account) {
+ZmMetaData = function(account, itemId) {
 
 	this._sections = {};
 	this._account = account;
+	this._itemId = itemId;
 };
 
 ZmMetaData.prototype.constructor = ZmMetaData;
@@ -49,10 +54,6 @@ ZmMetaData.prototype.constructor = ZmMetaData;
 // Consts
 
 ZmMetaData.NAMESPACE		= "zwc";
-ZmMetaData.DEFAULT_SECTIONS	= [
-	ZmSetting.M_IMPLICIT,
-	ZmSetting.M_OFFLINE
-];
 
 
 // Public Methods
@@ -78,7 +79,13 @@ function() {
  */
 ZmMetaData.prototype.set =
 function(section, data, batchCommand, callback, errorCallback) {
-	var soapDoc = AjxSoapDoc.create("SetMailboxMetadataRequest", "urn:zimbraMail");
+	var soapDoc;
+	if (this._itemId) {
+		soapDoc = AjxSoapDoc.create("SetCustomMetadataRequest", "urn:zimbraMail");
+		soapDoc.getMethod().setAttribute("id", this._itemId);
+	} else {
+		soapDoc = AjxSoapDoc.create("SetMailboxMetadataRequest", "urn:zimbraMail");
+	}
 	var metaNode = soapDoc.set("meta");
 	metaNode.setAttribute("section", [ZmMetaData.NAMESPACE, section].join(":"));
 
@@ -96,7 +103,7 @@ function(section, data, batchCommand, callback, errorCallback) {
 			asyncMode: true,
 			callback: callback,
 			errorCallback: errorCallback,
-			accountName: this._account.name
+			accountName: (this._account ? this._account.name : null)
 		};
 
 		appCtxt.getAppController().sendRequest(params);
@@ -121,7 +128,13 @@ function(section, batchCommand, callback, errorCallback) {
 
 	// if not yet cached, go fetch it
 	if (!cachedSection) {
-		var soapDoc = AjxSoapDoc.create("GetMailboxMetadataRequest", "urn:zimbraMail");
+		var soapDoc;
+		if (this._itemId) {
+			soapDoc = AjxSoapDoc.create("GetCustomMetadataRequest", "urn:zimbraMail");
+			soapDoc.getMethod().setAttribute("id", this._itemId);
+		} else {
+			soapDoc = AjxSoapDoc.create("GetMailboxMetadataRequest", "urn:zimbraMail");
+		}
 		var metaNode = soapDoc.set("meta");
 		metaNode.setAttribute("section", sectionName);
 
@@ -143,16 +156,19 @@ function(section, batchCommand, callback, errorCallback) {
 /**
  * Loads meta data from the server
  *
+ * @param {Array}		sections	the sections to load
  * @param {AjxCallback}	callback	the callback
  * @param {ZmBatchCommand}		batchCommand if part of batch command
  */
 ZmMetaData.prototype.load =
-function(callback, batchCommand) {
+function(sections, callback, batchCommand) {
+	if (!sections) { return; }
+	if (!(sections instanceof Array)) { sections = [sections]; }
+
 	var command = batchCommand || (new ZmBatchCommand());
-	var sectionList = ZmMetaData.DEFAULT_SECTIONS;
-	for (var i = 0; i < sectionList.length; i++) {
-		if (sectionList[i] == ZmSetting.M_OFFLINE && !appCtxt.isOffline) { continue; }
-		this.get(sectionList[i], command);
+	for (var i = 0; i < sections.length; i++) {
+		if (sections[i] == ZmSetting.M_OFFLINE && !appCtxt.isOffline) { continue; }
+		this.get(sections[i], command);
 	}
 
 	if (!batchCommand) {
@@ -174,7 +190,9 @@ ZmMetaData.prototype._handleLoad =
 function(callback, result) {
 	this._sections = {};
 
-	var metaDataResp = result.getResponse().BatchResponse.GetMailboxMetadataResponse;
+	var metaDataResp = (this._itemId != null)
+		? result.getResponse().BatchResponse.GetCustomMetadataResponse
+		: result.getResponse().BatchResponse.GetMailboxMetadataResponse;
 	for (var i = 0; i < metaDataResp.length; i++) {
 		var data = metaDataResp[i].meta[0];
 		this._sections[data.section] = data._attrs;
@@ -189,24 +207,20 @@ function(callback, result) {
  * Saves all data within the given section out to the server. If section is not
  * provided, all sections are saved.
  *
- * @param {String}		section			the section to save
+ * @param {Array}		sections		the sections to save
  * @param {AjxCallback}	callback		the callback called on successful save
  * @param {ZmBatchCommand}	batchCommand		the batch command the request should be a part of
  */
 ZmMetaData.prototype.save =
-function(section, callback, batchCommand) {
-	if (!section) {
-		section = ZmMetaData.DEFAULT_SECTIONS;
-	} else {
-		if (!(section instanceof Array)) {
-			section = [section];
-		}
-	}
+function(sections, callback, batchCommand) {
+	if (!sections) { return; }
+	if (!(sections instanceof Array)) { sections = [sections]; }
 
-	var command = batchCommand || (new ZmBatchCommand(null, this._account.name));
+	var acct = this._account ? this._account.name : null;
+	var command = batchCommand || (new ZmBatchCommand(null, acct));
 
-	for (var i = 0; i < section.length; i++) {
-		var s = section[i];
+	for (var i = 0; i < sections.length; i++) {
+		var s = sections[i];
 		var sectionName = [ZmMetaData.NAMESPACE, s].join(":");
 		var sectionData = this._sections[sectionName];
 		if (sectionData) {

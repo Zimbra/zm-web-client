@@ -535,7 +535,8 @@ function(list, callback, batchCommand, account) {
 
 	if (metaData.length > 0) {
 		var metaDataCallback = new AjxCallback(this, this._handleResponseSaveMetaData, [metaData]);
-		acct.metaData.save(null, metaDataCallback, batchCommand);
+		var sections = [ZmSetting.M_IMPLICIT, ZmSetting.M_OFFLINE];
+		acct.metaData.save(sections, metaDataCallback, batchCommand);
 	}
 
 	if (gotOne) {

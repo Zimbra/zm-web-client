@@ -98,6 +98,7 @@ ZmSetting.T_PSEUDO		= "pseudo";
 // metadata sections
 ZmSetting.M_IMPLICIT	= "implicit";
 ZmSetting.M_OFFLINE		= "offline";
+ZmSetting.M_ZIMLET		= "zimlet";
 
 // setting data types
 ZmSetting.D_STRING		= "string"; // default type
