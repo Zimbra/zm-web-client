@@ -272,6 +272,9 @@
     <c:when test="${context.isWikiSearch}">
         <app:notebookRestView context="${context}"/>
     </c:when>
+    <c:when test="${param.action eq 'compose'}">
+        <%-- do nothing --%>
+    </c:when>
     <c:otherwise>
         <fmt:message key="error" var="title"/>
         <app:view mailbox="${mailbox}" title="${title}" selected="${not mailbox.features.mail ? 'calendar' : 'mail'}" context="${context}" folders="true" tags="true" searches="true" ads="" keys="true">
