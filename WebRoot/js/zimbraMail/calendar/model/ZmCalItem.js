@@ -2059,7 +2059,7 @@ function(respName, callback, result) {
 	this._messageNode = null;
 
 	if (callback) {
-		callback.run();
+		callback.run(response);
 	}
 };
 

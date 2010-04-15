@@ -355,7 +355,7 @@ function(calItem, attId, notifyList) {
 			return false;
 		}
 		var callback = new AjxCallback(this, this._handleResponseSave, calItem);
-		var errorCallback = new AjxCallback(this, this._handleErrorSave);
+		var errorCallback = new AjxCallback(this, this._handleErrorSave, calItem);
         if(this._composeView.isReminderOnlyChanged()) {
             calItem.setMailNotificationOption(false);
         }
@@ -367,7 +367,7 @@ function(calItem, attId, notifyList) {
 };
 
 ZmCalItemComposeController.prototype._handleResponseSave =
-function(calItem) {
+function(calItem, result) {
 	if (calItem.__newFolderId) {
 		var folder = appCtxt.getById(calItem.__newFolderId);
 		calItem.__newFolderId = null;
@@ -375,10 +375,11 @@ function(calItem) {
 	}
 
 	this._composeView.cleanup();
+	appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success 
 };
 
 ZmCalItemComposeController.prototype._handleErrorSave =
-function(ex) {
+function(calItem, ex) {
 	// TODO: generalize error message for calItem instead of just Appt
 	var msg = null;
 	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
@@ -396,8 +397,10 @@ function(ex) {
 		var msgDialog = appCtxt.getMsgDialog();
 		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 		msgDialog.popup();
+		appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);//notify Zimlets on success 
 		return true;
 	} else {
+		appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);//notify Zimlets on success 
 		return false;
 	}
 };
