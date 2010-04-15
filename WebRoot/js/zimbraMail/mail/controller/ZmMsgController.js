@@ -301,6 +301,32 @@ function(view, next) {
 	}
 };
 
+ZmMsgController.prototype._selectNextItemInParentListView =
+function() {
+	var controller = AjxDispatcher.run(ZmMsgController.MODE_TO_CONTROLLER[this._mode]);
+	if (controller) {
+		controller._listView[controller._currentView]._itemToSelect = controller._getNextItemToSelect();
+	}
+};
+
+ZmMsgController.prototype._doDelete =
+function() {
+	this._selectNextItemInParentListView();
+	ZmMailListController.prototype._doDelete.apply(this, arguments);
+};
+
+ZmMsgController.prototype._doMove =
+function() {
+	this._selectNextItemInParentListView();
+	ZmMailListController.prototype._doMove.apply(this, arguments);
+};
+
+ZmMsgController.prototype._doSpam =
+function() {
+	this._selectNextItemInParentListView();
+	ZmMailListController.prototype._doSpam.apply(this, arguments);
+};
+
 ZmMsgController.prototype._menuPopdownActionListener =
 function(ev) {
 	// dont do anything since msg view has no action menus

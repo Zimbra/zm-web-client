@@ -904,6 +904,7 @@ function(items, on, callback) {
 ZmMailListController.prototype._doSpam =
 function(items, markAsSpam, folder) {
 
+	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
 	items = AjxUtil.toArray(items);
 
 	var params = {items:items, markAsSpam:markAsSpam, folder:folder, childWin:appCtxt.isChildWindow && window};
@@ -1299,7 +1300,6 @@ function(result) {
 
 ZmMailListController.prototype._spamListener =
 function(ev) {
-	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
 	var items = this._listView[this._currentView].getSelection();
 	var searchFolderId = this._getSearchFolderId();
 	if (appCtxt.multiAccounts) {
