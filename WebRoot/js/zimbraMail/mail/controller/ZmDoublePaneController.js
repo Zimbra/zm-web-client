@@ -558,6 +558,18 @@ function() {
 ZmDoublePaneController.prototype._handleResponseSetSelectedItem =
 function(msg) {
 	if (msg) {
+		// bug 41196 - offline mode, reset new mail notifier if user reads a msg
+		// from inactive account (via any system folder under "All Mailboxes") 
+		var acct = appCtxt.isOffline && msg.getAccount();
+		if (acct && acct.inNewMailMode) {
+			var search = appCtxt.getCurrentSearch();
+			var searchFolder = search.isMultiAccount() && appCtxt.getById(search.folderId);
+			if (searchFolder && searchFolder.isSystem()) {
+				acct.inNewMailMode = false;
+				appCtxt.getApp(ZmApp.MAIL).getOverviewContainer().updateAccountInfo(acct, true, true);
+			}
+		}
+
 		// make sure list view has this msg
 		var lv = this._listView[this._currentView];
 		var id = (lv.type == ZmItem.CONV) ? msg.cid : msg.id;

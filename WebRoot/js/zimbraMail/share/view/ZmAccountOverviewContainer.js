@@ -331,14 +331,12 @@ function(account, updateStatus, updateTooltip) {
 	var hi = appCtxt.getApp(this._appName) && this.getHeaderItem(account);
 	if (hi) {
 		if (updateStatus) {
-			var html = "";
-			if (account.status != ZmZimbraAccount.STATUS_ONLINE) {
-				html = (account.status == ZmZimbraAccount.STATUS_RUNNING)
-					? ("<img src='/img/animated/ImgSpinner.gif' width=16 height=16 border=0>")
-					: (AjxImg.getImageHtml(account.getStatusIcon()));
-			}
+			var html = (account.status == ZmZimbraAccount.STATUS_RUNNING)
+				? ("<img src='/img/animated/ImgSpinner.gif' width=16 height=16 border=0>")
+				: (AjxImg.getImageHtml(account.getStatusIcon()));
+
 			if (hi._extraCell) {
-				hi._extraCell.innerHTML = html;
+				hi._extraCell.innerHTML = (html || "");
 			}
 		}
 
@@ -622,6 +620,11 @@ function(ev) {
 
 			var account = appCtxt.accountList.getAccount(data);
 			if (account) {
+				// bug 41196 - turn off new mail notifier if inactive account header clicked
+				if (appCtxt.isOffline && account.inNewMailMode) {
+					account.inNewMailMode = false;
+					this.updateAccountInfo(account, true, true);
+				}
 
 				// don't process click if user clicked on error status icon
 				if ((ev.target.parentNode == ev.item._extraCell) && account.isError()) {

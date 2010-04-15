@@ -347,6 +347,10 @@ function(acctInfo) {
  */
 ZmZimbraAccount.prototype.getStatusIcon =
 function() {
+	if (this.inNewMailMode) {
+		return "NewMailAlert";
+	}
+
 	switch (this.status) {
 //		case ZmZimbraAccount.STATUS_UNKNOWN:	return "Offline"; 				// bug: 42403 - remove
 		case ZmZimbraAccount.STATUS_OFFLINE:	return "ImAway";
@@ -400,6 +404,10 @@ function(code) {
  */
 ZmZimbraAccount.prototype.getStatusMessage =
 function() {
+	if (this.inNewMailMode) {
+		return AjxMessageFormat.format(ZmMsg.unreadCount, this.unread);
+	}
+
 	switch (this.status) {
 //		case ZmZimbraAccount.STATUS_UNKNOWN:	return ZmMsg.unknown;
 		case ZmZimbraAccount.STATUS_OFFLINE:	return ZmMsg.imStatusOffline;

@@ -308,6 +308,13 @@ function() {
  */
 ZmFolderTreeController.prototype._itemClicked =
 function(folder) {
+	// bug 41196 - turn off new mail notifier if inactive account folder clicked
+	var acct = appCtxt.isOffline && folder.getAccount();
+	if (acct && acct.inNewMailMode) {
+		acct.inNewMailMode = false;
+		appCtxt.getApp(ZmApp.MAIL).getOverviewContainer().updateAccountInfo(acct, true, true);
+	}
+
 	if (folder.type == ZmOrganizer.SEARCH) {
 		// if the clicked item is a search (within the folder tree), hand
 		// it off to the search tree controller

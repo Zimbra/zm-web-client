@@ -1051,11 +1051,18 @@ function(creates) {
 
 	for (var i = 0; i < mailCreates.length; i++) {
 		var mc = mailCreates[i];
-		var parsedId = (mc && mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1))
+		var parsed = (mc && mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1))
 			? ZmOrganizer.parseId(mc.l) : null;
+		var acct = parsed && parsed.account;
 
-		if (parsedId && parsedId.id == ZmOrganizer.ID_INBOX) {
-			var acct = parsedId.account;
+		if (parsed && appCtxt.isOffline) {
+			if (acct && appCtxt.getActiveAccount() != acct) {
+				acct.inNewMailMode = true;
+				this.getOverviewContainer().updateAccountInfo(acct, true, true);
+			}
+		}
+
+		if (parsed && parsed.id == ZmOrganizer.ID_INBOX) {
 			if (!acct || (acct && acct.isOfflineInitialSync())) { continue; }
 
 			// for multi-account, highlite the non-active accordion item
@@ -1744,7 +1751,6 @@ function(organizer) {
 		mb.setImage(icon);
 	}
 
-	// if offline, always update *inbox* unread count for all accounts
 	if (appCtxt.isOffline && appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE)) {
 		var unreadCount = 0;
 		var list = appCtxt.accountList.visibleAccounts;
