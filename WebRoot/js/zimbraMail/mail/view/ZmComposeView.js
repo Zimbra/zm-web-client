@@ -261,12 +261,13 @@ function() {
 ZmComposeView.prototype.getTitle =
 function() {
 	var text;
-	if (this._action == ZmOperation.REPLY)
+	if (this._isReply()) {
 		text = ZmMsg.reply;
-	else if (this._action == ZmOperation.FORWARD_INLINE || this._action == ZmOperation.FORWARD_ATT)
+	} else if (this._isForward()) {
 		text = ZmMsg.forward;
-	else
+	} else {
 		text = ZmMsg.compose;
+	}
 	return [ZmMsg.zimbraTitle, text].join(": ");
 };
 
@@ -663,8 +664,8 @@ function(attId, isDraft, dummyMsg) {
 				msg.nId = this._msg.nId;
 			}
 		} else {
-			msg.isReplied = (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL || isInviteReply);
-			msg.isForwarded = (this._action == ZmOperation.FORWARD_INLINE || this._action == ZmOperation.FORWARD_ATT);
+			msg.isReplied = this._isReply();
+			msg.isForwarded = this._isForward();
 			msg.origId = this._msg.id;
 		}
 		msg.isInviteReply = isInviteReply;
@@ -1298,6 +1299,7 @@ function(content) {
 
 ZmComposeView.prototype._insertSignature =
 function(content, sigStyle, sig, newLine) {
+
 	var re_newlines = "(" + AjxStringUtil.regExEscape(newLine) + ")+";
 	// get rid of all trailing newlines
 	var re = re_newlines;
@@ -1308,8 +1310,11 @@ function(content, sigStyle, sig, newLine) {
 	re = new RegExp(re, "i");
 	content = content.replace(re, '');
 
-	if (sigStyle == ZmSetting.SIG_OUTLOOK) {
-		var repl = "----- ";
+	var what = this._controller._curIncOptions.what;
+	var hasQuotedContent = (what != ZmSetting.INC_ATTACH && what != ZmSetting.INC_NONE);
+
+	if (sigStyle == ZmSetting.SIG_OUTLOOK && hasQuotedContent) {
+		var repl = (this._composeMode == DwtHtmlEditor.TEXT) ? "----- " : "<hr>";
 		var regexp = new RegExp(re_newlines + repl, "i");
 
 		if (content.match(regexp)) {
@@ -1493,12 +1498,28 @@ function() {
 
 ZmComposeView.prototype._isInviteReply =
 function(action) {
+	action = action || this._action;
 	return (action == ZmOperation.REPLY_ACCEPT ||
 			action == ZmOperation.REPLY_CANCEL ||
 			action == ZmOperation.REPLY_DECLINE ||
 			action == ZmOperation.REPLY_TENTATIVE ||
 			action == ZmOperation.REPLY_MODIFY ||
 			action == ZmOperation.REPLY_NEW_TIME);
+};
+
+ZmComposeView.prototype._isReply =
+function(action) {
+	action = action || this._action;
+	return (action == ZmOperation.REPLY ||
+			action == ZmOperation.REPLY_ALL ||
+			this._isInviteReply(action));
+};
+
+ZmComposeView.prototype._isForward =
+function(action) {
+	action = action || this._action;
+	return (action == ZmOperation.FORWARD_INLINE ||
+			action == ZmOperation.FORWARD_ATT);
 };
 
 /*
@@ -1634,15 +1655,9 @@ ZmComposeView.prototype._setAddresses =
 function(action, type, override) {
 	this._action = action;
 
-	if (action == ZmOperation.NEW_MESSAGE &&
-		override)
-	{
+	if (action == ZmOperation.NEW_MESSAGE && override) {
 		this.setAddress(type, override);
-	}
-	else if (action == ZmOperation.REPLY ||
-			 action == ZmOperation.REPLY_ALL ||
-			 this._isInviteReply(action))
-	{
+	} else if (this._isReply(action)) {
 		var ac = window.parentAppCtxt || window.appCtxt;
 
 		// Prevent user's login name and aliases from going into To: or Cc:
@@ -1755,22 +1770,17 @@ function(action, msg, extraBodyText) {
 	var htmlMode = (this._composeMode == DwtHtmlEditor.HTML);
 
 	var isDraft = (action == ZmOperation.DRAFT);
-	var isInviteReply = (action == ZmOperation.REPLY_ACCEPT ||
-						 action == ZmOperation.REPLY_DECLINE ||
-						 action == ZmOperation.REPLY_TENTATIVE ||
-						 action == ZmOperation.REPLY_NEW_TIME);
-	var isInviteForward = (msg && msg.isInvite() && (action == ZmOperation.FORWARD_INLINE || action == ZmOperation.FORWARD_ATT));
+	if (msg && msg.isInvite() && this._isForward(action)) {
+		action = this._action = ZmOperation.FORWARD_INLINE;
+	}
 
 	// get reply/forward prefs as necessary
 	var incOptions = this._controller._curIncOptions;
 	if (!incOptions) {
-		var isReply = (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
-		if (isReply || isInviteReply) {
+		if (this._isReply(action)) {
 			incOptions = {what:		appCtxt.get(ZmSetting.REPLY_INCLUDE_WHAT),
 						  prefix:	appCtxt.get(ZmSetting.REPLY_USE_PREFIX),
 						  headers:	appCtxt.get(ZmSetting.REPLY_INCLUDE_HEADERS)};
-		} else if (isInviteForward) {
-			action = this._action = ZmOperation.FORWARD_INLINE;
 		} else if (isDraft) {
 			incOptions = {what:			ZmSetting.INC_BODY};
 		} else if (action == ZmOperation.FORWARD_INLINE) {

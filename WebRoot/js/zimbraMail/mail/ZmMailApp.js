@@ -742,9 +742,9 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_REPLY, {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply", shortcut:ZmKeyMap.REPLY, textPrecedence:50});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ALL, {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll", shortcut:ZmKeyMap.REPLY_ALL, textPrecedence:48});
-	ZmOperation.registerOp(ZmId.OP_REPLY_CANCEL);
+	ZmOperation.registerOp(ZmId.OP_REPLY_CANCEL);	// semantic op for appt delete
 	ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE, {textKey:"replyDecline", image:"Cancel"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_MODIFY);
+	ZmOperation.registerOp(ZmId.OP_REPLY_MODIFY);	// for future use (bug 6523)
 	ZmOperation.registerOp(ZmId.OP_REPLY_NEW_TIME, {textKey:"replyNewTime", image:"NewTime"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark"});
 	ZmOperation.registerOp(ZmId.OP_REQUEST_READ_RECEIPT, {textKey:"requestReadReceipt", image:"ReadMessage"});
