@@ -328,6 +328,10 @@ function(acctInfo) {
 		}
 	}
 
+	if (this.visible && acctInfo.unread != this.unread) {
+		this.unread = acctInfo.unread;
+	}
+
 	this.code = acctInfo.code;
 	if (acctInfo.error) {
 		var error = acctInfo.error[0];
