@@ -106,7 +106,7 @@
 
 			var dates = {};
 			<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-				<fmt:formatDate var="date" pattern="yyyyMMdd'T'HHmmss'.'SSS'Z'" value="${hit.voiceMailItemHit.date}" />
+				<fmt:formatDate var="date" pattern="yyyyMMdd'T'HHmmss'.'SSS'Z'" value="${hit.voiceMailItemHit.date}" timeZone="UTC"/>
 				dates['vm_${status.count}_date'] = "${date}";
             </c:forEach>
 
@@ -116,7 +116,7 @@
 				ZM_formatVoiceDate: "<fmt:message key='ZM_formatVoiceDate'/>"
 			};
 
-			var days = ["<fmt:message key='weekdayMonMedium' bundle='${i18n}'/>","<fmt:message key='weekdayTueMedium' bundle='${i18n}'/>","<fmt:message key='weekdayWedMedium' bundle='${i18n}'/>","<fmt:message key='weekdayThuMedium' bundle='${i18n}'/>","<fmt:message key='weekdayFriMedium' bundle='${i18n}'/>","<fmt:message key='weekdaySatMedium' bundle='${i18n}'/>","<fmt:message key='weekdaySunMedium' bundle='${i18n}'/>"];
+			var days = ["<fmt:message key='weekdaySunMedium' bundle='${i18n}'/>","<fmt:message key='weekdayMonMedium' bundle='${i18n}'/>","<fmt:message key='weekdayTueMedium' bundle='${i18n}'/>","<fmt:message key='weekdayWedMedium' bundle='${i18n}'/>","<fmt:message key='weekdayThuMedium' bundle='${i18n}'/>","<fmt:message key='weekdayFriMedium' bundle='${i18n}'/>","<fmt:message key='weekdaySatMedium' bundle='${i18n}'/>"];
 
 			var ONE_DAY = 24 * 3600000;
 			var nowDate = new Date();
