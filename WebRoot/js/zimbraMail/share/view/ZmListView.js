@@ -320,8 +320,6 @@ function() {
 
 ZmListView.prototype._handleResponseCheckReplenish =
 function() {
-console.log("ZmListView.prototype._handleResponseCheckReplenish");
-console.log(this._handleResponseCheckReplenish.caller);
 	if (this.size() == 0) {
 		this._controller._handleEmptyList(this);
 	} else {
