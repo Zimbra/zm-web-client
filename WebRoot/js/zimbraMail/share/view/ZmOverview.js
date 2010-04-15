@@ -29,6 +29,7 @@
  * @param {Hash}	params 				a hash of parameters
  * @param	{String}	params.id 	the id for the HTML element
  * @param	{String}	params.overviewId 	the overview id
+ * @param	{String}	params.containerId 	the overview container id (multi-account)
  * @param	{Array}	params.treeIds an array of organizer types that may be displayed in this overview
  * @param	{ZmZimbraAccount}	params.account		the account this overview belongs to
  * @param	{DwtControl}	params.parent			the containing widget
@@ -59,6 +60,7 @@ ZmOverview = function(params, controller) {
 	this.setScrollStyle(params.scroll || Dwt.SCROLL);
 
 	this.overviewId			= params.overviewId;
+	this.containerId		= params.containerId;
 	this.account			= params.account;
 	this.selectionSupported	= params.selectionSupported;
 	this.actionSupported	= params.actionSupported;
@@ -88,7 +90,9 @@ ZmOverview = function(params, controller) {
 	}
 
 	if (this.dndSupported) {
-		var params = {container:this.getHtmlElement(), threshold:15, amount:5, interval:10, id:this.overviewId};
+		this._scrollableContainerId = this.containerId || this.overviewId;
+		var container = this.containerId ? document.getElementById(this.containerId) : this.getHtmlElement();
+		var params = {container:container, threshold:15, amount:5, interval:10, id:this._scrollableContainerId};
 		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [params]);
 	}
 };
@@ -155,10 +159,10 @@ function(treeId, omit) {
 		this._treeIds.push(treeId);
 	}
 	var params = {
-		overviewId: this.overviewId,
-		omit: omit,
-		showUnread: this.showUnread,
-		account: this.account
+		overviewId:		this.overviewId,
+		omit:			omit,
+		showUnread:		this.showUnread,
+		account:		this.account
 	};
 	this._treeHash[treeId] = treeController.show(params); // render tree view
 };

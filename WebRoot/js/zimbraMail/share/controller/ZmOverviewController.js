@@ -79,6 +79,7 @@ function(containerParams, overviewParams) {
 
 	// we call initialize *after* creating new object since it references
 	// this._overviewContainer hash
+	overviewParams.containerId = containerParams.id;
 	container.initialize(overviewParams);
 
 	return container;

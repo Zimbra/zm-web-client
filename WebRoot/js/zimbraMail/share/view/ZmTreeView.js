@@ -155,7 +155,7 @@ function(params) {
 		id:					ZmId.getTreeItemId(this.overviewId, null, this.type),
 		button:				isMultiAcctSubHeader ? null : params.newButton,
 		dndScrollCallback:	this._overview._dndScrollCallback,
-		dndScrollId:		this.overviewId,
+		dndScrollId:		this._overview._scrollableContainerId,
 		selectable:			(appCtxt.multiAccounts && this.type != ZmOrganizer.SEARCH && this.type != ZmOrganizer.TAG)
 	});
 	ti._isHeader = true;
@@ -416,13 +416,13 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			while (parentOrganizer = stack.pop()) {
 				parentNode = this.getTreeItemById(parentOrganizer.parent.id);
 				parentNode = new DwtTreeItem({
-					parent: parentNode,
-					text: parentOrganizer.getName(),
-					imageInfo: parentOrganizer.getIconWithColor(),
-					forceNotifySelection: true,
-					dndScrollCallback: this._overview._dndScrollCallback,
-					dndScrollId: this.overviewId,
-					id: ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
+					parent:					parentNode,
+					text:					parentOrganizer.getName(),
+					imageInfo:				parentOrganizer.getIconWithColor(),
+					forceNotifySelection:	true,
+					dndScrollCallback:		this._overview._dndScrollCallback,
+					dndScrollId:			this._overview._scrollableContainerId,
+					id:						ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
 				});
 				parentNode.setData(Dwt.KEY_ID, parentOrganizer.id);
 				parentNode.setData(Dwt.KEY_OBJECT, parentOrganizer);
@@ -432,13 +432,13 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			}
 		}
 		var params = {
-			parent:parentNode,
-			index:index,
-			text:organizer.getName(this._showUnread),
-			dndScrollCallback: this._overview._dndScrollCallback,
-			dndScrollId: this.overviewId,
-			imageInfo:organizer.getIconWithColor(),
-			id:ZmId.getTreeItemId(this.overviewId, organizer.id)
+			parent:				parentNode,
+			index:				index,
+			text:				organizer.getName(this._showUnread),
+			dndScrollCallback:	this._overview._dndScrollCallback,
+			dndScrollId:		this._overview._scrollableContainerId,
+			imageInfo:			organizer.getIconWithColor(),
+			id:					ZmId.getTreeItemId(this.overviewId, organizer.id)
 		};
 		// now add item
 		ti = new DwtTreeItem(params);

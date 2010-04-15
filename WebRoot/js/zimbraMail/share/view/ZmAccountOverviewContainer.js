@@ -499,10 +499,10 @@ function(headerParams, omit, overviewParams, showBackgroundColor) {
 	// create a top-level section header
 	var params = {
 		parent: this,
-		text: headerParams.label,
-		imageInfo: headerParams.icon,
-		selectable: overviewParams.selectable,
-		className: headerParams.className
+		text:			headerParams.label,
+		imageInfo:		headerParams.icon,
+		selectable:		overviewParams.selectable,
+		className:		headerParams.className
 	};
 	var header = this._headerItems[headerParams.dataId] = new DwtTreeItem(params);
 	header.setData(Dwt.KEY_ID, headerParams.dataId);
@@ -518,7 +518,8 @@ function(headerParams, omit, overviewParams, showBackgroundColor) {
 
 	// next, create an overview for this account and add it to the account header
 	var ov = this._controller._overview[overviewParams.overviewId] = this._overview[overviewParams.overviewId] = new ZmOverview(overviewParams, this._controller);
-
+	header._dndScrollCallback = this._overview._dndScrollCallback,
+	header._dndScrollId = this._overview._scrollableContainerId,
 	header._addItem(ov, null, true);
 
 	// finally set treeviews for this overview
