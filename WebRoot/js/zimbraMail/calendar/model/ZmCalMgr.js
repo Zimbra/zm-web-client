@@ -477,3 +477,74 @@ function() {
 	}
 	return this._miniCalCache;
 };
+
+ZmCalMgr.prototype.getQuickReminderSearchTimeRange =
+function() {
+	var endOfDay = new Date();
+	endOfDay.setHours(23,59,59,999);
+
+	var end = new Date(endOfDay.getTime());
+
+	var start = endOfDay;
+	start.setHours(0,0,0, 0);
+
+	return { start: start.getTime(), end: end.getTime() };
+};
+
+ZmCalMgr.prototype.showQuickReminder =
+function() {
+    var params = this.getQuickReminderParams();
+    this.getApptSummaries(params);
+};
+
+ZmCalMgr.prototype.getQuickReminderParams =
+function() {
+
+	var timeRange = this.getQuickReminderSearchTimeRange();
+	return {
+		start: timeRange.start,
+		end: timeRange.end,
+		fanoutAllDay: false,
+		folderIds: this.getCheckedCalendarFolderIds(true),
+		callback: (new AjxCallback(this, this._quickReminderCallback)),
+		includeReminders: true
+	};
+};
+
+ZmCalMgr.prototype._quickReminderCallback =
+function(list) {
+    var newList = new AjxVector();
+    this._cacheMap = {};
+    var size = list.size();
+
+    var currentTime  = (new Date()).getTime();
+
+    for (var i = 0; i < size; i++) {
+        var appt = list.get(i);
+        var id = appt.id;
+        if (!this._cacheMap[id]) {
+            this._cacheMap[id] = appt;
+            if(!appt.isAllDayEvent() && currentTime >= appt.getStartTime() && currentTime <= appt.getEndTime()) {
+                newList.add(appt);
+            }
+        }
+    }
+
+    var qDlg = this.getQuickReminderDialog();
+    qDlg.initialize(newList);
+    qDlg.popup();
+};
+
+
+/**
+ * Gets the quick reminder dialog.
+ *
+ * @return	{ZmQuickReminderDialog}	the dialog
+ */
+ZmCalMgr.prototype.getQuickReminderDialog =
+function() {
+	if (this._reminderDialog == null) {
+		this._reminderDialog = new ZmQuickReminderDialog(appCtxt.getShell(), this, this._calController);
+	}
+	return this._reminderDialog;
+};

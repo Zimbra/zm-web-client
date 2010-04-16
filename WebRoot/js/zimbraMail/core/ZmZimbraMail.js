@@ -2309,6 +2309,15 @@ function(actionCode, ev) {
 			break;
 		}
 
+		case ZmKeyMap.QUICK_REMINDER: {
+            var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
+            if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account)) {
+                var calMgr = appCtxt.getCalManager();
+                calMgr.showQuickReminder();
+            }
+			break;
+		}
+
 		case ZmKeyMap.LOGOFF: {
 			ZmZimbraMail.logOff();
 			break;

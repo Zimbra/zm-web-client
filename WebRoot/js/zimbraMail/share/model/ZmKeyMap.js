@@ -176,6 +176,7 @@ ZmKeyMap.PREV_UNREAD_MSG		= "PreviousUnreadMsg";
 ZmKeyMap.PRINT					= "Print";
 ZmKeyMap.PRINT_ALL				= "PrintAll";
 ZmKeyMap.QUICK_ADD				= "QuickAdd";
+ZmKeyMap.QUICK_REMINDER 	    = "QuickReminder";
 ZmKeyMap.READING_PANE_BOTTOM	= "ReadingPaneAtBottom";
 ZmKeyMap.READING_PANE_OFF		= "ReadingPaneOff";
 ZmKeyMap.READING_PANE_RIGHT		= "ReadingPaneOnRight";
