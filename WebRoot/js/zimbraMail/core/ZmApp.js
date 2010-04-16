@@ -369,11 +369,11 @@ function(name, force) {
  * Stages the application view.
  * 
  * @param	{String}	name	the view name
- * @see		ZmAppViewMgr#setView
+ * @see		ZmAppViewMgr#stageView
  */
 ZmApp.prototype.stageView =
 function(name) {
-	return this._appViewMgr.setView(name);
+	return this._appViewMgr.stageView(name);
 };
 
 /**

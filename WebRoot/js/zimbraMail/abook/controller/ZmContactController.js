@@ -60,6 +60,7 @@ function() {
  */
 ZmContactController.prototype.show =
 function(contact, isDirty) {
+	this._app.pushView(ZmId.VIEW_LOADING, true); // push "Loading..." page
 	this._contact = contact;
 	this._currentView = this._getViewType();
 	if (isDirty) this._contactDirty = true;
@@ -69,10 +70,11 @@ function(contact, isDirty) {
 		this._listView[this._currentView].enableInputs(true);
 	this._setup(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-	var elements = new Object();
+	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	this._setView({view:this._currentView, elements:elements, isTransient:true});
+	this._setView({view:this._currentView, elements:elements, isTransient:true, stageView:true});
+	this._app.popView(true, ZmId.VIEW_LOADING); // pop "Loading..." page
 };
 
 ZmContactController.prototype.getKeyMapName =
