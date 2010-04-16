@@ -1371,6 +1371,7 @@ function() {
 	batchCmd.run();
 	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, batchCmd.size(), ZmItem.APPT);
 	appCtxt.setStatusMsg(summary);
+	appCtxt.notifyZimlets("onAppointmentDelete", [this._deleteList]);//notify Zimlets on delete 
 };
 
 ZmCalViewController.prototype._divvyItems =
@@ -1562,18 +1563,19 @@ function(appt, mode) {
 		this._handleMultiDelete();
 	}
 	else {
-		var respCallback = new AjxCallback(this, this._handleResponseContinueDelete);
+		var respCallback = new AjxCallback(this, this._handleResponseContinueDelete, appt);
 		appt.cancel(mode, null, respCallback, this._errorCallback);
 	}
 };
 
 ZmCalViewController.prototype._handleResponseContinueDelete =
-function() {
+function(appt) {
 	if (this._viewMgr.getCurrentViewName() == ZmId.VIEW_CAL_APPT) {
 		this._viewMgr.getCurrentView().close();
 	}
 	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, 1, ZmItem.APPT);
 	appCtxt.setStatusMsg(summary);
+	appCtxt.notifyZimlets("onAppointmentDelete", [appt]);//notify Zimlets on delete 
 };
 
 /**
