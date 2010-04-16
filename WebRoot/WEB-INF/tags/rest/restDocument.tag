@@ -24,11 +24,16 @@
 
 <zm:getDocument  var="doc" box="${mailbox}" id="${requestScope.zimbra_target_item_id}"/>
 
+<c:set var="isPreview" value="${not empty param.preview and param.preview eq '1'}" scope="request"/>
+
 <c:set var="contentType" value="${doc.contentType}"/>
 <c:choose>
     <c:when test="${(contentType eq 'application/x-zimbra-slides')}">
         <rest:slideView/>
     </c:when>
+    <c:when test="${(contentType eq 'application/x-zimbra-doc' and isPreview)}">
+            <rest:documentPreview/>
+    </c:when>        
     <c:when test="${(contentType eq 'application/x-zimbra-doc')}">
         <rest:documentView/>
     </c:when>
