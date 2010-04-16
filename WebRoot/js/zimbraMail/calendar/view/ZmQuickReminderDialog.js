@@ -133,6 +133,8 @@ function(html, idx, appt, data, needSep) {
 
 	var calendar = appCtxt.getById(appt.folderId);
 
+    var apptLabel = appt.isUpcomingEvent ? " (" + ZmMsg.upcoming + ")" : ""
+
 	var params = {
 		needSep: needSep,
 		rowId: data.rowId,
@@ -141,7 +143,7 @@ function(html, idx, appt, data, needSep) {
 		location: appt.getLocation(),
 		apptIconHtml: (AjxImg.getImageHtml(appt.otherAttendees ? "ApptMeeting" : "Appointment")),
 		organizer: appt.otherAtt ? appt.organizer : null,
-		reminderName: (AjxStringUtil.htmlEncode(appt.name)),
+		reminderName: (AjxStringUtil.htmlEncode(appt.name + apptLabel)),
 		durationText: (AjxStringUtil.trim(this._getDurationText(appt))),
 		deltaId: data.deltaId,
 		openBtnId: data.openBtnId

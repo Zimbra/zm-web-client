@@ -524,7 +524,11 @@ function(list) {
         var id = appt.id;
         if (!this._cacheMap[id]) {
             this._cacheMap[id] = appt;
-            if(!appt.isAllDayEvent() && currentTime >= appt.getStartTime() && currentTime <= appt.getEndTime()) {
+            if(appt.isAllDayEvent()) continue;
+            var diff = appt.getStartTime() - currentTime;
+            var isUpcomingEvent = (diff >= 0 && diff <= AjxDateUtil.MSEC_PER_HOUR)
+            if((currentTime >= appt.getStartTime() && currentTime <= appt.getEndTime()) || isUpcomingEvent) {
+                appt.isUpcomingEvent = isUpcomingEvent;
                 newList.add(appt);
             }
         }
