@@ -1297,6 +1297,7 @@ ZmEditContactViewInputSelectRows.prototype.removeRow = function(indexOrId) {
 	var adjust = this._subtract(indexOrId);
 	DwtFormRows.prototype.removeRow.apply(this, arguments);
 	if (adjust) this._adjustMaximums();
+	if (AjxEnv.isFirefox) this._updateSelectLayout();
 };
 
 /**
@@ -1374,6 +1375,13 @@ ZmEditContactViewInputSelectRows.prototype._resetMaximums = function() {
 		if (maximum) {
 			maximum.count++;
 		}
+	}
+};
+
+// On FF, the selects are sometimes rendered incorrectly.
+ZmEditContactViewInputSelectRows.prototype._updateSelectLayout = function() {
+	for (var i = 0, cnt = this.getRowCount(); i < cnt; i++) {
+		this.getControl(i).reRenderSelect();
 	}
 };
 
@@ -1568,6 +1576,10 @@ ZmEditContactViewInputSelect.prototype._createSelect = function(options) {
 		}
 	}
 	return select;
+};
+
+ZmEditContactViewInputSelect.prototype.reRenderSelect = function() {
+	this._select.updateRendering();
 };
 
 ZmEditContactViewInputSelect.prototype._handleInputKeyDown = function(input, evt) {
@@ -1979,6 +1991,11 @@ ZmEditContactViewInputDoubleSelect.prototype._createSelect2 = function(options) 
 		select.addOption(option.label || option.value, i == 0, option.value);
 	}
 	return select;
+};
+
+ZmEditContactViewInputDoubleSelect.prototype.reRenderSelect = function() {
+	ZmEditContactViewInputSelect.prototype.reRenderSelect.call(this);
+	this._select2.updateRendering();
 };
 
 ZmEditContactViewInputDoubleSelect.prototype._handleSelectChange = function(evt, skipFocus) {
