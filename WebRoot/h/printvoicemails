@@ -75,39 +75,40 @@
 		<c:if test="${!empty param.clientTime}">
 
 			function pad(number, length) {
-				var str = '' + number;
-				var pad = '';
+				var str=""+number;
+				var pad=[];
 				for (var i=0, cnt=length-str.length; i<cnt; i++) {
-					pad += "0";
+					pad[i]="0";
 				}
-				return pad + str;
+				return pad.join("")+str;
 			}
 			function insert(str, value, replacement) {
-				var _str = ""+str;
-				var out = "";
-				var escaped = false;
-				for (var i=0; i<_str.length; i++) {
-					var c = _str[i];
-					if (c == "'") {
-						escaped = !escaped;
+				var _str=""+str;
+				if (value&&_str.indexOf(value)==-1) return _str;
+				var out="";
+				var escaped=false;
+				for (var i=0;i<_str.length;i++) {
+					var c=_str.substr(i,1);
+					if (c=="'") {
+						escaped=!escaped;
 					}
 					else if (!escaped) {
-						var tok = _str.substr(i,value.length);
-						if (tok == value) {
-							out += replacement;
+						var tok=_str.substr(i,value.length);
+						if (tok==value) {
+							out+=replacement;
 							i+=value.length-1;
 							continue;
 						}
 					}
-					out += c;
+					out+=c;
 				}
 				return out;
 			}
 
 			var dates = {};
 			<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-				<fmt:formatDate var="date" pattern="yyyyMMdd'T'HHmmss'.'SSS'Z'" value="${hit.voiceMailItemHit.date}" timeZone="UTC"/>
-				dates['vm_${status.count}_date'] = "${date}";
+			<fmt:formatDate var="date" pattern="yyyyMMdd'T'HHmmss'.'SSS'Z'" value="${hit.voiceMailItemHit.date}" timeZone="UTC"/>
+			dates['vm_${status.count}_date'] = "${date}";
             </c:forEach>
 
 			var resources = {
@@ -156,7 +157,8 @@
 							out = insert(out, "M", msgDate.getMonth()+1);
 							out = insert(out, "d", msgDate.getDate());
 							out = insert(out, "yy", (""+msgDate.getFullYear()).substr(2,2));
-							out = insert(out, "h", pad(ampmhours,2));
+							out = insert(out, "h", ampmhours);
+							out = insert(out, "HH", pad(ampmhours,2));
 							out = insert(out, "mm", pad(msgDate.getMinutes(),2));
 							out = insert(out, "ss", pad(msgDate.getSeconds(),2));
 							out = insert(out, "a", am ? "AM" : "PM");
