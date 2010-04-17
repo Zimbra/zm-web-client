@@ -1814,7 +1814,7 @@ function(action, msg, extraBodyText) {
 		bodyInfo = this._getBodyContent(msg, htmlMode);
 		body = bodyInfo.body;
 		// Bug 7160: Strip off the ~*~*~*~ from invite replies.
-		if (isInviteReply) {
+		if (this._isInviteReply(action)) {
 			body = body.replace(ZmItem.NOTES_SEPARATOR, "");
 		}
 	}
