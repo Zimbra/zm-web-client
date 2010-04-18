@@ -1285,6 +1285,7 @@ ZmEditContactViewInputSelectRows.prototype.addRow = function(itemDef, index) {
 			this.setVisible(this._items[i]._addId, false);
 		}
 	}
+	if (AjxEnv.isFirefox) this._updateLayout();
 };
 
 /**
@@ -1297,7 +1298,7 @@ ZmEditContactViewInputSelectRows.prototype.removeRow = function(indexOrId) {
 	var adjust = this._subtract(indexOrId);
 	DwtFormRows.prototype.removeRow.apply(this, arguments);
 	if (adjust) this._adjustMaximums();
-	if (AjxEnv.isFirefox) this._updateSelectLayout();
+	if (AjxEnv.isFirefox) this._updateLayout();
 };
 
 /**
@@ -1379,9 +1380,10 @@ ZmEditContactViewInputSelectRows.prototype._resetMaximums = function() {
 };
 
 // On FF, the selects are sometimes rendered incorrectly.
-ZmEditContactViewInputSelectRows.prototype._updateSelectLayout = function() {
+ZmEditContactViewInputSelectRows.prototype._updateLayout = function() {
 	for (var i = 0, cnt = this.getRowCount(); i < cnt; i++) {
 		this.getControl(i).reRenderSelect();
+		this.getControl(i).reRenderInput();
 	}
 };
 
@@ -1580,6 +1582,12 @@ ZmEditContactViewInputSelect.prototype._createSelect = function(options) {
 
 ZmEditContactViewInputSelect.prototype.reRenderSelect = function() {
 	this._select.updateRendering();
+};
+
+ZmEditContactViewInputSelect.prototype.reRenderInput = function() {
+	var value = this._input.getValue();
+	this._input.setValue(value+" ");
+	this._input.setValue(value);
 };
 
 ZmEditContactViewInputSelect.prototype._handleInputKeyDown = function(input, evt) {
