@@ -1890,10 +1890,6 @@ function(action, msg, extraBodyText) {
 			}
 		} else if (incOptions.what == ZmSetting.INC_SMART) {
 			var chunks = AjxStringUtil.getTopLevel(body);
-			for (var i = 0; i < chunks.length; i++) {
-				wrapParams.text = chunks[i];
-				chunks[i] = AjxStringUtil.wordWrap(wrapParams);
-			}
 			if (chunks.length) {
 				body = chunks.join(crlf2);
 			}
