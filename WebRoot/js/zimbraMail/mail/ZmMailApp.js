@@ -1021,7 +1021,7 @@ function(creates, force) {
 		}
 	}
 
-	if (this._tradController && (appCtxt.getCurrentController() == this._tradController)) {
+	if (this._tradController) {
 		// can't get to another controller without running a search
 		this._checkList(creates, this._tradController.getList(), this._tradController);
 	} else {
