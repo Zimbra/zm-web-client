@@ -52,7 +52,7 @@
                     </tr>
                     <tr>
                         <td><fmt:message key="labelBy"/>&nbsp;${doc.creator}</td>
-                        <td align="right"><fmt:message key="labelVersion"/>: ${doc.version}  |  <fmt:message key="labelModifiedOn"/>: <fmt:formatDate value="${doc.modifiedDate}" pattern="M/d/yyyy hh:mm" timeZone="${mailbox.prefs.timeZone}"/></td>
+                        <td align="right"><fmt:message key="labelVersion"/>: ${doc.version}  |  <fmt:message key="labelModifiedOn"/>: <fmt:formatDate value="${doc.modifiedDate}" pattern="M/d/yyyy h:mm a" timeZone="${mailbox.prefs.timeZone}"/></td>
                     </tr>
                     </table>
                 </td>
