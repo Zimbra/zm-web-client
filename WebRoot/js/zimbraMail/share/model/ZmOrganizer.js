@@ -802,6 +802,15 @@ function() {
 		if (!this.account) {
 			this.account = ZmOrganizer.parseId(this.id).account;
 		}
+		// bug 46364:
+		// still no account?! Must be remote organizer, keep checking parent
+		if (!this.account) {
+			var parent = this.parent;
+			while (parent && !this.account) {
+				this.account = parent.getAccount();
+				parent = parent.parent;
+			}
+		}
 		return this.account;
 	}
 
@@ -920,7 +929,8 @@ ZmOrganizer.prototype.getIcon = function() {};
  * 
  * @return	{String}	the icon
  */
-ZmOrganizer.prototype.getIconWithColor = function() {
+ZmOrganizer.prototype.getIconWithColor =
+function() {
 	var icon = this.getIcon() || "";
 	var color = this.rgb || this.color;
 	return color ? [icon,color].join(",color=") : icon;

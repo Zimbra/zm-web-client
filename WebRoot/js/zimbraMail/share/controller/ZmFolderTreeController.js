@@ -309,10 +309,12 @@ function() {
 ZmFolderTreeController.prototype._itemClicked =
 function(folder) {
 	// bug 41196 - turn off new mail notifier if inactive account folder clicked
-	var acct = appCtxt.isOffline && folder.getAccount();
-	if (acct && acct.inNewMailMode) {
-		acct.inNewMailMode = false;
-		appCtxt.getApp(ZmApp.MAIL).getOverviewContainer().updateAccountInfo(acct, true, true);
+	if (appCtxt.isOffline) {
+		var acct = folder.getAccount();
+		if (acct && acct.inNewMailMode) {
+			acct.inNewMailMode = false;
+			appCtxt.getApp(ZmApp.MAIL).getOverviewContainer().updateAccountInfo(acct, true, true);
+		}
 	}
 
 	if (folder.type == ZmOrganizer.SEARCH) {
@@ -349,7 +351,7 @@ function(folder) {
 		if (appCtxt.multiAccounts) {
 			// make sure we have permissions for this folder (in case an "external"
 			// server was down during account load)
-			if (folder.link && folder.shares == null) {
+			if (folder.link && folder.perm == null) {
 				var folderTree = appCtxt.getFolderTree(acct);
 				if (folderTree) {
 					var callback = new AjxCallback(this, this._getPermissionsResponse, [params]);
