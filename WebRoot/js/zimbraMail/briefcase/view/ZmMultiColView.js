@@ -238,7 +238,11 @@ function(item) {
         restURL = this._controller.getApp().fixCrossDomainReference(restURL);
         originalRestURL = this._controller.getApp().fixCrossDomainReference(originalRestURL);
     }
-    
+    if(window.isTinyMCE && item.isWebDoc()) {
+        restURL = restURL + "&editor=tinymce&preview=1";
+
+    }
+
     var fileLink = [ '<a href="', restURL, '" target="_blank">', name, '</a>' ].join("");
 
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
@@ -247,10 +251,12 @@ function(item) {
 		{name:ZmMsg.name, value:fileLink},
 	];
 
-    if (item.isRealFile() || item.isSlideDoc()) {
+    if (item.isRealFile() || item.isSlideDoc() || item.isZimbraDoc()) {
         var actionLink;
         if (item.isSlideDoc()) {
             actionLink = [ '<a href="', originalRestURL, "?fmt=html&run=1", '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
+        } else if(item.isZimbraDoc()) {
+            actionLink = [ '<a href="', originalRestURL, "?fmt=html" + (window.isTinyMCE ?  "&editor=tinymce" : "") , '" target="_blank">', ZmMsg.edit, '</a>' ].join("");
         } else {
             actionLink = [ '<a href="', originalRestURL, "?disp=a", '" target="_blank">', ZmMsg.saveFile, '</a>' ].join("");
         }

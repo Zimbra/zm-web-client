@@ -47,6 +47,7 @@ ZmBriefcaseController = function(container, app) {
 	this._listeners[ZmOperation.NEW_FILE] = new AjxListener(this, this._uploadFileListener);
 	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);
 	this._listeners[ZmOperation.CREATE_SLIDE_SHOW] = new AjxListener(this, this._createSlideShow);
+    this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editFileListener);
 
 	this._listeners[ZmOperation.NEW_SPREADSHEET] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_SPREADSHEET]);
 	this._listeners[ZmOperation.NEW_PRESENTATION] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_PRESENTATION]);
@@ -442,12 +443,13 @@ function(ev) {
 
 		if (item.isWebDoc()) {
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
+            restUrl = restUrl + "&preview=1";
 		}
         var name = item.name || 'Briefcase';
         if(AjxEnv.isIE)
             name = name.replace(/[^\w]/g,'');
 		if (restUrl) {
-			window.open(restUrl, name, ZmBriefcaseApp.getDocWindowFeatures());
+			window.open(restUrl, name, item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
 		}
 	}
 };
@@ -481,12 +483,17 @@ function(ev) {
 	if (op) {
 		op.setEnabled(item && item.isRealFile());
 	}
+    var op = actionMenu.getOp(ZmOperation.EDIT);
+	if (op) {
+		op.setEnabled(item && item.isWebDoc());
+	}
 };
 
 ZmBriefcaseController.prototype._getActionMenuOps =
 function() {
 	var list = [
 		ZmOperation.OPEN_FILE,
+        ZmOperation.EDIT,    
 		ZmOperation.SAVE_FILE,
 		ZmOperation.SEND_FILE,
 		ZmOperation.SEND_FILE_AS_ATT
@@ -500,6 +507,31 @@ function() {
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
+};
+
+ZmBriefcaseController.prototype._editFileListener =
+function() {
+	var view = this._listView[this._currentView];
+	var items = view.getSelection();
+	if (!items) { return; }
+
+	items = AjxUtil.toArray(items);
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		var restUrl = item.getRestUrl();
+		if (restUrl) {
+
+            //added for bug: 45150
+            if(item.isWebDoc() && appCtxt.isOffline) {
+                restUrl = this._app.fixCrossDomainReference(restUrl);
+            }
+
+            if (item.isWebDoc()) {
+				restUrl = ZmBriefcaseApp.addEditorParam(restUrl);               
+			    window.open(restUrl, item.name, "");
+            }
+		}
+	}
 };
 
 ZmBriefcaseController.prototype._openFileListener =
@@ -521,8 +553,9 @@ function() {
 
             if (item.isWebDoc()) {
 				restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
+                restUrl = restUrl + "&preview=1";
 			}
-			window.open(restUrl, item.name, ZmBriefcaseApp.getDocWindowFeatures());
+			window.open(restUrl, item.name, item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
 		}
 	}
 };
