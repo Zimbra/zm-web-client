@@ -49,26 +49,59 @@ function(selectedAccount, accountType, chooserMessage, title) {
 
 	this._chooseMessageEl.innerHTML = chooserMessage || ZmMsg.chooseAccount;
 
-	this._accountSelect.clearOptions();
 	var activeAcct = selectedAccount || appCtxt.getActiveAccount();
 	var accounts = appCtxt.accountList.visibleAccounts;
 
+	var html = [];
+	var idx = 0;
+
+	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1>";
 	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
 		if (appCtxt.isOffline && acct.isMain) { continue; }
 		if (accountType && acct.type != accountType) { continue; }
 
 		var icon = appCtxt.isOffline ? acct.getIcon() : null;
-		var option = new DwtSelectOption(acct.id, (acct == activeAcct), acct.getDisplayName(), null, null, icon);
-		this._accountSelect.addOption(option);
+		var inputId = Dwt.getNextId();
+
+		html[idx++] = "<tr><td><input type='checkbox' name='";
+		html[idx++] = this._inputName;
+		html[idx++] = "'";
+		if (acct == activeAcct) {
+			html[idx++] = " checked";
+		}
+		html[idx++] = " _acctId='";
+		html[idx++] = acct.id;
+		html[idx++] = "' id='";
+		html[idx++] = inputId;
+		html[idx++] = "'></td>";
+		if (icon) {
+			html[idx++] = "<td>";
+			html[idx++] = AjxImg.getImageHtml(icon);
+			html[idx++] = "</td>";
+		}
+		html[idx++] = "<td><label for='";
+		html[idx++] = inputId;
+		html[idx++] = "'>";
+		html[idx++] = acct.getDisplayName();
+		html[idx++] = "</label></td></tr>";
 	}
+	html[idx++] = "</table>";
+	this._accountSelectEl.innerHTML = html.join("");
 
 	ZmDialog.prototype.popup.call(this);
 };
 
 ZmChooseAccountDialog.prototype._okButtonListener =
 function(ev) {
-	DwtDialog.prototype._buttonListener.call(this, ev, [this._accountSelect.getValue()]);
+	var selected = document.getElementsByName(this._inputName);
+	var accountIds = [];
+	for (var i = 0; i < selected.length; i++) {
+		if (selected[i].checked) {
+			accountIds.push(selected[i].getAttribute("_acctId"));
+		}
+	}
+	DwtDialog.prototype._buttonListener.call(this, ev, [accountIds]);
 };
 
 ZmChooseAccountDialog.prototype._enterListener =
@@ -83,6 +116,7 @@ function() {
 
 ZmChooseAccountDialog.prototype._createControls =
 function() {
-	this._accountSelect = new DwtSelect({parent: this, parentElement: (this._htmlElId+"_accountSelectId")});
+	this._accountSelectEl = document.getElementById(this._htmlElId+"_accountSelectId");
 	this._chooseMessageEl = document.getElementById(this._htmlElId+"_chooseAccountMsg");
+	this._inputName = this._htmlElId + "_accountCheckbox";
 };
