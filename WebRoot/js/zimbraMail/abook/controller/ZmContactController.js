@@ -60,7 +60,9 @@ function() {
  */
 ZmContactController.prototype.show =
 function(contact, isDirty) {
-	this._app.pushView(ZmId.VIEW_LOADING, true); // push "Loading..." page
+	if (!this._editPageLoaded) {
+		this._app.pushView(ZmId.VIEW_LOADING, true); // push "Loading..." page
+	}
 	this._contact = contact;
 	this._currentView = this._getViewType();
 	if (isDirty) this._contactDirty = true;
@@ -73,8 +75,11 @@ function(contact, isDirty) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	this._setView({view:this._currentView, elements:elements, isTransient:true, stageView:true});
-	this._app.popView(true, ZmId.VIEW_LOADING); // pop "Loading..." page
+	this._setView({view:this._currentView, elements:elements, isTransient:true, stageView:!this._editPageLoaded});
+	if (!this._editPageLoaded) {
+		this._app.popView(true, ZmId.VIEW_LOADING); // pop "Loading..." page
+	}
+	this._editPageLoaded = true;
 };
 
 ZmContactController.prototype.getKeyMapName =
