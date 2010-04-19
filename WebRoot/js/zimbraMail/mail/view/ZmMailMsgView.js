@@ -949,10 +949,11 @@ function(container, html, isTextMsg, isTruncated) {
 		html = this._stripHtmlComments(html);
 		if (this._objectManager) {
 			// this callback will post-process the HTML after the IFRAME is created
-			if (msgSize <= ZmMailMsgView.OBJ_SIZE_HTML)
+			if (msgSize <= ZmMailMsgView.OBJ_SIZE_HTML) {
 				callback = new AjxCallback(this, this._processHtmlDoc);
-			else
+			} else {
 				this._makeHighlightObjectsDiv();
+			}
 		}
 	}
 
@@ -1245,6 +1246,7 @@ function(msg, container, callback) {
 	var len = bodyParts.length;
 	if (len > 1) {
 		var html = [];
+		var hasHtmlPart = msg.hasHtmlPart();
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
 			if (ZmMimeTable.isRenderableImage(bp.ct)) {
@@ -1255,7 +1257,9 @@ function(msg, container, callback) {
 				html.push(imgHtml);
 			} else {
 				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
-					html.push("<pre>", AjxStringUtil.htmlEncode(bp.content, true), "</pre>");
+					html.push(hasHtmlPart ? "<pre>" : "");
+					html.push(AjxStringUtil.htmlEncode(bp.content, true));
+					html.push(hasHtmlPart ? "</pre>" : "");
 				} else {
 					if (appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
 						html.push(bp.content);
@@ -1264,12 +1268,15 @@ function(msg, container, callback) {
 						var div = document.createElement("div");
 						div.innerHTML = bp.content;
 						var convert = AjxStringUtil.convertHtml2Text(div);
-						html.push("<pre>", AjxStringUtil.htmlEncode(convert), "</pre>");
+
+						html.push(hasHtmlPart ? "<pre>" : "");
+						html.push(AjxStringUtil.htmlEncode(convert));
+						html.push(hasHtmlPart ? "</pre>" : "");
 					}
 				}
 			}
 		}
-		this._makeIframeProxy(el, html.join(""));
+		this._makeIframeProxy(el, html.join(""), !hasHtmlPart);
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
