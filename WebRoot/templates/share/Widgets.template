@@ -90,6 +90,17 @@
 	</div>
 </template>
 
+<template id='share.Widgets#ZmChooseAccountDialog'>
+	<div class='ChooserDialog' style='width:300px'>
+		<table border=0 cellpadding=3 cellspacing=3>
+			<tr>
+				<td id='${id}_chooseAccountMsg'></td>
+				<td id='${id}_accountSelectId'></td>
+			</tr>
+		</table>
+	</div>
+</template>
+
 <template id='share.Widgets#ZmPickTagDialog'>
 	<div class='ChooserDialog'>
 		<div style='width:300px'><$= ZmMsg.chooserDescription $></div>

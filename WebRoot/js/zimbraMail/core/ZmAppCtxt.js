@@ -557,6 +557,15 @@ function() {
 	return this._chooseFolderDialog;
 };
 
+ZmAppCtxt.prototype.getChooseAccountDialog =
+function() {
+	if (!this._chooseAccountDialog) {
+		AjxDispatcher.require("Extras");
+		this._chooseAccountDialog = new ZmChooseAccountDialog(this._shell);
+	}
+	return this._chooseAccountDialog;
+}
+
 /**
  * Gets the pick tag dialog.
  * 

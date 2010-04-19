@@ -35,6 +35,7 @@ AjxPackage.require("zimbraMail.core.ZmClientCmdHandler");
 
 AjxPackage.require("zimbraMail.share.view.dialog.ZmDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmChooseFolderDialog");
+AjxPackage.require("zimbraMail.share.view.dialog.ZmChooseAccountDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmRenameFolderDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmRenameTagDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmPickTagDialog");
