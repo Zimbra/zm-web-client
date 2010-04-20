@@ -204,6 +204,42 @@ function(callback, result) {
 };
 
 /**
+ * Modifies the given section with new key/value pairs
+ *
+ * @param {Array}			section			the section to modify
+ * @param {Object}			data			the list of key/value pairs
+ * @param {ZmBatchCommand}	batchCommand	Optional. the batch command the request should be a part of
+ * @param {AjxCallback}		callback		the callback called on successful modify
+ * @param {AjxCallback}		errorCallback	the error callback to trigger on error
+ */
+ZmMetaData.prototype.modify =
+function(section, data, batchCommand, callback, errorCallback) {
+	var soapDoc = AjxSoapDoc.create("ModifyMailboxMetadataRequest", "urn:zimbraMail");
+	var metaNode = soapDoc.set("meta");
+	metaNode.setAttribute("section", [ZmMetaData.NAMESPACE, section].join(":"));
+
+	for (var i in data) {
+		var a = soapDoc.set("a", data[i], metaNode);
+		a.setAttribute("n", i);
+	}
+
+	if (batchCommand) {
+		batchCommand.addNewRequestParams(soapDoc, callback, errorCallback);
+	}
+	else {
+		var params = {
+			soapDoc: soapDoc,
+			asyncMode: true,
+			callback: callback,
+			errorCallback: errorCallback,
+			accountName: (this._account ? this._account.name : null)
+		};
+
+		appCtxt.getAppController().sendRequest(params);
+	}
+};
+
+/**
  * Saves all data within the given section out to the server. If section is not
  * provided, all sections are saved.
  *
