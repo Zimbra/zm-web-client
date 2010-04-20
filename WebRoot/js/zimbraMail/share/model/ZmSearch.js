@@ -861,7 +861,8 @@ function() {
 		} catch(ex) {}
 	}
 
-	this.numTerms = tokens.length;
+	// this way we know if a search was simply "in:foo" or "tag:foo", and nothing else
+	this.singleTerm = (folderId || tagId) && (tokens.length == 1) && !fail;
 
 	// the way multi-account searches are done, we set the queryHint *only* so
 	// set the folderId if it exists for simple multi-account searches

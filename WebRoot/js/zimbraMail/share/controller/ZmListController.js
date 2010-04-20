@@ -1234,8 +1234,7 @@ function(parent, num) {
     }
 
 	// bug: 41758 - don't allow shared items to be tagged
-	var folderId = (num > 0) && this._getSearchFolderId();
-	var folder = folderId && appCtxt.getById(folderId);
+	var folder = (num > 0) && this._getSearchFolder();
 	if (folder && folder.isRemote()) {
 		parent.enable(ZmOperation.TAG_MENU, false);
 	}
@@ -1258,7 +1257,17 @@ function() {
  */
 ZmListController.prototype._getSearchFolderId =
 function() {
-	return (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
+	var s = this._activeSearch && this._activeSearch.search;
+	return s && s.singleTerm && s.folderId;
+};
+
+/**
+ * @private
+ */
+ZmListController.prototype._getSearchFolder =
+function() {
+	var id = this._getSearchFolderId();
+	return id && appCtxt.getById(id);
 };
 
 // Pagination

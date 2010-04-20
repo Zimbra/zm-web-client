@@ -449,8 +449,7 @@ function(parent, num) {
 	}
 	parent.enable(ZmOperation.SHOW_ORIG, isMsg);
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
-		var folderId = this._getSearchFolderId();
-		var folder = folderId ? appCtxt.getById(folderId) : null;
+		var folder = this._getSearchFolder();
 		var isSyncFailuresFolder = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
 		parent.enable(ZmOperation.ADD_FILTER_RULE, isMsg && !isSyncFailuresFolder);
 	}

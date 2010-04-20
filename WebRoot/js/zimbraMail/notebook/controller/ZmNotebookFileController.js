@@ -147,12 +147,8 @@ function() {
 	ZmListController.prototype._initializeActionMenu.call(this);
 
 	// based on current search, show/hide undelete menu option
-	var showUndelete = false;
-	var folderId = this._getSearchFolderId();
-	if (folderId) {
-		var folder = appCtxt.getById(folderId);
-		showUndelete = folder && folder.isInTrash();
-	}
+	var folder = this._getSearchFolder();
+	var showUndelete = folder && folder.isInTrash();
 	var actionMenu = this._actionMenu;
 	var mi = actionMenu.getMenuItem(ZmOperation.UNDELETE);
 	mi.setVisible(showUndelete);

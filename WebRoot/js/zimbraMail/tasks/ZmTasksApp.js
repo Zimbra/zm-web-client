@@ -195,8 +195,7 @@ function(op, params) {
 
 ZmTasksApp.prototype._handleLoadNewTask =
 function(params) {
-	var folderId = params ? params.folderId : null;
-	AjxDispatcher.run("GetTaskController").show((new ZmTask(null, null, folderId)));
+	AjxDispatcher.run("GetTaskController").show((new ZmTask(null, null, params && params.folderId)));
 };
 
 ZmTasksApp.prototype._handleLoadNewTaskFolder =
@@ -274,7 +273,7 @@ function(results, callback) {
 
 ZmTasksApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-	var folderId = results && results.search && results.search.folderId;
+	var folderId = results && results.search && results.search.singleTerm && results.search.folderId;
 	this.getTaskListController().show(results, folderId);
 	if (callback) callback.run();
 };

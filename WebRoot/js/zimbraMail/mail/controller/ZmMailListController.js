@@ -216,7 +216,7 @@ ZmMailListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmMailListController.handleKeyAction");
 
-	var folder = appCtxt.getById(this._getSearchFolderId());
+	var folder = this._getSearchFolder();
 	var isSyncFailures = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
 	var isDrafts = (folder && folder.nId == ZmFolder.ID_DRAFTS);
 	var lv = this._listView[this._currentView];
@@ -596,8 +596,7 @@ function(ev) {
 	var hasUnread = false;
 
 	// dont bother checking for read/unread state for read-only folders
-	var folderId = this._getSearchFolderId();
-	var folder = folderId ? appCtxt.getById(folderId) : null;
+	var folder = this._getSearchFolder();
 	if (!folder || (folder && !folder.isReadOnly())) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
@@ -1052,7 +1051,7 @@ function(toolbar, btn) {
 // If we're in the Trash folder, change the "Delete" button tooltip
 ZmMailListController.prototype._setupDeleteButton =
 function(parent) {
-	var folder = appCtxt.getById(this._getSearchFolderId());
+	var folder = this._getSearchFolder();
 	var inTrashFolder = (folder && folder.nId == ZmFolder.ID_TRASH);
 	var deleteButton = parent.getButton(ZmOperation.DELETE);
 	var deleteMenuButton = parent.getButton(ZmOperation.DELETE_MENU);
@@ -1370,8 +1369,7 @@ function() {
 		appCtxt.accountList.syncAll(callback);
 	}
 
-	var folderId = this._getSearchFolderId();
-	var folder = appCtxt.getById(folderId);
+	var folder = this._getSearchFolder();
 	var isFeed = (folder && folder.isFeed());
 	if (isFeed) {
 		folder.sync();
@@ -1469,7 +1467,7 @@ function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 
 	var folderId = this._getSearchFolderId();
-	var folder = folderId ? appCtxt.getById(folderId) : null;
+	var folder = folderId && appCtxt.getById(folderId);
 
 	parent.enable(ZmOperation.PRINT, num > 0);
 

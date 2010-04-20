@@ -480,7 +480,7 @@ function(searchObj) {
 	var search = searchObj || appCtxt.getCurrentSearch();
 
 	var id, type;
-	if (search && search.numTerms == 1) {
+	if (search && (search.singleTerm || search.searchId)) {
 		if (search.searchId) {
 			id = this._getNormalizedId(search.searchId);
 			type = ZmOrganizer.SEARCH;

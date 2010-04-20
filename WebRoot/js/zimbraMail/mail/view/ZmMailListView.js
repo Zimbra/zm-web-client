@@ -71,7 +71,8 @@ function(item) {
 
 ZmMailListView.prototype.set =
 function(list, sortField) {
-	this._folderId = (list && list.search) ? list.search.folderId : null;
+
+	this._folderId = list && list.search && list.search.singleTerm && list.search.folderId;
 	ZmListView.prototype.set.call(this, list, sortField);
 
 	var sortBy = list && list.search && list.search.sortBy;
@@ -750,7 +751,7 @@ function() {
 		// offline folders which are "syncable" but currently not syncing should
 		// display a different message
 		var fid = ZmOrganizer.getSystemId(this._controller._getSearchFolderId());
-		var folder = (fid != null) ? appCtxt.getById(fid) : null;
+		var folder = fid && appCtxt.getById(fid);
 		if (folder) {
 			if (folder.isOfflineSyncable && !folder.isOfflineSyncing) {
 				var link = "ZmMailListView.toggleSync('" + folder.id + "', '" + this._htmlElId + "');";
