@@ -526,7 +526,7 @@ function(results, callback) {
 ZmContactsApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
 	var search = results && results.search;
-	var folderId = search && search.folderId;
+	var folderId = search && search.singleTerm && search.folderId;
 	var isInGal = search && (search.contactSource == ZmId.SEARCH_GAL);
 	this.getContactListController().show(results, isInGal, folderId);
 	if (callback) {
