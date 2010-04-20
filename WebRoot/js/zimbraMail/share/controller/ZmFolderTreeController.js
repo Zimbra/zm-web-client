@@ -632,12 +632,15 @@ function(ev) {
 		} else {
 			var ctlr = ev.srcData.controller;
 			var items = (data instanceof Array) ? data : [data];
-			if (appCtxt.multiAccounts && !isShiftKey && this._isMovingAcrossAccount(items, dropFolder)) {
+			if (appCtxt.multiAccounts && !isShiftKey && !dropFolder.getAccount().isMain &&
+				this._isMovingAcrossAccount(items, dropFolder))
+			{
 				var dialog = appCtxt.getYesNoMsgDialog();
 				dialog.registerCallback(DwtDialog.YES_BUTTON, this._continueMovingAcrossAccount, this, [dialog, ctlr, items, dropFolder]);
 				dialog.setMessage(ZmMsg.moveAcrossAccountWarning, DwtMessageDialog.WARNING_STYLE);
 				dialog.popup();
-			} else {
+			}
+			else {
 				ctlr._doMove(items, dropFolder, null, isShiftKey);
 			}
 		}
