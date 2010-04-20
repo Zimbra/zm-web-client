@@ -130,7 +130,7 @@
     <c:if test="${mailbox.features.mail}"><c:set var="appcount" value="${appcount+1}"/></c:if>
     <c:if test="${mailbox.features.contacts}"><c:set var="appcount" value="${appcount+1}"/></c:if>
     <c:if test="${mailbox.features.calendar}"><c:set var="appcount" value="${appcount+1}"/></c:if>
-    <c:if test="${mailbox.features.briefcases || mailbox.features.notebook}"><c:set var="appcount" value="${appcount+1}"/></c:if>
+    <c:if test="${mailbox.features.briefcases || mailbox.features.notebook || mailbox.features.tasks}"><c:set var="appcount" value="${appcount+1}"/></c:if>
     <c:set var="active" value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'folders' ? '-active' : ''}"
     /><div class="tr"><c:if test="${mailbox.features.mail}"><a style='width: ${95/appcount}%;'  accesskey="${requestScope.mailapp_accesskey}" id="mail" class="mail${active} appTab${active} td" href="${aurl}?st=${mailbox.prefs.groupMailBy}">
             <span onclick="return zClickLink('mail')" class="nstd"><fmt:message key="mail"/></span>
@@ -144,11 +144,11 @@
             <span onclick="return zClickLink('cal')" style="display:none;" class="aptoday nstd">
                 <div class="_day">${darr[0]}</div><div class="_date">${darr[1]}</div><div class="_month">${darr[2]}</div>
             </span>
-        </a></c:if><c:if test="${mailbox.features.briefcases || mailbox.features.notebook}">
+        </a></c:if><c:if test="${mailbox.features.briefcases || mailbox.features.notebook || mailbox.features.tasks}">
             <c:if test="${not empty param.l_view}"><c:set var="l_view" value="${fn:escapeXml(param.l_view)}" scope="session"/></c:if>
             <c:if test="${empty sessionScope.l_view}"><c:set var="l_view" value="list" scope="session"/></c:if>
             <c:set var="active" value="${param.st eq 'tasks' || param.st eq 'task'|| param.st eq 'briefcase' || param.st eq 'wiki' || param.st eq 'briefcases' || param.st eq 'notebooks' ? '-active' : ''}"/>
-        <a style='width: ${98/appcount}%;'  accesskey="${requestScope.fldrapp_accesskey}" id="docs" class="folders${active} docs${active} appTab${active} td" href="${aurl}?st=${mailbox.features.briefcases ? 'briefcases' : 'notebooks'}">
+        <a style='width: ${98/appcount}%;'  accesskey="${requestScope.fldrapp_accesskey}" id="docs" class="folders${active} docs${active} appTab${active} td" href="${aurl}?st=${mailbox.features.briefcases ? 'briefcases' : (mailbox.features.notebook ? 'notebooks' : 'tasks')}">
             <span class="nstd" onclick="return zClickLink('docs')"><fmt:message key="folders"/></span>
         </a></c:if>
         <c:set var="active" value="${param.search eq '1' ? '' : ''}"/><c:set var="spara" value="search=${param.search eq '1' ? '0' : '1'}"/>
