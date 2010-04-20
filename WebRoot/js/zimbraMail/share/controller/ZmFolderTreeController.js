@@ -632,9 +632,34 @@ function(ev) {
 		} else {
 			var ctlr = ev.srcData.controller;
 			var items = (data instanceof Array) ? data : [data];
-			ctlr._doMove(items, dropFolder, null, isShiftKey);
+			if (appCtxt.multiAccounts && !isShiftKey && this._isMovingAcrossAccount(items, dropFolder)) {
+				var dialog = appCtxt.getYesNoMsgDialog();
+				dialog.registerCallback(DwtDialog.YES_BUTTON, this._continueMovingAcrossAccount, this, [dialog, ctlr, items, dropFolder]);
+				dialog.setMessage(ZmMsg.moveAcrossAccountWarning, DwtMessageDialog.WARNING_STYLE);
+				dialog.popup();
+			} else {
+				ctlr._doMove(items, dropFolder, null, isShiftKey);
+			}
 		}
 	}
+};
+
+ZmFolderTreeController.prototype._isMovingAcrossAccount =
+function(items, dropFolder) {
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		var itemAcct = item.getAccount();
+		if (itemAcct && itemAcct != dropFolder.getAccount()) {
+			return true;
+		}
+	}
+	return false;
+};
+
+ZmFolderTreeController.prototype._continueMovingAcrossAccount =
+function(dialog, ctlr, items, dropFolder) {
+	dialog.popdown();
+	ctlr._doMove(items, dropFolder);
 };
 
 /**
