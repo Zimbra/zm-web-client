@@ -594,7 +594,7 @@ function(viewId, force) {
  * @returns	{Boolean}		<code>true</code> if the view was popped
  */
 ZmAppViewMgr.prototype.popView =
-function(force, viewId) {
+function(force, viewId, skipHistory) {
 	if (!this._currentView) {
 		DBG.println(AjxDebug.DBG1, "ERROR: no view to pop");
 		return false;
@@ -656,7 +656,7 @@ function(force, viewId) {
 
 	// Move one back in the browser history stack so that we stay in sync, unless
 	// we're calling this function as a result of browser Back
-	if (this._historyMgr) {
+	if (this._historyMgr && !skipHistory) {
 		if (this._noHistory) {
 			DBG.println(AjxDebug.DBG2, "noHistory (pop)");
 			this._noHistory = false;

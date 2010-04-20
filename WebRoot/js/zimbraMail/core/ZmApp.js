@@ -349,8 +349,8 @@ function(name, force) {
  * @see		ZmAppViewMgr#popView
  */
 ZmApp.prototype.popView =
-function(force) {
-	return this._appViewMgr.popView(force);
+function(force, viewId, skipHistory) {
+	return this._appViewMgr.popView(force, viewId, skipHistory);
 };
 
 /**

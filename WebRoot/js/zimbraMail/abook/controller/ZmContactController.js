@@ -77,7 +77,7 @@ function(contact, isDirty) {
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView({view:this._currentView, elements:elements, isTransient:true, stageView:!this._editPageLoaded});
 	if (!this._editPageLoaded) {
-		this._app.popView(true, ZmId.VIEW_LOADING); // pop "Loading..." page
+		this._app.popView(true, ZmId.VIEW_LOADING, true); // pop "Loading..." page
 	}
 	this._editPageLoaded = true;
 };
