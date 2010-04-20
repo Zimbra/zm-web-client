@@ -117,6 +117,7 @@ function(callback, errorCallback) {
 			callback.run(this._features, this);
 		}
 	} else {
+		this._initializeFeatures();
 		var soapDoc = AjxSoapDoc.create("GetVoiceFeaturesRequest", "urn:zimbraVoice");
 		appCtxt.getApp(ZmApp.VOICE).setStorePrincipal(soapDoc);
 		var node = soapDoc.set("phone");

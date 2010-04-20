@@ -40,11 +40,16 @@ function() {
 }
 
 // Calling preferences
-ZmCallFeature.ANONYNOUS_REJECTION = "anoncallrejection";
+ZmCallFeature.ANONYMOUS_REJECTION = "anoncallrejection";
 ZmCallFeature.CALL_FORWARDING = "callforward";
 ZmCallFeature.SELECTIVE_CALL_FORWARDING = "selectivecallforward";
 ZmCallFeature.VOICEMAIL_PREFS = "voicemailprefs"
-ZmCallFeature.CALL_FEATURES = [ZmCallFeature.ANONYNOUS_REJECTION, ZmCallFeature.CALL_FORWARDING, ZmCallFeature.VOICEMAIL_PREFS];
+ZmCallFeature.CALL_FORWARD_NO_ANSWER = "callforwardnoanswer";
+ZmCallFeature.SELECTIVE_CALL_REJECTION = "selectivecallrejection";
+ZmCallFeature.SELECTIVE_CALL_ACCEPTANCE = "selectivecallacceptance";
+
+ZmCallFeature.CALL_FEATURES = [ZmCallFeature.ANONYMOUS_REJECTION, ZmCallFeature.CALL_FORWARDING, ZmCallFeature.VOICEMAIL_PREFS, ZmCallFeature.CALL_FORWARD_NO_ANSWER, ZmCallFeature.SELECTIVE_CALL_FORWARDING, ZmCallFeature.SELECTIVE_CALL_REJECTION, ZmCallFeature.SELECTIVE_CALL_ACCEPTANCE];
+
 
 // Voicemail preferences.
 ZmCallFeature.EMAIL_NOTIFICATION = "vmPrefEmailNotifAddress";
