@@ -251,11 +251,11 @@ function(item) {
 		{name:ZmMsg.name, value:fileLink},
 	];
 
-    if (item.isRealFile() || item.isSlideDoc() || item.isZimbraDoc()) {
+    if (item.isRealFile() || item.isSlideDoc() || item.isWebDoc()) {
         var actionLink;
         if (item.isSlideDoc()) {
             actionLink = [ '<a href="', originalRestURL, "?fmt=html&run=1", '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
-        } else if(item.isZimbraDoc()) {
+        } else if(item.isWebDoc()) {
             actionLink = [ '<a href="', originalRestURL, "?fmt=html" + (window.isTinyMCE ?  "&editor=tinymce" : "") , '" target="_blank">', ZmMsg.edit, '</a>' ].join("");
         } else {
             actionLink = [ '<a href="', originalRestURL, "?disp=a", '" target="_blank">', ZmMsg.saveFile, '</a>' ].join("");
