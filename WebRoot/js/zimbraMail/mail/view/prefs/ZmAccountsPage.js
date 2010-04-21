@@ -335,7 +335,7 @@ function(account, skipUpdate, ignoreProvider) {
 	if (div) {
 		this._currentAccount = account;
 		Dwt.setVisible(div, true);
-		if (appCtxt.multiAccounts) {
+		if (appCtxt.isOffline) {
 			this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
 			this._setZimbraAccount(account, this._currentSection);
 		} else {
@@ -1373,7 +1373,7 @@ function() {
 
 ZmAccountsPage.prototype._getSectionDiv =
 function(account) {
-	return appCtxt.multiAccounts
+	return appCtxt.isOffline
 		? this._sectionDivs[ZmAccount.TYPE_ZIMBRA]
 		: this._sectionDivs[account.type];
 };
