@@ -374,22 +374,22 @@ form {
 }
 .Msg {
     background-position: 0 -308px !important;
-    position:relative;left:15px;
+    left:15px;
 }
 .MsgGray {
     background-position: 0 -200px !important;
-    position:relative;left:15px;
+    left:15px;
 }
 .Conv {
     background-position: 0 -326px !important;
-    position:relative;left:15px;
+    left:15px;
 }
 .Contact {
     background-position: 0 -218px !important;
-    position:relative;left:15px;
+    left:15px;
 }
 .Task{
-    position:relative;left:15px;    
+    left:15px;
 }
 .Person48 {
     background: url( "/img/large/ImgPerson_48.gif" ) 90% 50% no-repeat;
@@ -399,7 +399,7 @@ form {
 }
 .ContactGroup {
     background-position: 0 -380px !important;
-    position:relative;left:15px;
+    left:15px;
 }
 .Attachment {
     background-position: 0 -362px !important;
@@ -592,7 +592,7 @@ select {
     padding: 0px;
     margin: 0px;
     font-size: 18px;
-    position:absolute;left:8px;
+    left:8px;
 }
 .from-span, .sub-span {
     overflow: hidden;
@@ -742,7 +742,7 @@ h1, h2, h3, h4, h5, h6 {
     vertical-align: -22%;
     background: url("/img/doctypes.gif") no-repeat top left;
     overflow:hidden;
-    position:relative;left:15px;
+    left:15px;
 }
 .ImgAudioDoc{ background-position:0px 0px ;}
  .ImgDoc{background-position: 0px -16px ;}
