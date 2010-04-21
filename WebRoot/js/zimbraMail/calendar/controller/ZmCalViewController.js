@@ -462,13 +462,19 @@ function(folderId) {
 
 /**
  * Gets the calendar for the specified account.
- * 
- * @param	{Boolean}	includeLinks		if <code>true</code>, include links
- * @param	{ZmAccount}	account			the account
+ *
+ * @param   {Hash}      params              Param hash
+ * @param	{Boolean}	params.includeLinks	if <code>true</code>, include links
+ * @param   {Boolean}   params.onlyWritable if <code>true</code> only writable calendars
+ * @param	{ZmAccount}	params.account		the account
  * @return	{Array}	an array of {ZmCalendar} objects
  */
 ZmCalViewController.prototype.getCalendars =
-function(includeLinks, account) {
+function(params) {
+    params = params || {};
+    var account = params.account;
+    var includeLinks = params.includeLinks;
+    var onlyWritable = params.onlyWritable;
 	this._updateCheckedCalendars();
 	var calendars = [];
 	var organizers = appCtxt.getFolderTree(account).getByType(ZmOrganizer.CALENDAR);
@@ -483,6 +489,8 @@ function(includeLinks, account) {
 		}
 
 		if (account && organizer.getAccount() != account) { continue; }
+
+        if (onlyWritable && organizer.isReadOnly()) continue;
 
 		calendars.push(organizer);
 	}

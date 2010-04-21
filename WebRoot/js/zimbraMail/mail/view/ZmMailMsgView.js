@@ -195,7 +195,7 @@ function(msg) {
 
 			var cc = ac.getApp(ZmApp.CALENDAR).getCalController();
 			var msgAcct = msg.getAccount();
-			var calendars = cc.getCalendars(true, msgAcct);
+			var calendars = cc.getCalendars({includeLinks:true, account:msgAcct, onlyWritable:true});
 
 			if (appCtxt.multiAccounts) {
 				var accounts = ac.accountList.visibleAccounts;
@@ -204,7 +204,7 @@ function(msg) {
 					if (acct == msgAcct || !ac.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
 					if (appCtxt.isOffline && acct.isMain) { continue; }
 
-					calendars = calendars.concat(cc.getCalendars(true, acct));
+					calendars = calendars.concat(cc.getCalendars({includeLinks:true, account:acct, onlyWritable:true}));
 				}
 
 				// always add the local account *last*
@@ -219,7 +219,7 @@ function(msg) {
 				for (var i = 0; i < calendars.length; i++) {
 					var calendar = calendars[i];
 					var calAcct = calendar.getAccount();
-					var icon = appCtxt.multiAccounts ? calAcct.getIcon() : null;
+					var icon = appCtxt.multiAccounts ? calAcct.getIcon() : calendar.getIcon();
 					var name = appCtxt.multiAccounts
 						? ([calendar.name, " (", calAcct.getDisplayName(), ")"].join(""))
 						: calendar.name;
@@ -232,7 +232,6 @@ function(msg) {
 			}
             this._inviteMoveLabel.setVisible(visible);
 			this._inviteMoveSelect.setVisible(visible);
-			this._lastApptFolder = ZmOrganizer.ID_CALENDAR;
 			this._hasInviteToolbar = true;
 		}
 	}
@@ -479,41 +478,6 @@ function(enable) {
 			}
 		}
 	}
-};
-
-ZmMailMsgView.prototype._moveAppt =
-function(ev) {
-	var select = ev.item.parent.parent;
-	var ofolder = this._lastApptFolder || ZmOrganizer.ID_CALENDAR;
-	var nfolder = select.getValue();
-	if (ofolder == nfolder) return;
-
-	var itemId = this._msg.invite.components[0].apptId;
-	this.moveApptItem(itemId, ofolder, nfolder, select);
-};
-
-ZmMailMsgView.prototype.moveApptItem =
-function(itemId, ofolder, nfolder, select) {
-	var callback = new AjxCallback(this, this._handleMoveApptResponse, [ofolder, nfolder]);
-	var errorCallback = new AjxCallback(this, this._handleMoveApptError, [ofolder, nfolder, select]);
-	ZmItem.move(itemId, nfolder, callback, errorCallback);
-};
-
-ZmMailMsgView.prototype._handleMoveApptResponse =
-function(ofolder, nfolder, resp) {
-	this._lastApptFolder = nfolder;
-	// TODO: Display some sort of confirmation?
-};
-
-ZmMailMsgView.prototype._handleMoveApptError =
-function(ofolder, nfolder, select, resp) {
-	select.setSelectedValue(ofolder);
-	var params = {
-		msg:	ZmMsg.errorMoveAppt,
-		level:	ZmStatusView.LEVEL_CRITICAL
-	};
-	appCtxt.setStatusMsg(params);
-	return true;
 };
 
 ZmMailMsgView.prototype._getShareToolbar =
