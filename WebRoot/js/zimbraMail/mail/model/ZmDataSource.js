@@ -101,7 +101,7 @@ ZmDataSource.prototype.folderId = ZmOrganizer.ID_INBOX;
 
 ZmDataSource.prototype.leaveOnServer = true;
 ZmDataSource.prototype.connectionType = ZmDataSource.CONNECT_DEFAULT;
-ZmDataSource.prototype.pollingInterval = ZmDataSource.POLL_NEVER;
+ZmDataSource.prototype.pollingInterval;
 
 //
 // Public methods
