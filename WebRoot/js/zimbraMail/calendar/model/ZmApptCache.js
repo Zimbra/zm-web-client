@@ -340,7 +340,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 	}
 
 	var miniCalCache = this._calViewController.getMiniCalCache();
-	cacheData = miniCalCache.getCacheData(miniCalParams);
+	var cacheData = miniCalCache.getCacheData(miniCalParams);
 
 	// mini cal data in cache
 	if (cacheData && cacheData.length > 0) {

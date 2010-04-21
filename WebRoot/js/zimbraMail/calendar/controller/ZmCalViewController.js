@@ -773,6 +773,9 @@ function(ev) {
 	if (ev.detail == DwtMenuItem.CHECKED ||
 		ev.detail == DwtMenuItem.UNCHECKED)
 	{
+		if (appCtxt.multiAccounts) {
+			this.apptCache.clearCache();
+		}
 		var id = ev.item.getData(ZmOperation.MENUITEM_ID);
 		var viewBtn = this._toolbar[ZmId.VIEW_CAL].getButton(ZmOperation.VIEW_MENU);
 		if (viewBtn) {
