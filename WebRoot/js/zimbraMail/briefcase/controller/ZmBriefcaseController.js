@@ -209,11 +209,22 @@ function(parent, num) {
 	parent.enable([ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isMailEnabled && isItemSelected && !isMultiFolder && !isFolderSelected));
 	parent.enable(ZmOperation.OPEN_FILE, (isItemSelected && !isMultiFolder));
 	parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected));
-	parent.enable(ZmOperation.CREATE_SLIDE_SHOW, (!isReadOnly && isItemSelected));
 	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 	parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared));
+
+    var isDocOpEnabled = !isReadOnly && (this._folderId != ZmFolder.ID_TRASH)
+    if (appCtxt.get(ZmSetting.DOCS_ENABLED)) {
+        parent.enable(ZmOperation.NEW_DOC, isDocOpEnabled);
+    }
+    if (appCtxt.get(ZmSetting.SPREADSHEET_ENABLED)) {
+        parent.enable(ZmOperation.NEW_SPREADSHEET, isDocOpEnabled);
+    }
+    if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
+        parent.enable(ZmOperation.NEW_PRESENTATION, isDocOpEnabled);
+        parent.enable(ZmOperation.CREATE_SLIDE_SHOW, isDocOpEnabled && isItemSelected);
+    }
 };
 
 ZmBriefcaseController.prototype._getTagMenuMsg =
@@ -378,17 +389,24 @@ ZmBriefcaseController.prototype.__popupUploadDialog =
 function(callback, title) {
 
 	var folderId = this._folderId || ZmOrganizer.ID_BRIEFCASE;
-	var isShared = this.isShared(folderId);
-	var isReadOnly = this.isReadOnly(folderId);
-
-	if (isShared && isReadOnly) {
-		var dialog = appCtxt.getMsgDialog();
-		dialog.setMessage(ZmMsg.errorPermission, DwtMessageDialog.WARNING_STYLE);
-		dialog.popup();
-	} else {
-		var cFolder = appCtxt.getById(folderId);
+    if(this.chkFolderPermission(folderId)){
+        var cFolder = appCtxt.getById(folderId);
 		appCtxt.getUploadDialog().popup(cFolder, callback, title);
-	}
+    }	
+};
+
+ZmBriefcaseController.prototype.chkFolderPermission =
+function(folderId){
+
+    var isShared = this.isShared(folderId);
+    var isReadOnly = this.isReadOnly(folderId);
+    if (isShared && isReadOnly) {
+        var dialog = appCtxt.getMsgDialog();
+        dialog.setMessage(ZmMsg.errorPermissionCreate, DwtMessageDialog.WARNING_STYLE);
+        dialog.popup();
+        return false;
+    }
+    return true;
 };
 
 ZmBriefcaseController.prototype.isReadOnly =

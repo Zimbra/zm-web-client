@@ -290,9 +290,11 @@ function(contentType, name, winName) {
 		folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
 	}
 
-	var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + (window.isTinyMCE ? "&editor=tinymce" : "") + "&skin=" + appCurrentSkin;
-	var winname = winName || name;
-	window.open(url, winname); //bug:44324 removed new launching window
+    if(this.getBriefcaseController().chkFolderPermission(folderId)) {
+        var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + (window.isTinyMCE ? "&editor=tinymce" : "") + "&skin=" + appCurrentSkin;
+        var winname = winName || name;
+        window.open(url, winname); //bug:44324 removed new launching window
+    }
 };
 
 /**
