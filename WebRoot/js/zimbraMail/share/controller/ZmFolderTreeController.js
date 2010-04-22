@@ -313,7 +313,10 @@ function(folder) {
 		var acct = folder.getAccount();
 		if (acct && acct.inNewMailMode) {
 			acct.inNewMailMode = false;
-			appCtxt.getApp(ZmApp.MAIL).getOverviewContainer().updateAccountInfo(acct, true, true);
+			var allContainers = appCtxt.getOverviewController()._overviewContainer;
+			for (var i in allContainers) {
+				allContainers[i].updateAccountInfo(acct, true, true);
+			}
 		}
 	}
 
