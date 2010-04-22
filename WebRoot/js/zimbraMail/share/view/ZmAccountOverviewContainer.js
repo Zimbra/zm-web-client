@@ -624,7 +624,10 @@ function(ev) {
 				// bug 41196 - turn off new mail notifier if inactive account header clicked
 				if (appCtxt.isOffline && account.inNewMailMode) {
 					account.inNewMailMode = false;
-					this.updateAccountInfo(account, true, true);
+					var allContainers = appCtxt.getOverviewController()._overviewContainer;
+					for (var i in allContainers) {
+						allContainers[i].updateAccountInfo(account, true, true);
+					}
 				}
 
 				// don't process click if user clicked on error status icon

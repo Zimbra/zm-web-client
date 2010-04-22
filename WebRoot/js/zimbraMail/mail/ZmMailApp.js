@@ -1056,9 +1056,14 @@ function(creates) {
 		var acct = parsed && parsed.account;
 
 		if (parsed && appCtxt.isOffline) {
-			if (acct && appCtxt.getActiveAccount() != acct) {
+			if (appCtxt.getCurrentSearch().isMultiAccount() ||
+				(acct && appCtxt.getActiveAccount() != acct))
+			{
 				acct.inNewMailMode = true;
-				this.getOverviewContainer().updateAccountInfo(acct, true, true);
+				var allContainers = appCtxt.getOverviewController()._overviewContainer;
+				for (var i in allContainers) {
+					allContainers[i].updateAccountInfo(acct, true, true);
+				}
 			}
 		}
 
