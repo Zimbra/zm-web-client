@@ -316,7 +316,13 @@ function() {
 			folderId = i;
 			break;
 		}
-		if (!folderId) {
+		
+		if (!folderId &&
+			appCtxt.multiAccounts &&
+			appCtxt.getCurrentApp() &&
+			appCtxt.getCurrentSearch() &&
+			!appCtxt.getCurrentSearch().isMultiAccount())
+		{
 			folderId = this.getFolderId();
 		}
 
