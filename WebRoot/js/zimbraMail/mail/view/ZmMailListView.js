@@ -289,7 +289,7 @@ function(viewId, headerList) {
 		headers = userHeaders.split(ZmListView.COL_JOIN);
 		if (headers.length != headerList.length) {
 			// this means a new column was added the user does not know about yet
-			this._normalizeHeaders(headers, headerList);
+			headers = this._normalizeHeaders(headers, headerList);
 		}
 	}
 	for (var i = 0, len = headers.length; i < len; i++) {
@@ -322,33 +322,52 @@ function(viewId, headerList) {
 };
 
 /**
- * Inserts new columns into the second to last position of userHeaders so user
- * still sees their preferred column format but also sees newly added columns
+ * Cleans up the list of columns in various ways:
+ * 		- Add new fields in penultimate position
+ * 		- Remove duplicate fields
+ * 		- Remove fields that aren't valid for the view
  *
  * @param userHeaders	[Array]		user-defined set of column headers
  * @param headerList	[Array]		default set of column headers
  */
 ZmMailListView.prototype._normalizeHeaders =
 function(userHeaders, headerList) {
-	var headers = {};
-	for (var i = 0; i < userHeaders.length; i++) {
-		headers[userHeaders[i]] = true;
-	}
 
-	for (var j = 0; j < headerList.length; j++) {
-		var field = headerList[j];
-		if (!headers[field]) {
-			// if account field, add it but initially invisible
-			if (field == ZmId.FLD_ACCOUNT) {
-				field += "*";
-			}
-			userHeaders.splice(userHeaders.length-1, 0, field);
+	// strip duplicates and invalid headers
+	var allHeaders = AjxUtil.arrayAsHash(headerList);
+	var headers = [], used = {}, starred = {};
+	for (var i = 0; i < userHeaders.length; i++) {
+		var hdr = userHeaders[i];
+		var idx = hdr.indexOf("*");
+		if (idx != -1) {
+			hdr = hdr.substr(0, idx);
+			starred[hdr] = true;
+		}
+		if (allHeaders[hdr] && !used[hdr]) {
+			headers.push(hdr);
+			used[hdr] = true;
 		}
 	}
 
+	// add columns this account doesn't know about
+	for (var j = 0; j < headerList.length; j++) {
+		var hdr = headerList[j];
+		if (!used[hdr]) {
+			// if account field, add it but initially invisible
+			if (hdr == ZmId.FLD_ACCOUNT) {
+				starred[ZmItem.F_ACCOUNT] = true;
+			}
+			headers.splice(headers.length - 1, 0, hdr);
+		}
+	}
+
+	// rebuild the list, preserve invisibility
+	var list = AjxUtil.map(headers, function(hdr) {
+		return starred[hdr] ? hdr + "*" : hdr; });
+
 	// save implicit pref with newly added column
-	var value = userHeaders.join(ZmListView.COL_JOIN);
-	appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
+	appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, list.join(ZmListView.COL_JOIN), this.view);
+	return list;
 };
 
 ZmMailListView.prototype.createHeaderHtml =
