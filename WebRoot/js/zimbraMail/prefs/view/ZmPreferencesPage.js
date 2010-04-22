@@ -347,6 +347,9 @@ function(id, setup, control) {
 			}
 			else if (type == ZmPref.TYPE_RADIO_GROUP) {
 				value = object.getSelectedValue();
+				if (value == "true" || value == "false") {
+					value = (value == "true");
+				}
 			}
 			else if (type == ZmPref.TYPE_LOCALES) {
 				value = object._localeId;
