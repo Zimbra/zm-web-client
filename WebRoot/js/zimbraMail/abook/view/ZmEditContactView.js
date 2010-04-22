@@ -1579,8 +1579,10 @@ ZmEditContactViewInputSelect.prototype.reRenderSelect = function() {
 ZmEditContactViewInputSelect.prototype.reRenderInput = function() {
 	if (this._input) {
 		var value = this._input.getValue();
-		this._input.setValue(value+" ");
-		this._input.setValue(value);
+		if (value && value != "") {
+			this._input.setValue(value+" ");
+			this._input.setValue(value);
+		}
 	}
 };
 
