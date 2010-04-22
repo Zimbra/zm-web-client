@@ -205,7 +205,7 @@ function(requestType, respFunction, callback, errorCallback, batchCmd) {
 	var identityNode = soapDoc.set("identity");
 
 	var name = this.isDefault ? ZmIdentity.DEFAULT_NAME : this.name;
-	if (requestType != "Create") {
+	if (requestType != "Create" && this.id !== "") {
 		identityNode.setAttribute("id", this.id);
 	}
 	else {
