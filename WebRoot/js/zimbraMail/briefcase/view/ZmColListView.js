@@ -64,19 +64,33 @@ ZmColListView.prototype.toString = function() {
 ZmColListView.KEY_ID = "_keyId";
 
 ZmColListView.prototype.set =
-function(list, sortField) {
+function(list, sortField, doNotIncludeFolders) {
 
-	var paging = Boolean(this._itemsToAdd);
-    if(!paging) {
-       //Add sub folders to the list
-       var subs = this._folders = this._controller._getSubfolders();
-       var subsLen = subs ? subs.length : 0;
-       for(var i=0; i<subsLen; i++){
-           list.add(subs[i], 0);
-       } 		    
-    };
+
+    //Add Folders accordingly
+    var paging = Boolean(this._itemsToAdd);
+    if(!doNotIncludeFolders && !paging){
+        var subs = this._folders = this._controller._getSubfolders();
+        var subsLen = subs ? subs.length : 0;
+        if(subsLen > 0){
+            list = this._cloneList(list);
+            for(var i=0; i<subsLen; i++){
+                list.add(subs[i], 0);
+            }
+        }
+    }
+	
 	ZmBriefcaseBaseView.prototype.set.call(this, list, sortField);
     this.focus();
+};
+
+ZmColListView.prototype._cloneList =
+function(list){
+    var newList = new ZmList(list.type, list.search);
+    for(var i=0; i<list.size(); i++){
+        newList.add(list.get(i));
+    }
+    return newList;
 };
 
 ZmColListView.prototype.getController =
@@ -152,26 +166,31 @@ function(folder) {
 ZmColListView.prototype._itemClicked =
 function(clickedEl, ev) {
 
-	this.parent.setCurrentListIndex(this._colIdx);
-	ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
-
-	if (ev.button == DwtMouseEvent.LEFT) {
-		this.parent.removeChildColumns(this._colIdx);
-		var items = this.getSelection();
-		if (items && items.length == 1) {
-			var item = items[0];
-			if (item.isFolder) {
-				this.parent.expandFolder(item.id);
-			} else {
-				this.parent.showFileProps(item);
-			}
-		}
-	}
+    if(this._controller._currentView == ZmId.VIEW_BRIEFCASE_COLUMN) {
+        this.parent.setCurrentListIndex(this._colIdx);
+        ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
+        if (ev.button == DwtMouseEvent.LEFT) {
+            this.parent.removeChildColumns(this._colIdx);
+            var items = this.getSelection();
+            if (items && items.length == 1) {
+                var item = items[0];
+                if (item.isFolder) {
+                    this.parent.expandFolder(item.id);
+                } else {
+                    this.parent.showFileProps(item);
+                }
+            }
+        }
+    }else{
+        ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
+    }
 };
 
 ZmColListView.prototype._getScrollDiv =
 function() {
-	return this.parent._divs[this._colIdx];
+	return (this.parent._divs)
+            ? this.parent._divs[this._colIdx]
+            : this.getHtmlElement();
 };
 
 ZmColListView.prototype._getItemId =

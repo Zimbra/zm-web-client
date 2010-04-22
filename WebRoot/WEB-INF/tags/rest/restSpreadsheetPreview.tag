@@ -20,8 +20,8 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <rest:handleError>
-    <zm:getDocument var="doc" box="${mailbox}" id="${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}"/>
-    <zm:getDocumentContent  var="docContent" box="${mailbox}" id="${requestScope.zimbra_target_item_id}"/>
+    <zm:getDocument var="spreadsheet" box="${mailbox}" id="${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}"/>
+    <zm:getDocumentContent  var="spreadsheetContent" box="${mailbox}" id="${requestScope.zimbra_target_item_id}"/>
 </rest:handleError>
 <c:set var="isViewOnly" value="${not empty param.viewonly}" scope="request"/>
 <html>
@@ -34,7 +34,18 @@
             <c:param name="v"		value="${initParam.zimbraCacheBusterVersion}" />
         </c:url>
         <link rel="stylesheet" type="text/css" href="${cssurl}" />
-
+        <jsp:include page="/public/Resources.jsp">
+            <jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys" />
+            <jsp:param name="skin" value="${skin}" />
+        </jsp:include>
+        <script type="text/javascript" src="/js/ajax/boot/AjxEnv.js"></script>
+        <script type="text/javascript" src="/js/ajax/util/AjxStringUtil.js"></script>
+        <script type="text/javascript" src="/js/ajax/util/AjxUtil.js"></script>
+        <script type="text/javascript" src="/js/ajax/xml/AjxXmlDoc.js"></script>
+        <script type="text/javascript" src="/js/zimbraMail/spreadsheets/model/msgs.js"></script>
+        <script type="text/javascript" src="/js/zimbraMail/spreadsheets/model/ZmSpreadSheetFormulae.js"></script>
+        <script type="text/javascript" src="/js/zimbraMail/spreadsheets/model/ZmSpreadSheetModel.js"></script>
+        <script type="text/javascript" src="/js/zimbraMail/spreadsheets/view/ZmSpreadSheetPreview.js"></script>
     </head>
     <body>
     <table width="100%" height="100%" cellspacing="0" cellpadding="0">
@@ -45,15 +56,15 @@
                     <table width="100%" height="100%" cellpadding="0" cellspacing="5">
                     <tr>
                         <td>
-                            <span style="font-size:18px;"><b>${doc.name}</b></span>
+                            <span style="font-size:18px;"><b>${spreadsheet.name}</b></span>
                         </td>
                         <td>
                             &nbsp;
                         </td>
                     </tr>
                     <tr>
-                        <td><fmt:message key="labelBy"/>&nbsp;${doc.creator}</td>
-                        <td align="right"><fmt:message key="labelVersion"/>: ${doc.version}  |  <fmt:message key="labelModifiedOn"/>: <fmt:formatDate value="${doc.modifiedDate}" pattern="M/d/yyyy h:mm a" timeZone="${mailbox.prefs.timeZone}"/></td>
+                        <td><fmt:message key="labelBy"/>&nbsp;${spreadsheet.creator}</td>
+                        <td align="right"><fmt:message key="labelVersion"/>: ${spreadsheet.version}  |  <fmt:message key="labelModifiedOn"/>: <fmt:formatDate value="${spreadsheet.modifiedDate}" pattern="M/d/yyyy hh:mm" timeZone="${mailbox.prefs.timeZone}"/></td>
                     </tr>
                     </table>
                 </td>
@@ -65,8 +76,8 @@
                         <tbody>
                             <tr>
                                 <td class="ZhAppContent" style="border-width:1px;">
-                                <div style="width:100%; height:100%;">
-                                   ${docContent}
+                                <div style="width:100%; height:100%;" id="spreadsheet">
+                                   <!-- Spreadsheet Content -->
                                 </div>
                                 </td>
                             </tr>
@@ -76,5 +87,8 @@
             </tr>
         </tbody>
     </table>
+    <script type="text/javascript">
+        ZmSpreadSheetPreview.launch('spreadsheet', '${spreadsheetContent}');
+    </script>
     </body>
 </html>

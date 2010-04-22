@@ -37,6 +37,9 @@
     <c:when test="${(contentType eq 'application/x-zimbra-doc')}">
         <rest:documentView/>
     </c:when>
+    <c:when test="${(contentType eq 'application/x-zimbra-xls' and isPreview)}">
+        <rest:spreadsheetPreview/>
+    </c:when>
     <c:when test="${(contentType eq 'application/x-zimbra-xls')}">
         <rest:spreadsheetView/>
     </c:when>

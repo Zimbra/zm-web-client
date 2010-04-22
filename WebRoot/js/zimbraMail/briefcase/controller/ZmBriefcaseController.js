@@ -55,6 +55,8 @@ ZmBriefcaseController = function(container, app) {
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+
+    this._parentView = {};
 };
 
 ZmBriefcaseController.prototype = new ZmListController;
@@ -75,6 +77,7 @@ ZmBriefcaseController._VIEWS = {};
 ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE]			= "ZmBriefcaseView";
 ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_DETAIL]	= "ZmDetailListView";
 ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_COLUMN]	= "ZmMultiColView";
+ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_PREVIEW]	= "ZmBriefcaseSplitView";
 
 // Stuff for the View menu
 ZmBriefcaseController.GROUP_BY_ICON = {};
@@ -84,14 +87,17 @@ ZmBriefcaseController.GROUP_BY_VIEWS = [];
 ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE]			= "explorerView";
 ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_DETAIL]	= "detailView";
 ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_COLUMN]	= "columnBrowserView";
+ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_PREVIEW]	= "previewView";
 
 ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE]			= "Folder";
 ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_DETAIL]		= "ListView";
 ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_COLUMN]		= "ListView";
+ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_PREVIEW]	= "ListView";
 
 ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE);
 ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_DETAIL);
 ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_COLUMN);
+ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_PREVIEW);
 
 ZmBriefcaseController.prototype._standardActionMenuOps =
 function() {
@@ -257,25 +263,17 @@ function() {
 ZmBriefcaseController.prototype._createNewView =
 function(view) {
 
-	var isMultiCol = (view == ZmId.VIEW_BRIEFCASE_COLUMN);
-	var curView = isMultiCol ? this._multiColView : this._listView[view];
-	if (!curView) {
-		var viewCtor = eval(ZmBriefcaseController._VIEWS[view]);
-		if (isMultiCol) {
-			this._multiColView = new viewCtor(this._container, this, this._dropTgt);
-			this._listView[view] = this._multiColView.getListView();
-		} else {
-			this._listView[view] = new viewCtor(this._container, this, this._dropTgt);
-		}
-	}
-	this._listView[view].setDragSource(this._dragSrc);
+    var viewCtor = eval(ZmBriefcaseController._VIEWS[view]);
+	this._parentView[view] = new viewCtor(this._container, this, this._dropTgt);
+	var listView = this._parentView[view].getListView();
+	listView.setDragSource(this._dragSrc);
 
-	return this._listView[view];
+	return listView;
 };
 
 ZmBriefcaseController.prototype._setViewContents =
 function(view) {
-	var bcv = (view == ZmId.VIEW_BRIEFCASE_COLUMN) ? this._multiColView : this._listView[view];
+	var bcv = this._parentView[view];
 	bcv.set(this._list);
 };
 
@@ -329,7 +327,7 @@ function(results) {
 
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this.isMultiColView() ? this._multiColView : lv;
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[this._currentView];//this.isMultiColView() ? this._multiColView : lv;
 
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 	this._resetNavToolBarButtons(this._currentView);
@@ -347,7 +345,7 @@ function(view, force) {
 	var viewChanged = (force || view != this._currentView);
 
 	if (viewChanged) {
-		var mcv = this._multiColView;
+		var mcv = this._parentView[ZmId.VIEW_BRIEFCASE_COLUMN];
 		if (this.isMultiColView()) {
 			// remember list columns in case we return to col view
 			mcv.setCurrentListIndex(mcv._nextIndex - 1);
@@ -363,8 +361,8 @@ function(view, force) {
 
 	if (viewChanged) {
 		var elements = {};
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this.isMultiColView() ? this._multiColView : this._listView[this._currentView];
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view]; /*this.isMultiColView() ? this._multiColView : this._listView[this._currentView];*/
 		this._setView({view:view, elements:elements, isAppView:true});
 		this._resetNavToolBarButtons(view);
 	}
@@ -514,12 +512,17 @@ function() {
 	var view = this._listView[this._currentView];
 	var items = view.getSelection();
 	if (!items) { return; }
+    this.editFile(items);
 
-	items = AjxUtil.toArray(items);
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		var restUrl = item.getRestUrl();
-		if (restUrl) {
+};
+
+ZmBriefcaseController.prototype.editFile =
+function(items){
+    items = AjxUtil.toArray(items);
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        var restUrl = item.getRestUrl();
+        if (restUrl) {
 
             //added for bug: 45150
             if(item.isWebDoc() && appCtxt.isOffline) {
@@ -527,11 +530,11 @@ function() {
             }
 
             if (item.isWebDoc()) {
-				restUrl = ZmBriefcaseApp.addEditorParam(restUrl);               
-			    window.open(restUrl, item.name, "");
+                restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
+                window.open(restUrl, item.name, "");
             }
-		}
-	}
+        }
+    }
 };
 
 ZmBriefcaseController.prototype._openFileListener =
@@ -540,7 +543,12 @@ function() {
 	var items = view.getSelection();
 	if (!items) { return; }
 
-	items = AjxUtil.toArray(items);
+    this.openFile(items);
+};
+
+ZmBriefcaseController.prototype.openFile =
+function(items){
+    items = AjxUtil.toArray(items);
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		var restUrl = item.getRestUrl();
@@ -569,12 +577,17 @@ function() {
 	items = AjxUtil.toArray(items);
 
 	// Allow download to only one file.
-	var item = items[0];
-	var restUrl = item.getRestUrl();
-	if (item && restUrl) {
-		// bug fix #36618 - force new window since some users may get prompted for auth
-		window.open(restUrl+ "?disp=a");
-	}
+    this._downloadFile(items[0]);
+};
+
+ZmBriefcaseController.prototype._downloadFile =
+function(item){
+    var restUrl = item.getRestUrl();
+    if (item && restUrl) {
+        // bug fix #36618 - force new window since some users may get prompted for auth
+        window.open(restUrl+ "?disp=a");
+    }
+
 };
 
 ZmBriefcaseController.prototype._viewAsHtmlListener =
@@ -670,32 +683,37 @@ ZmBriefcaseController.prototype._sendFileAsAttachmentListener =
 function(event) {
 	var view = this._listView[this._currentView];
 	var items = view.getSelection();
-	items = AjxUtil.toArray(items);
 
-	var docInfo = [];
+    this.sendFilesAsAttachment(items);	
+};
 
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
+ZmBriefcaseController.prototype.sendFilesAsAttachment =
+function(items){
 
-		var briefcase = appCtxt.getById(item.folderId);
-		if (briefcase.isRemote() || briefcase.isReadOnly()) {
-			continue;
-		}
+    items = AjxUtil.toArray(items);
+    var docInfo = [];
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
 
-		docInfo.push({id: item.id, ct: item.contentType, s: item.size});
-	}
+        var briefcase = appCtxt.getById(item.folderId);
+        if (briefcase.isRemote() || briefcase.isReadOnly()) {
+            continue;
+        }
 
-	if (docInfo.length == 0) { return; }
+        docInfo.push({id: item.id, ct: item.contentType, s: item.size});
+    }
 
-	var action = ZmOperation.NEW_MESSAGE;
-	var msg = new ZmMailMsg();
-	var toOverride;
+    if (docInfo.length == 0) { return; }
 
-	var cc = AjxDispatcher.run("GetComposeController");
-	cc._setView({action:action, msg:msg, toOverride:toOverride, inNewWindow:false});
-	var draftType = ZmComposeController.DRAFT_TYPE_AUTO;
-	var callback = new AjxCallback(cc, cc._handleResponseSaveDraftListener, [draftType, null]);
-	cc.sendDocs(docInfo, draftType, callback);
+    var action = ZmOperation.NEW_MESSAGE;
+    var msg = new ZmMailMsg();
+    var toOverride;
+
+    var cc = AjxDispatcher.run("GetComposeController");
+    cc._setView({action:action, msg:msg, toOverride:toOverride, inNewWindow:false});
+    var draftType = ZmComposeController.DRAFT_TYPE_AUTO;
+    var callback = new AjxCallback(cc, cc._handleResponseSaveDraftListener, [draftType]);
+    cc.sendDocs(docInfo, draftType, callback);
 };
 
 ZmBriefcaseController.prototype._resetOpForCurrentView =
@@ -737,7 +755,7 @@ function(view, firstTime) {
 			menu = new ZmPopupMenu(btn);
 			btn.setMenu(menu);
 			for (var i = 0; i < ZmBriefcaseController.GROUP_BY_VIEWS.length; i++) {
-				var id = ZmBriefcaseController.GROUP_BY_VIEWS[i];
+				var id = ZmBriefcaseController.GROUP_BY_VIEWS[i];                
 				var mi = menu.createMenuItem(id, {image:ZmBriefcaseController.GROUP_BY_ICON[id],
 												  text:ZmMsg[ZmBriefcaseController.GROUP_BY_MSG_KEY[id]],
 												  style:DwtMenuItem.RADIO_STYLE});

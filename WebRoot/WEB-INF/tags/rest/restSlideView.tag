@@ -32,6 +32,7 @@
     <c:set var="packages" value="dev" scope="request"/>
 </c:if>
 <c:set var="runSlideShow" value="${not empty param.run and param.run eq '1'}" scope="request"/>
+<c:set var="previewSlideShow" value="${not empty param.preview and param.preview eq '1'}" scope="request"/>    
 
 <c:set var="isDevMode" value="${not empty requestScope.mode and requestScope.mode eq 'mjsf'}" scope="request"/>
 <c:set var="isSkinDebugMode" value="${not empty requestScope.mode} and ${requestScope.mode eq 'skindebug'}" scope="request"/>
@@ -94,7 +95,7 @@
 <script>
     AjxEnv.DEFAULT_LOCALE = "${locale}";
     <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
-    <c:if test="${runSlideShow}">
+    <c:if test="${runSlideShow or previewSlideShow}">
         <jsp:include page="/public/slides/presentation.js" />
         window.runSlideShow = true;
         window.presentationMode = "embed";                        
@@ -209,7 +210,7 @@
             //REST URL will not be generated on server side
             item.rest = location.href;
             window.fileInfo = item;
-            slideEditView.loadSlide(item, ${runSlideShow});
+            slideEditView.loadSlide(item, ${runSlideShow or previewSlideShow});
         }else {
             slideEditView.createSlide();
         }

@@ -194,3 +194,16 @@ function(type) {
 			type.match(/^audio/) ||
 			type.match(/^video/)));
 };
+
+ZmMimeTable.isMultiMedia =
+function(type){
+    return (type.match(/^audio/) ||
+			type.match(/^video/));
+};
+
+ZmMimeTable.isWebDoc =
+function(type) {
+    return (type == ZmMimeTable.APP_ZIMBRA_SLIDES ||
+            type == ZmMimeTable.APP_ZIMBRA_SPREADSHEET ||
+            type == ZmMimeTable.APP_ZIMBRA_DOC);
+};
