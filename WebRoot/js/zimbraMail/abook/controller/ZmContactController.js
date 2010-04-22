@@ -380,6 +380,8 @@ function(ev, bIsPopCallback) {
 	}
 	if (fileAsChanged) // bug fix #45069 - if the contact is new, change the search to "all" instead of displaying contacts beginning with a specific letter
 		ZmContactAlphabetBar.alphabetClicked(null);
+
+    return true;
 };
 
 /**
@@ -449,10 +451,10 @@ function(view) {
  */
 ZmContactController.prototype._popShieldYesCallback =
 function() {
-	this._saveListener(null, true);
-	this._popShield.popdown();
-	appCtxt.getAppViewMgr().showPendingView(true);
-	this._listView[this._currentView].cleanup();
+    this._popShield.popdown();
+	if (this._saveListener(null, true)) {
+        this._popShieldCallback();
+    }
 };
 
 /**
@@ -460,9 +462,16 @@ function() {
  */
 ZmContactController.prototype._popShieldNoCallback =
 function() {
-	this._popShield.popdown();
-	appCtxt.getAppViewMgr().showPendingView(true);
-	this._listView[this._currentView].cleanup();
+    this._popShield.popdown();
+    this._popShieldCallback();
+};
+
+/**
+ * @private
+ */
+ZmContactController.prototype._popShieldCallback = function() {
+    appCtxt.getAppViewMgr().showPendingView(true);
+    this._listView[this._currentView].cleanup();
 };
 
 /**
