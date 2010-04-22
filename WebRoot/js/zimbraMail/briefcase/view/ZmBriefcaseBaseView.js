@@ -132,3 +132,13 @@ function() {
    }
    return files;
 }
+
+ZmBriefcaseBaseView.prototype.getListView =
+function(){
+    return this;
+};
+
+ZmBriefcaseBaseView.prototype.getTitle =
+function(){
+    return [ZmMsg.zimbraTitle, ZmMsg.briefcase].join(': ');  
+};
