@@ -111,6 +111,7 @@ function goNextSlide() {
             currentSlide = firstSlide;
             hide(prevSlide);
             show(currentSlide);
+            return;
         }else {
             window.close();
         }
