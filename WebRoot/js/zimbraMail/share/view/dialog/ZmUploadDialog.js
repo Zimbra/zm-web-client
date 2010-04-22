@@ -522,8 +522,13 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
 	var cell = row.insertCell(-1);
 	cell.appendChild(this._selector.getHtmlElement());
 
+    var docSizeInfo = document.createElement("DIV");
+    var attSize = AjxUtil.formatSize(appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) || 0, true)
+	docSizeInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentLimitMsg, attSize);     
+
 	var element = this._getContentDiv();
 	element.appendChild(label);
 	element.appendChild(container);
 	element.appendChild(table);
+    element.appendChild(docSizeInfo);
 };

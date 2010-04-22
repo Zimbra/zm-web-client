@@ -159,6 +159,7 @@ function(view) {
 	this._tabView = new ZmAttachTabView(view, null, Dwt.STATIC_STYLE);
 	this._tabView.addTabChangeListener(new AjxListener(this, this.tabChangeListener));
 	this._tabView.addStateChangeListener(new AjxListener(this, this.stateChangeListener));
+    this._setAttachmentSizeSection(view);
 	this._setInlineOptionSection(view);
 	this._setFooterSection(view);
 };
@@ -188,6 +189,16 @@ function(ev) {
 	}
 	return true;
 };
+
+ZmAttachDialog.prototype._setAttachmentSizeSection =
+function(view) {
+	var div = document.createElement("div");
+	div.className = "ZmAttachDialog-note";
+    var attSize = AjxUtil.formatSize(appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT) || 0, true)
+	div.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentLimitMsg, attSize);
+	view.getHtmlElement().appendChild(div);
+};
+
 
 ZmAttachDialog.prototype._setFooterSection =
 function(view) {
