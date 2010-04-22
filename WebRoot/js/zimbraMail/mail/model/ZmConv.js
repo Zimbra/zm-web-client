@@ -161,6 +161,7 @@ function(params, callback, result) {
 		this.msgs.addChangeListener(this._listChangeListener);
 		this.msgs.setHasMore(results.getAttribute("more"));
 		this._loaded = true;
+		this._allMsgsMatch = this._checkMsgMatches();
 	}
 	if (callback) {
 		callback.run(result);
@@ -649,4 +650,16 @@ function() {
 	searchResult.type = ZmItem.MSG;
 	searchResult._results[ZmItem.MSG] = this.msgs;
 	return new ZmCsfeResult(searchResult);
+};
+
+// returns true if all the msgs in the conv matched the search
+ZmConv.prototype._checkMsgMatches =
+function() {
+	var a = this.msgs.getArray();
+	for (var i = 0, len = a.length; i < len; i++) {
+		if (!a[i].inHitList) {
+			return false;
+		}
+	}
+	return true;
 };

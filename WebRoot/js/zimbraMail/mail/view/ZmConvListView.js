@@ -83,6 +83,8 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 
 ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Expand";
 
+ZmConvListView.MSG_STYLE = "ZmConvExpanded";	// for differentiating msg rows
+
 // Copy some functions from ZmMailMsgListView, for handling message rows
 ZmConvListView.prototype._changeFolderName = ZmMailMsgListView.prototype._changeFolderName;
 ZmConvListView.prototype._changeTrashStatus = ZmMailMsgListView.prototype._changeTrashStatus;
@@ -230,13 +232,17 @@ function(parent, controller) {
 	return this._getHeaders(ZmId.VIEW_CONVLIST, headers);
 };
 
-ZmConvListView.prototype._getDiv =
-function(item, params) {
-	var div = DwtListView.prototype._getDiv.apply(this, arguments);
-	if ((item.type == ZmItem.MSG) && !params.isMatched) {
-		Dwt.addClass(div, "ZmConvExpanded");
+ZmConvListView.prototype._getDivClass =
+function(base, item, params) {
+	if (item.type == ZmItem.MSG) {
+		if (params.isDragProxy || params.isMatched) {
+			return ZmMailMsgListView.prototype._getDivClass.apply(this, arguments);
+		} else {
+			return [base, ZmConvListView.MSG_STYLE].join(" ");
+		}
+	} else {
+		return ZmMailListView.prototype._getDivClass.apply(this, arguments);
 	}
-	return div;
 };
 
 ZmConvListView.prototype._getRowClass =

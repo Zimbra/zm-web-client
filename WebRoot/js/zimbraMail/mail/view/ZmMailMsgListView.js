@@ -69,28 +69,24 @@ function(msg) {
 // following _createItemHtml support methods are also used for creating msg
 // rows in ZmConvListView
 
+// support for showing which msgs in a conv matched the search
 ZmMailMsgListView.prototype._addParams =
 function(msg, params) {
-	// bug fix #3595 - dont hilite if search was in:<folder name>
-	var curSearch = this._controller._app.currentSearch;
-	var folderId = curSearch && curSearch.folderId;
-	params.isMatched = (msg.inHitList && (this._mode == ZmId.VIEW_CONV) && !folderId);
+	if (this._mode == ZmId.VIEW_TRAD) {
+		return ZmMailListView.prototype._addParams.apply(this, arguments);
+	} else {
+		var conv = appCtxt.getById(msg.cid);
+		params.isMatched = (msg.inHitList && conv && !conv._allMsgsMatch);
+	}
 };
 
 ZmMailMsgListView.prototype._getDivClass =
 function(base, item, params) {
-	var style;
-	if (params.isDragProxy && params.isMatched) {
-		var one = [base, DwtCssStyle.MATCHED, DwtCssStyle.DRAG_PROXY].join("-");
-		var two = [base, DwtCssStyle.DRAG_PROXY].join("-");
-		style = [one, two].join(" ");							// Row-matched-dnd Row-dnd
-	} else if (params.isMatched) {
-		style = [base, DwtCssStyle.MATCHED].join("-");			// Row-matched
+	if (params.isMatched && !params.isDragProxy) {
+		return base + " " + [base, DwtCssStyle.MATCHED].join("-");			// Row Row-matched
 	} else {
-		style = ZmMailListView.prototype._getDivClass.apply(this, arguments);
+		return ZmMailListView.prototype._getDivClass.apply(this, arguments);
 	}
-
-	return style;
 };
 
 ZmMailMsgListView.prototype._getRowClass =
