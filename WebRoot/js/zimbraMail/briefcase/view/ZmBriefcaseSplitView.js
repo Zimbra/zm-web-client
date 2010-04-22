@@ -200,6 +200,7 @@ function(item){
     //Load Body
     var html=[], idx=0;
     var restUrl = item.getRestUrl();
+    restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
     if(ZmMimeTable.isRenderableImage(item.contentType)){
         //this._iframePreview.setSrc();
         html = [
