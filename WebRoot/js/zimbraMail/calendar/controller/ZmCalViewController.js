@@ -1850,7 +1850,10 @@ function(appt) {
 
 ZmCalViewController.prototype._typeOkListener =
 function(ev) {
-	this._performApptAction(this._typeDialog.calItem, this._typeDialog.mode, this._typeDialog.isInstance());
+	if (this._typeDialog.mode == ZmCalItem.MODE_DELETE)
+		this._promptDeleteAppt(this._typeDialog.calItem, this._typeDialog.isInstance() ? ZmCalItem.MODE_DELETE_INSTANCE : ZmCalItem.MODE_DELETE_SERIES);
+	else
+		this._performApptAction(this._typeDialog.calItem, this._typeDialog.mode, this._typeDialog.isInstance());
 };
 
 ZmCalViewController.prototype._performApptAction =
