@@ -919,7 +919,7 @@ function(attr, callback) {
 
 	for (var name in attr) {
 		if (name == ZmContact.F_folderId) { continue; }
-		this._addRequestAttr(cn.a, name, attr[name].value || attr[name]);
+		this._addRequestAttr(cn.a, name, (attr[name] && attr[name].value) || attr[name]);
 		continueRequest = true;
 	}
 
