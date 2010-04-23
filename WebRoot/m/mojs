@@ -9,8 +9,19 @@
 <c:if test="${empty mailbox}">
     <zm:getMailbox var="mailbox"/>
 </c:if>
-<c:set scope="page" var="js"><mo:js mailbox="${mailbox}" scriptTag="${false}"/></c:set>
-<c:if test="${empty param.dev}">        
+<c:choose>
+        <c:when test="${sessionScope.zms eq 'ipad'}">
+            <c:set scope="page" var="js">
+                <mo:ipadjs mailbox="${mailbox}" scriptTag="${false}"/>
+            </c:set>
+        </c:when>
+        <c:otherwise>
+            <c:set scope="page" var="js">
+                <mo:js mailbox="${mailbox}" scriptTag="${false}"/>
+            </c:set>
+        </c:otherwise>
+</c:choose>
+<c:if test="${empty param.dev}">
     <c:set var="js" value="${zm:yuiCompress(js,'js')}"/>
 </c:if>
 ${js}

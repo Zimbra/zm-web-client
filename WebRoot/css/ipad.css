@@ -1,0 +1,334 @@
+/* CSS document for iPad */
+
+/* Browser reset */
+html,body,p,div,table,ul,li{
+
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+a{
+	outline: none;
+}
+
+/* Chrome*/
+
+html, body{
+	font: normal 11px Arial,Tahoma,helvetica,Verdana,sans-serif;;
+	overflow: hidden;
+}
+
+.ul li{
+
+	list-style: none;
+	display: inline;
+	margin: 0;
+}
+
+.alignLeft{
+	float: left;
+}
+
+.alignRight{
+	float: right;
+}
+
+.clear{
+	clear: both;
+}
+
+/* Topbar Styles */
+
+.topbar {
+	background: #dbd0b5 url("/img/mobile/ipad/topbar-bg.gif") repeat-x top left;
+	height: 40px;
+	overflow: hidden;
+	color: #5f5a4a;
+
+}
+
+	.topbar a{
+		text-decoration: none;
+
+	}
+
+
+.logo{
+		background: transparent url("/img/mobile/ipad/logo.png") no-repeat top left;
+		width: 80px;
+		height: 20px;
+		float: left;
+		margin: 10px 0 0 10px;
+
+}
+
+
+.search{
+
+		margin: 10px 10px 0 0;
+		width: 200px;
+}
+
+	.search input{
+		-webkit-border-radius: 8px;
+		outline: none;
+		padding: 2px 4px;
+		width: 200px;
+}
+
+
+
+.signout{
+
+}
+
+	.signout a{
+		text-decoration: none;
+	}
+
+
+.tab{
+	margin: 20px 20%;
+
+}
+
+	ul.ul{
+		margin: 20px 0 0 20%;
+		width: 455px;
+	}
+
+	 ul.ul li{
+		margin-right: 0px;
+		padding: 10px 20px;
+	}
+
+	ul.ul li.sel{
+		background: #7f7b6e url("/img/mobile/ipad/tab-selected.gif") repeat-x top left;
+		-webkit-border-top-left-radius: 4px;
+		-webkit-border-top-right-radius: 4px;
+		color: white;
+		font-weight: bold;
+	}
+
+
+/* Toolbar Style */
+
+.toolbar{
+	background: #676356 url("/img/mobile/ipad/toolbar-bg.gif") repeat-x top left;
+	height: 40px;
+	overflow: hidden;
+	border: none;
+}
+
+.overviewActions{
+	float: left;
+	width: 24.9%;
+	border-right: 1px solid #999;
+	height: 100%;
+}
+
+.applicationActions{
+	float: left;
+	width: 74.9%;
+	border-left: 1px solid #444;
+	height: 100%;
+
+}
+
+
+.button{
+	background: #c5bba3 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
+	-webkit-border-radius: 6px;
+	height: 20px;
+	vertical-align: middle;
+	padding: 4px;
+	margin-top: 6px;
+	color: #453928;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+	.button:active{
+		background: #7b7769 url("/img/mobile/ipad/button-selected-bg.gif") repeat-x top left;
+		color: white;
+		border-style: inset;
+	}
+
+
+.folder{
+	float: left;
+	margin-left: 10px;
+	width: 50px;
+}
+
+	.folder div{ margin: 4px;}
+
+
+.select{
+	float: right;
+	margin-right: 10px;
+	width: 70px;
+}
+
+	.select select{
+		background: transparent;
+		border: none;
+		width: 70px;
+		color: #453928;
+		font-weight: bold;
+	}
+
+
+.icons{
+	float: right;
+	margin-right: 10px;
+	width: 20px;
+}
+
+
+.compose{
+	float: left;
+	margin-left: 10px;
+	width: 60px;
+}
+
+	.compose div{ margin: 4px;}
+
+
+.actions{
+	float: right;
+	margin-right: 10px;
+	overflow: hidden;
+
+}
+
+.left, .center, .right{
+ 	float: left;
+
+}
+
+.left{
+	-webkit-border-top-left-radius: 6px;
+	-webkit-border-bottom-left-radius: 6px;
+	-webkit-border-top-right-radius: 0;
+	-webkit-border-bottom-right-radius: 0;
+	border-right: 1px solid #999;
+}
+
+.center{
+	-webkit-border-top-left-radius: 0;
+	-webkit-border-bottom-left-radius: 0;
+	-webkit-border-top-right-radius: 0;
+	-webkit-border-bottom-right-radius: 0;
+	border-left: 1px solid #444;
+	border-right: 1px solid #999;
+}
+
+.right{
+	-webkit-border-top-left-radius: 0;
+	-webkit-border-bottom-left-radius: 0;
+	-webkit-border-top-right-radius: 6px;
+	-webkit-border-bottom-right-radius: 6px;
+	border-left: 1px solid #444;
+}
+
+.left div, .center div, .right div{
+	margin: 4px;
+
+
+}
+
+
+/*List view and Contnet View styles */
+
+
+.view{
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background: #786448 url("/img/mobile/ipad/brown-pattern.gif") top left;
+
+}
+
+.listViewPane{
+	float: left;
+	width: 24.9%;
+	height: 80%;
+	overflow-y: scroll;
+	border-right: 1px solid #999;
+	background-color: white;
+
+}
+
+
+ul.list li{
+	list-style: none;
+	display: block;
+	border-bottom: 1px solid #ede8db;
+}
+
+.msgContainer{
+	padding: 10px 4px;
+	overflow: hidden;
+}
+.msgContainerSel{
+	padding: 10px 4px;
+	overflow: hidden;
+	background: #d9ceb2 url("/img/mobile/ipad/listview-sel-bg.gif") repeat-x top left;
+}
+
+.contentViewPane{
+	float: left;
+	width: 74.9%;
+	height: 100%;
+	overflow: none;
+	border-left: 1px solid #444;
+}
+
+
+.checkBox{
+	width: 5%;
+}
+
+.msg{
+	width: 75%;
+	overflow: hidden;
+	margin-left: 10px;
+}
+
+.header{
+	margin: 10px 10px 0 10px;
+	overflow: hidden;
+	padding: 0 5px;
+}
+.subject{
+	color: white;
+	font-size: 16px;
+	font-weight: bold;
+	width: 70%;
+}
+
+.time{
+	width: 29.9%;
+	color: white;
+	text-align: right;
+}
+
+.msgBody{
+	background-color: white;
+	-webkit-border-radius: 12px;
+	height: 85%;
+	margin: 5px 10px 10px 10px ;
+	padding: 10px;
+	overflow-y: auto;
+	word-break: break-all;
+	-webkit-appearance: scrollbarthumb-vertical;
+}
+
+.address{
+	color: #88847a;
+	letter-spacing: 1px;
+	border-bottom: 1px solid #e4dcc6;
+	padding: 6px;
+}

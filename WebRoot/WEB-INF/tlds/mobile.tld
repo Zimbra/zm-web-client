@@ -292,6 +292,10 @@
             <name>js</name>
              <path>/WEB-INF/tags/mobile/moJS.tag</path>
     </tag-file>
+    <tag-file>
+            <name>ipadjs</name>
+             <path>/WEB-INF/tags/mobile/moJS-iPad.tag</path>
+    </tag-file>
     
 </taglib>
 
