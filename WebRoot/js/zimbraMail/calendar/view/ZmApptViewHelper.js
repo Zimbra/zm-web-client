@@ -363,9 +363,10 @@ function(organizer) {
 * @param list					[array]			list of attendees (ZmContact or ZmResource)
 * @param type					[constant]		attendee type
 * @param includeDisplayName		[boolean]*		if true, include location info in parens (ZmResource)
+* @param includeRole		    [boolean]*		if true, include attendee role
 */
 ZmApptViewHelper.getAttendeesString = 
-function(list, type, includeDisplayName) {
+function(list, type, includeDisplayName, includeRole) {
 	if (!(list && list.length)) return "";
 
 	var a = [];
@@ -378,6 +379,9 @@ function(list, type, includeDisplayName) {
 				text = [text, " (", displayName, ")"].join("");
 			}
 		}
+        if(includeRole) {
+            text += " " + (attendee.getAttr("role") || ZmCalItem.ROLE_REQUIRED);
+        }
 		a.push(text);
 	}
 

@@ -885,7 +885,7 @@ function(excludeAttendees, excludeReminder) {
 		vals.push(this._tzoneSelect.getValue());
 	vals.push(this._repeatSelect.getValue());
 	if (!excludeAttendees) {
-		vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.PERSON].getArray(), ZmCalBaseItem.PERSON));
+		vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.PERSON].getArray(), ZmCalBaseItem.PERSON, false, true));
 	}
 	vals.push(this._notesHtmlEditor.getContent());
 
