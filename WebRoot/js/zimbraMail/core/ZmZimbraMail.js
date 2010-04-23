@@ -2056,11 +2056,26 @@ ZmZimbraMail._isOkToExit =
 function() {
 	var appCtlr = window._zimbraMail;
 	if (!appCtlr) { return true; }
-	var okToExit = appCtlr._appViewMgr.isOkToUnload();
+	var okToExit = appCtlr._appViewMgr.isOkToUnload() && ZmZimbraMail._childWindowsOkToUnload();
 	if (okToExit && appCtlr._pollRequest) {
 		appCtlr._requestMgr.cancelRequest(appCtlr._pollRequest);
 	}
 	return okToExit;
+};
+
+// returns true if no child windows are dirty
+ZmZimbraMail._childWindowsOkToUnload =
+function() {
+	var childWinList = window._zimbraMail ? window._zimbraMail._childWinList : null;
+	if (childWinList) {
+		for (var i = 0; i < childWinList.size(); i++) {
+			var childWin = childWinList.get(i);
+			if (childWin.win.ZmNewWindow._confirmExitMethod()) {
+				return false;
+			}
+		}
+	}
+	return true;
 };
 
 ZmZimbraMail.handleNetworkStatusClick =
