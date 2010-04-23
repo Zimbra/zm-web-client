@@ -67,9 +67,9 @@ function enableSpellCheck(myEditor) {
 
 		Event.on(ul, 'click', function(ev) {
             var tar = Event.getTarget(ev);
-            Event.stopEvent(ev);
             if (this._isElement(tar, 'li')) {
-                el.innerHTML = tar.innerHTML;
+                Event.stopEvent(ev);
+            	el.innerHTML = tar.innerHTML;
                 Dom.removeClass(el, 'yui-spellcheck');
                 Dom.addClass(el, 'yui-non');
 
@@ -97,9 +97,13 @@ function enableSpellCheck(myEditor) {
 
         win.setHeader('<fmt:message key="spellcheckSpellingSuggestions"/>');
         win.setBody(body);
+        this.get('panel').editor_form.innerHTML="";
+
+        if (!this._windows.spellcheck) {
+            this._windows.spellcheck = {};
+        }
+
         this.openWindow(win);
-
-
     };
 
     /* {{{ Override _handleClick method to keep the window open on click */
@@ -142,7 +146,7 @@ function enableSpellCheck(myEditor) {
     
     myEditor._checkSpelling = function(o) {
         //Change this code to suit your backend checker
-        var data = eval('(' + o.responseText + ')');
+		var data = eval('(' + o.responseText + ')');
 		if (!data || !data.available) {
 			alert("<fmt:message key="spellcheckServiceUnavailableMessage"/>");
 			this.endSpellCheck();
