@@ -213,3 +213,8 @@ ZmBriefcase.prototype.supportsPublicAccess =
 function() {
 	return true;
 };
+
+ZmBriefcase.prototype.isShared =
+function(){
+    return this.link ? true : false;  
+};

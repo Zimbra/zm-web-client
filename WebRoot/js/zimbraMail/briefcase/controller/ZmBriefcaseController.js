@@ -184,9 +184,11 @@ function(parent, num) {
 			}
 		}
 	}
+    var briefcase = appCtxt.getById(this._folderId);
+    var isShared = briefcase.isShared();
+	var isReadOnly = briefcase.isReadOnly();
+
 	var isMultiFolder = (noOfFolders > 1);
-	var isShared = this.isShared(this._folderId);
-	var isReadOnly = this.isReadOnly(this._folderId);
 	var isItemSelected = (num>0);
 	var isZimbraAccount = appCtxt.getActiveAccount().isZimbraAccount;
 	var isMailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
@@ -397,50 +399,14 @@ function(callback, title) {
 
 ZmBriefcaseController.prototype.chkFolderPermission =
 function(folderId){
-
-    var isShared = this.isShared(folderId);
-    var isReadOnly = this.isReadOnly(folderId);
-    if (isShared && isReadOnly) {
+    var briefcase = appCtxt.getById(folderId);
+    if(briefcase.isShared() && briefcase.isReadOnly()){
         var dialog = appCtxt.getMsgDialog();
         dialog.setMessage(ZmMsg.errorPermissionCreate, DwtMessageDialog.WARNING_STYLE);
         dialog.popup();
         return false;
     }
     return true;
-};
-
-ZmBriefcaseController.prototype.isReadOnly =
-function(folderId) {
-	//if one of the ancestor is readonly then no chances of childs being writable
-	var isReadOnly = false;
-	var folder = appCtxt.getById(folderId);
-	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
-	while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
-		folder = folder.parent;
-	}
-	if (folder && folder.isReadOnly()) {
-		isReadOnly = true;
-	}
-
-	return isReadOnly;
-};
-
-ZmBriefcaseController.prototype.getBriefcaseFolder =
-function(folderId) {
-	var briefcase;
-	var folder = appCtxt.getById(folderId);
-	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
-	while (folder && folder.parent && (folder.parent.id != rootId)) {
-		folder = folder.parent;
-	}
-	briefcase = folder;
-	return briefcase;
-};
-
-ZmBriefcaseController.prototype.isShared =
-function(folderId) {
-	var briefcase = this.getBriefcaseFolder(folderId);
-	return briefcase && briefcase.link;
 };
 
 ZmBriefcaseController.prototype._listSelectionListener =
