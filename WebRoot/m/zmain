@@ -90,10 +90,7 @@
     </c:choose>
     <c:set var="action" value="${zm:cook(empty param.paction ? param.action : param.paction)}" scope="request"/>
 </mo:handleError>
-<c:if test="${empty sessionScope.zms}">
-    <c:set value="${ua.isiPhone || ua.isiPod ? 'iphone' : ( ua.isIE ? 'wm6' : 'iphone')}" var="zms"
-           scope="session"/>
-</c:if>
+<c:set value="${ua.isiPhone || ua.isiPod ? 'iphone' : ( ua.isIE ? 'wm6' : 'iphone')}" var="zms" scope="session"/>
 <c:if test="${not empty param.zms}">
     <c:set value="${fn:escapeXml(param.zms)}" var="zms" scope="session"/>
 </c:if>
