@@ -741,6 +741,46 @@ function(name, value) {
 };
 
 /**
+ * Sets the participant status.
+ *
+ * @param	{String}	value the participant status value
+ */
+ZmContact.prototype.setParticipantStatus =
+function(ptst) {
+	this.participantStatus = ptst;
+};
+
+/**
+ * gets the participant status.
+ *
+ * @return	{String}    the value
+ */
+ZmContact.prototype.getParticipantStatus =
+function() {
+	return this.participantStatus;
+};
+
+/**
+ * Sets the participant role.
+ *
+ * @param	{String}	value the participant role value
+ */
+ZmContact.prototype.setParticipantRole =
+function(role) {
+	this.participantRole = role;
+};
+
+/**
+ * gets the participant role.
+ *
+ * @return	{String}    the value
+ */
+ZmContact.prototype.getParticipantRole =
+function() {
+	return this.participantRole;
+};
+
+/**
  * Removes the attribute.
  * 
  * @param	{String}	name		the attribute name

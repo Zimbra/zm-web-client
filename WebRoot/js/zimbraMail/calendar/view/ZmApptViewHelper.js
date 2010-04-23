@@ -380,7 +380,7 @@ function(list, type, includeDisplayName, includeRole) {
 			}
 		}
         if(includeRole) {
-            text += " " + (attendee.getAttr("role") || ZmCalItem.ROLE_REQUIRED);
+            text += " " + (attendee.getParticipantRole() || ZmCalItem.ROLE_REQUIRED);
         }
 		a.push(text);
 	}

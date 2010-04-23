@@ -535,8 +535,8 @@ function(message) {
 			var email = new AjxEmailAddress(addr, null, name);
 			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, ZmCalBaseItem.PERSON);
 			if (attendee) {
-				attendee.setAttr("participationStatus", ptstReplies[addr] || attendees[i].ptst);
-				attendee.setAttr("role", attendees[i].role || ZmCalItem.ROLE_REQUIRED);
+				attendee.setParticipantStatus(ptstReplies[addr] || attendees[i].ptst);
+				attendee.setParticipantRole(attendees[i].role || ZmCalItem.ROLE_REQUIRED);
 				this._attendees[ZmCalBaseItem.PERSON].push(attendee);
 				this.origAttendees.push(attendee);
 			}
@@ -558,7 +558,7 @@ function(message) {
 			var resourceName = resources[i].d;
 			var ptst = resources[i].ptst;
 			if (resourceName && ptst && (this._ptstLocationMap[resourceName] != null)) {
-				this._ptstLocationMap[resourceName].setAttr("participationStatus", ptstReplies[addr] || ptst);
+				this._ptstLocationMap[resourceName].setParticipantStatus(ptstReplies[addr] || ptst);
 			}
 
 			// if multiple resources are present (i.e. aliases) select first one
@@ -566,13 +566,13 @@ function(message) {
 
 			var location = ZmApptViewHelper.getAttendeeFromItem(resourceEmail, ZmCalBaseItem.LOCATION, false, false, true);
 			if (location) {
-				location.setAttr("participationStatus", ptstReplies[resourceEmail] || ptst);
+				location.setParticipantStatus(ptstReplies[resourceEmail] || ptst);
 				this._attendees[ZmCalBaseItem.LOCATION].push(location);
 				this.origLocations.push(location);
 			} else {
 				var equipment = ZmApptViewHelper.getAttendeeFromItem(resourceEmail, ZmCalBaseItem.EQUIPMENT);
 				if (equipment) {
-					equipment.setAttr("participationStatus", ptstReplies[resourceEmail] || ptst);
+					equipment.setParticipantStatus(ptstReplies[resourceEmail] || ptst);
 					this._attendees[ZmCalBaseItem.EQUIPMENT].push(equipment);
 					this.origEquipment.push(equipment);
 				}
@@ -729,7 +729,7 @@ function() {
 	var personAttendees = this._attendees[ZmCalBaseItem.PERSON];
 	for (var i = 0; i < personAttendees.length; i++) {
 		var attendee = personAttendees[i];
-		var ptst = attendee.getAttr("participationStatus") || "NE";
+		var ptst = attendee.getParticipantStatus() || "NE";
 		if (!ptstHashMap[ptst]) {
 			ptstHashMap[ptst] = [];
 		}
@@ -831,11 +831,11 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		// for now make attendees optional, until UI has a way of setting this
         var role = ZmCalItem.ROLE_NON_PARTICIPANT;
         if(type == ZmCalBaseItem.PERSON) {
-            role = attendee.getAttr("role") ? attendee.getAttr("role") : ZmCalItem.ROLE_REQUIRED;
+            role = attendee.getParticipantRole() ? attendee.getParticipantRole() : ZmCalItem.ROLE_REQUIRED;
         }
 		at.setAttribute("role", role);
 		
-		var ptst = attendee.getAttr("participationStatus") || ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
+		var ptst = attendee.getParticipantStatus() || ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 		if (notifyList) {
 			var attendeeFound = false;
 			for (var i in notifyList) {
@@ -846,7 +846,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 			}
 			ptst = attendeeFound
 				? ZmCalBaseItem.PSTATUS_NEEDS_ACTION
-				: (attendee.getAttr("participationStatus") || ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
+				: (attendee.getParticipantStatus() || ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
 		}
 		at.setAttribute("ptst", ptst);
 

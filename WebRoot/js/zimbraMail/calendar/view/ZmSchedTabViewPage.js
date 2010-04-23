@@ -656,7 +656,7 @@ function(sched, attendee, type) {
 	var name = attendee.getFullName();
 	var email = attendee.getEmail();
 	if (name && email) {
-		var ptst = ZmMsg.attendeeStatusLabel + ZmCalItem.getLabelForParticipationStatus(attendee.getAttr("participationStatus") || "NE");
+		var ptst = ZmMsg.attendeeStatusLabel + ZmCalItem.getLabelForParticipationStatus(attendee.getParticipantStatus() || "NE");
 		sched.inputObj.setToolTipContent(email + this._editView.getRsvp() ? ("<br>"+ ptst) : "");
 	}
 };
@@ -771,7 +771,7 @@ function(index, attendee, type, isOrganizer) {
 	}
 
 	var select = sched.selectObj;
-    var role = attendee.getAttr("role") || ZmCalItem.ROLE_REQUIRED;
+    var role = attendee.getParticipantRole() || ZmCalItem.ROLE_REQUIRED;
 
     if(type == ZmCalBaseItem.PERSON && role == ZmCalItem.ROLE_OPTIONAL) {
         type = ZmCalItem.ROLE_OPTIONAL; 
@@ -782,7 +782,7 @@ function(index, attendee, type, isOrganizer) {
         select.setText("");
 	}
 
-	var ptst = attendee.getAttr("participationStatus") || "NE";
+	var ptst = attendee.getParticipantStatus() || "NE";
 	var ptstCont = sched.ptstObj;
 	if (ptstCont) {
 		var ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
@@ -1027,7 +1027,7 @@ function(ev) {
 
     if(type == ZmCalBaseItem.PERSON || type == ZmCalItem.ROLE_REQUIRED || type == ZmCalItem.ROLE_OPTIONAL) {
         if(sched.attendee) {
-               sched.attendee.setAttr("role", (type == ZmCalItem.ROLE_OPTIONAL) ? ZmCalItem.ROLE_OPTIONAL : ZmCalItem.ROLE_REQUIRED); 
+               sched.attendee.setParticipantRole((type == ZmCalItem.ROLE_OPTIONAL) ? ZmCalItem.ROLE_OPTIONAL : ZmCalItem.ROLE_REQUIRED); 
         }
         type = ZmCalBaseItem.PERSON;
     }
