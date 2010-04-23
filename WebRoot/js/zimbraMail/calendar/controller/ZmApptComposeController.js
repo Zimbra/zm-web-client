@@ -163,7 +163,7 @@ function(attId) {
         var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
         var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
 
-        var needsPermissionCheck = (attendees && attendees.length > 0);
+        var needsPermissionCheck = (attendees && attendees.length > 0) || (resources && resources.length > 0) || (locations && locations.length > 0);
         var needsConflictCheck = (resources && resources.length > 0) || (locations && locations.length > 0);
 
         if (needsConflictCheck) {
@@ -184,8 +184,11 @@ function(attId) {
 ZmApptComposeController.prototype.checkConflicts =
 function(appt, attId) {
 
+    var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
+    var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
     var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
-    var needsPermissionCheck = (attendees && attendees.length > 0);
+
+    var needsPermissionCheck = (attendees && attendees.length > 0) || (resources && resources.length > 0) || (locations && locations.length > 0);
 
     var callback =  new AjxCallback(this, this.saveCalItemContinue, [appt, attId]);
 
@@ -199,19 +202,39 @@ function(appt, attId) {
 
 ZmApptComposeController.prototype.checkAttendeePermissions =
 function(appt, attId) {
-var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
-if (attendees && attendees.length > 0) {
     var newEmails = [];
-    for (var i = 0; i < attendees.length; i++) {
-        var email = attendees[i].getEmail();
-        newEmails.push(email);
+
+    var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
+    if (attendees && attendees.length > 0) {
+        for (var i = 0; i < attendees.length; i++) {
+            var email = attendees[i].getEmail();
+            newEmails.push(email);
+        }
     }
-    this.checkPermissionRequest(newEmails, appt, attId);
-    return false;
-}else {
-    // otherwise, just save the appointment
-    this._saveCalItemFoRealz(appt, attId);
-}
+
+    var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
+    if (locations && locations.length > 0) {
+        for (var i = 0; i < locations.length; i++) {
+            var email = locations[i].getEmail();
+            newEmails.push(email);
+        }
+    }
+
+    var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
+    if (resources && resources.length > 0) {
+        for (var i = 0; i < resources.length; i++) {
+            var email = resources[i].getEmail();
+            newEmails.push(email);
+        }
+    }
+
+    if(newEmails.length) {
+        this.checkPermissionRequest(newEmails, appt, attId);
+        return false;
+    }else {
+        // otherwise, just save the appointment
+        this._saveCalItemFoRealz(appt, attId);
+    }
 };
 
 
