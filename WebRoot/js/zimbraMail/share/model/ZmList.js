@@ -470,7 +470,7 @@ function(params) {
 ZmList.prototype.moveItems =
 function(params) {
 
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback"]);
 
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		return this._mixedAction("moveItems", params);
@@ -510,7 +510,7 @@ function(params, result) {
 			var item = movedItems[i];
 			var details = {oldFolderId:item.folderId};
 			item.moveLocal(params.folder.id);
-			ZmModel.prototype._notify.call(item, ZmEvent.E_MOVE, details);
+			//ZmModel.prototype._notify.call(item, ZmEvent.E_MOVE, details);
 		}
 		// batched change notification
 		var item = movedItems[0];
@@ -523,6 +523,9 @@ function(params, result) {
 
 	if (params.callback) {
 		params.callback.run(result);
+	}
+	if (params.finalCallback) {
+		params.finalCallback.run(result);
 	}
 };
 
@@ -863,7 +866,7 @@ function(params, batchCmd) {
 			dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._cancelAction, [params1]));
 		}
 	}
-
+	
 	this._doAction(params1);
 };
 
@@ -916,7 +919,6 @@ function(params) {
 ZmList.prototype._handleResponseDoAction =
 function(params, result) {
 
-	var dialog = ZmList.progressDialog;
 	var summary;
 	var response = result.getResponse();
 	var resp = response[ZmItem.SOAP_CMD[params.type] + "Response"];
@@ -935,7 +937,8 @@ function(params, result) {
 				params.callback.run(items, result);
 			}
 
-            summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
+			var dialog = ZmList.progressDialog;
+			summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
 			if (dialog) {
 				dialog.setContent(summary);
 				if (!dialog.isPoppedUp()) {

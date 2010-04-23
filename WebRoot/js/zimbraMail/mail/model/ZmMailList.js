@@ -75,7 +75,7 @@ function(params) {
 		return ZmList.prototype.moveItems.apply(this, arguments);
 	}
 
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback"]);
 	params.items = AjxUtil.toArray(params.items);
 
 	var params1 = AjxUtil.hashCopy(params);
@@ -181,20 +181,36 @@ ZmMailList.prototype._handleResponseSpamItems =
 function(params, result) {
 
 	var movedItems = result.getResponse();
+	var summary;
 	if (movedItems && movedItems.length) {
 		var folderId = params.markAsSpam ? ZmFolder.ID_SPAM : (params.folder ? params.folder.id : ZmFolder.ID_INBOX);
 		this.moveLocal(movedItems, folderId);
 		for (var i = 0; i < movedItems.length; i++) {
-			movedItems[i].moveLocal(folderId);
+			var item = movedItems[i];
+			var details = {oldFolderId:item.folderId};
+			item.moveLocal(folderId);
 		}
-		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
+		//ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
+		
+		var item = movedItems[0];
+		var list = item.list;
+		list._evt.batchMode = true;
+		list._evt.item = item;	// placeholder
+		list._evt.items = movedItems;
+		list._notify(ZmEvent.E_MOVE, details);
+
+		summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
 
 		if (params.childWin) {
 			params.childWin.close();
 		}
 	}
+	params.actionSummary = summary;
 	if (params.callback) {
 		params.callback.run(result);
+	}
+	if (params.finalCallback) {
+		params.finalCallback.run(result);
 	}
 };
 
