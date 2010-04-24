@@ -463,6 +463,8 @@ function(compNum) {
     if (this.components[cn] == null) return;
 	var desc = this.components[cn].descHtml;
 	var content = desc && desc[0]._content || null;
+    if(!content)
+        content = this.getSummary(true);
 	return content;
 };
 
@@ -478,6 +480,8 @@ function(compNum) {
     if (this.components[cn] == null) return;
 	var desc = this.components[cn].desc;
 	var content = desc && desc[0]._content || null;
+    if(!content)
+        content = this.getSummary();
 	return content;
 };
 

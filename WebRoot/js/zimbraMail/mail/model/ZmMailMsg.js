@@ -750,22 +750,36 @@ function(contentType, useOriginal) {
 	}
 	else
 	{
-		// return the first body part if content type was not specified,
-		// otherwise, search for the first body part that matches the given ct.
-		for (var i = 0; i < this._bodyParts.length; i++) {
-			if (contentType) {
-				if (this._bodyParts[i].ct == contentType)
-					return this._bodyParts[i];
-			} else {
-				return this._bodyParts[i];
-			}
-		}
+        var bodyPart = this._getFirstBodyPart(contentType);
 
-        if(this.isInvite()) {
-            return this.getInviteDescriptionContent(contentType);
+        if(this.isInvite()){
+            //bug: 46071, handle missing body part/content
+            if((!bodyPart) || (bodyPart && !bodyPart.content) ){
+                return this.getInviteDescriptionContent(contentType);
+            }
         }
+
+        return bodyPart;
 	}
 };
+
+ZmMailMsg.prototype._getFirstBodyPart =
+function(contentType){
+    // return the first body part if content type was not specified,
+    // otherwise, search for the first body part that matches the given ct.
+    for (var i = 0; i < this._bodyParts.length; i++) {
+        var bodyPart = this._bodyParts[i];
+        if (contentType) {
+            if (bodyPart.ct == contentType)
+                return bodyPart;
+        } else {
+            return bodyPart;
+        }
+    }
+    
+    return null;
+};
+
 
 /**
  * Gets the body content.
@@ -1731,7 +1745,7 @@ function(msgNode) {
 			var descHtml = this.invite.getComponentDescriptionHtml();
             if(descHtml) {
                 this.setHtmlContent(descHtml);
-                this.setInviteDescriptionContent(ZmMimeTable.TEXT_HTML, desc);
+                this.setInviteDescriptionContent(ZmMimeTable.TEXT_HTML, descHtml);
             }
 
             if(desc) {
