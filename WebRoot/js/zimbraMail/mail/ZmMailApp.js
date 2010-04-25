@@ -1053,9 +1053,19 @@ function(creates) {
 		var mc = mailCreates[i];
 		var parsed = (mc && mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1))
 			? ZmOrganizer.parseId(mc.l) : null;
-		var acct = parsed && parsed.account;
 
-		if (parsed && appCtxt.isOffline) {
+		// don't process alerts while account is undergoing initial sync
+		var acct = parsed && parsed.account;
+		if (!acct || (acct && acct.isOfflineInitialSync())) { continue; }
+
+		// offline: check wheter to show new-mail notification icon
+		// Skip spam/trash folders and the local account
+		if (appCtxt.isOffline &&
+			parsed &&
+			parsed.id != ZmOrganizer.ID_SPAM &&
+			parsed.id != ZmOrganizer.ID_TRASH &&
+			!acct.isMain)
+		{
 			if (appCtxt.getCurrentSearch().isMultiAccount() ||
 				(acct && appCtxt.getActiveAccount() != acct))
 			{
@@ -1068,8 +1078,6 @@ function(creates) {
 		}
 
 		if (parsed && parsed.id == ZmOrganizer.ID_INBOX) {
-			if (!acct || (acct && acct.isOfflineInitialSync())) { continue; }
-
 			// for multi-account, highlite the non-active accordion item
 			if (appCtxt.accountList.size() > 1) {
 				ZmAccountAlert.get(acct).start(this);
