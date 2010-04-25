@@ -750,34 +750,34 @@ function(contentType, useOriginal) {
 	}
 	else
 	{
-        var bodyPart = this._getFirstBodyPart(contentType);
+		var bodyPart = this._getFirstBodyPart(contentType);
 
-        if(this.isInvite()){
-            //bug: 46071, handle missing body part/content
-            if((!bodyPart) || (bodyPart && !bodyPart.content) ){
-                return this.getInviteDescriptionContent(contentType);
-            }
-        }
+		if(this.isInvite()){
+			//bug: 46071, handle missing body part/content
+			if((!bodyPart) || (bodyPart && !bodyPart.content) ){
+				return this.getInviteDescriptionContent(contentType);
+			}
+		}
 
-        return bodyPart;
+		return bodyPart;
 	}
 };
 
 ZmMailMsg.prototype._getFirstBodyPart =
 function(contentType){
-    // return the first body part if content type was not specified,
-    // otherwise, search for the first body part that matches the given ct.
-    for (var i = 0; i < this._bodyParts.length; i++) {
-        var bodyPart = this._bodyParts[i];
-        if (contentType) {
-            if (bodyPart.ct == contentType)
-                return bodyPart;
-        } else {
-            return bodyPart;
-        }
-    }
-    
-    return null;
+	// return the first body part if content type was not specified,
+	// otherwise, search for the first body part that matches the given ct.
+	for (var i = 0; i < this._bodyParts.length; i++) {
+		var bodyPart = this._bodyParts[i];
+		if (contentType) {
+			if (bodyPart.ct == contentType)
+				return bodyPart;
+		} else {
+			return bodyPart;
+		}
+	}
+
+	return null;
 };
 
 
@@ -861,46 +861,45 @@ function(contentType, content) {
 ZmMailMsg.prototype.getInviteDescriptionContent =
 function(contentType) {
 
-    if(!contentType) {
-        contentType = ZmMimeTable.TEXT_HTML;
-    }
+	if (!contentType) {
+		contentType = ZmMimeTable.TEXT_HTML;
+	}
 
 	var desc = this._inviteDescBody[contentType];
 
-    if(!desc) {
+	if (!desc) {
+		var htmlContent =  this._inviteDescBody[ZmMimeTable.TEXT_HTML];
+		var textContent =  this._inviteDescBody[ZmMimeTable.TEXT_PLAIN];
 
-        var htmlContent =  this._inviteDescBody[ZmMimeTable.TEXT_HTML];
-        var textContent =  this._inviteDescBody[ZmMimeTable.TEXT_PLAIN];
+		if (!htmlContent && textContent) {
+			htmlContent = AjxStringUtil.convertToHtml(textContent);
+		}
 
-        if(!htmlContent && textContent) {
-            htmlContent = AjxStringUtil.convertToHtml(textContent);
-        }
+		if (!textContent && htmlContent) {
+			textContent = AjxStringUtil.convertHtml2Text(htmlContent);
+		}
 
-        if(!textContent && htmlContent) {
-            textContent = AjxStringUtil.convertHtml2Text(htmlContent);
-        }
+		desc = (contentType == ZmMimeTable.TEXT_HTML) ? htmlContent : textContent;
+	}
 
-        desc = (contentType == ZmMimeTable.TEXT_HTML) ? htmlContent : textContent;
-    }
+	var idx = desc ? desc.indexOf(ZmItem.NOTES_SEPARATOR) : -1;
 
-    var idx = desc ? desc.indexOf(ZmItem.NOTES_SEPARATOR) : -1;
+	if (idx == -1 && this.isInvite()) {
+		var inviteSummary = this.invite.getSummary((contentType == ZmMimeTable.TEXT_HTML));
+		desc = desc ? (inviteSummary + desc) : null;
+	}
 
-    if(idx == -1 && this.isInvite()) {
-        var inviteSummary = this.invite.getSummary((contentType == ZmMimeTable.TEXT_HTML));
-        desc = desc ? (inviteSummary + desc) : null;
-    }
-    
-    if(desc != null) {
-        return { ct:contentType, s: desc.length, content: desc };
-    }
+	if (desc != null) {
+		return { ct:contentType, s: desc.length, content: desc };
+	}
 };
 
 ZmMailMsg.prototype.sendInviteReply =
 function(edited, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg) {
 	this._origMsg = this._origMsg || this;
-    if(componentId == 0){ //editing reply, custom message
-        this._origMsg._customMsg = true;            
-    }
+	if (componentId == 0){ // editing reply, custom message
+		this._origMsg._customMsg = true;
+	}
 	return this._sendInviteReply(edited, componentId || 0, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg);
 };
 
@@ -913,54 +912,51 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	request.compNum = componentId;
 
 	var verb = "ACCEPT";
-    var needsRsvp = true;
-    
-    switch (this.inviteMode) {
-        case ZmOperation.REPLY_ACCEPT_IGNORE:    needsRsvp = false;
-        case ZmOperation.REPLY_ACCEPT_NOTIFY:
-        case ZmOperation.REPLY_ACCEPT:           verb = "ACCEPT"; break;
+	var needsRsvp = true;
 
-        case ZmOperation.REPLY_DECLINE_IGNORE:   needsRsvp = false;
-        case ZmOperation.REPLY_DECLINE_NOTIFY:
-        case ZmOperation.REPLY_DECLINE:          verb = "DECLINE"; break;
-
-        case ZmOperation.REPLY_TENTATIVE_IGNORE: needsRsvp = false;
-        case ZmOperation.REPLY_TENTATIVE_NOTIFY:
-        case ZmOperation.REPLY_TENTATIVE:        verb = "TENTATIVE"; break;
-
-        case ZmOperation.REPLY_NEW_TIME: 	     verb = "DELEGATED"; break; // XXX: WRONG MAPPING!
-    }
-    request.verb = verb;
+	switch (this.inviteMode) {
+		case ZmOperation.REPLY_ACCEPT_IGNORE:		needsRsvp = false;
+		case ZmOperation.REPLY_ACCEPT_NOTIFY:
+		case ZmOperation.REPLY_ACCEPT:				verb = "ACCEPT"; break;
+		case ZmOperation.REPLY_DECLINE_IGNORE:		needsRsvp = false;
+		case ZmOperation.REPLY_DECLINE_NOTIFY:
+		case ZmOperation.REPLY_DECLINE:				verb = "DECLINE"; break;
+		case ZmOperation.REPLY_TENTATIVE_IGNORE:	needsRsvp = false;
+		case ZmOperation.REPLY_TENTATIVE_NOTIFY:
+		case ZmOperation.REPLY_TENTATIVE:			verb = "TENTATIVE"; break;
+		case ZmOperation.REPLY_NEW_TIME:			verb = "DELEGATED"; break; // XXX: WRONG MAPPING!
+	}
+	request.verb = verb;
 
 	var inv = this._origMsg.invite;
 	if (this.getAddress(AjxEmailAddress.TO) == null && !inv.isOrganizer()) {
 		var to = inv.getOrganizerEmail() || inv.getSentBy();
-        if(to == null) {
-            var ac = window.parentAppCtxt || window.appCtxt;
-            var mainAcct = ac.accountList.mainAccount.getEmail();
-            var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
-            //bug: 33639 when organizer component is missing from invitation
-            if (from && from.address != mainAcct) {
-                to = from.address;
-            }
-        }
-        if(to) {
-		    this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
-        }
+		if (to == null) {
+			var ac = window.parentAppCtxt || window.appCtxt;
+			var mainAcct = ac.accountList.mainAccount.getEmail();
+			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
+			//bug: 33639 when organizer component is missing from invitation
+			if (from && from.address != mainAcct) {
+				to = from.address;
+			}
+		}
+		if (to) {
+			this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
+		}
 	}
 
-    var replyActionMap = {};
-    replyActionMap[ZmOperation.REPLY_ACCEPT_NOTIFY]		= ZmOperation.REPLY_ACCEPT;
-    replyActionMap[ZmOperation.REPLY_ACCEPT_IGNORE]		= ZmOperation.REPLY_ACCEPT;
-    replyActionMap[ZmOperation.REPLY_DECLINE_NOTIFY]	= ZmOperation.REPLY_DECLINE;
-    replyActionMap[ZmOperation.REPLY_DECLINE_IGNORE]	= ZmOperation.REPLY_DECLINE;
-    replyActionMap[ZmOperation.REPLY_TENTATIVE_NOTIFY]	= ZmOperation.REPLY_TENTATIVE;
-    replyActionMap[ZmOperation.REPLY_TENTATIVE_IGNORE]	= ZmOperation.REPLY_TENTATIVE;
-    
-    if(!replyActionMap[this.inviteMode]) {
-        needsRsvp = this._origMsg.needsRsvp();        
-    }
-    return this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName);
+	var replyActionMap = {};
+	replyActionMap[ZmOperation.REPLY_ACCEPT_NOTIFY]		= ZmOperation.REPLY_ACCEPT;
+	replyActionMap[ZmOperation.REPLY_ACCEPT_IGNORE]		= ZmOperation.REPLY_ACCEPT;
+	replyActionMap[ZmOperation.REPLY_DECLINE_NOTIFY]	= ZmOperation.REPLY_DECLINE;
+	replyActionMap[ZmOperation.REPLY_DECLINE_IGNORE]	= ZmOperation.REPLY_DECLINE;
+	replyActionMap[ZmOperation.REPLY_TENTATIVE_NOTIFY]	= ZmOperation.REPLY_TENTATIVE;
+	replyActionMap[ZmOperation.REPLY_TENTATIVE_IGNORE]	= ZmOperation.REPLY_TENTATIVE;
+
+	if (!replyActionMap[this.inviteMode]) {
+		needsRsvp = this._origMsg.needsRsvp();
+	}
+	return this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName);
 };
 
 ZmMailMsg.prototype._sendInviteReplyContinue =
@@ -1431,37 +1427,37 @@ function(contentPartType, contentPart) {
 };
 
 ZmMailMsg.prototype.findAttsFoundInMsgBody =
-function(){
+function() {
+	if (this.findAttsFoundInMsgBodyDone) { return; }
 
-    if(this.findAttsFoundInMsgBodyDone) return;
-    
-    var content ="", cid;
-    var bodyParts = this.getBodyParts();
-    for (var i = 0; i < bodyParts.length; i++) {
-        var bodyPart = bodyParts[i];
-        if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
-            content = bodyPart.content;
-            var msgRef = this;
-            content.replace(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid){
-                var attach = msgRef.findInlineAtt("<" + cid + ">");
-                if(attach)
-                    attach.foundInMsgBody = true;
-            });
-        }
-    }
-    this.findAttsFoundInMsgBodyDone = true;
+	var content ="", cid;
+	var bodyParts = this.getBodyParts();
+	for (var i = 0; i < bodyParts.length; i++) {
+		var bodyPart = bodyParts[i];
+		if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
+			content = bodyPart.content;
+			var msgRef = this;
+			content.replace(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
+				var attach = msgRef.findInlineAtt("<" + cid + ">");
+				if (attach) {
+					attach.foundInMsgBody = true;
+				}
+			});
+		}
+	}
+	this.findAttsFoundInMsgBodyDone = true;
 };
 
 ZmMailMsg.prototype.hasInlineImagesInMsgBody =
-function(){
-    var body = this.getBodyPart(ZmMimeTable.TEXT_HTML);
-    if(body){
-        body = AjxUtil.isString(body) ? body : body.content;
-        if(body && body.search(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig) != -1){
-            return true;
-        }
-    }
-    return false;
+function() {
+	var body = this.getBodyPart(ZmMimeTable.TEXT_HTML);
+	if (body) {
+		body = AjxUtil.isString(body) ? body : body.content;
+		if (body && body.search(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig) != -1) {
+			return true;
+		}
+	}
+	return false;
 };
 
 /**
@@ -1491,9 +1487,8 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 	}
 
 	if (attachments && attachments.length > 0) {
-
 		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
-        this.findAttsFoundInMsgBody();
+		this.findAttsFoundInMsgBody();
 
 		for (var i = 0; i < attachments.length; i++) {
 			var attach = attachments[i];
@@ -1532,11 +1527,12 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				props.link = html.join("");
 
 
-                if(appCtxt.get(ZmSetting.CALENDAR_ENABLED) && attach.mp && attach.mp.length==1 && attach.mp[0].ct == ZmMimeTable.TEXT_CAL) {
-                    var onclickStr1 = "ZmMailMsgView.addToCalendarCallback(\"" + this.id + "\",\"" + attach.mp[0].part + "\");";
-                    props.importICSLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
-                }
-                
+				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
+					attach.mp && attach.mp.length==1 && attach.mp[0].ct == ZmMimeTable.TEXT_CAL)
+				{
+					var onclickStr1 = "ZmMailMsgView.addToCalendarCallback(\"" + this.id + "\",\"" + attach.mp[0].part + "\");";
+					props.importICSLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
+				}
 			} else {
 				// set the anchor html for the link to this attachment on the server
 				var url = useCL ? attach.cl : (hrefRoot + attach.part);
@@ -1571,11 +1567,12 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					props.briefcaseLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
 				}
 
-                if(appCtxt.get(ZmSetting.CALENDAR_ENABLED) && attach.ct == ZmMimeTable.TEXT_CAL) {
-                    var onclickStr1 = "ZmMailMsgView.addToCalendarCallback(\"" + this.id + "\",\"" + attach.part + "\");";
-                    props.importICSLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
-                }
-
+				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
+					attach.ct == ZmMimeTable.TEXT_CAL)
+				{
+					var onclickStr1 = "ZmMailMsgView.addToCalendarCallback(\"" + this.id + "\",\"" + attach.part + "\");";
+					props.importICSLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
+				}
 
 				if (!useCL) {
 					// check for vcard *first* since we dont care to view it in HTML
@@ -1660,7 +1657,7 @@ function(msgNode) {
 	if (msgNode.mid)	{ this.messageId = msgNode.mid; }
 	if (msgNode._attrs) { this.attrs = msgNode._attrs; }
 	if (msgNode.sf) 	{ this.sf = msgNode.sf; }
-    if (msgNode.cif) 	{ this.cif = msgNode.cif; }
+	if (msgNode.cif) 	{ this.cif = msgNode.cif; }
 
 	//Copying msg. header's
 	if (msgNode.header) {
@@ -1710,7 +1707,7 @@ function(msgNode) {
 		var params = {attachments: this.attachments, bodyParts: this._bodyParts};
 		this._topPart = ZmMimePart.createFromDom(msgNode.mp, params);
 		this._loaded = this._bodyParts.length > 0 || this.attachments.length > 0;
-        this._cleanupCIds();
+		this._cleanupCIds();
 	}
 
 	if (msgNode.shr) {
@@ -1743,14 +1740,14 @@ function(msgNode) {
 			// bug fix #18613
 			var desc = this.invite.getComponentDescription();
 			var descHtml = this.invite.getComponentDescriptionHtml();
-            if(descHtml) {
-                this.setHtmlContent(descHtml);
-                this.setInviteDescriptionContent(ZmMimeTable.TEXT_HTML, descHtml);
-            }
+			if (descHtml) {
+				this.setHtmlContent(descHtml);
+				this.setInviteDescriptionContent(ZmMimeTable.TEXT_HTML, descHtml);
+			}
 
-            if(desc) {
-                this.setInviteDescriptionContent(ZmMimeTable.TEXT_PLAIN, desc);                
-            }
+			if (desc) {
+				this.setInviteDescriptionContent(ZmMimeTable.TEXT_PLAIN, desc);
+			}
 
 			if (!appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
 				this.invite.type == "appt")
@@ -1764,17 +1761,17 @@ function(msgNode) {
 	}
 };
 
-ZmMailMsg.prototype._cleanupCIds = function(atts){
+ZmMailMsg.prototype._cleanupCIds =
+function(atts) {
+	atts = atts || this.attachments;
+	if (!atts || atts.length == 0) { return; }
 
-    atts = atts || this.attachments;
-    if(!atts || atts.length == 0) return;
-
-    for(var i=0; i<atts.length; i++){
-        var att = atts[i];
-        if(att.ci && !/^<.+>$/.test(att.ci)){
-            att.ci = '<' + att.ci + '>';
-        }
-    }
+	for (var i = 0; i < atts.length; i++) {
+		var att = atts[i];
+		if (att.ci && !/^<.+>$/.test(att.ci)) {
+			att.ci = '<' + att.ci + '>';
+		}
+	}
 };
 
 ZmMailMsg.prototype.isInvite =
@@ -1841,34 +1838,35 @@ function(addrNodes, parentNode, isDraft, accountName) {
 	var identity = this.identity;
 	var isPrimary = identity == null || identity.isDefault;
 
-    //If repying to an invite which was addressed to user's alias then accept reply should appear from the alias 
-    if(this._origMsg && this._origMsg.isInvite() && this.isReplied && (!this._origMsg._customMsg || !identity)){// is default reply or has no identities. 
-        var origTos =  this._origMsg._getAttendees();
-        var size = origTos && origTos.size() > 0 ? origTos.size() : 0;
-        var aliazesString = ","+appCtxt.get(ZmSetting.MAIL_ALIASES).join(",")+",";
-        for(var i = 0; i < size; i++){
-            var origTo = origTos.get(i).address;
-            if(origTo && aliazesString.indexOf(","+origTo+",") >= 0){
-                var addrNode = {t:"f",a: origTo};
-                addrNodes.push(addrNode);
-                return; //We have already added appropriate alias as a "from". return from here.
-            }
-        }
-    }
+	// If repying to an invite which was addressed to user's alias then accept
+	// reply should appear from the alias
+	if (this._origMsg && this._origMsg.isInvite() &&
+		this.isReplied &&
+		(!this._origMsg._customMsg || !identity)) // is default reply or has no identities.
+	{
+		var origTos =  this._origMsg._getAttendees();
+		var size = origTos && origTos.size() > 0 ? origTos.size() : 0;
+		var aliazesString = "," + appCtxt.get(ZmSetting.MAIL_ALIASES).join(",") + ",";
+		for (var i = 0; i < size; i++) {
+			var origTo = origTos.get(i).address;
+			if (origTo && aliazesString.indexOf("," + origTo + ",") >= 0) {
+				var addrNode = {t:"f", a:origTo};
+				addrNodes.push(addrNode);
+				return; // We have already added appropriate alias as a "from". return from here.
+			}
+		}
+	}
 
-    //TODO: OPTIMIZE CODE by aggregating the common code.
+	//TODO: OPTIMIZE CODE by aggregating the common code.
 	if (accountName && isPrimary) {
-
 		var mainAcct = ac.accountList.mainAccount.getEmail();
 		var onBehalfOf = false;
 
-
-        var folder = appCtxt.getById(this.folderId);
-        if (folder && folder.isRemote() && !this._origMsg.sendAsMe) {
-            accountName = folder.getOwner();
-            onBehalfOf  = (accountName != mainAcct);
-        }
-
+		var folder = appCtxt.getById(this.folderId);
+		if (folder && folder.isRemote() && !this._origMsg.sendAsMe) {
+			accountName = folder.getOwner();
+			onBehalfOf  = (accountName != mainAcct);
+		}
 
 		if (this._origMsg && this._origMsg.isDraft && !this._origMsg.sendAsMe) {
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
@@ -1879,10 +1877,14 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			}
 		}
 
-		var addr, displayName = null;
+		var addr, displayName;
 		if (this.fromSelectValue) {
 			addr = this.fromSelectValue.addr.address;
 			displayName = this.fromSelectValue.addr.name;
+		} else if (this._origMsg.isInvite() && appCtxt.multiAccounts) {
+			identity = this._origMsg.getAccount().getIdentity();
+			addr = identity ? identity.sendFromAddress : this._origMsg.getAccount().name;
+			displayName = identity && identity.sendFromDisplay;
 		} else {
 			if (onBehalfOf) {
 				addr = accountName;
@@ -1903,42 +1905,43 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			addrNodes.push({t:"s", a:mainAcct});
 		}
 	} else if (identity) {
-                
-        var mainAcct = ac.accountList.mainAccount.getEmail();
-        var onBehalfOf = false;
 
-        var folder = appCtxt.getById(this.folderId);
-        if (folder && folder.isRemote() && !this._origMsg.sendAsMe) {
-            accountName = folder.getOwner();
-            onBehalfOf  = (accountName != mainAcct);
-        }
+		var mainAcct = ac.accountList.mainAccount.getEmail();
+		var onBehalfOf = false;
 
-        if (this._origMsg && this._origMsg.isDraft && !this._origMsg.sendAsMe) {
+		var folder = appCtxt.getById(this.folderId);
+		if (folder && folder.isRemote() && !this._origMsg.sendAsMe) {
+			accountName = folder.getOwner();
+			onBehalfOf  = (accountName != mainAcct);
+		}
+
+		if (this._origMsg && this._origMsg.isDraft && !this._origMsg.sendAsMe) {
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo so reset account name
 			if (from && from.address.toLowerCase() != mainAcct.toLowerCase() && !appCtxt.isMyAddress(from.address.toLowerCase())) {
 				accountName = from.address;
 				onBehalfOf = true;
-			}           
+			}
 		}
 
-        var addr, displayName;
-        if(onBehalfOf){
-            addr = accountName;
-        }else{
-            addr = identity.sendFromAddress || mainAcct;
-            displayName = identity.sendFromDisplay;
-        }
+		var addr, displayName;
+		if (onBehalfOf){
+			addr = accountName;
+		} else {
+			addr = identity.sendFromAddress || mainAcct;
+			displayName = identity.sendFromDisplay;
+		}
 
-        var addrNode = {t:"f", a:addr};
-        if(displayName)
-            addrNode.p = displayName;
-        addrNodes.push(addrNode);
+		var addrNode = {t:"f", a:addr};
+		if( displayName) {
+			addrNode.p = displayName;
+		}
+		addrNodes.push(addrNode);
 
-        if( onBehalfOf){
-            addrNodes.push({t:"s", a:mainAcct});
-        }
-        
+		if (onBehalfOf) {
+			addrNodes.push({t:"s", a:mainAcct});
+		}
+
 		if (identity && identity.isFromDataSource && ac.get(ZmSetting.SEND_ON_BEHALF_OF)) {
 			var dataSource = ac.getDataSourceCollection().getById(identity.id);
 			if (dataSource) {
@@ -2068,12 +2071,13 @@ function(obj, batchMode) {
 
 ZmMailMsg.prototype.isResourceInvite =
 function() {
-  if(!this.cif || !this.invite) return false;
-  var resources = this.invite.getResources();
-  for(var i in resources) {
-      if(resources[i] && resources[i].url == this.cif) {
-          return true;
-      }
-  }
-    return false;
+	if (!this.cif || !this.invite) { return false; }
+
+	var resources = this.invite.getResources();
+	for (var i in resources) {
+		if (resources[i] && resources[i].url == this.cif) {
+			return true;
+		}
+	}
+	return false;
 };
