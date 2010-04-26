@@ -885,7 +885,6 @@ function(parent, buttonId, buttonListener, menuSelectionListener) {
 	// create menu for button
 	var reminderMenu = new DwtMenu({parent:reminderButton, style:DwtMenu.DROPDOWN_STYLE});
 	reminderMenu.setSize("150");
-	reminderMenu._table.width = "100%";
 	reminderButton.setMenu(reminderMenu, true);
 
 
