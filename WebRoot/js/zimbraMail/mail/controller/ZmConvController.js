@@ -408,3 +408,6 @@ ZmConvController.prototype._isTopLevelView =
 function() {
 	return false;
 };
+
+// don't preserve selection in CV, just select first hot msg as usual
+ZmConvController.prototype._resetSelection = function() {};
