@@ -464,7 +464,7 @@ function(compNum) {
 	var desc = this.components[cn].descHtml;
 	var content = desc && desc[0]._content || null;
     if(!content)
-        content = this.getSummary(true);
+        content = this.getApptSummary(true);
 	return content;
 };
 
@@ -481,7 +481,7 @@ function(compNum) {
 	var desc = this.components[cn].desc;
 	var content = desc && desc[0]._content || null;
     if(!content)
-        content = this.getSummary();
+        content = this.getApptSummary();
 	return content;
 };
 
@@ -814,6 +814,31 @@ function() {
 
 	return this._toolTip;
 };
+
+/**
+ * Gets the Appt summary.
+ *
+ * @param	{Boolean}	isHtml	<code>true</code> to return summary as HTML
+ * @return	{String}	the appt summary
+ */
+ZmInvite.prototype.getApptSummary =
+function(isHtml) {
+
+    var msgId = this.getMessageId();
+    var msg = appCtxt.getById(this.getMessageId());
+    var appt;
+
+    if(msg){
+        AjxDispatcher.require("CalendarCore");
+        appt = new ZmAppt();
+        appt.setFromMailMessageInvite(msg);
+    }
+
+    return appt ? appt.getSummary(isHtml) : this.getSummary(isHtml);
+    
+};
+
+
 
 /**
  * Gets the summary.
