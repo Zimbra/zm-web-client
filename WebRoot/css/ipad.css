@@ -371,7 +371,6 @@ ul.list li{
     font-weight: bold;
 }
 
-
 .list-row-sel{
 	background: #d9ceb2 url("/img/mobile/ipad/listview-sel-bg.gif") repeat-x top left;
 }
@@ -401,7 +400,6 @@ ul.list li{
 }
 
 .dlist .td{
-    padding: 8px;
 }
 
 .f {    
@@ -434,4 +432,49 @@ ul.list li{
 
 .msg-list-in-conv .cell {
     padding: 2px !important;
+}
+
+
+/** Style for Contacts **/
+
+.Person48 {
+    background: url( "/img/large/ImgPerson_48.gif" ) 90% 50% no-repeat;
+    height: 50px;
+    width: 50px;
+    padding: 2px;
+}
+
+.aleft {
+    text-align:left !important;
+    padding-left: 5px;
+}
+.aright {
+    text-align:right !important;
+    padding-right:5px;
+}
+
+span.aleft > div{
+	color: white;
+	font-size: 12px;
+}
+
+span.aleft > div:first-child {
+	font-size: 24px;
+	color: white;
+}
+
+.View div, .View .list-row {
+    padding: 8px;
+    border-bottom: 1px solid #ede8db;
+	font-size: 12px;
+} 
+
+.View .list-row .label{
+	float: left;
+	width: 70px;
+	text-tranform: capitalize;
+}
+
+.View .list-row .value{
+
 }
