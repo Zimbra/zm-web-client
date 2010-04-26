@@ -413,26 +413,31 @@ function(useDefaults) {
 	this._currentAccount = null;
 	this._currentSection = null;
 
+	var usedIdentities = {};
+
 	// add zimbra accounts (i.e. family mboxes)
 	var mboxes = appCtxt.accountList.getAccounts();
 	var active = appCtxt.getActiveAccount();
 	for (var j in mboxes) {
 		var acct = mboxes[j];
+		var ident = acct.getIdentity();
 		// NOTE: We create proxies of all of the account objects so that we can
 		//       store temporary values while editing.
 		if (active.isMain || acct == active) {
 			this._accounts.add(ZmAccountsPage.__createProxy(acct));
+			if (ident) usedIdentities[ident.id] = true;
 		}
 	}
-
 	// add data sources unless we're in offline mode
-	if (!appCtxt.isOffline) {
+	if (!appCtxt.isOffline && active.isMain) {
 		var dataSourceCollection = appCtxt.getDataSourceCollection();
 		var dataSources = dataSourceCollection.getItems(); // TODO: rename getItems or rename getIdentities/getSignatures
 		for (var i = 0; i < dataSources.length; i++) {
 			var datasource = dataSources[i];
+			var ident = datasource.getIdentity();
 			delete datasource.password;
 			this._accounts.add(ZmAccountsPage.__createProxy(datasource));
+			if (ident) usedIdentities[ident.id] = true;
 		}
 	}
 
@@ -442,9 +447,11 @@ function(useDefaults) {
 	for (var i = 0; i < identities.length; i++) {
 		var identity = identities[i];
 		if (identity.isDefault || identity.isFromDataSource) continue;
-
+		var id = identity.id;
+		if (usedIdentities[id]) continue;
+		usedIdentities[id] = true;
 		var persona = new ZmPersona(identity);
-		this._accounts.add(ZmAccountsPage.__createProxy(persona));
+		this._accounts.add(ZmAccountsPage.__createProxy(persona), null, true);
 	}
 
 	// initialize list view
@@ -1271,7 +1278,7 @@ function(id, setup, value) {
 
 ZmAccountsPage.prototype._getAllAddresses =
 function() {
-	var username = appCtxt.get(ZmSetting.USERNAME); 
+	var username = appCtxt.get(ZmSetting.USERNAME);
 	var addresses = appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES);
 	var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
 	return [].concat(username, addresses, aliases);
@@ -1931,6 +1938,23 @@ function(continueCallback, result, exceptions) {
 ZmAccountsPage.prototype._handleSaveAccount =
 function(account, resp) {
 	delete account._dirty;
+
+	var mboxes = appCtxt.accountList.getAccounts();
+	var active = appCtxt.getActiveAccount();
+
+	// Save data from old proxies to proxied objects
+	for (var j in mboxes) {
+		var acct = mboxes[j];
+		if (active.isMain || acct == active) {
+			var acct = ZmAccountsPage.__unProxy(mboxes[j]._proxy_);
+			if (acct) {
+				mboxes[j] = acct;
+			}
+		}
+	}
+
+
+
 };
 
 ZmAccountsPage.prototype._handleSaveVisibleAccount =
@@ -2002,9 +2026,12 @@ function(a, b) {
 ZmAccountsPage.__createProxy =
 function(account) {
 	delete account._object_;
-	var identityProxy = AjxUtil.createProxy(account.getIdentity());
+	var identity = account.getIdentity();
+	var identityProxy = AjxUtil.createProxy(identity);
 	var proxy = AjxUtil.createProxy(account);
-	proxy.getIdentity = AjxCallback.simpleClosure(ZmAccountsPage.__proxy_getIdentity, proxy, identityProxy);
+	proxy._identity = identityProxy;
+	account._proxy_ = proxy;
+	proxy.getIdentity = AjxCallback.simpleClosure(function(){return this._identity}, proxy, identityProxy);
 	return proxy;
 };
 
@@ -2012,6 +2039,16 @@ ZmAccountsPage.__proxy_getIdentity =
 function(identity) {
 	return identity;
 };
+
+ZmAccountsPage.__unProxy =
+function(accountProxy) {
+	var account = AjxUtil.unProxy(accountProxy);
+	if (!account) return accountProxy;
+	var identityProxy = accountProxy._identity;
+	var identity = AjxUtil.unProxy(identityProxy);
+	account.getIdentity = AjxCallback.simpleClosure(ZmAccountsPage.__proxy_getIdentity, account, identity);
+	return account;
+}
 
 //
 // Classes

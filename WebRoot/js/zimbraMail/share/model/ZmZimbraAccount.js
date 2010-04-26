@@ -172,13 +172,15 @@ function() {
  */
 ZmZimbraAccount.prototype.getIdentity =
 function() {
+	var defaultIdentity = appCtxt.getIdentityCollection(this).defaultIdentity;
 	if (!appCtxt.isFamilyMbox || this.isMain) {
-		return appCtxt.getIdentityCollection(this).defaultIdentity;
+		return defaultIdentity;
 	}
 
 	// for family mbox, create dummy identities for child accounts
 	if (!this.dummyIdentity) {
 		this.dummyIdentity = new ZmIdentity(this.name);
+		AjxUtil.hashUpdate(this.dummyIdentity, defaultIdentity, true, ["name","isDefault"]);
 	}
 	return this.dummyIdentity;
 };
