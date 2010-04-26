@@ -131,19 +131,19 @@
 
 		<a href="www.zimbra.com" target="_new"><div class="logo"></div></a>
 
-		<div class="tab alignLeft">
-				<ul class="ul">
+		
+				<ul class="ul alignLeft">
 					<li class="sel"><a id="mail" href="${aurl}?st=${mailbox.prefs.groupMailBy}"><span onclick="return zClickLink('mail')"><fmt:message key="mail"/></span></a></li>
 					<li><a id="contact" href="${aurl}?st=contact"><span onclick="return zClickLink('contact')"><fmt:message key="contacts"/></span></a></li>
 					<li><a id="cal" href=""><span><fmt:message key="calendar"/></span></a></li>
 					<li><a id="tasks" href=""><span><fmt:message key="tasks"/></span></a></li>
 					<li><a id="options" href=""><span><fmt:message key="options"/></span></a></li>
 				</ul>
-		</div>
+		
 
-		<div class="signout"><a href="#">Sign out</a></div>
+		<div class="signout alignRight"><a href="#">Sign out</a></div>
 
-		<div class="search"><input type="search" placeholder="Search..."></div>
+		<div class="search alignRight"><input type="search" placeholder="Search..."></div>
 
 
 	</div>

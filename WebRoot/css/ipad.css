@@ -67,7 +67,7 @@ html, body{
 .search{
 
 		margin: 10px 10px 0 0;
-		width: 200px;
+		width: 200px;		
 }
 
 	.search input{
@@ -80,7 +80,7 @@ html, body{
 
 
 .signout{
-
+		margin: 15px 10px 0 10px;
 }
 
 	.signout a{
@@ -89,13 +89,12 @@ html, body{
 
 
 .tab{
-	margin: 20px 20%;
 
 }
 
 	ul.ul{
 		margin: 20px 0 0 20%;
-		width: 455px;
+		width: 455px;		
 	}
 
 	 ul.ul li{
@@ -331,4 +330,101 @@ ul.list li{
 	letter-spacing: 1px;
 	border-bottom: 1px solid #e4dcc6;
 	padding: 6px;
+}
+
+
+/* ListView Styles */
+
+.tbl {
+    display: table;
+    width: 100%;
+    text-align:center;
+}
+
+.tr {
+    display: table-row;
+    text-align:center;
+}
+
+.td {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    padding-top:4px;
+    padding-bottom:4px;
+}
+
+.dlist .list-row .td, .dlist .list-row-unread .td{
+    border-bottom: 1px solid #DDD;
+}
+
+.list-row, .list-row-unread{
+    padding: 3px;
+    background: #fafafa;
+    border-bottom: 1px solid #DDD;
+}
+
+.list-row-unread {
+    font-weight: bold;
+    background: white; /*#f9fcff;*/
+}
+
+.small-gray-text {
+    color: #888888;
+    font-size: small;
+}
+
+.list-row-unread .small-gray-text,.Email a {
+    color: #666666;
+    font-weight:normal;
+}
+
+.list-row-unread .l{
+	font-weight: normal;
+}
+
+.from-span a {
+    color: black;
+}
+
+.ConvOpen{
+    background-position: 0 -326px !important;
+}
+
+.dlist .td{
+    padding:4px;
+}
+
+.f {
+    max-width: 40px;
+    width: 40px;
+    white-space: nowrap;
+    padding-left: 10px;
+    min-width:40px;
+}
+
+.l, .m {
+    vertical-align: top;
+    text-align:left;
+}
+
+.l {
+    width: 60px;
+    min-width: 60px;
+    text-align: right;
+    overflow:visible;
+}
+
+.m {
+    width:95%;
+    max-width:180px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.msg-list-in-conv {
+}
+
+.msg-list-in-conv .cell {
+    padding: 2px !important;
 }
