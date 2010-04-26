@@ -101,6 +101,8 @@ html, body{
 		margin-right: 0px;
 		padding: 10px 20px;
 	}
+	
+		ul.ul li a{ color: #5f5a4a; }
 
 	ul.ul li.sel{
 		background: #7f7b6e url("/img/mobile/ipad/tab-selected.gif") repeat-x top left;
@@ -110,6 +112,7 @@ html, body{
 		font-weight: bold;
 	}
 
+		ul.ul li.sel a{ color: white; } 
 
 /* Toolbar Style */
 
@@ -333,7 +336,7 @@ ul.list li{
 }
 
 
-/* ListView Styles */
+/** ListView Styles **/
 
 .tbl {
     display: table;
@@ -355,28 +358,33 @@ ul.list li{
 }
 
 .dlist .list-row .td, .dlist .list-row-unread .td{
-    border-bottom: 1px solid #DDD;
+    border-bottom: 1px solid #ede8db;
 }
 
 .list-row, .list-row-unread{
     padding: 3px;
-    background: #fafafa;
-    border-bottom: 1px solid #DDD;
-}
+    border-bottom: 1px solid #ede8db;
+    background-color: white;
+} 
 
 .list-row-unread {
     font-weight: bold;
-    background: white; /*#f9fcff;*/
+}
+
+
+.list-row-sel{
+	background: #d9ceb2 url("/img/mobile/ipad/listview-sel-bg.gif") repeat-x top left;
 }
 
 .small-gray-text {
     color: #888888;
-    font-size: small;
+    font-size: 11px;
 }
 
 .list-row-unread .small-gray-text,.Email a {
     color: #666666;
     font-weight:normal;
+    
 }
 
 .list-row-unread .l{
@@ -385,6 +393,7 @@ ul.list li{
 
 .from-span a {
     color: black;
+    text-decoration: none;
 }
 
 .ConvOpen{
@@ -392,34 +401,32 @@ ul.list li{
 }
 
 .dlist .td{
-    padding:4px;
+    padding: 8px;
 }
 
-.f {
-    max-width: 40px;
-    width: 40px;
+.f {    
     white-space: nowrap;
-    padding-left: 10px;
-    min-width:40px;
 }
 
-.l, .m {
-    vertical-align: top;
-    text-align:left;
-}
 
 .l {
-    width: 60px;
-    min-width: 60px;
-    text-align: right;
-    overflow:visible;
+    text-align: right; 
+	vertical-align: middle;
 }
 
+	.l a{ 
+		color: #666666;
+		text-decoration: none;
+		
+		
+	}
 .m {
-    width:95%;
-    max-width:180px;
     overflow:hidden;
     text-overflow:ellipsis;
+	vertical-align: top;
+    text-align:left;
+    font-size: 12px;
+
 }
 
 .msg-list-in-conv {
