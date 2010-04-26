@@ -25,6 +25,7 @@
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:getContact id="${id}" var="contact"/>
+    <zm:getUserAgent var="ua" session="true"/>
     <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
     <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
@@ -36,9 +37,11 @@
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
-    <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="true" mailbox="${mailbox}"/>
-    <div class="Stripes">
-        <div class="View">
+    <c:if test="${ua.isiPad == false}">
+        <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="true" mailbox="${mailbox}"/>
+    </c:if>
+    <%--<div class="Stripes">--%>
+        <div class="header">
             <div class="tbl">
                 <div class="tr">
                     <span class="td aleft Person48">&nbsp;</span>
@@ -72,7 +75,10 @@
                 </div>
             </c:if>
         </div>
+        <div class="msgBody">
         <mo:displayContact contact="${contact}"/>
     </div>
-    <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="false" mailbox="${mailbox}"/>
+    <c:if test="${ua.isiPad == false}">
+        <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="false" mailbox="${mailbox}"/>
+    </c:if>
 </form>

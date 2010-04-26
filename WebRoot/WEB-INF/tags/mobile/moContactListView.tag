@@ -22,6 +22,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
+    <zm:getUserAgent var="ua" session="true"/>
     <c:if test="${!context.isGALSearch}">
     <c:set var="contactId" value="${context.currentItem.id}"/>
     <c:if test="${not empty contactId}"><zm:getContact id="${contactId}" var="contact"/></c:if>
@@ -35,7 +36,9 @@
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doContactAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
-    <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
+    <c:if test="${ua.isiPad == false}">
+        <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
+    </c:if>
     <div class="tbl dlist">
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="chit" value="${hit.contactHit}"/>
@@ -87,5 +90,7 @@
                 </div>
             </div>
     </c:if>
-    <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
+    <c:if test="${ua.isiPad == false}">
+        <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
+    </c:if>
 </form>
