@@ -1881,7 +1881,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		if (this.fromSelectValue) {
 			addr = this.fromSelectValue.addr.address;
 			displayName = this.fromSelectValue.addr.name;
-		} else if (this._origMsg.isInvite() && appCtxt.multiAccounts) {
+		} else if (this._origMsg && this._origMsg.isInvite() && appCtxt.multiAccounts) {
 			identity = this._origMsg.getAccount().getIdentity();
 			addr = identity ? identity.sendFromAddress : this._origMsg.getAccount().name;
 			displayName = identity && identity.sendFromDisplay;
