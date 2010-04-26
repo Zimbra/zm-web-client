@@ -67,29 +67,30 @@ function() {
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
 	this._tzoneSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzSelect"), cascade:false});
 	this._tzoneSelect.addChangeListener(timezoneListener);
+
+    this._tzoneShowAll = new DwtCheckbox({parent:this, parentElement:(this._htmlElId+"_tzShowAll")});
+    this._tzoneShowAll.setText(ZmMsg.selectTimezoneIShowAll);
+    this._tzoneShowAll.addSelectionListener(new AjxListener(this, this._handleShowAllChange));
 };
 
 ZmTimezonePicker.prototype._initTzSelect =
-function() {
-	var options = AjxTimezone.getMatchingTimezoneChoices();
+function(force) {
+    var showAll = this._tzoneShowAll.isSelected();
+	var options = showAll ? AjxTimezone.getAbbreviatedZoneChoices() : AjxTimezone.getMatchingTimezoneChoices();
     var serverIdMap = {};
     var serverId;
-	if (options.length != this._tzCount) {
+	if (force || options.length != this._tzCount) {
 		this._tzCount = options.length;
 		this._tzoneSelect.clearOptions();
 		for (var i = 0; i < options.length; i++) {
-            if(options[i].clientId != AjxTimezone.AUTO_DETECTED) {
+            if(options[i].autoDetected) continue;
 
-                serverId = options[i].value;
-                //avoid duplicate entries
-                if(serverIdMap[serverId]) continue;
-                serverIdMap[serverId] = true;
+            serverId = options[i].value;
+            //avoid duplicate entries
+            if(!showAll && serverIdMap[serverId]) continue;
+            serverIdMap[serverId] = true;
 
-			    this._tzoneSelect.addOption(options[i]);
-            }else {
-                var idx = (i+1 < options.length) ? i+1 : options.length-1;
-                this._nxtTimezoneOption = options[idx];             
-            }
+            this._tzoneSelect.addOption(options[i]);
 		}
 	}
 };
@@ -103,7 +104,7 @@ function() {
 
         for(var i in AjxTimezone.MATCHING_RULES) {
             var rule = AjxTimezone.MATCHING_RULES[i];
-            if(rule.clientId == AjxTimezone.AUTO_DETECTED) continue;
+            if(rule.autoDetected) continue;
             if(rule.standard.offset == cRule.standard.offset) {
 
                 if(!standardOffsetMatch) standardOffsetMatch = rule.serverId;
@@ -151,6 +152,12 @@ function(callback) {
 ZmTimezonePicker.prototype._timezoneListener =
 function(ev) {
 	//todo: timezone change listener
+};
+
+ZmTimezonePicker.prototype._handleShowAllChange = function(evt) {
+    var value = this._tzoneSelect.getValue();
+    this._initTzSelect(true);
+    this._tzoneSelect.setSelectedValue(value);
 };
 
 ZmTimezonePicker.prototype._contentHtml = 

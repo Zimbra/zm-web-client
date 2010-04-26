@@ -427,6 +427,9 @@
 			<td width=50 align=right><$= ZmMsg.selectTimezoneLabel $></td>
             <td id='${id}_tzSelect'></td>
 		</tr>
+		<tr><td></td>
+		    <td id='${id}_tzShowAll'></td>
+        </tr>
 	</table>
 </template>
 

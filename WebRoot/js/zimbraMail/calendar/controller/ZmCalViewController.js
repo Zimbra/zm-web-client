@@ -1685,16 +1685,56 @@ function(appt, shiftKey) {
 	var useQuickAdd = appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD);
 	if ((useQuickAdd && !shiftKey) || (!useQuickAdd && shiftKey)) {
 		if (AjxTimezone.TIMEZONE_CONFLICT || AjxTimezone.DEFAULT_RULE.autoDetected) {
-			var timezonePicker = this.getTimezonePicker();
 			var callback = new AjxCallback(this, this.handleTimezoneSelectionQuickAdd, [appt, shiftKey]);
-			timezonePicker.setCallback(callback);
-			timezonePicker.popup();
+            var continueCallback = new AjxCallback(this, this._showQuickAddDialogContinue, [appt, shiftKey]);
+            this._resolveTimezoneConflict(callback, continueCallback);
 		} else {
 			this._showQuickAddDialogContinue(appt, shiftKey);
 		}
 	} else {
 		this.newAppointment(appt);
 	}
+};
+
+ZmCalViewController.prototype._resolveTimezoneConflict =
+function(resolveCallback, continueCallback) {
+    // attempt to resolve this ourselves
+    // NOTE: Dynamically inserting applet tag doesn't seem to work.
+    // NOTE: IE complains that page requires Java which is enough to avoid using it.
+    if (!AjxEnv.isIE) {
+        var iframe = document.createElement("IFRAME");
+        iframe.onload = AjxCallback.simpleClosure(this._resolveTimezoneConflict2, this, resolveCallback, continueCallback, iframe);
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
+        iframe.src = appContextPath+"/public/tzid.html";
+        return;
+    }
+
+    // let user resolve conflict
+    this._resolveTimezoneConflict2(resolveCallback, continueCallback);
+};
+
+ZmCalViewController.prototype._resolveTimezoneConflict2 =
+function(resolvecallback, continueCallback, iframe) {
+    // use Java timezone id
+    var doc = iframe && iframe.contentDocument;
+    var tzid = doc && AjxUtil.getInnerText(doc.body);
+    if (tzid && tzid != undefined) {
+        AjxTimezone.DEFAULT = tzid;
+        // TODO: Do we change the rule, too???
+        AjxTimezone.TIMEZONE_CONFLICT = false;
+        appCtxt.setStatusMsg("java tzid: "+tzid);
+        continueCallback.run();
+
+        // clean up
+        iframe.parentNode.removeChild(iframe);
+        return;
+    }
+
+    // let user resolve conflict
+    var timezonePicker = this.getTimezonePicker();
+    timezonePicker.setCallback(resolvecallback);
+    timezonePicker.popup();
 };
 
 ZmCalViewController.prototype._showQuickAddDialogContinue =
@@ -1731,11 +1771,12 @@ function(newAppt, mode, isDirty, startDate) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
 	var appt = newAppt || this._newApptObject(sd, AjxDateUtil.MSEC_PER_HALF_HOUR);
+
 	if (AjxTimezone.TIMEZONE_CONFLICT || AjxTimezone.DEFAULT_RULE.autoDetected) {
-		var timezonePicker = this.getTimezonePicker();
 		var callback = new AjxCallback(this, this.handleTimezoneSelection, [appt, mode, isDirty]);
-		timezonePicker.setCallback(callback);
-		timezonePicker.popup();
+        var controller = this._app.getApptComposeController();
+        var continueCallback = new AjxCallback(controller, controller.show, [appt, mode, isDirty]);
+        this._resolveTimezoneConflict(callback, continueCallback);
 	} else {
 		this._app.getApptComposeController().show(appt, mode, isDirty);
 	}
