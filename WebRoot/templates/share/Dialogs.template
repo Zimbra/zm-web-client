@@ -450,7 +450,8 @@
 			</td>
 			<td class='nobreak'>
 				<input id='${id}_input' type='file' name='<$= data.uploadName $>' size=40>&nbsp;
-				<span id='<$= data.removeLinkId $>' onmouseover='this.style.cursor="pointer"' onmouseout='this.style.cursor="default"' class="ZmAttachDialog-removeLink"><$= ZmMsg.remove $></span>
+				<span id='${id}_remove' onmouseover='this.style.cursor="pointer"' onmouseout='this.style.cursor="default"' class="ZmAttachDialog-removeLink"><$= ZmMsg.remove $></span>
+                <span id='${id}_size'>&nbsp;</span>
 			</td>
 		</tr>
 	</table>

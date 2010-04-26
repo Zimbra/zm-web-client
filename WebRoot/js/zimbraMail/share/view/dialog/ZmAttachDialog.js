@@ -75,6 +75,7 @@ ZmAttachDialog.TABKEY_MYCOMPUTER	= "MY_COMPUTER";
  */
 ZmAttachDialog.TABKEY_BRIEFCASE		= "BRIEFCASE";
 
+ZmAttachDialog.supportsHTML5 = ( window.FileReader/*Firefox*/ || AjxEnv.isChrome || AjxEnv.isSafari4up );
 
 //Listeners
 
@@ -269,8 +270,16 @@ function() {
 // Upload Utitlity Methods
 ZmAttachDialog.prototype.uploadFiles =
 function() {
+    this.setFooter('');
 	var tabKey = this._tabView.getCurrentTab();
 	var tabView = this._tabView.getTabView(tabKey);
+    if(tabView && tabView.validate){
+        var valid = tabView.validate();
+        if(!valid.status){
+            this.setFooter(valid.error);
+            return false;
+        }
+    }
 	if (tabView && tabView.gotAttachments()) {
 		this.upload(this._uploadCallback, tabView.uploadForm);
 	} else {
@@ -542,29 +551,53 @@ function() {
 
 	var row = this.attachmentTable.insertRow(-1);
 	var cell = row.insertCell(-1);
-	var removeLinkId = Dwt.getNextId();
+	var fieldId = Dwt.getNextId();
 
 	var subs = {
-		id: this._htmlElId,
-		removeLinkId: removeLinkId,
+		id: fieldId,
 		uploadName: ZmMyComputerTabViewPage.UPLOAD_FIELD_NAME
 	};
 	cell.innerHTML = AjxTemplate.expand("share.Dialogs#ZmAttachDialog-MyComputerTab-AddAttachment", subs);
 
-	var inputId = this._htmlElId+"_input";
+	var removeEl = document.getElementById(fieldId+"_remove");   
+	removeEl.onclick = AjxCallback.simpleClosure(this._removeAttachmentField, this, row);
+
+    var inputId = fieldId+"_input";
 	if (this._focusElId == -1) {
 		this._focusElId = inputId;
-	}
+	}    
+    var inputEl = document.getElementById(inputId);
+    var sizeEl = document.getElementById(fieldId+"_size");
 
-	var removeEl = document.getElementById(removeLinkId);
-	removeEl.onclick = AjxCallback.simpleClosure(this._removeAttachmentField, this, row);
+    //HTML5
+    if(ZmAttachDialog.supportsHTML5){
+        Dwt.setHandler(inputEl, "onchange", AjxCallback.simpleClosure(this._handleFileSize, this, inputEl, sizeEl));
+    }
 
 	// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
 	if (AjxEnv.isIE) {
-		var inputEl = document.getElementById(inputId);
 		inputEl.onkeydown = AjxCallback.simpleClosure(this._handleKeys, this);
 	}
 };
+
+ZmMyComputerTabViewPage.prototype._handleFileSize =
+function(inputEl, sizeEl){
+
+    var files = inputEl.files;
+    if(!files) return;
+    
+    var file = files[0];
+    var size = file.size;
+    if(sizeEl) {
+        sizeEl.innerHTML = "&nbsp;("+AjxUtil.formatSize(size, true)+")";
+        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))
+            Dwt.addClass(sizeEl, "RedC");
+        else
+            Dwt.delClass(sizeEl, "RedC");
+    }    
+};
+
+
 
 ZmMyComputerTabViewPage.prototype._removeAttachmentField =
 function(row) {
@@ -638,4 +671,32 @@ ZmMyComputerTabViewPage.prototype._handleKeys =
 function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
 	return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
+};
+
+ZmMyComputerTabViewPage.prototype._validateFileSize =
+function(){
+
+    var atts = document.getElementsByName(ZmMyComputerTabViewPage.UPLOAD_FIELD_NAME);
+	for (var i = 0; i < atts.length; i++){
+        var file = atts[i].files;
+        if(!file || file.length == 0) continue;
+        file = file[0];
+        if(file.size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)){
+            return false;
+        }
+    }
+	return true;
+};
+
+ZmMyComputerTabViewPage.prototype.validate =
+function(){
+    var status, errorMsg;
+    if(ZmAttachDialog.supportsHTML5){
+        status = this._validateFileSize();
+        errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)));
+    }else{
+        status = true;
+    }
+
+    return {status: status, error:errorMsg};
 };
