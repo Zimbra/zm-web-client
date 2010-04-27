@@ -145,10 +145,23 @@ function(item) {
 ZmConvListView.prototype.reRenderListView =
 function() {
 	var isMultiColumn = this.isMultiColumn();
+	var expanded;
 	if (isMultiColumn != this._isMultiColumn) {
+		expanded = this._expandedItems;
 		this._resetExpansion();
 	}
+
 	ZmMailListView.prototype.reRenderListView.call(this);
+
+	if (expanded) {
+		for (var id in expanded) {
+			if (expanded[id]) {
+				for (var i=0; i<expanded[id].length; i++) { 
+					this._expandItem(expanded[id][i]);
+				}
+			}
+		}
+	}
 };
 
 /**
