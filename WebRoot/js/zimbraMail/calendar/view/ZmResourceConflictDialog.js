@@ -166,10 +166,10 @@ function(inst) {
 ZmResourceConflictDialog.prototype.initialize =
 function(list, appt, callback) {
 	this._list = list;
-    this._appt = appt;
+	this._appt = appt;
 	this._instData = {};
-    this._callback = callback;
-    this._canceledInstanceCount = 0;
+	this._callback = callback;
+	this._canceledInstanceCount = 0;
 	
 	var attendeeMap = {};
 	var types = [ZmCalBaseItem.PERSON, ZmCalBaseItem.LOCATION, ZmCalBaseItem.EQUIPMENT];
@@ -269,6 +269,8 @@ function(isCanceled) {
 ZmResourceConflictDialog.prototype.popup =
 function() {
 	DwtDialog.prototype.popup.call(this);
+	var dblBookingAllowed = appCtxt.get(ZmSetting.CAL_RESOURCE_DBL_BOOKING_ALLOWED);
+	this._button[ZmResourceConflictDialog.SAVE_BUTTON].setEnabled(dblBookingAllowed);	
 };
 
 ZmResourceConflictDialog.prototype._handleSaveButton =
