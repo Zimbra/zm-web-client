@@ -1066,8 +1066,10 @@ function(creates) {
 			parsed.id != ZmOrganizer.ID_TRASH &&
 			!acct.isMain)
 		{
-			if (appCtxt.getCurrentSearch().isMultiAccount() ||
-				(acct && appCtxt.getActiveAccount() != acct))
+			var currSearch = appCtxt.getCurrentSearch();
+			if ((currSearch && currSearch.isMultiAccount()) ||
+				(appCtxt.getCurrentAppName() != ZmApp.MAIL) ||
+				(appCtxt.getActiveAccount() != acct))
 			{
 				acct.inNewMailMode = true;
 				var allContainers = appCtxt.getOverviewController()._overviewContainer;
