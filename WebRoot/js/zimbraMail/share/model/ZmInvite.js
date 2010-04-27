@@ -831,7 +831,7 @@ function(isHtml) {
     if(msg){
         AjxDispatcher.require("CalendarCore");
         appt = new ZmAppt();
-        appt.setFromMailMessageInvite(msg);
+        appt.setFromMessage(msg);
     }
 
     return appt ? appt.getSummary(isHtml) : this.getSummary(isHtml);

@@ -900,9 +900,10 @@ function(message, viewMode) {
 		this.isOrg = message.invite.isOrganizer();
 		this.organizer = message.invite.getOrganizerEmail();
 		this.sentBy = message.invite.getSentBy();
-		this.name = message.invite.getName();
+		this.name = message.invite.getName() || message.subject;
 		this.isException = message.invite.isException();
         this.recurring =  message.invite.isRecurring();
+        this.location = message.invite.getLocation();
 		this._setTimeFromMessage(message, viewMode);
 		this._setExtrasFromMessage(message);
 		this._setRecurrence(message);
