@@ -74,13 +74,12 @@ function(toolbar, listView) {
 ZmMobileDevicesController.prototype.getToolbarButtons =
 function() {
 	return [
-		ZmOperation.DELETE,
+		ZmOperation.MOBILE_REMOVE,
 		ZmOperation.SEP,
 		ZmOperation.MOBILE_SUSPEND_SYNC,
 		ZmOperation.MOBILE_RESUME_SYNC,
 		ZmOperation.SEP,
-		ZmOperation.MOBILE_WIPE,
-		ZmOperation.MOBILE_CANCEL_WIPE
+		ZmOperation.MOBILE_WIPE
 	];
 };
 
@@ -142,15 +141,21 @@ function(ev) {
 	var callback = new AjxCallback(this, this._handleAction, [item, id]);
 	var action = ev.item.getData(ZmOperation.KEY_ID);
 
-	// bug 42135: add confirmation for mobile wipe
 	if (action == ZmOperation.MOBILE_WIPE) {
-		var dialog = appCtxt.getOkCancelMsgDialog();
-		dialog.setMessage(ZmMsg.mobileDeviceWipeConfirm);
-		dialog.registerCallback(DwtDialog.OK_BUTTON, this._handleDeviceWipe, this, [dialog, item, callback]);
-		dialog.popup();
-	} else {
-		item.doAction(action, callback);
+		// if the item status is wipe-requested, then, user wants to cancel
+		if (item.status == ZmMobileDevice.STATUS_REMOTE_WIPE_REQUESTED) {
+			action = ZmOperation.MOBILE_CANCEL_WIPE;
+		} else {
+			// bug 42135: add confirmation for mobile wipe
+			var dialog = appCtxt.getOkCancelMsgDialog();
+			dialog.setMessage(ZmMsg.mobileDeviceWipeConfirm);
+			dialog.registerCallback(DwtDialog.OK_BUTTON, this._handleDeviceWipe, this, [dialog, item, callback]);
+			dialog.popup();
+			return;
+		}
 	}
+
+	item.doAction(action, callback);
 };
 
 ZmMobileDevicesController.prototype._handleDeviceWipe =
@@ -161,15 +166,20 @@ function(dialog, item, callback) {
 
 ZmMobileDevicesController.prototype._handleAction =
 function(item, id) {
-	if (id == ZmOperation.DELETE) {
+	if (id == ZmOperation.MOBILE_REMOVE) {
 		this._listView.removeItem(item, true);
 		this._devices.remove(item);
 		this._resetOperations(this._toolbar, 0);
-	} else {
-		this._listView.redrawItem(item);
-		this._listView.setSelection(item, true);
-		this._resetOperations(this._toolbar, 1);
+		return;
 	}
+
+	if (id == ZmOperation.MOBILE_WIPE) {
+		this._toolbar.getButton(ZmOperation.MOBILE_WIPE).setText(ZmMsg.mobileWipeCancel);
+	}
+
+	this._listView.redrawItem(item);
+	this._listView.setSelection(item, true);
+	this._resetOperations(this._toolbar, 1);
 };
 
 /**
@@ -183,17 +193,26 @@ function(parent, numSel) {
 	if (numSel == 1) {
 		var item = this._listView.getSelection()[0];
 		var status = item.getStatus();
+		if (item.id == "AppleBADBAD") {
+			status = ZmMobileDevice.STATUS_REMOTE_WIPE_REQUESTED;
+		}
 
 		parent.enableAll(true);
-		parent.enable([ZmOperation.MOBILE_RESUME_SYNC, ZmOperation.MOBILE_CANCEL_WIPE], false);
+		parent.enable(ZmOperation.MOBILE_RESUME_SYNC, false);
 
 		if (status == ZmMobileDevice.STATUS_SUSPENDED) {
 			parent.enable(ZmOperation.MOBILE_SUSPEND_SYNC, false);
 			parent.enable(ZmOperation.MOBILE_RESUME_SYNC, true);
 		}
-		else if (status == ZmMobileDevice.STATUS_REMOTE_WIPE_REQUESTED) {
-			parent.enable(ZmOperation.MOBILE_WIPE, false);
-			parent.enable(ZmOperation.MOBILE_CANCEL_WIPE, true);
+		else {
+			var button = parent.getButton(ZmOperation.MOBILE_WIPE);
+			if (status == ZmMobileDevice.STATUS_REMOTE_WIPE_REQUESTED) {
+				button.setText(ZmMsg.mobileWipeCancel);
+				button.setImage("MobileWipeCancel");
+			} else {
+				button.setText(ZmMsg.mobileWipe);
+				button.setImage("MobileWipe");
+			}
 		}
 
 		if (!item.provisionable) {

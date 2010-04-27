@@ -180,6 +180,7 @@ ZmPreferencesApp.prototype._registerOrganizers =  function() {
 
 ZmPreferencesApp.prototype._registerOperations =
 function() {
+	ZmOperation.registerOp(ZmId.OP_MOBILE_REMOVE, {textKey:"mobileRemoveFromList", image:"Delete"});
 	ZmOperation.registerOp(ZmId.OP_MOBILE_RESUME_SYNC, {textKey:"mobileResumeSync", image:"ImAvailable"});
 	ZmOperation.registerOp(ZmId.OP_MOBILE_SUSPEND_SYNC, {textKey:"mobileSuspendSync", image:"Offline"});
 	ZmOperation.registerOp(ZmId.OP_MOBILE_WIPE, {textKey:"mobileWipe", image:"MobileWipe"}, ZmSetting.MOBILE_POLICY_ENABLED);
