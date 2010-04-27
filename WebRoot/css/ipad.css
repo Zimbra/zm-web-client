@@ -118,23 +118,21 @@ html, body{
 
 .toolbar{
 	background: #676356 url("/img/mobile/ipad/toolbar-bg.gif") repeat-x top left;
-	height: 40px;
+	height: 45px;
 	overflow: hidden;
 	border: none;
 }
 
 .overviewActions{
-	float: left;
-	width: 24.9%;
+	/* float: left;
+	width: 24.9%; */
 	border-right: 1px solid #999;
-	height: 100%;
 }
 
 .applicationActions{
-	float: left;
-	width: 74.9%;
+	/* float: left;
+	width: 74.9%; */
 	border-left: 1px solid #444;
-	height: 100%;
 
 }
 
@@ -410,6 +408,7 @@ ul.list li{
 .l {
     text-align: right; 
 	vertical-align: middle;
+	padding-right: 5px;
 }
 
 	.l a{ 
@@ -469,7 +468,7 @@ span.aleft > div:first-child {
 	font-size: 12px;
 } 
 
-.View .list-row .label{
+.View .list-row .label, .View div .label{
 	float: left;
 	width: 70px;
 	text-tranform: capitalize;

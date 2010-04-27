@@ -149,9 +149,29 @@
 	</div>
 </c:if>
 <c:if test="${empty param.ajax}">
-	<div class="toolbar">
 
-		<div class="overviewActions">
+</c:if>
+	<mo:handleError>
+        <c:import url="/m/zmview" var="response" scope="page"/>
+    </mo:handleError>
+    <%  //!TODO may be should be done through filter? but minimization of html is essential to reduce response size
+        String respText = (String)pageContext.getAttribute("response");
+        respText = respText.replaceAll("[\t ]+"," ").replaceAll("\n\\s*\n","\n");
+        pageContext.setAttribute("response",respText);
+    %>
+
+<c:if test="${param.ajax}">
+    ${response}                
+</c:if>
+
+<c:if test="${empty param.ajax}">
+    <div class="view">
+
+        <div class="listViewPane" id="view-list">
+			
+	<!-- List view Toolbar -->		
+			
+			<div class="overviewActions toolbar">
 
 				<div class="folder button"><div>Folders</div></div>
 
@@ -171,11 +191,18 @@
 						</select>
 					</div>
 				</div>
+				
+				</div>
+				
+            ${response}
 
+        </div>
 
-		</div>
+        <div class="contentViewPane" id="view-content">
 
-		<div class="applicationActions">
+ <!--Application Toolbar  -->
+    
+        <div class="applicationActions toolbar">
 
 			<div class="compose button"><div>Compose</div></div>
 
@@ -185,31 +212,6 @@
 				<div class="right button"><div>Forward</div></div>
 			</div>
 		</div>
-	</div>
-</c:if>
-	<mo:handleError>
-        <c:import url="/m/zmview" var="response" scope="page"/>
-    </mo:handleError>
-    <%  //!TODO may be should be done through filter? but minimization of html is essential to reduce response size
-        String respText = (String)pageContext.getAttribute("response");
-        respText = respText.replaceAll("[\t ]+"," ").replaceAll("\n\\s*\n","\n");
-        pageContext.setAttribute("response",respText);
-    %>
-
-<c:if test="${param.ajax}">
-    ${response}                
-</c:if>
-
-<c:if test="${empty param.ajax}">
-    <div class="view">
-
-        <div class="listViewPane" id="view-list">
-
-            ${response}
-
-        </div>
-
-        <div class="contentViewPane" id="view-content">
 
             <div class="header">
                 <div class="alignLeft subject">Main Build Failing</div>

@@ -37,10 +37,26 @@
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
+    
+    <!--Application Toolbar  -->
+    
+        <div class="applicationActions toolbar">
+
+			<div class="compose button"><div>Compose</div></div>
+
+			<div class="actions">
+				<div class="left button"><div>Reply</div></div>
+				<div class="center button"><div>Reply all</div></div>
+				<div class="right button"><div>Forward</div></div>
+			</div>
+		</div>
+		
     <c:if test="${ua.isiPad == false}">
         <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="true" mailbox="${mailbox}"/>
     </c:if>
     <%--<div class="Stripes">--%>
+    
+   
         <div class="header">
             <div class="tbl">
                 <div class="tr">
