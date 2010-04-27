@@ -1037,7 +1037,10 @@ function(msg, container, callback) {
 	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : dateFormatter.format(new Date(msg.date)); //bug fix #31512 - if no sentdate then display receieddate
 	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
 	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
-	var sentBy = (sender && sender.address) ? sender : addr;
+	var sentBy = (sender && sender.address) ? sender : null;
+    if(!sentBy){
+        sentBy = addr && addr.address? addr.address : addr;
+    }
 	var sentByAddr = String(sentBy);
 	var sentByIcon = cl	? (cl.getContactByEmail(sentByAddr) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
