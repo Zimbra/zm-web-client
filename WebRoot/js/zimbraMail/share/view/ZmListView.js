@@ -173,14 +173,6 @@ function(list, sortField) {
 	}
 };
 
-ZmListView.prototype._setRowHeight =
-function() {
-	if (!this._rowHeight) {
-		var row = this._parentEl.firstChild;
-		this._rowHeight = row && Dwt.getSize(row).y;
-	}
-};
-
 ZmListView.prototype.reset =
 function() {
 	this._rendered = false;
