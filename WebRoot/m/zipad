@@ -165,7 +165,7 @@
 </c:if>
 
 <c:if test="${empty param.ajax}">
-    <div class="view">
+    <div class="view" id="view">
 
         <div class="listViewPane" id="view-list">
 			

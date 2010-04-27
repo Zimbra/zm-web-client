@@ -118,6 +118,11 @@ var sAT = function(tabId){ //set active tab
             }
         }
     }
+    if(targ && targ.id.match(/(mail|contact)/ig)) {
+        if(myScroll) {
+            myScroll.scrollTo(0,0);
+        }
+    }
 };
 <c:choose>
     <c:when test="${mailbox.features.mail}">
@@ -496,41 +501,6 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
         return false;
     }
 };
-<c:if test="${(ua.isiPhone or ua.isiPod) and param.anim}">
-var slideElem = function(elem,dir){
-    elem = (typeof(elem) == 'string')? $(elem) : elem;
-    if(dir == -1){
-        var crd = $('card'),frnt=$('front'),cntr=$('maincontainer');
-        if(crd.className.match(/flipped/)){
-            crd.className = "card";
-            setTimeout(function(){crd.className = "";cntr.className = cntr.className.replace(/ persp/ig,"");},1200);
-            frnt.className = frnt.className.replace("back","front");
-            //$('back').className = $('back').className.replace("front","back");
-        }else{
-            setTimeout(function(){
-                cntr.className += " persp";
-                crd.className = "card flipped";
-                frnt.className = frnt.className.replace("front","back");
-                //$('back').className = $('back').className.replace("back","front");
-            },10);
-        }
-        return;
-    }
-    var c1 = " cShow",c2 = " cLeft";
-    switch(dir){
-        case 0: c2 = " cLeft"; break;
-        case 1: c2 = " cRight"; break;
-        case 2: c2 = " cTop"; break;
-        case 3: c2 = " cBottom"; break;
-    }
-    if(dir > -1 && dir < 4){
-        elem.className = elem.className.replace(c1,c2);
-        setTimeout(function(){
-            elem.className = elem.className.replace(c2,c1);
-        },10);
-    }
-};
-</c:if>
 var parseResponse = function (request, container,url) {
     if (request.readyState == 4) {
         var match = url.match(/#([a-zA-Z0-9]+)/);
@@ -632,120 +602,7 @@ var selectDay = function(datestr) {
 var openURL = function(url) {
     window.location = url.replace(/date=......../, "date=" + currentDate);
 };
-<c:if test="${ua.isiPhone or ua.isiPod}">
-var startX,startY,iH=[],xD=0,yD=0,dV=[],dId=0;
-var rSH = function(frm){ //Register swipe handler
-    if(frm){
-        frm.addEventListener('touchstart', function(e) {
-            if (e.targetTouches.length != 1){
-                return false;
-            }
-            var p = e.target;
-            window.evHandled=false;
-            while(p && (!p.className || $iO(p.className,"list-row") < 0)){
-                p = p.parentNode;
-            }
-            if(!p || !p.className || $iO(p.className,"list-row") < 0) {return;}
-            xD=0,yD=0;
-            startX = e.targetTouches[0].clientX;
-            startY = e.targetTouches[0].clientY;
-            frm.addEventListener('touchmove', function(e) {
-                if (e.targetTouches.length != 1){
-                    return false;
-                }
-                var p = e.target;
-                while(p && (!p.className || $iO(p.className,"list-row") < 0)){
-                    p = p.parentNode;
-                }
-                if(!p || !p.className || $iO(p.className,"list-row") < 0) {/*window.evHandled=false;*/return;}
 
-                xD = e.targetTouches[0].clientX - startX;
-                yD = e.targetTouches[0].clientY - startY;
-            }, false);
-            frm.addEventListener('touchend', function(e) {
-                var p = e.target;
-                while(p && (!p.className || $iO(p.className,"list-row") < 0)){
-                    p = p.parentNode;
-                }
-                if(!p || !p.className || $iO(p.className,"list-row") < 0) {/*window.evHandled=false;*/return;}
-                if(Math.abs(xD) > 50 && Math.abs(yD) < 15 ){
-                   var l = p.getElementsByClassName("l");
-                   if(l && l.length > 0){
-                       if(dId && dId != p.id && dV[dId]){
-                            hideDelete(dId);
-                       }
-                       l = l[0];
-                       dId = p.id;
-                       if(!dV[dId]){
-                           showDelete(dId);
-                       }else{
-                           hideDelete(dId);
-                       }
-                       stopEvent(e);
-                       e.returnValue = false;
-                       window.evHandled=true;
-                       frm.removeEventListener('touchmove');
-                       frm.removeEventListener('touchend');
-                   }
-                }
-                xD=0;
-            }, false);
-        }, false);
-
-    }
-};
-var hideDelete = function(id){
-   var p = $(id);
-   if(!p) {return ;}
-   var l = p.getElementsByClassName("l");
-    if(l && l.length > 0 && dV[id]){
-        l = l[0];
-        l.innerHTML = iH[id];
-        p.getElementsByClassName('chk')[0].checked=false;
-        updateChecked(false);
-        $('zForm').anAction[0].value='';
-        dV[id]=false;
-        delete iH[id];
-    }
-};
-var updateChecked = function(disabled,doItAll){
-   var fbbar = $("fbbar");
-   if(!dV[dId] && !fbbar) return;
-   var cCount = 0,cbs=$('zForm').getElementsByClassName('chk');
-   for(var i=0, len = (cbs !== undefined) ? cbs.length : 0; i < len; i++){
-       if(cbs[i].checked){ cCount++;cbs[i].disabled = disabled;}
-   }
-   if(cCount > 0){
-    fbbar.style.display = "table";
-    uFB();
-    $("sc").innerHTML = "<span class='small-gray-text'>"+cCount+"</span>";
-   }else{
-    fbbar.style.display = "none";
-    $("sc").innerHTML = "";
-   }
-   if(doItAll && dV[dId])
-    if(cCount <= 0)
-        hideDelete(dId);
-    else
-        $('delBtn').value = "<fmt:message key="delete"/> ("+cCount+")";
-   return cCount;
-};
-var showDelete = function(id){
-   var p = $(id);
-   if(!p) {return ;}
-   var l = p.getElementsByClassName("l");
-   if(l && l.length > 0 && !dV[id]){
-       l = l[0];
-       iH[id] = l.innerHTML;
-       p.getElementsByClassName('chk')[0].checked=true;
-       var cCount = updateChecked(false);
-       $('zForm').anAction[0].value='';
-       l.innerHTML = "<input type='submit'  id='delBtn' style='z-index:-999' class='zo_button delete_button' name='actionDelete' value='<fmt:message key="delete"/>"+(cCount > 1 ? ' ('+cCount+')' : '')+"'>";
-       $('delBtn').className += " delBtnV";
-       dV[id]=true;
-   }
-};
-</c:if>
 var toggleElem = function(elem, me, minMsg, maxMsg) {
     if (!elem && !$(elem)) {return false;}
     if(typeof(elem) == "string"){elem = $(elem);}
@@ -785,13 +642,7 @@ var checkAll = function(cb, checked) {
         cb.checked = checked;
     <c:if test="${ua.isiPhone or ua.isiPod}">updateChecked(false,true);</c:if>
 };
-<c:if test="${ua.isiPhone or ua.isiPod}">
-var updateOrientation = function() {
-    currentWidth = window.innerWidth;
-    var orient = (currentWidth == 480) ? "landscape" : "portrait";
-    document.body.setAttribute("orient", orient);
-};
-</c:if>
+
 var rqT = function (xhr,msg,status){ // request timeout
    xhr = xhr ? xhr : window._xhr;
    xhr.abort();
@@ -819,20 +670,25 @@ var reqCount = 0;
 var reqTimer = null;
 var lastRendered = new Date().getTime();
 var ajxCache = new AjxCache(CACHE_DATA_LIFE);
+var myScroll = null;
+
 if(window.location.hash){
     sAT(window.location.hash);
 };
-<c:if test="${ua.isiPhone || ua.isiPod}">
-var uFB = function() {var fb = $("fbbar"); if(fb) {var t = window.scrollY;if(t > 88){ t -= 88;}else{t=0;} fb.style['-webkit-transform'] = 'translateY(' + t + 'px)'; }}
-window.onscroll = uFB;
-    window.addEventListener("load", function() {
-        setTimeout(function() {
-            updateOrientation();
-            window.scrollTo(0,1);
-        }, 300);
-    }, false);
-    rSH(document);
-</c:if>
+
+var setHeight = function (){
+    document.getElementById('view').style.height = window.orientation == 90 || window.orientation == -90 ? '608px' : '864px';   
+};
+
+var loaded = function () {
+	setHeight();
+    document.addEventListener('touchmove', function(e){ e.preventDefault(); });
+	myScroll = new iScroll('view-list');
+};
+
+window.addEventListener('orientationchange', setHeight);
+document.addEventListener('DOMContentLoaded', loaded);
+
 <c:if test="${scriptTag}">
 //-->
 </script>

@@ -248,14 +248,15 @@ html, body{
 	height: 100%;
 	overflow: hidden;
 	background: #786448 url("/img/mobile/ipad/brown-pattern.gif") top left;
+    position:relative;	/* needed */
+    z-index:1;			/* needed and important */
+    height: 610px;
 
 }
 
 .listViewPane{
 	float: left;
 	width: 24.9%;
-	height: 80%;
-	overflow-y: scroll;
 	border-right: 1px solid #999;
 	background-color: white;
 
@@ -476,4 +477,25 @@ span.aleft > div:first-child {
 
 .View .list-row .value{
 
+}
+
+
+/** needed for iscroll.js **/
+.scrollbar {
+	position: absolute;
+	z-index: 10;
+	width: 1px;
+	height: 1px;
+	border-width: 3px;
+/*	-webkit-border-image: url(images/scrollbar.png) 3;  */
+}
+
+.scrollbar.horizontal {
+	bottom: 1px;
+	left: 1px;
+}
+
+.scrollbar.vertical {
+	top: 1px;
+	right: 1px;
 }
