@@ -26,6 +26,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<zm:getUserAgent var="ua" session="true"/>
 <c:if test="${! empty message}">
 <%--compute body up front, so attachments refereneced in multipart/related don't show up --%>
 <c:set var="body" value="${message.body}"/>
@@ -50,10 +51,33 @@
 <c:set var="to" value="${message.displayTo}"/>
 <c:set var="cc" value="${message.displayCc}"/>
 <c:set var="sender" value="${message.displaySender}"/>
+<c:if test="${ua.isiPad == true}">
+<fmt:message var="noSubject" key="noSubject"/><hr size="1"/>
+<div class="header">
+<div class="alignLeft subject">${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
+    <c:if test="${message.isFlagged}"><span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
+    <c:if test="${message.hasTags and mailbox.features.tagging}">
+     <span class="mo_taglist"><c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
+        <c:forEach items="${tags}" var="tag"><span class="SmlIcnHldr Tag${tag.color}">&nbsp;</span><span>${fn:escapeXml(tag.name)}</span></c:forEach>
+    </span>
+    </c:if>
+</div>
+
+<div class='alignLeft time'>
+    <fmt:message var="dateFmt" key="formatDateSent"/>
+    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" value="${message.sentDate}" pattern="yyyyMMdd" var="caldt"/>
+    <a <c:if test="${mailbox.features.calendar}">href="?st=cal&amp;view=month&amp;date=${caldt}" </c:if>><fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></a>
+</div>
+
+</div>
+
+</c:if>
+<div class="msgBody">
 <div class="View"><c:if test="${not empty from}"><span class='label left'><fmt:message key="fromLabel"/></span>
     <span class="right" id="d_btn_td" <c:if test="${empty param.ajax}">style="display:none;"</c:if>><a id='d_btn' onclick="return toggleElem('d_div',this,'<fmt:message key="hide"/>','<fmt:message key="details"/>')"><fmt:message key="details"/></a></span>
     <span class=""><span id="d_from">${fn:escapeXml(from)}</span>
 </span></c:if></div>
+
 <div id="d_div" style="display:${empty param.ajax ? 'block' : 'none'};" >
     <c:if test="${not empty sender}">
     <div class="View">
@@ -76,6 +100,8 @@
         <span class="SmlIcnHldr Forward">&nbsp;</span>
         <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="?st=newmail&id=${message.id}&amp;op=forward" class="Action forward"><fmt:message key="forward"/></a>
     </div></div></div>
+
+<c:if test="${ua.isiPad == false}">
 <fmt:message var="noSubject" key="noSubject"/><hr size="1"/>
 <div class="zo_unread"><b>${fn:escapeXml(empty message.subject ? noSubject : message.subject)}</b>
     <c:if test="${message.isFlagged}"><span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
@@ -91,6 +117,7 @@
     <a <c:if test="${mailbox.features.calendar}">href="?st=cal&amp;view=month&amp;date=${caldt}" </c:if>><fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></a>
 </div>
 <hr size="1"/>
+</c:if>
 <c:if test="${not hideops}"><c:if test="${showInviteReply}"><div class="tbl"><div class="tr"><div class="td">
             <span class="SmlIcnHldr Check">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="?st=newmail&id=${message.id}&amp;op=accept" class="Action accept"><fmt:message key="replyAccept"/></a> &nbsp;
@@ -113,5 +140,9 @@
     </c:if>
 </div>
 </div>
-<c:if test="${not empty message.attachments}"><div class="View"><a name="attachments${message.partName}"></a><mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/></div></c:if>
+
+
+<c:if test="${not empty message.attachments}"><div class="View attachments"><a name="attachments${message.partName}"></a><mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/></div></c:if>
 <c:if test="${not empty param.debug}"><div><pre>${fn:escapeXml(message)}</pre></div></c:if></c:if>
+
+</div>

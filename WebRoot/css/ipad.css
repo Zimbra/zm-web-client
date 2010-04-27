@@ -1,7 +1,7 @@
 /* CSS document for iPad */
 
 /* Browser reset */
-html,body,p,div,table,ul,li{
+html,body,p,div,table,ul,li,form{
 
 	margin: 0;
 	padding: 0;
@@ -60,7 +60,6 @@ html, body{
 		height: 20px;
 		float: left;
 		margin: 10px 0 0 10px;
-
 }
 
 
@@ -76,7 +75,6 @@ html, body{
 		padding: 2px 4px;
 		width: 200px;
 }
-
 
 
 .signout{
@@ -248,15 +246,16 @@ html, body{
 	height: 100%;
 	overflow: hidden;
 	background: #786448 url("/img/mobile/ipad/brown-pattern.gif") top left;
-    position:relative;	/* needed */
+	position:relative;	/* needed */
     z-index:1;			/* needed and important */
     height: 610px;
-
 }
 
 .listViewPane{
 	float: left;
 	width: 24.9%;
+	height: 80%;
+	overflow-y: scroll;
 	border-right: 1px solid #999;
 	background-color: white;
 
@@ -316,10 +315,17 @@ ul.list li{
 	text-align: right;
 }
 
+	.time a {
+		text-decoration: none;
+		color: white;
+		text-align: right;
+	}
+	
+	
 .msgBody{
 	background-color: white;
 	-webkit-border-radius: 12px;
-	height: 85%;
+	height: 600px;
 	margin: 5px 10px 10px 10px ;
 	padding: 10px;
 	overflow-y: auto;
@@ -362,7 +368,7 @@ ul.list li{
 
 .list-row, .list-row-unread{
     padding: 3px;
-    border-bottom: 1px solid #ede8db;
+    /* border-bottom: 1px solid #ede8db; */
     background-color: white;
 } 
 
@@ -424,9 +430,13 @@ ul.list li{
 	vertical-align: top;
     text-align:left;
     font-size: 12px;
-
 }
 
+	.m a{
+		text-decoration: none;
+		color: black;
+	}
+	
 .msg-list-in-conv {
 }
 
@@ -464,19 +474,28 @@ span.aleft > div:first-child {
 }
 
 .View div, .View .list-row {
-    padding: 8px;
-    border-bottom: 1px solid #ede8db;
-	font-size: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+    /* border-bottom: 1px solid #ede8db; */
+	font-size: 16px;
 } 
 
 .View .list-row .label, .View div .label{
 	float: left;
-	width: 70px;
+	width: 120px;
 	text-tranform: capitalize;
+	color: #666;
 }
 
-.View .list-row .value{
+.value a{
+ 	text-decoration: none;
+ 	font-weight: bold;
+ 	color: black;
+}
 
+.attachments div{
+	padding: 4px;
+    margin-bottom: 2px;
 }
 
 
