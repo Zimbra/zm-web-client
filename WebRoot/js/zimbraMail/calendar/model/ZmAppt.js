@@ -329,11 +329,11 @@ function(isHtml) {
 		buf[i++] = "<p>\n<table border='0'>\n";
 	}
 
-	// bug fix #29249 - check if location *label* has changed
 	var locationLabel = this.getLocation();
 	var origLocationLabel = orig ? orig.getLocation() : "";
-	if (locationLabel != origLocationLabel || this.isForwardMode) {
-		params = [ZmMsg.locationLabel, locationLabel, (isEdit && !this.isForwardMode) ? ZmMsg.apptModifiedStamp : ""];
+    var emptyLocation = (locationLabel == origLocationLabel && origLocationLabel == "");
+    if (!emptyLocation || this.isForwardMode) {
+		params = [ZmMsg.locationLabel, locationLabel, (isEdit && locationLabel != origLocationLabel && !this.isForwardMode ) ? ZmMsg.apptModifiedStamp : ""];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
