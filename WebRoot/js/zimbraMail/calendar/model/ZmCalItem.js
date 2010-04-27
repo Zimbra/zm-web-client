@@ -902,6 +902,7 @@ function(message, viewMode) {
 		this.sentBy = message.invite.getSentBy();
 		this.name = message.invite.getName();
 		this.isException = message.invite.isException();
+        this.recurring =  message.invite.isRecurring();
 		this._setTimeFromMessage(message, viewMode);
 		this._setExtrasFromMessage(message);
 		this._setRecurrence(message);
