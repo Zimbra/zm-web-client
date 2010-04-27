@@ -390,6 +390,8 @@ function(displayShares, organizer) {
 				nameText = ZmMsg.shareWithAll;
 			} else if (share.isPublic()) {
 				nameText = ZmMsg.shareWithPublic;
+			} else if (share.isGuest()){
+                nameText = nameText || (share.grantee && share.grantee.id);
 			}
 			nameEl.innerHTML = AjxStringUtil.htmlEncode(nameText);
 
