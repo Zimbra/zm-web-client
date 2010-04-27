@@ -626,6 +626,7 @@ function(item) {
 		}
 	}
 	this._msgRowIdList[item.id] = [];	// start over
+	this._expanded[item.id] = false;
 	return false;
 };
 
