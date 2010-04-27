@@ -1512,10 +1512,10 @@ function(addr, allowLocal) {
 		return true;
 	}
 
-	var aliases = this.get(ZmSetting.MAIL_ALIASES);
-	if (aliases && aliases.length) {
-		for (var i = 0; i < aliases.length; i++) {
-			if (addr == aliases[i])
+	var allAddresses = appCtxt.get(ZmSetting.MAIL_ALIASES).concat(appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES));
+	if (allAddresses && allAddresses.length) {
+		for (var i = 0; i < allAddresses.length; i++) {
+			if (addr == allAddresses[i])
 				return true;
 		}
 	}
