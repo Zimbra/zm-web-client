@@ -945,6 +945,16 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 		}
 	}
 
+    if(!this.identity) {
+        var ac = window.parentAppCtxt || window.appCtxt;        
+        var collection = ac.getIdentityCollection();
+        this.identity = collection.defaultIdentity;
+    }
+
+    if (this.identity) {
+        request.idnt = this.identity.id;
+    }
+
 	var replyActionMap = {};
 	replyActionMap[ZmOperation.REPLY_ACCEPT_NOTIFY]		= ZmOperation.REPLY_ACCEPT;
 	replyActionMap[ZmOperation.REPLY_ACCEPT_IGNORE]		= ZmOperation.REPLY_ACCEPT;
