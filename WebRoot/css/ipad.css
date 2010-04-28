@@ -243,7 +243,6 @@ html, body{
 
 .view{
 	width: 100%;
-	height: 100%;
 	overflow: hidden;
 	background: #786448 url("/img/mobile/ipad/brown-pattern.gif") top left;
 	position:relative;	/* needed */
@@ -254,11 +253,8 @@ html, body{
 .listViewPane{
 	float: left;
 	width: 24.9%;
-	height: 80%;
-	overflow-y: scroll;
 	border-right: 1px solid #999;
 	background-color: white;
-
 }
 
 
