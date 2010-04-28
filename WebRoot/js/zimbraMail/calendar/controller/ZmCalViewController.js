@@ -59,6 +59,7 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.EDIT_REPLY_ACCEPT] = apptEditListener;
 	this._listeners[ZmOperation.EDIT_REPLY_DECLINE] = apptEditListener;
 	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = apptEditListener;
+	this._listeners[ZmOperation.VIEW_APPT_DATA] = new AjxListener(this, this._apptDataListener);
 	this._listeners[ZmOperation.VIEW_APPOINTMENT] = new AjxListener(this, this._handleMenuViewAction);
 	this._listeners[ZmOperation.OPEN_APPT_INSTANCE] = new AjxListener(this, this._handleMenuViewAction);
 	this._listeners[ZmOperation.OPEN_APPT_SERIES] = new AjxListener(this, this._handleMenuViewAction);
@@ -2485,7 +2486,8 @@ function(recurrenceMode) {
 		ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE, ZmOperation.INVITE_REPLY_MENU,
 		ZmOperation.SEP,
 		forwardOp,
-		deleteOp, ZmOperation.MOVE, ZmOperation.TAG_MENU
+		deleteOp, ZmOperation.MOVE, ZmOperation.TAG_MENU,
+		ZmOperation.VIEW_APPT_DATA
 	];
 };
 
@@ -3076,4 +3078,27 @@ function(folderId) {
 ZmCalViewController.prototype._checkItemCount =
 function() {
 	// No-op since this view doesn't do virtual paging.
+};
+
+
+ZmCalViewController.prototype._apptDataListener =
+function(ev) {
+	var actionMenu = this.getActionMenu();
+	var appt = actionMenu && actionMenu.__appt;
+	if (appt)
+		this._showApptDetailsDialog(appt);
+};
+
+
+ZmCalViewController.prototype._showApptDetailsDialog =
+function(appt) {
+	var restUrl = appt.getRestUrl();
+	var data = {
+		icsUrl: [restUrl, (restUrl.indexOf("?")==-1) ? "?":"&", "fmt=ics"].join("")
+	};
+	var msg = AjxTemplate.expand("calendar.Appointment#ApptDetailsDialog", data);
+	
+	var msgDialog = appCtxt.getMsgDialog();
+	msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
+	msgDialog.popup();
 };

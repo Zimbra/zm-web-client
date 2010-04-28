@@ -464,3 +464,21 @@ function() {
     }
     return false;
 };
+
+ZmCalBaseItem.prototype.getRestUrl =
+function() {
+	// return REST URL as seen by server
+	if (this.restUrl) {
+		return this.restUrl;
+	}
+
+	// if server doesn't tell us what URL to use, do our best to generate
+	var organizer = appCtxt.getById(this.folderId);
+	var url = organizer
+		? ([organizer.getRestUrl(), "/?id=", AjxStringUtil.urlComponentEncode(this.id)].join(""))
+		: null;
+
+	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
+
+	return url;
+};
