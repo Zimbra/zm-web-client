@@ -541,7 +541,7 @@
 				var value = attrs[name];
 				if (!value) continue;
 				if (!itemdata.address) itemdata.address = {};
-				itemdata.address[suffix] = value;
+				itemdata.address[suffix] = value.replace(/\n/g,"<br/>");
 			}
 			if (!itemdata.address) break;
 			itemdata.name = [prefix,"Address",count>1?count:""].join("");
