@@ -1665,6 +1665,7 @@ function(msgNode) {
 	if (msgNode.origid) { this.origId = msgNode.origid; }
 	if (msgNode.hp) 	{ this._attHitList = msgNode.hp; }
 	if (msgNode.mid)	{ this.messageId = msgNode.mid; }
+	if (msgNode.irt)	{ this.irtMessageId = msgNode.irt; }
 	if (msgNode._attrs) { this.attrs = msgNode._attrs; }
 	if (msgNode.sf) 	{ this.sf = msgNode.sf; }
 	if (msgNode.cif) 	{ this.cif = msgNode.cif; }

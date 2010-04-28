@@ -672,7 +672,7 @@ function(attId, isDraft, dummyMsg) {
 		msg.acceptFolderId = this._acceptFolderId;
 		var inviteMode = ZmComposeView.NOTIFY_ACTION_MAP[this._action] ? ZmComposeView.NOTIFY_ACTION_MAP[this._action] : this._action;
 		msg.inviteMode = isInviteReply ? inviteMode : null;
-		msg.irtMessageId = this._msg.messageId;
+		msg.irtMessageId = this._msg.irtMessageId || this._msg.messageId;
 		msg.folderId = this._msg.folderId;
 	}
 
