@@ -40,6 +40,7 @@ ZmTaskListController = function(container, app) {
 	this._listeners[ZmOperation.PRINT_TASK] = new AjxListener(this, this._printTaskListener);
 	this._listeners[ZmOperation.PRINT_TASKFOLDER] = new AjxListener(this, this._printTaskFolderListener);
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._syncAllListener);
+	this._listeners[ZmOperation.VIEW_TASK_DATA] = new AjxListener(this, this._taskDataListener);
 
 	this._currentTaskView = ZmId.VIEW_TASK_ALL;
 };
@@ -426,7 +427,8 @@ function() {
 		ZmOperation.TAG_MENU,
 		ZmOperation.DELETE,
 		ZmOperation.MOVE,
-		ZmOperation.PRINT_TASK
+		ZmOperation.PRINT_TASK,
+		ZmOperation.VIEW_TASK_DATA
 	];
 };
 
@@ -463,6 +465,8 @@ function(parent, num) {
 
 	parent.enable(ZmOperation.VIEW_MENU, true);
 	parent.enable(ZmOperation.TEXT, true);
+
+	parent.enable(ZmOperation.VIEW_TASK_DATA, num == 1);
 };
 
 ZmTaskListController.prototype._doDelete =
@@ -673,4 +677,24 @@ function(folder) {
 	this._doMove(this._pendingActionData, folder);
 	this._clearDialog(appCtxt.getChooseFolderDialog());
 	this._pendingActionData = null;
+};
+
+ZmTaskListController.prototype._taskDataListener =
+function(ev) {
+	var tasks = this._listView[this._currentView].getSelection();
+	if (tasks && tasks.length > 0)
+		this._showTaskDetailsDialog(tasks[0]);
+};
+
+ZmTaskListController.prototype._showTaskDetailsDialog =
+function(task) {
+	var restUrl = task.getRestUrl();
+	var data = {
+		icsUrl: [restUrl, (restUrl.indexOf("?")==-1) ? "?":"&", "fmt=ics"].join("")
+	};
+	var msg = AjxTemplate.expand("tasks.Task#TaskDetailsDialog", data);
+	
+	var msgDialog = appCtxt.getMsgDialog();
+	msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
+	msgDialog.popup();
 };
