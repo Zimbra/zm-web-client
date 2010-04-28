@@ -74,10 +74,6 @@ ZmAutocompleteListView = function(params) {
 	this._dataLoader = params.dataLoader;
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
-	this._delims = params.delims || ZmAutocompleteListView.DELIMS;
-	this._delimCodes = params.delimCodes || ZmAutocompleteListView.DELIM_CODES;
-	this._isDelim = AjxUtil.arrayAsHash(this._delims);
-	this._isDelimCode = AjxUtil.arrayAsHash(this._delimCodes);
 	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
 	this._compCallback = params.compCallback;
 	this._keyDownCallback = params.keyDownCallback;
@@ -85,6 +81,14 @@ ZmAutocompleteListView = function(params) {
 	this._keyUpCallback = params.keyUpCallback;
 	this._enterCallback = params.enterCallback;
     this._options = params.options;
+
+	this._isDelim = AjxUtil.arrayAsHash(params.delims || ZmAutocompleteListView.DELIMS);
+	this._isDelimCode = AjxUtil.arrayAsHash(params.delimCodes || ZmAutocompleteListView.DELIM_CODES);
+	if (!params.delims && !params.delimCodes) {
+		this._isDelim[','] = this._isDelimCode[188] = appCtxt.get(ZmSetting.AUTOCOMPLETE_ON_COMMA); 
+		var listener = new AjxListener(this, this._settingChangeListener);
+		appCtxt.getSettings().getSetting(ZmSetting.AUTOCOMPLETE_ON_COMMA).addChangeListener(listener);
+	}
 
     // mouse event handling
 	this._setMouseEventHdlrs();
@@ -114,8 +118,8 @@ ZmAutocompleteListView.prototype = new DwtComposite;
 ZmAutocompleteListView.prototype.constructor = ZmAutocompleteListView;
 
 // map of characters that are completion characters
-ZmAutocompleteListView.DELIMS		= [';', '\n', '\r', '\t'];	// used when list is not showing
-ZmAutocompleteListView.DELIM_CODES	= [59, 186, 3, 13, 9];		// used when list is showing
+ZmAutocompleteListView.DELIMS		= [',', ';', '\n', '\r', '\t'];	// used when list is not showing
+ZmAutocompleteListView.DELIM_CODES	= [188, 59, 186, 3, 13, 9];		// used when list is showing
 
 ZmAutocompleteListView.WAIT_ID = "wait";
 
@@ -954,5 +958,13 @@ function() {
 	if (!this.size()) {
 		// hide if "waiting" row was only one
 		this.show(false);
+	}
+};
+
+ZmAutocompleteListView.prototype._settingChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) { return; }
+	if (ev.source.id == ZmSetting.AUTOCOMPLETE_ON_COMMA) {
+		this._isDelim[','] = this._isDelimCode[188] = appCtxt.get(ZmSetting.AUTOCOMPLETE_ON_COMMA);
 	}
 };
