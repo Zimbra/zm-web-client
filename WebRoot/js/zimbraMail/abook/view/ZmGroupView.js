@@ -905,6 +905,16 @@ function(clickedEl, ev) {
 	DwtListView.prototype._itemClicked.call(this, clickedEl, ev);
 };
 
+ZmGroupListView.prototype._mouseDownAction =
+function(ev, div) {
+	return !Dwt.ffScrollbarCheck(ev);
+};
+
+ZmGroupListView.prototype._mouseUpAction =
+function(ev, div) {
+	return !Dwt.ffScrollbarCheck(ev);
+};
+
 
 /**
  * Creates a group members list view
