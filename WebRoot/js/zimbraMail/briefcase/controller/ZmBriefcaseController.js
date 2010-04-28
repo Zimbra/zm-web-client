@@ -739,7 +739,8 @@ function(view, firstTime) {
 			menu = new ZmPopupMenu(btn);
 			btn.setMenu(menu);
 			for (var i = 0; i < ZmBriefcaseController.GROUP_BY_VIEWS.length; i++) {
-				var id = ZmBriefcaseController.GROUP_BY_VIEWS[i];                
+				var id = ZmBriefcaseController.GROUP_BY_VIEWS[i];
+                if(id == ZmId.VIEW_BRIEFCASE_PREVIEW && !appCtxt.get(ZmSetting.PREVIEW_ENABLED)) continue;
 				var mi = menu.createMenuItem(id, {image:ZmBriefcaseController.GROUP_BY_ICON[id],
 												  text:ZmMsg[ZmBriefcaseController.GROUP_BY_MSG_KEY[id]],
 												  style:DwtMenuItem.RADIO_STYLE});
