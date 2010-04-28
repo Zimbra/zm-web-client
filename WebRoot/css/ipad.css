@@ -326,13 +326,13 @@ ul.list li{
 	padding: 10px;
 	overflow-y: auto;
 	word-break: break-all;
-	-webkit-appearance: scrollbarthumb-vertical;
+	-webkit-box-shadow: 3px 2px 5px #666;
 }
 
 .address{
-	color: #88847a;
+	color: #7C6E4E;
 	letter-spacing: 1px;
-	border-bottom: 1px solid #e4dcc6;
+	border-bottom: 1px solid #F1EEE6;
 	padding: 6px;
 }
 
@@ -503,6 +503,7 @@ span.aleft > div:first-child {
 	height: 1px;
 	border-width: 3px;
 /*	-webkit-border-image: url(images/scrollbar.png) 3;  */
+
 }
 
 .scrollbar.horizontal {
