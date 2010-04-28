@@ -840,6 +840,10 @@ and the container element is replaced with that control.
 								<td class='ZOptionsLabel'>&nbsp;</td>
 								<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_ON_COMMA' tabindex='80'></div></td>
 							</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_NO_GROUP_MATCH' tabindex='90'></div></td>
+						</tr>
 						<$ } $>
 					</table>
 				</td>

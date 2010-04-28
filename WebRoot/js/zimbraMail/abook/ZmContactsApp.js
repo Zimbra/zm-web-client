@@ -111,6 +111,7 @@ function(settings) {
 	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("AUTO_ADD_ADDRESS",				{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
 	settings.registerSetting("AUTOCOMPLETE_LIMIT",				{name: "zimbraContactAutoCompleteMaxResults", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:20});
+	settings.registerSetting("AUTOCOMPLETE_NO_GROUP_MATCH",		{name: "zimbraPrefContactsDisableAutocompleteOnContactGroupMembers", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("AUTOCOMPLETE_ON_COMMA",			{name: "zimbraPrefAutoCompleteQuickCompletionOnComma", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("AUTOCOMPLETE_SHARE",				{name: "zimbraPrefShareContactsInAutoComplete", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("AUTOCOMPLETE_SHARED_ADDR_BOOKS",	{name: "zimbraPrefSharedAddrBookAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
@@ -135,6 +136,7 @@ function() {
 			precondition: ZmSetting.CONTACTS_ENABLED,
 			prefs: [
 				ZmSetting.AUTO_ADD_ADDRESS,
+				ZmSetting.AUTOCOMPLETE_NO_GROUP_MATCH,
 				ZmSetting.AUTOCOMPLETE_ON_COMMA,
 				ZmSetting.AUTOCOMPLETE_SHARE,
 				ZmSetting.AUTOCOMPLETE_SHARED_ADDR_BOOKS,
@@ -151,6 +153,11 @@ function() {
 
 	ZmPref.registerPref("AUTO_ADD_ADDRESS", {
 		displayName:		ZmMsg.autoAddContacts,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("AUTOCOMPLETE_NO_GROUP_MATCH", {
+		displayName:		ZmMsg.autocompleteNoGroupMatch,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 

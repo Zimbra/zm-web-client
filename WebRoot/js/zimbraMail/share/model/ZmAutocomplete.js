@@ -32,9 +32,13 @@ ZmAutocomplete = function() {
 
 	this._acRequests = {};		// request mgmt (timeout, cancel)
 
-	var galSetting = appCtxt.getSettings().getSetting(ZmSetting.GAL_AUTOCOMPLETE);
-	if (galSetting) { // AddrBook might be disabled
-		galSetting.addChangeListener(new AjxListener(this, this._settingChangeListener));
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var listener = new AjxListener(this, this._settingChangeListener);
+		var settings = [ZmSetting.GAL_AUTOCOMPLETE, ZmSetting.AUTOCOMPLETE_SHARE,
+						ZmSetting.AUTOCOMPLETE_SHARED_ADDR_BOOKS, ZmSetting.AUTOCOMPLETE_NO_GROUP_MATCH];
+		for (var i = 0; i < settings.length; i++) {
+			appCtxt.getSettings().getSetting(settings[i]).addChangeListener(listener);
+		}
 	}
 };
 
@@ -61,7 +65,7 @@ ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_GAL]		= "GALContact";
 ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_GROUP]	= "Group";
 
 // cache control
-ZmAutocomplete.GAL_RESULTS_TTL		= 900000;	// time-to-live for cached GAL autocomplete results
+ZmAutocomplete.GAL_RESULTS_TTL		= 900000;	// time-to-live for cached GAL autocomplete results (msec)
 
 /**
  * Returns a string representation of the object.
@@ -393,15 +397,15 @@ function(str, acType, checkCacheable, account) {
 };
 
 /**
+ * Clears contact autocomplete cache on change to any related setting.
+ *
  * @private
  */
 ZmAutocomplete.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
-	if (ev.source.id == ZmSetting.GAL_AUTOCOMPLETE) {
-		var context = AjxEnv.isIE ? window.appCtxt : window.parentAppCtxt || window.appCtxt;
-		context.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
-	}
+	var context = AjxEnv.isIE ? window.appCtxt : window.parentAppCtxt || window.appCtxt;
+	context.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
 };
 
 
