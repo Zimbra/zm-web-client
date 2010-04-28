@@ -31,7 +31,6 @@
 ZmAutocomplete = function() {
 
 	this._acRequests = {};		// request mgmt (timeout, cancel)
-	this._acCache = {};			// results cache, grouped by account > type
 
 	var galSetting = appCtxt.getSettings().getSetting(ZmSetting.GAL_AUTOCOMPLETE);
 	if (galSetting) { // AddrBook might be disabled
@@ -279,6 +278,20 @@ function(str) {
 };
 
 /**
+ * @param acType		[constant]			type of result to match
+ * @param str			[string]			string to match against
+ * @param account		[ZmZimbraAccount]*	account to check cache against
+ * @param create		[boolean]			if <code>true</code>, create a cache if none found
+ *
+ * @private
+ */
+ZmAutocomplete.prototype._getCache =
+function(acType, str, account, create) {
+	var context = AjxEnv.isIE ? window.appCtxt : window.parentAppCtxt || window.appCtxt;
+	return context.getAutocompleteCache(acType, str, account, create);
+};
+
+/**
  * @param str			[string]			string to match against
  * @param acType		[constant]			type of result to match
  * @param list			[array]				list of matches
@@ -292,8 +305,7 @@ function(str) {
 ZmAutocomplete.prototype._cacheResults =
 function(str, acType, list, hasGal, cacheable, baseCache, account) {
 
-	var context = AjxEnv.isIE ? window.appCtxt : window.parentAppCtxt || window.appCtxt;
-	var cache = context.getAutocompleteCache(account, acType, str, true);
+	var cache = this._getCache(acType, str, account, true);
 	cache.list = list;
 	// we always cache; flag below indicates whether we can do forward matching
 	cache.cacheable = (baseCache && baseCache.cacheable) || cacheable;
@@ -364,8 +376,7 @@ function(str, acType, account) {
 ZmAutocomplete.prototype._getCachedResults =
 function(str, acType, checkCacheable, account) {
 
-	var context = AjxEnv.isIE ? window.appCtxt : window.parentAppCtxt || window.appCtxt;
-	var cache = context.getAutocompleteCache(account, acType, str);
+	var cache = this._getCache(acType, str, account);
 	if (cache) {
 		if (checkCacheable && (cache.cacheable === false)) { return null; }
 		if (cache.ts) {
@@ -388,9 +399,8 @@ ZmAutocomplete.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
 	if (ev.source.id == ZmSetting.GAL_AUTOCOMPLETE) {
-		for (var i in this._acCache) {
-			this._acCache[i][ZmAutocomplete.AC_TYPE_CONTACT] = {};
-		}
+		var context = AjxEnv.isIE ? window.appCtxt : window.parentAppCtxt || window.appCtxt;
+		context.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
 	}
 };
 

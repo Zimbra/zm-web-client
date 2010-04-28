@@ -1546,13 +1546,13 @@ function(parts, account) {
 /**
  * Gets the autocomplete cache for the given parameters, optionally creating one.
  *
- * @param	{ZmAccount}	account		the account
  * @param	{String}	acType		the item type
  * @param	{String}	str			the autocomplete string
+ * @param	{ZmAccount}	account		the account
  * @param	{Boolean}	create		if <code>true</code>, create a cache if none found
  */
 ZmAppCtxt.prototype.getAutocompleteCache =
-function(account, acType, str, create) {
+function(acType, str, account, create) {
 
 	var cache = null;
 	var acct = account || this.getActiveAccount();
