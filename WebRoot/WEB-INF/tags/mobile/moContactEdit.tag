@@ -26,6 +26,7 @@
 <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
+    <zm:getUserAgent var="ua" session="true"/>
     <c:choose>
         <c:when test="${not empty mailbox.prefs.locale}">
             <fmt:setLocale value='${mailbox.prefs.locale}' scope='request'/>
@@ -53,6 +54,7 @@
         <c:param name="id" value="${param.pid}"/>
     </c:if>
 </c:url>
+
 <c:if test="${!fn:containsIgnoreCase(caction, '_back=1')}">
 <c:url value="${caction}" var="caction">
     <c:param name="_back" value="1"/>
@@ -64,7 +66,14 @@
 <div class="tb tbl">
     <div class="tr">
         <span class='zo_tb_submit td'>
-            <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
+                <c:choose>
+                    <c:when test="${ua.isiPad == false}">
+                        <a id="cancel" href="${caction}"><fmt:message key="cancel"/></a>
+                    </c:when>
+                    <c:otherwise>
+                        <a id="cancel" href="${caction}"><span onclick="return zClickLink('cancel')"><fmt:message key="cancel"/></span></a>
+                    </c:otherwise>
+                </c:choose>
                 <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
         </span>
     </div>
@@ -164,6 +173,7 @@
     </div>
 </div>
 
+<c:if test="${ua.isiPad == false}">
 <div class="tb tbl">
     <div class="tr">
         <span class='zo_tb_submit td'>
@@ -171,5 +181,7 @@
         </span>
     </div>
 </div>
+</c:if> 
 <input type="hidden" name="id" value="${fn:escapeXml(contact.id)}"/> 
 </form>
+                                    

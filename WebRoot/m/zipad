@@ -159,7 +159,22 @@
         respText = respText.replaceAll("[\t ]+"," ").replaceAll("\n\\s*\n","\n");
         pageContext.setAttribute("response",respText);
     %>
-
+ <script type="text/javascript"><c:set var="js">
+//This code runs from the ajax response
+var nojs = false;
+if(window != parent){
+    var d = document.getElementById('statusdiv');
+    var msg = (d) ? d.innerHTML : null;
+    if (msg != null) {
+        parent.showLoadingMsg(null, false);
+        if(d.className && d.className.indexOf("Status") > -1){
+            parent.lfr(self.GC().innerHTML,self.frameElement.id);nojs = true;
+        }else{
+            nojs = true;
+        }
+    }
+}
+</c:set>${dbg ? js : zm:yuiCompress(js, 'js')}</script>
 <c:if test="${param.ajax}">
     ${response}                
 </c:if>
@@ -235,6 +250,10 @@
 </c:if>
 
 <c:if test="${empty param.ajax}">
+    <c:if test="${empty param.noframe || empty param.isiniframe}">
+    <script type="text/javascript">
+        if (XHR !==undefined && XHR(true)) {if(!nojs && (window == parent)){registerOnclickHook();}}
+    </script></c:if>
 </body>
 
 </html></c:if>

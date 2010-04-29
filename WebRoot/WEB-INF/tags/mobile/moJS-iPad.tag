@@ -271,9 +271,9 @@ var AC = function(f,c){ //Register auto complete on field f and populate contain
         f.addEventListener("keydown", function(e){if (!e) e = event ? event : window.event;var k = e.keyCode?  e.keyCode : e.which; if((k==13 || k == 38 || k==40) && c.style.display=="block"){ window.acon = true;stopEvent(e);return false;}},true);
     }
 };
-var zClickLink = function(id, t) { //Click on href and make ajx req if available
+var zClickLink = function(id, t, el) { //Click on href and make ajx req if available
     if((window.evHandled) !== undefined && window.evHandled) { return false; }
-    var targ = id ? $(id) : t ;
+    var targ = el ? el.parentNode : (id ? $(id) : t );
     if(!targ) {return false;}
     if (targ.onclick) {var r=false;<c:if test="${!ua.isIE && !ua.isOpera}">r = targ.onclick();</c:if> if(!r)return false;}
     var href = targ.href;
@@ -522,8 +522,8 @@ var parseResponse = function (request, container,url) {
                     slideElem(container,1);
                 }</c:if>
                 <c:if test="${!ua.isIE}">window.scrollTo(0,1);</c:if>
-                if(url.indexOf('action=view') != -1) {
-                    $("view-content").innerHTML = data;
+                if(url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('st=newmail') != -1) {
+                    $("view-content").innerHTML = data;                    
                 } else {
                     $("view-list").innerHTML = data;
                 }

@@ -58,17 +58,28 @@
                            name="id" value="${chit.id}"/></c:if>
             <span class="SmlIcnHldr ${class}">&nbsp;</span>
             </span>
-            <span class="td m" onclick='return zClickLink("a${chit.id}");'>
+            <span class="td m">
+            <span onclick='return zClickLink("a${chit.id}");'>
             <a id="a${chit.id}" href="${contactUrl}">
                 <div>
                     <strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? (context.isGALSearch ? chit.fullName : '<None>') : chit.fileAsStr),23, true)}</strong>
                 </div>
             </a>
-                <div class="Email">
-                    <c:set var="nmail" value="st=newmail"/>
-                    <c:url var="murl" value="?${nmail}&to=${chit.email}"/>
-                    <a href="${fn:escapeXml(murl)}">${fn:escapeXml(chit.email)}</a>
-                </div>
+            </span>
+            <div class="Email">
+                <c:set var="nmail" value="st=newmail"/>
+                <c:url var="murl" value="?${nmail}">
+                    <c:param name="to" value="${chit.email}"/>
+                </c:url>
+                <c:choose>
+                    <c:when test="${ua.isiPad == false}">
+                        <a href="${fn:escapeXml(murl)}">${fn:escapeXml(chit.email)}</a>
+                    </c:when>
+                    <c:otherwise>
+                        <a id="newmail" href="${fn:escapeXml(murl)}"><span onclick="return zClickLink('newmail', null, this)">${fn:escapeXml(chit.email)}</span></a>
+                    </c:otherwise>
+                </c:choose>
+            </div>
             </span>
             <span class="td l">
                 <c:if test="${chit.isFlagged}">

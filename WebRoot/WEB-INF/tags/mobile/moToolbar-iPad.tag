@@ -51,10 +51,10 @@
                    <c:param name="pid" value="${contact.id}"/>
                    <c:param name="folderid" value="${context.folder.id}"/>
                 </c:url>
-                <div class ="compose button"><a accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}"><span><fmt:message key="add"/></span></a></div>
+                <div class ="compose button"><a id="add" accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}"><span onclick="return zClickLink('add')"><fmt:message key="add"/></span></a></div>
                 <div class ="actions">
                     <div class ="right button">
-                        <a accesskey="${requestScope.mainaction_accesskey}" href="${editUrl}"><fmt:message key="edit"/></a>
+                        <a id="edit" accesskey="${requestScope.mainaction_accesskey}" href="${editUrl}"><span onclick="return zClickLink('edit')"><fmt:message key="edit"/></span></a>
                     </div>
                  </div>
             </c:when>

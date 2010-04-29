@@ -25,7 +25,10 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <zm:currentResultUrl var="closeUrl" value="${urlTarget}" context="${context}"/>
-<c:if test="${isTop}"><div class="stb tbl"><div class="tr"><div class="td">
+<mo:handleError>
+<zm:getUserAgent var="ua" session="true"/>
+</mo:handleError>
+<c:if test="${isTop and isiPad==false}"><div class="stb tbl"><div class="tr"><div class="td">
     <c:url value="${closeUrl}" var="backUrl"><c:param name="_pv" value="1"/></c:url>
     <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message key="addressBooks"/></a> &laquo;
     <a href="${fn:escapeXml(backUrl)}<c:if test="${empty context.sfi}">&sfi=${contact.folderId}</c:if>${empty param.ajax ? '#cn' : '&cn'}${contact.id}" class='zo_leftbutton'>${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}</a> &laquo;
@@ -38,8 +41,23 @@
     <c:param name="pid" value="${contact.id}"/>
     <c:param name="_ajxnoca" value="1"/>
 </c:url>
-<zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
-    <span class="zo_button_group">
+<c:choose>
+    <c:when test="${ua.isiPad == true}">
+        <c:url var="addUrl" value="${closeUrl}">
+            <c:param name="action" value="edit"/>
+            <c:param name="pid" value="${contact.id}"/>
+            <c:param name="folderid" value="${context.folder.id}"/>
+        </c:url>
+        <div class ="compose button"><a id="add" accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}"><span onclick="return zClickLink('add')"><fmt:message key="add"/></span></a></div>
+        <div class ="actions">
+            <div class ="right button">
+            <a id="edit" accesskey="${requestScope.mainaction_accesskey}" href="${editUrl}"><span onclick="return zClickLink('edit')"><fmt:message key="edit"/></span></a>
+            </div>
+        </div>
+    </c:when>
+    <c:otherwise>
+        <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
+        <span class="zo_button_group">
         <c:choose>
             <c:when test="${cursor.hasPrev}">
                 <zm:prevItemUrl var="prevMsgUrl" value="${urlTarget}" action='view'
@@ -56,8 +74,9 @@
             </c:when>
             <c:otherwise><a class='zo_button_disabled next_button'><fmt:message key="MO_NEXT"/></a></c:otherwise>
         </c:choose>
-    </span><span>
-    <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'));">
+        </span>
+        <span>
+        <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <c:choose>
             <c:when test="${not context.folder.isInTrash}"><option value="actionDelete"><fmt:message key="delete"/></option></c:when>
@@ -86,14 +105,16 @@
         </c:if>
         </select><noscript><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
         <script type="text/javascript">var actGo=document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
-    </span>
-    <span>
-        <c:url var="addUrl" value="${closeUrl}">
-           <c:param name="action" value="edit"/>
-           <c:param name="pid" value="${contact.id}"/>
-           <c:param name="folderid" value="${context.folder.id}"/>
-        </c:url>
+        </span>
+        <span>
+            <c:url var="addUrl" value="${closeUrl}">
+                <c:param name="action" value="edit"/>
+                <c:param name="pid" value="${contact.id}"/>
+                <c:param name="folderid" value="${context.folder.id}"/>
+            </c:url>
         <c:if test="${contact != null}"><a accesskey="${requestScope.mainaction_accesskey}" class="zo_button" href="${editUrl}"><fmt:message key="edit"/></a></c:if>
         <c:if test="${contact == null}"><a accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}" class='zo_button'><fmt:message key="add"/></a></c:if>
-    </span>
+        </span>
+    </c:otherwise>
+</c:choose>
 </div></div></div>
