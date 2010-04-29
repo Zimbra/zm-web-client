@@ -58,10 +58,14 @@ ZmDesktopAlert.prototype.start =
 function(title, message) {
 	if (this.usePrism) {
 		if (AjxEnv.isMac) {
-			window.platform.showNotification(title, message, "resource://webapp/icons/default/launcher.icns");
+			try {
+				window.platform.showNotification(title, message, "resource://webapp/icons/default/launcher.icns");
+			} catch (err) {}
 		}
 		else if (AjxEnv.isWindows) {
-			window.platform.icon().showNotification(title, message, 5);
+			try {
+				window.platform.icon().showNotification(title, message, 5);
+			} catch (err) {}
 		}
 	} else {
 		AjxDispatcher.require([ "BrowserPlus" ]);
@@ -74,7 +78,9 @@ function(title, message) {
 
 ZmDesktopAlert.prototype._notityServiceCallback =
 function(title, message, service) {
-	service.show({ title: title, message: message }, function(){});
+	try {
+		service.show({ title: title, message: message }, function(){});
+	} catch (err) {}
 };
 
 ZmDesktopAlert.prototype._notityServiceErrorCallback =
