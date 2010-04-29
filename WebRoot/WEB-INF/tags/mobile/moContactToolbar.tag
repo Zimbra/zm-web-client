@@ -34,7 +34,7 @@
     <a href="${fn:escapeXml(backUrl)}<c:if test="${empty context.sfi}">&sfi=${contact.folderId}</c:if>${empty param.ajax ? '#cn' : '&cn'}${contact.id}" class='zo_leftbutton'>${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}</a> &laquo;
     ${fn:escapeXml(fn:substring(contact.firstName,0,8))}...
 </div></div></div></c:if>
-<div class="tb tbl"><div class="tr"><div class="td">
+<div class="tb tbl "><div class="tr"><div class="td toolbar">
 <c:url var="editUrl" value="${closeUrl}">
     <c:param name="action" value="edit"/>
     <c:param name="id" value="${contact.id}"/>
@@ -49,8 +49,8 @@
             <c:param name="folderid" value="${context.folder.id}"/>
         </c:url>
         <div class ="compose button"><a id="add" accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}"><span onclick="return zClickLink('add')"><fmt:message key="add"/></span></a></div>
-        <div class ="actions">
-            <div class ="right button">
+        <div class =""> 
+            <div class ="buttonRight button">
             <a id="edit" accesskey="${requestScope.mainaction_accesskey}" href="${editUrl}"><span onclick="return zClickLink('edit')"><fmt:message key="edit"/></span></a>
             </div>
         </div>

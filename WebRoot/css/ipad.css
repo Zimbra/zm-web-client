@@ -119,6 +119,7 @@ html, body{
 	height: 45px;
 	overflow: hidden;
 	border: none;
+	padding: 0 0 0 0!important;
 }
 
 .overviewActions{
@@ -139,21 +140,36 @@ html, body{
 	background: #c5bba3 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
 	-webkit-border-radius: 6px;
 	height: 20px;
-	vertical-align: middle;
-	padding: 4px;
-	margin-top: 6px;
-	color: #453928;
+	padding: 6px 4px 0 4px;
 	font-size: 11px;
 	font-weight: bold;
+	text-align: center;
 }
 
 	.button:active{
 		background: #7b7769 url("/img/mobile/ipad/button-selected-bg.gif") repeat-x top left;
 		color: white;
-		border-style: inset;
 	}
 
+		.button a{
+			text-decoration: none;
+			color: #453928;
+			vertical-align: middle;
+			
+		}
+	
+		.button a:active{
+			color: white;
+		}
+			
+	
+.buttonRight{	
+	float: right;
+	margin-right: 10px;
+	width: 60px;
+}
 
+	
 .folder{
 	float: left;
 	margin-left: 10px;
@@ -238,7 +254,7 @@ html, body{
 }
 
 
-/*List view and Contnet View styles */
+/*List view and Content View styles */
 
 
 .view{
@@ -337,6 +353,28 @@ ul.list li{
 }
 
 
+.buttonBg{
+	background: #c5bba3 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
+	-webkit-border-radius: 6px;
+	vertical-align: middle;
+	padding: 0 !important;
+	margin-top: 6px;
+	color: #453928;
+	font-size: 11px;
+	font-weight: bold;
+	width: 40% !important;
+}
+
+	.buttonBg a{
+		text-decoration: none;
+		color: black;
+	}
+	
+	.buttonBg a:hover{
+		background-hover: black;
+		color: white;
+	}
+	
 /** ListView Styles **/
 
 .tbl {
@@ -358,7 +396,7 @@ ul.list li{
     padding-bottom:4px;
 }
 
-.dlist .list-row .td, .dlist .list-row-unread .td{
+.dlist .list-row .td, .dlist .list-row-unread .td, .lableBorder{
     border-bottom: 1px solid #ede8db;
 }
 
@@ -400,6 +438,13 @@ ul.list li{
     background-position: 0 -326px !important;
 }
 
+.displayNone{
+	display: none;
+}
+
+.displayShow{
+	display: block;
+}
 .dlist .td{
 }
 
@@ -440,6 +485,10 @@ ul.list li{
     padding: 2px !important;
 }
 
+.View hr{
+	border: 1px solid white;
+	background-color: white;
+}
 
 /** Style for Contacts **/
 
@@ -478,7 +527,7 @@ span.aleft > div:first-child {
 
 .View .list-row .label, .View div .label{
 	float: left;
-	width: 120px;
+	width: 100px;
 	text-tranform: capitalize;
 	color: #666;
 }
