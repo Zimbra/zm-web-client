@@ -1443,24 +1443,6 @@ function(ev) {
 		rv = DwtHtmlEditor.prototype._handleEditorEvent.call(this, ev);
 	}
 
-	// Bug 28308 - browser focus can get stuck in editor; flail around setting focus
-	// until focus is back in sync
-	if (AjxEnv.isSafari && ev.type == "keydown") {
-		var kbMgr = DwtShell.getShell(window).getKeyboardMgr();
-		if (kbMgr.__focusObj != this) {
-			DBG.println(AjxDebug.DBG1, "HTML editor has a focus issue!!!");
-			var focusObj = kbMgr.__focusObj;
-			var searchCtlr = appCtxt.getSearchController();
-			var searchField = searchCtlr && searchCtlr.getSearchToolbar().getSearchField();
-			if (searchField) {
-				searchField.focus();
-				kbMgr.grabFocus(kbMgr.__focusObj);
-			}
-			kbMgr.grabFocus(focusObj);
-			rv = DwtKeyboardMgr.__keyDownHdlr(ev);
-		}
-	}
-
 	if (this._TIMER_spell) {
 		clearTimeout(this._TIMER_spell);
 	}
@@ -1479,6 +1461,7 @@ function(ev) {
 			this._TIMER_spell = null;
 		}, 100);
 	}
+
 	return rv;
 };
 
