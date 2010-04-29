@@ -1308,7 +1308,7 @@ function(ev) {
 		}
 	}
 	var folder = appCtxt.getById(searchFolderId);
-	var markAsSpam = (folder && folder.nId != ZmFolder.ID_SPAM);
+	var markAsSpam = !(folder && folder.nId == ZmFolder.ID_SPAM);
 	this._doSpam(items, markAsSpam);
 };
 
