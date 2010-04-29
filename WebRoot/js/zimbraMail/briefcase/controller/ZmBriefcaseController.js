@@ -678,12 +678,6 @@ function(items){
     var docInfo = [];
     for (var i = 0; i < items.length; i++) {
         var item = items[i];
-
-        var briefcase = appCtxt.getById(item.folderId);
-        if (briefcase.isRemote() || briefcase.isReadOnly()) {
-            continue;
-        }
-
         docInfo.push({id: item.id, ct: item.contentType, s: item.size});
     }
 
