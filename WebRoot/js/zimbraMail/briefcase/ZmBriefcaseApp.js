@@ -492,7 +492,7 @@ function(msgId, partId, name) {
 
 ZmBriefcaseApp.prototype._getCopyParams =
 function(dlg, msgId, partId) {
-	return {
+	var params = {
 		data:			{msgId:msgId,partId:partId},
 		treeIds:		[ZmOrganizer.BRIEFCASE],
 		overviewId:		dlg.getOverviewId(this._name),
@@ -500,6 +500,9 @@ function(dlg, msgId, partId) {
 		description:	ZmMsg.targetFolder,
 		appName:		ZmApp.BRIEFCASE
 	};
+    params.omit = {};
+    params.omit[ZmFolder.ID_TRASH] = true;
+    return params;
 };
 
 ZmBriefcaseApp.prototype._chooserCallback =
@@ -511,13 +514,13 @@ function(msgId, partId, name, folder) {
 ZmBriefcaseApp.prototype.handleDuplicateCheck =
 function(msgId, partId, name, folderId, results) {
 
-	var bController = this.getBriefcaseController();
-	if (bController.isReadOnly(folderId)) {
+    var briefcase = appCtxt.getById(folderId); 
+	if (briefcase.isReadOnly(folderId)) {
 		ZmOrganizer._showErrorMsg(ZmMsg.errorPermission);
 		return;
 	}
 
-	if (bController.isShared(folderId)) {
+	if (briefcase.isShared(folderId)) {
 		if (msgId.indexOf(":") < 0) { // for shared folder, use fully qualified msg id if it is not already
 		   msgId = appCtxt.getActiveAccount().id + ":" + msgId;
 		}
