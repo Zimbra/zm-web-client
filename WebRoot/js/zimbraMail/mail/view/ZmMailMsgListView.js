@@ -76,7 +76,8 @@ function(msg, params) {
 		return ZmMailListView.prototype._addParams.apply(this, arguments);
 	} else {
 		var conv = appCtxt.getById(msg.cid);
-		params.isMatched = (msg.inHitList && conv && !conv._allMsgsMatch);
+		var s = this._controller._activeSearch && this._controller._activeSearch.search;
+		params.isMatched = (!(s && s.singleTerm) && msg.inHitList && conv && !conv._allMsgsMatch);
 	}
 };
 
