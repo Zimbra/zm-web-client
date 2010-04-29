@@ -984,7 +984,15 @@ function(ev) {
 	var anyAll = this._conditionSelect.getValue();
 
 	// adding a rule always starts with dummy
+
 	if (this._editMode) {
+		var cachedRule = {
+			name: rule.name,
+			active: rule.active,
+			conditions: rule.conditions,
+			actions: rule.actions
+		};
+
 		rule.name = name;
 		rule.active = active;
 		rule.clearConditions();
@@ -1016,18 +1024,25 @@ function(ev) {
 			rule.addAction(action.actionType, action.value);
 		}
 	}
-	var stopAction = document.getElementById(this._stopCheckboxId).checked;
-	if (stopAction) {
-		rule.addAction(ZmFilterRule.A_STOP);
-	}
 
 	if (msg) {
+		// bug #35912 - restore values from cached rule
+		rule.name = cachedRule.name;
+		rule.active = cachedRule.active;
+		rule.conditions = cachedRule.conditions;
+		rule.actions = cachedRule.actions;
+
 		var msgDialog = appCtxt.getMsgDialog();
     	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	    msgDialog.popup();
 	    return;
 	}
-	
+
+	var stopAction = document.getElementById(this._stopCheckboxId).checked;
+	if (stopAction) {
+		rule.addAction(ZmFilterRule.A_STOP);
+	}
+
 	var respCallback = new AjxCallback(this, this._handleResponseOkButtonListener);
 	if (this._editMode) {
 		this._rules._saveRules(this._rules.getIndexOfRule(rule), true, respCallback);
