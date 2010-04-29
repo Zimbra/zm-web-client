@@ -185,7 +185,7 @@ function(parent, num) {
 		}
 	}
     var briefcase = appCtxt.getById(this._folderId);
-    var isShared = briefcase.isShared();
+    var isShared = ((briefcase.nId != ZmOrganizer.ID_TRASH) && briefcase.isShared());
 	var isReadOnly = briefcase.isReadOnly();
 
 	var isMultiFolder = (noOfFolders > 1);
