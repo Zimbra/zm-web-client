@@ -1046,23 +1046,27 @@ function(message) {
 	var html = message.getBodyPart(ZmMimeTable.TEXT_HTML);
 
 	this.notesTopPart = new ZmMimePart();
+	var htmlContent = "";
+	var textContent = "";
+
 	if (html) {
 		var notes = AjxUtil.isString(html) ? html : html.content;
 		var htmlContent = notes.replace(/<title\s*>.*\/title>/ig,"");
-		if(!this._includeEditReply) {
+		if (!this._includeEditReply) {
 			htmlContent = this._trimNotesSummary(htmlContent, true);
 		}
-		var textContent = "";
+	}
 
+	if (html && htmlContent) {
 		// create a temp iframe to create a proper DOM tree
 		var params = {parent:appCtxt.getShell(), hidden:true, html:htmlContent};
 		var dwtIframe = new DwtIframe(params);
 		if (dwtIframe) {
 			textContent = this._getCleanHtml2Text(dwtIframe);
-			//bug: 23034 this hidden iframe under shell is adding more space which breaks calendar
-			//column view
+			// bug: 23034 this hidden iframe under shell is adding more space
+			// which breaks calendar column view
 			var iframe = dwtIframe.getIframe();
-			if(iframe && iframe.parentNode){
+			if (iframe && iframe.parentNode) {
 				iframe.parentNode.removeChild(iframe);
 			}
 			delete dwtIframe;
@@ -1081,8 +1085,8 @@ function(message) {
 		this.notesTopPart.children.add(textPart);
 		this.notesTopPart.children.add(htmlPart);
 	} else {
-        var textContent = (text && text.content) || "";
-		if(!this._includeEditReply) {
+        textContent = (text && text.content) || "";
+		if (!this._includeEditReply) {
 			textContent = this._trimNotesSummary(textContent);
 		}
 

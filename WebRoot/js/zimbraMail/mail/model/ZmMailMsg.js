@@ -748,19 +748,17 @@ function(contentType, useOriginal) {
 	{
 		return this._htmlBody;
 	}
-	else
-	{
-		var bodyPart = this._getFirstBodyPart(contentType);
 
-		if(this.isInvite()){
-			//bug: 46071, handle missing body part/content
-			if((!bodyPart) || (bodyPart && !bodyPart.content) ){
-				return this.getInviteDescriptionContent(contentType);
-			}
+	var bodyPart = this._getFirstBodyPart(contentType);
+
+	if (this.isInvite()) {
+		// bug: 46071, handle missing body part/content
+		if (!bodyPart || (bodyPart && !bodyPart.content)) {
+			return this.getInviteDescriptionContent(contentType);
 		}
-
-		return bodyPart;
 	}
+
+	return bodyPart;
 };
 
 ZmMailMsg.prototype._getFirstBodyPart =
