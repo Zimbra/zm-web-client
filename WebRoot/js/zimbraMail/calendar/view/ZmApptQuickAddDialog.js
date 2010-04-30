@@ -53,6 +53,7 @@ ZmApptQuickAddDialog = function(parent) {
 	this._cacheFields();
 	this._addEventHandlers();
 	this._button[ZmApptQuickAddDialog.MORE_DETAILS_BUTTON].setSize("100");
+    this._dateInfo = {};
 	DBG.timePt("create dwt controls, fields; register handlers");
 };
 
@@ -86,7 +87,12 @@ function(appt) {
 	if (!isAllDay) {
 		this._startTimeSelect.set(appt.startDate);
 		this._endTimeSelect.set(appt.endDate);
-	}
+        //need to capture initial time set while composing/editing appt
+        ZmApptViewHelper.getDateInfo(this, this._dateInfo);        
+	}else {
+        this._dateInfo = {};
+    }
+
 	this._showAsSelect.setSelectedValue("B");
 	this._privacySelect.setSelectedValue("PUB");
     this._calendarOrgs = {};
@@ -143,7 +149,7 @@ function() {
 	var errorMsg = null;
 
 	if (subj && subj.length) {
-		if (!ZmTimeSelect.validStartEnd( this._startDateField, this._endDateField, this._startTimeSelect, this._endTimeSelect)) {
+		if (!ZmTimeInput.validStartEnd( this._startDateField, this._endDateField, this._startTimeSelect, this._endTimeSelect)) {
 			errorMsg = ZmMsg.errorInvalidDates;
 		}
 	} else {
@@ -172,7 +178,7 @@ function(loc) {
 		if (this._folderSelect.size() > 1) {
 			members.push(this._folderSelect);
 		}
-		// XXX: ZmTimeSelect doesn't handle focus yet
+		// XXX: ZmTimeInput doesn't handle focus yet
 		members = members.concat([this._startDateField, this._startDateButton,
 								  this._endDateField, this._endDateButton,
 								  this._repeatSelect]);
@@ -249,11 +255,11 @@ function() {
 	// create selects for Time section
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 	
-	this._startTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.START);
+	this._startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
 	this._startTimeSelect.addChangeListener(timeSelectListener);
 	this._startTimeSelect.reparentHtmlElement(this._htmlElId + "_startTime");
 
-	this._endTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.END);
+	this._endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END);
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 	this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_endTime");
 
@@ -463,8 +469,11 @@ function(ev) {
 };
 
 ZmApptQuickAddDialog.prototype._timeChangeListener =
-function(ev) {
-	ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField);
+function(ev, id) {
+	ZmTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField, this._dateInfo, id);
+    if (!this._appt.isAllDayEvent()) {
+        ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+    }
 };
 
 // Static methods
