@@ -52,17 +52,37 @@ function(tabView, dateInfo) {
     dateInfo.timezone = tabView._tzoneSelect.getValue();
     if (tabView._allDayCheckbox.checked) {
 		dateInfo.showTime = false;
-		dateInfo.startHourIdx = dateInfo.startMinuteIdx = dateInfo.startAmPmIdx =
+
+        //used by ZmTimeInput - advanced time picker
+        dateInfo.startTimeStr = dateInfo.endTimeStr = null;
+
+        //used by ZmTimeSelect
+        dateInfo.startHourIdx = dateInfo.startMinuteIdx = dateInfo.startAmPmIdx =
 		dateInfo.endHourIdx = dateInfo.endMinuteIdx = dateInfo.endAmPmIdx = null;
+
         dateInfo.isAllDay = true;
     } else {
 		dateInfo.showTime = true;
-		dateInfo.startHourIdx = tabView._startTimeSelect.getSelectedHourIdx();
-		dateInfo.startMinuteIdx = tabView._startTimeSelect.getSelectedMinuteIdx();
-		dateInfo.startAmPmIdx = tabView._startTimeSelect.getSelectedAmPmIdx();
-		dateInfo.endHourIdx = tabView._endTimeSelect.getSelectedHourIdx();
-		dateInfo.endMinuteIdx = tabView._endTimeSelect.getSelectedMinuteIdx();
-		dateInfo.endAmPmIdx = tabView._endTimeSelect.getSelectedAmPmIdx();
+
+        if(tabView._startTimeSelect instanceof ZmTimeSelect) {
+            dateInfo.startHourIdx = tabView._startTimeSelect.getSelectedHourIdx();
+            dateInfo.startMinuteIdx = tabView._startTimeSelect.getSelectedMinuteIdx();
+            dateInfo.startAmPmIdx = tabView._startTimeSelect.getSelectedAmPmIdx();
+            dateInfo.endHourIdx = tabView._endTimeSelect.getSelectedHourIdx();
+            dateInfo.endMinuteIdx = tabView._endTimeSelect.getSelectedMinuteIdx();
+            dateInfo.endAmPmIdx = tabView._endTimeSelect.getSelectedAmPmIdx();
+        }else {
+            dateInfo.startHourIdx = dateInfo.startMinuteIdx = dateInfo.startAmPmIdx =
+            dateInfo.endHourIdx = dateInfo.endMinuteIdx = dateInfo.endAmPmIdx = null;            
+        }
+
+        if(tabView._startTimeSelect instanceof ZmTimeInput) {
+            dateInfo.startTimeStr = tabView._startTimeSelect.getTimeString();
+            dateInfo.endTimeStr = tabView._endTimeSelect.getTimeString();
+        }else {
+            dateInfo.startTimeStr = dateInfo.endTimeStr = null;
+        }
+
         dateInfo.isAllDay = false;
 	}
 };
@@ -746,4 +766,302 @@ function() {
 		this._amPmSelect.reparentHtmlElement(this._amPmSelectId);
 		delete this._amPmSelectId;
 	}
+};
+
+/**
+* Creates up to three separate DwtSelects for the time (hour, minute, am|pm)
+* Showing the AM|PM select widget is dependent on the user's locale
+*
+* @author Parag Shah
+*
+* @param parent		[DwtComposite]	the parent widget
+* @param id			[string]*		an ID that is propagated to component select objects
+*/
+ZmTimeInput = function(parent, id) {
+	DwtComposite.call(this, {parent:parent});
+
+	this.id = id;
+	this._isLocale24Hour = true;
+	this._createSelects();
+    this._useTextInput = true;
+};
+
+// IDs for types of time selects
+ZmTimeInput.START	= 1;
+ZmTimeInput.END	= 2;
+
+// IDs for time select components
+ZmTimeInput.HOUR	= 1;
+ZmTimeInput.MINUTE	= 2;
+ZmTimeInput.AMPM	= 3;
+
+ZmTimeInput.getDateFromFields =
+function(timeStr, date) {
+    var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+    var formattedDate = formatter.parse(timeStr);
+    date = date ? date : new Date();
+	date.setHours(formattedDate.getHours(), formattedDate.getMinutes(), 0, 0);
+	return date;
+};
+
+/**
+* Adjust an appt's start or end based on changes to the other one. If the user changes
+* the start time, change the end time so that the appt duration is maintained. If the
+* user changes the end time, we leave things alone.
+*
+* @param ev					[Event]				UI event from a DwtSelect
+* @param startSelect		[ZmTimeInput]		start time select
+* @param endSelect			[ZmTimeInput]		end time select
+* @param startDateField		[element]			start date field
+* @param endDateField		[element]			end date field
+* @param dateInfo		    [object]			date info used to calculate the old time before changing this
+* @param id		            [string]			an ID which got changed 
+*/
+ZmTimeInput.adjustStartEnd =
+function(ev, startSelect, endSelect, startDateField, endDateField, dateInfo, id) {
+    var startDate = AjxDateUtil.simpleParseDateStr(startDateField.value);
+    var endDate = AjxDateUtil.simpleParseDateStr(endDateField.value);
+    var startDateOrig = startDateField.value;
+    var endDateOrig = endDateField.value;
+    if (id == ZmTimeInput.START) {
+        var timeStr = dateInfo ? dateInfo.startTimeStr : startSelect.getTimeString();
+        var oldStartDateMs = ZmTimeInput.getDateFromFields(timeStr, startDate).getTime();
+        var newStartDateMs = ZmTimeInput.getDateFromFields(startSelect.getTimeString(), startDate).getTime();
+        var oldEndDateMs = ZmTimeInput.getDateFromFields(endSelect.getTimeString(), endDate).getTime();
+
+        var delta = oldEndDateMs - oldStartDateMs;
+        if (!delta) return null;
+
+        var newEndDateMs = newStartDateMs + delta;
+        var newEndDate = new Date(newEndDateMs);
+
+        endSelect.set(newEndDate);
+        endDateField.value = AjxDateUtil.simpleComputeDateStr(newEndDate);
+
+        if (endDateField.value != endDateOrig) {
+            return endDateField;
+        }
+    } else {
+        return null;
+    }
+};
+
+/**
+ * Returns true if the start date/time is before the end date/time.
+ *
+ * @param ss				[ZmTimeInput]		start time select
+ * @param es				[ZmTimeInput]		end time select
+ * @param startDateField	[element]			start date field
+ * @param endDateField		[element]			end date field
+ */
+ZmTimeInput.validStartEnd =
+function(startDateField, endDateField, ss, es) {
+	var startDate = AjxDateUtil.simpleParseDateStr(startDateField.value);
+	var endDate = AjxDateUtil.simpleParseDateStr(endDateField.value);
+
+    if (startDate && endDate) {
+        if((startDate.valueOf() > endDate.valueOf())){
+            return false;
+        }
+        // bug fix #11329 - dont allow year to be more than the earth will be around :]
+		if (startDate.getFullYear() > 9999 || endDate.getFullYear() > 9999) {
+			return false;
+		}
+        if(ss && es){
+            var startDateMs = ZmTimeInput.getDateFromFields(ss.getTimeString(), startDate).getTime();
+            var endDateMs = ZmTimeInput.getDateFromFields(es.getTimeString(), endDate).getTime();
+            if (startDateMs > endDateMs) {
+                return false;
+            }
+        }
+    } else {
+		return false;
+	}
+	return true;
+};
+
+ZmTimeInput.prototype = new DwtComposite;
+ZmTimeInput.prototype.constructor = ZmTimeInput;
+
+/**
+* Sets the time select according to the given date.
+*
+* @param date	[Date]		a Date object
+*/
+ZmTimeInput.prototype.set =
+function(date) {
+    var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+    var timeStr = timeFormatter.format(date);
+    this._originalTimeStr = timeStr;
+    this._timeSelectInput.setValue(timeStr);
+};
+
+/**
+* Sets the time string after validating it
+*
+* @param date	[Date]		a Date object
+*/
+ZmTimeInput.prototype.setValue =
+function(str) {
+    //sets only if the date is valid
+    var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+    var date = timeFormatter.parse(str);
+    this._originalTimeStr = date ? str : "";
+    this._timeSelectInput.setValue( date ? str : "");
+};
+
+
+/**
+ * Returns a date object with the hours and minutes set based on
+ * the values of this time picker.
+ *
+ * @param date [Date] Optional. If specified, the hour and minute
+ *                    values will be set on the specified object;
+ *                    else, a new <code>Date</code> object is created.
+ */
+ZmTimeInput.prototype.getValue =
+function(date) {
+	//return (ZmTimeInput.getDateFromFields(this.getHours(), this.getMinutes(), this.getAmPm(), date));
+    var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+    var d = timeFormatter.parse(this._timeSelectInput.getValue());
+    date = date || new Date();
+    date.setHours(d.getHours(), d.getMinutes(), 0, 0);
+    return date;
+};
+
+ZmTimeInput.prototype.getHours =
+function() {
+    var d = this.getValue();
+    return d ? d.getHours() : null;
+};
+
+ZmTimeInput.prototype.getMinutes =
+function() {
+    var d = this.getValue();
+    return d ? d.getMinutes() : null;
+};
+
+ZmTimeInput.prototype.addChangeListener =
+function(listener) {
+    this._changeListener = listener;
+    var callback = AjxCallback.simpleClosure(this.handleTimeChange, this, listener);
+    this._timeSelectInput.setHandler(DwtEvent.ONFOCUS, callback);
+    this._timeSelectInput.setHandler(DwtEvent.ONBLUR, callback);
+};
+
+ZmTimeInput.prototype.handleTimeChange =
+function(listener, ev) {
+    //restore old value if the new time is not in correct format
+    var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+    var d = timeFormatter.parse(this._timeSelectInput.getValue());
+    if(!d) this.setValue(this._originalTimeStr || "");
+
+    listener.run(ev, this.id);
+};
+
+ZmTimeInput.prototype.isLocale24Hour =
+function() {
+	return this._isLocale24Hour;
+};
+
+ZmTimeInput.prototype.setEnabled =
+function(enabled) {
+   DwtComposite.prototype.setEnabled.call(this, enabled);
+   this._timeSelectInput.setEnabled(enabled);
+   this._timeSelectBtn.setEnabled(enabled);
+};
+
+
+ZmTimeInput.prototype._timeButtonListener =
+function(ev) {
+	ev.item.popup();
+};
+
+ZmTimeInput.prototype._timeSelectionListener =
+function(ev) {
+    if(ev.item && ev.item instanceof DwtMenuItem){
+       this._timeSelectInput.setValue(ev.item.getText());
+       this._timeSelectValue = ev.item.getData("value");
+       if(this._changeListener) this._changeListener.run(ev, this.id);
+       return;
+    }
+};
+
+ZmTimeInput.prototype.getTimeString =
+function() {
+    var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);    
+
+    //validate and returns only valid time string
+    var date = timeFormatter.parse(this._timeSelectInput.getValue());
+    return date ? this._timeSelectInput.getValue() : "";    
+};
+
+
+ZmTimeInput.prototype._createSelects =
+function() {
+	// get the time formatter for the user's locale
+	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+	var hourSegmentIdx = 0;
+	var minuteSegmentIdx = 0;
+
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#ApptTimeInput", {id: this._htmlElId});
+
+    //create time select input field
+    var params = {
+        parent: this,
+        parentElement: (this._htmlElId + "_timeSelectInput"),
+        type: DwtInputField.STRING,
+        errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+        validationStyle: DwtInputField.CONTINUAL_VALIDATION
+    };
+
+    this._timeSelectInput = new DwtInputField(params);
+    var timeInputEl = this._timeSelectInput.getInputElement();
+    Dwt.setSize(timeInputEl, "80px", "22px");
+    timeInputEl.typeId = this.id;
+
+
+	// init vars for adding hour DwtSelect
+	var now = new Date();
+	var start = this._isLocale24Hour ? 0 : 1;
+	var limit = this._isLocale24Hour ? 24 : 13;
+
+    //listeners
+    var buttonListener = new AjxListener(this, this._timeButtonListener);
+    var menuSelectionListener = new AjxListener(this, this._timeSelectionListener);
+    var buttonId = this._htmlElId + "_timeSelectBtn"
+
+    //create time select drop down button
+    var timeSelectButton = this._timeSelectBtn = new DwtButton({parent:this});
+    timeSelectButton.addDropDownSelectionListener(buttonListener);
+    timeSelectButton.setData(Dwt.KEY_ID, buttonId);
+    if (AjxEnv.isIE) {
+        timeSelectButton.setSize("20");
+    }
+
+    // create menu for button
+    var timeSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE});
+    timeSelectMenu.setSize("150");
+    timeSelectMenu._table.width = "100%";
+    timeSelectButton.setMenu(timeSelectMenu, true);
+
+    for (var j = 0; j < 24; j++) {
+        now.setHours(j);        
+        now.setMinutes(0);
+
+        var mi = new DwtMenuItem({parent: timeSelectMenu, style: DwtMenuItem.NO_STYLE});
+        mi.setText(timeFormatter.format(now));
+        mi.setData("value", j*60);
+        if(menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
+
+        now.setMinutes(30);
+        var mi1 = new DwtMenuItem({parent: timeSelectMenu, style: DwtMenuItem.NO_STYLE});
+        mi1.setText(timeFormatter.format(now));
+        mi1.setData("value", j*60 + 30);
+        if(menuSelectionListener) mi1.addSelectionListener(menuSelectionListener);
+
+    }
+
+    timeSelectButton.reparentHtmlElement(buttonId);
+    delete buttonId;
 };

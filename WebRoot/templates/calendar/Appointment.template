@@ -633,3 +633,12 @@
 		</tr>
 	</table>
 </template>
+
+<template id='calendar.Appointment#ApptTimeInput'>
+    <table border=0 cellpadding=0 cellspacing=0>
+        <tr>
+            <td id='${id}_timeSelectInput'></td>
+            <td id='${id}_timeSelectBtn'> </td>            
+        </tr>
+    </table>
+</template>

@@ -156,8 +156,8 @@ function(dateInfo, organizer, attendees) {
 	if (dateInfo.showTime) {
 		this._allDayCheckbox.checked = false;
 		this._showTimeFields(true);
-		this._startTimeSelect.setSelected(dateInfo.startHourIdx, dateInfo.startMinuteIdx, dateInfo.startAmPmIdx);
-		this._endTimeSelect.setSelected(dateInfo.endHourIdx, dateInfo.endMinuteIdx, dateInfo.endAmPmIdx);
+		this._startTimeSelect.setValue(dateInfo.startTimeStr);
+		this._endTimeSelect.setValue(dateInfo.endTimeStr);
 	} else {
 		this._allDayCheckbox.checked = true;
 		this._showTimeFields(false);
@@ -166,6 +166,9 @@ function(dateInfo, organizer, attendees) {
 
 	this._initTzSelect();
 	this._resetTimezoneSelect(dateInfo);
+
+    //need to capture initial time set while composing/editing appt    
+    ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 
 	this._setAttendees(organizer, attendees);
 	this._outlineAppt();
@@ -501,12 +504,12 @@ function() {
 
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 
-	this._startTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.START);
+	this._startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
 	this._startTimeSelect.reparentHtmlElement(this._startTimeSelectId);
 	this._startTimeSelect.addChangeListener(timeSelectListener);
 	delete this._startTimeSelectId;
 
-	this._endTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.END);
+	this._endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END);
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 	this._endTimeSelect.reparentHtmlElement(this._endTimeSelectId);
 	delete this._endTimeSelectId;
@@ -996,9 +999,9 @@ function(ev) {
 };
 
 ZmSchedTabViewPage.prototype._timeChangeListener =
-function(ev) {
-	this._activeDateField = ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect,
-														this._startDateField, this._endDateField);
+function(ev, id) {
+	this._activeDateField = ZmTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect,
+														this._startDateField, this._endDateField, this._dateInfo, id);
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 	this._outlineAppt();
@@ -1198,13 +1201,12 @@ function(dateInfo) {
 	var index = {start: -99, end: -99};
 	if (dateInfo.showTime) {
 		var idx = AjxDateUtil.isLocale24Hour() ? 0 : 1;
-		var startDate = ZmTimeSelect.getDateFromFields(dateInfo.startHourIdx + idx, dateInfo.startMinuteIdx * 5,
-													   dateInfo.startAmPmIdx,
+        var startDate = ZmTimeInput.getDateFromFields(dateInfo.startTimeStr,
 													   AjxDateUtil.simpleParseDateStr(dateInfo.startDate));
-		var endDate = ZmTimeSelect.getDateFromFields(dateInfo.endHourIdx + idx, dateInfo.endMinuteIdx * 5,
-													 dateInfo.endAmPmIdx,
+		var endDate = ZmTimeInput.getDateFromFields(dateInfo.endTimeStr,
 													 AjxDateUtil.simpleParseDateStr(dateInfo.endDate));
-		// subtract 1 from index since we're marking right borders
+
+        // subtract 1 from index since we're marking right borders
 		index.start = this._getIndexFromTime(startDate, null, false) - 1;
 		if (dateInfo.endDate == dateInfo.startDate) {
 			index.end = this._getIndexFromTime(endDate, true, false);

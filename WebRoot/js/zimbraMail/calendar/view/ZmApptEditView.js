@@ -148,7 +148,7 @@ function() {
 
 	if (subj && subj.length) {
 		var allDay = this._allDayCheckbox.checked;
-		if (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField, (allDay ? null : this._startTimeSelect), (allDay ? null : this._endTimeSelect))) {
+		if (!ZmTimeInput.validStartEnd(this._startDateField, this._endDateField, (allDay ? null : this._startTimeSelect), (allDay ? null : this._endTimeSelect))) {
 				errorMsg = ZmMsg.errorInvalidDates;
 		}
 
@@ -183,8 +183,8 @@ function() {
 
 ZmApptEditView.prototype.updateTimeField =
 function(dateInfo) {
-	this._startTimeSelect.setSelected(dateInfo.startHourIdx, dateInfo.startMinuteIdx, dateInfo.startAmPmIdx);
-	this._endTimeSelect.setSelected(dateInfo.endHourIdx, dateInfo.endMinuteIdx, dateInfo.endAmPmIdx);
+     this._startTimeSelect.setValue(dateInfo.startTimeStr);
+     this._endTimeSelect.setValue(dateInfo.endTimeStr);
 };
 
 ZmApptEditView.prototype.updateTimezone =
@@ -332,6 +332,9 @@ function(calItem, mode) {
 
 	this._initTzSelect();
 	this._resetTimezoneSelect(calItem, isAllDayAppt);
+
+    //need to capture initial time set while composing/editing appt
+    ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 
 
     this._startTimeSelect.setEnabled(!this._isForward);
@@ -528,10 +531,11 @@ function(width) {
 
 	// time ZmTimeSelect
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
-	this._startTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.START);
+	this._startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
 	this._startTimeSelect.reparentHtmlElement(this._htmlElId + "_startTimeSelect");
 	this._startTimeSelect.addChangeListener(timeSelectListener);
-	this._endTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.END);
+
+	this._endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END);
 	this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_endTimeSelect");
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 
@@ -874,7 +878,8 @@ function(excludeAttendees, excludeReminder) {
 	}
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-	startDate = this._startTimeSelect.getValue(startDate);
+
+    startDate = this._startTimeSelect.getValue(startDate);
 	endDate = this._endTimeSelect.getValue(endDate);
 	vals.push(
 		AjxDateUtil.getServerDateTime(startDate),
@@ -898,8 +903,8 @@ function(excludeAttendees, excludeReminder) {
 // Listeners
 
 ZmApptEditView.prototype._timeChangeListener =
-function(ev) {
-	ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField);
+function(ev, id) {
+	ZmTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField, this._dateInfo, id);
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 };
 
