@@ -72,10 +72,11 @@ function(item) {
 ZmMailListView.prototype.set =
 function(list, sortField) {
 
-	this._folderId = list && list.search && list.search.singleTerm && list.search.folderId;
+	var s = this._controller._activeSearch && this._controller._activeSearch.search;
+	this._folderId = s && s.singleTerm && s.folderId;
 	ZmListView.prototype.set.call(this, list, sortField);
 
-	var sortBy = list && list.search && list.search.sortBy;
+	var sortBy = s && s.sortBy;
 	if (sortBy) {
 		var column;
 		if (sortBy == ZmSearch.SUBJ_DESC || sortBy == ZmSearch.SUBJ_ASC) {
@@ -248,6 +249,7 @@ function() {
 		this._normalClass = isMultiColumn ? DwtListView.ROW_CLASS : ZmMailListView.ROW_DOUBLE_CLASS;
 		var list = this.getList() || (new AjxVector());
 		this.set(list.clone());
+		this._resetFromColumnLabel();
 		this.setSelectedItems(sel);
 		this.scrollToTop();
 	}
