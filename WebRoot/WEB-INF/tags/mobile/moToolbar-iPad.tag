@@ -37,7 +37,7 @@
 </c:choose>
 </mo:handleError>
 <%--This takes care of the toolbar on the right pane, decide the buttons to be displayed depending on the app--%>
-<div class="applicationActions toolbar">
+<div class="overviewActions toolbar">
         <c:choose>
             <c:when test="${app eq 'contact' || app eq 'ab'}">
                 <c:url var="editUrl" value="${closeUrl}">
@@ -59,20 +59,26 @@
                  </div>
             </c:when>
             <c:when test="${app eq 'message' || app eq 'conversation'}">
-                <div class="compose button">
-                    <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
-                    <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}"><fmt:message key="compose"/></a>
-                </div>
-                <div class="actions">
-                    <div class="left button">
-                        <a href="?st=newmail&amp;id=${message.id}&amp;op=reply"><fmt:message key="reply"/></a>
+
+                    <div class="folder button"><div>Folders</div></div>
+
+                    <div class="icons button"></div>
+                    <div class="icons button"></div>
+                    <div class="select button">
+                        <div>
+                            <select>
+                                <option>Move to...</option>
+                                <option>Inbox</option>
+                                <option>Sent</option>
+                                <option>Spam</option>
+                                <option>Trash</option>
+                                <option>----------------</option>
+                                <option>Personal Folder 1</option>
+                                <option>Personal Folder 2</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="center button">
-                        <a href="?st=newmail&id=${message.id}&amp;op=replyAll"><fmt:message key="replyAll"/></a>
-                    </div>
-                    <div class="right button">
-                        <a href="?st=newmail&id=${message.id}&amp;op=forward"><fmt:message key="forward"/></a>
-                    </div>
+
             </c:when>
         </c:choose>
 </div>
