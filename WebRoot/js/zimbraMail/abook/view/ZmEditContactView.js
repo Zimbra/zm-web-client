@@ -2090,18 +2090,24 @@ ZmEditContactViewOther.validator = function(item) {
 		if (item.type in ZmEditContactViewOther.prototype.DATE_ATTRS || item.type.replace(/^other/,"").toLowerCase() in ZmEditContactViewOther.prototype.DATE_ATTRS) {
 			var dateStr = AjxStringUtil.trim(item.value);
 			if (dateStr.length) {
+                var formatter = ZmEditContactViewOther._getDateFormatter();
+                // NOTE: Still try to parse date string in locale-specific
+                // NOTE: format for backwards compatibility. 
 				var aDate = AjxDateUtil.simpleParseDateStr(dateStr);
+                if (isNaN(aDate) || aDate == null) {
+                    aDate = formatter.parse(dateStr);
+                }
 				if (isNaN(aDate) || aDate == null) {
 					throw ZmMsg.errorDate;
 					// return false;
 				}
-				return [aDate.getMonth() + 1, aDate.getDate(), aDate.getFullYear()].join("/");
+				return formatter.format(aDate);
 			}
 			return dateStr;
 		}
 		return item.value;
 	}
-}
+};
 
 // Public methods
 
@@ -2187,22 +2193,15 @@ ZmEditContactViewOther.prototype._resetPicker = function() {
 	}
 };
 
-ZmEditContactViewOther.prototype._getDateFormatter = function() {
-    if (!this._formatter) {
-        var pattern = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT).toPattern();
-        this._formatter = new AjxDateFormat(pattern);
-        var segments = this._formatter.getSegments();
-        for (var i = 0; i < segments.length; i++) {
-            if (segments[i] instanceof AjxDateFormat.YearSegment) {
-                segments[i] = new AjxDateFormat.YearSegment(this._formatter,"yyyy");
-            }
-        }
+ZmEditContactViewOther._getDateFormatter = function() {
+    if (!ZmEditContactViewOther._formatter) {
+        ZmEditContactViewOther._formatter = new AjxDateFormat("yyyy-MM-dd");
     }
-    return this._formatter;
+    return ZmEditContactViewOther._formatter;
 };
 
 ZmEditContactViewOther.prototype._handleDropDown = function(evt) {
-    var formatter = this._getDateFormatter();
+    var formatter = ZmEditContactViewOther._getDateFormatter();
     var value = this.getValue().value;
     var date = formatter.parse(value) || new Date;
     this._calendar.setDate(date);
@@ -2211,7 +2210,7 @@ ZmEditContactViewOther.prototype._handleDropDown = function(evt) {
 
 ZmEditContactViewOther.prototype._handleDateSelection = function(calendar) {
 	if (!calendar) calendar = this._calendar;
-	var formatter = this._getDateFormatter();
+	var formatter = ZmEditContactViewOther._getDateFormatter();
 	var value = this.getValue();
 	value.value = formatter.format(calendar.getDate());
 	this.setValue(value);
