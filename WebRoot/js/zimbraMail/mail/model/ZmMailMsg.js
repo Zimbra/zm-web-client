@@ -1872,8 +1872,8 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		var onBehalfOf = false;
 
 		var folder = appCtxt.getById(this.folderId);
-		if (folder && folder.isRemote() && !this._origMsg.sendAsMe) {
-			accountName = folder.getOwner();
+		if ((!folder || folder.isRemote()) && (!this._origMsg || !this._origMsg.sendAsMe)) {
+			accountName = (folder && folder.getOwner()) || accountName;
 			onBehalfOf  = (accountName != mainAcct);
 		}
 
@@ -1908,8 +1908,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			node.p = displayName;
 		}
 		addrNodes.push(node);
-
-		if (!ac.multiAccounts && (!isDraft || onBehalfOf)) {
+		if (/*!ac.multiAccounts && */(!isDraft || onBehalfOf)) {
 			// the main account is *always* the sender
 			addrNodes.push({t:"s", a:mainAcct});
 		}
