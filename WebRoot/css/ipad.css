@@ -268,9 +268,10 @@ html, body{
 
 .listViewPane{
 	float: left;
-	width: 24.9%;
+	width: 29.9%;
 	border-right: 1px solid #999;
 	background-color: white;
+	position: relative;
 }
 
 
@@ -292,7 +293,7 @@ ul.list li{
 
 .contentViewPane{
 	float: left;
-	width: 74.9%;
+	width: 69.9%;
 	height: 100%;
 	overflow: none;
 	border-left: 1px solid #444;
@@ -314,6 +315,14 @@ ul.list li{
 	overflow: hidden;
 	padding: 0 5px;
 }
+
+	.header div{
+		padding: 0 !important;
+		margin-bottom: 0 !important;
+	}
+	
+	
+	
 .subject{
 	color: white;
 	font-size: 16px;
@@ -513,12 +522,12 @@ span.aleft > div{
 	font-size: 12px;
 }
 
-span.aleft > div:first-child {
+span.aleft > div:first-child, .contactHeader {
 	font-size: 24px;
 	color: white;
 }
 
-.View div, .View .list-row {
+.View div, .View .list-row{
     padding: 12px;
     margin-bottom: 8px;
     /* border-bottom: 1px solid #ede8db; */
@@ -530,6 +539,29 @@ span.aleft > div:first-child {
 	width: 100px;
 	text-tranform: capitalize;
 	color: #666;
+	text-align: left;
+}
+
+.cont_view .tr{
+	display: block;
+	text-align: left;
+}
+
+.cont_view .label{
+	width: 120px;
+	text-tranform: capitalize;
+	color: #666;
+	text-align: left;
+	float: none !important;
+	font-size: 16px;
+}
+.cont_view .value{
+	text-align: left !important;
+	width: 500px;
+}
+
+.value input{
+	font-size: 16px;
 }
 
 .value a{
@@ -542,6 +574,7 @@ span.aleft > div:first-child {
 	padding: 4px;
     margin-bottom: 2px;
 }
+
 
 
 /** needed for iscroll.js **/
@@ -563,4 +596,44 @@ span.aleft > div:first-child {
 .scrollbar.vertical {
 	top: 1px;
 	right: 1px;
+}
+
+
+/**Compose UI styles **/
+
+.veil{
+	background-color: black;
+	opacity: 0.6;
+	-webkit-opacity: 0.6;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+}
+
+.wrapper{
+	position: absolute;
+	z-index: 4;
+	width: 100%;
+}
+.composeBox{
+	width: 40%;
+	margin: 2px auto;
+	position: relative;
+
+}
+
+.composeToolbar{
+	background: #dbd0b5 url("../images/topbar-bg.gif") repeat-x top left;
+	height: 40px;
+	overflow: hidden;
+	border: none;
+	-webkit-border-top-left-radius: 8px;
+	-webkit-border-top-right-radius: 8px;
+}
+
+.composeFields{
+	background-color: white;
+	height: 30%;
+	-webkit-border-bottom-left-radius: 8px;
+	-webkit-border-bottom-right-radius: 8px;
 }

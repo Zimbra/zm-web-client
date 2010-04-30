@@ -40,9 +40,8 @@
 
     <!--Application Toolbar  -->
     <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="true" mailbox="${mailbox}"/>
-     <%--<div class="Stripes">--%>
 
-        <div class="header">
+        <div class="Stripes header">
             <div class="tbl">
                 <div class="tr">
                     <span class="td aleft Person48">&nbsp;</span>

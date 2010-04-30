@@ -80,11 +80,11 @@
 </div>
 <div class="Stripes cont_view">
 <c:if test="${contact!=null}">
-    <div class="View">
+    <div class="View header">
             <div class="tbl cont_sum_table">
             <div class="tr">
-                <span class="td Person48">&nbsp;</span>
-                <span class="td">
+                <span class="td Person48 aleft">&nbsp;</span>
+                <span class="td aleft">
                    <div>
                        <b>${fn:escapeXml(contact.displayFileAs)}</b>
                    </div>
@@ -117,11 +117,13 @@
     </div>
 </c:if>
 <c:if test="${contact==null}">
-    <div class="sectionLbl">
+   <div class="header">
+    <div class="sectionLbl contactHeader">
         <fmt:message key="newContact"/>
     </div>
+   </div> 
 </c:if>
-<div class="View">
+<div class="View  msgBody">
     <div class="tbl">
         <mo:contactEditField label="AB_FIELD_lastName" contact="${contact}" field="lastName" index="0"/>
         <mo:contactEditField label="AB_FIELD_firstName" contact="${contact}" field="firstName"/>
