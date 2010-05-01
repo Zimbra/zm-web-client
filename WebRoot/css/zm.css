@@ -2551,12 +2551,17 @@ HTML>BODY .appt-selected .appt_allday_body
 #ENDIF
 
 .ZOptionsItemsListView .DwtListView-Rows {
-	/*overflow: visible;*/
 	height: auto;
 }
-.ZmPrefZimletListView .DwtListView-Rows{
+
+.ZmPrefZimletListView .DwtListView-Rows {
     overflow: visible;
 }
+
+.ZmPrefZimletListView .Row {
+	height: 20px;
+}
+
 .ZOptionsOfflineAccts {
 	font-size: 14px;
 	text-align: center;

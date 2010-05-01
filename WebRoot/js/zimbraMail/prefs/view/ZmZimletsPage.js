@@ -71,7 +71,7 @@ function(){
 ZmZimletsPage.prototype._setupCustom =
 function(id, setup, value) {
 	if (id == ZmSetting.CHECKED_ZIMLETS) {
-		this._listView = new ZmPrefZimletListView(this,this._controller);
+		this._listView = new ZmPrefZimletListView(this, this._controller);
 		return this._listView;
 	}
 
@@ -79,7 +79,7 @@ function(id, setup, value) {
 };
 
 ZmZimletsPage.prototype.addCommand  =
-function(batchCommand){
+function(batchCommand) {
 	var soapDoc = AjxSoapDoc.create("ModifyZimletPrefsRequest", "urn:zimbraAccount");
 	// LDAP supports multi-valued attrs, so don't serialize list
 	var zimlets = this.getZimlets()._vector.getArray();
@@ -87,13 +87,13 @@ function(batchCommand){
 	var setting = settingsObj.getSetting(ZmSetting.CHECKED_ZIMLETS);
 	var checked = [];
 	for (var i = 0; i < zimlets.length; i++) {
-		if(zimlets[i].isActive()) {
+		if(zimlets[i].active) {
 			checked.push(zimlets[i].name);
 		}
-        var node = soapDoc.set("zimlet", null);
-        node.setAttribute("name", zimlets[i].name);
-        node.setAttribute("presence", (zimlets[i].isActive() ? "enabled" : "disabled"));
-    }
+		var node = soapDoc.set("zimlet", null);
+		node.setAttribute("name", zimlets[i].name);
+		node.setAttribute("presence", (zimlets[i].active ? "enabled" : "disabled"));
+	}
 	setting.setValue(checked);
 	batchCommand.addNewRequestParams(soapDoc, null/*callback*/, null);
 
@@ -115,6 +115,7 @@ function() {
 ZmZimletsPage.prototype._postSave =
 function() {
 	if (!this.isDirty()) { return; }
+
 	this._reloadZimlets();
 
 	var cd = appCtxt.getYesNoMsgDialog();
@@ -127,7 +128,7 @@ function() {
 ZmZimletsPage.prototype._isChecked =
 function(name) {
 	var z = this.getZimlets().getPrefZimletByName(name);
-	return (z && z.isActive());
+	return (z && z.active);
 };
 
 ZmZimletsPage.prototype.isDirty =
@@ -162,19 +163,18 @@ function() {
 ZmZimletsPage._getZimlets =
 function() {
 	var allz = appCtxt.get(ZmSetting.ZIMLETS) || [];
-    var zimlets = new ZmPrefZimlets();
+	var zimlets = new ZmPrefZimlets();
 	for (var i = 0; i <  allz.length; i++) {
 		var name = allz[i].zimlet[0].name;
-        if(allz[i].zimletContext[0].presence == "mandatory"){
-            continue; //skip mandatory zimlets to be shown in prefs        
-        }
+		if (allz[i].zimletContext[0].presence == "mandatory") {
+			continue; // skip mandatory zimlets to be shown in prefs
+		}
 		var desc = allz[i].zimlet[0].description;
 		var label = allz[i].zimlet[0].label;
-        var isEnabled = allz[i].zimletContext[0].presence == "enabled";
-		var z = new ZmPrefZimlet(name,isEnabled,desc,label);
-		zimlets.addPrefZimlet(z);
+		var isEnabled = allz[i].zimletContext[0].presence == "enabled";
+		zimlets.addPrefZimlet(new ZmPrefZimlet(name, isEnabled, desc, label));
 	}
-    zimlets.sortByName();
+	zimlets.sortByName();
 	return zimlets;
 };
 
@@ -186,9 +186,12 @@ function() {
  * @param controller
  */
 ZmPrefZimletListView = function(parent, controller) {
-	var headerList = this._getHeaderList();
-	DwtListView.call(this, {parent:parent, className:"ZmPrefZimletListView", headerList:headerList,
-							view:ZmId.VIEW_PREF_ZIMLETS});
+	DwtListView.call(this, {
+		parent: parent,
+		className: "ZmPrefZimletListView",
+		headerList: this._getHeaderList(),
+		view: ZmId.VIEW_PREF_ZIMLETS
+	});
 
 	this._controller = controller;
 	this.multiSelectEnabled = false; // single selection only
@@ -230,17 +233,19 @@ ZmPrefZimletListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	if (field == ZmPrefZimletListView.COL_ACTIVE) {
 		html[idx++] = "<input name='checked_zimlets' type='checkbox' ";
-		html[idx++] = item.isActive() ? "checked " : "";
+		html[idx++] = item.active ? "checked " : "";
 		html[idx++] = "id='";
-		html[idx++] = item.getName();
+		html[idx++] = item.name;
 		html[idx++] = "_zimletCheckbox' _name='";
-		html[idx++] = item.getName();
+		html[idx++] = item.name;
 		html[idx++] = "' _flvId='";
 		html[idx++] = this._internalId;
 		html[idx++] = "' onchange='ZmPrefZimletListView._activeStateChange'>";
-	} else if (field == ZmPrefZimletListView.COL_DESC) {
-		html[idx++] = AjxStringUtil.stripTags(item.getDescription(), true);
-	}else if (field == ZmPrefZimletListView.COL_NAME) {
+	}
+	else if (field == ZmPrefZimletListView.COL_DESC) {
+		html[idx++] = AjxStringUtil.stripTags(item.desc, true);
+	}
+	else if (field == ZmPrefZimletListView.COL_NAME) {
 		html[idx++] = AjxStringUtil.stripTags(item.getNameWithoutPrefix(), true);
 	}
 
@@ -260,7 +265,7 @@ function(ev) {
 	var name = target.getAttribute("_name");
 	var z = flv.parent.getZimlets().getPrefZimletByName(name);
 	if (z) {
-		z.setActive(!z.isActive());
+		z.active = !z.active;
 	}
 };
 
@@ -317,25 +322,29 @@ ZmPrefZimlets.prototype.getPrefZimletByName =
 function(name) {
    return this._zNameHash[name];
 };
+
 /**
  *
  * @param desc true for desc sorting, false or empty otherwise
  */
 ZmPrefZimlets.prototype.sortByName =
 function(desc) {
-   var r = 0;
-   this._vector.sort(function(a,b){
-       var aname = a.getNameWithoutPrefix(), bname = b.getNameWithoutPrefix();
-       if(aname == bname){
-           r = 0;
-       }else if(aname > bname){
-           r = 1;
-       }else
-           r = -1;
-       return (desc ? -r : r);
-   });
+	var r = 0;
+	this._vector.sort(function(a,b) {
+		var aname = a.getNameWithoutPrefix();
+		var bname = b.getNameWithoutPrefix();
 
+		if (aname == bname) {
+			r = 0;
+		} else if (aname > bname) {
+			r = 1;
+		} else {
+			r = -1;
+		}
+		return (desc ? -r : r);
+	});
 };
+
 /**
  * ZmPrefZimlet
  *
@@ -353,17 +362,19 @@ ZmPrefZimlet = function(name, active, desc, label) {
 
 ZmPrefZimlet.prototype.getNameWithoutPrefix	=
 function() {
-	if (this.label != null && this.label.length > 0)
+	if (this.label != null && this.label.length > 0) {
 		return	this.label;
+	}
 
 	return this.name.substring(this.name.lastIndexOf("_")+1);
 };
 
-ZmPrefZimlet.prototype.isActive			= function() { return this.active; };
-ZmPrefZimlet.prototype.setActive		= function(active) { this.active = active; };
-ZmPrefZimlet.prototype.getName			= function() { return this.name; };
-ZmPrefZimlet.prototype.setName			= function(name) { this.name = name; };
-ZmPrefZimlet.prototype.getDescription	= function() { return this.desc; };
-ZmPrefZimlet.prototype.setDescription	= function(desc){ this.desc = desc; };
-ZmPrefZimlet.prototype.resetStatus		= function() { this._origStatus = this.active; };
-ZmPrefZimlet.prototype.restoreStatus	= function() { this.active = this._origStatus; };
+ZmPrefZimlet.prototype.resetStatus =
+function() {
+	this._origStatus = this.active;
+};
+
+ZmPrefZimlet.prototype.restoreStatus =
+function() {
+	this.active = this._origStatus;
+};
