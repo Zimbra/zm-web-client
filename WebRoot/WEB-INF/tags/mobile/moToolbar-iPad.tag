@@ -31,8 +31,11 @@
     <c:when test="${app eq 'contact' || app eq 'ab'}">
         <zm:getContact var="contact" id="${id}"/>
     </c:when>
-    <c:when test="${app eq 'message' || app eq 'conversation'}">
+    <c:when test="${app eq 'message'}">
         <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}"/>
+    </c:when>
+    <c:when test="${app eq 'conversation'}">
+        
     </c:when>
 </c:choose>
 </mo:handleError>

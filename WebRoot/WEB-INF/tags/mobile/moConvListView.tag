@@ -34,8 +34,15 @@
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
 <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
-<c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>    
-<mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
+<c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
+    <c:choose>
+        <c:when test="${ua.isiPad == true}">
+            <mo:ipadToolbar urlTarget="${context_url}" mailbox="${mailbox}" context="${context}" app="${param.st}" keys="false"/>
+        </c:when>
+        <c:otherwise>
+            <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
+        </c:otherwise>
+    </c:choose>
     <div class='tbl dlist'>
             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                 <c:set var="chit" value="${hit.conversationHit}"/>
@@ -69,6 +76,7 @@
                             <c:set var="dispRec" value="${chit.displayRecipients}"/>
                             <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
                             <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                            <c:if test="${chit.messageCount gt 1}"><c:url var="convUrl" value="${convUrl}"><c:param name="hc" value="1"/></c:url></c:if>
                             <a class="zo_m_list_from" id="a${chit.id}" href="${fn:escapeXml(convUrl)}">${fn:escapeXml(_f)}</a></div>
                         <div class="sub-span">
                             <c:set var="_f" value="${empty chit.subject ? unknownSubject : chit.subject}"/>
@@ -111,5 +119,7 @@
                 </div>
             </div>
         </c:if>
-    <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
+    <c:if test="${ua.isiPad == false}">
+        <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
+    </c:if>    
 </form>

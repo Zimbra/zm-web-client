@@ -154,6 +154,7 @@
 </c:otherwise>
 </c:choose>
 <%-- INCLUDE TOOLBAR BOTTOM --%>
+<c:if test="${ua.isiPad == false}">
 <c:choose>
     <c:when test="${convSummary.messageCount gt 1 and param.mview eq 1}">
                 <mo:convToolbar urlTarget="${context_url}" context="${context}" keys="false" isConv="false"
@@ -164,4 +165,5 @@
                                 keys="false" isConv="true" cid="${convSummary.id}" message="${message}" mailbox="${mailbox}"/>
     </c:otherwise>
 </c:choose>
+</c:if>    
 </form>

@@ -51,7 +51,7 @@
         <c:otherwise>
             <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="true" mailbox="${mailbox}"/>
         </c:otherwise>
-        </c:choose>
+    </c:choose>
     <div class="tbl dlist">
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="mhit" value="${hit.messageHit}"/>
@@ -121,6 +121,8 @@
                 </div>
             </div>
     </c:if>
-    <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="false" mailbox="${mailbox}"/>
+    <c:if test="${ua.isiPad == false}">
+        <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="false" mailbox="${mailbox}"/>
+    </c:if>
 </form>
 

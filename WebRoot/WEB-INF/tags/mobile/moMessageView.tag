@@ -60,6 +60,7 @@
                 <mo:displayMessage mailbox="${mailbox}" message="${msg}" externalImageUrl="${extImageUrl}"
                                    showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
             </div>
-        
-    <mo:msgToolbar mid="${msg.id}" urlTarget="${context_url}" context="${context}" keys="false" isTop="${false}" msg="${msg}" mailbox="${mailbox}"/>
+    <c:if test="${ua.isiPad == false}">
+        <mo:msgToolbar mid="${msg.id}" urlTarget="${context_url}" context="${context}" keys="false" isTop="${false}" msg="${msg}" mailbox="${mailbox}"/>
+    </c:if>
 </form>

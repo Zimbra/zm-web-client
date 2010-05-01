@@ -31,6 +31,28 @@
     <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" limit="100"
                    context="${context}" fetch="none" markread="false" sort="${param.css}"/>
 </c:if>
+
+<c:choose>
+<c:when test="${ua.isiPad == true && empty param.hc}">
+    <div class="applicationActions toolbar">
+        <div class="compose button" onclick="return zClickLink('compose');">
+            <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
+            <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" id="compose"><fmt:message key="compose"/></a>
+        </div>
+        <div class="actions">
+            <div class="left button" onclick="return zClickLink('reply');">
+                <a href="?st=newmail&amp;id=${message.id}&amp;op=reply" id="reply"><fmt:message key="reply"/></a>
+            </div>
+            <div class="center button" onclick="return zClickLink('replyall');">
+                <a href="?st=newmail&id=${message.id}&amp;op=replyAll" id="replyall"><fmt:message key="replyAll"/></a>
+            </div>
+            <div class="right button" onclick="return zClickLink('forward');">
+                <a href="?st=newmail&id=${message.id}&amp;op=forward" id="forward"><fmt:message key="forward"/></a>
+            </div>
+        </div>
+    </div>
+</c:when>
+<c:otherwise>
 <c:if test="${isTop}"><div class="stb tbl top_conv_v_subtoolbar"><div class="tr"><div class="td">
     <c:if test="${isConv!=null && isConv}">
         <zm:currentResultUrl var="closeurl" value="${urlTarget}" _pv="1"
@@ -244,3 +266,5 @@
 <span class="zo_button1" onclick="return checkAll($('zForm').getElementsByClassName('chk'),false);"><span class="SmlIcnHldr Cancel"></span></span></span></div>
 </div>
 </c:if>
+</c:otherwise>
+</c:choose>    
