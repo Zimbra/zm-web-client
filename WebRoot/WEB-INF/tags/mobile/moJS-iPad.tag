@@ -522,8 +522,11 @@ var parseResponse = function (request, container,url) {
                     slideElem(container,1);
                 }</c:if>
                 <c:if test="${!ua.isIE}">window.scrollTo(0,1);</c:if>
-                if(url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('st=newmail') != -1) {
+                if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1) && url.indexOf('hc=1') == -1) {
                     $("view-content").innerHTML = data;                    
+                } else if(url.indexOf('st=newmail') != -1) {
+                    $('compose-body').innerHTML = data;
+                    toggleCompose('compose-pop','veil');
                 } else {
                     $("view-list").innerHTML = data;
                 }
@@ -618,6 +621,24 @@ var toggleElem = function(elem, me, minMsg, maxMsg) {
     }
     return false;
 };
+
+var toggleCompose = function(elem, veil) {
+    if (!elem && !$(elem)) {return false;}
+    if (!veil && !$(veil)) {return false;}
+    if(typeof(elem) == "string"){elem = $(elem);}
+    if(typeof(veil) == "string"){veil = $(veil);}
+    var s = elem.style;
+    var veil = veil.style;
+    if (s && s.display && s.display == 'none' && veil && veil.display && veil.display == 'none') {
+        s.display = '';
+        veil.display = '';
+    } else {
+        s.display = 'none';
+        veil.display='none';
+    }
+    return false;
+};
+
 var addParam = function(url, param) {
     if($iO(url,"&"+param) > -1 || $iO(url,"?"+param) > -1){
         return url;

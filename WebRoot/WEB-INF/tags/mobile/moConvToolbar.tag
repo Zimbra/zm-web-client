@@ -34,7 +34,7 @@
 
 <c:choose>
 <c:when test="${ua.isiPad == true && empty param.hc}">
-    <div class="applicationActions toolbar">
+    <div class="tb tbl"><div class="tr"><div class="td toolbar">
         <div class="compose button" onclick="return zClickLink('compose');">
             <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
             <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" id="compose"><fmt:message key="compose"/></a>
@@ -50,7 +50,7 @@
                 <a href="?st=newmail&id=${message.id}&amp;op=forward" id="forward"><fmt:message key="forward"/></a>
             </div>
         </div>
-    </div>
+    </div></div></div>
 </c:when>
 <c:otherwise>
 <c:if test="${isTop}"><div class="stb tbl top_conv_v_subtoolbar"><div class="tr"><div class="td">

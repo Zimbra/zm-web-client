@@ -27,9 +27,10 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <zm:currentResultUrl var="closeUrl" value="${urlTarget}" context="${context}"/>
 <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
+<zm:getUserAgent var="ua" session="true"/>
 <c:choose>
     <c:when test="${ua.isiPad == true}">
-        <div class="applicationActions toolbar">
+        <div class="tb tbl"><div class="tr"><div class="td toolbar">
             <div class="compose button" onclick="return zClickLink('compose');">
                 <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
                 <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" id="compose"><fmt:message key="compose"/></a>
@@ -45,7 +46,7 @@
                     <a href="?st=newmail&id=${msg.id}&amp;op=forward" id="forward"><fmt:message key="forward"/></a>
                 </div>
             </div>
-        </div>
+        </div></div></div>
     </c:when>
     <c:otherwise>
         <c:if test="${isTop}"><div class="stb tbl"><div class="tr"><div class="td">

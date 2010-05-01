@@ -120,13 +120,31 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 <title><fmt:message key="zimbraTitle"/></title>
-<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"/>
+<meta content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width" name="viewport">
 <script type="text/javascript">window.onerror=function(m,u,l){if(window.console){window.console.log("An error occured in: "+u+"\n{\n\tmsg: "+m+",\n\tline: "+l+"\n}");}return false;};</script>
 <c:if test="${empty djs or not djs}"><script type="text/javascript">window.currentUrl='<c:url value="${currentUrl}"><c:param name="ajax" value="true"/></c:url>';<c:import url="/m/mojs${dbg ? '?dev=1':''}"/></script></c:if>
 <link href="<c:url value='/css/ipad.css'/>" type="text/css" rel="stylesheet"/>
 </head>
 
 <body>
+    <div class="veil" style="display:none;" id="veil"></div>
+
+    <div class="wrapper" style="display:none;" id="compose-pop">
+        <div class="composeBox">
+            <div class="composeToolbar">
+                <div class="compose button"><a href="#"><span>Send</span></a></div>
+
+                <div class="compose button"><a href="#"><span>Save</span></a></div>
+
+                <div class="buttonRight button" onclick="return toggleCompose('compose-pop','veil');"><span>Cancel</span></div>
+            </div>
+
+            <div class="composeFields" id="compose-body"> sdfsdfsd
+
+            </div>
+        </div>
+    </div>
+    
 	<div class="topbar">
 
 		<a href="www.zimbra.com" target="_new"><div class="logo"></div></a>
@@ -141,7 +159,10 @@
 				</ul>
 		
 
-		<div class="signout alignRight"><a href="#">Sign out</a></div>
+		<div class="signout alignRight">
+            <c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:url>
+            <a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>
+        </div>
 
 		<div class="search alignRight"><input type="search" placeholder="Search..."></div>
 
@@ -194,12 +215,16 @@ if(window != parent){
                 &nbsp;
             </div>
 
-            <div class="msgBody">
-                <center>To view a message, click on it</center>
+            <div class="msgBody" id="msg-body">
+                <center><fmt:message key="viewMessage"/></center>
             </div>
 	    </div>
 
+        <div id="empty-message" style="display:none;"><fmt:message key="viewMessage"/></div>
+
     </div>
+
+
 </c:if>
 
 <c:if test="${empty param.ajax}">
