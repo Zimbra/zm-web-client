@@ -3976,3 +3976,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
     font-size:13px;
     padding: 5px 10px 5px 5px;
 }
+
+.ZmSelectAddrDialog {
+	width: 400px;
+}

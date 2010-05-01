@@ -460,6 +460,15 @@ function(clickedCol, ev) {
 	if (isSentOrDrafts && (isSentOrDrafts.sent || isSentOrDrafts.drafts)) {
 		this._checkSelectionColumnClicked(clickedCol, ev);
 		return;
+		var sel = this.getSelection();
+		var addrs = [];
+		for (var i = 0, len = sel.length; i < len; i++) {
+			addrs.push(sel[i].getAddress(AjxEmailAddress.TO));
+		}
+		var dlg = appCtxt.getAddrSelectDialog();
+		dlg.popup(addrs);
+		this._checkSelectionColumnClicked(clickedCol, ev);
+		return;
 	}
 
 	ZmMailListView.prototype._columnClicked.call(this, clickedCol, ev);

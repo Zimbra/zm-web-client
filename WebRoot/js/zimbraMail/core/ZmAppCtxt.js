@@ -845,6 +845,20 @@ function() {
 };
 
 /**
+ * Gets the address selection dialog.
+ *
+ * @return	{ZmSelectAddrDialog}		the address selection dialog
+ */
+ZmAppCtxt.prototype.getAddrSelectDialog =
+function() {
+	if (!this._addrSelectDialog) {
+		AjxDispatcher.require(["MailCore", "Mail"]);
+		this._addrSelectDialog = new ZmSelectAddrDialog(this._shell);
+	}
+	return this._addrSelectDialog;
+};
+
+/**
  * Gets the root tab group.
  *
  * @return	{DwtTabGroup}	the root tab group
