@@ -1256,6 +1256,8 @@ function(type, componentId, instanceDate, accountName, ignoreNotifyDlg, origMsg,
 	msg.isForwarded = false;
 	msg.isInviteReply = true;
     msg.acceptFolderId = acceptFolderId;
+    msg.folderId = msg._origMsg.folderId; 
+
     var replyActionMode = ZmMailListController.REPLY_ACTION_MAP[type] ? ZmMailListController.REPLY_ACTION_MAP[type] : type;
 	var replyBody = this._getInviteReplyBody(replyActionMode, instanceDate, msg._origMsg.isResourceInvite());
 	if (replyBody != null) {

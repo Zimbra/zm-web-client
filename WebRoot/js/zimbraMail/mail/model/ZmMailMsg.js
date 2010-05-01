@@ -944,9 +944,11 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	}
 
     if(!this.identity) {
-        var ac = window.parentAppCtxt || window.appCtxt;        
-        var collection = ac.getIdentityCollection();
-        this.identity = collection.defaultIdentity;
+        var ac = window.parentAppCtxt || window.appCtxt;                
+        var account = (ac.multiAccounts && ac.getActiveAccount().isMain)
+            ? ac.accountList.defaultAccount : null;
+        var identityCollection = ac.getIdentityCollection(account);
+        this.identity = identityCollection.selectIdentity(this);
     }
 
     if (this.identity) {
