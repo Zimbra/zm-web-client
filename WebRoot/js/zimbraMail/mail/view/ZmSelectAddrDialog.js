@@ -48,19 +48,11 @@ function() {
 	return "ZmSelectAddrDialog";
 };
 
-//
-// Data
-//
-
-//
-// Public methods
-//
-
-ZmSelectAddrDialog.prototype._contentHtml = 
+ZmSelectAddrDialog.prototype._contentHtml =
 function() {
 	var html = [];
 	var idx = 0;
-	html[idx++] = "<table cellpadding=0 cellspacing=5 border=0";
+	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0";
 	html[idx++] = (AjxEnv.isSafari) ? " width='300'>" : ">";
 	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmSelectAddrDialog", {id:this._htmlElId});
 	html[idx++] = "</table>";
@@ -78,8 +70,14 @@ function() {
 	}
 };
 
+/**
+ * Populates the list view before showing the dialog.
+ *
+ * @param {array}		addrs			list of AjxEmailAddress to show user
+ * @param {string}		queryName		"sent" or "drafts"
+ */
 ZmSelectAddrDialog.prototype.popup =
-function(addrs) {
+function(addrs, queryName) {
 
 	if (!(addrs && addrs.length)) {
 		var d = appCtxt.getMsgDialog();
@@ -89,6 +87,7 @@ function(addrs) {
 	}
 
 	this._addrs = [];
+	this._queryName = queryName;
 	var used = {}, id = 1;
 	for (var i = 0, len = addrs.length; i < len; i++) {
 		var addr = addrs[i];
@@ -113,10 +112,8 @@ function() {
 
 	var sel = this._listView.getSelection();
 	if (sel && sel.length) {
-		var email = sel[0].getAddress();
-		var query = "in:sent to:" + email;
-		var sc = appCtxt.getSearchController();
-		sc.search({query:query});
+		var query = "in:" + this._queryName + " to:" + sel[0].getAddress();
+		appCtxt.getSearchController().search({query:query});
 	}
 	this.popdown();
 };

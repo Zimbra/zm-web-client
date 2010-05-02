@@ -73,7 +73,7 @@ ZmMailListView.prototype.set =
 function(list, sortField) {
 
 	var s = this._controller._activeSearch && this._controller._activeSearch.search;
-	this._folderId = s && s.singleTerm && s.folderId;
+	this._folderId = s && s.folderId;
 	ZmListView.prototype.set.call(this, list, sortField);
 
 	var sortBy = s && s.sortBy;
@@ -461,8 +461,33 @@ function() {
 	}
 };
 
+ZmMailListView.prototype._columnClicked =
+function(clickedCol, ev) {
+
+	// Bug 6830 - since server can't sort on recipient, let user search via dialog
+	var hdr = this.getItemFromElement(clickedCol);
+	if (hdr && hdr._sortable && hdr._sortable == ZmItem.F_FROM) {
+		var fromMe = this._isSentOrDraftsFolder();
+		if (fromMe) {
+			var sel = this.getSelection();
+			var addrs = [];
+			for (var i = 0, len = sel.length; i < len; i++) {
+				addrs.push(sel[i].getAddress(AjxEmailAddress.TO));
+			}
+			var dlg = appCtxt.getAddrSelectDialog();
+			var queryId = fromMe.isSent ? ZmFolder.ID_SENT : ZmFolder.ID_DRAFTS;
+			dlg.popup(addrs, ZmFolder.QUERY_NAME[queryId]);
+			this._checkSelectionColumnClicked(clickedCol, ev);
+			return;
+		}
+	}
+
+	ZmListView.prototype._columnClicked.call(this, clickedCol, ev);
+};
+
 ZmMailListView.prototype._resetFromColumnLabel =
 function() {
+
 	var isFolder = this._isSentOrDraftsFolder();
 
 	// set the from column name based on query string
