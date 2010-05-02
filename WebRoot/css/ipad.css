@@ -229,7 +229,7 @@ html, body{
 	-webkit-border-bottom-right-radius: 0;
 	border-right: 1px solid #999;
 }
-
+ 
 .center{
 	-webkit-border-top-left-radius: 0;
 	-webkit-border-bottom-left-radius: 0;
@@ -263,7 +263,7 @@ html, body{
 	background: #786448 url("/img/mobile/ipad/brown-pattern.gif") top left;
 	position:relative;	/* needed */
     z-index:1;			/* needed and important */
-    height: 610px;
+
 }
 
 .listViewPane{
@@ -325,7 +325,7 @@ ul.list li{
 	
 .subject{
 	color: white;
-	font-size: 16px;
+	font-size: 18px;
 	font-weight: bold;
 	width: 70%;
 }
@@ -527,11 +527,12 @@ span.aleft > div:first-child, .contactHeader {
 	color: white;
 }
 
-.View div, .View .list-row{
+
+.View .list-row{   									/*. View div, */
     padding: 12px;
     margin-bottom: 8px;
     /* border-bottom: 1px solid #ede8db; */
-	font-size: 16px;
+	font-size: 14px;
 } 
 
 .View .list-row .label, .View div .label{
@@ -545,6 +546,8 @@ span.aleft > div:first-child, .contactHeader {
 .cont_view .tr{
 	display: block;
 	text-align: left;
+	margin-bottom: 8px;
+	padding: 4px;
 }
 
 .cont_view .label{
@@ -553,7 +556,7 @@ span.aleft > div:first-child, .contactHeader {
 	color: #666;
 	text-align: left;
 	float: none !important;
-	font-size: 16px;
+	font-size: 14px;
 }
 .cont_view .value{
 	text-align: left !important;
@@ -561,7 +564,7 @@ span.aleft > div:first-child, .contactHeader {
 }
 
 .value input{
-	font-size: 16px;
+	font-size: 14px;
 }
 
 .value a{
@@ -617,9 +620,13 @@ span.aleft > div:first-child, .contactHeader {
 	width: 100%;
 }
 .composeBox{
-	width: 40%;
+	width: 500px;
 	margin: 2px auto;
 	position: relative;
+	-webkit-box-shadow: 3px 2px 5px #333;
+	background-color: transparent;
+
+
 
 }
 
@@ -631,10 +638,38 @@ span.aleft > div:first-child, .contactHeader {
 	-webkit-border-top-left-radius: 8px;
 	-webkit-border-top-right-radius: 8px;
 }
-
+	
+	.composeToolbar .compose, .composeToolbar .buttonRight{
+		margin-top: 6px;
+	}
+	
+	
 .composeFields{
 	background-color: white;
 	height: 30%;
 	-webkit-border-bottom-left-radius: 8px;
 	-webkit-border-bottom-right-radius: 8px;
+}
+
+
+.cmp_container .View div.tr, .cmp_body, .cmp_body textarea{
+	width: 95%;
+	text-align: left;
+	margin-bottom: 8px;
+	padding: 4px;
+	display: block;
+	font-size: 14px;
+}
+
+.cmp_container .View span.label{
+	width: 100px;
+}
+
+.cmp_container .View span.value div{
+	padding: 0;
+	margin-bottom: 0;
+}
+
+.cmp_container .View span.value, .cmp_container .View span.value input{
+	width: 365px;
 }
