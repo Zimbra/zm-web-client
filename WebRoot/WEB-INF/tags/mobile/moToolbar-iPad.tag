@@ -40,7 +40,7 @@
 </c:choose>
 </mo:handleError>
 <%--This takes care of the toolbar on the right pane, decide the buttons to be displayed depending on the app--%>
-<div class="overviewActions toolbar">
+<div class="tb tbl"><div class="tr"><div class="td toolbar">
         <c:choose>
             <c:when test="${app eq 'contact' || app eq 'ab'}">
                 <c:url var="editUrl" value="${closeUrl}">
@@ -65,24 +65,62 @@
 
                     <div class="folder button"><div>Folders</div></div>
 
-                    <div class="icons button"></div>
+                    <!--div class="icons button" onclick="return submitForm(document.getElementById('zForm'),null,'actionDelete');">
+                        <c:choose><c:when test="${not context.folder.isInTrash}"><input type="submit" name="actionDelete" value=<fmt:message key='delete'/></c:when>
+                            <c:otherwise><option value="actionHardDelete"><fmt:message key="delete"/></option></c:otherwise>
+                        </c:choose>
+                    </div-->
                     <div class="icons button"></div>
                     <div class="select button">
                         <div>
-                            <select>
-                                <option>Move to...</option>
-                                <option>Inbox</option>
-                                <option>Sent</option>
-                                <option>Spam</option>
-                                <option>Trash</option>
-                                <option>----------------</option>
-                                <option>Personal Folder 1</option>
-                                <option>Personal Folder 2</option>
+                            <select class="zo_select_button" name="anAction" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
+                                <option value="" selected="selected"><fmt:message key="moreActions"/></option>
+                                <optgroup label="<fmt:message key='select'/>">
+                                    <option value="selectAll"><fmt:message key="all"/></option>
+                                    <option value="selectNone"><fmt:message key="none"/></option>
+                                </optgroup><c:choose><c:when test="${context.isConversationSearch || context.isMessageSearch}">
+                                <optgroup label="<fmt:message key="markAs"/>">
+                                    <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
+                                    <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option><c:choose>
+                                    <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+                                    <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise></c:choose>
+                                </optgroup></c:when><c:when test="${context.isContactSearch}">
+                                <optgroup label="<fmt:message key="compose"/>">
+                                    <option value="composeTo"><fmt:message key="to"/></option>
+                                    <option value="composeCC"><fmt:message key="cc"/></option>
+                                    <option value="composeBCC"><fmt:message key="bcc"/></option>
+                                </optgroup></c:when></c:choose>
+                                <optgroup label="<fmt:message key="MO_flag"/>">
+                                    <option value="actionFlag"><fmt:message key="add"/></option>
+                                    <option value="actionUnflag"><fmt:message key="remove"/></option>
+                                </optgroup>
+                                <optgroup label="<fmt:message key="moveAction"/>">
+                                    <c:choose>
+                                        <c:when test="${context.isContactSearch}"><c:set var="count" value="${0}"/>
+                                            <zm:forEachFolder var="folder">
+                                                <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isContactMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if>
+                                            </zm:forEachFolder>
+                                        </c:when>
+                                        <c:otherwise><c:set var="count" value="${0}"/>
+                                            <zm:forEachFolder var="folder">
+                                                <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if>
+                                            </zm:forEachFolder>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </optgroup><c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+                                <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
+                                <optgroup label="<fmt:message key="MO_actionAddTag"/>">
+                                    <c:forEach var="atag" items="${allTags}"><option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
+                                </optgroup>
+                                <optgroup label="<fmt:message key="MO_actionRemoveTag"/>">
+                                    <c:forEach var="atag" items="${allTags}"><option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
+                                </optgroup>
+                            </c:if>
                             </select>
                         </div>
                     </div>
 
             </c:when>
         </c:choose>
-</div>
+</div></div></div>
 
