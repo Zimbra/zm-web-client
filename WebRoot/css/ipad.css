@@ -673,3 +673,8 @@ span.aleft > div:first-child, .contactHeader {
 .cmp_container .View span.value, .cmp_container .View span.value input{
 	width: 365px;
 }
+ .cmp_body textarea{
+ 	height: 200px;
+ 	width: 100%;
+ 	margin-left: 2px;
+ }

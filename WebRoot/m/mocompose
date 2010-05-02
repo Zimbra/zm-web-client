@@ -92,6 +92,7 @@
                 <c:forEach var="identity" items="${mailbox.accountInfo.identities}"><option <c:if test="${identity.default}">selected='true'</c:if> value="${fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted)}">${zm:truncateFixed(fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted),50,true)}</option></c:forEach>
                 </select>
             </span>
+    
     </div></c:if>
     <div class="tr ${classForNextRow}"><c:set value="nr" var="classForNextRow"/>
         <span class='label td'>
@@ -200,7 +201,7 @@
             value="${param.attachId}" name="uploadedAttachment"/>
 </div></c:if>
 <div class="View cmp_body value">
-    <textarea class="Textarea" id="bodyField" rows="20" name="body">${fn:escapeXml(compose.content)}</textarea>
+    <textarea class="Textarea" id="bodyField" <c:if test="$(ua.isiPad == false)">"rows="20"</c:if> name="body">${fn:escapeXml(compose.content)}</textarea>
     <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" />
  </div>
 </div>
