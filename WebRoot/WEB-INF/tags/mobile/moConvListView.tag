@@ -43,7 +43,8 @@
             <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
         </c:otherwise>
     </c:choose>
-    <div class='tbl dlist'>
+    <div class="wrap-dlist" id="wrap-dlist-view">
+    <div class='tbl dlist' id="dlist-view">
             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                 <c:set var="chit" value="${hit.conversationHit}"/>
                   <c:choose>
@@ -83,11 +84,13 @@
                             <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
                             ${fn:escapeXml(_f)}
                         </div>
-                        <div class="frag-span small-gray-text">
-                            <c:set var="_f" value="${chit.fragment}"/>
-                            <c:if test="${fn:length(_f) > 47}"><c:set var="_f" value="${fn:substring(_f, 0, 47)}..."/></c:if>
-                            ${fn:escapeXml(_f)}
-                        </div>
+                        <c:if test="${ua.isiPad == false}">
+                            <div class="frag-span small-gray-text">
+                                <c:set var="_f" value="${chit.fragment}"/>
+                                <c:if test="${fn:length(_f) > 47}"><c:set var="_f" value="${fn:substring(_f, 0, 47)}..."/></c:if>
+                                ${fn:escapeXml(_f)}
+                            </div>
+                        </c:if>
                     </span>
                     <span class="td l">
                         <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${chit.date}"/>
@@ -108,7 +111,11 @@
                         <c:if test="${chit.messageCount gt 1}"><span class="small-gray-text">(${chit.messageCount})</span></c:if> 
                     </span>
                 </div>
+                <c:if test="${chit.messageCount gt 1}">
+                        <div id="list${chit.id}" style="display:block;" class=""></div>
+                </c:if>
             </c:forEach>
+        </div>
         </div>
         <c:if test="${empty context || empty context.searchResult || context.searchResult.size == 0}">
             <div class='tbl'>

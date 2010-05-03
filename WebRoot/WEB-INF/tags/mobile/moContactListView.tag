@@ -39,7 +39,8 @@
     <c:if test="${ua.isiPad == false}">
         <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
     </c:if>
-    <div class="tbl dlist">
+    <div class="wrap-dlist" id="wrap-dlist-view">
+    <div class="tbl dlist" id="dlist-view">
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="chit" value="${hit.contactHit}"/>
         <zm:currentResultUrl var="contactUrl" value="${context_url}" action="view" id="${chit.id}"
@@ -91,7 +92,7 @@
             </span>
         </div>
     </c:forEach>
-    </div>        
+    </div></div>        
     <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">
         <div class='tbl'>
                 <div class="tr">

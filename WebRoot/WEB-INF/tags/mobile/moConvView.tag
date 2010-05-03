@@ -63,6 +63,7 @@
                          action="view" id="${message.id}"/>
 </c:if>
 <c:set var="title" value="${zm:truncate(subject,20,true)}" scope="request"/>
+<c:if test="${ua.isiPad == true}"><c:url var="actionUrl" value="${actionUrl}"><c:param name="hc" value="1"/></c:url></c:if>
 <form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
@@ -70,11 +71,10 @@
 <%-- INCLUDE TOOLBAR TOP--%>
 <c:choose>
     <c:when test="${convSummary.messageCount gt 1 and param.mview eq 1}">
-        <mo:convToolbar urlTarget="${context_url}" context="${context}" keys="false" isConv="false"
-                        singleMessage="${singleMessage}" message="${message}" isTop="${true}" mailbox="${mailbox}"/>
+        <mo:convToolbar urlTarget="${context_url}" context="${context}" keys="false" isConv="false" singleMessage="${singleMessage}" message="${message}" isTop="${true}" mailbox="${mailbox}"/>
     </c:when>
     <c:otherwise>
-        <mo:convToolbar singleMessage="${singleMessage}" urlTarget="${context_url}" context="${context}"
+            <mo:convToolbar singleMessage="${singleMessage}" urlTarget="${context_url}" context="${context}"
                         keys="false" isConv="true" cid="${convSummary.id}" message="${message}"
                         isTop="${true}" mailbox="${mailbox}"/>
     </c:otherwise>
@@ -95,11 +95,15 @@
     </div>
 </c:when>
 <c:otherwise>
+
+<c:if test="${ua.isiPad == false}">
     <div class='zo_m_cv_sub'>
         <span class="SmlIcnHldr ConvOpen">&nbsp;</span>&nbsp;${fn:escapeXml(empty subject ? emptySubject : subject)}
     </div>
-    <div class="msg-list-in-conv tbl dlist">
-        <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
+</c:if>
+<div class="wrap-dlist" id="wrap-dlist-view">    
+<div class="msg-list-in-conv tbl dlist" id="dlist-view">    
+<c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
 <c:set var="mhit" value="${hit.messageHit}"/>
 <zm:currentResultUrl var="msgUrl" value="${context_url}" cid="${convSummary.id}" id="${hit.id}"
                      action='view' context="${context}" mview="1"
@@ -107,7 +111,7 @@
 <fmt:message var="unknownRecipient" key="unknownRecipient"/>
 <fmt:message var="unknownSubject" key="noSubject"/>
 <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
-     <div id="conv${mhit.id}" class="tr conv_v_list_row list-row${mhit.isUnread ? '-unread' : ''}">
+            <div id="conv${mhit.id}" class="tr conv_v_list_row list-row${mhit.isUnread ? '-unread' : ''}">
                <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/>
                <span class="td f">
                    <c:set value=",${mhit.id}," var="stringToCheck"/>
@@ -150,7 +154,7 @@
                </span>
            </div>
 </c:forEach>
-</div>
+</div></div>
 </c:otherwise>
 </c:choose>
 <%-- INCLUDE TOOLBAR BOTTOM --%>

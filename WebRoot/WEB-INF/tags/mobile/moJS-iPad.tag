@@ -288,8 +288,7 @@ var zClickLink = function(id, t, el) { //Click on href and make ajx req if avail
         return false;
     }
     href = toHash(href);
-    var containerId = targ.targetId ? targ.targetId : containerId;
-    var container = GC(containerId);
+    var container = GC(id);
     ajxReq(href, null, container);
     delete xhr;
     return false;
@@ -410,8 +409,7 @@ var customClick = function (e) {
         if(tname.match(/input/ig) && ttype.match(/submit/ig)){ //submit button; add clicked=true to it
             targ._wasClicked = true;                                                          //ajxForm submit will send only clicked btns to server
             return true;
-        }<c:if test="${ua.isiPhone or ua.isiPod}">else if(tname.match(/input/ig) && ttype.match(/checkbox/ig))
-            updateChecked(false,true);</c:if>
+        }
     }
     //targ.dispatchEvent(e);
 };
@@ -529,6 +527,7 @@ var parseResponse = function (request, container,url) {
                     toggleCompose('compose-pop','veil');
                 } else {
                     $("view-list").innerHTML = data;
+                    loaded();
                 }
                 /*var scripts = container.getElementsByTagName("script");
                 for (var i = 0; i < scripts.length; i++) {
@@ -698,13 +697,13 @@ if(window.location.hash){
 };
 
 var setHeight = function (){
-    document.getElementById('view').style.height = window.orientation == 90 || window.orientation == -90 ? '608px' : '864px';   
+    document.getElementById('wrap-dlist-view').style.height = window.orientation == 90 || window.orientation == -90 ? '608px' : '864px';   
 };
 
 var loaded = function () {
 	setHeight();
     document.addEventListener('touchmove', function(e){ e.preventDefault(); });
-	myScroll = new iScroll('view-list');
+	myScroll = new iScroll('dlist-view');
 };
 
 window.addEventListener('orientationchange', setHeight);

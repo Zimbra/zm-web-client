@@ -261,9 +261,6 @@ html, body{
 	width: 100%;
 	overflow: hidden;
 	background: #786448 url("/img/mobile/ipad/brown-pattern.gif") top left;
-	position:relative;	/* needed */
-    z-index:1;			/* needed and important */
-
 }
 
 .listViewPane{
@@ -385,6 +382,12 @@ ul.list li{
 	}
 	
 /** ListView Styles **/
+
+.wrap-dlist {
+    position:relative;	/* needed */
+    z-index:10;			/* needed and important */
+    height: 610px;
+}
 
 .tbl {
     display: table;
