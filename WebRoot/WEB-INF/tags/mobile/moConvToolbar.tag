@@ -52,6 +52,66 @@
         </div>
     </div></div></div>
 </c:when>
+<c:when test="${ua.isiPad == true && not empty param.hc}">
+    <c:if test="${isConv!=null && isConv}">
+        <zm:currentResultUrl var="closeurl" value="${urlTarget}" _pv="1"
+                             index="${context.currentItemIndex}"
+                             context="${context}"/>
+    </c:if>
+    <zm:currentResultUrl var="closeurl" value="${urlTarget}" _pv="1"
+                         index="${context.currentItemIndex}"
+                         context="${context}"/>
+    <div class="tb tbl"><div class="tr"><div class="td toolbar">
+        <div class="compose button" onclick="return zClickLink('compose');">
+            <a href="${fn:escapeXml(closeurl)}${empty param.ajax ? '#conv' : '&conv'}${cid}" class='zo_leftbutton'>${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}</a>
+        </div>
+        <div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
+        <div class="select button">
+
+        <c:if test="${context.searchResult.size gt 0}">
+        <span>
+            <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'));">
+                <option value="" selected="selected"><fmt:message key="moreActions"/></option>
+                <optgroup label="Delete">
+                    <c:choose>
+                        <c:when test="${not context.folder.isInTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
+                        <c:otherwise><option value="actionDelete"><fmt:message key="delete"/></option></c:otherwise>
+                    </c:choose>
+                </optgroup>
+                <optgroup label="<fmt:message key="markAs"/>">
+                    <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
+                    <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
+                    <c:choose>
+                        <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+                        <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
+                    </c:choose>
+                </optgroup>
+                <optgroup label="<fmt:message key="MO_flag"/>">
+                    <option value="actionFlag"><fmt:message key="add"/></option>
+                    <option value="actionUnflag"><fmt:message key="remove"/></option>
+                </optgroup>
+                <optgroup label="<fmt:message key="moveAction"/>"><c:set var="count" value="${0}"/>
+                    <zm:forEachFolder var="folder">
+                        <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
+                </optgroup>
+                <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+                    <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
+                    <optgroup label="<fmt:message key="MO_actionAddTag"/>">
+                        <c:forEach var="atag" items="${allTags}"><option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
+                    </optgroup>
+                    <optgroup label="<fmt:message key="MO_actionRemoveTag"/>">
+                        <c:forEach var="atag" items="${allTags}"><option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
+                    </optgroup>
+                </c:if>
+            </select>
+            <noscript><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+            <script type="text/javascript">var actGo=document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
+        </span>
+        </c:if>
+
+        </div>    
+    </div></div></div>
+</c:when>
 <c:otherwise>
 <c:if test="${isTop}"><div class="stb tbl top_conv_v_subtoolbar"><div class="tr"><div class="td">
     <c:if test="${isConv!=null && isConv}">
