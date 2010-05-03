@@ -130,18 +130,8 @@
     <div class="veil" style="display:none;" id="veil"></div>
 
     <div class="wrapper" style="display:none;" id="compose-pop">
-        <div class="composeBox">
-            <div class="composeToolbar">
-                <div class="compose button"><a href="#"><span>Send</span></a></div>
-
-                <div class="compose button"><a href="#"><span>Save</span></a></div>
-
-                <div class="buttonRight button" onclick="return toggleCompose('compose-pop','veil');"><span>Cancel</span></div>
-            </div>
-
-            <div class="composeFields" id="compose-body"> sdfsdfsd
-
-            </div>
+        <div class="composeBox" id="compose-body">
+            &nbsp;
         </div>
     </div>
     

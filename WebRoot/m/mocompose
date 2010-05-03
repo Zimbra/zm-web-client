@@ -76,14 +76,27 @@
 <c:set var="title" scope="request" value="${title}"/><c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/><c:set var="nmail" value="st=newmail"/>
 <form action="?${nmail}&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe');">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/><%-- TOP TOOLBAR --%>
-<div class="tbl tb"><div class="tr"><div class="td">
-    <span class='zo_tb_submit'><a href="${zm:cook(caction)}" class="zo_button"><fmt:message key="cancel"/></a></span>
-    <span>
-       <span class="zo_tb_submit"><input class='zo_button' name="actionDraft" type="submit" value="<fmt:message key="save"/>"></span>
-       <span class="zo_tb_submit"><input class='zo_button' name="actionSend" type="submit" value="<fmt:message key="send"/>"></span>
-    </span>
-</div></div></div>
-<div class="Stripes cmp_container"><div class="View">
+<c:choose>
+    <c:when test="${ua.isiPad == true}">
+    <div class="composeToolbar">
+        <div class="compose button"><span><input class='zo_button' name="actionSend" type="submit" value="<fmt:message key="send"/>"></span></div>
+
+        <div class="compose button"><span><input class='zo_button' name="actionDraft" type="submit" value="<fmt:message key="save"/>"></span></div>
+
+        <div class="buttonRight button" onclick="return toggleCompose('compose-pop','veil');"><span><fmt:message key="cancel"/></span></div>
+    </div>
+    </c:when>
+    <c:otherwise>
+    <div class="tbl tb"><div class="tr"><div class="td">
+        <span class='zo_tb_submit'><a href="${zm:cook(caction)}" class="zo_button"><fmt:message key="cancel"/></a></span>
+        <span>
+           <span class="zo_tb_submit"><input class='zo_button' name="actionDraft" type="submit" value="<fmt:message key="save"/>"></span>
+           <span class="zo_tb_submit"><input class='zo_button' name="actionSend" type="submit" value="<fmt:message key="send"/>"></span>
+        </span>
+    </div></div></div>
+    </c:otherwise>
+</c:choose>
+<div class="Stripes cmp_container <c:if test="${ua.isiPad == true}">composeFields</c:if>"><div class="View">
 <div class="tbl cmp_from_to_cc_table">
     <c:if test="${fn:length(mailbox.accountInfo.identities) gt 1 }"><c:set value="nr" var="classForNextRow"/><div class="tr cmp_from_row">
             <span class='td label'><label for="fromField"><fmt:message key="fromLabel"/></label></span>
@@ -206,6 +219,7 @@
  </div>
 </div>
 <%-- BOTTOM TOOLBAR --%>
+<c:if test="${ua.isiPad == false}">
 <div class="tbl tb"><div class="tr"><div class="td">
     <span class='zo_tb_submit'><a href="${zm:cook(caction)}" class="zo_button"><fmt:message key="cancel"/></a></span>
     <span>
@@ -213,6 +227,7 @@
        <span class="zo_tb_submit"><input class='zo_button' name="actionSend" type="submit" value="<fmt:message key="send"/>"></span>
     </span>
 </div></div></div>
+</c:if>    
 <input type="hidden" name="sendUID" value="${fn:escapeXml(compose.sendUID)}"/>
 <input type="hidden" name="replyto" value="${fn:escapeXml(compose.replyTo)}"/>
 <input type="hidden" name="from" value="${fn:escapeXml(compose.from)}"/>
