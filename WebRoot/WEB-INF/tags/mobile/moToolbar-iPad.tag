@@ -49,7 +49,7 @@
                     </select></c:if>
 
                 <div class="icons button"><input name="actionDelete" type="submit" value="T"/></div>
-                <div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
+                <!-- div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div -->
                 <div class="select button">
                     <div>
                        <select class="zo_select_button" name="anAction" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
