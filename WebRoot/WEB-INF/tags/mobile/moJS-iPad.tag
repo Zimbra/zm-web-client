@@ -507,6 +507,8 @@ var parseResponse = function (request, container,url) {
         }
         if(match){
             sAT(match[1]);
+            $("view-content").style.display = "none";
+            $("empty-message").style.display = "block";
         }
         if (request.status == 200) {
             showLoadingMsg(null, false);
@@ -521,7 +523,9 @@ var parseResponse = function (request, container,url) {
                 }</c:if>
                 <c:if test="${!ua.isIE}">window.scrollTo(0,1);</c:if>
                 if(url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showABCreate')!=-1  && url.indexOf('hc=1') == -1) {
-                    $("view-content").innerHTML = data;                    
+                    $("view-content").innerHTML = data;
+                    $("view-content").style.display = "block";
+                    $("empty-message").style.display = "none";
                 } else if(url.indexOf('st=newmail') != -1) {
                     $('compose-body').innerHTML = data;
                     toggleCompose('compose-pop','veil');

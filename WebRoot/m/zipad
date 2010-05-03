@@ -206,11 +206,15 @@ if(window != parent){
             </div>
 
             <div class="msgBody" id="msg-body">
-                <center><fmt:message key="viewMessage"/></center>
+                <center><fmt:message key="emptyMessage"/></center>
             </div>
 	    </div>
-
-        <div id="empty-message" style="display:none;"><fmt:message key="viewMessage"/></div>
+        <div class="contentViewPane">
+            <div class="header">
+                &nbsp;
+            </div>
+        <div class="msgBody" id="empty-message" style="display:none;"><center><fmt:message key="emptyMessage"/></center> </div>
+        </div>
 
     </div>
 
