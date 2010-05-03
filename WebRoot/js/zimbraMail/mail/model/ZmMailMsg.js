@@ -948,7 +948,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
         var account = (ac.multiAccounts && ac.getActiveAccount().isMain)
             ? ac.accountList.defaultAccount : null;
         var identityCollection = ac.getIdentityCollection(account);
-        this.identity = identityCollection.selectIdentity(this);
+        this.identity = identityCollection.selectIdentity(this._origMsg);
     }
 
     if (this.identity) {

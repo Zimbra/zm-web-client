@@ -160,6 +160,12 @@ function(mailMsg, type) {
 	identity = this._folderToIdentity[mailMsg.folderId];
 	if (identity) { return identity; }
 
+    //Check if a identity's address was in the attendees list
+    if(mailMsg.isInvite()) {
+        identity = this._selectIdentityFromAttendees(mailMsg);
+        if (identity) { return identity; }
+    }
+
 	return this.defaultIdentity;
 };
 
@@ -248,5 +254,34 @@ function(mailMsg, type) {
 			}
 		}
 	}
+	return null;
+};
+
+/**
+ * Gets the identity based on attendees list
+ *
+ * @param	{ZmMailMsg}	    mail msg which is an invitation, passing non-invite mail msg will return null
+ * @return	{ZmIdentity}	the identity
+ */
+ZmIdentityCollection.prototype._selectIdentityFromAttendees =
+function(mailMsg) {
+
+    if(!mailMsg.isInvite()) return null;
+
+	var identity;
+    var attendees = mailMsg.invite.getAttendees();
+
+    if(!attendees) return null;
+    
+	for (var i = 0, count = attendees.length; i < count; i++) {
+		var address = attendees[i].url;
+		if (address) {
+			identity = this._addressToIdentity[address.toLowerCase()];
+			if(identity) {
+				return identity;
+			}
+		}
+	}
+    
 	return null;
 };
