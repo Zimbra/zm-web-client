@@ -24,65 +24,92 @@
 <c:set value="${title}" var="title" scope="request"/>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${param.st}"/></c:url>
-<div class="tb tbl">
-    <div class="tr">
-        <div class="td">
-            <span class="Title left">
+<c:choose>
+    <c:when test="${ua.isiPad == true}">
+        <c:if test="${empty param.showABCreate}">
+        <div class="overViewActions toolbar">
+            <span class="folder button">
                 <fmt:message key="addressBooks"/>
             </span>
             <c:if test="${mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE'}">
-            <span class="right">
-                    <a onclick="return toggleElem('nfldrfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1" 
-                       href="?st=ab${empty param.showABCreate?'&showABCreate=1':''}${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showABCreate ? 'create' : 'close'}"/></a>
-            </span>
+            <div class="icons button">
+                    <a class="zo_button1" id="createAB" href="?st=ab${empty param.showABCreate?'&showABCreate=1':''}${empty param.ajax ? '#folders' : ''}">
+                        <span onclick="return zClickLink('createAB')"><fmt:message key="${empty param.showABCreate ? 'create' : 'close'}"/></span></a>
+            </div>
             </c:if>
         </div>
-    </div>
-</div>
-<c:if test="${mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE'}">
-    <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showABCreate}" url="${currentUrl}" st="${param.st}"/>
-</c:if>
-<mo:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
-<mo:overviewFolder types="contact" folder="${mailbox.trash}" base="${context_url}"/>
-<mo:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false" skiptrash="${false}"/>
+        </c:if>
+        <c:if test="${mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE' and not empty param.showABCreate}">
+           <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showABCreate}" url="${currentUrl}" st="${param.st}"/>
+        </c:if>
+        <c:if test="${empty param.showABCreate}">
+            <mo:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
+            <mo:overviewFolder types="contact" folder="${mailbox.trash}" base="${context_url}"/>
+            <mo:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false" skiptrash="${false}"/>
+        </c:if>
+    </c:when>
+    <c:otherwise>
+        <div class="tb tbl">
+        <div class="tr">
+            <div class="td">
+                <span class="Title left">
+                    <fmt:message key="addressBooks"/>
+                </span>
+                <c:if test="${mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE'}">
+                <span class="right">
+                        <a onclick="return toggleElem('nfldrfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1"
+                           href="?st=ab${empty param.showABCreate?'&showABCreate=1':''}${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showABCreate ? 'create' : 'close'}"/></a>
+                </span>
+                </c:if>
+            </div>
+        </div>
+        </div>
+        <c:if test="${mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE'}">
+            <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showABCreate}" url="${currentUrl}" st="${param.st}"/>
+        </c:if>
+        <mo:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
+        <mo:overviewFolder types="contact" folder="${mailbox.trash}" base="${context_url}"/>
+        <mo:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false" skiptrash="${false}"/>
 
-<div class="tb tbl">
-    <div class="tr">
-        <div class="td">
-            <span class="Title left">
-                <fmt:message key="searches"/>
-            </span>
-            <span class="right">
-                <a onclick="return toggleElem('nsrchfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1" 
-                   href="?st=ab${empty param.showSearchCreate?'&showSearchCreate=1':''}${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
-            </span>
+        <div class="tb tbl">
+        <div class="tr">
+            <div class="td">
+                <span class="Title left">
+                    <fmt:message key="searches"/>
+                </span>
+                <span class="right">
+                    <a onclick="return toggleElem('nsrchfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1"
+                       href="?st=ab${empty param.showSearchCreate?'&showSearchCreate=1':''}${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
+                </span>
+            </div>
         </div>
-    </div>
-</div>
-<mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/><c:set var="count" value="${0}"/>
-<zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
-    <c:if test="${count lt sessionScope.F_LIMIT and (folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
-        <c:if test="${folder.types eq 'contact' || folder.types eq 'gal'}">
-            <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
-        </c:if><c:set var="count" value="${count+1}"/>
-    </c:if>
-</zm:forEachFolder>
-<div class="tb tbl">
-    <div class="tr">
-        <div class="td">
-            <span class="Title left">
-                        <fmt:message key="tags"/>
-            </span>
-            <c:if test="${mailbox.features.tagging}"><span class="right">
-                <a onclick="return toggleElem('ntagfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1" 
-                   href="?st=ab${empty param.showTagCreate?'&showTagCreate=1':''}${empty param.ajax ? '#tags' : ''}"><fmt:message key="${empty param.showTagCreate ? 'create' : 'close'}"/></a>
-            </span></c:if>
         </div>
-    </div>
-</div>
-<c:if test="${mailbox.features.tagging}">
-    <mo:folderForm type="tag" id="${param.tid}" hide="${empty param.showTagCreate}" url="${currentUrl}" st="${param.st}"/>
-</c:if>
-<zm:forEachTag var="tag">
-    <mo:overviewTag calendars="${false}" tag="${tag}" types="contact"/>
-</zm:forEachTag>
+        <mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/><c:set var="count" value="${0}"/>
+        <zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
+            <c:if test="${count lt sessionScope.F_LIMIT and (folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
+                <c:if test="${folder.types eq 'contact' || folder.types eq 'gal'}">
+                    <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
+                </c:if><c:set var="count" value="${count+1}"/>
+            </c:if>
+        </zm:forEachFolder>
+        <div class="tb tbl">
+            <div class="tr">
+                <div class="td">
+                    <span class="Title left">
+                                <fmt:message key="tags"/>
+                    </span>
+                    <c:if test="${mailbox.features.tagging}"><span class="right">
+                        <a onclick="return toggleElem('ntagfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1"
+                           href="?st=ab${empty param.showTagCreate?'&showTagCreate=1':''}${empty param.ajax ? '#tags' : ''}"><fmt:message key="${empty param.showTagCreate ? 'create' : 'close'}"/></a>
+                    </span></c:if>
+                </div>
+            </div>
+        </div>
+        <c:if test="${mailbox.features.tagging}">
+            <mo:folderForm type="tag" id="${param.tid}" hide="${empty param.showTagCreate}" url="${currentUrl}" st="${param.st}"/>
+        </c:if>
+        <zm:forEachTag var="tag">
+            <mo:overviewTag calendars="${false}" tag="${tag}" types="contact"/>
+        </zm:forEachTag>
+    </c:otherwise>
+</c:choose>

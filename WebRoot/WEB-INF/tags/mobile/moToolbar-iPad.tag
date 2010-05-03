@@ -43,23 +43,34 @@
 <div class="tb tbl"><div class="tr"><div class="td toolbar">
         <c:choose>
             <c:when test="${app eq 'contact' || app eq 'ab'}">
-                <c:url var="editUrl" value="${closeUrl}">
-                    <c:param name="action" value="edit"/>
-                    <c:param name="id" value="${contact.id}"/>
-                    <c:param name="pid" value="${contact.id}"/>
-                    <c:param name="_ajxnoca" value="1"/>
-                </c:url>
-                <c:url var="addUrl" value="${closeUrl}">
-                   <c:param name="action" value="edit"/>
-                   <c:param name="pid" value="${contact.id}"/>
-                   <c:param name="folderid" value="${context.folder.id}"/>
-                </c:url>
-                <div class ="compose button"><a id="add" accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}"><span onclick="return zClickLink('add')"><fmt:message key="add"/></span></a></div>
-                <div class ="actions">
-                    <div class ="right button">
-                        <a id="edit" accesskey="${requestScope.mainaction_accesskey}" href="${editUrl}"><span onclick="return zClickLink('edit')"><fmt:message key="edit"/></span></a>
+                <div class="folder button"><a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab&_pv=1"><fmt:message key="addressBooks"/></a></div>
+                <c:if test="${top_fldr_select eq '1'}"><select class="_zo_select_button" name="sfi" onchange="document.location.href='?sfi='+this.value+'&amp;st=contact';"><c:set var="count" value="${0}"/>
+                    <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${count lt sessionScope.F_LIMIT and fldr.isContactView}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
+                    </select></c:if>
+
+                <div class="icons button"></div>
+                <div class="icons button"></div>
+                <div class="select button">
+                    <div>
+                       <select class="zo_select_button" name="anAction" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
+                           <option value="" selected="selected"><fmt:message key="moveAction"/></option>
+                            <optgroup>
+                             <c:choose>
+                                <c:when test="${context.isContactSearch}"><c:set var="count" value="${0}"/>
+                                    <zm:forEachFolder var="folder">
+                                    <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isContactMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if>
+                                    </zm:forEachFolder>
+                                </c:when>
+                                <c:otherwise><c:set var="count" value="${0}"/>
+                                    <zm:forEachFolder var="folder">
+                                    <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if>
+                                    </zm:forEachFolder>
+                                </c:otherwise>
+                             </c:choose>
+                           </optgroup>
+                       </select>
                     </div>
-                 </div>
+                </div>
             </c:when>
             <c:when test="${app eq 'message' || app eq 'conversation'}">
 

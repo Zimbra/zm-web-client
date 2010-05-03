@@ -36,9 +36,14 @@
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doContactAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
-    <c:if test="${ua.isiPad == false}">
-        <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
-    </c:if>
+    <c:choose>
+        <c:when test="${ua.isiPad == false}">
+            <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
+        </c:when>
+        <c:otherwise>
+            <mo:ipadToolbar  app="${param.st}" urlTarget="${context_url}" context="${context}" keys="false" mailbox="${mailbox}"/> 
+        </c:otherwise>
+    </c:choose>
     <div class="wrap-dlist" id="wrap-dlist-view">
     <div class="tbl dlist" id="dlist-view">
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">

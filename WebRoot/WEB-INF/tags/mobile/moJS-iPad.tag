@@ -520,14 +520,14 @@ var parseResponse = function (request, container,url) {
                     slideElem(container,1);
                 }</c:if>
                 <c:if test="${!ua.isIE}">window.scrollTo(0,1);</c:if>
-                if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1) && url.indexOf('hc=1') == -1) {
+                if(url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showABCreate')!=-1  && url.indexOf('hc=1') == -1) {
                     $("view-content").innerHTML = data;                    
                 } else if(url.indexOf('st=newmail') != -1) {
                     $('compose-body').innerHTML = data;
                     toggleCompose('compose-pop','veil');
                 } else {
                     $("view-list").innerHTML = data;
-                    loaded();
+                    //loaded();
                 }
                 /*var scripts = container.getElementsByTagName("script");
                 for (var i = 0; i < scripts.length; i++) {
@@ -603,6 +603,30 @@ var selectDay = function(datestr) {
 
 var openURL = function(url) {
     window.location = url.replace(/date=......../, "date=" + currentDate);
+};
+
+var startX,startY,iH=[],xD=0,yD=0,dV=[],dId=0;
+var updateChecked = function(disabled,doItAll){
+   var fbbar = $("fbbar");
+   if(!dV[dId] && !fbbar) return;
+   var cCount = 0,cbs=$('zForm').getElementsByClassName('chk');
+   for(var i=0, len = (cbs !== undefined) ? cbs.length : 0; i < len; i++){
+       if(cbs[i].checked){ cCount++;cbs[i].disabled = disabled;}
+   }
+   if(cCount > 0){
+    fbbar.style.display = "table";
+    uFB();
+    $("sc").innerHTML = "<span class='small-gray-text'>"+cCount+"</span>";
+   }else{
+    fbbar.style.display = "none";
+    $("sc").innerHTML = "";
+   }
+   if(doItAll && dV[dId])
+    if(cCount <= 0)
+        hideDelete(dId);
+    else
+        $('delBtn').value = "<fmt:message key="delete"/> ("+cCount+")";
+   return cCount;
 };
 
 var toggleElem = function(elem, me, minMsg, maxMsg) {
