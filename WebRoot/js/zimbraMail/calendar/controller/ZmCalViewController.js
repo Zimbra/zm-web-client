@@ -59,7 +59,7 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.EDIT_REPLY_ACCEPT] = apptEditListener;
 	this._listeners[ZmOperation.EDIT_REPLY_DECLINE] = apptEditListener;
 	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = apptEditListener;
-	this._listeners[ZmOperation.VIEW_APPT_DATA] = new AjxListener(this, this._apptDataListener);
+	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
 	this._listeners[ZmOperation.VIEW_APPOINTMENT] = new AjxListener(this, this._handleMenuViewAction);
 	this._listeners[ZmOperation.OPEN_APPT_INSTANCE] = new AjxListener(this, this._handleMenuViewAction);
 	this._listeners[ZmOperation.OPEN_APPT_SERIES] = new AjxListener(this, this._handleMenuViewAction);
@@ -2238,6 +2238,7 @@ function(parent, num) {
 		parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
 		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
 		parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwadable);
+		parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null);
 	}
 
 	if (currViewName == ZmId.VIEW_CAL_LIST) {
@@ -2487,7 +2488,7 @@ function(recurrenceMode) {
 		ZmOperation.SEP,
 		forwardOp,
 		deleteOp, ZmOperation.MOVE, ZmOperation.TAG_MENU,
-		ZmOperation.VIEW_APPT_DATA
+		ZmOperation.SHOW_ORIG
 	];
 };
 
@@ -3081,24 +3082,19 @@ function() {
 };
 
 
-ZmCalViewController.prototype._apptDataListener =
+ZmCalViewController.prototype._showOrigListener =
 function(ev) {
 	var actionMenu = this.getActionMenu();
 	var appt = actionMenu && actionMenu.__appt;
 	if (appt)
-		this._showApptDetailsDialog(appt);
+		this._showApptSource(appt);
 };
 
-
-ZmCalViewController.prototype._showApptDetailsDialog =
+ZmCalViewController.prototype._showApptSource =
 function(appt) {
 	var restUrl = appt.getRestUrl();
-	var data = {
-		icsUrl: [restUrl, (restUrl.indexOf("?")==-1) ? "?":"&", "fmt=ics"].join("")
-	};
-	var msg = AjxTemplate.expand("calendar.Appointment#ApptDetailsDialog", data);
-	
-	var msgDialog = appCtxt.getMsgDialog();
-	msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
-	msgDialog.popup();
+	if (restUrl) {
+		var url = [restUrl, (restUrl.indexOf("?")==-1) ? "?" : "&", "mime=text/plain", "&", "noAttach=1"].join("");
+		window.open(url, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
+	}
 };

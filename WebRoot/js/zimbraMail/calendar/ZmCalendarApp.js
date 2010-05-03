@@ -382,7 +382,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT, {textKey:"forward", tooltipKey:"forward", image:"Forward"});	
 	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT_INSTANCE, {textKey:"forwardInstance", tooltipKey:"forwardInstance", image:"Forward"});
 	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT_SERIES, {textKey:"forwardSeries", tooltipKey:"forwardSeries", image:"Forward"});
-	ZmOperation.registerOp(ZmId.OP_VIEW_APPT_DATA, {textKey:"showOrig", image:"URL"});
 };
 
 ZmCalendarApp.prototype._registerItems =

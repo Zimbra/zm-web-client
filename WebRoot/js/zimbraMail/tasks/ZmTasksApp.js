@@ -74,7 +74,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHARE_TASKFOLDER, {textKey:"shareTaskFolder", image:"TaskList"});
 	ZmOperation.registerOp(ZmId.OP_PRINT_TASK, {textKey:"printTask", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_TASKFOLDER, {textKey:"printTaskFolder", image:"Print"}, ZmSetting.PRINT_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_VIEW_TASK_DATA, {textKey:"showOrig", image:"URL"});
 };
 
 ZmTasksApp.prototype._registerItems =

@@ -40,7 +40,7 @@ ZmTaskListController = function(container, app) {
 	this._listeners[ZmOperation.PRINT_TASK] = new AjxListener(this, this._printTaskListener);
 	this._listeners[ZmOperation.PRINT_TASKFOLDER] = new AjxListener(this, this._printTaskFolderListener);
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._syncAllListener);
-	this._listeners[ZmOperation.VIEW_TASK_DATA] = new AjxListener(this, this._taskDataListener);
+	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
 
 	this._currentTaskView = ZmId.VIEW_TASK_ALL;
 };
@@ -428,7 +428,7 @@ function() {
 		ZmOperation.DELETE,
 		ZmOperation.MOVE,
 		ZmOperation.PRINT_TASK,
-		ZmOperation.VIEW_TASK_DATA
+		ZmOperation.SHOW_ORIG
 	];
 };
 
@@ -440,6 +440,7 @@ function(num) {
 ZmTaskListController.prototype._resetOperations =
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
+	var tasks = this._listView[this._currentView].getSelection();
 
 	// a valid folderId means user clicked on a task list
 	var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
@@ -466,7 +467,7 @@ function(parent, num) {
 	parent.enable(ZmOperation.VIEW_MENU, true);
 	parent.enable(ZmOperation.TEXT, true);
 
-	parent.enable(ZmOperation.VIEW_TASK_DATA, num == 1);
+	parent.enable(ZmOperation.SHOW_ORIG, num == 1 && tasks && tasks.length && tasks[0].getRestUrl() != null);
 };
 
 ZmTaskListController.prototype._doDelete =
@@ -679,22 +680,18 @@ function(folder) {
 	this._pendingActionData = null;
 };
 
-ZmTaskListController.prototype._taskDataListener =
+ZmTaskListController.prototype._showOrigListener =
 function(ev) {
 	var tasks = this._listView[this._currentView].getSelection();
 	if (tasks && tasks.length > 0)
-		this._showTaskDetailsDialog(tasks[0]);
+		this._showTaskSource(tasks[0]);
 };
 
-ZmTaskListController.prototype._showTaskDetailsDialog =
+ZmTaskListController.prototype._showTaskSource =
 function(task) {
 	var restUrl = task.getRestUrl();
-	var data = {
-		icsUrl: [restUrl, (restUrl.indexOf("?")==-1) ? "?":"&", "fmt=ics"].join("")
-	};
-	var msg = AjxTemplate.expand("tasks.Task#TaskDetailsDialog", data);
-	
-	var msgDialog = appCtxt.getMsgDialog();
-	msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
-	msgDialog.popup();
+	if (restUrl) {
+		var url = [restUrl, (restUrl.indexOf("?")==-1) ? "?" : "&", "mime=text/plain", "&", "noAttach=1"].join("");
+		window.open(url, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
+	}
 };
