@@ -238,7 +238,7 @@ function(ev) {
 			var flag = flags[j];
 			var on = item[ZmItem.FLAG_PROP[flag]];
 			if (flag == ZmItem.FLAG_FLAGGED) {
-				this._setImage(item, ZmItem.F_FLAG, on ? "FlagRed" : null);
+				this._setImage(item, ZmItem.F_FLAG, on ? "FlagRed" : "FlagDis");
 			} else if (flag == ZmItem.FLAG_ATTACH) {
 				this._setImage(item, ZmItem.F_ATTACHMENT, on ? "Attachment" : null);
 			}
