@@ -522,7 +522,7 @@ var parseResponse = function (request, container,url) {
                     slideElem(container,1);
                 }</c:if>
                 <c:if test="${!ua.isIE}">window.scrollTo(0,1);</c:if>
-                if(url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showABCreate')!=-1  && url.indexOf('hc=1') == -1) {
+                if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showABCreate') !=-1)  && (url.indexOf('hc=1') == -1)) {
                     $("view-content").innerHTML = data;
                     $("view-content").style.display = "block";
                     $("empty-message").style.display = "none";
