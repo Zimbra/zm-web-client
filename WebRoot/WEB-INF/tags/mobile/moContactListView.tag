@@ -62,7 +62,9 @@
                     <c:if test="${!context.isGALSearch}">
                     <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                            name="id" value="${chit.id}"/></c:if>
+            <c:if test="${ua.isiPad == false}">
             <span class="SmlIcnHldr ${class}">&nbsp;</span>
+            </c:if>               
             </span>
             <span class="td m">
             <span onclick='return zClickLink("a${chit.id}");'>

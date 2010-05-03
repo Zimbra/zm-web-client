@@ -48,7 +48,7 @@
                     <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${count lt sessionScope.F_LIMIT and fldr.isContactView}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
                     </select></c:if>
 
-                <div class="icons button"></div>
+                <div class="icons button"><input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/></div>
                 <div class="icons button"></div>
                 <div class="select button">
                     <div>
