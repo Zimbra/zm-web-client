@@ -48,8 +48,7 @@
                     <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${count lt sessionScope.F_LIMIT and fldr.isContactView}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
                     </select></c:if>
 
-                <div class="icons button"><input name="actionDelete" type="submit" value="T"/></div>
-                <!-- div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div -->
+                <div class="icons button"><input type="image" name="actionDelete" src="/zimbra/img/startup/ImgTrash.gif" value="<fmt:message key='delete'/>"/></di     
                 <div class="select button">
                     <div>
                        <select class="zo_select_button" name="anAction" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
