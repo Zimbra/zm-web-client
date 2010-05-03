@@ -23,10 +23,17 @@
 <%@ attribute name="url" rtexprvalue="true" required="false" %>
 <%@ attribute name="hide" rtexprvalue="true" required="false" %>
 <%@ attribute name="id" rtexprvalue="true" required="false" %>
-
+<mo:handleError>
+    <zm:getUserAgent var="ua" session="true"/>
+</mo:handleError>
 <zm:getMailbox var="mailbox"/>
 <c:choose>
 <c:when test="${type eq 'folder'}">
+  <c:if test="${ua.isiPad == true}">
+                    	<div class="header">
+                    		<div class="subject">Create New Folder</div>
+                    	</div>
+                    </c:if>
     <div class="tbl View" id="nfldrfrm" style="${hide ? 'display:none':''};">
         <div class="tr">
             <div class="td">
@@ -37,11 +44,7 @@
                     <input name="st" type="hidden" value="${fn:escapeXml(st)}"/>
                    
                     <div class="msgBody">
-                    <c:if test="${ua.isiPad == true}">
-                    	<div class="header">
-                    		<div class="subject">Create New Folder</div>
-                    	</div>
-                    </c:if>
+                  
                     
                     <div class="tbl" width="100%"><div class="tr">
                         <span class="label td"><fmt:message key="nameLabel"/> <input type="text" name="folder_name" style="" class="Textarea" value="${efolder.name}">
@@ -209,7 +212,7 @@
                         <input type="text" style="width:100px;" class="Textarea" name="tag_name" value="${etag.name}">
                         <input type="submit" class="zo_button" name="action${empty etag ? 'Save':'Modify'}Tag" value="<fmt:message key='save'/>">
                         </span>
-                    </div></div>
+                    </div></div> 
                     <hr size="1"/>
                     <div class="tbl"><div class="tr"><div class="td">
                                 <select name="tag_color">

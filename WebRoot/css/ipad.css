@@ -518,6 +518,10 @@ ul.list li{
 	background: transparent url("/img/startup/ImgAttachment.gif") no-repeat top left;
 }
 
+.Flag{
+	background: transparent url("/img/startup/ImgFlagRed.gif") no-repeat top left;
+}
+
 .View hr{
 	border: 1px solid white;
 	background-color: white;
