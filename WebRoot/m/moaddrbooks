@@ -38,6 +38,8 @@
             </div>
             </c:if>
         </div>
+        <div class="wrap-dlist" id="wrap-dlist-view">
+        <div id="dlist-view">
         </c:if>
         <c:if test="${mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE' and not empty param.showABCreate}">
            <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showABCreate}" url="${currentUrl}" st="${param.st}"/>
@@ -47,6 +49,7 @@
             <mo:overviewFolder types="contact" folder="${mailbox.trash}" base="${context_url}"/>
             <mo:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false" skiptrash="${false}"/>
         </c:if>
+        </div></div>
     </c:when>
     <c:otherwise>
         <div class="tb tbl">
