@@ -503,13 +503,20 @@ ul.list li{
     padding: 2px !important;
 }
 
-.SmlIcnHldr,.Edit {
+.SmlIcnHldr{
     width: 16px;
     height: 16px;
-    max-height: 16px;
     display: inline-block;
-    background: url("/img/mobile/iphone-ext/common.png") no-repeat top left;
     vertical-align:middle;
+
+}
+
+.Msg {
+    background: transparent url("/img/im/Img_ImSmallAvailable.gif") no-repeat top left;
+}
+
+.Attachment{
+	background: transparent url("/img/im/ImgAttachment.gif") no-repeat top left;
 }
 
 .View hr{
