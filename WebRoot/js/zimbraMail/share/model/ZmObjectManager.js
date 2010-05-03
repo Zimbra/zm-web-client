@@ -422,14 +422,14 @@ ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 
 			if (next == null) {
 				if (/^(img|a)$/.test(tmp)) {
+                    var isMailTo = (tmp == 'a' && ZmMailMsgView._MAILTO_RE.test(node.href));
 					if (tmp == "a" && node.target
-					    && (ZmMailMsgView._URL_RE.test(node.href)
-						|| ZmMailMsgView._MAILTO_RE.test(node.href)))
+					    && (isMailTo || ZmMailMsgView._URL_RE.test(node.href)))
 					{
 						// tricky.
-						var txt = RegExp.$1;
+						var txt = isMailTo ? node.href :RegExp.$1 ;
 						tmp = doc.createElement("div");
-						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
+						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(txt));
 						tmp = tmp.firstChild;
 						if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
 							// probably no objects were found.  A warning would be OK here
