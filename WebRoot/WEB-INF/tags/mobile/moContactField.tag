@@ -29,10 +29,15 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<mo:handleError>
+    <zm:getUserAgent var="ua" session="true"/>
+</mo:handleError>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:if test="${(not empty value) or isaddress}">
 	<fmt:message key="${label}" var="label"/>
-    <div <c:if test="${!noborder}">class="list-row" </c:if> >
+    <div <c:if test="${!noborder || ua.isiPad == true}">class="list-row" </c:if> >
         <span class='label' width="20%">${fn:escapeXml(label)}</span>
         <span class=" value">
             <c:choose>
