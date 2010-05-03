@@ -528,6 +528,8 @@ var parseResponse = function (request, container,url) {
                     $("empty-message").style.display = "none";
                 } else if(url.indexOf('st=newmail') != -1) {
                     $('compose-body').innerHTML = data;
+                    $("view-content").style.display = "block";
+                    $("empty-message").style.display = "none";
                     toggleCompose('compose-pop','veil');
                 } else {
                     $("view-list").innerHTML = data;
