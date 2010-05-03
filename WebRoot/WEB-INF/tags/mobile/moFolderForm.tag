@@ -37,11 +37,11 @@
                     <input name="st" type="hidden" value="${fn:escapeXml(st)}"/>
                    
                     <div class="msgBody">
-                    <c:when test="${ua.isiPad == true}">
+                    <c:if test="${ua.isiPad == true}">
                     	<div class="header">
                     		<div class="subject">Create New Folder</div>
                     	</div>
-                    </c:when>
+                    </c:if>
                     
                     <div class="tbl" width="100%"><div class="tr">
                         <span class="label td"><fmt:message key="nameLabel"/> <input type="text" name="folder_name" style="" class="Textarea" value="${efolder.name}">
