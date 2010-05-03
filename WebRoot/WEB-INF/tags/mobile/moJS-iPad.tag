@@ -527,7 +527,9 @@ var parseResponse = function (request, container,url) {
                     toggleCompose('compose-pop','veil');
                 } else {
                     $("view-list").innerHTML = data;
-                    //loaded();
+                    if(myScroll) {
+                        loaded();
+                    }
                 }
                 /*var scripts = container.getElementsByTagName("script");
                 for (var i = 0; i < scripts.length; i++) {
