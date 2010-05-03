@@ -35,10 +35,19 @@
                     <input type="hidden" name="doFolderAction" value="1">
                     <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                     <input name="st" type="hidden" value="${fn:escapeXml(st)}"/>
+                   
+                    <div class="msgBody">
+                    <c:when test="${ua.isiPad == true}">
+                    	<div class="header">
+                    		<div class="subject">Create New Folder</div>
+                    	</div>
+                    </c:when>
+                    
                     <div class="tbl" width="100%"><div class="tr">
                         <span class="label td"><fmt:message key="nameLabel"/> <input type="text" name="folder_name" style="" class="Textarea" value="${efolder.name}">
                         <input class="zo_button" type="submit" name="action${not empty efolder ? 'Modify':'Save'}Folder" value="<fmt:message key='save'/>"></span>
                     </div></div>
+                    
                     <div class="tbl"><div class="tr"><div class="td">
                                 <c:choose>
                                     <c:when test="${empty st || st eq 'folders' || st eq mailbox.prefs.groupMailBy}">
@@ -85,6 +94,7 @@
                                                 <c:set var="count" value="${count+1}"/></c:if>
                                             </zm:forEachFolder>
                                         </select>
+                                      </div>  
                                     </c:when>
                                     <c:when test="${st eq 'cal' || st eq 'cals' || st eq 'appointment'}">
                                         <c:if test="${st eq 'cals'}">
