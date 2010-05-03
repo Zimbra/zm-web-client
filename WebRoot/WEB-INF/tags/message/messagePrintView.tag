@@ -23,6 +23,8 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%--compute body up front, so attachments refereneced in multipart/related don't show up --%>
+<fmt:setBundle basename="/messages/I18nMsg" var="i18n"/>
+
 <c:set var="body" value="${message.body}"/>
 
 <c:set var="theBody">
@@ -35,6 +37,112 @@
 <fmt:message var="unknownSender" key="unknownSender"/>
 
 <c:set var="isPart" value="${!empty message.partName}"/>
+
+<c:if test="${empty requestScope.dateFormat}">
+	<c:set var="dateFormat" scope="request" value="${true}"/>
+	<script type="text/javascript">
+	<!--
+		var bundle = {
+			days: ["<fmt:message key='weekdaySunMedium' bundle='${i18n}'/>","<fmt:message key='weekdayMonMedium' bundle='${i18n}'/>","<fmt:message key='weekdayTueMedium' bundle='${i18n}'/>","<fmt:message key='weekdayWedMedium' bundle='${i18n}'/>","<fmt:message key='weekdayThuMedium' bundle='${i18n}'/>","<fmt:message key='weekdayFriMedium' bundle='${i18n}'/>","<fmt:message key='weekdaySatMedium' bundle='${i18n}'/>"],
+			months: ["<fmt:message key='monthJanMedium' bundle='${i18n}'/>","<fmt:message key='monthFebMedium' bundle='${i18n}'/>","<fmt:message key='monthMarMedium' bundle='${i18n}'/>","<fmt:message key='monthAprMedium' bundle='${i18n}'/>","<fmt:message key='monthMayMedium' bundle='${i18n}'/>","<fmt:message key='monthJunMedium' bundle='${i18n}'/>","<fmt:message key='monthJulMedium' bundle='${i18n}'/>","<fmt:message key='monthAugMedium' bundle='${i18n}'/>","<fmt:message key='monthSepMedium' bundle='${i18n}'/>","<fmt:message key='monthOctMedium' bundle='${i18n}'/>","<fmt:message key='monthNovMedium' bundle='${i18n}'/>","<fmt:message key='monthDecMedium' bundle='${i18n}'/>"]
+		};
+
+		function pad(number, length) {
+			var str=""+number;
+			var pad=[];
+			for (var i=0, cnt=length-str.length; i<cnt; i++) {
+				pad[i]="0";
+			}
+			return pad.join("")+str;
+		}
+		function escape(string) {
+			return ["'", string, "'"].join("");
+		}
+		function insert(str, value, replacement) {
+			var _str=""+str;
+			if (value&&_str.indexOf(value)==-1) return _str;
+			var out="";
+			var escaped=false;
+			for (var i=0;i<_str.length;i++) {
+				var c=_str.substr(i,1);
+				if (c=="'") {
+					escaped=!escaped;
+				}
+				else if (!escaped) {
+					var tok=_str.substr(i,value.length);
+					if (tok==value) {
+						out+=escape(replacement);
+						i+=value.length-1;
+						continue;
+					}
+				}
+				out+=c;
+			}
+			return out;
+		}
+
+		function formatDate(UTCTimeString, format) {
+			if (UTCTimeString && format) {
+				var dateStr = UTCTimeString.replace(/[^\d]/g,"");
+				if (dateStr && dateStr.length == 16) {
+					var date = new Date();
+					date.setUTCFullYear(dateStr.substr(0,4));
+					date.setUTCMonth(parseInt(dateStr.substr(4,2), 10)-1);
+					date.setUTCDate(parseInt(dateStr.substr(6,2), 10));
+					date.setUTCHours(parseInt(dateStr.substr(9,2), 10));
+					date.setUTCMinutes(parseInt(dateStr.substr(11,2), 10));
+					date.setUTCSeconds(parseInt(dateStr.substr(13,2), 10));
+			
+					var d = {
+						yyyy: date.getFullYear(),
+						yy: (""+date.getFullYear()).substr(2,2),
+						EEE: days[date.getDay()],
+						MMM: months[date.getMonth()],
+						M: date.getMonth()+1,
+						d: date.getDate(),
+						K: date.getHours() % 12,
+						H: date.getHours(),
+						a: (date.getHours() < 12) ? "AM" : "PM",
+						m: date.getMinutes(),
+						s: date.getSeconds(),
+						S: date.getMilliseconds()
+					};
+					d.h = d.K==0?12:d.K;
+					d.k = d.H==0?24:d.H;
+
+					var out = ""+format;
+						out = insert(out, "EEE", d.EEE);
+						out = insert(out, "MMM", d.MMM);
+						out = insert(out, "MM", pad(d.M),2);
+						out = insert(out, "M", d.M);
+						out = insert(out, "dd", pad(d.d,2));
+						out = insert(out, "d", d.d);
+						out = insert(out, "yyyy", d.yyyy);
+						out = insert(out, "yy", d.yy);
+						out = insert(out, "hh", pad(d.h,2));
+						out = insert(out, "h", d.h);
+						out = insert(out, "kk", pad(d.k,2));
+						out = insert(out, "k", d.k);
+						out = insert(out, "HH", pad(d.H,2));
+						out = insert(out, "H", d.H);
+						out = insert(out, "KK", pad(d.K,2));
+						out = insert(out, "K", d.K);
+						out = insert(out, "mm", pad(d.m,2));pageScope
+						out = insert(out, "m", d.m,2);
+						out = insert(out, "ss", pad(d.s,2));
+						out = insert(out, "s", d.s);
+						out = insert(out, "SSS", pad(d.S,3));
+						out = insert(out, "SS", pad(d.S,2));
+						out = insert(out, "S", d.S);
+						out = insert(out, "a", d.a);
+						out = out.replace(/'/g, '');
+					return out;
+				}
+			}
+		}
+	//-->
+	</script>
+</c:if>
 
 <table width="100%" cellpadding="0" cellspacing="0" class="Msg" style="padding:10px;">
     <tr>
@@ -135,7 +243,7 @@
                             <tr>
                                 <td nowrap align='right' class='MsgHdrSent'>
                                     <fmt:message var="dateFmt" key="formatDateSent"/>
-									<span id="messageDisplayTime"><fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></span>
+									<span id="messageDisplayTime_${message.id}"><fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></span>
                                 </td>
                             </tr>
                             <c:if test="${message.hasTags or message.isFlagged}">
@@ -202,21 +310,10 @@
 </table>
 <script type="text/javascript">
 <!--
-	var messageUTCTime = '<fmt:formatDate timeZone="GMT" pattern="yyyyMMddHHmmss" value="${message.sentDate}"/>';
-	var displayContainer = document.getElementById("messageDisplayTime");
-	if (messageUTCTime && displayContainer) {
-		var dateStr = messageUTCTime.replace(/[^\d]/g,"");
-		if (dateStr && dateStr.length == 14) {
-			var date = new Date();
-			date.setUTCFullYear(dateStr.substr(0,4));
-			date.setUTCMonth(parseInt(dateStr.substr(4,2), 10)-1);
-			date.setUTCDate(parseInt(dateStr.substr(6,2), 10));
-			date.setUTCHours(parseInt(dateStr.substr(8,2), 10));
-			date.setUTCMinutes(parseInt(dateStr.substr(10,2), 10));
-			date.setUTCSeconds(parseInt(dateStr.substr(12,2), 10));
-			
-			displayContainer.innerHTML = [date.toDateString(), date.toLocaleTimeString()].join(" ");
-		}
+	var displayContainer = document.getElementById("messageDisplayTime_${message.id}");
+	if (displayContainer) {
+		var newContent = formatDate('<fmt:formatDate timeZone="GMT" pattern="yyyyMMdd'T'HHmmss'Z'" value="${message.sentDate}"/>', "${dateFmt}");
+		if (newContent) displayContainer.innerHTML = newContent;
 	}
 //-->
 </script>
