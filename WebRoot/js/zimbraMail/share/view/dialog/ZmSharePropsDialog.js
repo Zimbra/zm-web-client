@@ -328,6 +328,7 @@ function(shares, result) {
 	var replyType = this._reply.getReplyType();
 	if (replyType != ZmShareReply.NONE) {
 		var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
+		var guestnotes;
 		// TODO: Need to turn this into a batch request
 		for (var i = 0; i < shares.length; i++) {
 			var share = shares[i];
@@ -381,9 +382,9 @@ function(shares, result) {
 				}
 
 				var password = this._passwordInput.getValue();
-				notes = this._guestFormatter.format([url, email, password]);
+				guestnotes = this._guestFormatter.format([url, email, password, notes]);
 			}
-			tmpShare.notes = notes;
+			tmpShare.notes = guestnotes || notes;
 
 			if (replyType == ZmShareReply.COMPOSE) {
 				tmpShare.composeMessage(this._shareMode, addrs);
