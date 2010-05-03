@@ -27,6 +27,8 @@
 <c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${param.st}"/></c:url>
 <c:set value="${title}" var="title" scope="request"/>
 <%--<c:import url="mobriefcases"/>--%>
+<div class="wrap-dlist" id="wrap-dlist-view">
+<div id="dlist-view">
 <div class="tb tbl"><div class="tr"><div class="td">
     <span class="Title left"><fmt:message key="folders"/></span>
     <span class="right"><a onclick="return toggleElem('nfldrfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1"href="?st=folders${empty param.showFolderCreate?'&showFolderCreate=1':''}${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showFolderCreate ? 'create' : 'close'}"/></a>
@@ -81,3 +83,4 @@
         <mo:overviewTag calendars="${false}" tag="${tag}" types="${mailbox.prefs.groupMailBy}"/>
     </c:if>
 </zm:forEachTag>
+</div></div>

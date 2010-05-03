@@ -73,9 +73,10 @@
                 </div>
             </c:when>
             <c:when test="${app eq 'message' || app eq 'conversation'}">
-
-                    <div class="folder button"><div>Folders</div></div>
-
+                    <div class="folder button">
+                            <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders&_pv=1"><fmt:message key="folders"/></a> &laquo;
+                            <c:if test="${top_fldr_select ne '1'}">${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}</c:if>
+                    </div>
                     <!--div class="icons button" onclick="return submitForm(document.getElementById('zForm'),null,'actionDelete');">
                         <c:choose><c:when test="${not context.folder.isInTrash}"><input type="submit" name="actionDelete" value=<fmt:message key='delete'/></c:when>
                             <c:otherwise><option value="actionHardDelete"><fmt:message key="delete"/></option></c:otherwise>
