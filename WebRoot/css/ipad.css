@@ -271,7 +271,7 @@ html, body{
 
 .listViewPane{
 	float: left;
-	width: 29.9%;
+	width: 34.9%;
 	border-right: 1px solid #999;
 	background-color: white;
 	position: relative;
@@ -296,7 +296,7 @@ ul.list li{
 
 .contentViewPane{
 	float: left;
-	width: 69.9%;
+	width: 64.9%;
 	height: 100%;
 	overflow: none;
 	border-left: 1px solid #444;
@@ -349,7 +349,7 @@ ul.list li{
 .msgBody{
 	background-color: white;
 	-webkit-border-radius: 12px;
-	height: 580px;
+	height: 570px;
 	margin: 5px 10px 10px 10px ;
 	padding: 10px;
 	overflow-y: auto;
