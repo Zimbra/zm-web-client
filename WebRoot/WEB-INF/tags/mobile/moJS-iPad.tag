@@ -308,7 +308,7 @@ var getFormValues = function(obj) {
     for (var i = 0, inp = obj.getElementsByTagName("input"), len = inp !== undefined ? inp.length : 0; i < len; i++) {
         var control = inp[i];//obj.getElementsByTagName("input")[i];
         var type = control.type ;
-        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password") {
+        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password" || type == "image") {
             getstr += control.name + "=" + escape(control.value) + "&";
         }
         if (type == "checkbox" || type == "radio") {
