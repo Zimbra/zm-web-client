@@ -332,7 +332,12 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		if (field == ZmItem.F_STATUS || field == ZmItem.F_FOLDER) {
 			htmlArr[idx++] = "&nbsp;";
 		} else if (field == ZmItem.F_FROM) {
-			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
+			var isFolder = this._isSentOrDraftsFolder();
+			if (isFolder.sent) {
+				htmlArr[idx++] = ""
+			} else {
+				htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
+			}
 		} else if (field == ZmItem.F_SUBJECT) {
 			htmlArr[idx++] = item.subject ? AjxStringUtil.htmlEncode(item.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
