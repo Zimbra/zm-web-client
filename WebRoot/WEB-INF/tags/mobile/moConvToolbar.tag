@@ -65,6 +65,7 @@
         <div class="compose button" onclick="return zClickLink('compose');">
             <a href="${fn:escapeXml(closeurl)}${empty param.ajax ? '#conv' : '&conv'}${cid}" class='zo_leftbutton'>${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}</a>
         </div>
+        <div class="icons button"><input type="image" name="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}" src="/zimbra/img/startup/ImgTrash.gif" value="<fmt:message key='delete'/>"/></div>        
         <div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
         <div class="select button">
 
@@ -72,12 +73,6 @@
         <span>
             <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'));">
                 <option value="" selected="selected"><fmt:message key="moreActions"/></option>
-                <optgroup label="Delete">
-                    <c:choose>
-                        <c:when test="${not context.folder.isInTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
-                        <c:otherwise><option value="actionDelete"><fmt:message key="delete"/></option></c:otherwise>
-                    </c:choose>
-                </optgroup>
                 <optgroup label="<fmt:message key="markAs"/>">
                     <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
                     <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
