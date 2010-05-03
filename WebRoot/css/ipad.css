@@ -511,7 +511,7 @@ ul.list li{
 }
 
 .Msg {
-    background: transparent url("/img/im/Img_ImSmallAvailable.gif") no-repeat top left;
+    background: transparent url("/img/im/Img_ImSmallAvailable.gif") no-repeat center center;
 }
 
 .Attachment{

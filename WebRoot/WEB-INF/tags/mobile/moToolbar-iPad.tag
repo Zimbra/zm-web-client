@@ -73,8 +73,8 @@
             </c:when>
             <c:when test="${app eq 'message' || app eq 'conversation'}">
                     <div class="folder button">
-                            <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders&_pv=1"><fmt:message key="folders"/></a> &laquo;
-                            <c:if test="${top_fldr_select ne '1'}">${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}</c:if>
+                            <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders&_pv=1"><fmt:message key="folders"/></a> 
+                            <!-- &laquo; <c:if test="${top_fldr_select ne '1'}">${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}</c:if> -->
                     </div>
 
 
