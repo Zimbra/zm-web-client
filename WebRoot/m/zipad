@@ -154,7 +154,7 @@
             <a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>
         </div>
 
-		<div class="search alignRight"><input type="search" placeholder="Search..."></div>
+		<!-- div class="search alignRight"><input type="search" placeholder="Search..."></div -->
 
 
 	</div>
@@ -206,14 +206,14 @@ if(window != parent){
             </div>
 
             <div class="msgBody" id="msg-body">
-                <center><fmt:message key="emptyMessage"/></center>
+                <center><h2 style="text-transform: capitalize;"><fmt:message key="emptyMessage"/></h2></center>
             </div>
 	    </div>
         <div class="contentViewPane">
             <div class="header">
                 &nbsp;
             </div>
-        <div class="msgBody" id="empty-message" style="display:none;"><center><fmt:message key="emptyMessage"/></center> </div>
+        <div class="msgBody" id="empty-message" style="display:none;"><center><h2 style="text-transform: capitalize;"><fmt:message key="emptyMessage"/></h2></center></div>
         </div>
 
     </div>

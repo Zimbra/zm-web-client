@@ -151,7 +151,7 @@ html, body{
 		color: white;
 	}
 
-		.button a{
+		.button a, .buttonRight a, .buttonRight{
 			text-decoration: none;
 			color: #453928;
 			vertical-align: middle;
@@ -161,19 +161,25 @@ html, body{
 		.button a:active{
 			color: white;
 		}
-			
+	
+		.button input{
+			background-color: transparent;
+			border: none;
+			color: #453928;
+			font-weight: bold;
+		}		
 	
 .buttonRight{	
 	float: right;
 	margin-right: 10px;
-	width: 60px;
+	min-width: 60px;
 }
 
 	
 .folder{
 	float: left;
 	margin-left: 10px;
-	width: 50px;
+	 min-width: 50px;
 }
 
 	.folder div{ margin: 4px;}
@@ -343,7 +349,7 @@ ul.list li{
 .msgBody{
 	background-color: white;
 	-webkit-border-radius: 12px;
-	height: 600px;
+	height: 580px;
 	margin: 5px 10px 10px 10px ;
 	padding: 10px;
 	overflow-y: auto;
