@@ -65,16 +65,16 @@
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <div class="tb tbl">
     <div class="tr">
-        <span class='zo_tb_submit td'>
+        <span class='zo_tb_submit td toolbar'>
                 <c:choose>
                     <c:when test="${ua.isiPad == false}">
                         <a id="cancel" href="${caction}"><fmt:message key="cancel"/></a>
                     </c:when>
                     <c:otherwise>
-                        <a id="cancel" href="${caction}"><span onclick="return zClickLink('cancel')"><fmt:message key="cancel"/></span></a>
+                        <div class="buttonRight button"><a id="cancel" href="${caction}"><span onclick="return zClickLink('cancel')"><fmt:message key="cancel"/></span></a></div>
                     </c:otherwise>
                 </c:choose>
-                <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
+                <div class="compose button"><input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>"></div>
         </span>
     </div>
 </div>
