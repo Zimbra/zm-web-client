@@ -587,9 +587,9 @@ function(inputEl, sizeEl){
     if(!files) return;
     
     var file = files[0];
-    var size = file.size;
+    var size = file.size || file.fileSize /*Safari*/;
     if(sizeEl) {
-        sizeEl.innerHTML = "&nbsp;("+AjxUtil.formatSize(size, true)+")";
+        sizeEl.innerHTML = "  ("+AjxUtil.formatSize(size, true)+")";
         if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))
             Dwt.addClass(sizeEl, "RedC");
         else
@@ -677,11 +677,13 @@ ZmMyComputerTabViewPage.prototype._validateFileSize =
 function(){
 
     var atts = document.getElementsByName(ZmMyComputerTabViewPage.UPLOAD_FIELD_NAME);
+    var file, size;
 	for (var i = 0; i < atts.length; i++){
-        var file = atts[i].files;
+        file = atts[i].files;
         if(!file || file.length == 0) continue;
         file = file[0];
-        if(file.size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)){
+        size = file.size || file.fileSize /*Safari*/;
+        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)){
             return false;
         }
     }
