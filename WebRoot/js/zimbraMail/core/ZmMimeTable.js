@@ -168,6 +168,12 @@ function(type) {
 			type == ZmMimeTable.IMG_PNG);
 };
 
+ZmMimeTable.isTextType =
+function(type){
+    return (type.match(/^text\/.*/) &&
+            type != ZmMimeTable.TEXT_HTML);  
+};
+
 /**
  * Checks if the type is a renderable image.
  * 

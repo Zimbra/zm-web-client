@@ -180,7 +180,7 @@ function(partNode, attachments, bodyParts, parentNode) {
 			}
 		}
 
-		if (this.node.body && ZmMimeTable.isRenderable(this.node.ct)) {
+		if (this.node.body && (ZmMimeTable.isRenderable(this.node.ct) || ZmMimeTable.isTextType(this.node.ct)) ) {
 			bodyParts.push(this.node);
 		}
 

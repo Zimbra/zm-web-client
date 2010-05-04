@@ -805,6 +805,8 @@ function(callback) {
 
 	if (bodyPart && bodyPart.ct == ZmMimeTable.TEXT_PLAIN) {
 		return bodyPart.content;
+	} else if (bodyPart && bodyPart.body && ZmMimeTable.isTextType(bodyPart.ct)) {
+		return bodyPart.content;
 	} else if (bodyPart && bodyPart.ct != ZmMimeTable.TEXT_PLAIN && bodyPart.ct != ZmMimeTable.TEXT_HTML) {
 		// looks like the body of this message is the attachment itself
 		return "";
