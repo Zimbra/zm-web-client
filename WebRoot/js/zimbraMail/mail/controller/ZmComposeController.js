@@ -1049,6 +1049,19 @@ function(composeMode, incOptions) {
 		menu.checkItem(ZmOperation.KEY_ID, this._action, true);
 	}
 
+	this._setDependentOptions(incOptions);
+
+	button.setMenu(menu);
+};
+
+ZmComposeController.prototype._setDependentOptions =
+function(incOptions) {
+
+	incOptions = incOptions || this._curIncOptions || {};
+
+	var menu = this._optionsMenu[this._action];
+	if (!menu) { return; }
+
 	// handle options for what's included
 	var what = incOptions.what;
 	menu.checkItem(ZmOperation.KEY_ID, ZmComposeController.INC_OP[what], true);
@@ -1063,8 +1076,6 @@ function(composeMode, incOptions) {
 		mi.setEnabled(allowOptions);
 		mi.setChecked(incOptions.headers && allowOptions, true);
 	}
-
-	button.setMenu(menu);
 };
 
 /**
@@ -1336,6 +1347,7 @@ function(ev) {
 	} else {
 		if (this._setInclude(op)) {
 			this._switchInclude(op);
+			this._setDependentOptions();
 		}
 	}
 };
@@ -1343,7 +1355,9 @@ function(ev) {
 ZmComposeController.prototype._setInclude =
 function(op) {
 
-	if (this._composeView.isDirty()) {
+	var what = this._curIncOptions.what;
+	var canInclude = (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART);
+	if (this._composeView.isDirty() && canInclude) {
 		// warn user of possible lost content
 		if (!this._switchIncludeDialog) {
 			this._switchIncludeDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
@@ -1362,6 +1376,7 @@ function(op) {
 ZmComposeController.prototype._switchInclude =
 function(op) {
 
+	var origWhat = this._curIncOptions.what;
 	var menu = this._optionsMenu[this._action];
 	if (op == ZmOperation.USE_PREFIX || op == ZmOperation.INCLUDE_HEADERS) {
 		var mi = menu.getOp(op);
@@ -1376,14 +1391,19 @@ function(op) {
 		this._curIncOptions.what = ZmComposeController.INC_MAP[op];
 	}
 
+	var canInclude = (origWhat == ZmSetting.INC_BODY || origWhat == ZmSetting.INC_SMART);
 	var cv = this._composeView;
 	var userText = "";
 	if (op != ZmOperation.FORMAT_HTML && op != ZmOperation.FORMAT_TEXT) {
-		if (cv._origIncludedContent) {
+		if (cv._origIncludedContent || !canInclude) {
 			var curText = this._getBodyContent();
-			var idx = curText.indexOf(cv._origIncludedContent);
-			if (idx > 0) {
-				userText = curText.replace(cv._origIncludedContent, "");
+			if (cv._origIncludedContent) {
+				var idx = curText.indexOf(cv._origIncludedContent);
+				if (idx > 0) {
+					userText = curText.replace(cv._origIncludedContent, "");
+				}
+			} else {
+				userText = curText;
 			}
 		}
 		if (cv._composeMode == DwtHtmlEditor.TEXT) {
@@ -1392,10 +1412,11 @@ function(op) {
 	}
 
 	// forwarding actions are tied to inc option
-	if (this._action == ZmOperation.FORWARD_INLINE && this._curIncOptions.what == ZmSetting.INC_ATTACH) {
+	var what = this._curIncOptions.what;
+	if (this._action == ZmOperation.FORWARD_INLINE && what == ZmSetting.INC_ATTACH) {
 		this._action = ZmOperation.FORWARD_ATT;
 	}
-	if (this._action == ZmOperation.FORWARD_ATT && this._curIncOptions.what != ZmSetting.INC_ATTACH) {
+	if (this._action == ZmOperation.FORWARD_ATT && what != ZmSetting.INC_ATTACH) {
 		this._action = ZmOperation.FORWARD_INLINE;
 	}
 
@@ -1493,7 +1514,7 @@ ZmComposeController.prototype._formatOkCallback =
 function(mode) {
 	this._formatWarningDialog.popdown();
 	this._composeView.setComposeMode(mode, true);
-	this._composeView._dirtyModeSwitch = true;
+	this._composeView._isDirty = true;
 };
 
 ZmComposeController.prototype._formatCancelCallback =
@@ -1590,6 +1611,7 @@ ZmComposeController.prototype._switchIncludeOkCallback =
 function(op) {
 	this._switchIncludeDialog.popdown();
 	this._switchInclude(op);
+	this._setDependentOptions();
 };
 
 ZmComposeController.prototype._switchIncludeCancelCallback =

@@ -1076,6 +1076,7 @@ function() {
  */
 ZmComposeView.prototype.reset =
 function(bEnableInputs) {
+
 	this.backupForm = null;
 	this.sendUID = null;
 
@@ -1427,13 +1428,11 @@ function() {
 ZmComposeView.prototype.isDirty =
 function(incAddrs, incSubject) {
 	// reply/forward and empty body => not dirty
-	if ((this._action != ZmOperation.NEW_MESSAGE) &&
-		(this._htmlEditor.getContent().match(ZmComposeView.EMPTY_FORM_RE)))
-	{
+	if ((this._action != ZmOperation.NEW_MESSAGE) && (this._htmlEditor.getContent().match(ZmComposeView.EMPTY_FORM_RE))) {
 		return false;
 	}
 
-	if (this._dirtyModeSwitch) { return true; }
+	if (this._isDirty) { return true; }
 
 	var curFormValue = this._formValue(incAddrs, incSubject);
 
@@ -2026,6 +2025,7 @@ ZmComposeView.prototype.resetBody =
 function(action, msg, extraBodyText, incOptions) {
 	this.cleanupAttachments(true);
 	this._setBody(action, msg, extraBodyText, incOptions);
+	this._isDirty = this._isDirty || this.isDirty();
 	this._setFormValue();
 	this._resetBodySize();
 };
@@ -2978,7 +2978,7 @@ function() {
 ZmComposeView.prototype._clearFormValue =
 function() {
 	this._origFormValue = "";
-	this._dirtyModeSwitch = false;
+	this._isDirty = false;
 };
 
 ZmComposeView.prototype._focusHtmlEditor =
