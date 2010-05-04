@@ -418,12 +418,9 @@ function(ev) {
 		var item = ev.item;
 		var restUrl = item.getRestUrl();
 
-        //added for bug: 45150
-        if(item.isWebDoc() && appCtxt.isOffline) {
-                restUrl = this._app.fixCrossDomainReference(restUrl);
-        }
-
-		if (item.isWebDoc()) {
+        if (item.isWebDoc()) {
+            //added for bug: 45150
+            restUrl = this._app.fixCrossDomainReference(restUrl);
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
             restUrl = restUrl + "&preview=1";
 		}
@@ -508,12 +505,9 @@ function(items){
         var restUrl = item.getRestUrl();
         if (restUrl) {
 
-            //added for bug: 45150
-            if(item.isWebDoc() && appCtxt.isOffline) {
-                restUrl = this._app.fixCrossDomainReference(restUrl);
-            }
-
             if (item.isWebDoc()) {
+                //added for bug: 45150
+                restUrl = this._app.fixCrossDomainReference(restUrl);
                 restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
                 window.open(restUrl, item.name, "");
             }
@@ -538,13 +532,10 @@ function(items){
 		var restUrl = item.getRestUrl();
 		if (restUrl) {
 
-            //added for bug: 45150
-            if(item.isWebDoc() && appCtxt.isOffline) {
-                restUrl = this._app.fixCrossDomainReference(restUrl);
-            }
-
             if (item.isWebDoc()) {
-				restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
+                //added for bug: 45150
+                restUrl = this._app.fixCrossDomainReference(restUrl);
+                restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
                 restUrl = restUrl + "&preview=1";
 			}
 			window.open(restUrl, item.name, item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());

@@ -234,7 +234,7 @@ function(item) {
     var originalRestURL = item.getRestUrl(false, true);
 
     //added for bug: 45150
-    if(item.isWebDoc() && appCtxt.isOffline) {
+    if(item.isWebDoc()) {
         restURL = this._controller.getApp().fixCrossDomainReference(restURL);
         originalRestURL = this._controller.getApp().fixCrossDomainReference(originalRestURL);
     }
