@@ -2906,6 +2906,8 @@ function(words){
 		msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._spellCheckShieldOkListener, this, [ msgDialog, words ] );
 		msgDialog.registerCallback(DwtDialog.NO_BUTTON, this._spellCheckShieldCancelListener, this, msgDialog);
 		msgDialog.associateEnterWithButton(DwtDialog.NO_BUTTON);
+		var composeView = this;
+		msgDialog.handleKeyAction = function(actionCode, ev) { if (actionCode && actionCode==DwtKeyMap.CANCEL) { composeView._spellCheckShieldOkListener(msgDialog, words, ev); return(true); } };
 		msgDialog.popup(null, DwtDialog.NO_BUTTON);
 	} else {
 		this._spellCheckOkay = true;
