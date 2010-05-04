@@ -468,6 +468,7 @@
           <url-pattern>/m/moversions</url-pattern>
           <url-pattern>/m/mainx</url-pattern>
           <url-pattern>/m/zmain</url-pattern>
+          <url-pattern>/m/zipad</url-pattern>
           <url-pattern>/m/zmview</url-pattern>
           <url-pattern>/m/mosearch</url-pattern>
           <url-pattern>/m/mocalendar</url-pattern>
