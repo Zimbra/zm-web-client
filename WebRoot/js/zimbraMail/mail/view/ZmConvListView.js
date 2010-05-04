@@ -768,9 +768,10 @@ function(ev) {
 					// msg marked as Junk, or hard-deleted
 					// TODO: handle expandable msg removal
 					conv.removeMsg(item);
-					if (this._isExpandable(conv) && conv.numMsgs == 1) {
+					if (this._expanded[conv.id] && conv.numMsgs == 1) {
 						this._setImage(conv, ZmItem.F_EXPAND, null);
-						this._removeMsgRows(conv.id);
+						this._collapse(conv);
+						this._expanded[conv.id] = false;
 					}
 					this.removeItem(item, true, ev.batchMode);	// remove msg row
 					this._controller._app._checkReplenishListView = this;
@@ -844,17 +845,18 @@ function(ev) {
 		var sortIndex = this._getSortIndex(item, sortBy);
 		var curIndex = this.getItemIndex(item, true);
 		if ((sortIndex != null) && (curIndex != null) && (sortIndex != curIndex) &&	!this._expanded[item.id]) {
-            this._removeMsgRows(item.id);
-            this.removeItem(item);
+			this._removeMsgRows(item.id);
+			this.removeItem(item);
 			this.addItem(item, sortIndex);
 		}
 	}
 
 	// only a conv can change its fragment
-	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_FRAGMENT])) {
-		var fragmentField = this._getElement(item, ZmItem.F_FRAGMENT);
+	if ((ev.event == ZmEvent.E_MODIFY || ev.event == ZmEvent.E_MOVE) && (fields && fields[ZmItem.F_FRAGMENT])) {
+		var conv = isConv ? item : appCtxt.getById(item.cid);
+		var fragmentField = this._getElement(conv, ZmItem.F_FRAGMENT);
 		if (fragmentField) {
-			fragmentField.innerHTML = this._getFragmentHtml(item);
+			fragmentField.innerHTML = this._getFragmentHtml(conv);
 		}
 	}
 

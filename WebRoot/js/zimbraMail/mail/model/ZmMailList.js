@@ -185,10 +185,28 @@ function(params, result) {
 	if (movedItems && movedItems.length) {
 		var folderId = params.markAsSpam ? ZmFolder.ID_SPAM : (params.folder ? params.folder.id : ZmFolder.ID_INBOX);
 		this.moveLocal(movedItems, folderId);
+		var convs = {};
 		for (var i = 0; i < movedItems.length; i++) {
 			var item = movedItems[i];
-			var details = {oldFolderId:item.folderId};
+			if (item.cid) {
+				var conv = appCtxt.getById(item.cid);
+				if (conv) {
+					if (!convs[conv.id])
+						convs[conv.id] = {conv:conv,msgs:[]};
+					convs[conv.id].msgs.push(item);
+				}
+			}
+			var details = {oldFolderId:item.folderId, fields:{}};
+			details.fields[ZmItem.F_FRAGMENT] = true;
 			item.moveLocal(folderId);
+		}
+
+		for (var id in convs) {
+			if (convs.hasOwnProperty(id)) {
+				var conv = convs[id].conv;
+				var msgs = convs[id].msgs;
+				conv.updateFragment(msgs);
+			}
 		}
 		//ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
 		

@@ -663,3 +663,17 @@ function() {
 	}
 	return true;
 };
+
+// Updates the conversation fragment based on the newest message in the conversation, optionally ignoring an array of messages
+ZmConv.prototype.updateFragment =
+function(ignore) {
+	var best;
+	for (var j = this.msgs.size()-1; j >= 0; j--) {
+		var candidate = this.msgs.get(j);
+		if (ignore && AjxUtil.indexOf(ignore,candidate)!=-1) continue;
+		if (candidate.fragment && (!best || candidate.date > best.date))
+			best = candidate;
+	}
+	if (best)
+		this.fragment = best.fragment;
+};
