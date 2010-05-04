@@ -1203,7 +1203,7 @@ function() {
 ZmContact.prototype.getFullName =
 function() {
 	if (!this._fullName) {
-		var fullName = this.getAttr(ZmContact.X_fullName); // present if GAL contact
+		var fullName = this.isGal && this.getAttr(ZmContact.X_fullName); // present if GAL contact
 		if (fullName) {
 			this._fullName = (fullName instanceof Array) ? fullName[0] : fullName;
 		} else {
