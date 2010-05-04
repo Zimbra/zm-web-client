@@ -353,14 +353,14 @@ function(convs, msgs) {
 	var fields = {};
 	var sortBy = this.search ? this.search.sortBy : null;
 	var sortIndex = {};
-	if ((this.type == ZmItem.CONV) && this.search && this.search.matches) {
+	if (this.type == ZmItem.CONV) {
 
 		// handle new convs first so we can set their fragments later from new msgs
 		for (var id in convs) {
 			if (this.getById(id)) { continue; }	// already have this conv
 			newConvId[id] = convs[id];
 			var conv = convs[id];
-			if (this.search.matches(conv) && !conv.ignoreJunkTrash()) {
+			if (this.search && this.search.matches && this.search.matches(conv) && !conv.ignoreJunkTrash()) {
 				if (!appCtxt.multiAccounts ||
 					(appCtxt.multiAccounts && (this.search.isMultiAccount() || conv.getAccount() == appCtxt.getActiveAccount()))) 
 				{
@@ -375,7 +375,7 @@ function(convs, msgs) {
 		for (var id in msgs) {
 			var msg = msgs[id];
 			var cid = msg.cid;
-			var msgMatches = this.search.matches(msg) && !msg.ignoreJunkTrash();
+			var msgMatches = this.search && this.search.matches && this.search.matches(msg) && !msg.ignoreJunkTrash();
 			var isActiveAccount = (!appCtxt.multiAccounts || (appCtxt.multiAccounts && msg.getAccount() == appCtxt.getActiveAccount()));
 			var conv = newConvId[cid] || this.getById(cid);
 			if (msgMatches && isActiveAccount) {
@@ -413,19 +413,19 @@ function(convs, msgs) {
 				// if the new msg matches current search, update conv date, fragment, and sort order
 				if (msgMatches) {
 					msg.inHitList = true;
-					if (conv.fragment != msg.fragment) {
-						conv.fragment = msg.fragment;
-						fields[ZmItem.F_FRAGMENT] = true;
-					}
-					if (conv.date != msg.date) {
-						conv.date = msg.date;
-						// recalculate conv's sort position since we changed its date
-						fields[ZmItem.F_DATE] = true;
-					}
-					// conv gained a msg, may need to be moved to top/bottom
-					if (!newConvId[conv.id] && this._vector.contains(conv)) {
-						fields[ZmItem.F_INDEX] = true;
-					}
+				}
+				if (conv.fragment != msg.fragment) {
+					conv.fragment = msg.fragment;
+					fields[ZmItem.F_FRAGMENT] = true;
+				}
+				if (conv.date != msg.date) {
+					conv.date = msg.date;
+					// recalculate conv's sort position since we changed its date
+					fields[ZmItem.F_DATE] = true;
+				}
+				// conv gained a msg, may need to be moved to top/bottom
+				if (!newConvId[conv.id] && this._vector.contains(conv)) {
+					fields[ZmItem.F_INDEX] = true;
 				}
 				modifiedItems.push(conv);
 			}
@@ -442,7 +442,7 @@ function(convs, msgs) {
 					newMsgs.push(msg);
 				}
 			} else { // MLV (traditional)
-				if (this.search.matches && this.search.matches(msg) && !msg.ignoreJunkTrash()) {
+				if (this.search.matches && this.search.matches && this.search.matches(msg) && !msg.ignoreJunkTrash()) {
 					msg.list = this;
 					newMsgs.push(msg);
 				}

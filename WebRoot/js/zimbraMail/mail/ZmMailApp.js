@@ -1145,8 +1145,8 @@ function(creates, list, controller) {
 	var convs = {};
 	var msgs = {};
 
-	// make sure current search is matchable (conv ctlr can just match on cid)
-	if (!(list.search && list.search.matches) && (controller != this._convController)) { return; }
+	// make sure current search is matchable (conv can just match on cid)
+	if (!(list.search && list.search.matches) && (controller == this._tradController)) { return; }
 
 	var sortBy = list.search.sortBy;
 
