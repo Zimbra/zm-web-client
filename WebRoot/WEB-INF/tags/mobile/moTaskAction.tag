@@ -47,10 +47,10 @@
         <mo:status style="Warning"><fmt:message key="actionNoItemSelected"/></mo:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionDelete')}">
-        <zm:moveItem folderid="${mailbox.trash}" var="result" id="${ids}"/>
+        <zm:moveItem folderid="${mailbox.trash.id}" var="result" id="${ids}"/>
         <c:set var="op" value="x" scope="request"/>
         <mo:status>
-            <fmt:message key="actionTaskTrashed">
+            <fmt:message key="actionTaskDeleted">
                 <fmt:param value="${result.idCount}"/>
                 <fmt:param value="${zm:getFolderName(pageContext, mailbox.trash.id)}"/>
             </fmt:message>
