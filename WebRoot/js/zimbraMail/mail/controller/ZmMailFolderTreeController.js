@@ -103,3 +103,13 @@ function(parent, type, id) {
 		}
 	}
 };
+
+ZmMailFolderTreeController.prototype._doMarkAllRead =
+function(organizer) {
+	// we're not guaranteed mark-all will succeed, so this is a tiny bit risky
+	if (appCtxt.isOffline) {
+		appCtxt.getApp(ZmApp.MAIL).clearNewMailBadge();
+	}
+
+	ZmTreeController.prototype._doMarkAllRead.apply(this, arguments);
+};

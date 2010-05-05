@@ -44,6 +44,7 @@ ZmMailApp = function(container, parentController) {
 	this._signatureCollection	= {};
 
 	this.numEntries				= 0; // offline, initial sync
+	this.globalMailCount		= 0; // offline, new mail count
 
 	this._addSettingsChangeListeners();
 };
@@ -1057,7 +1058,7 @@ function(creates) {
 		var acct = parsed && parsed.account;
 		if (!acct || (acct && acct.isOfflineInitialSync())) { continue; }
 
-		// offline: check wheter to show new-mail notification icon
+		// offline: check whether to show new-mail notification icon
 		// Skip spam/trash folders and the local account
 		if (appCtxt.isOffline &&
 			parsed &&
@@ -1065,6 +1066,8 @@ function(creates) {
 			parsed.id != ZmOrganizer.ID_TRASH &&
 			!acct.isMain)
 		{
+			this.globalMailCount++;
+
 			var currSearch = appCtxt.getCurrentSearch();
 			if ((currSearch && currSearch.isMultiAccount()) ||
 				(appCtxt.getCurrentAppName() != ZmApp.MAIL) ||
@@ -1072,8 +1075,8 @@ function(creates) {
 			{
 				acct.inNewMailMode = true;
 				var allContainers = appCtxt.getOverviewController()._overviewContainer;
-				for (var i in allContainers) {
-					allContainers[i].updateAccountInfo(acct, true, true);
+				for (var j in allContainers) {
+					allContainers[j].updateAccountInfo(acct, true, true);
 				}
 			}
 		}
@@ -1764,33 +1767,30 @@ function(organizer) {
 		mb.setImage(icon);
 	}
 
+	this._setNewMailBadge();
+};
+
+ZmMailApp.prototype._setNewMailBadge =
+function() {
 	if (appCtxt.isOffline && appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE)) {
-		var unreadCount = 0;
-		var list = appCtxt.accountList.visibleAccounts;
-		for (var i = 0; i < list.length; i++) {
-			unreadCount += (list[i].unread || 0);
-		}
 		if (AjxEnv.isMac && window.platform) {
-			window.platform.icon().badgeText = (unreadCount > 0)
-				? unreadCount : null;
+			window.platform.icon().badgeText = (this.globalMailCount > 0)
+				? this.globalMailCount : null;
 		}
 		else if (AjxEnv.isWindows) {
-			window.platform.icon().imageSpec = (unreadCount > 0)
+			window.platform.icon().imageSpec = (this.globalMailCount > 0)
 				? "resource://webapp/icons/default/newmail.png"
 				: "resource://webapp/icons/default/launcher.ico";
-			window.platform.icon().title = (unreadCount > 0)
-				? AjxMessageFormat.format(ZmMsg.unreadCount, unreadCount) : null;
+			window.platform.icon().title = (this.globalMailCount > 0)
+				? AjxMessageFormat.format(ZmMsg.unreadCount, this.globalMailCount) : null;
 		}
 	}
 };
 
 ZmMailApp.prototype.clearNewMailBadge =
 function() {
-	if (appCtxt.isOffline && AjxEnv.isMac && window.platform &&
-		appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE))
-	{
-		window.platform.icon().badgeText = null;
-	}
+	this.globalMailCount = 0;
+	this._setNewMailBadge();
 };
 
 /**
