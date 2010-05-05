@@ -153,7 +153,6 @@ function(aid) {
 	try {
 		cmd.invoke(params);
 	} catch (ex) {
-		debugger;
 	}
 //	appCtxt.getAppController().sendRequest(params);
 };
