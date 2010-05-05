@@ -557,14 +557,20 @@ function() {
 ZmDoublePaneController.prototype._handleResponseSetSelectedItem =
 function(msg) {
 	if (msg) {
-		// bug 41196 - offline mode, reset new mail notifier if user reads a msg
-		// from that account 
-		var acct = appCtxt.isOffline && msg.getAccount();
-		if (acct && acct.inNewMailMode) {
-			acct.inNewMailMode = false;
-			var allContainers = appCtxt.getOverviewController()._overviewContainer;
-			for (var i in allContainers) {
-				allContainers[i].updateAccountInfo(acct, true, true);
+		// bug 41196
+		if (appCtxt.isOffline) {
+			// clear the new-mail badge every time user reads a msg regardless
+			// of number of unread messages across all accounts
+			this._app.clearNewMailBadge();
+
+			// offline mode, reset new mail notifier if user reads a msg from that account
+			var acct = msg.getAccount();
+			if (acct && acct.inNewMailMode) {
+				acct.inNewMailMode = false;
+				var allContainers = appCtxt.getOverviewController()._overviewContainer;
+				for (var i in allContainers) {
+					allContainers[i].updateAccountInfo(acct, true, true);
+				}
 			}
 		}
 

@@ -1785,6 +1785,15 @@ function(organizer) {
 	}
 };
 
+ZmMailApp.prototype.clearNewMailBadge =
+function() {
+	if (appCtxt.isOffline && AjxEnv.isMac && window.platform &&
+		appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE))
+	{
+		window.platform.icon().badgeText = null;
+	}
+};
+
 /**
  * Gets the "group mail by" setting. This is a convenience method to
  * convert "group mail by" between server (string) and client (int constant) versions.
