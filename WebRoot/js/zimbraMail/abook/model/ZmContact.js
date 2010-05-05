@@ -192,8 +192,7 @@ ZmContact.PHONE_FIELDS = [
 	ZmContact.F_pager,
 	ZmContact.F_workFax,
 	ZmContact.F_workMobile,
-	ZmContact.F_workPhone,
-	ZmContact.F_workPhone2
+	ZmContact.F_workPhone
 ];
 ZmContact.PRIMARY_FIELDS = [
 	ZmContact.F_company,

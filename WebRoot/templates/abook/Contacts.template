@@ -678,7 +678,6 @@
 	var i = 0;
 	while (true) {
 		var name = ++i > 1 || ZmContact.IS_ADDONE[data.name] ? data.name+i : data.name;
-		if (name != data.name && data.names && AjxUtil.indexOf(data.names,name)!=-1) break;
 		var value = data.attrs[name];
 		if (!value) break;
 		if (!isEmail) {
