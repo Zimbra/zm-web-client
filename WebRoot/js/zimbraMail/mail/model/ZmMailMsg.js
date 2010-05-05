@@ -1956,7 +1956,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			addrNodes.push({t:"s", a:mainAcct});
 		}
 
-		if (identity && identity.isFromDataSource && ac.get(ZmSetting.SEND_ON_BEHALF_OF)) {
+		if (identity && identity.isFromDataSource) {
 			var dataSource = ac.getDataSourceCollection().getById(identity.id);
 			if (dataSource) {
 				var provider = ZmDataSource.getProviderForAccount(dataSource);
