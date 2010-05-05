@@ -1612,7 +1612,7 @@ function() {
 						account = appCtxt.getActiveAccount();
 					}
 				}
-				this._isRemote = (parsed.account && (parsed.account != account));
+				this._isRemote = Boolean(!parsed.account || (parsed.account && (parsed.account != account)));
 			} else {
 				var id = String(this.id);
 				this._isRemote = ((id.indexOf(":") != -1) && (id.indexOf(appCtxt.getActiveAccount().id) != 0));

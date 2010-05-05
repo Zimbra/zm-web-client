@@ -397,7 +397,7 @@ function(params) {
 ZmFolderTree.prototype._getItemsWithoutPerms =
 function(type) {
 	var needPerms = [];
-	var orgs = type ? [type] : [ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR, ZmOrganizer.TASKS, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
+	var orgs = type ? [type] : [ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR, ZmOrganizer.TASKS, ZmOrganizer.NOTEBOOK, ZmOrganizer.BRIEFCASE, ZmOrganizer.ADDRBOOK];
 
 	for (var j = 0; j < orgs.length; j++) {
 		var org = orgs[j];
