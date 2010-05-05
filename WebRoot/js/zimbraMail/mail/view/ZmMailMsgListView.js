@@ -128,7 +128,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 	
 			// default to FROM addresses if no TO: found
 			//#Bug:24423 //Removed Defaulting for DRAFTS alone.
-			if (!isFolder.drafts && !folder.sent && (!addrs || addrs.length==0)) {
+			if (!isFolder.drafts && !isFolder.sent && (!addrs || addrs.length==0)) {
 				addrs = msg.getAddresses(AjxEmailAddress.FROM).getArray();
 			}
 			
