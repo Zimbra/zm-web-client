@@ -118,8 +118,7 @@ function() {
 							 compareFunc:		"ZmTaskFolder.sortCompare",
 							 deferrable:		true,
 							 newOp:				ZmOperation.NEW_TASK_FOLDER,
-							 displayOrder:		100,
-							 pathInName:		true
+							 displayOrder:		100
 							});
 };
 
