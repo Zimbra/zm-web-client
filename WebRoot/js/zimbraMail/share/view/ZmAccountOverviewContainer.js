@@ -142,6 +142,9 @@ function(params) {
 			this._setupHeader(header, acct);
 		}
 
+		if (appCtxt.isOffline && acct.recent > 0) {
+			acct.inNewMailMode = true;
+		}
 		this.updateAccountInfo(acct, true, true);
 
 		showBackgroundColor = !showBackgroundColor;
