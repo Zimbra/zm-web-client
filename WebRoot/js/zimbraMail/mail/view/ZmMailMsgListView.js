@@ -428,24 +428,6 @@ function(columnItem, bSortAsc) {
 	}
 };
 
-ZmMailMsgListView.prototype._mouseOverAction =
-function(mouseEv, div) {
-	// bug fix #12734 - disable sorting of "From" column for Sent/Drafts folders
-	if (this.sortingEnabled) {
-		var type = this._getItemData(div, "type");
-		if (type == DwtListView.TYPE_HEADER_ITEM) {
-			var hdr = this.getItemFromElement(div);
-			var isSentOrDrafts = (hdr && hdr._sortable && hdr._sortable == ZmItem.F_FROM)
-				? this._isSentOrDraftsFolder() : null;
-			if (isSentOrDrafts && (isSentOrDrafts.sent || isSentOrDrafts.drafts)) {
-				return;
-			}
-		}
-	}
-
-	ZmMailListView.prototype._mouseOverAction.call(this, mouseEv, div);
-};
-
 ZmMailMsgListView.prototype._handleResponseSortColumn =
 function(conv, columnItem, controller, result) {
 	var searchResult = result.getResponse();

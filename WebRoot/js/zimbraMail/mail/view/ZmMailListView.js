@@ -461,6 +461,24 @@ function() {
 	}
 };
 
+ZmMailListView.prototype._mouseOverAction =
+function(mouseEv, div) {
+
+	var type = this._getItemData(div, "type");
+	if (type == DwtListView.TYPE_HEADER_ITEM){
+		var hdr = this.getItemFromElement(div);
+		if (hdr && this.sortingEnabled && hdr._sortable && hdr._sortable == ZmItem.F_FROM) {
+			var fromMe = this._isSentOrDraftsFolder();
+			if (fromMe && (fromMe.sent || fromMe.drafts)) {
+				div.className = "DwtListView-Column DwtListView-ColumnHover";
+				return true;
+			}
+		}
+	}
+
+	return ZmListView.prototype._mouseOverAction.apply(this, arguments);
+};
+
 ZmMailListView.prototype._columnClicked =
 function(clickedCol, ev) {
 
@@ -468,14 +486,14 @@ function(clickedCol, ev) {
 	var hdr = this.getItemFromElement(clickedCol);
 	if (hdr && hdr._sortable && hdr._sortable == ZmItem.F_FROM) {
 		var fromMe = this._isSentOrDraftsFolder();
-		if (fromMe) {
+		if (fromMe && (fromMe.sent || fromMe.drafts)) {
 			var sel = this.getSelection();
 			var addrs = [];
 			for (var i = 0, len = sel.length; i < len; i++) {
 				addrs.push(sel[i].getAddress(AjxEmailAddress.TO));
 			}
 			var dlg = appCtxt.getAddrSelectDialog();
-			var queryId = fromMe.isSent ? ZmFolder.ID_SENT : ZmFolder.ID_DRAFTS;
+			var queryId = fromMe.sent ? ZmFolder.ID_SENT : ZmFolder.ID_DRAFTS;
 			dlg.popup(addrs, ZmFolder.QUERY_NAME[queryId]);
 			this._checkSelectionColumnClicked(clickedCol, ev);
 			return;

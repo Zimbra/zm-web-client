@@ -98,6 +98,7 @@ function(addrs, queryName) {
 			used[email] = true;
 		}
 	}
+	this._addrs.sort(AjxEmailAddress.sortCompareByAddress);
 	this._listView.set(AjxVector.fromArray(this._addrs));
 	this._listView.setSelection(this._addrs[0]);
 
