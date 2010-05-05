@@ -800,8 +800,8 @@ function(timeStr, date) {
     var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
     var formattedDate = formatter.parse(timeStr);
     date = date ? date : new Date();
-	date.setHours(formattedDate.getHours(), formattedDate.getMinutes(), 0, 0);
-	return date;
+    date.setHours(formattedDate.getHours(), formattedDate.getMinutes(), 0, 0);
+    return date;
 };
 
 /**
@@ -859,22 +859,26 @@ function(startDateField, endDateField, ss, es) {
 	var startDate = AjxDateUtil.simpleParseDateStr(startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(endDateField.value);
 
-    if (startDate && endDate) {
-        if((startDate.valueOf() > endDate.valueOf())){
-            return false;
-        }
-        // bug fix #11329 - dont allow year to be more than the earth will be around :]
+	if (startDate && endDate) {
+		if((startDate.valueOf() > endDate.valueOf())) {
+			return false;
+		}
+		// bug fix #11329 - dont allow year to be more than the earth will be around :]
 		if (startDate.getFullYear() > 9999 || endDate.getFullYear() > 9999) {
 			return false;
 		}
-        if(ss && es){
-            var startDateMs = ZmTimeInput.getDateFromFields(ss.getTimeString(), startDate).getTime();
-            var endDateMs = ZmTimeInput.getDateFromFields(es.getTimeString(), endDate).getTime();
-            if (startDateMs > endDateMs) {
-                return false;
-            }
-        }
-    } else {
+		if (ss && es) {
+			var startTime = ss.getTimeString();
+			var endTime = es.getTimeString();
+			if (startTime && endTime) {
+				var startDateMs = ZmTimeInput.getDateFromFields(startTime, startDate).getTime();
+				var endDateMs = ZmTimeInput.getDateFromFields(endTime, endDate).getTime();
+				if (startDateMs > endDateMs) {
+					return false;
+				}
+			}
+		}
+	} else {
 		return false;
 	}
 	return true;
