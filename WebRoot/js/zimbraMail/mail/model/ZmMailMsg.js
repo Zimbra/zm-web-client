@@ -1579,8 +1579,10 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					props.briefcaseLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
 				}
 
+                var isICSAttachment = (attach.filename && attach.filename.match(/\./) && attach.filename.replace(/^.*\./,"").toLowerCase() == "ics");
+
 				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
-					attach.ct == ZmMimeTable.TEXT_CAL)
+					((attach.ct == ZmMimeTable.TEXT_CAL) || isICSAttachment))
 				{
 					var onclickStr1 = "ZmMailMsgView.addToCalendarCallback(\"" + this.id + "\",\"" + attach.part + "\");";
 					props.importICSLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
