@@ -1851,7 +1851,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
 	</div>
 
-
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -1875,6 +1874,47 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</td>
 		</tr>
 	</table>
+
+	<$ if (appCtxt.isOffline) { $>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.zimletInstall$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table width=100%>
+						<tr>
+							<td>
+								<div><$=ZmMsg.zimletsPrefsUpload$></div><br/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<table border=0>
+									<tr>
+										<td class='ZOptionsLabel'><$=ZmMsg.fileLabel$></td>
+										<td>
+											<form id='${id}_form' action='${action}' method='POST' enctype='multipart/form-data' style='margin:0px; padding:0px;'>
+												<input id='${id}_input' tabindex='40' type='file' name='zimletUpload' style='font-family:Tahoma; font-size:10px'>
+											</form>
+										</td>
+									</tr>
+									<tr>
+										<td></td>
+										<td id='${id}_button'></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	<$ } $>
 </template>
 
 <template id='prefs.Pages#SharingPrefPage'>

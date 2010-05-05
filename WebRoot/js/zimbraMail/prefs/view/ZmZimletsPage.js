@@ -65,6 +65,15 @@ function(){
 	}
 };
 
+ZmZimletsPage.prototype._getTemplateData =
+function() {
+	var data = ZmPreferencesPage.prototype._getTemplateData.apply(this, arguments);
+	if (appCtxt.isOffline) {
+		data.action = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+	}
+	return data;
+};
+
 /**
  * @private
  */
@@ -76,6 +85,93 @@ function(id, setup, value) {
 	}
 
 	return ZmPreferencesPage.prototype._setupCustom.apply(this, arguments);
+};
+
+ZmZimletsPage.prototype._createControls =
+function() {
+	if (appCtxt.isOffline) {
+		// add "upload" button
+		this._uploadButton = new DwtButton({parent:this, parentElement: this._htmlElId+"_button"});
+		this._uploadButton.setText(ZmMsg.uploadNewFile);
+		this._uploadButton.addSelectionListener(new AjxListener(this, this._fileUploadListener));
+	}
+
+	ZmPreferencesPage.prototype._createControls.apply(this, arguments);
+};
+
+ZmZimletsPage.prototype._fileUploadListener =
+function() {
+	this._uploadButton.setEnabled(false);
+
+	var callback = new AjxCallback(this, this._handleZimletUpload);
+	var formEl = document.getElementById(this._htmlElId + "_form");
+	var um = window._uploadManager = appCtxt.getUploadManager();
+	um.execute(callback, formEl);
+};
+
+ZmZimletsPage.prototype._handleZimletUpload =
+function(status, aid) {
+	if (status == 200) {
+		var dialog = appCtxt.getCancelMsgDialog();
+		dialog.reset();
+		dialog.setMessage(ZmMsg.zimletDeploying, DwtMessageDialog.INFO_STYLE);
+		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._handleZimletCancel, [dialog]));
+		dialog.popup();
+
+		this._deployZimlet(aid);
+	}
+	else {
+		var msg = (status == AjxPost.SC_NO_CONTENT)
+			? ZmMsg.zimletUploadError
+			: (AjxMessageFormat.format(ZmMsg.zimletUploadStatus, status));
+        appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
+
+		this._uploadButton.setEnabled(true);
+	}
+};
+
+ZmZimletsPage.prototype._deployZimlet =
+function(aid) {
+	var soapDoc = AjxSoapDoc.create("DeployZimletRequest", "urn:zimbraAdmin");
+	var method = soapDoc.getMethod();
+	method.setAttribute("action", "deployLocal");
+	var content = soapDoc.set("content");
+	content.setAttribute("aid", aid);
+
+	var callback = new AjxCallback(this, this._deployZimletResponse);
+	var errorCallback = new AjxCallback(this, this._deployZimletError);
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: callback,
+		errorCallback: errorCallback,
+		serverUri: (["https://", location.hostname, ":7071"].join(""))
+	};
+
+	// send request manually since we need to send it to admin URL
+	var cmd = new ZmCsfeCommand();
+	try {
+		cmd.invoke(params);
+	} catch (ex) {
+		debugger;
+	}
+//	appCtxt.getAppController().sendRequest(params);
+};
+
+ZmZimletsPage.prototype._deployZimletResponse =
+function() {
+	// todo
+};
+
+ZmZimletsPage.prototype._deployZimletError =
+function() {
+	// todo
+};
+
+ZmZimletsPage.prototype._handleZimletCancel =
+function(dialog) {
+	dialog.popdown();
+	this._uploadButton.setEnabled(true);
 };
 
 ZmZimletsPage.prototype.addCommand  =
