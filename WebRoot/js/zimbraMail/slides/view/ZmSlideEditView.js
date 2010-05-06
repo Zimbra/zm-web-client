@@ -251,35 +251,38 @@ ZmSlideEditView.prototype._promptDeleteSlide =
 function() {
     var deleteSlideCallback = new AjxCallback(this, this._continueDeleteSlide);
 
-    var confirmDialog = new DwtConfirmDialog(appCtxt.getShell());
+    var confirmDialog = this._deleteConfirmDlg = new DwtConfirmDialog(appCtxt.getShell());
     confirmDialog.popup(ZmMsg.slides_confirmDeleteSlide, deleteSlideCallback);
 };
 
 ZmSlideEditView.prototype._continueDeleteSlide =
 function() {
+
+    this._deleteConfirmDlg.popdown();
+    
     this._syncPreview();
 
 
     var previewSlide = this.getNextPreviewSlideParent(this._previewSlideParent);
 
     if(!previewSlide) {
-        nextPreviewSlideParent = this.getPreviousPreviewSlideParent(this._previewSlideParent);
+        previewSlide = this.getPreviousPreviewSlideParent(this._previewSlideParent);
     }
 
     if(this._previewSlideParent && this._previewSlideParent.parentNode) {
         this._previewSlideParent.parentNode.removeChild(this._previewSlideParent);
     }
 
-    if(nextPreviewSlideParent) {
-        var div = nextPreviewSlideParent.firstChild;
+    if(previewSlide) {
+        var div = previewSlide.firstChild;
         this.clearCurrentSelection();
         this._currentSlideDiv.innerHTML = div.innerHTML;
         this._currentPreviewSlideDiv = div;
-        this._previewSlideParent = nextPreviewSlideParent;
+        this._previewSlideParent = previewSlide;
     }
 
 
-    if(!nextPreviewSlideParent) {
+    if(!previewSlide) {
         this.createSlide();
     }
 
