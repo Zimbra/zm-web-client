@@ -1276,7 +1276,7 @@ function(refresh) {
 	if (!appCtxt.inStartup) {
 		this.resetOverview(this.getOverviewId());
 		var req = appCtxt.currentRequestParams;
-		if (appCtxt.getCurrentAppName() == this._name && req.resend && req.methodName == "NoOpRequest") {
+		if (appCtxt.getCurrentAppName() == this._name) {
 			var curView = appCtxt.getCurrentViewId();
 			if (curView == ZmId.VIEW_CONVLIST || curView == ZmId.VIEW_TRAD) {
 				appCtxt.getSearchController().redoSearch(this.currentSearch);
