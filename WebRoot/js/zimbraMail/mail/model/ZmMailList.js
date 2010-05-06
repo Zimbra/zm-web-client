@@ -422,7 +422,7 @@ function(convs, msgs) {
 					conv.msgs.addChangeListener(conv._listChangeListener);
 				}
 				var index = conv.msgs._getSortIndex(msg, conv._sortBy);
-				conv.msgs.add(msg, index);
+				conv.addMsg(msg, index);
 				msg.list = conv.msgs;
 				if (!msg.isSent && msg.isUnread) {
 					conv.isUnread = true;

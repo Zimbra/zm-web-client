@@ -229,6 +229,30 @@ function(callback, result) {
 };
 
 /**
+ * Adds the message at the given index.
+ *
+ * @param	{ZmMailMsg}		msg		the message to add
+ * @param	{int}			index	where to add it
+ */
+ZmConv.prototype.addMsg =
+function(msg, index) {
+
+	if (!this.msgs) {
+		this.msgs = new ZmMailList(ZmItem.MSG, this.search);
+		this.msgs.convId = this.id;
+		this.msgs.addChangeListener(this._listChangeListener);
+		this.msgs.setHasMore(false);
+	}
+	this.msgs.add(msg, index);
+	this.msgIds = [];
+	var a = this.msgs.getArray();
+	for (var i = 0, len = a.length; i < len; i++) {
+		this.msgIds.push(a[i].id);
+	}
+	this.numMsgs = this.msgs.size();
+};
+
+/**
  * Removes the message.
  * 
  * @param	{ZmMailMsg}		msg		the message to remove
@@ -240,13 +264,7 @@ function(msg) {
 		this.numMsgs = this.msgs.size();
 	}
 	if (this.msgIds && this.msgIds.length) {
-		var tmpMsgIds = [];
-		for (var i = 0, count = this.msgIds.length; i < count; i++) {
-			if (this.msgIds[i] != msg.id) {
-				tmpMsgIds.push(this.msgIds[i]);
-			}
-		}
-		this.msgIds = tmpMsgIds;
+		AjxUtil.arrayRemove(this.msgIds, msg.id);
 	}
 };
 
