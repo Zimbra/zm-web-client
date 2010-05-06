@@ -1021,17 +1021,15 @@ function(creates, force) {
 		}
 	}
 
+	// give each controller a chance to handle the creates
 	if (this._tradController) {
-		// can't get to another controller without running a search
 		this._checkList(creates, this._tradController.getList(), this._tradController);
-	} else {
-		// these two controllers can be active together without an intervening search
-		if (this._convListController) {
-			this._checkList(creates, this._convListController.getList(), this._convListController);
-		}
-		if (this._convController) {
-			this._checkList(creates, this._convController.getList(), this._convController);
-		}
+	}
+	if (this._convListController) {
+		this._checkList(creates, this._convListController.getList(), this._convListController);
+	}
+	if (this._convController) {
+		this._checkList(creates, this._convController.getList(), this._convController, true);
 	}
 
 	this._handleAlerts(creates);
@@ -1133,14 +1131,15 @@ function(creates) {
  *  	- we are currently in a mail view
  *		- the view is the result of a matchable search
  *
- * @param {Hash}	creates		the JSON create objects
- * @param {ZmMailList}	list			the mail list to notify
+ * @param {Hash}					creates		the JSON create objects
+ * @param {ZmMailList}				list		the mail list to notify
  * @param {ZmMailListController}	controller	the controller that owns list
+ * @param {boolean}					last		if true, okay to mark creates as handled
  * 
  * @private
  */
 ZmMailApp.prototype._checkList =
-function(creates, list, controller) {
+function(creates, list, controller, last) {
 
 	if (!(list && list instanceof ZmMailList)) { return; }
 
@@ -1152,8 +1151,8 @@ function(creates, list, controller) {
 
 	var sortBy = list.search.sortBy;
 
-	var convResults = this._checkType(creates, ZmItem.CONV, convs, list, sortBy);
-	var msgResults  = this._checkType(creates, ZmItem.MSG, msgs, list, sortBy, convs);
+	var convResults = this._checkType(creates, ZmItem.CONV, convs, list, sortBy, null, last);
+	var msgResults  = this._checkType(creates, ZmItem.MSG, msgs, list, sortBy, convs, last);
 
 	if (convResults.gotMail || msgResults.gotMail) {
 		list.notifyCreate(convs, msgs);
@@ -1178,19 +1177,20 @@ function(creates, list, controller) {
 /**
  * Handles the creates for the given type of mail item.
  *
- * @param {Array}	creates	a list of JSON create nodes
+ * @param {Array}		creates		a list of JSON create nodes
  * @param {constant}	type		the mail item type
- * @param {Hash}	items		a hash of created mail items
+ * @param {Hash}		items		a hash of created mail items
  * @param {ZmMailList}	currList	the list currently being displayed to user
- * @param {constant}	sortBy	the sort order
- * @param {Hash}	convs		the convs, so we can update folders from msgs
+ * @param {constant}	sortBy		the sort order
+ * @param {Hash}		convs		the convs, so we can update folders from msgs
+ * @param {boolean}		last		if true, okay to mark creates as handled
  *
  * @return	{Hash}	a hash with booleans gotItem and gotAlertMessage
  * 
  * @private
  */
 ZmMailApp.prototype._checkType =
-function(creates, type, items, currList, sortBy, convs) {
+function(creates, type, items, currList, sortBy, convs, last) {
 	var result = { gotMail:false, hasMore:false};
 	var nodeName = ZmList.NODE[type];
 	var list = creates[nodeName];
@@ -1215,7 +1215,9 @@ function(creates, type, items, currList, sortBy, convs) {
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 		if (create._handled) { continue; }
-		create._handled = true;
+		if (last) {
+			create._handled = true;
+		}
 
 		// ignore stuff we already have
 		if (currList.getById(create.id) || create._wasVirtConv) { continue; }
