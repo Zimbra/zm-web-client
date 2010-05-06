@@ -125,13 +125,6 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		var isFolder = this._isSentOrDraftsFolder();
 		if (this._mode == ZmId.VIEW_TRAD && (isFolder.sent || isFolder.drafts)) {
 			var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
-	
-			// default to FROM addresses if no TO: found
-			//#Bug:24423 //Removed Defaulting for DRAFTS alone.
-			if (!isFolder.drafts && !isFolder.sent && (!addrs || addrs.length==0)) {
-				addrs = msg.getAddresses(AjxEmailAddress.FROM).getArray();
-			}
-			
 			if (addrs && addrs.length) {
 				var fieldId = this._getFieldId(msg, ZmItem.F_PARTICIPANT);
 				var origLen = addrs.length;
@@ -153,6 +146,8 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 						htmlArr[idx++] = AjxStringUtil.ELLIPSIS;
 					}
 				}
+			} else {
+				htmlArr[idx++] = "&nbsp;"
 			}
 		}
 		else
