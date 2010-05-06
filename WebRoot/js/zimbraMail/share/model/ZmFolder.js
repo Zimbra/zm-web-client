@@ -38,6 +38,7 @@
  * @param {int}	params.sizeTotal	the total size of folder's items
  * @param {String}	params.url		the URL for this folder's feed
  * @param {String}	params.owner	the Owner for this organizer
+ * @param {String}	params.oname	the Owner's name for this organizer, if remote folder
  * @param {String}	params.zid		the Zimbra ID of owner, if remote folder
  * @param {String}	params.rid		the Remote ID of organizer, if remote folder
  * @param {String}	params.restUrl	the REST URL of this organizer

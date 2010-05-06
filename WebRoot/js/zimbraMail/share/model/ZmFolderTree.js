@@ -222,6 +222,7 @@ function(type, parent, obj, tree, path, elementType, account) {
 		color: 		obj.color,
 		rgb:		obj.rgb,
 		owner: 		obj.owner,
+		oname: 		obj.oname,
 		zid: 		obj.zid,
 		rid: 		obj.rid,
 		restUrl: 	obj.rest,

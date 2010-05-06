@@ -42,6 +42,7 @@
 * @param {int}	params.sizeTotal	the total size of organizer's items
 * @param {String}	params.url		the URL for this organizer's feed
 * @param {String}	params.owner		the owner for this organizer
+* @param {String}	params.oname		the owner's name for this organizer
 * @param {String}	params.zid		the Zimbra ID of owner, if remote folder
 * @param {String}	params.rid		the remote ID of organizer, if remote folder
 * @param {String}	params.restUrl	the REST URL of this organizer.
@@ -64,6 +65,7 @@ ZmOrganizer = function(params) {
 	this.sizeTotal = params.sizeTotal || 0;
 	this.url = params.url;
 	this.owner = params.owner;
+	this.oname = params.oname;
 	this.link = params.link || (Boolean(params.zid)) || (this.parent && this.parent.link);
 	this.isMountpoint = params.link;
 	this.zid = params.zid;
@@ -648,13 +650,12 @@ function() {
 * @return	{String}	the name
 */
 ZmOrganizer.prototype.getName = 
-function(showUnread, maxLength, noMarkup, useSystemName) {
+function(showUnread, maxLength, noMarkup, useSystemName, useOwnerName) {
 	if (this.nId == ZmFolder.ID_ROOT) {
 		return (ZmOrganizer.LABEL[this.type])
 			? ZmMsg[ZmOrganizer.LABEL[this.type]] : "";
 	}
-	var name = (useSystemName && this._systemName)
-		? this._systemName : this.name || "";
+	var name = (useSystemName && this._systemName) || (useOwnerName && this.oname) || this.name || "";
 	if (ZmOrganizer.PATH_IN_NAME[this.type] && this.path) {
 		name = [this.path, name].join("/");
 	}
@@ -674,11 +675,11 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 * @return	{String}	the path
 */
 ZmOrganizer.prototype.getPath = 
-function(includeRoot, showUnread, maxLength, noMarkup, useSystemName) {
+function(includeRoot, showUnread, maxLength, noMarkup, useSystemName, useOwnerName) {
 	var parent = this.parent;
-	var path = this.getName(showUnread, maxLength, noMarkup, useSystemName);
+	var path = this.getName(showUnread, maxLength, noMarkup, useSystemName, useOwnerName);
 	while (parent && ((parent.nId != ZmOrganizer.ID_ROOT) || includeRoot)) {
-		path = parent.getName(showUnread, maxLength, noMarkup, useSystemName) + ZmFolder.SEP + path;
+		path = parent.getName(showUnread, maxLength, noMarkup, useSystemName, useOwnerName) + ZmFolder.SEP + path;
 		parent = parent.parent;
 	}
 
@@ -707,9 +708,9 @@ function(force) {
  * @return	{String}	the path
  */
 ZmOrganizer.prototype.getSearchPath =
-function() {
+function(useOwnerName) {
 	return (this.nId != ZmOrganizer.ID_ROOT)
-		? this.getPath(null, null, null, true, true) : "/";
+		? this.getPath(null, null, null, true, true, useOwnerName) : "/";
 };
 
 /**
@@ -756,9 +757,9 @@ function() {
  */
 ZmOrganizer.prototype.getRestUrl =
 function() {
-	// return REST URL as seen by the GetInfoResponse
 	var restUrl = appCtxt.get(ZmSetting.REST_URL);
-	if (restUrl) {
+	if (restUrl && this.getOwner() == appCtxt.get(ZmSetting.USERNAME)) {
+		// return REST URL as seen by the GetInfoResponse
 		return ([restUrl, "/", AjxStringUtil.urlEncode(this.getSearchPath())].join(""));
 	}
 
@@ -768,12 +769,19 @@ function() {
 	}
 
 	// if server doesn't tell us what URL to use, do our best to generate
+	url = this._generateRestUrl();
+	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
+
+	return url;
+};
+
+ZmOrganizer.prototype._generateRestUrl =
+function() {
 	var loc = document.location;
-	var uname = this.owner || appCtxt.get(ZmSetting.USERNAME);
+	var uname = this.getOwner();
 	var host = loc.host;
 	var m = uname.match(/^(.*)@(.*)$/);
 
-	uname = (m && m[1]) || uname;
 	host = (m && m[2]) || host;
 
 	// REVISIT: What about port? For now assume other host uses same port
@@ -781,14 +789,10 @@ function() {
 		host = host + ":" + loc.port;
 	}
 
-	var url = [
+	return [
 		loc.protocol, "//", host, "/service/user/", uname, "/",
-		AjxStringUtil.urlEncode(this.getSearchPath())
+		AjxStringUtil.urlEncode(this.getSearchPath(true))
 	].join("");
-
-	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
-
-	return url;
 };
 
 /**
@@ -1689,7 +1693,7 @@ function(type, checkParent) {
  */
 ZmOrganizer.prototype.getOwner =
 function() {
-	return (this.owner || appCtxt.get(ZmSetting.USERNAME));
+	return this.owner || (this.parent && this.parent.getOwner()) || appCtxt.get(ZmSetting.USERNAME);
 };
 
 /**

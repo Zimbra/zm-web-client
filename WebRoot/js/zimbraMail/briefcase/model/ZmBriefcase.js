@@ -30,6 +30,7 @@
  * @param {ZmTree}	params.tree		the tree model that contains this organizer
  * @param {constant}	params.color	the color for this briefcase
  * @param {String}	params.owner		the owner of this organizer
+ * @param {String}	params.oname		the owner's name for this organizer
  * @param {String}	[params.zid]		the Zimbra id of owner, if remote share
  * @param {String}	[params.rid]		the Remote id of organizer, if remote share
  * @param {String}	[params.restUrl]	the REST URL of this organizer.
