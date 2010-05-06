@@ -164,6 +164,25 @@ function(item) {
     }
 };
 
+ZmDocsEditView.prototype.setPendingContent =
+function(content) {
+	this._pendingContent = content;
+};
+
+ZmDocsEditView.prototype.getPendingContent =
+function() {
+	return this._pendingContent;
+};
+
+ZmDocsEditView.prototype.onLoadContent =
+function(ed) {
+	var pendingContent = this.getPendingContent();
+	if (pendingContent != null) {
+		ed.setContent(pendingContent, {format: "raw"});
+		this.setPendingContent(null);
+	}
+};
+
 ZmDocsEditView.prototype._initialize = function() {
 
     var toolbar = this._toolbar = new DwtToolBar({parent:this, className:"ZDToolBar", cellSpacing:2, posStyle:DwtControl.RELATIVE_STYLE});
@@ -174,7 +193,12 @@ ZmDocsEditView.prototype._initialize = function() {
     toolbar2.getHtmlElement().setAttribute("align","center");
     this._createToolbar2(toolbar2);
     */
-
+    var obj = this;
+    
+    function handleContentLoad(ed) {
+		obj.onLoadContent(ed);
+	};
+    
     var iFrame = this._iframe = document.createElement("iframe");
     iFrame.id = Dwt.getNextId();
     iFrame.className = "ZDEditor";
@@ -210,9 +234,9 @@ ZmDocsEditView.prototype._initialize = function() {
             mode : "exact",
             elements: "tiny_mce_content",
             theme : "advanced",
-            relative_urls : false,
+            relative_urls: false,
             remove_script_host : false,
-            plugins : "ztable,safari,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
+            plugins : "pagebreak,ztable,safari,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
 
             // Theme options
             theme_advanced_buttons1 : "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect,|,cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
@@ -222,7 +246,9 @@ ZmDocsEditView.prototype._initialize = function() {
             theme_advanced_toolbar_align : "left",
             theme_advanced_statusbar_location : "none",
             theme_advanced_resizing : true,
-
+            force_br_newlines : true,
+            forced_root_block : '',
+            force_p_newlines : false,
             // Example content CSS (should be your site CSS)
             content_css : "css/content.css",
             //enabling browser spell check
@@ -231,7 +257,10 @@ ZmDocsEditView.prototype._initialize = function() {
             template_external_list_url : "lists/template_list.js",
             external_link_list_url : "lists/link_list.js",
             external_image_list_url : "lists/image_list.js",
-            media_external_list_url : "lists/media_list.js"
+            media_external_list_url : "lists/media_list.js",
+            setup : function(ed) {
+			    ed.onLoadContent.add(handleContentLoad);
+		    }
 
         });
     } else {

@@ -42,7 +42,7 @@
 <c:set var="pnames" value="${fn:split(packages,',')}" scope="request"/>
 
 <c:set var="ext" value="${requestScope.fileExtension}" scope="page"/>
-<c:set var="vers" value="${requestScope.version}" scope="page"/>
+<c:set var="vers" value="${empty requestScope.version ? initParam.zimbraCacheBusterVersion : requestScope.version}" scope="page"/>
 
 <c:if test="${empty ext or isDevMode}">
     <c:set var="ext" value="" scope="page"/>

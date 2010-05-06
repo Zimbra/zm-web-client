@@ -83,12 +83,7 @@ ZmDocsEditController.prototype.loadDocument = function(item) {
     var content = this._docMgr.fetchDocumentContent(item);
     if(content) {
         if(window.isTinyMCE) {
-            var ed = tinyMCE.get('tiny_mce_content');
-            if(ed) {
-                ed.setContent();
-            }else {
-                document.getElementById('tiny_mce_content').value = content;
-            }
+            this._docsEdit.setPendingContent(content);            
         }else {
             this._docsEdit._editor.setContent(content);
         }
