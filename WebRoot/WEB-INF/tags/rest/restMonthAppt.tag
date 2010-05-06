@@ -82,17 +82,17 @@
                 <fmt:param>
                 <c:choose>
                     <c:when test="${appt.startTime lt start}">
-                        <fmt:formatDate  value="${zm:getCalendar(start,timezone).time}" type="time" timeStyle="short"/>
+                        <fmt:formatDate  value="${zm:getCalendar(start,timezone).time}" type="time" timeStyle="short" timeZone="${timezone}"/>
                     </c:when>
                     <c:otherwise>
-                        <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
+                        <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short" />
                     </c:otherwise>
                 </c:choose>
                 </fmt:param>
                 <fmt:param>
                 <c:choose>
                     <c:when test="${appt.endTime gt end}">
-                        <fmt:formatDate value="${zm:getCalendar(end,timezone).time}" type="time" timeStyle="short"/>
+                        <fmt:formatDate value="${zm:getCalendar(end,timezone).time}" type="time" timeStyle="short" timeZone="${timezone}"/>
                     </c:when>
                     <c:otherwise>
                         <fmt:formatDate value="${appt.endDate}" type="time" timeStyle="short"/>
