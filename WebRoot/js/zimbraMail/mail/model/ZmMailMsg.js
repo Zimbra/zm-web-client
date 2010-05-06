@@ -721,7 +721,8 @@ ZmMailMsg.prototype.hasHtmlPart =
 function() {
 	if (this._bodyParts.length > 1) {
 		for (var i = 0; i < this._bodyParts.length; i++) {
-			if (this._bodyParts[i].ct == ZmMimeTable.TEXT_HTML) {
+            var bodyPart = this._bodyParts[i];
+			if (bodyPart.ct == ZmMimeTable.TEXT_HTML || (bodyPart.cd == "inline" && bodyPart.filename && ZmMimeTable.isRenderableImage(bodyPart.ct))) {
 				return true;
 			}
 		}
