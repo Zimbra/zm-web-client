@@ -275,6 +275,11 @@ function(enable) {
 ZmApptChooserTabViewPage.prototype._createPageHtml =
 function() {
 
+    if(!appCtxt.get(ZmSetting.CAL_SHOW_RESOURCE_TABS)) {
+        ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalBaseItem.PERSON]			= ZmMsg.findAttendeesRooms;
+        ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalBaseItem.PERSON]		= ZmMsg.apptAttendeesRooms;
+    }
+
 	this._searchTableId	= Dwt.getNextId();
 
 	this._chooserSourceListViewDivId	= Dwt.getNextId();

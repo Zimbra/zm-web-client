@@ -69,8 +69,10 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 		this._tabIds.push(ZmApptComposeView.TAB_SCHEDULE);
 		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._tabIds.push(ZmApptComposeView.TAB_ATTENDEES);
-			this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
-			this._tabIds.push(ZmApptComposeView.TAB_EQUIPMENT);
+            if (appCtxt.get(ZmSetting.CAL_SHOW_RESOURCE_TABS)) {
+                this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
+                this._tabIds.push(ZmApptComposeView.TAB_EQUIPMENT);
+            }
 		}
 	}
 
@@ -438,6 +440,11 @@ function(msg, style, cb, cbObj, cbArgs) {
 
 ZmApptComposeView.prototype._initialize =
 function() {
+
+    if(!appCtxt.get(ZmSetting.CAL_SHOW_RESOURCE_TABS)) {
+        ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_ATTENDEES]		= "findAttendeesRooms";
+    }
+
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
 		this._tabPages[id] = (i == 0) ? this._createTabViewPage(id) : new AjxCallback(this, this._initializeAddTab, [id]);
