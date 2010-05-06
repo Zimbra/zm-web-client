@@ -179,8 +179,8 @@ function(loc) {
 			members.push(this._folderSelect);
 		}
 		// XXX: ZmTimeInput doesn't handle focus yet
-		members = members.concat([this._startDateField, this._startDateButton,
-								  this._endDateField, this._endDateButton,
+		members = members.concat([this._startDateField, this._startDateButton, this._startTimeSelect.getInputField(),
+								  this._endDateField, this._endDateButton,  this._endTimeSelect.getInputField(),
 								  this._repeatSelect]);
 		for (var i = 0; i < members.length; i++) {
 			this._tabGroup.addMember(members[i], i);

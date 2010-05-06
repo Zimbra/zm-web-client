@@ -210,6 +210,11 @@ ZmApptEditView.prototype._addTabGroupMembers =
 function(tabGroup) {
 	tabGroup.addMember(this._subjectField);
 	tabGroup.addMember(this._attInputField[ZmCalBaseItem.LOCATION]);
+    tabGroup.addMember(this._startDateField);
+	tabGroup.addMember(this._startTimeSelect.getInputField());
+	tabGroup.addMember(this._endDateField);
+	tabGroup.addMember(this._endTimeSelect.getInputField());
+
 	if(this.GROUP_CALENDAR_ENABLED) {
 		tabGroup.addMember(this._attInputField[ZmCalBaseItem.PERSON]);
 	}

@@ -958,9 +958,32 @@ function(listener, ev) {
     //restore old value if the new time is not in correct format
     var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
     var d = timeFormatter.parse(this._timeSelectInput.getValue());
-    if(!d) this.setValue(this._originalTimeStr || "");
+    if(!d) {
+        var val = this._timeSelectInput.getValue();
+        var newDate = this.correctTimeString(val, timeFormatter.parse(this._originalTimeStr));
+        this.setValue(timeFormatter.format(newDate) || "");
+    }
 
     listener.run(ev, this.id);
+};
+
+ZmTimeInput.prototype.correctTimeString =
+function(val, originalDate) {
+
+    var segments = val.split(":");
+
+    if(!segments) return originalDate;
+
+    var hrs = (segments.length && segments[0] != null) ? parseInt(segments[0].replace(/\D/g, "")) : null;
+    var mins = (segments.length > 1 && segments[1]!= null) ? parseInt(segments[1].replace(/\D/g, "")) : 0;
+
+    if(!hrs) hrs = originalDate.getHours();
+    if(!mins) mins = 0;
+
+    originalDate.setHours(hrs, mins, 0, 0);
+
+    return originalDate;
+
 };
 
 ZmTimeInput.prototype.isLocale24Hour =
@@ -1000,6 +1023,10 @@ function() {
     return date ? this._timeSelectInput.getValue() : "";    
 };
 
+ZmTimeInput.prototype.getInputField =
+function() {
+    return this._timeSelectInput;
+};
 
 ZmTimeInput.prototype._createSelects =
 function() {
