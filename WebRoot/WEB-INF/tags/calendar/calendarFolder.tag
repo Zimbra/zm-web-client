@@ -40,7 +40,12 @@
                 </c:otherwise>
             </c:choose>
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
-            ${fn:escapeXml(zm:truncate(label,17,true))}
+            <c:choose>
+                <c:when test="${folder.isMountPoint and folder.effectivePerm == null}">
+                    <del>${fn:escapeXml(zm:truncate(label,17,true))}</del>
+                </c:when>
+                <c:otherwise>${fn:escapeXml(zm:truncate(label,17,true))}</c:otherwise>
+            </c:choose>
         </a>
 
     </td>
@@ -57,4 +62,5 @@
         </c:choose>
     </td>
 </tr>
+
 
