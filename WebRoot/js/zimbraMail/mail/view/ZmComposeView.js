@@ -821,7 +821,7 @@ function(type, addr) {
 // Sets the mode ZmHtmlEditor should be in.
 ZmComposeView.prototype.setComposeMode =
 function(composeMode, switchPreface) {
-
+	if (composeMode == this._composeMode) return;
 	var htmlMode = (composeMode == DwtHtmlEditor.HTML);
 	if (!htmlMode || appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 
