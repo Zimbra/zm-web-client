@@ -683,6 +683,10 @@
 		if (!isEmail) {
 			value = AjxStringUtil.htmlEncode(value);
 		}
+		if (data.name.toLowerCase() in ZmEditContactViewOther.prototype.DATE_ATTRS) {
+			var dateArr = value.split("/");  // value is a string in mm/dd/yyyy format
+			value = AjxDateUtil.simpleComputeDateStr(new Date(dateArr[2], dateArr[0]-1, dateArr[1]));
+		}
 		if (data.findObjects) {
 			value = data.findObjects(value, data.objectType);
 		}
