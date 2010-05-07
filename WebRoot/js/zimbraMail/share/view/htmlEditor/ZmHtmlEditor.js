@@ -706,7 +706,11 @@ function() {
 
 		dlg.registerCallback(DwtDialog.OK_BUTTON, new AjxListener(this, function(){
 			var url = getURL();
-			var text = dlg.linkText.getValue() || url;
+            var img = this.getNearestElement("img");
+            var text = dlg.linkText.getValue() || url;
+            if(img) {
+                var text = dlg.linkText.getValue();
+            }
 			dlg.popdown();
 			this.insertLink({ text : text, url  : url });
 		}));
