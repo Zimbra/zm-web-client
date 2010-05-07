@@ -2015,6 +2015,7 @@ function(result) {
 	if (msgView) {
 		var msg = msgView._msg;
 		msg.attachments.length = 0;
+		msg._bodyParts = [];
 		msg._loadFromDom(msgNode);
 		msgView._msg = null;
 		msgView.set(msg);
