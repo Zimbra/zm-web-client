@@ -322,6 +322,9 @@ function(node, args) {
 		contact = new ZmContact(node.id, args.list);
 		contact._loadFromDom(node);
 	} else {
+		if (!AjxUtil.hashCompare(node._attrs, contact.attr)) {
+			contact.attr = node._attrs;
+		}
 		contact.list = args.list || new ZmContactList(null);
 	}
 
@@ -1202,7 +1205,7 @@ function() {
 ZmContact.prototype.getFullName =
 function() {
 	if (!this._fullName) {
-		var fullName = this.isGal && this.getAttr(ZmContact.X_fullName); // present if GAL contact
+		var fullName = this.getAttr(ZmContact.X_fullName); // present if GAL contact
 		if (fullName) {
 			this._fullName = (fullName instanceof Array) ? fullName[0] : fullName;
 		} else {
