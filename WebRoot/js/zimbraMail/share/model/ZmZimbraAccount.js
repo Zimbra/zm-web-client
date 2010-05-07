@@ -529,7 +529,7 @@ function(callback) {
 		command.addNewRequestParams(folderDoc, folderCallback);
 
 		var respCallback = new AjxCallback(this, this._handleLoadUserInfo, callback);
-		var errCallback = new AjxCallback(this, this._handleErrorLoad);
+		var errCallback = new AjxCallback(this, this._handleErrorLoad, callback);
 		command.run(respCallback, errCallback);
 	}
 	else if (callback) {
@@ -737,8 +737,10 @@ function(callback, sections) {
  * @private
  */
 ZmZimbraAccount.prototype._handleErrorLoad =
-function(ev) {
+function(callback, ev) {
 	DBG.println(AjxDebug.DBG1, "------- ERROR loading account settings for " + this.name);
+	if (callback)
+		callback.run();
 };
 
 /**
