@@ -578,15 +578,28 @@ ZmEditContactView.__trimNumber = function(s) {
  * 
  * @return	{Boolean}	<code>true</code> if the view is empty
  */
-ZmEditContactView.prototype.isEmpty = function() {
-	for (var id in this._items) {
-		var item = this._items[id];
+ZmEditContactView.prototype.isEmpty = function(items) {
+	items = items || this._items;
+	for (var id in items) {
+		var item = items[id];
 		if (this.isIgnore(id) || id == "FILE_AS") continue;
 		var value = this.getValue(id);
 		if (value) {
-			if (!AjxUtil.isArray(value)) return false;
-			for (var i=0; i<value.length; i++)
-				if (value[i].value && value[i].value!=="") return false;
+			if (!AjxUtil.isArray(value)) {
+				if (value != item.ovalue)
+					return false;
+			} else {
+				for (var i=0; i<value.length; i++) {
+					var valueitem = value[i];
+					if (valueitem) {
+						if (id=="ADDRESS") {
+							if (!ZmEditContactViewAddress.equals(valueitem, {type: valueitem.type})) return false;
+						} else {
+							if (!(valueitem.value==="" || valueitem==="")) return false;
+						}
+					}
+				}
+			}
 		}
 	}
 	return true;
@@ -2265,7 +2278,7 @@ ZmEditContactViewIM.prototype.setValue = function(value) {
 };
 ZmEditContactViewIM.prototype.getValue = function() {
 	var value = ZmEditContactViewInputSelect.prototype.getValue.call(this);
-	return [value.type, value.value].join("://");
+	return value.value ? [value.type, value.value].join("://") : "";
 };
 
 //
