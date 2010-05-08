@@ -1185,7 +1185,7 @@ function(draftType, msg, resp) {
 					appCtxt.setStatusMsg(ZmMsg.messageSent);
 				}
 			}
-			popped = this._app.popView(true);
+			popped = this._app.popView(true, this._currentView);
 		}
 
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
@@ -1237,7 +1237,7 @@ function(draftType, msg, resp) {
 			}
 
 			if (!popped) {
-				this._app.popView(true);
+				this._app.popView(true, this._currentView);
 			}
 		}
 	} else {
