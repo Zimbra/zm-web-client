@@ -1395,12 +1395,12 @@ function(op) {
 	var cv = this._composeView;
 	var userText = "";
 	if (op != ZmOperation.FORMAT_HTML && op != ZmOperation.FORMAT_TEXT) {
-		if (cv._origIncludedContent || !canInclude) {
+		if (cv._preface || !canInclude) {
 			var curText = this._getBodyContent();
-			if (cv._origIncludedContent) {
-				var idx = curText.indexOf(cv._origIncludedContent);
+			if (cv._preface) {
+				var idx = curText.indexOf(cv._preface);
 				if (idx > 0) {
-					userText = curText.replace(cv._origIncludedContent, "");
+					userText = curText.substr(0, idx);
 				}
 			} else {
 				userText = curText;

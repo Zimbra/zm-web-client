@@ -1828,7 +1828,7 @@ function(action, msg, extraBodyText) {
 	var sigPre = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig : "";
 	extraBodyText = extraBodyText || "";
 	var preText = extraBodyText + sigPre;
-	if (preText) {
+	if (sigPre) {
 		preText += crlf;
 	}
 
@@ -1862,9 +1862,9 @@ function(action, msg, extraBodyText) {
 		value = preText;
 		this._msgAttId = this._msg.id;
 	} else {
-		var preface = this._getPreface();
+		var preface = this._preface = this._getPreface();
 		var divider = htmlMode ? preface : preface + crlf;
-		var leadingSpace = sigPre ? "" : crlf2;
+		var leadingSpace = preText ? "" : crlf2;
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
 		wrapParams.preserveReturns = true;
 		if (incOptions.what == ZmSetting.INC_BODY) {
@@ -1878,13 +1878,14 @@ function(action, msg, extraBodyText) {
 			} else {
 				var headerText = "";
 				if (headers.length) {
-					wrapParams.text = headers.join(crlf);
+					var text = wrapParams.text = headers.join(crlf);
 					wrapParams.len = 120; // headers tend to be longer
-					headerText = AjxStringUtil.wordWrap(wrapParams) + crlf;
+					headerText = incOptions.prefix ? AjxStringUtil.wordWrap(wrapParams) : text;
+					headerText = headerText + crlf;
 				}
 				wrapParams.text = body;
 				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
-				var bodyText = AjxStringUtil.wordWrap(wrapParams);
+				var bodyText = incOptions.prefix ? AjxStringUtil.wordWrap(wrapParams) : body;
 				value = leadingSpace + preText + divider + headerText + bodyText;
 			}
 		} else if (incOptions.what == ZmSetting.INC_SMART) {
@@ -1900,13 +1901,14 @@ function(action, msg, extraBodyText) {
 			} else {
 				var headerText = "";
 				if (headers.length) {
-					wrapParams.text = headers.join(crlf);
+					var text = wrapParams.text = headers.join(crlf);
 					wrapParams.len = 120; // headers tend to be longer
-					headerText = AjxStringUtil.wordWrap(wrapParams) + crlf;
+					headerText = incOptions.prefix ? AjxStringUtil.wordWrap(wrapParams) : text;
+					headerText = headerText + crlf;
 				}
 				wrapParams.text = body;
 				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
-				var bodyText = AjxStringUtil.wordWrap(wrapParams);
+				var bodyText = incOptions.prefix ? AjxStringUtil.wordWrap(wrapParams) : body;
 				value = leadingSpace + preText + divider + headerText + bodyText;
 			}
 		}
@@ -1923,7 +1925,6 @@ function(action, msg, extraBodyText) {
 		value = value || (htmlMode ? "<br>" : "");
 		this._htmlEditor.setContent(value);
 	}
-	this._origIncludedContent = this._htmlEditor.getContent();
 
 	if (isHtmlEditorInitd) {
 		this._fixMultipartRelatedImages_onTimer(msg);
@@ -2000,7 +2001,7 @@ function(mode, action) {
 	action = action || this._action;
 	var preface;
 	if (mode == DwtHtmlEditor.HTML) {
-		preface = "<hr>";
+		preface = '<hr id="zwchr">';
 	} else {
 		var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
 		preface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
@@ -2019,13 +2020,14 @@ function(mode) {
 	var content = this.getHtmlEditor().getContent();
 	content = content.replace(curPreface, newPreface);
 	this._htmlEditor.setContent(content);
+	this._preface = newPreface;
 };
 
 ZmComposeView.prototype.resetBody =
 function(action, msg, extraBodyText, incOptions) {
 	this.cleanupAttachments(true);
-	this._setBody(action, msg, extraBodyText, incOptions);
 	this._isDirty = this._isDirty || this.isDirty();
+	this._setBody(action, msg, extraBodyText, incOptions);
 	this._setFormValue();
 	this._resetBodySize();
 };
@@ -2989,7 +2991,6 @@ function() {
 
 // Static methods
 
-// NOTE: this handler should only get triggered if/when contacts are DISABLED!
 ZmComposeView._onKeyUp =
 function(ev) {
 
