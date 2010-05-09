@@ -1,0 +1,12 @@
+.ZOptionsSectionMain{
+	background: #fff;
+	padding:1em;
+}
+
+.TabNormal a:link, .TabNormal a:visited{
+	color: white !important;
+}
+
+.TabFiller{
+ @AppTabBorder-normal@
+}
