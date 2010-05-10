@@ -9,7 +9,7 @@
 			t.onContextMenu = new tinymce.util.Dispatcher(this);
 
 			ed.onContextMenu.add(function(ed, e) {
-				if (e.metaKey) {
+				if (e.metaKey || e.ctrlKey) {
 					t._getMenu(ed).showMenu(e.clientX, e.clientY);
 					Event.add(ed.getDoc(), 'click', hide);
 					Event.cancel(e);
