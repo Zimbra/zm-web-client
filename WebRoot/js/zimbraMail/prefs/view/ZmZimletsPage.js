@@ -38,6 +38,27 @@ ZmZimletsPage = function(parent, section, controller) {
 ZmZimletsPage.prototype = new ZmPreferencesPage;
 ZmZimletsPage.prototype.constructor = ZmZimletsPage;
 
+// CONSTS
+ZmZimletsPage.ADMIN_URI = [
+	"http://",
+	location.hostname, ":",
+	location.port,
+	"/service/admin/soap/"
+].join("");
+
+ZmZimletsPage.ADMIN_UPLOAD_URI = [
+	"http://",
+	location.hostname, ":",
+	location.port,
+	"/service/upload"
+].join("");
+
+ZmZimletsPage.ADMIN_COOKIE_NAME				= "ZM_ADMIN_AUTH_TOKEN";
+ZmZimletsPage.ZIMLET_UPLOAD_STATUS_PENDING	= "pending";
+ZmZimletsPage.ZIMLET_UPLOAD_STATUS_SUCCESS	= "succeeded";
+ZmZimletsPage.ZIMLET_UPLOAD_STATUS_FAIL		= "failed";
+ZmZimletsPage.ZIMLET_MAX_CHECK_STATUS		= 8;
+
 ZmZimletsPage.prototype.toString =
 function () {
 	return "ZmZimletsPage";
@@ -69,7 +90,7 @@ ZmZimletsPage.prototype._getTemplateData =
 function() {
 	var data = ZmPreferencesPage.prototype._getTemplateData.apply(this, arguments);
 	if (appCtxt.isOffline) {
-		data.action = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+		data.action = ZmZimletsPage.ADMIN_UPLOAD_URI;
 	}
 	return data;
 };
@@ -103,6 +124,18 @@ ZmZimletsPage.prototype._fileUploadListener =
 function() {
 	this._uploadButton.setEnabled(false);
 
+	// first, fetch the admin auth token if none exists
+	if (!this._adminAuthToken) {
+		this._getAdminAuth();
+	} else {
+		this._uploadZimlet();
+	}
+};
+
+ZmZimletsPage.prototype._uploadZimlet =
+function() {
+	this._checkStatusCount = 0;
+
 	var callback = new AjxCallback(this, this._handleZimletUpload);
 	var formEl = document.getElementById(this._htmlElId + "_form");
 	var um = window._uploadManager = appCtxt.getUploadManager();
@@ -112,12 +145,6 @@ function() {
 ZmZimletsPage.prototype._handleZimletUpload =
 function(status, aid) {
 	if (status == 200) {
-		var dialog = appCtxt.getCancelMsgDialog();
-		dialog.reset();
-		dialog.setMessage(ZmMsg.zimletDeploying, DwtMessageDialog.INFO_STYLE);
-		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._handleZimletCancel, [dialog]));
-		dialog.popup();
-
 		this._deployZimlet(aid);
 	}
 	else {
@@ -130,41 +157,122 @@ function(status, aid) {
 	}
 };
 
-ZmZimletsPage.prototype._deployZimlet =
+ZmZimletsPage.prototype._getAdminAuth =
 function(aid) {
+	// first, make sure we have a valid admin password (parsed from location)
+	var pword;
+	var searches = document.location.search.split("&");
+	for (var i = 0; i < searches.length; i++) {
+		if (searches[i].indexOf("at=") == 0) {
+			pword = searches[i].substring(3);
+		}
+	}
+
+	// for dev build
+	if (!pword) {
+		pword = "@install.key@";
+	}
+
+	var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAdmin");
+	soapDoc.set("name", "zimbra");
+	soapDoc.set("password", pword);
+
+	var params = {
+		soapDoc: soapDoc,
+		noSession: true,
+		asyncMode: true,
+		noAuthToken: true,
+		skipAuthCheck: true,
+		serverUri: ZmZimletsPage.ADMIN_URI,
+		callback: (new AjxCallback(this, this._handleResponseAuthenticate, [aid]))
+	};
+	(new ZmCsfeCommand()).invoke(params);
+};
+
+ZmZimletsPage.prototype._handleResponseAuthenticate =
+function(aid, result) {
+	if (result.isException()) {
+		this._handleZimletDeployError();
+		return;
+	}
+
+	// set the admin auth cookie (expires when browser closes)
+	this._adminAuthToken = result.getResponse().Body.AuthResponse.authToken[0]._content;
+	AjxCookie.setCookie(document, ZmZimletsPage.ADMIN_COOKIE_NAME, this._adminAuthToken, null, "/service/upload");
+
+	this._uploadZimlet();
+};
+
+ZmZimletsPage.prototype._deployZimlet =
+function(aid, action) {
+	var dialog = appCtxt.getCancelMsgDialog();
+	dialog.reset();
+	dialog.setMessage(ZmMsg.zimletDeploying, DwtMessageDialog.INFO_STYLE);
+	dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._handleZimletCancel, [dialog]));
+	dialog.popup();
+
 	var soapDoc = AjxSoapDoc.create("DeployZimletRequest", "urn:zimbraAdmin");
 	var method = soapDoc.getMethod();
-	method.setAttribute("action", "deployLocal");
+	method.setAttribute("action", (action || "deployLocal"));
 	var content = soapDoc.set("content");
 	content.setAttribute("aid", aid);
 
-	var callback = new AjxCallback(this, this._deployZimletResponse);
-	var errorCallback = new AjxCallback(this, this._deployZimletError);
+	var callback = new AjxCallback(this, this._deployZimletResponse, [dialog, aid]);
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: true,
+		skipAuthCheck: true,
 		callback: callback,
-		errorCallback: errorCallback,
-		serverUri: (["https://", location.hostname, ":7071"].join(""))
+		serverUri: ZmZimletsPage.ADMIN_URI,
+		authToken: this._adminAuthToken
 	};
 
-	// send request manually since we need to send it to admin URL
-	var cmd = new ZmCsfeCommand();
-	try {
-		cmd.invoke(params);
-	} catch (ex) {
-	}
-//	appCtxt.getAppController().sendRequest(params);
+	(new ZmCsfeCommand()).invoke(params);
 };
 
 ZmZimletsPage.prototype._deployZimletResponse =
-function() {
-	// todo
+function(dialog, aid, result) {
+	if (result.isException()) {
+		dialog.popdown();
+		this._uploadButton.setEnabled(true);
+
+		this._controller.popupErrorDialog(ZmMsg.zimletDeployError, result.getException());
+		return;
+	}
+
+	var status = result.getResponse().Body.DeployZimletResponse.progress[0].status;
+	if (status == ZmZimletsPage.ZIMLET_UPLOAD_STATUS_PENDING) {
+		if (this._checkStatusCount++ > ZmZimletsPage.ZIMLET_MAX_CHECK_STATUS) {
+			this._handleZimletDeployError();
+		} else {
+			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._deployZimlet, [aid, "status"]), 1500);
+		}
+	} else {
+		dialog.popdown();
+
+		if (status == ZmZimletsPage.ZIMLET_UPLOAD_STATUS_FAIL) {
+			this._handleZimletDeployError();
+		}
+		else {
+			this._uploadButton.setEnabled(true);
+
+			var settings = appCtxt.getSettings(appCtxt.accountList.mainAccount);
+			var dialog = appCtxt.getYesNoMsgDialog();
+			dialog.reset();
+			dialog.registerCallback(DwtDialog.YES_BUTTON, settings._refreshBrowserCallback, settings, [dialog]);
+			dialog.setMessage(ZmMsg.zimletDeploySuccess, DwtMessageDialog.WARNING_STYLE);
+			dialog.popup();
+		}
+	}
 };
 
-ZmZimletsPage.prototype._deployZimletError =
+ZmZimletsPage.prototype._handleZimletDeployError =
 function() {
-	// todo
+	this._uploadButton.setEnabled(true);
+
+	var dialog = appCtxt.getMsgDialog();
+	dialog.setMessage(ZmMsg.zimletDeployError, DwtMessageDialog.CRITICAL_STYLE);
+	dialog.popup();
 };
 
 ZmZimletsPage.prototype._handleZimletCancel =
@@ -190,8 +298,7 @@ function(batchCommand) {
 		node.setAttribute("presence", (zimlets[i].active ? "enabled" : "disabled"));
 	}
 	setting.setValue(checked);
-	batchCommand.addNewRequestParams(soapDoc, null/*callback*/, null);
-
+	batchCommand.addNewRequestParams(soapDoc);
 };
 
 ZmZimletsPage.prototype._reloadZimlets =
