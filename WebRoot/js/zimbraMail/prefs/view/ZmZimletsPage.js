@@ -125,11 +125,8 @@ function() {
 	this._uploadButton.setEnabled(false);
 
 	// first, fetch the admin auth token if none exists
-	if (!this._adminAuthToken) {
-		this._getAdminAuth();
-	} else {
-		this._uploadZimlet();
-	}
+	var callback = new AjxCallback(this, this._uploadZimlet);
+	this._getAdminAuth(callback);
 };
 
 ZmZimletsPage.prototype._uploadZimlet =
@@ -158,7 +155,14 @@ function(status, aid) {
 };
 
 ZmZimletsPage.prototype._getAdminAuth =
-function(aid) {
+function(callback) {
+	if (this._adminAuthToken) {
+		if (callback) {
+			callback.run();
+		}
+		return;
+	}
+
 	// first, make sure we have a valid admin password (parsed from location)
 	var pword;
 	var searches = document.location.search.split("&");
@@ -184,13 +188,13 @@ function(aid) {
 		noAuthToken: true,
 		skipAuthCheck: true,
 		serverUri: ZmZimletsPage.ADMIN_URI,
-		callback: (new AjxCallback(this, this._handleResponseAuthenticate, [aid]))
+		callback: (new AjxCallback(this, this._handleResponseAuthenticate, [callback]))
 	};
 	(new ZmCsfeCommand()).invoke(params);
 };
 
 ZmZimletsPage.prototype._handleResponseAuthenticate =
-function(aid, result) {
+function(callback, result) {
 	if (result.isException()) {
 		this._handleZimletDeployError();
 		return;
@@ -200,7 +204,9 @@ function(aid, result) {
 	this._adminAuthToken = result.getResponse().Body.AuthResponse.authToken[0]._content;
 	AjxCookie.setCookie(document, ZmZimletsPage.ADMIN_COOKIE_NAME, this._adminAuthToken, null, "/service/upload");
 
-	this._uploadZimlet();
+	if (callback) {
+		callback.run();
+	}
 };
 
 ZmZimletsPage.prototype._deployZimlet =
@@ -217,12 +223,11 @@ function(aid, action) {
 	var content = soapDoc.set("content");
 	content.setAttribute("aid", aid);
 
-	var callback = new AjxCallback(this, this._deployZimletResponse, [dialog, aid]);
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: true,
 		skipAuthCheck: true,
-		callback: callback,
+		callback: (new AjxCallback(this, this._deployZimletResponse, [dialog, aid])),
 		serverUri: ZmZimletsPage.ADMIN_URI,
 		authToken: this._adminAuthToken
 	};
@@ -260,7 +265,7 @@ function(dialog, aid, result) {
 			var dialog = appCtxt.getYesNoMsgDialog();
 			dialog.reset();
 			dialog.registerCallback(DwtDialog.YES_BUTTON, settings._refreshBrowserCallback, settings, [dialog]);
-			dialog.setMessage(ZmMsg.zimletDeploySuccess, DwtMessageDialog.WARNING_STYLE);
+			dialog.setMessage(ZmMsg.zimletDeploySuccess, DwtMessageDialog.INFO_STYLE);
 			dialog.popup();
 		}
 	}
@@ -281,6 +286,52 @@ function(dialog) {
 	this._uploadButton.setEnabled(true);
 };
 
+ZmZimletsPage.prototype.undeployZimlet =
+function(zimletName) {
+	var callback = new AjxCallback(this, this._handleUndeployZimlet, [zimletName]);
+	this._getAdminAuth(callback);
+};
+
+ZmZimletsPage.prototype._handleUndeployZimlet =
+function(zimletName) {
+	var soapDoc = AjxSoapDoc.create("UndeployZimletRequest", "urn:zimbraAdmin");
+	soapDoc.getMethod().setAttribute("name", zimletName);
+
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		skipAuthCheck: true,
+		callback: (new AjxCallback(this, this._undeployZimletResponse, [zimletName])),
+		serverUri: ZmZimletsPage.ADMIN_URI,
+		authToken: this._adminAuthToken
+	};
+
+	(new ZmCsfeCommand()).invoke(params);
+};
+
+ZmZimletsPage.prototype._undeployZimletResponse =
+function(zimletName, result) {
+	if (result.isException()) {
+		this._controller.popupErrorDialog(ZmMsg.zimletUndeployError, result.getException());
+		return;
+	}
+
+	// remove the uninstalled zimlet from the listview
+	var zimlet = this._zimlets.getPrefZimletByName(zimletName);
+	if (zimlet) {
+		this._zimlets.removePrefZimlet(zimlet);
+		this._listView.set(this._zimlets._vector.clone());
+	}
+
+	// prompt user to resart client
+	var settings = appCtxt.getSettings(appCtxt.accountList.mainAccount);
+	var dialog = appCtxt.getYesNoMsgDialog();
+	dialog.reset();
+	dialog.registerCallback(DwtDialog.YES_BUTTON, settings._refreshBrowserCallback, settings, [dialog]);
+	dialog.setMessage(ZmMsg.zimletUndeploySuccess, DwtMessageDialog.INFO_STYLE);
+	dialog.popup();
+};
+
 ZmZimletsPage.prototype.addCommand  =
 function(batchCommand) {
 	var soapDoc = AjxSoapDoc.create("ModifyZimletPrefsRequest", "urn:zimbraAccount");
@@ -290,7 +341,7 @@ function(batchCommand) {
 	var setting = settingsObj.getSetting(ZmSetting.CHECKED_ZIMLETS);
 	var checked = [];
 	for (var i = 0; i < zimlets.length; i++) {
-		if(zimlets[i].active) {
+		if (zimlets[i].active) {
 			checked.push(zimlets[i].name);
 		}
 		var node = soapDoc.set("zimlet", null);
@@ -403,6 +454,7 @@ ZmPrefZimletListView = function(parent, controller) {
 ZmPrefZimletListView.COL_ACTIVE	= "ac";
 ZmPrefZimletListView.COL_NAME	= "na";
 ZmPrefZimletListView.COL_DESC	= "ds";
+ZmPrefZimletListView.COL_ACTION	= "an";
 
 ZmPrefZimletListView.prototype = new DwtListView;
 ZmPrefZimletListView.prototype.constructor = ZmPrefZimletListView;
@@ -424,11 +476,17 @@ function(list) {
 
 ZmPrefZimletListView.prototype._getHeaderList =
 function() {
-	return [
+	var hlist = [
 		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_ACTIVE, text:ZmMsg.active, width:ZmMsg.COLUMN_WIDTH_ACTIVE})),
         (new DwtListHeaderItem({field:ZmPrefZimletListView.COL_NAME, text:ZmMsg.name, width:ZmMsg.COLUMN_WIDTH_FOLDER_DLV})),    
 		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_DESC, text:ZmMsg.description}))
 	];
+
+	if (appCtxt.isOffline) {
+		hlist.push(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_ACTION, text:ZmMsg.action, width:ZmMsg.COLUMN_WIDTH_FOLDER_DLV}));
+	}
+
+	return hlist;
 };
 
 ZmPrefZimletListView.prototype._getCellContents =
@@ -450,8 +508,20 @@ function(html, idx, item, field, colIdx, params) {
 	else if (field == ZmPrefZimletListView.COL_NAME) {
 		html[idx++] = AjxStringUtil.stripTags(item.getNameWithoutPrefix(), true);
 	}
+	else if (field == ZmPrefZimletListView.COL_ACTION) {
+		html[idx++] = "<a href='javascript:;' onclick='ZmPrefZimletListView.undeployZimlet(";
+		html[idx++] = '"' + item.name + '"';
+		html[idx++] = ");'>";
+		html[idx++] = ZmMsg.uninstall;
+		html[idx++] = "</a>";
+	}
 
 	return idx;
+};
+
+ZmPrefZimletListView.undeployZimlet =
+function(zimletName) {
+	appCtxt.getCurrentView().prefView["PREF_ZIMLETS"].undeployZimlet(zimletName);
 };
 
 /**
