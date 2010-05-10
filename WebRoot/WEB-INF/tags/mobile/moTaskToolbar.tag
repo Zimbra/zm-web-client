@@ -109,13 +109,14 @@
                 <option value="selectAll"><fmt:message key="all"/></option>
                 <option value="selectNone"><fmt:message key="none"/></option>
             </optgroup>
-            <optgroup label="<fmt:message key='markAs'/>">
-                <option value="TASK_COMP"><fmt:message key="TASK_COMP"/></option>
-                <option value="TASK_WAITING"><fmt:message key="TASK_WAITING"/></option>
-                <option value="TASK_CANC"><fmt:message key="TASK_CANC"/></option>
-                <option value="TASK_INPR"><fmt:message key="TASK_INPR"/></option>
-                <option value="TASK_NEED"><fmt:message key="TASK_NEED"/></option>
-            </optgroup>
+            <%--At present, change of task status can only be done by editing the task(same as lite and ajax client)--%>
+            <%--<optgroup label="<fmt:message key='markAs'/>">--%>
+                <%--<option value="TASK_COMP"><fmt:message key="TASK_COMP"/></option>--%>
+                <%--<option value="TASK_WAITING"><fmt:message key="TASK_WAITING"/></option>--%>
+                <%--<option value="TASK_CANC"><fmt:message key="TASK_CANC"/></option>--%>
+                <%--<option value="TASK_INPR"><fmt:message key="TASK_INPR"/></option>--%>
+                <%--<option value="TASK_NEED"><fmt:message key="TASK_NEED"/></option>--%>
+            <%--</optgroup>--%>
             <optgroup label="<fmt:message key="moveAction"/>">
                         <c:set var="count" value="${0}"/>
                         <zm:forEachFolder var="folder">
