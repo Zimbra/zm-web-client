@@ -128,6 +128,11 @@ function(addrs) {
 	this._fwdAddrs = addrs;
 };
 
+ZmAppt.prototype.getForwardAddress =
+function() {
+	return this._fwdAddrs;
+};
+
 // Public methods
 
 /**

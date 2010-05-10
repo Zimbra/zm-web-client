@@ -1939,7 +1939,9 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._showApptForwardComposeView =
 function(appt, mode) {
-    appt.name = ZmMsg.fwd + ": " + appt.name;
+    if(!appt.isOrganizer()) {
+        appt.name = ZmMsg.fwd + ": " + appt.name;
+    }
 	this._app.getApptComposeController().show(appt, mode);
 };
 
@@ -2233,7 +2235,7 @@ function(parent, num) {
 		var isShared = calendar ? calendar.isRemote() : false;
 		var disabled = isSynced || isReadOnly || (num == 0);
 		var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-		var isForwadable = appt && !appt.isOrganizer() && !calendar.isReadOnly();
+		var isForwadable = calendar && !calendar.isReadOnly();
 		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled);
 		parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
 		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
@@ -2516,7 +2518,7 @@ function(appt, actionMenu) {
 	var workflow = share ? share.isWorkflow() : true;
 	var isPrivate = appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
 	var enabled = !isOrganizer && workflow && !isPrivate;
-	var isForwadable = appt && !appt.isOrganizer() && !calendar.isReadOnly();
+	var isForwadable = calendar && !calendar.isReadOnly();
 
 	// reply action menu
 	actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);

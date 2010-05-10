@@ -501,7 +501,7 @@ function(calItem, mode) {
 		this._controller.setFormatBtnItem(true, DwtHtmlEditor.HTML);
 		this.setComposeMode(DwtHtmlEditor.HTML);
         var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML)
-        if(this._isForward) {
+        if(this._isForward && !calItem.isOrganizer()) {
             var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
             var crlf2 = "<br><br>";
             var crlf = "<br>";
@@ -514,7 +514,7 @@ function(calItem, mode) {
 		this._controller.setFormatBtnItem(true, ZmMimeTable.TEXT_PLAIN);
 		this.setComposeMode(DwtHtmlEditor.TEXT);
         var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
-        if(this._isForward) {
+        if(this._isForward && !calItem.isOrganizer()) {
             var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
             var crlf2 = ZmMsg.CRLF2;
             var crlf = ZmMsg.CRLF;

@@ -47,6 +47,10 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
 		this._attTypes.push(ZmCalBaseItem.EQUIPMENT);
 	}
     this._locationTextMap = {};
+
+
+    //used to preserve original attendees while forwarding appt
+    this._fwdApptOrigAttendees = [];
 };
 
 ZmApptEditView.prototype = new ZmCalItemEditView;
@@ -286,6 +290,7 @@ function(calItem) {
     if(this._isForward)  {
         var addrs = this._collectForwardAddrs();
         calItem.setForwardAddress(this._attendees[ZmCalBaseItem.PERSON].getArray());
+        calItem.setAttendees(this._fwdApptOrigAttendees, ZmCalBaseItem.PERSON);
     }
 
 	return calItem;
@@ -359,9 +364,11 @@ function(calItem, mode) {
             tp = this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES);
             if (tp) tp._chooser.transfer(attendees, null, true);
             this._attInputField[ZmCalBaseItem.PERSON] = this._attendeesInputField;
+            this._fwdApptOrigAttendees = [];
         }else {
             this._attendees[ZmCalBaseItem.PERSON] = new AjxVector();
-            this._attInputField[ZmCalBaseItem.PERSON] = this._forwardToField;    
+            this._attInputField[ZmCalBaseItem.PERSON] = this._forwardToField;
+            this._fwdApptOrigAttendees = attendees;
         }
 	}else {
         if (this.GROUP_CALENDAR_ENABLED) {

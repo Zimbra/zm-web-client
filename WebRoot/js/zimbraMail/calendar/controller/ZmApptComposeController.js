@@ -116,7 +116,8 @@ function(attId) {
 				return false;
 			}
 
-			return this.forwardCalItem(appt);
+            //attendee forwarding an appt
+            if(!appt.isOrganizer()) return this.forwardCalItem(appt);
 		}
 
 		if (this._invalidAttendees && this._invalidAttendees.length > 0) {
@@ -161,6 +162,17 @@ function(attId) {
 		var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
 		var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
 
+        var notifyList;
+        
+        //organizer forwarding an appt - add forward addr as attendees
+        if(appt.isForward) {
+            if(!attendees) attendees = [];
+            var fwdAddrs = appt.getForwardAddress();
+            attendees = attendees.concat(fwdAddrs);
+            appt.setAttendees(attendees, ZmCalBaseItem.PERSON);
+            notifyList = this.getNotifyList(fwdAddrs);
+        }        
+
 		var needsPermissionCheck = (attendees && attendees.length > 0) ||
 								   (resources && resources.length > 0) ||
 								   (locations && locations.length > 0);
@@ -169,13 +181,13 @@ function(attId) {
 								 (locations && locations.length > 0);
 
 		if (needsConflictCheck) {
-			this.checkConflicts(appt, attId);
+			this.checkConflicts(appt, attId, notifyList);
 			return false;
 		} else if (needsPermissionCheck) {
-			this.checkAttendeePermissions(appt, attId);
+			this.checkAttendeePermissions(appt, attId, notifyList);
 			return false;
 		} else {
-			this._saveCalItemFoRealz(appt, attId);
+			this._saveCalItemFoRealz(appt, attId, notifyList);
 		}
 		return true;
 	}
@@ -183,8 +195,18 @@ function(attId) {
 	return false;
 };
 
+ZmApptComposeController.prototype.getNotifyList =
+function(addrs) {
+    var notifyList = [];
+    for(var i in addrs) {
+        notifyList.push(addrs[i]._inviteAddress || addrs[i].getEmail());
+    }
+
+    return notifyList;
+}; 
+
 ZmApptComposeController.prototype.checkConflicts =
-function(appt, attId) {
+function(appt, attId, notifyList) {
 	var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
 	var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
 	var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
@@ -194,14 +216,14 @@ function(appt, attId) {
 							   (locations && locations.length > 0);
 
 	var callback = needsPermissionCheck
-		? (new AjxCallback(this, this.checkAttendeePermissions, [appt, attId]))
-		: (new AjxCallback(this, this.saveCalItemContinue, [appt, attId]));
+		? (new AjxCallback(this, this.checkAttendeePermissions, [appt, attId, notifyList]))
+		: (new AjxCallback(this, this.saveCalItemContinue, [appt, attId, notifyList]));
 
 	this._checkResourceConflicts(appt, callback);
 };
 
 ZmApptComposeController.prototype.checkAttendeePermissions =
-function(appt, attId) {
+function(appt, attId, notifyList) {
 	var newEmails = [];
 
 	var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
@@ -226,12 +248,12 @@ function(appt, attId) {
 	}
 
 	if (newEmails.length) {
-		this.checkPermissionRequest(newEmails, appt, attId);
+		this.checkPermissionRequest(newEmails, appt, attId, notifyList);
 		return false;
 	}
 
 	// otherwise, just save the appointment
-	this._saveCalItemFoRealz(appt, attId);
+	this._saveCalItemFoRealz(appt, attId, notifyList);
 };
 
 ZmApptComposeController.prototype.checkResourceConflicts =
@@ -408,7 +430,7 @@ function(appt, callback, result) {
 };
 
 ZmApptComposeController.prototype.checkPermissionRequest =
-function(names, appt, attId) {
+function(names, appt, attId, notifyList) {
 	var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
 	var request = jsonObj.BatchRequest;
 
@@ -425,13 +447,13 @@ function(names, appt, attId) {
 		chkPermRequest.push(permRequest);
 	}
 
-	var respCallback = new AjxCallback(this, this.handleCheckPermissionResponse, [appt, attId, names]);
-	var errorCallback = new AjxCallback(this, this.handleCheckPermissionResponseError, [appt, attId, names]);
+	var respCallback = new AjxCallback(this, this.handleCheckPermissionResponse, [appt, attId, names, notifyList]);
+	var errorCallback = new AjxCallback(this, this.handleCheckPermissionResponseError, [appt, attId, names, notifyList]);
 	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:true});
 };
 
 ZmApptComposeController.prototype.handleCheckPermissionResponse =
-function(appt, attId, names, response) {
+function(appt, attId, names, notifyList, response) {
 	var batchResp = response && response._data && response._data.BatchResponse;
 	var checkPermissionResp = (batchResp && batchResp.CheckPermissionResponse) ? batchResp.CheckPermissionResponse  : null;
 	if (checkPermissionResp) {
@@ -445,31 +467,31 @@ function(appt, attId, names, response) {
 			var msg =  AjxMessageFormat.format(ZmMsg.invitePermissionDenied, [deniedAttendees.join(",")]);
 			var msgDialog = appCtxt.getYesNoMsgDialog();
 			msgDialog.reset();
-			msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._saveAfterPermissionCheck, this, [appt, attId, msgDialog]);
+			msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._saveAfterPermissionCheck, this, [appt, attId, notifyList, msgDialog]);
 			msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
 			msgDialog.popup();
 			return;
 		}
 	}
-	this.saveCalItemContinue(appt, attId);
+	this.saveCalItemContinue(appt, attId, notifyList);
 };
 
 ZmApptComposeController.prototype._saveAfterPermissionCheck =
-function(appt, attId, msgDialog) {
+function(appt, attId, notifyList, msgDialog) {
 	msgDialog.popdown();
-	this.saveCalItemContinue(appt, attId);
+	this.saveCalItemContinue(appt, attId, notifyList);
 };
 
 ZmApptComposeController.prototype.saveCalItemContinue =
-function(appt, attId) {
-	this._saveCalItemFoRealz(appt, attId);
+function(appt, attId, notifyList) {
+	this._saveCalItemFoRealz(appt, attId, notifyList);
 	this._app.popView(true);
 };
 
 ZmApptComposeController.prototype.handleCheckPermissionResponseError =
-function(appt, attId, response) {
+function(appt, attId, names, notifyList, response) {
 	var resp = response && response._data && response._data.BatchResponse;
-	this.saveCalItemContinue(appt, attId);
+	this.saveCalItemContinue(appt, attId, notifyList);
 };
 
 ZmApptComposeController.prototype._handleResourceConflict =
