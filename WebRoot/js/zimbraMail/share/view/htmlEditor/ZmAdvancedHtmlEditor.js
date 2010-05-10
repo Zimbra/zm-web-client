@@ -74,6 +74,9 @@ function(x, y) {
 	x -= delta + 4;
 	y -= delta; // subtract fudge factor
 
+	if (this._mode == DwtHtmlEditor.HTML && this.isTinyMCE)
+		y -= 26;
+
 	// bug fix #6786 - normalize width/height if less than zero
 	if (x < 0) { x = 0; }
 	if (y < 0) { y = 0; }
