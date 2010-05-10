@@ -558,6 +558,7 @@ function(attId, isDraft, dummyMsg) {
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);		
 
 		var idoc = this._htmlEditor._getIframeDoc();
+        this._cleanupFileRefImages(idoc);
 		this._restoreMultipartRelatedImages(idoc);
 		if (!isDraft) {
 			this._cleanupSignatureIds(idoc);
@@ -1014,6 +1015,29 @@ function(msg, idoc) {
 		}
 	}
 	return (num == images.length);
+};
+
+ZmComposeView.prototype._cleanupFileRefImages =
+function(idoc){
+
+    function removeImg(img){
+        var parent = img.parentNode;
+        parent.removeChild(img);
+    }
+
+    if (idoc) {
+		var images = idoc.getElementsByTagName("img");
+		var len = images.length, fileImgs=[], img, src;
+        for (var i = 0; i < images.length; i++) {
+            img = images[i];
+            src = img.src;
+            if(img && src.indexOf('file://') == 0){
+                removeImg(img);
+                i--; //removeImg reduces the images.length by 1.
+            }
+
+        }
+    }
 };
 
 /**
