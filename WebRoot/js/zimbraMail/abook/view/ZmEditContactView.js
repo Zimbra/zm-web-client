@@ -2103,17 +2103,11 @@ ZmEditContactViewOther.validator = function(item) {
 		if (item.type in ZmEditContactViewOther.prototype.DATE_ATTRS || item.type.replace(/^other/,"").toLowerCase() in ZmEditContactViewOther.prototype.DATE_ATTRS) {
 			var dateStr = AjxStringUtil.trim(item.value);
 			if (dateStr.length) {
-                var formatter = ZmEditContactViewOther._getDateFormatter();
-                // NOTE: Still try to parse date string in locale-specific
-                // NOTE: format for backwards compatibility. 
-				var aDate = AjxDateUtil.simpleParseDateStr(dateStr);
-                if (isNaN(aDate) || aDate == null) {
-                    aDate = formatter.parse(dateStr);
-                }
+                var aDate = ZmEditContactViewOther.parseDate(dateStr);
 				if (isNaN(aDate) || aDate == null) {
 					throw ZmMsg.errorDate;
-					// return false;
 				}
+                var formatter = ZmEditContactViewOther._getDateFormatter();
 				return formatter.format(aDate);
 			}
 			return dateStr;
@@ -2204,6 +2198,17 @@ ZmEditContactViewOther.prototype._resetPicker = function() {
 		var type = this.getValue().type;
 		this._picker.setVisible(type in this.DATE_ATTRS);
 	}
+};
+
+ZmEditContactViewOther.parseDate = function(dateStr) {
+    // NOTE: Still try to parse date string in locale-specific
+    // NOTE: format for backwards compatibility.
+    var aDate = AjxDateUtil.simpleParseDateStr(dateStr);
+    if (isNaN(aDate) || aDate == null) {
+        var formatter = ZmEditContactViewOther._getDateFormatter();
+        aDate = formatter.parse(dateStr);
+    }
+    return aDate;
 };
 
 ZmEditContactViewOther._getDateFormatter = function() {

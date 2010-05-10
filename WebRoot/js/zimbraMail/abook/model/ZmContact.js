@@ -262,6 +262,10 @@ ZmContact.ALL_FIELDS = [].concat(
 	ZmContact.DISPLAY_FIELDS, ZmContact.IGNORE_FIELDS
 );
 
+ZmContact.IS_DATE = {};
+ZmContact.IS_DATE[ZmContact.F_birthday] = true;
+ZmContact.IS_DATE[ZmContact.F_anniversary] = true;
+
 ZmContact.IS_IGNORE = {};
 for (var i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
 	ZmContact.IS_IGNORE[ZmContact.IGNORE_FIELDS[i]] = true;
