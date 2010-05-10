@@ -74,21 +74,22 @@ function(x, y) {
 	x -= delta + 4;
 	y -= delta; // subtract fudge factor
 
-	if (this._mode == DwtHtmlEditor.HTML && this.isTinyMCE)
-		y -= 26;
-
 	// bug fix #6786 - normalize width/height if less than zero
 	if (x < 0) { x = 0; }
 	if (y < 0) { y = 0; }
-
-	bodyField.style.width = x + 5 + "px";
-	bodyField.style.height = y + "px";
 
 	var editorContainer = document.getElementById(this._bodyTextAreaId + "_tbl");
 	if (editor && editorContainer) {
 		editorContainer.style.height = y + "px";
 		editorContainer.style.width = "100%";
 	}
+
+	if (this._mode == DwtHtmlEditor.HTML && this.isTinyMCE)
+		y -= 26;
+
+	bodyField.style.width = x + 5 + "px";
+	bodyField.style.height = y + "px";
+
 	//todo: handle spellcheck ids
 };
 
