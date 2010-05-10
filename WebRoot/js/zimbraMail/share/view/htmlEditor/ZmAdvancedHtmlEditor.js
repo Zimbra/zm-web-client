@@ -524,6 +524,7 @@ function(id, mode, content) {
 		force_p_newlines : false,
 		content_css : false,
 		editor_css: editorCSS,
+		inline_styles: false,
 		setup : function(ed) {
 			ed.onLoadContent.add(handleContentLoad);
 			ed.onInit.add(onTinyMCEEditorInit);
