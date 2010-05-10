@@ -428,7 +428,11 @@ function(ev) {
         if(AjxEnv.isIE)
             name = name.replace(/[^\w]/g,'');
 		if (restUrl) {
-			window.open(restUrl, name, item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
+            if(item.isDownloadable()) {
+                location.href = restUrl;
+            }else {
+			    window.open(restUrl, name, item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
+            }
 		}
 	}
 };

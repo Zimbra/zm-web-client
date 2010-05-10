@@ -124,6 +124,16 @@ function() {
 };
 
 /**
+ * Checks if this item is an document which can only be downloaded and cannot be rendered by browser
+ *
+ * @return	{Boolean}	<code>true</code> if this item is downloadable
+ */
+ZmBriefcaseItem.prototype.isDownloadable =
+function() {
+    return (!this.isWebDoc() && !ZmMimeTable.isRenderable(this.contentType) && !ZmMimeTable.isRenderableImage(this.contentType) && !ZmMimeTable.isTextType(this.contentType));
+};
+
+/**
  * Checks if this item is a slide doc.
  * 
  * @return	{Boolean}	<code>true</code> if this item is a slide doc
