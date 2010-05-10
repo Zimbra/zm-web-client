@@ -2116,7 +2116,7 @@ function(start, end, noheader, email) {
 			for (var i = 0; i < calendars.length; i++) {
 				var cal = calendars[i];
 				if (cal) {
-					calIds.push(cal.nId);
+					calIds.push(appCtxt.multiAccounts ? cal.id : cal.nId);
 				}
 			}
 		}		

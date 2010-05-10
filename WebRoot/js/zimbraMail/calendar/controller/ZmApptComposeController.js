@@ -64,61 +64,60 @@ function(calItem, mode, isDirty) {
  */
 ZmApptComposeController.prototype.forwardCalItem =
 function(appt, forwardCallback) {
-    //todo: to address input validation
-    var callback = new AjxCallback(this, this._handleForwardInvite, forwardCallback);
-    appt.forward(callback);
-    return true;
+	// todo: to address input validation
+	var callback = new AjxCallback(this, this._handleForwardInvite, forwardCallback);
+	appt.forward(callback);
+	return true;
 };
 
 ZmApptComposeController.prototype._handleForwardInvite =
 function(forwardCallback) {
-    appCtxt.setStatusMsg(ZmMsg.forwardInviteSent);
-    if(forwardCallback) {
-        forwardCallback.run();
-    }
+	appCtxt.setStatusMsg(ZmMsg.forwardInviteSent);
+	if (forwardCallback) {
+		forwardCallback.run();
+	}
 };
 
 ZmApptComposeController.prototype._badAddrsOkCallback =
 function(dialog, appt) {
 	dialog.popdown();
-    this.forwardCalItem(appt, new AjxCallback(this, this._apptForwardCallback));
+	this.forwardCalItem(appt, new AjxCallback(this, this._apptForwardCallback));
 };
 
 ZmApptComposeController.prototype._apptForwardCallback =
 function() {
-    this._app.popView(true);
+	this._app.popView(true);
 };
 
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
 	var appt = this._composeView.getAppt(attId);
 	if (appt) {
+		if (appt.isForward) {
+			var addrs = this._composeView.getForwardAddress();
 
-        if(appt.isForward) {
-            var addrs = this._composeView.getForwardAddress();
+			// validate empty forward address
+			if (!addrs.gotAddress) {
+				var msgDialog = appCtxt.getMsgDialog();
+				msgDialog.setMessage(ZmMsg.noForwardAddresses, DwtMessageDialog.CRITICAL_STYLE);
+				msgDialog.popup();
+				return false;
+			}
 
-            //validate empty forward address
-            if (!addrs.gotAddress) {
-                var msgDialog = appCtxt.getMsgDialog();
-                msgDialog.setMessage(ZmMsg.noForwardAddresses, DwtMessageDialog.CRITICAL_STYLE);
-                msgDialog.popup();
-                return false;
-            }
+			if (addrs[ZmApptEditView.BAD] && addrs[ZmApptEditView.BAD].size()) {
+				var cd = appCtxt.getOkCancelMsgDialog();
+				cd.reset();
+				var bad = AjxStringUtil.htmlEncode(addrs[ZmApptEditView.BAD].toString(AjxEmailAddress.SEPARATOR));
+				var msg = AjxMessageFormat.format(ZmMsg.compBadAddresses, bad);
+				cd.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+				cd.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this, [cd,appt]);
+				cd.setVisible(true); // per fix for bug 3209
+				cd.popup();
+				return false;
+			}
 
-            if (addrs[ZmApptEditView.BAD] && addrs[ZmApptEditView.BAD].size()) {
-                var cd = appCtxt.getOkCancelMsgDialog();
-	            cd.reset();
-                var bad = AjxStringUtil.htmlEncode(addrs[ZmApptEditView.BAD].toString(AjxEmailAddress.SEPARATOR));
-                var msg = AjxMessageFormat.format(ZmMsg.compBadAddresses, bad);
-                cd.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-                cd.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this, [cd,appt]);
-                cd.setVisible(true); // per fix for bug 3209
-                cd.popup();
-                return false;
-            }
-            
-            return this.forwardCalItem(appt);
-        }
+			return this.forwardCalItem(appt);
+		}
 
 		if (this._invalidAttendees && this._invalidAttendees.length > 0) {
 			var dlg = appCtxt.getYesNoMsgDialog();
@@ -158,109 +157,105 @@ function(attId) {
 			}
 		}
 
-        //this._checkResourceConflicts(appt);
-        var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
-        var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
-        var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
+		var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
+		var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
+		var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
 
-        var needsPermissionCheck = (attendees && attendees.length > 0) || (resources && resources.length > 0) || (locations && locations.length > 0);
-        var needsConflictCheck = (resources && resources.length > 0) || (locations && locations.length > 0);
+		var needsPermissionCheck = (attendees && attendees.length > 0) ||
+								   (resources && resources.length > 0) ||
+								   (locations && locations.length > 0);
 
-        if (needsConflictCheck) {
-            this.checkConflicts(appt, attId);
-            return false;
-        }else if (needsPermissionCheck) {
-            this.checkAttendeePermissions(appt, attId);
-            return false;
-        }else{
-            this._saveCalItemFoRealz(appt, attId);
-        }
-        return true;
-    }
+		var needsConflictCheck = (resources && resources.length > 0) ||
+								 (locations && locations.length > 0);
 
-    return false;
+		if (needsConflictCheck) {
+			this.checkConflicts(appt, attId);
+			return false;
+		} else if (needsPermissionCheck) {
+			this.checkAttendeePermissions(appt, attId);
+			return false;
+		} else {
+			this._saveCalItemFoRealz(appt, attId);
+		}
+		return true;
+	}
+
+	return false;
 };
 
 ZmApptComposeController.prototype.checkConflicts =
 function(appt, attId) {
+	var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
+	var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
+	var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
 
-    var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
-    var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
-    var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
+	var needsPermissionCheck = (attendees && attendees.length > 0) ||
+							   (resources && resources.length > 0) ||
+							   (locations && locations.length > 0);
 
-    var needsPermissionCheck = (attendees && attendees.length > 0) || (resources && resources.length > 0) || (locations && locations.length > 0);
+	var callback = needsPermissionCheck
+		? (new AjxCallback(this, this.checkAttendeePermissions, [appt, attId]))
+		: (new AjxCallback(this, this.saveCalItemContinue, [appt, attId]));
 
-    var callback =  new AjxCallback(this, this.saveCalItemContinue, [appt, attId]);
-
-    if(needsPermissionCheck) {
-        callback =  new AjxCallback(this, this.checkAttendeePermissions, [appt, attId]);
-    }
-
-    this._checkResourceConflicts(appt, callback);
-
+	this._checkResourceConflicts(appt, callback);
 };
 
 ZmApptComposeController.prototype.checkAttendeePermissions =
 function(appt, attId) {
-    var newEmails = [];
+	var newEmails = [];
 
-    var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
-    if (attendees && attendees.length > 0) {
-        for (var i = 0; i < attendees.length; i++) {
-            var email = attendees[i].getEmail();
-            newEmails.push(email);
-        }
-    }
+	var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
+	if (attendees && attendees.length > 0) {
+		for (var i = 0; i < attendees.length; i++) {
+			newEmails.push(attendees[i].getEmail());
+		}
+	}
 
-    var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
-    if (locations && locations.length > 0) {
-        for (var i = 0; i < locations.length; i++) {
-            var email = locations[i].getEmail();
-            newEmails.push(email);
-        }
-    }
+	var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
+	if (locations && locations.length > 0) {
+		for (var i = 0; i < locations.length; i++) {
+			newEmails.push(locations[i].getEmail());
+		}
+	}
 
-    var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
-    if (resources && resources.length > 0) {
-        for (var i = 0; i < resources.length; i++) {
-            var email = resources[i].getEmail();
-            newEmails.push(email);
-        }
-    }
+	var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
+	if (resources && resources.length > 0) {
+		for (var i = 0; i < resources.length; i++) {
+			newEmails.push(resources[i].getEmail());
+		}
+	}
 
-    if(newEmails.length) {
-        this.checkPermissionRequest(newEmails, appt, attId);
-        return false;
-    }else {
-        // otherwise, just save the appointment
-        this._saveCalItemFoRealz(appt, attId);
-    }
+	if (newEmails.length) {
+		this.checkPermissionRequest(newEmails, appt, attId);
+		return false;
+	}
+
+	// otherwise, just save the appointment
+	this._saveCalItemFoRealz(appt, attId);
 };
-
 
 ZmApptComposeController.prototype.checkResourceConflicts =
 function(callback) {
-    this._conflictCallback = callback;
-    var appt = this._composeView.getAppt();
-    this._checkResourceConflicts(appt);
+	this._conflictCallback = callback;
+	this._checkResourceConflicts(this._composeView.getAppt());
 };
 
 ZmApptComposeController.prototype._checkResourceConflicts =
 function(appt, callback) {
-    var mode = appt.viewMode;
+	var mode = appt.viewMode;
 
-    if(mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
-        if(appt.isRecurring()) {
-            //for recurring appt - user GetRecurRequest to get full recurrence information
-            //and use the component in CheckRecurConflictRequest
-            var recurInfoCallback = new AjxCallback(this, this._checkResourceConflictsSoap, [appt, callback]);
-            this.getRecurInfo(appt, recurInfoCallback);
-        }else {
-            this._checkResourceConflictsSoap(appt, callback);
-        }
-    }else {
-        this._checkResourceConflictsSoap(appt, callback);
-    }
+	if (mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
+		if(appt.isRecurring()) {
+			// for recurring appt - user GetRecurRequest to get full recurrence
+			// information and use the component in CheckRecurConflictRequest
+			var recurInfoCallback = new AjxCallback(this, this._checkResourceConflictsSoap, [appt, callback]);
+			this.getRecurInfo(appt, recurInfoCallback);
+		} else {
+			this._checkResourceConflictsSoap(appt, callback);
+		}
+	} else {
+		this._checkResourceConflictsSoap(appt, callback);
+	}
 };
 
 /**
@@ -270,62 +265,68 @@ function(appt, callback) {
  */
 ZmApptComposeController.prototype._checkResourceConflictsJSON =
 function(appt, callback, recurInfo) {
+	var mode = appt.viewMode;
+	var jsonObj = {CheckRecurConflictsRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.CheckRecurConflictsRequest;
+	var today = new Date();
+	today.setHours(0,0,0,0);
+	request.s = today.getTime();
+	request.e = today.getTime() + (AjxDateUtil.MSEC_PER_DAY*365);
 
-    var mode = appt.viewMode;
-    var jsonObj = {CheckRecurConflictsRequest:{_jsns:"urn:zimbraMail"}};
-    var request = jsonObj.CheckRecurConflictsRequest;
-    var today = new Date();
-    today.setHours(0,0,0,0);
-    request.s = today.getTime();
-    request.e = today.getTime() + (AjxDateUtil.MSEC_PER_DAY*365); 
+	if (mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
+		request.excludeUid = appt.uid;
+	}
 
-    if(mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
-        request.excludeUid = appt.uid;
-    }
+	request.comp = recurInfo.comp || [];
+	request.except = recurInfo.except;
+	request.tz = recurInfo.tz;
 
-    request.comp = recurInfo.comp || [];
-    request.except = recurInfo.except;
-    request.tz = recurInfo.tz;
+	appt.addAttendeesToChckConflictsJSONRequest(request);
 
-    appt.addAttendeesToChckConflictsJSONRequest(request);
-
-    var callback = new AjxCallback(this, this._handleResourceConflict, [appt, callback]);
-    var errorCallback = new AjxCallback(this, this._handleResourceConflictError, [appt, callback]);
-
-    return appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:callback,
-                                                   errorCallback:errorCallback, noBusyOverlay:true});
+	return appCtxt.getAppController().sendRequest({
+		jsonObj: jsonObj,
+		asyncMode: true,
+		callback: (new AjxCallback(this, this._handleResourceConflict, [appt, callback])),
+		errorCallback: (new AjxCallback(this, this._handleResourceConflictError, [appt, callback])),
+		noBusyOverlay: true
+	});
 };
 
 ZmApptComposeController.prototype.setExceptFromRecurInfo =
 function(soapDoc, recurInfo) {
+	var exceptInfo = recurInfo && recurInfo.except;
+	if (!exceptInfo) { return; }
 
-    var exceptInfo = recurInfo ? recurInfo.except : undefined;
+	for (var i in exceptInfo) {
+		var s = exceptInfo[i].s ? exceptInfo[i].s[0] : null;
+		var e = exceptInfo[i].e ? exceptInfo[i].e[0] : null;
+		var exceptId = exceptInfo[i].exceptId ? exceptInfo[i].exceptId[0] : null;
 
-    if(!exceptInfo) return;
+		var except = soapDoc.set("except", null, soapDoc.getMethod());
+		if (s) {
+			var sNode = soapDoc.set("s", null, except);
+			sNode.setAttribute("d", s.d);
+			if (s.tz) {
+				sNode.setAttribute("tz", s.tz);
+			}
+		}
 
-    for(var i in exceptInfo) {
-        var s = exceptInfo[i].s ? exceptInfo[i].s[0] : null;
-        var e = exceptInfo[i].e ? exceptInfo[i].e[0] : null;
-        var exceptId = exceptInfo[i].exceptId ? exceptInfo[i].exceptId[0] : null;
-        
-        var except = soapDoc.set("except", null, soapDoc.getMethod());
-        if(s) {
-            var sNode = soapDoc.set("s", null, except);
-            sNode.setAttribute("d", s.d);
-            if(s.tz) sNode.setAttribute("tz", s.tz);
-        }
-        if(e) {
-            var eNode = soapDoc.set("e", null, except);
-            eNode.setAttribute("d", e.d);
-            if(e.tz)  eNode.setAttribute("tz", e.tz);
-        }
-        if(exceptId) {
-            var exceptIdNode = soapDoc.set("exceptId", null, except);
-            exceptIdNode.setAttribute("d", exceptId.d);
-            if(exceptId.tz) exceptIdNode.setAttribute("tz", exceptId.tz);
-        }
+		if (e) {
+			var eNode = soapDoc.set("e", null, except);
+			eNode.setAttribute("d", e.d);
+			if (e.tz) {
+				eNode.setAttribute("tz", e.tz);
+			}
+		}
 
-    }
+		if (exceptId) {
+			var exceptIdNode = soapDoc.set("exceptId", null, except);
+			exceptIdNode.setAttribute("d", exceptId.d);
+			if (exceptId.tz) {
+				exceptIdNode.setAttribute("tz", exceptId.tz);
+			}
+		}
+	}
 };
 
 /**
@@ -335,53 +336,55 @@ function(soapDoc, recurInfo) {
  */
 ZmApptComposeController.prototype._checkResourceConflictsSoap =
 function(appt, callback, recurInfo) {
+	var mode = appt.viewMode;
+	var soapDoc = AjxSoapDoc.create("CheckRecurConflictsRequest", "urn:zimbraMail");
 
-    var mode = appt.viewMode;
-    
-    var soapDoc = AjxSoapDoc.create("CheckRecurConflictsRequest", "urn:zimbraMail");
-    var today = new Date();
-    today.setHours(0,0,0,0);
-        
-    soapDoc.setMethodAttribute("s", today.getTime());
-    soapDoc.setMethodAttribute("e", today.getTime() + (AjxDateUtil.MSEC_PER_DAY*365));
-	
-	if(mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
+	var today = new Date();
+	today.setHours(0,0,0,0);
+
+	soapDoc.setMethodAttribute("s", today.getTime());
+	soapDoc.setMethodAttribute("e", today.getTime() + (AjxDateUtil.MSEC_PER_DAY*365));
+
+	if (mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
 		soapDoc.setMethodAttribute("excludeUid", appt.uid);
 	}
 
-    var comp = soapDoc.set("comp", null, soapDoc.getMethod());
+	var comp = soapDoc.set("comp", null, soapDoc.getMethod());
 
-    appt._addDateTimeToSoap(soapDoc, soapDoc.getMethod(), comp);
-    appt._recurrence.setSoap(soapDoc, comp);
+	appt._addDateTimeToSoap(soapDoc, soapDoc.getMethod(), comp);
+	appt._recurrence.setSoap(soapDoc, comp);
 
-    this.setExceptFromRecurInfo(soapDoc, recurInfo);
-    
-    appt.addAttendeesToChckConflictsRequest(soapDoc, soapDoc.getMethod());
+	this.setExceptFromRecurInfo(soapDoc, recurInfo);
 
-    var callback = new AjxCallback(this, this._handleResourceConflict, [appt, callback]);
-    var errorCallback = new AjxCallback(this, this._handleResourceConflictError, [appt, callback]);
+	appt.addAttendeesToChckConflictsRequest(soapDoc, soapDoc.getMethod());
 
-    return appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback,
-                                                   errorCallback:errorCallback, noBusyOverlay:true});    
+	return appCtxt.getAppController().sendRequest({
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: (new AjxCallback(this, this._handleResourceConflict, [appt, callback])),
+		errorCallback: (new AjxCallback(this, this._handleResourceConflictError, [appt, callback])),
+		noBusyOverlay: true
+	});
 };
 
 /**
  * Gets the recurrence definition of an appointment.
  * 
  * @param {ZmAppt}	appt 	the appointment
- * @param {AjxCallback}	callback 		the callback module after getting recurrence info
+ * @param {AjxCallback}	recurInfoCallback 		the callback module after getting recurrence info
  */
 ZmApptComposeController.prototype.getRecurInfo =
 function(appt, recurInfoCallback) {
+	var soapDoc = AjxSoapDoc.create("GetRecurRequest", "urn:zimbraMail");
+	soapDoc.setMethodAttribute("id", appt.id);
 
-    var soapDoc = AjxSoapDoc.create("GetRecurRequest", "urn:zimbraMail");
-    soapDoc.setMethodAttribute("id", appt.id);
-
-    var callback = new AjxCallback(this, this._handleRecurInfo, [appt, recurInfoCallback]);
-    var errorCallback = new AjxCallback(this, this._handleRecurInfoError, [appt, recurInfoCallback]);
-
-    return appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback,
-                                                   errorCallback:errorCallback, noBusyOverlay:true});
+	return appCtxt.getAppController().sendRequest({
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: (new AjxCallback(this, this._handleRecurInfo, [appt, recurInfoCallback])),
+		errorCallback: (new AjxCallback(this, this._handleRecurInfoError, [appt, recurInfoCallback])),
+		noBusyOverlay: true
+	});
 };
 
 /**
@@ -391,125 +394,125 @@ function(appt, recurInfoCallback) {
  */
 ZmApptComposeController.prototype._handleRecurInfo =
 function(appt, callback, result) {
-    var recurResponse = result.getResponse().GetRecurResponse;
-    if(callback){
-        callback.run(recurResponse);
-    }
+	var recurResponse = result.getResponse().GetRecurResponse;
+	if (callback) {
+		callback.run(recurResponse);
+	}
 };
 
 ZmApptComposeController.prototype._handleRecurInfoError =
 function(appt, callback, result) {
-    if(callback){
-        callback.run();
-    }
+	if (callback) {
+		callback.run();
+	}
 };
 
 ZmApptComposeController.prototype.checkPermissionRequest =
 function(names, appt, attId) {
-    var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
-    var request = jsonObj.BatchRequest;
+	var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
+	var request = jsonObj.BatchRequest;
 
-    var chkPermRequest = request.CheckPermissionRequest = [];
+	var chkPermRequest = request.CheckPermissionRequest = [];
 
-    for(var i in names) {
-        var permRequest = {_jsns:"urn:zimbraMail"};
-        permRequest.target = {
-            type : "account",
-            by : "name",
-            _content : names[i]
-        };
-        permRequest.right = {_content: "invite"};
-        chkPermRequest.push(permRequest);
-    }
+	for (var i in names) {
+		var permRequest = {_jsns:"urn:zimbraMail"};
+		permRequest.target = {
+			type: "account",
+			by: "name",
+			_content: names[i]
+		};
+		permRequest.right = {_content: "invite"};
+		chkPermRequest.push(permRequest);
+	}
 
-    var respCallback = new AjxCallback(this, this.handleCheckPermissionResponse, [appt, attId, names]);
-    var errorCallback = new AjxCallback(this, this.handleCheckPermissionResponseError, [appt, attId, names]);
-    appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:true});
+	var respCallback = new AjxCallback(this, this.handleCheckPermissionResponse, [appt, attId, names]);
+	var errorCallback = new AjxCallback(this, this.handleCheckPermissionResponseError, [appt, attId, names]);
+	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:true});
 };
 
 ZmApptComposeController.prototype.handleCheckPermissionResponse =
 function(appt, attId, names, response) {
-    var batchResp = response && response._data && response._data.BatchResponse;
-    var checkPermissionResp = (batchResp && batchResp.CheckPermissionResponse) ? batchResp.CheckPermissionResponse  : null;
-    if(checkPermissionResp) {
-        var deniedAttendees = [];
-        for(var i in checkPermissionResp) {
-            if(checkPermissionResp && !checkPermissionResp[i].allow) {
-                deniedAttendees.push(names[i]);
-            }
-        }
-        if(deniedAttendees.length > 0) {
-            var msg =  AjxMessageFormat.format(ZmMsg.invitePermissionDenied, [deniedAttendees.join(",")]);;            
-            var msgDialog = appCtxt.getYesNoMsgDialog();
-            msgDialog.reset();
+	var batchResp = response && response._data && response._data.BatchResponse;
+	var checkPermissionResp = (batchResp && batchResp.CheckPermissionResponse) ? batchResp.CheckPermissionResponse  : null;
+	if (checkPermissionResp) {
+		var deniedAttendees = [];
+		for (var i in checkPermissionResp) {
+			if (checkPermissionResp && !checkPermissionResp[i].allow) {
+				deniedAttendees.push(names[i]);
+			}
+		}
+		if (deniedAttendees.length > 0) {
+			var msg =  AjxMessageFormat.format(ZmMsg.invitePermissionDenied, [deniedAttendees.join(",")]);
+			var msgDialog = appCtxt.getYesNoMsgDialog();
+			msgDialog.reset();
 			msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._saveAfterPermissionCheck, this, [appt, attId, msgDialog]);
-            msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
-            msgDialog.popup();
-            return;
-        }
-    }
-    this.saveCalItemContinue(appt, attId);
+			msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
+			msgDialog.popup();
+			return;
+		}
+	}
+	this.saveCalItemContinue(appt, attId);
 };
 
 ZmApptComposeController.prototype._saveAfterPermissionCheck =
 function(appt, attId, msgDialog) {
-    msgDialog.popdown();
-    this.saveCalItemContinue(appt, attId);
+	msgDialog.popdown();
+	this.saveCalItemContinue(appt, attId);
 };
 
 ZmApptComposeController.prototype.saveCalItemContinue =
 function(appt, attId) {
-    this._saveCalItemFoRealz(appt, attId);
-    this._app.popView(true);
+	this._saveCalItemFoRealz(appt, attId);
+	this._app.popView(true);
 };
 
 ZmApptComposeController.prototype.handleCheckPermissionResponseError =
 function(appt, attId, response) {
-    var resp = response && response._data && response._data.BatchResponse;
-    this.saveCalItemContinue(appt, attId);
+	var resp = response && response._data && response._data.BatchResponse;
+	this.saveCalItemContinue(appt, attId);
 };
 
 ZmApptComposeController.prototype._handleResourceConflict =
 function(appt, callback, result) {
-    var conflictExist = false;
-    if(result) {
-        var conflictResponse = result.getResponse().CheckRecurConflictsResponse;
-        var inst = this._conflictingInstances = conflictResponse.inst;
-        if(inst && inst.length > 0) {
-            if(this._conflictCallback) this._conflictCallback.run(inst);
-            this.showConflictDialog(appt, callback, inst);
-            conflictExist = true;
-        }
-    }
+	var conflictExist = false;
+	if (result) {
+		var conflictResponse = result.getResponse().CheckRecurConflictsResponse;
+		var inst = this._conflictingInstances = conflictResponse.inst;
+		if (inst && inst.length > 0) {
+			if(this._conflictCallback) this._conflictCallback.run(inst);
+			this.showConflictDialog(appt, callback, inst);
+			conflictExist = true;
+		}
+	}
 
-    if(!conflictExist && callback){
-        callback.run();
-    }
+	if (!conflictExist && callback) {
+		callback.run();
+	}
 };
 
 ZmApptComposeController.prototype.showConflictDialog =
 function(appt, callback, inst) {
+	DBG.println("conflict instances :" + inst.length);
 
-    DBG.println("conflict instances :" + inst.length);
-    var conflictDialog = this.getConflictDialog();
-    conflictDialog.initialize(inst, appt, callback);
-    conflictDialog.popup();
+	var conflictDialog = this.getConflictDialog();
+	conflictDialog.initialize(inst, appt, callback);
+	conflictDialog.popup();
 };
 
 ZmApptComposeController.prototype.getConflictDialog =
 function() {
-    if(!this._resConflictDialog) {
-        this._resConflictDialog = new ZmResourceConflictDialog(this._shell);
-    }
-    return this._resConflictDialog;
+	if (!this._resConflictDialog) {
+		this._resConflictDialog = new ZmResourceConflictDialog(this._shell);
+	}
+	return this._resConflictDialog;
 };
 
 ZmApptComposeController.prototype._handleResourceConflictError =
 function(appt, callback) {
-    //continue with normal saving process via callback
-    if(callback) {
-        callback.run();
-    }
+	// continue with normal saving process via callback
+	if (callback) {
+		callback.run();
+	}
 };
 
 ZmApptComposeController.prototype.getFreeBusyInfo =
@@ -519,8 +522,21 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) 
 	soapDoc.setMethodAttribute("e", endTime);
 	soapDoc.setMethodAttribute("uid", emailList);
 
-	return appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback,
-												   errorCallback:errorCallback, noBusyOverlay:noBusyOverlay});
+	var acct;
+	if (appCtxt.multiAccounts) {
+		acct = appCtxt.getActiveAccount();
+		if (appCtxt.isOffline && acct.isMain) {
+			acct = appCtxt.accountList.defaultAccount;
+		}
+	}
+	return appCtxt.getAppController().sendRequest({
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: callback,
+		errorCallback: errorCallback,
+		noBusyOverlay: noBusyOverlay,
+		accountName: (acct ? acct.name : null)
+	});
 };
 
 ZmApptComposeController.prototype._createComposeView =
@@ -537,7 +553,7 @@ function(setFocus) {
 	tg.addMember(this._toolbar);
 	var tabView = this._composeView.getTabView(this._composeView.getCurrentTab());
 	tabView._addTabGroupMembers(tg);
-	
+
 	var focusItem = tabView._savedFocusMember || tabView._getDefaultFocusItem() || tg.getFirstMember(true);
 	var ta = new AjxTimedAction(this, this._setFocus, [focusItem, !setFocus]);
 	AjxTimedAction.scheduleAction(ta, 10);
@@ -591,7 +607,7 @@ function(appt, attId, attendees, origAttendees) {
 			this._notifyDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._notifyDlgOkListener));
 			this._notifyDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._notifyDlgCancelListener));
 		}
-        appt.setMailNotificationOption(true);
+		appt.setMailNotificationOption(true);
 		this._notifyDialog.initialize(appt, attId, this._addedAttendees, this._removedAttendees);
 		this._notifyDialog.popup();
 		return true;
@@ -641,17 +657,18 @@ function(appt, attId, dlg) {
 };
 
 ZmApptComposeController.prototype._clearInvalidAttendeesCallback =
-function(appt, attId, dlg) {	
+function(appt, attId, dlg) {
 	dlg.popdown();
 	delete this._invalidAttendees;
 	this._saveListener();
 };
 
-ZmApptComposeController.prototype.closeView = function() {
-   this._closeView();    
+ZmApptComposeController.prototype.closeView =
+function() {
+	this._closeView();
 };
 
 ZmApptComposeController.prototype.forwardInvite =
 function(newAppt) {
-    this.show(newAppt, ZmCalItem.MODE_FORWARD_INVITE);
+	this.show(newAppt, ZmCalItem.MODE_FORWARD_INVITE);
 };
