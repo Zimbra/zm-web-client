@@ -206,12 +206,14 @@ function(parent, numSel) {
 		}
 		else {
 			var button = parent.getButton(ZmOperation.MOBILE_WIPE);
-			if (status == ZmMobileDevice.STATUS_REMOTE_WIPE_REQUESTED) {
-				button.setText(ZmMsg.mobileWipeCancel);
-				button.setImage("MobileWipeCancel");
-			} else {
-				button.setText(ZmMsg.mobileWipe);
-				button.setImage("MobileWipe");
+			if (button) {
+				if (status == ZmMobileDevice.STATUS_REMOTE_WIPE_REQUESTED) {
+					button.setText(ZmMsg.mobileWipeCancel);
+					button.setImage("MobileWipeCancel");
+				} else {
+					button.setText(ZmMsg.mobileWipe);
+					button.setImage("MobileWipe");
+				}
 			}
 		}
 
