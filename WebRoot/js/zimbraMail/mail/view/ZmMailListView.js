@@ -391,25 +391,43 @@ function(defaultColumnSort) {
 		}
 	}
 
-	if (!this._headerList || this.headerColCreated) { return; }
+	if (this._headerList && !this.headerColCreated) {
+		var rpLoc = appCtxt.get(ZmSetting.READING_PANE_LOCATION);
+		if (rpLoc == ZmSetting.RP_RIGHT && this._controller._itemCountText[rpLoc]) {
+			this._controller._itemCountText[rpLoc].dispose();
+		}
 
-	var rpLoc = appCtxt.get(ZmSetting.READING_PANE_LOCATION);
-	if (rpLoc == ZmSetting.RP_RIGHT && this._controller._itemCountText[rpLoc]) {
-		this._controller._itemCountText[rpLoc].dispose();
+		DwtListView.prototype.createHeaderHtml.apply(this, arguments);
+
+		if (rpLoc == ZmSetting.RP_RIGHT) {
+			var td = document.getElementById(this._itemCountTextTdId);
+			if (td) {
+				var textId = DwtId._makeId(this.view, rpLoc, "text");
+				var textDiv = document.getElementById(textId);
+				if (!textDiv) {
+					var text = this._controller._itemCountText[rpLoc] =
+							   new DwtText({parent:this, className:"itemCountText", id:textId});
+					td.appendChild(text.getHtmlElement());
+				}
+			}
+		}
 	}
 
-	DwtListView.prototype.createHeaderHtml.apply(this, arguments);
-
-	if (rpLoc == ZmSetting.RP_RIGHT) {
-		var td = document.getElementById(this._itemCountTextTdId);
-		if (td) {
-			var textId = DwtId._makeId(this.view, rpLoc, "text");
-			var textDiv = document.getElementById(textId);
-			if (!textDiv) {
-				var text = this._controller._itemCountText[rpLoc] =
-						   new DwtText({parent:this, className:"itemCountText", id:textId});
-				td.appendChild(text.getHtmlElement());
-			}
+	// Show "From" or "To" depending on which folder we're looking at
+	var headerCol = this._headerHash[ZmItem.F_DATE];
+	if (headerCol) {
+		this._resetFromColumnLabel();
+		// set the received column name based on search folder
+		var colLabel = ZmMsg.received;
+		if (this._isOutboundFolder()) {
+			colLabel = (this._folderId == ZmFolder.ID_DRAFTS) ? ZmMsg.lastSaved : ZmMsg.sentAt;
+		}
+		var recdColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
+		if (recdColSpan) {
+			recdColSpan.innerHTML = "&nbsp;" + colLabel;
+		}
+		if (this._colHeaderActionMenu) {
+			this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
 		}
 	}
 };
@@ -468,8 +486,7 @@ function(mouseEv, div) {
 	if (type == DwtListView.TYPE_HEADER_ITEM){
 		var hdr = this.getItemFromElement(div);
 		if (hdr && this.sortingEnabled && hdr._sortable && hdr._sortable == ZmItem.F_FROM) {
-			var fromMe = this._isSentOrDraftsFolder();
-			if (fromMe && (fromMe.sent || fromMe.drafts)) {
+			if (this._isOutboundFolder()) {
 				div.className = "DwtListView-Column DwtListView-ColumnHover";
 				return true;
 			}
@@ -485,16 +502,15 @@ function(clickedCol, ev) {
 	// Bug 6830 - since server can't sort on recipient, let user search via dialog
 	var hdr = this.getItemFromElement(clickedCol);
 	if (hdr && hdr._sortable && hdr._sortable == ZmItem.F_FROM) {
-		var fromMe = this._isSentOrDraftsFolder();
-		if (fromMe && (fromMe.sent || fromMe.drafts)) {
+		if (this._isOutboundFolder()) {
 			var sel = this.getSelection();
 			var addrs = [];
 			for (var i = 0, len = sel.length; i < len; i++) {
-				addrs.push(sel[i].getAddress(AjxEmailAddress.TO));
+				var vec = sel[i].getAddresses(AjxEmailAddress.TO);
+				addrs = addrs.concat(vec.getArray());
 			}
 			var dlg = appCtxt.getAddrSelectDialog();
-			var queryId = fromMe.sent ? ZmFolder.ID_SENT : ZmFolder.ID_DRAFTS;
-			dlg.popup(addrs, ZmFolder.QUERY_NAME[queryId]);
+			dlg.popup(addrs, this._folderId);
 			this._checkSelectionColumnClicked(clickedCol, ev);
 			return;
 		}
@@ -506,12 +522,10 @@ function(clickedCol, ev) {
 ZmMailListView.prototype._resetFromColumnLabel =
 function() {
 
-	var isFolder = this._isSentOrDraftsFolder();
-
 	// set the from column name based on query string
 	var headerCol = this._headerHash[ZmItem.F_FROM];
 	if (headerCol) {
-		var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
+		var colLabel = this._isOutboundFolder() ? ZmMsg.to : ZmMsg.from;
 
 		var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
 		if (fromColSpan) {
@@ -522,17 +536,19 @@ function() {
 			item.setText(colLabel);
 		}
 	}
-
-	return isFolder;
 };
 
-ZmMailListView.prototype._isSentOrDraftsFolder =
-function() {
-	var folder = appCtxt.getById(this._folderId);
-	var isSentFolder = folder && (folder.isUnder(ZmFolder.ID_SENT) || folder.isUnder(ZmFolder.ID_OUTBOX));
-	var isDraftsFolder = folder && folder.isUnder(ZmFolder.ID_DRAFTS);
-
-	return {sent:isSentFolder, drafts:isDraftsFolder};
+/**
+ * Returns true if the given folder is for outbound mail.
+ *
+ * @param folder
+ *
+ * @private
+ */
+ZmMailListView.prototype._isOutboundFolder =
+function(folder) {
+	folder = folder || (this._folderId && appCtxt.getById(this._folderId));
+	return folder && folder.isOutbound;
 };
 
 ZmMailListView.prototype._getRowClass =
@@ -549,13 +565,14 @@ function(item, field) {
 
 ZmMailListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
-    var isFolder = this._isSentOrDraftsFolder();
-	if (field == ZmItem.F_FROM && (isFolder && (isFolder.sent || isFolder.drafts))) {
-	   return ZmMsg.to;
+
+	var isOutboundFolder = this._isOutboundFolder();
+	if (field == ZmItem.F_FROM && isOutboundFolder) {
+	   return this._headerList[itemIdx]._sortable ? ZmMsg.sortByTo : ZmMsg.to;
 	} else if (field == ZmItem.F_STATUS) {
 		return ZmMsg.messageStatus;
 	} else {
-		return ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx, isFolder);
+		return ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx, isOutboundFolder);
 	}
 };
 
@@ -773,11 +790,9 @@ function(force) {
 				menu.addSelectionListener(column.field, actionListener);
 			}
 		}
-		var folderInfo = this._isSentOrDraftsFolder();
-		var isSent = (folderInfo && (folderInfo.sent || folderInfo.drafts));
 		var mi = this._colHeaderActionMenu.getItemById(ZmItem.F_FROM);
 		if (mi) {
-			mi.setVisible(!isSent);
+			mi.setVisible(!this._isOutboundFolder());
 		}
 		return this._colHeaderActionMenu;
 	}

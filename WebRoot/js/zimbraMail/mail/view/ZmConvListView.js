@@ -94,27 +94,6 @@ function() {
 	return "ZmConvListView";
 };
 
-ZmConvListView.prototype.createHeaderHtml =
-function(defaultColumnSort) {
-
-	ZmMailListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
-
-	var headerCol = this._headerHash[ZmItem.F_DATE];
-	if (headerCol) {
-		// Show "From" or "To" depending on which folder we're looking at
-		var isFolder = this._resetFromColumnLabel();
-		// set the received column name based on query string
-		var colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;
-		var recdColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
-		if (recdColSpan) {
-			recdColSpan.innerHTML = "&nbsp;" + colLabel;
-		}
-		if (this._colHeaderActionMenu) {
-			this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
-		}
-	}
-};
-
 // Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
 // it here so that it gets handled as an app shortcut (app shortcuts happen
 // after widget shortcuts).
@@ -243,6 +222,16 @@ function(parent, controller) {
 	}
 
 	return this._getHeaders(ZmId.VIEW_CONVLIST, headers);
+};
+
+ZmConvListView.prototype._resetFromColumnLabel =
+function() {
+	// set from column sortability based on query string
+	var headerCol = this._headerHash[ZmItem.F_FROM];
+	if (headerCol) {
+		headerCol._sortable = this._isOutboundFolder() ? ZmItem.F_FROM : null;
+	}
+	ZmMailListView.prototype._resetFromColumnLabel.apply(this, arguments);
 };
 
 ZmConvListView.prototype._getDivClass =
@@ -480,10 +469,9 @@ function(conv, fieldId) {
 
 ZmConvListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
-    var isFolder = this._isSentOrDraftsFolder();
     return (field == ZmItem.F_EXPAND)
 		? ZmMsg.expandCollapse
-		: ZmMailListView.prototype._getHeaderToolTip.call(this, field, itemIdx, isFolder);
+		: ZmMailListView.prototype._getHeaderToolTip.call(this, field, itemIdx, this._isOutboundFolder());
 };
 
 ZmConvListView.prototype._getToolTip =

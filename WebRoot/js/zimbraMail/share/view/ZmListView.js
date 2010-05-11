@@ -828,8 +828,10 @@ function(ev) {
 };
 
 ZmListView.prototype._getHeaderToolTip =
-function(field, itemIdx, isFolder) {
-    var tooltip = null;
+function(field, itemIdx, isOutboundFolder) {
+
+	var tooltip = null;
+	var sortable = this._headerList[itemIdx]._sortable;
 	if (field == ZmItem.F_SELECTION) {
 		tooltip = ZmMsg.selectionColumn;
 	} else if (field == ZmItem.F_FLAG) {
@@ -841,17 +843,21 @@ function(field, itemIdx, isFolder) {
     } else if (field == ZmItem.F_ATTACHMENT) {
         tooltip = ZmMsg.attachment;
     } else if (field == ZmItem.F_SUBJECT) {
-        tooltip = (this._headerList[itemIdx]._sortable)
-                ? ZmMsg.sortBySubject : ZmMsg.subject;
+        tooltip = sortable ? ZmMsg.sortBySubject : ZmMsg.subject;
     } else if (field == ZmItem.F_DATE) {
-        tooltip = (this._headerList[itemIdx]._sortable)
-                ? (isFolder && isFolder.sent) ? ZmMsg.sortBySent : (isFolder && isFolder.drafts) ? ZmMsg.sortByLastSaved : ZmMsg.sortByReceived : ZmMsg.date;
+		if (sortable) {
+			if (isOutboundFolder) {
+				tooltip = (this._folderId == ZmFolder.ID_DRAFTS) ? ZmMsg.sortByLastSaved : ZmMsg.sortBySent;
+			} else {
+				tooltip = ZmMsg.sortByReceived;
+			}
+		} else {
+			tooltip = ZmMsg.date;
+		}
     } else if (field == ZmItem.F_FROM) {
-        tooltip = (this._headerList[itemIdx]._sortable)
-                ? (isFolder && (isFolder.sent || isFolder.drafts)) ? ZmMsg.sortByTo : ZmMsg.sortByFrom : (isFolder && (isFolder.sent || isFolder.drafts)) ? ZmMsg.to : ZmMsg.from ;
+        tooltip = sortable ? isOutboundFolder ? ZmMsg.sortByTo : ZmMsg.sortByFrom : isOutboundFolder ? ZmMsg.to : ZmMsg.from ;
     } else if (field == ZmItem.F_SIZE){
-        tooltip = (this._headerList[itemIdx]._sortable)
-                ? ZmMsg.sortBySize : ZmMsg.sizeToolTip;
+        tooltip = sortable ? ZmMsg.sortBySize : ZmMsg.sizeToolTip;
 	} else if (field == ZmItem.F_ACCOUNT) {
 		tooltip = ZmMsg.account;
     } else if (field == ZmItem.F_FOLDER) {

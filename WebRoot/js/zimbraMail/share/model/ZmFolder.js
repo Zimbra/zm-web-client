@@ -49,6 +49,8 @@ ZmFolder = function(params) {
 	if (arguments.length == 0) { return; }
 	params.type = params.type || ZmOrganizer.FOLDER;
 	ZmOrganizer.call(this, params);
+
+	this.isOutbound = ZmFolder.OUTBOUND[this.nId];
 };
 
 ZmFolder.prototype = new ZmOrganizer;
@@ -165,6 +167,12 @@ ZmFolder.HIDE_NAME = {};
 //ZmFolder.HIDE_NAME["Notes"]		= true;
 //ZmFolder.HIDE_NAME["Outbox"]		= true;
 //ZmFolder.HIDE_NAME["Tasks"]		= true;
+
+// folders that contain mail from me instead of to me
+ZmFolder.OUTBOUND = {}
+ZmFolder.OUTBOUND[ZmFolder.ID_SENT]		= true;
+ZmFolder.OUTBOUND[ZmFolder.ID_OUTBOX]	= true;
+ZmFolder.OUTBOUND[ZmFolder.ID_DRAFTS]	= true;
 
 // The extra-special, visible but untouchable outlook folder
 ZmFolder.SYNC_ISSUES 							= "Sync Issues";

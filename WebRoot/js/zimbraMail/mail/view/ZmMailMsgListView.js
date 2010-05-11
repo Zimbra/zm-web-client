@@ -36,28 +36,6 @@ function() {
 	return "ZmMailMsgListView";
 };
 
-ZmMailMsgListView.prototype.createHeaderHtml = 
-function(defaultColumnSort) {
-
-	ZmMailListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
-	
-	// Show "From" or "To" depending on which folder we're looking at
-	var headerCol = this._headerHash[ZmItem.F_DATE];
-	if (headerCol && this._mode == ZmId.VIEW_TRAD) {
-		var isFolder = this._resetFromColumnLabel();
-
-		// set the received column name based on query string
-		colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;
-		var recdColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
-		if (recdColSpan) {
-			recdColSpan.innerHTML = "&nbsp;" + colLabel;
-		}
-		if (this._colHeaderActionMenu) {
-			this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
-		}
-	}
-};
-
 ZmMailMsgListView.prototype.markUIAsRead = 
 function(msg) {
 	ZmMailListView.prototype.markUIAsRead.apply(this, arguments);
@@ -122,8 +100,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		idx = this._getImageHtml(htmlArr, idx, msg.getStatusIcon(), this._getFieldId(msg, field));
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
 		// setup participants list for Sent/Drafts/Outbox folders
-		var isFolder = this._isSentOrDraftsFolder();
-		if (this._mode == ZmId.VIEW_TRAD && (isFolder.sent || isFolder.drafts)) {
+		if (this._isOutboundFolder()) {
 			var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
 			if (addrs && addrs.length) {
 				var fieldId = this._getFieldId(msg, ZmItem.F_PARTICIPANT);

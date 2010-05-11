@@ -695,3 +695,24 @@ function(ignore) {
 	if (best)
 		this.fragment = best.fragment;
 };
+
+/**
+ * Gets a vector of addresses of the given type.
+ *
+ * @param {constant}	type			an email address type
+ *
+ * @return	{AjxVector}	a vector of email addresses
+ */
+ZmConv.prototype.getAddresses =
+function(type) {
+
+	var p = this.participants ? this.participants.getArray() : [];
+	var list = [];
+	for (var i = 0, len = p.length; i < len; i++) {
+		var addr = p[i];
+		if (addr.type == type) {
+			list.push(addr);
+		}
+	}
+	return AjxVector.fromArray(list);
+};

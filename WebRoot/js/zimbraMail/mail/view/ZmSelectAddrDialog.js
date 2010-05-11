@@ -74,10 +74,10 @@ function() {
  * Populates the list view before showing the dialog.
  *
  * @param {array}		addrs			list of AjxEmailAddress to show user
- * @param {string}		queryName		"sent" or "drafts"
+ * @param {string}		folderId		ID of outbound folder
  */
 ZmSelectAddrDialog.prototype.popup =
-function(addrs, queryName) {
+function(addrs, folderId) {
 
 	if (!(addrs && addrs.length)) {
 		var d = appCtxt.getMsgDialog();
@@ -87,11 +87,12 @@ function(addrs, queryName) {
 	}
 
 	this._addrs = [];
-	this._queryName = queryName;
+	this._folderId = folderId;
 	var used = {}, id = 1;
 	for (var i = 0, len = addrs.length; i < len; i++) {
 		var addr = addrs[i];
 		var email = addr.getAddress();
+		// remove duplicates
 		if (!used[email]) {
 			addr.id = id++;
 			this._addrs.push(addr);
@@ -113,7 +114,8 @@ function() {
 
 	var sel = this._listView.getSelection();
 	if (sel && sel.length) {
-		var query = "in:" + this._queryName + " to:" + sel[0].getAddress();
+		var folder = ZmFolder.QUERY_NAME[this._folderId];
+		var query = "in:" + folder + " to:" + sel[0].getAddress();
 		appCtxt.getSearchController().search({query:query});
 	}
 	this.popdown();

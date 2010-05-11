@@ -212,13 +212,13 @@ function() {
 /**
  * Gets a vector of addresses of the given type.
  *
- * @param {constant}	type			an email address type
- * @param {Hash}	used			an array of addresses that have been used. If not <code>null</code>,
+ * @param {constant}	type		an email address type
+ * @param {Hash}		used		an array of addresses that have been used. If not <code>null</code>,
  *									then this method will omit those addresses from the
  * 									returned vector and will populate used with the additional new addresses
  * @param {Boolean}	addAsContact	if <code>true</code>, emails should be converted to {@link ZmContact} objects
  * 
- * @return	{AjxVector}	a vection of email address
+ * @return	{AjxVector}	a vector of email addresses
  */
 ZmMailMsg.prototype.getAddresses =
 function(type, used, addAsContact) {
