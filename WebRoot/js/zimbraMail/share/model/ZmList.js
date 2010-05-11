@@ -938,8 +938,10 @@ function(params, result) {
 			}
 
 			var dialog = ZmList.progressDialog;
-			summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
-			if (dialog) {
+			if (params.actionText) {
+				summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
+			}
+			if (dialog && summary) {
 				dialog.setContent(summary);
 				if (!dialog.isPoppedUp()) {
 					dialog.popup();

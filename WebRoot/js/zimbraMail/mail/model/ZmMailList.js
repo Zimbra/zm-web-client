@@ -217,7 +217,9 @@ function(params, result) {
 		list._evt.items = movedItems;
 		list._notify(ZmEvent.E_MOVE, details);
 
-		summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
+		if (params.actionText) {
+			summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
+		}
 
 		if (params.childWin) {
 			params.childWin.close();

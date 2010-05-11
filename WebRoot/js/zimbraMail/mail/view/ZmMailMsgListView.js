@@ -55,7 +55,7 @@ function(msg, params) {
 	} else {
 		var conv = appCtxt.getById(msg.cid);
 		var s = this._controller._activeSearch && this._controller._activeSearch.search;
-		params.isMatched = (!(s && s.singleTerm) && msg.inHitList && conv && !conv._allMsgsMatch);
+		params.isMatched = (s && s.hasTextTerm && msg.inHitList);
 	}
 };
 

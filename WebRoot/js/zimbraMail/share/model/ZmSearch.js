@@ -751,7 +751,7 @@ function() {
 
 
 	var len = query.length;
-	var tokens = [], ch, op, word = "", fail = false, eow = false, endOk = true, hasOrTerm = false;
+	var tokens = [], ch, op, word = "", fail = false, eow = false, endOk = true, hasOrTerm = false, bareWord = false;
 	var pos = skipSpace(query, 0);
 	while (pos < len) {
 		ch = query.charAt(pos);
@@ -777,14 +777,14 @@ function() {
 				if (ZmSearch.COND[word.toLowerCase()]) {
 					var cond = word.toLowerCase();
 					tokens.push(ZmSearch.COND[cond]);
-					word = "";
 					endOk = false;
 					if (cond == "or") {
 						hasOrTerm = true;
 					}
 				} else if (word) {
-					fail = true;
+					fail = bareWord = true;
 				}
+				word = "";
 			}
 		}
 
@@ -795,6 +795,7 @@ function() {
 				pos = results.pos;
 			} else {
 				fail = true;
+				word = "";
                 pos = skipSpace(query, pos + 1);
 			}
 		} else if (ch == "(" || ch == ")") {
@@ -817,7 +818,7 @@ function() {
 		tokens.push({isTerm:true, op:op, arg:word});
 		endOk = true;
 	} else if (!op && word) {
-		fail = true;
+		fail = bareWord = true;
 	}
 
 	fail = fail || !endOk;
@@ -863,6 +864,9 @@ function() {
 
 	// this way we know if a search was simply "in:foo" or "tag:foo", and nothing else
 	this.singleTerm = (folderId || tagId) && (tokens.length == 1) && !fail;
+
+	// has a text term (word by itself with no operator)
+	this.hasTextTerm = bareWord;
 
 	// the way multi-account searches are done, we set the queryHint *only* so
 	// set the folderId if it exists for simple multi-account searches

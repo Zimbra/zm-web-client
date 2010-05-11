@@ -1880,7 +1880,9 @@ function(params, actionParams) {
 		if (contResult) {
 			if (lv.allSelected) {
 				// items beyond page were acted on, give user a total count
-				actionParams.actionSummary = ZmList.getActionSummary(actionParams.actionText, this._continuation.totalItems, contResult.type, actionParams.actionArg);
+				if (actionParams.actionText) {
+					actionParams.actionSummary = ZmList.getActionSummary(actionParams.actionText, this._continuation.totalItems, contResult.type, actionParams.actionArg);
+				}
 				lv.deselectAll();
 				if (params.allDoneCallback) {
 					params.allDoneCallback.run();
