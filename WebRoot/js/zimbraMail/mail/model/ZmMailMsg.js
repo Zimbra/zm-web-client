@@ -1875,7 +1875,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 	}
 
 	//TODO: OPTIMIZE CODE by aggregating the common code.
-	if (accountName && isPrimary) {
+	if (!appCtxt.isOffline && accountName && isPrimary) {
 		var mainAcct = ac.accountList.mainAccount.getEmail();
 		var onBehalfOf = false;
 
