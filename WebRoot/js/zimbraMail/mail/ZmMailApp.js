@@ -1221,6 +1221,7 @@ function(creates, type, items, currList, sortBy, convs, last) {
 
 		// ignore stuff we already have
 		if (currList.getById(create.id) || create._wasVirtConv) { continue; }
+		if (appCtxt.getById(create.id)) { continue; }
 
 		// new conv does not affect a list of msgs
 		if (currList.type == ZmItem.MSG && type == ZmItem.CONV) { continue; }
