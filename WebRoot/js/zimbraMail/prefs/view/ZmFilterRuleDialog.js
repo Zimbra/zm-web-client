@@ -971,7 +971,7 @@ function(ev) {
 	}
 
 	var rule1 = this._rules.getRuleByName(name);
-	if (rule1 && (rule1 != rule)) {
+	if ( rule1 && (rule1 != rule) )  {
 		msg = ZmMsg.filterErrorNameExists;
 	}
 	if (msg) {
@@ -1203,11 +1203,11 @@ function(condition) {
 		if (conf[f] && !condition[key]) {
 			return this._conditionErrorFormatter.format([ZmFilterRule.C_LABEL[condition.subject]]);
 		}
-		if (condition.value &&
+	}
+	if (condition.value &&
 			(condition.value.indexOf('"') != -1) || (condition.value.indexOf("\\") != -1))
-		{
-			return ZmMsg.filterErrorIllegalCharacter;
-		}
+	{
+		return ZmMsg.filterErrorIllegalCharacter;
 	}
 };
 
