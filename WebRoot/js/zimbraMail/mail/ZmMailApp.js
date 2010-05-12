@@ -1066,11 +1066,7 @@ function(creates) {
 		{
 			this.globalMailCount++;
 
-			var currSearch = appCtxt.getCurrentSearch();
-			if ((currSearch && currSearch.isMultiAccount()) ||
-				(appCtxt.getCurrentAppName() != ZmApp.MAIL) ||
-				(appCtxt.getActiveAccount() != acct))
-			{
+			if (appCtxt.isOffline) {
 				acct.inNewMailMode = true;
 				var allContainers = appCtxt.getOverviewController()._overviewContainer;
 				for (var j in allContainers) {
