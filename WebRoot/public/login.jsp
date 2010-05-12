@@ -337,7 +337,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                                 <div class="ZLoginSeparator" style="margin-top:0px"></div>
 												<fmt:message key="chooseClient"/>&nbsp;
 												<c:set var="client" value="${param.client}"/>
-                                                <c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isGecko1_8up or ua.isIE6up or ua.isSafari3Up)}"/>
+                                                <c:set var="useStandard" value="${not (ua.isFirefox3up or ua.isGecko1_9up or ua.isIE6up or ua.isSafari4Up or ua.isChrome)}"/>
                                                 <c:if test="${empty client}">
 													<%-- set client select default based on user agent. --%>
 													<c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
