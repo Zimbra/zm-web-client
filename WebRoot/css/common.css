@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -18,7 +18,7 @@
 
 /****
 
-	TODO 
+	TODO
 		* Do some sort of reset, eg table cell spacing, etc
 		* set default font color on outside so it percolates in to all elements (?)
 		* fix box models ?
@@ -26,7 +26,7 @@
  ****/
 
 
-/* 
+/*
 * HTML elements - use for global declarations
 */
 
@@ -65,7 +65,7 @@ LEGEND {
 }
 
 
-/****	
+/****
  		Generic field borders/styles
  ****/
 INPUT[readonly] {
@@ -82,18 +82,18 @@ TEXTAREA[readonly] {
 }
 
 input[type="checkbox"] {
-		@ActiveCursor@		
+		@ActiveCursor@
 }
 #IFDEF MSIE
 input{
-cursor: expression(this.type=="checkbox"?'pointer':''); 
+cursor: expression(this.type=="checkbox"?'pointer':'');
 }
 #ENDIF
 
 /* TODO: figure out what we need to do for IE/etc to set the same input styles */
 #IFDEF GECKO
 	/* set for 'text' and 'password' fields explicitly so checkboxes and radio buttons don't get borders */
-	input[type="text"], 
+	input[type="text"],
 	input[type="password"] {
 		@InputField@
 		@InputField-normal@
@@ -105,7 +105,7 @@ cursor: expression(this.type=="checkbox"?'pointer':'');
 		@TextArea@
 		@TextArea-normal@
 	}
-	
+
 
 #ENDIF
 
@@ -282,8 +282,8 @@ DIV.vSpace {
 
 
 
-/* 
-	Link to open an attachment 
+/*
+	Link to open an attachment
 	WHY IS THIS DIFFERENT ?
 */
 
@@ -308,7 +308,7 @@ DIV.vSpace {
 
 
 
-/* 
+/*
 * Drag N Drop
 */
 
@@ -378,7 +378,7 @@ DIV.vSpace {
 
 
 /*
- *  New tag dialog 
+ *  New tag dialog
 ---UNUSED---
 .TagColorMenu {
 	background-color: white;
@@ -387,8 +387,8 @@ DIV.vSpace {
 */
 
 
-/* 
- * New folder dialog 
+/*
+ * New folder dialog
 ---UNUSED---
 .FolderTree {
 	background-color: white;
@@ -399,9 +399,9 @@ DIV.vSpace {
 }
 .FolderTree td {padding: 0;}
  */
- 
- 
-/* 
+
+
+/*
  *  Row display and highlighting in list views
  *	NOTE: these should probably be more specific names!
  *
@@ -411,7 +411,7 @@ DIV.vSpace {
  *	TODO: Disambiguate all of the below!!!
  *
  */
- 
+
  /* generic for all row types */
 .Row {
 	@ListItemContainer@
@@ -445,11 +445,11 @@ DIV.vSpace {
 .RowOdd						{	@ListItemContainer-alt@				}
 
 .selected, 	/* TODO: used? */
-.Row-selected, 
-.Row-selected-dragProxy, 
+.Row-selected,
+.Row-selected-dragProxy,
 .Row-selected-disabled 		{	@ListItemContainer-selected@		}
 
-.Row-matched, 
+/* .Row-matched, */
 .Row-matched-dragProxy 		{ 	@ListItemContainer-matched@			}
 
 .Row-matched table, .Row-matched-drag table {
@@ -460,7 +460,7 @@ DIV.vSpace {
 
 .Row-selected-actioned 		{	@ListItemContainer-actioned@	}
 
-.Row-dragProxy, 
+.Row-dragProxy,
 .Row-matched-dragProxy 		{	@ListItemContainer-dragProxy@	}
 
 
@@ -476,13 +476,13 @@ DIV.vSpace {
 .Row-selected-dragProxy td,
 .Row-selected-disabled td	{	@ListItemText-selected@				}
 
-.Row-matched td			 	{ 	@ListItemText-matched@				}
-	
+/* .Row-matched td			 	{ 	@ListItemText-matched@				} */
+
 .Row-focused td 			{	@ListItemText-focused@				}
 
 .Row-selected-right td	 	{	@ListItemText-actioned@				}
 
-.Row-dragProxy td, 
+.Row-dragProxy td,
 .Row-matched-dragProxy td	{	@ListItemText-dragProxy@			}
 
 
@@ -504,13 +504,13 @@ DIV.vSpace {
 
 
 
-/* 
- * Flags 
+/*
+ * Flags
  */
-.Unread { 
+.Unread {
 	@Text-unread@
 }
-.Trash { 
+.Trash {
 	@Text-deleted@
 }
 
@@ -570,7 +570,7 @@ DIV.vSpace {
 	padding-bottom: 1px;
 }
 
-.overviewHeader-Text, 
+.overviewHeader-Text,
 .overviewHeader-actioned,
 .overviewHeader-dragOver {
 	@TreeHeaderText@
