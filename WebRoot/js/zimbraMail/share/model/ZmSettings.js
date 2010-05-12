@@ -865,6 +865,20 @@ function(ev) {
 		cd.setMessage(ZmMsg.skinChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
 	} else if (id == ZmSetting.LOCALE_NAME) {
+		// bug: 29786
+		if (appCtxt.isOffline && AjxEnv.isPrism) {
+			try {
+				netscape.security.PrivilegeManager.enablePrivilege('UniversalXPConnect');
+				var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+				if (prefs) {
+					var newLocale = appCtxt.get(ZmSetting.LOCALE_NAME).replace("_", "-");
+					prefs.setCharPref("general.useragent.locale", newLocale);
+					prefs.setCharPref("intl.accept_languages", newLocale);
+				}
+			} catch (ex) {
+				// do nothing for now
+			}
+		}
 		var cd = appCtxt.getYesNoMsgDialog();
 		cd.reset();
 		var skin = ev.source.getValue();
