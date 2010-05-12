@@ -147,7 +147,7 @@ ZmMobileDevice.prototype.doAction =
 function(id, callback) {
 	var request;
 	switch (id) {
-		case ZmOperation.DELETE: 				request = "RemoveDeviceRequest"; break;
+		case ZmOperation.MOBILE_REMOVE: 		request = "RemoveDeviceRequest"; break;
 		case ZmOperation.MOBILE_RESUME_SYNC:	request = "ResumeDeviceRequest"; break;
 		case ZmOperation.MOBILE_SUSPEND_SYNC:	request = "SuspendDeviceRequest"; break;
 		case ZmOperation.MOBILE_WIPE:			request = "RemoteWipeRequest"; break;
