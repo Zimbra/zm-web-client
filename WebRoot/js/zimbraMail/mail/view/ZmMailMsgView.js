@@ -1225,7 +1225,7 @@ function(msg, container, callback) {
 			} else {
 				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
 					html.push(hasHtmlPart ? "<pre>" : "");
-					html.push(AjxStringUtil.htmlEncode(bp.content, true));
+					html.push(AjxStringUtil.htmlEncode(bp.content));
 					html.push(hasHtmlPart ? "</pre>" : "");
 				} else {
 					if (appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
