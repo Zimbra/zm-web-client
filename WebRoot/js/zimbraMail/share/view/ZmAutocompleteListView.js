@@ -133,8 +133,8 @@ ZmAutocompleteListView.onKeyDown =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 	var result = ZmAutocompleteListView._onKeyDown(ev);
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	var aclv = DwtControl.ALL_BY_ID[element.id]
+	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
+	var aclv = DwtControl.ALL_BY_ID[element._aclvId]
 	if (aclv && aclv._keyDownCallback) {
 		var cbResult = aclv._keyDownCallback.run(ev, aclv, result);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
@@ -151,8 +151,8 @@ ZmAutocompleteListView.onKeyPress =
 function(ev) {
 	DwtKeyEvent.geckoCheck(ev);
 	var result = null;
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	var aclv = DwtControl.ALL_BY_ID[element.id]
+	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
+	var aclv = DwtControl.ALL_BY_ID[element._aclvId]
 	if (aclv && aclv._keyPressCallback) {
 		var cbResult = aclv._keyPressCallback.run(ev, aclv);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
@@ -170,8 +170,8 @@ ZmAutocompleteListView.onKeyUp =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 	var result = ZmAutocompleteListView._onKeyUp(ev);
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	var aclv = DwtControl.ALL_BY_ID[element.id]
+	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
+	var aclv = DwtControl.ALL_BY_ID[element._aclvId]
 	if (aclv && aclv._keyUpCallback) {
 		var cbResult = aclv._keyUpCallback.run(ev, aclv, result);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
@@ -194,11 +194,11 @@ function(ev) {
 	// don't echo enter key if list view is visible, since in that case it's
 	// just a selection mechanism
 	if (key == 3 || key == 13) {
-		var element = DwtUiEvent.getTargetWithProp(ev, "id");
+		var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 		if (!element) {
 			return ZmAutocompleteListView._echoKey(true, ev);
 		}
-		var aclv = DwtControl.ALL_BY_ID[element.id]
+		var aclv = DwtControl.ALL_BY_ID[element._aclvId]
 		if (aclv && aclv.getVisible()) {
 			return ZmAutocompleteListView._echoKey(false, ev);
 		}
@@ -225,13 +225,12 @@ function(ev) {
 	}
 	this._hasCompleted = false;
 
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
+	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	if (!element) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 
-	var id = element.id;
-	var aclv = DwtControl.ALL_BY_ID[id]
+	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
 	var key = DwtKeyEvent.getCharCode(ev);
 //	DBG.println("ac", ev.type + " char code: " + key);
 
@@ -382,7 +381,7 @@ function(account) {
  */
 ZmAutocompleteListView.prototype.handle =
 function(element) {
-	var id = element.id = element.id || Dwt.getNextId();
+	var id = element._aclvId = element._aclvId || Dwt.getNextId();
 	DwtControl.ALL_BY_ID[id] = this;
 	Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmAutocompleteListView.onKeyDown);
 	Dwt.setHandler(element, DwtEvent.ONKEYPRESS, ZmAutocompleteListView.onKeyPress);
