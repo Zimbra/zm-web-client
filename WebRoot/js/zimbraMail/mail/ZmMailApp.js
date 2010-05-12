@@ -1065,13 +1065,10 @@ function(creates) {
 			!acct.isMain)
 		{
 			this.globalMailCount++;
-
-			if (appCtxt.isOffline) {
-				acct.inNewMailMode = true;
-				var allContainers = appCtxt.getOverviewController()._overviewContainer;
-				for (var j in allContainers) {
-					allContainers[j].updateAccountInfo(acct, true, true);
-				}
+			acct.inNewMailMode = true;
+			var allContainers = appCtxt.getOverviewController()._overviewContainer;
+			for (var j in allContainers) {
+				allContainers[j].updateAccountInfo(acct, true, true);
 			}
 		}
 
