@@ -976,9 +976,11 @@ function(type, value) {
 		var item = AjxStringUtil.trim(items[i]);
 		if (!item) continue;
 
+        var contact = AjxEmailAddress.parse(item);
+
 		// see if it's an attendee we already know about (added via autocomplete or other tab)
-		var attendee = this._getAttendeeByName(type, item) ||
-					   this._getAttendeeByItem(item, type) ||
+		var attendee = this._getAttendeeByName(type, contact.name || item) ||
+					   this._getAttendeeByItem(contact.address || item, type) ||
 					   ZmApptViewHelper.getAttendeeFromItem(item, type);
 		if (attendee) {
 			attendees.add(attendee);
