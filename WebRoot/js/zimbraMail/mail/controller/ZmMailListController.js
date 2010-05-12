@@ -579,10 +579,6 @@ function(ev) {
 		var folder = appCtxt.getById(ZmOrganizer.getSystemId(ZmFolder.ID_DRAFTS, account));
 		this._list.moveItems({items:[ev.item], folder:folder});
 	}
-     // set the active account based on the item clicked
-    if (appCtxt.multiAccounts){
-        appCtxt.accountList.setActiveAccount(ev.item.account || appCtxt.accountList.mainAccount, true);
-    }
 	ZmListController.prototype._listSelectionListener.apply(this, arguments);
 };
 

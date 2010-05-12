@@ -483,6 +483,12 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var item = ev.item;
 		if (!item) { return; }
+
+		var cs = appCtxt.isOffline && appCtxt.getCurrentSearch();
+		if (cs && cs.isMultiAccount()) {
+			appCtxt.accountList.setActiveAccount(item.getAccount());
+		}
+
 		var div = this._mailListView.getTargetItemDiv(ev);
 		this._mailListView._itemSelected(div, ev);
 
@@ -565,6 +571,14 @@ function(msg) {
 
 			// offline mode, reset new mail notifier if user reads a msg from that account
 			var acct = msg.getAccount();
+
+			// bug: 46873 - set active account when user clicks on item w/in cross-account search
+			var cs = appCtxt.getCurrentSearch();
+			if (cs && cs.isMultiAccount()) {
+				var active = acct || appCtxt.accountList.defaultAccount
+				appCtxt.accountList.setActiveAccount(active);
+			}
+
 			if (acct && acct.inNewMailMode) {
 				acct.inNewMailMode = false;
 				var allContainers = appCtxt.getOverviewController()._overviewContainer;

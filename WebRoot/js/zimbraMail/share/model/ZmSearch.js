@@ -875,10 +875,6 @@ function() {
 		this.folderId = folderId;
 		this.tagId = tagId;
 	}
-    //set default-account as active in multi-account view
-    if(isMultiAccountSearch){
-        appCtxt.accountList.setActiveAccount(appCtxt.accountList.defaultAccount);
-    }
 };
 
 /**

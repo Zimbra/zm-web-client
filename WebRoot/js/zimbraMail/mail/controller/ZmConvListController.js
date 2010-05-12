@@ -291,11 +291,6 @@ function(ev) {
 			}
 		}
 	}
-    // set the active account based on the item clicked
-    if (appCtxt.multiAccounts){
-        var account = item.account || appCtxt.accountList.mainAccount;
-        appCtxt.accountList.setActiveAccount(account);
-    }
 };
 
 ZmConvListController.prototype._handleResponseListSelectionListener =
