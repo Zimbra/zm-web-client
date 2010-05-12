@@ -1215,34 +1215,29 @@ function(content, replaceSignatureId, account) {
 	var noSignature = !signature;
 
 	var sigContent, replaceSignature;
-	var newSigContent = signature ? this.getSignatureContent(signature.id) : "";
+	var newSig = signature ? this.getSignatureContent(signature.id) : "";
 
 	if (replaceSignatureId) {
 		if (isHtml) {
 			var idoc = this.getHtmlEditor()._getIframeDoc();
 			var sigEl = idoc.getElementById(replaceSignatureId);
 			if (sigEl) {
-				replaceSignature = sigEl.innerHTML;
-				sigContent = this.getSignatureContent(replaceSignatureId);
-
-				// Replace img tags to handle inline images
-				replaceSignature = replaceSignature.replace(/<img[^>]*>/ig,'<img/>');
-				sigContent = sigContent.replace(/<img[^>]*>/ig, "<img/>");
-
-				if (AjxEnv.isIE) {
-					replaceSignature = replaceSignature.replace(/\s/g,'');
-					sigContent = sigContent.replace(/\s/g,'');
-
-					// IE style semicolons are messed up
-					replaceSignature = replaceSignature.replace(/;/g,'');
-					sigContent = sigContent.replace(/;/g,'');
-
-					// innerHTML in IE gives back capital tag names
-					replaceSignature = replaceSignature.toLowerCase();
-					sigContent = sigContent.toLowerCase();
+				// find old sig via delimiters, so we preserve any user content that made it into sig span
+				var oldSigContent = sigEl.innerHTML, newSigContent;
+				var idx = oldSigContent.indexOf(ZmComposeView.SIG_KEY);
+				var lastIdx = oldSigContent.lastIndexOf(ZmComposeView.SIG_KEY);
+				if (idx == -1 || lastIdx == -1) {
+					idx = oldSigContent.indexOf(ZmComposeView.SIG_KEY_LC);
+					lastIdx = oldSigContent.lastIndexOf(ZmComposeView.SIG_KEY_LC);
 				}
+				if (idx != -1 && lastIdx != -1) {
+					newSigContent = oldSigContent.substring(0, idx) + newSig +
+									oldSigContent.substring(lastIdx + ZmComposeView.SIG_KEY.length);
+				} else {
+					newSigContent = newSig;
+				}
+				sigEl.innerHTML = newSigContent;
 
-				sigEl.innerHTML = replaceSignature.replace(sigContent, newSigContent);
 				if (signature) {
 					sigEl.id = signature.id;
 				} else {
@@ -1264,7 +1259,7 @@ function(content, replaceSignatureId, account) {
 			replaceRe = new RegExp(replaceRe, "i");
 
 			//Replace Signature
-			content = content.replace(replaceRe, newSigContent);
+			content = content.replace(replaceRe, newSig);
 			done = true;
 
 		}
@@ -1369,6 +1364,10 @@ function(signatureId, account) {
 	return appCtxt.getSignatureCollection(account).getById(signatureId);
 };
 
+// So we can delimit the actual sig content when switching sigs (bug 46871)
+ZmComposeView.SIG_KEY = '<SPAN name="x"></SPAN>';
+ZmComposeView.SIG_KEY_LC = ZmComposeView.SIG_KEY.toLowerCase();
+
 ZmComposeView.prototype._getSignature =
 function(signatureId) {
 	var extraSignature = this._getExtraSignature();
@@ -1399,10 +1398,11 @@ function(signatureId) {
 
 	var sigString = "";
 	if (signature) {
-		var mode = (this._composeMode == DwtHtmlEditor.HTML)
-			? ZmMimeTable.TEXT_HTML
-			: ZmMimeTable.TEXT_PLAIN;
-		sigString = signature.getValue(mode) + this._getSignatureNewLine();
+		var htmlMode = (this._composeMode == DwtHtmlEditor.HTML);
+		var mode = htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
+		var sig = signature.getValue(mode);
+		var sig1 = htmlMode ? ZmComposeView.SIG_KEY + sig + ZmComposeView.SIG_KEY : sig;
+		sigString = sig1 + this._getSignatureNewLine();
 	}
 	return (sigString + extraSignature);
 };
