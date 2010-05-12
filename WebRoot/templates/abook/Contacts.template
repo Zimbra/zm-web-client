@@ -77,7 +77,10 @@
 				<tr><td><$=ZmMsg.fileAsLabel$></td><td><div id="${id}_FILE_AS" tabindex="400"></div></td></tr>
 				<tr><td><$=ZmMsg.locationLabel$></td><td><div id="${id}_FOLDER" tabindex="401"></div></td></tr>
 				<$ if (appCtxt.multiAccounts) { $>
-					<tr><td><$=ZmMsg.accountLabel$></td><td><div id="${id}_ACCOUNT"></div></td></tr>
+					<tr><td><$=ZmMsg.accountLabel$></td><td><div id="${id}_ACCOUNT" tabindex="402"></div></td></tr>
+				<$ } $>
+				<$ if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) { $>
+				<tr><td><$=ZmMsg.tagsLabel$></td><td><div id="${id}_TAG" tabindex="403"></div></td></tr>
 				<$ } $>
 				</table>
 			</td>
@@ -683,7 +686,7 @@
 		if (!isEmail) {
 			value = AjxStringUtil.htmlEncode(value);
 		}
-		if (ZmEditContactViewOther.IS_DATE[data.name]) {
+		if (ZmContact.IS_DATE[data.name]) {
 			var date = ZmEditContactViewOther.parseDate(value);
 			value = date ? AjxDateFormat.getDateInstance(AjxDateFormat.LONG).format(date) : value;
 		}

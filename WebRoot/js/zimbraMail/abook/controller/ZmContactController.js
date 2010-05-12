@@ -304,6 +304,23 @@ function(ev, bIsPopCallback) {
 	if (mods) {
 		var contact = view.getContact();
 
+		var tags = mods[ZmContact.F_tags];
+		if (tags) {
+			for (var i=0; i<tags.length; i++) {
+				var tagId = tags[i];
+				if (!contact.hasTag(tagId)) {
+					var tag = appCtxt.getById(tagId);
+					this._doTag(contact, appCtxt.getById(tagId), true);
+				}
+			}
+			for (var i=0; i<contact.tags.length; i++) {
+				var tagId = contact.tags[i];
+				if (AjxUtil.indexOf(tags, tagId)==-1)
+					this._doTag(contact, appCtxt.getById(tagId), false);
+			}
+			delete mods[ZmContact.F_tags];
+		}
+
 		// bug fix #22041 - when moving betw. shared/local folders, dont modify
 		// the contact since it will be created/deleted into the new folder
 		var newFolderId = mods[ZmContact.F_folderId];
