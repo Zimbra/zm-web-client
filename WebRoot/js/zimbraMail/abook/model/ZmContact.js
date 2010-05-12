@@ -1006,7 +1006,12 @@ function(attr, callback, result) {
  * @private
  */
 ZmContact.prototype._handleResponseMove =
-function(resp) {
+function(newFolderId, resp) {
+	var newFolder = newFolderId && appCtxt.getById(newFolderId);
+	var count = 1;
+	if (newFolder)
+		appCtxt.setStatusMsg(AjxMessageFormat.format(ZmMsg.actionMove, [count, AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[ZmItem.CONTACT]], count), newFolder.name]));
+	
 	this._notify(ZmEvent.E_MODIFY, resp);
 };
 
@@ -1028,7 +1033,7 @@ function(newFolderId) {
 	} else {
 		var jsonObj = {ContactActionRequest:{_jsns:"urn:zimbraMail"}};
 		jsonObj.ContactActionRequest.action = {id:this.id, op:"move", l:newFolderId};
-		var respCallback = new AjxCallback(this, this._handleResponseMove);
+		var respCallback = new AjxCallback(this, this._handleResponseMove, [newFolderId]);
 		var accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
 		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, accountName:accountName});
 	}

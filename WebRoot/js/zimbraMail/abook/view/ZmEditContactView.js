@@ -586,8 +586,11 @@ ZmEditContactView.prototype.isEmpty = function(items) {
 		var value = this.getValue(id);
 		if (value) {
 			if (!AjxUtil.isArray(value)) {
-				if (value != item.ovalue)
-					return false;
+				if (id == "FOLDER") {
+					if (value != item.ovalue) return false;
+				} else {
+					if (value !== "") return false;
+				}
 			} else {
 				for (var i=0; i<value.length; i++) {
 					var valueitem = value[i];
@@ -720,7 +723,13 @@ ZmEditContactView.prototype._handleDirty = function() {
 	var toolbar = this._controller && this._controller.getCurrentToolbar();
 	if (toolbar) {
 		var dirty = items.length > 0 ? items.length > 1 || items[0] != "IMAGE" || this._contact.id : false;
-		toolbar.enable(ZmOperation.SAVE, dirty);
+
+		// Creating a new contact with only the folder set should not be saveable until at least one other field has a value
+		var needitems = AjxUtil.hashCopy(this._items);
+		delete needitems["FOLDER"];
+		var empty = this.isEmpty(needitems); // false if one or more fields are set, excluding the folder field
+
+		toolbar.enable(ZmOperation.SAVE, dirty && !empty);
 	}
 	// debug information
 	this.setValue('DEBUG', items.join(', '));
