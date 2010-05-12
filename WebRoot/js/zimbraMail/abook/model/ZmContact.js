@@ -106,6 +106,7 @@ ZmContact.F_otherStreet				= "otherStreet";
 ZmContact.F_otherURL				= "otherURL";
 ZmContact.F_pager					= "pager";
 ZmContact.F_type					= "type";
+ZmContact.F_tags					= "tags";
 ZmContact.F_workAltPhone			= "workAltPhone";
 ZmContact.F_workCity				= "workCity";
 ZmContact.F_workCountry				= "workCountry";
