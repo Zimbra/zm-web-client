@@ -3980,3 +3980,9 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmSelectAddrDialog {
 	width: 400px;
 }
+
+/*Briefcase Split View */
+
+.PreviewFrame{
+    height:100%;
+}
