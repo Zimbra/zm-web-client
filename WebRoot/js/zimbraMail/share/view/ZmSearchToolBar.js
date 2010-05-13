@@ -529,8 +529,8 @@ function(id) {
 	var params = {
 		dataClass:			new ZmSearchAutocomplete(),
 		matchValue:			"matchText",
-		delims:				[" "],
-		delimCodes:			[3, 13, 32],
+		delims:				[" ", "\t"],
+		delimCodes:			[3, 13, 32, 9],
 		separator:			" ",
 		enterCallback:		new AjxCallback(this, this._handleEnterKeyPress)
 	};
