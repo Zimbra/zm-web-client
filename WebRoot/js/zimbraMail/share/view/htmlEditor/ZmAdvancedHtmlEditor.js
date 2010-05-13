@@ -258,6 +258,7 @@ function(domRoot) {
 
 ZmAdvancedHtmlEditor.prototype.moveCaretToTop =
 function() {
+	var focused = document.activeElement;
 	if (this._mode == DwtHtmlEditor.TEXT) {
 		var control = this.getContentField();
 		if (control.createTextRange) { // IE
@@ -270,6 +271,7 @@ function() {
 	} else {
 		this._moveCaretToTopHtml(true);
 	}
+	if (focused) focused.focus();
 };
 
 ZmAdvancedHtmlEditor.prototype._moveCaretToTopHtml =
