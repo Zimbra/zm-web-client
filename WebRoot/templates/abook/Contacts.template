@@ -683,7 +683,7 @@
 		if (!isEmail) {
 			value = AjxStringUtil.htmlEncode(value);
 		}
-		if (ZmEditContactViewOther.IS_DATE[data.name]) {
+		if (ZmContact.IS_DATE[data.name]) {
 			var date = ZmEditContactViewOther.parseDate(value);
 			value = date ? AjxDateFormat.getDateInstance(AjxDateFormat.LONG).format(date) : value;
 		}
