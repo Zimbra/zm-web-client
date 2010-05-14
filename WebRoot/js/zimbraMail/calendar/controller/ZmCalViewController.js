@@ -85,6 +85,12 @@ ZmCalViewController = function(container, calApp) {
 		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW, ZmOperation.SCHEDULE_VIEW
 	];
 
+    var viewOpsListener = new AjxListener(this, this._viewActionMenuItemListener);
+    for (var i = 0; i < ZmCalViewController.OPS.length; i++) {
+        var op = ZmCalViewController.OPS[i];
+        this._listeners[op] = viewOpsListener;
+    }
+    
 	this._errorCallback = new AjxCallback(this, this._handleError);
 
 	// needed by ZmCalListView:
@@ -770,6 +776,17 @@ function(toolbar) {
 	}
 
 	return menu;
+};
+
+
+// Switch to selected view.
+ZmCalViewController.prototype._viewActionMenuItemListener =
+function(ev) {
+    if (appCtxt.multiAccounts) {
+        this.apptCache.clearCache();
+    }
+    var id = ev.item.getData(ZmOperation.KEY_ID);
+    this.show(ZmCalViewController.OP_TO_VIEW[id]);
 };
 
 // Switch to selected view.
