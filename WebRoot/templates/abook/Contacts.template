@@ -30,6 +30,9 @@
 				<div style='padding:.125em'>
 					<div id="${id}_FULLNAME"></div>
 				</div>
+				<$ if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) { $>
+				<div id="${id}_TAG"></div>
+				<$ } $>
 				<div id="${id}_NAME_row">
 					<table><tr>
 						<td id="${id}_PREFIX_row"><div id="${id}_PREFIX" tabindex="200"></div></td>
@@ -78,9 +81,6 @@
 				<tr><td><$=ZmMsg.locationLabel$></td><td><div id="${id}_FOLDER" tabindex="401"></div></td></tr>
 				<$ if (appCtxt.multiAccounts) { $>
 					<tr><td><$=ZmMsg.accountLabel$></td><td><div id="${id}_ACCOUNT" tabindex="402"></div></td></tr>
-				<$ } $>
-				<$ if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) { $>
-				<tr><td><$=ZmMsg.tagsLabel$></td><td><div id="${id}_TAG" tabindex="403"></div></td></tr>
 				<$ } $>
 				</table>
 			</td>

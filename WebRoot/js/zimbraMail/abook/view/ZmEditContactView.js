@@ -150,7 +150,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 				enabled: "this._contact && !this._contact.isShared()",
 				onclick: this._handleFolderButton
 			},
-			{ id: "TAG", type: "DwtButton", image: "Tag",
+			{ id: "TAG", type: "DwtControl",
 				enabled: "this._contact && !this._contact.isShared()",
 				visible: "appCtxt.get(ZmSetting.TAGGING_ENABLED)"
 			},
@@ -328,7 +328,6 @@ ZmEditContactView.ALWAYS_SHOW = {
 ZmEditContactView.ATTRS = {
 	FILE_AS: ZmContact.F_fileAs,
 	FOLDER: ZmContact.F_folderId,
-	TAG: ZmContact.F_tags,
 	IMAGE: ZmContact.F_image,
 	PREFIX: ZmContact.F_namePrefix,
 	SUFFIX: ZmContact.F_nameSuffix,
@@ -411,15 +410,8 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 		this._setFolder(folderOrId || ZmOrganizer.ID_ADDRBOOK);
 	}
 
-	var tagControl = this.getControl("TAG");
-	if (tagControl) {
-		if (!this._tagMenu) {
-			this._tagMenu = new ZmTagMenu(tagControl);
-			tagControl.setMenu(this._tagMenu);
-			this._setupTagMenu();
-		}
+	if (this.getControl("TAG"))
 		this._setTags(contact);
-	}
 
 	// check show detail items for fields with values
 	for (var id in ZmEditContactView.ATTRS) {
@@ -637,132 +629,62 @@ ZmEditContactView.prototype.cleanup = function() {
 	this._contact = null;
 };
 
-ZmEditContactView.prototype.getTagMenu =
-function() {
-	return this._tagMenu;
-}
-
-ZmEditContactView.prototype._tagListener =
-function(ev) {
-	var tagEvent = ev.getData(ZmTagMenu.KEY_TAG_EVENT);
-	var tagAdded = ev.getData(ZmTagMenu.KEY_TAG_ADDED);
-	var items = [this._contact];
-
-	if (tagEvent == ZmEvent.E_TAGS) {
-		var tag = ev.getData(Dwt.KEY_OBJECT);
-		var tagId = parseInt(tag.id);
-		if (tagAdded) {
-			this._addTag(tagId);
-		} else {
-			this._removeTag(tagId);
-		}
-	
-	} else if (tagEvent == ZmEvent.E_CREATE) {
-		this._pendingActionData = items;
-		var newTagDialog = appCtxt.getNewTagDialog();
-		if (!this._newTagCb) {
-			this._newTagCb = new AjxCallback(this, ZmController.prototype._newTagCallback);
-		}
-
-		ZmController.showDialog(newTagDialog, this._newTagCb);
-		//newTagDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newTagDialog);
-	} else if (tagEvent == ZmEvent.E_REMOVE_ALL) {
-		this._clearTags();
-	}
-};
-
-ZmEditContactView.prototype._setupTagMenu =
-function() {
-	if (this._tagMenu)
-		this._tagMenu.addSelectionListener(new AjxListener(this, this._tagListener));
-};
-
 ZmEditContactView.prototype._setTags =
-function(tags) {
-	if (tags === undefined)
-		tags = this.getValue("TAG");
-	else if (tags instanceof ZmContact)
-		tags = [].concat(tags.tags);
-	this.setValue("TAG", tags);
-	this._setTagMenu(tags);
-};
-
-ZmEditContactView.prototype._addTag =
-function(tag) {
-	if (tag instanceof ZmTag)
-		tag = parseInt(tag.id);
-	var tags = this.getValue("TAG");
-	if (AjxUtil.indexOf(tags, tag) == -1) {
-		AjxUtil.arrayAdd(tags, tag);
-		this._setTagMenu(tags);
-		this.setValue("TAG", tags);
-		this.setDirty("TAG", true);
-	}
-};
-
-ZmEditContactView.prototype._removeTag =
-function(tag) {
-	if (tag instanceof ZmTag)
-		tag = parseInt(tag.id);
-	var tags = this.getValue("TAG");
-	if (AjxUtil.arrayRemove(tags, tag)) {
-		this._setTagMenu(tags);
-		this.setValue("TAG", tags);
-		this.setDirty("TAG", true);
-	}
-};
-
-ZmEditContactView.prototype._clearTags =
-function() {
-	this.setValue("TAG", []);
-	this._setTagMenu([]);
-	this.setDirty("TAG", true);
-};
-
-ZmEditContactView.prototype._setTagMenu =
-function(tags, account) {
-	this._setTagMenuDropdown(tags, account);
-	this._setTagMenuButton(tags, account);
-};
-
-ZmEditContactView.prototype._setTagMenuDropdown =
-function(tags, account) {
-	if (tags === undefined) tags = this._contact.tags; // Empty array is allowed
-	account = account || (appCtxt.multiAccounts) ? this._contact.getAccount() : null;
-
-	var items = [{tags:tags}];
-	this._tagMenu.set(items, appCtxt.getTagTree(account));
-};
-
-ZmEditContactView.prototype._setTagMenuButton =
-function(tags, account) {
-	var text = "";
-	var image = "Blank_16";
-
+function(contactOrTagIds) {
 	var tagControl = this.getControl("TAG");
-	if (tags === undefined) tags = (this._contact && this._contact.tags);
-	account = account || (this._contact && this._contact.getAccount());
+	if (tagControl) {
+		if (contactOrTagIds === undefined) // contactOrTagIds can also be an empty array, so just checking for a falsy value should not happen here
+			contactOrTagIds = this._contact;
+		var tagIds = (contactOrTagIds instanceof ZmContact) ? contactOrTagIds.tags : contactOrTagIds;
 
-	if (tags && tags.length) {
-		if (tags.length > 1)
-			image = "TagStack";
-		var limit = 5;
-		var tagNames = [];
-		for (var i=0; i<tags.length && i<limit; i++) {
-			var tagId = (account && !account.isMain) ? ([account.id, tags[i]].join(":")) : (ZmOrganizer.getSystemId(tags[i]));
-			var tag = appCtxt.getById(tagId);
-			tagNames.push(tag.name);
-			if (tags.length == 1)
-				image = ZmTag.COLOR_ICON[tag.color];
+		tagControl.clearContent();
+		if (tagIds && tagIds.length) {
+			tagControl.setContent(this._getTagHtml(tagIds));
+			tagControl.setVisible(true);
+		} else {
+			tagControl.setVisible(false);
 		}
-		if (tags.length > limit)
-			tagNames.push("...");
-		text = tagNames.join(", ");
 	}
-
-	tagControl.setText(text);
-	tagControl.setImage(image);
 };
+
+ZmEditContactView.prototype._getTagHtml =
+function(tagIds) {
+	var html = [];
+	var idx = 0;
+	var tagCellId = this.getControl("TAG").getHTMLElId();
+
+	// get sorted list of tags for this msg
+	var tags = [];
+	for (var i = 0; i < tagIds.length; i++) {
+		tags.push(appCtxt.getById(tagIds[i]));
+	}
+	tags.sort(ZmTag.sortCompare);
+
+	for (var j = 0; j < tags.length; j++) {
+		var tag = tags[j];
+		if (!tag) { continue; }
+		var icon = ZmTag.COLOR_ICON[tag.color];
+		var attr = ["id='", tagCellId, tag.id, "'"].join("");
+		// XXX: set proper class name for link once defined!
+		html[idx++] = "<a href='javascript:;' class='' onclick='ZmEditContactView._tagClicked(";
+		html[idx++] = '"';
+		html[idx++] = tag.id;
+		html[idx++] = '"';
+		html[idx++] = "); return false;'>";
+		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, tag.name);
+		html[idx++] = "</a>&nbsp;";
+	}
+	return html.join("");
+};
+
+ZmEditContactView._tagClicked =
+function() {
+	ZmContactSplitView._tagClicked.apply(this, arguments);
+};
+
+//
+// ZmListController methods
+//
 
 /**
  * Gets the list.
@@ -957,11 +879,7 @@ ZmEditContactView.prototype._tagChangeListener = function(ev) {
 	var fields = ev.getDetail("fields");
 	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
 	if ((ev.event == ZmEvent.E_MODIFY && changed) || ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY) {
-		this._setTags();
-	} else if (ev.event == ZmEvent.E_CREATE && this._pendingActionData) {
-		var tag = ev.getDetail("organizers")[0];
-		this._addTag(tag, true);
-		this._pendingActionData = null;
+		this._setTags(this._contact);
 	}
 };
 
