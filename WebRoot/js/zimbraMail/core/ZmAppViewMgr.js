@@ -1029,8 +1029,9 @@ function(view, force, isNewView) {
 			callback.run(view, isNewView);
 		}
 	}
-
-	appCtxt.notifyZimlets("onShowView", [view, isNewView], {noChildWindow:true});
+    
+    //bug:47048 removed param {noChildWindow:true}
+	appCtxt.notifyZimlets("onShowView", [view, isNewView]);
 
 	return okToContinue;
 };
