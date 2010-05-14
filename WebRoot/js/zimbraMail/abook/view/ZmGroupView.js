@@ -41,6 +41,11 @@ ZmGroupView = function(parent, controller) {
 	this._offset = 0;
 	this._defaultQuery = ".";
 	this._view = ZmId.VIEW_GROUP;
+
+	this._tagList = appCtxt.getTagTree();
+	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+
+	this._changeListener = new AjxListener(this, this._groupChangeListener);
 };
 
 ZmGroupView.prototype = new DwtComposite;
@@ -610,11 +615,6 @@ function() {
 	tagCell.innerHTML = html.join("");
 };
 
-ZmGroupView.prototype._getTagCell =
-function() {
-	return document.getElementById(this._tagCellId);
-};
-
 // Consistent spot to locate various dialogs
 ZmGroupView.prototype._getDialogXY =
 function() {
@@ -811,6 +811,23 @@ function(result) {
 	this._addAllButton.setEnabled(list.length > 0);
 
 	this._searchButton.setEnabled(true);
+};
+
+ZmGroupView.prototype._tagChangeListener = function(ev) {
+	if (ev.type != ZmEvent.S_TAG) { return; }
+
+	var fields = ev.getDetail("fields");
+	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
+	if ((ev.event == ZmEvent.E_MODIFY && changed) || ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY) {
+		this._setTags();
+	}
+};
+
+ZmGroupView.prototype._groupChangeListener = function(ev) {
+	if (ev.type != ZmEvent.S_CONTACT) return;
+	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
+		this._setTags();
+	}
 };
 
 
