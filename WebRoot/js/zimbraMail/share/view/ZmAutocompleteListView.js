@@ -575,10 +575,7 @@ function(text, start) {
 		}
 	}
 	var chunk = text.substring(start, i);
-	if (AjxEmailAddress.isValid(chunk)) {
-		start = i;
-		chunk = text.substring(start, i);
-	}
+
 	return {text: text, str: chunk, start: start, end: i, delim: false};
 };
 
