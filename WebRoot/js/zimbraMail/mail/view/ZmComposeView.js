@@ -1211,8 +1211,7 @@ function(content, replaceSignatureId, account) {
 	var isHtml = this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML;
 	var newLine = this._getSignatureNewLine();
 	var isAbove = ac.get(ZmSetting.SIGNATURE_STYLE, null, acct) == ZmSetting.SIG_OUTLOOK;
-	var done = false;
-	var donotsetcontent = false;
+	var done = false, donotsetcontent = false;
 	var noSignature = !signature;
 
 	var sigContent, replaceSignature;
@@ -1270,6 +1269,10 @@ function(content, replaceSignatureId, account) {
 		content = this._insertSignature(content, ac.get(ZmSetting.SIGNATURE_STYLE, null, acct), sigContent, newLine);
 	}
 
+	if (!isHtml) {
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() { this.getHtmlEditor().moveCaretToTop(); }), 200);
+	}
+
 	if (!donotsetcontent) {
 		this._htmlEditor.setContent(content);
 	}
@@ -1321,7 +1324,7 @@ function(content) {
 ZmComposeView.prototype._insertSignature =
 function(content, sigStyle, sig, newLine) {
 
-	var re_newlines = "(" + AjxStringUtil.regExEscape(newLine) + ")+";
+	var re_newlines = "(" + AjxStringUtil.regExEscape(newLine) + ")*";
 	// get rid of all trailing newlines
 	var re = re_newlines;
 	if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
@@ -1335,11 +1338,11 @@ function(content, sigStyle, sig, newLine) {
 	var hasQuotedContent = (what != ZmSetting.INC_ATTACH && what != ZmSetting.INC_NONE);
 
 	if (sigStyle == ZmSetting.SIG_OUTLOOK && hasQuotedContent) {
-		var repl = (this._composeMode == DwtHtmlEditor.TEXT) ? "----- " : "<hr>";
-		var regexp = new RegExp(re_newlines + repl, "i");
+		var preface = this._getPreface();
+		var regexp = new RegExp(re_newlines + preface, "i");
 
 		if (content.match(regexp)) {
-			content = content.replace(regexp, [sig, newLine, repl].join(""));
+			content = content.replace(regexp, [sig, newLine, preface].join(""));
 		} else {
 			// new message
 			content = [content, sig].join("");
