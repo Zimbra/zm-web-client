@@ -435,6 +435,10 @@ function() {
 		}
 	}
 
+	if (appCtxt.multiAccounts) {
+		this.apptCache.clearCache();
+	}
+
 	this._calItemStatus = {};
 	if (itemCount > 0) {
 		batchCmd.run();
