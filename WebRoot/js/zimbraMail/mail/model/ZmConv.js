@@ -621,7 +621,7 @@ function(msg) {
 	this.isFlagged = msg.isFlagged;
 	this.isUnread = msg.isUnread;
 	for (var i = 0; i < msg.tags.length; i++) {
-		this.tags.push(msg.tags[i]);
+		this.tagLocal(msg.tags[i], true);
 	}
 	var a = msg.participants ? msg.participants.getArray() : null;
 	this.participants = new AjxVector();
