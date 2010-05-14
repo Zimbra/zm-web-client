@@ -1073,9 +1073,10 @@ function(nfolder, resp) {
  * @param {String}	accountName			the account to send on behalf of
  * @param {Boolean}	noSave				if set, a copy will *not* be saved to sent regardless of account/identity settings
  * @param {Boolean}	requestReadReceipt	if set, a read receipt is sent to *all* recipients
+ * @param {ZmBatchCommand} batchCmd		if set, request gets added to this batch command
  */
 ZmMailMsg.prototype.send =
-function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt) {
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd) {
 	var aName = accountName;
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
@@ -1087,6 +1088,7 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 
 	// if we have an invite reply, we have to send a different message
 	if (this.isInviteReply && !isDraft) {
+		// TODO: support for batchCmd here as well
 		return this.sendInviteReply(true, 0, callback, errorCallback, this._instanceDate, aName, true);
 	} else {
 		var jsonObj, request;
@@ -1111,7 +1113,8 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			isDraft: isDraft,
 			accountName: aName,
 			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
-			errorCallback: errorCallback
+			errorCallback: errorCallback,
+			batchCmd: batchCmd
 		};
 		return this._sendMessage(params);
 	}
@@ -1340,6 +1343,7 @@ function(request, isDraft, accountName, requestReadReceipt) {
  *        isDraft				[boolean]		true if this message is a draft
  *        callback				[AjxCallback]	async callback
  *        errorCallback			[AjxCallback]	async error callback
+ *        batchCmd				[ZmBatchCommand]	if set, request gets added to this batch command
  *        
  * @private
  */
@@ -1366,6 +1370,8 @@ function(params) {
 		} else if (resp.SendMsgResponse) {
 			return resp.SendMsgResponse;
 		}
+	} else if (params.batchCmd) {
+		params.batchCmd.addNewRequestParams(params.jsonObj, respCallback, params.errorCallback);
 	} else {
 		appCtxt.getAppController().sendRequest({jsonObj:params.jsonObj,
 												asyncMode:true,

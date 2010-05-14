@@ -329,7 +329,13 @@ function(shares, result) {
 	if (replyType != ZmShareReply.NONE) {
 		var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
 		var guestnotes;
-		// TODO: Need to turn this into a batch request
+		var batchCmd;
+
+		if (replyType != ZmShareReply.COMPOSE && shares.length > 1) {
+			var accountName = appCtxt.multiAccounts ? this._object.getAccount().name : null;
+			batchCmd = new ZmBatchCommand(false, accountName, true);
+		}
+
 		for (var i = 0; i < shares.length; i++) {
 			var share = shares[i];
 			var email = share.grantee.email || share.grantee.id;
@@ -389,9 +395,11 @@ function(shares, result) {
 			if (replyType == ZmShareReply.COMPOSE) {
 				tmpShare.composeMessage(this._shareMode, addrs);
 			} else {
-				tmpShare.sendMessage(this._shareMode, addrs);
+				tmpShare.sendMessage(this._shareMode, addrs, null, batchCmd);
 			}
 		}
+		if (batchCmd)
+			batchCmd.run();
 	}
 };
 

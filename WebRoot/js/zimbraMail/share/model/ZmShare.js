@@ -705,12 +705,13 @@ function(replyType, notes, callback, owner) {
 /**
  * Sends a message.
  * 
- * @param	{constant}	mode	the request mode
- * @param	{AjxVector}	addrs	a vector of {@link AjxEmailAddress} objects or <code>null</code> to send to the grantee
- * @param	{String}	owner	the message owner
+ * @param	{constant}			mode		the request mode
+ * @param	{AjxVector}			addrs		a vector of {@link AjxEmailAddress} objects or <code>null</code> to send to the grantee
+ * @param	{String}			owner		the message owner
+ * @param	{ZmBatchCommand}	batchCmd	batchCommand to put the SendMsgRequest into or <code>null</code> to send the message immediately
  */
 ZmShare.prototype.sendMessage =
-function(mode, addrs, owner) {
+function(mode, addrs, owner, batchCmd) {
 	// generate message
 	if (!addrs) {
 		var email = this.grantee.email;
@@ -721,7 +722,7 @@ function(mode, addrs, owner) {
 	var accountName = appCtxt.multiAccounts ? this.object.getAccount().name : null;
 
 	// send message
-	msg.send(null, null, null, accountName);
+	msg.send(false, null, null, accountName, false, false, batchCmd);
 };
 
 /**
