@@ -92,6 +92,7 @@ ZmComposeView.MAX_ATTACHMENT_HEIGHT 	= (ZmComposeView.SHOW_MAX_ATTACHMENTS * 23)
 
 // Reply/forward stuff
 ZmComposeView.EMPTY_FORM_RE				= /^[\s\|]*$/;
+ZmComposeView.HTML_TAG_RE				= /(<[^>]+>)/g;
 ZmComposeView.SUBJ_PREFIX_RE			= new RegExp("^\\s*(Re|Fw|Fwd|" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
 ZmComposeView.QUOTED_CONTENT_RE			= new RegExp("^----- ", "m");
 ZmComposeView.HTML_QUOTED_CONTENT_RE	= new RegExp("<br>----- ", "i");
@@ -1186,7 +1187,7 @@ function(signature, sigContent, account) {
 	var signatureId = signature.id;
 	sigContent = sigContent || this.getSignatureContent(signatureId);
 	if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
-		sigContent = ["<span id='", signatureId, "'>", sigContent, "</span>"].join('');
+		sigContent = ["<span id=\"", signatureId, "\">", sigContent, "</span>"].join('');
 	}
 
 	return sigContent;
@@ -1470,6 +1471,16 @@ function(incAddrs, incSubject) {
 		return false;
 	}
 
+	if (this._composeMode == DwtHtmlEditor.HTML) {
+		var lower = function(match) {
+			return match.toLowerCase();
+		};
+
+		var origFormValue = AjxStringUtil.trim(this._origFormValue.replace(ZmComposeView.HTML_TAG_RE, lower)); // Make sure HTML tag names & parameters are lowercase for both values in the comparison
+		curFormValue = AjxStringUtil.trim(curFormValue.replace(ZmComposeView.HTML_TAG_RE, lower)); // so that <SPAN> and <span> are still equal, but <span>FOO</span> and <span>foo</span> are not.
+
+		return (curFormValue != origFormValue);
+	}
 	return (curFormValue != this._origFormValue);
 };
 
