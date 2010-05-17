@@ -117,6 +117,7 @@
         </c:if>
     </c:if>
      <%-- switch based on context search types --%>
+     <c:set var="noComposeView" scope="session" value="${false}"/>
      <c:choose>
          <c:when test="${param.action eq 'compose'}">
              <app:composeCheck/>
@@ -204,6 +205,10 @@
 
  <%-- switch based on context search types --%>
 <c:choose>
+    <%--In case of send and cancel, noComposeView is set to true--%>
+    <c:when test="${param.action eq 'compose' and noComposeView eq false}">
+        <%-- do nothing --%>
+    </c:when>
     <c:when test="${context.isConversationSearch and action eq 'view'}">
         <app:convView context="${context}"/>
     </c:when>
@@ -228,7 +233,6 @@
     <c:when test="${context.isConversationSearch}">
         <app:convListView context="${context}"/>
     </c:when>
-
     <c:when test="${context.isMessageSearch and action eq 'view'}">
         <app:messageView context="${context}"/>
     </c:when>
@@ -271,9 +275,6 @@
     </c:when>
     <c:when test="${context.isWikiSearch}">
         <app:notebookRestView context="${context}"/>
-    </c:when>
-    <c:when test="${param.action eq 'compose'}">
-        <%-- do nothing --%>
     </c:when>
     <c:otherwise>
         <fmt:message key="error" var="title"/>

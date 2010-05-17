@@ -97,6 +97,7 @@
         </c:when>
         <c:when test="${uploader.isCancel}">
             <c:set var="needComposeView" value="${false}"/>
+            <c:set var="noComposeView" scope="session" value="${true}"/>
             <c:if test="${not empty sessionScope.temp_draftid}">
                 <zm:deleteMessage var="result" id="${sessionScope.temp_draftid}"/>
                 <c:remove var="temp_draftid" scope="session"/>
@@ -104,6 +105,7 @@
         </c:when>
         <c:when test="${uploader.isCancelConfirm}">
             <c:set var="needComposeView" value="${false}"/>
+            <c:set var="noComposeView" scope="session" value="${true}"/>
             <c:if test="${! empty uploader && not empty uploader.compose && (not empty uploader.compose.to || not empty uploader.compose.cc || not empty uploader.compose.bcc || not empty uploader.compose.subject || not empty uploader.compose.content || not empty sessionScope.temp_draftid)}">
                 <c:set var="needComposeView" value="${true}"/>
                 <fmt:message key="yes" var="yes"/>
@@ -149,6 +151,7 @@
                     </c:catch>
                 </c:if>
                 <c:set var="needComposeView" value="${false}"/>
+                <c:set var="noComposeView" scope="session" value="${true}"/>
             </app:handleError>
         </c:when>
         <c:when test="${uploader.isDraft}">
@@ -165,5 +168,6 @@
 </app:handleError>
 
 <c:if test="${needComposeView}">
-    <jsp:forward page="/h/compose"/>
+    <%--<jsp:forward page="/h/compose"/>--%>
+    <c:import url="/h/compose"/>
 </c:if>
