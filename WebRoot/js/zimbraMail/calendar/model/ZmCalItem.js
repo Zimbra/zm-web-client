@@ -1686,7 +1686,7 @@ function(cancel, isHtml) {
 
 	if (cancel) {
 		buf[i++] = singleInstance ? ZmMsg.apptInstanceCanceled : ZmMsg.apptCanceled;
-	} else if(!this.isForwardMode || appt.isOrganizer()){
+	} else if(!this.isForwardMode || this.isOrganizer()){
 		if (this.viewMode == ZmCalItem.MODE_EDIT ||
 			this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE ||
 			this.viewMode == ZmCalItem.MODE_EDIT_SERIES)

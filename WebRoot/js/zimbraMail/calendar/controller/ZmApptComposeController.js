@@ -73,7 +73,7 @@ function(appt, forwardCallback) {
 ZmApptComposeController.prototype._handleForwardInvite =
 function(forwardCallback) {
 	appCtxt.setStatusMsg(ZmMsg.forwardInviteSent);
-	if (forwardCallback) {
+	if (forwardCallback instanceof AjxCallback) {
 		forwardCallback.run();
 	}
 };
