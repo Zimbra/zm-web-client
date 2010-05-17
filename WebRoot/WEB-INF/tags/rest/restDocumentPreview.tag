@@ -21,7 +21,6 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <rest:handleError>
     <zm:getDocument var="doc" box="${mailbox}" id="${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}"/>
-    <zm:getDocumentContent  var="docContent" box="${mailbox}" id="${requestScope.zimbra_target_item_id}"/>
 </rest:handleError>
 <c:set var="isViewOnly" value="${not empty param.viewonly}" scope="request"/>
 <html>
@@ -30,7 +29,7 @@
         <c:set value="/img" var="iconPath" scope="request"/>
         <c:url var='cssurl' value='/css/images,common,login,skin,docs.css'>
             <c:param name="client"	value="standard" />
-            <c:param name="skin"	value="${mailbox.prefs.skin}" />
+            <c:param name="skin"	value="${skin}" />
             <c:param name="v"		value="${initParam.zimbraCacheBusterVersion}" />
         </c:url>
         <link rel="stylesheet" type="text/css" href="${cssurl}" />
@@ -53,7 +52,7 @@
                     </tr>
                     <tr>
                         <td><fmt:message key="labelBy"/>&nbsp;${doc.creator}</td>
-                        <td align="right"><fmt:message key="labelVersion"/>: ${doc.version}  |  <fmt:message key="labelModifiedOn"/>: <fmt:formatDate value="${doc.modifiedDate}" pattern="M/d/yyyy h:mm a" timeZone="${mailbox.prefs.timeZone}"/></td>
+                        <td align="right"><fmt:message key="labelVersion"/>: ${doc.version}  |  <fmt:message key="labelModifiedOn"/>: <fmt:formatDate value="${doc.modifiedDate}" pattern="M/d/yyyy h:mm a" timeZone="${timeZone}"/></td>
                     </tr>
                     </table>
                 </td>
