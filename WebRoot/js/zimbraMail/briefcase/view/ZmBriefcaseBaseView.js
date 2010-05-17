@@ -107,7 +107,7 @@ ZmBriefcaseBaseView.prototype.uploadFiles =
 function() {
     var attachDialog = appCtxt.getUploadDialog();
     var files = this.processUploadFiles();
-    attachDialog.uploadFiles(files, document.getElementById("zdnd_form"), {id:this._controller._currentFolder});
+    attachDialog.uploadFiles(files, document.getElementById("zdnd_form"), {id:this._controller._folderId});
 };
 
 /**
