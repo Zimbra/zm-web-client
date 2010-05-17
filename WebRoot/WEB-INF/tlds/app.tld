@@ -120,7 +120,7 @@
         <path>/WEB-INF/tags/briefcase/briefcaseFolder.tag</path>
     </tag-file>
 
-    ﻿<tag-file>
+    <tag-file>
         <name>convColumnView</name>
         <path>/WEB-INF/tags/conv/convColumnView.tag</path>
     </tag-file>
@@ -276,7 +276,7 @@
         <path>/WEB-INF/tags/message/messageIframe.tag</path>
     </tag-file>
 
-    ﻿<tag-file>
+    <tag-file>
         <name>messageColumnView</name>
             <path>/WEB-INF/tags/message/messageColumnView.tag</path>
     </tag-file>
