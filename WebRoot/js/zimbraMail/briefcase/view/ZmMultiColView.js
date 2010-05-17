@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -15,18 +15,18 @@
 
 /**
  * @overview
- * 
+ *
  */
 
 /**
  * Creates the briefcase multi-column view.
  * @class
  * This class represents the briefcase multi-column  view.
- * 
+ *
  * @param	{ZmControl}		parent		the parent
  * @param	{ZmBriefcaseController}	controller		the controller
  * @param	{DWtDropTarget}		dropTgt		the drop target
- * 
+ *
  * @extends		ZmBriefcaseBaseView
  */
 ZmMultiColView = function(parent, controller, dropTgt) {
@@ -61,7 +61,7 @@ ZmMultiColView.prototype.constructor = ZmMultiColView;
 
 /**
  * Returns a string representation of the object.
- * 
+ *
  * @return		{String}		a string representation of the object
  */
 ZmMultiColView.prototype.toString = function() {
@@ -86,7 +86,7 @@ function() {
 
 /**
  * Gets the list view.
- * 
+ *
  * @param	{int}	idx		the index
  * @return	{ZmColListView}		the list view
  */
@@ -97,7 +97,7 @@ function(idx) {
 
 /**
  * Adds a column that displays a list of items.
- * 
+ *
  * @param	{DwtDropTarget}		dropTgt		the drop target
  * @return	{ZmColListView}	the list view
  */
@@ -131,7 +131,7 @@ function(dropTgt) {
 
 /**
  * Removes the list column.
- * 
+ *
  * @param	{int}	idx		the index
  */
 ZmMultiColView.prototype.removeListColumn =
@@ -230,27 +230,28 @@ function(item) {
 		name = name.substring(0,20) + "..";
 	}
 
+    var prop = [];
+
 	var restURL = item.getRestUrl();
     var originalRestURL = item.getRestUrl(false, true);
+    var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
 
     //added for bug: 45150
     if(item.isWebDoc()) {
         restURL = this._controller.getApp().fixCrossDomainReference(restURL);
         originalRestURL = this._controller.getApp().fixCrossDomainReference(originalRestURL);
     }
-    if(window.isTinyMCE && item.isWebDoc()) {
-        restURL = restURL + "&editor=tinymce";//+"&preview=1";
 
+    //Name: fileLink
+    if(item.isWebDoc()){
+        if(window.isTinyMCE)
+            restURL += "&editor=tinymce";
+        restURL += "&preview=1";
     }
+    var fileLink = [ '<a href="', restURL, '"',  (item.isWebDoc() ? ' target="_blank"' : ' onclick="ZmZimbraMail.unloadHackCallback();"'),'>', name, '</a>' ].join("");
+    prop.push({name:ZmMsg.name, value:fileLink});
 
-    var fileLink = [ '<a href="', restURL, '" target="_blank">', name, '</a>' ].join("");
-
-	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
-
-	var prop = [
-		{name:ZmMsg.name, value:fileLink},
-	];
-
+    //Action: actionLink
     if (item.isRealFile() || item.isSlideDoc() || item.isWebDoc()) {
         var actionLink;
         if (item.isSlideDoc()) {
@@ -258,7 +259,7 @@ function(item) {
         } else if(item.isWebDoc()) {
             actionLink = [ '<a href="', originalRestURL, "?fmt=html" + (window.isTinyMCE ?  "&editor=tinymce" : "") , '" target="_blank">', ZmMsg.edit, '</a>' ].join("");
         } else {
-            actionLink = [ '<a href="', originalRestURL, "?disp=a", '" target="_blank">', ZmMsg.saveFile, '</a>' ].join("");
+            actionLink = [ '<a href="', originalRestURL, "?disp=a", '" onclick="ZmZimbraMail.unloadHackCallback();">', ZmMsg.saveFile, '</a>' ].join("");
         }
         prop.push({name:ZmMsg.action, value:actionLink});
     }
