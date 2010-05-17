@@ -366,9 +366,8 @@ function(calItem, mode, firstTime) {
 
 ZmCalItemEditView.prototype._finishReset =
 function() {
-    var newMode = (this._mode == ZmCalItem.MODE_NEW);
-    // save the original form data in its initialized state for edited appt
-    this._origFormValue = newMode ? "" : this._formValue(false);
+    // save the original form data in its initialized state
+    this._origFormValue = this._formValue(false);
 };
 
 ZmCalItemEditView.prototype._getClone =
