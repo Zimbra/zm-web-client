@@ -239,7 +239,7 @@ function(item) {
         originalRestURL = this._controller.getApp().fixCrossDomainReference(originalRestURL);
     }
     if(window.isTinyMCE && item.isWebDoc()) {
-        restURL = restURL + "&editor=tinymce&preview=1";
+        restURL = restURL + "&editor=tinymce";//+"&preview=1";
 
     }
 

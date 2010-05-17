@@ -422,7 +422,7 @@ function(ev) {
             //added for bug: 45150
             restUrl = this._app.fixCrossDomainReference(restUrl);
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
-            restUrl = restUrl + "&preview=1";
+            //restUrl = restUrl + "&preview=1";
 		}
         var name = item.name || 'Briefcase';
         if(AjxEnv.isIE)
@@ -540,7 +540,7 @@ function(items){
                 //added for bug: 45150
                 restUrl = this._app.fixCrossDomainReference(restUrl);
                 restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
-                restUrl = restUrl + "&preview=1";
+                //restUrl = restUrl + "&preview=1";
 			}
 			window.open(restUrl, item.name, item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
 		}
