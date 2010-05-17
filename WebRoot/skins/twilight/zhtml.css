@@ -10,3 +10,7 @@
 .TabFiller{
  @AppTabBorder-normal@
 }
+
+.ZhAppSwitchLink a:link, .ZhAppLinks a:link, #skin_container_tree_top td{
+	color: white;
+}
