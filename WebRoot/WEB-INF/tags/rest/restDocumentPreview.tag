@@ -26,6 +26,50 @@
 <html>
     <head>
 
+        <%
+            String contextPath = request.getContextPath();
+            if(contextPath.equals("/")) {
+                contextPath = "";
+            }
+
+            final String SKIN_COOKIE_NAME = "ZM_SKIN";
+            String skin = application.getInitParameter("zimbraDefaultSkin");
+            Cookie[] cookies = request.getCookies();
+            String requestSkin = request.getParameter("skin");
+            if (requestSkin != null) {
+                skin = requestSkin;
+            } else if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
+                        skin = cookie.getValue();
+                    }
+                }
+            }
+            request.setAttribute("contextPath", contextPath);
+            request.setAttribute("skin", skin);
+        %>
+
+        <!-- Zimbra Variables -->
+        <c:if test="${not empty param.dev and param.dev eq '1'}">
+            <c:set var="mode" value="mjsf" scope="request"/>
+            <c:set var="gzip" value="false" scope="request"/>
+            <c:set var="fileExtension" value="" scope="request"/>
+            <c:if test="${empty param.debug}">
+                <c:set var="debug" value="1" scope="request"/>
+            </c:if>
+            <c:set var="packages" value="dev" scope="request"/>
+        </c:if>
+
+        <c:set var="isDevMode" value="${not empty requestScope.mode and requestScope.mode eq 'mjsf'}" scope="request"/>
+        <c:set var="isSkinDebugMode" value="${not empty requestScope.mode} and ${requestScope.mode eq 'skindebug'}" scope="request"/>
+        <c:set var="ext" value="${requestScope.fileExtension}" scope="page"/>
+        <c:set var="vers" value="${empty requestScope.version ? initParam.zimbraCacheBusterVersion : requestScope.version}" scope="page"/>
+        <c:if test="${empty ext or isDevMode}">
+            <c:set var="ext" value="" scope="page"/>
+        </c:if>
+
+
+        <!-- CSS -->
         <c:set value="/img" var="iconPath" scope="request"/>
         <c:url var='cssurl' value='/css/images,common,login,skin,docs.css'>
             <c:param name="client"	value="standard" />
@@ -34,6 +78,43 @@
         </c:url>
         <link rel="stylesheet" type="text/css" href="${cssurl}" />
 
+        <!-- Resournces -->
+        <jsp:include page="/public/Resources.jsp">
+            <jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys" />
+            <jsp:param name="skin" value="${skin}" />
+        </jsp:include>
+
+        <!-- Packages -->
+        <c:set var="packages" value="Boot,DocsPreview" scope="request"/>
+        <c:if test="${isDevMode}">
+            <c:set var="packages" value="${packages},Debug" scope="page"/>
+        </c:if>
+        <c:set var="pnames" value="${fn:split(packages,',')}" scope="request"/>
+        <c:set var="pprefix" value="js" scope="request"/>
+        <c:choose>
+            <c:when test="${isDevMode}">
+                <c:set var="pprefix" value="public/jsp" scope="request"/>
+                <c:set var="psufix" value=".jsp" scope="request"/>
+            </c:when>
+            <c:otherwise>
+                <c:set var="pprefix" value="js" scope="request"/>
+                <c:set var="psufix" value="_all.js" scope="request"/>
+            </c:otherwise>
+        </c:choose>
+        <c:forEach var="pname" items="${pnames}">
+            <c:set var="pageurl" value="/${pprefix}/${pname}${psufix}" scope="request"/>
+            <c:choose>
+                <c:when test="${isDevMode}">
+                    <jsp:include>
+                        <jsp:attribute name='page'>${pageurl}</jsp:attribute>
+                    </jsp:include>
+                </c:when>
+                <c:otherwise>
+                    <script type="text/javascript" src="${contextPath}${pageurl}${requestScope.fileExtension}?v=${vers}"></script>
+                </c:otherwise>
+            </c:choose>
+        </c:forEach>
+        
     </head>
     <body>
     <table width="100%" height="100%" cellspacing="0" cellpadding="0">
@@ -64,8 +145,8 @@
                         <tbody>
                             <tr>
                                 <td class="ZhAppContent" style="border-width:1px;">
-                                <div style="width:100%; height:100%;">
-                                   ${docContent}
+                                <div style="width:100%; height:100%;" id="zdocument">
+                                   <!-- document content -->
                                 </div>
                                 </td>
                             </tr>
@@ -75,5 +156,9 @@
             </tr>
         </tbody>
     </table>
+    <script type="text/javascript">
+        ZmDocsPreview._createDBG('${isDevMode}');
+        ZmDocsPreview.launch('zdocument');
+    </script>
     </body>
 </html>
