@@ -1,3 +1,5 @@
+/** Twilight **/
+
 .ZOptionsSectionMain{
 	background: #fff;
 	padding:1em;
@@ -13,4 +15,9 @@
 
 .ZhAppSwitchLink a:link, .ZhAppLinks a:link, #skin_container_tree_top td{
 	color: white;
+}
+
+.TabSelected{
+	@tlRadius@: 3px;
+	@trRadius@: 3px; 
 }

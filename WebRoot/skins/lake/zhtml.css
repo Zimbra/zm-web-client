@@ -1,20 +1,16 @@
-/** Pebble **/
+/** Lake **/
 
 .ZOptionsSectionMain{
 	background: #fff;
 	padding:1em;
 }
 
-.TabNormal a:link, .TabNormal a:visited{
+.TabNormal a:link, .TabNormal a:visited, .Tab a:link, .Tab a:visited{
 	color: white !important;
 }
 
 .TabFiller{
  @AppTabBorder-normal@
-}
-
-.ZhAppSwitchLink a:link, .ZhAppLinks a:link, #skin_container_tree_top td{
-	color: white;
 }
 
 .TabSelected{
