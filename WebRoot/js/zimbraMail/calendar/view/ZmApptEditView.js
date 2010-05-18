@@ -289,7 +289,11 @@ function(calItem) {
 
     if(this._isForward)  {
         var addrs = this._collectForwardAddrs();
-        calItem.setForwardAddress(this._attendees[ZmCalBaseItem.PERSON].getArray());
+        var a = {};
+        if (addrs[AjxEmailAddress.TO] && addrs[AjxEmailAddress.TO].good) {
+            a[AjxEmailAddress.TO] = addrs[AjxEmailAddress.TO].good.getArray();
+        }        
+        calItem.setForwardAddress(a[AjxEmailAddress.TO]);
         calItem.setAttendees(this._fwdApptOrigAttendees, ZmCalBaseItem.PERSON);
     }
 
@@ -905,6 +909,10 @@ function(excludeAttendees, excludeReminder) {
 		vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.PERSON].getArray(), ZmCalBaseItem.PERSON, false, true));
 	}
 	vals.push(this._notesHtmlEditor.getContent());
+
+    if(this._isForward) {
+	    vals.push(this._forwardToField.getValue());
+    }
 
 	var str = vals.join("|");
 	str = str.replace(/\|+/, "|");

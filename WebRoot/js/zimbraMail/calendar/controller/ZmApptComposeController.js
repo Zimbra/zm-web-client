@@ -199,7 +199,7 @@ ZmApptComposeController.prototype.getNotifyList =
 function(addrs) {
     var notifyList = [];
     for(var i in addrs) {
-        notifyList.push(addrs[i]._inviteAddress || addrs[i].getEmail());
+        notifyList.push(addrs[i]._inviteAddress || addrs[i].address || addrs[i].getEmail());
     }
 
     return notifyList;
