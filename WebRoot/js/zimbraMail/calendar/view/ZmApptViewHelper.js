@@ -1072,8 +1072,6 @@ function() {
 
     // create menu for button
     var timeSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE});
-    timeSelectMenu.setSize("150");
-    timeSelectMenu._table.width = "100%";
     timeSelectButton.setMenu(timeSelectMenu, true);
 
     for (var j = 0; j < 24; j++) {
