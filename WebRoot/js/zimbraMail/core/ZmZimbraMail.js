@@ -1111,6 +1111,12 @@ function() {
 			// register mailto callback
 			var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
 			window.platform.registerProtocolCallback("mailto", callback);
+
+			// handle "send to mail recipient" on windows (requires mapi@zimbra.com extension)
+			if (AjxEnv.isWindows) {
+				var shell = new ZimbraDesktopShell;
+				shell.defaultClient = true;
+			}
 		} catch(ex) {
 			// do nothing
 		}
