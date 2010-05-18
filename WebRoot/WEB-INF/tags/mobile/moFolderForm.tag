@@ -97,7 +97,7 @@
                                                 <c:set var="count" value="${count+1}"/></c:if>
                                             </zm:forEachFolder>
                                         </select>
-                                      </div>  
+                                     
                                     </c:when>
                                     <c:when test="${st eq 'cal' || st eq 'cals' || st eq 'appointment'}">
                                         <c:if test="${st eq 'cals'}">
@@ -157,6 +157,7 @@
                     <c:if test="${not empty efolder}">
                         <hr size="1"/><div align="center"><input type="submit" class="zo_button delete_button" name="action${efolder.parentId eq mailbox.trash.id ? 'Hard' : ''}DeleteFolder" value="<fmt:message key="delete"/>"></div>
                     </c:if>
+                    </div>
                 </form>
             </div>
             <a name="folders" style="padding:0px;margin:0px;"></a>
