@@ -49,8 +49,6 @@ ZmFolder = function(params) {
 	if (arguments.length == 0) { return; }
 	params.type = params.type || ZmOrganizer.FOLDER;
 	ZmOrganizer.call(this, params);
-
-	this.isOutbound = ZmFolder.OUTBOUND[this.nId];
 };
 
 ZmFolder.prototype = new ZmOrganizer;
@@ -158,8 +156,8 @@ ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]			= "o";
 
 // folders that look like mail folders that we don't want to show
 ZmFolder.HIDE_ID = {};
-ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS]			= true;
-ZmFolder.HIDE_ID[ZmOrganizer.ID_NOTIFICATION_MP]= true;
+ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS]				= true;
+ZmFolder.HIDE_ID[ZmOrganizer.ID_NOTIFICATION_MP]	= true;
 
 // Hide folders migrated from Outlook mailbox
 ZmFolder.HIDE_NAME = {};
@@ -169,10 +167,7 @@ ZmFolder.HIDE_NAME = {};
 //ZmFolder.HIDE_NAME["Tasks"]		= true;
 
 // folders that contain mail from me instead of to me
-ZmFolder.OUTBOUND = {}
-ZmFolder.OUTBOUND[ZmFolder.ID_SENT]		= true;
-ZmFolder.OUTBOUND[ZmFolder.ID_OUTBOX]	= true;
-ZmFolder.OUTBOUND[ZmFolder.ID_DRAFTS]	= true;
+ZmFolder.OUTBOUND = [ZmFolder.ID_SENT, ZmFolder.ID_OUTBOX, ZmFolder.ID_DRAFTS];
 
 // The extra-special, visible but untouchable outlook folder
 ZmFolder.SYNC_ISSUES 							= "Sync Issues";
@@ -725,4 +720,17 @@ function(folder) {
 	if (!(share && share.isInsert())) { return false; }
 	share = folder.shares && folder.shares[0];
 	return (share && share.isDelete());
+};
+
+/**
+ * Returns true if this folder is for outbound mail.
+ */
+ZmFolder.prototype.isOutbound =
+function() {
+	for (var i = 0; i < ZmFolder.OUTBOUND.length; i++) {
+		if (this.isUnder(ZmFolder.OUTBOUND[i])) {
+			return true;
+		}
+	}
+	return false;
 };

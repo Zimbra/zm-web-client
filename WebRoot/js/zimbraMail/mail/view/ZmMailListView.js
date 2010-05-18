@@ -548,7 +548,7 @@ function() {
 ZmMailListView.prototype._isOutboundFolder =
 function(folder) {
 	folder = folder || (this._folderId && appCtxt.getById(this._folderId));
-	return folder && folder.isOutbound;
+	return (folder && folder.isOutbound());
 };
 
 ZmMailListView.prototype._getRowClass =
