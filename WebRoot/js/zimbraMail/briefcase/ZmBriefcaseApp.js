@@ -507,23 +507,23 @@ function(dlg, msgId, partId) {
 
 ZmBriefcaseApp.prototype._chooserCallback =
 function(msgId, partId, name, folder) {
-	var callback = new AjxCallback(this, this.handleDuplicateCheck, [msgId, partId, name, folder.id]);
-	this.search({query:folder.createQuery(), callback:callback});
+	var callback = new AjxCallback(this, this.handleDuplicateCheck, [msgId, partId, name, folder]);
+	this.search({query:folder.createQuery(), callback:callback, accountName:folder.account.name});
 };
 
 ZmBriefcaseApp.prototype.handleDuplicateCheck =
-function(msgId, partId, name, folderId, results) {
+function(msgId, partId, name, folder, results) {
 
-    var briefcase = appCtxt.getById(folderId); 
-	if (briefcase.isReadOnly(folderId)) {
+	var msg = appCtxt.getById(msgId);
+
+	var briefcase = folder;
+	if (briefcase.isReadOnly(folder.id)) {
 		ZmOrganizer._showErrorMsg(ZmMsg.errorPermission);
 		return;
 	}
 
-	if (briefcase.isShared(folderId)) {
-		if (msgId.indexOf(":") < 0) { // for shared folder, use fully qualified msg id if it is not already
-		   msgId = appCtxt.getActiveAccount().id + ":" + msgId;
-		}
+	if (msgId.indexOf(":") < 0) {
+		msgId = msg.getAccount().id + ":" + msg.id;
 	}
 
 	var itemFound = false;
@@ -543,6 +543,7 @@ function(msgId, partId, name, folderId, results) {
 
 	if (!itemFound) {
 		var srcData = new ZmBriefcaseItem();
+		var folderId = (folder.account == appCtxt.getActiveAccount() || (folder.id.indexOf(":") != -1)) ? folder.id : [folder.account.id, folder.id].join(":"); 
 		srcData.createFromAttachment(msgId, partId, name, folderId);
 	} else {
 		var	msg = AjxMessageFormat.format(ZmMsg.errorFileAlreadyExists, name);
