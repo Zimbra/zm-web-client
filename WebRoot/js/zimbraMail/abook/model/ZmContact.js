@@ -969,6 +969,19 @@ function(attr, callback) {
 		continueRequest = true;
 	}
 
+    // bug: 45026
+    if (ZmContact.F_firstName in attr || ZmContact.F_lastName in attr || ZmContact.F_company in attr) {
+        var contact = {};
+        var fields = [ZmContact.F_firstName, ZmContact.F_lastName, ZmContact.F_company];
+        for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+            var value = attr[field];
+            contact[field] = value != null ? value : this.getAttr(field);
+        }
+        var fullName = ZmContact.computeFileAs(contact); 
+        this._addRequestAttr(cn.a, ZmContact.X_fullName, fullName);
+    }
+
 	if (continueRequest) {
 		var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback]);
 		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
