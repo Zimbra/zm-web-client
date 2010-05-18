@@ -411,3 +411,29 @@ function() {
 
 // don't preserve selection in CV, just select first hot msg as usual
 ZmConvController.prototype._resetSelection = function() {};
+
+ZmConvController.prototype._selectNextItemInParentListView =
+function() {
+	var controller = this._parentController || AjxDispatcher.run("GetConvListController");
+	if (controller) {
+		controller._listView[controller._currentView]._itemToSelect = controller._getNextItemToSelect();
+	}
+};
+
+ZmConvController.prototype._doDelete =
+function() {
+	this._selectNextItemInParentListView();
+	ZmDoublePaneController.prototype._doDelete.apply(this, arguments);
+};
+
+ZmConvController.prototype._doMove =
+function() {
+	this._selectNextItemInParentListView();
+	ZmDoublePaneController.prototype._doMove.apply(this, arguments);
+};
+
+ZmConvController.prototype._doSpam =
+function() {
+	this._selectNextItemInParentListView();
+	ZmDoublePaneController.prototype._doSpam.apply(this, arguments);
+};
