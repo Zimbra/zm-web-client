@@ -972,7 +972,7 @@ function(attr, callback) {
     // bug: 45026
     if (ZmContact.F_firstName in attr || ZmContact.F_lastName in attr || ZmContact.F_company in attr) {
         var contact = {};
-        var fields = [ZmContact.F_firstName, ZmContact.F_lastName, ZmContact.F_company];
+        var fields = [ZmContact.F_firstName, ZmContact.F_lastName, ZmContact.F_company, ZmContact.X_fileAs];
         for (var i = 0; i < fields.length; i++) {
             var field = fields[i];
             var value = attr[field];
