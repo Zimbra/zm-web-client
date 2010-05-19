@@ -184,10 +184,10 @@ function(parent, num) {
 			}
 		}
 	}
-    var briefcase = appCtxt.getById(this._folderId);
-    var isShared = ((briefcase.nId != ZmOrganizer.ID_TRASH) && briefcase.isShared());
-	var isReadOnly = briefcase.isReadOnly();
 
+    var briefcase = appCtxt.getById(this._folderId);
+    var isShared = ((briefcase && briefcase.nId != ZmOrganizer.ID_TRASH) && briefcase.isShared());
+	var isReadOnly = briefcase ? briefcase.isReadOnly() : false;
 	var isMultiFolder = (noOfFolders > 1);
 	var isItemSelected = (num>0);
 	var isZimbraAccount = appCtxt.getActiveAccount().isZimbraAccount;

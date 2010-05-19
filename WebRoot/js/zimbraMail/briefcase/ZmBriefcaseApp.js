@@ -119,6 +119,7 @@ function() {
 						 searchType:	"document",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
+            AjxDispatcher.require("BriefcaseCore");
 			return new ZmList(ZmItem.BRIEFCASE_ITEM, search);
 		}, this)
 						});

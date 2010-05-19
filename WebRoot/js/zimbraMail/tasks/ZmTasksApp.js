@@ -91,6 +91,7 @@ function() {
 						 searchType:	"task",
 						 resultsList:
 	   AjxCallback.simpleClosure(function(search) {
+           AjxDispatcher.require("TasksCore");
 		   return new ZmList(ZmItem.TASK, search);
 	   }, this)
 						});
