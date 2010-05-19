@@ -423,8 +423,6 @@ function(convs, msgs) {
 					conv.msgs = new ZmMailList(ZmItem.MSG);
 					conv.msgs.addChangeListener(conv._listChangeListener);
 				}
-				var index = conv.msgs._getSortIndex(msg, conv._sortBy);
-				conv.addMsg(msg, index);
 				msg.list = conv.msgs;
 				if (!msg.isSent && msg.isUnread) {
 					conv.isUnread = true;
@@ -594,22 +592,34 @@ function(item, sortBy) {
 
 ZmMailList.prototype._sortAndNotify =
 function(items, sortBy, event, details) {
+
 	if (!(items && items.length)) { return; }
-	if ((this.type == ZmItem.MSG) && (items[0].type == ZmItem.CONV)) { return; }
+
+	var itemType = items[0] && items[0].type;
+	if ((this.type == ZmItem.MSG) && (itemType == ZmItem.CONV)) { return; }
+
 	details = details || {};
-	var doSort = ((event == ZmEvent.E_CREATE) || (details && details.fields[ZmItem.F_DATE]));
+	var doSort = ((event == ZmEvent.E_CREATE) || (details.fields && details.fields[ZmItem.F_DATE]));
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		if (doSort) {
-			var sortIndex = this._getSortIndex(item, sortBy);
-			var doAdd = (item.type == this.type);
+			var doAdd = (itemType == this.type);
+			var sortIndex = 0;
+			if (this.type == ZmItem.CONV && itemType == ZmItem.MSG) {
+				var conv = this.getById(item.cid);
+				sortIndex = conv.msgs._getSortIndex(item, conv._sortBy);
+				if (event == ZmEvent.E_CREATE) {
+					conv.addMsg(item, sortIndex);
+				}
+			} else {
+				sortIndex = this._getSortIndex(item, sortBy);
+			}
 			if (event != ZmEvent.E_CREATE) {
 				// if date changed, re-insert item into correct slot
-				var curIndex = this.indexOf(item);
-				if (sortIndex == curIndex) {
-					doAdd = false;
-				} else {
+				if (sortIndex != this.indexOf(item)) {
 					this.remove(item);
+				} else {
+					doAdd = false;
 				}
 			}
 			if (doAdd) {
