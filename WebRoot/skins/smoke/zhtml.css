@@ -1,5 +1,38 @@
+/** Smoke **/
+body{
+	background: #F1F1F1;
+}
+
 .ZOptionsSectionMain{
 	background: #fff;
 	padding:1em;
 }
 
+.ZhAppSwitchLink a:link, .ZhAppLinks a:link{
+	color: #333333;
+}
+
+ #skin_container_tree_top td{
+ 	color: black;
+ }
+ 
+.TabSelected{
+	@tlRadius@: 3px;
+	@trRadius@: 3px; 
+}
+
+.TabSelected a:link, .TabSelected a:visited{
+	color: white;
+}
+
+.TabFiller{
+	@AppTabBorder-normal@
+}
+
+.Tb a:link, .Tb a:visited,.TbTop input, .TbBottom input{
+	color: white;
+} 
+
+.TbBt a{
+	color: white;
+} 
