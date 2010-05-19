@@ -219,3 +219,23 @@ ZmBriefcase.prototype.isShared =
 function(){
     return this.link ? true : false;  
 };
+
+ZmBriefcase.prototype._generateRestUrl =
+function() {
+	var loc = document.location;
+	var uname = this.getOwner();
+	var host = loc.host;
+	var m = uname.match(/^(.*)@(.*)$/);
+
+	host = (m && m[2]) || host;
+
+	// REVISIT: What about port? For now assume other host uses same port
+	if (loc.port && loc.port != 80) {
+		host = host + ":" + loc.port;
+	}
+
+	return [
+		loc.protocol, "//", host, "/service/user/", uname, "/",
+		AjxStringUtil.urlEncode(this.getSearchPath(true))
+	].join("");
+};
