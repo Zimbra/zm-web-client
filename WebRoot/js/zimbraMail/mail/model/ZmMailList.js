@@ -395,7 +395,8 @@ function(convs, msgs) {
 		for (var id in msgs) {
 			var msg = msgs[id];
 			var cid = msg.cid;
-			var msgMatches = this.search && this.search.matches && this.search.matches(msg) && !msg.ignoreJunkTrash();
+			var matchFunc = this.search && this.search.matches;
+			var msgMatches =  matchFunc && matchFunc(msg) && !msg.ignoreJunkTrash();
 			var isActiveAccount = (!appCtxt.multiAccounts || (appCtxt.multiAccounts && msg.getAccount() == appCtxt.getActiveAccount()));
 			var conv = newConvId[cid] || this.getById(cid);
 			if (msgMatches && isActiveAccount) {
@@ -432,20 +433,22 @@ function(convs, msgs) {
 				if (msgMatches) {
 					msg.inHitList = true;
 				}
-				if (conv.fragment != msg.fragment) {
-					conv.fragment = msg.fragment;
-					fields[ZmItem.F_FRAGMENT] = true;
+				if (msgMatches || (!matchFunc && !msg.isSent)) {
+					if (conv.fragment != msg.fragment) {
+						conv.fragment = msg.fragment;
+						fields[ZmItem.F_FRAGMENT] = true;
+					}
+					if (conv.date != msg.date) {
+						conv.date = msg.date;
+						// recalculate conv's sort position since we changed its date
+						fields[ZmItem.F_DATE] = true;
+					}
+					// conv gained a msg, may need to be moved to top/bottom
+					if (!newConvId[conv.id] && this._vector.contains(conv)) {
+						fields[ZmItem.F_INDEX] = true;
+					}
+					modifiedItems.push(conv);
 				}
-				if (conv.date != msg.date) {
-					conv.date = msg.date;
-					// recalculate conv's sort position since we changed its date
-					fields[ZmItem.F_DATE] = true;
-				}
-				// conv gained a msg, may need to be moved to top/bottom
-				if (!newConvId[conv.id] && this._vector.contains(conv)) {
-					fields[ZmItem.F_INDEX] = true;
-				}
-				modifiedItems.push(conv);
 			}
 			newMsgs.push(msg);
 		}
