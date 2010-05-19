@@ -778,7 +778,7 @@ function() {
 ZmOrganizer.prototype._generateRestUrl =
 function() {
 	var loc = document.location;
-	var uname = this.getOwner();
+	var uname = appCtxt.get(ZmSetting.USERNAME);
 	var host = loc.host;
 	var m = uname.match(/^(.*)@(.*)$/);
 
@@ -791,7 +791,7 @@ function() {
 
 	return [
 		loc.protocol, "//", host, "/service/user/", uname, "/",
-		AjxStringUtil.urlEncode(this.getSearchPath(true))
+		AjxStringUtil.urlEncode(this.getSearchPath())
 	].join("");
 };
 
