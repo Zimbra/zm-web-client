@@ -987,8 +987,8 @@ function(type, value) {
         var contact = AjxEmailAddress.parse(item);
 
 		// see if it's an attendee we already know about (added via autocomplete or other tab)
-		var attendee = this._getAttendeeByName(type, contact ? contact.name : item) ||
-					   this._getAttendeeByItem(contact ? contact.address : item, type) ||
+		var attendee = this._getAttendeeByName(type, (contact && contact.name) ? contact.name : item) ||
+					   this._getAttendeeByItem((contact && contact.address) ? contact.address : item, type) ||
 					   ZmApptViewHelper.getAttendeeFromItem(item, type);
 		if (attendee) {
 			attendees.add(attendee);
