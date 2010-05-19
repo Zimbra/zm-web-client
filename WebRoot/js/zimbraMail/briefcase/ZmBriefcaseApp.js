@@ -509,7 +509,7 @@ function(dlg, msgId, partId) {
 ZmBriefcaseApp.prototype._chooserCallback =
 function(msgId, partId, name, folder) {
 	var callback = new AjxCallback(this, this.handleDuplicateCheck, [msgId, partId, name, folder]);
-	this.search({query:folder.createQuery(), callback:callback, accountName:folder.account.name});
+	this.search({query:folder.createQuery(), callback:callback, accountName:(folder && folder.account && folder.account.name) || undefined});
 };
 
 ZmBriefcaseApp.prototype.handleDuplicateCheck =
@@ -544,7 +544,7 @@ function(msgId, partId, name, folder, results) {
 
 	if (!itemFound) {
 		var srcData = new ZmBriefcaseItem();
-		var folderId = (folder.account == appCtxt.getActiveAccount() || (folder.id.indexOf(":") != -1)) ? folder.id : [folder.account.id, folder.id].join(":"); 
+		var folderId = (!folder.account || folder.account == appCtxt.getActiveAccount() || (folder.id.indexOf(":") != -1)) ? folder.id : [folder.account.id, folder.id].join(":"); 
 		srcData.createFromAttachment(msgId, partId, name, folderId);
 	} else {
 		var	msg = AjxMessageFormat.format(ZmMsg.errorFileAlreadyExists, name);
