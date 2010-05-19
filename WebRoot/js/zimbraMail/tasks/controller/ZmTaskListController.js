@@ -684,7 +684,7 @@ ZmTaskListController.prototype._showOrigListener =
 function(ev) {
 	var tasks = this._listView[this._currentView].getSelection();
 	if (tasks && tasks.length > 0)
-		this._showTaskSource(tasks[0]);
+		setTimeout(AjxCallback.simpleClosure(this._showTaskSource, this, tasks[0]), 1); // Other listeners are focusing the main window, so delay the window opening for just a bit
 };
 
 ZmTaskListController.prototype._showTaskSource =
@@ -692,6 +692,6 @@ function(task) {
 	var restUrl = task.getRestUrl();
 	if (restUrl) {
 		var url = [restUrl, (restUrl.indexOf("?")==-1) ? "?" : "&", "mime=text/plain", "&", "noAttach=1"].join("");
-		window.open(url, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
+		window.open(url, "TaskSource", "menubar=yes,resizable=yes,scrollbars=yes");
 	}
 };
