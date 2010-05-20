@@ -961,6 +961,7 @@ function(ev) {
 	var msg = appCtxt.getById(ev._share._msgId);
 	var folder = appCtxt.getById(ZmFolder.ID_TRASH);
 
+	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
 	var list = msg.list || this.getList();
 	var callback = (appCtxt.isChildWindow)
 		? (new AjxCallback(this, this._handleAcceptShareInNewWindow)) : null;
