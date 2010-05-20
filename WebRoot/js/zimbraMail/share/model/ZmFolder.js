@@ -575,7 +575,7 @@ ZmFolder.prototype.mayContain =
 function(what, folderType) {
 	if (!what) return true;
 	if (this.isFeed()) return false;
-	if (this.isSyncIssuesFolder()) return false;
+	if (this.isSyncIssuesFolder()) return false; 
 
 	var thisType = folderType || this.type;
 	var invalid = false;
@@ -587,6 +587,7 @@ function(what, folderType) {
 				   (what.id == this.id) ||
 				   (what.disallowSubFolder) ||
 				   (appCtxt.multiAccounts && what.getAccount() != this.getAccount()) || // cannot move folders across accounts
+                   (this.isRemote() && !this._remoteMoveOk(what)) ||
 				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
 	} else {
 		// An item or an array of items is being moved
