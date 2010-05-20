@@ -758,7 +758,7 @@ function() {
 ZmOrganizer.prototype.getRestUrl =
 function() {
 	var restUrl = appCtxt.get(ZmSetting.REST_URL);
-	if (restUrl && this.getOwner() == appCtxt.get(ZmSetting.USERNAME)) {
+	if (restUrl) {
 		// return REST URL as seen by the GetInfoResponse
 		return ([restUrl, "/", AjxStringUtil.urlEncode(this.getSearchPath())].join(""));
 	}
