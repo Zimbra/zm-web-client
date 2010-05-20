@@ -2052,9 +2052,16 @@ ZmComposeView.prototype._switchPreface =
 function(mode) {
 
 	mode = mode || this._composeMode;
-	var otherMode = (mode == DwtHtmlEditor.HTML) ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML;
+	var htmlMode = (mode == DwtHtmlEditor.HTML);
+	var otherMode = htmlMode ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML;
 	var curPreface = this._getPreface(otherMode);
 	var newPreface = this._getPreface(mode);
+	if (!htmlMode) {
+		newPreface = newPreface + "<br>";	// so that text preface is followed by a return after conversion
+		this._switchedToText = true;
+	} else if (this._switchedToText) {
+		curPreface = new RegExp(curPreface + "\\s*<br>");
+	}
 	var content = this.getHtmlEditor().getContent();
 	content = content.replace(curPreface, newPreface);
 	this._htmlEditor.setContent(content);
