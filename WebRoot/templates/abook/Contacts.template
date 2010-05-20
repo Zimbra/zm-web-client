@@ -410,7 +410,13 @@
 	<table border=0 cellspacing=2 cellpadding=2 width=100% class='contactHeaderTable <$= data.contactHdrClass $>'>
 		<tr>
 			<$ if (imageUrl) { $>
-				<td valign=bottom width=48 rowspan=2><img src="<$= imageUrl $>" width=48 height=48 border=0></td>
+				<td valign=bottom width=48 rowspan=2><img src="<$= imageUrl $>" 
+				<$ if (AjxEnv.isIE) { $>
+					height=48
+				<$ } else { $>
+					style="max-width:48px;max-height:48px"
+				<$ } $>
+				 border=0></td>
 			<$ } else { $>
 				<td valign=bottom width=48 rowspan=2><$= AjxImg.getImageHtml("Person_48") $></td>
 			<$ } $>
