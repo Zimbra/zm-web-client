@@ -610,9 +610,11 @@ function(items, sortBy, event, details) {
 			var sortIndex = 0;
 			if (this.type == ZmItem.CONV && itemType == ZmItem.MSG) {
 				var conv = this.getById(item.cid);
-				sortIndex = conv.msgs._getSortIndex(item, conv._sortBy);
-				if (event == ZmEvent.E_CREATE) {
-					conv.addMsg(item, sortIndex);
+				if (conv) {
+					sortIndex = conv.msgs._getSortIndex(item, conv._sortBy);
+					if (event == ZmEvent.E_CREATE) {
+						conv.addMsg(item, sortIndex);
+					}
 				}
 			} else {
 				sortIndex = this._getSortIndex(item, sortBy);
