@@ -42,6 +42,7 @@
             zimbra_target_item_view: (${requestScope.zimbra_target_item_view})
             zimbra_target_account_prefTimeZoneId: (${requestScope.zimbra_target_account_prefTimeZoneId})
             zimbra_target_account_prefSkin: (${requestScope.zimbra_target_account_prefSkin})
+            zimbra_target_account_prefLocale: (${requestScope.zimbra_target_account_prefLocale})
             zimbra_freebusy: (${requestScope.zimbra_freebusy})
         </pre>
         -->

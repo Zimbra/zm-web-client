@@ -246,7 +246,7 @@ function(item) {
     if(item.isWebDoc()){
         if(window.isTinyMCE)
             restURL += "&editor=tinymce";
-        restURL += "&preview=1";
+        restURL += "&preview=1&localeId="+AjxEnv.DEFAULT_LOCALE;
     }
     var fileLink = [ '<a href="', restURL, '"',  (item.isWebDoc() ? ' target="_blank"' : ' onclick="ZmZimbraMail.unloadHackCallback();"'),'>', name, '</a>' ].join("");
     prop.push({name:ZmMsg.name, value:fileLink});
@@ -257,7 +257,7 @@ function(item) {
         if (item.isSlideDoc()) {
             actionLink = [ '<a href="', originalRestURL, "?fmt=html&run=1", '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
         } else if(item.isWebDoc()) {
-            actionLink = [ '<a href="', originalRestURL, "?fmt=html" + (window.isTinyMCE ?  "&editor=tinymce" : "") , '" target="_blank">', ZmMsg.edit, '</a>' ].join("");
+            actionLink = [ '<a href="', originalRestURL, "?fmt=html&localeId="+AjxEnv.DEFAULT_LOCALE + (window.isTinyMCE ?  "&editor=tinymce" : "") , '" target="_blank">', ZmMsg.edit, '</a>' ].join("");
         } else {
             actionLink = [ '<a href="', originalRestURL, "?disp=a", '" onclick="ZmZimbraMail.unloadHackCallback();">', ZmMsg.saveFile, '</a>' ].join("");
         }

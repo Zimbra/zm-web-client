@@ -77,7 +77,7 @@ function(item, params) {
             restURL = this._controller.getApp().fixCrossDomainReference(restURL);
         }
 
-		nameText = ['<a href="', restURL  + (item.isWebDoc() ? "&preview=1" : ""), '" target="_blank">', name, '</a>'].join('');
+		nameText = ['<a href="', restURL  + (item.isWebDoc() ? "&preview=1&localeId=" + AjxEnv.DEFAULT_LOCALE : ""), '" target="_blank">', name, '</a>'].join('');
 	} else {
 		nameText = item;
 	}
