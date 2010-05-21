@@ -93,6 +93,7 @@ ZmMailMsgView.OBJ_SIZE_HTML 		= 50; // similar for HTML emails.
 ZmMailMsgView.REPLY_INVITE_EVENT	= "inviteReply";
 ZmMailMsgView.SHARE_EVENT 			= "share";
 ZmMailMsgView.IMG_FIX_RE			= new RegExp("(<img\\s+.*dfsrc\\s*=\\s*)[\"']http[^'\"]+part=([\\d\\.]+)[\"']([^>]*>)", "gi");
+ZmMailMsgView.FILENAME_INV_CHARS_RE = /[\./?*:;{}\\]/g; // Chars we do not allow in a filename
 ZmMailMsgView.SETHEIGHT_MAX_TRIES	= 3;
 
 
@@ -1559,7 +1560,7 @@ function() {
 
 	if (attLinks.length > 1) {
 		imageAttsFound = imageAttsFound > 1;
-		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(this._msg.id, attLinks, imageAttsFound);
+		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(this._msg.id, attLinks, imageAttsFound, this._msg.subject);
 	}
 
 	var attLinksDiv = document.getElementById(this._attLinksId);
@@ -2020,8 +2021,15 @@ function(result) {
 };
 
 ZmMailMsgView._buildZipUrl =
-function(itemId, attachments, viewAllImages) {
-	var url = [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", itemId, "&part="].join("");
+function(itemId, attachments, viewAllImages, filename) {
+	if (AjxUtil.isString(filename)) {
+		filename = filename.replace(ZmMailMsgView.FILENAME_INV_CHARS_RE, "");
+	} else {
+		filename = null;
+	}
+	filename = AjxStringUtil.urlComponentEncode(filename || ZmMsg.downloadAllDefaultFileName);
+
+	var url = [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", itemId, "&filename=", filename, "&part="].join("");
 	var parts = [];
 	for (var j = 0; j < attachments.length; j++) {
 		parts.push(attachments[j].part);
