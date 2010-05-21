@@ -922,18 +922,25 @@ function(callback, errorCallback, mode) {
     for (var i = 0; i < addrs.length; i++) {
         var attendee = addrs[i];
         var address;
+        var name = "";
+
         if (attendee._inviteAddress) {
             address = attendee._inviteAddress;
             delete attendee._inviteAddress;
-        } else {
+        } else if(attendee.isAjxEmailAddress){
+            address = attendee.address;
+            name = attendee.dispName || attendee.name
+        } else if(attendee instanceof ZmContact){
             address = attendee.getEmail();
+            name = attendee.getFullName();
         }
         if (!address) continue;
         if (address instanceof Array) {
             address = address[0];
         }
-        this._addAddressToSoap(soapDoc, m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], attendee.getFullName());
-    }    
+
+        this._addAddressToSoap(soapDoc, m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], name);
+    }
 
     this._sendRequest(soapDoc, accountName, callback, errorCallback);
 };
@@ -1019,18 +1026,25 @@ function(callback, errorCallback) {
 	var addrs = this._fwdAddrs;
     for (var i = 0; i < addrs.length; i++) {
         var attendee = addrs[i];
+        if(!attendee) continue;
+
         var address;
+        var name = "";
         if (attendee._inviteAddress) {
             address = attendee._inviteAddress;
             delete attendee._inviteAddress;
-        } else {
+        } else if(attendee.isAjxEmailAddress){
+            address = attendee.address;
+            name = attendee.dispName || attendee.name
+        } else if(attendee instanceof ZmContact){
             address = attendee.getEmail();
+            name = attendee.getFullName();
         }
         if (!address) continue;
         if (address instanceof Array) {
             address = address[0];
         }
-        this._addAddressToSoap(soapDoc, m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], attendee.getFullName());
+        this._addAddressToSoap(soapDoc, m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], name);
     }
 
     this._sendRequest(soapDoc, accountName, callback, errorCallback);
