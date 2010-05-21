@@ -138,7 +138,7 @@ function(str, aclv, options, acType, callback, account) {
 
 	// cancel any outstanding requests for strings that are substrings of this one
 	for (var substr in this._acRequests) {
-		if (str != substr && str.indexOf(substr) === 0) {
+		if (str != substr) {
 			DBG.println("ac", "canceling autocomplete request for '" + substr + "' due to request for '" + str + "'");
 			appCtxt.getAppController().cancelRequest(this._acRequests[substr], null, true);
 			delete this._acRequests[str];
