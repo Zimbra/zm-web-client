@@ -20,6 +20,9 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <rest:handleError>
+    <fmt:getLocale var="locale"/>
+    <fmt:setLocale value="${not empty param.localeId ? param.localeId : (not empty requestScope.zimbra_target_account_prefLocale ? requestScope.zimbra_target_account_prefLocale : locale)}"/>
+    <fmt:setBundle basename="/messages/ZhMsg" scope='request'/>
     <zm:getDocument var="doc" box="${mailbox}" id="${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}"/>
     <zm:getDocumentContent  var="docContent" box="${mailbox}" id="${requestScope.zimbra_target_item_id}"/>
 </rest:handleError>

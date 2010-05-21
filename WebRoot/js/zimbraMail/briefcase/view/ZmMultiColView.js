@@ -255,7 +255,7 @@ function(item) {
     if (item.isRealFile() || item.isSlideDoc() || item.isWebDoc()) {
         var actionLink;
         if (item.isSlideDoc()) {
-            actionLink = [ '<a href="', originalRestURL, "?fmt=html&run=1", '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
+            actionLink = [ '<a href="', originalRestURL, "?fmt=html&run=1&localeId="+AjxEnv.DEFAULT_LOCALE, '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
         } else if(item.isWebDoc()) {
             actionLink = [ '<a href="', originalRestURL, "?fmt=html&localeId="+AjxEnv.DEFAULT_LOCALE + (window.isTinyMCE ?  "&editor=tinymce" : "") , '" target="_blank">', ZmMsg.edit, '</a>' ].join("");
         } else {
