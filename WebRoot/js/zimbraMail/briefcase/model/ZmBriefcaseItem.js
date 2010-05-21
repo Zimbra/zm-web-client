@@ -292,7 +292,8 @@ function(node) {
 	if (node.d)		{ this.createDate = new Date(Number(node.d)); }
 	if (node.md)	{ this.modifyDate = new Date(Number(node.md)); }
 	if (node.leb)	{ this.modifier = node.leb; }
-	if (node.s)		{ this.size = Number(node.s); }
+	if (node.s || node.s == 0) //size can be 0
+                    { this.size = Number(node.s); }
 	if (node.ver)	{ this.version = Number(node.ver) || 0; }
 	if (node.ct)	{ this.contentType = node.ct.split(";")[0]; }
 	if (node.t)		{ this._parseTags(node.t); }
