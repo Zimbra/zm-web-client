@@ -171,7 +171,8 @@ function(type) {
 ZmMimeTable.isTextType =
 function(type){
     return (type.match(/^text\/.*/) &&
-            type != ZmMimeTable.TEXT_HTML);  
+            type != ZmMimeTable.TEXT_HTML &&
+            type != ZmMimeTable.TEXT_CAL);  
 };
 
 /**
