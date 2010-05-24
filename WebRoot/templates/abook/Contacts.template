@@ -33,8 +33,8 @@
 				<$ if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) { $>
 				<div id="${id}_TAG"></div>
 				<$ } $>
-				<div id="${id}_NAME_row">
-					<table><tr>
+				<div id="${id}_NAME_row" style='padding-bottom:4;'>
+					<table border=0 cellpadding=0 cellspacing=0><tr>
 						<td id="${id}_PREFIX_row"><div id="${id}_PREFIX" tabindex="200"></div></td>
 						<td><div id="${id}_FIRST" tabindex="201"></div></td>
 						<td id="${id}_MIDDLE_row"><div id="${id}_MIDDLE" tabindex="202"></div></td>
@@ -55,22 +55,22 @@
 						<td><div id="${id}_DETAILS" tabindex="206"></div></td>
 					</tr></table>
 				</div>
-				<div id="${id}_NICKNAME_row">
-					<table><tr>
+				<div id="${id}_NICKNAME_row" style='padding-bottom:4;'>
+					<table border=0 cellpadding=0 cellspacing=0><tr>
 						<td>&ldquo;</td>
 						<td><div id="${id}_NICKNAME" tabindex="250"></div></td>
 						<td>&rdquo;</td>
 					</tr></table>
 				</div>
-				<div id="${id}_JOB_row">
-					<table><tr>
+				<div id="${id}_JOB_row" style='padding-bottom:4;'>
+					<table border=0 cellpadding=0 cellspacing=0><tr>
 						<td id="${id}_TITLE_row"><div id="${id}_TITLE" tabindex="301"></div></td>
 						<td id="${id}_TITLE_DEPARTMENT_SEP">&nbsp;-&nbsp;</td>
 						<td id="${id}_DEPARTMENT_row"><div id="${id}_DEPARTMENT" tabindex="302"></div></td>
 					</tr></table>
 				</div>
-				<div id="${id}_COMPANY_row">
-					<table><tr>
+				<div id="${id}_COMPANY_row" style='padding-bottom:4;'>
+					<table border=0 cellpadding=0 cellspacing=0><tr>
 						<td><div id="${id}_COMPANY" tabindex="305"></div></td>
 					</tr></table>
 				</div>
@@ -111,8 +111,14 @@
 		</tr>
 		<tr valign=top>
 			<td class=rowLabel><$=ZmMsg.notesLabel$></td>
-			<td class=rowValue style='padding-left:3'><div id="${id}_NOTES" tabindex="1100"></div></td>
+			<td class=rowValue><div id="${id}_NOTES" tabindex="1100"></div></td>
 		</tr>
+	</table>
+</template>
+
+<template id="abook.Contacts#ZmEditContactViewRows">
+	<table border=0 cellspacing=0 cellpadding=0>
+		<tbody id="${id}_rows" tabindex="100"></tbody>
 	</table>
 </template>
 

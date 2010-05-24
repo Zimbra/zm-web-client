@@ -1205,6 +1205,7 @@ ZmEditContactViewRows = function(params) {
 	params.className = params.className || "ZmEditContactViewRows";
 	params.id = [params.parent.getHTMLElId(),params.formItemDef.id].join("_");
 	DwtFormRows.apply(this, arguments);
+    this.setScrollStyle(Dwt.VISIBLE);
 };
 ZmEditContactViewRows.prototype = new DwtFormRows;
 ZmEditContactViewRows.prototype.constructor = ZmEditContactViewRows;
@@ -1218,6 +1219,8 @@ ZmEditContactViewRows.prototype.constructor = ZmEditContactViewRows;
 ZmEditContactViewRows.prototype.toString = function() {
 	return "ZmEditContactViewRows";
 };
+
+ZmEditContactViewRows.prototype.TEMPLATE = "abook.Contacts#ZmEditContactViewRows";
 
 // Public methods
 
