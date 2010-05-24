@@ -20,7 +20,6 @@ html, body{
 }
 
 .ul li{
-
 	list-style: none;
 	display: inline;
 	margin: 0;
@@ -42,7 +41,7 @@ html, body{
 
 .topbar {
 	background: #dbd0b5 url("/img/mobile/ipad/topbar-bg.gif") repeat-x top left;
-	height: 40px;
+	height: 50px;
 	overflow: hidden;
 	color: #5f5a4a;
 
@@ -59,13 +58,13 @@ html, body{
 		width: 80px;
 		height: 20px;
 		float: left;
-		margin: 10px 0 0 10px;
+		margin: 15px 0 0 15px;
 }
 
 
 .search{
 
-		margin: 10px 10px 0 0;
+		margin: 15px 10px 0 0;
 		width: 200px;		
 }
 
@@ -78,7 +77,7 @@ html, body{
 
 
 .signout{
-		margin: 15px 10px 0 10px;
+		margin: 20px 10px 0 15px;
 }
 
 	.signout a{
@@ -91,8 +90,8 @@ html, body{
 }
 
 	ul.ul{
-		margin: 20px 0 0 20%;
-		width: 455px;		
+		margin: 25px 0 0 10%;
+		width: 500px;		
 	}
 
 	 ul.ul li{
@@ -102,48 +101,45 @@ html, body{
 	
 		ul.ul li a{ color: #5f5a4a; }
 
-	ul.ul li.sel{
+	ul.ul li.sel, ul.ul li:active{
 		background: #7f7b6e url("/img/mobile/ipad/tab-selected.gif") repeat-x top left;
 		-webkit-border-top-left-radius: 4px;
 		-webkit-border-top-right-radius: 4px;
 		color: white;
 		font-weight: bold;
 	}
+	
+		ul.ul li.sel a, ul.ul li:active a{ color: white; } 
 
-		ul.ul li.sel a{ color: white; } 
 
 /* Toolbar Style */
 
 .toolbar{
-	background: #676356 url("/img/mobile/ipad/toolbar-bg.gif") repeat-x top left;
-	height: 45px;
+	background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left;
+	height: 55px;
 	overflow: hidden;
 	border: none;
 	padding: 0 0 0 0!important;
 }
 
 .overviewActions{
-	/* float: left;
-	width: 24.9%; */
 	border-right: 1px solid #999;
 }
 
 .applicationActions{
-	/* float: left;
-	width: 74.9%; */
 	border-left: 1px solid #444;
-
 }
 
 
 .button{
-	background: #c5bba3 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
-	-webkit-border-radius: 6px;
-	height: 20px;
-	padding: 6px 4px 0 4px;
+	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
+	-webkit-border-radius: 4px;
+	height: 25px;
+	padding: 10px 4px 0 4px;
 	font-size: 11px;
 	font-weight: bold;
 	text-align: center;
+	border: 1px solid #555;
 }
 
 	.button:active{
@@ -197,6 +193,7 @@ html, body{
 		width: 70px;
 		color: #453928;
 		font-weight: bold;
+		margin-top: -3px !important;
 	}
 
 
@@ -334,6 +331,7 @@ ul.list li{
 	width: 29.9%;
 	color: white;
 	text-align: right;
+	margin-top: 2px;
 }
 
 	.time a {
@@ -346,10 +344,10 @@ ul.list li{
 .msgBody{
 	background-color: white;
 	-webkit-border-radius: 12px;
-	height: 570px;
+	height: 520px;
 	margin: 5px 10px 10px 10px ;
 	padding: 10px;
-	overflow-y: auto;
+	overflow: auto;
 	word-break: break-all;
 	-webkit-box-shadow: 3px 2px 5px #666;
 }
@@ -668,8 +666,8 @@ span.aleft > div:first-child, .contactHeader {
 	width: 100%;
 }
 .composeBox{
-	width: 500px;
-	margin: 2px auto;
+	width: 600px;
+	margin: 5px auto;
 	position: relative;
 	-webkit-box-shadow: 3px 2px 5px #333;
 	background-color: transparent;
@@ -679,8 +677,8 @@ span.aleft > div:first-child, .contactHeader {
 }
 
 .composeToolbar{
-	background: #dbd0b5 url("/img/mobile/ipad/topbar-bg.gif") repeat-x top left;
-	height: 40px;
+	background: #e7decb url("/img/mobile/ipad/topbar-bg.gif") repeat-x bottom left;
+	height: 50px;
 	overflow: hidden;
 	border: none;
 	-webkit-border-top-left-radius: 8px;
@@ -697,20 +695,20 @@ span.aleft > div:first-child, .contactHeader {
 	height: 30%;
 	-webkit-border-bottom-left-radius: 8px;
 	-webkit-border-bottom-right-radius: 8px;
+	padding: 4px;
 }
 
 
 .cmp_container .View div.tr, .cmp_body, .cmp_body textarea{
 	width: 95%;
 	text-align: left;
-	margin-bottom: 8px;
-	padding: 4px;
+	padding: 0 4px;
 	display: block;
 	font-size: 14px;
 }
 
 .cmp_container .View span.label{
-	width: 100px;
+	width: 80px;
 }
 
 .cmp_container .View span.value div{
@@ -719,10 +717,10 @@ span.aleft > div:first-child, .contactHeader {
 }
 
 .cmp_container .View span.value, .cmp_container .View span.value input{
-	width: 365px;
+	width: 490px;
 }
  .cmp_body textarea{
- 	height: 200px;
+ 	height: 300px;
  	width: 100%;
  	margin-left: 2px;
  }
