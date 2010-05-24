@@ -206,7 +206,7 @@ function(list) {
 		this.removeChildColumns(this._curListIndex);
 	}
 	this._noReset = false;
-	this._curListView.set(list);
+	list = this._curListView.set(list);
 	this._ctlrList[this._curListIndex] = list;
 	this.setCurrentListIndex(this._curListIndex);
 };
