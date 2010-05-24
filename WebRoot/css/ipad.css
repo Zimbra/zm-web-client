@@ -220,15 +220,14 @@ html, body{
 	float: right;
 	margin-right: 10px;
 	overflow: hidden;
-
 }
 
-.left, .center, .right{
+.actionLeft, .actionCenter, .actionRight{
  	float: left;
 
 }
 
-.left{
+.actionLeft{
 	-webkit-border-top-left-radius: 6px;
 	-webkit-border-bottom-left-radius: 6px;
 	-webkit-border-top-right-radius: 0;
@@ -236,7 +235,7 @@ html, body{
 	border-right: 1px solid #999;
 }
  
-.center{
+.actionCenter{
 	-webkit-border-top-left-radius: 0;
 	-webkit-border-bottom-left-radius: 0;
 	-webkit-border-top-right-radius: 0;
@@ -245,7 +244,7 @@ html, body{
 	border-right: 1px solid #999;
 }
 
-.right{
+.actionRight{
 	-webkit-border-top-left-radius: 0;
 	-webkit-border-bottom-left-radius: 0;
 	-webkit-border-top-right-radius: 6px;
@@ -253,10 +252,8 @@ html, body{
 	border-left: 1px solid #444;
 }
 
-.left div, .center div, .right div{
+.actionLeft div, .actionCenter div, .actionRight div{
 	margin: 4px;
-
-
 }
 
 
@@ -480,7 +477,7 @@ ul.list li{
 	.l a{ 
 		color: #666666;
 		text-decoration: none;
-		
+		font-size: 12px;
 		
 	}
 .m {
@@ -623,6 +620,13 @@ span.aleft > div:first-child, .contactHeader {
 	border-left: none;
 }
 
+
+/** Msg View **/
+
+.zo_mv_body{
+	margin-top: 10px;
+	font-size: 14px;
+}
 
 /** needed for iscroll.js **/
 .scrollbar {

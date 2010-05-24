@@ -50,8 +50,14 @@
         </c:url>
         <div class ="compose button"><a id="add" accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}"><span onclick="return zClickLink('add')"><fmt:message key="add"/></span></a></div>
         <div class =""> 
-            <div class ="buttonRight button">
-            <a id="edit" accesskey="${requestScope.mainaction_accesskey}" href="${editUrl}"><span onclick="return zClickLink('edit')"><fmt:message key="edit"/></span></a>
+            <div class ="actions">
+            	<div class="actionLeft button">
+            		<a href="#"><span>Compose</span></a>
+            	</div>
+            	<div class="actionRight button">
+            		&nbsp; <a id="edit" accesskey="${requestScope.mainaction_accesskey}" href="${editUrl}"><span onclick="return zClickLink('edit')"><fmt:message key="edit"/></span></a> &nbsp;
+            	</div>
+            
             </div>
         </div>
     </c:when>
