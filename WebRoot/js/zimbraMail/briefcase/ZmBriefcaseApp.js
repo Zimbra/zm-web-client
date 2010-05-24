@@ -217,9 +217,9 @@ function(creates, force) {
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
 	for (var name in creates) {
-		var list = creates[name];
-		for (var i = 0; (list != null) && i < list.length; i++) {
-			var create = list[i];
+		var clist = creates[name];
+		for (var i = 0; (clist != null) && i < clist.length; i++) {
+			var create = clist[i];
 			if (appCtxt.cacheGet(create.id)) { continue; }
 
 			if (name == "folder") {
