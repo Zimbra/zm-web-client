@@ -79,9 +79,11 @@ function(list, sortField, doNotIncludeFolders) {
             }
         }
     }
-	
 	ZmBriefcaseBaseView.prototype.set.call(this, list, sortField);
     this.focus();
+
+    //bug 47240: return the new modified list with change listeners. 
+    return list;
 };
 
 ZmColListView.prototype._cloneList =
@@ -90,6 +92,7 @@ function(list){
     for(var i=0; i<list.size(); i++){
         newList.add(list.get(i));
     }
+    newList.setHasMore(list.hasMore());
     return newList;
 };
 
