@@ -89,8 +89,11 @@ function(list, sortField, doNotIncludeFolders) {
 ZmColListView.prototype._cloneList =
 function(list){
     var newList = new ZmList(list.type, list.search);
+    var item;
     for(var i=0; i<list.size(); i++){
-        newList.add(list.get(i));
+        item = list.get(i);
+        item.list = newList;
+        newList.add(item);
     }
     newList.setHasMore(list.hasMore());
     return newList;
