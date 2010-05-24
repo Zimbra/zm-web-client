@@ -15,7 +15,7 @@ a{
 /* Chrome*/
 
 html, body{
-	font: normal 11px Arial,Tahoma,helvetica,Verdana,sans-serif;;
+	font: normal 13px Arial,Tahoma,helvetica,Verdana,sans-serif;;
 	overflow: hidden;
 }
 
@@ -410,8 +410,8 @@ ul.list li{
     display: table-cell;
     vertical-align: middle;
     text-align: center;
-    padding-top:4px;
-    padding-bottom:4px;
+    padding-top:10px;
+    padding-bottom:10px;
 }
 
 .dlist .list-row .td, .dlist .list-row-unread .td, .lableBorder{
@@ -606,6 +606,22 @@ span.aleft > div:first-child, .contactHeader {
     margin-bottom: 2px;
 }
 
+.Folders a:link{
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 12px;
+	color: black;
+	
+}
+
+.left{
+	border-right: none;
+	border-bottom: 1px solid #ede8d8;
+}
+
+.right{	
+	border-left: none;
+}
 
 
 /** needed for iscroll.js **/
