@@ -686,6 +686,7 @@ function(event, details) {
 			details = {items: [this]};
 		}
 		this.list._evt.item = this;
+		this.list._evt.items = [this];
 		this.list._notify(event, details);
 	}
 };
