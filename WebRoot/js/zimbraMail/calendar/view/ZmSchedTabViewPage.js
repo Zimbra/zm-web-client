@@ -1075,6 +1075,11 @@ function(status, slots, table, sched) {
 			var startIdx = this._getIndexFromTime(slots[i].s);
 			var endIdx = this._getIndexFromTime(slots[i].e, true);
 
+            //bug:45623 assume start index is zero if its negative
+            if(startIdx < 0) {startIdx = 0;}
+            //bug:45623 skip the slot that has negative end index.
+            if(endIdx < 0) { continue; }
+
 			// normalize
 			if (endIdx < startIdx) {
 				endIdx = ZmSchedTabViewPage.FREEBUSY_NUM_CELLS - 1;
