@@ -102,6 +102,12 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		// setup participants list for Sent/Drafts/Outbox folders
 		if (this._isOutboundFolder()) {
 			var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
+
+			// default to FROM addresses if no TO: found
+			if (!addrs || addrs.length == 0) {
+				addrs = msg.getAddresses(AjxEmailAddress.FROM).getArray();
+			}
+
 			if (addrs && addrs.length) {
 				var fieldId = this._getFieldId(msg, ZmItem.F_PARTICIPANT);
 				var origLen = addrs.length;
