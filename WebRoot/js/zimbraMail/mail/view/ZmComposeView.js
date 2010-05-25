@@ -222,6 +222,9 @@ function(params) {
 	} else {
 		this._setFormValue();
 	}
+	// Force focus on the TO field
+	if (!this._isReply())
+		appCtxt.getKeyboardMgr().grabFocus(this._field[AjxEmailAddress.TO]);
 };
 
 /**
