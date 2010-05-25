@@ -874,7 +874,7 @@ function(ev) {
 	var url;
 
 	if (this._folderId && !this._list._isShared) {
-		url = "/h/printcontacts?folderid=" + this._folderId;
+		url = "/h/printcontacts?sfi=" + this._folderId;
 	} else {
 		var contacts = ((this._searchType & ZmContactListController.SEARCH_TYPE_ANYWHERE) != 0)
 			? AjxDispatcher.run("GetContacts")
