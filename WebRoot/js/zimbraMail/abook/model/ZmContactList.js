@@ -453,7 +453,7 @@ function(params) {
             params1.actionArg = params.folder.getName(false, false, true);
         }
 		params1.callback = params.outOfTrash && new AjxCallback(this, this._handleResponseMoveItems, params);
-		params1.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
+		params1.accountName = appCtxt.multiAccounts && params.items[0].getAccount().name;
 
 		this._itemAction(params1);
 	}
