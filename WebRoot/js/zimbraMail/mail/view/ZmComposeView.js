@@ -1233,18 +1233,19 @@ function(content, replaceSignatureId, account) {
 				if (idx != -1 && lastIdx != -1) {
 					newSigContent = oldSigContent.substring(0, idx) + newSig +
 									oldSigContent.substring(lastIdx + ZmComposeView.SIG_KEY.length);
-				} else {
-					newSigContent = newSig;
 				}
-				sigEl.innerHTML = newSigContent;
 
-				if (signature) {
-					sigEl.id = signature.id;
-				} else {
-					sigEl.removeAttribute("id");
+				if (newSigContent) {
+					sigEl.innerHTML = newSigContent;
+
+					if (signature) {
+						sigEl.id = signature.id;
+					} else {
+						sigEl.removeAttribute("id");
+					}
+					done = true;
+					donotsetcontent = true;
 				}
-				done = true;
-				donotsetcontent = true;
 			}
 		} else {
 			//Construct Regex
@@ -1259,9 +1260,10 @@ function(content, replaceSignatureId, account) {
 			replaceRe = new RegExp(replaceRe, "i");
 
 			//Replace Signature
-			content = content.replace(replaceRe, newSig);
-			done = true;
-
+			if (replaceRe.test(content)) {
+				content = content.replace(replaceRe, newSig);
+				done = true;
+			}
 		}
 	}
 	if (!done) {
