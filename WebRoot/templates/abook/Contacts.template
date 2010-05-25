@@ -35,18 +35,26 @@
 				<$ } $>
 				<div id="${id}_NAME_row" style='padding-bottom:4;'>
 					<table border=0 cellpadding=0 cellspacing=0><tr>
-						<td id="${id}_PREFIX_row"><div id="${id}_PREFIX" tabindex="200"></div></td>
-						<td><div id="${id}_FIRST" tabindex="201"></div></td>
-						<td id="${id}_MIDDLE_row"><div id="${id}_MIDDLE" tabindex="202"></div></td>
-						<td id="${id}_MAIDEN_row">
+						<td id="${id}_PREFIX_row" style='padding-right:4;'>
+						    <div id="${id}_PREFIX" tabindex="200"></div>
+                        </td>
+						<td style='padding-right:4;'>
+						    <div id="${id}_FIRST" tabindex="201"></div>
+                        </td>
+						<td id="${id}_MIDDLE_row" style='padding-right:4;'>
+						    <div id="${id}_MIDDLE" tabindex="202"></div>
+                        </td>
+						<td id="${id}_MAIDEN_row" style='padding-right:4;'>
 							<table border=0 cellspacing=0 cellpadding=0>
 								<td style='padding:0 2;'>(</td>
 								<td><div id="${id}_MAIDEN" tabindex="203"></div></td>
 								<td style='padding:0 2;'>)</td>
 							</table>
 						</td>
-						<td><div id="${id}_LAST" tabindex="204"></div></td>
-						<td id="${id}_SUFFIX_row">
+						<td style='padding-right:4;'>
+						    <div id="${id}_LAST" tabindex="204"></div>
+                        </td>
+						<td id="${id}_SUFFIX_row" style='padding-right:4;'>
 							<table border=0 cellspacing=0 cellpadding=0>
 								<td style='padding-right:4;'>,</td>
 								<td><div id="${id}_SUFFIX" tabindex="205"></div></td>
