@@ -248,7 +248,6 @@ function(msg, index) {
 	for (var i = 0, len = a.length; i < len; i++) {
 		this.msgIds.push(a[i].id);
 	}
-	this.numMsgs = this.msgs.size();
 };
 
 /**
@@ -260,7 +259,6 @@ ZmConv.prototype.removeMsg =
 function(msg) {
 	if (this.msgs) {
 		this.msgs.remove(msg, true);
-		this.numMsgs = this.msgs.size();
 	}
 	if (this.msgIds && this.msgIds.length) {
 		AjxUtil.arrayRemove(this.msgIds, msg.id);
