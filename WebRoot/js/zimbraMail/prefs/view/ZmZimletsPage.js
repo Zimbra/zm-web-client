@@ -603,8 +603,8 @@ ZmPrefZimlets.prototype.sortByName =
 function(desc) {
 	var r = 0;
 	this._vector.sort(function(a,b) {
-		var aname = a.getNameWithoutPrefix();
-		var bname = b.getNameWithoutPrefix();
+		var aname = a.getNameWithoutPrefix().toLowerCase();
+		var bname = b.getNameWithoutPrefix().toLowerCase();
 
 		if (aname == bname) {
 			r = 0;
