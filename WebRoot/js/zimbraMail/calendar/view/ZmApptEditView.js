@@ -841,6 +841,7 @@ function() {
 
 	inputEl = this._attInputField[ZmCalBaseItem.LOCATION].getInputElement();
 	inputEl.onkeypress = AjxCallback.simpleClosure(this._handleKeyPress, this);
+    if(AjxEnv.isIE) inputEl.onkeydown = AjxCallback.simpleClosure(this._handleKeyPress, this);
 };
 
 // cache all input fields so we dont waste time traversing DOM each time
