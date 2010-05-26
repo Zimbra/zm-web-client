@@ -29,7 +29,7 @@
 		<td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
 	</tr>
 </table>
-<div align="right"><a style="font-size:12px;" href="javascript:increaseFontSize();">+</a> Font size <a href="javascript:decreaseFontSize();" style="font-size:12px;">-</a></div>
+<div align="right"><a style="font-size:12px;" href="javascript:increaseFontSize();">+</a> <fmt:message key="fontSize"/> <a href="javascript:decreaseFontSize();" style="font-size:12px;">-</a></div>
 <hr/>
 <div id="zPrintMsg" class="zPrintMsgs11">
 <c:forEach items="${messageIds}" var="mid" varStatus="status">
