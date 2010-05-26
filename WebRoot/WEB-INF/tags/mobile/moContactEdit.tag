@@ -148,7 +148,6 @@
             </span>
         </div>
     </div>
-</div>
     <div class="View">
         <div class="tbl">
             <mo:contactEditField label="AB_FIELD_workPhone" contact="${contact}" field="workPhone" index="0"/>
@@ -173,6 +172,7 @@
             <mo:contactEditField label="AB_FIELD_homeURL" contact="${contact}" field="homeURL"/>
         </div>
     </div>
+</div>
 </div>
 
 <c:if test="${ua.isiPad == false}">
