@@ -1021,15 +1021,27 @@ function(creates, force) {
 		}
 	}
 
+
+	var controllers = [this._tradController, this._convListController, this._convController];
+	var currentController = this._getCurrentViewController();
+
+	if (currentController && controllers[controllers.length-1] !== currentController) { // Move currentController to the end of the list if it's not there already
+		AjxUtil.arrayRemove(controllers, currentController);
+		controllers.push(currentController);
+	}
+
+	var lastIndex = 0;
+	for (var i=0; i<controllers.length; i++) { // Some controllers may not be created yet. We need to determine the last existing controller in the list
+		if (controllers[i])
+			lastIndex = i;
+	}
+
 	// give each controller a chance to handle the creates
-	if (this._tradController) {
-		this._checkList(creates, this._tradController.getList(), this._tradController);
-	}
-	if (this._convListController) {
-		this._checkList(creates, this._convListController.getList(), this._convListController);
-	}
-	if (this._convController) {
-		this._checkList(creates, this._convController.getList(), this._convController, true);
+	for (var i=0; i<controllers.length; i++) {
+		var controller = controllers[i];
+		if (controller) {
+			this._checkList(creates, controller.getList(), controller, i==lastIndex);
+		}
 	}
 
 	this._handleAlerts(creates);
@@ -1153,19 +1165,25 @@ function(creates, list, controller, last) {
 
 	// bug: 30546
 	if (convResults.hasMore || msgResults.hasMore) {
-		var controller;
-		var vid = appCtxt.getAppViewMgr().getCurrentViewId();
-		if (vid == ZmId.VIEW_CONVLIST) {
-			controller = this.getConvListController();
-		} else if (vid == ZmId.VIEW_TRAD) {
-			controller = this.getTradController();
-		}
-
+		var controller = this._getCurrentViewController();
+		
 		if (controller) {
 			controller.setHasMore(true);
 		}
 	}
 };
+
+ZmMailApp.prototype._getCurrentViewController =
+function() {
+	var controller;
+	var vid = appCtxt.getAppViewMgr().getCurrentViewId();
+	if (vid == ZmId.VIEW_CONVLIST) {
+		controller = this.getConvListController();
+	} else if (vid == ZmId.VIEW_TRAD) {
+		controller = this.getTradController();
+	}
+	return controller;
+}
 
 /**
  * Handles the creates for the given type of mail item.
@@ -1212,9 +1230,6 @@ function(creates, type, items, currList, sortBy, convs, last) {
 			create._handled = true;
 		}
 
-		// ignore stuff we already have
-		if (currList.getById(create.id) || create._wasVirtConv) { continue; }
-
 		// new conv does not affect a list of msgs
 		if (currList.type == ZmItem.MSG && type == ZmItem.CONV) { continue; }
 
@@ -1232,8 +1247,12 @@ function(creates, type, items, currList, sortBy, convs, last) {
 		}
 
 		DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + nodeName);
-		var itemClass = eval(ZmList.ITEM_CLASS[type]);
-		var item = itemClass.createFromDom(create, {}, true);
+
+		var item = appCtxt.getById(create.id);
+		if (!item) {
+			var itemClass = eval(ZmList.ITEM_CLASS[type]);
+			item = itemClass.createFromDom(create, {}, true);
+		}
 		items[item.id] = item;
 		result.gotMail = true;
 	}

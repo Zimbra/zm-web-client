@@ -455,8 +455,13 @@ function(convs, msgs) {
 	} else if (this.type == ZmItem.MSG) {
 		// add new msg to list
 		for (var id in msgs) {
-			if (this.getById(id)) { continue; }
 			var msg = msgs[id];
+			if (this.getById(id)) {
+				if (this.search.matches && this.search.matches && this.search.matches(msg) && !msg.ignoreJunkTrash()) {
+					msg.list = this; // Even though we have the msg in the list, it sometimes has its list wrong.
+				}
+				continue;
+			}
 			if (this.convId) { // MLV within CV
 				if (msg.cid == this.convId && !this.getById(msg.id)) {
 					msg.list = this;
