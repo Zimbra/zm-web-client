@@ -2793,14 +2793,18 @@ function() {
 		clearCacheByFolder = true;
 	}
 	this._clearCacheFolderMap = {};
-	
+
+    //offline client makes batch request for each account configured causing
+    //refresh overlap clearing calendar
+    var timer = (appCtxt.isOffline && this.searchInProgress) ? 1000 : 0;
+    
 	if (this._clearCache) {
 		var act = new AjxTimedAction(this, this._refreshAction);
-		AjxTimedAction.scheduleAction(act, 0);
+		AjxTimedAction.scheduleAction(act, timer);
 		this._clearCache = false;
 	} else if(clearCacheByFolder) {
 		var act = new AjxTimedAction(this, this._refreshAction, [true]);
-		AjxTimedAction.scheduleAction(act, 0);
+		AjxTimedAction.scheduleAction(act, timer);
 	}
 };
 
