@@ -15,7 +15,32 @@
 
 /**
  * @overview
- * This file contains the command handler class.
+ * This file contains the command handler class. The following commands are supported:
+ *
+ * 		$set:debug {1,2,3}					set debug level to 1, 2, or 3
+ * 		$set:debug t						toggle debug timing on/off
+ * 		$set:debugtrace {on,off}			turn offline debug trace on/off
+ * 		$set:instant_notify					show whether instant notify is on or off
+ * 		$set:instant_notify {on,off}		turn instant notify on/off
+ *		$set:poll [N]						set poll interval to N ms (unless doing instant notify)
+ * 		$set:noop							send a poll (get notifications)
+ * 		$set:a								open the assistant
+ * 		$set:rr								refresh reminders
+ * 		$set:rh								run reminder housekeeping
+ * 		$set:toast							show sample toast messages
+ * 		$set:get version					show client version
+ * 		$set:expire							expire session; refresh block will come on next response
+ * 		$set:refresh						force immediate return of a refresh block
+ * 		$set:relogin						logout the user
+ * 		$set:alert							issue a test sound alert
+ * 		$set:alert {browser,desktop,app} N	issue a test alert in given context in N seconds
+ * 		$set:leak {begin,report,end}		manage leak detection
+ * 		$set:tabs							show tab groups (in debug window)
+ * 		$set:ymid [id]						set Yahoo IM user to id
+ * 		$set:log [type]						dump log contents for type
+ * 		$set:compose						compose msg based on mailto: in query string
+ * 		$set:error							show error dialog
+ * 		$set:modify [setting] [value]		set setting to value, then optionally restart
  */
 
 /**
@@ -51,11 +76,19 @@ function(cmdStr, searchController) {
 		cmdStr = cmdStr.toLowerCase();
 	}
 
-	var func = this["execute_"+arg0];
+	var func = this["execute_" + arg0];
 	if (func) {
 		var args = [].concat(cmdStr, searchController, argv);
 		return func.apply(this, args);
 	}
+};
+
+/**
+ * @private
+ */
+ZmClientCmdHandler.prototype._alert =
+function(msg, level) {
+	appCtxt.setStatusMsg(msg, level);
 };
 
 /**
@@ -181,15 +214,6 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 };
 
 /**
- * Executes the no op command.
- * 
- * @param	{String}	cmdStr		the command
- * @param	{ZmSearchController}	searchController	the search controller
- * @param	{Object}	[cmdArg1]		command arguments
- */
-ZmClientCmdHandler.prototype.execute_nop = ZmClientCmdHandler.prototype.noop;
-
-/**
  * Executes the assistant command.
  * 
  * @param	{String}	cmdStr		the command
@@ -259,6 +283,19 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 			  "Client Release: " + appCtxt.get(ZmSetting.CLIENT_RELEASE) + "\n" +
 			  "    Build Date: " + appCtxt.get(ZmSetting.CLIENT_DATETIME));
 	}
+};
+
+/**
+ * Executes the expire command.
+ *
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ */
+ZmClientCmdHandler.prototype.execute_expire =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	ZmCsfeCommand.setSessionId(null);
+	this._alert("Session expired");
 };
 
 /**
@@ -395,14 +432,6 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 		mailApp._showComposeView(null, query);
 		return true;
 	}
-};
-
-/**
- * @private
- */
-ZmClientCmdHandler.prototype._alert =
-function(msg, level) {
-	appCtxt.setStatusMsg(msg, level);
 };
 
 /**

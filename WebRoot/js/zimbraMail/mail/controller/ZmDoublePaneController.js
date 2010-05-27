@@ -796,3 +796,13 @@ function(text) {
 	}
 	this._toolbar[this._currentView].adjustSize();
 };
+
+ZmDoublePaneController.prototype._postShowCallback =
+function() {
+
+	ZmMailListController.prototype._postShowCallback.apply(this, arguments);
+	var dpv = this._doublePaneView;
+	if (dpv && dpv.isStale && dpv._staleHandler) {
+		dpv._staleHandler();
+	}
+};

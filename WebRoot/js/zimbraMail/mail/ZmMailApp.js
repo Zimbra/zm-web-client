@@ -1287,16 +1287,25 @@ function(refresh) {
 
 	if (!appCtxt.inStartup) {
 		this.resetOverview(this.getOverviewId());
-		var req = appCtxt.currentRequestParams;
-		if (appCtxt.getCurrentAppName() == this._name) {
-			var curView = appCtxt.getCurrentViewId();
-			if (curView == ZmId.VIEW_CONVLIST || curView == ZmId.VIEW_TRAD) {
-				appCtxt.getSearchController().redoSearch(this.currentSearch);
+
+		// mark all existing mail list views as stale
+		var viewIds = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONV];
+		var views = this._appViewMgr._views;
+		for (var i = 0; i < viewIds.length; i++) {
+			var view = views[viewIds[i]];
+			var dpv = view && view[ZmAppViewMgr.C_APP_CONTENT];
+			if (dpv) {
+				dpv.isStale = true;
 			}
 		}
+		// view is normally updated when user returns to it (from whatever view
+		// results from the current request); if the request doesn't result in a
+		// view change, use a timer to check if it still needs to be updated
+		var curViewId = appCtxt.getCurrentViewId();
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._checkRefresh, [curViewId]), 1000);
 	}
 
-	// Create an virtual ATTACHMENT's FOLDER
+	// Create a virtual ATTACHMENTS folder
 	if (appCtxt.get(ZmSetting.MAIL_ATTACH_VIEW_ENABLED)) {
 		var folderTree = appCtxt.getFolderTree();
 		if (!folderTree.getById(ZmFolder.ID_ATTACHMENTS)) {
@@ -1311,6 +1320,19 @@ function(refresh) {
 			var attachFolder = new ZmFolder(params);
 			root.children.add(attachFolder);
 			attachFolder._notify(ZmEvent.E_CREATE);
+		}
+	}
+};
+
+ZmMailApp.prototype._checkRefresh =
+function(lastViewId) {
+
+	// if the request that prompted the refresh didn't result in a view change
+	// (eg NoOpRequest), rerun its underlying search
+	if (appCtxt.getCurrentViewId() == lastViewId) {
+		var curView = appCtxt.getCurrentView();
+		if (curView && curView.isStale && curView._staleHandler) {
+			curView._staleHandler();
 		}
 	}
 };
