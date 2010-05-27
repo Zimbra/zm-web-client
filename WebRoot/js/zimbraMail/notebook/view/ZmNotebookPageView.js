@@ -678,7 +678,6 @@ ZmNotebookPageView.prototype.loadURL = function(restUrl){
         url += (url.match(/\?/) ?  '&' : '?') + (countryId ? 'country=' + countryId : "");
     }
     url = url + (url.indexOf('?') ? '&' : '?') + 't=' + (new Date()).getTime();
-    alert(url);
     this._iframe1.src = url;
 };
 
