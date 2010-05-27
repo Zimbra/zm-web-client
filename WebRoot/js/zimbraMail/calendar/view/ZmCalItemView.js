@@ -479,6 +479,8 @@ function() {
 	this._controller._app.popView();
 };
 
+ZmTaskView.prototype.setSelectionHdrCbox = function(check) {};
+
 ZmTaskView.prototype._getSubs =
 function(calItem) {
 	var subject = calItem.getName();

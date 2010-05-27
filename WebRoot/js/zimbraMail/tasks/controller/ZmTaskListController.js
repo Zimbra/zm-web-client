@@ -501,7 +501,14 @@ ZmTaskListController.prototype._editTask =
 function(task) {
 	var mode = ZmCalItem.MODE_EDIT;
 
-	if (task.isReadOnly()) {
+    var folder = appCtxt.getById(task.folderId);
+    var canEdit = null;
+
+    if(folder) {
+        canEdit = (folder == null || !folder.isReadOnly());
+    }
+    
+    if (!canEdit) {
 		if (task.isException) mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
 		task.getDetails(mode, new AjxCallback(this, this._showTaskReadOnlyView, task));
 	} else {
