@@ -207,6 +207,7 @@ ZmDocsEditView.prototype._initialize = function() {
     iFrame.setAttribute("vspace", "0", false);
     iFrame.setAttribute("autocomplete", "off", false);
     iFrame.setAttribute("allowtransparency", "true", false);
+    iFrame.onload = AjxCallback.simpleClosure(this._stealFocus, this, iFrame.id);
 
     if(window.isTinyMCE) {  //temp check
         var htmlEl = this.getHtmlElement();
@@ -279,6 +280,14 @@ ZmDocsEditView.prototype._initialize = function() {
          this.addFooter();
     }
 };
+
+ZmDocsEditView.prototype._stealFocus =
+function(iFrameId) {
+	if(AjxEnv.isFirefox3up) {
+		window.focus();
+		document.getElementById(iFrameId).contentWindow.focus();
+	}
+}
 
 ZmDocsEditView.prototype.addFooter = 
 function() {
