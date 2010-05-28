@@ -621,6 +621,11 @@ function(event) {
 			var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
 			url = remoteUri + url.substring((url.indexOf("/",7)));
 		}
+
+        if(item.isWebDoc()) {
+            url += (url.match(/\?/) ?  '&' : '?') + 'preview=1';
+        }
+        
 		urls.push(url);
 		names.push(item.name);
 
