@@ -1448,15 +1448,19 @@ function() {
 
 ZmCalViewController.prototype._promptDeleteAppt =
 function(appt, mode) {
-	if (appt.isOrganizer()) {
-		if (mode == ZmCalItem.MODE_DELETE_SERIES) {
-			this._promptDeleteFutureInstances(appt, mode);
-		} else {
-			this._promptCancelReply(appt, mode);
-		}
-	} else {
-		this._promptDeleteNotify(appt, mode);
-	}
+    if (appt instanceof Array) {
+        this._continueDelete(appt, mode);
+    } else {
+        if (appt.isOrganizer()) {
+            if (mode == ZmCalItem.MODE_DELETE_SERIES) {
+                this._promptDeleteFutureInstances(appt, mode);
+            } else {
+                this._promptCancelReply(appt, mode);
+            }
+        } else {
+            this._promptDeleteNotify(appt, mode);
+        }
+    }
 };
 
 ZmCalViewController.prototype._promptCancelReply =
