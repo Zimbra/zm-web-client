@@ -116,7 +116,7 @@ html, body{
 
 .toolbar{
 	background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left;
-	height: 55px;
+	height: 45px;
 	overflow: hidden;
 	border: none;
 	padding: 0 0 0 0!important;
@@ -133,13 +133,14 @@ html, body{
 
 .button{
 	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
-	-webkit-border-radius: 4px;
-	height: 25px;
-	padding: 10px 4px 0 4px;
+	-webkit-border-radius: 6px;
+	-webkit-box-shadow: rgba(255,255,255,0.1)0 1px 0;
+	border: 1px solid #555;
+	height: 22px;
+	padding: 8px 4px 0 4px;
 	font-size: 12px;
 	font-weight: bold;
-	text-align: center;
-	border: 1px solid #555;
+	text-align: center;	
 }
 
 	.button:active{
@@ -387,7 +388,7 @@ ul.list li{
 .wrap-dlist {
     position:relative;	/* needed */
     z-index:10;			/* needed and important */
-    height: 610px;
+    height: 580px;
 }
 
 .tbl {
@@ -517,6 +518,10 @@ ul.list li{
 	background: transparent url("/img/startup/ImgFlagRed.gif") no-repeat top left;
 }
 
+.Edit{
+	background: transparent url("/img/startup/ImgEdit.gif") no-repeat top left;
+}
+
 .View hr{
 	border: 1px solid white;
 	background-color: white;
@@ -601,14 +606,6 @@ span.aleft > div:first-child, .contactHeader {
     margin-bottom: 2px;
 }
 
-.Folders a:link{
-	text-decoration: none;
-	font-weight: bold;
-	font-size: 12px;
-	color: black;
-	
-}
-
 .left{
 	border-right: none;
 	border-bottom: 1px solid #ede8d8;
@@ -617,8 +614,43 @@ span.aleft > div:first-child, .contactHeader {
 
 .right{	
 	border-left: none;
+	border-bottom: 1px solid #ede8d8;
 }
 
+
+.Folders a:link{
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 12px;
+	color: black;	
+}
+
+.folderBar{
+	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
+	height: 15px;
+	color: #453928;
+}
+
+	.folderBar .td{ 
+		text-align: left;
+		padding: 8px;
+	} 
+	
+	.folderBar .left{ border-bottom: none; font-weight: bold; }
+	
+	.folderBar .right{
+		border-bottom: none;
+	}
+	
+	.folderBar .right a{
+		text-decoration: none;
+		color: blue;
+	}
+	
+.editFix{ 
+	text-align: right !important;
+	padding-right: 10px;
+}	
 
 /** Msg View **/
 
@@ -666,20 +698,18 @@ span.aleft > div:first-child, .contactHeader {
 	z-index: 14;
 	width: 100%;
 }
+
 .composeBox{
 	width: 600px;
 	margin: 5px auto;
 	position: relative;
 	-webkit-box-shadow: 3px 2px 5px #333;
 	background-color: transparent;
-
-
-
 }
 
 .composeToolbar{
 	background: #e7decb url("/img/mobile/ipad/topbar-bg.gif") repeat-x bottom left;
-	height: 50px;
+	height: 45px;
 	overflow: hidden;
 	border: none;
 	-webkit-border-top-left-radius: 8px;
@@ -688,7 +718,7 @@ span.aleft > div:first-child, .contactHeader {
 	
 	.composeToolbar .compose, .composeToolbar .buttonRight{
 		margin-top: 6px;
-	}
+	}	
 	
 	
 .composeFields{

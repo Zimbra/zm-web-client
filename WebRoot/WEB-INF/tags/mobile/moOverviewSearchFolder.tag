@@ -28,7 +28,7 @@
     <span class="td left">
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}"><span class="SmlIcnHldr Fldr${folder.type}">&nbsp;</span>${fn:escapeXml(label)}</a>
     </span>
-    <c:if test="${!folder.isSystemFolder}"><span class="td right" width="5%"> <a class="SmlIcnHldr Edit" href="?st=${param.st}&_ajxnoca=1&show${folder.isSearchFolder ? 'Search' : 'Folder'}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span></c:if>    
+    <c:if test="${!folder.isSystemFolder}"><span class="td right editFix" width="5%"> <a class="SmlIcnHldr Edit" href="?st=${param.st}&_ajxnoca=1&show${folder.isSearchFolder ? 'Search' : 'Folder'}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span></c:if>    
     </div>
     </div>    
 </div>

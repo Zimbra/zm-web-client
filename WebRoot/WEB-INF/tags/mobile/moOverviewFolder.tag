@@ -71,7 +71,7 @@
                 </c:choose>
             </c:otherwise>
         </c:choose>
-        <span class="td right" width="5%"><a class="SmlIcnHldr Edit" href="?st=${param.st}&_ajxnoca=1&show${what}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span>
+        <span class="td right editFix" width="5%"><a class="SmlIcnHldr Edit" href="?st=${param.st}&_ajxnoca=1&show${what}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span>
     </c:if>
         </div>
     </div>
