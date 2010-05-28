@@ -127,6 +127,9 @@ function() {
 
 ZmAdvancedHtmlEditor.prototype.getContent =
 function(insertFontStyle, onlyInnerContent) {
+
+    this.discardMisspelledWords();
+    
 	var field = this.getContentField();
 
 	if (this._mode == DwtHtmlEditor.HTML) {
@@ -213,6 +216,7 @@ function(content) {
 		var field = this.getContentField();
 		field.value = content;
 	}
+    this._ignoreWords = {};
 };
 
 ZmAdvancedHtmlEditor.prototype.reEnableDesignMode =
@@ -541,6 +545,9 @@ function(id, mode, content) {
 
 ZmAdvancedHtmlEditor.prototype.setMode =
 function(mode, convert) {
+
+    this.discardMisspelledWords();
+
 	if (mode == this._mode || (mode != DwtHtmlEditor.HTML && mode != DwtHtmlEditor.TEXT)) {	return;	}
 
 	this._mode = mode;
@@ -700,7 +707,11 @@ function(callback) {
 		if (!this.onExitSpellChecker) {
 			this.onExitSpellChecker = callback;
 		}
-		this._spellChecker.check(text, new AjxCallback(this, this._spellCheckCallback));
+        var params = {
+			text: text,
+			ignore: AjxUtil.keys(this._ignoreWords).join()
+		};
+		this._spellChecker.check(params, new AjxCallback(this, this._spellCheckCallback));
 		return true;
 	}
 
@@ -747,71 +758,118 @@ function(ev) {
 	var fixall = item.getData("fixall");
 	var doc = plainText ? document : this._getIframeDoc();
 	var span = doc.getElementById(item.getData("spanId"));
-	function fix(val) {
-		var spans = fixall
-			? self._spellCheck.wordIds[orig]
-			: [ item.getData("spanId") ];
-		for (var i = spans.length; --i >= 0;) {
-			var span = doc.getElementById(spans[i]);
-			if (span)
-				span.innerHTML = val;
-		}
-	};
+	var action = item.getData(ZmPopupMenu.MENU_ITEM_ID_KEY);
+	switch (action) {
+		case "ignore":
+			val = orig;
+			this._ignoreWords[val] = true;
+			if (fixall) {
+				// TODO: visually "correct" all of them
+			}
+			break;
+		case "add":
+			val = orig;
+			// add word to user's personal dictionary
+			var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+			var prefEl = soapDoc.set("pref", val);
+			prefEl.setAttribute("name", "+zimbraPrefSpellIgnoreWord");
+			var params = {
+				soapDoc: soapDoc,
+				asyncMode: true,
+				callback: new AjxCallback(appCtxt, appCtxt.setStatusMsg, [ZmMsg.wordAddedToDictionary])
+			};
+			appCtxt.getAppController().sendRequest(params);
+			break;
+		default: break;
+	}
+
 	if (plainText && val == null) {
-		function inputListener(ev) {
-			ev || (ev = window.event);
-			// the event gets lost after 20 milliseconds so we need
-			// to save the following :(
-			var evType = ev.type;
-			var evKeyCode = ev.keyCode;
-			var evCtrlKey = ev.ctrlKey;
-			var input = this;
-			setTimeout(function() {
-				var keyEvent = /key/.test(evType);
-				var removeInput = true;
-				if (/blur/.test(evType) || (keyEvent && evKeyCode == 13)) {
-					if (evCtrlKey)
-						fixall =! fixall;
-					fix(input.value);
-				} else if (keyEvent && evKeyCode == 27 /* ESC */) {
-					fix(AjxUtil.getInnerText(span));
-				} else {
-					removeInput = false;
-				}
-				if (removeInput) {
-					input.onblur = null;
-					input.onkeydown = null;
-					input.parentNode.removeChild(input);
-				}
-				self._handleSpellCheckerEvents(null);
-			}, 20);
-		};
-		// protect variables
-		(function() {
-			// edit clicked
-			var input = doc.createElement("input");
-			input.type = "text";
-			input.value = AjxUtil.getInnerText(span);
-			input.className = "SpellCheckInputField";
-			input.style.left = span.offsetLeft - 2 + "px";
-			input.style.top = span.offsetTop - 2 + "px";
-			input.style.width = span.offsetWidth + 4 + "px";
-			var div = doc.getElementById(self._spellCheckDivId);
-			var scrollTop = div.scrollTop;
-			div.appendChild(input);
-			div.scrollTop = scrollTop; // this gets resetted when we add an input field (at least Gecko)
-			input.setAttribute("autocomplete", "off");
-			input.focus();
-			if (!AjxEnv.isGeckoBased)
-				input.select();
-			else
-				input.setSelectionRange(0, input.value.length);
-			input.onblur = inputListener;
-			input.onkeydown = inputListener;
-		})();
-	} else
-		fix(val);
+		this._editWord(fixall, span);
+	}
+	else {
+		var spanEls = fixall ? this._spellCheck.wordIds[orig] : span;
+		this._editWordFix(spanEls, val);
+	}
+    
 	this._handleSpellCheckerEvents(null);
+};
+
+ZmAdvancedHtmlEditor.prototype._getEditorDocument = function() {
+	var plainText = this._mode == DwtHtmlEditor.TEXT;
+	return plainText ? document : this._getIframeDoc();
+};
+
+ZmAdvancedHtmlEditor.prototype._editWord = function(fixall, spanEl) {
+	// edit clicked
+	var doc = this._getEditorDocument();
+	var input = doc.createElement("input");
+	input.type = "text";
+	input.value = AjxUtil.getInnerText(spanEl);
+	input.className = "SpellCheckInputField";
+	input.style.left = spanEl.offsetLeft - 2 + "px";
+	input.style.top = spanEl.offsetTop - 2 + "px";
+	input.style.width = spanEl.offsetWidth + 4 + "px";
+	var div = doc.getElementById(this._spellCheckDivId);
+	var scrollTop = div.scrollTop;
+	div.appendChild(input);
+	div.scrollTop = scrollTop; // this gets resetted when we add an input field (at least Gecko)
+	input.setAttribute("autocomplete", "off");
+	input.focus();
+	if (!AjxEnv.isGeckoBased)
+		input.select();
+	else
+		input.setSelectionRange(0, input.value.length);
+	var inputListener = AjxCallback.simpleClosure(this._editWordHandler, this, fixall, spanEl);
+	input.onblur = inputListener;
+	input.onkeydown = inputListener;
+};
+
+ZmAdvancedHtmlEditor.prototype._editWordHandler = function(fixall, spanEl, ev) {
+	// the event gets lost after 20 milliseconds so we need
+	// to save the following :(
+	setTimeout(AjxCallback.simpleClosure(this._editWordHandler2, this, fixall, spanEl, ev), 20);
+};
+ZmAdvancedHtmlEditor.prototype._editWordHandler2 = function(fixall, spanEl, ev) {
+	ev = DwtUiEvent.getEvent(ev);
+	var evType = ev.type;
+	var evKeyCode = ev.keyCode;
+	var evCtrlKey = ev.ctrlKey;
+	var input = DwtUiEvent.getTarget(ev);
+	var keyEvent = /key/.test(evType);
+	var removeInput = true;
+	if (/blur/.test(evType) || (keyEvent && evKeyCode == 13)) {
+		if (evCtrlKey)
+			fixall =! fixall;
+		var orig = AjxUtil.getInnerText(spanEl);
+		var spanEls = fixall ? this._spellCheck.wordIds[orig] : spanEl;
+		this._editWordFix(spanEls, input.value);
+	} else if (keyEvent && evKeyCode == 27 /* ESC */) {
+		this._editWordFix(spanEl, AjxUtil.getInnerText(spanEl));
+	} else {
+		removeInput = false;
+	}
+	if (removeInput) {
+		input.onblur = null;
+		input.onkeydown = null;
+		if (input.parentNode) {
+			input.parentNode.removeChild(input);
+		}
+	}
+	this._handleSpellCheckerEvents(null);
+};
+
+ZmAdvancedHtmlEditor.prototype._editWordFix = function(spanEls, value) {
+	spanEls = spanEls instanceof Array ? spanEls : [ spanEls ];
+	var doc = this._getEditorDocument();
+	for (var i = spanEls.length - 1; i >= 0; i--) {
+		var spanEl = spanEls[i];
+		if (typeof spanEl == "string") {
+			spanEl = doc.getElementById(spanEl);
+		}
+		if (spanEl) {
+			spanEl.innerHTML = value;
+		}
+	}
 };
 
 ZmAdvancedHtmlEditor.prototype._getParentElement =
@@ -848,7 +906,7 @@ function(ev) {
 	for (i in ids) {
 		span = doc.getElementById(i);
 		if (span) {
-			if (ids[i] != AjxUtil.getInnerText(span))
+			if (ids[i] != AjxUtil.getInnerText(span) || this._ignoreWords[ids[i]])
 				span.className = "ZM-SPELLCHECK-FIXED";
 			else if (ids[i] == word)
 				span.className = "ZM-SPELLCHECK-MISSPELLED2";
@@ -869,7 +927,7 @@ function(ev) {
 			   && (!word || modified) )
 			)))
 	{
-		sc.menu._doPopdown();
+		//sc.menu._doPopdown();
 		// FIXME: menu.dispose() should remove any submenus that may be
 		//        present in its children; fix should go directly in DwtMenu.js
 		if (sc.menu._menuItems.fixall)
@@ -883,56 +941,7 @@ function(ev) {
 		(/mouseup|contextmenu/i.test(ev.type) ||
 		 (plainText && /(click|mousedown|contextmenu)/i.test(ev.type))))
 	{
-		function makeMenu(fixall, parent) {
-			var menu = new ZmPopupMenu(self.getParent()), item;
-			menu.dontStealFocus();
-			if (modified) {
-				var text = "<b style='color: red'>Initial: " + word + "</b>";
-				item = menu.createMenuItem("orig", {text:text});
-				item.setData("fixall", fixall);
-				item.setData("value", word);
-				item.setData("orig", word);
-				item.setData("spanId", p.id);
-				item.addSelectionListener(self._spellCheckSuggestionListenerObj);
-			}
-			if (plainText) {
-				// in plain text mode we want to be able to edit misspelled words
-				var txt = fixall ? ZmMsg.editAll : ZmMsg.edit;
-				item = menu.createMenuItem("edit", {text:txt, className:"ZMenuItem ZmSpellMenuItem"});
-				item.setData("fixall", fixall);
-				item.setData("orig", word);
-				item.setData("spanId", p.id);
-				item.addSelectionListener(self._spellCheckSuggestionListenerObj);
-			}
-			if (modified || plainText)
-				menu.createSeparator();
-			if (suggestions.length > 0) {
-				for (var i = 0; i < suggestions.length; ++i) {
-					item = menu.createMenuItem("sug-" + fixall + "" + i, {text:suggestions[i]});
-					item.setData("fixall", fixall);
-					item.setData("value", suggestions[i]);
-					item.setData("orig", word);
-					item.setData("spanId", p.id);
-					item.addSelectionListener(self._spellCheckSuggestionListenerObj);
-				}
-			} else {
-				item = menu.createMenuItem("clear", {text:ZmMsg.noSuggestions, className:"ZMenuItem ZmSpellMenuItem"});
-				item.setData("fixall", fixall);
-				item.setData("value", "");
-				item.setData("orig", word);
-				item.setData("spanId", p.id);
-				menu.createSeparator();
-
-				item = menu.createMenuItem("clear", {text:ZmMsg.clearText, className:"ZMenuItem ZmSpellMenuItem"});
-				item.setData("fixall", fixall);
-				item.setData("value", "");
-				item.setData("orig", word);
-				item.setData("spanId", p.id);
-				item.addSelectionListener(self._spellCheckSuggestionListenerObj);
-			}
-			return menu;
-		};
-		sc.menu = makeMenu(0, this);
+		sc.menu = this._spellCheckCreateMenu(this.getParent(), 0, suggestions, word, p.id, modified);
 		if (sc.wordIds[word].length > 1) {
 			sc.menu.createSeparator();
 			this._replaceAllFormatter = this._replaceAllFormatter || new AjxMessageFormat(ZmMsg.replaceAllMenu);
@@ -964,6 +973,74 @@ function(ev) {
 		ev._stopPropagation = true;
 		ev._returnValue = false;
 	}
+};
+
+ZmAdvancedHtmlEditor.prototype._spellCheckCreateMenu = function(parent, fixall, suggestions, word, spanId, modified) {
+    
+	var menu = new ZmPopupMenu(parent);
+//	menu.dontStealFocus();
+
+	if (modified) {
+		var txt = "<b>" + word + "</b>";
+		this._spellCheckCreateMenuItem(menu, "orig", {text:txt}, fixall, word, word, spanId);
+	}
+
+	if (suggestions.length > 0) {
+		for (var i = 0; i < suggestions.length; ++i) {
+			this._spellCheckCreateMenuItem(
+				menu, "sug-"+i, {text:suggestions[i], className: ""},
+				fixall, suggestions[i], word, spanId
+			);
+		}
+		if (!(parent instanceof DwtMenuItem) && this._spellCheck.wordIds[word].length > 1) {
+			if (!this._replaceAllFormatter) {
+				this._replaceAllFormatter = new AjxMessageFormat(ZmMsg.replaceAllMenu);
+			}
+			var txt = "<i>"+this._replaceAllFormatter.format(this._spellCheck.wordIds[word].length)+"</i>";
+			var item = menu.createMenuItem("fixall", {text:txt});
+			var submenu = this._spellCheckCreateMenu(item, 1, suggestions, word, spanId, modified);
+			item.setMenu(submenu);
+		}
+	}
+	else {
+		var item = this._spellCheckCreateMenuItem(menu, "noop", {text:ZmMsg.noSuggestions}, fixall, "", word, spanId);
+		item.setEnabled(false);
+		this._spellCheckCreateMenuItem(menu, "clear", {text:"<i>"+ZmMsg.clearText+"</i>" }, fixall, "", word, spanId);
+	}
+
+	menu.createSeparator();
+
+	var plainText = this._mode == DwtHtmlEditor.TEXT;
+	if (plainText) {
+		// in plain text mode we want to be able to edit misspelled words
+		var txt = fixall ? ZmMsg.editAll : ZmMsg.edit;
+		this._spellCheckCreateMenuItem(menu, "edit", {text:txt}, fixall, null, word, spanId);
+	}
+
+	if (!fixall) {
+		this._spellCheckCreateMenuItem(menu, "ignore", {text:ZmMsg.ignoreWord}, 0, null, word, spanId);
+//		this._spellCheckCreateMenuItem(menu, "ignore", {text:ZmMsg.ignoreWordAll}, 1, null, word, spanId);
+	}
+
+	if (!fixall && appCtxt.get(ZmSetting.SPELL_CHECK_ADD_WORD_ENABLED)) {
+		this._spellCheckCreateMenuItem(menu, "add", {text:ZmMsg.addWord}, fixall, null, word, spanId);
+	}
+
+	return menu;
+};
+
+ZmAdvancedHtmlEditor.prototype._spellCheckCreateMenuItem =
+function(menu, id, params, fixall, value, word, spanId, listener) {
+	if (params.className == null) {
+		params.className = "ZMenuItem ZmSpellMenuItem";
+	}
+	var item = menu.createMenuItem(id, params);
+	item.setData("fixall", fixall);
+	item.setData("value", value);
+	item.setData("orig", word);
+	item.setData("spanId", spanId);
+	item.addSelectionListener(listener || this._spellCheckSuggestionListenerObj);
+	return item;
 };
 
 ZmAdvancedHtmlEditor.prototype.discardMisspelledWords =
