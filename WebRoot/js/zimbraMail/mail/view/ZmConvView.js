@@ -69,6 +69,7 @@ function(conv) {
 	conv.addChangeListener(this._changeListener);
 	
 	this._mailListView.set(conv.msgs, ZmItem.F_DATE);
+	this.isStale = false;
 	this._setSubject(conv.subject);
 	this._setTags(conv);
 	
@@ -380,6 +381,15 @@ function(ev) {
 	this._controller._app.popView();
 };
 
+// mimics handling by ZmConvListController.prototype._listSelectionListener
+ZmConvView.prototype._staleHandler =
+function() {
+
+	var ctlr = this._controller._parentController || AjxDispatcher.run("GetConvListController");
+	this._conv._loaded = false;	// force request to be made
+	var respCallback = new AjxCallback(ctlr, ctlr._handleResponseListSelectionListener, this._conv);
+	AjxDispatcher.run("GetConvController").show(ctlr._activeSearch, this._conv, ctlr, respCallback, true);
+};
 
 // Static methods
 

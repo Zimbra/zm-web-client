@@ -182,6 +182,7 @@ function(items) {
 
 	var paginating = Boolean(this._mailListView._itemsToAdd);
 	this._mailListView.set(items, ZmItem.F_DATE);
+	this.isStale = false;
 
 	var gotItems = (this._controller._list && this._controller._list.size() > 0);
 	if (this._mailListView._isPageless) {
@@ -352,4 +353,10 @@ function() {
 ZmDoublePaneView.prototype.getLimit =
 function(offset) {
 	return this._mailListView.getLimit(offset);
+};
+
+ZmDoublePaneView.prototype._staleHandler =
+function() {
+	var search = this._controller._currentSearch;
+	appCtxt.getSearchController().redoSearch(search);
 };
