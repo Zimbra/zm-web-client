@@ -449,8 +449,8 @@ function(convs, msgs) {
 					}
 					modifiedItems.push(conv);
 				}
+				newMsgs.push(msg);
 			}
-			newMsgs.push(msg);
 		}
 	} else if (this.type == ZmItem.MSG) {
 		// add new msg to list
