@@ -2665,7 +2665,8 @@ function(msg) {
 
 	// for cross account searches, the active account isn't necessarily the
 	// account of the selected conv/msg so reset it based on the selected option.
-	if (appCtxt.getSearchController().searchAllAccounts && this._fromSelect) {
+    // if active-account is local/main acct, reset it based on selected option.
+	if ((appCtxt.getSearchController().searchAllAccounts && this._fromSelect) || active.isMain) {
 		active = this.getFromAccount();
 		this._controller._accountName = active.name;
 	}
