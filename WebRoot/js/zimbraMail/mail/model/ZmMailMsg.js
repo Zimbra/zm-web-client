@@ -1,3 +1,4 @@
+
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
@@ -820,6 +821,17 @@ function(callback) {
 			ZmMailMsg.fetchMsg({sender:appCtxt.getAppController(), msgId:this.id, getHtml:false, callback:respCallback});
 		}
 	}
+};
+
+ZmMailMsg.prototype.getTextBodyPart =
+function(){
+    var bodyPart = this.getBodyPart();
+    if (bodyPart && bodyPart.ct == ZmMimeTable.TEXT_PLAIN) {
+		return bodyPart;
+	} else if (bodyPart && bodyPart.body && ZmMimeTable.isTextType(bodyPart.ct)) {
+		return bodyPart;
+	}
+    return null;
 };
 
 ZmMailMsg.prototype._handleResponseGetTextPart =

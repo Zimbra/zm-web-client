@@ -1997,7 +1997,7 @@ function(msg, htmlMode) {
 				attInfo = attInfo ? attInfo.desc : part.ct;
 				bodyArr.push([crlf, "[", attInfo, ":", (part.filename||"..."), "]", crlf].join(""));
 				hasInlineAtts = true;
-			} else if (part.ct == ZmMimeTable.TEXT_PLAIN) {
+			} else if (part.ct == ZmMimeTable.TEXT_PLAIN || (part.body && ZmMimeTable.isTextType(bodyPart.ct))) {
 				bodyArr.push( htmlMode ? AjxStringUtil.convertToHtml(part.content) : part.content );
 			} else if (part.ct == ZmMimeTable.TEXT_HTML) {
 				if (htmlMode){
@@ -2023,7 +2023,7 @@ function(msg, htmlMode) {
 		} else {
 			hasInlineImages = msg.hasInlineImagesInMsgBody();
 			// grab text part out of the body part
-			bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML, true);
+			bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML, true) || msg.getTextBodyPart();            
 			body = bodyPart ? this._getTextPart(bodyPart) : null;
 		}
 	}
