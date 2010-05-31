@@ -567,7 +567,7 @@ ZmCalItemEditView.prototype._enableRepeat =
 function(enable) {
 	if (enable) {
 		this._repeatSelect.enable();
-		this._repeatDescField.className = "FakeAnchor";
+		this._repeatDescField.className = (this._repeatSelect.getValue() == "NON") ? "DisabledText" : "FakeAnchor";
 	}  else {
 		this._repeatSelect.disable();
 		this._repeatDescField.className = "DisabledText";
@@ -837,7 +837,7 @@ function(ev, isHover) {
 	if (isHover) {
 		var html = this._repeatDescField.innerHTML;
 		if (html && html.length > 0) {
-			this._repeatDescField.style.cursor = this._repeatSelectDisabled
+			this._repeatDescField.style.cursor = (this._repeatSelectDisabled || this._repeatSelect.getValue() == "NON")
 				? "default" : "pointer";
 
 			if (this._rdfTooltip == null) {
@@ -852,6 +852,10 @@ function(ev, isHover) {
 		if (this._rdfTooltip) {
 			this._rdfTooltip.popdown();
 		}
+
+        this._repeatDescField.style.cursor = (this._repeatSelectDisabled || this._repeatSelect.getValue() == "NON")
+            ? "default" : "pointer";
+
 	}
 };
 
@@ -949,6 +953,7 @@ function(ev) {
 		this._showRecurDialog();
 	} else {
 		this._repeatDescField.innerHTML = newSelectVal != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
+		this._repeatDescField.className = newSelectVal != "NON" ? "FakeAnchor" : "";
 	}
 	this.notifyListeners(ZmCalItemEditView._REPEAT_CHANGE, ev);
 };
@@ -1104,8 +1109,10 @@ ZmCalItemEditView.prototype._handleOnClick =
 function(el) {
 	// figure out which input field was clicked
 	if (el.id == this._repeatDescId) {
-		this._oldRepeatValue = this._repeatSelect.getValue();
-		this._showRecurDialog(this._oldRepeatValue);
+        this._oldRepeatValue = this._repeatSelect.getValue();
+        if(this._oldRepeatValue != "NON") {
+		    this._showRecurDialog(this._oldRepeatValue);
+        }
 	} else if (el.id.indexOf("_att_") != -1) {
 		this._removeAttachment(el.id);
 	}
