@@ -691,7 +691,7 @@ function(items){
     var cc = AjxDispatcher.run("GetComposeController");
     cc._setView({action:action, msg:msg, toOverride:toOverride, inNewWindow:false});
     var draftType = ZmComposeController.DRAFT_TYPE_AUTO;
-    var callback = new AjxCallback(cc, cc._handleResponseSaveDraftListener, [draftType]);
+    var callback = new AjxCallback(cc, cc._handleResponseSaveDraftListener, [draftType, null]);
     cc.sendDocs(docInfo, draftType, callback);
 };
 
