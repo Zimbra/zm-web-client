@@ -127,6 +127,14 @@ ZmSpreadSheetApp._createDBG = function(devMode){
     }
 };
 
+ZmSpreadSheetApp.prototype.exit = function(){
+    return this._controller.checkForChanges();
+};
+
+window.onbeforeunload = function() {
+    return appCtxt.getAppController().exit();
+};
+
 window.onload = function() {
     setTimeout(function() {
             ZmSpreadSheetApp.launch();

@@ -30,6 +30,8 @@ ZmSpreadSheetController = function(shell){
 ZmSpreadSheetController.prototype = new ZmController();
 ZmSpreadSheetController.prototype.constructor = ZmSpreadSheetController;
 
+ZmSpreadSheetController.NEW = 'new';
+ZmSpreadSheetController.EDIT = "edit";
 
 ZmSpreadSheetController.prototype.save = function(){
 
@@ -55,7 +57,7 @@ ZmSpreadSheetController.prototype.save = function(){
 	}
     
     ZmSpreadSheetApp.fileInfo.name    = fileName;
-    ZmSpreadSheetApp.fileInfo.content = this._spreadSheet.getXML();
+    ZmSpreadSheetApp.fileInfo.content = this._origContent = this._spreadSheet.getXML();
     ZmSpreadSheetApp.fileInfo.contentType = ZmSpreadSheetApp.APP_ZIMBRA_XLS;
 
     this._docMgr.setSaveCallback(new AjxCallback(this, this._postSaveHandler));
@@ -78,6 +80,7 @@ function(files, conflicts) {
             ZmSpreadSheetApp.fileInfo.id = files[0].id;
             ZmSpreadSheetApp.fileInfo.version = files[0].ver;
             appCtxt.setStatusMsg(ZmMsg.savedSpreadsheet, ZmStatusView.LEVEL_INFO);
+            this._state = ZmSpreadSheetController.EDIT;
         }
     }
 };
@@ -108,9 +111,14 @@ function(item) {
         var model = new ZmSpreadSheetModel(0, 0);
         model.loadFromXML(content);
         this._spreadSheet.setModel(model);
+        AjxTimedAction.scheduleAction(new AjxCallback(this, this._getOrigContent), 500);
     }
 };
 
+ZmSpreadSheetController.prototype._getOrigContent =
+function(){
+    this._origContent = this._spreadSheet.getXML();  
+};
 
 ZmSpreadSheetController.prototype._initModel = function(){
 
@@ -122,6 +130,7 @@ ZmSpreadSheetController.prototype._initModel = function(){
         if(item != null) {
             ZmSpreadSheetApp.fileInfo = item;
             this.loadSheet(item);
+            this._state= ZmSpreadSheetController.EDIT;
         }
     }else{
         //approx rows & cols such that it fills all whole browser area
@@ -131,6 +140,8 @@ ZmSpreadSheetController.prototype._initModel = function(){
         var rows = Math.ceil( h / ZmSpreadSheetModel.getDefaultRowProp().height) - 5;
 
 		this._spreadSheet.setModel(new ZmSpreadSheetModel(rows || 40, cols || 15));
+
+        this._state = ZmSpreadSheetController.NEW;
     }
 
 };
@@ -184,4 +195,11 @@ ZmSpreadSheetController.prototype.setStatusMsg = function(){
 ZmSpreadSheetController.prototype.toString =
 function() {
 	return "ZmSpreadSheetController";
+};
+
+ZmSpreadSheetController.prototype.checkForChanges = function() {
+   var isChanged = ( this._state == ZmSpreadSheetController.NEW ) || ( this._origContent != this._spreadSheet.getXML());
+   if(isChanged){
+       return ZmMsg.exitSpreadsheetUnsavedChanges;
+   }   
 };
