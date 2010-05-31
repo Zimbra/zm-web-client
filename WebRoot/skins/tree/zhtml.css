@@ -1,3 +1,5 @@
+/** Tree **/
+
 .ZOptionsSectionMain{
 	background: #fff;
 	padding:1em;
@@ -10,3 +12,28 @@
 .TabFiller{
  @AppTabBorder-normal@
 }
+
+.TabSelected{
+	@tlRadius@: 3px;
+	@trRadius@: 3px; 
+}
+
+ #skin_container_tree_top td{
+ 	color: white;
+ }
+ 
+ .Tb a:link, .Tb a:visited,.TbTop input, .TbBottom input{
+	color: white;
+	border-style: none;
+}
+ 
+
+#caltb.TbBt a:link, #caltb.TbBt a:visited, .TbBt a, .TbTop{
+	color: white;
+} 
+ 
+.Tab{
+	height: 28px;
+} 
+
+  
