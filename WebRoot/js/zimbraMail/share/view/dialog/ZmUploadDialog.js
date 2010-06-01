@@ -337,7 +337,7 @@ function(files, status, guids, response) {
 	// check for conflicts
 	var conflicts = [];
 	if (resp && resp.Fault) {
-		var errors = [];
+		var errors = [], mailboxQuotaExceeded=false;
 		for (var i = 0; i < resp.Fault.length; i++) {
 			var fault = resp.Fault[i];
 			var error = fault.Detail.Error;
@@ -357,13 +357,19 @@ function(files, status, guids, response) {
 				}
                 file.version = file.version || 1;
 				conflicts.push(file);
-			}
-			else {
+			}else {
 				DBG.println("Unknown error occurred: "+code);
+                if(code == ZmCsfeException.MAIL_QUOTA_EXCEEDED){
+                    mailboxQuotaExceeded = true;
+                }
 				errors[fault.requestId] = fault;
 			}
 		}
 		// TODO: What to do about other errors?
+        if(mailboxQuotaExceeded){
+            this._popupErrorDialog(ZmMsg.errorQuotaExceeded);
+            return;
+        }
 	}
 
 	// dismiss dialog
