@@ -508,8 +508,9 @@ function(dlg, msgId, partId) {
 
 ZmBriefcaseApp.prototype._chooserCallback =
 function(msgId, partId, name, folder) {
+    //TODO: Avoid using search, instead try renaming on failure
 	var callback = new AjxCallback(this, this.handleDuplicateCheck, [msgId, partId, name, folder]);
-	this.search({query:folder.createQuery(), callback:callback, accountName:(folder && folder.account && folder.account.name) || undefined});
+	this.search({query:folder.createQuery(), noRender:true, callback:callback, accountName:(folder && folder.account && folder.account.name) || undefined});
 };
 
 ZmBriefcaseApp.prototype.handleDuplicateCheck =
