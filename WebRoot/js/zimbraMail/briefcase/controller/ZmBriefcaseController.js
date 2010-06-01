@@ -418,6 +418,8 @@ function(ev) {
 		var item = ev.item;
 		var restUrl = item.getRestUrl();
 
+        if(item.isFolder) return;
+
         if (item.isWebDoc()) {
             //added for bug: 45150
             restUrl = this._app.fixCrossDomainReference(restUrl);
