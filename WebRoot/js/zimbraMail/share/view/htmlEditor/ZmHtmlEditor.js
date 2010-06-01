@@ -1561,6 +1561,7 @@ function(ev) {
 				callback: new AjxCallback(appCtxt, appCtxt.setStatusMsg, [ZmMsg.wordAddedToDictionary])
 			};
 			appCtxt.getAppController().sendRequest(params);
+			this._ignoreWords[val] = true;
 			break;
 		default: break;
 	}
