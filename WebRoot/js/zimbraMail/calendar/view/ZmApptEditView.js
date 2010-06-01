@@ -429,9 +429,9 @@ function(calItem, mode) {
         if(this._organizerData) {
             this._organizerData.innerHTML = calItem.getOrganizer() || "";
         }
+        this._forwardToField.setValue("");        
 	}
 
-    this._forwardToField.setValue("");
 
     this._folderSelect.setEnabled(!this._isForward);
     if (this._reminderSelect) {
