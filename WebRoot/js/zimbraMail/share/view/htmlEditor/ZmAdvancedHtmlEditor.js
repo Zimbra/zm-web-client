@@ -940,7 +940,8 @@ function(ev) {
 	// but that's even uglier:
 	if (ev && word && (suggestions = sc.suggestions[word]) &&
 		(/mouseup|contextmenu/i.test(ev.type) ||
-		 (plainText && /(click|mousedown|contextmenu)/i.test(ev.type))))
+		 (plainText && /(click|mousedown|contextmenu)/i.test(ev.type))) && 
+		(word == AjxUtil.getInnerText(p) && !this._ignoreWords[word]))
 	{
 		sc.menu = this._spellCheckCreateMenu(this.getParent(), 0, suggestions, word, p.id, modified);
 		if (sc.wordIds[word].length > 1) {

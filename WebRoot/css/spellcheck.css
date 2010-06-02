@@ -62,7 +62,6 @@
 .ZM-SPELLCHECK-FIXED { 
 	border-bottom: 1px dashed; 
 	@InfoContainer@
-	cursor: help; 
 }
 /* USE??? */
 .ZM-SPELLCHECK-INPROGRESS { 
