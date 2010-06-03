@@ -51,9 +51,10 @@
 <td>
 <c:if test="${not empty contactIds}">
     <c:forEach items="${contactIds}" var="contactId" varStatus="status">
+        <c:set var="galContact" value="${param.st eq 'gal' && fn:contains(contactId,'|')}"/>
         <c:choose>
-            <c:when test="${param.st ne 'gal'}"><zm:getContact id="${contactId}" var="contact"/></c:when>
-            <c:when test="${param.st eq 'gal'}">
+            <c:when test="${!galContact}"><zm:getContact id="${contactId}" var="contact"/></c:when>
+            <c:when test="${galContact}">
                 <zm:searchGal var="result" query="${empty param.email ? '*' : param.email}"/>      <%--!TODO optiomizartion needed--%>
                 <c:forEach items="${result.contacts}" var="acontact">
                     <c:if test="${fn:replace(acontact.id,',','|') eq contactId}">
@@ -69,16 +70,16 @@
 </c:if>
 
 <c:if test="${empty contactIds}">
-    <c:if test="${param. st ne 'gal'}">
+    <c:if test="${param.st ne 'gal'}">
     <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true"/>
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <zm:getContact id="${hit.contactHit.id}" var="contact"/>
-        <div  style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
+        <div style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
             <app:displayContact contact="${contact}"/>
         </div>
     </c:forEach>
     </c:if>
-    <c:if test="${param. st eq 'gal'}">
+    <c:if test="${param.st eq 'gal'}">
     <zm:searchGal var="result" query="*"/>
     <c:forEach items="${result.contacts}" var="contact" varStatus="status">
         <div  style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
