@@ -132,7 +132,15 @@ ZmAutocompleteListView.WAIT_ID = "wait";
 ZmAutocompleteListView.onKeyDown =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
-	var result = ZmAutocompleteListView._onKeyDown(ev);
+	var result = null;
+	var key = DwtKeyEvent.getCharCode(ev);
+	DBG.println("ac", ev.type + ": " + key);
+	if (key == 38 || key == 40) {
+		ZmAutocompleteListView.__geckoKeyCode = null;
+		result = ZmAutocompleteListView._onKeyUp(ev);
+	} else {
+		result = ZmAutocompleteListView._onKeyDown(ev);
+	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	var aclv = DwtControl.ALL_BY_ID[element._aclvId]
 	if (aclv && aclv._keyDownCallback) {
@@ -149,8 +157,18 @@ function(ev) {
  */
 ZmAutocompleteListView.onKeyPress =
 function(ev) {
+	ev = DwtUiEvent.getEvent(ev);
 	DwtKeyEvent.geckoCheck(ev);
 	var result = null;
+	var key = DwtKeyEvent.getCharCode(ev);
+	DBG.println("ac", ev.type + ": " + key);
+	if (AjxEnv.isGeckoBased && (key == 38 || key == 40)) {
+		if (ZmAutocompleteListView.__geckoKeyCode) {
+			result = ZmAutocompleteListView._onKeyUp(ev);
+		} else {
+			ZmAutocompleteListView.__geckoKeyCode = key;
+		}
+	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	var aclv = DwtControl.ALL_BY_ID[element._aclvId]
 	if (aclv && aclv._keyPressCallback) {
@@ -169,6 +187,12 @@ function(ev) {
 ZmAutocompleteListView.onKeyUp =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
+	var key = DwtKeyEvent.getCharCode(ev);
+	DBG.println("ac", ev.type + ": " + key);
+	if (key == 38 || key == 40) {
+		ZmAutocompleteListView.__geckoKeyCode = null;
+		return true;
+	}
 	var result = ZmAutocompleteListView._onKeyUp(ev);
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	var aclv = DwtControl.ALL_BY_ID[element._aclvId]
@@ -189,7 +213,6 @@ function(ev) {
 */
 ZmAutocompleteListView._onKeyDown =
 function(ev) {
-	DBG.println(AjxDebug.DBG3, "onKeyDown");
 	var key = DwtKeyEvent.getCharCode(ev);
 	// don't echo enter key if list view is visible, since in that case it's
 	// just a selection mechanism
@@ -220,9 +243,7 @@ function(ev) {
 */
 ZmAutocompleteListView._onKeyUp =
 function(ev) {
-	if (ev.type == "keyup") {
-		DBG.println(AjxDebug.DBG3, "onKeyUp");
-	}
+
 	this._hasCompleted = false;
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
@@ -232,7 +253,6 @@ function(ev) {
 
 	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
 	var key = DwtKeyEvent.getCharCode(ev);
-//	DBG.println("ac", ev.type + " char code: " + key);
 
 	// Tab/Esc handled in keydown for IE
 	if (AjxEnv.isIE && ev.type == "keyup" && (key == 9 || key == 27)) {
