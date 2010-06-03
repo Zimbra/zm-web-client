@@ -93,11 +93,6 @@ function(params) {
 	return AjxTemplate.expand("briefcase.Briefcase#Tooltip", subs);
 };
 
-ZmBriefcaseBaseView.prototype._getItemCountType =
-function() {
-	return null;
-};
-
 /**
  * Uploads files from drag-and-drop.
  * 

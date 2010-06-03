@@ -1757,20 +1757,28 @@ function() {
 ZmListController.prototype._getItemCountText =
 function() {
 
+	var size = this._getItemCount();
+	if (size == null) { return ""; }
 	var lv = this._listView[this._currentView];
 	var list = lv && lv._list;
-	if (!list) { return ""; }
 	var type = lv._getItemCountType();
-	var size = list.size();
 	var total = this._getNumTotal();
 	var num = total || size;
-    var typeText = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
+    var typeText = type ? AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num) : "";
 	if (total && (size != total)) {
 		return AjxMessageFormat.format(ZmMsg.itemCount1, [size, total, typeText]);
 	} else {
-		var sizeText = list.size() + (this._list.hasMore() ? "+" : "");
+		var sizeText = size + (this._list.hasMore() ? "+" : "");
 		return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, typeText]);
 	}
+};
+
+ZmListController.prototype._getItemCount =
+function() {
+	var lv = this._listView[this._currentView];
+	var list = lv && lv._list;
+	if (!list) { return null; }
+	return list.size();
 };
 
 /**

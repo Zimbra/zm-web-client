@@ -874,3 +874,20 @@ function() {
 	window.importSlidesQueue = importSlidesQueue;
 	this._app.handleOp(ZmOperation.NEW_PRESENTATION);
 };
+
+// item count doesn't include subfolders
+ZmBriefcaseController.prototype._getItemCount =
+function() {
+	var lv = this._listView[this._currentView];
+	var list = lv && lv._list;
+	if (!list) { return null; }
+	var a = list.getArray();
+	var num = 0;
+	for (var i = 0, len = a.length; i < len; i++) {
+		var item = a[i];
+		if (item && item.type == ZmItem.BRIEFCASE_ITEM && !item.isFolder) {
+			num++;
+		}
+	}
+	return num;
+};
