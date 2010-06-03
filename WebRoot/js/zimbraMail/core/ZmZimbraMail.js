@@ -388,14 +388,14 @@ function(params) {
 			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.session) {
 				ZmCsfeCommand.setSessionId(girJSON.Header.context.session);
 			}
-			DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "GetInfoResponse");
+			DBG.println(["<b>RESPONSE (from JSP tag)</b>"].join(""), "GetInfoResponse");
 			DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
 		}
 		if (br.SearchResponse) {
 			var srJSON = params.searchResponse = {};
 			srJSON.Body = {};
 			srJSON.Body.SearchResponse = br.SearchResponse[0];
-			DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "SearchResponse");
+			DBG.println(["<b>RESPONSE (from JSP tag)</b>"].join(""), "SearchResponse");
 			DBG.dumpObj(AjxDebug.DBG1, srJSON, -1);
 		}
 	}
