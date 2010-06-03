@@ -229,9 +229,6 @@ function(params, result) {
 	if (params.callback) {
 		params.callback.run(result);
 	}
-	if (params.finalCallback) {
-		params.finalCallback.run(result);
-	}
 };
 
 /**

@@ -525,9 +525,6 @@ function(params, result) {
 	if (params.callback) {
 		params.callback.run(result);
 	}
-	if (params.finalCallback) {
-		params.finalCallback.run(result);
-	}
 };
 
 /**
@@ -1010,11 +1007,10 @@ function(params) {
 	}
 	if (params.finalCallback) {
 		params.finalCallback.run(params);
-	} else {
-		var dialog = ZmList.progressDialog;
-		if (dialog && dialog.isPoppedUp()) {
-			dialog.popdown();
-		}
+	}
+	var dialog = ZmList.progressDialog;
+	if (dialog && dialog.isPoppedUp()) {
+		dialog.popdown();
 	}
 };
 
