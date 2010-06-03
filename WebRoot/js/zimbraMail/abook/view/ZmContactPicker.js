@@ -315,7 +315,7 @@ function(account) {
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 
 	this._searchField = document.getElementById(this._htmlElId + "_searchField");
-	Dwt.setHandler(this._searchField, DwtEvent.ONKEYPRESS, ZmContactPicker._keyPressHdlr);
+	Dwt.setHandler(this._searchField, DwtEvent.ONKEYUP, ZmContactPicker._keyPressHdlr);
 	Dwt.setHandler(this._searchField, DwtEvent.ONCLICK, ZmContactPicker._onclickHdlr);
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
 };
