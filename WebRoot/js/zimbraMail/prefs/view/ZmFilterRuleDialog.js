@@ -1027,10 +1027,12 @@ function(ev) {
 
 	if (msg) {
 		// bug #35912 - restore values from cached rule
-		rule.name = cachedRule.name;
-		rule.active = cachedRule.active;
-		rule.conditions = cachedRule.conditions;
-		rule.actions = cachedRule.actions;
+		if (cachedRule) {
+			rule.name = cachedRule.name;
+			rule.active = cachedRule.active;
+			rule.conditions = cachedRule.conditions;
+			rule.actions = cachedRule.actions;
+		}
 
 		var msgDialog = appCtxt.getMsgDialog();
     	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
