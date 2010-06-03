@@ -22,7 +22,7 @@
  	color: white;
  }
  
- .Tb a:link, .Tb a:visited,.TbTop input, .TbBottom input{
+ .Tb a:link, .Tb a:visited,.TbTop input, .TbBottom input,.Paging, .Tb td{
 	color: white;
 	border-style: none;
 }
