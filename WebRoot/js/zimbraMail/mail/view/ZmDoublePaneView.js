@@ -358,5 +358,9 @@ function(offset) {
 ZmDoublePaneView.prototype._staleHandler =
 function() {
 	var search = this._controller._currentSearch;
-	appCtxt.getSearchController().redoSearch(search);
+	if (search) {
+		search.lastId = search.lastSortVal = null
+		search.offset = search.limit = 0;
+		appCtxt.getSearchController().redoSearch(search);
+	}
 };
