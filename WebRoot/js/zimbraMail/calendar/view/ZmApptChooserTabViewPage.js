@@ -185,7 +185,7 @@ function() {
 
 	if (this._isClean && this.type == ZmCalBaseItem.PERSON) {
 		this._isClean = false;
-		this.searchContacts();
+		this.searchContacts(true);
 	}
 };
 
@@ -534,7 +534,7 @@ function(ev) {
                 lastId = contact.id;
                 lastSortVal = contact.sf;
             }
-            this.searchContacts(null, lastId, lastSortVal);
+            this.searchContacts(false, null, lastId, lastSortVal);
         } else {
             var more = this._list.hasMore;
             if (!more) {
@@ -593,12 +593,13 @@ function() {
  * Performs a contact search (in either personal contacts or in the GAL) and populates
  * the source list view with the results.
  *
+ * @param {Boolean}	defaultSearch set to true when contacts are searched by default without user initiation
  * @param {constant}	sortBy			the ID of column to sort by
  * @param {int}	lastId		   the ID of last item displayed (for pagination)
  * @param {String}	lastSortVal	the value of sort field for above item
  */
 ZmApptChooserTabViewPage.prototype.searchContacts =
-function(sortBy, lastId, lastSortVal) {
+function(defaultSearch, sortBy, lastId, lastSortVal) {
 	var id = this._searchFieldIds[ZmApptChooserTabViewPage.SF_ATT_NAME];
 	var query = AjxStringUtil.trim(document.getElementById(id).value);
 	if (!query.length) {
@@ -640,12 +641,12 @@ function(sortBy, lastId, lastSortVal) {
         lastSortVal: lastSortVal        
 	};
 	var search = new ZmSearch(params);
-	search.execute({callback: new AjxCallback(this, this._handleResponseSearchContacts)});
+	search.execute({callback: new AjxCallback(this, this._handleResponseSearchContacts, [defaultSearch])});
 };
 
 // If a contact has multiple emails, create a clone for each one.
 ZmApptChooserTabViewPage.prototype._handleResponseSearchContacts =
-function(result) {
+function(defaultSearch, result) {
 	var resp = result.getResponse();
     var offset = resp.getAttribute("offset");
     var isPagingSupported = AjxUtil.isSpecified(offset);
@@ -653,7 +654,8 @@ function(result) {
     var info = resp.getAttribute("info");
     var expanded = info && info[0].wildcard[0].expanded == "0";
 
-    if (!isPagingSupported &&
+    //bug: 47649 avoid showing warning message for default contacts search
+    if (!defaultSearch && !isPagingSupported &&
         (expanded || (this._contactSource == ZmId.SEARCH_GAL && more)))
     {
         var d = appCtxt.getMsgDialog();
