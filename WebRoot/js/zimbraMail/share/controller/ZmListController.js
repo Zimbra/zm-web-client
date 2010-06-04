@@ -1892,11 +1892,11 @@ function(params, actionParams) {
 					actionParams.actionSummary = ZmList.getActionSummary(actionParams.actionText, this._continuation.totalItems, contResult.type, actionParams.actionArg);
 				}
 				lv.deselectAll();
-				if (params.allDoneCallback) {
-					params.allDoneCallback.run();
-				}
 			}
 			this._continuation = {count:0, totalItems:0};
+		}
+		if (params.allDoneCallback) {
+			params.allDoneCallback.run();
 		}
 
 		ZmList.killProgressDialog(actionParams.actionSummary);

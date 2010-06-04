@@ -363,6 +363,7 @@ function(params) {
 
 ZmMsgController.prototype._checkItemCount =
 function() {
+	this._backListener();
 };
 
 ZmMsgController.prototype._getDefaultFocusItem = 

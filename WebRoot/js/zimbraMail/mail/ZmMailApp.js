@@ -1407,7 +1407,11 @@ function(params, callback) {
 				params.searchResponse = null;
 				this._forceMsgView = true;
 			} else if (view == "msg") {
-				var msg = new ZmMailMsg(id, null, true);
+
+				var list = new ZmMailList(ZmItem.MSG);
+				var msg = new ZmMailMsg(id, list, true);
+				list.add(msg);
+
 				var msgParams = {getHtml:			appCtxt.get(ZmSetting.VIEW_AS_HTML),
 								 markRead:			(appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW),
 								 callback:			new AjxCallback(this, this._handleResponseMsgLoad, [msg, callback]),
