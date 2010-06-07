@@ -68,34 +68,16 @@ function(list, sortField, doNotIncludeFolders) {
 
 
     //Add Folders accordingly
-    var paging = Boolean(this._itemsToAdd);
-    if(!doNotIncludeFolders && !paging){
-        var subs = this._folders = this._controller._getSubfolders();
-        var subsLen = subs ? subs.length : 0;
-        if(subsLen > 0){
-            list = this._cloneList(list);
-            for(var i=0; i<subsLen; i++){
-                list.add(subs[i], 0);
-            }
-        }
+    var paging = Boolean(this._itemsToAdd), newList;
+    if(!doNotIncludeFolders && !paging){        
+        newList = this.appendFolders(list);
     }
-	ZmBriefcaseBaseView.prototype.set.call(this, list, sortField);
+
+    newList = newList || list;
+	ZmBriefcaseBaseView.prototype.set.call(this, newList, sortField);
     this.focus();
 
     //bug 47240: return the new modified list with change listeners. 
-    return list;
-};
-
-ZmColListView.prototype._cloneList =
-function(list){
-    var newList = new ZmList(list.type, list.search);
-    var item;
-    for(var i=0; i<list.size(); i++){
-        item = list.get(i);
-        item.list = newList;
-        newList.add(item);
-    }
-    newList.setHasMore(list.hasMore());
     return newList;
 };
 

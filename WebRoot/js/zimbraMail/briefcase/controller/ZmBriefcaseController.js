@@ -286,8 +286,9 @@ function(view) {
 
 ZmBriefcaseController.prototype._setViewContents =
 function(view) {
-	var bcv = this._parentView[view];
-	bcv.set(this._list);
+	var bcv = this._parentView[view];    
+	bcv.set(this._list, this._switchView);
+    this._switchView = false;
 };
 
 ZmBriefcaseController.prototype._getDefaultFocusItem =
@@ -358,15 +359,7 @@ function(view, force) {
 	var viewChanged = (force || view != this._currentView);
 
 	if (viewChanged) {
-		var mcv = this._parentView[ZmId.VIEW_BRIEFCASE_COLUMN];
-		if (this.isMultiColView()) {
-			// remember list columns in case we return to col view
-			mcv.setCurrentListIndex(mcv._nextIndex - 1);
-		}
-		if (view == ZmId.VIEW_BRIEFCASE_COLUMN) {
-			// preserve list columns
-			mcv._noReset = true;
-		}
+        this._switchView = true;
 		this._currentView = view;
 		this._setup(view);
 	}
@@ -375,7 +368,7 @@ function(view, force) {
 	if (viewChanged) {
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view]; /*this.isMultiColView() ? this._multiColView : this._listView[this._currentView];*/
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
 		this._setView({view:view, elements:elements, isAppView:true});
 		this._resetNavToolBarButtons(view);
 	}

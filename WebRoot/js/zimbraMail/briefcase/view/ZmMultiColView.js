@@ -169,13 +169,9 @@ function(idx) {
 // be a regular list view.
 ZmMultiColView.prototype.setCurrentListIndex =
 function(index) {
-
 	this._curListIndex = index;
 	this._curListView = this._listView[index];
-	this._controller._listView[this.view] = this._listView[index];
-	if (this._ctlrList[index]) {
-		this._controller._list = this._ctlrList[index];
-	}
+	this._controller._listView[this.view] = this._listView[index];	
 };
 
 /**
@@ -198,16 +194,16 @@ function(folderId) {
 };
 
 ZmMultiColView.prototype.set =
-function(list) {
+function(list, initView) {
 
-	if (!this._curListView._itemsToAdd && !this._noReset) {
+	if (initView || (!this._curListView._itemsToAdd && !this._noReset)) {
 		this.resetColumns();
 	} else {
 		this.removeChildColumns(this._curListIndex);
 	}
 	this._noReset = false;
-	list = this._curListView.set(list);
-	this._ctlrList[this._curListIndex] = list;
+	var mcvlist = this._curListView.set(list);
+	this._ctlrList[this._curListIndex] = mcvlist;
 	this.setCurrentListIndex(this._curListIndex);
 };
 

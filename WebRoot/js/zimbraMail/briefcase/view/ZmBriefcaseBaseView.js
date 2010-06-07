@@ -137,3 +137,30 @@ ZmBriefcaseBaseView.prototype.getTitle =
 function(){
     return [ZmMsg.zimbraTitle, ZmMsg.briefcase].join(': ');  
 };
+
+ZmBriefcaseBaseView.prototype._cloneList =
+function(list){
+    var newList = new ZmList(list.type, list.search);
+    var item;
+    for(var i=0; i<list.size(); i++){
+        item = list.get(i);
+        item.list = newList;
+        newList.add(item);
+    }
+    newList.setHasMore(list.hasMore());
+    return newList;
+};
+
+ZmBriefcaseBaseView.prototype.appendFolders =
+function(srcList){
+    var subs = this._folders = this._controller._getSubfolders();
+    var subsLen = subs ? subs.length : 0;
+    var newList;
+    if(subsLen > 0){
+        newList = this._cloneList(srcList);
+        for(var i=0; i<subsLen; i++){
+            newList.add(subs[i], 0);
+        }        
+    }
+    return newList;
+};
