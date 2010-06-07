@@ -123,6 +123,7 @@ function(params) {
 		acct = accounts[i];
 		// skip the main account in offline mode since we'll add it at the end
 		if (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES) { continue; }
+		if (!acct.active) { continue; }
 
 		params.omit = {};
 

@@ -378,6 +378,7 @@ function(settings, obj) {
 	account.settings = settings;
 	account.type = ZmAccount.TYPE_ZIMBRA;
 	account.icon = "AccountZimbra";
+	account.active = true; // always set active for main/parent account
 
 	this._accounts[account.id] = account;
 	delete this._accounts[ZmAccountList.DEFAULT_ID];
