@@ -64,7 +64,7 @@ function(useDefaults) {
 ZmCalendarPrefsPage.prototype.showMe =
 function() {
 	var active = appCtxt.getActiveAccount();
-	this._isAclSupported = !appCtxt.multiAccounts || (!active.isMain && active.isZimbraAccount);
+	this._isAclSupported = !appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!active.isMain && active.isZimbraAccount);
 
 	ZmPreferencesPage.prototype.showMe.call(this);
 };
