@@ -363,15 +363,16 @@ function(shares, result) {
 				tmpShare.grantor.email = tmpShare.object.owner;
 				tmpShare.grantor.name = tmpShare.grantor.email;
 				tmpShare.link.id = tmpShare.object.rid;
+                tmpShare.link.name = tmpShare.object.oname || tmpShare.object.name;
 			} else {
 				tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID);
 				tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME);
 				tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME) || tmpShare.grantor.email;
 				tmpShare.link.id = tmpShare.object.id;
+                tmpShare.link.name = tmpShare.object.name;
 			}
 
 			tmpShare.link.perm = share.link.perm;
-			tmpShare.link.name = tmpShare.object.name;
 			tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
 			tmpShare.link.inh = this._inheritEl ? this._inheritEl.checked : true;
 
