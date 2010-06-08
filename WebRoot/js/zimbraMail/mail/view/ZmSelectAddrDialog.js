@@ -87,7 +87,8 @@ function(addrs, folderId) {
 	}
 
 	this._addrs = [];
-	this._folderId = folderId;
+    var idx = folderId.indexOf(":");
+    this._folderId = (idx != -1) ? (folderId.substr(idx + 1)) : folderId;
 	var used = {}, id = 1;
 	for (var i = 0, len = addrs.length; i < len; i++) {
 		var addr = addrs[i];
