@@ -505,7 +505,8 @@ function(pathOnly) {
 ZmFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup, useSystemName) {
 	if (this.nId == ZmFolder.ID_DRAFTS ||
-		this.nId == ZmFolder.ID_OUTBOX)
+		this.nId == ZmFolder.ID_OUTBOX ||
+		this.rid == ZmFolder.ID_DRAFTS)
 	{
 		var name = (useSystemName && this._systemName) ? this._systemName : this.name;
 		if (showUnread && this.numTotal > 0) {
@@ -573,9 +574,8 @@ function() {
 */
 ZmFolder.prototype.mayContain =
 function(what, folderType) {
-	if (!what) return true;
-	if (this.isFeed()) return false;
-	if (this.isSyncIssuesFolder()) return false; 
+	if (!what) { return true; }
+	if (this.isFeed() || this.isSyncIssuesFolder()) { return false; }
 
 	var thisType = folderType || this.type;
 	var invalid = false;
@@ -613,11 +613,11 @@ function(what, folderType) {
 						invalid = true;
 						break;
 					}
-				} else if (items[i].isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS)) {
+				} else if (items[i].isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
 					// can move drafts into Trash or Drafts
 					invalid = true;
 					break;
-				} else if (this.nId == ZmFolder.ID_DRAFTS && !items[i].isDraft)	{
+				} else if ((this.nId == ZmFolder.ID_DRAFTS || this.rid == ZmFolder.ID_DRAFTS) && !items[i].isDraft)	{
 					// only drafts can be moved into Drafts
 					invalid = true;
 					break;
