@@ -1466,9 +1466,104 @@ function(ev) {
 		}, 100);
 	}
 
+	if (/keydown/i.test(ev.type) && ev.keyCode==13) {
+		var element = this._getParentElement();
+		var ancestor = element;
+
+		while (ancestor) {
+			var tagname = Dwt.getAttr(ancestor, "tagName");
+			if (tagname && tagname.toLowerCase() === "blockquote")
+				break;
+			ancestor = ancestor.parentNode;
+		}
+
+		if (ancestor) {
+			this._handleBlockquoteAdd(ancestor, element);
+			rv = false;
+		}
+	}
+
 	return rv;
 };
 
+ZmHtmlEditor.prototype._handleBlockquoteAdd =
+function(blockquote, element) {
+	var range, el, text, offset;
+
+	// Get range, el, text and offset
+	if (AjxEnv.isIE) {
+		var iFrameDoc = this._getIframeDoc();
+		range = iFrameDoc.selection.createRange();
+		range.collapse(false);
+		el = element;
+		text = AjxUtil.getInnerText(el);
+
+		// IE doesn't let us get the offset directly, so we count the number of times we can use moveStart() until we're out of the containing element
+		var container = range.parentElement();
+		var limit = 10000;
+		for (var i=0; i<limit; i++) {
+			if (container != range.parentElement())
+				break;
+			range.moveStart("character", -1);
+		}
+		offset = i-1;
+	} else {
+		range = this._getRange();
+		range.collapse(false);
+		el = range.startContainer.parentNode;
+		text = AjxUtil.getInnerText(range.startContainer);
+		offset = range.startOffset;
+	}
+
+	var id = el.id = el.id || Dwt.getNextId();
+	var blockquote2 = blockquote.cloneNode(true); // Create an orphaned clone of the blockquote. This will be meddled with before getting attached to the DOM tree
+	var el1 = el;
+	var el2 = Dwt.byId(id, blockquote2); // Can't use document.getElementById on orphaned trees
+
+	el1.innerHTML = offset ? text.substring(0, offset) : "";
+	el2.innerHTML = text.substring(offset);
+	el2.id = null;
+
+	// Prune off all "later" siblings in the blockquote tree
+	while (el1 != blockquote) {
+		while (el1.nextSibling)
+			el1.parentNode.removeChild(el1.nextSibling);
+		el1 = el1.parentNode;
+	}
+
+	// Prune off all "prior" siblings in the blockquote2 tree
+	while (el2 != blockquote2) {
+		while (el2.previousSibling)
+			el2.parentNode.removeChild(el2.previousSibling);
+		el2 = el2.parentNode;
+	}
+
+	// Now we've effectively cut the original blockquote in half, with the second half present in blockquote2
+	if (blockquote.nextSibling) {
+		blockquote.parentNode.insertBefore(blockquote2, blockquote.nextSibling);
+	} else {
+		blockquote.parentNode.appendChild(blockquote2);
+	}
+	
+	if (AjxEnv.isIE) {
+		// Hack to get IE to properly place the cursor between the two blockquotes
+		var p = document.createElement("p");
+		var span1 = document.createElement("span");
+		var span2 = document.createElement("span");
+		var br = document.createElement("br");
+		span1.appendChild(span2);
+		span1.appendChild(br);
+		p.appendChild(span1);
+		blockquote2.parentNode.insertBefore(p, blockquote2);
+		this._setCursor(span2);
+		span2.parentNode.removeChild(span2);
+	} else {
+		range.setStartAfter(blockquote);
+		var sel = this._getSelection();
+		sel.removeAllRanges();
+		sel.addRange(range);
+	}
+};
 
 // Spell checker methods
 
