@@ -133,7 +133,7 @@ function(str, callback, list) {
 ZmAutocomplete.prototype._doAutocomplete =
 function(str, aclv, options, acType, callback, account) {
 
-	if (str in this._acRequests) // A request for this particular string is already active.
+	if (this._acRequests[str]) // A request for this particular string is already active.
 		return;
 
 	// cancel any outstanding requests for strings that are substrings of this one
