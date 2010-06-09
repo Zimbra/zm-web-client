@@ -162,7 +162,7 @@ function(ev){
 	var folder = this._getActionedOrganizer(ev);
 	var url = (folder) ? folder.getRestUrl() : null;
 	if (url) {
-		window.open(url+".html", "_blank");
+		window.open(url+".html?tz=" + AjxTimezone.DEFAULT, "_blank");
 	}
 };
 
