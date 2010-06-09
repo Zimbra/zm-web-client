@@ -513,7 +513,7 @@ function(id, mode, content) {
 		// General options
 		mode :  (mode == DwtHtmlEditor.HTML)? "exact" : "none",
 		elements:  id,
-		plugins : "table,ztable,inlinepopups,zcontextmenu,fullscreen",
+		plugins : "table,ztable,inlinepopups,zcontextmenu,fullscreen,zbreakquote",
 		theme : "advanced",
 		theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols,fullscreen",
 		theme_advanced_buttons2: "",
