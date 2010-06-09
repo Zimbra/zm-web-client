@@ -977,7 +977,7 @@ function(val, originalDate) {
     var hrs = (segments.length && segments[0] != null) ? parseInt(segments[0].replace(/\D/g, "")) : null;
     var mins = (segments.length > 1 && segments[1]!= null) ? parseInt(segments[1].replace(/\D/g, "")) : 0;
 
-    if(!hrs) hrs = originalDate.getHours();
+    if(!hrs) hrs = (hrs == 0) ? 0 : originalDate.getHours();
     if(!mins) mins = 0;
 
     originalDate.setHours(hrs, mins, 0, 0);
