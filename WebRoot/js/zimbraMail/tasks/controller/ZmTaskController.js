@@ -142,6 +142,11 @@ function() {
 	window.open(appContextPath+url, "_blank");
 };
 
+ZmTaskController.prototype._closeView = function() {
+    appCtxt.getAppViewMgr().showPendingView(true);
+	this._composeView.cleanup();
+};
+
 ZmTaskController.prototype.closeView = function() {
    this._closeView();
 };
