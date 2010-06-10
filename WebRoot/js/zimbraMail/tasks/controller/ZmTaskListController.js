@@ -203,7 +203,7 @@ function(map) {
  * @see	ZmTask
  */
 ZmTaskListController.prototype.quickSave =
-function(name, callback) {
+function(name, callback, errCallback) {
 	var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
 
 	var folder = appCtxt.getById(folderId);
@@ -223,7 +223,7 @@ function(name, callback) {
 	task.location = "";
 	task.setAllDayEvent(true);
 
-	task.save(null, callback);
+	task.save(null, callback, errCallback);
 };
 
 ZmTaskListController.prototype._defaultView =
