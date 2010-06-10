@@ -1466,20 +1466,37 @@ function(ev) {
 		}, 100);
 	}
 
-	if (/keydown/i.test(ev.type) && ev.keyCode==13) {
-		var element = this._getParentElement();
-		var ancestor = element;
+	if (/keydown/i.test(ev.type)) {
+		if (ev.keyCode==13) { // Enter
+			var element = this._getParentElement();
+			var ancestor = element;
 
-		while (ancestor) {
-			var tagname = Dwt.getAttr(ancestor, "tagName");
-			if (tagname && tagname.toLowerCase() === "blockquote")
-				break;
-			ancestor = ancestor.parentNode;
+			while (ancestor) {
+				var tagname = Dwt.getAttr(ancestor, "tagName");
+				if (tagname && tagname.toLowerCase() === "blockquote")
+					break;
+				ancestor = ancestor.parentNode;
+			}
+
+			if (ancestor) {
+				this._handleBlockquoteAdd(ancestor, element);
+				rv = false;
+			}
 		}
 
-		if (ancestor) {
-			this._handleBlockquoteAdd(ancestor, element);
-			rv = false;
+		if (ev.keyCode==8 || ev.keyCode==46) { // Backspace or delete
+			setTimeout(AjxCallback.simpleClosure(function() { // Waiting for the other event handlers (including the browser's own) to finish tends to clean up the DOM for us
+				var blockquote1, blockquote2;
+				for (var child=this._getIframeDoc().body.firstChild; child && child.nextSibling; child=child.nextSibling) {
+					var child2 = child.nextSibling;
+					if (child2.tagName.toLowerCase()=="p" && this._elementIsIEFiller(child2.firstChild))
+						child2 = child2.nextSibling;
+
+					if (child2 && child.tagName && child2.tagName && child.tagName.toLowerCase()=="blockquote" && child2.tagName.toLowerCase()=="blockquote") {
+						this._mergeBlockquotes(child, child2);
+					}
+				}
+			}, this), 5);
 		}
 	}
 
@@ -1512,37 +1529,41 @@ function(blockquote, element) {
 		range.collapse(false);
 		el = range.startContainer.parentNode;
 		text = AjxUtil.getInnerText(range.startContainer);
-		offset = range.startOffset;
+		var type = range.startContainer.nodeType;
+		offset = (type==3 || type==4 || type==8) && range.startOffset || null;
 	}
 
-	var id = el.id = el.id || Dwt.getNextId();
-	var blockquote2 = blockquote.cloneNode(true); // Create an orphaned clone of the blockquote. This will be meddled with before getting attached to the DOM tree
-	var el1 = el;
-	var el2 = Dwt.byId(id, blockquote2); // Can't use document.getElementById on orphaned trees
+	if (offset!==null) {
+		var id = el.id = el.id || Dwt.getNextId();
+		var blockquote2 = blockquote.cloneNode(true); // Create an orphaned clone of the blockquote. This will be meddled with before getting attached to the DOM tree
+		var el1 = el;
+		var el2 = Dwt.byId(id, blockquote2); // Can't use document.getElementById on orphaned trees
 
-	el1.innerHTML = offset ? text.substring(0, offset) : "";
-	el2.innerHTML = text.substring(offset);
-	el2.id = null;
+		el1.innerHTML = offset ? text.substring(0, offset) : "";
+		el2.innerHTML = text.substring(offset);
+	
+		el2.id = null;
 
-	// Prune off all "later" siblings in the blockquote tree
-	while (el1 != blockquote) {
-		while (el1.nextSibling)
-			el1.parentNode.removeChild(el1.nextSibling);
-		el1 = el1.parentNode;
-	}
+		// Prune off all "later" siblings in the blockquote tree
+		while (el1 != blockquote) {
+			while (el1.nextSibling)
+				el1.parentNode.removeChild(el1.nextSibling);
+			el1 = el1.parentNode;
+		}
 
-	// Prune off all "prior" siblings in the blockquote2 tree
-	while (el2 != blockquote2) {
-		while (el2.previousSibling)
-			el2.parentNode.removeChild(el2.previousSibling);
-		el2 = el2.parentNode;
-	}
+		// Prune off all "prior" siblings in the blockquote2 tree
+		while (el2 != blockquote2) {
+			while (el2.previousSibling)
+				el2.parentNode.removeChild(el2.previousSibling);
+			el2 = el2.parentNode;
+		}
 
-	// Now we've effectively cut the original blockquote in half, with the second half present in blockquote2
-	if (blockquote.nextSibling) {
-		blockquote.parentNode.insertBefore(blockquote2, blockquote.nextSibling);
-	} else {
-		blockquote.parentNode.appendChild(blockquote2);
+		// Now we've effectively cut the original blockquote in half, with the second half present in blockquote2
+		if (blockquote.nextSibling) {
+			blockquote.parentNode.insertBefore(blockquote2, blockquote.nextSibling);
+		} else {
+			blockquote.parentNode.appendChild(blockquote2);
+		}
 	}
 	
 	if (AjxEnv.isIE) {
@@ -1556,12 +1577,85 @@ function(blockquote, element) {
 		p.appendChild(span1);
 		blockquote2.parentNode.insertBefore(p, blockquote2);
 		this._setCursor(span2);
+		this._setIEFiller(span1); // We need to remove this element when we want to reconnect the blockquotes, so give it something we can find again
 		span2.parentNode.removeChild(span2);
 	} else {
 		range.setStartAfter(blockquote);
 		var sel = this._getSelection();
 		sel.removeAllRanges();
 		sel.addRange(range);
+	}
+	
+};
+
+ZmHtmlEditor.prototype._elementIsIEFiller =
+function(el) {
+	if (el.attributes) {
+		for (var i=0; i<el.attributes.length; i++) {
+			if (el.attributes[i].name=="_ieFiller") {
+				return true;
+			}
+		}
+	}
+};
+
+ZmHtmlEditor.prototype._setIEFiller = function(el) {
+	if (el) el.setAttribute("_ieFiller","");
+};
+
+ZmHtmlEditor.prototype._removeIEFiller = function(el) {
+	if (el) {
+		if (this._elementIsIEFiller(el)) {
+			el.parentNode.removeChild(el);
+		}
+		for (var i=0; i<el.children.length; i++) {
+			this._removeIEFiller(el.children[i]);
+		}
+	}
+};
+
+ZmHtmlEditor.prototype._mergeBlockquotes =
+function(blockquote1, blockquote2) {
+
+	if (AjxEnv.isIE) {
+		this._removeIEFiller(blockquote1.lastChild);
+	}
+
+	var el1 = blockquote1;
+	var depth1 = 0;
+	while (el1.lastChild) {
+		el1 = el1.lastChild;
+		while (el1.previousSibling && el1.tagName=="BR")
+			el1 = el1.previousSibling;
+		depth1++;
+	}
+
+	var el2 = blockquote2;
+	var depth2 = 0;
+	while (el2.firstChild) {
+		el2 = el2.firstChild;
+		depth2++;
+	}
+
+	if (el1.nodeType==3) {
+		el1 = el1.parentNode;
+		depth1--;
+	}
+	if (el2.nodeType==3) {
+		el2 = el2.parentNode;
+		depth2--;
+	}
+
+	if (depth1==depth2) { // depths MUST be the same (and they ought to be). Otherwise we'll quickly get in trouble, and then it would be safer not to do anything
+		el1.innerHTML = el1.innerHTML + el2.innerHTML;
+		while (el1 != blockquote1 && el2 != blockquote2) {
+			while (el2.nextSibling) {
+				el1.parentNode.appendChild(el2.nextSibling);
+			}
+			el1 = el1.parentNode;
+			el2 = el2.parentNode;
+		}
+		blockquote2.parentNode.removeChild(blockquote2);
 	}
 };
 
