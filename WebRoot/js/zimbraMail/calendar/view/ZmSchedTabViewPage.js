@@ -496,6 +496,18 @@ function(index, updateTabGroup) {
 	}
 };
 
+ZmSchedTabViewPage.prototype._hideAttendeeRow =
+function(index, updateTabGroup) {
+    var row = this._attendeesTable.rows[index];
+    if(row){
+        row.style.display="none";
+    }
+    if (updateTabGroup) {
+        this._controller._setComposeTabGroup(true);
+    }
+
+};
+
 ZmSchedTabViewPage.prototype._createDwtObjects =
 function() {
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
@@ -652,7 +664,9 @@ function(inputEl, attendee, useException) {
 	} else if (curAttendee) {
 		// user erased an attendee
 		this._resetRow(sched, false, type);
-		this._removeAttendeeRow(idx, true);
+        // bug:43660 removing row (splicing array) causes index mismatch.
+        //this._removeAttendeeRow(idx, true);
+		this._hideAttendeeRow(idx, true);
 	}
 };
 
