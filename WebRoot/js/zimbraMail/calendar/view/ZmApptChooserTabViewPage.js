@@ -601,7 +601,7 @@ function() {
 ZmApptChooserTabViewPage.prototype.searchContacts =
 function(defaultSearch, sortBy, lastId, lastSortVal) {
 	var id = this._searchFieldIds[ZmApptChooserTabViewPage.SF_ATT_NAME];
-	var query = AjxStringUtil.trim(document.getElementById(id).value);
+	var query = AjxStringUtil.trim(document.getElementById(id).value.replace(/[-]/g, ""));// trim "-" and what else ?
 	if (!query.length) {
 		query = this._defaultQuery;
 	}
