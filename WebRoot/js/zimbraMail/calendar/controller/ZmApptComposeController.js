@@ -581,6 +581,12 @@ function(setFocus) {
 	AjxTimedAction.scheduleAction(ta, 10);
 };
 
+ZmApptComposeController.prototype._getDefaultFocusItem =
+function() {
+    var tabView = this._composeView.getTabView(this._composeView.getCurrentTab());
+    return tabView._getDefaultFocusItem();	
+};
+
 ZmApptComposeController.prototype.getKeyMapName =
 function() {
 	return "ZmApptComposeController";

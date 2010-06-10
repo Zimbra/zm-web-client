@@ -33,7 +33,7 @@ ZmApptTabViewPage = function(parent, attendees, controller, dateInfo) {
 	if (arguments.length == 0) return;
 
 	DwtTabViewPage.call(this, parent);
-
+    
 	this._controller = controller;
 	this._editView = new ZmApptEditView(this, attendees, controller, dateInfo);
 };
@@ -112,7 +112,7 @@ function(tabGroup) {
 
 ZmApptTabViewPage.prototype._getDefaultFocusItem =
 function() {
-	this._editView._getDefaultFocusItem();
+	return this._editView._getDefaultFocusItem();
 };
 
 ZmApptTabViewPage.prototype.toggleAllDayField =
