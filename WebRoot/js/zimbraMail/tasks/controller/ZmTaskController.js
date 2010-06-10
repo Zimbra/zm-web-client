@@ -80,6 +80,11 @@ function() {
 	return (new ZmTaskEditView(this._container, this));
 };
 
+ZmTaskController.prototype._getDefaultFocusItem =
+function() {
+    return this._composeView._getDefaultFocusItem();	
+};
+
 ZmTaskController.prototype._setComposeTabGroup =
 function(setFocus) {
 	var tg = this._createTabGroup();
