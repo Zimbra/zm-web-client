@@ -49,10 +49,10 @@ ZmDocsEditView.prototype.save = function(){
 
     if(!fileInfo.id){
         if (fileName == "") {
-            appCtxt.setStatusMsg(ZmMsg.emptyDocName, ZmStatusView.LEVEL_WARNING);
-            return;    
+            message = ZmMsg.emptyDocName;
+        } else {
+            message = this._docMgr.checkInvalidDocName(fileName);
         }
-        message = this._docMgr.checkInvalidDocName(fileName);
     }
 
     if (message) {
@@ -79,26 +79,32 @@ ZmDocsEditView.prototype.save = function(){
 };
 
 ZmDocsEditView.prototype._saveHandler =
-function(files) {
-    if(files && files.length > 0) {
-        ZmDocsEditApp.fileInfo.id = files[0].id;
-        ZmDocsEditApp.fileInfo.version = files[0].ver;
-        
-        var item = this.loadData(ZmDocsEditApp.fileInfo.id);
-        if(!item.rest){    //TODO: Change this code to construct a rest url
-            item.rest = ZmDocsEditApp.restUrl;
+function(files, conflicts) {
+    if(conflicts){
+        var formatter = new AjxMessageFormat(ZmMsg.saveConflictDoc);
+        appCtxt.setStatusMsg(formatter.format(files[0].name), ZmStatusView.LEVEL_WARNING);
+    } else {
+        if (files && files.length > 0) {
+
+            ZmDocsEditApp.fileInfo.id = files[0].id;
+            ZmDocsEditApp.fileInfo.version = files[0].ver;
+
+            var item = this.loadData(ZmDocsEditApp.fileInfo.id);
+            if(!item.rest){    //TODO: Change this code to construct a rest url
+                item.rest = ZmDocsEditApp.restUrl;
+            }
+            if(item != null) {
+                ZmDocsEditApp.fileInfo = item;
+                this.setFooterInfo(item);
+            }
+            var wAppCtxt = null;
+            if(window.isRestView) {
+                wAppCtxt = top.appCtxt;
+            } else {
+                wAppCtxt = window.opener.appCtxt;
+            }
+            appCtxt.setStatusMsg(ZmMsg.savedDoc, ZmStatusView.LEVEL_INFO);
         }
-        if(item != null) {
-            ZmDocsEditApp.fileInfo = item;
-            this.setFooterInfo(item);
-        }
-        var wAppCtxt = null;
-        if(window.isRestView) {
-            wAppCtxt = top.appCtxt;
-        } else {
-            wAppCtxt = window.opener.appCtxt;
-        }
-        appCtxt.setStatusMsg(ZmMsg.savedDoc, ZmStatusView.LEVEL_INFO);
     }
 
 };
