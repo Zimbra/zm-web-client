@@ -2173,8 +2173,7 @@ ZmEditContactViewOther.validator = function(item) {
 				if (isNaN(aDate) || aDate == null) {
 					throw ZmMsg.errorDate;
 				}
-                var formatter = ZmEditContactViewOther._getDateFormatter();
-				return formatter.format(aDate);
+				return ZmEditContactViewOther.formatDate(aDate);
 			}
 			return dateStr;
 		}
@@ -2225,15 +2224,21 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 		var id = [this.getHTMLElId(),"picker"].join("_");
 		this._picker = new DwtButton({parent:this,id:id});
 		this._picker.setImage("CalendarApp");
-		var menu = new DwtMenu({parent:this._picker,style:DwtMenu.CALENDAR_PICKER_STYLE});
-		menu.setSize("150");
-		menu._table.width = "100%";
+
+        var menu = new DwtMenu({parent:this._picker,style:DwtMenu.GENERIC_WIDGET_STYLE});
+//		menu.setSize("150");
+//		menu._table.width = "100%";
 		this._picker.setMenu(menu);
 		this._picker.replaceElement(pickerEl);
+
         var listener = new AjxListener(this, this._handleDropDown);
         this._picker.addSelectionListener(listener);
         this._picker.addDropDownSelectionListener(listener);
-		var calendar = new DwtCalendar({parent:menu});
+
+        var container = new DwtComposite({parent:menu});
+        // TODO: use template?
+
+		var calendar = new DwtCalendar({parent:container});
 		calendar.setDate(new Date());
 		calendar.setFirstDayOfWeek(appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0);
 		calendar.addSelectionListener(new AjxListener(this,this._handleDateSelection,[calendar]));
@@ -2242,6 +2247,10 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 			control: this._picker
 		});
         this._calendar = calendar;
+
+        var checkbox = new DwtCheckbox({parent:container});
+        checkbox.setText(ZmMsg.includeYear);
+        this._calendarIncludeYear = checkbox;
 	}                                                        
 };
 
@@ -2271,10 +2280,17 @@ ZmEditContactViewOther.parseDate = function(dateStr) {
     // NOTE: format for backwards compatibility.
     var aDate = AjxDateUtil.simpleParseDateStr(dateStr);
     if (isNaN(aDate) || aDate == null) {
-        var formatter = ZmEditContactViewOther._getDateFormatter();
-        aDate = formatter.parse(dateStr);
+        var noYear = dateStr.match(/^--/);
+        var pattern = noYear ? "--MM-dd" : "yyyy-MM-dd";
+        aDate = AjxDateFormat.parse(pattern, dateStr);
+        if (noYear) aDate.setFullYear(0);
     }
     return aDate;
+};
+
+ZmEditContactViewOther.formatDate = function(date) {
+    var pattern = date.getFullYear() == 0 ? "--MM-dd" : "yyyy-MM-dd";
+    return AjxDateFormat.format(pattern, date);
 };
 
 ZmEditContactViewOther._getDateFormatter = function() {
@@ -2285,18 +2301,31 @@ ZmEditContactViewOther._getDateFormatter = function() {
 };
 
 ZmEditContactViewOther.prototype._handleDropDown = function(evt) {
-    var formatter = ZmEditContactViewOther._getDateFormatter();
     var value = this.getValue().value;
-    var date = formatter.parse(value) || new Date;
+    var date = ZmEditContactViewOther.parseDate(value) || new Date;
+    var includeYear = date.getFullYear() != 0;
+    // NOTE: Temporarilly set the year to the current year in the
+    // NOTE: case of a date without a year set (i.e. full year == 0).
+    // NOTE: This is done so that the calendar doesn't show the
+    // NOTE: wrong year.
+    if (!includeYear) date.setFullYear(new Date().getFullYear());
     this._calendar.setDate(date);
+    this._calendarIncludeYear.setSelected(includeYear);
     this._picker.popup();
 };
 
 ZmEditContactViewOther.prototype._handleDateSelection = function(calendar) {
+    this._picker.getMenu().popdown();
+
 	if (!calendar) calendar = this._calendar;
-	var formatter = ZmEditContactViewOther._getDateFormatter();
+    var date = calendar.getDate();
+    if (!this._calendarIncludeYear.isSelected()) {
+        date = new Date(date.getTime());
+        date.setFullYear(0);
+    }
+
 	var value = this.getValue();
-	value.value = formatter.format(calendar.getDate());
+	value.value = ZmEditContactViewOther.formatDate(date);
 	this.setValue(value);
 	this.parent.setDirty(true);
 };

@@ -708,7 +708,12 @@
 		}
 		if (ZmContact.IS_DATE[data.name]) {
 			var date = ZmEditContactViewOther.parseDate(value);
-			value = date ? AjxDateFormat.getDateInstance(AjxDateFormat.LONG).format(date) : value;
+			if (date) {
+			    var includeYear = date.getFullYear() != 0;
+			    var formatter = includeYear ?
+			        AjxDateFormat.getDateInstance(AjxDateFormat.LONG) : new AjxDateFormat(ZmMsg.formatDateLongNoYear);
+			    value = formatter.format(date);
+            }
 		}
 		if (data.findObjects) {
 			value = data.findObjects(value, data.objectType);
