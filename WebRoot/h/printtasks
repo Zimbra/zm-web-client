@@ -22,18 +22,18 @@
 <%--TODO: clean up this code --%>
 <html>
 <head>
+    <c:url var='cssurl' value='/css/common,login,images,skin.css'>
+        <c:param name="client"	value="standard" />
+    </c:url>
+    <link rel="stylesheet" type="text/css" href="${cssurl}">
     <style type="text/css">
         .smalltext{
-            font-size:10pt;
+            font-size:8pt;
             color:#666;
-        }
-        .ZhZimbraTitle {
-            font-size:18px;
-            font-weight:bold;
         }
     </style>
 </head>
-<body>
+<body style='background:white;'>
 <table><tr>
     <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
     <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
@@ -66,26 +66,47 @@
             </app:handleError>
 
 
-            <div style="width: 100%; background-color: rgb(238, 238, 238);">
+            <div style="width: 100%;">
                 <table cellpadding="2" cellspacing="0" width="100%">
                     <tr>
-                        <td colspan="2" ><b>${fn:escapeXml(compose.subject)}</b></td>
+                        <td colspan="2">
+                            <table cellpadding="2" cellspacing="0" width="100%">
+                            <tr>
+                                <td class="apptHeader">
+                                    <b>${fn:escapeXml(compose.subject)}</b>
+                                </td>
+                                <td align="right" width="1%">
+                                    <table border="0" cellpadding="2" cellspacing="2">
+                                        <tr>
+                                            <td class="companyName" width="100%">
+                                                <c:set var="folderImage" value="${zm:getFolder(pageContext, message.folderId).image}"/>
+                                                <c:set var="folderName" value="${fn:escapeXml(zm:getFolderName(pageContext, message.folderId))}"/>
+                                                <app:img alt='${folderName}' src="${folderImage}"/>
+                                            </td>
+                                            <td class="companyFolder">${folderName}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            </table>    
+                        <hr>
+                        </td>
                     </tr>
                     <tr>
-                        <td width="1%" align="right"><label for="location"><fmt:message key="location"/>:</label></td>
-                        <td>${fn:escapeXml(compose.location)}</td>
+                        <td class="MsgHdrName"><fmt:message key="location"/>:</td>
+                        <td class="MsgHdrValue">${fn:escapeXml(compose.location)}</td>
                     </tr>
                     <tr>
-                        <td width="1%" align="right"><label for="priority"><fmt:message key="priority"/>:</label></td>
-                        <td>
+                        <td class="MsgHdrName"><fmt:message key="priority"/>:</td>
+                        <td class="MsgHdrValue">
                             <c:if test="${compose.taskPriority eq '9'}"><fmt:message key="taskPrioLow"/></c:if>
                             <c:if test="${compose.taskPriority eq '5'}"><fmt:message key="taskPrioNormal"/></c:if>
                             <c:if test="${compose.taskPriority eq '1'}"><fmt:message key="taskPrioHigh"/></c:if>
                         </td>
                     </tr>
                     <tr>
-                        <td align="right"><fmt:message key="status" /> : </td>
-                        <td nowrap>
+                        <td class="MsgHdrName"><fmt:message key="status" /> : </td>
+                        <td nowrap class="MsgHdrValue">
                             <c:if test="${compose.taskStatus eq 'NEED'}"><fmt:message key="TASK_NEED"/></c:if>
                             <c:if test="${compose.taskStatus eq 'COMP'}"><fmt:message key="TASK_COMP"/></c:if>
                             <c:if test="${compose.taskStatus eq 'INPR'}"><fmt:message key="TASK_INPR"/></c:if>
@@ -95,26 +116,27 @@
                         </td>
                     </tr>
                     <tr>
-                        <td width="1%" align="right" nowrap><label for="start"><fmt:message key="startDate"/>:</label></td>
-                        <td>
+                        <td class="MsgHdrName"><fmt:message key="startDate"/>:</td>
+                        <td class="MsgHdrValue">
                                 ${fn:escapeXml(compose.startDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
                         </td>
 
                     </tr>
                     <tr>
-                        <td width="1%" align="right" nowrap><label for="end"><fmt:message key="taskDueDate"/>:</label></td>
-                        <td>
-                                ${fn:escapeXml(compose.endDate)} <span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
+                        <td class="MsgHdrName"><fmt:message key="taskDueDate"/>:</td>
+                        <td class="MsgHdrValue">
+                                ${fn:escapeXml(compose.endDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
                         </td>
 
                     </tr>
                 </table>
             </div>
-            <br/>
-            <div>
+            <hr/>
+            <table cellpadding="2" cellspacing="0" width="100%"><tr><td>
                     ${fn:escapeXml(empty compose.description ? compose.content : compose.description)}
-                <hr/>
-            </div>
+                </td></tr>   
+            </table>
+            <hr/>
         </c:forEach>
     </c:when>
     <c:otherwise>
@@ -147,26 +169,47 @@
                 
             </app:handleError>
 
-            <div style="width: 100%; background-color: rgb(238, 238, 238);">
+            <div style="width: 100%;">
                 <table cellpadding="2" cellspacing="0" width="100%">
                     <tr>
-                        <td colspan="2" ><b>${fn:escapeXml(compose.subject)}</b></td>
+                        <td colspan="2">
+                            <table cellpadding="2" cellspacing="0" width="100%">
+                            <tr>
+                                <td class="apptHeader">
+                                    <b>${fn:escapeXml(compose.subject)}</b>
+                                </td>
+                                <td align="right" width="1%">
+                                    <table border="0" cellpadding="2" cellspacing="2">
+                                        <tr>
+                                            <td class="companyName" width="100%">
+                                                <c:set var="folderImage" value="${zm:getFolder(pageContext, message.folderId).image}"/>
+                                                <c:set var="folderName" value="${fn:escapeXml(zm:getFolderName(pageContext, message.folderId))}"/>
+                                                <app:img alt='${folderName}' src="${folderImage}"/>
+                                            </td>
+                                            <td class="companyFolder">${folderName}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            </table>
+                        <hr>
+                        </td>
                     </tr>
                     <tr>
-                        <td width="1%" align="right"><label for="location"><fmt:message key="location"/>:</label></td>
-                        <td>${fn:escapeXml(compose.location)}</td>
+                        <td class="MsgHdrName"><fmt:message key="location"/>:</td>
+                        <td class="MsgHdrValue">${fn:escapeXml(compose.location)}</td>
                     </tr>
                     <tr>
-                        <td width="1%" align="right"><label for="priority"><fmt:message key="priority"/>:</label></td>
-                        <td>
+                        <td class="MsgHdrName"><fmt:message key="priority"/>:</td>
+                        <td class="MsgHdrValue">
                             <c:if test="${compose.taskPriority eq '9'}"><fmt:message key="taskPrioLow"/></c:if>
                             <c:if test="${compose.taskPriority eq '5'}"><fmt:message key="taskPrioNormal"/></c:if>
                             <c:if test="${compose.taskPriority eq '1'}"><fmt:message key="taskPrioHigh"/></c:if>
                         </td>
                     </tr>
                     <tr>
-                        <td align="right"><fmt:message key="status" /> : </td>
-                        <td nowrap>
+                        <td class="MsgHdrName"><fmt:message key="status" /> : </td>
+                        <td nowrap class="MsgHdrValue">
                             <c:if test="${compose.taskStatus eq 'NEED'}"><fmt:message key="TASK_NEED"/></c:if>
                             <c:if test="${compose.taskStatus eq 'COMP'}"><fmt:message key="TASK_COMP"/></c:if>
                             <c:if test="${compose.taskStatus eq 'INPR'}"><fmt:message key="TASK_INPR"/></c:if>
@@ -176,26 +219,26 @@
                         </td>
                     </tr>
                     <tr>
-                        <td width="1%" align="right" nowrap><label for="start"><fmt:message key="startDate"/>:</label></td>
-                        <td>
+                        <td class="MsgHdrName"><fmt:message key="startDate"/>:</td>
+                        <td class="MsgHdrValue">
                                 ${fn:escapeXml(compose.startDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
                         </td>
 
                     </tr>
                     <tr>
-                        <td width="1%" align="right" nowrap><label for="end"><fmt:message key="taskDueDate"/>:</label></td>
-                        <td>
-                                ${fn:escapeXml(compose.endDate)} <span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
+                        <td class="MsgHdrName"><fmt:message key="taskDueDate"/>:</td>
+                        <td class="MsgHdrValue">
+                                ${fn:escapeXml(compose.endDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
                         </td>
 
                     </tr>
                 </table>
             </div>
-            <br/>
-            <div>
+            <hr/>
+            <table cellpadding="2" cellspacing="0" width="100%"><tr><td>
                     ${fn:escapeXml(empty compose.description ? compose.content : compose.description)}
-            </div>
-            <br/><br/>
+                </td></tr>
+            </table>
             <hr/>
         </c:forEach>
     </c:otherwise>
