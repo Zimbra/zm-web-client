@@ -1505,7 +1505,8 @@ function(ev) {
 
 ZmHtmlEditor.prototype._handleBlockquoteAdd =
 function(blockquote, element) {
-	var range, el, text, offset;
+	var range, el, offset=null, coffset=null;
+	var text1,text2;
 
 	// Get range, el, text and offset
 	if (AjxEnv.isIE) {
@@ -1513,8 +1514,7 @@ function(blockquote, element) {
 		range = iFrameDoc.selection.createRange();
 		range.collapse(false);
 		el = element;
-		text = AjxUtil.getInnerText(el);
-
+		
 		// IE doesn't let us get the offset directly, so we count the number of times we can use moveStart() until we're out of the containing element
 		var container = range.parentElement();
 		var limit = 10000;
@@ -1524,46 +1524,66 @@ function(blockquote, element) {
 			range.moveStart("character", -1);
 		}
 		offset = i-1;
+		text1 = offset ? el.innerHTML.substring(0, offset) : ""; // Extract text before and after breakpoint
+		text2 = el.innerHTML.substring(offset);
+
 	} else {
 		range = this._getRange();
 		range.collapse(false);
-		el = range.startContainer.parentNode;
-		text = AjxUtil.getInnerText(range.startContainer);
 		var type = range.startContainer.nodeType;
-		offset = (type==3 || type==4 || type==8) && range.startOffset || null;
+		if (type==3 || type==4 || type==8) {
+			offset = range.startOffset;
+			el = range.startContainer.parentNode;
+			text1 = offset ? range.startContainer.textContent.substring(0, offset) : ""; // Extract text before and after breakpoint
+			text2 = range.startContainer.textContent.substring(offset);
+			var _el = range.startContainer.previousSibling;
+			while (_el) {
+				text1 = this._getElementHTML(_el) + text1; // offset is relative to local TextNode, but we need to use the entire text of the surrounding element
+				_el = _el.previousSibling; // so we extract the text from all siblings and put it together
+			}
+			_el = range.startContainer.nextSibling;
+			while (_el) {
+				text2 = text2 + this._getElementHTML(_el); // Same for text after the breakpoint
+				_el = _el.nextSibling;
+			}
+		} else {
+			coffset = range.startOffset; // Breakpoint is not inside a TextNode, store the element offset instead
+			el = range.startContainer;
+		}
 	}
+	
+
+	var id = el.id = el.id || Dwt.getNextId();
+	var blockquote2 = blockquote.cloneNode(true); // Create an orphaned clone of the blockquote. This will be meddled with before getting attached to the DOM tree
+	var el1 = el;
+	var el2 = Dwt.byId(id, blockquote2); // Can't use document.getElementById on orphaned trees
+	el2.removeAttribute("id");
 
 	if (offset!==null) {
-		var id = el.id = el.id || Dwt.getNextId();
-		var blockquote2 = blockquote.cloneNode(true); // Create an orphaned clone of the blockquote. This will be meddled with before getting attached to the DOM tree
-		var el1 = el;
-		var el2 = Dwt.byId(id, blockquote2); // Can't use document.getElementById on orphaned trees
+		el1.innerHTML = text1; // Insert the text we extracted earlier
+		el2.innerHTML = text2;
+	} else if (coffset!==null) {
+		this._removeNextSiblings(el1.childNodes[coffset]); // cut away all siblings after breakpoint for el1
+		this._removePreviousSiblings(el2.childNodes[coffset]); // and all sibling before breakpoint for el2
+	}
 
-		el1.innerHTML = offset ? text.substring(0, offset) : "";
-		el2.innerHTML = text.substring(offset);
-	
-		el2.id = null;
+	// Prune off all "later" siblings in the blockquote tree
+	while (el1 != blockquote) {
+		this._removeNextSiblings(el1);
+		el1 = el1.parentNode;
+	}
 
-		// Prune off all "later" siblings in the blockquote tree
-		while (el1 != blockquote) {
-			while (el1.nextSibling)
-				el1.parentNode.removeChild(el1.nextSibling);
-			el1 = el1.parentNode;
-		}
+	// Prune off all "prior" siblings in the blockquote2 tree
+	while (el2 != blockquote2) {
+		this._removePreviousSiblings(el2);
+		el2 = el2.parentNode;
+	}
 
-		// Prune off all "prior" siblings in the blockquote2 tree
-		while (el2 != blockquote2) {
-			while (el2.previousSibling)
-				el2.parentNode.removeChild(el2.previousSibling);
-			el2 = el2.parentNode;
-		}
-
-		// Now we've effectively cut the original blockquote in half, with the second half present in blockquote2
-		if (blockquote.nextSibling) {
-			blockquote.parentNode.insertBefore(blockquote2, blockquote.nextSibling);
-		} else {
-			blockquote.parentNode.appendChild(blockquote2);
-		}
+	// Now we've effectively cut the original blockquote in half, with the second half present in blockquote2
+	if (blockquote.nextSibling) {
+		blockquote.parentNode.insertBefore(blockquote2, blockquote.nextSibling);
+	} else {
+		blockquote.parentNode.appendChild(blockquote2);
 	}
 	
 	if (AjxEnv.isIE) {
@@ -1580,12 +1600,43 @@ function(blockquote, element) {
 		this._setIEFiller(span1); // We need to remove this element when we want to reconnect the blockquotes, so give it something we can find again
 		span2.parentNode.removeChild(span2);
 	} else {
-		range.setStartAfter(blockquote);
+		range.setStartAfter(blockquote); // Set the breakpoint between the blockquotes (which is immediately after the first one, duh)
 		var sel = this._getSelection();
 		sel.removeAllRanges();
 		sel.addRange(range);
 	}
-	
+};
+
+// Basically yields the same as el.outerHTML, but for all browsers
+ZmHtmlEditor.prototype._getElementHTML = function(el) {
+	if (AjxEnv.isIE) return el.outerHTML;
+	var parent = document.createElement(el.parentNode.tagName);
+	parent.appendChild(el.cloneNode(true));
+	return parent.innerHTML;
+};
+
+// Removes the element from its parent
+ZmHtmlEditor.prototype._removeElement = function(el) {
+	if (el && el.parentNode) {
+		el.parentNode.removeChild(el);
+	}
+};
+
+// Removes all sibling elements coming before el
+ZmHtmlEditor.prototype._removePreviousSiblings = function(el) {
+	if (el && el.parentNode) {
+		while (el.previousSibling) {
+			this._removeElement(el.previousSibling);
+		}
+	}
+};
+// Removes all sibling elements coming after el
+ZmHtmlEditor.prototype._removeNextSiblings = function(el) {
+	if (el && el.parentNode) {
+		while (el.nextSibling) {
+			this._removeElement(el.nextSibling);
+		}
+	}
 };
 
 ZmHtmlEditor.prototype._elementIsIEFiller =
@@ -1623,21 +1674,21 @@ function(blockquote1, blockquote2) {
 
 	var el1 = blockquote1;
 	var depth1 = 0;
-	while (el1.lastChild) {
-		el1 = el1.lastChild;
-		while (el1.previousSibling && el1.tagName=="BR")
-			el1 = el1.previousSibling;
+	while (el1.childNodes.length) { // Descend into blockquote1, finding the very last leaf node in the tree
+		el1 = el1.childNodes[el1.childNodes.length-1];
+		//while (el1.previousSibling && el1.tagName=="BR")
+		//	el1 = el1.previousSibling;
 		depth1++;
 	}
 
 	var el2 = blockquote2;
 	var depth2 = 0;
-	while (el2.firstChild) {
-		el2 = el2.firstChild;
+	while (el2.childNodes.length) { // Descend into blockquote2, finding the very first leaf node in the tree
+		el2 = el2.childNodes[0];
 		depth2++;
 	}
 
-	if (el1.nodeType==3) {
+	if (el1.nodeType==3) { // If it's a TextNode, go one up
 		el1 = el1.parentNode;
 		depth1--;
 	}
@@ -1646,17 +1697,31 @@ function(blockquote1, blockquote2) {
 		depth2--;
 	}
 
-	if (depth1==depth2) { // depths MUST be the same (and they ought to be). Otherwise we'll quickly get in trouble, and then it would be safer not to do anything
+	if (depth1==depth2) { // Simplest case, just append the contents of el2 to el1.
 		el1.innerHTML = el1.innerHTML + el2.innerHTML;
-		while (el1 != blockquote1 && el2 != blockquote2) {
-			while (el2.nextSibling) {
-				el1.parentNode.appendChild(el2.nextSibling);
-			}
-			el1 = el1.parentNode;
-			el2 = el2.parentNode;
+
+	} else if (depth1==depth2+1) { // We're merging at a node border, append all children of el2 to el1's parent (making them siblings of el1)
+		while (el2.firstChild) {
+			el1.parentNode.appendChild(el2.firstChild);
 		}
-		blockquote2.parentNode.removeChild(blockquote2);
+		el1 = el1.parentNode;
+
+	} else if (depth1+1==depth2) { // We're merging at a node border, append el2 and all its siblings to el1 (making them children of el1)
+		el2 = el2.parentNode;
+		while (el2.firstChild) {
+			el1.appendChild(el2.firstChild);
+		}
+	} else { // We don't handle nodes that are further apart
+		return;
 	}
+	while (el1 != blockquote1 && el2 != blockquote2) { // Ascend up the tree, appending nodes from blockquote2's tree to blockquotes1's tree
+		while (el2.nextSibling) {
+			el1.parentNode.appendChild(el2.nextSibling);
+		}
+		el1 = el1.parentNode;
+		el2 = el2.parentNode;
+	}
+	this._removeElement(blockquote2); // All significant contents have been transferred, kill blockquote2
 };
 
 // Spell checker methods
