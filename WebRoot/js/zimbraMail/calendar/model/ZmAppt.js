@@ -532,12 +532,16 @@ function(message) {
 	// parse out attendees for this invite
 	this._attendees[ZmCalBaseItem.PERSON] = [];
 	this.origAttendees = [];
+    var rsvp = false;
 	var attendees = message.invite.getAttendees();
 	if (attendees) {
 		for (var i = 0; i < attendees.length; i++) {
 			var addr = attendees[i].a;
 			var name = attendees[i].d;
 			var email = new AjxEmailAddress(addr, null, name);
+            if (attendees[i].rsvp) {
+				rsvp = true;
+			}
 			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, ZmCalBaseItem.PERSON);
 			if (attendee) {
 				attendee.setParticipantStatus(ptstReplies[addr] || attendees[i].ptst);
@@ -565,7 +569,9 @@ function(message) {
 			if (resourceName && ptst && (this._ptstLocationMap[resourceName] != null)) {
 				this._ptstLocationMap[resourceName].setParticipantStatus(ptstReplies[addr] || ptst);
 			}
-
+            if (resources[i].rsvp) {
+				rsvp = true;
+			}
 			// if multiple resources are present (i.e. aliases) select first one
 			var resourceEmail = AjxEmailAddress.split(resources[i].a)[0];
 
@@ -586,17 +592,8 @@ function(message) {
 	}
 
 	this._setAlarmFromMessage(message);
-
+    this.rsvp = rsvp;
 	if (message.invite.hasOtherAttendees()) {
-		var attendees = message.invite.getAttendees();
-		var rsvp = false;
-		for (var i in attendees) {
-			if (attendees[i].rsvp) {
-				rsvp = true;
-				break;
-			}
-		}
-		this.rsvp = rsvp;
 		if (this._orig) {
 			this._orig.setRsvp(rsvp);
 		}
