@@ -752,12 +752,13 @@ function(ev) {
 					// msg marked as Junk, or hard-deleted
 					// TODO: handle expandable msg removal
 					conv.removeMsg(item);
-					if (this._expanded[conv.id] && conv.numMsgs == 1) {
+					this.removeItem(item, true, ev.batchMode);	// remove msg row
+					var rowIds = this._msgRowIdList[conv.id];
+					if (this._expanded[conv.id] && rowIds && rowIds.length <= 1) {
 						this._setImage(conv, ZmItem.F_EXPAND, null);
 						this._collapse(conv);
 						this._expanded[conv.id] = false;
 					}
-					this.removeItem(item, true, ev.batchMode);	// remove msg row
 					this._controller._app._checkReplenishListView = this;
 				} else {
 					if (!(conv.hasMatchingMsg(this._controller._app.currentSearch), true)) {
@@ -919,16 +920,7 @@ function(convId) {
 ZmConvListView.prototype.removeItem =
 function(item, skipNotify) {
 	if (item.type == ZmItem.MSG) {
-		var msgRowId = this._getItemId(item);
-		var list = this._msgRowIdList[item.cid];
-		if (list && list.length) {
-			for (var i = 0; i < list.length; i++) {
-				if (list[i] == msgRowId) {
-					list[i] = null;
-					break;
-				}
-			}
-		}
+		AjxUtil.arrayRemove(this._msgRowIdList[item.cid], this._getItemId(item));
 	}
 	DwtListView.prototype.removeItem.apply(this, arguments);
 };
