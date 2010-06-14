@@ -1516,14 +1516,10 @@ function(blockquote, element) {
 		el = element;
 		
 		// IE doesn't let us get the offset directly, so we count the number of times we can use moveStart() until we're out of the containing element
-		var container = range.parentElement();
-		var limit = 10000;
-		for (var i=0; i<limit; i++) {
-			if (container != range.parentElement())
-				break;
-			range.moveStart("character", -1);
-		}
-		offset = i-1;
+		var dummy = "###"+Dwt.getNextId()+"###";
+		range.pasteHTML(dummy);
+		offset = el.innerHTML.indexOf(dummy);
+		el.innerHTML = el.innerHTML.replace(dummy,"");
 		text1 = offset ? el.innerHTML.substring(0, offset) : ""; // Extract text before and after breakpoint
 		text2 = el.innerHTML.substring(offset);
 
@@ -1610,7 +1606,7 @@ function(blockquote, element) {
 // Basically yields the same as el.outerHTML, but for all browsers
 ZmHtmlEditor.prototype._getElementHTML = function(el) {
 	if (AjxEnv.isIE) return el.outerHTML;
-	var parent = document.createElement(el.parentNode.tagName);
+	var parent = document.createElement(el.parentNode && el.parentNode.tagName || "span");
 	parent.appendChild(el.cloneNode(true));
 	return parent.innerHTML;
 };
@@ -1635,6 +1631,20 @@ ZmHtmlEditor.prototype._removeNextSiblings = function(el) {
 	if (el && el.parentNode) {
 		while (el.nextSibling) {
 			this._removeElement(el.nextSibling);
+		}
+	}
+};
+
+ZmHtmlEditor.prototype._selectNode = function(el) {
+	var set;
+	var range = this._getRange();
+	while (!set && el) {
+		try {
+			range.setStartBefore(el);
+			set = true;
+		} catch (ex) {
+			el = el.parentNode;
+			set = false;
 		}
 	}
 };
@@ -1676,8 +1686,8 @@ function(blockquote1, blockquote2) {
 	var depth1 = 0;
 	while (el1.childNodes.length) { // Descend into blockquote1, finding the very last leaf node in the tree
 		el1 = el1.childNodes[el1.childNodes.length-1];
-		//while (el1.previousSibling && el1.tagName=="BR")
-		//	el1 = el1.previousSibling;
+		while (el1.previousSibling && el1.tagName=="BR")
+			el1 = el1.previousSibling;
 		depth1++;
 	}
 
