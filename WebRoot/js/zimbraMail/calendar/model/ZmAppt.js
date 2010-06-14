@@ -428,12 +428,25 @@ function(isHtml) {
 			buf[i++] = "</table>\n<p>\n<table border='0'>";
 		}
 		buf[i++] = "\n";
-		var attString = ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.PERSON].slice(0, 10), ZmCalBaseItem.PERSON);
-		if (this._attendees[ZmCalBaseItem.PERSON].length > 10) {
-			attString += ", ...";
+		var reqAttString = ZmApptViewHelper.getAttendeesByRole(this._attendees[ZmCalBaseItem.PERSON].slice(0, 10), ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED);
+        if (this._attendees[ZmCalBaseItem.PERSON].length > 10) {
+			reqAttString += ", ...";
 		}
-		params = [ ZmMsg.invitees + ":", attString, "" ];
+
+        var optAttString = ZmApptViewHelper.getAttendeesByRole(this._attendees[ZmCalBaseItem.PERSON].slice(0, 10), ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL);
+		if (this._attendees[ZmCalBaseItem.PERSON].length > 10) {
+			optAttString += ", ...";
+		}
+        var attendeeTitle = (optAttString == "") ? ZmMsg.invitees : ZmMsg.requiredInvitees ;
+        params = [ attendeeTitle + ":", reqAttString, "" ];
 		buf[i++] = formatter.format(params);
+        buf[i++] = "\n";
+
+        params = [ ZmMsg.optionalInvitees + ":", optAttString, "" ];
+        if(optAttString != ""){
+		buf[i++] = formatter.format(params);
+        }
+
 	}
 	if (isHtml) {
 		buf[i++] = "</table>\n";

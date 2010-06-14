@@ -408,6 +408,34 @@ function(list, type, includeDisplayName, includeRole) {
 	return a.join(ZmAppt.ATTENDEES_SEPARATOR);
 };
 
+/**
+* Creates a string of attendees by role. If an item
+* doesn't have a name, its address is used.
+*
+* @param list					[array]			list of attendees (ZmContact or ZmResource)
+* @param type					[constant]		attendee type
+* @param role      		        [constant]      attendee role
+*/
+ZmApptViewHelper.getAttendeesByRole =
+function(list, type, role) {
+	if (!(list && list.length)) return "";
+
+	var a = [];
+	for (var i = 0; i < list.length; i++) {
+		var attendee = list[i];
+		var text = attendee.getAttendeeText(type);
+        var _attendeeRole = attendee.getParticipantRole() || ZmCalItem.ROLE_REQUIRED;
+        if(role == ZmCalItem.ROLE_REQUIRED && (_attendeeRole == ZmCalItem.ROLE_REQUIRED)){
+            a.push(text);
+        }
+        if(role == ZmCalItem.ROLE_OPTIONAL && _attendeeRole == ZmCalItem.ROLE_OPTIONAL){
+            a.push(text);
+        }
+	}
+
+	return a.join(ZmAppt.ATTENDEES_SEPARATOR);
+};
+
 ZmApptViewHelper._allDayItemHtml =
 function(appt, id, bodyStyle, controller) {
 	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
