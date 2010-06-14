@@ -743,9 +743,13 @@ function() {
 /**
  * Returns the item that should be selected after a move/delete. Finds
  * the first non-selected item after the first selected item.
+ *
+ * @param	{hash}		omit		hash of item IDs to exclude from being next selected item
  */
 ZmDoublePaneController.prototype._getNextItemToSelect =
-function() {
+function(omit) {
+
+	omit = omit || {};
 	var listView = this._listView[this._currentView];
 	var numSelected = listView.getSelectionCount();
 	if (numSelected) {
@@ -762,7 +766,7 @@ function() {
 			var childNodes = listView._parentEl.childNodes;
 			for (var i = idx - 1; i >= 0; i--) {
 				var item = listView.getItemFromElement(childNodes[i]);
-				if (item && !selIds[item.id] && !(item.cid && selIds[item.cid])) {
+				if (item && !selIds[item.id] && !omit[item.id] && !(item.cid && (selIds[item.cid] || omit[item.cid]))) {
 					return item;
 				}
 			}
@@ -772,7 +776,7 @@ function() {
 			var childNodes = listView._parentEl.childNodes;
 			for (var i = idx + 1; i < childNodes.length; i++) {
 				var item = listView.getItemFromElement(childNodes[i]);
-				if (item && !selIds[item.id] && !(item.cid && selIds[item.cid])) {
+				if (item && !selIds[item.id] && !omit[item.id] && !(item.cid && (selIds[item.cid] || omit[item.cid]))) {
 					return item;
 				}
 			}

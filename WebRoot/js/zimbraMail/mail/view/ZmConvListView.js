@@ -761,7 +761,7 @@ function(ev) {
 					}
 					this._controller._app._checkReplenishListView = this;
 				} else {
-					if (!(conv.hasMatchingMsg(this._controller._app.currentSearch), true)) {
+					if (!(conv.hasMatchingMsg(this._controller._app.currentSearch, true))) {
 						this._list.remove(conv);				// view has sublist of controller list
 						this._controller._list.remove(conv);	// complete list
 						ev.item = item = conv;
@@ -783,6 +783,15 @@ function(ev) {
 	if (isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
 		var items = ev.batchMode ? this._getItemsFromBatchEvent(ev) : [item];
 		for (var i = 0, len = items.length; i < len; i++) {
+			var conv = items[i];
+			if (this._itemToSelect && this._itemToSelect.cid == conv.id) {
+				var a = conv.msgs.getArray();
+				var omit = {};
+				for (var j = 0, len1 = a.length; j < len1; j++) {
+					omit[a[j].id] = true;
+				}
+				this._itemToSelect = this._controller._getNextItemToSelect(omit);
+			}
 			this._removeMsgRows(items[i].id);	// conv move: remove msg rows
 		}
 	}
