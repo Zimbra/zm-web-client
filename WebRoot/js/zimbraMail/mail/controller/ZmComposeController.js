@@ -1472,6 +1472,8 @@ function(draftType, callback) {
 	}
 	this._action = ZmOperation.DRAFT;
 
+	this._composeView._isDirty = false;
+
 	if (callback) {
 		callback.run();
 	}
