@@ -639,7 +639,7 @@ function(item) {
 		
 		var a = conv.msgs ? conv.msgs.getArray() : null;
 		if (a && a.length) {
-			var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
+			var limit = appCtxt.get(ZmSetting.CONVERSATION_PAGE_SIZE);
 			var idx = null;
 			for (var i = 0; i < a.length; i++) {
 				if (a[i].id == item.id) {

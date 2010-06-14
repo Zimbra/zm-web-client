@@ -108,7 +108,7 @@ function(params, callback) {
 	}
 	var sortBy = params.sortBy || ZmSearch.DATE_DESC;
 	var offset = params.offset || 0;
-	var limit = params.limit || appCtxt.get(ZmSetting.PAGE_SIZE);
+	var limit = params.limit || appCtxt.get(ZmSetting.CONVERSATION_PAGE_SIZE);
 
 	var doSearch = true;
 	if (this._loaded && this.msgs && this.msgs.size() && !params.forceLoad) {

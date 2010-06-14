@@ -418,7 +418,7 @@ ZmConvListController.prototype._paginateConv =
 function(conv, offset, callback) {
 	var list = conv.msgs;
 	// see if we're out of msgs and the server has more
-	var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
+	var limit = appCtxt.get(ZmSetting.CONVERSATION_PAGE_SIZE);
 	if (offset && list && ((offset + limit > list.size()) && list.hasMore())) {
 		// figure out how many items we need to fetch
 		var delta = (offset + limit) - list.size();

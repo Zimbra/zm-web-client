@@ -550,7 +550,7 @@ function(offset, limit) {
 
 	var msg = null;	
 	offset = offset || 0;
-	limit = limit || appCtxt.get(ZmSetting.PAGE_SIZE);
+	limit = limit || appCtxt.get(ZmSetting.CONVERSATION_PAGE_SIZE);
 	var numMsgs = this.size();
 
 	if (numMsgs > 0 && offset >= 0 && offset < numMsgs) {
