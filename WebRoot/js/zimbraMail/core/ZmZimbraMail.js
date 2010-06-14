@@ -1328,6 +1328,7 @@ function(result) {
 	this._pollRequest = null;
 	var noopResult = result.getResponse().NoOpResponse;
 	if (noopResult.waitDisallowed) {
+		this._waitDisallowed = true;
 		// revert to polling mode - server doesn't want us to use instant notify.
 		this.setInstantNotify(false);
 	}  else {
@@ -2543,6 +2544,12 @@ function() {
  */
 ZmZimbraMail.prototype._globalSelectionListener =
 function(ev) {
+	// bug 47514
+	if (this._waitDisallowed) {
+		this._waitDisallowed = false;
+		this.setInstantNotify(true);
+	}
+
 	if (!appCtxt.areZimletsLoaded()) { return; }
 
 	var item = ev.item;
