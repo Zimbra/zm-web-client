@@ -186,6 +186,9 @@ function(params) {
 			var overview = overviews[i];
 			this._resetTree(params.treeIds, overview);
 		}
+
+		ov.expandAccountOnly(appCtxt.getActiveAccount());
+
 	} else {
 		this._resetTree(params.treeIds, ov);
 	}
