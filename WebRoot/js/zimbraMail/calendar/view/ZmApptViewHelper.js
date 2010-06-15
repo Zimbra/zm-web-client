@@ -415,30 +415,25 @@ function(list, type, includeDisplayName, includeRole) {
 * @param list					[array]			list of attendees (ZmContact or ZmResource)
 * @param type					[constant]		attendee type
 * @param role      		        [constant]      attendee role
-* @param count                  [number]        number of attendees to be returned
 */
 ZmApptViewHelper.getAttendeesByRole =
-function(list, type, role, count) {
-    if (!(list && list.length)) return "";
+function(list, type, role) {
+	if (!(list && list.length)) return "";
 
-    var a = [];
-    var str = "";
-    var hasMore = false;
-    for (var i = 0; i < list.length; i++) {
-        var attendee = list[i];
-        var text = attendee.getAttendeeText(type);
+	var a = [];
+	for (var i = 0; i < list.length; i++) {
+		var attendee = list[i];
+		var text = attendee.getAttendeeText(type);
         var _attendeeRole = attendee.getParticipantRole() || ZmCalItem.ROLE_REQUIRED;
-        if(_attendeeRole == role){
+        if(role == ZmCalItem.ROLE_REQUIRED && (_attendeeRole == ZmCalItem.ROLE_REQUIRED)){
             a.push(text);
         }
-    }
-    if (count && a.length > count){
-        hasMore = true;
-        a = a.slice(0, count);
-    }
+        if(role == ZmCalItem.ROLE_OPTIONAL && _attendeeRole == ZmCalItem.ROLE_OPTIONAL){
+            a.push(text);
+        }
+	}
 
-    str = a.join(ZmAppt.ATTENDEES_SEPARATOR);
-    return hasMore ?  str+= ZmAppt.ATTENDEES_SEPARATOR + " ..." : str;
+	return a.join(ZmAppt.ATTENDEES_SEPARATOR);
 };
 
 ZmApptViewHelper._allDayItemHtml =

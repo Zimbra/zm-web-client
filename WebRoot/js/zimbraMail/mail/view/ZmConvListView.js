@@ -73,7 +73,7 @@ ZmConvListView = function(params) {
 
 	this._mode = ZmId.VIEW_CONVLIST;
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
-	this._resetExpansion();
+	this._msgRowIdList = {};	// hash of lists, each list has row IDs for an expandable item
 };
 
 ZmConvListView.prototype = new ZmMailListView;
@@ -123,37 +123,23 @@ function(item) {
  */
 ZmConvListView.prototype.reRenderListView =
 function() {
-
 	var isMultiColumn = this.isMultiColumn();
-	var expanded, selected, anchorItem, focused;
+	var expanded;
 	if (isMultiColumn != this._isMultiColumn) {
 		expanded = this._expandedItems;
-		selected = this.getSelection();
-		anchorItem = this._kbAnchor && this.getItemFromElement(this._kbAnchor);
-		focused = this.hasFocus();
 		this._resetExpansion();
 	}
 
 	ZmMailListView.prototype.reRenderListView.call(this);
 
-	// restore previous list view state
 	if (expanded) {
 		for (var id in expanded) {
 			if (expanded[id]) {
-				for (var i = 0; i < expanded[id].length; i++) {
+				for (var i=0; i<expanded[id].length; i++) { 
 					this._expandItem(expanded[id][i]);
 				}
 			}
 		}
-	}
-	if (selected && selected.length) {
-		this.setSelectedItems(selected);
-	}
-	if (anchorItem) {
-		this._kbAnchor = this._getElFromItem(anchorItem);
-	}
-	if (focused) {
-		this.focus();
 	}
 };
 
@@ -328,8 +314,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_SELECTION) {
 		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 	} else if (field == ZmItem.F_EXPAND) {
-		var exp = this._expandable[item.id] = this._isExpandable(item);
-		idx = this._getImageHtml(htmlArr, idx, exp ? "NodeCollapsed" : null, this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
 	} else if (item.type == ZmItem.MSG) {
 		idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);
 	} else {
@@ -683,11 +668,10 @@ function() {
 		}
 	}
 
-	this._expandable	= {};	// has an expansion arrow
-	this._expanded		= {};	// current expansion state, by ID
-	this._msgRowIdList	= {};	// list of row IDs for a conv ID
-	this._msgOffset		= {};	// the offset for a msg ID
-	this._expandedItems	= {};	// list of expanded items for a conv ID (inc conv)
+	this._expanded = {};		// current expansion state, by ID
+	this._msgRowIdList = {};	// list of row IDs for a conv ID
+	this._msgOffset = {};		// the offset for a msg ID
+	this._expandedItems = {};	// list of expanded items for a conv ID (inc conv)
 };
 
 ZmConvListView.prototype._expandItem =

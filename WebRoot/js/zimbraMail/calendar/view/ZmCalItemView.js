@@ -349,16 +349,12 @@ function(calItem) {
 	var equipment = calItem.getAttendeesText(ZmCalBaseItem.EQUIPMENT, true);
 	var isException = calItem._orig.isException;
 	var dateStr = this._getTimeString(calItem);
-	//var attendees = calItem.getAttendeesText(ZmCalBaseItem.PERSON);
-    var isAttendees = false;
-    var reqAttendees = calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED);
-    var optAttendees = calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL);
-    if(reqAttendees || optAttendees) isAttendees = true;
+	var attendees = calItem.getAttendeesText(ZmCalBaseItem.PERSON);
 	var org, obo;
 	var recurStr = calItem.isRecurring() ? calItem.getRecurBlurb() : null;
 	var attachStr = ZmCalItemView._getAttachString(calItem);
 
-	if (isAttendees) {
+	if (attendees) {
 		var organizer = org = calItem.getOrganizer();
 		var sender = calItem.message.getAddress(AjxEmailAddress.SENDER);
 		var from = calItem.message.getAddress(AjxEmailAddress.FROM);
@@ -379,8 +375,7 @@ function(calItem) {
 		dateStr = this._objectManager.findObjects(dateStr, true);
 		if (org) org = this._objectManager.findObjects(org, true, ZmObjectManager.EMAIL);
 		if (obo) obo = this._objectManager.findObjects(obo, true, ZmObjectManager.EMAIL);
-		if (optAttendees) optAttendees = this._objectManager.findObjects(optAttendees, true);
-        if (reqAttendees) reqAttendees = this._objectManager.findObjects(reqAttendees, true);
+		if (attendees) attendees = this._objectManager.findObjects(attendees, true);
 	}
 
 	return {
@@ -390,9 +385,7 @@ function(calItem) {
 		equipment: equipment,
 		isException: isException,
 		dateStr: dateStr,
-        isAttendees: isAttendees,
-        reqAttendees: reqAttendees,
-		optAttendees: optAttendees,
+		attendees: attendees,
 		org: org,
 		obo: obo,
 		recurStr: recurStr,
