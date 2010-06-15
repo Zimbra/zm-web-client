@@ -172,14 +172,44 @@
             <c:param name="sq" value="${param.sq}"/>
         </c:redirect>
     </c:if>
-
     <c:if test="${not mailbox.features.mail}">
         <c:if test="${param.st eq 'message' or param.st eq 'conversation' or empty param.st}">
             <c:redirect url="/h/calendar"/>
         </c:if>
     </c:if>
+    <%-- Include Shared Folder Search  --%>
+    <c:set var="sfId" value=""/>
+    <c:if test="${not empty param.incShared}">
+        <zm:forEachFolder var="folder" skiproot="${true}" skipsystem="${true}" expanded="${sessionScope.expanded}" skiptrash="${true}">
+            <c:if test="${folder.isMountPoint}">
+                <c:if test="${param.st eq 'task' and folder.isTaskView}">
+                    <c:if test="${not empty sfId}">
+                        <c:set var="sfId" value="${sfId} OR"/>
+                    </c:if>
+                    <c:set var="sfId" value="${sfId} inid:${folder.id}"/>
+                </c:if>
+                <c:if test="${param.st eq 'contact' and folder.isContactView}">
+                    <c:if test="${not empty sfId}">
+                        <c:set var="sfId" value="${sfId} OR"/>
+                    </c:if>
+                    <c:set var="sfId" value="${sfId} inid:${folder.id}"/>
+                </c:if>
+                <c:if test="${(param.st eq 'message' or param.st eq 'conversation') and folder.isMailView}">
+                    <c:if test="${not empty sfId}">
+                        <c:set var="sfId" value="${sfId} OR"/>
+                    </c:if>
+                    <c:set var="sfId" value="${sfId} inid:${folder.id}"/>
+                </c:if>
+            </c:if>    
+        </zm:forEachFolder>                            
+    </c:if>
+    <c:if test="${not empty sfId}">
+        <c:set var="sharedSq" value="${param.sq} (${sfId} OR is:local)"/>
+    </c:if>
+    <%-- End - Include Shared Folder Search  --%>
 
-    <zm:computeSearchContext var="context" usecache="true"/>
+    <zm:computeSearchContext var="context" usecache="true" query="${not empty param.incShared ? sharedSq : ''}"/>
+
 </app:handleError>
 <c:if test="${param.mesg eq 'welcome'}">
     <c:set var="refreshSkin" value="${true}" scope="request"/>

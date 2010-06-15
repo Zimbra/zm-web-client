@@ -276,7 +276,7 @@ ZmConvListController.prototype._listSelectionListener =
 function(ev) {
 	var item = ev.item;
 	if (!item) { return; }
-	if (ev.field == ZmItem.F_EXPAND) {
+	if (ev.field == ZmItem.F_EXPAND && this._mailListView._expandable[item.id]) {
 		this._toggle(item, false);
 	} else {
 		var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
