@@ -54,7 +54,7 @@
            <td class="ImgField_L searchwidth"></td>
             <td class="SearchFieldWidth"><input id="searchField" class="searchField" maxlength="2048" name="sq" value="${query}"></td>
             <td class="ImgField_R searchwidth"></td>
-            <td nowrap="nowrap"><input type="checkbox" name="incShared" value="1"/></td><td nowrap="nowrap">&nbsp;<fmt:message key="includeShared"/></td>    
+            <td nowrap="nowrap"><input type="checkbox" name="incShared" value="1" <c:if test="${not empty param.incShared}"> checked </c:if> /></td><td nowrap="nowrap">&nbsp;<fmt:message key="includeShared"/></td>    
             <c:if test="${mailbox.features.mail||mailbox.features.contacts||mailbox.features.calendar||mailbox.features.tasks}">    
             <td nowrap="nowrap" style="padding-left: 2px;">&nbsp;<fmt:message key="in"/>&nbsp;</td>
             <td style="padding-left: 2px;">
