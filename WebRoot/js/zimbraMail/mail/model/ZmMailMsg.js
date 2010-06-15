@@ -1252,8 +1252,9 @@ function(request, isDraft, accountName, requestReadReceipt) {
 									? (oboDraftMsgId || this.id || this.origId)
 									: (this.origId || this.id);
 
-                                if(!id && this._origMsg)
-                                    id = this._origMsg.id;
+								if (!id && this._origMsg) {
+									id = this._origMsg.id;
+								}
 
 								attachNode.mp = [{mid:id, part:inlineAtts[j].part}];
 							}
@@ -1334,8 +1335,11 @@ function(request, isDraft, accountName, requestReadReceipt) {
 						id = this.origAcctMsgId;
 					}
 
-					// bug fix #33312 - should be reverted(?) once bug #33691 is fixed. 
-					if (id && appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain && (isDraft || this.isDraft)) {
+					// bug fix #33312 - should be reverted(?) once bug #33691 is fixed.
+					if (id && appCtxt.multiAccounts &&
+						(appCtxt.getActiveAccount().name != accountName) &&
+						(isDraft || this.isDraft))
+					{
 						id = ZmOrganizer.getSystemId(id, appCtxt.accountList.mainAccount, true);
 					}
 
