@@ -118,6 +118,7 @@ function(params) {
 	var showAllMailboxes = (appCtxt.isOffline && this._appName == ZmApp.MAIL && (accounts.length > 2));
 	var showBackgroundColor = showAllMailboxes;
 	var mainAcct = appCtxt.accountList.mainAccount;
+	var origOmit = params.omit;
 
 	for (var i = 0; i < accounts.length; i++) {
 		acct = accounts[i];
@@ -152,7 +153,7 @@ function(params) {
 	}
 
 	// add "All Mailboxes"
-	skip = params.omit && params.omit[ZmOrganizer.ID_ALL_MAILBOXES];
+	skip = origOmit && origOmit[ZmOrganizer.ID_ALL_MAILBOXES];
 	if (showAllMailboxes && !skip) {
 		var text = ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_ALL_MAILBOXES]];
 		var hdrText = appCtxt.get(ZmSetting.OFFLINE_ALL_MAILBOXES_TREE_OPEN)
