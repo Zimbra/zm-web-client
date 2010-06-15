@@ -39,7 +39,7 @@
             </c:otherwise>
         </c:choose>
         <form method="get" onsubmit="return searchClick(this);" action="${fn:escapeXml(searchUrl)}">
-            <c:set var="query">${fn:escapeXml((!empty query and mailbox.prefs.showSearchString) ? query : param.sq)}</c:set>
+            <c:set var="query">${fn:escapeXml((!empty query and mailbox.prefs.showSearchString and empty param.incShared) ? query : param.sq)}</c:set>
             <c:if test="${voice}">
                 <c:set var="query"/>
             </c:if>
@@ -54,6 +54,7 @@
            <td class="ImgField_L searchwidth"></td>
             <td class="SearchFieldWidth"><input id="searchField" class="searchField" maxlength="2048" name="sq" value="${query}"></td>
             <td class="ImgField_R searchwidth"></td>
+            <td nowrap="nowrap"><input type="checkbox" name="incShared" value="1"/></td><td nowrap="nowrap">&nbsp;<fmt:message key="includeShared"/></td>    
             <c:if test="${mailbox.features.mail||mailbox.features.contacts||mailbox.features.calendar||mailbox.features.tasks}">    
             <td nowrap="nowrap" style="padding-left: 2px;">&nbsp;<fmt:message key="in"/>&nbsp;</td>
             <td style="padding-left: 2px;">
