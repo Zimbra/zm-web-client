@@ -101,6 +101,20 @@ function(type, inclDispName) {
 };
 
 /**
+ * Gets the attendee as text by role.
+ *
+ * @param	{constant}		type		the type
+ * @param	{constant}		role		defines the role of the attendee (required/optional)
+ *
+ * @return	{String}	the attendee string by role
+ */
+ZmAppt.prototype.getAttendeesTextByRole =
+function(type, role) {
+	return ZmApptViewHelper.getAttendeesByRole(this._attendees[type], type, role);
+};
+
+
+/**
  * Checks if the appointment has attendees of the specified type.
  * 
  * @param	{constant}		type		the type

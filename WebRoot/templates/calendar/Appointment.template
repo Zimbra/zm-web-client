@@ -610,9 +610,10 @@
 		</tr>
 		<$ } $>
 
-		<$ if (data.attendees && data.org) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.organizer, val:data.org}) $><$ } $>
-		<$ if (data.attendees && data.obo) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.onBehalfOf, val:data.obo}) $><$ } $>
-		<$ if (data.attendees) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attendees, val:data.attendees}) $><$ } $>
+		<$ if (data.isAttendees && data.org) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.organizer, val:data.org}) $><$ } $>
+		<$ if (data.isAttendees && data.obo) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.onBehalfOf, val:data.obo}) $><$ } $>
+		<$ if (data.reqAttendees) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attendees, val:data.reqAttendees}) $><$ } $>
+		<$ if (data.optAttendees) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.optionalAttendees, val:data.optAttendees}) $><$ } $>
 		<$ if (data.recurStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.repeats, val:data.recurStr}) $><$ } $>
 		<$ if (data.attachStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
 	</table>
