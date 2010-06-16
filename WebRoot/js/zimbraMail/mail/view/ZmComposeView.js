@@ -223,8 +223,9 @@ function(params) {
 		this._setFormValue();
 	}
 	// Force focus on the TO field
-	if (!this._isReply())
+	if (!this._isReply()) {
 		appCtxt.getKeyboardMgr().grabFocus(this._field[AjxEmailAddress.TO]);
+	}
 };
 
 /**
@@ -1600,6 +1601,8 @@ function(bodyPart, encodeSpace) {
 		var dwtIframe = new DwtIframe(params);
 		if (dwtIframe) {
 			text = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body);
+			var dwtEl = this.getHtmlElement().removeChild(dwtIframe.getHtmlElement());
+			delete dwtEl;
 			delete dwtIframe;
 		}
 	} else {
@@ -2594,8 +2597,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 ZmComposeView.prototype._resetBodySize =
 function() {
 	var size = this.getSize();
-	if (size.x <= 0 || size.y <= 0)
-		return;
+	if (size.x <= 0 || size.y <= 0) { return; }
 
 	var height = size.y - Dwt.getSize(this._headerEl).y;
 	if (height != size.y) {
