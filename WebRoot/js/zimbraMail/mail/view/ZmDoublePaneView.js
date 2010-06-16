@@ -77,20 +77,21 @@ function() {
 ZmDoublePaneView.prototype.setReadingPane =
 function() {
 
+	var mlv = this._mailListView, mv = this._msgView;
 	var readingPaneEnabled = this._controller.isReadingPaneOn();
 	if (!readingPaneEnabled) {
-		this._msgView.setVisible(false);
+		mv.setVisible(false);
 		this._vertMsgSash.setVisible(false);
 		this._horizMsgSash.setVisible(false);
 	} else {
-		if (!this._msgView.getVisible()) {
-			if (this._mailListView.getSelectionCount() == 1) {
+		if (!mv.getVisible()) {
+			if (mlv.getSelectionCount() == 1) {
 				this._controller._setSelectedItem();
 			} else {
-				this._msgView.reset();
+				mv.reset();
 			}
 		}
-		this._msgView.setVisible(true);
+		mv.setVisible(true);
 		var readingPaneOnRight = this._controller.isReadingPaneOnRight();
 		var newSash = readingPaneOnRight ? this._vertMsgSash : this._horizMsgSash;
 		var oldSash = readingPaneOnRight ? this._horizMsgSash : this._vertMsgSash;
@@ -98,13 +99,18 @@ function() {
 		newSash.setVisible(true);
 	}
 
-	this._mailListView.reRenderListView();
-	if (!this._mailListView._isPageless || this._mailListView.offset == 0) {
-		this._mailListView.scrollToTop();
-	}
-	this._msgView.noTab = !readingPaneEnabled || AjxEnv.isIE;
+	var oldRowHeight = mlv._rowHeight;
+	var oldScrollTop = mlv._listDiv.scrollTop;
+
+	mlv.reRenderListView();
+
+	mv.noTab = !readingPaneEnabled || AjxEnv.isIE;
 	var sz = this.getSize();
 	this._resetSize(sz.x, sz.y, true);
+	// restore scroll position based on row height ratio
+	if (mlv._rowHeight != oldRowHeight) {
+		mlv._listDiv.scrollTop = oldScrollTop * (mlv._rowHeight / oldRowHeight);
+	}
 };
 
 ZmDoublePaneView.prototype._createMailListView =

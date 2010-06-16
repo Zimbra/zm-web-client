@@ -101,6 +101,20 @@ function(type, inclDispName) {
 };
 
 /**
+ * Gets the attendee as text by role.
+ *
+ * @param	{constant}		type		the type
+ * @param	{constant}		role		defines the role of the attendee (required/optional)
+ *
+ * @return	{String}	the attendee string by role
+ */
+ZmAppt.prototype.getAttendeesTextByRole =
+function(type, role) {
+	return ZmApptViewHelper.getAttendeesByRole(this._attendees[type], type, role);
+};
+
+
+/**
  * Checks if the appointment has attendees of the specified type.
  * 
  * @param	{constant}		type		the type
@@ -434,15 +448,9 @@ function(isHtml) {
 			buf[i++] = "</table>\n<p>\n<table border='0'>";
 		}
 		buf[i++] = "\n";
-		var reqAttString = ZmApptViewHelper.getAttendeesByRole(this._attendees[ZmCalBaseItem.PERSON].slice(0, 10), ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED);
-        if (this._attendees[ZmCalBaseItem.PERSON].length > 10) {
-			reqAttString += ", ...";
-		}
-
-        var optAttString = ZmApptViewHelper.getAttendeesByRole(this._attendees[ZmCalBaseItem.PERSON].slice(0, 10), ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL);
-		if (this._attendees[ZmCalBaseItem.PERSON].length > 10) {
-			optAttString += ", ...";
-		}
+		var reqAttString = ZmApptViewHelper.getAttendeesByRole(this._attendees[ZmCalBaseItem.PERSON], ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED, 10);
+        var optAttString = ZmApptViewHelper.getAttendeesByRole(this._attendees[ZmCalBaseItem.PERSON], ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL, 10);
+		
         var attendeeTitle = (optAttString == "") ? ZmMsg.invitees : ZmMsg.requiredInvitees ;
         params = [ attendeeTitle + ":", reqAttString, "" ];
 		buf[i++] = formatter.format(params);
