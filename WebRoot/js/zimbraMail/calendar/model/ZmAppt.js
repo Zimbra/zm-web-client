@@ -340,6 +340,12 @@ function(isHtml) {
 	var params = [ ZmMsg.organizer + ":", orgText, "" ];
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
+    if(this.getFolder().isRemote() && this.sentBy){
+        orgEmail = ZmApptViewHelper.getOrganizerEmail(this.sentBy).toString();
+	    orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
+        buf[i++] = formatter.format([ZmMsg.sentBy+":", orgText, ""]);
+        buf[i++] = "\n";
+    }
 	if (isHtml) {
 		buf[i++] = "</table>";
 	}

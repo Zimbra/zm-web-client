@@ -285,3 +285,14 @@ function(mailMsg) {
     
 	return null;
 };
+
+ZmIdentityCollection.prototype.getIdentityBySendAddress =
+function(address) {
+    for(var id in this._idToIdentity){
+        var identity = this._idToIdentity[id];
+        if(identity.sendFromAddress == address){
+            return identity;
+        }
+    }
+    return null;
+};
