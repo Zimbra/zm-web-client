@@ -124,6 +124,9 @@ function() {
 		this._acLocationsList.reset();
 		this._acLocationsList.show(false);
 	}
+
+    //Default Persona
+    this.setIdentity();
 };
 
 // Acceptable hack needed to prevent cursor from bleeding thru higher z-index'd views
@@ -247,7 +250,15 @@ function() {
 
 ZmApptEditView.prototype._populateForSave =
 function(calItem) {
-	ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
+
+    ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
+
+    //Handle Persona's
+    var identity = this.getIdentity();
+    identity = (identity && identity.getField(ZmIdentity.SEND_FROM_ADDRESS));
+    if(identity){
+        calItem.sentBy = identity;
+    }
 
 	calItem.freeBusy = this._showAsSelect.getValue();
 	calItem.privacy = this._privacySelect.getValue();
@@ -437,7 +448,14 @@ function(calItem, mode) {
     if (this._reminderSelect) {
 		this._reminderSelect.setEnabled(!this._isForward);
 	}
-    this._allDayCheckbox.disabled = this._isForward;    
+    this._allDayCheckbox.disabled = this._isForward;
+
+    //Persona's
+    var sentBy = calItem.sentBy;
+    sentBy = sentBy || (calItem.organizer != calItem.getFolder().getOwner() ? calItem.organizer : null);
+    if(sentBy){
+        this.setIdentity(appCtxt.getIdentityCollection().getIdentityBySendAddress(sentBy));
+    }
 };
 
 ZmApptEditView.prototype._addResourcesDiv =
@@ -609,6 +627,103 @@ function(width) {
             button.addrType = ZmCalBaseItem.PERSON;
         }
     }
+
+    //Personas
+    //TODO: Remove size check once we add identityCollection change listener.
+    if(appCtxt.get(ZmSetting.IDENTITIES_ENABLED) && !appCtxt.multiAccounts && appCtxt.getIdentityCollection().getSize() > 1){
+        var identityOptions = this._getIdentityOptions();
+        this.identitySelect = new DwtSelect({parent:this, options:identityOptions, parentElement: (this._htmlElId + "_identity")});
+        this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
+    }
+
+    this._setIdentityVisible();
+};
+
+//TODO:
+    // 1. Organizer/From is always Persona  - Done
+    // 2. Remote Cals -  sentBy is Persona  - Done
+    // 3. Appt. Summary body needs Persona details - Needs Action
+    // 4. No Persona's Case  - Done
+
+ZmApptEditView.prototype.setIdentity =
+function(identity){
+    if (this.identitySelect) {
+        identity = identity || appCtxt.getIdentityCollection().defaultIdentity;
+        this.identitySelect.setSelectedValue(identity.id);
+    }
+};
+
+ZmApptEditView.prototype.getIdentity =
+function() {
+
+	if (this.identitySelect) {
+		var collection = appCtxt.getIdentityCollection();
+		var val = this.identitySelect.getValue();
+		var identity = collection.getById(val);
+		return identity ? identity : collection.defaultIdentity;
+	}
+};
+
+ZmApptEditView.prototype._setIdentityVisible =
+function() {
+	if (!appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) return;
+
+	var div = document.getElementById(this._htmlElId + "_identityContainer");
+	if (!div) return;
+
+	var visible = appCtxt.getIdentityCollection().getSize() > 1;
+    Dwt.setVisible(div, visible);
+};
+
+ZmApptEditView.prototype._getIdentityOptions =
+function() {
+	var options = [];
+	var identityCollection = appCtxt.getIdentityCollection();
+	var identities = identityCollection.getIdentities();
+    var defaultIdentity = identityCollection.defaultIdentity;
+	for (var i = 0, count = identities.length; i < count; i++) {
+		var identity = identities[i];
+		options.push(new DwtSelectOptionData(identity.id, this._getIdentityText(identity), (identity.id == defaultIdentity.id)));
+	}
+	return options;
+};
+
+ZmApptEditView.prototype._getIdentityText =
+function(identity, account) {
+	var name = identity.name;
+	if (identity.isDefault && name == ZmIdentity.DEFAULT_NAME) {
+		name = account ? account.getDisplayName() : ZmMsg.accountDefault;
+	}
+
+	// default replacement parameters
+	var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
+	var params = [
+		name,
+		(identity.sendFromDisplay || ''),
+		identity.sendFromAddress,
+		ZmMsg.accountDefault,
+		appCtxt.get(ZmSetting.DISPLAY_NAME),
+		defaultIdentity.sendFromAddress
+	];
+
+	// get appropriate pattern
+	var pattern;
+	if (identity.isDefault) {
+		pattern = ZmMsg.identityTextPrimary;
+	}
+	else if (identity.isFromDataSource) {
+		var ds = appCtxt.getDataSourceCollection().getById(identity.id);
+		params[1] = ds.userName || '';
+		params[2] = ds.getEmail();
+		var provider = ZmDataSource.getProviderForAccount(ds);
+		pattern = (provider && ZmMsg["identityText-"+provider.id]) || ZmMsg.identityTextExternal;
+	}
+	else {
+		pattern = ZmMsg.identityTextPersona;
+	}
+
+	// format text
+	return AjxMessageFormat.format(pattern, params);
 };
 
 ZmApptEditView.prototype._addressButtonListener =
@@ -913,6 +1028,10 @@ function(excludeAttendees, excludeReminder) {
 
     if(this._isForward) {
 	    vals.push(this._forwardToField.getValue());
+    }
+
+    if(this.identitySelect){
+        vals.push(this.getIdentity().id);        
     }
 
 	var str = vals.join("|");

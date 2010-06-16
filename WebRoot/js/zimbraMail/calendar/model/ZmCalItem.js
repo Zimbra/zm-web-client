@@ -1737,7 +1737,7 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 
 	var calendar = this.getFolder();
 	var acct = calendar.getAccount();
-	var isOnBehalfOf = accountName && acct && acct.name != accountName;
+    var isOnBehalfOf = accountName && acct && acct.name != accountName;
 	m.setAttribute("l", (isOnBehalfOf ? this.getFolder().rid : this.folderId));
 
 	var inv = soapDoc.set("inv", null, m);
@@ -1750,12 +1750,22 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	// attendees
 	this._addAttendeesToSoap(soapDoc, comp, m, notifyList, accountName);
 
+    var isIdentity = this.sentBy && (this.sentBy != appCtxt.get(ZmSetting.USERNAME));
+    var isRemoteAndIdentity = calendar.isRemote() && isIdentity;
+    var isRemoteOrIdentity = calendar.isRemote() || isIdentity;
+    
 	var mailFromAddress = this.getMailFromAddress();
-	if (this.isOrganizer() && !accountName && mailFromAddress) {
+	if (this.isOrganizer() && !accountName && (mailFromAddress || isRemoteOrIdentity)) {
 		var e = soapDoc.set("e", null, m);
-		e.setAttribute("a", mailFromAddress);
+		e.setAttribute("a", mailFromAddress || (calendar.isRemote() ? this.organizer : this.sentBy));
 		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
 	}
+
+    if(calendar.isRemote()){
+        var e = soapDoc.set("e", null, m);
+		e.setAttribute("a", this.sentBy || appCtxt.get(ZmSetting.USERNAME));
+		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.SENDER]);
+    }
 
 	this._addExtrasToSoap(soapDoc, inv, comp);
 	this._addDateTimeToSoap(soapDoc, inv, comp);
@@ -1772,7 +1782,7 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	// set organizer - but not for local account
 	if (!(appCtxt.isOffline && acct.isMain)) {
 		var me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
-		var user = mailFromAddress || me;
+		var user = this.sentBy || mailFromAddress || me;
 		var organizer = this.organizer || user;
 		var org = soapDoc.set("or", null, comp);
 		org.setAttribute("a", organizer);
