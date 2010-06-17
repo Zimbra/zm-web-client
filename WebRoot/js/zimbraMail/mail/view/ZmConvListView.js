@@ -124,36 +124,16 @@ function(item) {
 ZmConvListView.prototype.reRenderListView =
 function() {
 
-	var isMultiColumn = this.isMultiColumn();
-	var expanded, selected, anchorItem, focused;
-	if (isMultiColumn != this._isMultiColumn) {
-		expanded = this._expandedItems;
-		selected = this.getSelection();
-		anchorItem = this._kbAnchor && this.getItemFromElement(this._kbAnchor);
-		focused = this.hasFocus();
+	var newView = (this.isMultiColumn() != this._isMultiColumn);
+	if (newView) {
+		this._saveState();
 		this._resetExpansion();
 	}
 
 	ZmMailListView.prototype.reRenderListView.call(this);
 
-	// restore previous list view state
-	if (expanded) {
-		for (var id in expanded) {
-			if (expanded[id]) {
-				for (var i = 0; i < expanded[id].length; i++) {
-					this._expandItem(expanded[id][i]);
-				}
-			}
-		}
-	}
-	if (selected && selected.length) {
-		this.setSelectedItems(selected);
-	}
-	if (anchorItem) {
-		this._kbAnchor = this._getElFromItem(anchorItem);
-	}
-	if (focused) {
-		this.focus();
+	if (newView) {
+		this._restoreState();
 	}
 };
 
@@ -1001,4 +981,26 @@ function(force) {
 		}
 	}
 	return menu;
+};
+
+ZmConvListView.prototype._saveState =
+function(params) {
+	ZmMailListView.prototype._saveState.apply(this, arguments);
+	this._state.expanded = this._expandedItems;
+};
+
+ZmConvListView.prototype._restoreState =
+function() {
+
+	var s = this._state || {};
+	if (s.expanded) {
+		for (var id in s.expanded) {
+			if (s.expanded[id]) {
+				for (var i = 0; i < s.expanded[id].length; i++) {
+					this._expandItem(s.expanded[id][i]);
+				}
+			}
+		}
+	}
+	ZmMailListView.prototype._restoreState.call(this);
 };

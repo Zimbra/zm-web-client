@@ -99,18 +99,11 @@ function() {
 		newSash.setVisible(true);
 	}
 
-	var oldRowHeight = mlv._rowHeight;
-	var oldScrollTop = mlv._listDiv.scrollTop;
-
 	mlv.reRenderListView();
 
 	mv.noTab = !readingPaneEnabled || AjxEnv.isIE;
 	var sz = this.getSize();
 	this._resetSize(sz.x, sz.y, true);
-	// restore scroll position based on row height ratio
-	if (mlv._rowHeight != oldRowHeight) {
-		mlv._listDiv.scrollTop = oldScrollTop * (mlv._rowHeight / oldRowHeight);
-	}
 };
 
 ZmDoublePaneView.prototype._createMailListView =
@@ -185,30 +178,15 @@ function(x, y, width, height) {
 
 ZmDoublePaneView.prototype.setItem =
 function(items) {
-
-	var paginating = Boolean(this._mailListView._itemsToAdd);
 	this._mailListView.set(items, ZmItem.F_DATE);
 	this.isStale = false;
-
-	var gotItems = (this._controller._list && this._controller._list.size() > 0);
-	if (this._mailListView._isPageless) {
-		if (gotItems && !paginating) {
-			this._msgView.set();
-		}
-	} else {
-		 if (this._controller.isReadingPaneOn()) {
-			 this._msgView.set();
-		 } else {
-			 this._selectFirstItem();
-		 }
-	}
 };
 
 // Private / Protected methods
 
 ZmDoublePaneView.prototype._initHeader = 
 function() {
-	// overload me if you want a header
+	// overload me if you want a header (twss)
 	return this;
 };
 

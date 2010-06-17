@@ -1173,3 +1173,55 @@ function(item) {
 	}
 	return false;
 };
+
+/**
+ * The following two methods allow a list view to maintain state after it has
+ * been rerendered. State may include such elements as: which items are selected,
+ * focus, scroll position, etc.
+ *
+ * @private
+ * @param {hash}		params		hash of parameters:
+ * @param {boolean}		selection	if true (default), preserve selection
+ * @param {boolean}		focus		if true (default), preserve focus
+ * @param {boolean}		scroll		if true (default), preserve scroll position
+ *
+ */
+ZmListView.prototype._saveState =
+function(params) {
+
+	params = params || {};
+	var s = this._state = {};
+	if (params.selection !== false) {
+		s.selected = this.getSelection();
+	}
+	if (params.focus !== false) {
+		s.focused = this.hasFocus();
+		s.anchorItem = this._kbAnchor && this.getItemFromElement(this._kbAnchor);
+	}
+	if (params.scroll !== false) {
+		s.rowHeight = this._rowHeight;
+		s.scrollTop = this._listDiv.scrollTop;
+	}
+};
+
+ZmListView.prototype._restoreState =
+function() {
+
+	var s = this._state || {};
+	if (s.selected && s.selected.length) {
+		this.setSelectedItems(s.selected);
+	}
+	if (s.anchorItem) {
+		var el = this._getElFromItem(s.anchorItem);
+		if (el) {
+			this._setKbFocusElement(el);
+		}
+	}
+	if (s.focused) {
+		this.focus();
+	}
+	// restore scroll position based on row height ratio
+	if (s.rowHeight) {
+		this._listDiv.scrollTop = s.scrollTop * (this._rowHeight / s.rowHeight);
+	}
+};
