@@ -255,9 +255,9 @@ function(calItem) {
 
     //Handle Persona's
     var identity = this.getIdentity();
-    identity = (identity && identity.getField(ZmIdentity.SEND_FROM_ADDRESS));
     if(identity){
-        calItem.sentBy = identity;
+       calItem.identity = identity; 
+       calItem.sentBy = (identity && identity.getField(ZmIdentity.SEND_FROM_ADDRESS));
     }
 
 	calItem.freeBusy = this._showAsSelect.getValue();
@@ -450,7 +450,7 @@ function(calItem, mode) {
 	}
     this._allDayCheckbox.disabled = this._isForward;
 
-    //Persona's
+    //Persona's   [ Should select Persona as combination of both DisplayName, FromAddress ]
     var sentBy = calItem.sentBy;
     sentBy = sentBy || (calItem.organizer != calItem.getFolder().getOwner() ? calItem.organizer : null);
     if(sentBy){
@@ -630,7 +630,7 @@ function(width) {
 
     //Personas
     //TODO: Remove size check once we add identityCollection change listener.
-    if(appCtxt.get(ZmSetting.IDENTITIES_ENABLED) && !appCtxt.multiAccounts && appCtxt.getIdentityCollection().getSize() > 1){
+    if(appCtxt.get(ZmSetting.IDENTITIES_ENABLED) && !appCtxt.multiAccounts){
         var identityOptions = this._getIdentityOptions();
         this.identitySelect = new DwtSelect({parent:this, options:identityOptions, parentElement: (this._htmlElId + "_identity")});
         this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);

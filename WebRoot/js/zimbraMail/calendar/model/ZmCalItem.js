@@ -41,6 +41,7 @@ ZmCalItem = function(type, list, id, folderId) {
 	this._recurrence = new ZmRecurrence(this);
 	this._noBusyOverlay = null;
     this._sendNotificationMail = true;
+    this.identity = null;
 };
 
 ZmCalItem.prototype = new ZmCalBaseItem;
@@ -1750,21 +1751,52 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	// attendees
 	this._addAttendeesToSoap(soapDoc, comp, m, notifyList, accountName);
 
-    var isIdentity = this.sentBy && (this.sentBy != appCtxt.get(ZmSetting.USERNAME));
-    var isRemoteAndIdentity = calendar.isRemote() && isIdentity;
-    var isRemoteOrIdentity = calendar.isRemote() || isIdentity;
-    
+    var identity = this.identity;
+    var isPrimary = identity == null || identity.isDefault;
+    var isRemote = calendar.isRemote();    
+
+    //FROM Address
 	var mailFromAddress = this.getMailFromAddress();
-	if (this.isOrganizer() && !accountName && (mailFromAddress || isRemoteOrIdentity)) {
-		var e = soapDoc.set("e", null, m);
-		e.setAttribute("a", mailFromAddress || (calendar.isRemote() ? this.organizer : this.sentBy));
-		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+	if (this.isOrganizer() && !accountName && (mailFromAddress || isRemote || !isPrimary)) {
+        var e = soapDoc.set("e", null, m);
+        var addr, displayName;
+        if(mailFromAddress){
+            addr = mailFromAddress;
+        }else{
+            if(isRemote){
+                addr = this.organizer;
+            }else if(identity){
+                addr = identity.sendFromAddress;
+                displayName = identity.sendFromDisplay;
+            }
+        }
+        e.setAttribute("a", addr);
+        e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+        if(!displayName && addr == appCtxt.get(ZmSetting.USERNAME)){
+             displayName = appCtxt.get(ZmSetting.DISPLAY_NAME);
+        }
+        if(displayName){
+             e.setAttribute("p", displayName);
+        }        
 	}
 
-    if(calendar.isRemote()){
+    //SENDER Address
+    if(isRemote){
         var e = soapDoc.set("e", null, m);
-		e.setAttribute("a", this.sentBy || appCtxt.get(ZmSetting.USERNAME));
+        var addr, displayName;
+        identity = identity || appCtxt.getIdentityCollection().defaultIdentity;
+        if(identity){
+            addr = identity.sendFromAddress;
+            displayName = identity.sendFromDisplay;
+        }else{
+            addr = appCtxt.get(ZmSetting.USERNAME);
+            displayName = appCtxt.get(ZmSetting.DISPLAY_NAME);
+        }
+		e.setAttribute("a", addr);
 		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.SENDER]);
+        if (displayName) {
+            e.setAttribute("p", displayName);
+        }
     }
 
 	this._addExtrasToSoap(soapDoc, inv, comp);
@@ -1782,16 +1814,22 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	// set organizer - but not for local account
 	if (!(appCtxt.isOffline && acct.isMain)) {
 		var me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
-		var user = this.sentBy || mailFromAddress || me;
+        var user, displayName, identityUser;
+        identity = identity || appCtxt.getIdentityCollection().defaultIdentity;
+        if(identity){ //If !Identity then consider the default identity
+            identityUser = identity.sendFromAddress;
+            displayName = identity.sendFromDisplay;
+        }
+		user = mailFromAddress || identityUser || me;
 		var organizer = this.organizer || user;
 		var org = soapDoc.set("or", null, comp);
-		org.setAttribute("a", organizer);
-		if (calendar.isRemote()) {
+		org.setAttribute("a", organizer);        
+		if (isRemote) {
 			org.setAttribute("sentBy", user); // if on-behalf of, set sentBy
 		}
-		var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
-		var orgName = orgEmail.getName();
-		if (orgName) org.setAttribute("d", orgName);
+        var orgName = (organizer == identityUser) ? displayName : (ZmApptViewHelper.getAddressEmail(organizer)).getName();
+		if (orgName)
+            org.setAttribute("d", orgName);
 	}
 
 	// handle attachments
