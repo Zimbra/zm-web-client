@@ -60,7 +60,7 @@
                         title : 'table.desc',
                         cmd: 'mceInsertTable',
                         scope: t,
-                        image : t.url + '/img/example.gif'
+                        image : t.url + '/img/ImgTable.gif'
  				    });
                     c.ztmenu = {};
 
