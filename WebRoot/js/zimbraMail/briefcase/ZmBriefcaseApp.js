@@ -79,7 +79,7 @@ function() {
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASE});
-	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"NewPage", textPrecedence:70});
+	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"Upload", textPrecedence:70});
 	ZmOperation.registerOp(ZmId.OP_NEW_PRESENTATION, {textKey:"newPresentationBeta", tooltipKey:"newPresentation", image:"Presentation", textPrecedence:10});
 	ZmOperation.registerOp(ZmId.OP_NEW_SPREADSHEET, {textKey:"newSpreadSheetBeta", tooltipKey:"newSpreadSheet", image:"ZSpreadSheet", textPrecedence:11});
 	ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", image:"Doc", shortcut:ZmKeyMap.NEW_DOC, textPrecedence:12});
@@ -158,7 +158,7 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmItem.BRIEFCASE_ITEM,
 								{msgKey:		"searchBriefcase",
 								 tooltipKey:	"searchForFiles",
-								 icon:			"Folder",
+								 icon:			"Briefcase",
 								 shareIcon:		"SharedBriefcase",
 								 setting:		ZmSetting.BRIEFCASE_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_BRIEFCASE)
@@ -184,7 +184,7 @@ function() {
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
 					 {mainPkg:				"Briefcase",
 					  nameKey:				"briefcase",
-					  icon:					"Folder",
+					  icon:					"Briefcase",
 					  textPrecedence:		30,
 					  chooserTooltipKey:	"gotoBriefcase",
 					  defaultSearch:		ZmItem.BRIEFCASE_ITEM,
