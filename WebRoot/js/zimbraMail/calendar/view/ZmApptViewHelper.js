@@ -389,21 +389,7 @@ function(email, isIdentity) {
             orgName = identity.sendFromDisplay;
         }
     }
-    return new AjxEmailAddress(orgAddress, null, orgName);
-
-    /*if(isIdentity){
-        //Identity
-        var identity = appCtxt.getIdentityCollection().getIdentityBySendAddress(orgAddress);
-        if(identity){
-            orgName = identity.sendFromDisplay;
-        }
-    }
-
-    if(!orgName && (email == appCtxt.get(ZmSetting.USERNAME)) ){
-        orgName = appCtxt.get(ZmSetting.DISPLAY_NAME)
-    }*/
-
-	return orgName;
+    return new AjxEmailAddress(orgAddress, null, orgName);    
 };
 
 /**
