@@ -376,6 +376,36 @@ function(organizer) {
 	return new AjxEmailAddress(orgAddress, null, orgName);
 };
 
+ZmApptViewHelper.getAddressEmail =
+function(email, isIdentity) {
+	var orgAddress = email ? email : appCtxt.get(ZmSetting.USERNAME);
+	var orgName;
+    if(email == appCtxt.get(ZmSetting.USERNAME)){
+        orgName = appCtxt.get(ZmSetting.DISPLAY_NAME);
+    }else{
+        //Identity
+        var identity = appCtxt.getIdentityCollection().getIdentityBySendAddress(orgAddress);
+        if(identity){
+            orgName = identity.sendFromDisplay;
+        }
+    }
+    return new AjxEmailAddress(orgAddress, null, orgName);
+
+    /*if(isIdentity){
+        //Identity
+        var identity = appCtxt.getIdentityCollection().getIdentityBySendAddress(orgAddress);
+        if(identity){
+            orgName = identity.sendFromDisplay;
+        }
+    }
+
+    if(!orgName && (email == appCtxt.get(ZmSetting.USERNAME)) ){
+        orgName = appCtxt.get(ZmSetting.DISPLAY_NAME)
+    }*/
+
+	return orgName;
+};
+
 /**
 * Creates a string from a list of attendees/locations/resources. If an item
 * doesn't have a name, its address is used.
@@ -997,7 +1027,7 @@ function(listener, ev) {
         this.setValue(timeFormatter.format(newDate) || "");
     }
 
-    listener.run(ev, this.id);
+    listener.run(ev, this.id);    
 };
 
 ZmTimeInput.prototype.correctTimeString =
@@ -1083,7 +1113,6 @@ function() {
     var timeInputEl = this._timeSelectInput.getInputElement();
     Dwt.setSize(timeInputEl, "80px", "22px");
     timeInputEl.typeId = this.id;
-
 
 	// init vars for adding hour DwtSelect
 	var now = new Date();

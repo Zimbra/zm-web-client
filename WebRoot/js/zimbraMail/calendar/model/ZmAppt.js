@@ -52,7 +52,7 @@ ZmAppt = function(list, noinit) {
 	this.origEquipment = null;	// list of ZmResource
 
 	// forward address
-	this._fwdAddrs = {};
+	this._fwdAddrs = {};    
 };
 
 ZmAppt.prototype = new ZmCalItem;
@@ -329,19 +329,26 @@ function(isHtml) {
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
 
-	var userName = appCtxt.get(ZmSetting.USERNAME);
+	var userName = appCtxt.get(ZmSetting.USERNAME), displayName;
 	var mailFromAddress = this.getMailFromAddress();
 	if (mailFromAddress) {
 		userName = mailFromAddress;
-	}
+	}else if(this.identity){
+        userName = this.identity.sendFromAddress;
+        displayName = this.identity.sendFromDisplay;
+    }
 	var organizer = this.organizer ? this.organizer : userName;
-	var orgEmail = ZmApptViewHelper.getOrganizerEmail(organizer).toString();
+	var orgEmail = (!this.organizer && displayName)
+            ? (new AjxEmailAddress(userName, null, displayName)).toString()
+            : ZmApptViewHelper.getAddressEmail(organizer).toString();
 	var orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
 	var params = [ ZmMsg.organizer + ":", orgText, "" ];
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
-    if(this.getFolder().isRemote() && this.sentBy){
-        orgEmail = ZmApptViewHelper.getOrganizerEmail(this.sentBy).toString();
+    if(this.getFolder().isRemote() && this.identity){
+        var identity = this.identity;
+        orgEmail = new AjxEmailAddress(identity.sendFromAddress , null, identity.sendFromDisplay);
+        orgEmail = orgEmail.toString();
 	    orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
         buf[i++] = formatter.format([ZmMsg.sentBy+":", orgText, ""]);
         buf[i++] = "\n";
