@@ -50,14 +50,15 @@ body, #skin_container_splash_screen	{
 
 .Row {
 	border-color: #e5e5e5;
-	border-top-width: 0px;
+	border-width: 1px 0;
 	height: 20px;
+	
 }
 
 .RowOdd {
 	background-color: #F0EFEC;
 	border-color: #e5e5e5;
-	border-top-width: 0px;
+	border-top-width: 1px;
 }
 
 .Row-selected, 
