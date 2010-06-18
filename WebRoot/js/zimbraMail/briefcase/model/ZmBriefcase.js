@@ -166,46 +166,53 @@ function(nbA, nbB) {
  * @param {Object}	what		the object(s) to possibly move into this briefcase (item or organizer)
  */
 ZmBriefcase.prototype.mayContain =
-function(what) {
-	if (!what) return true;
+function(what, targetFolderType) {
+
+    if (!what) return true;
 
 	var invalid = false;
+    targetFolderType = targetFolderType || this.type;
 
-	if (this.id == ZmFolder.ID_ROOT) {
-		// cannot drag anything onto root folder
-		invalid = true;
-	} else if (this.link) {
-		// cannot drop anything onto a read-only folder
-		invalid = this.isReadOnly();
-	}
-
-	if (!invalid) {
-		// An item or an array of items is being moved
-		var items = AjxUtil.toArray(what);
+    if (what instanceof ZmFolder) { //ZmBriefcase
+         invalid =(
+                    what.parent == this || this.isChildOf(what)
+                 || targetFolderType == ZmOrganizer.SEARCH || targetFolderType == ZmOrganizer.TAG
+                 || (!this.isInTrash() && this.hasChild(what.name))
+                 || (what.id == this.id)
+                 || (this.isRemote() && !this._remoteMoveOk(what))
+                 || (what.isRemote() && !this._remoteMoveOk(what))
+                 ||  what.disallowSubFolder
+                 );
+    }else{ //ZmBriefcaseItem
+        var items = AjxUtil.toArray(what);
 		var item = items[0];
-	
-		if (item.type != ZmItem.BRIEFCASE_ITEM) {
-			invalid = true;
-		} else {
-			
-			// can't move items to folder they're already in; we're okay if
-			// we have one item from another folder
-			if (!invalid && item.folderId) {
-				invalid = true;
-				for (var i = 0; i < items.length; i++) {
-					var tree = appCtxt.getById(items[i].folderId);
-					if (tree != this) {
-						invalid = false;
-						break;
-					}
-				}
-			}
-		}
-		// attachments from mail can be moved inside briefcase
+        if(item.type == ZmItem.BRIEFCASE_ITEM){
+            // can't move items to folder they're already in; we're okay if
+            // we have one item from another folder
+            if (!invalid && item.folderId) {
+                invalid = true;
+                for (var i = 0; i < items.length; i++) {
+                    var tree = appCtxt.getById(items[i].folderId);
+                    if (tree != this) {
+                        invalid = false;
+                        break;
+                    }
+                }
+            }
+        }else{
+            invalid = true;
+        }
+        
+        // attachments from mail can be moved inside briefcase
 		if(item && item.msgId && item.partId){
 			invalid = false;
 		}
-	}
+
+    }
+
+    if(!invalid && this.link){
+        invalid = this.isReadOnly();
+    }	
 
 	return !invalid;
 };
