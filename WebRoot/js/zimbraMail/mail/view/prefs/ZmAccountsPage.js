@@ -85,9 +85,6 @@ function() {
 			displayContainer:	ZmPref.TYPE_COMBOBOX,
 			hint:				ZmMsg.emailAddr
 		},
-		READ_RECEIPT_TO_ADDR: {
-			displayContainer:	ZmPref.TYPE_INPUT
-		},
 		SIGNATURE: {
 			displayContainer:	ZmPref.TYPE_SELECT
 		},
@@ -188,7 +185,6 @@ function() {
 				"REPLY_TO",				// I
 				"REPLY_TO_NAME",		// I
 				"REPLY_TO_EMAIL",		// I
-				"READ_RECEIPT_TO_ADDR",	// I
 				"SIGNATURE"				// I
 			]
 		},
@@ -216,7 +212,6 @@ function() {
 				"REPLY_TO",					// I
 				"REPLY_TO_NAME",			// I
 				"REPLY_TO_EMAIL",			// I
-				"READ_RECEIPT_TO_ADDR",		// I
 				"SIGNATURE"					// I
 			]
 		},
@@ -230,7 +225,6 @@ function() {
 				"REPLY_TO",					// I
 				"REPLY_TO_NAME",			// I
 				"REPLY_TO_EMAIL",			// I
-				"READ_RECEIPT_TO_ADDR",		// I
 				"SIGNATURE",				// I
 				"WHEN_SENT_TO",				// I
 				"WHEN_SENT_TO_LIST",		// I
@@ -284,7 +278,6 @@ ZmAccountsPage.IDENTITY_PROPS = {
 	"REPLY_TO":				"setReplyTo",
 	"REPLY_TO_NAME":		"setReplyToDisplay",
 	"REPLY_TO_EMAIL":		"setReplyToAddress",
-	"READ_RECEIPT_TO_ADDR":	"readReceiptAddr",
 	"SIGNATURE":			"signature",
 	"WHEN_SENT_TO":			"useWhenSentTo",
 	"WHEN_SENT_TO_LIST":	"whenSentToAddresses",

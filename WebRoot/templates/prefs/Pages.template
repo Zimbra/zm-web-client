@@ -996,13 +996,6 @@ and the container element is replaced with that control.
 							</table>
 						</td>
 					</tr>
-					<$ if (data.isEnabled(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) { $>
-						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.readReceiptAddress$></td>
-							<td class='ZOptionsField'><input id='${id}_PRIMARY_READ_RECEIPT_TO_ADDR' tabindex='1070' size=30></td>
-						</tr>
-					<$ } $>
-
 					<tr valign=top>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
 						<td class='ZOptionsField'><select id='${id}_PRIMARY_SIGNATURE' tabindex='1080'></select></td>
@@ -1167,13 +1160,6 @@ and the container element is replaced with that control.
 							</table>
 						</td>
 					</tr>
-					<$ if (data.isEnabled(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) { $>
-						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.readReceiptAddress$></td>
-							<td class='ZOptionsField'><input id='${id}_EXTERNAL_READ_RECEIPT_TO_ADDR' tabindex='1070' size=30></td>
-						</tr>
-					<$ } $>
-
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
 						<td class='ZOptionsField'><select id='${id}_EXTERNAL_SIGNATURE' tabindex='2170'></select></td>
@@ -1253,13 +1239,6 @@ and the container element is replaced with that control.
 							</table>
 						</td>
 					</tr>
-
-					<$ if (data.isEnabled(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) { $>
-						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.readReceiptAddress$></td>
-							<td class='ZOptionsField'><input id='${id}_PERSONA_READ_RECEIPT_TO_ADDR' tabindex='1070' size=30></td>
-						</tr>
-					<$ } $>
 
 					<tr valign=top>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
