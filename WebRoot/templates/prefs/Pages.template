@@ -294,6 +294,13 @@ and the container element is replaced with that control.
 						</tr>
 					<$ } $>
 
+					<$ if (appCtxt.isOffline) { $>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><div id='${id}_OFFLINE_NOTIFY_NEWMAIL_ON_INBOX' tabindex='109' /></td>
+						</tr>
+					<$ } $>
+
 					<$ if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 						<$ if (data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
 							<tr>
