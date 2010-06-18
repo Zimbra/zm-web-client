@@ -528,7 +528,6 @@ function(msgId, partId, name, folder, results) {
 		msgId = msg.getAccount().id + ":" + msg.id;
 	}
 
-	var itemFound = false;
 
 	var searchResult = results.getResponse();
 	var items = searchResult && searchResult.getResults(ZmItem.BRIEFCASE_ITEM);
@@ -536,21 +535,31 @@ function(msgId, partId, name, folder, results) {
 		items = items.getArray();
 	}
 
+    var itemFound = false;
 	for (var i = 0, len = items.length; i < len; i++) {
 		if (items[i].name == name) {
-			itemFound = true;
+			itemFound = items[i];
 			break;
 		}
 	}
 
-	if (!itemFound) {
-		var srcData = new ZmBriefcaseItem();
-		var folderId = (!folder.account || folder.account == appCtxt.getActiveAccount() || (folder.id.indexOf(":") != -1)) ? folder.id : [folder.account.id, folder.id].join(":"); 
-		srcData.createFromAttachment(msgId, partId, name, folderId);
-	} else {
-		var	msg = AjxMessageFormat.format(ZmMsg.errorFileAlreadyExists, name);
-		ZmOrganizer._showErrorMsg(msg);
-	}
+    var folderId = (!folder.account || folder.account == appCtxt.getActiveAccount() || (folder.id.indexOf(":") != -1)) ? folder.id : [folder.account.id, folder.id].join(":");	
+    if(itemFound){
+       var dlg = appCtxt.getYesNoMsgDialog();
+        dlg.registerCallback(DwtDialog.YES_BUTTON, this._createFromAttachment, this, [msgId, partId, name, folderId, itemFound, dlg]);
+		dlg.setMessage(AjxMessageFormat.format(ZmMsg.errorFileAlreadyExistsReplace, name), DwtMessageDialog.WARNING_STYLE);
+		dlg.popup();
+    }else{
+       this._createFromAttachment(msgId, partId, name, folderId); 
+    }
+};
+
+ZmBriefcaseApp.prototype._createFromAttachment =
+function(msgId, partId, name, folderId, replaceItem, dlg){
+    var srcData = new ZmBriefcaseItem();
+    srcData.createFromAttachment(msgId, partId, name, folderId, replaceItem);
+    if(dlg)
+        dlg.popdown();
 };
 
 /**
