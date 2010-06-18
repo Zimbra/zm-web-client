@@ -71,12 +71,14 @@ ZmDoublePaneController.prototype.show =
 function(search, item, callback, markRead) {
 
 	ZmMailListController.prototype.show.call(this, search);
-	this.reset();
+
+	if (this._doublePaneView) {
+		var mlv = this._doublePaneView._mailListView;
+		mlv._saveState({scroll:false});
+		mlv.reset();
+	}
 	this._item = item;
 	this._setup(this._currentView);
-
-	var listView = this._listView[this._currentView];
-	listView._selectedItem = (listView.getSelectionCount() == 1) ? listView.getSelection()[0] : null;
 
 	// see if we have it cached? Check if conv loaded?
 	var respCallback = new AjxCallback(this, this._handleResponseShow, [item, callback]);
@@ -86,13 +88,35 @@ function(search, item, callback, markRead) {
 
 ZmDoublePaneController.prototype._handleResponseShow =
 function(item, callback, results) {
+
 	if (callback) {
 		callback.run();
 	}
 
+	var dpv = this._doublePaneView;
 	var readingPaneOn = this.isReadingPaneOn();
-	if (this._doublePaneView.isMsgViewVisible() != readingPaneOn) {
-		this._doublePaneView.setReadingPane();
+	if (dpv.isMsgViewVisible() != readingPaneOn) {
+		dpv.setReadingPane();
+	}
+
+	// clear the msg view, unless it's showing something selected
+	var clearMsgView = true;
+	var mlv = dpv._mailListView;
+	mlv._restoreState();
+	var msg = dpv.getMsg();
+	if (msg) {
+		var sel = mlv.getSelection();
+		for (var i = 0, len = sel.length; i < len; i++) {
+			var item = sel[i];
+			var m = (item.type == ZmItem.CONV) ? item.getFirstHotMsg() : item;
+			if (m && m.id == msg.id) {
+				clearMsgView = false;
+				break;
+			}
+		}
+	}
+	if (clearMsgView) {
+		dpv.setMsg();
 	}
 };
 
@@ -400,8 +424,6 @@ function(view) {
 	// always allow derived classes to reset size after loading
 	var sz = this._doublePaneView.getSize();
 	this._doublePaneView._resetSize(sz.x, sz.y);
-
-	this._resetSelection();
 };
 
 /**
@@ -729,15 +751,6 @@ function(msg) {
 ZmDoublePaneController.prototype.selectFirstItem =
 function() {
 	this._doublePaneView._selectFirstItem();
-};
-
-ZmDoublePaneController.prototype._resetSelection =
-function() {
-	var listView = this._listView[this._currentView];
-	var item = listView && listView._selectedItem;
-	if (item && (listView.getItemIndex(item) != null)) {
-		listView.setSelection(item);
-	}
 };
 
 /**
