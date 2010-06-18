@@ -1759,28 +1759,29 @@ function(blockquote1, blockquote2) {
 		var text = [el1.innerHTML, el2.innerHTML];
 		var dummy = "###"+Dwt.getNextId()+"###";
 		el1.innerHTML = text.join(dummy);
-		var offset = el1.innerHTML.replace(/<br>/ig," ").replace(/<\/?[\s\w=:;\-\"\']+>/g,"").indexOf(dummy);
+		var offset = el1.innerHTML.replace(/<br>/ig," ").replace(/<\/?[^>]+>/g,"").indexOf(dummy);
 		el1.innerHTML = text.join("");
 		if (AjxEnv.isIE) {
 			range.moveToElementText(el1);
 			range.moveStart("character", offset);
 		} else {
+			var p;
 			for (var p = el1; p != null && offset > 0; p = this._nextElement(p)) { // Walk through elements, decrementing offset as we go, and set the range when we find an element where the remaining offset fits
 				var type = p.nodeType;
 				var textContent = p.textContent || p.innerText || p.innerHTML || "";
 
 				if (type==3 || type==4 || type==8) {
-					if (offset <= textContent.length) {
-						range.setStart(p, offset); // We'll get out of the for loop after this, no need to break;
-					}
+					if (offset <= textContent.length)
+						break;
 					offset -= textContent.length;
 				} else {
 					if (p.tagName.toLowerCase()=="br")
 						offset--;
 					if (offset==0)
-						range.setStart(p, 0);
+						break;
 				}
 			}
+			range.setStart(p, offset);
 		}
 	} else if (depth1==depth2+1) { // We're merging at a node border, append all children of el2 to el1's parent (making them siblings of el1)
 		while (el2.firstChild) {
