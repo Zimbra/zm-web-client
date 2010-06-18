@@ -57,7 +57,6 @@ function(params) {
 	params.offset = params.offset || 0;
 	params.limit = ZmContactsApp.SEARCHFOR_MAX;
 	params.contactSource = o._contactSource;
-	params.field = "contact";
 
 	var search = new ZmSearch(params);
 	search.execute({callback:params.respCallback, errorCallback:params.errorCallback});
