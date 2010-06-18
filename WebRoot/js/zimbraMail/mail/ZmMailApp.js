@@ -267,6 +267,7 @@ function() {
 				ZmSetting.MAIL_NOTIFY_APP,
 				ZmSetting.MAIL_NOTIFY_BROWSER,
 				ZmSetting.MAIL_NOTIFY_TOASTER,
+				ZmSetting.OFFLINE_NOTIFY_NEWMAIL_ON_INBOX,
 				ZmSetting.MAIL_WHITELIST,
 				ZmSetting.MAIL_SEND_READ_RECEIPTS,
 				ZmSetting.MARK_MSG_READ,
@@ -627,6 +628,14 @@ function() {
 		displayFunc:		function() { AjxDispatcher.require("Alert"); return ZmDesktopAlert.getInstance().getDisplayText(); },
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
+
+	if (appCtxt.isOffline) {
+		ZmPref.registerPref("OFFLINE_NOTIFY_NEWMAIL_ON_INBOX", {
+			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+			displayOptions:		[ZmMsg.notifyNewMailOnInbox, ZmMsg.notifyNewMailOnAny],
+			options:			[true, false]
+		});
+	}
 };
 
 /**
@@ -1074,17 +1083,18 @@ function(creates) {
 
 		// offline: check whether to show new-mail notification icon
 		// Skip spam/trash folders and the local account
-		if (appCtxt.isOffline &&
-			parsed &&
-			parsed.id != ZmOrganizer.ID_SPAM &&
-			parsed.id != ZmOrganizer.ID_TRASH &&
-			!acct.isMain)
-		{
-			this.globalMailCount++;
-			acct.inNewMailMode = true;
-			var allContainers = appCtxt.getOverviewController()._overviewContainer;
-			for (var j in allContainers) {
-				allContainers[j].updateAccountInfo(acct, true, true);
+		if (appCtxt.isOffline && parsed && !acct.isMain) {
+			var doIt = (appCtxt.get(ZmSetting.OFFLINE_NOTIFY_NEWMAIL_ON_INBOX))
+				? (parsed.id == ZmOrganizer.ID_INBOX)
+				: (parsed.id != ZmOrganizer.ID_SPAM && parsed.id != ZmOrganizer.ID_TRASH);
+
+			if (doIt) {
+				this.globalMailCount++;
+				acct.inNewMailMode = true;
+				var allContainers = appCtxt.getOverviewController()._overviewContainer;
+				for (var j in allContainers) {
+					allContainers[j].updateAccountInfo(acct, true, true);
+				}
 			}
 		}
 

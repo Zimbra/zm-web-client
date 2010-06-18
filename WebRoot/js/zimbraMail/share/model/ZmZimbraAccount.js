@@ -676,8 +676,6 @@ function(result) {
 	if (!this.isZimbraAccount) {
 		appCtxt.set(ZmSetting.MAIL_READ_RECEIPT_ENABLED, false, null, null, null, this);
 	}
-
-	this.recent = obj.recent;
 };
 
 /**
