@@ -74,7 +74,7 @@ function(search, item, callback, markRead) {
 
 	if (this._doublePaneView) {
 		var mlv = this._doublePaneView._mailListView;
-		mlv._saveState({scroll:false});
+		mlv._saveState({selection:true});
 		mlv.reset();
 	}
 	this._item = item;

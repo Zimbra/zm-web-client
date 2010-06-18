@@ -94,6 +94,12 @@ function() {
 	return "ZmConvListView";
 };
 
+ZmConvListView.prototype.set =
+function(list, sortField) {
+	this._resetExpansion();
+	ZmListView.prototype.set.apply(this, arguments);
+};
+
 // Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
 // it here so that it gets handled as an app shortcut (app shortcuts happen
 // after widget shortcuts).
@@ -113,27 +119,6 @@ function(item) {
 	ZmMailListView.prototype.markUIAsRead.apply(this, arguments);
 	if (item.type == ZmItem.MSG) {
 		this._setImage(item, ZmItem.F_STATUS, item.getStatusIcon());
-	}
-};
-
-/**
- * Called by the controller whenever the reading pane preference changes
- * 
- * @private
- */
-ZmConvListView.prototype.reRenderListView =
-function() {
-
-	var newView = (this.isMultiColumn() != this._isMultiColumn);
-	if (newView) {
-		this._saveState();
-		this._resetExpansion();
-	}
-
-	ZmMailListView.prototype.reRenderListView.call(this);
-
-	if (newView) {
-		this._restoreState();
 	}
 };
 
@@ -983,16 +968,21 @@ function(force) {
 	return menu;
 };
 
+/**
+ * @private
+ * @param {hash}		params			hash of parameters:
+ * @param {boolean}		expansion		if true, preserve expansion
+ */
 ZmConvListView.prototype._saveState =
 function(params) {
 	ZmMailListView.prototype._saveState.apply(this, arguments);
-	this._state.expanded = this._expandedItems;
+	this._state.expanded = params && params.expansion && this._expandedItems;
 };
 
 ZmConvListView.prototype._restoreState =
 function() {
 
-	var s = this._state || {};
+	var s = this._state;
 	if (s.expanded) {
 		for (var id in s.expanded) {
 			if (s.expanded[id]) {
