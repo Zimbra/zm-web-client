@@ -1762,7 +1762,10 @@ function(action, type, override) {
 			var addrs = this._msg.getAddresses(ZmMailMsg.COMPOSE_ADDRS[i]);
 			this.setAddress(ZmMailMsg.COMPOSE_ADDRS[i], addrs.getArray().join(AjxEmailAddress.SEPARATOR));
 		}
-	}
+	} else if(action == ZmOperation.DECLINE_PROPOSAL) {
+        var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.FROM);
+        this.setAddress(AjxEmailAddress.TO, this._getAddrString(toAddrs));
+    }
 };
 
 ZmComposeView.prototype._setObo =
@@ -1834,6 +1837,8 @@ function(action, msg, extraBodyText) {
 						  headers:	appCtxt.get(ZmSetting.FORWARD_INCLUDE_HEADERS)};
 		} else if (action == ZmOperation.FORWARD_ATT) {
 			incOptions = {what:		ZmSetting.INC_ATTACH};
+		} else if (action == ZmOperation.DECLINE_PROPOSAL) {
+			incOptions = {what:		ZmSetting.INC_BODY};
 		} else if (action == ZmOperation.NEW_MESSAGE) {
 			incOptions = {what:		ZmSetting.INC_NONE};
 		} else {

@@ -87,7 +87,7 @@
 				<!-- appointment date/time section -->
 				<td valign=top>
 					<fieldset>
-						<legend><$= (data.isAppt ? ZmMsg.time : ZmMsg.progress) $></legend>
+						<legend id="${id}_timeLegend"><$= (data.isAppt ? ZmMsg.time : ZmMsg.progress) $></legend>
 						<div style='overflow:hidden; <$= AjxEnv.isIE ? " width:99%" : "" $>'>
 							<table border=0 width=100%>
 								<colgroup>

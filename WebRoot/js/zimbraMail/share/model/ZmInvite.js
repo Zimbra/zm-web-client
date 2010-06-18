@@ -379,8 +379,20 @@ function(compNum) {
 };
 
 /**
- * Gets the status.
+ * Gets the appointment id.
  * 
+ * @param	{int}	compNum		the component number
+ * @return {String}	the id
+ */
+ZmInvite.prototype.getAppointmentId =
+function(compNum) {
+	var cn = compNum || 0;
+	return this.components[cn].apptId;
+};
+
+/**
+ * Gets the status.
+ *
  * @param	{int}	compNum		the component number
  * @return {String}	the status
  */
@@ -746,7 +758,19 @@ function(compNum) {
 	return this.components[cn] ? this.components[cn].loc : null;
 };
 
-/** 
+/**
+ * Gets the recurrence id (ridZ) - applicable to recurring appointment .
+ *
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the recurrence id, null for non-recurring appointment
+ */
+ZmInvite.prototype.getRecurrenceId =
+function(compNum) {
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].ridZ : null;
+};
+
+/**
  * Gets the tool tip in HTML for this invite.
  * 
  * <p>
@@ -966,4 +990,16 @@ function(compNum) {
     var methodName = this.getInviteMethod(compNum);
     var publishOrRequest = (methodName == ZmCalendarApp.METHOD_REQUEST || methodName == ZmCalendarApp.METHOD_PUBLISH);
     return ((methodName == null) || publishOrRequest);
+};
+
+/**
+ * Checks the invite has a counter method.
+ *
+ * @param	{int}	    compNum		the component number
+ * @return	{Boolean}	<code>true</code> if the invite has a counter method
+ */
+ZmInvite.prototype.hasCounterMethod =
+function(compNum) {
+    var methodName = this.getInviteMethod(compNum);
+    return (methodName == ZmCalendarApp.METHOD_COUNTER);
 };
