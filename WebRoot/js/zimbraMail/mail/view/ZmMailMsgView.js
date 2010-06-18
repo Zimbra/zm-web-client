@@ -182,11 +182,12 @@ function(msg) {
 	{
 		if (!invite.isEmpty() &&
 			invite.hasAcceptableComponents() &&
-			invite.hasInviteReplyMethod() &&
+			(invite.hasInviteReplyMethod() || invite.hasCounterMethod())&&
 			msg.folderId != ZmFolder.ID_TRASH)
 		{
 			var topToolbar = this._getInviteToolbar();
 			topToolbar.reparentHtmlElement(contentDiv);
+            this.setInviteOptions(invite);
 			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
 			if (this._respondOnBehalfLabel) {
@@ -381,15 +382,24 @@ function (listener) {
 
 // Private / protected methods
 
+ZmMailMsgView.prototype._getInviteOps =
+function() {
+    return [
+		ZmOperation.REPLY_ACCEPT,
+		ZmOperation.REPLY_TENTATIVE,
+		ZmOperation.REPLY_DECLINE,
+		ZmOperation.PROPOSE_NEW_TIME,
+		ZmOperation.ACCEPT_PROPOSAL,
+		ZmOperation.DECLINE_PROPOSAL
+	];
+};
+
 ZmMailMsgView.prototype._getInviteToolbar =
 function() {
 	if (this._inviteToolbar) { return this._inviteToolbar; }
 
-	var operationButtonIds = [
-		ZmOperation.REPLY_ACCEPT,
-		ZmOperation.REPLY_TENTATIVE,
-		ZmOperation.REPLY_DECLINE
-	];
+	var operationButtonIds = this._getInviteOps(); 
+
 	var replyButtonIds = [
 		ZmOperation.INVITE_REPLY_ACCEPT,
 		ZmOperation.INVITE_REPLY_TENTATIVE,
@@ -428,6 +438,12 @@ function() {
 
 		this._inviteToolbar.addSelectionListener(id, listener);
 
+        if(id == ZmOperation.ACCEPT_PROPOSAL || id == ZmOperation.DECLINED_PROPOSAL) {
+            button.setVisible(false);
+        }
+
+        if(id == ZmOperation.PROPOSE_NEW_TIME || id == ZmOperation.ACCEPT_PROPOSAL || id == ZmOperation.DECLINE_PROPOSAL) continue;
+
 		var standardItems = [notifyOperationButtonIds[i], replyButtonIds[i], ignoreOperationButtonIds[i]];
 		var menu = new ZmActionMenu({parent:button, menuItems:standardItems});
 		standardItems = menu.opList;
@@ -453,6 +469,26 @@ function() {
 	this._inviteMoveSelect = new DwtSelect({parent: this._inviteToolbar});
 
 	return this._inviteToolbar;
+};
+
+ZmMailMsgView.prototype.setInviteOptions = function(invite) {
+
+    var operationButtonIds = this._getInviteOps();
+    var proposeTimeIds =  {};
+    proposeTimeIds[ZmOperation.ACCEPT_PROPOSAL] = true;
+    proposeTimeIds[ZmOperation.DECLINE_PROPOSAL] = true;
+    var id,button;
+
+    for(var i in operationButtonIds) {
+        id = operationButtonIds[i]; 
+        button = this._inviteToolbar.getButton(id);
+        if(invite.hasCounterMethod()) {
+            button.setVisible(Boolean(proposeTimeIds[id]));            
+        }else {
+            button.setVisible(!Boolean(proposeTimeIds[id]));            
+        }
+    }
+
 };
 
 ZmMailMsgView.prototype.enableInviteReplyMenus =

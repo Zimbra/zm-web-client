@@ -857,7 +857,9 @@ function(params, msg) {
 	} else if (appCtxt.isOffline && action == ZmOperation.DRAFT) {
 		var folder = appCtxt.getById(msg.folderId);
 		params.accountName = folder && folder.getAccount().name;
-	}
+	}else if(action == ZmOperation.DECLINE_PROPOSAL) {
+        params.subjOverride = this._getInviteReplySubject(action) + msg.subject;        
+    }
 
 	params.msg = msg;
 	AjxDispatcher.run("Compose", params);
@@ -922,15 +924,22 @@ function(ev) {
 	var type = ev._inviteReplyType;
     var folderId = ev._inviteReplyFolderId || ZmOrganizer.ID_CALENDAR;
 	var compId = ev._inviteComponentId;
-	if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
+	if (type == ZmOperation.PROPOSE_NEW_TIME ) {
+        var newAppt = AjxDispatcher.run("GetCalController").newApptObject(new Date(), null, null, ev._msg);
+        newAppt.setProposeTimeMode(true);
+        newAppt.setFromMailMessageInvite(ev._msg);
+        AjxDispatcher.run("GetApptComposeController").proposeNewTime(newAppt);
+    }else if (type == ZmOperation.ACCEPT_PROPOSAL ) {
+        this._acceptProposedTime(compId, ev._msg);        
+    }else if (type == ZmOperation.DECLINE_PROPOSAL ) {
+        this._declineProposedTime(compId, ev._msg);
+    }else if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
 		type == ZmOperation.EDIT_REPLY_CANCEL ||
 		type == ZmOperation.INVITE_REPLY_DECLINE ||
 		type == ZmOperation.INVITE_REPLY_TENTATIVE)
 	{
 		this._editInviteReply(ZmMailListController.INVITE_REPLY_MAP[type], compId, null, null, folderId);
-	}
-	else
-	{
+	}else {
 		var accountName = ac.multiAccounts && ac.accountList.mainAccount.name;
 		var resp = this._sendInviteReply(type, compId, null, accountName, null, ev._msg, folderId);
 		if (resp && appCtxt.isChildWindow) {
@@ -1205,6 +1214,7 @@ function(type, instanceDate, isResourceInvite) {
 	switch (type) {
 		case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyAcceptMessage; break;
 		case ZmOperation.REPLY_CANCEL:		replyBody = ZmMsg.apptCanceled; break;
+        case ZmOperation.DECLINE_PROPOSAL:  replyBody = ""; break;
 		case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyDeclineMessage; break;
 		case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyTentativeMessage; break;
 		case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
@@ -1232,6 +1242,7 @@ function(type) {
 	var replySubject = null;
 	switch (type) {
 		case ZmOperation.REPLY_ACCEPT:		replySubject = ZmMsg.subjectAccept + ": "; break;
+		case ZmOperation.DECLINE_PROPOSAL:	replySubject = ZmMsg.subjectDecline + " - "; break;
 		case ZmOperation.REPLY_DECLINE:		replySubject = ZmMsg.subjectDecline + ": "; break;
 		case ZmOperation.REPLY_TENTATIVE:	replySubject = ZmMsg.subjectTentative + ": "; break;
 		case ZmOperation.REPLY_NEW_TIME:	replySubject = ZmMsg.subjectNewTime + ": "; break;
@@ -1243,6 +1254,20 @@ ZmMailListController.prototype._editInviteReply =
 function(action, componentId, instanceDate, accountName, acceptFolderId) {
 	var replyBody = this._getInviteReplyBody(action, instanceDate);
 	this._doAction({action:action, extraBodyText:replyBody, instanceDate:instanceDate, accountName:accountName, acceptFolderId: acceptFolderId});
+};
+
+ZmMailListController.prototype._acceptProposedTime =
+function(componentId, origMsg) {
+    var invite = origMsg.invite;
+    var apptId = invite.getAppointmentId();
+    var controller = AjxDispatcher.run("GetCalController");
+    controller.acceptProposedTime(apptId, invite);
+};
+
+ZmMailListController.prototype._declineProposedTime =
+function(componentId, origMsg) {
+    var replyBody = this._getInviteReplyBody(ZmOperation.DECLINE_PROPOSAL, null);
+    this._doAction({action:ZmOperation.DECLINE_PROPOSAL, extraBodyText:replyBody, instanceDate:null});    
 };
 
 ZmMailListController.prototype._sendInviteReply =

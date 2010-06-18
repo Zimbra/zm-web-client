@@ -194,9 +194,12 @@ function() {
 };
 
 ZmApptChooserTabViewPage.prototype.initialize =
-function(appt, mode, isDirty) {
+function(appt, mode, isDirty, apptComposeMode) {
 	this._appt = appt;
 	this._isDirty = isDirty;
+    this._isForward = (apptComposeMode == ZmApptComposeView.FORWARD);
+    this._isProposeTime = (apptComposeMode == ZmApptComposeView.PROPOSE_TIME);
+    
     this._list.removeAll();
 
 	if (this._rendered) {

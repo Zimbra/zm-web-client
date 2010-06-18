@@ -70,6 +70,28 @@ function(appt, forwardCallback) {
 	return true;
 };
 
+/**
+ * Propose new time for an appointment
+ *
+ * @param	{ZmAppt}	    appt		            the appointment
+ * @param	{AjxCallback}	proposeTimeCallback		callback executed  after proposing time
+ * @return	{Boolean}	    <code>true</code>       indicates that propose time is executed
+ */
+ZmApptComposeController.prototype.sendCounterAppointmentRequest =
+function(appt, proposeTimeCallback) {
+	var callback = new AjxCallback(this, this._handleCounterAppointmentRequest, proposeTimeCallback);
+	appt.sendCounterAppointmentRequest(callback);
+	return true;
+};
+
+ZmApptComposeController.prototype._handleCounterAppointmentRequest =
+function(proposeTimeCallback) {
+	appCtxt.setStatusMsg(ZmMsg.newTimeProposed);
+	if (proposeTimeCallback instanceof AjxCallback) {
+		proposeTimeCallback.run();
+	}
+};
+
 ZmApptComposeController.prototype._handleForwardInvite =
 function(forwardCallback) {
 	appCtxt.setStatusMsg(ZmMsg.forwardInviteSent);
@@ -93,6 +115,11 @@ ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
 	var appt = this._composeView.getAppt(attId);
 	if (appt) {
+
+        if(appt.isProposeTime && !appt.isOrganizer()) {
+            return this.sendCounterAppointmentRequest(appt);
+        }
+
 		if (appt.isForward) {
 			var addrs = this._composeView.getForwardAddress();
 
@@ -699,4 +726,9 @@ function() {
 ZmApptComposeController.prototype.forwardInvite =
 function(newAppt) {
 	this.show(newAppt, ZmCalItem.MODE_FORWARD_INVITE);
+};
+
+ZmApptComposeController.prototype.proposeNewTime =
+function(newAppt) {
+	this.show(newAppt, ZmCalItem.MODE_PROPOSE_TIME);
 };

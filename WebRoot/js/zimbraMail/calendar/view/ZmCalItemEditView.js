@@ -101,11 +101,13 @@ function(attId) {
 };
 
 ZmCalItemEditView.prototype.initialize =
-function(calItem, mode, isDirty, isForward) {
-	this._calItem = calItem;
+function(calItem, mode, isDirty, apptComposeMode) {
+
+    this._calItem = calItem;
 	this._isDirty = isDirty;
-    this._isForward = Boolean(isForward);
-    
+    this._isForward = (apptComposeMode == ZmApptComposeView.FORWARD);
+    this._isProposeTime = (apptComposeMode == ZmApptComposeView.PROPOSE_TIME);
+
 	var firstTime = !this._rendered;
 	this.createHtml();
 
@@ -147,8 +149,8 @@ function(listener) {
 ZmCalItemEditView.prototype.enableInputs =
 function(bEnableInputs) {
 	this._subjectField.setEnabled(bEnableInputs);
-	this._startDateField.disabled = !bEnableInputs;
-	this._endDateField.disabled = !bEnableInputs;
+	this._startDateField.disabled = !(bEnableInputs || this._isProposeTime);
+	this._endDateField.disabled = !(bEnableInputs || this._isProposeTime);
 };
 
 ZmCalItemEditView.prototype.enableSubjectField =
@@ -340,19 +342,21 @@ function(calItem, mode, firstTime) {
 
 	this.enableInputs(true);
 
+    var enableTimeSelection = !this._isForward;
+
 	// lets always attempt to populate even if we're dealing w/ a "new" calItem
 	this._populateForEdit(calItem, mode);
 
 	// disable the recurrence select object for editing single instance
-    var enableRepeat = ((mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) && !this._isForward);
+    var enableRepeat = ((mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) && enableTimeSelection && !this._isProposeTime);
 	this._enableRepeat(enableRepeat);
 
     //show 'to' fields for forward action
     var forwardOptions = document.getElementById(this._htmlElId + "_forward_options");
-    if(forwardOptions) Dwt.setVisible(forwardOptions, this._isForward);
+    if(forwardOptions) Dwt.setVisible(forwardOptions, this._isForward || this._isProposeTime);
 
     var reminderOptions = document.getElementById(this._htmlElId + "_reminder_options");
-    if(reminderOptions) Dwt.setVisible(reminderOptions, !this._isForward);
+    if(reminderOptions) Dwt.setVisible(reminderOptions, !this._isForward && !this._isProposeTime);
 
 	// if first time reset'ing, delay saving form value since all widgets
 	// (i.e. html editor) may not have finished initializing yet.

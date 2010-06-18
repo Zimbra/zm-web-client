@@ -297,6 +297,7 @@ function(calItem) {
 	}
 
     calItem.isForward = this._isForward;
+    calItem.isProposeTime = this._isProposeTime;
 
     if(this._isForward)  {
         var addrs = this._collectForwardAddrs();
@@ -322,8 +323,11 @@ function(calItem, mode) {
 
 	ZmCalItemEditView.prototype._populateForEdit.call(this, calItem, mode);
 
+    var enableTimeSelection = !this._isForward;
+    var enableApptDetails = !this._isForward && !this._isProposeTime;
+
 	this._showAsSelect.setSelectedValue(calItem.freeBusy);
-    this._showAsSelect.setEnabled(!this._isForward);
+    this._showAsSelect.setEnabled(enableApptDetails);
 	this._privacySelect.setSelectedValue(calItem.privacy);
 
 	// reset the date/time values based on current time
@@ -361,11 +365,10 @@ function(calItem, mode) {
     //need to capture initial time set while composing/editing appt
     ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 
-
-    this._startTimeSelect.setEnabled(!this._isForward);
-    this._endTimeSelect.setEnabled(!this._isForward);
-    this._startDateButton.setEnabled(!this._isForward);
-    this._endDateButton.setEnabled(!this._isForward);
+    this._startTimeSelect.setEnabled(enableTimeSelection);
+    this._endTimeSelect.setEnabled(enableTimeSelection);
+    this._startDateButton.setEnabled(enableTimeSelection);
+    this._endDateButton.setEnabled(enableTimeSelection);
 
 	// attendees
 	var tp;
@@ -411,10 +414,11 @@ function(calItem, mode) {
 	if (this._privacySelect) {
 		var isRemote = calItem.isShared();
 		var cal = isRemote ? appCtxt.getById(calItem.folderId) : null;
-		var isEnabled = ((!isRemote || (cal && cal.hasPrivateAccess())) && !this._isForward);
+		var isPrivacyEnabled = ((!isRemote || (cal && cal.hasPrivateAccess())) && enableApptDetails);
 		var defaultPrivacyOption = (appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY) == ZmSetting.CAL_VISIBILITY_PRIV)?"PRI":"PUB";
-		this._privacySelect.setSelectedValue(isEnabled ? (calItem.privacy || defaultPrivacyOption) : "PUB");
-		this._privacySelect.setEnabled(isEnabled);
+
+        this._privacySelect.setSelectedValue(isPrivacyEnabled ? (calItem.privacy || defaultPrivacyOption) : "PUB");
+		this._privacySelect.setEnabled(isPrivacyEnabled);
 	}
 
 	// set the equipment attendee(s)
@@ -434,21 +438,36 @@ function(calItem, mode) {
 		// by default the changes made to the appt should be visible to others
 		this._sendNotificationMailCheckbox.checked = true;
 		this._isOrganizer = calItem.isOrganizer();
-		this._attInputField[ZmCalBaseItem.PERSON].setEnabled(calItem.isOrganizer() || this._isForward);
+		//this._attInputField[ZmCalBaseItem.PERSON].setEnabled(calItem.isOrganizer() || this._isForward);
         Dwt.setVisible(this._notificationOptions, calItem.isOrganizer());
         Dwt.setVisible(this._organizerOptions, !calItem.isOrganizer());
         if(this._organizerData) {
             this._organizerData.innerHTML = calItem.getOrganizer() || "";
         }
-        this._forwardToField.setValue("");        
+        this._forwardToField.setValue(this._isProposeTime ? calItem.getOrganizer() : "");        
+        this._forwardToField.setEnabled(!this._isProposeTime);        
 	}
 
 
-    this._folderSelect.setEnabled(!this._isForward);
+    this._folderSelect.setEnabled(enableApptDetails);
     if (this._reminderSelect) {
-		this._reminderSelect.setEnabled(!this._isForward);
+		this._reminderSelect.setEnabled(enableTimeSelection);
 	}
-    this._allDayCheckbox.disabled = this._isForward;
+
+    this._allDayCheckbox.disabled = !enableTimeSelection;
+
+    var label = ZmMsg.time;
+
+    if(calItem.isAcceptingProposal) {
+        this._isDirty = true;
+        label = ZmMsg.proposedTime;
+    }
+
+    if(this._isProposeTime) {
+        label = ZmMsg.proposeNewTime;        
+    }
+
+    if(this._timeLegend) this._timeLegend.innerHTML = label;
 
     //Persona's   [ Should select Persona as combination of both DisplayName, FromAddress ]
     var sentBy = calItem.sentBy;
@@ -546,6 +565,7 @@ function(width) {
 	inputEl._attType = ZmCalBaseItem.LOCATION;
 
 	this._resourcesContainer = document.getElementById(this._htmlElId + "_resourcesContainer");
+	this._timeLegend = document.getElementById(this._htmlElId + "_timeLegend");
 	this._resourcesData = document.getElementById(this._htmlElId + "_resourcesData");
 
 	// show-as DwtSelect
@@ -588,7 +608,7 @@ function(width) {
             parentElement: (this._htmlElId + "_to_control")
         };
         var input = new DwtInputField(params);
-        var inputEl = input.getInputElement();
+        var inputEl = input.getInputElement();                  
         Dwt.setSize(inputEl, "100%", "24px");
         inputEl._attType = ZmCalBaseItem.PERSON;
 
