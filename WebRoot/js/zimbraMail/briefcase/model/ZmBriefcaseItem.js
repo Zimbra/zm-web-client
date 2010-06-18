@@ -240,12 +240,17 @@ function() {
  * @param	{String}	folderId		the folder id
  */
 ZmBriefcaseItem.prototype.createFromAttachment =
-function(msgId, partId, name, folderId) {
+function(msgId, partId, name, folderId, replaceFile) {
 	var acctId = appCtxt.getActiveAccount().id;
     
 	var soapDoc = AjxSoapDoc.create("SaveDocumentRequest", "urn:zimbraMail");
 	var doc = soapDoc.set("doc");
-	doc.setAttribute("l", folderId);
+    if (replaceFile && replaceFile.id) {
+        doc.setAttribute("id", replaceFile.id);
+        doc.setAttribute("ver", replaceFile.version);
+    }else{
+	    doc.setAttribute("l", folderId);
+    }
 	var mnode = soapDoc.set("m", null, doc);
 	mnode.setAttribute("id", msgId);
 	mnode.setAttribute("part", partId);
