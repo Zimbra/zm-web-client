@@ -36,7 +36,7 @@ ZmOverviewContainer = function(params) {
 	params.id = params.id || ZmId.getOverviewContainerId(params.containerId);
 	DwtTree.call(this, params);
 
-	this.setScrollStyle(params.scroll || Dwt.SCROLL);
+	this.setScrollStyle(params.scroll || Dwt.SCROLL_Y);
 
 	this.containerId = params.containerId;
 	this._appName = params.appName;
