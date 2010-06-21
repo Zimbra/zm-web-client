@@ -773,26 +773,28 @@ function(ev) {
 				}
 				this._itemToSelect = this._controller._getNextItemToSelect(omit);
 			}
-			this._removeMsgRows(items[i].id);	// conv move: remove msg rows
+			this._removeMsgRows(conv.id);	// conv move: remove msg rows
+			this._expanded[conv.id] = false;
+			delete this._msgRowIdList[conv.id];
 		}
 	}
 
 	// if we get a new msg that's part of an expanded conv, insert it into the
 	// expanded conv, and don't move that conv
 	if (!isConv && (ev.event == ZmEvent.E_CREATE)) {
-		var div = this._createItemHtml(item);
-		if (!this._expanded[item.cid]) {
-			Dwt.setVisible(div, false);
-		}
+		var rowIds = this._msgRowIdList[item.cid];
 		var conv = appCtxt.getById(item.cid);
-		var convIndex = this._getRowIndex(conv);
-		var sortIndex = ev.getDetail("sortIndex");
-		var msgIndex = sortIndex || 0;
-		this._addRow(div, convIndex + msgIndex + 1);
-		if (this._msgRowIdList[item.cid]) {
-			this._msgRowIdList[item.cid].push(div.id);
+		if (rowIds && rowIds.length && this._rowsArePresent(conv)) {
+			var div = this._createItemHtml(item);
+			if (!this._expanded[item.cid]) {
+				Dwt.setVisible(div, false);
+			}
+			var convIndex = this._getRowIndex(conv);
+			var sortIndex = ev.getDetail("sortIndex");
+			var msgIndex = sortIndex || 0;
+			this._addRow(div, convIndex + msgIndex + 1);
+			rowIds.push(div.id);
 		}
-
 		handled = ev.handled = true;
 	}
 
