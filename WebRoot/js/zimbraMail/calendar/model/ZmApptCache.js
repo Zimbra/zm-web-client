@@ -213,6 +213,13 @@ function(params) {
 
 	for (var i = 0; i < params.folderIds.length; i++) {
 		var fid = params.folderIds[i];
+
+		// bug #46296/#47041 - skip shared folders if account is offline
+		var calFolder = appCtxt.isOffline && appCtxt.getById(fid);
+		if (calFolder && calFolder.isRemote() && calFolder.getAccount().status == ZmZimbraAccount.STATUS_OFFLINE) {
+			continue;
+		}
+
 		// check vector cache first
 		list = this._getCachedVector(params.start, params.end, params.fanoutAllDay, fid);
 		if (list != null) {
