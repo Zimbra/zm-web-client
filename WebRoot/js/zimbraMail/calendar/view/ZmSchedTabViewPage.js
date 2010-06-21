@@ -652,6 +652,7 @@ function(inputEl, attendee, useException) {
 				this._getFreeBusyInfo(this._getStartTime(), email, this._fbCallback);
 			}
 			sched.attendee = attendee;
+			this._setParticipantStatus(sched, attendee, idx);
 			this._setAttendeeToolTip(sched, attendee);
 			this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
 			if (!curAttendee) {
@@ -803,23 +804,7 @@ function(index, attendee, type, isOrganizer) {
         select.setText("");
 	}
 
-	var ptst = attendee.getParticipantStatus() || "NE";
-	var ptstCont = sched.ptstObj;
-	if (ptstCont) {
-		var ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
-		if (ptstIcon != "") {
-			var ptstLabel = ZmMsg.attendeeStatusLabel + " " + ZmCalItem.getLabelForParticipationStatus(ptst);
-			ptstCont.innerHTML = AjxImg.getImageHtml(ptstIcon);
-			var imgDiv = ptstCont.firstChild;
-			if(imgDiv && !imgDiv._schedViewPageId ){
-				Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOVER, ZmSchedTabViewPage._onPTSTMouseOver);	
-				Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOUT, ZmSchedTabViewPage._onPTSTMouseOut);
-				imgDiv._ptstLabel = ptstLabel;
-				imgDiv._schedViewPageId = this._svpId;
-				imgDiv._schedTableIdx = index;
-			}
-        }
-    }
+    this._setParticipantStatus(sched, attendee, index);
 
 	var email = attendee.getEmail();
 	if (email instanceof Array) {
@@ -831,6 +816,34 @@ function(index, attendee, type, isOrganizer) {
 	}
 
 	return email;
+};
+
+/**
+ * sets participant status for an attendee
+ *
+ * @param sched 		[object]		scedule object which contains info related to this attendee row
+ * @param attendee		[object]		attendee object ZmContact/ZmResource
+ * @param index 		[Integer]		index of the schedule 
+ */
+ZmSchedTabViewPage.prototype._setParticipantStatus =
+function(sched, attendee, index) {
+    var ptst = attendee.getParticipantStatus() || "NE";
+    var ptstCont = sched.ptstObj;
+    if (ptstCont) {
+        var ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
+        if (ptstIcon != "") {
+            var ptstLabel = ZmMsg.attendeeStatusLabel + " " + ZmCalItem.getLabelForParticipationStatus(ptst);
+            ptstCont.innerHTML = AjxImg.getImageHtml(ptstIcon);
+            var imgDiv = ptstCont.firstChild;
+            if(imgDiv && !imgDiv._schedViewPageId ){
+                Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOVER, ZmSchedTabViewPage._onPTSTMouseOver);
+                Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOUT, ZmSchedTabViewPage._onPTSTMouseOut);
+                imgDiv._ptstLabel = ptstLabel;
+                imgDiv._schedViewPageId = this._svpId;
+                imgDiv._schedTableIdx = index;
+            }
+        }
+    }
 };
 
 /**
