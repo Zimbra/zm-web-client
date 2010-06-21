@@ -445,7 +445,8 @@ function(calItem, mode) {
             this._organizerData.innerHTML = calItem.getOrganizer() || "";
         }
         this._forwardToField.setValue(this._isProposeTime ? calItem.getOrganizer() : "");        
-        this._forwardToField.setEnabled(!this._isProposeTime);        
+        this._forwardToField.setEnabled(!this._isProposeTime);
+        if(this._pickerButton) this._pickerButton.setEnabled(!this._isProposeTime);
 	}
 
 

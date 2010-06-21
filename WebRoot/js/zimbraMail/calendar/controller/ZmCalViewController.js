@@ -3129,3 +3129,59 @@ function(appt) {
 		window.open(url, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 	}
 };
+
+ZmCalViewController.prototype.acceptProposedTime =
+function(apptId, invite) {
+    var jsonObj = {GetAppointmentRequest:{_jsns:"urn:zimbraMail"}};
+    var request = jsonObj.GetAppointmentRequest;
+    request.id = apptId;
+    request.includeContent = "1";    
+
+    var accountName =  (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null);
+
+    appCtxt.getAppController().sendRequest({
+        jsonObj: jsonObj,
+        asyncMode: true,
+        callback: (new AjxCallback(this, this._getApptItemInfoHandler, [invite])),
+        errorCallback: (new AjxCallback(this, this._getApptItemInfoErrorHandler, [invite])),        
+        accountName: accountName
+    });
+};
+
+ZmCalViewController.prototype._getApptItemInfoHandler =
+function(proposedInvite, result) {
+    var resp = result.getResponse();
+    resp = resp.GetAppointmentResponse;
+
+    var apptList = new ZmApptList();
+    var apptNode = resp.appt[0]; 
+    var appt = ZmAppt.createFromDom(apptNode, {list: apptList}, null);
+
+    var invites = apptNode.inv;
+    this.setApptInvitationId(appt, invites, proposedInvite);
+
+    var mode = appt.isRecurring() ? (appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES) : ZmCalItem.MODE_EDIT;
+    appt.setProposedInvite(proposedInvite);
+    this.editAppointment(appt, mode);
+};
+
+ZmCalViewController.prototype.setApptInvitationId =
+function(appt, invites, proposedInvite) {
+    var proposalRidZ = proposedInvite.getRecurrenceId();
+    if(proposedInvite.components[0].ridZ) {
+        for(var i in invites) {
+            var inv = invites[i];
+            if(inv.comp[0].ridZ  == proposalRidZ) {
+                appt.invId = appt.id + "-" + inv.id;
+                break;
+            }
+        }
+    }else {
+        appt.invId = appt.id + "-" + invites[0].id;
+    }
+};
+
+ZmCalViewController.prototype._getApptItemInfoErrorHandler =
+function(invite, result) {
+    //todo: error handling
+};
