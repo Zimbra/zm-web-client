@@ -691,34 +691,6 @@ function(modifies) {
 };
 
 /**
- * Returns a list of objects that have the given parent, flattening child
- * arrays in the process. It also saves each child's name into it.
- *
- * @param {Object}	parent	the notification subnode
- *
- * TODO: remove this func (still used by ZmMailApp::preNotify)
- * 
- * @private
- */
-ZmRequestMgr._getObjList =
-function(parent) {
-	var list = [];
-	for (var name in parent) {
-		var obj = parent[name];
-		if (obj instanceof Array) {
-			for (var i = 0; i < obj.length; i++) {
-				obj[i]._name = name;
-				list.push(obj[i]);
-			}
-		} else {
-			obj._name = name;
-			list.push(obj);
-		}
-	}
-	return list;
-};
-
-/**
  * Changes browser title if it's a folder or tag whose unread count has changed.
  *
  * @param ev	the event

@@ -380,7 +380,8 @@ function(obj, batchMode) {
 				a[i].cid = conv.id;
 			}
 		}
-		if (conv.list && conv._oldId) {
+		conv.folders = AjxUtil.hashCopy(this.folders);
+		if (conv.list && conv._oldId && conv.list._idHash[conv._oldId]) {
 			delete conv.list._idHash[conv._oldId];
 			conv.list._idHash[conv.id] = conv;
 		}
