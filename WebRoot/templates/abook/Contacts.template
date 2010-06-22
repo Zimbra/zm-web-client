@@ -12,6 +12,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+<!-- NOTE: sync with field order in ZmContact -->
 <template id="abook.Contacts#ZmEditContactView">
 	<div id="${id}_DEBUG"></div>
 	<table valign=top width='100%' cellspacing=0>
