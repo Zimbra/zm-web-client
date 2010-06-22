@@ -295,7 +295,7 @@ function(view) {
 
 ZmMsgController.prototype._goToMsg =
 function(view, next) {
-	var controller = AjxDispatcher.run(ZmMsgController.MODE_TO_CONTROLLER[this._mode]);
+	var controller = this._getParentListController();
 	if (controller) {
 		controller.pageItemSilently(this._msg, next);
 	}
@@ -303,7 +303,7 @@ function(view, next) {
 
 ZmMsgController.prototype._selectNextItemInParentListView =
 function() {
-	var controller = AjxDispatcher.run(ZmMsgController.MODE_TO_CONTROLLER[this._mode]);
+	var controller = this._getParentListController();
 	if (controller) {
 		controller._listView[controller._currentView]._itemToSelect = controller._getNextItemToSelect();
 	}
@@ -412,4 +412,22 @@ function(ev) {
        url += "&xim=1"; 
     }
 	window.open(appContextPath+url, "_blank");
+};
+
+/**
+ * Returns the parent list controller (TV, CLV, or CV)
+ *
+ * @private
+ */
+ZmMsgController.prototype._getParentListController =
+function() {
+	var ac = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+	var mailApp = ac.getApp(ZmApp.MAIL);
+	if (this._mode == ZmId.VIEW_TRAD) {
+		return mailApp.getTradController();
+	} else if (this._mode == ZmId.VIEW_CONV) {
+		return mailApp.getConvController();
+	} else if (this._mode == ZmId.VIEW_CONVLIST) {
+		return mailApp.getConvListController();
+	}
 };

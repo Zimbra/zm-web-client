@@ -274,7 +274,7 @@ function() {
 	} else if (cmd == "msgViewDetach") {
 		var msgController = AjxDispatcher.run("GetMsgController");
 		appCtxt.msgCtlrSessionId = msgController.sessionId;
-		msgController.show(params.msg);
+		msgController.show(params.msg, params.mode);
 		rootTg.addMember(msgController.getTabGroup());
 		startupFocusItem = msgController.getCurrentView();
 

@@ -262,15 +262,7 @@ function(ev) {
 		if (ev.batchMode) {
 			this._fixAlternation(0);
 		}
-		if (!this.allSelected) {
-			if (!this._isPageless) {
-				this._controller._app._checkReplenishListView = this;
-			} else {
-				if (!this._replenishTimedAction) // Many rows may be removed quickly, so skip unnecessary replenishes
-					this._replenishTimedAction = new AjxTimedAction(this, this._handleResponseCheckReplenish);
-				AjxTimedAction.scheduleAction(this._replenishTimedAction, 10);
-			}
-		}
+		this._checkReplenishOnTimer();
 		this._controller._resetToolbarOperations();
 	}
 };
@@ -303,6 +295,21 @@ function(ev) {
 	}
 
 	return items;
+};
+
+ZmListView.prototype._checkReplenishOnTimer =
+function(ev) {
+	if (!this.allSelected) {
+		if (!this._isPageless) {
+			this._controller._app._checkReplenishListView = this;
+		} else {
+			// Many rows may be removed quickly, so skip unnecessary replenishes
+			if (!this._replenishTimedAction) {
+				this._replenishTimedAction = new AjxTimedAction(this, this._handleResponseCheckReplenish);
+			}
+			AjxTimedAction.scheduleAction(this._replenishTimedAction, 10);
+		}
+	}
 };
 
 ZmListView.prototype._checkReplenish =

@@ -1344,13 +1344,13 @@ function(ev, callback) {
 	var msg = this.getMsg();
 	if (msg) {
 		if (msg._loaded) {
-			ZmMailMsgView.detachMsgInNewWindow(msg);
+			ZmMailMsgView.detachMsgInNewWindow(msg, false, this._msgControllerMode);
 			// always mark a msg read if it is displayed in its own window
 			if (msg.isUnread) {
 				msg.list.markRead({items:[msg], value:true});
 			}
 		} else {
-			ZmMailMsgView.rfc822Callback(msg.id);
+			ZmMailMsgView.rfc822Callback(msg.id, null, this._msgControllerMode);
 		}
 	}
 	if (callback) { callback.run(); }

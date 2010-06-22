@@ -261,6 +261,7 @@ function(ev) {
 					ZmMailListView.prototype._changeListener.call(this, ev);
 				} else {
 					this._changeFolderName(msg, ev.getDetail("oldFolderId"));
+					this._checkReplenishOnTimer();
 				}
 			}
 		}
