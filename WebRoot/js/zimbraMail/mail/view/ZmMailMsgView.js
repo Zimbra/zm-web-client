@@ -742,8 +742,19 @@ function(msg, idoc) {
 	// fix <img> tags
 	var images = idoc.getElementsByTagName("img");
 	var hasExternalImages = false;
+    var self = this;
+    var iframe = document.getElementById(this._iframeId);
+    var onload = function() {
+        //resize iframe onload of image
+        ZmMailMsgView._resetIframeHeight(self, iframe);
+        this.onload = null; // *this* is reference to <img> el.
+    };
 	for (var i = 0; i < images.length; i++) {
-		hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, images[i], "src") || hasExternalImages;
+        var external = ZmMailMsgView.__unfangInternalImage(msg, images[i], "src");
+        if(!external){ //Inline image
+            images[i].onload = onload;
+        }
+		hasExternalImages = external || hasExternalImages;
 	}
 	// fix all elems with "background" attribute
 	hasExternalImages = this._fixMultipartRelatedImagesRecurse(msg, idoc.body) || hasExternalImages;
@@ -782,7 +793,7 @@ function(msg, elem, aname) {
 		if (avalue.substr(0,4) == "cid:") {
 			var cid = "<" + avalue.substr(4) + ">";
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
-			if (avalue) {
+			if (avalue) {                
 				elem.setAttribute(aname, avalue);
 				//elem.setAttribute(df_aname, avalue)
 				return false;
@@ -814,7 +825,7 @@ function(msg, idoc, id, iframe) {
 	var self = this;
 	return function() {
 		var images = idoc.getElementsByTagName("img");
-		var onload = function() {
+		var onload = function() {            
 			ZmMailMsgView._resetIframeHeight(self, iframe);
 			this.onload = null; // *this* is reference to <img> el.
 		};
