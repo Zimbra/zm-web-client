@@ -509,5 +509,5 @@ function() {
 
 ZmPrefController.prototype._getDefaultFocusItem = 
 function() {
-	return this._toolbar;
+	return this._prefsView.getTabGroupMember() || this._toolbar || null;
 };
