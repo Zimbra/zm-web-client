@@ -106,7 +106,17 @@ function(mode, object, share) {
 	var type = this._getType(isUserShare, isGuestShare, isPublicShare);
 	this._handleShareWith(type);
 
-	this._granteeInput.setValue(share ? (share.grantee.name || ZmMsg.userUnknown) : "", true);
+	var grantee = "", password  = "";
+	if (share) {
+		if (isGuestShare) {
+			grantee = share.grantee.id;
+			password = share.link.pw;
+		} else {
+			grantee = (share.grantee.name || ZmMsg.userUnknown);
+			password = share.grantee.id;
+		}
+	}
+	this._granteeInput.setValue(grantee, true);
 	this._granteeInput.setEnabled(isNewShare);
 
 	// Make all the properties visible so that their elements are in the
@@ -120,7 +130,7 @@ function(mode, object, share) {
 
 	this._passwordButton.setVisible(!isNewShare);
 	this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
-	this._passwordInput.setValue((share && share.grantee.id) || "", true);
+	this._passwordInput.setValue(password, true);
 
 	if (this._inheritEl) {
 		this._inheritEl.checked = share ? share.link.inh : isNewShare;

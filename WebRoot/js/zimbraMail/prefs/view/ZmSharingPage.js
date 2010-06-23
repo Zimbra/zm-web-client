@@ -761,6 +761,8 @@ function(html, idx, item, field, colIdx, params) {
 			html[idx++] = ZmMsg.shareWithPublic;
 		} else if (type == ZmShare.TYPE_ALL) {
 			html[idx++] = ZmMsg.shareWithAll;
+		} else if (type == ZmShare.TYPE_GUEST) {
+			html[idx++] = item.grantee.id;
 		} else {
 			html[idx++] = item.grantee.name;
 		}
