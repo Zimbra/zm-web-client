@@ -31,7 +31,7 @@ ZmSlideEditView = function(parent, className, posStyle, controller, dropTgt) {
     this._themeManager = new ZmSlideThemeManager();
     this._layoutManager = new ZmSlideLayoutManager();
     this._docMgr = new ZmDocletMgr();
-
+    this._state = ZmSlideEditView.NEW;
 };
 
 ZmSlideEditView.prototype = new DwtComposite;
@@ -69,6 +69,10 @@ ZmSlideEditView.EDITABLE_OBJECTS = {
 };
 
 ZmSlideEditView.LIMIT_HEIGHT_PERCENTAGE = 90;
+
+
+ZmSlideEditView.NEW = 'new';
+ZmSlideEditView.EDIT = "edit";
 
 ZmSlideEditView.prototype.isEditable =
 function(div) {
@@ -1196,6 +1200,7 @@ function(filenames) {
         this.createNewSlide();
     }
 
+    this._state = ZmSlideEditView.NEW;
 };
 
 ZmSlideEditView.prototype.isImage  =
@@ -1444,7 +1449,7 @@ function() {
 	}
 
     window.fileInfo.name = fileName;
-    window.fileInfo.content = content.join("");
+    window.fileInfo.content = this._origContent = content.join("");
     window.fileInfo.contentType = ZmSlideEditView.APP_ZIMBRA_PPT;
     this._docMgr.setSaveCallback(new AjxCallback(this, this._saveHandler));
     this._docMgr.saveDocument(window.fileInfo);
@@ -1465,6 +1470,7 @@ function(files, conflicts) {
             window.fileInfo.id = files[0].id;
             window.fileInfo.version = files[0].ver;
             appCtxt.setStatusMsg(ZmMsg.savedPresentation, ZmStatusView.LEVEL_INFO);
+            this._state = ZmSlideEditView.EDIT;
         }
     }
 };
@@ -1480,9 +1486,11 @@ function(item, runSlideShow) {
     this._controller.setFileName(item.name ? item.name : "Untitled");
     if(content) {
         var div = this.getSlideParserDiv();
-        div.innerHTML = content;
+        div.innerHTML = this._origContent = content;
+
         if(!runSlideShow) {
             this.parseSlideContent();
+            this._state = ZmSlideEditView.EDIT;
         }else {
             var head = [];
 
@@ -1683,4 +1691,15 @@ function(themeName) {
 ZmSlideEditView.prototype.getThemeSlidePath =
 function(themeName) {
     return "/public/slides/themes/" + themeName + "/slide.html";    
+};
+
+ZmSlideEditView.prototype.checkForChanges = function() {
+   var content = [];
+   var idx = 0;
+   idx = this.getSlideHTML(content, idx);
+
+   var isChanged = ( this._state == ZmSlideEditView.NEW ) || ( this._origContent != content.join(""));
+   if(isChanged){
+       return ZmMsg.exitPresentationUnsavedChanges;
+   }
 };
