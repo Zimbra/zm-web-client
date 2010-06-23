@@ -299,3 +299,11 @@ ZmSlideEditController.prototype._kickPolling =
 function(resetBackoff) {
 
 };
+
+ZmSlideEditController.prototype.exit = function(){
+    return this._currentView.checkForChanges();
+};
+
+window.onbeforeunload = function() {
+    return appCtxt.getAppController().exit();
+};
