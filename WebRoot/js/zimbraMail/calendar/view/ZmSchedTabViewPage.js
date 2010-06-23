@@ -1037,6 +1037,7 @@ function(ev, id) {
 	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 	this._outlineAppt();
 	this._editView.updateTimeField(this._dateInfo);
+    this._dateInfo.isTimeModified = true;
 };
 
 ZmSchedTabViewPage.prototype._timezoneListener =

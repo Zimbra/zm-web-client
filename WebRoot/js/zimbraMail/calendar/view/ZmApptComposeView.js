@@ -531,15 +531,15 @@ function(id) {
 			break;
 		}
 		case ZmApptComposeView.TAB_ATTENDEES : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalBaseItem.PERSON);
+			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalBaseItem.PERSON, this._dateInfo);
 			break;
 		}
 		case ZmApptComposeView.TAB_LOCATIONS : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalBaseItem.LOCATION);
+			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalBaseItem.LOCATION, this._dateInfo);
 			break;
 		}
 		case ZmApptComposeView.TAB_EQUIPMENT : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalBaseItem.EQUIPMENT);
+			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalBaseItem.EQUIPMENT, this._dateInfo);
 			break;
 		}
 	}

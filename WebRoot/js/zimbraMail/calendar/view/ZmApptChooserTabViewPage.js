@@ -30,7 +30,7 @@
  * 
  * @extends		DwtTabViewPage
  */
-ZmApptChooserTabViewPage = function(parent, attendees, controller, type) {
+ZmApptChooserTabViewPage = function(parent, attendees, controller, type, dateInfo) {
 
 	DwtTabViewPage.call(this, parent, "ZmApptChooserTabViewPage");
 
@@ -38,6 +38,7 @@ ZmApptChooserTabViewPage = function(parent, attendees, controller, type) {
 	this._controller = controller;
 	this._editView = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT).getEditView();
 	this.type = type;
+    this._dateInfo = dateInfo;
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._offset = 0;
@@ -182,11 +183,24 @@ function() {
 	this.parent.tabSwitched(this._tabKey);
 	this._setAttendees();
 	this._controller._setComposeTabGroup(true);
+    //Update FB status if the time is changed
+    if(this.type == ZmCalBaseItem.EQUIPMENT && this._dateInfo.isTimeModified){
+        this.refreshResourcesFBStatus();
+        this._dateInfo.isTimeModified = false;
+    }
 
 	if (this._isClean && this.type == ZmCalBaseItem.PERSON) {
 		this._isClean = false;
 		this.searchContacts(true);
 	}
+};
+
+ZmApptChooserTabViewPage.prototype.refreshResourcesFBStatus =
+function() {
+    var items = this._chooser.getItems();
+    this._fillFreeBusy(items, AjxCallback.simpleClosure(function(items) {
+        this._chooser.setItems(items);
+    }, this));
 };
 
 ZmApptChooserTabViewPage.prototype.tabBlur =

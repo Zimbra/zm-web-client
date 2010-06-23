@@ -1067,6 +1067,7 @@ ZmApptEditView.prototype._timeChangeListener =
 function(ev, id) {
 	ZmTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField, this._dateInfo, id);
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+    this._dateInfo.isTimeModified = true;
 };
 
 ZmApptEditView.prototype._timezoneListener =
