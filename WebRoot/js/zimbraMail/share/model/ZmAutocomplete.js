@@ -465,6 +465,9 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 		this.icon = ZmAutocomplete.AC_ICON[match.type];
 		this.score = match.ranking;
 	}
+    if(!this.icon){
+    this.icon = ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_CONTACT];    
+    }
 	this.acType = (this.type == ZmAutocomplete.AC_TYPE_LOCATION || this.type == ZmAutocomplete.AC_TYPE_EQUIPMENT)
 		? this.type : ZmAutocomplete.AC_TYPE_CONTACT;
 };
