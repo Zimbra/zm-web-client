@@ -294,7 +294,7 @@ function(contentType, name, winName) {
 
     if(this.getBriefcaseController().chkFolderPermission(folderId)) {
         var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + (window.isTinyMCE ? "&editor=tinymce" : "") + "&skin=" + appCurrentSkin + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
-        var winname = winName || name;
+        var winname = winName || name || (new Date()).getTime().toString();
         window.open(url, winname); //bug:44324 removed new launching window
     }
 };
