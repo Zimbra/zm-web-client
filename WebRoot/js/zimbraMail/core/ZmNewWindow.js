@@ -355,6 +355,8 @@ function(reqId, errorCallback, noBusyOverlay) {
  */
 ZmNewWindow.prototype.sendRequest =
 function(params) {
+    // reset onbeforeunload on send
+    window.onbeforeunload = null;
 	// bypass error callback to get control over exceptions in the childwindow.
 	params.errorCallback = new AjxCallback(this, this._handleException, [( params.errorCallback || null )]);
 	return window.parentController ? window.parentController.sendRequest(params) : null;
