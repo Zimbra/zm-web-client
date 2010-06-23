@@ -847,7 +847,7 @@ function(ev) {
 ZmApp.prototype._handleCreateFolder =
 function(create, org) {
 	var parent = appCtxt.getById(create.l);
-	if (parent && (ZmOrganizer.VIEWS[org][create.view])) {
+	if (parent && (ZmOrganizer.VIEW_HASH[org][create.view])) {
 		parent.notifyCreate(create, "folder");
 		create._handled = true;
 	}
