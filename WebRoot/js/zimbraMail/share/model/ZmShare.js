@@ -1162,7 +1162,7 @@ function(link, share) {
 
 	// link is the shared folder
 	share.link = share.link || {};
-	share.link.view	= ZmOrganizer.VIEWS[link.type];
+	share.link.view	= ZmOrganizer.VIEWS[link.type][0];
 	if (link.rid)	{ share.link.id = link.rid; }
 
 	var linkShare = link.getMainShare();
