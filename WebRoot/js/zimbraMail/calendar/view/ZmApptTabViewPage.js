@@ -33,7 +33,7 @@ ZmApptTabViewPage = function(parent, attendees, controller, dateInfo) {
 	if (arguments.length == 0) return;
 
 	DwtTabViewPage.call(this, parent);
-    
+
 	this._controller = controller;
 	this._editView = new ZmApptEditView(this, attendees, controller, dateInfo);
 };
@@ -90,6 +90,9 @@ function() {
 
 ZmApptTabViewPage.prototype.resize =
 function(newWidth, newHeight) {
+    if(newHeight)
+        newHeight = newHeight - 35;
+
 	this._editView.resize(newWidth, newHeight);
 };
 

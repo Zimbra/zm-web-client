@@ -999,7 +999,8 @@ function(dateInfo) {
 		showTimezone = appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) ||
 					   dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 	}
-	Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
+
+    Dwt.setDisplay(this._tzoneSelect.getHtmlElement(), showTimezone ? Dwt.DISPLAY_INLINE : Dwt.DISPLAY_NONE)
 };
 
 ZmApptEditView.prototype._showTimeFields =
@@ -1039,7 +1040,7 @@ function(excludeAttendees, excludeReminder) {
 		AjxDateUtil.getServerDateTime(endDate)
 	);
 	vals.push("" + this._allDayCheckbox.checked);
-	if (Dwt.getVisibility(this._tzoneSelect.getHtmlElement()))
+	if (Dwt.getDisplay(this._tzoneSelect.getHtmlElement()) != Dwt.DISPLAY_NONE);
 		vals.push(this._tzoneSelect.getValue());
 	vals.push(this._repeatSelect.getValue());
 	if (!excludeAttendees) {
