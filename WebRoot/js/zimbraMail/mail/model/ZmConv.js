@@ -506,6 +506,11 @@ function(offset, ascending) {
 	return a;
 };
 
+ZmConv.prototype.getFolderId =
+function() {
+	return this.folderId || (this.list && this.list.search && this.list.search.folderId);
+};
+
 /**
  * Gets the first matching msg of this conv, loading the conv msg list if necessary. If the
  * msg itself hasn't been loaded we also load the conv. The conv load is a SearchConvRequest
@@ -597,6 +602,16 @@ function(convNode) {
 		this.msgIds = [];
 		for (var i = 0, count = convNode.m.length; i < count; i++) {
 			this.msgIds.push(convNode.m[i].id);
+		}
+		if (count == 1) {
+			var msgNode = convNode.m[0];
+			if (msgNode.l) {
+				this.folderId = msgNode.l;
+				this.folders[msgNode.l] = true;
+			}
+			if (msgNode.s) {
+				this.size = msgNode.s;
+			}
 		}
 	}
 

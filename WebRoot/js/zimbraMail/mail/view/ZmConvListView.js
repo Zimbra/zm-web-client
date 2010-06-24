@@ -298,7 +298,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (item.type == ZmItem.MSG) {
 		idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);
 	} else {
-		if (field == ZmItem.F_STATUS || field == ZmItem.F_FOLDER) {
+		if (field == ZmItem.F_STATUS) {
 			htmlArr[idx++] = "&nbsp;";
 		} else if (field == ZmItem.F_FROM) {
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
@@ -307,8 +307,23 @@ function(htmlArr, idx, item, field, colIdx, params) {
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
+		} else if (field == ZmItem.F_FOLDER) {
+			if (item.folderId) {
+				htmlArr[idx++] = "<nobr id='";
+				htmlArr[idx++] = this._getFieldId(item, field);
+				htmlArr[idx++] = "'>"; // required for IE bug
+				var folder = appCtxt.getById(item.folderId);
+				if (folder) {
+					htmlArr[idx++] = folder.getName();
+				}
+				htmlArr[idx++] = "</nobr>";
+			}
 		} else if (field == ZmItem.F_SIZE) {
-			if (item.numMsgs > 1) {
+			if (item.size) {
+				htmlArr[idx++] = "<nobr>";
+				htmlArr[idx++] = AjxUtil.formatSize(item.size);
+				htmlArr[idx++] = "</nobr>";
+			} else if (item.numMsgs > 1) {
 				htmlArr[idx++] = "(";
 				htmlArr[idx++] = item.numMsgs;
 				htmlArr[idx++] = ")";
