@@ -443,7 +443,6 @@ function() {
                 batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
 			    itemCount++;
             }
-			itemCount++;
 		}
 	}
 
