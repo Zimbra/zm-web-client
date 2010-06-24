@@ -404,8 +404,7 @@ function(ev) {
         }
     } else {
 		id = item.id;
-        if (item._part) 
-			id += ":" + item._part;
+        if (item._part) { id+= "&part=" + item._part; }
     }
     var url = "/h/printmessage?id=" + id;
     if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES)) {
