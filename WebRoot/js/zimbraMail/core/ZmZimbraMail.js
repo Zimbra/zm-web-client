@@ -324,7 +324,6 @@ function() {
  * 
  * @param {Hash}	params		a hash of parameters
  * @param {constant}	app			the starting app
- * @param {Boolean}	isRelogin		if <code>true</code>, user has re-authenticated after session timeout
  * @param {Hash}	settings		a hash of settings overrides
  */
 ZmZimbraMail.prototype.startup =
@@ -785,7 +784,7 @@ function(params) {
 				break;
 			}
 		}
-		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : this._getDefaultStartAppName(account);
+		startApp = this._getDefaultStartAppName(account);
 	}
 
 	// parse query string, in case we are coming in with a deep link	
