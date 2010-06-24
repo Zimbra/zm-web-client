@@ -1966,7 +1966,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 				// main account is "sender"
 				if (!doNotAddSender) {
 					addrNode.t = "s";
-					addrNode.p = name || ac.get(ZmSetting.DISPLAY_NAME);
+					addrNode.p = ac.get(ZmSetting.DISPLAY_NAME);
 					addrNode = {};
 					addrNodes.push(addrNode);
 				}
@@ -1974,7 +1974,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 				addrNode.t = "f";
 				addrNode.a = dataSource.getEmail();
 				if (ac.get(ZmSetting.DEFAULT_DISPLAY_NAME)) {
-					addrNode.p = name || dataSource.getName();
+					addrNode.p = dataSource.userName || dataSource.getName();
 				}
 			}
 		}
