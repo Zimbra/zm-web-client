@@ -855,7 +855,7 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 			shareNode.setAttribute("inh", "1");
 		}
 		if (!this.isPublic()) {
-			shareNode.setAttribute("d", this.grantee.name);
+			shareNode.setAttribute("d", this.isGuest() ? this.grantee.id : this.grantee.name);
 		}
 		for (var attr in grantAttrs) {
 			shareNode.setAttribute(attr, (grantAttrs[attr] || ""));
@@ -871,6 +871,45 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 													  callback: respCallback, errorCallback: errorCallback});
 	}
 };
+
+/*
+ZmShare.prototype._shareActionJson =
+function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
+
+	var jsonObj = {FolderActionRequest:{_jsns:"urn:zimbraMail"}};
+	var action = jsonObj.FolderActionRequest.action = {op:operation};
+	if (this.object.rid && this.object.zid) {
+		action.id = this.object.zid + ":" + this.object.rid;
+	} else {
+		action.id = this.object.id;
+	}
+	for (var attr in actionAttrs) {
+		action.attr = actionAttrs[attr];
+	}
+
+	if (operation != "!grant") {
+		var share = action.grant = {gt:this.grantee.type};
+		if (this.link.inh) {
+			share.inh = "1";
+		}
+		if (!this.isPublic()) {
+			share.d = this.isGuest() ? this.grantee.id : this.grantee.name;
+		}
+		for (var attr in grantAttrs) {
+			share.attr = grantAttrs[attr] || "";
+		}
+	}
+	var respCallback = new AjxCallback(this, this._handleResponseShareAction, [callback]);
+	var errorCallback = new AjxCallback(this, this._handleErrorShareAction);
+
+	if (batchCmd) {
+		batchCmd.addRequestParams(jsonObj, respCallback, errorCallback);
+	} else {
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true,
+												callback: respCallback, errorCallback: errorCallback});
+	}
+};
+*/
 
 /**
  * @private

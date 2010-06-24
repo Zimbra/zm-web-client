@@ -318,21 +318,24 @@ function(event) {
 	var pw = isGuestShare && this._passwordInput.getValue();
 	for (var i = 0; i < shares.length; i++) {
 		var share = shares[i];
-		if (perm != share.link.perm) {
+		if (perm != share.link.perm || pw != share.link.pw) {
 			var cmd = new AjxCallback(share, share.grant, [perm, pw]);
 			batchCmd.add(cmd);
 		}
 	}
-	var respCallback = !isPublicShare
-		? (new AjxCallback(this, this._handleResponseBatchCmd, [shares])) : null;
-	batchCmd.run(respCallback);
+	if (batchCmd.size() > 0) {
+		var respCallback = !isPublicShare
+			? (new AjxCallback(this, this._handleResponseBatchCmd, [shares])) : null;
+		batchCmd.run(respCallback);
+	}
 	
 	this.popdown();
 };
 
 ZmSharePropsDialog.prototype._handleResponseBatchCmd =
 function(shares, result) {
-	if (!shares || (shares && shares.length == 0)) { return; }
+
+	if (!(shares && shares.length == 0)) { return; }
 
 	var ignore = this._getFaultyEmails(result);
 	var replyType = this._reply.getReplyType();
@@ -417,6 +420,8 @@ function(shares, result) {
 // HACK: grep the Faults in BatchResponse and sift out the bad emails
 ZmSharePropsDialog.prototype._getFaultyEmails =
 function(result) {
+
+	if (!result) { return; }
 	var noSuchAccount = "no such account: ";
 	var bad = {};
 	var fault = result.getResponse().BatchResponse.Fault || [];
