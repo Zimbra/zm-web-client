@@ -87,6 +87,7 @@ function(buttonId, addrs, str, account) {
 		this._resetSelectDiv();
 	}
 	this._offset = 0;
+	this._truePageSize = 0;
 
 	var searchFor = this._selectDiv ? this._selectDiv.getValue() : ZmContactsApp.SEARCHFOR_CONTACTS;
 
@@ -329,6 +330,7 @@ ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
 	this._offset = 0;
 	this._list.removeAll();
+	this._truePageSize = 0;
 	this.search();
 };
 
@@ -353,11 +355,14 @@ function(firstTime, result) {
 		if (expanded) { return; }
 	}
 
+	// this method will expand the list depending on the number of email
+	// addresses per contact.
 	var list = AjxVector.fromArray(ZmContactsHelper._processSearchResponse(resp));
 
 	if (isPagingSupported) {
 		this._list.merge(offset, list);
 		this._list.hasMore = more;
+		this._truePageSize = list.size();
 	}
 
 	if (list.size() == 0) {
@@ -400,13 +405,13 @@ function() {
 ZmContactPicker.prototype._pageListener =
 function(ev) {
 	if (ev.item == this._prevButton) {
-		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
+		this._offset -= this._truePageSize;
 		this._showResults(true, true, this.getSubList()); // show cached results
 	}
 	else {
 		var lastId;
 		var lastSortVal;
-		this._offset += ZmContactsApp.SEARCHFOR_MAX;
+		this._offset += this._truePageSize;
 		var list = this.getSubList();
 		if (!list) {
 			list = this._chooser.sourceListView.getList();
@@ -419,7 +424,7 @@ function(ev) {
 		} else {
 			var more = this._list.hasMore;
 			if (!more) {
-				more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
+				more = (this._offset+this._truePageSize) < this._list.size();
 			}
 			this._showResults(true, more, list); // show cached results
 		}
