@@ -140,6 +140,9 @@
           <c:when test="${not empty param.doBriefcaseAction}">
              <app:briefcaseListViewAction/>
          </c:when>
+         <c:when test="${not empty param.doNotebookAction}">
+             <app:notebookListViewAction/>
+         </c:when>
          <c:when test="${not empty param.doContactListViewAction or param.action eq 'newcontact' or param.action eq 'newcontactgroup'}">
              <app:contactListViewAction/>
          </c:when>
@@ -304,7 +307,14 @@
         <app:briefcaseExplorerView context="${context}"/>
     </c:when>
     <c:when test="${context.isWikiSearch}">
-        <app:notebookRestView context="${context}"/>
+        <c:choose>
+            <c:when test="${context.isTagSearch}">
+                <app:notebookListView context="${context}"/>
+            </c:when>
+            <c:otherwise>
+                <app:notebookRestView context="${context}"/>
+            </c:otherwise>
+        </c:choose>
     </c:when>
     <c:otherwise>
         <fmt:message key="error" var="title"/>
