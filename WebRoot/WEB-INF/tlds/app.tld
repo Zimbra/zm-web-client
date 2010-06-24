@@ -96,6 +96,16 @@
     </tag-file>
 
     <tag-file>
+        <name>notebookListViewAction</name>
+        <path>/WEB-INF/tags/notebook/notebookListViewAction.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>notebookListView</name>
+        <path>/WEB-INF/tags/notebook/notebookListView.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>notebookRestView</name>
         <path>/WEB-INF/tags/notebook/notebookRestView.tag</path>
     </tag-file>
