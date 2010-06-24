@@ -436,7 +436,13 @@ function() {
 		var info = this._calItemStatus[i];
 		if (info.item) {
 			var calendar = info.item;
-			batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
+			if(calendar.isRemote() && !calendar.isMountpoint && calendar.isReadOnly()){
+                calendar.isChecked = info.checked;
+                calendar.checkedCallback(info.checked);
+            }else{
+                batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
+			    itemCount++;
+            }
 			itemCount++;
 		}
 	}
