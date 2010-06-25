@@ -15,6 +15,8 @@
 
 /**
  * Singleton alert class that alerts the user by popping up a message on the desktop.
+ * @class
+ * @private
  */
 ZmDesktopAlert = function() {
 	this.usePrism = appCtxt.isOffline && window.platform && (AjxEnv.isWindows || AjxEnv.isMac);

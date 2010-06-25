@@ -449,6 +449,9 @@ function() {
  * @param parent
  * @param className
  * @param position
+ *
+ * @class
+ * @private
  */
 ZmAttachTabView = function(parent, className, position) {
 	if (arguments.length == 0) { return; }
@@ -487,6 +490,9 @@ function(tabKey, skipTabChangeListener){
  * @param parent
  * @param className
  * @param posStyle
+ *
+ * @class
+ * @private
  */
 ZmMyComputerTabViewPage = function(parent, className, posStyle) {
 	if (arguments.length == 0) { return; }

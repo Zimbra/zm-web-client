@@ -17,6 +17,7 @@
  * Advanced Html Editor which switches between TinyMCE and ZmHtmlEditor
  *
  * @author Satish S
+ * @private
  */
 ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 	if (arguments.length == 0) { return; }

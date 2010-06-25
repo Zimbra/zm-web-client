@@ -17,6 +17,8 @@
  * Html Editor
  *
  * @author Ross Dargahi
+ * @class
+ * @constructor
  */
 ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 	if (arguments.length == 0) return;

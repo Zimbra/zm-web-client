@@ -19,6 +19,8 @@
  * It uses an text area as an editor where text is plain or all with the same style.
  *
  * @author Rajesh Segu
+ * @class
+ * @constructor
  */
 ZmLiteHtmlEditor = function(params) {
 	if (arguments.length == 0) return;

@@ -342,6 +342,8 @@ function(val) {
  *
  * @param parent
  * @param id
+ *
+ * @private
  */
 ZmWhiteBlackList = function(parent, id, templateId) {
 	DwtComposite.call(this, {parent:parent});

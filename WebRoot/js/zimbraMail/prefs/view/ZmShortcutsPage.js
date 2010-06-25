@@ -106,6 +106,7 @@ function() {
  * Displays shortcuts in some sort of list.
  * 
  * @param params
+ * @private
  */
 ZmShortcutList = function(params) {
 

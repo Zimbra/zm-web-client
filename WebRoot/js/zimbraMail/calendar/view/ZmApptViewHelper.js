@@ -502,6 +502,8 @@ function(id) {
 *
 * @param parent		[DwtComposite]	the parent widget
 * @param id			[string]*		an ID that is propagated to component select objects
+ *
+ * @private
 */
 ZmTimeSelect = function(parent, id) {
 	DwtComposite.call(this, {parent:parent});
@@ -825,6 +827,8 @@ function() {
 *
 * @param parent		[DwtComposite]	the parent widget
 * @param id			[string]*		an ID that is propagated to component select objects
+ *
+ * @private
 */
 ZmTimeInput = function(parent, id) {
 	DwtComposite.call(this, {parent:parent});

@@ -807,14 +807,9 @@ function(abook) {
 
 	this.getHtmlElement().innerHTML = html.toString();
 
-	var myView = this;
-	document.getElementById(this._bodyDivId).onscroll = function() {
-		myView._syncScroll();
-	};
-
-	document.getElementById(this._allDayApptScrollDivId).onscroll = function() {
-		myView._syncScroll();
-	};
+    var func = AjxCallback.simpleClosure(ZmCalColView.__onScroll, ZmCalColView, this);
+	document.getElementById(this._bodyDivId).onscroll = func;
+	document.getElementById(this._allDayApptScrollDivId).onscroll = func;
 
 	var ids = [this._apptBodyDivId, this._bodyHourDivId, this._allDayDivId, this._allDaySepDivId];
 	var types = [ZmCalBaseView.TYPE_APPTS_DAYGRID, ZmCalBaseView.TYPE_HOURS_COL, ZmCalBaseView.TYPE_ALL_DAY, ZmCalBaseView.TYPE_DAY_SEP];
@@ -823,6 +818,10 @@ function(abook) {
 	}
 	this._scrollToTime(8);
 
+};
+
+ZmCalColView.__onScroll = function(myView) {
+    myView._syncScroll();
 };
 
 ZmCalColView.prototype._computeMaxCols =

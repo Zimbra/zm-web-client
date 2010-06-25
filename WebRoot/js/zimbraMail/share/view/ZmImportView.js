@@ -17,6 +17,7 @@
  * This class represents the import view.
  * 
  * @extends		ZmImportExportBaseView
+ * @private
  */
 ZmImportView = function(params) {
 	if (arguments.length == 0) { return; }

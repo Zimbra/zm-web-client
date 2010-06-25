@@ -14,11 +14,8 @@
  */
 
 /**
- * @overview
- */
-
-/**
- * 
+ * @class
+ * @constructor 
  * @extends		DwtComposite
  */
 ZmSearchToolBar = function(parent, id) {

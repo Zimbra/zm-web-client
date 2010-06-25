@@ -16,6 +16,7 @@
 /**
  * 
  * @extends		DwtControl
+ * @private
  */
 ZmUpsellView = function(params) {
 	DwtControl.call(this, params);

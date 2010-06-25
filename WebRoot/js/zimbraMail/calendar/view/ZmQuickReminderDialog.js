@@ -16,6 +16,7 @@
 /**
 * show history of the status window
 * @param parent			the element that created this view
+ * @private
 */
 ZmQuickReminderDialog = function(parent, reminderController, calController) {
 
