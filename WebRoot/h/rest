@@ -12,6 +12,7 @@
 <fmt:setTimeZone var="timezone" value="${zm:getTimeZone(not empty param.tz ? param.tz : requestScope.zimbra_target_account_prefTimeZoneId)}" scope="request"/>
 
 <c:set var="type" value="${requestScope.zimbra_target_item_type}"/>
+<c:set var="skin" value="${requestScope.zimbra_target_account_prefSkin}" scope="request"/>
 <c:set var="view" value="${requestScope.zimbra_target_item_view}"/>
 <c:set var="itemColor" value="${not empty param.color ? param.color : requestScope.zimbra_target_item_color}" scope="request"/>
 
