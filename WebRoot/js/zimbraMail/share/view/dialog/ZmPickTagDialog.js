@@ -41,6 +41,7 @@ ZmPickTagDialog = function(parent, className) {
 	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._creatingTag = false;
 	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
+	this._lastVal = "";
 };
 
 ZmPickTagDialog.prototype = new ZmDialog;
@@ -163,6 +164,14 @@ function(ev) {
 ZmPickTagDialog.prototype._handleKeyUp =
 function(ev) {
 
+	var key = DwtKeyEvent.getCharCode(ev);
+	if (key == 9) {
+		return;
+	} else if (key == 40) {
+		this._overview[this._curOverviewId].focus();
+		return;
+	}
+	
 	var num = 0, firstMatch;
 	var value = this._inputField.getValue().toLowerCase();
 	if (value == this._lastVal) { return; }
@@ -204,7 +213,8 @@ function(ev) {
 
 	var tag = ev.item.getData(Dwt.KEY_OBJECT);
 	if (tag) {
-		var value = this._lastVal = tag.getName(false, null, true, true);
+		var value = tag.getName(false, null, true, true);
+		this._lastVal = value.toLowerCase();
 		this._inputField.setValue(value);
 		if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
 			this._okButtonListener();

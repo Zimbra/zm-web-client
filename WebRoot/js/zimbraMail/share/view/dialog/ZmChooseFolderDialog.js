@@ -42,6 +42,7 @@ ZmChooseFolderDialog = function(parent, className) {
 	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
 
 	this._multiAcctOverviews = {};
+	this._lastVal = "";
 };
 
 ZmChooseFolderDialog.prototype = new ZmDialog;
@@ -362,6 +363,14 @@ function() {
 ZmChooseFolderDialog.prototype._handleKeyUp =
 function(ev) {
 
+	var key = DwtKeyEvent.getCharCode(ev);
+	if (key == 9) {
+		return;
+	} else if (key == 40) {
+		this._overview[this._curOverviewId].focus();
+		return;
+	}
+
 	var num = 0, firstMatch, matches = [];
 	var value = this._inputField.getValue().toLowerCase();
 	if (value == this._lastVal) { return; }
@@ -445,8 +454,9 @@ function(ev) {
 	}
 
 	var organizer = ev.item && ev.item.getData(Dwt.KEY_OBJECT);
-	var value = this._lastVal = organizer ? organizer.getName(null, null, true) : ev.item.getText();
+	var value = organizer ? organizer.getName(null, null, true) : ev.item.getText();
 	this._inputField.setValue(value);
+	this._lastVal = value.toLowerCase();
 	if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
 		this._okButtonListener();
 	}
