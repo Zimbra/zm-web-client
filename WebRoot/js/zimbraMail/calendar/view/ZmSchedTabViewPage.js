@@ -1097,11 +1097,21 @@ function(status, slots, table, sched) {
 	var row = table.rows[0];
 	var className = this._getClassForStatus(status);
 
+    var currentDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value)
+
 	if (row && className) {
 		// figure out the table cell that needs to be colored
 		for (var i = 0; i < slots.length; i++) {
 			var startIdx = this._getIndexFromTime(slots[i].s);
 			var endIdx = this._getIndexFromTime(slots[i].e, true);
+
+            if(slots[i].s <= currentDate.getTime()) {
+                startIdx = 0;                
+            }
+
+            if(slots[i].e >= currentDate.getTime() + AjxDateUtil.MSEC_PER_DAY) {
+                endIdx = ZmSchedTabViewPage.FREEBUSY_NUM_CELLS - 1;
+            }
 
             //bug:45623 assume start index is zero if its negative
             if(startIdx < 0) {startIdx = 0;}
