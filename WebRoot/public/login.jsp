@@ -23,7 +23,7 @@
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
-<c:set var="useMobile" value="${ua.isiPhone or ua.isiPod}"/>
+<c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or ua.isOsAndroid}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
 <c:catch var="loginException">

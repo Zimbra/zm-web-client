@@ -90,7 +90,7 @@
     </c:choose>
     <c:set var="action" value="${zm:cook(empty param.paction ? param.action : param.paction)}" scope="request"/>
 </mo:handleError>
-<c:set value="${ua.isiPhone || ua.isiPod ? 'iphone' : ( ua.isIE ? 'wm6' : 'iphone')}" var="zms" scope="session"/>
+<c:set value="${ua.isiPhone || ua.isiPod || ua.isOsAndroid ? 'iphone' : ( ua.isIE ? 'wm6' : 'iphone')}" var="zms" scope="session"/>
 <c:if test="${not empty param.zms}">
     <c:set value="${fn:escapeXml(param.zms)}" var="zms" scope="session"/>
 </c:if>
@@ -244,7 +244,7 @@ if(window != parent){
 document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(requestScope.title)}";</c:if>
 <c:if test="${not empty requestScope.curId}">window.currentDate = '${requestScope.curId}';</c:if>
 <c:if test="${not empty requestScope._today}">window._today = '${requestScope._today}';</c:if>
-<c:if test="${ua.isiPhone or ua.isiPod}">if(dId && dV[dId]){hideDelete(dId);}</c:if>
+<c:if test="${ua.isiPhone or ua.isiPod or ua.isOsAndroid}">if(dId && dV[dId]){hideDelete(dId);}</c:if>
 </c:set>${dbg ? js : zm:yuiCompress(js, 'js')}</script>
 <c:if test="${param.st eq 'folders' or param.st eq 'cals' or param.st eq 'tasks' or param.st eq 'ab' or param.st eq 'notebooks' or param.st eq 'briefcases'}">
 <div class="tbl"><div class="tr"><div class="td YellowBg small-gray-text"><fmt:message key="MO_MaxFoldersNote"><fmt:param value="${sessionScope.F_LIMIT}"/></fmt:message></div></div></div>
@@ -258,7 +258,7 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
     </div></div>
     <div class="tbl container" style="height:32px;"><div class="tr"><div class="td fw list-row"><a href="?st=prefs"><fmt:message key="options"/></a></div></div></div>
     <div class="tbl container" style="height:30px;"><div class="tr">
-            <div class="td fw list-row"><c:set var="v" value="${ua.isiPhone || ua.isiPod ? 'iphone' : ( ua.isIE ? 'wm6' : 'xlite')}"/>
+            <div class="td fw list-row"><c:set var="v" value="${ua.isiPhone || ua.isiPod || ua.isOsAndroid? 'iphone' : ( ua.isIE ? 'wm6' : 'xlite')}"/>
                 <fmt:message key="lowBandwidth" var="lbw"/>
                 <fmt:message key="default" var="def"/>
                 <fmt:message key="viewLabel"/>&nbsp;
@@ -271,7 +271,7 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
     </div></div></div><c:if test="${empty param.noframe || empty param.isiniframe}">
     <script type="text/javascript"><c:set var="js">
     if (XHR !==undefined && XHR(true)) {if(!nojs && (window == parent)){registerOnclickHook();
-        <c:if test="${ua.isiPhone or ua.isiPod}">setInterval(function() {checkHash(null,'get');}, 400);</c:if>
+        <c:if test="${ua.isiPhone or ua.isiPod or ua.isOsAndroid}">setInterval(function() {checkHash(null,'get');}, 400);</c:if>
         <c:if test="${param.st ne 'newmail' && param.st ne 'compose' && mailbox.features.mail && (empty param.st || param.st eq mailbox.prefs.groupMailBy)}">if(window.location.hash.indexOf('newmail') < 0 && window.location.hash.indexOf('compose') < 0 ){
             setTimeout(function() {ajxReq('<c:url value="/m/zmain?st=newmail"/>',null,null,'get',true);},300);}</c:if>
     }}</c:set>
