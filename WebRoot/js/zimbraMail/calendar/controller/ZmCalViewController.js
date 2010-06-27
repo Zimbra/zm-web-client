@@ -3136,7 +3136,10 @@ function(appt) {
 };
 
 ZmCalViewController.prototype.acceptProposedTime =
-function(apptId, invite) {
+function(apptId, invite, callback) {
+
+    this._proposedTimeCallback = callback;
+
     var jsonObj = {GetAppointmentRequest:{_jsns:"urn:zimbraMail"}};
     var request = jsonObj.GetAppointmentRequest;
     request.id = apptId;
@@ -3167,6 +3170,7 @@ function(proposedInvite, result) {
 
     var mode = appt.isRecurring() ? (appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES) : ZmCalItem.MODE_EDIT;
     appt.setProposedInvite(proposedInvite);
+    appt.setProposedTimeCallback(this._proposedTimeCallback);
     this.editAppointment(appt, mode);
 };
 

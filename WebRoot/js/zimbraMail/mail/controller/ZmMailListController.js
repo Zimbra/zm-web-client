@@ -1260,14 +1260,21 @@ ZmMailListController.prototype._acceptProposedTime =
 function(componentId, origMsg) {
     var invite = origMsg.invite;
     var apptId = invite.getAppointmentId();
+    var callback = new AjxCallback(this, this._handleAcceptDeclineProposedTime, [origMsg]);
     var controller = AjxDispatcher.run("GetCalController");
-    controller.acceptProposedTime(apptId, invite);
+    controller.acceptProposedTime(apptId, invite, callback);
 };
 
 ZmMailListController.prototype._declineProposedTime =
 function(componentId, origMsg) {
     var replyBody = this._getInviteReplyBody(ZmOperation.DECLINE_PROPOSAL, null);
-    this._doAction({action:ZmOperation.DECLINE_PROPOSAL, extraBodyText:replyBody, instanceDate:null});    
+    var callback = new AjxCallback(this, this._handleAcceptDeclineProposedTime, [origMsg]);
+    this._doAction({action:ZmOperation.DECLINE_PROPOSAL, extraBodyText:replyBody, instanceDate:null, sendMsgCallback: callback});    
+};
+
+ZmMailListController.prototype._handleAcceptDeclineProposedTime =
+function(origMsg) {
+    this._doDelete([origMsg]);    
 };
 
 ZmMailListController.prototype._sendInviteReply =

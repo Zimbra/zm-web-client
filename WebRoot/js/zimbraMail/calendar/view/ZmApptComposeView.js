@@ -190,7 +190,7 @@ function(appt, mode, isDirty) {
 
 	// always switch to appointment tab
 	this.switchToTab(this._apptTabKey);
-    this.setTabVisibility([ZmApptComposeView.TAB_ATTENDEES, ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_EQUIPMENT], !isForward);    
+    this.setTabVisibility([ZmApptComposeView.TAB_ATTENDEES, ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_EQUIPMENT], !isForward && !this._proposeNewTime);    
     this.setTabVisibility([ZmApptComposeView.TAB_ATTENDEES], appt.isOrganizer() || isForward);
 };
 
