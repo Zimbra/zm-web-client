@@ -490,6 +490,11 @@ function(draftType, msg, callback, result) {
 	if (callback) {
 		callback.run(result);
 	}
+
+    if(this.sendMsgCallback) {
+        this.sendMsgCallback.run(result);
+    }
+
 	appCtxt.notifyZimlets("onSendMsgSuccess", [this, msg]);//notify Zimlets on success	
 };
 
@@ -833,6 +838,8 @@ function(params) {
 	} else {
 		this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
 	}
+
+    this.sendMsgCallback = params.sendMsgCallback;
 
 	if (params.callback) {
 		params.callback.run(this);

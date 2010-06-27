@@ -374,6 +374,8 @@ function(calItem, result) {
 		this._app.getListController()._doMove(calItem, folder, null, false);
 	}
 
+    calItem.handlePostSaveCallbacks();
+
 	this._composeView.cleanup();
 	appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success 
 };

@@ -323,7 +323,7 @@ function(isHtml) {
         buf[i++] = "<p>\n<table border='0'>\n";
     }
 
-    var params = [ZmMsg.subjectLabel, this.name];
+    var params = [ZmMsg.subjectLabel, this.name, ""];
 
     buf[i++] = formatter.format(params);
     buf[i++] = "\n";

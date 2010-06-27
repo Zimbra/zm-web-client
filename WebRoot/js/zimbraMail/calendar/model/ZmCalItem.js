@@ -2155,6 +2155,16 @@ function(respName, callback, result) {
 };
 
 
+ZmCalItem.prototype.setProposedTimeCallback =
+function(callback) {
+    this._proposedTimeCallback = callback;
+};
+
+ZmCalItem.prototype.handlePostSaveCallbacks =
+function() {
+    if(this._proposedTimeCallback) this._proposedTimeCallback.run(this);     
+};
+
 // Static methods
 
 /**
