@@ -340,14 +340,13 @@ function() {
     var bgDiv = this._currentPreviewSlideThemeDiv = document.createElement("div");
     bgDiv.className = "slidemaster";
     Dwt.setPosition(bgDiv, Dwt.ABSOLUTE_STYLE);
-
+    Dwt.setLocation(bgDiv, 0, 0);
     slideDiv.appendChild(bgDiv);
 
 	Dwt.setSize(div, "100%","100%");
 	Dwt.setSize(bgDiv, "100%","100%");
 
     div.innerHTML = this._currentSlideDiv.innerHTML;
-    bgDiv.innerHTML = this._currentSlideThemeDiv.innerHTML;
 
     div.style.zIndex = Dwt.Z_VIEW;
     bgDiv.style.zIndex = Dwt.Z_VIEW-10;
@@ -356,7 +355,9 @@ function() {
     if(newFontSize < 3) {
         newFontSize = 3;
     }
-    div.style.fontSize = newFontSize + 'px'; 
+    div.style.fontSize = newFontSize + 'px';
+
+    bgDiv.innerHTML = this._currentSlideThemeDiv.innerHTML;    
 }
 
 ZmSlideEditView.prototype._initializeSlideEditView =
@@ -564,6 +565,10 @@ function(ev, div) {
     DBG.println("mouse down :" + this.isPreviewComponent(div)+","+div.parentNode+"::"+div.parentNode.className);
 
     div = this._getActionDiv(div);
+
+    if(div.className == "slidemaster" && div.parentNode) {
+        div = this._getActionDiv(div.parentNode.firstChild);
+    }
 
     if(!div) {
         return false;
@@ -1564,7 +1569,6 @@ function() {
 ZmSlideEditView.prototype.parseSlideContent =
 function() {
     this.createSlide(true);
-
     var node = this._slideParserDiv.firstChild;
     while(node) {
         var className = node.className;
