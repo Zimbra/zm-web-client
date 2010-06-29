@@ -343,8 +343,12 @@ function() {
 		}
 
 		if (folderId) {
-			this.account = appCtxt.getById(folderId).getAccount();
-		} else {
+			var folder = appCtxt.getById(folderId);
+			this.account = folder && folder.getAccount();
+		}
+
+		// last resort: pull out the account from the fully-qualified ID
+		if (!this.account) {
 			var parsed = ZmOrganizer.parseId(this.id);
 			this.account = parsed && parsed.account;
 		}
