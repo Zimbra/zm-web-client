@@ -13,33 +13,41 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDocsPreview = function(container){
+ZmDocsPreview = function(container, params){
 
     this._container = document.getElementById(container);
 
-    this.init();
+    params = params || {};
+
+    if(!params.deferInit)   this.init();
 
 };
 
 ZmDocsPreview.prototype.constructor = ZmDocsPreview;
 
 ZmDocsPreview.launch =
-function(container){
-    return ( new ZmDocsPreview(container) );
+function(container, params){
+    return ( new ZmDocsPreview(container, params) );
 };
 
 ZmDocsPreview.prototype.init =
 function(){
-    this.loadContent();
+    this.loadContent(new AjxCallback(this, this.show));
 };
 
 ZmDocsPreview.prototype.loadContent =
-function(){
+function(callback){
     if(!this._content){
-        this.fetchContent(new AjxCallback(this, this.loadContent));
+        this.fetchContent(callback);
         return;
     }
-    this.show();
+
+    if(callback) callback.run();
+};
+
+ZmDocsPreview.prototype.getContent =
+function(){
+    return this._content;
 };
 
 ZmDocsPreview.prototype.fetchContent =
