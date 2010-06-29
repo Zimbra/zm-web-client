@@ -12,9 +12,10 @@ function addSlideEvent (el, evname, func) {
     }
 };
 
-function initSlides() {
+function initSlides(container) {
     if(!document.body) { return; }
-    currentSlide = document.body.firstChild;
+    container = container || document.body;
+    currentSlide = container.firstChild;
 
     while(currentSlide && currentSlide.className != "slide") {
         currentSlide = currentSlide.nextSibling;
