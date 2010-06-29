@@ -391,9 +391,10 @@ function(oldView, newView) {
 
 ZmMsgController.prototype._printListener =
 function(ev) {
-	var ids = [];
+    var ids = [];
     var item = this._msg;
-	var id;
+    var id;
+    var showImages;
     // always extract out the msg ids from the conv
     if (item.toString() == "ZmConv") {
         // get msg ID in case of virtual conv.
@@ -403,15 +404,25 @@ function(ev) {
         } else {
             id = "C:" + item.id;
         }
+        var msgList = item.getMsgList();
+        for(var j=0; j<msgList.length; j++) {
+            if(msgList[j].showImages) {
+                showImages = true;
+                break;
+            }
+        }
     } else {
-		id = item.id;
+        id = item.id;
         if (item._part) { id+= "&part=" + item._part; }
+        if (item.showImages) {
+            showImages = true;
+        }
     }
     var url = "/h/printmessage?id=" + id;
-    if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES)) {
-       url += "&xim=1"; 
+    if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages) {
+       url += "&xim=1";
     }
-	window.open(appContextPath+url, "_blank");
+    window.open(appContextPath+url, "_blank");
 };
 
 /**

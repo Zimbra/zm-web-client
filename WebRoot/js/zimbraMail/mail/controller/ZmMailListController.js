@@ -1365,10 +1365,11 @@ function(ev, callback) {
 
 ZmMailListController.prototype._printListener =
 function(ev) {
-	var listView = this._listView[this._currentView];
-	var items = listView.getSelection();
-	items = AjxUtil.toArray(items);
-	var ids = [];
+    var listView = this._listView[this._currentView];
+    var items = listView.getSelection();
+    items = AjxUtil.toArray(items);
+    var ids = [];
+    var showImages = false;
     for (var i = 0; i < items.length; i++) {
         var item = items[i];
         // always extract out the msg ids from the conv
@@ -1380,15 +1381,25 @@ function(ev) {
             }else{
                 ids.push("C:"+item.id);
             }
+            var msgList = item.getMsgList();
+            for(var j=0; j<msgList.length; j++) {
+                if(msgList[j].showImages) {
+                    showImages = true;
+                    break;
+                }
+            }
         } else {
             ids.push(item.id);
+            if (item.showImages) {
+                showImages = true;
+            }
         }
     }
     var url = ("/h/printmessage?id=" + ids.join(","));
-    if(appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES)){
-       url = url+"&xim=1"; 
+    if(appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages){
+       url = url+"&xim=1";
     }
-	window.open(appContextPath+url, "_blank");
+    window.open(appContextPath+url, "_blank");
 };
 
 ZmMailListController.prototype._editListener =
