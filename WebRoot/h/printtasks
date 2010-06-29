@@ -133,8 +133,13 @@
             </div>
             <hr/>
             <table cellpadding="2" cellspacing="0" width="100%"><tr><td>
-                    ${fn:escapeXml(empty compose.description ? compose.content : compose.description)}
-                </td></tr>   
+                    <c:choose>
+                        <c:when test="${not empty compose.descriptionHtml}">${compose.descriptionHtml}</c:when>
+                        <c:otherwise>
+                            ${fn:escapeXml(empty compose.description ? compose.content : compose.description)}
+                        </c:otherwise>
+                    </c:choose>
+                </td></tr>
             </table>
             <hr/>
         </c:forEach>
@@ -236,7 +241,12 @@
             </div>
             <hr/>
             <table cellpadding="2" cellspacing="0" width="100%"><tr><td>
-                    ${fn:escapeXml(empty compose.description ? compose.content : compose.description)}
+                    <c:choose>
+                        <c:when test="${not empty compose.descriptionHtml}">${compose.descriptionHtml}</c:when>
+                        <c:otherwise>
+                            ${fn:escapeXml(empty compose.description ? compose.content : compose.description)}
+                        </c:otherwise>
+                    </c:choose>
                 </td></tr>
             </table>
             <hr/>
