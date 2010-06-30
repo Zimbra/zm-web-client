@@ -841,9 +841,8 @@ function(settings) {
  */
 ZmZimbraMail.prototype.reset =
 function() {
-	ZmCsfeCommand.setSessionId(null);	// so we get a refresh block
-	this._highestNotifySeen = 0; 		// we have a new session
 
+	ZmCsfeCommand.clearSessionId();	// so we get a refresh block
 	appCtxt.accountList.resetTrees();
 
 	if (!appCtxt.rememberMe()) {

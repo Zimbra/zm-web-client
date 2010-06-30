@@ -448,12 +448,14 @@ function(ex, params) {
  */
 ZmRequestMgr.prototype._handleNotifications =
 function(hdr) {
+
 	if (hdr && hdr.context && hdr.context.notify) {
-        for(i = 0; i < hdr.context.notify.length; i++) {
+        for (var i = 0; i < hdr.context.notify.length; i++) {
         	var notify = hdr.context.notify[i];
         	var seq = notify.seq;
             // BUG?  What if the array isn't in sequence-order?  Could we miss notifications?
-            if (notify.seq > this._highestNotifySeen) {
+			var sid = hdr.context && ZmCsfeCommand.extractSessionId(hdr.context.session);
+            if (notify.seq > this._highestNotifySeen && !(sid && ZmCsfeCommand._staleSession[sid])) {
                 DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
                 this._highestNotifySeen = seq;
                 this._notifyHandler(notify);
@@ -474,7 +476,11 @@ function(hdr) {
  */
 ZmRequestMgr.prototype._refreshHandler =
 function(refresh) {
+
 	DBG.println(AjxDebug.DBG1, "Handling REFRESH");
+	if (!appCtxt.inStartup) {
+		this._controller._execPoll();
+	}
 	this._controller.runAppFunction("_clearDeferredFolders");
 	
 	if (refresh.version) {
