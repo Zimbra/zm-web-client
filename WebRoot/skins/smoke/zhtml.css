@@ -29,7 +29,7 @@ body{
 	@AppTabBorder-normal@
 }
 
-.Tb a:link, .Tb a:visited,.TbTop input, .TbBottom input, #caltb.TbBt a:link, #caltb.TbBt a:visited{
+.Tb a:link, .Tb a:visited,.TbTop input, .TbBottom input, #caltb.TbBt a:link, #caltb.TbBt a:visited, .Paging, .Tb td{
 	color: white;
 } 
 
