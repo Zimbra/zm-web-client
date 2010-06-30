@@ -367,3 +367,14 @@ SELECT						{	@FieldBorder@	}
 
 .ZhRow TD,
 .ZhRowOdd TD				{	border-width:0 0 1 0 !important; padding-left:3px !important;	}
+
+/* Quick fix for selected Adv. Search button */
+
+.ZmSearchToolbarCell .ZSelected .ZToolbarButtonBorder{
+ 	-moz-border-top-colors:#77736A #BFB8A9;
+ 	-moz-border-right-colors:#A7A194 #F0E9D8;
+ 	-moz-border-left-colors:#77736A #BFB8A9;
+ 	-moz-border-bottom-colors:#A7A194 #F0E9D8;
+ 	background-color:#FBF9F4 !important;
+ 	border: 2px inset; 
+}
