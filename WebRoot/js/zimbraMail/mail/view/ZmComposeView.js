@@ -1968,7 +1968,7 @@ function(action, msg, extraBodyText) {
 		this._fixMultipartRelatedImages_onTimer(msg);
 	}
 
-	if (sigStyle == ZmSetting.SIG_INTERNET) {
+	if (!isDraft && sigStyle == ZmSetting.SIG_INTERNET) {
 		this.addSignature(value);
 	} else {
 		value = value || (htmlMode ? "<br>" : "");
