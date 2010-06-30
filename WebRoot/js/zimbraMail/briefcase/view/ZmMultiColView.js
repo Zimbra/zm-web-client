@@ -120,13 +120,29 @@ function(dropTgt) {
 	div.id = this._divIds[idx];
 	this._divs[idx] = div;
 
-	var lv = this._listView[idx] = new ZmColListView(this, this._controller, dropTgt, idx);
+	var lv = this._listView[idx] = new ZmColListView(this, this._controller, dropTgt, idx);    
 	lv.reparentHtmlElement(this._divIds[idx]);
-
+    lv.addSelectionListener(new AjxListener(this, this._lvSelectListener, lv));
 	// so that scroll event gets handed to list view (div is its parent element and gets the event)
 	DwtControl.ALL_BY_ID[divId] = lv;
 
 	return lv;
+};
+
+ZmMultiColView.prototype._lvSelectListener =
+function(listView, ev){
+    this.setCurrentListIndex(listView._colIdx);
+    this.removeChildColumns(listView._colIdx);
+    var selection = listView.getSelection();
+    if(selection && selection.length > 0){
+        selection = selection[0];
+        if(selection.isFolder)
+            this.expandFolder(selection.id);
+        else
+            this.showFileProps(selection);
+    }else{
+        this.clearFolderProps();
+    } 
 };
 
 /**
@@ -147,7 +163,12 @@ function(idx) {
 			this._row.deleteCell(cell.cellIndex);
 		}
 
+        //Cleanup List / ListView 
 		var lv = this._listView[idx];
+        var list = lv._zmList;
+        if(list){
+            list.clear();
+        }
 		if (lv) {
 			lv.dispose();
 		}
@@ -172,6 +193,26 @@ function(index) {
 	this._curListIndex = index;
 	this._curListView = this._listView[index];
 	this._controller._listView[this.view] = this._listView[index];	
+};
+
+ZmMultiColView.prototype.getItemList =
+function(id, folder){
+    var lv = this._getItemListView() || this._curListView;
+    return lv._zmList;
+};
+
+ZmMultiColView.prototype._getItemListView =
+function(folder){
+    var len = this._listView.length;
+    for(var i=0; i< len; i++){
+        var lv = this._listView[i];
+        if(!lv) continue;
+        
+        var fId = lv.folderId || lv._folderId;
+        if(fId == folder){
+            return lv;
+        }
+    }    
 };
 
 /**
@@ -205,7 +246,32 @@ function(list, initView) {
 	var mcvlist = this._curListView.set(list);
 	this._ctlrList[this._curListIndex] = mcvlist;
 	this.setCurrentListIndex(this._curListIndex);
+    mcvlist.addChangeListener(new AjxListener(this, this._changeListener));
 };
+
+ZmMultiColView.prototype._changeListener =
+function(ev){
+
+    var item = this._curListView._getItemFromEvent(ev);
+    if(!item || item.handled) return;
+
+    if(ev.event == ZmEvent.E_MOVE){
+        //If the col list visible, add the briefcase item
+        var lv = this._getItemListView(item.folderId);
+        if(lv){
+            lv.addItem(item, 0, true);   
+        }
+    }
+};
+
+ZmMultiColView.prototype.handleNotifyCreate =
+function(create){
+    var lv = this._getItemListView(create.folderId) || this._curListView;
+    var list = lv && lv._zmList;    
+    if(list){
+        list.notifyCreate(create);
+    }
+};        
 
 ZmMultiColView.prototype.showFileProps =
 function(item) {

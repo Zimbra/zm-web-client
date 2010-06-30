@@ -323,6 +323,23 @@ function(data) {
 	this._parseTags(data.t);
 };
 
+ZmBriefcaseItem.prototype.notifyModify =
+function(obj, batchMode) {
+
+	var result = ZmItem.prototype.notifyModify.apply(this, arguments);
+	if (result) {
+		return result;
+	}
+
+    var modified = false, doNotify = true, fields=[];    
+    //Updating modified attributes
+    this.set(obj);
+
+    if (doNotify) {
+		this._notify(ZmEvent.E_MODIFY, {fields: fields});
+	}
+	
+};
 
 ZmBriefcaseFolderItem = function(folder) {
 

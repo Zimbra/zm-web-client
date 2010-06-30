@@ -1045,7 +1045,10 @@ function() {
 	if (this.firstSelIndex < 0) {
 		this.firstSelIndex = 0;
 	}
-	var item = this._list.get(this.firstSelIndex) || this._list.getLast();
+    var item;
+    if(this._list){
+	    item = this._list.get(this.firstSelIndex) || this._list.getLast();
+    }
 	if (item) {
 		this.setSelection(item, false);
 	}

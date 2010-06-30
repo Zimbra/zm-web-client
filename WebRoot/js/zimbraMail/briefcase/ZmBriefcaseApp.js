@@ -228,13 +228,7 @@ function(creates, force) {
 				this._handleCreateLink(create, ZmOrganizer.BRIEFCASE);
 			} else if (name == "doc") {
 				var bc = AjxDispatcher.run("GetBriefcaseController");
-				var list = bc.getList();
-				if (list) {
-					var item = ZmBriefcaseItem.createFromDom(create, {list:list});
-					if (list.search && list.search.matches && list.search.matches(item)) {
-						list.notifyCreate(create);
-					}
-				}
+                bc.handleCreateNotify(create);
 			}
 		}
 	}
