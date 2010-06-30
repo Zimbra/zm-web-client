@@ -925,10 +925,11 @@ function(ev) {
     var folderId = ev._inviteReplyFolderId || ZmOrganizer.ID_CALENDAR;
 	var compId = ev._inviteComponentId;
 	if (type == ZmOperation.PROPOSE_NEW_TIME ) {
-        var newAppt = AjxDispatcher.run("GetCalController").newApptObject(new Date(), null, null, ev._msg);
-        newAppt.setProposeTimeMode(true);
-        newAppt.setFromMailMessageInvite(ev._msg);
-        AjxDispatcher.run("GetApptComposeController").proposeNewTime(newAppt);
+        var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
+        controller.proposeNewTime(ev._msg);
+        if(appCtxt.isChildWindow) {
+            window.close();
+        }
     }else if (type == ZmOperation.ACCEPT_PROPOSAL ) {
         this._acceptProposedTime(compId, ev._msg);        
     }else if (type == ZmOperation.DECLINE_PROPOSAL ) {
@@ -1260,9 +1261,13 @@ ZmMailListController.prototype._acceptProposedTime =
 function(componentId, origMsg) {
     var invite = origMsg.invite;
     var apptId = invite.getAppointmentId();
+    var ac = window.parentAppCtxt || window.appCtxt;
+    var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
     var callback = new AjxCallback(this, this._handleAcceptDeclineProposedTime, [origMsg]);
-    var controller = AjxDispatcher.run("GetCalController");
-    controller.acceptProposedTime(apptId, invite, callback);
+    controller.acceptProposedTime(apptId, invite, appCtxt.isChildWindow ? null : callback);
+    if (appCtxt.isChildWindow) {
+        window.close();
+    }
 };
 
 ZmMailListController.prototype._declineProposedTime =

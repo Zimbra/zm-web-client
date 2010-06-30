@@ -3192,5 +3192,17 @@ function(appt, invites, proposedInvite) {
 
 ZmCalViewController.prototype._getApptItemInfoErrorHandler =
 function(invite, result) {
-    //todo: error handling
+    var msgDialog = appCtxt.getMsgDialog();
+    msgDialog.reset();
+    msgDialog.setMessage(ZmMsg.unableToAcceptTime, DwtMessageDialog.INFO_STYLE);
+    msgDialog.popup();
+    return true;
+};
+
+ZmCalViewController.prototype.proposeNewTime =
+function(msg) {
+    var newAppt = this.newApptObject(new Date(), null, null, msg);
+    newAppt.setProposeTimeMode(true);
+    newAppt.setFromMailMessageInvite(msg);
+    AjxDispatcher.run("GetApptComposeController").proposeNewTime(newAppt);	
 };
