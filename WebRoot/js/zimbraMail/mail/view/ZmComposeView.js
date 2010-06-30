@@ -556,7 +556,13 @@ function(attId, isDraft, dummyMsg) {
 		// create two more mp's for text and html content types
 		var textPart = new ZmMimePart();
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-		textPart.setContent(this._htmlEditor.getTextVersion());
+		var self = this;
+		var convertor = {"hr":
+			function(el) {
+				return ZmComposeView._convertHtmlPreface(self, el);
+			}
+		}
+		textPart.setContent(this._htmlEditor.getTextVersion(convertor));
 		top.children.add(textPart);
 
 		var htmlPart = new ZmMimePart();
@@ -2077,6 +2083,12 @@ function(mode) {
 	content = content.replace(curPreface, newPreface);
 	this._htmlEditor.setContent(content);
 	this._preface = newPreface;
+};
+
+// for getting text version of HTML part when sending, used by AjxStringUtil._traverse
+ZmComposeView._convertHtmlPreface =
+function(self, el) {
+	return (el && el.id == "zwchr") ? self._getPreface(DwtHtmlEditor.TEXT) + ZmMsg.CRLF : null;
 };
 
 ZmComposeView.prototype.resetBody =
