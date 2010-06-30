@@ -149,7 +149,7 @@
             <span class="nstd" onclick="return zClickLink('docs')"><fmt:message key="folders"/></span>
         </a></c:if>
         <c:set var="active" value="${param.search eq '1' ? '' : ''}"/><c:set var="spara" value="search=${param.search eq '1' ? '0' : '1'}"/>
-        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.search_accesskey}" id="search" class="search${active} appTab${active} td" href="${zm:replaceAll(currentUrl,"search=[01]","")}&${spara}" onclick='toggleElem("searchbar",this) ; $("sq").focus(); return false;'>
+        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.search_accesskey}" id="search" class="search${active} appTab${active} td" href="${aurl}?${spara}" onclick='toggleElem("searchbar",this) ; $("sq").focus(); return false;'>
             <span class="nstd"><fmt:message key="search"/></span>
         </a></div></div>
 <div class="loadingDiv hidden" id="loadingDiv" onclick="function(){return requestTimeout(false,'Aborted by user.');}"></div></c:if>
