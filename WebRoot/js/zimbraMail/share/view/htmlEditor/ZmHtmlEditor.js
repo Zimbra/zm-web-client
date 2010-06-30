@@ -127,9 +127,9 @@ function() {
 
 // returns the text version of the html message
 ZmHtmlEditor.prototype.getTextVersion =
-function() {
+function(convertor) {
 	return this._mode == DwtHtmlEditor.HTML
-		? this._convertHtml2Text()
+		? this._convertHtml2Text(convertor)
 		: this.getContent();
 };
 
