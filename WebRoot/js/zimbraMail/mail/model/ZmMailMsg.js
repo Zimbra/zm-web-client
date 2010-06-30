@@ -1118,7 +1118,7 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			request.noSave = 1;
 		}
 		this._createMessageNode(request, isDraft, aName, requestReadReceipt);
-
+		appCtxt.notifyZimlets("addExtraMsgParts", [request, isDraft]);
 		var params = {
 			jsonObj: jsonObj,
 			isInvite: false,
