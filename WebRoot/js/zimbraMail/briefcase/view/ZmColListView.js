@@ -44,8 +44,8 @@ ZmColListView =	function(parent, controller, dropTgt, index) {
 	
 	//adding the listeners in constructors so that we get listener events
 	//for all new columns created on fly
-	this._controller._addListListeners(this);	
-}
+	this._controller._addListListeners(this);
+};
 
 ZmColListView.prototype = new ZmBriefcaseBaseView;
 ZmColListView.prototype.constructor = ZmColListView;
@@ -76,8 +76,8 @@ function(list, sortField, doNotIncludeFolders) {
     newList = newList || list;
 	ZmBriefcaseBaseView.prototype.set.call(this, newList, sortField);
     this.focus();
-
-    //bug 47240: return the new modified list with change listeners. 
+    
+    //bug 47240: return the new modified list with change listeners.
     return newList;
 };
 
@@ -156,22 +156,8 @@ function(clickedEl, ev) {
 
     if(this._controller._currentView == ZmId.VIEW_BRIEFCASE_COLUMN) {
         this.parent.setCurrentListIndex(this._colIdx);
-        ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
-        if (ev.button == DwtMouseEvent.LEFT) {
-            this.parent.removeChildColumns(this._colIdx);
-            var items = this.getSelection();
-            if (items && items.length == 1) {
-                var item = items[0];
-                if (item.isFolder) {
-                    this.parent.expandFolder(item.id);
-                } else {
-                    this.parent.showFileProps(item);
-                }
-            }
-        }
-    }else{
-        ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
-    }
+    }    
+    ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
 };
 
 ZmColListView.prototype._getScrollDiv =
@@ -193,7 +179,10 @@ function(ev) {
 	var org = ev.getDetail("organizers")[0];
 	if (!org) { return; }
 	var item = new ZmBriefcaseFolderItem(org);
-	if (this.folderId && (item.folderId != this.folderId)) { return; }
+    var folderId = this.folderId || this._folderId;    
+	if (folderId && (item.folderId != folderId)) {
+        return;
+    }
 
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY) {
@@ -207,7 +196,7 @@ function(ev) {
 		}
 	} else if (ev.event == ZmEvent.E_CREATE) {
 		var search = this._controller._currentSearch;
-		if (this.folderId || (search && search.matches && search.matches(item))) {
+		if (folderId || (search && search.matches && search.matches(item))) {
 			var index = this._getFolderSortIndex(org, ZmFolder.sortCompare);
 			this._addFolderRow(item, index);
 			this._folders.splice(index, 0, item);
@@ -239,25 +228,4 @@ function(folder, sortFunction) {
 		}
 	}
 	return i;
-};
-
-ZmColListView.prototype._changeListener =
-function(ev){
-
-    ZmBriefcaseBaseView.prototype._changeListener.call(this, ev);
-
-    if(this._controller.isMultiColView()){
-        var multiColView = this._controller.getParentView();
-        var selection = this.getSelection();
-        if(selection && selection.length > 0){
-            selection = selection[0];
-            if(selection.isFolder)
-                multiColView.expandFolder(selection.id);
-            else
-                multiColView.showFileProps(selection);
-        }else{
-            multiColView.clearFolderProps();
-        }
-    }
-
 };

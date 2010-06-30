@@ -799,7 +799,6 @@ function() {
 
 ZmBriefcaseController.prototype._addListListeners =
 function(colView) {
-	colView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
 	colView.addActionListener(new AjxListener(this, this._listActionListener));
 };
 
@@ -883,4 +882,21 @@ function() {
 		}
 	}
 	return num;
+};
+
+
+ZmBriefcaseController.prototype.handleCreateNotify =
+function(create){
+
+    if(this.isMultiColView()){
+        this.getParentView().handleNotifyCreate(create);
+    }else{
+        var list = this.getList();
+        if (list) {
+            var item = ZmBriefcaseItem.createFromDom(create, {list:list});
+            if (list.search && list.search.matches && list.search.matches(item)) {
+                list.notifyCreate(create);
+            }
+        }
+    }
 };

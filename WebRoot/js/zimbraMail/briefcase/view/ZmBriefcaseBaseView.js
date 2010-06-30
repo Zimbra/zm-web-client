@@ -64,9 +64,28 @@ function(ev) {
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
 			this.addItem(item, 0);
 		}
-	} else {
-		ZmListView.prototype._changeListener.call(this, ev);
 	}
+
+    if(ev.event == ZmEvent.E_MODIFY){
+        for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if (this._list && this._list.contains(item)) {
+                this.redrawItem(item);
+            }
+		}
+    }
+
+    ZmListView.prototype._changeListener.call(this, ev);
+
+    if(ev.event == ZmEvent.E_MOVE){
+        var folderId = this._controller._folderId || this.folderId || this._folderId;
+        var item = items.length ? items[0] : items;
+        if(item && item.folderId == folderId){
+            this.addItem(item, 0, true);
+            item.handled = true;
+        }
+    }
+
 };
 
 
@@ -164,3 +183,10 @@ function(srcList){
     }
     return newList;
 };
+
+ZmBriefcaseBaseView.prototype.set =
+function(list, sortField){
+    this._zmList = list;
+    ZmListView.prototype.set.call(this, list, sortField);
+};
+
