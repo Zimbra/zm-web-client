@@ -172,10 +172,7 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	if (typeof cmdArg1 == "undefined") {
 		this._alert("Instant notify is "+ (appCtxt.getAppController().getInstantNotify() ? "ON" : "OFF"));
 	} else {
-		var on = false;
-		if (cmdArg1 && cmdArg1 == 1) {
-			on = true;
-		}
+		var on = cmdArg1 && (cmdArg1.toLowerCase() == "on");
 		this._alert("Set instant notify to "+ (on ? "ON" : "OFF"));
 		appCtxt.getAppController().setInstantNotify(on);
 	}
@@ -294,7 +291,7 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
  */
 ZmClientCmdHandler.prototype.execute_expire =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	ZmCsfeCommand.setSessionId(null);
+	ZmCsfeCommand.clearSessionId();
 	this._alert("Session expired");
 };
 
@@ -307,7 +304,7 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
  */
 ZmClientCmdHandler.prototype.execute_refresh = 
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	ZmCsfeCommand.setSessionId(null);
+	ZmCsfeCommand.clearSessionId();
 	appCtxt.getAppController().sendNoOp();
 };
 
