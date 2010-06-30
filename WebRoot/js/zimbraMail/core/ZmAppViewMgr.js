@@ -1223,6 +1223,7 @@ function(components) {
  */
 ZmAppViewMgr.prototype._historyChangeListener =
 function(ev) {
+	if (appCtxt.inStartup) { return; }
 	if (!(ev && ev.data)) { return; }
 	if (this._ignoreHistoryChange) {
 		this._ignoreHistoryChange = false;
