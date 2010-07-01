@@ -931,7 +931,7 @@ function(items, folder, attrs, isShiftKey) {
 		if (item.isGal) {
 			moveFromGal.push(item);
 		} else if (!item.folderId || item.folderId != folder.id) {
-			if (isShiftKey || item.isShared() || folder.isRemote() || item.isReadOnly()) {
+			if (!this._isItemMovable(item, isShiftKey, folder)) {
 				copy.push(item);
 			} else {
 				move.push(item);
