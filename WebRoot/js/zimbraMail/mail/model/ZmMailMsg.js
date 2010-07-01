@@ -1855,6 +1855,7 @@ function(addrNodes, type, isDraft) {
 	var num = addrs.size();
 	if (num) {
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+		contactsApp = contactsApp.isContactListLoaded() && contactsApp;
 		for (var i = 0; i < num; i++) {
 			var addr = addrs.get(i);
 			var email = addr.getAddress();
@@ -1862,6 +1863,10 @@ function(addrNodes, type, isDraft) {
 			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
 			if (name) {
 				addrNode.p = name;
+			}
+			if (contactsApp) {
+				var contact = contactsApp.getContactByEmail(email);
+				addrNode.add = contact ? "0" : "1";
 			}
 			addrNodes.push(addrNode);
 		}

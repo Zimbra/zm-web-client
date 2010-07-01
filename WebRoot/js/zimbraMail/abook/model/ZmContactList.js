@@ -63,7 +63,7 @@ ZmContactList.prototype.constructor = ZmContactList;
 
 // Support for loading user's local contacts from a large string
 
-ZmContactList.URL = "/Contacts?fmt=cf&t=2";		// REST URL for loading user's local contacts
+ZmContactList.URL = "/Contacts?fmt=cf&t=2&all";	// REST URL for loading user's local contacts
 ZmContactList.CONTACT_SPLIT_CHAR	= '\u001E';	// char for splitting string into contacts
 ZmContactList.FIELD_SPLIT_CHAR		= '\u001D';	// char for splitting contact into fields
 // fields that belong to a contact rather than its attrs
