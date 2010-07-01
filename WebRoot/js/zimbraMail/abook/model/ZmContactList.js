@@ -430,7 +430,13 @@ function(params) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoadMove, [moveBatchCmd, hardMove]);
 			loadBatchCmd.run(respCallback);
 		} else {
-			var deleteCmd = new AjxCallback(this, this._itemAction, [{items:hardMove, action:"delete", actionText:ZmMsg.actionDelete}]);
+			var params1 = {
+				items: hardMove,
+				action: "delete",
+				actionText: ZmMsg.actionMove,
+				actionArg: params.folder.getName(false, false, true)
+			};
+			var deleteCmd = new AjxCallback(this, this._itemAction, [params1]);
 			moveBatchCmd.add(deleteCmd);
 
 			var respCallback = new AjxCallback(this, this._handleResponseMoveBatchCmd);
