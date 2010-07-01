@@ -754,7 +754,9 @@ function(check) {
 		this.setSelectionCbox(sel[i], !check);
 	}
 
-	this.setSelectionHdrCbox(sel.length == this.getList().size());
+	var list = this.getList();
+	var size = list && list.size();
+	this.setSelectionHdrCbox(size && sel.length == size);
 };
 
 ZmListView.prototype._setNoResultsHtml =
