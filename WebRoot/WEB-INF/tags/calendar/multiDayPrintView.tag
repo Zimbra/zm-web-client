@@ -69,24 +69,21 @@
     </c:set>
 
 </app:handleError>
-<table width="98%" align="center" cellpadding="0" cellspacing="0" border="0">
+<table cellpadding="0" cellspacing="0" border="0" style="margin-left: 1%;">
     <tr>
         <td width="180">
             <app:miniCal print="${true}" date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}"/>
         </td>
         <td width="10">
-            &nbsp;
+             &nbsp;
         </td>
         <td width="180">
             <app:miniCal print="${true}" date="${not empty nextMonthDate ? nextMonthDate : zm:getToday(mailbox.prefs.timeZone)}" rangeDate="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}"/>            
         </td>
-        <td>
-           &nbsp;
-        </td>
     </tr>
-    <tr>
-        <td colspan="4"><br/></td>
-    </tr>
+</table>
+<br>
+<table width="98%" align="center" cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td colspan="4" class='ZhAppContent'>
             ${multiDay}
