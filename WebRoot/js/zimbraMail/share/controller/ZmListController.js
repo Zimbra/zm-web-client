@@ -824,7 +824,7 @@ function() {
 	var cc = AjxDispatcher.run("GetContactController");
 	if (this._actionEv.contact) {
 		if (this._actionEv.contact.isLoaded) {
-			cc.show(this._actionEv.contact);
+			cc.show(this._actionEv.contact, true);
 		} else {
 			var callback = new AjxCallback(this, this._loadContactCallback);
 			this._actionEv.contact.load(callback);
