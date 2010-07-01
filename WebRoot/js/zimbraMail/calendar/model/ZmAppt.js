@@ -635,7 +635,8 @@ function(message) {
 
     if(this.isForwardMode) {
         this.forwardInviteMsgId = message.id;
-        this.name = ZmMsg.fwd + ": " + message.subject;
+        if(!invite.isOrganizer()) this.name = ZmMsg.fwd + ": " + message.subject;
+        this.status = invite.components ? invite.components[0].status : ZmCalendarApp.STATUS_CONF;
     }
 
     if(this.isProposeTimeMode) {

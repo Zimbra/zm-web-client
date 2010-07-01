@@ -817,10 +817,12 @@ function(params, msg) {
 
         // bug 43428 - invitation should be forwarded using apt forward view        
         if(msg.isInvite()) {
-            var newAppt = AjxDispatcher.run("GetCalController").newApptObject(new Date(), null, null, msg);
-            newAppt.setForwardMode(true);
-            newAppt.setFromMailMessageInvite(msg);
-            AjxDispatcher.run("GetApptComposeController").forwardInvite(newAppt);
+            var ac = window.parentAppCtxt || window.appCtxt;
+            var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
+            controller.forwardInvite(msg);
+            if(appCtxt.isChildWindow) {
+                window.close();
+            }            
             return;
         }
 

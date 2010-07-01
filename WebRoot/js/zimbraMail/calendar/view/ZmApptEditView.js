@@ -370,6 +370,8 @@ function(calItem, mode) {
     this._startDateButton.setEnabled(enableTimeSelection);
     this._endDateButton.setEnabled(enableTimeSelection);
 
+    this._fwdApptOrigAttendees = [];
+    
 	// attendees
 	var tp;
 	var attendees = calItem.getAttendees(ZmCalBaseItem.PERSON);
@@ -393,6 +395,7 @@ function(calItem, mode) {
             this._attendeesInputField.setValue("");
         }
         this._attendees[ZmCalBaseItem.PERSON] = new AjxVector();
+        this._attInputField[ZmCalBaseItem.PERSON] = this._isForward ? this._forwardToField : this._attendeesInputField;        
     }
 
 	// set the location *label*    
