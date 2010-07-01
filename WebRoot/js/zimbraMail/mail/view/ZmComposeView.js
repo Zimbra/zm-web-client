@@ -1926,7 +1926,7 @@ function(action, msg, extraBodyText) {
 		this._msgAttId = this._msg.id;
 	} else {
 		var preface = this._preface = this._getPreface();
-		var divider = htmlMode ? preface : preface + crlf;
+		var divider = !body ? "" : htmlMode ? preface : preface + crlf;
 		var leadingSpace = preText ? "" : crlf2;
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
 		wrapParams.preserveReturns = true;
