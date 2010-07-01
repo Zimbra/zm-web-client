@@ -1606,7 +1606,13 @@ function(bodyPart, encodeSpace) {
 		var params = {parent: this, hidden: true, html: bodyPart.content};
 		var dwtIframe = new DwtIframe(params);
 		if (dwtIframe) {
-			text = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body);
+			var self = this;
+			var convertor = {"hr":
+				function(el) {
+					return ZmComposeView._convertHtmlPreface(self, el);
+				}
+			}
+			text = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body, convertor);
 			var dwtEl = this.getHtmlElement().removeChild(dwtIframe.getHtmlElement());
 			delete dwtEl;
 			delete dwtIframe;
