@@ -337,19 +337,20 @@ function(test, data) {
 	var condition;
 	switch (test) {
 		case ZmFilterRule.TEST_ADDRESS:			condition = null; break; // currently not supported.
+		case ZmFilterRule.TEST_HEADER_EXISTS:	condition = ZmFilterRule.C_HEADER; break;
+		case ZmFilterRule.TEST_SIZE:			condition = ZmFilterRule.C_SIZE; break;
+		case ZmFilterRule.TEST_DATE:			condition = ZmFilterRule.C_DATE; break;
+		case ZmFilterRule.TEST_BODY:			condition = ZmFilterRule.C_BODY; break;
+		case ZmFilterRule.TEST_ATTACHMENT:		condition = ZmFilterRule.C_ATT; break;
+		case ZmFilterRule.TEST_MIME_HEADER:		condition = ZmFilterRule.C_MIME_HEADER; break;
+		case ZmFilterRule.TEST_ADDRBOOK:		condition = ZmFilterRule.C_ADDRBOOK; break;
+		case ZmFilterRule.TEST_INVITE:			condition = ZmFilterRule.C_INVITE; break;
 		case ZmFilterRule.TEST_HEADER:
 			condition = ZmFilterRule.C_HEADER_MAP[data.header];
 			if (!condition) { // means custom header
 				condition = ZmFilterRule.C_HEADER;
 			}
 			break;
-		case ZmFilterRule.TEST_HEADER_EXISTS:	condition = ZmFilterRule.C_HEADER; break;
-		case ZmFilterRule.TEST_SIZE:			condition = ZmFilterRule.C_SIZE; break;
-		case ZmFilterRule.TEST_DATE:			condition = ZmFilterRule.C_DATE; break;
-		case ZmFilterRule.TEST_BODY:			condition = ZmFilterRule.C_BODY; break;
-		case ZmFilterRule.TEST_ATTACHMENT:		condition = ZmFilterRule.C_ATT; break;
-		case ZmFilterRule.TEST_ADDRBOOK:		condition = ZmFilterRule.C_ADDRBOOK; break;
-		case ZmFilterRule.TEST_INVITE:			condition = ZmFilterRule.C_INVITE; break;
 	}
 
 	return (condition ? ZmFilterRule.CONDITIONS[condition] : null);
@@ -582,6 +583,7 @@ function(isMainSelect, testType, field, rowData) {
 			case ZmFilterRule.TEST_DATE:			dataValue = ZmFilterRule.C_DATE; break;
 			case ZmFilterRule.TEST_BODY:			dataValue = ZmFilterRule.C_BODY; break;
 			case ZmFilterRule.TEST_ATTACHMENT:		dataValue = ZmFilterRule.C_ATT; break;
+			case ZmFilterRule.TEST_MIME_HEADER:		dataValue = ZmFilterRule.C_MIME_HEADER; break;
 			case ZmFilterRule.TEST_ADDRBOOK:		dataValue = ZmFilterRule.C_ADDRBOOK; break;
 			case ZmFilterRule.TEST_INVITE:			dataValue = ZmFilterRule.C_INVITE; break;
 			// default returns action type
@@ -1092,6 +1094,12 @@ function(rowId) {
 	}
 	else if (testType == ZmFilterRule.TEST_SIZE && valueMod && valueMod != "B") {
 		value += valueMod;
+	}
+	// MIME header currently supports ZmMimeTable.MSG_READ_RECEIPT only.
+	else if (testType == ZmFilterRule.TEST_MIME_HEADER) {
+		subjectMod = "Content-Type";
+		value = ZmMimeTable.MSG_READ_RECEIPT;
+		comparator = ZmFilterRule.OP_CONTAINS;
 	}
 
 	return { testType:testType, comparator:comparator, value:value, subjectMod:subjectMod };

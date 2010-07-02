@@ -88,17 +88,18 @@ ZmFilterRule.TYPE_TAG_PICKER	= i++;
 
 // Conditions (subjects)
 var i = 1;
-ZmFilterRule.C_FROM		= i++;
-ZmFilterRule.C_TO		= i++;
-ZmFilterRule.C_CC		= i++;
-ZmFilterRule.C_SUBJECT	= i++;
-ZmFilterRule.C_HEADER	= i++;
-ZmFilterRule.C_SIZE		= i++;
-ZmFilterRule.C_DATE		= i++;
-ZmFilterRule.C_BODY		= i++;
-ZmFilterRule.C_ATT		= i++;
-ZmFilterRule.C_ADDRBOOK	= i++;
-ZmFilterRule.C_INVITE	= i++;
+ZmFilterRule.C_FROM			= i++;
+ZmFilterRule.C_TO			= i++;
+ZmFilterRule.C_CC			= i++;
+ZmFilterRule.C_SUBJECT		= i++;
+ZmFilterRule.C_HEADER		= i++;
+ZmFilterRule.C_SIZE			= i++;
+ZmFilterRule.C_DATE			= i++;
+ZmFilterRule.C_BODY			= i++;
+ZmFilterRule.C_ATT			= i++;
+ZmFilterRule.C_MIME_HEADER	= i++;
+ZmFilterRule.C_ADDRBOOK		= i++;
+ZmFilterRule.C_INVITE		= i++;
 
 ZmFilterRule.C_HEADER_VALUE = {};
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM]	= "from";
@@ -122,6 +123,8 @@ ZmFilterRule.C_LABEL[ZmFilterRule.C_SIZE]		= ZmMsg.size;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_DATE]		= ZmMsg.date;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_BODY]		= ZmMsg.body;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_ATT]		= ZmMsg.attachment;
+// only read-receipt (i.e. "message/disposition-notification") content-type is currently supported
+ZmFilterRule.C_LABEL[ZmFilterRule.C_MIME_HEADER]= ZmMsg.readReceiptFilter;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_ADDRBOOK]	= ZmMsg.addressIn;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_INVITE]		= ZmMsg.calendarInvite;
 
@@ -133,22 +136,24 @@ ZmFilterRule.TEST_SIZE							= "sizeTest";
 ZmFilterRule.TEST_DATE							= "dateTest";
 ZmFilterRule.TEST_BODY							= "bodyTest";
 ZmFilterRule.TEST_ATTACHMENT					= "attachmentTest";
+ZmFilterRule.TEST_MIME_HEADER					= "mimeHeaderTest";
 ZmFilterRule.TEST_ADDRBOOK						= "addressBookTest";
 ZmFilterRule.TEST_INVITE						= "inviteTest";
 
 // Conditions map to Tests
 ZmFilterRule.C_TEST_MAP = {};
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_FROM]	= ZmFilterRule.TEST_HEADER;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO]		= ZmFilterRule.TEST_HEADER;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_CC]		= ZmFilterRule.TEST_HEADER;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SUBJECT] = ZmFilterRule.TEST_HEADER;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_HEADER]	= ZmFilterRule.TEST_HEADER;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SIZE]	= ZmFilterRule.TEST_SIZE;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_DATE]	= ZmFilterRule.TEST_DATE;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_BODY]	= ZmFilterRule.TEST_BODY;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ATT]		= ZmFilterRule.TEST_ATTACHMENT;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ADDRBOOK]= ZmFilterRule.TEST_ADDRBOOK;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_INVITE]	= ZmFilterRule.TEST_INVITE;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_FROM]		= ZmFilterRule.TEST_HEADER;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO]			= ZmFilterRule.TEST_HEADER;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_CC]			= ZmFilterRule.TEST_HEADER;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SUBJECT]		= ZmFilterRule.TEST_HEADER;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_HEADER]		= ZmFilterRule.TEST_HEADER;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SIZE]		= ZmFilterRule.TEST_SIZE;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_DATE]		= ZmFilterRule.TEST_DATE;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_BODY]		= ZmFilterRule.TEST_BODY;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ATT]			= ZmFilterRule.TEST_ATTACHMENT;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_MIME_HEADER]	= ZmFilterRule.TEST_MIME_HEADER;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ADDRBOOK]	= ZmFilterRule.TEST_ADDRBOOK;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_INVITE]		= ZmFilterRule.TEST_INVITE;
 
 // Operations (verbs)
 var i = 1;
@@ -179,10 +184,11 @@ ZmFilterRule.COMP_NUMBER							= "numberComparison";
 ZmFilterRule.COMP_DATE								= "dateComparison";
 // comparator map to test
 ZmFilterRule.COMP_TEST_MAP = {};
-ZmFilterRule.COMP_TEST_MAP[ZmFilterRule.TEST_ADDRESS]	= ZmFilterRule.COMP_STRING;
-ZmFilterRule.COMP_TEST_MAP[ZmFilterRule.TEST_HEADER]	= ZmFilterRule.COMP_STRING;
-ZmFilterRule.COMP_TEST_MAP[ZmFilterRule.TEST_SIZE]		= ZmFilterRule.COMP_NUMBER;
-ZmFilterRule.COMP_TEST_MAP[ZmFilterRule.TEST_DATE]		= ZmFilterRule.COMP_DATE;
+ZmFilterRule.COMP_TEST_MAP[ZmFilterRule.TEST_ADDRESS]		= ZmFilterRule.COMP_STRING;
+ZmFilterRule.COMP_TEST_MAP[ZmFilterRule.TEST_HEADER]		= ZmFilterRule.COMP_STRING;
+ZmFilterRule.COMP_TEST_MAP[ZmFilterRule.TEST_MIME_HEADER]	= ZmFilterRule.COMP_STRING;
+ZmFilterRule.COMP_TEST_MAP[ZmFilterRule.TEST_SIZE]			= ZmFilterRule.COMP_NUMBER;
+ZmFilterRule.COMP_TEST_MAP[ZmFilterRule.TEST_DATE]			= ZmFilterRule.COMP_DATE;
 
 // operation values
 ZmFilterRule.OP_VALUE = {};
@@ -302,6 +308,8 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_ATT] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
 		opsOptions:	[ZmFilterRule.OP_EXISTS, ZmFilterRule.OP_NOT_EXISTS]
 };
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_MIME_HEADER] = {
+};
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRBOOK] = {
 		subjectMod:	ZmFilterRule.TYPE_SELECT,
 		smOptions:	[{label: ZmMsg.from, value: "from"}, {label: ZmMsg.to, value: "to"},
@@ -327,6 +335,7 @@ ZmFilterRule.CONDITIONS_LIST = [
 	ZmFilterRule.C_DATE,
 	ZmFilterRule.C_BODY,
 	ZmFilterRule.C_ATT,
+	ZmFilterRule.C_MIME_HEADER,
 	ZmFilterRule.C_ADDRBOOK,
 	ZmFilterRule.C_INVITE
 ];
@@ -577,7 +586,8 @@ function(testType, comparator, value, subjectMod) {
 	if (subjectMod &&
 		(testType == ZmFilterRule.TEST_HEADER ||
 		 testType == ZmFilterRule.TEST_HEADER_EXISTS ||
-		 testType == ZmFilterRule.TEST_ADDRBOOK))
+		 testType == ZmFilterRule.TEST_ADDRBOOK ||
+		 testType == ZmFilterRule.TEST_MIME_HEADER))
 	{
 		conditionData.header = subjectMod;
 	}
