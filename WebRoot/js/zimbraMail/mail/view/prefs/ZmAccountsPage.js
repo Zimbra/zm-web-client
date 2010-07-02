@@ -2083,7 +2083,10 @@ function(account, field, html) {
 
 	if (field == ZmItem.F_NAME) {
 		el = document.getElementById(this._getCellId(account, field)+"_name");
-	}
+    }
+    if(field == ZmItem.F_EMAIL) {
+        html = "<div style='margin-left: 10px;'>"+ html +"</div>";    
+    }
 	el.innerHTML = html;
 };
 
@@ -2113,7 +2116,7 @@ function(buffer, i, item, field, col, params) {
 		return i;
 	}
 	if (field == ZmItem.F_EMAIL) {
-		buffer[i++] = item.getEmail();
+		buffer[i++] = "<div style='margin-left: 10px;'>"+ item.getEmail() +"</div>";
 		return i;
 	}
 	if (field == ZmItem.F_TYPE) {
