@@ -35,7 +35,7 @@
              </c:url>
              <th style='width:20px'><a href="${fn:escapeXml(toggleUrl)}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}"/></a></th>
             <th class='Header'><fmt:message key="calendars"/></th>
-            <th style="width:20%" align='right' class='ZhTreeEdit'>
+            <th nowrap="nowrap" align='right' class='ZhTreeEdit'>
                 <c:url value="/h/mcalendars" var="mabUrl"/>
                 <a href="${mabUrl}" ><fmt:message key="TREE_EDIT"/></a>
             </th>
