@@ -41,7 +41,7 @@
             <th style="width:20px"><a href="${fn:escapeXml(toggleUrl)}"><app:img src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}" altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/></a></th>
             <th class="Header" nowrap="nowrap" width="99%"> <fmt:message key="tags"/></th>
             
-            <th style="width:30px" align="right" class="ZhTreeEdit">
+            <th nowrap="nowrap" align="right" class="ZhTreeEdit">
                 <a id="MTAGS" href="${fn:escapeXml(mtagsUrl)}"><fmt:message key="TREE_EDIT"/> </a>
             </th>
         </tr>
