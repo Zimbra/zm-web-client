@@ -784,11 +784,6 @@ function() {
 
 ZmApptChooserTabViewPage.prototype._fillFreeBusy =
 function(items, callback) {
-	// bug fix #28693 - offline does not support free/busy yet
-	if (appCtxt.isOffline) {
-		if (callback) callback(items);
-		return;
-	}
 
 	var tf = this._getTimeFrame();
 	var list = (items instanceof AjxVector) ? items.getArray() : (items instanceof Array) ? items : [items];
