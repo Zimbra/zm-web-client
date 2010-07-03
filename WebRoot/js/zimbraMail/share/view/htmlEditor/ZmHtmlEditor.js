@@ -1875,6 +1875,9 @@ ZmHtmlEditor.prototype._editWord = function(fixall, spanEl) {
 ZmHtmlEditor.prototype._editWordHandler = function(fixall, spanEl, ev) {
 	// the event gets lost after 20 milliseconds so we need
 	// to save the following :(
+    // bug 48471: IE loses the window.event object outside this call scope. So we fake it.
+    ev = DwtUiEvent.getEvent(ev);
+    ev = { type:ev.type, keyCode:ev.keyCode, ctrlKey:ev.ctrlKey, target:DwtUiEvent.getTarget(ev) };
 	setTimeout(AjxCallback.simpleClosure(this._editWordHandler2, this, fixall, spanEl, ev), 20);
 };
 ZmHtmlEditor.prototype._editWordHandler2 = function(fixall, spanEl, ev) {
