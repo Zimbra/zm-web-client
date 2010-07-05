@@ -819,6 +819,14 @@ function() {
 };
 
 
+ZmApptEditView.prototype.initialize =
+function(calItem, mode, isDirty, apptComposeMode) {
+    this._isForward = (apptComposeMode == ZmApptComposeView.FORWARD);
+    this._isProposeTime = (apptComposeMode == ZmApptComposeView.PROPOSE_TIME);
+
+    ZmCalItemEditView.prototype.initialize.call(this, calItem, mode, isDirty, apptComposeMode);
+};
+
 ZmApptEditView.prototype._folderListener =
 function() {
 	if (!this._privacySelect) { return; }
