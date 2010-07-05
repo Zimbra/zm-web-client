@@ -53,6 +53,8 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle) 
 	this._calendarOrgs = {};
 
 	this._kbMgr = appCtxt.getKeyboardMgr();
+    this._isForward = false;
+    this._isProposeTime = false;    
 };
 
 ZmCalItemEditView.prototype = new DwtComposite;
@@ -105,8 +107,6 @@ function(calItem, mode, isDirty, apptComposeMode) {
 
     this._calItem = calItem;
 	this._isDirty = isDirty;
-    this._isForward = (apptComposeMode == ZmApptComposeView.FORWARD);
-    this._isProposeTime = (apptComposeMode == ZmApptComposeView.PROPOSE_TIME);
 
 	var firstTime = !this._rendered;
 	this.createHtml();
