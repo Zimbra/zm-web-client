@@ -1924,6 +1924,15 @@ function(self, iframe, attempt) {
 		h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight, origHeight);
 
 		iframe.style.height = h + "px";
+
+        if(AjxEnv.isWebKitBased){
+            //bug: 39434, WebKit specific
+            // After the iframe ht is set there is change is body.scrollHeight, weird.
+            // So reset ht to make the entire body visible.
+            var newHt = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+            if(newHt > h)
+                iframe.style.height = newHt + "px";
+        }
 	}
 };
 
