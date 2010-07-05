@@ -982,6 +982,10 @@ function(date) {
     var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
     var d = timeFormatter.parse(this._timeSelectInput.getValue());
     date = date || new Date();
+    //daylight saving time
+    if(AjxDateUtil.isDayShifted(date)) {
+        AjxDateUtil.rollToNextDay(date);
+    }
     date.setHours(d.getHours(), d.getMinutes(), 0, 0);
     return date;
 };

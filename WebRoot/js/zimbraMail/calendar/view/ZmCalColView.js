@@ -385,7 +385,17 @@ function(date) {
 ZmCalColView.prototype._updateDays =
 function() {
 	var d = new Date(this._date.getTime());
-	d.setHours(0,0,0,0);
+    d.setHours(0,0,0,0);
+
+    //counter to track DST adjustments
+    var daylightAdjustment = false;
+
+    //handle daylight shifting the day e.g. Santiago  Oct 10, 2010 00:00 shifted to Oct 9 2010 23:00
+    if(d.getHours() != 0) {
+        AjxDateUtil.rollToNextDay(d);
+        daylightAdjustment = true;
+    }
+
 	var dow;
 
 	switch(this.view) {
@@ -409,6 +419,12 @@ function() {
 			break;
 	}
 
+    //handling the case where start day of week shifted due to DST
+    if(d.getHours() != 0 && !daylightAdjustment) {
+        AjxDateUtil.rollToNextDay(d);
+        daylightAdjustment = true;
+    }
+    
 	this._dateToDayIndex = new Object();
 
 	var today = new Date();
@@ -439,6 +455,12 @@ function() {
 			d.setHours(0,0,0,0);
 			d.setTime(d.getTime() + AjxDateUtil.MSEC_PER_DAY);
 		}
+
+        //handling the case where first day got shifted due to DST
+        if(daylightAdjustment) {
+            d.setHours(0,0,0,0);
+            daylightAdjustment = false;
+        }
 	}
 	var te = document.getElementById(this._headerYearId);
 	te.innerHTML = this._days[0].date.getFullYear();
