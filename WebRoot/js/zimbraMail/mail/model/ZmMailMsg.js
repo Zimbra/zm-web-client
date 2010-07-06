@@ -1973,7 +1973,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		}
 
 		var addr, displayName;
-		if (onBehalfOf){
+		if (onBehalfOf) {
 			addr = accountName;
 		} else {
 			addr = identity.sendFromAddress || mainAcct;
@@ -2009,7 +2009,8 @@ function(addrNodes, parentNode, isDraft, accountName) {
 				addrNode.t = "f";
 				addrNode.a = dataSource.getEmail();
 				if (ac.get(ZmSetting.DEFAULT_DISPLAY_NAME)) {
-					addrNode.p = dataSource.userName || dataSource.getName();
+					var dispName = dataSource.identity && dataSource.identity.sendFromDisplay;
+					addrNode.p = dispName || dataSource.userName || dataSource.getName();
 				}
 			}
 		}
