@@ -2224,10 +2224,10 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 		var id = [this.getHTMLElId(),"picker"].join("_");
 		this._picker = new DwtButton({parent:this,id:id});
 		this._picker.setImage("CalendarApp");
+        this._picker.popup = ZmEditContactViewOther.__DwtButton_popup; // HACK
 
         var menu = new DwtMenu({parent:this._picker,style:DwtMenu.GENERIC_WIDGET_STYLE});
-//		menu.setSize("150");
-//		menu._table.width = "100%";
+        this._picker.getHtmlElement().className += " ZmEditContactViewOtherCalendar";
 		this._picker.setMenu(menu);
 		this._picker.replaceElement(pickerEl);
 
@@ -2254,9 +2254,27 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 	}                                                        
 };
 
+// HACK: This function executes in the scope of the calendar picker
+// HACK: button. It avoids the calendar being resized and scrolled
+// HACK: when there's not enough room to display the menu below the
+// HACK: button.
+ZmEditContactViewOther.__DwtButton_popup = function() {
+    var button = this;
+    var size = button.getSize();
+    var location = Dwt.toWindow(button.getHtmlElement(), 0, 0);
+    var menu = button.getMenu();
+    var menuSize = menu.getSize();
+    var windowSize = DwtShell.getShell(window).getSize();
+    button._popupAbove = (location.y + size.y) + menuSize.y > windowSize.y;
+    if (AjxEnv.isIE) {
+        menu.getHtmlElement().style.width = "150px";
+    }
+    DwtButton.prototype.popup.apply(button, arguments);
+};
+
 ZmEditContactViewOther.prototype._createSelect = function() {
 	var id = [this.getHTMLElId(),"select"].join("_");
-	var select = new DwtComboBox({parent:this,inputParams:{size:14},id:id});
+	var select = new DwtComboBox({parent:this,inputParams:{size:18},id:id});
 	var options = this._options || [];
 	for (var i = 0; i < options.length; i++) {
 		var option = options[i];
