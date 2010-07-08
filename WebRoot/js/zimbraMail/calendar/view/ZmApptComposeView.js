@@ -165,9 +165,10 @@ function(appt, mode, isDirty) {
         this._forwardMode = undefined;        
     }
 
-    if(mode == ZmCalItem.MODE_PROPOSE_TIME) {
+    this._proposeNewTime = (mode == ZmCalItem.MODE_PROPOSE_TIME);
+
+    if(this._proposeNewTime) {
         mode = ZmCalItem.MODE_EDIT;
-        this._proposeNewTime = true;
         apptComposeMode = ZmApptComposeView.PROPOSE_TIME;
     }
 
