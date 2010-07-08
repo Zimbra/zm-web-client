@@ -1035,9 +1035,10 @@ function(ev) {
 
 ZmAutocompleteListView.prototype._clearWaiting =
 function() {
-	if (this._waitingRow) {
+	if (this._waitingRow && this._waitingRow.parentNode) {
 		this._waitingRow.parentNode.removeChild(this._waitingRow);
 	}
+	this._waitingRow = null;
 	if (!this.size()) {
 		// hide if "waiting" row was only one
 		this.show(false);
