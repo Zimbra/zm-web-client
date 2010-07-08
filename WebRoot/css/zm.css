@@ -2399,26 +2399,71 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmAutocompleteListView {
 	@MenuContainer@
 	background-color:@ListItemBgColor-normal@;
-	#IFDEF MSIE
-	width: 400px;
-	#ENDIF
-	#IFNDEF MSIE
 	width: auto;
-	#ENDIF
 	padding: 0px !important;
 }
 
-/* ??? USE? */
-.ZmAutocompleteListView .Row,
-.ZmAutocompleteListView .Row-selected {
-	@TextPadding@
-    height:auto;
-}
-.ZmAutocompleteListView .Row-selected {
-	/* color: white; */
+.acRow, .acRow-selected {
+	@ListItemHeight@
+	@ActiveCursor@
+	@DisableSelection@
 }
 
+.acRow {
+	@ListItemContainer-normal@
+}
 
+.acRow-selected {
+	@ListItemContainer-selected@
+}
+
+.ZmAutocompleteListView td {
+	border-style:solid;
+	border-width:1px 0px;
+	border-color:@lighten(AppC,60)@;
+	border-top-color:@ListItemBgColor-normal@;
+}
+
+.acRow td {
+	@ListItemText@
+}
+
+.acRow-selected td {
+	@ListItemText-selected@
+}
+
+.ZmAutocompleteListView td.Icon {
+	width:20px;
+}
+
+/* not sure that these pseudoclasses will work in IE6 */
+.ZmAutocompleteListView td:first-child {
+	padding-left:3px;
+}
+.ZmAutocompleteListView td:last-child {
+	padding-right:3px;
+}
+
+.ZmAutocompleteListView .Forget {
+	text-align:right;
+}
+
+.ZmAutocompleteListView .ForgetText, .ZmAutocompleteListView .ForgetText-hide {
+	padding-left:8px;
+	@FontSize-small@;
+}
+
+.ZmAutocompleteListView .ForgetText {
+	color:blue;
+}
+
+.ZmAutocompleteListView .ForgetText-hide {
+	color:@ListItemBgColor-normal@;
+}
+
+.ZmAutocompleteListView .ForgetText-hide-selected {
+	color:@ListItemBgColor-selected@;
+}
 
 /*
  * Filter rules

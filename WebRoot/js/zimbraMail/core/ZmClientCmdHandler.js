@@ -41,6 +41,7 @@
  * 		$set:compose						compose msg based on mailto: in query string
  * 		$set:error							show error dialog
  * 		$set:modify [setting] [value]		set setting to value, then optionally restart
+ * 		$set:clearAutocompleteCache			clear contacts autocomplete cache
  */
 
 /**
@@ -473,4 +474,18 @@ function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */)
 	dialog.registerCallback(DwtDialog.YES_BUTTON, settings._refreshBrowserCallback, settings, [dialog]);
 	dialog.setMessage(ZmMsg.accountChangeRestart, DwtMessageDialog.WARNING_STYLE);
 	dialog.popup();
+};
+
+/**
+ * Executes the clearAutocompleteCache command.
+ *
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ * @param	{Object}	[cmdArg2]		command arguments
+ */
+ZmClientCmdHandler.prototype.execute_clearAutocompleteCache =
+function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
+	appCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
+	this._alert("Contacts autocomplete cache cleared");
 };

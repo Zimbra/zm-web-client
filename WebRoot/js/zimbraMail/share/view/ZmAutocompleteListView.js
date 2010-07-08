@@ -47,21 +47,21 @@
  * 
  * @author Conrad Damon
  *
- * @param {Hash}	params			a hash of parameters
- * @param	{String}	matchValue		the name of field in match result to use for completion
- * @param	{function}	dataClass			the class that has the data loader
- * @param	{function}	dataLoader		a method of dataClass that returns data to match against
- * @param	{DwtComposite}	parent			the control that created this list (defaults to shell)
- * @param	{String}	className			the CSS class
- * @param	{Array}	delims			the list of delimiters (which separate tokens such as addresses)
- * @param	{Array}	delimCodes		the list of delimiter key codes
- * @param	{String}	separator		the separator (gets added to the end of a match)
+ * @param {Hash}	params			a hash of parameters:
+ * @param	{String}		matchValue			the name of field in match result to use for completion
+ * @param	{function}		dataClass			the class that has the data loader
+ * @param	{function}		dataLoader			a method of dataClass that returns data to match against
+ * @param	{DwtComposite}	parent				the control that created this list (defaults to shell)
+ * @param	{String}		className			the CSS class
+ * @param	{Array}			delims				the list of delimiters (which separate tokens such as addresses)
+ * @param	{Array}			delimCodes			the list of delimiter key codes
+ * @param	{String}		separator			the separator (gets added to the end of a match)
  * @param	{AjxCallback}	compCallback		the callback into client to notify it that completion happened
- * @param	{AjxCallback}	keyDownCallback	the additional client ONKEYDOWN handler
+ * @param	{AjxCallback}	keyDownCallback		the additional client ONKEYDOWN handler
  * @param	{AjxCallback}	keyPressCallback	the additional client ONKEYPRESS handler
- * @param	{AjxCallback}	keyUpCallback	the additional client ONKEYUP handler
+ * @param	{AjxCallback}	keyUpCallback		the additional client ONKEYUP handler
  * @param	{AjxCallback}	enterCallback		the client handler for Enter key
- * @param	{Hash}	options			the additional options for autocompleteMatch() in data class
+ * @param	{Hash}			options				the additional options for autocompleteMatch() in data class
  * 
  * @extends		DwtComposite
  */
@@ -80,7 +80,7 @@ ZmAutocompleteListView = function(params) {
 	this._keyPressCallback = params.keyPressCallback;
 	this._keyUpCallback = params.keyUpCallback;
 	this._enterCallback = params.enterCallback;
-    this._options = params.options;
+    this._options = params.options || {};
 
 	this._isDelim = AjxUtil.arrayAsHash(params.delims || ZmAutocompleteListView.DELIMS);
 	this._isDelimCode = AjxUtil.arrayAsHash(params.delimCodes || ZmAutocompleteListView.DELIM_CODES);
@@ -108,6 +108,16 @@ ZmAutocompleteListView = function(params) {
 		this._focusAction = new AjxTimedAction(null, this._autocompleteFocus);
 	}
 
+	// back-reference to this object to stash in elements
+	this._internalId = Dwt.getNextId();
+	DwtControl.ALL_BY_ID[this._internalId] = this;
+
+	this._origClass = "acRow";
+	this._selClass = "acRow-selected";
+	this._showForgetTextClass = "ForgetText";
+	this._hideForgetTextClass = "ForgetText-hide";
+	this._hideSelForgetTextClass = "ForgetText-hide-selected";
+
 	this._numChars = 0;
 	this._done = {};
 	this.setVisible(false);
@@ -122,6 +132,10 @@ ZmAutocompleteListView.DELIMS		= [',', ';', '\n', '\r', '\t'];	// used when list
 ZmAutocompleteListView.DELIM_CODES	= [188, 59, 186, 3, 13, 9];		// used when list is showing
 
 ZmAutocompleteListView.WAIT_ID = "wait";
+
+// for list selection with up/down arrows
+ZmAutocompleteListView.NEXT = -1;
+ZmAutocompleteListView.PREV = -2;
 
 // Public static methods
 
@@ -363,7 +377,7 @@ function(ev) {
 	var curList = ZmAutocompleteListView._activeAcList;
     if (curList.getVisible()) {
 		var obj = DwtControl.getTargetControl(ev);
-		if (obj != curList) {
+		if (obj != curList && !obj.isForgetText) {
 			curList.show(false);
 			ev._stopPropagation = false;
 			ev._returnValue = true;
@@ -402,8 +416,7 @@ function(account) {
  */
 ZmAutocompleteListView.prototype.handle =
 function(element) {
-	var id = element._aclvId = element._aclvId || Dwt.getNextId();
-	DwtControl.ALL_BY_ID[id] = this;
+	element._aclvId = this._internalId;
 	Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmAutocompleteListView.onKeyDown);
 	Dwt.setHandler(element, DwtEvent.ONKEYPRESS, ZmAutocompleteListView.onKeyPress);
 	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
@@ -447,6 +460,9 @@ function(info) {
 ZmAutocompleteListView.prototype.reset =
 function() {
 	this._matches = null;
+	this._matchHash = {};
+	this._canForget = {};
+	this._selected = null;
 	this.show(false);
 };
 
@@ -471,22 +487,18 @@ function() {
 */
 ZmAutocompleteListView.prototype.handleAction =
 function(key, isDelim) {
+
 	DBG.println(AjxDebug.DBG2, "autocomplete handleAction for key " + key + " / " + isDelim);
 
 	if (isDelim) {
 		this._update(true);
 	} else if (key == 38 || key == 40) {
 		// handle up and down arrow keys
-		var idx = this._getSelectedIndex();
-		var size = this.size();
-		if (size <= 1) return;
-		var newIdx;
-		if (key == 40 && (idx < size - 1)) {
-			newIdx = idx + 1;
-			this._setSelected(newIdx);
-		} else if (key == 38 && (idx > 0)) {
-			newIdx = idx - 1;
-			this._setSelected(newIdx);
+		if (this.size() <= 1) { return; }
+		if (key == 40) {
+			this._setSelected(ZmAutocompleteListView.NEXT);
+		} else if (key == 38) {
+			this._setSelected(ZmAutocompleteListView.PREV);
 		}
 	} else if (key == 27) {
 		this.reset(); // ESC hides the list
@@ -501,15 +513,19 @@ function(key, isDelim) {
  */
 ZmAutocompleteListView.prototype.setWaiting =
 function(on) {
-	if (on) {
+	if (on && !this._waitingRow) {
 		if (!this.size()) {
 			// make sure we're visible if "waiting" row is the only one
 			this.show(true);
 		}
-		var div = this._getDiv(ZmAutocompleteListView.WAIT_ID);
-		this._waitDivId = div.id;
-		this._addRow(div, ZmMsg.autocompleteWaiting, "DwtWait16Icon");
-		this.getHtmlElement().appendChild(div);
+		var table = this._getTable();
+		var row = this._waitingRow = table.insertRow(-1);
+		var cell = row.insertCell(-1);
+		cell.innerHTML = "<div class='DwtWait16Icon'></div>";
+		cell = row.insertCell(-1);
+		cell.innerHTML = ZmMsg.autocompleteWaiting;
+		cell = row.insertCell(-1);
+		cell.innerHTML = "&nbsp;";
 	} else {
 		var ta = new AjxTimedAction(this, this._clearWaiting);
 		AjxTimedAction.scheduleAction(ta, 1000);
@@ -641,8 +657,7 @@ function(str, chunk, text, start, callback, list) {
 
 	if (!retValue) {
 		if (list && list.length) {
-			var len = list.length;
-			DBG.println(AjxDebug.DBG2, "matches found: " + len);
+			DBG.println(AjxDebug.DBG2, "matches found: " + list.length);
 			// done now in case of quick complete
 			this._set(list); // populate the list view
 		}
@@ -688,7 +703,7 @@ function(str, chunk, text, start, callback, list) {
 ZmAutocompleteListView.prototype._complete =
 function(text, str, hasDelim) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _complete: selected is " + this._selected);
-	var match = this._getSelected();
+	var match = this._matchHash[this._selected];
 	if (!match && str && hasDelim && this._dataAPI.quickComplete) {
 		match = this._dataAPI.quickComplete(str);
 	}
@@ -747,15 +762,13 @@ function(hasDelim) {
 ZmAutocompleteListView.prototype._mouseDownListener = 
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
-	var div = DwtUiEvent.getTargetWithProp(ev, "_pos");	// target could be DIV or B
-	if (!div || div._pos == null)
-		return;
+	var row = DwtUiEvent.getTargetWithProp(ev, "id");
+	if (!row || !row.id) { return; }
 	if (ev.button == DwtMouseEvent.LEFT) {
-		this._setSelected(div._pos);
+		this._setSelected(row.id);
 		if (this.isListenerRegistered(DwtEvent.SELECTION)) {
 	    	var selEv = DwtShell.selectionEvent;
 	    	DwtUiEvent.copy(selEv, ev);
-	    	selEv.match = div._match;
 	    	selEv.detail = 0;
 	    	this.notifyListeners(DwtEvent.SELECTION, selEv);
 	    	return true;
@@ -767,10 +780,9 @@ function(ev) {
 ZmAutocompleteListView.prototype._mouseOverListener = 
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
-	var div = DwtUiEvent.getTarget(ev);
-	div = Dwt.findAncestor(div, "_pos");
-	if (div) {
-		this._setSelected(div._pos);
+	var row = Dwt.findAncestor(DwtUiEvent.getTarget(ev), "id");
+	if (row) {
+		this._setSelected(row.id);
 	}
 	return true;
 };
@@ -788,63 +800,102 @@ function(ev) {
 
 // Layout
 
-// Creates the list and its member elements based on the matches we have. Each match becomes a 
-// DIV. The first match is automatically selected.
+// Lazily create main table, since we may need it to show "Waiting..." row before
+// a call to _set() is made.
+ZmAutocompleteListView.prototype._getTable =
+function() {
+
+	var table = this._tableId && document.getElementById(this._tableId);
+	if (!table) {
+		var html = [], idx = 0;
+		this._tableId = Dwt.getNextId();
+		html[idx++] = "<table id='" + this._tableId + "' cellpadding=0 cellspacing=0 border=0>";
+		html[idx++] = "</table>";
+		this.getHtmlElement().innerHTML = html.join("");
+		table = document.getElementById(this._tableId);
+	}
+	return table;
+};
+
+// Creates the list and its member elements based on the matches we have. Each match becomes a
+// row. The first match is automatically selected.
 ZmAutocompleteListView.prototype._set =
-function(list, sel) {
-	var thisHtmlElement = this.getHtmlElement();
-	thisHtmlElement.innerHTML = "";
+function(list) {
+
+	var table = this._getTable();
 	this._matches = list;
 	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
 		var match = this._matches[i];
 		if (match && (match.text || match.icon)) {
-			var div = this._getDiv(i);
-			div._pos = i;
-			this._addRow(div, match.text, match.icon);
-			thisHtmlElement.appendChild(div);
+			var rowId = match.id = this._getId("Row", i);
+			this._matchHash[rowId] = match;
+			var row = table.insertRow(-1);
+			row.className = this._origClass;
+			row.id = rowId;
+			var html = [], idx = 0;
+			var cell = row.insertCell(-1);
+			cell.className = "Icon";
+			if (match.icon) {
+				cell.innerHTML = (match.icon.indexOf('Dwt') != -1) ? ["<div class='", match.icon, "'></div>"].join("") :
+								 									 AjxImg.getImageHtml(match.icon);
+			} else {
+				cell.innerHTML = "&nbsp;";
+			}
+			cell = row.insertCell(-1);
+			cell.innerHTML = match.text || "&nbsp;";
+			if (this._options.supportForget !== false) {
+				this._canForget[rowId] = match.canForget;
+				cell = row.insertCell(-1);
+				cell.className = "Forget";
+				cell.innerHTML = match.canForget ? "<a id='" + this._getId("Forget", i) + "'></a>" :
+								 				   "<div id='" + this._getId("Forget", i) + "'></div>";
+			}
 		}
 	}
+	this._addForgetLinks();
+
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
 		function() {
-			this._setSelected(sel || 0);
+			this._setSelected(this._getId("Row", 0));
 		}), 100);
 };
 
-ZmAutocompleteListView.prototype._getDiv = 
-function(id) {
-	var div = document.createElement("div");
-	div[DwtListView._STYLE_CLASS] = "Row";
-	// MOW: make class name for selected:  "Row Row-selected" instead of just "Row-selected"
-	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + " " + div[DwtListView._STYLE_CLASS] + "-" + DwtCssStyle.SELECTED;
-	div.className = div[DwtListView._STYLE_CLASS];
-	div.id = "AutoCompleteListViewDiv_" + id;
-	return div;
+ZmAutocompleteListView.prototype._getId =
+function(type, num) {
+	return [this._internalId, "ac" + type, num].join("_");
 };
 
-// Adds a row with text and possibly an icon for the left column
-ZmAutocompleteListView.prototype._addRow = 
-function(div, text, icon) {
-	if (icon) {
-		var html = [];
-		var idx = 0;
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0>";
-		html[idx++] = "<tr>";
-		html[idx++] = "<td style='width:";
-		html[idx++] = 20;
-		html[idx++] = "' class='Icon'>";
-		if (icon.indexOf('Dwt') != -1) {
-			html[idx++] = ["<div class='", icon, "'></div>"].join("");
-		} else {
-			html[idx++] = AjxImg.getImageHtml(icon);
+// Add a DwtText to each "forget" link so it can have a tooltip.
+ZmAutocompleteListView.prototype._addForgetLinks =
+function() {
+
+	this._rowForgetHash = {};
+	var len = this._matches.length;
+	for (var i = 0; i < len; i++) {
+		var match = this._matches[i];
+		var rowId = match.id = this._getId("Row", i);
+		var forgetId = this._getId("Forget", i);
+		var forgetLink = document.getElementById(forgetId);
+		if (forgetLink) {
+			var text = new DwtText({parent:this, className:this._hideForgetTextClass});
+			this._rowForgetHash[rowId] = text;
+			text.isForgetText = true;
+			text.setText(ZmMsg.forget);
+			text.setToolTipContent(ZmMsg.forgetTooltip);
+			var listener = new AjxListener(this, this._handleForgetLink, [match.email, rowId]);
+			text.addListener(DwtEvent.ONMOUSEDOWN, listener);
+			text.reparentHtmlElement(forgetLink);
 		}
-		html[idx++] = "</td>";
-		html[idx++] = "<td>";
-		html[idx++] = text;
-		html[idx++] = "</td></tr></table>";
-		div.innerHTML = html.join("");
-	} else {
-		div.innerHTML = text;
+	}
+};
+
+ZmAutocompleteListView.prototype._showForgetLink =
+function(rowId, show) {
+	var forgetText = this._rowForgetHash[rowId];
+	if (forgetText) {
+		forgetText.setClassName(!show ? this._hideForgetTextClass :
+			this._canForget[rowId] ? this._showForgetTextClass : this._hideSelForgetTextClass);
 	}
 };
 
@@ -896,24 +947,50 @@ function() {
 	this.shell.removeListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
 };
 
-// Selects a match by changing its CSS class
+/**
+ * Selects a match by changing its CSS class.
+ *
+ * @param	{string}	id		ID of row to select, or NEXT / PREV
+ */
 ZmAutocompleteListView.prototype._setSelected =
-function(sel) {
-	DBG.println(AjxDebug.DBG3, "setting selected index to " + sel);
-	var children = this.getHtmlElement().childNodes;
-	if (!children) { return; }
+function(id) {
 
-	var len = children.length;
+	if (id == this._selected) { return; }
+
+	DBG.println(AjxDebug.DBG3, "setting selected id to " + id);
+	var table = document.getElementById(this._tableId);
+	var rows = table && table.rows;
+	if (!(rows && rows.length)) { return; }
+
+	var len = rows.length;
+	var idx = -1;
+	if (id == ZmAutocompleteListView.NEXT || id == ZmAutocompleteListView.PREV) {
+		if (len <= 1) { return; }
+		for (var i = 0; i < len; i++) {
+			if (rows[i].id == this._selected) {
+				idx = i;
+				break;
+			}
+		}
+		var newIdx = (id == ZmAutocompleteListView.PREV) ? idx - 1 : idx + 1;
+		if (newIdx < 0 || newIdx >= len) { return; }
+		id = rows[newIdx].id;
+	}
+
 	for (var i = 0; i < len; i++) {
-		var div = children[i];
-		var curStyle = div.className;
-		if (i == sel) {
-			div.className = div[DwtListView._SELECTED_STYLE_CLASS];
-		} else if (curStyle != div[DwtListView._STYLE_CLASS]) {
-			div.className = div[DwtListView._STYLE_CLASS];
+		var row = rows[i]
+		var curStyle = row.className;
+		if (row.id == id) {
+			row.className = this._selClass;
+		} else if (curStyle != this._origClass) {
+			row.className = this._origClass;
 		}
 	}
-	this._selected = sel;
+
+	this._showForgetLink(this._selected, false);
+	this._showForgetLink(id, true);
+
+	this._selected = id;
 };
 
 // Miscellaneous
@@ -922,33 +999,25 @@ function(sel) {
 ZmAutocompleteListView.prototype._removeAll =
 function() {
 	this._matches = null;
-	var htmlElement = this.getHtmlElement();
-	while (htmlElement.hasChildNodes()) {
-		htmlElement.removeChild(htmlElement.firstChild);
+	var table = this._getTable();
+	for (var i = table.rows.length - 1; i >= 0; i--) {
+		var row = table.rows[i];
+		if (row != this._waitingRow) {
+			table.deleteRow(i);
+		}
+	}
+	var forgetTextIds = AjxUtil.values(this._rowForgetHash);
+	for (var i = 0, len = forgetTextIds.length; i < len; i++) {
+		var forgetTextId = forgetTextIds[i];
+		DwtControl.ALL_BY_ID[forgetTextId] = null;
+		delete DwtControl.ALL_BY_ID[forgetTextId];
 	}
 };
 
 // Returns the number of matches
 ZmAutocompleteListView.prototype.size =
 function() {
-	return this._matches ? this._matches.length : 0;
-};
-
-// Returns the index of the currently selected match
-ZmAutocompleteListView.prototype._getSelectedIndex =
-function() {
-	return this._selected;
-};
-
-// Returns the currently selected match
-ZmAutocompleteListView.prototype._getSelected =
-function() {
-	if (this._matches && this._matches.length) {
-		var selected = this._selected || 0;
-		return this._matches[selected];
-	} else {
-		return null;
-	}
+	return this._getTable().rows.length;
 };
 
 // Force focus to the input element (handle Tab in Firefox)
@@ -967,9 +1036,8 @@ function(ev) {
 
 ZmAutocompleteListView.prototype._clearWaiting =
 function() {
-	var div = document.getElementById(this._waitDivId);
-	if (div) {
-		this.getHtmlElement().removeChild(div);
+	if (this._waitingRow) {
+		this._waitingRow.parentNode.removeChild(this._waitingRow);
 	}
 	if (!this.size()) {
 		// hide if "waiting" row was only one
@@ -982,5 +1050,22 @@ function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
 	if (ev.source.id == ZmSetting.AUTOCOMPLETE_ON_COMMA) {
 		this._isDelim[','] = this._isDelimCode[188] = appCtxt.get(ZmSetting.AUTOCOMPLETE_ON_COMMA);
+	}
+};
+
+ZmAutocompleteListView.prototype._handleForgetLink =
+function(email, rowId) {
+	if (this._dataAPI.forget) {
+		this._dataAPI.forget(email, new AjxCallback(this, this._handleResponseForget, [rowId, email]));
+	}
+};
+
+ZmAutocompleteListView.prototype._handleResponseForget =
+function(rowId, email) {
+	var row = document.getElementById(rowId);
+	if (row) {
+		row.parentNode.removeChild(row);
+		var msg = AjxMessageFormat.format(ZmMsg.forgetSummary, [email]);
+		appCtxt.setStatusMsg(msg);
 	}
 };
