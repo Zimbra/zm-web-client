@@ -1360,7 +1360,7 @@ function(ev, callback) {
 		if (msg._loaded) {
 			ZmMailMsgView.detachMsgInNewWindow(msg, false, this._msgControllerMode);
 			// always mark a msg read if it is displayed in its own window
-			if (msg.isUnread) {
+			if (msg.isUnread && !appCtxt.getById(msg.folderId).isReadOnly()) {
 				msg.list.markRead({items:[msg], value:true});
 			}
 		} else {
