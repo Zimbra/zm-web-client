@@ -96,7 +96,9 @@ function() {
 
 ZmConvListView.prototype.set =
 function(list, sortField) {
-	this._resetExpansion();
+	if (this.offset == 0) {
+		this._resetExpansion();
+	}
 	ZmListView.prototype.set.apply(this, arguments);
 };
 
@@ -293,8 +295,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_SELECTION) {
 		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 	} else if (field == ZmItem.F_EXPAND) {
-		var exp = this._expandable[item.id] = this._isExpandable(item);
-		idx = this._getImageHtml(htmlArr, idx, exp ? "NodeCollapsed" : null, this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
 	} else if (item.type == ZmItem.MSG) {
 		idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);
 	} else {
@@ -663,7 +664,6 @@ function() {
 		}
 	}
 
-	this._expandable	= {};	// has an expansion arrow
 	this._expanded		= {};	// current expansion state, by ID
 	this._msgRowIdList	= {};	// list of row IDs for a conv ID
 	this._msgOffset		= {};	// the offset for a msg ID
