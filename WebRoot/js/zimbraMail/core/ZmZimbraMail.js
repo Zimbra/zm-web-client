@@ -2040,14 +2040,17 @@ function(ex, continuation) {
 ZmZimbraMail._confirmExitMethod =
 function() {
 
-	appCtxt.accountList.saveImplicitPrefs();
+	if (ZmCsfeCommand.getAuthToken()) {
+		appCtxt.accountList.saveImplicitPrefs();
 
-	if (!ZmZimbraMail._isOkToExit()) {
-		ZmZimbraMail._isLogOff = false;
-		return ZmMsg.appExitWarning;
+		if (!ZmZimbraMail._isOkToExit()) {
+			ZmZimbraMail._isLogOff = false;
+			return ZmMsg.appExitWarning;
+		}
+
+		ZmZimbraMail._endSession();
 	}
-
-	ZmZimbraMail._endSession();
+	
 	ZmZimbraMail._endSessionDone = true;
 };
 
