@@ -128,6 +128,7 @@ function(attId) {
 				var msgDialog = appCtxt.getMsgDialog();
 				msgDialog.setMessage(ZmMsg.noForwardAddresses, DwtMessageDialog.CRITICAL_STYLE);
 				msgDialog.popup();
+                this.enableToolbar(true);
 				return false;
 			}
 
@@ -140,6 +141,7 @@ function(attId) {
 				cd.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this, [cd,appt]);
 				cd.setVisible(true); // per fix for bug 3209
 				cd.popup();
+                this.enableToolbar(true);
 				return false;
 			}
 
@@ -153,6 +155,7 @@ function(attId) {
 			var msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, this._invalidAttendees.join(","));
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
+            this.enableToolbar(true);
 			return false;
 		}
 		
@@ -180,6 +183,7 @@ function(attId) {
 					var msg = AjxMessageFormat.format(ZmMsg.orgChange, newOrg);
 					dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 					dlg.popup();
+                    this.enableToolbar(true);
 					return false;
 				}
 			}
@@ -497,6 +501,7 @@ function(appt, attId, names, notifyList, response) {
 			msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._saveAfterPermissionCheck, this, [appt, attId, notifyList, msgDialog]);
 			msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
 			msgDialog.popup();
+            this.enableToolbar(true);
 			return;
 		}
 	}
@@ -531,6 +536,7 @@ function(appt, callback, result) {
 			if(this._conflictCallback) this._conflictCallback.run(inst);
 			this.showConflictDialog(appt, callback, inst);
 			conflictExist = true;
+            this.enableToolbar(true);
 		}
 	}
 
@@ -665,6 +671,7 @@ function(appt, attId, attendees, origAttendees) {
 		appt.setMailNotificationOption(true);
 		this._notifyDialog.initialize(appt, attId, this._addedAttendees, this._removedAttendees);
 		this._notifyDialog.popup();
+        this.enableToolbar(true);
 		return true;
 	}
 
