@@ -42,7 +42,7 @@
 							var blockquote1, blockquote2;
 							for (var child=doc.body.firstChild; child && child.nextSibling; child=child.nextSibling) {
 								var child2 = child.nextSibling;
-								if (child2.tagName.toLowerCase()=="p" && this.elementIsIEFiller(child2.firstChild))
+								if (child2 && child2.tagName && child2.tagName.toLowerCase()=="p" && this.elementIsIEFiller(child2.firstChild))
 									child2 = child2.nextSibling;
 
 								if (child2 && child.tagName && child2.tagName && child.tagName.toLowerCase()=="blockquote" && child2.tagName.toLowerCase()=="blockquote") {
@@ -50,6 +50,17 @@
 								}
 							}
 						}, this), 5);
+//							if (ev.preventDefault)
+//								ev.preventDefault();
+
+							if (!tinymce.isIE) {
+								var el = range.startContainer.childNodes[range.startOffset];
+								if (el && el.tagName && el.tagName.toLowerCase()=="br") {
+									t.removeElement(el);
+								}
+							}
+//							rv=false;
+						}
 					}
 				}
 			});
