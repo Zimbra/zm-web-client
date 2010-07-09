@@ -193,6 +193,11 @@ function(appt, mode, isDirty) {
 	this.switchToTab(this._apptTabKey);
     this.setTabVisibility([ZmApptComposeView.TAB_ATTENDEES, ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_EQUIPMENT], !isForward && !this._proposeNewTime);    
     this.setTabVisibility([ZmApptComposeView.TAB_ATTENDEES], appt.isOrganizer() || isForward);
+    //bug:48189 Hide schedule tab for non-ZCS acct
+    if (appCtxt.isOffline) {
+        this.setTabVisibility([ZmApptComposeView.TAB_SCHEDULE], appCtxt.getActiveAccount().isZimbraAccount);
+    }
+
 };
 
 ZmApptComposeView.prototype.cleanup = 

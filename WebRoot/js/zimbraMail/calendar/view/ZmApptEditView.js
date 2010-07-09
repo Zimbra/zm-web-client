@@ -843,7 +843,10 @@ function() {
 
 	var calId = this._folderSelect.getValue();
 	var cal = appCtxt.getById(calId);
-
+    //bug:48189 Hide schedule tab for non-ZCS acct
+    if(appCtxt.isOffline){
+        this.parent.parent.setTabVisibility([ZmApptComposeView.TAB_SCHEDULE], cal.getAccount().isZimbraAccount);
+    }
 	var acct = appCtxt.getActiveAccount();
 	var id = String(cal.id);
 	var isRemote = (id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0);

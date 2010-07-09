@@ -785,6 +785,11 @@ function() {
 ZmApptChooserTabViewPage.prototype._fillFreeBusy =
 function(items, callback) {
 
+    // Bug:48189 Don't send GetFreeBusyRequest for non-ZCS accounts.
+    if (appCtxt.isOffline && !appCtxt.getActiveAccount().isZimbraAccount) {
+		if (callback) callback(items);
+		return;
+	}
 	var tf = this._getTimeFrame();
 	var list = (items instanceof AjxVector) ? items.getArray() : (items instanceof Array) ? items : [items];
 	var emails = [];
