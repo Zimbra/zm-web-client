@@ -180,10 +180,12 @@ function(msg) {
 	if ((ac.get(ZmSetting.CALENDAR_ENABLED) || ac.multiAccounts) &&
 		(invite && invite.type != "task"))
 	{
+        var isCounterInvite = !invite.isEmpty() && invite.hasCounterMethod();
+
 		if (!invite.isEmpty() &&
 			invite.hasAcceptableComponents() &&
-			(invite.hasInviteReplyMethod() || invite.hasCounterMethod())&&
-			msg.folderId != ZmFolder.ID_TRASH)
+			(invite.hasInviteReplyMethod() || isCounterInvite)&&
+			msg.folderId != ZmFolder.ID_TRASH && msg.folderId != ZmFolder.ID_SENT)
 		{
 			var topToolbar = this._getInviteToolbar();
 			topToolbar.reparentHtmlElement(contentDiv);
