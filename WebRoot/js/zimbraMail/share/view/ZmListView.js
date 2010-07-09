@@ -319,13 +319,15 @@ function() {
 };
 
 ZmListView.prototype._handleResponseCheckReplenish =
-function() {
+function(skipSelection) {
 	if (this.size() == 0) {
 		this._controller._handleEmptyList(this);
 	} else {
 		this._controller._resetNavToolBarButtons(this._controller._getViewType());
 	}
-	this._setNextSelection();
+	if (!skipSelection) {
+		this._setNextSelection();
+	}
 };
 
 ZmListView.prototype._folderChangeListener =
@@ -1048,7 +1050,7 @@ function() {
 		this.firstSelIndex = 0;
 	}
     var item;
-    if(this._list){
+    if (this._list) {
 	    item = this._list.get(this.firstSelIndex) || this._list.getLast();
     }
 	if (item) {
