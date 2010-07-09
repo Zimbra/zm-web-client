@@ -437,3 +437,8 @@ function() {
 	this._selectNextItemInParentListView();
 	ZmDoublePaneController.prototype._doSpam.apply(this, arguments);
 };
+
+ZmConvController.prototype._msgViewCurrent =
+function() {
+	return true;
+};
