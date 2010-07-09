@@ -252,6 +252,8 @@ function(mode) {
 		this._createToolBar();
 	}
 
+    this.enableToolbar(true);
+
 	var isNew = (mode == null || mode == ZmCalItem.MODE_NEW || mode == ZmCalItem.MODE_NEW_FROM_QUICKADD);
 
 	var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
@@ -343,6 +345,7 @@ function(errorMsg) {
 	var msg = errorMsg ? AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, errorMsg) : ZmMsg.errorSaving;
 	dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	dialog.popup();
+    this.enableToolbar(true);    
 };
 
 ZmCalItemComposeController.prototype._saveCalItemFoRealz =
@@ -416,14 +419,20 @@ function() {
 	return false;
 };
 
+ZmCalItemComposeController.prototype.enableToolbar =
+function(enabled) {
+    this._toolbar.enableAll(enabled);
+};
 
 // Listeners
 
 // Save button was pressed
 ZmCalItemComposeController.prototype._saveListener =
 function(ev) {
-	if (this._doSave() === false)
+    this.enableToolbar(false);
+	if (this._doSave() === false) {
 		return;
+    }
 	this._app.popView(true);
 };
 
@@ -521,6 +530,7 @@ function() {
 ZmCalItemComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
+    this.enableToolbar(true);
 	try {
 		// bug fix #33001 - prism throws exception with this method:
 		appCtxt.getAppViewMgr().showPendingView(true);
