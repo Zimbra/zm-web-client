@@ -447,6 +447,7 @@ function(calItem, mode) {
         if(this._organizerData) {
             this._organizerData.innerHTML = calItem.getOrganizer() || "";
         }
+        this._calItemOrganizer =  calItem.getOrganizer() || "";
         this._forwardToField.setValue(this._isProposeTime ? calItem.getOrganizer() : "");        
         this._forwardToField.setEnabled(!this._isProposeTime);
         if(this._pickerButton) this._pickerButton.setEnabled(!this._isProposeTime);
@@ -480,6 +481,15 @@ function(calItem, mode) {
         this.setIdentity(appCtxt.getIdentityCollection().getIdentityBySendAddress(sentBy));
     }
 };
+
+ZmApptEditView.prototype.getCalItemOrganizer =
+function() {
+	var folderId = this._folderSelect.getValue();
+	var organizer = new ZmContact(null);
+	organizer.initFromEmail(this._calItemOrganizer, true);
+	return organizer;
+};
+
 
 ZmApptEditView.prototype._addResourcesDiv =
 function(calItem) {

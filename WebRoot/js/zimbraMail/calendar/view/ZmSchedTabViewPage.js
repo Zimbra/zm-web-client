@@ -125,7 +125,12 @@ function() {
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
 
-	this.set(this._dateInfo, this._editView.getOrganizer(), this._attendees);
+    var organizer = this._editView.getOrganizer();
+    if(this._isProposeTime) {
+        organizer = this._editView.getCalItemOrganizer();                    
+    }
+
+	this.set(this._dateInfo, organizer, this._attendees);
 	this._controller._setComposeTabGroup();
     this.enablePartcipantStatusColumn(this._editView.getRsvp());
 };
@@ -143,10 +148,11 @@ function(useException) {
 };
 
 ZmSchedTabViewPage.prototype.initialize =
-function(appt, mode, isDirty, isForward) {
+function(appt, mode, isDirty, apptComposeMode) {
 	this._appt = appt;
 	this._mode = mode;
-    this._isForward = isForward;
+    this._isForward = (apptComposeMode == ZmApptComposeView.FORWARD);
+    this._isProposeTime = (apptComposeMode == ZmApptComposeView.PROPOSE_TIME);
 };
 
 ZmSchedTabViewPage.prototype.set =
