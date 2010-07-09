@@ -1009,7 +1009,7 @@ function(attr, callback, result) {
 	if (id && id == this.id) {
 		appCtxt.setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
 		// was this contact moved to another folder?
-		if (attr[ZmContact.F_folderId]) {
+		if (attr[ZmContact.F_folderId] && this.folderId != attr[ZmContact.F_folderId]) {
 			this._setFolder(attr[ZmContact.F_folderId]);
 		}
 	} else {
