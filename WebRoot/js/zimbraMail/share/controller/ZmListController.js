@@ -1932,5 +1932,5 @@ ZmListController.prototype._checkItemCount =
 function() {
 	var lv = this._listView[this._currentView];
 	lv._checkItemCount();
-	lv._handleResponseCheckReplenish();
+	lv._handleResponseCheckReplenish(true);
 };
