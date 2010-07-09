@@ -100,7 +100,16 @@ function(item, callback, results) {
 	}
 
 	// clear the msg view, unless it's showing something selected
-	var clearMsgView = true;
+	if (!this._msgViewCurrent()) {
+		dpv.setMsg();
+	}
+};
+
+// returns true if the msg shown in the reading pane is selected in the list view
+ZmDoublePaneController.prototype._msgViewCurrent =
+function() {
+
+	var dpv = this._doublePaneView;
 	var mlv = dpv._mailListView;
 	mlv._restoreState();
 	var msg = dpv.getMsg();
@@ -110,14 +119,11 @@ function(item, callback, results) {
 			var item = sel[i];
 			var m = (item.type == ZmItem.CONV) ? item.getFirstHotMsg() : item;
 			if (m && m.id == msg.id) {
-				clearMsgView = false;
-				break;
+				return true;
 			}
 		}
 	}
-	if (clearMsgView) {
-//		dpv.setMsg();
-	}
+	return false;
 };
 
 ZmDoublePaneController.prototype.switchView =
