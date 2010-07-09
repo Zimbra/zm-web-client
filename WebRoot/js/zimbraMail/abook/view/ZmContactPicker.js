@@ -88,6 +88,8 @@ function(buttonId, addrs, str, account) {
 	}
 	this._offset = 0;
 	this._truePageSize = 0;
+	this._curPage = 0;
+	this._pageBoundaries = new Array();
 
 	var searchFor = this._selectDiv ? this._selectDiv.getValue() : ZmContactsApp.SEARCHFOR_CONTACTS;
 
@@ -331,6 +333,8 @@ function(ev) {
 	this._offset = 0;
 	this._list.removeAll();
 	this._truePageSize = 0;
+	this._curPage = 0;
+	this._pageBoundaries = new Array();
 	this.search();
 };
 
@@ -363,6 +367,7 @@ function(firstTime, result) {
 		this._list.merge(offset, list);
 		this._list.hasMore = more;
 		this._truePageSize = list.size();
+		this._pageBoundaries.push(offset);
 	}
 
 	if (list.size() == 0) {
@@ -405,15 +410,20 @@ function() {
 ZmContactPicker.prototype._pageListener =
 function(ev) {
 	if (ev.item == this._prevButton) {
-		this._offset -= this._truePageSize;
-		if (this._offset < 0) 
+		this._curPage--;
+		this._offset = this._pageBoundaries[this._curPage];
+		if (this._offset < 0)
 			this._offset = 0;
 		this._showResults(true, true, this.getSubList()); // show cached results
 	}
 	else {
+		this._curPage++;
 		var lastId;
 		var lastSortVal;
-		this._offset += this._truePageSize;
+		if (this._pageBoundaries[this._curPage]) 
+			this._offset = this._pageBoundaries[this._curPage];
+		else
+			this._offset += this._truePageSize;
 		var list = this.getSubList();
 		if (!list) {
 			list = this._chooser.sourceListView.getList();
@@ -442,8 +452,9 @@ ZmContactPicker.prototype.getSubList =
 function() {
 	var size = this._list.size();
 
-	var end = (this._offset + ZmContactsApp.SEARCHFOR_MAX > size)
-		? size : (this._offset + ZmContactsApp.SEARCHFOR_MAX);
+	var end = (this._pageBoundaries[this._curPage+1])
+		? this._pageBoundaries[this._curPage+1]:(this._offset +  this._truePageSize  > size)
+			?size:(this._offset +  this._truePageSize );
 
 	return (this._offset < end)
 		? (AjxVector.fromArray(this._list.getArray().slice(this._offset, end))) : null;
