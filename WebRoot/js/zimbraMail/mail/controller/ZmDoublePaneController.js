@@ -116,7 +116,7 @@ function(item, callback, results) {
 		}
 	}
 	if (clearMsgView) {
-		dpv.setMsg();
+//		dpv.setMsg();
 	}
 };
 
