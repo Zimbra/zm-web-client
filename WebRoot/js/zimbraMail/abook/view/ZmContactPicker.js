@@ -406,6 +406,8 @@ ZmContactPicker.prototype._pageListener =
 function(ev) {
 	if (ev.item == this._prevButton) {
 		this._offset -= this._truePageSize;
+		if (this._offset < 0) 
+			this._offset = 0;
 		this._showResults(true, true, this.getSubList()); // show cached results
 	}
 	else {
