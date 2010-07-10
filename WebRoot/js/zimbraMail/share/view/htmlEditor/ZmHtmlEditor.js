@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -345,7 +345,7 @@ function(path) {
 		// servlet caches CSS unless there's a debug param
 		var debugLevel = DBG && DBG.getDebugLevel();
 		if (debugLevel) {
-			style_url = style_url + "&debug=" + debugLevel; 
+			style_url = style_url + "&debug=" + debugLevel;
 		}
 		style.href = style_url;
 		var head = doc.getElementsByTagName("head")[0];
@@ -586,7 +586,7 @@ function(x, y) {
 
 		// bug fix #6786 - normalize width/height if less than zero
 		if (x < 0) x = 0;
-	
+
 		main.style.width = x + 5 + "px";
 		if (div) {
 			if (!AjxEnv.isIE) {
@@ -1481,7 +1481,7 @@ function(ev) {
 			}
 
 			if (ancestor) {
-				this._handleBlockquoteAdd(ancestor, element);
+				this._splitBlockquote(ancestor, element);
 				rv = false;
 			}
 		}
@@ -1491,7 +1491,7 @@ function(ev) {
 				var blockquote1, blockquote2;
 				for (var child=this._getIframeDoc().body.firstChild; child && child.nextSibling; child=child.nextSibling) {
 					var child2 = child.nextSibling;
-					if (child2.tagName && child2.tagName.toLowerCase()=="p" && this._elementIsIEFiller(child2.firstChild))
+					if (child2 && child2.tagName && child2.tagName.toLowerCase()=="p" && this._elementIsIEFiller(child2.firstChild))
 						child2 = child2.nextSibling;
 
 					if (child2 && child.tagName && child2.tagName && child.tagName.toLowerCase()=="blockquote" && child2.tagName.toLowerCase()=="blockquote") {
@@ -1499,6 +1499,7 @@ function(ev) {
 					}
 				}
 			}, this), 5);
+			if (ev.keyCode==46) {
 //				if (ev.preventDefault)
 //					ev.preventDefault();
 
@@ -1518,7 +1519,7 @@ function(ev) {
 	return rv;
 };
 
-ZmHtmlEditor.prototype._handleBlockquoteAdd =
+ZmHtmlEditor.prototype._splitBlockquote =
 function(blockquote, element) {
 	var range, el, offset=null, coffset=null;
 	var text1,text2;
@@ -1529,7 +1530,7 @@ function(blockquote, element) {
 		range = iFrameDoc.selection.createRange();
 		range.collapse(false);
 		el = element;
-		
+
 		// IE doesn't let us get the offset directly, so we count the number of times we can use moveStart() until we're out of the containing element
 		var dummy = "###"+Dwt.getNextId()+"###";
 		range.pasteHTML(dummy);
@@ -1562,7 +1563,7 @@ function(blockquote, element) {
 			el = range.startContainer;
 		}
 	}
-	
+
 
 	var id = el.id = el.id || Dwt.getNextId();
 	var blockquote2 = blockquote.cloneNode(true); // Create an orphaned clone of the blockquote. This will be meddled with before getting attached to the DOM tree
@@ -1575,7 +1576,9 @@ function(blockquote, element) {
 		el2.innerHTML = text2;
 	} else if (coffset!==null) {
 		this._removeNextSiblings(el1.childNodes[coffset]); // cut away all siblings after breakpoint for el1
-		this._removePreviousSiblings(el2.childNodes[coffset]); // and all sibling before breakpoint for el2
+		var c2 = el2.childNodes[coffset];
+		this._removePreviousSiblings(c2); // and all sibling before breakpoint for el2
+		this._removeElement(c2);
 	}
 
 	// Prune off all "later" siblings in the blockquote tree
@@ -1596,7 +1599,7 @@ function(blockquote, element) {
 	} else {
 		blockquote.parentNode.appendChild(blockquote2);
 	}
-	
+
 	if (AjxEnv.isIE) {
 		// Hack to get IE to properly place the cursor between the two blockquotes
 		var p = document.createElement("p");
@@ -1611,6 +1614,23 @@ function(blockquote, element) {
 		this._setIEFiller(span1); // We need to remove this element when we want to reconnect the blockquotes, so give it something we can find again
 		span2.parentNode.removeChild(span2);
 	} else {
+		if (AjxEnv.isSafari) {
+			var t = this;
+			setTimeout(function(){
+				var p;
+				if (blockquote.lastChild && blockquote.lastChild.childElementCount==1 && blockquote.lastChild.firstChild instanceof HTMLBRElement)
+					p = blockquote.lastChild;
+				else if (blockquote2.firstChild && blockquote2.firstChild.childElementCount==1 && blockquote2.firstChild.firstChild instanceof HTMLBRElement)
+					p = blockquote2.firstChild;
+				if (p) {
+					blockquote.parentNode.insertBefore(p, blockquote2);
+					range.setStart(p,0);
+					var sel = t._getSelection();
+					sel.removeAllRanges();
+					sel.addRange(range);
+				}
+			},5);
+		}
 		range.setStartAfter(blockquote); // Set the breakpoint between the blockquotes (which is immediately after the first one, duh)
 		var sel = this._getSelection();
 		sel.removeAllRanges();
@@ -1663,6 +1683,19 @@ ZmHtmlEditor.prototype._selectNode = function(el) {
 		}
 	}
 };
+
+ZmHtmlEditor.prototype._nextElement = function(el) {
+	if (el.childNodes && el.childNodes.length)
+		return el.childNodes[0];
+	if (el.nextSibling)
+		return el.nextSibling;
+	var p = el.parentNode;
+	while (!el.nextSibling) {
+		el = el.parentNode;
+		if (!el) return null;
+	}
+	return el.nextSibling;
+}
 
 ZmHtmlEditor.prototype._elementIsIEFiller =
 function(el) {
@@ -1721,20 +1754,76 @@ function(blockquote1, blockquote2) {
 		el2 = el2.parentNode;
 		depth2--;
 	}
+	var range = (AjxEnv.isIE) ? this._getIframeDoc().selection.createRange() : this._getRange();
 
 	if (depth1==depth2) { // Simplest case, just append the contents of el2 to el1.
-		el1.innerHTML = el1.innerHTML + el2.innerHTML;
+		var text = [el1.innerHTML, el2.innerHTML];
+		var dummy = "###"+Dwt.getNextId()+"###";
+		el1.innerHTML = text.join(dummy);
+		var offset = el1.innerHTML.replace(/<br>/ig," ").replace(/<\/?[^>]+>/g,"").indexOf(dummy);
+		el1.innerHTML = text.join("");
+		if (AjxEnv.isIE) {
+			range.moveToElementText(el1);
+			range.moveStart("character", offset);
+		} else {
+			var p;
+			for (var p = el1; p != null && offset > 0; p = this._nextElement(p)) { // Walk through elements, decrementing offset as we go, and set the range when we find an element where the remaining offset fits
+				var type = p.nodeType;
+				var textContent = p.textContent || p.innerText || p.innerHTML || "";
 
+				if (type==3 || type==4 || type==8) {
+					if (offset <= textContent.length)
+						break;
+					offset -= textContent.length;
+				} else {
+					if (p.tagName.toLowerCase()=="br")
+						offset--;
+					if (offset==0)
+						break;
+				}
+			}
+			range.setStart(p, offset);
+		}
 	} else if (depth1==depth2+1) { // We're merging at a node border, append all children of el2 to el1's parent (making them siblings of el1)
 		while (el2.firstChild) {
 			el1.parentNode.appendChild(el2.firstChild);
 		}
+		if (AjxEnv.isIE) {
+			var type = p.nodeType;
+			var offset = 1;
+			if (type==3 || type==4 || type==8) {
+				offset = p.length;
+				p = p.parentNode;
+			}
+			range.moveToElementText(p);
+			range.moveStart("character",offset);
+		} else {
+			if (el1.tagName && el1.tagName.toLowerCase()=="br")
+				range.setStartBefore(el1);
+			else
+				range.setStartAfter(el1);
+		}
 		el1 = el1.parentNode;
-
 	} else if (depth1+1==depth2) { // We're merging at a node border, append el2 and all its siblings to el1 (making them children of el1)
+		var p = el1.childNodes.length ? el1.childNodes[el1.childNodes.length-1] : el1;
 		el2 = el2.parentNode;
 		while (el2.firstChild) {
 			el1.appendChild(el2.firstChild);
+		}
+		if (AjxEnv.isIE) {
+			var type = p.nodeType;
+			var offset = 1;
+			if (type==3 || type==4 || type==8) {
+				offset = p.length;
+				p = p.parentNode;
+			}
+			range.moveToElementText(p);
+			range.moveStart("character",offset);
+		} else {
+			if (p.tagName && p.tagName.toLowerCase()=="br")
+				range.setStartBefore(p);
+			else
+				range.setStartAfter(p);
 		}
 	} else { // We don't handle nodes that are further apart
 		return;
@@ -1747,6 +1836,15 @@ function(blockquote1, blockquote2) {
 		el2 = el2.parentNode;
 	}
 	this._removeElement(blockquote2); // All significant contents have been transferred, kill blockquote2
+
+	range.collapse(true);
+	if (AjxEnv.isIE) {
+		range.select();
+	} else {
+		var sel = this._getSelection();
+		sel.removeAllRanges();
+		sel.addRange(range);
+	}
 };
 
 // Spell checker methods
@@ -1991,7 +2089,7 @@ function(ev) {
 	// but that's even uglier:
 	if (ev && word && (suggestions = sc.suggestions[word]) &&
 	    (/mouseup|contextmenu/i.test(ev.type) ||
-	     (plainText && /(click|mousedown|contextmenu)/i.test(ev.type))) && 
+	     (plainText && /(click|mousedown|contextmenu)/i.test(ev.type))) &&
 		(word == AjxUtil.getInnerText(p) && !this._ignoreWords[word]))
 	{
 		sc.menu = this._spellCheckCreateMenu(this, 0, suggestions, word, p.id, modified);
