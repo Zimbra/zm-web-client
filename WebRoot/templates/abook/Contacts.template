@@ -385,6 +385,7 @@
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#SplitView">
 	<table border=0 cellpadding=0 cellspacing=5 width=100% height=100%>
+		<col width=230></col>
 		<tr>
 			<td id='${id}_alphabetbar' colspan=2></td>
 		</tr>
