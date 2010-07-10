@@ -479,7 +479,9 @@ function(params, account, showBackgroundColor, headerClassName) {
 			headerIcon = "AccountAll";
 		} else {
 			headerLabel = account.getDisplayName();
-			headerIcon = account.getIcon()
+			if (!appCtxt.isFamilyMbox) {
+				headerIcon = account.getIcon()
+			}
 		}
 
 		var headerParams = {
