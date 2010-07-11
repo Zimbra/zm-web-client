@@ -2017,7 +2017,7 @@ function(msg, htmlMode) {
 				attInfo = attInfo ? attInfo.desc : part.ct;
 				bodyArr.push([crlf, "[", attInfo, ":", (part.filename||"..."), "]", crlf].join(""));
 				hasInlineAtts = true;
-			} else if (part.ct == ZmMimeTable.TEXT_PLAIN || (part.body && ZmMimeTable.isTextType(bodyPart.ct))) {
+			} else if (part.ct == ZmMimeTable.TEXT_PLAIN || (part.body && ZmMimeTable.isTextType(part.ct))) {
 				bodyArr.push( htmlMode ? AjxStringUtil.convertToHtml(part.content) : part.content );
 			} else if (part.ct == ZmMimeTable.TEXT_HTML) {
 				if (htmlMode){
