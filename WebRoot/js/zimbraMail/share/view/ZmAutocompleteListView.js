@@ -847,8 +847,7 @@ function(list) {
 				this._canForget[rowId] = match.canForget;
 				cell = row.insertCell(-1);
 				cell.className = "Forget";
-				cell.innerHTML = match.canForget ? "<a id='" + this._getId("Forget", i) + "'></a>" :
-								 				   "<div id='" + this._getId("Forget", i) + "'></div>";
+				cell.innerHTML = match.canForget ? "<a id='" + this._getId("Forget", i) + "'></a>" : "";
 			}
 		}
 	}
@@ -885,6 +884,8 @@ function() {
 			var listener = new AjxListener(this, this._handleForgetLink, [match.email, rowId]);
 			text.addListener(DwtEvent.ONMOUSEDOWN, listener);
 			text.reparentHtmlElement(forgetLink);
+		} else {
+			
 		}
 	}
 };
