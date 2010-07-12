@@ -367,6 +367,11 @@ td.DDSepInvisible div {
 	font-weight: normal;
 }
 
+/* bug #48863 - fix for IE/Webkit */
+.Trash TD {
+	text-decoration: line-through;
+}
+
 .SubjectDoubleRow .ZmConvListFragment {
 	@Text-disabled@
 }
