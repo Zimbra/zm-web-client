@@ -366,15 +366,47 @@ function(firstTime, result) {
 	if (isPagingSupported) {
 		this._list.merge(offset, list);
 		this._list.hasMore = more;
-		this._truePageSize = list.size();
-		this._pageBoundaries.push(offset);
+		this._truePageSize = list.size()?list.size():this._truePageSize;
+		// Don't push this, since we may have come through several times
+		// if we have to re-search below.
+		this._pageBoundaries[this._curPage] = offset;
 	}
 
-	if (list.size() == 0) {
+	if (list.size() == 0 && firstTime) {
 		this._chooser.sourceListView._setNoResultsHtml();
 	}
 
-	this._showResults(isPagingSupported, more, list);
+	// if we don't get a full number of addresses in the results, repeat the search.
+	// Could search several times.
+	if ((list.size() < ZmContactsApp.SEARCHFOR_MAX) && more) {
+		// We want to base our search off the ID of the last contact in the response,
+		// NOT the last contact with an email address
+		var vec = resp.getResults(ZmItem.CONTACT);
+
+		var email = (vec.size() > 0) ? vec.getVector().getLast() : null;
+		if (email) {
+			if (email.__contact) {
+				lastId = email.__contact.id;
+				lastSortVal = email.__contact.sf;
+			} else {
+				lastId = email.id;
+				lastSortVal = email.sf;
+			}
+		}
+		this.search(null, null, null, lastId, lastSortVal);
+	} else {
+		list = this.getSubList();
+		// If the AB ends with a long list of contacts w/o addresses,
+		// we may never get a list back.  If that's the case, roll back the offset
+		// and refetch, should disable the "next page" button.
+		if (!list) {
+			this._curPage--;
+			this._offset = this._pageBoundaries[this._curPage];
+			list = this.getSubList();
+		}
+		this._showResults(isPagingSupported, more, list);
+	}
+
 };
 
 ZmContactPicker.prototype._showResults =
@@ -452,9 +484,17 @@ ZmContactPicker.prototype.getSubList =
 function() {
 	var size = this._list.size();
 
-	var end = (this._pageBoundaries[this._curPage+1])
-		? this._pageBoundaries[this._curPage+1]:(this._offset +  this._truePageSize  > size)
-			?size:(this._offset +  this._truePageSize );
+	var end;
+	if ((this._pageBoundaries[this._curPage+1])) {
+		end = this._pageBoundaries[this._curPage+1];
+	} else {
+		// Use the greater of truePageSize or ZmContactsApp.SEARCHFOR_MAX
+		end = (this._truePageSize > ZmContactsApp.SEARCHFOR_MAX)?
+			this._offset+this._truePageSize:this._offset+ZmContactsApp.SEARCHFOR_MAX;
+	}
+
+	if (end > size) 
+		end = size;
 
 	return (this._offset < end)
 		? (AjxVector.fromArray(this._list.getArray().slice(this._offset, end))) : null;
