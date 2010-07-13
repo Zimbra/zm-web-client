@@ -24,6 +24,18 @@
 					</table>
 
 					<table id='${hdrTableId}' cellspacing=0 cellpadding=1 border=0>
+                        <$ if (data.inviteMessage) { $>
+                        <tr>
+                            <td class='LabelColValue' colspan=11>
+                                <table border=0 cellpadding=1 cellspacing=0 width="100%">
+                                    <tr>
+                                        <td width=20><$= AjxImg.getImageHtml("Information") $></td>
+                                        <td width="99%"><$= data.inviteMessage $></td>
+                                    </tr>
+                                </table>    
+                            </td>
+                        </tr>
+                        <$ } $>
 						<tr id='${expandRowId}'>
 							<td>
 								<table align=right border=0 cellpadding=0 cellspacing=0>
