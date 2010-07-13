@@ -1092,6 +1092,17 @@ function(msg, container, callback) {
 	var sentByIcon = cl	? (cl.getContactByEmail((sentBy && sentBy.address ) ? sentBy.address : sentByAddr ) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
 	var additionalHdrs = [];
+
+    var invite = msg.invite;
+    var isCounterInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && invite && !invite.isEmpty() && (invite.type != "task") && invite.hasCounterMethod();
+    var inviteMessage;
+
+    if (isCounterInvite && msg.folderId != ZmFolder.ID_SENT){
+        additionalHdrs.push({hdrName: ZmMsg.proposedTimeLabel, hdrVal: invite.getProposedTimeStr()});
+        inviteMessage = AjxMessageFormat.format(ZmMsg.counterInviteMsg, [(sentBy && sentBy.name ) ? sentBy.name : sentByAddr ]);
+    }
+
+
 	if (msg.attrs) {
 		for (var hdrName in ZmMailMsgView.displayAdditionalHdrsInMsgView) {
 			if (msg.attrs[hdrName]) {
@@ -1210,7 +1221,8 @@ function(msg, container, callback) {
 		hasAttachments    : hasAttachments,
 		attachmentsCount  : attachmentsCount,
 		isSyncFailureMsg  : isSyncFailureMsg,
-		additionalHdrs	  : additionalHdrs
+		additionalHdrs	  : additionalHdrs,
+        inviteMessage     : inviteMessage
 	};
 
 	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
