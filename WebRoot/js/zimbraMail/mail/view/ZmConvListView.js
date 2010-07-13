@@ -702,8 +702,7 @@ function(columnItem, bSortAsc) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
 	var query;
-	if (columnItem._sortable == ZmItem.F_FLAG ||
-		columnItem._sortable == ZmItem.F_ATTACHMENT)
+	if (this._columnHasCustomQuery(columnItem))
 	{
 		query = this._getSearchForSort(columnItem._sortable);
 	}
@@ -723,6 +722,11 @@ function(columnItem, bSortAsc) {
 		};
 		appCtxt.getSearchController().search(params);
 	}
+};
+
+ZmConvListView.prototype._columnHasCustomQuery =
+function(columnItem) {
+	return (columnItem._sortable == ZmItem.F_FLAG || columnItem._sortable == ZmItem.F_ATTACHMENT);
 };
 
 ZmConvListView.prototype._changeListener =

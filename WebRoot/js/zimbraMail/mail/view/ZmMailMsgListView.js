@@ -370,8 +370,7 @@ function(columnItem, bSortAsc) {
 
 	var query;
 	var controller = AjxDispatcher.run((this._mode == ZmId.VIEW_CONV) ? "GetConvController" : "GetTradController");
-	if (columnItem._sortable == ZmItem.F_FLAG ||
-		columnItem._sortable == ZmItem.F_ATTACHMENT) 
+	if (this._columnHasCustomQuery(columnItem)) 
 	{
 		query = this._getSearchForSort(columnItem._sortable, controller);
 	}
@@ -405,6 +404,11 @@ function(columnItem, bSortAsc) {
 			appCtxt.getSearchController().search(params);
 		}
 	}
+};
+
+ZmMailMsgListView.prototype._columnHasCustomQuery =
+function(columnItem) {
+	return (columnItem._sortable == ZmItem.F_FLAG || columnItem._sortable == ZmItem.F_ATTACHMENT);
 };
 
 ZmMailMsgListView.prototype._handleResponseSortColumn =
