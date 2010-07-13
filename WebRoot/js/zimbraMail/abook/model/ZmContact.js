@@ -169,7 +169,10 @@ ZmContact.ADDRESS_FIELDS = [
     ZmContact.F_otherStreet
 ];
 ZmContact.EMAIL_FIELDS = [
-	ZmContact.F_email
+	ZmContact.F_email,
+	ZmContact.F_workEmail1,
+	ZmContact.F_workEmail2,
+	ZmContact.F_workEmail3
 ];
 ZmContact.IM_FIELDS = [
 	ZmContact.F_imAddress
