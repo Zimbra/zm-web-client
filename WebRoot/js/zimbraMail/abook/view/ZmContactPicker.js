@@ -195,7 +195,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 		ascending: ascending,
 		query: query,
 		queryHint: queryHint,
-		offset: this._offset,
+		offset: this._list.size(),
 		lastId: lastId,
 		lastSortVal: lastSortVal,
 		respCallback: (new AjxCallback(this, this._handleResponseSearch, [firstTime])),
