@@ -87,9 +87,6 @@ function(buttonId, addrs, str, account) {
 		this._resetSelectDiv();
 	}
 	this._offset = 0;
-	this._truePageSize = 0;
-	this._curPage = 0;
-	this._pageBoundaries = new Array();
 
 	var searchFor = this._selectDiv ? this._selectDiv.getValue() : ZmContactsApp.SEARCHFOR_CONTACTS;
 
@@ -332,9 +329,6 @@ ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
 	this._offset = 0;
 	this._list.removeAll();
-	this._truePageSize = 0;
-	this._curPage = 0;
-	this._pageBoundaries = new Array();
 	this.search();
 };
 
@@ -366,10 +360,6 @@ function(firstTime, result) {
 	if (isPagingSupported) {
 		this._list.merge(offset, list);
 		this._list.hasMore = more;
-		this._truePageSize = list.size()?list.size():this._truePageSize;
-		// Don't push this, since we may have come through several times
-		// if we have to re-search below.
-		this._pageBoundaries[this._curPage] = offset;
 	}
 
 	if (list.size() == 0 && firstTime) {
@@ -378,7 +368,7 @@ function(firstTime, result) {
 
 	// if we don't get a full number of addresses in the results, repeat the search.
 	// Could search several times.
-	if ((list.size() < ZmContactsApp.SEARCHFOR_MAX) && more) {
+	if (((this._list.size() - this._offset) < ZmContactsApp.SEARCHFOR_MAX) && more) {
 		// We want to base our search off the ID of the last contact in the response,
 		// NOT the last contact with an email address
 		var vec = resp.getResults(ZmItem.CONTACT);
@@ -400,10 +390,13 @@ function(firstTime, result) {
 		// we may never get a list back.  If that's the case, roll back the offset
 		// and refetch, should disable the "next page" button.
 		if (!list) {
-			this._curPage--;
-			this._offset = this._pageBoundaries[this._curPage];
+			this._offset -= ZmContactsApp.SEARCHFOR_MAX;
+			if (this._offset < 0)
+				this._offset = 0;
 			list = this.getSubList();
 		}
+		if (!more) 
+			more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
 		this._showResults(isPagingSupported, more, list);
 	}
 
@@ -442,23 +435,19 @@ function() {
 ZmContactPicker.prototype._pageListener =
 function(ev) {
 	if (ev.item == this._prevButton) {
-		this._curPage--;
-		this._offset = this._pageBoundaries[this._curPage];
+		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
 		if (this._offset < 0)
 			this._offset = 0;
 		this._showResults(true, true, this.getSubList()); // show cached results
 	}
 	else {
-		this._curPage++;
 		var lastId;
 		var lastSortVal;
-		if (this._pageBoundaries[this._curPage]) 
-			this._offset = this._pageBoundaries[this._curPage];
-		else
-			this._offset += this._truePageSize;
+		this._offset += ZmContactsApp.SEARCHFOR_MAX;
 		var list = this.getSubList();
-		if (!list) {
-			list = this._chooser.sourceListView.getList();
+		if (!list || ((list.size() < ZmContactsApp.SEARCHFOR_MAX) && this._list.hasMore)) {
+			if (!list)
+				list = this._chooser.sourceListView.getList();
 			var email = (list.size() > 0) ? list.getLast() : null;
 			if (email) {
 				lastId = email.__contact.id;
@@ -468,7 +457,7 @@ function(ev) {
 		} else {
 			var more = this._list.hasMore;
 			if (!more) {
-				more = (this._offset+this._truePageSize) < this._list.size();
+				more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
 			}
 			this._showResults(true, more, list); // show cached results
 		}
@@ -484,14 +473,7 @@ ZmContactPicker.prototype.getSubList =
 function() {
 	var size = this._list.size();
 
-	var end;
-	if ((this._pageBoundaries[this._curPage+1])) {
-		end = this._pageBoundaries[this._curPage+1];
-	} else {
-		// Use the greater of truePageSize or ZmContactsApp.SEARCHFOR_MAX
-		end = (this._truePageSize > ZmContactsApp.SEARCHFOR_MAX)?
-			this._offset+this._truePageSize:this._offset+ZmContactsApp.SEARCHFOR_MAX;
-	}
+	var end = this._offset+ZmContactsApp.SEARCHFOR_MAX;
 
 	if (end > size) 
 		end = size;
