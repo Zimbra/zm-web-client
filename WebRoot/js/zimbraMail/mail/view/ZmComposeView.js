@@ -136,7 +136,8 @@ function(params) {
 		obo = (folder && folder.isRemote()) ? folder.getOwner() : null;
 
 		// check if this is a draft that was originally composed obo
-		if (!obo && msg.isDraft && !appCtxt.multiAccounts) {
+		var isFromDataSource = msg.identity && msg.identity.isFromDataSource;
+		if (!obo && msg.isDraft && !appCtxt.multiAccounts && !isFromDataSource) {
 			var ac = window.parentAppCtxt || window.appCtxt;
 			var from = msg.getAddresses(AjxEmailAddress.FROM).get(0);
 			if (from && from.address.toLowerCase() != ac.accountList.mainAccount.getEmail().toLowerCase() && !appCtxt.isMyAddress(from.address.toLowerCase())) {
