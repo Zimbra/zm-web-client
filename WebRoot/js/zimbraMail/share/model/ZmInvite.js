@@ -1003,3 +1003,18 @@ function(compNum) {
     var methodName = this.getInviteMethod(compNum);
     return (methodName == ZmCalendarApp.METHOD_COUNTER);
 };
+
+/**
+ * returns proposed time from counter invite
+ *
+ * @param	{int}	    compNum		the component number
+ * @return	{string}	proposed time as formatted string
+ */
+ZmInvite.prototype.getProposedTimeStr =
+function(compNum) {
+    var methodName = this.getInviteMethod(compNum);
+    if (methodName == ZmCalendarApp.METHOD_COUNTER) {
+        return this.getDurationText(compNum, false, false, true);                
+    }
+    return "";
+};
