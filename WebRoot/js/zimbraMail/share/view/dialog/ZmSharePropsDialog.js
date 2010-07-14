@@ -335,7 +335,7 @@ function(event) {
 ZmSharePropsDialog.prototype._handleResponseBatchCmd =
 function(shares, result) {
 
-	if (!(shares && shares.length == 0)) { return; }
+	if (!shares || (shares && shares.length == 0)) { return; }
 
 	var ignore = this._getFaultyEmails(result);
 	var replyType = this._reply.getReplyType();
