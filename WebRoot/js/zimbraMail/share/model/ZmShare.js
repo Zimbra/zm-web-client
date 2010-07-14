@@ -855,7 +855,7 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 			shareNode.setAttribute("inh", "1");
 		}
 		if (!this.isPublic()) {
-			shareNode.setAttribute("d", this.isGuest() ? this.grantee.id : this.grantee.name);
+			shareNode.setAttribute("d", this.isGuest() ? (this.grantee.id || this.grantee.name) : this.grantee.name);
 		}
 		for (var attr in grantAttrs) {
 			shareNode.setAttribute(attr, (grantAttrs[attr] || ""));
