@@ -87,8 +87,7 @@ ZmAutocompleteListView = function(params) {
 	if (!params.delims && !params.delimCodes) {
 		this._isDelim[','] = this._isDelimCode[188] = appCtxt.get(ZmSetting.AUTOCOMPLETE_ON_COMMA); 
 		var listener = new AjxListener(this, this._settingChangeListener);
-		var aoc = appCtxt.getSettings().getSetting(ZmSetting.AUTOCOMPLETE_ON_COMMA);
-		if (aoc) aoc.addChangeListener(listener);
+		appCtxt.getSettings().getSetting(ZmSetting.AUTOCOMPLETE_ON_COMMA).addChangeListener(listener);
 	}
 
     // mouse event handling
