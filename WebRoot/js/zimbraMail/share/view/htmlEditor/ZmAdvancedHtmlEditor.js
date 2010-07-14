@@ -276,7 +276,7 @@ function() {
 	} else {
 		this._moveCaretToTopHtml(true);
 	}
-	if (focused) focused.focus();
+	if (focused && focused.focus) focused.focus();
 };
 
 ZmAdvancedHtmlEditor.prototype._moveCaretToTopHtml =
