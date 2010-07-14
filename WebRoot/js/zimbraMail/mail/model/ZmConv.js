@@ -327,31 +327,8 @@ function() {
 ZmConv.prototype.getAccount =
 function() {
 	if (!this.account) {
-		var folderId;
-		for (var i in this.folders) {
-			folderId = i;
-			break;
-		}
-		
-		if (!folderId &&
-			appCtxt.multiAccounts &&
-			appCtxt.getCurrentApp() &&
-			appCtxt.getCurrentSearch() &&
-			!appCtxt.getCurrentSearch().isMultiAccount())
-		{
-			folderId = this.getFolderId();
-		}
-
-		if (folderId) {
-			var folder = appCtxt.getById(folderId);
-			this.account = folder && folder.getAccount();
-		}
-
-		// last resort: pull out the account from the fully-qualified ID
-		if (!this.account) {
-			var parsed = ZmOrganizer.parseId(this.id);
-			this.account = parsed && parsed.account;
-		}
+		// always pull out the account from the fully-qualified ID
+		this.account = ZmOrganizer.parseId(this.id).account;
 	}
 	return this.account;
 };
