@@ -87,7 +87,8 @@ ZmAutocompleteListView = function(params) {
 	if (!params.delims && !params.delimCodes) {
 		this._isDelim[','] = this._isDelimCode[188] = appCtxt.get(ZmSetting.AUTOCOMPLETE_ON_COMMA); 
 		var listener = new AjxListener(this, this._settingChangeListener);
-		appCtxt.getSettings().getSetting(ZmSetting.AUTOCOMPLETE_ON_COMMA).addChangeListener(listener);
+		var aoc = appCtxt.getSettings().getSetting(ZmSetting.AUTOCOMPLETE_ON_COMMA);
+		if (aoc) aoc.addChangeListener(listener);
 	}
 
     // mouse event handling
@@ -892,7 +893,7 @@ function() {
 
 ZmAutocompleteListView.prototype._showForgetLink =
 function(rowId, show) {
-	var forgetText = this._rowForgetHash[rowId];
+	var forgetText = this._rowForgetHash && this._rowForgetHash[rowId];
 	if (forgetText) {
 		forgetText.setClassName(!show ? this._hideForgetTextClass :
 			this._canForget[rowId] ? this._showForgetTextClass : this._hideSelForgetTextClass);
@@ -1006,11 +1007,13 @@ function() {
 			table.deleteRow(i);
 		}
 	}
-	var forgetTextIds = AjxUtil.values(this._rowForgetHash);
-	for (var i = 0, len = forgetTextIds.length; i < len; i++) {
-		var forgetTextId = forgetTextIds[i];
-		DwtControl.ALL_BY_ID[forgetTextId] = null;
-		delete DwtControl.ALL_BY_ID[forgetTextId];
+	if (this._rowForgetHash) {
+		var forgetTextIds = AjxUtil.values(this._rowForgetHash);
+		for (var i = 0, len = forgetTextIds.length; i < len; i++) {
+			var forgetTextId = forgetTextIds[i];
+			DwtControl.ALL_BY_ID[forgetTextId] = null;
+			delete DwtControl.ALL_BY_ID[forgetTextId];
+		}
 	}
 };
 
