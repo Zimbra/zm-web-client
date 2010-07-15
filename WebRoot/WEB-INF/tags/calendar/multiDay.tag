@@ -39,8 +39,15 @@
     <c:if test="${empty checkedCalendars}">
         <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
     </c:if>
-    <c:set var="folderIds" value="${zm:getCanonicalFolderIds(mailbox, checkedCalendars)}"/>
-    <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${rangeEnd}" query="${query}" varexception="gasException"/>
+    <zm:getValidFolderIds var="validFolderIds" box="${mailbox}" folderid="${checkedCalendars}" varexception="exp"/>
+    <c:if test="${not empty exp}">
+        <zm:getException var="error" exception="${exp}"/>
+        <app:status style="Critical">
+            <fmt:message key="${error.code}"/>
+        </app:status>
+        <!-- ${fn:escapeXml(error.stackStrace)} -->
+    </c:if>
+    <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${validFolderIds}" start="${currentDay.timeInMillis}" end="${rangeEnd}" query="${query}" varexception="gasException"/>
     <c:if test="${not empty gasException}">
         <zm:getException var="error" exception="${gasException}"/>
         <app:status style="Critical">
@@ -48,6 +55,7 @@
         </app:status>
         <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
+    <c:set var="folderIds" value="${zm:getCanonicalFolderIds(mailbox, validFolderIds)}"/>
     <zm:apptMultiDayLayout timezone="${timezone}"
                            schedule="${scheduleView ? folderIds : ''}"
                            var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
