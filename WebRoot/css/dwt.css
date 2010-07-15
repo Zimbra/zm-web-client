@@ -1720,6 +1720,7 @@ input.xform_field {
  *	ZToolbarButton	-- more subtle buttons, inside toolbars
  *
  ***************/
+ZToolbarButtonTable {}
 
 .ZToolbarButton									{	@ToolbarButton@			@ToolbarButtonSpacing@			}
 
@@ -2042,7 +2043,7 @@ input.xform_field {
  *	ZMenuItem	- individual menu items
  *
  ***************/
-
+.ZMenuItemTable {}
 .ZMenuItem									{	@MenuItem@						 				}
 
 			.ZMenuItemBorder				{	@MenuItemBorder@ 	@MenuItemBorder-normal@		}

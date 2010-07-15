@@ -611,14 +611,6 @@
 	margin-left: 3px ;	
 }
 
-.ZToolbarButtonBorder,  .ZMenuItemBorder {
-	border: 2px solid transparent; 	
-#IFDEF MSIE
-	border: 1px solid transparent; 
-	border-color:@AppC+20@;	
-#ENDIF
-}
-
 .ZaSearchOptionViewSubHeader {
 	background-color:#F9F6F0;
 	border:thin solid;
