@@ -167,8 +167,10 @@ function(callback) {
 	var pword;
 	var searches = document.location.search.split("&");
 	for (var i = 0; i < searches.length; i++) {
-		if (searches[i].indexOf("at=") == 0) {
-			pword = searches[i].substring(3);
+		var idx = searches[i].indexOf("at=");
+		if (idx != -1) {
+			pword = searches[i].substring(idx+3);
+			break;
 		}
 	}
 
