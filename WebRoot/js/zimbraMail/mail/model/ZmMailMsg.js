@@ -1854,7 +1854,7 @@ function(addrNodes, type, isDraft) {
 	var addrs = this._addrs[type];
 	var num = addrs.size();
 	if (num) {
-		var contactsApp = appCtxt.get("CONTACTS_ENABLED") && appCtxt.getApp(ZmApp.CONTACTS);
+		var contactsApp = appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.getApp(ZmApp.CONTACTS);
         if (contactsApp && !contactsApp.isContactListLoaded()) {
             contactsApp = null;
         }
