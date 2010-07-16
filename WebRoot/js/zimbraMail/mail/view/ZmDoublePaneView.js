@@ -77,20 +77,21 @@ function() {
 ZmDoublePaneView.prototype.setReadingPane =
 function() {
 
+	var mlv = this._mailListView, mv = this._msgView;
 	var readingPaneEnabled = this._controller.isReadingPaneOn();
 	if (!readingPaneEnabled) {
-		this._msgView.setVisible(false);
+		mv.setVisible(false);
 		this._vertMsgSash.setVisible(false);
 		this._horizMsgSash.setVisible(false);
 	} else {
-		if (!this._msgView.getVisible()) {
-			if (this._mailListView.getSelectionCount() == 1) {
+		if (!mv.getVisible()) {
+			if (mlv.getSelectionCount() == 1) {
 				this._controller._setSelectedItem();
 			} else {
-				this._msgView.reset();
+				mv.reset();
 			}
 		}
-		this._msgView.setVisible(true);
+		mv.setVisible(true);
 		var readingPaneOnRight = this._controller.isReadingPaneOnRight();
 		var newSash = readingPaneOnRight ? this._vertMsgSash : this._horizMsgSash;
 		var oldSash = readingPaneOnRight ? this._horizMsgSash : this._vertMsgSash;
@@ -98,11 +99,9 @@ function() {
 		newSash.setVisible(true);
 	}
 
-	this._mailListView.reRenderListView();
-	if (!this._mailListView._isPageless || this._mailListView.offset == 0) {
-		this._mailListView.scrollToTop();
-	}
-	this._msgView.noTab = !readingPaneEnabled || AjxEnv.isIE;
+	mlv.reRenderListView();
+
+	mv.noTab = !readingPaneEnabled || AjxEnv.isIE;
 	var sz = this.getSize();
 	this._resetSize(sz.x, sz.y, true);
 };
@@ -179,30 +178,15 @@ function(x, y, width, height) {
 
 ZmDoublePaneView.prototype.setItem =
 function(items) {
-
-	var paginating = Boolean(this._mailListView._itemsToAdd);
 	this._mailListView.set(items, ZmItem.F_DATE);
 	this.isStale = false;
-
-	var gotItems = (this._controller._list && this._controller._list.size() > 0);
-	if (this._mailListView._isPageless) {
-		if (gotItems && !paginating) {
-			this._msgView.set();
-		}
-	} else {
-		 if (this._controller.isReadingPaneOn()) {
-			 this._msgView.set();
-		 } else {
-			 this._selectFirstItem();
-		 }
-	}
 };
 
 // Private / Protected methods
 
 ZmDoublePaneView.prototype._initHeader = 
 function() {
-	// overload me if you want a header
+	// overload me if you want a header (twss)
 	return this;
 };
 
@@ -358,5 +342,9 @@ function(offset) {
 ZmDoublePaneView.prototype._staleHandler =
 function() {
 	var search = this._controller._currentSearch;
-	appCtxt.getSearchController().redoSearch(search);
+	if (search) {
+		search.lastId = search.lastSortVal = null
+		search.offset = search.limit = 0;
+		appCtxt.getSearchController().redoSearch(search);
+	}
 };

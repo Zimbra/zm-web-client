@@ -77,7 +77,7 @@ function(item, params) {
             restURL = this._controller.getApp().fixCrossDomainReference(restURL);
         }
 
-		nameText = ['<a href="', restURL  /*+ (item.isWebDoc() ? "&preview=1" : "")*/, '" target="_blank">', name, '</a>'].join('');
+		nameText = ['<a href="', restURL  + (item.isWebDoc() ? "&preview=1&localeId=" + AjxEnv.DEFAULT_LOCALE : ""), '" target="_blank">', name, '</a>'].join('');
 	} else {
 		nameText = item;
 	}
@@ -122,8 +122,18 @@ function(clickedEl, ev) {
         ].join("|") +
         ")\\b", "g"
     );
+
+    ZmListView.prototype._itemClicked.call(this, clickedEl, ev);
     
-	DwtListView.prototype._itemClicked.call(this, clickedEl, ev);
+    if (ev.button == DwtMouseEvent.LEFT) {
+        var items = this.getSelection();
+        if (items && items.length) {
+            var item = items[0];
+            if (item.isFolder) {
+                this._controller._app.search({folderId:item.id, noClear:true});
+            }
+        }
+    }
 };
 
 // Protected methods
@@ -155,3 +165,21 @@ function() {
 	var fromBottom = (scrollDiv.scrollHeight - (scrollDiv.scrollTop + scrollDiv.clientHeight));
 	return (fromBottom <= this._rowHeight) ? this.getLimit(1) : 0;
 };
+
+ZmBriefcaseView.prototype.set =
+function(list) {
+
+
+    //Add Folders accordingly
+    var paging = Boolean(this._itemsToAdd), newList;
+    if(!paging){        
+        newList = this.appendFolders(list);
+        //TODO: Add "UP" folder to go to the parent folder
+    }
+
+    newList = newList || list;
+	ZmBriefcaseBaseView.prototype.set.call(this, newList);
+    this.focus();
+
+};
+

@@ -41,6 +41,9 @@ ZmCalItem = function(type, list, id, folderId) {
 	this._recurrence = new ZmRecurrence(this);
 	this._noBusyOverlay = null;
     this._sendNotificationMail = true;
+    this.identity = null;
+    this.isProposeTimeMode = false;
+    this.isForwardMode = false;
 };
 
 ZmCalItem.prototype = new ZmCalBaseItem;
@@ -111,9 +114,13 @@ ZmCalItem.MODE_FORWARD_SERIES			= 12;
  */
 ZmCalItem.MODE_FORWARD_INVITE			= 13;
 /**
+ * Defines the "propose" mode.
+ */
+ZmCalItem.MODE_PROPOSE_TIME 			= 14;
+/**
  * Defines the "last" mode index constant.
  */
-ZmCalItem.MODE_LAST					    = 13;
+ZmCalItem.MODE_LAST					    = 14;
 
 ZmCalItem.FORWARD_MAPPING = {};
 ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD]                   = ZmCalItem.MODE_EDIT;
@@ -843,6 +850,25 @@ function(mode, message, callback, result) {
 	// msg content should be text, so no need to pass callback to setFromMessage()
 	this.setFromMessage(message, mode);
     message.seriesMode = (mode == ZmCalItem.MODE_EDIT_SERIES);
+
+    //overwrite proposed time
+    if(this._orig && this._orig.proposedInvite) {
+        var invite = this._orig.proposedInvite;
+        var start = invite.getServerStartTime();
+        var end = invite.getServerEndTime();
+        if (start) this.setStartDate(AjxDateUtil.parseServerDateTime(start));
+        if (end) this.setEndDate(AjxDateUtil.parseServerDateTime(end));
+
+        // record whether the start/end dates are in UTC
+        this.startsInUTC = start ? start.charAt(start.length-1) == "Z" : null;
+        this.endsInUTC = end && start ? end.charAt(start.length-1) == "Z" : null;
+
+        //set all the fields that are not generated in GetAppointmentResponse - accept proposal mode
+        this.status = invite.components[0].status;
+
+
+        this.isAcceptingProposal = true;
+    }
 	if (callback) callback.run(result);
 };
 
@@ -1116,6 +1142,30 @@ function(sendNotificationMail) {
 };
 
 /**
+ * Sets the exception details to soap
+ *
+ * @param	{Element}	comp	soap element
+ */
+ZmCalItem.prototype.addExceptionDetails =
+function(soapDoc, comp) {
+    var exceptId = soapDoc.set("exceptId", null, comp);
+    // bug 13529: exception id based on original appt, not new data
+    var allDay = this._orig ? this._orig.allDayEvent : this.allDayEvent;
+    if (allDay != "1") {
+        var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate(), this.startsInUTC);
+        // bug fix #4697 (part 2)
+        var timezone = this.getOrigTimezone();
+        if (!this.startsInUTC && timezone) {
+            exceptId.setAttribute("tz", timezone);
+        }
+        exceptId.setAttribute("d", sd);
+    } else {
+        var sd = AjxDateUtil.getServerDate(this.getOrigStartDate());
+        exceptId.setAttribute("d", sd);
+    }
+};
+
+/**
  * Saves the item.
  * 
  * @param {String}	attachmentId 		the id of the already uploaded attachment
@@ -1146,21 +1196,7 @@ function(attachmentId, callback, errorCallback, notifyList) {
 
 	var comp = invAndMsg.inv.getElementsByTagName("comp")[0];
 	if (needsExceptionId) {
-		var exceptId = soapDoc.set("exceptId", null, comp);
-		// bug 13529: exception id based on original appt, not new data
-		var allDay = this._orig ? this._orig.allDayEvent : this.allDayEvent;
-		if (allDay != "1") {
-			var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate(), this.startsInUTC);
-			// bug fix #4697 (part 2)
-			var timezone = this.getOrigTimezone();
-			if (!this.startsInUTC && timezone) {
-				exceptId.setAttribute("tz", timezone);
-			}
-			exceptId.setAttribute("d", sd);
-		} else {
-			var sd = AjxDateUtil.getServerDate(this.getOrigStartDate());
-			exceptId.setAttribute("d", sd);
-		}
+        this.addExceptionDetails(soapDoc, comp);
 	} else {
 		// set recurrence rules for appointment (but not for exceptions!)
 		this._recurrence.setSoap(soapDoc, comp);
@@ -1684,7 +1720,9 @@ function(cancel, isHtml) {
 
 	if (isHtml) buf[i++] = "<h3>";
 
-	if (cancel) {
+    if(this.isProposeTimeMode) {
+        buf[i++] =  ZmMsg.subjectNewTime;
+    }else if (cancel) {
 		buf[i++] = singleInstance ? ZmMsg.apptInstanceCanceled : ZmMsg.apptCanceled;
 	} else if(!this.isForwardMode || this.isOrganizer()){
 		if (this.viewMode == ZmCalItem.MODE_EDIT ||
@@ -1737,7 +1775,7 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 
 	var calendar = this.getFolder();
 	var acct = calendar.getAccount();
-	var isOnBehalfOf = accountName && acct && acct.name != accountName;
+    var isOnBehalfOf = accountName && acct && acct.name != accountName;
 	m.setAttribute("l", (isOnBehalfOf ? this.getFolder().rid : this.folderId));
 
 	var inv = soapDoc.set("inv", null, m);
@@ -1750,12 +1788,53 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	// attendees
 	this._addAttendeesToSoap(soapDoc, comp, m, notifyList, accountName);
 
+    var identity = this.identity;
+    var isPrimary = identity == null || identity.isDefault;
+    var isRemote = calendar.isRemote();    
+
+    //FROM Address
 	var mailFromAddress = this.getMailFromAddress();
-	if (this.isOrganizer() && !accountName && mailFromAddress) {
-		var e = soapDoc.set("e", null, m);
-		e.setAttribute("a", mailFromAddress);
-		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+	if (this.isOrganizer() && !accountName && (mailFromAddress || isRemote || !isPrimary)) {
+        var e = soapDoc.set("e", null, m);
+        var addr, displayName;
+        if(mailFromAddress){
+            addr = mailFromAddress;
+        }else{
+            if(isRemote){
+                addr = this.organizer;
+            }else if(identity){
+                addr = identity.sendFromAddress;
+                displayName = identity.sendFromDisplay;
+            }
+        }
+        e.setAttribute("a", addr);
+        e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+        if(!displayName && addr == appCtxt.get(ZmSetting.USERNAME)){
+             displayName = appCtxt.get(ZmSetting.DISPLAY_NAME);
+        }
+        if(displayName){
+             e.setAttribute("p", displayName);
+        }        
 	}
+
+    //SENDER Address
+    if(isRemote){
+        var e = soapDoc.set("e", null, m);
+        var addr, displayName;
+        identity = identity || appCtxt.getIdentityCollection().defaultIdentity;
+        if(identity){
+            addr = identity.sendFromAddress;
+            displayName = identity.sendFromDisplay;
+        }else{
+            addr = appCtxt.get(ZmSetting.USERNAME);
+            displayName = appCtxt.get(ZmSetting.DISPLAY_NAME);
+        }
+		e.setAttribute("a", addr);
+		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.SENDER]);
+        if (displayName) {
+            e.setAttribute("p", displayName);
+        }
+    }
 
 	this._addExtrasToSoap(soapDoc, inv, comp);
 	this._addDateTimeToSoap(soapDoc, inv, comp);
@@ -1772,16 +1851,22 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	// set organizer - but not for local account
 	if (!(appCtxt.isOffline && acct.isMain)) {
 		var me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
-		var user = mailFromAddress || me;
+        var user, displayName, identityUser;
+        identity = identity || appCtxt.getIdentityCollection().defaultIdentity;
+        if(identity){ //If !Identity then consider the default identity
+            identityUser = identity.sendFromAddress;
+            displayName = identity.sendFromDisplay;
+        }
+		user = mailFromAddress || identityUser || me;
 		var organizer = this.organizer || user;
 		var org = soapDoc.set("or", null, comp);
-		org.setAttribute("a", organizer);
-		if (calendar.isRemote()) {
+		org.setAttribute("a", organizer);        
+		if (isRemote) {
 			org.setAttribute("sentBy", user); // if on-behalf of, set sentBy
 		}
-		var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
-		var orgName = orgEmail.getName();
-		if (orgName) org.setAttribute("d", orgName);
+        var orgName = (organizer == identityUser) ? displayName : (ZmApptViewHelper.getAddressEmail(organizer)).getName();
+		if (orgName)
+            org.setAttribute("d", orgName);
 	}
 
 	// handle attachments
@@ -1971,10 +2056,10 @@ function(soapDoc, m, cancel) {
 		textPart.setAttribute("ct", ZmMimeTable.TEXT_PLAIN);
 		soapDoc.set("content", (this._includeEditReply ? tcontent : AjxBuffer.concat(tprefix, tcontent)), textPart);
 
-		// bug fix #9592 - html encode the text before setting it as the "HTML" part
+		//bug fix #9592 - html encode the text before setting it as the "HTML" part
 		var hcontent = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(tcontent));
 		var htmlPart = soapDoc.set("mp", null, mp);
-		htmlPart.setAttribute("ct", ZmMimeTable.TEXT_HTML);
+	    htmlPart.setAttribute("ct", ZmMimeTable.TEXT_HTML);
 		var html = "<html><body>" + (this._includeEditReply ? hcontent : AjxBuffer.concat(hprefix, hcontent)) + "</body></html>";
 		soapDoc.set("content", html, htmlPart);
 	}
@@ -2069,6 +2154,16 @@ function(respName, callback, result) {
 	}
 };
 
+
+ZmCalItem.prototype.setProposedTimeCallback =
+function(callback) {
+    this._proposedTimeCallback = callback;
+};
+
+ZmCalItem.prototype.handlePostSaveCallbacks =
+function() {
+    if(this._proposedTimeCallback) this._proposedTimeCallback.run(this);     
+};
 
 // Static methods
 

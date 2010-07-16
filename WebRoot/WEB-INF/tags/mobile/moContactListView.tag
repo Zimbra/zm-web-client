@@ -73,21 +73,21 @@
                     <strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? (context.isGALSearch ? chit.fullName : '<None>') : chit.fileAsStr),23, true)}</strong>
                 </div>
             </a>
-            </span>
             <div class="Email">
-                <c:set var="nmail" value="st=newmail"/>
-                <c:url var="murl" value="?${nmail}">
-                    <c:param name="to" value="${chit.email}"/>
-                </c:url>
                 <c:choose>
                     <c:when test="${ua.isiPad == false}">
+                        <c:set var="nmail" value="st=newmail"/>
+                        <c:url var="murl" value="?${nmail}">
+                            <c:param name="to" value="${chit.email}"/>
+                        </c:url>
                         <a href="${fn:escapeXml(murl)}">${fn:escapeXml(chit.email)}</a>
                     </c:when>
                     <c:otherwise>
-                        <a id="newmail" href="${fn:escapeXml(murl)}"><span onclick="return zClickLink('newmail', null, this)">${fn:escapeXml(chit.email)}</span></a>
+                        <span>${fn:escapeXml(chit.email)}</span>
                     </c:otherwise>
                 </c:choose>
             </div>
+            </span>
             </span>
             <span class="td l">
                 <c:if test="${chit.isFlagged}">

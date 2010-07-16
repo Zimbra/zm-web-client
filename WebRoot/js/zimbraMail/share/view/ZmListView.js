@@ -81,6 +81,7 @@ ZmListView = function(params) {
 	if (this._isPageless) {
 		Dwt.setHandler(this._getScrollDiv(), DwtEvent.ONSCROLL, ZmListView.handleScroll);
 	}
+	this._state = {};
 };
 
 ZmListView.prototype = new DwtListView;
@@ -261,15 +262,7 @@ function(ev) {
 		if (ev.batchMode) {
 			this._fixAlternation(0);
 		}
-		if (!this.allSelected) {
-			if (!this._isPageless) {
-				this._controller._app._checkReplenishListView = this;
-			} else {
-				if (!this._replenishTimedAction) // Many rows may be removed quickly, so skip unnecessary replenishes
-					this._replenishTimedAction = new AjxTimedAction(this, this._handleResponseCheckReplenish);
-				AjxTimedAction.scheduleAction(this._replenishTimedAction, 10);
-			}
-		}
+		this._checkReplenishOnTimer();
 		this._controller._resetToolbarOperations();
 	}
 };
@@ -304,6 +297,21 @@ function(ev) {
 	return items;
 };
 
+ZmListView.prototype._checkReplenishOnTimer =
+function(ev) {
+	if (!this.allSelected) {
+		if (!this._isPageless) {
+			this._controller._app._checkReplenishListView = this;
+		} else {
+			// Many rows may be removed quickly, so skip unnecessary replenishes
+			if (!this._replenishTimedAction) {
+				this._replenishTimedAction = new AjxTimedAction(this, this._handleResponseCheckReplenish);
+			}
+			AjxTimedAction.scheduleAction(this._replenishTimedAction, 10);
+		}
+	}
+};
+
 ZmListView.prototype._checkReplenish =
 function() {
 	var respCallback = new AjxCallback(this, this._handleResponseCheckReplenish);
@@ -311,13 +319,15 @@ function() {
 };
 
 ZmListView.prototype._handleResponseCheckReplenish =
-function() {
+function(skipSelection) {
 	if (this.size() == 0) {
 		this._controller._handleEmptyList(this);
 	} else {
 		this._controller._resetNavToolBarButtons(this._controller._getViewType());
 	}
-	this._setNextSelection();
+	if (!skipSelection) {
+		this._setNextSelection();
+	}
 };
 
 ZmListView.prototype._folderChangeListener =
@@ -746,7 +756,9 @@ function(check) {
 		this.setSelectionCbox(sel[i], !check);
 	}
 
-	this.setSelectionHdrCbox(sel.length == this.getList().size());
+	var list = this.getList();
+	var size = list && list.size();
+	this.setSelectionHdrCbox(size && sel.length == size);
 };
 
 ZmListView.prototype._setNoResultsHtml =
@@ -1037,7 +1049,10 @@ function() {
 	if (this.firstSelIndex < 0) {
 		this.firstSelIndex = 0;
 	}
-	var item = this._list.get(this.firstSelIndex) || this._list.getLast();
+    var item;
+    if (this._list) {
+	    item = this._list.get(this.firstSelIndex) || this._list.getLast();
+    }
 	if (item) {
 		this.setSelection(item, false);
 	}
@@ -1172,4 +1187,57 @@ function(item) {
 		}
 	}
 	return false;
+};
+
+/**
+ * The following methods allow a list view to maintain state after it has
+ * been rerendered. State may include such elements as: which items are selected,
+ * focus, scroll position, etc.
+ *
+ * @private
+ * @param {hash}		params		hash of parameters:
+ * @param {boolean}		selection	if true, preserve selection
+ * @param {boolean}		focus		if true, preserve focus
+ * @param {boolean}		scroll		if true, preserve scroll position
+ */
+ZmListView.prototype._saveState =
+function(params) {
+
+	var s = this._state = {};
+	params = params || {};
+	if (params.selection) {
+		s.selected = this.getSelection();
+	}
+	if (params.focus) {
+		s.focused = this.hasFocus();
+		s.anchorItem = this._kbAnchor && this.getItemFromElement(this._kbAnchor);
+	}
+	if (params.scroll) {
+		s.rowHeight = this._rowHeight;
+		s.scrollTop = this._listDiv.scrollTop;
+	}
+};
+
+ZmListView.prototype._restoreState =
+function() {
+
+	var s = this._state;
+	if (s.selected && s.selected.length) {
+		this.setSelectedItems(s.selected);
+	}
+	if (s.anchorItem) {
+		var el = this._getElFromItem(s.anchorItem);
+		if (el) {
+			this._setKbFocusElement(el);
+		}
+	}
+	if (s.focused) {
+		this.focus();
+	}
+	// restore scroll position based on row height ratio
+	if (s.rowHeight) {
+		this._listDiv.scrollTop = s.scrollTop * (this._rowHeight / s.rowHeight);
+	}
+
+	this._state = {};
 };

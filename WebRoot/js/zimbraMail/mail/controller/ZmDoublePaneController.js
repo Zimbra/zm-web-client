@@ -71,12 +71,14 @@ ZmDoublePaneController.prototype.show =
 function(search, item, callback, markRead) {
 
 	ZmMailListController.prototype.show.call(this, search);
-	this.reset();
+
+	if (this._doublePaneView) {
+		var mlv = this._doublePaneView._mailListView;
+		mlv._saveState({selection:true});
+		mlv.reset();
+	}
 	this._item = item;
 	this._setup(this._currentView);
-
-	var listView = this._listView[this._currentView];
-	listView._selectedItem = (listView.getSelectionCount() == 1) ? listView.getSelection()[0] : null;
 
 	// see if we have it cached? Check if conv loaded?
 	var respCallback = new AjxCallback(this, this._handleResponseShow, [item, callback]);
@@ -86,14 +88,42 @@ function(search, item, callback, markRead) {
 
 ZmDoublePaneController.prototype._handleResponseShow =
 function(item, callback, results) {
+
 	if (callback) {
 		callback.run();
 	}
 
+	var dpv = this._doublePaneView;
 	var readingPaneOn = this.isReadingPaneOn();
-	if (this._doublePaneView.isMsgViewVisible() != readingPaneOn) {
-		this._doublePaneView.setReadingPane();
+	if (dpv.isMsgViewVisible() != readingPaneOn) {
+		dpv.setReadingPane();
 	}
+
+	// clear the msg view, unless it's showing something selected
+	if (!this._msgViewCurrent()) {
+		dpv.setMsg();
+	}
+};
+
+// returns true if the msg shown in the reading pane is selected in the list view
+ZmDoublePaneController.prototype._msgViewCurrent =
+function() {
+
+	var dpv = this._doublePaneView;
+	var mlv = dpv._mailListView;
+	mlv._restoreState();
+	var msg = dpv.getMsg();
+	if (msg) {
+		var sel = mlv.getSelection();
+		for (var i = 0, len = sel.length; i < len; i++) {
+			var item = sel[i];
+			var m = (item.type == ZmItem.CONV) ? item.getFirstHotMsg() : item;
+			if (m && m.id == msg.id) {
+				return true;
+			}
+		}
+	}
+	return false;
 };
 
 ZmDoublePaneController.prototype.switchView =
@@ -400,8 +430,6 @@ function(view) {
 	// always allow derived classes to reset size after loading
 	var sz = this._doublePaneView.getSize();
 	this._doublePaneView._resetSize(sz.x, sz.y);
-
-	this._resetSelection();
 };
 
 /**
@@ -483,6 +511,12 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var item = ev.item;
 		if (!item) { return; }
+
+		var cs = appCtxt.isOffline && appCtxt.getCurrentSearch();
+		if (cs && cs.isMultiAccount()) {
+			appCtxt.accountList.setActiveAccount(item.getAccount());
+		}
+
 		var div = this._mailListView.getTargetItemDiv(ev);
 		this._mailListView._itemSelected(div, ev);
 
@@ -565,6 +599,14 @@ function(msg) {
 
 			// offline mode, reset new mail notifier if user reads a msg from that account
 			var acct = msg.getAccount();
+
+			// bug: 46873 - set active account when user clicks on item w/in cross-account search
+			var cs = appCtxt.getCurrentSearch();
+			if (cs && cs.isMultiAccount()) {
+				var active = acct || appCtxt.accountList.defaultAccount
+				appCtxt.accountList.setActiveAccount(active);
+			}
+
 			if (acct && acct.inNewMailMode) {
 				acct.inNewMailMode = false;
 				var allContainers = appCtxt.getOverviewController()._overviewContainer;
@@ -717,21 +759,16 @@ function() {
 	this._doublePaneView._selectFirstItem();
 };
 
-ZmDoublePaneController.prototype._resetSelection =
-function() {
-	var listView = this._listView[this._currentView];
-	var item = listView && listView._selectedItem;
-	if (item && (listView.getItemIndex(item) != null)) {
-		listView.setSelection(item);
-	}
-};
-
 /**
  * Returns the item that should be selected after a move/delete. Finds
  * the first non-selected item after the first selected item.
+ *
+ * @param	{hash}		omit		hash of item IDs to exclude from being next selected item
  */
 ZmDoublePaneController.prototype._getNextItemToSelect =
-function() {
+function(omit) {
+
+	omit = omit || {};
 	var listView = this._listView[this._currentView];
 	var numSelected = listView.getSelectionCount();
 	if (numSelected) {
@@ -748,7 +785,7 @@ function() {
 			var childNodes = listView._parentEl.childNodes;
 			for (var i = idx - 1; i >= 0; i--) {
 				var item = listView.getItemFromElement(childNodes[i]);
-				if (item && !selIds[item.id] && !(item.cid && selIds[item.cid])) {
+				if (item && !selIds[item.id] && !omit[item.id] && !(item.cid && (selIds[item.cid] || omit[item.cid]))) {
 					return item;
 				}
 			}
@@ -758,7 +795,7 @@ function() {
 			var childNodes = listView._parentEl.childNodes;
 			for (var i = idx + 1; i < childNodes.length; i++) {
 				var item = listView.getItemFromElement(childNodes[i]);
-				if (item && !selIds[item.id] && !(item.cid && selIds[item.cid])) {
+				if (item && !selIds[item.id] && !omit[item.id] && !(item.cid && (selIds[item.cid] || omit[item.cid]))) {
 					return item;
 				}
 			}

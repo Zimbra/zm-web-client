@@ -69,8 +69,8 @@ function() {
 };
 
 ZmApptTabViewPage.prototype.initialize =
-function(appt, mode, isDirty, isForward) {
-	this._editView.initialize(appt, mode, isDirty, isForward);
+function(appt, mode, isDirty, apptComposeMode) {
+	this._editView.initialize(appt, mode, isDirty, apptComposeMode);
 };
 
 ZmApptTabViewPage.prototype.isDirty =
@@ -90,6 +90,9 @@ function() {
 
 ZmApptTabViewPage.prototype.resize =
 function(newWidth, newHeight) {
+    if(newHeight)
+        newHeight = newHeight - 35;
+
 	this._editView.resize(newWidth, newHeight);
 };
 
@@ -112,7 +115,7 @@ function(tabGroup) {
 
 ZmApptTabViewPage.prototype._getDefaultFocusItem =
 function() {
-	this._editView._getDefaultFocusItem();
+	return this._editView._getDefaultFocusItem();
 };
 
 ZmApptTabViewPage.prototype.toggleAllDayField =

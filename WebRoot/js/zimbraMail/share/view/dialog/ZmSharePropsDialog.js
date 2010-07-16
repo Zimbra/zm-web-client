@@ -106,7 +106,17 @@ function(mode, object, share) {
 	var type = this._getType(isUserShare, isGuestShare, isPublicShare);
 	this._handleShareWith(type);
 
-	this._granteeInput.setValue(share ? (share.grantee.name || ZmMsg.userUnknown) : "", true);
+	var grantee = "", password  = "";
+	if (share) {
+		if (isGuestShare) {
+			grantee = share.grantee.id;
+			password = share.link.pw;
+		} else {
+			grantee = (share.grantee.name || ZmMsg.userUnknown);
+			password = share.grantee.id;
+		}
+	}
+	this._granteeInput.setValue(grantee, true);
 	this._granteeInput.setEnabled(isNewShare);
 
 	// Make all the properties visible so that their elements are in the
@@ -120,7 +130,7 @@ function(mode, object, share) {
 
 	this._passwordButton.setVisible(!isNewShare);
 	this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
-	this._passwordInput.setValue((share && share.grantee.id) || "", true);
+	this._passwordInput.setValue(password, true);
 
 	if (this._inheritEl) {
 		this._inheritEl.checked = share ? share.link.inh : isNewShare;
@@ -308,20 +318,23 @@ function(event) {
 	var pw = isGuestShare && this._passwordInput.getValue();
 	for (var i = 0; i < shares.length; i++) {
 		var share = shares[i];
-		if (perm != share.link.perm) {
+		if (perm != share.link.perm || pw != share.link.pw) {
 			var cmd = new AjxCallback(share, share.grant, [perm, pw]);
 			batchCmd.add(cmd);
 		}
 	}
-	var respCallback = !isPublicShare
-		? (new AjxCallback(this, this._handleResponseBatchCmd, [shares])) : null;
-	batchCmd.run(respCallback);
+	if (batchCmd.size() > 0) {
+		var respCallback = !isPublicShare
+			? (new AjxCallback(this, this._handleResponseBatchCmd, [shares])) : null;
+		batchCmd.run(respCallback);
+	}
 	
 	this.popdown();
 };
 
 ZmSharePropsDialog.prototype._handleResponseBatchCmd =
 function(shares, result) {
+
 	if (!shares || (shares && shares.length == 0)) { return; }
 
 	var ignore = this._getFaultyEmails(result);
@@ -329,7 +342,13 @@ function(shares, result) {
 	if (replyType != ZmShareReply.NONE) {
 		var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
 		var guestnotes;
-		// TODO: Need to turn this into a batch request
+		var batchCmd;
+
+		if (replyType != ZmShareReply.COMPOSE && shares.length > 1) {
+			var accountName = appCtxt.multiAccounts ? this._object.getAccount().name : null;
+			batchCmd = new ZmBatchCommand(false, accountName, true);
+		}
+
 		for (var i = 0; i < shares.length; i++) {
 			var share = shares[i];
 			var email = share.grantee.email || share.grantee.id;
@@ -357,15 +376,16 @@ function(shares, result) {
 				tmpShare.grantor.email = tmpShare.object.owner;
 				tmpShare.grantor.name = tmpShare.grantor.email;
 				tmpShare.link.id = tmpShare.object.rid;
+                tmpShare.link.name = tmpShare.object.oname || tmpShare.object.name;
 			} else {
 				tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID);
 				tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME);
 				tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME) || tmpShare.grantor.email;
 				tmpShare.link.id = tmpShare.object.id;
+                tmpShare.link.name = tmpShare.object.name;
 			}
 
 			tmpShare.link.perm = share.link.perm;
-			tmpShare.link.name = tmpShare.object.name;
 			tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
 			tmpShare.link.inh = this._inheritEl ? this._inheritEl.checked : true;
 
@@ -389,15 +409,19 @@ function(shares, result) {
 			if (replyType == ZmShareReply.COMPOSE) {
 				tmpShare.composeMessage(this._shareMode, addrs);
 			} else {
-				tmpShare.sendMessage(this._shareMode, addrs);
+				tmpShare.sendMessage(this._shareMode, addrs, null, batchCmd);
 			}
 		}
+		if (batchCmd)
+			batchCmd.run();
 	}
 };
 
 // HACK: grep the Faults in BatchResponse and sift out the bad emails
 ZmSharePropsDialog.prototype._getFaultyEmails =
 function(result) {
+
+	if (!result) { return; }
 	var noSuchAccount = "no such account: ";
 	var bad = {};
 	var fault = result.getResponse().BatchResponse.Fault || [];

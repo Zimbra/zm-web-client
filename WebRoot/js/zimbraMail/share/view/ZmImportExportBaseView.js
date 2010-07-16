@@ -17,6 +17,7 @@
  * This class represents the export base view.
  * 
  * @extends		DwtForm
+ * @private
  */
 ZmImportExportBaseView = function(params) {
 	if (arguments.length == 0) return;

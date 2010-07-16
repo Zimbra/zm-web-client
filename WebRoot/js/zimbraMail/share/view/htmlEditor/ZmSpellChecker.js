@@ -17,11 +17,12 @@
  * Makes server request to check spelling of given text.
  * Use this class to check spelling of any text via {@link check} method.
  *
- * TODO: we may want to move this class out into its own file later for public use...
- * 
  * @author Mihai Bazon
  * 
  * @param {DwtHtmlEditor}	parent		the parent needing spell checking
+ *
+ * @class
+ * @constructor
  */
 ZmSpellChecker = function(parent) {
 	this._parent = parent;

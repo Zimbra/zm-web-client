@@ -46,7 +46,7 @@
             <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>
         </a>
     </span>
-        <span class="td right" width="5%"> <a class="SmlIcnHldr Edit"
+        <span class="td right editFix" width="5%"> <a class="SmlIcnHldr Edit"
                         href="?st=${param.st}&_ajxnoca=1&showTagCreate=1&tid=${tag.id}">&nbsp;</a></span>            
     </div>
     </div>        

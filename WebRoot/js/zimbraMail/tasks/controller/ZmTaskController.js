@@ -80,6 +80,11 @@ function() {
 	return (new ZmTaskEditView(this._container, this));
 };
 
+ZmTaskController.prototype._getDefaultFocusItem =
+function() {
+    return this._composeView._getDefaultFocusItem();	
+};
+
 ZmTaskController.prototype._setComposeTabGroup =
 function(setFocus) {
 	var tg = this._createTabGroup();
@@ -135,6 +140,11 @@ ZmTaskController.prototype._printListener =
 function() {
 	var url = ("/h/printtasks?id=" + this._composeView._calItem.invId);
 	window.open(appContextPath+url, "_blank");
+};
+
+ZmTaskController.prototype._closeView = function() {
+    appCtxt.getAppViewMgr().showPendingView(true);
+	this._composeView.cleanup();
 };
 
 ZmTaskController.prototype.closeView = function() {

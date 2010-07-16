@@ -324,7 +324,6 @@ function() {
  * 
  * @param {Hash}	params		a hash of parameters
  * @param {constant}	app			the starting app
- * @param {Boolean}	isRelogin		if <code>true</code>, user has re-authenticated after session timeout
  * @param {Hash}	settings		a hash of settings overrides
  */
 ZmZimbraMail.prototype.startup =
@@ -388,14 +387,14 @@ function(params) {
 			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.session) {
 				ZmCsfeCommand.setSessionId(girJSON.Header.context.session);
 			}
-			DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "GetInfoResponse");
+			DBG.println(["<b>RESPONSE (from JSP tag)</b>"].join(""), "GetInfoResponse");
 			DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
 		}
 		if (br.SearchResponse) {
 			var srJSON = params.searchResponse = {};
 			srJSON.Body = {};
 			srJSON.Body.SearchResponse = br.SearchResponse[0];
-			DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "SearchResponse");
+			DBG.println(["<b>RESPONSE (from JSP tag)</b>"].join(""), "SearchResponse");
 			DBG.dumpObj(AjxDebug.DBG1, srJSON, -1);
 		}
 	}
@@ -785,7 +784,7 @@ function(params) {
 				break;
 			}
 		}
-		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : this._getDefaultStartAppName(account);
+		startApp = this._getDefaultStartAppName(account);
 	}
 
 	// parse query string, in case we are coming in with a deep link	
@@ -842,9 +841,8 @@ function(settings) {
  */
 ZmZimbraMail.prototype.reset =
 function() {
-	ZmCsfeCommand.setSessionId(null);	// so we get a refresh block
-	this._highestNotifySeen = 0; 		// we have a new session
 
+	ZmCsfeCommand.clearSessionId();	// so we get a refresh block
 	appCtxt.accountList.resetTrees();
 
 	if (!appCtxt.rememberMe()) {
@@ -1111,6 +1109,12 @@ function() {
 			// register mailto callback
 			var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
 			window.platform.registerProtocolCallback("mailto", callback);
+
+			// handle "send to mail recipient" on windows (requires mapi@zimbra.com extension)
+			if (AjxEnv.isWindows) {
+				var shell = new ZimbraDesktopShell;
+				shell.defaultClient = true;
+			}
 		} catch(ex) {
 			// do nothing
 		}
@@ -1322,6 +1326,7 @@ function(result) {
 	this._pollRequest = null;
 	var noopResult = result.getResponse().NoOpResponse;
 	if (noopResult.waitDisallowed) {
+		this._waitDisallowed = true;
 		// revert to polling mode - server doesn't want us to use instant notify.
 		this.setInstantNotify(false);
 	}  else {
@@ -2035,14 +2040,17 @@ function(ex, continuation) {
 ZmZimbraMail._confirmExitMethod =
 function() {
 
-	appCtxt.accountList.saveImplicitPrefs();
+	if (ZmCsfeCommand.getAuthToken()) {
+		appCtxt.accountList.saveImplicitPrefs();
 
-	if (!ZmZimbraMail._isOkToExit()) {
-		ZmZimbraMail._isLogOff = false;
-		return ZmMsg.appExitWarning;
+		if (!ZmZimbraMail._isOkToExit()) {
+			ZmZimbraMail._isLogOff = false;
+			return ZmMsg.appExitWarning;
+		}
+
+		ZmZimbraMail._endSession();
 	}
-
-	ZmZimbraMail._endSession();
+	
 	ZmZimbraMail._endSessionDone = true;
 };
 
@@ -2537,6 +2545,12 @@ function() {
  */
 ZmZimbraMail.prototype._globalSelectionListener =
 function(ev) {
+	// bug 47514
+	if (this._waitDisallowed) {
+		this._waitDisallowed = false;
+		this.setInstantNotify(true);
+	}
+
 	if (!appCtxt.areZimletsLoaded()) { return; }
 
 	var item = ev.item;

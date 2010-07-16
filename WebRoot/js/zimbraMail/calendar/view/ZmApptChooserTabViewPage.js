@@ -30,7 +30,7 @@
  * 
  * @extends		DwtTabViewPage
  */
-ZmApptChooserTabViewPage = function(parent, attendees, controller, type) {
+ZmApptChooserTabViewPage = function(parent, attendees, controller, type, dateInfo) {
 
 	DwtTabViewPage.call(this, parent, "ZmApptChooserTabViewPage");
 
@@ -38,6 +38,7 @@ ZmApptChooserTabViewPage = function(parent, attendees, controller, type) {
 	this._controller = controller;
 	this._editView = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT).getEditView();
 	this.type = type;
+    this._dateInfo = dateInfo;
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._offset = 0;
@@ -182,11 +183,24 @@ function() {
 	this.parent.tabSwitched(this._tabKey);
 	this._setAttendees();
 	this._controller._setComposeTabGroup(true);
+    //Update FB status if the time is changed
+    if(this.type == ZmCalBaseItem.EQUIPMENT && this._dateInfo.isTimeModified){
+        this.refreshResourcesFBStatus();
+        this._dateInfo.isTimeModified = false;
+    }
 
 	if (this._isClean && this.type == ZmCalBaseItem.PERSON) {
 		this._isClean = false;
-		this.searchContacts();
+		this.searchContacts(true);
 	}
+};
+
+ZmApptChooserTabViewPage.prototype.refreshResourcesFBStatus =
+function() {
+    var items = this._chooser.getItems();
+    this._fillFreeBusy(items, AjxCallback.simpleClosure(function(items) {
+        this._chooser.setItems(items);
+    }, this));
 };
 
 ZmApptChooserTabViewPage.prototype.tabBlur =
@@ -194,9 +208,12 @@ function() {
 };
 
 ZmApptChooserTabViewPage.prototype.initialize =
-function(appt, mode, isDirty) {
+function(appt, mode, isDirty, apptComposeMode) {
 	this._appt = appt;
 	this._isDirty = isDirty;
+    this._isForward = (apptComposeMode == ZmApptComposeView.FORWARD);
+    this._isProposeTime = (apptComposeMode == ZmApptComposeView.PROPOSE_TIME);
+    
     this._list.removeAll();
 
 	if (this._rendered) {
@@ -534,7 +551,7 @@ function(ev) {
                 lastId = contact.id;
                 lastSortVal = contact.sf;
             }
-            this.searchContacts(null, lastId, lastSortVal);
+            this.searchContacts(false, null, lastId, lastSortVal);
         } else {
             var more = this._list.hasMore;
             if (!more) {
@@ -593,14 +610,15 @@ function() {
  * Performs a contact search (in either personal contacts or in the GAL) and populates
  * the source list view with the results.
  *
+ * @param {Boolean}	defaultSearch set to true when contacts are searched by default without user initiation
  * @param {constant}	sortBy			the ID of column to sort by
  * @param {int}	lastId		   the ID of last item displayed (for pagination)
  * @param {String}	lastSortVal	the value of sort field for above item
  */
 ZmApptChooserTabViewPage.prototype.searchContacts =
-function(sortBy, lastId, lastSortVal) {
+function(defaultSearch, sortBy, lastId, lastSortVal) {
 	var id = this._searchFieldIds[ZmApptChooserTabViewPage.SF_ATT_NAME];
-	var query = AjxStringUtil.trim(document.getElementById(id).value);
+	var query = AjxStringUtil.trim(document.getElementById(id).value.replace(/[-]/g, ""));// trim "-" and what else ?
 	if (!query.length) {
 		query = this._defaultQuery;
 	}
@@ -640,12 +658,12 @@ function(sortBy, lastId, lastSortVal) {
         lastSortVal: lastSortVal        
 	};
 	var search = new ZmSearch(params);
-	search.execute({callback: new AjxCallback(this, this._handleResponseSearchContacts)});
+	search.execute({callback: new AjxCallback(this, this._handleResponseSearchContacts, [defaultSearch])});
 };
 
 // If a contact has multiple emails, create a clone for each one.
 ZmApptChooserTabViewPage.prototype._handleResponseSearchContacts =
-function(result) {
+function(defaultSearch, result) {
 	var resp = result.getResponse();
     var offset = resp.getAttribute("offset");
     var isPagingSupported = AjxUtil.isSpecified(offset);
@@ -653,7 +671,8 @@ function(result) {
     var info = resp.getAttribute("info");
     var expanded = info && info[0].wildcard[0].expanded == "0";
 
-    if (!isPagingSupported &&
+    //bug: 47649 avoid showing warning message for default contacts search
+    if (!defaultSearch && !isPagingSupported &&
         (expanded || (this._contactSource == ZmId.SEARCH_GAL && more)))
     {
         var d = appCtxt.getMsgDialog();
@@ -765,12 +784,12 @@ function() {
 
 ZmApptChooserTabViewPage.prototype._fillFreeBusy =
 function(items, callback) {
-	// bug fix #28693 - offline does not support free/busy yet
-	if (appCtxt.isOffline) {
+
+    // Bug:48189 Don't send GetFreeBusyRequest for non-ZCS accounts.
+    if (appCtxt.isOffline && !appCtxt.getActiveAccount().isZimbraAccount) {
 		if (callback) callback(items);
 		return;
 	}
-
 	var tf = this._getTimeFrame();
 	var list = (items instanceof AjxVector) ? items.getArray() : (items instanceof Array) ? items : [items];
 	var emails = [];

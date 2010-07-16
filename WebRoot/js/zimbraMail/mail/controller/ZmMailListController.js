@@ -579,7 +579,6 @@ function(ev) {
 		var folder = appCtxt.getById(ZmOrganizer.getSystemId(ZmFolder.ID_DRAFTS, account));
 		this._list.moveItems({items:[ev.item], folder:folder});
 	}
-
 	ZmListController.prototype._listSelectionListener.apply(this, arguments);
 };
 
@@ -818,10 +817,12 @@ function(params, msg) {
 
         // bug 43428 - invitation should be forwarded using apt forward view        
         if(msg.isInvite()) {
-            var newAppt = AjxDispatcher.run("GetCalController").newApptObject(new Date(), null, null, msg);
-            newAppt.setForwardMode(true);
-            newAppt.setFromMailMessageInvite(msg);
-            AjxDispatcher.run("GetApptComposeController").forwardInvite(newAppt);
+            var ac = window.parentAppCtxt || window.appCtxt;
+            var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
+            controller.forwardInvite(msg);
+            if(appCtxt.isChildWindow) {
+                window.close();
+            }            
             return;
         }
 
@@ -858,7 +859,9 @@ function(params, msg) {
 	} else if (appCtxt.isOffline && action == ZmOperation.DRAFT) {
 		var folder = appCtxt.getById(msg.folderId);
 		params.accountName = folder && folder.getAccount().name;
-	}
+	}else if(action == ZmOperation.DECLINE_PROPOSAL) {
+        params.subjOverride = this._getInviteReplySubject(action) + msg.subject;        
+    }
 
 	params.msg = msg;
 	AjxDispatcher.run("Compose", params);
@@ -923,15 +926,23 @@ function(ev) {
 	var type = ev._inviteReplyType;
     var folderId = ev._inviteReplyFolderId || ZmOrganizer.ID_CALENDAR;
 	var compId = ev._inviteComponentId;
-	if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
+	if (type == ZmOperation.PROPOSE_NEW_TIME ) {
+        var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
+        controller.proposeNewTime(ev._msg);
+        if(appCtxt.isChildWindow) {
+            window.close();
+        }
+    }else if (type == ZmOperation.ACCEPT_PROPOSAL ) {
+        this._acceptProposedTime(compId, ev._msg);        
+    }else if (type == ZmOperation.DECLINE_PROPOSAL ) {
+        this._declineProposedTime(compId, ev._msg);
+    }else if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
 		type == ZmOperation.EDIT_REPLY_CANCEL ||
 		type == ZmOperation.INVITE_REPLY_DECLINE ||
 		type == ZmOperation.INVITE_REPLY_TENTATIVE)
 	{
 		this._editInviteReply(ZmMailListController.INVITE_REPLY_MAP[type], compId, null, null, folderId);
-	}
-	else
-	{
+	}else {
 		var accountName = ac.multiAccounts && ac.accountList.mainAccount.name;
 		var resp = this._sendInviteReply(type, compId, null, accountName, null, ev._msg, folderId);
 		if (resp && appCtxt.isChildWindow) {
@@ -1206,6 +1217,7 @@ function(type, instanceDate, isResourceInvite) {
 	switch (type) {
 		case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyAcceptMessage; break;
 		case ZmOperation.REPLY_CANCEL:		replyBody = ZmMsg.apptCanceled; break;
+        case ZmOperation.DECLINE_PROPOSAL:  replyBody = ""; break;
 		case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyDeclineMessage; break;
 		case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyTentativeMessage; break;
 		case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
@@ -1233,6 +1245,7 @@ function(type) {
 	var replySubject = null;
 	switch (type) {
 		case ZmOperation.REPLY_ACCEPT:		replySubject = ZmMsg.subjectAccept + ": "; break;
+		case ZmOperation.DECLINE_PROPOSAL:	replySubject = ZmMsg.subjectDecline + " - "; break;
 		case ZmOperation.REPLY_DECLINE:		replySubject = ZmMsg.subjectDecline + ": "; break;
 		case ZmOperation.REPLY_TENTATIVE:	replySubject = ZmMsg.subjectTentative + ": "; break;
 		case ZmOperation.REPLY_NEW_TIME:	replySubject = ZmMsg.subjectNewTime + ": "; break;
@@ -1244,6 +1257,31 @@ ZmMailListController.prototype._editInviteReply =
 function(action, componentId, instanceDate, accountName, acceptFolderId) {
 	var replyBody = this._getInviteReplyBody(action, instanceDate);
 	this._doAction({action:action, extraBodyText:replyBody, instanceDate:instanceDate, accountName:accountName, acceptFolderId: acceptFolderId});
+};
+
+ZmMailListController.prototype._acceptProposedTime =
+function(componentId, origMsg) {
+    var invite = origMsg.invite;
+    var apptId = invite.getAppointmentId();
+    var ac = window.parentAppCtxt || window.appCtxt;
+    var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
+    var callback = new AjxCallback(this, this._handleAcceptDeclineProposedTime, [origMsg]);
+    controller.acceptProposedTime(apptId, invite, appCtxt.isChildWindow ? null : callback);
+    if (appCtxt.isChildWindow) {
+        window.close();
+    }
+};
+
+ZmMailListController.prototype._declineProposedTime =
+function(componentId, origMsg) {
+    var replyBody = this._getInviteReplyBody(ZmOperation.DECLINE_PROPOSAL, null);
+    var callback = new AjxCallback(this, this._handleAcceptDeclineProposedTime, [origMsg]);
+    this._doAction({action:ZmOperation.DECLINE_PROPOSAL, extraBodyText:replyBody, instanceDate:null, sendMsgCallback: callback});    
+};
+
+ZmMailListController.prototype._handleAcceptDeclineProposedTime =
+function(origMsg) {
+    this._doDelete([origMsg]);    
 };
 
 ZmMailListController.prototype._sendInviteReply =
@@ -1320,13 +1358,13 @@ function(ev, callback) {
 	var msg = this.getMsg();
 	if (msg) {
 		if (msg._loaded) {
-			ZmMailMsgView.detachMsgInNewWindow(msg);
+			ZmMailMsgView.detachMsgInNewWindow(msg, false, this._msgControllerMode);
 			// always mark a msg read if it is displayed in its own window
-			if (msg.isUnread) {
+			if (msg.isUnread && !appCtxt.getById(msg.folderId).isReadOnly()) {
 				msg.list.markRead({items:[msg], value:true});
 			}
 		} else {
-			ZmMailMsgView.rfc822Callback(msg.id);
+			ZmMailMsgView.rfc822Callback(msg.id, null, this._msgControllerMode);
 		}
 	}
 	if (callback) { callback.run(); }
@@ -1334,10 +1372,11 @@ function(ev, callback) {
 
 ZmMailListController.prototype._printListener =
 function(ev) {
-	var listView = this._listView[this._currentView];
-	var items = listView.getSelection();
-	items = AjxUtil.toArray(items);
-	var ids = [];
+    var listView = this._listView[this._currentView];
+    var items = listView.getSelection();
+    items = AjxUtil.toArray(items);
+    var ids = [];
+    var showImages = false;
     for (var i = 0; i < items.length; i++) {
         var item = items[i];
         // always extract out the msg ids from the conv
@@ -1349,15 +1388,25 @@ function(ev) {
             }else{
                 ids.push("C:"+item.id);
             }
+            var msgList = item.getMsgList();
+            for(var j=0; j<msgList.length; j++) {
+                if(msgList[j].showImages) {
+                    showImages = true;
+                    break;
+                }
+            }
         } else {
             ids.push(item.id);
+            if (item.showImages) {
+                showImages = true;
+            }
         }
     }
     var url = ("/h/printmessage?id=" + ids.join(","));
-    if(appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES)){
-       url = url+"&xim=1"; 
+    if(appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages){
+       url = url+"&xim=1";
     }
-	window.open(appContextPath+url, "_blank");
+    window.open(appContextPath+url, "_blank");
 };
 
 ZmMailListController.prototype._editListener =

@@ -507,8 +507,19 @@ var parseResponse = function (request, container,url) {
         }
         if(match){
             sAT(match[1]);
+            var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail');
+            var targ = $(tabId);
+            if (targ) {
+                if (targ.id == 'contact') {
+                    $("view-contact").style.display = "block";
+                    $("view-mail").style.display = "none";
+                } else if (targ.id == 'mail') {
+                    $("view-mail").style.display = "block";
+                    $("view-contact").style.display = "none";
+                }
+            }
             $("view-content").style.display = "none";
-            $("empty-message").style.display = "block";
+            $("static-content").style.display = "block";
         }
         if (request.status == 200) {
             showLoadingMsg(null, false);
@@ -525,14 +536,15 @@ var parseResponse = function (request, container,url) {
                 if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showABCreate') !=-1)  && (url.indexOf('hc=1') == -1)) {
                     $("view-content").innerHTML = data;
                     $("view-content").style.display = "block";
-                    $("empty-message").style.display = "none";
+                    $("static-content").style.display = "none";
                 } else if(url.indexOf('st=newmail') != -1) {
                     $('compose-body').innerHTML = data;
                     $("view-content").style.display = "block";
-                    $("empty-message").style.display = "none";
+                    $("static-content").style.display = "none";
                     toggleCompose('compose-pop','veil');
                 } else {
                     $("view-list").innerHTML = data;
+                    $("view-content").style.display = "none";
                     if(myScroll) {
                         loaded();
                     }

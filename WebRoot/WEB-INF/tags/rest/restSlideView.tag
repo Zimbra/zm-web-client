@@ -61,6 +61,8 @@
         <c:set var="psufix" value="_all.js" scope="request"/>    
     </c:otherwise>
 </c:choose>
+<fmt:getLocale var="locale"/>
+<c:set var="localeId" value="${not empty param.localeId ? param.localeId : (not empty requestScope.zimbra_target_account_prefLocale ? requestScope.zimbra_target_account_prefLocale : locale)}"/>    
 </rest:handleError>
 <head>
 <c:set value="/img" var="iconPath" scope="request"/>
@@ -93,7 +95,7 @@
 </script>
 
 <script>
-    AjxEnv.DEFAULT_LOCALE = "${locale}";
+    AjxEnv.DEFAULT_LOCALE = "${localeId}";
     <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
     <c:if test="${runSlideShow or previewSlideShow}">
         <jsp:include page="/public/slides/presentation.js" />

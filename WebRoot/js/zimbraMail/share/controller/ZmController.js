@@ -609,12 +609,13 @@ function(continuation, rememberMe, result) {
 				continuation.resend = ZmCsfeCommand.REAUTH;
 				appCtxt.getRequestMgr().sendRequest(continuation);
 			}
+			this._hideLoginDialog();
 		} else {
 			// if no continuation context, start over
-			ZmCsfeCommand.setSessionId(null);						// so we get a refresh block
-			appCtxt.getAppController().startup({isRelogin:true});	// restart application
+			window.onbeforeunload = null;
+			var url = AjxUtil.formatUrl();
+			ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 		}
-		this._hideLoginDialog();
 	} catch (ex) {
 		var loginDialog = appCtxt.getLoginDialog();
 		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || ex.code == ZmCsfeException.SVC_INVALID_REQUEST) {

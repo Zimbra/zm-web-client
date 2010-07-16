@@ -18,6 +18,8 @@
  * This class represents an alert that highlights and flashes an application tab.
  *
  * @param {ZmApp}		app 		the application
+ * @class
+ * @private
  */
 ZmAppAlert = function(app) {
 	this.app = app;

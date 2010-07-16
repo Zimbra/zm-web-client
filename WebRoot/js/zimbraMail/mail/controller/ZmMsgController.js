@@ -295,7 +295,7 @@ function(view) {
 
 ZmMsgController.prototype._goToMsg =
 function(view, next) {
-	var controller = AjxDispatcher.run(ZmMsgController.MODE_TO_CONTROLLER[this._mode]);
+	var controller = this._getParentListController();
 	if (controller) {
 		controller.pageItemSilently(this._msg, next);
 	}
@@ -303,7 +303,7 @@ function(view, next) {
 
 ZmMsgController.prototype._selectNextItemInParentListView =
 function() {
-	var controller = AjxDispatcher.run(ZmMsgController.MODE_TO_CONTROLLER[this._mode]);
+	var controller = this._getParentListController();
 	if (controller) {
 		controller._listView[controller._currentView]._itemToSelect = controller._getNextItemToSelect();
 	}
@@ -363,6 +363,7 @@ function(params) {
 
 ZmMsgController.prototype._checkItemCount =
 function() {
+	this._backListener();
 };
 
 ZmMsgController.prototype._getDefaultFocusItem = 
@@ -390,9 +391,10 @@ function(oldView, newView) {
 
 ZmMsgController.prototype._printListener =
 function(ev) {
-	var ids = [];
+    var ids = [];
     var item = this._msg;
-	var id;
+    var id;
+    var showImages;
     // always extract out the msg ids from the conv
     if (item.toString() == "ZmConv") {
         // get msg ID in case of virtual conv.
@@ -402,13 +404,41 @@ function(ev) {
         } else {
             id = "C:" + item.id;
         }
+        var msgList = item.getMsgList();
+        for(var j=0; j<msgList.length; j++) {
+            if(msgList[j].showImages) {
+                showImages = true;
+                break;
+            }
+        }
     } else {
-		id = item.id;
+        id = item.id;
         if (item._part) { id+= "&part=" + item._part; }
+        if (item.showImages) {
+            showImages = true;
+        }
     }
     var url = "/h/printmessage?id=" + id;
-    if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES)) {
-       url += "&xim=1"; 
+    if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages) {
+       url += "&xim=1";
     }
-	window.open(appContextPath+url, "_blank");
+    window.open(appContextPath+url, "_blank");
+};
+
+/**
+ * Returns the parent list controller (TV, CLV, or CV)
+ *
+ * @private
+ */
+ZmMsgController.prototype._getParentListController =
+function() {
+	var ac = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+	var mailApp = ac.getApp(ZmApp.MAIL);
+	if (this._mode == ZmId.VIEW_TRAD) {
+		return mailApp.getTradController();
+	} else if (this._mode == ZmId.VIEW_CONV) {
+		return mailApp.getConvController();
+	} else if (this._mode == ZmId.VIEW_CONVLIST) {
+		return mailApp.getConvListController();
+	}
 };

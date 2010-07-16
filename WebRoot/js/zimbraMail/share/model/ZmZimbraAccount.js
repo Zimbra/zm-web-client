@@ -676,8 +676,6 @@ function(result) {
 	if (!this.isZimbraAccount) {
 		appCtxt.set(ZmSetting.MAIL_READ_RECEIPT_ENABLED, false, null, null, null, this);
 	}
-
-	this.recent = obj.recent;
 };
 
 /**
@@ -739,8 +737,9 @@ function(callback, sections) {
 ZmZimbraAccount.prototype._handleErrorLoad =
 function(callback, ev) {
 	DBG.println(AjxDebug.DBG1, "------- ERROR loading account settings for " + this.name);
-	if (callback)
+	if (callback) {
 		callback.run();
+	}
 };
 
 /**
@@ -751,6 +750,7 @@ function(node) {
 	this.id = node.id;
 	this.name = node.name;
 	this.visible = node.visible;
+	this.active = node.active;
 
 	var data = node.attrs && node.attrs._attrs;
 	this._displayName = data ? data.displayName : this.email;

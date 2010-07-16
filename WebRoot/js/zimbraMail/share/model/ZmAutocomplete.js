@@ -54,6 +54,8 @@ ZmAutocomplete.AC_TIMEOUT			= 20;	// autocomplete timeout (in seconds)
 ZmAutocomplete.AC_TYPE_CONTACT		= "contact";
 ZmAutocomplete.AC_TYPE_GAL			= "gal";
 ZmAutocomplete.AC_TYPE_GROUP		= "group";
+ZmAutocomplete.AC_TYPE_TABLE		= "rankingTable";
+
 ZmAutocomplete.AC_TYPE_UNKNOWN		= "unknown";
 ZmAutocomplete.AC_TYPE_LOCATION		= "Location";	// same as ZmResource.ATTR_LOCATION
 ZmAutocomplete.AC_TYPE_EQUIPMENT	= "Equipment";	// same as ZmResource.ATTR_EQUIPMENT
@@ -81,11 +83,14 @@ function() {
  * Returns a list of matching contacts for a given string. The first name, last
  * name, full name, first/last name, and email addresses are matched against.
  *
- * @param {String}	str		the string to match against
- * @param {AjxCallback}	callback	the callback to run with results
+ * @param {String}					str			the string to match against
+ * @param {AjxCallback}				callback	the callback to run with results
  * @param {ZmAutocompleteListView}	aclv		the needed to show wait msg
- * @param {Hash}	options		additional options
- * @param {ZmZimbraAccount}	account	the account to fetch cached items from
+ * @param {ZmZimbraAccount}			account		the account to fetch cached items from
+ * @param {Hash}					options		additional options:
+ *  @param {constant} 				 type		 		type of result to match; default is {@link ZmAutocomplete.AC_TYPE_CONTACT}; other valid values are for location or equipment
+ *  @param {Boolean}				 needItem	 		if <code>true</code>, return a {@link ZmItem} as part of match result
+ *  @param {Boolean}				 supportForget		allow user to reset ranking for a contact (defaults to true)
  */
 ZmAutocomplete.prototype.autocompleteMatch =
 function(str, callback, aclv, options, account) {
@@ -132,9 +137,13 @@ function(str, callback, list) {
  */
 ZmAutocomplete.prototype._doAutocomplete =
 function(str, aclv, options, acType, callback, account) {
+
+	if (this._acRequests[str]) // A request for this particular string is already active.
+		return;
+
 	// cancel any outstanding requests for strings that are substrings of this one
 	for (var substr in this._acRequests) {
-		if (str != substr && str.indexOf(substr) === 0) {
+		if (str != substr) {
 			DBG.println("ac", "canceling autocomplete request for '" + substr + "' due to request for '" + str + "'");
 			appCtxt.getAppController().cancelRequest(this._acRequests[substr], null, true);
 			delete this._acRequests[str];
@@ -281,6 +290,23 @@ function(str) {
 	}
 };
 
+ZmAutocomplete.prototype.forget =
+function(addr, callback) {
+
+	var jsonObj = {RankingActionRequest:{_jsns:"urn:zimbraMail"}};
+	jsonObj.RankingActionRequest.action = {op:"delete", email:addr};
+	var respCallback = new AjxCallback(this, this._handleResponseForget, [callback]);
+	appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+};
+
+ZmAutocomplete.prototype._handleResponseForget =
+function(callback) {
+	appCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
+	if (callback) {
+		callback.run();
+	}
+};
+
 /**
  * @param acType		[constant]			type of result to match
  * @param str			[string]			string to match against
@@ -415,9 +441,9 @@ function(ev) {
  * This class represents an auto-complete result, with fields for the caller to look at, and fields to
  * help with further matching.
  *
- * @param {Object}	match			the JSON match object or a {@link ZmContact} object
+ * @param {Object}	match		the JSON match object or a {@link ZmContact} object
  * @param {Object}	options		the matching options
- * @param {Boolean}	isContact		if <code>true</code>, provided match is a {@link ZmContact}
+ * @param {Boolean}	isContact	if <code>true</code>, provided match is a {@link ZmContact}
  */
 ZmAutocompleteMatch = function(match, options, isContact) {
 
@@ -461,8 +487,10 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 		this.icon = ZmAutocomplete.AC_ICON[match.type];
 		this.score = match.ranking;
 	}
+	this.icon = this.icon || ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_CONTACT];
 	this.acType = (this.type == ZmAutocomplete.AC_TYPE_LOCATION || this.type == ZmAutocomplete.AC_TYPE_EQUIPMENT)
 		? this.type : ZmAutocomplete.AC_TYPE_CONTACT;
+	this.canForget = (match.type == ZmAutocomplete.AC_TYPE_TABLE);
 };
 
 /**
@@ -587,12 +615,10 @@ function(op, params) {
 /**
  * Returns a list of matches for a given query operator.
  *
- * @param {String}	str		the string to match against
- * @param {AjxCallback}	callback	the callback to run with results
+ * @param {String}					str			the string to match against
+ * @param {AjxCallback}				callback	the callback to run with results
  * @param {ZmAutocompleteListView}	aclv		needed to show wait msg
- * @param {Hash}	options		a hash of additional options
- * @param {constant} options.type		type of result to match; default is {@link ZmAutocomplete.AC_TYPE_CONTACT}; other valid values are for location or equipment
- * @param	{Boolean}	options.needItem	if <code>true</code>, return a {@link ZmItem} as part of match result
+ * @param {Hash}					options		a hash of additional options
  */
 ZmSearchAutocomplete.prototype.autocompleteMatch =
 function(str, callback, aclv, options) {

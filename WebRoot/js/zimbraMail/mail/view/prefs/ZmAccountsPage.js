@@ -85,9 +85,6 @@ function() {
 			displayContainer:	ZmPref.TYPE_COMBOBOX,
 			hint:				ZmMsg.emailAddr
 		},
-		READ_RECEIPT_TO_ADDR: {
-			displayContainer:	ZmPref.TYPE_INPUT
-		},
 		SIGNATURE: {
 			displayContainer:	ZmPref.TYPE_SELECT
 		},
@@ -188,7 +185,6 @@ function() {
 				"REPLY_TO",				// I
 				"REPLY_TO_NAME",		// I
 				"REPLY_TO_EMAIL",		// I
-				"READ_RECEIPT_TO_ADDR",	// I
 				"SIGNATURE"				// I
 			]
 		},
@@ -216,7 +212,6 @@ function() {
 				"REPLY_TO",					// I
 				"REPLY_TO_NAME",			// I
 				"REPLY_TO_EMAIL",			// I
-				"READ_RECEIPT_TO_ADDR",		// I
 				"SIGNATURE"					// I
 			]
 		},
@@ -230,7 +225,6 @@ function() {
 				"REPLY_TO",					// I
 				"REPLY_TO_NAME",			// I
 				"REPLY_TO_EMAIL",			// I
-				"READ_RECEIPT_TO_ADDR",		// I
 				"SIGNATURE",				// I
 				"WHEN_SENT_TO",				// I
 				"WHEN_SENT_TO_LIST",		// I
@@ -284,7 +278,6 @@ ZmAccountsPage.IDENTITY_PROPS = {
 	"REPLY_TO":				"setReplyTo",
 	"REPLY_TO_NAME":		"setReplyToDisplay",
 	"REPLY_TO_EMAIL":		"setReplyToAddress",
-	"READ_RECEIPT_TO_ADDR":	"readReceiptAddr",
 	"SIGNATURE":			"signature",
 	"WHEN_SENT_TO":			"useWhenSentTo",
 	"WHEN_SENT_TO_LIST":	"whenSentToAddresses",
@@ -2090,7 +2083,10 @@ function(account, field, html) {
 
 	if (field == ZmItem.F_NAME) {
 		el = document.getElementById(this._getCellId(account, field)+"_name");
-	}
+    }
+    if(field == ZmItem.F_EMAIL) {
+        html = "<div style='margin-left: 10px;'>"+ html +"</div>";    
+    }
 	el.innerHTML = html;
 };
 
@@ -2120,7 +2116,7 @@ function(buffer, i, item, field, col, params) {
 		return i;
 	}
 	if (field == ZmItem.F_EMAIL) {
-		buffer[i++] = item.getEmail();
+		buffer[i++] = "<div style='margin-left: 10px;'>"+ item.getEmail() +"</div>";
 		return i;
 	}
 	if (field == ZmItem.F_TYPE) {

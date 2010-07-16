@@ -579,6 +579,9 @@ function() {
 	Dwt.setSize(de, w, h);
 
 	var be = document.getElementById(this._bodyId);
+    if(h < Dwt.getSize(be).y){
+        w = w - 15; //Less Scroll bar width
+    }
 	Dwt.setSize(be, w, h);
 
     if(this._showWeekNumber) {

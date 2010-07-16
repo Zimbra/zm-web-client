@@ -913,7 +913,7 @@ function(ev, treeView, overviewId) {
 				fields[ZmOrganizer.F_UNREAD] ||
 				fields[ZmOrganizer.F_FLAGS] ||
 				fields[ZmOrganizer.F_COLOR] ||
-				((organizer.nId == ZmFolder.ID_DRAFTS ||
+				((organizer.nId == ZmFolder.ID_DRAFTS || organizer.rid == ZmFolder.ID_DRAFTS ||
 				  organizer.nId == ZmOrganizer.ID_OUTBOX) && fields[ZmOrganizer.F_TOTAL]))
 			{
 				this._updateOverview(parentNode, node, fields, organizer, treeView);

@@ -93,6 +93,7 @@ ZmMailMsgView.OBJ_SIZE_HTML 		= 50; // similar for HTML emails.
 ZmMailMsgView.REPLY_INVITE_EVENT	= "inviteReply";
 ZmMailMsgView.SHARE_EVENT 			= "share";
 ZmMailMsgView.IMG_FIX_RE			= new RegExp("(<img\\s+.*dfsrc\\s*=\\s*)[\"']http[^'\"]+part=([\\d\\.]+)[\"']([^>]*>)", "gi");
+ZmMailMsgView.FILENAME_INV_CHARS_RE = /[\./?*:;{}\\]/g; // Chars we do not allow in a filename
 ZmMailMsgView.SETHEIGHT_MAX_TRIES	= 3;
 
 
@@ -179,13 +180,16 @@ function(msg) {
 	if ((ac.get(ZmSetting.CALENDAR_ENABLED) || ac.multiAccounts) &&
 		(invite && invite.type != "task"))
 	{
+        var isCounterInvite = !invite.isEmpty() && invite.hasCounterMethod();
+
 		if (!invite.isEmpty() &&
 			invite.hasAcceptableComponents() &&
-			invite.hasInviteReplyMethod() &&
-			msg.folderId != ZmFolder.ID_TRASH)
+			(invite.hasInviteReplyMethod() || isCounterInvite)&&
+			msg.folderId != ZmFolder.ID_TRASH && msg.folderId != ZmFolder.ID_SENT)
 		{
 			var topToolbar = this._getInviteToolbar();
 			topToolbar.reparentHtmlElement(contentDiv);
+            this.setInviteOptions(invite);
 			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
 			if (this._respondOnBehalfLabel) {
@@ -380,15 +384,24 @@ function (listener) {
 
 // Private / protected methods
 
+ZmMailMsgView.prototype._getInviteOps =
+function() {
+    return [
+		ZmOperation.REPLY_ACCEPT,
+		ZmOperation.REPLY_TENTATIVE,
+		ZmOperation.REPLY_DECLINE,
+		ZmOperation.PROPOSE_NEW_TIME,
+		ZmOperation.ACCEPT_PROPOSAL,
+		ZmOperation.DECLINE_PROPOSAL
+	];
+};
+
 ZmMailMsgView.prototype._getInviteToolbar =
 function() {
 	if (this._inviteToolbar) { return this._inviteToolbar; }
 
-	var operationButtonIds = [
-		ZmOperation.REPLY_ACCEPT,
-		ZmOperation.REPLY_TENTATIVE,
-		ZmOperation.REPLY_DECLINE
-	];
+	var operationButtonIds = this._getInviteOps(); 
+
 	var replyButtonIds = [
 		ZmOperation.INVITE_REPLY_ACCEPT,
 		ZmOperation.INVITE_REPLY_TENTATIVE,
@@ -427,6 +440,12 @@ function() {
 
 		this._inviteToolbar.addSelectionListener(id, listener);
 
+        if(id == ZmOperation.ACCEPT_PROPOSAL || id == ZmOperation.DECLINED_PROPOSAL) {
+            button.setVisible(false);
+        }
+
+        if(id == ZmOperation.PROPOSE_NEW_TIME || id == ZmOperation.ACCEPT_PROPOSAL || id == ZmOperation.DECLINE_PROPOSAL) continue;
+
 		var standardItems = [notifyOperationButtonIds[i], replyButtonIds[i], ignoreOperationButtonIds[i]];
 		var menu = new ZmActionMenu({parent:button, menuItems:standardItems});
 		standardItems = menu.opList;
@@ -452,6 +471,26 @@ function() {
 	this._inviteMoveSelect = new DwtSelect({parent: this._inviteToolbar});
 
 	return this._inviteToolbar;
+};
+
+ZmMailMsgView.prototype.setInviteOptions = function(invite) {
+
+    var operationButtonIds = this._getInviteOps();
+    var proposeTimeIds =  {};
+    proposeTimeIds[ZmOperation.ACCEPT_PROPOSAL] = true;
+    proposeTimeIds[ZmOperation.DECLINE_PROPOSAL] = true;
+    var id,button;
+
+    for(var i in operationButtonIds) {
+        id = operationButtonIds[i]; 
+        button = this._inviteToolbar.getButton(id);
+        if(invite.hasCounterMethod()) {
+            button.setVisible(Boolean(proposeTimeIds[id]));            
+        }else {
+            button.setVisible(!Boolean(proposeTimeIds[id]));            
+        }
+    }
+
 };
 
 ZmMailMsgView.prototype.enableInviteReplyMenus =
@@ -705,8 +744,19 @@ function(msg, idoc) {
 	// fix <img> tags
 	var images = idoc.getElementsByTagName("img");
 	var hasExternalImages = false;
+    var self = this;
+    var iframe = document.getElementById(this._iframeId);
+    var onload = function() {
+        //resize iframe onload of image
+        ZmMailMsgView._resetIframeHeight(self, iframe);
+        this.onload = null; // *this* is reference to <img> el.
+    };
 	for (var i = 0; i < images.length; i++) {
-		hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, images[i], "src") || hasExternalImages;
+        var external = ZmMailMsgView.__unfangInternalImage(msg, images[i], "src");
+        if(!external){ //Inline image
+            images[i].onload = onload;
+        }
+		hasExternalImages = external || hasExternalImages;
 	}
 	// fix all elems with "background" attribute
 	hasExternalImages = this._fixMultipartRelatedImagesRecurse(msg, idoc.body) || hasExternalImages;
@@ -745,7 +795,7 @@ function(msg, elem, aname) {
 		if (avalue.substr(0,4) == "cid:") {
 			var cid = "<" + avalue.substr(4) + ">";
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
-			if (avalue) {
+			if (avalue) {                
 				elem.setAttribute(aname, avalue);
 				//elem.setAttribute(df_aname, avalue)
 				return false;
@@ -777,7 +827,7 @@ function(msg, idoc, id, iframe) {
 	var self = this;
 	return function() {
 		var images = idoc.getElementsByTagName("img");
-		var onload = function() {
+		var onload = function() {            
 			ZmMailMsgView._resetIframeHeight(self, iframe);
 			this.onload = null; // *this* is reference to <img> el.
 		};
@@ -1042,6 +1092,17 @@ function(msg, container, callback) {
 	var sentByIcon = cl	? (cl.getContactByEmail((sentBy && sentBy.address ) ? sentBy.address : sentByAddr ) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
 	var additionalHdrs = [];
+
+    var invite = msg.invite;
+    var isCounterInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && invite && !invite.isEmpty() && (invite.type != "task") && invite.hasCounterMethod();
+    var inviteMessage;
+
+    if (isCounterInvite && msg.folderId != ZmFolder.ID_SENT){
+        additionalHdrs.push({hdrName: ZmMsg.proposedTimeLabel, hdrVal: invite.getProposedTimeStr()});
+        inviteMessage = AjxMessageFormat.format(ZmMsg.counterInviteMsg, [(sentBy && sentBy.name ) ? sentBy.name : sentByAddr ]);
+    }
+
+
 	if (msg.attrs) {
 		for (var hdrName in ZmMailMsgView.displayAdditionalHdrsInMsgView) {
 			if (msg.attrs[hdrName]) {
@@ -1160,7 +1221,8 @@ function(msg, container, callback) {
 		hasAttachments    : hasAttachments,
 		attachmentsCount  : attachmentsCount,
 		isSyncFailureMsg  : isSyncFailureMsg,
-		additionalHdrs	  : additionalHdrs
+		additionalHdrs	  : additionalHdrs,
+        inviteMessage     : inviteMessage
 	};
 
 	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
@@ -1559,7 +1621,7 @@ function() {
 
 	if (attLinks.length > 1) {
 		imageAttsFound = imageAttsFound > 1;
-		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(this._msg.id, attLinks, imageAttsFound);
+		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(this._msg.id, attLinks, imageAttsFound, this._msg.subject);
 	}
 
 	var attLinksDiv = document.getElementById(this._attLinksId);
@@ -1876,6 +1938,15 @@ function(self, iframe, attempt) {
 		h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight, origHeight);
 
 		iframe.style.height = h + "px";
+
+        if(AjxEnv.isWebKitBased){
+            //bug: 39434, WebKit specific
+            // After the iframe ht is set there is change is body.scrollHeight, weird.
+            // So reset ht to make the entire body visible.
+            var newHt = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+            if(newHt > h)
+                iframe.style.height = newHt + "px";
+        }
 	}
 };
 
@@ -1903,7 +1974,7 @@ function(myId, tagId) {
 };
 
 ZmMailMsgView._detachCallback =
-function(isRfc822, result) {
+function(isRfc822, mode, result) {
     var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var resp = result.getResponse().GetMsgResponse;
 	var list = appCtxt.getApp(ZmApp.MAIL).getMailListController().getList();
@@ -1912,19 +1983,19 @@ function(isRfc822, result) {
 	msg._loaded = true; // bug fix #8868 - force load for rfc822 msgs since they may not return any content
 	msg.readReceiptRequested = false; // bug #36247 - never allow read receipt for rfc/822 message
 	msg._part = resp.m[0].part;
-	ZmMailMsgView.detachMsgInNewWindow(msg, isRfc822);
+	ZmMailMsgView.detachMsgInNewWindow(msg, isRfc822, mode);
 };
 
 ZmMailMsgView.detachMsgInNewWindow =
-function(msg, isRfc822) {
+function(msg, isRfc822, mode) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var newWinObj = appCtxt.getNewWindow(true);
 	newWinObj.command = "msgViewDetach";
-	newWinObj.params = { msg:msg, isRfc822:isRfc822 };
+	newWinObj.params = { msg:msg, isRfc822:isRfc822, mode:mode };
 };
 
 ZmMailMsgView.rfc822Callback =
-function(msgId, msgPartId) {
+function(msgId, msgPartId, mode) {
 	var isRfc822 = Boolean((msgPartId != null));
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var params = {
@@ -1933,7 +2004,7 @@ function(msgId, msgPartId) {
 		partId: msgPartId,
 		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
 		markRead: true,
-		callback: (new AjxCallback(null, ZmMailMsgView._detachCallback, [isRfc822]))
+		callback: (new AjxCallback(null, ZmMailMsgView._detachCallback, [isRfc822, mode]))
 	};
 	ZmMailMsg.fetchMsg(params);
 };
@@ -2020,8 +2091,15 @@ function(result) {
 };
 
 ZmMailMsgView._buildZipUrl =
-function(itemId, attachments, viewAllImages) {
-	var url = [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", itemId, "&part="].join("");
+function(itemId, attachments, viewAllImages, filename) {
+	if (AjxUtil.isString(filename)) {
+		filename = filename.replace(ZmMailMsgView.FILENAME_INV_CHARS_RE, "");
+	} else {
+		filename = null;
+	}
+	filename = AjxStringUtil.urlComponentEncode(filename || ZmMsg.downloadAllDefaultFileName);
+
+	var url = [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", itemId, "&filename=", filename, "&part="].join("");
 	var parts = [];
 	for (var j = 0; j < attachments.length; j++) {
 		parts.push(attachments[j].part);

@@ -47,6 +47,21 @@ function() {
 	return "ZmCalendarTreeController";
 };
 
+
+ZmCalendarTreeController.prototype._treeListener =
+function(ev) {
+
+    ZmTreeController.prototype._treeListener.call(this, ev);
+
+	if(ev.detail == DwtTree.ITEM_EXPANDED){
+        var calItem = ev.item;
+        var calendar = calItem.getData(Dwt.KEY_OBJECT);
+        if(calendar && calendar.isRemote() && calendar.isMountpoint){
+            this._fixupTreeNode(calItem, calendar, calItem._tree);
+        }
+	}
+};
+
 // Public methods
 
 /**
@@ -162,7 +177,7 @@ function(ev){
 	var folder = this._getActionedOrganizer(ev);
 	var url = (folder) ? folder.getRestUrl() : null;
 	if (url) {
-		window.open(url+".html", "_blank");
+		window.open(url+".html?tz=" + AjxTimezone.DEFAULT, "_blank");
 	}
 };
 

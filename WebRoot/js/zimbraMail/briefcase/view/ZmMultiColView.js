@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -15,18 +15,18 @@
 
 /**
  * @overview
- * 
+ *
  */
 
 /**
  * Creates the briefcase multi-column view.
  * @class
  * This class represents the briefcase multi-column  view.
- * 
+ *
  * @param	{ZmControl}		parent		the parent
  * @param	{ZmBriefcaseController}	controller		the controller
  * @param	{DWtDropTarget}		dropTgt		the drop target
- * 
+ *
  * @extends		ZmBriefcaseBaseView
  */
 ZmMultiColView = function(parent, controller, dropTgt) {
@@ -61,7 +61,7 @@ ZmMultiColView.prototype.constructor = ZmMultiColView;
 
 /**
  * Returns a string representation of the object.
- * 
+ *
  * @return		{String}		a string representation of the object
  */
 ZmMultiColView.prototype.toString = function() {
@@ -86,7 +86,7 @@ function() {
 
 /**
  * Gets the list view.
- * 
+ *
  * @param	{int}	idx		the index
  * @return	{ZmColListView}		the list view
  */
@@ -97,7 +97,7 @@ function(idx) {
 
 /**
  * Adds a column that displays a list of items.
- * 
+ *
  * @param	{DwtDropTarget}		dropTgt		the drop target
  * @return	{ZmColListView}	the list view
  */
@@ -120,18 +120,34 @@ function(dropTgt) {
 	div.id = this._divIds[idx];
 	this._divs[idx] = div;
 
-	var lv = this._listView[idx] = new ZmColListView(this, this._controller, dropTgt, idx);
+	var lv = this._listView[idx] = new ZmColListView(this, this._controller, dropTgt, idx);    
 	lv.reparentHtmlElement(this._divIds[idx]);
-
+    lv.addSelectionListener(new AjxListener(this, this._lvSelectListener, lv));
 	// so that scroll event gets handed to list view (div is its parent element and gets the event)
 	DwtControl.ALL_BY_ID[divId] = lv;
 
 	return lv;
 };
 
+ZmMultiColView.prototype._lvSelectListener =
+function(listView, ev){
+    this.setCurrentListIndex(listView._colIdx);
+    this.removeChildColumns(listView._colIdx);
+    var selection = listView.getSelection();
+    if(selection && selection.length > 0){
+        selection = selection[0];
+        if(selection.isFolder)
+            this.expandFolder(selection.id);
+        else
+            this.showFileProps(selection);
+    }else{
+        this.clearFolderProps();
+    } 
+};
+
 /**
  * Removes the list column.
- * 
+ *
  * @param	{int}	idx		the index
  */
 ZmMultiColView.prototype.removeListColumn =
@@ -147,7 +163,12 @@ function(idx) {
 			this._row.deleteCell(cell.cellIndex);
 		}
 
+        //Cleanup List / ListView 
 		var lv = this._listView[idx];
+        var list = lv._zmList;
+        if(list){
+            list.clear();
+        }
 		if (lv) {
 			lv.dispose();
 		}
@@ -169,13 +190,29 @@ function(idx) {
 // be a regular list view.
 ZmMultiColView.prototype.setCurrentListIndex =
 function(index) {
-
 	this._curListIndex = index;
 	this._curListView = this._listView[index];
-	this._controller._listView[this.view] = this._listView[index];
-	if (this._ctlrList[index]) {
-		this._controller._list = this._ctlrList[index];
-	}
+	this._controller._listView[this.view] = this._listView[index];	
+};
+
+ZmMultiColView.prototype.getItemList =
+function(id, folder){
+    var lv = this._getItemListView() || this._curListView;
+    return lv._zmList;
+};
+
+ZmMultiColView.prototype._getItemListView =
+function(folder){
+    var len = this._listView.length;
+    for(var i=0; i< len; i++){
+        var lv = this._listView[i];
+        if(!lv) continue;
+        
+        var fId = lv.folderId || lv._folderId;
+        if(fId == folder){
+            return lv;
+        }
+    }    
 };
 
 /**
@@ -198,18 +235,43 @@ function(folderId) {
 };
 
 ZmMultiColView.prototype.set =
-function(list) {
+function(list, initView) {
 
-	if (!this._curListView._itemsToAdd && !this._noReset) {
+	if (initView || (!this._curListView._itemsToAdd && !this._noReset)) {
 		this.resetColumns();
 	} else {
 		this.removeChildColumns(this._curListIndex);
 	}
 	this._noReset = false;
-	list = this._curListView.set(list);
-	this._ctlrList[this._curListIndex] = list;
+	var mcvlist = this._curListView.set(list);
+	this._ctlrList[this._curListIndex] = mcvlist;
 	this.setCurrentListIndex(this._curListIndex);
+    mcvlist.addChangeListener(new AjxListener(this, this._changeListener));
 };
+
+ZmMultiColView.prototype._changeListener =
+function(ev){
+
+    var item = this._curListView._getItemFromEvent(ev);
+    if(!item || item.handled) return;
+
+    if(ev.event == ZmEvent.E_MOVE){
+        //If the col list visible, add the briefcase item
+        var lv = this._getItemListView(item.folderId);
+        if(lv){
+            lv.addItem(item, 0, true);   
+        }
+    }
+};
+
+ZmMultiColView.prototype.handleNotifyCreate =
+function(create){
+    var lv = this._getItemListView(create.folderId) || this._curListView;
+    var list = lv && lv._zmList;    
+    if(list){
+        list.notifyCreate(create);
+    }
+};        
 
 ZmMultiColView.prototype.showFileProps =
 function(item) {
@@ -230,35 +292,36 @@ function(item) {
 		name = name.substring(0,20) + "..";
 	}
 
+    var prop = [];
+
 	var restURL = item.getRestUrl();
     var originalRestURL = item.getRestUrl(false, true);
+    var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
 
     //added for bug: 45150
     if(item.isWebDoc()) {
         restURL = this._controller.getApp().fixCrossDomainReference(restURL);
         originalRestURL = this._controller.getApp().fixCrossDomainReference(originalRestURL);
     }
-    if(window.isTinyMCE && item.isWebDoc()) {
-        restURL = restURL + "&editor=tinymce";//+"&preview=1";
 
+    //Name: fileLink
+    if(item.isWebDoc()){
+        if(window.isTinyMCE)
+            restURL += "&editor=tinymce";
+        restURL += "&preview=1&localeId="+AjxEnv.DEFAULT_LOCALE;
     }
+    var fileLink = [ '<a href="', restURL, '"',  (item.isWebDoc() ? ' target="_blank"' : ' onclick="ZmZimbraMail.unloadHackCallback();"'),'>', name, '</a>' ].join("");
+    prop.push({name:ZmMsg.name, value:fileLink});
 
-    var fileLink = [ '<a href="', restURL, '" target="_blank">', name, '</a>' ].join("");
-
-	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
-
-	var prop = [
-		{name:ZmMsg.name, value:fileLink},
-	];
-
+    //Action: actionLink
     if (item.isRealFile() || item.isSlideDoc() || item.isWebDoc()) {
         var actionLink;
         if (item.isSlideDoc()) {
-            actionLink = [ '<a href="', originalRestURL, "?fmt=html&run=1", '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
+            actionLink = [ '<a href="', originalRestURL, "?fmt=html&run=1&localeId="+AjxEnv.DEFAULT_LOCALE, '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
         } else if(item.isWebDoc()) {
-            actionLink = [ '<a href="', originalRestURL, "?fmt=html" + (window.isTinyMCE ?  "&editor=tinymce" : "") , '" target="_blank">', ZmMsg.edit, '</a>' ].join("");
+            actionLink = [ '<a href="', originalRestURL, "?fmt=html&localeId="+AjxEnv.DEFAULT_LOCALE + (window.isTinyMCE ?  "&editor=tinymce" : "") , '" target="_blank">', ZmMsg.edit, '</a>' ].join("");
         } else {
-            actionLink = [ '<a href="', originalRestURL, "?disp=a", '" target="_blank">', ZmMsg.saveFile, '</a>' ].join("");
+            actionLink = [ '<a href="', originalRestURL, "?disp=a", '" onclick="ZmZimbraMail.unloadHackCallback();">', ZmMsg.saveFile, '</a>' ].join("");
         }
         prop.push({name:ZmMsg.action, value:actionLink});
     }

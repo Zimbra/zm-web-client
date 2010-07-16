@@ -63,7 +63,7 @@ ZmContactList.prototype.constructor = ZmContactList;
 
 // Support for loading user's local contacts from a large string
 
-ZmContactList.URL = "/Contacts?fmt=cf&t=2";		// REST URL for loading user's local contacts
+ZmContactList.URL = "/Contacts?fmt=cf&t=2&all";	// REST URL for loading user's local contacts
 ZmContactList.CONTACT_SPLIT_CHAR	= '\u001E';	// char for splitting string into contacts
 ZmContactList.FIELD_SPLIT_CHAR		= '\u001D';	// char for splitting contact into fields
 // fields that belong to a contact rather than its attrs
@@ -430,7 +430,13 @@ function(params) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoadMove, [moveBatchCmd, hardMove]);
 			loadBatchCmd.run(respCallback);
 		} else {
-			var deleteCmd = new AjxCallback(this, this._itemAction, [{items:hardMove, action:"delete", actionText:ZmMsg.actionDelete}]);
+			var params1 = {
+				items: hardMove,
+				action: "delete",
+				actionText: ZmMsg.actionMove,
+				actionArg: params.folder.getName(false, false, true)
+			};
+			var deleteCmd = new AjxCallback(this, this._itemAction, [params1]);
 			moveBatchCmd.add(deleteCmd);
 
 			var respCallback = new AjxCallback(this, this._handleResponseMoveBatchCmd);
@@ -453,7 +459,7 @@ function(params) {
             params1.actionArg = params.folder.getName(false, false, true);
         }
 		params1.callback = params.outOfTrash && new AjxCallback(this, this._handleResponseMoveItems, params);
-		params1.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
+		params1.accountName = appCtxt.multiAccounts && params.items[0].getAccount().name;
 
 		this._itemAction(params1);
 	}

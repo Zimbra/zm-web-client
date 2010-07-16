@@ -150,6 +150,10 @@ ZmEditContactView.prototype.getFormItems = function() {
 				enabled: "this._contact && !this._contact.isShared()",
 				onclick: this._handleFolderButton
 			},
+			{ id: "TAG", type: "DwtControl",
+				enabled: "this._contact && !this._contact.isShared()",
+				visible: "appCtxt.get(ZmSetting.TAGGING_ENABLED)"
+			},
 			{ id: "ACCOUNT", type: "DwtLabel",
 				visible: "appCtxt.multiAccounts"
 			},
@@ -406,6 +410,9 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 		this._setFolder(folderOrId || ZmOrganizer.ID_ADDRBOOK);
 	}
 
+	if (this.getControl("TAG"))
+		this._setTags(contact);
+
 	// check show detail items for fields with values
 	for (var id in ZmEditContactView.ATTRS) {
 		var showId = "SHOW_"+id;
@@ -500,8 +507,7 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 						}
 						attributes[a] = v;
 					}
-				}
-				else {
+				} else {
 					var onlyvalue = ZmEditContactView.LISTS[id] && ZmEditContactView.LISTS[id].onlyvalue;
 					var v = onlyvalue ? item : item.value;
 					if (!v) continue;
@@ -586,8 +592,11 @@ ZmEditContactView.prototype.isEmpty = function(items) {
 		var value = this.getValue(id);
 		if (value) {
 			if (!AjxUtil.isArray(value)) {
-				if (value != item.ovalue)
-					return false;
+				if (id == "FOLDER") {
+					if (value != item.ovalue) return false;
+				} else {
+					if (value !== "") return false;
+				}
 			} else {
 				for (var i=0; i<value.length; i++) {
 					var valueitem = value[i];
@@ -618,6 +627,59 @@ ZmEditContactView.prototype.enableInputs = function(bEnable) {
  */
 ZmEditContactView.prototype.cleanup = function() {
 	this._contact = null;
+};
+
+ZmEditContactView.prototype._setTags =
+function(contactOrTagIds) {
+	var tagControl = this.getControl("TAG");
+	if (tagControl) {
+		if (contactOrTagIds === undefined) // contactOrTagIds can also be an empty array, so just checking for a falsy value should not happen here
+			contactOrTagIds = this._contact;
+		var tagIds = (contactOrTagIds instanceof ZmContact) ? contactOrTagIds.tags : contactOrTagIds;
+
+		tagControl.clearContent();
+		if (tagIds && tagIds.length) {
+			tagControl.setContent(this._getTagHtml(tagIds));
+			tagControl.setVisible(true);
+		} else {
+			tagControl.setVisible(false);
+		}
+	}
+};
+
+ZmEditContactView.prototype._getTagHtml =
+function(tagIds) {
+	var html = [];
+	var idx = 0;
+	var tagCellId = this.getControl("TAG").getHTMLElId();
+
+	// get sorted list of tags for this msg
+	var tags = [];
+	for (var i = 0; i < tagIds.length; i++) {
+		tags.push(appCtxt.getById(tagIds[i]));
+	}
+	tags.sort(ZmTag.sortCompare);
+
+	for (var j = 0; j < tags.length; j++) {
+		var tag = tags[j];
+		if (!tag) { continue; }
+		var icon = ZmTag.COLOR_ICON[tag.color];
+		var attr = ["id='", tagCellId, tag.id, "'"].join("");
+		// XXX: set proper class name for link once defined!
+		html[idx++] = "<a href='javascript:;' class='' onclick='ZmEditContactView._tagClicked(";
+		html[idx++] = '"';
+		html[idx++] = tag.id;
+		html[idx++] = '"';
+		html[idx++] = "); return false;'>";
+		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, tag.name);
+		html[idx++] = "</a>&nbsp;";
+	}
+	return html.join("");
+};
+
+ZmEditContactView._tagClicked =
+function() {
+	ZmContactSplitView._tagClicked.apply(this, arguments);
 };
 
 //
@@ -720,7 +782,13 @@ ZmEditContactView.prototype._handleDirty = function() {
 	var toolbar = this._controller && this._controller.getCurrentToolbar();
 	if (toolbar) {
 		var dirty = items.length > 0 ? items.length > 1 || items[0] != "IMAGE" || this._contact.id : false;
-		toolbar.enable(ZmOperation.SAVE, dirty);
+
+		// Creating a new contact with only the folder set should not be saveable until at least one other field has a value
+		var needitems = AjxUtil.hashCopy(this._items);
+		delete needitems["FOLDER"];
+		var empty = this.isEmpty(needitems); // false if one or more fields are set, excluding the folder field
+
+		toolbar.enable(ZmOperation.SAVE, dirty && !empty);
 	}
 	// debug information
 	this.setValue('DEBUG', items.join(', '));
@@ -798,8 +866,7 @@ ZmEditContactView.prototype._handleChooseFolder = function(organizer) {
 ZmEditContactView.prototype._contactChangeListener = function(ev) {
 	if (ev.type != ZmEvent.S_CONTACT) return;
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
-		// TODO
-//		this._setTags(this._contact);
+		this._setTags(this._contact);
 	}
 };
 
@@ -811,12 +878,8 @@ ZmEditContactView.prototype._tagChangeListener = function(ev) {
 
 	var fields = ev.getDetail("fields");
 	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
-	if ((ev.event == ZmEvent.E_MODIFY && changed) ||
-		ev.event == ZmEvent.E_DELETE ||
-		ev.event == ZmEvent.MODIFY)
-	{
-		// TODO
-//		this._setTags();
+	if ((ev.event == ZmEvent.E_MODIFY && changed) || ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY) {
+		this._setTags(this._contact);
 	}
 };
 
@@ -1142,6 +1205,7 @@ ZmEditContactViewRows = function(params) {
 	params.className = params.className || "ZmEditContactViewRows";
 	params.id = [params.parent.getHTMLElId(),params.formItemDef.id].join("_");
 	DwtFormRows.apply(this, arguments);
+    this.setScrollStyle(Dwt.VISIBLE);
 };
 ZmEditContactViewRows.prototype = new DwtFormRows;
 ZmEditContactViewRows.prototype.constructor = ZmEditContactViewRows;
@@ -1155,6 +1219,8 @@ ZmEditContactViewRows.prototype.constructor = ZmEditContactViewRows;
 ZmEditContactViewRows.prototype.toString = function() {
 	return "ZmEditContactViewRows";
 };
+
+ZmEditContactViewRows.prototype.TEMPLATE = "abook.Contacts#ZmEditContactViewRows";
 
 // Public methods
 
@@ -2107,8 +2173,7 @@ ZmEditContactViewOther.validator = function(item) {
 				if (isNaN(aDate) || aDate == null) {
 					throw ZmMsg.errorDate;
 				}
-                var formatter = ZmEditContactViewOther._getDateFormatter();
-				return formatter.format(aDate);
+				return ZmEditContactViewOther.formatDate(aDate);
 			}
 			return dateStr;
 		}
@@ -2159,15 +2224,21 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 		var id = [this.getHTMLElId(),"picker"].join("_");
 		this._picker = new DwtButton({parent:this,id:id});
 		this._picker.setImage("CalendarApp");
-		var menu = new DwtMenu({parent:this._picker,style:DwtMenu.CALENDAR_PICKER_STYLE});
-		menu.setSize("150");
-		menu._table.width = "100%";
+        this._picker.popup = ZmEditContactViewOther.__DwtButton_popup; // HACK
+
+        var menu = new DwtMenu({parent:this._picker,style:DwtMenu.GENERIC_WIDGET_STYLE});
+        this._picker.getHtmlElement().className += " ZmEditContactViewOtherCalendar";
 		this._picker.setMenu(menu);
 		this._picker.replaceElement(pickerEl);
+
         var listener = new AjxListener(this, this._handleDropDown);
         this._picker.addSelectionListener(listener);
         this._picker.addDropDownSelectionListener(listener);
-		var calendar = new DwtCalendar({parent:menu});
+
+        var container = new DwtComposite({parent:menu});
+        // TODO: use template?
+
+		var calendar = new DwtCalendar({parent:container});
 		calendar.setDate(new Date());
 		calendar.setFirstDayOfWeek(appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0);
 		calendar.addSelectionListener(new AjxListener(this,this._handleDateSelection,[calendar]));
@@ -2176,12 +2247,34 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 			control: this._picker
 		});
         this._calendar = calendar;
+
+        var checkbox = new DwtCheckbox({parent:container});
+        checkbox.setText(ZmMsg.includeYear);
+        this._calendarIncludeYear = checkbox;
 	}                                                        
+};
+
+// HACK: This function executes in the scope of the calendar picker
+// HACK: button. It avoids the calendar being resized and scrolled
+// HACK: when there's not enough room to display the menu below the
+// HACK: button.
+ZmEditContactViewOther.__DwtButton_popup = function() {
+    var button = this;
+    var size = button.getSize();
+    var location = Dwt.toWindow(button.getHtmlElement(), 0, 0);
+    var menu = button.getMenu();
+    var menuSize = menu.getSize();
+    var windowSize = DwtShell.getShell(window).getSize();
+    button._popupAbove = (location.y + size.y) + menuSize.y > windowSize.y;
+    if (AjxEnv.isIE) {
+        menu.getHtmlElement().style.width = "150px";
+    }
+    DwtButton.prototype.popup.apply(button, arguments);
 };
 
 ZmEditContactViewOther.prototype._createSelect = function() {
 	var id = [this.getHTMLElId(),"select"].join("_");
-	var select = new DwtComboBox({parent:this,inputParams:{size:14},id:id});
+	var select = new DwtComboBox({parent:this,inputParams:{size:18},id:id});
 	var options = this._options || [];
 	for (var i = 0; i < options.length; i++) {
 		var option = options[i];
@@ -2205,10 +2298,17 @@ ZmEditContactViewOther.parseDate = function(dateStr) {
     // NOTE: format for backwards compatibility.
     var aDate = AjxDateUtil.simpleParseDateStr(dateStr);
     if (isNaN(aDate) || aDate == null) {
-        var formatter = ZmEditContactViewOther._getDateFormatter();
-        aDate = formatter.parse(dateStr);
+        var noYear = dateStr.match(/^--/);
+        var pattern = noYear ? "--MM-dd" : "yyyy-MM-dd";
+        aDate = AjxDateFormat.parse(pattern, dateStr);
+        if (noYear) aDate.setFullYear(0);
     }
     return aDate;
+};
+
+ZmEditContactViewOther.formatDate = function(date) {
+    var pattern = date.getFullYear() == 0 ? "--MM-dd" : "yyyy-MM-dd";
+    return AjxDateFormat.format(pattern, date);
 };
 
 ZmEditContactViewOther._getDateFormatter = function() {
@@ -2219,18 +2319,31 @@ ZmEditContactViewOther._getDateFormatter = function() {
 };
 
 ZmEditContactViewOther.prototype._handleDropDown = function(evt) {
-    var formatter = ZmEditContactViewOther._getDateFormatter();
     var value = this.getValue().value;
-    var date = formatter.parse(value) || new Date;
+    var date = ZmEditContactViewOther.parseDate(value) || new Date;
+    var includeYear = date.getFullYear() != 0;
+    // NOTE: Temporarilly set the year to the current year in the
+    // NOTE: case of a date without a year set (i.e. full year == 0).
+    // NOTE: This is done so that the calendar doesn't show the
+    // NOTE: wrong year.
+    if (!includeYear) date.setFullYear(new Date().getFullYear());
     this._calendar.setDate(date);
+    this._calendarIncludeYear.setSelected(includeYear);
     this._picker.popup();
 };
 
 ZmEditContactViewOther.prototype._handleDateSelection = function(calendar) {
+    this._picker.getMenu().popdown();
+
 	if (!calendar) calendar = this._calendar;
-	var formatter = ZmEditContactViewOther._getDateFormatter();
+    var date = calendar.getDate();
+    if (!this._calendarIncludeYear.isSelected()) {
+        date = new Date(date.getTime());
+        date.setFullYear(0);
+    }
+
 	var value = this.getValue();
-	value.value = formatter.format(calendar.getDate());
+	value.value = ZmEditContactViewOther.formatDate(date);
 	this.setValue(value);
 	this.parent.setDirty(true);
 };

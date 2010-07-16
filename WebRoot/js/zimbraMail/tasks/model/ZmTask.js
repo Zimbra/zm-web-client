@@ -305,6 +305,10 @@ function(node, instNode) {
 			this.endDate.setHours(0,0,0);
 		}
 	}
+    //bug: 47394 if no duration then startDate is null
+    if(!node.dur) {
+        this.startDate = null;
+    }
 
 	if (node.name || comp)				this.name		= this._getAttr(node, comp, "name");
 	if (node.loc || comp)				this.location	= this._getAttr(node, comp, "loc");

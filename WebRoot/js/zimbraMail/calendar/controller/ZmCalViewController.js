@@ -436,8 +436,13 @@ function() {
 		var info = this._calItemStatus[i];
 		if (info.item) {
 			var calendar = info.item;
-			batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
-			itemCount++;
+			if(calendar.isRemote() && !calendar.isMountpoint && calendar.isReadOnly()){
+                calendar.isChecked = info.checked;
+                calendar.checkedCallback(info.checked);
+            }else{
+                batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
+			    itemCount++;
+            }
 		}
 	}
 
@@ -1448,15 +1453,19 @@ function() {
 
 ZmCalViewController.prototype._promptDeleteAppt =
 function(appt, mode) {
-	if (appt.isOrganizer()) {
-		if (mode == ZmCalItem.MODE_DELETE_SERIES) {
-			this._promptDeleteFutureInstances(appt, mode);
-		} else {
-			this._promptCancelReply(appt, mode);
-		}
-	} else {
-		this._promptDeleteNotify(appt, mode);
-	}
+    if (appt instanceof Array) {
+        this._continueDelete(appt, mode);
+    } else {
+        if (appt.isOrganizer()) {
+            if (mode == ZmCalItem.MODE_DELETE_SERIES) {
+                this._promptDeleteFutureInstances(appt, mode);
+            } else {
+                this._promptCancelReply(appt, mode);
+            }
+        } else {
+            this._promptDeleteNotify(appt, mode);
+        }
+    }
 };
 
 ZmCalViewController.prototype._promptCancelReply =
@@ -2793,14 +2802,18 @@ function() {
 		clearCacheByFolder = true;
 	}
 	this._clearCacheFolderMap = {};
-	
+
+    //offline client makes batch request for each account configured causing
+    //refresh overlap clearing calendar
+    var timer = (appCtxt.isOffline && this.searchInProgress) ? 1000 : 0;
+    
 	if (this._clearCache) {
 		var act = new AjxTimedAction(this, this._refreshAction);
-		AjxTimedAction.scheduleAction(act, 0);
+		AjxTimedAction.scheduleAction(act, timer);
 		this._clearCache = false;
 	} else if(clearCacheByFolder) {
 		var act = new AjxTimedAction(this, this._refreshAction, [true]);
-		AjxTimedAction.scheduleAction(act, 0);
+		AjxTimedAction.scheduleAction(act, timer);
 	}
 };
 
@@ -3120,4 +3133,130 @@ function(appt) {
 		var url = [restUrl, (restUrl.indexOf("?")==-1) ? "?" : "&", "mime=text/plain", "&", "noAttach=1"].join("");
 		window.open(url, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 	}
+};
+
+ZmCalViewController.prototype.getAppointmentByInvite =
+function(invite, callback) {
+
+    var apptId = invite.getAppointmentId();
+    if(apptId) {
+        var jsonObj = {GetAppointmentRequest:{_jsns:"urn:zimbraMail"}};
+        var request = jsonObj.GetAppointmentRequest;
+        request.id = apptId;
+        request.includeContent = "1";
+
+        var accountName = (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null);
+
+        appCtxt.getAppController().sendRequest({
+            jsonObj: jsonObj,
+            asyncMode: true,
+            callback: (new AjxCallback(this, this._getApptItemInfoHandler, [invite, callback])),
+            errorCallback: (new AjxCallback(this, this._getApptItemInfoErrorHandler, [invite, callback])),
+            accountName: accountName
+        });
+    }
+};
+
+ZmCalViewController.prototype._getApptItemInfoHandler =
+function(invite, callback, result) {
+    var resp = result.getResponse();
+    resp = resp.GetAppointmentResponse;
+
+    var apptList = new ZmApptList();
+    var apptNode = resp.appt[0];
+    var appt = ZmAppt.createFromDom(apptNode, {list: apptList}, null);
+
+    var invites = apptNode.inv;
+    this.setApptInvitationId(appt, invites, invite);
+
+    if(callback) {
+        callback.run(appt);
+    }
+};
+
+ZmCalViewController.prototype._getApptItemInfoErrorHandler =
+function(invite, callback, result) {
+    var msgDialog = appCtxt.getMsgDialog();
+    msgDialog.reset();
+    msgDialog.setMessage(ZmMsg.unableToAcceptTime, DwtMessageDialog.INFO_STYLE);
+    msgDialog.popup();
+    return true;
+};
+
+ZmCalViewController.prototype.acceptProposedTime =
+function(apptId, invite, proposeTimeCallback) {
+
+    this._proposedTimeCallback = proposeTimeCallback;
+
+    if(apptId) {
+        var callback = new AjxCallback(this, this._acceptProposedTimeContinue, [invite]);
+        this.getAppointmentByInvite(invite, callback);
+    }else {
+        var msgDialog = appCtxt.getMsgDialog();
+        msgDialog.reset();
+        msgDialog.setMessage(ZmMsg.unableToAcceptTime, DwtMessageDialog.INFO_STYLE);
+        msgDialog.popup();
+    }
+};
+
+ZmCalViewController.prototype._acceptProposedTimeContinue =
+function(invite, appt) {
+    var mode = appt.isRecurring() ? (appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES) : ZmCalItem.MODE_EDIT;
+    appt.setProposedInvite(invite);
+    appt.setProposedTimeCallback(this._proposedTimeCallback);
+    this.editAppointment(appt, mode);   
+};
+
+ZmCalViewController.prototype.setApptInvitationId =
+function(appt, invites, proposedInvite) {
+    var proposalRidZ = proposedInvite.getRecurrenceId();
+    if(proposedInvite.components[0].ridZ) {
+        for(var i in invites) {
+            var inv = invites[i];
+            if(inv.comp[0].ridZ  == proposalRidZ) {
+                appt.invId = appt.id + "-" + inv.id;
+                break;
+            }
+        }
+    }else {
+        appt.invId = appt.id + "-" + invites[0].id;
+    }
+};
+
+ZmCalViewController.prototype.proposeNewTime =
+function(msg) {
+    var newAppt = this.newApptObject(new Date(), null, null, msg);
+    newAppt.setProposeTimeMode(true);
+    newAppt.setFromMailMessageInvite(msg);
+    AjxDispatcher.run("GetApptComposeController").proposeNewTime(newAppt);	
+};
+
+ZmCalViewController.prototype.forwardInvite =
+function(msg) {
+    var invite = msg.invite;
+    var apptId = invite.getAppointmentId();
+
+    if(apptId && invite.isOrganizer()) {
+        var callback = new AjxCallback(this, this.forwardInviteContinue, [invite, msg]);
+        this.getAppointmentByInvite(invite, callback);
+    }else {
+        var newAppt = this.newApptObject(new Date(), null, null, msg);
+        newAppt.setForwardMode(true);
+        newAppt.setFromMailMessageInvite(msg);
+        AjxDispatcher.run("GetApptComposeController").forwardInvite(newAppt);
+    }
+};
+
+ZmCalViewController.prototype.forwardInviteContinue =
+function(invite, msg, appt) {
+    appt.setForwardMode(true);
+    appt.setFromMailMessageInvite(msg);    
+    var mode = appt.isRecurring() ? (appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES) : ZmCalItem.MODE_EDIT;
+    var clone = ZmAppt.quickClone(appt);
+    clone.getDetails(mode, new AjxCallback(this, this._forwardInviteCompose, [clone]));
+};
+
+ZmCalViewController.prototype._forwardInviteCompose =
+function (appt) {
+    AjxDispatcher.run("GetApptComposeController").forwardInvite(appt);
 };

@@ -15,12 +15,11 @@ a{
 /* Chrome*/
 
 html, body{
-	font: normal 11px Arial,Tahoma,helvetica,Verdana,sans-serif;;
+	font: normal 13px Arial,Tahoma,helvetica,Verdana,sans-serif;;
 	overflow: hidden;
 }
 
 .ul li{
-
 	list-style: none;
 	display: inline;
 	margin: 0;
@@ -42,7 +41,7 @@ html, body{
 
 .topbar {
 	background: #dbd0b5 url("/img/mobile/ipad/topbar-bg.gif") repeat-x top left;
-	height: 40px;
+	height: 50px;
 	overflow: hidden;
 	color: #5f5a4a;
 
@@ -59,13 +58,13 @@ html, body{
 		width: 80px;
 		height: 20px;
 		float: left;
-		margin: 10px 0 0 10px;
+		margin: 15px 0 0 15px;
 }
 
 
 .search{
 
-		margin: 10px 10px 0 0;
+		margin: 15px 10px 0 0;
 		width: 200px;		
 }
 
@@ -78,7 +77,7 @@ html, body{
 
 
 .signout{
-		margin: 15px 10px 0 10px;
+		margin: 20px 10px 0 15px;
 }
 
 	.signout a{
@@ -91,8 +90,8 @@ html, body{
 }
 
 	ul.ul{
-		margin: 20px 0 0 20%;
-		width: 455px;		
+		margin: 25px 0 0 10%;
+		width: 500px;		
 	}
 
 	 ul.ul li{
@@ -102,20 +101,21 @@ html, body{
 	
 		ul.ul li a{ color: #5f5a4a; }
 
-	ul.ul li.sel{
+	ul.ul li.sel, ul.ul li:active{
 		background: #7f7b6e url("/img/mobile/ipad/tab-selected.gif") repeat-x top left;
 		-webkit-border-top-left-radius: 4px;
 		-webkit-border-top-right-radius: 4px;
 		color: white;
 		font-weight: bold;
 	}
+	
+		ul.ul li.sel a, ul.ul li:active a{ color: white; } 
 
-		ul.ul li.sel a{ color: white; } 
 
 /* Toolbar Style */
 
 .toolbar{
-	background: #676356 url("/img/mobile/ipad/toolbar-bg.gif") repeat-x top left;
+	background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left;
 	height: 45px;
 	overflow: hidden;
 	border: none;
@@ -123,27 +123,24 @@ html, body{
 }
 
 .overviewActions{
-	/* float: left;
-	width: 24.9%; */
 	border-right: 1px solid #999;
 }
 
 .applicationActions{
-	/* float: left;
-	width: 74.9%; */
 	border-left: 1px solid #444;
-
 }
 
 
 .button{
-	background: #c5bba3 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
+	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
 	-webkit-border-radius: 6px;
-	height: 20px;
-	padding: 6px 4px 0 4px;
-	font-size: 11px;
+	-webkit-box-shadow: rgba(255,255,255,0.1)0 1px 0;
+	border: 1px solid #555;
+	height: 22px;
+	padding: 8px 4px 0 4px;
+	font-size: 12px;
 	font-weight: bold;
-	text-align: center;
+	text-align: center;	
 }
 
 	.button:active{
@@ -197,6 +194,7 @@ html, body{
 		width: 70px;
 		color: #453928;
 		font-weight: bold;
+		margin-top: -3px !important;
 	}
 
 
@@ -220,15 +218,14 @@ html, body{
 	float: right;
 	margin-right: 10px;
 	overflow: hidden;
-
 }
 
-.left, .center, .right{
+.actionLeft, .actionCenter, .actionRight{
  	float: left;
 
 }
 
-.left{
+.actionLeft{
 	-webkit-border-top-left-radius: 6px;
 	-webkit-border-bottom-left-radius: 6px;
 	-webkit-border-top-right-radius: 0;
@@ -236,7 +233,7 @@ html, body{
 	border-right: 1px solid #999;
 }
  
-.center{
+.actionCenter{
 	-webkit-border-top-left-radius: 0;
 	-webkit-border-bottom-left-radius: 0;
 	-webkit-border-top-right-radius: 0;
@@ -245,7 +242,7 @@ html, body{
 	border-right: 1px solid #999;
 }
 
-.right{
+.actionRight{
 	-webkit-border-top-left-radius: 0;
 	-webkit-border-bottom-left-radius: 0;
 	-webkit-border-top-right-radius: 6px;
@@ -253,10 +250,8 @@ html, body{
 	border-left: 1px solid #444;
 }
 
-.left div, .center div, .right div{
+.actionLeft div, .actionCenter div, .actionRight div{
 	margin: 4px;
-
-
 }
 
 
@@ -337,6 +332,7 @@ ul.list li{
 	width: 29.9%;
 	color: white;
 	text-align: right;
+	margin-top: 2px;
 }
 
 	.time a {
@@ -349,10 +345,10 @@ ul.list li{
 .msgBody{
 	background-color: white;
 	-webkit-border-radius: 12px;
-	height: 570px;
+	height: 520px;
 	margin: 5px 10px 10px 10px ;
 	padding: 10px;
-	overflow-y: auto;
+	overflow: auto;
 	word-break: break-all;
 	-webkit-box-shadow: 3px 2px 5px #666;
 }
@@ -372,7 +368,7 @@ ul.list li{
 	padding: 0 !important;
 	margin-top: 6px;
 	color: #453928;
-	font-size: 11px;
+	font-size: 12px;
 	font-weight: bold;
 	width: 40% !important;
 }
@@ -392,7 +388,7 @@ ul.list li{
 .wrap-dlist {
     position:relative;	/* needed */
     z-index:10;			/* needed and important */
-    height: 610px;
+    height: 580px;
 }
 
 .tbl {
@@ -410,8 +406,8 @@ ul.list li{
     display: table-cell;
     vertical-align: middle;
     text-align: center;
-    padding-top:4px;
-    padding-bottom:4px;
+    padding-top:10px;
+    padding-bottom:10px;
 }
 
 .dlist .list-row .td, .dlist .list-row-unread .td, .lableBorder{
@@ -480,7 +476,7 @@ ul.list li{
 	.l a{ 
 		color: #666666;
 		text-decoration: none;
-		
+		font-size: 12px;
 		
 	}
 .m {
@@ -520,6 +516,10 @@ ul.list li{
 
 .Flag{
 	background: transparent url("/img/startup/ImgFlagRed.gif") no-repeat top left;
+}
+
+.Edit{
+	background: transparent url("/img/startup/ImgEdit.gif") no-repeat top left;
 }
 
 .View hr{
@@ -606,7 +606,58 @@ span.aleft > div:first-child, .contactHeader {
     margin-bottom: 2px;
 }
 
+.left{
+	border-right: none;
+	border-bottom: 1px solid #ede8d8;
+	text-align: left;
+}
 
+.right{	
+	border-left: none;
+	border-bottom: 1px solid #ede8d8;
+}
+
+
+.Folders a:link{
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 12px;
+	color: black;	
+}
+
+.folderBar{
+	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
+	height: 15px;
+	color: #453928;
+}
+
+	.folderBar .td{ 
+		text-align: left;
+		padding: 8px;
+	} 
+	
+	.folderBar .left{ border-bottom: none; font-weight: bold; }
+	
+	.folderBar .right{
+		border-bottom: none;
+	}
+	
+	.folderBar .right a{
+		text-decoration: none;
+		color: blue;
+	}
+	
+.editFix{ 
+	text-align: right !important;
+	padding-right: 10px;
+}	
+
+/** Msg View **/
+
+.zo_mv_body{
+	margin-top: 10px;
+	font-size: 14px;
+}
 
 /** needed for iscroll.js **/
 .scrollbar {
@@ -647,20 +698,18 @@ span.aleft > div:first-child, .contactHeader {
 	z-index: 14;
 	width: 100%;
 }
+
 .composeBox{
-	width: 500px;
-	margin: 2px auto;
+	width: 600px;
+	margin: 5px auto;
 	position: relative;
 	-webkit-box-shadow: 3px 2px 5px #333;
 	background-color: transparent;
-
-
-
 }
 
 .composeToolbar{
-	background: #dbd0b5 url("/img/mobile/ipad/topbar-bg.gif") repeat-x top left;
-	height: 40px;
+	background: #e7decb url("/img/mobile/ipad/topbar-bg.gif") repeat-x bottom left;
+	height: 45px;
 	overflow: hidden;
 	border: none;
 	-webkit-border-top-left-radius: 8px;
@@ -669,7 +718,7 @@ span.aleft > div:first-child, .contactHeader {
 	
 	.composeToolbar .compose, .composeToolbar .buttonRight{
 		margin-top: 6px;
-	}
+	}	
 	
 	
 .composeFields{
@@ -677,20 +726,20 @@ span.aleft > div:first-child, .contactHeader {
 	height: 30%;
 	-webkit-border-bottom-left-radius: 8px;
 	-webkit-border-bottom-right-radius: 8px;
+	padding: 4px;
 }
 
 
 .cmp_container .View div.tr, .cmp_body, .cmp_body textarea{
 	width: 95%;
 	text-align: left;
-	margin-bottom: 8px;
-	padding: 4px;
+	padding: 0 4px;
 	display: block;
 	font-size: 14px;
 }
 
 .cmp_container .View span.label{
-	width: 100px;
+	width: 80px;
 }
 
 .cmp_container .View span.value div{
@@ -699,10 +748,10 @@ span.aleft > div:first-child, .contactHeader {
 }
 
 .cmp_container .View span.value, .cmp_container .View span.value input{
-	width: 365px;
+	width: 490px;
 }
  .cmp_body textarea{
- 	height: 200px;
+ 	height: 300px;
  	width: 100%;
  	margin-left: 2px;
  }

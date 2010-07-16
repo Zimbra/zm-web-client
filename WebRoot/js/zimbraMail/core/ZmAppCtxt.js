@@ -1189,6 +1189,19 @@ function(fullVersion, width, height) {
 	}
 	var newWin = window.open(url.join(""), "_blank", args);
 
+	// Chrome-specific way to detect popup-blocker (I know, it's ugly as hell isn't it?)
+	if (newWin && AjxEnv.isChrome) {
+		var oldOnload = newWin.onload;
+		newWin.onload = function() {
+			if (oldOnload)
+				oldOnload();
+			setTimeout(function() { // need to halt this for a bit so innerHeight can get in place (otherwise we may display the statusmsg when the window is not actually blocked)
+					if (newWin.innerHeight == 0)
+						appCtxt.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
+				}, 1);
+		};
+	}
+
 	if (!newWin) {
 		this.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
 	} else {

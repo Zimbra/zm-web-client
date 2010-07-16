@@ -124,6 +124,9 @@ function() {
 		this._acLocationsList.reset();
 		this._acLocationsList.show(false);
 	}
+
+    //Default Persona
+    this.setIdentity();
 };
 
 // Acceptable hack needed to prevent cursor from bleeding thru higher z-index'd views
@@ -247,7 +250,15 @@ function() {
 
 ZmApptEditView.prototype._populateForSave =
 function(calItem) {
-	ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
+
+    ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
+
+    //Handle Persona's
+    var identity = this.getIdentity();
+    if(identity){
+       calItem.identity = identity; 
+       calItem.sentBy = (identity && identity.getField(ZmIdentity.SEND_FROM_ADDRESS));
+    }
 
 	calItem.freeBusy = this._showAsSelect.getValue();
 	calItem.privacy = this._privacySelect.getValue();
@@ -286,6 +297,7 @@ function(calItem) {
 	}
 
     calItem.isForward = this._isForward;
+    calItem.isProposeTime = this._isProposeTime;
 
     if(this._isForward)  {
         var addrs = this._collectForwardAddrs();
@@ -311,8 +323,11 @@ function(calItem, mode) {
 
 	ZmCalItemEditView.prototype._populateForEdit.call(this, calItem, mode);
 
+    var enableTimeSelection = !this._isForward;
+    var enableApptDetails = !this._isForward && !this._isProposeTime;
+
 	this._showAsSelect.setSelectedValue(calItem.freeBusy);
-    this._showAsSelect.setEnabled(!this._isForward);
+    this._showAsSelect.setEnabled(enableApptDetails);
 	this._privacySelect.setSelectedValue(calItem.privacy);
 
 	// reset the date/time values based on current time
@@ -350,12 +365,13 @@ function(calItem, mode) {
     //need to capture initial time set while composing/editing appt
     ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 
+    this._startTimeSelect.setEnabled(enableTimeSelection);
+    this._endTimeSelect.setEnabled(enableTimeSelection);
+    this._startDateButton.setEnabled(enableTimeSelection);
+    this._endDateButton.setEnabled(enableTimeSelection);
 
-    this._startTimeSelect.setEnabled(!this._isForward);
-    this._endTimeSelect.setEnabled(!this._isForward);
-    this._startDateButton.setEnabled(!this._isForward);
-    this._endDateButton.setEnabled(!this._isForward);
-
+    this._fwdApptOrigAttendees = [];
+    
 	// attendees
 	var tp;
 	var attendees = calItem.getAttendees(ZmCalBaseItem.PERSON);
@@ -379,6 +395,7 @@ function(calItem, mode) {
             this._attendeesInputField.setValue("");
         }
         this._attendees[ZmCalBaseItem.PERSON] = new AjxVector();
+        this._attInputField[ZmCalBaseItem.PERSON] = this._isForward ? this._forwardToField : this._attendeesInputField;        
     }
 
 	// set the location *label*    
@@ -400,10 +417,11 @@ function(calItem, mode) {
 	if (this._privacySelect) {
 		var isRemote = calItem.isShared();
 		var cal = isRemote ? appCtxt.getById(calItem.folderId) : null;
-		var isEnabled = ((!isRemote || (cal && cal.hasPrivateAccess())) && !this._isForward);
+		var isPrivacyEnabled = ((!isRemote || (cal && cal.hasPrivateAccess())) && enableApptDetails);
 		var defaultPrivacyOption = (appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY) == ZmSetting.CAL_VISIBILITY_PRIV)?"PRI":"PUB";
-		this._privacySelect.setSelectedValue(isEnabled ? (calItem.privacy || defaultPrivacyOption) : "PUB");
-		this._privacySelect.setEnabled(isEnabled);
+
+        this._privacySelect.setSelectedValue(isPrivacyEnabled ? (calItem.privacy || defaultPrivacyOption) : "PUB");
+		this._privacySelect.setEnabled(isPrivacyEnabled);
 	}
 
 	// set the equipment attendee(s)
@@ -423,22 +441,55 @@ function(calItem, mode) {
 		// by default the changes made to the appt should be visible to others
 		this._sendNotificationMailCheckbox.checked = true;
 		this._isOrganizer = calItem.isOrganizer();
-		this._attInputField[ZmCalBaseItem.PERSON].setEnabled(calItem.isOrganizer() || this._isForward);
+		//this._attInputField[ZmCalBaseItem.PERSON].setEnabled(calItem.isOrganizer() || this._isForward);
         Dwt.setVisible(this._notificationOptions, calItem.isOrganizer());
         Dwt.setVisible(this._organizerOptions, !calItem.isOrganizer());
         if(this._organizerData) {
             this._organizerData.innerHTML = calItem.getOrganizer() || "";
         }
+        this._calItemOrganizer =  calItem.getOrganizer() || "";
+        this._forwardToField.setValue(this._isProposeTime ? calItem.getOrganizer() : "");        
+        this._forwardToField.setEnabled(!this._isProposeTime);
+        if(this._pickerButton) this._pickerButton.setEnabled(!this._isProposeTime);
 	}
 
-    this._forwardToField.setValue("");
 
-    this._folderSelect.setEnabled(!this._isForward);
+    this._folderSelect.setEnabled(enableApptDetails);
     if (this._reminderSelect) {
-		this._reminderSelect.setEnabled(!this._isForward);
+		this._reminderSelect.setEnabled(enableTimeSelection);
 	}
-    this._allDayCheckbox.disabled = this._isForward;    
+
+    this._allDayCheckbox.disabled = !enableTimeSelection;
+
+    var label = ZmMsg.time;
+
+    if(calItem.isAcceptingProposal) {
+        this._isDirty = true;
+        label = ZmMsg.proposedTime;
+    }
+
+    if(this._isProposeTime) {
+        label = ZmMsg.proposeNewTime;        
+    }
+
+    if(this._timeLegend) this._timeLegend.innerHTML = label;
+
+    //Persona's   [ Should select Persona as combination of both DisplayName, FromAddress ]
+    var sentBy = calItem.sentBy;
+    sentBy = sentBy || (calItem.organizer != calItem.getFolder().getOwner() ? calItem.organizer : null);
+    if(sentBy){
+        this.setIdentity(appCtxt.getIdentityCollection().getIdentityBySendAddress(sentBy));
+    }
 };
+
+ZmApptEditView.prototype.getCalItemOrganizer =
+function() {
+	var folderId = this._folderSelect.getValue();
+	var organizer = new ZmContact(null);
+	organizer.initFromEmail(this._calItemOrganizer, true);
+	return organizer;
+};
+
 
 ZmApptEditView.prototype._addResourcesDiv =
 function(calItem) {
@@ -528,6 +579,7 @@ function(width) {
 	inputEl._attType = ZmCalBaseItem.LOCATION;
 
 	this._resourcesContainer = document.getElementById(this._htmlElId + "_resourcesContainer");
+	this._timeLegend = document.getElementById(this._htmlElId + "_timeLegend");
 	this._resourcesData = document.getElementById(this._htmlElId + "_resourcesData");
 
 	// show-as DwtSelect
@@ -570,7 +622,7 @@ function(width) {
             parentElement: (this._htmlElId + "_to_control")
         };
         var input = new DwtInputField(params);
-        var inputEl = input.getInputElement();
+        var inputEl = input.getInputElement();                  
         Dwt.setSize(inputEl, "100%", "24px");
         inputEl._attType = ZmCalBaseItem.PERSON;
 
@@ -609,6 +661,103 @@ function(width) {
             button.addrType = ZmCalBaseItem.PERSON;
         }
     }
+
+    //Personas
+    //TODO: Remove size check once we add identityCollection change listener.
+    if(appCtxt.get(ZmSetting.IDENTITIES_ENABLED) && !appCtxt.multiAccounts){
+        var identityOptions = this._getIdentityOptions();
+        this.identitySelect = new DwtSelect({parent:this, options:identityOptions, parentElement: (this._htmlElId + "_identity")});
+        this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
+    }
+
+    this._setIdentityVisible();
+};
+
+//TODO:
+    // 1. Organizer/From is always Persona  - Done
+    // 2. Remote Cals -  sentBy is Persona  - Done
+    // 3. Appt. Summary body needs Persona details - Needs Action
+    // 4. No Persona's Case  - Done
+
+ZmApptEditView.prototype.setIdentity =
+function(identity){
+    if (this.identitySelect) {
+        identity = identity || appCtxt.getIdentityCollection().defaultIdentity;
+        this.identitySelect.setSelectedValue(identity.id);
+    }
+};
+
+ZmApptEditView.prototype.getIdentity =
+function() {
+
+	if (this.identitySelect) {
+		var collection = appCtxt.getIdentityCollection();
+		var val = this.identitySelect.getValue();
+		var identity = collection.getById(val);
+		return identity ? identity : collection.defaultIdentity;
+	}
+};
+
+ZmApptEditView.prototype._setIdentityVisible =
+function() {
+	if (!appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) return;
+
+	var div = document.getElementById(this._htmlElId + "_identityContainer");
+	if (!div) return;
+
+	var visible = appCtxt.getIdentityCollection().getSize() > 1;
+    Dwt.setVisible(div, visible);
+};
+
+ZmApptEditView.prototype._getIdentityOptions =
+function() {
+	var options = [];
+	var identityCollection = appCtxt.getIdentityCollection();
+	var identities = identityCollection.getIdentities();
+    var defaultIdentity = identityCollection.defaultIdentity;
+	for (var i = 0, count = identities.length; i < count; i++) {
+		var identity = identities[i];
+		options.push(new DwtSelectOptionData(identity.id, this._getIdentityText(identity), (identity.id == defaultIdentity.id)));
+	}
+	return options;
+};
+
+ZmApptEditView.prototype._getIdentityText =
+function(identity, account) {
+	var name = identity.name;
+	if (identity.isDefault && name == ZmIdentity.DEFAULT_NAME) {
+		name = account ? account.getDisplayName() : ZmMsg.accountDefault;
+	}
+
+	// default replacement parameters
+	var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
+	var params = [
+		name,
+		(identity.sendFromDisplay || ''),
+		identity.sendFromAddress,
+		ZmMsg.accountDefault,
+		appCtxt.get(ZmSetting.DISPLAY_NAME),
+		defaultIdentity.sendFromAddress
+	];
+
+	// get appropriate pattern
+	var pattern;
+	if (identity.isDefault) {
+		pattern = ZmMsg.identityTextPrimary;
+	}
+	else if (identity.isFromDataSource) {
+		var ds = appCtxt.getDataSourceCollection().getById(identity.id);
+		params[1] = ds.userName || '';
+		params[2] = ds.getEmail();
+		var provider = ZmDataSource.getProviderForAccount(ds);
+		pattern = (provider && ZmMsg["identityText-"+provider.id]) || ZmMsg.identityTextExternal;
+	}
+	else {
+		pattern = ZmMsg.identityTextPersona;
+	}
+
+	// format text
+	return AjxMessageFormat.format(pattern, params);
 };
 
 ZmApptEditView.prototype._addressButtonListener =
@@ -680,13 +829,24 @@ function() {
 };
 
 
+ZmApptEditView.prototype.initialize =
+function(calItem, mode, isDirty, apptComposeMode) {
+    this._isForward = (apptComposeMode == ZmApptComposeView.FORWARD);
+    this._isProposeTime = (apptComposeMode == ZmApptComposeView.PROPOSE_TIME);
+
+    ZmCalItemEditView.prototype.initialize.call(this, calItem, mode, isDirty, apptComposeMode);
+};
+
 ZmApptEditView.prototype._folderListener =
 function() {
 	if (!this._privacySelect) { return; }
 
 	var calId = this._folderSelect.getValue();
 	var cal = appCtxt.getById(calId);
-
+    //bug:48189 Hide schedule tab for non-ZCS acct
+    if(appCtxt.isOffline){
+        this.parent.parent.setTabVisibility([ZmApptComposeView.TAB_SCHEDULE], cal.getAccount().isZimbraAccount);
+    }
 	var acct = appCtxt.getActiveAccount();
 	var id = String(cal.id);
 	var isRemote = (id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0);
@@ -841,6 +1001,7 @@ function() {
 
 	inputEl = this._attInputField[ZmCalBaseItem.LOCATION].getInputElement();
 	inputEl.onkeypress = AjxCallback.simpleClosure(this._handleKeyPress, this);
+    if(AjxEnv.isIE) inputEl.onkeydown = AjxCallback.simpleClosure(this._handleKeyPress, this);
 };
 
 // cache all input fields so we dont waste time traversing DOM each time
@@ -862,7 +1023,8 @@ function(dateInfo) {
 		showTimezone = appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) ||
 					   dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 	}
-	Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
+
+    Dwt.setDisplay(this._tzoneSelect.getHtmlElement(), showTimezone ? Dwt.DISPLAY_INLINE : Dwt.DISPLAY_NONE)
 };
 
 ZmApptEditView.prototype._showTimeFields =
@@ -902,7 +1064,7 @@ function(excludeAttendees, excludeReminder) {
 		AjxDateUtil.getServerDateTime(endDate)
 	);
 	vals.push("" + this._allDayCheckbox.checked);
-	if (Dwt.getVisibility(this._tzoneSelect.getHtmlElement()))
+	if (Dwt.getDisplay(this._tzoneSelect.getHtmlElement()) != Dwt.DISPLAY_NONE);
 		vals.push(this._tzoneSelect.getValue());
 	vals.push(this._repeatSelect.getValue());
 	if (!excludeAttendees) {
@@ -912,6 +1074,10 @@ function(excludeAttendees, excludeReminder) {
 
     if(this._isForward) {
 	    vals.push(this._forwardToField.getValue());
+    }
+
+    if(this.identitySelect){
+        vals.push(this.getIdentity().id);        
     }
 
 	var str = vals.join("|");
@@ -926,6 +1092,7 @@ ZmApptEditView.prototype._timeChangeListener =
 function(ev, id) {
 	ZmTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField, this._dateInfo, id);
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+    this._dateInfo.isTimeModified = true;
 };
 
 ZmApptEditView.prototype._timezoneListener =

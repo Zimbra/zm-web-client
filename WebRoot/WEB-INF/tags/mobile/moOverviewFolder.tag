@@ -39,8 +39,15 @@
     <span class='td left' onclick='return zClickLink("FLDR${folder.id}")' width="94%">
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
             <span class="SmlIcnHldr Fldr${folder.type}">&nbsp;</span>
-            ${fn:escapeXml(zm:truncateFixed(label,30,true))}
-            <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount})</c:if>
+            <c:choose>
+                <c:when test="${folder.hasUnread}">
+                    <c:set var="folderName" value="${label} (${folder.unreadCount})"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="folderName" value="${label}"/>
+                </c:otherwise>
+            </c:choose>
+            ${fn:escapeXml(zm:truncateFixed(folderName,24,true))}
         </a>
     </span>
     <c:if test="${!folder.isSystemFolder}">
@@ -71,7 +78,7 @@
                 </c:choose>
             </c:otherwise>
         </c:choose>
-        <span class="td right" width="5%"><a class="SmlIcnHldr Edit" href="?st=${param.st}&_ajxnoca=1&show${what}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span>
+        <span class="td right editFix" width="5%"><a class="SmlIcnHldr Edit" href="?st=${param.st}&_ajxnoca=1&show${what}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span>
     </c:if>
         </div>
     </div>

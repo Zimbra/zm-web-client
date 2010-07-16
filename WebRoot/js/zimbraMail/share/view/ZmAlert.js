@@ -51,7 +51,9 @@ function() {
 
 /**
  * Private class only used by ZmAlert.
- * Manages an interval that tells alerts when to flash icons and titles and such. 
+ * Manages an interval that tells alerts when to flash icons and titles and such.
+ * @class
+ * @private 
  */
 ZmAlertLoop = function() {
 	this._alerts = new AjxVector();

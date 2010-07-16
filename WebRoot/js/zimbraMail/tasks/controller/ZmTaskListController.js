@@ -203,7 +203,7 @@ function(map) {
  * @see	ZmTask
  */
 ZmTaskListController.prototype.quickSave =
-function(name, callback) {
+function(name, callback, errCallback) {
 	var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
 
 	var folder = appCtxt.getById(folderId);
@@ -223,7 +223,7 @@ function(name, callback) {
 	task.location = "";
 	task.setAllDayEvent(true);
 
-	task.save(null, callback);
+	task.save(null, callback, errCallback);
 };
 
 ZmTaskListController.prototype._defaultView =
@@ -501,7 +501,14 @@ ZmTaskListController.prototype._editTask =
 function(task) {
 	var mode = ZmCalItem.MODE_EDIT;
 
-	if (task.isReadOnly()) {
+    var folder = appCtxt.getById(task.folderId);
+    var canEdit = null;
+
+    if(folder) {
+        canEdit = (folder == null || !folder.isReadOnly());
+    }
+    
+    if (!canEdit) {
 		if (task.isException) mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
 		task.getDetails(mode, new AjxCallback(this, this._showTaskReadOnlyView, task));
 	} else {
@@ -684,7 +691,7 @@ ZmTaskListController.prototype._showOrigListener =
 function(ev) {
 	var tasks = this._listView[this._currentView].getSelection();
 	if (tasks && tasks.length > 0)
-		this._showTaskSource(tasks[0]);
+		setTimeout(AjxCallback.simpleClosure(this._showTaskSource, this, tasks[0]), 1); // Other listeners are focusing the main window, so delay the window opening for just a bit
 };
 
 ZmTaskListController.prototype._showTaskSource =
@@ -692,6 +699,6 @@ function(task) {
 	var restUrl = task.getRestUrl();
 	if (restUrl) {
 		var url = [restUrl, (restUrl.indexOf("?")==-1) ? "?" : "&", "mime=text/plain", "&", "noAttach=1"].join("");
-		window.open(url, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
+		window.open(url, "TaskSource", "menubar=yes,resizable=yes,scrollbars=yes");
 	}
 };

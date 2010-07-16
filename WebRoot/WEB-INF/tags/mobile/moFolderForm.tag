@@ -29,26 +29,43 @@
 <zm:getMailbox var="mailbox"/>
 <c:choose>
 <c:when test="${type eq 'folder'}">
-  <c:if test="${ua.isiPad == true}">
-                    	<div class="header">
-                    		<div class="subject">Create New Folder</div>
-                    	</div>
-                    </c:if>
-    <div class="tbl View" id="nfldrfrm" style="${hide ? 'display:none':''};">
-        <div class="tr">
-            <div class="td">
-                <form action="${url}" method="post" onsubmit="return submitForm(this);">
-                    <c:if test="${not empty id}"><c:set var="efolder" value="${zm:getFolder(pageContext, fn:escapeXml(id))}"/><input type="hidden" name="efolderid" value="${efolder.id}"></c:if>
-                    <input type="hidden" name="doFolderAction" value="1">
-                    <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-                    <input name="st" type="hidden" value="${fn:escapeXml(st)}"/>
+    <c:url var=" caction" value="${prevUrl}">
+    <c:if test="${param.pid!=null}">
+        <c:param name="action" value="view"/>
+        <c:param name="id" value="${param.pid}"/>
+    </c:if>
+    </c:url>
+
+    <c:if test="${!fn:containsIgnoreCase(caction, '_back=1')}">
+    <c:url value="${caction}" var="caction">
+        <c:param name="_back" value="1"/>
+    </c:url>
+    </c:if>
+     <div class="tbl View" id="nfldrfrm" style="${hide ? 'display:none':''};">
+         <form action="${url}" method="post" onsubmit="return submitForm(this);">
+         <c:if test="${ua.isiPad == true}">
+            <div class="tb tbl">
+                <div class="tr">
+                <span class='zo_tb_submit td toolbar'>
+                    <div class="buttonRight button"><a id="cancel" href="${caction}"><span onclick="return zClickLink('cancel')"><fmt:message key="cancel"/></span></a></div>
+                    <div class="compose button"><input class="zo_button" name="action${empty id ? 'Save' : 'Delete'}Folder" type="submit" value="<fmt:message key="${empty id? 'save' :'delete'}"/>"></div>
+                </span>
+                </div>
+            </div>
+            <div class="header">
+            	<div class="subject"><fmt:message key="createNewFolder"/></div>
+            </div>
+         </c:if>
+         <c:if test="${not empty id}"><c:set var="efolder" value="${zm:getFolder(pageContext, fn:escapeXml(id))}"/><input type="hidden" name="efolderid" value="${efolder.id}"></c:if>
+         <input type="hidden" name="doFolderAction" value="1">
+         <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+         <input name="st" type="hidden" value="${fn:escapeXml(st)}"/>
                    
-                    <div class="msgBody">
-                  
-                    
+         <div class="msgBody">
                     <div class="tbl" width="100%"><div class="tr">
-                        <span class="label td"><fmt:message key="nameLabel"/> <input type="text" name="folder_name" style="" class="Textarea" value="${efolder.name}">
-                        <input class="zo_button" type="submit" name="action${not empty efolder ? 'Modify':'Save'}Folder" value="<fmt:message key='save'/>"></span>
+                        <span class="label td"><fmt:message key="nameLabel"/><input type="text" name="folder_name" style="" class="Textarea" value="${efolder.name}">
+                        <c:if test="${ua.isiPad == false}">
+                        <input class="zo_button" type="submit" name="action${not empty efolder ? 'Modify':'Save'}Folder" value="<fmt:message key='save'/>"></c:if></span>
                     </div></div>
                     
                     <div class="tbl"><div class="tr"><div class="td">
@@ -154,15 +171,13 @@
                                     </c:when>
                                 </c:choose>
                     </div></div></div>
-                    <c:if test="${not empty efolder}">
+                    <c:if test="${ua.isiPad == false and not empty efolder}">
                         <hr size="1"/><div align="center"><input type="submit" class="zo_button delete_button" name="action${efolder.parentId eq mailbox.trash.id ? 'Hard' : ''}DeleteFolder" value="<fmt:message key="delete"/>"></div>
                     </c:if>
                     </div>
-                </form>
-            </div>
-            <a name="folders" style="padding:0px;margin:0px;"></a>
-        </div>
-    </div>
+              </form>
+         <a name="folders" style="padding:0px;margin:0px;"></a>
+     </div>
 </c:when>
 <c:when test="${type eq 'search'}">
     <div class="tbl View" id="nsrchfrm" style="${hide ?'display:none':''};">
@@ -189,7 +204,7 @@
                     <c:if test="${not empty efolder}"><hr size="1"/>
                         <div align="center"><input type="submit" class="zo_button delete_button" name="action${efolder.parentId eq mailbox.trash.id ? 'Hard' : ''}DeleteSearch" value="<fmt:message key="delete"/>"></div>
                     </c:if>
-                </form>
+            </form>
             </div>
             <a name="searches" style="padding:0px;margin:0px;"></a>
         </div>

@@ -15,6 +15,7 @@
 
 /**
  * Functions to create and cache table and cells properties dialogs
+ * @private
  */
 
 ZmTableEditor = {

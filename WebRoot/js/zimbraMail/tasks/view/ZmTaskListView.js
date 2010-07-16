@@ -74,7 +74,8 @@ function(keepFocus) {
 		var name = AjxStringUtil.trim(this._newTaskInputEl.value);
 		if (name != "") {
 			var respCallback = new AjxCallback(this, this._saveNewTaskResponse, [keepFocus]);
-			this._controller.quickSave(name, respCallback);
+            var errorCallback = new AjxCallback(this, this._handleNewTaskError);
+			this._controller.quickSave(name, respCallback, errorCallback);
 		} else {
 			this._saveNewTaskResponse(keepFocus);
 		}
@@ -90,6 +91,14 @@ function(keepFocus) {
 		Dwt.setVisibility(this._newTaskInputEl, false);
 	}
 };
+
+ZmTaskListView.prototype._handleNewTaskError =
+function(ex) {
+    if(ex) {
+        this.discardNewTask();   
+    }
+};
+
 ZmTaskListView.prototype.handleKeyAction =
 function(actionCode, ev) {
 	if (this._editing) {

@@ -150,6 +150,7 @@ function(settings) {
 	settings.registerSetting("COMPOSE_SAME_FORMAT",				{name:"zimbraPrefForwardReplyInOriginalFormat", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("CONVERSATIONS_ENABLED",			{name:"zimbraFeatureConversationsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("CONVERSATION_ORDER",				{name:"zimbraPrefConversationOrder", type:ZmSetting.T_PREF, defaultValue:ZmSearch.DATE_DESC, isImplicit:true});
+	settings.registerSetting("CONVERSATION_PAGE_SIZE",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:250, isGlobal:true});
 	settings.registerSetting("DEDUPE_MSG_TO_SELF",				{name:"zimbraPrefDedupeMessagesSentToSelf", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DEDUPE_NONE});
 	settings.registerSetting("DEFAULT_DISPLAY_NAME",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("DETACH_COMPOSE_ENABLED",			{name:"zimbraFeatureComposeInNewWindowEnabled",type:ZmSetting.T_PREF,dataType:ZmSetting.D_BOOLEAN,defaultValue:true});
@@ -158,11 +159,11 @@ function(settings) {
 	settings.registerSetting("END_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("FILTERS_ENABLED",					{name:"zimbraFeatureFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("FILTERS_MAIL_FORWARDING_ENABLED",	{name:"zimbraFeatureMailForwardingInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("FORWARD_INCLUDE_HEADERS",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("FORWARD_INCLUDE_HEADERS",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
 	settings.registerSetting("FORWARD_INCLUDE_ORIG",			{name:"zimbraPrefForwardIncludeOriginalText", type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY, isGlobal:true});
-	settings.registerSetting("FORWARD_INCLUDE_WHAT",			{type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY});
+	settings.registerSetting("FORWARD_INCLUDE_WHAT",			{type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY, isGlobal:true});
 	settings.registerSetting("FORWARD_MENU_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("FORWARD_USE_PREFIX",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("FORWARD_USE_PREFIX",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("GET_MAIL_ACTION",					{name:"zimbraPrefGetMailAction", type:ZmSetting.T_PREF, defaultValue:ZmSetting.GETMAIL_ACTION_DEFAULT, isGlobal:true});
 	settings.registerSetting("GROUP_MAIL_BY",					{name:"zimbraPrefGroupMailBy", type:ZmSetting.T_PREF, defaultValue:ZmSetting.GROUP_BY_MESSAGE, isImplicit:true, isGlobal:true});
 	settings.registerSetting("HTML_SIGNATURE_ENABLED",			{type:ZmSetting.T_PREF,dataType:ZmSetting.D_BOOLEAN,defaultValue:true});
@@ -208,14 +209,14 @@ function(settings) {
 	settings.registerSetting("POP_DOWNLOAD_SINCE",				{name:"zimbraPrefPop3DownloadSince", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:""});
 	settings.registerSetting("READING_PANE_LOCATION",			{name:"zimbraPrefReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true, isGlobal:true});
 	settings.registerSetting("READING_PANE_LOCATION_CV",		{name:"zimbraPrefConvReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true});
-	settings.registerSetting("REPLY_INCLUDE_HEADERS",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("REPLY_INCLUDE_HEADERS",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
 	settings.registerSetting("REPLY_INCLUDE_ORIG",				{name:"zimbraPrefReplyIncludeOriginalText", type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY, isGlobal:true});
-	settings.registerSetting("REPLY_INCLUDE_WHAT",				{type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY});
+	settings.registerSetting("REPLY_INCLUDE_WHAT",				{type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY, isGlobal:true});
 	settings.registerSetting("REPLY_MENU_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("REPLY_PREFIX",					{name:"zimbraPrefForwardReplyPrefixChar", type:ZmSetting.T_PREF, defaultValue:">", isGlobal:true});
 	settings.registerSetting("REPLY_TO_ADDRESS",				{name:"zimbraPrefReplyToAddress", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST });
 	settings.registerSetting("REPLY_TO_ENABLED",				{name:"zimbraPrefReplyToEnabled", type:ZmSetting.T_PREF}); // XXX: Is this a list or single?
-	settings.registerSetting("REPLY_USE_PREFIX",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("REPLY_USE_PREFIX",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("SAVE_DRAFT_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("SAVE_TO_SENT",					{name:"zimbraPrefSaveToSent", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
 	settings.registerSetting("SELECT_AFTER_DELETE",				{name:"zimbraPrefMailSelectAfterDelete", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DELETE_SELECT_NEXT, isGlobal:true});
@@ -266,6 +267,7 @@ function() {
 				ZmSetting.MAIL_NOTIFY_APP,
 				ZmSetting.MAIL_NOTIFY_BROWSER,
 				ZmSetting.MAIL_NOTIFY_TOASTER,
+				ZmSetting.OFFLINE_NOTIFY_NEWMAIL_ON_INBOX,
 				ZmSetting.MAIL_WHITELIST,
 				ZmSetting.MAIL_SEND_READ_RECEIPTS,
 				ZmSetting.MARK_MSG_READ,
@@ -626,6 +628,14 @@ function() {
 		displayFunc:		function() { AjxDispatcher.require("Alert"); return ZmDesktopAlert.getInstance().getDisplayText(); },
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
+
+	if (appCtxt.isOffline) {
+		ZmPref.registerPref("OFFLINE_NOTIFY_NEWMAIL_ON_INBOX", {
+			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+			displayOptions:		[ZmMsg.notifyNewMailOnInbox, ZmMsg.notifyNewMailOnAny],
+			options:			[true, false]
+		});
+	}
 };
 
 /**
@@ -709,6 +719,7 @@ function(checked) {
  */
 ZmMailApp.prototype._registerOperations =
 function() {
+    ZmOperation.registerOp(ZmId.OP_ACCEPT_PROPOSAL, {textKey:"replyAccept", image:"Check"});    
 	ZmOperation.registerOp(ZmId.OP_ADD_FILTER_RULE, {textKey:"newFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_ADD_SIGNATURE, {textKey:"signature", image:"AddSignature", tooltipKey:"chooseSignature"}, ZmSetting.SIGNATURES_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_CHECK_MAIL, {textKey:"checkMail", tooltipKey:"checkMailPrefDefault", image:"Refresh", textPrecedence:90});
@@ -717,6 +728,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_COMPOSE_OPTIONS, {textKey:"options", image:"Preferences"});
 	ZmOperation.registerOp(ZmId.OP_CREATE_APPT, {textKey:"createAppt", image:"NewAppointment"}, ZmSetting.CALENDAR_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_CREATE_TASK, {textKey:"createTask", image:"NewTask"}, ZmSetting.TASKS_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_DECLINE_PROPOSAL, {textKey:"replyDecline", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_DELETE_CONV, {textKey:"delConv", image:"DeleteConversation"}, ZmSetting.CONVERSATIONS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_DELETE_MSG, {textKey:"delMsg", image:"DeleteMessage"});
 	ZmOperation.registerOp(ZmId.OP_DELETE_MENU, {tooltipKey:"deleteTooltip", image:"Delete"});
@@ -738,6 +750,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_MOVE_UP_FILTER_RULE, {textKey:"filterMoveUp", image:"UpArrow"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_MESSAGE, {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage", shortcut:ZmKeyMap.NEW_MESSAGE});
 	ZmOperation.registerOp(ZmId.OP_NEW_MESSAGE_WIN, {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage", shortcut:ZmKeyMap.NEW_MESSAGE_WIN});
+    ZmOperation.registerOp(ZmId.OP_PROPOSE_NEW_TIME, {textKey:"proposeNewTime", image:"ProposeTime"});    
 	ZmOperation.registerOp(ZmId.OP_REMOVE_FILTER_RULE, {textKey:"filterRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_REPLY, {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply", shortcut:ZmKeyMap.REPLY, textPrecedence:50});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check"});
@@ -887,6 +900,7 @@ function(result) {
  */
 ZmMailApp.prototype.preNotify =
 function(notify) {
+
 	if (!(notify.deleted && notify.created && notify.modified))	{ return notify; }
 
 	// first, see if we are deleting any virtual convs (which have negative IDs)
@@ -908,19 +922,20 @@ function(notify) {
 
 	// look for creates of convs that mean a virtual conv got promoted
 	var gotNewConv = false;
-	var createList = ZmRequestMgr._getObjList(notify.created);
 	var createdMsgs = {};
 	var createdConvs = {};
-	for (var i = 0; i < createList.length; i++) {
-		var create = createList[i];
-		var id = create.id;
-		var name = create._name;
-		if (name == "m") {
-			createdMsgs[id] = create;
-		} else if (name == "c" && (create.n > 1)) {
-			// this is *probably* a create for a real conv from a virtual conv
-			createdConvs[id] = create;
-			gotNewConv = true;
+	for (var name in notify.created) {
+		var list = notify.created[name];
+		for (var i = 0; i < list.length; i++) {
+			var create = list[i];
+			var id = create.id;
+			if (name == "m") {
+				createdMsgs[id] = create;
+			} else if (name == "c" && (create.n > 1)) {
+				// this is *probably* a create for a real conv from a virtual conv
+				createdConvs[id] = create;
+				gotNewConv = true;
+			}
 		}
 	}
 	if (!gotNewConv) { return notify; }
@@ -928,27 +943,24 @@ function(notify) {
 	// last thing to confirm virt conv promotion is msg changing cid
 	var msgMoved = false;
 	var newToOldCid = {};
-	var modList = ZmRequestMgr._getObjList(notify.modified);
 	var movedMsgs = {};
-	for (var i = 0; i < modList.length; i++) {
-		var mod = modList[i];
+	var list = notify.modified.m;
+	for (var i = 0; i < list.length; i++) {
+		var mod = list[i];
 		var id = mod.id;
 		var nId = ZmOrganizer.normalizeId(id);
-		var name = mod._name;
-		if (name == "m") {
-			var virtCid = nId * -1;
-			if (virtConv[virtCid] && createdConvs[mod.cid]) {
-				msgMoved = true;
-				movedMsgs[id] = mod;
-				newToOldCid[mod.cid] = appCtxt.multiAccounts ? ZmOrganizer.getSystemId(virtCid) : virtCid;
-				createdConvs[mod.cid]._wasVirtConv = true;
-				createdConvs[mod.cid].m = [{id:id}];
-				// go ahead and update the msg cid, since it's used in
-				// notification processing for creates
-				var msg = appCtxt.getById(id);
-				if (msg) {
-					msg.cid = mod.cid;
-				}
+		var virtCid = nId * -1;
+		if (virtConv[virtCid] && createdConvs[mod.cid]) {
+			msgMoved = true;
+			movedMsgs[id] = mod;
+			newToOldCid[mod.cid] = appCtxt.multiAccounts ? ZmOrganizer.getSystemId(virtCid) : virtCid;
+			createdConvs[mod.cid]._wasVirtConv = true;
+			createdConvs[mod.cid].m = [{id:id}];
+			// go ahead and update the msg cid, since it's used in
+			// notification processing for creates
+			var msg = appCtxt.getById(id);
+			if (msg) {
+				msg.cid = mod.cid;
 			}
 		}
 	}
@@ -963,6 +975,22 @@ function(notify) {
 		notify.deleted.id = newDeletedIds.join(",");
 	} else {
 		delete notify.deleted;
+	}
+
+	// get rid of creates for virtual convs, since they aren't really creates
+	var tmp = [];
+	var list = notify.created.c;
+	for (var i = 0; i < list.length; i++) {
+		var create = list[i];
+		var c = createdConvs[create.id];
+		if (!(c && c._wasVirtConv)) {
+			tmp.push(create);
+		}
+	}
+	if (tmp && tmp.length) {
+		notify.created.c = tmp;
+	} else {
+		delete notify.created.c;
 	}
 
 	// if the first msg matched the current search, we'll want to use the conv
@@ -1021,15 +1049,27 @@ function(creates, force) {
 		}
 	}
 
+
+	var controllers = [this._tradController, this._convListController, this._convController];
+	var currentController = this._getCurrentViewController();
+
+	if (currentController && controllers[controllers.length-1] !== currentController) { // Move currentController to the end of the list if it's not there already
+		AjxUtil.arrayRemove(controllers, currentController);
+		controllers.push(currentController);
+	}
+
+	var lastIndex = 0;
+	for (var i=0; i<controllers.length; i++) { // Some controllers may not be created yet. We need to determine the last existing controller in the list
+		if (controllers[i])
+			lastIndex = i;
+	}
+
 	// give each controller a chance to handle the creates
-	if (this._tradController) {
-		this._checkList(creates, this._tradController.getList(), this._tradController);
-	}
-	if (this._convListController) {
-		this._checkList(creates, this._convListController.getList(), this._convListController);
-	}
-	if (this._convController) {
-		this._checkList(creates, this._convController.getList(), this._convController, true);
+	for (var i=0; i<controllers.length; i++) {
+		var controller = controllers[i];
+		if (controller) {
+			this._checkList(creates, controller.getList(), controller, i==lastIndex);
+		}
 	}
 
 	this._handleAlerts(creates);
@@ -1058,19 +1098,13 @@ function(creates) {
 
 		// offline: check whether to show new-mail notification icon
 		// Skip spam/trash folders and the local account
-		if (appCtxt.isOffline &&
-			parsed &&
-			parsed.id != ZmOrganizer.ID_SPAM &&
-			parsed.id != ZmOrganizer.ID_TRASH &&
-			!acct.isMain)
-		{
-			this.globalMailCount++;
+		if (appCtxt.isOffline && parsed && !acct.isMain) {
+			var doIt = (appCtxt.get(ZmSetting.OFFLINE_NOTIFY_NEWMAIL_ON_INBOX))
+				? (parsed.id == ZmOrganizer.ID_INBOX)
+				: (parsed.id != ZmOrganizer.ID_SPAM && parsed.id != ZmOrganizer.ID_TRASH);
 
-			var currSearch = appCtxt.getCurrentSearch();
-			if ((currSearch && currSearch.isMultiAccount()) ||
-				(appCtxt.getCurrentAppName() != ZmApp.MAIL) ||
-				(appCtxt.getActiveAccount() != acct))
-			{
+			if (doIt) {
+				this.globalMailCount++;
 				acct.inNewMailMode = true;
 				var allContainers = appCtxt.getOverviewController()._overviewContainer;
 				for (var j in allContainers) {
@@ -1160,19 +1194,25 @@ function(creates, list, controller, last) {
 
 	// bug: 30546
 	if (convResults.hasMore || msgResults.hasMore) {
-		var controller;
-		var vid = appCtxt.getAppViewMgr().getCurrentViewId();
-		if (vid == ZmId.VIEW_CONVLIST) {
-			controller = this.getConvListController();
-		} else if (vid == ZmId.VIEW_TRAD) {
-			controller = this.getTradController();
-		}
-
+		var controller = this._getCurrentViewController();
+		
 		if (controller) {
 			controller.setHasMore(true);
 		}
 	}
 };
+
+ZmMailApp.prototype._getCurrentViewController =
+function() {
+	var controller;
+	var vid = appCtxt.getAppViewMgr().getCurrentViewId();
+	if (vid == ZmId.VIEW_CONVLIST) {
+		controller = this.getConvListController();
+	} else if (vid == ZmId.VIEW_TRAD) {
+		controller = this.getTradController();
+	}
+	return controller;
+}
 
 /**
  * Handles the creates for the given type of mail item.
@@ -1219,9 +1259,6 @@ function(creates, type, items, currList, sortBy, convs, last) {
 			create._handled = true;
 		}
 
-		// ignore stuff we already have
-		if (currList.getById(create.id) || create._wasVirtConv) { continue; }
-
 		// new conv does not affect a list of msgs
 		if (currList.type == ZmItem.MSG && type == ZmItem.CONV) { continue; }
 
@@ -1239,8 +1276,12 @@ function(creates, type, items, currList, sortBy, convs, last) {
 		}
 
 		DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + nodeName);
-		var itemClass = eval(ZmList.ITEM_CLASS[type]);
-		var item = itemClass.createFromDom(create, {}, true);
+
+		var item = appCtxt.getById(create.id);
+		if (!item) {
+			var itemClass = eval(ZmList.ITEM_CLASS[type]);
+			item = itemClass.createFromDom(create, {}, true);
+		}
 		items[item.id] = item;
 		result.gotMail = true;
 	}
@@ -1395,7 +1436,11 @@ function(params, callback) {
 				params.searchResponse = null;
 				this._forceMsgView = true;
 			} else if (view == "msg") {
-				var msg = new ZmMailMsg(id, null, true);
+
+				var list = new ZmMailList(ZmItem.MSG);
+				var msg = new ZmMailMsg(id, list, true);
+				list.add(msg);
+
 				var msgParams = {getHtml:			appCtxt.get(ZmSetting.VIEW_AS_HTML),
 								 markRead:			(appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW),
 								 callback:			new AjxCallback(this, this._handleResponseMsgLoad, [msg, callback]),

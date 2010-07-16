@@ -631,12 +631,13 @@ function(params, noRender, callback, errorCallback) {
  */
 ZmSearchController.prototype._handleResponseDoSearch =
 function(search, noRender, isMixed, callback, noUpdateOverview, noClear, result) {
-	if (this._searchFor == ZmItem.APPT) {
+
+	var results = result.getResponse();
+
+	if (results.type == ZmItem.APPT) {
 		this._results = new ZmSearchResult(search);
 		return;
 	}
-
-	var results = result.getResponse();
 
 	this.currentSearch = search;
 	DBG.timePt("execute search", true);

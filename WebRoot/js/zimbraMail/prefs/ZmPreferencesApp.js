@@ -604,10 +604,12 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
-	ZmPref.registerPref("OFFLINE_SHOW_ALL_MAILBOXES", {
-		displayName:		ZmMsg.showAllMailboxes,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
+	if (appCtxt.isOffline) {
+		ZmPref.registerPref("OFFLINE_SHOW_ALL_MAILBOXES", {
+			displayName:		ZmMsg.showAllMailboxes,
+			displayContainer:	ZmPref.TYPE_CHECKBOX
+		});
+	}
 
 	ZmPref.registerPref("SHOW_SEARCH_STRING", {
 		displayName:		ZmMsg.showSearchString,

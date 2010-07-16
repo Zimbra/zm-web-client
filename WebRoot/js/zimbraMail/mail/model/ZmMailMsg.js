@@ -1,3 +1,4 @@
+
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
@@ -822,6 +823,17 @@ function(callback) {
 	}
 };
 
+ZmMailMsg.prototype.getTextBodyPart =
+function(){
+    var bodyPart = this.getBodyPart();
+    if (bodyPart && bodyPart.ct == ZmMimeTable.TEXT_PLAIN) {
+		return bodyPart;
+	} else if (bodyPart && bodyPart.body && ZmMimeTable.isTextType(bodyPart.ct)) {
+		return bodyPart;
+	}
+    return null;
+};
+
 ZmMailMsg.prototype._handleResponseGetTextPart =
 function(callback, result) {
 	var response = result.getResponse().GetMsgResponse;
@@ -1073,9 +1085,10 @@ function(nfolder, resp) {
  * @param {String}	accountName			the account to send on behalf of
  * @param {Boolean}	noSave				if set, a copy will *not* be saved to sent regardless of account/identity settings
  * @param {Boolean}	requestReadReceipt	if set, a read receipt is sent to *all* recipients
+ * @param {ZmBatchCommand} batchCmd		if set, request gets added to this batch command
  */
 ZmMailMsg.prototype.send =
-function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt) {
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd) {
 	var aName = accountName;
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
@@ -1087,6 +1100,7 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 
 	// if we have an invite reply, we have to send a different message
 	if (this.isInviteReply && !isDraft) {
+		// TODO: support for batchCmd here as well
 		return this.sendInviteReply(true, 0, callback, errorCallback, this._instanceDate, aName, true);
 	} else {
 		var jsonObj, request;
@@ -1104,14 +1118,15 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			request.noSave = 1;
 		}
 		this._createMessageNode(request, isDraft, aName, requestReadReceipt);
-
+		appCtxt.notifyZimlets("addExtraMsgParts", [request, isDraft]);
 		var params = {
 			jsonObj: jsonObj,
 			isInvite: false,
 			isDraft: isDraft,
 			accountName: aName,
 			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
-			errorCallback: errorCallback
+			errorCallback: errorCallback,
+			batchCmd: batchCmd
 		};
 		return this._sendMessage(params);
 	}
@@ -1237,8 +1252,9 @@ function(request, isDraft, accountName, requestReadReceipt) {
 									? (oboDraftMsgId || this.id || this.origId)
 									: (this.origId || this.id);
 
-                                if(!id && this._origMsg)
-                                    id = this._origMsg.id;
+								if (!id && this._origMsg) {
+									id = this._origMsg.id;
+								}
 
 								attachNode.mp = [{mid:id, part:inlineAtts[j].part}];
 							}
@@ -1319,8 +1335,11 @@ function(request, isDraft, accountName, requestReadReceipt) {
 						id = this.origAcctMsgId;
 					}
 
-					// bug fix #33312 - should be reverted(?) once bug #33691 is fixed. 
-					if (id && appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain && (isDraft || this.isDraft)) {
+					// bug fix #33312 - should be reverted(?) once bug #33691 is fixed.
+					if (id && appCtxt.multiAccounts &&
+						(appCtxt.getActiveAccount().name != accountName) &&
+						(isDraft || this.isDraft))
+					{
 						id = ZmOrganizer.getSystemId(id, appCtxt.accountList.mainAccount, true);
 					}
 
@@ -1340,6 +1359,7 @@ function(request, isDraft, accountName, requestReadReceipt) {
  *        isDraft				[boolean]		true if this message is a draft
  *        callback				[AjxCallback]	async callback
  *        errorCallback			[AjxCallback]	async error callback
+ *        batchCmd				[ZmBatchCommand]	if set, request gets added to this batch command
  *        
  * @private
  */
@@ -1366,6 +1386,8 @@ function(params) {
 		} else if (resp.SendMsgResponse) {
 			return resp.SendMsgResponse;
 		}
+	} else if (params.batchCmd) {
+		params.batchCmd.addNewRequestParams(params.jsonObj, respCallback, params.errorCallback);
 	} else {
 		appCtxt.getAppController().sendRequest({jsonObj:params.jsonObj,
 												asyncMode:true,
@@ -1832,7 +1854,10 @@ function(addrNodes, type, isDraft) {
 	var addrs = this._addrs[type];
 	var num = addrs.size();
 	if (num) {
-		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+		var contactsApp = appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.getApp(ZmApp.CONTACTS);
+        if (contactsApp && !contactsApp.isContactListLoaded()) {
+            contactsApp = null;
+        }
 		for (var i = 0; i < num; i++) {
 			var addr = addrs.get(i);
 			var email = addr.getAddress();
@@ -1840,6 +1865,10 @@ function(addrNodes, type, isDraft) {
 			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
 			if (name) {
 				addrNode.p = name;
+			}
+			if (contactsApp) {
+				var contact = contactsApp.getContactByEmail(email);
+				addrNode.add = contact ? "0" : "1";
 			}
 			addrNodes.push(addrNode);
 		}
@@ -1875,7 +1904,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 	}
 
 	//TODO: OPTIMIZE CODE by aggregating the common code.
-	if (accountName && isPrimary) {
+	if (!appCtxt.isOffline && accountName && isPrimary) {
 		var mainAcct = ac.accountList.mainAccount.getEmail();
 		var onBehalfOf = false;
 
@@ -1892,6 +1921,11 @@ function(addrNodes, parentNode, isDraft, accountName) {
 				accountName = from.address;
 				onBehalfOf = true;
 			}
+		}
+
+		// bug #44857 - replies/forwards should save sent message into respective account
+		if (!onBehalfOf && appCtxt.isFamilyMbox && this._origMsg) {
+			onBehalfOf = (folder.getOwner() != mainAcct);
 		}
 
 		var addr, displayName;
@@ -1941,7 +1975,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		}
 
 		var addr, displayName;
-		if (onBehalfOf){
+		if (onBehalfOf) {
 			addr = accountName;
 		} else {
 			addr = identity.sendFromAddress || mainAcct;
@@ -1977,7 +2011,8 @@ function(addrNodes, parentNode, isDraft, accountName) {
 				addrNode.t = "f";
 				addrNode.a = dataSource.getEmail();
 				if (ac.get(ZmSetting.DEFAULT_DISPLAY_NAME)) {
-					addrNode.p = dataSource.userName || dataSource.getName();
+					var dispName = dataSource.identity && dataSource.identity.sendFromDisplay;
+					addrNode.p = dispName || dataSource.userName || dataSource.getName();
 				}
 			}
 		}

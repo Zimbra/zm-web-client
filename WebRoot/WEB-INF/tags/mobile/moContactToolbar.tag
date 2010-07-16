@@ -48,10 +48,20 @@
             <c:param name="pid" value="${contact.id}"/>
             <c:param name="folderid" value="${context.folder.id}"/>
         </c:url>
+        <c:set var="nmail" value="st=newmail"/>
+        <c:url var="murl" value="?${nmail}">
+        <c:param name="to" value="${contact.email}"/>
+        </c:url>
         <div class ="compose button"><a id="add" accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}"><span onclick="return zClickLink('add')"><fmt:message key="add"/></span></a></div>
-        <div class =""> 
-            <div class ="buttonRight button">
-            <a id="edit" accesskey="${requestScope.mainaction_accesskey}" href="${editUrl}"><span onclick="return zClickLink('edit')"><fmt:message key="edit"/></span></a>
+        <div class ="">
+            <div class ="actions">
+            	<div class="actionLeft button">
+            		<a href="${fn:escapeXml(murl)}"><span onclick="return zClickLink('newmail', null, this)"><fmt:message key="compose"/></span></a>
+            	</div>
+            	<div class="actionRight button">
+            		&nbsp; <a id="edit" accesskey="${requestScope.mainaction_accesskey}" href="${editUrl}"><span onclick="return zClickLink('edit')"><fmt:message key="edit"/></span></a> &nbsp;
+            	</div>
+            
             </div>
         </div>
     </c:when>

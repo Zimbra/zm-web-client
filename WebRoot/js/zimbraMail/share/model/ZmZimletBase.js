@@ -1008,7 +1008,7 @@ function(object, context, x, y, span) {
 	var tooltip = shell.getToolTip();
 	tooltip.setContent('<div id="zimletTooltipDiv"/>', true);
 	this.toolTipPoppedUp(span, object, context, document.getElementById("zimletTooltipDiv"));
-	tooltip.popup(x, y, true);
+	tooltip.popup(x, y, true, new AjxCallback(this, this.hoverOut, object, context, span));
 };
 
 /**

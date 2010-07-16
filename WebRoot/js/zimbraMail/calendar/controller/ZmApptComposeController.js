@@ -70,6 +70,28 @@ function(appt, forwardCallback) {
 	return true;
 };
 
+/**
+ * Propose new time for an appointment
+ *
+ * @param	{ZmAppt}	    appt		            the appointment
+ * @param	{AjxCallback}	proposeTimeCallback		callback executed  after proposing time
+ * @return	{Boolean}	    <code>true</code>       indicates that propose time is executed
+ */
+ZmApptComposeController.prototype.sendCounterAppointmentRequest =
+function(appt, proposeTimeCallback) {
+	var callback = new AjxCallback(this, this._handleCounterAppointmentRequest, proposeTimeCallback);
+	appt.sendCounterAppointmentRequest(callback);
+	return true;
+};
+
+ZmApptComposeController.prototype._handleCounterAppointmentRequest =
+function(proposeTimeCallback) {
+	appCtxt.setStatusMsg(ZmMsg.newTimeProposed);
+	if (proposeTimeCallback instanceof AjxCallback) {
+		proposeTimeCallback.run();
+	}
+};
+
 ZmApptComposeController.prototype._handleForwardInvite =
 function(forwardCallback) {
 	appCtxt.setStatusMsg(ZmMsg.forwardInviteSent);
@@ -93,6 +115,11 @@ ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
 	var appt = this._composeView.getAppt(attId);
 	if (appt) {
+
+        if(appt.isProposeTime && !appt.isOrganizer()) {
+            return this.sendCounterAppointmentRequest(appt);
+        }
+
 		if (appt.isForward) {
 			var addrs = this._composeView.getForwardAddress();
 
@@ -101,6 +128,7 @@ function(attId) {
 				var msgDialog = appCtxt.getMsgDialog();
 				msgDialog.setMessage(ZmMsg.noForwardAddresses, DwtMessageDialog.CRITICAL_STYLE);
 				msgDialog.popup();
+                this.enableToolbar(true);
 				return false;
 			}
 
@@ -113,6 +141,7 @@ function(attId) {
 				cd.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this, [cd,appt]);
 				cd.setVisible(true); // per fix for bug 3209
 				cd.popup();
+                this.enableToolbar(true);
 				return false;
 			}
 
@@ -126,6 +155,7 @@ function(attId) {
 			var msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, this._invalidAttendees.join(","));
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
+            this.enableToolbar(true);
 			return false;
 		}
 		
@@ -153,6 +183,7 @@ function(attId) {
 					var msg = AjxMessageFormat.format(ZmMsg.orgChange, newOrg);
 					dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 					dlg.popup();
+                    this.enableToolbar(true);
 					return false;
 				}
 			}
@@ -470,6 +501,7 @@ function(appt, attId, names, notifyList, response) {
 			msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._saveAfterPermissionCheck, this, [appt, attId, notifyList, msgDialog]);
 			msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
 			msgDialog.popup();
+            this.enableToolbar(true);
 			return;
 		}
 	}
@@ -504,6 +536,7 @@ function(appt, callback, result) {
 			if(this._conflictCallback) this._conflictCallback.run(inst);
 			this.showConflictDialog(appt, callback, inst);
 			conflictExist = true;
+            this.enableToolbar(true);
 		}
 	}
 
@@ -581,6 +614,12 @@ function(setFocus) {
 	AjxTimedAction.scheduleAction(ta, 10);
 };
 
+ZmApptComposeController.prototype._getDefaultFocusItem =
+function() {
+    var tabView = this._composeView.getTabView(this._composeView.getCurrentTab());
+    return tabView._getDefaultFocusItem();	
+};
+
 ZmApptComposeController.prototype.getKeyMapName =
 function() {
 	return "ZmApptComposeController";
@@ -632,6 +671,7 @@ function(appt, attId, attendees, origAttendees) {
 		appt.setMailNotificationOption(true);
 		this._notifyDialog.initialize(appt, attId, this._addedAttendees, this._removedAttendees);
 		this._notifyDialog.popup();
+        this.enableToolbar(true);
 		return true;
 	}
 
@@ -693,4 +733,9 @@ function() {
 ZmApptComposeController.prototype.forwardInvite =
 function(newAppt) {
 	this.show(newAppt, ZmCalItem.MODE_FORWARD_INVITE);
+};
+
+ZmApptComposeController.prototype.proposeNewTime =
+function(newAppt) {
+	this.show(newAppt, ZmCalItem.MODE_PROPOSE_TIME);
 };

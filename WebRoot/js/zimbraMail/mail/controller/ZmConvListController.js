@@ -108,7 +108,7 @@ function(actionCode) {
 			if (mlv.getSelectionCount() != 1) { return false; }
 			var item = mlv.getItemFromElement(mlv._kbAnchor);
 			if (!item) { return false; }
-			if (item.type == ZmItem.CONV && item.numMsgs == 1) {
+			if (item.type == ZmItem.CONV && !mlv._isExpandable(item)) {
 				return DwtListView.prototype.handleKeyAction.call(mlv, DwtKeyMap.DBLCLICK);
 			} else {
 				mlv._expandItem(item);
@@ -218,14 +218,6 @@ function() {
 	return ZmId.VIEW_CONVLIST;
 };
 
-ZmConvListController.prototype._setViewContents =
-function(view) {
-	if (this._mailListView.offset == 0) {
-		this._mailListView._resetExpansion();
-	}
-	ZmDoublePaneController.prototype._setViewContents.apply(this, arguments);
-};
-
 ZmConvListController.prototype._paginate = 
 function(view, bPageForward, convIdx, limit) {
 	view = view ? view : this._currentView;
@@ -276,7 +268,7 @@ ZmConvListController.prototype._listSelectionListener =
 function(ev) {
 	var item = ev.item;
 	if (!item) { return; }
-	if (ev.field == ZmItem.F_EXPAND && (this._mailListView._isExpandable(item))) {
+	if (ev.field == ZmItem.F_EXPAND && this._mailListView._isExpandable(item)) {
 		this._toggle(item, false);
 	} else {
 		var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
@@ -418,7 +410,7 @@ ZmConvListController.prototype._paginateConv =
 function(conv, offset, callback) {
 	var list = conv.msgs;
 	// see if we're out of msgs and the server has more
-	var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
+	var limit = appCtxt.get(ZmSetting.CONVERSATION_PAGE_SIZE);
 	if (offset && list && ((offset + limit > list.size()) && list.hasMore())) {
 		// figure out how many items we need to fetch
 		var delta = (offset + limit) - list.size();

@@ -74,7 +74,7 @@ function(list, sortField) {
 
 	var s = this._controller._activeSearch && this._controller._activeSearch.search;
 	this._folderId = s && s.folderId;
-	ZmListView.prototype.set.call(this, list, sortField);
+	ZmListView.prototype.set.apply(this, arguments);
 
 	var sortBy = s && s.sortBy;
 	if (sortBy) {
@@ -241,7 +241,7 @@ ZmMailListView.prototype.reRenderListView =
 function() {
 	var isMultiColumn = this.isMultiColumn();
 	if (isMultiColumn != this._isMultiColumn) {
-		var sel = this.getSelection();
+		this._saveState({selection:true, focus:true, scroll:true, expansion:true});
 		this._isMultiColumn = isMultiColumn;
 		this.headerColCreated = false;
 		this._headerList = this._getHeaderList();
@@ -249,9 +249,8 @@ function() {
 		this._normalClass = isMultiColumn ? DwtListView.ROW_CLASS : ZmMailListView.ROW_DOUBLE_CLASS;
 		var list = this.getList() || (new AjxVector());
 		this.set(list.clone());
+		this._restoreState();
 		this._resetFromColumnLabel();
-		this.setSelectedItems(sel);
-		this.scrollToTop();
 	}
 };
 
@@ -726,14 +725,14 @@ function(participants, participantsElided, width) {
 	// only one participant, no need to test width
 	if (participants.length == 1) {
 		var p = participants[0];
-		var name = p.name ? p.name : p.dispName;
+		var name = p.name ? p.name : p.dispName || p.address;
 		var tmp = {name: AjxStringUtil.htmlEncode(name), index: 0};
 		return [tmp];
 	}
 	// create a list of "others" (not the originator)
 	var list = new Array();
 	for (var i = 0; i < participants.length; i++) {
-		var tmp = {name: AjxStringUtil.htmlEncode(participants[i].dispName), index: i};
+		var tmp = {name: AjxStringUtil.htmlEncode(participants[i].dispName || participants[i].address), index: i};
 		list.push(tmp);
 	}
 	var origLen = list.length;

@@ -73,7 +73,7 @@ ZmConvListView = function(params) {
 
 	this._mode = ZmId.VIEW_CONVLIST;
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
-	this._msgRowIdList = {};	// hash of lists, each list has row IDs for an expandable item
+	this._resetExpansion();
 };
 
 ZmConvListView.prototype = new ZmMailListView;
@@ -92,6 +92,14 @@ ZmConvListView.prototype._changeTrashStatus = ZmMailMsgListView.prototype._chang
 ZmConvListView.prototype.toString = 
 function() {
 	return "ZmConvListView";
+};
+
+ZmConvListView.prototype.set =
+function(list, sortField) {
+	if (this.offset == 0) {
+		this._resetExpansion();
+	}
+	ZmListView.prototype.set.apply(this, arguments);
 };
 
 // Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
@@ -113,33 +121,6 @@ function(item) {
 	ZmMailListView.prototype.markUIAsRead.apply(this, arguments);
 	if (item.type == ZmItem.MSG) {
 		this._setImage(item, ZmItem.F_STATUS, item.getStatusIcon());
-	}
-};
-
-/**
- * Called by the controller whenever the reading pane preference changes
- * 
- * @private
- */
-ZmConvListView.prototype.reRenderListView =
-function() {
-	var isMultiColumn = this.isMultiColumn();
-	var expanded;
-	if (isMultiColumn != this._isMultiColumn) {
-		expanded = this._expandedItems;
-		this._resetExpansion();
-	}
-
-	ZmMailListView.prototype.reRenderListView.call(this);
-
-	if (expanded) {
-		for (var id in expanded) {
-			if (expanded[id]) {
-				for (var i=0; i<expanded[id].length; i++) { 
-					this._expandItem(expanded[id][i]);
-				}
-			}
-		}
 	}
 };
 
@@ -318,7 +299,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (item.type == ZmItem.MSG) {
 		idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);
 	} else {
-		if (field == ZmItem.F_STATUS || field == ZmItem.F_FOLDER) {
+		if (field == ZmItem.F_STATUS) {
 			htmlArr[idx++] = "&nbsp;";
 		} else if (field == ZmItem.F_FROM) {
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
@@ -327,8 +308,23 @@ function(htmlArr, idx, item, field, colIdx, params) {
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
+		} else if (field == ZmItem.F_FOLDER) {
+			if (item.folderId) {
+				htmlArr[idx++] = "<nobr id='";
+				htmlArr[idx++] = this._getFieldId(item, field);
+				htmlArr[idx++] = "'>"; // required for IE bug
+				var folder = appCtxt.getById(item.folderId);
+				if (folder) {
+					htmlArr[idx++] = folder.getName();
+				}
+				htmlArr[idx++] = "</nobr>";
+			}
 		} else if (field == ZmItem.F_SIZE) {
-			if (item.numMsgs > 1) {
+			if (item.size) {
+				htmlArr[idx++] = "<nobr>";
+				htmlArr[idx++] = AjxUtil.formatSize(item.size);
+				htmlArr[idx++] = "</nobr>";
+			} else if (item.numMsgs > 1) {
 				htmlArr[idx++] = "(";
 				htmlArr[idx++] = item.numMsgs;
 				htmlArr[idx++] = ")";
@@ -639,7 +635,7 @@ function(item) {
 		
 		var a = conv.msgs ? conv.msgs.getArray() : null;
 		if (a && a.length) {
-			var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
+			var limit = appCtxt.get(ZmSetting.CONVERSATION_PAGE_SIZE);
 			var idx = null;
 			for (var i = 0; i < a.length; i++) {
 				if (a[i].id == item.id) {
@@ -668,10 +664,10 @@ function() {
 		}
 	}
 
-	this._expanded = {};		// current expansion state, by ID
-	this._msgRowIdList = {};	// list of row IDs for a conv ID
-	this._msgOffset = {};		// the offset for a msg ID
-	this._expandedItems = {};	// list of expanded items for a conv ID (inc conv)
+	this._expanded		= {};	// current expansion state, by ID
+	this._msgRowIdList	= {};	// list of row IDs for a conv ID
+	this._msgOffset		= {};	// the offset for a msg ID
+	this._expandedItems	= {};	// list of expanded items for a conv ID (inc conv)
 };
 
 ZmConvListView.prototype._expandItem =
@@ -706,8 +702,7 @@ function(columnItem, bSortAsc) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
 	var query;
-	if (columnItem._sortable == ZmItem.F_FLAG ||
-		columnItem._sortable == ZmItem.F_ATTACHMENT)
+	if (this._columnHasCustomQuery(columnItem))
 	{
 		query = this._getSearchForSort(columnItem._sortable);
 	}
@@ -727,6 +722,11 @@ function(columnItem, bSortAsc) {
 		};
 		appCtxt.getSearchController().search(params);
 	}
+};
+
+ZmConvListView.prototype._columnHasCustomQuery =
+function(columnItem) {
+	return (columnItem._sortable == ZmItem.F_FLAG || columnItem._sortable == ZmItem.F_ATTACHMENT);
 };
 
 ZmConvListView.prototype._changeListener =
@@ -752,15 +752,16 @@ function(ev) {
 					// msg marked as Junk, or hard-deleted
 					// TODO: handle expandable msg removal
 					conv.removeMsg(item);
-					if (this._expanded[conv.id] && conv.numMsgs == 1) {
+					this.removeItem(item, true, ev.batchMode);	// remove msg row
+					var rowIds = this._msgRowIdList[conv.id];
+					if (this._expanded[conv.id] && rowIds && rowIds.length <= 1) {
 						this._setImage(conv, ZmItem.F_EXPAND, null);
 						this._collapse(conv);
 						this._expanded[conv.id] = false;
 					}
-					this.removeItem(item, true, ev.batchMode);	// remove msg row
 					this._controller._app._checkReplenishListView = this;
 				} else {
-					if (!(conv.hasMatchingMsg(this._controller._app.currentSearch), true)) {
+					if (!(conv.hasMatchingMsg(this._controller._app.currentSearch, true))) {
 						this._list.remove(conv);				// view has sublist of controller list
 						this._controller._list.remove(conv);	// complete list
 						ev.item = item = conv;
@@ -782,26 +783,37 @@ function(ev) {
 	if (isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
 		var items = ev.batchMode ? this._getItemsFromBatchEvent(ev) : [item];
 		for (var i = 0, len = items.length; i < len; i++) {
-			this._removeMsgRows(items[i].id);	// conv move: remove msg rows
+			var conv = items[i];
+			if (this._itemToSelect && this._itemToSelect.cid == conv.id) {
+				var a = conv.msgs.getArray();
+				var omit = {};
+				for (var j = 0, len1 = a.length; j < len1; j++) {
+					omit[a[j].id] = true;
+				}
+				this._itemToSelect = this._controller._getNextItemToSelect(omit);
+			}
+			this._removeMsgRows(conv.id);	// conv move: remove msg rows
+			this._expanded[conv.id] = false;
+			delete this._msgRowIdList[conv.id];
 		}
 	}
 
 	// if we get a new msg that's part of an expanded conv, insert it into the
 	// expanded conv, and don't move that conv
 	if (!isConv && (ev.event == ZmEvent.E_CREATE)) {
-		var div = this._createItemHtml(item);
-		if (!this._expanded[item.cid]) {
-			Dwt.setVisible(div, false);
-		}
+		var rowIds = this._msgRowIdList[item.cid];
 		var conv = appCtxt.getById(item.cid);
-		var convIndex = this._getRowIndex(conv);
-		var sortIndex = ev.getDetail("sortIndex");
-		var msgIndex = sortIndex || 0;
-		this._addRow(div, convIndex + msgIndex + 1);
-		if (this._msgRowIdList[item.cid]) {
-			this._msgRowIdList[item.cid].push(div.id);
+		if (rowIds && rowIds.length && this._rowsArePresent(conv)) {
+			var div = this._createItemHtml(item);
+			if (!this._expanded[item.cid]) {
+				Dwt.setVisible(div, false);
+			}
+			var convIndex = this._getRowIndex(conv);
+			var sortIndex = ev.getDetail("sortIndex");
+			var msgIndex = sortIndex || 0;
+			this._addRow(div, convIndex + msgIndex + 1);
+			rowIds.push(div.id);
 		}
-
 		handled = ev.handled = true;
 	}
 
@@ -919,16 +931,7 @@ function(convId) {
 ZmConvListView.prototype.removeItem =
 function(item, skipNotify) {
 	if (item.type == ZmItem.MSG) {
-		var msgRowId = this._getItemId(item);
-		var list = this._msgRowIdList[item.cid];
-		if (list && list.length) {
-			for (var i = 0; i < list.length; i++) {
-				if (list[i] == msgRowId) {
-					list[i] = null;
-					break;
-				}
-			}
-		}
+		AjxUtil.arrayRemove(this._msgRowIdList[item.cid], this._getItemId(item));
 	}
 	DwtListView.prototype.removeItem.apply(this, arguments);
 };
@@ -984,4 +987,31 @@ function(force) {
 		}
 	}
 	return menu;
+};
+
+/**
+ * @private
+ * @param {hash}		params			hash of parameters:
+ * @param {boolean}		expansion		if true, preserve expansion
+ */
+ZmConvListView.prototype._saveState =
+function(params) {
+	ZmMailListView.prototype._saveState.apply(this, arguments);
+	this._state.expanded = params && params.expansion && this._expandedItems;
+};
+
+ZmConvListView.prototype._restoreState =
+function() {
+
+	var s = this._state;
+	if (s.expanded) {
+		for (var id in s.expanded) {
+			if (s.expanded[id]) {
+				for (var i = 0; i < s.expanded[id].length; i++) {
+					this._expandItem(s.expanded[id][i]);
+				}
+			}
+		}
+	}
+	ZmMailListView.prototype._restoreState.call(this);
 };

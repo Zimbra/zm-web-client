@@ -824,7 +824,7 @@ function() {
 	var cc = AjxDispatcher.run("GetContactController");
 	if (this._actionEv.contact) {
 		if (this._actionEv.contact.isLoaded) {
-			cc.show(this._actionEv.contact);
+			cc.show(this._actionEv.contact, true);
 		} else {
 			var callback = new AjxCallback(this, this._loadContactCallback);
 			this._actionEv.contact.load(callback);
@@ -1757,20 +1757,28 @@ function() {
 ZmListController.prototype._getItemCountText =
 function() {
 
+	var size = this._getItemCount();
+	if (size == null) { return ""; }
 	var lv = this._listView[this._currentView];
 	var list = lv && lv._list;
-	if (!list) { return ""; }
 	var type = lv._getItemCountType();
-	var size = list.size();
 	var total = this._getNumTotal();
 	var num = total || size;
-    var typeText = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
+    var typeText = type ? AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num) : "";
 	if (total && (size != total)) {
 		return AjxMessageFormat.format(ZmMsg.itemCount1, [size, total, typeText]);
 	} else {
-		var sizeText = list.size() + (this._list.hasMore() ? "+" : "");
+		var sizeText = size + (this._list.hasMore() ? "+" : "");
 		return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, typeText]);
 	}
+};
+
+ZmListController.prototype._getItemCount =
+function() {
+	var lv = this._listView[this._currentView];
+	var list = lv && lv._list;
+	if (!list) { return null; }
+	return list.size();
 };
 
 /**
@@ -1884,11 +1892,11 @@ function(params, actionParams) {
 					actionParams.actionSummary = ZmList.getActionSummary(actionParams.actionText, this._continuation.totalItems, contResult.type, actionParams.actionArg);
 				}
 				lv.deselectAll();
-				if (params.allDoneCallback) {
-					params.allDoneCallback.run();
-				}
 			}
 			this._continuation = {count:0, totalItems:0};
+		}
+		if (params.allDoneCallback) {
+			params.allDoneCallback.run();
 		}
 
 		ZmList.killProgressDialog(actionParams.actionSummary);
@@ -1924,5 +1932,5 @@ ZmListController.prototype._checkItemCount =
 function() {
 	var lv = this._listView[this._currentView];
 	lv._checkItemCount();
-	lv._handleResponseCheckReplenish();
+	lv._handleResponseCheckReplenish(true);
 };

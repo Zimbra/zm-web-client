@@ -151,66 +151,74 @@ ZmContact.FA_CUSTOM					= i++;
 // Field information
 
 ZmContact.ADDRESS_FIELDS = [
+    // NOTE: sync with field order in ZmEditContactView's templates
 	ZmContact.F_homeCity,
 	ZmContact.F_homeCountry,
 	ZmContact.F_homePostalCode,
 	ZmContact.F_homeState,
 	ZmContact.F_homeStreet,
-	ZmContact.F_otherCity,
-	ZmContact.F_otherCountry,
-	ZmContact.F_otherPostalCode,
-	ZmContact.F_otherState,
-	ZmContact.F_otherStreet,
 	ZmContact.F_workCity,
 	ZmContact.F_workCountry,
 	ZmContact.F_workPostalCode,
 	ZmContact.F_workState,
-	ZmContact.F_workStreet
+	ZmContact.F_workStreet,
+    ZmContact.F_otherCity,
+    ZmContact.F_otherCountry,
+    ZmContact.F_otherPostalCode,
+    ZmContact.F_otherState,
+    ZmContact.F_otherStreet
 ];
 ZmContact.EMAIL_FIELDS = [
-	ZmContact.F_email
+	ZmContact.F_email,
+	ZmContact.F_workEmail1,
+	ZmContact.F_workEmail2,
+	ZmContact.F_workEmail3
 ];
 ZmContact.IM_FIELDS = [
 	ZmContact.F_imAddress
 ];
 ZmContact.OTHER_FIELDS = [
-	ZmContact.F_anniversary,
+    // NOTE: sync with field order in ZmEditContactView's templates
 	ZmContact.F_birthday,
+    ZmContact.F_anniversary,
 	ZmContact.F_custom
 ];
 ZmContact.PHONE_FIELDS = [
+    // NOTE: sync with field order in ZmEditContactView's templates
+    ZmContact.F_mobilePhone,
+    ZmContact.F_workPhone,
+    ZmContact.F_workFax,
+    ZmContact.F_companyPhone,
+    ZmContact.F_homePhone,
+    ZmContact.F_homeFax,
+    ZmContact.F_pager,
+    ZmContact.F_callbackPhone,
 	ZmContact.F_assistantPhone,
-	ZmContact.F_callbackPhone,
 	ZmContact.F_carPhone,
-	ZmContact.F_companyPhone,
-	ZmContact.F_homeFax,
-	ZmContact.F_homePhone,
-	ZmContact.F_mobilePhone,
-	ZmContact.F_otherFax,
 	ZmContact.F_otherPhone,
+    ZmContact.F_otherFax,
 	ZmContact.F_workAltPhone,
-	ZmContact.F_pager,
-	ZmContact.F_workFax,
-	ZmContact.F_workMobile,
-	ZmContact.F_workPhone
+	ZmContact.F_workMobile
 ];
 ZmContact.PRIMARY_FIELDS = [
-	ZmContact.F_company,
-	ZmContact.F_department,
-	ZmContact.F_fileAs,
-	ZmContact.F_firstName,
-	ZmContact.F_folderId,
-	ZmContact.F_image,
-	ZmContact.F_jobTitle,
-	ZmContact.F_lastName,
+    // NOTE: sync with field order in ZmEditContactView's templates
+    ZmContact.F_image,
+    ZmContact.F_namePrefix,
+    ZmContact.F_firstName,
+    ZmContact.F_middleName,
 	ZmContact.F_maidenName,
-	ZmContact.F_middleName,
-	ZmContact.F_namePrefix,
-	ZmContact.F_nameSuffix,
-	ZmContact.F_nickname,
+    ZmContact.F_lastName,
+    ZmContact.F_nameSuffix,
+    ZmContact.F_nickname,
+    ZmContact.F_jobTitle,
+    ZmContact.F_department,
+	ZmContact.F_company,
+	ZmContact.F_fileAs,
+	ZmContact.F_folderId,
 	ZmContact.F_notes
 ];
 ZmContact.URL_FIELDS = [
+    // NOTE: sync with field order in ZmEditContactView's templates
 	ZmContact.F_homeURL,
 	ZmContact.F_workURL,
 	ZmContact.F_otherURL
@@ -1004,7 +1012,7 @@ function(attr, callback, result) {
 	if (id && id == this.id) {
 		appCtxt.setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
 		// was this contact moved to another folder?
-		if (attr[ZmContact.F_folderId]) {
+		if (attr[ZmContact.F_folderId] && this.folderId != attr[ZmContact.F_folderId]) {
 			this._setFolder(attr[ZmContact.F_folderId]);
 		}
 	} else {
@@ -1019,7 +1027,12 @@ function(attr, callback, result) {
  * @private
  */
 ZmContact.prototype._handleResponseMove =
-function(resp) {
+function(newFolderId, resp) {
+	var newFolder = newFolderId && appCtxt.getById(newFolderId);
+	var count = 1;
+	if (newFolder)
+		appCtxt.setStatusMsg(AjxMessageFormat.format(ZmMsg.actionMove, [count, AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[ZmItem.CONTACT]], count), newFolder.name]));
+	
 	this._notify(ZmEvent.E_MODIFY, resp);
 };
 
@@ -1041,7 +1054,7 @@ function(newFolderId) {
 	} else {
 		var jsonObj = {ContactActionRequest:{_jsns:"urn:zimbraMail"}};
 		jsonObj.ContactActionRequest.action = {id:this.id, op:"move", l:newFolderId};
-		var respCallback = new AjxCallback(this, this._handleResponseMove);
+		var respCallback = new AjxCallback(this, this._handleResponseMove, [newFolderId]);
 		var accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
 		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, accountName:accountName});
 	}

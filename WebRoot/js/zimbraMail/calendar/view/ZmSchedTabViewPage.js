@@ -125,7 +125,12 @@ function() {
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
 
-	this.set(this._dateInfo, this._editView.getOrganizer(), this._attendees);
+    var organizer = this._editView.getOrganizer();
+    if(this._isProposeTime) {
+        organizer = this._editView.getCalItemOrganizer();                    
+    }
+
+	this.set(this._dateInfo, organizer, this._attendees);
 	this._controller._setComposeTabGroup();
     this.enablePartcipantStatusColumn(this._editView.getRsvp());
 };
@@ -143,10 +148,11 @@ function(useException) {
 };
 
 ZmSchedTabViewPage.prototype.initialize =
-function(appt, mode, isDirty, isForward) {
+function(appt, mode, isDirty, apptComposeMode) {
 	this._appt = appt;
 	this._mode = mode;
-    this._isForward = isForward;
+    this._isForward = (apptComposeMode == ZmApptComposeView.FORWARD);
+    this._isProposeTime = (apptComposeMode == ZmApptComposeView.PROPOSE_TIME);
 };
 
 ZmSchedTabViewPage.prototype.set =
@@ -496,6 +502,18 @@ function(index, updateTabGroup) {
 	}
 };
 
+ZmSchedTabViewPage.prototype._hideAttendeeRow =
+function(index, updateTabGroup) {
+    var row = this._attendeesTable.rows[index];
+    if(row){
+        row.style.display="none";
+    }
+    if (updateTabGroup) {
+        this._controller._setComposeTabGroup(true);
+    }
+
+};
+
 ZmSchedTabViewPage.prototype._createDwtObjects =
 function() {
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
@@ -640,6 +658,7 @@ function(inputEl, attendee, useException) {
 				this._getFreeBusyInfo(this._getStartTime(), email, this._fbCallback);
 			}
 			sched.attendee = attendee;
+			this._setParticipantStatus(sched, attendee, idx);
 			this._setAttendeeToolTip(sched, attendee);
 			this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
 			if (!curAttendee) {
@@ -652,7 +671,9 @@ function(inputEl, attendee, useException) {
 	} else if (curAttendee) {
 		// user erased an attendee
 		this._resetRow(sched, false, type);
-		this._removeAttendeeRow(idx, true);
+        // bug:43660 removing row (splicing array) causes index mismatch.
+        //this._removeAttendeeRow(idx, true);
+		this._hideAttendeeRow(idx, true);
 	}
 };
 
@@ -789,23 +810,7 @@ function(index, attendee, type, isOrganizer) {
         select.setText("");
 	}
 
-	var ptst = attendee.getParticipantStatus() || "NE";
-	var ptstCont = sched.ptstObj;
-	if (ptstCont) {
-		var ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
-		if (ptstIcon != "") {
-			var ptstLabel = ZmMsg.attendeeStatusLabel + " " + ZmCalItem.getLabelForParticipationStatus(ptst);
-			ptstCont.innerHTML = AjxImg.getImageHtml(ptstIcon);
-			var imgDiv = ptstCont.firstChild;
-			if(imgDiv && !imgDiv._schedViewPageId ){
-				Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOVER, ZmSchedTabViewPage._onPTSTMouseOver);	
-				Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOUT, ZmSchedTabViewPage._onPTSTMouseOut);
-				imgDiv._ptstLabel = ptstLabel;
-				imgDiv._schedViewPageId = this._svpId;
-				imgDiv._schedTableIdx = index;
-			}
-        }
-    }
+    this._setParticipantStatus(sched, attendee, index);
 
 	var email = attendee.getEmail();
 	if (email instanceof Array) {
@@ -817,6 +822,34 @@ function(index, attendee, type, isOrganizer) {
 	}
 
 	return email;
+};
+
+/**
+ * sets participant status for an attendee
+ *
+ * @param sched 		[object]		scedule object which contains info related to this attendee row
+ * @param attendee		[object]		attendee object ZmContact/ZmResource
+ * @param index 		[Integer]		index of the schedule 
+ */
+ZmSchedTabViewPage.prototype._setParticipantStatus =
+function(sched, attendee, index) {
+    var ptst = attendee.getParticipantStatus() || "NE";
+    var ptstCont = sched.ptstObj;
+    if (ptstCont) {
+        var ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
+        if (ptstIcon != "") {
+            var ptstLabel = ZmMsg.attendeeStatusLabel + " " + ZmCalItem.getLabelForParticipationStatus(ptst);
+            ptstCont.innerHTML = AjxImg.getImageHtml(ptstIcon);
+            var imgDiv = ptstCont.firstChild;
+            if(imgDiv && !imgDiv._schedViewPageId ){
+                Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOVER, ZmSchedTabViewPage._onPTSTMouseOver);
+                Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOUT, ZmSchedTabViewPage._onPTSTMouseOut);
+                imgDiv._ptstLabel = ptstLabel;
+                imgDiv._schedViewPageId = this._svpId;
+                imgDiv._schedTableIdx = index;
+            }
+        }
+    }
 };
 
 /**
@@ -1010,6 +1043,7 @@ function(ev, id) {
 	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 	this._outlineAppt();
 	this._editView.updateTimeField(this._dateInfo);
+    this._dateInfo.isTimeModified = true;
 };
 
 ZmSchedTabViewPage.prototype._timezoneListener =
@@ -1069,11 +1103,26 @@ function(status, slots, table, sched) {
 	var row = table.rows[0];
 	var className = this._getClassForStatus(status);
 
+    var currentDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value)
+
 	if (row && className) {
 		// figure out the table cell that needs to be colored
 		for (var i = 0; i < slots.length; i++) {
 			var startIdx = this._getIndexFromTime(slots[i].s);
 			var endIdx = this._getIndexFromTime(slots[i].e, true);
+
+            if(slots[i].s <= currentDate.getTime()) {
+                startIdx = 0;                
+            }
+
+            if(slots[i].e >= currentDate.getTime() + AjxDateUtil.MSEC_PER_DAY) {
+                endIdx = ZmSchedTabViewPage.FREEBUSY_NUM_CELLS - 1;
+            }
+
+            //bug:45623 assume start index is zero if its negative
+            if(startIdx < 0) {startIdx = 0;}
+            //bug:45623 skip the slot that has negative end index.
+            if(endIdx < 0) { continue; }
 
 			// normalize
 			if (endIdx < startIdx) {

@@ -34,15 +34,15 @@
             <div class="compose button" onclick="return zClickLink('compose');">
                 <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
                 <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" id="compose"><fmt:message key="compose"/></a>
-            </div>
+            </div> 
             <div class="actions">
-                <div class="left button" onclick="return zClickLink('reply');">
+                <div class="actionLeft button" onclick="return zClickLink('reply');">
                     <a href="?st=newmail&amp;id=${msg.id}&amp;op=reply" id="reply"><fmt:message key="reply"/></a>
                 </div>
-                <div class="center button" onclick="return zClickLink('replyall');">
+                <div class="actionCenter button" onclick="return zClickLink('replyall');">
                     <a href="?st=newmail&id=${msg.id}&amp;op=replyAll" id="replyall"><fmt:message key="replyAll"/></a>
                 </div>
-                <div class="right button" onclick="return zClickLink('forward');">
+                <div class="actionRight button" onclick="return zClickLink('forward');">
                     <a href="?st=newmail&id=${msg.id}&amp;op=forward" id="forward"><fmt:message key="forward"/></a>
                 </div>
             </div>

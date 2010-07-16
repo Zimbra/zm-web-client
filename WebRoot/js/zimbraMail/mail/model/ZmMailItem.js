@@ -73,11 +73,7 @@ function() {
 
 ZmMailItem.prototype.getFolderId =
 function() {
-	if ((this.type == ZmItem.CONV) && this.list && this.list.search) {
-		return this.list.search.folderId;
-	} else {
-		return this.folderId;
-	}
+	return this.folderId;
 };
 
 ZmMailItem.prototype.notifyModify =

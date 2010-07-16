@@ -192,7 +192,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 		ascending: ascending,
 		query: query,
 		queryHint: queryHint,
-		offset: this._offset,
+		offset: this._list.size(),
 		lastId: lastId,
 		lastSortVal: lastSortVal,
 		respCallback: (new AjxCallback(this, this._handleResponseSearch, [firstTime])),
@@ -315,7 +315,7 @@ function(account) {
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 
 	this._searchField = document.getElementById(this._htmlElId + "_searchField");
-	Dwt.setHandler(this._searchField, DwtEvent.ONKEYPRESS, ZmContactPicker._keyPressHdlr);
+	Dwt.setHandler(this._searchField, DwtEvent.ONKEYUP, ZmContactPicker._keyPressHdlr);
 	Dwt.setHandler(this._searchField, DwtEvent.ONCLICK, ZmContactPicker._onclickHdlr);
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
 };
@@ -353,6 +353,8 @@ function(firstTime, result) {
 		if (expanded) { return; }
 	}
 
+	// this method will expand the list depending on the number of email
+	// addresses per contact.
 	var list = AjxVector.fromArray(ZmContactsHelper._processSearchResponse(resp));
 
 	if (isPagingSupported) {
@@ -360,11 +362,52 @@ function(firstTime, result) {
 		this._list.hasMore = more;
 	}
 
-	if (list.size() == 0) {
+	if (list.size() == 0 && firstTime) {
 		this._chooser.sourceListView._setNoResultsHtml();
 	}
 
-	this._showResults(isPagingSupported, more, list);
+	// if we don't get a full number of addresses in the results, repeat the search.
+	// Could search several times.
+	if (((this._list.size() - this._offset) < ZmContactsApp.SEARCHFOR_MAX) && more) {
+		// We want to base our search off the ID of the last contact in the response,
+		// NOT the last contact with an email address
+		var vec = resp.getResults(ZmItem.CONTACT);
+
+		var email = (vec.size() > 0) ? vec.getVector().getLast() : null;
+		if (email) {
+			if (email.__contact) {
+				lastId = email.__contact.id;
+				lastSortVal = email.__contact.sf;
+			} else {
+				lastId = email.id;
+				lastSortVal = email.sf;
+			}
+		}
+		if (!lastSortVal) {
+			// BAIL. Server didn't send us enough info to make the next request
+			this._searchIcon.className = "ImgSearch";
+			return;
+		}
+		this.search(null, null, null, lastId, lastSortVal);
+	}
+	else {
+		list = this.getSubList();
+		// If the AB ends with a long list of contacts w/o addresses,
+		// we may never get a list back.  If that's the case, roll back the offset
+		// and refetch, should disable the "next page" button.
+		if (!list) {
+			this._offset -= ZmContactsApp.SEARCHFOR_MAX;
+			if (this._offset < 0) {
+				this._offset = 0;
+			}
+			list = this.getSubList();
+		}
+		if (!more) {
+			more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
+		}
+		this._showResults(isPagingSupported, more, list);
+	}
+
 };
 
 ZmContactPicker.prototype._showResults =
@@ -401,6 +444,9 @@ ZmContactPicker.prototype._pageListener =
 function(ev) {
 	if (ev.item == this._prevButton) {
 		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
+		if (this._offset < 0) {
+			this._offset = 0;
+		}
 		this._showResults(true, true, this.getSubList()); // show cached results
 	}
 	else {
@@ -408,8 +454,10 @@ function(ev) {
 		var lastSortVal;
 		this._offset += ZmContactsApp.SEARCHFOR_MAX;
 		var list = this.getSubList();
-		if (!list) {
-			list = this._chooser.sourceListView.getList();
+		if (!list || ((list.size() < ZmContactsApp.SEARCHFOR_MAX) && this._list.hasMore)) {
+			if (!list) {
+				list = this._chooser.sourceListView.getList();
+			}
 			var email = (list.size() > 0) ? list.getLast() : null;
 			if (email) {
 				lastId = email.__contact.id;
@@ -435,8 +483,11 @@ ZmContactPicker.prototype.getSubList =
 function() {
 	var size = this._list.size();
 
-	var end = (this._offset + ZmContactsApp.SEARCHFOR_MAX > size)
-		? size : (this._offset + ZmContactsApp.SEARCHFOR_MAX);
+	var end = this._offset+ZmContactsApp.SEARCHFOR_MAX;
+
+	if (end > size) {
+		end = size;
+	}
 
 	return (this._offset < end)
 		? (AjxVector.fromArray(this._list.getArray().slice(this._offset, end))) : null;

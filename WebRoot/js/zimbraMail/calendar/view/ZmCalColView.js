@@ -385,7 +385,17 @@ function(date) {
 ZmCalColView.prototype._updateDays =
 function() {
 	var d = new Date(this._date.getTime());
-	d.setHours(0,0,0,0);
+    d.setHours(0,0,0,0);
+
+    //counter to track DST adjustments
+    var daylightAdjustment = false;
+
+    //handle daylight shifting the day e.g. Santiago  Oct 10, 2010 00:00 shifted to Oct 9 2010 23:00
+    if(d.getHours() != 0) {
+        AjxDateUtil.rollToNextDay(d);
+        daylightAdjustment = true;
+    }
+
 	var dow;
 
 	switch(this.view) {
@@ -409,6 +419,12 @@ function() {
 			break;
 	}
 
+    //handling the case where start day of week shifted due to DST
+    if(d.getHours() != 0 && !daylightAdjustment) {
+        AjxDateUtil.rollToNextDay(d);
+        daylightAdjustment = true;
+    }
+    
 	this._dateToDayIndex = new Object();
 
 	var today = new Date();
@@ -439,6 +455,12 @@ function() {
 			d.setHours(0,0,0,0);
 			d.setTime(d.getTime() + AjxDateUtil.MSEC_PER_DAY);
 		}
+
+        //handling the case where first day got shifted due to DST
+        if(daylightAdjustment) {
+            d.setHours(0,0,0,0);
+            daylightAdjustment = false;
+        }
 	}
 	var te = document.getElementById(this._headerYearId);
 	te.innerHTML = this._days[0].date.getFullYear();
@@ -566,7 +588,7 @@ function(appt) {
 	var isRemote = Boolean(calendar.url);
 	var is30 = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
 	var is60 = (appt._orig.getDuration() <= 2*AjxDateUtil.MSEC_PER_HALF_HOUR);
-	var apptName = AjxStringUtil.htmlEncode(appt.getName());
+	var apptName = appt.getName();
 	var tagIcon = (!appt.getFolder().link && appt.tags.length > 0)
 		? appt.getTagImageInfo() : null;
 	// normalize location
@@ -582,7 +604,7 @@ function(appt) {
 		if (apptName.length > widthLimit) {
 			apptName = apptName.substring(0, widthLimit) + "...";
 		}
-		apptName = appt.getDurationText(true, true) + " - " + apptName;
+		apptName = appt.getDurationText(true, true) + " - " + AjxStringUtil.htmlEncode(apptName);
 	}
 
 	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
@@ -807,14 +829,9 @@ function(abook) {
 
 	this.getHtmlElement().innerHTML = html.toString();
 
-	var myView = this;
-	document.getElementById(this._bodyDivId).onscroll = function() {
-		myView._syncScroll();
-	};
-
-	document.getElementById(this._allDayApptScrollDivId).onscroll = function() {
-		myView._syncScroll();
-	};
+    var func = AjxCallback.simpleClosure(ZmCalColView.__onScroll, ZmCalColView, this);
+	document.getElementById(this._bodyDivId).onscroll = func;
+	document.getElementById(this._allDayApptScrollDivId).onscroll = func;
 
 	var ids = [this._apptBodyDivId, this._bodyHourDivId, this._allDayDivId, this._allDaySepDivId];
 	var types = [ZmCalBaseView.TYPE_APPTS_DAYGRID, ZmCalBaseView.TYPE_HOURS_COL, ZmCalBaseView.TYPE_ALL_DAY, ZmCalBaseView.TYPE_DAY_SEP];
@@ -823,6 +840,10 @@ function(abook) {
 	}
 	this._scrollToTime(8);
 
+};
+
+ZmCalColView.__onScroll = function(myView) {
+    myView._syncScroll();
 };
 
 ZmCalColView.prototype._computeMaxCols =

@@ -21,6 +21,7 @@
   <standard>
 		<css>
 			<file>../../css/zhtml.css</file>
+			<file>zhtml.css</file>
 		</css>
   </standard>	
 </skin>

@@ -108,7 +108,7 @@ function(params, callback) {
 	}
 	var sortBy = params.sortBy || ZmSearch.DATE_DESC;
 	var offset = params.offset || 0;
-	var limit = params.limit || appCtxt.get(ZmSetting.PAGE_SIZE);
+	var limit = params.limit || appCtxt.get(ZmSetting.CONVERSATION_PAGE_SIZE);
 
 	var doSearch = true;
 	if (this._loaded && this.msgs && this.msgs.size() && !params.forceLoad) {
@@ -327,27 +327,8 @@ function() {
 ZmConv.prototype.getAccount =
 function() {
 	if (!this.account) {
-		var folderId;
-		for (var i in this.folders) {
-			folderId = i;
-			break;
-		}
-		
-		if (!folderId &&
-			appCtxt.multiAccounts &&
-			appCtxt.getCurrentApp() &&
-			appCtxt.getCurrentSearch() &&
-			!appCtxt.getCurrentSearch().isMultiAccount())
-		{
-			folderId = this.getFolderId();
-		}
-
-		if (folderId) {
-			this.account = appCtxt.getById(folderId).getAccount();
-		} else {
-			var parsed = ZmOrganizer.parseId(this.id);
-			this.account = parsed && parsed.account;
-		}
+		// always pull out the account from the fully-qualified ID
+		this.account = ZmOrganizer.parseId(this.id).account;
 	}
 	return this.account;
 };
@@ -380,7 +361,8 @@ function(obj, batchMode) {
 				a[i].cid = conv.id;
 			}
 		}
-		if (conv.list && conv._oldId) {
+		conv.folders = AjxUtil.hashCopy(this.folders);
+		if (conv.list && conv._oldId && conv.list._idHash[conv._oldId]) {
 			delete conv.list._idHash[conv._oldId];
 			conv.list._idHash[conv.id] = conv;
 		}
@@ -505,6 +487,11 @@ function(offset, ascending) {
 	return a;
 };
 
+ZmConv.prototype.getFolderId =
+function() {
+	return this.folderId || (this.list && this.list.search && this.list.search.folderId);
+};
+
 /**
  * Gets the first matching msg of this conv, loading the conv msg list if necessary. If the
  * msg itself hasn't been loaded we also load the conv. The conv load is a SearchConvRequest
@@ -597,6 +584,16 @@ function(convNode) {
 		for (var i = 0, count = convNode.m.length; i < count; i++) {
 			this.msgIds.push(convNode.m[i].id);
 		}
+		if (count == 1) {
+			var msgNode = convNode.m[0];
+			if (msgNode.l) {
+				this.folderId = msgNode.l;
+				this.folders[msgNode.l] = true;
+			}
+			if (msgNode.s) {
+				this.size = msgNode.s;
+			}
+		}
 	}
 
 	// Grab the metadata, keyed off the section name
@@ -619,7 +616,7 @@ function(msg) {
 	this.isFlagged = msg.isFlagged;
 	this.isUnread = msg.isUnread;
 	for (var i = 0; i < msg.tags.length; i++) {
-		this.tags.push(msg.tags[i]);
+		this.tagLocal(msg.tags[i], true);
 	}
 	var a = msg.participants ? msg.participants.getArray() : null;
 	this.participants = new AjxVector();

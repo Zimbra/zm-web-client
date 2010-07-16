@@ -32,7 +32,7 @@
               </c:url>
             <th style="width:20px"><a href="${toggleUrl}"><app:img src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}" altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/></a></th>
             <th class="Header" nowrap="nowrap" width="99%"><fmt:message key="searches"/></th>
-            <th style="width:30px" align="right" class="ZhTreeEdit">
+            <th nowrap="nowrap" align="right" class="ZhTreeEdit">
                 <c:url value="/h/mfolders" var="mfoldersUrl">
                     <c:if test="${not empty param.sfi}">
                         <c:param name="sfi" value="${param.sfi}"/>

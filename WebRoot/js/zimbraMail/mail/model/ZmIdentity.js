@@ -80,10 +80,6 @@ ZmIdentity.SET_REPLY_TO_DISPLAY		= i++;
  */
 ZmIdentity.SET_REPLY_TO_ADDRESS		= i++;
 /**
- * Defines the "read receipt to address" field id.
- */
-ZmIdentity.READ_RECEIPT_TO_ADDR		= i++;
-/**
  * Defines the "signature" field id.
  */
 ZmIdentity.SIGNATURE				= i++;
@@ -127,7 +123,6 @@ ZmIdentity.addField(ZmIdentity.SEND_FROM_ADDRESS, { name: "sendFromAddress", soa
 ZmIdentity.addField(ZmIdentity.SET_REPLY_TO, { name: "setReplyTo", soap: "zimbraPrefReplyToEnabled", type: ZmIdentity.BOOLEAN });
 ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_DISPLAY, { name: "setReplyToDisplay", soap: "zimbraPrefReplyToDisplay", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_ADDRESS, { name: "setReplyToAddress", soap: "zimbraPrefReplyToAddress", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.READ_RECEIPT_TO_ADDR, { name: "readReceiptAddr", soap: "zimbraPrefReadReceiptsToAddress", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.SIGNATURE, { name: "signature", soap: "zimbraPrefDefaultSignatureId", type: ZmIdentity.STRING });
 // Used only for Persona
 ZmIdentity.addField(ZmIdentity.USE_WHEN_SENT_TO, { name: "useWhenSentTo", soap: "zimbraPrefWhenSentToEnabled", type: ZmIdentity.BOOLEAN });

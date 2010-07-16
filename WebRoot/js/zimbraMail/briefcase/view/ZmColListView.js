@@ -44,8 +44,8 @@ ZmColListView =	function(parent, controller, dropTgt, index) {
 	
 	//adding the listeners in constructors so that we get listener events
 	//for all new columns created on fly
-	this._controller._addListListeners(this);	
-}
+	this._controller._addListListeners(this);
+};
 
 ZmColListView.prototype = new ZmBriefcaseBaseView;
 ZmColListView.prototype.constructor = ZmColListView;
@@ -68,34 +68,16 @@ function(list, sortField, doNotIncludeFolders) {
 
 
     //Add Folders accordingly
-    var paging = Boolean(this._itemsToAdd);
-    if(!doNotIncludeFolders && !paging){
-        var subs = this._folders = this._controller._getSubfolders();
-        var subsLen = subs ? subs.length : 0;
-        if(subsLen > 0){
-            list = this._cloneList(list);
-            for(var i=0; i<subsLen; i++){
-                list.add(subs[i], 0);
-            }
-        }
+    var paging = Boolean(this._itemsToAdd), newList;
+    if(!doNotIncludeFolders && !paging){        
+        newList = this.appendFolders(list);
     }
-	ZmBriefcaseBaseView.prototype.set.call(this, list, sortField);
+
+    newList = newList || list;
+	ZmBriefcaseBaseView.prototype.set.call(this, newList, sortField);
     this.focus();
-
-    //bug 47240: return the new modified list with change listeners. 
-    return list;
-};
-
-ZmColListView.prototype._cloneList =
-function(list){
-    var newList = new ZmList(list.type, list.search);
-    var item;
-    for(var i=0; i<list.size(); i++){
-        item = list.get(i);
-        item.list = newList;
-        newList.add(item);
-    }
-    newList.setHasMore(list.hasMore());
+    
+    //bug 47240: return the new modified list with change listeners.
     return newList;
 };
 
@@ -174,22 +156,8 @@ function(clickedEl, ev) {
 
     if(this._controller._currentView == ZmId.VIEW_BRIEFCASE_COLUMN) {
         this.parent.setCurrentListIndex(this._colIdx);
-        ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
-        if (ev.button == DwtMouseEvent.LEFT) {
-            this.parent.removeChildColumns(this._colIdx);
-            var items = this.getSelection();
-            if (items && items.length == 1) {
-                var item = items[0];
-                if (item.isFolder) {
-                    this.parent.expandFolder(item.id);
-                } else {
-                    this.parent.showFileProps(item);
-                }
-            }
-        }
-    }else{
-        ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
-    }
+    }    
+    ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
 };
 
 ZmColListView.prototype._getScrollDiv =
@@ -211,7 +179,10 @@ function(ev) {
 	var org = ev.getDetail("organizers")[0];
 	if (!org) { return; }
 	var item = new ZmBriefcaseFolderItem(org);
-	if (this.folderId && (item.folderId != this.folderId)) { return; }
+    var folderId = this.folderId || this._folderId;    
+	if (folderId && (item.folderId != folderId)) {
+        return;
+    }
 
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY) {
@@ -225,7 +196,7 @@ function(ev) {
 		}
 	} else if (ev.event == ZmEvent.E_CREATE) {
 		var search = this._controller._currentSearch;
-		if (this.folderId || (search && search.matches && search.matches(item))) {
+		if (folderId || (search && search.matches && search.matches(item))) {
 			var index = this._getFolderSortIndex(org, ZmFolder.sortCompare);
 			this._addFolderRow(item, index);
 			this._folders.splice(index, 0, item);
@@ -257,25 +228,4 @@ function(folder, sortFunction) {
 		}
 	}
 	return i;
-};
-
-ZmColListView.prototype._changeListener =
-function(ev){
-
-    ZmBriefcaseBaseView.prototype._changeListener.call(this, ev);
-
-    if(this._controller.isMultiColView()){
-        var multiColView = this._controller.getParentView();
-        var selection = this.getSelection();
-        if(selection && selection.length > 0){
-            selection = selection[0];
-            if(selection.isFolder)
-                multiColView.expandFolder(selection.id);
-            else
-                multiColView.showFileProps(selection);
-        }else{
-            multiColView.clearFolderProps();
-        }
-    }
-
 };

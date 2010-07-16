@@ -64,9 +64,28 @@ function(ev) {
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
 			this.addItem(item, 0);
 		}
-	} else {
-		ZmListView.prototype._changeListener.call(this, ev);
 	}
+
+    if(ev.event == ZmEvent.E_MODIFY){
+        for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if (this._list && this._list.contains(item)) {
+                this.redrawItem(item);
+            }
+		}
+    }
+
+    ZmListView.prototype._changeListener.call(this, ev);
+
+    if(ev.event == ZmEvent.E_MOVE){
+        var folderId = this._controller._folderId || this.folderId || this._folderId;
+        var item = items.length ? items[0] : items;
+        if(item && item.folderId == folderId){
+            this.addItem(item, 0, true);
+            item.handled = true;
+        }
+    }
+
 };
 
 
@@ -91,11 +110,6 @@ function(params) {
 		tagTooltip:		this._getTagToolTip(item)
 	};
 	return AjxTemplate.expand("briefcase.Briefcase#Tooltip", subs);
-};
-
-ZmBriefcaseBaseView.prototype._getItemCountType =
-function() {
-	return null;
 };
 
 /**
@@ -142,3 +156,37 @@ ZmBriefcaseBaseView.prototype.getTitle =
 function(){
     return [ZmMsg.zimbraTitle, ZmMsg.briefcase].join(': ');  
 };
+
+ZmBriefcaseBaseView.prototype._cloneList =
+function(list){
+    var newList = new ZmList(list.type, list.search);
+    var item;
+    for(var i=0; i<list.size(); i++){
+        item = list.get(i);
+        item.list = newList;
+        newList.add(item);
+    }
+    newList.setHasMore(list.hasMore());
+    return newList;
+};
+
+ZmBriefcaseBaseView.prototype.appendFolders =
+function(srcList){
+    var subs = this._folders = this._controller._getSubfolders();
+    var subsLen = subs ? subs.length : 0;
+    var newList;
+    if(subsLen > 0){
+        newList = this._cloneList(srcList);
+        for(var i=0; i<subsLen; i++){
+            newList.add(subs[i], 0);
+        }        
+    }
+    return newList;
+};
+
+ZmBriefcaseBaseView.prototype.set =
+function(list, sortField){
+    this._zmList = list;
+    ZmListView.prototype.set.call(this, list, sortField);
+};
+

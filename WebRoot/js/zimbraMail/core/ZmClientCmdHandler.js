@@ -41,6 +41,7 @@
  * 		$set:compose						compose msg based on mailto: in query string
  * 		$set:error							show error dialog
  * 		$set:modify [setting] [value]		set setting to value, then optionally restart
+ * 		$set:clearAutocompleteCache			clear contacts autocomplete cache
  */
 
 /**
@@ -172,10 +173,7 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	if (typeof cmdArg1 == "undefined") {
 		this._alert("Instant notify is "+ (appCtxt.getAppController().getInstantNotify() ? "ON" : "OFF"));
 	} else {
-		var on = false;
-		if (cmdArg1 && cmdArg1 == 1) {
-			on = true;
-		}
+		var on = cmdArg1 && (cmdArg1.toLowerCase() == "on");
 		this._alert("Set instant notify to "+ (on ? "ON" : "OFF"));
 		appCtxt.getAppController().setInstantNotify(on);
 	}
@@ -294,7 +292,7 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
  */
 ZmClientCmdHandler.prototype.execute_expire =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	ZmCsfeCommand.setSessionId(null);
+	ZmCsfeCommand.clearSessionId();
 	this._alert("Session expired");
 };
 
@@ -307,7 +305,7 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
  */
 ZmClientCmdHandler.prototype.execute_refresh = 
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	ZmCsfeCommand.setSessionId(null);
+	ZmCsfeCommand.clearSessionId();
 	appCtxt.getAppController().sendNoOp();
 };
 
@@ -476,4 +474,18 @@ function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */)
 	dialog.registerCallback(DwtDialog.YES_BUTTON, settings._refreshBrowserCallback, settings, [dialog]);
 	dialog.setMessage(ZmMsg.accountChangeRestart, DwtMessageDialog.WARNING_STYLE);
 	dialog.popup();
+};
+
+/**
+ * Executes the clearAutocompleteCache command.
+ *
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ * @param	{Object}	[cmdArg2]		command arguments
+ */
+ZmClientCmdHandler.prototype.execute_clearAutocompleteCache =
+function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
+	appCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
+	this._alert("Contacts autocomplete cache cleared");
 };

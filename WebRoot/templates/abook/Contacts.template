@@ -12,6 +12,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
+<!-- NOTE: sync with field order in ZmContact -->
 <template id="abook.Contacts#ZmEditContactView">
 	<div id="${id}_DEBUG"></div>
 	<table valign=top width='100%' cellspacing=0>
@@ -30,20 +31,31 @@
 				<div style='padding:.125em'>
 					<div id="${id}_FULLNAME"></div>
 				</div>
-				<div id="${id}_NAME_row">
-					<table><tr>
-						<td id="${id}_PREFIX_row"><div id="${id}_PREFIX" tabindex="200"></div></td>
-						<td><div id="${id}_FIRST" tabindex="201"></div></td>
-						<td id="${id}_MIDDLE_row"><div id="${id}_MIDDLE" tabindex="202"></div></td>
-						<td id="${id}_MAIDEN_row">
+				<$ if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) { $>
+				<div id="${id}_TAG"></div>
+				<$ } $>
+				<div id="${id}_NAME_row" style='padding-bottom:4;'>
+					<table border=0 cellpadding=0 cellspacing=0><tr>
+						<td id="${id}_PREFIX_row" style='padding-right:4;'>
+						    <div id="${id}_PREFIX" tabindex="200"></div>
+                        </td>
+						<td style='padding-right:4;'>
+						    <div id="${id}_FIRST" tabindex="201"></div>
+                        </td>
+						<td id="${id}_MIDDLE_row" style='padding-right:4;'>
+						    <div id="${id}_MIDDLE" tabindex="202"></div>
+                        </td>
+						<td id="${id}_MAIDEN_row" style='padding-right:4;'>
 							<table border=0 cellspacing=0 cellpadding=0>
 								<td style='padding:0 2;'>(</td>
 								<td><div id="${id}_MAIDEN" tabindex="203"></div></td>
 								<td style='padding:0 2;'>)</td>
 							</table>
 						</td>
-						<td><div id="${id}_LAST" tabindex="204"></div></td>
-						<td id="${id}_SUFFIX_row">
+						<td style='padding-right:4;'>
+						    <div id="${id}_LAST" tabindex="204"></div>
+                        </td>
+						<td id="${id}_SUFFIX_row" style='padding-right:4;'>
 							<table border=0 cellspacing=0 cellpadding=0>
 								<td style='padding-right:4;'>,</td>
 								<td><div id="${id}_SUFFIX" tabindex="205"></div></td>
@@ -52,22 +64,22 @@
 						<td><div id="${id}_DETAILS" tabindex="206"></div></td>
 					</tr></table>
 				</div>
-				<div id="${id}_NICKNAME_row">
-					<table><tr>
+				<div id="${id}_NICKNAME_row" style='padding-bottom:4;'>
+					<table border=0 cellpadding=0 cellspacing=0><tr>
 						<td>&ldquo;</td>
 						<td><div id="${id}_NICKNAME" tabindex="250"></div></td>
 						<td>&rdquo;</td>
 					</tr></table>
 				</div>
-				<div id="${id}_JOB_row">
-					<table><tr>
+				<div id="${id}_JOB_row" style='padding-bottom:4;'>
+					<table border=0 cellpadding=0 cellspacing=0><tr>
 						<td id="${id}_TITLE_row"><div id="${id}_TITLE" tabindex="301"></div></td>
 						<td id="${id}_TITLE_DEPARTMENT_SEP">&nbsp;-&nbsp;</td>
 						<td id="${id}_DEPARTMENT_row"><div id="${id}_DEPARTMENT" tabindex="302"></div></td>
 					</tr></table>
 				</div>
-				<div id="${id}_COMPANY_row">
-					<table><tr>
+				<div id="${id}_COMPANY_row" style='padding-bottom:4;'>
+					<table border=0 cellpadding=0 cellspacing=0><tr>
 						<td><div id="${id}_COMPANY" tabindex="305"></div></td>
 					</tr></table>
 				</div>
@@ -77,7 +89,7 @@
 				<tr><td><$=ZmMsg.fileAsLabel$></td><td><div id="${id}_FILE_AS" tabindex="400"></div></td></tr>
 				<tr><td><$=ZmMsg.locationLabel$></td><td><div id="${id}_FOLDER" tabindex="401"></div></td></tr>
 				<$ if (appCtxt.multiAccounts) { $>
-					<tr><td><$=ZmMsg.accountLabel$></td><td><div id="${id}_ACCOUNT"></div></td></tr>
+					<tr><td><$=ZmMsg.accountLabel$></td><td><div id="${id}_ACCOUNT" tabindex="402"></div></td></tr>
 				<$ } $>
 				</table>
 			</td>
@@ -108,8 +120,14 @@
 		</tr>
 		<tr valign=top>
 			<td class=rowLabel><$=ZmMsg.notesLabel$></td>
-			<td class=rowValue style='padding-left:3'><div id="${id}_NOTES" tabindex="1100"></div></td>
+			<td class=rowValue><div id="${id}_NOTES" tabindex="1100"></div></td>
 		</tr>
+	</table>
+</template>
+
+<template id="abook.Contacts#ZmEditContactViewRows">
+	<table border=0 cellspacing=0 cellpadding=0>
+		<tbody id="${id}_rows" tabindex="100"></tbody>
 	</table>
 </template>
 
@@ -366,13 +384,13 @@
 <!---------------------------- ZmContactSplitView ----------------------------->
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#SplitView">
-	<table border=0 cellpadding=0 cellspacing=5 width=100% height=100% style='table-layout:fixed'>
+	<table border=0 cellpadding=0 cellspacing=5 width=100% height=100%>
 		<col width=230></col>
 		<tr>
 			<td id='${id}_alphabetbar' colspan=2></td>
 		</tr>
 		<tr height=100%>
-			<td width=200 valign=top id='${id}_listview'></td>
+			<td width=230 valign=top id='${id}_listview'></td>
 			<td valign=top id='${id}_contentCell' height=100%>
 				<div class='ZmContactInfoView' id='${id}_content'></div>
 			</td>
@@ -407,7 +425,13 @@
 	<table border=0 cellspacing=2 cellpadding=2 width=100% class='contactHeaderTable <$= data.contactHdrClass $>'>
 		<tr>
 			<$ if (imageUrl) { $>
-				<td valign=bottom width=48 rowspan=2><img src="<$= imageUrl $>" width=48 height=48 border=0></td>
+				<td valign=bottom width=48 rowspan=2><img src="<$= imageUrl $>" 
+				<$ if (AjxEnv.isIE) { $>
+					height=48
+				<$ } else { $>
+					style="max-width:48px;max-height:48px"
+				<$ } $>
+				 border=0></td>
 			<$ } else { $>
 				<td valign=bottom width=48 rowspan=2><$= AjxImg.getImageHtml("Person_48") $></td>
 			<$ } $>
@@ -685,7 +709,12 @@
 		}
 		if (ZmContact.IS_DATE[data.name]) {
 			var date = ZmEditContactViewOther.parseDate(value);
-			value = date ? AjxDateFormat.getDateInstance(AjxDateFormat.LONG).format(date) : value;
+			if (date) {
+			    var includeYear = date.getFullYear() != 0;
+			    var formatter = includeYear ?
+			        AjxDateFormat.getDateInstance(AjxDateFormat.LONG) : new AjxDateFormat(ZmMsg.formatDateLongNoYear);
+			    value = formatter.format(date);
+            }
 		}
 		if (data.findObjects) {
 			value = data.findObjects(value, data.objectType);

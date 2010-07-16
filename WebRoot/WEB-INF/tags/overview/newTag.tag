@@ -54,14 +54,14 @@
         </td>
         <td>
             <select name="newTagColor">
-                <option <c:if test="${param.newTagColor eq 'blue'}">selected</c:if> value="blue"/><fmt:message key="blue"/>
-                <option <c:if test="${param.newTagColor eq 'cyan'}">selected</c:if> value="cyan"/><fmt:message key="cyan"/>
-                <option <c:if test="${param.newTagColor eq 'green'}">selected</c:if> value="green"/><fmt:message key="green"/>
-                <option <c:if test="${param.newTagColor eq 'purple'}">selected</c:if> value="purple"/><fmt:message key="purple"/>
-                <option <c:if test="${param.newTagColor eq 'red'}">selected</c:if> value="red"/><fmt:message key="red"/>
-                <option <c:if test="${param.newTagColor eq 'yellow'}">selected</c:if> value="yellow"/><fmt:message key="yellow"/>
-                <option <c:if test="${param.newTagColor eq 'orange'}">selected</c:if> value="orange"/><fmt:message key="orange"/>
-            </select>
+                <option <c:if test="${param.newTagColor eq 'blue'}">selected</c:if> value="<fmt:message key="colorBlue"/>"/><fmt:message key="blue"/>
+                <option <c:if test="${param.newTagColor eq 'cyan'}">selected</c:if> value="<fmt:message key="colorCyan"/>"/><fmt:message key="cyan"/>
+                <option <c:if test="${param.newTagColor eq 'green'}">selected</c:if> value="<fmt:message key="colorGreen"/>"/><fmt:message key="green"/>
+                <option <c:if test="${param.newTagColor eq 'purple'}">selected</c:if> value="<fmt:message key="colorPurple"/>"/><fmt:message key="purple"/>
+                <option <c:if test="${param.newTagColor eq 'red'}">selected</c:if> value="<fmt:message key="colorRed"/>"/><fmt:message key="red"/>
+                <option <c:if test="${param.newTagColor eq 'yellow'}">selected</c:if> value="<fmt:message key="colorYellow"/>"/><fmt:message key="yellow"/>
+                <option <c:if test="${param.newTagColor eq 'orange'}">selected</c:if> value="<fmt:message key="colorOrange"/>"/><fmt:message key="orange"/>
+            </select>                                                                                                                                                      
         </td>
     </tr>
 

@@ -15,6 +15,7 @@
 
 /**
  * Alerts of an event by playing a sound.
+ * @private
  */
 ZmSoundAlert = function() {
 	this.enabled = AjxPluginDetector.detectQuickTime() || AjxPluginDetector.detectWindowsMedia();

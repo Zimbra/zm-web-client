@@ -107,7 +107,7 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 	this._shell.addControlListener(this._controlListener);
 	this._sashSupported = (window.skin && typeof window.skin.setTreeWidth == "function");
 
-	if (appCtxt.get(ZmSetting.HISTORY_SUPPORT_ENABLED) && !AjxEnv.isSafari && !isNewWindow && !AjxEnv.isPrism) {
+	if (appCtxt.get(ZmSetting.HISTORY_SUPPORT_ENABLED) && !AjxEnv.isChrome && !isNewWindow && !AjxEnv.isPrism) {
 		this._historyMgr = appCtxt.getHistoryMgr();
 		this._historyMgr.addListener(new AjxListener(this, this._historyChangeListener));
 	}
@@ -1223,6 +1223,7 @@ function(components) {
  */
 ZmAppViewMgr.prototype._historyChangeListener =
 function(ev) {
+	if (appCtxt.inStartup) { return; }
 	if (!(ev && ev.data)) { return; }
 	if (this._ignoreHistoryChange) {
 		this._ignoreHistoryChange = false;

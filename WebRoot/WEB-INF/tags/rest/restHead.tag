@@ -28,7 +28,7 @@
     </title>
 	<c:url var='cssurl' value='/css/common,login,images,skin.css'>
 		<c:param name="client"	value="standard" />
-		<c:param name="skin"	value="${skin}" />
+		<c:param name="skin"	value="${empty requestScope.skin ? skin : requestScope.skin}" />
 		<c:param name="v"		value="${initParam.zimbraCacheBusterVersion}" />
 	</c:url>
 	<link rel="stylesheet" type="text/css" href="${cssurl}" />

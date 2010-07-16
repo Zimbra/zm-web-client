@@ -490,6 +490,11 @@ function(draftType, msg, callback, result) {
 	if (callback) {
 		callback.run(result);
 	}
+
+    if(this.sendMsgCallback) {
+        this.sendMsgCallback.run(result);
+    }
+
 	appCtxt.notifyZimlets("onSendMsgSuccess", [this, msg]);//notify Zimlets on success	
 };
 
@@ -834,6 +839,8 @@ function(params) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
 	}
 
+    this.sendMsgCallback = params.sendMsgCallback;
+
 	if (params.callback) {
 		params.callback.run(this);
 	}
@@ -892,7 +899,7 @@ function() {
 		}
 	}
 
-	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT];
+	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT, ZmOperation.DECLINE_PROPOSAL];
 	this._optionsMenu = {};
 	for (var i = 0; i < actions.length; i++) {
 		this._optionsMenu[actions[i]] = this._createOptionsMenu(actions[i]);
@@ -900,7 +907,7 @@ function() {
 	this._optionsMenu[ZmOperation.REPLY_ALL] = this._optionsMenu[ZmOperation.REPLY];
 	this._optionsMenu[ZmOperation.FORWARD_INLINE] = this._optionsMenu[ZmOperation.FORWARD_ATT];
 	this._optionsMenu[ZmOperation.REPLY_CANCEL] = this._optionsMenu[ZmOperation.REPLY_ACCEPT] =
-		this._optionsMenu[ZmOperation.REPLY_DECLINE] = this._optionsMenu[ZmOperation.REPLY_TENTATIVE] =
+		this._optionsMenu[ZmOperation.DECLINE_PROPOSAL] = this._optionsMenu[ZmOperation.REPLY_DECLINE] = this._optionsMenu[ZmOperation.REPLY_TENTATIVE] =
 		this._optionsMenu[ZmOperation.SHARE] = this._optionsMenu[ZmOperation.DRAFT] =
 		this._optionsMenu[ZmOperation.NEW_MESSAGE];
 
@@ -1471,6 +1478,8 @@ function(draftType, callback) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
 	}
 	this._action = ZmOperation.DRAFT;
+
+	this._composeView._isDirty = false;
 
 	if (callback) {
 		callback.run();

@@ -1,0 +1,44 @@
+/** Lake **/
+
+.ZOptionsSectionMain{
+	background: #fff;
+	padding:1em;
+}
+ #skin_container_tree_top td{
+ 	color: white;
+ }
+
+.TabNormal a:link, .TabNormal a:visited, .Tab a:link, .Tab a:visited{
+	color: white !important;
+}
+
+.TabFiller{
+ @AppTabBorder-normal@
+}
+
+.TabSelected{
+	@tlRadius@: 3px;
+	@trRadius@: 3px; 
+	background-color: #1C3360;
+}
+
+.Tb a:link, .Tb a:visited,.TbTop input, .TbBottom input{
+	color: white;
+} 
+
+.TbBt a, .Paging{
+	color: white;
+}
+
+.TbTop, .TbBottom {
+	@AppTabBorder-hover@
+}
+
+.TbTop input, .TbBottom input{
+	background: transparent;
+	border-style:none;
+}
+
+.ZhEditFolderContent, .ZhEditAddressBookContent, .ZhEditCalendarContent, .ZhEditTagContent{
+	background-color: transparent;
+} 

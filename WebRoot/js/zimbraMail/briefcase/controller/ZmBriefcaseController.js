@@ -89,10 +89,10 @@ ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_DETAIL]	= "detailView
 ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_COLUMN]	= "columnBrowserView";
 ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_PREVIEW]	= "previewView";
 
-ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE]			= "Folder";
-ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_DETAIL]		= "ListView";
+ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE]			= "IconView";
+ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_DETAIL]		= "TasksListView";
 ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_COLUMN]		= "ListView";
-ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_PREVIEW]	= "ListView";
+ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_PREVIEW]	= "FilePreview";
 
 ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE);
 ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_DETAIL);
@@ -286,8 +286,9 @@ function(view) {
 
 ZmBriefcaseController.prototype._setViewContents =
 function(view) {
-	var bcv = this._parentView[view];
-	bcv.set(this._list);
+	var bcv = this._parentView[view];    
+	bcv.set(this._list, this._switchView);
+    this._switchView = false;
 };
 
 ZmBriefcaseController.prototype._getDefaultFocusItem =
@@ -358,15 +359,7 @@ function(view, force) {
 	var viewChanged = (force || view != this._currentView);
 
 	if (viewChanged) {
-		var mcv = this._parentView[ZmId.VIEW_BRIEFCASE_COLUMN];
-		if (this.isMultiColView()) {
-			// remember list columns in case we return to col view
-			mcv.setCurrentListIndex(mcv._nextIndex - 1);
-		}
-		if (view == ZmId.VIEW_BRIEFCASE_COLUMN) {
-			// preserve list columns
-			mcv._noReset = true;
-		}
+        this._switchView = true;
 		this._currentView = view;
 		this._setup(view);
 	}
@@ -375,7 +368,7 @@ function(view, force) {
 	if (viewChanged) {
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view]; /*this.isMultiColView() ? this._multiColView : this._listView[this._currentView];*/
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
 		this._setView({view:view, elements:elements, isAppView:true});
 		this._resetNavToolBarButtons(view);
 	}
@@ -418,11 +411,13 @@ function(ev) {
 		var item = ev.item;
 		var restUrl = item.getRestUrl();
 
+        if(item.isFolder) return;
+
         if (item.isWebDoc()) {
             //added for bug: 45150
             restUrl = this._app.fixCrossDomainReference(restUrl);
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
-            //restUrl = restUrl + "&preview=1";
+            restUrl = restUrl + "&preview=1" + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
 		}
         var name = item.name || 'Briefcase';
         if(AjxEnv.isIE)
@@ -513,6 +508,7 @@ function(items){
                 //added for bug: 45150
                 restUrl = this._app.fixCrossDomainReference(restUrl);
                 restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
+                restUrl = restUrl + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
                 window.open(restUrl, item.name, "");
             }
         }
@@ -540,7 +536,7 @@ function(items){
                 //added for bug: 45150
                 restUrl = this._app.fixCrossDomainReference(restUrl);
                 restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
-                //restUrl = restUrl + "&preview=1";
+                restUrl = restUrl + "&preview=1" + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
 			}
 			window.open(restUrl, item.name, item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
 		}
@@ -620,6 +616,11 @@ function(event) {
 			var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
 			url = remoteUri + url.substring((url.indexOf("/",7)));
 		}
+
+        if(item.isWebDoc()) {
+            url += (url.match(/\?/) ?  '&' : '?') + 'preview=1';
+        }
+        
 		urls.push(url);
 		names.push(item.name);
 
@@ -667,7 +668,7 @@ function(event) {
 };
 
 ZmBriefcaseController.prototype.sendFilesAsAttachment =
-function(items){
+function(items, callback){
 
     items = AjxUtil.toArray(items);
     var docInfo = [];
@@ -685,8 +686,8 @@ function(items){
     var cc = AjxDispatcher.run("GetComposeController");
     cc._setView({action:action, msg:msg, toOverride:toOverride, inNewWindow:false});
     var draftType = ZmComposeController.DRAFT_TYPE_AUTO;
-    var callback = new AjxCallback(cc, cc._handleResponseSaveDraftListener, [draftType]);
-    cc.sendDocs(docInfo, draftType, callback);
+    var sendDocsCallback = new AjxCallback(cc, cc._handleResponseSaveDraftListener, [draftType, callback]);
+    cc.sendDocs(docInfo, draftType, sendDocsCallback);
 };
 
 ZmBriefcaseController.prototype._resetOpForCurrentView =
@@ -798,7 +799,6 @@ function() {
 
 ZmBriefcaseController.prototype._addListListeners =
 function(colView) {
-	colView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
 	colView.addActionListener(new AjxListener(this, this._listActionListener));
 };
 
@@ -865,4 +865,38 @@ function() {
 	window.importSlides = true;
 	window.importSlidesQueue = importSlidesQueue;
 	this._app.handleOp(ZmOperation.NEW_PRESENTATION);
+};
+
+// item count doesn't include subfolders
+ZmBriefcaseController.prototype._getItemCount =
+function() {
+	var lv = this._listView[this._currentView];
+	var list = lv && lv._list;
+	if (!list) { return null; }
+	var a = list.getArray();
+	var num = 0;
+	for (var i = 0, len = a.length; i < len; i++) {
+		var item = a[i];
+		if (item && item.type == ZmItem.BRIEFCASE_ITEM && !item.isFolder) {
+			num++;
+		}
+	}
+	return num;
+};
+
+
+ZmBriefcaseController.prototype.handleCreateNotify =
+function(create){
+
+    if(this.isMultiColView()){
+        this.getParentView().handleNotifyCreate(create);
+    }else{
+        var list = this.getList();
+        if (list) {
+            var item = ZmBriefcaseItem.createFromDom(create, {list:list});
+            if (list.search && list.search.matches && list.search.matches(item)) {
+                list.notifyCreate(create);
+            }
+        }
+    }
 };

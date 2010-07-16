@@ -118,11 +118,13 @@ function(params) {
 	var showAllMailboxes = (appCtxt.isOffline && this._appName == ZmApp.MAIL && (accounts.length > 2));
 	var showBackgroundColor = showAllMailboxes;
 	var mainAcct = appCtxt.accountList.mainAccount;
+	var origOmit = params.omit;
 
 	for (var i = 0; i < accounts.length; i++) {
 		acct = accounts[i];
 		// skip the main account in offline mode since we'll add it at the end
 		if (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES) { continue; }
+		if (!acct.active) { continue; }
 
 		params.omit = {};
 
@@ -142,16 +144,13 @@ function(params) {
 			this._setupHeader(header, acct);
 		}
 
-		if (appCtxt.isOffline && acct.recent > 0) {
-			acct.inNewMailMode = true;
-		}
 		this.updateAccountInfo(acct, true, true);
 
 		showBackgroundColor = !showBackgroundColor;
 	}
 
 	// add "All Mailboxes"
-	skip = params.omit && params.omit[ZmOrganizer.ID_ALL_MAILBOXES];
+	skip = origOmit && origOmit[ZmOrganizer.ID_ALL_MAILBOXES];
 	if (showAllMailboxes && !skip) {
 		var text = ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_ALL_MAILBOXES]];
 		var hdrText = appCtxt.get(ZmSetting.OFFLINE_ALL_MAILBOXES_TREE_OPEN)
@@ -480,7 +479,9 @@ function(params, account, showBackgroundColor, headerClassName) {
 			headerIcon = "AccountAll";
 		} else {
 			headerLabel = account.getDisplayName();
-			headerIcon = account.getIcon()
+			if (!appCtxt.isFamilyMbox) {
+				headerIcon = account.getIcon()
+			}
 		}
 
 		var headerParams = {

@@ -1,0 +1,35 @@
+/** Oasis **/
+
+body{
+	background: #FFFAE7;
+}
+
+.ZOptionsSectionMain{
+	background: #fff;
+	padding:1em;
+}
+
+.TabNormal a:link, .TabNormal a:visited, .Tab a:link, .Tab a:visited{
+	color: #594805 !important;
+}
+
+.TabSelected{
+	@tlRadius@: 3px;
+	@trRadius@: 3px; 
+}
+
+.TabSelected a:link, .TabSelected a:visited{
+	color: black;
+}
+
+.TabFiller{
+ @AppTabBorder-normal@
+}
+
+.ZhAppSwitchLink a:link, .ZhAppLinks a:link, #skin_container_tree_top td{
+	color: #594805;
+}
+
+.TbTop input, .TbBottom input{
+	border-style: none;
+}

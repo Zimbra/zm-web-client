@@ -96,6 +96,16 @@
     </tag-file>
 
     <tag-file>
+        <name>notebookListViewAction</name>
+        <path>/WEB-INF/tags/notebook/notebookListViewAction.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>notebookListView</name>
+        <path>/WEB-INF/tags/notebook/notebookListView.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>notebookRestView</name>
         <path>/WEB-INF/tags/notebook/notebookRestView.tag</path>
     </tag-file>
@@ -120,7 +130,7 @@
         <path>/WEB-INF/tags/briefcase/briefcaseFolder.tag</path>
     </tag-file>
 
-    ﻿<tag-file>
+    <tag-file>
         <name>convColumnView</name>
         <path>/WEB-INF/tags/conv/convColumnView.tag</path>
     </tag-file>
@@ -276,7 +286,7 @@
         <path>/WEB-INF/tags/message/messageIframe.tag</path>
     </tag-file>
 
-    ﻿<tag-file>
+    <tag-file>
         <name>messageColumnView</name>
             <path>/WEB-INF/tags/message/messageColumnView.tag</path>
     </tag-file>

@@ -35,7 +35,7 @@
              </c:url>
              <th style='width:20px'><a href="${fn:escapeXml(toggleUrl)}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}"/></a></th>
             <th class='Header'><fmt:message key="addressBooks"/></th>
-            <th style="width:30px" align='right' class='ZhTreeEdit'>
+            <th align='right' class='ZhTreeEdit' nowrap="nowrap">
                 <c:url value="/h/maddrbooks" var="mabUrl">
                     <c:if test="${not empty param.sfi}">
                         <c:param name="sfi" value="${param.sfi}"/>

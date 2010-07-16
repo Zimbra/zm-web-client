@@ -15,6 +15,8 @@
 
 /**
  * Singleton wrapper of BrowserPlus.
+ * @class
+ * @private
  */
 ZmBrowserPlus = function() {
 };

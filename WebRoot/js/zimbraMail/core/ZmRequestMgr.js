@@ -448,12 +448,14 @@ function(ex, params) {
  */
 ZmRequestMgr.prototype._handleNotifications =
 function(hdr) {
+
 	if (hdr && hdr.context && hdr.context.notify) {
-        for(i = 0; i < hdr.context.notify.length; i++) {
+        for (var i = 0; i < hdr.context.notify.length; i++) {
         	var notify = hdr.context.notify[i];
         	var seq = notify.seq;
             // BUG?  What if the array isn't in sequence-order?  Could we miss notifications?
-            if (notify.seq > this._highestNotifySeen) {
+			var sid = hdr.context && ZmCsfeCommand.extractSessionId(hdr.context.session);
+            if (notify.seq > this._highestNotifySeen && !(sid && ZmCsfeCommand._staleSession[sid])) {
                 DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
                 this._highestNotifySeen = seq;
                 this._notifyHandler(notify);
@@ -474,7 +476,11 @@ function(hdr) {
  */
 ZmRequestMgr.prototype._refreshHandler =
 function(refresh) {
+
 	DBG.println(AjxDebug.DBG1, "Handling REFRESH");
+	if (!appCtxt.inStartup) {
+		this._controller._execPoll();
+	}
 	this._controller.runAppFunction("_clearDeferredFolders");
 	
 	if (refresh.version) {
@@ -688,34 +694,6 @@ function(modifies) {
 			}
 		}
 	}
-};
-
-/**
- * Returns a list of objects that have the given parent, flattening child
- * arrays in the process. It also saves each child's name into it.
- *
- * @param {Object}	parent	the notification subnode
- *
- * TODO: remove this func (still used by ZmMailApp::preNotify)
- * 
- * @private
- */
-ZmRequestMgr._getObjList =
-function(parent) {
-	var list = [];
-	for (var name in parent) {
-		var obj = parent[name];
-		if (obj instanceof Array) {
-			for (var i = 0; i < obj.length; i++) {
-				obj[i]._name = name;
-				list.push(obj[i]);
-			}
-		} else {
-			obj._name = name;
-			list.push(obj);
-		}
-	}
-	return list;
 };
 
 /**

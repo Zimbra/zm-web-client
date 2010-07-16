@@ -28,7 +28,7 @@
             <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
             <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
         </tr></table>
-        <div align="right"><a style="font-size:12px;" href="javascript:increaseFontSize();">+</a> Font size <a href="javascript:decreaseFontSize();" style="font-size:12px;">-</a></div>
+        <div align="right"><a style="font-size:12px;" href="javascript:increaseFontSize();">+</a> <fmt:message key="fontSize"/> <a href="javascript:decreaseFontSize();" style="font-size:12px;">-</a></div>
         <hr/>
 <c:forEach items="${convIds}" var="cid" varStatus="status">
 <zm:searchConv var="convSearchResult" id="${cid}" context="${context}"  markread="false" fetch="all"/>

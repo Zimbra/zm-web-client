@@ -255,9 +255,9 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 
 		var selected = ((calItem.folderId == cal.id) || (calItem.folderId == id));
 		var icon = appCtxt.multiAccounts ? acct.getIcon() : null;
-		var name = appCtxt.multiAccounts
+		var name = AjxStringUtil.htmlDecode(appCtxt.multiAccounts
 			? ([cal.getName(), " (", acct.getDisplayName(), ")"].join(""))
-			: cal.getName();
+			: cal.getName());
 		var option = new DwtSelectOption(id, selected, name, null, null, icon);
 		folderSelect.addOption(option, selected);
 	}
@@ -376,6 +376,22 @@ function(organizer) {
 	return new AjxEmailAddress(orgAddress, null, orgName);
 };
 
+ZmApptViewHelper.getAddressEmail =
+function(email, isIdentity) {
+	var orgAddress = email ? email : appCtxt.get(ZmSetting.USERNAME);
+	var orgName;
+    if(email == appCtxt.get(ZmSetting.USERNAME)){
+        orgName = appCtxt.get(ZmSetting.DISPLAY_NAME);
+    }else{
+        //Identity
+        var identity = appCtxt.getIdentityCollection().getIdentityBySendAddress(orgAddress);
+        if(identity){
+            orgName = identity.sendFromDisplay;
+        }
+    }
+    return new AjxEmailAddress(orgAddress, null, orgName);    
+};
+
 /**
 * Creates a string from a list of attendees/locations/resources. If an item
 * doesn't have a name, its address is used.
@@ -406,6 +422,39 @@ function(list, type, includeDisplayName, includeRole) {
 	}
 
 	return a.join(ZmAppt.ATTENDEES_SEPARATOR);
+};
+
+/**
+* Creates a string of attendees by role. If an item
+* doesn't have a name, its address is used.
+*
+* @param list					[array]			list of attendees (ZmContact or ZmResource)
+* @param type					[constant]		attendee type
+* @param role      		        [constant]      attendee role
+* @param count                  [number]        number of attendees to be returned
+*/
+ZmApptViewHelper.getAttendeesByRole =
+function(list, type, role, count) {
+    if (!(list && list.length)) return "";
+
+    var a = [];
+    var str = "";
+    var hasMore = false;
+    for (var i = 0; i < list.length; i++) {
+        var attendee = list[i];
+        var text = attendee.getAttendeeText(type);
+        var _attendeeRole = attendee.getParticipantRole() || ZmCalItem.ROLE_REQUIRED;
+        if(_attendeeRole == role){
+            a.push(text);
+        }
+    }
+    if (count && a.length > count){
+        hasMore = true;
+        a = a.slice(0, count);
+    }
+
+    str = a.join(ZmAppt.ATTENDEES_SEPARATOR);
+    return hasMore ?  str+= ZmAppt.ATTENDEES_SEPARATOR + " ..." : str;
 };
 
 ZmApptViewHelper._allDayItemHtml =
@@ -453,6 +502,8 @@ function(id) {
 *
 * @param parent		[DwtComposite]	the parent widget
 * @param id			[string]*		an ID that is propagated to component select objects
+ *
+ * @private
 */
 ZmTimeSelect = function(parent, id) {
 	DwtComposite.call(this, {parent:parent});
@@ -776,6 +827,8 @@ function() {
 *
 * @param parent		[DwtComposite]	the parent widget
 * @param id			[string]*		an ID that is propagated to component select objects
+ *
+ * @private
 */
 ZmTimeInput = function(parent, id) {
 	DwtComposite.call(this, {parent:parent});
@@ -929,6 +982,10 @@ function(date) {
     var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
     var d = timeFormatter.parse(this._timeSelectInput.getValue());
     date = date || new Date();
+    //daylight saving time
+    if(AjxDateUtil.isDayShifted(date)) {
+        AjxDateUtil.rollToNextDay(date);
+    }
     date.setHours(d.getHours(), d.getMinutes(), 0, 0);
     return date;
 };
@@ -964,7 +1021,7 @@ function(listener, ev) {
         this.setValue(timeFormatter.format(newDate) || "");
     }
 
-    listener.run(ev, this.id);
+    listener.run(ev, this.id);    
 };
 
 ZmTimeInput.prototype.correctTimeString =
@@ -977,7 +1034,7 @@ function(val, originalDate) {
     var hrs = (segments.length && segments[0] != null) ? parseInt(segments[0].replace(/\D/g, "")) : null;
     var mins = (segments.length > 1 && segments[1]!= null) ? parseInt(segments[1].replace(/\D/g, "")) : 0;
 
-    if(!hrs) hrs = originalDate.getHours();
+    if(!hrs) hrs = (hrs == 0) ? 0 : originalDate.getHours();
     if(!mins) mins = 0;
 
     originalDate.setHours(hrs, mins, 0, 0);
@@ -1050,7 +1107,6 @@ function() {
     var timeInputEl = this._timeSelectInput.getInputElement();
     Dwt.setSize(timeInputEl, "80px", "22px");
     timeInputEl.typeId = this.id;
-
 
 	// init vars for adding hour DwtSelect
 	var now = new Date();

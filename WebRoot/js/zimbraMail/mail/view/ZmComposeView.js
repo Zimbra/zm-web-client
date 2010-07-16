@@ -136,7 +136,8 @@ function(params) {
 		obo = (folder && folder.isRemote()) ? folder.getOwner() : null;
 
 		// check if this is a draft that was originally composed obo
-		if (!obo && msg.isDraft && !appCtxt.multiAccounts) {
+		var isFromDataSource = msg.identity && msg.identity.isFromDataSource;
+		if (!obo && msg.isDraft && !appCtxt.multiAccounts && !isFromDataSource) {
 			var ac = window.parentAppCtxt || window.appCtxt;
 			var from = msg.getAddresses(AjxEmailAddress.FROM).get(0);
 			if (from && from.address.toLowerCase() != ac.accountList.mainAccount.getEmail().toLowerCase() && !appCtxt.isMyAddress(from.address.toLowerCase())) {
@@ -223,8 +224,9 @@ function(params) {
 		this._setFormValue();
 	}
 	// Force focus on the TO field
-	if (!this._isReply())
+	if (!this._isReply()) {
 		appCtxt.getKeyboardMgr().grabFocus(this._field[AjxEmailAddress.TO]);
+	}
 };
 
 /**
@@ -555,7 +557,13 @@ function(attId, isDraft, dummyMsg) {
 		// create two more mp's for text and html content types
 		var textPart = new ZmMimePart();
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-		textPart.setContent(this._htmlEditor.getTextVersion());
+		var self = this;
+		var convertor = {"hr":
+			function(el) {
+				return ZmComposeView._convertHtmlPreface(self, el);
+			}
+		}
+		textPart.setContent(this._htmlEditor.getTextVersion(convertor));
 		top.children.add(textPart);
 
 		var htmlPart = new ZmMimePart();
@@ -1599,7 +1607,15 @@ function(bodyPart, encodeSpace) {
 		var params = {parent: this, hidden: true, html: bodyPart.content};
 		var dwtIframe = new DwtIframe(params);
 		if (dwtIframe) {
-			text = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body);
+			var self = this;
+			var convertor = {"hr":
+				function(el) {
+					return ZmComposeView._convertHtmlPreface(self, el);
+				}
+			}
+			text = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body, convertor);
+			var dwtEl = this.getHtmlElement().removeChild(dwtIframe.getHtmlElement());
+			delete dwtEl;
 			delete dwtIframe;
 		}
 	} else {
@@ -1759,7 +1775,10 @@ function(action, type, override) {
 			var addrs = this._msg.getAddresses(ZmMailMsg.COMPOSE_ADDRS[i]);
 			this.setAddress(ZmMailMsg.COMPOSE_ADDRS[i], addrs.getArray().join(AjxEmailAddress.SEPARATOR));
 		}
-	}
+	} else if(action == ZmOperation.DECLINE_PROPOSAL) {
+        var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.FROM);
+        this.setAddress(AjxEmailAddress.TO, this._getAddrString(toAddrs));
+    }
 };
 
 ZmComposeView.prototype._setObo =
@@ -1831,6 +1850,8 @@ function(action, msg, extraBodyText) {
 						  headers:	appCtxt.get(ZmSetting.FORWARD_INCLUDE_HEADERS)};
 		} else if (action == ZmOperation.FORWARD_ATT) {
 			incOptions = {what:		ZmSetting.INC_ATTACH};
+		} else if (action == ZmOperation.DECLINE_PROPOSAL) {
+			incOptions = {what:		ZmSetting.INC_BODY};
 		} else if (action == ZmOperation.NEW_MESSAGE) {
 			incOptions = {what:		ZmSetting.INC_NONE};
 		} else {
@@ -1906,7 +1927,7 @@ function(action, msg, extraBodyText) {
 		this._msgAttId = this._msg.id;
 	} else {
 		var preface = this._preface = this._getPreface();
-		var divider = htmlMode ? preface : preface + crlf;
+		var divider = !body ? "" : htmlMode ? preface : preface + crlf;
 		var leadingSpace = preText ? "" : crlf2;
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
 		wrapParams.preserveReturns = true;
@@ -1960,7 +1981,7 @@ function(action, msg, extraBodyText) {
 		this._fixMultipartRelatedImages_onTimer(msg);
 	}
 
-	if (sigStyle == ZmSetting.SIG_INTERNET) {
+	if (!isDraft && sigStyle == ZmSetting.SIG_INTERNET) {
 		this.addSignature(value);
 	} else {
 		value = value || (htmlMode ? "<br>" : "");
@@ -1997,7 +2018,7 @@ function(msg, htmlMode) {
 				attInfo = attInfo ? attInfo.desc : part.ct;
 				bodyArr.push([crlf, "[", attInfo, ":", (part.filename||"..."), "]", crlf].join(""));
 				hasInlineAtts = true;
-			} else if (part.ct == ZmMimeTable.TEXT_PLAIN) {
+			} else if (part.ct == ZmMimeTable.TEXT_PLAIN || (part.body && ZmMimeTable.isTextType(part.ct))) {
 				bodyArr.push( htmlMode ? AjxStringUtil.convertToHtml(part.content) : part.content );
 			} else if (part.ct == ZmMimeTable.TEXT_HTML) {
 				if (htmlMode){
@@ -2023,7 +2044,7 @@ function(msg, htmlMode) {
 		} else {
 			hasInlineImages = msg.hasInlineImagesInMsgBody();
 			// grab text part out of the body part
-			bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML, true);
+			bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML, true) || msg.getTextBodyPart();            
 			body = bodyPart ? this._getTextPart(bodyPart) : null;
 		}
 	}
@@ -2069,6 +2090,12 @@ function(mode) {
 	content = content.replace(curPreface, newPreface);
 	this._htmlEditor.setContent(content);
 	this._preface = newPreface;
+};
+
+// for getting text version of HTML part when sending, used by AjxStringUtil._traverse
+ZmComposeView._convertHtmlPreface =
+function(self, el) {
+	return (el && el.id == "zwchr") ? self._getPreface(DwtHtmlEditor.TEXT) + ZmMsg.CRLF : null;
 };
 
 ZmComposeView.prototype.resetBody =
@@ -2594,8 +2621,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 ZmComposeView.prototype._resetBodySize =
 function() {
 	var size = this.getSize();
-	if (size.x <= 0 || size.y <= 0)
-		return;
+	if (size.x <= 0 || size.y <= 0) { return; }
 
 	var height = size.y - Dwt.getSize(this._headerEl).y;
 	if (height != size.y) {
@@ -2665,7 +2691,8 @@ function(msg) {
 
 	// for cross account searches, the active account isn't necessarily the
 	// account of the selected conv/msg so reset it based on the selected option.
-	if (appCtxt.getSearchController().searchAllAccounts && this._fromSelect) {
+    // if active-account is local/main acct, reset it based on selected option.
+	if ((appCtxt.getSearchController().searchAllAccounts && this._fromSelect) || active.isMain) {
 		active = this.getFromAccount();
 		this._controller._accountName = active.name;
 	}
