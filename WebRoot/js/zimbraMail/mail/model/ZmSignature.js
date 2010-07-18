@@ -115,7 +115,9 @@ ZmSignature.prototype.doDelete = function(callback, errorCallback, batchCmd) {
  */
 ZmSignature.prototype.setFromJson = function(object) {
 	this.name = object.name || this.name;
-	var content = object.content && object.content[0];
+    if(object.content){
+        var content = (object.content[0]._content == "" && object.content[1]._content != "") ? object.content[1] : object.content[0]
+    }
 	if (content) {
 		this.contentType = content.type || this.contentType;
 		this.value = content._content != null ? content._content : this.value;
