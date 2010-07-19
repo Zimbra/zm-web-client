@@ -837,16 +837,25 @@ function(calItem, mode, isDirty, apptComposeMode) {
     ZmCalItemEditView.prototype.initialize.call(this, calItem, mode, isDirty, apptComposeMode);
 };
 
+ZmApptEditView.prototype.getCalendarAccount =
+function() {
+	var cal = appCtxt.getById(this._folderSelect.getValue());
+	return cal && cal.getAccount();
+};
+
 ZmApptEditView.prototype._folderListener =
 function() {
 	if (!this._privacySelect) { return; }
 
 	var calId = this._folderSelect.getValue();
 	var cal = appCtxt.getById(calId);
-    //bug:48189 Hide schedule tab for non-ZCS acct
-    if(appCtxt.isOffline){
-        this.parent.parent.setTabVisibility([ZmApptComposeView.TAB_SCHEDULE], cal.getAccount().isZimbraAccount);
-    }
+
+	// bug: 48189 - Hide schedule tab for non-ZCS acct
+	if (appCtxt.isOffline) {
+		this.parent.parent.setTabVisibility([ZmApptComposeView.TAB_SCHEDULE], cal.getAccount().isZimbraAccount);
+		this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES).cleanup();
+	}
+
 	var acct = appCtxt.getActiveAccount();
 	var id = String(cal.id);
 	var isRemote = (id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0);

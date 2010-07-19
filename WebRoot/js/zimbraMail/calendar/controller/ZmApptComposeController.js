@@ -577,13 +577,9 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) 
 	soapDoc.setMethodAttribute("e", endTime);
 	soapDoc.setMethodAttribute("uid", emailList);
 
-	var acct;
-	if (appCtxt.multiAccounts) {
-		acct = appCtxt.getActiveAccount();
-		if (appCtxt.isOffline && acct.isMain) {
-			acct = appCtxt.accountList.defaultAccount;
-		}
-	}
+	var acct = (appCtxt.multiAccounts)
+		? this._composeView.getApptTab().getEditView().getCalendarAccount() : null;
+
 	return appCtxt.getAppController().sendRequest({
 		soapDoc: soapDoc,
 		asyncMode: true,
