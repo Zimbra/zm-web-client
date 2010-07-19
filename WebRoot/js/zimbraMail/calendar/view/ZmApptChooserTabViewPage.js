@@ -38,7 +38,7 @@ ZmApptChooserTabViewPage = function(parent, attendees, controller, type, dateInf
 	this._controller = controller;
 	this._editView = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT).getEditView();
 	this.type = type;
-    this._dateInfo = dateInfo;
+	this._dateInfo = dateInfo;
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._offset = 0;
@@ -176,18 +176,18 @@ ZmApptChooserTabViewPage.prototype.showMe =
 function() {
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
-    if (this._rendered) {
+	if (this._rendered) {
 		this._chooser.reset();
 	}
 
 	this.parent.tabSwitched(this._tabKey);
 	this._setAttendees();
 	this._controller._setComposeTabGroup(true);
-    //Update FB status if the time is changed
-    if(this.type == ZmCalBaseItem.EQUIPMENT && this._dateInfo.isTimeModified){
-        this.refreshResourcesFBStatus();
-        this._dateInfo.isTimeModified = false;
-    }
+	// Update FB status if the time is changed
+	if (this.type == ZmCalBaseItem.EQUIPMENT && this._dateInfo.isTimeModified) {
+		this.refreshResourcesFBStatus();
+		this._dateInfo.isTimeModified = false;
+	}
 
 	if (this._isClean && this.type == ZmCalBaseItem.PERSON) {
 		this._isClean = false;
@@ -197,10 +197,10 @@ function() {
 
 ZmApptChooserTabViewPage.prototype.refreshResourcesFBStatus =
 function() {
-    var items = this._chooser.getItems();
-    this._fillFreeBusy(items, AjxCallback.simpleClosure(function(items) {
-        this._chooser.setItems(items);
-    }, this));
+	var items = this._chooser.getItems();
+	this._fillFreeBusy(items, AjxCallback.simpleClosure(function(items) {
+		this._chooser.setItems(items);
+	}, this));
 };
 
 ZmApptChooserTabViewPage.prototype.tabBlur =
@@ -211,10 +211,9 @@ ZmApptChooserTabViewPage.prototype.initialize =
 function(appt, mode, isDirty, apptComposeMode) {
 	this._appt = appt;
 	this._isDirty = isDirty;
-    this._isForward = (apptComposeMode == ZmApptComposeView.FORWARD);
-    this._isProposeTime = (apptComposeMode == ZmApptComposeView.PROPOSE_TIME);
-    
-    this._list.removeAll();
+	this._isForward = (apptComposeMode == ZmApptComposeView.FORWARD);
+	this._isProposeTime = (apptComposeMode == ZmApptComposeView.PROPOSE_TIME);
+	this._list.removeAll();
 
 	if (this._rendered) {
 		this._chooser.reset();
@@ -228,7 +227,7 @@ function(appt, mode, isDirty, apptComposeMode) {
 
 ZmApptChooserTabViewPage.prototype.resize =
 function(newWidth, newHeight) {
-	if (!this._rendered) return;
+	if (!this._rendered) { return; }
 
 	if (newWidth || newHeight) {
 		var w = newWidth ? newWidth : Dwt.DEFAULT;
@@ -292,10 +291,10 @@ function(enable) {
 ZmApptChooserTabViewPage.prototype._createPageHtml =
 function() {
 
-    if(!appCtxt.get(ZmSetting.CAL_SHOW_RESOURCE_TABS)) {
-        ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalBaseItem.PERSON]			= ZmMsg.findAttendeesRooms;
-        ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalBaseItem.PERSON]		= ZmMsg.apptAttendeesRooms;
-    }
+	if (!appCtxt.get(ZmSetting.CAL_SHOW_RESOURCE_TABS)) {
+		ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalBaseItem.PERSON]			= ZmMsg.findAttendeesRooms;
+		ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalBaseItem.PERSON]		= ZmMsg.apptAttendeesRooms;
+	}
 
 	this._searchTableId	= Dwt.getNextId();
 
@@ -312,8 +311,9 @@ function() {
 	var i = 0;
 
 	html[i++] = "<fieldset";
-	if (AjxEnv.isMozilla)
+	if (AjxEnv.isMozilla) {
 		html[i++] = " style='border: 1px dotted #555555'";
+	}
 	html[i++] = "><legend style='color:#555555'>";
 	html[i++] = ZmApptChooserTabViewPage.TOP_LEGEND[this.type];
 	html[i++] = "</legend>";
@@ -363,12 +363,10 @@ function() {
 	html[i++] = "'></div>";
 
 	html[i++] = "<fieldset";
-	if (AjxEnv.isMozilla)
+	if (AjxEnv.isMozilla) {
 		html[i++] = " style='border: 1px dotted #555555'";
+	}
 	html[i++] = "><legend style='color:#555555'>";
-//	html[i++] = "<img src='";
-//	html[i++] = ZmApptChooserTabViewPage.ICON[this.type];
-//	html[i++] = "' />&nbsp;";
 	html[i++] = ZmApptChooserTabViewPage.BOTTOM_LEGEND[this.type];
 	html[i++] = "</legend>";
 
@@ -535,31 +533,31 @@ function(ev) {
 
 ZmApptChooserTabViewPage.prototype._pageListener =
 function(ev) {
-    if (ev.item == this._prevButton) {
-        this._offset -= ZmContactsApp.SEARCHFOR_MAX;
-        this._showResults(true, true, this.getSubList()); // show cached results
-    }
-    else {
-        var lastId;
-        var lastSortVal;
-        this._offset += ZmContactsApp.SEARCHFOR_MAX;
-        var list = this.getSubList();
-        if (!list) {
-            list = this._chooser.sourceListView.getList();
-            var contact = (list.size() > 0) ? list.getLast() : null;
-            if (contact) {
-                lastId = contact.id;
-                lastSortVal = contact.sf;
-            }
-            this.searchContacts(false, null, lastId, lastSortVal);
-        } else {
-            var more = this._list.hasMore;
-            if (!more) {
-                more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
-            }
-            this._showResults(true, more, list); // show cached results
-        }
-    }
+	if (ev.item == this._prevButton) {
+		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
+		this._showResults(true, true, this.getSubList()); // show cached results
+	}
+	else {
+		var lastId;
+		var lastSortVal;
+		this._offset += ZmContactsApp.SEARCHFOR_MAX;
+		var list = this.getSubList();
+		if (!list) {
+			list = this._chooser.sourceListView.getList();
+			var contact = (list.size() > 0) ? list.getLast() : null;
+			if (contact) {
+				lastId = contact.id;
+				lastSortVal = contact.sf;
+			}
+			this.searchContacts(false, null, lastId, lastSortVal);
+		} else {
+			var more = this._list.hasMore;
+			if (!more) {
+				more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
+			}
+			this._showResults(true, more, list); // show cached results
+		}
+	}
 };
 
 ZmApptChooserTabViewPage.prototype.getSubList =
@@ -585,8 +583,9 @@ function() {
 			var pSize = this.parent.getSize();
 			this.resize(pSize.x, pSize.y);
 		}
-                this._chooser.setItems(attendees, DwtChooserListView.TARGET);
-	} else {
+		this._chooser.setItems(attendees, DwtChooserListView.TARGET);
+	}
+	else {
 		this._chooser.reset(DwtChooserListView.TARGET);
 	}
 };
@@ -594,13 +593,15 @@ function() {
 ZmApptChooserTabViewPage.prototype._resetSelectDiv =
 function() {
 	if (this._selectDiv) {
+		var currAcct = this._editView.getCalendarAccount();
+
 		this._selectDiv.clearOptions();
 		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
-		if (appCtxt.get(ZmSetting.SHARING_ENABLED))
+		if (appCtxt.get(ZmSetting.SHARING_ENABLED, null, currAcct))
 			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
-		if (appCtxt.get(ZmSetting.GAL_ENABLED) && appCtxt.getActiveAccount().isZimbraAccount)
+		if (appCtxt.get(ZmSetting.GAL_ENABLED, null, currAcct))
 			this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
-		if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL, null, currAcct) || !appCtxt.get(ZmSetting.GAL_ENABLED, null, currAcct)) {
 			this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
 		}
 	}
@@ -623,6 +624,7 @@ function(defaultSearch, sortBy, lastId, lastSortVal) {
 		query = this._defaultQuery;
 	}
 
+	var currAcct = this._editView.getCalendarAccount();
 	var queryHint;
 	if (this._selectDiv) {
 		var searchFor = this._selectDiv.getValue();
@@ -635,7 +637,7 @@ function(defaultSearch, sortBy, lastId, lastSortVal) {
 			queryHint = "is:local";
 		}
 	} else {
-		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
+		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, currAcct)
 			? ZmItem.CONTACT
 			: ZmId.SEARCH_GAL;
 
@@ -654,8 +656,9 @@ function(defaultSearch, sortBy, lastId, lastSortVal) {
 		offset: this._offset,
 		limit: (this._contactSource != ZmId.SEARCH_GAL) ? ZmContactsApp.SEARCHFOR_MAX : "",
 		contactSource: this._contactSource,
-        lastId: lastId,
-        lastSortVal: lastSortVal        
+		lastId: lastId,
+		lastSortVal: lastSortVal,
+		accountName: appCtxt.isOffline ? currAcct.name : null
 	};
 	var search = new ZmSearch(params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearchContacts, [defaultSearch])});
@@ -665,53 +668,53 @@ function(defaultSearch, sortBy, lastId, lastSortVal) {
 ZmApptChooserTabViewPage.prototype._handleResponseSearchContacts =
 function(defaultSearch, result) {
 	var resp = result.getResponse();
-    var offset = resp.getAttribute("offset");
-    var isPagingSupported = AjxUtil.isSpecified(offset);
-    var more = resp.getAttribute("more");    
-    var info = resp.getAttribute("info");
-    var expanded = info && info[0].wildcard[0].expanded == "0";
+	var offset = resp.getAttribute("offset");
+	var isPagingSupported = AjxUtil.isSpecified(offset);
+	var more = resp.getAttribute("more");
+	var info = resp.getAttribute("info");
+	var expanded = info && info[0].wildcard[0].expanded == "0";
 
-    //bug: 47649 avoid showing warning message for default contacts search
-    if (!defaultSearch && !isPagingSupported &&
-        (expanded || (this._contactSource == ZmId.SEARCH_GAL && more)))
-    {
-        var d = appCtxt.getMsgDialog();
-        d.setMessage(ZmMsg.errorSearchNotExpanded);
-        d.popup();
-        if (expanded) { return; }
-    }
+	//bug: 47649 avoid showing warning message for default contacts search
+	if (!defaultSearch && !isPagingSupported &&
+		(expanded || (this._contactSource == ZmId.SEARCH_GAL && more)))
+	{
+		var d = appCtxt.getMsgDialog();
+		d.setMessage(ZmMsg.errorSearchNotExpanded);
+		d.popup();
+		if (expanded) { return; }
+	}
 
-    var list = AjxVector.fromArray(ZmContactsHelper._processSearchResponse(resp));
+	var list = AjxVector.fromArray(ZmContactsHelper._processSearchResponse(resp));
 
-    if (isPagingSupported) {
-        this._list.merge(offset, list);
-        this._list.hasMore = more;
-    }
+	if (isPagingSupported) {
+		this._list.merge(offset, list);
+		this._list.hasMore = more;
+	}
 
-    this._showResults(isPagingSupported, more, list.getArray());
+	this._showResults(isPagingSupported, more, list.getArray());
 };
 
 ZmApptChooserTabViewPage.prototype._showResults =
 function(isPagingSupported, more, list) {
-    if(this._prevButton && this._nextButton) {
-        // if offset is returned, then this account support gal paging
-        if (this._contactSource == ZmId.SEARCH_GAL && !isPagingSupported) {
-            this._prevButton.setEnabled(false);
-            this._nextButton.setEnabled(false);
-        } else {
-            this._prevButton.setEnabled(this._offset > 0);
-            this._nextButton.setEnabled(more);
-        }
-    }
-    
+	if (this._prevButton && this._nextButton) {
+		// if offset is returned, then this account support gal paging
+		if (this._contactSource == ZmId.SEARCH_GAL && !isPagingSupported) {
+			this._prevButton.setEnabled(false);
+			this._nextButton.setEnabled(false);
+		} else {
+			this._prevButton.setEnabled(this._offset > 0);
+			this._nextButton.setEnabled(more);
+		}
+	}
+
 	var list1 = [];
-    var contactList = list ? list : [];
-    if(!(contactList instanceof Array)) {
-        contactList = contactList.getArray();                
-    }
+	var contactList = list ? list : [];
+	if (!(contactList instanceof Array)) {
+		contactList = contactList.getArray();
+	}
 
 	for (var i = 0; i < contactList.length; i++) {
-        if(!contactList[i]) continue;
+		if (!contactList[i]) { continue; }
 		var contact = (contactList[i] && contactList[i].__contact) ? contactList[i].__contact : contactList[i];
 		var emails = contact.isGal ? [contact.getEmail()] : contact.getEmails();
 		if (emails && emails.length > 1) {
@@ -736,6 +739,7 @@ function(isPagingSupported, more, list) {
 
 ZmApptChooserTabViewPage.prototype.searchCalendarResources =
 function(sortBy) {
+	var currAcct = this._editView.getCalendarAccount();
 	var fields = ZmApptChooserTabViewPage.SEARCH_FIELDS[this.type];
 	var conds = [];
 	var value = (this.type == ZmCalBaseItem.LOCATION) ? "Location" : "Equipment";
@@ -757,7 +761,8 @@ function(sortBy) {
 		offset: 0,
 		limit: ZmContactsApp.SEARCHFOR_MAX,
 		conds: conds,
-		attrs: ZmApptChooserTabViewPage.ATTRS[this.type]
+		attrs: ZmApptChooserTabViewPage.ATTRS[this.type],
+		accountName: appCtxt.isOffline ? currAcct.name : null
 	};
 	var search = new ZmSearch(params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearchCalendarResources)});
@@ -785,11 +790,15 @@ function() {
 ZmApptChooserTabViewPage.prototype._fillFreeBusy =
 function(items, callback) {
 
-    // Bug:48189 Don't send GetFreeBusyRequest for non-ZCS accounts.
-    if (appCtxt.isOffline && !appCtxt.getActiveAccount().isZimbraAccount) {
-		if (callback) callback(items);
+	var currAcct = this._editView.getCalendarAccount();
+	// Bug: 48189 Don't send GetFreeBusyRequest for non-ZCS accounts.
+	if (appCtxt.isOffline && !currAcct.isZimbraAccount) {
+		if (callback) {
+			callback(items);
+		}
 		return;
 	}
+
 	var tf = this._getTimeFrame();
 	var list = (items instanceof AjxVector) ? items.getArray() : (items instanceof Array) ? items : [items];
 	var emails = [];
@@ -798,7 +807,8 @@ function(items, callback) {
 		var item = list[i];
 		emails[i] = item.getEmail();
 
-        //bug: 30824 - Don't list all addresses/aliases of a resource in GetFreeBusyRequest.  One should suffice.
+		// bug: 30824 - Don't list all addresses/aliases of a resource in
+		// GetFreeBusyRequest.  One should suffice.
 		if (emails[i] instanceof Array) {
 			emails[i] = emails[i][0];
 		}
@@ -993,6 +1003,14 @@ function(item, list) {
 	return list.containsLike(item, item.getEmail);
 };
 
+ZmApptChooser.prototype._reset =
+function(view) {
+	if (appCtxt.isOffline && appCtxt.accountList.size() > 1) {
+		this.parent._resetSelectDiv();
+	}
+	DwtChooser.prototype._reset.apply(this, arguments);
+};
+
 /**
  * This class creates a specialized source list view for the contact chooser. The items
  * it manages are of type ZmContact or its subclass ZmResource.
@@ -1044,10 +1062,10 @@ function(item, field) {
 
 ZmApptChooserListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
-    if(field != ZmItem.F_NOTES) {
-        html[idx++] = "&nbsp;";
-    }
-    if (field == ZmItem.F_FOLDER) {
+	if (field != ZmItem.F_NOTES) {
+		html[idx++] = "&nbsp;";
+	}
+	if (field == ZmItem.F_FOLDER) {
 		var name = "";
 		if (item.isGal) {
 			name = ZmMsg.GAL;
@@ -1058,9 +1076,9 @@ function(html, idx, item, field, colIdx, params) {
 		html[idx++] = AjxStringUtil.htmlEncode(name);
 	} else if (field == ZmItem.F_NAME) {
 		var name = (this._chooserType == ZmCalBaseItem.PERSON) ? item.getFullName() : item.getAttr(ZmResource.F_name);
-        if(this._chooserType != ZmCalBaseItem.PERSON && item instanceof ZmContact) {
-            name = item.getFullName();             
-        }
+		if (this._chooserType != ZmCalBaseItem.PERSON && item instanceof ZmContact) {
+			name = item.getFullName();
+		}
 		html[idx++] = AjxStringUtil.htmlEncode(name);
 	} else if (field == ZmItem.F_EMAIL) {
 		html[idx++] = AjxStringUtil.htmlEncode(item.getEmail());
@@ -1079,11 +1097,11 @@ function(html, idx, item, field, colIdx, params) {
 		if (notes) {
 			var notesId = this._getFieldId(item, field);
 			this._notes[notesId] = notes;
-            html[idx++] = AjxImg.getImageHtml("Page", null, ["id='", notesId, "'"].join(""));
+			html[idx++] = AjxImg.getImageHtml("Page", null, ["id='", notesId, "'"].join(""));
 		}
 	} else if (field == "FBSTATUS" && item.__fbStatus) {
-                html[idx++] = item.__fbStatus.txt;
-        }
+		html[idx++] = item.__fbStatus.txt;
+	}
 	return idx;
 };
 
@@ -1103,15 +1121,15 @@ function(ev, div) {
 			}
 		}
 	} else {
-        var note = this._notes[id];
-        if (!note) {
-            var item = this.getItemFromElement(div);
-            if (item) {
-                var notesId = this._getFieldId(item, ZmItem.F_NOTES);
-                note = this._notes[notesId];
-            }
-        }
-        if (note) {
+		var note = this._notes[id];
+		if (!note) {
+			var item = this.getItemFromElement(div);
+			if (item) {
+				var notesId = this._getFieldId(item, ZmItem.F_NOTES);
+				note = this._notes[notesId];
+			}
+		}
+		if (note) {
 			this.setToolTipContent(AjxStringUtil.htmlEncode(note));
 		}
 	}
