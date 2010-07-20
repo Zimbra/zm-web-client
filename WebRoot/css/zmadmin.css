@@ -181,6 +181,9 @@
 	color:@AppC+60@;
 }
 
+input.admin_xform_name_input_disabled {
+	@InputField-disabled@
+}
 .admin_xform_name_input {
 	width:200px;
 }
