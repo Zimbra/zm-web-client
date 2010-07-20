@@ -75,14 +75,9 @@
                 </div>
             </c:if>
         </div>
-
         <div class="msgBody">
-            <div class="wrap-dcontent" id="wrap-dcontent-view">
-                <div id="dcontent-view">
-                    <mo:displayContact contact="${contact}"/>
-                </div>    
-            </div>
-        </div>    
+        <mo:displayContact contact="${contact}"/>
+    </div>
     <c:if test="${ua.isiPad == false}">
         <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="false" mailbox="${mailbox}"/>
     </c:if>
