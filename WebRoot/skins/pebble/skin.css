@@ -12,30 +12,25 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-body	{  @ChromeBg@ }
+body, #skin_container_splash_screen { @ChromeBg@ }
 
-#skin_outer { background: #efefef !important; }
-
-#skin_container_splash_screen			{		}
-
-#skin_container_links a{
-	color: #634919;
+#skin_container_links a {
+	color: #ffffff;
 }
 
-	#skin_container_links a:hover{
-		color: white; 
-		background-color: #634919;
-		text-decoration: none;
-	}
+#skin_container_links a:hover{
+	color: #ffffff;
+	text-decoration: underline;
+}
 
 #skin_container_tree_top {
-	background: #614719 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
+	background-color: #ad8a4c;
 	text-align:center;
 }
 
 
-#skin_spacing_tree {
-	background-color: #fff;
+#skin_spacing_tree, #skin_spacing_tree_top {
+	background-color: #5a5a43;
 }
 
 #skin_td_tree	{	
@@ -48,8 +43,8 @@ body	{  @ChromeBg@ }
 }
 
 #skin_container_search {	
-	background: #654f1e url("@SkinImgDir@/search_bg.png") top left repeat-x;
-	color: #d5d5d3;	
+	background-color: #ad8a4c;
+	color: #d5d5d3;
 	border: 0;
 }
 
@@ -64,10 +59,15 @@ body	{  @ChromeBg@ }
 
 .Row-selected, 
 .Row-selected-dragProxy, 
-.Row-selected-disabled 		{	background-color: #fff; border-color: #c6c6c7; border-top-color: #c6c6c7;}
+.Row-selected-disabled {
+	background-color: #e3da93 !important; 
+}
 
+.Row-selected-actioned .DwtListView-Rows td {
+	color: #ffffff;
+}
 
-.ZmTaskbar{
+.ZmTaskbar {
 	height:30px; 
 	background: #634d1e url("@SkinImgDir@/app_header_bg.png") repeat-x top left;
 	border: 0;
@@ -88,24 +88,28 @@ body	{  @ChromeBg@ }
 }
 
 .ZOptionsSectionMain {
-	background: #fff;
-	padding:1em;
+	background: #ffffff;
+	padding: 1em;
 }
 
 .ZOptionsHeader{
-	color: #fff;
+	color: #ffffff;
 }
 
 .DwtTreeItem-selected-focused {
 	@TreeItemSelectedBg@
 }
 
+.DwtTreeItem-actioned .DwtTreeItem-Text {
+	color: #ffffff;
+}
+
 .ZDisabled .ZToolbarButtonTable .ZWidgetTitle {
-	color: #ccc;
+	color: #cccccc;
 }
 
 .ZOptionsSectionTable .ZToolbarButtonTable .ZWidgetTitle {
-	color: #333;
+	color: #333333;
 }
 
 .ZmPickerOverview .DwtCalendarTitle {
