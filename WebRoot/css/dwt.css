@@ -1098,6 +1098,11 @@
 input.xform_field_disabled {
 	@InputField-disabled@
 }
+textarea.xform_field {
+	overflow-x:auto;
+	overflow-y:auto;	
+}
+	
 textarea.xform_field_disabled {
 	@TextArea-disabled@
 }
