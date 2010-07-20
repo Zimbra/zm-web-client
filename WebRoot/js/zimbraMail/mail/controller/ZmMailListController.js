@@ -815,14 +815,14 @@ function(params, msg) {
 	var action = params.action;
 	if (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE) {
 
-        // bug 43428 - invitation should be forwarded using apt forward view        
+        // bug 43428 - invitation should be forwarded using apt forward view
         if(msg.isInvite()) {
             var ac = window.parentAppCtxt || window.appCtxt;
             var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
             controller.forwardInvite(msg);
             if(appCtxt.isChildWindow) {
                 window.close();
-            }            
+            }
             return;
         }
 
@@ -860,7 +860,7 @@ function(params, msg) {
 		var folder = appCtxt.getById(msg.folderId);
 		params.accountName = folder && folder.getAccount().name;
 	}else if(action == ZmOperation.DECLINE_PROPOSAL) {
-        params.subjOverride = this._getInviteReplySubject(action) + msg.subject;        
+        params.subjOverride = this._getInviteReplySubject(action) + msg.subject;
     }
 
 	params.msg = msg;
@@ -933,7 +933,7 @@ function(ev) {
             window.close();
         }
     }else if (type == ZmOperation.ACCEPT_PROPOSAL ) {
-        this._acceptProposedTime(compId, ev._msg);        
+        this._acceptProposedTime(compId, ev._msg);
     }else if (type == ZmOperation.DECLINE_PROPOSAL ) {
         this._declineProposedTime(compId, ev._msg);
     }else if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
@@ -1388,13 +1388,15 @@ function(ev) {
             }else{
                 ids.push("C:"+item.id);
             }
-            var msgList = item.getMsgList();
-            for(var j=0; j<msgList.length; j++) {
-                if(msgList[j].showImages) {
-                    showImages = true;
-                    break;
-                }
-            }
+			if (item instanceof ZmConv) {
+				var msgList = item.getMsgList();
+				for(var j=0; j<msgList.length; j++) {
+					if(msgList[j].showImages) {
+						showImages = true;
+						break;
+					}
+				}
+			}
         } else {
             ids.push(item.id);
             if (item.showImages) {
