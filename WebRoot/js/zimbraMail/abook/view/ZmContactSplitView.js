@@ -207,7 +207,8 @@ function() {
  */
 ZmContactSplitView.prototype.enableAlphabetBar =
 function(enable) {
-	this._alphabetBar.enable(enable);
+	if (this._alphabetBar)
+		this._alphabetBar.enable(enable);
 };
 
 /**

@@ -200,8 +200,6 @@ if(window != parent){
         </div>
 
       <div class="contentViewPane" id="view-content" style="display:none;">
-          <div class="header">&nbsp;</div>
-
           <div class="msgBody" id="msg-body">
             <center><h2 style="text-transform: capitalize;"><fmt:message key="emptyMessage"/></h2></center>
           </div>
@@ -216,9 +214,6 @@ if(window != parent){
             <c:url var="composeUrl" value="${aurl}?st=newmail"/>
             <div class ="compose button" id="view-mail" style="display:block;"><a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" id="compose"><fmt:message key="compose"/></a></div>
           </div></div></div>
-          <div class="header">
-              &nbsp;
-          </div>
           <div class="msgBody" id="empty-message"><center><h2 style="text-transform: capitalize;"><fmt:message key="emptyMessage"/></h2></center></div>
       </div>
     </div>

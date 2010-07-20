@@ -119,8 +119,8 @@ var sAT = function(tabId){ //set active tab
         }
     }
     if(targ && targ.id.match(/(mail|contact)/ig)) {
-        if(myScroll) {
-            myScroll.scrollTo(0,0);
+        if(listScroll) {
+            listScroll.scrollTo(0,0);
         }
     }
 };
@@ -537,7 +537,8 @@ var parseResponse = function (request, container,url) {
                     $("view-content").innerHTML = data;
                     $("view-content").style.display = "block";
                     $("static-content").style.display = "none";
-                } else if(url.indexOf('st=newmail') != -1) {
+                    contentLoaded();
+                } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
                     $('compose-body').innerHTML = data;
                     $("view-content").style.display = "block";
                     $("static-content").style.display = "none";
@@ -545,7 +546,7 @@ var parseResponse = function (request, container,url) {
                 } else {
                     $("view-list").innerHTML = data;
                     $("view-content").style.display = "none";
-                    if(myScroll) {
+                    if(listScroll) {
                         loaded();
                     }
                 }
@@ -734,21 +735,26 @@ var reqCount = 0;
 var reqTimer = null;
 var lastRendered = new Date().getTime();
 var ajxCache = new AjxCache(CACHE_DATA_LIFE);
-var myScroll = null;
+var listScroll = null;
+var contentScroll = null;
 
 if(window.location.hash){
     sAT(window.location.hash);
 };
 
 var setHeight = function (){
-    document.getElementById('wrap-dlist-view').style.height = window.orientation == 90 || window.orientation == -90 ? '608px' : '864px';   
+    document.getElementById('wrap-dlist-view').style.height = window.orientation == 90 || window.orientation == -90 ? '595px' : '850px';
 };
 
 var loaded = function () {
 	setHeight();
     document.addEventListener('touchmove', function(e){ e.preventDefault(); });
-	myScroll = new iScroll('dlist-view');
+	listScroll = new iScroll('dlist-view');
 };
+
+var contentLoaded = function() {
+        contentScroll = new iScroll('dcontent-view');
+}
 
 window.addEventListener('orientationchange', setHeight);
 document.addEventListener('DOMContentLoaded', loaded);
