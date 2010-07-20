@@ -270,6 +270,7 @@ html, body{
 	border-right: 1px solid #999;
 	background-color: white;
 	position: relative;
+    overflow:hidden;
 }
 
 
@@ -292,9 +293,9 @@ ul.list li{
 .contentViewPane{
 	float: left;
 	width: 64.9%;
-	height: 100%;
-	overflow: none;
 	border-left: 1px solid #444;
+    position: relative;
+    overflow:hidden;
 }
 
 
@@ -341,16 +342,26 @@ ul.list li{
 		text-align: right;
 	}
 	
-	
-.msgBody{
-	background-color: white;
-	-webkit-border-radius: 12px;
-	height: 520px;
-	margin: 5px 10px 10px 10px ;
-	padding: 10px;
-	overflow: auto;
-	word-break: break-all;
-	-webkit-box-shadow: 3px 2px 5px #666;
+.msgBody {
+       background-color: white;
+       -webkit-border-radius: 12px;
+       margin: 5px 10px 10px 10px ;
+       padding: 10px;
+       overflow: auto;
+       word-break: break-all;
+       -webkit-box-shadow: 3px 2px 5px #666;
+}
+
+@media (orientation:landscape) {
+   .msgBody {
+       height: 530px;
+   }
+}
+
+@media (orientation:portrait) {
+   .msgBody {
+       height: 770px;
+   }
 }
 
 .address{
@@ -388,7 +399,13 @@ ul.list li{
 .wrap-dlist {
     position:relative;	/* needed */
     z-index:10;			/* needed and important */
-    height: 580px;
+    height: 610px;
+}
+
+.wrap-dcontent {
+    position:relative;	/* needed */
+    z-index:10;			/* needed and important */
+    height: 100%;
 }
 
 .tbl {

@@ -73,6 +73,8 @@
 
 </c:if>
 <div class="msgBody">
+<div class="wrap-dcontent" id="wrap-dcontent-view">
+<div id="dcontent-view">
 <div class="View address"><c:if test="${not empty from}"><span class='label'><fmt:message key="fromLabel"/></span>
     <c:if test="${ua.isiPad == false}">
         <span class="" id="d_btn_td" <c:if test="${empty param.ajax}">style="display:none;"</c:if>> <a id='d_btn' onclick="return toggleElem('d_div',this,'<fmt:message key="hide"/>','<fmt:message key="details"/>')"><fmt:message key="details"/></a></span>
@@ -145,9 +147,10 @@
     </c:if>
 </div>
 </div>
-
+</div>
 
 <c:if test="${not empty message.attachments}"><div class="View attachments"><a name="attachments${message.partName}"></a><mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/></div></c:if>
 <c:if test="${not empty param.debug}"><div><pre>${fn:escapeXml(message)}</pre></div></c:if></c:if>
 
+</div>
 </div>
