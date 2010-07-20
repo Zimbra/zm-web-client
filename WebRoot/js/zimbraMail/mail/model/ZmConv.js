@@ -480,7 +480,9 @@ function(folderId) {
 
 ZmConv.prototype.getMsgList =
 function(offset, ascending) {
-	var a = this.msgs.getArray().slice(offset || 0);
+	// this.msgs will not be set if the conv has not yet been loaded
+	var list = this.msgs && this.msgs.getArray();
+	var a = list ? (list.slice(offset || 0)) : [];
 	if (ascending) {
 		a.reverse();
 	}
