@@ -471,12 +471,17 @@ function(compNum) {
  */
 ZmInvite.prototype.getComponentDescriptionHtml =
 function(compNum) {
-    var cn = compNum || 0;    
-    if (this.components[cn] == null) return;
-	var desc = this.components[cn].descHtml;
+    var cn = compNum || 0;
+    var comp = this.components[cn];
+    if (comp == null) return;
+	var desc = comp.descHtml;
 	var content = desc && desc[0]._content || null;
-    if(!content)
-        content = this.getApptSummary(true);
+    if(!content){
+        var txtContent = comp.desc;
+        txtContent = (txtContent && txtContent[0]._content) || null;
+        if(!txtContent)
+            content = this.getApptSummary(true);
+    }
 	return content;
 };
 
@@ -488,12 +493,17 @@ function(compNum) {
  */
 ZmInvite.prototype.getComponentDescription =
 function(compNum) {
-    var cn = compNum || 0;    
-    if (this.components[cn] == null) return;
-	var desc = this.components[cn].desc;
+    var cn = compNum || 0;
+    var comp = this.components[cn];
+    if (comp == null) return;
+	var desc = comp.desc;
 	var content = desc && desc[0]._content || null;
-    if(!content)
-        content = this.getApptSummary();
+    if(!content){
+        var htmlContent = comp.descHtml;
+        htmlContent = (htmlContent && htmlContent[0]._content) || null;
+        if(!htmlContent)
+            content = this.getApptSummary();
+    }
 	return content;
 };
 
