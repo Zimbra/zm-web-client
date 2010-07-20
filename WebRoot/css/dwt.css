@@ -1100,13 +1100,19 @@ input.xform_field_disabled {
 }
 textarea.xform_field_disabled {
 	@TextArea-disabled@
-}	
+}
+
+input.dynselect_display_disabled {
+	@InputField-disabled@
+}
+
 .xform_table {
 	@CompactTable@
 }
 .xform_composite_table {
 	@CompactTable@
 }
+
 
 .xform_field_container,
 .xform_select_container,
