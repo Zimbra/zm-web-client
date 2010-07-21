@@ -901,35 +901,31 @@ function(rowId, show) {
 };
 
 // Displays the list
-ZmAutocompleteListView.prototype._popup = 
+ZmAutocompleteListView.prototype._popup =
 function(loc) {
 
+	// position just below input field
 	var shellHeight = this.shell.getSize().y;
 	var elLoc = Dwt.getLocation(this._element);
 	var elSize = Dwt.getSize(this._element);
 	var x = elLoc.x;
 	var y = elLoc.y + elSize.y;
-	this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-	this.setVisible(true);
-	var myHeight = this.getSize().y;
-	var newHeight;
-	if (y + myHeight > shellHeight) {
-		// If not enough vertical space, set height and let it scroll
-		newHeight = (shellHeight - y) - (10 + (AjxEnv.isIE ? 20 : 0));
-		if (newHeight < 40) {
-			// if we can't show at least a couple rows, position it above the input
-			newHeight = null;
-			y = elLoc.y - myHeight;
-			if (y < 0) {
-				// need to scroll
-				y = 0;
-				newHeight = shellHeight - elLoc.y;
-			}
+	var availHeight = shellHeight - y;
+	var aclvHeight = this.size() * this._getRowHeight();
+	if (availHeight < aclvHeight) {
+		// if we don't fit, resize so we are scrollable
+		this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+		this.setVisible(true);
+		this.setSize(Dwt.DEFAULT, availHeight - (AjxEnv.isIE ? 30 : 10));
+		// see if we need to account for width of vertical scrollbar
+		var div = this.getHtmlElement();
+		if (div.clientWidth != div.scrollWidth) {
+			this.setSize(this.getSize().x + Dwt.SCROLLBAR_WIDTH, Dwt.DEFAULT);
 		}
 	}
-	this.setSize(Dwt.DEFAULT, newHeight ? newHeight : Dwt.CLEAR);
 
     this.setLocation(x, y);
+	this.setVisible(true);
 	this.setZIndex(Dwt.Z_DIALOG_MENU);
 	ZmAutocompleteListView._activeAcList = this;
 	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, ZmAutocompleteListView._outsideMouseDownListener);
@@ -977,6 +973,7 @@ function(id) {
 		if (newIdx < 0 || newIdx >= len) { return; }
 		id = rows[newIdx].id;
 	}
+	DwtControl._scrollIntoView(rows[newIdx], this.getHtmlElement());
 
 	for (var i = 0; i < len; i++) {
 		var row = rows[i]
@@ -992,6 +989,19 @@ function(id) {
 	this._showForgetLink(id, true);
 
 	this._selected = id;
+};
+
+ZmAutocompleteListView.prototype._getRowHeight =
+function() {
+	if (!this._rowHeight) {
+		if (!ZmAutocompleteListView._activeAcList) {
+			this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+			this.setVisible(true);
+		}
+		var row = this._getTable().rows[0];
+		this._rowHeight = row && Dwt.getSize(row).y;
+	}
+	return this._rowHeight || 18;
 };
 
 // Miscellaneous
