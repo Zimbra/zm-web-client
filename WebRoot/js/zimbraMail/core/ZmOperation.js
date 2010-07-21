@@ -475,8 +475,8 @@ function(parent) {
 	parent.setMenu(menu);
 	var list = ZmTagTree.COLOR_LIST;
 	for (var i = 0; i < list.length; i++) {
-		var color = list[i];
-		var mi = menu.createMenuItem(color, {image:ZmTag.COLOR_ICON[color], text:ZmOrganizer.COLOR_TEXT[color]});
+        var color = list[i];
+		var mi = menu.createMenuItem(color, {image:ZmTag.getIcon(color), text:ZmOrganizer.COLOR_TEXT[color]});
 		mi.setData(ZmOperation.MENUITEM_ID, color);
 	}
 	return menu;

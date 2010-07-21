@@ -1451,7 +1451,7 @@ function(msg) {
 
 		if (AjxEnv.isGeckoBased) {
 			html[i++] = "<td width=16>";
-			html[i++] = AjxImg.getImageHtml(ZmTag.COLOR_ICON[tag.color], null, ["id='", imageId, "'"].join(""));
+			html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
 			html[i++] = "</td><td class='Tags' style='white-space:nowrap;'>";
 		}
 		html[i++] = "<a href='javascript:' onclick='ZmMailMsgView._tagClick(\"";
@@ -1463,7 +1463,7 @@ function(msg) {
 		html[i++] = "'>";
 		if (AjxEnv.isIE || AjxEnv.isSafari) {
 			html[i++] = "<table style='display:inline; vertical-align:middle; width:16px' border=0 cellspacing=0 cellpadding=0><tr><td>";
-			html[i++] = AjxImg.getImageHtml(ZmTag.COLOR_ICON[tag.color], null, ["id='", imageId, "'"].join(""));
+			html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
 			html[i++] = "</td></tr></table>";
 		}
 		html[i++] = AjxStringUtil.htmlEncodeSpace(tag.name);
@@ -1701,7 +1701,7 @@ function(ev) {
 		var tag = ev.getDetail("organizers")[0];
 		var img = document.getElementById(this._tagCellId +  ZmDoublePaneView._TAG_IMG + tag.id);
 		if (img) {
-			AjxImg.setImage(img, ZmTag.COLOR_ICON[tag.color]);
+			AjxImg.setImage(img, tag.getIconWithColor());
 		}
 	}
 
