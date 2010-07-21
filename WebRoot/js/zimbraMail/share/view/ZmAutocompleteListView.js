@@ -911,17 +911,20 @@ function(loc) {
 	var x = elLoc.x;
 	var y = elLoc.y + elSize.y;
 	var availHeight = shellHeight - y;
-	var aclvHeight = this.size() * this._getRowHeight();
-	if (availHeight < aclvHeight) {
+	var fullHeight = this.size() * this._getRowHeight();
+	this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+	this.setVisible(true);
+	var curSize = this.getSize();
+	if (availHeight < fullHeight) {
 		// if we don't fit, resize so we are scrollable
-		this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-		this.setVisible(true);
 		this.setSize(Dwt.DEFAULT, availHeight - (AjxEnv.isIE ? 30 : 10));
 		// see if we need to account for width of vertical scrollbar
 		var div = this.getHtmlElement();
 		if (div.clientWidth != div.scrollWidth) {
-			this.setSize(this.getSize().x + Dwt.SCROLLBAR_WIDTH, Dwt.DEFAULT);
+			this.setSize(curSize.x + Dwt.SCROLLBAR_WIDTH, Dwt.DEFAULT);
 		}
+	} else if (curSize.y < fullHeight) {
+		this.setSize(Dwt.CLEAR, fullHeight);
 	}
 
     this.setLocation(x, y);
