@@ -12,6 +12,39 @@ a{
 	outline: none;
 }
 
+
+/* Orientation specific styles */
+
+@media (orientation:landscape) {
+	.wrap-dcontent {
+       height: 593px;
+    }
+	
+	.msgBody {
+		min-height: 560px;
+	}
+	
+	.view{
+		height: 640px;
+	}
+}
+
+@media (orientation:portrait) {
+	.wrap-dcontent {
+       height: 849px;
+   	}
+	
+	.msgBody {
+		min-height: 806px;
+	}
+	
+	.view{
+		height: 896px;
+	}
+}
+
+
+
 /* Chrome*/
 
 html, body{
@@ -61,18 +94,25 @@ html, body{
 		margin: 15px 0 0 15px;
 }
 
-
 .search{
-
-		margin: 15px 10px 0 0;
-		width: 200px;		
+		background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left;
+		height: 30px;
+		width: 34%;
+		position: absolute;
+		z-index: 100;
+		bottom: 0;
+		left: 0;
+		padding: 7px 5px;
 }
-
+ 
 	.search input{
-		-webkit-border-radius: 8px;
+		-webkit-border-radius: 12px;
 		outline: none;
-		padding: 2px 4px;
-		width: 200px;
+		padding: 4px 10px;
+		width: 98%;
+		font-size: 13px;
+		background-color: #d4d2c8;
+	    color: #333;
 }
 
 
@@ -345,7 +385,7 @@ ul.list li{
 .msgBody {
     background-color: white;
     -webkit-border-radius: 12px;
-    margin: 5px 10px 10px 10px ;
+    margin: 10px ;
     padding: 10px;
     overflow: auto;
     word-break: break-all;
@@ -395,17 +435,6 @@ ul.list li{
     z-index:10;			/* needed and important */
 }
 
-@media (orientation:landscape) {
-   .wrap-dcontent {
-       height: 585px;
-   }
-}
-
-@media (orientation:portrait) {
-   .wrap-dcontent {
-       height: 840px;
-   }
-}
 
 .tbl {
     display: table;
@@ -700,7 +729,7 @@ span.aleft > div:first-child, .contactHeader {
 /**Compose UI styles **/
 
 .veil{
-	background-color: black;
+	background-color: #7c674c;
 	opacity: 0.6;
 	-webkit-opacity: 0.6;
 	width: 100%;
