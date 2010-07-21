@@ -99,7 +99,7 @@ function(list, sortField) {
 	if (this.offset == 0) {
 		this._resetExpansion();
 	}
-	ZmListView.prototype.set.apply(this, arguments);
+	ZmMailListView.prototype.set.apply(this, arguments);
 };
 
 // Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op

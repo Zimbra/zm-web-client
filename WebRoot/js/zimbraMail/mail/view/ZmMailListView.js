@@ -413,9 +413,9 @@ function(defaultColumnSort) {
 	}
 
 	// Show "From" or "To" depending on which folder we're looking at
+	this._resetFromColumnLabel();
 	var headerCol = this._headerHash[ZmItem.F_DATE];
 	if (headerCol) {
-		this._resetFromColumnLabel();
 		// set the received column name based on search folder
 		var colLabel = ZmMsg.received;
 		if (this._isOutboundFolder()) {
