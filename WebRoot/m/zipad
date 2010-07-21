@@ -192,11 +192,11 @@ if(window != parent){
 
 <c:if test="${empty param.ajax}">
     <div class="view" id="view">
-
+ 		<form>
+		<div class="search"><input type="search" name="search" placeholder=" Search..."/></div>
+        </form>
         <div class="listViewPane" id="view-list">
-            
             ${response}
-
         </div>
 
       <div class="contentViewPane" id="view-content" style="display:none;">

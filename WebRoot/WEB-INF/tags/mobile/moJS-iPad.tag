@@ -743,7 +743,7 @@ if(window.location.hash){
 };
 
 var setHeight = function (){
-    document.getElementById('wrap-dlist-view').style.height = window.orientation == 90 || window.orientation == -90 ? '595px' : '850px';
+    document.getElementById('wrap-dlist-view').style.height = window.orientation == 90 || window.orientation == -90 ? '598px' : '850px';
 };
 
 var loaded = function () {
