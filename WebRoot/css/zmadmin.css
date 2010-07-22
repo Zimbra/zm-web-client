@@ -581,8 +581,8 @@ input.admin_xform_name_input_disabled {
 
 .ZAppTab 									{	@AppTab@	@AppTabSpacing@				}
 
-.ZAppTabBorder								{	@AppTabBorder@	@AppTabBorder-normal@	}
-.ZHover		.ZAppTabBorder					{					@AppTabBorder-hover@	}
+.ZAppTabBorder								{	@AppTabBorder@	@AppTabBorder-normal@ 	}
+.ZHover		.ZAppTabBorder					{					@AppTabBorder-hover@	@ActiveCursor@ }
 .ZDisabled	.ZAppTabBorder					{					@AppTabBorder-disabled@	}
 .ZFocused	.ZAppTabBorder					{					@AppTabBorder-focused@	}
 .ZActive	.ZAppTabBorder					{					@AppTabBorder-active@	}
