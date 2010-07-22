@@ -27,6 +27,10 @@ a{
 	.view{
 		height: 640px;
 	}
+	
+	.composeBox{
+		width: 800px;
+	}
 }
 
 @media (orientation:portrait) {
@@ -40,6 +44,10 @@ a{
 	
 	.view{
 		height: 896px;
+	}
+	
+	.composeBox{
+		width: 600px;
 	}
 }
 
@@ -102,7 +110,7 @@ html, body{
 		z-index: 100;
 		bottom: 0;
 		left: 0;
-		padding: 7px 5px;
+		padding: 7px 6px;
 }
  
 	.search input{
@@ -745,10 +753,9 @@ span.aleft > div:first-child, .contactHeader {
 }
 
 .composeBox{
-	width: 600px;
 	margin: 5px auto;
 	position: relative;
-	-webkit-box-shadow: 3px 2px 5px #333;
+/*	-webkit-box-shadow: 3px 2px 5px #333; */
 	background-color: transparent;
 }
 
@@ -757,8 +764,8 @@ span.aleft > div:first-child, .contactHeader {
 	height: 45px;
 	overflow: hidden;
 	border: none;
-	-webkit-border-top-left-radius: 8px;
-	-webkit-border-top-right-radius: 8px;
+	-webkit-border-top-left-radius: 6px;
+	-webkit-border-top-right-radius: 6px;
 }
 	
 	.composeToolbar .compose, .composeToolbar .buttonRight{
@@ -769,8 +776,8 @@ span.aleft > div:first-child, .contactHeader {
 .composeFields{
 	background-color: white;
 	height: 30%;
-	-webkit-border-bottom-left-radius: 8px;
-	-webkit-border-bottom-right-radius: 8px;
+	-webkit-border-bottom-left-radius: 6px;
+	-webkit-border-bottom-right-radius: 6px;
 	padding: 4px;
 }
 
