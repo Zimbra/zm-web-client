@@ -65,7 +65,7 @@
     </c:choose>
     <c:choose>
         <c:when test="${empty compose }">
-            <zm:messageCompose var="compose" message="${message}" action="${message.isDraft ? 'draft' : param.op}"/>
+            <zm:messageCompose var="compose" message="${message}" action="${message.isDraft ? 'draft' : param.op}" ismobile="true"/>
         </c:when>
         <c:when test="${uploader.isUpload and !empty message}">
             <zm:fixupMessageCompose message="${message}" compose="${compose}"
