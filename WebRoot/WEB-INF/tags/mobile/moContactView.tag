@@ -40,8 +40,7 @@
 
     <!--Application Toolbar  -->
     <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="true" mailbox="${mailbox}"/>
-    <div class="wrap-dcontent" id="wrap-dcontent-view">
-                    <div id="dcontent-view" style="padding-bottom:5px;">
+
         <div class="Stripes header">
             <div class="tbl">
                 <div class="tr">
@@ -76,16 +75,10 @@
                 </div>
             </c:if>
         </div>
-
         <div class="msgBody">
-
-                    <mo:displayContact contact="${contact}"/>
-                </div>    
-            </div>
-        </div>    
+        <mo:displayContact contact="${contact}"/>
+    </div>
     <c:if test="${ua.isiPad == false}">
         <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="false" mailbox="${mailbox}"/>
     </c:if>
-    </div>
-    </div>
 </form>

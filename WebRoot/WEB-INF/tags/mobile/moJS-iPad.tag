@@ -119,8 +119,8 @@ var sAT = function(tabId){ //set active tab
         }
     }
     if(targ && targ.id.match(/(mail|contact)/ig)) {
-        if(listScroll) {
-            listScroll.scrollTo(0,0);
+        if(myScroll) {
+            myScroll.scrollTo(0,0);
         }
     }
 };
@@ -271,46 +271,11 @@ var AC = function(f,c){ //Register auto complete on field f and populate contain
         f.addEventListener("keydown", function(e){if (!e) e = event ? event : window.event;var k = e.keyCode?  e.keyCode : e.which; if((k==13 || k == 38 || k==40) && c.style.display=="block"){ window.acon = true;stopEvent(e);return false;}},true);
     }
 };
-
-var delClass = function(el, del, add) {
-	if (el == null) { return; }
-	if (!del && !add) { return; }
-
-	if (typeof del == "string" && del.length) {
-		del = _DELCLASS_CACHE[del] || (_DELCLASS_CACHE[del] = new RegExp("\\b" + del + "\\b", "ig"));
-	}
-	var className = el.className || "";
-	className = className.replace(del, " ");
-	el.className = add ? className + " " + add : className;
-};
-
-_DELCLASS_CACHE = {};
-
-var addClass = function(el, add) {
-    delClass(el, add, add)
-}
-
-var selId = null;
-
 var zClickLink = function(id, t, el) { //Click on href and make ajx req if available
     if((window.evHandled) !== undefined && window.evHandled) { return false; }
     var targ = el ? el.parentNode : (id ? $(id) : t );
     if(!targ) {return false;}
     if (targ.onclick) {var r=false;<c:if test="${!ua.isIE && !ua.isOpera}">r = targ.onclick();</c:if> if(!r)return false;}
-
-    if (targ.tagName  == "a" || targ.tagName == "A") {
-        var targId = targ.id.toString();
-        var chitid = targId.substr(1, targId.length-1);
-        var elem = "conv" + chitid;
-        var element = document.getElementById(elem); 
-        addClass(element, 'msgContainerSel');
-        if (selId) {
-            delClass(selId, 'msgContainerSel');
-            selId = element;
-        } else {
-            selId = element;            
-        }
-     }
     var href = targ.href;
     if (!href || loading) {return false;}
     if (targ.target) {return true;}
@@ -572,8 +537,7 @@ var parseResponse = function (request, container,url) {
                     $("view-content").innerHTML = data;
                     $("view-content").style.display = "block";
                     $("static-content").style.display = "none";
-                    contentLoaded();
-                } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
+                } else if(url.indexOf('st=newmail') != -1) {
                     $('compose-body').innerHTML = data;
                     $("view-content").style.display = "block";
                     $("static-content").style.display = "none";
@@ -581,7 +545,7 @@ var parseResponse = function (request, container,url) {
                 } else {
                     $("view-list").innerHTML = data;
                     $("view-content").style.display = "none";
-                    if(listScroll) {
+                    if(myScroll) {
                         loaded();
                     }
                 }
@@ -770,26 +734,21 @@ var reqCount = 0;
 var reqTimer = null;
 var lastRendered = new Date().getTime();
 var ajxCache = new AjxCache(CACHE_DATA_LIFE);
-var listScroll = null;
-var contentScroll = null;
+var myScroll = null;
 
 if(window.location.hash){
     sAT(window.location.hash);
 };
 
 var setHeight = function (){
-    document.getElementById('wrap-dlist-view').style.height = window.orientation == 90 || window.orientation == -90 ? '598px' : '850px';
+    document.getElementById('wrap-dlist-view').style.height = window.orientation == 90 || window.orientation == -90 ? '608px' : '864px';   
 };
 
 var loaded = function () {
 	setHeight();
     document.addEventListener('touchmove', function(e){ e.preventDefault(); });
-	listScroll = new iScroll('dlist-view');
+	myScroll = new iScroll('dlist-view');
 };
-
-var contentLoaded = function() {
-        contentScroll = new iScroll('dcontent-view');
-}
 
 window.addEventListener('orientationchange', setHeight);
 document.addEventListener('DOMContentLoaded', loaded);
