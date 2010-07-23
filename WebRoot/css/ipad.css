@@ -12,6 +12,47 @@ a{
 	outline: none;
 }
 
+
+/* Orientation specific styles */
+
+@media (orientation:landscape) {
+	.wrap-dcontent {
+       height: 593px;
+    }
+	
+	.msgBody {
+		min-height: 560px;
+	}
+	
+	.view{
+		height: 640px;
+	}
+	
+	.composeBox{
+		width: 800px;
+	}
+}
+
+@media (orientation:portrait) {
+	.wrap-dcontent {
+       height: 849px;
+   	}
+	
+	.msgBody {
+		min-height: 806px;
+	}
+	
+	.view{
+		height: 896px;
+	}
+	
+	.composeBox{
+		width: 600px;
+	}
+}
+
+
+
 /* Chrome*/
 
 html, body{
@@ -61,18 +102,25 @@ html, body{
 		margin: 15px 0 0 15px;
 }
 
-
 .search{
-
-		margin: 15px 10px 0 0;
-		width: 200px;		
+		background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left;
+		height: 30px;
+		width: 34%;
+		position: absolute;
+		z-index: 100;
+		bottom: 0;
+		left: 0;
+		padding: 7px 6px;
 }
-
+ 
 	.search input{
-		-webkit-border-radius: 8px;
+		-webkit-border-radius: 12px;
 		outline: none;
-		padding: 2px 4px;
-		width: 200px;
+		padding: 4px 10px;
+		width: 98%;
+		font-size: 13px;
+		background-color: #d4d2c8;
+	    color: #333;
 }
 
 
@@ -270,6 +318,7 @@ html, body{
 	border-right: 1px solid #999;
 	background-color: white;
 	position: relative;
+    overflow:hidden;
 }
 
 
@@ -292,9 +341,9 @@ ul.list li{
 .contentViewPane{
 	float: left;
 	width: 64.9%;
-	height: 100%;
-	overflow: none;
 	border-left: 1px solid #444;
+    position: relative;
+    overflow:hidden;
 }
 
 
@@ -341,19 +390,17 @@ ul.list li{
 		text-align: right;
 	}
 	
-	
-.msgBody{
-	background-color: white;
-	-webkit-border-radius: 12px;
-	height: 520px;
-	margin: 5px 10px 10px 10px ;
-	padding: 10px;
-	overflow: auto;
-	word-break: break-all;
-	-webkit-box-shadow: 3px 2px 5px #666;
+.msgBody {
+    background-color: white;
+    -webkit-border-radius: 12px;
+    margin: 10px ;
+    padding: 10px;
+    overflow: auto;
+    word-break: break-all;
+    -webkit-box-shadow: 3px 2px 5px #666;
 }
 
-.address{
+ .address{
 	color: #7C6E4E;
 	letter-spacing: 1px;
 	border-bottom: 1px solid #F1EEE6;
@@ -388,8 +435,14 @@ ul.list li{
 .wrap-dlist {
     position:relative;	/* needed */
     z-index:10;			/* needed and important */
-    height: 580px;
+    height: 610px;
 }
+
+.wrap-dcontent {
+    position:relative;	/* needed */
+    z-index:10;			/* needed and important */
+}
+
 
 .tbl {
     display: table;
@@ -684,7 +737,7 @@ span.aleft > div:first-child, .contactHeader {
 /**Compose UI styles **/
 
 .veil{
-	background-color: black;
+	background-color: #7c674c;
 	opacity: 0.6;
 	-webkit-opacity: 0.6;
 	width: 100%;
@@ -700,10 +753,9 @@ span.aleft > div:first-child, .contactHeader {
 }
 
 .composeBox{
-	width: 600px;
 	margin: 5px auto;
 	position: relative;
-	-webkit-box-shadow: 3px 2px 5px #333;
+/*	-webkit-box-shadow: 3px 2px 5px #333; */
 	background-color: transparent;
 }
 
@@ -712,8 +764,8 @@ span.aleft > div:first-child, .contactHeader {
 	height: 45px;
 	overflow: hidden;
 	border: none;
-	-webkit-border-top-left-radius: 8px;
-	-webkit-border-top-right-radius: 8px;
+	-webkit-border-top-left-radius: 6px;
+	-webkit-border-top-right-radius: 6px;
 }
 	
 	.composeToolbar .compose, .composeToolbar .buttonRight{
@@ -724,8 +776,8 @@ span.aleft > div:first-child, .contactHeader {
 .composeFields{
 	background-color: white;
 	height: 30%;
-	-webkit-border-bottom-left-radius: 8px;
-	-webkit-border-bottom-right-radius: 8px;
+	-webkit-border-bottom-left-radius: 6px;
+	-webkit-border-bottom-right-radius: 6px;
 	padding: 4px;
 }
 

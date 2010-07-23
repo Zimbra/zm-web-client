@@ -386,7 +386,7 @@ function() {
 			? ([this.getAccount().id, this.tags[0]].join(":"))
 			: (ZmOrganizer.getSystemId(this.tags[0]));
 		var tag = appCtxt.getById(tagId);
-		tagImageInfo = tag ? ZmTag.COLOR_ICON[tag.color] : "Blank_16";
+		tagImageInfo = tag ? tag.getIconWithColor() : "Blank_16";
 	}
 	else {
 		tagImageInfo = "TagStack";
