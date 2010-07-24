@@ -879,6 +879,9 @@
 	@MiniCalDay-wrongMonth@
 }
 
+.DwtMenu .DwtCalendar {
+    width: 170px;
+}
 
 
 /*
