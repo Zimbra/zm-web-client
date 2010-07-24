@@ -139,6 +139,10 @@ function() {
 		this._inviteToolbar.setVisible(Dwt.DISPLAY_NONE);
 		this._inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement());
 		this._hasInviteToolbar = false;
+
+		if (this._dayView) {
+			this._dayView.setDisplay(Dwt.DISPLAY_NONE);
+		}
 	}
 	if (this._shareToolbar) {
 		this._shareToolbar.setVisible(Dwt.DISPLAY_NONE);
@@ -384,6 +388,15 @@ function (listener) {
 	this.addListener(ZmMailMsgView.SHARE_EVENT, listener);
 };
 
+ZmMailMsgView.prototype.setVisible =
+function(visible) {
+	DwtComposite.prototype.setVisible.apply(this, arguments);
+
+	if (this._dayView) {
+		this._dayView.setDisplay(visible ? Dwt.DISPLAY_BLOCK : Dwt.DISPLAY_NONE);
+	}
+};
+
 
 // Private / protected methods
 
@@ -556,6 +569,43 @@ function() {
 
 ZmMailMsgView.prototype._handleResponseSet =
 function(msg, oldMsg) {
+	var ac = window.parentAppCtxt || window.appCtxt;
+
+	// show F/B info here
+	if (this._hasInviteToolbar &&
+		this._controller.isReadingPaneOn() &&
+		!appCtxt.isChildWindow &&
+		(ac.get(ZmSetting.CALENDAR_ENABLED) || ac.multiAccounts) &&
+		(msg.invite && msg.invite.type != "task"))
+	{
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
+
+		var calController = ac.getCalManager().getCalViewController();
+		if (!this._dayView) {
+			// create a new ZmCalDayView under msgview's parent otherwise, we
+			// cannot position the day view correctly.
+			this._dayView = new ZmCalDayView(this.parent, DwtControl.ABSOLUTE_STYLE, calController, null, null, null, true);
+		}
+
+		this._dayView.setDisplay(Dwt.DISPLAY_BLOCK);
+		this._dayView.setDate((new Date(msg.date)), 0, false);
+		this._resetDayViewBounds();
+
+		var rt = this._dayView.getTimeRange();
+		var params = {
+			start: rt.start,
+			end: rt.end,
+			fanoutAllDay: this._dayView._fanoutAllDay(),
+			callback: (new AjxCallback(this, this._dayResultsCallback)),
+			accountFolderIds: ([].concat(calController.getCheckedCalendarFolderIds())) // pass in *copy*
+		};
+		calController.apptCache.batchRequest(params);
+	}
+	// only reset the msgview bounds if we've previously created the day view
+	else if (this._dayView) {
+		this._resetDayViewBounds(true);
+	}
+
 	if (!appCtxt.isChildWindow) {
 		if (this._mode == ZmId.VIEW_MSG) {
 			this._setTags(msg);
@@ -575,6 +625,48 @@ function(msg, oldMsg) {
 
 	if (!msg.isDraft && msg.readReceiptRequested) {
 		this._controller.sendReadReceipt(msg);
+	}
+};
+
+ZmMailMsgView.prototype._dayResultsCallback =
+function(list, skipMiniCalUpdate, query) {
+	this._dayView.set(list, true);
+};
+
+/**
+ * @param reset		Boolean		If true, day view is not shown and msgview's bounds need to be "reset"
+ */
+ZmMailMsgView.prototype._resetDayViewBounds =
+function(reset) {
+	if (appCtxt.isChildWindow) { return; }
+
+	var isRight = this._controller.isReadingPaneOnRight();
+	if (reset) {
+		isRight
+			? this.setSize(Dwt.DEFAULT, this.parent.getSize().y)
+			: this.setSize(this.parent.getSize().x, Dwt.DEFAULT);
+	} else {
+		var mvBounds = this.getBounds();
+
+		if (isRight) {
+			var parentHeight = this.parent.getSize().y;
+			var dvHeight = Math.floor(parentHeight / 3);
+			var mvHeight = parentHeight - dvHeight;
+
+			this._dayView.setBounds(mvBounds.x, mvHeight, mvBounds.width, dvHeight);
+			// don't call DwtControl's setSize() since it triggers control
+			// listener and leads to infinite loop
+			Dwt.setSize(this.getHtmlElement(), Dwt.DEFAULT, mvHeight);
+		} else {
+			var parentWidth = this.parent.getSize().x;
+			var dvWidth = Math.floor(parentWidth / 3);
+			var mvWidth = parentWidth - dvWidth;
+
+			this._dayView.setBounds(mvWidth, mvBounds.y, dvWidth, mvBounds.height);
+			// don't call DwtControl's setSize() since it triggers control
+			// listener and leads to infinite loop
+			Dwt.setSize(this.getHtmlElement(), mvWidth, Dwt.DEFAULT);
+		}
 	}
 };
 
@@ -1664,6 +1756,9 @@ function(ev) {
 	if (iframe) {
 		this._resetIframeHeightOnTimer(iframe);
 	}
+	if (this._hasInviteToolbar) {
+		this._resetDayViewBounds();
+	}
 };
 
 ZmMailMsgView.prototype._shareToolBarListener =
@@ -1718,8 +1813,9 @@ function(ev) {
 ZmMailMsgView.prototype._expandRows =
 function(expand) {
 	this._expandHeader = expand;
-	if(this._expandButton)
-	this._expandButton.setImage(expand ? "HeaderExpanded" : "HeaderCollapsed");
+	if (this._expandButton) {
+		this._expandButton.setImage(expand ? "HeaderExpanded" : "HeaderCollapsed");
+	}
 
 	var expandRow = document.getElementById(this._expandRowId);
 	var table = expandRow.parentNode;
@@ -1744,8 +1840,9 @@ function(expand) {
 	}
 	if (this._scrollWithIframe) {
 		var iframe = document.getElementById(this._iframeId);
-		if (iframe)
+		if (iframe) {
 			ZmMailMsgView._resetIframeHeight(this, iframe);
+		}
 	}
 };
 
@@ -1876,6 +1973,9 @@ function(self, iframe, attempt) {
 		}
 		if (self._hasInviteToolbar && self._inviteToolbar) {
 			subtract(self._inviteToolbar.getHtmlElement());
+			if (self._dayView) {
+				subtract(self._dayView.getHtmlElement());
+			}
 		}
 		if (self._hasShareToolbar && self._shareToolbar) {
 			subtract(self._shareToolbar.getHtmlElement());
