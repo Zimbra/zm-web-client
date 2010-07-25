@@ -31,6 +31,17 @@ a{
 	.composeBox{
 		width: 800px;
 	}
+	
+	.search{
+		margin: 15px 10px 0 15px;
+		width: 200px;
+	}
+	
+	ul.ul{
+		margin: 25px 0 0 10%;
+		width: 500px;		
+	}
+
 }
 
 @media (orientation:portrait) {
@@ -48,6 +59,16 @@ a{
 	
 	.composeBox{
 		width: 600px;
+	}
+	
+	.search{
+		margin: 15px 10px 0 5px;
+		width: 160px;
+	}
+
+	ul.ul{
+		margin: 25px 0 0 4%;
+		width: 460px;		
 	}
 }
 
@@ -95,52 +116,27 @@ html, body{
 
 
 .logo{
-		background: transparent url("/img/mobile/ipad/logo.png") no-repeat top left;
-		width: 80px;
-		height: 20px;
-		float: left;
-		margin: 15px 0 0 15px;
+	background: transparent url("/img/mobile/ipad/logo.png") no-repeat top left;
+	width: 80px;
+	height: 20px;
+	float: left;
+	margin: 15px 0 0 15px;
 }
 
-.search{
-		background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left;
-		height: 30px;
-		width: 34%;
-		position: absolute;
-		z-index: 100;
-		bottom: 0;
-		left: 0;
-		padding: 7px 6px;
+.search input{
+	-webkit-border-radius: 12px;
+	outline: none;
+	padding: 4px 10px;
+	width: 98%;
+	font-size: 12px;
+	background-color: white;
+    color: #333;
 }
- 
-	.search input{
-		-webkit-border-radius: 12px;
-		outline: none;
-		padding: 4px 10px;
-		width: 98%;
-		font-size: 13px;
-		background-color: #d4d2c8;
-	    color: #333;
-}
-
-
-.signout{
-		margin: 20px 10px 0 15px;
-}
-
-	.signout a{
-		text-decoration: none;
-	}
 
 
 .tab{
 
 }
-
-	ul.ul{
-		margin: 25px 0 0 10%;
-		width: 500px;		
-	}
 
 	 ul.ul li{
 		margin-right: 0px;
@@ -268,10 +264,13 @@ html, body{
 	overflow: hidden;
 }
 
+
 .actionLeft, .actionCenter, .actionRight{
  	float: left;
+ 	min-width: 60px;
 
 }
+
 
 .actionLeft{
 	-webkit-border-top-left-radius: 6px;
@@ -281,6 +280,7 @@ html, body{
 	border-right: 1px solid #999;
 }
  
+ 
 .actionCenter{
 	-webkit-border-top-left-radius: 0;
 	-webkit-border-bottom-left-radius: 0;
@@ -289,6 +289,7 @@ html, body{
 	border-left: 1px solid #444;
 	border-right: 1px solid #999;
 }
+
 
 .actionRight{
 	-webkit-border-top-left-radius: 0;
@@ -303,14 +304,25 @@ html, body{
 }
 
 
-/*List view and Content View styles */
+.bottomBar{
+		background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left;
+		height: 30px;
+		position: absolute;
+		z-index: 100;
+		bottom: 0;
+		left: 0;
+		padding: 7px 5px;
+		width: 98.2%;
+}
 
+/*List view and Content View styles */
 
 .view{
 	width: 100%;
 	overflow: hidden;
 	background: #786448 url("/img/mobile/ipad/brown-pattern.gif") top left;
 }
+
 
 .listViewPane{
 	float: left;
@@ -743,12 +755,12 @@ span.aleft > div:first-child, .contactHeader {
 	width: 100%;
 	height: 100%;
 	position: absolute;
-    z-index: 12;
+    z-index: 102;
 }
 
 .wrapper{
 	position: absolute;
-	z-index: 14;
+	z-index: 104;
 	width: 100%;
 }
 
