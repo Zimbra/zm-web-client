@@ -34,12 +34,12 @@
 									<col />
 									<col />
 								</colgroup>
-                                <$ if(data.isAppt){ $>
-                                <tr id="${id}_identityContainer">
-                                    <td width="1%" class='ZmFieldLabelRight'><nobr><$= ZmMsg.from $></nobr></td>
-                                    <td colspan='2' id="${id}_identity"></td>
-                                </tr>    
-                                <$ } $>
+								<$ if (data.isAppt && !appCtxt.multiAccounts) { $>
+									<tr id="${id}_identityContainer">
+										<td width="1%" class='ZmFieldLabelRight'><nobr><$= ZmMsg.fromLabel $></nobr></td>
+										<td colspan='2' id="${id}_identity"></td>
+									</tr>
+								<$ } $>
 								<tr>
 									<td width="1%" class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subjectLabel $></nobr></td>
 									<td colspan=2 id='${id}_subject'></td>
