@@ -99,7 +99,7 @@
             </span>
         </div>
     </c:forEach>
-    </div></div>        
+
     <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">
         <div class='tbl'>
                 <div class="tr">
@@ -109,6 +109,7 @@
                 </div>
             </div>
     </c:if>
+    </div></div>        
     <c:if test="${ua.isiPad == false}">
         <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
     </c:if>

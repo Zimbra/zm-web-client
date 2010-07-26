@@ -298,7 +298,9 @@ var zClickLink = function(id, t, el) { //Click on href and make ajx req if avail
     if(!targ) {return false;}
     if (targ.onclick) {var r=false;<c:if test="${!ua.isIE && !ua.isOpera}">r = targ.onclick();</c:if> if(!r)return false;}
 
-    if (targ.tagName  == "a" || targ.tagName == "A") {
+    //highlight the selected item
+    // TODO:need to handle multiple selection, move this to a separate method
+    if ((targ.tagName  == "a" || targ.tagName == "A") && (targ.id.toString().charAt(0) == 'a')) {
         var targId = targ.id.toString();
         var chitid = targId.substr(1, targId.length-1);
         var elem = "conv" + chitid;
@@ -310,7 +312,7 @@ var zClickLink = function(id, t, el) { //Click on href and make ajx req if avail
         } else {
             selId = element;            
         }
-     }
+    }
     var href = targ.href;
     if (!href || loading) {return false;}
     if (targ.target) {return true;}
@@ -343,7 +345,7 @@ var getFormValues = function(obj) {
     for (var i = 0, inp = obj.getElementsByTagName("input"), len = inp !== undefined ? inp.length : 0; i < len; i++) {
         var control = inp[i];//obj.getElementsByTagName("input")[i];
         var type = control.type ;
-        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password" || type == "image") {
+        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password" || type == "image" || type == "search") {
             getstr += control.name + "=" + escape(control.value) + "&";
         }
         if (type == "checkbox" || type == "radio") {
@@ -546,9 +548,11 @@ var parseResponse = function (request, container,url) {
             var targ = $(tabId);
             if (targ) {
                 if (targ.id == 'contact') {
+                    $("st").value = 'contact';
                     $("view-contact").style.display = "block";
                     $("view-mail").style.display = "none";
                 } else if (targ.id == 'mail') {
+                    $("st").value = 'conversation';
                     $("view-mail").style.display = "block";
                     $("view-contact").style.display = "none";
                 }
@@ -581,6 +585,7 @@ var parseResponse = function (request, container,url) {
                 } else {
                     $("view-list").innerHTML = data;
                     $("view-content").style.display = "none";
+                    $("sq").blur();
                     if(listScroll) {
                         loaded();
                     }

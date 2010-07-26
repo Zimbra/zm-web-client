@@ -45,89 +45,89 @@
     </c:choose>
     <div class="wrap-dlist" id="wrap-dlist-view">
     <div class='tbl dlist' id="dlist-view">
-            <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-                <c:set var="chit" value="${hit.conversationHit}"/>
-                  <c:choose>
-                    <c:when test="${chit.isDraft}">
-                        <zm:currentResultUrl var="convUrl" value="${context_url}" index="${status.index}"
-                                             context="${context}" usecache="true" id="${fn:substringAfter(chit.id,'-')}"
-                                             action="compose"/>
-                    </c:when>
-                    <c:otherwise>
-                        <zm:currentResultUrl var="convUrl" value="${context_url}" cid="${chit.id}" action='view'
-                                             index="${status.index}" context="${context}" usecache="true"/>
-                    </c:otherwise>
-                </c:choose>
-                <div id="conv${chit.id}" class="tr conv_lv_list_row list-row${chit.isUnread ? '-unread' : ''}">
-                    <c:if test="${chit.messageCount ge 2}">
-                        <c:set value="Conv" var="class"/>
-                        <%--<mo:img src="startup/ImgConversationView.gif" class="left-icon"/>--%>
+        <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+            <c:set var="chit" value="${hit.conversationHit}"/>
+              <c:choose>
+                <c:when test="${chit.isDraft}">
+                    <zm:currentResultUrl var="convUrl" value="${context_url}" index="${status.index}"
+                                         context="${context}" usecache="true" id="${fn:substringAfter(chit.id,'-')}"
+                                         action="compose"/>
+                </c:when>
+                <c:otherwise>
+                    <zm:currentResultUrl var="convUrl" value="${context_url}" cid="${chit.id}" action='view'
+                                         index="${status.index}" context="${context}" usecache="true"/>
+                </c:otherwise>
+            </c:choose>
+            <div id="conv${chit.id}" class="tr conv_lv_list_row list-row${chit.isUnread ? '-unread' : ''}">
+                <c:if test="${chit.messageCount ge 2}">
+                    <c:set value="Conv" var="class"/>
+                    <%--<mo:img src="startup/ImgConversationView.gif" class="left-icon"/>--%>
+                </c:if>
+                <c:if test="${chit.messageCount lt 2}">
+                    <c:set value="Msg${chit.isUnread ? '' : 'Gray'}" var="class"/>
+                    <%--<mo:img src="mail/ImgEnvelope${chit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
+                </c:if>
+                <span class="td f">
+                    <c:set value=",${chit.id}," var="stringToCheck"/>
+                    <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedCids,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''} name="cid" value="${chit.id}"/>
+                    <c:if test="${ua.isiPad == false}">
+                    <span class="SmlIcnHldr ${class}">&nbsp;</span>
                     </c:if>
-                    <c:if test="${chit.messageCount lt 2}">
-                        <c:set value="Msg${chit.isUnread ? '' : 'Gray'}" var="class"/> 
-                        <%--<mo:img src="mail/ImgEnvelope${chit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
-                    </c:if>
-                    <span class="td f">
-                        <c:set value=",${chit.id}," var="stringToCheck"/>
-                        <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedCids,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''} name="cid" value="${chit.id}"/>
-                        <c:if test="${ua.isiPad == false}">
-                        <span class="SmlIcnHldr ${class}">&nbsp;</span>
-                        </c:if>
-                    </span>
-                    <span class="td m" onclick='return zClickLink("a${chit.id}");'>
-                        <div class="from-span">
-                            <c:set var="dispRec" value="${chit.displayRecipients}"/>
-                            <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
-                            <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
-                            <c:if test="${chit.messageCount gt 1}"><c:url var="convUrl" value="${convUrl}"><c:param name="hc" value="1"/></c:url></c:if>
-                            <a class="zo_m_list_from" id="a${chit.id}" href="${fn:escapeXml(convUrl)}">${fn:escapeXml(_f)}</a></div>
-                        <div class="sub-span">
-                            <c:set var="_f" value="${empty chit.subject ? unknownSubject : chit.subject}"/>
-                            <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                </span>
+                <span class="td m" onclick='return zClickLink("a${chit.id}");'>
+                    <div class="from-span">
+                        <c:set var="dispRec" value="${chit.displayRecipients}"/>
+                        <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
+                        <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                        <c:if test="${chit.messageCount gt 1}"><c:url var="convUrl" value="${convUrl}"><c:param name="hc" value="1"/></c:url></c:if>
+                        <a class="zo_m_list_from" id="a${chit.id}" href="${fn:escapeXml(convUrl)}">${fn:escapeXml(_f)}</a></div>
+                    <div class="sub-span">
+                        <c:set var="_f" value="${empty chit.subject ? unknownSubject : chit.subject}"/>
+                        <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                        ${fn:escapeXml(_f)}
+                    </div>
+                    <c:if test="${ua.isiPad == false}">
+                        <div class="frag-span small-gray-text">
+                            <c:set var="_f" value="${chit.fragment}"/>
+                            <c:if test="${fn:length(_f) > 47}"><c:set var="_f" value="${fn:substring(_f, 0, 47)}..."/></c:if>
                             ${fn:escapeXml(_f)}
                         </div>
-                        <c:if test="${ua.isiPad == false}">
-                            <div class="frag-span small-gray-text">
-                                <c:set var="_f" value="${chit.fragment}"/>
-                                <c:if test="${fn:length(_f) > 47}"><c:set var="_f" value="${fn:substring(_f, 0, 47)}..."/></c:if>
-                                ${fn:escapeXml(_f)}
-                            </div>
-                        </c:if>
-                    </span>
-                    <span class="td l">
-                        <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${chit.date}"/>
-                        <a <c:if test="${mailbox.features.calendar}">href='${context_url}?st=cal&amp;view=month&amp;date=${on_dt}'</c:if>>
-                            ${fn:escapeXml(zm:displayMsgDate(pageContext, chit.date))}
-                        </a><br/>
-                        <c:if test="${chit.isFlagged}">
-                            <span class="SmlIcnHldr Flag">&nbsp;</span>
-                            <%--<mo:img src="startup/ImgFlagRed.gif" alt="flag"/>--%>
-                        </c:if>
-                        <c:if test="${chit.hasTags}">
-                        <mo:miniTagImage
-                                ids="${hit.conversationHit.tagIds}"/>
-                        </c:if>
-                        <c:if test="${chit.hasAttachment}">
-                            <span class="SmlIcnHldr Attachment">&nbsp;</span>
-                        </c:if>
-                        <c:if test="${chit.messageCount gt 1}"><span class="small-gray-text">(${chit.messageCount})</span></c:if> 
-                    </span>
-                </div>
-                <c:if test="${chit.messageCount gt 1}">
-                        <div id="list${chit.id}" style="display:block;" class=""></div>
-                </c:if>
-            </c:forEach>
-        </div>
-        </div>
+                    </c:if>
+                </span>
+                <span class="td l">
+                    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${chit.date}"/>
+                    <a <c:if test="${mailbox.features.calendar}">href='${context_url}?st=cal&amp;view=month&amp;date=${on_dt}'</c:if>>
+                        ${fn:escapeXml(zm:displayMsgDate(pageContext, chit.date))}
+                    </a><br/>
+                    <c:if test="${chit.isFlagged}">
+                        <span class="SmlIcnHldr Flag">&nbsp;</span>
+                        <%--<mo:img src="startup/ImgFlagRed.gif" alt="flag"/>--%>
+                    </c:if>
+                    <c:if test="${chit.hasTags}">
+                    <mo:miniTagImage
+                            ids="${hit.conversationHit.tagIds}"/>
+                    </c:if>
+                    <c:if test="${chit.hasAttachment}">
+                        <span class="SmlIcnHldr Attachment">&nbsp;</span>
+                    </c:if>
+                    <c:if test="${chit.messageCount gt 1}"><span class="small-gray-text">(${chit.messageCount})</span></c:if>
+                </span>
+            </div>
+            <c:if test="${chit.messageCount gt 1}">
+                    <div id="list${chit.id}" style="display:block;" class=""></div>
+            </c:if>
+        </c:forEach>
         <c:if test="${empty context || empty context.searchResult || context.searchResult.size == 0}">
             <div class='tbl'>
                 <div class="tr">
                     <div class="td zo_noresults">
                         <fmt:message key="noResultsFound"/>
-                     </div>
+                    </div>
                 </div>
             </div>
         </c:if>
+    </div>
+    </div>
     <c:if test="${ua.isiPad == false}">
         <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
     </c:if>    

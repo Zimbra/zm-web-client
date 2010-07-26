@@ -173,8 +173,14 @@
 				</ul>
 		
 
-
-		<div class="search alignRight"><form><input type="search" placeholder="Search..."></form></div>
+        <div class="search alignRight">
+        <form method="post" accept-charset="UTF-8" action="${context_url}" onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
+            <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+            <input type="hidden" name="st" id="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>
+            <input type="hidden" name="search" value="1"/>
+            <input type="search" id="sq" name="sq" placeholder="Search..." onclick="this.value=''">
+        </form>
+        </div>
 
 
 	</div>
