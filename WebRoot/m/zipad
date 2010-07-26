@@ -150,7 +150,7 @@
 			</div>
         	<div class ="alignLeft copyrights">
        		 	&copy; 2010 <a href="#">Zimbra</a>. All rights reserved.
-        	</div>	
+        	</div>
         	<div class ="alignRight buttonBottom">
         		<c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:url>
        		 	<a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>
