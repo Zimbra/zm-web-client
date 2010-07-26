@@ -873,12 +873,15 @@ span.aleft > div:first-child, .contactHeader {
 .composeBox{
 	margin: 5px auto;
 	position: relative;
-/*	-webkit-box-shadow: 3px 2px 5px #333; */
+ /*	-webkit-box-shadow: 3px 2px 5px #333; */
 	background-color: transparent;
 }
 
 .composeToolbar{
-	background: #e7decb url("/img/mobile/ipad/topbar-bg.gif") repeat-x bottom left;
+ /* background: #e7decb url("/img/mobile/ipad/topbar-bg.gif") repeat-x bottom left; */
+	background-color: #e8ddc3;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e8ddc3), to(#a49479));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #e8ddc3, #a49479);
 	height: 45px;
 	overflow: hidden;
 	border: none;
