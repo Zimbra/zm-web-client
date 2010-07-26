@@ -21,7 +21,7 @@ a{
     }
 	
 	.msgBody {
-		min-height: 560px;
+		min-height: 520px;
 	}
 	
 	.view{
@@ -53,7 +53,7 @@ a{
    	}
 	
 	.msgBody {
-		min-height: 806px;
+		min-height: 776px;
 	}
 	
 	.view{
@@ -109,7 +109,7 @@ html, body{
 /* Topbar Styles */
 
 .topbar {
-	background: #dbd0b5 url("/img/mobile/ipad/topbar-bg.gif") repeat-x top left;
+ /*	background: #dbd0b5 url("/img/mobile/ipad/topbar-bg.gif") repeat-x top left; */
 	background-color: #e8ddc3;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e8ddc3), to(#a49479));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #e8ddc3, #a49479);
@@ -153,10 +153,10 @@ html, body{
 		padding: 10px 20px;
 	}
 	
-		ul.ul li a{ color: #5f5a4a; }
+		ul.ul li a{ color: #29261d; }
 
 	ul.ul li.sel, ul.ul li:active{
-		background: #7f7b6e url("/img/mobile/ipad/tab-selected.gif") repeat-x top left;
+	/*	background: #7f7b6e url("/img/mobile/ipad/tab-selected.gif") repeat-x top left; */
 		background-color: #9a8d6e;
 		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#9a8d6e), to(#564e3c));
 		background-image: -moz-linear-gradient(100% 100% 90deg, #9a8d6e, #564e3c);
@@ -172,7 +172,7 @@ html, body{
 /* Toolbar Style */
 
 .toolbar{
-	background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left;
+ /*	background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left; */
 	background-color: #564e3c;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#564e3c), to(#29251b));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #564e3c, #29251b);
@@ -192,7 +192,7 @@ html, body{
 
 
 .button{
-	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
+ /*	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left; */
 	background-color: #d8bf9c;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d8bf9c), to(#928068));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #d8bf9c, #928068);
@@ -206,7 +206,7 @@ html, body{
 }
 
 	.button:active{
-		background: #7b7769 url("/img/mobile/ipad/button-selected-bg.gif") repeat-x top left;
+	 /* background: #7b7769 url("/img/mobile/ipad/button-selected-bg.gif") repeat-x top left; */
 		background-color: #29251b;
 		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#29251b), to(#564e3c));
 		background-image: -moz-linear-gradient(100% 100% 90deg, #29251b, #564e3c);
@@ -252,7 +252,7 @@ html, body{
 	}
 	
 	.buttonBottom a{
-		color: #999;
+		color: #d3c7ac;
 		text-decoration: none;
 	}
 	
@@ -367,7 +367,8 @@ html, body{
 }
 
 .copyrights, .copyrights a, .userInfo{
-	color: #999;
+	color: #d3c7ac;
+	text-decoration: none;
 }
 
 .shell{
@@ -386,9 +387,9 @@ html, body{
 	border-radius: 18px;
 	height: 10px;
 	width: 30%;
-	background-color: #c70000;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#c70000), to(#800000));
-	background-image: -moz-linear-gradient(100% 100% 90deg, #c70000, #800000);
+	background-color: #e8ddc3;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e8ddc3), to(#a49479));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #e8ddc3, #a49479);
 }
 		
 /*List view and Content View styles */
@@ -419,10 +420,16 @@ ul.list li{
 	padding: 10px 4px;
 	overflow: hidden;
 }
+
 .msgContainerSel{
 	padding: 10px 4px;
 	overflow: hidden;
 	background: #d9ceb2 url("/img/mobile/ipad/listview-sel-bg.gif") repeat-x top left;
+}
+
+.infoBg{
+	background-color: InfoBackground ;
+	color: InfoText; 
 }
 
 .contentViewPane{
@@ -493,10 +500,34 @@ ul.list li{
 	border-bottom: 1px solid #F1EEE6;
 	padding: 6px;
 }
+a.accept,a.tentative,a.decline{
+ /*	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left; */
+	background-color: #eee;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eeeeee), to(#c5c5c5));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #eeeeee, #c5c5c5);
+	-webkit-border-radius: 6px;
+	padding: 10px 15px;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	text-decoration: none;
+	color: #453928;	
+	border: 1px solid #ccc;
+}
 
+	a.accept:active, a.tentative:active,a.decline:active{
+	 /* background: #7b7769 url("/img/mobile/ipad/button-selected-bg.gif") repeat-x top left; */
+		background-color: #666;
+		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#999));
+		background-image: -moz-linear-gradient(100% 100% 90deg, #666, #999);
+		color: white;
+	}
 
 .buttonBg{
-	background: #c5bba3 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
+	/* background: #c5bba3 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left; */
+	background-color: #d8bf9c;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d8bf9c), to(#928068));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #d8bf9c, #928068);	
 	-webkit-border-radius: 6px;
 	vertical-align: middle;
 	padding: 0 !important;
