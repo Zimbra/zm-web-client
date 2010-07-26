@@ -41,7 +41,10 @@ a{
 		margin: 25px 0 0 10%;
 		width: 500px;		
 	}
-
+	
+	.shell{
+		width: 250px;	
+	}
 }
 
 @media (orientation:portrait) {
@@ -69,6 +72,10 @@ a{
 	ul.ul{
 		margin: 25px 0 0 4%;
 		width: 460px;		
+	}
+	
+	.shell{
+		width: 180px;
 	}
 }
 
@@ -103,6 +110,9 @@ html, body{
 
 .topbar {
 	background: #dbd0b5 url("/img/mobile/ipad/topbar-bg.gif") repeat-x top left;
+	background-color: #e8ddc3;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e8ddc3), to(#a49479));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #e8ddc3, #a49479);
 	height: 50px;
 	overflow: hidden;
 	color: #5f5a4a;
@@ -147,6 +157,9 @@ html, body{
 
 	ul.ul li.sel, ul.ul li:active{
 		background: #7f7b6e url("/img/mobile/ipad/tab-selected.gif") repeat-x top left;
+		background-color: #9a8d6e;
+		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#9a8d6e), to(#564e3c));
+		background-image: -moz-linear-gradient(100% 100% 90deg, #9a8d6e, #564e3c);
 		-webkit-border-top-left-radius: 4px;
 		-webkit-border-top-right-radius: 4px;
 		color: white;
@@ -160,10 +173,13 @@ html, body{
 
 .toolbar{
 	background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left;
+	background-color: #564e3c;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#564e3c), to(#29251b));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #564e3c, #29251b);
 	height: 45px;
 	overflow: hidden;
 	border: none;
-	padding: 0 0 0 0!important;
+	padding: 0 !important;
 }
 
 .overviewActions{
@@ -177,9 +193,11 @@ html, body{
 
 .button{
 	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
+	background-color: #d8bf9c;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d8bf9c), to(#928068));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #d8bf9c, #928068);
 	-webkit-border-radius: 6px;
-	-webkit-box-shadow: rgba(255,255,255,0.1)0 1px 0;
-	border: 1px solid #555;
+	box-shadow: 1px 1px 3px #333;
 	height: 22px;
 	padding: 8px 4px 0 4px;
 	font-size: 12px;
@@ -189,14 +207,16 @@ html, body{
 
 	.button:active{
 		background: #7b7769 url("/img/mobile/ipad/button-selected-bg.gif") repeat-x top left;
+		background-color: #29251b;
+		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#29251b), to(#564e3c));
+		background-image: -moz-linear-gradient(100% 100% 90deg, #29251b, #564e3c);
 		color: white;
 	}
 
 		.button a, .buttonRight a, .buttonRight{
 			text-decoration: none;
 			color: #453928;
-			vertical-align: middle;
-			
+			vertical-align: middle;	
 		}
 	
 		.button a:active{
@@ -216,6 +236,25 @@ html, body{
 	min-width: 60px;
 }
 
+.buttonBottom{
+	background-color: transparent;
+	width: 60px;
+	height: 30px;
+	font-size: 12px;
+	text-align: center;
+	padding: 8px 4px 0 4px; 
+}
+
+	.buttonBottom:hover{
+		background-color: #564e3c;
+		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#29251b), to(#564e3c));
+		background-image: -moz-linear-gradient(100% 100% 90deg, #29251b, #564e3c);
+	}
+	
+	.buttonBottom a{
+		color: #999;
+		text-decoration: none;
+	}
 	
 .folder{
 	float: left;
@@ -277,7 +316,7 @@ html, body{
 	-webkit-border-bottom-left-radius: 6px;
 	-webkit-border-top-right-radius: 0;
 	-webkit-border-bottom-right-radius: 0;
-	border-right: 1px solid #999;
+	border-right: 1px solid #c5b094;
 }
  
  
@@ -286,8 +325,8 @@ html, body{
 	-webkit-border-bottom-left-radius: 0;
 	-webkit-border-top-right-radius: 0;
 	-webkit-border-bottom-right-radius: 0;
-	border-left: 1px solid #444;
-	border-right: 1px solid #999;
+	border-left: 1px solid #6f604b;
+	border-right: 1px solid #c5b094;
 }
 
 
@@ -296,7 +335,7 @@ html, body{
 	-webkit-border-bottom-left-radius: 0;
 	-webkit-border-top-right-radius: 6px;
 	-webkit-border-bottom-right-radius: 6px;
-	border-left: 1px solid #444;
+	border-left: 1px solid #6f604b;
 }
 
 .actionLeft div, .actionCenter div, .actionRight div{
@@ -304,17 +343,54 @@ html, body{
 }
 
 
-.bottomBar{
-		background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left;
+.footer{
 		height: 30px;
 		position: absolute;
 		z-index: 100;
 		bottom: 0;
 		left: 0;
-		padding: 7px 5px;
-		width: 98.2%;
+		min-width: 100%;
 }
 
+	.footer .copyrights, .footer .userInfo, .footer .quota{
+		height: 30px;
+		font-size: 12px;
+		text-align: center;
+		padding: 8px 4px 0 4px;
+	}
+	
+.copyrights{
+	margin-left: 20%;	
+}
+.userInfo{
+	margin-left: 10px;
+}
+
+.copyrights, .copyrights a, .userInfo{
+	color: #999;
+}
+
+.shell{
+	margin: 4px 0 0 20%;
+	background-color: #564e3c;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#29251b), to(#564e3c));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #29251b, #564e3c);
+	padding: 0;
+	border-radius: 18px;
+	-webkit-border-radius: 18px;
+	height: 10px;
+}
+
+.shell .bar{
+	-webkit-border-radius: 18px;
+	border-radius: 18px;
+	height: 10px;
+	width: 30%;
+	background-color: #c70000;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#c70000), to(#800000));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #c70000, #800000);
+}
+		
 /*List view and Content View styles */
 
 .view{
@@ -328,7 +404,6 @@ html, body{
 	float: left;
 	width: 34.9%;
 	border-right: 1px solid #999;
-	background-color: white;
 	position: relative;
     overflow:hidden;
 }

@@ -135,16 +135,27 @@
         </div>
     </div>
     
-	<div class="bottomBar">
-		<div class="userInfo alignLeft">
-			user1@zimbra.com
-		</div>
-
-        	<div class ="actions button">
+	<div class="toolbar footer">
+       <div class="listViewPane">		
+			<div class="quota alignLeft">
+				<div class="shell">
+					<div class="bar"></div>
+				</div>
+			</div>
+		</div>		
+			
+        <div class="contentViewPane">
+        <div class="userInfo alignLeft">
+				user1@zimbra.com
+			</div>
+        	<div class ="alignLeft copyrights">
+       		 	&copy; 2010 <a href="#">Zimbra</a>. All rights reserved.
+        	</div>	
+        	<div class ="alignRight buttonBottom">
         		<c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:url>
        		 	<a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>
         	</div>
-        
+        </div>
     </div>
        
     
@@ -163,7 +174,7 @@
 		
 
 
-		<div class="search alignRight"><input type="search" placeholder="Search..."></div>
+		<div class="search alignRight"><form><input type="search" placeholder="Search..."></form></div>
 
 
 	</div>
