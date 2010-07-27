@@ -326,10 +326,17 @@ function() {
 
 ZmConv.prototype.getAccount =
 function() {
+	// always pull out the account from the fully-qualified ID
 	if (!this.account) {
-		// always pull out the account from the fully-qualified ID
 		this.account = ZmOrganizer.parseId(this.id).account;
 	}
+
+	// fallback on the active account if account not found from parsed ID (most
+	// likely means this is a conv inside a shared folder of the active acct)
+	if (!this.account) {
+		this.account = appCtxt.getActiveAccount();
+	}
+
 	return this.account;
 };
 

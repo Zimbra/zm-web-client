@@ -413,7 +413,7 @@ ZmFolder.prototype.notifyCreate =
 function(obj, elementType, skipNotify) {
 	// ignore creates of system folders
 	var nId = ZmOrganizer.normalizeId(obj.id);
-	if (nId < ZmOrganizer.FIRST_USER_ID[this.type]) { return; }
+	if (this.isSystem() && nId < ZmOrganizer.FIRST_USER_ID[this.type]) { return; }
 
 	var account = ZmOrganizer.parseId(obj.id).account;
 	var folder = ZmFolderTree.createFromJs(this, obj, this.tree, elementType, null, account);
