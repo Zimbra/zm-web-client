@@ -588,7 +588,7 @@ function(msg, oldMsg) {
 		}
 
 		this._dayView.setDisplay(Dwt.DISPLAY_BLOCK);
-		this._dayView.setDate((new Date(msg.date)), 0, false);
+		this._dayView.setDate(msg.invite.getServerStartDate(), 0, false);
 		this._resetDayViewBounds();
 
 		var rt = this._dayView.getTimeRange();

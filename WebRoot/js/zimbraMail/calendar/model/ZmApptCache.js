@@ -444,7 +444,7 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 			}
 		}
 
-		if (appCtxt.multiAccounts) {
+		if (appCtxt.multiAccounts && miniCalParams) {
 			this._highliteMiniCal(miniCalCache, miniCalParams);
 		}
 		return;
@@ -466,7 +466,7 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 	if (searchParams.accountFolderIds && searchParams.accountFolderIds.length > 0) {
 		this._doBatchRequest(searchParams, miniCalParams);
 	} else {
-		if (appCtxt.multiAccounts) {
+		if (appCtxt.multiAccounts && miniCalParams) {
 			this._highliteMiniCal(miniCalCache, miniCalParams);
 		}
 
