@@ -447,7 +447,10 @@ ul.list li{
 .msgContainerSel{
 	padding: 10px 4px;
 	overflow: hidden;
-	background: #d9ceb2 url("/img/mobile/ipad/listview-sel-bg.gif") repeat-x top left;
+	background-color: #ece4d0;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ece4d0), to(#d9ceb2));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #ece4d0, #d9ceb2);
+
 }
 
 .infoBg{
@@ -750,43 +753,49 @@ span.aleft > div:first-child, .contactHeader {
 }
 
 
-.View .list-row{   									/*. View div, */
-    padding: 12px;
-    margin-bottom: 8px;
-    /* border-bottom: 1px solid #ede8db; */
+.View .list-row{   									/*. View div, border-bottom: 1px solid #f6f2e7;*/
 	font-size: 14px;
+	display: table-row;
 } 
 
 .View .list-row .label, .View div .label{
-	float: left;
+	width: 100px;
+	text-tranform: capitalize;
+	color: #666;
+	text-align: left;
+	display: table-cell;
+	padding: 10px;
+}
+.View .list-row .value, .View div .value{
+	display: table-cell;
+	padding: 10px;
+}
+
+.cont_view .tr{
+	display: table-row;
+	text-align: left;
+	font-size: 14px;
+}
+
+.cont_view .label{
+	padding: 10px;
+	display: table-cell;
 	width: 100px;
 	text-tranform: capitalize;
 	color: #666;
 	text-align: left;
 }
-
-.cont_view .tr{
-	display: block;
-	text-align: left;
-	margin-bottom: 8px;
-	padding: 4px;
-}
-
-.cont_view .label{
-	width: 120px;
-	text-tranform: capitalize;
-	color: #666;
-	text-align: left;
-	float: none !important;
-	font-size: 14px;
-}
 .cont_view .value{
 	text-align: left !important;
 	width: 500px;
+	display: table-cell;
 }
 
 .value input{
 	font-size: 14px;
+    border: 1px solid #ede8db;
+    font-weight: bold;
+    padding: 4px;
 }
 
 .value a{
