@@ -10,8 +10,10 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <c:set var="F_LIMIT" value="${not empty sessionScope.F_LIMIT ? sessionScope.F_LIMIT : 100}" scope="session"/>
 <c:if test="${empty param.ajax}"><?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<!DOCTYPE html>
+<html manifest="mobile.manifest">
+
 <c:if test="${(!empty param.debug || !empty param.dev)}"><c:set var="dbg" value="${true}"/></c:if>
 <c:remove var="prevUrl" scope="session"/><c:remove var="currentUrl" scope="session"/></c:if>
 <c:url var="baseURL" scope="request" value="${requestScope.baseURL!=null?requestScope.baseURL:'zipad'}"/>
