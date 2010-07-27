@@ -587,8 +587,9 @@ function(msg, oldMsg) {
 			this._dayView = new ZmCalDayView(this.parent, DwtControl.ABSOLUTE_STYLE, calController, null, null, null, true);
 		}
 
+		var inviteDate = msg.invite.getServerStartDate();
 		this._dayView.setDisplay(Dwt.DISPLAY_BLOCK);
-		this._dayView.setDate(msg.invite.getServerStartDate(), 0, false);
+		this._dayView.setDate(inviteDate, 0, false);
 		this._resetDayViewBounds();
 
 		var rt = this._dayView.getTimeRange();
@@ -596,7 +597,7 @@ function(msg, oldMsg) {
 			start: rt.start,
 			end: rt.end,
 			fanoutAllDay: this._dayView._fanoutAllDay(),
-			callback: (new AjxCallback(this, this._dayResultsCallback)),
+			callback: (new AjxCallback(this, this._dayResultsCallback, [inviteDate.getHours()])),
 			accountFolderIds: ([].concat(calController.getCheckedCalendarFolderIds())) // pass in *copy*
 		};
 		calController.apptCache.batchRequest(params);
@@ -629,8 +630,9 @@ function(msg, oldMsg) {
 };
 
 ZmMailMsgView.prototype._dayResultsCallback =
-function(list, skipMiniCalUpdate, query) {
+function(invitedHour, list, skipMiniCalUpdate, query) {
 	this._dayView.set(list, true);
+	this._dayView._scrollToTime(invitedHour);
 };
 
 /**
