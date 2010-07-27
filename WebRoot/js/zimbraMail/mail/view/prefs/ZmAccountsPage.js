@@ -324,14 +324,20 @@ function(account, skipUpdate, ignoreProvider) {
 	// sections use same div. This avoids double inititalization in that case.
 	var isExternal = account instanceof ZmDataSource;
 	var provider = !ignoreProvider && isExternal && account.getProvider();
-	var div = (provider && this._sectionDivs[provider.id]) || this._getSectionDiv(account);
+	var div = (provider && this._sectionDivs[provider.id]) || this._sectionDivs[account.type];
 	if (div) {
 		this._currentAccount = account;
 		Dwt.setVisible(div, true);
-		if (appCtxt.isOffline) {
-			this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
-			this._setZimbraAccount(account, this._currentSection);
-		} else {
+        if (appCtxt.isOffline) {
+            if(account.type == ZmAccount.TYPE_PERSONA){
+                //bug:48014 add "Use this persona" section for offline 
+                this._currentSection = ZmAccountsPage.SECTIONS["PERSONA"];
+                this._setPersona(account, this._currentSection);
+            }else{
+                this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
+                this._setZimbraAccount(account, this._currentSection);
+            }
+        } else {
 			switch (account.type) {
 				case ZmAccount.TYPE_POP:
 				case ZmAccount.TYPE_IMAP: {
