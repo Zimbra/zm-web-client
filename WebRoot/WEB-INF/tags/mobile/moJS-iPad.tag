@@ -345,7 +345,7 @@ var getFormValues = function(obj) {
     for (var i = 0, inp = obj.getElementsByTagName("input"), len = inp !== undefined ? inp.length : 0; i < len; i++) {
         var control = inp[i];//obj.getElementsByTagName("input")[i];
         var type = control.type ;
-        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password" || type == "image" || type == "search") {
+        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password" || (type == "image" && control._wasClicked) || type == "search") {
             getstr += control.name + "=" + escape(control.value) + "&";
         }
         if (type == "checkbox" || type == "radio") {
@@ -443,7 +443,7 @@ var customClick = function (e) {
     } else {
         var tname = targ.tagName;
         var ttype = targ.type;
-        if(tname.match(/input/ig) && ttype.match(/submit/ig)){ //submit button; add clicked=true to it
+        if(tname.match(/input/ig) && (ttype.match(/submit/ig) || ttype.match(/image/ig))){ //submit button; add clicked=true to it
             targ._wasClicked = true;                                                          //ajxForm submit will send only clicked btns to server
             return true;
         }
