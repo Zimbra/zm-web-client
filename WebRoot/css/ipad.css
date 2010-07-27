@@ -342,7 +342,30 @@ html, body{
 	margin: 4px;
 }
 
+.moreButton{
+	background-color: #d8bf9c;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d8bf9c), to(#928068));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #d8bf9c, #928068);
+	-webkit-border-radius: 6px;
+	box-shadow: 1px 1px 3px #333;
+	height: 30px;
+	padding: 10px 4px 0 4px;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;	
+	width: 150px
+}
 
+		.moreButton a{
+			text-decoration: none;
+			color: #453928;
+			vertical-align: middle;	
+		}
+	
+		.moreButton a:active{
+			color: white;
+		}
+		
 .footer{
 		height: 30px;
 		position: absolute;
