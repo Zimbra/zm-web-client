@@ -110,9 +110,9 @@ html, body{
 
 .topbar {
  /*	background: #dbd0b5 url("/img/mobile/ipad/topbar-bg.gif") repeat-x top left; */
-	background-color: #e8ddc3;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e8ddc3), to(#a49479));
-	background-image: -moz-linear-gradient(100% 100% 90deg, #e8ddc3, #a49479);
+	background-color: #f7ecd2;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f7ecd2), to(#c8bc9e));  /*from: e8ddc3 to: a49479*/
+	background-image: -moz-linear-gradient(100% 100% 90deg, #f7ecd2, #c8bc9e);
 	height: 50px;
 	overflow: hidden;
 	color: #5f5a4a;
