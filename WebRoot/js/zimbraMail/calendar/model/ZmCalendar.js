@@ -267,3 +267,37 @@ ZmCalendar.prototype.supportsPrivatePermission =
 function() {
 	return true;
 };
+
+ZmCalendar.prototype.getRestUrl =
+function() {
+	// return REST URL as seen by server
+	if (this.restUrl) {
+		return this.restUrl;
+	}
+
+	// if server doesn't tell us what URL to use, do our best to generate
+	url = this._generateRestUrl();
+	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
+
+	return url;
+};
+
+ZmCalendar.prototype._generateRestUrl =
+function() {
+	var loc = document.location;
+	var owner = this.getOwner();
+	var uname = owner || appCtxt.get(ZmSetting.USERNAME);
+	var m = uname.match(/^(.*)@(.*)$/);
+	var host = (m && m[2]) || loc.host;
+
+	// REVISIT: What about port? For now assume other host uses same port
+	if (loc.port && loc.port != 80 && (owner == appCtxt.get(ZmSetting.USERNAME))) {
+		host = host + ":" + loc.port;
+	}
+
+	return [
+		loc.protocol, "//", host, "/service/user/", uname, "/",
+		AjxStringUtil.urlEncode(this.getSearchPath(true))
+	].join("");
+};
+
