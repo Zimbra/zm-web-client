@@ -39,6 +39,8 @@
 </mo:handleError>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
+
+<c:if test="${empty param.show}">
 <form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doMessageAction" value="1"/>
@@ -54,6 +56,8 @@
     </c:choose>
     <div class="wrap-dlist" id="wrap-dlist-view">
     <div class="tbl dlist" id="dlist-view">
+</c:if>
+
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="mhit" value="${hit.messageHit}"/>
         <c:choose>
@@ -114,10 +118,33 @@
                    </c:if>
                    <span class="small-gray-text">(${fn:escapeXml(zm:displaySize(pageContext, mhit.size))})</span>
                </span>
-           </div>
+        </div>
     </c:forEach>
-    </div>
-    </div>    
+    <c:if test="${ua.isiPad == true}">
+    <c:choose>
+        <c:when test="${context.searchResult.hasNextPage}">
+            <div id="more-div" class='tr list-row'>
+                <span class="td">&nbsp;</span>
+                <span class="td" onclick="return zClickLink('more-a')"><zm:nextResultUrl var="url" value="${context_url}" index="0" context="${context}"/>
+                    <div class="moreButton">
+                    <a id="more-a" accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(url)}&show=more">More messages...</a>
+                </div>
+                </span>
+                <span class="td">&nbsp;</span></div>
+        </c:when>
+        <c:otherwise>
+            <div id="more-div" class='tr list-row'>
+                <span class="td">&nbsp;</span>
+                <span class="td">
+                    <div class="moreButton">
+                    <a accesskey="${requestScope.next_accesskey}" class='zo_button_disabled next_button'>More messages...</a>
+                </div>
+                </span>
+                <span class="td">&nbsp;</span></div>
+        </c:otherwise>
+    </c:choose>
+    </c:if>    
+<c:if test="${empty param.show}">
     <c:if test="${empty context || empty context.searchResult || context.searchResult.size == 0}">
         <div class='tbl'>
                 <div class="tr">
@@ -127,8 +154,10 @@
                 </div>
             </div>
     </c:if>
+    </div>
+    </div>          
     <c:if test="${ua.isiPad == false}">
         <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="false" mailbox="${mailbox}"/>
     </c:if>
 </form>
-
+</c:if>

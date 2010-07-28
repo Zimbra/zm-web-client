@@ -16,8 +16,13 @@ a{
 /* Orientation specific styles */
 
 @media (orientation:landscape) {
+
+    .wrap-dlist {
+       height: 558px;   
+    }
+
 	.wrap-dcontent {
-       height: 593px;
+       height: 558px;
     }
 	
 	.msgBody {
@@ -48,8 +53,12 @@ a{
 }
 
 @media (orientation:portrait) {
-	.wrap-dcontent {
-       height: 849px;
+	.wrap-dlist {
+       height: 814px;   
+    }
+
+    .wrap-dcontent {
+       height: 814px;
    	}
 	
 	.msgBody {
@@ -352,8 +361,7 @@ html, body{
 	padding: 10px 4px 0 4px;
 	font-size: 12px;
 	font-weight: bold;
-	text-align: center;	
-	width: 150px
+	text-align: center;
 }
 
 		.moreButton a{
@@ -579,7 +587,6 @@ a.accept,a.tentative,a.decline{
 .wrap-dlist {
     position:relative;	/* needed */
     z-index:10;			/* needed and important */
-    height: 610px;
 }
 
 .wrap-dcontent {

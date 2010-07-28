@@ -118,11 +118,6 @@ var sAT = function(tabId){ //set active tab
             }
         }
     }
-    if(targ && targ.id.match(/(mail|contact)/ig)) {
-        if(listScroll) {
-            listScroll.scrollTo(0,0);
-        }
-    }
 };
 <c:choose>
     <c:when test="${mailbox.features.mail}">
@@ -576,19 +571,29 @@ var parseResponse = function (request, container,url) {
                     $("view-content").innerHTML = data;
                     $("view-content").style.display = "block";
                     $("static-content").style.display = "none";
-                    contentLoaded();
+                    initContentScroll();
                 } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
                     $('compose-body').innerHTML = data;
                     $("view-content").style.display = "block";
                     $("static-content").style.display = "none";
                     toggleCompose('compose-pop','veil');
+                } else if(url.indexOf('show=more') != -1) {
+                    var moreDiv = document.createElement("div");
+                    moreDiv.innerHTML =  data;
+                    $("dlist-view").removeChild(document.getElementById('more-div'));
+
+                    for(var j =0; j < moreDiv.childNodes.length; j ++) {
+                        var nodeDiv = moreDiv.childNodes[j];
+                        if(nodeDiv.nodeName == 'DIV' || nodeDiv.nodeName == 'A') {
+                            $("dlist-view").appendChild(nodeDiv);
+                        }
+                    }
+                    listScroll.refresh();
                 } else {
                     $("view-list").innerHTML = data;
                     $("view-content").style.display = "none";
                     $("sq").blur();
-                    if(listScroll) {
-                        loaded();
-                    }
+                    initListScroll();
                 }
                 /*var scripts = container.getElementsByTagName("script");
                 for (var i = 0; i < scripts.length; i++) {
@@ -782,22 +787,23 @@ if(window.location.hash){
     sAT(window.location.hash);
 };
 
-var setHeight = function (){
-    document.getElementById('wrap-dlist-view').style.height = window.orientation == 90 || window.orientation == -90 ? '598px' : '850px';
+var initListScroll = function () {
+    $('dlist-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
+    listScroll = new iScroll('dlist-view');
 };
 
-var loaded = function () {
-	setHeight();
-    document.addEventListener('touchmove', function(e){ e.preventDefault(); });
-	listScroll = new iScroll('dlist-view');
-};
-
-var contentLoaded = function() {
-        contentScroll = new iScroll('dcontent-view');
+var initContentScroll = function() {
+   $('dcontent-view').addEventListener('touchmove', function(e){ e.preventDefault(); }); 
+   contentScroll = new iScroll('dcontent-view');
 }
 
-window.addEventListener('orientationchange', setHeight);
-document.addEventListener('DOMContentLoaded', loaded);
+var init = function () {
+    document.getElementById('dlist-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
+    //document.getElementById('dcontent-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
+    listScroll = new iScroll('dlist-view');
+}
+
+window.addEventListener('load', init);
 
 <c:if test="${scriptTag}">
 //-->

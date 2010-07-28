@@ -32,6 +32,7 @@
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
+<c:if test="${empty param.show and ua.isiPad == true}"> 
 <form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doContactAction" value="1"/>
@@ -46,24 +47,25 @@
     </c:choose>
     <div class="wrap-dlist" id="wrap-dlist-view">
     <div class="tbl dlist" id="dlist-view">
-    <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-        <c:set var="chit" value="${hit.contactHit}"/>
-        <zm:currentResultUrl var="contactUrl" value="${context_url}" action="view" id="${chit.id}"
-                             index="${status.index}" context="${context}"/>
-        <c:if test="${context.isGALSearch}">
-            <c:url value="${contactUrl}" var="contactUrl">
-                <c:param name="email" value="${chit.email}"/>
-            </c:url>
-        </c:if>
-        <div class="tr list-row" id="conv${chit.id}">
-            <c:set value=",${hit.id}," var="stringToCheck"/>
-            <c:set var="class" value="Contact${chit.isGroup ? 'Group' : ''}"/>
+</c:if>    
+        <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+            <c:set var="chit" value="${hit.contactHit}"/>
+            <zm:currentResultUrl var="contactUrl" value="${context_url}" action="view" id="${chit.id}"
+                                 index="${status.index}" context="${context}"/>
+            <c:if test="${context.isGALSearch}">
+                <c:url value="${contactUrl}" var="contactUrl">
+                    <c:param name="email" value="${chit.email}"/>
+                </c:url>
+            </c:if>
+            <div class="tr list-row" id="conv${chit.id}">
+                <c:set value=",${hit.id}," var="stringToCheck"/>
+                <c:set var="class" value="Contact${chit.isGroup ? 'Group' : ''}"/>
             <span class="td f">
                     <c:if test="${!context.isGALSearch}">
-                    <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
-                           name="id" value="${chit.id}"/></c:if>
+                        <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
+                               name="id" value="${chit.id}"/></c:if>
             <c:if test="${ua.isiPad == false}">
-            <span class="SmlIcnHldr ${class}">&nbsp;</span>
+                <span class="SmlIcnHldr ${class}">&nbsp;</span>
             </c:if>               
             </span>
             <span class="td m">
@@ -97,20 +99,47 @@
                     <mo:miniTagImage ids="${chit.tagIds}"/>
                 </c:if>
             </span>
-        </div>
-    </c:forEach>
-
-    <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">
-        <div class='tbl'>
+            </div>
+        </c:forEach>
+<c:if test="${ua.isiPad == true}">
+        <c:choose>
+            <c:when test="${context.searchResult.hasNextPage}">
+                <div id="more-div" class='tr list-row'>
+                    <span class="td">&nbsp;</span>
+                        <span class="td" onclick="return zClickLink('more-a')"><zm:nextResultUrl var="url" value="${context_url}" index="0" context="${context}"/>
+                            <div class="moreButton">
+                                <a id="more-a" accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(url)}&show=more">More contacts...</a>
+                            </div>
+                        </span>
+                    <span class="td">&nbsp;</span>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <div id="more-div" class='tr list-row'>
+                    <span class="td">&nbsp;</span>
+                        <span class="td">
+                            <div class="moreButton">
+                                <a accesskey="${requestScope.next_accesskey}" class='zo_button_disabled next_button'>More contacts...</a>
+                            </div>
+                        </span>
+                    <span class="td">&nbsp;</span>
+                </div>
+            </c:otherwise>
+        </c:choose>
+</c:if>    
+<c:if test="${empty param.show and ua.isiPad == true}">        
+        <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">
+            <div class='tbl'>
                 <div class="tr">
                     <div class="td zo_noresults">
                         <fmt:message key="noResultsFound"/>
-                     </div>
+                    </div>
                 </div>
             </div>
-    </c:if>
-    </div></div>        
-    <c:if test="${ua.isiPad == false}">
-        <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
-    </c:if>
+        </c:if>
+    </div></div>
+        <c:if test="${ua.isiPad == false}">
+            <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
+        </c:if>
 </form>
+</c:if>
