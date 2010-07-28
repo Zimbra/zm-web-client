@@ -55,7 +55,7 @@
                 <c:param name="email" value="${chit.email}"/>
             </c:url>
         </c:if>
-        <div class="tr list-row" id="conv${chit.id}">
+        <div class="tr list-row" id="cn${chit.id}">
             <c:set value=",${hit.id}," var="stringToCheck"/>
             <c:set var="class" value="Contact${chit.isGroup ? 'Group' : ''}"/>
             <span class="td f">
@@ -99,7 +99,7 @@
             </span>
         </div>
     </c:forEach>
-
+    </div></div>        
     <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">
         <div class='tbl'>
                 <div class="tr">
@@ -109,7 +109,6 @@
                 </div>
             </div>
     </c:if>
-    </div></div>        
     <c:if test="${ua.isiPad == false}">
         <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
     </c:if>

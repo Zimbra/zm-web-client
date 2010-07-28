@@ -10,10 +10,8 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <c:set var="F_LIMIT" value="${not empty sessionScope.F_LIMIT ? sessionScope.F_LIMIT : 100}" scope="session"/>
 <c:if test="${empty param.ajax}"><?xml version="1.0" encoding="UTF-8"?>
-
-<!DOCTYPE html>
-<html manifest="mobile.manifest">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <c:if test="${(!empty param.debug || !empty param.dev)}"><c:set var="dbg" value="${true}"/></c:if>
 <c:remove var="prevUrl" scope="session"/><c:remove var="currentUrl" scope="session"/></c:if>
 <c:url var="baseURL" scope="request" value="${requestScope.baseURL!=null?requestScope.baseURL:'zipad'}"/>
@@ -137,30 +135,6 @@
         </div>
     </div>
     
-	<div class="toolbar footer">
-       <div class="listViewPane">		
-			<div class="quota alignLeft">
-				<div class="shell">
-					<div class="bar"></div>
-				</div>
-			</div>
-		</div>		
-			
-        <div class="contentViewPane">
-        <div class="userInfo alignLeft">
-				user1@zimbra.com
-			</div>
-        	<div class ="alignLeft copyrights">
-       		 	&copy; 2010 <a href="#">Zimbra</a>. All rights reserved.
-        	</div>
-        	<div class ="alignRight buttonBottom">
-        		<c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:url>
-       		 	<a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>
-        	</div>
-        </div>
-    </div>
-       
-    
 	<div class="topbar">
 
 		<a href="www.zimbra.com" target="_new"><div class="logo"></div></a>
@@ -175,14 +149,12 @@
 				</ul>
 		
 
-        <div class="search alignRight">
-        <form method="post" accept-charset="UTF-8" action="${context_url}" onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
-            <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-            <input type="hidden" name="st" id="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>
-            <input type="hidden" name="search" value="1"/>
-            <input type="search" id="sq" name="sq" placeholder="Search..." onclick="this.value=''">
-        </form>
+		<div class="signout alignRight">
+            <c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:url>
+            <a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>
         </div>
+
+		<!-- div class="search alignRight"><input type="search" placeholder="Search..."></div -->
 
 
 	</div>
@@ -220,18 +192,21 @@ if(window != parent){
 
 <c:if test="${empty param.ajax}">
     <div class="view" id="view">
- 
+
         <div class="listViewPane" id="view-list">
+            
             ${response}
+
         </div>
 
       <div class="contentViewPane" id="view-content" style="display:none;">
+          <div class="header">&nbsp;</div>
+
           <div class="msgBody" id="msg-body">
             <center><h2 style="text-transform: capitalize;"><fmt:message key="emptyMessage"/></h2></center>
           </div>
       </div>
       <div class="contentViewPane" id="static-content">
-      
           <div class="tb tbl "><div class="tr"><div class="td toolbar">
             <c:url var="addUrl" value="${aurl}?st=contact">
                 <c:param name="action" value="edit"/>
@@ -241,6 +216,9 @@ if(window != parent){
             <c:url var="composeUrl" value="${aurl}?st=newmail"/>
             <div class ="compose button" id="view-mail" style="display:block;"><a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" id="compose"><fmt:message key="compose"/></a></div>
           </div></div></div>
+          <div class="header">
+              &nbsp;
+          </div>
           <div class="msgBody" id="empty-message"><center><h2 style="text-transform: capitalize;"><fmt:message key="emptyMessage"/></h2></center></div>
       </div>
     </div>

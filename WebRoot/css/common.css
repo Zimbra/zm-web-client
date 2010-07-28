@@ -561,7 +561,7 @@ DIV.vSpace {
 }
 
 /* ??? MARGINS */
-.overviewHeader,.overviewHeader-actioned {
+.overviewHeader {
 	@InactiveCursor@
 	@TreeHeaderContainer@
 	@TreeHeaderText@
@@ -571,15 +571,14 @@ DIV.vSpace {
 }
 
 .overviewHeader-Text,
+.overviewHeader-actioned,
 .overviewHeader-dragOver {
-	@TreeHeaderText@	
+	@TreeHeaderText@
 }
 
 .overviewHeader-selected {
 	@TreeHeaderText@
     @SelectedBg-blurred@
-	padding-top: 1px;
-	padding-bottom: 1px;
 }
 
 .overviewHeader-selected-focused {
@@ -587,7 +586,7 @@ DIV.vSpace {
     @SelectedBg@
 }
 
-.overviewHeader .imageCell,.overviewHeader-actioned .imageCell {
+.overviewHeader .imageCell {
 	@ImagePadding@
 	white-space: nowrap;	/* ??? */
 }

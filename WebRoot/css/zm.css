@@ -457,11 +457,6 @@ td.DDSepInvisible div {
 	@MailMsgHeaderLight@
 }
 
-.ZmConvDoublePaneView .calendar_view, .ZmConvView .calendar_view {
-	@TopSeparator@
-	@LeftSeparator@
-}
-
 .MessageHeaderAttachments {
 	@MailMsgAttachments@
 }
