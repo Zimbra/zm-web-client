@@ -712,6 +712,14 @@ function(online) {
 
 ZmZimbraMail.prototype._updateNetworkStatus =
 function(online) {
+	// bug 48108 - Prism sometimes triggers network status change mutliple times
+	// So don't bother if the last change is the same as current status
+	if ((online && this._currentNetworkStatus == ZmZimbraMail.UI_NETWORK_UP) ||
+		(!online && this._currentNetworkStatus == ZmZimbraMail.UI_NETWORK_DOWN))
+	{
+		return;
+	}
+
 	if (online) {
 		if (!this._firstTimeNetworkChange) {
 			this.setStatusMsg(ZmMsg.networkChangeOnline);
@@ -719,11 +727,12 @@ function(online) {
 			this._firstTimeNetworkChange = false;
 			this._isUserOnline = online;
 		}
-		this.sendClientEventNotify(ZmZimbraMail.UI_NETWORK_UP);
+		this._currentNetworkStatus = ZmZimbraMail.UI_NETWORK_UP;
 	} else {
 		this.setStatusMsg(ZmMsg.networkChangeOffline, ZmStatusView.LEVEL_WARNING);
-		this.sendClientEventNotify(ZmZimbraMail.UI_NETWORK_DOWN);
+		this._currentNetworkStatus = ZmZimbraMail.UI_NETWORK_DOWN;
 	}
+	this.sendClientEventNotify(this._currentNetworkStatus);
 
 	this._networkStatusIcon.setToolTipContent(online ? ZmMsg.networkStatusOffline : ZmMsg.networkStatusOnline);
 	this._networkStatusIcon.getHtmlElement().innerHTML = AjxImg.getImageHtml(online ? "Connect" : "Disconnect");
