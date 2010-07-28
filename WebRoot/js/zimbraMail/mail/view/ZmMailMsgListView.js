@@ -143,7 +143,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 				htmlArr[idx++] = "<span style='white-space:nowrap' id='";
 				htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_FROM);
 				htmlArr[idx++] = "'>";
-				var name = fromAddr.getName() || fromAddr.getDispName();
+				var name = fromAddr.getName() || fromAddr.getDispName() || fromAddr.getAddress();
 				htmlArr[idx++] = AjxStringUtil.htmlEncode(name);
 				htmlArr[idx++] = "</span>";
 			}
