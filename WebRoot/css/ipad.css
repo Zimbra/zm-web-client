@@ -18,11 +18,11 @@ a{
 @media (orientation:landscape) {
 
     .wrap-dlist {
-       height: 558px;   
+       height: 563px;   
     }
 
 	.wrap-dcontent {
-       height: 558px;
+       height: 563px;
     }
 	
 	.msgBody {
@@ -50,15 +50,19 @@ a{
 	.shell{
 		width: 250px;	
 	}
+	
+	.moreButton{
+		width: 91%;
+	}
 }
 
 @media (orientation:portrait) {
 	.wrap-dlist {
-       height: 814px;   
+       height: 820px;   
     }
 
     .wrap-dcontent {
-       height: 814px;
+       height: 820px;
    	}
 	
 	.msgBody {
@@ -85,6 +89,9 @@ a{
 	
 	.shell{
 		width: 180px;
+	}
+	.moreButton{
+		width: 87%;
 	}
 }
 
@@ -352,27 +359,36 @@ html, body{
 }
 
 .moreButton{
-	background-color: #d8bf9c;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d8bf9c), to(#928068));
-	background-image: -moz-linear-gradient(100% 100% 90deg, #d8bf9c, #928068);
+	background-color: #eee;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eeeeee), to(#c5c5c5));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #eeeeee, #c5c5c5);
 	-webkit-border-radius: 6px;
-	box-shadow: 1px 1px 3px #333;
+	box-shadow: 1px 1px 5px #999;
 	height: 30px;
-	padding: 10px 4px 0 4px;
+	padding: 13px 4px 0 4px;
 	font-size: 12px;
 	font-weight: bold;
 	text-align: center;
+	margin-left: 8px;	
 }
+
+		.moreButton:active{
+			background-color: #666;
+			background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#999));
+			background-image: -moz-linear-gradient(100% 100% 90deg, #666, #999);
+			color: white;
+		}
 
 		.moreButton a{
 			text-decoration: none;
+			text-transform: lowercase;
 			color: #453928;
 			vertical-align: middle;	
 		}
 	
 		.moreButton a:active{
 			color: white;
-		}
+		} 
 		
 .footer{
 		height: 30px;
@@ -733,12 +749,12 @@ a.accept,a.tentative,a.decline{
 
 /** Style for Contacts **/
 
-.Person48 {
-    background: url( "/img/large/ImgPerson_48.gif" ) 90% 50% no-repeat;
+.person {
+    background: url("/img/mobile/ipad/person.png") 90% 50% no-repeat;
     height: 50px;
     width: 50px;
     padding: 2px;
-}
+} 
 
 .aleft {
     text-align:left !important;

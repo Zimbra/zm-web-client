@@ -124,23 +124,24 @@
     <c:choose>
         <c:when test="${context.searchResult.hasNextPage}">
             <div id="more-div" class='tr list-row'>
-                <span class="td">&nbsp;</span>
+                <span class="td"></span>
                 <span class="td" onclick="return zClickLink('more-a')"><zm:nextResultUrl var="url" value="${context_url}" index="0" context="${context}"/>
                     <div class="moreButton">
-                    <a id="more-a" accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(url)}&show=more">More messages...</a>
+                    <a id="more-a" accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(url)}&show=more">More</a>
                 </div>
                 </span>
-                <span class="td">&nbsp;</span></div>
+                <span class="td"></span>
+                </div>
         </c:when>
         <c:otherwise>
             <div id="more-div" class='tr list-row'>
-                <span class="td">&nbsp;</span>
+                <span class="td"></span>
                 <span class="td">
                     <div class="moreButton">
-                    <a accesskey="${requestScope.next_accesskey}" class='zo_button_disabled next_button'>More messages...</a>
+                    <a accesskey="${requestScope.next_accesskey}" class='zo_button_disabled next_button'>More</a>
                 </div>
                 </span>
-                <span class="td">&nbsp;</span></div>
+                <span class="td"></span></div>
         </c:otherwise>
     </c:choose>
     </c:if>    

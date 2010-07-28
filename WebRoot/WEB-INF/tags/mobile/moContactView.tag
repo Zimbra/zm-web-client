@@ -45,7 +45,7 @@
         <div class="Stripes header">
             <div class="tbl">
                 <div class="tr">
-                    <span class="td aleft Person48">&nbsp;</span>
+                    <span class="td aleft person">&nbsp;</span>
                     <span class="td aleft">
                        <div>
                            <strong>${fn:escapeXml(contact.displayFileAs)}</strong>
