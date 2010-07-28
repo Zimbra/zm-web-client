@@ -206,7 +206,8 @@ function(msg) {
 
 			var cc = ac.getApp(ZmApp.CALENDAR).getCalController();
 			var msgAcct = msg.getAccount();
-			var calendars = cc.getCalendars({includeLinks:true, account:msgAcct, onlyWritable:true});
+			var calendars = ac.get(ZmSetting.CALENDAR_ENABLED, null, msgAcct)
+				? cc.getCalendars({includeLinks:true, account:msgAcct, onlyWritable:true}) : [];
 
 			if (appCtxt.multiAccounts) {
 				var accounts = ac.accountList.visibleAccounts;
@@ -239,6 +240,12 @@ function(msg) {
 						: calendar.nId == ZmOrganizer.ID_CALENDAR;
 					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null, icon);
 					this._inviteMoveSelect.addOption(option);
+				}
+
+				// for accounts that don't support calendar, always set the
+				// selected calendar to the Local calendar
+				if (!ac.get(ZmSetting.CALENDAR_ENABLED, null, msgAcct)) {
+					this._inviteMoveSelect.setSelectedValue(ZmOrganizer.ID_CALENDAR);
 				}
 			}
 			this._inviteMoveLabel.setVisible(visible);
