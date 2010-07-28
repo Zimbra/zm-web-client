@@ -550,6 +550,10 @@ function(params) {
     params.actionArg = params.folder.getName(false, false, true);
 	params.callback = new AjxCallback(this, this._handleResponseCopyItems, params);
 
+	if (appCtxt.multiAccounts && params.folder.isRemote()) {
+		params.accountName = params.items[0].getAccount().name;
+	}
+
 	this._itemAction(params);
 };
 
