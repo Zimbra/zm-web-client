@@ -595,7 +595,15 @@ function(convNode) {
 		}
 		if (count == 1) {
 			var msgNode = convNode.m[0];
-			if (msgNode.l) {
+
+			// bug 49067 - SearchConvResponse does not return the folder ID w/in
+			// the msgNode as fully qualified so reset if this 1-msg conv was
+			// returned by a simple folder search
+			var searchFolderId = appCtxt.multiAccounts && this.list && this.list.search && this.list.search.folderId;
+			if (searchFolderId) {
+				this.folderId = searchFolderId;
+				this.folders[searchFolderId] = true;
+			} else if (msgNode.l) {
 				this.folderId = msgNode.l;
 				this.folders[msgNode.l] = true;
 			}
