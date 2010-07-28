@@ -725,7 +725,7 @@ function(participants, participantsElided, width) {
 	// only one participant, no need to test width
 	if (participants.length == 1) {
 		var p = participants[0];
-		var name = p.name ? p.name : p.dispName || p.address;
+		var name = p.name || p.dispName || p.address;
 		var tmp = {name: AjxStringUtil.htmlEncode(name), index: 0};
 		return [tmp];
 	}
