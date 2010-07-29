@@ -672,7 +672,7 @@
 	// display custom
 	for (var a in attrs) {
 		itemlistdata.name = a;
-		itemlistdata.type = a;
+		itemlistdata.type = AjxStringUtil.capitalizeWords(AjxStringUtil.fromMixed(a));
 		$>
 		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
 		<$
