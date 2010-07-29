@@ -176,9 +176,6 @@ ZmApptChooserTabViewPage.prototype.showMe =
 function() {
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
-	if (this._rendered) {
-		this._chooser.reset();
-	}
 
 	this.parent.tabSwitched(this._tabKey);
 	this._setAttendees();
