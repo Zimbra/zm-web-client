@@ -852,7 +852,8 @@ function() {
 
 	// bug: 48189 - Hide schedule tab for non-ZCS acct
 	if (appCtxt.isOffline) {
-		this.parent.parent.setTabVisibility([ZmApptComposeView.TAB_SCHEDULE], cal.getAccount().isZimbraAccount);
+        var currAcct = cal.getAccount();
+		this.parent.parent.setTabVisibility([ZmApptComposeView.TAB_SCHEDULE], (currAcct.isZimbraAccount && !currAcct.isMain));
         var tabPage = this.parent.parent._tabPages[ZmApptComposeView.TAB_ATTENDEES];
         if (!(tabPage instanceof AjxCallback)) {
 		    this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES).cleanup();

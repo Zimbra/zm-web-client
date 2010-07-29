@@ -792,7 +792,7 @@ function(items, callback) {
 
 	var currAcct = this._editView.getCalendarAccount();
 	// Bug: 48189 Don't send GetFreeBusyRequest for non-ZCS accounts.
-	if (appCtxt.isOffline && !currAcct.isZimbraAccount) {
+	if (appCtxt.isOffline && (!currAcct.isZimbraAccount || currAcct.isMain)) {
 		if (callback) {
 			callback(items);
 		}
