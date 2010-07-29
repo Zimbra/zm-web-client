@@ -85,6 +85,7 @@
 		request.setAttribute("packages", "dev");
 	}
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
+	String debugLogTarget = getParameter(request, "log", getAttribute(request, "log", null));
 	String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
 	String startApp = getParameter(request, "app", "");
 	String noSplashScreen = getParameter(request, "nss", null);
@@ -304,9 +305,10 @@ for (var pkg in window.AjxTemplateMsg) {
 
 		var prodMode = ${isProdMode};
 		var debugLevel = "<%= (debug != null) ? debug : "" %>";
+		var debugLogTarget = "<%= (debugLogTarget != null) ? debugLogTarget : "" %>";
 		if (!prodMode || debugLevel) {
 			AjxDispatcher.require("Debug");
-			DBG = new AjxDebug(AjxDebug.NONE, null, false);
+			window.DBG = new AjxDebug({level:AjxDebug.NONE, target:debugLogTarget});
 			// figure out the debug level
 			if (debugLevel == 't') {
 				DBG.showTiming(true);

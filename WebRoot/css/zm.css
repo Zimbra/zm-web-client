@@ -2961,6 +2961,20 @@ HTML>BODY .appt-selected .appt_allday_body
     @Text-disabled@
 }
 
+.DebugLogDialog-desc {
+	width: 500px;
+	font-size: 14px;
+	padding: 10px;
+}
+
+.DebugLogDialog-log {
+	width: 600px;
+	height: 400px;
+	border: 2px solid black;
+	overflow: auto;
+	padding: 5px;
+}
+
 /*
  * Temporary styles for the shortcuts tab. These should be
  * replaced with the proper substitutions from skin files.
