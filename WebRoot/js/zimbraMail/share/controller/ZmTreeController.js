@@ -906,8 +906,6 @@ function(ev, treeView, overviewId) {
 					appCtxt.getApp(ZmApp.MAIL).getOverviewContainer().updateTooltip(organizer.nId);
 				}
 			}
-			var parentNode = this._getParentNode(organizer, ev, overviewId);
-			if (!parentNode) { return; }
 
 			if (fields[ZmOrganizer.F_NAME] ||
 				fields[ZmOrganizer.F_UNREAD] ||
@@ -916,6 +914,8 @@ function(ev, treeView, overviewId) {
 				((organizer.nId == ZmFolder.ID_DRAFTS || organizer.rid == ZmFolder.ID_DRAFTS ||
 				  organizer.nId == ZmOrganizer.ID_OUTBOX) && fields[ZmOrganizer.F_TOTAL]))
 			{
+				var parentNode = this._getParentNode(organizer, ev, overviewId);
+				if (!parentNode) { return; }
 				this._updateOverview(parentNode, node, fields, organizer, treeView);
 				this._evHandled[overviewId] = true;
 			}

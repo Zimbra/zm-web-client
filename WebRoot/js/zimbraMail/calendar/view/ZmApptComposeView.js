@@ -161,13 +161,13 @@ function(appt, mode, isDirty) {
         this._forwardMode = mode;
         mode = ZmCalItem.FORWARD_MAPPING[mode];
         apptComposeMode = ZmApptComposeView.FORWARD; 
-    }else {
+    } else {
         this._forwardMode = undefined;        
     }
 
     this._proposeNewTime = (mode == ZmCalItem.MODE_PROPOSE_TIME);
 
-    if(this._proposeNewTime) {
+    if (this._proposeNewTime) {
         mode = ZmCalItem.MODE_EDIT;
         apptComposeMode = ZmApptComposeView.PROPOSE_TIME;
     }
@@ -474,7 +474,7 @@ function() {
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
 		this._tabPages[id] = (i == 0) ? this._createTabViewPage(id) : new AjxCallback(this, this._initializeAddTab, [id]);
-		var tabButtonId = ZmId.getTabId(this._controller._getViewType(), id);
+		var tabButtonId = ZmId.getTabId(this._controller.viewId, id);
 		this._tabKeys[id] = this.addTab(ZmMsg[ZmApptComposeView.TAB_NAME[id]], this._tabPages[id], tabButtonId);
 		this._tabIdByKey[this._tabKeys[id]] = id;
 		var image = ZmApptComposeView.TAB_IMAGE[id];

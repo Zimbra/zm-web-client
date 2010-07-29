@@ -176,16 +176,17 @@
 	<fieldset class='ZmFieldset'>
 		<legend class='ZmLegend'><$= ZmMsg.attachments $></legend>
 		<form style='margin:0;padding:0' method='POST' action='${url}' id='${uploadFormId}' enctype='multipart/form-data'>
-			<div id='${attachDivId}' style='overflow:auto'></div>
+			<div id='${attachDivId}'></div>
 		</form>
 	</fieldset>
 </template>
 
 <template id='calendar.Appointment#AttachAdd'>
-	<nobr>&nbsp;<input type='file' size=40 name='${uploadFieldName}' id='${attachInputId}'>&nbsp;
+	<nobr>&nbsp;<input type='file' size=40 name='${uploadFieldName}' id='${attachInputId}' multiple>&nbsp;
 		<span style='cursor:pointer;color:blue;text-decoration:underline;' id='${attachRemoveId}'>
 			<$= ZmMsg.remove $>
 		</span>
+        <span id='${sizeId}'>&nbsp;</span>
 	</nobr>
 </template>
 

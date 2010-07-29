@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -345,7 +345,7 @@ function(path) {
 		// servlet caches CSS unless there's a debug param
 		var debugLevel = DBG && DBG.getDebugLevel();
 		if (debugLevel) {
-			style_url = style_url + "&debug=" + debugLevel; 
+			style_url = style_url + "&debug=" + debugLevel;
 		}
 		style.href = style_url;
 		var head = doc.getElementsByTagName("head")[0];
@@ -586,7 +586,7 @@ function(x, y) {
 
 		// bug fix #6786 - normalize width/height if less than zero
 		if (x < 0) x = 0;
-	
+
 		main.style.width = x + 5 + "px";
 		if (div) {
 			if (!AjxEnv.isIE) {
@@ -1530,7 +1530,7 @@ function(blockquote, element) {
 		range = iFrameDoc.selection.createRange();
 		range.collapse(false);
 		el = element;
-		
+
 		// IE doesn't let us get the offset directly, so we count the number of times we can use moveStart() until we're out of the containing element
 		var dummy = "###"+Dwt.getNextId()+"###";
 		range.pasteHTML(dummy);
@@ -1563,7 +1563,7 @@ function(blockquote, element) {
 			el = range.startContainer;
 		}
 	}
-	
+
 
 	var id = el.id = el.id || Dwt.getNextId();
 	var blockquote2 = blockquote.cloneNode(true); // Create an orphaned clone of the blockquote. This will be meddled with before getting attached to the DOM tree
@@ -1600,7 +1600,6 @@ function(blockquote, element) {
 		blockquote.parentNode.appendChild(blockquote2);
 	}
 
-	
 	if (AjxEnv.isIE) {
 		// Hack to get IE to properly place the cursor between the two blockquotes
 		var p = document.createElement("p");
@@ -2090,7 +2089,7 @@ function(ev) {
 	// but that's even uglier:
 	if (ev && word && (suggestions = sc.suggestions[word]) &&
 	    (/mouseup|contextmenu/i.test(ev.type) ||
-	     (plainText && /(click|mousedown|contextmenu)/i.test(ev.type))) && 
+	     (plainText && /(click|mousedown|contextmenu)/i.test(ev.type))) &&
 		(word == AjxUtil.getInnerText(p) && !this._ignoreWords[word]))
 	{
 		sc.menu = this._spellCheckCreateMenu(this, 0, suggestions, word, p.id, modified);
