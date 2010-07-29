@@ -390,11 +390,12 @@ function() {
  */
 ZmAccessControlList.sortByGrantee =
 function(a, b) {
-    var granteeA = a.grantee;
-    var granteeB = b.grantee;
 
-    if (granteeA.toLowerCase() > granteeB.toLowerCase()) return 1;
-    if (granteeA.toLowerCase() < granteeB.toLowerCase()) return -1;
+    var granteeA = a.grantee || "";
+    var granteeB = b.grantee || "";
+
+    if (granteeA.toLowerCase() > granteeB.toLowerCase()) { return 1; }
+    if (granteeA.toLowerCase() < granteeB.toLowerCase()) { return -1; }
     
 	return 0;
 };
