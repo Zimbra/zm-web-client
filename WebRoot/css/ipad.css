@@ -52,7 +52,11 @@ a{
 	}
 	
 	.moreButton{
-		width: 91%;
+		width: 250px;
+	}
+	
+	.copyrights{
+		margin-left: 20%;	
 	}
 }
 
@@ -91,7 +95,11 @@ a{
 		width: 180px;
 	}
 	.moreButton{
-		width: 87%;
+		width: 170px;
+	}
+
+	.copyrights{
+		margin-left: 10%;	
 	}
 }
 
@@ -406,9 +414,7 @@ html, body{
 		padding: 8px 4px 0 4px;
 	}
 	
-.copyrights{
-	margin-left: 20%;	
-}
+
 .userInfo{
 	margin-left: 10px;
 }
@@ -684,6 +690,7 @@ a.accept,a.tentative,a.decline{
 
 .f {    
     white-space: nowrap;
+	padding: 0 5px;
 }
 
 
@@ -910,9 +917,9 @@ span.aleft > div:first-child, .contactHeader {
 /**Compose UI styles **/
 
 .veil{
-	background-color: #7c674c;
-	opacity: 0.6;
-	-webkit-opacity: 0.6;
+	background-color: #333;
+	opacity: 0.7; 
+	-webkit-opacity: 0.8;
 	width: 100%;
 	height: 100%;
 	position: absolute;
