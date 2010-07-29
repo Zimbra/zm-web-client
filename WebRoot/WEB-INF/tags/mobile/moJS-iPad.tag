@@ -111,9 +111,9 @@ var sAT = function(tabId){ //set active tab
         for(var i=0, len = ids.length; i < len;i++){
             var eid = ids[i];
             var  e = $(eid);
-            if(e.id == targ.id){
+            if(e && e.id == targ.id){
                 e.parentNode.className = "sel";
-            } else {
+            } else if(e) {
                 e.parentNode.className = "";
             }
         }
@@ -539,7 +539,7 @@ var parseResponse = function (request, container,url) {
         }
         if(match){
             sAT(match[1]);
-            var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail');
+            var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders|newmail)/,'mail');
             var targ = $(tabId);
             if (targ) {
                 if (targ.id == 'contact') {
@@ -559,48 +559,20 @@ var parseResponse = function (request, container,url) {
             showLoadingMsg(null, false);
             var data = request.responseText;
             if (data) {
-                <c:if test="${(ua.isiPhone or ua.isiPod) and param.anim}">if(url.match(/st=prefs|action=edit|st=newmail|st=newappt|st=newtask/) || $('card').className.match(/flipped/)){
-                    slideElem(container,-1);
-                }else if(url.match(/_pv=1|_back|st=briefcases|st=notebooks|st=folders|st=tasks|st=ab|st=cals/)){
-                    slideElem(container,0);
-                }else if(url.match(/_pv=0|action=view|sti/)){
-                    slideElem(container,1);
-                }</c:if>
                 <c:if test="${!ua.isIE}">window.scrollTo(0,1);</c:if>
-                if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showABCreate') !=-1)  && (url.indexOf('hc=1') == -1)) {
-                    $("view-content").innerHTML = data;
-                    $("view-content").style.display = "block";
-                    $("static-content").style.display = "none";
-                    initContentScroll();
-                } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
-                    $('compose-body').innerHTML = data;
-                    $("view-content").style.display = "block";
-                    $("static-content").style.display = "none";
-                    toggleCompose('compose-pop','veil');
-                } else if(url.indexOf('show=more') != -1) {
-                    var moreDiv = document.createElement("div");
-                    moreDiv.innerHTML =  data;
-                    $("dlist-view").removeChild(document.getElementById('more-div'));
-
-                    for(var j =0; j < moreDiv.childNodes.length; j ++) {
-                        var nodeDiv = moreDiv.childNodes[j];
-                        if(nodeDiv.nodeName == 'DIV' || nodeDiv.nodeName == 'A') {
-                            $("dlist-view").appendChild(nodeDiv);
+                if(match) {  //TODO: need to clean up a lot 
+                    var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders|newmail)/,'mail').replace(/(ab)/,'contact');
+                    var targ = $(tabId);
+                    if(targ) {
+                        if(targ.id == 'cal' && targ.parentNode.className == 'sel') {
+                           ZmiPadCal.processResponse(data,url);
+                        } else if (targ.id == 'mail' && targ.parentNode.className == 'sel') {
+                           ZmiPadMail.processResponse(data,url);
+                        } else if (targ.id == 'contact' && targ.parentNode.className == 'sel') {
+                           ZmiPadContacts.processResponse(data,url);
                         }
                     }
-                    listScroll.refresh();
-                } else {
-                    $("view-list").innerHTML = data;
-                    $("view-content").style.display = "none";
-                    $("sq").blur();
-                    initListScroll();
                 }
-                /*var scripts = container.getElementsByTagName("script");
-                for (var i = 0; i < scripts.length; i++) {
-                    if (!scripts[i].src) {
-                        try{eval(scripts[i].innerHTML);}catch(e){if(window.console){console.log(e);}}
-                    }
-                }*/
             }
         } else {
             showLoadingMsg('<fmt:message key="error"/> : ' + request.status, true, 'Critical');
@@ -793,14 +765,164 @@ var initListScroll = function () {
 };
 
 var initContentScroll = function() {
-   $('dcontent-view').addEventListener('touchmove', function(e){ e.preventDefault(); }); 
-   contentScroll = new iScroll('dcontent-view');
+   if($("dcontent-view")) {
+       $("dcontent-view").addEventListener('touchmove', function(e){ e.preventDefault(); });
+       contentScroll = new iScroll('dcontent-view');
+   }
 }
 
 var init = function () {
     document.getElementById('dlist-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
     //document.getElementById('dcontent-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
     listScroll = new iScroll('dlist-view');
+}
+
+
+function ZmiPad() {
+};
+
+//div id's for all views
+ZmiPad.ID_VIEW_LIST = "view-list";
+ZmiPad.ID_VIEW_CONTENT = "view-content";
+ZmiPad.ID_VIEW_STATIC = "static-content";
+ZmiPad.ID_VIEW_MAIN = "view-main";
+
+ZmiPad.IDS_ALL_VIEW = [ZmiPad.ID_VIEW_LIST,ZmiPad.ID_VIEW_CONTENT,ZmiPad.ID_VIEW_STATIC,ZmiPad.ID_VIEW_MAIN]
+
+//id's to show based on view pattern (i.e's) either CoLUMN VIEW or MAIN VIEW
+ZmiPad.COLUMN_VIEW = [ZmiPad.ID_VIEW_LIST,ZmiPad.ID_VIEW_CONTENT,ZmiPad.ID_VIEW_STATIC];
+ZmiPad.MAIN_VIEW = [ZmiPad.ID_VIEW_MAIN];
+
+
+ZmiPad.initMainView = function() {
+    for(var i = 0; i < ZmiPad.IDS_ALL_VIEW.length; i++) {
+        var viewDiv = $(ZmiPad.IDS_ALL_VIEW[i]);
+        if(viewDiv && ZmiPad.MAIN_VIEW.indexOf(ZmiPad.IDS_ALL_VIEW[i]) != -1) {
+            viewDiv.style.display = "block";
+        } else {
+            viewDiv.style.display = "none";
+        }
+    }
+};
+
+ZmiPad.initColumnView = function() {
+    for(var i = 0; i < ZmiPad.IDS_ALL_VIEW.length; i++) {
+        var viewDiv = $(ZmiPad.IDS_ALL_VIEW[i]);
+        if(viewDiv && ZmiPad.COLUMN_VIEW.indexOf(ZmiPad.IDS_ALL_VIEW[i]) != -1) {
+            viewDiv.style.display = "block";
+        } else {
+            viewDiv.style.display = "none";
+        }
+    }
+};
+
+/*
+ZmiPadMail to process all Mail responses
+ */
+function ZmiPadMail() {
+};
+
+ZmiPadMail.processResponse = function (respData, url) {
+
+    ZmiPad.initColumnView();
+
+    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showABCreate') !=-1)  && (url.indexOf('hc=1') == -1)) {
+
+        $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        initContentScroll();
+
+    } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
+
+        $('compose-body').innerHTML = respData;
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        toggleCompose('compose-pop','veil');
+
+    } else if(url.indexOf('show=more') != -1) {
+
+        var moreDiv = document.createElement("div");
+        moreDiv.innerHTML =  respData;
+        $("dlist-view").removeChild(document.getElementById('more-div'));
+
+        for(var j =0; j < moreDiv.childNodes.length; j ++) {
+            var nodeDiv = moreDiv.childNodes[j];
+            if(nodeDiv.nodeName == 'DIV' || nodeDiv.nodeName == 'A') {
+                $("dlist-view").appendChild(nodeDiv);
+            }
+        }
+        listScroll.refresh();
+
+    } else {
+
+        $(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+        $("sq").blur();
+        initListScroll();
+
+    }
+}
+
+/*
+ZmiPadContacts to process all Contact responses
+ */
+function ZmiPadContacts() {
+};
+
+ZmiPadContacts.processResponse = function (respData, url) {
+
+    ZmiPad.initColumnView();
+
+    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showABCreate') !=-1)  && (url.indexOf('hc=1') == -1)) {
+
+        $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        initContentScroll();
+
+    } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
+
+        $('compose-body').innerHTML = respData;
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        toggleCompose('compose-pop','veil');
+
+    } else if(url.indexOf('show=more') != -1) {
+
+        var moreDiv = document.createElement("div");
+        moreDiv.innerHTML =  respData;
+        $("dlist-view").removeChild(document.getElementById('more-div'));
+
+        for(var j =0; j < moreDiv.childNodes.length; j ++) {
+            var nodeDiv = moreDiv.childNodes[j];
+            if(nodeDiv.nodeName == 'DIV' || nodeDiv.nodeName == 'A') {
+                $("dlist-view").appendChild(nodeDiv);
+            }
+        }
+        listScroll.refresh();
+
+    } else {
+        $(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+        $("sq").blur();
+        initListScroll();
+
+    }
+
+};
+
+
+
+/*
+ZmiPaCal to process all Calendar responses
+ */
+function ZmiPadCal() {
+};
+
+ZmiPadCal.processResponse = function (respData, url) {
+    ZmiPad.initMainView();
+    $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
 }
 
 window.addEventListener('load', init);

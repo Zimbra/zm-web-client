@@ -169,8 +169,7 @@
 				<ul class="ul alignLeft">
 					<li class="sel"><a id="mail" href="${aurl}?st=${mailbox.prefs.groupMailBy}"><span onclick="return zClickLink('mail')"><fmt:message key="mail"/></span></a></li>
 					<li><a id="contact" href="${aurl}?st=contact"><span onclick="return zClickLink('contact')"><fmt:message key="contacts"/></span></a></li>
-					<li><a id="cal" href=""><span><fmt:message key="calendar"/></span></a></li>
-					<li><a id="tasks" href=""><span><fmt:message key="tasks"/></span></a></li>
+					<li><a id="cal" href="${aurl}?st=cal"><span onclick="return zClickLink('cal')"><fmt:message key="calendar"/></span></a></li>
 					<li><a id="options" href=""><span><fmt:message key="options"/></span></a></li>
 				</ul>
 		
@@ -220,10 +219,12 @@ if(window != parent){
 
 <c:if test="${empty param.ajax}">
     <div class="view" id="view">
- 
-        <div class="listViewPane" id="view-list">
+
+      <div id="view-main" style="display:none;"></div>
+
+      <div class="listViewPane" id="view-list">
             ${response}
-        </div>
+      </div>
 
       <div class="contentViewPane" id="view-content" style="display:none;">
           <div class="msgBody" id="msg-body">
