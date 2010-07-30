@@ -2009,10 +2009,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 				// main account is "sender"
 				if (!doNotAddSender) {
 					addrNode.t = "s";
-					displayName = ac.get(ZmSetting.DISPLAY_NAME);
-					if (displayName) {
-						addrNode.p = displayName;
-					}
+					addrNode.p = ac.get(ZmSetting.DISPLAY_NAME) || "";
 					addrNode = {};
 					addrNodes.push(addrNode);
 				}
