@@ -437,7 +437,7 @@ function(calItem, mode) {
 	this._addResourcesDiv();
 
 	if (this.GROUP_CALENDAR_ENABLED) {
-		this._requestResponsesCheckbox.checked = calItem.shouldRsvp();
+		this._requestResponsesCheckbox.checked = (attendees && attendees.length) ? calItem.shouldRsvp() : true;
 		// by default the changes made to the appt should be visible to others
 		this._sendNotificationMailCheckbox.checked = true;
 		this._isOrganizer = calItem.isOrganizer();
