@@ -39,15 +39,13 @@ ZmTagTree.prototype.constructor = ZmTagTree;
 
 // ordered list of colors
 ZmTagTree.COLOR_LIST = [
-    ZmOrganizer.C_BLUE,
-    ZmOrganizer.C_CYAN,
-    ZmOrganizer.C_GREEN,
-    ZmOrganizer.C_PURPLE,
-    ZmOrganizer.C_RED,
-    ZmOrganizer.C_YELLOW,
-    ZmOrganizer.C_PINK,
-    ZmOrganizer.C_GRAY,
-    ZmOrganizer.C_ORANGE
+	ZmOrganizer.C_CYAN,
+	ZmOrganizer.C_BLUE,
+	ZmOrganizer.C_PURPLE,
+	ZmOrganizer.C_RED,
+	ZmOrganizer.C_ORANGE,
+	ZmOrganizer.C_YELLOW,
+	ZmOrganizer.C_GREEN
 ];
 
 /**
