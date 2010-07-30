@@ -112,3 +112,8 @@
 		<div style='background-color:white; width:100%; overflow:auto' id='${id}_tagTreeDivId'></div>
 	</div>
 </template>
+
+<template id='share.Widgets#ZmDebugLogDialog'>
+	<div class='DebugLogDialog-desc'><$= ZmMsg.debugLogDesc $></div>
+	<div class='DebugLogDialog-log' id='${id}_log'></div>
+</template>

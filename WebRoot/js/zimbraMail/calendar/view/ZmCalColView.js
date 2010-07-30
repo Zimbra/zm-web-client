@@ -13,7 +13,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, scheduleMode) {
+ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, scheduleMode, readonly) {
 	if (arguments.length == 0) { return; }
 
 	view = view || ZmId.VIEW_CAL_DAY;
@@ -25,7 +25,7 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	this._layoutMap = [];
 	this._unionBusyDivIds = [];													// div ids for layingout union
 
-	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, view);
+	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, view, readonly);
 
 	this.setDropTarget(dropTgt);
 	this.setScrollStyle(DwtControl.CLIP);

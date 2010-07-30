@@ -47,6 +47,10 @@ ZmApp = function(name, container, parentController) {
 	this._deferredFolderHash = {};
 	this._deferredNotifications = [];
 	
+	this._sessionController		= {};
+	this._sessionId				= {};
+	this._curSessionId			= {};
+
 	ZmApp.DROP_TARGETS[name] = {};
 	
 	this._defineAPI();
@@ -597,6 +601,40 @@ function() {
 		newList.push(ZmOrganizer.ZIMLET);
 	}
 	return newList;
+};
+
+ZmApp.prototype.getSessionController =
+function(type, controllerClass, sessionId) {
+
+	if (!this._sessionController[type]) {
+		this._sessionController[type] = {};
+		this._sessionId[type] = 1;
+	}
+
+	if (sessionId && this._sessionController[type][sessionId]) {
+		return this._sessionController[type][sessionId];
+	}
+
+	var controllers = this._sessionController[type];
+	var controller;
+	for (var id in controllers) {
+		if (controllers[id].inactive) {
+			controller = controllers[id];
+			break;
+		}
+	}
+
+	sessionId = controller ? controller.sessionId : this._sessionId[type]++;
+
+	if (!controller) {
+		var ctlrClass = eval(controllerClass);
+		controller = this._sessionController[type][sessionId] = new ctlrClass(this._container, this);
+	}
+	controller.setSessionId(type, sessionId);
+	this._curSessionId[type] = sessionId;
+	controller.inactive = false;
+
+	return controller;
 };
 
 /**
