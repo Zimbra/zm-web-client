@@ -305,13 +305,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 
 ZmApptCache.prototype._doBatchRequest =
 function(searchParams, miniCalParams, reminderSearchParams) {
-	var caledarIds = searchParams.accountFolderIds.shift();
-	if (searchParams) {
-		searchParams.folderIds = caledarIds;
-	}
-	if (miniCalParams) {
-		miniCalParams.folderIds = caledarIds;
-	}
+	searchParams.folderIds = miniCalParams.folderIds = searchParams.accountFolderIds.shift();
 
 	var apptVec;
 	var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
@@ -352,20 +346,18 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 		}
 	}
 
-	if (miniCalParams) {
-		var miniCalCache = this._calViewController.getMiniCalCache();
-		var cacheData = miniCalCache.getCacheData(miniCalParams);
+	var miniCalCache = this._calViewController.getMiniCalCache();
+	var cacheData = miniCalCache.getCacheData(miniCalParams);
 
-		// mini cal data in cache
-		if (cacheData && cacheData.length > 0) {
-			miniCalCache.highlightMiniCal(cacheData);
-			if (miniCalParams.callback) {
-				miniCalParams.callback.run(cacheData);
-			}
-		} else {
-			var miniCalRequest = request.GetMiniCalRequest = {_jsns:"urn:zimbraMail"};
-			miniCalCache._setSoapParams(miniCalRequest, miniCalParams);
+	// mini cal data in cache
+	if (cacheData && cacheData.length > 0) {
+		miniCalCache.highlightMiniCal(cacheData);
+		if (miniCalParams.callback) {
+			miniCalParams.callback.run(cacheData);
 		}
+	} else {
+		var miniCalRequest = request.GetMiniCalRequest = {_jsns:"urn:zimbraMail"};
+		miniCalCache._setSoapParams(miniCalRequest, miniCalParams);
 	}
 
 	// both mini cal and search data is in cache, no need to send request
@@ -444,7 +436,7 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 			}
 		}
 
-		if (appCtxt.multiAccounts && miniCalParams) {
+		if (appCtxt.multiAccounts) {
 			this._highliteMiniCal(miniCalCache, miniCalParams);
 		}
 		return;
@@ -466,7 +458,7 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 	if (searchParams.accountFolderIds && searchParams.accountFolderIds.length > 0) {
 		this._doBatchRequest(searchParams, miniCalParams);
 	} else {
-		if (appCtxt.multiAccounts && miniCalParams) {
+		if (appCtxt.multiAccounts) {
 			this._highliteMiniCal(miniCalCache, miniCalParams);
 		}
 

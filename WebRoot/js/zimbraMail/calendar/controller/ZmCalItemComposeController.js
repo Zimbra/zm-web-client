@@ -39,8 +39,6 @@ function() {
 	return "ZmCalItemComposeController";
 };
 
-ZmCalItemComposeController.DEFAULT_TAB_TEXT = ZmMsg.appointment;
-
 // Public methods
 
 ZmCalItemComposeController.prototype.show =
@@ -49,7 +47,7 @@ function(calItem, mode, isDirty) {
 	this._initToolbar(mode);
 	var initial = this.initComposeView();
 
-	this._app.pushView(this.viewId);
+	this._app.pushView(this._getViewType());
 	this._composeView.set(calItem, mode, isDirty);
 	this._composeView.reEnableDesignMode();
 
@@ -144,19 +142,13 @@ function(initHide) {
 			this._createToolBar();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
+		this._app.createView({viewId:this._getViewType(), elements:elements, callbacks:callbacks, isTransient:true});
 		if (initHide) {
 			this._composeView.preload();
 		}
 		return true;
 	}
 	return false;
-};
-
-ZmCalItemComposeController.prototype._getTabParams =
-function() {
-	return {id:this.tabId, image:"NewAppointment", text:ZmCalItemComposeController.DEFAULT_TAB_TEXT, textPrecedence:76,
-			tooltip:ZmCalItemComposeController.DEFAULT_TAB_TEXT};
 };
 
 ZmCalItemComposeController.prototype._createComposeView =
@@ -249,6 +241,11 @@ function(skipNotify, composeMode) {
 // Private / Protected methods
 
 
+ZmCalItemComposeController.prototype._getViewType =
+function() {
+	// override
+};
+
 ZmCalItemComposeController.prototype._initToolbar =
 function(mode) {
 	if (!this._toolbar) {
@@ -283,7 +280,7 @@ function(mode) {
 		printButton.setEnabled(!isNew);
 	}
 
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this.viewId], {waitUntilLoaded:true});
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._getViewType()], {waitUntilLoaded:true});
 };
 
 ZmCalItemComposeController.prototype._createToolBar =
@@ -302,7 +299,7 @@ function() {
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
 
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this.viewId, controller:this});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._getViewType(), controller:this});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 
