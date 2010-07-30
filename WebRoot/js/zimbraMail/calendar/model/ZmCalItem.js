@@ -845,6 +845,25 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay, batc
 /**
  * @private
  */
+ZmCalItem.prototype.convertToLocalTimezone =
+function() {
+    var apptTZ = this.getTimezone();
+    var localTZ = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+    var sd = this.startDate;
+    var ed = this.endDate;
+    if(apptTZ != localTZ) {
+        var offset1 = AjxTimezone.getOffset(AjxTimezone.DEFAULT, sd);
+        var offset2 = AjxTimezone.getOffset(AjxTimezone.getClientId(apptTZ), sd);
+        sd.setTime(sd.getTime() + (offset1 - offset2)*60*1000);
+        ed.setTime(ed.getTime() + (offset1 - offset2)*60*1000);
+        this.setTimezone(localTZ);
+    }
+};
+
+
+/**
+ * @private
+ */
 ZmCalItem.prototype._handleResponseGetDetails =
 function(mode, message, callback, result) {
 	// msg content should be text, so no need to pass callback to setFromMessage()
@@ -859,6 +878,10 @@ function(mode, message, callback, result) {
         if (start) this.setStartDate(AjxDateUtil.parseServerDateTime(start));
         if (end) this.setEndDate(AjxDateUtil.parseServerDateTime(end));
 
+        //set timezone from proposed invite
+        var tz = invite.getServerStartTimeTz();
+        this.setTimezone(tz || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+
         // record whether the start/end dates are in UTC
         this.startsInUTC = start ? start.charAt(start.length-1) == "Z" : null;
         this.endsInUTC = end && start ? end.charAt(start.length-1) == "Z" : null;
@@ -866,7 +889,8 @@ function(mode, message, callback, result) {
         //set all the fields that are not generated in GetAppointmentResponse - accept proposal mode
         this.status = invite.components[0].status;
 
-
+        //convert proposed invite timezone to local timezone
+        this.convertToLocalTimezone();
         this.isAcceptingProposal = true;
     }
 	if (callback) callback.run(result);
