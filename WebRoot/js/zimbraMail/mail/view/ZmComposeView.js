@@ -344,8 +344,8 @@ function() {
 	}
 
 	// keep track of "uploaded" attachments as well :/
-	val += this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME+this._sessionId).join("");
-	val += this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME+this._sessionId).join("");
+	val += this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME + this._sessionId).join("");
+	val += this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME + this._sessionId).join("");
 
 	return val;
 };
@@ -541,8 +541,8 @@ function(attId, isDraft, dummyMsg) {
 	}
 
 	// get list of message part id's for any forwarded attachements
-	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME+this._sessionId);
-	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME+this._sessionId);
+	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME + this._sessionId);
+	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME + this._sessionId);
 
 	// --------------------------------------------
 	// Passed validation checks, message ok to send
@@ -2583,7 +2583,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 				isForward: action == ZmOperation.FORWARD,
 				isForwardInline: action == ZmOperation.FORWARD_INLINE,
 				isDraft: action == ZmOperation.DRAFT,
-				fwdFieldName:(ZmComposeView.FORWARD_ATT_NAME+this._sessionId)
+				fwdFieldName:(ZmComposeView.FORWARD_ATT_NAME + this._sessionId)
 			};
 			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
 
@@ -2604,7 +2604,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 		}
 		var data = {
 			messages: messages,
-			fwdFieldName: (ZmComposeView.FORWARD_MSG_NAME+this._sessionId)
+			fwdFieldName: (ZmComposeView.FORWARD_MSG_NAME + this._sessionId)
 		};
 		html = AjxTemplate.expand("mail.Message#ForwardMessages", data);
 		if (messages.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {

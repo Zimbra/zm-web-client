@@ -47,7 +47,7 @@ and the container element is replaced with that control.
 					</tr>
 
 					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.defualtTimezone$></td>
+						<td class='ZOptionsLabel'><$=ZmMsg.defaultTimezone$></td>
 						<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE' tabindex='45'></div></td>
 					</tr>
 				<$ if (!appCtxt.isOffline) { $>

@@ -26,7 +26,7 @@
 </c:if>
 ${js}
 <c:if test="${ua.isiPad eq true}">
- /**
+/**
  *
  * Find more about the scrolling function at
  * http://cubiq.org/scrolling-div-for-mobile-webkit-turns-3/16
@@ -35,7 +35,7 @@ ${js}
  * Released under MIT license
  * http://cubiq.org/dropbox/mit-license.txt
  *
- * Version 3.0beta4 - Last updated: 2010.04.02
+ * Version 3.1beta1 - Last updated: 2010.05.06
  *
  */
 
@@ -63,11 +63,12 @@ function iScroll (el, options) {
 		}
 	}
 
-	this.refresh();
+    this.refresh();
 
 	this.element.addEventListener('touchstart', this);
 	this.element.addEventListener('touchmove', this);
 	this.element.addEventListener('touchend', this);
+	this.element.addEventListener('DOMSubtreeModified', this);
 	window.addEventListener('orientationchange', this);
 }
 
@@ -81,7 +82,8 @@ iScroll.prototype = {
 			case 'touchmove': this.onTouchMove(e); break;
 			case 'touchend': this.onTouchEnd(e); break;
 			case 'webkitTransitionEnd': this.onTransitionEnd(e); break;
-			case 'orientationchange': this.refresh(); this.scrollTo(0,0,'0'); break;
+			case 'orientationchange': this.refresh(); /*this.scrollTo(0,0,'0');*/ break;
+			case 'DOMSubtreeModified': //this.refresh(); break;
 		}
 	},
 
@@ -91,12 +93,23 @@ iScroll.prototype = {
 		this.scrollHeight = this.wrapper.clientHeight;
 		this.maxScrollX = this.scrollWidth - this.element.offsetWidth;
 		this.maxScrollY = this.scrollHeight - this.element.offsetHeight;
+
+		var resetX = this.x, resetY = this.y;
+		if (this.scrollX && this.x < this.maxScrollX) {
+			resetX = this.maxScrollX;
+		}
+		if (this.scrollY && this.y < this.maxScrollY) {
+			resetY = this.maxScrollY;
+		}
+		// If content width/lenght has been modified, reset scroller position
+		this.scrollTo(resetX,resetY,'0');
+
 		this.scrollX = this.element.offsetWidth > this.scrollWidth ? true : false;
 		this.scrollY = this.element.offsetHeight > this.scrollHeight ? true : false;
 
 		// Update horizontal scrollbar
 		if (this.options.hScrollBar && this.scrollX) {
-			this.scrollBarX = new scrollbar('horizontal', this.wrapper);
+            this.scrollBarX = new scrollbar('horizontal', this.wrapper);
 			this.scrollBarX.init(this.scrollWidth, this.element.offsetWidth);
 		} else if (this.scrollBarX) {
 			this.scrollBarX = this.scrollBarX.remove();
@@ -326,6 +339,7 @@ var scrollbar = function (dir, wrapper) {
 	this.dir = dir;
 	this.bar = document.createElement('div');
 	this.bar.className = 'scrollbar ' + dir;
+    //this.bar.style.border = "1px solid red";
 	this.bar.style.webkitTransitionTimingFunction = 'cubic-bezier(0,0,0.25,1)';
 	this.bar.style.webkitTransform = 'translate3d(0,0,0)';
 	this.bar.style.webkitTransitionProperty = '-webkit-transform,opacity';
@@ -380,5 +394,5 @@ scrollbar.prototype = {
 		this.bar.parentNode.removeChild(this.bar);
 		return null;
 	}
-};
+}; 
 </c:if>
