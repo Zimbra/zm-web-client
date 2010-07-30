@@ -642,6 +642,8 @@ function(message) {
     if(this.isProposeTimeMode) {
         this.proposeInviteMsgId = message.id;
         this.ridZ = message.invite.components ? message.invite.components[0].ridZ : null;
+        //bug: 49315 - use local timezone while proposing time
+        this.convertToLocalTimezone();
     }
 };
 
