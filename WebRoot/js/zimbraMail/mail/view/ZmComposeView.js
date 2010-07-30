@@ -2476,7 +2476,7 @@ function(identity, account) {
 	var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
 	var params = [
 		name,
-		(identity.sendFromDisplay || ''),
+		(identity.sendFromDisplay || ""),
 		identity.sendFromAddress,
 		ZmMsg.accountDefault,
 		appCtxt.get(ZmSetting.DISPLAY_NAME),
@@ -2490,10 +2490,22 @@ function(identity, account) {
 	}
 	else if (identity.isFromDataSource) {
 		var ds = appCtxt.getDataSourceCollection().getById(identity.id);
-		params[1] = ds.userName || '';
+		if (params[1] == "") {
+			params[1] = ds.userName || "";
+		}
 		params[2] = ds.getEmail();
 		var provider = ZmDataSource.getProviderForAccount(ds);
-		pattern = (provider && ZmMsg["identityText-"+provider.id]) || ZmMsg.identityTextExternal;
+		if (provider) {
+			pattern = ZmMsg["identityText-"+provider.id];
+		}
+		else if (params[0] && params[1] && params[2] &&
+				(params[0] != params[1] != params[2]))
+		{
+			pattern = ZmMsg.identityTextPersona;
+		}
+		else {
+			pattern = ZmMsg.identityTextExternal;
+		}
 	}
 	else {
 		pattern = ZmMsg.identityTextPersona;
