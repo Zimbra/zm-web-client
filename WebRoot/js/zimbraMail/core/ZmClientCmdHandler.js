@@ -405,11 +405,8 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
  */
 ZmClientCmdHandler.prototype.execute_log =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	var text = AjxUtil.LOG[cmdArg1].join("<br/>");
-	var msgDialog = appCtxt.getMsgDialog();
-	msgDialog.reset();
-	msgDialog.setMessage(text, DwtMessageDialog.INFO_STYLE);
-	msgDialog.popup();
+	var text = AjxDebug.BUFFER.join("");
+	appCtxt.getDebugLogDialog().popup(text);
 };
 
 /**
