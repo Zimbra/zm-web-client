@@ -633,6 +633,11 @@ ZmSearchController.prototype._handleResponseDoSearch =
 function(search, noRender, isMixed, callback, noUpdateOverview, noClear, result) {
 
 	var results = result.getResponse();
+	if (!results) { return; }
+
+	if (!results.type) {
+		results.type = search.types.get(0);
+	}
 
 	if (results.type == ZmItem.APPT) {
 		this._results = new ZmSearchResult(search);
@@ -641,10 +646,6 @@ function(search, noRender, isMixed, callback, noUpdateOverview, noClear, result)
 
 	this.currentSearch = search;
 	DBG.timePt("execute search", true);
-
-	if (!results.type) {
-		results.type = search.types.get(0);
-	}
 
 	// bug fix #34776 - don't show search results if user is in the composer
 	if (!noRender) {
