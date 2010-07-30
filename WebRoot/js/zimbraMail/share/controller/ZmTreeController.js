@@ -1104,23 +1104,21 @@ function(ev) {
  */
 ZmTreeController.prototype._syncAllListener =
 function(ev) {
-	var f = this._getActionedOrganizer(ev);
-	if (f.isFeed()) {
-		// Loop over all the TreeViews
-		for (var overviewId in this._treeView) {
-			var treeView = this.getTreeView(overviewId);
-			var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, appCtxt.getActiveAccount());
-			var rootTreeItem = treeView.getTreeItemById(rootId);
-			if (!rootTreeItem) { return; }
-			var treeItems = rootTreeItem.getItems();
-			if (treeItems && treeItems[i] &&
-				(treeItems[i].isFeed && treeItems[i].isFeed() || (treeItems[i].hasFeeds && treeItems[i].hasFeeds())))
-			{
-				this._syncFeeds(treeItems[i]);
+	// Loop over all the TreeViews
+	for (var overviewId in this._treeView) {
+		var treeView = this.getTreeView(overviewId);
+		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, appCtxt.getActiveAccount());
+		var rootTreeItem = treeView.getTreeItemById(rootId);
+		var treeItems = rootTreeItem && rootTreeItem.getItems();
+		if (treeItems) {
+			for (var i = 0; i < treeItems.length; i++) {
+				var ti = treeItems[i];
+				var folder = ti && ti.getData && ti.getData(Dwt.KEY_OBJECT);
+				if (folder && (folder.isFeed() || folder.hasFeeds())) {
+					this._syncFeeds(folder);
+				}
 			}
 		}
-	} else {
-		this._syncListener(ev);
 	}
 };
 
@@ -1133,8 +1131,7 @@ function(ev) {
  */
 ZmTreeController.prototype._syncListener =
 function(ev) {
-	var f = this._getActionedOrganizer(ev);
-	this._syncFeeds(f);
+	this._syncFeeds(this._getActionedOrganizer(ev));
 };
 
 /**
@@ -1144,7 +1141,7 @@ ZmTreeController.prototype._syncFeeds =
 function(f) {
 	if (f.isFeed()) {
 		this._doSync(f);
-	} else if(f.hasFeeds()) {
+	} else if (f.hasFeeds()) {
 		var a = f.children.getArray();
 		var sz = f.children.size();
 		for (var i = 0; i < sz; i++) {
