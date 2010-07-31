@@ -25,8 +25,12 @@ a{
        height: 563px;
     }
 	
-	.msgBody {
+	.emptyBody {
 		min-height: 520px;
+	}
+
+	.msgBody {
+		min-height: 490px;
 	}
 	
 	.view{
@@ -69,8 +73,12 @@ a{
        height: 820px;
    	}
 	
-	.msgBody {
+	.emptyBody {
 		min-height: 776px;
+	}
+	
+	.msgBody {
+		min-height: 736px;
 	}
 	
 	.view{
@@ -460,6 +468,7 @@ html, body{
 	border-right: 1px solid #999;
 	position: relative;
     overflow:hidden;
+    background-color: white;
 }
 
 
@@ -540,7 +549,7 @@ ul.list li{
 		text-align: right;
 	}
 	
-.msgBody {
+.msgBody,.emptyBody {
     background-color: white;
     -webkit-border-radius: 12px;
     margin: 10px ;
@@ -550,6 +559,11 @@ ul.list li{
     -webkit-box-shadow: 3px 2px 5px #666;
 }
 
+.emptyBody{
+	text-transform: capitalize;
+	text-align: center;
+	text-shadow: #e5e5e5 3px 2px 1px;
+}
  .address{
 	color: #7C6E4E;
 	letter-spacing: 1px;
@@ -954,7 +968,7 @@ span.aleft > div:first-child, .contactHeader {
 	.composeToolbar .compose, .composeToolbar .buttonRight{
 		margin-top: 6px;
 	}	
-	
+	 
 	
 .composeFields{
 	background-color: white;

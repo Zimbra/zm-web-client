@@ -138,7 +138,7 @@
     </div>
     
 	<div class="toolbar footer">
-       <div class="listViewPane">		
+       <div class="listViewPane" style="background-color:transparent;">		
 			<div class="quota alignLeft">
 				<div class="shell">
 					<div class="bar"></div>
@@ -227,8 +227,8 @@ if(window != parent){
       </div>
 
       <div class="contentViewPane" id="view-content" style="display:none;">
-          <div class="msgBody" id="msg-body">
-            <center><h2 style="text-transform: capitalize;"><fmt:message key="emptyMessage"/></h2></center>
+          <div class="emptyBody" id="msg-body">
+            <h2><fmt:message key="emptyMessage"/></h2>
           </div>
       </div>
       <div class="contentViewPane" id="static-content">
@@ -242,7 +242,7 @@ if(window != parent){
             <c:url var="composeUrl" value="${aurl}?st=newmail"/>
             <div class ="compose button" id="view-mail" style="display:block;"><a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" id="compose"><fmt:message key="compose"/></a></div>
           </div></div></div>
-          <div class="msgBody" id="empty-message"><center><h2 style="text-transform: capitalize;"><fmt:message key="emptyMessage"/></h2></center></div>
+          <div class="emptyBody" id="empty-message"><h2><fmt:message key="emptyMessage"/></h2></div>
       </div>
     </div>
 </c:if>
