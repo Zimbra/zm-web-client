@@ -360,6 +360,8 @@ function(firstTime, result) {
 	if (isPagingSupported) {
 		this._list.merge(offset, list);
 		this._list.hasMore = more;
+	} else {
+		this._list = list;
 	}
 
 	if (list.size() == 0 && firstTime) {
