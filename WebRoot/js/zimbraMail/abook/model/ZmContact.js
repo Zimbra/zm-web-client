@@ -383,7 +383,7 @@ function(contact) {
 				if (attr.fullName) { // bug fix #27428 - if fullName is Array, return first
 					return (attr.fullName instanceof Array) ? attr.fullName[0] : attr.fullName;
 				}
-				return attr.email;
+				return ((attr.email instanceof Array) ? attr.email[0] : attr.email);
 			}
 			fa = ZmContact.fileAsLastFirst(attr.firstName, attr.lastName, attr.fullName, attr.nickname);
 		}
