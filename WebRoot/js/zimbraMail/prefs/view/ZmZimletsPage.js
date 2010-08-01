@@ -222,6 +222,8 @@ function(aid, action) {
 	var soapDoc = AjxSoapDoc.create("DeployZimletRequest", "urn:zimbraAdmin");
 	var method = soapDoc.getMethod();
 	method.setAttribute("action", (action || "deployLocal"));
+	method.setAttribute("flush", "1");
+	method.setAttribute("synchronous", "1");
 	var content = soapDoc.set("content");
 	content.setAttribute("aid", aid);
 
