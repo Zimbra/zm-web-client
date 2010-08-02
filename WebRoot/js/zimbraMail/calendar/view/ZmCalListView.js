@@ -168,6 +168,12 @@ function(list, skipMiniCalUpdate, skipSort) {
 		}
 	}
 	ZmListView.prototype.set.call(this, list, this._defaultSortField);
+
+	// bug 49340 - fix slow rendering issue with IE. Always call layout after
+	// list is set.
+	if (AjxEnv.isIE) {
+		this.parent._layout();
+	}
 };
 
 ZmCalListView.prototype._getItemId =
