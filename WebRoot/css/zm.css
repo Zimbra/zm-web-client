@@ -4055,3 +4055,8 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .PreviewFrame{
     height:100%;
 }
+
+.RenameInput input {
+    width:100%;
+    heigth:19px;
+}
