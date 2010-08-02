@@ -48,6 +48,7 @@ ZmBriefcaseController = function(container, app) {
 	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);
 	this._listeners[ZmOperation.CREATE_SLIDE_SHOW] = new AjxListener(this, this._createSlideShow);
     this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editFileListener);
+    this._listeners[ZmOperation.RENAME_FILE] = new AjxListener(this, this._renameFileListener);
 
 	this._listeners[ZmOperation.NEW_SPREADSHEET] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_SPREADSHEET]);
 	this._listeners[ZmOperation.NEW_PRESENTATION] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_PRESENTATION]);
@@ -215,6 +216,7 @@ function(parent, num) {
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 	parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared));
+    parent.enable(ZmOperation.RENAME_FILE, !isFolderSelected && !isReadOnly);
 
     var isDocOpEnabled = !isReadOnly && (this._folderId != ZmFolder.ID_TRASH)
     if (appCtxt.get(ZmSetting.DOCS_ENABLED)) {
@@ -484,7 +486,18 @@ function() {
 	}	
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
+    list.push(ZmOperation.RENAME_FILE);
 	return list;
+};
+
+ZmBriefcaseController.prototype._renameFileListener =
+function(){
+
+    var view = this._listView[this._currentView];
+	var items = view.getSelection();
+	if (!items) { return; }
+
+    view.renameFile(items[0]);
 };
 
 ZmBriefcaseController.prototype._editFileListener =

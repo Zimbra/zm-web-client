@@ -39,7 +39,7 @@
 	<fmt:message key="${label}" var="label"/>
     <div <c:if test="${!noborder || ua.isiPad == true}">class="list-row" </c:if> >
         <span class='label' width="20%">${fn:escapeXml(label)}</span>
-        <span class=" value">
+        <span class="value">
             <c:choose>
                 <c:when test="${isurl}">
                     <c:set var="prefix" value="${fn:contains(value,'//') ? '' : 'http://'}"/>
@@ -51,14 +51,15 @@
                         <c:param name="q" value="${street} ${city} ${state} ${postalcode} ${country}"/>
                     </c:url>
                     <a target="_new" href="${fn:escapeXml(gmaps)}">
-                        <c:if test="${not empty street}">${fn:escapeXml(street)}<br/></c:if>
+                        <c:if test="${not empty street}">${fn:escapeXml(street)}</c:if>
+                        <c:if test="${not (empty street and empty city)}">,&nbsp;</c:if>
                         <c:if test="${not empty city}">
-                            ${fn:escapeXml(city)} <c:if test="${not empty state or not empty postalcode}">,</c:if>
+                            ${fn:escapeXml(city)} <c:if test="${not empty state or not empty postalcode}">,&nbsp;</c:if>
                         </c:if>
-                        <c:if test="${not empty state}">${fn:escapeXml(state)}</c:if>
-                        <c:if test="${not empty postalcode}">${fn:escapeXml(postalcode)}</c:if>
-                        <c:if test="${not (empty state and empty street and empty postalcode)}"><br/></c:if>
-                        <c:if test="${not empty country}">${fn:escapeXml(country)}</c:if>
+                        <c:if test="${not empty state}">${fn:escapeXml(state)} </c:if>
+                        <c:if test="${not empty postalcode}">&nbsp;${fn:escapeXml(postalcode)}</c:if>
+                        <c:if test="${not (empty state and empty street and empty postalcode)}"></c:if>
+                        <c:if test="${not empty country}">,&nbsp;${fn:escapeXml(country)}</c:if>
                     </a>
                 </c:when>
                 <c:when test="${isphone}">
