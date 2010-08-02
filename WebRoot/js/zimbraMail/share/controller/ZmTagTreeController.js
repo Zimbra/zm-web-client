@@ -275,7 +275,7 @@ function(ev, treeView, overviewId) {
 		if (ev.event == ZmEvent.E_MODIFY && ((fields && fields[ZmOrganizer.F_COLOR]))) {
 			var node = treeView.getTreeItemById(tag.id);
 			if (node)
-				node.setImage(ZmTag.COLOR_ICON[tag.color]);
+				node.setImage(tag.getIconWithColor());
 		} else {
 			ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 		}
