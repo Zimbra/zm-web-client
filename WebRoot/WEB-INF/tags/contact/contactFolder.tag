@@ -32,6 +32,17 @@
             <c:param name="st" value="contact"/>
         </c:url>
 
+        <c:if test="${folder.hasChildren}">
+            <c:set var="expanded" value="${sessionScope.expanded[folder.id] ne 'collapse'}"/>
+            <c:url var="toggleUrl" value="/h/search">
+                <c:param name="${expanded ? 'collapse' : 'expand'}" value="${folder.id}"/>
+                <c:param name="st" value="contact"/>
+            </c:url>
+            <a href="${fn:escapeXml(toggleUrl)}">
+               <app:img src="${expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}" altkey="${expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/>
+           </a>
+        </c:if>
+
         <a href='${fn:escapeXml(url)}'>
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
             <span <c:if test="${not requestScope.myCardSelected and (folder.id eq requestScope.context.selectedId)}"> class='ZhTISelected'</c:if>>
