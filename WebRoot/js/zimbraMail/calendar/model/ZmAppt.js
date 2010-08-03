@@ -1317,6 +1317,8 @@ function(invites, proposedInvite) {
             var invite = ZmInvite.createFromDom(invites);            
             if(invite.isRecurring()) {
                 this.isException = true;
+                this.recurring = this.getRecurrenceFromInvite(invites[0]);
+                this._origStartDate = proposedInvite.getServerStartDate();                
             }
         }
 
