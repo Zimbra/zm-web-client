@@ -641,9 +641,9 @@ function(message) {
 
     if(this.isProposeTimeMode) {
         this.proposeInviteMsgId = message.id;
-        this.ridZ = message.invite.components ? message.invite.components[0].ridZ : null;
         //bug: 49315 - use local timezone while proposing time
         this.convertToLocalTimezone();
+        if(!this.ridZ) this.ridZ = message.invite.components ? message.invite.components[0].ridZ : null;
     }
 };
 
@@ -1140,7 +1140,7 @@ function(callback, errorCallback) {
     var inv = soapDoc.set("inv", null, m);
     var comp = soapDoc.set("comp", null, inv);
 
-    if (this.ridZ) {
+    if (this.ridZ && this.isRecurring() && (this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)) {
         var exceptId = soapDoc.set("exceptId", null, comp);
         exceptId.setAttribute("d", this.ridZ);
     }
@@ -1286,4 +1286,41 @@ function(soapDoc, m, addr, type, name) {
 ZmAppt.prototype.setProposedInvite =
 function(invite) {
     this.proposedInvite = invite;
+};
+
+
+ZmAppt.prototype.getRecurrenceFromInvite =
+function(invite) {
+    return (invite && invite.comp && invite.comp[0]) ? invite.comp[0].recur : null;
+};
+
+ZmAppt.prototype.setInvIdFromProposedInvite =
+function(invites, proposedInvite) {
+
+    var proposalRidZ = proposedInvite.getRecurrenceId();
+
+    if(proposedInvite.components[0].ridZ) {
+
+        //search all the invites for an appointment
+        for(var i in invites) {
+            var inv = invites[i];
+            if(inv.comp[0].ridZ  == proposalRidZ) {
+                this.invId = this.id + "-" + inv.id;
+                break;
+            }
+        }
+
+        //if new time is proposed for creating an exceptional instance - no matching invites will be found
+        if(!this.invId) {
+            this.invId = this.id + "-" + invites[0].id;
+            this.ridZ = proposalRidZ;
+            var invite = ZmInvite.createFromDom(invites);            
+            if(invite.isRecurring()) {
+                this.isException = true;
+            }
+        }
+
+    }else {
+        this.invId = this.id + "-" + invites[0].id;
+    }
 };
