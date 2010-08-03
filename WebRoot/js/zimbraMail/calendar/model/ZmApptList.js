@@ -140,6 +140,10 @@ function(orig, result, startTime, endTime, fanoutAllDay, includeReminders) {
 				nextDay = new Date(origEndTime);
 			}
 			nextDay.setHours(0,0,0,0);
+            if(AjxDateUtil.isDayShifted(nextDay)) {
+                AjxDateUtil.rollToNextDay(nextDay);
+            }
+
 			if (AjxDateUtil.isInRange(apptStartTime, nextDay.getTime(), startTime, endTime)) {
 				var slice = ZmAppt.quickClone(appt);
 				if (outOfBounds) {
