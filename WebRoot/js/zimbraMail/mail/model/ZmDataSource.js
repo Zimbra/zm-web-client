@@ -119,7 +119,11 @@ function() {
 	if (!email) { // bug: 38175
 		var provider = ZmDataSource.getProviderForAccount(this);
 		var host = (provider && provider._host) || this.mailServer;
-		email = this.userName && host ? [ this.userName, host].join("@") : "";
+		email = "";
+        if (this.userName) {
+            if (this.userName.match(/@/)) email = this.userName; // bug: 48186
+            else if (host) email = [ this.userName, host].join("@");
+        }
 	}
 	return email;
 };
