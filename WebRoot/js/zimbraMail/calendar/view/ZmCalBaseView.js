@@ -13,28 +13,32 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCalBaseView = function(parent, className, posStyle, controller, view) {
+ZmCalBaseView = function(parent, className, posStyle, controller, view, readonly) {
 	if (arguments.length == 0) { return; }
 
 	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
 
 	// BEGIN LIST-RELATED
-	this._setMouseEventHdlrs();
+	if (!readonly) {
+		this._setMouseEventHdlrs();
+	}
 	this.setCursor("default");
-	
-	this._listenerMouseOver = new AjxListener(this, ZmCalBaseView.prototype._mouseOverListener);
-	this._listenerMouseOut = new AjxListener(this, ZmCalBaseView.prototype._mouseOutListener);
-	this._listenerMouseDown = new AjxListener(this, ZmCalBaseView.prototype._mouseDownListener);
-	this._listenerMouseUp = new AjxListener(this, ZmCalBaseView.prototype._mouseUpListener);
-	this._listenerMouseMove = new AjxListener(this, ZmCalBaseView.prototype._mouseMoveListener);
-	this._listenerDoubleClick = new AjxListener(this, ZmCalBaseView.prototype._doubleClickListener);
-	this.addListener(DwtEvent.ONMOUSEOVER, this._listenerMouseOver);
-	this.addListener(DwtEvent.ONMOUSEOUT, this._listenerMouseOut);
-	this.addListener(DwtEvent.ONMOUSEDOWN, this._listenerMouseDown);
-	this.addListener(DwtEvent.ONMOUSEUP, this._listenerMouseUp);
-	this.addListener(DwtEvent.ONMOUSEMOVE, this._listenerMouseMove);
-	this.addListener(DwtEvent.ONDBLCLICK, this._listenerDoubleClick);
-	
+
+	if (!readonly) {
+		this._listenerMouseOver = new AjxListener(this, ZmCalBaseView.prototype._mouseOverListener);
+		this._listenerMouseOut = new AjxListener(this, ZmCalBaseView.prototype._mouseOutListener);
+		this._listenerMouseDown = new AjxListener(this, ZmCalBaseView.prototype._mouseDownListener);
+		this._listenerMouseUp = new AjxListener(this, ZmCalBaseView.prototype._mouseUpListener);
+		this._listenerMouseMove = new AjxListener(this, ZmCalBaseView.prototype._mouseMoveListener);
+		this._listenerDoubleClick = new AjxListener(this, ZmCalBaseView.prototype._doubleClickListener);
+		this.addListener(DwtEvent.ONMOUSEOVER, this._listenerMouseOver);
+		this.addListener(DwtEvent.ONMOUSEOUT, this._listenerMouseOut);
+		this.addListener(DwtEvent.ONMOUSEDOWN, this._listenerMouseDown);
+		this.addListener(DwtEvent.ONMOUSEUP, this._listenerMouseUp);
+		this.addListener(DwtEvent.ONMOUSEMOVE, this._listenerMouseMove);
+		this.addListener(DwtEvent.ONDBLCLICK, this._listenerDoubleClick);
+	}
+
 	this._controller = controller;
 	this.view = view;	
 	this._evtMgr = new AjxEventMgr();	 
@@ -667,7 +671,7 @@ function() {
 		}
 	}
 	list.removeAll();
-	this.removeAll();	
+	this.removeAll();
 };
 
 ZmCalBaseView.prototype.removeAll =

@@ -86,7 +86,7 @@ ZmOrganizer = function(params) {
 	// NOTE: has been set. In other words, the color parameter will only
 	// NOTE: be specified if explicitly set that way and not as an explicit
 	// NOTE: RGB value.
-	this.rgb = ZmOrganizer.COLOR_VALUES[params.color] || params.rgb;
+	this.rgb = params.color != null ? ZmOrganizer.COLOR_VALUES[params.color] : params.rgb;
 
 	if (appCtxt.isOffline && !this.account && this.id == this.nId) {
 		this.account = appCtxt.accountList.mainAccount;

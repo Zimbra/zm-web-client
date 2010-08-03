@@ -48,7 +48,7 @@
                     <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${count lt sessionScope.F_LIMIT and fldr.isContactView}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
                     </select></c:if>
 
-                <div class="icons button"><input type="image" name="actionDelete" src="/zimbra/img/startup/ImgTrash.gif" value="<fmt:message key='delete'/>"/></div>     
+                <div class="icons button"><input type="image" name="actionDelete" src="/zimbra/img/startup/ImgTrash.gif" value="<fmt:message key='delete'/>" onclick="return submitForm(document.getElementById('zForm'),null,this.value);"/></div>
                 <div class="select button">
                     <div>
                        <select class="zo_select_button" name="anAction" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
@@ -78,7 +78,7 @@
                     </div>
 
 
-                    <div class="icons button"><input type="image" name="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}" src="/zimbra/img/startup/ImgTrash.gif" value="<fmt:message key='delete'/>"/></div>
+                    <div class="icons button"><input type="image" name="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}" src="/zimbra/img/startup/ImgTrash.gif" value="<fmt:message key='delete'/>" onclick="return submitForm(document.getElementById('zForm'),null,this.value);"/></div>
 
                     <div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
                     
@@ -118,7 +118,8 @@
                                             </zm:forEachFolder>
                                         </c:otherwise>
                                     </c:choose>
-                                </optgroup><c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+                                </optgroup>
+                                <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
                                 <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
                                 <optgroup label="<fmt:message key="MO_actionAddTag"/>">
                                     <c:forEach var="atag" items="${allTags}"><option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
@@ -126,7 +127,7 @@
                                 <optgroup label="<fmt:message key="MO_actionRemoveTag"/>">
                                     <c:forEach var="atag" items="${allTags}"><option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
                                 </optgroup>
-                            </c:if>
+                                </c:if>
                             </select>
                         
                     </div>

@@ -93,6 +93,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE_MENU, {textKey:"send", image:"Send", textPrecedence:75});
 	ZmOperation.registerOp(ZmId.OP_CREATE_SLIDE_SHOW, {textKey:"createSlideShow", image:"Presentation"});
     ZmOperation.registerOp(ZmId.OP_EDIT, {textKey: "edit", image:"Edit"});
+    ZmOperation.registerOp(ZmId.OP_RENAME_FILE, {textKey: "rename", image:"Edit"});
 };
 
 ZmBriefcaseApp.prototype._registerSettings =
