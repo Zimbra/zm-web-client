@@ -107,7 +107,7 @@ function(str, callback, aclv, options, account) {
 		return;
 	}
 
-	aclv.setWaiting(true);
+//	aclv.setWaiting(true);
 	var respCallback = new AjxCallback(this, this._handleResponseAutocompleteMatch, [str, callback]);
 	this._doAutocomplete(str, aclv, options, acType, respCallback, account);
 };
@@ -184,7 +184,7 @@ function(str, aclv, options, acType, callback, account, result) {
 	// if we get back results for other than the current string, ignore them
 	if (str != this._curAcStr) { return; }
 
-	aclv.setWaiting(false);
+//	aclv.setWaiting(false);
 
 	delete this._acRequests[str];
 
@@ -225,7 +225,7 @@ function(str, aclv, options, acType, callback, account, result) {
 ZmAutocomplete.prototype._handleErrorDoAutocomplete =
 function(str, aclv, ex) {
 	DBG.println("ac", "error on request for " + str + ", canceling");
-	aclv.setWaiting(false);
+//	aclv.setWaiting(false);
 	appCtxt.getAppController().cancelRequest(this._acRequests[str], null, true);
 	appCtxt.setStatusMsg({msg:ZmMsg.autocompleteFailed, level:ZmStatusView.LEVEL_WARNING});
 	delete this._acRequests[str];
