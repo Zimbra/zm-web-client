@@ -168,7 +168,7 @@ function(appt, mode, isDirty) {
     this._proposeNewTime = (mode == ZmCalItem.MODE_PROPOSE_TIME);
 
     if (this._proposeNewTime) {
-        mode = ZmCalItem.MODE_EDIT;
+        mode = appt.viewMode || ZmCalItem.MODE_EDIT;
         apptComposeMode = ZmApptComposeView.PROPOSE_TIME;
     }
 

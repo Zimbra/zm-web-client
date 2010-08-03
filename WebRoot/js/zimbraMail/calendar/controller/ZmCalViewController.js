@@ -72,6 +72,7 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.DELETE_INSTANCE]  = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_SERIES]  = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.FORWARD_APPT]  = new AjxListener(this, this._forwardListener);
+	this._listeners[ZmOperation.PROPOSE_NEW_TIME]  = new AjxListener(this, this._proposeTimeListener);
 	this._listeners[ZmOperation.FORWARD_APPT_INSTANCE]  = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.FORWARD_APPT_SERIES]  = new AjxListener(this, this._forwardListener);
 
@@ -1314,6 +1315,36 @@ function(ev) {
 	this._doForward(this._listView[this._currentView].getSelection(), op);
 };
 
+ZmCalViewController.prototype._proposeTimeListener =
+function(ev) {
+    var op = ev.item.parent.getData(ZmOperation.KEY_ID);
+
+    var items = this._listView[this._currentView].getSelection();
+
+    // listview cannot handle proposing time for multiple items at once
+    if (this._viewMgr.getCurrentViewName() == ZmId.VIEW_CAL_LIST && items.length > 1) {
+        return;
+    }
+
+    var mode = ZmCalItem.MODE_EDIT;
+    if (op == ZmOperation.VIEW_APPT_INSTANCE || op == ZmOperation.VIEW_APPT_SERIES) {
+        mode = (op == ZmOperation.VIEW_APPT_INSTANCE)
+            ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE
+            : ZmCalItem.MODE_EDIT_SERIES;
+    }
+
+    var appt = items[0];
+    var clone = ZmAppt.quickClone(appt);
+    clone.setProposeTimeMode(true);
+    clone.getDetails(mode, new AjxCallback(this, this._proposeTimeContinue, [clone, mode]));
+};
+
+ZmCalViewController.prototype._proposeTimeContinue =
+function(appt, mode) {
+    appt.setViewMode(mode);
+    AjxDispatcher.run("GetApptComposeController").proposeNewTime(appt);
+};
+
 ZmCalViewController.prototype._doForward =
 function(items, op) {
 	// listview cannot handle forwarding multiple items at once
@@ -2278,6 +2309,7 @@ function(parent, num) {
 		parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
 		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
 		parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwadable);
+		parent.enable(ZmOperation.PROPOSE_NEW_TIME, (appt && !appt.isOrganizer()));
 		parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null);
 	}
 
@@ -2527,6 +2559,7 @@ function(recurrenceMode) {
 		ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE, ZmOperation.INVITE_REPLY_MENU,
 		ZmOperation.SEP,
 		forwardOp,
+        ZmOperation.PROPOSE_NEW_TIME,
 		deleteOp, ZmOperation.MOVE, ZmOperation.TAG_MENU,
 		ZmOperation.SHOW_ORIG
 	];
@@ -3175,7 +3208,7 @@ function(invite, callback, result) {
     var appt = ZmAppt.createFromDom(apptNode, {list: apptList}, null);
 
     var invites = apptNode.inv;
-    this.setApptInvitationId(appt, invites, invite);
+    appt.setInvIdFromProposedInvite(invites, invite);
 
     if(callback) {
         callback.run(appt);
@@ -3213,22 +3246,6 @@ function(invite, appt) {
     appt.setProposedInvite(invite);
     appt.setProposedTimeCallback(this._proposedTimeCallback);
     this.editAppointment(appt, mode);   
-};
-
-ZmCalViewController.prototype.setApptInvitationId =
-function(appt, invites, proposedInvite) {
-    var proposalRidZ = proposedInvite.getRecurrenceId();
-    if(proposedInvite.components[0].ridZ) {
-        for(var i in invites) {
-            var inv = invites[i];
-            if(inv.comp[0].ridZ  == proposalRidZ) {
-                appt.invId = appt.id + "-" + inv.id;
-                break;
-            }
-        }
-    }else {
-        appt.invId = appt.id + "-" + invites[0].id;
-    }
 };
 
 ZmCalViewController.prototype.proposeNewTime =
