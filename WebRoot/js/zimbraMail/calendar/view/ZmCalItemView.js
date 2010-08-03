@@ -95,7 +95,7 @@ function(calItem, prevView, mode) {
 ZmCalItemView.prototype.reset =
 function() {
 	ZmMailMsgView.prototype.reset.call(this);
-	this._calItem = null;
+	this._calItem = null;    
 };
 
 ZmCalItemView.prototype.close = function() {}; // override
@@ -114,7 +114,9 @@ function(calItem) {
 	var editBtnCellId = this._htmlElId + "_editBtnCell";
 	this._hdrTableId = this._htmlElId + "_hdrTable";
 
-    subs.allowEdit = (appCtxt.get(ZmSetting.CAL_APPT_ALLOW_ATTENDEE_EDIT) || calItem.isOrg);
+    var calendar = calItem.getFolder();
+    var isReadOnly = calendar.isReadOnly();
+    subs.allowEdit = !isReadOnly && (appCtxt.get(ZmSetting.CAL_APPT_ALLOW_ATTENDEE_EDIT) || calItem.isOrg);
 
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
@@ -292,7 +294,7 @@ function(ev) {
         msgDialog.popup();
         msgDialog.registerCallback(DwtDialog.OK_BUTTON, this.edit, this);
         return;
-    }else{
+    }else if(this._editWarningDialog){
         this._editWarningDialog.popdown();
     }
     
