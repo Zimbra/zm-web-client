@@ -436,9 +436,11 @@ function() {
 		var info = this._calItemStatus[i];
 		if (info.item) {
 			var calendar = info.item;
-			if(calendar.isRemote() && !calendar.isMountpoint && calendar.isReadOnly()){
+            //If, Remote Calendars & not mount-points, dont send check/uncheck requests
+			if(calendar.isRemote() && (!calendar.isMountpoint || !calendar.zid)){
                 calendar.isChecked = info.checked;
                 calendar.checkedCallback(info.checked);
+                this._handleCheckedCalendarRefresh(calendar);
             }else{
                 batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
 			    itemCount++;
@@ -456,6 +458,12 @@ function() {
 	}
 
 	this._updateCalItemStateActionId = null;
+};
+
+ZmCalViewController.prototype._handleCheckedCalendarRefresh =
+function(calendar){
+    this._updateCheckedCalendars();
+    this._refreshAction(true);
 };
 
 ZmCalViewController.prototype._calTreeChangeListener =
