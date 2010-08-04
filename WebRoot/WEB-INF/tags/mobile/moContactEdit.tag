@@ -78,6 +78,8 @@
         </span>
     </div>
 </div>
+<div class="wrap-dcontent" id="wrap-dcontent-view">
+<div id="dcontent-view" style="padding-bottom:5px;">
 <div class="Stripes cont_view">
 <c:if test="${contact!=null}">
     <div class="View header">
@@ -172,6 +174,8 @@
             <mo:contactEditField label="AB_FIELD_homeURL" contact="${contact}" field="homeURL"/>
         </div>
     </div>
+</div>
+</div>
 </div>
 </div>
 

@@ -61,8 +61,6 @@ ZmUploadDialog.prototype._uploadCallback;
 
 ZmUploadDialog.prototype._extensions;
 
-ZmUploadDialog.supportsHTML5 = ( window.FileReader/*Firefox*/ || AjxEnv.isChrome || AjxEnv.isSafari4up );
-
 // Public methods
 /**
  * Enables the link title option.
@@ -179,15 +177,23 @@ ZmUploadDialog.prototype._upload = function(){
 			return;
 		}
         this._msgInfo.innerHTML = "";
-        if(ZmUploadDialog.supportsHTML5 && !this._validateSize()){
-            this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)));;
-            return;
+        if(AjxEnv.supportsHTML5File){
+            if(this._validateSize()){
+                var f = element.files; 
+                for(var j=0; j<f.length; j++){
+                    files.push({name:f[j].name, fullname: f[j].name});
+                }
+            }else{
+                this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)));;
+                return;
+            }
+        }else{
+            var file = {
+                fullname: element.value,
+                name: element.value.replace(/^.*[\\\/:]/, "")
+            };
+            files.push(file);
         }
-		var file = {
-			fullname: element.value,
-			name: element.value.replace(/^.*[\\\/:]/, "")
-		};
-		files.push(file);
         if(this._showLinkTitleText) {
             var id = element.id;
             id = id.replace("_input", "") + "_titleinput";
@@ -240,13 +246,15 @@ function(){
 	for (var i = 0; i < atts.length; i++){
         file = atts[i].files;
         if(!file || file.length == 0) continue;
-        file = file[0];
-        size = file.size || file.fileSize /*Safari*/;
-        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)){
-            return false;
+        for(var j=0; j<file.length;j++){
+            var f = file[j];
+            size = f.size || f.fileSize /*Safari*/;
+            if(size > appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)){
+                return false;
+            }
         }
     }
-	return true;
+	return true;        
 };
 
 ZmUploadDialog.prototype._popupErrorDialog = function(message) {
@@ -422,7 +430,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 
 	var cell = row.insertCell(-1);
 	cell.innerHTML = [
-		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30>"
+		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 multiple>"
 	].join("");
 
 	var cell = row.insertCell(-1);
@@ -430,7 +438,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 	cell.innerHTML = "&nbsp;";
 
     //HTML5
-    if(ZmUploadDialog.supportsHTML5){
+    if(AjxEnv.supportsHTML5File){
         var inputEl = document.getElementById(inputId);
         var sizeEl = cell;
         Dwt.setHandler(inputEl, "onchange", AjxCallback.simpleClosure(this._handleFileSize, this, inputEl, sizeEl));
@@ -489,15 +497,23 @@ function(inputEl, sizeEl){
     var files = inputEl.files;
     if(!files) return;
 
-    var file = files[0];
-    var size = file.size || file.fileSize;
+    var sizeStr = [], className, totalSize =0;
+    for(var i=0; i<files.length;i++){
+        var file = files[i];
+        var size = file.size || file.fileSize /*Safari*/;
+        if(size > appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT))
+            className = "RedC";
+        totalSize += size;
+    }
+
     if(sizeEl) {
-        sizeEl.innerHTML = "  ("+AjxUtil.formatSize(size, true)+")";
-        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))
+        sizeEl.innerHTML = "  ("+AjxUtil.formatSize(totalSize, true)+")";
+        if(className)
             Dwt.addClass(sizeEl, "RedC");
         else
             Dwt.delClass(sizeEl, "RedC");
     }
+    
 };
 
 ZmUploadDialog._removeHandler = function(event) {

@@ -739,7 +739,7 @@ function(dialog) {
 ZmController.prototype._menuPopdownActionListener = function() {};
 
 /**
- * Sets the session id and view id (using the type and session id).
+ * Sets the session id, view id, and tab id (using the type and session id).
  * Controller for a view that shows up in a tab within the app chooser bar.
  * Currently only mail views exist: compose, send confirmation, and msg view.
  *
@@ -750,6 +750,7 @@ ZmController.prototype.setSessionId =
 function(type, sessionId) {
 	this.sessionId = sessionId;
 	this.viewId = [type, this.sessionId].join("");
+	this.tabId = ["tab", this.viewId].join("_");
 };
 
 /**

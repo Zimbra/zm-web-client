@@ -504,12 +504,12 @@ function(ev) {
 		return this._handleEnterKeyPress(ev);
 	}
 	return true;
-}
+};
 
 ZmSearchToolBar.prototype._handleEnterKeyPress =
 function(ev) {
-	var menu = this._searchMenuButton.getMenu();
-	var data = menu.getSelectedItem().getData("CustomSearchItem");
+	var menu = this._searchMenuButton && this._searchMenuButton.getMenu();
+	var data = menu && menu.getSelectedItem().getData("CustomSearchItem");
 	if (data) {
 		data[2].run(ev); // call original listener
 	} else {

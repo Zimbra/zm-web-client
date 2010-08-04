@@ -309,11 +309,8 @@ function() {
  * @return	{ZmTaskController}	the controller
  */
 ZmTasksApp.prototype.getTaskController =
-function() {
-	if (!this._taskController) {
-		this._taskController = new ZmTaskController(this._container, this);
-	}
-	return this._taskController;
+function(sessionId) {
+	return this.getSessionController(ZmId.VIEW_TASKEDIT, "ZmTaskController", sessionId);
 };
 
 /**
