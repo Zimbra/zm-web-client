@@ -24,7 +24,11 @@ a{
 	.wrap-dcontent {
        height: 563px;
     }
-	
+
+    .wrap-dcal {
+       height: 500px;
+    }
+
 	.emptyBody {
 		min-height: 520px;
 	}
@@ -468,7 +472,6 @@ html, body{
 	border-right: 1px solid #999;
 	position: relative;
     overflow:hidden;
-    background-color: white;
 }
 
 
@@ -1004,3 +1007,37 @@ span.aleft > div:first-child, .contactHeader {
  	width: 100%;
  	margin-left: 2px;
  }
+
+/* Calendar UI styles */
+
+.calSplit{
+    width: 49.8%;
+    float: left;
+    border: 1px dotted #ccc;
+}
+
+.calBits{
+        background-color: #564e3c;
+        background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#29251b), to(#564e3c));
+        background-image: -moz-linear-gradient(100% 100% 90deg, #29251b, #564e3c);
+        padding: 0;
+        border-radius: 18px;
+        -webkit-border-radius: 18px;
+		color: white;
+        height: 18px;
+        width: 86%;
+        margin-left: 7%;
+        border: 1px solid #29251b;
+}
+
+.calBits td{
+        text-align: center;
+        font-size: 11px;
+        width: 30px;
+        padding-top: 2px;
+        border-right: 1px solid #666;
+}
+
+    .calBits td a{
+          color: white;
+    }

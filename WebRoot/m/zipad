@@ -125,7 +125,7 @@
 <meta content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width" name="viewport">
 <script type="text/javascript">window.onerror=function(m,u,l){if(window.console){window.console.log("An error occured in: "+u+"\n{\n\tmsg: "+m+",\n\tline: "+l+"\n}");}return false;};</script>
 <c:if test="${empty djs or not djs}"><script type="text/javascript">window.currentUrl='<c:url value="${currentUrl}"><c:param name="ajax" value="true"/></c:url>';<c:import url="/m/mojs${dbg ? '?dev=1':''}"/></script></c:if>
-<link href="<c:url value='/css/ipad.css'/>" type="text/css" rel="stylesheet"/>
+<link href="<c:url value='/css/zhtml,iphone-cal,ipad.css'/>" type="text/css" rel="stylesheet"/>
 </head>
 
 <body>

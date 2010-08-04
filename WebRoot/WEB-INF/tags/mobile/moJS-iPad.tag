@@ -312,9 +312,9 @@ var zClickLink = function(id, t, el) { //Click on href and make ajx req if avail
     if (!href || loading) {return false;}
     if (targ.target) {return true;}
     var xhr = XHR(true);
-    if($iO(href,"_replaceDate") > -1){
+    /*if($iO(href,"_replaceDate") > -1){
         href = href.replace(/date=......../, "date=" + currentDate);
-    }
+    }*/
     if (targ.attributes.noajax || !xhr) {
         window.location = href;
         return false;
@@ -491,9 +491,9 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
     }
     var xhr = false;
     if(((method == "GET" || method == "get")) && $iO(url,"_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
-           xhr = ajxCache.get([url,query].join("?"));
+           xhr = ajxCache.get(query ? [url,query].join("?") : url);
            if(xhr){
-                parseResponse(xhr, container,[url,query].join("?"));
+                parseResponse(xhr, container, query ? [url,query].join("?") : url);
                 return;
            }
     }
@@ -512,11 +512,11 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
             }
             if(xhr.readyState == 4){
                 if((method == "GET" || method == "get") && $iO(url,"_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
-                    ajxCache.set([url,query].join("?"),xhr,justPrefetch);
+                    ajxCache.set(query ? [url,query].join("?") : url,xhr,justPrefetch);
                 }
                 lastRendered = new Date().getTime();
                 if(!justPrefetch){
-                    parseResponse(xhr, container,[url,query].join("?"));
+                    parseResponse(xhr, container,query ? [url,query].join("?") : url);
                 }
             }
         };
@@ -555,13 +555,14 @@ var parseResponse = function (request, container,url) {
             $("view-content").style.display = "none";
             $("static-content").style.display = "block";
         }
+        //alert(ZmiPad.getParamFromURL("st",url));
         if (request.status == 200) {
             showLoadingMsg(null, false);
             var data = request.responseText;
             if (data) {
                 <c:if test="${!ua.isIE}">window.scrollTo(0,1);</c:if>
                 if(match) {  //TODO: need to clean up a lot 
-                    var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders|newmail)/,'mail').replace(/(ab)/,'contact');
+                    var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals|newappt)/ig,'cal').replace(/(message|conversation|folders|newmail)/,'mail').replace(/(ab)/,'contact');
                     var targ = $(tabId);
                     if(targ) {
                         if(targ.id == 'cal' && targ.parentNode.className == 'sel') {
@@ -761,20 +762,20 @@ if(window.location.hash){
 
 var initListScroll = function () {
     $('dlist-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
-    listScroll = new iScroll('dlist-view');
+    listScroll = new iScroll('dlist-view',{ checkDOMChanges: false, desktopCompatibility: true });
 };
 
 var initContentScroll = function() {
    if($("dcontent-view")) {
        $("dcontent-view").addEventListener('touchmove', function(e){ e.preventDefault(); });
-       contentScroll = new iScroll('dcontent-view');
+       contentScroll = new iScroll('dcontent-view',{ checkDOMChanges: false, desktopCompatibility: true });
    }
 }
 
 var init = function () {
     document.getElementById('dlist-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
     //document.getElementById('dcontent-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
-    listScroll = new iScroll('dlist-view');
+    listScroll = new iScroll('dlist-view',{ checkDOMChanges: false,desktopCompatibility: true });
 }
 
 
@@ -812,9 +813,25 @@ ZmiPad.initColumnView = function() {
             viewDiv.style.display = "block";
         } else {
             viewDiv.style.display = "none";
+            viewDiv.innerHTML = "";    
         }
     }
 };
+
+//get param value from url
+ZmiPad.getParamFromURL = function(param, url) {
+
+  param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+param+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( url );
+  if( results == null )
+    return "";
+  else
+    return results[1];
+
+};
+
 
 /*
 ZmiPadMail to process all Mail responses
@@ -826,7 +843,7 @@ ZmiPadMail.processResponse = function (respData, url) {
 
     ZmiPad.initColumnView();
 
-    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showABCreate') !=-1)  && (url.indexOf('hc=1') == -1)) {
+    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || ZmiPad.getParamFromURL("showFolderCreate",url) == "1" || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1")  && (url.indexOf('hc=1') == -1)) {
 
         $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
@@ -852,7 +869,7 @@ ZmiPadMail.processResponse = function (respData, url) {
                 $("dlist-view").appendChild(nodeDiv);
             }
         }
-        listScroll.refresh();
+        setTimeout(function(){listScroll.refresh();}, 0);
 
     } else {
 
@@ -900,7 +917,7 @@ ZmiPadContacts.processResponse = function (respData, url) {
                 $("dlist-view").appendChild(nodeDiv);
             }
         }
-        listScroll.refresh();
+        setTimeout(function(){listScroll.refresh();}, 0);
 
     } else {
         $(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
@@ -922,7 +939,20 @@ function ZmiPadCal() {
 
 ZmiPadCal.processResponse = function (respData, url) {
     ZmiPad.initMainView();
-    $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
+    if(ZmiPad.getParamFromURL("st",url) == "newappt") {
+        $('compose-body').innerHTML = respData;
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        toggleCompose('compose-pop','veil');
+    } else if(ZmiPad.getParamFromURL("action",url) == "view") {
+        $('compose-body').innerHTML = respData;
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        toggleCompose('compose-pop','veil');
+    } else if(ZmiPad.getParamFromURL("view",url) == "day") {
+        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
+        initContentScroll();
+    } else {
+        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
+    }
 }
 
 window.addEventListener('load', init);

@@ -22,13 +22,15 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <fmt:setTimeZone value="${timezone}"/>
     <c:set var="context" value="${null}"/>
+    <fmt:message key="noSubject" var="noSubject"/>
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
-
+    <fmt:message var="dayFormat" key="MO_CAL_LIST_DOW"/>
     <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
     <c:set var="scheduleView" value="${view eq 'schedule'}"/>
     <c:choose>
@@ -85,24 +87,99 @@
 </mo:handleError>
 
 <div>
-    <mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="${view}" isTop="${true}"/>
-    <div class="zo_cal_dayheader">
-        <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
-        <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
-                        <span>
-                            <a class="cal_prev" href="${fn:escapeXml(prevUrl)}">&nbsp;</a>
-                        </span>
-                        <span class='zo_unread Medium${(date.timeInMillis eq today.timeInMillis) ? '_today':''}'>
-                            <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
-                            <fmt:formatDate value="${date.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
-                        </span>
-                        <span>
-                            <a class="cal_next" href="${fn:escapeXml(nextUrl)}">&nbsp;</a>
-                        </span>
-    </div>
+    <c:choose>
+        <c:when test="${ua.isiPad eq true}">
+            <mo:ipadToolbar urlTarget="${urlTarget}" mailbox="${mailbox}" view="${view}" date="${date}" context="${context}" app="${param.st}" keys="false" timezone="${timezone}"/>
+        </c:when>
+        <c:otherwise>
+            <mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="${view}" isTop="${true}"/>
+        </c:otherwise>
+    </c:choose> 
+    <div class="msgBody">
+        <div class="calSplit">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr><td width="50%"></td>
+                    <td width="50%">
+                    <app:miniCal date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}"/>
+                </td></tr>
+                <tr><td colspan="2">
+                    <c:set var="count" value="0"/>
+                    <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
+                    <c:set var="dayEnd" value="${zm:addDay(currentDay, 1).timeInMillis}"/>
+                    <zm:forEachAppoinment var="appt" appointments="${minicalappts}" start="${dayStart}" end="${dayEnd}">
+                        <c:if test="${count eq 0}">
+                            <div class='zo_cal_listh'>
+                    <span class='zo_cal_listh_dow aleft'>
+                        <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}" timeZone="${timezone}"/>
+                    </span>
+                    <span class='zo_cal_listh_date aright'>
+                        <fmt:formatDate value="${currentDay.time}" type="date" dateStyle="medium" timeZone="${timezone}"/>
+                    </span>
+                            </div>
+                        </c:if>
+                        <div class='zo_cal_listi' onclick='return zClickLink("a${id}")'>
+                            <span class="${zm:getFolder(pageContext,appt.folderId).styleColor}${appt.partStatusNeedsAction ? '' : 'Bg'}">&nbsp;&nbsp;</span>
+                <span class='zo_cal_listi_time'>
+                    <c:choose>
+                        <c:when test="${appt.allDay}">
+                            <fmt:message key="apptAllDay"/>
+                        </c:when>
+                        <c:when test="${appt.startTime lt dayStart}">
+                            <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="short" timeZone="${timezone}"/>
+                        </c:when>
+                        <c:otherwise>
+                            <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short" timeZone="${timezone}"/>
+                        </c:otherwise>
+                    </c:choose>
+                </span>
+                            <mo:calendarUrl appt="${appt}" var="apptUrl"/>
+                <span class='zo_cal_listi_subject'>
+                    <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
+                    <a id="a${id}" href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(fn:substring(subject,0,25))}...</a>
+                </span>
+                        </div>
+                        <c:set var="count" value="${count+1}"/>
+                        <c:set var="id" value="${id+1}"/>
+                    </zm:forEachAppoinment>
+                </td></tr>
+            </table>
+        </div>
+        
+        <div class="calSplit">
+            <div class="wrap-dcontent wrap-dcal" id="wrap-dcontent-view">
+                    <div id="dcontent-view" style="padding-bottom:5px;">
+            <div class="zo_cal_dayheader">
+                <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
+                <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
+                                <span>
+                                    <a class="cal_prev" href="${fn:escapeXml(prevUrl)}">&nbsp;</a>
+                                </span>
+                                <span class='zo_unread Medium${(date.timeInMillis eq today.timeInMillis) ? '_today':''}'>
+                                    <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
+                                    <fmt:formatDate value="${date.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
+                                </span>
+                                <span>
+                                    <a class="cal_next" href="${fn:escapeXml(nextUrl)}">&nbsp;</a>
+                                </span>
+            </div>
 
-    <div>
-        ${multiDay}
+            <div>
+                ${multiDay}
+            </div>
+            </div>
+            </div>    
+        </div>
     </div>
-    <mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="${view}" isTop="${false}"/>
+    <div class="calBits">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+            </tr>
+        </table>
+    </div>
+    <c:if test="${ua.isiPad eq false}">
+        <mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="${view}" isTop="${false}"/>
+    </c:if>
 </div>
