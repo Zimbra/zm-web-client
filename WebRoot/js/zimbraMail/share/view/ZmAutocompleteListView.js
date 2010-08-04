@@ -108,10 +108,6 @@ ZmAutocompleteListView = function(params) {
 		this._focusAction = new AjxTimedAction(null, this._autocompleteFocus);
 	}
 
-	// back-reference to this object to stash in elements
-	this._internalId = Dwt.getNextId();
-	DwtControl.ALL_BY_ID[this._internalId] = this;
-
 	this._origClass = "acRow";
 	this._selClass = "acRow-selected";
 	this._showForgetTextClass = "ForgetText";
@@ -416,7 +412,7 @@ function(account) {
  */
 ZmAutocompleteListView.prototype.handle =
 function(element) {
-	element._aclvId = this._internalId;
+	element._aclvId = this._htmlElId;
 	Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmAutocompleteListView.onKeyDown);
 	Dwt.setHandler(element, DwtEvent.ONKEYPRESS, ZmAutocompleteListView.onKeyPress);
 	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
@@ -862,7 +858,7 @@ function(list) {
 
 ZmAutocompleteListView.prototype._getId =
 function(type, num) {
-	return [this._internalId, "ac" + type, num].join("_");
+	return [this._htmlElId, "ac" + type, num].join("_");
 };
 
 // Add a DwtText to each "forget" link so it can have a tooltip.
@@ -885,8 +881,6 @@ function() {
 			var listener = new AjxListener(this, this._handleForgetLink, [match.email, rowId]);
 			text.addListener(DwtEvent.ONMOUSEDOWN, listener);
 			text.reparentHtmlElement(forgetLink);
-		} else {
-			
 		}
 	}
 };
