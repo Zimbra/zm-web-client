@@ -104,7 +104,7 @@ var XHR = function(justTest) { //get the ajx
     return xhr;
 };
 var sAT = function(tabId){ //set active tab
-    tabId = tabId.replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail');
+    tabId = tabId.replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail').replace(/(prefs)/,'options');
     var targ = $(tabId);
     if(targ && targ.id.match(/(mail|contact|cal|tasks|options)/ig)){
         var ids = ['mail','contact','cal','tasks','options'];
@@ -539,7 +539,7 @@ var parseResponse = function (request, container,url) {
         }
         if(match){
             sAT(match[1]);
-            var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders|newmail)/,'mail');
+            var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders|newmail)/,'mail').replace(/(prefs)/,'options');
             var targ = $(tabId);
             if (targ) {
                 if (targ.id == 'contact') {
@@ -550,8 +550,7 @@ var parseResponse = function (request, container,url) {
                     $("st").value = 'conversation';
                     $("view-mail").style.display = "block";
                     $("view-contact").style.display = "none";
-                }
-            }
+                }            }
             $("view-content").style.display = "none";
             $("static-content").style.display = "block";
         }
@@ -562,7 +561,7 @@ var parseResponse = function (request, container,url) {
             if (data) {
                 <c:if test="${!ua.isIE}">window.scrollTo(0,1);</c:if>
                 if(match) {  //TODO: need to clean up a lot 
-                    var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals|newappt)/ig,'cal').replace(/(message|conversation|folders|newmail)/,'mail').replace(/(ab)/,'contact');
+                    var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals|newappt)/ig,'cal').replace(/(message|conversation|folders|newmail)/,'mail').replace(/(ab)/,'contact').replace(/(prefs)/,'options');
                     var targ = $(tabId);
                     if(targ) {
                         if(targ.id == 'cal' && targ.parentNode.className == 'sel') {
@@ -571,6 +570,8 @@ var parseResponse = function (request, container,url) {
                            ZmiPadMail.processResponse(data,url);
                         } else if (targ.id == 'contact' && targ.parentNode.className == 'sel') {
                            ZmiPadContacts.processResponse(data,url);
+                        } else if (targ.id == 'options') {
+                           ZmiPadPrefs.processResponse(data,url);
                         }
                     }
                 }
@@ -955,6 +956,23 @@ ZmiPadCal.processResponse = function (respData, url) {
     }
 }
 
+/*
+ZmiPadPrefs to process Preferences related responses
+ */
+function ZmiPadPrefs() {
+};
+
+ZmiPadPrefs.processResponse = function (respData, url) {
+    if(ZmiPad.getParamFromURL("doPrefsAction",url) == 1) {
+        //Preferences have been saved, redirect to the mail app(default)
+        loading = false;
+        zClickLink('mail');
+    } else {
+        ZmiPad.initMainView();
+        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
+        initListScroll();
+    }
+}
 window.addEventListener('load', init);
 
 <c:if test="${scriptTag}">
