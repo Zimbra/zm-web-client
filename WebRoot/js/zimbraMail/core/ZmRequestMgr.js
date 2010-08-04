@@ -270,7 +270,7 @@ function(params, result) {
 		}
 	}
 
-	var response;
+	var response, refreshBlock;
 	try {
 		if (params.asyncMode && !params.restUri) {
 			response = result.getResponse(); // may throw exception
@@ -283,7 +283,7 @@ function(params, result) {
 			}
 		}
 		if (response.Header) {
-			this._handleHeader(response.Header);
+			refreshBlock = this._handleHeader(response.Header);
 		}
 	} catch (ex) {
 		DBG.println(AjxDebug.DBG2, "Request " + params.reqId + " got an exception");
@@ -324,6 +324,11 @@ function(params, result) {
 	this._handleNotifications(response.Header);
 
 	this._clearPendingRequest(params.reqId);
+
+	if (refreshBlock && (!appCtxt.isOffline || !appCtxt.multiAccounts)) {
+		this._refreshHandler(refreshBlock);
+	}
+	
 	if (!params.asyncMode) {
 		return response.Body;
 	}
@@ -382,25 +387,18 @@ function(reqId) {
  */
 ZmRequestMgr.prototype._handleHeader =
 function(hdr) {
-	if (!hdr) { return; }
+
+	var ctxt = hdr && hdr.context;
+	if (!ctxt) { return; }
 
 	// update change token if we got one
-	if (hdr && hdr.context && hdr.context.change) {
-		this._changeToken = hdr.context.change.token;
-	}
-
-	if (hdr && hdr.context && hdr.context.refresh) {
-		this._highestNotifySeen = 0;
-		// bug: 24269 - offline does not handle refresh block well so ignore it
-		// until we find a better solution
-		if (!appCtxt.isOffline || !appCtxt.multiAccounts) {
-			this._refreshHandler(hdr.context.refresh);
-		}
+	if (ctxt.change) {
+		this._changeToken = ctxt.change.token;
 	}
 
 	// offline/zdesktop only
-	if (hdr && hdr.context.zdsync && hdr.context.zdsync.account) {
-		var acctList = hdr.context.zdsync.account;
+	if (ctxt.zdsync && ctxt.zdsync.account) {
+		var acctList = ctxt.zdsync.account;
 		for (var i = 0; i < acctList.length; i++) {
 			var acct = appCtxt.accountList.getAccount(acctList[i].id);
 			if (acct) {
@@ -408,6 +406,12 @@ function(hdr) {
 			}
 		}
 	}
+
+	if (ctxt.refresh) {
+		this._highestNotifySeen = 0;
+	}
+
+	return ctxt.refresh;
 };
 
 /**
