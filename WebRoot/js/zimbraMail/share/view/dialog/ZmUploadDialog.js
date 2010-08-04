@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -21,10 +21,10 @@
  * Creates an upload dialog.
  * @class
  * This class represents an upload dialog.
- * 
+ *
  * @param	{DwtComposite}	shell		the parent
  * @param	{String}	className		the class name
- *  
+ *
  * @extends		DwtDialog
  */
 ZmUploadDialog = function(shell, className) {
@@ -66,17 +66,17 @@ ZmUploadDialog.supportsHTML5 = ( window.FileReader/*Firefox*/ || AjxEnv.isChrome
 // Public methods
 /**
  * Enables the link title option.
- * 
+ *
  * @param	{Boolean}	enabled		if <code>true</code>, to enbled the link title option
  */
 ZmUploadDialog.prototype.enableLinkTitleOption =
 function(enabled) {
-    this._showLinkTitleText = enabled;    
+    this._showLinkTitleText = enabled;
 };
 
 /**
  * Sets allowed extensions.
- * 
+ *
  * @param	{Array}		array		an array of extensions
  */
 ZmUploadDialog.prototype.setAllowedExtensions =
@@ -93,6 +93,8 @@ ZmUploadDialog.prototype.popup =
 function(folder, callback, title, loc, oneFileOnly, noResolveAction) {
 	this._uploadFolder = folder;
 	this._uploadCallback = callback;
+
+    this._supportsHTML5 = ZmUploadDialog.supportsHTML5 && !this._showLinkTitleText && (appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) != null);
 
 	this.setTitle(title || ZmMsg.uploadDocs);
 
@@ -179,15 +181,23 @@ ZmUploadDialog.prototype._upload = function(){
 			return;
 		}
         this._msgInfo.innerHTML = "";
-        if(ZmUploadDialog.supportsHTML5 && !this._validateSize()){
-            this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)));;
-            return;
+        if(this._supportsHTML5){
+            if(this._validateSize()){
+                var f = element.files;
+                for(var j=0; j<f.length; j++){
+                    files.push({name:f[j].name, fullname: f[j].name});
+                }
+            }else{
+                this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)));;
+                return;
+            }
+        }else{
+            var file = {
+                fullname: element.value,
+                name: element.value.replace(/^.*[\\\/:]/, "")
+            };
+            files.push(file);
         }
-		var file = {
-			fullname: element.value,
-			name: element.value.replace(/^.*[\\\/:]/, "")
-		};
-		files.push(file);
         if(this._showLinkTitleText) {
             var id = element.id;
             id = id.replace("_input", "") + "_titleinput";
@@ -201,7 +211,7 @@ ZmUploadDialog.prototype._upload = function(){
 	if (files.length == 0) {
 		return;
 	}
-    
+
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, false);
 
@@ -240,10 +250,12 @@ function(){
 	for (var i = 0; i < atts.length; i++){
         file = atts[i].files;
         if(!file || file.length == 0) continue;
-        file = file[0];
-        size = file.size || file.fileSize /*Safari*/;
-        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)){
-            return false;
+        for(var j=0; j<file.length;j++){
+            var f = file[j];
+            size = f.size || f.fileSize /*Safari*/;
+            if(size > appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)){
+                return false;
+            }
         }
     }
 	return true;
@@ -400,7 +412,7 @@ ZmUploadDialog.prototype._finishUpload = function(files, status, guids) {
 	for (var i in files) {
         var name = files[i].name;
         if(this._linkText[name]) {
-            files[i].linkText = this._linkText[name]; 
+            files[i].linkText = this._linkText[name];
         }
 		filenames.push(name);
 	}
@@ -422,7 +434,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 
 	var cell = row.insertCell(-1);
 	cell.innerHTML = [
-		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30>"
+		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 ",(this._supportsHTML5 ? "multiple" : ""),">"
 	].join("");
 
 	var cell = row.insertCell(-1);
@@ -430,7 +442,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 	cell.innerHTML = "&nbsp;";
 
     //HTML5
-    if(ZmUploadDialog.supportsHTML5){
+    if(this._supportsHTML5){
         var inputEl = document.getElementById(inputId);
         var sizeEl = cell;
         Dwt.setHandler(inputEl, "onchange", AjxCallback.simpleClosure(this._handleFileSize, this, inputEl, sizeEl));
@@ -438,7 +450,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 
     if(oneInputOnly){
         cell.colSpan = 3;
-    }else{    
+    }else{
         var cell = row.insertCell(-1);
         cell.innerHTML = [
             "<span ",
@@ -489,11 +501,18 @@ function(inputEl, sizeEl){
     var files = inputEl.files;
     if(!files) return;
 
-    var file = files[0];
-    var size = file.size || file.fileSize;
+    var sizeStr = [], className, totalSize =0;
+    for(var i=0; i<files.length;i++){
+        var file = files[i];
+        var size = file.size || file.fileSize /*Safari*/;
+        if(size > appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT))
+            className = "RedC";
+        totalSize += size;
+    }
+
     if(sizeEl) {
-        sizeEl.innerHTML = "  ("+AjxUtil.formatSize(size, true)+")";
-        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))
+        sizeEl.innerHTML = "  ("+AjxUtil.formatSize(totalSize, true)+")";
+        if(className)
             Dwt.addClass(sizeEl, "RedC");
         else
             Dwt.delClass(sizeEl, "RedC");
@@ -517,7 +536,7 @@ ZmUploadDialog._removeHandler = function(event) {
            endRow = txtRow;
        }
     }
-    
+
 	if (row.previousSibling == null && endRow.nextSibling == null) {
 		var comp = DwtControl.findControl(span);
 		comp._addFileInputRow();
