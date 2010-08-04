@@ -92,6 +92,8 @@ function(folder, callback, title, loc, oneFileOnly, noResolveAction) {
 	this._uploadFolder = folder;
 	this._uploadCallback = callback;
 
+    this._supportsHTML5 = AjxEnv.supportsHTML5File && !this._showLinkTitleText && (appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) != null);
+
 	this.setTitle(title || ZmMsg.uploadDocs);
 
 	// reset input fields
@@ -177,7 +179,7 @@ ZmUploadDialog.prototype._upload = function(){
 			return;
 		}
         this._msgInfo.innerHTML = "";
-        if(AjxEnv.supportsHTML5File){
+        if(this._supportsHTML5){
             if(this._validateSize()){
                 var f = element.files; 
                 for(var j=0; j<f.length; j++){
@@ -430,7 +432,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 
 	var cell = row.insertCell(-1);
 	cell.innerHTML = [
-		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 multiple>"
+		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 ",(this._supportsHTML5 ? "multiple" : ""),">"
 	].join("");
 
 	var cell = row.insertCell(-1);
@@ -438,7 +440,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 	cell.innerHTML = "&nbsp;";
 
     //HTML5
-    if(AjxEnv.supportsHTML5File){
+    if(this._supportsHTML5){
         var inputEl = document.getElementById(inputId);
         var sizeEl = cell;
         Dwt.setHandler(inputEl, "onchange", AjxCallback.simpleClosure(this._handleFileSize, this, inputEl, sizeEl));
