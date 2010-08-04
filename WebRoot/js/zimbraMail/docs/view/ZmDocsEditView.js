@@ -290,8 +290,11 @@ ZmDocsEditView.prototype._initialize = function() {
 ZmDocsEditView.prototype._stealFocus =
 function(iFrameId) {
 	if(AjxEnv.isFirefox3up) {
-		window.focus();
-		document.getElementById(iFrameId).contentWindow.focus();
+		var iframe = document.getElementById(iFrameId);
+		if (iframe) {
+			iframe.blur();
+			iframe.focus();
+		}
 	}
 }
 
