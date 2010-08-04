@@ -297,11 +297,15 @@
              <path>/WEB-INF/tags/mobile/moJS-iPad.tag</path>
     </tag-file>
     <tag-file>
-             <name>ipadToolbar</name>
-              <path>/WEB-INF/tags/mobile/moToolbar-iPad.tag</path>
+        <name>ipadToolbar</name>
+        <path>/WEB-INF/tags/mobile/moToolbar-iPad.tag</path>
      </tag-file>
 
-    
+    <tag-file>
+        <name>calMonthView-iPad</name>
+        <path>/WEB-INF/tags/mobile/moCalMonthView-iPad.tag</path>
+    </tag-file>
+
 </taglib>
 
         
