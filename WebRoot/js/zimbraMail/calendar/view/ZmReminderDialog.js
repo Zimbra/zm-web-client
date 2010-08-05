@@ -65,42 +65,42 @@ function() {
 
 ZmReminderDialog.prototype.popup =
 function() {
-	if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_BROWSER)) {
-		AjxPackage.require("Alert");
-		ZmBrowserAlert.getInstance().start(ZmMsg.appointmentReminder);
-	}
-
-	if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_SOUNDS)) {
-		AjxPackage.require("Alert");
-		ZmSoundAlert.getInstance().start();
-	}
-
-	if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_TOASTER)) {
-		AjxPackage.require("Alert");
-		var winText = [];
-		var appts = this._list.getArray();
-		// only show, at most, five appointment reminders
-		for (var i = 0; i < appts.length && i < 5; i++) {
-			var appt = appts[i];
-			var delta = this._formatDeltaString(this._computeDelta(appt));
-			var text = [appt.getName(), ", ", this._getDurationText(appt), "\n(", delta, ")"].join("");
-			if (AjxEnv.isMac) {
-				ZmDesktopAlert.getInstance().start(ZmMsg.appointmentReminder, text);
-			} else if (AjxEnv.isWindows) {
-				winText.push(text);
-			}
-		}
-
-		if (AjxEnv.isWindows && winText.length > 0) {
-			if (appts.length > 5) {
-				winText.push(ZmMsg.andMore);
-			}
-			ZmDesktopAlert.getInstance().start(ZmMsg.appointmentReminder, winText.join("\n"), 5);
-		}
-	}
-
 	DwtDialog.prototype.popup.call(this);
 	this._cancelSnooze();
+
+    if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_BROWSER)) {
+        AjxPackage.require("Alert");
+        ZmBrowserAlert.getInstance().start(ZmMsg.appointmentReminder);
+    }
+
+    if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_SOUNDS)) {
+        AjxPackage.require("Alert");
+        ZmSoundAlert.getInstance().start();
+    }
+
+    if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_TOASTER)) {
+        AjxPackage.require("Alert");
+        var winText = [];
+        var appts = this._list.getArray();
+        // only show, at most, five appointment reminders
+        for (var i = 0; i < appts.length && i < 5; i++) {
+            var appt = appts[i];
+            var delta = this._formatDeltaString(this._computeDelta(appt));
+            var text = [appt.getName(), ", ", this._getDurationText(appt), "\n(", delta, ")"].join("");
+            if (AjxEnv.isMac) {
+                ZmDesktopAlert.getInstance().start(ZmMsg.appointmentReminder, text);
+            } else if (AjxEnv.isWindows) {
+                winText.push(text);
+            }
+        }
+
+        if (AjxEnv.isWindows && winText.length > 0) {
+            if (appts.length > 5) {
+                winText.push(ZmMsg.andMore);
+            }
+            ZmDesktopAlert.getInstance().start(ZmMsg.appointmentReminder, winText.join("\n"), 5);
+        }
+    }    
 };
 
 ZmReminderDialog.prototype.initialize =
