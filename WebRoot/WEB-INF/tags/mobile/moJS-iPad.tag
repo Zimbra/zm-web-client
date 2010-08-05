@@ -945,7 +945,9 @@ ZmiPadCal.processResponse = function (respData, url) {
     if(ZmiPad.getParamFromURL("st",url) == "newappt") {
         $('compose-body').innerHTML = respData;
         $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
-        toggleCompose('compose-pop','veil');
+        if(ZmiPad.getParamFromURL("action",url) != "popup") {
+            toggleCompose('compose-pop','veil');                        
+        }
     } else if(ZmiPad.getParamFromURL("action",url) == "view") {
         $('compose-body').innerHTML = respData;
         $(ZmiPad.ID_VIEW_STATIC).style.display = "none";

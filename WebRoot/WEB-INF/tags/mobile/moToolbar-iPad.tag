@@ -169,32 +169,43 @@
                 <mo:calendarUrl view="${view}" var="todayURL" rawdate="${today}" timezone="${timezone}"/>
 
                 <fmt:message key="checkedCalendars" var="checkedInUI"/>
-                <div class="td toolbar">
-                   <div class="folder button">
-                            <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals&_pv=1"><fmt:message key="calendar"/></a>
-                   </div>
-                    <div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
-                </div>
-                <div class="td toolbar">
-                    <div class="folder button">
-                        <a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}"><fmt:message key="newAppointment"/></a>
-                    </div>
-                    <div class="folder button">
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${fn:escapeXml(todayURL)}"><fmt:message key="today"/></a>
-                    </div>
 
-                    <div class="actions">
-                        <div class="actionLeft button" onclick="return zClickLink('cal-list');">
-                            <a id="cal-list" ${list} class='prev_button ${view!=null && view=='list'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewListShort"/></a>
+                <c:choose>
+                    <c:when test="${view eq 'appt'}">
+                        <div class="composeToolbar">
+                            <div class="compose button"><span><a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}&action=popup" class='zo_button'><fmt:message key="${empty invId ? 'add' : 'edit'}"/></a></span></div>
+                            <div class="buttonRight button" onclick="return toggleCompose('compose-pop','veil');"><span><fmt:message key="close"/></span></div>
                         </div>
-                        <div class="actionCenter button" onclick="return zClickLink('cal-day');">
-                            <a id="cal-day" ${day} class='next_button ${view!=null && view=='day'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewDayShort"/></a>
+                    </c:when>
+                <c:otherwise>
+                    <div class="td toolbar">
+                        <div class="folder button">
+                            <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals&_pv=1"><fmt:message key="calendar"/></a>
                         </div>
-                        <div class="actionRight button" onclick="return zClickLink('cal-month');">
-                            <a id="cal-month" ${month} class='next_button ${view!=null && view=='month'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewMonthShort"/></a>
+                        <div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
+                    </div>
+                    <div class="td toolbar">
+                        <div class="folder button">
+                            <a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}"><fmt:message key="newAppointment"/></a>
+                        </div>
+                        <div class="folder button">
+                            <a accesskey="${requestScope.navlink_accesskey}" href="${fn:escapeXml(todayURL)}"><fmt:message key="today"/></a>
+                        </div>
+
+                        <div class="actions">
+                            <div class="actionLeft button" onclick="return zClickLink('cal-list');">
+                                <a id="cal-list" ${list} class='prev_button ${view!=null && view=='list'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewListShort"/></a>
+                            </div>
+                            <div class="actionCenter button" onclick="return zClickLink('cal-day');">
+                                <a id="cal-day" ${day} class='next_button ${view!=null && view=='day'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewDayShort"/></a>
+                            </div>
+                            <div class="actionRight button" onclick="return zClickLink('cal-month');">
+                                <a id="cal-month" ${month} class='next_button ${view!=null && view=='month'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewMonthShort"/></a>
+                            </div>
                         </div>
                     </div>
-                </div>    
+                </c:otherwise>
+                </c:choose>
             </c:when>
         </c:choose>
 </div></div>

@@ -145,7 +145,7 @@
                                                         <fmt:message var="noSubject" key="noSubject"/>
                                                         <c:set var="color" value=""/>
                                                         <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
-                                                        <mo:calendarUrl appt="${appt}" var="apptUrl"/>
+                                                        <mo:calendarUrl appt="${appt}" var="apptUrl" view="month"/>
                                                         <fmt:setTimeZone value="${timezone}"/>
                                                         <c:if test="${empty color}"><c:set var="color" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/></c:if>
                                                         <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
