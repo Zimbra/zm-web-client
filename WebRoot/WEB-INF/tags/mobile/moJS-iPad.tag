@@ -908,16 +908,18 @@ ZmiPadContacts.processResponse = function (respData, url) {
 
     } else if(url.indexOf('show=more') != -1) {
 
-        var moreDiv = document.createElement("div");
-        moreDiv.innerHTML =  respData;
+        //var moreDiv = document.createElement("div");
+        //moreDiv.innerHTML =  respData;
         $("dlist-view").removeChild(document.getElementById('more-div'));
 
-        for(var j =0; j < moreDiv.childNodes.length; j ++) {
+        $("dlist-view").innerHTML = $("dlist-view").innerHTML + respData;
+        /*for(var j =0; j < moreDiv.childNodes.length; j ++) {
             var nodeDiv = moreDiv.childNodes[j];
             if(nodeDiv.nodeName == 'DIV' || nodeDiv.nodeName == 'A') {
                 $("dlist-view").appendChild(nodeDiv);
             }
-        }
+        }*/
+        //delete moreDiv;
         setTimeout(function(){listScroll.refresh();}, 0);
 
     } else {
@@ -950,6 +952,9 @@ ZmiPadCal.processResponse = function (respData, url) {
         toggleCompose('compose-pop','veil');
     } else if(ZmiPad.getParamFromURL("view",url) == "day") {
         $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
+        initContentScroll();
+    } else if(ZmiPad.getParamFromURL("zoom",url) == "true") {
+        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;    
         initContentScroll();
     } else {
         $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;

@@ -49,6 +49,8 @@
         <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <c:set var="isZoom" value="${param.zoom eq true}" />
+
+    <c:set var="bitMonths" value="${dateSymbols.shortMonths}"/>
 </mo:handleError>
 <c:set var="lastMonth" value="-1"/>
 <table width="100%"  cellpadding="0" cellspacing="0" border="0">
@@ -58,41 +60,22 @@
         </td>
     </tr>
     <tr>
-        <td class='ZhAppContent'>
+        <td>
 
             <table width="100%" class='ZhCalMonthHeaderTable' cellpadding=2 cellspacing=0 border=0>
                 <tr>
-                    <td colspan="7" class='ZhCalMonthHeaderMonth'>
+                    <mo:calendarUrl view="month" var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
+                    <mo:calendarUrl view="month" var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
+
+                    <td width="1%" class='zo_cal_mpage' style="background-color:transparent; padding:0px;"><a class="cal_prev" href="${fn:escapeXml(prevUrl)}">&nbsp;</a></td>
+                    <td colspan="7" class='ZhCalMonthHeaderMonth' style="background-color:transparent; color:white; font-size:20px;">
                             ${fn:escapeXml(title)}
                     </td>
+                    <td width="1%" class='zo_cal_mpage' style="background-color:transparent; padding:0px;"><a class="cal_next" href="${fn:escapeXml(nextUrl)}">&nbsp;</a></td>
                 </tr>
-                <!--tr>
-                    <c:forEach var="day"
-                               begin="${mailbox.prefs.calendarFirstDayOfWeek}"
-                               end="${mailbox.prefs.calendarFirstDayOfWeek+6}" varStatus="status">
-                        <c:choose>
-                            <c:when test="${isZoom}">
-                               <c:set var="dayCount" value="${zm:getDayOfWeek(date)}" />
-                               <c:choose>
-                                   <c:when test="${status.count eq dayCount}">
-                                          <c:set var="width" value="34" />
-                                   </c:when>
-                                   <c:otherwise>
-                                          <c:set var="width" value="11" />
-                                   </c:otherwise>
-                               </c:choose>
-                            </c:when>
-                            <c:otherwise>
-                                  <c:set var="width" value="14" />
-                            </c:otherwise>
-                        </c:choose>
-                        <td width="${width}%" class='ZhCalMonthHeaderCellsText'>
-                                ${weekDays[(day mod 7)+1]}
-                        </td>
-                    </c:forEach>
-                </tr-->
             </table>
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" class='ZhCalMonthTable'>
+            <div class="calBody" style="margin-top:2px; ">
+            <table width="100%" cellpadding="5" cellspacing="0" border="0" class='ZhCalMonthTable'>
                 <c:set var="lastMonth" value="-1"/>
                 <c:forEach var="week" begin="1" end="6" varStatus="weekStatus">
                     <tr>
@@ -111,9 +94,12 @@
                                                 <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
                                             </c:otherwise>
                                         </c:choose>
-                                        <table width="100%" cellpadding="7" cellspacing="0" border="0"  class='ZhAppContent' style="background-color:#D7CFBE;">
+                                        <div class="wrap-dcontent wrap-dcalzoom" id="wrap-dcontent-view">
+                                        <div id="dcontent-view" style="padding-bottom:5px;">
+                                        <div>
+                                        <table width="100%" cellpadding="7" cellspacing="0" border="0">
                                             <tr>
-                                                <td align="center" width="10%">
+                                                <td align="center" width="20%">
                                                     <span style="font-size:26px;">${dayTitle}</span>
                                                 </td>
                                                 <td>
@@ -129,16 +115,17 @@
                                             </tr>
                                             <tr>
                                                 <td colspan="3">
-                                                    <div style="height:350px;overflow-y:auto;">
+                                                    <div style="overflow-y:auto;">
                                                         <mo:calMultiDay date="${date}" numdays="${1}" view="${'day'}" timezone="${timezone}" checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
                                                     </div>
                                                 </td>
                                             </tr>
                                         </table>
+                                        </div></div></div>    
                                     </td>
                                 </c:when>
                             <c:otherwise>
-                                        <td width="11%" onclick='return fetchIt("${monthZoomUrl}");' class='ZhCalMonthDay${currentDay.timeInMillis eq date.timeInMillis ? 'Selected':''}'>
+                                        <td width="11%" onclick='return fetchIt("${monthZoomUrl}");' class='ZhCalMonthDay${currentDay.timeInMillis eq date.timeInMillis ? 'Selected':''}' style="white-space:normal; ${isZoom ? 'height:69px;' : ''}">
                                             <table width="100%" cellspacing="2" >
                                                 <tr>
                                                     <c:set var="T" value="${zm:isSameDate(currentDay, today) ? 'T' : ''}"/>
@@ -181,9 +168,12 @@
                                                                             <td class="${fbashowAsColor}" width="4px"></td>
                                                                             <td>
                                                                                 <c:if test="${param.action ne 'print'}">
-                                                                                <a href="${fn:escapeXml(apptUrl)}">
-                                                                                    </c:if>
-                                                                                        ${fn:escapeXml(subject)}<c:if test="${param.action ne 'print'}"></a></c:if></td></tr></table>
+                                                                                    <a href="${fn:escapeXml(apptUrl)}">
+                                                                                </c:if>
+                                                                                ${fn:escapeXml(subject)}<c:if test="${param.action ne 'print'}"></a></c:if>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
                                                                 </div>
                                                             </c:when>
                                                             <c:otherwise>
@@ -201,7 +191,7 @@
                                                                                         &nbsp;<fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
                                                                                     </c:otherwise>
                                                                                 </c:choose>
-                                                                                </c:if>&nbsp;${fn:escapeXml(subject)}
+                                                                                </c:if>&nbsp;${fn:escapeXml(zm:truncate(subject,8,true))}
                                                                             </a>
                                                                             </td>
                                                                             <td align="right">
@@ -221,8 +211,8 @@
                                                 </zm:forEachAppoinment>
                                                 </c:if>
                                                 <%-- end appointment's list --%>
-                                                <c:if test="${dowStatus.first and count lt 4}">
-                                                    <c:forEach begin="1" end="${4-count}"><tr><td>&nbsp;</td></tr></c:forEach>
+                                                <c:if test="${dowStatus.first and count lt 3}">
+                                                    <c:forEach begin="1" end="${3-count}"><tr><td>&nbsp;</td></tr></c:forEach>
                                                 </c:if>
                                             </table>
                                     </td>
@@ -233,17 +223,29 @@
                     </tr>
                 </c:forEach>
             </table>
+            </div>
         </td>
     </tr>
 </table>
 
-    <div class="calBits">
-        <table cellpadding="0" cellspacing="0" border="0">
-            <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-            </tr>
-        </table>
-    </div>
+<div class="calBits">
+    <c:set var="prevYear" value="${zm:addYear(date, -1)}"/>
+    <c:set var="nextYear" value="${zm:addYear(date,  1)}"/>
+    <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+        <tr>
+            <td>
+                <mo:calendarUrl view="month" var="prevYearURL" timezone="${timezone}" date="${zm:getYear(prevYear)}1201"/>
+                <a href="${prevYearURL}">${zm:getYear(prevYear)}</a>
+            </td>
+            <c:forEach var="bitMonth" begin="0" end="11" varStatus="bitMonthStatus">
+                <mo:calendarUrl view="month" var="monthsURL" timezone="${timezone}" date="${zm:getYear(date)}${(bitMonthStatus.index+1 eq 10 || bitMonthStatus.index+1 eq 11 || bitMonthStatus.index+1 eq 12) ? '' : '0'}${(bitMonthStatus.index+1)}01"/>
+                <td><a href="${monthsURL}"> ${bitMonthStatus.index eq 0 ? zm:getYear(date) : ''}&nbsp;${bitMonths[bitMonthStatus.index]}</a></td>
+            </c:forEach>
+            <td>
+                <mo:calendarUrl view="month" var="nextYearURL" timezone="${timezone}" date="${zm:getYear(nextYear)}0101"/>
+                <a href="${nextYearURL}">${zm:getYear(nextYear)}</a>
+            </td>
+        </tr>
+    </table>
+</div>
     

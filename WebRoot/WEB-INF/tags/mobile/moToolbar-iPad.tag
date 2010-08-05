@@ -165,6 +165,8 @@
                         <c:param name="bt" value="${param.bt}"/>
                     </c:if>
                 </c:url>
+                <c:set var="today" value="${zm:getToday(timezone)}"/>
+                <mo:calendarUrl view="${view}" var="todayURL" rawdate="${today}" timezone="${timezone}"/>
 
                 <fmt:message key="checkedCalendars" var="checkedInUI"/>
                 <div class="td toolbar">
@@ -177,6 +179,10 @@
                     <div class="folder button">
                         <a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}"><fmt:message key="newAppointment"/></a>
                     </div>
+                    <div class="folder button">
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${fn:escapeXml(todayURL)}"><fmt:message key="today"/></a>
+                    </div>
+
                     <div class="actions">
                         <div class="actionLeft button" onclick="return zClickLink('cal-list');">
                             <a id="cal-list" ${list} class='prev_button ${view!=null && view=='list'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewListShort"/></a>
