@@ -1759,11 +1759,17 @@ function(folder) {
 
 ZmAccountsPage.prototype._preSave =
 function(continueCallback) {
-	// make sure that the current object proxy is up-to-date
-	this._setAccountFields(this._currentAccount, this._currentSection);
+    // make sure that the current object proxy is up-to-date
+    this._setAccountFields(this._currentAccount, this._currentSection);
 
-	// perform account tests
-	this._preSaveTest(continueCallback);
+    if(appCtxt.isOffline) {
+        // skip account tests  
+        this._preSaveCreateFolders(continueCallback);
+    } else {
+        // perform account tests
+        this._preSaveTest(continueCallback);
+    }
+
 };
 
 ZmAccountsPage.prototype._preSaveTest =
