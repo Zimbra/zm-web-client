@@ -146,7 +146,7 @@ function(view) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._setupViewMenu(view, true);
-		this._setNewButtonProps(view, ZmMsg.uploadNewFile, "NewPage", "NewPageDis", ZmOperation.NEW_FILE);
+		this._setNewButtonProps(view, ZmMsg.uploadNewFile, "Upload", "UploadDis", ZmOperation.NEW_FILE);
 		var toolbar = this._toolbar[view];
 		button = toolbar.getButton(ZmOperation.DELETE);
 		button.setToolTipContent(ZmMsg.deletePermanentTooltip);
@@ -187,6 +187,7 @@ function(parent, num) {
 	}
 
     var briefcase = appCtxt.getById(this._folderId);
+    var isTrash = (briefcase && briefcase.nId == ZmOrganizer.ID_TRASH);
     var isShared = ((briefcase && briefcase.nId != ZmOrganizer.ID_TRASH) && briefcase.isShared());
 	var isReadOnly = briefcase ? briefcase.isReadOnly() : false;
 	var isMultiFolder = (noOfFolders > 1);
@@ -217,8 +218,9 @@ function(parent, num) {
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 	parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared));
     parent.enable(ZmOperation.RENAME_FILE, !isFolderSelected && !isReadOnly);
+    parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
 
-    var isDocOpEnabled = !isReadOnly && (this._folderId != ZmFolder.ID_TRASH)
+    var isDocOpEnabled = !(isTrash || isReadOnly);
     if (appCtxt.get(ZmSetting.DOCS_ENABLED)) {
         parent.enable(ZmOperation.NEW_DOC, isDocOpEnabled);
     }
@@ -385,7 +387,11 @@ function(itemId) {
 ZmBriefcaseController.prototype.__popupUploadDialog =
 function(callback, title) {
 
-	var folderId = this._folderId || ZmOrganizer.ID_BRIEFCASE;
+
+	var folderId = this._folderId;
+    if(!folderId || folderId == ZmOrganizer.ID_TRASH)
+        folderId = ZmOrganizer.ID_BRIEFCASE;
+    
     if(this.chkFolderPermission(folderId)){
         var cFolder = appCtxt.getById(folderId);
 		appCtxt.getUploadDialog().popup(cFolder, callback, title);
@@ -395,7 +401,7 @@ function(callback, title) {
 ZmBriefcaseController.prototype.chkFolderPermission =
 function(folderId){
     var briefcase = appCtxt.getById(folderId);
-    if(briefcase.isShared() && briefcase.isReadOnly()){
+    if(briefcase.isRemote() && briefcase.isReadOnly()){
         var dialog = appCtxt.getMsgDialog();
         dialog.setMessage(ZmMsg.errorPermissionCreate, DwtMessageDialog.WARNING_STYLE);
         dialog.popup();
@@ -902,7 +908,9 @@ ZmBriefcaseController.prototype.handleCreateNotify =
 function(create){
 
     if(this.isMultiColView()){
-        this.getParentView().handleNotifyCreate(create);
+        var isTrash = (this._folderId == String(ZmOrganizer.ID_TRASH));
+        if(!isTrash)
+            this.getParentView().handleNotifyCreate(create);
     }else{
         var list = this.getList();
         if (list) {
