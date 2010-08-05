@@ -1851,6 +1851,8 @@ function () {
 // Adds child address nodes for the given address type.
 ZmMailMsg.prototype._addAddressNodes =
 function(addrNodes, type, isDraft) {
+
+	var doAdd = appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS);
 	var addrs = this._addrs[type];
 	var num = addrs.size();
 	if (num) {
@@ -1868,7 +1870,7 @@ function(addrNodes, type, isDraft) {
 			}
 			if (contactsApp) {
 				var contact = contactsApp.getContactByEmail(email);
-				addrNode.add = contact ? "0" : "1";
+				addrNode.add = (doAdd && !contact) ? "1" : "0";
 			}
 			addrNodes.push(addrNode);
 		}
