@@ -40,6 +40,7 @@ ZmBriefcaseTreeController = function(type) {
 	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
 	this._eventMgrs = {};
+    this._app = appCtxt.getApp(ZmApp.BRIEFCASE);
 };
 
 ZmBriefcaseTreeController.prototype = new ZmFolderTreeController;
@@ -185,7 +186,10 @@ function() {
 // Method that is run when a tree item is left-clicked
 ZmBriefcaseTreeController.prototype._itemClicked =
 function(folder) {
-	appCtxt.getApp(ZmApp.BRIEFCASE).search({folderId:folder.id});
+	appCtxt.getApp(ZmApp.BRIEFCASE).search({
+        folderId:folder.id,
+        callback: new AjxCallback(this, this._handleSearchResponse, [folder])
+    });
 };
 
 // Listener callbacks
@@ -236,7 +240,7 @@ function(overviewId) {
 			return root.getItems();
 		}
 	}
-	return [];
+	return [];  
 };
 
 ZmBriefcaseTreeController.prototype._trashChangeListener =
@@ -269,4 +273,13 @@ function(params) {
 	}
 
 	return treeView;
+};
+
+ZmBriefcaseTreeController.prototype._handleSearchResponse =
+function(folder, result) {
+    // bug fix #49568 - Trash is special when in Briefcase app since it
+    // is a FOLDER type in BRIEFCASE tree. So reset selection if clicked
+    if (folder.nId == ZmFolder.ID_TRASH) {
+        this._treeView[this._app.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
+    }
 };
