@@ -98,9 +98,14 @@
     <div class="msgBody">
         <div class="calSplit">
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                <tr><td width="50%"></td>
+                <tr><td width="50%">
+                        <span style="font-size:100px;padding-left:10px;"><fmt:formatDate value="${currentDay.time}" pattern="d" timeZone="${timezone}"/></span>
+                        <br><span style="font-size:20px;padding-left:10px;"><fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
+                                    <fmt:formatDate value="${currentDay.time}" pattern="${titleFormat}" timeZone="${timezone}"/></span>
+                        <br><span style="font-size:20px;padding-left:10px;"><fmt:formatDate value="${currentDay.time}" pattern="yyyy" timeZone="${timezone}"/></span>
+                    </td>
                     <td width="50%">
-                    <app:miniCal date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}"/>
+                    <mo:miniCal date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}"/>
                 </td></tr>
                 <tr><td colspan="2">
                     <c:set var="count" value="0"/>
@@ -144,13 +149,13 @@
                 </td></tr>
             </table>
         </div>
-        
+
         <div class="calSplit">
             <div class="wrap-dcontent wrap-dcal" id="wrap-dcontent-view">
-                    <div id="dcontent-view" style="padding-bottom:5px;">
-            <div class="zo_cal_dayheader">
-                <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
-                <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
+                <div id="dcontent-view" style="padding-bottom:5px;">
+                    <div class="zo_cal_dayheader">
+                        <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
+                        <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
                                 <span>
                                     <a class="cal_prev" href="${fn:escapeXml(prevUrl)}">&nbsp;</a>
                                 </span>
@@ -161,13 +166,13 @@
                                 <span>
                                     <a class="cal_next" href="${fn:escapeXml(nextUrl)}">&nbsp;</a>
                                 </span>
-            </div>
+                    </div>
 
-            <div>
-                ${multiDay}
+                    <div>
+                        ${multiDay}
+                    </div>
+                </div>
             </div>
-            </div>
-            </div>    
         </div>
     </div>
     <div class="calBits">

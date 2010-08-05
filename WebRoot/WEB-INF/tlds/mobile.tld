@@ -306,6 +306,11 @@
         <path>/WEB-INF/tags/mobile/moCalMonthView-iPad.tag</path>
     </tag-file>
 
+    <tag-file>
+        <name>miniCal</name>
+        <path>/WEB-INF/tags/mobile/moMiniCal.tag</path>
+    </tag-file>
+
 </taglib>
 
         
