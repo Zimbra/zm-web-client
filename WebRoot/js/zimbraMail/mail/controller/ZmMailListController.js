@@ -797,6 +797,14 @@ function(params) {
 		}
 	}
 
+    if(action == ZmOperation.DRAFT){
+        var bp = msg.getBodyPart();
+        if(bp.truncated){
+            params.noTruncate = true;
+            params.forceLoad = true;
+        }
+    }
+
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, params);
 	// TODO: pointless to load msg when forwarding as att
 	this._getLoadedMsg(params, respCallback);
