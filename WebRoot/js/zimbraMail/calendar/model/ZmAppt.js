@@ -1117,6 +1117,7 @@ function(callback, errorCallback) {
     soapDoc.set("su", ZmMsg.subjectNewTime + ": " + this.name, m);
 
     var calendar = this.getFolder();
+    var acct = calendar.getAccount();
     var accountName = this.getRemoteFolderOwner();
     var localAcctName = this.getFolder().getAccount().name;
     var isOnBehalfOf = accountName && localAcctName && localAcctName != accountName;
