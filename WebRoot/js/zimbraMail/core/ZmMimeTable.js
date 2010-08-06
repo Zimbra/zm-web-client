@@ -56,6 +56,7 @@ ZmMimeTable.AUDIO_WAV				= "audio/x-wav";
 ZmMimeTable.AUDIO_MP3				= "audio/mpeg";
 ZmMimeTable.IMG						= "image";
 ZmMimeTable.IMG_GIF					= "image/gif";
+ZmMimeTable.IMG_BMP					= "image/bmp";
 ZmMimeTable.IMG_JPEG				= "image/jpeg";
 ZmMimeTable.IMG_PJPEG				= "image/pjpeg";				// bug 23607
 ZmMimeTable.IMG_PNG					= "image/png";
@@ -186,6 +187,7 @@ ZmMimeTable.isRenderableImage =
 function(type) {
 	return (type == ZmMimeTable.IMG_JPEG ||
 			type == ZmMimeTable.IMG_GIF ||
+			type == ZmMimeTable.IMG_BMP ||
 			type == ZmMimeTable.IMG_PNG);
 };
 
