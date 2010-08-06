@@ -48,7 +48,6 @@ ZmBriefcaseController = function(container, app) {
 	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);
 	this._listeners[ZmOperation.CREATE_SLIDE_SHOW] = new AjxListener(this, this._createSlideShow);
     this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editFileListener);
-    this._listeners[ZmOperation.RENAME_FILE] = new AjxListener(this, this._renameFileListener);
 
 	this._listeners[ZmOperation.NEW_SPREADSHEET] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_SPREADSHEET]);
 	this._listeners[ZmOperation.NEW_PRESENTATION] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_PRESENTATION]);
@@ -217,7 +216,6 @@ function(parent, num) {
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 	parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared));
-    parent.enable(ZmOperation.RENAME_FILE, !isFolderSelected && !isReadOnly);
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
 
     var isDocOpEnabled = !(isTrash || isReadOnly);
@@ -387,11 +385,10 @@ function(itemId) {
 ZmBriefcaseController.prototype.__popupUploadDialog =
 function(callback, title) {
 
-
-	var folderId = this._folderId;
+    var folderId = this._folderId;
     if(!folderId || folderId == ZmOrganizer.ID_TRASH)
         folderId = ZmOrganizer.ID_BRIEFCASE;
-    
+
     if(this.chkFolderPermission(folderId)){
         var cFolder = appCtxt.getById(folderId);
 		appCtxt.getUploadDialog().popup(cFolder, callback, title);
@@ -492,18 +489,7 @@ function() {
 	}	
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
-    list.push(ZmOperation.RENAME_FILE);
 	return list;
-};
-
-ZmBriefcaseController.prototype._renameFileListener =
-function(){
-
-    var view = this._listView[this._currentView];
-	var items = view.getSelection();
-	if (!items) { return; }
-
-    view.renameFile(items[0]);
 };
 
 ZmBriefcaseController.prototype._editFileListener =

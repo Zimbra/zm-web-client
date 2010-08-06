@@ -581,8 +581,7 @@ function(initHide, composeMode) {
 
 ZmComposeController.prototype._getTabParams =
 function() {
-	return {id:this.tabId, image:"NewMessage", text:ZmComposeController.DEFAULT_TAB_TEXT, textPrecedence:75,
-			tooltip:ZmComposeController.DEFAULT_TAB_TEXT};
+	return {id:this.tabId, image:"NewMessage", textPrecedence:75, tooltip:ZmComposeController.DEFAULT_TAB_TEXT};
 };
 
 ZmComposeController.prototype._identityChangeListener =
@@ -1725,6 +1724,12 @@ function() {
 	if (op) {
 		op.setVisible(appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED));
 	}
+};
+
+ZmComposeController.prototype.setSessionId =
+function(type, sessionId) {
+	ZmController.prototype.setSessionId.apply(this, arguments);
+	this.tabId = ["tab", this.viewId].join("_");
 };
 
 ZmComposeController.prototype._canSaveDraft =

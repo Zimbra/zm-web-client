@@ -715,9 +715,12 @@ function() {
  * @return	{ZmApptComposeController}	the controller
  */
 ZmCalendarApp.prototype.getApptComposeController = 
-function(sessionId) {
-	AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
-	return this.getSessionController(ZmId.VIEW_APPOINTMENT, "ZmApptComposeController", sessionId);
+function() {
+	if (!this._apptController) {
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+		this._apptController = new ZmApptComposeController(this._container, this);
+	}
+	return this._apptController;
 };
 
 ZmCalendarApp.prototype.initResources =

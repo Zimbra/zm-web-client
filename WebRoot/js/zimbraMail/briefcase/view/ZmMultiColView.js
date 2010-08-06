@@ -267,7 +267,7 @@ function(ev){
 ZmMultiColView.prototype.handleNotifyCreate =
 function(create){
     var fId = create.folderId || create.l;
-    var lv = this._getItemListView(fId) || this._curListView;    
+    var lv = this._getItemListView(fId) || this._curListView;
     var list = lv && lv._zmList;    
     if(list){
         list.notifyCreate(create);
