@@ -169,7 +169,7 @@ function() {
 	if (!this._headerInit) {
 		ZmMailListView.prototype._initHeaders.call(this);
 		this._headerInit[ZmItem.F_EXPAND]	= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand};
-		this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_MLV, resizeable:true};
+		this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
 	}
 };
 
@@ -435,9 +435,9 @@ function(conv, fieldId) {
 
 		var headerCol = this._headerHash[ZmItem.F_FROM];
 		var partColWidth = headerCol ? headerCol._width : ZmMsg.COLUMN_WIDTH_FROM_CLV;
-		var part2 = this._fitParticipants(part1, conv.participantsElided, partColWidth);
+		var part2 = this._fitParticipants(part1, conv, partColWidth);
 		for (var j = 0; j < part2.length; j++) {
-			if (j == 1 && (conv.participantsElided || part2.length < origLen)) {
+			if (j == 0 && (conv.participantsElided || part2.length < origLen)) {
 				html[idx++] = AjxStringUtil.ELLIPSIS;
 			} else if (part2.length > 1 && j > 0) {
 				html[idx++] = ", ";
@@ -449,11 +449,6 @@ function(conv, fieldId) {
 			html[idx++] = "'>";
 			html[idx++] = (part2 && part2[j]) ? part2[j].name : "";
 			html[idx++] = "</span>";
-		}
-
-		// bug fix #724
-		if (part2.length == 1 && origLen > 1) {
-			html[idx++] = AjxStringUtil.ELLIPSIS;
 		}
 	} else {
 		// XXX: possible import bug but we must take into account

@@ -705,68 +705,73 @@ function(isFlagged, isMouseover) {
 		: (this._isMultiColumn ? "Blank_16" : "FlagDis");
 };
 
-// Figure out how many of the participants will fit into a given pixel width.
-// We always include the originator, and then as many of the most recent participants
-// as possible. If any have been elided (either by the server or because they don't
-// fit), there will be an ellipsis after the originator.
-//
-// The length of a participants string is determined mathematically. Since each letter
-// is assumed to be an em in width, the calculated length is significantly longer than
-// the actual length. The only way I've found to get the actual length is to create
-// invisible divs and measure them, but that's expensive. The calculated length seems to
-// run about 50% greater than the actual length, so we use a 30% fudge factor. The text 
-// that's tested is bolded, since that's bigger and the conv may be unread.
-//
-// Returns a list of objects with name and original index.
-ZmMailListView.prototype._fitParticipants = 
-function(participants, participantsElided, width) {
-	// fudge factor since we're basing calc on em width; the actual ratio is around 1.5
-	width = width * 1.3;
-	// only one participant, no need to test width
-	if (participants.length == 1) {
-		var p = participants[0];
-		var name = p.name || p.dispName || p.address;
-		var tmp = {name: AjxStringUtil.htmlEncode(name), index: 0};
-		return [tmp];
+/**
+ * Returns a list of the largest subset of the given participants that will fit within the
+ * given width. The participants are assumed to be ordered oldest to most recent. We return
+ * as many of the most recent as possible.
+ *
+ * The only way to get the actual width of a string is to put it in a div and measure it.
+ * That's expensive, so instead we do some math with some rough values for the average width
+ * of a character, both bolded (in case the item is unread) and not.
+ *
+ * @private
+ * @param {array}		participants		list of AjxEmailAddress
+ * @param {ZmMailItem}	item				item that contains the participants
+ * @param {int}			width				available space in pixels
+ * 
+ * @return list of participant objects with 'name' and 'index' fields
+ */
+ZmMailListView.prototype._fitParticipants =
+function(participants, item, width) {
+
+	// safety margin
+	width -= 15;
+
+	// first see if we can fit everyone with their full names
+	var list = [];
+	var cw = (item && item.isUnread) ? DwtUnits.WIDTH_BOLD : DwtUnits.WIDTH_CHAR;
+	var chars = 0;
+	var pLen = participants.length;
+	for (var i = 0; i < pLen; i++) {
+		var p = participants[i];
+		var field = p.name || p.address || p.company || "";
+		chars += field.length;
+		list.push({name:field, index:i});
 	}
-	// create a list of "others" (not the originator)
-	var list = new Array();
-	for (var i = 0; i < participants.length; i++) {
-		var tmp = {name: AjxStringUtil.htmlEncode(participants[i].dispName || participants[i].address), index: i};
-		list.push(tmp);
+	var textWidth = (chars * cw) + ((pLen - 1) * DwtUnits.WIDTH_SEP);
+	if (textWidth < width) {
+		return list;
 	}
-	var origLen = list.length;
-	var originator = list.shift();
-	// test originator + others
-	// if it's too big, remove the oldest from others
+
+	// now try with display (first) names; fit as many of the most recent as we can
+	list = [];
+	chars = 0;
+	for (var i = 0; i < pLen; i++) {
+		var p = participants[i];
+		var field = p.dispName || p.address || p.company || "";
+		chars += field.length;
+		list.push({name:field, index:i});
+	}
 	while (list.length) {
-		var test = [originator];
-		test = test.concat(list);
-		var text;
-		var tmp = [];
 		var w = 0;
-		for (var i = 0; i < test.length; i++)
-			w = w + (test[i].name.length * DwtUnits.WIDTH_EM); // total width of names
-		if ((test.length == origLen) && !participantsElided) {
-			w = w + (test.length - 1) * DwtUnits.WIDTH_SEP; // none left out, comma join
-			for (var i = 0; i < test.length; i++)
-				tmp.push(test[i].name);
-			text = tmp.join(", ");
-		} else {
-			w = w + DwtUnits.WIDTH_ELLIPSIS;				// some left out, add in ellipsis
-			w = w + (test.length - 2) * DwtUnits.WIDTH_SEP; // and remaining commas
-			for (var i = 0; i < list.length; i++)
-				tmp.push(list[i].name);
-			text = originator.name + AjxStringUtil.ELLIPSIS + tmp.join(", ");
+		for (var i = 0; i < list.length; i++) {
+			w += list[i].name.length * cw;
 		}
-		//DBG.println(AjxDebug.DBG3, "calc width of [" + text + "] = " + w);
-		if (w <= width) {
-			return test;
+		w += (list.length - 1) * DwtUnits.WIDTH_SEP;
+		if (list.length < pLen) {
+			w += DwtUnits.WIDTH_ELLIPSIS;
+		}
+		if (w < width) {
+			return list;
 		} else {
 			list.shift();
 		}
 	}
-	return [originator];
+
+	// not enough room for even one participant, just return the last one
+	var p = participants[pLen - 1];
+	var field = p.dispName || p.address || p.company || "";
+	return [{name:field, index:pLen - 1}];
 };
 
 ZmMailListView.prototype._getActionMenuForColHeader =
