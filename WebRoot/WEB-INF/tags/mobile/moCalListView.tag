@@ -55,7 +55,15 @@
     </c:if>
     <fmt:message var="noSubject" key="noSubject"/>
 </mo:handleError>
-<mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="list" isTop="${true}"/>
+<c:choose>
+    <c:when test="${ua.isiPad eq true}">
+        <mo:ipadToolbar urlTarget="${urlTarget}" mailbox="${mailbox}" view="list" date="${date}" context="${context}" app="${param.st}" keys="false" timezone="${timezone}"/>
+    </c:when>
+    <c:otherwise>
+        <mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="list" isTop="${true}"/>
+    </c:otherwise>
+</c:choose>
+<div class="msgBody">
 <div class="zo_cal_listheader">
         <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
         <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
@@ -121,4 +129,7 @@
         ${zm:getNextDay(currentDay)}
     </c:forEach>
 </div>
-<mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="list" isTop="${false}"/>
+</div>
+<c:if test="${ua.isiPad eq false}">
+    <mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="list" isTop="${false}"/>
+</c:if>
