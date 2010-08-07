@@ -416,14 +416,18 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 ZmPrefView.prototype._prefChanged =
 function(type, origValue, value) {
 
-	var test1 = value || null;
-	var test2 = origValue || null;
+	var test1 = (typeof value == "undefined" || value === null || value === "") ? null : value;
+	var test2 = (typeof origValue == "undefined" || origValue === null || origValue === "") ? null : origValue;
 
 	if (type == ZmSetting.D_LIST) {
 		return !AjxUtil.arrayCompare(test1, test2);
 	}
 	if (type == ZmSetting.D_HASH) {
 		return !AjxUtil.hashCompare(test1, test2);
+	}
+	if (type == ZmSetting.D_INT) {
+		test1 = parseInt(test1);
+		test2 = parseInt(test2);
 	}
 	return Boolean(test1 != test2);
 };
