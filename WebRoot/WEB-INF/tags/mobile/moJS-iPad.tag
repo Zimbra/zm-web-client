@@ -572,6 +572,8 @@ var parseResponse = function (request, container,url) {
                            ZmiPadContacts.processResponse(data,url);
                         } else if (targ.id == 'options') {
                            ZmiPadPrefs.processResponse(data,url);
+                        } else if (ZmiPad.getParamFromURL("st",url) == "newmail") {
+                          ZmiPadMail.processResponse(data,url);
                         }
                     }
                 }
@@ -854,8 +856,12 @@ ZmiPadMail.processResponse = function (respData, url) {
     } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
 
         $('compose-body').innerHTML = respData;
-        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
-        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        if(ZmiPad.getParamFromURL("compose",url) != "new") {
+          $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        } else {
+          $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";      
+          $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+        }
         toggleCompose('compose-pop','veil');
 
     } else if(url.indexOf('show=more') != -1) {
@@ -870,7 +876,7 @@ ZmiPadMail.processResponse = function (respData, url) {
                 $("dlist-view").appendChild(nodeDiv);
             }
         }
-        setTimeout(function(){listScroll.refresh();}, 0);
+        setTimeout(function(){listScroll.refresh();}, 1000);
 
     } else {
 
@@ -902,8 +908,12 @@ ZmiPadContacts.processResponse = function (respData, url) {
     } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
 
         $('compose-body').innerHTML = respData;
-        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
-        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        if(ZmiPad.getParamFromURL("compose",url) != "new") {
+          $(ZmiPad.ID_VIEW_STATIC).style.display = "none";  
+        } else {
+          $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+          $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+        }
         toggleCompose('compose-pop','veil');
 
     } else if(url.indexOf('show=more') != -1) {
@@ -920,7 +930,7 @@ ZmiPadContacts.processResponse = function (respData, url) {
             }
         }*/
         //delete moreDiv;
-        setTimeout(function(){listScroll.refresh();}, 0);
+        setTimeout(function(){listScroll.refresh(); }, 1000);
 
     } else {
         $(ZmiPad.ID_VIEW_LIST).innerHTML = respData;

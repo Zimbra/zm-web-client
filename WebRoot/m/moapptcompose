@@ -117,12 +117,22 @@
 <c:set var="title" value="${title} : ${addedit}" scope="request"/>
 <form action="?st=${param.st}&more=true&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe1');">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-
-<div class="tbl tb"><div class="tr"><div class="td">
-    <span class="zo_tb_submit"><a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a></span>
-    <span class='zo_tb_submit'><input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>"></span>
-</div></div></div>
-<div class="Stripes cmp_appt_container">
+<c:choose>
+    <c:when test="${ua.isiPad eq true}">
+        <div class="composeToolbar">
+            <div class="compose button"><span><input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>"></span></div>
+            <div class="buttonRight button" onclick="return toggleCompose('compose-pop','veil');"><span><fmt:message key="cancel"/></span></div>
+        </div>
+    </c:when>
+    <c:otherwise>
+        <div class="tbl tb"><div class="tr"><div class="td">
+            <span class="zo_tb_submit"><a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a></span>
+            <span class='zo_tb_submit'><input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>"></span>
+        </div>
+        </div></div>
+    </c:otherwise>
+</c:choose>
+<div class="Stripes cmp_appt_container ${ua.isiPad eq true ? 'composeFields' : ''}">
 <fmt:message key="newTask" var="newTaskSub"/>
 <div class="sectionLbl"><b>${fn:escapeXml(apptSubject)}</b></div>
 <c:if test="${isInstance}"><div class="View"><div class="tbl"><div class="tr">
@@ -135,16 +145,16 @@
 <div class="View"><div class="tbl">
     <div class="tr cmp_to_row">
         <span class="label td"><fmt:message key="subjectLabel"/></span>
-        <span class="td value"><input type="text" class="Textarea" value="${fn:escapeXml(compose.subject)}" name="subject"></span>
+        <span class="td value" style="padding:0px; text-align:left;"><input type="text" class="Textarea" value="${fn:escapeXml(compose.subject)}" name="subject"></span>
     </div><div class="tr nr">
         <span class="label td"><fmt:message key="locationLabel"/></span>
-        <span class="td value"><input class="Textarea" type="text" value="${fn:escapeXml(compose.location)}" name="location"></span>
+        <span class="td value" style="padding:0px; text-align:left;"><input class="Textarea" type="text" value="${fn:escapeXml(compose.location)}" name="location"></span>
     </div>
 </div></div>
 <div class="View"><div class="tbl">
     <div class="tr cmp_to_row">
         <span class="label td"><fmt:message key="startLabel"/></span>
-        <span class="td value1"><input class="Textarea" id="start" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}"> <fmt:message key="at"/>
+        <span class="td value1" style="padding:0px; text-align:left;"><input class="Textarea" id="start" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}"> <fmt:message key="at"/>
             <select name="startHour"><c:set var="h" value="${compose.startHour}"/>
             <c:forEach var="hi" begin="0" end="23"><option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>><fmt:formatDate value="${zm:getTodayHour(hi, tz).time}" pattern="${hourFmt}"/></option></c:forEach>
             </select>
@@ -165,7 +175,7 @@
         </span>
     </div><div class="tr nr cmp_to_row">
         <span class="label td"><fmt:message key="endLabel"/></span>
-        <span class="td value1"><input class="Textarea" id="end" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}"> <fmt:message key="at"/>
+        <span class="td value1" style="padding:0px; text-align:left;"><input class="Textarea" id="end" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}"> <fmt:message key="at"/>
             <select name="endHour"><c:set var="h" value="${compose.endHour}"/>
             <c:forEach var="hi" begin="0" end="23"><option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>><fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}"/></option></c:forEach>
             </select>
@@ -189,7 +199,7 @@
 <div class="View">
     <c:if test="${param.st eq 'newtask'}"><div class="tbl"><div class="tr">
         <span class="label td"><fmt:message key="priority"/></span>
-        <span class="value td">
+        <span class="value td" style="padding:0px; text-align:left;">
             <select name="taskPriority" id="priority">
                 <option <c:if test="${compose.taskPriority eq '9'}">selected </c:if>value="9"><fmt:message key="taskPrioLow"/></option>
                 <option <c:if test="${compose.taskPriority eq '5'}">selected </c:if>value="5"><fmt:message key="taskPrioNormal"/></option>
@@ -198,7 +208,7 @@
         </span>
     </div><div class="tr nr">
         <span class="label td"><fmt:message key="status"/></span>
-        <span class="td value1">
+        <span class="td value1" style="padding:0px; text-align:left;">
             <select name="taskStatus" id="status">
                 <option id="NEED" <c:if test="${compose.taskStatus eq 'NEED'}">selected </c:if>value="NEED"><fmt:message key="TASK_NEED"/></option>
                 <option id="COMP" <c:if test="${compose.taskStatus eq 'COMP'}">selected </c:if>value="COMP"><fmt:message key="TASK_COMP"/></option>
@@ -223,7 +233,7 @@
     </div></div></c:if>
     <c:if test="${param.st ne 'newtask'}"><div class="tbl"><div class="tr">
         <span class="td label"><fmt:message key="showAsLabel"/></span>
-        <span class="td value"><select name="freeBusyStatus" id="showAs">
+        <span class="td value" style="padding:0px; text-align:left;"><select name="freeBusyStatus" id="showAs">
             <option <c:if test="${compose.freeBusyStatus eq 'F'}">selected </c:if>value="F"><fmt:message key="free"/></option>
             <option <c:if test="${compose.freeBusyStatus eq 'T'}">selected </c:if> value="T"><fmt:message key="tentative"/></option>
             <option <c:if test="${compose.freeBusyStatus eq 'B'}">selected </c:if> value="B"><fmt:message key="busy"/></option>
@@ -231,7 +241,7 @@
         </select></span>
     </div><div class="tr nr">
     <span class="td label"><fmt:message key="markAsLabel"/></span>
-        <span class="td value"><select name="classProp" id="markAs">
+        <span class="td value" style="padding:0px; text-align:left;"><select name="classProp" id="markAs">
             <option <c:if test="${compose.classProp eq 'PUB'}">selected </c:if> value="PUB"><fmt:message key="public"/></option>
             <option <c:if test="${compose.classProp eq 'PRI'}">selected </c:if> value="PRI"><fmt:message key="private"/></option>
         </select></span>
@@ -262,7 +272,7 @@
 <c:if test="${numCalendars gt 1}">
     <div class="View"><div class="tbl"><div class="tr">
         <span class="td label"><c:if test="${param.st eq 'newtask'}"><fmt:message key="taskList"/></c:if><c:if test="${param.st ne 'newtask'}"><fmt:message key="calendarLabel"/></c:if></span>
-         <span class="td value"><select name='apptFolderId' id="apptFolderId"><c:set var="count" value="${0}"/>
+         <span class="td value" style="padding:0px; text-align:left;"><select name='apptFolderId' id="apptFolderId"><c:set var="count" value="${0}"/>
              <zm:forEachFolder var="folder">
                  <c:if test="${count lt sessionScope.F_LIMIT and param.st ne 'newtask' and folder.isAppointmentView and folder.isAppointmentMoveTarget }">
                      <option value="${folder.id}" <c:if test="${(param.invId ne '' && compose.apptFolderId eq folder.id) || (not empty sessionScope.calendar && sessionScope.calendar.id eq folder.id) || (empty sessionScope.calendar && folder.isCheckedInUI) }">selected='selected'</c:if>>
@@ -280,7 +290,7 @@
 <c:if test="${param.st ne 'newtask'}">
 <div class="View"><div class="tbl"><div class="tr">
     <span class="label td"><fmt:message key="repeatLabel"/></span>
-    <span class="value td">
+    <span class="value td" style="padding:0px; text-align:left;">
         <input type=radio name='repeatType' <c:if test="${compose.repeatType eq 'NONE'}">checked="checked"</c:if> value="NONE"><fmt:message key="recurNone"/>
         <input type=radio id="rpttypeid" name='repeatType' value="BASIC" <c:if test="${compose.repeatType eq 'BASIC'}">checked="checked"</c:if>>
         <select name="repeatBasicType" onchange="document.getElementById('rpttypeid').checked='checked';">
@@ -293,7 +303,7 @@
     <c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneCanonicalId)}">
     <c:set var="addedTimeZone" value="true"/>
     <div class="tr nr"><span class="label td"><fmt:message key="timeZonePrefLabel"/></span>
-            <span class="value td"><select name="timeZone" id="timeZone">
+            <span class="value td" style="padding:0px; text-align:left;"><select name="timeZone" id="timeZone">
                 <zm:forEachTimeZone var="tz"><fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
                     <option <c:if test="${compose.timeZone eq tz.id}">selected</c:if> value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
                 </zm:forEachTimeZone>
@@ -301,14 +311,15 @@
     </c:if></div>
 <c:if test="${mailbox.features.groupcalendarEnabled}">
     <div class="tbl"><div class="tr nr"><span class="td label"><fmt:message key="attendeesLabel"/></span>
-        <span class="td value"><div class="ZhAC ZhACTo">
+        <span class="td value" style="padding:0px; text-align:left;"><div class="ZhAC ZhACTo">
         <input class="Textarea" id="attField" rows="1" type="text" name="attendees" autocorrect="off" autocomplete="off" value="${fn:escapeXml(compose.attendees)}"/><br/><div class='ZhACCont' id="attContainer" style='width:99%;top:1.5em;'></div>
 </div></span></div></div></c:if>
-</div><div class="View value cmp_body">
-    <textarea class='Textarea' id="bodyField" cols="39" rows="20" name="body">${fn:escapeXml(empty compose.content ? compose.description : compose.content)}</textarea>
+</div><div class="View value cmp_body" style="height:200px;">
+    <textarea class='Textarea' id="bodyField" cols="39" rows="20" name="body" style="height:200px;">${fn:escapeXml(empty compose.content ? compose.description : compose.content)}</textarea>
 </div></c:if>
 </div>
 </div>
+<c:if test="${ua.isiPad eq false}">
 <div class="tbl tb"><div class="tr"><div class="td">
     <span class="zo_tb_submit">
         <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
@@ -316,6 +327,7 @@
     <span class='zo_tb_submit'>
         <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
 </span></div></div></div>
+</c:if>    
 <input type="hidden" name="apptFolderId" value="${fn:escapeXml(compose.apptFolderId)}"/>
 <input type="hidden" name="invId" value="${fn:escapeXml(compose.inviteId)}"/>
 <input type="hidden" name="exInvId" value="${fn:escapeXml(compose.exceptionInviteId)}"/>

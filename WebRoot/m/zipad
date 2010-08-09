@@ -229,10 +229,9 @@ if(window != parent){
       </div>
 
       <div class="contentViewPane" id="view-content" style="display:none;">
-          <div class="emptyBody" id="msg-body">
-            <h2><fmt:message key="emptyMessage"/></h2>
-          </div>
+          
       </div>
+        
       <div class="contentViewPane" id="static-content">
       
           <div class="tb tbl "><div class="tr"><div class="td toolbar">
@@ -241,7 +240,7 @@ if(window != parent){
             </c:url>
 
             <div class ="compose button" id="view-contact" style="display:none;"><a id="add" accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}"><span onclick="return zClickLink('add')"><fmt:message key="add"/></span></a></div>
-            <c:url var="composeUrl" value="${aurl}?st=newmail"/>
+            <c:url var="composeUrl" value="${aurl}?st=newmail&compose=new"/>
             <div class ="compose button" id="view-mail" style="display:block;"><a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" id="compose"><fmt:message key="compose"/></a></div>
           </div></div></div>
           <div class="emptyBody" id="empty-message"><h2><fmt:message key="emptyMessage"/></h2></div>

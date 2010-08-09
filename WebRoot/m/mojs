@@ -35,7 +35,7 @@ ${js}
  * Released under MIT license
  * http://cubiq.org/dropbox/mit-license.txt
  *
- * Version 3.5 - Last updated: 2010.07.27
+ * Version 3.5.1 - Last updated: 2010.07.30
  *
  */
 
@@ -133,10 +133,12 @@ iScroll.prototype = {
 	},
 
 	onDOMModified: function (e) {
-		this.refresh();
+		var that = this;
 
-		if (this.options.topOnDOMChanges && (this.x!=0 || this.y!=0)) {
-			this.scrollTo(0,0,'0');
+		that.refresh();
+
+		if (that.options.topOnDOMChanges && (that.x!=0 || that.y!=0)) {
+			that.scrollTo(0,0,'0');
 		}
 	},
 
@@ -175,7 +177,7 @@ iScroll.prototype = {
 
 		// Update horizontal scrollbar
 		if (that.options.hScrollbar && that.scrollX) {
-			that.scrollBarX = (that.scrollBarX instanceof scrollbar) ? that.scrollBarX : new scrollbar('horizontal', that.wrapper, that.options.fadeScrollbar, that.options.shrinkScrollbar);
+			that.scrollBarX = that.scrollBarX || new scrollbar('horizontal', that.wrapper, that.options.fadeScrollbar, that.options.shrinkScrollbar);
 			that.scrollBarX.init(that.scrollWidth, that.scrollerWidth);
 		} else if (that.scrollBarX) {
 			that.scrollBarX = that.scrollBarX.remove();
@@ -183,7 +185,7 @@ iScroll.prototype = {
 
 		// Update vertical scrollbar
 		if (that.options.vScrollbar && that.scrollY && that.scrollerHeight > that.scrollHeight) {
-			that.scrollBarY = (that.scrollBarY instanceof scrollbar) ? that.scrollBarY : new scrollbar('vertical', that.wrapper, that.options.fadeScrollbar, that.options.shrinkScrollbar);
+			that.scrollBarY = that.scrollBarY || new scrollbar('vertical', that.wrapper, that.options.fadeScrollbar, that.options.shrinkScrollbar);
 			that.scrollBarY.init(that.scrollHeight, that.scrollerHeight);
 		} else if (that.scrollBarY) {
 			that.scrollBarY = that.scrollBarY.remove();
@@ -193,8 +195,8 @@ iScroll.prototype = {
 	setPosition: function (x, y, hideScrollBars) {
 		var that = this;
 
-		this.x = x;
-		this.y = y;
+		that.x = x;
+		that.y = y;
 
 		that.element.style.webkitTransform = translateOpen + that.x + 'px,' + that.y + 'px' + translateClose;
 
@@ -351,7 +353,7 @@ iScroll.prototype = {
 
 		if (!momentumX.dist && !momentumY.dist) {
 			that.resetPosition();
-			return false;
+			return;
 		}
 
 		newDuration = Math.max(Math.max(momentumX.time, momentumY.time), 1);		// The minimum animation length must be 1ms
@@ -462,6 +464,7 @@ iScroll.prototype = {
 	destroy: function (full) {
 		var that = this;
 
+		window.removeEventListener('orientationchange', that, false);
 		window.removeEventListener('resize', that, false);
 		that.element.removeEventListener(START_EVENT, that, false);
 		that.element.removeEventListener(MOVE_EVENT, that, false);
@@ -601,17 +604,17 @@ scrollbar.prototype = {
 // Is translate3d compatible?
 var has3d = ('WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix()),
 	// Device sniffing
-	isIphone = navigator.appVersion.match(/iphone/gi) ? true : false,
-	isIpad = navigator.appVersion.match(/ipad/gi) ? true : false,
-	isAndroid = navigator.appVersion.match(/android/gi) ? true : false,
+	isIphone = (/iphone/gi).test(navigator.appVersion),
+	isIpad = (/ipad/gi).test(navigator.appVersion),
+	isAndroid = (/android/gi).test(navigator.appVersion),
 	isTouch = isIphone || isIpad || isAndroid,
 	// Event sniffing
 	START_EVENT = isTouch ? 'touchstart' : 'mousedown',
 	MOVE_EVENT = isTouch ? 'touchmove' : 'mousemove',
 	END_EVENT = isTouch ? 'touchend' : 'mouseup',
 	// Translate3d helper
-	translateOpen = 'translate' + (has3d ? '3d(' : '(');
-	translateClose = has3d ? ',0)' : ')';
+	translateOpen = 'translate' + (has3d ? '3d(' : '('),
+	translateClose = has3d ? ',0)' : ')',
 	// Unique ID
 	uid = 0;
 

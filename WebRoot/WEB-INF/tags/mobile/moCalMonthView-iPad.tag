@@ -170,7 +170,7 @@
                                                                                 <c:if test="${param.action ne 'print'}">
                                                                                     <a href="${fn:escapeXml(apptUrl)}">
                                                                                 </c:if>
-                                                                                ${fn:escapeXml(subject)}<c:if test="${param.action ne 'print'}"></a></c:if>
+                                                                                ${fn:escapeXml(zm:truncate(subject,14,true))}<c:if test="${param.action ne 'print'}"></a></c:if>
                                                                             </td>
                                                                         </tr>
                                                                     </table>
