@@ -241,6 +241,10 @@ function(aid, action) {
 
 ZmZimletsPage.prototype._deployZimletResponse =
 function(dialog, aid, result) {
+    
+    // remove Admin auth key
+     AjxCookie.deleteCookie(document, ZmZimletsPage.ADMIN_COOKIE_NAME, "/service/upload");
+
 	if (result.isException()) {
 		dialog.popdown();
 		this._uploadButton.setEnabled(true);
@@ -315,6 +319,10 @@ function(zimletName) {
 
 ZmZimletsPage.prototype._undeployZimletResponse =
 function(zimletName, result) {
+
+    // remove admin auth key
+    AjxCookie.deleteCookie(document, ZmZimletsPage.ADMIN_COOKIE_NAME, "/service/upload");
+    
 	if (result.isException()) {
 		this._controller.popupErrorDialog(ZmMsg.zimletUndeployError, result.getException());
 		return;
