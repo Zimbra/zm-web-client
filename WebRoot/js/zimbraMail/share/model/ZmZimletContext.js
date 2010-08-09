@@ -470,6 +470,26 @@ function() {
 };
 
 /**
+ * Sets the panel action menu.
+ * 
+ * @param	{ZmActionMenu}	menu		the menu
+ */
+ZmZimletContext.prototype.setPanelActionMenu =
+function(menu) {
+	if (menu == null || (menu instanceof ZmActionMenu) == false)
+		return;
+	
+	var items = menu.getMenuItems();
+	for (menuId in items) {
+		var item = items[menuId];
+		if (item.id != null || item.id != "")
+			item.addSelectionListener(this._handleMenuItemSelected);
+	}
+	
+	this._panelActionMenu = menu;
+};
+
+/**
  * @private
  */
 ZmZimletContext.prototype._makeMenu =
