@@ -1494,7 +1494,7 @@ line-height:normal;
 .appt_30_body {
 	position:relative;
 	overflow:hidden;
-	border:2px solid;
+	border:1px solid;
 	border-color:#AAAAAA #333333 #333333 #AAAAAA;
 #IFDEF GECKO
 	-moz-user-select: none;
@@ -1734,6 +1734,11 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSchedulerPTST-deferred    {	color: #009900 !important;}
 .ZmSchedulerPTST-delegated 	 {	color: #996633 !important;}
 .ZmSchedulerPTST-waiting     {  color: #666666 !important;}
+
+.ZmSchedulerApptBorder-free         { border-style:dotted; }
+.ZmSchedulerApptBorder-busy         { border-style:solid; }
+.ZmSchedulerApptBorder-tentative    { border-style:dashed; }
+.ZmSchedulerApptBorder-outOfOffice  { border-style:solid; }
 
 .ZmSchedulerNormalRow {
 	@AppBg@
