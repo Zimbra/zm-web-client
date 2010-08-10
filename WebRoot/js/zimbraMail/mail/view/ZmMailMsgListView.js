@@ -118,7 +118,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 					if (j == 0 && (parts.length < origLen)) {
 						htmlArr[idx++] = AjxStringUtil.ELLIPSIS;
 					} else if (parts.length > 1 && j > 0) {
-						htmlArr[idx++] = ", ";
+						htmlArr[idx++] = AjxStringUtil.LIST_SEP;
 					}
 					htmlArr[idx++] = "<span style='white-space: nowrap' id='";
 					// bug fix #3001 - always add one to index value (to take FROM: address into account)

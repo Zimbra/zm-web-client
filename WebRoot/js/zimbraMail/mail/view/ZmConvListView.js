@@ -440,7 +440,7 @@ function(conv, fieldId) {
 			if (j == 0 && (conv.participantsElided || part2.length < origLen)) {
 				html[idx++] = AjxStringUtil.ELLIPSIS;
 			} else if (part2.length > 1 && j > 0) {
-				html[idx++] = ", ";
+				html[idx++] = AjxStringUtil.LIST_SEP;
 			}
 			var p2 = (part2 && part2[j] && (part2[j].index != null)) ? part2[j].index : "";
 			var spanId = [fieldId, p2].join(DwtId.SEP);

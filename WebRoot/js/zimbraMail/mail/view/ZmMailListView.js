@@ -710,10 +710,6 @@ function(isFlagged, isMouseover) {
  * given width. The participants are assumed to be ordered oldest to most recent. We return
  * as many of the most recent as possible.
  *
- * The only way to get the actual width of a string is to put it in a div and measure it.
- * That's expensive, so instead we do some math with some rough values for the average width
- * of a character, both bolded (in case the item is unread) and not.
- *
  * @private
  * @param {array}		participants		list of AjxEmailAddress
  * @param {ZmMailItem}	item				item that contains the participants
@@ -722,46 +718,48 @@ function(isFlagged, isMouseover) {
  * @return list of participant objects with 'name' and 'index' fields
  */
 ZmMailListView.prototype._fitParticipants =
-function(participants, item, width) {
+function(participants, item, availWidth) {
 
-	// safety margin
-	width -= 15;
+	availWidth -= 15;	// safety margin
+
+	var sepWidth = AjxStringUtil.getWidth(AjxStringUtil.LIST_SEP, item.isUnread);
+	var ellWidth = AjxStringUtil.getWidth(AjxStringUtil.ELLIPSIS, item.isUnread);
 
 	// first see if we can fit everyone with their full names
 	var list = [];
-	var cw = (item && item.isUnread) ? DwtUnits.WIDTH_BOLD : DwtUnits.WIDTH_CHAR;
-	var chars = 0;
 	var pLen = participants.length;
+	var width = 0;
 	for (var i = 0; i < pLen; i++) {
 		var p = participants[i];
 		var field = p.name || p.address || p.company || "";
-		chars += field.length;
+		width += AjxStringUtil.getWidth(field, item.isUnread);
 		list.push({name:field, index:i});
 	}
-	var textWidth = (chars * cw) + ((pLen - 1) * DwtUnits.WIDTH_SEP);
-	if (textWidth < width) {
+	width += (pLen - 1) * sepWidth;
+	if (width < availWidth) {
 		return list;
 	}
 
 	// now try with display (first) names; fit as many of the most recent as we can
 	list = [];
-	chars = 0;
 	for (var i = 0; i < pLen; i++) {
 		var p = participants[i];
 		var field = p.dispName || p.address || p.company || "";
-		chars += field.length;
 		list.push({name:field, index:i});
 	}
 	while (list.length) {
-		var w = 0;
+		var width = 0;
+		// total the width of the names
 		for (var i = 0; i < list.length; i++) {
-			w += list[i].name.length * cw;
+			width += AjxStringUtil.getWidth(list[i].name, item.isUnread);
 		}
-		w += (list.length - 1) * DwtUnits.WIDTH_SEP;
+		// add the width of the separators
+		width += (list.length - 1) * sepWidth;
+		// add the width of the ellipsis if we've dropped anyone
 		if (list.length < pLen) {
-			w += DwtUnits.WIDTH_ELLIPSIS;
+			width += ellWidth;
 		}
-		if (w < width) {
+		if (width < availWidth) {
 			return list;
 		} else {
 			list.shift();
