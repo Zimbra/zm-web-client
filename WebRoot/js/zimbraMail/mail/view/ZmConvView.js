@@ -303,7 +303,7 @@ function(conv) {
 		html[i++] = anchorId;
 		html[i++] = "'>";
 		html[i++] = "<table style='display:inline; vertical-align:middle;' border=0 cellspacing=0 cellpadding=0><tr><td>";
-		html[i++] = AjxImg.getImageHtml(ZmTag.COLOR_ICON[tag.color], null, ["id='", imageId, "'"].join(""));
+		html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
 		html[i++] = "</td></tr></table>";
 		html[i++] = AjxStringUtil.htmlEncodeSpace(tag.name);
 		html[i++] = "</a>";
@@ -369,7 +369,7 @@ function(ev) {
 		var tag = ev.getDetail("organizers")[0];
 		var img = document.getElementById(this._tagDiv.id +  ZmDoublePaneView._TAG_IMG + tag.id);
 		if (img)
-			AjxImg.setImage(img, ZmTag.COLOR_ICON[tag.color]);
+			AjxImg.setImage(img, tag.getIconWithColor());
 	}
 	
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY)

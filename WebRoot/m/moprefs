@@ -7,6 +7,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
+    <zm:getUserAgent var="ua" session="true"/>
     <c:choose>
         <c:when test="${not empty mailbox.prefs.locale}">
             <fmt:setLocale value='${mailbox.prefs.locale}' scope='request'/>
@@ -19,20 +20,50 @@
     <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request'/>
 </mo:handleError>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${param.st}"/></c:url>
+<c:url var="caction" value="${context_url}">
+    <c:param name="st" value="${mailbox.prefs.groupMailBy}"/>
+</c:url>
 <c:if test="${not empty param.emsg}"><div class="StatusWarning"><fmt:message key="${param.emsg}"/></div></c:if>
-<form action="" method="post" name="optionsForm" onsubmit="return submitForm(this);" accept-charset="UTF-8">
-    <div class="tb tbl">
-            <div class="tr">
-                <div class="td aleft"><fmt:message key="options"/></div>
-            </div>
-    </div>
+
+<style type="text/css">
+    .folderBar{
+       -webkit-border-radius: 12px;
+    }
+    .label {
+        width: 250px !important;
+    }
+</style>
+
+<form action="${currentUrl}" method="post" name="optionsForm" onsubmit="return submitForm(this);" accept-charset="UTF-8">
+    <input type="hidden" name="doPrefsAction" value="1">
+    <c:choose>
+        <c:when test="${ua.isiPad == true}">
+        <div class="tb tbl">
+                <div class="tr">
+                    <span class="zo_tb_submit td toolbar">
+                        <div class="compose button"><input class="zo_button" name="actionPrefsSave" type="submit" value="<fmt:message key="save"/>"></div>
+                        <div class="buttonRight button"><a id="cancel" href="${caction}"><span onclick="return zClickLink('cancel')"><fmt:message key="cancel"/></span></a></div>
+                    </span>
+                </div>
+        </div>
+        </c:when>
+        <c:otherwise>
+                <div class="tb tbl">
+                <div class="tr">
+                    <div class="td aleft"><fmt:message key="options"/></div>
+                </div>
+                </div>
+        </c:otherwise>
+    </c:choose>
+    <div class="msgBody">
     <div class="Stripes" id="prefDiv">
-        <div class="sectionLbl"><fmt:message key="general"/></div>
+        <div class="sectionLbl tb tbl folderBar"><div class="tr"><div class="td aleft"><b><fmt:message key="general"/></b></div></div></div>
         <div class='View'>
             <div class="tbl">
                 <div class="tr">
-                    <span class="label aleft  td" style='white-space:nowrap;'><fmt:message key="timeZonePref"/></span>
-        <span class="value aright td"><select name="zimbraPrefTimeZoneId" id="timeZone" style="width:50%;">
+                    <span class="label aleft  td" style='white-space:nowrap;'><b><fmt:message key="timeZonePref"/></b></span>
+        <span class="value aleft td"><select name="zimbraPrefTimeZoneId" id="timeZone">
             <c:set var="tzpref" value="${mailbox.prefs.timeZoneCanonicalId}"/>
             <zm:forEachTimeZone var="tz">
                 <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
@@ -44,12 +75,12 @@
                 </div>
             </div>
         </div>
-        <div class="sectionLbl"><fmt:message key="mail"/></div>
+        <div class="sectionLbl tb tbl folderBar"><div class="tr"><div class="td aleft"><b><fmt:message key="mail"/></b></div></div></div>
         <div class='View'>
             <div class="tbl">
                 <div class="tr">
-                    <span class="label aleft td"><fmt:message key="optionsEmailPerPage"/></span>
-        <span class="value aright td"><select style="width:100%;" name="zimbraPrefMailItemsPerPage"
+                    <span class="label aleft td"><b><fmt:message key="optionsEmailPerPage"/></b></span>
+        <span class="value aleft td"><select name="zimbraPrefMailItemsPerPage"
                                                                id="itemsPP">
             <c:set var="mailItemsPP" value="${mailbox.prefs.mailItemsPerPage}"/>
             <option <c:if test="${mailItemsPP eq 5}"> selected="selected"</c:if>>5</option>
@@ -61,8 +92,8 @@
                 </div>
                 <c:if test="${mailbox.features.conversations}">
                     <div class="tr nr">
-                        <span class="label aleft td"><fmt:message key="groupMailBy"/></span>
-        <span class="value aright td"><select name="zimbraPrefGroupMailBy"
+                        <span class="label aleft td"><b><fmt:message key="groupMailBy"/></b></span>
+        <span class="value aleft td"><select name="zimbraPrefGroupMailBy"
                                                                id="groupMailBy">
             <c:set var="groupMailBy" value="${mailbox.prefs.groupMailBy}"/>
             <option
@@ -76,8 +107,8 @@
                 </c:if>
                 <c:if test="${mailbox.features.initialSearchPreference}">
                     <div class="tr nr">
-                        <span class="label aleft td"><fmt:message key="optionsDefaultMailSearch"/></span>
-		<span class="value aright td"><input id="zimbraPrefMailInitialSearch" style="width:138px;" type="text"
+                        <span class="label aleft td"><b><fmt:message key="optionsDefaultMailSearch"/></b></span>
+		<span class="value aleft td"><input id="zimbraPrefMailInitialSearch" style="width:138px;" type="text"
                                                      name='zimbraPrefMailInitialSearch'
                                                      value="${fn:escapeXml(mailbox.prefs.mailInitialSearch)}">
 		</span>
@@ -85,12 +116,12 @@
                 </c:if>
             </div>
         </div>
-        <div class="sectionLbl"><fmt:message key="contact"/></div>
+        <div class="sectionLbl tb tbl folderBar"><div class="tr"><div class="td aleft"><b><fmt:message key="contact"/></b></div></div></div>
         <div class='View'>
             <div class="tbl">
                 <div class="tr">
-                    <span class="label aleft  td"><fmt:message key="optionsContactsPerPage"/></span>
-        <span class="value aright td">
+                    <span class="label aleft  td"><b><fmt:message key="optionsContactsPerPage"/></b></span>
+        <span class="value aleft td">
             <select name="zimbraPrefContactsPerPage" id="itemsPP1" style="width:150px">
                 <c:set var="pageSize" value="${mailbox.prefs.contactsPerPage}"/>
                 <option <c:if test="${pageSize eq 5}"> selected="selected"</c:if>>5</option>
@@ -101,8 +132,8 @@
             </select></span>
                 </div>
                 <div class="tr nr">
-                    <span class="label aleft td"><fmt:message key="autoAddContacts"/></span>
-        <span class="value td aright">
+                    <span class="label aleft td"><b><fmt:message key="autoAddContacts"/></b></span>
+        <span class="value aleft td">
             <input onchange="this.className = 'check '+(this.checked ? 'on':'off');" type="checkbox"
                    id="zimbraPrefAutoAddAddressEnabled" name='zimbraPrefAutoAddAddressEnabled' value="TRUE"
                    class="check <c:if test="${mailbox.prefs.autoAddAddressEnabled}">on" checked="checked</c:if>">
@@ -110,25 +141,25 @@
                 </div>
             </div>
         </div>
-        <div class="sectionLbl"><fmt:message key="calendar"/></div>
+        <div class="sectionLbl tb tbl folderBar"><div class="tr"><div class="td aleft"><b><fmt:message key="calendar"/></b></div></div></div>
         <div class='View'>
             <div class="tbl">
                 <div class="tr">
-                    <span class="label aleft td"><fmt:message key="calendarFirstDayOfWeek"/></span>
-        <span class="value aright td">
+                    <span class="label aleft td"><b><fmt:message key="calendarFirstDayOfWeek"/></b></span>
+        <span class="value aleft td">
             <fmt:getLocale var="userLocale"/>
             <c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale,pageContext)}"/>
             <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
             <c:set var="dow" value="${mailbox.prefs.calendarFirstDayOfWeek}"/>
-             <select name="zimbraPrefCalendarFirstdayOfWeek" id="fdow" style="width:100%;padding:0px !important;margin:0px !important;overflow:hidden;">
+             <select name="zimbraPrefCalendarFirstdayOfWeek" id="fdow" style="padding:0px !important;margin:0px !important;overflow:hidden;">
                  <c:forEach var="day" begin="1" end="7">
                      <option value="${day-1}" <c:if test="${dow eq (day-1)}"> selected</c:if>>${weekDays[day]}</option>
                  </c:forEach>
              </select></span>
                 </div>
                 <div class="tr nr">
-                    <span class="label aleft td"><fmt:message key="shouldShowTimezone"/></span>
-        <span class="value td aright">
+                    <span class="label aleft td"><b><fmt:message key="shouldShowTimezone"/></b></span>
+        <span class="value aleft td">
             <input onchange="this.className ='check '+(this.checked ? 'on':'off');" type="checkbox"
                    id="zimbraPrefUseTimeZoneListInCalendar" name='zimbraPrefUseTimeZoneListInCalendar' value="TRUE"
                    class="check <c:if test="${mailbox.prefs.useTimeZoneListInCalendar}">on"
@@ -136,7 +167,8 @@
                 </div>
             </div>
         </div>
-    <div class="sectionLbl"><fmt:message key="MO_SessionPrefs"/></div>
+    <c:if test="${ua.isiPad == false}">
+    <div class="sectionLbl tb tbl folderBar"><div class="tr"><div class="td aleft"><fmt:message key="MO_SessionPrefs"/></div></div></div> 
     <div class='View'>
         <div class="tbl small-gray-text">
                 <div class="tr"><div class="td aleft"><fmt:message key="MO_SessionPrefsNote"/></div></div>
@@ -144,7 +176,7 @@
         <div class="tbl">
             <div class="tr nr">
                 <span class="label aleft td"><fmt:message key="MO_MaxFolders"/></span>
-                <span class="value aright td"> <input type="text" maxlength="4" name="F_LIMIT" value="${sessionScope.F_LIMIT}">
+                <span class="value aleft td"> <input type="text" maxlength="4" name="F_LIMIT" value="${sessionScope.F_LIMIT}">
                 </span>
             </div>
         </div>
@@ -159,10 +191,11 @@
             <div class="td">
                 <a id='_back' href="?st=${mailbox.prefs.groupMailBy}&_back=1" class="zo_button"><fmt:message
                         key="cancel"/></a>
-                <input type="hidden" name="doPrefsAction" value="1">
                 <%--<app:button id="OPSEND" name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>--%>
                 <input type="submit" class="zo_button" name="actionPrefsSave" value="<fmt:message key="save"/>">
             </div>
         </div>
+    </div>
+    </c:if>
     </div>
 </form>

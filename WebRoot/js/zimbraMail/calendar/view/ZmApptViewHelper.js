@@ -478,7 +478,8 @@ function(appt, id, bodyStyle, controller) {
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
 		icon: appt.isPrivate() ? "ReadOnly" : null,
-		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba)
+		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba),
+        boxBorder: ZmApptViewHelper.getBoxBorderFromId(appt.fba)
 	};
     return AjxTemplate.expand("calendar.Calendar#calendar_appt_allday", subs);
 };
@@ -492,6 +493,17 @@ function(id) {
 		case "O": return "ZmScheduler-outOfOffice";
 	}
 	return "ZmScheduler-busy";
+};
+
+ZmApptViewHelper.getBoxBorderFromId =
+function(id) {
+	switch(id) {
+		case "F": return "ZmSchedulerApptBorder-free";
+		case "B": return "ZmSchedulerApptBorder-busy";
+		case "T": return "ZmSchedulerApptBorder-tentative";
+		case "O": return "ZmSchedulerApptBorder-outOfOffice";
+	}
+	return "ZmSchedulerApptBorder-busy";
 };
 
 /**

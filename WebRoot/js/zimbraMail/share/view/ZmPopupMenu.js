@@ -26,8 +26,8 @@
  * @author Conrad Damon
  *
  * @param {DwtComposite}	parent		the containing widget
- * @param {String}	className		the CSS class
- * @param {String}	id			an explicit ID to use for the control's HTML element
+ * @param {string}	className		the CSS class
+ * @param {string}	id			an explicit ID to use for the control's HTML element
  * @param {ZmController}	controller	the owning controller
  * 
  * @extends		DwtMenu
@@ -64,9 +64,9 @@ ZmPopupMenu.MENU_ITEM_ID_KEY = "menuItemId";
 /**
  * Adds a section listener.
  * 
- * @param	{String}		menuItemId		the menu item id
+ * @param	{string}		menuItemId		the menu item id
  * @param	{AjxListener}	listener		the selection listener
- * @param	{int}		index				the index where to insert the listener
+ * @param	{number}		index				the index where to insert the listener
  */
 ZmPopupMenu.prototype.addSelectionListener =
 function(menuItemId, listener, index) {
@@ -79,7 +79,7 @@ function(menuItemId, listener, index) {
 /**
  * Removes a section listener.
  * 
- * @param	{String}		menuItemId		the menu item id
+ * @param	{string}		menuItemId		the menu item id
  * @param	{AjxListener}	listener		the selection listener
  */
 ZmPopupMenu.prototype.removeSelectionListener =
@@ -101,8 +101,8 @@ function(delay, x, y, kbGenerated) {
 /**
  * Enables/disables menu items.
  *
- * @param {Array}	ids		a list of menu item IDs
- * @param {Boolean}		enabled	if <code>true</code>, enable the menu items
+ * @param {array}	ids		a list of menu item IDs
+ * @param {boolean}		enabled	if <code>true</code>, enable the menu items
  */
 ZmPopupMenu.prototype.enable =
 function(ids, enabled) {
@@ -117,7 +117,7 @@ function(ids, enabled) {
 /**
  * Enables/disables all menu items.
  *
- * @param {Boolean}		enabled	if <code>true</code>, enable the menu items
+ * @param {boolean}		enabled	if <code>true</code>, enable the menu items
  */
 ZmPopupMenu.prototype.enableAll =
 function(enabled) {
@@ -129,15 +129,15 @@ function(enabled) {
 /**
  * Creates a menu item and adds the item to this menu.
  *
- * @param {String}	id			the menu item ID
- * @param {Hash}	params		a hash of parameters
- * @param {String}	text		the menu item text
- * @param {String}	image		the icon class for the or menu item
- * @param {String}	disImage	disabled version of icon
- * @param {Boolean}	enabled		if <code>true</code>, menu item is enabled
- * @param {constant}	style			the menu item style
- * @param {String}	radioGroupId	the ID of radio group for this menu item
- * @param {constant}	shortcut		the shortcut ID (from {@link ZmKeyMap}) for showing hint
+ * @param {string}	id			the menu item ID
+ * @param {hash}	params		a hash of parameters
+ * @param {string}	params.text		the menu item text
+ * @param {string}	params.image		the icon class for the or menu item
+ * @param {string}	params.disImage	disabled version of icon
+ * @param {boolean}	params.enabled		if <code>true</code>, menu item is enabled
+ * @param {constant}	params.style			the menu item style
+ * @param {string}	params.radioGroupId	the ID of radio group for this menu item
+ * @param {constant}	params.shortcut		the shortcut ID (from {@link ZmKeyMap}) for showing hint
  * 
  * @see		DwtMenuItem
  */
@@ -164,12 +164,22 @@ function(id, params) {
 /**
  * Gets the menu item with the given ID.
  *
- * @param {String}	id		an operation ID
+ * @param {string}	id		an operation ID
  * @return	{DwtMenuItem}		the menu item
  */
 ZmPopupMenu.prototype.getMenuItem =
 function(id) {
 	return this._menuItems[id];
+};
+
+/**
+ * Gets the menu items.
+ *
+ * @return	{array}		an array of {@link DwtMenuItem} objects
+ */
+ZmPopupMenu.prototype.getMenuItems =
+function() {
+	return this._menuItems;
 };
 
 /**

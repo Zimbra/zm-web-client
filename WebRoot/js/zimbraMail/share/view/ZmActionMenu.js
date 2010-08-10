@@ -27,12 +27,12 @@
  *
  * @author Conrad Damon
  *
- * @param {Hash}	params		a hash of parameters
+ * @param {hash}	params		a hash of parameters
  * @param {DwtComposite}	params.parent		the containing widget
  * @param {ZmController}	params.controller	the owning controller
- * @param {Array}	params.menuItems	a list of operation IDs
- * @param {Hash}	params.overrides	a hash of overrides by op ID
- * @param {String}	params.context		the context (used to create ID)
+ * @param {array}	params.menuItems	a list of operation IDs
+ * @param {hash}	params.overrides	a hash of overrides by op ID
+ * @param {string}	params.context		the context (used to create ID)
  * @param {constant}	params.menuType		the menu type (used to generate menu item IDs)
  * 
  * @extends		ZmPopupMenu
@@ -65,7 +65,7 @@ ZmActionMenu.prototype.constructor = ZmActionMenu;
 /**
  * Returns a string representation of the object.
  * 
- * @return		{String}		a string representation of the object
+ * @return		{string}		a string representation of the object
  */
 ZmActionMenu.prototype.toString = 
 function() {
@@ -76,13 +76,13 @@ function() {
  * Creates a menu item and adds its operation ID as data.
  * 
  * @param {String}	id			the name of the operation
- * @param	{Hash}	params		a hash of parameters
- * @param  {String}	params.text			the menu item text
- * @param {String}	params.image			the icon class for the menu item
- * @param {String}	params.disImage		the disabled version of icon
- * @param {Boolean}	params.enabled		if <code>true</code>, menu item is enabled
+ * @param	{hash}	params		a hash of parameters
+ * @param  {string}	params.text			the menu item text
+ * @param {string}	params.image			the icon class for the menu item
+ * @param {string}	params.disImage		the disabled version of icon
+ * @param {boolean}	params.enabled		if <code>true</code>, menu item is enabled
  * @param {constant}	params.style			the menu item style
- * @param {String}	params.radioGroupId	the ID of radio group for this menu item
+ * @param {string}	params.radioGroupId	the ID of radio group for this menu item
  * @param {constant}	params.shortcut		the shortcut ID (from {@link ZmKeyMap}) for showing hint
  * 
  * @private

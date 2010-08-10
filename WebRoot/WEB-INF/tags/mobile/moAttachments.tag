@@ -47,7 +47,7 @@
                 <div>
                     <div>
                         <span>
-                            <c:if test="${mailbox.features.briefcases}"><input type="checkbox" name="attachIds" value="${fn:escapeXml(partId)}"/></c:if> <mo:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}"/>
+                            <c:if test="${mailbox.features.briefcases && ua.isiPad eq false}"><input type="checkbox" name="attachIds" value="${fn:escapeXml(partId)}"/></c:if> <mo:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}"/>
                         </span>
                         <span>
                             <a href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${zm:displaySize(pageContext,part.size)})
@@ -63,7 +63,7 @@
         </div>
     </c:if>
 </c:forEach>
-<c:if test="${count gt 0 && mailbox.features.briefcases}">
+<c:if test="${count gt 0 && mailbox.features.briefcases && ua.isiPad eq false}">
     <hr size="1"/>
     <input type="hidden" name="mid" value="${message.id}">
     <div class="tbl" width="100%"><div class="tr">

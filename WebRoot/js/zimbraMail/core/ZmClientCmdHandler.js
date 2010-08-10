@@ -405,11 +405,8 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
  */
 ZmClientCmdHandler.prototype.execute_log =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	var text = AjxUtil.LOG[cmdArg1].join("<br/>");
-	var msgDialog = appCtxt.getMsgDialog();
-	msgDialog.reset();
-	msgDialog.setMessage(text, DwtMessageDialog.INFO_STYLE);
-	msgDialog.popup();
+	var text = AjxDebug.BUFFER.join("");
+	appCtxt.getDebugLogDialog().popup(text);
 };
 
 /**
@@ -488,4 +485,50 @@ ZmClientCmdHandler.prototype.execute_clearAutocompleteCache =
 function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
 	appCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
 	this._alert("Contacts autocomplete cache cleared");
+};
+
+/**
+ * Executes the getCharWidth command.
+ *
+ * @param	{String}	cmdStr		the command
+ * @param	{ZmSearchController}	searchController	the search controller
+ * @param	{Object}	[cmdArg1]		command arguments
+ * @param	{Object}	[cmdArg2]		command arguments
+ */
+ZmClientCmdHandler.prototype.execute_getCharWidth =
+function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
+	var cla = appCtxt.getApp(ZmApp.CONTACTS).getContactList().getArray();
+	for (var i = 0; i < cla.length; i++) {
+		ZmClientCmdHandler._testWidth(cla[i]._attrs["firstLast"] || cla[i]._attrs["company"] || "");
+	}
+	var text = [];
+	text.push("Avg char width: " + ZmClientCmdHandler.WIDTH / ZmClientCmdHandler.CHARS);
+	text.push("Avg bold char width: " + ZmClientCmdHandler.BWIDTH / ZmClientCmdHandler.CHARS);
+	var w = ZmClientCmdHandler._testWidth(AjxStringUtil.ELLIPSIS);
+	text.push("Ellipsis width: " + w.w);
+	w = ZmClientCmdHandler._testWidth(", ");
+	text.push("Comma + space width: " + w.w);
+	alert(text.join("\n"));
+};
+
+ZmClientCmdHandler.CHARS = 0;
+ZmClientCmdHandler.WIDTH = 0;
+ZmClientCmdHandler.BWIDTH = 0;
+
+ZmClientCmdHandler._testWidth =
+function(str) {
+	var div = document.createElement("DIV");
+	div.style.position = Dwt.ABSOLUTE_STYLE;
+	var shellEl = appCtxt.getShell().getHtmlElement();
+	shellEl.appendChild(div);
+	Dwt.setLocation(div, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+	div.innerHTML = str;
+	var size = Dwt.getSize(div);
+	ZmClientCmdHandler.CHARS += str.length;
+	ZmClientCmdHandler.WIDTH += size.x;
+	div.style.fontWeight = "bold";
+	var bsize = Dwt.getSize(div);
+	ZmClientCmdHandler.BWIDTH += bsize.x;
+	shellEl.removeChild(div);
+	return {w:size.x, bw:bsize.x};
 };
