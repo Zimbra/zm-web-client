@@ -1002,7 +1002,7 @@ function(item, list) {
 
 ZmApptChooser.prototype._reset =
 function(view) {
-	if (appCtxt.isOffline && appCtxt.accountList.size() > 1) {
+	if (appCtxt.isOffline && appCtxt.accountList.size() > 1 && !view) {
 		this.parent._resetSelectDiv();
 	}
 	DwtChooser.prototype._reset.apply(this, arguments);
