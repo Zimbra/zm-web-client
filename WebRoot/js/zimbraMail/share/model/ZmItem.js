@@ -386,7 +386,7 @@ function() {
 			? ([this.getAccount().id, this.tags[0]].join(":"))
 			: (ZmOrganizer.getSystemId(this.tags[0]));
 		var tag = appCtxt.getById(tagId);
-		tagImageInfo = tag ? tag.getIconWithColor() : "Blank_16";
+		tagImageInfo = tag ? ZmTag.COLOR_ICON[tag.color] : "Blank_16";
 	}
 	else {
 		tagImageInfo = "TagStack";
@@ -699,45 +699,4 @@ function(event, details) {
 ZmItem.prototype._getFlags =
 function() {
 	return [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH];
-};
-
-/**
- * Rename the item.
- *
- * @param	{String}	newName
- * @param	{AjxCallback}	callback		the callback
- * @param	{AjxCallback}	errorCallback	the callback on error
- * @return	{Object}		the result of the move
- */
-ZmItem.prototype.rename =
-function(newName, callback, errorCallback) {
-	return ZmItem.rename(this.id, newName, callback, errorCallback);
-};
-
-/**
- * Rename the item.
- *
- * @return	{Object}		the result of the move
- */
-ZmItem.rename =
-function(itemId, newName, callback, errorCallback, accountName) {
-    var json = {
-		ItemActionRequest: {
-			_jsns: "urn:zimbraMail",
-			action: {
-				id:	itemId instanceof Array ? itemId[0] : itemId,
-				op:	"rename",
-				name:	newName
-			}
-		}
-	};	
-
-	var params = {
-		jsonObj:		json,
-		asyncMode:		Boolean(callback),
-		callback:		callback,
-		errorCallback:	errorCallback,
-		accountName:	accountName
-	};
-	return appCtxt.getAppController().sendRequest(params);
 };

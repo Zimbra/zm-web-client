@@ -859,20 +859,6 @@ function() {
 };
 
 /**
- * Gets the debug log dialog.
- *
- * @return	{ZmDebugLogDialog}		the debug log dialog
- */
-ZmAppCtxt.prototype.getDebugLogDialog =
-function() {
-	if (!this._debugLogDialog) {
-		AjxDispatcher.require("Extras");
-		this._debugLogDialog = new ZmDebugLogDialog(this._shell);
-	}
-	return this._debugLogDialog;
-};
-
-/**
  * Gets the root tab group.
  *
  * @return	{DwtTabGroup}	the root tab group
