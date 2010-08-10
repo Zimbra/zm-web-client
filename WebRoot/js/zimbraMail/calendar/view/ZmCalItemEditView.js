@@ -373,7 +373,8 @@ ZmCalItemEditView.prototype.getOrganizer =
 function() {
 	var folderId = this._folderSelect.getValue();
 	var organizer = new ZmContact(null);
-	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(this._calendarOrgs[folderId]), true);
+	var acct = appCtxt.multiAccounts && appCtxt.getById(folderId).getAccount();
+	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(this._calendarOrgs[folderId], acct), true);
 
 	return organizer;
 };

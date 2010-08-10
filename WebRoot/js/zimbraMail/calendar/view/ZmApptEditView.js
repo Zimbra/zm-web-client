@@ -855,9 +855,10 @@ function() {
         var currAcct = cal.getAccount();
 		this.parent.parent.setTabVisibility([ZmApptComposeView.TAB_SCHEDULE], (currAcct.isZimbraAccount && !currAcct.isMain));
         var tabPage = this.parent.parent._tabPages[ZmApptComposeView.TAB_ATTENDEES];
-        if (!(tabPage instanceof AjxCallback)) {
-		    this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES).cleanup();
-        }
+		var attendeesTab = (!(tabPage instanceof AjxCallback)) ? this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES) : null;
+		if (attendeesTab) {
+			attendeesTab.cleanup();
+		}
 	}
 
 	var acct = appCtxt.getActiveAccount();

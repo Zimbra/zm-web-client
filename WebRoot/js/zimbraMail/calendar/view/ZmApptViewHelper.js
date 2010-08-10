@@ -368,11 +368,13 @@ function(addr, type) {
  * Returns a AjxEmailAddress for the organizer.
  *
  * @param organizer	[string]*		organizer's email address
+ * @param account	[ZmAccount]*	organizer's account
  */
 ZmApptViewHelper.getOrganizerEmail =
-function(organizer) {
-	var orgAddress = organizer ? organizer : appCtxt.get(ZmSetting.USERNAME);
-	var orgName = (orgAddress == appCtxt.get(ZmSetting.USERNAME)) ? appCtxt.get(ZmSetting.DISPLAY_NAME) : null;
+function(organizer, account) {
+	var orgAddress = organizer ? organizer : appCtxt.get(ZmSetting.USERNAME, null, account);
+	var orgName = (orgAddress == appCtxt.get(ZmSetting.USERNAME, null, account))
+		? appCtxt.get(ZmSetting.DISPLAY_NAME, null, account) : null;
 	return new AjxEmailAddress(orgAddress, null, orgName);
 };
 
