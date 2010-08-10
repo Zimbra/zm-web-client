@@ -42,15 +42,8 @@
 
 </mo:handleError>
     <c:set var="title" scope="request" value="${requestScope.title} : ${zm:truncate(msg.subject,10,true)}"/>
-    <c:choose>
-    <c:when test="${ua.isiPad eq true}">
-        <mo:ipadToolbar mailbox="${mailbox}" app="${'cal'}" context="${context}" keys="false" invId="${invite.component.isOrganizer ? id : ''}"  urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${true}"/>
-    </c:when>
-    <c:otherwise>
-        <mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}"  urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${true}"/>
-    </c:otherwise>    
-    </c:choose>
-    <div class="Stripes ${ua.isiPad eq true ? 'composeFields' : ''}">
+    <mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}"  urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${true}"/>
+    <div class="Stripes">
                 <c:set var="extImageUrl" value=""/>
                 <c:if test="${empty param.xim}">
                     <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
@@ -76,7 +69,4 @@
                     </div>
                 </c:if>
     </div>
-
-<c:if test="${ua.isiPad eq false}">
-    <mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}" urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${false}"/>
-</c:if>
+<mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}" urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${false}"/>

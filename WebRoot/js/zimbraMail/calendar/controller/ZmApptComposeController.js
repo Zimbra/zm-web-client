@@ -33,6 +33,9 @@ ZmApptComposeController = function(container, app) {
 	this._addedAttendees = [];
 	this._removedAttendees = [];
 	this._kbMgr = appCtxt.getKeyboardMgr();
+
+	// preload compose view for faster loading
+	this.initComposeView(true);
 };
 
 ZmApptComposeController.prototype = new ZmCalItemComposeController;
@@ -620,6 +623,11 @@ function() {
 
 
 // Private / Protected methods
+
+ZmApptComposeController.prototype._getViewType =
+function() {
+	return ZmId.VIEW_APPOINTMENT;
+};
 
 ZmApptComposeController.prototype._attendeesUpdated =
 function(appt, attId, attendees, origAttendees) {
