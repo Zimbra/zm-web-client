@@ -644,6 +644,7 @@ function(message) {
         //bug: 49315 - use local timezone while proposing time
         this.convertToLocalTimezone();
         if(!this.ridZ) this.ridZ = message.invite.components ? message.invite.components[0].ridZ : null;
+        this.seq = message.invite.getSequenceNo();
     }
 };
 
@@ -1150,6 +1151,10 @@ function(callback, errorCallback) {
     comp.setAttribute("name", this.name);
     if (this.uid != null && this.uid != -1) {
         comp.setAttribute("uid", this.uid);
+    }
+
+    if(this.seq) {
+        comp.setAttribute("seq", this.seq);        
     }
 
     //if(this.ridZ) comp.setAttribute("ridZ", this.ridZ);
