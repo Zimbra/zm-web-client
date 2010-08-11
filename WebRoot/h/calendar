@@ -51,7 +51,7 @@
             <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
         </c:otherwise>
     </c:choose>
-
+    <c:set var="noComposeView" scope="session" value="${false}"/>
     <c:choose>
         <c:when test="${param.action eq 'compose'}">
             <app:composeCheck/>
@@ -158,6 +158,10 @@
 
 <app:handleError>
 <c:choose>
+    <%--In case of send and cancel, noComposeView is set to true--%>
+    <c:when test="${param.action eq 'compose' and noComposeView eq false}">
+        <%--do nothing--%>
+    </c:when>
     <c:when test="${needViewAppt}">
         <app:apptView/>
     </c:when>
