@@ -1141,24 +1141,28 @@ function() {
     }
 
     // create menu for button
-    var timeSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE});
-    timeSelectButton.setMenu(timeSelectMenu, true);
+    var hoursSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE});
+    timeSelectButton.setMenu(hoursSelectMenu, true);
 
     for (var j = 0; j < 24; j++) {
         now.setHours(j);        
         now.setMinutes(0);
 
-        var mi = new DwtMenuItem({parent: timeSelectMenu, style: DwtMenuItem.NO_STYLE});
+        var mi = new DwtMenuItem({parent: hoursSelectMenu, style: DwtMenuItem.NO_STYLE});
         mi.setText(timeFormatter.format(now));
         mi.setData("value", j*60);
-        if(menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
+        if (menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
 
-        now.setMinutes(30);
-        var mi1 = new DwtMenuItem({parent: timeSelectMenu, style: DwtMenuItem.NO_STYLE});
-        mi1.setText(timeFormatter.format(now));
-        mi1.setData("value", j*60 + 30);
-        if(menuSelectionListener) mi1.addSelectionListener(menuSelectionListener);
-
+        var minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE});
+        mi.setMenu(minutesSelectMenu, true);
+        mi.setSelectableWithSubmenu(true);
+        for (var k = 1; k < 4; k++) {
+            now.setMinutes(k*15);
+            var smi = new DwtMenuItem({parent: minutesSelectMenu, style: DwtMenuItem.NO_STYLE});
+            smi.setText(timeFormatter.format(now));
+            smi.setData("value", j*60 + k*15);
+            if (menuSelectionListener) smi.addSelectionListener(menuSelectionListener);
+        }
     }
 
     timeSelectButton.reparentHtmlElement(buttonId);
