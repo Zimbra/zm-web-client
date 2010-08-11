@@ -75,6 +75,8 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.PROPOSE_NEW_TIME]  = new AjxListener(this, this._proposeTimeListener);
 	this._listeners[ZmOperation.FORWARD_APPT_INSTANCE]  = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.FORWARD_APPT_SERIES]  = new AjxListener(this, this._forwardListener);
+	this._listeners[ZmOperation.REPLY] = new AjxListener(this, this._replyListener);
+	this._listeners[ZmOperation.REPLY_ALL] = new AjxListener(this, this._replyAllListener);
 
 	this._treeSelectionListener = new AjxListener(this, this._calTreeSelectionListener);
 	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
@@ -1308,6 +1310,24 @@ function(ev) {
 	this._doDelete(this._listView[this._currentView].getSelection(), null, null, op);
 };
 
+ZmCalViewController.prototype._replyListener =
+function(ev) {
+	var op = (ev && ev.item instanceof DwtMenuItem)
+		? ev.item.parent.getData(ZmOperation.KEY_ID) : null;
+	var items = this._listView[this._currentView].getSelection();
+	if (items && items.length)
+		this._replyAppointment(items[0], false);
+};
+
+ZmCalViewController.prototype._replyAllListener =
+function(ev) {
+	var op = (ev && ev.item instanceof DwtMenuItem)
+		? ev.item.parent.getData(ZmOperation.KEY_ID) : null;
+	var items = this._listView[this._currentView].getSelection();
+	if (items && items.length)
+		this._replyAppointment(items[0], true);
+};
+
 ZmCalViewController.prototype._forwardListener =
 function(ev) {
 	var op = (ev && ev.item instanceof DwtMenuItem)
@@ -1875,6 +1895,22 @@ function(appt, mode) {
 	}
 };
 
+ZmCalViewController.prototype._replyAppointment =
+function(appt, all) {
+	AjxDispatcher.require(["MailCore", "Mail"]);
+	var respCallback = new AjxCallback(this, this._replyDetailsHandler, [appt, all]);
+	appt.getDetails(null, respCallback, this._errorCallback, true, true);
+};
+
+ZmCalViewController.prototype._replyDetailsHandler =
+function(appt, all, result) {
+	var addresses = appt.getOrganizer();
+	if (all)
+		addresses += "; " + appt.getAttendeesText(ZmCalBaseItem.PERSON, true);
+	var data = {action: ZmOperation.NEW_MESSAGE, toOverride: addresses, subjOverride: appt.name || null};
+	AjxDispatcher.run("GetComposeController").doAction(data);
+};
+
 ZmCalViewController.prototype._forwardAppointment =
 function(appt, mode) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
@@ -2304,11 +2340,13 @@ function(parent, num) {
 		var isShared = calendar ? calendar.isRemote() : false;
 		var disabled = isSynced || isReadOnly || (num == 0);
 		var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-		var isForwadable = calendar && !calendar.isReadOnly();
+		var isForwardable = calendar && !calendar.isReadOnly();
+		var isReplyable = appt && (num == 1);
 		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled);
+		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], isReplyable);
 		parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
 		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
-		parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwadable);
+		parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
 		parent.enable(ZmOperation.PROPOSE_NEW_TIME, (appt && !appt.isOrganizer()));
 		parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null);
 	}
@@ -2558,6 +2596,8 @@ function(recurrenceMode) {
 		ZmOperation.SEP,
 		ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE, ZmOperation.INVITE_REPLY_MENU,
 		ZmOperation.SEP,
+		ZmOperation.REPLY,
+		ZmOperation.REPLY_ALL,
 		forwardOp,
         ZmOperation.PROPOSE_NEW_TIME,
 		deleteOp, ZmOperation.MOVE, ZmOperation.TAG_MENU,
@@ -2589,14 +2629,14 @@ function(appt, actionMenu) {
 	var workflow = share ? share.isWorkflow() : true;
 	var isPrivate = appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
 	var enabled = !isOrganizer && workflow && !isPrivate;
-	var isForwadable = calendar && !calendar.isReadOnly();
+	var isForwardable = calendar && !calendar.isReadOnly();
 
 	// reply action menu
 	actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
 	actionMenu.enable(ZmOperation.REPLY_DECLINE, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
 	actionMenu.enable(ZmOperation.REPLY_TENTATIVE, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
 	actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled);
-	actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwadable);
+	actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
 
 	// edit reply menu
 	if (enabled) {
