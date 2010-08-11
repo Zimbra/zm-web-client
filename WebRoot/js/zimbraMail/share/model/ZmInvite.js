@@ -236,6 +236,18 @@ function(compNum) {
 };
 
 /**
+ * Gets the sequence no
+ *
+ * @param	{int}	compNum		the component number
+ * @return	{String} the sequence no
+ */
+ZmInvite.prototype.getSequenceNo =
+function(compNum) {
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].seq : null;
+};
+
+/**
  * Gets the organizer email.
  * 
  * @param	{int}	compNum		the component number
