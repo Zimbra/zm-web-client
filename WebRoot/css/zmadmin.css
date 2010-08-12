@@ -706,12 +706,14 @@ div.ZaSearchBuilderOptionRemoveAll table  {
 
 /* text style for name of a selected and focused tree item */
 .AdminTreeItem-selected-focused {
-	@SelectedBg@
+    @TreeItem@
+    @SelectedBg@
 	@ImagePadding@
 }
 
 /* text style for a right-clicked tree item */
 .AdminTreeItem-actioned {
+    @TreeItem@
 	@RightClickBg@
 	@ImagePadding@
 }
