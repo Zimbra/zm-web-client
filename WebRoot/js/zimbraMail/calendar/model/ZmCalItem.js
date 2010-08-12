@@ -954,6 +954,7 @@ function(message, viewMode) {
 		this.isException = message.invite.isException();
         this.recurring =  message.invite.isRecurring();
         this.location = message.invite.getLocation();
+        this.seq = message.invite.getSequenceNo(); 
 		this._setTimeFromMessage(message, viewMode);
 		this._setExtrasFromMessage(message);
 		this._setRecurrence(message);
