@@ -1935,7 +1935,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		}
 
 		// bug #44857 - replies/forwards should save sent message into respective account
-		if (!onBehalfOf && appCtxt.isFamilyMbox && this._origMsg) {
+		if (!onBehalfOf && appCtxt.isFamilyMbox && this._origMsg && folder) {
 			onBehalfOf = (folder.getOwner() != mainAcct);
 		}
 
