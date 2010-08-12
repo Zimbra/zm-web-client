@@ -53,28 +53,29 @@
     <c:set var="bitMonths" value="${dateSymbols.shortMonths}"/>
 </mo:handleError>
 <c:set var="lastMonth" value="-1"/>
+
+<mo:ipadToolbar urlTarget="${urlTarget}" mailbox="${mailbox}" view="month" date="${date}" context="${context}" app="${param.st}" keys="false" timezone="${timezone}"/>
+
+<div class='ZhCalMonthHeaderMonth'>
+	  ${fn:escapeXml(title)}
+</div>
 <table width="100%"  cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td>
-            <mo:ipadToolbar urlTarget="${urlTarget}" mailbox="${mailbox}" view="month" date="${date}" context="${context}" app="${param.st}" keys="false" timezone="${timezone}"/>
-        </td>
-    </tr>
-    <tr>
-        <td>
 
-            <table width="100%" class='ZhCalMonthHeaderTable' cellpadding=2 cellspacing=0 border=0>
+            <!-- table width="100%" class='ZhCalMonthHeaderTable' cellpadding=2 cellspacing=0 border=0>
                 <tr>
                     <mo:calendarUrl view="month" var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                     <mo:calendarUrl view="month" var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
 
-                    <td width="1%" class='zo_cal_mpage' style="background-color:transparent; padding:0px;"><a class="cal_prev" href="${fn:escapeXml(prevUrl)}">&nbsp;</a></td>
-                    <td colspan="7" class='ZhCalMonthHeaderMonth' style="background-color:transparent; color:white; font-size:20px;">
-                            ${fn:escapeXml(title)}
+                    <td width="1%" class='zo_cal_mpage'><a class="cal_prev" href="${fn:escapeXml(prevUrl)}">&nbsp;</a></td>
+                    <td>
+                          
                     </td>
-                    <td width="1%" class='zo_cal_mpage' style="background-color:transparent; padding:0px;"><a class="cal_next" href="${fn:escapeXml(nextUrl)}">&nbsp;</a></td>
+                    <td width="1%" class='zo_cal_mpage'><a class="cal_next" href="${fn:escapeXml(nextUrl)}">&nbsp;</a></td>
                 </tr>
-            </table>
-            <div class="calBody" style="margin-top:2px; ">
+            </table -->
+            <div class="calBody">
             <table width="100%" cellpadding="5" cellspacing="0" border="0" class='ZhCalMonthTable'>
                 <c:set var="lastMonth" value="-1"/>
                 <c:forEach var="week" begin="1" end="6" varStatus="weekStatus">

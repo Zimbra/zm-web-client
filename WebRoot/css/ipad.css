@@ -1033,7 +1033,7 @@ span.aleft > div:first-child, .contactHeader {
  	margin-left: 2px;
  }
 
-/* Calendar UI styles */
+/** Calendar UI styles **/
 
 .calSplit{
     width: 49.8%;
@@ -1068,9 +1068,102 @@ span.aleft > div:first-child, .contactHeader {
           text-decoration:none;
 
     }
-    
- /** Preference UI Styles **/   
-.titleText{
+
+.ZhCalMonthTable{
+	border-spacing: 0px 0px;
+	background-color: white;
+	border-collapse: collapse;
+	padding: 0px;
+	border-radius: 6px;
+}
+ 
+.ZhCalMonthDay, .ZhCalMonthDaySelected{
+	border: 1px solid #d5d5d5;
+	cursor: pointer;
+	overflow: hidden;
+	vertical-align: top;
+}   
+
+.ZhCalDOM, .ZhCalDOMT, .ZhCalDOMO, .ZhCalDOMOT{
+	font-size: 11px;
+	overflow: hidden;
+	padding-left: 3px;
+	padding-right: 3px;
+	text-align: right;
+	white-space: nowrap;
+	color: #999999;
+}
+
+	.ZhCalDOM a,.ZhCalDOMO a,.ZhCalDOMT a{
+		color: #999999;
+		text-decoration: none;
+	}
+
+
+.ZhCalMonthHeaderMonth{
+	font-size: 18px;
+ 	color: white;
+	text-shadow: #000000 0px -1px;
+	text-align: center;
+	margin-top: 10px;
+}
+
+.ZhCalMonthDaySelected{
+	background-color: #e5e5e5 !important; 
+}
+
+.ZhCalMonthAppt,.zo_day_appt{
+	border-radius: 16px;
+	-webkit-border-radius: 16px;
+}
+
+
+	.ZhCalMonthAppt a,.zo_appt_text a{
+		text-decoration: none;
+		color: white;
+		font-size: 12px;
+		text-shadow: #666666 0px 1px;
+		font-weight: bold;
+	}
+
+
+.OrangeDark,.Orange{ 
+	background-color: #ff9966;
+	border: 1px solid #e4770a;
+}
+
+
+.RedLight,.RedBg{ 
+	background-color:#ff9999;
+	border: 1px solid #e56e6e;	 
+}
+
+.GreenLight,.GreenBg{ 
+	background-color:#80C095;
+	border: 1px solid #78ab8a;	 	
+}
+
+.PurpleLight,.PurpleBg{
+	background-color:#c8a4e1;
+	border: 1px solid #9966cc;	
+}
+
+.CyanLight,.CyanBg{
+	background-color:#66cccc;
+	border: 1px solid #4ba5a5;
+}
+
+
+
+
+
+
+
+
+
+/** Preference UI Styles **/   
+
+.titleText,{
  	font-size: 18px;
  	color: white;
 	text-shadow: #000000 0px -1px;
