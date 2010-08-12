@@ -1153,7 +1153,7 @@ function() {
         mi.setData("value", j*60);
         if (menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
 
-        var minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE});
+        var minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE, cascade:true, maxRows:1});
         mi.setMenu(minutesSelectMenu, true);
         mi.setSelectableWithSubmenu(true);
         for (var k = 1; k < 4; k++) {
