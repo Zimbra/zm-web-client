@@ -68,7 +68,14 @@
         <mo:calMultiDayView urlTarget="${context_url}" timezone="${tz}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
     </c:when>
     <c:when test="${view eq 'month'}">
-        <mo:calMonthView urlTarget="${context_url}" timezone="${tz}" date="${dateContext}"/>
+        <c:choose>
+            <c:when test="${ua.isiPad == true}">
+                <mo:calMonthView-iPad urlTarget="${context_url}" timezone="${tz}" date="${dateContext}"/>
+            </c:when>
+            <c:otherwise>
+               <mo:calMonthView urlTarget="${context_url}" timezone="${tz}" date="${dateContext}"/>
+            </c:otherwise>
+        </c:choose>
     </c:when>
     <c:otherwise>
         <mo:calListView urlTarget="${context_url}" timezone="${tz}" date="${dateContext}"/>

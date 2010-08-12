@@ -155,6 +155,15 @@ function(key) {
 	return !key ? this._zimletContext : this._zimletContext.getVal(key);
 };
 
+/**
+ * Gets the zimlet context.
+ * 
+ * @return	{ZimletContext}	the context
+ */
+ZmZimletBase.prototype.getZimletContext =
+function() {
+	return	this._zimletContext;
+}
 
 /*
  * 

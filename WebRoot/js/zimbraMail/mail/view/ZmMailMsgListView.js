@@ -111,13 +111,14 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 			if (addrs && addrs.length) {
 				var fieldId = this._getFieldId(msg, ZmItem.F_PARTICIPANT);
 				var origLen = addrs.length;
-				var partsElided = false; // may need to get this from server...
-				var parts = this._fitParticipants(addrs, partsElided, 145);
+				var headerCol = this._headerHash[field];
+				var partColWidth = headerCol ? headerCol._width : ZmMsg.COLUMN_WIDTH_FROM_CLV;
+				var parts = this._fitParticipants(addrs, msg, partColWidth);
 				for (var j = 0; j < parts.length; j++) {
-					if (j == 1 && (partsElided || parts.length < origLen)) {
+					if (j == 0 && (parts.length < origLen)) {
 						htmlArr[idx++] = AjxStringUtil.ELLIPSIS;
 					} else if (parts.length > 1 && j > 0) {
-						htmlArr[idx++] = ", ";
+						htmlArr[idx++] = AjxStringUtil.LIST_SEP;
 					}
 					htmlArr[idx++] = "<span style='white-space: nowrap' id='";
 					// bug fix #3001 - always add one to index value (to take FROM: address into account)
@@ -125,16 +126,11 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 					htmlArr[idx++] = "'>";
 					htmlArr[idx++] = parts[j].name;
 					htmlArr[idx++] = "</span>";
-					if (parts.length == 1 && parts.length < origLen) {
-						htmlArr[idx++] = AjxStringUtil.ELLIPSIS;
-					}
 				}
 			} else {
 				htmlArr[idx++] = "&nbsp;"
 			}
-		}
-		else
-		{
+		} else {
 			var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 			if (fromAddr) {
 				if (this._mode == ZmId.VIEW_CONVLIST && this._isMultiColumn) {

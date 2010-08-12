@@ -28,8 +28,8 @@
  * <br />
  * To write a zimlet, see {@link ZmZimletBase}. 
  * 
- * @param	{String}	typeName	the type name
- * @param	{String}	className	the class name
+ * @param	{string}	typeName	the type name
+ * @param	{string}	className	the class name
  */
 ZmObjectHandler = function(typeName, className) {
 	if (arguments.length > 0) {
@@ -42,8 +42,8 @@ ZmObjectHandler.prototype.constructor = ZmObjectHandler;
 /**
  * This method is called by the Zimlet framework to initialize the object.
  * 
- * @param	{String}	typeName	the type name
- * @param	{String}	className	the class name; if <code>null</code>, "Object" will be used
+ * @param	{string}	typeName	the type name
+ * @param	{string}	className	the class name; if <code>null</code>, "Object" will be used
  */
 ZmObjectHandler.prototype.init =
 function(typeName, className) {
@@ -54,7 +54,7 @@ function(typeName, className) {
 /**
  * Returns a string representation of the object.
  * 
- * @return		{String}		a string representation of the object
+ * @return		{string}		a string representation of the object
  */
 ZmObjectHandler.prototype.toString = 
 function() {
@@ -72,7 +72,7 @@ function() {
 /**
  * Gets the type name.
  * 
- * @return	{String}		the type name
+ * @return	{string}		the type name
  */
 ZmObjectHandler.prototype.getTypeName =
 function() {
@@ -84,7 +84,7 @@ function() {
  * 
  * @param	{Object}		obj			the object
  * @param	{Object}		context		the content
- * @return	{String}		the class name
+ * @return	{string}		the class name
  */
 ZmObjectHandler.prototype.getClassName =
 function(obj, context) {
@@ -96,7 +96,7 @@ function(obj, context) {
  * 
  * @param	{Object}		obj		the object
  * @param	{Object}		context		the content
- * @return	{String}		the hovered class name
+ * @return	{string}		the hovered class name
  */
 ZmObjectHandler.prototype.getHoveredClassName =
 function(obj, context) {
@@ -113,7 +113,7 @@ function(obj, context) {
  * 
  * @param	{Object}		obj		the object
  * @param	{Object}		context		the content
- * @return	{String}		the active class name
+ * @return	{string}		the active class name
  */
 ZmObjectHandler.prototype.getActiveClassName =
 function(obj, context) {
@@ -168,7 +168,7 @@ function(content, startIndex) {
 /**
  * Generates content inside the <code>&lt;span&gt;</code> tag.
  * 
- * @return	{Number}	the content index
+ * @return	{number}	the content index
  * @private
  * */
 ZmObjectHandler.prototype._getHtmlContent =
@@ -180,7 +180,7 @@ function(html, idx, obj, context, spanId) {
 /**
  * Generates the <code>&lt;span&gt;</code> tag.
  * 
- * @return	{Number}	the content index
+ * @return	{number}	the content index
  * @private
  */
 ZmObjectHandler.prototype.generateSpan = 
@@ -212,7 +212,7 @@ function(obj, context) {
  * 
  * @param		{Object}	obj			the object
  * @param		{Object}	context		the context
- * @return		{String}	the handler has tool tip text
+ * @return		{string}	the handler has tool tip text
  */
 ZmObjectHandler.prototype.getToolTipText =
 function(obj, context) {
@@ -233,9 +233,11 @@ function(obj, context) {
  * Gets the action menu.
  * 
  * @param		{Object}	obj			the object
- * @param		{String}	span		the span element
+ * @param		{string}	span		the span element
  * @param		{Object}	context		the context
- * @return		the action menu
+ * @return		{ZmActionMenu}	the action menu
+ * 
+ * @private
  */
 ZmObjectHandler.prototype.getActionMenu =
 function(obj, span, context) {
@@ -246,7 +248,7 @@ function(obj, span, context) {
  * This method is called by the Zimlet framework when the handler is selected.
  * 
  * @param		{Object}	obj			the object
- * @param		{String}	span		the span element
+ * @param		{string}	span		the span element
  * @param		{Object}	ev			the event
  * @param		{Object}	context		the context
  * @see		#clicked
@@ -260,7 +262,7 @@ function(obj, span, ev, context) {
  * This method is called by the Zimlet framework when the handler is clicked.
  * 
  * @param		{Object}	obj			the object
- * @param		{String}	span		the span element
+ * @param		{string}	span		the span element
  * @param		{Object}	ev			the event
  * @param		{Object}	context		the context
  */
