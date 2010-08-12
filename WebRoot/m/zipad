@@ -172,6 +172,7 @@
 					<li class="sel"><a id="mail" href="${aurl}?st=${mailbox.prefs.groupMailBy}"><span onclick="return zClickLink('mail')"><fmt:message key="mail"/></span></a></li>
 					<li><a id="contact" href="${aurl}?st=contact"><span onclick="return zClickLink('contact')"><fmt:message key="contacts"/></span></a></li>
 					<li><a id="cal" href="${aurl}?st=cal"><span onclick="return zClickLink('cal')"><fmt:message key="calendar"/></span></a></li>
+					<li><a href="#"><span>Tasks</span></a></li>
 					<li><a id="options" href="${aurl}?st=prefs"><span onclick="return zClickLink('options')"><fmt:message key="options"/></span></a></li>
 				</ul>
 		

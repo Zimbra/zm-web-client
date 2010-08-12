@@ -577,7 +577,7 @@ ul.list li{
 		text-align: right;
 	}
 	
-.msgBody,.emptyBody,.calBody {
+.msgBody,.emptyBody,.calBody,.prefBody {
     background-color: white;
     -webkit-border-radius: 12px;
     margin: 10px ;
@@ -1068,3 +1068,20 @@ span.aleft > div:first-child, .contactHeader {
           text-decoration:none;
 
     }
+    
+ /** Preference UI Styles **/   
+.titleText{
+ 	font-size: 18px;
+ 	color: white;
+	text-shadow: #000000 0px -1px;
+	padding-left: 13px;
+	padding-bottom: 0px; 
+}
+
+.prefBody .label{
+	width: 200px !important;
+}
+
+.prefBody .value select{
+	font-size: 14px !important;
+}  

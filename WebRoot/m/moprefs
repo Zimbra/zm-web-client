@@ -26,14 +26,6 @@
 </c:url>
 <c:if test="${not empty param.emsg}"><div class="StatusWarning"><fmt:message key="${param.emsg}"/></div></c:if>
 
-<style type="text/css">
-    .folderBar{
-       -webkit-border-radius: 12px;
-    }
-    .label {
-        width: 250px !important;
-    }
-</style>
 
 <form action="${currentUrl}" method="post" name="optionsForm" onsubmit="return submitForm(this);" accept-charset="UTF-8">
     <input type="hidden" name="doPrefsAction" value="1">
@@ -56,27 +48,27 @@
                 </div>
         </c:otherwise>
     </c:choose>
-    <div class="msgBody">
+    
     <div class="Stripes" id="prefDiv">
-        <div class="sectionLbl tb tbl folderBar"><div class="tr"><div class="td aleft"><b><fmt:message key="general"/></b></div></div></div>
-        <div class='View'>
+        <div class="sectionLbl"><div class="tr"><div class="td titleText"><b><fmt:message key="general"/></b></div></div></div>
+        <div class="View prefBody">
             <div class="tbl">
                 <div class="tr">
                     <span class="label aleft  td" style='white-space:nowrap;'><b><fmt:message key="timeZonePref"/></b></span>
-        <span class="value aleft td"><select name="zimbraPrefTimeZoneId" id="timeZone">
-            <c:set var="tzpref" value="${mailbox.prefs.timeZoneCanonicalId}"/>
-            <zm:forEachTimeZone var="tz">
-                <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
-                <option
-                        <c:if test="${tzpref eq tz.id}">selected</c:if>
-                        value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
-            </zm:forEachTimeZone>
-        </select></span>
-                </div>
+	        <span class="value aleft td"><select name="zimbraPrefTimeZoneId" id="timeZone">
+	            <c:set var="tzpref" value="${mailbox.prefs.timeZoneCanonicalId}"/>
+	            <zm:forEachTimeZone var="tz">
+	                <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
+	                <option
+	                        <c:if test="${tzpref eq tz.id}">selected</c:if>
+	                        value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
+	            </zm:forEachTimeZone>
+		        </select></span>
+	                </div>
             </div>
         </div>
-        <div class="sectionLbl tb tbl folderBar"><div class="tr"><div class="td aleft"><b><fmt:message key="mail"/></b></div></div></div>
-        <div class='View'>
+        <div class="sectionLbl"><div class="tr"><div class="td titleText"><b><fmt:message key="mail"/></b></div></div></div>
+        <div class="View prefBody">
             <div class="tbl">
                 <div class="tr">
                     <span class="label aleft td"><b><fmt:message key="optionsEmailPerPage"/></b></span>
@@ -116,8 +108,8 @@
                 </c:if>
             </div>
         </div>
-        <div class="sectionLbl tb tbl folderBar"><div class="tr"><div class="td aleft"><b><fmt:message key="contact"/></b></div></div></div>
-        <div class='View'>
+        <div class="sectionLbl"><div class="tr"><div class="td titleText"><b><fmt:message key="contact"/></b></div></div></div>
+        <div class="View prefBody">
             <div class="tbl">
                 <div class="tr">
                     <span class="label aleft  td"><b><fmt:message key="optionsContactsPerPage"/></b></span>
@@ -141,8 +133,8 @@
                 </div>
             </div>
         </div>
-        <div class="sectionLbl tb tbl folderBar"><div class="tr"><div class="td aleft"><b><fmt:message key="calendar"/></b></div></div></div>
-        <div class='View'>
+        <div class="sectionLbl"><div class="tr"><div class="td titleText"><b><fmt:message key="calendar"/></b></div></div></div>
+        <div class="View prefBody">
             <div class="tbl">
                 <div class="tr">
                     <span class="label aleft td"><b><fmt:message key="calendarFirstDayOfWeek"/></b></span>
@@ -197,5 +189,5 @@
         </div>
     </div>
     </c:if>
-    </div>
+   
 </form>
