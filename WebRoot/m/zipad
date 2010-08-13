@@ -10,8 +10,10 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <c:set var="F_LIMIT" value="${not empty sessionScope.F_LIMIT ? sessionScope.F_LIMIT : 100}" scope="session"/>
 <c:if test="${empty param.ajax}"><?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<!DOCTYPE html>
+<html manifest="mobile.manifest">
+
 <c:if test="${(!empty param.debug || !empty param.dev)}"><c:set var="dbg" value="${true}"/></c:if>
 <c:remove var="prevUrl" scope="session"/><c:remove var="currentUrl" scope="session"/></c:if>
 <c:url var="baseURL" scope="request" value="${requestScope.baseURL!=null?requestScope.baseURL:'zipad'}"/>
@@ -56,6 +58,7 @@
                 <zm:pref name="zimbraPrefCalendarFirstdayOfWeek" value="${param.zimbraPrefCalendarFirstdayOfWeek}"/>
                 <zm:pref name="zimbraPrefUseTimeZoneListInCalendar" value="${param.zimbraPrefUseTimeZoneListInCalendar eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             </zm:modifyPrefs>
+            <c:if test="${ua.isiPad == false}">
             <c:set var="flimit" value="${zm:cook(param.F_LIMIT)}"/>
             <c:choose>
                 <c:when test="${flimit gt 0 and flimit le 1000}">
@@ -65,12 +68,13 @@
                     <c:redirect url="zmview?st=prefs&emsg=MO_MaxFoldersInvalidValueMsg"/>
                 </c:otherwise>
             </c:choose>
+            </c:if>
             <c:if test="${updated}">
                 <zm:getMailbox var="mailbox" refreshaccount="${true}"/>
                 <c:set var="limit" value="${mailbox.prefs.mailItemsPerPage}" scope="session"/>
                 <zm:clearSearchCache />
                 <app:status><fmt:message key="optionsSaved"/></app:status>
-            </c:if>
+            </c:if>                    
         </c:when>
         <c:when test="${not empty param.doMessageAction}">
             <mo:messageAction/>
@@ -123,7 +127,7 @@
 <meta content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width" name="viewport">
 <script type="text/javascript">window.onerror=function(m,u,l){if(window.console){window.console.log("An error occured in: "+u+"\n{\n\tmsg: "+m+",\n\tline: "+l+"\n}");}return false;};</script>
 <c:if test="${empty djs or not djs}"><script type="text/javascript">window.currentUrl='<c:url value="${currentUrl}"><c:param name="ajax" value="true"/></c:url>';<c:import url="/m/mojs${dbg ? '?dev=1':''}"/></script></c:if>
-<link href="<c:url value='/css/ipad.css'/>" type="text/css" rel="stylesheet"/>
+<link href="<c:url value='/css/zhtml,iphone-cal,ipad.css'/>" type="text/css" rel="stylesheet"/>
 </head>
 
 <body>
@@ -135,6 +139,30 @@
         </div>
     </div>
     
+	<div class="toolbar footer">
+       <div class="listViewPane" style="background-color:transparent;">		
+			<div class="quota alignLeft">
+				<div class="shell">
+					<div class="bar"></div>
+				</div>
+			</div>
+		</div>		
+			
+        <div class="contentViewPane">
+        <div class="userInfo alignLeft">
+				user1@zimbra.com
+			</div>
+        	<div class ="alignLeft copyrights">
+       		 	&copy; 2010 <a href="#">Zimbra</a>. All rights reserved.
+        	</div>
+        	<div class ="alignRight buttonBottom">
+        		<c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:url>
+       		 	<a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>
+        	</div>
+        </div>
+    </div>
+       
+    
 	<div class="topbar">
 
 		<a href="www.zimbra.com" target="_new"><div class="logo"></div></a>
@@ -143,18 +171,20 @@
 				<ul class="ul alignLeft">
 					<li class="sel"><a id="mail" href="${aurl}?st=${mailbox.prefs.groupMailBy}"><span onclick="return zClickLink('mail')"><fmt:message key="mail"/></span></a></li>
 					<li><a id="contact" href="${aurl}?st=contact"><span onclick="return zClickLink('contact')"><fmt:message key="contacts"/></span></a></li>
-					<li><a id="cal" href=""><span><fmt:message key="calendar"/></span></a></li>
-					<li><a id="tasks" href=""><span><fmt:message key="tasks"/></span></a></li>
-					<li><a id="options" href=""><span><fmt:message key="options"/></span></a></li>
+					<li><a id="cal" href="${aurl}?st=cal"><span onclick="return zClickLink('cal')"><fmt:message key="calendar"/></span></a></li>
+					<li><a href="#"><span>Tasks</span></a></li>
+					<li><a id="options" href="${aurl}?st=prefs"><span onclick="return zClickLink('options')"><fmt:message key="options"/></span></a></li>
 				</ul>
 		
 
-		<div class="signout alignRight">
-            <c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:url>
-            <a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>
+        <div class="search alignRight">
+        <form method="post" accept-charset="UTF-8" action="${context_url}" onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
+            <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+            <input type="hidden" name="st" id="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>
+            <input type="hidden" name="search" value="1"/>
+            <input type="search" id="sq" name="sq" placeholder="Search..." onclick="this.value=''">
+        </form>
         </div>
-
-		<!-- div class="search alignRight"><input type="search" placeholder="Search..."></div -->
 
 
 	</div>
@@ -193,33 +223,28 @@ if(window != parent){
 <c:if test="${empty param.ajax}">
     <div class="view" id="view">
 
-        <div class="listViewPane" id="view-list">
-            
-            ${response}
+      <div id="view-main" style="display:none;"></div>
 
-        </div>
+      <div class="listViewPane" id="view-list">
+            ${response}
+      </div>
 
       <div class="contentViewPane" id="view-content" style="display:none;">
-          <div class="header">&nbsp;</div>
-
-          <div class="msgBody" id="msg-body">
-            <center><h2 style="text-transform: capitalize;"><fmt:message key="emptyMessage"/></h2></center>
-          </div>
+          
       </div>
+        
       <div class="contentViewPane" id="static-content">
+      
           <div class="tb tbl "><div class="tr"><div class="td toolbar">
             <c:url var="addUrl" value="${aurl}?st=contact">
                 <c:param name="action" value="edit"/>
             </c:url>
 
             <div class ="compose button" id="view-contact" style="display:none;"><a id="add" accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}"><span onclick="return zClickLink('add')"><fmt:message key="add"/></span></a></div>
-            <c:url var="composeUrl" value="${aurl}?st=newmail"/>
+            <c:url var="composeUrl" value="${aurl}?st=newmail&compose=new"/>
             <div class ="compose button" id="view-mail" style="display:block;"><a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" id="compose"><fmt:message key="compose"/></a></div>
           </div></div></div>
-          <div class="header">
-              &nbsp;
-          </div>
-          <div class="msgBody" id="empty-message"><center><h2 style="text-transform: capitalize;"><fmt:message key="emptyMessage"/></h2></center></div>
+          <div class="emptyBody" id="empty-message"><h2><fmt:message key="emptyMessage"/></h2></div>
       </div>
     </div>
 </c:if>

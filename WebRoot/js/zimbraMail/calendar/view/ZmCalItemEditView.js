@@ -256,6 +256,7 @@ function(calItem, attach) {
 
 	var attachRemoveId = "_att_" + Dwt.getNextId();
 	var attachInputId = "_att_" + Dwt.getNextId();
+    var sizeContId = "_att_" + Dwt.getNextId();
 
 	if (attach) {
 		div.innerHTML = calItem.getAttachListHtml(attach, true);
@@ -264,6 +265,7 @@ function(calItem, attach) {
 			id: this._htmlElId,
 			attachInputId: attachInputId,
 			attachRemoveId: attachRemoveId,
+            sizeId: sizeContId,
 			uploadFieldName: ZmCalItemEditView.UPLOAD_FIELD_NAME
 		};
 		div.innerHTML = AjxTemplate.expand("calendar.Appointment#AttachAdd", subs);
@@ -281,15 +283,47 @@ function(calItem, attach) {
 		attachRemoveSpan._editViewId = tvpId;
 		attachRemoveSpan._parentDiv = div;
 		Dwt.setHandler(attachRemoveSpan, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+
+        var attachInputEl = document.getElementById(attachInputId);
 		// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
 		if (AjxEnv.isIE) {
-			var attachInputEl = document.getElementById(attachInputId);
+			//var attachInputEl = document.getElementById(attachInputId);
 			attachInputEl._editViewId = tvpId;
 			Dwt.setHandler(attachInputEl, DwtEvent.ONKEYDOWN, ZmCalItemEditView._onKeyDown);
-		}
-	}
+        }
+
+        //HTML5
+        if(AjxEnv.supportsHTML5File){
+            var sizeEl = document.getElementById(sizeContId);
+            Dwt.setHandler(attachInputEl, "onchange", AjxCallback.simpleClosure(this._handleFileSize, this, attachInputEl, sizeEl));
+        }
+    }
 
     this.resize();
+};
+
+ZmCalItemEditView.prototype._handleFileSize =
+function(inputEl, sizeEl){
+
+    var files = inputEl.files;
+    if(!files) return;
+
+    var sizeStr = [], className, totalSize =0;
+    for(var i=0; i<files.length;i++){
+        var file = files[i];
+        var size = file.size || file.fileSize /*Safari*/;
+        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))
+            className = "RedC";
+        totalSize += size;
+    }
+
+    if(sizeEl) {
+        sizeEl.innerHTML = "  ("+AjxUtil.formatSize(totalSize, true)+")";
+        if(className)
+            Dwt.addClass(sizeEl, "RedC");
+        else
+            Dwt.delClass(sizeEl, "RedC");
+    }
 };
 
 ZmCalItemEditView.prototype.resize =

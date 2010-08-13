@@ -64,13 +64,13 @@ ZmNewTagDialog.prototype.cleanup =
 function(bPoppedUp) {
 	DwtDialog.prototype.cleanup.call(this, bPoppedUp);
 	var color = this._getNextColor();
-	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
+	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.getIcon(color));
 };
 
 ZmNewTagDialog.prototype._colorListener = 
 function(ev) {
 	var color = ev.item.getData(ZmOperation.MENUITEM_ID);
-	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
+	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.getIcon(color));
 };
 
 ZmNewTagDialog.prototype._setTagColorMenu =
@@ -82,7 +82,7 @@ function() {
 	ZmOperation.addColorMenu(this._colorButton);
 
 	var color = ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
-	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
+	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.getIcon(color));
 
 	this._tagColorListener = new AjxListener(this, this._colorListener);
 	var items = this._colorButton.getMenu().getItems();

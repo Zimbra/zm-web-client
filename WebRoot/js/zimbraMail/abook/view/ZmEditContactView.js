@@ -663,7 +663,7 @@ function(tagIds) {
 	for (var j = 0; j < tags.length; j++) {
 		var tag = tags[j];
 		if (!tag) { continue; }
-		var icon = ZmTag.COLOR_ICON[tag.color];
+		var icon = tag.getIconWithColor();
 		var attr = ["id='", tagCellId, tag.id, "'"].join("");
 		// XXX: set proper class name for link once defined!
 		html[idx++] = "<a href='javascript:;' class='' onclick='ZmEditContactView._tagClicked(";

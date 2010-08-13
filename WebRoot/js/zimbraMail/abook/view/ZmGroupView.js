@@ -607,7 +607,7 @@ function() {
 	for (var j = 0; j < ta.length; j++) {
 		var tag = ta[j];
 		if (!tag) continue;
-		var icon = ZmTag.COLOR_ICON[tag.color];
+		var icon = tag.getIconWithColor();
 		html[i++] = AjxImg.getImageSpanHtml(icon, null, null, tag.name);
 		html[i++] = "&nbsp;";
 	}
