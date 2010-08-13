@@ -509,7 +509,7 @@ ZmNotebookPageView.prototype.createHistoryLink = function(doc,wikiName){
 };
 
 ZmNotebookPageView.prototype.editPage = function(pageName){
-
+    pageName = AjxStringUtil.htmlDecode(pageName);
 	var controller = this._controller;
 	var object = controller._object;
 	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
@@ -523,7 +523,7 @@ ZmNotebookPageView.prototype.editPage = function(pageName){
 };
 
 ZmNotebookPageView.prototype.deletePage = function(pageName){
-
+    pageName = AjxStringUtil.htmlDecode(pageName);
 	var controller = this._controller;
 	var object = controller._object;
 	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
@@ -536,7 +536,7 @@ ZmNotebookPageView.prototype.deletePage = function(pageName){
 };
 
 ZmNotebookPageView.prototype.showHistory = function(pageName){
-
+    pageName = AjxStringUtil.htmlDecode(pageName);
 	var controller = this._controller;
 	var object = controller._object;
 	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
