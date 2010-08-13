@@ -1706,6 +1706,9 @@ function(msgNode) {
 	if (msgNode._attrs) { this.attrs = msgNode._attrs; }
 	if (msgNode.sf) 	{ this.sf = msgNode.sf; }
 	if (msgNode.cif) 	{ this.cif = msgNode.cif; }
+	if (msgNode.md) 	{ this.md = msgNode.md; }
+	if (msgNode.ms) 	{ this.ms = msgNode.ms; }
+	if (msgNode.rev) 	{ this.rev = msgNode.rev; }
 
 	//Copying msg. header's
 	if (msgNode.header) {
