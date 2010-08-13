@@ -193,7 +193,7 @@ ZmNotebookController.prototype._doDelete = function(items,delcallback) {
 		var organizer = appCtxt.getById(page.id);
 		if(organizer) {
 			var callback = new AjxCallback(treeController, treeController._deleteListener2, [ organizer ]);
-			var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, organizer.name);
+			var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, AjxStringUtil.htmlEncode(organizer.name));
 			var dialog = appCtxt.getConfirmationDialog();
 			dialog.popup(message, callback);
 			return;
@@ -208,7 +208,7 @@ ZmNotebookController.prototype._doDelete = function(items,delcallback) {
 		}
 
 		var item = items instanceof Array ? items[0] : items;
-		message = this._confirmDeleteFormatter.format(item.name);
+		message = this._confirmDeleteFormatter.format(AjxStringUtil.htmlEncode(item.name));
 	}
 	var callback = new AjxCallback(this, this._doDelete2, [items,delcallback]);
 	dialog.popup(message, callback);

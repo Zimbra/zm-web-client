@@ -225,6 +225,9 @@ function() {
 
 ZmPageEditView._validatePageName =
 function(name) {
+    if(name !== ""){
+        this.setValue(unescape(name),true);
+    }    
 	if (name == "") {
 		throw AjxMsg.valueIsRequired;
 	} else if (!ZmOrganizer.VALID_NAME_RE.test(name)) {
