@@ -457,6 +457,12 @@ td.DDSepInvisible div {
 	@MailMsgHeaderLight@
 }
 
+/* Container for the header of the message */
+.ZmMailMsgView .InvHeaderTable {
+	@MailInvHeaderLight@
+	border-bottom: 1px solid #999999;
+}
+
 .ZmConvDoublePaneView .calendar_view, .ZmConvView .calendar_view {
 	@TopSeparator@
 	@LeftSeparator@
@@ -501,6 +507,39 @@ td.DDSepInvisible div {
 .ZmMailMsgView .AttName-matched {
 	@Anchor-matched@
 	white-space: nowrap;
+}
+
+.InvHeaderTable .LabelColName {
+	@MailMsgHeaderLabel@
+	font-weight: bold;
+	font-size: 12px;
+	vertical-align: top;
+	padding: 3px 0px 3px 0px;
+	white-space: nowrap;
+	text-align: left;
+}
+
+.InvHeaderTable .LabelColValue {
+	@MailMsgHeaderText@
+	font-size: 12px;
+	white-space: normal;
+	vertical-align: top;
+	padding: 3px;
+}
+
+.InvHeaderTable .SubjectCol {
+	@FontSize-biggest@
+}
+
+.InvHeaderTable .DateCol {
+	white-space: nowrap;
+}
+
+.InvHeaderTable .InvCounter {
+	@WarningContainer@
+	@WarningText@
+	@ActiveCursor@
+	padding-left: 5px;
 }
 
 /* the sash next to overview does not need borders or a background color */

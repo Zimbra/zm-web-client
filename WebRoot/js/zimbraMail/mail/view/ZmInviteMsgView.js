@@ -46,8 +46,10 @@ function() {
 
 ZmInviteMsgView.prototype.reset =
 function() {
-	this._inviteToolbar.setVisible(Dwt.DISPLAY_NONE);
-	this._inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement());
+	if (this._inviteToolbar) {
+		this._inviteToolbar.setVisible(Dwt.DISPLAY_NONE);
+		this._inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement());
+	}
 	this._hasInviteToolbar = false;
 
 	if (this._dayView) {
@@ -182,8 +184,8 @@ function(reset) {
 
 	if (reset) {
 		isRight
-			? this.setSize(Dwt.DEFAULT, this.parent.parent.getSize().y)
-			: this.setSize(this.parent.parent.getSize().x, Dwt.DEFAULT);
+			? this.parent.setSize(Dwt.DEFAULT, this.parent.parent.getSize().y)
+			: this.parent.setSize(this.parent.parent.getSize().x, Dwt.DEFAULT);
 	} else {
 		var mvBounds = this.parent.getBounds();
 
@@ -207,6 +209,50 @@ function(reset) {
 			Dwt.setSize(this.parent.getHtmlElement(), mvWidth, Dwt.DEFAULT);
 		}
 	}
+};
+
+ZmInviteMsgView.prototype.addSubs =
+function(subs, sentBy, sentByAddr) {
+
+	subs.invite = this._invite;
+
+	// counter proposal
+	if ((this._invite.type != "task") && this._invite.hasCounterMethod() &&
+		this._msg.folderId != ZmFolder.ID_SENT)
+	{
+		subs.counterInvMsg = AjxMessageFormat.format(ZmMsg.counterInviteMsg, [(sentBy && sentBy.name ) ? sentBy.name : sentByAddr]);
+		subs.newProposedTime = this._invite.getProposedTimeStr();
+	}
+
+	var om = this.parent._objectManager;
+
+	// organizer
+	var org = new AjxEmailAddress(this._invite.getOrganizerEmail(), null, this._invite.getOrganizerName());
+	subs.invOrganizer = om ? om.findObjects(org, true, ZmObjectManager.EMAIL) : om.toString();
+
+	// inviteees
+	var str = [];
+	var j = 0;
+
+	var list = this._invite.getAttendees();
+	for (var i = 0; i < list.length; i++) {
+		var at = list[i];
+		var attendee = new AjxEmailAddress(at.a, null, at.d);
+		str[j++] = om ? om.findObjects(attendee, true, ZmObjectManager.EMAIL) : attendee.toString();
+	}
+	subs.invitees = str.join(AjxEmailAddress.SEPARATOR);
+
+	// invite date
+	var durText = this._invite.getDurationText(null,null,null,true);
+	subs.invDate = om ? om.findObjects(durText, true, ZmObjectManager.DATE) : durText;
+};
+
+ZmInviteMsgView.prototype.truncateBodyContent =
+function(content, isHtml) {
+	var sepIdx = content.indexOf(ZmItem.NOTES_SEPARATOR);
+	return isHtml
+		? (content.substring(content.indexOf(">", sepIdx)+1))
+		: (content.substring(sepIdx+ZmItem.NOTES_SEPARATOR.length));
 };
 
 ZmInviteMsgView.prototype._getInviteToolbar =
@@ -309,7 +355,7 @@ function(ev) {
 	ev._inviteReplyFolderId = folderId;
 	ev._inviteComponentId = null;
 	ev._msg = this._msg;
-	this.notifyListeners(ZmInviteMsgView.REPLY_INVITE_EVENT, ev);
+	this.parent.notifyListeners(ZmInviteMsgView.REPLY_INVITE_EVENT, ev);
 };
 
 ZmInviteMsgView.prototype._setInviteOptions =

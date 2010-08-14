@@ -913,15 +913,7 @@ function(msg, container, callback) {
 	var sentByIcon = cl	? (cl.getContactByEmail((sentBy && sentBy.address ) ? sentBy.address : sentByAddr ) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
 	var additionalHdrs = [];
-
 	var invite = msg.invite;
-	var isCounterInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && invite && !invite.isEmpty() && (invite.type != "task") && invite.hasCounterMethod();
-	var inviteMessage;
-
-	if (isCounterInvite && msg.folderId != ZmFolder.ID_SENT) {
-		additionalHdrs.push({hdrName: ZmMsg.proposedTimeLabel, hdrVal: invite.getProposedTimeStr()});
-		inviteMessage = AjxMessageFormat.format(ZmMsg.counterInviteMsg, [(sentBy && sentBy.name ) ? sentBy.name : sentByAddr ]);
-	}
 
 	if (msg.attrs) {
 		for (var hdrName in ZmMailMsgView.displayAdditionalHdrsInMsgView) {
@@ -1007,7 +999,6 @@ function(msg, container, callback) {
 
 	var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var attachmentsCount = msg.getAttachmentLinks(true, isTextView, true).length;
-	var hasAttachments = attachmentsCount != 0;
 
 	// do we add a close button in the header section?
 	var hasHeaderCloseBtn = (this._mode == ZmId.VIEW_MSG && !appCtxt.isChildWindow);
@@ -1022,30 +1013,39 @@ function(msg, container, callback) {
 	var expandHeaderId		= ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_HDR, this._mode);
 
 	var subs = {
-		id                : this._htmlElId,
-		hdrTableId        : this._hdrTableId,
-		hdrTableTopRowId  : ZmId.getViewId(this._viewId, ZmId.MV_HDR_TABLE_TOP_ROW, this._mode),
-		closeBtnCellId    : closeBtnCellId,
-		reportBtnCellId   : reportBtnCellId,
-		expandRowId       : this._expandRowId,
-		expandHeaderId    : expandHeaderId,
-		attachId          : this._attLinksId,
-		infoBarId         : this._infoBarId,
-		subject           : subject,
-		dateString        : dateString,
-		sentBy            : sentBy,
-		sentByNormal      : sentByAddr,
-		sentByIcon        : sentByIcon,
-		obo               : obo,
-		participants      : participants,
-		hasAttachments    : hasAttachments,
-		attachmentsCount  : attachmentsCount,
-		isSyncFailureMsg  : isSyncFailureMsg,
-		additionalHdrs	  : additionalHdrs,
-		inviteMessage     : inviteMessage
+		id: 				this._htmlElId,
+		hdrTableId: 		this._hdrTableId,
+		hdrTableTopRowId:	ZmId.getViewId(this._viewId, ZmId.MV_HDR_TABLE_TOP_ROW, this._mode),
+		closeBtnCellId:		closeBtnCellId,
+		expandRowId:		this._expandRowId,
+		expandHeaderId:		expandHeaderId,
+		attachId:			this._attLinksId,
+		infoBarId:			this._infoBarId,
+		subject:			subject,
+		dateString:			dateString,
+		hasAttachments:		(attachmentsCount != 0),
+		attachmentsCount:	attachmentsCount
 	};
 
-	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
+	if (invite && !invite.isEmpty() &&
+		this._inviteMsgView && this._inviteMsgView.isActive())
+	{
+		this._inviteMsgView.addSubs(subs, sentBy, sentByAddr);
+	}
+	else {
+		subs.sentBy = sentBy;
+		subs.sentByNormal = sentByAddr;
+		subs.sentByIcon = sentByIcon;
+		subs.obo = obo;
+		subs.participants = participants;
+		subs.reportBtnCellId = reportBtnCellId;
+		subs.isSyncFailureMsg = isSyncFailureMsg;
+		subs.additionalHdrs = additionalHdrs;
+	}
+
+	var template = (this._inviteMsgView && this._inviteMsgView.isActive())
+		? "mail.Message#InviteHeader" : "mail.Message#MessageHeader";
+	var html = AjxTemplate.expand(template, subs);
 
 	var el = container || this.getHtmlElement();
 	el.appendChild(Dwt.parseHtmlFragment(html));
@@ -1126,8 +1126,15 @@ function(msg, container, callback) {
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
+			var c = bodyPart.content;
+
 			if (bodyPart.ct == ZmMimeTable.TEXT_HTML && appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
-				var c = bodyPart.content;
+				if (invite && !invite.isEmpty() &&
+					this._inviteMsgView && this._inviteMsgView.isActive())
+				{
+					c = this._inviteMsgView.truncateBodyContent(c, true);
+				}
+
 				// fix broken inline images - take one like this: <img dfsrc="http:...part=1.2.2">
 				// and make it look like this: <img dfsrc="cid:DWT123"> by looking up the cid for that part
 				if (msg._attachments && ZmMailMsgView.IMG_FIX_RE.test(c)) {
@@ -1144,7 +1151,12 @@ function(msg, container, callback) {
 				}
 				this._makeIframeProxy(el, c, false, bodyPart.truncated);
 			} else if (ZmMimeTable.isRenderableImage(bodyPart.ct)) {
-				var html = ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bodyPart.part, "'>"].join("");
+				var html = [
+					"<img zmforced='1' class='InlineImage' src='",
+					appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI),
+					"&id=", msg.id,
+					"&part=", bodyPart.part, "'>"
+				].join("");
 				this._makeIframeProxy(el, html, false);
 			} else {
 				// otherwise, get the text part if necessary
@@ -1156,7 +1168,13 @@ function(msg, container, callback) {
 						this._makeIframeProxy(el, content, true);
 					return;
 				} else {
-					this._makeIframeProxy(el, bodyPart.content, true, bodyPart.truncated);
+					if (invite && !invite.isEmpty() &&
+						this._inviteMsgView && this._inviteMsgView.isActive())
+					{
+						c = this._inviteMsgView.truncateBodyContent(c);
+					}
+
+					this._makeIframeProxy(el, c, true, bodyPart.truncated);
 				}
 			}
 		}
@@ -1527,12 +1545,14 @@ function(ev) {
 
 ZmMailMsgView.prototype._expandRows =
 function(expand) {
+	var expandRow = document.getElementById(this._expandRowId);
+	if (!expandRow) { return; }
+
 	this._expandHeader = expand;
 	if (this._expandButton) {
 		this._expandButton.setImage(expand ? "HeaderExpanded" : "HeaderCollapsed");
 	}
 
-	var expandRow = document.getElementById(this._expandRowId);
 	var table = expandRow.parentNode;
 	if (!expand) {
 		this._addressRows = [];
