@@ -480,8 +480,7 @@ function(appt, id, bodyStyle, controller) {
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
 		icon: appt.isPrivate() ? "ReadOnly" : null,
-		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba),
-        boxBorder: ZmApptViewHelper.getBoxBorderFromId(appt.fba)
+		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba)
 	};
     return AjxTemplate.expand("calendar.Calendar#calendar_appt_allday", subs);
 };
@@ -489,23 +488,12 @@ function(appt, id, bodyStyle, controller) {
 ZmApptViewHelper._getShowAsColorFromId =
 function(id) {
 	switch(id) {
-		case "F": return "ZmAppt-free";
-		case "B": return "ZmAppt-busy";
-		case "T": return "ZmAppt-tentative";
-		case "O": return "ZmAppt-ooo";
+		case "F": return "ZmScheduler-free";
+		case "B": return "ZmScheduler-busy";
+		case "T": return "ZmScheduler-tentative";
+		case "O": return "ZmScheduler-outOfOffice";
 	}
-	return "ZmAppt-busy";
-};
-
-ZmApptViewHelper.getBoxBorderFromId =
-function(id) {
-	switch(id) {
-		case "F": return "ZmSchedulerApptBorder-free";
-		case "B": return "ZmSchedulerApptBorder-busy";
-		case "T": return "ZmSchedulerApptBorder-tentative";
-		case "O": return "ZmSchedulerApptBorder-outOfOffice";
-	}
-	return "ZmSchedulerApptBorder-busy";
+	return "ZmScheduler-busy";
 };
 
 /**
@@ -1141,28 +1129,24 @@ function() {
     }
 
     // create menu for button
-    var hoursSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE});
-    timeSelectButton.setMenu(hoursSelectMenu, true);
+    var timeSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE});
+    timeSelectButton.setMenu(timeSelectMenu, true);
 
     for (var j = 0; j < 24; j++) {
         now.setHours(j);        
         now.setMinutes(0);
 
-        var mi = new DwtMenuItem({parent: hoursSelectMenu, style: DwtMenuItem.NO_STYLE});
+        var mi = new DwtMenuItem({parent: timeSelectMenu, style: DwtMenuItem.NO_STYLE});
         mi.setText(timeFormatter.format(now));
         mi.setData("value", j*60);
-        if (menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
+        if(menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
 
-        var minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE, cascade:true, maxRows:1});
-        mi.setMenu(minutesSelectMenu, true);
-        mi.setSelectableWithSubmenu(true);
-        for (var k = 1; k < 4; k++) {
-            now.setMinutes(k*15);
-            var smi = new DwtMenuItem({parent: minutesSelectMenu, style: DwtMenuItem.NO_STYLE});
-            smi.setText(timeFormatter.format(now));
-            smi.setData("value", j*60 + k*15);
-            if (menuSelectionListener) smi.addSelectionListener(menuSelectionListener);
-        }
+        now.setMinutes(30);
+        var mi1 = new DwtMenuItem({parent: timeSelectMenu, style: DwtMenuItem.NO_STYLE});
+        mi1.setText(timeFormatter.format(now));
+        mi1.setData("value", j*60 + 30);
+        if(menuSelectionListener) mi1.addSelectionListener(menuSelectionListener);
+
     }
 
     timeSelectButton.reparentHtmlElement(buttonId);

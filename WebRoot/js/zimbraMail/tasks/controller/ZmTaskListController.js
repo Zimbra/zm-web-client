@@ -56,8 +56,7 @@ ZmTaskListController.VIEWS = [
 	ZmId.VIEW_TASK_IN_PROGRESS,
 	ZmId.VIEW_TASK_WAITING,
 	ZmId.VIEW_TASK_DEFERRED,
-	ZmId.VIEW_TASK_ALL,
-    ZmId.VIEW_TASK_TODO    
+	ZmId.VIEW_TASK_ALL
 ];
 
 ZmTaskListController.ICON = {};
@@ -67,7 +66,6 @@ ZmTaskListController.ICON[ZmId.VIEW_TASK_IN_PROGRESS]		= "TaskViewInProgress";
 ZmTaskListController.ICON[ZmId.VIEW_TASK_WAITING]			= "TaskViewWaiting";
 ZmTaskListController.ICON[ZmId.VIEW_TASK_DEFERRED]			= "TaskViewDeferred";
 ZmTaskListController.ICON[ZmId.VIEW_TASK_ALL]				= "TaskList";
-ZmTaskListController.ICON[ZmId.VIEW_TASK_TODO]				= "TaskViewTodoList";
 
 ZmTaskListController.MSG_KEY = {};
 ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_NOT_STARTED]	= "notStarted";
@@ -76,7 +74,6 @@ ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_IN_PROGRESS]	= "inProgress";
 ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_WAITING]		= "waitingOn";
 ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_DEFERRED]		= "deferred";
 ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_ALL]			= "all";
-ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_TODO]			= "todoList";
 
 /**
  * Defines the status.
@@ -87,7 +84,6 @@ ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_COMPLETED]	= "COMP";
 ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_IN_PROGRESS]= "INPR";
 ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_WAITING]	= "WAITING";
 ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_DEFERRED]	= "DEFERRED";
-ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_TODO]	= "NEED,INPR";
 
 
 // Public methods

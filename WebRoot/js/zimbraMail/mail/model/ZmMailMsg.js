@@ -1706,9 +1706,6 @@ function(msgNode) {
 	if (msgNode._attrs) { this.attrs = msgNode._attrs; }
 	if (msgNode.sf) 	{ this.sf = msgNode.sf; }
 	if (msgNode.cif) 	{ this.cif = msgNode.cif; }
-	if (msgNode.md) 	{ this.md = msgNode.md; }
-	if (msgNode.ms) 	{ this.ms = msgNode.ms; }
-	if (msgNode.rev) 	{ this.rev = msgNode.rev; }
 
 	//Copying msg. header's
 	if (msgNode.header) {
@@ -1938,7 +1935,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		}
 
 		// bug #44857 - replies/forwards should save sent message into respective account
-		if (!onBehalfOf && appCtxt.isFamilyMbox && this._origMsg && folder) {
+		if (!onBehalfOf && appCtxt.isFamilyMbox && this._origMsg) {
 			onBehalfOf = (folder.getOwner() != mainAcct);
 		}
 

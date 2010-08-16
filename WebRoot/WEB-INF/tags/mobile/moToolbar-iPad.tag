@@ -18,12 +18,6 @@
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext" %>
 <%@ attribute name="app" rtexprvalue="true" required="true" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
-
-<%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Calendar"%>
-<%@ attribute name="view" rtexprvalue="true" required="false" %>
-<%@ attribute name="invId" rtexprvalue="true" required="false" %>
-<%@ attribute name="timezone" rtexprvalue="true" required="false" type="java.util.TimeZone"%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -46,16 +40,15 @@
 </c:choose>
 </mo:handleError>
 <%--This takes care of the toolbar on the right pane, decide the buttons to be displayed depending on the app--%>
-<div class="tb tbl"><div class="tr">
+<div class="tb tbl"><div class="tr"><div class="td toolbar">
         <c:choose>
             <c:when test="${app eq 'contact' || app eq 'ab'}">
-                <div class="td toolbar">
                 <div class="folder button"><a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab&_pv=1"><fmt:message key="addressBooks"/></a></div>
                 <c:if test="${top_fldr_select eq '1'}"><select class="_zo_select_button" name="sfi" onchange="document.location.href='?sfi='+this.value+'&amp;st=contact';"><c:set var="count" value="${0}"/>
                     <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${count lt sessionScope.F_LIMIT and fldr.isContactView}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
                     </select></c:if>
 
-                <div class="icons button"><input type="image" name="actionDelete" src="/zimbra/img/startup/ImgTrash.gif" value="<fmt:message key='delete'/>" onclick="return submitForm(document.getElementById('zForm'),null,this.value);"/></div>
+                <div class="icons button"><input type="image" name="actionDelete" src="/zimbra/img/startup/ImgTrash.gif" value="<fmt:message key='delete'/>"/></div>     
                 <div class="select button">
                     <div>
                        <select class="zo_select_button" name="anAction" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
@@ -77,17 +70,15 @@
                        </select>
                     </div>
                 </div>
-                </div>    
             </c:when>
             <c:when test="${app eq 'message' || app eq 'conversation'}">
-                <div class="td toolbar">
                     <div class="folder button">
                             <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders&_pv=1"><fmt:message key="folders"/></a> 
                             <!-- &laquo; <c:if test="${top_fldr_select ne '1'}">${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}</c:if> -->
                     </div>
 
 
-                    <div class="icons button"><input type="image" name="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}" src="/zimbra/img/startup/ImgTrash.gif" value="<fmt:message key='delete'/>" onclick="return submitForm(document.getElementById('zForm'),null,this.value);"/></div>
+                    <div class="icons button"><input type="image" name="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}" src="/zimbra/img/startup/ImgTrash.gif" value="<fmt:message key='delete'/>"/></div>
 
                     <div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
                     
@@ -127,8 +118,7 @@
                                             </zm:forEachFolder>
                                         </c:otherwise>
                                     </c:choose>
-                                </optgroup>
-                                <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+                                </optgroup><c:if test="${mailbox.features.tagging and mailbox.hasTags}">
                                 <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
                                 <optgroup label="<fmt:message key="MO_actionAddTag"/>">
                                     <c:forEach var="atag" items="${allTags}"><option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
@@ -136,77 +126,12 @@
                                 <optgroup label="<fmt:message key="MO_actionRemoveTag"/>">
                                     <c:forEach var="atag" items="${allTags}"><option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
                                 </optgroup>
-                                </c:if>
+                            </c:if>
                             </select>
                         
                     </div>
-                  </div>
-            </c:when>
-            <c:when test="${app eq 'cal' || app eq 'cals'}">
-                <fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd" timeZone="${timezone}"/>
-                <mo:calendarUrl var="dayViewUrl" view="day" date="${dateDf}" _replaceDate="1"/>
-                <mo:calendarUrl var="listViewUrl" view="list" date="${dateDf}" _replaceDate="1"/>
-                <mo:calendarUrl var="monthViewUrl" view="month" date="${dateDf}" _replaceDate="1"/>
 
-                <c:set var="list">href="${fn:escapeXml(listViewUrl)}"</c:set>
-                <c:set var="day">href="${fn:escapeXml(dayViewUrl)}"</c:set>
-                <c:set var="month">href="${fn:escapeXml(monthViewUrl)}"</c:set>
-
-                <c:url var='eaction' value="?st=newappt&date=${dateDf}">
-                    <c:if test="${empty invId}">
-                        <c:param name="_replaceDate" value="1"/>
-                    </c:if>
-                    <c:if test="${not empty invId}">
-                        <c:param name="useInstance" value="0"/>
-                        <c:param name="invId" value="${invId}"/>
-                        <c:param name="_ajxnoca" value="1"/>
-                    </c:if>
-                    <c:if test="${not empty param.bt}">
-                        <c:param name="bt" value="${param.bt}"/>
-                    </c:if>
-                </c:url>
-                <c:set var="today" value="${zm:getToday(timezone)}"/>
-                <mo:calendarUrl view="${view}" var="todayURL" rawdate="${today}" timezone="${timezone}"/>
-
-                <fmt:message key="checkedCalendars" var="checkedInUI"/>
-
-                <c:choose>
-                    <c:when test="${view eq 'appt'}">
-                        <div class="composeToolbar">
-                            <div class="compose button"><span><a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}&action=popup" class='zo_button'><fmt:message key="${empty invId ? 'add' : 'edit'}"/></a></span></div>
-                            <div class="buttonRight button" onclick="return toggleCompose('compose-pop','veil');"><span><fmt:message key="close"/></span></div>
-                        </div>
-                    </c:when>
-                <c:otherwise>
-                    <div class="td toolbar">
-                        <div class="folder button">
-                            <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals&_pv=1"><fmt:message key="calendar"/></a>
-                        </div>
-                        <div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
-                    </div>
-                    <div class="td toolbar">
-                        <div class="folder button">
-                            <a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}"><fmt:message key="newAppointment"/></a>
-                        </div>
-                        <div class="folder button">
-                            <a accesskey="${requestScope.navlink_accesskey}" href="${fn:escapeXml(todayURL)}"><fmt:message key="today"/></a>
-                        </div>
-
-                        <div class="actions">
-                            <div class="actionLeft button" onclick="return zClickLink('cal-list');">
-                                <a id="cal-list" ${list} class='prev_button ${view!=null && view=='list'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewListShort"/></a>
-                            </div>
-                            <div class="actionCenter button" onclick="return zClickLink('cal-day');">
-                                <a id="cal-day" ${day} class='next_button ${view!=null && view=='day'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewDayShort"/></a>
-                            </div>
-                            <div class="actionRight button" onclick="return zClickLink('cal-month');">
-                                <a id="cal-month" ${month} class='next_button ${view!=null && view=='month'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewMonthShort"/></a>
-                            </div>
-                        </div>
-                    </div>
-                </c:otherwise>
-                </c:choose>
             </c:when>
         </c:choose>
-</div></div>
+</div></div></div>
 

@@ -40,7 +40,6 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmRenameFolderDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmRenameTagDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmPickTagDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmUploadDialog");
-AjxPackage.require("zimbraMail.share.view.dialog.ZmDebugLogDialog");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmTableEditor");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmSpellChecker");
