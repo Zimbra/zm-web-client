@@ -489,12 +489,12 @@ function(appt, id, bodyStyle, controller) {
 ZmApptViewHelper._getShowAsColorFromId =
 function(id) {
 	switch(id) {
-		case "F": return "ZmScheduler-free";
-		case "B": return "ZmScheduler-busy";
-		case "T": return "ZmScheduler-tentative";
-		case "O": return "ZmScheduler-outOfOffice";
+		case "F": return "ZmAppt-free";
+		case "B": return "ZmAppt-busy";
+		case "T": return "ZmAppt-tentative";
+		case "O": return "ZmAppt-ooo";
 	}
-	return "ZmScheduler-busy";
+	return "ZmAppt-busy";
 };
 
 ZmApptViewHelper.getBoxBorderFromId =

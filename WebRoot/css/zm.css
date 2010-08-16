@@ -4104,3 +4104,27 @@ If you feel compelled to have a background color, please do so on a per skin lev
     width:100%;
     heigth:19px;
 }
+
+/*Calendar Styles*/
+.ZmAppt-busy {
+	background-color: #4AA6F1;
+}
+
+.ZmAppt-ooo {
+	background-color: #7B5BAC;
+	background-image: url('/zimbra/img/calendar/freeBusyBar_ooo.png');
+}
+
+.ZmAppt-tentative {
+	background-color: #BAE0E3;
+	background-image: url('/zimbra/img/calendar/freeBusyBar_tentative.png');
+}
+
+.ZmAppt-free {
+	background-color: #FFFFFF;
+	background-image: url('/zimbra/img/calendar/freeBusyBar_free.png');
+}
+
+.ZmAppt-no-response {
+	background-color: #F30;
+}
