@@ -378,7 +378,12 @@ function(value, key, setDefault, skipNotify, skipImplicit) {
 	}
 	
 	if (ZmSetting.IS_IMPLICIT[this.id] && changed && !skipImplicit) {
-		ZmSetting.CHANGED_IMPLICIT[this.id] = true;
+		if (skipNotify) {
+			ZmSetting.CHANGED_IMPLICIT[this.id] = true;
+		} else {
+			this._notify(ZmEvent.E_MODIFY, key);
+			return;
+		}
 	}
 
 	// Setting an internal pref is equivalent to saving it, so we should notify

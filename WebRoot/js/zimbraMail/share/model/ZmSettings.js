@@ -40,6 +40,7 @@ ZmSettings = function(noInit) {
 	this._nameToId = {};	// map to get from server setting name to setting ID
 
 	this.getInfoResponse = null; // Cached GetInfoResponse for lazy creation of identities, etc.
+	this._handleImplicitChange = new AjxListener(this, this._implicitChangeListener);
 
 	if (!noInit) {
 		this.initialize();
@@ -65,6 +66,9 @@ function(id, params) {
 	var setting = this._settings[id] = new ZmSetting(id, params);
 	if (params.name) {
 		this._nameToId[params.name] = id;
+	}
+	if (params.isImplicit) {
+		setting.addChangeListener(this._handleImplicitChange);
 	}
 	return setting;
 };
@@ -892,6 +896,16 @@ function(ev) {
 		cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
 		cd.setMessage(ZmMsg.accountChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
+	}
+};
+
+ZmSettings.prototype._implicitChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) { return; }
+	var id = ev.source.id;
+	var setting = this.getSetting(id);
+	if (ZmSetting.IS_IMPLICIT[id] && setting) {
+		this.save([setting]);
 	}
 };
 
