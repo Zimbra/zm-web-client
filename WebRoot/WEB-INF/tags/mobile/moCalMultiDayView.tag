@@ -97,17 +97,18 @@
     </c:choose> 
     <div class="msgBody">
         <div class="calSplit">
-            <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                <tr><td width="50%">
-                        <span style="font-size:100px;padding-left:10px;"><fmt:formatDate value="${currentDay.time}" pattern="d" timeZone="${timezone}"/></span>
-                        <br><span style="font-size:20px;padding-left:10px;"><fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
+            <table cellpadding="10" cellspacing="0" border="0" width="100%">
+                <tr><td width="50%" valign="top">
+                        <span class="bigDate"><fmt:formatDate value="${currentDay.time}" pattern="d" timeZone="${timezone}"/></span>
+                        <span class="bigDay"><fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
                                     <fmt:formatDate value="${currentDay.time}" pattern="${titleFormat}" timeZone="${timezone}"/></span>
-                        <br><span style="font-size:20px;padding-left:10px;"><fmt:formatDate value="${currentDay.time}" pattern="yyyy" timeZone="${timezone}"/></span>
+                        <br><span class="bigDay"><fmt:formatDate value="${currentDay.time}" pattern="yyyy" timeZone="${timezone}"/></span>
                     </td>
-                    <td width="50%">
+                    <td width="50%" valign="top">
                     <mo:miniCal date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}"/>
                 </td></tr>
-                <tr><td colspan="2">
+                </table>
+                <br><br>
                     <c:set var="count" value="0"/>
                     <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
                     <c:set var="dayEnd" value="${zm:addDay(currentDay, 1).timeInMillis}"/>
@@ -146,8 +147,7 @@
                         <c:set var="count" value="${count+1}"/>
                         <c:set var="id" value="${id+1}"/>
                     </zm:forEachAppoinment>
-                </td></tr>
-            </table>
+               
         </div>
 
         <div class="calSplit">

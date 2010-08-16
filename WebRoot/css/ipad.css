@@ -1154,9 +1154,38 @@ span.aleft > div:first-child, .contactHeader {
 }
 
 
+.bigDate{
+	font-size: 100px;
+	color: #999999;
+	display: block;
+}
 
+.bigDay{
+	font-size: 16px;
+	color: #999999;
+	font-weight: bold;
+}
 
+.ZhCalMiniTitlebar,.zo_cal_dayheader{
+	display: none;
+}
 
+.ZhCalMiniDow,.ZhCalMDOMO a, .ZhCalMDOM a, .ZhCalMDOMT a,.zo_cal_dayhour,.zo_cal_allday{
+	font-size: 11px;
+	color: #999999;
+	text-decoration: none;
+	text-align: center;
+}
+
+.ZhCalMDOMT{
+	background-color: #e5e5e5;
+	-webkit-border-radius: 6px;
+}
+
+	.ZhCalMDOMT a{
+		text-shadow: #FFFFFF 0px -1px;
+		color: brown;
+	}
 
 
 
