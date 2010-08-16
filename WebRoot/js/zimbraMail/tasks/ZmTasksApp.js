@@ -336,7 +336,7 @@ function(mailItem, date, subject) {
 	var t = new ZmTask();
 	t.setStartDate(AjxDateUtil.roundTimeMins(date, 30));
 	t.setFromMailMessage(mailItem, subject);
-	this.getTaskController().show(t, ZmCalItem.MODE_NEW);
+	this.getTaskController().show(t, ZmCalItem.MODE_NEW, true);
 };
 
 /**

@@ -964,7 +964,7 @@ ZmCalViewController.prototype._msgLoadedCallback =
 function(mailItem, date, subject) {
 	var newAppt = this._newApptObject(date, null, null, mailItem);
 	newAppt.setFromMailMessage(mailItem, subject);
-	this.newAppointment(newAppt, ZmCalItem.MODE_NEW);
+	this.newAppointment(newAppt, ZmCalItem.MODE_NEW, true);
 };
 
 /**
