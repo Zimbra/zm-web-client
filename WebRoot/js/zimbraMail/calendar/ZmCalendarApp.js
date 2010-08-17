@@ -374,6 +374,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHARE_CALENDAR, {textKey:"shareCalendar", image:"CalendarFolder"});
 	ZmOperation.registerOp(ZmId.OP_TODAY, {textKey:"today", tooltipKey:"todayTooltip", image:"Date", shortcut:ZmKeyMap.TODAY});
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPOINTMENT, {textKey:"viewAppointment", image:"Appointment"});
+	ZmOperation.registerOp(ZmId.OP_OPEN_APPT, {textKey:"openAppt", image:"Appointment"});
 	ZmOperation.registerOp(ZmId.OP_OPEN_APPT_INSTANCE, {textKey:"openApptInstance", image:"Appointment"});
 	ZmOperation.registerOp(ZmId.OP_OPEN_APPT_SERIES, {textKey:"openApptSeries", image:"Appointment"});
 	ZmOperation.registerOp(ZmId.OP_DELETE_APPT_INSTANCE, {textKey:"deleteApptInstance", image:"Delete"});

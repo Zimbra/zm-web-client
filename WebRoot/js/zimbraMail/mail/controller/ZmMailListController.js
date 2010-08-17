@@ -925,34 +925,37 @@ function(items, markAsSpam, folder) {
 
 ZmMailListController.prototype._inviteReplyHandler =
 function(ev) {
-
 	var ac = window.parentAppCtxt || window.appCtxt;
 
 	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
 	ac.getAppController().focusContentPane();
-	
+
 	var type = ev._inviteReplyType;
-    var folderId = ev._inviteReplyFolderId || ZmOrganizer.ID_CALENDAR;
-	var compId = ev._inviteComponentId;
 	if (type == ZmOperation.PROPOSE_NEW_TIME ) {
-        var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
-        controller.proposeNewTime(ev._msg);
-        if(appCtxt.isChildWindow) {
-            window.close();
-        }
-    }else if (type == ZmOperation.ACCEPT_PROPOSAL ) {
-        this._acceptProposedTime(compId, ev._msg);
-    }else if (type == ZmOperation.DECLINE_PROPOSAL ) {
-        this._declineProposedTime(compId, ev._msg);
-    }else if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
-		type == ZmOperation.EDIT_REPLY_CANCEL ||
-		type == ZmOperation.INVITE_REPLY_DECLINE ||
-		type == ZmOperation.INVITE_REPLY_TENTATIVE)
+		ac.getApp(ZmApp.CALENDAR).getCalController().proposeNewTime(ev._msg);
+		if (appCtxt.isChildWindow) {
+			window.close();
+		}
+	}
+	else if (type == ZmOperation.ACCEPT_PROPOSAL) {
+		this._acceptProposedTime(ev._inviteComponentId, ev._msg);
+	}
+	else if (type == ZmOperation.DECLINE_PROPOSAL) {
+		this._declineProposedTime(ev._inviteComponentId, ev._msg);
+	}
+	else if (type == ZmOperation.OPEN_APPT) {
+		this._openAppt(ev._inviteComponentId, ev._msg);
+	}
+	else if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
+			type == ZmOperation.EDIT_REPLY_CANCEL ||
+			type == ZmOperation.INVITE_REPLY_DECLINE ||
+			type == ZmOperation.INVITE_REPLY_TENTATIVE)
 	{
-		this._editInviteReply(ZmMailListController.INVITE_REPLY_MAP[type], compId, null, null, folderId);
-	}else {
+		this._editInviteReply(ZmMailListController.INVITE_REPLY_MAP[type], ev._inviteComponentId, null, null, ev._inviteReplyFolderId);
+	}
+	else {
 		var accountName = ac.multiAccounts && ac.accountList.mainAccount.name;
-		var resp = this._sendInviteReply(type, compId, null, accountName, null, ev._msg, folderId);
+		var resp = this._sendInviteReply(type, ev._inviteComponentId, null, accountName, null, ev._msg, ev._inviteReplyFolderId);
 		if (resp && appCtxt.isChildWindow) {
 			window.close();
 		}
@@ -1285,6 +1288,11 @@ function(componentId, origMsg) {
     var replyBody = this._getInviteReplyBody(ZmOperation.DECLINE_PROPOSAL, null);
     var callback = new AjxCallback(this, this._handleAcceptDeclineProposedTime, [origMsg]);
     this._doAction({action:ZmOperation.DECLINE_PROPOSAL, extraBodyText:replyBody, instanceDate:null, sendMsgCallback: callback});    
+};
+
+ZmMailListController.prototype._openAppt =
+function(componentId, origMsg) {
+	// todo
 };
 
 ZmMailListController.prototype._handleAcceptDeclineProposedTime =

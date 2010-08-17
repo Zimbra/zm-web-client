@@ -47,10 +47,16 @@ function() {
 ZmInviteMsgView.prototype.reset =
 function() {
 	if (this._inviteToolbar) {
-		this._inviteToolbar.setVisible(Dwt.DISPLAY_NONE);
-		this._inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement());
+		this._inviteToolbar.setDisplay(Dwt.DISPLAY_NONE);
 	}
-	this._hasInviteToolbar = false;
+
+	if (this._counterToolbar) {
+		this._counterToolbar.setDisplay(Dwt.DISPLAY_NONE);
+	}
+
+	if (this._openToolbar) {
+		this._openToolbar.setDisplay(Dwt.DISPLAY_NONE);
+	}
 
 	if (this._dayView) {
 		this._dayView.setDisplay(Dwt.DISPLAY_NONE);
@@ -59,7 +65,9 @@ function() {
 
 ZmInviteMsgView.prototype.isActive =
 function() {
-	return this._hasInviteToolbar;
+	return ((this._inviteToolbar && this._inviteToolbar.getVisible()) ||
+			(this._counterToolbar && this._counterToolbar.getVisible()) ||
+			(this._openToolbar && this._openToolbar.getVisible()));
 };
 
 ZmInviteMsgView.prototype.set =
@@ -67,73 +75,90 @@ function(msg) {
 	this._msg = msg;
 	var invite = this._invite = msg.invite;
 
-	var isCounterInvite = !invite.isEmpty() && invite.hasCounterMethod();
-
 	if (!invite.isEmpty() &&
 		invite.hasAcceptableComponents() &&
-		(invite.hasInviteReplyMethod() || isCounterInvite) &&
-		msg.folderId != ZmFolder.ID_TRASH && msg.folderId != ZmFolder.ID_SENT)
+		msg.folderId != ZmFolder.ID_TRASH &&
+		msg.folderId != ZmFolder.ID_SENT)
 	{
-		var ac = window.parentAppCtxt || window.appCtxt;
+		if (invite.hasCounterMethod()) {
+			if (!this._counterToolbar) {
+				this._counterToolbar = this._getCounterToolbar();
+			}
+			this._counterToolbar.reparentHtmlElement(this.parent.getHtmlElement());
+			this._counterToolbar.setVisible(Dwt.DISPLAY_BLOCK);
+		}
+		else if (invite.hasInviteReplyMethod()) {
+			var ac = window.parentAppCtxt || window.appCtxt;
 
-		var tb = this._getInviteToolbar();
-		tb.reparentHtmlElement(this.parent.getHtmlElement());
-		this._setInviteOptions(invite);
-		tb.setVisible(Dwt.DISPLAY_BLOCK);
+			if (!this._inviteToolbar) {
+				this._inviteToolbar = this._getInviteToolbar();
+			}
+			this._inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement());
+			this._inviteToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
-		if (this._respondOnBehalfLabel) {
+			// show on-behalf-of info?
 			this._respondOnBehalfLabel.innerHTML = msg.cif
 				? AjxMessageFormat.format(ZmMsg.onBehalfOfText, [msg.cif]) : "";
-			Dwt.setVisible(this._respondOnBehalfLabel, new Boolean(msg.cif));
+			Dwt.setVisible(this._respondOnBehalfLabel, (!!msg.cif));
+
+			// logic for showing calendar/folder chooser
+			var cc = AjxDispatcher.run("GetCalController");
+			var msgAcct = msg.getAccount();
+			var calendars = ac.get(ZmSetting.CALENDAR_ENABLED, null, msgAcct)
+				? cc.getCalendars({includeLinks:true, account:msgAcct, onlyWritable:true}) : [];
+
+			if (appCtxt.multiAccounts) {
+				var accounts = ac.accountList.visibleAccounts;
+				for (var i = 0; i < accounts.length; i++) {
+					var acct = accounts[i];
+					if (acct == msgAcct || !ac.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
+					if (appCtxt.isOffline && acct.isMain) { continue; }
+
+					calendars = calendars.concat(cc.getCalendars({includeLinks:true, account:acct, onlyWritable:true}));
+				}
+
+				// always add the local account *last*
+				if (appCtxt.isOffline) {
+					calendars.push(appCtxt.getById(ZmOrganizer.ID_CALENDAR));
+				}
+			}
+
+			var visible = (calendars.length > 1 || appCtxt.multiAccounts);
+			if (visible) {
+				this._inviteMoveSelect.clearOptions();
+				for (var i = 0; i < calendars.length; i++) {
+					var calendar = calendars[i];
+					var calAcct = calendar.getAccount();
+					var icon = appCtxt.multiAccounts ? calAcct.getIcon() : calendar.getIcon();
+					var name = appCtxt.multiAccounts
+						? ([calendar.name, " (", calAcct.getDisplayName(), ")"].join(""))
+						: calendar.name;
+					var isSelected = (calAcct && msgAcct)
+						? (calAcct == msgAcct && calendar.nId == ZmOrganizer.ID_CALENDAR)
+						: calendar.nId == ZmOrganizer.ID_CALENDAR;
+					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null, icon);
+					this._inviteMoveSelect.addOption(option);
+				}
+
+				// for accounts that don't support calendar, always set the
+				// selected calendar to the Local calendar
+				if (!ac.get(ZmSetting.CALENDAR_ENABLED, null, msgAcct)) {
+					this._inviteMoveSelect.setSelectedValue(ZmOrganizer.ID_CALENDAR);
+				}
+			}
+			this._inviteMoveLabel.setVisible(visible);
+			this._inviteMoveSelect.setVisible(visible);
 		}
-
-		var cc = AjxDispatcher.run("GetCalController");
-		var msgAcct = msg.getAccount();
-		var calendars = ac.get(ZmSetting.CALENDAR_ENABLED, null, msgAcct)
-			? cc.getCalendars({includeLinks:true, account:msgAcct, onlyWritable:true}) : [];
-
-		if (appCtxt.multiAccounts) {
-			var accounts = ac.accountList.visibleAccounts;
-			for (var i = 0; i < accounts.length; i++) {
-				var acct = accounts[i];
-				if (acct == msgAcct || !ac.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
-				if (appCtxt.isOffline && acct.isMain) { continue; }
-
-				calendars = calendars.concat(cc.getCalendars({includeLinks:true, account:acct, onlyWritable:true}));
-			}
-
-			// always add the local account *last*
-			if (appCtxt.isOffline) {
-				calendars.push(appCtxt.getById(ZmOrganizer.ID_CALENDAR));
+		else {
+			var att = this._invite.getAttendees();
+			if (att.length > 0 && att[0].ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION) {
+				if (!this._openToolbar) {
+					this._openToolbar = this._getOpenToolbar();
+				}
+				this._openToolbar.reparentHtmlElement(this.parent.getHtmlElement());
+				this._openToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 			}
 		}
-
-		var visible = (calendars.length > 1 || appCtxt.multiAccounts);
-		if (visible) {
-			this._inviteMoveSelect.clearOptions();
-			for (var i = 0; i < calendars.length; i++) {
-				var calendar = calendars[i];
-				var calAcct = calendar.getAccount();
-				var icon = appCtxt.multiAccounts ? calAcct.getIcon() : calendar.getIcon();
-				var name = appCtxt.multiAccounts
-					? ([calendar.name, " (", calAcct.getDisplayName(), ")"].join(""))
-					: calendar.name;
-				var isSelected = (calAcct && msgAcct)
-					? (calAcct == msgAcct && calendar.nId == ZmOrganizer.ID_CALENDAR)
-					: calendar.nId == ZmOrganizer.ID_CALENDAR;
-				var option = new DwtSelectOptionData(calendar.id, name, isSelected, null, icon);
-				this._inviteMoveSelect.addOption(option);
-			}
-
-			// for accounts that don't support calendar, always set the
-			// selected calendar to the Local calendar
-			if (!ac.get(ZmSetting.CALENDAR_ENABLED, null, msgAcct)) {
-				this._inviteMoveSelect.setSelectedValue(ZmOrganizer.ID_CALENDAR);
-			}
-		}
-		this._inviteMoveLabel.setVisible(visible);
-		this._inviteMoveSelect.setVisible(visible);
-		this._hasInviteToolbar = true;
 	}
 };
 
@@ -255,12 +280,29 @@ function(content, isHtml) {
 		: (content.substring(sepIdx+ZmItem.NOTES_SEPARATOR.length));
 };
 
+ZmInviteMsgView.prototype._getCounterToolbar =
+function() {
+	var params = {
+		parent: this.parent,
+		buttons: [ZmOperation.ACCEPT_PROPOSAL, ZmOperation.DECLINE_PROPOSAL],
+		posStyle: DwtControl.STATIC_STYLE,
+		className: "ZmInviteToolBar",
+		buttonClassName: "DwtToolbarButton",
+		context: this.mode,
+		toolbarType: ZmId.TB_COUNTER
+	};
+	var tb = new ZmButtonToolBar(params);
+
+	var listener = new AjxListener(this, this._inviteToolBarListener);
+	for (var i = 0; i < tb.opList.length; i++) {
+		tb.addSelectionListener(tb.opList[i], listener);
+	}
+
+	return tb;
+};
+
 ZmInviteMsgView.prototype._getInviteToolbar =
 function() {
-	if (this._inviteToolbar) { return this._inviteToolbar; }
-
-	var operationButtonIds = this._getInviteOps();
-
 	var replyButtonIds = [
 		ZmOperation.INVITE_REPLY_ACCEPT,
 		ZmOperation.INVITE_REPLY_TENTATIVE,
@@ -276,40 +318,33 @@ function() {
 		ZmOperation.REPLY_TENTATIVE_IGNORE,
 		ZmOperation.REPLY_DECLINE_IGNORE
 	];
+	var inviteOps = [
+		ZmOperation.REPLY_ACCEPT,
+		ZmOperation.REPLY_TENTATIVE,
+		ZmOperation.REPLY_DECLINE,
+		ZmOperation.PROPOSE_NEW_TIME
+	];
+
 	var params = {
 		parent: this.parent,
-		buttons: operationButtonIds,
+		buttons: inviteOps,
 		posStyle: DwtControl.STATIC_STYLE,
 		className: "ZmInviteToolBar",
 		buttonClassName: "DwtToolbarButton",
 		context: this.mode,
 		toolbarType: ZmId.TB_INVITE
 	};
-	this._inviteToolbar = new ZmButtonToolBar(params);
+	var tb = new ZmButtonToolBar(params);
 
 	var listener = new AjxListener(this, this._inviteToolBarListener);
-	operationButtonIds = this._inviteToolbar.opList;
-	for (var i = 0; i < operationButtonIds.length; i++) {
-		var id = operationButtonIds[i];
+	for (var i = 0; i < tb.opList.length; i++) {
+		var id = tb.opList[i];
 
-		// HACK: IE doesn't support multiple classnames.
-		var button = this._inviteToolbar.getButton(id);
-		button._hoverClassName = button._className + "-" + DwtCssStyle.HOVER;
-		button._activeClassName = button._className + "-" + DwtCssStyle.ACTIVE;
+		tb.addSelectionListener(id, listener);
 
-		this._inviteToolbar.addSelectionListener(id, listener);
+		if (id == ZmOperation.PROPOSE_NEW_TIME) { continue; }
 
-		if (id == ZmOperation.ACCEPT_PROPOSAL || id == ZmOperation.DECLINED_PROPOSAL) {
-			button.setVisible(false);
-		}
-
-		if (id == ZmOperation.PROPOSE_NEW_TIME ||
-			id == ZmOperation.ACCEPT_PROPOSAL ||
-			id == ZmOperation.DECLINE_PROPOSAL)
-		{
-			continue;
-		}
-
+		var button = tb.getButton(id);
 		var standardItems = [notifyOperationButtonIds[i], replyButtonIds[i], ignoreOperationButtonIds[i]];
 		var menu = new ZmActionMenu({parent:button, menuItems:standardItems});
 		standardItems = menu.opList;
@@ -320,60 +355,47 @@ function() {
 		button.setMenu(menu);
 	}
 
-	this._respondOnBehalfLabel = this._inviteToolbar.addFiller();
-	this._inviteToolbar.addFiller();
+	this._respondOnBehalfLabel = tb.addFiller();
+	tb.addFiller();
 
-	var label = this._inviteMoveLabel = new DwtText({parent: this._inviteToolbar, className: "DwtText InviteSelectLabel"});
+	// folder picker
+	var label = this._inviteMoveLabel = new DwtText({parent: tb, className: "DwtText InviteSelectLabel"});
 	label.setSize(100, DwtControl.DEFAULT);
 	label.setText(ZmMsg.calendarLabel);
+	tb.addSpacer();
+	this._inviteMoveSelect = new DwtSelect({parent:tb});
 
-	this._inviteToolbar.addSpacer();
-	this._inviteMoveSelect = new DwtSelect({parent:this._inviteToolbar});
-
-	return this._inviteToolbar;
+	return tb;
 };
 
-ZmInviteMsgView.prototype._getInviteOps =
+ZmInviteMsgView.prototype._getOpenToolbar =
 function() {
-    return [
-		ZmOperation.REPLY_ACCEPT,
-		ZmOperation.REPLY_TENTATIVE,
-		ZmOperation.REPLY_DECLINE,
-		ZmOperation.PROPOSE_NEW_TIME,
-		ZmOperation.ACCEPT_PROPOSAL,
-		ZmOperation.DECLINE_PROPOSAL
-	];
+	var params = {
+		parent: this.parent,
+		buttons: [ZmOperation.OPEN_APPT],
+		posStyle: DwtControl.STATIC_STYLE,
+		className: "ZmInviteToolBar",
+		buttonClassName: "DwtToolbarButton",
+		context: this.mode,
+		toolbarType: ZmId.TB_COUNTER
+	};
+	var tb = new ZmButtonToolBar(params);
+
+	var listener = new AjxListener(this, this._inviteToolBarListener);
+	for (var i = 0; i < tb.opList.length; i++) {
+		tb.addSelectionListener(tb.opList[i], listener);
+	}
+
+	return tb;
 };
 
 ZmInviteMsgView.prototype._inviteToolBarListener =
 function(ev) {
 	ev._inviteReplyType = ev.item.getData(ZmOperation.KEY_ID);
-	var folderId = ZmOrganizer.ID_CALENDAR;
-	if (this._inviteMoveSelect && this._inviteMoveSelect.getValue()) {
-		folderId = this._inviteMoveSelect.getValue();
-	}
-	ev._inviteReplyFolderId = folderId;
+	ev._inviteReplyFolderId = ((this._inviteMoveSelect && this._inviteMoveSelect.getValue()) || ZmOrganizer.ID_CALENDAR);
 	ev._inviteComponentId = null;
 	ev._msg = this._msg;
 	this.parent.notifyListeners(ZmInviteMsgView.REPLY_INVITE_EVENT, ev);
-};
-
-ZmInviteMsgView.prototype._setInviteOptions =
-function(invite) {
-	var operationButtonIds = this._getInviteOps();
-	var proposeTimeIds = {};
-	proposeTimeIds[ZmOperation.ACCEPT_PROPOSAL] = true;
-	proposeTimeIds[ZmOperation.DECLINE_PROPOSAL] = true;
-
-	for (var i in operationButtonIds) {
-		var id = operationButtonIds[i];
-		var button = this._inviteToolbar.getButton(id);
-		if (invite.hasCounterMethod()) {
-			button.setVisible(Boolean(proposeTimeIds[id]));
-		} else {
-			button.setVisible(!Boolean(proposeTimeIds[id]));
-		}
-	}
 };
 
 ZmInviteMsgView.prototype._dayResultsCallback =

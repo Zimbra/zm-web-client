@@ -206,6 +206,7 @@ function(context, tbType) {
 
 // special toolbars
 ZmId.TB_INVITE	= "Inv";
+ZmId.TB_COUNTER	= "Cou";
 ZmId.TB_NAV		= "Nav";
 ZmId.TB_SHARE	= "Shr";
 
@@ -1096,6 +1097,7 @@ ZmId.OP_NEW_TAG					= "NEW_TAG";
 ZmId.OP_NEW_TASK				= "NEW_TASK";
 ZmId.OP_NOTIFY                  = "NOTIFY";
 ZmId.OP_NEW_TASK_FOLDER			= "NEW_TASK_FOLDER";
+ZmId.OP_OPEN_APPT				= "OPEN_APPT";
 ZmId.OP_OPEN_APPT_INSTANCE		= "OPEN_APPT_INSTANCE";
 ZmId.OP_OPEN_APPT_SERIES		= "OPEN_APPT_SERIES";
 ZmId.OP_OPEN_FILE				= "OPEN_FILE";
