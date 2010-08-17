@@ -408,6 +408,7 @@ function(hdr) {
 	}
 
 	if (ctxt.refresh) {
+		this._loadTrees(ctxt.refresh);
 		this._highestNotifySeen = 0;
 	}
 
@@ -506,13 +507,16 @@ function(refresh) {
 		}
 	}
 
+	// Run any app-requested refresh routines
+	this._controller.runAppFunction("refresh", false, refresh);
+};
+
+ZmRequestMgr.prototype._loadTrees =
+function(refresh) {
 	var unread = {};
 	var main = appCtxt.multiAccounts ? appCtxt.accountList.mainAccount : null;
 	this._loadTree(ZmOrganizer.TAG, unread, refresh.tags, null, main);
 	this._loadTree(ZmOrganizer.FOLDER, unread, refresh.folder[0], "folder", main);
-
-	// Run any app-requested refresh routines
-	this._controller.runAppFunction("refresh", false, refresh);
 };
 
 /**
