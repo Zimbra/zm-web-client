@@ -676,6 +676,7 @@ function(defaultSearch, result) {
 		(expanded || (this._contactSource == ZmId.SEARCH_GAL && more)))
 	{
 		var d = appCtxt.getMsgDialog();
+		d.reset();
 		d.setMessage(ZmMsg.errorSearchNotExpanded);
 		d.popup();
 		if (expanded) { return; }
