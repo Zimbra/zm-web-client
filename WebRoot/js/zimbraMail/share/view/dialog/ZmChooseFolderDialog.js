@@ -207,7 +207,7 @@ function(part) {
 ZmChooseFolderDialog.prototype._resetTree =
 function(treeIds, overview) {
 
-	var account = overview.account || appCtxt.accountList.mainAccount;
+	var account = overview.account || appCtxt.getActiveAccount() || appCtxt.accountList.mainAccount;
 	var acctTreeView = this._treeView[account.id] = {};
 	var folderTree = appCtxt.getFolderTree(account);
 

@@ -441,7 +441,8 @@ function() {
 							 compareFunc:		"ZmCalendar.sortCompare",
 							 newOp:				ZmOperation.NEW_CALENDAR,
 							 displayOrder:		100,
-							 deferrable:		true
+							 deferrable:		true,
+							 childWindow:		true
 							});
 };
 
