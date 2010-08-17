@@ -28,22 +28,21 @@
 <app:head mailbox="${mailbox}"/>
 <body style='background:white;'>
 <style>
-    .contactHeader, .ZhFolderHeader {
-        font-size: small !important;
+    .ZhCallListPrintView td, .zPrintMsgs *{
+        font-family:Tahoma,Arial,Helvetica,sans-serif;
+        font-size:${mailbox.prefs.defaultPrintFontSize} !important;
     }
     .companyName{
-        font-size: small !important;
         color: #555555 !important;
     }
     .sectionLabel{
-        font-size: small !important;
         color: gray !important;
     }
 </style>
 <div class='ZhCallListPrintView'>
 <table><tr>
-    <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
-    <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
+    <td><b><fmt:message key="zimbraTitle"/></b></td>
+    <td nowrap width='1%'>${fn:escapeXml(mailbox.name)}</td>
 </tr></table>
 <hr/>
 <table cellpadding="0" cellspacing="5" width="99%" align="center">
@@ -63,7 +62,7 @@
                 </c:forEach>
             </c:when>
         </c:choose>
-        <div  style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
+        <div class="zPrintMsgs" style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
           <app:displayContact contact="${contact}"/>
         </div>
     </c:forEach>
@@ -74,7 +73,7 @@
     <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true"/>
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <zm:getContact id="${hit.contactHit.id}" var="contact"/>
-        <div style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
+        <div class="zPrintMsgs" style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
             <app:displayContact contact="${contact}"/>
         </div>
     </c:forEach>
@@ -82,7 +81,7 @@
     <c:if test="${param.st eq 'gal'}">
     <zm:searchGal var="result" query="*"/>
     <c:forEach items="${result.contacts}" var="contact" varStatus="status">
-        <div  style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
+        <div class="zPrintMsgs" style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
             <app:displayContact contact="${contact}"/>
         </div>
     </c:forEach>

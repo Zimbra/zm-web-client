@@ -234,6 +234,7 @@ function() {
 				ZmSetting.SKIN_NAME,
 				ZmSetting.CLIENT_TYPE,
 				ZmSetting.DEFAULT_TIMEZONE,
+                ZmSetting.DEFAULT_PRINTFONTSIZE,
 				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
 				ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED // offline
 			]
@@ -396,6 +397,13 @@ function() {
         displayOptions:		AjxTimezone.getZonePreferences(),
         options:			AjxTimezone.getZonePreferencesOptions()
     });
+
+    ZmPref.registerPref("DEFAULT_PRINTFONTSIZE", {
+		displayName:		ZmMsg.printFontSizePref,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions: 	fontSizeOptions,
+        options:            fontSizeValueOptions
+	});
 
     ZmPref.registerPref("EXPORT_FOLDER", {
         displayContainer:	ZmPref.TYPE_CUSTOM
