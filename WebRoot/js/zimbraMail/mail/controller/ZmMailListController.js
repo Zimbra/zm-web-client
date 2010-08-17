@@ -799,7 +799,7 @@ function(params) {
 
     if(action == ZmOperation.DRAFT){
         var bp = msg.getBodyPart();
-        if(bp.truncated){
+        if(bp && bp.truncated){
             params.noTruncate = true;
             params.forceLoad = true;
         }
