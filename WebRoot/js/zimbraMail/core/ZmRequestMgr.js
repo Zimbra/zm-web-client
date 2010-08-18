@@ -408,6 +408,7 @@ function(hdr) {
 	}
 
 	if (ctxt.refresh) {
+		this._controller.runAppFunction("_clearDeferredFolders");
 		this._loadTrees(ctxt.refresh);
 		this._highestNotifySeen = 0;
 	}
@@ -486,8 +487,7 @@ function(refresh) {
 	if (!appCtxt.inStartup) {
 		this._controller._execPoll();
 	}
-	this._controller.runAppFunction("_clearDeferredFolders");
-	
+
 	if (refresh.version) {
 		if (!this._canceledReload) {
 			var curVersion = appCtxt.get(ZmSetting.SERVER_VERSION);
