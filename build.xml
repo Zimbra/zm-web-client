@@ -176,7 +176,7 @@
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
         <property name='img.includes' value='${common.img.includes}'/>
-        <property name='img.excludes' value='${common.img.excludes}'/>
+        <property name='img.excludes' value='${common.img.excludes},admin/**'/>
         <property name='template.includes' value='${common.template.includes}'/>
         <property name='template.excludes' value='${common.template.excludes},admin/**'/>
         <property name='jam.includes' value='${common.jam.includes}'/>
@@ -204,7 +204,7 @@
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes'
                   value='${common.jsp.excludes},launchNewWindow.jsp,login.jsp,*Mail.jsp,*ZCS.jsp,Spreadsheet*'/>
-        <property name='img.includes' value='${common.img.includes}'/>
+        <property name='img.includes' value='admin/**'/>
         <property name='img.excludes' value='${common.img.excludes}'/>
         <property name='template.includes' value='admin/**,dwt/**,zimbra/**'/>
         <property name='template.excludes' value='${common.template.excludes}'/>
@@ -255,8 +255,8 @@
 
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
 			<zipfileset dir='${build.web.dir}' includes='js/Boot_all.js${jsmin.ext}' />
-            <!--<zipfileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' prefix='img'/>-->
-            <zipfileset dir='${skins.dir}' prefix='skins'/>
+            <zipfileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' prefix='img'/>
+            <zipfileset dir='${skins.dir}' prefix='skins' excludes='*/img/**/_*/**' />
             <zipfileset refid='help.fileset' prefix='help' />
 			<zipfileset refid='network.help.fileset' prefix='help' />
         </war>
@@ -275,11 +275,11 @@
         <copy todir='${webapp.dir}/tiny_mce/${tinymce.version}/plugins' verbose='${sync.verbose}'>
             <fileset dir='${tinymce.zplugins.dir}' includes='**'/>
         </copy>
-        <!--<copy todir='${webapp.dir}/img' verbose='${sync.verbose}'>-->
-            <!--<fileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}'/>-->
-        <!--</copy>-->
+        <copy todir='${webapp.dir}/img' verbose='${sync.verbose}'>
+            <fileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}'/>
+        </copy>
         <copy todir='${webapp.dir}/skins' verbose='${sync.verbose}'>
-            <fileset dir='${skins.dir}'/>
+            <fileset dir='${skins.dir}' excludes='*/img/**/_*/**' />
         </copy>
 		<copy todir='${webapp.dir}/help'>
 			<fileset refid='help.fileset' />
@@ -647,59 +647,60 @@
 	<target name='images' depends='images-init'>
 		<mkdir dir='${build.img.dir}' />
 		<mkdir dir='${build.skin.dir}' />
-		<!-- copy images -->
-		<copy todir='${build.img.dir}' preservelastmodified="true" includeemptydirs="false">
-			<fileset dir='${img.dir}' excludes='_sourceimages/**,${customer.img.files}' />
-		</copy>
-		<copy todir='${build.img.dir}' preservelastmodified="true">
-			<fileset refid='customer.img.fileset' />
-		</copy>
-		<copy todir='${build.web.dir}' preservelastmodified='true' includeemptydirs="false">
-			<fileset dir='${web.dir}' includes='skins/*/img/**' excludes='skins/*/img/_sourceimages/**' />
-			<fileset refid='customer.skins.img.fileset' />
-		</copy>
 		<!-- merge base images -->
 		<antcall target='images-merge'>
-			<param name='srcdir' value='${build.img.dir}' />
+			<param name='srcdir' value='${img.dir}' />
 			<param name='destdir' value='${build.img.dir}' />
 			<param name='csspath' value='@AppContextPath@/img/' />
 		</antcall>
 		<!-- merge skin images -->
-		<dirset id='this.build.skins.dirset' dir='${build.skin.dir}' includes='*' />
-		<pathconvert property='this.build.skins.files' refid='this.build.skins.dirset' pathsep=','>
-			<flattenmapper />
-		</pathconvert>
-		<for list='${this.build.skins.files}' param='skinname'>
-			<sequential>
-				<antcall target="images-merge">
-					<param name='srcdir' value='${build.skin.dir}/@{skinname}/img' />
-					<param name='destdir' value='${build.skin.dir}/@{skinname}/img' />
-                    <!-- NOTE: @AppContextPath@ needs to be escaped here because -->
-                    <!-- NOTE: it is used within a for loop which treats @xyz@ as -->
-                    <!-- NOTE: property replacements for each iteration. -->
-					<param name='csspath' value='@@AppContextPath@/skins/@{skinname}/img/' />
-				</antcall>
-			</sequential>
-		</for>
-		<!-- copy icons -->
-		<copy todir="${build.web.dir}" flatten="true" overwrite="true">
-			<fileset dir='${img.dir}' includes='**/favicon.ico,**/apple-touch-icon.png'/>
-		</copy>
-		<copy todir="${build.web.dir}" flatten="true" overwrite="true" failonerror="false">
-			<fileset dir='${customer.img.dir}' includes='**/favicon.ico,**/apple-touch-icon.png'/>
-		</copy>
+        <antcall target="images-skins">
+            <param name="skin.dir" value="${web.dir}/skins" />
+        </antcall>
+        <if><available file="${customer.skin.dir}" />
+            <then>
+                <antcall target="images-skins">
+                    <param name="skin.dir" value="${customer.skin.dir}" />
+                </antcall>
+            </then>
+        </if>
 	</target>
+
+    <target name="images-skins">
+        <dirset id='this.build.skins.dirset' dir='${skin.dir}' includes='*' excludes="_*" />
+        <pathconvert property='this.build.skins.files' refid='this.build.skins.dirset' pathsep=','>
+            <flattenmapper />
+        </pathconvert>
+        <echo>DEBUG skin files: ${this.build.skins.files}</echo>
+        <for list='${this.build.skins.files}' param='skinname'>
+            <sequential>
+                <if><available file='${skin.dir}/@{skinname}/img' />
+                    <then>
+                        <antcall target="images-merge">
+                            <param name='srcdir' value='${skin.dir}/@{skinname}/img' />
+                            <param name='destdir' value='${build.skin.dir}/@{skinname}/img' />
+                            <!-- NOTE: @AppContextPath@ needs to be escaped here because -->
+                            <!-- NOTE: it is used within a for loop which treats @xyz@ as -->
+                            <!-- NOTE: property replacements for each iteration. -->
+                            <param name='csspath' value='@@AppContextPath@/skins/@{skinname}/img/' />
+                        </antcall>
+                    </then>
+                </if>
+            </sequential>
+        </for>
+    </target>
 
 	<target name='images-merge'>
 		<!-- delete output files if files changed -->
 		<dependset>
 			<srcfileset dir='${srcdir}' includes='*/**' />
 			<srcfileset dir='${java.dir}' includes='**/img/*.java' />
-			<targetfileset dir='${destdir}' includes='${build.css.file}*${build.css.ext}' />
+			<targetfileset dir='${destdir}' includes='${build.css.file}*.css,${build.css.file}*.js' />
 		</dependset>
 		<!-- merge images, if needed -->
 		<if><not><available file='${destdir}/${build.css.filename}' /></not>
 			<then>
+                <mkdir dir="${destdir}" />
 				<!-- default locale images -->
 				<imagemerge destdir='${destdir}' disable='true'
 							cssfile='${build.css.filename}' csspath='${csspath}'
@@ -736,7 +737,7 @@
 
     <target name='images-init' depends='compile'>
         <taskdef name='imagemerge'
-                 classname='com.zimbra.kabuki.tools.img.ImageMergeTask'
+                 classname='com.zimbra.kabuki.tools.img.ImageMergerTask'
                  classpathref='class.path'
                 />
         <taskdef name='imagesort'
