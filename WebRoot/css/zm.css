@@ -464,6 +464,10 @@ td.DDSepInvisible div {
 	border-bottom: 1px solid #999999;
 }
 
+.ZmMailMsgView .InvHeaderDiv {
+	padding: 0px 10px;
+}
+
 .ZmConvDoublePaneView .calendar_view, .ZmConvView .calendar_view {
 	@TopSeparator@
 	@LeftSeparator@
@@ -3968,6 +3972,27 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .InviteSelectLabel {
     text-align: right;
+}
+
+.InviteStatusAccept, .InviteStatusDecline, .InviteStatusTentative {
+	padding: 7px;
+	border-bottom: 1px solid #cccccc;
+}
+
+.InviteStatusAccept td, InviteStatusDecline td, InviteStatusTentative td {
+	font-size: 13px;
+}
+
+.InviteStatusAccept {
+	background-color: #CAE7B2;
+}
+
+.InviteStatusDecline {
+	background-color: #E7B2B2;
+}
+
+.InviteStatusTentative {
+	background-color: #FFFFCC;
 }
 
 .ZmEditContactViewDetailsButton {

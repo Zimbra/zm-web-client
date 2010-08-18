@@ -306,48 +306,47 @@ function(val) {
  */
 ZmAppt.prototype.getProposedTimeSummary =
 function(isHtml) {
+	var orig = this._orig || this;
 
-    var orig = this._orig || this;
+	var buf = [];
+	var i = 0;
 
-    var buf = [];
-    var i = 0;
+	if (!this._summaryHtmlLineFormatter) {
+		this._summaryHtmlLineFormatter = new AjxMessageFormat("<tr><th align='left'>{0}</th><td>{1} {2}</td></tr>");
+		this._summaryTextLineFormatter = new AjxMessageFormat("{0} {1} {2}");
+	}
 
-    if (!this._summaryHtmlLineFormatter) {
-        this._summaryHtmlLineFormatter = new AjxMessageFormat("<tr><th align='left'>{0}</th><td>{1} {2}</td></tr>");
-        this._summaryTextLineFormatter = new AjxMessageFormat("{0} {1} {2}");
-    }
+	var formatter = isHtml ? this._summaryHtmlLineFormatter : this._summaryTextLineFormatter;
 
-    var formatter = isHtml ? this._summaryHtmlLineFormatter : this._summaryTextLineFormatter;
+	if (isHtml) {
+		buf[i++] = "<p>\n<table border='0'>\n";
+	}
 
-    if (isHtml) {
-        buf[i++] = "<p>\n<table border='0'>\n";
-    }
+	var params = [ZmMsg.subjectLabel, this.name, ""];
 
-    var params = [ZmMsg.subjectLabel, this.name, ""];
+	buf[i++] = formatter.format(params);
+	buf[i++] = "\n";
 
-    buf[i++] = formatter.format(params);
-    buf[i++] = "\n";
+	if (isHtml) {
+		buf[i++] = "</table>";
+	}
+	buf[i++] = "\n";
+	if (isHtml) {
+		buf[i++] = "<p>\n<table border='0'>\n";
+	}
 
-    if (isHtml) {
-        buf[i++] = "</table>";
-    }
-    buf[i++] = "\n";
-    if (isHtml) {
-        buf[i++] = "<p>\n<table border='0'>\n";
-    }
+	i = this.getApptTimeSummary(buf, i, isHtml, true);
 
-    i = this.getApptTimeSummary(buf, i, isHtml, true);
+	if (isHtml) {
+		buf[i++] = "</table>\n";
+	}
+	buf[i++] = isHtml ? "<div>" : "\n\n";
+	buf[i++] = ZmItem.NOTES_SEPARATOR;
 
-    if (isHtml) {
-        buf[i++] = "</table>\n";
-    }
-    buf[i++] = isHtml ? "<div>" : "\n\n";
-    buf[i++] = ZmItem.NOTES_SEPARATOR;
+	// bug fix #7835 - add <br> after DIV otherwise Outlook lops off 1st char
+	buf[i++] = isHtml ? "</div><br>" : "\n\n";
 
-    // bug fix #7835 - add <br> after DIV otherwise Outlook lops off 1st char
-    buf[i++] = isHtml ? "</div><br>" : "\n\n";
-
-    return buf.join("");
+	return buf.join("");
 };
 
 /**
@@ -359,9 +358,9 @@ function(isHtml) {
 ZmAppt.prototype.getSummary =
 function(isHtml) {
 
-    if(this.isProposeTimeMode) {
-        return this.getProposedTimeSummary(isHtml);         
-    }
+	if (this.isProposeTimeMode) {
+		return this.getProposedTimeSummary(isHtml);
+	}
 
 	var orig = this._orig || this;
 
@@ -390,26 +389,26 @@ function(isHtml) {
 	var mailFromAddress = this.getMailFromAddress();
 	if (mailFromAddress) {
 		userName = mailFromAddress;
-	}else if(this.identity){
-        userName = this.identity.sendFromAddress;
-        displayName = this.identity.sendFromDisplay;
-    }
+	} else if(this.identity) {
+		userName = this.identity.sendFromAddress;
+		displayName = this.identity.sendFromDisplay;
+	}
 	var organizer = this.organizer ? this.organizer : userName;
 	var orgEmail = (!this.organizer && displayName)
-            ? (new AjxEmailAddress(userName, null, displayName)).toString()
-            : ZmApptViewHelper.getAddressEmail(organizer).toString();
+		? (new AjxEmailAddress(userName, null, displayName)).toString()
+		: ZmApptViewHelper.getAddressEmail(organizer).toString();
 	var orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
 	var params = [ ZmMsg.organizer + ":", orgText, "" ];
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
-    if(this.getFolder().isRemote() && this.identity){
-        var identity = this.identity;
-        orgEmail = new AjxEmailAddress(identity.sendFromAddress , null, identity.sendFromDisplay);
-        orgEmail = orgEmail.toString();
-	    orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
-        buf[i++] = formatter.format([ZmMsg.sentBy+":", orgText, ""]);
-        buf[i++] = "\n";
-    }
+	if (this.getFolder().isRemote() && this.identity) {
+		var identity = this.identity;
+		orgEmail = new AjxEmailAddress(identity.sendFromAddress , null, identity.sendFromDisplay);
+		orgEmail = orgEmail.toString();
+		orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
+		buf[i++] = formatter.format([ZmMsg.sentBy+":", orgText, ""]);
+		buf[i++] = "\n";
+	}
 	if (isHtml) {
 		buf[i++] = "</table>";
 	}
@@ -420,8 +419,8 @@ function(isHtml) {
 
 	var locationLabel = this.getLocation();
 	var origLocationLabel = orig ? orig.getLocation() : "";
-    var emptyLocation = (locationLabel == origLocationLabel && origLocationLabel == "");
-    if (!emptyLocation || this.isForwardMode) {
+	var emptyLocation = (locationLabel == origLocationLabel && origLocationLabel == "");
+	if (!emptyLocation || this.isForwardMode) {
 		params = [ZmMsg.locationLabel, locationLabel, (isEdit && locationLabel != origLocationLabel && !this.isForwardMode ) ? ZmMsg.apptModifiedStamp : ""];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
@@ -445,8 +444,8 @@ function(isHtml) {
 		buf[i++] = "\n";
 	}
 
-    i = this.getApptTimeSummary(buf, i, isHtml, isEdit);    
-    i = this.getRecurrenceSummary(buf, i, isHtml, isEdit);
+	i = this.getApptTimeSummary(buf, i, isHtml, isEdit);
+	i = this.getRecurrenceSummary(buf, i, isHtml, isEdit);
 
 	if (this._attendees[ZmCalBaseItem.PERSON].length) {
 		if (isHtml) {
@@ -454,17 +453,17 @@ function(isHtml) {
 		}
 		buf[i++] = "\n";
 		var reqAttString = ZmApptViewHelper.getAttendeesByRole(this._attendees[ZmCalBaseItem.PERSON], ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED, 10);
-        var optAttString = ZmApptViewHelper.getAttendeesByRole(this._attendees[ZmCalBaseItem.PERSON], ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL, 10);
-		
-        var attendeeTitle = (optAttString == "") ? ZmMsg.invitees : ZmMsg.requiredInvitees ;
-        params = [ attendeeTitle + ":", reqAttString, "" ];
-		buf[i++] = formatter.format(params);
-        buf[i++] = "\n";
+		var optAttString = ZmApptViewHelper.getAttendeesByRole(this._attendees[ZmCalBaseItem.PERSON], ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL, 10);
 
-        params = [ ZmMsg.optionalInvitees + ":", optAttString, "" ];
-        if(optAttString != ""){
+		var attendeeTitle = (optAttString == "") ? ZmMsg.invitees : ZmMsg.requiredInvitees ;
+		params = [ attendeeTitle + ":", reqAttString, "" ];
 		buf[i++] = formatter.format(params);
-        }
+		buf[i++] = "\n";
+
+		params = [ ZmMsg.optionalInvitees + ":", optAttString, "" ];
+		if (optAttString != "") {
+			buf[i++] = formatter.format(params);
+		}
 
 	}
 	if (isHtml) {
@@ -483,11 +482,11 @@ function(isHtml) {
  *
  * @return	{Boolean}	returns whether appointment needs recurrence summary
  */
-ZmAppt.prototype.needsRecurrenceSummary = function() {
-    return this._recurrence.repeatType != "NON" &&
-            this.viewMode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE &&
-            this.viewMode != ZmCalItem.MODE_DELETE_INSTANCE;
-
+ZmAppt.prototype.needsRecurrenceSummary =
+function() {
+	return this._recurrence.repeatType != "NON" &&
+			this.viewMode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE &&
+			this.viewMode != ZmCalItem.MODE_DELETE_INSTANCE;
 };
 
 /**
@@ -499,11 +498,11 @@ ZmAppt.prototype.needsRecurrenceSummary = function() {
  * @param	{Boolean}	isEdit		if view mode is edit/edit instance/edit series
  * @return	{String}	the appointment time summary
  */
-ZmAppt.prototype.getApptTimeSummary = function(buf, i, isHtml, isEdit) {
-
-    var formatter = isHtml ? this._summaryHtmlLineFormatter : this._summaryTextLineFormatter;
-    var orig = this._orig || this;
-    var s = this.startDate;
+ZmAppt.prototype.getApptTimeSummary =
+function(buf, i, isHtml, isEdit) {
+	var formatter = isHtml ? this._summaryHtmlLineFormatter : this._summaryTextLineFormatter;
+	var orig = this._orig || this;
+	var s = this.startDate;
 	var e = this.endDate;
 
 	if (this.viewMode == ZmCalItem.MODE_DELETE_INSTANCE) {
@@ -540,7 +539,7 @@ ZmAppt.prototype.getApptTimeSummary = function(buf, i, isHtml, isEdit) {
 		buf[i++] = formatter.format(params);
 	}
 
-    return i;    
+	return i;
 };
 
 /**
@@ -552,34 +551,34 @@ ZmAppt.prototype.getApptTimeSummary = function(buf, i, isHtml, isEdit) {
  * @param	{Boolean}	isEdit		if view mode is edit/edit instance/edit series
  * @return	{String}	the recurrence summary
  */
-ZmAppt.prototype.getRecurrenceSummary = function(buf, i, isHtml, isEdit) {
+ZmAppt.prototype.getRecurrenceSummary =
+function(buf, i, isHtml, isEdit) {
+	var formatter = isHtml ? this._summaryHtmlLineFormatter : this._summaryTextLineFormatter;
+	var orig = this._orig || this;
 
-    var formatter = isHtml ? this._summaryHtmlLineFormatter : this._summaryTextLineFormatter;
-    var orig = this._orig || this;
-
-    if (this.needsRecurrenceSummary()) {
-        var modified = false;
-        if (isEdit) {
-            modified = orig._recurrence.repeatType != this._recurrence.repeatType ||
-                    orig._recurrence.repeatCustom != this._recurrence.repeatCustom ||
-                    orig._recurrence.repeatCustomType != this._recurrence.repeatCustomType ||
-                    orig._recurrence.repeatCustomCount != this._recurrence.repeatCustomCount ||
-                    orig._recurrence.repeatCustomOrdinal != this._recurrence.repeatCustomOrdinal ||
-                    orig._recurrence.repeatCustomDayOfWeek != this._recurrence.repeatCustomDayOfWeek ||
-                    orig._recurrence.repeatCustomMonthDay != this._recurrence.repeatCustomMonthDay ||
-                    orig._recurrence.repeatEnd != this._recurrence.repeatEnd ||
-                    orig._recurrence.repeatEndType != this._recurrence.repeatEndType ||
-                    orig._recurrence.repeatEndCount != this._recurrence.repeatEndCount ||
-                    orig._recurrence.repeatEndDate != this._recurrence.repeatEndDate ||
-                    orig._recurrence.repeatWeeklyDays != this._recurrence.repeatWeeklyDays ||
-                    orig._recurrence.repeatMonthlyDayList != this._recurrence.repeatMonthlyDayList ||
-                    orig._recurrence.repeatYearlyMonthsList != this._recurrence.repeatYearlyMonthsList;
-        }
-        params = [ ZmMsg.recurrence, ":", this._recurrence.getBlurb(), modified ? ZmMsg.apptModifiedStamp : "" ];
-        buf[i++] = formatter.format(params);
-        buf[i++] = "\n";
-    }
-    return i;
+	if (this.needsRecurrenceSummary()) {
+		var modified = false;
+		if (isEdit) {
+			modified = orig._recurrence.repeatType != this._recurrence.repeatType ||
+					orig._recurrence.repeatCustom != this._recurrence.repeatCustom ||
+					orig._recurrence.repeatCustomType != this._recurrence.repeatCustomType ||
+					orig._recurrence.repeatCustomCount != this._recurrence.repeatCustomCount ||
+					orig._recurrence.repeatCustomOrdinal != this._recurrence.repeatCustomOrdinal ||
+					orig._recurrence.repeatCustomDayOfWeek != this._recurrence.repeatCustomDayOfWeek ||
+					orig._recurrence.repeatCustomMonthDay != this._recurrence.repeatCustomMonthDay ||
+					orig._recurrence.repeatEnd != this._recurrence.repeatEnd ||
+					orig._recurrence.repeatEndType != this._recurrence.repeatEndType ||
+					orig._recurrence.repeatEndCount != this._recurrence.repeatEndCount ||
+					orig._recurrence.repeatEndDate != this._recurrence.repeatEndDate ||
+					orig._recurrence.repeatWeeklyDays != this._recurrence.repeatWeeklyDays ||
+					orig._recurrence.repeatMonthlyDayList != this._recurrence.repeatMonthlyDayList ||
+					orig._recurrence.repeatYearlyMonthsList != this._recurrence.repeatYearlyMonthsList;
+		}
+		params = [ ZmMsg.recurrence, ":", this._recurrence.getBlurb(), modified ? ZmMsg.apptModifiedStamp : "" ];
+		buf[i++] = formatter.format(params);
+		buf[i++] = "\n";
+	}
+	return i;
 };
 
 /**
@@ -617,35 +616,39 @@ function(message, subject) {
 
 ZmAppt.prototype.setFromMailMessageInvite =
 function(message) {
-    var invite = message.invite;
-    var viewMode = (!invite.isRecurring()) ? ZmCalItem.MODE_FORWARD : ZmCalItem.MODE_FORWARD_SERIES;
+	var invite = message.invite;
+	var viewMode = (!invite.isRecurring()) ? ZmCalItem.MODE_FORWARD : ZmCalItem.MODE_FORWARD_SERIES;
 
-    if(invite.isRecurring() && invite.isException()) {
-        viewMode = ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE;
-    }
+	if (invite.isRecurring() && invite.isException()) {
+		viewMode = ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE;
+	}
 
-    this.setFromMessage(message, viewMode);
-    this.name = message.subject;
-    this.location = message.invite.getLocation();
-    if(message.apptId) {
-        this.invId = message.apptId;
-    }
+	this.setFromMessage(message, viewMode);
+	this.name = message.subject;
+	this.location = message.invite.getLocation();
+	if (message.apptId) {
+		this.invId = message.apptId;
+	}
 
-    this.uid = message.invite.components ? message.invite.components[0].uid : null;
+	this.uid = message.invite.components ? message.invite.components[0].uid : null;
 
-    if(this.isForwardMode) {
-        this.forwardInviteMsgId = message.id;
-        if(!invite.isOrganizer()) this.name = ZmMsg.fwd + ": " + message.subject;
-        this.status = invite.components ? invite.components[0].status : ZmCalendarApp.STATUS_CONF;
-    }
+	if (this.isForwardMode) {
+		this.forwardInviteMsgId = message.id;
+		if (!invite.isOrganizer()) {
+			this.name = ZmMsg.fwd + ": " + message.subject;
+		}
+		this.status = invite.components ? invite.components[0].status : ZmCalendarApp.STATUS_CONF;
+	}
 
-    if(this.isProposeTimeMode) {
-        this.proposeInviteMsgId = message.id;
-        //bug: 49315 - use local timezone while proposing time
-        this.convertToLocalTimezone();
-        if(!this.ridZ) this.ridZ = message.invite.components ? message.invite.components[0].ridZ : null;
-        this.seq = message.invite.getSequenceNo();
-    }
+	if (this.isProposeTimeMode) {
+		this.proposeInviteMsgId = message.id;
+		//bug: 49315 - use local timezone while proposing time
+		this.convertToLocalTimezone();
+		if (!this.ridZ) {
+			this.ridZ = message.invite.components ? message.invite.components[0].ridZ : null;
+		}
+		this.seq = message.invite.getSequenceNo();
+	}
 };
 
 /**
@@ -685,7 +688,7 @@ function(message) {
 	// parse out attendees for this invite
 	this._attendees[ZmCalBaseItem.PERSON] = [];
 	this.origAttendees = [];
-    var rsvp = false;
+	var rsvp;
 	var attendees = message.invite.getAttendees();
 	if (attendees) {
 		for (var i = 0; i < attendees.length; i++) {
@@ -722,7 +725,7 @@ function(message) {
 			if (resourceName && ptst && (this._ptstLocationMap[resourceName] != null)) {
 				this._ptstLocationMap[resourceName].setParticipantStatus(ptstReplies[addr] || ptst);
 			}
-            if (resources[i].rsvp) {
+			if (resources[i].rsvp) {
 				rsvp = true;
 			}
 			// if multiple resources are present (i.e. aliases) select first one
@@ -745,7 +748,7 @@ function(message) {
 	}
 
 	this._setAlarmFromMessage(message);
-    this.rsvp = rsvp;
+	this.rsvp = rsvp;
 	if (message.invite.hasOtherAttendees()) {
 		if (this._orig) {
 			this._orig.setRsvp(rsvp);
@@ -987,10 +990,10 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 	if (inv) {
 		at = soapDoc.set("at", null, inv);
 		// for now make attendees optional, until UI has a way of setting this
-        var role = ZmCalItem.ROLE_NON_PARTICIPANT;
-        if(type == ZmCalBaseItem.PERSON) {
-            role = attendee.getParticipantRole() ? attendee.getParticipantRole() : ZmCalItem.ROLE_REQUIRED;
-        }
+		var role = ZmCalItem.ROLE_NON_PARTICIPANT;
+		if (type == ZmCalBaseItem.PERSON) {
+			role = attendee.getParticipantRole() ? attendee.getParticipantRole() : ZmCalItem.ROLE_REQUIRED;
+		}
 		at.setAttribute("role", role);
 		
 		var ptst = attendee.getParticipantStatus() || ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
@@ -1049,136 +1052,132 @@ function(result) {
 
 ZmAppt.prototype.forwardInvite =
 function(callback, errorCallback, mode) {
-    var soapDoc = AjxSoapDoc.create(this._getSoapForMode(ZmCalItem.MODE_FORWARD_INVITE, this.isException), "urn:zimbraMail");
+	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(ZmCalItem.MODE_FORWARD_INVITE, this.isException), "urn:zimbraMail");
 
-    if(this.forwardInviteMsgId) {
-        soapDoc.setMethodAttribute("id", this.forwardInviteMsgId);
-    }
+	if (this.forwardInviteMsgId) {
+		soapDoc.setMethodAttribute("id", this.forwardInviteMsgId);
+	}
 
-    var m = soapDoc.set("m");
-    soapDoc.set("su", this.name, m);
-    this.isForwardMode = true;
-    this._addNotesToSoap(soapDoc, m, false);
+	var m = soapDoc.set("m");
+	soapDoc.set("su", this.name, m);
+	this.isForwardMode = true;
+	this._addNotesToSoap(soapDoc, m, false);
 
-    var accountName = this.getRemoteFolderOwner();
-    var localAcctName = this.getFolder().getAccount().name
-    var isOnBehalfOf = accountName && localAcctName && localAcctName != accountName;
+	var accountName = this.getRemoteFolderOwner();
+	var localAcctName = this.getFolder().getAccount().name;
+	var isOnBehalfOf = accountName && localAcctName && localAcctName != accountName;
 
-    var mailFromAddress = this.getMailFromAddress();
-    if (this.isOrganizer() && !accountName && mailFromAddress) {
-        var e = soapDoc.set("e", null, m);
-        e.setAttribute("a", mailFromAddress);
-        e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
-    }
+	var mailFromAddress = this.getMailFromAddress();
+	if (this.isOrganizer() && !accountName && mailFromAddress) {
+		var e = soapDoc.set("e", null, m);
+		e.setAttribute("a", mailFromAddress);
+		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+	}
 
-    var addrs = this._fwdAddrs;
-    for (var i = 0; i < addrs.length; i++) {
-        var attendee = addrs[i];
-        var address;
-        var name = "";
+	var addrs = this._fwdAddrs;
+	for (var i = 0; i < addrs.length; i++) {
+		var attendee = addrs[i];
+		var address;
+		var name = "";
 
-        if (attendee._inviteAddress) {
-            address = attendee._inviteAddress;
-            delete attendee._inviteAddress;
-        } else if(attendee.isAjxEmailAddress){
-            address = attendee.address;
-            name = attendee.dispName || attendee.name
-        } else if(attendee instanceof ZmContact){
-            address = attendee.getEmail();
-            name = attendee.getFullName();
-        }
-        if (!address) continue;
-        if (address instanceof Array) {
-            address = address[0];
-        }
+		if (attendee._inviteAddress) {
+			address = attendee._inviteAddress;
+			delete attendee._inviteAddress;
+		} else if(attendee.isAjxEmailAddress){
+			address = attendee.address;
+			name = attendee.dispName || attendee.name
+		} else if(attendee instanceof ZmContact){
+			address = attendee.getEmail();
+			name = attendee.getFullName();
+		}
+		if (!address) { continue; }
+		if (address instanceof Array) {
+			address = address[0];
+		}
 
-        this._addAddressToSoap(soapDoc, m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], name);
-    }
+		this._addAddressToSoap(soapDoc, m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], name);
+	}
 
-    this._sendRequest(soapDoc, accountName, callback, errorCallback);
+	this._sendRequest(soapDoc, accountName, callback, errorCallback);
 };
 
 ZmAppt.prototype.setForwardMode =
 function(forwardMode) {
-    this.isForwardMode = forwardMode;
+	this.isForwardMode = forwardMode;
 };
 
 ZmAppt.prototype.setProposeTimeMode =
 function(isProposeTimeMode) {
-    this.isProposeTimeMode = isProposeTimeMode;
+	this.isProposeTimeMode = isProposeTimeMode;
 };
 
 ZmAppt.prototype.sendCounterAppointmentRequest =
 function(callback, errorCallback) {
 	var mode = ZmCalItem.MODE_PROPOSE_TIME;
 
-    var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode, this.isException), "urn:zimbraMail");
+	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode, this.isException), "urn:zimbraMail");
 
-    var m = soapDoc.set("m");
-    soapDoc.set("su", ZmMsg.subjectNewTime + ": " + this.name, m);
+	var m = soapDoc.set("m");
+	soapDoc.set("su", ZmMsg.subjectNewTime + ": " + this.name, m);
 
-    var calendar = this.getFolder();
-    var acct = calendar.getAccount();
-    var accountName = this.getRemoteFolderOwner();
-    var localAcctName = this.getFolder().getAccount().name;
-    var isOnBehalfOf = accountName && localAcctName && localAcctName != accountName;
+	var calendar = this.getFolder();
+	var acct = calendar.getAccount();
+	var accountName = this.getRemoteFolderOwner();
+	var localAcctName = this.getFolder().getAccount().name;
+	var isOnBehalfOf = accountName && localAcctName && localAcctName != accountName;
 
-    var mailFromAddress = this.getMailFromAddress();
-    if (this.isOrganizer() && !accountName && mailFromAddress) {
-        var e = soapDoc.set("e", null, m);
-        e.setAttribute("a", mailFromAddress);
-        e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
-    }
+	var mailFromAddress = this.getMailFromAddress();
+	if (this.isOrganizer() && !accountName && mailFromAddress) {
+		var e = soapDoc.set("e", null, m);
+		e.setAttribute("a", mailFromAddress);
+		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+	}
 
+	if(this.organizer) {
+		var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
+		var orgName = orgEmail.getName();
+		var e = soapDoc.set("e", null, m);
+		e.setAttribute("a", orgEmail);
+		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
+	}
 
-    if(this.organizer) {
-        var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
-        var orgName = orgEmail.getName();
-        var e = soapDoc.set("e", null, m);
-        e.setAttribute("a", orgEmail);
-        e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
-    }
+	var inv = soapDoc.set("inv", null, m);
+	var comp = soapDoc.set("comp", null, inv);
 
-    var inv = soapDoc.set("inv", null, m);
-    var comp = soapDoc.set("comp", null, inv);
+	if (this.ridZ && this.isRecurring() && (this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)) {
+		var exceptId = soapDoc.set("exceptId", null, comp);
+		exceptId.setAttribute("d", this.ridZ);
+	}
 
-    if (this.ridZ && this.isRecurring() && (this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)) {
-        var exceptId = soapDoc.set("exceptId", null, comp);
-        exceptId.setAttribute("d", this.ridZ);
-    }
+	// subject/location
+	comp.setAttribute("name", this.name);
+	if (this.uid != null && this.uid != -1) {
+		comp.setAttribute("uid", this.uid);
+	}
 
-    // subject/location
-    comp.setAttribute("name", this.name);
-    if (this.uid != null && this.uid != -1) {
-        comp.setAttribute("uid", this.uid);
-    }
+	if (this.seq) {
+		comp.setAttribute("seq", this.seq);
+	}
 
-    if(this.seq) {
-        comp.setAttribute("seq", this.seq);        
-    }
+	this._addDateTimeToSoap(soapDoc, inv, comp);
+	this._addNotesToSoap(soapDoc, m, false);
 
-    //if(this.ridZ) comp.setAttribute("ridZ", this.ridZ);
+	// set organizer - but not for local account
+	if (!(appCtxt.isOffline && acct.isMain)) {
+		var me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
+		var user = mailFromAddress || me;
+		var organizer = this.organizer || user;
+		var org = soapDoc.set("or", null, comp);
+		org.setAttribute("a", organizer);
+		if (calendar.isRemote()) {
+			org.setAttribute("sentBy", user); // if on-behalf of, set sentBy
+		}
+		var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
+		var orgName = orgEmail.getName();
+		if (orgName) org.setAttribute("d", orgName);
+	}
 
-    this._addDateTimeToSoap(soapDoc, inv, comp);
-    this._addNotesToSoap(soapDoc, m, false);
-
-    // set organizer - but not for local account
-    if (!(appCtxt.isOffline && acct.isMain)) {
-        var me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
-        var user = mailFromAddress || me;
-        var organizer = this.organizer || user;
-        var org = soapDoc.set("or", null, comp);
-        org.setAttribute("a", organizer);
-        if (calendar.isRemote()) {
-            org.setAttribute("sentBy", user); // if on-behalf of, set sentBy
-        }
-        var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
-        var orgName = orgEmail.getName();
-        if (orgName) org.setAttribute("d", orgName);
-    }
-    
-    this._sendRequest(soapDoc, accountName, callback, errorCallback);
-
+	this._sendRequest(soapDoc, accountName, callback, errorCallback);
 };
 
 ZmAppt.prototype.forward =
@@ -1188,15 +1187,17 @@ function(callback, errorCallback) {
 
 	if (this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
 		mode = ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE;
-		if (!this.isException) { needsExceptionId = true; }
+		if (!this.isException) {
+			needsExceptionId = true;
+		}
 	} else if(this.viewMode == ZmCalItem.MODE_EDIT_SERIES) {
 		mode = ZmCalItem.MODE_FORWARD_SERIES;
 	}
 
-    if(this.forwardInviteMsgId) {
-        this.forwardInvite(callback, errorCallback, mode);
-        return;
-    }
+	if (this.forwardInviteMsgId) {
+		this.forwardInvite(callback, errorCallback, mode);
+		return;
+	}
 
 	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode, this.isException), "urn:zimbraMail");
 
@@ -1255,30 +1256,30 @@ function(callback, errorCallback) {
 	}
 
 	var addrs = this._fwdAddrs;
-    for (var i = 0; i < addrs.length; i++) {
-        var attendee = addrs[i];
-        if(!attendee) continue;
+	for (var i = 0; i < addrs.length; i++) {
+		var attendee = addrs[i];
+		if (!attendee) { continue; }
 
-        var address;
-        var name = "";
-        if (attendee._inviteAddress) {
-            address = attendee._inviteAddress;
-            delete attendee._inviteAddress;
-        } else if(attendee.isAjxEmailAddress){
-            address = attendee.address;
-            name = attendee.dispName || attendee.name
-        } else if(attendee instanceof ZmContact){
-            address = attendee.getEmail();
-            name = attendee.getFullName();
-        }
-        if (!address) continue;
-        if (address instanceof Array) {
-            address = address[0];
-        }
-        this._addAddressToSoap(soapDoc, m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], name);
-    }
+		var address;
+		var name = "";
+		if (attendee._inviteAddress) {
+			address = attendee._inviteAddress;
+			delete attendee._inviteAddress;
+		} else if(attendee.isAjxEmailAddress){
+			address = attendee.address;
+			name = attendee.dispName || attendee.name
+		} else if(attendee instanceof ZmContact){
+			address = attendee.getEmail();
+			name = attendee.getFullName();
+		}
+		if (!address) { continue; }
+		if (address instanceof Array) {
+			address = address[0];
+		}
+		this._addAddressToSoap(soapDoc, m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], name);
+	}
 
-    this._sendRequest(soapDoc, accountName, callback, errorCallback);
+	this._sendRequest(soapDoc, accountName, callback, errorCallback);
 };
 
 ZmAppt.prototype._addAddressToSoap =
@@ -1286,49 +1287,48 @@ function(soapDoc, m, addr, type, name) {
 	var e = soapDoc.set("e", null, m);
 	e.setAttribute("a", addr);
 	e.setAttribute("t", type);
-    if(name) e.setAttribute("p", name);
+	if (name) {
+		e.setAttribute("p", name);
+	}
 };
 
 ZmAppt.prototype.setProposedInvite =
 function(invite) {
-    this.proposedInvite = invite;
+	this.proposedInvite = invite;
 };
-
 
 ZmAppt.prototype.getRecurrenceFromInvite =
 function(invite) {
-    return (invite && invite.comp && invite.comp[0]) ? invite.comp[0].recur : null;
+	return (invite && invite.comp && invite.comp[0]) ? invite.comp[0].recur : null;
 };
 
 ZmAppt.prototype.setInvIdFromProposedInvite =
 function(invites, proposedInvite) {
+	var proposalRidZ = proposedInvite.getRecurrenceId();
 
-    var proposalRidZ = proposedInvite.getRecurrenceId();
+	if (proposedInvite.components[0].ridZ) {
+		// search all the invites for an appointment
+		for (var i in invites) {
+			var inv = invites[i];
+			if (inv.comp[0].ridZ  == proposalRidZ) {
+				this.invId = this.id + "-" + inv.id;
+				break;
+			}
+		}
 
-    if(proposedInvite.components[0].ridZ) {
-
-        //search all the invites for an appointment
-        for(var i in invites) {
-            var inv = invites[i];
-            if(inv.comp[0].ridZ  == proposalRidZ) {
-                this.invId = this.id + "-" + inv.id;
-                break;
-            }
-        }
-
-        //if new time is proposed for creating an exceptional instance - no matching invites will be found
-        if(!this.invId) {
-            this.invId = this.id + "-" + invites[0].id;
-            this.ridZ = proposalRidZ;
-            var invite = ZmInvite.createFromDom(invites);            
-            if(invite.isRecurring()) {
-                this.isException = true;
-                this.recurring = this.getRecurrenceFromInvite(invites[0]);
-                this._origStartDate = proposedInvite.getServerStartDate();                
-            }
-        }
-
-    }else {
-        this.invId = this.id + "-" + invites[0].id;
-    }
+		// if new time is proposed for creating an exceptional instance - no
+		// matching invites will be found
+		if (!this.invId) {
+			this.invId = this.id + "-" + invites[0].id;
+			this.ridZ = proposalRidZ;
+			var invite = ZmInvite.createFromDom(invites);
+			if (invite.isRecurring()) {
+				this.isException = true;
+				this.recurring = this.getRecurrenceFromInvite(invites[0]);
+				this._origStartDate = proposedInvite.getServerStartDate();
+			}
+		}
+	} else {
+		this.invId = this.id + "-" + invites[0].id;
+	}
 };

@@ -96,65 +96,78 @@
 		<table class='InvHeaderTable' id='${id}_headerElement'cellspacing=0 cellpadding=0 border=0 width=100%>
 			<tr>
 				<td>
-					<table cellspacing=0 cellpadding=0 border=0 width=100%>
-						<tr id='${hdrTableTopRowId}'>
-							<$ if (data.closeBtnCellId) { $>
-								<td>&nbsp;</td>
-								<td id='${closeBtnCellId}'></td>
-								<td>&nbsp;</td>
-							<$ } $>
-							<td class='LabelColValue SubjectCol' valign=top width=100%>
-								<$= data.subject $>
-							</td>
-							<td class='LabelColValue DateCol' align=right>${dateString}</td>
-							<td>&nbsp;</td>
-						</tr>
-					</table>
-
-					<table id='${hdrTableId}' cellspacing=0 cellpadding=1 border=0 width=100%>
-						<$ if (data.counterInvMsg) { $>
-							<tr>
-								<td class='LabelColValue' colspan=11>
-									<div class='InvCounter'>
-										<table border=0 cellpadding=0 cellspacing=0 width="100%">
-											<tr>
-												<td width=20><$= AjxImg.getImageHtml("Information") $></td>
-												<td class='LabelColValue'><$= data.counterInvMsg $></td>
-											</tr>
-										</table>
-									</div>
-								</td>
-							</tr>
-						<$ } $>
-						<tr>
-							<td class='LabelColName' width=75><$= ZmMsg.organizerLabel $></td>
-							<td class='LabelColValue'><$= data.invOrganizer $></td>
-						</tr>
-						<tr>
-							<td class='LabelColName'><$= data.counterInvMsg ? ZmMsg.proposedTimeLabel : ZmMsg.timeLabel $></td>
-							<td class='LabelColValue'>
-								<$= data.invDate $><br>
-								<$= data.invite.getServerStartTimeTz() $>
-							</td>
-						</tr>
-						<$ if (data.invite.getLocation()) { $>
-							<tr>
-								<td class='LabelColName'><$= ZmMsg.locationLabel $></td>
-								<td class='LabelColValue'><$= data.invite.getLocation() $></td>
-							</tr>
-						<$ } $>
-						<$ if (data.invite.hasOtherAttendees()) { $>
-							<tr>
-								<td class='LabelColName'><$= ZmMsg.inviteesLabel $></td>
-								<td class='LabelColValue'><$= data.invitees $></td>
-							</tr>
-						<$ } $>
-					</table>
-					<$ if (data.hasAttachments) { $>
-						<div class="MessageHeaderAttachments" id="${attachId}_container">
-							<div id="${attachId}" style='overflow:auto;'></div>
+					<$ if (data.ptstMsg) { $>
+						<div class="${ptstClassName}">
+							<table border=0 cellpadding=0 cellspacing=0>
+								<tr>
+									<td><$= AjxImg.getImageHtml(data.ptstIcon) $></td>
+									<td>&nbsp;</td>
+									<td>${ptstMsg}</td>
+								</tr>
+							</table>
 						</div>
 					<$ } $>
+					<div class='InvHeaderDiv'>
+						<table cellspacing=0 cellpadding=0 border=0 width=100%>
+							<tr id='${hdrTableTopRowId}'>
+								<$ if (data.closeBtnCellId) { $>
+									<td>&nbsp;</td>
+									<td id='${closeBtnCellId}'></td>
+									<td>&nbsp;</td>
+								<$ } $>
+								<td class='LabelColValue SubjectCol' valign=top width=100%>
+									<$= data.subject $>
+								</td>
+								<td class='LabelColValue DateCol' align=right>${dateString}</td>
+								<td>&nbsp;</td>
+							</tr>
+						</table>
+
+						<table id='${hdrTableId}' cellspacing=0 cellpadding=1 border=0 width=100%>
+							<$ if (data.counterInvMsg) { $>
+								<tr>
+									<td class='LabelColValue' colspan=11>
+										<div class='InvCounter'>
+											<table border=0 cellpadding=0 cellspacing=0 width="100%">
+												<tr>
+													<td width=20><$= AjxImg.getImageHtml("Information") $></td>
+													<td class='LabelColValue'><$= data.counterInvMsg $></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+								</tr>
+							<$ } $>
+							<tr>
+								<td class='LabelColName' width=75><$= ZmMsg.organizerLabel $></td>
+								<td class='LabelColValue'><$= data.invOrganizer $></td>
+							</tr>
+							<tr>
+								<td class='LabelColName'><$= data.counterInvMsg ? ZmMsg.proposedTimeLabel : ZmMsg.timeLabel $></td>
+								<td class='LabelColValue'>
+									<$= data.invDate $><br>
+									<$= data.invite.getServerStartTimeTz() $>
+								</td>
+							</tr>
+							<$ if (data.invite.getLocation()) { $>
+								<tr>
+									<td class='LabelColName'><$= ZmMsg.locationLabel $></td>
+									<td class='LabelColValue'><$= data.invite.getLocation() $></td>
+								</tr>
+							<$ } $>
+							<$ if (data.invite.hasOtherAttendees()) { $>
+								<tr>
+									<td class='LabelColName'><$= ZmMsg.inviteesLabel $></td>
+									<td class='LabelColValue'><$= data.invitees $></td>
+								</tr>
+							<$ } $>
+						</table>
+						<$ if (data.hasAttachments) { $>
+							<div class="MessageHeaderAttachments" id="${attachId}_container">
+								<div id="${attachId}" style='overflow:auto;'></div>
+							</div>
+						<$ } $>
+					</div>
 				</td>
 				<td id='${id}_contactArea' class='ContactArea'>
 					<!-- Area reserved zimlets to add to message views. -->

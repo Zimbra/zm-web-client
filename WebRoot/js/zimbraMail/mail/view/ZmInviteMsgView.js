@@ -249,6 +249,31 @@ function(subs, sentBy, sentByAddr) {
 		subs.newProposedTime = this._invite.getProposedTimeStr();
 	}
 
+	// is this an action'ed invite?
+	if (this._openToolbar && this._openToolbar.getVisible()) {
+		var attendee = this._invite.getAttendees()[0];
+		var ptst = attendee && attendee.ptst;
+		if (ptst) {
+			var dispName = attendee.d || attendee.a;
+			subs.ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
+
+			switch (ptst) {
+				case ZmCalBaseItem.PSTATUS_ACCEPT:
+					subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgAccepted, [dispName]);
+					subs.ptstClassName = "InviteStatusAccept";
+					break;
+				case ZmCalBaseItem.PSTATUS_DECLINED:
+					subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgDeclined, [dispName]);
+					subs.ptstClassName = "InviteStatusDecline";
+					break;
+				case ZmCalBaseItem.PSTATUS_TENTATIVE:
+					subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgTentative, [dispName]);
+					subs.ptstClassName = "InviteStatusTentative";
+					break;
+			}
+		}
+	}
+
 	var om = this.parent._objectManager;
 
 	// organizer
