@@ -933,7 +933,7 @@ function(item) {
 		var tag = tagList.getById(tags[i]);
         if (!tag) { continue; }        
         html[idx++] = "<table><tr><td>";
-		html[idx++] = AjxImg.getImageHtml(ZmTag.COLOR_ICON[tag.color]);
+		html[idx++] = AjxImg.getImageHtml(tag.getIconWithColor());
 		html[idx++] = "</td><td valign='middle'>";
 		html[idx++] = AjxStringUtil.htmlEncode(tag.name);
 		html[idx++] = "</td></tr></table>";

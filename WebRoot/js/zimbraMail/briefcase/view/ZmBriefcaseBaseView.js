@@ -190,3 +190,96 @@ function(list, sortField){
     ZmListView.prototype.set.call(this, list, sortField);
 };
 
+ZmBriefcaseBaseView.prototype.renameFile =
+function(item){
+
+    var fileNameEl = this._getFieldId(item, ZmItem.F_SUBJECT);
+    fileNameEl = document.getElementById(fileNameEl);
+    var fileNameBounds = Dwt.getBounds(fileNameEl);
+
+    var fileInput = this._enableRenameInput(true, fileNameBounds);
+    fileInput.setValue(item.name);
+    this._fileItem = item;
+};
+
+ZmBriefcaseBaseView.prototype._enableRenameInput =
+function(enable, bounds){
+    var fileInput = this._getRenameInput();
+    if(enable){
+        fileInput.setBounds(bounds.x, bounds.y, bounds.width ,  18);
+        fileInput.setDisplay(Dwt.DISPLAY_INLINE);
+        fileInput.focus();
+    }else{
+        fileInput.setDisplay(Dwt.DISPLAY_NONE);
+        fileInput.setLocation("-10000px", "-10000px");
+    }
+    return fileInput;
+};
+
+ZmBriefcaseBaseView.prototype._getRenameInput =
+function(){
+    if(!this._searchField){
+        this._searchField = new DwtInputField({parent:appCtxt.getShell(), className:"RenameInput DwtInputField", posStyle: Dwt.ABSOLUTE_STYLE});
+        this._searchField.setZIndex(Dwt.Z_VIEW + 10); //One layer above the VIEW
+        this._searchField.setDisplay(Dwt.DISPLAY_NONE);
+        this._searchField.setLocation("-10000px", "-10000px");
+        this._searchField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
+    }
+    return this._searchField;
+};
+
+ZmBriefcaseBaseView.prototype._handleKeyUp =
+function(ev) {
+    var allowDefault = true;
+	var key = DwtKeyEvent.getCharCode(ev);
+    var item = this._fileItem;
+    if(key == DwtKeyEvent.KEY_ENTER){
+        var fileName = this._searchField.getValue();
+        if(fileName != ''){
+            if(this._checkDuplicate(fileName)){
+                this._redrawItem(item);
+                var warning = appCtxt.getMsgDialog();
+                warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, fileName), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
+                warning.popup();
+            }else{
+                item.rename(fileName, new AjxCallback(this, this._handleRenameFile));
+            }
+        }else{
+            this._redrawItem(item);
+        }
+        allowDefault = false;
+    }else if( key == DwtKeyEvent.KEY_ESCAPE){
+        this._redrawItem(item);
+        allowDefault = false;
+    }
+	DwtUiEvent.setBehaviour(ev, true, allowDefault);
+};
+
+ZmBriefcaseBaseView.prototype._handleRenameFile =
+function(){
+    this._enableRenameInput(false);
+    this._fileItem = null;
+};
+
+ZmBriefcaseBaseView.prototype._redrawItem =
+function(item){
+    this._handleRenameFile();
+    this.redrawItem(item);
+};
+
+ZmBriefcaseBaseView.prototype._checkDuplicate =
+function(name){
+
+    name = name.toLowerCase();
+    var list = this.getList();
+    if(list){
+        list = list.getArray();
+        for (var i = 0; i < list.length; i++) {
+            var item = list[i];
+            if(item.name.toLowerCase() == name)
+                return true;
+        }
+    }
+    return false;   
+};
+

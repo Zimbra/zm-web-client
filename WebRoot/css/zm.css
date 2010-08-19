@@ -242,7 +242,8 @@
 /* toolbars in read message view that let you accept an appointment, share, etc (with no border) */
 .ZmInviteToolBar, .ZmShareToolBar {
 	@InlineToolbarContainer@
-	padding-left:@BoxPaddingSize@
+	padding-left:@BoxPaddingSize@;
+	background-color:@lighten(AppC,90)@; 
 }
 
 .ZmInviteToolBar .ZToolbarTable, .ZmShareToolBar .ZToolbarTable {
@@ -457,6 +458,21 @@ td.DDSepInvisible div {
 	@MailMsgHeaderLight@
 }
 
+/* Container for the header of the message */
+.ZmMailMsgView .InvHeaderTable {
+	@MailInvHeaderLight@
+	border-bottom: 1px solid #999999;
+}
+
+.ZmMailMsgView .InvHeaderDiv {
+	padding: 0px 10px;
+}
+
+.ZmConvDoublePaneView .calendar_view, .ZmConvView .calendar_view {
+	@TopSeparator@
+	@LeftSeparator@
+}
+
 .MessageHeaderAttachments {
 	@MailMsgAttachments@
 }
@@ -496,6 +512,39 @@ td.DDSepInvisible div {
 .ZmMailMsgView .AttName-matched {
 	@Anchor-matched@
 	white-space: nowrap;
+}
+
+.InvHeaderTable .LabelColName {
+	@MailMsgHeaderLabel@
+	font-weight: bold;
+	font-size: 12px;
+	vertical-align: top;
+	padding: 3px 0px 3px 0px;
+	white-space: nowrap;
+	text-align: left;
+}
+
+.InvHeaderTable .LabelColValue {
+	@MailMsgHeaderText@
+	font-size: 12px;
+	white-space: normal;
+	vertical-align: top;
+	padding: 3px;
+}
+
+.InvHeaderTable .SubjectCol {
+	@FontSize-biggest@
+}
+
+.InvHeaderTable .DateCol {
+	white-space: nowrap;
+}
+
+.InvHeaderTable .InvCounter {
+	@WarningContainer@
+	@WarningText@
+	@ActiveCursor@
+	padding-left: 5px;
 }
 
 /* the sash next to overview does not need borders or a background color */
@@ -1489,7 +1538,7 @@ line-height:normal;
 .appt_30_body {
 	position:relative;
 	overflow:hidden;
-	border:2px solid;
+	border:1px solid;
 	border-color:#AAAAAA #333333 #333333 #AAAAAA;
 #IFDEF GECKO
 	-moz-user-select: none;
@@ -1729,6 +1778,11 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSchedulerPTST-deferred    {	color: #009900 !important;}
 .ZmSchedulerPTST-delegated 	 {	color: #996633 !important;}
 .ZmSchedulerPTST-waiting     {  color: #666666 !important;}
+
+.ZmSchedulerApptBorder-free         { border-style:dotted; }
+.ZmSchedulerApptBorder-busy         { border-style:solid; }
+.ZmSchedulerApptBorder-tentative    { border-style:dashed; }
+.ZmSchedulerApptBorder-outOfOffice  { border-style:solid; }
 
 .ZmSchedulerNormalRow {
 	@AppBg@
@@ -2956,6 +3010,20 @@ HTML>BODY .appt-selected .appt_allday_body
     @Text-disabled@
 }
 
+.DebugLogDialog-desc {
+	width: 500px;
+	font-size: 14px;
+	padding: 10px;
+}
+
+.DebugLogDialog-log {
+	width: 600px;
+	height: 400px;
+	border: 2px solid black;
+	overflow: auto;
+	padding: 5px;
+}
+
 /*
  * Temporary styles for the shortcuts tab. These should be
  * replaced with the proper substitutions from skin files.
@@ -3906,6 +3974,27 @@ If you feel compelled to have a background color, please do so on a per skin lev
     text-align: right;
 }
 
+.InviteStatusAccept, .InviteStatusDecline, .InviteStatusTentative {
+	padding: 7px;
+	border-bottom: 1px solid #cccccc;
+}
+
+.InviteStatusAccept td, InviteStatusDecline td, InviteStatusTentative td {
+	font-size: 13px;
+}
+
+.InviteStatusAccept {
+	background-color: #CAE7B2;
+}
+
+.InviteStatusDecline {
+	background-color: #E7B2B2;
+}
+
+.InviteStatusTentative {
+	background-color: #FFFFCC;
+}
+
 .ZmEditContactViewDetailsButton {
 	border: solid @darken(AppC,40)@ 1px;
 	background-color: @WidgetBgColor@;
@@ -4035,4 +4124,33 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .PreviewFrame{
     height:100%;
+}
+
+.RenameInput input {
+    width:100%;
+    heigth:19px;
+}
+
+/*Calendar Styles*/
+.ZmAppt-busy {
+	background-color: #4AA6F1;
+}
+
+.ZmAppt-ooo {
+	background-color: #7B5BAC;
+	background-image: url('/zimbra/img/calendar/freeBusyBar_ooo.png');
+}
+
+.ZmAppt-tentative {
+	background-color: #BAE0E3;
+	background-image: url('/zimbra/img/calendar/freeBusyBar_tentative.png');
+}
+
+.ZmAppt-free {
+	background-color: #FFFFFF;
+	background-image: url('/zimbra/img/calendar/freeBusyBar_free.png');
+}
+
+.ZmAppt-no-response {
+	background-color: #F30;
 }

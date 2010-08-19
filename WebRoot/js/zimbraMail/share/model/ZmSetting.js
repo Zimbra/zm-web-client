@@ -183,6 +183,7 @@ ZmSetting.LICENSE_GRACE			= "inGracePeriod";
 ZmSetting.MARK_READ_NONE		= -1;						// zimbraPrefMarkMsgRead
 ZmSetting.MARK_READ_NOW			= 0;						// zimbraPrefMarkMsgRead
 ZmSetting.MARK_READ_TIME		= 1;						// zimbraPrefMarkMsgRead
+ZmSetting.PRINT_FONT_SIZE 	    = AjxMessageFormat.format(ZmMsg.pt,"12"); 			// zimbraPrefDefaultPrintFontSize
 ZmSetting.PROTO_HTTP			= "http:";
 ZmSetting.PROTO_HTTPS			= "https:";
 ZmSetting.PROTO_MIXED			= "mixed:";

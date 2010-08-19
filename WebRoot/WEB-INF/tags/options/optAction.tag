@@ -35,6 +35,7 @@
                 <zm:pref name="zimbraPrefSkin" value="${param.zimbraPrefSkin}"/>
             </c:if>
             <zm:pref name="zimbraPrefTimeZoneId" value="${param.zimbraPrefTimeZoneId}"/>
+            <zm:pref name="zimbraPrefDefaultPrintFontSize" value="${param.zimbraPrefDefaultPrintFontSize}"/>
         </c:when>
         <%-- MAIL --%>
         <c:when test="${selected eq 'mail'}">

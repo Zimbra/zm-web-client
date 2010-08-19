@@ -1,4 +1,4 @@
-<%--
+    <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
@@ -93,6 +93,24 @@
                             <c:if test="${tzpref eq tz.id}">selected</c:if>
                             value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
                 </zm:forEachTimeZone>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td class='ZOptionsTableLabel'>
+            <label for="printFont"><fmt:message key="printFontSizePref"/>
+                :</label>
+        </td>
+        <td>
+            <select name="zimbraPrefDefaultPrintFontSize" id="printFont">
+                <c:set var="printpref" value="${mailbox.prefs.defaultPrintFontSize}"/>
+                <option <c:if test="${printpref eq '8pt'}"> selected</c:if> value="8pt">8pt</option>
+                <option <c:if test="${printpref eq '10pt'}"> selected</c:if> value="10pt">10pt</option>
+                <option <c:if test="${printpref eq '12pt'}"> selected</c:if> value="12pt">12pt</option>
+                <option <c:if test="${printpref eq '14pt'}"> selected</c:if> value="14pt">14pt</option>
+                <option <c:if test="${printpref eq '18pt'}"> selected</c:if> value="18pt">18pt</option>
+                <option <c:if test="${printpref eq '24pt'}"> selected</c:if> value="24pt">24pt</option>
+                <option <c:if test="${printpref eq '36pt'}"> selected</c:if> value="36pt">36pt</option>                
             </select>
         </td>
     </tr>

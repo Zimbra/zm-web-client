@@ -1,5 +1,5 @@
 <template id='calendar.Calendar#calendar_appt' width='10' height='7'>
-	<div id='${id}_body' class='appt_body ${bodyColor}'>
+	<div id='${id}_body' class='appt_body ${bodyColor} ${boxBorder}'>
 		<table cellspacing=0 cellpadding=0 style='width:100%; height:100%;${bodyStyle}'>
 		    <$ if(data.headerStyle) {$>
 			<tr style='${headerStyle}'>
@@ -37,7 +37,7 @@
 </template>
 
 <template id='calendar.Calendar#calendar_appt_bottom_only' width='10' height='7'>
-	<div id='${id}_body' class='appt_body ${bodyColor}'>
+	<div id='${id}_body' class='appt_body ${bodyColor} ${boxBorder}'>
 		<table cellspacing=0 cellpadding=0 style='width:100%;height:100%;${bodyStyle}'>
 			<tr valign=top>
 				<td width='4px' class='${showAsColor}' ></td>			
@@ -56,7 +56,7 @@
 </template>
 
 <template id='calendar.Calendar#calendar_appt_30' width='4' height='4'>
-	<div id='${id}_body' class='appt_30_body  ${headerColor}'>
+	<div id='${id}_body' class='appt_30_body  ${headerColor} ${boxBorder}'>
 		<$ if (!AjxEnv.isIE && !AjxEnv.isFirefox3up && data.icon) { $>
 			<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
 		<$ } $>
@@ -79,7 +79,7 @@
 </template>
 
 <template id='calendar.Calendar#calendar_appt_allday' width='4' height='4'>
-	<div id='${id}_body' class='appt_allday_body ${headerColor}'>
+	<div id='${id}_body' class='appt_allday_body ${headerColor} ${boxBorder}'>
 		<table width=100% cellspacing=0 cellpadding=0 style='width:100%;height:100%;${headerStyle}'>
 			<tr>
 				<td width='4px' class='${showAsColor}' ></td>

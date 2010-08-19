@@ -25,6 +25,7 @@
 <c:url var="url" value="${empty base ? 'zmain' : base}">
     <c:param name="sfi" value="${folder.id}"/>
     <c:if test="${!empty types}"><c:param name="st" value="${types}"/></c:if>
+    <c:if test="${empty types}"><c:param name="st" value="${folder.isMessageView ? 'message' : folder.isConversationView ? 'conversation' : 'message'}"/></c:if>
 </c:url>
 <div class='Folders ${param.id eq folder.id ? 'StatusWarning' : ''} list-row${folder.hasUnread ? '-unread' : ''}'
      <c:if test="${types ne 'cal' && !ua.isIE}">onclick='return zClickLink("FLDR${folder.id}")'</c:if>>

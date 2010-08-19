@@ -31,12 +31,23 @@
             font-size:8pt;
             color:#666;
         }
+        .ZhCallListPrintView td, .zPrintMsgs *{
+            font-family:Tahoma,Arial,Helvetica,sans-serif;
+            font-size:${mailbox.prefs.defaultPrintFontSize} !important;
+        }
+        .companyName{
+             color: #555555 !important;
+        }
+        .sectionLabel{
+             color: gray !important;
+        }
     </style>
 </head>
 <body style='background:white;'>
+<div class="ZhCallListPrintView">
 <table><tr>
-    <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
-    <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
+    <td><b><fmt:message key="zimbraTitle"/></b></td>
+    <td nowrap width='1%'>${fn:escapeXml(mailbox.name)}</td>
 </tr></table>
 <hr/>
 <c:set var="taskIds" value="${fn:join(paramValues.id, ',')}"/>
@@ -66,7 +77,7 @@
             </app:handleError>
 
 
-            <div style="width: 100%;">
+            <div class="zPrintMsgs" style="width: 100%;">
                 <table cellpadding="2" cellspacing="0" width="100%">
                     <tr>
                         <td colspan="2">
@@ -174,7 +185,7 @@
                 
             </app:handleError>
 
-            <div style="width: 100%;">
+            <div class="zPrintMsgs" style="width: 100%;">
                 <table cellpadding="2" cellspacing="0" width="100%">
                     <tr>
                         <td colspan="2">
@@ -253,6 +264,7 @@
         </c:forEach>
     </c:otherwise>
 </c:choose>
+</div> 
 <script type="text/javascript">
 	<!--
 	window.print();
