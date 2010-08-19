@@ -307,7 +307,7 @@ function() {
  * @param	{ZmFolder}	newParent		the new parent
  */
 ZmFolder.prototype.move =
-function(newParent) {
+function(newParent, noUndo) {
 	var origName = this.name;
 	var name = this.name;
 	while (newParent.hasChild(name)) {
@@ -316,7 +316,7 @@ function(newParent) {
 	if (origName != name) {
 		this.rename(name);
 	}
-	ZmOrganizer.prototype.move.call(this, newParent);
+	ZmOrganizer.prototype.move.call(this, newParent, noUndo);
 };
 
 /**

@@ -26,6 +26,7 @@ AjxPackage.require("zimbraMail.share.model.ZmSettings");
 AjxPackage.require("zimbraMail.share.model.ZmMetaData");
 AjxPackage.require("zimbraMail.share.model.ZmKeyMap");
 AjxPackage.require("zimbraMail.share.model.ZmTimezone");
+AjxPackage.require("zimbraMail.share.model.ZmActionStack");
 AjxPackage.require("zimbraMail.share.model.ZmItem");
 AjxPackage.require("zimbraMail.share.model.ZmOrganizer");
 AjxPackage.require("zimbraMail.share.model.ZmFolder");

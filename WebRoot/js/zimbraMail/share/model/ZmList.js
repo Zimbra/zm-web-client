@@ -466,6 +466,7 @@ function(params) {
  * @param	{AjxCallback}	params.callback			the callback to run after each sub-request
  * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
  * @param	{int}			params.count			the starting count for number of items processed
+ * @param	{boolean}		params.noUndo			true if the action is not undoable
  */
 ZmList.prototype.moveItems =
 function(params) {
@@ -843,7 +844,8 @@ function(params, batchCmd) {
 		}
 	}
 
-	var respCallback = params.callback && (new AjxCallback(this, this._handleResponseItemAction, [params.callback]));
+	var undoLogElement = params.noUndo ? null : appCtxt.getActionStack().logAction({op: params.action, ids: idList, attrs: params.attrs});
+	var respCallback = new AjxCallback(this, this._handleResponseItemAction, [params.callback, undoLogElement]);
 
 	var params1 = {
 		ids:			idList,
@@ -876,7 +878,11 @@ function(params, batchCmd) {
  * @private
  */
 ZmList.prototype._handleResponseItemAction =
-function(callback, items, result) {
+function(callback, undoLogElement, items, result) {
+	if (undoLogElement) {
+		undoLogElement.setComplete();
+	}
+	
 	if (callback) {
 		result.set(items);
 		callback.run(result);

@@ -1167,6 +1167,14 @@ function() {
 	return (ctlr && ctlr.getList) ? ctlr.getList() : this._list ? this._list : null;
 };
 
+ZmAppCtxt.prototype.getActionStack =
+function() {
+	if (!this._actionStack) {
+		this._actionStack = new ZmActionStack();
+	}
+	return this._actionStack;
+};
+
 /**
  * Gets a new window.
  * 

@@ -249,15 +249,30 @@ function(ev) {
 	// move/delete support batch notification mode
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		var items = ev.batchMode ? this._getItemsFromBatchEvent(ev) : [item];
+		var needsSort = false;
 		for (var i = 0, len = items.length; i < len; i++) {
 			var item = items[i];
-			this.removeItem(item, true, ev.batchMode);
-			// if we've removed it from the view, we should remove it from the reference
-			// list as well so it doesn't get resurrected via replenishment *unless*
-			// we're dealing with a canonical list (i.e. contacts)
-			if (ev.event != ZmEvent.E_MOVE || !this._controller._list.isCanonical) {
-				this._controller._list.remove(item);
+			if (item.folderId == this._folderId && ev.event == ZmEvent.E_MOVE) {
+				// We've moved the item into this folder
+				if (this._getRowIndex(item) === null) { // Not already here
+					this.addItem(item);
+					needsSort = true;
+				}
+			} else {
+				this.removeItem(item, true, ev.batchMode);
+				// if we've removed it from the view, we should remove it from the reference
+				// list as well so it doesn't get resurrected via replenishment *unless*
+				// we're dealing with a canonical list (i.e. contacts)
+				if (ev.event != ZmEvent.E_MOVE || !this._controller._list.isCanonical) {
+					this._controller._list.remove(item);
+				}
 			}
+		}
+		if (needsSort) {
+			var col = Dwt.byId(this._currentColId);
+			var hdr = col && this.getItemFromElement(col);
+			if (hdr)
+				this._sortColumn(hdr, this._bSortAsc);
 		}
 		if (ev.batchMode) {
 			this._fixAlternation(0);

@@ -1006,9 +1006,10 @@ function(attrs) {
  * Assigns the organizer a new parent, moving it within its tree.
  *
  * @param {ZmOrganizer}		newParent		the new parent of this organizer
+ * @param {boolean}		noUndo			if true, action is not undoable
  */
 ZmOrganizer.prototype.move =
-function(newParent) {
+function(newParent, noUndo) {
 	var newId = (newParent.nId > 0)
 		? newParent.id
 		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
@@ -1021,10 +1022,10 @@ function(newParent) {
 	}
 
 	if (newId == ZmOrganizer.ID_TRASH) {
-		this._organizerAction({action: "trash"});
+		this._organizerAction({action: "trash", noUndo: noUndo});
 	}
 	else {
-		this._organizerAction({action: "move", attrs: {l: newId}});
+		this._organizerAction({action: "move", attrs: {l: newId}, noUndo: noUndo});
 	}
 };
 
@@ -1739,7 +1740,8 @@ function(params) {
 		}
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	}
-	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, params);
+	var undoLogElement = params.noUndo ? null : appCtxt.getActionStack().logAction({op: params.action, id: params.id || this.id, attrs: params.attrs});
+	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, undoLogElement]);
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
 	} else {
@@ -1762,7 +1764,10 @@ function(params) {
  * @private
  */
 ZmOrganizer.prototype._handleResponseOrganizerAction =
-function(params, result) {
+function(params, undoLogElement, result) {
+	if (undoLogElement) {
+		undoLogElement.setComplete();
+	}
 	if (params.callback) {
 		params.callback.run(result);
 	}
