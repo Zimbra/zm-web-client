@@ -155,6 +155,12 @@
 								<td class='LabelColName' width=75><$= ZmMsg.organizerLabel $></td>
 								<td class='LabelColValue'><$= data.invOrganizer $></td>
 							</tr>
+							<$ if (data.invSentBy) { $>
+								<tr>
+									<td class='LabelColName' width=75><$= ZmMsg.sentByLabel $></td>
+									<td class='LabelColValue'><$= data.invSentBy $></td>
+								</tr>
+							<$ } $>
 							<tr>
 								<td class='LabelColName'><$= data.counterInvMsg ? ZmMsg.proposedTimeLabel : ZmMsg.timeLabel $></td>
 								<td class='LabelColValue'>

@@ -273,6 +273,12 @@ function(subs, sentBy, sentByAddr) {
 	var org = new AjxEmailAddress(this._invite.getOrganizerEmail(), null, this._invite.getOrganizerName());
 	subs.invOrganizer = om ? om.findObjects(org, true, ZmObjectManager.EMAIL) : om.toString();
 
+	// sent-by
+	var sentBy = this._invite.getSentBy();
+	if (sentBy) {
+		subs.invSentBy = om ? om.findObjects(sentBy, true, ZmObjectManager.EMAIL) : sentBy.toString();
+	}
+
 	// inviteees
 	var str = [];
 	var j = 0;
