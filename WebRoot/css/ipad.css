@@ -714,6 +714,7 @@ a.accept,a.tentative,a.decline{
 .from-span a {
     color: black;
     text-decoration: none;
+	font-weight: bold;
 }
 
 .ConvOpen{
@@ -1177,7 +1178,7 @@ span.aleft > div:first-child, .contactHeader {
 	text-align: center;
 }
 
-.ZhCalMDOMT{
+.ZhCalMDOMT,.ZhCalMDHA{
 	background-color: #e5e5e5;
 	-webkit-border-radius: 6px;
 }
@@ -1186,8 +1187,26 @@ span.aleft > div:first-child, .contactHeader {
 		text-shadow: #FFFFFF 0px -1px;
 		color: brown;
 	}
+ 
+.zo_cal_listh{
+	background-color: #e5e5e5;
+	color: black;
+	font-weight: bold;
+	border-top: 2px double #e5e5e5;
+	border-bottom: 1px double #e5e5e5;
+}
 
+.zo_cal_listi_subject{
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    max-width:470px;
+}
 
+	.zo_cal_listi_subject a {
+	    color: black;
+	    font-weight: bold;
+	    text-decoration: none;
+	}
 
 
 /** Preference UI Styles **/   
