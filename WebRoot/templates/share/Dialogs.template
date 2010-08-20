@@ -368,8 +368,8 @@
 			<td id='${id}_email'></td>
 		</tr>
 		<tr>
-			<td width=50 align=right><$= ZmMsg.pathLabel $></td>
-			<td id='${id}_path'></td>
+			<td width=50 align=right><$= ZmMsg.folderLabel $></td>
+			<td id='${id}_folder'></td>
 		</tr>
 		<tr><td><br></td></tr>
 		<tr>
