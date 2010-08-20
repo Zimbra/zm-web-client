@@ -172,7 +172,7 @@ function(msg) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 
 	if ((ac.get(ZmSetting.CALENDAR_ENABLED) || ac.multiAccounts) &&
-		(invite && invite.type != "task"))
+		(invite && !invite.isEmpty() && invite.type != "task"))
 	{
 		if (!this._inviteMsgView) {
 			this._inviteMsgView = new ZmInviteMsgView({parent:this, mode:this._mode});
@@ -1041,6 +1041,7 @@ function(msg, container, callback) {
 		subs.reportBtnCellId = reportBtnCellId;
 		subs.isSyncFailureMsg = isSyncFailureMsg;
 		subs.additionalHdrs = additionalHdrs;
+		subs.isOutDated = invite && invite.isEmpty()
 	}
 
 	var template = (this._inviteMsgView && this._inviteMsgView.isActive())

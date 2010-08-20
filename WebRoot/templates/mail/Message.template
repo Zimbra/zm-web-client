@@ -3,84 +3,97 @@
 		<table class='MsgHeaderTable' id='${id}_headerElement'cellspacing=0 cellpadding=0 border=0 width=100%>
 			<tr>
 				<td>
-					<table cellspacing=0 cellpadding=0 border=0 width=100%>
-						<tr id='${hdrTableTopRowId}'>
-							<$ if (data.closeBtnCellId) { $>
-								<td>&nbsp;</td>
-								<td id='${closeBtnCellId}'></td>
-								<td>&nbsp;</td>
-							<$ } $>
-							<$ if (data.isSyncFailureMsg) { $>
-								<td>&nbsp;</td>
-								<td id='${reportBtnCellId}'></td>
-								<td>&nbsp;</td>
-							<$ } $>
-							<td class='LabelColValue SubjectCol' valign=top width=100%>
-								<$= data.subject $>
-							</td>
-							<td class='LabelColValue DateCol' align=right>${dateString}</td>
-							<td>&nbsp;</td>
-						</tr>
-					</table>
-					<table id='${hdrTableId}' cellspacing=0 cellpadding=1 border=0>
-						<tr id='${expandRowId}'>
-							<td>
-								<table align=right border=0 cellpadding=0 cellspacing=0>
-									<tr>
-										<td valign=top id='${expandHeaderId}' class='arrowbtn'></td>
-										<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
-									</tr>
-								</table>
-							</td>
-							<td class='LabelColValue' valign=top colspan=10>
-								<table border=0 cellpadding=0 cellspacing=0>
-									<tr>
-										<$ if (data.sentByIcon) { $>
-											<td valign=top>
-												<a href="javascript:;" onclick="ZmMailMsgView.contactIconCallback('<$=AjxStringUtil.xmlAttrEncode(data.sentByNormal)$>', '${sentByIcon}'); return false;">
-													<$= AjxImg.getImageHtml(data.sentByIcon, "cursor:pointer") $>
-												</a>
-											</td>
-											<td>&nbsp;</td>
-										<$ } $>
-										<td>${sentBy}&nbsp;&nbsp;</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-
-						<$ if (data.obo && (AjxStringUtil.stripTags(data.obo) != AjxStringUtil.stripTags(data.sentBy))) { // if Email zimlet is deployed. $>
-							<tr>
-								<td valign='top' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
-								<td class='LabelColValue' colspan=10><$= data.obo $></td>
-							</tr>
-						<$ } $>
-
-						<$ for (var i = 0; i < data.participants.length; i++) { $>
-							<tr>
-								<td class='LabelColName'>
-									<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.participants[i].prefix) $>
-								</td>
-								<td class='LabelColValue' colspan='10'><$= data.participants[i].partStr $></td>
-							</tr>
-						<$ } $>
-						<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
-							<tr>
-								<td valign='top' class='LabelColName'>
-									<$= data.additionalHdrs[i].hdrName $>
-								</td>
-								<td class='LabelColValue' colspan='10'>	
-									<$=  data.additionalHdrs[i].hdrVal $>
-								</td>
-							</tr>
-						<$ } $>
-					</table>
-
-					<$ if (data.hasAttachments) { $>
-						<div class="MessageHeaderAttachments" id="${attachId}_container">
-							<div id="${attachId}" style='overflow:auto;'></div>
+					<$ if (data.isOutDated) { $>
+						<div class="InviteOutDated">
+							<table border=0 cellpadding=0 cellspacing=0>
+								<tr>
+									<td><$= AjxImg.getImageHtml("Warning") $></td>
+									<td>&nbsp;</td>
+									<td><$= ZmMsg.inviteNotCurrent $></td>
+								</tr>
+							</table>
 						</div>
 					<$ } $>
+					<div class="ZmMailMsgViewDiv">
+						<table cellspacing=0 cellpadding=0 border=0 width=100%>
+							<tr id='${hdrTableTopRowId}'>
+								<$ if (data.closeBtnCellId) { $>
+									<td>&nbsp;</td>
+									<td id='${closeBtnCellId}'></td>
+									<td>&nbsp;</td>
+								<$ } $>
+								<$ if (data.isSyncFailureMsg) { $>
+									<td>&nbsp;</td>
+									<td id='${reportBtnCellId}'></td>
+									<td>&nbsp;</td>
+								<$ } $>
+								<td class='LabelColValue SubjectCol' valign=top width=100%>
+									<$= data.subject $>
+								</td>
+								<td class='LabelColValue DateCol' align=right>${dateString}</td>
+								<td>&nbsp;</td>
+							</tr>
+						</table>
+						<table id='${hdrTableId}' cellspacing=0 cellpadding=1 border=0>
+							<tr id='${expandRowId}'>
+								<td>
+									<table align=right border=0 cellpadding=0 cellspacing=0>
+										<tr>
+											<td valign=top id='${expandHeaderId}' class='arrowbtn'></td>
+											<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
+										</tr>
+									</table>
+								</td>
+								<td class='LabelColValue' valign=top colspan=10>
+									<table border=0 cellpadding=0 cellspacing=0>
+										<tr>
+											<$ if (data.sentByIcon) { $>
+												<td valign=top>
+													<a href="javascript:;" onclick="ZmMailMsgView.contactIconCallback('<$=AjxStringUtil.xmlAttrEncode(data.sentByNormal)$>', '${sentByIcon}'); return false;">
+														<$= AjxImg.getImageHtml(data.sentByIcon, "cursor:pointer") $>
+													</a>
+												</td>
+												<td>&nbsp;</td>
+											<$ } $>
+											<td>${sentBy}&nbsp;&nbsp;</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+
+							<$ if (data.obo && (AjxStringUtil.stripTags(data.obo) != AjxStringUtil.stripTags(data.sentBy))) { // if Email zimlet is deployed. $>
+								<tr>
+									<td valign='top' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
+									<td class='LabelColValue' colspan=10><$= data.obo $></td>
+								</tr>
+							<$ } $>
+
+							<$ for (var i = 0; i < data.participants.length; i++) { $>
+								<tr>
+									<td class='LabelColName'>
+										<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.participants[i].prefix) $>
+									</td>
+									<td class='LabelColValue' colspan='10'><$= data.participants[i].partStr $></td>
+								</tr>
+							<$ } $>
+							<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
+								<tr>
+									<td valign='top' class='LabelColName'>
+										<$= data.additionalHdrs[i].hdrName $>
+									</td>
+									<td class='LabelColValue' colspan='10'>
+										<$=  data.additionalHdrs[i].hdrVal $>
+									</td>
+								</tr>
+							<$ } $>
+						</table>
+
+						<$ if (data.hasAttachments) { $>
+							<div class="MessageHeaderAttachments" id="${attachId}_container">
+								<div id="${attachId}" style='overflow:auto;'></div>
+							</div>
+						<$ } $>
+					</div>
 				</td>
 				<td id='${id}_contactArea' class='ContactArea'>
 					<!-- Area reserved zimlets to add to message views. -->

@@ -464,7 +464,7 @@ td.DDSepInvisible div {
 	border-bottom: 1px solid #999999;
 }
 
-.ZmMailMsgView .InvHeaderDiv {
+.ZmMailMsgView .ZmMailMsgViewDiv, .ZmMailMsgView .InvHeaderDiv {
 	padding: 0px 10px;
 }
 
@@ -3974,12 +3974,12 @@ If you feel compelled to have a background color, please do so on a per skin lev
     text-align: right;
 }
 
-.InviteStatusAccept, .InviteStatusDecline, .InviteStatusTentative {
+.InviteStatusAccept, .InviteStatusDecline, .InviteStatusTentative, .InviteOutDated {
 	padding: 7px;
 	border-bottom: 1px solid #cccccc;
 }
 
-.InviteStatusAccept td, InviteStatusDecline td, InviteStatusTentative td {
+.InviteStatusAccept td, InviteStatusDecline td, InviteStatusTentative td, .InviteOutDated td {
 	font-size: 13px;
 }
 
@@ -3993,6 +3993,10 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .InviteStatusTentative {
 	background-color: #FFFFCC;
+}
+
+.InviteOutDated {
+	background-color:@lighten(AppC,90)@;
 }
 
 .ZmEditContactViewDetailsButton {

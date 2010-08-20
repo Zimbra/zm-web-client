@@ -18,26 +18,24 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view, readonly
 
 	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
 
+	this._isReadOnly = readonly;
+
 	// BEGIN LIST-RELATED
-	if (!readonly) {
-		this._setMouseEventHdlrs();
-	}
+	this._setMouseEventHdlrs();
 	this.setCursor("default");
 
-	if (!readonly) {
-		this._listenerMouseOver = new AjxListener(this, ZmCalBaseView.prototype._mouseOverListener);
-		this._listenerMouseOut = new AjxListener(this, ZmCalBaseView.prototype._mouseOutListener);
-		this._listenerMouseDown = new AjxListener(this, ZmCalBaseView.prototype._mouseDownListener);
-		this._listenerMouseUp = new AjxListener(this, ZmCalBaseView.prototype._mouseUpListener);
-		this._listenerMouseMove = new AjxListener(this, ZmCalBaseView.prototype._mouseMoveListener);
-		this._listenerDoubleClick = new AjxListener(this, ZmCalBaseView.prototype._doubleClickListener);
-		this.addListener(DwtEvent.ONMOUSEOVER, this._listenerMouseOver);
-		this.addListener(DwtEvent.ONMOUSEOUT, this._listenerMouseOut);
-		this.addListener(DwtEvent.ONMOUSEDOWN, this._listenerMouseDown);
-		this.addListener(DwtEvent.ONMOUSEUP, this._listenerMouseUp);
-		this.addListener(DwtEvent.ONMOUSEMOVE, this._listenerMouseMove);
-		this.addListener(DwtEvent.ONDBLCLICK, this._listenerDoubleClick);
-	}
+	this._listenerMouseOver = new AjxListener(this, ZmCalBaseView.prototype._mouseOverListener);
+	this._listenerMouseOut = new AjxListener(this, ZmCalBaseView.prototype._mouseOutListener);
+	this._listenerDoubleClick = new AjxListener(this, ZmCalBaseView.prototype._doubleClickListener);
+	this._listenerMouseDown = new AjxListener(this, ZmCalBaseView.prototype._mouseDownListener);
+	this._listenerMouseUp = new AjxListener(this, ZmCalBaseView.prototype._mouseUpListener);
+	this._listenerMouseMove = new AjxListener(this, ZmCalBaseView.prototype._mouseMoveListener);
+	this.addListener(DwtEvent.ONMOUSEOVER, this._listenerMouseOver);
+	this.addListener(DwtEvent.ONMOUSEOUT, this._listenerMouseOut);
+	this.addListener(DwtEvent.ONDBLCLICK, this._listenerDoubleClick);
+	this.addListener(DwtEvent.ONMOUSEDOWN, this._listenerMouseDown);
+	this.addListener(DwtEvent.ONMOUSEUP, this._listenerMouseUp);
+	this.addListener(DwtEvent.ONMOUSEMOVE, this._listenerMouseMove);
 
 	this._controller = controller;
 	this.view = view;	
@@ -291,6 +289,8 @@ function(elem, attr) {
 
 ZmCalBaseView.prototype._mouseDownListener = 
 function(ev) {
+	if (this._isReadOnly) { return; }
+
 	var div = this.getTargetItemDiv(ev);
 	if (!div) {
 		return this._mouseDownAction(ev, div);

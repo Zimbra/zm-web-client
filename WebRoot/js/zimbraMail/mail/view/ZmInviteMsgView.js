@@ -54,20 +54,18 @@ function() {
 		this._counterToolbar.setDisplay(Dwt.DISPLAY_NONE);
 	}
 
-	if (this._openToolbar) {
-		this._openToolbar.setDisplay(Dwt.DISPLAY_NONE);
-	}
-
 	if (this._dayView) {
 		this._dayView.setDisplay(Dwt.DISPLAY_NONE);
 	}
+
+	this._isActionedInvite = false;
 };
 
 ZmInviteMsgView.prototype.isActive =
 function() {
 	return ((this._inviteToolbar && this._inviteToolbar.getVisible()) ||
 			(this._counterToolbar && this._counterToolbar.getVisible()) ||
-			(this._openToolbar && this._openToolbar.getVisible()));
+			this._isActionedInvite);
 };
 
 ZmInviteMsgView.prototype.set =
@@ -75,8 +73,7 @@ function(msg) {
 	this._msg = msg;
 	var invite = this._invite = msg.invite;
 
-	if (!invite.isEmpty() &&
-		invite.hasAcceptableComponents() &&
+	if (invite.hasAcceptableComponents() &&
 		msg.folderId != ZmFolder.ID_TRASH &&
 		msg.folderId != ZmFolder.ID_SENT)
 	{
@@ -149,15 +146,11 @@ function(msg) {
 			this._inviteMoveLabel.setVisible(visible);
 			this._inviteMoveSelect.setVisible(visible);
 		}
-		else {
-			var att = this._invite.getAttendees();
-			if (att.length > 0 && att[0].ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION) {
-				if (!this._openToolbar) {
-					this._openToolbar = this._getOpenToolbar();
-				}
-				this._openToolbar.reparentHtmlElement(this.parent.getHtmlElement());
-				this._openToolbar.setVisible(Dwt.DISPLAY_BLOCK);
-			}
+
+		// is this an invite that was accepted|declined|tentative?
+		var att = this._invite.getAttendees();
+		if (att.length > 0 && att[0].ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION) {
+			this._isActionedInvite = true;
 		}
 	}
 };
@@ -177,6 +170,7 @@ function() {
 			// create a new ZmCalDayView under msgview's parent otherwise, we
 			// cannot position the day view correctly.
 			this._dayView = new ZmCalDayView(this.parent.parent, DwtControl.ABSOLUTE_STYLE, cc, null, null, null, true);
+			this._dayView.addSelectionListener(new AjxListener(this, this._apptSelectionListener));
 		}
 
 		var inviteDate = this._invite.getServerStartDate();
@@ -242,15 +236,14 @@ function(subs, sentBy, sentByAddr) {
 	subs.invite = this._invite;
 
 	// counter proposal
-	if ((this._invite.type != "task") && this._invite.hasCounterMethod() &&
+	if (this._invite.hasCounterMethod() &&
 		this._msg.folderId != ZmFolder.ID_SENT)
 	{
 		subs.counterInvMsg = AjxMessageFormat.format(ZmMsg.counterInviteMsg, [(sentBy && sentBy.name ) ? sentBy.name : sentByAddr]);
 		subs.newProposedTime = this._invite.getProposedTimeStr();
 	}
-
 	// is this an action'ed invite?
-	if (this._openToolbar && this._openToolbar.getVisible()) {
+	else if (this._isActionedInvite) {
 		var attendee = this._invite.getAttendees()[0];
 		var ptst = attendee && attendee.ptst;
 		if (ptst) {
@@ -393,27 +386,6 @@ function() {
 	return tb;
 };
 
-ZmInviteMsgView.prototype._getOpenToolbar =
-function() {
-	var params = {
-		parent: this.parent,
-		buttons: [ZmOperation.OPEN_APPT],
-		posStyle: DwtControl.STATIC_STYLE,
-		className: "ZmInviteToolBar",
-		buttonClassName: "DwtToolbarButton",
-		context: this.mode,
-		toolbarType: ZmId.TB_COUNTER
-	};
-	var tb = new ZmButtonToolBar(params);
-
-	var listener = new AjxListener(this, this._inviteToolBarListener);
-	for (var i = 0; i < tb.opList.length; i++) {
-		tb.addSelectionListener(tb.opList[i], listener);
-	}
-
-	return tb;
-};
-
 ZmInviteMsgView.prototype._inviteToolBarListener =
 function(ev) {
 	ev._inviteReplyType = ev.item.getData(ZmOperation.KEY_ID);
@@ -429,3 +401,18 @@ function(invitedHour, list, skipMiniCalUpdate, query) {
 	this._dayView._scrollToTime(invitedHour);
 };
 
+ZmInviteMsgView.prototype._apptSelectionListener =
+function(ev) {
+	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
+		var appt = ev.item;
+		if (appt.isPrivate() && appt.getFolder().isRemote() && !appt.getFolder().hasPrivateAccess()) {
+			var msgDialog = appCtxt.getMsgDialog();
+			msgDialog.setMessage(ZmMsg.apptIsPrivate, DwtMessageDialog.INFO_STYLE);
+			msgDialog.popup();
+		} else {
+			// open a appointment view
+			var cc = AjxDispatcher.run("GetCalController");
+			cc._showAppointmentDetails(appt);
+		}
+	}
+};

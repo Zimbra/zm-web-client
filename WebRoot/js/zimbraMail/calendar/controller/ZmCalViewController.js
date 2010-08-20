@@ -2386,7 +2386,7 @@ function(ev) {
 			// open a appointment view
 			this._apptIndexShowing = this._list.indexOf(appt);
 			this._apptFromView = this._viewMgr.getCurrentView();
-			this._showAppointmentDetails(ev.item);
+			this._showAppointmentDetails(appt);
 		}
 	}
 };

@@ -37,13 +37,13 @@ ZmMailListController = function(container, mailApp) {
 	ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_DECLINE]		= ZmOperation.REPLY_DECLINE;
 	ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_TENTATIVE]	= ZmOperation.REPLY_TENTATIVE;
 
-    ZmMailListController.REPLY_ACTION_MAP = {};
-    ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_ACCEPT_NOTIFY]		= ZmOperation.REPLY_ACCEPT;
-    ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_ACCEPT_IGNORE]		= ZmOperation.REPLY_ACCEPT;
-    ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_DECLINE_NOTIFY]		= ZmOperation.REPLY_DECLINE;
-    ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_DECLINE_IGNORE]		= ZmOperation.REPLY_DECLINE;
-    ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE_NOTIFY]	= ZmOperation.REPLY_TENTATIVE;
-    ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE_IGNORE]	= ZmOperation.REPLY_TENTATIVE;
+	ZmMailListController.REPLY_ACTION_MAP = {};
+	ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_ACCEPT_NOTIFY]		= ZmOperation.REPLY_ACCEPT;
+	ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_ACCEPT_IGNORE]		= ZmOperation.REPLY_ACCEPT;
+	ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_DECLINE_NOTIFY]		= ZmOperation.REPLY_DECLINE;
+	ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_DECLINE_IGNORE]		= ZmOperation.REPLY_DECLINE;
+	ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE_NOTIFY]	= ZmOperation.REPLY_TENTATIVE;
+	ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE_IGNORE]	= ZmOperation.REPLY_TENTATIVE;
 
 	// convert key mapping to operation
 	ZmMailListController.ACTION_CODE_TO_OP = {};
@@ -797,13 +797,13 @@ function(params) {
 		}
 	}
 
-    if(action == ZmOperation.DRAFT){
-        var bp = msg.getBodyPart();
-        if(bp && bp.truncated){
-            params.noTruncate = true;
-            params.forceLoad = true;
-        }
-    }
+	if (action == ZmOperation.DRAFT) {
+		var bp = msg.getBodyPart();
+		if (bp && bp.truncated) {
+			params.noTruncate = true;
+			params.forceLoad = true;
+		}
+	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, params);
 	// TODO: pointless to load msg when forwarding as att
@@ -823,16 +823,16 @@ function(params, msg) {
 	var action = params.action;
 	if (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE) {
 
-        // bug 43428 - invitation should be forwarded using apt forward view
-        if(msg.isInvite()) {
-            var ac = window.parentAppCtxt || window.appCtxt;
-            var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
-            controller.forwardInvite(msg);
-            if(appCtxt.isChildWindow) {
-                window.close();
-            }
-            return;
-        }
+		// bug 43428 - invitation should be forwarded using apt forward view
+		if (msg.isInvite()) {
+			var ac = window.parentAppCtxt || window.appCtxt;
+			var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
+			controller.forwardInvite(msg);
+			if (appCtxt.isChildWindow) {
+				window.close();
+			}
+			return;
+		}
 
 		// reset the action if user is forwarding multiple mail items inline
 		var cview = this._listView[this._currentView];
@@ -867,9 +867,9 @@ function(params, msg) {
 	} else if (appCtxt.isOffline && action == ZmOperation.DRAFT) {
 		var folder = appCtxt.getById(msg.folderId);
 		params.accountName = folder && folder.getAccount().name;
-	}else if(action == ZmOperation.DECLINE_PROPOSAL) {
-        params.subjOverride = this._getInviteReplySubject(action) + msg.subject;
-    }
+	} else if(action == ZmOperation.DECLINE_PROPOSAL) {
+		params.subjOverride = this._getInviteReplySubject(action) + msg.subject;
+	}
 
 	params.msg = msg;
 	AjxDispatcher.run("Compose", params);
@@ -942,9 +942,6 @@ function(ev) {
 	}
 	else if (type == ZmOperation.DECLINE_PROPOSAL) {
 		this._declineProposedTime(ev._inviteComponentId, ev._msg);
-	}
-	else if (type == ZmOperation.OPEN_APPT) {
-		this._openAppt(ev._inviteComponentId, ev._msg);
 	}
 	else if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
 			type == ZmOperation.EDIT_REPLY_CANCEL ||
@@ -1212,14 +1209,14 @@ function(type, instanceDate, isResourceInvite) {
 			case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyTentativeInstanceMessage; break;
 		}
 
-        if(isResourceInvite) {
-            switch (type) {
-                case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyResourceAcceptInstanceMessage; break;
-                case ZmOperation.REPLY_CANCEL:		replyBody = ZmMsg.apptInstanceCanceled; break;
-                case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyResourceDeclineInstanceMessage; break;
-                case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyResourceTentativeInstanceMessage; break;
-            }
-        }
+		if (isResourceInvite) {
+			switch (type) {
+				case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyResourceAcceptInstanceMessage; break;
+				case ZmOperation.REPLY_CANCEL:		replyBody = ZmMsg.apptInstanceCanceled; break;
+				case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyResourceDeclineInstanceMessage; break;
+				case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyResourceTentativeInstanceMessage; break;
+			}
+		}
 
 		if (replyBody) {
 			return AjxMessageFormat.format(replyBody, instanceDate);
@@ -1228,21 +1225,21 @@ function(type, instanceDate, isResourceInvite) {
 	switch (type) {
 		case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyAcceptMessage; break;
 		case ZmOperation.REPLY_CANCEL:		replyBody = ZmMsg.apptCanceled; break;
-        case ZmOperation.DECLINE_PROPOSAL:  replyBody = ""; break;
+		case ZmOperation.DECLINE_PROPOSAL:  replyBody = ""; break;
 		case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyDeclineMessage; break;
 		case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyTentativeMessage; break;
 		case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
 	}
 
-    if(isResourceInvite) {
-        switch (type) {
-            case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyResourceAcceptMessage; break;
-            case ZmOperation.REPLY_CANCEL:		replyBody = ZmMsg.apptCanceled; break;
-            case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyResourceDeclineMessage; break;
-            case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyResourceTentativeMessage; break;
-            case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
-        }
-    }
+	if (isResourceInvite) {
+		switch (type) {
+			case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyResourceAcceptMessage; break;
+			case ZmOperation.REPLY_CANCEL:		replyBody = ZmMsg.apptCanceled; break;
+			case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyResourceDeclineMessage; break;
+			case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyResourceTentativeMessage; break;
+			case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
+		}
+	}
 
 	//format the escaped apostrophe in ZmMsg entry
 	if (replyBody) {
@@ -1272,32 +1269,27 @@ function(action, componentId, instanceDate, accountName, acceptFolderId) {
 
 ZmMailListController.prototype._acceptProposedTime =
 function(componentId, origMsg) {
-    var invite = origMsg.invite;
-    var apptId = invite.getAppointmentId();
-    var ac = window.parentAppCtxt || window.appCtxt;
-    var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
-    var callback = new AjxCallback(this, this._handleAcceptDeclineProposedTime, [origMsg]);
-    controller.acceptProposedTime(apptId, invite, appCtxt.isChildWindow ? null : callback);
-    if (appCtxt.isChildWindow) {
-        window.close();
-    }
+	var invite = origMsg.invite;
+	var apptId = invite.getAppointmentId();
+	var ac = window.parentAppCtxt || window.appCtxt;
+	var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
+	var callback = new AjxCallback(this, this._handleAcceptDeclineProposedTime, [origMsg]);
+	controller.acceptProposedTime(apptId, invite, appCtxt.isChildWindow ? null : callback);
+	if (appCtxt.isChildWindow) {
+		window.close();
+	}
 };
 
 ZmMailListController.prototype._declineProposedTime =
 function(componentId, origMsg) {
-    var replyBody = this._getInviteReplyBody(ZmOperation.DECLINE_PROPOSAL, null);
-    var callback = new AjxCallback(this, this._handleAcceptDeclineProposedTime, [origMsg]);
-    this._doAction({action:ZmOperation.DECLINE_PROPOSAL, extraBodyText:replyBody, instanceDate:null, sendMsgCallback: callback});    
-};
-
-ZmMailListController.prototype._openAppt =
-function(componentId, origMsg) {
-	// todo
+	var replyBody = this._getInviteReplyBody(ZmOperation.DECLINE_PROPOSAL);
+	var callback = new AjxCallback(this, this._handleAcceptDeclineProposedTime, [origMsg]);
+	this._doAction({action:ZmOperation.DECLINE_PROPOSAL, extraBodyText:replyBody, instanceDate:null, sendMsgCallback: callback});
 };
 
 ZmMailListController.prototype._handleAcceptDeclineProposedTime =
 function(origMsg) {
-    this._doDelete([origMsg]);    
+	this._doDelete([origMsg]);
 };
 
 ZmMailListController.prototype._sendInviteReply =
@@ -1310,10 +1302,10 @@ function(type, componentId, instanceDate, accountName, ignoreNotifyDlg, origMsg,
 	msg.isReplied = true;
 	msg.isForwarded = false;
 	msg.isInviteReply = true;
-    msg.acceptFolderId = acceptFolderId;
-    msg.folderId = msg._origMsg.folderId; 
+	msg.acceptFolderId = acceptFolderId;
+	msg.folderId = msg._origMsg.folderId;
 
-    var replyActionMode = ZmMailListController.REPLY_ACTION_MAP[type] ? ZmMailListController.REPLY_ACTION_MAP[type] : type;
+	var replyActionMode = ZmMailListController.REPLY_ACTION_MAP[type] ? ZmMailListController.REPLY_ACTION_MAP[type] : type;
 	var replyBody = this._getInviteReplyBody(replyActionMode, instanceDate, msg._origMsg.isResourceInvite());
 	if (replyBody != null) {
 		var dummyAppt = new ZmAppt();
@@ -1388,22 +1380,22 @@ function(ev, callback) {
 
 ZmMailListController.prototype._printListener =
 function(ev) {
-    var listView = this._listView[this._currentView];
-    var items = listView.getSelection();
-    items = AjxUtil.toArray(items);
-    var ids = [];
-    var showImages = false;
-    for (var i = 0; i < items.length; i++) {
-        var item = items[i];
-        // always extract out the msg ids from the conv
-        if (item.toString() == "ZmConv") {
-            // get msg ID in case of virtual conv.
-            // item.msgIds.length is inconsistent, so checking if conv id is negative.
-            if(appCtxt.isOffline && item.id.split(":")[1]<0){
-                ids.push(item.msgIds[0]);
-            }else{
-                ids.push("C:"+item.id);
-            }
+	var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
+	items = AjxUtil.toArray(items);
+	var ids = [];
+	var showImages = false;
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		// always extract out the msg ids from the conv
+		if (item.toString() == "ZmConv") {
+			// get msg ID in case of virtual conv.
+			// item.msgIds.length is inconsistent, so checking if conv id is negative.
+			if (appCtxt.isOffline && item.id.split(":")[1]<0) {
+				ids.push(item.msgIds[0]);
+			} else {
+				ids.push("C:"+item.id);
+			}
 			if (item instanceof ZmConv) {
 				var msgList = item.getMsgList();
 				for(var j=0; j<msgList.length; j++) {
@@ -1413,18 +1405,18 @@ function(ev) {
 					}
 				}
 			}
-        } else {
-            ids.push(item.id);
-            if (item.showImages) {
-                showImages = true;
-            }
-        }
-    }
-    var url = ("/h/printmessage?id=" + ids.join(","));
-    if(appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages){
-       url = url+"&xim=1";
-    }
-    window.open(appContextPath+url, "_blank");
+		} else {
+			ids.push(item.id);
+			if (item.showImages) {
+				showImages = true;
+			}
+		}
+	}
+	var url = ("/h/printmessage?id=" + ids.join(","));
+	if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages) {
+		url = url+"&xim=1";
+	}
+	window.open(appContextPath+url, "_blank");
 };
 
 ZmMailListController.prototype._editListener =
