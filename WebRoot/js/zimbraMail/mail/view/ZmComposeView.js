@@ -2232,7 +2232,7 @@ function(templateId, data) {
 	this._identityDivId = data.identityRowId;
 
 	// init autocomplete list
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.isOffline) {
 		var params = {
 			parent: appCtxt.getShell(),
 			dataClass: appCtxt.getAutocompleter(),
@@ -2281,7 +2281,7 @@ function(templateId, data) {
 				button.addrType = type;
 
 				// autocomplete-related handlers
-				if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+				if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.isOffline) {
 					this._acAddrSelectList.handle(this._field[type]);
 				} else {
 					this._setEventHandler(this._fieldId[type], "onKeyUp");
