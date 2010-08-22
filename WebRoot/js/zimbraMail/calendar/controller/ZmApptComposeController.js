@@ -43,6 +43,8 @@ function() {
 	return "ZmApptComposeController";
 };
 
+ZmApptComposeController._VALUE = "value";
+
 // Public methods
 
 ZmApptComposeController.prototype.show =
@@ -112,6 +114,11 @@ ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
 	var appt = this._composeView.getAppt(attId);
 	if (appt) {
+
+        if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
+            appt.setRsvp(this._requestResponses.getChecked());
+            appt.setMailNotificationOption(this._sendNotificationMail.getChecked());
+        }
 
         if(appt.isProposeTime && !appt.isOrganizer()) {
             return this.sendCounterAppointmentRequest(appt);
@@ -221,6 +228,41 @@ function(attId) {
 	}
 
 	return false;
+};
+
+ZmApptComposeController.prototype._createToolBar =
+function() {
+
+    ZmCalItemComposeController.prototype._createToolBar.call(this);
+
+    var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+    var m = new DwtMenu({parent:optionsButton});
+    optionsButton.setMenu(m);
+
+    var mi = this._requestResponses = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
+    mi.setText(ZmMsg.requestResponses);
+    mi.setChecked(true, true);
+
+    mi = this._sendNotificationMail = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
+    mi.setText(ZmMsg.sendNotificationMail);
+    mi.setChecked(true, true);
+
+	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
+};
+
+ZmApptComposeController.prototype.setRequestResponses =
+function(requestResponses) {
+   this._requestResponses.setChecked(requestResponses);
+};
+
+ZmApptComposeController.prototype.getRequestResponses =
+function() {
+   return this._requestResponses.getChecked();
+};
+
+ZmApptComposeController.prototype.setNotificationMail =
+function(sendNotificationMail) {
+   this._sendNotificationMail.setChecked(sendNotificationMail);
 };
 
 ZmApptComposeController.prototype.getNotifyList =

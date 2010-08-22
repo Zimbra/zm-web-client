@@ -263,8 +263,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 	}
 
 
-	var len = folderSelect.size();
-	Dwt.setVisible(folderRow, len > 1);
+    //todo: new ui hide folder select if there is only one folder
 };
 
 /*

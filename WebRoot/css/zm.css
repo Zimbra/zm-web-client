@@ -1243,6 +1243,15 @@ line-height:normal;
 	@SeparatorBg@
 }
 
+/* Separator between details and notes section of the calendar compose view*/
+.calendar_edit_view_separator {
+	@BottomSeparator@
+}
+
+.calendar_edit_field {
+    font-weight: bold;
+}
+
 /* container for the hour labels of the day grid */
 .calendar_hour_scroll {
 	position:absolute;
@@ -1819,7 +1828,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSchedulerGridHeaderTable {
 	position:relative;
 	left:-13px;
-	top:4px;
+	top:0px;
 }
 
 .ZmSchedulerGridHeaderCell {
@@ -1854,11 +1863,21 @@ HTML>BODY .appt-selected .appt_allday_body
 	@InactiveCursor@
 }
 
+/* "All attendees" label */
+.ZmSchedulerAllLabel {
+	@NoWrap@
+	@Text-disabled@
+	font-weight: bold;
+	text-align: center;
+	@InactiveCursor@
+}
+
 /* input field for f/b attendees */
 .ZmSchedulerInput {
 	@FullSize@
 	border: 0px;
 	padding-top: 3px;
+    height: 22px;
 }
 
 .ZmSchedulerInputDisabled {
@@ -1903,7 +1922,6 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmSchedulerGridDiv-halfHour {
-	@RightSeparator-light@
 }
 
 .ZmSchedulerGridDiv-start {

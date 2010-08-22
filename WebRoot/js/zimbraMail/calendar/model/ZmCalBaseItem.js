@@ -74,6 +74,10 @@ function() {
  */
 ZmCalBaseItem.PERSON				= "PERSON";
 /**
+ * Defines the "optional person" resource type.
+ */
+ZmCalBaseItem.OPTIONAL_PERSON		= "OPT_PERSON";
+/**
  * Defines the "location" resource type.
  */
 ZmCalBaseItem.LOCATION				= "LOCATION";

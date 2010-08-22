@@ -408,7 +408,11 @@ function(calItem, mode, firstTime) {
     if(forwardOptions) Dwt.setVisible(forwardOptions, this._isForward || this._isProposeTime);
 
     var reminderOptions = document.getElementById(this._htmlElId + "_reminder_options");
-    if(reminderOptions) Dwt.setVisible(reminderOptions, !this._isForward && !this._isProposeTime);
+    if(reminderOptions) {
+        var enableReminder = !this._isForward && !this._isProposeTime;
+        this._reminderSelectInput.setEnabled(enableReminder);
+        this._reminderButton.setEnabled(enableReminder);
+    }
 
 	// if first time reset'ing, delay saving form value since all widgets
 	// (i.e. html editor) may not have finished initializing yet.
@@ -649,7 +653,7 @@ function(width) {
 	};
 	this._subjectField = new DwtInputField(params);
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), width, "22px");
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
 
 	// CalItem folder DwtSelect
 	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});

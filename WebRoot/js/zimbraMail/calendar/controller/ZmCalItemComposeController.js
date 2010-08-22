@@ -246,6 +246,24 @@ function(skipNotify, composeMode) {
 	}
 };
 
+ZmCalItemComposeController.prototype.setOptionsBtnItem =
+function(skipNotify, composeMode) {
+	var mode;
+	if (composeMode) {
+		mode = composeMode;
+	} else {
+		var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+		var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+		mode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
+			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+	}
+
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	if (formatBtn) {
+		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
+	}
+};
+
 // Private / Protected methods
 
 
@@ -301,6 +319,7 @@ function() {
 		buttons.push(ZmOperation.SPELL_CHECK);
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
+	buttons.push(ZmOperation.COMPOSE_OPTIONS);
 
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this.viewId, controller:this});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
