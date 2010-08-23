@@ -1167,12 +1167,12 @@ function() {
 	return (ctlr && ctlr.getList) ? ctlr.getList() : this._list ? this._list : null;
 };
 
-ZmAppCtxt.prototype.getActionStack =
+ZmAppCtxt.prototype.getActionController =
 function() {
-	if (!this._actionStack) {
-		this._actionStack = new ZmActionStack();
+	if (!this._actionController) {
+		this._actionController = new ZmActionController();
 	}
-	return this._actionStack;
+	return this._actionController;
 };
 
 /**

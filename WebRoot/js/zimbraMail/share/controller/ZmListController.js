@@ -1899,7 +1899,7 @@ function(params, actionParams) {
 			params.allDoneCallback.run();
 		}
 
-		ZmList.killProgressDialog(actionParams.actionSummary);
+		ZmList.killProgressDialog(actionParams.actionSummary, actionParams.actionLogItem);
 	}
 };
 

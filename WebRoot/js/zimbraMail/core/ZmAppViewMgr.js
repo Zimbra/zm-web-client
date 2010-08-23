@@ -1029,11 +1029,15 @@ function(view, force, isNewView) {
 			callback.run(view, isNewView);
 		}
 	}
-    
-    //bug:47048 removed param {noChildWindow:true}
-	appCtxt.notifyZimlets("onShowView", [view, isNewView]);
-
+	this._onShowView(view, force, isNewView);
 	return okToContinue;
+};
+
+ZmAppViewMgr.prototype._onShowView =
+function(view, force, isNewView) {
+	appCtxt.getActionController().dismiss();
+	//bug:47048 removed param {noChildWindow:true}
+	appCtxt.notifyZimlets("onShowView", [view, isNewView]);
 };
 
 /**

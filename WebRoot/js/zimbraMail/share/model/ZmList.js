@@ -466,11 +466,10 @@ function(params) {
  * @param	{AjxCallback}	params.callback			the callback to run after each sub-request
  * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
  * @param	{int}			params.count			the starting count for number of items processed
- * @param	{boolean}		params.noUndo			true if the action is not undoable
+ * @param	{boolean}		params.undoing			true if the action is performed as an undo (different result text and not undoable)
  */
 ZmList.prototype.moveItems =
 function(params) {
-
 	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback"]);
 
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
@@ -481,12 +480,10 @@ function(params) {
 	params1.items = AjxUtil.toArray(params.items);
 	params1.attrs = params.attrs || {};
 	if (params1.folder.id == ZmFolder.ID_TRASH) {
-		if (params1.items.length > 1) {
-			params1.actionText = ZmMsg.actionTrash;
-		}
+		params1.actionText = params.actionText || ZmMsg.actionTrash;
 		params1.action = "trash";
 	} else {
-		params1.actionText = ZmMsg.actionMove;
+		params1.actionText = params.actionText || ZmMsg.actionMove;
 		params1.actionArg = params.folder.getName(false, false, true);
 		params1.action = "move";
 		params1.attrs.l = params.folder.id;
@@ -779,16 +776,17 @@ function(items, folderId) {
 /**
  * Performs an action on items via a SOAP request.
  *
- * @param {Hash}	params			a hash of parameters
- * @param	{Array}	params.items				a list of items to act upon
+ * @param {Hash}		params				a hash of parameters
+ * @param	{Array}		params.items			a list of items to act upon
  * @param	{String}	params.action			the SOAP operation
- * @param	{Object}	params.attrs				a hash of additional attrs for SOAP request
+ * @param	{Object}	params.attrs			a hash of additional attrs for SOAP request
  * @param	{AjxCallback}	params.callback			the async callback
  * @param	{AjxCallback}	params.finalCallback		the callback to run after all items have been processed
  * @param	{AjxCallback}	params.errorCallback		the async error callback
  * @param	{String}	params.accountName		the account to send request on behalf of
- * @param	{int}	params.count				the starting count for number of items processed
- * @param {ZmBatchCommand}	batchCmd			if set, request data is added to batch request
+ * @param	{int}		params.count			the starting count for number of items processed
+ * @param	{ZmBatchCommand}batchCmd			if set, request data is added to batch request
+ * @param	{boolean}	params.undoing			true if the action is performed as an undo (not undoable)
  */
 ZmList.prototype._itemAction =
 function(params, batchCmd) {
@@ -844,23 +842,24 @@ function(params, batchCmd) {
 		}
 	}
 
-	var undoLogElement = params.noUndo ? null : appCtxt.getActionStack().logAction({op: params.action, ids: idList, attrs: params.attrs});
-	var respCallback = new AjxCallback(this, this._handleResponseItemAction, [params.callback, undoLogElement]);
+	var actionLogItem = params.undoing ? null : appCtxt.getActionController().actionPerformed({op: params.action, ids: idList, attrs: params.attrs});
+	var respCallback = new AjxCallback(this, this._handleResponseItemAction, [params.callback, actionLogItem]);
 
 	var params1 = {
 		ids:			idList,
 		idHash:			idHash,
-		accountName:	params.accountName,
+		accountName:		params.accountName,
 		request:		request,
 		action:			action,
 		type:			type,
 		callback:		respCallback,
-		finalCallback:	params.finalCallback,
-		errorCallback:	params.errorCallback,
+		finalCallback:		params.finalCallback,
+		errorCallback:		params.errorCallback,
 		batchCmd:		batchCmd,
 		numItems:		params.count || 0,
-        actionText:		params.actionText,
-        actionArg:      params.actionArg
+		actionText:		params.actionText,
+		actionArg:		params.actionArg,
+		actionLogItem:		actionLogItem
 	};
 
 	var dialog = ZmList.progressDialog;
@@ -878,9 +877,9 @@ function(params, batchCmd) {
  * @private
  */
 ZmList.prototype._handleResponseItemAction =
-function(callback, undoLogElement, items, result) {
-	if (undoLogElement) {
-		undoLogElement.setComplete();
+function(callback, actionLogItem, items, result) {
+	if (actionLogItem) {
+		actionLogItem.setComplete();
 	}
 	
 	if (callback) {
@@ -970,7 +969,7 @@ function(params, result) {
 			params.finalCallback.run(params);
 		} else {
 			DBG.println("sa", "no final callback");
-			ZmList.killProgressDialog(params.actionSummary);
+			ZmList.killProgressDialog(params.actionSummary, params.actionLogItem);
 		}
 	}
 };
@@ -981,7 +980,7 @@ function(params, result) {
  * @param {String}	summary		the text that summarizes the recent action
  */
 ZmList.killProgressDialog =
-function(summary) {
+function(summary, action) {
 
 	DBG.println("sa", "kill progress dialog");
 	var dialog = ZmList.progressDialog;
@@ -991,14 +990,19 @@ function(summary) {
 		ZmList.progressDialog = null;
 	}
 	if (summary) {
-		appCtxt.setStatusMsg(summary);
+		var undoLink = action && appCtxt.getActionController().getUndoLink(action);
+		if (undoLink) {
+			appCtxt.setStatusMsg({msg: summary+" "+undoLink, transitions: appCtxt.getActionController().getStatusTransitions()});
+		} else {
+			appCtxt.setStatusMsg(summary);
+		}
 	}
 };
 
 ZmList.getActionSummary =
 function(text, num, type, arg) {
     var typeText = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
-    return AjxMessageFormat.format(text, [num, typeText, arg]);
+	return AjxMessageFormat.format(text, [num, typeText, arg]);
 };
 
 /**

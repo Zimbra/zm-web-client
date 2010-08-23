@@ -26,8 +26,9 @@ AjxPackage.require("zimbraMail.share.model.ZmSettings");
 AjxPackage.require("zimbraMail.share.model.ZmMetaData");
 AjxPackage.require("zimbraMail.share.model.ZmKeyMap");
 AjxPackage.require("zimbraMail.share.model.ZmTimezone");
-AjxPackage.require("zimbraMail.share.model.ZmActionStack");
 AjxPackage.require("zimbraMail.share.model.ZmItem");
+AjxPackage.require("zimbraMail.share.model.ZmActionStack");
+AjxPackage.require("zimbraMail.share.model.ZmAction");
 AjxPackage.require("zimbraMail.share.model.ZmOrganizer");
 AjxPackage.require("zimbraMail.share.model.ZmFolder");
 AjxPackage.require("zimbraMail.share.model.ZmSearchFolder");
@@ -72,6 +73,7 @@ AjxPackage.require("zimbraMail.share.controller.ZmFolderTreeController");
 AjxPackage.require("zimbraMail.share.controller.ZmSearchTreeController");
 AjxPackage.require("zimbraMail.share.controller.ZmOverviewController");
 AjxPackage.require("zimbraMail.share.controller.ZmSearchController");
+AjxPackage.require("zimbraMail.share.controller.ZmActionController");
 
 AjxPackage.require("zimbraMail.im.model.ZmRoster");
 AjxPackage.require("zimbraMail.im.view.ZmImOverview");

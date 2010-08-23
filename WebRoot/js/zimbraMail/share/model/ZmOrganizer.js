@@ -1006,10 +1006,10 @@ function(attrs) {
  * Assigns the organizer a new parent, moving it within its tree.
  *
  * @param {ZmOrganizer}		newParent		the new parent of this organizer
- * @param {boolean}		noUndo			if true, action is not undoable
+ * @param {boolean}		undoing			if true, action is not undoable
  */
 ZmOrganizer.prototype.move =
-function(newParent, noUndo) {
+function(newParent, undoing) {
 	var newId = (newParent.nId > 0)
 		? newParent.id
 		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
@@ -1020,13 +1020,20 @@ function(newParent, noUndo) {
 	{
 		return;
 	}
+	var params = {};
 
 	if (newId == ZmOrganizer.ID_TRASH) {
-		this._organizerAction({action: "trash", noUndo: noUndo});
+		params.action = "trash";
+		params.undoing = undoing;
 	}
 	else {
-		this._organizerAction({action: "move", attrs: {l: newId}, noUndo: noUndo});
+		params.actionText = (undoing) ? ZmMsg.actionUndoMove : ZmMsg.actionMove;
+		params.actionArg = newParent.getName(false, false, true);
+		params.action = "move";
+		params.attrs = {l: newId};
+		params.undoing = undoing;
 	}
+	this._organizerAction(params);
 };
 
 /**
@@ -1740,8 +1747,8 @@ function(params) {
 		}
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	}
-	var undoLogElement = params.noUndo ? null : appCtxt.getActionStack().logAction({op: params.action, id: params.id || this.id, attrs: params.attrs});
-	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, undoLogElement]);
+	var actionLogItem = params.undoing ? null : appCtxt.getActionController().actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs});
+	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
 	} else {
@@ -1764,13 +1771,28 @@ function(params) {
  * @private
  */
 ZmOrganizer.prototype._handleResponseOrganizerAction =
-function(params, undoLogElement, result) {
-	if (undoLogElement) {
-		undoLogElement.setComplete();
+function(params, actionLogItem, result) {
+	if (actionLogItem) {
+		actionLogItem.setComplete();
 	}
 	if (params.callback) {
 		params.callback.run(result);
 	}
+	if (params.actionText) {
+		var summary = ZmOrganizer.getActionSummary(params.actionText, params.numItems || 1, this.type, params.actionArg);
+		var undoLink = actionLogItem && appCtxt.getActionController().getUndoLink(actionLogItem);
+		if (undoLink) {
+			appCtxt.setStatusMsg({msg: summary+" "+undoLink, transitions: appCtxt.getActionController().getStatusTransitions()});
+		} else {
+			appCtxt.setStatusMsg(summary);
+		}
+	}
+};
+
+ZmOrganizer.getActionSummary =
+function(text, num, type, arg) {
+	var typeText = ZmMsg[ZmOrganizer.MSG_KEY[type]];
+	return AjxMessageFormat.format(text, [num, typeText, arg]);
 };
 
 /**

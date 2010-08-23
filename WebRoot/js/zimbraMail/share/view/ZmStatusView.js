@@ -105,6 +105,11 @@ function() {
     return false;
 };
 
+ZmStatusView.prototype.unHold =
+function(all) {
+	this._toast.unHold(all);
+};
+
 // Static functions
 
 /**
@@ -176,6 +181,7 @@ ZmToast = function(parent, id) {
     this._funcs["show"] = AjxCallback.simpleClosure(this.__show, this);
     this._funcs["hide"] = AjxCallback.simpleClosure(this.__hide, this);
     this._funcs["pause"] = AjxCallback.simpleClosure(this.__pause, this);
+    this._funcs["hold"] = AjxCallback.simpleClosure(this.__hold, this);
     this._funcs["idle"] = AjxCallback.simpleClosure(this.__idle, this);
     this._funcs["fade"] = AjxCallback.simpleClosure(this.__fade, this);
     this._funcs["fade-in"] = this._funcs["fade"];
@@ -222,6 +228,10 @@ ZmToast.SLIDE_OUT = { type: "slide-out" };
  */
 ZmToast.PAUSE = { type: "pause" };
 /**
+ * Defines the "hold" transition.
+ */
+ZmToast.HOLD = { type: "hold" };
+/**
  * Defines the "idle" transition.
  */
 ZmToast.IDLE = {type: "idle" };
@@ -236,6 +246,7 @@ ZmToast.DEFAULT_TRANSITIONS = [ ZmToast.SLIDE_IN, ZmToast.PAUSE, ZmToast.SLIDE_O
 ZmToast.DEFAULT_STATE = {};
 ZmToast.DEFAULT_STATE["position"] = { location: "C" }; // center
 ZmToast.DEFAULT_STATE["pause"] = { duration: 1200 };
+ZmToast.DEFAULT_STATE["hold"] = {};
 ZmToast.DEFAULT_STATE["fade"] = { duration: 100, multiplier: 1 };
 ZmToast.DEFAULT_STATE["fade-in"] = { start: 0, end: 99, step: 10, duration: 200, multiplier: 1 };
 ZmToast.DEFAULT_STATE["fade-out"] = { start: 99, end: 0, step: -10, duration: 200, multiplier: 1 };
@@ -293,6 +304,7 @@ function() {
     this.__clear();
     Dwt.setLocation(this.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
     this._poppedUp = false;
+    this._onUnHold = null;
 };
 
 ZmToast.prototype.isPoppedUp =
@@ -426,6 +438,35 @@ function() {
 ZmToast.prototype.__pause =
 function() {
     setTimeout(this._funcs["next"], this._state.duration);
+};
+
+
+// Hold the toast in place until unHold is called. If unHold was already called before this function, continue immediately
+ZmToast.prototype.__hold =
+function() {
+    if (this._unholdCounter) {
+        this._unholdCounter--;
+        this._funcs["next"]();
+    } else {
+        if (!this._onUnHold)
+            this._onUnHold = [];
+        this._onUnHold.push(this._funcs["next"]);
+    }
+};
+
+// Unhold one "holding", or all holdings if [all] is true. If nothing was held, queue up so subsequent holds will continue immediately
+ZmToast.prototype.unHold =
+function(all) {
+    if (this._onUnHold && this._onUnHold.length) {
+        do { // This exotic construct repeats the if until it is false when [all] is set, or runs it only once when it is unset
+            if (this._onUnHold.length) {
+                var func = this._onUnHold.shift();
+                func();
+            } else break;
+        } while (all);
+    } else {
+        this._unholdCounter = all ? 0 : (this._unholdCounter+1 || 1);
+    }
 };
 
 ZmToast.prototype.__idle =
