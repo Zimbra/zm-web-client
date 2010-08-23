@@ -37,6 +37,7 @@ AjxPackage.require("zimbraMail.calendar.view.ZmResourceConflictDialog");
 
 AjxPackage.require("zimbraMail.calendar.view.ZmApptQuickAddDialog");
 AjxPackage.require("zimbraMail.calendar.view.ZmApptTabViewPage");
+AjxPackage.require("zimbraMail.calendar.view.ZmFreeBusySchedulerView");
 AjxPackage.require("zimbraMail.calendar.view.ZmSchedTabViewPage");
 AjxPackage.require("zimbraMail.calendar.view.ZmApptChooserTabViewPage");
 AjxPackage.require("zimbraMail.calendar.view.ZmNewCalendarDialog");
