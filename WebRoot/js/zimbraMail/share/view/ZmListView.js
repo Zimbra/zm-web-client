@@ -742,6 +742,10 @@ function(allResults) {
 			}
 			appCtxt.setStatusMsg(toastMsg);
 		}
+
+		var sel = this._selectedItems.getArray();
+		for (var i=0; i<sel.length; i++)
+			this.setSelectionCbox(sel[i], false);
 	}
 };
 
@@ -759,6 +763,10 @@ function() {
 		if (hdrDiv) {
 			hdrDiv.className = "ImgCheckboxUnchecked";
 		}
+		var sel = this._selectedItems.getArray();
+		for (var i=0; i<sel.length; i++)
+			this.setSelectionCbox(sel[i], true);
+		
 	}
 
 	DwtListView.prototype.deselectAll.call(this);
