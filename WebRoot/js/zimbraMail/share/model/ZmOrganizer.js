@@ -1782,7 +1782,7 @@ function(params, actionLogItem, result) {
 		var summary = ZmOrganizer.getActionSummary(params.actionText, params.numItems || 1, this.type, params.actionArg);
 		var undoLink = actionLogItem && appCtxt.getActionController().getUndoLink(actionLogItem);
 		if (undoLink) {
-			appCtxt.setStatusMsg({msg: summary+" "+undoLink, transitions: appCtxt.getActionController().getStatusTransitions()});
+			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: appCtxt.getActionController().getStatusTransitions()});
 		} else {
 			appCtxt.setStatusMsg(summary);
 		}

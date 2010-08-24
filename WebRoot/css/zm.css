@@ -3828,6 +3828,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	@ToastText@
 }
 
+.ZToastText a.undo {
+	font-size: 0.75em;
+	margin-left: 20px;
+}
+
 .ZToastBG 				{	@ToastContainer@		}
 
 /* Removed per new Toastie look and feel, which includes an icon instead of a background color to differentiate the status.

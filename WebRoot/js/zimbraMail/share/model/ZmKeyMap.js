@@ -193,6 +193,7 @@ ZmKeyMap.SPAM					= "Spam";
 ZmKeyMap.SPELLCHECK				= "Spellcheck";
 ZmKeyMap.TAG					= "Tag";
 ZmKeyMap.TODAY					= "Today";
+ZmKeyMap.UNDO					= "Undo";
 ZmKeyMap.UNTAG					= "Untag";
 ZmKeyMap.VIEW_BY_CONV			= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG			= "ViewByMessage";

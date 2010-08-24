@@ -977,10 +977,11 @@ function(params, result) {
 /**
  * Kills the progress dialog (if shown). Show the given summary as status.
  *
- * @param {String}	summary		the text that summarizes the recent action
+ * @param {String}      summary          the text that summarizes the recent action
+ * @param {ZmAction}    actionLogItem    the logged action for possible undoing
  */
 ZmList.killProgressDialog =
-function(summary, action) {
+function(summary, actionLogItem) {
 
 	DBG.println("sa", "kill progress dialog");
 	var dialog = ZmList.progressDialog;
@@ -990,9 +991,9 @@ function(summary, action) {
 		ZmList.progressDialog = null;
 	}
 	if (summary) {
-		var undoLink = action && appCtxt.getActionController().getUndoLink(action);
+		var undoLink = actionLogItem && appCtxt.getActionController().getUndoLink(actionLogItem);
 		if (undoLink) {
-			appCtxt.setStatusMsg({msg: summary+" "+undoLink, transitions: appCtxt.getActionController().getStatusTransitions()});
+			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: appCtxt.getActionController().getStatusTransitions()});
 		} else {
 			appCtxt.setStatusMsg(summary);
 		}

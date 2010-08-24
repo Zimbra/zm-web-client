@@ -1,3 +1,30 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+
+/**
+ * @overview
+ */
+
+/**
+ * @class
+ * Represents an undoable action (e.g. move an item)
+ * This class is a generic superclass that does very little on its own; the real work is being done in subclasses
+ * 
+ * @extends		ZmModel
+ */
+
 ZmAction = function() {
 	ZmModel.call(this, ZmEvent.S_ACTION);
 	this._complete = false;
@@ -37,14 +64,23 @@ ZmAction.prototype.getComplete = function() {
 	return this._complete;
 };
 
-
+/**
+ * @class
+ * Represents an undoable action on an item
+ * This class is a generic superclass that does very little on its own; the real work is being done in subclasses
+ * 
+ * @extends		ZmAction
+ *
+ * @param {ZmItem}	item	The item to perform the action on
+ * @param {String}	op		The operation to perform (e.g. "move" or "trash")	
+ */
 
 ZmItemAction = function(item, op) {
 	if (!arguments.length) return;
 	ZmAction.call(this);
 	this._item = item;
 	this._op = op;
-}
+};
 
 ZmItemAction.prototype = new ZmAction;
 ZmItemAction.prototype.constructor = ZmItemAction;
@@ -62,7 +98,16 @@ ZmItemAction.prototype.getOp = function() {
 	return this._op;
 };
 
-
+/**
+ * @class
+ * Represents an undoable action on an organizer
+ * This class is a generic superclass that does very little on its own; the real work is being done in subclasses
+ * 
+ * @extends		ZmAction
+ *
+ * @param {ZmOrganizer}		organizer	The organizer to perform the action on
+ * @param {String}			op			The operation to perform (e.g. "move")
+ */
 
 ZmOrganizerAction = function(organizer, op) {
 	if (!arguments.length) return;
@@ -87,7 +132,17 @@ ZmOrganizerAction.prototype.getOp = function() {
 	return this._op;
 };
 
-
+/**
+ * @class
+ * Represents an undoable move action on an item
+ * 
+ * @extends		ZmItemAction
+ *
+ * @param {ZmItem}	item			Item to perform the move on
+ * @param {int}		fromFolderId	Original folder id of the item
+ * @param {int}		toFolderId		Destination folder id of the item
+ * @param {String}	op				The operation to perform (e.g. "move")
+ */
 
 ZmItemMoveAction = function(item, fromFolderId, toFolderId, op) {
 	ZmItemAction.call(this, item, op);
@@ -196,34 +251,17 @@ ZmItemMoveAction.multipleRedo = function(actions) {
 	ZmItemMoveAction.multipleUndo(actions, true);
 };
 
-
-
-
-/*
-ZmItemTrashAction = function(item, fromFolderId) {
-	ZmItemMoveAction.call(this, item, fromFolderId, ZmFolder.ID_TRASH);
-};
-
-ZmItemTrashAction.prototype = new ZmItemMoveAction;
-ZmItemTrashAction.prototype.constructor = ZmItemTrashAction;
-
-ZmItemTrashAction.prototype.type = ZmAction.ACTION_ZMITEMTRASHACTION;
-
-ZmItemTrashAction.prototype.toString = function() {
-	return "ZmItemTrashAction";
-};
-
-ZmItemTrashAction.prototype._doMove = function(callback, errorCallback, folderId) {
-	this._item.list.moveItems({items: [this._item], folder: appCtxt.getById(folderId), undoing: true, finalCallback: new AjxCallback(this, this._handleDoMove, this._item.folderId), actionText: ZmMsg.actionUndoTrash});
-};
-
-ZmItemTrashAction.multipleUndo = function(actions, redo) {
-	return ZmItemMoveAction.multipleUndo(actions, redo, ZmMsg.actionUndoTrash);
-};*/
-
-
-
-
+/**
+ * @class
+ * Represents an undoable move action on an organizer
+ * 
+ * @extends		ZmOrganizerAction
+ *
+ * @param {ZmOrganizer}	organizer		Organizer to perform the move on
+ * @param {int}			fromFolderId	Original parent folder id of the organizer
+ * @param {int}			toFolderId		Destination parent folder id of the organizer
+ * @param {String}		op				The operation to perform (e.g. "move")
+ */
 
 ZmOrganizerMoveAction = function(organizer, fromFolderId, toFolderId, op) {
 	ZmOrganizerAction.call(this, organizer, op);
@@ -234,7 +272,7 @@ ZmOrganizerMoveAction = function(organizer, fromFolderId, toFolderId, op) {
 ZmOrganizerMoveAction.prototype = new ZmOrganizerAction;
 ZmOrganizerMoveAction.prototype.constructor = ZmOrganizerMoveAction;
 
-ZmOrganizerMoveAction.prototype.type = ZmAction.ACTION_ZMITEMMOVEACTION;
+ZmOrganizerMoveAction.prototype.type = ZmAction.ACTION_ZMORGANIZERMOVEACTION;
 
 ZmOrganizerMoveAction.prototype.toString = function() {
 	return "ZmOrganizerMoveAction";
@@ -275,7 +313,13 @@ ZmOrganizerMoveAction.multipleRedo = function(actions) {
 	ZmItemMoveAction.multipleUndo(actions, true);
 };
 
-
+/**
+ * @class
+ * Represents a collection of undoable actions that will be performed as a whole
+ * 
+ * @extends		ZmAction
+ *
+ */
 
 ZmCompositeAction = function() {
 	ZmAction.call(this);
@@ -290,8 +334,13 @@ ZmCompositeAction.prototype.toString = function() {
 	return "ZmCompositeAction";
 };
 
+/**
+ * Add an action the the collection
+ *
+ * @param	{ZmAction}	action	An action to add
+ */
 ZmCompositeAction.prototype.addAction = function(action) {
-	if (action && action!=this && (action instanceof ZmItemAction || action instanceof ZmCompositeAction)) {
+	if (action && action!=this && action instanceof ZmAction) {
 		var type = action.type;
 		if (!this._actions[type])
 			this._actions[type] = [];
@@ -313,6 +362,10 @@ ZmCompositeAction.prototype.undo = function(callback, errorCallback) {
 		ZmItemMoveAction.multipleUndo(this.getActions(ZmAction.ACTION_ZMITEMMOVEACTION));
 	}
 
+	if (this.hasActions(ZmAction.ACTION_ZMORGANIZERMOVEACTION)) {
+		ZmOrganizerMoveAction.multipleUndo(this.getActions(ZmAction.ACTION_ZMORGANIZERMOVEACTION));
+	}
+
 	if (this.hasActions(ZmAction.ACTION_ZMCOMPOSITEACTION) || this.hasActions(ZmAction.ACTION_ZMITEMACTION)) {
 		var actions = this.getActions(ZmAction.ACTION_ZMCOMPOSITEACTION).concat(this.getActions(ZmAction.ACTION_ZMITEMACTION));
 		for (var i=0; i<actions.length; i++) {
@@ -327,8 +380,12 @@ ZmCompositeAction.prototype.redo = function(callback, errorCallback) {
 		ZmItemMoveAction.multipleRedo(this.getActions(ZmAction.ACTION_ZMITEMMOVEACTION));
 	}
 
-	if (this.hasActions(ZmAction.ACTION_ZMCOMPOSITEACTION) || this.hasActions(ZmAction.ACTION_ZMITEMACTION)) {
-		var actions = this.getActions(ZmAction.ACTION_ZMCOMPOSITEACTION).concat(this.getActions(ZmAction.ACTION_ZMITEMACTION));
+	if (this.hasActions(ZmAction.ACTION_ZMORGANIZERMOVEACTION)) {
+		ZmOrganizerMoveAction.multipleRedo(this.getActions(ZmAction.ACTION_ZMORGANIZERMOVEACTION));
+	}
+
+	if (this.hasActions(ZmAction.ACTION_ZMCOMPOSITEACTION) || this.hasActions(ZmAction.ACTION_ZMITEMACTION) || this.hasActions(ZmAction.ACTION_ZMORGANIZERACTION)) {
+		var actions = this.getActions(ZmAction.ACTION_ZMCOMPOSITEACTION).concat(this.getActions(ZmAction.ACTION_ZMITEMACTION)).concat(this.getActions(ZmAction.ACTION_ZMORGANIZERACTION));
 		for (var i=0; i<actions.length; i++) {
 			actions[i].redo();
 		}

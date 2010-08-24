@@ -441,7 +441,9 @@ function() {
 };
 
 
-// Hold the toast in place until unHold is called. If unHold was already called before this function, continue immediately
+/**
+ * Hold the toast in place until unHold is called. If unHold was already called before this function, continue immediately
+ */
 ZmToast.prototype.__hold =
 function() {
     if (this._unholdCounter) {
@@ -454,17 +456,19 @@ function() {
     }
 };
 
-// Unhold one "holding", or all holdings if [all] is true. If nothing was held, queue up so subsequent holds will continue immediately
+/**
+ * Unhold one "holding", or all holdings if [all] is true. If nothing was held, queue up so subsequent holds will continue immediately
+ */
 ZmToast.prototype.unHold =
 function(all) {
     if (this._onUnHold && this._onUnHold.length) {
-        do { // This exotic construct repeats the if until it is false when [all] is set, or runs it only once when it is unset
-            if (this._onUnHold.length) {
-                var func = this._onUnHold.shift();
-                func();
-            } else break;
-        } while (all);
+		for (var i=0; (i<1 || (all && i<1000)) && this._onUnHold.length; i++) { // If !all, run once. If all, keep running (but limit it nonetheless). In either case, stop when this._onUnHold is empty
+			var func = this._onUnHold.shift();
+			func();
+		}
     } else {
+		// It may happen that the user presses a dismiss link before the toast is completely displayed (he's quick!), so we get here before the toast is in the "hold" state.
+		// Therefore we queue up the holding so the hold state is immediately skipped
         this._unholdCounter = all ? 0 : (this._unholdCounter+1 || 1);
     }
 };

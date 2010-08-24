@@ -2377,6 +2377,11 @@ function(actionCode, ev) {
 			break;
 		}
 
+		case ZmKeyMap.UNDO: {
+			appCtxt.getActionController().undoCurrent();
+			break;
+		}
+
 		case ZmKeyMap.SHORTCUTS: {
 
 			var panel = appCtxt.getShortcutsPanel();
