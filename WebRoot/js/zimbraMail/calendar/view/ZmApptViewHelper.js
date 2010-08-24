@@ -901,6 +901,7 @@ function(ev, startSelect, endSelect, startDateField, endDateField, dateInfo, id)
         var newEndDateMs = newStartDateMs + delta;
         var newEndDate = new Date(newEndDateMs);
 
+	startSelect.set(new Date(newStartDateMs));
         endSelect.set(newEndDate);
         endDateField.value = AjxDateUtil.simpleComputeDateStr(newEndDate);
 
@@ -964,6 +965,8 @@ function(date) {
     var timeStr = timeFormatter.format(date);
     this._originalTimeStr = timeStr;
     this._timeSelectInput.setValue(timeStr);
+    var index= timeStr.replace(/\:\d\d/, ":00");
+    this._hoursSelectMenu.scrollToIndex(this._timeIndex[index]);
 };
 
 /**
@@ -1140,19 +1143,22 @@ function() {
     }
 
     // create menu for button
-    var hoursSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE});
-    timeSelectButton.setMenu(hoursSelectMenu, true);
+    this._hoursSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_SCROLL, maxRows:7});
+    timeSelectButton.setMenu(this._hoursSelectMenu, true);
 
+	this._timeIndex = {};
     for (var j = 0; j < 24; j++) {
         now.setHours(j);        
         now.setMinutes(0);
 
-        var mi = new DwtMenuItem({parent: hoursSelectMenu, style: DwtMenuItem.NO_STYLE});
-        mi.setText(timeFormatter.format(now));
+        var mi = new DwtMenuItem({parent: this._hoursSelectMenu, style: DwtMenuItem.NO_STYLE});
+	var text = timeFormatter.format(now);
+	this._timeIndex[text] = j;
+        mi.setText(text);
         mi.setData("value", j*60);
         if (menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
 
-        var minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE, cascade:true, maxRows:1});
+        var minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_CASCADE, maxRows:1});
         mi.setMenu(minutesSelectMenu, true);
         mi.setSelectableWithSubmenu(true);
         for (var k = 1; k < 4; k++) {
