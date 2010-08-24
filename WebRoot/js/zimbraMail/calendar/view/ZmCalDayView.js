@@ -36,6 +36,11 @@ function() {
 	return this._compactMode;
 };
 
+ZmCalDayView.prototype.fbStatusBarEnabled =
+function(){
+    return true;
+};
+
 ZmCalDayView.prototype._layout =
 function(refreshApptLayout) {
 	ZmCalColView.prototype._layout.call(this, refreshApptLayout);

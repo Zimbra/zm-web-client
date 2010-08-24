@@ -4176,3 +4176,21 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmAppt-no-response {
 	background-color: #F30;
 }
+
+.ZmFBBar-tentative {
+    background-color: #BAE0E3;
+}
+
+.ZmFBBar-ooo {
+   background-color: #7B5BAC;
+}
+
+.ZmFBBar-busy {
+	background-color: #4AA6F1;
+}
+
+.ZmFBBar-free {
+	background-color: #FFFFFF;
+}
+
+

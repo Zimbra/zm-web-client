@@ -24,6 +24,7 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	this._columns = [];
 	this._layoutMap = [];
 	this._unionBusyDivIds = [];													// div ids for layingout union
+    this._fbBarEnabled = this.fbStatusBarEnabled();
 
 	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, view, readonly);
 
@@ -53,6 +54,7 @@ ZmCalColView._OPACITY_APPT_TENTATIVE = 60;
 
 ZmCalColView._HOURS_DIV_WIDTH = 55; // width of div holding hours text (1:00am, etc)
 ZmCalColView._UNION_DIV_WIDTH = 40; // width of div holding union in sched view
+ZmCalColView._FBBAR_DIV_WIDTH = 10;
 
 ZmCalColView._ALL_DAY_SEP_HEIGHT = 5; // height of separator between all day appts and body
 
@@ -71,9 +73,19 @@ ZmCalColView._HALF_HOUR_HEIGHT = ZmCalColView._HOUR_HEIGHT/2;
 ZmCalColView._15_MINUTE_HEIGHT = ZmCalColView._HOUR_HEIGHT/4;
 ZmCalColView._DAY_HEIGHT = ZmCalColView._HOUR_HEIGHT*24;
 
+ZmCalColView._STATUS_FREE       = "F";
+ZmCalColView._STATUS_TENTATIVE  = "T";
+ZmCalColView._STATUS_BUSY       = "B";
+ZmCalColView._STATUS_OOO        = "O";
+
 ZmCalColView.prototype.toString =
 function() {
 	return "ZmCalColView";
+};
+
+ZmCalColView.prototype.fbStatusBarEnabled =
+function(){
+    return false;
 };
 
 ZmCalColView.prototype.getRollField =
@@ -676,12 +688,17 @@ function(html) {
 	var formatter = DwtCalendar.getHourFormatter();
 	var date = new Date();
 	date.setHours(0, 0, 0, 0);
+    var timeTDWidth = ZmCalColView._HOURS_DIV_WIDTH - (this._fbBarEnabled ? ZmCalColView._FBBAR_DIV_WIDTH : 0 );
 	for (var h=0; h < 25; h++) {
 		html.append("<tr><td class=calendar_grid_body_time_td style='height:",
-		ZmCalColView._HOUR_HEIGHT ,"px; width:", ZmCalColView._HOURS_DIV_WIDTH, "px'><div class=calendar_grid_body_time_text>");
+		ZmCalColView._HOUR_HEIGHT ,"px; width:", timeTDWidth, "px'><div class=calendar_grid_body_time_text>");
 		date.setHours(h);
 		html.append(h > 0 && h < 24 ? AjxStringUtil.htmlEncode(formatter.format([h, date])) : "&nbsp;");
-		html.append("</div></td></tr>");
+		html.append("</div></td>");
+        if(this._fbBarEnabled){
+            html.append("<td class=calendar_grid_body_fbbar_td style='height:",ZmCalColView._HOUR_HEIGHT ,"px; width:", ZmCalColView._FBBAR_DIV_WIDTH,"px; border-left:1px solid #A7A194;'>&nbsp;</td>");
+        }
+        html.append("</tr>");
 	}
 	html.append("</table>", "</div>");
 };
@@ -713,7 +730,7 @@ function(abook) {
 	this._apptBodyDivId = Dwt.getNextId();
 	this._newApptDivId = Dwt.getNextId();
 	this._newAllDayApptDivId = Dwt.getNextId();
-	this._timeSelectionDivId = Dwt.getNextId();
+	this._timeSelectionDivId = Dwt.getNextId();    
 
 	if (this._scheduleMode) {
 		this._unionHeadingDivId = Dwt.getNextId();
@@ -1438,6 +1455,153 @@ function(refreshApptLayout) {
 	}
 };
 
+//Free Busy Bar
+
+ZmCalColView.prototype._layoutFBBar =
+function(){
+    //Fetch FB Data from GetFreeBusyRequest
+    var date = this._getDayForDate(this._date);
+    var startDate = date ? date.date : this._date;
+    var endDate = date ? date.endDate : null;
+    this.getFreeBusyInfo(startDate, endDate, new AjxCallback(this, this._handleFBResponse));
+};
+
+ZmCalColView.prototype._handleFBResponse =
+function(result){
+    var statusSlots = result.getResponse().GetFreeBusyResponse.usr;
+    statusSlots = statusSlots[0]; // 1 User for Calendar View
+
+
+    //Prepare UI
+    if(!this._fbBarSlots){
+        var div = document.createElement("DIV");
+        //div.style.backgroundColor = "#EFE7D4";
+        document.getElementById(this._hoursScrollDivId).appendChild(div);
+        Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
+        this._fbBarSlots = div;
+        this._fbBarSlotsId = div.id = Dwt.getNextId();
+    }
+
+    //Calculate X, Y
+    var hourScrollDivLoc = Dwt.getLocation(document.getElementById(this._hoursScrollDivId));
+    var x = hourScrollDivLoc.x;
+    x = x + (ZmCalColView._HOURS_DIV_WIDTH - ZmCalColView._FBBAR_DIV_WIDTH + 1);
+    Dwt.setLocation(this._fbBarSlots, x, 0);
+
+    //Set Ht./ Width
+    var calBodyHt = document.getElementById(this._bodyDivId).scrollHeight;
+    Dwt.setSize(this._fbBarSlots, ZmCalColView._FBBAR_DIV_WIDTH - 2, calBodyHt);
+
+    //Cleanup Existing Slots
+    this._fbBarSlots.innerHTML = "";
+
+    //Handle Slots
+    if(statusSlots.t) this._drawSlots(ZmCalColView._STATUS_TENTATIVE, statusSlots.t);
+    if(statusSlots.b) this._drawSlots(ZmCalColView._STATUS_BUSY, statusSlots.b);
+    if(statusSlots.o) this._drawSlots(ZmCalColView._STATUS_OOO, statusSlots.o);
+    if(statusSlots.u) this._drawSlots(ZmCalColView._STATUS_OOO, statusSlots.u);
+    //non tentative/busy/ooo are all free, dont handle them
+    //if(statusSlots.f) this._drawSlots(ZmCalColView._STATUS_FREE, statusSlots.f);
+
+};
+
+ZmCalColView.prototype._drawSlots =
+function(status, slots){
+
+    //Slots
+    var currDate = this._date.getTime();
+    var calBodyHt = document.getElementById(this._bodyDivId).scrollHeight;
+    
+    for(var i=0; i<slots.length; i++){
+        var slot = slots[i];
+        var start = slot.s;
+        var end = slot.e;
+        if(end > currDate + AjxDateUtil.MSEC_PER_DAY){
+            end = currDate + AjxDateUtil.MSEC_PER_DAY;
+        }
+        if(start < currDate){
+            start = currDate;
+        }
+
+        start = new Date(start);
+        end = new Date(end);
+
+        start = start.getHours()*60 + start.getMinutes();
+        end   = end.getHours()*60 + end.getMinutes();
+
+        var startPx = Math.floor(start * (calBodyHt / ( 24 * 60)));
+        var endPx =  Math.floor(end * ( calBodyHt / (24 * 60)));
+
+        var div = document.createElement("DIV");
+        div.className = this._getFBBarSlotColor(status);
+        Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
+        this._fbBarSlots.appendChild(div);
+        div.style.top = ( startPx - 2 ) + "px";
+        div.style.height = ( endPx - startPx) + "px";
+        div.style.width = ZmCalColView._FBBAR_DIV_WIDTH - 2;
+    }
+    
+};
+
+ZmCalColView.prototype._getFBBarSlotColor =
+function(status){
+    switch(status){
+        case ZmCalColView._STATUS_FREE:         return "ZmFBBar-free";
+        case ZmCalColView._STATUS_TENTATIVE:    return "ZmFBBar-tentative";
+        case ZmCalColView._STATUS_BUSY:         return "ZmFBBar-busy";
+        case ZmCalColView._STATUS_OOO:          return "ZmFBBar-ooo";
+    }
+    return "ZmFBBar-busy";
+};
+
+ZmCalColView.prototype.getFreeBusyInfo =
+function(startTime, endTime , callback, errorCallback) {
+
+    if(startTime instanceof Date)
+       startTime = startTime.getTime();
+
+    if(endTime instanceof Date)
+        endTime = endTime.getTime();
+    
+    endTime = endTime || (startTime + AjxDateUtil.MSEC_PER_DAY );
+    var email = appCtxt.getActiveAccount().getEmail();
+    
+	var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
+	soapDoc.setMethodAttribute("s", startTime);
+	soapDoc.setMethodAttribute("e", endTime);
+	soapDoc.setMethodAttribute("uid", email);
+
+	return appCtxt.getAppController().sendRequest({
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: callback,
+		errorCallback: errorCallback,
+		noBusyOverlay: true
+	});
+};
+
+ZmCalColView.prototype._isFBBarDiv =
+function(ev){
+    var target = DwtUiEvent.getTargetWithProp(ev, "id");
+    if(target.id == this._fbBarSlotsId){
+        return true;
+    }   
+    return false;
+};
+
+ZmCalColView.prototype._getFBBarToolTipContent =
+function(ev){
+    var target = DwtUiEvent.getTarget(ev);
+    var className = target.className;    
+    if(/-busy$/.test(className))
+        return ZmMsg.busy;
+    if(/-tentative$/.test(className))
+        return ZmMsg.tentative;
+    if(/-ooo$/.test(className))
+        return ZmMsg.outOfOffice;
+    return ZmMsg.free;
+};
+
 ZmCalColView.prototype._getUnionToolTip =
 function(i) {
 	// cache it...
@@ -1576,6 +1740,9 @@ function(ev, div) {
 
 ZmCalColView.prototype.getToolTipContent =
 function(ev) {
+    if(this._fbBarEnabled && this._isFBBarDiv(ev)){
+        return this._getFBBarToolTipContent(ev);        
+    }
 	var div = this.getTargetItemDiv(ev);
 	var type = this._getItemData(div, "type");
 	if (type == ZmCalBaseView.TYPE_SCHED_FREEBUSY) {
@@ -2302,6 +2469,9 @@ function(list, skipMiniCalUpdate) {
 		}
 	}
 	this._layout();
+    if(this._fbBarEnabled){
+        this._layoutFBBar();
+    }
 	this._scrollToTime(8);
 };
 
