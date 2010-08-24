@@ -7,7 +7,7 @@
                 <col width='60' />
                 <col width='140'/>
                 <col width='100'/>
-                <col width='250'/>
+                <col id='${id}_timezoneColumn' width='250'/>
                 <col width='60'/>
                 <col/>
                 <col width='80'/>
@@ -64,9 +64,8 @@
                         </tr>
                     </table>
                 </td>
-                <td class='ZmFieldLabelRight' align="right"><nobr><$= ZmMsg.showAs $>&nbsp;</nobr></td>
-                <td valign="top" id='${id}_showAsSelect'>
-                </td>
+                <td class='ZmFieldLabelRight' align="right" id='${id}_showAsSelect'></td>
+                <td valign="top" id='${id}_timezoneSpacer'>&nbsp;</td>
                 <td class='ZmFieldLabelRight'><nobr><$= data.isAppt ? ZmMsg.calendarLabel : ZmMsg.taskFolder $></nobr></td>
                 <td id='${id}_folderSelect'></td>
                 <td>&nbsp;</td>
@@ -74,7 +73,7 @@
             <tr>
                 <td width='60' class='ZmApptTabViewPageField'><nobr><$= (data.isAppt ? ZmMsg.startLabel : (ZmMsg.startDate+":")) $></nobr></td>
                 <td colspan="2">
-                     <table border=0 style='table-layout:fixed;'>
+                     <table border=0 style='table-layout:fixed;' <$= AjxEnv.isIE ? "width='100%'" : ""$> >
                          <$= AjxTemplate.expand("calendar.Appointment#ApptTimeSection_StartDate", data) $>
                      </table>
                 </td>
@@ -91,14 +90,14 @@
             <tr>
                 <td width='60' class='ZmApptTabViewPageField'><nobr><$= (data.isAppt ? ZmMsg.endLabel : ZmMsg.dateDueLabel ) $></nobr></td>
                 <td colspan="2">
-                     <table border=0 style='table-layout:fixed;'>
+                     <table border=0 style='table-layout:fixed;' <$= AjxEnv.isIE ? "width='100%'" : ""$> >
                          <$= AjxTemplate.expand("calendar.Appointment#ApptTimeSection_EndDate", data) $>
                      </table>
                 </td>
                 <td id='${id}_tzoneSelectEnd'></td>
                 <td valign=top class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'><nobr><$= ZmMsg.repeatLabel $></nobr></td>
                 <td id='${id}_repeatSelect' style='padding-right: 5px;'></td>
-                <td id='${id}_repeatDesc' style='text-decoration:underline'></td>                                
+                <td id='${id}_repeatDesc' style='text-decoration:underline'></td>
             </tr>
 		</table>
 	</div>

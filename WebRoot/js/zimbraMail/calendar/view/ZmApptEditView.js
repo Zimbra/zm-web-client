@@ -282,8 +282,10 @@ function(calItem) {
 	}
 	calItem.setStartDate(startDate, true);
 	calItem.setEndDate(endDate, true);
-	if (Dwt.getVisibility(this._tzoneSelectStart.getHtmlElement()))
-		calItem.timezone = this._tzoneSelectStart.getValue();
+	if (Dwt.getVisibility(this._tzoneSelectStart.getHtmlElement())) {
+        calItem.timezone = this._tzoneSelectStart.getValue();
+        calItem.setEndTimezone(this._tzoneSelectEnd.getValue());
+    }
 
 	// set attendees
 	for (var t = 0; t < this._attTypes.length; t++) {
@@ -654,6 +656,10 @@ function(width) {
 	this._tzoneSelectEnd = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzoneSelectEnd"), cascade:false});
 	this._tzoneSelectEnd.addChangeListener(timezoneListener);
     this._tzoneSelectEndElement = document.getElementById(this._htmlElId + "_tzoneSelectEnd");
+
+
+    this._timezoneColumn = document.getElementById(this._htmlElId + "_timezoneColumn");
+    this._timezoneSpacer = document.getElementById(this._htmlElId + "_timezoneSpacer");
 
 
 	// NOTE: tzone select is initialized later
@@ -1098,7 +1104,7 @@ function() {
 ZmApptEditView.prototype._resetTimezoneSelect =
 function(calItem, isAllDayAppt) {
 	this._tzoneSelectStart.setSelectedValue(calItem.timezone);
-	this._tzoneSelectEnd.setSelectedValue(calItem.timezone);
+	this._tzoneSelectEnd.setSelectedValue(calItem.endTimezone || calItem.timezone);
     this.handleTimezoneOverflow();
 };
 
@@ -1112,8 +1118,12 @@ function(dateInfo) {
 
     Dwt.setDisplay(this._tzoneSelectStart.getHtmlElement(), showTimezone ? Dwt.DISPLAY_INLINE : Dwt.DISPLAY_NONE);
     Dwt.setDisplay(this._tzoneSelectEnd.getHtmlElement(), showTimezone ? Dwt.DISPLAY_INLINE : Dwt.DISPLAY_NONE);
-    Dwt.setVisibility(this._tzoneSelectStartElement, showTimezone);
-    Dwt.setVisibility(this._tzoneSelectEndElement, showTimezone);
+
+    //expand/collapse timezone column
+    Dwt.setDisplay(this._tzoneSelectStartElement, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
+    Dwt.setDisplay(this._tzoneSelectEndElement, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
+    Dwt.setDisplay(this._timezoneSpacer, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
+    this._timezoneColumn.setAttribute("width", showTimezone ? 250 : 60);
 };
 
 ZmApptEditView.prototype._showTimeFields =

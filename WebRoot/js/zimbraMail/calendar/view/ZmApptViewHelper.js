@@ -49,7 +49,8 @@ ZmApptViewHelper.getDateInfo =
 function(tabView, dateInfo) {
 	dateInfo.startDate = tabView._startDateField.value;
 	dateInfo.endDate = tabView._endDateField.value;
-    dateInfo.timezone = tabView._tzoneSelect ? tabView._tzoneSelect.getValue() : "";
+    var tzoneSelect = tabView._tzoneSelect || tabView._tzoneSelectStart;
+    dateInfo.timezone = tzoneSelect ? tzoneSelect.getValue() : "";
     if (tabView._allDayCheckbox && tabView._allDayCheckbox.checked) {
 		dateInfo.showTime = false;
 

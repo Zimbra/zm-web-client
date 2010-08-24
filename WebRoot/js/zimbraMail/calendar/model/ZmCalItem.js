@@ -438,6 +438,19 @@ function(timezone, keepCache) {
 };
 
 /**
+ * Sets the end timezone.
+ *
+ * @param	{AjxTimezone}	timezone	the timezone
+ */
+ZmCalItem.prototype.setEndTimezone =
+function(timezone) {
+	if (this._origEndTimezone == null) {
+		this._origEndTimezone = timezone;
+	}
+	this.endTimezone = timezone;
+};
+
+/**
  * Sets the view mode, and resets any other fields that should not be set for that view mode.
  * 
  * @param	{constant}	mode		the mode (see <code>ZmCalItem.MODE_</code> constants)
@@ -1028,6 +1041,7 @@ function(message, viewMode) {
 	else {
 		var serverId = !this.startsInUTC && message.invite.getServerStartTimeTz();
 		this.setTimezone(serverId || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+		if(!this.startsInUTC && message.invite.getServerEndTimeTz()) this.setEndTimezone(message.invite.getServerEndTimeTz());
 	}
 
 	var tzrule = AjxTimezone.getRule(AjxTimezone.getClientId(this.getTimezone()));
@@ -2017,6 +2031,11 @@ function(soapDoc, inv, comp) {
 			s.setAttribute("d", AjxDateUtil.getServerDate(this.startDate));
 		}
 	}
+
+
+    if(this.endTimezone) {
+        tz = this.endTimezone;
+    }
 
 	// end date
 	if (this.endDate) {

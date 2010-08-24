@@ -636,7 +636,7 @@ function(compNum) {
 
 	if (this._serverEndTimeZone == null) {
 		var endTime = this.getServerEndTime();
-		this._serverEndTimeZone = endTime && startTime.charAt(endTime.length -1) == 'Z'
+		this._serverEndTimeZone = endTime && endTime.charAt(endTime.length -1) == 'Z'
 			? AjxTimezone.GMT_NO_DST
 			: this.components[cn].e[0].tz;
 	}
