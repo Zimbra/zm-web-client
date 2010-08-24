@@ -135,6 +135,42 @@ function() {
 	return appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
 };
 
+
+ZmCalBaseView.getWorkingHours =
+function() {
+	return appCtxt.get(ZmSetting.CAL_WORKING_HOURS) || 0;
+};
+
+ZmCalBaseView.parseWorkingHours =
+function(wHrsString) {
+    if(wHrsString === 0) {
+        return [];
+    }
+	var wHrsPerDay = wHrsString.split(','),
+        i,
+        wHrs = [],
+        wDay,
+        w,
+        idx;
+
+    for(i=0; i<wHrsPerDay.length; i++) {
+        wDay = wHrsPerDay[i].split(':');
+        w = {};
+        idx = wDay[0];
+        if(wDay[1] === "Y") {
+            w.isWorkingDay = true;
+        }
+        else {
+            w.isWorkingDay = false;
+        }
+        w.startTime = wDay[2];
+        w.endTime = wDay[3];
+
+        wHrs[idx] = w;
+    }
+    return wHrs;
+};
+
 ZmCalBaseView.prototype.addViewActionListener =
 function(listener) {
 	this._evtMgr.addListener(ZmCalBaseView.VIEW_ACTION, listener);
