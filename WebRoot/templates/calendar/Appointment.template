@@ -2,7 +2,7 @@
 <$ var labelStyle = "width:"+(AjxEnv.isIE ? 30 : 32)+"px; overflow:visible; white-space:nowrap"; $>
 <$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $> 
 	<div id='${id}_top'>
-		<table border=0 width=100% style='table-layout:fixed;' id='${id}_table' class='calendar_edit_view_separator'>
+		<table border=0 width=100% style='table-layout:fixed;margin-top: 10px;' id='${id}_table' class='calendar_edit_view_separator'>
             <colgroup>
                 <col width='60' />
                 <col width='140'/>
@@ -23,12 +23,12 @@
             </tr>
             <$ } $>
             <tr>
-                <td width='60' align='right' valign='top'><legend><$= ZmMsg.attendees $></legend></td>
+                <td width='60' align='right' valign='top'><legend><$= ZmMsg.requiredLabel $></legend></td>
                 <td colspan='5' id='${id}_person'></td>
-                <td id='${id}_show_optional' class='fakeAnchor'></td>
+                <td id='${id}_show_optional' class='fakeAnchor'><$= ZmMsg.showOptional $></td>
             </tr>
             <tr id='${id}_optionalContainer'>
-                <td width='60' align='right' valign='top'><legend><$= ZmMsg.optionalInvitees $></legend></td>
+                <td width='60' align='right' valign='top'><legend><$= ZmMsg.optionalLabel $></legend></td>
                 <td colspan='5' id='${id}_optional'></td>
                 <td>&nbsp;</td>
             </tr>

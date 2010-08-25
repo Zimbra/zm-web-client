@@ -104,6 +104,7 @@ function() {
 
 	if (this.GROUP_CALENDAR_ENABLED) {
 		this._attendeesInputField.setValue("");
+		this._optAttendeesInputField.setValue("");
         this._forwardToField.setValue("");
 	}
 	this._attInputField[ZmCalBaseItem.LOCATION].setValue("");
@@ -145,6 +146,7 @@ function(bEnableInputs) {
 			bEnableAttendees = false;
 		}
 		this._attendeesInputField.setEnabled(bEnableAttendees);
+		this._optAttendeesInputField.setEnabled(bEnableAttendees);
 	}
 	this._attInputField[ZmCalBaseItem.LOCATION].setEnabled(bEnableInputs);
 };
@@ -231,6 +233,7 @@ function(tabGroup) {
 
 	if(this.GROUP_CALENDAR_ENABLED) {
 		tabGroup.addMember(this._attInputField[ZmCalBaseItem.PERSON]);
+		tabGroup.addMember(this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON]);
 	}
 	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
 	tabGroup.addMember(document.getElementById(bodyFieldId));
@@ -382,7 +385,11 @@ function(calItem, mode) {
 	var attendees = calItem.getAttendees(ZmCalBaseItem.PERSON);
 	if (attendees && attendees.length) {
 		if (this.GROUP_CALENDAR_ENABLED) {
-			this._attendeesInputField.setValue(calItem.getAttendeesText(ZmCalBaseItem.PERSON));
+			this._attendeesInputField.setValue(calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED));
+			this._optAttendeesInputField.setValue(calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL));
+            if(this._optAttendeesInputField.getValue() != "") {
+                this._toggleOptionalAttendees(true);
+            }
 		}
         if(!this._isForward) {
 		    this._attendees[ZmCalBaseItem.PERSON] = AjxVector.fromArray(attendees);
@@ -398,6 +405,7 @@ function(calItem, mode) {
 	}else {
         if (this.GROUP_CALENDAR_ENABLED) {
             this._attendeesInputField.setValue("");
+            this._optAttendeesInputField.setValue("");
         }
         this._attendees[ZmCalBaseItem.PERSON] = new AjxVector();
         this._attInputField[ZmCalBaseItem.PERSON] = this._isForward ? this._forwardToField : this._attendeesInputField;        
@@ -604,7 +612,6 @@ function(width) {
     this._schImage = document.getElementById(this._htmlElId + "_scheduleImage");    
     Dwt.setHandler(this._schButton, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 
-    Dwt.setVisible(this._showOptional, false);
 	this._resourcesContainer = document.getElementById(this._htmlElId + "_resourcesContainer");
 
 	this._resourcesData = document.getElementById(this._htmlElId + "_resourcesData");
@@ -705,8 +712,8 @@ function(width) {
 
 
 ZmApptEditView.prototype._toggleOptionalAttendees =
-function() {
-    this._optionalAttendeesShown = ! this._optionalAttendeesShown;
+function(forceShow) {
+    this._optionalAttendeesShown = ! this._optionalAttendeesShown || forceShow;
     this._showOptional.innerHTML = this._optionalAttendeesShown ? ZmMsg.hideOptional : ZmMsg.showOptional;
     Dwt.setVisible(this._optionalAttendeesContainer, Boolean(this._optionalAttendeesShown))
 };
@@ -954,6 +961,11 @@ function(enabled) {
 	if (attField) {
 		attField.setEnabled(enabled);
 	}
+
+	attField = this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON];
+	if (attField) {
+		attField.setEnabled(enabled);
+	}
 };
 
 ZmApptEditView.prototype._folderPickerCallback =
@@ -1051,6 +1063,12 @@ function(text, el, match) {
 			}
 			attendee = newAttendees;
 		}
+
+        //controller tracks both optional & required attendees in common var
+        if (type == ZmCalBaseItem.OPTIONAL_PERSON) {
+            type = ZmCalBaseItem.PERSON;
+        }
+
 		this.parent.parent.updateAttendees(attendee, type, (type == ZmCalBaseItem.LOCATION )?ZmApptComposeView.MODE_REPLACE : ZmApptComposeView.MODE_ADD);
 
 		if (type == ZmCalBaseItem.LOCATION) {
@@ -1079,6 +1097,12 @@ function() {
 
 	if (this._attendeesInputField) {
 		var inputEl = this._attendeesInputField.getInputElement();
+		inputEl.onfocus = AjxCallback.simpleClosure(this._handleOnFocus, this, inputEl);
+		inputEl.onblur = AjxCallback.simpleClosure(this._handleOnBlur, this, inputEl);
+	}
+
+	if (this._optAttendeesInputField) {
+		var inputEl = this._optAttendeesInputField.getInputElement();
 		inputEl.onfocus = AjxCallback.simpleClosure(this._handleOnFocus, this, inputEl);
 		inputEl.onblur = AjxCallback.simpleClosure(this._handleOnBlur, this, inputEl);
 	}
@@ -1236,8 +1260,13 @@ function() {
 		var type = this._attTypes[t];
 		var attendees = this._attendees[type].getArray();
 		var list = [];
+		var optionalList = [];
 		for (var i = 0; i < attendees.length; i++) {
-			list.push(attendees[i].getAttendeeText(type));
+            if(attendees[i].getParticipantRole() == ZmCalItem.ROLE_OPTIONAL) {
+                optionalList.push(attendees[i].getAttendeeText(type));                
+            }else {
+			    list.push(attendees[i].getAttendeeText(type));
+            }
 		}
 		var val = list.length ? list.join(ZmAppt.ATTENDEES_SEPARATOR) : "";
 
@@ -1249,6 +1278,9 @@ function() {
 			}
 		} else if (type == ZmCalBaseItem.PERSON) {
 			this._attInputField[type].setValue(val);
+
+            var optionalAttendees = optionalList.length ? optionalList.join(ZmAppt.ATTENDEES_SEPARATOR) : "";
+            this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].setValue(optionalAttendees);            
 		}
 	}
 	this._addResourcesDiv();
@@ -1264,12 +1296,25 @@ function(type, useException) {
 	if (!this._activeInputField) { return; }
 
 	this._controller._invalidAttendees = [];
-	var value = this._attInputField[type].getValue();
-    return this._updateAttendeeFieldValues(type, value);
+
+    var attendees;
+
+    if(type == ZmCalBaseItem.OPTIONAL_PERSON || type == ZmCalBaseItem.PERSON) {
+        attendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.PERSON].getValue());
+        var optionalAttendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].getValue(), true);
+        //merge optional & required attendees to update parent controller                
+        attendees.addList(optionalAttendees);
+        type = ZmCalBaseItem.PERSON;
+    }else {
+        var value = this._attInputField[type].getValue();        
+        attendees = this.getAttendeesFromString(type, value);
+    }
+
+    return this._updateAttendeeFieldValues(type, attendees);
 };
 
-ZmApptEditView.prototype._updateAttendeeFieldValues =
-function(type, value) {
+ZmApptEditView.prototype.getAttendeesFromString =
+function(type, value, markAsOptional) {
 	var attendees = new AjxVector();
 	var items = AjxEmailAddress.split(value);
 
@@ -1284,19 +1329,25 @@ function(type, value) {
 					   this._getAttendeeByItem((contact && contact.address) ? contact.address : item, type) ||
 					   ZmApptViewHelper.getAttendeeFromItem(item, type);
 		if (attendee) {
+            if(markAsOptional) attendee.setParticipantRole(ZmCalItem.ROLE_OPTIONAL);
 			attendees.add(attendee);
 		} else {
 			this._controller._invalidAttendees.push(item);
 		}
 	}
 
+    return attendees;
+};
+
+ZmApptEditView.prototype._updateAttendeeFieldValues =
+function(type, attendees) {
 	// *always* force replace of attendees list with what we've found
 	this.parent.parent.updateAttendees(attendees, type);
 
     if(this._schedulerOpened) {
         var organizer = this._isProposeTime ? this.getCalItemOrganizer() : this.getOrganizer();
-        this._scheduleView._setAttendees(organizer, this._attendees);
-    }	
+        this._scheduleView.set(this._dateInfo, organizer, this._attendees);
+    }
 };
 
 ZmApptEditView.prototype._getAttendeeByName =

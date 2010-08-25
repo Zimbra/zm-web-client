@@ -602,7 +602,11 @@ function() {
 ZmFreeBusySchdulerView.prototype._setAttendees =
 function(organizer, attendees) {
 	this.cleanup();
-	var emails = [];
+
+    //sync with date info from schedule view
+    ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
+
+    var emails = [];
 
 	// create a slot for the organizer
 	this._organizerIndex = this._addAttendeeRow(false, organizer.getAttendeeText(ZmCalBaseItem.PERSON, true), false);
@@ -841,7 +845,8 @@ function(ev) {
 
     if(type == ZmCalBaseItem.PERSON || type == ZmCalItem.ROLE_REQUIRED || type == ZmCalItem.ROLE_OPTIONAL) {
         if(sched.attendee) {
-               sched.attendee.setParticipantRole((type == ZmCalItem.ROLE_OPTIONAL) ? ZmCalItem.ROLE_OPTIONAL : ZmCalItem.ROLE_REQUIRED);
+            sched.attendee.setParticipantRole((type == ZmCalItem.ROLE_OPTIONAL) ? ZmCalItem.ROLE_OPTIONAL : ZmCalItem.ROLE_REQUIRED);
+            this._editView._setAttendees();
         }
         type = ZmCalBaseItem.PERSON;
     }
