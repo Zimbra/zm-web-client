@@ -1133,7 +1133,7 @@ function() {
     //listeners
     var buttonListener = new AjxListener(this, this._timeButtonListener);
     var menuSelectionListener = new AjxListener(this, this._timeSelectionListener);
-    var buttonId = this._htmlElId + "_timeSelectBtn"
+    var buttonId = this._htmlElId + "_timeSelectBtn";
 
     //create time select drop down button
     var timeSelectButton = this._timeSelectBtn = new DwtButton({parent:this});
@@ -1145,21 +1145,21 @@ function() {
 
     // create menu for button
     this._hoursSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_SCROLL, maxRows:7});
-    timeSelectButton.setMenu(this._hoursSelectMenu, true);
+    timeSelectButton.setMenu(this._hoursSelectMenu, true, false, false, true);
 
-	this._timeIndex = {};
+    this._timeIndex = {};
     for (var j = 0; j < 24; j++) {
-        now.setHours(j);        
+        now.setHours(j);
         now.setMinutes(0);
 
         var mi = new DwtMenuItem({parent: this._hoursSelectMenu, style: DwtMenuItem.NO_STYLE});
-	var text = timeFormatter.format(now);
-	this._timeIndex[text] = j;
+        var text = timeFormatter.format(now);
+        this._timeIndex[text] = j;
         mi.setText(text);
         mi.setData("value", j*60);
         if (menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
 
-        var minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_CASCADE, maxRows:1});
+        var minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_CASCADE, maxRows:1, congruent: true});
         mi.setMenu(minutesSelectMenu, true);
         mi.setSelectableWithSubmenu(true);
         for (var k = 1; k < 4; k++) {
@@ -1173,4 +1173,6 @@ function() {
 
     timeSelectButton.reparentHtmlElement(buttonId);
     delete buttonId;
+
+    this._hoursSelectMenu.setWidth(timeSelectButton.getW() + this._timeSelectInput.getW());
 };

@@ -1144,10 +1144,10 @@ function(dateInfo) {
     Dwt.setDisplay(this._tzoneSelectEnd.getHtmlElement(), showTimezone ? Dwt.DISPLAY_INLINE : Dwt.DISPLAY_NONE);
 
     //expand/collapse timezone column
-    Dwt.setDisplay(this._tzoneSelectStartElement, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
-    Dwt.setDisplay(this._tzoneSelectEndElement, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
-    Dwt.setDisplay(this._timezoneSpacer, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
-    this._timezoneColumn.setAttribute("width", showTimezone ? 250 : 60);
+    if (this._tzoneSelectStartElement) Dwt.setDisplay(this._tzoneSelectStartElement, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
+    if (this._tzoneSelectEndElement) Dwt.setDisplay(this._tzoneSelectEndElement, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
+    if (this._timezoneSpacer) Dwt.setDisplay(this._timezoneSpacer, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
+    if (this._timezoneColumn) this._timezoneColumn.setAttribute("width", showTimezone ? 250 : 60);
 };
 
 ZmApptEditView.prototype._showTimeFields =
