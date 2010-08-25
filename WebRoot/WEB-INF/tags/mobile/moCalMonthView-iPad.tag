@@ -86,7 +86,7 @@
 
                             <c:choose>
                                 <c:when test="${isZoom and currentDay.timeInMillis eq date.timeInMillis}">
-                                    <td width="34%">
+                                    <td width="34%" class="fishEye">
                                         <c:choose>
                                             <c:when test="${not empty param.tz}">
                                                 <fmt:setTimeZone var="tz" value="${param.tz}" scope="request"/>
@@ -97,31 +97,25 @@
                                         </c:choose>
                                         <div class="wrap-dcontent wrap-dcalzoom" id="wrap-dcontent-view">
                                         <div id="dcontent-view" style="padding-bottom:5px;">
-                                        <div>
-                                        <table width="100%" cellpadding="7" cellspacing="0" border="0">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                             <tr>
-                                                <td align="center" width="20%">
-                                                    <span style="font-size:26px;">${dayTitle}</span>
-                                                </td>
-                                                <td>
-                                                  <span style="font-size:14px;text-align:center;" >
+                                                <td valign="top">
+                                                    <span class="medDate">${dayTitle}</span>  
+                                                  <sup class="medDay">
                                                       <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
                                                       <fmt:formatDate value="${date.time}" pattern="${titleFormat}"/>
-                                                  </span>
+                                                  </sup>
                                                 </td>
                                                 <td align="right">
                                                     <mo:calendarUrl var="monthUrl" view="month" timezone="${timezone}" rawdate="${currentDay}"/>
                                                     <span  onclick="return zClickLink('closeZoom');"><a id='closeZoom' href="${fn:escapeXml(monthUrl)}"><app:img src="common/ImgCancel.gif" alt="close"/></a></span>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td colspan="3">
-                                                    <div style="overflow-y:auto;">
+                                        </table>
+                                        <div class="fishDayView">
+                                         <div style="overflow-y:auto;">
                                                         <mo:calMultiDay date="${date}" numdays="${1}" view="${'day'}" timezone="${timezone}" checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
                                                     </div>
-                                                </td>
-                                            </tr>
-                                        </table>
                                         </div></div></div>    
                                     </td>
                                 </c:when>

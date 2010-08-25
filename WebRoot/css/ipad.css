@@ -12,7 +12,7 @@ a{
 	outline: none;
 }
 
-
+ 
 /* Orientation specific styles */
 
 @media (orientation:landscape) {
@@ -74,6 +74,7 @@ a{
 	.copyrights{
 		margin-left: 20%;	
 	}
+	
     .ZhCalMonthDay, .ZhCalMonthDaySelected {
         height: 0 !important;
     }
@@ -493,7 +494,7 @@ html, body{
 
 .listViewPane{
 	float: left;
-	width: 34.9%;
+	width: 35.9%;
 	border-right: 1px solid #999;
 	position: relative;
     overflow:hidden;
@@ -527,7 +528,7 @@ ul.list li{
 
 .contentViewPane{
 	float: left;
-	width: 64.9%;
+	width: 63.9%;
 	border-left: 1px solid #444;
     position: relative;
     overflow:hidden;
@@ -917,11 +918,15 @@ span.aleft > div:first-child, .contactHeader {
 }
 
 .folderBar{
-	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left;
+	background-color: #eee;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eeeeee), to(#c5c5c5));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #eeeeee, #c5c5c5);
 	height: 15px;
-	color: #453928;
+	color: #333;
+	padding: 8px;
 }
 
+	
 	.folderBar .td{ 
 		text-align: left;
 		padding: 8px;
@@ -937,6 +942,11 @@ span.aleft > div:first-child, .contactHeader {
 		text-decoration: none;
 		color: blue;
 	}
+
+.folderTitle{
+	font-weight: bold;
+	padding-top: 6px;
+}	
 	
 .editFix{ 
 	text-align: right !important;
@@ -1094,7 +1104,7 @@ span.aleft > div:first-child, .contactHeader {
 }
  
 .ZhCalMonthDay, .ZhCalMonthDaySelected{
-	border: 1px solid #d5d5d5;
+	border: 1px solid #e5e5e5;
 	cursor: pointer;
 	overflow: hidden;
 	vertical-align: top;
@@ -1193,7 +1203,7 @@ span.aleft > div:first-child, .contactHeader {
 	text-align: center;
 }
 
-.ZhCalMDOMT,.ZhCalMDHA{
+.ZhCalMDOMT,.ZhCalMDS{
 	background-color: #e5e5e5;
 	-webkit-border-radius: 6px;
 }
@@ -1202,6 +1212,11 @@ span.aleft > div:first-child, .contactHeader {
 		text-shadow: #FFFFFF 0px -1px;
 		color: brown;
 	}
+
+.ZhCalMDOMT {
+	padding:1px;
+	border:1px solid darkblue;
+}
  
 .zo_cal_listh{
 	background-color: #e5e5e5;
@@ -1223,10 +1238,30 @@ span.aleft > div:first-child, .contactHeader {
 	    text-decoration: none;
 	}
 
+.fishEye{
+	background-color: #ece4d0;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ece4d0), to(#d9ceb2));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #ece4d0, #d9ceb2);
+}
+
+.fishDayView{
+	-webkit-border-radius: 6px;
+	background-color: white;
+	border: 1px solid #d9ceb2;
+}
+
+.medDate{
+	font-size:24px;
+	font-weight: bold;
+}
+
+.medDay{
+	font-size: 12px;
+}
 
 /** Preference UI Styles **/   
 
-.titleText,{
+.titleText{
  	font-size: 18px;
  	color: white;
 	text-shadow: #000000 0px -1px;
