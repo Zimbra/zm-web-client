@@ -146,7 +146,7 @@ function(setting, right) {
 ZmCalendarPrefsPage.prototype.isDirty =
 function(section, list, errors) {
 	var dirty = this._controller.getPrefsView()._checkSection(section, this, true, true, list, errors);
-    if(!dirty) {
+    if(!dirty && this._workHoursControl) {
         dirty = this._workHoursControl.isDirty();
     }
 	if (!dirty && this._isAclSupported) {
@@ -187,9 +187,12 @@ function() {
 };
 
 ZmCalendarPrefsPage.prototype._postSave =
-function() {
+function(callback) {
 	if (this._workHoursControl) {
 		this._workHoursControl.reloadWorkHours();
+	}
+    if (callback) {
+		callback.run();
 	}
 };
 
@@ -348,12 +351,17 @@ function(batchCmd) {
 		this._acl.grant(this._grants, respCallback, batchCmd);
 	}
     if(this._workHoursControl) {
-        var value = this._workHoursControl.getValue(),
-            soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount"),
-            node = soapDoc.set("pref", value),
-            respCallback = new AjxCallback(this, this._postSaveBatchCmd, [value]);
-        node.setAttribute("name", "zimbraPrefCalendarWorkingHours");
-        batchCmd.addNewRequestParams(soapDoc, respCallback);
+        if(this._workHoursControl.isValid()) {
+            var value = this._workHoursControl.getValue(),
+                soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount"),
+                node = soapDoc.set("pref", value),
+                respCallback = new AjxCallback(this, this._postSaveBatchCmd, [value]);
+            node.setAttribute("name", "zimbraPrefCalendarWorkingHours");
+            batchCmd.addNewRequestParams(soapDoc, respCallback);
+        }
+        else {
+            throw new AjxException(ZmMsg.calendarWorkHoursInvalid);
+        }
     }
 };
 
@@ -548,14 +556,12 @@ function(templateId) {
     this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#"+templateId, {id:this._htmlElId});    
     //fill the containers for the work days and work time
     el = document.getElementById(this._htmlElId + "_CAL_WORKING_START_TIME");
-    startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
     startTimeSelect.set(this._startTime);
     startTimeSelect.reparentHtmlElement(el);
     this.parent._addControlTabIndex(el, startTimeSelect);
     this._startTimeSelect = startTimeSelect;
 
     el = document.getElementById(this._htmlElId + "_CAL_WORKING_END_TIME");
-    endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END);
     endTimeSelect.set(this._endTime);
     endTimeSelect.reparentHtmlElement(el);
     this.parent._addControlTabIndex(el, endTimeSelect);
