@@ -646,26 +646,27 @@ function(compNum) {
 /**
  * Gets the duration text.
  * 
- * @param	{int}	compNum		the component number
+ * @param	{int}		compNum			the component number
  * @param	{Boolean}	emptyAllDay		<code>true</code> to return an empty string "" if all day event.
  * @param	{Boolean}	startOnly		<code>true</code> to include start only
  * @param	{Boolean}	isText			<code>true</code> to return as text, not html
+ * @param	{Date}		startDate		Optional. Start date to use instead of the original start date
+ * @param	{Date}		endDate			Optional. End date to use instead of the original end date
+ *
  * @return	{String}	the duration
  */
 ZmInvite.prototype.getDurationText =
-function(compNum, emptyAllDay, startOnly, isText) {
+function(compNum, emptyAllDay, startOnly, isText, startDate, endDate) {
 	var component = this.components[compNum];
-	var sdt = this.getServerStartDate(compNum);
-	var edt = this.getServerEndDate(compNum);
-	if (!sdt && !edt) { return ""; }
+	var sd = startDate || this.getServerStartDate(compNum);
+	var ed = endDate || this.getServerEndDate(compNum);
+	if (!sd && !ed) { return ""; }
 
+	// all day
 	if (this.isAllDayEvent(compNum)) {
 		if (emptyAllDay) { return ""; }
 
-		var sd = this.getServerStartDate(compNum);
 		if (this.isMultiDay(compNum)) {
-			var ed = this.getServerEndDate(compNum);
-
 			var dateFormatter = AjxDateFormat.getDateInstance();
 			var startDay = dateFormatter.format(sd);
 			var endDay = dateFormatter.format(ed);
@@ -673,37 +674,28 @@ function(compNum, emptyAllDay, startOnly, isText) {
 			if (!ZmInvite._daysFormatter) {
 				ZmInvite._daysFormatter = new AjxMessageFormat(ZmMsg.durationDays);
 			}
-			return ZmInvite._daysFormatter.format( [ startDay, endDay ] );
+			return ZmInvite._daysFormatter.format([startDay, endDay]);
 		} 
-		var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
-		return dateFormatter.format(sd);
+		return AjxDateFormat.getDateInstance(AjxDateFormat.FULL).format(sd);
+	}
+
+	var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
+	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+
+	var a = [dateFormatter.format(sd), isText ? " " : "<br>"];
+	if (startOnly) {
+		a.push(timeFormatter.format(sd));
 	}
 	else {
-		var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
-		var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+		var startHour = timeFormatter.format(sd);
+		var endHour = timeFormatter.format(ed);
 
-		var sd = this.getServerStartDate(compNum);
-		var a = [];
-		if (sd) {
-			a = [dateFormatter.format(sd), isText ? " " : "<br>"];
-			if (startOnly) {
-				a.push(timeFormatter.format(sd));
-			}
-			else {
-				var ed = this.getServerEndDate(compNum);
-				if (ed) {
-					var startHour = timeFormatter.format(sd);
-					var endHour = timeFormatter.format(ed);
-
-					if (!ZmInvite._hoursFormatter) {
-						ZmInvite._hoursFormatter = new AjxMessageFormat(ZmMsg.durationHours);
-					}
-					a.push(ZmInvite._hoursFormatter.format( [ startHour, endHour ] ));
-				}
-			}
+		if (!ZmInvite._hoursFormatter) {
+			ZmInvite._hoursFormatter = new AjxMessageFormat(ZmMsg.durationHours);
 		}
-		return a.join("");
+		a.push(ZmInvite._hoursFormatter.format([startHour, endHour]));
 	}
+	return a.join("");
 };
 
 /**

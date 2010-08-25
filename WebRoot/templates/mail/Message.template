@@ -165,7 +165,7 @@
 								<td class='LabelColName'><$= data.counterInvMsg ? ZmMsg.proposedTimeLabel : ZmMsg.timeLabel $></td>
 								<td class='LabelColValue'>
 									<$= data.invDate $><br>
-									<$= data.invite.getServerStartTimeTz() $>
+									<$= data.timezone $>
 								</td>
 							</tr>
 							<$ if (data.invite.getLocation()) { $>
