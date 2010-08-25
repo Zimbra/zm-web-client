@@ -774,11 +774,12 @@ a.accept,a.tentative,a.decline{
     height: 16px;
     display: inline-block;
     vertical-align:middle;
+    background: url("/img/mobile/iphone-ext/common.png") no-repeat top left;
 }
 
-.Msg {
-    background: transparent url("/img/im/Img_ImSmallAvailable.gif") no-repeat center center;
-}
+/*.Msg {*/
+    /*background: transparent url("/img/im/Img_ImSmallAvailable.gif") no-repeat center center;*/
+/*}*/
 
 .Attachment{
 	background: transparent url("/img/startup/ImgAttachment.gif") no-repeat top left;
@@ -790,6 +791,20 @@ a.accept,a.tentative,a.decline{
 
 .Edit{
 	background: transparent url("/img/startup/ImgEdit.gif") no-repeat top left;
+}
+
+.Msg {
+    background-position: 0 -308px !important;
+    left:15px;
+}
+
+.MsgGray {
+    background-position: 0 -200px !important;
+    left:15px;
+}
+.Conv {
+    background-position: 0 -326px !important;
+    left:15px;
 }
 
 .View hr{

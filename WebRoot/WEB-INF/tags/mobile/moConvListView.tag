@@ -72,9 +72,7 @@
                 <span class="td f">
                     <c:set value=",${chit.id}," var="stringToCheck"/>
                     <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedCids,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''} name="cid" value="${chit.id}"/>
-                    <c:if test="${ua.isiPad == false}">
                     <span class="SmlIcnHldr ${class}">&nbsp;</span>
-                    </c:if>
                 </span>
                 <span class="td m" onclick='return zClickLink("a${chit.id}");'>
                     <div class="from-span">
@@ -88,13 +86,11 @@
                         <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
                         ${fn:escapeXml(_f)}
                     </div>
-                    <c:if test="${ua.isiPad == false}">
-                        <div class="frag-span small-gray-text">
-                            <c:set var="_f" value="${chit.fragment}"/>
-                            <c:if test="${fn:length(_f) > 47}"><c:set var="_f" value="${fn:substring(_f, 0, 47)}..."/></c:if>
-                            ${fn:escapeXml(_f)}
-                        </div>
-                    </c:if>
+                    <div class="frag-span small-gray-text">
+                        <c:set var="_f" value="${chit.fragment}"/>
+                        <c:if test="${fn:length(_f) > 47}"><c:set var="_f" value="${fn:substring(_f, 0, 47)}..."/></c:if>
+                        ${fn:escapeXml(_f)}
+                    </div>
                 </span>
                 <span class="td l">
                     <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${chit.date}"/>
