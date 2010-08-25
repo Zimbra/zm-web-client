@@ -567,8 +567,10 @@ ZmSettings.prototype._handleResponseSaveMetaData =
 function(list, result) {
 	for (var i = 0; i < list.length; i++) {
 		var setting = list[i];
-		setting.origValue = setting.copyValue();
-		setting._notify(ZmEvent.E_MODIFY);
+		if (!ZmSetting.IS_IMPLICIT[setting.id]) {
+			setting.origValue = setting.copyValue();
+			setting._notify(ZmEvent.E_MODIFY);
+		}
 	}
 };
 
