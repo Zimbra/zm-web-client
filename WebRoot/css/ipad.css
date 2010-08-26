@@ -918,10 +918,12 @@ span.aleft > div:first-child, .contactHeader {
 }
 
 .folderBar{
-	background-color: #eee;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eeeeee), to(#c5c5c5));
-	background-image: -moz-linear-gradient(100% 100% 90deg, #eeeeee, #c5c5c5);
-	height: 15px;
+	background-color: #564e3c;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#564e3c), to(#29251b));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #564e3c, #29251b);
+	height: 45px;
+	overflow: hidden;
+	border: none;
 	color: #333;
 	padding: 8px;
 }
@@ -946,6 +948,7 @@ span.aleft > div:first-child, .contactHeader {
 .folderTitle{
 	font-weight: bold;
 	padding-top: 6px;
+	color: white;
 }	
 	
 .editFix{ 

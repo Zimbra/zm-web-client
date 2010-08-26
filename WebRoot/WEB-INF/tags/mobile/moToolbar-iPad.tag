@@ -194,13 +194,13 @@
 
                         <div class="actions">
                             <div class="actionLeft button" onclick="return zClickLink('cal-list');">
-                                <a id="cal-list" ${list} class='prev_button ${view!=null && view=='list'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewListShort"/></a>
+                               <a id="cal-day" ${day} class='next_button ${view!=null && view=='day'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewDayShort"/></a>
                             </div>
                             <div class="actionCenter button" onclick="return zClickLink('cal-day');">
-                                <a id="cal-day" ${day} class='next_button ${view!=null && view=='day'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewDayShort"/></a>
+                               <a id="cal-month" ${month} class='next_button ${view!=null && view=='month'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewMonthShort"/></a>
                             </div>
                             <div class="actionRight button" onclick="return zClickLink('cal-month');">
-                                <a id="cal-month" ${month} class='next_button ${view!=null && view=='month'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewMonthShort"/></a>
+                               <a id="cal-list" ${list} class='prev_button ${view!=null && view=='list'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewListShort"/></a>
                             </div>
                         </div>
                     </div>
