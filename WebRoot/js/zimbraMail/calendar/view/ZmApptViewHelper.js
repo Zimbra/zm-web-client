@@ -546,10 +546,36 @@ function(hours, minutes, ampm, date) {
 			hours = (hours < 12) ? hours + 12 : hours;
 		}
 	}
-	
 	date = date ? date : new Date();
 	date.setHours(hours, Number(minutes), 0, 0);
 	return date;
+};
+
+ZmTimeSelect.parse =
+function(timeString) {
+    var date;
+	var lTimeString = timeString.toLowerCase();
+	if (lTimeString === ZmMsg.midnight.toLowerCase() || lTimeString === ZmMsg.noon.toLowerCase()) {
+		date = new Date();
+		date.setMinutes(0);
+		date.setSeconds(0);
+			date.setHours(lTimeString === ZmMsg.noon.toLowerCase() ? 12 : 0);
+	} else {
+		var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);    
+		date = timeFormatter.parse(timeString);
+	}
+    return date;
+};
+
+ZmTimeSelect.format =
+function(date) {
+	if (date.getHours() == 0 && date.getMinutes() == 0) {
+		return ZmMsg.midnight;
+	} else if (date.getHours() == 12 && date.getMinutes() == 0) {
+		return ZmMsg.noon;
+	} else {
+		return AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT).format(date);
+	}
 };
 
 /**
@@ -864,9 +890,8 @@ ZmTimeInput.AMPM	= 3;
 
 ZmTimeInput.getDateFromFields =
 function(timeStr, date) {
-    var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-    var formattedDate = formatter.parse(timeStr);
-    date = date ? date : new Date();
+    var formattedDate = ZmTimeSelect.parse(timeStr);
+    date = date || new Date();
     date.setHours(formattedDate.getHours(), formattedDate.getMinutes(), 0, 0);
     return date;
 };
@@ -902,7 +927,7 @@ function(ev, startSelect, endSelect, startDateField, endDateField, dateInfo, id)
         var newEndDateMs = newStartDateMs + delta;
         var newEndDate = new Date(newEndDateMs);
 
-	startSelect.set(new Date(newStartDateMs));
+        startSelect.set(new Date(newStartDateMs));
         endSelect.set(newEndDate);
         endDateField.value = AjxDateUtil.simpleComputeDateStr(newEndDate);
 
@@ -962,12 +987,10 @@ ZmTimeInput.prototype.constructor = ZmTimeInput;
 */
 ZmTimeInput.prototype.set =
 function(date) {
-    var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-    var timeStr = timeFormatter.format(date);
+    var timeStr = ZmTimeSelect.format(date);
     this._originalTimeStr = timeStr;
     this._timeSelectInput.setValue(timeStr);
-    var index= timeStr.replace(/\:\d\d/, ":00");
-    this._hoursSelectMenu.scrollToIndex(this._timeIndex[index]);
+    this._scrollToValue(timeStr);
 };
 
 /**
@@ -978,12 +1001,19 @@ function(date) {
 ZmTimeInput.prototype.setValue =
 function(str) {
     //sets only if the date is valid
-    var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-    var date = timeFormatter.parse(str);
-    this._originalTimeStr = date ? str : "";
-    this._timeSelectInput.setValue( date ? str : "");
+    var date = ZmTimeSelect.parse(str);
+    if (!date) str = "";
+    this._originalTimeStr = str;
+    this._timeSelectInput.setValue(str);
+    this._scrollToValue(str);
 };
 
+ZmTimeInput.prototype._scrollToValue =
+function(str) {
+	var index = this.getTimeIndex(str);
+    if (index !== null)
+		this._hoursSelectMenu.scrollToIndex(index);
+};
 
 /**
  * Returns a date object with the hours and minutes set based on
@@ -996,8 +1026,7 @@ function(str) {
 ZmTimeInput.prototype.getValue =
 function(date) {
 	//return (ZmTimeInput.getDateFromFields(this.getHours(), this.getMinutes(), this.getAmPm(), date));
-    var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-    var d = timeFormatter.parse(this._timeSelectInput.getValue());
+    var d = ZmTimeSelect.parse(this._timeSelectInput.getValue());
     date = date || new Date();
     //daylight saving time
     if(AjxDateUtil.isDayShifted(date)) {
@@ -1030,15 +1059,16 @@ function(listener) {
 ZmTimeInput.prototype.handleTimeChange =
 function(listener, ev) {
     //restore old value if the new time is not in correct format
-    var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-    var d = timeFormatter.parse(this._timeSelectInput.getValue());
+    var str = this._timeSelectInput.getValue();
+    var d = ZmTimeSelect.parse(str);
     if(!d) {
-        var val = this._timeSelectInput.getValue();
-        var newDate = this.correctTimeString(val, timeFormatter.parse(this._originalTimeStr));
-        this.setValue(timeFormatter.format(newDate) || "");
+        var newDate = this.correctTimeString(str, ZmTimeSelect.parse(this._originalTimeStr));
+        this.setValue(ZmTimeSelect.format(newDate) || "");
+    } else {
+        this._scrollToValue(str);
     }
 
-    listener.run(ev, this.id);    
+    listener.run(ev, this.id);
 };
 
 ZmTimeInput.prototype.correctTimeString =
@@ -1090,16 +1120,26 @@ function(ev) {
 
 ZmTimeInput.prototype.getTimeString =
 function() {
-    var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);    
-
     //validate and returns only valid time string
-    var date = timeFormatter.parse(this._timeSelectInput.getValue());
+    var date = ZmTimeSelect.parse(this._timeSelectInput.getValue());
     return date ? this._timeSelectInput.getValue() : "";    
 };
 
 ZmTimeInput.prototype.getInputField =
 function() {
     return this._timeSelectInput;
+};
+
+ZmTimeInput.prototype.putTimeIndex =
+function(text, value) {
+    this._timeIndex[text.replace(/\:\d\d/, ":00").replace(/\s/,"").toLowerCase()] = value;
+};
+
+ZmTimeInput.prototype.getTimeIndex =
+function(text) {
+    if (!text) return null;
+    var index = this._timeIndex[text.replace(/\:\d\d/, ":00").replace(/\s/,"").toLowerCase()];
+    return (index || index===0) ? index : null;
 };
 
 ZmTimeInput.prototype._createSelects =
@@ -1153,8 +1193,14 @@ function() {
         now.setMinutes(0);
 
         var mi = new DwtMenuItem({parent: this._hoursSelectMenu, style: DwtMenuItem.NO_STYLE});
-        var text = timeFormatter.format(now);
-        this._timeIndex[text] = j;
+        var text = timeFormatter.format(now); // Regular formatter, returns the I18nMsg formatted time
+        this.putTimeIndex(text, j);
+
+        if (j==0 || j==12) {
+            text = ZmTimeSelect.format(now); // Specialized formatter, returns ZmMsg.midnight for midnight and ZmMsg.noon for noon
+            this.putTimeIndex(text, j); // Both should go in the indexer
+        }
+
         mi.setText(text);
         mi.setData("value", j*60);
         if (menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
