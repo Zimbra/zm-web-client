@@ -31,7 +31,7 @@
     <c:when test="${ua.isiPad eq true}">
     <c:if test="${empty param.showFolderCreate and empty param.showSearchCreate and empty param.showTagCreate}">    
         <div class="tb tbl"><div class="tr"><div class="td toolbar">
-            <span class="folder button"><fmt:message key="folders"/></span>
+            <span class="folder button" onclick="return zClickLink('mail')"><a class="zo_button1" id="mail" href="${aurl}?st=${mailbox.prefs.groupMailBy}"><fmt:message key="back"/></a></span>
             <span class="buttonRight button" onclick="return zClickLink('createFolder')">
                 <a  class="zo_button1" id="createFolder" href="?st=folders${empty param.showFolderCreate?'&showFolderCreate=1':''}${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showFolderCreate ? 'create' : 'close'}"/></a>
             </span>

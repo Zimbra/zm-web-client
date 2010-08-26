@@ -141,16 +141,29 @@
     
 	<div class="toolbar footer">
        <div class="listViewPane" style="background-color:transparent;">		
-			<div class="quota alignLeft">
-				<div class="shell">
-					<div class="bar"></div>
-				</div>
+			<div class="quota">
+                <c:set var="userQuota" value="0"/>
+                <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
+                <c:if test="${max != 0}">
+                    <c:set var="userQuota" value="${(mailbox.size*100)/max}"/>
+                </c:if>
+                <c:catch>
+                    <fmt:message var="unlimited" key="unlimited"/>
+                    <fmt:message key="quotaUsage">
+                        <fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/>
+                        <fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,2)}"/>
+                    </fmt:message>
+                </c:catch>
+                <div style="align:center">${quotaUsage}</div>
+                <div class="shell">
+                     <div class="bar" style="width:${userQuota}%"></div>
+                </div>
 			</div>
 		</div>		
 			
         <div class="contentViewPane">
         <div class="userInfo alignLeft">
-				user1@zimbra.com
+				${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}
 			</div>
         	<div class ="alignLeft copyrights">
        		 	&copy; 2010 <a href="#">Zimbra</a>. All rights reserved.
