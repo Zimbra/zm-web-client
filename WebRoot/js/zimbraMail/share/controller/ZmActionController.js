@@ -91,7 +91,9 @@ ZmActionController.prototype.undoCurrent = function() {
  * Dismisses the popped up toast
  */
 ZmActionController.prototype.dismiss = function() {
-	appCtxt.getAppController().statusView.unHold(!this._active); // If we're active (an undoable action has been performed and we're showing the toast), clear one holding off the toast
+	if (this._active) {
+		appCtxt.getAppController().statusView.unHold(); // If we're active (an undoable action has been performed and we're showing the toast), clear one holding off the toast
+	}
 	this._active = false;
 };
 

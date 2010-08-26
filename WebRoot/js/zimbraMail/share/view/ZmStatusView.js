@@ -320,6 +320,7 @@ function() {
         if (!this._statusView.nextStatus()) {
             this.popdown();
         }
+	this._unholdCounter = 0;
         return;
     }
 
@@ -447,7 +448,7 @@ function() {
 ZmToast.prototype.__hold =
 function() {
     if (this._unholdCounter) {
-        this._unholdCounter--;
+        this._unholdCounter = 0;
         this._funcs["next"]();
     } else {
         if (!this._onUnHold)
@@ -462,14 +463,18 @@ function() {
 ZmToast.prototype.unHold =
 function(all) {
     if (this._onUnHold && this._onUnHold.length) {
-		for (var i=0; (i<1 || (all && i<1000)) && this._onUnHold.length; i++) { // If !all, run once. If all, keep running (but limit it nonetheless). In either case, stop when this._onUnHold is empty
+		while (this._onUnHold.length) {
 			var func = this._onUnHold.shift();
 			func();
+			if (!all) {
+				break;
+			}
 		}
+		this._unholdCounter = 0;
     } else {
 		// It may happen that the user presses a dismiss link before the toast is completely displayed (he's quick!), so we get here before the toast is in the "hold" state.
 		// Therefore we queue up the holding so the hold state is immediately skipped
-        this._unholdCounter = all ? 0 : (this._unholdCounter+1 || 1);
+        // this._unholdCounter = all ? 0 : 1;//all ? 0 : (this._unholdCounter+1 || 1);
     }
 };
 

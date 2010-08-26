@@ -467,10 +467,11 @@ function(params) {
  * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
  * @param	{int}			params.count			the starting count for number of items processed
  * @param	{boolean}		params.undoing			true if the action is performed as an undo (different result text and not undoable)
+ * @param	{String}		params.actionText		optional text to display in the confirmation toast instead of the default summary
  */
 ZmList.prototype.moveItems =
 function(params) {
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "undoing", "actionText"]);
 
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		return this._mixedAction("moveItems", params);
