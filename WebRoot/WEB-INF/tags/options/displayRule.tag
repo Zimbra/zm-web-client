@@ -81,7 +81,7 @@
                 <c:when test="${zm:isHeaderCondition(condition)}">
                     <c:set var="hdr" value="${zm:getHeader(condition)}"/>
                     <c:choose>
-                        <c:when test="${hdr.headerName eq 'subject' or hdr.headerName eq 'to' or hdr.headerName eq 'cc' or hdr.headerName eq 'from'}">
+                        <c:when test="${hdr.headerName eq 'subject' or hdr.headerName eq 'to' or hdr.headerName eq 'cc' or hdr.headerName eq 'to,cc' or hdr.headerName eq 'from'}">
                             <fmt:message key="FILT_COND_HEADER_${hdr.headerOp}">
                                 <fmt:param><fmt:message key="FILT_COND_HEADER_${hdr.headerName}"/></fmt:param>
                                 <fmt:param>${fn:escapeXml(hdr.headerValue)}</fmt:param>

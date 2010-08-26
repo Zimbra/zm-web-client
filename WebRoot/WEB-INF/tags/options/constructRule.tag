@@ -96,6 +96,9 @@
             <c:when test="${param.cond_add eq 'cc'}">
                 <zm:headerCondition name="cc" value="" op="IS"/>
             </c:when>
+             <c:when test="${param.cond_add eq 'to,cc'}">
+                <zm:headerCondition name="to,cc" value="" op="IS"/>
+            </c:when>
             <c:when test="${param.cond_add eq 'subject'}">
                 <zm:headerCondition name="subject" value="" op="IS"/>
             </c:when>
