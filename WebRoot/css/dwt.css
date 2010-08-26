@@ -385,14 +385,26 @@
 
 .DwtMenuCascadeCell 					{	@LeftSeparator@		}
 
-.DwtMenuScrollTop					{	width: 100%; height: 10px; 	}
-.DwtMenuScrollBottom					{	width: 100%; height: 10px; 	}
 
-.DwtMenuScrollTop div					{	margin:2px auto 0; 	}
-.DwtMenuScrollBottom div				{	margin:0 auto 2px; 	}
+#IFDEF MSIE
+.DwtMenuScrollTop,
+.DwtMenuScrollBottom					{	text-align:center; 	}
+.DwtMenuScrollTop div,
+.DwtMenuScrollBottom div				{	display:inline; }
+#ENDIF
 
-.DwtMenu-congruentLeft					{	border-right: none !important; -moz-border-radius-topright:0; -moz-border-radius-bottomright:0	}
-.DwtMenu-congruentRight					{	border-left: none !important; -moz-border-radius-topleft:0; -moz-border-radius-bottomleft:0 	}
+#IFDEF GECKO
+.DwtMenuScrollTop div,
+.DwtMenuScrollBottom div				{	position:relative; top:@MenuScrollArrowMargin@;	}
+#ENDIF
+
+.DwtMenuScrollTop,
+.DwtMenuScrollBottom					{	width: 100%; @MenuScrollHeight@ 	}
+.DwtMenuScrollTop div,
+.DwtMenuScrollBottom div				{	margin:@MenuScrollArrowMargin@ auto;	}
+
+.DwtMenu-congruentLeft					{	@MenuCongruentLeft@	}
+.DwtMenu-congruentRight					{	@MenuCongruentRight@ 	}
 
 /* ??? */
 .DwtSelectMenu table{
