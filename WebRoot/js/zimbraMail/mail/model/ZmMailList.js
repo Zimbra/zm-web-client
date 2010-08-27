@@ -81,13 +81,11 @@ function(params) {
 	var params1 = AjxUtil.hashCopy(params);
 
 	params1.attrs = {};
-	params1.attrs.tcon = this._getTcon();
+	params1.attrs.tcon = this._getTcon(params.items);
 	params1.attrs.l = params.folder.id;
 	params1.action = (params.folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
     if (params1.folder.id == ZmFolder.ID_TRASH) {
-		if (params1.items.length > 1) {
-	        params1.actionText = params.actionText || ZmMsg.actionTrash;
-		}
+        params1.actionText = params.actionText || ZmMsg.actionTrash;
     } else {
         params1.actionText = params.actionText || ZmMsg.actionMove;
         params1.actionArg = params1.folder.getName(false, false, true);
@@ -639,16 +637,23 @@ function(items, sortBy, event, details) {
 };
 
 ZmMailList.prototype._getTcon =
-function() {
+function(items) {
 	var chars = ["-"];
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
 	var searchFolder = this.search && appCtxt.getById(this.search.folderId);
 	for (var i = 0; i < folders.length; i++) {
 		if (!(searchFolder && searchFolder.nId == folders[i])) {
-			chars.push(ZmFolder.TCON_CODE[folders[i]]);
+			var found = false;
+			for (var j=0; j<items.length; j++) {
+				if (items[j].folders[folders[i]]) {
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+				chars.push(ZmFolder.TCON_CODE[folders[i]]);
 		}
 	}
-
 	return chars.join("");
 };
 

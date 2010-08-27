@@ -252,7 +252,7 @@ function(ev) {
 		var needsSort = false;
 		for (var i = 0, len = items.length; i < len; i++) {
 			var item = items[i];
-			if (item.folderId == this._folderId && ev.event == ZmEvent.E_MOVE) {
+			if ((this.type==ZmId.ITEM_CONV ? (item.folders[this._folderId]) : (item.folderId == this._folderId)) && ev.event == ZmEvent.E_MOVE) {
 				// We've moved the item into this folder
 				if (this._getRowIndex(item) === null) { // Not already here
 					this.addItem(item);
