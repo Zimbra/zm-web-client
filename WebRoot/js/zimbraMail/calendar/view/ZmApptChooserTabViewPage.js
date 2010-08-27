@@ -50,6 +50,7 @@ ZmApptChooserTabViewPage = function(parent, attendees, controller, type, dateInf
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
 	this._kbMgr = appCtxt.getKeyboardMgr();    
     this._list = new AjxVector();
+    this.showSelect = false;
 };
 
 ZmApptChooserTabViewPage.COL_LABEL = {};
@@ -219,6 +220,9 @@ function(appt, mode, isDirty, apptComposeMode) {
 		this._addDwtObjects();
 		this._rendered = true;
 	}
+    if (appCtxt.isOffline && this.type == ZmCalBaseItem.PERSON) {
+        this.setSelectVisibility();
+    }
 	this._resetSelectDiv();
 };
 
@@ -380,21 +384,23 @@ ZmApptChooserTabViewPage.prototype._getSearchFieldHtml =
 function(id, html, i, addButton, addMultLocsCheckbox) {
 	if (id == ZmApptChooserTabViewPage.SF_SOURCE) {
 		// no need for source select if not more than one choice to choose from
-		var showSelect = false;
+		this.showSelect = false;
 		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
-				showSelect = true;
+				this.showSelect = true;
 		}
 
-		if (!showSelect) {
-			html[i++] = "<td>&nbsp;</td>";
-		} else {
-			this._listSelectId = this._searchFieldIds[id];
-			html[i++] = "<td align='right'>";
+		if (this.showSelect || appCtxt.isOffline) {
+            this._listSelectId = this._searchFieldIds[id];
+			html[i++] = "<td align='right' id='";
+            html[i++] = this._listSelectId+"_label";
+            html[i++] = "'>";
 			html[i++] = ZmMsg[ZmApptChooserTabViewPage.SF_LABEL[id]];
 			html[i++] = ":&nbsp;</td><td id='";
 			html[i++] = this._listSelectId;
 			html[i++] = "' width='130'></td>";
+		} else {
+			html[i++] = "<td>&nbsp;</td>";
 		}
 	} else {
 		html[i++] = "<td align='right'>";
@@ -424,6 +430,9 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 		html[i++] = "</label></td></tr></table></td>";
 	}
 
+    if (appCtxt.isOffline && this.type == ZmCalBaseItem.PERSON) {
+        this.setSelectVisibility(this.showSelect);
+    }
 	return i;
 };
 
@@ -443,7 +452,7 @@ function() {
 	}
 
 	// add select menu for contact source if we need one
-	if (this._listSelectId) {
+	if (this.showSelect) {
 		var listSelect = document.getElementById(this._listSelectId);
 		this._selectDiv = new DwtSelect({parent:this});
 		this._resetSelectDiv();
@@ -602,6 +611,24 @@ function() {
 			this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
 		}
 	}
+};
+
+ZmApptChooserTabViewPage.prototype.setSelectVisibility =
+function(showSelect) {
+    if(typeof(showSelect) == "undefined") {
+        showSelect = false;
+        if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+            if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+                showSelect = true;
+            }
+        }
+    }
+    var listSelect = document.getElementById(this._listSelectId);
+    var selectLabel = document.getElementById(this._listSelectId+"_label");
+    if(listSelect && selectLabel) {
+        Dwt.setDisplay(selectLabel, showSelect ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
+        Dwt.setDisplay(listSelect, showSelect ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);        
+    }
 };
 
 /**

@@ -860,6 +860,8 @@ function() {
 		if (attendeesTab) {
 			attendeesTab.cleanup();
 		}
+        // show / hide source select in attendees tab
+        attendeesTab.setSelectVisibility();
 	}
 
 	var acct = appCtxt.getActiveAccount();
