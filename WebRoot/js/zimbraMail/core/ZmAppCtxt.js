@@ -122,6 +122,9 @@ function() {
  * @param	{String}	params.detail 	the details (may be <code>null</code>)
  * @param	{Object}	params.transitions 	the transitions (may be <code>null</code>)
  * @param	{Object}	params.toast	the toast control (may be <code>null</code>)
+ * @param   {boolean}   params.force    force any displayed toasts out of the way (dismiss them and run their dismissCallback). Enqueued messages that are not yet displayed will not be displayed
+ * @param   {AjxCallback} params.dismissCallback    callback to run when the toast is dismissed (by another message using [force], or explicitly calling ZmStatusView.prototype.dismiss())
+ * @param   {AjxCallback} params.finishCallback     callback to run when the toast finishes its transitions by itself (not when dismissed)
  * </ul>
  * 
  */
@@ -129,6 +132,15 @@ ZmAppCtxt.prototype.setStatusMsg =
 function(params) {
 	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
 	this._appController.setStatusMsg(params);
+};
+
+/**
+ * Dismisses the displayed status message, if any
+ */
+
+ZmAppCtxt.prototype.dismissStatusMsg =
+function() {
+	this._appController.dismissStatusMsg();
 };
 
 /**

@@ -2253,12 +2253,24 @@ function(id) {
  * @param {constant}	[params.level] ZmStatusView.LEVEL_INFO, ZmStatusView.LEVEL_WARNING, or ZmStatusView.LEVEL_CRITICAL
  * @param {constant}	[params.detail] 	the details
  * @param {constant}	[params.transitions]		the transitions
- * @param {constant}	[params.toast]		the toast control
+ * @param {constant}	[params.toast]		the toast control 
+ * @param {boolean}     [force]        force any displayed toasts out of the way (dismiss them and run their dismissCallback). Enqueued messages that are not yet displayed will not be displayed
+ * @param {AjxCallback}    [dismissCallback]    callback to run when the toast is dismissed (by another message using [force], or explicitly calling ZmStatusView.prototype.dismiss())
+ * @param {AjxCallback}    [finishCallback]     callback to run when the toast finishes its transitions by itself (not when dismissed)
  */
 ZmZimbraMail.prototype.setStatusMsg =
 function(params) {
 	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
 	this.statusView.setStatusMsg(params);
+};
+
+/**
+ * Dismisses the displayed status message, if any
+ */
+
+ZmZimbraMail.prototype.dismissStatusMsg =
+function() {
+	this.statusView.dismissStatusMsg();
 };
 
 /**
