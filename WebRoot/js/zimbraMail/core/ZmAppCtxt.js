@@ -139,8 +139,8 @@ function(params) {
  */
 
 ZmAppCtxt.prototype.dismissStatusMsg =
-function() {
-	this._appController.dismissStatusMsg();
+function(all) {
+	this._appController.dismissStatusMsg(all);
 };
 
 /**

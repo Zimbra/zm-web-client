@@ -118,7 +118,12 @@ function() {
 };
 
 ZmStatusView.prototype.dismissStatusMsg =
-function() {
+function(all) {
+	if (all) {
+		for (var i=0; i<this._statusQueue.length; i++) {
+			this._statusQueue[i].dismissed = true; // Dismiss all messages in the queue in turn, calling their dismissCallbacks along the way
+		}
+	}
     this._toast.dismiss();
 };
 

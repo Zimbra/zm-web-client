@@ -2269,8 +2269,8 @@ function(params) {
  */
 
 ZmZimbraMail.prototype.dismissStatusMsg =
-function() {
-	this.statusView.dismissStatusMsg();
+function(all) {
+	this.statusView.dismissStatusMsg(all);
 };
 
 /**
