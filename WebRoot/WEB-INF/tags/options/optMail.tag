@@ -122,8 +122,29 @@
         <fmt:message key="optionsReadingPane"/>:
     </td>
     <td>
-        <app:optCheckbox boxfirst="true" label="alwaysShowReadingPane" pref="zimbraPrefReadingPaneEnabled" checked="${mailbox.prefs.readingPaneEnabled}"/>
-    </td>
+		<table border="0" cellpadding="0" cellspacing="3">
+			<tr>
+				<td>
+					<input id="viewRight" type="radio" name="zimbraPrefReadingPaneLocation" value="right" <c:if test="${mailbox.prefs.readingPaneLocation eq 'right'}">checked</c:if>/>
+				</td>
+				<td>
+					<label for="viewRight"><fmt:message key="readingPaneOnRight"/></label>
+				</td>
+				<td>
+					<input id="viewBottom" type="radio" name="zimbraPrefReadingPaneLocation" value="bottom" <c:if test="${mailbox.prefs.readingPaneLocation eq 'bottom'}">checked</c:if>/>
+				</td>
+				<td>
+					<label for="viewBottom"><fmt:message key="readingPaneAtBottom"/></label>
+				</td>
+                <td>
+                    <input id="noReadingPane" type="radio" name="zimbraPrefReadingPaneLocation" value="off" <c:if test="${mailbox.prefs.readingPaneLocation eq 'off'}">checked</c:if>/>
+                </td>
+                <td>
+                    <label for="noReadingPane"><fmt:message key="readingPaneOff"/></label>
+                </td>
+			</tr>
+		</table>
+	</td>
 </tr>
 <app:optSeparator/>
 <tr>

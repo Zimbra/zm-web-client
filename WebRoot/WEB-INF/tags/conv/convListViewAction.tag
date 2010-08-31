@@ -28,13 +28,13 @@
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 <c:set var="viewOp" value="${not empty paramValues.viewOp[0] ? paramValues.viewOp[0] :  paramValues.viewOp[1]}"/>
+<c:set var="readingPaneOp" value="${not empty paramValues.readingPaneOp[0] ? paramValues.readingPaneOp[0] :  paramValues.readingPaneOp[1]}"/>
 <c:set var="actionSort" value="${not empty paramValues.actionSort[0] ? paramValues.actionSort[0] :  paramValues.actionSort[1]}"/>
 <c:set var="dragMsgId" value="${not empty paramValues.dragMsgId[0] ? paramValues.dragMsgId[0] : paramValues.dragMsgId[1]}"/>
 <c:set var="dragTargetFolder" value="${not empty paramValues.dragTargetFolder[0] ? paramValues.dragTargetFolder[0] : paramValues.dragTargetFolder[1]}"/>
 <c:if test="${not empty dragMsgId}">
 	<c:set var="ids" value="${dragMsgId}"/>
 </c:if>
-
 <c:choose>
 <c:when test="${zm:actionSet(param, 'actionCompose')}">
 	<jsp:forward page="/h/compose"/>
@@ -176,11 +176,70 @@
 					</c:if>
 				</c:url>
 			</c:when>
-	</c:choose>
+    </c:choose>
 	<c:if test="${updated and not empty redirectUrl}">
 	<%--<c:if test="${not empty redirectUrl}">--%>
 			<zm:getMailbox var="mailbox" refreshaccount="${true}"/>
 			<c:redirect url="${redirectUrl}"/>
+	</c:if>
+</c:when>
+<c:when test="${zm:actionSet(param, 'readingPaneAction')}">
+    <c:choose>
+        <c:when test="${readingPaneOp eq 'bottom'}">
+            <zm:modifyPrefs var="updated">
+                  <zm:pref name="zimbraPrefReadingPaneLocation" value="bottom"/>
+            </zm:modifyPrefs>
+            <c:url var="redirectUrl" value="search?st=conversation">
+					<c:if test="${not empty param.sfi}">
+						<c:param name="sfi" value="${fn:escapeXml(param.sfi)}"/>
+					</c:if>
+					<c:if test="${not empty param.sq}">
+						<c:param name="sq" value="${fn:escapeXml(param.sq)}"/>
+					</c:if>
+					<c:if test="${not empty param.search}">
+						<c:param name="search" value="${fn:escapeXml(param.search)}"/>
+					</c:if>
+                    <c:param name="action" value="rowView"/>
+		    </c:url>
+        </c:when>
+        <c:when test="${readingPaneOp eq 'right'}">
+            <zm:modifyPrefs var="updated">
+                  <zm:pref name="zimbraPrefReadingPaneLocation" value="right"/>
+            </zm:modifyPrefs>
+            <c:url var="redirectUrl" value="search?st=conversation">
+					<c:if test="${not empty param.sfi}">
+						<c:param name="sfi" value="${fn:escapeXml(param.sfi)}"/>
+					</c:if>
+					<c:if test="${not empty param.sq}">
+						<c:param name="sq" value="${fn:escapeXml(param.sq)}"/>
+					</c:if>
+					<c:if test="${not empty param.search}">
+						<c:param name="search" value="${fn:escapeXml(param.search)}"/>
+					</c:if>
+                    <c:param name="action" value="paneView"/>
+		    </c:url>
+        </c:when>
+        <c:when test="${readingPaneOp eq 'off'}">
+            <zm:modifyPrefs var="updated">
+                  <zm:pref name="zimbraPrefReadingPaneLocation" value="off"/>
+            </zm:modifyPrefs>
+            <c:url var="redirectUrl" value="search?st=conversation">
+					<c:if test="${not empty param.sfi}">
+						<c:param name="sfi" value="${fn:escapeXml(param.sfi)}"/>
+					</c:if>
+					<c:if test="${not empty param.sq}">
+						<c:param name="sq" value="${fn:escapeXml(param.sq)}"/>
+					</c:if>
+					<c:if test="${not empty param.search}">
+						<c:param name="search" value="${fn:escapeXml(param.search)}"/>
+					</c:if>
+                    <%--<c:param name="action" value="view"/>--%>
+		    </c:url>
+        </c:when>
+    </c:choose>
+    <c:if test="${updated and not empty redirectUrl}">
+    	<zm:getMailbox var="mailbox" refreshaccount="${true}"/>
+		<c:redirect url="${redirectUrl}"/>
 	</c:if>
 </c:when>
 <c:when test="${empty ids}">

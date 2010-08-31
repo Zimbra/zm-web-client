@@ -37,7 +37,7 @@
 	<c:set var="context" value="${context}" />
 	<c:set var="idcheck" value="${not empty param.id && not zm:actionSet(param, 'actionHardDelete') && not zm:actionSet(param, 'actionDelete') ? param.id : context.currentItem.id}"/>
 	<app:certifiedMessage var="reqHdr"/>
-	<c:if test="${mailbox.prefs.readingPaneEnabled and not empty idcheck and param.action eq 'paneView'}">
+	<c:if test="${mailbox.prefs.readingPaneLocation eq 'right' and not empty idcheck and param.action eq 'paneView'}">
 		<zm:getMessage var="msg" id="${idcheck}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}" requestHeaders="${reqHdr}"/>
 		<c:if test="${not empty msg.requestHeader}">
 			<zm:getMessage var="msg" id="${idcheck}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>
@@ -85,11 +85,8 @@
 									<c:when test="${hit.messageHit.isDraft}">
 										<zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" context="${context}" action="compose" id="${hit.messageHit.id}"/>
 									</c:when>
-									<c:when test="${empty selectedRow and hit.messageHit.id == context.currentItem.id and mailbox.prefs.readingPaneEnabled and not empty msg and (param.action eq 'paneView' or param.action eq 'paneView2')}">
-										<zm:currentResultUrl var="currentItemUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
-									</c:when>
 									<c:otherwise>
-										<zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="${mailbox.prefs.readingPaneEnabled ? 'paneView' : 'view'}" context="${context}" id="${hit.messageHit.id}" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+										<zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="${mailbox.prefs.readingPaneLocation eq 'right' and hit.messageHit.id != context.currentItem.id ? 'paneView' : 'view'}" context="${context}" id="${hit.messageHit.id}" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
 									</c:otherwise>
 								</c:choose>
 								<c:if test="${empty selectedRow and hit.messageHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
@@ -133,7 +130,7 @@
 				</td>
 				<td class='ZhAppColContent' valign="top" width="55%">
 					<c:choose>
-						<c:when test="${mailbox.prefs.readingPaneEnabled and not empty msg and param.action eq 'paneView'}">
+						<c:when test="${mailbox.prefs.readingPaneLocation eq 'right' and not empty msg and param.action eq 'paneView'}">
 							<table width="100%" cellpadding="0" cellspacing="0">
 								<tr valign="top">
 									<td class='ZhAppContent2' valign="top">

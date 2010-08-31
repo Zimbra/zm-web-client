@@ -235,7 +235,6 @@
     </app:status>
 </c:when>
 </c:choose>
-
  <%-- switch based on context search types --%>
 <c:choose>
     <%--In case of send and cancel, noComposeView is set to true--%>
@@ -248,40 +247,54 @@
     <c:when test="${context.isConversationSearch and action eq 'view2'}">
         <app:convView2 context="${context}"/>
     </c:when>
-    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled and action eq 'paneView'}">
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'right' and action eq 'paneView'}">
         <app:convColumnView context="${context}"/>
     </c:when>
-    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled and action eq 'paneView2'}">
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'right' and action eq 'paneView2'}">
         <app:convColumnView context="${context}"/>
     </c:when>
-    <c:when test="${context.isConversationSearch and !mailbox.prefs.readingPaneEnabled and action eq 'paneView'}">
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'bottom' and action eq 'rowView'}">
+        <app:convRowView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'bottom' and action eq 'rowView2'}">
+        <app:convRowView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'off' and action eq 'paneView'}">
         <app:convView context="${context}"/>
     </c:when>
-    <c:when test="${context.isConversationSearch and !mailbox.prefs.readingPaneEnabled and action eq 'paneView2'}">
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'off' and action eq 'paneView2'}">
         <app:convView2 context="${context}"/>
     </c:when>
-    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled}">
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'right'}">
         <app:convColumnView context="${context}"/>
     </c:when>
-    <c:when test="${context.isConversationSearch}">
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'bottom'}">
+        <app:convRowView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'off'}">
         <app:convListView context="${context}"/>
     </c:when>
     <c:when test="${context.isMessageSearch and action eq 'view'}">
         <app:messageView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneEnabled and action eq 'paneView'}">
+    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'right' and action eq 'paneView'}">
         <app:messageColumnView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and !mailbox.prefs.readingPaneEnabled and action eq 'paneView'}">
+    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'bottom' and action eq 'rowView'}">
+        <app:messageRowView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'off' and action eq 'view'}">
         <app:messageView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneEnabled}">
+    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'right'}">
         <app:messageColumnView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'bottom'}">
+        <app:messageRowView context="${context}"/>
     </c:when>
     <c:when test="${context.isMessageSearch}">
         <app:messageListView context="${context}"/>
     </c:when>
-
     <c:when test="${context.isContactSearch and action eq 'view'}">
         <app:contactView context="${context}"/>
     </c:when>

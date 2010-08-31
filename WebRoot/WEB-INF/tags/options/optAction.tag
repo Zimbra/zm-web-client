@@ -44,6 +44,7 @@
             </c:if>
             <zm:pref name="zimbraPrefMailItemsPerPage" value="${param.zimbraPrefMailItemsPerPage}"/>
             <zm:pref name="zimbraPrefShowFragments" value="${param.zimbraPrefShowFragments eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
+            <zm:pref name="zimbraPrefReadingPaneLocation" value="${param.zimbraPrefReadingPaneLocation}"/>
             <zm:pref name="zimbraPrefReadingPaneEnabled" value="${param.zimbraPrefReadingPaneEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             <c:if test="${mailbox.features.initialSearchPreference}">
                 <zm:pref name="zimbraPrefMailInitialSearch" value="${param.zimbraPrefMailInitialSearch}"/>

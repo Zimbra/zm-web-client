@@ -33,3 +33,7 @@ body{
 .TbTop input, .TbBottom input{
 	border-style: none;
 }
+
+.ZhConvExpanded TD{
+	background-color:#e5e5e5;
+}
