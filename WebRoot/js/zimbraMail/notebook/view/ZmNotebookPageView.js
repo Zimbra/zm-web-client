@@ -675,7 +675,7 @@ ZmNotebookPageView.prototype.loadURL = function(restUrl){
             countryId = locale.substr(index+1);
         }
         url += (url.match(/\?/) ?  '&' : '?') + 'language=' + languageId;
-        url += (url.match(/\?/) ?  '&' : '?') + (countryId ? 'country=' + countryId : "");
+        url += (countryId ? (url.match(/\?/) ?  '&' : '?') + 'country=' + countryId : "");
     }
     url = url + (url.indexOf('?') ? '&' : '?') + 't=' + (new Date()).getTime();
     this._iframe1.src = url;
