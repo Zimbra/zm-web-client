@@ -81,6 +81,56 @@
 	</table>
 </template>
 
+<template id='share.Widgets#ZmPeopleSearchToolBar'>
+	<table border=0 cellpadding=0 cellspacing=0 width='100%' height='100%'>
+		<tr>
+			<td>
+				<div width='100%' class='ZmPeopleSearchToolbarDiv'>
+					<table border=0 cellpadding=0 cellspacing=0 class='ZmPeopleSearchToolbarTable'>
+						<tr>
+							<td id='${id}_inputField' width='100%'></td>
+							<td><$= AjxImg.getImageHtml("Search2") $></td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id='share.Widgets#ZmPeopleAutocompleteListView'>
+	<tr id='${rowId}'>
+		<td>
+			<table border=0>
+				<tr>
+					<td valign=top><$= AjxImg.getImageHtml("Person_32") $></td>
+					<td>
+						<div class='ZmPeopleSearch-fullname'>${fullName}</div>
+						<div>${email}</div>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</template>
+
+<template id='share.Widgets#ZmPeopleAutocompleteListView-toolbar'>
+	<table border=0>
+		<tr>
+			<td><$= AjxImg.getImageHtml("NewMessage") $></td>
+			<$ if (appCtxt.get(ZmSetting.IM_ENABLED)) { $>
+				<td>AjxImg.getImageHtml("ImFree2Chat")</td>
+			<$ } $>
+			<$ if (data.workPhone && data.workPhone != "") { $>
+				<td><$= AjxImg.getImageHtml("Telephone") $></td>
+			<$ } $>
+			<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) { $>
+				<td><$= AjxImg.getImageHtml("NewAppointment") $></td>
+			<$ } $>
+		</tr>
+	</table>
+</template>
+
 <template id='share.Widgets#ZmChooseFolderDialog'>
 	<div class='ChooserDialog'>
 		<span id='${id}_folderDescDivId' style='margin: 0; margin-bottom: 2px'></span>

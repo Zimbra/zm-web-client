@@ -303,10 +303,7 @@ ZmZimbraMail.killSplash =
 function() {
 	// 	Splash screen is now a part of the skin, loaded in statically via the JSP
 	//	as a well-known ID.  To hide the splash screen, just hide that div.
-	var splashDiv = Dwt.byId("skin_container_splash_screen");
-	if (splashDiv) {
-		Dwt.hide(splashDiv);
-	}
+	Dwt.hide("skin_container_splash_screen");
 };
 
 /**
@@ -412,7 +409,9 @@ function(params) {
 				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account)) {
 					this.handleCalendarComponents();
 				}
-				appCtxt.getSearchController().getSearchToolbar().initAutocomplete();
+				var sc = appCtxt.getSearchController();
+				sc.getSearchToolbar().initAutocomplete();
+				sc.peopleSearchToolBar.initAutocomplete();
 			});
 		this.addPostRenderCallback(callback, 0, 0, true);
 	}
@@ -620,7 +619,18 @@ function(params) {
 	this.setUserInfo();
 
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().getSearchPanel();
+		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().searchPanel;
+	}
+
+	if (appCtxt.get(ZmSetting.PEOPLE_SEARCH_ENABLED) &&
+		(appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
+		appCtxt.get(ZmSetting.GAL_ENABLED) ||
+		appCtxt.isOffline))
+	{
+		this._components[ZmAppViewMgr.C_PEOPLE_SEARCH] = appCtxt.getSearchController().peopleSearchToolBar;
+	}
+	else {
+		Dwt.hide(ZmId.SKIN_PEOPLE_SEARCH);
 	}
 
 	this.getKeyMapMgr();	// make sure keyboard handling is initialized

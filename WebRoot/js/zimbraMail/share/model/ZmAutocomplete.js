@@ -28,7 +28,9 @@
  *
  * @author Conrad Damon
  */
-ZmAutocomplete = function() {
+ZmAutocomplete = function(params) {
+
+	if (arguments.length == 0) { return; }
 
 	this._acRequests = {};		// request mgmt (timeout, cancel)
 
@@ -150,6 +152,11 @@ function(str, aclv, options, acType, callback, account) {
 		}
 	}
 
+	this._doSearch(str, aclv, options, acType, callback, account);
+};
+
+ZmAutocomplete.prototype._doSearch =
+function(str, aclv, options, acType, callback, account) {
 	var params = {query:str, isAutocompleteSearch:true};
 	if (acType != ZmAutocomplete.AC_TYPE_CONTACT) {
 		params.isGalAutocompleteSearch = true;
@@ -821,4 +828,70 @@ function(ev) {
 			this._loadTags(listType);
 		}
 	}
+};
+
+/**
+ * Creates a peopel search auto-complete.
+ * @class
+ * This class supports auto-complete for searching the GAL and the user's
+ * personal contacts.
+ */
+ZmPeopleSearchAutocomplete = function() {
+	// no need to call ctor
+	this._acRequests = {}; 
+};
+
+ZmPeopleSearchAutocomplete.prototype = new ZmAutocomplete;
+ZmPeopleSearchAutocomplete.prototype.constructor = ZmPeopleSearchAutocomplete;
+
+ZmPeopleSearchAutocomplete.prototype.toString =
+function() {
+	return "ZmPeopleSearchAutocomplete";
+};
+
+ZmPeopleSearchAutocomplete.prototype._doSearch =
+function(str, aclv, options, acType, callback, account) {
+	var params = {
+		query: str,
+		types: AjxVector.fromArray([ZmItem.CONTACT]),
+		sortBy: ZmSearch.NAME_ASC,
+		contactSource: ZmId.SEARCH_GAL,
+		accountName: account && account.name
+	};
+
+	var search = new ZmSearch(params);
+
+	var searchParams = {
+		callback: (new AjxCallback(this, this._handleResponseDoAutocomplete, [str, aclv, options, acType, callback, account])),
+		errorCallback: (new AjxCallback(this, this._handleErrorDoAutocomplete, [str, aclv])),
+		timeout: ZmAutocomplete.AC_TIMEOUT,
+		noBusyOverlay: true
+	};
+	this._acRequests[str] = search.execute(searchParams);
+};
+
+/**
+ * @private
+ */
+ZmPeopleSearchAutocomplete.prototype._handleResponseDoAutocomplete =
+function(str, aclv, options, acType, callback, account, result) {
+	// if we get back results for other than the current string, ignore them
+	if (str != this._curAcStr) { return; }
+
+	delete this._acRequests[str];
+
+	var resp = result.getResponse();
+	var cl = resp.getResults(ZmItem.CONTACT);
+	var resultList = (cl && cl.getArray()) || [];
+	var list = [];
+
+	for (var i = 0; i < resultList.length; i++) {
+		var match = new ZmAutocompleteMatch(resultList[i], options, true);
+		list.push(match);
+	}
+
+	// we assume the results from the server are sorted by ranking
+	callback.run(list);
+
+	this._cacheResults(str, acType, list, true, resp._respEl.canBeCached, null, account);
 };

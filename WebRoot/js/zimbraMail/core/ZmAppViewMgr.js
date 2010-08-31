@@ -150,6 +150,7 @@ ZmAppViewMgr.C_BANNER					= "banner";
 ZmAppViewMgr.C_USER_INFO				= "userInfo";
 ZmAppViewMgr.C_QUOTA_INFO				= "quota";
 ZmAppViewMgr.C_SEARCH					= "search";
+ZmAppViewMgr.C_PEOPLE_SEARCH			= "peopleSearch";
 ZmAppViewMgr.C_SEARCH_BUILDER			= "searchBuilder";
 ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR	= "searchBuilderToolbar";
 ZmAppViewMgr.C_APP_CHOOSER				= "appChooser";
@@ -167,7 +168,7 @@ ZmAppViewMgr.C_AD						= "adsrvc";
 
 ZmAppViewMgr.ALL_COMPONENTS = [
 	ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
-	ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_SEARCH_BUILDER,
+	ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_PEOPLE_SEARCH, ZmAppViewMgr.C_SEARCH_BUILDER,
 	ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
 	ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
 	ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_TOOLBAR_BOTTOM,
@@ -210,6 +211,7 @@ function() {
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_USER_INFO]				= ZmId.SKIN_USER_INFO;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_QUOTA_INFO]				= ZmId.SKIN_QUOTA_INFO;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmId.SKIN_SEARCH;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_PEOPLE_SEARCH]			= ZmId.SKIN_PEOPLE_SEARCH;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER]			= ZmId.SKIN_SEARCH_BUILDER;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR]	= ZmId.SKIN_SEARCH_BUILDER_TOOLBAR;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CHOOSER]			= ZmId.SKIN_APP_CHOOSER;
@@ -1190,7 +1192,7 @@ function(ev) {
 				this._fitToContainer(list, true);
 			} else if (deltaWidth) {
 				var list = [
-					ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
+					ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_PEOPLE_SEARCH, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
 					ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
 					ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
 					ZmAppViewMgr.C_TOOLBAR_BOTTOM, ZmAppViewMgr.C_TASKBAR, ZmAppViewMgr.C_AD, ZmAppViewMgr.C_FOOTER

@@ -57,6 +57,7 @@ AjxPackage.require("zimbraMail.share.model.ZmAutocomplete");
 AjxPackage.require("zimbraMail.share.model.ZmInvite");
 
 AjxPackage.require("zimbraMail.share.view.ZmAutocompleteListView");
+AjxPackage.require("zimbraMail.share.view.ZmPeopleAutocompleteListView");
 AjxPackage.require("zimbraMail.share.view.assistant.ZmAssistant");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");

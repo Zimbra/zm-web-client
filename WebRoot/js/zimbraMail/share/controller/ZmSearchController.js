@@ -60,16 +60,6 @@ function() {
 };
 
 /**
- * Gets the search panel.
- * 
- * @return	{Object}	the panel
- */
-ZmSearchController.prototype.getSearchPanel =
-function() {
-	return this._searchPanel;
-};
-
-/**
  * Gets the search tool bar.
  * 
  * @return	{ZmButtonToolBar}		the tool bar
@@ -190,7 +180,7 @@ function(forceShow, callback) {
  */
 ZmSearchController.prototype._handleLoadShowBrowseView =
 function(callback) {
-	var bvc = this._browseViewController = new ZmBrowseController(this._searchPanel);
+	var bvc = this._browseViewController = new ZmBrowseController(this.searchPanel);
 	bvc.setBrowseViewVisible(true);
 	if (callback) {
 		callback.run(bvc.getBrowseView());
@@ -259,14 +249,18 @@ ZmSearchController.prototype._setView =
 function() {
 	// Create search panel - a composite is needed because the search builder
 	// element (ZmBrowseView) is added to it (can't add it to the toolbar)
-	this._searchPanel = new DwtComposite({parent:this._container, className:"SearchPanel", posStyle:Dwt.ABSOLUTE_STYLE});
-	this._searchToolBar = new ZmSearchToolBar(this._searchPanel, ZmId.SEARCH_TOOLBAR);
+	this.searchPanel = new DwtComposite({parent:this._container, className:"SearchPanel", posStyle:Dwt.ABSOLUTE_STYLE});
+	this._searchToolBar = new ZmSearchToolBar(this.searchPanel, ZmId.SEARCH_TOOLBAR);
+
+	// create people search toolbar
+	this.peopleSearchToolBar = new ZmPeopleSearchToolBar(this._container, ZmId.PEOPLE_SEARCH_TOOLBAR);
 
 	this._createTabGroup();
 	this._tabGroup.addMember(this._searchToolBar.getSearchField());
 	var buttons = this._searchToolBar.getButtons();
-	for (var i=0; i<buttons.length; i++)
+	for (var i = 0; i < buttons.length; i++) {
 		this._tabGroup.addMember(buttons[i]);
+	}
 
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);

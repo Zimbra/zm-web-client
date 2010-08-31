@@ -67,6 +67,8 @@
  */
 ZmAutocompleteListView = function(params) {
 
+	if (arguments.length == 0) { return; }
+
 	var className = params.className ? params.className : "ZmAutocompleteListView";
 	DwtComposite.call(this, params.parent || appCtxt.getShell(), className, DwtControl.ABSOLUTE_STYLE);
 
@@ -957,23 +959,14 @@ function(id) {
 	if (!(rows && rows.length)) { return; }
 
 	var len = rows.length;
-	var idx = -1;
+
 	if (id == ZmAutocompleteListView.NEXT || id == ZmAutocompleteListView.PREV) {
-		if (len <= 1) { return; }
-		for (var i = 0; i < len; i++) {
-			if (rows[i].id == this._selected) {
-				idx = i;
-				break;
-			}
-		}
-		var newIdx = (id == ZmAutocompleteListView.PREV) ? idx - 1 : idx + 1;
-		if (newIdx < 0 || newIdx >= len) { return; }
-		id = rows[newIdx].id;
+		id = this._getRowId(rows, id, len);
+		if (!id) { return; }
 	}
-	DwtControl._scrollIntoView(rows[newIdx], this.getHtmlElement());
 
 	for (var i = 0; i < len; i++) {
-		var row = rows[i]
+		var row = rows[i];
 		var curStyle = row.className;
 		if (row.id == id) {
 			row.className = this._selClass;
@@ -986,6 +979,26 @@ function(id) {
 	this._showForgetLink(id, true);
 
 	this._selected = id;
+};
+
+ZmAutocompleteListView.prototype._getRowId =
+function(rows, id, len) {
+	if (len <= 1) { return; }
+
+	var idx = -1;
+	for (var i = 0; i < len; i++) {
+		if (rows[i].id == this._selected) {
+			idx = i;
+			break;
+		}
+	}
+	var newIdx = (id == ZmAutocompleteListView.PREV) ? idx - 1 : idx + 1;
+
+	if (!(newIdx < 0 || newIdx >= len)) {
+		DwtControl._scrollIntoView(rows[newIdx], this.getHtmlElement());
+		return rows[newIdx].id;
+	}
+	return null;
 };
 
 ZmAutocompleteListView.prototype._getRowHeight =

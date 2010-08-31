@@ -199,7 +199,7 @@ function(buttonId) {
 ZmSearchToolBar.prototype.getButtons =
 function() {
 	return AjxUtil.collapseList([this._searchMenuButton, this._searchButton, this._saveButton, this._browseButton, this._customSearchBtn]);
-}
+};
 
 ZmSearchToolBar.prototype.focus =
 function() {
@@ -362,6 +362,7 @@ function() {
 		inputEl.className = "search_input";
 		this._searchField.reparentHtmlElement(inputFieldId);
 		this._searchField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
+		this._searchField._showHint();
 	}
 
 	// add "search types" menu
@@ -391,7 +392,7 @@ function() {
 										 buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SAVE),
 										 lbl:		ZmMsg.save,
 										 icon:		"Save",
-  										 type:		"toolbar",
+										 type:		"toolbar",
 										 tooltip:	ZmMsg.saveSearchTooltip });
 			
 
