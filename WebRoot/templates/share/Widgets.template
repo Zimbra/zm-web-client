@@ -117,11 +117,11 @@
 <template id='share.Widgets#ZmPeopleAutocompleteListView-toolbar'>
 	<table border=0>
 		<tr>
-			<$ if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+			<$ if (appCtxt.get(ZmSetting.MAIL_ENABLED)) { $>
 				<td class='ZmPeopleSearch-toolbar-button' onclick="ZmPeopleAutocompleteListView.doAction('message', '${rowId}', '${toolbarId}');">
 					<$= AjxImg.getImageHtml("NewMessage") $>
 				</td>
-			$>
+			<$ } $>
 			<$ if (data.canIm) { $>
 				<td class='ZmPeopleSearch-toolbar-button' onclick="ZmPeopleAutocompleteListView.doAction('IM', '${rowId}', '${toolbarId}');">
 					<$= AjxImg.getImageHtml("NewIM") $>
