@@ -77,9 +77,21 @@ function() {
 	var params = {
 		parent: appCtxt.getShell(),
 		dataClass: (new ZmPeopleSearchAutocomplete()),
-		matchValue: ZmAutocomplete.AC_VALUE_FULL,
-		options: {type:ZmAutocomplete.AC_TYPE_GAL}
+		matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
+		options: {type:ZmAutocomplete.AC_TYPE_GAL},
+		separator: "",
+		compCallback: (new AjxCallback(this, this._acCompCallback))
 	};
 	this._autocomplete = new ZmPeopleAutocompleteListView(params);
 	this._autocomplete.handle(this._searchField.getInputElement());
+};
+
+ZmPeopleSearchToolBar.prototype._acCompCallback =
+function(text, el, match) {
+	AjxDispatcher.require(["ContactsCore", "Contacts"]);
+
+	var list = new ZmContactList((new ZmSearch()), true);
+	list.add(match.item);
+
+	appCtxt.getApp(ZmApp.CONTACTS).getContactListController().show(list, true);
 };

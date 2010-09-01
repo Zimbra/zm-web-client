@@ -2548,6 +2548,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding: 0px 7px;
 }
 
+.ZmPeopleSearch-toolbar-button {
+	cursor: pointer;
+}
+
 .acRow td {
 	@ListItemText@
 }

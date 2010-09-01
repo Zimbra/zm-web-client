@@ -1550,7 +1550,7 @@ function() {
 ZmAppCtxt.prototype.getAutocompleter =
 function() {
 	if (!this._autocompleter) {
-		this._autocompleter = new ZmAutocomplete();
+		this._autocompleter = new ZmAutocomplete(null);
 	}
 	return this._autocompleter;
 };

@@ -117,15 +117,25 @@
 <template id='share.Widgets#ZmPeopleAutocompleteListView-toolbar'>
 	<table border=0>
 		<tr>
-			<td><$= AjxImg.getImageHtml("NewMessage") $></td>
-			<$ if (appCtxt.get(ZmSetting.IM_ENABLED)) { $>
-				<td>AjxImg.getImageHtml("ImFree2Chat")</td>
+			<$ if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+				<td class='ZmPeopleSearch-toolbar-button' onclick="ZmPeopleAutocompleteListView.doAction('message', '${rowId}', '${toolbarId}');">
+					<$= AjxImg.getImageHtml("NewMessage") $>
+				</td>
+			$>
+			<$ if (data.canIm) { $>
+				<td class='ZmPeopleSearch-toolbar-button' onclick="ZmPeopleAutocompleteListView.doAction('IM', '${rowId}', '${toolbarId}');">
+					<$= AjxImg.getImageHtml("NewIM") $>
+				</td>
 			<$ } $>
 			<$ if (data.workPhone && data.workPhone != "") { $>
-				<td><$= AjxImg.getImageHtml("Telephone") $></td>
+				<td class='ZmPeopleSearch-toolbar-button' onclick="ZmPeopleAutocompleteListView.doAction('call', '${rowId}', '${toolbarId}');">
+					<$= AjxImg.getImageHtml("NewCall") $>
+				</td>
 			<$ } $>
 			<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) { $>
-				<td><$= AjxImg.getImageHtml("NewAppointment") $></td>
+				<td class='ZmPeopleSearch-toolbar-button' onclick="ZmPeopleAutocompleteListView.doAction('appt', '${rowId}', '${toolbarId}');">
+					<$= AjxImg.getImageHtml("NewAppointment") $>
+				</td>
 			<$ } $>
 		</tr>
 	</table>

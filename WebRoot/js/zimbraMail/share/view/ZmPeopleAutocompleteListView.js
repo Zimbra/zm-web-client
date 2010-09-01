@@ -28,18 +28,43 @@ ZmPeopleAutocompleteListView = function(params) {
 		parent: params.parent,
 		className: "ZmPeopleSearch-toolbar",
 		posStyle: Dwt.ABSOLUTE_STYLE
-	}
+	};
 	this._toolbarDiv = new DwtComposite(tbParams);
+	this._toolbarDiv.isToolbar = true;
+
+	this._outsideListener = new AjxListener(null, ZmPeopleAutocompleteListView._outsideMouseDownListener);
 };
 
 ZmPeopleAutocompleteListView.prototype = new ZmAutocompleteListView;
 ZmPeopleAutocompleteListView.prototype.constructor = ZmPeopleAutocompleteListView;
 
 
+// Consts
+
+ZmPeopleAutocompleteListView.ACTION_MESSAGE		= "message";
+ZmPeopleAutocompleteListView.ACTION_IM			= "IM";
+ZmPeopleAutocompleteListView.ACTION_CALL		= "call";
+ZmPeopleAutocompleteListView.ACTION_APPT		= "appt";
+
+
+// Public methods
+
 ZmPeopleAutocompleteListView.prototype.toString =
 function() {
 	return "ZmPeopleAutocompleteListView";
 };
+
+ZmPeopleAutocompleteListView.prototype.show =
+function(show, loc) {
+	if (!show) {
+		this._toolbarDiv.setDisplay(Dwt.DISPLAY_NONE);
+	}
+
+	ZmAutocompleteListView.prototype.show.apply(this, arguments);
+};
+
+
+// protected methods
 
 // Creates the list and its member elements based on the matches we have. Each match becomes a
 // row. The first match is automatically selected.
@@ -49,8 +74,15 @@ function(list) {
 	var idx = 0;
 
 	var table = this._getTable();
+	this._matches = list;
 
 	for (var i = 0; i < list.length; i++) {
+		var match = this._matches[i];
+		if (match && (match.text || match.icon)) {
+			var rowId = match.id = this._getId("Row", i);
+			this._matchHash[rowId] = match;
+		}
+
 		var rowId = this._getId("Row", i);
 		var contact = list[i].item;
 		var email = contact.getEmail();
@@ -83,10 +115,21 @@ function(id) {
 	var rowEl = document.getElementById(id);
 	if (rowEl) {
 		var contact = Dwt.getObjectFromElement(rowEl, "contact");
+
+		var canIm;
+		if (contact && appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
+			var imPresence = contact.getImPresence();
+			canIm = imPresence && (imPresence.getShow() == ZmRosterPresence.SHOW_ONLINE);
+		}
+
 		var data = {
 			id: this._htmlElId,
-			workPhone: (contact && contact.getAttr(ZmContact.F_workPhone))
-		}
+			workPhone: (contact && contact.getAttr(ZmContact.F_workPhone)),
+			canIm: canIm,
+			rowId: id,
+			toolbarId: this._toolbarDiv._htmlElId
+		};
+
 		var loc = Dwt.getLocation(rowEl);
 		this._toolbarDiv.setDisplay(Dwt.DISPLAY_BLOCK);
 		this._toolbarDiv.setLocation(loc.x+40, loc.y+40);
@@ -94,13 +137,6 @@ function(id) {
 	}
 
 	ZmAutocompleteListView.prototype._setSelected.apply(this, arguments);
-};
-
-ZmPeopleAutocompleteListView.prototype._popdown =
-function() {
-	this._toolbarDiv.setDisplay(Dwt.DISPLAY_NONE);
-
-	ZmAutocompleteListView.prototype._popdown.apply(this, arguments);
 };
 
 ZmPeopleAutocompleteListView.prototype._removeAll =
@@ -113,5 +149,76 @@ function() {
 	}
 
 	ZmAutocompleteListView.prototype._removeAll.apply(this, arguments);
+};
+
+ZmPeopleAutocompleteListView.doAction =
+function(action, rowId, toolbarId) {
+	var rowEl = document.getElementById(rowId);
+	var contact = rowEl && Dwt.getObjectFromElement(rowEl, "contact");
+	if (contact) {
+		// hide the autocomplete listview
+		var curList = ZmAutocompleteListView._activeAcList;
+		if (curList) {
+			curList.show(false);
+		}
+
+		// then do the action
+		switch (action) {
+			case ZmPeopleAutocompleteListView.ACTION_MESSAGE:
+				var params = {action:ZmOperation.NEW_MESSAGE, toOverride: contact.getEmail()};
+				AjxDispatcher.run("Compose", params);
+				break;
+
+			case ZmPeopleAutocompleteListView.ACTION_IM:
+				AjxDispatcher.require(["IMCore", "IM"]);
+				var buddy = contact.getBuddy();
+				if (buddy && contact.getImPresence().getShow() == ZmRosterPresence.SHOW_ONLINE) {
+					ZmTaskbarController.INSTANCE.chatWithRosterItem(buddy);
+				}
+				break;
+
+			case ZmPeopleAutocompleteListView.ACTION_CALL:
+				var workPhone = contact.getAttr(ZmContact.F_workPhone);
+				var phone = Com_Zimbra_Phone.getCallToLink(workPhone);
+				Com_Zimbra_Phone.unsetOnbeforeunload();
+				window.location = phone;
+				break;
+
+			case ZmPeopleAutocompleteListView.ACTION_APPT:
+				AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+				var cc = AjxDispatcher.run("GetCalController");
+				var appt = cc.newApptObject((new Date()));
+				appt.setAttendees([contact.getEmail()], ZmCalBaseItem.PERSON);
+				cc.newAppointment(appt);
+				break;
+		}
+	}
+};
+
+ZmPeopleAutocompleteListView._outsideMouseDownListener =
+function(ev) {
+	var obj = DwtControl.getTargetControl(ev);
+	if (obj.isToolbar) { return; }
+
+	var curList = ZmAutocompleteListView._activeAcList;
+	if (curList && curList._toolbarDiv) {
+		curList._toolbarDiv.setDisplay(Dwt.DISPLAY_NONE);
+	}
+
+	ZmAutocompleteListView._outsideMouseDownListener(ev);
+};
+
+ZmPeopleAutocompleteListView.prototype._addMouseDownListener =
+function() {
+	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, ZmPeopleAutocompleteListView._outsideMouseDownListener);
+	this.shell._setEventHdlrs([DwtEvent.ONMOUSEDOWN]);
+	this.shell.addListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
+};
+
+ZmPeopleAutocompleteListView.prototype._removeMouseDownListener =
+function() {
+	DwtEventManager.removeListener(DwtEvent.ONMOUSEDOWN, ZmPeopleAutocompleteListView._outsideMouseDownListener);
+	this.shell._setEventHdlrs([DwtEvent.ONMOUSEDOWN], true);
+	this.shell.removeListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
 };
 
