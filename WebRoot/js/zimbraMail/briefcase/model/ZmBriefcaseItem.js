@@ -275,6 +275,88 @@ function(ex) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateFile, ZmStatusView.LEVEL_CRITICAL);
 };
 
+ZmBriefcaseItem.prototype.getRevisions =
+function(callback, errorCallback, accountName){
+    ZmBriefcaseItem.getRevision(this.id, -1 ,callback, errorCallback, accountName);
+};
+
+ZmBriefcaseItem.getRevision =
+function(itemId, version, callback, errorCallback, accountName) {
+	var json = {
+		ListDocumentRevisionsRequest: {
+			_jsns: "urn:zimbraMail",
+			doc: {
+				id:	itemId,
+                ver: version,   //verion=-1 for all versions of count
+                count: 10       //parametrize count to allow pagination
+			}
+		}
+	};
+
+	var params = {
+		jsonObj:		json,
+		asyncMode:		Boolean(callback),
+		callback:		callback,
+		errorCallback:	errorCallback,
+		accountName:	accountName
+	};
+	return appCtxt.getAppController().sendRequest(params);
+};
+
+ZmBriefcaseItem.prototype.lock =
+function(callback, errorCallback, accountName){
+    ZmBriefcaseItem.lock(this.id, callback, errorCallback, accountName);  
+};
+
+ZmBriefcaseItem.lock =
+function(itemId, callback, errorCallback, accountName) {
+	var json = {
+		ItemActionRequest: {
+			_jsns: "urn:zimbraMail",
+			action: {
+				id:	itemId instanceof Array ? itemId.join() : itemId,
+				op:	"lock"
+			}
+		}
+	};
+
+	var params = {
+		jsonObj:		json,
+		asyncMode:		Boolean(callback),
+		callback:		callback,
+		errorCallback:	errorCallback,
+		accountName:	accountName
+	};
+	return appCtxt.getAppController().sendRequest(params);
+};
+
+ZmBriefcaseItem.prototype.unlock =
+function(callback, errorCallback, accountName){
+    ZmBriefcaseItem.unlock(this.id, callback, errorCallback, accountName);
+};
+
+ZmBriefcaseItem.unlock =
+function(itemId, callback, errorCallback, accountName) {
+	var json = {
+		ItemActionRequest: {
+			_jsns: "urn:zimbraMail",
+			action: {
+				id:	itemId instanceof Array ? itemId.join() : itemId,
+				op:	"unlock"
+			}
+		}
+	};
+
+	var params = {
+		jsonObj:		json,
+		asyncMode:		Boolean(callback),
+		callback:		callback,
+		errorCallback:	errorCallback,
+		accountName:	accountName
+	};
+	return appCtxt.getAppController().sendRequest(params);
+};
+
 /**
  * Gets the folder.
  * 
@@ -302,6 +384,14 @@ function(node) {
 	if (node.ver)	{ this.version = Number(node.ver) || 0; }
 	if (node.ct)	{ this.contentType = node.ct.split(";")[0]; }
 	if (node.t)		{ this._parseTags(node.t); }
+
+    this.locked = false;
+    if (node.loid)    {
+        this.locked = true;
+        this.lockId = node.loid;
+        this.lockUser = node.loe;
+        this.lockTime = node.lt;
+    }
 };
 
 // Mendoza line
@@ -321,6 +411,13 @@ function(data) {
 	if (data.ver) this.version = Number(data.ver);
 	if (data.ct) this.contentType = data.ct.split(";")[0];
 	this._parseTags(data.t);
+    this.locked = false;
+    if (data.loid)    {
+        this.locked = true;
+        this.lockId = data.loid;
+        this.lockUser = data.loe;
+        this.lockTime = data.lt;
+    }
 };
 
 ZmBriefcaseItem.prototype.notifyModify =

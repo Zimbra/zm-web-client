@@ -71,6 +71,74 @@
 	</table>
 </template>
 
+
+<!----------------------------------------------------------------------------->
+<!---------------------------- Version History ----------------------------->
+<!----------------------------------------------------------------------------->
+
+
+<template id='briefcase.Briefcase#VersionHistory'>
+<div>
+    <table border=0 cellspacing=0 cellpadding=0>
+        <tr>
+            <td><div id='${id}_toolbar' tabindex='10' class="VersionHistoryToolbar"></div></td>
+        </tr>
+        <tr>
+            <td><div id='${id}_list' tabindex='20'></div></td>
+        </tr>
+    </table>
+</div>    
+</template>
+
+<!----------------------------------------------------------------------------->
+<!---------------------------- Checkin/Checkout ----------------------------->
+<!----------------------------------------------------------------------------->
+
+
+<template id="briefcase.Briefcase#CheckoutDialog">
+	<table cellpadding='0' cellspacing='0' border='0' width='500'>
+		<tr>
+			<td><$=ZmMsg.checkoutDownloadMsg$></td>
+		</tr>
+		<tr>
+			<td style='padding: 20px 70px;'>
+                <input type='radio' name="checkout" id='${id}_checkout' checked/>&nbsp;<$=ZmMsg.checkoutFileForChanges$>
+                <br/>
+                <input type='radio' name="checkout" id='${id}_download'/>&nbsp;<$=ZmMsg.checkoutFileDownload$>                
+            </td>
+		</tr>
+	</table>
+</template>
+
+<template id="briefcase.Briefcase#CheckinDialog">
+	<div><$=ZmMsg.checkInFileChoose$></div>
+    <table cellpadding='2' cellspacing='5' border='0' width='400'>
+		    <tr>            
+			    <td class="rowLabel"><$=ZmMsg.fileLabel$></td>
+                <td class="rowField">
+                    <form id='${id}_form' method='POST' action='${uri}' enctype='multipart/form-data'>
+                        <div id='${id}_fileTD'>
+                            <input type="file" id="${id}_file" size="35"/>
+                        </div>
+                    </form>
+                </td>
+		    </tr>
+        <tr>
+			<td class="rowLabel"><$=ZmMsg.versionLabel$></td>
+            <td class="rowField">
+                <span id='${id}_version'></span>
+            </td>
+		</tr>
+        <tr>
+			<td class="rowLabel" valign="top"><$=ZmMsg.notesLabel$></td>
+            <td class="rowField" valign="top">
+                <textarea rows="5" id='${id}_notes'></textarea>
+            </td>
+		</tr>		
+	</table>
+</template>
+
+
         
 <!----------------------------------------------------------------------------->
 <!---------------------------- ZmBriefcaseSplitView ----------------------------->

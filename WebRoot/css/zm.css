@@ -4245,4 +4245,8 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	background-color: #FFFFFF;
 }
 
+/* Version History */
+.VersionHistoryToolbar {
+    @ToolbarBg@   
+}
 

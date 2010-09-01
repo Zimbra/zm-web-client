@@ -102,6 +102,7 @@ ZmItem.F_TAG			= ZmId.FLD_TAG;
 ZmItem.F_TAG_CELL		= ZmId.FLD_TAG_CELL;
 ZmItem.F_TYPE			= ZmId.FLD_TYPE;
 ZmItem.F_WORK_PHONE		= ZmId.FLD_WORK_PHONE;
+ZmItem.F_LOCK           = ZmId.FLD_LOCK;
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};

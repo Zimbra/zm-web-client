@@ -126,6 +126,11 @@ function(htmlArr, idx, item, field, colIdx, params) {
     htmlArr[idx++] =    "&nbsp;"+AjxStringUtil.htmlEncode(item.name);
 	htmlArr[idx++] = "</td>";
 
+    htmlArr[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_LOCK)+"' ";
+    htmlArr[idx++] = item.locked ? "class='ImgPadLock' ":" ";
+    htmlArr[idx++] = " >";
+	htmlArr[idx++] = "</td>";
+
     htmlArr[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_TAG)+"'>";
     idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
 	htmlArr[idx++] = "</td>";

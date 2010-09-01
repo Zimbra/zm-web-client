@@ -87,6 +87,7 @@ function(parent) {
 											name:ZmMsg.tag}));
 	}	
 	headers.push(
+        new DwtListHeaderItem({field:ZmItem.F_LOCK, icon: "PadLock", width:ZmDetailListView.COLWIDTH_ICON}),    
 		new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"GenericDoc", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.icon}),
 		new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg._name, sortable:ZmItem.F_SUBJECT}),
 		new DwtListHeaderItem({field:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmMsg.COLUMN_WIDTH_TYPE_DLV}),
@@ -106,6 +107,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(item, field));
 	} else if (field == ZmItem.F_TYPE) {
 		htmlArr[idx++] = AjxImg.getImageHtml(item.getIcon());
+	} else if (field == ZmItem.F_LOCK) {
+		htmlArr[idx++] = AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");
 	} else if (field == ZmItem.F_SUBJECT) {
 		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+AjxStringUtil.htmlEncode(item.name)+"</div>";
 	} else if (field == ZmItem.F_FILE_TYPE) {
