@@ -48,28 +48,8 @@ function() {
 		var inputEl = this._searchField.getInputElement();
 		Dwt.addClass(inputEl, "people_search_input");
 		this._searchField.reparentHtmlElement(inputFieldId);
-		this._searchField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
 		this._searchField._showHint();
 	}
-};
-
-ZmPeopleSearchToolBar.prototype._handleKeyUp =
-function(ev) {
-	var code = DwtKeyEvent.getCharCode(ev);
-	if (code == 0x0D) {
-		return this._handleEnterKeyPress(ev);
-	}
-	return true;
-};
-
-ZmPeopleSearchToolBar.prototype._handleEnterKeyPress =
-function(ev) {
-	var str = this._searchField.getValue();
-	// later...
-//	appCtxt.notifyZimlets("onKeyPressSearchField", [str]);
-	this._callback.run(str);
-
-	return false;
 };
 
 ZmPeopleSearchToolBar.prototype.initAutocomplete =

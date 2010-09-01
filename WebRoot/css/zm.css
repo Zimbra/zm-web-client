@@ -328,6 +328,10 @@ INPUT[type="text"].people_search_input {
 	font-weight: bold;
 }
 
+.ZmPeopleSearch-busy {
+	padding-left: 3px;
+}
+
 
 /*
  * Search builder

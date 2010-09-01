@@ -103,9 +103,21 @@
 		<td>
 			<table border=0>
 				<tr>
-					<td valign=top><$= AjxImg.getImageHtml("Person_32") $></td>
+					<$ if (data.photoUrl) { $>
+						<td valign=top><img src="${photoUrl}" width=32 height=32></img></td>
+					<$ } else { $>
+						<td valign=top><$= AjxImg.getImageHtml("Person_32") $></td>
+					<$ } $>
 					<td>
-						<div class='ZmPeopleSearch-fullname'>${fullName}</div>
+						<table border=0 cellpadding=0 cellspacing=0>
+							<tr>
+								<td class='ZmPeopleSearch-fullname'>${fullName}</td>
+								<td class='ZmPeopleSearch-busy' id='${rowId}-freebusy'></td>
+							</tr>
+						</table>
+						<$ if (data.title) { $>
+							<div>${title}</div>
+						<$ } $>
 						<div>${email}</div>
 					</td>
 				</tr>

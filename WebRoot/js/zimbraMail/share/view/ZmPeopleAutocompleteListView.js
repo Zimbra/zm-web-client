@@ -77,21 +77,25 @@ function(list) {
 	this._matches = list;
 
 	for (var i = 0; i < list.length; i++) {
-		var match = this._matches[i];
+		var match = list[i];
 		if (match && (match.text || match.icon)) {
 			var rowId = match.id = this._getId("Row", i);
 			this._matchHash[rowId] = match;
 		}
 
 		var rowId = this._getId("Row", i);
-		var contact = list[i].item;
-		var email = contact.getEmail();
+		var contact = match.item;
 		var data = {
 			id: this._htmlElId,
 			rowId: rowId,
 			fullName: contact.getFullName(),
-			email: email
+			title: contact.getAttr(ZmContact.F_jobTitle),
+			email: contact.getEmail()
 		};
+
+		// zimlet support
+		appCtxt.notifyZimlets("onPeopleSearchData", [data]);
+
 		var rowHtml = AjxTemplate.expand("share.Widgets#ZmPeopleAutocompleteListView", data);
 		var rowEl = table.appendChild(Dwt.parseHtmlFragment(rowHtml, true));
 		Dwt.associateElementWithObject(rowEl, contact, "contact");
@@ -101,6 +105,11 @@ function(list) {
 		function() {
 			this._setSelected(this._getId("Row", 0));
 		}), 100);
+
+	// fetch free/busy info for all results
+	if (list.length > 0) {
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._getFreeBusyInfo, [list]), 100);
+	}
 };
 
 ZmPeopleAutocompleteListView.prototype._setSelected =
@@ -137,6 +146,45 @@ function(id) {
 	}
 
 	ZmAutocompleteListView.prototype._setSelected.apply(this, arguments);
+};
+
+ZmPeopleAutocompleteListView.prototype._getFreeBusyInfo =
+function(list) {
+	var emailList = [];
+	var emailHash = {};
+	for (var i = 0; i < list.length; i++) {
+		var match = list[i];
+		emailList.push(match.email);
+		emailHash[match.email] = match.id;
+	}
+
+	var now = new Date();
+	var jsonObj = {GetFreeBusyRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.GetFreeBusyRequest;
+	request.s = now.getTime();
+	request.e = now.getTime() + (5*60*1000); // next 5 mins
+	request.name = emailList.join(",");
+
+	return appCtxt.getAppController().sendRequest({
+		jsonObj: jsonObj,
+		asyncMode: true,
+		callback: (new AjxCallback(this, this._handleFreeBusyResponse, [emailHash])),
+		noBusyOverlay: true
+	});
+};
+
+ZmPeopleAutocompleteListView.prototype._handleFreeBusyResponse =
+function(emailHash, result) {
+	if (!this.getVisible()) { return; }
+
+	var fb = result.getResponse().GetFreeBusyResponse.usr;
+	for (var i = 0; i < fb.length; i++) {
+		var id = fb[i].b && fb[i].id;
+		var el = id && (document.getElementById(emailHash[id] + "-freebusy"));
+		if (el) {
+			el.innerHTML = AjxImg.getImageHtml("FreeBusyDotBusy");
+		}
+	}
 };
 
 ZmPeopleAutocompleteListView.prototype._removeAll =
