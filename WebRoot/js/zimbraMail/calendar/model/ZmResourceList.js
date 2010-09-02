@@ -41,7 +41,7 @@ ZmResourceList = function(resType, search) {
 
 ZmResourceList.ATTRS =
 	[ZmResource.F_name, ZmResource.F_mail, ZmResource.F_type, ZmResource.F_locationName,
-	 ZmResource.F_capacity, ZmResource.F_contactMail, ZmContact.F_description];
+	 ZmResource.F_capacity, ZmResource.F_contactMail, ZmResource.F_description];
 
 ZmResourceList.prototype = new ZmContactList;
 ZmResourceList.prototype.constructor = ZmResourceList;
