@@ -67,7 +67,6 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 	this._tabIds = [ZmApptComposeView.TAB_APPOINTMENT];
 	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
 		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			this._tabIds.push(ZmApptComposeView.TAB_ATTENDEES);
             if (appCtxt.get(ZmSetting.CAL_SHOW_RESOURCE_TABS)) {
                 this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
                 this._tabIds.push(ZmApptComposeView.TAB_EQUIPMENT);
@@ -190,8 +189,8 @@ function(appt, mode, isDirty) {
 
 	// always switch to appointment tab
 	this.switchToTab(this._apptTabKey);
-    this.setTabVisibility([ZmApptComposeView.TAB_ATTENDEES, ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_EQUIPMENT], !isForward && !this._proposeNewTime);
-    this.setTabVisibility([ZmApptComposeView.TAB_ATTENDEES], appt.isOrganizer() || isForward);
+    this.setTabVisibility([ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_EQUIPMENT], !isForward && !this._proposeNewTime);
+
     //bug:48189 Hide schedule tab for non-ZCS acct
     if (appCtxt.isOffline) {
         var currAcct = appCtxt.getActiveAccount();

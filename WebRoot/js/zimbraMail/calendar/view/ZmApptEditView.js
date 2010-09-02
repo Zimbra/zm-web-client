@@ -47,6 +47,7 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
 		this._attTypes.push(ZmCalBaseItem.EQUIPMENT);
 	}
     this._locationTextMap = {};
+    this._attendeePicker = {};
 
 
     //used to preserve original attendees while forwarding appt
@@ -393,8 +394,6 @@ function(calItem, mode) {
 		}
         if(!this._isForward) {
 		    this._attendees[ZmCalBaseItem.PERSON] = AjxVector.fromArray(attendees);
-            tp = this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES);
-            if (tp) tp._chooser.transfer(attendees, null, true);
             this._attInputField[ZmCalBaseItem.PERSON] = this._attendeesInputField;
             this._fwdApptOrigAttendees = [];
         }else {
@@ -616,6 +615,7 @@ function(width) {
 
 	this._resourcesData = document.getElementById(this._htmlElId + "_resourcesData");
 	this._schedulerContainer = document.getElementById(this._htmlElId + "_scheduler");
+	this._schedulerOptions = document.getElementById(this._htmlElId + "_scheduler_option");
 
 	// show-as DwtSelect
 	this._showAsSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_showAsSelect")});
@@ -684,17 +684,9 @@ function(width) {
 						   appCtxt.get(ZmSetting.GAL_ENABLED) ||
 						   appCtxt.multiAccounts);
     if (isPickerEnabled) {
-        var pickerId = this._htmlElId + "_picker";
-        var pickerEl = document.getElementById(pickerId);
-        if (pickerEl) {
-            var buttonId = Dwt.getNextId();
-            var button = this._pickerButton = new DwtButton({parent:this, id:buttonId});
-            button.setText(pickerEl.innerHTML);
-            button.replaceElement(pickerEl);
-
-            button.addSelectionListener(new AjxListener(this, this._addressButtonListener));
-            button.addrType = ZmCalBaseItem.PERSON;
-        }
+        this._createContactPicker(this._htmlElId + "_picker", new AjxListener(this, this._addressButtonListener), ZmCalBaseItem.PERSON);
+        this._createContactPicker(this._htmlElId + "_req_att_picker", new AjxListener(this, this._attendeesButtonListener, ZmCalBaseItem.PERSON), ZmCalBaseItem.PERSON);
+        this._createContactPicker(this._htmlElId + "_opt_att_picker", new AjxListener(this, this._attendeesButtonListener, ZmCalBaseItem.OPTIONAL_PERSON), ZmCalBaseItem.OPTIONAL_PERSON);
     }
 
     //Personas
@@ -710,6 +702,20 @@ function(width) {
     Dwt.setVisible(this._optionalAttendeesContainer, false)
 };
 
+
+ZmApptEditView.prototype._createContactPicker =
+function(pickerId, listener, addrType) {
+    var pickerEl = document.getElementById(pickerId);
+    if (pickerEl) {
+        var buttonId = Dwt.getNextId();
+        var button = this._pickerButton = new DwtButton({parent:this, id:buttonId});
+        button.setText(pickerEl.innerHTML);
+        button.replaceElement(pickerEl);
+
+        button.addSelectionListener(listener);
+        button.addrType = addrType;
+    }
+};
 
 ZmApptEditView.prototype._toggleOptionalAttendees =
 function(forceShow) {
@@ -734,7 +740,7 @@ function() {
     this._schImage.className = "ImgSelectPullUpArrow";
 
     if(!this._scheduleView) {
-        this._scheduleView = new ZmFreeBusySchdulerView(this, this._attendees, this._controller, this._dateInfo);
+        this._scheduleView = new ZmFreeBusySchedulerView(this, this._attendees, this._controller, this._dateInfo);
         this._scheduleView.reparentHtmlElement(this._schedulerContainer);
     }
 
@@ -841,7 +847,7 @@ function(identity, account) {
 };
 
 ZmApptEditView.prototype._addressButtonListener =
-function(ev, addrType) {
+function(ev) {
 	var obj = ev ? DwtControl.getTargetControl(ev) : null;
     this._forwardToField.setEnabled(false);
 	if (!this._contactPicker) {
@@ -865,6 +871,52 @@ function(ev, addrType) {
 	this._contactPicker.popup(AjxEmailAddress.TO, a, str, account);
 };
 
+ZmApptEditView.prototype._attendeesButtonListener =
+function(addrType, ev) {
+	var obj = ev ? DwtControl.getTargetControl(ev) : null;
+    var inputObj = this._attInputField[addrType]; 
+    inputObj.setEnabled(false);
+    var contactPicker = this._attendeePicker[addrType];
+	if (!contactPicker) {
+		AjxDispatcher.require("ContactsCore");
+		var buttonInfo = [
+			{ id: AjxEmailAddress.TO,	label: ZmMsg.toLabel }
+		];
+		contactPicker = this._attendeePicker[addrType] = new ZmContactPicker(buttonInfo);
+		contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._attendeePickerOkCallback, this, [addrType]);
+		contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._attendeePickerCancelCallback, this, [addrType]);
+	}
+
+    var addrs = this._collectAddrs(inputObj.getValue());
+    var a = {};
+    if (addrs[AjxEmailAddress.TO] && addrs[AjxEmailAddress.TO].good) {
+        a[AjxEmailAddress.TO] = addrs[AjxEmailAddress.TO].good.getArray();
+    }
+    var str = (inputObj.getValue() && !(a[AjxEmailAddress.TO] && a[AjxEmailAddress.TO].length))
+        ? inputObj.getValue() : "";
+	var account;
+	contactPicker.popup(AjxEmailAddress.TO, a, str, account);
+};
+
+// Transfers addresses from the contact picker to the appt compose view.
+ZmApptEditView.prototype._attendeePickerOkCallback =
+function(addrType, addrs) {
+    this._attInputField[addrType].setEnabled(true);
+    var vec = (addrs instanceof AjxVector) ? addrs : addrs[AjxEmailAddress.TO];
+    var addr = (vec.size() > 0) ? vec.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
+    addr = addr ? addr : "";
+    this._attInputField[addrType].setValue(addr);
+    this._activeInputField = addrType; 
+    this._handleAttendeeField(addrType);
+	this._attendeePicker[addrType].popdown();
+};
+
+ZmApptEditView.prototype._attendeePickerCancelCallback =
+function(addrType) {
+    this._handleAttendeeField(addrType);
+    this._attInputField[addrType].setEnabled(true);
+};
+
 // Transfers addresses from the contact picker to the appt compose view.
 ZmApptEditView.prototype._contactPickerOkCallback =
 function(addrs) {
@@ -873,7 +925,7 @@ function(addrs) {
     var addr = (vec.size() > 0) ? vec.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
     addr = addr ? addr : "";
     this._forwardToField.setValue(addr);
-    this._activeInputField = ZmCalBaseItem.PERSON; 
+    this._activeInputField = ZmCalBaseItem.PERSON;
     this._handleAttendeeField(ZmCalBaseItem.PERSON);
 	//this._contactPicker.removePopdownListener(this._controller._dialogPopdownListener);
 	this._contactPicker.popdown();
@@ -893,9 +945,15 @@ function() {
 // Grab the good addresses out of the forward to field
 ZmApptEditView.prototype._collectForwardAddrs =
 function() {
+    return this._collectAddrs(this._forwardToField.getValue());
+};
+
+// Grab the good addresses out of the forward to field
+ZmApptEditView.prototype._collectAddrs =
+function(addrStr) {
     var addrs = {};
     addrs[ZmApptEditView.BAD] = new AjxVector();
-    var val = AjxStringUtil.trim(this._forwardToField.getValue());
+    var val = AjxStringUtil.trim(addrStr);
     if (val.length == 0) return addrs;
     var result = AjxEmailAddress.parseEmailString(val, AjxEmailAddress.TO, false);
     if (result.all.size() == 0) return addrs;
@@ -933,12 +991,7 @@ function() {
 	// bug: 48189 - Hide schedule tab for non-ZCS acct
 	if (appCtxt.isOffline) {
         var currAcct = cal.getAccount();
-		this.parent.parent.setTabVisibility([ZmApptComposeView.TAB_SCHEDULE], (currAcct.isZimbraAccount && !currAcct.isMain));
-        var tabPage = this.parent.parent._tabPages[ZmApptComposeView.TAB_ATTENDEES];
-		var attendeesTab = (!(tabPage instanceof AjxCallback)) ? this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES) : null;
-		if (attendeesTab) {
-			attendeesTab.cleanup();
-		}
+		this.setSchedulerVisibility(currAcct.isZimbraAccount && !currAcct.isMain);
 	}
 
 	var acct = appCtxt.getActiveAccount();
@@ -947,6 +1000,12 @@ function() {
 	var isEnabled = !isRemote || cal.hasPrivateAccess();
 
     this._privacyCheckbox.disabled = !isEnabled;
+};
+
+ZmApptEditView.prototype.setSchedulerVisibility =
+function(visible) {
+    Dwt.setVisible(this._schedulerOptions, visible);
+    Dwt.setVisible(this._schedulerContainer, visible);
 };
 
 ZmApptEditView.prototype._resetFolderSelect =

@@ -1877,9 +1877,21 @@ HTML>BODY .appt-selected .appt_allday_body
 	@NoWrap@
 	@RightSeparator@
 	@BottomSeparator@
+    border-top: 1px solid #000000;
+    border-left: 1px solid #000000;
+    background-color: #FFFFFF;
 	vertical-align: middle;
 	@TextCursor@
 /*	color: #AAAAAA;	*/
+}
+
+.ZmSchedulerPTSTTd {
+	@FreeBusyViewGridHeight@
+	@NoWrap@
+	@RightSeparator@
+	@BottomSeparator@
+	vertical-align: middle;
+	@TextCursor@
 }
 
 /* "All attendees" label */
@@ -1906,7 +1918,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@FullSize@
 	border: 0px;
 	padding-top: 3px;
-    height: 22px;
+    height: 22px;    
 }
 
 .ZmSchedulerInputDisabled {

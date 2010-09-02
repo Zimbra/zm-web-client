@@ -4,7 +4,7 @@
 	<div id='${id}_top'>
 		<table border=0 width=100% style='table-layout:fixed;margin-top: 10px;' id='${id}_table' class='calendar_edit_view_separator'>
             <colgroup>
-                <col width='60' />
+                <col width='65' />
                 <col width='140'/>
                 <col width='100'/>
                 <col id='${id}_timezoneColumn' width='250'/>
@@ -13,7 +13,7 @@
                 <col width='80'/>
             </colgroup>
             <tr  id='${id}_forward_options' style='display:none;'>
-                <td width='60' class='ZmFieldLabelRight'><div id='${id}_picker'><$=ZmMsg.toLabel$></div></td>
+                <td width='65' class='ZmFieldLabelRight'><div id='${id}_picker'><$=ZmMsg.toLabel$></div></td>
                 <td colspan='6' id='${id}_to_control'></td>
             </tr>
             <$ if (data.isAppt && !appCtxt.multiAccounts) { $>
@@ -23,22 +23,22 @@
             </tr>
             <$ } $>
             <tr>
-                <td width='60' align='right' valign='top'><legend><$= ZmMsg.requiredLabel $></legend></td>
+                <td width='65' align='right' valign='top'><div id='${id}_req_att_picker'><legend><$= ZmMsg.requiredLabel $></legend></div></td>
                 <td colspan='5' id='${id}_person'></td>
                 <td id='${id}_show_optional' class='fakeAnchor'><$= ZmMsg.showOptional $></td>
             </tr>
             <tr id='${id}_optionalContainer'>
-                <td width='60' align='right' valign='top'><legend><$= ZmMsg.optionalLabel $></legend></td>
+                <td width='65' align='right' valign='top'><div id='${id}_opt_att_picker'><legend><$= ZmMsg.optionalLabel $></legend></div></td>
                 <td colspan='5' id='${id}_optional'></td>
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td width='60' class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subjectLabel $></nobr></td>
+                <td width='65' class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subjectLabel $></nobr></td>
                 <td colspan='5' id='${id}_subject'></td>
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td width='60' class='ZmApptTabViewPageField'><nobr><$= ZmMsg.locationLabel $></nobr></td>
+                <td width='65' class='ZmApptTabViewPageField'><nobr><$= ZmMsg.locationLabel $></nobr></td>
                 <td colspan='5' id='${id}_location'></td>
                 <td>&nbsp;</td>
             </tr>
@@ -50,7 +50,7 @@
             </tr>            
             <$ } $>
             <tr>
-                <td width='60' class='ZmApptTabViewPageField'>&nbsp;</td>
+                <td width='65' class='ZmApptTabViewPageField'>&nbsp;</td>
                 <td id='${id}_location'>
                     <table border=0 width="100%">
                         <tr>
@@ -71,7 +71,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td width='60' class='ZmApptTabViewPageField'><nobr><$= (data.isAppt ? ZmMsg.startLabel : (ZmMsg.startDate+":")) $></nobr></td>
+                <td width='65' class='ZmApptTabViewPageField'><nobr><$= (data.isAppt ? ZmMsg.startLabel : (ZmMsg.startDate+":")) $></nobr></td>
                 <td colspan="2">
                      <table border=0 style='table-layout:fixed;' <$= AjxEnv.isIE ? "width='100%'" : ""$> >
                          <$= AjxTemplate.expand("calendar.Appointment#ApptTimeSection_StartDate", data) $>
@@ -88,7 +88,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td width='60' class='ZmApptTabViewPageField'><nobr><$= (data.isAppt ? ZmMsg.endLabel : ZmMsg.dateDueLabel ) $></nobr></td>
+                <td width='65' class='ZmApptTabViewPageField'><nobr><$= (data.isAppt ? ZmMsg.endLabel : ZmMsg.dateDueLabel ) $></nobr></td>
                 <td colspan="2">
                      <table border=0 style='table-layout:fixed;' <$= AjxEnv.isIE ? "width='100%'" : ""$> >
                          <$= AjxTemplate.expand("calendar.Appointment#ApptTimeSection_EndDate", data) $>
@@ -604,12 +604,12 @@
 			<$ } $>
 
 			<$ if (!data.isAllAttendees) { $>
-				<td class='ZmSchedulerNameTd' id='${sched.dwtNameId}'>
+				<td <$ if (!data.organizer) { $>class='ZmSchedulerNameTd'<$ } $> id='${sched.dwtNameId}'>
 				<$ if (data.organizer) { $>
 					<div class='ZmSchedulerInputDisabled'>${organizer}</div>
 				<$ } $>
 				</td>
-				<td width=16 id='${sched.dwtNameId}_ptst' class='ZmSchedulerNameTd'>&nbsp;</td>
+				<td width=16 id='${sched.dwtNameId}_ptst' class='ZmSchedulerPTSTTd'>&nbsp;</td>
 			<$ } $>
 		</tr>
 	</table>
