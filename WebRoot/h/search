@@ -265,6 +265,12 @@
     <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'off' and action eq 'paneView2'}">
         <app:convView2 context="${context}"/>
     </c:when>
+     <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'off' and action eq 'offView'}">
+        <app:convListView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'off' and action eq 'offView2'}">
+        <app:convListView context="${context}"/>
+    </c:when>
     <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'right'}">
         <app:convColumnView context="${context}"/>
     </c:when>

@@ -38,7 +38,7 @@
 	<c:set var="context" value="${context}" />
 	<c:set var="csi" value="${param.csi}"/>
 	<app:certifiedMessage var="reqHdr"/>
-	<c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneLocation eq 'bottom' and not empty cid and (param.action eq 'rowView' or param.action eq 'rowView2')}">
+	<c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneLocation eq 'bottom' and not empty cid}">
 		<zm:searchConv  var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" limit="${-1}" />
 		<c:if test="${empty csi}">
 			<c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
@@ -82,6 +82,7 @@
 		<table width="100%" cellpadding="2" cellspacing="0">
 			<tr class='Header'>
                 <th class='CB' nowrap='nowrap'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type="checkbox" name="allids"/></th>
+                <th class='Img' nowrap><app:img src="startup/ImgNodeCollapsed.gif"/></th>
 				<c:if test="${mailbox.features.flagging}">
 					<th class='Img' nowrap='nowrap'><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
 				</c:if>
@@ -118,13 +119,20 @@
 							<zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(convHit.id,'-')}" action="compose"/>
 						</c:when>
                         <c:otherwise>
-                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${mailbox.prefs.readingPaneLocation eq 'right' ? 'paneView' : (mailbox.prefs.readingPaneLocation eq 'bottom' ? 'rowView' : 'view')}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                            <zm:currentResultUrl var="expandUrl" value="search" cid="${hit.id}" action="${mailbox.prefs.readingPaneLocation eq 'bottom' ? 'rowView' : 'view'}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                         </c:otherwise>
 					</c:choose>
 					<c:if test="${empty selectedRow and convHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 					<c:set var="aid" value="A${status.index}"/>
 					<tr onclick='zSelectRow(event,"${aid}","C${status.index}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd':'ZhRow'} ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
 						<td class='CB' nowrap="nowrap"><input  id="C${status.index}" type="checkbox" name="id" value="${convHit.id}"></td>
+                        <td class='Img' nowrap>
+                            <c:choose>
+                                <c:when test="${convHit.messageCount > 1 and param.action == 'rowView' and hit.id eq param.cid}"><a href="${fn:escapeXml(convUrl)}" id="${aid}"><app:img src="startup/ImgNodeExpanded.gif"/></a></c:when>
+                                <c:when test="${convHit.messageCount > 1}"><a href="${fn:escapeXml(expandUrl)}" id="${aid}"><app:img src="startup/ImgNodeCollapsed.gif"/></a></c:when>
+                            </c:choose>
+                        </td>
                         <c:if test="${mailbox.features.flagging}">
 							<td class='Img'><app:flagImage flagged="${convHit.isFlagged}"/></td>
 						</c:if>
@@ -169,6 +177,7 @@
                            <c:set var="aid" value="A${stat.index}11"/>
                            <tr onclick='zSelectRow(event,"${aid}","C${stat.index}11")' id="R${stat.index}11" class='ZhRow${(hit.messageHit.isUnread and (hit.id != msg.id)) ? ' Unread':''}${hit.id eq msg.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : ' ZhConvExpanded')}'>
                                 <td class='CB' nowrap><input id="C${stat.index}11"<c:if test="${hit.id eq msg.id}">checked</c:if> type=checkbox name="idcv" value="${hit.id}"/></td>
+                                <td class="Img">&nbsp;</td>
                                 <c:if test="${mailbox.features.flagging}">
                                     <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
                                 </c:if>
@@ -180,9 +189,8 @@
                                 </c:if>
                                 <td class='MsgStatusImg' width="19"><app:img src="${(hit.messageHit.isUnread and hit.id == msg.id) ? 'startup/ImgMsgStatusRead.gif' : hit.messageHit.statusImage}" altkey="${(hit.messageHit.isUnread and hit.id == msg.id) ? 'ALT_MSG_STATUS_READ' : hit.messageHit.statusImageAltKey}"/></td>
                                 <td nowrap width="160">
-                                    <center>
-                                        <c:set var="sender" value="${hit.messageHit.displaySender}"/>${fn:escapeXml(empty sender ? unknownSender : sender)}
-                                    </center>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <c:set var="sender" value="${hit.messageHit.displaySender}"/>${fn:escapeXml(empty sender ? unknownSender : sender)}
                                 </td>
                                 <td class='Img' nowrap><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                 <td nowrap> <%-- allow wrap --%>
@@ -215,7 +223,7 @@
 
 <td class='ZhAppColContent' valign="top" width="55%">
 <c:choose>
-    <c:when test="${mailbox.prefs.readingPaneLocation eq 'bottom' and not empty msg and (param.action eq 'rowView' or param.action eq 'rowView2')}">
+    <c:when test="${mailbox.prefs.readingPaneLocation eq 'bottom' and not empty msg}">
         <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
         <td class='ZhAppContent2' valign="top">

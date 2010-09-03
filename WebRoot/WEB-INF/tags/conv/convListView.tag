@@ -31,6 +31,33 @@
 	<zm:getMailbox var="mailbox"/>
 	<app:searchTitle var="title" context="${context}"/>
 	<c:set var="cid" value="${empty param.id ? context.searchResult.hits[0].id : param.id}"/>
+    <c:set var="csi" value="${param.csi}"/>
+    <c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneLocation eq 'off' and not empty cid and (param.action eq 'offView' or param.action eq 'offView2')}">
+		<zm:searchConv  var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" limit="${-1}" />
+		<c:if test="${empty csi}">
+			<c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
+			<c:if test="${csi ge 0}">
+				<zm:getMessage var="msg" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
+				<c:if test="${not empty msg.requestHeader}">
+					<zm:getMessage var="msg" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>
+				</c:if>
+			</c:if>
+		</c:if>
+		<c:if test="${msg eq null}">
+			<c:if test="${csi lt 0 or csi ge convSearchResult.size}">
+				<c:set var="csi" value="0"/>
+			</c:if>
+			<zm:getMessage var="msg" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
+			<c:if test="${not empty msg.requestHeader}">
+				<zm:getMessage var="msg" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>
+			</c:if>
+		</c:if>
+		<zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
+		<c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
+        <fmt:message var="emptyFragment" key="fragmentIsEmpty"/>
+        <fmt:message var="unknownSender" key="unknownSender"/>
+        <c:set var="convdisp" value="true"/>
+	</c:if>
 	<fmt:message var="unknownRecipient" key="unknownRecipient"/>
 	<fmt:message var="unknownSubject" key="noSubject"/>
 	<c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
@@ -52,6 +79,7 @@
 			<tbody id="mess_list_tbody">
 			<tr class='Header'>
 				<th class='CB' nowrap='nowrap'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type="checkbox" name="allids"/></th>
+                <th class='Img' nowrap><app:img src="startup/ImgNodeCollapsed.gif"/></th>
 				<c:if test="${mailbox.features.flagging}">
 					<th class='Img' nowrap='nowrap'><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
 				</c:if>
@@ -61,7 +89,8 @@
 				<c:if test="${mailbox.features.tagging}">
 					<th class='Img' nowrap><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/></th>
 				</c:if>
-				<th width="10%" nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/></th>
+                <th class='Img' nowrap=""><app:img src="startup/ImgMsgStatus.gif"/></th>
+   				<th width="10%" nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/></th>
 				<th class='Img' nowrap width='20'><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/></th>
 				<th nowrap>
 					<zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
@@ -87,14 +116,21 @@
 							<zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(convHit.id,'-')}" action="compose"/>
 						</c:when>
 						<c:otherwise>
-							<zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${mailbox.prefs.readingPaneLocation eq 'right' ? 'paneView' : (mailbox.prefs.readingPaneLocation eq 'bottom' ? 'rowView' : 'view')}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                            <zm:currentResultUrl var="expandUrl" value="search" cid="${hit.id}" action="${mailbox.prefs.readingPaneLocation eq 'right' ? 'paneView' : (mailbox.prefs.readingPaneLocation eq 'bottom' ? 'rowView' : (mailbox.prefs.readingPaneLocation eq 'off' and param.action != 'offView') ? 'offView' : 'view')}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
 						</c:otherwise>
 					</c:choose>
 					<c:if test="${empty selectedRow and convHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 					<c:set var="aid" value="A${status.index}"/>
 					<tr onclick='zSelectRow(event,"${aid}","C${status.index}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'} ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
-						<td class='CB' nowrap><input  id="C${status.index}" type="checkbox" name="id" value="${convHit.id}"></td>
-						<c:if test="${mailbox.features.flagging}">
+  						<td class='CB' nowrap><input  id="C${status.index}" type="checkbox" name="id" value="${convHit.id}"></td>
+                        <td class='Img' nowrap>
+                            <c:choose>
+                                <c:when test="${convHit.messageCount > 1 and param.action == 'offView' and hit.id eq param.cid}"><a href="${fn:escapeXml(convUrl)}" id="${aid}"><app:img src="startup/ImgNodeExpanded.gif"/></a></c:when>
+                                <c:when test="${convHit.messageCount > 1}"><a href="${fn:escapeXml(expandUrl)}" id="${aid}"><app:img src="startup/ImgNodeCollapsed.gif"/></a></c:when>
+                            </c:choose>
+                        </td>
+                        <c:if test="${mailbox.features.flagging}">
 							<td class='Img'><app:flagImage flagged="${convHit.isFlagged}"/></td>
 						</c:if>
 						<c:if test="${mailbox.features.mailPriority}">
@@ -103,7 +139,8 @@
 						<c:if test="${mailbox.features.tagging}">
 							<td class='Img'><app:miniTagImage ids="${convHit.tagIds}"/></td>
 						</c:if>
-						<td width='10%'><%-- allow this column to wrap --%>
+                        <td class='Img' nowrap="">&nbsp;</td>
+   						<td width='10%'><%-- allow this column to wrap --%>
 							<c:set var="dispRec" value="${zm:truncate(convHit.displayRecipients,20,true)}"/>${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}
 						</td>
 						<td class='Img'><app:attachmentImage attachment="${convHit.hasAttachment}"/></td>
@@ -130,6 +167,43 @@
 						<td nowrap width='20'><c:if test="${convHit.messageCount > 1}">(${convHit.messageCount})&nbsp;</c:if><c:if test="${convHit.messageCount < 2}">&nbsp</c:if></td>
 						<td nowrap width='5%'>${fn:escapeXml(zm:displayMsgDate(pageContext, convHit.date))}</td>
 					</tr>
+                    <c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneLocation eq 'off' and not empty cid and (param.action eq 'offView' or param.action eq 'offView2') and convdisp eq 'true' and selectedRow eq status.index and convHit.messageCount > 1}">
+                    <c:set var="convdisp" value="false"/>
+                    <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="stat">
+                           <zm:currentResultUrl var="msgUrl" value="search" action="${hit.id eq msg.id ? 'view' : 'offView2'}" context="${context}" cso="${convSearchResult.offset}" csi="${stat.index}" css="${param.css}"/>
+                           <c:set var="aid" value="A${stat.index}11"/>
+                           <tr onclick='zSelectRow(event,"${aid}","C${stat.index}11")' id="R${stat.index}11" class='ZhRow${(hit.messageHit.isUnread and (hit.id != msg.id)) ? ' Unread':''}${hit.id eq msg.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : ' ZhConvExpanded')}'>
+                                <td class='CB' nowrap><input id="C${stat.index}11"<c:if test="${hit.id eq msg.id}">checked</c:if> type=checkbox name="idcv" value="${hit.id}"/></td>
+                                <td class="Img" nowrap>&nbsp;</td> 
+                                <c:if test="${mailbox.features.flagging}">
+                                    <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
+                                </c:if>
+                                <c:if test="${mailbox.features.mailPriority}">
+                                    <td class='ImgNarrow'><app:priorityImage high="${hit.messageHit.isHighPriority}" low="${hit.messageHit.isLowPriority}"/></td>
+                                </c:if>
+                                <c:if test="${mailbox.features.tagging}">
+                                    <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
+                                </c:if>
+                                <td class='Img'><app:img src="${(hit.messageHit.isUnread and hit.id == msg.id) ? 'startup/ImgMsgStatusRead.gif' : hit.messageHit.statusImage}" altkey="${(hit.messageHit.isUnread and hit.id == msg.id) ? 'ALT_MSG_STATUS_READ' : hit.messageHit.statusImageAltKey}"/></td>
+                                <td nowrap width="10%">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <c:set var="sender" value="${hit.messageHit.displaySender}"/>${fn:escapeXml(empty sender ? unknownSender : sender)}
+                                </td>
+                                <td class='Img' nowrap><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
+                                <td nowrap> <%-- allow wrap --%>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a href="${fn:escapeXml(msgUrl)}" id="A${stat.index}11">
+                                        <c:if test="${mailbox.prefs.showFragments and not empty hit.messageHit.fragment}">
+                                            <span class='Fragment'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span>
+                                        </c:if>
+                                    </a>
+                                </td>
+                                <td nowrap width="20">&nbsp;</td>
+                                <td nowrap width="5%">${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}</td>
+                           </tr>
+                    </c:forEach>
+
+                    </c:if>
 				</c:forEach>
 			</tbody>
 		</table>
