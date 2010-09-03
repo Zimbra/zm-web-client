@@ -361,8 +361,8 @@ function() {
 	ZmPref.registerPref("COMPOSE_INIT_FONT_FAMILY", {
 		displayName:		ZmMsg.defaultFontSettings,
 		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions: 	["Arial", "Times New Roman", "Courier", "Verdana"],
-		options: 			["Arial", "Times New Roman", "Courier", "Verdana"],
+		displayOptions: 	["Arial", "Arial Black","Comic Sans MS","Courier New", "Lucida Console", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana"],
+		options: 			["Arial", "Arial Black","Comic Sans MS","Courier New", "Lucida Console", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana"],
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
