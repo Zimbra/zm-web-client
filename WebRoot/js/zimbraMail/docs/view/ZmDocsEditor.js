@@ -39,12 +39,19 @@ ZmDocsEditor.prototype.constructor = ZmDocsEditor;
 
 ZmDocsEditor._VALUE = "ZD";
 ZmDocsEditor.FONT_SIZE_VALUES = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
-ZmDocsEditor.FONT_FAMILY = [
-    {name:"Times New Roman",	value:"Times New Roman, Times, serif" },
-    {name:"Arial", 				value:"Arial, Helvetica, sans-serif" },
-    {name:"Courier", 			value:"Courier, Courier New, mono" },
-    {name:"Verdana",			value:"Verdana, Arial, Helvetica, sans-serif" }
-];
+
+ZmDocsEditor.FONT_FAMILY = {};
+(function() {
+	var KEYS = [ "fontFamilyIntl", "fontFamilyBase" ];
+	var i, j, key, value, name;
+	for (j = 0; j < KEYS.length; j++) {
+		for (i = 1; value = AjxMsg[KEYS[j]+i+".css"]; i++) {
+			if (value.match(/^#+$/)) break;
+			name = AjxMsg[KEYS[j]+i+".display"];
+			ZmDocsEditor.FONT_FAMILY[value] = {name:name, value:value};
+		}
+	}
+})();
 
 ZmDocsEditor.__makeFontName = function(value) {
 	return value.replace(/,.*/,"").replace(/\b[a-z]/g, ZmDocsEditor.__toUpperCase);
@@ -121,18 +128,15 @@ function(tb) {
 
 	var defaultText = "";
 
-    for (var i = 0; i < ZmDocsEditor.FONT_FAMILY.length; i++) {
-        var item = ZmDocsEditor.FONT_FAMILY[i];
-        var mi = menu.createMenuItem(item.name, {text:item.name});
-        mi.addSelectionListener(listener);
-        mi.setData(ZmDocsEditor._VALUE, i);
-		if(i==0) {
-			defaultText = item.name;
-		}
-    }
+    for (var id in ZmDocsEditor.FONT_FAMILY) {
+		var item = ZmDocsEditor.FONT_FAMILY[id];
+		var mi = menu.createMenuItem(item.name, {text:item.name});
+		mi.addSelectionListener(listener);
+		mi.setData(ZmDocsEditor._VALUE, item.value);
+	}
 
     this._fontFamilyButton.setMenu(menu);
-    this._fontFamilyButton.setText(defaultText);
+    this._fontFamilyButton.setText(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
 };
 
 ZmDocsEditor.prototype._createFontSizeMenu =
