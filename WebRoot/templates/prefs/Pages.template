@@ -1597,15 +1597,67 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
         <td class='ZOptionsField'>
             <table>
                 <tr>
-                    <td id='${id}_CAL_WORKING_START_TIME' tabindex='48'></div></td>
+                    <td id='${id}_CAL_WORKING_HOURS_NORMAL'><td>
+                    <td> <$=ZmMsg.calendarWorkHoursNormal $> <td>
+                    <td id='${id}_CAL_WORKING_START_TIME' tabindex='48'></td>
                     <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
-                    <td id='${id}_CAL_WORKING_END_TIME' tabindex='49'></div></td>
+                    <td id='${id}_CAL_WORKING_END_TIME' tabindex='49'></td>
+                    <td id='${id}_CAL_WORKING_HOURS_CUSTOM'><td>
+                    <td> <$=ZmMsg.calendarWorkHoursCustom $> <td>
+                    <td id='${id}_CAL_CUSTOM_WORK_HOURS'></td>
                 </tr>
             </table>
         </td>
     </tr>
 </table>
-</template>       
+</template>
+
+<template id='prefs.Pages#CustomWorkHoursDlg'>
+<table border=0 cellspacing=2 cellpadding=2 width=100%>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_0' tabindex='10'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_0' tabindex='20'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_0' tabindex='30'></td>
+    </tr>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_1' tabindex='40'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_1' tabindex='50'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_1' tabindex='60'></td>
+    </tr>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_2' tabindex='70'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_2' tabindex='80'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_2' tabindex='90'></td>
+    </tr>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_3' tabindex='100'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_3' tabindex='110'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_3' tabindex='120'></td>
+    </tr>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_4' tabindex='130'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_4' tabindex='140'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_4' tabindex='150'></td>
+    </tr>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_5' tabindex='160'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_5' tabindex='170'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_5' tabindex='180'></td>
+    </tr>
+    <tr>
+        <td id='${id}_CAL_WORKING_DAY_6' tabindex='190'></td>
+        <td id='${id}_CAL_WORKING_START_TIME_6' tabindex='200'></td>
+        <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+        <td id='${id}_CAL_WORKING_END_TIME_6' tabindex='210'></td>
+    </tr>        
+</table>
+</template>
 
 <template id='prefs.Pages#IM'>
 <div align=right style='margin-right: 20px; margin-bottom: 10px;'>

@@ -166,7 +166,7 @@ function(wHrsString) {
         w.startTime = wDay[2];
         w.endTime = wDay[3];
 
-        wHrs[idx] = w;
+        wHrs[idx-1] = w;
     }
     return wHrs;
 };
