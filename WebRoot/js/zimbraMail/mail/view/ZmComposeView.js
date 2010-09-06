@@ -438,12 +438,12 @@ function(msg, forwardAttIds) {
 * Returns the message from the form, after some basic input validation.
 */
 ZmComposeView.prototype.getMsg =
-function(attId, isDraft, dummyMsg) {
+function(attId, isDraft, dummyMsg, forceBail) {
 	// Check destination addresses.
 	var addrs = this._collectAddrs();
 
 	// Any addresses at all provided? If not, bail.
-	if (!isDraft && !addrs.gotAddress) {
+	if ((!isDraft || forceBail) && !addrs.gotAddress) {
 		this.enableInputs(false);
 		var msgDialog = appCtxt.getMsgDialog();
 		msgDialog.setMessage(ZmMsg.noAddresses, DwtMessageDialog.CRITICAL_STYLE);
@@ -458,7 +458,7 @@ function(attId, isDraft, dummyMsg) {
 
 	// Is there a subject? If not, ask the user if they want to send anyway.
 	var subject = AjxStringUtil.trim(this._subjectField.value);
-	if (!isDraft && subject.length == 0 && !this._noSubjectOkay) {
+	if ((!isDraft || forceBail) && subject.length == 0 && !this._noSubjectOkay) {
 		this.enableInputs(false);
 		cd.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
 		cd.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this, cd);
@@ -468,7 +468,7 @@ function(attId, isDraft, dummyMsg) {
 	}
 
 	// Any bad addresses?  If there are bad ones, ask the user if they want to send anyway.
-	if (!isDraft && addrs[ZmComposeView.BAD].size() && !this._badAddrsOkay) {
+	if ((!isDraft || forceBail) && addrs[ZmComposeView.BAD].size() && !this._badAddrsOkay) {
 		this.enableInputs(false);
 		var bad = AjxStringUtil.htmlEncode(addrs[ZmComposeView.BAD].toString(AjxEmailAddress.SEPARATOR));
 		var msg = AjxMessageFormat.format(ZmMsg.compBadAddresses, bad);
@@ -483,7 +483,7 @@ function(attId, isDraft, dummyMsg) {
 	}
 
 	// Mandatory Spell Check
-	if (!isDraft && appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED) && 
+	if ((!isDraft || forceBail) && appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED) && 
 		appCtxt.get(ZmSetting.MAIL_MANDATORY_SPELLCHECK) && !this._spellCheckOkay) {
 		if (this._htmlEditor.checkMisspelledWords(new AjxCallback(this, this._spellCheckShield), null, new AjxCallback(this, this._spellCheckErrorShield))) {
 			return;
@@ -734,7 +734,7 @@ function(attId, isDraft, dummyMsg) {
 	* errorMsg:"you might have forgotten attaching an attachment, do you want to
 	* continue?", zimletName:"com_zimbra_attachmentAlert"}
 	**/
-	if (!isDraft && appCtxt.areZimletsLoaded()) {
+	if ((!isDraft || forceBail) && appCtxt.areZimletsLoaded()) {
 		var boolAndErrorMsgArray = [];
 		var showErrorDlg = false;
 		var errorMsg = "";

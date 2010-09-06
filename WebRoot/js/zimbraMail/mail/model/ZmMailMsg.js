@@ -1095,9 +1095,10 @@ function(nfolder, resp) {
  * @param {Boolean}	noSave				if set, a copy will *not* be saved to sent regardless of account/identity settings
  * @param {Boolean}	requestReadReceipt	if set, a read receipt is sent to *all* recipients
  * @param {ZmBatchCommand} batchCmd		if set, request gets added to this batch command
+ * @param {Date} sendTime				if set, tell server that this message should be sent at the specified time
  */
 ZmMailMsg.prototype.send =
-function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd) {
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime) {
 	var aName = accountName;
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
@@ -1125,6 +1126,9 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 		}
 		if (noSave) {
 			request.noSave = 1;
+		}
+		if (sendTime) {
+			request.autoSendTime = {tz:AjxTimezone.getServerId(AjxTimezone.DEFAULT), d:AjxDateUtil.getServerDateTime(sendTime)};
 		}
 		this._createMessageNode(request, isDraft, aName, requestReadReceipt);
 		appCtxt.notifyZimlets("addExtraMsgParts", [request, isDraft]);

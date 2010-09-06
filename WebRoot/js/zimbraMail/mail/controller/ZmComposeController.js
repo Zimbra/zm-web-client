@@ -36,6 +36,8 @@ ZmComposeController = function(container, mailApp) {
 
 	this._listeners = {};
 	this._listeners[ZmOperation.SEND] = new AjxListener(this, this._sendListener);
+	this._listeners[ZmOperation.SEND_MENU] = new AjxListener(this, this._sendListener);
+	this._listeners[ZmOperation.SEND_LATER] = new AjxListener(this, this._sendLaterListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
 	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._attachmentListener);
 	this._listeners[ZmOperation.DETACH_COMPOSE] = new AjxListener(this, this._detachListener);
@@ -82,6 +84,10 @@ ZmComposeController.DRAFT_TYPE_MANUAL	= "manual";
  * Defines the "auto" draft type reason.
  */
 ZmComposeController.DRAFT_TYPE_AUTO		= "auto";
+/**
+ * Defines the "delaysend" draft type reason.
+ */
+ZmComposeController.DRAFT_TYPE_DELAYSEND	= "delaysend";
 
 ZmComposeController.DEFAULT_TAB_TEXT = ZmMsg.compose;
 
@@ -393,9 +399,9 @@ function(docIds, draftType, callback) {
 ZmComposeController.prototype._sendMsg =
 function(attId, docIds, draftType, callback) {
 
-	draftType = draftType || ZmComposeController.DRAFT_TYPE_NONE;
+	var isTimed = Boolean(this._sendTime);
+	draftType = draftType || (isTimed ? ZmComposeController.DRAFT_TYPE_DELAYSEND : ZmComposeController.DRAFT_TYPE_NONE);
 	var isDraft = draftType != ZmComposeController.DRAFT_TYPE_NONE;
-
 	// bug fix #38408 - briefcase attachments need to be set *before* calling
 	// getMsg() but we cannot do that without having a ZmMailMsg to store it in.
 	// File this one under WTF.
@@ -404,7 +410,7 @@ function(attId, docIds, draftType, callback) {
 		tempMsg = new ZmMailMsg();
 		this._composeView.setDocAttachments(tempMsg, docIds);
 	}
-	var msg = this._composeView.getMsg(attId, isDraft, tempMsg);
+	var msg = this._composeView.getMsg(attId, isDraft, tempMsg, isTimed);
 
 	if (!msg) { return; }
 
@@ -472,7 +478,8 @@ function(attId, docIds, draftType, callback) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg, msg);
-	var resp = msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt);
+	var resp = msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime);
+	this._resetDelayTime();
 	
 	// XXX: temp bug fix #4325 - if resp returned, we're processing sync
 	//      request REVERT this bug fix once mozilla fixes bug #295422!
@@ -851,12 +858,14 @@ ZmComposeController.prototype._initializeToolBar =
 function() {
 	if (this._toolbar) { return; }
 
-	var buttons = [
-		ZmOperation.SEND,
-		ZmOperation.CANCEL,
-		ZmOperation.SEP,
-		ZmOperation.SAVE_DRAFT
-	];
+	var buttons = [];
+	if (this._canSaveDraft()) {
+		buttons.push(ZmOperation.SEND_MENU);
+	} else {
+		buttons.push(ZmOperation.SEND);
+	}
+
+	buttons.push(ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
 
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
 		buttons.push(ZmOperation.ATTACHMENT);
@@ -924,6 +933,16 @@ function() {
 		button.addDropDownSelectionListener(listener);
 		tb._ZmListController_this = this;
 		tb._ZmListController_newDropDownListener = listener;
+	}
+
+	var button = tb.getButton(ZmOperation.SEND_MENU);
+	if (button) {
+		var menu = new ZmPopupMenu(button, null, null, this);
+		var sendItem = menu.createMenuItem(ZmOperation.SEND, ZmOperation.defineOperation(ZmOperation.SEND));
+		sendItem.addSelectionListener(this._listeners[ZmOperation.SEND]);
+		var sendLaterItem = menu.createMenuItem(ZmOperation.SEND_LATER, ZmOperation.defineOperation(ZmOperation.SEND_LATER));
+		sendLaterItem.addSelectionListener(this._listeners[ZmOperation.SEND_LATER]);
+		button.setMenu(menu);
 	}
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, this.viewId], {waitUntilLoaded:true});
@@ -1177,7 +1196,7 @@ ZmComposeController.prototype._processSendMsg =
 function(draftType, msg, resp) {
 
 	this._msgSent = true;
-	var isDraft = (draftType != ZmComposeController.DRAFT_TYPE_NONE);
+	var isDraft = (draftType != ZmComposeController.DRAFT_TYPE_NONE && draftType != ZmComposeController.DRAFT_TYPE_DELAYSEND);
 	if (!isDraft) {
 		var popped = false;
 		if (appCtxt.get(ZmSetting.SHOW_MAIL_CONFIRM)) {
@@ -1191,7 +1210,9 @@ function(draftType, msg, resp) {
 					window.parentController.setStatusMsg(ZmMsg.messageSent);
 				}
 			} else {
-				if (!appCtxt.isOffline) { // see bug #29372
+				if (draftType == ZmComposeController.DRAFT_TYPE_DELAYSEND) {
+					appCtxt.setStatusMsg(ZmMsg.messageScheduledSent);
+				} else if (!appCtxt.isOffline) { // see bug #29372
 					appCtxt.setStatusMsg(ZmMsg.messageSent);
 				}
 			}
@@ -1296,7 +1317,13 @@ function(ev) {
 ZmComposeController.prototype._send =
 function() {
 	this._toolbar.enableAll(false); // thwart multiple clicks on Send button
+	this._resetDelayTime();
 	this.sendMsg();
+};
+
+ZmComposeController.prototype._sendLaterListener =
+function(ev) {
+	this.showDelayDialog();
 };
 
 // Cancel button was pressed
@@ -1463,6 +1490,7 @@ function(draftType, attId, docIds, callback) {
 
 	draftType = draftType || ZmComposeController.DRAFT_TYPE_MANUAL;
 	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener, [draftType, callback]);
+	this._resetDelayTime();
 	if (!docIds) {
 		this.sendMsg(attId, draftType, respCallback);
 	} else {
@@ -1511,6 +1539,49 @@ function(ev) {
 	}
 };
 
+ZmComposeController.prototype.showDelayDialog =
+function() {
+	if (!this._delayDialog) {
+		this._delayDialog = new ZmTimeDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
+		this._delayDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleDelayDialog));
+	}
+	this._delayDialog.popup(this._composeView._getDialogXY());
+};
+
+ZmComposeController.prototype._handleDelayDialog =
+function() {
+	this._delayDialog.popdown();
+	var date = this._delayDialog.getValue();
+	var now = new Date();
+	if (date < now) {
+		this.showDelayPastDialog();
+	} else {
+		this._toolbar.enableAll(false); // thwart multiple clicks on Send button
+		this._sendTime = date;
+		this.sendMsg(null, ZmComposeController.DRAFT_TYPE_DELAYSEND, null);
+	}
+};
+
+ZmComposeController.prototype.showDelayPastDialog =
+function() {
+	if (!this._delayPastDialog) {
+		this._delayPastDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
+		this._delayPastDialog.setMessage(ZmMsg.sendLaterPastError, DwtMessageDialog.WARNING_STYLE);
+		this._delayPastDialog.registerCallback(DwtDialog.OK_BUTTON, this._handleDelayPastDialog, this, []);
+	}
+	this._delayPastDialog.popup(this._composeView._getDialogXY());
+};
+
+ZmComposeController.prototype._handleDelayPastDialog =
+function() {
+	this._delayPastDialog.popdown();
+	this._send();
+};
+
+ZmComposeController.prototype._resetDelayTime =
+function() {
+	this._sendTime = null;
+};
 
 // Callbacks
 
@@ -1555,6 +1626,7 @@ function(mailtoParams) {
 		// save as draft
 		var callback = mailtoParams ? new AjxCallback(this, this.doAction, mailtoParams) :
 					   				  new AjxCallback(this, this._popShieldYesDraftSaved);
+		this._resetDelayTime();
 		this.sendMsg(null, ZmComposeController.DRAFT_TYPE_MANUAL, callback);
 	} else {
 		// cancel

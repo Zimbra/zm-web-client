@@ -547,3 +547,31 @@
 		</tr>
 	</table>
 </template>
+
+<!-- time selection dialog template -->
+<template id='share.Dialogs#ZmTimeDialog'>
+	<table border=0 width=330>
+		<tr>
+			<td colspan=2>${description}</td>
+		</tr>
+		<tr>
+			<td class='Label'>${label}:</td>
+			<td>
+				<table border=0 cellpadding=0 cellspacing=0>
+					<tr>
+						<td><$=AjxTemplate.expand("#DateField",{id:data.id+"_date"})$></td>
+						<td id='${id}_miniCal'></td>
+						<td>&nbsp;</td>
+						<td><$= ZmMsg.at $></td>
+						<td>&nbsp;</td>
+						<td id='${id}_time'></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id='share.Dialogs#DateField'>
+	<input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}' value='${value}'>
+</template>
