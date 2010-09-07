@@ -35,7 +35,7 @@
 	<zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
 	<c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
 	<c:set var="context" value="${context}" />
-	<c:if test="${false and mailbox.prefs.readingPaneEnabled}">
+	<c:if test="${false and mailbox.prefs.readingPaneLocation eq 'off'}">
 		<zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}"/>
 		<zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 		<c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
@@ -114,7 +114,7 @@
 						<zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" context="${context}" action="compose" id="${hit.messageHit.id}"/>
 					</c:when>
 					<c:otherwise>
-						<zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="${mailbox.prefs.readingPaneLocation eq 'right' ? 'paneView' : (mailbox.prefs.readingPaneLocation eq 'bottom' ? 'rowView' : 'view')}" context="${context}" id="${hit.messageHit.id}" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+						<zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="${(mailbox.prefs.readingPaneLocation eq 'off' and param.action != 'offView') ? 'offView' : 'view'}" context="${context}" id="${hit.messageHit.id}" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
 					</c:otherwise>
 				</c:choose>
 				<c:if test="${empty selectedRow and hit.messageHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>

@@ -102,8 +102,8 @@
 							<zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(convHit.id,'-')}" action="compose"/>
 						</c:when>
                         <c:otherwise>
-                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
-                            <zm:currentResultUrl var="expandUrl" value="search" cid="${hit.id}" action="${mailbox.prefs.readingPaneLocation eq 'right' ? 'paneView' : 'view'}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${(mailbox.prefs.readingPaneLocation eq 'right' and param.action != 'paneView') ? 'paneView' : 'view'}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                            <zm:currentResultUrl var="collapseUrl" value="search" cid="${hit.id}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                         </c:otherwise>
 					</c:choose>
                     <c:if test="${empty selectedRow and convHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
@@ -112,8 +112,8 @@
 						<td class='CB' nowrap><input  id="C${status.index}" type="checkbox" name="id" value="${convHit.id}"></td>
                         <td class='Img' nowrap>
                             <c:choose>
-                                <c:when test="${convHit.messageCount > 1 and param.action == 'paneView' and hit.id eq param.cid}"><a href="${fn:escapeXml(convUrl)}" id="${aid}"><app:img src="startup/ImgNodeExpanded.gif"/></a></c:when>
-                                <c:when test="${convHit.messageCount > 1}"><a href="${fn:escapeXml(expandUrl)}" id="${aid}"><app:img src="startup/ImgNodeCollapsed.gif"/></a></c:when>
+                                <c:when test="${convHit.messageCount > 1 and param.action == 'paneView' and hit.id eq param.cid}"><a href="${fn:escapeXml(collapseUrl)}" id="${aid}"><app:img src="startup/ImgNodeExpanded.gif"/></a></c:when>
+                                <c:when test="${convHit.messageCount > 1}"><a href="${fn:escapeXml(convUrl)}" id="${aid}"><app:img src="startup/ImgNodeCollapsed.gif"/></a></c:when>
                             </c:choose>
                         </td>
 						<td colspan="3" nowrap><%-- allow this column to wrap --%>

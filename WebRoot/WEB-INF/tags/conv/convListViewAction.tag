@@ -25,6 +25,7 @@
 <zm:checkCrumb crumb="${param.crumb}"/>
 <zm:getMailbox var="mailbox"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
+<c:set var="msgids" value="${fn:join(paramValues.idcv, ',')}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 <c:set var="viewOp" value="${not empty paramValues.viewOp[0] ? paramValues.viewOp[0] :  paramValues.viewOp[1]}"/>
@@ -242,43 +243,71 @@
 		<c:redirect url="${redirectUrl}"/>
 	</c:if>
 </c:when>
-<c:when test="${empty ids}">
-	<app:status style="Warning"><fmt:message key="actionNoConvSelected"/>
+<c:when test="${empty ids and empty msgids}">
+	<app:status style="Warning"><fmt:message key="actionNoConvMessageSelected"/>
 	</app:status>
 </c:when>
 <c:otherwise>
 <c:choose>
-<c:when test="${zm:actionSet(param, 'actionSpam')}">
-	<zm:markConversationSpam  var="result" id="${ids}" spam="true"/>
-	<app:status>
-		<fmt:message key="actionConvMarkedSpam">
-			<fmt:param value="${result.idCount}"/>
-		</fmt:message>
-	</app:status>
-</c:when>
-<c:when test="${zm:actionSet(param, 'actionNotSpam')}">
-	<zm:markConversationSpam  var="result" id="${ids}" spam="false"/>
-	<app:status>
-		<fmt:message key="actionConvMarkedNotSpam">
-			<fmt:param value="${result.idCount}"/>
-		</fmt:message>
-	</app:status>
-</c:when>
 <c:when test="${zm:actionSet(param,'actionDelete')}">
-	<zm:trashConversation  var="result" id="${ids}"/>
-	<app:status>
-		<fmt:message key="actionConvMovedTrash">
-			<fmt:param value="${result.idCount}"/>
+    <c:choose>
+    <c:when test="${not empty ids and not empty msgids}">
+        <zm:trashConversation  var="convresult" id="${ids}"/>
+        <zm:trashMessage var="msgresult" id="${msgids}"/>
+	    <app:status>
+        <fmt:message key="actionConvMessageMovedTrash">
+			<fmt:param value="${convresult.idCount}"/>
+            <fmt:param value="${msgresult.idCount}"/>
 		</fmt:message>
-	</app:status>
+	    </app:status>
+    </c:when>
+    <c:when test="${not empty ids and empty msgids}">
+        <zm:trashConversation  var="convresult" id="${ids}"/>
+        <app:status>
+        <fmt:message key="actionConvMovedTrash">
+            <fmt:param value="${convresult.idCount}"/>
+        </fmt:message>
+        </app:status>
+    </c:when>
+    <c:when test="${not empty msgids and empty ids}">
+        <zm:trashMessage var="msgresult" id="${msgids}"/>
+        <app:status>
+        <fmt:message key="actionMessageMovedTrash">
+            <fmt:param value="${msgresult.idCount}"/>
+        </fmt:message>
+        </app:status>
+    </c:when>
+    </c:choose>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
-	<zm:deleteConversation  var="result" id="${ids}"/>
-	<app:status>
-		<fmt:message key="actionConvHardDeleted">
-			<fmt:param value="${result.idCount}"/>
+    <c:choose>
+    <c:when test="${not empty ids and not empty msgids}">
+        <zm:deleteConversation  var="convresult" id="${ids}"/>
+        <zm:deleteMessage var="msgresult" id="${msgids}"/>
+	    <app:status>
+		<fmt:message key="actionConvMessageHardDeleted">
+			<fmt:param value="${convresult.idCount}"/>
+            <fmt:param value="${msgresult.idCount}"/>
 		</fmt:message>
-	</app:status>
+	    </app:status>
+    </c:when>
+    <c:when test="${not empty ids and empty msgids}">
+        <zm:deleteConversation  var="convresult" id="${ids}"/>
+	    <app:status>
+		<fmt:message key="actionConvHardDeleted">
+			<fmt:param value="${convresult.idCount}"/>
+		</fmt:message>
+	    </app:status>
+    </c:when>
+    <c:when test="${empty ids and not empty msgids}">
+        <zm:deleteMessage  var="msgresult" id="${msgids}"/>
+        <app:status>
+            <fmt:message key="actionMessageHardDeleted">
+                 <fmt:param value="${msgresult.idCount}"/>
+            </fmt:message>
+        </app:status>
+    </c:when>
+    </c:choose>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionPrint')}">
 	<jsp:forward page="/h/printconversations"/>
@@ -286,60 +315,198 @@
 <c:when test="${zm:actionSet(param, 'action')}">
 	<c:choose>
 		<c:when test="${actionOp eq 'unread' or actionOp eq 'read'}">
-			<zm:markConversationRead var="result" id="${ids}" read="${actionOp eq 'read'}"/>
-			<app:status>
-				<fmt:message key="${actionOp eq 'read' ? 'actionConvMarkedRead' : 'actionConvMarkedUnread'}">
-					<fmt:param value="${result.idCount}"/>
-				</fmt:message>
-			</app:status>
+            <c:choose>
+                <c:when test="${not empty ids and not empty msgids}">
+                    <zm:markConversationRead var="convresult" id="${ids}" read="${actionOp eq 'read'}"/>
+                    <zm:markMessageRead var="msgresult" id="${msgids}" read="${actionOp eq 'read'}"/>
+                    <app:status>
+				    <fmt:message key="${actionOp eq 'read' ? 'actionConvMessageMarkedRead' : 'actionConvMessageMarkedUnread'}">
+					    <fmt:param value="${convresult.idCount}"/>
+                        <fmt:param value="${msgresult.idCount}"/>
+				    </fmt:message>
+			        </app:status>
+                </c:when>
+                <c:when test="${not empty ids and empty msgids}">
+                    <zm:markConversationRead var="convresult" id="${ids}" read="${actionOp eq 'read'}"/>
+			        <app:status>
+			    	<fmt:message key="${actionOp eq 'read' ? 'actionConvMarkedRead' : 'actionConvMarkedUnread'}">
+				    	<fmt:param value="${convresult.idCount}"/>
+			    	</fmt:message>
+			        </app:status>
+                </c:when>
+                <c:when test="${empty ids and not empty msgids}">
+                    <zm:markMessageRead var="msgresult" id="${msgids}" read="${actionOp eq 'read'}"/>
+			        <app:status>
+				    <fmt:message key="${actionOp eq 'read' ? 'actionMessageMarkedRead' : 'actionMessageMarkedUnread'}">
+					    <fmt:param value="${msgresult.idCount}"/>
+				    </fmt:message>
+			        </app:status>
+                </c:when>
+            </c:choose>
 		</c:when>
 		<c:when test="${actionOp eq 'actionSpam'}">
-			<zm:markConversationSpam  var="result" id="${ids}" spam="true"/>
-			<app:status>
-				<fmt:message key="actionConvMarkedSpam">
-					<fmt:param value="${result.idCount}"/>
-				</fmt:message>
-			</app:status>
+            <c:choose>
+            <c:when test="${not empty ids and not empty msgids}">
+                <zm:markConversationSpam var="convresult" id="${ids}" spam="true"/>
+                <zm:markMessageSpam var="msgresult" id="${msgids}" spam="true"/>
+                <app:status>
+                <fmt:message key="actionConvMessageMarkedSpam">
+                    <fmt:param value="${convresult.idCount}"/>
+                    <fmt:param value="${msgresult.idCount}"/>
+                </fmt:message>
+                </app:status>
+            </c:when>
+            <c:when test="${not empty ids and empty msgids}">
+                <zm:markConversationSpam  var="convresult" id="${ids}" spam="true"/>
+                <app:status>
+                <fmt:message key="actionConvMarkedSpam">
+                    <fmt:param value="${convresult.idCount}"/>
+                </fmt:message>
+                </app:status>
+            </c:when>
+            <c:when test="${not empty msgids and empty ids}">
+                <zm:markMessageSpam var="msgresult" id="${msgids}" spam="true"/>
+                <app:status>
+                <fmt:message key="actionMessageMarkedSpam">
+                    <fmt:param value="${msgresult.idCount}"/>
+                </fmt:message>
+                </app:status>
+            </c:when>
+            </c:choose>
 		</c:when>
 		<c:when test="${actionOp eq 'actionNotSpam'}">
-			<zm:markConversationSpam  var="result" id="${ids}" spam="false"/>
-			<app:status>
-				<fmt:message key="actionConvMarkedNotSpam">
-					<fmt:param value="${result.idCount}"/>
-				</fmt:message>
-			</app:status>
+            <c:choose>
+            <c:when test="${not empty ids and not empty msgids}">
+                <zm:markConversationSpam var="convresult" id="${ids}" spam="false"/>
+                <zm:markMessageSpam var="msgresult" id="${msgids}" spam="false"/>
+                <app:status>
+                <fmt:message key="actionConvMessageMarkedNotSpam">
+                    <fmt:param value="${convresult.idCount}"/>
+                    <fmt:param value="${msgresult.idCount}"/>
+                </fmt:message>
+                </app:status>
+            </c:when>
+            <c:when test="${not empty ids and empty msgids}">
+                <zm:markConversationSpam  var="convresult" id="${ids}" spam="true"/>
+                <app:status>
+                <fmt:message key="actionConvMarkedNotSpam">
+                    <fmt:param value="${convresult.idCount}"/>
+                </fmt:message>
+                </app:status>
+            </c:when>
+            <c:when test="${not empty msgids and empty ids}">
+                <zm:markMessageSpam var="msgresult" id="${msgids}" spam="true"/>
+                <app:status>
+                <fmt:message key="actionMessageMarkedNotSpam">
+                    <fmt:param value="${msgresult.idCount}"/>
+                </fmt:message>
+                </app:status>
+            </c:when>
+            </c:choose>
 		</c:when>
 		<c:when test="${actionOp eq 'flag' or actionOp eq 'unflag'}">
-			<zm:flagConversation var="result" id="${ids}" flag="${actionOp eq 'flag'}"/>
-			<app:status>
-				<fmt:message key="${actionOp eq 'flag' ? 'actionConvFlag' : 'actionConvUnflag'}">
-					<fmt:param value="${result.idCount}"/>
-				</fmt:message>
-			</app:status>
+            <c:choose>
+                <c:when test="${not empty ids and not empty msgids}">
+                    <zm:flagConversation var="convresult" id="${ids}" flag="${actionOp eq 'flag'}"/>
+                    <zm:flagMessage var="msgresult" id="${msgids}" flag="${actionOp eq 'flag'}"/>
+          			<app:status>
+				    <fmt:message key="${actionOp eq 'flag' ? 'actionConvMessageFlag' : 'actionConvMessageUnflag'}">
+			    		<fmt:param value="${convresult.idCount}"/>
+                        <fmt:param value="${msgresult.idCount}"/>
+		    		</fmt:message>
+			        </app:status>
+                </c:when>
+                <c:when test="${not empty ids and empty msgids}">
+                    <zm:flagConversation var="convresult" id="${ids}" flag="${actionOp eq 'flag'}"/>
+                    <app:status>
+                        <fmt:message key="${actionOp eq 'flag' ? 'actionConvFlag' : 'actionConvUnflag'}">
+                            <fmt:param value="${convresult.idCount}"/>
+                        </fmt:message>
+                    </app:status>
+                </c:when>
+                <c:when test="${empty ids and not empty msgids}">
+                    <zm:flagMessage var="msgresult" id="${msgids}" flag="${actionOp eq 'flag'}"/>
+                    <app:status>
+                        <fmt:message key="${actionOp eq 'flag' ? 'actionMessageFlag' : 'actionConvMessageUnflag'}">
+                            <fmt:param value="${msgresult.idCount}"/>
+                        </fmt:message>
+                    </app:status>
+                </c:when>
+            </c:choose>
 		</c:when>
 		<c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
 			<c:set var="untagall" value="${fn:startsWith(actionOp, 'u:all')}"/>
 			<c:choose>
 				<c:when test="${untagall}" >
-					<zm:forEachTag var="eachtag">
-						<zm:tagConversation tagid="${eachtag.id}" var="result" id="${ids}" tag="false"/>
-					</zm:forEachTag>
-					<app:status>
-						<fmt:message key="${'actionConvUntagAll'}">
-							<fmt:param value="${result.idCount}"/>
-						</fmt:message>
-					</app:status>
+                    <c:choose>
+                        <c:when test="${not empty ids and not empty msgids}">
+                            <zm:forEachTag var="eachtag">
+						        <zm:tagConversation tagid="${eachtag.id}" var="convresult" id="${ids}" tag="false"/>
+                                <zm:tagMessage tagid="${eachtag.id}" var="msgresult" id="${msgids}" tag="false"/>
+					        </zm:forEachTag>
+					        <app:status>
+						    <fmt:message key="${'actionConvMessageUntagAll'}">
+						    	<fmt:param value="${convresult.idCount}"/>
+                                <fmt:param value="${msgresult.idCount}"/>
+						    </fmt:message>
+					        </app:status>
+                        </c:when>
+                        <c:when test="${not empty ids and empty msgids}">
+                            <zm:forEachTag var="eachtag">
+						        <zm:tagConversation tagid="${eachtag.id}" var="convresult" id="${ids}" tag="false"/>
+                            </zm:forEachTag>
+                            <app:status>
+                                <fmt:message key="${'actionConvUntagAll'}">
+                                    <fmt:param value="${convresult.idCount}"/>
+                                </fmt:message>
+                            </app:status>
+                        </c:when>
+                        <c:when test="${empty ids and not empty msgids}">
+                            <zm:forEachTag var="eachtag">
+						        <zm:tagMessage tagid="${eachtag.id}" var="msgresult" id="${msgids}" tag="false"/>
+                            </zm:forEachTag>
+                            <app:status>
+                                <fmt:message key="${'actionMessageUntagAll'}">
+                                    <fmt:param value="${msgresult.idCount}"/>
+                                </fmt:message>
+                            </app:status>
+                        </c:when>
+                    </c:choose>
 				</c:when>
 				<c:otherwise>
 					<c:set var="istag" value="${fn:startsWith(actionOp, 't')}"/>
 					<c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
-					<zm:tagConversation tagid="${tagid}" var="result" id="${ids}" tag="${istag}"/>
-					<app:status>
-						<fmt:message key="${istag ? 'actionConvTag' : 'actionConvUntag'}">
-							<fmt:param value="${result.idCount}"/>
-							<fmt:param value="${zm:getTagName(pageContext, tagid)}"/>
-						</fmt:message>
-					</app:status>
+                    <c:choose>
+                        <c:when test="${not empty ids and not empty msgids}">
+               				<zm:tagConversation tagid="${tagid}" var="convresult" id="${ids}" tag="${istag}"/>
+                            <zm:tagMessage tagid="${tagid}" var="msgresult" id="${msgids}" tag="${istag}"/>
+                            <app:status>
+                                <fmt:message key="${istag ? 'actionConvMessageTag' : 'actionConvMessageUntag'}">
+                                    <fmt:param value="${convresult.idCount}"/>
+                                    <fmt:param value="${msgresult.idCount}"/>
+                                    <fmt:param value="${zm:getTagName(pageContext, tagid)}"/>
+                                </fmt:message>
+                            </app:status>
+                        </c:when>
+                        <c:when test="${not empty ids and empty msgids}">
+                            <zm:tagConversation tagid="${tagid}" var="convresult" id="${ids}" tag="${istag}"/>
+                            <app:status>
+                                <fmt:message key="${istag ? 'actionConvTag' : 'actionConvUntag'}">
+                                    <fmt:param value="${convresult.idCount}"/>
+                                    <fmt:param value="${zm:getTagName(pageContext, tagid)}"/>
+                                </fmt:message>
+                            </app:status>
+                        </c:when>
+                        <c:when test="${empty ids and not empty msgids}">
+                            <zm:tagMessage tagid="${tagid}" var="msgresult" id="${msgids}" tag="${istag}"/>
+                            <app:status>
+                                <fmt:message key="${istag ? 'actionMessageTag' : 'actionMessageUntag'}">
+                                    <fmt:param value="${msgresult.idCount}"/>
+                                    <fmt:param value="${zm:getTagName(pageContext, tagid)}"/>
+                                </fmt:message>
+                            </app:status>
+                        </c:when>
+                    </c:choose>
 				</c:otherwise>
 			</c:choose>
 		</c:when>
@@ -352,25 +519,62 @@
 	<c:set var="dragFolderid" value="${fn:substring(dragTargetFolder, 2, -1)}"/>
 	<c:set var="movedFolderName" value="${zm:getFolderName(pageContext, dragFolderid)}"/>
 	<zm:checkCrumb crumb="${param.crumb}"/>
-	<zm:moveConversation folderid="${dragFolderid}"var="result" id="${ids}"/>
-	<app:status>
-		<fmt:message key="actionConvMoved">
-			<fmt:param value="${result.idCount}"/>
-			<fmt:param value="${movedFolderName}"/>
-		</fmt:message>
-	</app:status>
+    <c:choose>
+        <c:when test="${not empty ids}">
+            <zm:moveConversation folderid="${dragFolderid}" var="convresult" id="${ids}"/>
+            <app:status>
+                <fmt:message key="actionConvMoved">
+                    <fmt:param value="${convresult.idCount}"/>
+                    <fmt:param value="${movedFolderName}"/>
+                </fmt:message>
+            </app:status>
+        </c:when>
+        <c:when test="${not empty msgids}">
+            <zm:moveMessage folderid="${dragFolderid}" var="msgresult" id="${msgids}"/>
+            <app:status>
+                <fmt:message key="actionMessageMoved">
+                    <fmt:param value="${msgresult.idCount}"/>
+                    <fmt:param value="${movedFolderName}"/>
+                </fmt:message>
+            </app:status>
+        </c:when>
+    </c:choose>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionMove')}">
 	<c:choose>
 		<c:when test="${fn:startsWith(folderId, 'm:')}">
 			<c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
-			<zm:moveConversation folderid="${folderid}"var="result" id="${ids}"/>
-			<app:status>
-				<fmt:message key="actionConvMoved">
-					<fmt:param value="${result.idCount}"/>
-					<fmt:param value="${zm:getFolderName(pageContext, folderid)}"/>
-				</fmt:message>
-			</app:status>
+            <c:choose>
+                <c:when test="${not empty ids and not empty msgids}">
+                    <zm:moveConversation folderid="${folderid}" var="convresult" id="${ids}"/>
+                    <zm:moveMessage folderid="${folderid}" var="msgresult" id="${msgids}"/>
+                    <app:status>
+                        <fmt:message key="actionConvMessageMoved">
+                            <fmt:param value="${convresult.idCount}"/>
+                            <fmt:param value="${msgresult.idCount}"/>
+                            <fmt:param value="${zm:getFolderName(pageContext, folderid)}"/>
+                        </fmt:message>
+                    </app:status>
+                </c:when>
+                <c:when test="${not empty ids and empty msgids}">
+                    <zm:moveConversation folderid="${folderid}" var="convresult" id="${ids}"/>
+                    <app:status>
+                        <fmt:message key="actionConvMoved">
+                            <fmt:param value="${convresult.idCount}"/>
+                            <fmt:param value="${zm:getFolderName(pageContext, folderid)}"/>
+                        </fmt:message>
+                    </app:status>
+                </c:when>
+                <c:when test="${not empty ids and empty msgids}">
+                    <zm:moveMessage folderid="${folderid}" var="msgresult" id="${msgids}"/>
+                    <app:status>
+                        <fmt:message key="actionMessageMoved">
+                            <fmt:param value="${msgresult.idCount}"/>
+                            <fmt:param value="${zm:getFolderName(pageContext, folderid)}"/>
+                        </fmt:message>
+                    </app:status>
+                </c:when>
+            </c:choose>
 		</c:when>
 		<c:otherwise>
 			<app:status style="Warning"><fmt:message key="actionNoFolderSelected"/></app:status>
