@@ -39,6 +39,8 @@ ZmTask = function(list, id, folderId) {
 	this.status = ZmCalendarApp.STATUS_NEED;
     this.startDate = new Date();
     this.endDate = this.startDate;
+    this.remindDate = this.startDate;
+    this.alarm = false;
 };
 
 ZmTask.prototype = new ZmCalItem;
@@ -310,6 +312,8 @@ function(node, instNode) {
         this.startDate = null;
     }
 
+    if(node.alarm) this.alarm = node.alarm;
+    
 	if (node.name || comp)				this.name		= this._getAttr(node, comp, "name");
 	if (node.loc || comp)				this.location	= this._getAttr(node, comp, "loc");
 	if (node.allDay || comp)			this.setAllDayEvent(this._getAttr(node, comp, "allDay"));
@@ -341,7 +345,44 @@ function(node, comp, name) {
 ZmTask.prototype._setExtrasFromMessage =
 function(message) {
 	this.location = message.invite.getLocation();
+    this._setAlarmFromMessage(message);
 };
+
+ZmTask.prototype._setAlarmFromMessage =
+function(message) {
+	this._reminderMinutes = 0;
+	var alarm = message.invite.getAlarm();
+	if (alarm) {
+		for (var i in alarm) {
+			if (alarm[i] && (alarm[i].action == "DISPLAY")) {
+				this.parseAlarm(alarm[i]);
+				break;
+			}
+		}
+	}
+};
+
+/**
+ * @private
+ */
+ZmTask.prototype.parseAlarm =
+function(tmp) {
+	if (!tmp) { return; }
+
+	var d;
+	var trigger = (tmp) ? tmp.trigger : null;
+	var abs = (trigger && (trigger.length > 0)) ? trigger[0].abs : null;
+	d = (abs && (abs.length > 0)) ? abs[0].d : null;
+
+	this._reminderMinutes = 0;
+	if (tmp && (tmp.action == "DISPLAY")) {
+		if (d != null) {
+			this._reminderAbs = d;
+            this.remindDate = d ? AjxDateUtil.parseServerDateTime(d) : null;
+		}
+	}
+};
+
 
 /**
  * @private
@@ -392,3 +433,41 @@ ZmTask.prototype._getInviteFromError =
 function(result) {
 	return (result._data.GetTaskResponse.task[0].inv[0]);
 };
+
+/**
+ * @private
+ */
+ZmTask.prototype._setAlarmData =
+function(soapDoc, comp) {
+	if (this._reminderAbs == 0 || this._reminderAbs == null) {
+		return;
+	}
+
+	var alarm = soapDoc.set("alarm", null, comp);
+	alarm.setAttribute("action", "DISPLAY");
+
+	var trigger = soapDoc.set("trigger", null, alarm);
+
+	var abs = soapDoc.set("abs", null, trigger);
+
+    this._setReminderAbs(abs);
+
+	this._addXPropsToAlarm(soapDoc, alarm);
+};
+
+/**
+ * @private
+ */
+ZmTask.prototype._setReminderAbs =
+function(rel) {
+    rel.setAttribute("d", this._reminderAbs ? this._reminderAbs:0);
+};
+
+/**
+ * @private
+ */
+ZmTask.prototype.setTaskReminder =
+function(absStr) {
+    this._reminderAbs = absStr;
+};
+

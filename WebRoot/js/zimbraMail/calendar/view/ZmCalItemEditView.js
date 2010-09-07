@@ -127,11 +127,13 @@ function() {
 
 	// clear out all input fields
 	this._subjectField.setValue("");
-	this._repeatDescField.innerHTML = "";
 	this._notesHtmlEditor.setContent("");
 
-	// reinit non-time sensitive selects option values
-	this._repeatSelect.setSelectedValue(ZmApptViewHelper.REPEAT_OPTIONS[0].value);
+    if(this._hasRepeatSupport) {
+        this._repeatDescField.innerHTML = "";
+        // reinit non-time sensitive selects option values
+        this._repeatSelect.setSelectedValue(ZmApptViewHelper.REPEAT_OPTIONS[0].value);
+    }
 
 	// remove attachments if any were added
 	this._removeAllAttachments();
@@ -401,7 +403,8 @@ function(calItem, mode, firstTime) {
 
 	// disable the recurrence select object for editing single instance
     var enableRepeat = ((mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) && enableTimeSelection && !this._isProposeTime);
-	this._enableRepeat(enableRepeat);
+    var repeatOptions = document.getElementById(this._htmlElId + "_repeat_options");
+	if(repeatOptions) this._enableRepeat(enableRepeat);
 
     //show 'to' fields for forward action
     var forwardOptions = document.getElementById(this._htmlElId + "_forward_options");
@@ -510,10 +513,12 @@ ZmCalItemEditView.prototype._populateForEdit =
 function(calItem, mode) {
 	// set subject
 	this._subjectField.setValue(calItem.getName());
-	this._repeatSelect.setSelectedValue(calItem.getRecurType());
 
-	// recurrence string
-	this._setRepeatDesc(calItem);
+    if(this._hasRepeatSupport) {
+        this._repeatSelect.setSelectedValue(calItem.getRecurType());
+        // recurrence string
+	    this._setRepeatDesc(calItem);
+    }
 
 	// attachments
 	this._attachDiv = document.getElementById(this._attachDivId);
@@ -658,13 +663,17 @@ function(width) {
 	// CalItem folder DwtSelect
 	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
 
-	// recurrence DwtSelect
-	this._repeatSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_repeatSelect")});
-	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
-	for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length; i++) {
-		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
-		this._repeatSelect.addOption(option.label, option.selected, option.value);
-	}
+    this._hasRepeatSupport = Boolean(Dwt.byId(this._htmlElId + "_repeatSelect") != null);
+
+    if(this._hasRepeatSupport) {
+        // recurrence DwtSelect
+        this._repeatSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_repeatSelect")});
+        this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
+        for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length; i++) {
+            var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
+            this._repeatSelect.addOption(option.label, option.selected, option.value);
+        }
+    }
 
 	this._hasReminderSupport = Boolean(Dwt.byId(this._htmlElId + "_reminderSelect") != null);
 
@@ -987,28 +996,33 @@ function(ev) {
 		if (ed && (ed.valueOf() < ev.detail.valueOf()))
 			this._endDateField.value = newDate;
 		this._startDateField.value = newDate;
-	} else {
+	} else if(parentButton == this._endDateButton) {
 		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 		if (sd && (sd.valueOf() > ev.detail.valueOf()))
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
 	var calItem = this._calItem;
-	var repeatType = this._repeatSelect.getValue();
-	
-	if (calItem.isCustomRecurrence() &&
-		this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
-	{
-		this._checkRecurrenceValidity = true;
-		this._initRecurDialog(repeatType);
-		this._recurOkListener();		
-	}
-	else
-	{
-		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-		this._calItem._recurrence.setRecurrenceStartTime(sd.getTime());
-		this._setRepeatDesc(this._calItem);
-	}
+
+    if(this._hasRepeatSupport) {
+        var repeatType = this._repeatSelect.getValue();
+
+        if (calItem.isCustomRecurrence() &&
+            this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
+        {
+            this._checkRecurrenceValidity = true;
+            this._initRecurDialog(repeatType);
+            this._recurOkListener();
+        }
+        else
+        {
+            var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+            if(sd) {
+                this._calItem._recurrence.setRecurrenceStartTime(sd.getTime());
+                this._setRepeatDesc(this._calItem);
+            }
+        }
+    }    
 };
 
 ZmCalItemEditView.prototype._resetRecurrence =
