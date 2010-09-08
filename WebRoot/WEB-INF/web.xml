@@ -221,6 +221,20 @@
 		<url-pattern>/adminhelp/*</url-pattern>
 	</filter-mapping>
 
+    <!-- NOTE: This filter has to be *after* the redirects -->
+    <filter>
+        <filter-name>InsertHelpBranding</filter-name>
+        <filter-class>com.zimbra.webClient.filters.InsertHelpBranding</filter-class>
+        <init-param>
+            <param-name>exts</param-name>
+            <param-value>.htm,.xml</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>InsertHelpBranding</filter-name>
+        <url-pattern>/help/*</url-pattern>
+    </filter-mapping>
+
 	<filter>
 		<filter-name>TimezoneFilter</filter-name>
 		<filter-class>com.zimbra.webClient.filters.TimezoneFilter</filter-class>
