@@ -229,18 +229,17 @@ function(parent, num) {
         var firstItem = items && items[0];
         var isWebDoc = firstItem && !firstItem.isFolder && firstItem.isWebDoc();
         var isLocked = firstItem && !firstItem.isFolder && firstItem.locked;
-
-        var versionEnabled =  num ==1 && firstItem;
-        var checkinEnabled = num == 1 && isLocked && !isWebDoc;
-        var checkoutEnabled = num == 1 && !isLocked && !isWebDoc;
-
+        var isLockOwner = isLocked && (item.lockUser == appCtxt.getActiveAccount().name);
+        
+        var versionEnabled =  num ==1 && firstItem;        
+        var checkinEnabled = !isReadOnly && num == 1 && isLockOwner && !isWebDoc;
+        var checkoutEnabled = !isReadOnly && num == 1 && !isLocked && !isWebDoc;
+        var discardCheckoutEnabled = !isReadOnly && isLocked && !isWebDoc;
 
         parent.getOp(ZmOperation.CHECKIN).setVisible(checkinEnabled);
         parent.getOp(ZmOperation.CHECKOUT).setVisible(checkoutEnabled);
-        parent.getOp(ZmOperation.DISCARD_CHECKOUT).setVisible(!checkoutEnabled);
-        //parent.enable(ZmOperation.CHECKIN, checkinEnabled);
-        //parent.enable(ZmOperation.CHECKOUT, checkoutEnabled);
-        parent.enable(ZmOperation.VERSION_HISTORY, ( num == 1 && !firstItem.isFolder) );
+        parent.getOp(ZmOperation.DISCARD_CHECKOUT).setVisible(discardCheckoutEnabled);
+        parent.enable(ZmOperation.VERSION_HISTORY, versionEnabled );
     }
 
     var isDocOpEnabled = !(isTrash || isReadOnly);
