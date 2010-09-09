@@ -22,10 +22,15 @@ ZmCalListView = function(parent, posStyle, controller, dropTgt) {
 		controller: controller,
 		dropTgt: dropTgt,
 		view: ZmId.VIEW_CAL_LIST,
-		headerList: this._getHeaderList(parent)
-	}
+		headerList: this._getHeaderList(parent),
+		pageless: true
+	};
 
 	ZmListView.call(this, params);
+
+	// add date-search bar first
+	this._dateSearchBar = new DwtComposite({parent:parent, className:"calendar_date_search"});
+	this._createSearchBarHtml();
 
 	this._needsRefresh = true;
 	this._timeRangeStart = 0;
@@ -42,8 +47,7 @@ ZmCalListView.prototype.constructor = ZmCalListView;
 
 
 // Consts
-ZmCalListView.DEFAULT_CALENDAR_PERIOD	= AjxDateUtil.MSEC_PER_DAY * 21;			// 3 weeks
-ZmCalListView.DEFAULT_SEARCH_PERIOD		= AjxDateUtil.MSEC_PER_DAY * 31;			// 1 month
+ZmCalListView.DEFAULT_CALENDAR_PERIOD	= AjxDateUtil.MSEC_PER_DAY * 14;			// 2 weeks
 ZmCalListView.COL_WIDTH_DATE			= ZmMsg.COLUMN_WIDTH_DATE_CAL;
 ZmCalListView.COL_WIDTH_LOCATION		= ZmMsg.COLUMN_WIDTH_LOCATION_CAL;
 ZmCalListView.COL_WIDTH_STATUS			= ZmMsg.COLUMN_WIDTH_STATUS_CAL;
@@ -92,15 +96,23 @@ function() {
 
 ZmCalListView.prototype.setDate =
 function(date, duration, roll) {
-//	this._duration = duration; // necessary?
 	this._date = new Date(date.getTime());
 
 	var d = new Date(date.getTime());
 	d.setHours(0, 0, 0, 0);
-	this._timeRangeStart = d.getTime() - (AjxDateUtil.MSEC_PER_DAY * 7);
+	this._timeRangeStart = d.getTime();
 	this._timeRangeEnd = this._timeRangeStart + ZmCalListView.DEFAULT_CALENDAR_PERIOD;
 
 	this._updateTitle();
+	this._segmentedDates = [];
+
+	// update widgets
+	var startDate = new Date(this._timeRangeStart);
+	var endDate = new Date(this._timeRangeEnd);
+	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(startDate);
+	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(endDate);
+
+	this._updateDateRange(startDate, endDate);
 
 	// Notify any listeners
 	if (this.isListenerRegistered(DwtEvent.DATE_RANGE)) {
@@ -140,6 +152,17 @@ function() {
 	].join("");
 };
 
+ZmCalListView.prototype._updateDateRange =
+function(startDate, endDate) {
+	var params = [
+		AjxDateUtil._getMonthName(startDate, true),
+		startDate.getDate(),
+		AjxDateUtil._getMonthName(endDate, true),
+		endDate.getDate()
+	];
+	this._dateRangeField.innerHTML = AjxMessageFormat.format(ZmMsg.viewCalListDateRange, params);
+};
+
 ZmCalListView.prototype.addTimeSelectionListener =
 function(listener) {
 	// do nothing
@@ -158,6 +181,13 @@ function(listener) {
 
 // DwtListView methods
 
+/**
+ * Sets the initial set of results when user first comes to the listview
+ *
+ * @param list					[AjxVector]		data as a list
+ * @param skipMiniCalUpdate		[Boolean]		skip mini cal update
+ * @param skipSort				[Boolean]		skip sorting
+ */
 ZmCalListView.prototype.set =
 function(list, skipMiniCalUpdate, skipSort) {
 	if (!skipSort) {
@@ -174,6 +204,12 @@ function(list, skipMiniCalUpdate, skipSort) {
 	if (AjxEnv.isIE) {
 		this.parent._layout();
 	}
+};
+
+ZmCalListView.prototype.setBounds =
+function(x, y, width, height) {
+	// set height to 32px (plus 1px for bottom border) to adjust for the new date-range toolbar
+	ZmListView.prototype.setBounds.call(this, x, 33, width, height-33);
 };
 
 ZmCalListView.prototype._getItemId =
@@ -354,6 +390,211 @@ function(parent) {
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.startDate, width:ZmCalListView.COL_WIDTH_DATE, sortable:ZmItem.F_DATE}));
 
 	return hList;
+};
+
+/**
+ * Adds the HTML needed to render the date-search-bar. Caches the DOM objects
+ * and sets up event listeners.
+ *
+ * @private
+ */
+ZmCalListView.prototype._createSearchBarHtml =
+function() {
+	this._dateSearchBar.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Calendar#ListViewSearchBar", {id:this._htmlElId});
+
+	this._startDateField = document.getElementById(this._htmlElId+"_startDateInput");
+	this._endDateField = document.getElementById(this._htmlElId+"_endDateInput");
+
+	this._startDateField.onchange = AjxCallback.simpleClosure(this._onDatesChange, this, [true]);
+	this._endDateField.onchange = AjxCallback.simpleClosure(this._onDatesChange, this);
+
+	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
+	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
+	this._startDateButton = ZmCalendarApp.createMiniCalButton(this._dateSearchBar, (this._htmlElId+"_startMiniCal"), dateButtonListener, dateCalSelectionListener);
+	this._endDateButton = ZmCalendarApp.createMiniCalButton(this._dateSearchBar, (this._htmlElId+"_endMiniCal"), dateButtonListener, dateCalSelectionListener);
+
+	this._dateRangeField = document.getElementById(this._htmlElId+"_searchBarDate");
+};
+
+/**
+ * Event listener triggered when user clicks on the down arrow button to bring
+ * up the date picker.
+ *
+ * @param ev		[Event]		Browser event
+ * @private
+ */
+ZmCalListView.prototype._dateButtonListener =
+function(ev) {
+	var calDate = ev.item == this._startDateButton
+		? AjxDateUtil.simpleParseDateStr(this._startDateField.value)
+		: AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+
+	// if date was input by user and its foobar, reset to today's date
+	if (isNaN(calDate)) {
+		calDate = new Date();
+		var field = ev.item == this._startDateButton
+			? this._startDateField : this._endDateField;
+		field.value = AjxDateUtil.simpleComputeDateStr(calDate);
+	}
+
+	// always reset the date to current field's date
+	var menu = ev.item.getMenu();
+	var cal = menu.getItem(0);
+	cal.setDate(calDate, true);
+	ev.item.popup();
+};
+
+/**
+ * Event listener triggered when user selects date in the date-picker.
+ *
+ * @param ev		[Event]		Browser event
+ * @private
+ */
+ZmCalListView.prototype._dateCalSelectionListener =
+function(ev) {
+	var parentButton = ev.item.parent.parent;
+
+	// update the appropriate field w/ the chosen date
+	var field = (parentButton == this._startDateButton)
+		? this._startDateField : this._endDateField;
+	field.value = AjxDateUtil.simpleComputeDateStr(ev.detail);
+
+	// change the start/end date if they mismatch
+	this._handleDateChange(parentButton == this._startDateButton);
+};
+
+/**
+ * Called when user selects a new date from the date-picker. Normalizes the
+ * start/end dates if user chose start date to be after end date or vice versa.
+ * Also updates the UI with the new date ranges and initiates SearchRequest.
+ *
+ * @param isStartDate
+ * @private
+ */
+ZmCalListView.prototype._handleDateChange =
+function(isStartDate) {
+	var start = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	var end = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+
+	var startTime = start.getTime();
+	var endTime = end.getTime();
+
+	// normalize dates
+	if (isStartDate && startTime >= endTime) {
+		endTime = startTime + AjxDateUtil.MSEC_PER_DAY;
+		end = new Date(endTime);
+		this._endDateField.value = AjxDateUtil.simpleComputeDateStr(end);
+	}
+	else if (endTime <= startTime) {
+		startTime = endTime - AjxDateUtil.MSEC_PER_DAY;
+		start = new Date(startTime);
+		this._startDateField.value = AjxDateUtil.simpleComputeDateStr(start);
+	}
+
+	this._timeRangeStart = startTime;
+	this._timeRangeEnd = endTime;
+
+	this._updateDateRange(start, end);
+	this._updateTitle();
+
+	this._segmentedDates = [];
+
+	this._segmentDates(startTime, endTime);
+	this.set((new AjxVector()), null, true); // clear the current list
+	this._search();
+};
+
+/**
+ * Chunks the date range into intervals per the default calendar period. We do
+ * this to avoid taxing the server with a large date range.
+ *
+ * @param startTime		[String]	start time in ms
+ * @param endTime		[String]	end time in ms
+ * @private
+ */
+ZmCalListView.prototype._segmentDates =
+function(startTime, endTime) {
+	var startPeriod = startTime;
+	var endPeriod = startTime + ZmCalListView.DEFAULT_CALENDAR_PERIOD;
+
+	// reset back to end time if we're search less than next block (e.g. two weeks)
+	if (endPeriod > endTime) {
+		endPeriod = endTime;
+	}
+
+	do {
+		this._segmentedDates.push({startTime: startPeriod, endTime: endPeriod});
+
+		startPeriod += ZmCalListView.DEFAULT_CALENDAR_PERIOD;
+
+		var newEndPeriod = endPeriod + ZmCalListView.DEFAULT_CALENDAR_PERIOD;
+		endPeriod = (newEndPeriod > endTime) ? endTime : newEndPeriod;
+	}
+	while (startPeriod < endTime);
+};
+
+/**
+ * Makes a SearchRequest for the first chunk of appointments
+ *
+ * @private
+ */
+ZmCalListView.prototype._search =
+function() {
+	var dates = this._segmentedDates.shift();
+
+	var params = {
+		start: dates.startTime,
+		end: dates.endTime,
+		folderIds: this._controller.getCheckedCalendarFolderIds(),
+		callback: (new AjxCallback(this, this._handleSearchResponse)),
+		noBusyOverlay: true
+	};
+
+	this._controller.apptCache.getApptSummaries(params);
+};
+
+/**
+ * Appends the SearchResponse results to the listview. Attempts to request the
+ * next chunk of appointments if the user's scrollbar isn't shown.
+ *
+ * @param list		[AjxVector]		list returned by ZmApptCache
+ * @private
+ */
+ZmCalListView.prototype._handleSearchResponse =
+function(list) {
+
+	this.addItems(list.getArray());
+
+	// if we have more days to fetch, search again for the next set
+	if (this._segmentedDates.length > 0 && this._getItemsNeeded(true) > 0) {
+		this._search();
+	}
+};
+
+/**
+ * This method gets called when the user scrolls up/down. If there are more
+ * appointments to request, it does so.
+ *
+ * @private
+ */
+ZmCalListView.prototype._checkItemCount =
+function() {
+	if (this._segmentedDates.length > 0) {
+		this._search();
+	}
+};
+
+/**
+ * Called when the date input field loses focus.
+ *
+ * @param isStartDate		[Boolean]	If true, the start date field is what changed.
+ * @private
+ */
+ZmCalListView.prototype._onDatesChange =
+function(isStartDate) {
+	if (ZmApptViewHelper.handleDateChange(this._startDateField, this._endDateField, isStartDate)) {
+		this._handleDateChange(isStartDate);
+	}
 };
 
 

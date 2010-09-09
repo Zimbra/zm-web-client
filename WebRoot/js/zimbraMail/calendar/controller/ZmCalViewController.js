@@ -209,13 +209,11 @@ function(viewId, startDate, skipMaintenance) {
 			break;
 		case ZmId.VIEW_CAL_LIST:
 			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
-			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous);
-			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next);
 			break;
 	}
 	DBG.timePt("switching selection mode and tooltips");
 
-	if (viewId == ZmId.VIEW_CAL_APPT) {
+	if (viewId == ZmId.VIEW_CAL_APPT || viewId == ZmId.VIEW_CAL_LIST) {
 		this._navToolBar[ZmId.VIEW_CAL].setVisible(false);
 	} else {
 		this._navToolBar[ZmId.VIEW_CAL].setVisible(true);
@@ -2347,7 +2345,7 @@ function(parent, num) {
 	}
 	else {
 		if (this._navToolBar[ZmId.VIEW_CAL]) {
-			this._navToolBar[ZmId.VIEW_CAL].setVisible(true);
+			this._navToolBar[ZmId.VIEW_CAL].setVisible(currViewName != ZmId.VIEW_CAL_LIST);
 		}
 		var currView = this._viewMgr.getCurrentView();
 		var appt = currView ? currView.getSelection()[0] : null;

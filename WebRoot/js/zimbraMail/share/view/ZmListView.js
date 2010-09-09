@@ -1137,9 +1137,11 @@ function() {
  * below the fold. Nonstandard list views may override.
  */
 ZmListView.prototype._getItemsNeeded =
-function() {
+function(skipMoreCheck) {
 
-	if (!(this._controller._list && this._controller._list.hasMore()) || !this._list) { return 0; }
+	if (!skipMoreCheck) {
+		if (!(this._controller._list && this._controller._list.hasMore()) || !this._list) { return 0; }
+	}
 	if (!this._rendered || !this._rowHeight) { return 0; }
 
 	DBG.println(AjxDebug.DBG2, "List view: checking item count");

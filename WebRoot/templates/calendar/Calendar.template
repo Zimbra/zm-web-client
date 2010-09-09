@@ -157,6 +157,20 @@
 	</table>
 </template>
 
+<template id='calendar.Calendar#ListViewSearchBar'>
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr>
+			<td class='calendar_date_search_td'><$= ZmMsg.showApptsFrom $></td>
+			<td class='calendar_date_search_td'><input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}_startDateInput' value='${value}'></td>
+			<td id='${id}_startMiniCal'></td>
+			<td class='calendar_date_search_td'><$= ZmMsg.through $></td>
+			<td class='calendar_date_search_td'><input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}_endDateInput' value='${value}'></td>
+			<td id='${id}_endMiniCal'></td>
+			<td class='calendar_date_search-dateRange' id='${id}_searchBarDate'></td>
+		</tr>
+	</table>
+</template>
+
 <template id='calendar.Calendar#ReminderDialogRow'>
 	<$ if (data.needSep) { $>
 		<tr name="rdsep">

@@ -1513,8 +1513,26 @@ line-height:normal;
 	font-weight:bold;
 }
 
+.calendar_date_search {
+	height: 32px;
+	margin-right: 5px;
+	@DateSearchBackground@;
+	border-bottom: 1px solid @darken(AppC,30)@;
+}
 
+.calendar_date_search_td {
+	padding: 5px 0px 5px 5px;
+	white-space: nowrap;
+}
 
+.calendar_date_search-dateRange {
+	color: #4c4c4c;
+	font-size: 16px;
+	font-weight: bold;
+	padding-right: 10px;
+	text-align: right;
+	width: 100%;
+}
 
 /* ??? USED? */
 .allday {
