@@ -200,11 +200,29 @@ function(dateInfo) {
      this._endTimeSelect.setValue(dateInfo.endTimeStr);
 };
 
+
+ZmApptEditView.prototype.setDate =
+function(startDate, endDate, ignoreTimeUpdate) {
+    this._startDateField.value = AjxDateUtil.simpleComputeDateStr(startDate);
+    this._endDateField.value = AjxDateUtil.simpleComputeDateStr(endDate);
+    if(!ignoreTimeUpdate) {
+        this._startTimeSelect.set(startDate);
+        this._endTimeSelect.set(endDate);
+    }
+};
+
 ZmApptEditView.prototype.updateTimezone =
 function(dateInfo) {
 	this._tzoneSelectStart.setSelectedValue(dateInfo.timezone);
 	this._tzoneSelectEnd.setSelectedValue(dateInfo.timezone);
     this.handleTimezoneOverflow();
+};
+
+ZmApptEditView.prototype.updateLocation =
+function(location, locationStr) {
+    this._updateAttendeeFieldValues(ZmCalBaseItem.LOCATION, [location]);
+    this.setApptLocation(locationStr);
+    this._addResourcesDiv(); 
 };
 
 // Private / protected methods
@@ -257,6 +275,19 @@ function() {
 ZmApptEditView.prototype._getClone =
 function() {
 	return ZmAppt.quickClone(this._calItem);
+};
+
+ZmApptEditView.prototype.getDuration =
+function() {
+    var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+    var duration = AjxDateUtil.MSEC_PER_DAY;
+	if (!this._allDayCheckbox.checked) {
+		startDate = this._startTimeSelect.getValue(startDate);
+		endDate = this._endTimeSelect.getValue(endDate);
+        duration = endDate.getTime() - startDate.getTime();        
+	}
+    return duration;
 };
 
 ZmApptEditView.prototype._populateForSave =
@@ -491,6 +522,8 @@ function(calItem, mode) {
     if(sentBy){
         this.setIdentity(appCtxt.getIdentityCollection().getIdentityBySendAddress(sentBy));
     }
+
+    if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true);
 };
 
 ZmApptEditView.prototype.getCalItemOrganizer =
@@ -514,21 +547,17 @@ function(calItem) {
 		Dwt.setVisible(this._resourcesContainer, true);
 		if (location.length) {
 			html[i++] = "<div style='padding-left:2px'>";
-			html[i++] = AjxImg.getImageSpanHtml("Location");
-			html[i++] = "&nbsp;<a href='javascript:;' onclick='ZmApptEditView._switchTab(";
-			html[i++] = '"' + ZmCalBaseItem.LOCATION + '"';
-			html[i++] = ")'>";
+			html[i++] = AjxImg.getImageSpanHtml("Location","float:left");
+			html[i++] = "&nbsp;";
 			html[i++] = location;
-			html[i++] = "</a></div>";
+			html[i++] = "</div>";
 		}
 		if (equipment.length) {
 			html[i++] = "<div style='padding-left:2px'>";
-			html[i++] = AjxImg.getImageSpanHtml("Resource");
-			html[i++] = "&nbsp;<a href='javascript:;' onclick='ZmApptEditView._switchTab(";
-			html[i++] = '"' + ZmCalBaseItem.EQUIPMENT + '"';
-			html[i++] = ")'>";
+			html[i++] = AjxImg.getImageSpanHtml("Resource", "float:left");
+			html[i++] = "&nbsp;";
 			html[i++] = equipment;
-			html[i++] = "</a></div>";
+			html[i++] = "</div>";
 		}
 	} else {
 		Dwt.setVisible(this._resourcesContainer, false);
@@ -1279,6 +1308,11 @@ function(ev, id) {
     }
 };
 
+ZmApptEditView.prototype.setScheduleAssistant =
+function(scheduleAssistant) {
+    this._scheduleAssistant = scheduleAssistant;        
+};
+
 ZmApptEditView.prototype._dateCalSelectionListener =
 function(ev) {
     ZmCalItemEditView.prototype._dateCalSelectionListener.call(this, ev);
@@ -1286,6 +1320,8 @@ function(ev) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
         this._scheduleView._updateFreeBusy();
     }
+    
+    if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true);
 };
 
 
@@ -1407,6 +1443,8 @@ function(type, attendees) {
         var organizer = this._isProposeTime ? this.getCalItemOrganizer() : this.getOrganizer();
         this._scheduleView.set(this._dateInfo, organizer, this._attendees);
     }
+
+    if(type == ZmCalBaseItem.PERSON && this._scheduleAssistant) this._scheduleAssistant.updateAttendees(this._attendees);
 };
 
 ZmApptEditView.prototype._getAttendeeByName =

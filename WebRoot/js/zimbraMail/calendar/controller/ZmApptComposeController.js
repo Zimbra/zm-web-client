@@ -634,6 +634,11 @@ function() {
 	return (new ZmApptComposeView(this._container, null, this._app, this));
 };
 
+ZmApptComposeController.prototype._createScheduler =
+function(apptEditView) {
+	return (new ZmScheduleAssistantView(this._container, this, apptEditView));
+};
+
 ZmApptComposeController.prototype._setComposeTabGroup =
 function(setFocus) {
 	DBG.println(AjxDebug.DBG2, "_setComposeTabGroup");
@@ -768,4 +773,59 @@ function(newAppt) {
 ZmApptComposeController.prototype.proposeNewTime =
 function(newAppt) {
 	this.show(newAppt, ZmCalItem.MODE_PROPOSE_TIME);
+};
+
+ZmApptComposeController.prototype.initComposeView =
+function(initHide) {
+	if (!this._composeView) {
+		this._composeView = this._createComposeView();
+        var appEditView = this._composeView.getApptEditView();
+        this._smartScheduler = this._createScheduler(appEditView);
+        appEditView.setScheduleAssistant(this._smartScheduler);
+
+		var callbacks = {};
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
+		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
+		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
+		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
+		var elements = {};
+		if (!this._toolbar)
+			this._createToolBar();
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
+        elements[ZmAppViewMgr.C_TREE] = this._smartScheduler;
+		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
+		if (initHide) {
+			this._composeView.preload();
+		}
+		return true;
+	}
+	return false;
+};
+
+ZmApptComposeController.prototype.getCalendarAccount =
+function() {
+    return (appCtxt.multiAccounts)
+        ? this._composeView.getApptTab().getEditView().getCalendarAccount() : null;
+
+};
+
+ZmApptComposeController.prototype.getAttendees =
+function(type) {
+    return this._composeView.getAttendees(type);
+};
+
+ZmApptComposeController.prototype._postHideCallback =
+function() {
+	// overload me
+    if(appCtxt.getCurrentAppName() == ZmApp.CALENDAR || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
+        appCtxt.getAppViewMgr().showTreeFooter(true);
+    }
+};
+
+ZmApptComposeController.prototype._postShowCallback =
+function(view, force) {
+	var ta = new AjxTimedAction(this, this._setFocus);
+	AjxTimedAction.scheduleAction(ta, 10);
+    appCtxt.getAppViewMgr().showTreeFooter(false);
 };

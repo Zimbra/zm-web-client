@@ -660,6 +660,20 @@ function(active) {
 };
 
 /**
+ * Sets the overview tree to display overview content for this application.
+ *
+ * @param {Boolean}	reset		if <code>true</code>, clear the content first
+ */
+ZmCalendarApp.prototype.setOverviewPanelContent =
+function(reset) {
+    var viewId = appCtxt.getCurrentViewId();
+    if(viewId.indexOf(ZmId.VIEW_APPOINTMENT) != 0) {
+        ZmApp.prototype.setOverviewPanelContent.apply(this, arguments);
+    }
+};
+
+
+/**
  * Shows the mini-calendar.
  *
  * @param	{Boolean}	show		if <code>true</code>, show the mini-calendar

@@ -4270,3 +4270,6 @@ If you feel compelled to have a background color, please do so on a per skin lev
     @ToolbarBg@   
 }
 
+.SuggestBtn .ZButtonTable {
+    width: 100%;    
+}
