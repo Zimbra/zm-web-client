@@ -1912,19 +1912,19 @@ function(appt, all) {
 
 ZmCalViewController.prototype._replyDetailsHandler =
 function(appt, all, result) {
-	var dummyMsg = new ZmMailMsg(9999, null, true);
+	var msg = appt.message || new ZmMailMsg(9999, null, true);
 	var organizer = appt.getOrganizer();
-	dummyMsg.addAddress(new AjxEmailAddress(organizer, AjxEmailAddress.FROM));
-	dummyMsg.getHeaderStr = AjxCallback.returnFalse; // Real ugly hack to prevent headers from showing in the message
+	msg.addAddress(new AjxEmailAddress(organizer, AjxEmailAddress.FROM));
+	msg.getHeaderStr = AjxCallback.returnFalse; // Real ugly hack to prevent headers from showing in the message
 
 	var attendeesText = appt.getAttendeesText(ZmCalBaseItem.PERSON, true);
 	var addressArray = attendeesText.split(/;\s*/);
 
 	for (var i=0; i<addressArray.length; i++) {
-		dummyMsg.addAddress(new AjxEmailAddress(addressArray[i], AjxEmailAddress.CC));
+		msg.addAddress(new AjxEmailAddress(addressArray[i], AjxEmailAddress.CC));
 	}
 	
-	var data = {action: all ? ZmOperation.REPLY_ALL : ZmOperation.REPLY, subjOverride: appt.name || null, msg: dummyMsg, toOverride: organizer, ccOverride: all && attendeesText};
+	var data = {action: all ? ZmOperation.REPLY_ALL : ZmOperation.REPLY, subjOverride: appt.name || null, msg: msg, toOverride: organizer, ccOverride: all && attendeesText};
 	AjxDispatcher.run("GetComposeController").doAction(data);
 };
 
