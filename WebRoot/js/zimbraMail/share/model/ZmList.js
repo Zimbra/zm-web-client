@@ -1003,8 +1003,9 @@ function(summary, actionLogItem) {
 
 ZmList.getActionSummary =
 function(text, num, type, arg) {
-    var typeText = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
-	return AjxMessageFormat.format(text, [num, typeText, arg]);
+	var typeTextAuto = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
+	var typeTextSingular = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], 1);
+	return AjxMessageFormat.format(text, [num, typeTextAuto, arg, typeTextSingular]);
 };
 
 /**

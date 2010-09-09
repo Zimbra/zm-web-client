@@ -52,7 +52,7 @@ ZmAction.prototype.undo = function() {
 };
 
 ZmAction.prototype.redo = function() {
-	//override me"
+	//override me
 };
 
 ZmAction.prototype.setComplete = function() {
