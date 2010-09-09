@@ -562,12 +562,14 @@
 						<td><$=AjxTemplate.expand("#DateField",{id:data.id+"_date"})$></td>
 						<td id='${id}_miniCal'></td>
 						<td>&nbsp;</td>
-						<td><$= ZmMsg.at $></td>
-						<td>&nbsp;</td>
 						<td id='${id}_time'></td>
 					</tr>
 				</table>
 			</td>
+		</tr>
+		<tr>
+			<td width=50><nobr><$= ZmMsg.selectTimezoneLabel $></nobr></td>
+			<td id='${id}_tzSelect'></td>
 		</tr>
 	</table>
 </template>

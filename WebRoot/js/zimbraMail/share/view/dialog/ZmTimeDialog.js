@@ -40,10 +40,28 @@ function() {
 
 ZmTimeDialog.prototype.initialize = 
 function() {
+	// Init Date / time picker
 	var now = new Date();
 	this._dateField.value = AjxDateUtil.simpleComputeDateStr(now);
 	this.showTimeFields(true);
 	this._timeSelect.set(now);
+
+	// Init Timezone picker
+	var options = AjxTimezone.getAbbreviatedZoneChoices();
+	var serverIdMap = {};
+	var serverId;
+	if (options.length != this._tzCount) {
+		this._tzCount = options.length;
+		this._tzoneSelect.clearOptions();
+		for (var i = 0; i < options.length; i++) {
+			if (!options[i].autoDetected) {
+				serverId = options[i].value;
+				serverIdMap[serverId] = true;
+				this._tzoneSelect.addOption(options[i]);
+			}
+		}
+	}
+	this.autoSelectTimezone();
 };
 
 
@@ -60,8 +78,9 @@ function() {
 
 ZmTimeDialog.prototype.getValue =
 function() {
-	var date = AjxDateUtil.simpleParseDateStr(this._dateField.value);
-	return this._timeSelect.getValue(date);
+	var date = this._timeSelect.getValue(AjxDateUtil.simpleParseDateStr(this._dateField.value));
+	var timezone = this._tzoneSelect.getValue();
+	return {date: date, timezone: timezone};
 }
 
 ZmTimeDialog.prototype.popup =
@@ -69,7 +88,7 @@ function() {
 	this.initialize();
 	ZmDialog.prototype.popup.call(this);
 	if (!this._tabGroupComplete) {
-		var members = [this._dateField, this._dateButton, this._timeSelect.getInputField()];
+		var members = [this._dateField, this._dateButton, this._timeSelect.getInputField(), this._tzoneSelect];
 		for (var i = 0; i < members.length; i++) {
 			this._tabGroup.addMember(members[i], i);
 		}
@@ -86,8 +105,7 @@ function() {
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-	var miniCalId = this._htmlElId + "_miniCal";
-	this._dateButton = this.createMiniCalButton(miniCalId, dateButtonListener, dateCalSelectionListener);
+	this._dateButton = this.createMiniCalButton(this._htmlElId + "_miniCal", dateButtonListener, dateCalSelectionListener);
 
 	// create selects for Time section
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
@@ -97,13 +115,13 @@ function() {
 	this._timeSelect.reparentHtmlElement(this._htmlElId + "_time");
 
 	this._dateField = Dwt.byId(this._htmlElId + "_date");
+
+	this._tzoneSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzSelect"), cascade:true});
 };
 
 ZmTimeDialog.prototype.showTimeFields = 
 function(show) {
 	Dwt.setVisibility(this._timeSelect.getHtmlElement(), show);
-	// also show/hide the "@" text
-	Dwt.setVisibility(this._timeSelect.getHtmlElement().parentNode.previousSibling.previousSibling, show);
 };
 
 // Listeners
@@ -178,3 +196,38 @@ function(buttonId, dateButtonListener, dateCalSelectionListener) {
 	return dateButton;
 };
 
+ZmTimeDialog.prototype.autoSelectTimezone =
+function() {
+	if (AjxTimezone.DEFAULT_RULE.autoDetected) {
+
+		var cRule = AjxTimezone.DEFAULT_RULE;
+		var standardOffsetMatch, daylightOffsetMatch, transMatch;
+
+		for (var i in AjxTimezone.MATCHING_RULES) {
+			var rule = AjxTimezone.MATCHING_RULES[i];
+			if (rule.autoDetected) continue;
+			if (rule.standard.offset == cRule.standard.offset) {
+
+				if (!standardOffsetMatch)
+					standardOffsetMatch = rule.serverId;
+
+				var isDayLightOffsetMatching = (cRule.daylight && rule.daylight && (rule.daylight.offset == cRule.daylight.offset));
+
+				if(isDayLightOffsetMatching) {
+					if (!daylightOffsetMatch)
+						daylightOffsetMatch = rule.serverId;
+					var isTransYearMatching = (rule.daylight.trans[0] == cRule.daylight.trans[0]);
+					var isTransMonthMatching = (rule.daylight.trans[1] == cRule.daylight.trans[1]);
+					if (isTransYearMatching && isTransMonthMatching && !transMatch)
+						transMatch = rule.serverId;
+				}
+			}
+		}
+		//select closest matching timezone
+		var serverId = transMatch ? transMatch : (daylightOffsetMatch || standardOffsetMatch);
+		if (serverId) this._tzoneSelect.setSelectedValue(serverId);
+	} else {
+		var tz = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+		this._tzoneSelect.setSelectedValue(tz);
+	}
+};

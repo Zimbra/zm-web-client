@@ -1128,7 +1128,9 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			request.noSave = 1;
 		}
 		if (sendTime) {
-			request.autoSendTime = {tz:AjxTimezone.getServerId(AjxTimezone.DEFAULT), d:AjxDateUtil.getServerDateTime(sendTime)};
+			var date = sendTime.date; // See ZmTimeDialog.prototype.getValue
+			var timezone = sendTime.timezone;
+			request.autoSendTime = {tz:AjxTimezone.getServerId(timezone || AjxTimezone.DEFAULT), d:AjxDateUtil.getServerDateTime(date)};
 		}
 		this._createMessageNode(request, isDraft, aName, requestReadReceipt);
 		appCtxt.notifyZimlets("addExtraMsgParts", [request, isDraft]);

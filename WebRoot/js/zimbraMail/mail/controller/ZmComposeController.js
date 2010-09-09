@@ -1551,13 +1551,21 @@ function() {
 ZmComposeController.prototype._handleDelayDialog =
 function() {
 	this._delayDialog.popdown();
-	var date = this._delayDialog.getValue();
+	var time = this._delayDialog.getValue(); //Returns {date: Date, timezone: String (see AjxTimezone)}
+
+	var date = time.date;
+	var dateOffset = AjxTimezone.getOffset(AjxTimezone.getClientId(time.timezone), date);
+	var utcDate = new Date(date.getTime() - dateOffset*60*1000);
+
 	var now = new Date();
-	if (date < now) {
+	var nowOffset = AjxTimezone.getOffset(AjxTimezone.DEFAULT_RULE, now);
+	var utcNow = new Date(now.getTime() - nowOffset*60*1000);
+
+	if (utcDate < utcNow) {
 		this.showDelayPastDialog();
 	} else {
 		this._toolbar.enableAll(false); // thwart multiple clicks on Send button
-		this._sendTime = date;
+		this._sendTime = time;
 		this.sendMsg(null, ZmComposeController.DRAFT_TYPE_DELAYSEND, null);
 	}
 };
