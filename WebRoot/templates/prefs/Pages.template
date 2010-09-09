@@ -50,11 +50,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'><$=ZmMsg.defaultTimezone$></td>
 						<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE' tabindex='45'></div></td>
 					</tr>
-                    <tr>
-                       	<td class='ZOptionsLabel'><$=ZmMsg.printFontSizePref$></td>
-						<td class='ZOptionsField'><select id='${id}_DEFAULT_PRINTFONTSIZE' tabindex='50'></select></td>
-					</tr>
-				<$ if (!appCtxt.isOffline) { $>
+                <$ if (!appCtxt.isOffline) { $>
 					<tr><td colspan=2><hr></td></tr>
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
@@ -144,6 +140,10 @@ and the container element is replaced with that control.
 							<td class='ZOptionsField'><div id='${id}_OFFLINE_NOTEBOOK_SYNC_ENABLED' tabindex='120'></div></td>
 						</tr>
 					<$ } $>
+                    <tr>
+                       	<td class='ZOptionsLabel'><$=ZmMsg.printFontSizeLabel$></td>
+						<td class='ZOptionsField'><select id='${id}_DEFAULT_PRINTFONTSIZE' tabindex='50'></select></td>
+					</tr>
 				</table>
 			</td>
 		</tr>

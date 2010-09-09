@@ -96,24 +96,6 @@
             </select>
         </td>
     </tr>
-    <tr>
-        <td class='ZOptionsTableLabel'>
-            <label for="printFont"><fmt:message key="printFontSizePref"/>
-                :</label>
-        </td>
-        <td>
-            <select name="zimbraPrefDefaultPrintFontSize" id="printFont">
-                <c:set var="printpref" value="${mailbox.prefs.defaultPrintFontSize}"/>
-                <option <c:if test="${printpref eq '8pt'}"> selected</c:if> value="8pt">8pt</option>
-                <option <c:if test="${printpref eq '10pt'}"> selected</c:if> value="10pt">10pt</option>
-                <option <c:if test="${printpref eq '12pt'}"> selected</c:if> value="12pt">12pt</option>
-                <option <c:if test="${printpref eq '14pt'}"> selected</c:if> value="14pt">14pt</option>
-                <option <c:if test="${printpref eq '18pt'}"> selected</c:if> value="18pt">18pt</option>
-                <option <c:if test="${printpref eq '24pt'}"> selected</c:if> value="24pt">24pt</option>
-                <option <c:if test="${printpref eq '36pt'}"> selected</c:if> value="36pt">36pt</option>                
-            </select>
-        </td>
-    </tr>
     
     <c:if test="${mailbox.features.changePassword}">
         <app:optSeparator/>
@@ -189,6 +171,40 @@
         <td colspan="2">
             &nbsp;
         </td>
+    </tr>
+</table>
+<br/>
+<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr class="ZOptionsHeaderRow">
+        <td class="ImgPrefsHeader_L">
+            &nbsp;
+        </td>
+        <td class='ZOptionsHeader ImgPrefsHeader'>
+            <fmt:message key="other"/>
+        </td>
+        <td class="ImgPrefsHeader_R">
+            &nbsp;
+        </td>
+    </tr>
+</table>
+<table cellpadding="3" width="100%" class="ZOptionsSectionMain">
+    <tr>
+    <td class='ZOptionsTableLabel'>
+        <label for="printFont"><fmt:message key="printFontSizePref"/>
+            :</label>
+    </td>
+    <td>
+        <select name="zimbraPrefDefaultPrintFontSize" id="printFont">
+            <c:set var="printpref" value="${mailbox.prefs.defaultPrintFontSize}"/>
+            <option <c:if test="${printpref eq '8pt'}"> selected</c:if> value="8pt">8pt</option>
+            <option <c:if test="${printpref eq '10pt'}"> selected</c:if> value="10pt">10pt</option>
+            <option <c:if test="${printpref eq '12pt'}"> selected</c:if> value="12pt">12pt</option>
+            <option <c:if test="${printpref eq '14pt'}"> selected</c:if> value="14pt">14pt</option>
+            <option <c:if test="${printpref eq '18pt'}"> selected</c:if> value="18pt">18pt</option>
+            <option <c:if test="${printpref eq '24pt'}"> selected</c:if> value="24pt">24pt</option>
+            <option <c:if test="${printpref eq '36pt'}"> selected</c:if> value="36pt">36pt</option>
+        </select>
+    </td>
     </tr>
 </table>
 </td>
