@@ -87,14 +87,14 @@
                     </c:choose>
                         <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
                     <app:status><fmt:message key="messageSent"/></app:status>
-                    <c:redirect url="${caction}">
-                        <c:param name="appmsg" value="messageSent"></c:param>
-                    </c:redirect>
                     <c:if test="${!empty uploader.compose.draftId}">
                         <c:catch>
                             <zm:deleteMessage var="actionResult" id="${uploader.compose.draftId}"/>
                         </c:catch>
                     </c:if>
+                    <c:redirect url="${caction}">
+                        <c:param name="appmsg" value="messageSent"></c:param>
+                    </c:redirect>
                     <c:set var="needComposeView" value="${false}"/>
                 </mo:handleError>
            </c:when>
