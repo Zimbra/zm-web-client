@@ -48,6 +48,16 @@
     font-weight: bold;
 }
 
+.zo_cal_listi_location{
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    max-width:470px;
+}
+.zo_cal_listi_location a {
+    color: #888888;
+    font-size: small;
+}
+
 .zo_cal_listh_date {
     float: right;
 }

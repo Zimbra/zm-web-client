@@ -46,7 +46,7 @@
 <div class='View'>
     <div><strong>${fn:escapeXml(empty appt.name ? noSubject : appt.name)}</strong></div>
     <c:if test="${not empty appt.location}">
-        <div class='small-gray-text'>location: ${fn:escapeXml(appt.location)}</div>
+        <div class='small-gray-text'><fmt:message key="locationLabel"/>&nbsp;${fn:escapeXml(appt.location)}</div>
     </c:if>                                                                          
     <c:if test="${not empty appt.organizer}">
            <div class='small-gray-text'>
