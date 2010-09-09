@@ -2611,13 +2611,19 @@ function(recurrenceMode) {
 	return [
 		viewOp,
 		ZmOperation.SEP,
-		ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE, ZmOperation.INVITE_REPLY_MENU,
+		ZmOperation.REPLY_ACCEPT,
+		ZmOperation.REPLY_TENTATIVE,
+		ZmOperation.REPLY_DECLINE,
+		ZmOperation.INVITE_REPLY_MENU,
+		ZmOperation.PROPOSE_NEW_TIME,
 		ZmOperation.SEP,
 		ZmOperation.REPLY,
 		ZmOperation.REPLY_ALL,
 		forwardOp,
-        ZmOperation.PROPOSE_NEW_TIME,
-		deleteOp, ZmOperation.MOVE, ZmOperation.TAG_MENU,
+        deleteOp,
+		ZmOperation.SEP,
+		ZmOperation.MOVE,
+		ZmOperation.TAG_MENU,
 		ZmOperation.SHOW_ORIG
 	];
 };
