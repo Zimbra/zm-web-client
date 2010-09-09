@@ -8,7 +8,7 @@
                 <col width='140'/>
                 <col width='100'/>
                 <col id='${id}_timezoneColumn' width='250'/>
-                <col width='60'/>
+                <col width='90'/>
                 <col/>
                 <col width='80'/>
             </colgroup>
@@ -881,7 +881,7 @@
         </tr>
         <tr>
             <td><$= AjxImg.getImageHtml("Location") $></td>
-            <td height="30" colspan="2" id='${id}_loc'><$= data.locationCountStr $></td>
+            <td height="30" colspan="2" id='${id}_loc'><span class="fakeAnchor"><$= data.locationCountStr $></span></td>
         </tr>
     </table>
 </template>

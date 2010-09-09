@@ -314,6 +314,53 @@ function(itemsById, result) {
         this._schedule[id] = usr;                
     };
 
+    this.getWorkingHours(itemsById);
+};
+
+ZmScheduleAssistantView.prototype.getWorkingHours =
+function(itemsById) {
+    if (this._workingHoursRequest) {
+        appCtxt.getRequestMgr().cancelRequest(this._workingHoursRequest, null, true);
+    }
+    this._workingHoursRequest = this._controller.getWorkingInfo(this._timeFrame.start.getTime(),
+                                                             this._timeFrame.end.getTime(),
+                                                             this._attendees.join(","),
+                                                             new AjxCallback(this, this._handleWorkingHoursResponse, [itemsById]),
+                                                             new AjxCallback(this, this._handleWorkingHoursError, [itemsById]),
+                                                             true);
+};
+
+ZmScheduleAssistantView.prototype._handleWorkingHoursResponse =
+function(itemsById, result) {
+
+    this._workingHoursRequest = null;
+    this._workingHours = {};
+    
+    var args = result.getResponse().GetWorkingHoursResponse.usr;
+    for (var i = 0; i < args.length; i++) {
+		var usr = args[i];
+        var id = usr.id;
+        if (!id) {
+            continue;
+        }
+        this._workingHours[id] = usr;
+    };
+
+    this.suggestTimeSlots(itemsById);
+};
+
+ZmScheduleAssistantView.prototype._handleWorkingHoursError =
+function(itemsById, result) {
+
+    this._workingHoursRequest = null;
+    this._workingHours = {};
+    this.suggestTimeSlots(itemsById);
+
+};
+
+ZmScheduleAssistantView.prototype.suggestTimeSlots =
+function(itemsById) {
+
     var startDate = this._timeFrame.start;
     startDate.setHours(0, 0, 0, 0);
     var startTime = startDate.getTime();
@@ -361,7 +408,11 @@ function(startTime, endTime, fbStat, fbStatMap) {
     for(var i=0; i < this._attendees.length; i++) {
         var attendee = this._attendees[i];
         var sched = this._schedule[attendee];
-        var isFree = true;
+        var isFree = this.isUnderWorkingHour(attendee, startTime, endTime);
+
+        //ignore time slots for non-working hours of this user
+        if(!isFree) continue;
+        
         if(sched.b) isFree = isFree && this.isBooked(sched.b, startTime, endTime);
         if(sched.t) isFree = isFree && this.isBooked(sched.t, startTime, endTime);
         if(sched.u) isFree = isFree && this.isBooked(sched.u, startTime, endTime);
@@ -389,8 +440,10 @@ function(startTime, endTime, fbStat, fbStatMap) {
         if(isFree) fbInfo.availableLocations++;
 	}
 
-    this._fbStat.add(fbInfo);
-    this._fbStatMap[key] = fbInfo;
+    if(fbInfo.availableUsers > 0) {
+        this._fbStat.add(fbInfo);
+        this._fbStatMap[key] = fbInfo;
+    }
 };
 
 ZmScheduleAssistantView._slotComparator =
@@ -421,10 +474,32 @@ function(slots, startTime, endTime) {
     return true;
 };
 
+ZmScheduleAssistantView.prototype.isUnderWorkingHour =
+function(attendee, startTime, endTime) {
+
+    var workingHours = this._workingHours[attendee];
+
+    //if working hours could not be retrieved consider all time slots for suggestion
+    if(!workingHours || workingHours.n) return true;
+
+    var slots = workingHours.f;
+
+    //working hours are indicated as free slots
+    if(!slots) return false;
+
+    for (var i = 0; i < slots.length; i++) {
+        if(startTime >= slots[i].s && endTime <= slots[i].e) {
+            return true;
+        }
+    };
+    return false;
+};
+
 ZmScheduleAssistantView.prototype.renderSuggestions =
 function(itemsById) {
     this.resizeTimeSuggestions();
     this._timeSuggestions.set(this._fbStat, itemsById);
+    this._timeSuggestions.focus();
 };
 
 ZmScheduleAssistantView.prototype.resizeTimeSuggestions =

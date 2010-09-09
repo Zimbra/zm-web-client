@@ -80,7 +80,7 @@ function(item, id) {
     }else {
         this._locSelect.reparentHtmlElement(locId)
         this._locSelect.clearOptions();
-        this._restorePrevLocationInfo();
+        if(this._locSelect.itemId != id) this._restorePrevLocationInfo();
     }
 
     this._locSelect.itemId = id;
@@ -115,7 +115,7 @@ function() {
     var prevItem = prevItemDiv ? this.getItemFromElement(prevItemDiv) : null;
     if(prevItem) {
         var prevLoc = document.getElementById(prevId + '_loc');
-        prevLoc.innerHTML = AjxMessageFormat.format(ZmMsg.availableRoomsCount, [prevItem.availableLocations]);
+        prevLoc.innerHTML = '<span class="fakeAnchor">' + AjxMessageFormat.format(ZmMsg.availableRoomsCount, [prevItem.availableLocations]) + '</span>';
     }
 };
 

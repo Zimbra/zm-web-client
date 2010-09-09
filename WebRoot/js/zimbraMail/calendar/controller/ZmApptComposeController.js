@@ -829,3 +829,23 @@ function(view, force) {
 	AjxTimedAction.scheduleAction(ta, 10);
     appCtxt.getAppViewMgr().showTreeFooter(false);
 };
+
+ZmApptComposeController.prototype.getWorkingInfo =
+function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) {
+   var soapDoc = AjxSoapDoc.create("GetWorkingHoursRequest", "urn:zimbraMail");
+   soapDoc.setMethodAttribute("s", startTime);
+   soapDoc.setMethodAttribute("e", endTime);
+   soapDoc.setMethodAttribute("name", emailList);
+
+   var acct = (appCtxt.multiAccounts)
+       ? this._composeView.getApptTab().getEditView().getCalendarAccount() : null;
+
+   return appCtxt.getAppController().sendRequest({
+       soapDoc: soapDoc,
+       asyncMode: true,
+       callback: callback,
+       errorCallback: errorCallback,
+       noBusyOverlay: noBusyOverlay,
+       accountName: (acct ? acct.name : null)
+   });
+};
