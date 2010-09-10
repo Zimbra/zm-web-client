@@ -258,7 +258,7 @@ function(ev){
     if(ev.event == ZmEvent.E_MOVE){
         //If the col list visible, add the briefcase item
         var lv = this._getItemListView(item.folderId);
-        if(lv){
+        if(lv && lv._getRowIndex(item) === null){
             lv.addItem(item, 0, true);   
         }
     }
@@ -269,7 +269,7 @@ function(create){
     var fId = create.folderId || create.l;
     var lv = this._getItemListView(fId) || this._curListView;    
     var list = lv && lv._zmList;    
-    if(list){
+    if(list && !list.getById(create.id)){
         list.notifyCreate(create);
     }
 };        

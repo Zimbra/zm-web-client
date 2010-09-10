@@ -33,7 +33,7 @@ ZmActionStack = function(maxLength) {
 
 ZmEvent.S_ACTION			= "ACTION";
 
-ZmActionStack.validTypes	= [ZmId.ITEM_MSG, ZmId.ITEM_CONV, ZmId.ITEM_CONTACT, ZmId.ITEM_GROUP, ZmId.ORG_FOLDER]; // Set ZmActionStack.validTypes to false to allow all item types
+ZmActionStack.validTypes	= [ZmId.ITEM_MSG, ZmId.ITEM_CONV, ZmId.ITEM_CONTACT, ZmId.ITEM_GROUP, ZmId.ORG_FOLDER, ZmId.ITEM_BRIEFCASE, ZmId.ORG_BRIEFCASE ]; // Set ZmActionStack.validTypes to false to allow all item types
 
 ZmActionStack.prototype.toString = function() {
 	return "ZmActionStack";

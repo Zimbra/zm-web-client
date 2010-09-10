@@ -79,8 +79,8 @@ function(ev) {
 
     if(ev.event == ZmEvent.E_MOVE){
         var folderId = this._controller._folderId || this.folderId || this._folderId;
-        var item = items.length ? items[0] : items;
-        if(item && item.folderId == folderId){
+        var item = items && items.length ? items[0] : items;
+        if(item && item.folderId == folderId && this._getRowIndex(item) === null){
             this.addItem(item, 0, true);
             item.handled = true;
         }
