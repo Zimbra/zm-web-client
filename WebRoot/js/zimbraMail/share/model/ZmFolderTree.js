@@ -433,6 +433,8 @@ function(callback, skipNotify, result) {
 				if (mtpt) {
 					// update the mtpt perms with the updated link perms
 					mtpt.perm = link.perm;
+                    if (link.n) mtpt.numTotal=link.n;
+                    if (link.u) mtpt.numUnread=link.u;
 					mtpt._setSharesFromJs(link);
 				}
 
