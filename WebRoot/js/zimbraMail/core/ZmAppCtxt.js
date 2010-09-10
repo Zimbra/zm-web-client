@@ -1181,7 +1181,7 @@ function() {
 
 ZmAppCtxt.prototype.getActionController =
 function() {
-	if (!this._actionController) {
+	if (!this._actionController && !this.isChildWindow) {
 		this._actionController = new ZmActionController();
 	}
 	return this._actionController;
