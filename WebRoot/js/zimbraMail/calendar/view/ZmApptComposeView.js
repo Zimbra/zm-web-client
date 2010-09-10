@@ -492,6 +492,16 @@ function() {
 	this.addControlListener(new AjxListener(this, this._controlListener));
 };
 
+ZmApptComposeView.prototype.getApptEditView =
+function() {
+    return this._apptEditView;
+};
+
+ZmApptComposeView.prototype.getAttendees =
+function(type) {
+    return this._attendees[type];
+};
+
 ZmApptComposeView.prototype.setTabVisibility =
 function(ids, visible) {
     for(var i in ids) {
