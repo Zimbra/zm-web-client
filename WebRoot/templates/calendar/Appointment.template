@@ -875,12 +875,12 @@
 <template id='calendar.Appointment#TimeSuggestion'>
     <table id='${id}' border=0 cellpadding=4 cellspacing=0 width="100%" style="border-bottom:1px solid black;" class="Row">
         <tr>
-            <td><$= AjxImg.getImageHtml("Person") $></td>
+            <td><$= AjxImg.getImageHtml(data.attendeeImage) $></td>
             <td><$= data.item.availableUsers $> of <$= data.item.totalUsers $></td>
             <td align="right" class="calendar_edit_field"><$= data.timeLabel $></td>
         </tr>
         <tr>
-            <td><$= AjxImg.getImageHtml("Location") $></td>
+            <td><$= AjxImg.getImageHtml(data.locationImage) $></td>
             <td height="30" colspan="2" id='${id}_loc'><span class="fakeAnchor"><$= data.locationCountStr $></span></td>
         </tr>
     </table>

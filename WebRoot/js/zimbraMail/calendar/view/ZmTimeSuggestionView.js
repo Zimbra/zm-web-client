@@ -48,12 +48,24 @@ function(list, itemsById) {
 
 ZmTimeSuggestionView.prototype._createItemHtml =
 function (item) {
-    var id = this.associateItemWithElement(item, null, null, null);    
+    var id = this.associateItemWithElement(item, null, null, null);
+
+    var attendeeImage = "AttendeeOrange";
+    var locationImage = "LocationOrange";
+
+    if(item.availableUsers == item.totalUsers) attendeeImage = "AttendeeGreen"; 
+    if(item.availableLocations == item.totalLocations) locationImage = "LocationGreen";
+
+    if(item.availableUsers < Math.ceil(item.totalUsers/2)) attendeeImage = "AttendeeRed";
+    if(item.availableLocations < Math.ceil(item.totalLocations/2)) locationImage = "LocationRed";
+
     var params = {
         id: id,
         item: item,
         timeLabel: AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT).format(new Date(item.startTime)),
-        locationCountStr: AjxMessageFormat.format(ZmMsg.availableRoomsCount, [item.availableLocations])
+        locationCountStr: AjxMessageFormat.format(ZmMsg.availableRoomsCount, [item.availableLocations]),
+        attendeeImage: attendeeImage,
+        locationImage: locationImage 
     };
     return AjxTemplate.expand("calendar.Appointment#TimeSuggestion", params);
 };
