@@ -492,9 +492,10 @@ function(result){
  * @param {AjxCallback}	callback		the callback to run after response is received
  * @param {ZmBatchCommand}	batchCommand	the batch command
  * @param {ZmZimbraAccount}	account		the account to save under
+ * @param {boolean}			isImplicit	if true, we are saving implicit settings
  */
 ZmSettings.prototype.save =
-function(list, callback, batchCommand, account) {
+function(list, callback, batchCommand, account, isImplicit) {
 	if (!(list && list.length)) { return; }
 
 	var acct = account || appCtxt.getActiveAccount();
@@ -547,15 +548,14 @@ function(list, callback, batchCommand, account) {
 
 	if (gotOne) {
 		var respCallback;
-		var asyncMode = false;
 		if (callback || batchCommand) {
 			respCallback = new AjxCallback(this, this._handleResponseSave, [list, callback]);
-			asyncMode = true;
 		}
 		if (batchCommand) {
 			batchCommand.addNewRequestParams(soapDoc, respCallback);
 		} else {
-			appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:asyncMode, callback:respCallback, accountName:acct.name});
+			appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
+			 										accountName:acct.name, noBusyOverlay:isImplicit});
 		}
 	}
 };
@@ -585,7 +585,9 @@ function(list, callback, result) {
 		for (var i = 0; i < list.length; i++) {
 			var setting = list[i];
 			setting.origValue = setting.copyValue();
-			setting._notify(ZmEvent.E_MODIFY);
+			if (!ZmSetting.IS_IMPLICIT[setting.id]) {
+				setting._notify(ZmEvent.E_MODIFY);
+			}
 		}
 		// notify any listeners on the settings as a whole
 		this._notify(ZmEvent.E_MODIFY, {settings:list});
@@ -910,7 +912,7 @@ function(ev) {
 	var id = ev.source.id;
 	var setting = this.getSetting(id);
 	if (ZmSetting.IS_IMPLICIT[id] && setting) {
-		this.save([setting], null, null, appCtxt.getActiveAccount());
+		this.save([setting], null, null, appCtxt.getActiveAccount(), true);
 	}
 };
 
