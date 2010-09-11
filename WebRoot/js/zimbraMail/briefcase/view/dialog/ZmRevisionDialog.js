@@ -116,7 +116,7 @@ ZmRevisionListView = function(parent) {
 
 ZmRevisionListView.FIELD_VERSION	= "ver";
 ZmRevisionListView.FIELD_DATE	= "md";
-ZmRevisionListView.FIELD_USER	= "cr";
+ZmRevisionListView.FIELD_USER	= "leb";
 ZmRevisionListView.FIELD_NOTES	= "desc";
 
 ZmRevisionListView.prototype = new DwtListView;
