@@ -14,7 +14,7 @@
  */
 
 ZmCalMonthView = function(parent, posStyle, controller, dropTgt) {
-	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, ZmId.VIEW_CAL_MONTH, dropTgt);	
+	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, ZmId.VIEW_CAL_MONTH, false);	
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
