@@ -167,7 +167,7 @@ function(attId) {
 		if (origAttendees && origAttendees.length > 0 && 			// make sure we're not u/l'ing a file
 			attId == null) 											// make sure we are editing an existing appt w/ attendees
 		{
-			if (!this._composeView.getApptTab().isDirty(true)) {	// make sure other fields (besides attendees field) have not changed
+			if (!this._composeView.getApptEditView().isDirty(true)) {	// make sure other fields (besides attendees field) have not changed
 				var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
 				if (attendees.length > 0) {
 					// check whether organizer has added/removed any attendees
@@ -617,7 +617,7 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) 
 	soapDoc.setMethodAttribute("uid", emailList);
 
 	var acct = (appCtxt.multiAccounts)
-		? this._composeView.getApptTab().getEditView().getCalendarAccount() : null;
+		? this._composeView.getApptEditView().getCalendarAccount() : null;
 
 	return appCtxt.getAppController().sendRequest({
 		soapDoc: soapDoc,
@@ -646,18 +646,17 @@ function(setFocus) {
 	var rootTg = appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
 	tg.addMember(this._toolbar);
-	var tabView = this._composeView.getTabView(this._composeView.getCurrentTab());
-	tabView._addTabGroupMembers(tg);
+	var editView = this._composeView.getApptEditView();
+	editView._addTabGroupMembers(tg);
 
-	var focusItem = tabView._savedFocusMember || tabView._getDefaultFocusItem() || tg.getFirstMember(true);
+	var focusItem = editView._savedFocusMember || editView._getDefaultFocusItem() || tg.getFirstMember(true);
 	var ta = new AjxTimedAction(this, this._setFocus, [focusItem, !setFocus]);
 	AjxTimedAction.scheduleAction(ta, 10);
 };
 
 ZmApptComposeController.prototype._getDefaultFocusItem =
 function() {
-    var tabView = this._composeView.getTabView(this._composeView.getCurrentTab());
-    return tabView._getDefaultFocusItem();	
+    return this._composeView.getApptEditView()._getDefaultFocusItem();	
 };
 
 ZmApptComposeController.prototype.getKeyMapName =
@@ -806,7 +805,7 @@ function(initHide) {
 ZmApptComposeController.prototype.getCalendarAccount =
 function() {
     return (appCtxt.multiAccounts)
-        ? this._composeView.getApptTab().getEditView().getCalendarAccount() : null;
+        ? this._composeView.getApptEditView().getCalendarAccount() : null;
 
 };
 
@@ -838,7 +837,7 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) 
    soapDoc.setMethodAttribute("name", emailList);
 
    var acct = (appCtxt.multiAccounts)
-       ? this._composeView.getApptTab().getEditView().getCalendarAccount() : null;
+       ? this._composeView.getApptEditView().getCalendarAccount() : null;
 
    return appCtxt.getAppController().sendRequest({
        soapDoc: soapDoc,

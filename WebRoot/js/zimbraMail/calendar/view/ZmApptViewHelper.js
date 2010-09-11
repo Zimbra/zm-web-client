@@ -42,7 +42,7 @@ ZmApptViewHelper.REPEAT_OPTIONS = [
 /**
  * Gets an object with the indices of the currently selected time fields.
  *
- * @param {ZmApptTabViewPage|DwtSchedTabViewPage}	tabView		the tab view
+ * @param {ZmApptEditView}	tabView		the edit/tab view containing time widgets
  * @param {Hash}	dateInfo	a hash of date info to fill in
  */
 ZmApptViewHelper.getDateInfo =

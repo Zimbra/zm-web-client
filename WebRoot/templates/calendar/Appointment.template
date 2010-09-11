@@ -38,9 +38,9 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td width='65' class='ZmApptTabViewPageField'><nobr><$= ZmMsg.locationLabel $></nobr></td>
+                <td width='65' align='right' valign='top'><div id='${id}_loc_picker'><legend><$= ZmMsg.locationLabel $></legend></div></td>
                 <td colspan='5' id='${id}_location'></td>
-                <td>&nbsp;</td>
+                <td id='${id}_res_btn'>&nbsp;</td>
             </tr>
             <$ if (data.isGalEnabled) { $>
             <tr id='${id}_resourcesContainer'>
@@ -106,7 +106,7 @@
     </div>
     <div id='${id}_scheduler' style='padding:5px;display: block;'></div>
 	<!-- appointment notes -->
-    <div class="calendar_edit_field"  style='padding:5px;'><$= ZmMsg.message $></div>
+    <div class="calendar_edit_field"  style='padding:5px;height:10px;'><$= ZmMsg.message $></div>
 	<div id='${id}_notes' style='padding:5px;'></div>
 </template>
 

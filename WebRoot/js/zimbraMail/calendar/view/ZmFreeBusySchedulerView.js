@@ -516,11 +516,13 @@ function(inputEl, attendee, useException) {
 			this._setParticipantStatus(sched, attendee, idx);
 			this._setAttendeeToolTip(sched, attendee);
             //directly update attendees
-			this._editView.parent.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
+			this._editView.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
             this._editView._setAttendees();
 			if (!curAttendee) {
 				// user added attendee in empty slot
-				return this._addAttendeeRow(false, null, true, null, true, true); // add new empty slot
+				var value = this._addAttendeeRow(false, null, true, null, true, true); // add new empty slot
+                this._editView.autoSize();
+                return value;
 			}
 		} else {
 			this._activeInputIdx = null;
@@ -720,7 +722,7 @@ function(sched, resetSelect, type, noClear) {
 
 	var input = sched.inputObj;
 	if (sched.attendee && type) {
-		this._editView.parent.parent.updateAttendees(sched.attendee, type, ZmApptComposeView.MODE_REMOVE);
+		this._editView.parent.updateAttendees(sched.attendee, type, ZmApptComposeView.MODE_REMOVE);
         this._editView._setAttendees();
 		if (input) {
 			input.setToolTipContent(null);
@@ -861,7 +863,7 @@ function(ev) {
 
 	// if we wiped out an attendee, make sure it's reflected in master list
 	if (sched.attendee) {
-		this._editView.parent.parent.updateAttendees(sched.attendee, sched.attType, ZmApptComposeView.MODE_REMOVE);
+		this._editView.parent.updateAttendees(sched.attendee, sched.attType, ZmApptComposeView.MODE_REMOVE);
         this._editView._setAttendees();
 		sched.attendee = null;
 	}

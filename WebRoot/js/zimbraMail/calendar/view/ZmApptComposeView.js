@@ -35,16 +35,12 @@
 ZmApptComposeView = function(parent, className, calApp, controller) {
 
 	className = className ? className : "ZmApptComposeView";
-	DwtTabView.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
+	DwtComposite.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._app = calApp;
 	this._controller = controller;
 	
-	this._tabPages = {};
-	this._tabKeys = {};
-	this._tabIdByKey = {};
-
 	// centralized date info
 	this._dateInfo = {};
 
@@ -64,60 +60,15 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 	this._evt = new ZmEvent(ZmEvent.S_CONTACT);
 	this._evtMgr = new AjxEventMgr();
 	
-	this._tabIds = [ZmApptComposeView.TAB_APPOINTMENT];
-	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
-		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-            if (appCtxt.get(ZmSetting.CAL_SHOW_RESOURCE_TABS)) {
-                this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
-                this._tabIds.push(ZmApptComposeView.TAB_EQUIPMENT);
-            }
-		}
-	}
-
 	this._initialize();
 };
-
-/**
- * Defines the "appointment" tab.
- */
-ZmApptComposeView.TAB_APPOINTMENT	= "details";
-/**
- * Defines the "schedule" tab.
- */
-ZmApptComposeView.TAB_SCHEDULE		= "schedule";
-/**
- * Defines the "attendees" tab.
- */
-ZmApptComposeView.TAB_ATTENDEES		= "attendees";
-/**
- * Defines the "locations" tab.
- */
-ZmApptComposeView.TAB_LOCATIONS		= "locations";
-/**
- * Defines the "equipment" tab.
- */
-ZmApptComposeView.TAB_EQUIPMENT		= "equipment";
-
-ZmApptComposeView.TAB_NAME = {};
-ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_APPOINTMENT]	= "apptDetails";
-ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_SCHEDULE]		= "schedule";
-ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_ATTENDEES]		= "findAttendees";
-ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_LOCATIONS]		= "findLocations";
-ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_EQUIPMENT]		= "findResources";
-
-ZmApptComposeView.TAB_IMAGE = {};
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_APPOINTMENT]	= "Appointment";
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_SCHEDULE]		= "GroupSchedule";
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_ATTENDEES]	= "ApptMeeting";
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_LOCATIONS]	= "Location";
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_EQUIPMENT]	= "Resource";
 
 // attendee operations
 ZmApptComposeView.MODE_ADD		= 1;
 ZmApptComposeView.MODE_REMOVE	= 2;
 ZmApptComposeView.MODE_REPLACE	= 3;
 
-ZmApptComposeView.prototype = new DwtTabView;
+ZmApptComposeView.prototype = new DwtComposite;
 ZmApptComposeView.prototype.constructor = ZmApptComposeView;
 
 // Consts
@@ -171,32 +122,17 @@ function(appt, mode, isDirty) {
     }
 
 	this._setData = [appt, mode, isDirty];
-	var button = this.getTabButton(this._apptTabKey);
-	if (mode == ZmCalItem.MODE_EDIT_SERIES || appt.getRecurType() != "NON") {
-		button.setImage("ApptRecur");
-	} else {
-		button.setImage("Appointment");
-	}
-
 	this._dateInfo.timezone = appt.getTimezone();
-	for (var i = 0; i < this._tabIds.length; i++) {
-		var id = this._tabIds[i];
-		var tabPage = this._tabPages[id];
-		if (!(tabPage instanceof AjxCallback)) {
-			tabPage.initialize(appt, mode, isDirty, apptComposeMode);
-		}
-	}
+    this._apptEditView.initialize(appt, mode, isDirty, apptComposeMode);
+    this._apptEditView.show();
 
-	// always switch to appointment tab
-	this.switchToTab(this._apptTabKey);
-    this.setTabVisibility([ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_EQUIPMENT], !isForward && !this._proposeNewTime);
+    var editMode = !Boolean(this._forwardMode) && !this._proposeNewTime;
+    this._apptEditView.enableInputs(editMode);
+    this._apptEditView.enableSubjectField(!this._proposeNewTime);
 
-    //bug:48189 Hide schedule tab for non-ZCS acct
-    if (appCtxt.isOffline) {
-        var currAcct = appCtxt.getActiveAccount();
-        this.setTabVisibility([ZmApptComposeView.TAB_SCHEDULE], (!currAcct.isMain && currAcct.isZimbraAccount));
-    }
-
+    var toolbar = this._controller.getToolbar();
+    toolbar.enableAll(true);    
+    toolbar.enable([ZmOperation.ATTACHMENT], editMode);
 };
 
 ZmApptComposeView.prototype.cleanup = 
@@ -210,19 +146,13 @@ function() {
 	this._attendeeKeys[ZmCalBaseItem.LOCATION]	= {};
 	this._attendeeKeys[ZmCalBaseItem.EQUIPMENT]	= {};
 
-	for (var i = 0; i < this._tabIds.length; i++) {
-		var id = this._tabIds[i];
-		var tabPage = this._tabPages[id];
-		if (!(tabPage instanceof AjxCallback)) {
-			tabPage.cleanup();
-		}
-	}
+    this._apptEditView.cleanup();
 };
 
 ZmApptComposeView.prototype.preload = 
 function() {
     this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-    this._tabPages[ZmApptComposeView.TAB_APPOINTMENT].createHtml();
+    this._apptEditView.createHtml();
 };
 
 ZmApptComposeView.prototype.getComposeMode = 
@@ -247,19 +177,12 @@ function() {
 
 ZmApptComposeView.prototype.isDirty =
 function() {
-	for (var i = 0; i < this._tabIds.length; i++) {
-		var id = this._tabIds[i];
-		var tabPage = this._tabPages[id];
-		if (!(tabPage instanceof AjxCallback) && tabPage.isDirty()) {
-			return true;
-		}
-	}
 	//drag and drop changed appts will be dirty even if nothing is changed
 	var apptEditView = this._apptEditView;
 	if( apptEditView && apptEditView._calItem && apptEditView._calItem.dndUpdate){
 			return true;
 	}    
-    return false;
+    return apptEditView.isDirty();
 };
 
 ZmApptComposeView.prototype.isReminderOnlyChanged =
@@ -269,14 +192,7 @@ function() {
 
 ZmApptComposeView.prototype.isValid = 
 function() {
-	for (var i = 0; i < this._tabIds.length; i++) {
-		var id = this._tabIds[i];
-		var tabPage = this._tabPages[id];
-		if (!(tabPage instanceof AjxCallback) && !tabPage.isValid()) {
-			return false;
-		}
-	}
-	return true;
+    return this._apptEditView.isValid();
 };
 
 /**
@@ -288,43 +204,8 @@ function() {
 	this._apptEditView.addAttachmentField();
 };
 
-ZmApptComposeView.prototype.tabSwitched =
-function(tabKey) {
-	var toolbar = this._controller.getToolbar();
-	toolbar.enableAll(true);
-    var editMode = !Boolean(this._forwardMode) && !this._proposeNewTime; 
-
-	// based on the current tab selected, enable/disable appropriate buttons in toolbar
-	if (tabKey == this._tabKeys[ZmApptComposeView.TAB_APPOINTMENT]) {
-        //disable inputs for appt forwarding
-		this._apptEditView.enableInputs(editMode);
-        this._apptEditView.enableSubjectField(!this._proposeNewTime);
-		this._apptEditView.reEnableDesignMode();
-        toolbar.enable([ZmOperation.ATTACHMENT], editMode);
-	} else {
-		var buttons = [ZmOperation.ATTACHMENT];
-		if (!appCtxt.isOffline) {
-			buttons.push(ZmOperation.SPELL_CHECK);
-		}
-		if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-			buttons.push(ZmOperation.COMPOSE_FORMAT);
-		}
-		if (!appCtxt.isChildWindow) {
-			buttons.push(ZmOperation.DETACH_COMPOSE);
-		}
-		toolbar.enable(buttons, false);
-		this._apptEditView.enableInputs(false);
-	}
-
-	if (this._curTabId && (this._curTabId != this._tabIdByKey[tabKey])) {
-		this._tabPages[this._curTabId].tabBlur();
-	}
-	this._curTabId = this._tabIdByKey[tabKey];
-};
-
 ZmApptComposeView.prototype.getAppt = 
 function(attId) {
-	this._tabPages[this._curTabId].tabBlur(true);
 	return this._apptEditView.getCalItem(attId);
 };
 
@@ -333,32 +214,9 @@ function() {
     return this._apptEditView.getForwardAddress();
 };
 
-ZmApptComposeView.prototype.getApptTab =
-function() {
-	return this._apptTab;
-};
-
 ZmApptComposeView.prototype.getHtmlEditor = 
 function() {
 	return this._apptEditView.getHtmlEditor();
-};
-
-ZmApptComposeView.prototype.getTabPage =
-function(id) {
-	var tabPage = this._tabPages[id];
-	if (tabPage instanceof AjxCallback) {
-		var tabKey = this._tabKeys[id];
-		tabPage = this._initializeAddTab(id, tabKey);
-	}
-	return tabPage;
-};
-
-ZmApptComposeView.prototype.switchToTab =
-function(tabKey) {
-	if (this._tabIdByKey[tabKey]) {
-		DwtTabView.prototype.switchToTab.call(this, tabKey);
-		this._curTabId = this._tabIdByKey[tabKey];
-	}
 };
 
 /**
@@ -465,29 +323,7 @@ function(msg, style, cb, cbObj, cbArgs) {
 
 ZmApptComposeView.prototype._initialize =
 function() {
-
-    if(!appCtxt.get(ZmSetting.CAL_SHOW_RESOURCE_TABS)) {
-        ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_ATTENDEES]		= "findAttendeesRooms";
-    }
-
-	for (var i = 0; i < this._tabIds.length; i++) {
-		var id = this._tabIds[i];
-		this._tabPages[id] = (i == 0) ? this._createTabViewPage(id) : new AjxCallback(this, this._initializeAddTab, [id]);
-		var tabButtonId = ZmId.getTabId(this._controller.viewId, id);
-		this._tabKeys[id] = this.addTab(ZmMsg[ZmApptComposeView.TAB_NAME[id]], this._tabPages[id], tabButtonId);
-		this._tabIdByKey[this._tabKeys[id]] = id;
-		var image = ZmApptComposeView.TAB_IMAGE[id];
-		if (image) {
-			var button = this.getTabButton(this._tabKeys[id]);
-			button.setImage(image);
-		}
-	}
-	this.resetKeyBindings();
-
-	this._apptTab = this._tabPages[ZmApptComposeView.TAB_APPOINTMENT];
-	this._apptTabKey = this._tabKeys[ZmApptComposeView.TAB_APPOINTMENT];
-	this._apptEditView = this._apptTab.getEditView();
-	
+    this._apptEditView = new ZmApptEditView(this, this._attendees, this._controller, this._dateInfo);
 	this._apptEditView.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this.addControlListener(new AjxListener(this, this._controlListener));
 };
@@ -502,71 +338,9 @@ function(type) {
     return this._attendees[type];
 };
 
-ZmApptComposeView.prototype.setTabVisibility =
-function(ids, visible) {
-    for(var i in ids) {
-        var tabKey = this._tabKeys[ids[i]];
-        var tab = tabKey ? this._tabs[tabKey] : null;
-        var button = tab ? tab.button : null;
-        if(button) {
-            button.setVisible(visible);            
-        }
-    }
-};
-
-ZmApptComposeView.prototype._initializeAddTab =
-function(id, tabKey) {
-	var tabPage = this._tabPages[id];
-	if (!(tabPage instanceof AjxCallback)) return tabPage;
-
-	tabPage = this._createTabViewPage(id);
-	this._tabPages[id] = tabPage;
-	this.setTabView(tabKey, this._tabPages[id]);
-	tabPage.initialize.apply(tabPage, this._setData);
-	if (id == ZmApptComposeView.TAB_ATTENDEES ||
-		id == ZmApptComposeView.TAB_LOCATIONS ||
-		id == ZmApptComposeView.TAB_EQUIPMENT)
-	{
-		this._addChooserListener(tabPage);
-	}
-
-	return tabPage;
-};
-
-ZmApptComposeView.prototype._createTabViewPage =
-function(id) {
-	var tabPage;
-	switch (id) {
-		case ZmApptComposeView.TAB_APPOINTMENT : {
-			tabPage = new ZmApptTabViewPage(this, this._attendees, this._controller, this._dateInfo);
-			break;
-		}
-		case ZmApptComposeView.TAB_SCHEDULE : {
-			tabPage = new ZmSchedTabViewPage(this, this._attendees, this._controller, this._dateInfo);
-			break;
-		}
-		case ZmApptComposeView.TAB_ATTENDEES : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalBaseItem.PERSON, this._dateInfo);
-			break;
-		}
-		case ZmApptComposeView.TAB_LOCATIONS : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalBaseItem.LOCATION, this._dateInfo);
-			break;
-		}
-		case ZmApptComposeView.TAB_EQUIPMENT : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalBaseItem.EQUIPMENT, this._dateInfo);
-			break;
-		}
-	}
-
-	return tabPage;
-};
-
 ZmApptComposeView.prototype._repeatChangeListener =
 function(ev) {
-	var value = ev._args.newValue;
-	var button = this.getTabButton(this._apptTabKey);
-	button.setImage(value != "NON" ? "ApptRecur" : "Appointment");
+
 };
 
 // Consistent spot to locate various dialogs
@@ -576,38 +350,14 @@ function() {
 	return new DwtPoint(loc.x + ZmApptComposeView.DIALOG_X, loc.y + ZmApptComposeView.DIALOG_Y);
 };
 
-ZmApptComposeView.prototype._addChooserListener =
-function(tab) {
-	if (!this._chooserLstnr) {
-		this._chooserLstnr = new AjxListener(this, this._chooserListener);
-	}
-	if (tab && tab._chooser) {
-		tab._chooser.addStateChangeListener(this._chooserLstnr);
-	}
-};
-
 // Listeners
 
-ZmApptComposeView.prototype._chooserListener =
-function(ev) {
-	var chooser = this._tabPages[this._curTabId]._chooser;
-	if (!chooser) return;
-	var vec = chooser.getItems();
-	var type = this._tabPages[this._curTabId].type;
-	this.updateAttendees(vec.getArray(), type);
-    if(type == ZmCalBaseItem.LOCATION) {
-        var location = ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.LOCATION].getArray(), ZmCalBaseItem.LOCATION);
-        var apptTab = this._tabPages[ZmApptComposeView.TAB_APPOINTMENT];
-        //apptTab.setApptLocation(location);
-    }
-};
-
-ZmApptComposeView.prototype._controlListener = 
+ZmApptComposeView.prototype._controlListener =
 function(ev) {
 	var newWidth = (ev.oldWidth == ev.newWidth) ? null : ev.newWidth;
 	var newHeight = (ev.oldHeight == ev.newHeight) ? null : ev.newHeight;
 
 	if (!(newWidth || newHeight)) return;
 
-	this._tabPages[this._tabIdByKey[this.getCurrentTab()]].resize(newWidth, newHeight);
+	this._apptEditView.resize(newWidth, newHeight);
 };
