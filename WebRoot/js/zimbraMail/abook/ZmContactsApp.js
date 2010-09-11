@@ -43,6 +43,9 @@ ZmContactsApp = function(container, parentController) {
 	this._byEmail	= {};
 	this._byIM		= {};
 	this._byPhone	= {};
+
+	// cache fetched distribution lists
+	this._dlCache	= {};
 };
 
 // Organizer and item-related constants
@@ -1057,4 +1060,14 @@ function(parent, name, color) {
 
 	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.ADDRBOOK)._doCreate(parent, name, color);
+};
+
+ZmContactsApp.prototype.getDL =
+function(addr) {
+	return this._dlCache[addr];
+};
+
+ZmContactsApp.prototype.cacheDL =
+function(addr, dl) {
+	this._dlCache[addr] = dl;
 };

@@ -400,14 +400,15 @@
 
 <template id="abook.Contacts#SplitView_content">
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
-	<table>
-	<$= AjxTemplate.expand("abook.Contacts#SplitView_emails", data) $>
-	<$= AjxTemplate.expand("abook.Contacts#SplitView_phones", data) $>
-	<$= AjxTemplate.expand("abook.Contacts#SplitView_ims", data) $>
-	<$= AjxTemplate.expand("abook.Contacts#SplitView_addresses", data) $>
-	<$= AjxTemplate.expand("abook.Contacts#SplitView_urls", data) $>
-	<$= AjxTemplate.expand("abook.Contacts#SplitView_other",  data) $>
-	<$= AjxTemplate.expand("abook.Contacts#SplitView_notes",  data) $>
+	<table id='${id}_details'>
+	<$= ZmContactSplitView.showContactEmails(data) $>
+	<$= ZmContactSplitView.showContactPhones(data) $>
+	<$= ZmContactSplitView.showContactIMs(data) $>
+	<$= ZmContactSplitView.showContactAddresses(data) $>
+	<$= ZmContactSplitView.showContactUrls(data) $>
+	<$= ZmContactSplitView.showContactOther(data) $>
+	<$= ZmContactSplitView.showContactNotes(data) $>
+	<$= ZmContactSplitView.showContactDLMembers(data) $>
 	</table>
 </template>
 
@@ -488,95 +489,23 @@
 	</table>
 </template>
 
-<template id="abook.Contacts#SplitView_emails">
-	<$
-	var itemlistdata = {
-		id: data.id,
-		attrs: data.attrs, seenone: false,
-		findObjects: data.findObjects, objectType: ZmObjectManager.EMAIL,
-		label: ZmMsg.emailLabel
-	};
-	var names = ZmEditContactView.LISTS.EMAIL.attrs;
-	itemlistdata.names = names;
-	for (var i = 0; i < names.length; i++) {
-		itemlistdata.name = names[i];
-		itemlistdata.type = ZmMsg["AB_FIELD_"+names[i]]; $>
-		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
-	<$ } $>
+
+<template id="abook.Contacts#SplitView_dlmember-collapsed">
+	<td <$= data.expandTdText $>><$= data.html.join("") $></td>
+	<td class=rowLabel><$= ZmMsg.membersLabel $></td>
+	<td colspan=2 class=rowValue>
+		<$= data.value $>
+	</td>
 </template>
 
-<template id="abook.Contacts#SplitView_phones">
-	<$
-	var itemlistdata = {
-		id: data.id,
-		attrs: data.attrs, seenone: false,
-		findObjects: data.findObjects, objectType: ZmObjectManager.PHONE,
-		label: ZmMsg.phoneLabel
-	};
-	var names = ZmEditContactView.LISTS.PHONE.attrs;
-	itemlistdata.names = names;
-	for (var i = 0; i < names.length; i++) {
-		itemlistdata.name = names[i];
-		itemlistdata.type = ZmMsg["AB_FIELD_"+names[i]]; $>
-		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
-	<$ } $>
+<template id="abook.Contacts#SplitView_dlmember-expanded">
+	<td <$= data.seenone ? "" : data.expandTdText $>><$= data.html.join("") $></td>
+	<td class='rowLabel'><$= data.seenone ? "" : ZmMsg.membersLabel $></td>
+	<td colspan=2 class='rowValue'>
+		<$= data.value $>
+	</td>
 </template>
 
-<template id="abook.Contacts#SplitView_ims">
-	<$
-	var itemlistdata = {
-		id: data.id,
-		attrs: data.attrs, seenone: false,
-		label: ZmMsg.imLabel
-	};
-	if (AjxUtil.isFunction(data.encode.IM)) {
-		itemlistdata.encode = data.encode.IM;
-	}
-	var names = ZmEditContactView.LISTS.IM.attrs;
-	itemlistdata.names = names;
-	for (var i = 0; i < names.length; i++) {
-		itemlistdata.name = names[i];
-		itemlistdata.type = ZmMsg["AB_FIELD_"+names[i]]; $>
-		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
-	<$ } $>
-</template>
-
-<template id="abook.Contacts#SplitView_addresses">
-	<$
-	var attrs = data.attrs;
-	var itemdata = {
-		id: data.id,
-		attrs: attrs, seenone: false,
-		label: ZmMsg.addressLabel
-	};
-	var types = {"work":ZmMsg.work,"home":ZmMsg.home,"other":ZmMsg.other};
-	var prefixes = ZmEditContactView.ADDR_PREFIXES;
-	var suffixes = ZmEditContactView.ADDR_SUFFIXES;
-	for (var i = 0; i < prefixes.length; i++) {
-		var count = 0;
-		var prefix = prefixes[i];
-		itemdata.type = types[prefix] || prefix;
-		while (true) {
-			count++;
-			itemdata.address = null;
-			for (var j = 0; j < suffixes.length; j++) {
-				var suffix = suffixes[j];
-				var name = [prefix,suffix,count>1?count:""].join("");
-				var value = attrs[name];
-				if (!value) continue;
-				if (!itemdata.address) itemdata.address = {};
-				itemdata.address[suffix] = value.replace(/\n/g,"<br/>");
-			}
-			if (!itemdata.address) break;
-			itemdata.name = [prefix,"Address",count>1?count:""].join("");
-			$>
-			<$= AjxTemplate.expand("#SplitView_address_value", itemdata) $>
-			<$
-			itemdata.seenone = true;
-		}
-	}
-	$>
-</template>
 
 <template id="abook.Contacts#SplitView_address_value">
 	<tr valign=top>
@@ -603,158 +532,27 @@
 	</tr>
 </template>
 
-<template id="abook.Contacts#SplitView_urls">
-	<$
-	var itemlistdata = {
-		id: data.id,
-		attrs: data.attrs, seenone: false,
-		findObjects: data.findObjects, objectType: ZmObjectManager.URL,
-		label: ZmMsg.urlLabel
-	};
-	var types = {};
-	types[ZmContact.F_homeURL] = ZmMsg.home;
-	types[ZmContact.F_workURL] = ZmMsg.work;
-	types[ZmContact.F_otherURL] = ZmMsg.other;
-	var names = ZmEditContactView.LISTS.URL.attrs;
-	itemlistdata.names = names;
-	for (var i = 0; i < names.length; i++) {
-		var name = names[i]; 
-		itemlistdata.name = name;
-		itemlistdata.type = types[name] || ZmMsg["AB_FIELD_"+name]; $>
-		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
+
+<template id="abook.Contacts#SplitView_list_item">
+<tr valign=top>
+	<$ if (data.isDL) { $>
+	<td><div class ="ImgBlank_16"></div></td>
 	<$ } $>
+	<td class='rowLabel'><$= data.seenone ? "" : data.label $></td>
+	<td id='${id}_<$=data.name1$>' <$= data.type ? "" : "colspan=2" $> class='rowValue'>
+		<$= data.value $>
+	</td>
+	<$ if (data.type) { $>
+		<td style='color:gray' class='rowType'>&nbsp;<$= data.type $></td>
+	<$ } $>
+</tr>
 </template>
 
-<template id="abook.Contacts#SplitView_other">
-	<$
-	var itemlistdata = {
-		id: data.id,
-		attrs: data.attrs, seenone: false,
-		findObjects: data.findObjects,
-		label: ZmMsg.otherLabel
-	};
-	var names = ZmEditContactView.LISTS.OTHER.attrs;
-	itemlistdata.names = names;
-	for (var i = 0; i < names.length; i++) {
-		var name = names[i];
-		itemlistdata.name = name;
-		itemlistdata.type = ZmMsg["AB_FIELD_"+names[i]];
-		$>
-		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
-		<$
-	}
-
-	// find unknown attributes
-	var attrs = {};
-	for (var a in itemlistdata.attrs) {
-		var aname = a.replace(/\d+$/,"");
-		if (aname in ZmContact.IS_IGNORE) continue;
-		attrs[aname] = true;
-	}
-	for (var id in ZmEditContactView.ATTRS) {
-		delete attrs[ZmEditContactView.ATTRS[id]];
-	}
-	for (var id in ZmEditContactView.LISTS) {
-		var list = ZmEditContactView.LISTS[id];
-		if (!list.attrs) continue;
-		for (var i = 0; i < list.attrs.length; i++) {
-			delete attrs[list.attrs[i]];
-		}
-	}
-	var prefixes = ZmEditContactView.ADDR_PREFIXES;
-	var suffixes = ZmEditContactView.ADDR_SUFFIXES;
-	for (var i = 0; i < prefixes.length; i++) {
-		for (var j = 0; j < suffixes.length; j++) {
-			delete attrs[prefixes[i]+suffixes[j]];
-		}
-	}
-
-	// display custom
-	for (var a in attrs) {
-		itemlistdata.name = a;
-		itemlistdata.type = AjxStringUtil.capitalizeWords(AjxStringUtil.fromMixed(a));
-		$>
-		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
-		<$
-	}
-	$>
-</template>
-
-<template id="abook.Contacts#SplitView_notes">
-	<$
-	var itemlistdata = {
-		id: data.id,
-		attrs: data.attrs,
-		encode: AjxStringUtil.nl2br,
-		seenone: false,
-		label: ZmMsg.notesLabel,
-		name: ZmContact.F_notes,
-		names: [ZmContact.F_notes]
-	};
-	$>
-	<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
-</template>
-
-<!-- NOTE: This template is used internally and should NOT be called in code! -->
-<template id="abook.Contacts#SplitView_item_list">
-	<$
-	var isEmail = data.objectType == ZmObjectManager.EMAIL;
-	var i = 0;
-	while (true) {
-		var name = ++i > 1 || ZmContact.IS_ADDONE[data.name] ? data.name+i : data.name;
-		var value = data.attrs[name];
-		if (!value) break;
-		if (!isEmail) {
-			value = AjxStringUtil.htmlEncode(value);
-		}
-		if (ZmContact.IS_DATE[data.name]) {
-			var date = ZmEditContactViewOther.parseDate(value);
-			if (date) {
-			    var includeYear = date.getFullYear() != 0;
-			    var formatter = includeYear ?
-			        AjxDateFormat.getDateInstance(AjxDateFormat.LONG) : new AjxDateFormat(ZmMsg.formatDateLongNoYear);
-			    value = formatter.format(date);
-            }
-		}
-		if (data.findObjects) {
-			value = data.findObjects(value, data.objectType);
-		}
-		if (data.encode) {
-			value = data.encode(value);
-		}
-		$>
-
-		<tr valign=top>
-			<td class=rowLabel><$= data.seenone ? "" : data.label $></td>
-			<td id='${id}_<$=name$>' <$= data.type ? "" : "colspan=2" $> class=rowValue>
-				<$= value $>
-			</td>
-			<$ if (data.type) { $>
-				<td style='color:gray' class='rowType'>&nbsp;<$= data.type $></td>
-			<$ } $>
-		</tr>
-
-		<$ data.seenone = true;
-	}
-	$>
-</template>
 
 <template id="abook.Contacts#SplitViewGroup">
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
 	<table>
-	<$
-	var itemlistdata = {
-		id: data.id, name: "email",
-		attrs: {}, addone: false, seenone: false,
-		findObjects: data.findObjects, objectType: ZmObjectManager.EMAIL,
-		label: ZmMsg.emailLabel
-	};
-	for (var i = 0; i < data.groupMembers.length; i++) {
-		var address = data.groupMembers[i];
-		itemlistdata.attrs.email = address.getAddress();
-		itemlistdata.type = address.getName() || address.getDispName(); $>
-		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
-	<$ } $>
+	<$= ZmContactSplitView.showContactGroup(data) $>
 	</table>
 </template>
 

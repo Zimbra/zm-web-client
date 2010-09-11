@@ -56,6 +56,7 @@ ZmContactSplitView.prototype.constructor = ZmContactSplitView;
 
 // Consts
 ZmContactSplitView.ALPHABET_HEIGHT = 35;
+ZmContactSplitView.NUM_DL_MEMBERS = 10;	// number of distribution list members to show initially
 
 /**
  * Returns a string representation of the object.
@@ -160,6 +161,75 @@ function(contact, isGal) {
 	}
 };
 
+ZmContactSplitView.expandDL =
+function(viewId, expand) {
+	var view = DwtControl.fromElementId(viewId);
+	if (view) {
+		view._setContact(view._contact, true, null, expand);
+	}
+};
+
+ZmContactSplitView.handleDLScroll =
+function(ev) {
+
+	var target = DwtUiEvent.getTarget(ev);
+	var view = DwtControl.findControl(target);
+	if (!view) { return; }
+	var div = view._dlScrollDiv;
+	if (div.clientHeight == div.scrollHeight) { return; }
+	var contactDL = appCtxt.getApp(ZmApp.CONTACTS).getDL(view._dlContact.getEmail());
+	var listSize = view.getDLSize();
+	if (contactDL && (contactDL.more || (listSize < contactDL.list.length))) {
+		var params = {scrollDiv:	div,
+					  rowHeight:	view._rowHeight,
+					  threshold:	10,
+					  limit:		ZmContact.DL_PAGE_SIZE,
+					  listSize:		listSize};
+		var needed = ZmListView.getRowsNeeded(params);
+		DBG.println("dl", "scroll, items needed: " + needed);
+		if (needed) {
+			DBG.println("dl", "new offset: " + listSize);
+			var respCallback = new AjxCallback(null, ZmContactSplitView._handleResponseDLScroll, [view]);
+			view._dlContact.getDLMembers(listSize, null, respCallback);
+		}
+	}
+};
+
+ZmContactSplitView._handleResponseDLScroll =
+function(view, result) {
+
+	var list = result.list;
+	if (!(list && list.length)) { return; }
+
+	var html = [];
+	view._listPart._getImageHtml(html, 0, null);
+	var subs = {seenone:true, html:html};
+	var row = document.getElementById(view._dlLastRowId);
+	var table = row && document.getElementById(view._detailsId);
+	if (row) {
+		var rowIndex = row.rowIndex + 1;
+		for (var i = 0, len = list.length; i < len; i++) {
+			view._distributionList.list.push(list[i]);
+			subs.value = view.__findObjects(view._objectManager, list[i], ZmObjectManager.EMAIL);
+			var rowIdText = "";
+			var newRow = table.insertRow(rowIndex + i);
+			if (i == len - 1) {
+				newRow.id = view._dlLastRowId = Dwt.getNextId();
+			}
+			newRow.valign = "top";
+			newRow.innerHTML = AjxTemplate.expand("abook.Contacts#SplitView_dlmember-expanded", subs);
+		}
+//		view._dlScrollDiv.scrollTop = 0;
+	}
+	DBG.println("dl", table.rows.length + " rows");
+};
+
+ZmContactSplitView.prototype.getDLSize =
+function() {
+	return this._distributionList && this._distributionList.list.length;
+
+};
+
 /**
  * @private
  */
@@ -238,17 +308,19 @@ function(controller, dropTgt) {
 	this._tagCellId		= this._htmlElId + "_tags";
 	this._headerRowId	= this._htmlElId + "_headerRow";
 	this._contactBodyId = this._htmlElId + "_body";
+	this._contentId		= this._htmlElId + "_content";
+	this._detailsId		= this._htmlElId + "_details";
 
 	// contact groups is not child of DwtTabGroup
 	this._contactGroupView = new DwtComposite(this);
 	this._contactGroupView.setVisible(false);
-	this._contactGroupView.reparentHtmlElement(this._htmlElId + "_content");
+	this._contactGroupView.reparentHtmlElement(this._contentId);
 	this._contactGroupView._setMouseEventHdlrs();
 	this._groupObjectManager = new ZmObjectManager(this._contactGroupView);
 
 	// create an empty slate
 	this._contactView = new DwtComposite(this);
-	this._contactView.reparentHtmlElement(this._htmlElId + "_content");
+	this._contactView.reparentHtmlElement(this._contentId);
 	this._contactView._setMouseEventHdlrs();
 	this._objectManager = new ZmObjectManager(this._contactView);
 };
@@ -335,7 +407,7 @@ function(objectManager, data, type, encodeHTML) {
  * @private
  */
 ZmContactSplitView.prototype._setContact =
-function(contact, isGal, oldContact) {
+function(contact, isGal, oldContact, expandDL) {
 	var folderId = contact.folderId;
 	var folder = folderId ? appCtxt.getById(folderId) : null;
 	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
@@ -362,25 +434,313 @@ function(contact, isGal, oldContact) {
 		var size = this.getSize();
 		this._sizeChildren(size.x, size.y);
 	} else {
-		this._objectManager.reset();
-
 		subs.view = this;
 		subs.isGal = isGal;
 		subs.findObjects = AjxCallback.simpleClosure(this.__findObjects, this, this._objectManager);
 		subs.attrs = contact.getNormalizedAttrs();
 		subs.encode = {};
 		subs.encode.IM = AjxCallback.simpleClosure(this._encodeIM, this);
+		subs.expandDL = expandDL;
 
-		this._resetVisibility(false);
-
-		// render the appropriate view
-		this._contactView.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitView_content", subs);
-
-		// notify zimlets that a new contact is being shown.
-		appCtxt.notifyZimlets("onContactView", [contact, this._htmlElId]);
+		if (contact.isDL) {
+			this._dlContact = contact;
+			this._dlScrollDiv = this._dlScrollDiv || document.getElementById(this._contentId);
+			var respCallback = new AjxCallback(this, this._showDL, [subs]);
+			contact.getDLMembers(0, null, respCallback);
+			return;
+		}
+		this._showContact(subs);
 	}
 
 	this._setHeaderInfo();
+};
+
+ZmContactSplitView.prototype._showContact =
+function(subs) {
+	this._objectManager.reset();
+	this._resetVisibility(false);
+	this._contactView.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitView_content", subs);
+
+	// notify zimlets that a new contact is being shown.
+	appCtxt.notifyZimlets("onContactView", [subs.contact, this._htmlElId]);
+};
+
+// returns an object with common properties used for displaying a contact field
+ZmContactSplitView._getListData =
+function(data, label, objectType) {
+	var itemListData = {id:data.id, attrs:data.attrs, seenone:false, label:label};
+	if (objectType) {
+		itemListData.findObjects = data.findObjects;
+		itemListData.objectType = objectType;
+	}
+	itemListData.isDL = data.contact.isDL;
+
+	return itemListData;
+};
+
+ZmContactSplitView._showContactList =
+function(data, names, typeFunc) {
+
+	data.names = names;
+	var html = [];
+	for (var i = 0; i < names.length; i++) {
+		var name = names[i];
+		data.name = name;
+		data.type = (typeFunc && typeFunc(data, name)) || ZmMsg["AB_FIELD_" + name];
+		html.push(ZmContactSplitView._showContactListItem(data));
+	}
+
+	return html.join("");
+};
+
+ZmContactSplitView._showContactListItem =
+function(data) {
+
+	var isEmail = (data.objectType == ZmObjectManager.EMAIL);
+	var i = 0;
+	var html = [];
+	while (true) {
+		data.name1 = ++i > 1 || ZmContact.IS_ADDONE[data.name] ? data.name + i : data.name;
+		var value = data.attrs[data.name1];
+		if (!value) { break; }
+		if (!isEmail) {
+			value = AjxStringUtil.htmlEncode(value);
+		}
+		if (ZmContact.IS_DATE[data.name]) {
+			var date = ZmEditContactViewOther.parseDate(value);
+			if (date) {
+			    var includeYear = date.getFullYear() != 0;
+			    var formatter = includeYear ?
+			        AjxDateFormat.getDateInstance(AjxDateFormat.LONG) : new AjxDateFormat(ZmMsg.formatDateLongNoYear);
+			    value = formatter.format(date);
+            }
+		}
+		if (data.findObjects) {
+			value = data.findObjects(value, data.objectType);
+		}
+		if (data.encode) {
+			value = data.encode(value);
+		}
+		data.value = value;
+
+		html.push(AjxTemplate.expand("#SplitView_list_item", data));
+
+		data.seenone = true;
+	}
+
+	return html.join("");
+};
+
+ZmContactSplitView.showContactEmails =
+function(data) {
+	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.emailLabel, ZmObjectManager.EMAIL);
+	var typeFunc = function(data, name) { return data.isDL && ZmMsg.distributionList; };
+	return ZmContactSplitView._showContactList(itemListData, ZmEditContactView.LISTS.EMAIL.attrs, typeFunc);
+};
+
+ZmContactSplitView.showContactPhones =
+function(data) {
+	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.phoneLabel, ZmObjectManager.PHONE);
+	return ZmContactSplitView._showContactList(itemListData, ZmEditContactView.LISTS.PHONE.attrs);
+};
+
+ZmContactSplitView.showContactIMs =
+function(data) {
+
+	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.imLabel);
+	if (AjxUtil.isFunction(data.encode.IM)) {
+		itemListData.encode = data.encode.IM;
+	}
+	return ZmContactSplitView._showContactList(itemListData, ZmEditContactView.LISTS.IM.attrs);
+};
+
+ZmContactSplitView.showContactAddresses =
+function(data) {
+
+	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.addressLabel);
+	var types = {"work":ZmMsg.work, "home":ZmMsg.home, "other":ZmMsg.other};
+	var prefixes = ZmEditContactView.ADDR_PREFIXES;
+	var suffixes = ZmEditContactView.ADDR_SUFFIXES;
+	var html = [];
+	for (var i = 0; i < prefixes.length; i++) {
+		var count = 0;
+		var prefix = prefixes[i];
+		itemListData.type = types[prefix] || prefix;
+		while (true) {
+			count++;
+			itemListData.address = null;
+			for (var j = 0; j < suffixes.length; j++) {
+				var suffix = suffixes[j];
+				var name = [prefix, suffix, count > 1 ? count : ""].join("");
+				var value = data.attrs[name];
+				if (!value) { continue; }
+				if (!itemListData.address)  {
+					itemListData.address = {};
+				}
+				itemListData.address[suffix] = value.replace(/\n/g,"<br/>");
+			}
+			if (!itemListData.address) { break; }
+			itemListData.name = [prefix, "Address", count > 1 ? count : ""].join("");
+			html.push(AjxTemplate.expand("#SplitView_address_value", itemListData));
+			itemListData.seenone = true;
+		}
+	}
+
+	return html.join("");
+};
+
+ZmContactSplitView.showContactUrls =
+function(data) {
+	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.urlLabel, ZmObjectManager.URL);
+	var typeFunc = function(data, name) { return ZmMsg["AB_FIELD_" + name.replace("URL", "")]; };
+	return ZmContactSplitView._showContactList(itemListData, ZmEditContactView.LISTS.URL.attrs, typeFunc);
+};
+
+ZmContactSplitView.showContactOther =
+function(data) {
+
+	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.otherLabel);
+	itemListData.findObjects = data.findObjects;
+	var html = [];
+	html.push(ZmContactSplitView._showContactList(itemListData, ZmEditContactView.LISTS.OTHER.attrs));
+
+	// find unknown attributes
+	var attrs = {};
+	for (var a in itemListData.attrs) {
+		var aname = a.replace(/\d+$/,"");
+		if (aname in ZmContact.IS_IGNORE) { continue; }
+		attrs[aname] = true;
+	}
+	for (var id in ZmEditContactView.ATTRS) {
+		delete attrs[ZmEditContactView.ATTRS[id]];
+	}
+	for (var id in ZmEditContactView.LISTS) {
+		var list = ZmEditContactView.LISTS[id];
+		if (!list.attrs) { continue; }
+		for (var i = 0; i < list.attrs.length; i++) {
+			delete attrs[list.attrs[i]];
+		}
+	}
+	var prefixes = ZmEditContactView.ADDR_PREFIXES;
+	var suffixes = ZmEditContactView.ADDR_SUFFIXES;
+	for (var i = 0; i < prefixes.length; i++) {
+		for (var j = 0; j < suffixes.length; j++) {
+			delete attrs[prefixes[i] + suffixes[j]];
+		}
+	}
+
+	// display custom
+	for (var a in attrs) {
+		itemListData.name = a;
+		itemListData.type = AjxStringUtil.capitalizeWords(AjxStringUtil.fromMixed(a));
+		html.push(ZmContactSplitView._showContactListItem(itemListData));
+	}
+
+	return html.join("");
+};
+
+ZmContactSplitView.showContactNotes =
+function(data) {
+
+	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.notesLabel);
+	itemListData.encode = AjxStringUtil.nl2br;
+	itemListData.name = ZmContact.F_notes;
+	itemListData.names = [ZmContact.F_notes];
+	return ZmContactSplitView._showContactListItem(itemListData);
+};
+
+ZmContactSplitView.showContactDLMembers =
+function(data) {
+
+	var html = [];
+	var itemData = {};
+	if (data.dl) {
+		var list = data.dl.list;
+		var canExpand = (list.length > ZmContactSplitView.NUM_DL_MEMBERS || data.dl.more);
+		var lv = data.view._listPart;
+		var id = lv._expandId = Dwt.getNextId();
+		var tdStyle = "", onclick = "";
+		var list1 = [];
+		var len = Math.min(list.length, ZmContactSplitView.NUM_DL_MEMBERS);
+		for (var i = 0; i < len; i++) {
+			list1.push(data.findObjects ? data.findObjects(list[i], ZmObjectManager.EMAIL) : list[i]);
+		}
+		if (canExpand) {
+			if (!data.expandDL) {
+				list1.push(" ... ");
+			}
+			tdStyle = "style='cursor:pointer;'";
+			var viewId = '"' + data.id + '"';
+			var doExpand = data.expandDL ? "false" : "true";
+			onclick = "onclick='ZmContactSplitView.expandDL(" + viewId + ", " + doExpand + ");'";
+		}
+		itemData.value = list1.join(", ");
+		itemData.expandTdText = [tdStyle, onclick].join(" ");
+		if (!data.expandDL) {
+			itemData.html = [];
+			lv._getImageHtml(itemData.html, 0, canExpand ? "NodeCollapsed" : null, id);
+			html.push("<tr valign='top'>");
+			html.push(AjxTemplate.expand("abook.Contacts#SplitView_dlmember-collapsed", itemData));
+			html.push("</tr>");
+		} else {
+			itemData.seenone = false;
+			for (var i = 0, len = list.length; i < len; i++) {
+				itemData.value = list[i];
+				if (data.findObjects) {
+					itemData.value = data.findObjects(itemData.value, ZmObjectManager.EMAIL);
+				}
+				itemData.html = [];
+				lv._getImageHtml(itemData.html, 0, itemData.seenone ? null : "NodeExpanded", id);
+				var rowIdText = "";
+				if (i == len - 1) {
+					var rowId = data.view._dlLastRowId = Dwt.getNextId();
+					rowIdText = "id='" + rowId + "'";
+				}
+				html.push("<tr valign='top' " + rowIdText + ">");
+				html.push(AjxTemplate.expand("abook.Contacts#SplitView_dlmember-expanded", itemData));
+				html.push("</tr>");
+				itemData.seenone = true;
+			}
+		}
+	}
+
+	return html.join("");
+};
+
+ZmContactSplitView.showContactGroup =
+function(data) {
+
+	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.emailLabel, ZmObjectManager.EMAIL);
+	itemListData.attrs = {};
+	itemListData.name = "email";
+	itemListData.addone = false;
+	var html = [];
+	for (var i = 0; i < data.groupMembers.length; i++) {
+		var address = data.groupMembers[i];
+		itemListData.attrs.email = address.getAddress();
+		itemListData.type = address.getName() || address.getDispName();
+		html.push(ZmContactSplitView._showContactListItem(itemListData));
+	}
+
+	return html.join("");
+};
+
+ZmContactSplitView.prototype._showDL =
+function(subs, result) {
+
+	subs.dl = this._distributionList = result;
+	this._showContact(subs);
+	this._setHeaderInfo();
+	if (!this._rowHeight) {
+		var table = document.getElementById(this._detailsId);
+		if (table) {
+			this._rowHeight = Dwt.getSize(table.rows[0]).y;
+		}
+	}
+
+	if (subs.expandDL) {
+		Dwt.setHandler(this._dlScrollDiv, DwtEvent.ONSCROLL, ZmContactSplitView.handleDLScroll);
+	}
 };
 
 ZmContactSplitView.IM_RE_VALUE = /^(.*?):\/\/(.*)$/;

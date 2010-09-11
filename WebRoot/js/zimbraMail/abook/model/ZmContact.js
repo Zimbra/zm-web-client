@@ -230,7 +230,8 @@ ZmContact.GAL_FIELDS = [
 	ZmContact.GAL_OBJECT_CLASS,
 	ZmContact.GAL_MAIL_FORWARD_ADDRESS,
 	ZmContact.GAL_CAL_RES_TYPE,
-	ZmContact.GAL_CAL_RES_LOC_NAME
+	ZmContact.GAL_CAL_RES_LOC_NAME,
+	ZmContact.F_type
 ];
 ZmContact.MYCARD_FIELDS = [
 	ZmContact.MC_cardOwner,
@@ -278,6 +279,9 @@ ZmContact.IS_IGNORE = {};
 for (var i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
 	ZmContact.IS_IGNORE[ZmContact.IGNORE_FIELDS[i]] = true;
 }
+
+// number of distribution list members to fetch at a time
+ZmContact.DL_PAGE_SIZE = 100;
 
 }; // updateFieldConstants()
 ZmContact.updateFieldConstants();
@@ -334,9 +338,7 @@ function(node, args) {
 		contact = new ZmContact(node.id, args.list);
 		contact._loadFromDom(node);
 	} else {
-		if (!AjxUtil.hashCompare(node._attrs, contact.attr)) {
-			contact.attr = node._attrs;
-		}
+		AjxUtil.hashUpdate(contact.attr, node._attrs);	// merge new attrs just in case we don't have them
 		contact.list = args.list || new ZmContactList(null);
 	}
 
@@ -1571,9 +1573,9 @@ function(node) {
 	this.attr = node._attrs || {};
 
 	// for shared contacts, we get these fields outside of the attr part
-	if (node.email) this.attr[ZmContact.F_email] = node.email;
-	if (node.email2) this.attr[ZmContact.F_email2] = node.email2;
-	if (node.email3) this.attr[ZmContact.F_email3] = node.email3;
+	if (node.email)		{ this.attr[ZmContact.F_email] = node.email; }
+	if (node.email2)	{ this.attr[ZmContact.F_email2] = node.email2; }
+	if (node.email3)	{ this.attr[ZmContact.F_email3] = node.email3; }
 
 	this.type = (this.attr[ZmContact.F_dlist] != null) ? ZmItem.GROUP : ZmItem.CONTACT;
 
@@ -1595,6 +1597,9 @@ function(node) {
 	// We ignore the server's computed file-as property and instead
 	// format it based on the user's locale.
 	this._fileAs = ZmContact.computeFileAs(this);
+
+	// Is this a distribution list?
+	this.isDL = this.isGal && (this.attr[ZmContact.F_type] == "group");
 };
 
 /**
@@ -1650,7 +1655,8 @@ ZmContact.prototype.getUnknownFields = function(sortByNameFunc) {
  * @param	{function}	[sortByNameFunc]	sort by function
  * @return	{Array}	an array of field name/value pairs
  */
-ZmContact.prototype.getFields = function(fields, sortByNameFunc) {
+ZmContact.prototype.getFields =
+function(fields, sortByNameFunc) {
 	// TODO: [Q] Should sort function handle just the field names or the attribute names?
 	var selection;
 	var attrs = this.getAttrs();
@@ -1673,6 +1679,118 @@ ZmContact.prototype.getFields = function(fields, sortByNameFunc) {
 		selection = nfields;
 	}
 	return selection;
+};
+
+/**
+ * Returns a list of distribution list members for this contact. Only the
+ * requested range is returned.
+ *
+ * @param offset	{int}			offset into list to start at
+ * @param limit		{int}			number of members to fetch and return
+ * @param callback	{AjxCallback}	callback to run with results
+ */
+ZmContact.prototype.getDLMembers =
+function(offset, limit, callback) {
+
+	var result = {list:[], more:false, isDL:{}};
+	if (!this.isDL) { return result; }
+
+	var email = this.getEmail();
+	var app = appCtxt.getApp(ZmApp.CONTACTS);
+	var dl = app.getDL(email);
+	if (!dl) {
+		dl = result;
+		dl.more = true;
+		app.cacheDL(email, dl);
+	}
+
+	limit = limit || ZmContact.DL_PAGE_SIZE;
+	var start = offset || 0;
+	var end = (offset + limit) - 1;
+
+	// see if we already have the requested members, or know that we don't
+	if (dl.list.length >= end + 1 || !dl.more) {
+		var list = dl.list.slice(offset, end + 1);
+		result = {list:list, more:dl.more || (dl.list.length > end + 1), isDL:dl.isDL};
+		DBG.println("dl", "found cached DL members");
+		this._handleResponseGetDLMembers(start, limit, callback, result);
+		return;
+	}
+
+	DBG.println("dl", "server call " + offset + " / " + limit);
+	if (!dl.total || (offset < dl.total)) {
+		var jsonObj = {GetDistributionListMembersRequest:{_jsns:"urn:zimbraAccount", offset:offset, limit:limit}};
+		var request = jsonObj.GetDistributionListMembersRequest;
+		request.dl = {_content: this.getEmail()};
+		var respCallback = new AjxCallback(this, this._handleResponseGetDLMembers, [offset, limit, callback]);
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+	} else {
+		this._handleResponseGetDLMembers(start, limit, callback, result);
+		return;
+	}
+};
+
+ZmContact.prototype._handleResponseGetDLMembers =
+function(offset, limit, callback, result) {
+
+	if (!result.list) {
+		var list = [];
+		var resp = result.getResponse().GetDistributionListMembersResponse;
+		var dl = appCtxt.getApp(ZmApp.CONTACTS).getDL(this.getEmail());
+		var more = dl.more = resp.more;
+		var isDL = {};
+		var members = resp.dlm;
+		if (members && members.length) {
+			for (var i = 0, len = members.length; i < len; i++) {
+				var member = members[i]._content;
+				list.push(member);
+				dl.list[offset + i] = member;
+				if (members[i].isDL) {
+					isDL[member] = dl.isDL[member] = true;
+				}
+			}
+		}
+		dl.total = resp.total;
+		DBG.println("dl", list.join("<br>"));
+		var result = {list:list, more:more, isDL:isDL};
+	}
+	DBG.println("dl", "returning list of " + result.list.length + ", more is " + result.more);
+	callback.run(result);
+};
+
+/**
+ * Returns a list of all the distribution list members for this contact.
+ *
+ * @param callback	{AjxCallback}	callback to run with results
+ */
+ZmContact.prototype.getAllDLMembers =
+function(callback) {
+
+	var result = {list:[], more:false, isDL:{}};
+	if (!this.isDL) { return result; }
+
+	var dl = appCtxt.getApp(ZmApp.CONTACTS).getDL(this.getEmail());
+	if (dl && !dl.more) {
+		result = {list:dl.list.slice(), more:false, isDL:dl.isDL};
+		callback.run(result);
+		return;
+	}
+
+	var nextCallback = new AjxCallback(this, this._getNextDLChunk, [callback]);
+	this.getDLMembers(dl ? dl.list.length : 0, null, nextCallback);
+};
+
+ZmContact.prototype._getNextDLChunk =
+function(callback, result) {
+
+	var dl = appCtxt.getApp(ZmApp.CONTACTS).getDL(this.getEmail());
+	if (result.more) {
+		var nextCallback = new AjxCallback(this, this._getNextDLChunk, [callback]);
+		this.getDLMembers(dl.list.length, null, nextCallback);
+	} else {
+		result.list = dl.list.slice();
+		callback.run(result);
+	}
 };
 
 // these need to be kept in sync with ZmContact.F_*

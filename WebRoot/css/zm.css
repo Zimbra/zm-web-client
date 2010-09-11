@@ -2606,24 +2606,28 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding-right:3px;
 }
 
-.ZmAutocompleteListView .Forget {
+.ZmAutocompleteListView .Link {
 	text-align:right;
 }
 
-.ZmAutocompleteListView .ForgetText, .ZmAutocompleteListView .ForgetText-hide {
+.ZmAutocompleteListView .Link a:hover {
+	text-decoration:none;
+}
+
+.ZmAutocompleteListView .LinkText, .ZmAutocompleteListView .LinkText-hide {
 	padding-left:8px;
 	@FontSize-small@;
 }
 
-.ZmAutocompleteListView .ForgetText {
+.ZmAutocompleteListView .LinkText {
 	color:blue;
 }
 
-.ZmAutocompleteListView .ForgetText-hide {
+.ZmAutocompleteListView .LinkText-hide {
 	color:@ListItemBgColor-normal@;
 }
 
-.ZmAutocompleteListView .ForgetText-hide-selected {
+.ZmAutocompleteListView .LinkText-hide-selected {
 	color:@ListItemBgColor-selected@;
 }
 

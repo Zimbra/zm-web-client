@@ -1145,37 +1145,53 @@ function(skipMoreCheck) {
 	if (!this._rendered || !this._rowHeight) { return 0; }
 
 	DBG.println(AjxDebug.DBG2, "List view: checking item count");
-	var scrollDiv = this._getScrollDiv();
-	var sh = scrollDiv.scrollHeight, st = scrollDiv.scrollTop, rh = this._rowHeight;
 
-	// view (porthole) height - everything measured relative to its top
-	// prefer clientHeight since (like scrollHeight) it doesn't include borders
-	var h = scrollDiv.clientHeight || Dwt.getSize(scrollDiv).y;
-
-	// where we'd like bottom of list view to be (with extra hidden items at bottom)
-	var target = h + (this.getPagelessThreshold() * this._rowHeight);
-
-	// where bottom of list view is (including hidden items)
-	var bottom = sh - st;
-
-	if (bottom == h) {
-		// handle cases where list view isn't full, but we have more items (eg tall browser, or replenishment)
-		bottom = (this._list.size() * rh) - st;
-		if (st == 0) {
-			// fix list view width since we are getting a scrollbar
-			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._resetColWidth), 100);
-		}
-	}
-	var itemsNeeded = 0;
-	if (bottom < target) {
-		// buffer below visible bottom of list view is not full
-		return Math.max(Math.floor((target - bottom) / rh), this.getLimit(1));
-	}
+	var sbCallback = new AjxCallback(null, AjxTimedAction.scheduleAction, [new AjxTimedAction(this, this._resetColWidth), 100]);
+	var params = {scrollDiv:	this._getScrollDiv(),
+				  rowHeight:	this._rowHeight,
+				  threshold:	this.getPagelessThreshold(),
+				  limit:		this.getLimit(1),
+				  listSize:		this._list.size(),
+				  sbCallback:	sbCallback};
+	return ZmListView.getRowsNeeded(params);
 };
 
 ZmListView.prototype._getScrollDiv =
 function() {
 	return this._parentEl;
+};
+
+ZmListView.getRowsNeeded =
+function(params) {
+
+	var div = params.scrollDiv;
+	var sh = div.scrollHeight, st = div.scrollTop, rh = params.rowHeight;
+
+	// view (porthole) height - everything measured relative to its top
+	// prefer clientHeight since (like scrollHeight) it doesn't include borders
+	var h = div.clientHeight || Dwt.getSize(div).y;
+
+	// where we'd like bottom of list view to be (with extra hidden items at bottom)
+	var target = h + (params.threshold * rh);
+
+	// where bottom of list view is (including hidden items)
+	var bottom = sh - st;
+
+	if (bottom == h) {
+		// handle cases where there's no scrollbar, but we have more items (eg tall browser, or replenishment)
+		bottom = (params.listSize * rh) - st;
+		if (st == 0 && params.sbCallback) {
+			// give list view a chance to fix width since it may be getting a scrollbar
+			params.sbCallback.run();
+		}
+	}
+
+	var rowsNeeded = 0;
+	if (bottom < target) {
+		// buffer below visible bottom of list view is not full
+		rowsNeeded = Math.max(Math.floor((target - bottom) / rh), params.limit);
+	}
+	return rowsNeeded;
 };
 
 ZmListView.prototype._sizeChildren =

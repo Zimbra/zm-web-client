@@ -55,7 +55,6 @@ ZmAutocomplete.AC_TIMEOUT			= 20;	// autocomplete timeout (in seconds)
 // result types
 ZmAutocomplete.AC_TYPE_CONTACT		= "contact";
 ZmAutocomplete.AC_TYPE_GAL			= "gal";
-ZmAutocomplete.AC_TYPE_GROUP		= "group";
 ZmAutocomplete.AC_TYPE_TABLE		= "rankingTable";
 
 ZmAutocomplete.AC_TYPE_UNKNOWN		= "unknown";
@@ -66,7 +65,6 @@ ZmAutocomplete.AC_TYPE_EQUIPMENT	= "Equipment";	// same as ZmResource.ATTR_EQUIP
 ZmAutocomplete.AC_ICON = {};
 ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_CONTACT]	= "Contact";
 ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_GAL]		= "GALContact";
-ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_GROUP]	= "Group";
 
 // cache control
 ZmAutocomplete.GAL_RESULTS_TTL		= 900000;	// time-to-live for cached GAL autocomplete results (msec)
@@ -314,6 +312,34 @@ function(callback) {
 	}
 };
 
+ZmAutocomplete.prototype.expandDL =
+function(contact, offset, callback) {
+
+	var respCallback = new AjxCallback(this, this._handleResponseExpandDL, [callback]);
+	contact.getDLMembers(offset, null, respCallback);
+};
+
+ZmAutocomplete.prototype._handleResponseExpandDL =
+function(callback, result) {
+
+	var list = result.list;
+	var matches = [];
+	if (list && list.length) {
+		for (var i = 0, len = list.length; i < len; i++) {
+			var match = new ZmAutocompleteMatch();
+			var addr = list[i];
+			match.text = match.fullAddress = match.email = addr;
+			match.type = ZmAutocomplete.AC_TYPE_GAL;
+			match.isDL = result.isDL[addr];
+			match.icon = match.isDL ? "Group" : ZmAutocomplete.AC_ICON[match.type];
+			matches.push(match);
+		}
+	}
+	if (callback) {
+		callback.run(matches);
+	}
+};
+
 /**
  * @param acType		[constant]			type of result to match
  * @param str			[string]			string to match against
@@ -462,10 +488,12 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 		this.item = match;
 		this.type = ZmContact.getAttr(match, ZmResource.F_type) || ZmAutocomplete.AC_TYPE_GAL;
 	} else {
-		if (this.type == ZmAutocomplete.AC_TYPE_GROUP) {
+		this.isGroup = Boolean(match.isGroup);
+		this.isDL = (this.isGroup && this.type == ZmAutocomplete.AC_TYPE_GAL);
+		if (this.isGroup && !this.isDL) {
+			// Local contact group
 			this.fullAddress = match.email;
 			this.name        = match.display;
-			//Find all the emails
 			var emails = [];
 			var eIds = match.email.split(',');
 			for (var i = 0; i < eIds.length; i++) {
@@ -476,7 +504,9 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 			}
 			this.email = emails.join(";");
 			this.text = match.display;
+			this.icon = "Group";
 		} else {
+			// Local contact, GAL contact, or distribution list
 			var email = AjxEmailAddress.parse(match.email);
 			if (email) {
 				this.fullAddress = email.toString();
@@ -490,14 +520,13 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 				this.item = new ZmContact(null);
 				this.item.initFromEmail(email || match.email);
 			}
+			this.icon = this.isDL ? "Group" : ZmAutocomplete.AC_ICON[match.type];
 		}
-		this.icon = ZmAutocomplete.AC_ICON[match.type];
 		this.score = match.ranking;
 	}
 	this.icon = this.icon || ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_CONTACT];
 	this.acType = (this.type == ZmAutocomplete.AC_TYPE_LOCATION || this.type == ZmAutocomplete.AC_TYPE_EQUIPMENT)
 		? this.type : ZmAutocomplete.AC_TYPE_CONTACT;
-	this.canForget = (match.type == ZmAutocomplete.AC_TYPE_TABLE);
 };
 
 /**

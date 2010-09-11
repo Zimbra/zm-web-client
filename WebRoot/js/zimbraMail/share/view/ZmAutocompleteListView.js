@@ -112,14 +112,15 @@ ZmAutocompleteListView = function(params) {
 
 	this._origClass = "acRow";
 	this._selClass = "acRow-selected";
-	this._showForgetTextClass = "ForgetText";
-	this._hideForgetTextClass = "ForgetText-hide";
-	this._hideSelForgetTextClass = "ForgetText-hide-selected";
+	this._showLinkTextClass = "LinkText";
+	this._hideLinkTextClass = "LinkText-hide";
+	this._hideSelLinkTextClass = "LinkText-hide-selected";
 
 	this._numChars = 0;
 	this._done = {};
 	this.setVisible(false);
 	this.setScrollStyle(Dwt.SCROLL);
+	this.reset();
 };
 
 ZmAutocompleteListView.prototype = new DwtComposite;
@@ -257,8 +258,6 @@ function(ev) {
 ZmAutocompleteListView._onKeyUp =
 function(ev) {
 
-	this._hasCompleted = false;
-
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	if (!element) {
 		return ZmAutocompleteListView._echoKey(true, ev);
@@ -266,6 +265,7 @@ function(ev) {
 
 	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
 	var key = DwtKeyEvent.getCharCode(ev);
+	aclv._hasCompleted = false;
 
 	// Tab/Esc handled in keydown for IE
 	if (AjxEnv.isIE && ev.type == "keyup" && (key == 9 || key == 27)) {
@@ -375,7 +375,8 @@ function(ev) {
 	var curList = ZmAutocompleteListView._activeAcList;
     if (curList.getVisible()) {
 		var obj = DwtControl.getTargetControl(ev);
-		if (obj != curList && !obj.isForgetText) {
+		var target = DwtUiEvent.getTargetWithProp(ev, "id");
+		if (obj && obj != curList && !obj.isLinkText && target != obj.getHtmlElement()) {
 			curList.show(false);
 			ev._stopPropagation = false;
 			ev._returnValue = true;
@@ -457,11 +458,17 @@ function(info) {
  */
 ZmAutocompleteListView.prototype.reset =
 function() {
+
 	this._matches = null;
-	this._matchHash = {};
-	this._canForget = {};
 	this._selected = null;
-	this.show(false);
+
+	this._matchHash			= {};
+	this._forgetLink		= {};
+	this._expandLink		= {};
+
+	if (this.getVisible()) {
+		this.show(false);
+	}
 };
 
 /**
@@ -697,11 +704,12 @@ function(str, chunk, text, start, callback, list) {
  * @param text		[string]		current input text
  * @param str		[string]*		current chunk
  * @param hasDelim	[boolean]*		current chunk ends with a delimiter
+ * @param match		[object]*		forced match object
  */
 ZmAutocompleteListView.prototype._complete =
-function(text, str, hasDelim) {
+function(text, str, hasDelim, match) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _complete: selected is " + this._selected);
-	var match = this._matchHash[this._selected];
+	match = match || this._matchHash[this._selected];
 	if (!match && str && hasDelim && this._dataAPI.quickComplete) {
 		match = this._dataAPI.quickComplete(str);
 	}
@@ -710,6 +718,17 @@ function(text, str, hasDelim) {
 	var start = this._start;
 	var end = hasDelim ? this._end + 1 : this._end;
 	DBG.println(AjxDebug.DBG2, "update replace range: " + start + " - " + end);
+	var value = this._getCompletionValue(match);
+	var newText = [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
+	if (value) {
+		this._done[value] = true;
+	}
+	DBG.display(AjxDebug.DBG2, newText);
+	return {text: newText, start: start + value.length + this._separator.length, match: match};
+};
+
+ZmAutocompleteListView.prototype._getCompletionValue =
+function(match) {
 	var value = "";
 	if (this._matchValue instanceof Array) {
 		for (var i = 0, len = this._matchValue.length; i < len; i++) {
@@ -721,12 +740,7 @@ function(text, str, hasDelim) {
 	} else {
 		value = match[this._matchValue] || "";
 	}
-	var newText = [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
-	if (value) {
-		this._done[value] = true;
-	}
-	DBG.display(AjxDebug.DBG2, newText);
-	return {text: newText, start: start + value.length + this._separator.length, match: match};
+	return value;
 };
 
 // Resets the value of an element to the given text.
@@ -746,8 +760,8 @@ function(text, match) {
 
 // Updates the element with the currently selected match.
 ZmAutocompleteListView.prototype._update =
-function(hasDelim) {
-	var result = this._complete(this._element.value, null, hasDelim);
+function(hasDelim, match) {
+	var result = this._complete(this._element.value, null, hasDelim, match);
 	if (result) {
 		this._updateField(result.text, result.match);
 	}
@@ -761,7 +775,7 @@ ZmAutocompleteListView.prototype._mouseDownListener =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 	var row = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!row || !row.id) { return; }
+	if (!row || !row.id || row.id.indexOf("Row") == -1) { return; }
 	if (ev.button == DwtMouseEvent.LEFT) {
 		this._setSelected(row.id);
 		if (this.isListenerRegistered(DwtEvent.SELECTION)) {
@@ -822,6 +836,8 @@ function(list) {
 
 	var table = this._getTable();
 	this._matches = list;
+	var forgetEnabled = (this._options.supportForget !== false);
+	var expandEnabled = (this._options.supportExpand !== false);
 	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
 		var match = this._matches[i];
@@ -842,15 +858,22 @@ function(list) {
 			}
 			cell = row.insertCell(-1);
 			cell.innerHTML = match.text || "&nbsp;";
-			if (this._options.supportForget !== false) {
-				this._canForget[rowId] = match.canForget;
-				cell = row.insertCell(-1);
-				cell.className = "Forget";
-				cell.innerHTML = match.canForget ? "<a id='" + this._getId("Forget", i) + "'></a>" : "";
+			if (forgetEnabled) {
+				this._insertLinkCell(this._forgetLink, row, rowId, this._getId("Forget", i), (match.type == ZmAutocomplete.AC_TYPE_TABLE));
+			}
+			if (expandEnabled) {
+				this._insertLinkCell(this._expandLink, row, rowId, this._getId("Expand", i), match.isDL);
 			}
 		}
 	}
-	this._addForgetLinks();
+	if (forgetEnabled) {
+		this._forgetText = {};
+		this._addLinks(this._forgetText, "Forget", ZmMsg.forget, ZmMsg.forgetTooltip, this._handleForgetLink);
+	}
+	if (expandEnabled) {
+		this._expandText = {};
+		this._addLinks(this._expandText, "Expand", ZmMsg.expand, ZmMsg.expandTooltip, this.expandDL);
+	}
 
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
 		function() {
@@ -858,41 +881,49 @@ function(list) {
 		}), 100);
 };
 
+ZmAutocompleteListView.prototype._insertLinkCell =
+function(hash, row, rowId, linkId, addLink) {
+	hash[rowId] = addLink ? linkId : null;
+	var cell = row.insertCell(-1);
+	cell.className = "Link";
+	cell.innerHTML = addLink ? "<a id='" + linkId + "'></a>" : "";
+};
+
 ZmAutocompleteListView.prototype._getId =
 function(type, num) {
 	return [this._htmlElId, "ac" + type, num].join("_");
 };
 
-// Add a DwtText to each "forget" link so it can have a tooltip.
-ZmAutocompleteListView.prototype._addForgetLinks =
-function() {
+// Add a DwtText to the link so it can have a tooltip.
+ZmAutocompleteListView.prototype._addLinks =
+function(textHash, idLabel, label, tooltip, handler) {
 
-	this._rowForgetHash = {};
 	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
 		var match = this._matches[i];
 		var rowId = match.id = this._getId("Row", i);
-		var forgetId = this._getId("Forget", i);
-		var forgetLink = document.getElementById(forgetId);
-		if (forgetLink) {
-			var text = new DwtText({parent:this, className:this._hideForgetTextClass});
-			this._rowForgetHash[rowId] = text;
-			text.isForgetText = true;
-			text.setText(ZmMsg.forget);
-			text.setToolTipContent(ZmMsg.forgetTooltip);
-			var listener = new AjxListener(this, this._handleForgetLink, [match.email, rowId]);
+		var linkId = this._getId(idLabel, i);
+		var link = document.getElementById(linkId);
+		if (link) {
+			var textId = this._getId(idLabel + "Text", i);
+			var text = new DwtText({parent:this, className:this._hideLinkTextClass, id:textId});
+			textHash[rowId] = text;
+			text.isLinkText = true;
+			text.setText(label);
+			text.setToolTipContent(tooltip);
+			var listener = new AjxListener(this, handler, [match.email, textId, rowId]);
 			text.addListener(DwtEvent.ONMOUSEDOWN, listener);
-			text.reparentHtmlElement(forgetLink);
+			text.reparentHtmlElement(link);
 		}
 	}
 };
 
-ZmAutocompleteListView.prototype._showForgetLink =
-function(rowId, show) {
-	var forgetText = this._rowForgetHash && this._rowForgetHash[rowId];
-	if (forgetText) {
-		forgetText.setClassName(!show ? this._hideForgetTextClass :
-			this._canForget[rowId] ? this._showForgetTextClass : this._hideSelForgetTextClass);
+ZmAutocompleteListView.prototype._showLink =
+function(hash, textHash, rowId, show) {
+	var text = textHash && textHash[rowId];
+	if (text) {
+		text.setClassName(!show ? this._hideLinkTextClass :
+			hash[rowId] ? this._showLinkTextClass : this._hideSelLinkTextClass);
 	}
 };
 
@@ -900,12 +931,21 @@ function(rowId, show) {
 ZmAutocompleteListView.prototype._popup =
 function(loc) {
 
-	// position just below input field
+	if (this.getVisible()) { return; }
+
+	var x, y;
+	if (loc) {
+		x = loc.x;
+		y = loc.y;
+	} else {
+		// position just below input field
+		var elLoc = Dwt.getLocation(this._element);
+		var elSize = Dwt.getSize(this._element);
+		var x = elLoc.x;
+		var y = elLoc.y + elSize.y;
+	}
+
 	var shellHeight = this.shell.getSize().y;
-	var elLoc = Dwt.getLocation(this._element);
-	var elSize = Dwt.getSize(this._element);
-	var x = elLoc.x;
-	var y = elLoc.y + elSize.y;
 	var availHeight = shellHeight - y;
 	var fullHeight = this.size() * this._getRowHeight();
 	this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
@@ -921,6 +961,8 @@ function(loc) {
 		}
 	} else if (curSize.y < fullHeight) {
 		this.setSize(Dwt.CLEAR, fullHeight);
+	} else {
+		this.setSize(Dwt.CLEAR, Dwt.CLEAR);	// set back to auto-sizing
 	}
 
     this.setLocation(x, y);
@@ -933,6 +975,9 @@ function(loc) {
 // Hides the list
 ZmAutocompleteListView.prototype._popdown = 
 function() {
+
+	if (!this.getVisible()) { return; }
+
 	this.setZIndex(Dwt.Z_HIDDEN);
 	this.setVisible(false);
 	ZmAutocompleteListView._activeAcList = null;
@@ -985,8 +1030,11 @@ function(id) {
 		}
 	}
 
-	this._showForgetLink(this._selected, false);
-	this._showForgetLink(id, true);
+	this._showLink(this._forgetLink, this._forgetText, this._selected, false);
+	this._showLink(this._forgetLink, this._forgetText, id, true);
+
+	this._showLink(this._expandLink, this._expandText, this._selected, false);
+	this._showLink(this._expandLink, this._expandText, id, true);
 
 	this._selected = id;
 };
@@ -1037,13 +1085,18 @@ function() {
 			table.deleteRow(i);
 		}
 	}
-	if (this._rowForgetHash) {
-		var forgetTextIds = AjxUtil.values(this._rowForgetHash);
-		for (var i = 0, len = forgetTextIds.length; i < len; i++) {
-			var forgetTextId = forgetTextIds[i];
-			DwtControl.ALL_BY_ID[forgetTextId] = null;
-			delete DwtControl.ALL_BY_ID[forgetTextId];
-		}
+	this._removeLinks(this._forgetText);
+	this._removeLinks(this._expandText);
+};
+
+ZmAutocompleteListView.prototype._removeLinks =
+function(textHash) {
+	if (!textHash) { return; }
+	var textIds = AjxUtil.values(textHash);
+	for (var i = 0, len = textIds.length; i < len; i++) {
+		var textId = textIds[i];
+		DwtControl.ALL_BY_ID[textId] = null;
+		delete DwtControl.ALL_BY_ID[textId];
 	}
 };
 
@@ -1088,18 +1141,88 @@ function(ev) {
 };
 
 ZmAutocompleteListView.prototype._handleForgetLink =
-function(email, rowId) {
+function(email, textId, rowId) {
 	if (this._dataAPI.forget) {
-		this._dataAPI.forget(email, new AjxCallback(this, this._handleResponseForget, [rowId, email]));
+		this._dataAPI.forget(email, new AjxCallback(this, this._handleResponseForget, [email, rowId]));
 	}
 };
 
 ZmAutocompleteListView.prototype._handleResponseForget =
-function(rowId, email) {
+function(email, rowId) {
 	var row = document.getElementById(rowId);
 	if (row) {
 		row.parentNode.removeChild(row);
 		var msg = AjxMessageFormat.format(ZmMsg.forgetSummary, [email]);
 		appCtxt.setStatusMsg(msg);
+	}
+	appCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
+};
+
+/**
+ * Displays a second popup list with the members of the given distribution list.
+ *
+ * @param {string}		email		address of a distribution list
+ * @param {string}		textId		ID of link text
+ * @param {string}		rowId		ID of row
+ */
+ZmAutocompleteListView.prototype.expandDL =
+function(email, textId, rowId) {
+
+	if (!this._dataAPI.expandDL) { return; }
+
+	var mlv = this._memberListView;
+	if (mlv && this._curExpanded == textId) {
+		mlv.show(false, null, true);
+		this._curExpanded = null;
+		this._setExpandText(textId, false);
+	} else {
+		if (mlv && mlv.getVisible()) {
+			// expanding a DL while another one is showing
+			this._setExpandText(this._curExpanded, false);
+			mlv.show(false, null, true);
+		}
+		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+		var contact = contactsApp.getContactByEmail(email);
+		if (!contact) {
+			contact = new ZmContact(null);
+			contact.initFromEmail(email);
+			contact.isDL = true;
+			contactsApp.updateCache(contact, true);
+		}
+		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact]));
+		this._curExpanded = textId;
+		this._setExpandText(textId, true);
+	}
+};
+
+ZmAutocompleteListView.prototype._setExpandText =
+function(textId, expanded) {
+	var textCtrl = DwtControl.fromElementId(textId);
+	if (textCtrl) {
+		textCtrl.setText(expanded ? ZmMsg.collapse : ZmMsg.expand);
+	}
+};
+
+ZmAutocompleteListView.prototype._handleResponseExpandDL =
+function(contact, matches) {
+
+	var mlv = this._memberListView;
+	if (!mlv) {
+		mlv = this._memberListView = new ZmDLAutocompleteListView({parent:appCtxt.getShell(), parentAclv:this});
+		mlv._element = this._element;
+	}
+	mlv._dlContact = contact;
+	mlv._removeAll();
+	mlv._set(matches, contact);
+
+	// position just to right of parent ac list
+	var loc = this.getLocation();
+	loc.x += this.getSize().x;
+	mlv.show(true, loc);
+	if (!mlv._rowHeight) {
+		var table = document.getElementById(mlv._tableId);
+		if (table) {
+			mlv._rowHeight = Dwt.getSize(table.rows[0]).y;
+		}
 	}
 };
