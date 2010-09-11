@@ -8,7 +8,7 @@
                 <col width='140'/>
                 <col width='100'/>
                 <col id='${id}_timezoneColumn' width='250'/>
-                <col width='90'/>
+                <col id='${id}_labelColumn' width='160'/>
                 <col/>
                 <col width='80'/>
             </colgroup>

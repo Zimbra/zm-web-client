@@ -252,7 +252,7 @@ function(appt, mode, isDirty, apptComposeMode) {
 ZmAttendeePicker.prototype.resize =
 function() {
 	if (!this._rendered) { return; }
-	this._chooser.resize('100%', ZmAttendeePicker.CHOOSER_HEIGHT);
+	this._chooser.resize(this._chooserWidth, ZmAttendeePicker.CHOOSER_HEIGHT);
 };
 
 ZmAttendeePicker.prototype.cleanup =
@@ -485,8 +485,11 @@ function() {
 		this._nextButton.setEnabled(false);
 	}
 
+    var width = this.getSize().x;
 	// add chooser
 	this._chooser = new ZmApptChooser(this);
+    this._chooserWidth = width-25;
+    this._chooser.resize(this._chooserWidth, ZmAttendeePicker.CHOOSER_HEIGHT);
 	var chooserSourceListViewDiv = document.getElementById(this._chooserSourceListViewDivId);
 	var sourceListView = this._chooser.getSourceListView();
 	chooserSourceListViewDiv.appendChild(sourceListView);
