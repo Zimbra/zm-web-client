@@ -149,3 +149,9 @@ ZmDocsEditController.prototype.checkForChanges = function() {
         return ZmMsg.exitDocUnSavedChanges;
    } 
 };
+
+ZmDocsEditController.prototype.exit = function(){
+    if(ZmDocsEditApp.fileInfo.locked){
+        this._docMgr.unlock(ZmDocsEditApp.fileInfo);
+    }
+};

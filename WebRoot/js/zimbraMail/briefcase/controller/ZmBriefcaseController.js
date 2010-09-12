@@ -624,7 +624,6 @@ ZmBriefcaseController.prototype._getActionMenuOps =
 function() {
 	var list = [
 		ZmOperation.OPEN_FILE,
-        ZmOperation.EDIT,    
 		ZmOperation.SAVE_FILE,
 		ZmOperation.SEND_FILE,
 		ZmOperation.SEND_FILE_AS_ATT
@@ -636,7 +635,7 @@ function() {
 		list.push(ZmOperation.CREATE_SLIDE_SHOW);
 	}
     list.push(ZmOperation.SEP);
-    list.push(ZmOperation.VERSION_HISTORY, ZmOperation.CHECKOUT, ZmOperation.DISCARD_CHECKOUT, ZmOperation.CHECKIN);
+    list.push(ZmOperation.EDIT, ZmOperation.VERSION_HISTORY, ZmOperation.CHECKOUT, ZmOperation.DISCARD_CHECKOUT, ZmOperation.CHECKIN);
 
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
@@ -659,8 +658,12 @@ function() {
 	var view = this._listView[this._currentView];
 	var items = view.getSelection();
 	if (!items) { return; }
-    this.editFile(items);
-
+    items = AjxUtil.toArray(items);
+    var item = items[0];
+    if(item.contentType == ZmMimeTable.APP_ZIMBRA_DOC)
+        this.checkout(item, new AjxCallback(this, this.editFile, item));
+    else
+        this.editFile(item);
 };
 
 ZmBriefcaseController.prototype.editFile =
