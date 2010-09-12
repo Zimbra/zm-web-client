@@ -285,7 +285,8 @@ function(node, instNode) {
 	if (node.invId) {
 		this.invId = node.invId;
 	} else if (inv) {
-		var remoteIndex = inv.id.indexOf(":");
+		var remoteIndex = inv.id;
+        remoteIndex = remoteIndex.toString().indexOf(":");
 		if (remoteIndex != -1) {
 			this.invId = this.id + "-" + inv.id.substring(remoteIndex+1);
 		} else {

@@ -1724,8 +1724,10 @@ function(d) {
  */
 ZmCalItem.prototype._addInviteAndCompNum =
 function(soapDoc) {
-	soapDoc.setMethodAttribute("ms", this.message.ms);
-	soapDoc.setMethodAttribute("rev", this.message.rev);
+    if(this.message){
+        soapDoc.setMethodAttribute("ms", this.message.ms);
+        soapDoc.setMethodAttribute("rev", this.message.rev);
+    }
 	if (this.viewMode == ZmCalItem.MODE_EDIT_SERIES || this.viewMode == ZmCalItem.MODE_DELETE_SERIES) {
 		if (this.recurring && this.seriesInvId != null) {
 			soapDoc.setMethodAttribute("id", this.seriesInvId);
