@@ -267,6 +267,8 @@ function() {
     var attendee;
     this._attendees = [];
     for (var i = 0; i < attendees.length; i++) {
+            //ignore optional attendees while suggesting
+            if(attendees[i].getParticipantRole() == ZmCalItem.ROLE_OPTIONAL) continue;
             attendee = attendees[i].getEmail();
             if (attendee instanceof Array) {
                 attendee = attendee[i][0];

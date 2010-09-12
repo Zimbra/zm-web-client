@@ -1816,6 +1816,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	width: 1%;
 }
 
+.ZmApptComposeField {
+    float: left;
+    padding-right: 5px;
+}
 
 
 /*
