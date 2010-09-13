@@ -805,7 +805,7 @@ function() {
             startInputTime = tf.format(this._startTimeSelect[i].getValue());
             endInputTime = tf.format(this._endTimeSelect[i].getValue());
 
-            if(startInputTime < endInputTime) {
+            if(startInputTime > endInputTime) {
                 return false;
             }
         }

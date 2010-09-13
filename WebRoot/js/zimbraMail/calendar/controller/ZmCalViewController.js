@@ -1149,10 +1149,12 @@ function(date, duration, roll) {
 		if (viewId == ZmId.VIEW_CAL_APPT) {
 			this._viewMgr.getCurrentView().close();
 		}
-		var title = this._viewMgr.getCurrentView().getCalTitle();
+        var currentView = this._viewMgr.getCurrentView(); 
+		var title = currentView.getCalTitle();
 		Dwt.setTitle([ZmMsg.zimbraTitle, ": ", title].join(""));
 		if (!roll &&
 			this._currentView == ZmId.VIEW_CAL_WORK_WEEK &&
+            !currentView.workingHours[date.getDay()].isWorkingDay &&                    
 			(date.getDay() == 0 || date.getDay() ==  6))
 		{
 			this.show(ZmId.VIEW_CAL_WEEK);

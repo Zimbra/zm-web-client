@@ -1826,11 +1826,12 @@ HTML>BODY .appt-selected .appt_allday_body
  *	Free/busy view
  */
 /* Colors for the free/busy blocks */		/*??? SKIN THIS ? */
-.ZmScheduler-free 		{	background-color: #FFFFFF;	}
+.ZmScheduler-free 		{	background-color: #F3F3ED;	}
 .ZmScheduler-busy 		{	background-color: #4AA6F1;	}
 .ZmScheduler-tentative 	{	background-color: #BAE0E3;	}
 .ZmScheduler-outOfOffice {	background-color: #7B5BAC;	}
 .ZmScheduler-unknown 	{	background-color: #FFF5CC;	}
+.ZmScheduler-working 	{	background-color: #FFFFFF;	}
 
 .ZmSchedulerPTST-needsaction {	color: #0066CC !important;}
 .ZmSchedulerPTST-declined 	 {	color: #FF0000 !important;}

@@ -1609,11 +1609,15 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
             </table>
         </td>
     </tr>
+    <tr>
+        <td class='ZOptionsLabel'>&nbsp;</td>
+        <td class='ZOptionsField'><$=ZmMsg.calendarWorkHoursDisclaimer $> <$=appCtxt.get(ZmSetting.DEFAULT_TIMEZONE) $></td>
+    </tr>
 </table>
 </template>
 
 <template id='prefs.Pages#CustomWorkHoursDlg'>
-<table border=0 cellspacing=2 cellpadding=2 width=100%>
+<table border=0 cellspacing=2 cellpadding=2 width=300>
     <tr>
         <td id='${id}_CAL_WORKING_DAY_0' tabindex='10'></td>
         <td id='${id}_CAL_WORKING_START_TIME_0' tabindex='20'></td>
@@ -1655,7 +1659,10 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
         <td id='${id}_CAL_WORKING_START_TIME_6' tabindex='200'></td>
         <td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
         <td id='${id}_CAL_WORKING_END_TIME_6' tabindex='210'></td>
-    </tr>        
+    </tr>
+    <tr>
+        <td colspan="4"><$=ZmMsg.calendarWorkHoursDisclaimer $> <$=appCtxt.get(ZmSetting.DEFAULT_TIMEZONE) $></td>
+    </tr>
 </table>
 </template>
 

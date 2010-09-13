@@ -51,6 +51,7 @@ ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo) {
 	}
 
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
+	this._workCallback = new AjxCallback(this, this._handleResponseWorking);
 	this._kbMgr = appCtxt.getKeyboardMgr();
     this._emailAliasMap = {};
 };
@@ -83,7 +84,7 @@ ZmFreeBusySchedulerView.STATUS_OUT				= 4;
  * Defines the "unknown" status.
  */
 ZmFreeBusySchedulerView.STATUS_UNKNOWN			= 5;
-
+ZmFreeBusySchedulerView.STATUS_WORKING			= 6;
 // Pre-cache the status css class names
 ZmFreeBusySchedulerView.STATUS_CLASSES = [];
 ZmFreeBusySchedulerView.STATUS_CLASSES[ZmFreeBusySchedulerView.STATUS_FREE]		= "ZmScheduler-free";
@@ -91,6 +92,7 @@ ZmFreeBusySchedulerView.STATUS_CLASSES[ZmFreeBusySchedulerView.STATUS_BUSY]		= "
 ZmFreeBusySchedulerView.STATUS_CLASSES[ZmFreeBusySchedulerView.STATUS_TENTATIVE]	= "ZmScheduler-tentative";
 ZmFreeBusySchedulerView.STATUS_CLASSES[ZmFreeBusySchedulerView.STATUS_OUT]		= "ZmScheduler-outOfOffice";
 ZmFreeBusySchedulerView.STATUS_CLASSES[ZmFreeBusySchedulerView.STATUS_UNKNOWN]	= "ZmScheduler-unknown";
+ZmFreeBusySchedulerView.STATUS_CLASSES[ZmFreeBusySchedulerView.STATUS_WORKING]	= "ZmScheduler-working";
 
 ZmFreeBusySchedulerView.PSTATUS_CLASSES = [];
 ZmFreeBusySchedulerView.PSTATUS_CLASSES[ZmCalBaseItem.PSTATUS_DECLINED]      = "ZmSchedulerPTST-declined";
@@ -510,7 +512,7 @@ function(inputEl, attendee, useException) {
 
 			// go get this attendee's free/busy info if we haven't already
 			if (sched.uid != email) {
-				this._getFreeBusyInfo(this._getStartTime(), email, this._fbCallback);
+				this._getFreeBusyInfo(this._getStartTime(), email, this._fbCallback, this._workCallback);
 			}
 			sched.attendee = attendee;
 			this._setParticipantStatus(sched, attendee, idx);
@@ -565,12 +567,12 @@ function() {
 	var row = this._allAttendeesTable.rows[0];
 
 	for (var i = 0; i < this._allAttendees.length; i++) {
-		if (this._allAttendees[i] > 0) {
+		//if (this._allAttendees[i] > 0) {
 			// TODO: opacity...
 			var status = this.getAllAttendeeStatus(i);
 			row.cells[i].className = this._getClassForStatus(status);
 			this._allAttendeesSlot._coloredCells.push(row.cells[i]);
-		}
+		//}
 	}
 };
 
@@ -597,7 +599,7 @@ function() {
 
 	if (uids.length) {
 		var emails = uids.join(",");
-		this._getFreeBusyInfo(this._getStartTime(), emails, this._fbCallback);
+		this._getFreeBusyInfo(this._getStartTime(), emails, this._fbCallback, this._workCallback);
 	}
 };
 
@@ -632,7 +634,7 @@ function(organizer, attendees) {
 	this._addAttendeeRow(false, null, false, null, true, true);
 
 	if (emails.length) {
-		this._getFreeBusyInfo(this._getStartTime(), emails.join(","), this._fbCallback);
+		this._getFreeBusyInfo(this._getStartTime(), emails.join(","), this._fbCallback, this._workCallback);
 	}
 
     if(this._appt) {
@@ -917,9 +919,14 @@ function(status, slots, table, sched) {
 						this._allAttendees[j] = this._allAttendees[j] + 1;
 						this.updateAllAttendeeCellStatus(j, status);
 					}
-					sched._coloredCells.push(row.cells[j]);
-					row.cells[j].className = className;
+                    if(row.cells[j].className != ZmFreeBusySchedulerView.FREE_CLASS && status == ZmFreeBusySchedulerView.STATUS_WORKING) {
+                        // do not update anything if the status is already changed
+                        continue;
+                    }
+                    sched._coloredCells.push(row.cells[j]);
+                    row.cells[j].className = className;
                     row.cells[j]._fbStatus = status;
+
 				}
 			}
 		}
@@ -1066,11 +1073,30 @@ function(result) {
 			this._clearColoredCells(sched);
 			sched.uid = usr.id;
 
-			// next, for each free/busy status, color the row for given start/end times
+            // next, for each free/busy status, color the row for given start/end times
 			if (usr.n) this._colorSchedule(ZmFreeBusySchedulerView.STATUS_UNKNOWN, usr.n, table, sched);
 			if (usr.t) this._colorSchedule(ZmFreeBusySchedulerView.STATUS_TENTATIVE, usr.t, table, sched);
 			if (usr.b) this._colorSchedule(ZmFreeBusySchedulerView.STATUS_BUSY, usr.b, table, sched);
 			if (usr.u) this._colorSchedule(ZmFreeBusySchedulerView.STATUS_OUT, usr.u, table, sched);
+		}
+	}
+	this._colorAllAttendees();
+};
+
+ZmFreeBusySchedulerView.prototype._handleResponseWorking =
+function(result) {
+	var args = result.getResponse().GetWorkingHoursResponse.usr;
+
+	for (var i = 0; i < args.length; i++) {
+		var usr = args[i];
+
+		// first clear out the whole row for this email id
+		var sched = this._schedTable[this._emailToIdx[usr.id]];
+		var table = sched ? document.getElementById(sched.dwtTableId) : null;
+		if (table) {
+            sched.uid = usr.id;
+            // next, for each free/busy status, color the row for given start/end times
+			if (usr.f) this._colorSchedule(ZmFreeBusySchedulerView.STATUS_WORKING, usr.f, table, sched);
 		}
 	}
 	this._colorAllAttendees();
@@ -1119,10 +1145,11 @@ function() {
 };
 
 ZmFreeBusySchedulerView.prototype._getFreeBusyInfo =
-function(startTime, emailList, callback) {
+function(startTime, emailList, fbCallback, workCallback) {
 	var endTime = startTime + AjxDateUtil.MSEC_PER_DAY;
 	var errorCallback = new AjxCallback(this, this._handleErrorFreeBusy, emailList);
-	this._controller.getFreeBusyInfo(startTime, endTime, emailList, callback, errorCallback);
+	this._controller.getFreeBusyInfo(startTime, endTime, emailList, fbCallback, errorCallback);
+	this._controller.getWorkingInfo(startTime, endTime, emailList, workCallback, errorCallback);
 };
 
 ZmFreeBusySchedulerView.prototype.showFreeBusyToolTip =
@@ -1180,6 +1207,7 @@ function(params) {
         fbStatusMsg[ZmFreeBusySchedulerView.STATUS_TENTATIVE]= ZmMsg.tentative;
         fbStatusMsg[ZmFreeBusySchedulerView.STATUS_OUT]      = ZmMsg.outOfOffice;
         fbStatusMsg[ZmFreeBusySchedulerView.STATUS_UNKNOWN]  = ZmMsg.unknown;
+        fbStatusMsg[ZmFreeBusySchedulerView.STATUS_WORKING]  = ZmMsg.free;
 
         tooltipContent = "<b>" + ZmMsg.statusLabel + " " + fbStatusMsg[params.status] + "</b>";
     }else {
