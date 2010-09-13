@@ -33,6 +33,14 @@ ZmInvite = function() {
 ZmInvite.prototype = new ZmModel;
 ZmInvite.prototype.constructor = ZmInvite;
 
+
+// Consts
+ZmInvite.CHANGES_LOCATION	= "location";
+ZmInvite.CHANGES_SUBJECT	= "subject";
+ZmInvite.CHANGES_RECURRENCE	= "recurrence";
+ZmInvite.CHANGES_TIME		= "time";
+
+
 /**
  * Returns a string representation of the object.
  * 
@@ -1007,4 +1015,20 @@ function(compNum) {
 		return this.getDurationText(compNum, false, false, true);
 	}
 	return "";
+};
+
+ZmInvite.prototype.getChanges =
+function(compNum) {
+	var cn = compNum || 0;
+	var changesStr = this.components[cn] && this.components[cn].changes;
+	var changesArr = changesStr && changesStr.split(",");
+	if (changesArr && changesArr.length > 0) {
+		var changes = {};
+		for (var i = 0; i < changesArr.length; i++) {
+			changes[changesArr[i]] = true;
+		}
+		return changes;
+	}
+
+	return null;
 };

@@ -128,7 +128,7 @@
 									<td id='${closeBtnCellId}'></td>
 									<td>&nbsp;</td>
 								<$ } $>
-								<td class='LabelColValue SubjectCol' valign=top width=100%>
+								<td class='LabelColValue SubjectCol ${subjChangeClass}' valign=top width=100%>
 									<$= data.subject $>
 								</td>
 								<td class='LabelColValue DateCol' align=right>${dateString}</td>
@@ -162,16 +162,16 @@
 								</tr>
 							<$ } $>
 							<tr>
-								<td class='LabelColName'><$= data.counterInvMsg ? ZmMsg.proposedTimeLabel : ZmMsg.timeLabel $></td>
-								<td class='LabelColValue'>
+								<td class='LabelColName ${timeChangeClass}'><$= data.counterInvMsg ? ZmMsg.proposedTimeLabel : ZmMsg.timeLabel $></td>
+								<td class='LabelColValue ${timeChangeClass}'>
 									<$= data.invDate $><br>
 									<$= data.timezone $>
 								</td>
 							</tr>
 							<$ if (data.invite.getLocation()) { $>
 								<tr>
-									<td class='LabelColName'><$= ZmMsg.locationLabel $></td>
-									<td class='LabelColValue'><$= data.invite.getLocation() $></td>
+									<td class='LabelColName ${locChangeClass}'><$= ZmMsg.locationLabel $></td>
+									<td class='LabelColValue ${locChangeClass}'><$= data.invite.getLocation() $></td>
 								</tr>
 							<$ } $>
 							<$ if (data.invite.hasOtherAttendees()) { $>

@@ -73,7 +73,7 @@ function(msg) {
 	this._msg = msg;
 	var invite = this._invite = msg.invite;
 
-	if (invite.hasAcceptableComponents() &&
+	if (invite && invite.hasAcceptableComponents() &&
 		msg.folderId != ZmFolder.ID_TRASH &&
 		msg.folderId != ZmFolder.ID_SENT)
 	{
@@ -81,7 +81,7 @@ function(msg) {
 			if (!this._counterToolbar) {
 				this._counterToolbar = this._getCounterToolbar();
 			}
-			this._counterToolbar.reparentHtmlElement(this.parent.getHtmlElement());
+			this._counterToolbar.reparentHtmlElement(this.parent.getHtmlElement(), 0);
 			this._counterToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 		}
 		else if (invite.hasInviteReplyMethod()) {
@@ -90,7 +90,7 @@ function(msg) {
 			if (!this._inviteToolbar) {
 				this._inviteToolbar = this._getInviteToolbar();
 			}
-			this._inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement());
+			this._inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement(), 0);
 			this._inviteToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
 			// show on-behalf-of info?
@@ -309,6 +309,18 @@ function(subs, sentBy, sentByAddr) {
 	// duration text
 	var durText = this._invite.getDurationText(null, null, null, true, sd, ed);
 	subs.invDate = om ? om.findObjects(durText, true, ZmObjectManager.DATE) : durText;
+
+	// set changes to the invite
+	var changes = this._invite.getChanges();
+	if (changes && changes[ZmInvite.CHANGES_LOCATION]) {
+		subs.locChangeClass = "InvChanged";
+	}
+	if (changes && changes[ZmInvite.CHANGES_SUBJECT]) {
+		subs.subjChangeClass = "InvChanged";
+	}
+	if (changes && changes[ZmInvite.CHANGES_TIME]) {
+		subs.timeChangeClass = "InvChanged";
+	}
 };
 
 ZmInviteMsgView.prototype.truncateBodyContent =

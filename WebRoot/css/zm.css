@@ -576,6 +576,11 @@ INPUT[type="text"].people_search_input {
 	padding-left: 5px;
 }
 
+.InvHeaderTable .InvChanged, .InvHeaderTable .InvChanged .Object {
+	color: #eb7400;
+	font-style: italic;
+}
+
 /* the sash next to overview does not need borders or a background color */
 .console_inset_app_l .DwtHorizontalSash {
 	border: 0px;
