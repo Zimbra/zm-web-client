@@ -687,6 +687,14 @@ var toggleElem = function(elem, me, minMsg, maxMsg) {
     return false;
 };
 
+//initialize auto complete for mail compose view
+var initComposeAutoComplete = function() {
+    var fields = ['to', 'cc', 'bcc'];
+    for(var i=0; i < fields.length; i++) {
+        AC(fields[i] + "Field", fields[i] + "Container");
+    }
+};
+
 var toggleCompose = function(elem, veil) {
     if (!elem && !$(elem)) {return false;}
     if (!veil && !$(veil)) {return false;}
@@ -863,6 +871,7 @@ ZmiPadMail.processResponse = function (respData, url) {
           $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
         }
         toggleCompose('compose-pop','veil');
+        initComposeAutoComplete();
 
     } else if(url.indexOf('show=more') != -1) {
 

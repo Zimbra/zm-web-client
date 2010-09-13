@@ -1303,4 +1303,58 @@ span.aleft > div:first-child, .contactHeader {
 .prefBody .value input[type='checkbox']{
 	width: 20px;
 	height: 20px;
-}  
+}
+
+/*Auto Complete*/
+.ZhAC {
+    position: relative;
+}
+.ZhACB {
+    font-weight: bold;
+}
+.ZhACCont {
+    position: absolute;
+    bottom: 0;
+}
+.ZhACCont .yui-ac-content {
+    position: absolute;
+    border: 1px solid #404040;
+    background: #fff;
+    overflow: hidden;
+    z-index: 9050;
+}
+.ZhACCont .yui-ac-shadow {
+    position: absolute;
+    margin: .3em;
+    background: #a0a0a0;
+    z-index: 9010;
+}
+.ZhACCont ul {
+    margin: 0;
+    padding: 1px 0;
+    list-style: none
+}
+.ZhACCont li {
+    margin: 0;
+    padding: 0 1px;
+    cursor: default;
+    white-space: nowrap;
+}
+.ZhACCont li.yui-ac-highlight {
+@SelectedBg@
+}
+.ZhACCont li.yui-ac-prehighlight {
+    background: #FFFFCC;
+}
+.ZhACCont table {
+    font-size: small;
+}
+.ZhACTo {
+    z-index: 9050;
+}
+.ZhACCc {
+    z-index: 9040;
+}
+.ZhACBCc {
+    z-index: 9030;
+}
