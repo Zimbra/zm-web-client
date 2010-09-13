@@ -843,7 +843,8 @@ function(params, batchCmd) {
 		}
 	}
 
-	var actionLogItem = params.undoing ? null : appCtxt.getActionController().actionPerformed({op: params.action, ids: idList, attrs: params.attrs});
+	var actionController = appCtxt.getActionController();
+	var actionLogItem = (params.undoing && actionController && actionController.actionPerformed({op: params.action, ids: idList, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseItemAction, [params.callback, actionLogItem]);
 
 	var params1 = {
@@ -992,9 +993,10 @@ function(summary, actionLogItem) {
 		ZmList.progressDialog = null;
 	}
 	if (summary) {
-		var undoLink = actionLogItem && appCtxt.getActionController().getUndoLink(actionLogItem);
+		var actionController = appCtxt.getActionController();
+		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 		if (undoLink) {
-			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: appCtxt.getActionController().getStatusTransitions()});
+			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: actionController.getStatusTransitions()});
 		} else {
 			appCtxt.setStatusMsg(summary);
 		}

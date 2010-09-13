@@ -2400,8 +2400,11 @@ function(actionCode, ev) {
 		}
 
 		case ZmKeyMap.UNDO: {
-			if (!appCtxt.isChildWindow)
-				appCtxt.getActionController().undoCurrent();
+			if (!appCtxt.isChildWindow) {
+				var actionController = appCtxt.getActionController();
+				if (actionController)
+					actionController.undoCurrent();
+			}
 			break;
 		}
 

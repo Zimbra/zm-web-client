@@ -1747,7 +1747,8 @@ function(params) {
 		}
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	}
-	var actionLogItem = params.undoing ? null : appCtxt.getActionController().actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs});
+	var actionController = appCtxt.getActionController();
+	var actionLogItem = (params.undoing && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
@@ -1779,10 +1780,11 @@ function(params, actionLogItem, result) {
 		params.callback.run(result);
 	}
 	if (params.actionText) {
+		var actionController = appCtxt.getActionController();
 		var summary = ZmOrganizer.getActionSummary(params.actionText, params.numItems || 1, this.type, params.actionArg);
-		var undoLink = actionLogItem && appCtxt.getActionController().getUndoLink(actionLogItem);
+		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 		if (undoLink) {
-			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: appCtxt.getActionController().getStatusTransitions()});
+			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: actionController.getStatusTransitions()});
 		} else {
 			appCtxt.setStatusMsg(summary);
 		}
