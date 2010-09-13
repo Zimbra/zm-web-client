@@ -17,7 +17,7 @@
 	</context-param>
 	<context-param>
 		<param-name>admin.allowed.ports</param-name>
-		<param-value>7071</param-value>
+		<param-value>%%zimbraAdminPort%%</param-value>
 	</context-param>
 
     <!-- =============
