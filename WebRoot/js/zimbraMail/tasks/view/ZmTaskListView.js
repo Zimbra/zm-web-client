@@ -330,7 +330,8 @@ function(ev) {
 	if ((ev.type != this.type) && (ZmList.MIXED != this.type))
 		return;
 
-	var items = ev.getDetail("items");
+	var items = ev.getDetail("items") || ev.items;
+    items = AjxUtil.toArray(items);
 
 	if (ev.event == ZmEvent.E_CREATE) {
 		for (var i = 0; i < items.length; i++) {
@@ -372,6 +373,17 @@ function(ev) {
 	} else {
 		ZmListView.prototype._changeListener.call(this, ev);
 	}
+
+    //Handle Create Notification
+    if(ev.event == ZmEvent.E_MOVE){
+        var folderId = this._controller._folderId || this.folderId || this._folderId;
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            if(item && item.folderId == folderId && this._getRowIndex(item) === null){
+                this.addItem(item, null, true);
+            }
+        }
+    }
 
 	if (ev.event == ZmEvent.E_CREATE ||
 		ev.event == ZmEvent.E_DELETE ||
