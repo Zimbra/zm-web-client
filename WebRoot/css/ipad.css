@@ -64,7 +64,7 @@ a{
 	}
 	
 	.shell{
-		width: 250px;	
+		width: 280px;	
 	}
 	
 	.moreButton{
@@ -135,7 +135,7 @@ a{
 	}
 	
 	.shell{
-		width: 180px;
+		width: 210px;
 	}
 	.moreButton{
 		width: 170px;
@@ -470,31 +470,35 @@ html, body{
 		padding: 8px 4px 0 4px;
 	}
 	
-
+	.quota{
+		color: #A9A294;
+		font-size: 10px !important;
+	}
+	
 .userInfo{
 	margin-left: 10px;
 }
 
 .copyrights, .copyrights a, .userInfo{
-	color: #d3c7ac;
+	color: #D3C7AC;
 	text-decoration: none;
 }
 
 .shell{
-	margin: 4px 0 0 20%;
+	margin: 1px 0 0 13%;
 	background-color: #564e3c;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#29251b), to(#564e3c));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #29251b, #564e3c);
 	padding: 0;
 	border-radius: 18px;
 	-webkit-border-radius: 18px;
-	height: 10px;
+	height: 8px;
 }
 
 .shell .bar{
 	-webkit-border-radius: 18px;
 	border-radius: 18px;
-	height: 10px;
+	height: 8px;
 	width: 30%;
 	background-color: #e8ddc3;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e8ddc3), to(#a49479));
@@ -515,6 +519,7 @@ html, body{
 	border-right: 1px solid #999;
 	position: relative;
     overflow:hidden;
+    background-color: white;
 }
 
 
@@ -607,8 +612,25 @@ ul.list li{
 .emptyBody{
 	text-transform: capitalize;
 	text-align: center;
-	text-shadow: #e5e5e5 3px 2px 1px;
 }
+
+	.emptyBody h2{
+		background: url("/img/mobile/ipad/animgrad.png") repeat, white;
+		-webkit-text-fill-color: transparent;	
+		-webkit-background-clip: text;	
+		-webkit-animation-name: masked-animation;	
+		-webkit-animation-duration: 10s;	
+		-webkit-animation-iteration-count: infinite;	
+		-webkit-animation-timing-function: linear;
+	}
+	
+	@-webkit-keyframes masked-animation {	
+		0% {background-position: top left;}
+		100% {background-position: top right;}	
+	}
+
+	
+	
  .address{
 	color: #7C6E4E;
 	letter-spacing: 1px;
@@ -1236,7 +1258,7 @@ span.aleft > div:first-child, .contactHeader {
 
 .ZhCalMDOMT {
 	padding:1px;
-	border:1px solid darkblue;
+	border:none;
 }
  
 .zo_cal_listh{
@@ -1280,6 +1302,7 @@ span.aleft > div:first-child, .contactHeader {
 	font-size: 12px;
 }
 
+
 /** Preference UI Styles **/   
 
 .titleText{
@@ -1303,58 +1326,81 @@ span.aleft > div:first-child, .contactHeader {
 .prefBody .value input[type='checkbox']{
 	width: 20px;
 	height: 20px;
-}
+} 
 
-/*Auto Complete*/
+/** Auto Complete **/
+
 .ZhAC {
     position: relative;
 }
+
 .ZhACB {
     font-weight: bold;
 }
+
 .ZhACCont {
     position: absolute;
     bottom: 0;
 }
+
 .ZhACCont .yui-ac-content {
     position: absolute;
-    border: 1px solid #404040;
-    background: #fff;
+    border: 1px solid #EDE8D8;
+    background-color: #fdf9ee;
     overflow: hidden;
-    z-index: 9050;
+    z-index: 9050; 
+    width: 100%;
 }
+
 .ZhACCont .yui-ac-shadow {
     position: absolute;
     margin: .3em;
     background: #a0a0a0;
     z-index: 9010;
 }
+
 .ZhACCont ul {
     margin: 0;
     padding: 1px 0;
     list-style: none
 }
+
 .ZhACCont li {
     margin: 0;
     padding: 0 1px;
     cursor: default;
     white-space: nowrap;
+    border-top: 1px solid #EDE8D8;
 }
+
 .ZhACCont li.yui-ac-highlight {
-@SelectedBg@
+	overflow: hidden;
+	background-color: #ece4d0;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ece4d0), to(#d9ceb2));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #ece4d0, #d9ceb2);
 }
+
 .ZhACCont li.yui-ac-prehighlight {
-    background: #FFFFCC;
+    background-color: #FFFFCC;
 }
+
 .ZhACCont table {
     font-size: small;
 }
+
 .ZhACTo {
     z-index: 9050;
 }
+
 .ZhACCc {
     z-index: 9040;
 }
+
 .ZhACBCc {
     z-index: 9030;
 }
+
+.yui-ac-bcd .left{
+	border-bottom: none !important;
+}
+ 

@@ -149,15 +149,15 @@
                 </c:if>
                 <c:catch>
                     <fmt:message var="unlimited" key="unlimited"/>
-                    <fmt:message key="quotaUsage">
+                    <fmt:message key="quotaUsage" var="quotaUsage">
                         <fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/>
                         <fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,2)}"/>
                     </fmt:message>
                 </c:catch>
-                <div style="align:center">${quotaUsage}</div>
+                
                 <div class="shell">
                      <div class="bar" style="width:${userQuota}%"></div>
-                </div>
+                </div><span>${quotaUsage}</span>
 			</div>
 		</div>		
 			
@@ -256,7 +256,10 @@ if(window != parent){
             <c:url var="composeUrl" value="${aurl}?st=newmail&compose=new"/>
             <div class ="compose button" id="view-mail" style="display:block;"><a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" id="compose"><fmt:message key="compose"/></a></div>
           </div></div></div>
-          <div class="emptyBody" id="empty-message"><h2><fmt:message key="emptyMessage"/></h2></div>
+          <div class="emptyBody" id="empty-message">
+          	<h2>Need to view one of those emails/contact up there&#63;</h2>
+          	<span>Just click on an email/contact to view it here in this handy reading pane.</span>
+          </div> <!--<fmt:message key="emptyMessage"/> -->
       </div>
     </div>
 </c:if>
