@@ -17,18 +17,21 @@ ZmRevisionDialog.prototype.popup =
 function(item, revisions){
 
     this._item = item;
-    this._initialize();
 
-    this._reset();
+    this.setRevisionList(revisions);
 
-    this._listView.set(revisions);
-    this._listView.setSize(600, 150);
     this.setTitle(AjxMessageFormat.format(ZmMsg.versionHistoryFileLabel, item.name || item.filename));
 
     ZmDialog.prototype.popup.call(this);
 };
 
-
+ZmRevisionDialog.prototype.setRevisionList =
+function(revisions){
+    this._initialize();
+    this._reset();
+    this._listView.set(revisions);
+    this._listView.setSize(600, 150);
+};
 
 ZmRevisionDialog.prototype._reset =
 function(){
@@ -95,6 +98,27 @@ function(){
     }
 
     window.open(restUrl);
+};
+
+ZmRevisionDialog.prototype._restoreVersionListener =
+function(){
+    var items = this._listView.getSelection();
+    if(!items || items.length == 0) return;
+    var verItem = items[0];
+    this._item.restoreVersion(verItem.ver, new AjxCallback(this, this._doneRestoreVersion));
+    
+};
+
+ZmRevisionDialog.prototype._doneRestoreVersion =
+function(){
+    this._item.getRevisions(new AjxCallback(this, this._refreshListView));
+};
+
+ZmRevisionDialog.prototype._refreshListView =
+function(result){
+    var resp =  result.getResponse();
+    resp = resp.ListDocumentRevisionsResponse.doc;
+    this.setRevisionList(resp);
 };
 
 ZmRevisionDialog.prototype._listSelListener =

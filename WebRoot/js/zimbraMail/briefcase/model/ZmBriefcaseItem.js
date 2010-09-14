@@ -264,6 +264,32 @@ function(msgId, partId, name, folderId, replaceFile) {
 	appCtxt.getAppController().sendRequest(params);
 };
 
+ZmBriefcaseItem.prototype.restoreVersion =
+function(restoreVerion, callback){
+
+    var json = {
+		SaveDocumentRequest: {
+			_jsns: "urn:zimbraMail",
+			doc: {
+				id:	this.id,
+                ver: this.version,
+                doc: {
+                    id: this.id,
+                    ver: restoreVerion
+                }
+			}
+		}
+	};
+
+	var params = {
+		jsonObj:		json,
+		asyncMode:		true,
+		callback:		callback
+	};
+	return appCtxt.getAppController().sendRequest(params);
+    
+};
+
 ZmBriefcaseItem.prototype._handleResponseCreateItem =
 function(folderId,response) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.fileCreated);
