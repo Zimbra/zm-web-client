@@ -1363,7 +1363,10 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 		var date = sendTime.date; // See ZmTimeDialog.prototype.getValue
 		var timezone = sendTime.timezone || AjxTimezone.DEFAULT;
 		var offset = AjxTimezone.getOffset(timezone, date);
-		var utcEpochTime = date.getTime() - offset * 60 * 1000;
+		var utcEpochTime = date.getTime() - ((date.getTimezoneOffset() + offset) * 60 * 1000);
+		// date.getTime() is the selected timestamp in local machine time (NOT UTC)
+		// date.getTimezoneOffset() is negative minutes to UTC from local time (+ for West, - for East)
+		// offset is minutes to UTC from selected time (- for West, + for East)
 		msgNode.autoSendTime = utcEpochTime;
 	}
 };
