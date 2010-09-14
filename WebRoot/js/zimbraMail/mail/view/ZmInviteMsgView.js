@@ -324,6 +324,13 @@ function(subs, sentBy, sentByAddr) {
 	var durText = this._invite.getDurationText(null, null, null, true, sd, ed);
 	subs.invDate = om ? om.findObjects(durText, true, ZmObjectManager.DATE) : durText;
 
+	// recurrence
+	if (this._invite.isRecurring()) {
+		var recur = new ZmRecurrence();
+		recur.setRecurrenceRules(this._invite.getRecurrenceRules(), this._invite.getServerStartDate());
+		subs.recur = recur.getBlurb();
+	}
+
 	// set changes to the invite
 	var changes = this._invite.getChanges();
 	if (changes && changes[ZmInvite.CHANGES_LOCATION]) {

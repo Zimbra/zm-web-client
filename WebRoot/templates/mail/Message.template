@@ -180,6 +180,12 @@
 									<td class='LabelColValue'><$= data.invitees $></td>
 								</tr>
 							<$ } $>
+							<$ if (data.recur) { $>
+								<tr>
+									<td class='LabelColName'><$= ZmMsg.repeats $>:</td>
+									<td class='LabelColValue'><$= data.recur $></td>
+								</tr>
+							<$ } $>
 						</table>
 						<$ if (data.hasAttachments) { $>
 							<div class="MessageHeaderAttachments" id="${attachId}_container">
