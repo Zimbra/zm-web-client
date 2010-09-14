@@ -45,6 +45,7 @@ ZmPeopleAutocompleteListView.ACTION_MESSAGE		= "message";
 ZmPeopleAutocompleteListView.ACTION_IM			= "IM";
 ZmPeopleAutocompleteListView.ACTION_CALL		= "call";
 ZmPeopleAutocompleteListView.ACTION_APPT		= "appt";
+ZmPeopleAutocompleteListView.NO_RESULTS			= "no-results";
 
 
 // Public methods
@@ -70,9 +71,6 @@ function(show, loc) {
 // row. The first match is automatically selected.
 ZmPeopleAutocompleteListView.prototype._set =
 function(list) {
-	var html = [];
-	var idx = 0;
-
 	var table = this._getTable();
 	this._matches = list;
 
@@ -112,8 +110,20 @@ function(list) {
 	}
 };
 
+ZmPeopleAutocompleteListView.prototype._showNoResults =
+function() {
+	var table = this._getTable();
+	var data = { id: this._htmlElId, rowId: ZmPeopleAutocompleteListView.NO_RESULTS };
+	var rowHtml = AjxTemplate.expand("share.Widgets#ZmPeopleAutocompleteListView-NoResults", data);
+	table.appendChild(Dwt.parseHtmlFragment(rowHtml, true));
+
+	this.show(true);
+};
+
 ZmPeopleAutocompleteListView.prototype._setSelected =
 function(id) {
+	if (id == ZmPeopleAutocompleteListView.NO_RESULTS || id == this.getHtmlElement().id) { return; }
+
 	if (id == ZmAutocompleteListView.NEXT || id == ZmAutocompleteListView.PREV) {
 		var table = document.getElementById(this._tableId);
 		var rows = table && table.rows;
@@ -193,7 +203,9 @@ function() {
 	for (var i = table.rows.length - 1; i >= 0; i--) {
 		var row = table.rows[i];
 		var contact = Dwt.getObjectFromElement(row, "contact");
-		Dwt.disassociateElementFromObject(row, contact, "contact");
+		if (contact) {
+			Dwt.disassociateElementFromObject(row, contact, "contact");
+		}
 	}
 
 	ZmAutocompleteListView.prototype._removeAll.apply(this, arguments);

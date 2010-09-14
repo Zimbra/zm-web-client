@@ -126,6 +126,14 @@
 	</tr>
 </template>
 
+<template id='share.Widgets#ZmPeopleAutocompleteListView-NoResults'>
+	<tr id='${rowId}'>
+		<td class="ZmPeopleSearch-noresults">
+			<$= ZmMsg.noCallResults $>
+		</td>
+	</tr>
+</template>
+
 <template id='share.Widgets#ZmPeopleAutocompleteListView-toolbar'>
 	<table border=0>
 		<tr>

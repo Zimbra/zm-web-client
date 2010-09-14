@@ -332,6 +332,11 @@ INPUT[type="text"].people_search_input {
 	padding-left: 3px;
 }
 
+.ZmPeopleSearch-noresults {
+	font-style: italic;
+	padding: 3px;
+	border: 2px solid @AltC@ !important;
+}
 
 /*
  * Search builder

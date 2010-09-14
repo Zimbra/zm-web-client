@@ -665,6 +665,8 @@ function(str, chunk, text, start, callback, list) {
 			DBG.println(AjxDebug.DBG2, "matches found: " + list.length);
 			// done now in case of quick complete
 			this._set(list); // populate the list view
+		} else {
+			this._showNoResults();
 		}
 
 		// if text ends in a delimiter, complete immediately without showing the list
@@ -879,6 +881,11 @@ function(list) {
 		function() {
 			this._setSelected(this._getId("Row", 0));
 		}), 100);
+};
+
+ZmAutocompleteListView.prototype._showNoResults =
+function() {
+	// do nothing. Overload to show something.
 };
 
 ZmAutocompleteListView.prototype._insertLinkCell =
