@@ -385,6 +385,8 @@ function(view, force) {
 	var viewChanged = (force || view != this._currentView);
 
 	if (viewChanged) {
+        var lv = this._listView[this._currentView];
+        if(lv)  lv.cleanup();
         this._switchView = true;
 		this._currentView = view;
 		this._setup(view);
@@ -399,6 +401,15 @@ function(view, force) {
 		this._resetNavToolBarButtons(view);
 	}
 	Dwt.setTitle(this.getCurrentView().getTitle());
+};
+
+ZmBriefcaseController.prototype._preHideCallback =
+function(){
+
+    var lv = this._listView[this._currentView];
+    if(lv) lv.cleanup();
+
+    return ZmController.prototype._preHideCallback.call(this);
 };
 
 ZmBriefcaseController.prototype.getItemById =

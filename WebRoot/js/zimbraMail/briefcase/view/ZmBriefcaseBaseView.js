@@ -192,7 +192,7 @@ function(list, sortField){
 
 ZmBriefcaseBaseView.prototype.renameFile =
 function(item){
-
+    //TODO: Make rename field singleton across briefcase views
     var fileNameEl = this._getFieldId(item, ZmItem.F_SUBJECT);
     fileNameEl = document.getElementById(fileNameEl);
     var fileNameBounds = Dwt.getBounds(fileNameEl);
@@ -218,14 +218,14 @@ function(enable, bounds){
 
 ZmBriefcaseBaseView.prototype._getRenameInput =
 function(){
-    if(!this._searchField){
-        this._searchField = new DwtInputField({parent:appCtxt.getShell(), className:"RenameInput DwtInputField", posStyle: Dwt.ABSOLUTE_STYLE});
-        this._searchField.setZIndex(Dwt.Z_VIEW + 10); //One layer above the VIEW
-        this._searchField.setDisplay(Dwt.DISPLAY_NONE);
-        this._searchField.setLocation("-10000px", "-10000px");
-        this._searchField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
+    if(!this._renameField){
+        this._renameField = new DwtInputField({parent:appCtxt.getShell(), className:"RenameInput DwtInputField", posStyle: Dwt.ABSOLUTE_STYLE});
+        this._renameField.setZIndex(Dwt.Z_VIEW + 10); //One layer above the VIEW
+        this._renameField.setDisplay(Dwt.DISPLAY_NONE);
+        this._renameField.setLocation("-10000px", "-10000px");
+        this._renameField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
     }
-    return this._searchField;
+    return this._renameField;
 };
 
 ZmBriefcaseBaseView.prototype._handleKeyUp =
@@ -234,7 +234,7 @@ function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
     var item = this._fileItem;
     if(key == DwtKeyEvent.KEY_ENTER){
-        var fileName = this._searchField.getValue();
+        var fileName = this._renameField.getValue();
         if(fileName != ''){
             if(this._checkDuplicate(fileName)){
                 this._redrawItem(item);
@@ -242,7 +242,7 @@ function(ev) {
                 warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, fileName), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
                 warning.popup();
             }else{
-                item.rename(fileName, new AjxCallback(this, this._handleRenameFile));
+                item.rename(fileName, new AjxCallback(this, this.resetRenameFile));
             }
         }else{
             this._redrawItem(item);
@@ -255,7 +255,7 @@ function(ev) {
 	DwtUiEvent.setBehaviour(ev, true, allowDefault);
 };
 
-ZmBriefcaseBaseView.prototype._handleRenameFile =
+ZmBriefcaseBaseView.prototype.resetRenameFile =
 function(){
     this._enableRenameInput(false);
     this._fileItem = null;
@@ -263,7 +263,7 @@ function(){
 
 ZmBriefcaseBaseView.prototype._redrawItem =
 function(item){
-    this._handleRenameFile();
+    this.resetRenameFile();
     this.redrawItem(item);
 };
 
@@ -281,5 +281,11 @@ function(name){
         }
     }
     return false;   
+};
+
+ZmBriefcaseBaseView.prototype.cleanup =
+function(){
+    if(this._renameField)
+        this.resetRenameFile();
 };
 
