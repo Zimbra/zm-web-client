@@ -1127,12 +1127,7 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 		if (noSave) {
 			request.noSave = 1;
 		}
-		if (sendTime) {
-			var date = sendTime.date; // See ZmTimeDialog.prototype.getValue
-			var timezone = sendTime.timezone;
-			request.autoSendTime = {tz:AjxTimezone.getServerId(timezone || AjxTimezone.DEFAULT), d:AjxDateUtil.getServerDateTime(date)};
-		}
-		this._createMessageNode(request, isDraft, aName, requestReadReceipt);
+		this._createMessageNode(request, isDraft, aName, requestReadReceipt, sendTime);
 		appCtxt.notifyZimlets("addExtraMsgParts", [request, isDraft]);
 		var params = {
 			jsonObj: jsonObj,
@@ -1166,7 +1161,7 @@ function(isDraft, callback, result) {
 };
 
 ZmMailMsg.prototype._createMessageNode =
-function(request, isDraft, accountName, requestReadReceipt) {
+function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 
 	var msgNode = request.m = {};
 
@@ -1362,6 +1357,14 @@ function(request, isDraft, accountName, requestReadReceipt) {
 				}
 			}
 		}
+	}
+
+	if (sendTime && sendTime.date) {
+		var date = sendTime.date; // See ZmTimeDialog.prototype.getValue
+		var timezone = sendTime.timezone || AjxTimezone.DEFAULT;
+		var offset = AjxTimezone.getOffset(timezone, date);
+		var utcEpochTime = date.getTime() - offset * 60 * 1000;
+		msgNode.autoSendTime = utcEpochTime;
 	}
 };
 
