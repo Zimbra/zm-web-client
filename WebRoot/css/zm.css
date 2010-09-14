@@ -307,7 +307,7 @@ INPUT[type="text"].people_search_input {
 
 .ZmPeopleSearchToolbarDiv {
 	height: 16px;
-	padding:0px 1px 3px 2px;
+	margin:0px 1px 3px 2px;
 	@FieldBorder@
 }
 
