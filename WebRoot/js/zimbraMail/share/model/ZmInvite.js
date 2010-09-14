@@ -640,13 +640,13 @@ function(compNum) {
 ZmInvite.prototype.getServerEndTimeTz = 
 function(compNum) {
 	var cn = compNum || 0;
-	if (this.components[cn] == null) { return; }
+	var endComp = this.components[cn] && this.components[cn].e;
+	if (!endComp) { return null; }
 
-	if (this._serverEndTimeZone == null) {
+	if (!this._serverEndTimeZone) {
 		var endTime = this.getServerEndTime();
-		this._serverEndTimeZone = endTime && endTime.charAt(endTime.length -1) == 'Z'
-			? AjxTimezone.GMT_NO_DST
-			: this.components[cn].e[0].tz;
+		this._serverEndTimeZone = (endTime && endTime.charAt(endTime.length -1) == 'Z')
+			? AjxTimezone.GMT_NO_DST : endComp[0].tz;
 	}
 	return this._serverEndTimeZone;
 };

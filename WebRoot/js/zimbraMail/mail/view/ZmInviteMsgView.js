@@ -171,6 +171,7 @@ function() {
 			// cannot position the day view correctly.
 			this._dayView = new ZmCalDayView(this.parent.parent, DwtControl.ABSOLUTE_STYLE, cc, null, null, null, true);
 			this._dayView.addSelectionListener(new AjxListener(this, this._apptSelectionListener));
+			this._dayView.setZIndex(Dwt.Z_VIEW); // needed by ZmMsgController's msgview
 		}
 
 		var inviteDate = this._invite.getServerStartDate();
@@ -200,16 +201,29 @@ function(reset) {
 	if (appCtxt.isChildWindow) { return; }
 
 	var isRight = this.parent._controller.isReadingPaneOnRight();
+	var grandParentSize = this.parent.parent.getSize();
 
 	if (reset) {
 		isRight
-			? this.parent.setSize(Dwt.DEFAULT, this.parent.parent.getSize().y)
-			: this.parent.setSize(this.parent.parent.getSize().x, Dwt.DEFAULT);
-	} else {
+			? this.parent.setSize(Dwt.DEFAULT, grandParentSize.y)
+			: this.parent.setSize(grandParentSize.x, Dwt.DEFAULT);
+	} else if (this._dayView) {
+		// bug: 50412 - fix day view for stand-alone message view which is a parent
+		// of DwtShell and needs to be resized manually.
+		var padding = 0;
+		if (this.parent.getController() instanceof ZmMsgController) {
+			// get the bounds for the app content area so we can position the day view
+			var appContentBounds = appCtxt.getAppViewMgr()._getContainerBounds(ZmAppViewMgr.C_APP_CONTENT);
+			grandParentSize = {x: appContentBounds.width, y: appContentBounds.height};
+
+			// set padding so we can add it to the day view's x-location since it is a child of the shell
+			padding = appContentBounds.x;
+		}
+
 		var mvBounds = this.parent.getBounds();
 
 		if (isRight) {
-			var parentHeight = this.parent.parent.getSize().y;
+			var parentHeight = grandParentSize.y;
 			var dvHeight = Math.floor(parentHeight / 3);
 			var mvHeight = parentHeight - dvHeight;
 
@@ -218,11 +232,11 @@ function(reset) {
 			// listener and leads to infinite loop
 			Dwt.setSize(this.parent.getHtmlElement(), Dwt.DEFAULT, mvHeight);
 		} else {
-			var parentWidth = this.parent.parent.getSize().x;
+			var parentWidth = grandParentSize.x;
 			var dvWidth = Math.floor(parentWidth / 3);
 			var mvWidth = parentWidth - dvWidth;
 
-			this._dayView.setBounds(mvWidth, mvBounds.y, dvWidth, mvBounds.height);
+			this._dayView.setBounds(mvWidth+padding, mvBounds.y, dvWidth, mvBounds.height);
 			// don't call DwtControl's setSize() since it triggers control
 			// listener and leads to infinite loop
 			Dwt.setSize(this.parent.getHtmlElement(), mvWidth, Dwt.DEFAULT);

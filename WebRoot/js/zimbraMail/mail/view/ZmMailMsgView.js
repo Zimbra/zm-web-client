@@ -325,8 +325,13 @@ ZmMailMsgView.prototype.setVisible =
 function(visible) {
 	DwtComposite.prototype.setVisible.apply(this, arguments);
 
-	if (this._dayView) {
-		this._dayView.setDisplay(visible ? Dwt.DISPLAY_BLOCK : Dwt.DISPLAY_NONE);
+	if (this._inviteMsgView) {
+		if (visible) {
+			this._inviteMsgView.set(this._msg);
+			this._inviteMsgView.showFreeBusy();
+		} else {
+			this._inviteMsgView.reset();
+		}
 	}
 };
 
@@ -367,11 +372,16 @@ function() {
 ZmMailMsgView.prototype._handleResponseSet =
 function(msg, oldMsg) {
 
-	// show F/B info here
 	if (this._inviteMsgView) {
-		if (this._inviteMsgView.isActive() && this._controller.isReadingPaneOn()) {
+		// always show F/B view if in stand-alone message view otherwise, check
+		// if reading pane is on
+		if (this._inviteMsgView.isActive() &&
+			(this._controller.isReadingPaneOn() || (this._controller instanceof ZmMsgController)))
+		{
 			this._inviteMsgView.showFreeBusy();
-		} else {
+		}
+		else {
+			// resize the message view without F/B view
 			this._inviteMsgView.resize(true);
 		}
 	}
@@ -1718,8 +1728,8 @@ function(self, iframe, attempt) {
 		}
 		if (self._inviteMsgView && self._inviteMsgView.isActive()) {
 			subtract(self._inviteMsgView._getInviteToolbar().getHtmlElement());
-			if (self._dayView) {
-				subtract(self._dayView.getHtmlElement());
+			if (self._inviteMsgView._dayView) {
+				subtract(self._inviteMsgView._dayView.getHtmlElement());
 			}
 		}
 		if (self._hasShareToolbar && self._shareToolbar) {
