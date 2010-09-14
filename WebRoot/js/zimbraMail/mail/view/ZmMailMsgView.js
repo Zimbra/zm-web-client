@@ -910,6 +910,15 @@ function(msg, container, callback) {
 	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
 	var sentBy = (sender && sender.address) ? sender : addr;
 	var sentByAddr = String(sentBy);
+    var sentByContact = cl	? cl.getContactByEmail((sentBy && sentBy.address ) ? sentBy.address : sentByAddr ) : null;
+    if(sentByContact && sentByContact.attr) {
+        if(sentByContact.attr.autoLoadRemoteImages == ZmContact.SHOW_EXT_IMG) {
+            msg.showImages = true;
+        }
+        else {
+            msg.showImages = false;
+        }
+    }
 	var sentByIcon = cl	? (cl.getContactByEmail((sentBy && sentBy.address ) ? sentBy.address : sentByAddr ) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
 	var additionalHdrs = [];

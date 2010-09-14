@@ -146,6 +146,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 				template: "abook.Contacts#ZmEditContactViewDetailsButton"
 			},
 			{ id: "FILE_AS", type: "DwtSelect", onchange: this._handleFileAsChange, items: this.getFileAsOptions() },
+			{ id: "SHOW_EXT_IMG", type: "DwtSelect", items: this.getShowExtImgOptions() },
 			{ id: "FOLDER", type: "DwtButton", image: "ContactsFolder",
 				enabled: "this._contact && !this._contact.isShared()",
 				onclick: this._handleFolderButton
@@ -297,6 +298,18 @@ ZmEditContactView.prototype.getFileAsOptions = function() {
 	];
 };
 
+/**
+ * Gets the "trusted" options.
+ *
+ * @return	{Array}	an array of "trusted" options
+ */
+ZmEditContactView.prototype.getShowExtImgOptions = function() {
+	return [
+		{ value: ZmContact.HIDE_EXT_IMG, label: "No" },
+        { value: ZmContact.SHOW_EXT_IMG, label: "Yes" }
+	];
+};
+
 //
 // Constants
 //
@@ -327,6 +340,7 @@ ZmEditContactView.ALWAYS_SHOW = {
 
 ZmEditContactView.ATTRS = {
 	FILE_AS: ZmContact.F_fileAs,
+	SHOW_EXT_IMG: ZmContact.F_showExtImg,
 	FOLDER: ZmContact.F_folderId,
 	IMAGE: ZmContact.F_image,
 	PREFIX: ZmContact.F_namePrefix,
@@ -392,6 +406,9 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 		}
 		if (id == "FILE_AS") {
 			value = value || ZmContact.FA_LAST_C_FIRST;
+		}
+        if (id == "SHOW_EXT_IMG") {
+			value = value || ZmContact.HIDE_EXT_IMG;
 		}
 		this.setValue(id, value);
 	}

@@ -91,6 +91,7 @@
 				<$ if (appCtxt.multiAccounts) { $>
 					<tr><td><$=ZmMsg.accountLabel$></td><td><div id="${id}_ACCOUNT" tabindex="402"></div></td></tr>
 				<$ } $>
+                <tr><td><$=ZmMsg.showExtImgLabel$></td><td><div id="${id}_SHOW_EXT_IMG" tabindex="403"></div></td></tr>
 				</table>
 			</td>
 		</tr>
