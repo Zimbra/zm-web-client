@@ -102,8 +102,7 @@
             </div>
         </c:forEach>
 <c:if test="${ua.isiPad == true}">
-        <c:choose>
-            <c:when test="${context.searchResult.hasNextPage}">
+           <c:if test="${context.searchResult.hasNextPage}">
                 <div id="more-div" class='tr list-row'>
                     <span class="td"></span>
                         <span class="td" onclick="return zClickLink('more-a')"><zm:nextResultUrl var="url" value="${context_url}" index="0" context="${context}"/>
@@ -113,19 +112,7 @@
                         </span>
                     <span class="td"></span>
                 </div>
-            </c:when>
-            <c:otherwise>
-                <div id="more-div" class='tr list-row'>
-                    <span class="td"></span>
-                        <span class="td">
-                            <div class="moreButton">
-                                <a accesskey="${requestScope.next_accesskey}" class='zo_button_disabled next_button'>More</a>
-                            </div>
-                        </span>
-                    <span class="td"></span>
-                </div>
-            </c:otherwise>
-        </c:choose>
+            </c:if>
 </c:if>    
 <c:if test="${empty param.show and ua.isiPad == true}">        
         <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">

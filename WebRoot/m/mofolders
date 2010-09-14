@@ -79,7 +79,7 @@
 <c:choose>
     <c:when test="${ua.isiPad eq true}">
         <c:if test="${empty param.showFolderCreate and empty param.showSearchCreate and empty param.showTagCreate}">
-        <div class="tb tbl"><div class="tr"><div class="td folderBar">
+        <div class="tb tbl"><div class="tr"><div class="td toolbar">
             <span class="folderTitle alignLeft"><fmt:message key="searches"/></span>
         <span class="buttonRight button" onclick="return zClickLink('createSearch')">
             <a id="createSearch" class="zo_button1" href="?st=folders${empty param.showSearchCreate?'&showSearchCreate=1':''}${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
@@ -110,7 +110,7 @@
 <c:choose>
     <c:when test="${ua.isiPad eq true}">
         <c:if test="${empty param.showFolderCreate and empty param.showSearchCreate and empty param.showTagCreate}">
-        <div class="tb tbl"><div class="tr"><div class="td folderBar">
+        <div class="tb tbl"><div class="tr"><div class="td toolbar">
             <span class="folderTitle alignLeft"><fmt:message key="tags"/></span>
             <c:if test="${mailbox.features.tagging}">
                 <span class="buttonRight button" onclick="return zClickLink('createTag')">

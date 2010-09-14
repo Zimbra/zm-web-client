@@ -18,7 +18,7 @@
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <fmt:message var="title" key="addressBooks"/>
 </mo:handleError>
-<c:if test="${not empty param.sq && empty param.actionSaveAddrFolder && empty param.actionSaveSearch && empty param.actionSaveTag}">
+<c:if test="${not empty param.sq && empty param.actionSaveFolder && empty param.actionSaveSearch && empty param.actionSaveTag}">
     <c:set var="query" value="${param.sq}"/>
 </c:if>
 <c:set value="${title}" var="title" scope="request"/>
@@ -26,7 +26,7 @@
 <c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${param.st}"/></c:url>
 <c:choose>
     <c:when test="${ua.isiPad == true}">
-        <c:if test="${empty param.showABCreate}">
+        <c:if test="${empty param.showABCreate and empty param.showSearchCreate and empty param.showTagCreate}">
         <div class="tb tbl"><div class="tr"><div class="td toolbar">
             <span class="folder button" onclick="return zClickLink('contact')">
                 <a class="zo_button1" id="contact" href="${aurl}?st=contact">
@@ -34,10 +34,10 @@
                 </a>
             </span>
             <c:if test="${mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE'}">
-            <div class="buttonRight button">
+            <span class="buttonRight button" onclick="return zClickLink('createAB')" >
                     <a class="zo_button1" id="createAB" href="?st=ab${empty param.showABCreate?'&showABCreate=1':''}${empty param.ajax ? '#folders' : ''}">
-                        <span onclick="return zClickLink('createAB')"><fmt:message key="${empty param.showABCreate ? 'create' : 'close'}"/></span></a>
-            </div>
+                        <fmt:message key="${empty param.showABCreate ? 'create' : 'close'}"/></a>
+            </span>
             </c:if>
         </div> </div> </div>
         </c:if>
@@ -58,11 +58,11 @@
             </div>
         </div>
         </div>
-        <c:if test="${mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE'}">
-            <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showABCreate}" url="${currentUrl}" st="${param.st}"/>
-        </c:if>
     </c:otherwise>
 </c:choose>
+<c:if test="${(mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE') and ((empty param.showTagCreate and empty param.showSearchCreate and not empty param.showABCreate) or ua.isiPad eq false)}">
+    <mo:folderForm type="ab" id="${param.id}" hide="${empty param.showABCreate}" url="${currentUrl}" st="${param.st}"/>
+</c:if>
 <div class="wrap-dlist" id="wrap-dlist-view">
 <div id="dlist-view">
     <c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showABCreate) or ua.isiPad eq false}">
@@ -73,8 +73,8 @@
 
     <c:choose>
     <c:when test="${ua.isiPad eq true}">
-        <c:if test="${empty param.showFolderCreate and empty param.showSearchCreate and empty param.showTagCreate}">
-        <div class="tb tbl"><div class="tr"><div class="td folderBar">
+        <c:if test="${empty param.showABCreate and empty param.showSearchCreate and empty param.showTagCreate}">
+        <div class="tb tbl"><div class="tr"><div class="td toolbar">
             <span class="folderTitle alignLeft"><fmt:message key="searches"/></span>
         <span class="buttonRight button" onclick="return zClickLink('createSearch')">
             <a id="createSearch" class="zo_button1" href="?st=ab${empty param.showSearchCreate?'&showSearchCreate=1':''}${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
@@ -107,7 +107,7 @@
     <c:choose>
     <c:when test="${ua.isiPad eq true}">
         <c:if test="${empty param.showABCreate and empty param.showSearchCreate and empty param.showTagCreate}">
-        <div class="tb tbl"><div class="tr"><div class="td folderBar">
+        <div class="tb tbl"><div class="tr"><div class="td toolbar">
             <span class="folderTitle alignLeft"><fmt:message key="tags"/></span>
             <c:if test="${mailbox.features.tagging}">
                 <span class="buttonRight button" onclick="return zClickLink('createTag')">
@@ -130,7 +130,7 @@
     <c:if test="${mailbox.features.tagging}">
         <mo:folderForm type="tag" id="${param.tid}" hide="${empty param.showTagCreate}" url="${currentUrl}" st="${param.st}"/>
     </c:if>
-    <c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showFolderCreate) or ua.isiPad eq false}">
+    <c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showABCreate) or ua.isiPad eq false}">
     <zm:forEachTag var="tag">
     <c:if test="${empty query || fn:containsIgnoreCase(tag.name, query)}">
         <mo:overviewTag calendars="${false}" tag="${tag}" types="${mailbox.prefs.groupMailBy}"/>

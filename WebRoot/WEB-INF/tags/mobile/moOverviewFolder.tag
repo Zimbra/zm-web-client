@@ -22,7 +22,15 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:set var="label" value="${zm:getFolderPath(pageContext, folder.id)}"/>
-<c:url var="url" value="${empty base ? 'zmain' : base}">
+<c:choose>
+    <c:when test="${ua.isiPad == true}">
+        <c:set var="baseUrl" value="zipad"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="baseUrl" value="zmain"/>
+    </c:otherwise>
+</c:choose>
+<c:url var="url" value="${empty base ? baseUrl  : base}">
     <c:param name="sfi" value="${folder.id}"/>
     <c:if test="${!empty types}"><c:param name="st" value="${types}"/></c:if>
     <c:if test="${empty types}"><c:param name="st" value="${folder.isMessageView ? 'message' : folder.isConversationView ? 'conversation' : 'message'}"/></c:if>

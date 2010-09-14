@@ -286,8 +286,10 @@ var addClass = function(el, add) {
 }
 
 var selId = null;
+var mailId = null;
 
 var zClickLink = function(id, t, el) { //Click on href and make ajx req if available
+    mailId = id;
     if((window.evHandled) !== undefined && window.evHandled) { return false; }
     var targ = el ? el.parentNode : (id ? $(id) : t );
     if(!targ) {return false;}
@@ -299,7 +301,7 @@ var zClickLink = function(id, t, el) { //Click on href and make ajx req if avail
         var targId = targ.id.toString();
         var chitid = targId.substr(1, targId.length-1);
         var elem = "conv" + chitid;
-        var element = document.getElementById(elem); 
+        var element = $(elem);
         addClass(element, 'msgContainerSel');
         if (selId) {
             delClass(selId, 'msgContainerSel');
@@ -573,8 +575,8 @@ var parseResponse = function (request, container,url) {
                         } else if (targ.id == 'options') {
                            ZmiPadPrefs.processResponse(data,url);
                         } else if (ZmiPad.getParamFromURL("st",url) == "newmail") {
-                          ZmiPadMail.processResponse(data,url);
-                        }
+                           ZmiPadMail.processResponse(data,url);
+                        } 
                     }
                 }
             }
@@ -860,7 +862,18 @@ ZmiPadMail.processResponse = function (respData, url) {
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
         $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
         initContentScroll();
-
+        var targ = $(mailId);
+        if (targ && ((targ.tagName  == "a" || targ.tagName == "A") && (targ.id.toString().charAt(0) == 'a'))) {
+            var targId = targ.id.toString();
+            var chitid = targId.substr(1, targId.length-1);
+            var elem = "conv" + chitid;
+            var element = $(elem);
+            var elemMsg = element.children[0].children[1];
+            if (elemMsg.className.indexOf('Msg') != -1) {
+                delClass(elemMsg, 'Msg');
+                addClass(elemMsg, 'MsgGray');
+            }
+        }
     } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
 
         $('compose-body').innerHTML = respData;
@@ -907,7 +920,7 @@ ZmiPadContacts.processResponse = function (respData, url) {
 
     ZmiPad.initColumnView();
 
-    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showABCreate') !=-1)  && (url.indexOf('hc=1') == -1)) {
+    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || ZmiPad.getParamFromURL("showABCreate",url) == "1" || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1") && (url.indexOf('hc=1') == -1)) {
 
         $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
@@ -951,8 +964,6 @@ ZmiPadContacts.processResponse = function (respData, url) {
 
 };
 
-
-
 /*
 ZmiPaCal to process all Calendar responses
  */
@@ -981,6 +992,28 @@ ZmiPadCal.processResponse = function (respData, url) {
         $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
     }
 }
+
+/*
+ZmiPadTasks to process all the tasks responses
+ */
+//function ZmiPadTasks() {
+//};
+//
+//ZmiPadTasks.processResponse = function (respData, url) {
+//    ZmiPad.initColumnView();
+//
+//    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showTaskCreate') !=-1)  && (url.indexOf('hc=1') == -1)) {
+//        $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
+//        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
+//        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+//        initContentScroll();
+//    } else {
+//        $(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
+//        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+//        $("sq").blur();
+//        initListScroll();
+//    }
+//}
 
 /*
 ZmiPadPrefs to process Preferences related responses

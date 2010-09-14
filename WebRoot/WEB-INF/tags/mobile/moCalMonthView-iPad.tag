@@ -59,6 +59,8 @@
 <div class='ZhCalMonthHeaderMonth'>
 	  ${fn:escapeXml(title)}
 </div>
+    <div class="wrap-dlist" id="wrap-dlist-view">
+    <div class="tbl dlist" id="dlist-view">
 <table width="100%"  cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td>
@@ -162,10 +164,7 @@
                                                                         <tr>
                                                                             <td class="${fbashowAsColor}" width="4px"></td>
                                                                             <td>
-                                                                                <c:if test="${param.action ne 'print'}">
-                                                                                    <a href="${fn:escapeXml(apptUrl)}">
-                                                                                </c:if>
-                                                                                ${fn:escapeXml(zm:truncate(subject,14,true))}<c:if test="${param.action ne 'print'}"></a></c:if>
+                                                                              ${fn:escapeXml(zm:truncate(subject,14,true))}
                                                                             </td>
                                                                         </tr>
                                                                     </table>
@@ -177,7 +176,7 @@
                                                                         <tr>
                                                                             <td class="${fbashowAsColor}" width="4px"></td>
                                                                             <td>
-                                                                                <c:if test="${param.action ne 'print'}">    <a href="${fn:escapeXml(apptUrl)}">
+                                                                                <c:if test="${param.action ne 'print'}">
                                                                                 <c:choose>
                                                                                     <c:when test="${appt.startTime lt dayStart}">
                                                                                         &laquo;
@@ -187,7 +186,6 @@
                                                                                     </c:otherwise>
                                                                                 </c:choose>
                                                                                 </c:if>&nbsp;${fn:escapeXml(zm:truncate(subject,8,true))}
-                                                                            </a>
                                                                             </td>
                                                                             <td align="right">
                                                                                 <c:if test="${param.action ne 'print'}">
@@ -242,5 +240,7 @@
             </td>
         </tr>
     </table>
+</div>
+</div>
 </div>
     

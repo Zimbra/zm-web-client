@@ -78,9 +78,7 @@
                <span class="td f">
                    <c:set value=",${mhit.id}," var="stringToCheck"/>
                    <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"':''} name="id" value="${mhit.id}"/>
-                   <c:if test="${ua.isiPad == false}">
                    <span class="SmlIcnHldr ${class}">&nbsp;</span>
-                   </c:if>
                </span>
                <span class="td m" onclick='return zClickLink("a${mhit.id}");'>
                    <div class="from-span">
@@ -121,8 +119,7 @@
         </div>
     </c:forEach>
     <c:if test="${ua.isiPad == true}">
-    <c:choose>
-        <c:when test="${context.searchResult.hasNextPage}">
+        <c:if test="${context.searchResult.hasNextPage}">
             <div id="more-div" class='tr list-row'>
                 <span class="td"></span>
                 <span class="td" onclick="return zClickLink('more-a')"><zm:nextResultUrl var="url" value="${context_url}" index="0" context="${context}"/>
@@ -132,18 +129,7 @@
                 </span>
                 <span class="td"></span>
                 </div>
-        </c:when>
-        <c:otherwise>
-            <div id="more-div" class='tr list-row'>
-                <span class="td"></span>
-                <span class="td">
-                    <div class="moreButton">
-                    <a accesskey="${requestScope.next_accesskey}" class='zo_button_disabled next_button'>More</a>
-                </div>
-                </span>
-                <span class="td"></span></div>
-        </c:otherwise>
-    </c:choose>
+        </c:if>
     </c:if>    
 <c:if test="${empty param.show}">
     <c:if test="${empty context || empty context.searchResult || context.searchResult.size == 0}">
