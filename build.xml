@@ -10,6 +10,7 @@
 
     <property name="webxml.zimbraAdminURL" value="/zimbraAdmin" />
     <property name="webxml.zimbraMailURL" value="/zimbra" />
+    <property name="webxml.zimbraAdminPort" value="7071" />
     <property name="webxml.zimbraMailPort" value="7070" />
     <property name="webxml.zimbraMailSSLPort" value="7443" />
     <property name="webxml.zimbraMailTrustedIP" value="" />
@@ -1142,6 +1143,7 @@ if (ext == null) ext = "";
         <!-- replace %%xyz%% tokens -->
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraAdminURL%%" value="${webxml.zimbraAdminURL}"/>
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailURL%%" value="${webxml.zimbraMailURL}"/>
+        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraAdminPort%%" value="${webxml.zimbraAdminPort}"/>
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailPort%%" value="${webxml.zimbraMailPort}"/>
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailSSLPort%%" value="${webxml.zimbraMailSSLPort}"/>
     	<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailTrustedIP%%" value="${webxml.zimbraMailTrustedIP}"/>
