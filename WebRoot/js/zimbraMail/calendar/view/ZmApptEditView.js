@@ -488,13 +488,18 @@ function(calItem, mode) {
             this._organizerData.innerHTML = calItem.getOrganizer() || "";
         }
         this._calItemOrganizer =  calItem.getOrganizer() || "";
-        this._forwardToField.setValue(this._isProposeTime ? calItem.getOrganizer() : "");        
+
+        //enable forward field/picker if its not propose time view
+        this._forwardToField.setValue(this._isProposeTime ? calItem.getOrganizer() : "");
         this._forwardToField.setEnabled(!this._isProposeTime);
+        this._forwardPicker.setEnabled(!this._isProposeTime);
+
         for (var t = 0; t < this._attTypes.length; t++) {
 		    var type = this._attTypes[t];
-		    if(this._pickerButton[type]) this._pickerButton[type].setEnabled(!this._isProposeTime);
+		    if(this._pickerButton[type]) this._pickerButton[type].setEnabled(enableApptDetails);
 	    }
 
+        if(this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON]) this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON].setEnabled(enableApptDetails);
 	}
 
 
@@ -505,16 +510,7 @@ function(calItem, mode) {
 
     this._allDayCheckbox.disabled = !enableTimeSelection;
 
-    var label = ZmMsg.time;
-
-    if(calItem.isAcceptingProposal) {
-        this._isDirty = true;
-        label = ZmMsg.proposedTime;
-    }
-
-    if(this._isProposeTime) {
-        label = ZmMsg.proposeNewTime;        
-    }
+    if(calItem.isAcceptingProposal) this._isDirty = true;
 
     //Persona's   [ Should select Persona as combination of both DisplayName, FromAddress ]
     var sentBy = calItem.sentBy;
@@ -714,7 +710,7 @@ function(width) {
 						   appCtxt.get(ZmSetting.GAL_ENABLED) ||
 						   appCtxt.multiAccounts);
     if (isPickerEnabled) {
-        this._createContactPicker(this._htmlElId + "_picker", new AjxListener(this, this._addressButtonListener), ZmCalBaseItem.PERSON);
+        this._createContactPicker(this._htmlElId + "_picker", new AjxListener(this, this._addressButtonListener), ZmCalBaseItem.PERSON, true);
         this._createContactPicker(this._htmlElId + "_req_att_picker", new AjxListener(this, this._attendeesButtonListener, ZmCalBaseItem.PERSON), ZmCalBaseItem.PERSON);
         this._createContactPicker(this._htmlElId + "_opt_att_picker", new AjxListener(this, this._attendeesButtonListener, ZmCalBaseItem.OPTIONAL_PERSON), ZmCalBaseItem.OPTIONAL_PERSON);
     }
@@ -737,11 +733,16 @@ function(width) {
 
 
 ZmApptEditView.prototype._createContactPicker =
-function(pickerId, listener, addrType) {
+function(pickerId, listener, addrType, isForwardPicker) {
     var pickerEl = document.getElementById(pickerId);
     if (pickerEl) {
         var buttonId = Dwt.getNextId();
-        var button = this._pickerButton[addrType] = new DwtButton({parent:this, id:buttonId});
+        var button = new DwtButton({parent:this, id:buttonId});
+        if(isForwardPicker) {
+            this._forwardPicker = button;
+        }else {
+            this._pickerButton[addrType] = button;            
+        }
         if(addrType == ZmCalBaseItem.EQUIPMENT) {
             button.setImage("Resource");
             button.setSize("16px", Dwt.DEFAULT);

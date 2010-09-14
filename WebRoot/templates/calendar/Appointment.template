@@ -96,9 +96,9 @@
                 </td>
                 <td id='${id}_tzoneSelectEnd'></td>
                 <td class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'><nobr><$= ZmMsg.repeatLabel $></nobr></td>
-                <td colspan="2">
+                <td colspan="2" id='${id}_repeat_options'>
                     <div id='${id}_repeatSelect' class="ZmApptComposeField"></div>
-                    <div id='${id}_repeatDesc' class="ZmApptComposeField"></div>
+                    <div id='${id}_repeatDesc' class="ZmApptComposeField" style='text-decoration:underline'></div>
                 </td>
             </tr>
 		</table>
