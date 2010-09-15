@@ -456,14 +456,18 @@ function() {
 
 ZmCalendarApp.prototype._setupSearchToolbar =
 function() {
-	ZmSearchToolBar.addMenuItem(ZmItem.APPT,
-								{msgKey:		"appointments",
-								 tooltipKey:	"searchAppts",
-								 icon:			"Appointment",
-								 shareIcon:		"SharedCalendarFolder",
-								 setting:		ZmSetting.CALENDAR_ENABLED,
-								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_APPOINTMENT)
-								});
+    var params = {
+        msgKey:		"appointments",
+        tooltipKey:	"searchAppts",
+        icon:			"Appointment",
+        shareIcon:		"SharedCalendarFolder",
+        id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_APPOINTMENT)
+    };
+    // always enable appt search for offline
+    if(!appCtxt.isOffline) {
+        params["setting"] = ZmSetting.CALENDAR_ENABLED;
+    }
+	ZmSearchToolBar.addMenuItem(ZmItem.APPT, params);
 };
 
 ZmCalendarApp.prototype._registerApp =
