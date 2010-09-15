@@ -1095,7 +1095,7 @@ function(parent) {
 		var folder = appCtxt.getById(folderId);
 		var inSpamFolder = ((folder && folder.nId == ZmFolder.ID_SPAM) ||
 							(!folder && folderId == ZmFolder.ID_SPAM)); // fall back
-		item.setText(inSpamFolder ? ZmMsg.notJunk : ZmMsg.junk);
+		item.setText(inSpamFolder ? ZmMsg.notJunkLabel : ZmMsg.junkLabel);
 		item.setImage(inSpamFolder ? 'Inbox' : 'JunkMail');
 		if (item.setToolTipContent) {
 			var tooltip = inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip;

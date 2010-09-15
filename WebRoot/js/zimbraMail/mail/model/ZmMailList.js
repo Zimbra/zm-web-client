@@ -165,11 +165,11 @@ function(params) {
 
 	params1.action = params.markAsSpam ? "spam" : "!spam";
 	params1.attrs = {};
-	params1.attrs.tcon = this._getTcon();
+	params1.attrs.tcon = this._getTcon(params.items);
 	if (params.folder) {
 		params1.attrs.l = params.folder.id;
 	}
-    params1.actionText = params.markAsSpam ? ZmMsg.actionMarkAsJunk : ZmMsg.actionMarkAsNotJunk;
+	params1.actionText = params.markAsSpam ? ZmMsg.actionMarkAsJunk : ZmMsg.actionMarkAsNotJunk;
 
 	params1.callback = new AjxCallback(this, this._handleResponseSpamItems, params);
 	this._itemAction(params1);
@@ -642,16 +642,18 @@ function(items) {
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
 	var searchFolder = this.search && appCtxt.getById(this.search.folderId);
 	for (var i = 0; i < folders.length; i++) {
-		if (!(searchFolder && searchFolder.nId == folders[i])) {
+		var folder = folders[i];
+		if (!(searchFolder && searchFolder.nId == folder)) {
 			var found = false;
 			for (var j=0; j<items.length; j++) {
-				if (items[j].folders[folders[i]]) {
+				var item = items[i];
+				if (item && ((item.folders && item.folders[folder]) || (item.folderId == folder))) {
 					found = true;
 					break;
 				}
 			}
 			if (!found)
-				chars.push(ZmFolder.TCON_CODE[folders[i]]);
+				chars.push(ZmFolder.TCON_CODE[folder]);
 		}
 	}
 	return chars.join("");
