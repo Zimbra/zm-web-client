@@ -47,7 +47,7 @@ ZmBriefcaseController = function(container, app) {
 	this._listeners[ZmOperation.NEW_FILE] = new AjxListener(this, this._uploadFileListener);
 	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);
 	this._listeners[ZmOperation.CREATE_SLIDE_SHOW] = new AjxListener(this, this._createSlideShow);
-    this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editFileListener);
+    this._listeners[ZmOperation.EDIT_FILE] = new AjxListener(this, this._editFileListener);
     this._listeners[ZmOperation.RENAME_FILE] = new AjxListener(this, this._renameFileListener);
 
 	this._listeners[ZmOperation.NEW_SPREADSHEET] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_SPREADSHEET]);
@@ -502,7 +502,7 @@ function(ev) {
 	if (op) {
 		op.setEnabled(item && item.isRealFile());
 	}
-    var op = actionMenu.getOp(ZmOperation.EDIT);
+    var op = actionMenu.getOp(ZmOperation.EDIT_FILE);
 	if (op) {
 		op.setEnabled(item && item.isWebDoc());
 	}
@@ -646,7 +646,7 @@ function() {
 		list.push(ZmOperation.CREATE_SLIDE_SHOW);
 	}
     list.push(ZmOperation.SEP);
-    list.push(ZmOperation.EDIT, ZmOperation.VERSION_HISTORY, ZmOperation.CHECKOUT, ZmOperation.DISCARD_CHECKOUT, ZmOperation.CHECKIN);
+    list.push(ZmOperation.EDIT_FILE, ZmOperation.VERSION_HISTORY, ZmOperation.CHECKOUT, ZmOperation.DISCARD_CHECKOUT, ZmOperation.CHECKIN);
 
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
