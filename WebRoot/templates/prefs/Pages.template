@@ -1410,15 +1410,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 								<td class='ZOptionsLabel'>&nbsp;</td>
 								<td class='ZOptionsField'><input id='${id}_CAL_AUTO_ADD_INVITES' tabindex='40' type=checkbox></td>
 							</tr>
-						<$ } $>
-
-						<tr><td colspan=2><hr></td></tr>
-
-						<tr>
-                            <td colspan="2" id='${id}_CAL_WORKING_HOURS' style='padding-left:3.3em;'></td>
-                        </tr>
-
-						<tr><td colspan=2><hr></td></tr>
+						<$ } $>						
 
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
@@ -1473,6 +1465,20 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 				</td>
 			</tr>
 		</table>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.calendarWorkHoursHeader$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain' id='${id}_CAL_WORKING_HOURS'></td>
+			</tr>
+		</table>
+
 		<table border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>

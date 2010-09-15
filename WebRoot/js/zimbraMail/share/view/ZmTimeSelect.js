@@ -375,8 +375,12 @@ function() {
  *
  * @private
 */
-ZmTimeInput = function(parent, id) {
-	DwtComposite.call(this, {parent:parent});
+ZmTimeInput = function(parent, id, parentElement) {
+    var params = {parent:parent};
+    if(parentElement) {
+        params.parentElement = parentElement;
+    }
+	DwtComposite.call(this, params);
 
 	this.id = id;
 	this._isLocale24Hour = true;

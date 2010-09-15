@@ -640,8 +640,8 @@ function(templateId) {
         checkbox,
         customBtn,
         workHours = this._workHours,
-        startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START),
-        endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END),
+        startTimeSelect,
+        endTimeSelect,
         radioNormal,
         radioCustom,
         radioGroup,
@@ -653,16 +653,14 @@ function(templateId) {
     this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#"+templateId, {id:this._htmlElId});
     //fill the containers for the work days and work time
     el = document.getElementById(this._htmlElId + "_CAL_WORKING_START_TIME");
+    startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START, el);
     startTimeSelect.set(this._startTime);
-    startTimeSelect.reparentHtmlElement(el);
-    this.parent._addControlTabIndex(el, startTimeSelect);
     startTimeSelect.setEnabled(!isCustom);
     this._startTimeSelect = startTimeSelect;
 
     el = document.getElementById(this._htmlElId + "_CAL_WORKING_END_TIME");
+    endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END, el);
     endTimeSelect.set(this._endTime);
-    endTimeSelect.reparentHtmlElement(el);
-    this.parent._addControlTabIndex(el, endTimeSelect);
     endTimeSelect.setEnabled(!isCustom);
     this._endTimeSelect = endTimeSelect;
 
@@ -727,22 +725,20 @@ ZmCustomWorkHoursDlg.prototype.initialize = function(workHours) {
 
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
         //fill the containers for the work days and work time
-        startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
+        el = document.getElementById(this._htmlElId + "_CAL_WORKING_START_TIME_"+i);
+        startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START, el);
         inputTime = new Date();
         inputTime.setHours(workHours[i].startTime/100, workHours[i].startTime%100, 0);
-        el = document.getElementById(this._htmlElId + "_CAL_WORKING_START_TIME_"+i);
         startTimeSelect.set(inputTime);
-        startTimeSelect.reparentHtmlElement(el);
         startTimeSelect.setEnabled(workHours[i].isWorkingDay);
         this._startTimeSelect.push(startTimeSelect);
 
 
         inputTime = new Date();
         inputTime.setHours(workHours[i].endTime/100, workHours[i].endTime%100, 0);
-        endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END);
         el = document.getElementById(this._htmlElId + "_CAL_WORKING_END_TIME_"+i);
+        endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END, el);
         endTimeSelect.set(inputTime);
-        endTimeSelect.reparentHtmlElement(el);
         endTimeSelect.setEnabled(workHours[i].isWorkingDay);
         this._endTimeSelect.push(endTimeSelect);
 

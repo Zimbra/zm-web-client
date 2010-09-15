@@ -146,27 +146,133 @@ function(wHrsString) {
     if(wHrsString === 0) {
         return [];
     }
-	var wHrsPerDay = wHrsString.split(','),
+	var userTimeZone = appCtxt.get(ZmSetting.DEFAULT_TIMEZONE),
+        currentTimeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT),
+        wHrsPerDay = wHrsString.split(','),
         i,
         wHrs = [],
         wDay,
         w,
-        idx;
+        offset1,
+        offset2,
+        hourMinOffset = 0,
+        idx,
+        startDate = new Date(),
+        endDate = new Date(),
+        hourMin,
+        startDayIdx,
+        endDayIdx,
+        curDayIdx = endDate.getDay();
 
+    //Helper inner functions, these functions takes the advantage of the fact that wHrs is available in local scope
+    function isWorkingDay(idx) {
+        return wHrs[idx] && wHrs[idx].isWorkingDay;
+    }
+
+    function setWorkingDay(idx, startTime, endTime) {
+        if(isWorkingDay(idx)) {
+            addWorkingTime(idx, startTime, endTime);
+        }
+        else {
+            addWorkingDay(idx, startTime, endTime);
+        }
+    }
+
+    function setNonWorkingDay(idx) {
+        wHrs[idx] = {};
+        wHrs[idx].isWorkingDay = false;
+        wHrs[idx].startTime = ["0000"];
+        wHrs[idx].endTime = ["0000"];
+    }
+
+    function addWorkingDay(idx, startTime, endTime) {
+        wHrs[idx] = {};
+        wHrs[idx].isWorkingDay = true;
+        wHrs[idx].startTime = [startTime];
+        wHrs[idx].endTime = [endTime];
+    }
+
+    function addWorkingTime(idx, startTime, endTime) {
+        wHrs[idx].startTime.push(startTime);
+        wHrs[idx].endTime.push(endTime);
+    }
+    
+    if(userTimeZone != currentTimeZone) {
+        offset1 = AjxTimezone.getOffset(AjxTimezone.getClientId(currentTimeZone), startDate);
+        offset2 = AjxTimezone.getOffset(AjxTimezone.getClientId(userTimeZone), startDate);
+        hourMinOffset = offset2 - offset1;
+    }
     for(i=0; i<wHrsPerDay.length; i++) {
         wDay = wHrsPerDay[i].split(':');
         w = {};
-        idx = wDay[0];
-        if(wDay[1] === "Y") {
-            w.isWorkingDay = true;
+        idx = wDay[0]-1;
+        if(wDay[1] === "N") {
+            if(!isWorkingDay(idx)) {
+                setNonWorkingDay(idx);
+            }
+            continue;
+        }
+
+        if(hourMinOffset) {
+            endDate = new Date();
+            startDate = new Date();
+            
+            endDate.setHours(wDay[3]/100, wDay[3]%100);
+            hourMin = endDate.getHours() * 60 + endDate.getMinutes() - hourMinOffset;
+            endDate.setHours(hourMin/60, hourMin%60);
+            endDayIdx = endDate.getDay();
+
+            startDate.setHours(wDay[2]/100, wDay[2]%100);
+            hourMin = startDate.getHours() * 60 + startDate.getMinutes() - hourMinOffset;
+            startDate.setHours(hourMin/60, hourMin%60);
+            startDayIdx = startDate.getDay();
+
+            if(startDayIdx == curDayIdx && endDayIdx == curDayIdx) {
+                //Case 1 working time starts current day and ends on the current day -- IDEAL one :)
+                setWorkingDay(idx, startDate.getHours() + "" + startDate.getMinutes(), endDate.getHours() + "" + endDate.getMinutes());
+            }
+            else if((endDayIdx == 0 && startDayIdx == 6) ||
+                    (startDayIdx < curDayIdx  && endDayIdx == curDayIdx)) {
+                //Case 2 working time starts prev day and ends on current day
+                startDayIdx = idx-1;
+                setWorkingDay(startDayIdx, startDate.getHours() + "" + startDate.getMinutes(), "2400");
+                setWorkingDay(idx, "0000", endDate.getHours() + "" + endDate.getMinutes());
+            }
+            else if((startDayIdx == 6 && endDayIdx == 0) || 
+                    (startDayIdx == curDayIdx  && endDayIdx > curDayIdx)) {
+                //Case 3 working time starts current day and ends on next day
+                endDayIdx = idx+1;
+                setWorkingDay(endDayIdx, "0000", endDate.getHours() + "" + endDate.getMinutes());
+                setWorkingDay(idx, startDate.getHours() + "" + startDate.getMinutes(), "2400");
+            }
+            else if(startDayIdx < curDayIdx &&
+                    endDayIdx < curDayIdx &&
+                    startDayIdx == endDayIdx) {
+                //EDGE CASE 1: working time starts and ends on the prev day
+                startDayIdx = idx-1;
+                setWorkingDay(startDayIdx, startDate.getHours() + "" + startDate.getMinutes(), endDate.getHours() + "" + endDate.getMinutes());
+                if(!isWorkingDay(idx)) {
+                    setNonWorkingDay(idx);
+                }
+            }
+
+            else if(startDayIdx > curDayIdx &&
+                    endDayIdx > curDayIdx &&
+                    startDayIdx == endDayIdx) {
+                //EDGE CASE 2: working time starts and ends on the next day
+                endDayIdx = idx+1;
+                setWorkingDay(endDayIdx, startDate.getHours() + "" + startDate.getMinutes(), endDate.getHours() + "" + endDate.getMinutes());
+                if(!isWorkingDay(idx)) {
+                    setNonWorkingDay(idx);
+                }
+            }
+
         }
         else {
-            w.isWorkingDay = false;
+            //There is no timezone diff, client and server are in the same timezone
+            setWorkingDay(idx, wDay[2], wDay[3]);
         }
-        w.startTime = wDay[2];
-        w.endTime = wDay[3];
 
-        wHrs[idx-1] = w;
     }
     return wHrs;
 };
