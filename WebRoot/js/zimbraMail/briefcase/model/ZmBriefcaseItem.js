@@ -298,7 +298,7 @@ function(version, callback){
 			_jsns: "urn:zimbraMail",
 			revision: {
 				id:	this.id,
-                rev: version,
+                ver: version,
                 includeOlderRevisions: false
 			}
 		}
