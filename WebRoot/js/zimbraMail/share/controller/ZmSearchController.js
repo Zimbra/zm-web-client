@@ -253,7 +253,9 @@ function() {
 	this._searchToolBar = new ZmSearchToolBar(this.searchPanel, ZmId.SEARCH_TOOLBAR);
 
 	// create people search toolbar
-	this.peopleSearchToolBar = new ZmPeopleSearchToolBar(this._container, ZmId.PEOPLE_SEARCH_TOOLBAR);
+	if (!appCtxt.isChildWindow) {
+		this.peopleSearchToolBar = new ZmPeopleSearchToolBar(this._container, ZmId.PEOPLE_SEARCH_TOOLBAR);
+	}
 
 	this._createTabGroup();
 	this._tabGroup.addMember(this._searchToolBar.getSearchField());

@@ -411,7 +411,9 @@ function(params) {
 				}
 				var sc = appCtxt.getSearchController();
 				sc.getSearchToolbar().initAutocomplete();
-				sc.peopleSearchToolBar.initAutocomplete();
+				if (!appCtxt.isChildWindow) {
+					sc.peopleSearchToolBar.initAutocomplete();
+				}
 			});
 		this.addPostRenderCallback(callback, 0, 0, true);
 	}
