@@ -134,33 +134,6 @@
 	</tr>
 </template>
 
-<template id='share.Widgets#ZmPeopleAutocompleteListView-toolbar'>
-	<table border=0>
-		<tr>
-			<$ if (appCtxt.get(ZmSetting.MAIL_ENABLED)) { $>
-				<td class='ZmPeopleSearch-toolbar-button' onclick="ZmPeopleAutocompleteListView.doAction('message', '${rowId}', '${toolbarId}');">
-					<$= AjxImg.getImageHtml("NewMessage") $>
-				</td>
-			<$ } $>
-			<$ if (data.canIm) { $>
-				<td class='ZmPeopleSearch-toolbar-button' onclick="ZmPeopleAutocompleteListView.doAction('IM', '${rowId}', '${toolbarId}');">
-					<$= AjxImg.getImageHtml("NewIM") $>
-				</td>
-			<$ } $>
-			<$ if (data.workPhone && data.workPhone != "") { $>
-				<td class='ZmPeopleSearch-toolbar-button' onclick="ZmPeopleAutocompleteListView.doAction('call', '${rowId}', '${toolbarId}');">
-					<$= AjxImg.getImageHtml("NewCall") $>
-				</td>
-			<$ } $>
-			<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) { $>
-				<td class='ZmPeopleSearch-toolbar-button' onclick="ZmPeopleAutocompleteListView.doAction('appt', '${rowId}', '${toolbarId}');">
-					<$= AjxImg.getImageHtml("NewAppointment") $>
-				</td>
-			<$ } $>
-		</tr>
-	</table>
-</template>
-
 <template id='share.Widgets#ZmChooseFolderDialog'>
 	<div class='ChooserDialog'>
 		<span id='${id}_folderDescDivId' style='margin: 0; margin-bottom: 2px'></span>

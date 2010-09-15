@@ -23,15 +23,7 @@ ZmPeopleAutocompleteListView = function(params) {
 
 	this.addClassName("ZmPeopleAutocompleteListView");
 	this.setScrollStyle(DwtControl.CLIP);
-
-	var tbParams = {
-		parent: params.parent,
-		className: "ZmPeopleSearch-toolbar",
-		posStyle: Dwt.ABSOLUTE_STYLE
-	};
-	this._toolbarDiv = new DwtComposite(tbParams);
-	this._toolbarDiv.isToolbar = true;
-
+	this._initToolbar(params.parent);
 	this._outsideListener = new AjxListener(null, ZmPeopleAutocompleteListView._outsideMouseDownListener);
 };
 
@@ -58,7 +50,7 @@ function() {
 ZmPeopleAutocompleteListView.prototype.show =
 function(show, loc) {
 	if (!show) {
-		this._toolbarDiv.setDisplay(Dwt.DISPLAY_NONE);
+		this._toolbar.setDisplay(Dwt.DISPLAY_NONE);
 	}
 
 	ZmAutocompleteListView.prototype.show.apply(this, arguments);
@@ -133,26 +125,21 @@ function(id) {
 
 	var rowEl = document.getElementById(id);
 	if (rowEl) {
-		var contact = Dwt.getObjectFromElement(rowEl, "contact");
+		this._activeContact = Dwt.getObjectFromElement(rowEl, "contact");
 
-		var canIm;
-		if (contact && appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
-			var imPresence = contact.getImPresence();
-			canIm = imPresence && (imPresence.getShow() == ZmRosterPresence.SHOW_ONLINE);
+		// show/hide IM button based on whether active contact is online
+		var imButton = this._toolbar.getButton(ZmPeopleAutocompleteListView.ACTION_IM);
+		if (imButton) {
+			var imPresence = this._activeContact && this._activeContact.getImPresence();
+			imButton.setVisible(imPresence && (imPresence.getShow() == ZmRosterPresence.SHOW_ONLINE));
 		}
 
-		var data = {
-			id: this._htmlElId,
-			workPhone: (contact && contact.getAttr(ZmContact.F_workPhone)),
-			canIm: canIm,
-			rowId: id,
-			toolbarId: this._toolbarDiv._htmlElId
-		};
+		// ask zimlets if they want to inject any buttons into the toolbar
+		appCtxt.notifyZimlets("onPeopleSearchToolbarShow", [this._toolbar, this._activeContact]);
 
 		var loc = Dwt.getLocation(rowEl);
-		this._toolbarDiv.setDisplay(Dwt.DISPLAY_BLOCK);
-		this._toolbarDiv.setLocation(loc.x+40, loc.y+40);
-		this._toolbarDiv.getHtmlElement().innerHTML = AjxTemplate.expand("share.Widgets#ZmPeopleAutocompleteListView-toolbar", data);
+		this._toolbar.setDisplay(Dwt.DISPLAY_BLOCK);
+		this._toolbar.setLocation(loc.x+40, loc.y+40);
 	}
 
 	ZmAutocompleteListView.prototype._setSelected.apply(this, arguments);
@@ -208,61 +195,84 @@ function() {
 		}
 	}
 
+	this._activeContact = null;
+
 	ZmAutocompleteListView.prototype._removeAll.apply(this, arguments);
 };
 
-ZmPeopleAutocompleteListView.doAction =
-function(action, rowId, toolbarId) {
-	var rowEl = document.getElementById(rowId);
-	var contact = rowEl && Dwt.getObjectFromElement(rowEl, "contact");
-	if (contact) {
-		// hide the autocomplete listview
-		var curList = ZmAutocompleteListView._activeAcList;
-		if (curList) {
-			curList.show(false);
-		}
+ZmPeopleAutocompleteListView.prototype._initToolbar =
+function(parent) {
+	var params = {
+		parent: parent,
+		className: "ZmPeopleSearch-toolbar"
+	};
+	this._toolbar = new ZmToolBar(params);
 
-		// then do the action
-		switch (action) {
-			case ZmPeopleAutocompleteListView.ACTION_MESSAGE:
-				var params = {action:ZmOperation.NEW_MESSAGE, toOverride: contact.getEmail()};
-				AjxDispatcher.run("Compose", params);
-				break;
+	var buttonListener = new AjxListener(this, this._toolbarButtonListener);
 
-			case ZmPeopleAutocompleteListView.ACTION_IM:
-				AjxDispatcher.require(["IMCore", "IM"]);
-				var buddy = contact.getBuddy();
-				if (buddy && contact.getImPresence().getShow() == ZmRosterPresence.SHOW_ONLINE) {
-					ZmTaskbarController.INSTANCE.chatWithRosterItem(buddy);
-				}
-				break;
+	// add the basic set of buttons
+	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		this._addButton(ZmPeopleAutocompleteListView.ACTION_MESSAGE, "NewMessage", buttonListener);
+	}
 
-			case ZmPeopleAutocompleteListView.ACTION_CALL:
-				var workPhone = contact.getAttr(ZmContact.F_workPhone);
-				var phone = Com_Zimbra_Phone.getCallToLink(workPhone);
-				Com_Zimbra_Phone.unsetOnbeforeunload();
-				window.location = phone;
-				break;
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		this._addButton(ZmPeopleAutocompleteListView.ACTION_APPT, "NewAppointment", buttonListener);
+	}
 
-			case ZmPeopleAutocompleteListView.ACTION_APPT:
-				AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
-				var cc = AjxDispatcher.run("GetCalController");
-				var appt = cc.newApptObject((new Date()));
-				appt.setAttendees([contact.getEmail()], ZmCalBaseItem.PERSON);
-				cc.newAppointment(appt);
-				break;
-		}
+	if (appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
+		this._addButton(ZmPeopleAutocompleteListView.ACTION_IM, "NewIM", buttonListener);
+	}
+};
+
+ZmPeopleAutocompleteListView.prototype._addButton =
+function(id, icon, listener) {
+	this._toolbar.createButton(id, {image:icon});
+	this._toolbar.addSelectionListener(id, listener);
+};
+
+ZmPeopleAutocompleteListView.prototype._toolbarButtonListener =
+function(ev) {
+	var buttonId = this._activeContact && ev.item && ev.item.getData("_buttonId");
+
+	// hide the autocomplete listview
+	var curList = ZmAutocompleteListView._activeAcList;
+	if (curList) {
+		curList.show(false);
+	}
+
+	switch (buttonId) {
+		case ZmPeopleAutocompleteListView.ACTION_MESSAGE:
+			var params = {action:ZmOperation.NEW_MESSAGE, toOverride: this._activeContact.getEmail()};
+			AjxDispatcher.run("Compose", params);
+			break;
+
+		case ZmPeopleAutocompleteListView.ACTION_APPT:
+			AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+			var cc = AjxDispatcher.run("GetCalController");
+			var appt = cc.newApptObject((new Date()));
+			appt.setAttendees([this._activeContact.getEmail()], ZmCalBaseItem.PERSON);
+			cc.newAppointment(appt);
+			break;
+
+		case ZmPeopleAutocompleteListView.ACTION_IM:
+			AjxDispatcher.require(["IMCore", "IM"]);
+			var buddy = this._activeContact.getBuddy();
+			if (buddy && this._activeContact.getImPresence().getShow() == ZmRosterPresence.SHOW_ONLINE) {
+				ZmTaskbarController.INSTANCE.chatWithRosterItem(buddy);
+			}
+			break;
 	}
 };
 
 ZmPeopleAutocompleteListView._outsideMouseDownListener =
 function(ev) {
-	var obj = DwtControl.getTargetControl(ev);
-	if (obj.isToolbar) { return; }
-
 	var curList = ZmAutocompleteListView._activeAcList;
-	if (curList && curList._toolbarDiv) {
-		curList._toolbarDiv.setDisplay(Dwt.DISPLAY_NONE);
+	if (curList && curList._toolbar) {
+		var obj = DwtControl.getTargetControl(ev);
+		if (obj && obj.parent && obj.parent == curList._toolbar) {
+			return;
+		}
+		curList._toolbar.setDisplay(Dwt.DISPLAY_NONE);
 	}
 
 	ZmAutocompleteListView._outsideMouseDownListener(ev);
