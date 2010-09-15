@@ -326,7 +326,7 @@ function(visible) {
 	DwtComposite.prototype.setVisible.apply(this, arguments);
 
 	if (this._inviteMsgView) {
-		if (visible) {
+		if (visible && this._msg) {
 			this._inviteMsgView.set(this._msg);
 			this._inviteMsgView.showFreeBusy();
 		} else {
@@ -1046,9 +1046,7 @@ function(msg, container, callback) {
 		attachmentsCount:	attachmentsCount
 	};
 
-	if (invite && !invite.isEmpty() &&
-		this._inviteMsgView && this._inviteMsgView.isActive())
-	{
+	if (invite && !invite.isEmpty() && this._inviteMsgView) {
 		this._inviteMsgView.addSubs(subs, sentBy, sentByAddr);
 	}
 	else {
@@ -1063,7 +1061,7 @@ function(msg, container, callback) {
 		subs.isOutDated = invite && invite.isEmpty()
 	}
 
-	var template = (this._inviteMsgView && this._inviteMsgView.isActive())
+	var template = (invite && !invite.isEmpty() && this._inviteMsgView)
 		? "mail.Message#InviteHeader" : "mail.Message#MessageHeader";
 	var html = AjxTemplate.expand(template, subs);
 
@@ -1149,9 +1147,7 @@ function(msg, container, callback) {
 			var c = bodyPart.content;
 
 			if (bodyPart.ct == ZmMimeTable.TEXT_HTML && appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
-				if (invite && !invite.isEmpty() &&
-					this._inviteMsgView && this._inviteMsgView.isActive())
-				{
+				if (invite && !invite.isEmpty() && this._inviteMsgView) {
 					c = this._inviteMsgView.truncateBodyContent(c, true);
 				}
 
@@ -1188,9 +1184,7 @@ function(msg, container, callback) {
 						this._makeIframeProxy(el, content, true);
 					return;
 				} else {
-					if (invite && !invite.isEmpty() &&
-						this._inviteMsgView && this._inviteMsgView.isActive())
-					{
+					if (invite && !invite.isEmpty() && this._inviteMsgView) {
 						c = this._inviteMsgView.truncateBodyContent(c);
 					}
 

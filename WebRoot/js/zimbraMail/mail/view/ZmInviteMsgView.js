@@ -58,12 +58,15 @@ function() {
 		this._dayView.setDisplay(Dwt.DISPLAY_NONE);
 	}
 
+	this._msg = null;
+	this._invite = null;
 	this._isActionedInvite = false;
 };
 
 ZmInviteMsgView.prototype.isActive =
 function() {
-	return ((this._inviteToolbar && this._inviteToolbar.getVisible()) ||
+	return ((this._invite && !this._invite.isEmpty()) ||
+			(this._inviteToolbar && this._inviteToolbar.getVisible()) ||
 			(this._counterToolbar && this._counterToolbar.getVisible()) ||
 			this._isActionedInvite);
 };
