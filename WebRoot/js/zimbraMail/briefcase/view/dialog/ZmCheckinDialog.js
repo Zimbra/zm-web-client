@@ -20,7 +20,7 @@ function(item, callback){
     this._uploadCallback = callback;
     //this._uploadFolder = appCtxt.get(item.folderId);    
 
-    this._verDiv.innerHTML = item.version;
+    this._verDiv.innerHTML = Number(item.version) + 1;
     this._fileTD.innerHTML = "";
     this._fileTD.innerHTML = [
         '<input type="file" name="file" id="',this._templateId,'_file" size="35"/>'

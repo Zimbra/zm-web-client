@@ -105,11 +105,22 @@ function(){
     var items = this._listView.getSelection();
     if(!items || items.length == 0) return;
     var verItem = items[0];
-    this._item.restoreVersion(verItem.ver, new AjxCallback(this, this._doneRestoreVersion));
+    this._item.restoreVersion(verItem.ver, new AjxCallback(this, this.refreshListView));
     
 };
 
-ZmRevisionDialog.prototype._doneRestoreVersion =
+ZmRevisionDialog.prototype._delVersionListener =
+function(){
+
+    var items = this._listView.getSelection();
+    if(!items || items.length == 0) return;
+    var verItem = items[0];
+    if(verItem.ver != this._item.version)
+        this._item.deleteVersion(verItem.ver, new AjxCallback(this, this.refreshListView));
+
+};
+
+ZmRevisionDialog.prototype.refreshListView =
 function(){
     this._item.getRevisions(new AjxCallback(this, this._refreshListView));
 };
@@ -127,6 +138,7 @@ function(ev){
     this._toolbar.enableAll((sel.length > 0));
     //Disable it when the latest version is selected.
     this._toolbar.enable(ZmOperation.RESTORE_VERSION, ( sel.length ==1 && this._listView._list.indexOf(sel[0]) != 0 ));
+    this._toolbar.enable(ZmOperation.DELETE, ( sel.length ==1 && this._listView._list.indexOf(sel[0]) != 0 ));
 };
 
 //ZmRevisionListView

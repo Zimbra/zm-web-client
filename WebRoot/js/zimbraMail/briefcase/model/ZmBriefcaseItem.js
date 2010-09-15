@@ -290,6 +290,30 @@ function(restoreVerion, callback){
     
 };
 
+ZmBriefcaseItem.prototype.deleteVersion =
+function(version, callback){
+
+    var json = {
+		PurgeRevisionRequest: {
+			_jsns: "urn:zimbraMail",
+			revision: {
+				id:	this.id,
+                rev: version,
+                includeOlderRevisions: false
+			}
+		}
+	};
+
+	var params = {
+		jsonObj:		json,
+		asyncMode:		true,
+		callback:		callback
+	};
+	return appCtxt.getAppController().sendRequest(params);
+
+};
+
+
 ZmBriefcaseItem.prototype._handleResponseCreateItem =
 function(folderId,response) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.fileCreated);
