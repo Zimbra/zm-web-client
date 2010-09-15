@@ -60,15 +60,13 @@ function() {
 
 	this._msg = null;
 	this._invite = null;
-	this._isActionedInvite = false;
 };
 
 ZmInviteMsgView.prototype.isActive =
 function() {
 	return ((this._invite && !this._invite.isEmpty()) ||
 			(this._inviteToolbar && this._inviteToolbar.getVisible()) ||
-			(this._counterToolbar && this._counterToolbar.getVisible()) ||
-			this._isActionedInvite);
+			(this._counterToolbar && this._counterToolbar.getVisible()));
 };
 
 ZmInviteMsgView.prototype.set =
@@ -149,16 +147,62 @@ function(msg) {
 			this._inviteMoveLabel.setVisible(visible);
 			this._inviteMoveSelect.setVisible(visible);
 		}
-
-		// is this an invite that was accepted|declined|tentative?
-		var att = this._invite.getAttendees();
-		if (att.length > 0 && att[0].ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION) {
-			this._isActionedInvite = true;
-		}
 	}
 };
 
-ZmInviteMsgView.prototype.showFreeBusy =
+/**
+ * This method does two things:
+ * 1) Checks if invite was responded to with accept/decline/tentative, and if so,
+ *    a GetAppointmentRequest is made to get the status for the other attendees.
+ *
+ * 2) Requests the free/busy status for the start date and renders the day view
+ *    with the results returned.
+ */
+ZmInviteMsgView.prototype.showMoreInfo =
+function() {
+	var apptId = this._invite && this._invite.hasAttendeeResponse() && this._invite.getAppointmentId();
+	if (apptId) {
+		var jsonObj = {GetAppointmentRequest:{_jsns:"urn:zimbraMail"}};
+		var request = jsonObj.GetAppointmentRequest;
+		request.id = apptId;
+
+		appCtxt.getAppController().sendRequest({
+			jsonObj: jsonObj,
+			asyncMode: true,
+			callback: (new AjxCallback(this, this._handleShowMoreInfo))
+		});
+	}
+	else {
+		this._showFreeBusy();
+	}
+};
+
+ZmInviteMsgView.prototype._handleShowMoreInfo =
+function(result) {
+	var appt = result && result.getResponse().GetAppointmentResponse.appt[0];
+	if (appt) {
+		var om = this.parent._objectManager;
+		var html = [];
+		var idx = 0;
+		var attendees = appt.inv[0].comp[0].at;
+
+		for (var i = 0; i < attendees.length; i++) {
+			var at = attendees[i];
+			var subs = {
+				icon: ZmCalItem.getParticipationStatusIcon(at.ptst),
+				attendee: (om ? om.findObjects((new AjxEmailAddress(at.a)), true, ZmObjectManager.EMAIL) : at.a)
+			};
+			html[idx++] = AjxTemplate.expand("mail.Message#InviteHeaderPtst", subs);
+		}
+
+		var ptstEl = document.getElementById(this._ptstId);
+		ptstEl.innerHTML = html.join("");
+	}
+
+	this._showFreeBusy();
+};
+
+ZmInviteMsgView.prototype._showFreeBusy =
 function() {
 	var ac = window.parentAppCtxt || window.appCtxt;
 
@@ -259,8 +303,8 @@ function(subs, sentBy, sentByAddr) {
 		subs.counterInvMsg = AjxMessageFormat.format(ZmMsg.counterInviteMsg, [(sentBy && sentBy.name ) ? sentBy.name : sentByAddr]);
 		subs.newProposedTime = this._invite.getProposedTimeStr();
 	}
-	// is this an action'ed invite?
-	else if (this._isActionedInvite) {
+	// if this an action'ed invite, show the status banner
+	else if (this._invite.hasAttendeeResponse()) {
 		var attendee = this._invite.getAttendees()[0];
 		var ptst = attendee && attendee.ptst;
 		if (ptst) {
@@ -281,6 +325,9 @@ function(subs, sentBy, sentByAddr) {
 					subs.ptstClassName = "InviteStatusTentative";
 					break;
 			}
+
+			// set an Id for adding more detailed info later
+			subs.ptstId = this._ptstId = (this._htmlElId + "_ptst");
 		}
 	}
 
@@ -288,7 +335,7 @@ function(subs, sentBy, sentByAddr) {
 
 	// organizer
 	var org = new AjxEmailAddress(this._invite.getOrganizerEmail(), null, this._invite.getOrganizerName());
-	subs.invOrganizer = om ? om.findObjects(org, true, ZmObjectManager.EMAIL) : om.toString();
+	subs.invOrganizer = om ? om.findObjects(org, true, ZmObjectManager.EMAIL) : org.toString();
 
 	// sent-by
 	var sentBy = this._invite.getSentBy();

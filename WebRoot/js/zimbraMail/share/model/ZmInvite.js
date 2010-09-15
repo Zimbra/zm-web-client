@@ -1032,3 +1032,13 @@ function(compNum) {
 
 	return null;
 };
+
+/**
+ * Returns true if this invite has attendees, one of which replied back with an
+ * "actioned" response (e.g. accept/decline/tentative)
+ */
+ZmInvite.prototype.hasAttendeeResponse =
+function() {
+	var att = this.getAttendees();
+	return (att.length > 0 && att[0].ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
+};

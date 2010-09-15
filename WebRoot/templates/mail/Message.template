@@ -174,7 +174,12 @@
 									<td class='LabelColValue ${locChangeClass}'><$= data.invite.getLocation() $></td>
 								</tr>
 							<$ } $>
-							<$ if (data.invite.hasOtherAttendees()) { $>
+							<$ if (data.ptstId) { $>
+								<tr>
+									<td class='LabelColName'><$= ZmMsg.inviteesLabel $></td>
+									<td class='LabelColValue' id='${ptstId}'></td>
+								</tr>
+							<$ } else if (data.invite.hasOtherAttendees()) { $>
 								<tr>
 									<td class='LabelColName'><$= ZmMsg.inviteesLabel $></td>
 									<td class='LabelColValue'><$= data.invitees $></td>
@@ -202,6 +207,16 @@
 		<div id='${infoBarId}'></div>
 	</div>
 </template>
+
+<template id='mail.Message#InviteHeaderPtst'>
+	<table border=0>
+		<tr>
+			<td><$= AjxImg.getImageHtml(data.icon) $></td>
+			<td class='LabelColValue'>${attendee}</td>
+		</tr>
+	</table>
+</template>
+
 
 <template id='mail.Message#AttachmentsView'>
 	<table border='0' width='100%' height='100%'>
