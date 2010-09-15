@@ -501,9 +501,9 @@ function(list, callback, batchCommand, account, isImplicit) {
 	var acct = account || appCtxt.getActiveAccount();
 	var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
 	var gotOne = false;
-	var metaData = [], done = {};
+	var metaData = [], done = {}, setting;
 	for (var i = 0; i < list.length; i++) {
-		var setting = list[i];
+		setting = list[i];
         if (done[setting.id]) { continue; }
 		if (setting.type == ZmSetting.T_METADATA) {
 			metaData.push(setting);
@@ -539,6 +539,11 @@ function(list, callback, batchCommand, account, isImplicit) {
         done[setting.id] = true;
 		gotOne = true;
 	}
+
+    // bug: 50668 if the setting is implicit and global, use main Account
+    if(appCtxt.isOffline && ZmSetting.IS_IMPLICIT[setting.id] && ZmSetting.IS_GLOBAL[setting.id]) {
+        acct = appCtxt.accountList.mainAccount;
+    }
 
 	if (metaData.length > 0) {
 		var metaDataCallback = new AjxCallback(this, this._handleResponseSaveMetaData, [metaData]);
