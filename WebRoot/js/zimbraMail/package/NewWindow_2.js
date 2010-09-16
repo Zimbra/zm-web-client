@@ -41,6 +41,7 @@ AjxPackage.require("ajax.dwt.widgets.DwtCheckbox");
 AjxPackage.require("ajax.dwt.widgets.DwtRadioButton");
 AjxPackage.require("ajax.dwt.widgets.DwtRadioButtonGroup");
 AjxPackage.require("ajax.dwt.widgets.DwtForm");
+AjxPackage.require("ajax.dwt.widgets.DwtCalendar");
 
 AjxPackage.require("ajax.util.AjxDateUtil");
 
@@ -98,8 +99,10 @@ AjxPackage.require("zimbraMail.share.view.ZmOverviewContainer");
 AjxPackage.require("zimbraMail.share.view.ZmAccountOverviewContainer");
 AjxPackage.require("zimbraMail.share.view.ZmOverview");
 AjxPackage.require("zimbraMail.share.view.ZmTreeView");
+AjxPackage.require("zimbraMail.share.view.ZmTimeSelect");
 
 AjxPackage.require("zimbraMail.share.view.dialog.ZmDialog");
+AjxPackage.require("zimbraMail.share.view.dialog.ZmTimeDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewOrganizerDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmAttachDialog");
 
