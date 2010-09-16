@@ -280,7 +280,9 @@ if (application.getInitParameter("offlineMode") != null)  {
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div>
+                                        <div id="ZLoginAppName">
+                                            <fmt:message key="${(client eq 'mobile') ? 'splashScreenMobileAppName' : 'splashScreenAppName'}"/>
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
