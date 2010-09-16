@@ -1332,3 +1332,12 @@ function(invites, proposedInvite) {
 		this.invId = this.id + "-" + invites[0].id;
 	}
 };
+
+/**
+ * clears the recurrence.
+ */
+ZmCalItem.prototype.clearRecurrence =
+function() {
+    this._recurrence = new ZmRecurrence(this);
+    this.recurring = false;
+};

@@ -77,6 +77,7 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.FORWARD_APPT_SERIES]  = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.REPLY] = new AjxListener(this, this._replyListener);
 	this._listeners[ZmOperation.REPLY_ALL] = new AjxListener(this, this._replyAllListener);
+	this._listeners[ZmOperation.DUPLICATE_APPT] = new AjxListener(this, this._duplicateApptListener);
 
 	this._treeSelectionListener = new AjxListener(this, this._calTreeSelectionListener);
 	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
@@ -1341,6 +1342,32 @@ function(ev) {
 	var op = (ev && ev.item instanceof DwtMenuItem)
 		? ev.item.parent.getData(ZmOperation.KEY_ID) : null;
 	this._doForward(this._listView[this._currentView].getSelection(), op);
+};
+
+ZmCalViewController.prototype._duplicateApptListener =
+function(ev) {
+	var op = (ev && ev.item instanceof DwtMenuItem)
+		? ev.item.parent.getData(ZmOperation.KEY_ID) : null;
+	var items = this._listView[this._currentView].getSelection();
+    var mode = ZmCalItem.MODE_EDIT;
+    if (op == ZmOperation.VIEW_APPT_INSTANCE || op == ZmOperation.VIEW_APPT_SERIES) {
+        mode = (op == ZmOperation.VIEW_APPT_INSTANCE)
+            ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE
+            : ZmCalItem.MODE_EDIT_SERIES;
+    }
+
+    var appt = items[0];
+    var clone = ZmAppt.quickClone(appt);
+    var clearRecurrence = (appt.isRecurring() && op == ZmOperation.VIEW_APPT_INSTANCE);
+    clone.getDetails(mode, new AjxCallback(this, this._duplicateApptContinue, [clone, ZmCalItem.MODE_NEW, clearRecurrence]));
+};
+
+ZmCalViewController.prototype._duplicateApptContinue =
+function(appt, mode, clearRecurrence) {
+    if(clearRecurrence) {
+        appt.clearRecurrence();
+    }
+    this.newAppointment(appt, mode, true);
 };
 
 ZmCalViewController.prototype._proposeTimeListener =
@@ -2616,6 +2643,7 @@ function(recurrenceMode) {
 		ZmOperation.REPLY_DECLINE,
 		ZmOperation.INVITE_REPLY_MENU,
 		ZmOperation.PROPOSE_NEW_TIME,
+		ZmOperation.DUPLICATE_APPT,
 		ZmOperation.SEP,
 		ZmOperation.REPLY,
 		ZmOperation.REPLY_ALL,
