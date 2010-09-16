@@ -115,6 +115,7 @@ ZmItem.FLAG_ATTACH				= "a";
 ZmItem.FLAG_FLAGGED				= "f";
 ZmItem.FLAG_FORWARDED			= "w";
 ZmItem.FLAG_ISDRAFT 			= "d";
+ZmItem.FLAG_ISSCHEDULED 		= "c";
 ZmItem.FLAG_ISSENT				= "s";
 ZmItem.FLAG_READ_RECEIPT_SENT	= "n";
 ZmItem.FLAG_REPLIED				= "r";
@@ -131,6 +132,7 @@ ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_ISSENT,
 	ZmItem.FLAG_READ_RECEIPT_SENT,
 	ZmItem.FLAG_ISDRAFT,
+	ZmItem.FLAG_ISSCHEDULED,
 	ZmItem.FLAG_HIGH_PRIORITY,
 	ZmItem.FLAG_LOW_PRIORITY
 ];
@@ -141,6 +143,7 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_ATTACH]			= "hasAttach";
 ZmItem.FLAG_PROP[ZmItem.FLAG_FLAGGED]			= "isFlagged";
 ZmItem.FLAG_PROP[ZmItem.FLAG_FORWARDED]			= "isForwarded";
 ZmItem.FLAG_PROP[ZmItem.FLAG_ISDRAFT] 			= "isDraft";
+ZmItem.FLAG_PROP[ZmItem.FLAG_ISSCHEDULED] 		= "isScheduled";
 ZmItem.FLAG_PROP[ZmItem.FLAG_ISSENT]			= "isSent";
 ZmItem.FLAG_PROP[ZmItem.FLAG_READ_RECEIPT_SENT]	= "readReceiptSent";
 ZmItem.FLAG_PROP[ZmItem.FLAG_REPLIED]			= "isReplied";

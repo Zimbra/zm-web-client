@@ -843,6 +843,14 @@ function(params) {
 
 	if (msg && (action == ZmOperation.DRAFT)) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
+		if (msg.autoSendTime) {
+			this.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL, null, null, new AjxCallback(msg, msg.setAutoSendTime, null));
+			if (!this._autoSendHaltedDialog) {
+				this._autoSendHaltedDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON]});
+				this._autoSendHaltedDialog.setMessage(ZmMsg.messageAutoSaveAborted, DwtMessageDialog.WARNING_STYLE);
+			}
+			this._autoSendHaltedDialog.popup(cv._getDialogXY());
+		}
 	} else {
 		this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
 	}

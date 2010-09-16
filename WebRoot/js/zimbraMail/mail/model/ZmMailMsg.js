@@ -89,7 +89,7 @@ ZmMailMsg.HDR_DATE		= "DATE";
  */
 ZmMailMsg.HDR_SUBJECT	= "SUBJECT";
 
-ZmMailMsg.HDR_KEY = new Object();
+ZmMailMsg.HDR_KEY = {};
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_FROM]		= ZmMsg.from;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_TO]			= ZmMsg.to;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_CC]			= ZmMsg.cc;
@@ -100,7 +100,7 @@ ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE]		= ZmMsg.sentAt;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT]	= ZmMsg.subject;
 
 // Ordered list - first matching status wins
-ZmMailMsg.STATUS_LIST = ["isDraft", "isReplied", "isForwarded", "isSent", "isUnread"];
+ZmMailMsg.STATUS_LIST = ["isScheduled", "isDraft", "isReplied", "isForwarded", "isSent", "isUnread"];
 
 ZmMailMsg.STATUS_ICON = {};
 ZmMailMsg.STATUS_ICON["isDraft"]		= "MsgStatusDraft";
@@ -108,6 +108,7 @@ ZmMailMsg.STATUS_ICON["isReplied"]		= "MsgStatusReply";
 ZmMailMsg.STATUS_ICON["isForwarded"]	= "MsgStatusForward";
 ZmMailMsg.STATUS_ICON["isSent"]			= "MsgStatusSent";
 ZmMailMsg.STATUS_ICON["isUnread"]		= "MsgStatusUnread";
+ZmMailMsg.STATUS_ICON["isScheduled"]	= "SendLater";
 
 ZmMailMsg.PSTATUS_ACCEPT		= "AC";
 ZmMailMsg.PSTATUS_DECLINED		= "DE";
@@ -628,6 +629,16 @@ ZmMailMsg.prototype.setForwardAttIds =
 function(ids) {
 	this._onChange("forwardAttIds", ids);
 	this._forAttIds = ids;
+};
+
+ZmMailMsg.prototype.setAutoSendTime =
+function(autoSendTime) {
+	var wasScheduled = this.isScheduled;
+	var isDate = AjxUtil.isDate(autoSendTime);
+	this.flagLocal(ZmItem.FLAG_ISSCHEDULED, isDate);
+	this.autoSendTime = isDate ? autoSendTime : null;
+	if (wasScheduled != this.isScheduled)
+		this._notify(ZmEvent.E_FLAGS, {flags: ZmItem.FLAG_ISSCHEDULED});
 };
 
 // Actions
@@ -1796,6 +1807,13 @@ function(msgNode) {
 		}
 	}
 
+	if (msgNode.autoSendTime) {
+		var timestamp = parseInt(msgNode.autoSendTime) || null;
+		if (timestamp) {
+			this.setAutoSendTime(new Date(timestamp));
+		}
+	}
+
 	if (msgNode.inv) {
 		try {
 			this.invite = ZmInvite.createFromDom(msgNode.inv);
@@ -2126,10 +2144,11 @@ function() {
 		var icon = this.getStatusIcon();
 		status.push(ZmMailMsg.TOOLTIP[icon]);
 	}
+	if (this.isScheduled)	{ status.push(ZmMsg.scheduled); }
 	if (this.isUnread)		{ status.push(ZmMsg.unread); }
 	if (this.isReplied)		{ status.push(ZmMsg.replied); }
 	if (this.isForwarded)	{ status.push(ZmMsg.forwarded); }
-	if (this.isSent)		{ status.push(ZmMsg.sentAt); }
+	if (this.isSent && !this.isDraft) { status.push(ZmMsg.sentAt); }
 	if (status.length == 0) {
 		status = [ZmMsg.read];
 	}

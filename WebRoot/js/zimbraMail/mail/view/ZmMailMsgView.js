@@ -928,6 +928,7 @@ function(msg, container, callback) {
 	var obo = sender ? addr : null;
 	var additionalHdrs = [];
 	var invite = msg.invite;
+	var autoSendTime = AjxUtil.isDate(msg.autoSendTime) ? AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM).format(msg.autoSendTime) : null;
 
 	if (msg.attrs) {
 		for (var hdrName in ZmMailMsgView.displayAdditionalHdrsInMsgView) {
@@ -1052,6 +1053,7 @@ function(msg, container, callback) {
 		subs.participants = participants;
 		subs.reportBtnCellId = reportBtnCellId;
 		subs.isSyncFailureMsg = isSyncFailureMsg;
+		subs.autoSendTime = autoSendTime;
 		subs.additionalHdrs = additionalHdrs;
 		subs.isOutDated = invite && invite.isEmpty()
 	}

@@ -76,6 +76,14 @@
 									<td class='LabelColValue' colspan='10'><$= data.participants[i].partStr $></td>
 								</tr>
 							<$ } $>
+
+							<$ if (data.autoSendTime) { $>
+								<tr>
+									<td valign='top' class='LabelColName'><$= ZmMsg.messageScheduledSendLabel $></td>
+									<td class='LabelColValue' colspan=10><$= data.autoSendTime $></td>
+								</tr>
+							<$ } $>
+
 							<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
 								<tr>
 									<td valign='top' class='LabelColName'>
