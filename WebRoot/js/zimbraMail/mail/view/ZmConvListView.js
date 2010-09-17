@@ -300,7 +300,11 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);
 	} else {
 		if (field == ZmItem.F_STATUS) {
-			htmlArr[idx++] = "&nbsp;";
+			if (item.type == ZmItem.CONV && item.numMsgs == 1 && item.isScheduled) {
+				idx = this._getImageHtml(htmlArr, idx, "SendLater", this._getFieldId(item, field));
+			} else {
+				htmlArr[idx++] = "&nbsp;";
+			}
 		} else if (field == ZmItem.F_FROM) {
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
 		} else if (field == ZmItem.F_SUBJECT) {

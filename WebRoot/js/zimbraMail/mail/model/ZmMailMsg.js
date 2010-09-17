@@ -631,16 +631,6 @@ function(ids) {
 	this._forAttIds = ids;
 };
 
-ZmMailMsg.prototype.setAutoSendTime =
-function(autoSendTime) {
-	var wasScheduled = this.isScheduled;
-	var isDate = AjxUtil.isDate(autoSendTime);
-	this.flagLocal(ZmItem.FLAG_ISSCHEDULED, isDate);
-	this.autoSendTime = isDate ? autoSendTime : null;
-	if (wasScheduled != this.isScheduled)
-		this._notify(ZmEvent.E_FLAGS, {flags: ZmItem.FLAG_ISSCHEDULED});
-};
-
 // Actions
 
 /**
@@ -1806,6 +1796,8 @@ function(msgNode) {
 			this.addAddress(parts[j]);
 		}
 	}
+
+msgNode.autoSendTime = "1284571800000";
 
 	if (msgNode.autoSendTime) {
 		var timestamp = parseInt(msgNode.autoSendTime) || null;
