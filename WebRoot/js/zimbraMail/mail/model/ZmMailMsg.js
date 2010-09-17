@@ -1797,8 +1797,6 @@ function(msgNode) {
 		}
 	}
 
-msgNode.autoSendTime = "1284571800000";
-
 	if (msgNode.autoSendTime) {
 		var timestamp = parseInt(msgNode.autoSendTime) || null;
 		if (timestamp) {
