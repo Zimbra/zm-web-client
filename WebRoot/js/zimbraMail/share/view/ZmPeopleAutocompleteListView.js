@@ -91,11 +91,6 @@ function(list) {
 		Dwt.associateElementWithObject(rowEl, contact, "contact");
 	}
 
-	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
-		function() {
-			this._setSelected(this._getId("Row", 0));
-		}), 100);
-
 	// fetch free/busy info for all results
 	if (list.length > 0) {
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._getFreeBusyInfo, [list]), 100);
