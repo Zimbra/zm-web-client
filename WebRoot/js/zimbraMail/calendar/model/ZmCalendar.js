@@ -288,7 +288,7 @@ function() {
 	var owner = this.getOwner();
 	var uname = owner || appCtxt.get(ZmSetting.USERNAME);
 	var m = uname.match(/^(.*)@(.*)$/);
-	var host = (m && m[2]) || loc.host;
+	var host = loc.host || (m && m[2]);
 
 	// REVISIT: What about port? For now assume other host uses same port
 	if (loc.port && loc.port != 80 && (owner == appCtxt.get(ZmSetting.USERNAME))) {
