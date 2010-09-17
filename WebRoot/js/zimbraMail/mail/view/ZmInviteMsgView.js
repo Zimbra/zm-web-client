@@ -184,7 +184,7 @@ function(result) {
 		var om = this.parent._objectManager;
 		var html = [];
 		var idx = 0;
-		var attendees = appt.inv[0].comp[0].at;
+		var attendees = appt.inv[0].comp[0].at || [];
 
 		for (var i = 0; i < attendees.length; i++) {
 			var at = attendees[i];
@@ -305,6 +305,7 @@ function(subs, sentBy, sentByAddr) {
 	}
 	// if this an action'ed invite, show the status banner
 	else if (this._invite.hasAttendeeResponse()) {
+        AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		var attendee = this._invite.getAttendees()[0];
 		var ptst = attendee && attendee.ptst;
 		if (ptst) {
