@@ -1349,24 +1349,26 @@ function(ev) {
 	var op = (ev && ev.item instanceof DwtMenuItem)
 		? ev.item.parent.getData(ZmOperation.KEY_ID) : null;
 	var items = this._listView[this._currentView].getSelection();
-    var mode = ZmCalItem.MODE_EDIT;
-    if (op == ZmOperation.VIEW_APPT_INSTANCE || op == ZmOperation.VIEW_APPT_SERIES) {
-        mode = (op == ZmOperation.VIEW_APPT_INSTANCE)
-            ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE
-            : ZmCalItem.MODE_EDIT_SERIES;
-    }
-
     var appt = items[0];
+    var isException = (appt.isRecurring() && op == ZmOperation.VIEW_APPT_INSTANCE);
+    this.duplicateAppt(appt, {isException: isException});
+};
+
+ZmCalViewController.prototype.duplicateAppt =
+function(appt, params) {
     var clone = ZmAppt.quickClone(appt);
-    var clearRecurrence = (appt.isRecurring() && op == ZmOperation.VIEW_APPT_INSTANCE);
-    clone.getDetails(mode, new AjxCallback(this, this._duplicateApptContinue, [clone, ZmCalItem.MODE_NEW, clearRecurrence]));
+    var mode = ZmCalItem.MODE_EDIT;
+    if(appt.isRecurring()) {
+        mode =  params.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES
+    }
+    clone.getDetails(mode, new AjxCallback(this, this._duplicateApptContinue, [clone, ZmCalItem.MODE_NEW, params]));
 };
 
 ZmCalViewController.prototype._duplicateApptContinue =
-function(appt, mode, clearRecurrence) {
-    if(clearRecurrence) {
-        appt.clearRecurrence();
-    }
+function(appt, mode, params) {
+    if(params.isException) appt.clearRecurrence();
+    if(params.startDate) appt.setStartDate(params.startDate);
+    if(params.endDate) appt.setEndDate(params.endDate);
     this.newAppointment(appt, mode, true);
 };
 
@@ -3179,11 +3181,50 @@ function(actionCode) {
 				this._listView[this._currentView].close();
 			}
 			break;
+        case ZmKeyMap.COPY:
+            this.clipboardCopy();
+            break;
+
+        case ZmKeyMap.PASTE:
+            this.clipboardPaste();
+            break;
 
 		default:
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
+};
+
+ZmCalViewController.prototype.clipboardCopy =
+function() {
+    var items = this._listView[this._currentView].getSelection();
+
+    if(items && items.length) {
+        this._clipBoardAppts = items;        
+        appCtxt.setStatusMsg(ZmMsg.apptCopied);
+    }
+};
+
+ZmCalViewController.prototype.clipboardPaste =
+function() {
+    if(!this._clipBoardAppts) return;
+
+    var appt = this._clipBoardAppts[0];
+    var params = {};
+
+    if(appt && this._viewMgr && this._viewMgr.getDate()) {
+        var sd =  this._viewMgr.getDate();
+        var dur = appt.getDuration();
+        params.startDate = sd;
+        params.endDate = new Date(sd.getTime() + dur);
+    }
+
+    if(appt) {
+        appCtxt.setStatusMsg({msg: ZmMsg.apptCreatingFromCopy, force: true});        
+        this.duplicateAppt(appt, params);
+    }
+
+    delete this._clipBoardAppts;
 };
 
 ZmCalViewController.prototype._getDefaultFocusItem =
