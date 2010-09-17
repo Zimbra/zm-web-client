@@ -134,7 +134,7 @@ function(id) {
 
 		var loc = Dwt.getLocation(rowEl);
 		this._toolbar.setDisplay(Dwt.DISPLAY_BLOCK);
-		this._toolbar.setLocation(loc.x+40, loc.y+40);
+		this._toolbar.setLocation(loc.x+40, loc.y+Dwt.getSize(rowEl).y);
 	}
 
 	ZmAutocompleteListView.prototype._setSelected.apply(this, arguments);
