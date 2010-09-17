@@ -519,9 +519,9 @@ function(str) {
 
 ZmTimeInput.prototype._scrollToValue =
 function(str) {
-	var index = this.getTimeIndex(str);
+    var index = this.getTimeIndex(str);
     if (index !== null)
-		this._hoursSelectMenu.scrollToIndex(index);
+        this._hoursSelectMenu.scrollToIndex(index);
 };
 
 /**
@@ -614,6 +614,50 @@ function(enabled) {
 
 ZmTimeInput.prototype._timeButtonListener =
 function(ev) {
+    if(!this._menuItemsAdded) {
+        var j,
+            k,
+            mi,
+            smi,
+            text,
+            minutesSelectMenu,
+            now = new Date(),
+            timeSelectButton = this._timeSelectBtn,
+            timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT),
+            menuSelectionListener = new AjxListener(this, this._timeSelectionListener);
+
+        for (j = 0; j < 24; j++) {
+            now.setHours(j);
+            now.setMinutes(0);
+
+            mi = new DwtMenuItem({parent: this._hoursSelectMenu, style: DwtMenuItem.NO_STYLE});
+            text = timeFormatter.format(now); // Regular formatter, returns the I18nMsg formatted time
+            this.putTimeIndex(text, j);
+
+            if (j==0 || j==12) {
+                text = ZmTimeSelect.format(now); // Specialized formatter, returns ZmMsg.midnight for midnight and ZmMsg.noon for noon
+                this.putTimeIndex(text, j); // Both should go in the indexer
+            }
+
+            mi.setText(text);
+            mi.setData("value", j*60);
+            if (menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
+
+            minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_CASCADE, maxRows:1, congruent: true});
+            mi.setMenu(minutesSelectMenu, true);
+            mi.setSelectableWithSubmenu(true);
+            for (k = 1; k < 4; k++) {
+                now.setMinutes(k*15);
+                smi = new DwtMenuItem({parent: minutesSelectMenu, style: DwtMenuItem.NO_STYLE});
+                smi.setText(timeFormatter.format(now));
+                smi.setData("value", j*60 + k*15);
+                if (menuSelectionListener) smi.addSelectionListener(menuSelectionListener);
+            }
+        }
+        this._hoursSelectMenu.setWidth(timeSelectButton.getW() + this._timeSelectInput.getW());
+        this._scrollToValue(timeFormatter.format(this.getValue()));
+        this._menuItemsAdded = true;
+    }
 	ev.item.popup();
 };
 
@@ -654,9 +698,6 @@ function(text) {
 ZmTimeInput.prototype._createSelects =
 function() {
 	// get the time formatter for the user's locale
-	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-	var hourSegmentIdx = 0;
-	var minuteSegmentIdx = 0;
 
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#ApptTimeInput", {id: this._htmlElId});
 
@@ -673,15 +714,8 @@ function() {
     var timeInputEl = this._timeSelectInput.getInputElement();
     Dwt.setSize(timeInputEl, "80px", "22px");
     timeInputEl.typeId = this.id;
-
-	// init vars for adding hour DwtSelect
-	var now = new Date();
-	var start = this._isLocale24Hour ? 0 : 1;
-	var limit = this._isLocale24Hour ? 24 : 13;
-
     //listeners
     var buttonListener = new AjxListener(this, this._timeButtonListener);
-    var menuSelectionListener = new AjxListener(this, this._timeSelectionListener);
     var buttonId = this._htmlElId + "_timeSelectBtn";
 
     //create time select drop down button
@@ -691,43 +725,10 @@ function() {
     if (AjxEnv.isIE) {
         timeSelectButton.setSize("20");
     }
-
+    this._timeIndex = {};
     // create menu for button
     this._hoursSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_SCROLL, maxRows:7});
     timeSelectButton.setMenu(this._hoursSelectMenu, true, false, false, true);
-
-    this._timeIndex = {};
-    for (var j = 0; j < 24; j++) {
-        now.setHours(j);
-        now.setMinutes(0);
-
-        var mi = new DwtMenuItem({parent: this._hoursSelectMenu, style: DwtMenuItem.NO_STYLE});
-        var text = timeFormatter.format(now); // Regular formatter, returns the I18nMsg formatted time
-        this.putTimeIndex(text, j);
-
-        if (j==0 || j==12) {
-            text = ZmTimeSelect.format(now); // Specialized formatter, returns ZmMsg.midnight for midnight and ZmMsg.noon for noon
-            this.putTimeIndex(text, j); // Both should go in the indexer
-        }
-
-        mi.setText(text);
-        mi.setData("value", j*60);
-        if (menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
-
-        var minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_CASCADE, maxRows:1, congruent: true});
-        mi.setMenu(minutesSelectMenu, true);
-        mi.setSelectableWithSubmenu(true);
-        for (var k = 1; k < 4; k++) {
-            now.setMinutes(k*15);
-            var smi = new DwtMenuItem({parent: minutesSelectMenu, style: DwtMenuItem.NO_STYLE});
-            smi.setText(timeFormatter.format(now));
-            smi.setData("value", j*60 + k*15);
-            if (menuSelectionListener) smi.addSelectionListener(menuSelectionListener);
-        }
-    }
-
+    this._menuItemsAdded = false;
     timeSelectButton.reparentHtmlElement(buttonId);
-    delete buttonId;
-
-    this._hoursSelectMenu.setWidth(timeSelectButton.getW() + this._timeSelectInput.getW());
 };
