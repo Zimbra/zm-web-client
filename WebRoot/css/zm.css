@@ -2686,6 +2686,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:99%;
 }
 
+.ZmPreferencesPage .Label {
+	padding-right: 5px;
+	@NoWrap@
+}
+
 /* table that holds the 'restore defaults' button */
 .ZOptionsDefaultsTable {
 	margin-bottom: 0.5em;
@@ -2757,12 +2762,13 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZOptionsTableRow INPUT[disabled] {
 	height: auto;
 }
+
 .ZOptionsField input[type="checkbox"] {
 		@ActiveCursor@
 }
 
 #IFDEF MSIE
-.ZOptionsField input{
+.ZOptionsField input {
 	cursor: expression(this.type=="checkbox"?'pointer':'');
 }
 #ENDIF
@@ -2793,6 +2799,11 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmSignatureListView {
 	width: 150px !important;
+	background-color:white;
+}
+
+.ZmSignatureListView td {
+	padding-left:5px;
 }
 
 .ZmFilterRulesView .DwtListView-Rows {

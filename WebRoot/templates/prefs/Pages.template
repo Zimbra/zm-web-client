@@ -718,14 +718,18 @@ and the container element is replaced with that control.
 		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
+				<table id='${id}_SIG_TABLE' border=0 cellpadding=0 cellspacing=10>
+					<tr>
+						<td>&nbsp;</td>
+						<td><$=ZmMsg.newMessages$></td>
+						<td><$=ZmMsg.repliesForwards$></td>
+					</tr>
+				</table>
+				<hr>
 				<table width=100% cellspacing=0>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.placeSignature$></td>
 						<td class='ZOptionsInfo'><div id='${id}_SIGNATURE_STYLE' tabindex='40'></div></td>
-					</tr>
-					<tr><td colspan=2><hr></td></tr>
-					<tr>
-						<td colspan=2><b><$=ZmMsg.signatureMoreOptions$></b></td>
 					</tr>
 				</table>
 			</td>
@@ -733,47 +737,56 @@ and the container element is replaced with that control.
 	</table>
 </template>
 
-<template id="prefs.Pages#SignatureSplitView">     
+
+
+<template id="prefs.Pages#SignatureSplitView">
     <table border=0 cellpadding=0 cellspacing=5 width='100%'>
         <tr>
-            <td style="width:150px;min-width:150px" height='100%' valign=top>
-                <table border=0 cellpadding=3 cellspacing=0 width='100%' height='100%'>
-                    <tr>
-                      <td class='ZOptionsField' align='left' valign='top'><div id='${id}_SIG_ADD' tabindex='30'></div></td>  
-                    </tr>
-                    <tr>
-                      <td class='ZOptionsField' valign='top' height='150px' width='150px'><div id='${id}_SIG_LIST' width='100%' tabindex='40'></div></td>
-                    </tr>
-                </table>
-            </td>
-            <td valign=top>
-                <table border=0 cellpadding='4' cellspacing='0' width='100%'>
-                    <tr>
-                        <td class='ZOptionsField' nowrap="nowrap" width="10%"><$=ZmMsg.signatureNameLabel$></td>
-                        <td class='ZOptionsField'><input id='${id}_SIG_NAME' tabindex='50' size=30></td>
-                        <td class='ZOptionsField'>&nbsp;</td>
-                        <td class="ZOptionsField" align='right'><div id='${id}_SIG_FORMAT' tabIndex='60'></div></td>
-                        <td class='ZOptionsField' width='80'><div id='${id}_SIG_BUTTON' tabindex='70'></div></td>
-                    </tr>
-                    <tr>                       
-                        <td class='ZOptionsField' width="100%" valign='top' style='border:1px solid #CCCCCC; padding: 0px;' height='150px' colspan=6>
-                            <div id='${id}_SIG_EDITOR' tabindex='80'></div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td colspan=2>
-				<table width=1%>
+            <td style="width:150px;min-width:150px" height='100%' valign='top'>
+				<div id='${id}_SIG_LIST' width='100%' tabindex='40'></div>
+			</td>
+			<td>
+				<table border=0 cellpadding=0 cellspacing=0 width="100%">
 					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.noteLabel$></td>
-						<td class='ZOptionsField'><nobr><$=ZmMsg.signatureNote$></nobr></td>
+						<td>
+							<table border=0 cellpadding=0 cellspacing=0 width="100%">
+								<tr>
+									<td class="Label"><$=ZmMsg.nameLabel$></td>
+									<td class='ZOptionsField'><input id='${id}_SIG_NAME' tabindex='50' size=30></td>
+									<td width="100%">&nbsp;</td>
+									<td class="Label"><$=ZmMsg.formatLabel$></td>
+									<td><div id='${id}_SIG_FORMAT' tabIndex='60'></div></td>
+								</tr>
+							</table>
+							<div id='${id}_SIG_EDITOR' tabindex='80'></div>
+<!--
+							<table border=0 cellpadding=0 cellspacing=0 width="100%">
+								<tr>
+									<td class="Label"><$=ZmMsg.signatureVcardLabel$></td>
+									<td class='ZOptionsField' width="100%"><input id='${id}_SIG_VCARD' tabindex='85' size=30></td>
+									<td><div id='${id}_SIG_VCARD_BROWSE' style='padding-right:5px;' tabIndex='86'></div></td>
+									<td><div id='${id}_SIG_VCARD_CLEAR' tabIndex='87'></div></td>
+								</tr>
+							</table>
+-->
+						</td>
 					</tr>
 				</table>
-            </td>
-        </tr>
-    </table>    
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table>
+					<tr>
+						<td class="ZOptionsField"><div id='${id}_SIG_NEW' tabIndex='86'></div></td>
+						<td class='ZOptionsField'>&nbsp;</td>
+						<td class="ZOptionsField" align='right'><div id='${id}_SIG_DELETE' tabIndex='87'></div></td>
+					</tr>
+				</table>
+			</td>
+			<td>&nbsp;</td>
+		</tr>
+	</table>
 </template>
 
 <template id='prefs.Pages#Contacts'>
@@ -1002,7 +1015,7 @@ and the container element is replaced with that control.
 					</tr>
 					<tr valign=top>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-						<td class='ZOptionsField'><select id='${id}_PRIMARY_SIGNATURE' tabindex='1080'></select></td>
+						<td class='ZOptionsField'><$=ZmMsg.manageSignatures$></td>
 					</tr>
 				</table>
 			</td>
@@ -1166,7 +1179,7 @@ and the container element is replaced with that control.
 					</tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-						<td class='ZOptionsField'><select id='${id}_EXTERNAL_SIGNATURE' tabindex='2170'></select></td>
+						<td class='ZOptionsField'><$=ZmMsg.manageSignatures$></td>
 					</tr>
 				</table>
 			</td>
@@ -1246,7 +1259,7 @@ and the container element is replaced with that control.
 
 					<tr valign=top>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-						<td class='ZOptionsField'><select id='${id}_PERSONA_SIGNATURE' tabindex='3070'></select></td>
+						<td class='ZOptionsField'><$=ZmMsg.manageSignatures$></td>
 					</tr>
 
 					<tr><td colspan=2><hr></td></tr>

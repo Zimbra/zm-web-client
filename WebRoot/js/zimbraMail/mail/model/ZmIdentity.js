@@ -84,6 +84,10 @@ ZmIdentity.SET_REPLY_TO_ADDRESS		= i++;
  */
 ZmIdentity.SIGNATURE				= i++;
 /**
+ * Defines the "reply signature" field id.
+ */
+ZmIdentity.REPLY_SIGNATURE			= i++;
+/**
  * Defines the "use when sent to" field id.
  */
 ZmIdentity.USE_WHEN_SENT_TO			= i++;
@@ -124,6 +128,8 @@ ZmIdentity.addField(ZmIdentity.SET_REPLY_TO, { name: "setReplyTo", soap: "zimbra
 ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_DISPLAY, { name: "setReplyToDisplay", soap: "zimbraPrefReplyToDisplay", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_ADDRESS, { name: "setReplyToAddress", soap: "zimbraPrefReplyToAddress", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.SIGNATURE, { name: "signature", soap: "zimbraPrefDefaultSignatureId", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.REPLY_SIGNATURE, { name: "replySignature", soap: "zimbraPrefForwardReplySignatureId", type: ZmIdentity.STRING });
+
 // Used only for Persona
 ZmIdentity.addField(ZmIdentity.USE_WHEN_SENT_TO, { name: "useWhenSentTo", soap: "zimbraPrefWhenSentToEnabled", type: ZmIdentity.BOOLEAN });
 ZmIdentity.addField(ZmIdentity.WHEN_SENT_TO_ADDRESSES, { name: "whenSentToAddresses", soap: "zimbraPrefWhenSentToAddresses", type: ZmIdentity.ARRAY });
@@ -196,7 +202,8 @@ function(callback, errorCallback, batchCmd) {
 
 ZmIdentity.prototype._doRequest =
 function(requestType, respFunction, callback, errorCallback, batchCmd) {
-	var soapDoc = AjxSoapDoc.create(requestType+"IdentityRequest", "urn:zimbraAccount");
+
+	var soapDoc = AjxSoapDoc.create(requestType + "IdentityRequest", "urn:zimbraAccount");
 	var identityNode = soapDoc.set("identity");
 
 	var name = this.isDefault ? ZmIdentity.DEFAULT_NAME : this.name;
