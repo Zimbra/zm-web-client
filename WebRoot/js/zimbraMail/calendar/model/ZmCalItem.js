@@ -747,7 +747,7 @@ function() {
 		if (this._validAttachments == null) {
 			this._validAttachments = [];
 			for (var i = 0; i < attachs.length; ++i) {
-				if (this.message.isRealAttachment(attachs[i]))
+				if (this.message.isRealAttachment(attachs[i]) || attachs[i].ct == ZmMimeTable.TEXT_CAL)
 					this._validAttachments.push(attachs[i]);
 			}
 		}

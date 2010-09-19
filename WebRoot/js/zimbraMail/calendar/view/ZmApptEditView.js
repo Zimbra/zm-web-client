@@ -1683,3 +1683,23 @@ function(newWidth, newHeight) {
         this._scrollHandled = false;
     }
 };
+
+ZmApptEditView.prototype._initAttachContainer =
+function() {
+	// create new table row which will contain parent fieldset
+	var table = document.getElementById(this._htmlElId + "_table");
+	this._attachmentRow = table.insertRow(-1);
+	var cell = this._attachmentRow.insertCell(-1);
+	cell.colSpan = 7;
+
+	this._uploadFormId = Dwt.getNextId();
+	this._attachDivId = Dwt.getNextId();
+
+	var subs = {
+		uploadFormId: this._uploadFormId,
+		attachDivId: this._attachDivId,
+		url: appCtxt.get(ZmSetting.CSFE_UPLOAD_URI)+"&fmt=extended"
+	};
+
+	cell.innerHTML = AjxTemplate.expand("calendar.Appointment#AttachContainer", subs);
+};
