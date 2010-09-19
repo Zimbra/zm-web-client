@@ -148,3 +148,11 @@ function() {
     div.innerHTML = AjxTemplate.expand("calendar.Appointment#TimeSuggestion-NoAttendees");
     this._addRow(div);
 };
+
+ZmTimeSuggestionView.prototype.setLoadingHtml =
+function() {
+    this.removeAll();
+    var	div = document.createElement("div");
+    div.innerHTML = AjxTemplate.expand("calendar.Appointment#TimeSuggestion-Loading");
+    this._addRow(div);
+};

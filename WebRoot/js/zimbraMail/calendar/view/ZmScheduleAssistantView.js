@@ -36,6 +36,9 @@ ZmScheduleAssistantView = function(parent, controller, apptEditView) {
 
     this.type = ZmCalBaseItem.LOCATION;
     this._attendees = [];
+    this._workingHours = {};
+    this._fbStat = new AjxVector();
+    this._fbStatMap = {};    
 
     this.initialize();
 };
@@ -124,6 +127,7 @@ function(date) {
 
 ZmScheduleAssistantView.prototype._suggestionListener =
 function() {
+    this._timeSuggestions.setLoadingHtml();
     if(!this._resources) {
         this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo));
     }else {
@@ -322,17 +326,32 @@ function(itemsById, result) {
     this.getWorkingHours(itemsById);
 };
 
+ZmScheduleAssistantView.prototype.clearCache =
+function() {
+    this._organizerEmail = null;
+    this._workingHours = {};    
+};
+
 ZmScheduleAssistantView.prototype.getWorkingHours =
 function(itemsById) {
     if (this._workingHoursRequest) {
         appCtxt.getRequestMgr().cancelRequest(this._workingHoursRequest, null, true);
     }
-    this._workingHoursRequest = this._controller.getWorkingInfo(this._timeFrame.start.getTime(),
+
+    var organizer = this._editView.getOrganizer();
+    this._organizerEmail = organizer.getEmail();
+
+    if(this._workingHoursKey == this.getWorkingHoursKey()) {
+        this.suggestTimeSlots(itemsById);
+    }else {
+        this._workingHoursKey = this.getWorkingHoursKey();
+        this._workingHoursRequest = this._controller.getWorkingInfo(this._timeFrame.start.getTime(),
                                                              this._timeFrame.end.getTime(),
-                                                             this._attendees.join(","),
+                                                             this._organizerEmail,
                                                              new AjxCallback(this, this._handleWorkingHoursResponse, [itemsById]),
                                                              new AjxCallback(this, this._handleWorkingHoursError, [itemsById]),
                                                              true);
+    }
 };
 
 ZmScheduleAssistantView.prototype._handleWorkingHoursResponse =
@@ -385,7 +404,6 @@ function(itemsById) {
     }
 
     this._fbStat.sort(ZmScheduleAssistantView._slotComparator);
-    DBG.dumpObj(this._fbStat);
     this.renderSuggestions(itemsById);
 };
 
@@ -413,7 +431,9 @@ function(startTime, endTime, fbStat, fbStatMap) {
     for(var i=0; i < this._attendees.length; i++) {
         var attendee = this._attendees[i];
         var sched = this._schedule[attendee];
-        var isFree = this.isUnderWorkingHour(attendee, startTime, endTime);
+
+        //show suggestions only in the organizer's working hours.
+        var isFree = this.isUnderWorkingHour(this._organizerEmail, startTime, endTime);
 
         //ignore time slots for non-working hours of this user
         if(!isFree) continue;
@@ -465,6 +485,11 @@ function(slot1, slot2) {
 ZmScheduleAssistantView.prototype.getKey =
 function(startTime, endTime) {
     return startTime + "-" + endTime;
+};
+
+ZmScheduleAssistantView.prototype.getWorkingHoursKey =
+function() {
+    return this._timeFrame ? this._timeFrame.start.getTime() + "-" + this._timeFrame.end.getTime() + "-" + this._organizerEmail : ""; 
 };
 
 ZmScheduleAssistantView.prototype.isBooked =

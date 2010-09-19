@@ -895,3 +895,12 @@
         </div>
     </center>
 </template>
+
+<template id='calendar.Appointment#TimeSuggestion-Loading'>
+    <center>
+        <div>
+            <br><br><div class='DwtWait32Icon'></div>    
+            <br><$= ZmMsg.searching $>
+        </div>
+    </center>
+</template>
