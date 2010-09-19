@@ -29,3 +29,4 @@ AjxPackage.require("zimbraMail.tasks.model.ZmTask");
 AjxPackage.require("zimbraMail.tasks.controller.ZmTaskListController");
 
 AjxPackage.require("zimbraMail.tasks.view.ZmTaskListView");
+AjxPackage.require("zimbraMail.tasks.view.ZmTaskMultiView");

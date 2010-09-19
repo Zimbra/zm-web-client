@@ -46,6 +46,8 @@ ZmApp.QS_ARG[ZmApp.TASKS]		= "tasks";
 ZmTasksApp.prototype = new ZmApp;
 ZmTasksApp.prototype.constructor = ZmTasksApp;
 
+ZmTasksApp.REMINDER_START_DELAY = 10000;
+
 /**
  * Returns a string representation of the object.
  * 
@@ -74,6 +76,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHARE_TASKFOLDER, {textKey:"shareTaskFolder", image:"TaskList"});
 	ZmOperation.registerOp(ZmId.OP_PRINT_TASK, {textKey:"printTask", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_TASKFOLDER, {textKey:"printTaskFolder", image:"Print"}, ZmSetting.PRINT_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_SORTBY_MENU, {tooltipKey:"viewTooltip", textKey:"sortBy", image:"SplitPane", textPrecedence:80});
 };
 
 ZmTasksApp.prototype._registerItems =
@@ -372,4 +375,37 @@ function(parent, name, color) {
 	dialog.popdown();
 	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.TASKS)._doCreate(parent, name, color);
+};
+
+/**
+ * Gets the list of checked calendar ids. If calendar packages are not loaded,
+ * gets the list from deferred folder ids.
+ *
+ * @param	{Boolean}		localOnly	if <code>true</code>, use local calendar only
+ * @return	{Array}	an array of ids
+ */
+ZmTasksApp.prototype.getTaskFolderIds =
+function(localOnly) {
+	var folderIds = [];
+	if (AjxDispatcher.loaded("TasksCore")) {
+		folderIds = this.getTaskListController().getTaskFolderIds(localOnly);
+	} else {
+		// will be used in reminder dialog
+		this._folderNames = {};
+		for (var i = 0; i < this._deferredFolders.length; i++) {
+			var params = this._deferredFolders[i];
+			var str = (params && params.obj && params.obj.f) ? params.obj.f : "";
+			if (str && (str.indexOf(ZmOrganizer.FLAG_CHECKED) != -1)) {
+				if (localOnly && params.obj.zid != null) {
+					continue;
+				}
+				folderIds.push(params.obj.id);
+				// _folderNames are used when deferred folders are not created
+				// and calendar name is required. example: calendar name
+				// requirement in reminder module
+				this._folderNames[params.obj.id] = params.obj.name;
+			}
+		}
+	}
+	return folderIds;
 };

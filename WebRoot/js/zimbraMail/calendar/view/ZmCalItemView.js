@@ -502,6 +502,8 @@ function(calItem) {
 	var pComplete = calItem.pComplete;
 	var recurStr = calItem.isRecurring() ? calItem.getRecurBlurb() : null;
 	var attachStr = ZmCalItemView._getAttachString(calItem);
+    var alarm = calItem.alarm;
+    var remindDate = calItem.remindDate ? AjxDateFormat.getDateInstance().format(calItem.remindDate) : null;
 
 	if (this._objectManager) {
 		this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
@@ -526,7 +528,39 @@ function(calItem) {
 		pComplete: pComplete,
 		recurStr: recurStr,
 		attachStr: attachStr,
+        remindDate: remindDate,
+        alarm: alarm,
 		folder: appCtxt.getTree(ZmOrganizer.TASKS).getById(calItem.folderId),
 		folderLabel: ZmMsg.folder
 	};
+};
+
+// Private / protected methods
+
+ZmTaskView.prototype._renderCalItem =
+function(calItem) {
+
+   if(this._controller.isReadingPaneOn()) {
+	this._lazyCreateObjectManager();
+
+	var subs = this._getSubs(calItem);
+	var editBtnCellId = this._htmlElId + "_editBtnCell";
+	this._hdrTableId = this._htmlElId + "_hdrTable";
+
+    var el = this.getHtmlElement();
+	el.innerHTML = AjxTemplate.expand("tasks.Task#ReadOnlyView", subs);
+
+	// content/body
+	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
+	var mode = (hasHtmlPart && appCtxt.get(ZmSetting.VIEW_AS_HTML))
+		? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
+
+	var bodyPart = calItem.getNotesPart(mode);
+	if (bodyPart) {
+		this._msg = this._msg || this._calItem._currentlyLoaded;
+		this._makeIframeProxy(el, bodyPart, mode == ZmMimeTable.TEXT_PLAIN);
+	}
+   } else {
+     ZmCalItemView.prototype._renderCalItem.call(this, calItem);  
+   }
 };

@@ -30,20 +30,48 @@
  * @extends		ZmListView
  */
 ZmTaskListView = function(parent, controller, dropTgt) {
+
+    this._controller = controller;
+    
 	var headerList = this._getHeaderList(parent);
-	var params = {parent:parent, posStyle:Dwt.ABSOLUTE_STYLE, view:ZmId.VIEW_TASKLIST, pageless:true,
+
+    var params = {parent:parent, posStyle:Dwt.ABSOLUTE_STYLE, view:ZmId.VIEW_TASKLIST, pageless:true,
 				  type:ZmItem.TASK, controller:controller, headerList:headerList, dropTgt:dropTgt}
+
 	ZmListView.call(this, params);
+
 };
 
 ZmTaskListView.prototype = new ZmListView;
 ZmTaskListView.prototype.constructor = ZmTaskListView;
 
+ZmTaskListView.SASH_THRESHOLD = 5;
 
 // Consts
 ZmTaskListView.COL_WIDTH_STATUS		= ZmMsg.COLUMN_WIDTH_STATUS_TLV;
 ZmTaskListView.COL_WIDTH_PCOMPLETE	= ZmMsg.COLUMN_WIDTH_PCOMPLETE_TLV;
 ZmTaskListView.COL_WIDTH_DATE_DUE	= ZmMsg.COLUMN_WIDTH_DATE_DUE_TLV;
+
+//Consts
+ZmTaskListView.SEC_UPCOMING = "UPCOMING";
+ZmTaskListView.SEC_PASTDUE = "PASTDUE";
+ZmTaskListView.SEC_TODAY = "TODAY";
+ZmTaskListView.SEC_NODUEDATE = "NODUEDATE";
+
+ZmTaskListView.SEC_MSG_KEY = {};
+ZmTaskListView.SEC_MSG_KEY[ZmTaskListView.SEC_UPCOMING] = ZmMsg.taskSecUpcoming;
+ZmTaskListView.SEC_MSG_KEY[ZmTaskListView.SEC_PASTDUE] = ZmMsg.taskSecPastDue;
+ZmTaskListView.SEC_MSG_KEY[ZmTaskListView.SEC_TODAY] = ZmMsg.taskSecToday;
+ZmTaskListView.SEC_MSG_KEY[ZmTaskListView.SEC_NODUEDATE] = ZmMsg.taskSecNoDuedate;
+
+ZmTaskListView.SEC_COLOR = {};
+ZmTaskListView.SEC_COLOR[ZmTaskListView.SEC_UPCOMING] = "OrangeC";
+ZmTaskListView.SEC_COLOR[ZmTaskListView.SEC_PASTDUE] = "RedC";
+ZmTaskListView.SEC_COLOR[ZmTaskListView.SEC_TODAY] = "GreenC";
+ZmTaskListView.SEC_COLOR[ZmTaskListView.SEC_NODUEDATE] = "GrayDarkC";
+
+// Consts
+ZmTaskListView.ROW_DOUBLE_CLASS	= "RowDouble";
 
 // Public Methods
 
@@ -136,19 +164,126 @@ function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
-// Private Methods
+ZmTaskListView.prototype._renderTaskListItemHdr = 
+function(sechdr) {
+    if(!this._newSecHdrHtml[sechdr]) {
 
+        var htmlArr = [];
+        var idx = 0;
+
+        htmlArr[idx++] = "<div id='_upComingTaskListHdr'>";
+        htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='DwtListView-Column'><tr>";
+        this.dId = Dwt.getNextId();
+        htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label ";
+        htmlArr[idx++] = ZmTaskListView.SEC_COLOR[sechdr];
+        htmlArr[idx++] = "' style='padding:0px 0px 2px 2px; font-weight:bold;' id='";
+        htmlArr[idx++] = this.dId;	// bug: 17653 - for QA
+        htmlArr[idx++] = "'>";
+        htmlArr[idx++] = ZmTaskListView.SEC_MSG_KEY[sechdr];
+        htmlArr[idx++] = "</div></td>";
+        htmlArr[idx++] = "</tr></table></div>";
+        return this._newSecHdrHtml[sechdr] = htmlArr.join("");
+   } else {
+        return null;     
+   }
+};
+
+// Private Methods
 ZmTaskListView.prototype._renderList =
 function(list, noResultsOk, doAdd) {
 	// call base class first
-	ZmListView.prototype._renderList.apply(this, arguments);
-	if (doAdd) { return; }
+	//ZmListView.prototype._renderList.apply(this, arguments);
+    this._newSecHdrHtml = {};
+
+    if (list instanceof AjxVector && list.size()) {
+		var now = new Date();
+		var size = list.size();
+		var htmlArr = [];
+        var currentSec = null;
+
+        var htmlUpcomingArr = [];
+        var htmlPastDueArr = [];
+        var htmlTodayArr = [];
+        var htmlNoDueArr = [];
+        
+		for (var i = 0; i < size; i++) {
+			var item = list.get(i);
+
+            var today = new Date();
+            today.setHours(0,0,0,0);
+            today = today.getTime();
+
+            var dueDate = item.endDate;
+            if(dueDate != null) {
+                dueDate.setHours(0,0,0,0);
+                dueDate = dueDate.getTime();
+            } else {
+                dueDate = null;
+            }
+            
+            if(dueDate != null && dueDate > today) {
+               var newSecHdrHtml = this._renderTaskListItemHdr(ZmTaskListView.SEC_UPCOMING);
+               if(newSecHdrHtml) htmlUpcomingArr.push(newSecHdrHtml);
+                currentSec = ZmTaskListView.SEC_UPCOMING;
+            } else if(dueDate != null && dueDate == today) {
+                var newSecHdrHtml = this._renderTaskListItemHdr(ZmTaskListView.SEC_TODAY);
+                if(newSecHdrHtml) htmlTodayArr.push(newSecHdrHtml);
+                currentSec = ZmTaskListView.SEC_TODAY;
+            } else if(dueDate != null && dueDate < today) {
+                var newSecHdrHtml = this._renderTaskListItemHdr(ZmTaskListView.SEC_PASTDUE);
+                if(newSecHdrHtml) htmlPastDueArr.push(newSecHdrHtml);
+                currentSec = ZmTaskListView.SEC_PASTDUE; 
+            } else if(dueDate == null) {
+                var newSecHdrHtml = this._renderTaskListItemHdr(ZmTaskListView.SEC_NODUEDATE);
+                if(newSecHdrHtml) htmlNoDueArr.push(newSecHdrHtml);
+                currentSec = ZmTaskListView.SEC_NODUEDATE;
+            } else {
+                currentSec = null;
+            }
+
+			var div = this._createItemHtml(item, {now:now}, !doAdd, i);
+			if (div) {
+				if (div instanceof Array) {
+					for (var j = 0; j < div.length; j++){
+						this._addRow(div[j]);
+					}
+				} else if (div.tagName || doAdd) {
+					this._addRow(div);
+				} else {
+                    if(currentSec == ZmTaskListView.SEC_UPCOMING) {
+					    htmlUpcomingArr.push(div);
+                    } else if(currentSec == ZmTaskListView.SEC_TODAY) {
+                        htmlTodayArr.push(div);
+                    } else if(currentSec == ZmTaskListView.SEC_PASTDUE) {
+                        htmlPastDueArr.push(div);
+                    } else if(currentSec == ZmTaskListView.SEC_NODUEDATE) {
+                        htmlNoDueArr.push(div); 
+                    } else {
+                        htmlArr.push(div);
+                    }
+				}
+			}
+		}
+        
+        if(htmlUpcomingArr.length) htmlArr.push(htmlUpcomingArr.join(""));
+        if(htmlTodayArr.length) htmlArr.push(htmlTodayArr.join(""));
+        if(htmlPastDueArr.length) htmlArr.push(htmlPastDueArr.join(""));
+        if(htmlNoDueArr.length) htmlArr.push(htmlNoDueArr.join(""));
+
+		if (htmlArr.length) {
+			this._parentEl.innerHTML = htmlArr.join("");
+		}
+	} else if (!noResultsOk) {
+		this._setNoResultsHtml();
+	}
+
+    if (doAdd) { return; }
 
 	// add custom row to allow user to quickly enter tasks from w/in listview
-	var div = document.createElement("DIV");
+	div = document.createElement("DIV");
 	div.id = "_newTaskBannerId";
 
-	var htmlArr = [];
+	htmlArr = [];
 	var idx = 0;
 
 	htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='newTaskBannerSep'><tr>";
@@ -156,7 +291,7 @@ function(list, noResultsOk, doAdd) {
 		var hdr = this._headerList[i];
 		if (!hdr._visible) { continue; }
 
-		if (hdr._field == ZmItem.F_SUBJECT) {
+		if (hdr._field == ZmItem.F_SUBJECT || hdr._field == ZmItem.F_SORTED_BY) {
 			this.dId = Dwt.getNextId();
 			htmlArr[idx++] = "<td><div class='newTaskBanner' onclick='ZmTaskListView._handleOnClick(this)' id='";
 			htmlArr[idx++] = this.dId;	// bug: 17653 - for QA
@@ -172,6 +307,7 @@ function(list, noResultsOk, doAdd) {
 	htmlArr[idx++] = "</tr></table>";
 	div.innerHTML = htmlArr.join("");
 	this._addRow(div, 0);
+    //this._renderTaskListItemHdr();
 };
 
 ZmTaskListView.prototype._resetListView =
@@ -191,6 +327,95 @@ ZmTaskListView.prototype._getCellId =
 function(item, field) {
 	return (field == ZmItem.F_PRIORITY) ? this._getFieldId(item, field) : null;
 };
+
+ZmTaskListView.prototype.setTask =
+function(task) {
+	this._taskReadOnlyView.set(task);
+};
+
+ZmTaskListView.prototype._getAbridgedCell =
+function(htmlArr, idx, item, field, colIdx, width, attr) {
+	var params = {};
+
+	htmlArr[idx++] = "<td";
+	if (width) {
+		htmlArr[idx++] = " width='";
+		htmlArr[idx++] = width;
+		htmlArr[idx++] = "'";
+	}
+	htmlArr[idx++] = " id='";
+	htmlArr[idx++] = this._getCellId(item, field, params);
+	htmlArr[idx++] = "'";
+	var className = this._getCellClass(item, field, params);
+	if (className) {
+		htmlArr[idx++] = " class='";
+		htmlArr[idx++] = className;
+		htmlArr[idx++] = "'";
+	}
+	if (attr) {
+		htmlArr[idx++] = " ";
+		htmlArr[idx++] = attr;
+	}
+	htmlArr[idx++] = ">";
+	idx = this._getCellContents(htmlArr, idx, item, field, colIdx, params);
+	htmlArr[idx++] = "</td>";
+
+	return idx;
+};
+
+ZmTaskListView.prototype.getColorForStatus =
+function(status) {
+    switch (status) {
+		case ZmCalendarApp.STATUS_CANC: return "YellowDark";
+		case ZmCalendarApp.STATUS_COMP: return "Green";
+		case ZmCalendarApp.STATUS_DEFR: return "Red";
+		case ZmCalendarApp.STATUS_INPR: return "Blue";
+		case ZmCalendarApp.STATUS_NEED: return "";
+		case ZmCalendarApp.STATUS_WAIT: return "Orange";
+	}
+	return "";
+};
+
+ZmTaskListView.prototype._getAbridgedContent =
+function(task, colIdx) {
+	var htmlArr = [];
+	var idx = 0;
+	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? "22" : "16";
+
+	// first row
+	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100% style='padding-bottom:4px;'>";
+	htmlArr[idx++] = "<tr id='";
+	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, task.id, ZmItem.F_ITEM_ROW_3PANE);
+	htmlArr[idx++] = "'>";
+
+    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_SUBJECT, colIdx);
+
+    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
+
+	htmlArr[idx++] = "</tr></table>";
+
+    // second row
+    htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr>";
+    htmlArr[idx++] = "<td width=50%><div style='height:10px; width:80px; border:1px solid #c5c5c5;'><div";
+    htmlArr[idx++] = " class='";
+    htmlArr[idx++] = this.getColorForStatus(task.status);
+    htmlArr[idx++] = "' style='height:10px; width:"+ task.pComplete + "%;'></div></div></td>";
+    htmlArr[idx++] = "<td width=50% align=right><table border=0 cellspacing=0 cellpadding=0><tr>";
+
+    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_TAG, colIdx, "16");
+    if(task.priority == ZmCalItem.PRIORITY_HIGH || task.priority == ZmCalItem.PRIORITY_LOW) {
+        idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_PRIORITY, colIdx, "16", "align=right");
+    }
+    if (task.hasAttach) {
+        idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_ATTACHMENT, colIdx, "16");
+    }
+    htmlArr[idx++] = "</tr></table></td>";
+    htmlArr[idx++] = "</tr></table>";
+
+	return htmlArr.join("");
+
+};
+
 
 ZmTaskListView.prototype._getCellContents =
 function(htmlArr, idx, task, field, colIdx, params) {
@@ -225,7 +450,9 @@ function(htmlArr, idx, task, field, colIdx, params) {
 		htmlArr[idx++] = task.endDate != null
 			? AjxDateUtil.simpleComputeDateStr(task.endDate)
 			: "&nbsp;";
-	} else {
+	} else if (field == ZmItem.F_SORTED_BY) {
+        htmlArr[idx++] = this._getAbridgedContent(task, colIdx);
+    } else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}
 	
@@ -306,20 +533,56 @@ function(parent) {
 
 	var hList = [];
 
-	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
+    if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+        hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
+    }
+    if (this.isMultiColumn()) {
+        if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+            hList.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag}));
+        }
+        hList.push(new DwtListHeaderItem({field:ZmItem.F_PRIORITY, icon:"TaskHigh", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.priority}));
+        hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment}));
+        hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, resizeable:true, noRemove:true}));
+        hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmTaskListView.COL_WIDTH_STATUS, resizeable:true, sortable:ZmItem.F_STATUS}));
+        hList.push(new DwtListHeaderItem({field:ZmItem.F_PCOMPLETE, text:ZmMsg.pComplete, width:ZmTaskListView.COL_WIDTH_PCOMPLETE, sortable:ZmItem.F_PCOMPLETE}));
+        hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.dateDue, width:ZmTaskListView.COL_WIDTH_DATE_DUE, sortable:ZmItem.F_DATE}));
+    }
+	else {
+        hList.push(new DwtListHeaderItem({field:ZmItem.F_SORTED_BY, text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY, resizeable:false}));
 	}
-	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag}));
-	}
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_PRIORITY, icon:"TaskHigh", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.priority}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, resizeable:true, noRemove:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmTaskListView.COL_WIDTH_STATUS, resizeable:true, sortable:ZmItem.F_STATUS}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_PCOMPLETE, text:ZmMsg.pComplete, width:ZmTaskListView.COL_WIDTH_PCOMPLETE, sortable:ZmItem.F_PCOMPLETE}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.dateDue, width:ZmTaskListView.COL_WIDTH_DATE_DUE, sortable:ZmItem.F_DATE}));
-
 	return hList;
+};
+
+ZmTaskListView.prototype._createHeader =
+function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
+    if (headerCol._field == ZmItem.F_SORTED_BY) {
+		var field = headerCol._field;
+		var textTdId = this._itemCountTextTdId = DwtId._makeId(this.view, ZmSetting.RP_RIGHT, "td");
+		htmlArr[idx++] = "<td id='";
+		htmlArr[idx++] = id;
+		htmlArr[idx++] = "' class='";
+		htmlArr[idx++] = (id == this._currentColId)	? "DwtListView-Column DwtListView-ColumnActive'" :
+													  "DwtListView-Column'";
+		htmlArr[idx++] = " width='auto'><table border=0 cellpadding=0 cellspacing=0 width='100%'><tr><td id='";
+		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
+		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
+		htmlArr[idx++] = headerCol._label;
+		htmlArr[idx++] = "</td>";
+
+		// sort icon
+		htmlArr[idx++] = "<td class='itemSortIcon' id='";
+		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ARROW, this._view, field);
+		htmlArr[idx++] = "'>";
+		htmlArr[idx++] = AjxImg.getImageHtml(this._bSortAsc ? "ColumnUpArrow" : "ColumnDownArrow");
+		htmlArr[idx++] = "</td>";
+
+		// item count text
+		htmlArr[idx++] = "<td align=right class='itemCountText' id='";
+		htmlArr[idx++] = textTdId;
+		htmlArr[idx++] = "'></td></tr></table></div></td>";
+	} else {
+		return DwtListView.prototype._createHeader.apply(this, arguments);
+	}
 };
 
 
@@ -353,8 +616,10 @@ function(ev) {
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
 
 			// add new item at the beg. of list view's internal list
-			var idx = this._list && this._list.size() > 0 ? 1 : null;
-			this.addItem(item, idx, false, 0);
+			//var idx = this._list && this._list.size() > 0 ? 1 : null;
+			//this.addItem(item, idx, false);
+            this._sortColumn(ZmItem.F_DATE,true);
+            this._renderList(this.getList(),false,false);            
 		}
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var task = items[0];
@@ -391,6 +656,8 @@ function(ev) {
 	{
 		this._resetColWidth();
 	}
+
+    //this.reRenderListView();
 };
 
 
@@ -440,6 +707,60 @@ function(ev) {
 			? (ev.charCode == 0 && ev.keyCode == 40) : false;
 		if (key == DwtKeyEvent.KEY_ESCAPE || isDownArrow) {
 			tlv.discardNewTask();
+		}
+	}
+};
+
+/**
+ * Returns true if the reading pane is turned off or set to bottom. We use this
+ * call to tell the UI whether to re-render the listview with multiple columns
+ * or a single column (for right-pane).
+ */
+ZmTaskListView.prototype.isMultiColumn =
+function(controller) {
+	var ctlr = controller || this._controller;
+	return !ctlr.isReadingPaneOnRight();
+};
+
+
+/**
+ * Called by the controller whenever the reading pane preference changes
+ *
+ * @private
+ */
+ZmTaskListView.prototype.reRenderListView =
+function() {
+	var isMultiColumn = this.isMultiColumn();
+	if (isMultiColumn != this._isMultiColumn) {
+		this._saveState({selection:true, focus:true, scroll:true, expansion:true});
+		this._isMultiColumn = isMultiColumn;
+		this.headerColCreated = false;
+		this._headerList = this._getHeaderList();
+		this._rowHeight = null;
+		this._normalClass = isMultiColumn ? DwtListView.ROW_CLASS : ZmTaskListView.ROW_DOUBLE_CLASS;
+		var list = this.getList() || (new AjxVector());
+		this.set(list.clone());
+		this._restoreState();
+	}
+};
+
+ZmTaskListView.prototype.resetSize =
+function(newWidth, newHeight) {
+	this.setSize(newWidth, newHeight);
+	var height = (newHeight == Dwt.DEFAULT) ? newHeight : newHeight - DwtListView.HEADERITEM_HEIGHT;
+	Dwt.setSize(this._parentEl, newWidth, height);
+};
+
+ZmTaskListView.prototype._resetColWidth =
+function() {
+
+	if (!this.headerColCreated) { return; }
+
+	var lastColIdx = this._getLastColumnIndex();
+    if (lastColIdx) {
+        var lastCol = this._headerList[lastColIdx];
+		if (lastCol._field != ZmItem.F_SORTED_BY) {
+			DwtListView.prototype._resetColWidth.apply(this, arguments);
 		}
 	}
 };

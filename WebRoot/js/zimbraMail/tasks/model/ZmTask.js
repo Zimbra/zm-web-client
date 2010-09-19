@@ -469,6 +469,7 @@ function(rel) {
  */
 ZmTask.prototype.setTaskReminder =
 function(absStr) {
+    this.alarm = true;
     this._reminderAbs = absStr;
 };
 
