@@ -845,6 +845,14 @@ ZmiPad.getParamFromURL = function(param, url) {
 
 };
 
+ZmiPad.processScript = function() {
+    var scripts = $(ZmiPad.ID_VIEW_CONTENT).getElementsByTagName("script");
+    for (var i = 0; i < scripts.length; i++) {
+        if (!scripts[i].src) {
+            try{eval(scripts[i].innerHTML);}catch(e){if(window.console){console.log(e);}}
+        }
+    }
+};
 
 /*
 ZmiPadMail to process all Mail responses
@@ -859,6 +867,7 @@ ZmiPadMail.processResponse = function (respData, url) {
     if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || ZmiPad.getParamFromURL("showFolderCreate",url) == "1" || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1")  && (url.indexOf('hc=1') == -1)) {
 
         $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
+        if(url.indexOf('action=view') != -1) ZmiPad.processScript();
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
         $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
         initContentScroll();
