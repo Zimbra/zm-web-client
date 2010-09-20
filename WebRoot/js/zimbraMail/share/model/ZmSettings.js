@@ -106,6 +106,7 @@ function() {
 
 	if (appCtxt.isOffline) {
 		this.getSetting(ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED).addChangeListener(listener);
+		this.getSetting(ZmSetting.OFFLINE_IS_MAILTO_HANDLER).addChangeListener(listener);
 	}
 };
 
@@ -298,13 +299,6 @@ function(callback, accountName, result) {
 		if (setting) {
 			setting.setValue(false, null, true);
 		}
-	}
-
-	if (appCtxt.isOffline && appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
-		window.platform && window.platform.isRegisteredProtocolHandler("mailto") &&
-		!appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER))
-	{
-		appCtxt.set(ZmSetting.OFFLINE_IS_MAILTO_HANDLER, true, null, null, true);
 	}
 
 	// load zimlets *only* for the main account
@@ -908,6 +902,8 @@ function(ev) {
 		cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
 		cd.setMessage(ZmMsg.accountChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
+	} else if (appCtxt.isOffline && id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
+		appCtxt.getAppController().registerMailtoHandler(true);
 	}
 };
 
