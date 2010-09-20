@@ -357,6 +357,11 @@ function(view) {
     ZmListController.prototype._initialize.call(this, view);
 };
 
+ZmTaskListController.prototype.getTaskMultiView = 
+function() {
+		return this._taskMultiView;	
+};
+
 ZmTaskListController.prototype._initializeToolBar =
 function(view) {
 	if (this._toolbar[view]) { return; }

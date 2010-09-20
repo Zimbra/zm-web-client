@@ -616,10 +616,20 @@ function(ev) {
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
 
 			// add new item at the beg. of list view's internal list
-			//var idx = this._list && this._list.size() > 0 ? 1 : null;
-			//this.addItem(item, idx, false);
-            this._sortColumn(ZmItem.F_DATE,true);
-            this._renderList(this.getList(),false,false);            
+			var idx = this._list && this._list.size() > 0 ? 1 : null;
+
+			if (!this._list) {
+				this._list = new AjxVector();
+			}
+			// clear the "no results" message before adding!
+			if (this._list.size() == 0) {
+				this._resetList();
+			}
+
+			this._list.add(item, idx);	
+			this._sortColumn(ZmItem.F_DATE,true);
+            this._renderList(this.getList(),false,false);
+            if(this._list && this._list.size() == 1) { this.setSelection(this._list.get(0)); }
 		}
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var task = items[0];
@@ -635,6 +645,9 @@ function(ev) {
 		}
 		this._controller._app._checkReplenishListView = this;
 		this._controller._resetToolbarOperations();
+		if(this._controller.isReadingPaneOn()) {
+			this._controller.getTaskMultiView().getTaskView().reset();
+		}
 	} else {
 		ZmListView.prototype._changeListener.call(this, ev);
 	}
