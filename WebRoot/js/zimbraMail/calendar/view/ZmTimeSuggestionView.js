@@ -40,9 +40,14 @@ ZmTimeSuggestionView = function(parent, controller, apptEditView) {
 ZmTimeSuggestionView.prototype = new ZmListView;
 ZmTimeSuggestionView.prototype.constructor = ZmTimeSuggestionView;
 
+ZmTimeSuggestionView.SHOW_MORE_VALUE = '-1';
+
 ZmTimeSuggestionView.prototype.set =
-function(list, itemsById) {
+function(list, totalUsers, totalLocations, itemsById, itemsByIdx) {
     this._itemsById = itemsById;
+    this._itemsByIdx = itemsByIdx;
+    this._totalUsers = totalUsers;
+    this._totalLocations = totalLocations;
     ZmListView.prototype.set.call(this, list);
 };
 
@@ -53,11 +58,11 @@ function (item) {
     var attendeeImage = "AttendeeOrange";
     var locationImage = "LocationOrange";
 
-    if(item.availableUsers == item.totalUsers) attendeeImage = "AttendeeGreen"; 
-    if(item.availableLocations == item.totalLocations) locationImage = "LocationGreen";
+    if(item.availableUsers == this._totalUsers) attendeeImage = "AttendeeGreen";
+    if(item.availableLocations == this._totalLocations) locationImage = "LocationGreen";
 
-    if(item.availableUsers < Math.ceil(item.totalUsers/2)) attendeeImage = "AttendeeRed";
-    if(item.availableLocations < Math.ceil(item.totalLocations/2)) locationImage = "LocationRed";
+    if(item.availableUsers < Math.ceil(this._totalUsers/2)) attendeeImage = "AttendeeRed";
+    if(item.availableLocations < Math.ceil(this._totalLocations/2)) locationImage = "LocationRed";
 
     var params = {
         id: id,
@@ -65,7 +70,9 @@ function (item) {
         timeLabel: AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT).format(new Date(item.startTime)),
         locationCountStr: AjxMessageFormat.format(ZmMsg.availableRoomsCount, [item.availableLocations]),
         attendeeImage: attendeeImage,
-        locationImage: locationImage 
+        locationImage: locationImage,
+        totalUsers: this._totalUsers, 
+        totalLocations: this._totalLocations
     };
     return AjxTemplate.expand("calendar.Appointment#TimeSuggestion", params);
 };
@@ -85,27 +92,40 @@ function(itemDiv, ev) {
 ZmTimeSuggestionView.prototype.switchLocationSelect =
 function(item, id) {
     var locId = id + "_loc";
-    document.getElementById(locId).innerHTML = "";
+
+    var locationC = document.getElementById(locId);
+    if(!locationC) return;
+
+    locationC.innerHTML = "";
     if(!this._locSelect) {
         this._locSelect = new DwtSelect({parent:this, parentElement: locId});
         this._locSelect.addChangeListener(new AjxListener(this, this._locationListener));
     }else {
-        this._locSelect.reparentHtmlElement(locId)
+        this._locSelect.reparentHtmlElement(locId);
         this._locSelect.clearOptions();
         if(this._locSelect.itemId != id) this._restorePrevLocationInfo();
     }
 
     this._locSelect.itemId = id;
-    for (var loc in item.locations) {
-        var location = this._itemsById[loc];
-        var name = loc;
-        if(location) {
-            name = location.getAttr(ZmResource.F_name);
-            if (location instanceof ZmContact) {
-                name = location.getFullName();
+    this._locSelect.itemInfo = item;
+
+    var location, name, locationObj;
+    for (var i = item.locations.length; --i >=0;) {
+        location = this._itemsByIdx[item.locations[i]];
+        locationObj = this._itemsById[location];
+        name = location;
+        if(locationObj) {
+            name = locationObj.getAttr(ZmResource.F_name);
+            if (locationObj instanceof ZmContact) {
+                name = locationObj.getFullName();
             }
         }
-        if(item.locations[loc]) this._locSelect.addOption(name, false, loc);
+        this._locSelect.addOption(name, false, location);
+
+        if(item.locations.length - i > 20) {
+            this._locSelect.addOption(ZmMsg.showMore, false, ZmTimeSuggestionView.SHOW_MORE_VALUE);
+            break;
+        }
     }
 
     this.handleLocationOverflow();
@@ -134,6 +154,12 @@ function() {
 ZmTimeSuggestionView.prototype._locationListener =
 function() {
     var id = this._locSelect.getValue();
+
+    if(id == ZmTimeSuggestionView.SHOW_MORE_VALUE) {
+        this.showMore(this._locSelect.itemInfo);
+        return;
+    }
+
     var location = this._itemsById[id];
     if(location) {
         this._editView.updateLocation(location, this._locSelect.getSelectedOption() ? this._locSelect.getSelectedOption().getDisplayValue() : id);
@@ -156,3 +182,18 @@ function() {
     div.innerHTML = AjxTemplate.expand("calendar.Appointment#TimeSuggestion-Loading");
     this._addRow(div);
 };
+
+ZmTimeSuggestionView.prototype.showMore =
+function(locationInfo) {
+
+    var location, name, locationObj, items = new AjxVector();
+    for (var i = locationInfo.locations.length; --i >=0;) {
+        location = this._itemsByIdx[locationInfo.locations[i]];
+        locationObj = this._itemsById[location];
+        if(locationObj) items.add(locationObj)
+    }
+
+    var attendeePicker = this._editView.getAttendeePicker(ZmCalBaseItem.LOCATION);
+    attendeePicker.showSuggestedItems(items);    
+};
+

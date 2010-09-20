@@ -944,14 +944,20 @@ function(addrType, ev) {
 	var obj = ev ? DwtControl.getTargetControl(ev) : null;
     var inputObj = this._attInputField[addrType];
     if(inputObj) inputObj.setEnabled(false);
-    var locationPicker = this._attendeePicker[addrType];
-	if (!locationPicker) {
-		locationPicker = this._attendeePicker[addrType] = new ZmAttendeePicker(this, this._attendees, this._controller, addrType, this._dateInfo);
-		locationPicker.registerCallback(DwtDialog.OK_BUTTON, this._locationPickerOkCallback, this, [addrType]);
-		locationPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._attendeePickerCancelCallback, this, [addrType]);
-        locationPicker.initialize(this._calItem, this._mode, this._isDirty, this._apptComposeMode);
-	}
+    var locationPicker = this.getAttendeePicker(addrType);
 	locationPicker.popup();
+};
+
+ZmApptEditView.prototype.getAttendeePicker =
+function(addrType) {
+    var attendeePicker = this._attendeePicker[addrType];
+	if (!attendeePicker) {
+		attendeePicker = this._attendeePicker[addrType] = new ZmAttendeePicker(this, this._attendees, this._controller, addrType, this._dateInfo);
+		attendeePicker.registerCallback(DwtDialog.OK_BUTTON, this._locationPickerOkCallback, this, [addrType]);
+		attendeePicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._attendeePickerCancelCallback, this, [addrType]);
+        attendeePicker.initialize(this._calItem, this._mode, this._isDirty, this._apptComposeMode);
+	}
+    return attendeePicker;
 };
 
 // Transfers addresses from the contact picker to the appt compose view.

@@ -152,6 +152,11 @@ ZmAttendeePicker.TOP_LEGEND[ZmCalBaseItem.PERSON]			= ZmMsg.findAttendees;
 ZmAttendeePicker.TOP_LEGEND[ZmCalBaseItem.LOCATION]			= ZmMsg.findLocations;
 ZmAttendeePicker.TOP_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.findResources;
 
+ZmAttendeePicker.SUGGEST_LEGEND = {};
+ZmAttendeePicker.SUGGEST_LEGEND[ZmCalBaseItem.PERSON]			= ZmMsg.suggestedAttendees;
+ZmAttendeePicker.SUGGEST_LEGEND[ZmCalBaseItem.LOCATION]			= ZmMsg.suggestedLocations;
+ZmAttendeePicker.SUGGEST_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.suggestedResources;
+
 ZmAttendeePicker.BOTTOM_LEGEND = {};
 ZmAttendeePicker.BOTTOM_LEGEND[ZmCalBaseItem.PERSON]		= ZmMsg.apptAttendees;
 ZmAttendeePicker.BOTTOM_LEGEND[ZmCalBaseItem.LOCATION]		= ZmMsg.apptLocations;
@@ -196,8 +201,25 @@ function(ev) {
 	this.popdown();
 };
 
+ZmAttendeePicker.prototype.showSuggestedItems =
+function(items) {
+    this.popup(true);
+    this._fillFreeBusy(items, AjxCallback.simpleClosure(function(items) {
+		this._chooser.setItems(items);
+	}, this));
+};
+
+ZmAttendeePicker.prototype.setLabel =
+function(title) {
+    this.setTitle(title);
+    var sourceTitle = document.getElementById(this._searchTableId + '_legend');
+    if(sourceTitle) sourceTitle.innerHTML = title;
+};
+
 ZmAttendeePicker.prototype.popup =
-function() {
+function(showSuggestions) {
+
+    this.setLabel(showSuggestions ? ZmAttendeePicker.SUGGEST_LEGEND[this.type] : ZmAttendeePicker.TOP_LEGEND[this.type]);    
 
     DwtDialog.prototype.popup.call(this);
     
@@ -323,7 +345,7 @@ function() {
 	if (AjxEnv.isMozilla) {
 		html[i++] = " style='border: 1px dotted #555555'";
 	}
-	html[i++] = "><legend style='color:#555555'>";
+	html[i++] = "><legend style='color:#555555' id='" + this._searchTableId + "_legend'>";
 	html[i++] = ZmAttendeePicker.TOP_LEGEND[this.type];
 	html[i++] = "</legend>";
 
