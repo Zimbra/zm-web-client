@@ -844,7 +844,7 @@ function(params, batchCmd) {
 	}
 
 	var actionController = appCtxt.getActionController();
-	var actionLogItem = (params.undoing && actionController && actionController.actionPerformed({op: params.action, ids: idList, attrs: params.attrs})) || null;
+	var actionLogItem = (!params.undoing && actionController && actionController.actionPerformed({op: params.action, ids: idList, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseItemAction, [params.callback, actionLogItem]);
 
 	var params1 = {
