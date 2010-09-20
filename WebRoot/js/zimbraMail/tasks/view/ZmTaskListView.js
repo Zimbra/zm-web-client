@@ -250,6 +250,15 @@ function(list, noResultsOk, doAdd) {
 				} else if (div.tagName || doAdd) {
 					this._addRow(div);
 				} else {
+					
+					//bug:47781
+					if(this._controller.getAllowableTaskStatus() == ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_TODO] && item.status == ZmCalendarApp.STATUS_WAIT) {
+							if(currentSec == ZmTaskListView.SEC_PASTDUE) {
+								htmlPastDueArr.push(div);
+							}
+							continue;
+					}
+					
                     if(currentSec == ZmTaskListView.SEC_UPCOMING) {
 					    htmlUpcomingArr.push(div);
                     } else if(currentSec == ZmTaskListView.SEC_TODAY) {
