@@ -65,10 +65,6 @@ function() {
 		var mi = menu.getMenuItem(ZmOperation.TAG_COLOR_MENU);
 		if (mi) {
             mi.getMenu().addSelectionListener(this._listeners[ZmOperation.TAG_COLOR_MENU]);
-//			var items = mi.getMenu().getItems();
-//			for (var i = 0; i < items.length; i++) {
-//				items[i].addSelectionListener(this._listeners[ZmOperation.TAG_COLOR_MENU]);
-//			}
 		}
 		menu._initialized = true;
 	}
