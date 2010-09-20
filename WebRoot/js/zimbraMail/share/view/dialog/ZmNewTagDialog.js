@@ -79,16 +79,13 @@ function() {
 	this._colorButton = new DwtButton({parent:this, parentElement:fieldId, id:"ZmTagColorMenu"});
 	this._colorButton.noMenuBar = true;
 
-	ZmOperation.addColorMenu(this._colorButton);
+	var menu = ZmOperation.addColorMenu(this._colorButton, true);
 
 	var color = ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.getIcon(color));
 
 	this._tagColorListener = new AjxListener(this, this._colorListener);
-	var items = this._colorButton.getMenu().getItems();
-	for (var i = 0; i < items.length; i++) {
-		items[i].addSelectionListener(this._tagColorListener);
-	}
+    menu.addSelectionListener(this._tagColorListener);
 };
 
 ZmNewTagDialog.prototype._setAccountMenu =
@@ -111,7 +108,7 @@ function() {
 ZmNewTagDialog.prototype._setColorButton =
 function(color, text, image) {
 	this._colorButton.setData(ZmOperation.MENUITEM_ID, color);
-	this._colorButton.setText(text);
+	this._colorButton.setText(text || ZmMsg.custom);
 	this._colorButton.setImage(image);
 };
 
@@ -143,9 +140,14 @@ function() {
 		msg = ZmMsg.tagNameExists;
 	}
 
-	return (msg)
-		? this._showError(msg)
-		: {name:name, color:this._colorButton.getData(ZmOperation.MENUITEM_ID), accountName:(account && account.name)};
+	if (msg) return this._showError(msg);
+    var color = this._colorButton.getData(ZmOperation.MENUITEM_ID);
+    var data = {name:name, color:color, accountName:(account && account.name)};
+    if (String(color).match(/^#/)) {
+        data.rgb = color;
+        delete data.color;
+    }
+    return data;
 };
 
 ZmNewTagDialog.prototype._enterListener =

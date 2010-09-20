@@ -6,3 +6,10 @@
   </div>
 </template>
 
+<template id='zimbra.Widgets#ZmColorMenuItem' class='ZWidget'>
+	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder' cellspacing='0' cellpadding='0'>
+		<tr>
+			<td id='${id}_title' class='ZWidgetTitle'></td>
+		</tr>
+	</table>
+</template>

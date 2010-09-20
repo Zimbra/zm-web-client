@@ -157,7 +157,7 @@ function() {
 		}));
 	ZmOperation.registerOp(ZmId.OP_TAG_MENU, {tooltipKey:"tagTooltip", image:"Tag"}, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
-			ZmOperation.addDeferredMenu(ZmOperation.addTagMenu, parent);
+			ZmOperation.addDeferredMenu(ZmOperation.addTagMenu, parent, true);
 		}));
 	// placeholder for toolbar text
 	ZmOperation.registerOp(ZmId.OP_TEXT);
@@ -334,8 +334,12 @@ function(parent, id, opHash, index) {
  * @param {DwtComposite}	parent		the containing widget (toolbar or menu)
  */
 ZmOperation.addDeferredMenu =
-function(addMenuFunc, parent) {
-	var callback = new AjxCallback(null, addMenuFunc, parent);
+function(addMenuFunc, parent /* ... */) {
+    var args = [parent];
+    for (var i = 2; i < arguments.length; i++) {
+        args.push(arguments[i]);
+    }
+	var callback = new AjxCallback(null, addMenuFunc, args);
 	parent.setMenu(callback);
 };
 
@@ -467,19 +471,14 @@ function(parent) {
  * Adds a color submenu for choosing tag color.
  *
  * @param {DwtComposite}	parent		parent widget (a toolbar or action menu)
+ * @param {boolean} hideNoFill True to hide the no-fill/use-default option.
  * @return	{ZmPopupMenu}	the menu
  */
 ZmOperation.addColorMenu =
-function(parent) {
-	var menu = new ZmPopupMenu(parent);
-	parent.setMenu(menu);
-	var list = ZmTagTree.COLOR_LIST;
-	for (var i = 0; i < list.length; i++) {
-        var color = list[i];
-		var mi = menu.createMenuItem(color, {image:ZmTag.getIcon(color), text:ZmOrganizer.COLOR_TEXT[color]});
-		mi.setData(ZmOperation.MENUITEM_ID, color);
-	}
-	return menu;
+function(parent, hideNoFill) {
+    var menu = new ZmColorMenu({parent:parent,image:"Tag",hideNone:true,hideNoFill:hideNoFill});
+    parent.setMenu(menu);
+    return menu;
 };
 
 /**

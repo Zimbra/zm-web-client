@@ -544,3 +544,108 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 		</tr>
 	</table>
 </template>
+
+<template id="dwt.Widgets#DwtColorPicker">
+    <div id='${id}_colors'>
+        <div class='Text'><$=AjxMsg.colorsStandard$></div>
+        <div class='Colors First'>
+            <div class='Color' style='background-color:<$=AjxMsg.colorRed$>;'></div>
+            <div class='Color' style='background-color:<$=AjxMsg.colorOrange$>;'></div>
+            <div class='Color' style='background-color:<$=AjxMsg.colorYellow$>;'></div>
+            <div class='Color' style='background-color:<$=AjxMsg.colorGreen$>;'></div>
+            <div class='Color' style='background-color:<$=AjxMsg.colorCyan$>;'></div>
+            <div class='Color' style='background-color:<$=AjxMsg.colorBlue$>;'></div>
+            <div class='Color' style='background-color:<$=AjxMsg.colorPurple$>;'></div>
+            <div class='Color' style='background-color:<$=AjxMsg.colorPink$>;'></div>
+            <div class='Color' style='background-color:white;'></div>
+            <div class='Color' style='background-color:black;'></div>
+        </div>
+        <div class='Text'><$=AjxMsg.colorsCustom$></div>
+        <div class='Colors First'>
+            <div class='Color' style='background-color:#ff8686;'></div>
+            <div class='Color' style='background-color:#ff9966;'></div>
+            <div class='Color' style='background-color:#ffff99;'></div>
+            <div class='Color' style='background-color:#ccffcc;'></div>
+            <div class='Color' style='background-color:#ccffff;'></div>
+            <div class='Color' style='background-color:#99ccff;'></div>
+            <div class='Color' style='background-color:#ccccff;'></div>
+            <div class='Color' style='background-color:#ffccff;'></div>
+            <div class='Color' style='background-color:#ededed;'></div>
+            <div class='Color' style='background-color:#808080;'></div>
+        </div>
+        <div class='Colors'>
+            <div class='Color' style='background-color:#ff0000;'></div>
+            <div class='Color' style='background-color:#ff6600;'></div>
+            <div class='Color' style='background-color:#ffcc33;'></div>
+            <div class='Color' style='background-color:#66cc66;'></div>
+            <div class='Color' style='background-color:#00cccc;'></div>
+            <div class='Color' style='background-color:#3366ff;'></div>
+            <div class='Color' style='background-color:#6666ff;'></div>
+            <div class='Color' style='background-color:#cc33cc;'></div>
+            <div class='Color' style='background-color:#d5d5d5;'></div>
+            <div class='Color' style='background-color:#666666;'></div>
+        </div>
+        <div class='Colors'>
+            <div class='Color' style='background-color:#cc0000;'></div>
+            <div class='Color' style='background-color:#cc6600;'></div>
+            <div class='Color' style='background-color:#cc9933;'></div>
+            <div class='Color' style='background-color:#009900;'></div>
+            <div class='Color' style='background-color:#339999;'></div>
+            <div class='Color' style='background-color:#3333ff;'></div>
+            <div class='Color' style='background-color:#6633ff;'></div>
+            <div class='Color' style='background-color:#993399;'></div>
+            <div class='Color' style='background-color:#cccccc;'></div>
+            <div class='Color' style='background-color:#4d4d4d;'></div>
+        </div>
+        <div class='Colors'>
+            <div class='Color' style='background-color:#990000;'></div>
+            <div class='Color' style='background-color:#993300;'></div>
+            <div class='Color' style='background-color:#996633;'></div>
+            <div class='Color' style='background-color:#006600;'></div>
+            <div class='Color' style='background-color:#336666;'></div>
+            <div class='Color' style='background-color:#000099;'></div>
+            <div class='Color' style='background-color:#330099;'></div>
+            <div class='Color' style='background-color:#663366;'></div>
+            <div class='Color' style='background-color:#b3b3b3;'></div>
+            <div class='Color' style='background-color:#333333;'></div>
+        </div>
+        <div class='Colors'>
+            <div class='Color' style='background-color:#330000;'></div>
+            <div class='Color' style='background-color:#663300;'></div>
+            <div class='Color' style='background-color:#333300;'></div>
+            <div class='Color' style='background-color:#003300;'></div>
+            <div class='Color' style='background-color:#003333;'></div>
+            <div class='Color' style='background-color:#000066;'></div>
+            <div class='Color' style='background-color:#330066;'></div>
+            <div class='Color' style='background-color:#330033;'></div>
+            <div class='Color' style='background-color:#aaaaaa;'></div>
+            <div class='Color' style='background-color:#1a1a1a;'></div>
+        </div>
+    </div>
+    <$ if (!data.hideNoFill) { $>
+        <div class='Text' style='margin-top:4px;'>
+            <div id='${id}_default'></div>
+        </div>
+    <$ } $>
+    <$ if (data.allowColorInput) { $>
+        <div class='Text' style='margin-top:4px;'>
+            <table border="0" width='100%'>
+                <tr><td><div id='${id}_input'></div></td>
+                    <td><div id='${id}_button'></div></td>
+                </tr>
+            </table>
+
+
+        </div>
+    <$ } $>
+</template>
+
+<template id='dwt.Widgets#DwtColorPickerButton' class='ZWidget'>
+	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder' cellspacing=0 cellpadding=0>
+		<tr>
+			<td><div id='${id}_color' class='Color'></div></td>
+			<td id='${id}_title' class='ZWidgetTitle'></td>
+		</tr>
+	</table>
+</template>
+

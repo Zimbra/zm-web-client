@@ -64,10 +64,11 @@ function() {
 	if (menu && !menu._initialized) {
 		var mi = menu.getMenuItem(ZmOperation.TAG_COLOR_MENU);
 		if (mi) {
-			var items = mi.getMenu().getItems();
-			for (var i = 0; i < items.length; i++) {
-				items[i].addSelectionListener(this._listeners[ZmOperation.TAG_COLOR_MENU]);
-			}
+            mi.getMenu().addSelectionListener(this._listeners[ZmOperation.TAG_COLOR_MENU]);
+//			var items = mi.getMenu().getItems();
+//			for (var i = 0; i < items.length; i++) {
+//				items[i].addSelectionListener(this._listeners[ZmOperation.TAG_COLOR_MENU]);
+//			}
 		}
 		menu._initialized = true;
 	}
@@ -207,7 +208,13 @@ ZmTagTreeController.prototype._colorListener =
 function(ev) {
 	var tag = this._getActionedOrganizer(ev);
 	if (tag) {
-		tag.setColor(ev.item.getData(ZmOperation.MENUITEM_ID));
+        var color = ev.item.getData(ZmOperation.MENUITEM_ID);
+        if (String(color).match(/^#/)) {
+            tag.setRGB(color);
+        }
+        else {
+            tag.setColor(color);
+        }
 	}
 };
 

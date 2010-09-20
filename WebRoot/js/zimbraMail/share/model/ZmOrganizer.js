@@ -86,7 +86,10 @@ ZmOrganizer = function(params) {
 	// NOTE: has been set. In other words, the color parameter will only
 	// NOTE: be specified if explicitly set that way and not as an explicit
 	// NOTE: RGB value.
-	this.rgb = params.color != null ? ZmOrganizer.COLOR_VALUES[params.color] : params.rgb;
+    // NOTE: It looks like the server IS sending a color value even though
+    // NOTE: it shouldn't when an explicit RGB is set. So, instead, try to
+    // NOTE: handle this situation as well.
+	this.rgb = params.rgb || ZmOrganizer.COLOR_VALUES[params.color];
 
 	if (appCtxt.isOffline && !this.account && this.id == this.nId) {
 		this.account = appCtxt.accountList.mainAccount;
@@ -936,7 +939,7 @@ ZmOrganizer.prototype.getIcon = function() {};
 ZmOrganizer.prototype.getIconWithColor =
 function() {
 	var icon = this.getIcon() || "";
-	var color = this.rgb || this.color;
+	var color = this.rgb || ZmOrganizer.COLOR_VALUES[this.color];
 	return color ? [icon,color].join(",color=") : icon;
 };
 

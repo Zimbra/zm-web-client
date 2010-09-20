@@ -76,24 +76,10 @@ function(organizer) {
 	this._organizer = organizer;
 	organizer.addChangeListener(this._folderChangeListener);
 
-	// dont allow "None" option in color picker
-	// bug 22490 removed None option when not in use
-	if (this._color &&
-		organizer.type != ZmOrganizer.FOLDER &&
-		organizer.type != ZmOrganizer.TASKS &&
-		organizer.type != ZmOrganizer.ADDRBOOK)
-	{
-		this._color.clearOptions();
-		for (var i = 1; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
-			var color = ZmOrganizer.COLOR_CHOICES[i];
-			this._color.addOption(color.label, false, color.value);
-		}
-	} else {
-		this._color.clearOptions();
-		for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
-			var color = ZmOrganizer.COLOR_CHOICES[i];
-			this._color.addOption(color.label, false, color.value);
-		}
+	if (this._color) {
+        var icon = organizer.getIcon(); 
+        this._color.setImage(icon);
+        this._color.setValue(organizer.rgb);
 	}
 
 	this._handleFolderChange();
@@ -220,9 +206,14 @@ function(response) {
 	// change color
 	var callback = new AjxCallback(this, this._handleFreeBusy);
 	var organizer = this._organizer;
-	var color = this._color.getValue();
+	var color = this._color.getValue() || ZmOrganizer.DEFAULT_COLOR[organizer.type];
 	if (organizer.color != color) {
-		organizer.setColor(color, callback, this._handleErrorCallback);
+        if (String(color).match(/^#/)) {
+            organizer.setRGB(color, callback, this._handleErrorCallback);
+        }
+        else {
+            organizer.setColor(color, callback, this._handleErrorCallback);
+        }
 		return;
 	}
 
@@ -290,7 +281,7 @@ function(event) {
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
 	this._urlEl.innerHTML = organizer.url || "";
 	if (this._color) {
-		this._color.setSelectedValue(organizer.color);
+		this._color.setValue(organizer.rgb || ZmOrganizer.COLOR_VALUES[organizer.color]);
 		var isVisible = (organizer.type != ZmOrganizer.FOLDER ||
 						 (organizer.type == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)));
 		this._props.setPropertyVisible(this._colorId, isVisible);
@@ -480,11 +471,7 @@ function() {
 	propsGroup.setLabel(ZmMsg.properties);
 
 	this._props = new DwtPropertySheet(propsGroup);
-	this._color = new DwtSelect({parent:this._props});
-	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
-		var color = ZmOrganizer.COLOR_CHOICES[i];
-		this._color.addOption(color.label, false, color.value);
-	}
+	this._color = new ZmColorButton({parent:this});
 
 	this._props.addProperty(ZmMsg.nameLabel, nameEl);
 	this._props.addProperty(ZmMsg.typeLabel, this._typeEl);

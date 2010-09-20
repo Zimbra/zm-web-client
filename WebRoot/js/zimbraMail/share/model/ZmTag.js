@@ -142,6 +142,10 @@ function(color) {
 
 ZmTag.getIcon = function(color) {
     var object = { getIcon:ZmTag.prototype.getIcon, color:color };
+    if (String(color).match(/^#/)) {
+        object.rgb = color;
+        object.color = null;
+    }
     return ZmTag.prototype.getIconWithColor.call(object);
 }
 
@@ -155,10 +159,13 @@ function(params) {
 	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
 	var tagNode = soapDoc.set("tag");
 	tagNode.setAttribute("name", params.name);
-	var color = ZmOrganizer.checkColor(params.color);
-	if (color && (color != ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG])) {
-		tagNode.setAttribute("color", color);
-	}
+    if (params.rgb) {
+        tagNode.setAttribute("rgb", params.rgb);
+    }
+    else {
+        var color = ZmOrganizer.checkColor(params.color) || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
+        tagNode.setAttribute("color", color);
+    }
 	var errorCallback = new AjxCallback(null, ZmTag._handleErrorCreate, params);
 	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback, accountName:params.accountName});
 };
