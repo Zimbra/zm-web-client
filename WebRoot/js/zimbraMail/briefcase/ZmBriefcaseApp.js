@@ -310,7 +310,7 @@ function() {
     return [
         "width=",(screen.width || 640),",",
         "height=",(screen.height || 480),",",
-        "fullscreen=yes"
+        "scrollbars=yes"
     ].join("");
 };
 
