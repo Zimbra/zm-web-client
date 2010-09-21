@@ -163,7 +163,7 @@ ZmScheduleAssistantView.prototype.updateTime =
 function(clearSelection) {
     if(clearSelection) this._date = null;
     var tf = this._getTimeFrame();
-    this._miniCalendar.setDate(tf.start);
+    this._miniCalendar.setDate(tf.start, true);
     this.reset(tf.start, this._attendees);    
 };
 
@@ -173,6 +173,11 @@ function(attendees) {
     if(attendees instanceof AjxVector) attendees = attendees.getArray();
 
     this._attendees = [];
+
+    //include organizer in the scheduler suggestions
+    var organizer = this._editView.getOrganizer();
+    this._attendees.push(organizer);
+
     var attendee;
     for (var i = 0; i < attendees.length; i++) {
             attendee = attendees[i].getEmail();
@@ -272,18 +277,15 @@ function() {
     var attendees = this._controller.getAttendees(ZmCalBaseItem.PERSON).getArray();
     var attendee;
     this._attendees = [];
+
+    //include organizer in the scheduler suggestions
+    var organizer = this._editView.getOrganizer();
+    this._addAttendee(organizer, itemsByIdx, itemsById, emails);
+
     for (var i = attendees.length; --i >= 0;) {        
             //ignore optional attendees while suggesting
             if(attendees[i].getParticipantRole() == ZmCalItem.ROLE_OPTIONAL) continue;
-            attendee = attendees[i].getEmail();
-            if (attendee instanceof Array) {
-                attendee = attendee[i][0];
-            }
-            itemsByIdx.push(attendee);
-            attendees[i]._itemIndex = itemsByIdx.length-1;
-            itemsById[attendee] = attendees[i];
-            emails.push(attendee);
-            this._attendees.push(attendee);
+            this._addAttendee(attendees[i], itemsByIdx, itemsById, emails);
     }
 
     this._key = this.getFormKey(tf.start, this._attendees);
@@ -304,6 +306,20 @@ function() {
 															 null,
 															 true);
 };
+
+ZmScheduleAssistantView.prototype._addAttendee =
+function(attendeeObj, itemsByIdx, itemsById, emails) {
+    var attendee = attendeeObj.getEmail();
+    if (attendee instanceof Array) {
+        attendee = attendeeObj[0];
+    }
+    itemsByIdx.push(attendee);
+    attendeeObj._itemIndex = itemsByIdx.length-1;
+    itemsById[attendee] = attendeeObj;
+    emails.push(attendee);
+    this._attendees.push(attendee);
+};
+
 
 ZmScheduleAssistantView.prototype.getFormKey =
 function(startDate, attendees) {

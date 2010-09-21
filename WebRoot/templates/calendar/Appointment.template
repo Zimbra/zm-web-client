@@ -23,6 +23,11 @@
             </tr>
             <$ } $>
             <tr>
+                <td width='65' class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subjectLabel $></nobr></td>
+                <td colspan='5' id='${id}_subject'></td>
+                <td>&nbsp;</td>
+            </tr>            
+            <tr>
                 <td width='65' align='right' valign='top'><div id='${id}_req_att_picker'><legend><$= ZmMsg.requiredLabel $></legend></div></td>
                 <td colspan='5' id='${id}_person'></td>
                 <td id='${id}_show_optional' class='fakeAnchor'><$= ZmMsg.showOptional $></td>
@@ -30,11 +35,6 @@
             <tr id='${id}_optionalContainer'>
                 <td width='65' align='right' valign='top'><div id='${id}_opt_att_picker'><legend><$= ZmMsg.optionalLabel $></legend></div></td>
                 <td colspan='5' id='${id}_optional'></td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td width='65' class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subjectLabel $></nobr></td>
-                <td colspan='5' id='${id}_subject'></td>
                 <td>&nbsp;</td>
             </tr>
             <tr>
