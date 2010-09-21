@@ -1204,7 +1204,8 @@ ZmComposeController.prototype._processSendMsg =
 function(draftType, msg, resp) {
 
 	this._msgSent = true;
-	var isDraft = (draftType != ZmComposeController.DRAFT_TYPE_NONE && draftType != ZmComposeController.DRAFT_TYPE_DELAYSEND);
+	var isScheduled = draftType == ZmComposeController.DRAFT_TYPE_DELAYSEND;
+	var isDraft = (draftType != ZmComposeController.DRAFT_TYPE_NONE && !isScheduled);
 	if (!isDraft) {
 		var popped = false;
 		if (appCtxt.get(ZmSetting.SHOW_MAIL_CONFIRM)) {
@@ -1230,9 +1231,9 @@ function(draftType, msg, resp) {
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
 			this._composeView.reset(false);
 
-			// if the original message was a draft, we need to nuke it
+			// if the original message was a draft and we're not autosending, we need to nuke it
 			var origMsg = msg._origMsg;
-			if (origMsg && origMsg.isDraft)
+			if (origMsg && origMsg.isDraft && !isScheduled)
 				this._deleteDraft(origMsg);
 
 			// bug 36341
