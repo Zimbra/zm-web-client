@@ -506,7 +506,8 @@ function(params, result) {
 	if (!appCtxt.isOffline) {
 		this.setPollInterval(true);
 	} else {
-		if (window.platform && window.platform.isRegisteredProtocolHandler("mailto")) {  
+		if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && window.platform && 
+			window.platform.isRegisteredProtocolHandler("mailto")) {  
 		    // bug fix #34342 - always register the protocol handler for mac on start up
 		    this.registerMailtoHandler(AjxEnv.isMac);
 		}    
