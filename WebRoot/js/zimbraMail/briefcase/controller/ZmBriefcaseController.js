@@ -81,9 +81,8 @@ function() {
 // Constants
 ZmBriefcaseController._VIEWS = {};
 ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE]			= "ZmBriefcaseView";
-ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_DETAIL]	= "ZmDetailListView";
+ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_DETAIL]	= "ZmPreviewPaneView";
 ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_COLUMN]	= "ZmMultiColView";
-ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_PREVIEW]	= "ZmBriefcaseSplitView";
 
 // Stuff for the View menu
 ZmBriefcaseController.GROUP_BY_ICON = {};
@@ -91,19 +90,30 @@ ZmBriefcaseController.GROUP_BY_MSG_KEY = {};
 ZmBriefcaseController.GROUP_BY_VIEWS = [];
 
 ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE]			= "explorerView";
-ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_DETAIL]	= "detailView";
+ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_DETAIL]	= "previewView";
 ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_COLUMN]	= "columnBrowserView";
-ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_PREVIEW]	= "previewView";
 
 ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE]			= "IconView";
 ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_DETAIL]		= "TasksListView";
 ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_COLUMN]		= "ListView";
-ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_PREVIEW]	= "FilePreview";
 
 ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE);
 ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_DETAIL);
 ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_COLUMN);
-ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_PREVIEW);
+
+ZmBriefcaseController.RP_IDS = [ZmSetting.RP_BOTTOM, ZmSetting.RP_RIGHT, ZmSetting.RP_OFF];
+
+// reading pane options
+ZmBriefcaseController.PREVIEW_PANE_TEXT = {};
+ZmBriefcaseController.PREVIEW_PANE_TEXT[ZmSetting.RP_OFF]	= ZmMsg.previewPaneOff;
+ZmBriefcaseController.PREVIEW_PANE_TEXT[ZmSetting.RP_BOTTOM]	= ZmMsg.previewPaneAtBottom;
+ZmBriefcaseController.PREVIEW_PANE_TEXT[ZmSetting.RP_RIGHT]	= ZmMsg.previewPaneOnRight;
+
+ZmBriefcaseController.PREVIEW_PANE_ICON = {};
+ZmBriefcaseController.PREVIEW_PANE_ICON[ZmSetting.RP_OFF]	    = "SplitPaneOff";
+ZmBriefcaseController.PREVIEW_PANE_ICON[ZmSetting.RP_BOTTOM]	= "SplitPane";
+ZmBriefcaseController.PREVIEW_PANE_ICON[ZmSetting.RP_RIGHT]	    = "SplitPaneVertical";
+
 
 ZmBriefcaseController.prototype._standardActionMenuOps =
 function() {
@@ -296,7 +306,7 @@ function() {
 
 ZmBriefcaseController.prototype._defaultView =
 function() {
-	return ZmId.VIEW_BRIEFCASE_COLUMN;
+	return ZmId.VIEW_BRIEFCASE_DETAIL;
 };
 
 ZmBriefcaseController.prototype._createNewView =
@@ -712,7 +722,6 @@ function(items){
 		var item = items[i];
 		var restUrl = item.getRestUrl();
 		if (restUrl) {
-
             if (item.isWebDoc()) {
                 //added for bug: 45150
                 restUrl = this._app.fixCrossDomainReference(restUrl);
@@ -911,13 +920,15 @@ function(view, firstTime) {
 			btn.setMenu(menu);
 			for (var i = 0; i < ZmBriefcaseController.GROUP_BY_VIEWS.length; i++) {
 				var id = ZmBriefcaseController.GROUP_BY_VIEWS[i];
-                if(id == ZmId.VIEW_BRIEFCASE_PREVIEW && !appCtxt.get(ZmSetting.PREVIEW_ENABLED)) continue;
 				var mi = menu.createMenuItem(id, {image:ZmBriefcaseController.GROUP_BY_ICON[id],
 												  text:ZmMsg[ZmBriefcaseController.GROUP_BY_MSG_KEY[id]],
 												  style:DwtMenuItem.RADIO_STYLE});
 				mi.setData(ZmOperation.MENUITEM_ID, id);
 				mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			}
+
+            this._setupPreviewPaneMenu(menu);
+
 		}
 	}
 
@@ -931,6 +942,86 @@ function(view, firstTime) {
 
 	// always reset the view menu button icon to reflect the current view
 	btn.setImage(ZmBriefcaseController.GROUP_BY_ICON[view]);
+
+    this._resetPreviewPaneMenu(menu, view);
+};
+
+ZmBriefcaseController.prototype._resetPreviewPaneMenu =
+function(menu, view){
+    view = view || this._currentView;
+    var enabled = (view == ZmId.VIEW_BRIEFCASE_DETAIL);
+    var ids = ZmDoublePaneController.RP_IDS;    
+    for (var i = 0; i < ids.length; i++) {
+		var id = ids[i];
+		if (menu._menuItems[id]) {
+            menu._menuItems[id].setEnabled(enabled);
+        }
+    }
+
+};
+
+ZmBriefcaseController.prototype._setupPreviewPaneMenu =
+function(menu){
+
+    if (menu.getItemCount() > 0) {
+		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE, id:"PREVIEW_SEPERATOR"});
+	}
+
+	var miParams = {text:ZmMsg.readingPaneAtBottom, style:DwtMenuItem.RADIO_STYLE, radioGroupId:"RP"};
+	var ids = ZmDoublePaneController.RP_IDS;
+	var pref = appCtxt.get(ZmSetting.READING_PANE_LOCATION);
+	for (var i = 0; i < ids.length; i++) {
+		var id = ids[i];
+		if (!menu._menuItems[id]) {
+			miParams.text = ZmBriefcaseController.PREVIEW_PANE_TEXT[id];
+			miParams.image = ZmBriefcaseController.PREVIEW_PANE_ICON[id];
+			var mi = menu.createMenuItem(id, miParams);
+			mi.setData(ZmOperation.MENUITEM_ID, id);
+			mi.addSelectionListener(new AjxListener(this, this._previewPaneListener, id));
+			if (id == pref) {
+				mi.setChecked(true, true);
+			}
+		}
+	}
+
+};
+
+/**
+ * Checks if the reading pane is "on".
+ *
+ * @return	{Boolean}	<code>true</code> if the reading pane is "on"
+ */
+ZmBriefcaseController.prototype.isReadingPaneOn =
+function() {
+	return (this._getReadingPanePref() != ZmSetting.RP_OFF);
+};
+
+/**
+ * Checks if the reading pane is "on" right.
+ *
+ * @return	{Boolean}	<code>true</code> if the reading pane is "on" right.
+ */
+ZmBriefcaseController.prototype.isReadingPaneOnRight =
+function() {
+	return (this._getReadingPanePref() == ZmSetting.RP_RIGHT);
+};
+
+ZmBriefcaseController.prototype._getReadingPanePref =
+function() {
+	return appCtxt.get(ZmSetting.READING_PANE_LOCATION);
+};
+
+ZmBriefcaseController.prototype._setReadingPanePref =
+function(value) {
+	appCtxt.set(ZmSetting.READING_PANE_LOCATION, value);
+};
+
+ZmBriefcaseController.prototype._previewPaneListener =
+function(newPreviewStatus){
+    var oldPreviewStatus = appCtxt.get(ZmSetting.READING_PANE_LOCATION);
+    appCtxt.set(ZmSetting.READING_PANE_LOCATION, newPreviewStatus);
+    var lv = this._parentView[this._currentView];
+    lv.resetPreviewPane(newPreviewStatus, oldPreviewStatus);
 };
 
 ZmBriefcaseController.CONVERTABLE = {

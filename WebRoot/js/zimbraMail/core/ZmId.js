@@ -940,6 +940,7 @@ ZmId.FLD_SUBJECT		= "su";
 ZmId.FLD_TAG			= "tg";
 ZmId.FLD_TAG_CELL		= "tc";
 ZmId.FLD_TYPE			= "ty";
+ZmId.FLD_VERSION        = "ver";
 ZmId.FLD_WORK_PHONE		= "wp"; // Contacts
 ZmId.FLD_LOCK           = "loid";
 
