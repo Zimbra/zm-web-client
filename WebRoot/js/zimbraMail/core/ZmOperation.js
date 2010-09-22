@@ -133,6 +133,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_PAGE_BACK, {image:"LeftArrow", shortcut:ZmKeyMap.PREV_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow", shortcut:ZmKeyMap.NEXT_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30}, ZmSetting.PRINT_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_RECOVER_DELETED_ITEMS, {textKey:"recoverDeletedItems", image:"Trash", tooltipKey:"recoverDeletedItems"}, ZmSetting.DUMPSTER_ENABLED);
     ZmOperation.registerOp(ZmId.OP_REFRESH, {textKey:"refresh", tooltipKey:"refreshTooltip"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_FOLDER, {textKey:"renameFolder", image:"Rename"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_SEARCH, {textKey:"renameSearch", image:"Rename"});

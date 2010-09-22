@@ -2960,6 +2960,27 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 /*
+ * Dumpster dialog
+ */
+.ZmDumpsterDialog {
+	height: 300px;
+}
+
+.ZmDumpsterDialog .DwtDialogBody {
+	width: 450px;
+}
+
+.ZmDumpsterDialog-toolbar {
+    @ToolbarBg@
+	border-bottom: 1px solid @Darken(AltC, 25)@;
+}
+
+.ZmDumpsterDialog .DwtListView-Rows {
+	height: 278px;
+}
+
+
+/*
  *	Share properties dialog
  */
 /* ??? USE? */

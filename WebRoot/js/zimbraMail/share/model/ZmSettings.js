@@ -704,6 +704,7 @@ function() {
 	this.registerSetting("BROWSE_ENABLED",					{name:"zimbraFeatureAdvancedSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("CHANGE_PASSWORD_ENABLED",			{name:"zimbraFeatureChangePasswordEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("DISPLAY_NAME",					{name:"displayName", type:ZmSetting.T_COS});
+	this.registerSetting("DUMPSTER_ENABLED",				{name:"zimbraDumpsterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("ERROR_REPORT_URL",				{name:"zimbraErrorReportUrl", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
 	this.registerSetting("FLAGGING_ENABLED",				{name:"zimbraFeatureFlaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("FOLDERS_EXPANDED",				{name:"zimbraPrefFoldersExpanded", type:ZmSetting.T_METADATA, dataType: ZmSetting.D_HASH, isImplicit:true, section:ZmSetting.M_IMPLICIT});

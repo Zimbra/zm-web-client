@@ -170,3 +170,8 @@
 	<div class='DebugLogDialog-desc'><$= ZmMsg.debugLogDesc $></div>
 	<div class='DebugLogDialog-log' id='${id}_log'></div>
 </template>
+
+<template id='share.Widgets#ZmDumpsterDialog'>
+	<div id='${id}_toolbar'></div>
+	<div id='${id}_listview'></div>
+</template>

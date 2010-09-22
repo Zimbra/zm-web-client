@@ -576,7 +576,7 @@ function() {
 		this._chooseAccountDialog = new ZmChooseAccountDialog(this._shell);
 	}
 	return this._chooseAccountDialog;
-}
+};
 
 /**
  * Gets the pick tag dialog.
@@ -784,6 +784,15 @@ function() {
 		this.runAttachDialogCallbacks();
 	}
 	return this._attachDialog;
+};
+
+ZmAppCtxt.prototype.getDumpsterDialog =
+function() {
+	if (!this._dumpsterDialog) {
+		AjxDispatcher.require("Extras");
+		this._dumpsterDialog = new ZmDumpsterDialog(this._shell);
+	}
+	return this._dumpsterDialog;
 };
 
 /**

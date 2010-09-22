@@ -41,6 +41,7 @@ ZmFolderTreeController = function(type, dropTgt) {
 	this._listeners[ZmOperation.SHARE_FOLDER] = new AjxListener(this, this._shareFolderListener);
 	this._listeners[ZmOperation.MOUNT_FOLDER] = new AjxListener(this, this._mountFolderListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER] = new AjxListener(this, this._emptyListener);
+	this._listeners[ZmOperation.RECOVER_DELETED_ITEMS] = new AjxListener(this, this._recoverListener);
 	this._listeners[ZmOperation.SYNC_OFFLINE_FOLDER] = new AjxListener(this, this._syncOfflineFolderListener);
 	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 };
@@ -219,6 +220,14 @@ function(parent, type, id) {
 	}
 	parent.enable(ZmOperation.BROWSE, true);
 
+	button = parent.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
+	if (button) {
+		button.setVisible(isTrash);
+		button.setEnabled(isTrash);
+		// bug #30582 - remove this line to enable dumpster:
+		button.setVisible(false);
+	}
+
 	// we always enable sharing in case we're in multi-mbox mode
 	this._resetButtonPerSetting(parent, ZmOperation.SHARE_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
 	this._resetButtonPerSetting(parent, ZmOperation.MOUNT_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
@@ -262,6 +271,7 @@ function() {
 		ZmOperation.SYNC,
 		ZmOperation.SYNC_ALL,
 		ZmOperation.EMPTY_FOLDER,
+		ZmOperation.RECOVER_DELETED_ITEMS,
 		ZmOperation.SYNC_OFFLINE_FOLDER
 	];
 };
@@ -530,6 +540,11 @@ function(ev) {
 		var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
 		cancelButton.focus();
 	}
+};
+
+ZmFolderTreeController.prototype._recoverListener =
+function(ev) {
+	appCtxt.getDumpsterDialog().popup();
 };
 
 /**
