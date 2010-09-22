@@ -57,10 +57,8 @@ function() {
 
 ZmDumpsterDialog.prototype.popup =
 function() {
-	var dumpster = appCtxt.getById(ZmOrganizer.ID_DUMPSTER);
-
 	var params = {
-		query: dumpster.createQuery(),
+		query: "in:trash",				// XXX: change this to "in:dumpster" per bug 45284 is fixed.
 		searchFor: ZmId.SEARCH_MAIL,    // only mail for now
 		types: [ZmItem.MSG],            // restrict to messages only
 		sortBy: ZmSearch.DATE_DESC,
