@@ -284,7 +284,9 @@ function() {
 	var selectedItem = list ? list.get(0) : null;
 	if (selectedItem) {
 		this._detailListView.setSelection(selectedItem);
-	}
+	}else{
+        this._previewView.enablePreview(false);
+    }
 };
 
 ZmPreviewPaneView.prototype.getSash =
@@ -398,6 +400,11 @@ function(){
 
 ZmPreviewView.prototype.set =
 function(item){
+
+    if(!item){
+        this.enablePreview(false);
+        return;
+    }
 
     this.enablePreview(true);
 

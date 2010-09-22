@@ -187,7 +187,7 @@
     <div id="${id}_noitem" style="display:none;">
         <table border=0 cellpadding=0 cellspacing=0 width=100% height=100% style='table-layout:fixed'>
             <tr>
-                <td align="center" valign="middle"><$=ZmMsg.noItemsFound$></td>
+                <td align="center" valign="middle"><$=ZmMsg.noPreviewFound$></td>
             </tr>
         </table>
     </div>
