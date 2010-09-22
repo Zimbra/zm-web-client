@@ -186,6 +186,7 @@ function(srcList){
 
 ZmBriefcaseBaseView.prototype.set =
 function(list, sortField){
+    this.cleanup();
     this._zmList = list;
     ZmListView.prototype.set.call(this, list, sortField);
 };
@@ -224,6 +225,7 @@ function(){
         this._renameField.setDisplay(Dwt.DISPLAY_NONE);
         this._renameField.setLocation("-10000px", "-10000px");
         this._renameField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
+        this.addSelectionListener(new AjxListener(this, this.cleanup));
     }
     return this._renameField;
 };
@@ -235,7 +237,7 @@ function(ev) {
     var item = this._fileItem;
     if(key == DwtKeyEvent.KEY_ENTER){
         var fileName = this._renameField.getValue();
-        if(fileName != ''){
+        if(fileName != '' && fileName != item.name){
             if(this._checkDuplicate(fileName)){
                 this._redrawItem(item);
                 var warning = appCtxt.getMsgDialog();
