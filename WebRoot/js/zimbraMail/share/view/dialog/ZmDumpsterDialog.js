@@ -57,7 +57,7 @@ function() {
 
 ZmDumpsterDialog.prototype.popup =
 function() {
-	var dumpster = appCtxt.getById(ZmFolder.ID_TRASH); // XXX: change me.
+	var dumpster = appCtxt.getById(ZmOrganizer.ID_DUMPSTER);
 
 	var params = {
 		query: dumpster.createQuery(),
