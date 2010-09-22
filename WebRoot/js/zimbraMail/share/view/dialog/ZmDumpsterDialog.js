@@ -220,6 +220,10 @@ function(view) {
 	var tb = this._toolbar[view] = new ZmButtonToolBar(tbParams);
 	tb.addSelectionListener(ZmOperation.MOVE, new AjxListener(this, this._moveListener));
 	tb.addSelectionListener(ZmOperation.DELETE, new AjxListener(this, this._deleteListener));
+
+	// change tooltip for delete button
+	var button = tb.getButton(ZmOperation.DELETE);
+	button.setToolTipContent(ZmMsg.permanentlyDelete);
 };
 
 ZmDumpsterListController.prototype._deleteListener =
