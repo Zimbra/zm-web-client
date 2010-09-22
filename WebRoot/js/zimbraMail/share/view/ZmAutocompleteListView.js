@@ -861,7 +861,7 @@ function(list) {
 			cell = row.insertCell(-1);
 			cell.innerHTML = match.text || "&nbsp;";
 			if (forgetEnabled) {
-				this._insertLinkCell(this._forgetLink, row, rowId, this._getId("Forget", i), (match.type == ZmAutocomplete.AC_TYPE_TABLE));
+				this._insertLinkCell(this._forgetLink, row, rowId, this._getId("Forget", i), (match.score > 0));
 			}
 			if (expandEnabled) {
 				this._insertLinkCell(this._expandLink, row, rowId, this._getId("Expand", i), match.isDL);

@@ -503,7 +503,7 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 				}
 			}
 			this.email = emails.join(";");
-			this.text = match.display;
+			this.text = match.display || this.email;
 			this.icon = "Group";
 		} else {
 			// Local contact, GAL contact, or distribution list
@@ -522,8 +522,8 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 			}
 			this.icon = this.isDL ? "Group" : ZmAutocomplete.AC_ICON[match.type];
 		}
-		this.score = match.ranking;
 	}
+	this.score = (match.ranking && parseInt(match.ranking)) || 0;
 	this.icon = this.icon || ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_CONTACT];
 	this.acType = (this.type == ZmAutocomplete.AC_TYPE_LOCATION || this.type == ZmAutocomplete.AC_TYPE_EQUIPMENT)
 		? this.type : ZmAutocomplete.AC_TYPE_CONTACT;
