@@ -544,6 +544,7 @@ input.admin_xform_name_input_disabled {
 
 .AllScreenGrouperBorder {
 	@FieldSet@
+        padding-top:7px;
 	padding-left:0px;	/* ??? SIZE */
 	padding-right:0px;
 	padding-bottom:10px;
