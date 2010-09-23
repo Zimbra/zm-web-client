@@ -169,7 +169,7 @@ function(params) {
 
 	params1.action = params.markAsSpam ? "spam" : "!spam";
 	params1.attrs = {};
-	params1.attrs.tcon = this._getTcon();
+	params1.attrs.tcon = this._getTcon(params.items);
 	if (params.folder) {
 		params1.attrs.l = params.folder.id;
 	}
