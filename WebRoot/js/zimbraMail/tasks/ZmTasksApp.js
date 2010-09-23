@@ -77,6 +77,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_PRINT_TASK, {textKey:"printTask", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_TASKFOLDER, {textKey:"printTaskFolder", image:"Print"}, ZmSetting.PRINT_ENABLED);
     ZmOperation.registerOp(ZmId.OP_SORTBY_MENU, {tooltipKey:"viewTooltip", textKey:"sortBy", image:"SplitPane", textPrecedence:80});
+    ZmOperation.registerOp(ZmId.OP_MARK_AS_COMPLETED, {tooltipKey:"markAsCompleted", textKey:"markAsCompleted", image:"CheckboxChecked", textPrecedence:80});
 };
 
 ZmTasksApp.prototype._registerItems =

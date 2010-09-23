@@ -41,6 +41,7 @@ ZmTaskListController = function(container, app) {
 	this._listeners[ZmOperation.PRINT_TASKFOLDER] = new AjxListener(this, this._printTaskFolderListener);
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._syncAllListener);
 	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
+	this._listeners[ZmOperation.MARK_AS_COMPLETED] = new AjxListener(this, this._markAsCompletedListener);
 
 	this._currentTaskView = ZmId.VIEW_TASK_ALL;
 };
@@ -165,26 +166,21 @@ function(results, folderId) {
 ZmTaskListController.prototype.switchView =
 function(view) {
 	if (this._currentTaskView == view) { return; }
-
 	this._currentTaskView = view;
-
     if (view == ZmSetting.RP_OFF ||	view == ZmSetting.RP_BOTTOM || view == ZmSetting.RP_RIGHT) {
 		this._taskListView._colHeaderActionMenu = null;
 		if (view != this._getReadingPanePref()) {
 			this._setReadingPanePref(view);
 			this._taskMultiView.setReadingPane();
 		}
-
         // always reset the view menu button icon to reflect the current view
         var btn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
         btn.setImage(ZmTaskListController.READING_PANE_ICON[view]);
-
 	} else {
         // always reset the view menu button icon to reflect the current view
         var btn = this._toolbar[this._currentView].getButton(ZmOperation.SORTBY_MENU);
         btn.setImage(ZmTaskListController.ICON[view]);
-    }
-
+	}
 	var sc = appCtxt.getSearchController();
 	var soapStatus = ZmTaskListController.SOAP_STATUS[view];
 	sc.redoSearch(appCtxt.getCurrentSearch(), false, {allowableTaskStatus:soapStatus});
@@ -338,7 +334,10 @@ function() {
 			ZmOperation.TAG_MENU,
 			ZmOperation.SEP,
             ZmOperation.VIEW_MENU,
-            ZmOperation.SORTBY_MENU);
+            ZmOperation.SORTBY_MENU,
+            ZmOperation.SEP,
+            ZmOperation.MARK_AS_COMPLETED);
+	
 	return toolbarOps;
 };
 
@@ -378,7 +377,8 @@ function(view) {
 	this._setupPrintMenu(view);
     this._setupViewMenu(view);
 	this._setupSortByMenu(view);
-
+	this._setupMarkAsCompletedMenu(view);
+	
 	this._toolbar[view].getButton(ZmOperation.DELETE).setToolTipContent(ZmMsg.hardDeleteTooltip);
 
 	this._toolbar[view].addFiller();
@@ -468,6 +468,16 @@ function(ev) {
 	}
 };
 
+ZmTaskListController.prototype._setupMarkAsCompletedMenu = 
+function(view) {
+	var markAsCompButton = this._toolbar[view].getButton(ZmOperation.MARK_AS_COMPLETED);
+	if(!markAsCompButton) { return; }
+	
+	markAsCompButton.setToolTipContent(ZmMsg.markAsCompleted);
+	markAsCompButton.addSelectionListener(this._listeners[ZmOperation.MARK_AS_COMPLETED]);
+	//markAsCompButton.noMenuBar = true;
+}
+
 ZmTaskListController.prototype._setupPrintMenu =
 function(view) {
 	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT);
@@ -550,6 +560,7 @@ ZmTaskListController.prototype._getActionMenuOps =
 function() {
 	return [
 		ZmOperation.EDIT,
+		ZmOperation.MARK_AS_COMPLETED,
 		ZmOperation.SEP,
 		ZmOperation.TAG_MENU,
 		ZmOperation.DELETE,
@@ -578,6 +589,7 @@ function(parent, num) {
 
 		parent.enable([ZmOperation.MOVE, ZmOperation.DELETE], canEdit && num > 0);
 		parent.enable(ZmOperation.EDIT, canEdit && num == 1);
+		parent.enable(ZmOperation.MARK_AS_COMPLETED, canEdit && num > 0);
 		parent.enable(ZmOperation.TAG_MENU, (!isShare && num > 0));
 	}
 	var printButton = (parent instanceof ZmButtonToolBar) ? parent.getButton(ZmOperation.PRINT) : null;
@@ -611,6 +623,35 @@ function(tasks, mode) {
 	appCtxt.getConfirmationDialog().popup(ZmMsg.confirmCancelTask, callback);
 };
 
+ZmTaskListController.prototype._doCheckCompleted =
+function(task,ftask) {
+	var callback = new AjxCallback(this, this._doCheckCompletedResponse, [task,ftask]);
+	task.getDetails(ZmCalItem.MODE_EDIT, callback);
+};
+
+ZmTaskListController.prototype._doCheckCompletedResponse =
+function(task,ftask) {
+	var clone = ZmTask.quickClone(task);
+	clone.pComplete = task.isComplete() ? 0 : 100;
+	clone.status = task.isComplete() ? ZmCalendarApp.STATUS_NEED : ZmCalendarApp.STATUS_COMP;
+	clone.setViewMode(ZmCalItem.MODE_EDIT);
+	var callback = new AjxCallback(this, this._markAsCompletedResponse, [clone,ftask]);
+	clone.save(null, callback);
+};
+
+ZmTaskListController.prototype._markAsCompletedResponse = 
+function(task,ftask) {
+	if (task && task._orig)
+		task._orig.message = null;
+	//Cache the item for further processing
+	task.cache();
+	this._taskListView.updateListViewEl(task);
+	if(ftask && this.isReadingPaneOn()) {
+		this._taskMultiView.setTask(task);
+	}
+};
+
+	
 ZmTaskListController.prototype._handleDelete =
 function(tasks) {
 	var batchCmd = new ZmBatchCommand();
@@ -698,21 +739,6 @@ function(task, mode) {
 	this._app.getTaskController().show(task, mode);
 };
 
-ZmTaskListController.prototype._doCheckCompleted =
-function(task) {
-	var callback = new AjxCallback(this, this._doCheckCompletedResponse, [task]);
-	task.getDetails(ZmCalItem.MODE_EDIT, callback);
-};
-
-ZmTaskListController.prototype._doCheckCompletedResponse =
-function(task) {
-	var clone = ZmTask.quickClone(task);
-	clone.pComplete = task.isComplete() ? 0 : 100;
-	clone.status = task.isComplete() ? ZmCalendarApp.STATUS_NEED : ZmCalendarApp.STATUS_COMP;
-	clone.setViewMode(ZmCalItem.MODE_EDIT);
-	clone.save();
-};
-
 ZmTaskListController.prototype._showTypeDialog =
 function(task, mode) {
 	if (!this._typeDialog) {
@@ -786,6 +812,20 @@ function(ev) {
 
 	var url = ("/h/printtasks?id=" + taskIds.join(","));
 	window.open(appContextPath+url, "_blank");
+};
+
+ZmTaskListController.prototype._markAsCompletedListener = 
+function(ev) {
+	var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
+	var fItem = null;
+	for (var i = 0; i < items.length; i++) {
+		var task = items[i];
+		if (!task.isComplete()) {
+			if(!fItem) fItem = true;
+			this._doCheckCompleted(items[i],fItem);
+		}	
+	}
 };
 
 ZmTaskListController.prototype._printListener =

@@ -637,7 +637,7 @@ function(ev) {
 
 			this._list.add(item, idx);	
 			this._sortColumn(ZmItem.F_DATE,true);
-            this._renderList(this.getList(),false,false);
+            this._renderList(this.getList(),true,false);
             if(this._list && this._list.size() == 1) { this.setSelection(this._list.get(0)); }
 		}
 	} else if (ev.event == ZmEvent.E_MODIFY) {
@@ -742,6 +742,17 @@ ZmTaskListView.prototype.isMultiColumn =
 function(controller) {
 	var ctlr = controller || this._controller;
 	return !ctlr.isReadingPaneOnRight();
+};
+
+
+ZmTaskListView.prototype.updateListViewEl = 
+function(task) {
+	var div = this._getElFromItem(task);
+	if (div) {
+		var bContained = this._selectedItems.contains(div);
+		this._createItemHtml(task, {div:div, bContained:bContained});
+		this.associateItemWithElement(task, div);
+	}
 };
 
 
