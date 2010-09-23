@@ -312,7 +312,7 @@ function(node, instNode) {
     if(!node.dur) {
         this.startDate = null;
     }
-
+    
     if(node.alarm) this.alarm = node.alarm;
     
 	if (node.name || comp)				this.name		= this._getAttr(node, comp, "name");
@@ -469,7 +469,6 @@ function(rel) {
  */
 ZmTask.prototype.setTaskReminder =
 function(absStr) {
-    this.alarm = true;
     this._reminderAbs = absStr;
 };
 
