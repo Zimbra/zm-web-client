@@ -28,6 +28,9 @@
     </c:when>
     <c:when test="${(type eq 'document')}">
         <rest:document  mailbox="${mailbox}" timezone="${timezone}"/>
+    </c:when>
+    <c:when test="${(type eq 'folder' or type eq 'remote folder') and (view eq 'document')}">
+        <rest:briefcase mailbox="${mailbox}" timezone="${timezone}"/>
     </c:when>    
     <c:otherwise>
         <rest:view title="">
