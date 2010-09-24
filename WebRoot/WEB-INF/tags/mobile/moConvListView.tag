@@ -69,9 +69,9 @@
             <c:set value="Msg${chit.isUnread ? '' : 'Gray'}" var="class"/>
             <%--<mo:img src="mail/ImgEnvelope${chit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
         </c:if>
-        <span class="td f">
+        <span class="td f" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>>
             <c:set value=",${chit.id}," var="stringToCheck"/>
-            <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedCids,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''} name="cid" value="${chit.id}"/>
+            <input <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if> class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedCids,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''} name="cid" value="${chit.id}"/>
             <span class="SmlIcnHldr ${class}">&nbsp;</span>
         </span>
         <span class="td m" onclick='return zClickLink("a${chit.id}");'>

@@ -26,6 +26,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
+    <zm:getUserAgent var="ua" session="true"/>
     <fmt:setTimeZone value="${timezone}"/>
     <c:set var="context" value="${null}"/>
     <fmt:message key="noSubject" var="noSubject"/>
@@ -83,7 +84,9 @@
         <mo:calMultiDay date="${date}" numdays="${numdays}" view="${view}" timezone="${timezone}"
                         checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
     </c:set>
-
+    <fmt:getLocale var="userLocale"/>
+    <c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale,pageContext)}"/>
+	<c:set var="bitMonths" value="${dateSymbols.shortMonths}"/>
 </mo:handleError>
 
 <div>
@@ -183,11 +186,31 @@
         </div>
         </div>
         <div class="calBits">
-        <table cellpadding="0" cellspacing="0" border="0">
+        <c:set var="cday"  value="${zm:getDay(date)}"/>
+        <c:set var="cmonth"  value="${zm:getMonth(date)}"/> 
+        <c:set var="pday"  value="${zm:getDay(zm:addDay(date, -1))}"/>
+        <c:set var="fDate" value="${cday eq 1 ? date : zm:addDay(date, -pday)}"/>
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
             <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
+            	<td>
+            		<c:set var="pMonth" value="${zm:addMonth(fDate,-1)}"/>
+            		<fmt:formatDate var="prevDateStr" value="${pMonth.time}" pattern="yyyyMMdd"/>
+	                <mo:calendarUrl view="day" var="prevMonthURL" timezone="${timezone}" date="${prevDateStr}"/>
+	                <a href="${prevMonthURL}">${bitMonths[zm:getMonth(pMonth)]}</a>
+            	</td>
+            	<c:forEach var="bitDay" begin="0" end="31" varStatus="bitDayStat">
+            		<c:if test="${zm:getMonth(zm:addDay(fDate, bitDayStat.index)) eq cmonth}">
+	                	<fmt:formatDate var="bitDateStr" value="${(zm:addDay(fDate,bitDayStat.index)).time}" pattern="yyyyMMdd"/>
+	                	<mo:calendarUrl view="day" var="daysURL" timezone="${timezone}" date="${bitDateStr}"/>
+	               	 	<td <c:if test="${zm:getDay(zm:addDay(fDate, bitDayStat.index)) eq cday}">style='background-color:grey;'</c:if> ><a href="${daysURL}"> ${(bitDayStat.index eq 0) ? bitMonths[zm:getMonth(fDate)] : ''}&nbsp;${bitDayStat.index + 1}</a></td>
+               	 	</c:if>
+            	</c:forEach>
+            	<td>
+            		<c:set var="nMonth" value="${zm:addMonth(fDate,1)}"/>
+            		<fmt:formatDate var="nextDateStr" value="${nMonth.time}" pattern="yyyyMMdd"/>
+	                <mo:calendarUrl view="day" var="nextMonthURL" timezone="${timezone}" date="${nextDateStr}"/>
+	                <a href="${nextMonthURL}">${bitMonths[zm:getMonth(nMonth)]}</a>
+            	</td>
             </tr>
         </table>
         </div>
@@ -211,6 +234,6 @@
             ${multiDay}
         </div>
         <mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="${view}" isTop="${false}"/>
-            </c:otherwise>
+        </c:otherwise>
      </c:choose> 
 </div>

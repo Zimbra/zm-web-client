@@ -329,7 +329,7 @@ var zClickLink = function(id, t, el) { //Click on href and make ajx req if avail
 };
 var lfr = function(response,frameId){ //Load frame response
     var req = {responseText: response,status: 200, readyState: 4};
-    parseResponse(req,GC(),$(frameId).src);
+    parseResponse(req,null,frameId);
 };
 
 var toParams = function(url){
@@ -375,6 +375,13 @@ var createUploaderFrame = function(iframeId){
     document.body.appendChild(div.firstChild);
 };
 
+var iframeLoaded = function (iframeObj) {
+	alert(iframeObj.readyState);
+	if(iframeObj.readyState=="complete") {
+		alert(iframeObj.contentDocument.body.innerHTML);
+	}
+};
+
 var submitForm = function(fobj, target, val) {
     if(window.acon !== undefined && window.acon){window.acon=false;return false;}
     if(val && (val == "selectAll" || val == "selectNone")){
@@ -395,7 +402,7 @@ var submitForm = function(fobj, target, val) {
             createUploaderFrame(target);
         }
         fobj.target = target;
-        fobj.action = fobj.action.replace('ajax=true', '');
+        //fobj.action = fobj.action.replace('ajax=true', '');
         fobj.action = addParam(fobj.action,'isinframe=true');
         showLoadingMsg('<fmt:message key="MO_sendingRequestMsg"/>', true);
         fobj.submit();
@@ -756,6 +763,16 @@ var GC = function(id) {
     return window.__container;
 };
 
+var zCheckUnCheck = function(el) {
+	var chkEl = (el.nodeName == 'INPUT') ? el : el.getElementsByClassName('chk')[0];
+	if(chkEl && chkEl.checked) {
+		chkEl.checked = false;
+	} else if(chkEl && !chkEl.checked) {
+		chkEl.checked = true;
+	}
+	return true;
+};
+
 //Init vals
 var MAX_CACHE_REQUEST = 50; // No of ajx get requests to cache
 var CACHE_DATA_LIFE = 20000; // miliseconds to keep the cache alive
@@ -778,6 +795,11 @@ var initListScroll = function () {
     listScroll = new iScroll('dlist-view',{ checkDOMChanges: false, desktopCompatibility: true });
 };
 
+var initPrefScroll = function () {
+    $('dlist-pref').addEventListener('touchmove', function(e){ e.preventDefault(); });
+    listScroll = new iScroll('dlist-pref',{ checkDOMChanges: false, desktopCompatibility: true });
+};
+
 var initContentScroll = function() {
    if($("dcontent-view")) {
        $("dcontent-view").addEventListener('touchmove', function(e){ e.preventDefault(); });
@@ -786,9 +808,11 @@ var initContentScroll = function() {
 }
 
 var init = function () {
-    document.getElementById('dlist-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
-    //document.getElementById('dcontent-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
-    listScroll = new iScroll('dlist-view',{ checkDOMChanges: false,desktopCompatibility: true });
+    var dlistview = document.getElementById('dlist-view');
+    if(dlistview) {
+	    dlistview.addEventListener('touchmove', function(e){ e.preventDefault(); });
+	    listScroll = new iScroll('dlist-view',{ checkDOMChanges: false,desktopCompatibility: true });
+    }
 }
 
 
@@ -845,8 +869,8 @@ ZmiPad.getParamFromURL = function(param, url) {
 
 };
 
-ZmiPad.processScript = function() {
-    var scripts = $(ZmiPad.ID_VIEW_CONTENT).getElementsByTagName("script");
+ZmiPad.processScript = function(id) {
+    var scripts = $(id).getElementsByTagName("script");
     for (var i = 0; i < scripts.length; i++) {
         if (!scripts[i].src) {
             try{eval(scripts[i].innerHTML);}catch(e){if(window.console){console.log(e);}}
@@ -864,10 +888,10 @@ ZmiPadMail.processResponse = function (respData, url) {
 
     ZmiPad.initColumnView();
 
-    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || ZmiPad.getParamFromURL("showFolderCreate",url) == "1" || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1")  && (url.indexOf('hc=1') == -1)) {
+    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1")  && (url.indexOf('hc=1') == -1)) {
 
         $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
-        if(url.indexOf('action=view') != -1) ZmiPad.processScript();
+        if(url.indexOf('action=view') != -1) ZmiPad.processScript(ZmiPad.ID_VIEW_CONTENT);
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
         $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
         initContentScroll();
@@ -883,9 +907,10 @@ ZmiPadMail.processResponse = function (respData, url) {
                 addClass(elemMsg, 'MsgGray');
             }
         }
-    } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
+    } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1 || ZmiPad.getParamFromURL("showFolderCreate",url) == "1" ) {
 
         $('compose-body').innerHTML = respData;
+        ZmiPad.processScript('compose-body');
         if(ZmiPad.getParamFromURL("compose",url) != "new") {
           $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
         } else {
@@ -994,6 +1019,9 @@ ZmiPadCal.processResponse = function (respData, url) {
     } else if(ZmiPad.getParamFromURL("view",url) == "day") {
         $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
         initContentScroll();
+    } else if(ZmiPad.getParamFromURL("view",url) == "list") {
+        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
+        initContentScroll();   
     } else if(ZmiPad.getParamFromURL("zoom",url) == "true") {
         $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;    
         initContentScroll();
@@ -1038,7 +1066,7 @@ ZmiPadPrefs.processResponse = function (respData, url) {
     } else {
         ZmiPad.initMainView();
         $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
-        initListScroll();
+        initPrefScroll();
     }
 }
 window.addEventListener('load', init);

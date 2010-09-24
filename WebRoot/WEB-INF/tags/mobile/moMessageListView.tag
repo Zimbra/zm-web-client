@@ -75,9 +75,9 @@
         <div id="conv${mhit.id}" class="tr msg_lv_list_row list-row${mhit.isUnread ? '-unread' : ''}">
                <%--<mo:img src="mail/ImgEnvelope${mhit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
                <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/> 
-               <span class="td f">
+               <span class="td f" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>>
                    <c:set value=",${mhit.id}," var="stringToCheck"/>
-                   <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"':''} name="id" value="${mhit.id}"/>
+                   <input <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if> class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"':''} name="id" value="${mhit.id}"/>
                    <span class="SmlIcnHldr ${class}">&nbsp;</span>
                </span>
                <span class="td m" onclick='return zClickLink("a${mhit.id}");'>

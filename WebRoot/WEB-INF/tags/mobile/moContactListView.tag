@@ -1,4 +1,4 @@
-<%--
+ <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
@@ -60,9 +60,9 @@
             <div class="tr list-row" id="conv${chit.id}">
                 <c:set value=",${hit.id}," var="stringToCheck"/>
                 <c:set var="class" value="Contact${chit.isGroup ? 'Group' : ''}"/>
-            <span class="td f">
+            <span class="td f" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>>
                     <c:if test="${!context.isGALSearch}">
-                        <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
+                        <input <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if> class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                                name="id" value="${chit.id}"/></c:if>
             <c:if test="${ua.isiPad == false}">
                 <span class="SmlIcnHldr ${class}">&nbsp;</span>

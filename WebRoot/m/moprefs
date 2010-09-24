@@ -49,6 +49,9 @@
         </c:otherwise>
     </c:choose>
     
+    <div class="wrap-dlist" id="wrap-dlist-view">
+    <div class="tbl dlist" id="dlist-pref">
+    
     <div class="Stripes" id="prefDiv">
         <div class="sectionLbl"><div class="tr"><div class="td titleText"><b><fmt:message key="general"/></b></div></div></div>
         <div class="View prefBody">
@@ -159,6 +162,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    </div>    
     <c:if test="${ua.isiPad == false}">
     <div class="sectionLbl tb tbl folderBar"><div class="tr"><div class="td aleft"><fmt:message key="MO_SessionPrefs"/></div></div></div> 
     <div class='View'>

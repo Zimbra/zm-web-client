@@ -56,7 +56,7 @@
 
 <mo:ipadToolbar urlTarget="${urlTarget}" mailbox="${mailbox}" view="month" date="${date}" context="${context}" app="${param.st}" keys="false" timezone="${timezone}"/>
 
-<div class='ZhCalMonthHeaderMonth'>
+<div class='ZhCalMonthHeaderMonth' style="margin-top:7px;">
 	  ${fn:escapeXml(title)}
 </div>
     <div class="wrap-dlist" id="wrap-dlist-view">
@@ -137,7 +137,8 @@
                                                 <c:set var="count" value="${0}"/>
                                                 <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
                                                 <c:set var="dayEnd" value="${zm:addDay(currentDay, 1).timeInMillis}"/>
-                                                <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
+                                                <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}" >
+                                                    <c:if test="${count lt 3}">
                                                     <tr><td>
                                                         <fmt:message var="noSubject" key="noSubject"/>
                                                         <c:set var="color" value=""/>
@@ -163,8 +164,8 @@
                                                                     <table cellpadding="0" cellspacing="0" border="0" width="100%">
                                                                         <tr>
                                                                             <td class="${fbashowAsColor}" width="4px"></td>
-                                                                            <td>
-                                                                              ${fn:escapeXml(zm:truncate(subject,14,true))}
+                                                                            <td style="font-size:6pt;">
+                                                                              ${fn:escapeXml(zm:truncate(subject,13,true))}
                                                                             </td>
                                                                         </tr>
                                                                     </table>
@@ -175,7 +176,7 @@
                                                                     <table cellpadding="0" cellspacing="0" border="0" width="100%">
                                                                         <tr>
                                                                             <td class="${fbashowAsColor}" width="4px"></td>
-                                                                            <td>
+                                                                            <td style="font-size:8pt;" align="left">
                                                                                 <c:if test="${param.action ne 'print'}">
                                                                                 <c:choose>
                                                                                     <c:when test="${appt.startTime lt dayStart}">
@@ -200,12 +201,16 @@
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </td></tr>
+                                                    </c:if>
                                                     <c:set var="count" value="${count+1}"/>
                                                 </zm:forEachAppoinment>
                                                 </c:if>
                                                 <%-- end appointment's list --%>
                                                 <c:if test="${dowStatus.first and count lt 3}">
                                                     <c:forEach begin="1" end="${3-count}"><tr><td>&nbsp;</td></tr></c:forEach>
+                                                </c:if>
+                                                <c:if test="${count gt 3}">
+                                                    <tr><td align="right" style="font-size:8pt;"><fmt:message key="more"/>..</td></tr>
                                                 </c:if>
                                             </table>
                                     </td>
@@ -224,6 +229,7 @@
 <div class="calBits">
     <c:set var="prevYear" value="${zm:addYear(date, -1)}"/>
     <c:set var="nextYear" value="${zm:addYear(date,  1)}"/>
+    <c:set var="cMonth" value="${zm:getMonth(date)}"/>
     <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
         <tr>
             <td>
@@ -232,7 +238,7 @@
             </td>
             <c:forEach var="bitMonth" begin="0" end="11" varStatus="bitMonthStatus">
                 <mo:calendarUrl view="month" var="monthsURL" timezone="${timezone}" date="${zm:getYear(date)}${(bitMonthStatus.index+1 eq 10 || bitMonthStatus.index+1 eq 11 || bitMonthStatus.index+1 eq 12) ? '' : '0'}${(bitMonthStatus.index+1)}01"/>
-                <td><a href="${monthsURL}"> ${bitMonthStatus.index eq 0 ? zm:getYear(date) : ''}&nbsp;${bitMonths[bitMonthStatus.index]}</a></td>
+                <td <c:if test="${cMonth eq (bitMonthStatus.index)}">style='background-color:grey;'</c:if> ><a href="${monthsURL}"> ${bitMonthStatus.index eq 0 ? zm:getYear(date) : ''}&nbsp;${bitMonths[bitMonthStatus.index]}</a></td>
             </c:forEach>
             <td>
                 <mo:calendarUrl view="month" var="nextYearURL" timezone="${timezone}" date="${zm:getYear(nextYear)}0101"/>
