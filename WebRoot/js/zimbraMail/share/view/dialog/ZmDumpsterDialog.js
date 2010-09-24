@@ -221,9 +221,23 @@ function(view) {
 	tb.addSelectionListener(ZmOperation.MOVE, new AjxListener(this, this._moveListener));
 	tb.addSelectionListener(ZmOperation.DELETE, new AjxListener(this, this._deleteListener));
 
+	// change text of move button
+	var button = tb.getButton(ZmOperation.MOVE);
+	button.setText(ZmMsg.recoverTo);
+
 	// change tooltip for delete button
 	var button = tb.getButton(ZmOperation.DELETE);
 	button.setToolTipContent(ZmMsg.permanentlyDelete);
+};
+
+ZmDumpsterListController.prototype._doMove =
+function(items, folder, attrs, isShiftKey) {
+	if (!attrs) {
+		attrs = {};
+	}
+	attrs.op = "recover";
+
+	ZmListController.prototype._doMove.call(this, items, folder, attrs, isShiftKey);
 };
 
 ZmDumpsterListController.prototype._deleteListener =
@@ -240,6 +254,6 @@ function(dialog) {
 	dialog.popdown();
 
 	// hard delete
-	this._doDelete(this._listView[this._currentView].getSelection(), true);
+	this._doDelete(this._listView[this._currentView].getSelection(), true, {op:"deletedumpster"});
 };
 
