@@ -221,6 +221,14 @@ function() {
 	return ZmListView.DEFAULT_REPLENISH_THRESHOLD;
 };
 
+/**
+ * Returns the underlying ZmList.
+ */
+ZmListView.prototype.getItemList =
+function() {
+	return this._controller && this._controller._list;
+};
+
 ZmListView.prototype._changeListener =
 function(ev) {
 
@@ -263,8 +271,9 @@ function(ev) {
 				// if we've removed it from the view, we should remove it from the reference
 				// list as well so it doesn't get resurrected via replenishment *unless*
 				// we're dealing with a canonical list (i.e. contacts)
-				if (ev.event != ZmEvent.E_MOVE || !this._controller._list.isCanonical) {
-					this._controller._list.remove(item);
+				var itemList = this.getItemList();
+				if (ev.event != ZmEvent.E_MOVE || !itemList.isCanonical) {
+					itemList.remove(item);
 				}
 			}
 		}
@@ -1140,7 +1149,8 @@ ZmListView.prototype._getItemsNeeded =
 function(skipMoreCheck) {
 
 	if (!skipMoreCheck) {
-		if (!(this._controller._list && this._controller._list.hasMore()) || !this._list) { return 0; }
+		var itemList = this.getItemList();
+		if (!(itemList && itemList.hasMore()) || !this._list) { return 0; }
 	}
 	if (!this._rendered || !this._rowHeight) { return 0; }
 

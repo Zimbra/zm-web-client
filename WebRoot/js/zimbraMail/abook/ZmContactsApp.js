@@ -73,6 +73,8 @@ ZmApp.QS_ARG[ZmApp.CONTACTS]			= "contacts";
 ZmContactsApp.SEARCHFOR_CONTACTS 	= 1;
 ZmContactsApp.SEARCHFOR_GAL 		= 2;
 ZmContactsApp.SEARCHFOR_PAS			= 3; // PAS = personal and shared
+ZmContactsApp.SEARCHFOR_FOLDERS		= 4;
+
 ZmContactsApp.SEARCHFOR_MAX 		= 50;
 
 ZmContactsApp.prototype = new ZmApp;

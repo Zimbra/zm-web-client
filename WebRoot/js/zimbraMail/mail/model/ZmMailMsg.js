@@ -631,6 +631,18 @@ function(ids) {
 	this._forAttIds = ids;
 };
 
+/**
+* Sets the ID of the contacts that are to be attached as vCards
+*
+* @param {Array}	ids		a list of contact IDs
+*/
+ZmMailMsg.prototype.setContactAttIds =
+function(ids) {
+	ids = AjxUtil.toArray(ids);
+	this._onChange("contactAttIds", ids);
+	this._contactAttIds = ids;
+};
+
 // Actions
 
 /**
@@ -1100,6 +1112,7 @@ function(nfolder, resp) {
  */
 ZmMailMsg.prototype.send =
 function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime) {
+
 	var aName = accountName;
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
@@ -1303,7 +1316,8 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 	if (this.attId ||
 		(this._msgAttIds && this._msgAttIds.length) ||
 		(this._docAttIds && this._docAttIds.length) ||
-		(this._forAttIds && this._forAttIds.length))
+		(this._forAttIds && this._forAttIds.length) ||
+		(this._contactAttIds && this._contactAttIds.length))
 	{
 		var attachNode = msgNode.attach = {};
 		if (this.attId) {
@@ -1356,6 +1370,13 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 
 					parts.push({mid:id, part:attIds[i]});
 				}
+			}
+		}
+
+		if (this._contactAttIds && this._contactAttIds.length) {
+			attachNode.cn = [];
+			for (var i = 0; i < this._contactAttIds.length; i++) {
+				attachNode.cn.push({id:this._contactAttIds[i]});
 			}
 		}
 	}

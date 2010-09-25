@@ -2544,6 +2544,23 @@ HTML>BODY .appt-selected .appt_allday_body
 	@Text-light@
 }
 
+.ZmContactSearch {
+	width: 500px;
+}
+.ZmContactSearch .contactSearchResultsDiv {
+	margin-top: 15px;
+}
+
+.ZmContactSearch .ZmContactSearchListView {
+	width: 100%;
+	height: 300px;
+	background-color: white;
+}
+
+.ZmContactSearch .searchFieldHint {
+	@Text-light@
+}
+
 /*
  *  Autocompletion
  */

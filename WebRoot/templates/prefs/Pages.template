@@ -759,16 +759,14 @@ and the container element is replaced with that control.
 								</tr>
 							</table>
 							<div id='${id}_SIG_EDITOR' tabindex='80'></div>
-<!--
 							<table border=0 cellpadding=0 cellspacing=0 width="100%">
 								<tr>
 									<td class="Label"><$=ZmMsg.signatureVcardLabel$></td>
-									<td class='ZOptionsField' width="100%"><input id='${id}_SIG_VCARD' tabindex='85' size=30></td>
-									<td><div id='${id}_SIG_VCARD_BROWSE' style='padding-right:5px;' tabIndex='86'></div></td>
+									<td class='ZOptionsField' width="100%"><input id='${id}_SIG_VCARD' tabindex='85' style='width:100%'></td>
+									<td><div id='${id}_SIG_VCARD_BROWSE' style='padding:0 5 0 5;' tabIndex='86'></div></td>
 									<td><div id='${id}_SIG_VCARD_CLEAR' tabIndex='87'></div></td>
 								</tr>
 							</table>
--->
 						</td>
 					</tr>
 				</table>

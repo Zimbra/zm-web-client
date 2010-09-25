@@ -158,7 +158,7 @@ function(params) {
 			this.identitySelect.setSelectedValue(params.identity.id);
 		}
 		if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED) || appCtxt.multiAccounts) {
-			var selected = params.identity.signature || "";
+			var selected = this._getSignatureIdForAction(params.identity) || "";
 			var account = appCtxt.multiAccounts && this.getFromAccount();
 			this._controller.resetSignatureToolbar(selected, account);
 		}
@@ -438,7 +438,7 @@ function(msg, forwardAttIds) {
 * Returns the message from the form, after some basic input validation.
 */
 ZmComposeView.prototype.getMsg =
-function(attId, isDraft, dummyMsg, forceBail) {
+function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	// Check destination addresses.
 	var addrs = this._collectAddrs();
 
@@ -526,7 +526,7 @@ function(attId, isDraft, dummyMsg, forceBail) {
 		msg.addAttachmentId(attId);
 	}
 
-	if (zeroSizedAttachments){
+	if (zeroSizedAttachments) {
 		appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
 	}
 
@@ -648,6 +648,7 @@ function(attId, isDraft, dummyMsg, forceBail) {
 	msg.setTopPart(top);
 	msg.setSubject(subject);
 	msg.setForwardAttIds(forwardAttIds);
+	msg.setContactAttIds(contactId);
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		if (addrs[type] && addrs[type].all.size() > 0) {
@@ -1204,6 +1205,15 @@ function(signature, sigContent, account) {
 	return sigContent;
 };
 
+ZmComposeView.prototype._attachSignatureVcard =
+function(signatureId) {
+
+	var signature = this.getSignatureById(signatureId);
+	if (signature && signature.contactId) {
+		this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL, null, null, null, signature.contactId);
+	}
+};
+
 /**
  * Called when the user selects something from the Signature menu.
  *
@@ -1214,7 +1224,8 @@ function(signature, sigContent, account) {
  * @private
  */
 ZmComposeView.prototype.applySignature =
-function(content, replaceSignatureId, account) {
+function(content, oldSignatureId, account) {
+
 	content = content || "";
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var acct = account || (appCtxt.multiAccounts && this.getFromAccount());
@@ -1228,10 +1239,10 @@ function(content, replaceSignatureId, account) {
 	var sigContent, replaceSignature;
 	var newSig = signature ? this.getSignatureContent(signature.id) : "";
 
-	if (replaceSignatureId) {
+	if (oldSignatureId) {
 		if (isHtml) {
 			var idoc = this.getHtmlEditor()._getIframeDoc();
-			var sigEl = idoc.getElementById(replaceSignatureId);
+			var sigEl = idoc.getElementById(oldSignatureId);
 			if (sigEl) {
 				// find old sig via delimiters, so we preserve any user content that made it into sig span
 				var oldSigContent = sigEl.innerHTML, newSigContent;
@@ -1260,7 +1271,7 @@ function(content, replaceSignatureId, account) {
 			}
 		} else {
 			//Construct Regex
-			replaceSignature = this.getSignatureContent(replaceSignatureId);
+			replaceSignature = this.getSignatureContent(oldSignatureId);
 			var replaceRe = "(" + AjxStringUtil.regExEscape(newLine) + ")*" + AjxStringUtil.regExEscape(replaceSignature);
 			replaceRe = replaceRe.replace(/(\\n|\\r)/g, "\\s*");
 			if (!isAbove) {
@@ -1294,6 +1305,38 @@ function(content, replaceSignatureId, account) {
 	//Caching previous Signature state.
 	this._previousSignature = signature;
 	this._previousSignatureMode = this._htmlEditor.getMode();
+
+	var hadVcard = false;
+	if (oldSignatureId) {
+		// uncheck box for previous vcard att so it gets removed
+		var oldSig = this.getSignatureById(oldSignatureId);
+		if (oldSig.contactId) {
+			var vcardPart;
+			var atts = this._msg && this._msg.attachments;
+			if (atts && atts.length) {
+				for (var i = 0; i < atts.length; i++) {
+					if (atts[i].ct == ZmMimeTable.TEXT_VCARD) {
+						vcardPart = atts[i].part;
+					}
+				}
+			}
+			var inputs = document.getElementsByName(ZmComposeView.FORWARD_ATT_NAME + this._sessionId);
+			if (inputs && inputs.length) {
+				for (var i = 0; i < inputs.length; i++) {
+					if (inputs[i].value == vcardPart) {
+						inputs[i].checked = false;
+						hadVcard = true;
+					}
+				}
+			}
+		}
+	}
+	if (signature && signature.contactId) {
+		this._attachSignatureVcard(signature.id);
+	}
+	else if (hadVcard) {
+		this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL);
+	}
 };
 
 ZmComposeView.prototype.getSignatureContent =
@@ -1456,6 +1499,13 @@ function() {
 ZmComposeView.prototype._getSignatureNewLine =
 function() {
 	return ((this._composeMode == DwtHtmlEditor.HTML) ? "<br>" : "\n");
+};
+
+ZmComposeView.prototype._getSignatureIdForAction =
+function(identity, action) {
+	action = action || this._action;
+	var field = (this._isReply(action) || this._isForward(action)) ? ZmIdentity.REPLY_SIGNATURE : ZmIdentity.SIGNATURE;
+	return identity && identity.getField(field);
 };
 
 /**
@@ -1641,8 +1691,9 @@ function(name) {
 
 	// walk collection of input elements
 	for (var i = 0; i < forAttList.length; i++) {
-		if (forAttList[i].checked)
+		if (forAttList[i].checked) {
 			forAttIds.push(forAttList[i].value);
+		}
 	}
 
 	return forAttIds;
@@ -1882,12 +1933,13 @@ function(action, msg, extraBodyText) {
 		}
 	}
 
-	var sigStyle, sig;
+	var sigStyle, sig, sigId;
 	var account = appCtxt.multiAccounts && this.getFromAccount();
 	var ac = window.parentAppCtxt || window.appCtxt;
 	if (ac.get(ZmSetting.SIGNATURES_ENABLED, null, account)) {
 		sig = this.getSignatureContentSpan(null, null, account);
 		sigStyle = sig && ac.get(ZmSetting.SIGNATURE_STYLE, null, account);
+		sigId = this._controller.getSelectedSignature();
 	}
 	var sigPre = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig : "";
 	extraBodyText = extraBodyText || "";
@@ -1994,6 +2046,10 @@ function(action, msg, extraBodyText) {
 
 	var hasInlineImages = (bodyInfo && bodyInfo.hasInlineImages) || !appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	this._showForwardField(msg, action, incOptions, hasInlineImages, bodyInfo && bodyInfo.hasInlineAtts);
+
+	if (sigId) {
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._attachSignatureVcard, [sigId]), 10);
+	}
 };
 
 ZmComposeView.prototype._getBodyContent =
@@ -2355,7 +2411,8 @@ function(ev) {
 	var newAccount = ac.accountList.getAccount(newOption.accountId);
 	var collection = ac.getIdentityCollection(newAccount);
 	var identity = collection && collection.getById(newVal);
-	var sigId = identity ? identity.signature : collection.defaultIdentity;
+
+	var sigId = this._getSignatureIdForAction(identity || collection.defaultIdentity) || "";
 
 	this._controller._accountName = newAccount.name;
 	this._controller.resetSignatureToolbar(sigId, newAccount);

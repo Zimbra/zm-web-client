@@ -36,6 +36,7 @@
  */
 ZmContactListController = function(container, contactsApp) {
 
+	if (arguments.length == 0) { return; }
 	ZmListController.call(this, container, contactsApp);
 
 	this._viewFactory = {};

@@ -375,8 +375,8 @@ function(params) {
  * @param	{AjxCallback}	callback		the callback
  */
 ZmComposeController.prototype.sendMsg =
-function(attId, draftType, callback) {
-	return this._sendMsg(attId, null, draftType, callback);
+function(attId, draftType, callback, contactId) {
+	return this._sendMsg(attId, null, draftType, callback, contactId);
 };
 
 /**
@@ -397,7 +397,7 @@ function(docIds, draftType, callback) {
  * @private
  */
 ZmComposeController.prototype._sendMsg =
-function(attId, docIds, draftType, callback) {
+function(attId, docIds, draftType, callback, contactId) {
 
 	var isTimed = Boolean(this._sendTime);
 	draftType = draftType || (isTimed ? ZmComposeController.DRAFT_TYPE_DELAYSEND : ZmComposeController.DRAFT_TYPE_NONE);
@@ -410,7 +410,7 @@ function(attId, docIds, draftType, callback) {
 		tempMsg = new ZmMailMsg();
 		this._composeView.setDocAttachments(tempMsg, docIds);
 	}
-	var msg = this._composeView.getMsg(attId, isDraft, tempMsg, isTimed);
+	var msg = this._composeView.getMsg(attId, isDraft, tempMsg, isTimed, contactId);
 
 	if (!msg) { return; }
 
@@ -609,7 +609,8 @@ ZmComposeController.prototype._applyIdentityToBody =
 function(setSignature, resetBody) {
 	var identity = this._composeView.getIdentity();
 	if (setSignature) {
-		this.setSelectedSignature(identity.signature);
+		var sigId = this._composeView._getSignatureIdForAction(identity);
+		this.setSelectedSignature(sigId);
 	}
 	var newMode = this._getComposeMode(this._msg, identity);
 	if (newMode != this._composeView.getComposeMode()) {
@@ -1493,7 +1494,7 @@ function(idle) {
 };
 
 ZmComposeController.prototype.saveDraft =
-function(draftType, attId, docIds, callback) {
+function(draftType, attId, docIds, callback, contactId) {
 
 	if (!this._canSaveDraft()) { return; }
 
@@ -1501,7 +1502,7 @@ function(draftType, attId, docIds, callback) {
 	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener, [draftType, callback]);
 	this._resetDelayTime();
 	if (!docIds) {
-		this.sendMsg(attId, draftType, respCallback);
+		this.sendMsg(attId, draftType, respCallback, contactId);
 	} else {
 		this.sendDocs(docIds, draftType, respCallback);
 	}

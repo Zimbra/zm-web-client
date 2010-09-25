@@ -851,6 +851,8 @@ function(tagId) {
  */
 ZmContactSimpleView = function(params) {
 
+	if (arguments.length == 0) { return; }
+
 	params.view = ZmId.VIEW_CONTACT_SIMPLE;
 	params.className = "ZmContactSimpleView";
 	ZmContactsBaseView.call(this, params);
