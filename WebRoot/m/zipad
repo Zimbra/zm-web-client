@@ -139,7 +139,7 @@
         </div>
     </div>
     
-	<div class="toolbar footer">
+	<div class="topbar footer">
        <div class="listViewPane" style="background-color:transparent;">		
 			<div class="quota">
                 <c:set var="userQuota" value="0"/>
@@ -257,7 +257,7 @@ if(window != parent){
             <div class ="compose button" id="view-mail" style="display:block;"><a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" id="compose"><fmt:message key="compose"/></a></div>
           </div></div></div>
           <div class="emptyBody" id="empty-message">
-          	<h2>Need to view one of those emails/contact up there&#63;</h2>
+          	<h2>Need to view one of those email/contact&#63;</h2>
           	<span>Just click on an email/contact to view it here in this handy reading pane.</span>
           </div> <!--<fmt:message key="emptyMessage"/> -->
       </div>

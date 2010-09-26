@@ -8,11 +8,16 @@ html,body,p,div,table,ul,li,form{
 	border: none;
 }
 
+
 a{
 	outline: none;
+	-webkit-transition: color 0.15s ease-out;
+	color: blue;
 }
 
- 
+a:hover{
+	color: orange;
+} 
 /* Orientation specific styles */
 
 @media (orientation:landscape) {
@@ -191,11 +196,11 @@ html, body{
 .topbar {
  /*	background: #dbd0b5 url("/img/mobile/ipad/topbar-bg.gif") repeat-x top left; */
 	background-color: #f7ecd2;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f7ecd2), to(#c8bc9e));  /*from: e8ddc3 to: a49479*/
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4a4a4a), to(#2A2A2A));  /*from(#f7ecd2), to(#c8bc9e)) from: e8ddc3 to: a49479*/
 	background-image: -moz-linear-gradient(100% 100% 90deg, #f7ecd2, #c8bc9e);
 	height: 50px;
 	overflow: hidden;
-	color: #5f5a4a;
+	color: #5f5a4a; 
 
 }
 
@@ -233,20 +238,20 @@ html, body{
 		padding: 10px 20px;
 	}
 	
-		ul.ul li a{ color: #29261d; }
+		ul.ul li a{ color: #d5d5d5; }
 
 	ul.ul li.sel, ul.ul li:active{
 	/*	background: #7f7b6e url("/img/mobile/ipad/tab-selected.gif") repeat-x top left; */
 		background-color: #9a8d6e;
-		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#9a8d6e), to(#564e3c));
+		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f5f5f5), to(#E5E5E5));
 		background-image: -moz-linear-gradient(100% 100% 90deg, #9a8d6e, #564e3c);
 		-webkit-border-top-left-radius: 4px;
 		-webkit-border-top-right-radius: 4px;
-		color: white;
+		color: #333333;
 		font-weight: bold;
 	}
 	
-		ul.ul li.sel a, ul.ul li:active a{ color: white; } 
+		ul.ul li.sel a, ul.ul li:active a{ color: #333333; } 
 
 
 /* Toolbar Style */
@@ -254,7 +259,7 @@ html, body{
 .toolbar{
  /*	background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left; */
 	background-color: #564e3c;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#564e3c), to(#29251b));
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E5E5E5), to(#A0A0A0));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #564e3c, #29251b);
 	height: 45px;
 	overflow: hidden;
@@ -274,7 +279,7 @@ html, body{
 .button{
  /*	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left; */
 	background-color: #d8bf9c;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d8bf9c), to(#928068));
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E5E5E5), to(#CCCCCC));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #d8bf9c, #928068);
 	-webkit-border-radius: 6px;
 	box-shadow: 1px 1px 3px #333;
@@ -327,12 +332,12 @@ html, body{
 
 	.buttonBottom:hover{
 		background-color: #564e3c;
-		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#29251b), to(#564e3c));
+		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#2A2A2A), to(#4a4a4a));
 		background-image: -moz-linear-gradient(100% 100% 90deg, #29251b, #564e3c);
 	}
 	
 	.buttonBottom a{
-		color: #d3c7ac;
+		color: #DDDDDD;
 		text-decoration: none;
 	}
 	
@@ -396,7 +401,7 @@ html, body{
 	-webkit-border-bottom-left-radius: 6px;
 	-webkit-border-top-right-radius: 0;
 	-webkit-border-bottom-right-radius: 0;
-	border-right: 1px solid #c5b094;
+	border-right: 1px solid #FFFFFF;
 }
  
  
@@ -405,8 +410,8 @@ html, body{
 	-webkit-border-bottom-left-radius: 0;
 	-webkit-border-top-right-radius: 0;
 	-webkit-border-bottom-right-radius: 0;
-	border-left: 1px solid #6f604b;
-	border-right: 1px solid #c5b094;
+	border-left: 1px solid #666666;
+	border-right: 1px solid #FFFFFF;
 }
 
 
@@ -415,7 +420,7 @@ html, body{
 	-webkit-border-bottom-left-radius: 0;
 	-webkit-border-top-right-radius: 6px;
 	-webkit-border-bottom-right-radius: 6px;
-	border-left: 1px solid #6f604b;
+	border-left: 1px solid #666666;
 }
 
 .actionLeft div, .actionCenter div, .actionRight div{
@@ -471,7 +476,7 @@ html, body{
 	}
 	
 	.quota{
-		color: #A9A294;
+		color: #DDDDDD;
 		font-size: 10px !important;
 	}
 	
@@ -480,14 +485,14 @@ html, body{
 }
 
 .copyrights, .copyrights a, .userInfo{
-	color: #D3C7AC;
+	color: #DDDDDD;
 	text-decoration: none;
 }
 
 .shell{
 	margin: 1px 0 0 13%;
 	background-color: #564e3c;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#29251b), to(#564e3c));
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#2A2A2A), to(#4a4a4a));  /*from(#f7ecd2), to(#c8bc9e)) from: e8ddc3 to: a49479*/
 	background-image: -moz-linear-gradient(100% 100% 90deg, #29251b, #564e3c);
 	padding: 0;
 	border-radius: 18px;
@@ -501,7 +506,7 @@ html, body{
 	height: 8px;
 	width: 30%;
 	background-color: #e8ddc3;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e8ddc3), to(#a49479));
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E5E5E5), to(#A0A0A0));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #e8ddc3, #a49479);
 }
 		
@@ -510,7 +515,10 @@ html, body{
 .view{
 	width: 100%;
 	overflow: hidden;
-	background: #786448 url("/img/mobile/ipad/brown-pattern.gif") top left;
+	background: transparent url("/img/mobile/ipad/	pattern.jpg") top left;
+	/*background-color: #ece4d0;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#999999), to(#666666));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #ece4d0, #d9ceb2);*/
 }
 
 
@@ -538,11 +546,16 @@ ul.list li{
 	padding: 10px 4px;
 	overflow: hidden;
 	background-color: #ece4d0;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ece4d0), to(#d9ceb2));
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#5c88f7), to(#4b60e8));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #ece4d0, #d9ceb2);
 
 }
 
+	.msgContainerSel *{
+		color: white !important;
+	}
+	
+	  
 .infoBg{
 	background-color: InfoBackground ;
 	color: InfoText; 
@@ -606,7 +619,7 @@ ul.list li{
     padding: 10px;
     overflow: auto;
     word-break: break-all;
-    -webkit-box-shadow: 3px 2px 5px #666;
+    -webkit-box-shadow: 2px 2px 3px #666;
 }
 
 .emptyBody{
@@ -632,7 +645,7 @@ ul.list li{
 	
 	
  .address{
-	color: #7C6E4E;
+	color: #333333;
 	letter-spacing: 1px;
 	border-bottom: 1px solid #F1EEE6;
 	padding: 6px;
@@ -680,7 +693,7 @@ a.accept,a.tentative,a.decline{
 		color: black;
 	}
 	
-	.buttonBg a:hover{
+	.buttonBg a:focus,.buttonBg a:hover{
 		background-hover: black;
 		color: white;
 	}
