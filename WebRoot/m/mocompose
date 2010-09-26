@@ -96,7 +96,23 @@
     </div></div></div>
     </c:otherwise>
 </c:choose>
-<div class="Stripes cmp_container <c:if test="${ua.isiPad == true}">composeFields</c:if>"><div class="View">
+<div class="Stripes cmp_container <c:if test="${ua.isiPad == true}">composeFields</c:if>">
+
+<c:if test="${ua.isiPad == true}">
+        <c:choose>
+			<c:when test="${not empty param.appmsg}"><c:set var="statusMessage" value="${fn:escapeXml(param.appmsg)}"/>
+            	<c:set var="statusClass" value="Info"/>
+            	<div class="container tbl" id="msgDiv" onclick="return toggleElem(this);"><div id='statusdiv' class="tbl StatusInfo"><span  class='td aleft'><fmt:message key="${fn:escapeXml(param.appmsg)}"/></span><span class='SmlIcnHldr aright right Cancel'></span></div></div>
+        	</c:when>
+        	<c:when test="${not empty requestScope.statusMessage}">
+            	<c:set var="statusMessage" value="${fn:escapeXml(requestScope.statusMessage)}"/>
+            	<c:set var="statusClass" value="${requestScope.statusClass}"/>
+            	<div class="container tbl" id="msgDiv" onclick="return toggleElem(this);"><div id='statusdiv' class="tbl ${requestScope.statusClass}"><span class="td aleft">${fn:escapeXml(requestScope.statusMessage)}</span><span class='SmlIcnHldr aright Cancel'></span></div></div>
+        	</c:when>
+		</c:choose>
+</c:if>
+
+<div class="View">
 <div class="tbl cmp_from_to_cc_table">
     <c:if test="${fn:length(mailbox.accountInfo.identities) gt 1 }"><c:set value="nr" var="classForNextRow"/><div class="tr cmp_from_row">
             <span class='td label'><label for="fromField"><fmt:message key="fromLabel"/></label></span>
@@ -241,4 +257,24 @@
 <input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>
 <c:if test="${message.isDraft}"><input type="hidden" name="draftid" value="${message.id}"/></c:if>
 </form>
-<script type="text/javascript">AC("toField","toContainer");AC("ccField","ccContainer");AC("bccField","bccContainer");$('${param.op eq 'reply' || param.op eq 'replyAll' ? 'bodyField' : 'toField'}').focus();</script>
+<c:if test="${not empty requestScope.compAction and ua.isiPad eq true}">
+<script type="text/javascript"><c:set var="js">
+//This code runs from the ajax response
+var nojs = false;
+if(window != parent){
+    var d = document.getElementById('statusdiv');
+    var msg = (d) ? d.innerHTML : null;
+    if (msg != null) {
+        parent.showLoadingMsg(null, false);
+        if(d.className && d.className.indexOf("Status") > -1){
+            parent.ZmiPadMail.processPostComposeAction(document.getElementById('msgDiv').innerHTML, "${requestScope.compAction}",document.getElementById('pAjax').innerHTML, self.frameElement.id);nojs = true;
+        }else{
+            nojs = true;
+        }
+    }
+}
+</c:set>${dbg ? js : zm:yuiCompress(js, 'js')}</script>
+</c:if>
+<c:if test="${empty param.isinframe and empty requestScope.compAction}">
+	<script type="text/javascript">AC("toField","toContainer");AC("ccField","ccContainer");AC("bccField","bccContainer");$('${param.op eq 'reply' || param.op eq 'replyAll' ? 'bodyField' : 'toField'}').focus();</script>
+</c:if>

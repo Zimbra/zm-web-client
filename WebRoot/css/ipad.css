@@ -515,7 +515,7 @@ html, body{
 .view{
 	width: 100%;
 	overflow: hidden;
-	background: transparent url("/img/mobile/ipad/	pattern.jpg") top left;
+	background: transparent url("/img/mobile/ipad/pattern.jpg") top left;
 	/*background-color: #ece4d0;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#999999), to(#666666));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #ece4d0, #d9ceb2);*/
@@ -1415,5 +1415,39 @@ span.aleft > div:first-child, .contactHeader {
 
 .yui-ac-bcd .left{
 	border-bottom: none !important;
+}
+
+.loadingDiv{
+    -webkit-transition: opacity 250ms linear;
+    position:absolute;
+    top:48px;
+    width:98%;
+    background-color:#ffffd0;
+    z-index:1000;
+}
+.hidden {
+    opacity: 0.0 !important;
+    display:none;
+}
+
+.StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
+    padding: 10px 0px;
+    margin: 0px;
+    font-weight: bold;
+    text-align: center;
+    font-size: small;
+}
+.zo_noresults {
+    height: 200px;
+    text-align: center;
+}
+.StatusInfo {
+    background-color: lightgreen !important;
+}
+.StatusWarning {
+    background-color: yellow !important;
+}
+.StatusCritical {
+    background-color: red !important;
 }
  

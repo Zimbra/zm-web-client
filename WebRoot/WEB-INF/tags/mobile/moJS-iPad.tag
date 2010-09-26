@@ -375,13 +375,6 @@ var createUploaderFrame = function(iframeId){
     document.body.appendChild(div.firstChild);
 };
 
-var iframeLoaded = function (iframeObj) {
-	alert(iframeObj.readyState);
-	if(iframeObj.readyState=="complete") {
-		alert(iframeObj.contentDocument.body.innerHTML);
-	}
-};
-
 var submitForm = function(fobj, target, val) {
     if(window.acon !== undefined && window.acon){window.acon=false;return false;}
     if(val && (val == "selectAll" || val == "selectNone")){
@@ -402,7 +395,7 @@ var submitForm = function(fobj, target, val) {
             createUploaderFrame(target);
         }
         fobj.target = target;
-        //fobj.action = fobj.action.replace('ajax=true', '');
+        fobj.action = addParam(fobj.action,'ajax=true'); //fobj.action.replace('ajax=true', '');
         fobj.action = addParam(fobj.action,'isinframe=true');
         showLoadingMsg('<fmt:message key="MO_sendingRequestMsg"/>', true);
         fobj.submit();
@@ -563,7 +556,6 @@ var parseResponse = function (request, container,url) {
             $("view-content").style.display = "none";
             $("static-content").style.display = "block";
         }
-        //alert(ZmiPad.getParamFromURL("st",url));
         if (request.status == 200) {
             showLoadingMsg(null, false);
             var data = request.responseText;
@@ -882,13 +874,14 @@ ZmiPad.processScript = function(id) {
 ZmiPadMail to process all Mail responses
  */
 function ZmiPadMail() {
+	
 };
 
 ZmiPadMail.processResponse = function (respData, url) {
 
     ZmiPad.initColumnView();
 
-    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1")  && (url.indexOf('hc=1') == -1)) {
+    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1)  && (url.indexOf('hc=1') == -1)) {
 
         $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
         if(url.indexOf('action=view') != -1) ZmiPad.processScript(ZmiPad.ID_VIEW_CONTENT);
@@ -907,7 +900,21 @@ ZmiPadMail.processResponse = function (respData, url) {
                 addClass(elemMsg, 'MsgGray');
             }
         }
-    } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1 || ZmiPad.getParamFromURL("showFolderCreate",url) == "1" ) {
+    } else if(ZmiPad.getParamFromURL("showFolderCreate",url) == "1" || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1") {
+
+        $('compose-body').innerHTML = respData;
+        ZmiPad.processScript('compose-body');
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";      
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+        toggleCompose('compose-pop','veil');
+               
+    } else if(ZmiPad.getParamFromURL("doFolderAction", url) == "1") {
+		toggleCompose('compose-pop','veil');
+		$(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+        $("sq").blur();
+        initListScroll();
+    } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1 ) {
 
         $('compose-body').innerHTML = respData;
         ZmiPad.processScript('compose-body');
@@ -922,27 +929,29 @@ ZmiPadMail.processResponse = function (respData, url) {
 
     } else if(url.indexOf('show=more') != -1) {
 
-        var moreDiv = document.createElement("div");
-        moreDiv.innerHTML =  respData;
         $("dlist-view").removeChild(document.getElementById('more-div'));
-
-        for(var j =0; j < moreDiv.childNodes.length; j ++) {
-            var nodeDiv = moreDiv.childNodes[j];
-            if(nodeDiv.nodeName == 'DIV' || nodeDiv.nodeName == 'A') {
-                $("dlist-view").appendChild(nodeDiv);
-            }
-        }
+        $("dlist-view").innerHTML = $("dlist-view").innerHTML + respData;
         setTimeout(function(){listScroll.refresh();}, 1000);
-
     } else {
-
         $(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
         $("sq").blur();
         initListScroll();
-
     }
 }
+
+ZmiPadMail.processPostComposeAction = function(statusMsg, compAction, response, iframeId) {
+	if(compAction == 'iPadDraft') {
+		$('compose-body').innerHTML = response;
+	} else if(compAction == 'iPadSend'){
+		toggleCompose('compose-pop','veil');
+		$('eaMsgDiv').innerHTML = statusMsg;
+		$('eaMsgDiv').style.display = '';
+		setTimeout(function() {return zClickLink('mail');},300);
+	}
+}
+
+
 
 /*
 ZmiPadContacts to process all Contact responses
@@ -954,15 +963,12 @@ ZmiPadContacts.processResponse = function (respData, url) {
 
     ZmiPad.initColumnView();
 
-    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || ZmiPad.getParamFromURL("showABCreate",url) == "1" || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1") && (url.indexOf('hc=1') == -1)) {
-
+    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1) && (url.indexOf('hc=1') == -1)) {
         $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
         $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
         initContentScroll();
-
     } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
-
         $('compose-body').innerHTML = respData;
         if(ZmiPad.getParamFromURL("compose",url) != "new") {
           $(ZmiPad.ID_VIEW_STATIC).style.display = "none";  
@@ -971,23 +977,22 @@ ZmiPadContacts.processResponse = function (respData, url) {
           $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
         }
         toggleCompose('compose-pop','veil');
-
+    } else if(ZmiPad.getParamFromURL("showABCreate",url) == "1" || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1") {
+        $('compose-body').innerHTML = respData;
+        ZmiPad.processScript('compose-body');
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";      
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+        toggleCompose('compose-pop','veil');
+    } else if(ZmiPad.getParamFromURL("doFolderAction",url) == "1") {
+		toggleCompose('compose-pop','veil');
+		$(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+        $("sq").blur();
+        initListScroll();
     } else if(url.indexOf('show=more') != -1) {
-
-        //var moreDiv = document.createElement("div");
-        //moreDiv.innerHTML =  respData;
         $("dlist-view").removeChild(document.getElementById('more-div'));
-
         $("dlist-view").innerHTML = $("dlist-view").innerHTML + respData;
-        /*for(var j =0; j < moreDiv.childNodes.length; j ++) {
-            var nodeDiv = moreDiv.childNodes[j];
-            if(nodeDiv.nodeName == 'DIV' || nodeDiv.nodeName == 'A') {
-                $("dlist-view").appendChild(nodeDiv);
-            }
-        }*/
-        //delete moreDiv;
         setTimeout(function(){listScroll.refresh(); }, 1000);
-
     } else {
         $(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
@@ -1008,6 +1013,7 @@ ZmiPadCal.processResponse = function (respData, url) {
     ZmiPad.initMainView();
     if(ZmiPad.getParamFromURL("st",url) == "newappt") {
         $('compose-body').innerHTML = respData;
+        ZmiPad.processScript('compose-body');
         $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
         if(ZmiPad.getParamFromURL("action",url) != "popup") {
             toggleCompose('compose-pop','veil');                        
@@ -1028,6 +1034,17 @@ ZmiPadCal.processResponse = function (respData, url) {
     } else {
         $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
     }
+}
+
+ZmiPadCal.processPostComposeAction = function(statusMsg, compAction, response, iframeId) {
+	if(compAction == 'iPadApptInvalid') {
+		$('compose-body').innerHTML = response;
+	} else if(compAction == 'iPadApptSave'){
+		toggleCompose('compose-pop','veil');
+		$('eaMsgDiv').innerHTML = statusMsg;
+		$('eaMsgDiv').style.display = '';
+		setTimeout(function() {return zClickLink('cal');},300);
+	}
 }
 
 /*
@@ -1059,15 +1076,15 @@ function ZmiPadPrefs() {
 };
 
 ZmiPadPrefs.processResponse = function (respData, url) {
-    if(ZmiPad.getParamFromURL("doPrefsAction",url) == 1) {
+    //if(ZmiPad.getParamFromURL("doPrefsAction",url) == 1) {
         //Preferences have been saved, redirect to the mail app(default)
-        loading = false;
-        zClickLink('mail');
-    } else {
+    //    loading = false;
+        //zClickLink('mail');
+    //} else {
         ZmiPad.initMainView();
         $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
         initPrefScroll();
-    }
+    //}
 }
 window.addEventListener('load', init);
 

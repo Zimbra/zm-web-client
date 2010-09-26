@@ -201,9 +201,25 @@
 
 	</div>
 </c:if>
-<c:if test="${empty param.ajax}">
 
-</c:if>
+<c:if test="${empty param.show}">
+	<div class="loadingDiv hidden" id="loadingDiv" onclick="function(){return requestTimeout(false,'Aborted by user.');}"></div>
+	<c:choose>
+			<c:when test="${not empty param.appmsg}"><c:set var="statusMessage" value="${fn:escapeXml(param.appmsg)}"/>
+	            <c:set var="statusClass" value="Info"/>
+	            <div class="container tbl" id="msgDiv" onclick="return toggleElem(this);"><div id='statusdiv' class="tbl StatusInfo"><span  class='td aleft'><fmt:message key="${fn:escapeXml(param.appmsg)}"/></span><span class='SmlIcnHldr aright right Cancel'></span></div></div>
+	        </c:when>
+	        <c:when test="${not empty requestScope.statusMessage}">
+	            <c:set var="statusMessage" value="${fn:escapeXml(requestScope.statusMessage)}"/>
+	            <c:set var="statusClass" value="${requestScope.statusClass}"/>
+	            <div class="container tbl" id="msgDiv" onclick="return toggleElem(this);"><div id='statusdiv' class="tbl ${requestScope.statusClass}"><span class="td aleft">${fn:escapeXml(requestScope.statusMessage)}</span><span class='SmlIcnHldr aright Cancel'></span></div></div>
+	        </c:when>
+	        <c:when test="${empty param.ajax}">
+	        	<div class="container tbl" id="eaMsgDiv" onclick="return toggleElem(this);"></div>
+	        </c:when>
+	</c:choose>
+</c:if>        
+
 	<mo:handleError>
         <c:import url="/m/zmview" var="response" scope="page"/>
     </mo:handleError>
@@ -212,25 +228,14 @@
         respText = respText.replaceAll("[\t ]+"," ").replaceAll("\n\\s*\n","\n");
         pageContext.setAttribute("response",respText);
     %>
- <script type="text/javascript"><c:set var="js">
-//This code runs from the ajax response
-var nojs = false;
-if(window != parent){
-    var d = document.getElementById('statusdiv');
-    var msg = (d) ? d.innerHTML : null;
-    if (msg != null) {
-        parent.showLoadingMsg(null, false);
-        if(d.className && d.className.indexOf("Status") > -1){
-            parent.lfr(self.GC().innerHTML,self.frameElement.id);nojs = true;
-        }else{
-            nojs = true;
-        }
-    }
-}
-</c:set>${dbg ? js : zm:yuiCompress(js, 'js')}</script>
-<c:if test="${param.ajax}">
-    ${response}                
+ 
+<c:if test="${param.ajax and param.show eq 'more'}">
+   ${response}
 </c:if>
+<c:if test="${param.ajax and empty param.show}">
+   <div id="pAjax"> ${response} </div>
+</c:if>
+
 
 <c:if test="${empty param.ajax}">
     <div class="view" id="view">
@@ -264,10 +269,17 @@ if(window != parent){
     </div>
 </c:if>
 
+<script type="text/javascript"><c:set var="js">
+//This code runs from the ajax response
+var nojs = false;
+</c:set>${dbg ? js : zm:yuiCompress(js, 'js')}</script>
+
 <c:if test="${empty param.ajax}">
     <c:if test="${empty param.noframe || empty param.isiniframe}">
     <script type="text/javascript">
-        if (XHR !==undefined && XHR(true)) {if(!nojs && (window == parent)){registerOnclickHook();}}
+        if (XHR !==undefined && XHR(true)) {if(!nojs && (window == parent)){registerOnclickHook();
+        <c:if test="${ua.isiPhone or ua.isiPad or ua.isiPod or ua.isOsAndroid}">setInterval(function() {checkHash(null,'get');}, 400);</c:if>
+        }}
     </script></c:if>
 </body>
 

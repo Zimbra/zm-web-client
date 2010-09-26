@@ -113,7 +113,7 @@
 <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
             <div id="conv${mhit.id}" class="tr conv_v_list_row list-row${mhit.isUnread ? '-unread' : ''}">
                <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/>
-               <span class="td f">
+               <span class="td f" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>>
                    <c:set value=",${mhit.id}," var="stringToCheck"/>
                    <input class="chk" type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':''} name="id" value="${mhit.id}"/>
                    <span class="SmlIcnHldr ${class}">&nbsp;</span>
@@ -129,13 +129,11 @@
                        <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
                        ${fn:escapeXml(_f)}
                    </div>
-                   <c:if test="${ua.isiPad == false}">
                    <div class="frag-span small-gray-text">
                        <c:set var="_f" value="${mhit.fragment}"/>
                        <c:if test="${fn:length(_f) > 45}"><c:set var="_f" value="${fn:substring(_f, 0, 45)}..."/></c:if>
                        ${fn:escapeXml(_f)}
                    </div>
-                   </c:if>
                </span>
                <span class="td l">
                    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${mhit.date}"/>

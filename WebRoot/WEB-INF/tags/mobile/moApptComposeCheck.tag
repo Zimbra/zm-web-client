@@ -45,21 +45,33 @@
                 <c:set var="needEditView" value="${false}"/>
             </c:when>
             <c:when test="${uploader.isSave and not uploader.compose.isValidStartTime}">
+            	<c:if test="${ua.isiPad eq true}">
+                	<c:set var="compAction" scope="request" value="iPadApptInvalid"/>
+                </c:if>
                 <app:status style="Critical">
                     <fmt:message key="errorInvalidApptStartDate"/>
                 </app:status>
             </c:when>
             <c:when test="${uploader.isSave and not uploader.compose.isValidEndTime}">
+            	<c:if test="${ua.isiPad eq true}">
+                	<c:set var="compAction" scope="request" value="iPadApptInvalid"/>
+                </c:if>
                 <app:status style="Critical">
                     <fmt:message key="errorInvalidApptEndDate"/>
                 </app:status>
             </c:when>
             <c:when test="${uploader.isSave and uploader.compose.isValidEndTime and uploader.compose.isValidStartTime and (uploader.compose.apptEndTime lt uploader.compose.apptStartTime)}">
+                <c:if test="${ua.isiPad eq true}">
+                	<c:set var="compAction" scope="request" value="iPadApptInvalid"/>
+                </c:if>
                 <app:status style="Critical">
                     <fmt:message key="errorInvalidApptEndBeforeStart"/>
                 </app:status>
             </c:when>
             <c:when test="${uploader.isSave and empty uploader.compose.subject}">
+                <c:if test="${ua.isiPad eq true}">
+                	<c:set var="compAction" scope="request" value="iPadApptInvalid"/>
+                </c:if>
                 <app:status style="Critical">
                     <fmt:message key="errorMissingSubject"/>
                 </app:status>
@@ -86,6 +98,9 @@
             <c:when test="${uploader.isSave}">
                 <c:set var="needEditView" value="${true}"/>
                 <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
+                <c:if test="${ua.isiPad eq true}">
+                	<c:set var="compAction" scope="request" value="iPadApptSave"/>
+                </c:if>
                 <mo:handleError>
                     <c:set var="apptId" value="${uploader.compose.useInstance and not empty uploader.compose.exceptionInviteId ? uploader.compose.exceptionInviteId : uploader.compose.inviteId}"/>
                     <c:choose>
@@ -107,16 +122,28 @@
                     </c:if>
                     <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
                     <app:status><fmt:message key="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/></app:status>
-		    
-                    <c:redirect url="${caction}">
-                    <c:if test="${param.st eq 'newtask'}">
-                        <c:param name="appmsg" value="${empty message ? 'actionTaskCreated' : 'actionTaskSaved'}"/>
-                    </c:if>
-                    <c:if test="${param.st ne 'newtask'}">
-                        <c:param name="appmsg" value="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/>
-                    </c:if>    
-			<c:param name="bt" value="${bt}"/>
-                    </c:redirect>
+		    		
+		    		<c:choose>
+		    		<c:when test="${ua.isiPad eq true}">
+		    			<c:if test="${param.st eq 'newtask'}">
+		                        
+		                </c:if>
+		                <c:if test="${param.st ne 'newtask'}">
+		                        
+		                </c:if> 
+		    		</c:when>
+		    		<c:otherwise>
+	                    <c:redirect url="${caction}">
+		                    <c:if test="${param.st eq 'newtask'}">
+		                        <c:param name="appmsg" value="${empty message ? 'actionTaskCreated' : 'actionTaskSaved'}"/>
+		                    </c:if>
+		                    <c:if test="${param.st ne 'newtask'}">
+		                        <c:param name="appmsg" value="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/>
+		                    </c:if> 
+							<c:param name="bt" value="${bt}"/>
+	                    </c:redirect>
+                    </c:otherwise>
+                    </c:choose>
 		    <c:set var="needEditView" value="${false}"/>
                 </mo:handleError>
             </c:when>

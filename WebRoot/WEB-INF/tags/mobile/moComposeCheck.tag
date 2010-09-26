@@ -69,6 +69,9 @@
                 <c:set var="needComposeView" value="${false}"/>
             </c:when>
             <c:when test="${uploader.isSend and empty uploader.compose.to and empty uploader.compose.cc and empty uploader.compose.bcc}">
+            	<c:if test="${ua.isiPad eq true}">
+            		<c:set var="compAction" scope="request" value="iPadDraft"/>
+            	</c:if>
                 <app:status style="Critical">
                     <fmt:message key="noAddresses"/>
                 </app:status>
@@ -76,6 +79,9 @@
             <c:when test="${uploader.isSend}">
                 <zm:checkCrumb crumb="${uploader.paramValues['crumb'][0]}"/>
                 <c:set var="needComposeView" value="${true}"/>
+                <c:if test="${ua.isiPad eq true}">
+                	<c:set var="compAction" scope="request" value="iPadSend"/>
+                </c:if>
                 <mo:handleError>
                     <c:choose>
                         <c:when test="${not empty uploader.compose.inviteReplyVerb}">
@@ -92,9 +98,16 @@
                             <zm:deleteMessage var="actionResult" id="${uploader.compose.draftId}"/>
                         </c:catch>
                     </c:if>
-                    <c:redirect url="${caction}">
-                        <c:param name="appmsg" value="messageSent"></c:param>
-                    </c:redirect>
+                    <c:choose>
+	                    <c:when test="${ua.isiPad eq true}">
+	                    	<app:status><fmt:message key="messageSent"/></app:status>
+	                    </c:when>
+	                    <c:otherwise>
+		                    <c:redirect url="${caction}">
+		                        <c:param name="appmsg" value="messageSent"></c:param>
+		                    </c:redirect>
+	                    </c:otherwise>
+                    </c:choose>
                     <c:set var="needComposeView" value="${false}"/>
                 </mo:handleError>
            </c:when>
@@ -103,6 +116,9 @@
                 <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
                 <c:set scope="request" var="draftid" value="${draftResult.id}"/>
                 <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
+                <c:if test="${ua.isiPad eq true}">
+                	<c:set var="compAction" scope="request" value="iPadDraft"/>
+                </c:if>
                 <app:status><fmt:message key="draftSavedSuccessfully"/></app:status>
                 <c:set var="needComposeView" value="${true}"/>
             </c:when>

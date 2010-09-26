@@ -91,13 +91,11 @@
                        <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
                        ${fn:escapeXml(_f)}
                    </div>
-                   <c:if test="${ua.isiPad == false}">
-                       <div class="frag-span small-gray-text">
-                           <c:set var="_f" value="${mhit.fragment}"/>
-                           <c:if test="${fn:length(_f) > 45}"><c:set var="_f" value="${fn:substring(_f, 0, 45)}..."/></c:if>
-                           ${fn:escapeXml(_f)}
-                       </div>
-                   </c:if>
+                   <div class="frag-span small-gray-text">
+                       <c:set var="_f" value="${mhit.fragment}"/>
+                        <c:if test="${fn:length(_f) > 45}"><c:set var="_f" value="${fn:substring(_f, 0, 45)}..."/></c:if>
+                        ${fn:escapeXml(_f)}
+                    </div>
                </span>
                <span class="td l">
                    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${mhit.date}"/>

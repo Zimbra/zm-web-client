@@ -46,8 +46,11 @@
         </div></div></div>
 </c:otherwise>    
 </c:choose>
-<div class="wrap-dlist" id="wrap-dlist-view">
-<div id="dlist-view">
+
+<c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showFolderCreate and ua.isiPad eq true)}" >
+	<div class="wrap-dlist" id="wrap-dlist-view">
+	<div id="dlist-view">
+</c:if>
 
 <c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and not empty param.showFolderCreate) or ua.isiPad eq false}">
     <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showFolderCreate}" url="${currentUrl}" st="${param.st}"/>
@@ -79,12 +82,12 @@
 <c:choose>
     <c:when test="${ua.isiPad eq true}">
         <c:if test="${empty param.showFolderCreate and empty param.showSearchCreate and empty param.showTagCreate}">
-        <div class="tb tbl"><div class="tr"><div class="td toolbar">
-            <span class="folderTitle alignLeft"><fmt:message key="searches"/></span>
-        <span class="buttonRight button" onclick="return zClickLink('createSearch')">
-            <a id="createSearch" class="zo_button1" href="?st=folders${empty param.showSearchCreate?'&showSearchCreate=1':''}${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
-        </span>
-        </div></div></div>
+	        <div class="tb tbl"><div class="tr"><div class="td toolbar">
+	            <span class="folderTitle alignLeft"><fmt:message key="searches"/></span>
+	        <span class="buttonRight button" onclick="return zClickLink('createSearch')">
+	            <a id="createSearch" class="zo_button1" href="?st=folders${empty param.showSearchCreate?'&showSearchCreate=1':''}${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
+	        </span>
+	        </div></div></div>
         </c:if>
     </c:when>
     <c:otherwise>
@@ -97,16 +100,21 @@
     </c:otherwise>
 </c:choose>
 
-<mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/><c:set var="count" value="${0}"/>
-<c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showFolderCreate) or ua.isiPad eq false}">
-<zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
-    <c:if test="${count lt sessionScope.F_LIMIT and (folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
-        <c:if test="${folder.types eq 'conversation' || folder.types eq 'message' || empty folder.types}">
-            <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
-        <c:set var="count" value="${count+1}"/></c:if>
-    </c:if>
-</zm:forEachFolder>
+<c:if test="${(empty param.showTagCreate and not empty param.showSearchCreate and empty param.showFolderCreate) or ua.isiPad eq false}">
+	<mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/>
 </c:if>
+
+<c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showFolderCreate) or ua.isiPad eq false}">
+	<c:set var="count" value="${0}"/>
+	<zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
+	    <c:if test="${count lt sessionScope.F_LIMIT and (folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
+	        <c:if test="${folder.types eq 'conversation' || folder.types eq 'message' || empty folder.types}">
+	            <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
+	        <c:set var="count" value="${count+1}"/></c:if>
+	    </c:if>
+	</zm:forEachFolder>
+</c:if>
+
 <c:choose>
     <c:when test="${ua.isiPad eq true}">
         <c:if test="${empty param.showFolderCreate and empty param.showSearchCreate and empty param.showTagCreate}">
@@ -129,14 +137,19 @@
         </div></div></div>
 </c:otherwise>
 </c:choose>
-    <c:if test="${mailbox.features.tagging}">
-        <mo:folderForm type="tag" id="${param.tid}" hide="${empty param.showTagCreate}" url="${currentUrl}" st="${param.st}"/>
-    </c:if>
+
+<c:if test="${(not empty param.showTagCreate and empty param.showSearchCreate and empty param.showFolderCreate and mailbox.features.tagging) or ua.isiPad eq false}">
+   <mo:folderForm type="tag" id="${param.tid}" hide="${empty param.showTagCreate}" url="${currentUrl}" st="${param.st}"/>
+</c:if>
+
 <c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showFolderCreate) or ua.isiPad eq false}">    
 <zm:forEachTag var="tag">
     <c:if test="${empty query || fn:containsIgnoreCase(tag.name, query)}">
         <mo:overviewTag calendars="${false}" tag="${tag}" types="${mailbox.prefs.groupMailBy}"/>
     </c:if>
 </zm:forEachTag>
-</c:if>    
+</c:if>
+
+<c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showFolderCreate and ua.isiPad eq true)}" >    
 </div></div>
+</c:if>
