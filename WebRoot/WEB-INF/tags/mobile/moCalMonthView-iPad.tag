@@ -238,7 +238,7 @@
             </td>
             <c:forEach var="bitMonth" begin="0" end="11" varStatus="bitMonthStatus">
                 <mo:calendarUrl view="month" var="monthsURL" timezone="${timezone}" date="${zm:getYear(date)}${(bitMonthStatus.index+1 eq 10 || bitMonthStatus.index+1 eq 11 || bitMonthStatus.index+1 eq 12) ? '' : '0'}${(bitMonthStatus.index+1)}01"/>
-                <td <c:if test="${cMonth eq (bitMonthStatus.index)}">style='background-color:grey;'</c:if> ><a href="${monthsURL}"> ${bitMonthStatus.index eq 0 ? zm:getYear(date) : ''}&nbsp;${bitMonths[bitMonthStatus.index]}</a></td>
+                <td <c:if test="${cMonth eq (bitMonthStatus.index)}">class='calBitsSel'</c:if> ><a href="${monthsURL}"> ${bitMonthStatus.index eq 0 ? zm:getYear(date) : ''}&nbsp;${bitMonths[bitMonthStatus.index]}</a></td>
             </c:forEach>
             <td>
                 <mo:calendarUrl view="month" var="nextYearURL" timezone="${timezone}" date="${zm:getYear(nextYear)}0101"/>

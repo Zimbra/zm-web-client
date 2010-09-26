@@ -129,7 +129,7 @@
                             </div>
                         </c:if>
                         <div class='zo_cal_listi' onclick='return zClickLink("a${id}")'>
-                            <span class="${zm:getFolder(pageContext,appt.folderId).styleColor}${appt.partStatusNeedsAction ? '' : 'Bg'}">&nbsp;&nbsp;</span>
+                            <span class="${zm:getFolder(pageContext,appt.folderId).styleColor}${appt.partStatusNeedsAction ? '' : 'Bg'} roundness">&nbsp;&nbsp;</span>
                             <span class='zo_cal_listi_time'>
                             <c:choose>
                                 <c:when test="${appt.allDay}">
@@ -148,7 +148,7 @@
                                 <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
                                 <a id="a${id}" href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(zm:truncate(subject,25,true))}</a>
                             </span>
-                            <span class="zo_cal_listi_location">
+                           <span class="zo_cal_listi_location">
                                 <a id="appt${appt.id}" href="${fn:escapeXml(zm:jsEncode(apptUrl))}">
                                     <c:if test="${not empty appt.location}">
                                         , ${fn:escapeXml(zm:truncate(appt.location,25,true))}
@@ -202,7 +202,7 @@
             		<c:if test="${zm:getMonth(zm:addDay(fDate, bitDayStat.index)) eq cmonth}">
 	                	<fmt:formatDate var="bitDateStr" value="${(zm:addDay(fDate,bitDayStat.index)).time}" pattern="yyyyMMdd"/>
 	                	<mo:calendarUrl view="day" var="daysURL" timezone="${timezone}" date="${bitDateStr}"/>
-	               	 	<td <c:if test="${zm:getDay(zm:addDay(fDate, bitDayStat.index)) eq cday}">style='background-color:grey;'</c:if> ><a href="${daysURL}"> ${(bitDayStat.index eq 0) ? bitMonths[zm:getMonth(fDate)] : ''}&nbsp;${bitDayStat.index + 1}</a></td>
+	               	 	<td <c:if test="${zm:getDay(zm:addDay(fDate, bitDayStat.index)) eq cday}">class='calBitsSel'</c:if> ><a href="${daysURL}"> ${(bitDayStat.index eq 0) ? bitMonths[zm:getMonth(fDate)] : ''}&nbsp;${bitDayStat.index + 1}</a></td>
                	 	</c:if>
             	</c:forEach>
             	<td>
