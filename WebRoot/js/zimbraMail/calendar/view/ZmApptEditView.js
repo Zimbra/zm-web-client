@@ -139,6 +139,8 @@ function() {
 
     //Default Persona
     this.setIdentity();
+
+    if(this._scheduleAssistant) this._scheduleAssistant.cleanup();
 };
 
 // Acceptable hack needed to prevent cursor from bleeding thru higher z-index'd views
@@ -1187,9 +1189,8 @@ function(text, el, match) {
 		return;
 	}
 	var attendee = match.item;
+    var type = el._attType;
 	if (attendee) {
-		var type = el._attType;
-
 		if (type == ZmCalBaseItem.FORWARD) {
             DBG.println("forward auto complete match : " + match)
             return;
@@ -1221,7 +1222,11 @@ function(text, el, match) {
 			this._addResourcesDiv();
 			this._isKnownLocation = true;
 		}
-	}
+
+        if(type == ZmCalBaseItem.PERSON && this._scheduleAssistant) this._scheduleAssistant.updateAttendee(attendee);
+	}else if(match.email){
+        if(type == ZmCalBaseItem.PERSON && this._scheduleAssistant) this._scheduleAssistant.updateAttendee(match.email);    
+    }
 };
 
 ZmApptEditView.prototype._addEventHandlers =
@@ -1245,6 +1250,8 @@ function() {
 		var inputEl = this._attendeesInputField.getInputElement();
 		inputEl.onfocus = AjxCallback.simpleClosure(this._handleOnFocus, this, inputEl);
 		inputEl.onblur = AjxCallback.simpleClosure(this._handleOnBlur, this, inputEl);
+        inputEl._editViewId = edvId;
+        Dwt.setHandler(inputEl, DwtEvent.ONKEYPRESS, ZmApptEditView._onAttendeesChange);
 	}
 
 	if (this._optAttendeesInputField) {
@@ -1504,7 +1511,7 @@ function(type, attendees) {
         this.autoSize();
     }
 
-    if(type == ZmCalBaseItem.PERSON && this._scheduleAssistant) this._scheduleAssistant.updateAttendees(this._attendees);
+    if(type == ZmCalBaseItem.PERSON && this._scheduleAssistant) this._scheduleAssistant.updateAttendees(attendees);
 };
 
 ZmApptEditView.prototype._getAttendeeByName =
@@ -1709,4 +1716,15 @@ function() {
 	};
 
 	cell.innerHTML = AjxTemplate.expand("calendar.Appointment#AttachContainer", subs);
+};
+
+ZmApptEditView._onAttendeesChange =
+function(ev) {
+	var el = DwtUiEvent.getTarget(ev);
+	var edv = AjxCore.objectWithId(el._editViewId);
+    var key = DwtKeyEvent.getCharCode(ev);
+
+    if(key == 32 || key == 59) {
+        edv._handleAttendeeField(ZmCalBaseItem.PERSON);                
+    }
 };

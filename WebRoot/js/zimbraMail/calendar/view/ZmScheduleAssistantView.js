@@ -38,7 +38,8 @@ ZmScheduleAssistantView = function(parent, controller, apptEditView) {
     this._attendees = [];
     this._workingHours = {};
     this._fbStat = new AjxVector();
-    this._fbStatMap = {};    
+    this._fbStatMap = {};
+    this._schedule = {};
 
     this.initialize();
 };
@@ -64,7 +65,7 @@ ZmScheduleAssistantView.prototype.cleanup =
 function() {
     this._attendees = [];
     this._timeFrame = null;
-
+    this._schedule = {};
 };
 
 ZmScheduleAssistantView.prototype._createWidgets =
@@ -126,14 +127,25 @@ function(date) {
 };
 
 ZmScheduleAssistantView.prototype._suggestionListener =
-function() {
+function(ev) {
+    this.suggestAction(true);
+};
+
+ZmScheduleAssistantView.prototype.suggestAction =
+function(focusOnSuggestion) {
+
+    var params = {
+        itemsById: {},
+        itemsByIdx: [],
+        focus: focusOnSuggestion
+    };
+
     this._timeSuggestions.setLoadingHtml();
     if(!this._resources) {
-        this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo));
+        this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
     }else {
-        this._findFreeBusyInfo();
-    }
-    
+        this._findFreeBusyInfo(params);
+    }    
 };
 
 ZmScheduleAssistantView.prototype._getTimeFrame =
@@ -167,6 +179,13 @@ function(clearSelection) {
     this.reset(tf.start, this._attendees);    
 };
 
+ZmScheduleAssistantView.prototype.addOrganizer =
+function() {
+    //include organizer in the scheduler suggestions
+    var organizer = this._editView.getOrganizer();
+    this._attendees.push(organizer.getEmail());
+};
+
 ZmScheduleAssistantView.prototype.updateAttendees =
 function(attendees) {
 
@@ -174,29 +193,49 @@ function(attendees) {
 
     this._attendees = [];
 
-    //include organizer in the scheduler suggestions
-    var organizer = this._editView.getOrganizer();
-    this._attendees.push(organizer);
+    this.addOrganizer();
 
     var attendee;
-    for (var i = 0; i < attendees.length; i++) {
+    for (var i = attendees.length; --i >= 0;) {
             attendee = attendees[i].getEmail();
             if (attendee instanceof Array) {
                 attendee = attendee[i][0];
             }
             this._attendees.push(attendee);
     }
-    this.reset(this._date, this._attendees);
+    this.reset(this._date, this._attendees, true);
+};
+
+ZmScheduleAssistantView.prototype.updateAttendee =
+function(attendee) {
+
+    var email = (typeof attendee == 'string') ? attendee : attendee.getEmail();
+    if(this._attendees.length == 0) {
+        this.addOrganizer();
+        this._attendees.push(email);
+    }else {
+        var found = false;
+        for (var i = this._attendees.length; --i >= 0;) {
+            if(email == this._attendees[i]) {
+                found = true;
+                break;
+            }
+        }
+        if(!found) this._attendees.push(email); 
+    }
+
+    this.reset(this._date, this._attendees, true);
 };
 
 ZmScheduleAssistantView.prototype.reset =
-function(date, attendees) {
+function(date, attendees, forceRefresh) {
     this.resizeTimeSuggestions();
     var newKey = this.getFormKey(date, attendees);
     this._date = date;
     if(newKey != this._key) {
         this._setSuggestionLabel(date);
         if(this._timeSuggestions) this._timeSuggestions.removeAll();
+        if(forceRefresh) this.suggestAction(false);
     }
 };
 
@@ -245,7 +284,7 @@ function(callback, result) {
 };
 
 ZmScheduleAssistantView.prototype._findFreeBusyInfo =
-function() {
+function(params) {
 
     var currAcct = this._editView.getCalendarAccount();
 	// Bug: 48189 Don't send GetFreeBusyRequest for non-ZCS accounts.
@@ -257,7 +296,11 @@ function() {
 	var tf = this._timeFrame = this._getTimeFrame();
 	var list = this._resources;
 	var emails = [];
-	var itemsById = {}, itemsByIdx = [];
+
+    params.itemsById = {};
+    params.itemsByIdx = [];
+    params.timeFrame = tf;
+
 	for (var i = list.length; --i >= 0;) {
 		var item = list[i];
 		emails[i] = item.getEmail();
@@ -268,10 +311,9 @@ function() {
 			emails[i] = emails[i][0];
 		}
 
-        itemsByIdx.push(emails[i]);
-        item._itemIndex = itemsByIdx.length-1; 
-		itemsById[emails[i]] = item;
-		item.__fbStatus = { txt: ZmMsg.unknown };
+        params.itemsByIdx.push(emails[i]);
+        item._itemIndex = params.itemsByIdx.length-1;
+		params.itemsById[emails[i]] = item;
 	}
 
     var attendees = this._controller.getAttendees(ZmCalBaseItem.PERSON).getArray();
@@ -280,12 +322,12 @@ function() {
 
     //include organizer in the scheduler suggestions
     var organizer = this._editView.getOrganizer();
-    this._addAttendee(organizer, itemsByIdx, itemsById, emails);
+    this._addAttendee(organizer, params, emails);
 
     for (var i = attendees.length; --i >= 0;) {        
             //ignore optional attendees while suggesting
             if(attendees[i].getParticipantRole() == ZmCalItem.ROLE_OPTIONAL) continue;
-            this._addAttendee(attendees[i], itemsByIdx, itemsById, emails);
+            this._addAttendee(attendees[i], params, emails);
     }
 
     this._key = this.getFormKey(tf.start, this._attendees);
@@ -299,23 +341,34 @@ function() {
 	if (this._freeBusyRequest) {
 		appCtxt.getRequestMgr().cancelRequest(this._freeBusyRequest, null, true);
 	}
-	this._freeBusyRequest = this._controller.getFreeBusyInfo(tf.start.getTime(),
+
+    var requiredEmails = [], freeBusyKey;
+    for (var i = emails.length; --i >= 0;) {
+        freeBusyKey = this.getFreeBusyKey(tf, emails[i]);
+        if(!this._schedule[freeBusyKey]) requiredEmails.push(emails[i]);
+    }
+
+    if(requiredEmails.length) {
+	    this._freeBusyRequest = this._controller.getFreeBusyInfo(tf.start.getTime(),
 															 tf.end.getTime(),
-															 emails.join(","),
-															 new AjxCallback(this, this._handleResponseFreeBusy, [itemsById, itemsByIdx]),
+															 requiredEmails.join(","),
+															 new AjxCallback(this, this._handleResponseFreeBusy, [params]),
 															 null,
 															 true);
+    }else {
+        this.getWorkingHours(params);
+    }
 };
 
 ZmScheduleAssistantView.prototype._addAttendee =
-function(attendeeObj, itemsByIdx, itemsById, emails) {
+function(attendeeObj, params, emails) {
     var attendee = attendeeObj.getEmail();
     if (attendee instanceof Array) {
         attendee = attendeeObj[0];
     }
-    itemsByIdx.push(attendee);
-    attendeeObj._itemIndex = itemsByIdx.length-1;
-    itemsById[attendee] = attendeeObj;
+    params.itemsByIdx.push(attendee);
+    attendeeObj._itemIndex = params.itemsByIdx.length-1;
+    params.itemsById[attendee] = attendeeObj;
     emails.push(attendee);
     this._attendees.push(attendee);
 };
@@ -327,12 +380,13 @@ function(startDate, attendees) {
 };
 
 ZmScheduleAssistantView.prototype._handleResponseFreeBusy =
-function(itemsById, itemsByIdx, result) {
+function(params, result) {
 
     this._freeBusyRequest = null;
 
-    this._schedule = {};
+    //this._schedule = {};
 
+    var freeBusyKey;
 	var args = result.getResponse().GetFreeBusyResponse.usr;
     for (var i = 0; i < args.length; i++) {
 		var usr = args[i];
@@ -340,10 +394,11 @@ function(itemsById, itemsByIdx, result) {
         if (!id) {
             continue;
         }
-        this._schedule[id] = usr;                
+        freeBusyKey = this.getFreeBusyKey(params.timeFrame, id);
+        this._schedule[freeBusyKey] = usr;
     };
 
-    this.getWorkingHours(itemsById, itemsByIdx);
+    this.getWorkingHours(params);
 };
 
 ZmScheduleAssistantView.prototype.clearCache =
@@ -352,8 +407,13 @@ function() {
     this._workingHours = {};    
 };
 
+ZmScheduleAssistantView.prototype.getFreeBusyKey =
+function(timeFrame, id) {
+    return timeFrame.start.getTime() + "-" + timeFrame.end.getTime() + "-" + id;
+};
+
 ZmScheduleAssistantView.prototype.getWorkingHours =
-function(itemsById, itemsByIdx ) {
+function(params) {
     if (this._workingHoursRequest) {
         appCtxt.getRequestMgr().cancelRequest(this._workingHoursRequest, null, true);
     }
@@ -362,20 +422,20 @@ function(itemsById, itemsByIdx ) {
     this._organizerEmail = organizer.getEmail();
 
     if(this._workingHoursKey == this.getWorkingHoursKey()) {
-        this.suggestTimeSlots(itemsById, itemsByIdx );
+        this.suggestTimeSlots(params);
     }else {
         this._workingHoursKey = this.getWorkingHoursKey();
         this._workingHoursRequest = this._controller.getWorkingInfo(this._timeFrame.start.getTime(),
                                                              this._timeFrame.end.getTime(),
                                                              this._organizerEmail,
-                                                             new AjxCallback(this, this._handleWorkingHoursResponse, [itemsById, itemsByIdx]),
-                                                             new AjxCallback(this, this._handleWorkingHoursError, [itemsById, itemsByIdx]),
+                                                             new AjxCallback(this, this._handleWorkingHoursResponse, [params]),
+                                                             new AjxCallback(this, this._handleWorkingHoursError, [params]),
                                                              true);
     }
 };
 
 ZmScheduleAssistantView.prototype._handleWorkingHoursResponse =
-function(itemsById, itemsByIdx, result) {
+function(params, result) {
 
     this._workingHoursRequest = null;
     this._workingHours = {};
@@ -390,20 +450,20 @@ function(itemsById, itemsByIdx, result) {
         this._workingHours[id] = usr;
     };
 
-    this.suggestTimeSlots(itemsById, itemsByIdx);
+    this.suggestTimeSlots(params);
 };
 
 ZmScheduleAssistantView.prototype._handleWorkingHoursError =
-function(itemsById, itemsByIdx, result) {
+function(params, result) {
 
     this._workingHoursRequest = null;
     this._workingHours = {};
-    this.suggestTimeSlots(itemsById, itemsByIdx);
+    this.suggestTimeSlots(params);
 
 };
 
 ZmScheduleAssistantView.prototype.suggestTimeSlots =
-function(itemsById, itemsByIdx) {
+function(params) {
 
     var startDate = this._timeFrame.start;
     startDate.setHours(0, 0, 0, 0);
@@ -419,17 +479,17 @@ function(itemsById, itemsByIdx) {
     this._totalLocations =  this._resources.length;
 
     while(startTime < endTime) {
-        this.computeAvailability(startTime, startTime + duration, itemsById);
+        this.computeAvailability(startTime, startTime + duration, params);
         startTime += AjxDateUtil.MSEC_PER_HALF_HOUR;
     }
 
     this._fbStat.sort(ZmScheduleAssistantView._slotComparator);
     DBG.dumpObj(this._fbStat);
-    this.renderSuggestions(itemsById, itemsByIdx);
+    this.renderSuggestions(params);
 };
 
 ZmScheduleAssistantView.prototype.computeAvailability =
-function(startTime, endTime, itemsById) {
+function(startTime, endTime, params) {
 
     var key = this.getKey(startTime, endTime);
     var fbInfo;
@@ -447,9 +507,11 @@ function(startTime, endTime, itemsById) {
         };
     }
 
+    var freeBusyKey;
     for(var i = this._attendees.length; --i >= 0;) {
         var attendee = this._attendees[i];
-        var sched = this._schedule[attendee];
+        freeBusyKey = this.getFreeBusyKey(params.timeFrame, attendee);         
+        var sched = this._schedule[freeBusyKey];
 
         //show suggestions only in the organizer's working hours.
         var isFree = this.isUnderWorkingHour(this._organizerEmail, startTime, endTime);
@@ -463,7 +525,7 @@ function(startTime, endTime, itemsById) {
         var key = startTime + "-" + endTime;
         
         if(isFree) {
-            fbInfo.attendees.push(itemsById[attendee]._itemIndex);
+            fbInfo.attendees.push(params.itemsById[attendee]._itemIndex);
             fbInfo.availableUsers++;
         }
     }
@@ -476,14 +538,15 @@ function(startTime, endTime, itemsById) {
 		if (resource instanceof Array) {
 			resource = resource[0];
 		}
-        var sched = this._schedule[resource];
+        freeBusyKey = this.getFreeBusyKey(params.timeFrame, resource);
+        var sched = this._schedule[freeBusyKey];
         var isFree = true;
         if(sched.b) isFree = isFree && this.isBooked(sched.b, startTime, endTime);
         if(sched.t) isFree = isFree && this.isBooked(sched.t, startTime, endTime);
         if(sched.u) isFree = isFree && this.isBooked(sched.u, startTime, endTime);
         
         if(isFree) {
-            fbInfo.locations.push(itemsById[resource]._itemIndex);
+            fbInfo.locations.push(params.itemsById[resource]._itemIndex);
             fbInfo.availableLocations++;
         }
 	}
@@ -549,10 +612,10 @@ function(attendee, startTime, endTime) {
 };
 
 ZmScheduleAssistantView.prototype.renderSuggestions =
-function(itemsById, itemsByIdx) {
+function(params) {
     this.resizeTimeSuggestions();
-    this._timeSuggestions.set(this._fbStat, this._totalUsers, this._totalLocations, itemsById, itemsByIdx);
-    this._timeSuggestions.focus();
+    this._timeSuggestions.set(this._fbStat, this._totalUsers, this._totalLocations, params.itemsById, params.itemsByIdx);
+    if(params.focus) this._timeSuggestions.focus();
 };
 
 ZmScheduleAssistantView.prototype.resizeTimeSuggestions =
