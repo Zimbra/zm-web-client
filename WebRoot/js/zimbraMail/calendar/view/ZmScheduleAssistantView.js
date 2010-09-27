@@ -163,7 +163,7 @@ ZmScheduleAssistantView.prototype._miniCalSelectionListener =
 function(ev) {
 	if (ev.item instanceof DwtCalendar) {
         var date = ev.detail;
-        this.reset(date, this._attendees);
+        this.reset(date, this._attendees, true);
         //set edit view start/end date
         var duration = this._editView.getDuration();
         var endDate = new Date(date.getTime() + duration);
@@ -221,7 +221,7 @@ function(attendee) {
                 break;
             }
         }
-        if(!found) this._attendees.push(email); 
+        if(!found) this._attendees.push(email);
     }
 
     this.reset(this._date, this._attendees, true);
@@ -316,7 +316,7 @@ function(params) {
 		params.itemsById[emails[i]] = item;
 	}
 
-    var attendees = this._controller.getAttendees(ZmCalBaseItem.PERSON).getArray();
+    var attendees = this._editView.getAttendees(ZmCalBaseItem.PERSON).getArray();
     var attendee;
     this._attendees = [];
 

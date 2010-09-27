@@ -1225,7 +1225,10 @@ function(text, el, match) {
 
         if(type == ZmCalBaseItem.PERSON && this._scheduleAssistant) this._scheduleAssistant.updateAttendee(attendee);
 	}else if(match.email){
-        if(type == ZmCalBaseItem.PERSON && this._scheduleAssistant) this._scheduleAssistant.updateAttendee(match.email);    
+        if(type == ZmCalBaseItem.PERSON && this._scheduleAssistant) {
+            var attendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.PERSON].getValue());
+            this._scheduleAssistant.updateAttendees(attendees);
+        }
     }
 };
 
@@ -1450,6 +1453,11 @@ function() {
 ZmApptEditView.prototype.setApptLocation =
 function(val) {
     this._attInputField[ZmCalBaseItem.LOCATION].setValue(val);
+};
+
+ZmApptEditView.prototype.getAttendees =
+function(type) {
+    return this.getAttendeesFromString(type, this._attInputField[type].getValue());
 };
 
 ZmApptEditView.prototype._handleAttendeeField =
