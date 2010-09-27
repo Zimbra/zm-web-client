@@ -376,6 +376,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.accountName	= search.accountName;
 	params.searchFor	= this._searchFor;
 	params.idsOnly		= search.idsOnly;
+	params.inDumpster   = search.inDumpster;
 
 	if (changes) {
 		for (var key in changes) {

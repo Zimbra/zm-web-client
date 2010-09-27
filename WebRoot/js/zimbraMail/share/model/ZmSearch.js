@@ -50,6 +50,7 @@
  * @param	{Array}		params.allowableTaskStatus		the list of task status types to return (assuming one of the values for "types" is "task")
  * @param	{String}	params.accountName				the account name to run this search against
  * @params	{Boolean}	params.idsOnly					if <code>true</code>, response returns item IDs only
+ * @param   {Boolean}   params.inDumpster               if <code>true</code>, search in the dumpster
  */
 ZmSearch = function(params) {
 
@@ -258,6 +259,9 @@ function(params) {
 					}
 				}
 			}
+			if (this.inDumpster) {
+				method.setAttribute("inDumpster", "1");
+			}
 		}
 	}
 
@@ -407,6 +411,9 @@ function(params) {
 					}
                 }
             }
+			if (this.inDumpster) {
+				request.inDumpster = 1;
+			}
         }
     }
 

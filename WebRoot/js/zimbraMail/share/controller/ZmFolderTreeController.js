@@ -224,8 +224,6 @@ function(parent, type, id) {
 	if (button) {
 		button.setVisible(isTrash);
 		button.setEnabled(isTrash);
-		// bug #30582 - remove this line to enable dumpster:
-		button.setVisible(false);
 	}
 
 	// we always enable sharing in case we're in multi-mbox mode

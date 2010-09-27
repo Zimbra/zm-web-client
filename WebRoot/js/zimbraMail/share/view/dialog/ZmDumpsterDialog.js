@@ -58,11 +58,12 @@ function() {
 ZmDumpsterDialog.prototype.popup =
 function() {
 	var params = {
-		query: "in:trash",				// XXX: change this to "in:dumpster" per bug 45284 is fixed.
+		query: "is:anywhere",
 		searchFor: ZmId.SEARCH_MAIL,    // only mail for now
 		types: [ZmItem.MSG],            // restrict to messages only
 		sortBy: ZmSearch.DATE_DESC,
 		noRender: true,
+		inDumpster: true,
 		callback: (new AjxCallback(this._controller, this._controller.show))
 	};
 
@@ -254,6 +255,10 @@ function(dialog) {
 	dialog.popdown();
 
 	// hard delete
-	this._doDelete(this._listView[this._currentView].getSelection(), true, {op:"deletedumpster"});
+	this._doDelete(this._listView[this._currentView].getSelection(), true, {op:"dumpsterdelete"});
 };
 
+ZmDumpsterListController.prototype._getMoreSearchParams =
+function(params) {
+	params.inDumpster = true;
+};
