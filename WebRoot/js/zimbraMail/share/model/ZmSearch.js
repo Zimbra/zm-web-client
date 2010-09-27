@@ -189,7 +189,11 @@ function(params) {
 		} else if (this.isCalResSearch) {
 			soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
 			var method = soapDoc.getMethod();
-			if (this.attrs) { method.setAttribute("attrs", this.attrs.join(",")); }
+			if (this.attrs) {
+				var attrs = [].concat(this.attrs);
+				AjxUtil.arrayRemove(attrs, "fullName");
+				method.setAttribute("attrs", attrs.join(","));
+			}
 			var searchFilterEl = soapDoc.set("searchFilter");
 			if (this.conds && this.conds.length) {
 				var condsEl = soapDoc.set("conds", null, searchFilterEl);
@@ -198,10 +202,14 @@ function(params) {
 				}
 				for (var i = 0; i < this.conds.length; i++) {
 					var cond = this.conds[i];
-					var condEl = soapDoc.set("cond", null, condsEl);
-					condEl.setAttribute("attr", cond.attr);
-					condEl.setAttribute("op", cond.op);
-					condEl.setAttribute("value", cond.value);
+					if (cond.attr=="fullName" && cond.op=="has") {
+						var nameEl = soapDoc.set("name", cond.value);
+					} else {
+						var condEl = soapDoc.set("cond", null, condsEl);
+						condEl.setAttribute("attr", cond.attr);
+						condEl.setAttribute("op", cond.op);
+						condEl.setAttribute("value", cond.value);
+					}
 				}
 			}
 		} else {
@@ -319,7 +327,9 @@ function(params) {
 			jsonObj = {SearchCalendarResourcesRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.SearchCalendarResourcesRequest;
 			if (this.attrs) {
-				request.attrs = this.attrs.join(",");
+				var attrs = [].concat(this.attrs);
+				AjxUtil.arrayRemove(attrs, "fullName");
+				request.attrs = attrs.join(",");
 			}
 			if (this.conds && this.conds.length) {
 				request.searchFilter = {conds:{}};
@@ -330,7 +340,11 @@ function(params) {
 				}
 				for (var i = 0; i < this.conds.length; i++) {
 					var c = this.conds[i];
-					cond.push({attr:c.attr, op:c.op, value:c.value});
+					if (c.attr=="fullName" && c.op=="has") { // Optimization for bug #50841
+						request.name = c.value;
+					} else {
+						cond.push({attr:c.attr, op:c.op, value:c.value});
+					}
 				}
 			}
 		} else {

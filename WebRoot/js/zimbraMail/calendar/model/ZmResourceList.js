@@ -79,8 +79,11 @@ ZmResourceList.prototype.searchCalResources =
 function(params) {
     var soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
     var method = soapDoc.getMethod();
-    if (params.attrs)
-        method.setAttribute("attrs", params.attrs.join(","));
+    if (params.attrs) {
+        var attrs = [].concat(params.attrs);
+        AjxUtil.arrayRemove(attrs, "fullName");
+        method.setAttribute("attrs", attrs.join(","));
+    }
     var searchFilterEl = soapDoc.set("searchFilter");
     if (params.conds && params.conds.length) {
         var condsEl = soapDoc.set("conds", null, searchFilterEl);
@@ -89,10 +92,14 @@ function(params) {
         }
         for (var i = 0; i < params.conds.length; i++) {
             var cond = params.conds[i];
-            var condEl = soapDoc.set("cond", null, condsEl);
-            condEl.setAttribute("attr", cond.attr);
-            condEl.setAttribute("op", cond.op);
-            condEl.setAttribute("value", cond.value);
+            if (cond.attr=="fullName" && cond.op=="has") {
+                var nameEl = soapDoc.set("name", cond.value);
+            } else {
+                var condEl = soapDoc.set("cond", null, condsEl);
+                condEl.setAttribute("attr", cond.attr);
+                condEl.setAttribute("op", cond.op);
+                condEl.setAttribute("value", cond.value);
+            }
         }
     }
 
