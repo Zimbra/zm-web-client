@@ -101,7 +101,7 @@
                                         <div id="dcontent-view" style="padding-bottom:5px;">
                                         <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                             <tr>
-                                                <td valign="top">
+                                                <td valign="top" align="left">
                                                     <span class="medDate">${dayTitle}</span>  
                                                   <sup class="medDay">
                                                       <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
@@ -110,7 +110,7 @@
                                                 </td>
                                                 <td align="right">
                                                     <mo:calendarUrl var="monthUrl" view="month" timezone="${timezone}" rawdate="${currentDay}"/>
-                                                    <span  onclick="return zClickLink('closeZoom');"><a id='closeZoom' href="${fn:escapeXml(monthUrl)}"><app:img src="common/ImgCancel.gif" alt="close"/></a></span>
+                                                    <span  onclick="return zClickLink('closeZoom');"><a id='closeZoom' href="${fn:escapeXml(monthUrl)}"><app:img src="common/ImgClose.gif" alt="close"/></a></span>
                                                 </td>
                                             </tr>
                                         </table>

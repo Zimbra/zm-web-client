@@ -1232,9 +1232,9 @@ span.aleft > div:first-child, .contactHeader {
 
 	.ZhCalMonthAppt,.zo_appt_text a,.ZhCalMonthAllDayAppt,.ZhCalMonthAllDayApptNew{
 		text-decoration: none;
-		color: white;
+		color: #333;
 		font-size: 12px;
-		text-shadow: #666666 0px 1px;
+		text-shadow: #fff 0px -1px;
 		font-weight: bold;
 	}
 
@@ -1247,6 +1247,10 @@ span.aleft > div:first-child, .contactHeader {
 	border: 1px solid #e4770a;
 }
 
+.OrangeLight{
+	background-color: #FFBB80;
+	border: 1px solid #ffa95e;
+}
 
 .RedLight,.RedBg{ 
 	background-color:#ff9999;
@@ -1460,7 +1464,7 @@ span.aleft > div:first-child, .contactHeader {
     -webkit-transition: opacity 200ms linear;
     position:absolute;
     top:0px;
-    min-width:20%; 
+    width:30%; 
     z-index:1000;
     margin: 0 30%;
     -webkit-border-bottom-left-radius: 6px;
@@ -1497,5 +1501,5 @@ span.aleft > div:first-child, .contactHeader {
 }
 
 .Cancel{
-    background-position: 0 -56px !important;
+    background-position: 0px -60px !important;
 }
