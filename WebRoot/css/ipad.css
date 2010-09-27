@@ -34,6 +34,14 @@ a:hover{
        height: 500px;
     }
 
+	.wrap-dcallist {
+       height: 280px;
+    }
+    
+    .wrap-dcallview {
+       height: 462px;
+    }
+    
     .wrap-dcalzoom {
         height:323px;
     }
@@ -106,6 +114,15 @@ a:hover{
     .wrap-dcal {
        height: 753px;
     }
+    
+    .wrap-dcallist {
+       height: 533px;
+    }
+    
+    .wrap-dcallview {
+       height: 715px;
+    }
+    
     .wrap-dcalzoom {
         height:320px;   
     }

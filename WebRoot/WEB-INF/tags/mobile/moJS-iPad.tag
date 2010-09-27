@@ -1024,9 +1024,11 @@ ZmiPadCal.processResponse = function (respData, url) {
         toggleCompose('compose-pop','veil');
     } else if(ZmiPad.getParamFromURL("view",url) == "day") {
         $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
+        initListScroll();
         initContentScroll();
     } else if(ZmiPad.getParamFromURL("view",url) == "list") {
         $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
+        initListScroll();
         initContentScroll();   
     } else if(ZmiPad.getParamFromURL("zoom",url) == "true") {
         $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;    

@@ -114,6 +114,8 @@
                 </td></tr>
             </table>
             <br><br>
+            <div class="wrap-dlist wrap-dcallist" id="wrap-dlist-view">
+                <div id="dlist-view" style="padding-bottom:5px;">
                     <c:set var="count" value="0"/>
                     <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
                     <c:set var="dayEnd" value="${zm:addDay(currentDay, 1).timeInMillis}"/>
@@ -159,6 +161,7 @@
                         <c:set var="count" value="${count+1}"/>
                         <c:set var="id" value="${id+1}"/>
                     </zm:forEachAppoinment>
+              </div></div>      
         </div>
 
         <div class="calSplit">
