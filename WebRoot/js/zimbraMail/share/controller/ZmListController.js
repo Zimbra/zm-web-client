@@ -711,7 +711,7 @@ function(ev) {
  */
 ZmListController.prototype._deleteListener =
 function(ev) {
-	this._doDelete(this..getSelection());
+	this._doDelete(this.getSelection());
 };
 
 /**
