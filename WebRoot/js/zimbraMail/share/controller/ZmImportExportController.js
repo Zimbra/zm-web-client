@@ -308,7 +308,6 @@ function(params) {
 		encodeURIComponent(path),
 		"?",
 		type ? "fmt="+encodeURIComponent(type) : "",
-        params.subType ? "&"+type+"fmt="+encodeURIComponent(params.subType) : "",
 		params.views ? "&types="+encodeURIComponent(params.views) : "",
 		params.resolve ? "&resolve="+encodeURIComponent(params.resolve) : "",
 		"&callback="+funcName
