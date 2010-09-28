@@ -2,7 +2,7 @@
 <$ var labelStyle = "width:"+(AjxEnv.isIE ? 30 : 32)+"px; overflow:visible; white-space:nowrap"; $>
 <$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
 	<div id='${id}_top'>
-        <table border=0 width=100%>
+        <table border=0 width=100% class='calendar_edit_view_separator'>
             <tr>
                 <td valign="top" style="padding-top:20px;">
                     <div id="${id}_invitesend_btn" class="InviteButton" style="display:none;padding:5px;">
@@ -10,114 +10,117 @@
                     </div>
                 </td>
                 <td style="width:100%">
-
-
-
-
-		<table border=0 width=100% style='table-layout:fixed;margin-top: 5px;' id='${id}_table' class='calendar_edit_view_separator'>
-            <colgroup>
-                <col width='65' />
-                <col width='140'/>
-                <col width='100'/>
-                <col id='${id}_timezoneColumn' width='250'/>
-                <col id='${id}_labelColumn' width='160'/>
-                <col/>
-                <col width='80'/>
-            </colgroup>
-            <tr id='${id}_invitemsg_container' style='display:none;'>
-                <td width="1%" align="right" id="${id}_invitemsgicon"><$= AjxImg.getImageHtml("Warning") $></td>
-                <td colspan="6" id="${id}_invitemsg"><!-- Invite message --></td>
-            </tr>
-            <tr  id='${id}_forward_options' style='display:none;'>
-                <td width='65' class='ZmFieldLabelRight'><div id='${id}_picker'><$=ZmMsg.toLabel$></div></td>
-                <td colspan='6' id='${id}_to_control'></td>
-            </tr>
-            <$ if (data.isAppt && !appCtxt.multiAccounts) { $>
-            <tr id="${id}_identityContainer">
-                <td width="1%" class='ZmFieldLabelRight'><nobr><$= ZmMsg.fromLabel $></nobr></td>
-                <td colspan='6' id="${id}_identity"></td>
-            </tr>
-            <$ } $>
-            <tr>
-                <td width='65' class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subjectLabel $></nobr></td>
-                <td colspan='5' id='${id}_subject'></td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr id="${id}_attendeesContainer">
-                <td width='65' align='right' valign='top'><div id='${id}_req_att_picker'><legend><$= ZmMsg.attendeesLabel $></legend></div></td>
-                <td colspan='5' id='${id}_person'></td>
-                <td id='${id}_show_optional' class='fakeAnchor'><$= ZmMsg.showOptional $></td>
-            </tr>
-            <tr id='${id}_optionalContainer'>
-                <td width='65' align='right' valign='top'><div id='${id}_opt_att_picker'><legend><$= ZmMsg.optionalLabel $></legend></div></td>
-                <td colspan='5' id='${id}_optional'></td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td width='65' align='right' valign='top'><div id='${id}_loc_picker'><legend><$= ZmMsg.locationLabel $></legend></div></td>
-                <td colspan='5' id='${id}_location'></td>
-                <td id='${id}_res_btn'>&nbsp;</td>
-            </tr>
-            <$ if (data.isGalEnabled) { $>
-            <tr id='${id}_resourcesContainer'>
-                <td width='60' class='ZmApptTabViewPageField'><nobr><$= ZmMsg.resourcesLabel $></nobr></td>
-                <td colspan='5' id='${id}_resourcesData'></td>
-                <td>&nbsp;</td>
-            </tr>
-            <$ } $>
-            <tr>
-                <td width='65' class='ZmApptTabViewPageField'>&nbsp;</td>
-                <td>
-                    <table border=0 width="100%">
+                    <table border=0 width=100% style='table-layout:fixed;margin-top: 5px;' id='${id}_table'>
+                        <colgroup>
+                            <col width='65' />
+                            <col width='140'/>
+                            <col width='100'/>
+                            <col id='${id}_timezoneColumn' width='250'/>
+                            <col id='${id}_labelColumn' width='160'/>
+                            <col/>
+                            <col width='80'/>
+                        </colgroup>
+                        <tr id='${id}_invitemsg_container' style='display:none;'>
+                            <td width="1%" align="right" id="${id}_invitemsgicon"><$= AjxImg.getImageHtml("Warning") $></td>
+                            <td colspan="6" id="${id}_invitemsg"><!-- Invite message --></td>
+                        </tr>
+                        <tr  id='${id}_forward_options' style='display:none;'>
+                            <td width='65' class='ZmFieldLabelRight'><div id='${id}_picker'><$=ZmMsg.toLabel$></div></td>
+                            <td colspan='6' id='${id}_to_control'></td>
+                        </tr>
+                        <$ if (data.isAppt && !appCtxt.multiAccounts) { $>
+                        <tr id="${id}_identityContainer">
+                            <td width="1%" class='ZmFieldLabelRight'><nobr><$= ZmMsg.fromLabel $></nobr></td>
+                            <td colspan='6' id="${id}_identity"></td>
+                        </tr>
+                        <$ } $>
                         <tr>
-                            <td align="left">
-                                <input type='checkbox' id='${id}_allDayCheckbox'>
-                                <nobr>&nbsp;<$= ZmMsg.allDay $></nobr>
-                                &nbsp;
-                                <input type='checkbox' id='${id}_privateCheckbox'>
-                                <nobr>&nbsp;<$= ZmMsg._private $></nobr>
+                            <td width='65' class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subjectLabel $></nobr></td>
+                            <td colspan='5' id='${id}_subject'></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr id="${id}_attendeesContainer">
+                            <td width='65' align='right' valign='top'><div id='${id}_req_att_picker'><legend><$= ZmMsg.attendeesLabel $></legend></div></td>
+                            <td colspan='5' id='${id}_person'></td>
+                            <td id='${id}_show_optional' class='fakeAnchor'><$= ZmMsg.showOptional $></td>
+                        </tr>
+                        <tr id='${id}_optionalContainer'>
+                            <td width='65' align='right' valign='top'><div id='${id}_opt_att_picker'><legend><$= ZmMsg.optionalLabel $></legend></div></td>
+                            <td colspan='5' id='${id}_optional'></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td width='65' align='right' valign='top'><div id='${id}_loc_picker'><legend><$= ZmMsg.locationLabel $></legend></div></td>
+                            <td colspan='5' id='${id}_location'></td>
+                            <td id='${id}_res_btn'>&nbsp;</td>
+                        </tr>
+                        <$ if (data.isGalEnabled) { $>
+                        <tr id='${id}_resourcesContainer'>
+                            <td width='60' class='ZmApptTabViewPageField'><nobr><$= ZmMsg.resourcesLabel $></nobr></td>
+                            <td colspan='5' id='${id}_resourcesData'></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <$ } $>
+                        <tr>
+                            <td width='65' class='ZmApptTabViewPageField'><nobr><$= (data.isAppt ? ZmMsg.startLabel : (ZmMsg.startDate+":")) $></nobr></td>
+                            <td colspan="2">
+                                 <table border=0 style='table-layout:fixed;' <$= AjxEnv.isIE ? "width='100%'" : ""$> >
+                                     <$= AjxTemplate.expand("calendar.Appointment#ApptTimeSection_StartDate", data) $>
+                                 </table>
+                            </td>
+                            <td id='${id}_tzoneSelectStart'></td>
+                            <td class='ZmFieldLabelRight' id='${id}_reminder_options' style='line-height:22px'></nobr><$= ZmMsg.reminderLabel $></td>
+                            <td align='left' id='${id}_reminderSelectContainer'>
+                                <table border=0 cellpadding=0 cellspacing=0><tr>
+                                    <td id='${id}_reminderSelectInput'></td>
+                                    <td id='${id}_reminderSelect'> </td>
+                                </tr></table>
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td width='65' class='ZmApptTabViewPageField'><nobr><$= (data.isAppt ? ZmMsg.endLabel : ZmMsg.dateDueLabel ) $></nobr></td>
+                            <td colspan="2">
+                                 <table border=0 style='table-layout:fixed;' <$= AjxEnv.isIE ? "width='100%'" : ""$> >
+                                     <$= AjxTemplate.expand("calendar.Appointment#ApptTimeSection_EndDate", data) $>
+                                 </table>
+                            </td>
+                            <td id='${id}_tzoneSelectEnd'></td>
+                            <td class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'><nobr><$= ZmMsg.repeatLabel $></nobr></td>
+                            <td colspan="2" id='${id}_repeat_options'>
+                                <div id='${id}_repeatSelect' class="ZmApptComposeField"></div>
+                                <div id='${id}_repeatDesc' class="ZmApptComposeField" style='text-decoration:underline'></div>
                             </td>
                         </tr>
+                        <tr>
+                            <td width='65' class='ZmApptTabViewPageField'>&nbsp;</td>
+                            <td colspan="2">
+                                <table border=0 width="100%">
+                                    <tr>
+                                        <td align="left">
+                                            <input type='checkbox' id='${id}_allDayCheckbox'>
+                                            <nobr>&nbsp;<$= ZmMsg.allDay $></nobr>
+                                            &nbsp;
+                                            <input type='checkbox' id='${id}_privateCheckbox'>
+                                            <nobr>&nbsp;<$= ZmMsg._private $></nobr>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td valign="top" id='${id}_timezoneSpacer'>&nbsp;</td>
+                            <td class='ZmFieldLabelRight'><nobr><$= data.isAppt ? ZmMsg.calendarLabel : ZmMsg.taskFolder $></nobr></td>
+                            <td>
+                                <table border=0>
+                                    <tr>
+                                        <td id='${id}_folderSelect'></td>
+                                        <td class='ZmFieldLabelRight'><nobr><$= ZmMsg.showAs $></nobr></td>
+                                        <td class='ZmFieldLabelRight' align="right" id='${id}_showAsSelect'></td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
                     </table>
-                </td>
-                <td class='ZmFieldLabelRight' align="right" id='${id}_showAsSelect'></td>
-                <td valign="top" id='${id}_timezoneSpacer'>&nbsp;</td>
-                <td class='ZmFieldLabelRight'><nobr><$= data.isAppt ? ZmMsg.calendarLabel : ZmMsg.taskFolder $></nobr></td>
-                <td id='${id}_folderSelect'></td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td width='65' class='ZmApptTabViewPageField'><nobr><$= (data.isAppt ? ZmMsg.startLabel : (ZmMsg.startDate+":")) $></nobr></td>
-                <td colspan="2">
-                     <table border=0 style='table-layout:fixed;' <$= AjxEnv.isIE ? "width='100%'" : ""$> >
-                         <$= AjxTemplate.expand("calendar.Appointment#ApptTimeSection_StartDate", data) $>
-                     </table>
-                </td>
-                <td id='${id}_tzoneSelectStart'></td>
-                <td class='ZmFieldLabelRight' id='${id}_reminder_options' style='line-height:22px'></nobr><$= ZmMsg.reminderLabel $></td>
-                <td align='left' id='${id}_reminderSelectContainer'>
-                    <table border=0 cellpadding=0 cellspacing=0><tr>
-                        <td id='${id}_reminderSelectInput'></td>
-                        <td id='${id}_reminderSelect'> </td>
-                    </tr></table>
-                </td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td width='65' class='ZmApptTabViewPageField'><nobr><$= (data.isAppt ? ZmMsg.endLabel : ZmMsg.dateDueLabel ) $></nobr></td>
-                <td colspan="2">
-                     <table border=0 style='table-layout:fixed;' <$= AjxEnv.isIE ? "width='100%'" : ""$> >
-                         <$= AjxTemplate.expand("calendar.Appointment#ApptTimeSection_EndDate", data) $>
-                     </table>
-                </td>
-                <td id='${id}_tzoneSelectEnd'></td>
-                <td class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'><nobr><$= ZmMsg.repeatLabel $></nobr></td>
-                <td colspan="2" id='${id}_repeat_options'>
-                    <div id='${id}_repeatSelect' class="ZmApptComposeField"></div>
-                    <div id='${id}_repeatDesc' class="ZmApptComposeField" style='text-decoration:underline'></div>
-                </td>
-            </tr>
-		</table>
 
                 </td>
             </tr>
