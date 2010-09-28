@@ -40,6 +40,8 @@ function() {
 };
 
 ZmCalItemComposeController.DEFAULT_TAB_TEXT = ZmMsg.appointment;
+ZmCalItemComposeController.SEND = "SEND";
+ZmCalItemComposeController.SAVE  = "SAVE";
 
 // Public methods
 
@@ -307,14 +309,16 @@ function(mode) {
 ZmCalItemComposeController.prototype._createToolBar =
 function() {
 	
-	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];
+	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];    
 
-	if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-		buttons.push(ZmOperation.PRINT);
-	}
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
 		buttons.push(ZmOperation.ATTACHMENT);
 	}
+
+    if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+		buttons.push(ZmOperation.PRINT);
+	}
+
 	if (!appCtxt.isOffline) {
 		buttons.push(ZmOperation.SPELL_CHECK);
 	}
@@ -384,7 +388,10 @@ function(calItem, attId, notifyList) {
         if(this._composeView.isReminderOnlyChanged()) {
             calItem.setMailNotificationOption(false);
         }
-		calItem.save(attId, callback, errorCallback, notifyList);
+        if(this._action == ZmCalItemComposeController.SEND)
+            calItem.send(attId, callback, errorCallback, notifyList);
+        else
+		    calItem.save(attId, callback, errorCallback, notifyList);
 	} else {
 		// bug: 27600 clean up edit view to avoid stagnant attendees
 		this._composeView.cleanup();
@@ -451,6 +458,7 @@ function(enabled) {
 // Save button was pressed
 ZmCalItemComposeController.prototype._saveListener =
 function(ev) {
+    this._action = ZmCalItemComposeController.SAVE;
     this.enableToolbar(false);
 	if (this._doSave() === false) {
 		return;

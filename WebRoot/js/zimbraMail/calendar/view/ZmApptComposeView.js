@@ -261,6 +261,21 @@ function(attendees, type, mode, index) {
 	}
 };
 
+ZmApptComposeView.prototype.showMeetingFields =
+function(show){
+    this._apptEditView.showMeetingFields(show);
+};
+
+ZmApptComposeView.prototype.isMeetingAppt =
+function(){
+    return this._apptEditView.isMeeting();
+};
+
+ZmApptComposeView.prototype.setApptMessage =
+function(msg){
+    this._apptEditView.setApptMessage(msg);  
+};
+
 ZmApptComposeView.prototype.getTitle = 
 function() {
 	return [ZmMsg.zimbraTitle, ZmMsg.appointment].join(": ");

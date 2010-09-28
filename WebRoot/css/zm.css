@@ -4354,3 +4354,9 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmCalListViewSearchBar .DwtCompositeCell {
     white-space: nowrap;
 }
+
+/*Calendar Appt Send button*/
+.InviteButton .ZWidgetTitle{
+    padding-bottom:20px;
+    padding-top:20px;
+}

@@ -108,7 +108,7 @@ function(dialog, appt) {
 ZmApptComposeController.prototype._apptForwardCallback =
 function() {
 	this._app.popView(true);
-};
+};      
 
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
@@ -230,12 +230,52 @@ function(attId) {
 	return false;
 };
 
+ZmApptComposeController.prototype._sendListener =
+function(ev){
+    this._action = ZmCalItemComposeController.SEND;
+    this.enableToolbar(false);
+	if (this._doSave() === false) {
+		return;
+    }
+	this._app.popView(true);
+};
+
+ZmApptComposeController.prototype._saveListener =
+function(ev, force) {
+    var isMeeting = this._composeView.isMeetingAppt();
+    var dlg = appCtxt.getOkCancelMsgDialog();
+    if(isMeeting && !force){
+        dlg.setMessage(ZmMsg.inviteNotSentMsg);
+        dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._saveListener, ev, true));
+        dlg.popup();
+        return;
+    }else if(dlg.isPoppedUp()){
+        dlg.popdown();
+    }
+    this._action = ZmCalItemComposeController.SAVE;
+    this.enableToolbar(false);
+	if (this._doSave() === false) {
+		return;
+    }
+    if(isMeeting){
+        this._composeView.setApptMessage(ZmMsg.inviteNotSent);
+        return;
+    }
+	this._app.popView(true);        
+};
+
 ZmApptComposeController.prototype._createToolBar =
 function() {
 
     ZmCalItemComposeController.prototype._createToolBar.call(this);
 
+    var btn = this._inviteAttendeesBtn = new DwtToolBarButton({id:ZmOperation.INVITE_ATTENDEES, parent:this._toolbar, index:3});
+    this._inviteAttendeesBtn.setText(ZmMsg.inviteAttendees);
+    this._inviteAttendeesBtn.setImage("ApptMeeting");
+    this._inviteAttendeesBtn.addSelectionListener(new AjxListener(this, this._inviteAttendeesListener));
+
     var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+
     var m = new DwtMenu({parent:optionsButton});
     optionsButton.setMenu(m);
 
@@ -248,6 +288,11 @@ function() {
     mi.setChecked(true, true);
 
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
+};
+
+ZmApptComposeController.prototype._inviteAttendeesListener =
+function(){
+    this._composeView.showMeetingFields();  
 };
 
 ZmApptComposeController.prototype.setRequestResponses =

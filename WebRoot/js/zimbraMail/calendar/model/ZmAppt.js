@@ -64,6 +64,8 @@ ZmAppt.prototype.constructor = ZmAppt;
 ZmAppt.MODE_DRAG_OR_SASH		= ++ZmCalItem.MODE_LAST;
 ZmAppt.ATTENDEES_SEPARATOR		= "; ";
 
+ZmAppt.ACTION_SAVE = "SAVE";
+ZmAppt.ACTION_SEND = "SEND";
 
 // Public methods
 
@@ -950,6 +952,28 @@ function(inv) {
 	}
 };
 
+ZmAppt.prototype.send =
+function(attachmentId, callback, errorCallback, notifyList){
+    this._mode = ZmAppt.ACTION_SEND;
+    this.isSend = true;
+    ZmCalItem.prototype.save.call(this, attachmentId, callback, errorCallback, notifyList);
+}
+
+ZmAppt.prototype.save =
+function(attachmentId, callback, errorCallback, notifyList){
+    this._mode = ZmAppt.ACTION_SAVE;
+    this.isSend = false;
+    ZmCalItem.prototype.save.call(this, attachmentId, callback, errorCallback, notifyList);
+};
+
+ZmAppt.prototype._setSimpleSoapAttributes =
+function(soapDoc, attachmentId, notifyList, accountName) {
+    var soapNodes = ZmCalItem.prototype._setSimpleSoapAttributes.call(this, soapDoc, attachmentId, notifyList, accountName);
+    if(this.hasAttendees() && !this.isSend)
+        soapNodes.m.setAttribute("f", ZmItem.FLAG_ISDRAFT);
+    return soapNodes;
+};
+
 ZmAppt.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	for (var type in this._attendees) {
@@ -961,7 +985,7 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	}
 
 	// if we have a separate list of email addresses to notify, do it here
-	if (this._sendNotificationMail && this.isOrganizer() && m && notifyList) {
+	if (this._sendNotificationMail && this.isOrganizer() && m && notifyList && this.isSend) {
 		for (var i = 0; i < notifyList.length; i++) {
 			e = soapDoc.set("e", null, m);
 			e.setAttribute("a", notifyList[i]);
@@ -1034,7 +1058,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 	}
 
 	// set email to notify if notifyList not provided
-	if (this._sendNotificationMail && this.isOrganizer() && m && !notifyList && !this.__newFolderId) {
+	if (this._sendNotificationMail && this.isOrganizer() && m && !notifyList && !this.__newFolderId && this.isSend) {
 		e = soapDoc.set("e", null, m);
 		e.setAttribute("a", address);
 		if (dispName) {

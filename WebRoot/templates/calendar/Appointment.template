@@ -1,7 +1,19 @@
 <template id='calendar.Appointment#ComposeView'>
 <$ var labelStyle = "width:"+(AjxEnv.isIE ? 30 : 32)+"px; overflow:visible; white-space:nowrap"; $>
-<$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $> 
+<$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
 	<div id='${id}_top'>
+        <table border=0 width=100%>
+            <tr>
+                <td valign="top" style="padding-top:20px;">
+                    <div id="${id}_invitesend_btn" class="InviteButton" style="display:none;padding:5px;">
+                        <!-- Invite Send Button -->
+                    </div>
+                </td>
+                <td style="width:100%">
+
+
+
+
 		<table border=0 width=100% style='table-layout:fixed;margin-top: 5px;' id='${id}_table' class='calendar_edit_view_separator'>
             <colgroup>
                 <col width='65' />
@@ -12,6 +24,10 @@
                 <col/>
                 <col width='80'/>
             </colgroup>
+            <tr id='${id}_invitemsg_container' style='display:none;'>
+                <td width="1%" align="right" id="${id}_invitemsgicon"><$= AjxImg.getImageHtml("Warning") $></td>
+                <td colspan="6" id="${id}_invitemsg"><!-- Invite message --></td>
+            </tr>
             <tr  id='${id}_forward_options' style='display:none;'>
                 <td width='65' class='ZmFieldLabelRight'><div id='${id}_picker'><$=ZmMsg.toLabel$></div></td>
                 <td colspan='6' id='${id}_to_control'></td>
@@ -26,9 +42,9 @@
                 <td width='65' class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subjectLabel $></nobr></td>
                 <td colspan='5' id='${id}_subject'></td>
                 <td>&nbsp;</td>
-            </tr>            
-            <tr>
-                <td width='65' align='right' valign='top'><div id='${id}_req_att_picker'><legend><$= ZmMsg.requiredLabel $></legend></div></td>
+            </tr>
+            <tr id="${id}_attendeesContainer">
+                <td width='65' align='right' valign='top'><div id='${id}_req_att_picker'><legend><$= ZmMsg.attendeesLabel $></legend></div></td>
                 <td colspan='5' id='${id}_person'></td>
                 <td id='${id}_show_optional' class='fakeAnchor'><$= ZmMsg.showOptional $></td>
             </tr>
@@ -47,7 +63,7 @@
                 <td width='60' class='ZmApptTabViewPageField'><nobr><$= ZmMsg.resourcesLabel $></nobr></td>
                 <td colspan='5' id='${id}_resourcesData'></td>
                 <td>&nbsp;</td>
-            </tr>            
+            </tr>
             <$ } $>
             <tr>
                 <td width='65' class='ZmApptTabViewPageField'>&nbsp;</td>
@@ -102,6 +118,10 @@
                 </td>
             </tr>
 		</table>
+
+                </td>
+            </tr>
+        </table>
 	</div>
     <div id='${id}_scheduler_option' style='padding:5px;'>
         <div style="float:left;" class="calendar_edit_field"><$= ZmMsg.scheduler $></div><div style="float:left; padding-left: 5px;" id="${id}_scheduleButton" class="fakeAnchor"><$= ZmMsg.show $></div><div id="${id}_scheduleImage" class="ImgSelectPullDownArrow" style="float:left;"></div>        
