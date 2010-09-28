@@ -73,7 +73,7 @@ a:hover{
 	}
 	
 	ul.ul{
-		margin: 25px 0 0 10%;
+		margin: 25px 0 0 18%;
 		width: 500px;		
 	}
 	
@@ -153,7 +153,7 @@ a:hover{
 	}
 
 	ul.ul{
-		margin: 25px 0 0 4%;
+		margin: 25px 0 0 5%;
 		width: 460px;		
 	}
 	
@@ -300,8 +300,8 @@ html, body{
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#CCCCCC));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #f6f6f6, #CCCCCC);
 	-webkit-border-radius: 6px;
-	box-shadow: 1px 1px 0 #white;
-	-webkit-box-shadow: 0 1px 0 #ccc;
+	box-shadow: 0 1px 0 #c4c4c4;
+	-webkit-box-shadow: 0 1px 0 #c4c4c4;
 	height: 22px;
 	padding: 8px 4px 0 4px;
 	font-size: 12px;
@@ -312,16 +312,17 @@ html, body{
 
 	.button:active{
 	 /* background: #7b7769 url("/img/mobile/ipad/button-selected-bg.gif") repeat-x top left; */
-		background-color: #29251b;
-		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#29251b), to(#564e3c));
-		background-image: -moz-linear-gradient(100% 100% 90deg, #29251b, #564e3c);
+		background-color: #666;
+		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#999));
+		background-image: -moz-linear-gradient(100% 100% 90deg, #666, #999);
 		color: white;
 	}
 
 		.button a, .buttonRight a, .buttonRight{
 			text-decoration: none;
-			color: #453928;
-			vertical-align: middle;	
+			color: #3b3b3b;
+			vertical-align: middle;
+			text-shadow: #f6f6f6 0px 1px;	
 		}
 	
 		.button a:active{
@@ -331,7 +332,7 @@ html, body{
 		.button input{
 			background-color: transparent;
 			border: none;
-			color: #453928;
+			color: #3b3b3b;
 			font-weight: bold;
 		}		
 	
@@ -380,9 +381,10 @@ html, body{
 		background: transparent;
 		border: none;
 		width: 70px;
-		color: #453928;
+		color: #3b3b3b;
 		font-weight: bold;
 		margin-top: -3px !important;
+		text-shadow: #f6f6f6 0px 1px;
 	}
 
 
@@ -462,17 +464,18 @@ html, body{
 }
 
 		.moreButton:active{
-			background-color: #666;
-			background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#999));
-			background-image: -moz-linear-gradient(100% 100% 90deg, #666, #999);
+		background-color: #666;
+		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#999));
+		background-image: -moz-linear-gradient(100% 100% 90deg, #666, #999);
 			color: white;
 		}
 
 		.moreButton a{
 			text-decoration: none;
 			text-transform: lowercase;
-			color: #453928;
-			vertical-align: middle;	
+			color: #3b3b3b	;
+			vertical-align: middle;
+			text-shadow: #f6f6f6 0px 1px;	
 		}
 	
 		.moreButton a:active{
@@ -680,8 +683,9 @@ a.accept,a.tentative,a.decline{
 	font-weight: bold;
 	text-align: center;
 	text-decoration: none;
-	color: #453928;	
+	color: #3b3b3b;	
 	border: 1px solid #ccc;
+	text-shadow: #f6f6f6 0px 1px;
 }
 
 	a.accept:active, a.tentative:active,a.decline:active{
@@ -701,10 +705,11 @@ a.accept,a.tentative,a.decline{
 	vertical-align: middle;
 	padding: 0 !important;
 	margin-top: 6px;
-	color: #453928;
+	color: #3b3b3b;
 	font-size: 12px;
 	font-weight: bold;
 	width: 40% !important;
+	text-shadow: #f6f6f6 0px 1px;
 }
 
 	.buttonBg a{
@@ -1238,8 +1243,6 @@ span.aleft > div:first-child, .contactHeader {
 		text-decoration: none;
 		color: #333;
 		font-size: 12px;
-		text-shadow: #fff 0px -1px;
-		font-weight: bold;
 	}
 
 .roundness{
@@ -1374,7 +1377,7 @@ span.aleft > div:first-child, .contactHeader {
 
 .prefBody .value select{
 	font-size: 14px !important;
-	width: 150px;
+	width: 50%;
 }
 
 .prefBody .value .timezone{
