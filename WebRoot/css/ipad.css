@@ -6,6 +6,7 @@ html,body,p,div,table,ul,li,form{
 	margin: 0;
 	padding: 0;
 	border: none;
+	word-spacing: 1px;
 }
 
 
@@ -544,6 +545,7 @@ html, body{
 	border-right: 1px solid #999;
     overflow:hidden;
     background-color: white;
+    line-height: 16px;
 }
 
 
@@ -1473,18 +1475,19 @@ span.aleft > div:first-child, .contactHeader {
 	-webkit-border-top-right-radius: 0px;
 }
 
-.loadingDiv{
-  	background-color:#ffffd0;
+.loadingDiv, .StatusWarning{
+  	background-color:#ffffe1;
 }
-	.loadingDiv .td{
-		padding: 5px 0;
+	.loadingDiv .td, .StatusInfo .td, .StatusWarning .td, .StatusCritical .td, .zo_noresults .td{
+		padding-top: 3px !important;
+		padding-bottom: 3px !important;
 		font-weight: bold;
 	}
 	
 .hidden {
     opacity: 0.0 !important;
     display:none;
-}
+} 
 
 .zo_noresults {
     height: 200px;
@@ -1493,9 +1496,7 @@ span.aleft > div:first-child, .contactHeader {
 .StatusInfo {
     background-color: lightgreen !important;
 }
-.StatusWarning {
-    background-color: yellow !important;
-}
+
 .StatusCritical {
     background-color: red !important;
 }

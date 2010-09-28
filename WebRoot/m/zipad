@@ -209,12 +209,12 @@
 	<c:choose>
 			<c:when test="${not empty param.appmsg}"><c:set var="statusMessage" value="${fn:escapeXml(param.appmsg)}"/>
 	            <c:set var="statusClass" value="Info"/>
-	            <div class="container tbl" id="msgDiv" onclick="return toggleElem(this);"><div id='statusdiv' class="tbl StatusInfo"><span  class='td aleft'><fmt:message key="${fn:escapeXml(param.appmsg)}"/></span><!-- span class='SmlIcnHldr aright right Cancel'></span --></div></div>
+	            <div class="container tbl" id="msgDiv" onclick="return toggleElem(this);"><div id='statusdiv' class="tbl StatusInfo"><span  class='td'><fmt:message key="${fn:escapeXml(param.appmsg)}"/></span><!-- span class='SmlIcnHldr aright right Cancel'></span --></div></div>
 	        </c:when>
 	        <c:when test="${not empty requestScope.statusMessage}">
 	            <c:set var="statusMessage" value="${fn:escapeXml(requestScope.statusMessage)}"/>
 	            <c:set var="statusClass" value="${requestScope.statusClass}"/>
-	            <div class="container tbl" id="msgDiv" onclick="return toggleElem(this);"><div id='statusdiv' class="tbl ${requestScope.statusClass}"><span class="td aleft">${fn:escapeXml(requestScope.statusMessage)}</span><!-- span class='SmlIcnHldr aright Cancel'></span --></div></div>
+	            <div class="container tbl" id="msgDiv" onclick="return toggleElem(this);"><div id='statusdiv' class="tbl ${requestScope.statusClass}"><span class="td">${fn:escapeXml(requestScope.statusMessage)}</span><!-- span class='SmlIcnHldr aright Cancel'></span --></div></div>
 	        </c:when>
 	        <c:when test="${empty param.ajax}">
 	        	<div class="container tbl" id="eaMsgDiv" onclick="return toggleElem(this);"></div>
