@@ -271,19 +271,24 @@ function() {
 		} else {
 			div.innerHTML = calName;
 		}
-		titleParentEl.appendChild(div);
-
+        if(titleParentEl) {
+		    titleParentEl.appendChild(div);
+        }
 		div = document.createElement("div");
 		div.className = "calendar_day_separator";
 		div.style.position = 'absolute';
 		div.id = col.headingDaySepDivId;
-		headingParentEl.appendChild(div);
+        if(headingParentEl) {
+		    headingParentEl.appendChild(div);
+        }
 
 		div = document.createElement("div");
 		div.className = "calendar_day_separator";
 		div.style.position = 'absolute';
 		div.id = col.daySepDivId;
-		dayParentEl.appendChild(div);
+        if(dayParentEl) {
+		    dayParentEl.appendChild(div);
+        }
 	}
 };
 
@@ -322,6 +327,7 @@ function(resetLeft) {
 		var unionGridScrollElement = document.getElementById(this._unionGridScrollDivId);
 		var alldayApptElement = document.getElementById(this._allDayApptScrollDivId);
 		hourElement.scrollTop = bodyElement.scrollTop;
+		hourElement.scrollLeft = bodyElement.scrollLeft;
 		if (resetLeft) bodyElement.scrollLeft = 0;
 		alldayElement.scrollLeft = bodyElement.scrollLeft;
 		alldayApptElement.scrollLeft = bodyElement.scrollLeft;
@@ -481,7 +487,9 @@ function() {
         }
 	}
 	var te = document.getElementById(this._headerYearId);
-	te.innerHTML = this._days[0].date.getFullYear();
+    if(te) {
+	    te.innerHTML = this._days[0].date.getFullYear();
+    }
 };
 
 ZmCalColView.prototype._resetAllDayData =
@@ -543,7 +551,6 @@ function(div, allDay, folderId) {
 	var calendar = appCtxt.getById(folderId);
 	var headerColor = calendar.rgb ? AjxColor.deepen(AjxColor.darken(calendar.rgb,ZmCalBaseView.headerColorDelta)) : "";
 	var bodyColor = calendar.rgb ? AjxColor.deepen(AjxColor.lighten(calendar.rgb,ZmCalBaseView.bodyColorDelta)) : "";
-	var bodyColor = calendar.rgb ? AjxColor.deepen(AjxColor.lighten(calendar.rgb,ZmCalBaseView.bodyColorDelta)) : "";
 	var subs = {
 		id: div.id,
 		newState: "",
@@ -604,7 +611,7 @@ function(appt) {
 	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
 	var calendar = appCtxt.getById(appt.folderId);
 	var isRemote = Boolean(calendar.url);
-	var is30 = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
+	var is30 = this._scheduleMode || (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
 	var is60 = (appt._orig.getDuration() <= 2*AjxDateUtil.MSEC_PER_HALF_HOUR);
 	var apptName = appt.getName();
 	var tagIcon = (!appt.getFolder().link && appt.tags.length > 0)

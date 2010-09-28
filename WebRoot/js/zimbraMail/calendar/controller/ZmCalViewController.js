@@ -1163,6 +1163,9 @@ function(date, duration, roll) {
 		if (ZmId.VIEW_CAL_MONTH == this._currentView) {
 			title = this._viewMgr.getCurrentView().getShortCalTitle();
 		}
+        if (ZmId.VIEW_CAL_SCHEDULE == this._currentView) {
+			currentView._navDateChangeListener(date);
+		}
 		this._navToolBar[ZmId.VIEW_CAL].setText(title);
 	}
 };
@@ -3463,4 +3466,44 @@ function(invite, msg, appt) {
 ZmCalViewController.prototype._forwardInviteCompose =
 function (appt) {
 	AjxDispatcher.run("GetApptComposeController").forwardInvite(appt);
+};
+
+ZmCalViewController.prototype.getFreeBusyInfo =
+function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) {
+	var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
+	soapDoc.setMethodAttribute("s", startTime);
+	soapDoc.setMethodAttribute("e", endTime);
+	soapDoc.setMethodAttribute("uid", emailList);
+
+	var acct = (appCtxt.multiAccounts)
+		? this._composeView.getApptEditView().getCalendarAccount() : null;
+
+	return appCtxt.getAppController().sendRequest({
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: callback,
+		errorCallback: errorCallback,
+		noBusyOverlay: noBusyOverlay,
+		accountName: (acct ? acct.name : null)
+	});
+};
+
+ZmCalViewController.prototype.getWorkingInfo =
+function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) {
+   var soapDoc = AjxSoapDoc.create("GetWorkingHoursRequest", "urn:zimbraMail");
+   soapDoc.setMethodAttribute("s", startTime);
+   soapDoc.setMethodAttribute("e", endTime);
+   soapDoc.setMethodAttribute("name", emailList);
+
+   var acct = (appCtxt.multiAccounts)
+       ? this._composeView.getApptEditView().getCalendarAccount() : null;
+
+   return appCtxt.getAppController().sendRequest({
+       soapDoc: soapDoc,
+       asyncMode: true,
+       callback: callback,
+       errorCallback: errorCallback,
+       noBusyOverlay: noBusyOverlay,
+       accountName: (acct ? acct.name : null)
+   });
 };
