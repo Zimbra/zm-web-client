@@ -3143,12 +3143,7 @@ function(ev) {
 	if (!element) { return true; }
 	var cv = AjxCore.objectWithId(element._composeView);
 
-	if (element == cv._subjectField) {
-		var key = DwtKeyEvent.getCharCode(ev);
-		if (key == 3 || key == 13) {
-			cv._focusHtmlEditor();
-		}
-	} else {
+	if (element != cv._subjectField) {
 		cv._adjustAddrHeight(element);
 	}
 	return true;
