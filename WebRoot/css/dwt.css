@@ -233,6 +233,10 @@
 	padding-top:2px;		/* ??? */
 }
 
+.overviewHeader .ImgNodeExpanded,
+.overviewHeader .ImgNodeCollapsed {
+    @ActiveCursor@
+}
 
 /*
 * Buttons
