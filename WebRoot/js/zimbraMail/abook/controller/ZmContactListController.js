@@ -863,6 +863,11 @@ function(ev) {
         url = "/h/printcontacts?id=" + ids.join("&id=");
         url = url + "&st=gal";
     }
+    if (appCtxt.isOffline) {
+        var folderId = this._folderId || ZmFolder.ID_CONTACTS;
+	    var acctName = appCtxt.getById(folderId).getAccount().name;
+        url+="&acct=" + acctName ;
+    }
 	window.open(appContextPath+url, "_blank");
 };
 
@@ -894,6 +899,11 @@ function(ev) {
 	}
     if(this.isGalSearch()) {
         url = url + "&st=gal";
+    }
+    if (appCtxt.isOffline) {
+        var folderId = this._folderId || ZmFolder.ID_CONTACTS;
+        var acctName = appCtxt.getById(folderId).getAccount().name;
+        url+="&acct=" + acctName ;
     }
 	window.open(appContextPath+url, "_blank");
 };

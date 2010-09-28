@@ -1396,15 +1396,15 @@ function(ev) {
             }else{
                 ids.push("C:"+item.id);
             }
-			if (item instanceof ZmConv) {
-				var msgList = item.getMsgList();
-				for(var j=0; j<msgList.length; j++) {
-					if(msgList[j].showImages) {
-						showImages = true;
-						break;
-					}
-				}
-			}
+            if (item instanceof ZmConv) {
+                var msgList = item.getMsgList();
+                for(var j=0; j<msgList.length; j++) {
+                    if(msgList[j].showImages) {
+                        showImages = true;
+                        break;
+                    }
+                }
+            }
         } else {
             ids.push(item.id);
             if (item.showImages) {
@@ -1414,7 +1414,11 @@ function(ev) {
     }
     var url = ("/h/printmessage?id=" + ids.join(","));
     if(appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages){
-       url = url+"&xim=1";
+        url = url+"&xim=1";
+    }
+    if (appCtxt.isOffline) {
+        var acctName = items[0].getAccount().name;
+        url+="&acct=" + acctName ;
     }
     window.open(appContextPath+url, "_blank");
 };

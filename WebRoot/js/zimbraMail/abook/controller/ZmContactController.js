@@ -398,6 +398,10 @@ function(ev) {
 ZmContactController.prototype._printListener =
 function(ev) {
 	var url = "/h/printcontacts?id=" + this._contact.id;
+    if (appCtxt.isOffline) {
+        var acctName = this._contact.getAccount().name;
+        url+="&acct=" + acctName ;
+    }
 	window.open(appContextPath+url, "_blank");
 };
 

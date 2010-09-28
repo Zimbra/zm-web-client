@@ -43,7 +43,7 @@
 <div class='ZhCallListPrintView'>
 <table><tr>
     <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
-    <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
+    <td nowrap width='1%'><b>${fn:escapeXml(not empty param.acct ? param.acct : mailbox.name)}</b></td>
 </tr></table>
 <hr/>
 <table cellpadding="0" cellspacing="5" width="99%" align="center">
@@ -71,7 +71,7 @@
 
 <c:if test="${empty contactIds}">
     <c:if test="${param.st ne 'gal'}">
-    <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true"/>
+    <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true" query="*"/>
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <zm:getContact id="${hit.contactHit.id}" var="contact"/>
         <div style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">

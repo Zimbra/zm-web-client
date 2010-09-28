@@ -27,7 +27,7 @@ ${zm:clearMessageCache(mailbox)}
 <table cellpadding="0" cellspacing="5"  width="100%">
 	<tr>
 		<td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
-		<td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
+		<td nowrap width='1%'><b>${(not empty param.acct ? param.acct : mailbox.name)}</b></td>
 	</tr>
 </table>
 <div align="right"><a style="font-size:12px;" href="javascript:increaseFontSize();">+</a> <fmt:message key="fontSize"/> <a href="javascript:decreaseFontSize();" style="font-size:12px;">-</a></div>
