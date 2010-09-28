@@ -1171,6 +1171,7 @@ span.aleft > div:first-child, .contactHeader {
 .calBitsSel{
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E5E5E5), to(#A0A0A0));
 	color: black;
+	border-radius: 16px; 
 }
 
 	.calBitsSel a{
@@ -1181,7 +1182,7 @@ span.aleft > div:first-child, .contactHeader {
         font-size: 12px;
         width: 30px;
         padding-top: 2px;
-        border-right: 1px solid #666;
+        /*border-right: 1px solid #666; */
 }
 
     .calBits td a{
