@@ -35,6 +35,7 @@ ZmTimeSuggestionView = function(parent, controller, apptEditView) {
 	this._kbMgr = appCtxt.getKeyboardMgr();
     this._normalClass = DwtListView.ROW_CLASS;
     this._selectedClass = [DwtListView.ROW_CLASS, DwtCssStyle.SELECTED].join("-");
+    this.setMultiSelect(false);
 };
 
 ZmTimeSuggestionView.prototype = new ZmListView;
@@ -115,10 +116,7 @@ function(item, id) {
         locationObj = this._itemsById[location];
         name = location;
         if(locationObj) {
-            name = locationObj.getAttr(ZmResource.F_name);
-            if (locationObj instanceof ZmContact) {
-                name = locationObj.getFullName();
-            }
+            name = locationObj.getAttr(ZmResource.F_locationName) || locationObj.getAttr(ZmResource.F_name);
         }
         this._locSelect.addOption(name, false, location);
 
@@ -134,7 +132,7 @@ function(item, id) {
 ZmTimeSuggestionView.prototype.handleLocationOverflow =
 function() {
     var locTxt = this._locSelect.getText();
-    if(locTxt.length > 15) {
+    if(locTxt && locTxt.length > 15) {
         locTxt = locTxt.substring(0, 15) + '...';
         this._locSelect.setText(locTxt);
     }
