@@ -269,24 +269,27 @@ function() {
 };
 
 ZmCalendar.prototype.getRestUrl =
-function() {
+function(acct) {
 	// return REST URL as seen by server
 	if (this.restUrl) {
 		return this.restUrl;
 	}
 
 	// if server doesn't tell us what URL to use, do our best to generate
-	url = this._generateRestUrl();
+	url = this._generateRestUrl(acct);
 	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
 
 	return url;
 };
 
 ZmCalendar.prototype._generateRestUrl =
-function() {
+function(acct) {
 	var loc = document.location;
 	var owner = this.getOwner();
 	var uname = owner || appCtxt.get(ZmSetting.USERNAME);
+    if (appCtxt.multiAccounts) {
+        uname = appCtxt.get(ZmSetting.USERNAME, null, acct)
+    }
 	var m = uname.match(/^(.*)@(.*)$/);
 	var host = loc.host || (m && m[2]);
 
