@@ -60,17 +60,17 @@
                                 inviteReplyAllDay="${isInstance and invite.component.allDay ? '1' : ''}"/>
                     <%-- <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/> --%>
                 <c:if test="${empty sessionScope.calendar}">
-                <div class="View ${apptFolder.styleColor}Bg">
+                <div class="roundness View ${apptFolder.styleColor}Bg" style="padding: 5px;">
                 <span class="label"><fmt:message
                         key="calendarLabel"/></span> ${fn:escapeXml(zm:getFolderName(pageContext,apptFolder.id))}
-                </div>
+                </div><br>
                 </c:if>    
                 <mo:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}"
                                        showInviteReply="${not readOnly}" externalImageUrl="${extImageUrl}"
                                        composeUrl="${composeUrl}" newWindowUrl=""/>
                 <c:set var="repeat" value="${invite.component.simpleRecurrence}"/>
                 <c:if test="${repeat != null && repeat.type != null && !repeat.type.none}">
-                    <div class="View">
+                    <div class="View lineHeight">
                     <span class="label"><fmt:message
                             key="repeatsLabel"/></span> ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, invite.component.start.date))}
                     </div>

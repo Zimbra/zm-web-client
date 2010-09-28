@@ -1249,6 +1249,12 @@ span.aleft > div:first-child, .contactHeader {
 	border-radius: 16px;
 	-webkit-border-radius: 16px;
 }
+
+.lineHeight{
+	line-height: 16px;
+	padding: 7px;
+}
+
 .OrangeDark,.Orange{ 
 	background-color: #ff9966;
 	border: 1px solid #e4770a;
