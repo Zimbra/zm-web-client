@@ -296,16 +296,18 @@ html, body{
 
 .button{
  /*	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left; */
-	background-color: #d8bf9c;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E5E5E5), to(#CCCCCC));
-	background-image: -moz-linear-gradient(100% 100% 90deg, #d8bf9c, #928068);
+	background-color: #f6f6f6;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#CCCCCC));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #f6f6f6, #CCCCCC);
 	-webkit-border-radius: 6px;
-	box-shadow: 1px 1px 3px #333;
+	box-shadow: 1px 1px 0 #white;
+	-webkit-box-shadow: 0 1px 0 #ccc;
 	height: 22px;
 	padding: 8px 4px 0 4px;
 	font-size: 12px;
 	font-weight: bold;
-	text-align: center;	
+	text-align: center;
+	border: 1px solid #a2a2a2;
 }
 
 	.button:active{
