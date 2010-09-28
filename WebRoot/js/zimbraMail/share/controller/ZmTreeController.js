@@ -360,7 +360,8 @@ function(treeItem, organizer, treeView) {
 			this._setTreeItemColor(treeItem, organizer);
 		}
 		if (treeView.isCheckedStyle) {
-			if (organizer.type == this.type && treeView.isCheckedStyle) {
+			if ((organizer.type == this.type && treeView.isCheckedStyle) ||
+                organizer.nId == ZmOrganizer.ID_TRASH || organizer.nId == ZmOrganizer.ID_DRAFTS) {
 				treeItem.setChecked(organizer.isChecked, true);
 			} else {
 				treeItem.showCheckBox(false);

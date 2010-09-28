@@ -50,6 +50,27 @@ function() {
 	return "ZmTaskTreeController";
 };
 
+// Public methods
+
+/**
+ * Displays the tree of this type.
+ *
+ * @param {Hash}	params		a hash of parameters
+ * @param	{constant}	params.overviewId		the overview ID
+ * @param	{Boolean}	params.showUnread		if <code>true</code>, unread counts will be shown
+ * @param	{Object}	params.omit				a hash of organizer IDs to ignore
+ * @param	{Object}	params.include			a hash of organizer IDs to include
+ * @param	{Boolean}	params.forceCreate		if <code>true</code>, tree view will be created
+ * @param	{String}	params.app				the app that owns the overview
+ * @param	{Boolean}	params.hideEmpty		if <code>true</code>, don't show header if there is no data
+ * @param	{Boolean}	params.noTooltips	if <code>true</code>, don't show tooltips for tree items
+ */
+ZmTaskTreeController.prototype.show = function(params) {
+	params.include = params.include || {};
+    params.include[ZmFolder.ID_TRASH] = true;
+    return ZmFolderTreeController.prototype.show.call(this, params);
+};
+
 ZmTaskTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;

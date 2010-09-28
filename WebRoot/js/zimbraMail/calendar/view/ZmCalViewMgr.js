@@ -43,6 +43,9 @@ ZmCalViewMgr = function(parent, controller, dropTgt) {
 	this._viewFactory[ZmId.VIEW_CAL_LIST]		= ZmCalListView;
 	this._viewFactory[ZmId.VIEW_CAL_SCHEDULE]	= ZmCalScheduleView;
 	this._viewFactory[ZmId.VIEW_CAL_APPT]		= ZmApptView;
+    this._viewFactory[ZmId.VIEW_CAL_TRASH]		= ZmApptListView;
+
+    this._createHtml();
 };
 
 ZmCalViewMgr.prototype = new DwtComposite;
@@ -54,6 +57,11 @@ ZmCalViewMgr.prototype.toString =
 function() {
 	return "ZmCalViewMgr";
 };
+
+ZmCalViewMgr.prototype.TEMPLATE = "calendar.Calendar#ZmCalViewMgr";
+
+ZmCalViewMgr.prototype._subContentShown = false;
+ZmCalViewMgr.prototype._subContentInitialized = false;
 
 ZmCalViewMgr.prototype.getController =
 function() {
@@ -115,7 +123,7 @@ ZmCalViewMgr.prototype.createView =
 function(viewName) {
 	var view = new this._viewFactory[viewName](this, DwtControl.ABSOLUTE_STYLE, this._controller, this._dropTgt);
 
-	if (viewName != ZmId.VIEW_CAL_APPT) {
+	if (viewName != ZmId.VIEW_CAL_APPT && viewName != ZmId.VIEW_CAL_TRASH) {
 		view.addTimeSelectionListener(new AjxListener(this, this._viewTimeSelectionListener));
 		view.addDateRangeListener(new AjxListener(this, this._viewDateRangeListener));
 		view.addViewActionListener(new AjxListener(this, this._viewActionListener));
@@ -124,7 +132,57 @@ function(viewName) {
 	return view;
 };
 
-ZmCalViewMgr.prototype.addViewActionListener = 
+ZmCalViewMgr.prototype.getSubContentView = function() {
+    return this._list || this._createSubContent();
+};
+
+ZmCalViewMgr.prototype.setSubContentVisible = function(visible) {
+    if (this._subContentShown != visible) {
+        this._subContentShown = visible;
+        if (!visible) {
+            this._controller.setCurrentListView(null);
+        }
+        this._layout();
+    }
+};
+
+ZmCalViewMgr.prototype._createSubContent = function() {
+    if (this._subContentInitialized) return this._list;
+
+    this._subContentInitialized = true;
+
+    this._sash = new DwtSash({parent:this,posStyle:Dwt.ABSOLUTE_STYLE,style:DwtSash.VERTICAL_STYLE});
+    this._list = this.createView(ZmId.VIEW_CAL_TRASH);
+    this._list.set(new AjxVector([]));
+
+    this._subContentEl.appendChild(this._sash.getHtmlElement());
+    this._subContentEl.appendChild(this._list.getHtmlElement());
+
+    this._populateTrashListView(this._list);
+    return this._list;
+};
+
+ZmCalViewMgr.prototype._populateTrashListView = function(listView) {
+    var params = {
+        searchFor:ZmItem.APPT,
+        query:"inid:"+ZmOrganizer.ID_TRASH,
+        limit:20,
+        types:AjxVector.fromArray([ZmId.ITEM_APPOINTMENT]),
+        forceSearch: true,
+//        noRender: true,
+        callback: new AjxCallback(this, this._populateTrashListViewResults, [listView])
+    };
+    var search = new ZmSearch(params);
+    search.execute(params);
+};
+
+ZmCalViewMgr.prototype._populateTrashListViewResults = function(listView, results) {
+    var data = results && results._data;
+    var apptList = data && data._results && data._results.APPT;
+    listView.set(apptList || new AjxVector([]));
+};
+
+ZmCalViewMgr.prototype.addViewActionListener =
 function(listener) {
 	this.addListener(ZmCalBaseView.VIEW_ACTION, listener);
 };
@@ -175,18 +233,39 @@ function(viewName) {
 
 ZmCalViewMgr.prototype._layout =
 function() {
-	var mySz = this.getSize();
-	if (mySz.x == 0 || mySz.y == 0) { return; }
+    var size = this.getSize();
 
-	var view = this._views[this._currentViewName];
-	var width = mySz.x - ZmCalViewMgr._SEP;
-	var height = mySz.y;
-	var viewSz = view.getSize();
-	if (viewSz.x == width && viewSz.y == height) {
-		view.setLocation(0, 0);
-	} else {
-		view.setBounds(0, 0, width, height);
-	}
+    // create sub-content, if needed
+    var showSubContent = this.getCurrentViewName() != ZmId.VIEW_CAL_LIST && this._subContentShown;
+    if (showSubContent && !this._subContentInitialized) {
+        Dwt.setSize(this._contentEl, null, 2 * size.y / 3);
+        Dwt.setSize(this._subContentEl, null, size.y / 3);
+        this._createSubContent();
+    }
+
+    // show sub-content
+    Dwt.setVisible(this._subContentEl, showSubContent);
+    if (this._sash) {
+        this._sash.setVisible(showSubContent);
+        this._list.setVisible(showSubContent);
+    }
+
+    // size sub-content
+    var contentWidth = size.x;
+    var contentHeight = size.y;
+    if (showSubContent) {
+        var subContentHeight = Dwt.getSize(this._subContentEl).y;
+        var sashHeight = this._sash.getSize().y;
+
+        this._sash.setBounds(0, 0, contentWidth, sashHeight);
+        this._list.setBounds(0, sashHeight, contentWidth, subContentHeight - sashHeight);
+
+        contentHeight -= subContentHeight;
+    }
+
+    // size content
+    var view = this._views[this._currentViewName];
+    view.setBounds(0, 0, contentWidth, contentHeight);
 };
 
 ZmCalViewMgr.prototype._controlListener =
@@ -220,4 +299,14 @@ function(ev) {
 	if (this.isListenerRegistered(DwtEvent.DATE_RANGE)) {
 		this.notifyListeners(DwtEvent.DATE_RANGE, ev);
 	}
+};
+
+ZmCalViewMgr.prototype._createHtml = function(templateId) {
+    this._createHtmlFromTemplate(templateId||this.TEMPLATE, {id:this.getHTMLElId()});
+};
+
+ZmCalViewMgr.prototype._createHtmlFromTemplate = function(templateId, data) {
+    DwtComposite.prototype._createHtmlFromTemplate.apply(this, arguments);
+    this._contentEl = document.getElementById(data.id+"_content");
+    this._subContentEl = document.getElementById(data.id+"_subcontent");
 };

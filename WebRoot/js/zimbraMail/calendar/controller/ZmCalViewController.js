@@ -167,7 +167,7 @@ function(viewId, startDate, skipMaintenance) {
 
 	if (!this._viewMgr) {
 		this.createViewMgr(startDate);
-		this._setup(viewId);
+		this._setup(viewId); // TODO: Needed? Wouldn't this be handled by next conditional?
 	}
 
 	if (!this._viewMgr.getView(viewId)) {
@@ -182,6 +182,7 @@ function(viewId, startDate, skipMaintenance) {
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._viewMgr;
 	this._setView({view:ZmId.VIEW_CAL, elements:elements, isAppView:true});
 	this._currentView = this._viewMgr.getCurrentViewName();
+    this.setCurrentListView(null);
 	this._listView[this._currentView] = this._viewMgr.getCurrentView();
 	this._resetToolbarOperations(viewId);
 
@@ -289,11 +290,21 @@ function(startDate) {
  * @return	{Array}		an array of {ZmCalendar} objects
  */
 ZmCalViewController.prototype.getCheckedCalendars =
-function() {
+function(includeTrash) {
 	if (!this._checkedCalendars) {
 		this._updateCheckedCalendars();
 	}
-	return this._checkedCalendars;
+    var calendars = this._checkedCalendars;
+    if (!includeTrash) {
+        calendars = [].concat(calendars);
+        for (var i = 0; i < calendars.length; i++) {
+            if (calendars[i].id == ZmOrganizer.ID_TRASH) {
+                calendars.splice(i, 1);
+                break;
+            }
+        }
+    }
+	return calendars;
 };
 
 /**
@@ -303,9 +314,9 @@ function() {
  * @return	{Array}		an array of folder ids
  */
 ZmCalViewController.prototype.getCheckedCalendarFolderIds =
-function(localOnly) {
+function(localOnly, includeTrash) {
 	if (!this._checkedCalendarIds) {
-		this.getCheckedCalendars();
+		this.getCheckedCalendars(includeTrash);
 		if (!this._checkedCalendarIds) {
 			return [ZmOrganizer.ID_CALENDAR];
 		}
@@ -313,6 +324,40 @@ function(localOnly) {
 	return localOnly
 		? this._checkedLocalCalendarIds
 		: this._checkedCalendarIds;
+};
+
+/**
+ * Gets the checked organizers.
+ *
+ * @return {Array} array of {ZmOrganizer}
+ */
+ZmCalViewController.prototype.getCheckedOrganizers = function(includeTrash) {
+    var controller = appCtxt.getOverviewController();
+    var overviewId = appCtxt.getApp(ZmApp.CALENDAR).getOverviewId();
+    var treeId = ZmOrganizer.CALENDAR;
+    var treeView = controller.getTreeView(overviewId, treeId);
+    var organizers = treeView.getSelected();
+    if (!includeTrash) {
+        for (var i = 0; i < organizers.length; i++) {
+            if (organizers[i].id == ZmOrganizer.ID_TRASH) {
+                organizers.splice(i, 1);
+                break;
+            }
+        }
+    }
+    return organizers;
+};
+
+/**
+ * Gets the checked organizer IDs.
+ *
+ * @return {Array} array of strings
+ */
+ZmCalViewController.prototype.getCheckedOrganizerIds = function() {
+    return AjxUtil.map(this.getCheckedOrganizers(), ZmCalViewController.__map_id);
+};
+ZmCalViewController.__map_id = function(item) {
+    return item.id;
 };
 
 ZmCalViewController.prototype._updateCheckedCalendars =
@@ -396,6 +441,20 @@ function(ev) {
 	}
 
 	if (ev.item) {
+        var organizer = ev.item.getData && ev.item.getData(Dwt.KEY_OBJECT);
+        if (organizer && organizer.id == ZmOrganizer.ID_TRASH) {
+            var found = false;
+            var organizers = this.getCheckedOrganizers(true);
+            for (var i = 0; i < organizers.length; i++) {
+                var id = organizers[i].id;
+                if (id == ZmOrganizer.ID_TRASH) {
+                    found = true;
+                    break;
+                }
+            }
+            this._viewMgr.setSubContentVisible(found);
+            return;
+        }
 		ev.items = [ ev.item ];
 	}
 	if (ev.items && ev.items.length) {
@@ -550,6 +609,8 @@ function(folderId) {
 
 ZmCalViewController.prototype._refreshButtonListener =
 function(ev) {
+    this.setCurrentListView(null);
+    
 	// bug fix #33830 - force sync for calendar refresh
 	if (appCtxt.isOffline) {
 		appCtxt.accountList.syncAll();
@@ -810,6 +871,7 @@ function(ev) {
 	if (ev.detail == DwtMenuItem.CHECKED ||
 		ev.detail == DwtMenuItem.UNCHECKED)
 	{
+        this.setCurrentListView(null);
 		if (appCtxt.multiAccounts) {
 			this.apptCache.clearCache();
 		}
@@ -1024,6 +1086,7 @@ function(delay) {
 
 ZmCalViewController.prototype._todayButtonListener =
 function(ev) {
+    this.setCurrentListView(null);
 	this.setDate(new Date(), 0, false);
 };
 
@@ -1121,6 +1184,7 @@ function() {
 
 ZmCalViewController.prototype._paginate =
 function(viewId, forward) {
+    this.setCurrentListView(null);
 	var view = this._listView[viewId];
 	var field = view.getRollField();
 	var d = new Date(this._viewMgr.getDate());
@@ -1273,7 +1337,7 @@ function(ev) {
 		viewId == ZmId.VIEW_CAL_LIST)
 	{
 		var ids = [];
-		var list = this._viewMgr.getCurrentView().getSelection();
+		var list = this.getSelection();
 		for (var i = 0; i < list.length; i++) {
 			ids.push(list[i].invId);
 		}
@@ -1513,7 +1577,11 @@ function() {
 
 ZmCalViewController.prototype.getSelection =
 function() {
-	return this._listView[this._currentView].getSelection();
+    return ZmListController.prototype.getSelection.call(this, this.getCurrentListView());
+};
+
+ZmCalViewController.prototype.getSelectionCount = function() {
+    return ZmListController.prototype.getSelectionCount.call(this, this.getCurrentListView());
 };
 
 ZmCalViewController.prototype._divvyItems =
@@ -2425,8 +2493,7 @@ function(parent, num) {
 		if (this._navToolBar[ZmId.VIEW_CAL]) {
 			this._navToolBar[ZmId.VIEW_CAL].setVisible(currViewName != ZmId.VIEW_CAL_LIST);
 		}
-		var currView = this._viewMgr.getCurrentView();
-		var appt = currView ? currView.getSelection()[0] : null;
+		var appt = this.getSelection()[0];
 		var calendar = appt && appt.getFolder();
 		var isReadOnly = calendar ? calendar.isReadOnly() : false;
 		var isSynced = Boolean(calendar && calendar.url);
@@ -2890,11 +2957,11 @@ function(params, callback) {
 	this._userQuery = params.query;
 
 	// set start/end date boundaries
-	var view = this.getCurrentView();
+	var view = this._listView[this._currentView];
 
 	if (view && this._currentView == ZmId.VIEW_CAL_APPT) {
 		view.close();
-		view = this.getCurrentView();
+        view = this._listView[this._currentView];
 	}
 
 	if (view) {
@@ -2921,7 +2988,7 @@ function(callback, list, userQuery, result) {
 	this.show(null, null, true);	// always make sure a calendar view is being shown
 	this._userQuery = userQuery;	// cache the user-entered search query
 
-	this._maintGetApptCallback(ZmCalViewController.MAINT_VIEW, this.getCurrentView(), list, true, userQuery);
+	this._maintGetApptCallback(ZmCalViewController.MAINT_VIEW, this._listView[this._currentView], list, true, userQuery);
 
 	if (callback) {
 		callback.run(result);
@@ -2964,6 +3031,33 @@ function(ids) {
 
 ZmCalViewController.prototype.notifyModify =
 function(modifies) {
+    var apptObjs = modifies.appt;
+    if (apptObjs && this._viewMgr) {
+        var listView = this._viewMgr.getSubContentView();
+        if (listView) {
+            this._modifyAppts = { adds: 0, removes:0 };
+            for (var i = 0; i < apptObjs.length; i++) {
+                var apptObj = apptObjs[i];
+                // case 1: item moved *into* Trash
+                if (apptObj.l == ZmOrganizer.ID_TRASH) {
+                    this._modifyAppts.adds++;
+                    ZmAppt.loadByUid(apptObj.uid, new AjxCallback(this, this._updateSubContent));
+                }
+                // case 2: item moved *from* Trash
+                else {
+                    var apptList = listView.getApptList();
+                    var appt = ZmCalViewController.__AjxVector_getById(apptList, apptObj.id)
+                    if (appt) {
+                        apptList.remove(appt);
+                        this._modifyAppts.removes++;
+                        // TODO: was this appointment moved to a checked calendar w/in the specified range?
+                    }
+                }
+                // case 3: neither, ignore
+            }
+        }
+    }
+
 	if (this._clearCache) { return; }
 
 	// if any of the ids are in the cache then...
@@ -2973,11 +3067,46 @@ function(modifies) {
 	}
 };
 
+ZmCalViewController.__AjxVector_getById = function(vector, id) {
+    var array = vector.getArray();
+    for (var i = 0; i < array.length; i++) {
+        var item = array[i];
+        if (item.id == id) return item;
+    }
+    return null;
+};
+
+ZmCalViewController.prototype._updateSubContent = function(appt) {
+    if (appt) {
+        var listView = this._viewMgr.getSubContentView();
+        listView.getApptList().add(appt);
+        listView.setNeedsRefresh(true);
+        if (!this._modifyAppts || --this._modifyAppts.adds <= 0) {
+            listView.refresh();
+            this._clearCache = true;
+            this.refreshHandler();
+        }
+    }
+};
+
 // this gets called afer all the above notify* methods get called
 ZmCalViewController.prototype.notifyComplete =
-function() {
+function(notify) {
 	DBG.println(AjxDebug.DBG2, "ZmCalViewController: notifyComplete: " + this._clearCache);
-	
+
+    // update the trash list all at once
+    if (this._modifyAppts) {
+        var removes = this._modifyAppts.removes;
+        var adds = this._modifyAppts.adds;
+        if (removes || adds) {
+            var listView = this._viewMgr.getSubContentView();
+            listView.setNeedsRefresh(true);
+            listView.refresh();
+            this._clearCache = true;
+        }
+        this._modifyAppts.removes = 0;
+    }
+
 	var clearCacheByFolder = false;
 	
 	for (var i in this._clearCacheFolderMap) {
@@ -3133,8 +3262,7 @@ function(work, forceMaintenance) {
 	var maintainView = (work & ZmCalViewController.MAINT_VIEW);
 	var maintainRemainder = (work & ZmCalViewController.MAINT_REMINDER);
 	if (maintainMiniCal || maintainView || maintainRemainder) {
-		var view = this.getCurrentView();
-		view.setNeedsRefresh(true);
+		this.getCurrentView().setNeedsRefresh(true);
 	}
 	this._scheduleMaintenance(work, forceMaintenance);
 };
@@ -3154,7 +3282,8 @@ function() {
 		this.searchInProgress = false;
 	}
 	else if (maintainMiniCal || maintainView || maintainRemainder) {
-		var view = this.getCurrentView();
+        // NOTE: It's important that we go straight to the view!
+		var view = this._viewMgr.getView(this._currentView);
 		if (view && view.needsRefresh()) {
 			var rt = view.getTimeRange();
 			var params = {
@@ -3506,4 +3635,25 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) 
        noBusyOverlay: noBusyOverlay,
        accountName: (acct ? acct.name : null)
    });
+};
+
+/**
+ * Sets the current view.
+ *
+ * @param {ZmListView} view	the view
+ */
+ZmCalViewController.prototype.setCurrentListView = function(view) {
+    if (this._currentListView != view) {
+        // if changing views, de-select items in current view so user doesn't get confused
+        if (this._currentListView) {
+            this._currentListView.deselectAll();
+            this._currentListView.blur();
+        }
+        this._currentListView = view;
+        this._resetToolbarOperations();
+    }
+};
+
+ZmCalViewController.prototype.getCurrentListView = function() {
+    return this._currentListView || this.getCurrentView();
 };

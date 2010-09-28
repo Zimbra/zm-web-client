@@ -159,14 +159,16 @@
 
 <template id='calendar.Calendar#ListViewSearchBar'>
 	<table border=0 cellpadding=0 cellspacing=0 width=100%>
-		<tr>
-			<td class='calendar_date_search_td'><$= ZmMsg.showApptsFrom $></td>
-			<td class='calendar_date_search_td'><input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}_startDateInput' value='${value}'></td>
-			<td id='${id}_startMiniCal'></td>
-			<td class='calendar_date_search_td'><$= ZmMsg.through $></td>
-			<td class='calendar_date_search_td'><input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}_endDateInput' value='${value}'></td>
-			<td id='${id}_endMiniCal'></td>
-			<td class='calendar_date_search-dateRange' id='${id}_searchBarDate'></td>
+		<tr><td id="${id}_searchBarControls"></td>
+            <td id="${id}_searchBarDate" class='calendar_date_search-dateRange'></td>
+        </tr>
+    </table>
+</template>
+
+<template id='calendar.Calendar#ListViewSearchBarInput'>
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td class='calendar_date_search_td'><input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}DateInput' value='${value}'></td>
+			<td id='${id}MiniCal'></td>
 		</tr>
 	</table>
 </template>
@@ -216,4 +218,9 @@
 			</table>
 		</td>
 	</tr>
+</template>
+
+<template id='calendar.Calendar#ZmCalViewMgr'>
+    <div id='${id}_content' style='position:relative;width:100%;height:100%'></div>
+    <div id='${id}_subcontent' style='position:relative;height:50%;display:none;'></div>
 </template>

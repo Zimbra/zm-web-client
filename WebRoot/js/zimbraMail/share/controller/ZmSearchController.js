@@ -486,6 +486,9 @@ function(searchObj) {
 			var folderTree = appCtxt.getFolderTree();
 			var folder = folderTree && folderTree.getById(id);
 			type = folder ? folder.type : ZmOrganizer.FOLDER;
+            if (search.searchFor == ZmItem.TASK) {
+                type = ZmOrganizer.TASKS;
+            }
 		} else if (search.tagId) {
 			id = this._getNormalizedId(search.tagId);
 			type = ZmOrganizer.TAG;
@@ -534,6 +537,7 @@ function(types) {
  * @param {String}	params.query	the search query
  * @param {String}	params.userText	the user text
  * @param {Array}	params.type		an array of types
+ * @param {boolean} params.forceSearch     Ignores special processing and just executes the search.
  * @param {Boolean}	noRender		if <code>true</code>, the search results will not be rendered
  * @param {AjxCallback}	callback		the callback
  * @param {AjxCallback}	errorCallback	the error callback
@@ -603,7 +607,7 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	// calendar searching is special so hand it off if necessary
-	if (searchFor == ZmItem.APPT) {
+	if (searchFor == ZmItem.APPT && !params.forceSearch) {
 		var controller = AjxDispatcher.run("GetCalController");
 		if (controller && types.contains(ZmItem.APPT)) {
 			controller.handleUserSearch(params, respCallback);

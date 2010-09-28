@@ -73,6 +73,8 @@ ZmTaskListView.SEC_COLOR[ZmTaskListView.SEC_NODUEDATE] = "GrayDarkC";
 // Consts
 ZmTaskListView.ROW_DOUBLE_CLASS	= "RowDouble";
 
+ZmTaskListView._NEW_TASK_ROW_ID = "_newTaskBannerId";
+
 // Public Methods
 
 /**
@@ -188,6 +190,13 @@ function(sechdr) {
    }
 };
 
+ZmTaskListView.prototype.setTaskInputVisible = function(visible) {
+    var el = document.getElementById(ZmTaskListView._NEW_TASK_ROW_ID);
+    if (el) {
+        Dwt.setVisible(el, visible);
+    }
+};
+
 // Private Methods
 ZmTaskListView.prototype._renderList =
 function(list, noResultsOk, doAdd) {
@@ -290,7 +299,7 @@ function(list, noResultsOk, doAdd) {
 
 	// add custom row to allow user to quickly enter tasks from w/in listview
 	div = document.createElement("DIV");
-	div.id = "_newTaskBannerId";
+	div.id = ZmTaskListView._NEW_TASK_ROW_ID;
 
 	htmlArr = [];
 	var idx = 0;

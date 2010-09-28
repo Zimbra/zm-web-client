@@ -86,6 +86,7 @@ ZmCalBaseView.deepenThreshold = .3;
 
 ZmCalBaseView._getColors = function(color) {
 	// generate header and body colors
+    color = color || ZmOrganizer.COLOR_VALUES[ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.CALENDAR]];
 	var hs = { bgcolor: AjxColor.darken(color, ZmCalBaseView.headerColorDelta) };
 	var hd = { bgcolor: AjxColor.deepen(hs.bgcolor, ZmCalBaseView.deepenColorAdjustment) };
 	var bs = { bgcolor: AjxColor.lighten(color, ZmCalBaseView.bodyColorDelta)  };

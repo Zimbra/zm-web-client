@@ -569,7 +569,7 @@ function(modifies, force) {
 ZmCalendarApp.prototype.postNotify =
 function(notify) {
 	if(this._calController != null) {
-		this._calController.notifyComplete();
+		this._calController.notifyComplete(notify);
 	}
 };
 
@@ -809,10 +809,10 @@ function() {
  * @return	{Array}	an array of ids
  */
 ZmCalendarApp.prototype.getCheckedCalendarFolderIds =
-function(localOnly) {
+function(localOnly, includeTrash) {
 	var folderIds = [];
 	if (AjxDispatcher.loaded("CalendarCore")) {
-		folderIds = this.getCalController().getCheckedCalendarFolderIds(localOnly);
+		folderIds = this.getCalController().getCheckedCalendarFolderIds(localOnly, includeTrash);
 	} else {
 		// will be used in reminder dialog
 		this._folderNames = {};
@@ -823,6 +823,9 @@ function(localOnly) {
 				if (localOnly && params.obj.zid != null) {
 					continue;
 				}
+                if (params.obj.id == ZmOrganizer.ID_TRASH && !includeTrash) {
+                    continue;
+                }
 				folderIds.push(params.obj.id);
 				// _folderNames are used when deferred folders are not created
 				// and calendar name is required. example: calendar name

@@ -156,6 +156,8 @@ function(results, folderId) {
 		this._taskTreeController = appCtxt.getOverviewController().getTreeController(ZmOrganizer.TASKS);
 		DBG.timePt("getting tree controller", true);
 	}
+
+    this.getCurrentView().setTaskInputVisible(folderId != ZmOrganizer.ID_TRASH);
 };
 
 /**
@@ -619,8 +621,33 @@ function(tasks, mode) {
 		this._showTypeDialog(task, ZmCalItem.MODE_DELETE);
 	}
 	*/
-	var callback = new AjxCallback(this, this._handleDelete, [tasks]);
-	appCtxt.getConfirmationDialog().popup(ZmMsg.confirmCancelTask, callback);
+    if (!tasks || tasks.length == 0) return;
+
+    // check to see if this is a cancel or delete
+    var isTrash = tasks[0].folderId == ZmOrganizer.ID_TRASH;
+    if (isTrash) {
+        this._handleDelete(tasks);
+    }
+    else {
+        this._handleCancel(tasks);
+    }
+};
+
+ZmTaskListController.prototype._handleDelete = function(tasks) {
+    var params = {
+        items: tasks,
+        hardDelete: true,
+        finalCallback: new AjxCallback(this, this._handleDeleteResponse, [tasks])
+    };
+    // NOTE: This makes the assumption that the task items to be deleted are
+    // NOTE: always in a list (which knows how to hard delete items). But since
+    // NOTE: this is the task *list* controller, I think that's a fair bet. ;)
+    tasks[0].list.deleteItems(params);
+};
+
+ZmTaskListController.prototype._handleDeleteResponse = function(tasks, resp) {
+    var summary = ZmList.getActionSummary(ZmMsg.actionDelete, tasks.length, ZmItem.TASK);
+    appCtxt.setStatusMsg(summary);
 };
 
 ZmTaskListController.prototype._doCheckCompleted =
@@ -661,6 +688,7 @@ function(tasks) {
 		batchCmd.add(cmd);
 	}
 	batchCmd.run();
+    // TODO: Change message to moved to trash!
 	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, tasks.length, ZmItem.TASK);
 	appCtxt.setStatusMsg(summary);
 };

@@ -65,13 +65,33 @@ function(ev) {
 // Public methods
 
 /**
+ * Displays the tree of this type.
+ *
+ * @param {Hash}	params		a hash of parameters
+ * @param	{constant}	params.overviewId		the overview ID
+ * @param	{Boolean}	params.showUnread		if <code>true</code>, unread counts will be shown
+ * @param	{Object}	params.omit				a hash of organizer IDs to ignore
+ * @param	{Object}	params.include			a hash of organizer IDs to include
+ * @param	{Boolean}	params.forceCreate		if <code>true</code>, tree view will be created
+ * @param	{String}	params.app				the app that owns the overview
+ * @param	{Boolean}	params.hideEmpty		if <code>true</code>, don't show header if there is no data
+ * @param	{Boolean}	params.noTooltips	if <code>true</code>, don't show tooltips for tree items
+ */
+ZmCalendarTreeController.prototype.show = function(params) {
+	params.include = params.include || {};
+    params.include[ZmFolder.ID_TRASH] = true;
+    return ZmFolderTreeController.prototype.show.call(this, params);
+};
+
+/**
  * Gets the checked calendars.
  * 
  * @param	{String}	overviewId		the overview id
+ * @param   {boolean}   includeTrash    True to include trash, if checked.
  * @return	{Array}		an array of {@link ZmCalendar} objects
  */
 ZmCalendarTreeController.prototype.getCheckedCalendars =
-function(overviewId) {
+function(overviewId, includeTrash) {
 	var calendars = [];
 	var items = this._getItems(overviewId);
 	for (var i = 0; i < items.length; i++) {
@@ -79,6 +99,7 @@ function(overviewId) {
 		if (item._isSeparator) { continue; }
 		if (item.getChecked()) {
 			var calendar = item.getData(Dwt.KEY_OBJECT);
+            if (calendar.id == ZmOrganizer.ID_TRASH && !includeTrash) continue;
 			calendars.push(calendar);
 		}
 	}
@@ -218,22 +239,32 @@ function() {
 // Returns a list of desired action menu operations
 ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
-	var ops = [];
-	ops.push(ZmOperation.SHARE_CALENDAR);
-	ops.push(ZmOperation.DELETE,
-			ZmOperation.EDIT_PROPS,
-			ZmOperation.SYNC,
-			ZmOperation.DETACH_WIN);
-
-	return ops;
+	return [
+        ZmOperation.SHARE_CALENDAR,
+        ZmOperation.DELETE,
+        ZmOperation.EDIT_PROPS,
+        ZmOperation.SYNC,
+        ZmOperation.DETACH_WIN,
+        ZmOperation.EMPTY_FOLDER
+    ];
 };
 
 ZmCalendarTreeController.prototype._getActionMenu =
 function(ev) {
 	var organizer = ev.item.getData(Dwt.KEY_OBJECT);
-	if (organizer.type != this.type) { return null; }
-
-	return ZmTreeController.prototype._getActionMenu.apply(this, arguments);
+	if (organizer.type != this.type &&
+        organizer.id != ZmOrganizer.ID_TRASH) {
+        return null;
+    }
+	var menu = ZmTreeController.prototype._getActionMenu.apply(this, arguments);
+    var isTrash = organizer.id == ZmOrganizer.ID_TRASH;
+    menu.enableAll(!isTrash);
+    menu.enable(ZmOperation.EMPTY_FOLDER, isTrash);
+    var menuItem = menu.getMenuItem(ZmOperation.EMPTY_FOLDER);
+    if (menuItem) {
+        menuItem.setText(isTrash ? ZmMsg.emptyTrash : ZmMsg.emptyFolder);
+    }
+    return menu;
 };
 
 // Method that is run when a tree item is left-clicked

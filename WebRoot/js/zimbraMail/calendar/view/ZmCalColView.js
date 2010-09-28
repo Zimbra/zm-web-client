@@ -633,7 +633,6 @@ function(appt) {
 	}
 
 	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
-	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
 	var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
 	var bodyStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
 
@@ -1977,6 +1976,8 @@ function(ev, apptEl) {
 		mouseUpHdlr:ZmCalColView._apptMouseUpHdlr,
 		mouseOutHdlr:ZmCalColView._emptyHdlr
 	});
+
+    this._controller.setCurrentListView(this);
 
 	capture.capture();
 	return false;

@@ -4350,3 +4350,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .SuggestBtn .ZButtonTable {
     width: 100%;    
 }
+
+.ZmCalListViewSearchBar .DwtCompositeCell {
+    white-space: nowrap;
+}

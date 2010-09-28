@@ -25,33 +25,23 @@ ZmCalListView = function(parent, posStyle, controller, dropTgt) {
 		headerList: this._getHeaderList(parent),
 		pageless: true
 	};
+	ZmApptListView.call(this, params);
 
-	ZmListView.call(this, params);
-
-	// add date-search bar first
-	this._dateSearchBar = new DwtComposite({parent:parent, className:"calendar_date_search"});
-	this._createSearchBarHtml();
+	this._dateSearchBar = this._createSearchBar(parent);
 
 	this._needsRefresh = true;
 	this._timeRangeStart = 0;
 	this._timeRangeEnd = 0;
 	this._title = "";
-	this._bSortAsc = true;
-	this._defaultSortField = ZmItem.F_DATE;
-
-	this.setDragSource(controller._dragSrc);
 };
 
-ZmCalListView.prototype = new ZmListView;
+ZmCalListView.prototype = new ZmApptListView;
 ZmCalListView.prototype.constructor = ZmCalListView;
 
 
 // Consts
 ZmCalListView.DEFAULT_CALENDAR_PERIOD	= AjxDateUtil.MSEC_PER_DAY * 14;			// 2 weeks
-ZmCalListView.COL_WIDTH_DATE			= ZmMsg.COLUMN_WIDTH_DATE_CAL;
-ZmCalListView.COL_WIDTH_LOCATION		= ZmMsg.COLUMN_WIDTH_LOCATION_CAL;
-ZmCalListView.COL_WIDTH_STATUS			= ZmMsg.COLUMN_WIDTH_STATUS_CAL;
-ZmCalListView.COL_WIDTH_FOLDER			= ZmMsg.COLUMN_WIDTH_FOLDER_CAL;
+ZmCalListView.DEFAULT_SEARCH_PERIOD		= AjxDateUtil.MSEC_PER_DAY * 31;			// 1 month
 
 
 // Public methods
@@ -181,109 +171,35 @@ function(listener) {
 
 // DwtListView methods
 
-/**
- * Sets the initial set of results when user first comes to the listview
- *
- * @param list					[AjxVector]		data as a list
- * @param skipMiniCalUpdate		[Boolean]		skip mini cal update
- * @param skipSort				[Boolean]		skip sorting
- */
-ZmCalListView.prototype.set =
-function(list, skipMiniCalUpdate, skipSort) {
-	if (!skipSort) {
-		if ((this._defaultSortField != ZmItem.F_DATE) ||
-			(this._defaultSortField == ZmItem.F_DATE && !this._bSortAsc))
-		{
-			this._sortList(list, this._defaultSortField);
-		}
-	}
-	ZmListView.prototype.set.call(this, list, this._defaultSortField);
-
-	// bug 49340 - fix slow rendering issue with IE. Always call layout after
-	// list is set.
-	if (AjxEnv.isIE) {
-		this.parent._layout();
-	}
-};
-
 ZmCalListView.prototype.setBounds =
 function(x, y, width, height) {
 	// set height to 32px (plus 1px for bottom border) to adjust for the new date-range toolbar
-	ZmListView.prototype.setBounds.call(this, x, 33, width, height-33);
+    if (this._dateSearchBar) {
+        this._dateSearchBar.setBounds(x, y, width, 33);
+        ZmListView.prototype.setBounds.call(this, x, y+33, width, height-33);
+    }
+    else {
+        ZmListView.prototype.setBounds.apply(this, arguments);
+    }
 };
 
-ZmCalListView.prototype._getItemId =
-function(item) {
-	var itemId = (item && item.id) ? item.getUniqueId(true) : Dwt.getNextId();
-	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM, this._view, itemId);
+ZmCalListView.prototype.setLocation = function(x, y) {
+    // HACK: setBounds calls setLocation so only relocate date search bar
+    // HACK: when the location is NOWHERE
+    if (this._dateSearchBar && x == Dwt.LOC_NOWHERE) {
+        this._dateSearchBar.setLocation(x, y);
+    }
+    ZmApptListView.prototype.setLocation.call(this, x, y);
 };
 
-ZmCalListView.prototype._getFieldId =
-function(item, field) {
-	var itemId = (item && item.getUniqueId) ? item.getUniqueId(true) : item.id;
-	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, itemId, field);
-};
-
-ZmCalListView.prototype._getCellId =
-function(item, field) {
-	if (field == ZmItem.F_SUBJECT ||
-		field == ZmItem.F_DATE)
-	{
-		return this._getFieldId(item, field);
-	}
-};
-
-ZmCalListView.prototype._getCellContents =
-function(htmlArr, idx, appt, field, colIdx, params) {
-	if (field == ZmItem.F_RECURRENCE) {
-		var icon;
-		if (appt.isException) {
-			icon = "ApptException";
-		} else if (appt.isRecurring()) {
-			icon = "ApptRecur";
-		}
-		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(appt, field));
-
-	} else if (field == ZmItem.F_FROM) { // for mixed view
-		htmlArr[idx++] = appt.getOrganizer();
-
-	} else if (field == ZmItem.F_SUBJECT) {
-		if (params.isMixedView) {
-			htmlArr[idx++] = appt.name ? AjxStringUtil.htmlEncode(appt.name, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-		} else {
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(appt.getName(), true);
-		}
-		if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && appt.fragment) {
-			htmlArr[idx++] = this._getFragmentSpan(appt);
-		}
-
-	} else if (field == ZmItem.F_LOCATION) {
-		htmlArr[idx++] = AjxStringUtil.htmlEncode(appt.getLocation(), true);
-
-	} else if (field == ZmItem.F_STATUS) {
-		if (appt.otherAttendees) {
-			htmlArr[idx++] = appt.getParticipantStatusStr();
-		}
-
-	} else if (field == ZmItem.F_FOLDER) {
-		var calendar = appt.getFolder();
-		var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
-		var subs = {
-			folderColor: colors.standard.header.bgcolor,
-			folderName: appt.getFolder().getName()
-		};
-		htmlArr[idx++] = AjxTemplate.expand("calendar.Calendar#ListViewFolder", subs);
-
-	} else if (field == ZmItem.F_DATE) {
-		htmlArr[idx++] = (appt.isAllDayEvent())
-			? AjxMessageFormat.format(ZmMsg.apptDateTimeAllDay, [appt.startDate])
-			: AjxMessageFormat.format(ZmMsg.apptDateTime, [appt.startDate, appt.startDate]);
-
-	} else {
-		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
-	}
-
-	return idx;
+// NOTE: Currently setLocation is called with values of NOWHERE when they
+// NOTE: want the control to disappear. But I'm adding an override for
+// NOTE: setVisible as well to be defensive against future changes.
+ZmCalListView.prototype.setVisible = function(visible) {
+    if (this._dateSearchBar) {
+        this._dateSearchBar.setVisible(visible);
+    }
+    ZmApptListView.prototype.setVisible.apply(this, arguments);
 };
 
 ZmCalListView.prototype._mouseOverAction =
@@ -319,17 +235,6 @@ function(ev, div) {
 	return true;
 };
 
-ZmCalListView.prototype._getToolTip =
-function(params) {
-	var tooltip, field = params.field, item = params.item;
-	if (field && (field == ZmItem.F_SELECTION || field == ZmItem.F_TAG)) {
-		tooltip = ZmListView.prototype._getToolTip.apply(this, arguments);
-	} else if (item.getToolTip) {
-		tooltip = item.getToolTip(this._controller);
-	}
-	return tooltip;
-};
-
 ZmCalListView.prototype.getApptDetails =
 function(appt, callback, uid) {
 	if (this._currentMouseOverApptId &&
@@ -340,80 +245,52 @@ function(appt, callback, uid) {
 	}
 };
 
-ZmCalListView.prototype._sortList =
-function(list, column) {
-	ZmCalListView.sortByAsc = this._bSortAsc;
+ZmCalListView.prototype._createSearchBar = function(parent) {
+    var id = this._htmlElId;
 
-	switch (column) {
-		case ZmItem.F_SUBJECT:	list.sort(ZmCalListView._sortSubject); break;
-		case ZmItem.F_STATUS:	list.sort(ZmCalListView._sortStatus); break;
-		case ZmItem.F_FOLDER:	list.sort(ZmCalListView._sortFolder); break;
-		case ZmItem.F_DATE:		list.sort(ZmCalListView._sortDate); break;
-	}
+    var searchBar = new DwtComposite({parent:parent, className:"ZmCalListViewSearchBar", posStyle:DwtControl.ABSOLUTE_STYLE});
+    searchBar.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Calendar#ListViewSearchBar",id);
+
+    var controls = new DwtMessageComposite(searchBar);
+    var message = ZmMsg.showApptsFromThrough;
+    var callback = new AjxCallback(this, this._createSearchBarComponent);
+    var hintsCallback = null;
+    controls.setFormat(message, callback, hintsCallback);
+    controls.reparentHtmlElement(document.getElementById(id+"_searchBarControls"));
+
+    this._dateRangeField = document.getElementById(id+"_searchBarDate");
+
+    return searchBar;
 };
 
-ZmCalListView.prototype._sortColumn =
-function(columnItem, bSortAsc) {
-	this._defaultSortField = columnItem._field;
+ZmCalListView.prototype._createSearchBarComponent = function(searchBar, segment, i) {
+    var isStart = segment.getIndex() == 0;
+    var id = this._htmlElId;
+    var prefix = isStart ? "_start" : "_end";
 
-	var list = this.getList().clone();
-	this._sortList(list, columnItem._field);
-	this.set(list, null, true);
-};
+    var component = new DwtComposite({parent:searchBar});
+    var templateId = "calendar.Calendar#ListViewSearchBarInput";
+    component.getHtmlElement().innerHTML = AjxTemplate.expand(templateId, id+prefix);
 
-ZmCalListView.prototype._getHeaderToolTip =
-function(field, itemIdx) {
-	switch (field) {
-		case ZmItem.F_LOCATION: return ZmMsg.location;
-		case ZmItem.F_FOLDER:	return ZmMsg.calendar;
-		case ZmItem.F_DATE:		return ZmMsg.date;
-	}
-	return ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx);
-};
+    var inputId = [id,prefix,"DateInput"].join("");
+    var inputEl = document.getElementById(inputId);
+    inputEl.onchange = AjxCallback.simpleClosure(this._onDatesChange, this, [isStart]);
 
-ZmCalListView.prototype._getHeaderList =
-function(parent) {
-	var hList = [];
+    var dateButtonListener = new AjxListener(this, this._dateButtonListener);
+    var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
+    var buttonId = [id,prefix,"MiniCal"].join("");
+    var button = ZmCalendarApp.createMiniCalButton(searchBar, buttonId, dateButtonListener, dateCalSelectionListener);
 
-	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
-	}
-	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag}));
-	}
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg.subject, noRemove:true, sortable:ZmItem.F_SUBJECT}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_LOCATION, text:ZmMsg.location, width:ZmCalListView.COL_WIDTH_LOCATION, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmCalListView.COL_WIDTH_STATUS, resizeable:true, sortable:ZmItem.F_STATUS}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.calendar, width:ZmCalListView.COL_WIDTH_FOLDER, resizeable:true, sortable:ZmItem.F_FOLDER}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_RECURRENCE, icon:"ApptRecur", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.recurrence}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.startDate, width:ZmCalListView.COL_WIDTH_DATE, sortable:ZmItem.F_DATE}));
+    if (isStart) {
+        this._startDateField = inputEl;
+        this._startDateButton = button;
+    }
+    else {
+        this._endDateField = inputEl;
+        this._endDateButton = button;
+    }
 
-	return hList;
-};
-
-/**
- * Adds the HTML needed to render the date-search-bar. Caches the DOM objects
- * and sets up event listeners.
- *
- * @private
- */
-ZmCalListView.prototype._createSearchBarHtml =
-function() {
-	this._dateSearchBar.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Calendar#ListViewSearchBar", {id:this._htmlElId});
-
-	this._startDateField = document.getElementById(this._htmlElId+"_startDateInput");
-	this._endDateField = document.getElementById(this._htmlElId+"_endDateInput");
-
-	this._startDateField.onchange = AjxCallback.simpleClosure(this._onDatesChange, this, [true]);
-	this._endDateField.onchange = AjxCallback.simpleClosure(this._onDatesChange, this);
-
-	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
-	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
-	this._startDateButton = ZmCalendarApp.createMiniCalButton(this._dateSearchBar, (this._htmlElId+"_startMiniCal"), dateButtonListener, dateCalSelectionListener);
-	this._endDateButton = ZmCalendarApp.createMiniCalButton(this._dateSearchBar, (this._htmlElId+"_endMiniCal"), dateButtonListener, dateCalSelectionListener);
-
-	this._dateRangeField = document.getElementById(this._htmlElId+"_searchBarDate");
+    return component;
 };
 
 /**
@@ -595,51 +472,4 @@ function(isStartDate) {
 	if (ZmApptViewHelper.handleDateChange(this._startDateField, this._endDateField, isStartDate)) {
 		this._handleDateChange(isStartDate);
 	}
-};
-
-
-// private static methods
-
-ZmCalListView._sortSubject =
-function(a, b) {
-	var aVal = a.getName();
-	var bVal = b.getName();
-
-	if (aVal < bVal)		{ return ZmCalListView.sortByAsc ? -1 : 1; }
-	else if (aVal > bVal)	{ return ZmCalListView.sortByAsc ? 1 : -1; }
-	else 					{ return 0; }
-
-};
-
-ZmCalListView._sortStatus =
-function(a, b) {
-	if (!a.otherAttendees)	{ return ZmCalListView.sortByAsc ? -1 : 1; }
-	if (!b.otherAttendees)	{ return ZmCalListView.sortByAsc ? 1 : -1; }
-
-	var aVal = a.getParticipantStatusStr();
-	var bVal = b.getParticipantStatusStr();
-
-	if (aVal < bVal)		{ return ZmCalListView.sortByAsc ? -1 : 1; }
-	else if (aVal > bVal)	{ return ZmCalListView.sortByAsc ? 1 : -1; }
-	else 					{ return 0; }
-};
-
-ZmCalListView._sortFolder =
-function(a, b) {
-	var aVal = a.getFolder().getName();
-	var bVal = b.getFolder().getName();
-
-	if (aVal < bVal)		{ return ZmCalListView.sortByAsc ? -1 : 1; }
-	else if (aVal > bVal)	{ return ZmCalListView.sortByAsc ? 1 : -1; }
-	else 					{ return 0; }
-};
-
-ZmCalListView._sortDate =
-function(a, b) {
-	var aVal = a.startDate.getTime();
-	var bVal = b.startDate.getTime();
-
-	if (aVal < bVal)		{ return ZmCalListView.sortByAsc ? -1 : 1; }
-	else if (aVal > bVal)	{ return ZmCalListView.sortByAsc ? 1 : -1; }
-	else 					{ return 0; }
 };

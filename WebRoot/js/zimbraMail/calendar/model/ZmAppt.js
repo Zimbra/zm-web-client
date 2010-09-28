@@ -1341,3 +1341,55 @@ function() {
     this._recurrence = new ZmRecurrence(this);
     this.recurring = false;
 };
+
+ZmAppt.loadById = function(id, callback, errorCallback) {
+    return ZmAppt.__load(id, null, callback, errorCallback);
+};
+ZmAppt.loadByUid = function(uid, callback, errorCallback) {
+    return ZmAppt.__load(null, uid, callback, errorCallback);
+};
+
+ZmAppt.__load = function(id, uid, callback, errorCallback) {
+    var req = { _jsns: "urn:zimbraMail", includeContent: 1 };
+    if (id) req.id = id;
+    else if (uid) req.uid = uid;
+    var params = {
+        jsonObj: { GetAppointmentRequest: req },
+        accountName: appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null,
+        asyncMode: Boolean(callback),
+        callback: new AjxCallback(ZmAppt.__loadResponse, [callback]),
+        errorCallback: errorCallback
+    };
+    var resp = appCtxt.getAppController().sendRequest(params);
+    if (!callback) {
+        return ZmAppt.__loadResponse(null, resp);
+    }
+};
+ZmAppt.__loadResponse = function(callback, resp) {
+    var data = resp && resp._data;
+    var response = data && data.GetAppointmentResponse;
+    var apptNode = response && response.appt;
+    apptNode = apptNode && apptNode[0];
+    if (!apptNode) return null;
+
+    var appt = new ZmAppt();
+    appt._loadFromDom(apptNode, {});
+    if (apptNode.inv) {
+        // HACK: There doesn't seem to be any direct way to load an appt
+        // HACK: by id/uid. So I initialize the appt object with the node
+        // HACK: in the response and then fake a message with the invite
+        // HACK: data to initialize the rest of it.
+        var message = {
+            invite: new ZmInvite.createFromDom(apptNode.inv),
+            getBodyPart: function(mimeType) {
+                return (mimeType == ZmMimeTable.TEXT_HTML ? apptNode.descHtml : apptNode.desc) || "";
+            }
+        }
+        appt.setFromMessage(message);
+    }
+
+    if (callback) {
+        callback.run(appt);
+    }
+    return appt;
+};
