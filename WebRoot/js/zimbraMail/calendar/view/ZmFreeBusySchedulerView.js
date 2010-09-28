@@ -334,7 +334,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		isAllAttendees: isAllAttendees,
 		organizer: organizer,
 		cellCount: ZmFreeBusySchedulerView.FREEBUSY_NUM_CELLS,
-        isComposeMode: this._isComposeMode
+        isComposeMode: this.isComposeMode
 	};
 
 	var tr = this._attendeesTable.insertRow(index);
