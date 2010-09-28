@@ -420,7 +420,11 @@ function(ev) {
     }
     var url = "/h/printmessage?id=" + id;
     if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages) {
-       url += "&xim=1";
+        url += "&xim=1";
+    }
+    if (appCtxt.isOffline) {
+        var acctName = items[0].getAccount().name;
+        url+="&acct=" + acctName ;
     }
     window.open(appContextPath+url, "_blank");
 };

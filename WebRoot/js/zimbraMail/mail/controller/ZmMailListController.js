@@ -1416,7 +1416,11 @@ function(ev) {
 	if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages) {
 		url = url+"&xim=1";
 	}
-	window.open(appContextPath+url, "_blank");
+    if (appCtxt.isOffline) {
+        var acctName = items[0].getAccount().name;
+        url+="&acct=" + acctName ;
+    }
+    window.open(appContextPath+url, "_blank");
 };
 
 ZmMailListController.prototype._editListener =
