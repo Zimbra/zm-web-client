@@ -29,6 +29,8 @@
  */
 ZmPrefController = function(container, prefsApp) {
 
+	if (arguments.length == 0) { return; }
+	
 	ZmController.call(this, container, prefsApp);
 
 	this._currentView = ZmId.VIEW_PREF;

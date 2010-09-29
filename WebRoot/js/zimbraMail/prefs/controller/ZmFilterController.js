@@ -42,7 +42,7 @@ ZmFilterController = function(container, prefsApp, prefsView, section, parent) {
 	this._outgoingFilterRulesController = new ZmFilterRulesController(container, prefsApp, this._filterView, this, true);
 };
 
-ZmFilterController.prototype = new ZmPrefController();
+ZmFilterController.prototype = new ZmPrefController;
 ZmFilterController.prototype.constructor = ZmFilterController;
 
 ZmFilterController.prototype.toString =
