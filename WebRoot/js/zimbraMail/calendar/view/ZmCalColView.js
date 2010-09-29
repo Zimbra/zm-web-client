@@ -1567,7 +1567,7 @@ ZmCalColView.prototype._drawSlots =
 function(status, slots){
 
     //Slots
-    var currDate = this._date.getTime();
+    var currDate = this._timeRangeStart;
     var calBodyHt = document.getElementById(this._bodyDivId).scrollHeight;
     
     for(var i=0; i<slots.length; i++){
