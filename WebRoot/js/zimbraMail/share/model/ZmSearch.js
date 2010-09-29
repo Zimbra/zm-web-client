@@ -49,8 +49,9 @@
  * @param	{Array}		params.folders					the list of folders for autocomplete
  * @param	{Array}		params.allowableTaskStatus		the list of task status types to return (assuming one of the values for "types" is "task")
  * @param	{String}	params.accountName				the account name to run this search against
- * @params	{Boolean}	params.idsOnly					if <code>true</code>, response returns item IDs only
+ * @param	{Boolean}	params.idsOnly					if <code>true</code>, response returns item IDs only
  * @param   {Boolean}   params.inDumpster               if <code>true</code>, search in the dumpster
+ * @param	{boolean}	params.expandDL					if <code>true</code>, set flag to have server indicate expandability for DLs
  */
 ZmSearch = function(params) {
 
@@ -171,12 +172,18 @@ function(params) {
 			if (this.galType) {
 				method.setAttribute("type", this.galType);
 			}
+			if (this.expandDL) {
+				method.setAttribute("needExp", 1);
+			}
 			soapDoc.set("name", this.query);
 		} else if (this.isAutocompleteSearch) {
 			soapDoc = AjxSoapDoc.create("AutoCompleteRequest", "urn:zimbraMail");
 			var method = soapDoc.getMethod();
 			if (this.limit) {
 				method.setAttribute("limit", this.limit);
+			}
+			if (this.expandDL) {
+				method.setAttribute("needExp", 1);
 			}
 			soapDoc.set("name", this.query);
 		} else if (this.isGalAutocompleteSearch) {
@@ -185,6 +192,9 @@ function(params) {
 			method.setAttribute("limit", this._getLimit());
 			if (this.galType) {
 				method.setAttribute("type", this.galType);
+			}
+			if (this.expandDL) {
+				method.setAttribute("needExp", 1);
 			}
 			soapDoc.set("name", this.query);
 		} else if (this.isCalResSearch) {
@@ -301,7 +311,12 @@ function(params) {
 		if (this.isGalSearch) {
 			jsonObj = {SearchGalRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.SearchGalRequest;
-			if (this.galType) { request.type = this.galType; }
+			if (this.galType) {
+				request.type = this.galType;
+			}
+			if (this.expandDL) {
+				request.needExp = 1;
+			}
 			request.name = this.query;
 
 			// bug #36188 - add offset/limit for paging support
@@ -320,13 +335,21 @@ function(params) {
 			if (this.limit) {
 				request.limit = this.limit;
 			}
+			if (this.expandDL) {
+				request.needExp = 1;
+			}
 			request.name = {_content:this.query};
 		} else if (this.isGalAutocompleteSearch) {
 			jsonObj = {AutoCompleteGalRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.AutoCompleteGalRequest;
 			request.limit = this._getLimit();
 			request.name = this.query;
-			if (this.galType) { request.type = this.galType; }
+			if (this.galType) {
+				request.type = this.galType;
+			}
+			if (this.expandDL) {
+				request.needExp = 1;
+			}
 		} else if (this.isCalResSearch) {
 			jsonObj = {SearchCalendarResourcesRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.SearchCalendarResourcesRequest;

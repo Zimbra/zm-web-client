@@ -167,6 +167,7 @@ function(str, aclv, options, acType, callback, account) {
 		DBG.println("ac", "AutoCompleteRequest: " + str);
 	}
 	params.accountName = account && account.name;
+	params.expandDL = appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE);
 
 	var search = new ZmSearch(params);
 	var searchParams = {
@@ -521,6 +522,7 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 				this.item.initFromEmail(email || match.email);
 			}
 			this.icon = this.isDL ? "Group" : ZmAutocomplete.AC_ICON[match.type];
+			this.canExpand = this.isDL && match.exp;
 		}
 	}
 	this.score = (match.ranking && parseInt(match.ranking)) || 0;

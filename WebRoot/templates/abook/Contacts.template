@@ -493,7 +493,7 @@
 
 <template id="abook.Contacts#SplitView_dlmember-collapsed">
 	<td <$= data.expandTdText $>><$= data.html.join("") $></td>
-	<td class=rowLabel><$= ZmMsg.membersLabel $></td>
+	<td class=rowLabel><$= data.contact.canExpand ? ZmMsg.membersLabel : "" $></td>
 	<td colspan=2 class=rowValue>
 		<$= data.value $>
 	</td>

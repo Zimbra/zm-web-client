@@ -864,7 +864,7 @@ function(list) {
 				this._insertLinkCell(this._forgetLink, row, rowId, this._getId("Forget", i), (match.score > 0));
 			}
 			if (expandEnabled) {
-				this._insertLinkCell(this._expandLink, row, rowId, this._getId("Expand", i), match.isDL);
+				this._insertLinkCell(this._expandLink, row, rowId, this._getId("Expand", i), match.canExpand);
 			}
 		}
 	}

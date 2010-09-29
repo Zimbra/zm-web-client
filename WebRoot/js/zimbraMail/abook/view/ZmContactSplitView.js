@@ -442,7 +442,7 @@ function(contact, isGal, oldContact, expandDL) {
 		subs.encode.IM = AjxCallback.simpleClosure(this._encodeIM, this);
 		subs.expandDL = expandDL;
 
-		if (contact.isDL) {
+		if (contact.isDL && contact.canExpand) {
 			this._dlContact = contact;
 			this._dlScrollDiv = this._dlScrollDiv || document.getElementById(this._contentId);
 			var respCallback = new AjxCallback(this, this._showDL, [subs]);
@@ -653,10 +653,10 @@ ZmContactSplitView.showContactDLMembers =
 function(data) {
 
 	var html = [];
-	var itemData = {};
+	var itemData = {contact:data.contact};
 	if (data.dl) {
 		var list = data.dl.list;
-		var canExpand = (list.length > ZmContactSplitView.NUM_DL_MEMBERS || data.dl.more);
+		var canExpand = data.contact.canExpand && (list.length > ZmContactSplitView.NUM_DL_MEMBERS || data.dl.more);
 		var lv = data.view._listPart;
 		var id = lv._expandId = Dwt.getNextId();
 		var tdStyle = "", onclick = "";

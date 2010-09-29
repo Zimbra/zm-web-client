@@ -594,6 +594,9 @@ function(params, noRender, callback, errorCallback) {
 	// only set contact source if we are searching for contacts
 	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmId.SEARCH_GAL))
 		? this._contactSource : null;
+	if (params.contactSource == ZmId.SEARCH_GAL) {
+		params.expandDL = true;
+	}
 
 	// find suitable sort by value if not given one (and if applicable)
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);

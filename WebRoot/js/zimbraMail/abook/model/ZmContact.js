@@ -1605,6 +1605,9 @@ function(node) {
 
 	// Is this a distribution list?
 	this.isDL = this.isGal && (this.attr[ZmContact.F_type] == "group");
+	if (this.isDL) {
+		this.canExpand = node.exp;
+	}
 };
 
 /**
