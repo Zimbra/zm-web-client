@@ -719,7 +719,7 @@ function(mode, addrs, owner, batchCmd) {
 		addrs.add(new AjxEmailAddress(email, AjxEmailAddress.TO));
 	}
 	var msg = this._createMsg(mode, false, addrs, owner);
-	var accountName = appCtxt.multiAccounts ? this.object.getAccount().name : null;
+	var accountName = appCtxt.multiAccounts ? (this.object ? (this.object.getAccount().name) : null ) : null;
 
 	// send message
 	msg.send(false, null, null, accountName, false, false, batchCmd);
