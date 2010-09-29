@@ -759,7 +759,6 @@ and the container element is replaced with that control.
 								</tr>
 							</table>
 							<div id='${id}_SIG_EDITOR' tabindex='80'></div>
-<!--
 							<table border=0 cellpadding=0 cellspacing=0 width="100%">
 								<tr>
 									<td class="Label"><$=ZmMsg.signatureVcardLabel$></td>
@@ -768,7 +767,6 @@ and the container element is replaced with that control.
 									<td><div id='${id}_SIG_VCARD_CLEAR' tabIndex='87'></div></td>
 								</tr>
 							</table>
--->
 						</td>
 					</tr>
 				</table>
@@ -2199,5 +2197,36 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 				<td><$=data.device.getRemoteWipeAckTimeString()$></td>
 			</tr>
 		<$ } $>
+	</table>
+</template>
+
+<template id='prefs.Pages#Notifications'>
+	<!-- REVERT_PAGE (button) -->
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	</div>
+
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.notificationsEmail$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr>
+			<td class='ZOptionsSectionMain'>
+				<table width=100%>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.emailNotificationsLabel$></td>
+						<td class='ZOptionsField'><input id='${id}_CAL_EMAIL_REMINDERS_ENABLED' tabindex='40' type='checkbox'></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.emailNotificationsDescription$></td>
+						<td class='ZOptionsField'><div id='${id}_CAL_EMAIL_REMINDERS_ADDRESS' tabindex='50'></div></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
 	</table>
 </template>
