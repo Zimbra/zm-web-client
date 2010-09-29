@@ -7,21 +7,18 @@
 	</table>
 </template>
 
-<template id='tasks.Task#ReadOnlyView'>
+<template id='tasks.Tasks#ReadOnlyView'>
     <div class='MsgHeaderTable'>
-	<table border=0  id='${id}_hdrTable' cellspacing=0 cellpadding=10>
+    <div class='SubjectCol LabelColValue' style="margin-left: 5px;"><$= data.subject $></div>
+	<table border=0  id='${id}_hdrTable' cellspacing=0 cellpadding=10 style="margin-left: 5px;">
 
-		<tr>
-			<td class='SubjectCol LabelColValue' colspan='2' width=100%><$= data.subject $></td>
-		</tr>
-
-		<$ if (data.location) { $><$= AjxTemplate.expand("tasks.Task#AddEntry", {lbl:ZmMsg.location, val:data.location}) $><$ } $>
-		<$ if (data.startDate) { $><$= AjxTemplate.expand("tasks.Task#AddEntry", {lbl:ZmMsg.startDate, val:data.startDate}) $><$ } $>
-		<$ if (data.dueDate) { $><$= AjxTemplate.expand("tasks.Task#AddEntry", {lbl:ZmMsg.dueDate, val:data.dueDate}) $><$ } $>
-		<$ if (data.priority) { $><$= AjxTemplate.expand("tasks.Task#AddEntry", {lbl:ZmMsg.priority, val:data.priority}) $><$ } $>
-		<$ if (data.status) { $><$= AjxTemplate.expand("tasks.Task#AddEntry", {lbl:ZmMsg.status, val:data.status}) $><$ } $>
-		<$ if (data.pComplete) { $><$= AjxTemplate.expand("tasks.Task#AddEntry", {lbl:ZmMsg.completed, val:data.pComplete+'%'}) $><$ } $>
-        <$ if (data.alarm) { $><$= AjxTemplate.expand("tasks.Task#AddEntry", {lbl:ZmMsg.reminder, val:data.remindDate}) $><$ } $>
+		<$ if (data.location) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.location, val:data.location}) $><$ } $>
+		<$ if (data.startDate) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.startDate, val:data.startDate}) $><$ } $>
+		<$ if (data.dueDate) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.dueDate, val:data.dueDate}) $><$ } $>
+		<$ if (data.priority) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.priority, val:data.priority}) $><$ } $>
+		<$ if (data.status) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.status, val:data.status}) $><$ } $>
+		<$ if (data.pComplete) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.completed, val:data.pComplete+'%'}) $><$ } $>
+        <$ if (data.alarm) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.reminder, val:data.remindDate}) $><$ } $>
         
 		<!-- exception warning -->
 		<$ if (data.isException) { $>
@@ -36,12 +33,12 @@
 			</td>
 		</tr>
 		<$ } $>
-		<$ if (data.attachStr) { $><$= AjxTemplate.expand("tasks.Task#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
+		<$ if (data.attachStr) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
 	</table>
 	</div>
 </template>
 
-<template id="tasks.Task#AddEntry">
+<template id="tasks.Tasks#AddEntry">
 	<tr>
 		<td class='LabelColName' style='padding-left:2px;'><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.lbl)) $> </td>
 		<td class='LabelColValue'><$= data.val $></td>

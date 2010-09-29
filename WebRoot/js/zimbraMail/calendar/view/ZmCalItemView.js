@@ -548,7 +548,7 @@ function(calItem) {
 	this._hdrTableId = this._htmlElId + "_hdrTable";
 
     var el = this.getHtmlElement();
-	el.innerHTML = AjxTemplate.expand("tasks.Task#ReadOnlyView", subs);
+	el.innerHTML = AjxTemplate.expand("tasks.Tasks#ReadOnlyView", subs);
 
 	// content/body
 	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
