@@ -345,7 +345,7 @@ function(params) {
 				for (var i = 0; i < this.conds.length; i++) {
 					var c = this.conds[i];
 					if (c.attr=="fullName" && c.op=="has") { // Optimization for bug #50841
-						request.name = c.value;
+						request.name = {_content: c.value};
 					} else {
 						cond.push({attr:c.attr, op:c.op, value:c.value});
 					}

@@ -80,9 +80,8 @@ function(params) {
     var soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
     var method = soapDoc.getMethod();
     if (params.attrs) {
-        var attrs = [].concat(params.attrs);
-        AjxUtil.arrayRemove(attrs, "fullName");
-        method.setAttribute("attrs", attrs.join(","));
+        AjxUtil.arrayRemove(params.attrs, "fullName");
+        method.setAttribute("attrs", params.attrs.join(","));
     }
     var searchFilterEl = soapDoc.set("searchFilter");
     if (params.conds && params.conds.length) {
