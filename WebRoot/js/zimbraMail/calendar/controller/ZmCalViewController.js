@@ -1167,6 +1167,7 @@ function() {
 	if (this._viewMgr.needsRefresh()) {
 		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);
 	}
+    this._app.setOverviewPanelContent();    
 };
 
 ZmCalViewController.prototype._postHideCallback =
@@ -1174,12 +1175,6 @@ function() {
 	var overview = this._app.getOverview();
 	overview.zShow(false);
 	this._viewVisible = false;
-};
-
-ZmCalViewController.prototype._postShowCallback =
-function() {
-	var overview = this._app.getOverview();
-	if(overview) overview.zShow(true);
 };
 
 ZmCalViewController.prototype._paginate =

@@ -675,6 +675,10 @@ function(reset) {
     var viewId = appCtxt.getCurrentViewId();
     if(viewId.indexOf(ZmId.VIEW_APPOINTMENT) != 0) {
         ZmApp.prototype.setOverviewPanelContent.apply(this, arguments);
+    }else {
+        ZmApp.prototype.setOverviewPanelContent.apply(this, arguments);
+        var controller = appCtxt.getCurrentView().getController();
+        controller.setSchedulerPanelContent();
     }
 };
 

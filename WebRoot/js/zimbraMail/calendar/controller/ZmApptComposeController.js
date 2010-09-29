@@ -837,7 +837,6 @@ function(initHide) {
 			this._createToolBar();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-        elements[ZmAppViewMgr.C_TREE] = this._smartScheduler;
 		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
 		if (initHide) {
 			this._composeView.preload();
@@ -865,6 +864,7 @@ function() {
     if(appCtxt.getCurrentAppName() == ZmApp.CALENDAR || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
         appCtxt.getAppViewMgr().showTreeFooter(true);
     }
+    if(this._schedulerRendered) this._smartScheduler.zShow(false);
 };
 
 ZmApptComposeController.prototype._postShowCallback =
@@ -872,6 +872,22 @@ function(view, force) {
 	var ta = new AjxTimedAction(this, this._setFocus);
 	AjxTimedAction.scheduleAction(ta, 10);
     appCtxt.getAppViewMgr().showTreeFooter(false);
+    this.setSchedulerPanelContent();
+};
+
+ZmApptComposeController.prototype.getScheduleAssistant =
+function() {
+    return this._smartScheduler;
+};
+
+ZmApptComposeController.prototype.setSchedulerPanelContent =
+function() {
+    var scheduler = this.getScheduleAssistant();
+    if(scheduler) {
+        var avm = appCtxt.getAppViewMgr();
+        avm.setComponent(ZmAppViewMgr.C_TREE, scheduler);
+        this._schedulerRendered = true;
+    }
 };
 
 ZmApptComposeController.prototype.getWorkingInfo =
