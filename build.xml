@@ -20,6 +20,9 @@
     <property name='common.build.dir' value='${common.dir}/build'/>
     <property name='common.build.classes.dir' value='${common.build.dir}/classes'/>
 
+    <property name='soap.dir' location='../ZimbraSoap'/>
+	<property name='soap.build.dir' value='${soap.dir}/build'/>
+	
     <property name='taglib.dir' value='../ZimbraTagLib'/>
     <property name='taglib.build.dir' value='${taglib.dir}/build'/>
 	<property name='taglib.build.classes.dir' value='${taglib.build.dir}/classes'/>
@@ -242,6 +245,7 @@
             <classes dir='${web.dir}' includes='messages/**,keys/**'/>
             <lib dir='${lib.dir}' includes='gifencoder.jar'/>
             <lib dir='${webinf.lib.dir}'/>
+        	<lib dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
             <lib dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
             <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
             <zipfileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.files}'/>
