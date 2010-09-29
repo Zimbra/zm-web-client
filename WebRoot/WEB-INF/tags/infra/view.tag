@@ -158,7 +158,7 @@
 <c:if test="${statusBlocking}">
 	<div id="app_st_block_div" class="VeilOverlay" style="z-index:99;"></div>
 </c:if>
-<div class='${requestScope.statusClass}' style="z-index:100;position:relative;"><app:appStatus/></div>
+<div id="app_status_container" class='${requestScope.statusClass}' style="z-index:100;position:relative;"><app:appStatus/></div>
 	<table width="100%" cellspacing="0" cellpadding="0" border="0" height="100%">
 	<tr>
 		<td class='ImgSkin_Chrome_R1' colspan="2">
@@ -503,7 +503,7 @@
 			<td class="Overview">
 
 			</td>
-			<td align="center" colspan="3">
+			<td id="app_status_container" align="center" colspan="3">
 				<app:appStatus/>
 			</td>
 		</tr>
@@ -620,7 +620,7 @@
 				&nbsp;
 			</td>
 			<td align="center" colspan="3">
-				<div style="z-index:100;position:relative;"><app:appStatus/></div>
+				<div id="app_status_container" style="z-index:100;position:relative;"><app:appStatus/></div>
 			</td>
 		</tr>
 		<tr>

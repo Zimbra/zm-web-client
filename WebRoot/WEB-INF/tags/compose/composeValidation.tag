@@ -126,9 +126,25 @@
         if(_checkFail){
             return "<fmt:message key="composeExitConfirmation"/>"; //disabling this for new way of save/cancel handling
         }
-    }
+    };
 
-    window.onbeforeunload = checkForChanges;
+    /*
+      Clears the autoSave timeout before unloading the page, resets the timeout if the
+      user opts to cancel the confirmation dialog.
+    */
+    window.onbeforeunload = function(e) {
+        clearTimeout(timer);
+        var activeElement = e.target.activeElement;
+        // If user opts to cancel the confirmation dialog, focus shifts to the last activeElement which triggered this activity.
+        // Register a onFocus handler which will trigger the timer for autosave, then remove the onfocus listener.
+        // Note that this handler will be invoked only if the confirmation dialog is cancelled.
+        activeElement.addEventListener('focus',function() {
+            timer = setTimeout(autoSaveTimer, AUTO_SAVE_DRAFT_INTERVAL*1000);
+            this.removeEventListener('focus');
+        },true);
+
+        return checkForChanges();
+    };
 
     /* Move the body caret to the top of the textarea */
     var bodyEl = document.getElementById('body');
