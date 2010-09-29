@@ -94,6 +94,7 @@ function(appt) {
     }
 
 	this._showAsSelect.setSelectedValue("B");
+    this._privacySelect.enable();
 	this._privacySelect.setSelectedValue("PUB");
     this._calendarOrgs = {};
 	ZmApptViewHelper.populateFolderSelect(this._folderSelect, this._folderRow, this._calendarOrgs, appt);
@@ -363,7 +364,7 @@ function() {
     }
 
 	if (cal) {
-		var isRemote = (calId.match(/:/));
+        var isRemote = cal.isRemote();        
 		if (value == "PRI" && isRemote && !cal.hasPrivateAccess()) {
 			this._privacySelect.setSelectedValue("PUB");
 			this._privacySelect.disable();
