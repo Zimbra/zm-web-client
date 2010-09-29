@@ -125,6 +125,7 @@
                 </div>
                 </span>
                 <span class="td"></span>
+                <input type="hidden" name="ipadcoffset" value="${empty requestScope.lmt ? context.searchResult.nextOffset : requestScope.lmt}"/>
             </div>
     </c:if>
 </c:if>

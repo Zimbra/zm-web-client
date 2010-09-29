@@ -777,6 +777,8 @@ var lastRendered = new Date().getTime();
 var ajxCache = new AjxCache(CACHE_DATA_LIFE);
 var listScroll = null;
 var contentScroll = null;
+var selectedConvId = null;
+var listConvListScroll = null;
 
 if(window.location.hash){
     sAT(window.location.hash);
@@ -785,7 +787,16 @@ if(window.location.hash){
 var initListScroll = function () {
     $('dlist-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
     listScroll = new iScroll('dlist-view',{ checkDOMChanges: false, desktopCompatibility: true });
+    return listScroll;
 };
+
+var initConvListScroll = function () {
+	if($('conv-view-dlist')) {
+    	$('conv-view-dlist').addEventListener('touchmove', function(e){ e.preventDefault(); });
+    	listConvListScroll = new iScroll('conv-view-dlist',{ checkDOMChanges: false, desktopCompatibility: true });
+	}
+};
+
 
 var initPrefScroll = function () {
     $('dlist-pref').addEventListener('touchmove', function(e){ e.preventDefault(); });
@@ -874,16 +885,22 @@ ZmiPad.processScript = function(id) {
 ZmiPadMail to process all Mail responses
  */
 function ZmiPadMail() {
-	
+
 };
 
 ZmiPadMail.processResponse = function (respData, url) {
 
     ZmiPad.initColumnView();
-
+    $("conv-view-list").style.display = "none";
+    
+    if(ZmiPad.getParamFromURL("st",url) == "conversation" && (ZmiPad.getParamFromURL("hc",url) == "1" || ZmiPad.getParamFromURL("mview",url) == "1")) {
+		$("conv-view-list").style.display = "block";
+    }
+    
     if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1)  && (url.indexOf('hc=1') == -1)) {
 
         $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
+        if(ZmiPad.getParamFromURL("mview",url) == "1") { $(ZmiPad.ID_VIEW_LIST).style.display = "none"; }
         if(url.indexOf('action=view') != -1) ZmiPad.processScript(ZmiPad.ID_VIEW_CONTENT);
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
         $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
@@ -919,10 +936,16 @@ ZmiPadMail.processResponse = function (respData, url) {
         $('compose-body').innerHTML = respData;
         ZmiPad.processScript('compose-body');
         if(ZmiPad.getParamFromURL("compose",url) != "new") {
-          $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+          if($(ZmiPad.ID_VIEW_CONTENT).style.display == "none") { 
+          	$(ZmiPad.ID_VIEW_STATIC).style.display = "block"; 
+          } 
         } else {
           $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";      
           $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+        }
+        if(ZmiPad.getParamFromURL("mview", url) == "1") {
+        	$(ZmiPad.ID_VIEW_LIST).style.display = "none";
+        	$("conv-view-list").style.display = "block";
         }
         toggleCompose('compose-pop','veil');
         initComposeAutoComplete();
@@ -931,12 +954,54 @@ ZmiPadMail.processResponse = function (respData, url) {
 
         $("dlist-view").removeChild(document.getElementById('more-div'));
         $("dlist-view").innerHTML = $("dlist-view").innerHTML + respData;
+        
         setTimeout(function(){listScroll.refresh();}, 1000);
-    } else {
-        $(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
-        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+        
+    } else if(ZmiPad.getParamFromURL("st",url) == "conversation" && ZmiPad.getParamFromURL("isto",url) != "") {    //isto:iscroll to which element 
+		$("conv-view-list").style.display = "none";
+		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
         $("sq").blur();
-        initListScroll();
+        //initListScroll();
+        if(selectedConvId != null) {
+	        var lastConvId = "conv" + selectedConvId;
+	        
+	        if(lastConvId != ZmiPad.getParamFromURL("isto",url)) {
+	        	$("dlist-view").removeChild($(lastConvId));
+	        }
+	        
+	        selectedConvId = null;
+        }
+        $(ZmiPad.ID_VIEW_LIST).style.display = "block";
+        
+        if($(ZmiPad.getParamFromURL("isto",url))) {
+        	listScroll.scrollToElement($(ZmiPad.getParamFromURL("isto",url)));
+        }
+        
+    } else {
+    	if(ZmiPad.getParamFromURL("st",url) == "conversation" && (ZmiPad.getParamFromURL("hc",url) == "1" || ZmiPad.getParamFromURL("mview",url) == "1")) {
+    		$("conv-view-list").innerHTML = respData;
+  			$("conv-view-list").style.display = "block";
+  			
+    		$(ZmiPad.ID_VIEW_LIST).style.display = "none";
+    		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+    		
+    		$(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+    		
+    		if(selectedConvId == null) {
+    			selectedConvId = ZmiPad.getParamFromURL("cid",url);
+    		}
+    		
+    		initConvListScroll();
+    		
+    	} else {
+    		$(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
+    		$(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+    		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+    		$("conv-view-list").style.display = "none";
+    		initListScroll();
+    	}
+    	
+        $("sq").blur();
     }
 }
 
@@ -962,7 +1027,8 @@ function ZmiPadContacts() {
 ZmiPadContacts.processResponse = function (respData, url) {
 
     ZmiPad.initColumnView();
-
+	$("conv-view-list").style.display = "none";
+	
     if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1) && (url.indexOf('hc=1') == -1)) {
         $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
@@ -1011,6 +1077,8 @@ function ZmiPadCal() {
 
 ZmiPadCal.processResponse = function (respData, url) {
     ZmiPad.initMainView();
+    $("conv-view-list").style.display = "none";
+    
     if(ZmiPad.getParamFromURL("st",url) == "newappt") {
         $('compose-body').innerHTML = respData;
         ZmiPad.processScript('compose-body');

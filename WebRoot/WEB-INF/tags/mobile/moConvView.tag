@@ -37,10 +37,14 @@
             <c:set var="message" value="${convSearchResult.hits[csi].messageHit.message}"/>
         </c:if>
     </c:if>
+    
     <c:if test="${singleMessage and (message eq null or not empty param.xim)}">
         <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
             <c:set var="csi" value="0"/>
         </c:if>
+        
+        <c:set var="iempty" value="${message}"/>
+        
         <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}"
                        markread="true" neuterimages="${empty param.xim}"/>
     </c:if>
@@ -64,7 +68,7 @@
 </c:if>
 <c:set var="title" value="${zm:truncate(subject,20,true)}" scope="request"/>
 <c:if test="${ua.isiPad == true}"><c:url var="actionUrl" value="${actionUrl}"><c:param name="hc" value="1"/></c:url></c:if>
-<form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
+<form id="zForm${ua.isiPad == true ? '1' : ''}" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
 <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
@@ -74,12 +78,23 @@
         <mo:convToolbar urlTarget="${context_url}" context="${context}" keys="false" isConv="false" singleMessage="${singleMessage}" message="${message}" isTop="${true}" mailbox="${mailbox}"/>
     </c:when>
     <c:otherwise>
-            <mo:convToolbar singleMessage="${singleMessage}" urlTarget="${context_url}" context="${context}"
-                        keys="false" isConv="true" cid="${convSummary.id}" message="${message}"
-                        isTop="${true}" mailbox="${mailbox}"/>
+        <mo:convToolbar singleMessage="${singleMessage}" urlTarget="${context_url}" context="${context}" keys="false" isConv="true" cid="${convSummary.id}" message="${message}" isTop="${true}" mailbox="${mailbox}"/>
     </c:otherwise>
 </c:choose>
+
 <c:choose>
+<c:when test="${empty param.cid and (convSummary.id eq context.currentItem.id)}">
+<div class="wrap-dlist" id="wrap-dlist-view">    
+<div class="msg-list-in-conv tbl dlist" id="dlist-view">    
+	<div class='tbl'>
+                <div class="tr">
+                    <div class="td zo_noresults">
+                        <fmt:message key="noResultsFound"/>
+                     </div>
+                </div>
+            </div>
+</div></div>            
+</c:when>
 <c:when test="${singleMessage}">
     <div class="Stripes">
             <c:set var="extImageUrl" value="${context_url}"/>
@@ -102,7 +117,7 @@
     </div>
 </c:if>
 <div class="wrap-dlist" id="wrap-dlist-view">    
-<div class="msg-list-in-conv tbl dlist" id="dlist-view">    
+<div class="msg-list-in-conv tbl dlist" id="conv-view-dlist">    
 <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
 <c:set var="mhit" value="${hit.messageHit}"/>
 <zm:currentResultUrl var="msgUrl" value="${context_url}" cid="${convSummary.id}" id="${hit.id}"
@@ -115,7 +130,7 @@
                <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/>
                <span class="td f" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>>
                    <c:set value=",${mhit.id}," var="stringToCheck"/>
-                   <input class="chk" type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':''} name="id" value="${mhit.id}"/>
+                   <input class="chk" type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':''} name="id" value="${mhit.id}" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>/>
                    <span class="SmlIcnHldr ${class}">&nbsp;</span>
                </span>
                <span class="td m" onclick='return zClickLink("a${mhit.id}");'>
