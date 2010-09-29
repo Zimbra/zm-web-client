@@ -1459,6 +1459,18 @@ input.xform_field {
 	border-bottom-width:1px;
 	border-right-width:1px;
 }
+.dynselect_error_note,
+.oselect_error_note {
+    @MenuContainer@
+    @Text-error@
+    @NoticeContainer-warning@  
+    position:absolute;
+    z-index:10000000000;
+    border-bottom-width:1px;
+    border-right-width:1px;
+    white-space:nowrap;
+}
+
 .dynselect_menu,
 .oselect_menu {
 	@MenuContainer@
