@@ -27,12 +27,12 @@
  */
 ZmFilterRulesView = function(parent, controller) {
 
-	DwtTabViewPage.call(this, parent, "ZmPreferencesPage ZmFilterRulesView");
+	DwtTabViewPage.call(this, parent, "ZmPreferencesPage ZmFilterRulesView", Dwt.STATIC_STYLE);
 
 	this._controller = controller;
 	this._prefsController = AjxDispatcher.run("GetPrefController");
 
-	this._rules = AjxDispatcher.run("GetFilterRules");
+	this._rules = AjxDispatcher.run(controller.isOutgoing() ? "GetOutgoingFilterRules" : "GetFilterRules");
 
 	var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
 	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section && section.title].join(": ");
@@ -54,15 +54,16 @@ ZmFilterRulesView.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
 	var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
+
 	this._prefsController._resetOperations(this._prefsController._toolbar, section && section.id);
 	if (this.hasRendered) { return; }
 
 	// create the html
 	var data = {id:this._htmlElId};
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#MailFilters", data);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#MailFilter", data);
 
 	// create toolbar
-	var toolbarEl = document.getElementById(data.id + "_toolbar");
+	var toolbarEl = Dwt.byId(data.id + "_toolbar");
 	if (toolbarEl) {
 		var buttons = this._controller.getToolbarButtons();
 		this._toolbar = new ZmButtonToolBar({parent:this, buttons:buttons, posStyle:Dwt.STATIC_STYLE,
@@ -72,7 +73,7 @@ function() {
 	}
 
 	// create list view
-	var listViewEl = document.getElementById(data.id + "_list");
+	var listViewEl = Dwt.byId(data.id + "_list");
 	if (listViewEl) {
 		this._listView = new ZmFilterListView(this, this._controller);
 		this._listView.replaceElement(listViewEl);
@@ -150,7 +151,7 @@ ZmFilterListView = function(parent, controller) {
 	DwtListView.call(this, {parent:parent, className:"ZmFilterListView", headerList:headerList,
 							view:ZmId.VIEW_FILTER_RULES});
 
-	this._rules = AjxDispatcher.run("GetFilterRules");
+	this._rules = AjxDispatcher.run(controller.isOutgoing() ? "GetOutgoingFilterRules" : "GetFilterRules");
 
 	this._controller = controller;
 	this._rules.addChangeListener(new AjxListener(this, this._changeListener));
@@ -159,6 +160,7 @@ ZmFilterListView = function(parent, controller) {
 
 ZmFilterListView.COL_ACTIVE	= "ac";
 ZmFilterListView.COL_NAME	= "na";
+ZmFilterListView.CHECKBOX_PREFIX = "_ruleCheckbox";
 
 ZmFilterListView.prototype = new DwtListView;
 ZmFilterListView.prototype.constructor = ZmFilterListView;
@@ -188,6 +190,14 @@ function(list) {
 		}
 	}
 	DwtListView.prototype.set.call(this, list1);
+
+	for (var i = 0, len = list1.size(); i < len; i++) {
+		var rule = list1.get(i);
+		var checkbox = Dwt.byId(ZmFilterListView._getCheckboxIdForRule(rule));
+		if (checkbox) {
+			Dwt.setHandler(checkbox, DwtEvent.ONCHANGE, AjxCallback.simpleClosure(this._activeStateChange, this));
+		}
+	}
 };
 
 ZmFilterListView.prototype._getHeaderList =
@@ -198,16 +208,29 @@ function() {
 	];
 };
 
+ZmFilterListView._getCheckboxIdForRule =
+function(rule) {
+	return ZmFilterListView.CHECKBOX_PREFIX + rule.id;
+};
+
+ZmFilterListView.prototype._getCellClass =
+function(item, field, params) {
+	if (field == ZmFilterListView.COL_ACTIVE) {
+		return "FilterActiveCell";
+	}
+	return DwtListView.prototype._getCellClass.call(this, item, field, params);
+};
+
 ZmFilterListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	if (field == ZmFilterListView.COL_ACTIVE) {
 		html[idx++] = "<input type='checkbox' ";
 		html[idx++] = item.active ? "checked " : "";
-		html[idx++] = "id='_ruleCheckbox";
-		html[idx++] = item.id;
+		html[idx++] = "id='";
+		html[idx++] = ZmFilterListView._getCheckboxIdForRule(item);
 		html[idx++] = "' _flvId='";
 		html[idx++] = this._internalId;
-		html[idx++] = "' onchange='ZmFilterListView._activeStateChange'>";
+		html[idx++] = "'>";
 	} else if (field == ZmFilterListView.COL_NAME) {
 		html[idx++] = AjxStringUtil.htmlEncode(item.name);
 	}
@@ -241,7 +264,7 @@ function(ev) {
  * 
  * @private
  */
-ZmFilterListView._activeStateChange =
+ZmFilterListView.prototype._activeStateChange =
 function(ev) {
 	var target = DwtUiEvent.getTarget(ev);
 	var flvId = target.getAttribute("_flvId");
@@ -249,7 +272,16 @@ function(ev) {
 	var ruleId = target.id.substring(13);
 	var rule = flv._rules.getRuleById(ruleId);
 	if (rule) {
-		flv._rules.setActive(rule, !rule.active);
+		var active = target.checked;
+		if (active != rule.active) {
+			var okCallback = new AjxCallback(flv._rules, flv._rules.setActive, [rule, active]);
+			var cancelCallback = new AjxCallback(this, function(){target.checked = false;});
+			if (active) {
+				this._controller.handleBeforeFilterChange(okCallback, cancelCallback);
+			} else {
+				okCallback.run();
+			}
+		}
 	}
 };
 
@@ -270,9 +302,9 @@ function(clickedEl, ev, button) {
 	if (!(ev instanceof DwtMouseEvent)) { return true; }
 
 	var target = DwtUiEvent.getTarget(ev);
-	var isInput = (target.id.indexOf("_ruleCheckbox") == 0);
+	var isInput = (target.id.indexOf(ZmFilterListView.CHECKBOX_PREFIX) == 0);
 	if (isInput) {
-		ZmFilterListView._activeStateChange(ev);
+		this._activeStateChange(ev);
 	}
 
 	return !isInput;

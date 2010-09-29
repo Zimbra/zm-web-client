@@ -48,3 +48,8 @@
 	margin-top: 10px;
 	border-bottom: 1px solid #c0d9ee;		/* get this from skin.properties */
 }
+
+.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
+	background-color: #fff;
+	border-bottom-color: #fff;
+}

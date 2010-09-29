@@ -83,16 +83,16 @@ function() {
 };
 
 /**
- * Gets the filter rules controller.
+ * Gets the filter controller.
  * 
- * @return	{ZmFilterRulesController}	the filter rules controller
+ * @return	{ZmFilterController}	the filter controller
  */
-ZmPrefController.prototype.getFilterRulesController =
-function() {
-	if (!this._filterRulesController) {
-		this._filterRulesController = new ZmFilterRulesController(this._container, this._app, this._prefsView);
+ZmPrefController.prototype.getFilterController =
+function(section) {
+	if (!this._filterController) {
+		this._filterController = new ZmFilterController(this._container, this._app, this._prefsView, section || ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS), this);
 	}
-	return this._filterRulesController;
+	return this._filterController;
 };
 
 /**

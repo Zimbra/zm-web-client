@@ -33,6 +33,7 @@ ZmPreferencesApp = function(container, parentController) {
 
 	// must be hash for case of multi-accounts
 	this._filterRules = {};
+	this._outgoingFilterRules = {};
 };
 
 // Organizer and item-related constants
@@ -109,7 +110,7 @@ function() {
 ZmPreferencesApp.prototype.getFilterController =
 function() {
 	if (!this._filterController) {
-		this._filterController = new ZmFilterController(this._container, this);
+		this._filterController = this.getPrefController().getFilterController();
 	}
 	return this._filterController;
 };
@@ -129,6 +130,23 @@ function(accountName) {
 		this._filterRules[acct] = new ZmFilterRules(acct);
 	}
 	return this._filterRules[acct];
+};
+
+/**
+ * Gets the outgoing filter rules.
+ * 
+ * @param	{String}	[accountName]		the account name or <code>null</code> to use the active account
+ * @return	{ZmFilterRules}		the filter rules
+ */
+ZmPreferencesApp.prototype.getOutgoingFilterRules =
+function(accountName) {
+	var ac = window.parentAppCtxt || window.appCtxt;
+	var acct = accountName || ac.getActiveAccount().name;
+
+	if (!this._outgoingFilterRules[acct]) {
+		this._outgoingFilterRules[acct] = new ZmFilterRules(acct, true);
+	}
+	return this._outgoingFilterRules[acct];
 };
 
 ZmPreferencesApp.prototype.modifyNotify =
@@ -161,6 +179,7 @@ function(refresh) {
 ZmPreferencesApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.registerMethod("GetFilterRules", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterRules));
+	AjxDispatcher.registerMethod("GetOutgoingFilterRules", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getOutgoingFilterRules));
 	AjxDispatcher.registerMethod("GetPrefController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getPrefController));
 	AjxDispatcher.registerMethod("GetFilterController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterController));
 };
@@ -592,7 +611,8 @@ function() {
 	ZmPref.registerPref("SAVE_TO_SENT", {
 		displayName:		ZmMsg.saveToSent,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		ZmSetting.MAIL_ENABLED
+		precondition:		ZmSetting.MAIL_ENABLED,
+		changeFunction:		AjxCallback.simpleClosure(ZmPref.onChangeConfirm, null, ZmMsg.saveToSentWarning, ZmPref.getSendToFiltersActive, true, new AjxCallback(null, ZmPref.setFormValue, ["SAVE_TO_SENT", true]))
 	});
 
 	ZmPref.registerPref("SEARCH_INCLUDES_SPAM", {
@@ -665,13 +685,18 @@ function(callback) {
 
 ZmPreferencesApp.prototype._getSharingView =
 function() {
+	var sharingSection = this.getPreferencesPage("SHARING");
+	return (sharingSection && sharingSection.view);
+};
+
+ZmPreferencesApp.prototype.getPreferencesPage =
+function(id) {
 	if (!this._prefController) {
 		return null;
 	}
 	var prefCtlr = this.getPrefController();
 	var prefsView = prefCtlr && prefCtlr.getPrefsView();
-	var sharingSection = prefsView && prefsView.getView("SHARING");
-	return (sharingSection && sharingSection.view);
+	return prefsView && prefsView.getView(id);
 };
 
 // needed to hide zimlet tree view for multi-account

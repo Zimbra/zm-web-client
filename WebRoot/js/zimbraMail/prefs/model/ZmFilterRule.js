@@ -366,6 +366,10 @@ var i = 1;
  */
 ZmFilterRule.A_KEEP		= i++;
 /**
+ * Defines the "keep" action type.
+ */
+ZmFilterRule.A_KEEP_SENT	= i++;
+/**
  * Defines the "folder" action type.
  */
 ZmFilterRule.A_FOLDER	= i++;
@@ -395,6 +399,10 @@ ZmFilterRule.A_FORWARD	= i++;
  */
 ZmFilterRule.A_NAME_KEEP						= "actionKeep";
 /**
+ * Defines the "keep" action name.
+ */
+ZmFilterRule.A_NAME_KEEP_SENT					= "actionKeep";
+/**
  * Defines the "file into a folder" action name.
  */
 ZmFilterRule.A_NAME_FOLDER						= "actionFileInto";
@@ -421,6 +429,7 @@ ZmFilterRule.A_NAME_FORWARD						= "actionRedirect";
 
 ZmFilterRule.A_VALUE = {};
 ZmFilterRule.A_VALUE[ZmFilterRule.A_KEEP]		= ZmFilterRule.A_NAME_KEEP;
+ZmFilterRule.A_VALUE[ZmFilterRule.A_KEEP_SENT]	= ZmFilterRule.A_NAME_KEEP_SENT;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_FOLDER]		= ZmFilterRule.A_NAME_FOLDER;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_DISCARD]	= ZmFilterRule.A_NAME_DISCARD;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_STOP]		= ZmFilterRule.A_NAME_STOP;
@@ -436,6 +445,7 @@ delete i;
 
 ZmFilterRule.A_LABEL = {};
 ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP]		= ZmMsg.keepInInbox;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP_SENT]	= ZmMsg.keepInSent;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_FOLDER]		= ZmMsg.fileIntoFolder;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_DISCARD]	= ZmMsg.discard;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_STOP]		= ZmMsg.stopEvaluation;
@@ -459,6 +469,7 @@ ZmFilterRule.A_LABEL[ZmFilterRule.A_FORWARD]	= ZmMsg.forwardToAddress;
  */
 ZmFilterRule.ACTIONS = {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_KEEP] = {};
+ZmFilterRule.ACTIONS[ZmFilterRule.A_KEEP_SENT] = {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_DISCARD] = {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_STOP] = {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FOLDER] = {
@@ -480,6 +491,15 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD] = {
 
 ZmFilterRule.ACTIONS_LIST = [
 	ZmFilterRule.A_KEEP,
+	ZmFilterRule.A_DISCARD,
+	ZmFilterRule.A_FOLDER,
+	ZmFilterRule.A_TAG,
+	ZmFilterRule.A_FLAG,
+	ZmFilterRule.A_FORWARD
+];
+
+ZmFilterRule.ACTIONS_OUTGOING_LIST = [
+	ZmFilterRule.A_KEEP_SENT,
 	ZmFilterRule.A_DISCARD,
 	ZmFilterRule.A_FOLDER,
 	ZmFilterRule.A_TAG,

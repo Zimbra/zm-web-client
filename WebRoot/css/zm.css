@@ -2736,6 +2736,48 @@ HTML>BODY .appt-selected .appt_allday_body
 	@ChromeBg@
 	padding:1em;
 }
+
+.ZOptionsSectionTabView .ZmPreferencesPage,
+.ZOptionsSectionTabView .ZSelectedPrev .ZTabBorder {
+	border-style: solid;
+	border-color: @Darken(TabColor,20)@;
+	border-width: 1px;
+	width: 100%;
+	padding: 0;
+}
+
+.ZOptionsSectionTabView .ZOptionsSectionTable {
+	padding: 0;
+	margin: 0;
+}
+
+.ZOptionsSectionTabView .ZTabBar {
+	background-color: transparent;
+}
+
+.ZOptionsSectionTabView .ZTab {
+	margin-bottom: -1px;
+	margin-right: 3px;
+	position: relative !important;
+}
+
+.ZOptionsSectionTabView .ZTabBarPrefix,
+.ZOptionsSectionTabView .ZTabBarSuffix {
+	border-width: 0;
+}
+
+.ZOptionsSectionTabView .ZTabBorder {
+	background-color: @TabColor@;
+	border-width: 1px;
+	@TabRoundCorners@
+}
+
+.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
+	background-color: @AppC@;
+	border-bottom-color: @AppC@;
+}
+
+
 .ZOptionsLabel,
 .ZOptionsLabelTop,
 .ZOptionsLabelNarrow,
@@ -2826,7 +2868,22 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmFilterRulesView .DwtListView-Rows {
 	/*overflow: visible;*/
 	height: auto;
+	min-height: 185px;
 }
+
+.ZmFilterRulesView .FilterActiveCell {
+	text-align: center;
+}
+
+.ZmFilterRulesView .DwtListView-Rows input {
+	margin: 1px;
+}
+
+#IFDEF MSIE
+* html .ZmFilterRulesView .DwtListView-Rows {
+	height: 185px;
+}
+#ENDIF
 
 /* Container for the set of preference pages (including tabs) */
 .ZmPrefView {

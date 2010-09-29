@@ -334,7 +334,7 @@ function() {
 			],
 			manageChanges: true,
 			createView: function(parent, section, controller) {
-				return controller.getFilterRulesController().getFilterRulesView();
+				return controller.getFilterController(section).getFilterView();
 			}
 		}
 	};

@@ -98,3 +98,7 @@ background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
 .calendar_header_allday_separator {
 	background-color: #C0D9EA;
 }
+
+.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
+	background-color: #E8E8E8;
+}

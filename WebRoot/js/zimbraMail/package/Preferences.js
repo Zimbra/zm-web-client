@@ -43,6 +43,7 @@ AjxPackage.require("zimbraMail.prefs.view.ZmFilterRuleDialog");
 AjxPackage.require("zimbraMail.prefs.view.ZmZimletsPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmMobileDevicesPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmSharingPage");
+AjxPackage.require("zimbraMail.prefs.view.ZmFilterPage");
 
 AjxPackage.require("zimbraMail.calendar.view.ZmCalendarPrefsPage");
 
@@ -54,5 +55,6 @@ AjxPackage.require("zimbraMail.mail.view.prefs.ZmSignaturesPage");
 AjxPackage.require("zimbraMail.im.view.prefs.ZmImGatewayControl");
 
 AjxPackage.require("zimbraMail.prefs.controller.ZmPrefController");
+AjxPackage.require("zimbraMail.prefs.controller.ZmFilterController");
 AjxPackage.require("zimbraMail.prefs.controller.ZmFilterRulesController");
 AjxPackage.require("zimbraMail.prefs.controller.ZmMobileDevicesController");
