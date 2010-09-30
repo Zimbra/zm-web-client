@@ -237,6 +237,7 @@ function(items, folder, attrs, isShiftKey) {
 		attrs = {};
 	}
 	attrs.op = "recover";
+	attrs.l = folder.id;
 
 	ZmListController.prototype._doMove.call(this, items, folder, attrs, isShiftKey);
 };
