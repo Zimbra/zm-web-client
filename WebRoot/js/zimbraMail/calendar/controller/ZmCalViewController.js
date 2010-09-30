@@ -3278,7 +3278,7 @@ function() {
 	}
 	else if (maintainMiniCal || maintainView || maintainRemainder) {
         // NOTE: It's important that we go straight to the view!
-		var view = this._viewMgr.getView(this._currentView);
+		var view = this._viewMgr ? this._viewMgr.getView(this._currentView) : null;
 		if (view && view.needsRefresh()) {
 			var rt = view.getTimeRange();
 			var params = {
