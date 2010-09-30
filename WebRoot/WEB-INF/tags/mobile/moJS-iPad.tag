@@ -911,12 +911,11 @@ ZmiPadMail.processResponse = function (respData, url) {
             var chitid = targId.substr(1, targId.length-1);
             var elem = "conv" + chitid;
             var element = $(elem);
-            var elemMsg = element.children[0].children[1];
-            if (elemMsg.className.indexOf('Msg') != -1) {
-                delClass(elemMsg, 'Msg');
-                addClass(elemMsg, 'MsgGray');
-            }
-        }
+			if (element.className.indexOf('list-row-unread') != -1) { 
+				addClass(element, "list-row"); 
+				delClass(element, "list-row-unread");
+			}
+		}
     } else if(ZmiPad.getParamFromURL("showFolderCreate",url) == "1" || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1") {
 
         $('compose-body').innerHTML = respData;

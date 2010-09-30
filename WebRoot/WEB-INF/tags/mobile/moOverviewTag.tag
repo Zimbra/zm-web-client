@@ -41,7 +41,7 @@
     </c:choose>
     <span class="td left">
         <a id="TAG${tag.id}" href="${fn:escapeXml(url)}">
-            <span class="SmlIcnHldr Tag${tag.color}">&nbsp;</span>
+            <c:if test="${ua.isiPad eq false}"><span class="SmlIcnHldr Tag${tag.color}"></span></c:if>&nbsp;
             ${fn:escapeXml(tag.name)}
             <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>
         </a>

@@ -131,7 +131,7 @@
                <span class="td f" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>>
                    <c:set value=",${mhit.id}," var="stringToCheck"/>
                    <input class="chk" type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':''} name="id" value="${mhit.id}" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>/>
-                   <span class="SmlIcnHldr ${class}">&nbsp;</span>
+                   <c:if test="${ua.isiPad eq false}" ><span class="SmlIcnHldr ${class}">&nbsp;</span> </c:if>
                </span>
                <span class="td m" onclick='return zClickLink("a${mhit.id}");'>
                    <div class="from-span">
