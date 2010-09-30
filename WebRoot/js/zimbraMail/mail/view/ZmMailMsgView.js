@@ -1885,7 +1885,7 @@ ZmMailMsgView.removeAttachmentCallback =
 function(msgId, partIds) {
 	ZmZimbraMail.unloadHackCallback();
 
-	if (!(partIds instanceof Array)) { partIds = [partIds]; }
+	if (!(partIds instanceof Array)) { partIds = partIds.split(","); }
 
 	var msg = (partIds.length > 1)
 		? ZmMsg.attachmentConfirmRemoveAll
