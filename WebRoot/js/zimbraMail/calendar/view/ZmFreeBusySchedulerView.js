@@ -55,6 +55,8 @@ ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo) {
 	this._kbMgr = appCtxt.getKeyboardMgr();
     this._emailAliasMap = {};
 
+    this.addListener(DwtEvent.ONMOUSEDOWN, parent._listenerMouseDown);
+
     this.isComposeMode = true;
 };
 
@@ -144,7 +146,7 @@ function() {
     }
 
 	this.set(this._dateInfo, organizer, this._attendees);
-    this.enablePartcipantStatusColumn(this.isComposeMode ? this._editView.getRsvp() : false);
+    this.enablePartcipantStatusColumn(this.isComposeMode ? this._editView.getRsvp() : true);
 };
 
 ZmFreeBusySchedulerView.prototype.initialize =
@@ -302,6 +304,19 @@ function(tabGroup) {
 	}
 };
 
+ZmFreeBusySchedulerView.prototype._deleteAttendeeRow =
+function(email) {
+    var index = this._emailToIdx[email];
+    if(!index) {
+        return;
+    }
+    delete this._emailToIdx[email];
+    Dwt.setDisplay(this._attendeesTable.rows[index], 'none');
+    this._schedTable[index] = null;
+    this._updateFreeBusy();
+    this._editView.removeMetadataAttendees(this._schedTable[this._organizerIndex].attendee, email);
+}
+
 /**
  * Adds a new, empty slot with a select for the attendee type, an input field,
  * and cells for free/busy info.
@@ -404,7 +419,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 
 		sched.ptstObj = document.getElementById(sched.dwtNameId+"_ptst");
 
-        Dwt.setVisible(sched.ptstObj, this.isComposeMode ? this._editView.getRsvp() : false);
+        Dwt.setVisible(sched.ptstObj, this.isComposeMode ? this._editView.getRsvp() : true);
 
 		// set handlers
 		var attendeeInput = document.getElementById(sched.dwtInputId);
@@ -429,7 +444,6 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 	if (setFocus && sched.inputObj) {
 		this._kbMgr.grabFocus(sched.inputObj);
 	}
-
 	return index;
 };
 
@@ -535,14 +549,17 @@ function(inputEl, attendee, useException) {
 				this._getFreeBusyInfo(this._getStartTime(), email, this._fbCallback, this._workCallback);
 			}
 			sched.attendee = attendee;
-			this._setParticipantStatus(sched, attendee, idx);
+            this._setParticipantStatus(sched, attendee, idx);
+
 			this._setAttendeeToolTip(sched, attendee);
             //directly update attendees
 			if(this.isComposeMode) {
                 this._editView.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
                 this._editView._setAttendees();
             }
-
+            else {
+                this._editView.setMetadataAttendees(this._schedTable[this._organizerIndex].attendee, email);
+            }
             if (!curAttendee) {
 				// user added attendee in empty slot
 				var value = this._addAttendeeRow(false, null, true, null, true, true); // add new empty slot
@@ -697,9 +714,8 @@ function(index, attendee, type, isOrganizer) {
 		select.setSelectedValue(type);
         select.setText("");
 	}
-
     this._setParticipantStatus(sched, attendee, index);
-
+    
 	var email = attendee.getEmail();
 	if (email instanceof Array) {
 		for (var i in email) {
@@ -710,6 +726,21 @@ function(index, attendee, type, isOrganizer) {
 	}
 
 	return email;
+};
+
+ZmFreeBusySchedulerView.prototype.getAttendees =
+function() {
+    var attendees = [];
+    for (var i=0; i < this._schedTable.length; i++) {
+        var sched = this._schedTable[i];
+        if(!sched) {
+            continue;
+        }
+        if(sched.attendee) {
+            attendees.push(sched.attendee);
+        }
+    }
+    return AjxVector.fromArray(attendees);
 };
 
 /**
@@ -724,18 +755,27 @@ function(sched, attendee, index) {
     var ptst = attendee.getParticipantStatus() || "NE";
     var ptstCont = sched.ptstObj;
     if (ptstCont) {
-        var ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
-        if (ptstIcon != "") {
-            var ptstLabel = ZmMsg.attendeeStatusLabel + " " + ZmCalItem.getLabelForParticipationStatus(ptst);
-            ptstCont.innerHTML = AjxImg.getImageHtml(ptstIcon);
-            var imgDiv = ptstCont.firstChild;
-            if(imgDiv && !imgDiv._schedViewPageId ){
-                Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOVER, ZmFreeBusySchedulerView._onPTSTMouseOver);
-                Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOUT, ZmFreeBusySchedulerView._onPTSTMouseOut);
-                imgDiv._ptstLabel = ptstLabel;
-                imgDiv._schedViewPageId = this._svpId;
-                imgDiv._schedTableIdx = index;
+        if(this.isComposeMode) {
+            var ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
+            if (ptstIcon != "") {
+                var ptstLabel = ZmMsg.attendeeStatusLabel + " " + ZmCalItem.getLabelForParticipationStatus(ptst);
+                ptstCont.innerHTML = AjxImg.getImageHtml(ptstIcon);
+                var imgDiv = ptstCont.firstChild;
+                if(imgDiv && !imgDiv._schedViewPageId ){
+                    Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOVER, ZmFreeBusySchedulerView._onPTSTMouseOver);
+                    Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOUT, ZmFreeBusySchedulerView._onPTSTMouseOut);
+                    imgDiv._ptstLabel = ptstLabel;
+                    imgDiv._schedViewPageId = this._svpId;
+                    imgDiv._schedTableIdx = index;
+                }
             }
+        }
+        else {
+            var deleteButton = new DwtButton({parent:this});
+            deleteButton.setImage("Trash");
+            deleteButton.setText("");
+            deleteButton.addSelectionListener(new AjxListener(this, this._deleteAttendeeRow, [attendee.getEmail()]));
+            deleteButton.replaceElement(ptstCont.firstChild, false, false);
         }
     }
 };
@@ -877,6 +917,10 @@ function(dateInfo) {
 	if(this.isComposeMode) this._editView.updateDateField(AjxDateUtil.simpleComputeDateStr(sd), AjxDateUtil.simpleComputeDateStr(ed));
 };
 
+ZmFreeBusySchedulerView.prototype.setDateBorder =
+function(dateBorder) {
+    this._dateBorder = dateBorder;
+};
 ZmFreeBusySchedulerView.prototype._timeChangeListener =
 function(ev, id) {
     if(this.isComposeMode) ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
@@ -1479,15 +1523,15 @@ function(idx) {
 
 ZmFreeBusySchedulerView.prototype.enablePartcipantStatusColumn =
 function(show) {
-  for(var i in this._schedTable) {
-      var sched = this._schedTable[i];
-      if(sched && sched.ptstObj) {
+    for(var i in this._schedTable) {
+        var sched = this._schedTable[i];
+        if(sched && sched.ptstObj) {
             Dwt.setVisible(sched.ptstObj, show);
-      }else if(i == this._organizerIndex) {
+        }else if(i == this._organizerIndex) {
             var ptstObj = document.getElementById(sched.dwtNameId+"_ptst");
             Dwt.setVisible(ptstObj, show);
-      }
-  }
+        }
+    }
 };
 
 ZmFreeBusySchedulerView.prototype.enableAttendees =

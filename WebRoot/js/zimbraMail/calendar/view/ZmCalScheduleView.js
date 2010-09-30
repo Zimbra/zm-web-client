@@ -25,6 +25,8 @@ function() {
 	return "ZmCalScheduleView";
 };
 
+ZmCalScheduleView.ATTENDEES_METADATA = 'MD_SCHED_VIEW_ATTENDEES';
+
 
 ZmCalScheduleView.prototype._createHtml =
 function(abook) {
@@ -74,7 +76,7 @@ function(abook) {
     this._attendees[ZmCalBaseItem.EQUIPMENT] = {};
 
     var html = new AjxBuffer();
-    html.append("<div id='", this._apptBodyDivId, "' style='width:100%; position:absolute;'>","</div>");
+    html.append("<div id='", this._apptBodyDivId, "' style='width:100%;position:absolute;'>","</div>");
     this.getHtmlElement().innerHTML = html.toString();
     
 };
@@ -91,6 +93,28 @@ ZmCalScheduleView.prototype._apptMouseDownAction =
 function(ev, apptEl) {
     DBG.println(AjxDebug.DBG2,  "mouse listeners");    
 };
+//mouse actions removed for now
+ZmCalColView.prototype._mouseDownAction =
+function(ev, div) {
+    DBG.println(AjxDebug.DBG2,  "mouse down action");
+    var target = DwtUiEvent.getTarget(ev),
+        targetId,
+        tmp,
+        index = {};
+    if(target) {
+        targetId = target.id;
+        tmp = targetId.split("__");
+        index.start = tmp[1] - 1;
+        index.end = tmp[1];
+
+        if(this._scheduleView) {
+            this._scheduleView.setDateBorder(index);
+            this._scheduleView._outlineAppt();
+        }
+    }
+};
+
+
 
 ZmCalScheduleView.prototype.getOrganizer =
 function() {
@@ -171,36 +195,110 @@ ZmCalScheduleView.prototype._layoutAllDayAppts =
 function() {
 };
 
+ZmCalScheduleView.prototype.getMetadataAttendees =
+function(organizer) {
+    var md = new ZmMetaData(organizer.getAccount());
+    var callback = new AjxCallback(this, this.processMetadataAttendees);
+    md.get('MD_SCHED_VIEW_ATTENDEES', null, callback);
+};
+
+ZmCalScheduleView.prototype.processMetadataAttendees =
+function(metadataResponse) {
+    var objAttendees = metadataResponse.getResponse().BatchResponse.GetMailboxMetadataResponse[0].meta[0]._attrs,
+        emails = [],
+        email,
+        acct,
+        tb,
+        i;
+
+    for (email in objAttendees) {
+        if(email && objAttendees[email]) {
+            emails.push(objAttendees[email]);
+        }
+    }
+    this._mdAttendees = AjxVector.fromArray(emails);
+    for (i=0; i<this._mdAttendees.size(); i++) {
+        acct = ZmApptViewHelper.getAttendeeFromItem(this._mdAttendees.get(i), ZmCalBaseItem.PERSON);
+        this._attendees[ZmCalBaseItem.PERSON].add(acct, null, true);
+    }
+
+    this._scheduleView = new ZmFreeBusySchedulerView(this, this._attendees, this._controller, this.getDateInfo());
+    this._scheduleView.setComposeMode(false);
+    this._scheduleView.setVisible(true);
+    this._scheduleView.showMe();
+    this._scheduleView.reparentHtmlElement(this._apptBodyDivId);
+    tb = this._controller._navToolBar[ZmId.VIEW_CAL];
+    tb.reparentHtmlElement(this._scheduleView._navToolbarContainerId);
+};
+
+ZmCalScheduleView.prototype.setMetadataAttendees =
+function(organizer, email) {
+    if(!organizer) {
+        organizer = this.getOrganizer();
+    }
+    if (email instanceof Array) {
+        email = email.join(',');
+    }
+    var md = new ZmMetaData(organizer.getAccount());
+    this._mdAttendees.add(email, null, true);
+    return md.set(ZmCalScheduleView.ATTENDEES_METADATA, this._mdAttendees.getArray());
+};
+
+ZmCalScheduleView.prototype.removeMetadataAttendees =
+function(organizer, email) {
+    if(!organizer) {
+        organizer = this.getOrganizer();
+    }
+    if (email instanceof Array) {
+        email = email.join(',');
+    }
+    var md = new ZmMetaData(organizer.getAccount());
+    this._mdAttendees.remove(email, null, true);
+    return md.set(ZmCalScheduleView.ATTENDEES_METADATA, this._mdAttendees.getArray());
+};
+
 ZmCalScheduleView.prototype._resetCalendarData =
 function() {
+    var i,
+        tb,
+        acct,
+        acctEmail,
+        strAttendees,
+        mdAttendees,
+        organizer = this.getOrganizer();
 	this._calendars = this._controller.getCheckedCalendars();
 	this._calendars.sort(ZmCalendar.sortCompare);
 	this._folderIdToColIndex = {};
 	this._columns = [];
 	this._numCalendars = this._calendars.length;
-    this._attendees[ZmCalBaseItem.PERSON] = [];
-    var organizer = this.getOrganizer();
-    for (var i=0; i<this._numCalendars; i++) {
-        var acctEmail = this._calendars[i].getOwner();
+    this._attendees[ZmCalBaseItem.PERSON] = new AjxVector();
+
+    for (i=0; i<this._numCalendars; i++) {
+        acctEmail = this._calendars[i].getOwner();
         if(organizer.getEmail() != acctEmail) {
             //if not organizer add to the attendee list
-            var acct = ZmApptViewHelper.getAttendeeFromItem(acctEmail, ZmCalBaseItem.PERSON);
-            this._attendees[ZmCalBaseItem.PERSON].push(acct);
+            acct = ZmApptViewHelper.getAttendeeFromItem(acctEmail, ZmCalBaseItem.PERSON);
+            this._attendees[ZmCalBaseItem.PERSON].add(acct, null, true);
         }
     }
-    //this._attendees[ZmCalBaseItem.PERSON] = [this._calendarOwners];
+
     if(this._scheduleView) {
+        //this._attendees[ZmCalBaseItem.PERSON] = this._scheduleView.getAttendees();
+
+        for (i=0; i<this._mdAttendees.size(); i++) {
+            acct = ZmApptViewHelper.getAttendeeFromItem(this._mdAttendees.get(i), ZmCalBaseItem.PERSON);
+            this._attendees[ZmCalBaseItem.PERSON].add(acct, null, true);
+        }
+
         this._scheduleView.cleanup();
-        this._scheduleView.set(this.getDate(), this.getOrganizer(), this._attendees);
+        this._scheduleView.setComposeMode(false);
+        this._scheduleView.set(this.getDate(), organizer, this._attendees);
+        this._scheduleView.enablePartcipantStatusColumn(true);
     }
     else {
-        this._scheduleView = new ZmFreeBusySchedulerView(this, this._attendees, this._controller, this.getDateInfo());
-        this._scheduleView.setComposeMode(false);
-        this._scheduleView.setVisible(true);
-        this._scheduleView.showMe();
-        this._scheduleView.reparentHtmlElement(this._apptBodyDivId);
-
-        var tb = this._controller._navToolBar[ZmId.VIEW_CAL];
-        tb.reparentHtmlElement(this._scheduleView._navToolbarContainerId);
+        this._mdAttendees = new AjxVector();
+        this.getMetadataAttendees(organizer);        
     }
+
+    
 };

@@ -643,12 +643,12 @@
 			<$ } $>
 
 			<$ if (!data.isAllAttendees) { $>
-				<td <$ if (!data.organizer) { $>class='ZmSchedulerNameTd'<$ } $> id='${sched.dwtNameId}'>
+				<td <$ if (!data.organizer) { $>class='ZmSchedulerNameTd'<$ } else { $> class='ZmSchedulerInputDisabledTd' <$ } $> id='${sched.dwtNameId}'>
 				<$ if (data.organizer) { $>
 					<div class='ZmSchedulerInputDisabled'>${organizer}</div>
 				<$ } $>
 				</td>
-				<td width=16 id='${sched.dwtNameId}_ptst' class='ZmSchedulerPTSTTd'>&nbsp;</td>
+				<td width=28 id='${sched.dwtNameId}_ptst' class='ZmSchedulerPTSTTd'>&nbsp;</td>
 			<$ } $>
 		</tr>
 	</table>

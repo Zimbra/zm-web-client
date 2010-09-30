@@ -1889,20 +1889,23 @@ HTML>BODY .appt-selected .appt_allday_body
 /* Table that contains the hour labels -- scootch it to the right a little bit */
 .ZmSchedulerGridHeaderTable {
 	position:relative;
-	left:-13px;
-	top:0px;
+    width:103%;
 }
 
 .ZmSchedulerGridHeaderCell {
-	@FreeBusyViewHeaderWidth@;
 	@NoWrap@
 	@Label@
-	text-align: center;
 }
 
 .ZmSchedulerOrgIconTd {
 	@RightSeparator@
 	@LeftSeparator@
+}
+
+.ZmSchedulerViewAttendeeTd {
+    @RightSeparator@
+	@LeftSeparator@
+    @BottomSeparator@
 }
 
 .ZmSchedulerNameTd {
@@ -1954,8 +1957,14 @@ HTML>BODY .appt-selected .appt_allday_body
     height: 22px;    
 }
 
+.ZmSchedulerInputDisabledTd {
+	@RightSeparator@
+    @FreeBusyViewGridHeight@
+}
+
 .ZmSchedulerInputDisabled {
 	@TextPadding@
+    @FreeBusyViewGridHeight@
 }
 
 /*
@@ -1987,7 +1996,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSchedulerGridDiv-halfHour,
 .ZmSchedulerGridDiv-start,
 .ZmSchedulerGridDiv-end {
-	@FreeBusyViewGridWidth@;
 	@FreeBusyViewGridHeight@
 }
 
@@ -2000,16 +2008,10 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmSchedulerGridDiv-start {
 	border-right:3px solid green;
-	#IFNDEF MSIE
-	width: 10px;
-	#ENDIF
 }
 
 .ZmSchedulerGridDiv-end {
 	border-right:3px solid darkred;
-	#IFNDEF MSIE
-	width: 10px;
-	#ENDIF
 }
 
 
