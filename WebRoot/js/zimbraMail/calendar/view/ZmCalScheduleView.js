@@ -222,6 +222,7 @@ function(metadataResponse) {
         this._attendees[ZmCalBaseItem.PERSON].add(acct, null, true);
     }
 
+    AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
     this._scheduleView = new ZmFreeBusySchedulerView(this, this._attendees, this._controller, this.getDateInfo());
     this._scheduleView.setComposeMode(false);
     this._scheduleView.setVisible(true);
