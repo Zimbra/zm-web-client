@@ -894,6 +894,14 @@ function(ev) {
 	var data = ev.srcData.data;
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		ev.doIt = (item && (item instanceof ZmItem) && !item.isShared() && this._dropTgt.isValidTarget(data));
+        // Bug: 44488 - Don't allow dropping tag of one account to other account's item
+        if (appCtxt.multiAccounts) {
+           var listAcctId = item ? item.getAccount().id : null;
+           var tagAcctId = data.account.id;
+           if (listAcctId != tagAcctId) {
+               ev.doIt = false;
+           }
+        }
 		DBG.println(AjxDebug.DBG3, "DRAG_ENTER: doIt = " + ev.doIt);
 		view.dragSelect(div);
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
