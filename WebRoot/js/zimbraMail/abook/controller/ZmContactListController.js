@@ -774,7 +774,7 @@ function(ev) {
         contact = selection[i];
         email   = contact.isGroup() ? contact.getGroupMembers().good : contact.getEmail();
         if(email){
-            email   = contact.isGroup() ? email : new AjxEmailAddress(email);
+            email   = contact.isGroup() ? email : new AjxEmailAddress(email, AjxEmailAddress.TO, contact.getFullName());
             email   = email.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR;
             name   += email;
         }
