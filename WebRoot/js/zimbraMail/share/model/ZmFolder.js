@@ -571,17 +571,18 @@ function() {
 *
 * @param {Object}	what		the object(s) to possibly move into this folder (item or organizer)
 * @param {constant}	folderType	the contextual folder type (for tree view root items)
+* @param {boolean}	ignoreExisting  Set to true if checks for item presence in the folder should be skipped (e.g. when recovering deleted items)
 */
 ZmFolder.prototype.mayContain =
-function(what, folderType) {
+function(what, folderType, ignoreExisting) {
 	if (!what) { return true; }
 	if (this.isFeed() || this.isSyncIssuesFolder()) { return false; }
 
 	var thisType = folderType || this.type;
 	var invalid = false;
 	if (what instanceof ZmFolder) {
-		invalid = (what.parent == this || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
-				   (!this.isInTrash() && this.hasChild(what.name)) ||
+		invalid = ((what.parent == this && !ignoreExisting) || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
+				   (!this.isInTrash() && this.hasChild(what.name) && !ignoreExisting) ||
 				   (what.type == ZmOrganizer.FOLDER && thisType == ZmOrganizer.SEARCH) ||
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
 				   (what.id == this.id) ||
@@ -653,7 +654,7 @@ function(what, folderType) {
 
 			// can't move items to folder they're already in; we're okay if we
 			// have one item from another folder
-			if (!invalid) {
+			if (!invalid && !ignoreExisting) {
 				if (item.folderId) {
 					invalid = true;
 					for (var i = 0; i < items.length; i++) {

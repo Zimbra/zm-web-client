@@ -157,6 +157,8 @@ function(params) {
 		treeIdMap[treeIds[i]] = true;
 	}
 
+	this._acceptFolderMatch = params.acceptFolderMatch;
+
 	// TODO: Refactor packages so that we don't have to bring in so much
 	// TODO: code just do make sure this dialog works.
 	// TODO: I opened bug 34447 for this performance enhancement.
@@ -312,7 +314,7 @@ function(ev) {
 	if (!msg && this._data) {
 		for (var i = 0; i < folderList.length; i++) {
 			var folder = folderList[i];
-			if (folder.mayContain && !folder.mayContain(this._data)) {
+			if (folder.mayContain && !folder.mayContain(this._data, null, this._acceptFolderMatch)) {
 				msg = (this._data instanceof ZmFolder)
 					? ZmMsg.badTargetFolder
 					: ZmMsg.badTargetFolderItems;
