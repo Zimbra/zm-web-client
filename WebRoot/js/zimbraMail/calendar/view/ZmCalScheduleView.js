@@ -94,7 +94,7 @@ function(ev, apptEl) {
     DBG.println(AjxDebug.DBG2,  "mouse listeners");    
 };
 //mouse actions removed for now
-ZmCalColView.prototype._mouseDownAction =
+ZmCalScheduleView.prototype._mouseDownAction =
 function(ev, div) {
     DBG.println(AjxDebug.DBG2,  "mouse down action");
     var target = DwtUiEvent.getTarget(ev),
@@ -154,13 +154,28 @@ function(rangeChanged) {
 ZmCalScheduleView.prototype.set =
 function(list, skipMiniCalUpdate) {
     this._preSet();
-	this._selectedItems.removeAll();
+    //Check added for sync issue - not sure if schedule view is ready by this time
+    if(!this._scheduleView) {
+        this._calNotRenderedList = list;
+        return;
+    }
+    this.resetListItems(list);
+    this.renderAppts(list);
+};
+
+ZmCalScheduleView.prototype.resetListItems =
+function(list) {
+    this._selectedItems.removeAll();
     var newList = list;
     if (list && (list == this._list)) {
         newList = list.clone();
     }
     this._resetList();
     this._list = newList;
+};
+
+ZmCalScheduleView.prototype.renderAppts =
+function(list) {
     var timeRange = this.getTimeRange();
 	if (list) {
 		var size = list.size();
@@ -174,7 +189,7 @@ function(list, skipMiniCalUpdate) {
 				}
 			}
 		}
-	}    
+	}
 };
 
 ZmCalScheduleView.prototype.addAppt =
@@ -188,6 +203,46 @@ function(appt) {
         }
         this._scheduleView.colorAppt(appt, item);
     }
+};
+
+ZmCalScheduleView.prototype.removeAppt =
+function(appt) {
+    if(this._scheduleView) {
+        var itemId = this._getItemId(appt),
+            item = document.getElementById(itemId),
+            div = this._getDivForAppt(appt);
+
+	    if (div && item) {
+            div.removeChild(item);
+        }
+    }
+};
+
+ZmCalScheduleView.prototype.removeApptByEmail =
+function(email) {
+    if(this._scheduleView) {
+        for (var i = 0; i<this._list.size(); i++) {
+            var appt = this._list.get(i);
+            if(appt && appt.getFolder().getOwner() == email) {
+                var itemId = this._getItemId(appt),
+                    item = document.getElementById(itemId),
+                    div = this._getDivForAppt(appt);
+
+                if (div && item) {
+                    div.removeChild(item);
+                }
+            }
+        }
+    }
+};
+
+ZmCalScheduleView.prototype.refreshAppts =
+function() {
+    this._selectedItems.removeAll();
+    var newList = this._list.clone();
+    this._resetList();
+    this._list = newList;
+    this.renderAppts(newList);
 };
 
 //overridden method - do not remove
@@ -230,6 +285,11 @@ function(metadataResponse) {
     this._scheduleView.reparentHtmlElement(this._apptBodyDivId);
     tb = this._controller._navToolBar[ZmId.VIEW_CAL];
     tb.reparentHtmlElement(this._scheduleView._navToolbarContainerId);
+
+    //Called to handle the sync issue
+    this.resetListItems(this._calNotRenderedList);
+    this.renderAppts(this._calNotRenderedList);
+    delete this._calNotRenderedList;
 };
 
 ZmCalScheduleView.prototype.setMetadataAttendees =

@@ -313,6 +313,11 @@ function(email) {
     delete this._emailToIdx[email];
     Dwt.setDisplay(this._attendeesTable.rows[index], 'none');
     this._schedTable[index] = null;
+    //remove appt divs created for attendee/calendar
+
+    this._editView.removeApptByEmail(email);
+
+
     this._updateFreeBusy();
     this._editView.removeMetadataAttendees(this._schedTable[this._organizerIndex].attendee, email);
 }
@@ -498,6 +503,11 @@ function(show) {
 	Dwt.setVisibility(document.getElementById(this._endTimeAtLblId), show);
 };
 
+ZmFreeBusySchedulerView.prototype._isDuplicate =
+function(email) {
+    return this._emailToIdx[email] ? true : false;
+}
+
 /**
  * Called by ONBLUR handler for attendee input field.
  *
@@ -536,11 +546,21 @@ function(inputEl, attendee, useException) {
 		attendee = attendee ? attendee : ZmApptViewHelper.getAttendeeFromItem(value, type, true);
 		if (attendee) {
 			var email = attendee.getEmail();
+
+
 			if (email instanceof Array) {
 				for (var i in email) {
+                    if(this._isDuplicate(email[i])) {
+                        //if duplicate - do nothing
+                        return;
+                    }
 					this._emailToIdx[email[i]] = idx;
 				}
 			} else {
+                if(this._isDuplicate(email)) {
+                    //if duplicate - do nothing
+                    return;
+                }
 				this._emailToIdx[email] = idx;
 			}
 
@@ -559,6 +579,7 @@ function(inputEl, attendee, useException) {
             }
             else {
                 this._editView.setMetadataAttendees(this._schedTable[this._organizerIndex].attendee, email);
+                this._editView.refreshAppts();
             }
             if (!curAttendee) {
 				// user added attendee in empty slot
@@ -1197,7 +1218,8 @@ function(result) {
 
 ZmFreeBusySchedulerView.prototype.colorAppt =
 function(appt, div) {
-    var sched = this._schedTable[this._emailToIdx[appt.getFolder().getOwner()]];
+    var idx = this._emailToIdx[appt.getFolder().getOwner()];
+    var sched = this._schedTable[idx];
     var table = sched ? document.getElementById(sched.dwtTableId) : null;
     if (table) {
         table.rows[0].className = "ZmSchedulerNormalRow";
@@ -1236,7 +1258,7 @@ function(appt, div) {
                 pb = Dwt.toWindow(div.parentNode, 0, 0, null, null, new DwtPoint(0, 0)),
                 width = (endIdx-startIdx+1)*cb.width;
 
-            Dwt.setBounds(div, cb.x - pb.x + 1, cb.y - pb.y-1, width-2, cb.height-1);
+            Dwt.setBounds(div, cb.x - pb.x + 1, cb.y - pb.y-1, width-2, cb.height-1);            
         }
 
     }
