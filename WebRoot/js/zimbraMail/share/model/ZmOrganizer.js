@@ -1751,7 +1751,8 @@ function(params) {
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	}
 	var actionController = appCtxt.getActionController();
-	var actionLogItem = (params.undoing && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
+	actionController.dismiss();
+	var actionLogItem = (!params.undoing && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);

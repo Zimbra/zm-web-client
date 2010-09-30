@@ -60,7 +60,6 @@ ZmActionController.prototype.actionPerformed = function(params) {
  */
 ZmActionController.prototype.getUndoLink = function(actionElement, text) {
 	if (actionElement instanceof ZmAction) {
-		//var undoId = ZmActionController._registerCallback(new AjxCallback(this, this.undo, actionElement));
 		var undoId = ZmActionController._registerCallback(new AjxCallback(this, this.undoCurrent));
 		return ["<a onclick='ZmActionController.callRegisteredCallback(",undoId,")' href='javascript:;' class='undo'>", text || ZmMsg.undo, "</a>"].join("");
 	} else return ""; // We can't risk displaying "null" or "undefined" wherever this function is called from, and an empty string is just as falsy
