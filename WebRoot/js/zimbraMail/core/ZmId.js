@@ -771,6 +771,7 @@ ZmId.VIEW_CAL_SCHEDULE			= "CLS";
 ZmId.VIEW_CAL_WEEK				= "CLW";
 ZmId.VIEW_CAL_WORK_WEEK			= "CLWW";
 ZmId.VIEW_CAL_TRASH             = "CLT";
+ZmId.VIEW_SCHEDULE_PANE         = "CSP";
 ZmId.VIEW_CALL_LIST				= "CLIST";
 /**
  * Defines the "compose" view.

@@ -26,7 +26,7 @@
  */
 ZmTimeSuggestionView = function(parent, controller, apptEditView) {
 
-	ZmListView.call(this, {parent: parent, posStyle: DwtControl.RELATIVE_STYLE});
+	ZmListView.call(this, {parent: parent, posStyle: DwtControl.RELATIVE_STYLE, view: ZmId.VIEW_SCHEDULE_PANE});
 
 	this._controller = controller;
 	this._editView = apptEditView;
