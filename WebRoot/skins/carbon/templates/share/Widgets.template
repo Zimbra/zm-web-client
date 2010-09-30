@@ -1,0 +1,107 @@
+<template id='share.Widgets#ZmToolBarSeparator'>
+	<table>
+		<tr>
+			<td id='${itemId}' valign='middle'>
+				<div class='vertSep'></div>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id='share.Widgets#ZmAppChooser' class='ZWidget'>
+	<table class='ZToolbarTable' border=0 cellpadding=0 cellspacing=0>
+		<tr valign='bottom' id='${id}_items'>
+			<td id='${id}_suffix' valign=bottom>
+				<div class='ZAppTabSpacer'></div>
+			</td>
+            <td id="admin_link_container" width="100%" valign="middle" align="right" style="padding-right: 10px;">
+                &nbsp;
+            </td>
+        </tr>
+	</table>
+</template>
+
+<template id='share.Widgets#ZmAppChooserItem'>
+	<$= AjxTemplate.expand("dwt.Widgets#ZToolbarItem", data) $>
+</template>
+
+<template id='share.Widgets#ZmAppChooserButton' class='ZAppTab'>
+	<$ var buttonClass = data.buttonClass || "AppTab"; $>
+	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'>
+		<tr>
+			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
+			<td id='${id}_title'		class='ZWidgetTitle'></td>
+			<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
+		</tr>
+	</table>
+</template>
+
+<template id='share.Widgets#ZmAppChooserSpacer'>
+	<$ var buttonClass = data.buttonClass || "AppTab"; $>
+	<div class='Z<$=buttonClass$>Spacer'></div>
+</template>
+
+
+<template id='share.Widgets#ZToast' class='ZToastInfo'>
+	<div class='ZToastBG'>
+		<div class='ZToastContent'>
+			<div id='${id}_icon' class='ZToastIcon'></div>
+			<div id='${id}_text' class='ZToastText'></div>
+		</div>
+	</div>
+</template>
+
+<template id='share.Widgets#ZmSearchToolBar'>
+	<table border=0 cellpadding=0 cellspacing=0 width='100%' height='100%'>
+		<tr>
+			<td id='${id}_inputField' width='100%' class='ZmSearchToolbarCell'></td>
+			<td id='${id}_searchMenuButton' class='ZmSearchToolbarCell'></td>
+			<td id='${id}_searchButton' hint='text' class='ZmSearchToolbarCell'></td>
+			<!-- UNCOMMENT THIS IF YOU WANT CUSTOM SEARCH TO APPEAR AS A SEPARATE BUTTON ON SEARCH TOOLBAR
+			<td class='ZmSearchToolbarSeparatorCell'><div id='${id}_customSearchButtonSep' class='vertSep' style='display:none'></div></td>
+			<td id='${id}_customSearchButton' class='ZmSearchToolbarCell'></td>
+			-->
+			<td class='ZmSearchToolbarSeparatorCell'><div class='vertSep'></div></td>
+			<td id='${id}_saveButton' hint='text' class='ZmSearchToolbarCell'></td>
+			<td class='ZmSearchToolbarSeparatorCell'><div class='vertSep'></div></td>
+			<td id='${id}_advancedButton' hint='text' class='ZmSearchToolbarCell'></td>
+		</tr>
+	</table>
+</template>
+
+<template id='share.Widgets#ZmChooseFolderDialog'>
+	<div class='ChooserDialog'>
+		<span id='${id}_folderDescDivId' style='margin: 0; margin-bottom: 2px'></span>
+		<div><$= ZmMsg.chooserDescription $></div>
+		<div id='${id}_inputDivId'></div>
+		<div class='overview' id='${id}_folderTreeDivId'></div>
+	</div>
+</template>
+
+<template id='share.Widgets#ZmChooseAccountDialog'>
+	<div class='ChooserDialog' style='width:300px'>
+		<table border=0 width=100%>
+			<tr>
+				<td>
+					<center>
+						<div id='${id}_chooseAccountMsg'></div>
+						<div id='${id}_accountSelectId'></div>
+					</center>
+				</td>
+			</tr>
+		</table>
+	</div>
+</template>
+
+<template id='share.Widgets#ZmPickTagDialog'>
+	<div class='ChooserDialog'>
+		<div style='width:300px'><$= ZmMsg.chooserDescription $></div>
+		<div id='${id}_inputDivId'></div>
+		<div style='background-color:white; width:100%; overflow:auto' id='${id}_tagTreeDivId'></div>
+	</div>
+</template>
+
+<template id='share.Widgets#ZmDebugLogDialog'>
+	<div class='DebugLogDialog-desc'><$= ZmMsg.debugLogDesc $></div>
+	<div class='DebugLogDialog-log' id='${id}_log'></div>
+</template>

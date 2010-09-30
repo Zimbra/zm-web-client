@@ -1,0 +1,47 @@
+<template id="share.App#UserInfo">
+	<table cellpadding=0 cellspacing=0 border=0>
+		<tr>
+			<td id='skin_container_help'>
+				<table border=0 cellpadding=0 cellspacing=0>
+					<tr>
+						<$ if (data.helpIcon) { $>
+							<!--td style='padding-right:3px;'>
+								<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= AjxImg.getImageHtml(data.helpIcon, null, "border=0") $></a>
+							</td-->
+						<$ } $>
+						<td style='white-space:nowrap;'>
+							<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= ZmMsg.help $></a>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td id='skin_container_logoff'>
+				<table border=0 cellpadding=0 cellspacing=0>
+					<tr>
+						<$ if (data.logoutIcon) { $>
+							<!--td style='padding-right:3px;'>
+								<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'><$= AjxImg.getImageHtml(data.logoutIcon, null, "border=0") $></a>
+							</td-->
+						<$ } $>
+						<td style='white-space:nowrap;'>
+							<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>${logoutText}</a>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<$ if (data.showOfflineLink) { $>
+		<!--tr>
+			<td id='skin_td_switch_offline' colspan=3>
+				<a href="http://www.zimbra.com/products/desktop.html" target="_blank"><$= ZmMsg.switchToOfflineClientEx $></a>
+			</td>
+		</tr-->
+		<$ } $>
+	</table>
+</template>
+
+<template id="share.App#Banner">
+	<div style="width:100%;height:100%;padding-top:2px">
+		<a<$ if (data.url && data.url != '') { $> href='${url}' target='_blank'<$ } $>><div id='ImgAppBanner' class='ImgAppBanner'></div></a>
+	</div>
+</template>
