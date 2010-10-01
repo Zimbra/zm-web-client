@@ -93,15 +93,25 @@ ZmCalScheduleView.prototype._apptMouseDownAction =
 function(ev, apptEl) {
     DBG.println(AjxDebug.DBG2,  "mouse listeners");    
 };
-//mouse actions removed for now
-ZmCalScheduleView.prototype._mouseDownAction =
+
+ZmCalScheduleView.prototype._doubleClickAction =
 function(ev, div) {
+    this._mouseDownAction(ev, div, true);
+};
+
+ZmCalScheduleView.prototype._mouseDownAction =
+function(ev, div, isDblClick) {
     DBG.println(AjxDebug.DBG2,  "mouse down action");
     var target = DwtUiEvent.getTarget(ev),
         targetId,
         tmp,
-        index = {};
-    if(target) {
+        index = {},
+        apptDate,
+        duration = 30,
+        folderId = null,
+        isAllDay = false;
+    isDblClick = isDblClick || false;
+    if(target && target.className.indexOf("ZmSchedulerGridDiv") != -1) {
         targetId = target.id;
         tmp = targetId.split("__");
         index.start = tmp[1] - 1;
@@ -110,11 +120,16 @@ function(ev, div) {
         if(this._scheduleView) {
             this._scheduleView.setDateBorder(index);
             this._scheduleView._outlineAppt();
+            if(!this._date) {
+                this._date = new Date();
+            }
+            apptDate = new Date(this._date);
+            apptDate.setHours(0, index.end*30, 0);
+
+            this._timeSelectionEvent(apptDate, duration, isDblClick, isAllDay, folderId, ev.shiftKey);
         }
     }
 };
-
-
 
 ZmCalScheduleView.prototype.getOrganizer =
 function() {
@@ -144,6 +159,7 @@ function(date) {
 
 ZmCalScheduleView.prototype._navDateChangeListener =
 function(date) {
+    this._date = date;
     this._scheduleView.changeDate(this.getDateInfo(date));
 };
 //overridden method - do not remove

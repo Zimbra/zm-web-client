@@ -1222,7 +1222,7 @@ function(date, duration, roll) {
 		if (ZmId.VIEW_CAL_MONTH == this._currentView) {
 			title = this._viewMgr.getCurrentView().getShortCalTitle();
 		}
-        if (ZmId.VIEW_CAL_SCHEDULE == this._currentView) {
+        if (ZmId.VIEW_CAL_SCHEDULE == this._currentView && roll) {
 			currentView._navDateChangeListener(date);
 		}
 		this._navToolBar[ZmId.VIEW_CAL].setText(title);

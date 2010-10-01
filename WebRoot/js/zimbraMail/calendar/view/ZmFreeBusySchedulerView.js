@@ -792,10 +792,11 @@ function(sched, attendee, index) {
             }
         }
         else {
-            var deleteButton = new DwtButton({parent:this});
+            var deleteButton = new DwtBorderlessButton({parent:this, className:"Label"});
             deleteButton.setImage("Trash");
             deleteButton.setText("");
             deleteButton.addSelectionListener(new AjxListener(this, this._deleteAttendeeRow, [attendee.getEmail()]));
+            deleteButton.getHtmlElement().style.cursor = 'pointer';
             deleteButton.replaceElement(ptstCont.firstChild, false, false);
         }
     }
