@@ -44,6 +44,9 @@ ZmCalItem = function(type, list, id, folderId) {
     this.identity = null;
     this.isProposeTimeMode = false;
     this.isForwardMode = false;
+	this.alarmActions = new AjxVector();
+	this.alarmActions.add(ZmCalItem.ALARM_DISPLAY);
+	this._useAbsoluteReminder = false;
 };
 
 ZmCalItem.prototype = new ZmCalBaseItem;
@@ -182,6 +185,11 @@ ZmCalItem.REMINDER_UNIT_WEEKS       = "weeks";
  * Defines "none" reminder.
  */
 ZmCalItem.REMINDER_NONE             = "none";
+
+// Alarm actions
+ZmCalItem.ALARM_DISPLAY	= "DISPLAY";
+ZmCalItem.ALARM_EMAIL	= "EMAIL";
+
 
 // Getters
 
@@ -646,19 +654,19 @@ function(tmp) {
 	h = (rel && (rel.length > 0)) ? rel[0].h : null;
 
 	this._reminderMinutes = 0;
-	if (tmp && (tmp.action == "DISPLAY")) {
+	if (tmp && (tmp.action == ZmCalItem.ALARM_DISPLAY)) {
 		if (m != null) {
 			this._reminderMinutes = m;
             this._origReminderUnits = ZmCalItem.REMINDER_UNIT_MINUTES;
 		}
 		if (h != null) {
 			h = parseInt(h);
-			this._reminderMinutes = h*60;
+			this._reminderMinutes = h * 60;
             this._origReminderUnits = ZmCalItem.REMINDER_UNIT_HOURS;
 		}
 		if (d != null) {
 			d = parseInt(d);
-			this._reminderMinutes = d*24*60;
+			this._reminderMinutes = d * 24 * 60;
             this._origReminderUnits = ZmCalItem.REMINDER_UNIT_DAYS;
 		}
 	}
@@ -1252,31 +1260,47 @@ function(attachmentId, callback, errorCallback, notifyList) {
  */
 ZmCalItem.prototype._setAlarmData = 
 function(soapDoc, comp) {
-	if (this._reminderMinutes == 0 || this._reminderMinutes == null) {
-		return;
+
+	var useAbs = this._useAbsoluteReminder;
+	var time = useAbs ? this._reminderAbs : this._reminderMinutes;
+	if (!time) { return; }
+
+	for (var i = 0, len = this.alarmActions.size(); i < len; i++) {
+		var action = this.alarmActions.get(i);
+		if (action == ZmCalItem.ALARM_EMAIL) {
+			var email = appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS);
+			if (!email) { continue; }
+		}
+		var alarm = soapDoc.set("alarm", null, comp);
+		alarm.setAttribute("action", action);
+		var trigger = soapDoc.set("trigger", null, alarm);
+		this._setReminderUnits(soapDoc, trigger, time);
+		if (email) {
+			var at = soapDoc.set("at", null, alarm);
+			at.setAttribute("a", email);
+		}
+		this._addXPropsToAlarm(soapDoc, alarm);
 	}
-
-	var alarm = soapDoc.set("alarm", null, comp);
-	alarm.setAttribute("action", "DISPLAY");
-
-	var trigger = soapDoc.set("trigger", null, alarm);
-
-	var rel = soapDoc.set("rel", null, trigger);
-
-    this._setReminderUnits(rel);
-
-	this._addXPropsToAlarm(soapDoc, alarm);
 };
 
 /**
  * @private
  */
 ZmCalItem.prototype._setReminderUnits =
-function(rel) {
-    rel.setAttribute("m", this._reminderMinutes ? this._reminderMinutes:0);
-    //default option is to remind before appt start
-    rel.setAttribute("related", "START");
-    rel.setAttribute("neg", "1");
+function(soapDoc, trigger, time) {
+
+	time = time || 0;
+	var useAbs = this._useAbsoluteReminder;
+	var rel = soapDoc.set(useAbs ? "abs" : "rel", null, trigger);
+	if (useAbs) {
+		rel.setAttribute("d", time);
+	}
+	else {
+		rel.setAttribute("m", time);
+		//default option is to remind before appt start
+		rel.setAttribute("related", "START");
+		rel.setAttribute("neg", "1");
+	}
 };
 
 /**
@@ -1331,13 +1355,34 @@ function(minutes) {
  * @param	{int}	reminderUnits		the reminder units
  */
 ZmCalItem.prototype.setReminderUnits =
-function(reminderValue, reminderUnits) {
-    if(!reminderValue) {
+function(reminderValue, reminderUnits, sendEmail) {
+    if (!reminderValue) {
         this._reminderMinutes = 0;
         return;
     }
     reminderValue = parseInt(reminderValue + "");
 	this._reminderMinutes = ZmCalendarApp.convertReminderUnits(reminderValue, reminderUnits);
+	this._reminderSendEmail = sendEmail;
+};
+
+/**
+ * Adds the given action to this appt's reminders. A type of action can only be added once.
+ *
+ * @param {constant}	action		alarm action
+ */
+ZmCalItem.prototype.addReminderAction =
+function(action) {
+	this.alarmActions.add(action, null, true);
+};
+
+/**
+ * Removes the given action from this appt's reminders.
+ *
+ * @param {constant}	action		alarm action
+ */
+ZmCalItem.prototype.removeReminderAction =
+function(action) {
+	this.alarmActions.remove(action);
 };
 
 /**

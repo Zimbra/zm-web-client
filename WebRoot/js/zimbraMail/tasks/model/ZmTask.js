@@ -41,6 +41,7 @@ ZmTask = function(list, id, folderId) {
     this.endDate = this.startDate;
     this.remindDate = this.startDate;
     this.alarm = false;
+	this._useAbsoluteReminder = true;
 };
 
 ZmTask.prototype = new ZmCalItem;
@@ -433,35 +434,6 @@ function(soapDoc, inv, comp) {
 ZmTask.prototype._getInviteFromError =
 function(result) {
 	return (result._data.GetTaskResponse.task[0].inv[0]);
-};
-
-/**
- * @private
- */
-ZmTask.prototype._setAlarmData =
-function(soapDoc, comp) {
-	if (this._reminderAbs == 0 || this._reminderAbs == null) {
-		return;
-	}
-
-	var alarm = soapDoc.set("alarm", null, comp);
-	alarm.setAttribute("action", "DISPLAY");
-
-	var trigger = soapDoc.set("trigger", null, alarm);
-
-	var abs = soapDoc.set("abs", null, trigger);
-
-    this._setReminderAbs(abs);
-
-	this._addXPropsToAlarm(soapDoc, alarm);
-};
-
-/**
- * @private
- */
-ZmTask.prototype._setReminderAbs =
-function(rel) {
-    rel.setAttribute("d", this._reminderAbs ? this._reminderAbs:0);
 };
 
 /**

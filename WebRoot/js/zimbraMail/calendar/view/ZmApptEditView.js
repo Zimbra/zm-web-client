@@ -753,7 +753,7 @@ function(width) {
 
     //Personas
     //TODO: Remove size check once we add identityCollection change listener.
-    if(appCtxt.get(ZmSetting.IDENTITIES_ENABLED) && !appCtxt.multiAccounts){
+    if (appCtxt.get(ZmSetting.IDENTITIES_ENABLED) && !appCtxt.multiAccounts){
         var identityOptions = this._getIdentityOptions();
         this.identitySelect = new DwtSelect({parent:this, options:identityOptions, parentElement: (this._htmlElId + "_identity")});
         this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
@@ -1618,7 +1618,7 @@ function(el) {
 		var edv = AjxCore.objectWithId(el._editViewId);
 		ZmApptViewHelper.getDateInfo(edv, edv._dateInfo);
 		this._showTimeFields(!el.checked);
-		if(el.checked && this._reminderSelect) {
+		if (el.checked && this._reminderSelect) {
 			this._reminderSelect.setSelectedValue(1080);
 		}
 	} else if(el.id == this._schButtonId) {

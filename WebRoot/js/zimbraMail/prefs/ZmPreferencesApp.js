@@ -296,6 +296,17 @@ function() {
 				return new ZmSharingPage(parent, section, controller);
 			}
 		},
+		NOTIFICATIONS: {
+			title: ZmMsg.reminders,
+			icon: "ApptReminder",
+			templateId: "prefs.Pages#Notifications",
+			priority: 88,
+			precondition: ZmSetting.CALENDAR_ENABLED,
+			prefs: [
+				ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS,
+				ZmSetting.CAL_EMAIL_REMINDERS_ENABLED
+			]
+		},
 		MOBILE: {
 			title: ZmMsg.mobileDevices,
 			icon: "Mobile",

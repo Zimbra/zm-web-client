@@ -133,6 +133,8 @@ function(settings) {
 	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("CAL_ALWAYS_SHOW_MINI_CAL",	{name: "zimbraPrefCalendarAlwaysShowMiniCal", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
 	settings.registerSetting("CAL_APPT_VISIBILITY",			{name: "zimbraPrefCalendarApptVisibility", type: ZmSetting.T_PREF, dataType: ZmSetting.D_STRING, defaultValue: "public", isGlobal:true});
+	settings.registerSetting("CAL_EMAIL_REMINDERS_ENABLED",	{name: "zimbraPrefCalendarReminderSendEmail", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
+	settings.registerSetting("CAL_EMAIL_REMINDERS_ADDRESS",	{name: "zimbraPrefCalendarReminderEmail", type:ZmSetting.T_PREF, isGlobal:true});
 	settings.registerSetting("CAL_EXPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("CAL_FIRST_DAY_OF_WEEK",		{name: "zimbraPrefCalendarFirstDayOfWeek", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0, isGlobal:true});
 	settings.registerSetting("CAL_FREE_BUSY_ACL",			{type: ZmSetting.T_PREF, defaultValue:ZmSetting.ACL_ALL});
@@ -223,6 +225,20 @@ function() {
 
 	ZmPref.registerPref("CAL_SEND_INV_DENIED_REPLY", {
 		displayName:		ZmMsg.sendInvDeniedAutoReply,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("CAL_EMAIL_REMINDERS_ADDRESS", {
+		displayName:		ZmMsg.emailNotificationsDescription,
+		displayContainer:	ZmPref.TYPE_INPUT,
+//		validationFunction: ZmMailApp.validateForwardEmail,
+		errorMessage:       ZmMsg.invalidEmail,
+		precondition:		ZmSetting.CAL_EMAIL_REMINDERS_ENABLED,
+		hint:				ZmMsg.enterEmailAddress
+	});
+
+	ZmPref.registerPref("CAL_EMAIL_REMINDERS_ENABLED", {
+		displayName:		ZmMsg.enabled,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 

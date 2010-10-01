@@ -122,12 +122,11 @@ function(calItem, mode) {
 
     var rd = new Date(calItem.remindDate.getTime());
 
-    if(calItem.alarm) {
-        if(calItem.remindDate && calItem._reminderAbs) {
+    if (calItem.alarm) {
+        if (calItem.remindDate && calItem._reminderAbs) {
             this._remindTimeSelect.set(calItem.remindDate);
         }
     } else {
-
         var now = AjxDateUtil.roundTimeMins(new Date(), 30);
         this._remindTimeSelect.set(now);        
     }
@@ -136,6 +135,10 @@ function(calItem, mode) {
     this._reminderCheckbox.checked = calItem.alarm;
     this._setRemindersEnabled(calItem.alarm);
 
+	if (calItem.alarmActions.contains(ZmCalItem.ALARM_EMAIL)) {
+		this._reminderEmailCheckbox.checked = true;
+	}
+	
 	this._location.setValue(calItem.getLocation());
 	this._prioritySelect.setSelectedValue(calItem.priority);
 	this._statusSelect.setSelectedValue(calItem.status);
@@ -165,13 +168,16 @@ function(calItem) {
 	}
 
     //set reminder
-    if(this._reminderCheckbox.checked) {
+    if (this._reminderCheckbox.checked) {
         var remindDate = AjxDateUtil.simpleParseDateStr(this._remindDateField.value);
         calItem.alarm = true;
         calItem.remindDate = remindDate;
         remindDate = this._remindTimeSelect.getValue(remindDate);
         var remindFmtStr = AjxDateUtil.getServerDateTime(remindDate,false);
         calItem.setTaskReminder(remindFmtStr);
+		if (this._reminderEmailCheckbox && this._reminderEmailCheckbox.checked) {
+			calItem.addReminderAction(ZmCalItem.ALARM_EMAIL);
+		}
     } else {
        calItem.alarm = false;
        calItem.remindDate = new Date();
@@ -289,6 +295,12 @@ function(width) {
     // time ZmTimeSelect
 	this._remindTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
 	this._remindTimeSelect.reparentHtmlElement(this._htmlElId + "_remindTimeSelect");
+
+	this._reminderEmailCell = document.getElementById(this._htmlElId + "_reminderEmailCell");
+	this._reminderEmailCheckbox = document.getElementById(this._htmlElId + "_reminderEmailCheckbox");
+	this._setEmailReminderControls();
+	var listener = new AjxListener(this, this._settingChangeListener);
+	appCtxt.getSettings().getSetting(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS).addChangeListener(listener);
 };
 
 ZmTaskEditView.prototype._remindDateBtnListener =

@@ -1012,7 +1012,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 
 	var dispName = attendee.getFullName();
 	if (inv) {
-		at = soapDoc.set("at", null, inv);
+		var at = soapDoc.set("at", null, inv);
 		// for now make attendees optional, until UI has a way of setting this
 		var role = ZmCalItem.ROLE_NON_PARTICIPANT;
 		if (type == ZmCalBaseItem.PERSON) {

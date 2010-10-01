@@ -54,7 +54,7 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle) 
 
 	this._kbMgr = appCtxt.getKeyboardMgr();
     this._isForward = false;
-    this._isProposeTime = false;    
+    this._isProposeTime = false;
 };
 
 ZmCalItemEditView.prototype = new DwtComposite;
@@ -184,7 +184,7 @@ function(excludeAttendees) {
 ZmCalItemEditView.prototype.isReminderOnlyChanged =
 function() {
 
-	if(!this._hasReminderSupport) { return false; }
+	if (!this._hasReminderSupport) { return false; }
 
 	var formValue = this._origFormValueMinusReminder;
 
@@ -498,11 +498,14 @@ function(calItem) {
 	if (this._hasReminderSupport) {
 		//calItem.setReminderMinutes(this._reminderSelect.getValue());
         var reminderString = this._reminderSelectInput.getValue();
-        if(!reminderString || reminderString == ZmMsg.apptRemindNever) {
+        if (!reminderString || reminderString == ZmMsg.apptRemindNever) {
             calItem.setReminderMinutes(0);                        
-        }else {
+        } else {
             var reminderInfo = ZmCalendarApp.parseReminderString(reminderString);
-            calItem.setReminderUnits(reminderInfo.reminderValue,  reminderInfo.reminderUnits);            
+			if (this._reminderEmailCheckbox && this._reminderEmailCheckbox.checked) {
+				calItem.addReminderAction(ZmCalItem.ALARM_EMAIL);
+			}
+            calItem.setReminderUnits(reminderInfo.reminderValue,  reminderInfo.reminderUnits);
         }
 	}
 
@@ -514,7 +517,7 @@ function(calItem, mode) {
 	// set subject
 	this._subjectField.setValue(calItem.getName());
 
-    if(this._hasRepeatSupport) {
+    if (this._hasRepeatSupport) {
         this._repeatSelect.setSelectedValue(calItem.getRecurType());
         // recurrence string
 	    this._setRepeatDesc(calItem);
@@ -535,13 +538,15 @@ function(calItem, mode) {
 	this._setContent(calItem, mode);
 	if (this._hasReminderSupport) {
 		this.adjustReminderValue(calItem);
+		if (calItem.alarmActions.contains(ZmCalItem.ALARM_EMAIL)) {
+			this._reminderEmailCheckbox.checked = true;
+		}
 	}
 };
 
 ZmCalItemEditView.prototype.adjustReminderValue =
 function(calItem) {
     this._reminderSelectInput.setValue(ZmCalendarApp.getReminderSummary(calItem._reminderMinutes));
-    return
 };
 
 ZmCalItemEditView.prototype._setRepeatDesc =
@@ -701,6 +706,12 @@ function(width) {
 		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
 		var reminderSelectionListener = new AjxListener(this, this._reminderSelectionListener);
 		this._reminderButton = ZmCalendarApp.createReminderButton(this, this._htmlElId + "_reminderSelect", reminderButtonListener, reminderSelectionListener);
+
+		this._reminderEmailCell = document.getElementById(this._htmlElId + "_reminderEmailCell");
+		this._reminderEmailCheckbox = document.getElementById(this._htmlElId + "_reminderEmailCheckbox");
+		this._setEmailReminderControls();
+		var listener = new AjxListener(this, this._settingChangeListener);
+		appCtxt.getSettings().getSetting(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS).addChangeListener(listener);
 	}
 
     this._notesContainer = document.getElementById(this._htmlElId + "_notes");
@@ -1224,6 +1235,22 @@ function(sd) {
 	{
 		calItem._recurrence.setRecurrenceStartTime(sd.getTime());
 		this._setRepeatDesc(calItem);
+	}
+};
+
+ZmCalItemEditView.prototype._setEmailReminderControls =
+function() {
+	var enabled = Boolean(appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS));
+	this._reminderEmailCell.className = enabled ? "" : "DisabledText";
+	this._reminderEmailCheckbox.disabled = !enabled;
+};
+
+ZmCalItemEditView.prototype._settingChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) { return; }
+	var id = ev.source.id;
+	if (id == ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS) {
+		this._setEmailReminderControls();
 	}
 };
 
