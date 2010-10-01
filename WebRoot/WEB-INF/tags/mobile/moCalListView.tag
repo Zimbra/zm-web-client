@@ -139,7 +139,7 @@
 			                <span class="zo_cal_listi_location">
 			                    <a id="appt${appt.id}" href="${fn:escapeXml(zm:jsEncode(apptUrl))}">
 			                        <c:if test="${not empty appt.location}">
-			                            , ${fn:escapeXml(zm:truncate(appt.location,25,true))}
+			                            ${fn:escapeXml(zm:truncate(appt.location,25,true))}
 			                        </c:if>
 			                    </a>
 			                </span>
@@ -263,7 +263,7 @@
 		                <span class="zo_cal_listi_location">
 		                    <a id="appt${appt.id}" href="${fn:escapeXml(zm:jsEncode(apptUrl))}">
 		                        <c:if test="${not empty appt.location}">
-		                            , ${fn:escapeXml(zm:truncate(appt.location,25,true))}
+		                            ${fn:escapeXml(zm:truncate(appt.location,25,true))}
 		                        </c:if>
 		                    </a>
 		                </span>

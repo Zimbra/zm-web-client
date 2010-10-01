@@ -54,8 +54,9 @@
     max-width:470px;
 }
 .zo_cal_listi_location a {
-    color: #888888;
+    color: #888888 !important;
     font-size: small;
+    padding: 5px;
 }
 
 .zo_cal_listh_date {

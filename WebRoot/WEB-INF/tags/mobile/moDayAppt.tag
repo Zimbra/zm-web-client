@@ -40,12 +40,27 @@
             <div class='zo_appt_text'>
                 <a id="${id}" href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a>
             </div>
+            <div class="zo_cal_listi_location">
+                <a id="appt${appt.id}" href="${fn:escapeXml(zm:jsEncode(apptUrl))}">
+                    <c:if test="${not empty appt.location}">
+                        ${fn:escapeXml(zm:truncate(appt.location,25,true))}
+                    </c:if>
+                </a>
+            </div>
         </div>
+
     </c:when>
     <c:otherwise>
         <div class='${color}${appt.partStatusNeedsAction ? '' : 'Bg'} zo_day_appt' onclick='return zClickLink("${id}")'>
             <div class='zo_appt_text'>
                 <a id="${id}" href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a>
+            </div>
+            <div class="zo_cal_listi_location">
+                <a id="appt${appt.id}" href="${fn:escapeXml(zm:jsEncode(apptUrl))}">
+                    <c:if test="${not empty appt.location}">
+                        ${fn:escapeXml(zm:truncate(appt.location,25,true))}
+                    </c:if>
+                </a>
             </div>
         </div>
     </c:otherwise>
