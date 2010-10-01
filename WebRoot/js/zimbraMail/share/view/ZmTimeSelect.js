@@ -571,8 +571,10 @@ function(listener, ev) {
     var str = this._timeSelectInput.getValue();
     var d = ZmTimeSelect.parse(str);
     if(!d) {
-        var newDate = this.correctTimeString(str, ZmTimeSelect.parse(this._originalTimeStr));
-        this.setValue(ZmTimeSelect.format(newDate) || "");
+        //TODO: Try to guess the time 
+        /*var newDate = this.correctTimeString(str, ZmTimeSelect.parse(this._originalTimeStr));
+        this.setValue(ZmTimeSelect.format(newDate) || "");*/
+        this.setValue(this._originalTimeStr);
     } else {
         this._scrollToValue(str);
     }
