@@ -321,4 +321,28 @@ FORM {
 .DwtButton-selected .Text				{	@ButtonText@ @ButtonText-active@	}	
 .DwtButton-disabled .Text				{	@ButtonText@ @ButtonText-disabled@	}	
 .DwtButton-active .Text					{	@ButtonText@ @ButtonText-default@	}	
-.DwtButton-focused .Text				{	@ButtonText@ @ButtonText-focused@	}	
+.DwtButton-focused .Text				{	@ButtonText@ @ButtonText-focused@	}
+
+/*Launch Button*/
+
+.LaunchButton {
+    text-align:center;
+    padding:10px;
+}
+
+.LaunchButton input{
+    background-color:#D7CFB3;
+    border-color:#A7A194 #77736A #77736A #A7A194;
+    border-style:solid;
+    border-width:1px;
+    color:#000000;
+    display:inline-block;
+    text-align:center;
+    text-decoration:none;
+    width: 300px;
+    height: 30px;
+    cursor:pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+

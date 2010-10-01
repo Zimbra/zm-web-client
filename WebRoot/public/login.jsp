@@ -42,7 +42,7 @@
             <c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />
             <zm:logout/>
             <c:if test="${not empty logoutRedirectUrl}" >
-            <c:redirect url="${logoutRedirectUrl}"/>
+                <c:redirect url="${logoutRedirectUrl}"/>
             </c:if>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && !(empty trimmedUserName) && !(empty param.password)}">
@@ -192,7 +192,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 <c:if test="${(empty pageContext.request.queryString) or (fn:indexOf(pageContext.request.queryString,'customerDomain') == -1)}">
 	<c:set var="domainLoginRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLoginURL}" />
 </c:if>
-<c:if test="${not empty domainLoginRedirectUrl}" >
+<c:if test="${not empty domainLoginRedirectUrl and empty param.sso and empty param.ignoreLoginURL}" >
     <c:redirect url="${domainLoginRedirectUrl}">
         <c:forEach var="p" items="${paramValues}">
             <c:forEach var='value' items='${p.value}'>
@@ -307,7 +307,15 @@ if (application.getInitParameter("offlineMode") != null)  {
                             </c:if>
 
                             <div id="ZloginFormPanel">
-                                <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
+                                <c:choose>
+                                    <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL}">
+                                        <form method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
+                                            <div class="LaunchButton">
+                                                <input type="submit" value="<fmt:message key="launch"/>" >
+                                            </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                    <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
                                     <input type="hidden" name="loginOp" value="login"/>
                                     <table width="100%" cellpadding="4">
                                         <tr>
@@ -350,6 +358,8 @@ if (application.getInitParameter("offlineMode") != null)  {
                                                        value="<fmt:message key="login"/>"/></td>
                                         </tr>
                                     </table>
+                                    </c:otherwise>
+                                </c:choose>
                                     <table width="100%">
                                         <tr>
                                         	<td align="center">
@@ -385,7 +395,10 @@ if (application.getInitParameter("offlineMode") != null)  {
 													}
 													
 													function onLoad() {
-														document.loginForm.username.focus();
+                                                        var loginForm = document.loginForm;
+                                                        if(loginForm.username){
+														    loginForm.username.focus();
+                                                        }
 														clientChange("${zm:cook(client)}");
 													}
 													document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
