@@ -185,7 +185,7 @@ function(result) {
 		var html = [];
 		var idx = 0;
 		var attendees = appt.inv[0].comp[0].at || [];
-
+        AjxDispatcher.require(["CalendarCore"]);
 		for (var i = 0; i < attendees.length; i++) {
 			var at = attendees[i];
 			var subs = {
@@ -325,12 +325,14 @@ function(subs, sentBy, sentByAddr) {
 					subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgTentative, [dispName]);
 					subs.ptstClassName = "InviteStatusTentative";
 					break;
-			}
-
-			// set an Id for adding more detailed info later
-			subs.ptstId = this._ptstId = (this._htmlElId + "_ptst");
+			}            
 		}
 	}
+
+    if(this._invite.hasAttendeeResponse()){
+        // set an Id for adding more detailed info later
+        subs.ptstId = this._ptstId = (this.parent._htmlElId + "_ptst");
+    }
 
 	var om = this.parent._objectManager;
 
