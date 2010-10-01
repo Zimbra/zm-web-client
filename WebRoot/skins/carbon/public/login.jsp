@@ -192,7 +192,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 <c:if test="${(empty pageContext.request.queryString) or (fn:indexOf(pageContext.request.queryString,'customerDomain') == -1)}">
 	<c:set var="domainLoginRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLoginURL}" />
 </c:if>
-<c:if test="${not empty domainLoginRedirectUrl}" >
+<c:if test="${not empty domainLoginRedirectUrl and empty param.sso and empty param.ignoreLoginURL}" >
     <c:redirect url="${domainLoginRedirectUrl}">
         <c:forEach var="p" items="${paramValues}">
             <c:forEach var='value' items='${p.value}'>
@@ -279,60 +279,80 @@ if (application.getInitParameter("offlineMode") != null)  {
 			<h1><a href="http://www.zimbra.com/" id="bannerLink" target="_new">
 				<span style="cursor:pointer;display:block;" class="Img${smallScreen?'App':'Login'}Banner"></span>
 			</a></h1>
-			<!--div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div--> 
-			<form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
-				<input type="hidden" name="loginOp" value="login"/>
-                   
+			<!--div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div-->
+            <c:choose>
+                <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL}">
+                    <form method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
+                </c:when>
+                <c:otherwise>
+			        <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
+				    <input type="hidden" name="loginOp" value="login"/>
+                </c:otherwise>
+            </c:choose>
+
 				<c:if test="${errorCode != null}">
 				    <!-- ${fn:escapeXml(error.stackStrace)} -->
 				    <div id="ZloginErrorPanel">
-				        <img alt='<fmt:message key="ALT_ERROR"/>' 
+				        <img alt='<fmt:message key="ALT_ERROR"/>'
 				        	src="<app:imgurl value='dwt/ImgCritical_32.gif'/>"
 				        	style="float:left;margin:-3px 10px 10px 0px;"/>
 				        <c:out value="${errorMessage}"/>
 				        <div style="clear:both;height:0px;"></div>
 				    </div>
 				</c:if>
-<table class="form">
-<tr>
-<td><label for="username"><fmt:message key="username"/>:</label></td>
-<td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" /></td>
-</tr>
-<tr>
-<td><label for="password"><fmt:message key="password"/>:</label></td>
-<td><input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}"/></td>
-</tr>
-<c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
-<tr>
-<td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
-<td><input id="loginNewPassword" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}"/></td>
-</tr>
-<tr>
-<td><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
-<td><input id="confirmNew" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}"/></td>
-</tr>
-</c:if>
-<tr>
-<td>&nbsp;</td>
-<td style="text-align:right">
-<input type="submit" class="zLoginButton" value="<fmt:message key="login"/>" style="float:left;"/> 
-<input id="remember" value="1" type="checkbox" name="zrememberme" />
-<label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label></td>
-</tr>
-<tr>
-<td colspan="2"><hr/></td>
-</tr>
-<tr>
-<td>
-<label for="client">
-<c:choose>
-    <c:when test="${!smallScreen}">
-        <fmt:message key="chooseClient"/>:
-    </c:when>
-    <c:otherwise>
-        <fmt:message key="versionLabel"/>:
-    </c:otherwise>
-</c:choose>
+            <table class="form">
+                <c:choose>
+                <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL}">
+                    <tr>
+                        <td colspan="2">
+                            <div class="LaunchButton">
+                                <input type="submit" value="<fmt:message key="launch"/>" >
+                            </div>
+                        </td>
+                    </tr>
+                    </c:when>
+                    <c:otherwise>
+                    <tr>
+                        <td><label for="username"><fmt:message key="username"/>:</label></td>
+                        <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="password"><fmt:message key="password"/>:</label></td>
+                        <td><input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}"/></td>
+                    </tr>
+                    <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
+                    <tr>
+                        <td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
+                        <td><input id="loginNewPassword" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
+                        <td><input id="confirmNew" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}"/></td>
+                    </tr>
+                    </c:if>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td style="text-align:right">
+                            <input type="submit" class="zLoginButton" value="<fmt:message key="login"/>" style="float:left;"/>
+                            <input id="remember" value="1" type="checkbox" name="zrememberme" />
+                            <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label></td>
+                    </tr>
+                    </c:otherwise>
+                    </c:choose>
+                    <tr>
+                        <td colspan="2"><hr/></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="client">
+                                <c:choose>
+                                    <c:when test="${!smallScreen}">
+                                        <fmt:message key="chooseClient"/>:
+                                    </c:when>
+                                    <c:otherwise>
+                                        <fmt:message key="versionLabel"/>:
+                                    </c:otherwise>
+                                </c:choose>
 </label>
 </td>
 <td>
@@ -356,11 +376,14 @@ if (application.getInitParameter("offlineMode") != null)  {
         var div = document.getElementById("ZLoginWhatsThis");
 		div.style.display = (div.style.display == "block" ? "none" : "block");
 	}
-	
-	function onLoad() {
-		document.loginForm.username.focus();
-		clientChange("${zm:cook(client)}");
-	}
+
+    function onLoad() {
+        var loginForm = document.loginForm;
+        if(loginForm.username){
+            loginForm.username.focus();
+        }
+        clientChange("${zm:cook(client)}");
+    }
 	document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
 </script>
 <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;text-align:left;width:90%;"><fmt:message key="clientWhatsThisMessage"/></div>
