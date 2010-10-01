@@ -277,20 +277,40 @@
 		try{
 			var idex = 0;
 			var c ="";
-			while (idex <= zrc )
-			{
-				if(document.getElementById("C"+idex).checked) {
-					cid = document.getElementById("C"+idex).value;
-					c += cid + ",";
-				}
-				idex++ ;
-			}
+			var elemid = document.getElementsByName('id');
+            var elemidcv = document.getElementsByName('idcv');
+            /*
+            All conversations and messages(virtual conv) have the same name(id),
+            loop over to find which of them is selected
+             */
+            while (elemid[idex]) {
+                if (elemid[idex].checked) {
+                    cid = elemid[idex].value;
+                    c += "C:"+cid+",";
+                }
+                idex++;
+            }
+            idex = 0;
+            /*
+            Since conversations can be expanded inline, all the messages that are part of conversations
+            have the same name(idcv), loop over to find which of them is selected.
+             */
+            while (elemidcv[idex]) {
+                if (elemidcv[idex].checked) {
+                    cid = elemidcv[idex].value;
+                    c += cid+",";
+                }
+                idex++;
+            }
+            if (c.charAt(c.length-1) == ',') {
+                c = c.substr(0, c.length-1);
+            }
 		}catch(ex){
 		}
 		if(c == ""){
 			alert('<fmt:message key="actionNoConvSelected"/>');return;
 		}
-		window.open("/h/printconversations?id="+c);
+		window.open("/h/printmessage?id="+c);
 	}
 
    //-->
