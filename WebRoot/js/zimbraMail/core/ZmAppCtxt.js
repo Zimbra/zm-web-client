@@ -1465,6 +1465,20 @@ function() {
 };
 
 /**
+ * Gets the task manager.
+ *
+ * @return	{ZmTaskMgr}	the task manager
+ */
+ZmAppCtxt.prototype.getTaskManager =
+function() {
+	if (!this._taskMgr) {
+		this._taskMgr = new ZmTaskMgr(this._shell);
+	}
+	return this._taskMgr;
+};
+
+
+/**
  * Gets the ACL.
  * 
  * @param	{ZmZimbrAccount}	account		the account
