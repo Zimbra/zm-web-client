@@ -700,7 +700,7 @@ function(organizer, attendees) {
 	}
 
 	// make sure there's always an empty slot
-	this._addAttendeeRow(false, null, false, null, true, true);
+	this._addAttendeeRow(false, null, false, null, true, false);
 
 	if (emails.length) {
 		this._getFreeBusyInfo(this._getStartTime(), emails.join(","), this._fbCallback, this._workCallback);

@@ -510,7 +510,7 @@ function() {
     var width = this.getSize().x;
 	// add chooser
 	this._chooser = new ZmApptChooser(this);
-    this._chooserWidth = width-25;
+    this._chooserWidth = width + 100;
     this._chooser.resize(this._chooserWidth, ZmAttendeePicker.CHOOSER_HEIGHT);
 	var chooserSourceListViewDiv = document.getElementById(this._chooserSourceListViewDivId);
 	var sourceListView = this._chooser.getSourceListView();
@@ -1131,7 +1131,7 @@ function(html, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_NAME) {
 		var name = (this._chooserType == ZmCalBaseItem.PERSON) ? item.getFullName() : item.getAttr(ZmResource.F_name);
 		if (this._chooserType != ZmCalBaseItem.PERSON && item instanceof ZmContact) {
-			name = item.getFullName();
+			name = item.getFullName() || item.getAttr(ZmResource.F_locationName);
 		}
 		html[idx++] = AjxStringUtil.htmlEncode(name);
 	} else if (field == ZmItem.F_EMAIL) {

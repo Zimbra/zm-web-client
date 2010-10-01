@@ -375,7 +375,7 @@ function(show){
     }
     Dwt.setVisible(this._attendeesContainer, show);
     Dwt.setVisible(this._inviteSendBtnContainer, show);
-    this.setSchedulerVisibility(show);    
+    this.setSchedulerVisibility(show);
     this.resize();
 };
 
@@ -816,9 +816,9 @@ function(forceShow) {
 };
 
 ZmApptEditView.prototype._toggleInlineScheduler =
-function() {
+function(forceShow) {
 
-    if(this._schedulerOpened) {
+    if(this._schedulerOpened && !forceShow) {
         this._schedulerOpened = false;
         this._schButton.innerHTML = ZmMsg.show;
         this._schImage.className = "ImgSelectPullDownArrow";
