@@ -331,8 +331,8 @@ FORM {
 }
 
 .LaunchButton input{
-    background-color:#D7CFB3;
-    border-color:#A7A194 #77736A #77736A #A7A194;
+    background-color:@lighten(AppC,15)@;
+    border-color:@lighten(AppC,45)@ @darken(AppC,25)@ @darken(AppC,25)@ @lighten(AppC,45)@;
     border-style:solid;
     border-width:1px;
     color:#000000;
