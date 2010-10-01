@@ -173,7 +173,7 @@ function(calItem) {
         calItem.alarm = true;
         calItem.remindDate = remindDate;
         remindDate = this._remindTimeSelect.getValue(remindDate);
-        var remindFmtStr = AjxDateUtil.getServerDateTime(remindDate,false);
+        var remindFmtStr = AjxDateUtil.getServerDateTime(remindDate,true);
         calItem.setTaskReminder(remindFmtStr);
 		if (this._reminderEmailCheckbox && this._reminderEmailCheckbox.checked) {
 			calItem.addReminderAction(ZmCalItem.ALARM_EMAIL);
