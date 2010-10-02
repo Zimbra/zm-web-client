@@ -73,7 +73,7 @@ function(organizerType, folderId, user, path) {
 
     // clear prev options and insert default
 	this._folderSelect.clearOptions();
-    this._folderSelect.addOption(ZmMsg.calendar, true);
+    this._folderSelect.addOption(ZmMsg.chooseFolder, true, ZmMsg.folder);
     // reset input fields
 	this._userInput.setValue(user || "");
 	this._nameInput.setValue("");
@@ -239,7 +239,7 @@ function(ev) {
     var key = DwtKeyEvent.getCharCode(ev);
     if(key == DwtKeyEvent.KEY_ENTER){
         var email = this._userInput.getValue();
-        var respCallback = new AjxCallback(this, this.showSharedCalendars);
+        var respCallback = new AjxCallback(this, this.showSharedFolders);
         var shares = this.getShares(null, email, respCallback);
     }
 };
@@ -270,7 +270,7 @@ function(callback, result) {
 	}
 };
 
-ZmMountFolderDialog.prototype.showSharedCalendars =
+ZmMountFolderDialog.prototype.showSharedFolders =
 function(shares) {
     this._folderSelect.clearOptions();
     if (shares && shares.length) {
@@ -280,5 +280,7 @@ function(shares) {
             folderName = folderName.replace(/^.*\//,"");
             this._folderSelect.addOption(folderName, i == 0, folderPath);
         }
+        // update the name field
+        this._handleOtherKeyUp();
     }
 };
