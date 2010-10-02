@@ -46,7 +46,7 @@ ZmTimeSuggestionPrefDialog.prototype.constructor = ZmTimeSuggestionPrefDialog;
 // Constants
 
 ZmTimeSuggestionPrefDialog.META_DATA_KEY = "MD_LOCATION_SEARCH_PREF";
-ZmTimeSuggestionPrefDialog.PREF_FIELDS = ["name", "site", "capacity", "building", "desc", "floor", "working_hrs"];
+ZmTimeSuggestionPrefDialog.PREF_FIELDS = ["name", "site", "capacity", "building", "desc", "floor", "non_working_hrs"];
 
 // corresponding attributes for search command
 ZmTimeSuggestionPrefDialog.SF_ATTR = {};
@@ -117,14 +117,14 @@ function(text) {
     for(var i=0; i<ZmTimeSuggestionPrefDialog.PREF_FIELDS.length; i++) {
         id = ZmTimeSuggestionPrefDialog.PREF_FIELDS[i];
         this._prefFields[id] = field = document.getElementById(this.getHTMLElId() + "_" + id);
-        if(id != "working_hrs") {
+        if(id != "non_working_hrs") {
             this._prefs[id] = field.value;
         }else {
             this._prefs[id] = field.checked ? 'true' : 'false';            
         }
     }
 
-    this._workingHrsCheckbox = document.getElementById(this.getHTMLElId() + "_working_hrs");
+    this._workingHrsCheckbox = document.getElementById(this.getHTMLElId() + "_non_working_hrs");
 };
 
 ZmTimeSuggestionPrefDialog.prototype.getPreference =
@@ -142,7 +142,7 @@ function(text) {
     var field;
     for(var id in this._prefFields) {
         field = this._prefFields[id];
-        if(id != "working_hrs") {
+        if(id != "non_working_hrs") {
             this._prefs[id] = field.value;
         }else {
             this._prefs[id] = field.checked ? 'true' : 'false';
@@ -165,7 +165,7 @@ function(metadataResponse) {
     for (name in objPrefs) {
         if(name && objPrefs[name]) {
             this._prefs[name] = objPrefs[name];
-            if(name != "working_hrs") {
+            if(name != "non_working_hrs") {
                 this._prefFields[name].value = this._prefs[name] || "";
             }else {
                 this._prefFields[name].checked = (this._prefs[name] == 'true'); 

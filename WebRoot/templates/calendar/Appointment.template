@@ -990,7 +990,7 @@
             </tr>
             <tr>
                 <td align="right">&nbsp;</td>
-                <td colspan=4 align="left"><input type="checkbox" id="${id}_working_hrs"><$= ZmMsg.includeNonWorkingHours $></td>
+                <td colspan=4 align="left"><input type="checkbox" id="${id}_non_working_hrs"><$= ZmMsg.includeNonWorkingHours $></td>
             </tr>        
         </tbody>
     </table>

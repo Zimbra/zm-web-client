@@ -292,7 +292,7 @@ function(callback, sortBy) {
     if(this._prefDialog) {
         for (var i = 0; i < ZmTimeSuggestionPrefDialog.PREF_FIELDS.length; i++) {
             var sf = ZmTimeSuggestionPrefDialog.PREF_FIELDS[i];
-            if(sf == "working_hrs") continue;
+            if(sf == "non_working_hrs") continue;
             value = AjxStringUtil.trim(this._prefDialog.getPreference(sf));
             if (value.length) {
                 var attr = ZmTimeSuggestionPrefDialog.SF_ATTR[sf];
@@ -457,7 +457,7 @@ function(params) {
         appCtxt.getRequestMgr().cancelRequest(this._workingHoursRequest, null, true);
     }
 
-    var includeNonWorkingHours = params.includeNonWorkingHours = this._prefDialog ? (this._prefDialog.getPreference("working_hrs") == 'true') : false;
+    var includeNonWorkingHours = params.includeNonWorkingHours = this._prefDialog ? (this._prefDialog.getPreference("non_working_hrs") == 'true') : false;
     if(includeNonWorkingHours) {
          this.suggestTimeSlots(params);
          return;   
