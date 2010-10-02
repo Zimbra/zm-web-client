@@ -963,3 +963,35 @@
         </div>
     </center>
 </template>
+
+<template id='calendar.Appointment#TimeLocationPreference'>
+    <table cellspacing="3" cellpadding="0" border="0">
+        <tbody>
+            <tr>
+                <td align="right"><$= ZmMsg._name $>&nbsp;</td>
+                <td><input type="text" id="${id}_name" nowrap="" size="30" autocomplete="off"></td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td align="right"><$= ZmMsg.site $>&nbsp;</td>
+                <td><input type="text" id="${id}_site" nowrap="" size="30" autocomplete="off"></td>
+            </tr>
+            <tr>
+                <td align="right"><$= ZmMsg.minimumCapacity $>&nbsp;</td>
+                <td><input type="text" id="${id}_capacity" nowrap="" size="30" autocomplete="off"></td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td align="right"><$= ZmMsg.building $>&nbsp;</td>
+                <td><input type="text" id="${id}_building" nowrap="" size="30" autocomplete="off"></td>
+            </tr>
+            <tr>
+                <td align="right"><$= ZmMsg.description $>&nbsp;</td>
+                <td><input type="text" id="${id}_desc" nowrap="" size="30" autocomplete="off"></td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td align="right"><$= ZmMsg.floor $>&nbsp;</td>
+                <td><input type="text" id="${id}_floor" nowrap="" size="30" autocomplete="off"></td>
+            </tr>
+            <tr>
+                <td align="right">&nbsp;</td>
+                <td colspan=4 align="left"><input type="checkbox" id="${id}_working_hrs"><$= ZmMsg.includeNonWorkingHours $></td>
+            </tr>        
+        </tbody>
+    </table>
+</template>

@@ -71,25 +71,31 @@ function() {
 ZmScheduleAssistantView.prototype._createWidgets =
 function() {
     this._createMiniCalendar();
-    this._suggestBtn = new DwtButton({parent:this, style:DwtLabel.IMAGE_RIGHT, className: 'ZButton SuggestBtn'});
-    this._suggestBtn.setImage("SelectPullDownArrow");
-    this._suggestBtn.setSize('100%', Dwt.DEFAULT);
-    this._suggestBtn.addSelectionListener(new AjxListener(this, this._suggestionListener));
 
-    this._setSuggestionLabel();
+    var id = this.getHTMLElId();
+
+    this._customizeBtn = new DwtButton({parent:this, className: 'ZButton SuggestBtn'});
+    this._customizeBtn.setImage("Preferences");    
+    this._customizeBtn.setSize('100%', Dwt.DEFAULT);
+    this._customizeBtn.addSelectionListener(new AjxListener(this, this._prefListener));
+    this._customizeBtn.setText(ZmMsg.customizeSuggestions);
 
     this._timeSuggestions = new ZmTimeSuggestionView(this, this._controller, this._editView);
+
+    var prefDlg = this.getPrefDialog();
+    prefDlg.setCallback(new AjxCallback(this, this._prefChangeListener));
+    prefDlg.getSearchPreference(appCtxt.getActiveAccount());
 };
 
 ZmScheduleAssistantView.prototype._setSuggestionLabel =
 function(date) {
 
-    if(!this._suggestBtn) return;
+    if(!this._customizeBtn) return;
 
     date = date || new Date();
     var dateStr = AjxDateUtil.computeDateStrNoYear(date);
     var dateLabel =  AjxMessageFormat.format(ZmMsg.suggestTimeLabel, [dateStr]);
-    this._suggestBtn.setText(dateLabel);    
+    this._customizeBtn.setText(dateLabel);    
 };
 
 ZmScheduleAssistantView.prototype._createMiniCalendar =
@@ -129,6 +135,26 @@ function(date) {
 ZmScheduleAssistantView.prototype._suggestionListener =
 function(ev) {
     this.suggestAction(true);
+};
+
+ZmScheduleAssistantView.prototype._prefListener =
+function(ev) {
+    var dialog = this.getPrefDialog();
+    dialog.popup(this._editView.getCalendarAccount());
+};
+
+ZmScheduleAssistantView.prototype._prefChangeListener =
+function() {
+    this._resources = null;
+    this.suggestAction(true);
+};
+
+ZmScheduleAssistantView.prototype.getPrefDialog =
+function() {
+    if(!this._prefDialog) {
+        this._prefDialog = new ZmTimeSuggestionPrefDialog(appCtxt.getShell());        
+    }
+    return this._prefDialog;
 };
 
 ZmScheduleAssistantView.prototype.suggestAction =
@@ -233,7 +259,6 @@ function(date, attendees, forceRefresh) {
     var newKey = this.getFormKey(date, attendees);
     this._date = date;
     if(newKey != this._key) {
-        this._setSuggestionLabel(date);
         if(this._timeSuggestions) this._timeSuggestions.removeAll();
         if(forceRefresh) this.suggestAction(false);
     }
@@ -262,7 +287,21 @@ ZmScheduleAssistantView.prototype.searchCalendarResources =
 function(callback, sortBy) {
 	var currAcct = this._editView.getCalendarAccount();
 	var value = (this.type == ZmCalBaseItem.LOCATION) ? "Location" : "Equipment";
-	var conds = [{attr: "zimbraCalResType", op: "eq", value: value}];
+
+    var conds = [{attr: "zimbraCalResType", op: "eq", value: value}];
+    if(this._prefDialog) {
+        for (var i = 0; i < ZmTimeSuggestionPrefDialog.PREF_FIELDS.length; i++) {
+            var sf = ZmTimeSuggestionPrefDialog.PREF_FIELDS[i];
+            if(sf == "working_hrs") continue;
+            value = AjxStringUtil.trim(this._prefDialog.getPreference(sf));
+            if (value.length) {
+                var attr = ZmTimeSuggestionPrefDialog.SF_ATTR[sf];
+                var op = ZmTimeSuggestionPrefDialog.SF_OP[sf] ? ZmTimeSuggestionPrefDialog.SF_OP[sf] : "has";
+                conds.push({attr: attr, op: op, value: value});
+            }
+        }
+    }
+    
 	var params = {
 		sortBy: sortBy,
 		offset: 0,
@@ -418,6 +457,12 @@ function(params) {
         appCtxt.getRequestMgr().cancelRequest(this._workingHoursRequest, null, true);
     }
 
+    var includeNonWorkingHours = params.includeNonWorkingHours = this._prefDialog ? (this._prefDialog.getPreference("working_hrs") == 'true') : false;
+    if(includeNonWorkingHours) {
+         this.suggestTimeSlots(params);
+         return;   
+    }
+
     var organizer = this._editView.getOrganizer();
     this._organizerEmail = organizer.getEmail();
 
@@ -514,7 +559,7 @@ function(startTime, endTime, params) {
         var sched = this._schedule[freeBusyKey];
 
         //show suggestions only in the organizer's working hours.
-        var isFree = this.isUnderWorkingHour(this._organizerEmail, startTime, endTime);
+        var isFree = params.includeNonWorkingHours ? true : this.isUnderWorkingHour(this._organizerEmail, startTime, endTime);
 
         //ignore time slots for non-working hours of this user
         if(!isFree) continue;
@@ -624,7 +669,7 @@ function() {
     if(!this._timeSuggestions) return;
 
     var calSize = Dwt.getSize(this._miniCalendar.getHtmlElement());
-    var btnSize = Dwt.getSize(this._suggestBtn.getHtmlElement());
+    var btnSize = Dwt.getSize(this._customizeBtn.getHtmlElement());
     var contSize = Dwt.getSize(this.getHtmlElement());
     var newHeight = contSize.y - btnSize.y - calSize.y -2;
     this._timeSuggestions.setSize('100%', newHeight);
