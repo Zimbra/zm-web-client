@@ -366,6 +366,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 
 	var td = tr.insertCell(-1);
 	td.innerHTML = AjxTemplate.expand("calendar.Appointment#AttendeeFreeBusy", data);
+    td.style.padding = "0";
 
 	var freeBusyTable = document.getElementById(sched.dwtTableId);
 	Dwt.setHandler(freeBusyTable, DwtEvent.ONMOUSEOVER, ZmFreeBusySchedulerView._onFreeBusyMouseOver);
