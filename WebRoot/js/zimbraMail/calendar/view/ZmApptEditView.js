@@ -815,6 +815,11 @@ function(forceShow) {
     Dwt.setVisible(this._optionalAttendeesContainer, Boolean(this._optionalAttendeesShown))
 };
 
+ZmApptEditView.prototype.showOptional =
+function() {
+    this._toggleOptionalAttendees(true);
+};
+
 ZmApptEditView.prototype._toggleInlineScheduler =
 function(forceShow) {
 

@@ -569,13 +569,18 @@ function(inputEl, attendee, useException) {
 			if (sched.uid != email) {
 				this._getFreeBusyInfo(this._getStartTime(), email, this._fbCallback, this._workCallback);
 			}
+            var roleType = sched.selectObj ? sched.selectObj.getValue() : null;
+            var isOptionalAttendee = (roleType == ZmCalItem.ROLE_OPTIONAL); 
+            if(type != ZmCalBaseItem.LOCATION && type != ZmCalBaseItem.EQUIPMENT) {
+                attendee.setParticipantRole( isOptionalAttendee ? ZmCalItem.ROLE_OPTIONAL : ZmCalItem.ROLE_REQUIRED);
+            }
 			sched.attendee = attendee;
             this._setParticipantStatus(sched, attendee, idx);
-
 			this._setAttendeeToolTip(sched, attendee);
             //directly update attendees
 			if(this.isComposeMode) {
                 this._editView.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
+                if(isOptionalAttendee) this._editView.showOptional(); 
                 this._editView._setAttendees();
             }
             else {
