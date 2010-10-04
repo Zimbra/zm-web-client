@@ -4410,6 +4410,13 @@ If you feel compelled to have a background color, please do so on a per skin lev
     width: 100%;    
 }
 
+.SuggestBtn {
+    height: 32px;
+    padding: 5px;
+    @SelectedBg@
+    border-bottom: 1px solid @AppC@
+}
+
 .ZmCalListViewSearchBar .DwtCompositeCell {
     white-space: nowrap;
 }

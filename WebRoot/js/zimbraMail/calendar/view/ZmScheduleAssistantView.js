@@ -80,6 +80,7 @@ function() {
     this._customizeBtn.addSelectionListener(new AjxListener(this, this._prefListener));
     this._customizeBtn.setText(ZmMsg.customizeSuggestions);
 
+    this.showCustomize(false);
     this._timeSuggestions = new ZmTimeSuggestionView(this, this._controller, this._editView);
 
     var prefDlg = this.getPrefDialog();
@@ -166,6 +167,7 @@ function(focusOnSuggestion) {
         focus: focusOnSuggestion
     };
 
+    this.showCustomize(true);
     this._timeSuggestions.setLoadingHtml();
     if(!this._resources) {
         this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
@@ -259,7 +261,10 @@ function(date, attendees, forceRefresh) {
     var newKey = this.getFormKey(date, attendees);
     this._date = date;
     if(newKey != this._key) {
-        if(this._timeSuggestions) this._timeSuggestions.removeAll();
+        if(this._timeSuggestions){
+            this.showCustomize(false);
+            this._timeSuggestions.removeAll();
+        }
         if(forceRefresh) this.suggestAction(false);
     }
 };
@@ -373,6 +378,7 @@ function(params) {
 
     if(this._attendees.length == 0) {
         this.resizeTimeSuggestions();
+        this.showCustomize(true);
         this._timeSuggestions.setNoResultsHtml();
         return;
     }
@@ -659,6 +665,7 @@ function(attendee, startTime, endTime) {
 ZmScheduleAssistantView.prototype.renderSuggestions =
 function(params) {
     this.resizeTimeSuggestions();
+    this.showCustomize(true);
     this._timeSuggestions.set(this._fbStat, this._totalUsers, this._totalLocations, params.itemsById, params.itemsByIdx);
     if(params.focus) this._timeSuggestions.focus();
 };
@@ -673,4 +680,10 @@ function() {
     var contSize = Dwt.getSize(this.getHtmlElement());
     var newHeight = contSize.y - btnSize.y - calSize.y -2;
     this._timeSuggestions.setSize('100%', newHeight);
+
+};
+
+ZmScheduleAssistantView.prototype.showCustomize =
+function(visible) {
+    this._customizeBtn.setVisible(visible);
 };
