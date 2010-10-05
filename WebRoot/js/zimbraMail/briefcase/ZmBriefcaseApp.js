@@ -175,7 +175,6 @@ function() {
 ZmBriefcaseApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
-	newItemOps[ZmOperation.NEW_FILE]		= "uploadNewFile";
 	newItemOps[ZmOperation.NEW_DOC]			= "document";
 
 	var newOrgOps = {};
@@ -202,7 +201,7 @@ function() {
 					  newOrgOps:			newOrgOps,
 					  actionCodes:			actionCodes,
 					  gotoActionCode:		ZmKeyMap.GOTO_BRIEFCASE,
-					  newActionCode:		ZmKeyMap.NEW_FILE,
+					  newActionCode:		ZmKeyMap.NEW_DOC,
 					  chooserSort:			70,
 					  defaultSort:			60
 					  });
