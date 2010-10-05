@@ -232,7 +232,7 @@ function(parent, num) {
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 	parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared));
-    parent.enable(ZmOperation.RENAME_FILE, !isFolderSelected && !isReadOnly);
+    parent.enable(ZmOperation.RENAME_FILE, num ==1 && !isFolderSelected && !isReadOnly);
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
 
     if(parent &&  parent instanceof ZmActionMenu){
