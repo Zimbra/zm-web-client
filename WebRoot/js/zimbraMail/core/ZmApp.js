@@ -860,6 +860,7 @@ function(mods) {
 	if (!list) { return; }
 	list._evt.batchMode = true;
 	list._evt.item = item;	// placeholder - change listeners like it to be there
+	list._evt.items = null;
 	for (var ev in notifs) {
 		var details = {notifs:notifs[ev]};
 		list._notify(ev, details);
