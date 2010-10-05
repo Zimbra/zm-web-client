@@ -2371,14 +2371,14 @@ function(start, noheader, callback, result) {
 };
 
 ZmCalViewController.prototype.getUserStatusToolTipText =
-function(start, end, noheader, email) {
+function(start, end, noheader, email, emptyMsg) {
 	try {
 		var calIds = [];
 		if (this._calTreeController) {
 			var calendars = this._calTreeController.getOwnedCalendars(this._app.getOverviewId(),email);
 			for (var i = 0; i < calendars.length; i++) {
 				var cal = calendars[i];
-				if (cal) {
+				if (cal && (cal.nId != ZmFolder.ID_TRASH)) {
 					calIds.push(appCtxt.multiAccounts ? cal.id : cal.nId);
 				}
 			}
@@ -2402,7 +2402,7 @@ function(start, end, noheader, email) {
 
 		var result = this.getApptSummaries({start:startTime, end:endTime, fanoutAllDay:true, folderIds: calIds});
 
-		return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader, ZmMsg.unknown);
+		return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader, emptyMsg);
 	} catch (ex) {
 		DBG.println(ex);
 		return "<b>" + ZmMsg.meetingStatusUnknown + "</b>";

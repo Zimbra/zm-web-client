@@ -836,16 +836,22 @@ function(forceShow) {
     this._schButton.innerHTML = ZmMsg.hide;
     this._schImage.className = "ImgSelectPullUpArrow";
 
+    var scheduleView = this.getScheduleView();
+
+    //todo: scheduler auto complete
+    Dwt.setVisible(this._schedulerContainer, true);
+    scheduleView.setVisible(true);
+    scheduleView.showMe();
+    this.autoSize();
+};
+
+ZmApptEditView.prototype.getScheduleView =
+function() {
     if(!this._scheduleView) {
         this._scheduleView = new ZmFreeBusySchedulerView(this, this._attendees, this._controller, this._dateInfo);
         this._scheduleView.reparentHtmlElement(this._schedulerContainer);
     }
-
-    //todo: scheduler auto complete
-    Dwt.setVisible(this._schedulerContainer, true);
-    this._scheduleView.setVisible(true);
-    this._scheduleView.showMe();
-    this.autoSize();
+    return this._scheduleView;    
 };
 
 ZmApptEditView.prototype._resetAttendeeCount =
@@ -1116,6 +1122,9 @@ function(calItem, mode, isDirty, apptComposeMode) {
     this._apptComposeMode = apptComposeMode;
     
     ZmCalItemEditView.prototype.initialize.call(this, calItem, mode, isDirty, apptComposeMode);
+
+    var scheduleView = this.getScheduleView();
+    scheduleView.initialize(calItem, mode, isDirty, apptComposeMode);
 };
 
 ZmApptEditView.prototype.getCalendarAccount =

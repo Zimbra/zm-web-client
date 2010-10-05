@@ -136,12 +136,6 @@ function() {
     if(this.isComposeMode) {
         organizer = this._isProposeTime ? this._editView.getCalItemOrganizer() : this._editView.getOrganizer();
     }else {
-        /* var organizer = new ZmContact(null);
-        var account = appCtxt.multiAccounts && appCtxt.getById(folderId).getAccount();
-        var orgAddress = appCtxt.get(ZmSetting.USERNAME, null, account);
-	    var orgName = appCtxt.get(ZmSetting.DISPLAY_NAME, null, account);
-	    var organizerEmail = new AjxEmailAddress(orgAddress, null, orgName);
-        organizer.initFromEmail(organizerEmail, true);  */
         organizer = this._editView.getOrganizer();
     }
 
@@ -1366,21 +1360,22 @@ function(params) {
     var treeController =  cc.getCalTreeController();
     var calendars = treeController ? treeController.getOwnedCalendars(appCtxt.getApp(ZmApp.CALENDAR).getOverviewId(), params.email) : [];
     var tooltipContent = "";
+
+    if(!params.status) params.status = ZmFreeBusySchedulerView.STATUS_FREE;
+
+    var fbStatusMsg = [];
+    fbStatusMsg[ZmFreeBusySchedulerView.STATUS_FREE]     = ZmMsg.free;
+    fbStatusMsg[ZmFreeBusySchedulerView.STATUS_BUSY]     = ZmMsg.busy;
+    fbStatusMsg[ZmFreeBusySchedulerView.STATUS_TENTATIVE]= ZmMsg.tentative;
+    fbStatusMsg[ZmFreeBusySchedulerView.STATUS_OUT]      = ZmMsg.outOfOffice;
+    fbStatusMsg[ZmFreeBusySchedulerView.STATUS_UNKNOWN]  = ZmMsg.unknown;
+    fbStatusMsg[ZmFreeBusySchedulerView.STATUS_WORKING]  = ZmMsg.free;
+
     if(calendars.length == 0) {
-
-        if(!params.status) params.status = ZmFreeBusySchedulerView.STATUS_FREE;
-
-        var fbStatusMsg = [];
-        fbStatusMsg[ZmFreeBusySchedulerView.STATUS_FREE]     = ZmMsg.free;
-        fbStatusMsg[ZmFreeBusySchedulerView.STATUS_BUSY]     = ZmMsg.busy;
-        fbStatusMsg[ZmFreeBusySchedulerView.STATUS_TENTATIVE]= ZmMsg.tentative;
-        fbStatusMsg[ZmFreeBusySchedulerView.STATUS_OUT]      = ZmMsg.outOfOffice;
-        fbStatusMsg[ZmFreeBusySchedulerView.STATUS_UNKNOWN]  = ZmMsg.unknown;
-        fbStatusMsg[ZmFreeBusySchedulerView.STATUS_WORKING]  = ZmMsg.free;
-
         tooltipContent = "<b>" + ZmMsg.statusLabel + " " + fbStatusMsg[params.status] + "</b>";
     }else {
-        tooltipContent = cc.getUserStatusToolTipText(params.startDate, params.endDate, true, params.email);
+        var acct = this._editView.getCalendarAccount();
+        tooltipContent = cc.getUserStatusToolTipText(params.startDate, params.endDate, true, params.email, (acct.name == params.email) ? fbStatusMsg[params.status] : ZmMsg.unknown);
     }
     var shell = DwtShell.getShell(window);
     var tooltip = shell.getToolTip();
