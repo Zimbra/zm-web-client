@@ -1352,3 +1352,8 @@ input[type="password"] {
 input[disabled] {
 		@InputField-disabled@
 	}
+
+/* bug 51085: Hack to fix the alignment issue of Preferences header*/
+.ImgPrefsHeader{
+    width: auto !important;
+}
