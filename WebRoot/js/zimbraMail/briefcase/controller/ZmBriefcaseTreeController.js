@@ -105,7 +105,7 @@ function(actionMenu, type, id) {
                 }
                 menuItem.setEnabled(isShareVisible);
             }
-
+        }
         var op = actionMenu.getOp(ZmOperation.DELETE);
         if (op) {
             op.setText(deleteText);
