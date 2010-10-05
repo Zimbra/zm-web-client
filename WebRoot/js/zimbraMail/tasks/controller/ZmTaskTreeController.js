@@ -54,15 +54,20 @@ ZmTaskTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;
 	var folder = appCtxt.getById(id);
+    var isShareVisible = true;
 
 	parent.enableAll(true);
 	if (folder) {
-		if (folder.isSystem()) {
-			parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
-		} else if (folder.link && !folder.isAdmin()) {
-			parent.enable([ZmOperation.SHARE_TASKFOLDER], false);
-		}
-		parent.enable(ZmOperation.SYNC, folder.isFeed());
+        if (folder.isSystem()) {
+            parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
+        } else if (folder.link && !folder.isAdmin()) {
+            isShareVisible = false;
+        }
+        if (appCtxt.isOffline) {
+            isShareVisible = !folder.getAccount().isMain;
+        }
+        parent.enable([ZmOperation.SHARE_TASKFOLDER], isShareVisible);
+        parent.enable(ZmOperation.SYNC, folder.isFeed());
 	}
 
 	var op = parent.getOp(ZmOperation.DELETE);

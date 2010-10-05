@@ -103,6 +103,9 @@ function(parent, type, id) {
 	var nId = ZmOrganizer.normalizeId(id, this.type);
 	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder())) {
 		var isShareVisible = (!folder.link || folder.isAdmin());
+        if (appCtxt.isOffline) {
+            isShareVisible = (folder && !folder.getAccount().isMain);            
+        }
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
 		parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());

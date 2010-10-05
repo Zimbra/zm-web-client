@@ -136,7 +136,11 @@ function(actionMenu, type, id) {
 		var nId;
 		if (calendar) {
 			nId = calendar.nId;
-			actionMenu.enable(ZmOperation.SHARE_CALENDAR, (!calendar.link || calendar.isAdmin()));
+            var isShareVisible = !calendar.link || calendar.isAdmin();
+            if (appCtxt.isOffline) {
+                isShareVisible = !calendar.getAccount().isMain;
+            }
+			actionMenu.enable(ZmOperation.SHARE_CALENDAR, isShareVisible);
 			actionMenu.enable(ZmOperation.SYNC, calendar.isFeed());
 		} else {
 			nId = ZmOrganizer.normalizeId(id);

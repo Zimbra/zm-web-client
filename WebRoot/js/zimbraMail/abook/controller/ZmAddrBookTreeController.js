@@ -123,14 +123,17 @@ function(parent, type, id) {
 		deleteText = ZmMsg.emptyTrash;
 	} else {
 		parent.enableAll(true);
-		if (addrBook) {
-			if (addrBook.isSystem()) {
-				parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
-			} else if (addrBook.link) {
-				parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.link || addrBook.isAdmin());
-			}
-		}
-	}
+        if (addrBook) {
+            if (addrBook.isSystem()) {
+                parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
+            } else if (addrBook.link) {
+                parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.link || addrBook.isAdmin());
+            }
+            if (appCtxt.isOffline) {
+                parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.getAccount().isMain);
+            }
+        }
+    }
 
 	if (addrBook) {
 		parent.enable(ZmOperation.EXPAND_ALL, (addrBook.size() > 0));

@@ -99,9 +99,12 @@ function(actionMenu, type, id) {
                 menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_BRIEFCASE);
                 menuItem.setText(ZmMsg.shareFolder);
                 menuItem.setImage(isBriefcase ? "SharedMailFolder" : "Section");
-                menuItem.setEnabled(!isLinkOrRemote || briefcase.isAdmin());
+                var isShareVisible = (!isLinkOrRemote || briefcase.isAdmin());
+                if (appCtxt.isOffline) {
+                    isShareVisible = !briefcase.getAccount().isMain;
+                }
+                menuItem.setEnabled(isShareVisible);
             }
-        }
 
         var op = actionMenu.getOp(ZmOperation.DELETE);
         if (op) {
