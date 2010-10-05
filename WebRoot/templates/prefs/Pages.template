@@ -1635,7 +1635,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
     </tr>
     <tr>
         <td class='ZOptionsLabel'>&nbsp;</td>
-        <td class='ZOptionsField'><$=ZmMsg.calendarWorkHoursDisclaimer $> <$=appCtxt.get(ZmSetting.DEFAULT_TIMEZONE) $></td>
+        <td class='ZOptionsField'><$=ZmMsg.calendarWorkHoursDisclaimer $> <$=AjxTimezone.getMediumName(appCtxt.get(ZmSetting.DEFAULT_TIMEZONE)) $></td>
     </tr>
 </table>
 </template>
@@ -1685,7 +1685,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
         <td id='${id}_CAL_WORKING_END_TIME_6' tabindex='210'></td>
     </tr>
     <tr>
-        <td colspan="4"><$=ZmMsg.calendarWorkHoursDisclaimer $> <$=appCtxt.get(ZmSetting.DEFAULT_TIMEZONE) $></td>
+        <td colspan="4"><$=ZmMsg.calendarWorkHoursDisclaimer $> <$=AjxTimezone.getMediumName(appCtxt.get(ZmSetting.DEFAULT_TIMEZONE)) $></td>
     </tr>
 </table>
 </template>
