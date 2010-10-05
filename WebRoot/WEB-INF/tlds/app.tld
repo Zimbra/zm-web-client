@@ -136,6 +136,11 @@
     </tag-file>
 
     <tag-file>
+        <name>convRowView</name>
+        <path>/WEB-INF/tags/conv/convRowView.tag</path>
+    </tag-file>
+
+    <tag-file>
        <name>convListView</name>
         <path>/WEB-INF/tags/conv/convListView.tag</path>
     </tag-file>
@@ -288,7 +293,12 @@
 
     <tag-file>
         <name>messageColumnView</name>
-            <path>/WEB-INF/tags/message/messageColumnView.tag</path>
+        <path>/WEB-INF/tags/message/messageColumnView.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>messageRowView</name>
+        <path>/WEB-INF/tags/message/messageRowView.tag</path>
     </tag-file>
 
     <tag-file>

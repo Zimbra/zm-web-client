@@ -22,9 +22,18 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:set var="label" value="${zm:getFolderPath(pageContext, folder.id)}"/>
-<c:url var="url" value="${empty base ? 'zmain' : base}">
+<c:choose>
+    <c:when test="${ua.isiPad == true}">
+        <c:set var="baseUrl" value="zipad"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="baseUrl" value="zmain"/>
+    </c:otherwise>
+</c:choose>
+<c:url var="url" value="${empty base ? baseUrl  : base}">
     <c:param name="sfi" value="${folder.id}"/>
     <c:if test="${!empty types}"><c:param name="st" value="${types}"/></c:if>
+    <c:if test="${empty types}"><c:param name="st" value="${folder.isMessageView ? 'message' : folder.isConversationView ? 'conversation' : 'message'}"/></c:if>
 </c:url>
 <div class='Folders ${param.id eq folder.id ? 'StatusWarning' : ''} list-row${folder.hasUnread ? '-unread' : ''}'
      <c:if test="${types ne 'cal' && !ua.isIE}">onclick='return zClickLink("FLDR${folder.id}")'</c:if>>
@@ -38,7 +47,7 @@
     </c:if>
     <span class='td left' onclick='return zClickLink("FLDR${folder.id}")' width="94%">
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
-            <span class="SmlIcnHldr Fldr${folder.type}">&nbsp;</span>
+            <c:if test="${ua.isiPad eq false}"><span class="SmlIcnHldr Fldr${folder.type}">&nbsp;</span></c:if>
             <c:choose>
                 <c:when test="${folder.hasUnread}">
                     <c:set var="folderName" value="${label} (${folder.unreadCount})"/>

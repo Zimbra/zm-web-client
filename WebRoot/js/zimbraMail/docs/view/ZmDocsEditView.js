@@ -104,6 +104,10 @@ function(files, conflicts) {
                 wAppCtxt = window.opener.appCtxt;
             }
             appCtxt.setStatusMsg(ZmMsg.savedDoc, ZmStatusView.LEVEL_INFO);
+
+            if(this._saveClose){
+                window.close();
+            }
         }
     }
 
@@ -327,6 +331,12 @@ function() {
 };
 
 ZmDocsEditView.prototype._saveButtonListener = function(ev) {
+    this._saveClose = false;
+    this.save();
+};
+
+ZmDocsEditView.prototype._saveCloseButtonListener = function(ev) {
+    this._saveClose = true;
     this.save();
 };
 
@@ -594,6 +604,15 @@ ZmDocsEditView.prototype._createToolbar = function(toolbar) {
     b.setToolTipContent(ZmMsg.save);
 
     new DwtControl({parent:toolbar, className:"vertSep"});
+
+    var b = this._buttons.saveAndCloseFile = new DwtToolBarButton(params);
+    b.setImage("Save");
+    b.setText(ZmMsg.saveClose);
+    b.setData(ZmDocsEditView.ZD_VALUE, "Save&Close");
+    b.addSelectionListener(new AjxListener(this, this._saveCloseButtonListener));
+    b.setToolTipContent(ZmMsg.saveClose);
+
+    new DwtControl({parent:toolbar, className:"vertSep"});    
 
     var listener = new AjxListener(this, this._tbActionListener);
     /*

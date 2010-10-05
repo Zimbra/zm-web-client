@@ -115,3 +115,8 @@ body, #skin_container_splash_screen { @ChromeBg@ }
 .ZmPickerOverview .DwtCalendarTitle {
 	 color: #ffffff;
 }
+
+.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
+	background-color: #fff;
+	border-bottom-color: #fff;
+}

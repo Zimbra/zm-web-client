@@ -1,0 +1,534 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+BODY						{	margin:0px; 				}
+
+
+#skin_outer *				{	@FixBoxModel@	}
+
+/** generics **/
+.skin_table					{	width:100%; height:100%; 						}
+.skin_container				{	width:100%; height:100%; position:relative;		}
+.skin_container_ad			{	width:100%; height:100%; position:relative; 	}
+
+/* hide the main screen initially - hide if html facade is not needed */
+#skin_outer					{	display:none;				}
+
+/* hide search builder initially */
+#skin_tr_search_builder		{	display:none;				}
+
+/* hide all ads initially */
+.skin_outer_ad				{	display:none;				}
+
+
+
+/** Outer container of the entire skin **/
+#skin_outer 							{	@SkinOuter@			}
+#skin_table_outer						{	padding:0px;		}
+
+
+/** set the height for the top row -- must be set to a fixed number! **/
+#skin_spacing_top_row					{	height:40px; 
+											background-color: @MastheadColor@;
+											background-image: -moz-linear-gradient(top, @MastheadColor@, @darken(MastheadColor,50)@); /* FF3.6 */
+ 											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @MastheadColor@),color-stop(1, @darken(MastheadColor,50)@)); /* Saf4+, Chrome */
+    										filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@MastheadColor@', EndColorStr='@darken(MastheadColor,50)@'); /* IE6,IE7 */
+    										-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@MastheadColor@', EndColorStr='@darken(MastheadColor,50)@')"; /* IE8 */
+}
+
+
+/** Logo displayed in the app **/
+#skin_spacing_logo						{}
+#skin_container_logo					{	width:auto;		}
+		
+#skin_spacing_filler				{	
+	height:15px; 
+	background-color: #FFFFFF;
+	background-image: -moz-linear-gradient(top, #FFFFFF, @AppC@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #FFFFFF),color-stop(1, @AppC@)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@AppC@'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@AppC@')"; /* IE8 */
+ }
+	
+	
+	
+/** Search box **/	
+#skin_spacing_search_row				{	text-align:left;	}
+#skin_spacing_search					{	width:100%; padding-bottom:3px; @cssValue(HSashContainer,width)@; text-align:right;			}
+#skin_container_search					{	max-width:700px;	}
+
+#skin_container_people_search			{	width:150px; }
+	
+
+/** Search Builder & its toolbar **/
+#skin_spacing_search_builder			{	padding-bottom:5px;	}
+#skin_container_search_builder			{	@SkinBorderSB@	}
+#skin_spacing_search_builder_toolbar	{}
+#skin_container_search_builder_toolbar	{	@SkinBorderSBToolbar@		}
+
+
+/** combined username/quota **/
+#skin_spacing_tree_top					{	text-align:center;	}
+#skin_container_tree_top				{	@SkinBorderUsername@	}
+
+#skin_container_links					{	padding: 0px 5px 0px 20px; }
+
+/** User Name section **/
+#skin_container_username				{	height:auto; padding-top:2px;	}
+#skin_container_username *				{	color:#FFF; font-weight:normal;	}
+
+/** Quota section **/	
+#skin_container_quota					{	@SkinBorderQuota@	}
+
+/** Tree Toolbar a.k.a.  "current app" **/
+#skin_spacing_current_app				{}
+#skin_container_current_app				{	@SkinBorderCurrentApp@		}
+
+#skin_container_adminlink				{	padding-right: 7px			}
+
+#skin_td_switch_offline,
+#skin_container_help,
+#skin_container_logoff					{
+	white-space:nowrap;
+	text-align: center;
+}
+#skin_td_switch_offline a,
+#skin_container_help a:link,
+#skin_container_logoff a:link				{	color:#fff;		}	
+
+#skin_container_help,
+#skin_container_logoff					{
+	padding-left: 5px;
+	padding-right: 10px;
+}
+
+/** Tree Toolbar **/
+#skin_spacing_tree						{	height:100%; padding-bottom:5px;			}
+#skin_container_tree					{	@SkinBorderTree@ border-top-width:1px		}
+
+.overviewHeader,
+.DwtListView-Column							{
+  background-color: @lighten(AppC,27)@;
+  background-image: -moz-linear-gradient(top, @lighten(AppC,27)@, @darken(AppC,3)@); /* FF3.6 */
+  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @lighten(AppC,27)@),color-stop(1, @darken(AppC,3)@)); /* Saf4+, Chrome */
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AppC,27)@', EndColorStr='@darken(AppC,3)@'); /* IE6,IE7 */
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AppC,27)@', EndColorStr='@darken(AppC,3)@')"; /* IE8 */
+}
+
+/** Tree Footer (mini-calendar) **/
+#skin_tr_tree_footer					{ display: none; }
+#skin_spacing_tree_footer				{}
+#skin_container_tree_footer				{	@SkinBorderMiniCal@ border-width:1px 1px 0px 0px;	}
+
+
+/** Tree/App Sash **/
+#skin_spacing_tree_app_sash				{}
+#skin_container_tree_app_sash			{	@SkinBorderTreeSash@		}
+
+/** App Chooser **/
+#skin_spacing_app_row					{ 
+	background-color:@AppC@; 
+	background-image: url("@SkinImgDir@/vmwareLogo.png");
+	background-position: right center;
+	background-repeat:no-repeat;
+	padding:0px 10px 0px; 
+	margin-top:-4px;
+}
+#skin_spacing_app_chooser				{}
+#skin_border_app_chooser				{ height:27px;}
+
+#skin_container_app_chooser				{
+	position:absolute;
+	width:auto;
+	z-index:1;
+	height:30px;
+}
+
+/** App Toolbar **/
+#skin_spacing_app_top_toolbar			{	}
+#skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@	width:auto;	}
+
+/** App  **/
+#skin_spacing_app_main					{	height:100%;			}
+#skin_container_app_main				{	@SkinBorderApp@ border-width:1px 0px 0px 1px;	}
+
+
+
+/** Top ad **/
+#skin_spacing_top_ad					{}
+#skin_container_top_ad					{	@AdStyle@ height:@TopAdHeight@;		}
+
+/** Sidebar ad **/
+#skin_spacing_sidebar_ad				{	padding:10px 0px 0px 5px;		}
+#skin_container_sidebar_ad				{	@AdStyle@ width:@SidebarAdWidth@;		}
+
+
+
+/** Tree Top Ad **/
+#skin_spacing_tree_top_ad				{}
+#skin_container_tree_top_ad				{	@AdStyle@ height:@TreeTopAdHeight@;		}
+
+
+/** Tree Bottom Ad **/
+#skin_spacing_tree_bottom_ad			{}
+#skin_container_tree_bottom_ad			{	@AdStyle@ height:@TreeBottomAdHeight@;	}
+
+/** Bottom ad **/
+#skin_spacing_bottom_ad					{}
+#skin_container_bottom_ad				{	@AdStyle@ height:@BottomAdHeight@;		}
+
+
+
+/*** HACKS: this makes the tables work properly -- rationalize this!  **/
+#skin_td_tree				{	width:@TreeStartWidth@;	}
+#skin_td_tree_app_sash 		{	width:@SashSize@;	}
+#skin_td_main				{	width:auto;	}
+#skin_td_sidebar_ad			{	width:@SidebarAdWidth@;	}
+
+
+
+/** LoginPanel and Splash screen **/
+#skin_container_splash_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}
+
+#ZLoginPanel 			{	@LoginPanelOuterBorder@	}	
+#ZLoginBodyContainer	{	@LoginPanelInnerBorder@	}
+
+#ZSplashPanel			{	@SplashOuterBorder@		}
+#ZSplashBodyContainer	{	@SplashInnerBorder@		}
+
+.SplashScreen {	position:absolute;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:11px;
+	
+	background-color: @SplashColor@;
+	background-image: -moz-linear-gradient(top, @SplashColor@, @darken(LoginColor,50)@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @SplashColor@),color-stop(1, @darken(LoginColor,50)@)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@SplashColor@', EndColorStr='@darken(LoginColor,50)@'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@SplashColor@', EndColorStr='@darken(LoginColor,50)@')"; /* IE8 */
+}
+.SplashScreen #center {	
+	width:500px;
+	min-height:300px;
+	margin-top:-150px;
+	margin-left:-250px;
+}	
+.SplashScreen #center-small {
+	width:350px;
+	height:270px;
+	margin-top:-135px;
+	margin-left:-175px;
+}
+.SplashScreen #center, .SplashScreen #center-small {
+	position:absolute;
+	top:50%;
+	left:50%;
+	overflow:visible;
+	
+	/*Linear gradient backgrounds*/
+	background-color: @darken(LoginColor,30)@;
+	background-image: -moz-linear-gradient(top, @LoginColor@, @darken(LoginColor,50)@); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @LoginColor@),color-stop(1, @darken(LoginColor,50)@)); /* Saf4+, Chrome */
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@LoginColor@', EndColorStr='@darken(LoginColor,50)@'); /* IE6,IE7 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@LoginColor@', EndColorStr='@darken(LoginColor,50)@')"; /* IE8 */
+
+	/*Radial gradient backgrounds*/
+	background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @LoginColor@ 0%, @darken(LoginColor,50)@ 100%); /* FF3.6 */
+	background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@LoginColor@), to(@darken(LoginColor,50)@) ); /* Saf4+, Chrome */
+
+	-moz-border-radius: 15px; /* FF1+ */
+	-webkit-border-radius: 15px; /* Saf3-4 */
+	border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
+	
+	-moz-box-shadow: 0px 0px 10px #000000; /* FF3.5+ */
+	-webkit-box-shadow: 0px 0px 10px #000000; /* Saf3.0+, Chrome */
+	box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
+	filter: progid:DXImageTransform.Microsoft.Glow(Color=@darken(LoginColor,50)@, Strength=3); /* IE6,IE7 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.Glow(Color=@darken(LoginColor,50)@, Strength=3)"; /* IE8 */
+}
+.SplashScreen #title {
+	margin:0px;
+	font-size:1px;
+	height:135px;
+	background-color:#4d4d4d;
+	color:#b3b3b3;
+	padding:20px 0px 0px 75px;
+	border:solid #676767;
+	border-width:1px 1px 0px;
+	
+	-moz-border-radius-topleft: 15px;
+	-moz-border-radius-topright: 15px;
+	-webkit-border-top-left-radius: 15px;
+	-webkit-border-top-right-radius: 15px;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+}
+.SplashScreen #content {
+	color:@lighten(LoginColor,36)@; 
+	font-size:10px;
+	text-align:center;
+}
+.SplashScreen #message {
+	color:#FFFFFF;
+	font-size:14px;
+	font-weight:bold;
+	padding-top:20px;
+}
+.SplashScreen #switch{
+	margin:30px 0px 60px;
+}
+.SplashScreen #switch a{
+	color: #FFFFFF;
+}
+.SplashScreen #copyright {
+	color:@lighten(LoginColor,36)@; 
+	text-align:center;
+	margin:3px 0px;
+}
+
+
+
+/** Logo Images **/
+.ImgAppBanner			{	@AppBanner@	background-repeat:no-repeat;	}
+.ImgLoginBanner			{	@LoginBanner@	}	
+
+
+
+
+
+/* TO INTEGRATE */
+.DwtVerticalSash div {
+	position:relative;
+	top:1px;
+	margin-top:0px;
+}
+
+
+.UserInfoLink {
+	width:100%;
+	text-align:left;
+	white-space:nowrap;
+}
+
+.ZmPicker .ZToolbar {
+	@WidgetHeaderContainer@
+	@WidgetHeaderContainer-normal@
+}
+
+
+.BannerTextUser {
+	font-weight:bold;
+	overflow: hidden !important;
+}
+
+.BannerTextUserOffline {
+	text-align: left !important;
+	padding: 0px 3px;
+	font-weight: bold;
+}
+
+
+
+/* App Chooser and App Tab Overrides -- TODO: Merge into main */
+
+.ZmAppChooser					{	margin:0px !important; 		}
+
+.ZAppTab						{	height:23px;					}
+.ZAppTabBorder                  {   
+	@AppTabRoundCorners@;  
+	background-color: #FFFFFF;
+	background-image: -moz-linear-gradient(top, #FFFFFF, @lighten(AppC,23)@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #FFFFFF),color-stop(1, @lighten(AppC,23)@)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,23)@'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,23)@')"; /* IE8 */
+}
+.ZHover .ZAppTabBorder			{   
+	background-image: -moz-linear-gradient(top, #FFFFFF, @lighten(AppC,50)@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #FFFFFF),color-stop(1, @lighten(AppC,50)@)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,50)@'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,50)@')"; /* IE8 */
+}
+
+.ZAppTabBorder .ZLeftIcon 		{	padding-left:5px;			}
+.ZAppTabBorder .ZWidgetTitle 	{	padding-right:10px;			}
+
+.ZSelectedPrev .ZAppTabBorder 	{	@AppTabBorder-selectedPrev@	}
+.ZSelectedNext .ZAppTabBorder	{	@AppTabBorder-selectedNext@	}
+.ZFirstItem .ZAppTabBorder 		{	@AppTabBorder-first@		}
+.ZAppTabSpacer 					{	@AppTab@ @AppTabSpacer@		}
+
+.ZSelected .ZAppTabBorder		{	border-bottom-color: #fff; background-color: #fff; background-image: none;	}
+
+
+
+/* Normal Tab Overrides  -- TODO: Merge into main */
+
+.ZSelectedPrev .ZTabBorder 		{	@TabBorder-selectedPrev@	}
+.ZSelectedNext .ZTabBorder		{	@TabBorder-selectedNext@	}
+.ZFirstItem .ZTabBorder 		{	@TabBorder-first@			}
+.ZLastItem .ZTabBorder 			{	@TabBorder-last@			}
+.ZTabBarPrefix 					{	@TabBarPrefix@				}
+.ZTabBarSuffix 					{	@TabBarSuffix@				}
+
+
+.ZOptionsHeader					{	color:#000;	}
+
+/* Quota */
+.quotaBar 						{	height:8px;			}
+
+/* USED? */
+.quotaLabel {		
+	@FontSize-smaller@
+	text-align:right;
+}
+
+
+
+.ZmInviteToolBar .ZToolbarTable, .ZmShareToolBar .ZToolbarTable {
+	height:100%;
+}
+
+
+/* offline */
+.ZmNetworkStatus 		{ font-weight: bold; }
+.ZmNetworkStatusIcon 	{ cursor: pointer; }
+
+/* Input stuff -- adding classes properly -- TODO: put this back into dwt.css  */
+.DwtInputField INPUT[type="text"], 
+.DwtInputField INPUT[type="password"],
+.DwtSimpleInput {
+	@InputField@
+	@InputField-normal@
+}
+.DwtInputField TEXTAREA {
+	@TextArea@
+	@TextArea-normal@
+}
+
+.DwtInputField-error INPUT[type="text"],
+.DwtInputField-error INPUT[type="password"],
+.DwtSimpleInput-error {
+	@InputField@
+	@InputField-error@
+}
+.DwtInputField-error TEXTAREA {
+	@TextArea@
+	@TextArea-error@
+}
+
+.DwtInputField-focused INPUT[type="text"],
+.DwtInputField-focused INPUT[type="password"],
+.DwtSimpleInput-focused {
+	@InputField@
+	@InputField-focused@
+}
+.DwtInputField-focused TEXTAREA {
+	@TextArea@
+	@TextArea-focused@
+}
+
+.DwtInputField-disabled INPUT[type="text"],
+.DwtInputField-disabled INPUT[type="password"],
+.DwtSimpleInput-disabled {
+	@InputField@
+	@InputField-disabled@
+}
+.DwtInputField-disabled TEXTAREA {
+	@TextArea@
+	@TextArea-disabled@
+}
+
+.DwtInputField-hint INPUT[type="text"],
+.DwtInputField-hint INPUT[type="password"],
+.DwtInputField-hint INPUT,
+.DwtSimpleInput-hint {
+	@InputField@
+	@InputField-normal@
+	@InputField-hint@
+}
+.DwtInputField-hint TEXTAREA {
+	@TextArea@
+	@InputField-hint@
+
+}
+
+.DwtInputField-errorhint INPUT[type="text"],
+.DwtInputField-errorhint INPUT[type="password"],
+.DwtSimpleInput-errorhint {
+	@InputField@
+	@InputField-error@
+	@InputField-hint@
+}
+.DwtInputField-errorhint TEXTAREA {
+	@TextArea-error@
+	@Text-light@
+}
+TEXTAREA
+.BannerBar * {
+	@FontSize-smaller@
+}
+
+.BannerBar {
+	padding-top:1px;
+}
+.BannerBar TD {
+	padding-right:0px;
+}
+.BannerTextQuota {
+	text-align:center;
+	vertical-align:top;
+}
+.BannerTextUser,
+.BannerTextQuota {
+	cursor:default;
+}
+
+.BannerTextQuota-MultiAccount {
+	padding-top:5px;
+}
+
+
+/* styles for the HTML client */
+INPUT[type="text"],
+INPUT[type="password"]		{	@FieldBorder@	}
+SELECT						{	@FieldBorder@	}
+.TabSpacer 					{	display:none;		}
+.Tab						{	white-space:nowrap;	height:30px; padding-right:5px !important;	}
+.TbTop						{	border-width:0 1 1 0 !important; padding-right:5px !important;	}
+.TbBottom					{	border-width:0 1 1 0 !important; padding-right:5px !important;	}
+.TabFiller					{	@AppTabSpacer@ width:100%;	}
+.List .Header TH			{	@RightSeparator@	}
+.ZhSubTabs					{	@TabBar@	}
+.ZhSubTabs					{	padding:5px !important;	}
+.ZhSubTabs .TabSelected		{	@TabBorder-selected@	}
+
+.ZhRow TD,
+.ZhRowOdd TD				{	border-width:0 0 1 0 !important; padding-left:3px !important;	}
+
+/* Quick fix for selected Adv. Search button */
+
+.ZmSearchToolbarCell .ZSelected .ZToolbarButtonBorder{
+ 	-moz-border-top-colors:#77736A #BFB8A9;
+ 	-moz-border-right-colors:#A7A194 #F0E9D8;
+ 	-moz-border-left-colors:#77736A #BFB8A9;
+ 	-moz-border-bottom-colors:#A7A194 #F0E9D8;
+ 	background-color:#FBF9F4 !important;
+ 	border: 2px inset; 
+}
+
+/* People Search */
+.ZmPeopleSearchToolbarDiv	{	background-color: #FFF;	}

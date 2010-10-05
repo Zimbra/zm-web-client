@@ -117,7 +117,12 @@
                 </c:otherwise>
             </c:choose>
         </c:forEach>
-        
+
+        <c:set var="version" value="${doc.version}"/>
+        <c:if test="${not empty param.ver}">
+            <c:set var="version" value="${param.ver}"/>
+        </c:if>
+
     </head>
     <body>
     <table width="100%" height="100%" cellspacing="0" cellpadding="0">
@@ -136,7 +141,7 @@
                     </tr>
                     <tr>
                         <td><fmt:message key="labelBy"/>&nbsp;${doc.creator}</td>
-                        <td align="right"><fmt:message key="labelVersion"/>: ${doc.version}  |  <fmt:message key="labelModifiedOn"/>: <fmt:formatDate value="${doc.modifiedDate}" pattern="M/d/yyyy h:mm a" timeZone="${timeZone}"/></td>
+                        <td align="right"><fmt:message key="labelVersion"/>: <span id="version_cont">${doc.version}</span>  |  <fmt:message key="labelModifiedOn"/>: <fmt:formatDate value="${doc.modifiedDate}" pattern="M/d/yyyy h:mm a" timeZone="${timeZone}"/></td>
                     </tr>
                     </table>
                 </td>
@@ -161,7 +166,10 @@
     </table>
     <script type="text/javascript">
         ZmDocsPreview._createDBG('${isDevMode}');
-        ZmDocsPreview.launch('zdocument');
+        ZmDocsPreview.launch('zdocument', {
+            version: '${version}',
+            versionCont: "version_cont"
+        });
     </script>
     </body>
 </html>

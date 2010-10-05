@@ -121,3 +121,8 @@ body	{  @ChromeBg@ }
 .ZOptionsSectionTable .ZToolbarButtonTable .ZWidgetTitle {
 	color: #333;
 }
+
+.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
+	background-color: #fff;
+	border-bottom-color: #fff;
+}

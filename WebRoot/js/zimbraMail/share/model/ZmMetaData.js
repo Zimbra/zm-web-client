@@ -90,7 +90,13 @@ function(section, data, batchCommand, callback, errorCallback) {
 	metaNode.setAttribute("section", [ZmMetaData.NAMESPACE, section].join(":"));
 
 	for (var i in data) {
-		var a = soapDoc.set("a", data[i], metaNode);
+		var d = data[i];
+
+		// serialize if we're dealing with an object
+		if (AjxUtil.isObject(d)) {
+			d = ZmSetting.serialize(d, ZmSetting.D_HASH);
+		}
+		var a = soapDoc.set("a", d, metaNode);
 		a.setAttribute("n", i);
 	}
 

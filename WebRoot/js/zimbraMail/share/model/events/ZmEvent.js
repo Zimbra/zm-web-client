@@ -92,6 +92,10 @@ ZmEvent.E_TAGS			= "TAGS";
  * Defines the "zimlets" event type.
  */
 ZmEvent.E_ZIMLETS		= "ZIMLET";
+/**
+ * Defines the "complete" event type.
+ */
+ZmEvent.E_COMPLETE		= "COMPLETE";
 
 // Public methods
 

@@ -104,23 +104,18 @@ var XHR = function(justTest) { //get the ajx
     return xhr;
 };
 var sAT = function(tabId){ //set active tab
-    tabId = tabId.replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail');
+    tabId = tabId.replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail').replace(/(prefs)/,'options');
     var targ = $(tabId);
     if(targ && targ.id.match(/(mail|contact|cal|tasks|options)/ig)){
         var ids = ['mail','contact','cal','tasks','options'];
         for(var i=0, len = ids.length; i < len;i++){
             var eid = ids[i];
             var  e = $(eid);
-            if(e.id == targ.id){
+            if(e && e.id == targ.id){
                 e.parentNode.className = "sel";
-            } else {
+            } else if(e) {
                 e.parentNode.className = "";
             }
-        }
-    }
-    if(targ && targ.id.match(/(mail|contact)/ig)) {
-        if(myScroll) {
-            myScroll.scrollTo(0,0);
         }
     }
 };
@@ -271,18 +266,57 @@ var AC = function(f,c){ //Register auto complete on field f and populate contain
         f.addEventListener("keydown", function(e){if (!e) e = event ? event : window.event;var k = e.keyCode?  e.keyCode : e.which; if((k==13 || k == 38 || k==40) && c.style.display=="block"){ window.acon = true;stopEvent(e);return false;}},true);
     }
 };
+
+var delClass = function(el, del, add) {
+	if (el == null) { return; }
+	if (!del && !add) { return; }
+
+	if (typeof del == "string" && del.length) {
+		del = _DELCLASS_CACHE[del] || (_DELCLASS_CACHE[del] = new RegExp("\\b" + del + "\\b", "ig"));
+	}
+	var className = el.className || "";
+	className = className.replace(del, " ");
+	el.className = add ? className + " " + add : className;
+};
+
+_DELCLASS_CACHE = {};
+
+var addClass = function(el, add) {
+    delClass(el, add, add)
+}
+
+var selId = null;
+var mailId = null;
+
 var zClickLink = function(id, t, el) { //Click on href and make ajx req if available
+    mailId = id;
     if((window.evHandled) !== undefined && window.evHandled) { return false; }
     var targ = el ? el.parentNode : (id ? $(id) : t );
     if(!targ) {return false;}
     if (targ.onclick) {var r=false;<c:if test="${!ua.isIE && !ua.isOpera}">r = targ.onclick();</c:if> if(!r)return false;}
+
+    //highlight the selected item
+    // TODO:need to handle multiple selection, move this to a separate method
+    if ((targ.tagName  == "a" || targ.tagName == "A") && (targ.id.toString().charAt(0) == 'a')) {
+        var targId = targ.id.toString();
+        var chitid = targId.substr(1, targId.length-1);
+        var elem = "conv" + chitid;
+        var element = $(elem);
+        addClass(element, 'msgContainerSel');
+        if (selId) {
+            delClass(selId, 'msgContainerSel');
+            selId = element;
+        } else {
+            selId = element;            
+        }
+    }
     var href = targ.href;
     if (!href || loading) {return false;}
     if (targ.target) {return true;}
     var xhr = XHR(true);
-    if($iO(href,"_replaceDate") > -1){
+    /*if($iO(href,"_replaceDate") > -1){
         href = href.replace(/date=......../, "date=" + currentDate);
-    }
+    }*/
     if (targ.attributes.noajax || !xhr) {
         window.location = href;
         return false;
@@ -295,7 +329,7 @@ var zClickLink = function(id, t, el) { //Click on href and make ajx req if avail
 };
 var lfr = function(response,frameId){ //Load frame response
     var req = {responseText: response,status: 200, readyState: 4};
-    parseResponse(req,GC(),$(frameId).src);
+    parseResponse(req,null,frameId);
 };
 
 var toParams = function(url){
@@ -308,7 +342,7 @@ var getFormValues = function(obj) {
     for (var i = 0, inp = obj.getElementsByTagName("input"), len = inp !== undefined ? inp.length : 0; i < len; i++) {
         var control = inp[i];//obj.getElementsByTagName("input")[i];
         var type = control.type ;
-        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password" || type == "image") {
+        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password" || (type == "image" && control._wasClicked) || type == "search") {
             getstr += control.name + "=" + escape(control.value) + "&";
         }
         if (type == "checkbox" || type == "radio") {
@@ -361,7 +395,7 @@ var submitForm = function(fobj, target, val) {
             createUploaderFrame(target);
         }
         fobj.target = target;
-        fobj.action = fobj.action.replace('ajax=true', '');
+        fobj.action = addParam(fobj.action,'ajax=true'); //fobj.action.replace('ajax=true', '');
         fobj.action = addParam(fobj.action,'isinframe=true');
         showLoadingMsg('<fmt:message key="MO_sendingRequestMsg"/>', true);
         fobj.submit();
@@ -406,7 +440,7 @@ var customClick = function (e) {
     } else {
         var tname = targ.tagName;
         var ttype = targ.type;
-        if(tname.match(/input/ig) && ttype.match(/submit/ig)){ //submit button; add clicked=true to it
+        if(tname.match(/input/ig) && (ttype.match(/submit/ig) || ttype.match(/image/ig))){ //submit button; add clicked=true to it
             targ._wasClicked = true;                                                          //ajxForm submit will send only clicked btns to server
             return true;
         }
@@ -459,9 +493,9 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
     }
     var xhr = false;
     if(((method == "GET" || method == "get")) && $iO(url,"_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
-           xhr = ajxCache.get([url,query].join("?"));
+           xhr = ajxCache.get(query ? [url,query].join("?") : url);
            if(xhr){
-                parseResponse(xhr, container,[url,query].join("?"));
+                parseResponse(xhr, container, query ? [url,query].join("?") : url);
                 return;
            }
     }
@@ -480,11 +514,11 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
             }
             if(xhr.readyState == 4){
                 if((method == "GET" || method == "get") && $iO(url,"_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
-                    ajxCache.set([url,query].join("?"),xhr,justPrefetch);
+                    ajxCache.set(query ? [url,query].join("?") : url,xhr,justPrefetch);
                 }
                 lastRendered = new Date().getTime();
                 if(!justPrefetch){
-                    parseResponse(xhr, container,[url,query].join("?"));
+                    parseResponse(xhr, container,query ? [url,query].join("?") : url);
                 }
             }
         };
@@ -507,17 +541,18 @@ var parseResponse = function (request, container,url) {
         }
         if(match){
             sAT(match[1]);
-            var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail');
+            var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders|newmail)/,'mail').replace(/(prefs)/,'options');
             var targ = $(tabId);
             if (targ) {
                 if (targ.id == 'contact') {
+                    $("st").value = 'contact';
                     $("view-contact").style.display = "block";
                     $("view-mail").style.display = "none";
                 } else if (targ.id == 'mail') {
+                    $("st").value = 'conversation';
                     $("view-mail").style.display = "block";
                     $("view-contact").style.display = "none";
-                }
-            }
+                }            }
             $("view-content").style.display = "none";
             $("static-content").style.display = "block";
         }
@@ -525,36 +560,24 @@ var parseResponse = function (request, container,url) {
             showLoadingMsg(null, false);
             var data = request.responseText;
             if (data) {
-                <c:if test="${(ua.isiPhone or ua.isiPod) and param.anim}">if(url.match(/st=prefs|action=edit|st=newmail|st=newappt|st=newtask/) || $('card').className.match(/flipped/)){
-                    slideElem(container,-1);
-                }else if(url.match(/_pv=1|_back|st=briefcases|st=notebooks|st=folders|st=tasks|st=ab|st=cals/)){
-                    slideElem(container,0);
-                }else if(url.match(/_pv=0|action=view|sti/)){
-                    slideElem(container,1);
-                }</c:if>
                 <c:if test="${!ua.isIE}">window.scrollTo(0,1);</c:if>
-                if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showABCreate') !=-1)  && (url.indexOf('hc=1') == -1)) {
-                    $("view-content").innerHTML = data;
-                    $("view-content").style.display = "block";
-                    $("static-content").style.display = "none";
-                } else if(url.indexOf('st=newmail') != -1) {
-                    $('compose-body').innerHTML = data;
-                    $("view-content").style.display = "block";
-                    $("static-content").style.display = "none";
-                    toggleCompose('compose-pop','veil');
-                } else {
-                    $("view-list").innerHTML = data;
-                    $("view-content").style.display = "none";
-                    if(myScroll) {
-                        loaded();
+                if(match) {  //TODO: need to clean up a lot 
+                    var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals|newappt)/ig,'cal').replace(/(message|conversation|folders|newmail)/,'mail').replace(/(ab)/,'contact').replace(/(prefs)/,'options');
+                    var targ = $(tabId);
+                    if(targ) {
+                        if(targ.id == 'cal' && targ.parentNode.className == 'sel') {
+                           ZmiPadCal.processResponse(data,url);
+                        } else if (targ.id == 'mail' && targ.parentNode.className == 'sel') {
+                           ZmiPadMail.processResponse(data,url);
+                        } else if (targ.id == 'contact' && targ.parentNode.className == 'sel') {
+                           ZmiPadContacts.processResponse(data,url);
+                        } else if (targ.id == 'options') {
+                           ZmiPadPrefs.processResponse(data,url);
+                        } else if (ZmiPad.getParamFromURL("st",url) == "newmail") {
+                           ZmiPadMail.processResponse(data,url);
+                        } 
                     }
                 }
-                /*var scripts = container.getElementsByTagName("script");
-                for (var i = 0; i < scripts.length; i++) {
-                    if (!scripts[i].src) {
-                        try{eval(scripts[i].innerHTML);}catch(e){if(window.console){console.log(e);}}
-                    }
-                }*/
             }
         } else {
             showLoadingMsg('<fmt:message key="error"/> : ' + request.status, true, 'Critical');
@@ -665,6 +688,14 @@ var toggleElem = function(elem, me, minMsg, maxMsg) {
     return false;
 };
 
+//initialize auto complete for mail compose view
+var initComposeAutoComplete = function() {
+    var fields = ['to', 'cc', 'bcc'];
+    for(var i=0; i < fields.length; i++) {
+        AC(fields[i] + "Field", fields[i] + "Container");
+    }
+};
+
 var toggleCompose = function(elem, veil) {
     if (!elem && !$(elem)) {return false;}
     if (!veil && !$(veil)) {return false;}
@@ -724,6 +755,16 @@ var GC = function(id) {
     return window.__container;
 };
 
+var zCheckUnCheck = function(el) {
+	var chkEl = (el.nodeName == 'INPUT') ? el : el.getElementsByClassName('chk')[0];
+	if(chkEl && chkEl.checked) {
+		chkEl.checked = false;
+	} else if(chkEl && !chkEl.checked) {
+		chkEl.checked = true;
+	}
+	return true;
+};
+
 //Init vals
 var MAX_CACHE_REQUEST = 50; // No of ajx get requests to cache
 var CACHE_DATA_LIFE = 20000; // miliseconds to keep the cache alive
@@ -734,24 +775,387 @@ var reqCount = 0;
 var reqTimer = null;
 var lastRendered = new Date().getTime();
 var ajxCache = new AjxCache(CACHE_DATA_LIFE);
-var myScroll = null;
+var listScroll = null;
+var contentScroll = null;
+var selectedConvId = null;
+var listConvListScroll = null;
 
 if(window.location.hash){
     sAT(window.location.hash);
 };
 
-var setHeight = function (){
-    document.getElementById('wrap-dlist-view').style.height = window.orientation == 90 || window.orientation == -90 ? '608px' : '864px';   
+var initListScroll = function () {
+    $('dlist-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
+    listScroll = new iScroll('dlist-view',{ checkDOMChanges: false, desktopCompatibility: true });
+    return listScroll;
 };
 
-var loaded = function () {
-	setHeight();
-    document.addEventListener('touchmove', function(e){ e.preventDefault(); });
-	myScroll = new iScroll('dlist-view');
+var initConvListScroll = function () {
+	if($('conv-view-dlist')) {
+    	$('conv-view-dlist').addEventListener('touchmove', function(e){ e.preventDefault(); });
+    	listConvListScroll = new iScroll('conv-view-dlist',{ checkDOMChanges: false, desktopCompatibility: true });
+	}
 };
 
-window.addEventListener('orientationchange', setHeight);
-document.addEventListener('DOMContentLoaded', loaded);
+
+var initPrefScroll = function () {
+    $('dlist-pref').addEventListener('touchmove', function(e){ e.preventDefault(); });
+    listScroll = new iScroll('dlist-pref',{ checkDOMChanges: false, desktopCompatibility: true });
+};
+
+var initContentScroll = function() {
+   if($("dcontent-view")) {
+       $("dcontent-view").addEventListener('touchmove', function(e){ e.preventDefault(); });
+       contentScroll = new iScroll('dcontent-view',{ checkDOMChanges: false, desktopCompatibility: true });
+   }
+}
+
+var init = function () {
+    var dlistview = document.getElementById('dlist-view');
+    if(dlistview) {
+	    dlistview.addEventListener('touchmove', function(e){ e.preventDefault(); });
+	    listScroll = new iScroll('dlist-view',{ checkDOMChanges: false,desktopCompatibility: true });
+    }
+}
+
+
+function ZmiPad() {
+};
+
+//div id's for all views
+ZmiPad.ID_VIEW_LIST = "view-list";
+ZmiPad.ID_VIEW_CONTENT = "view-content";
+ZmiPad.ID_VIEW_STATIC = "static-content";
+ZmiPad.ID_VIEW_MAIN = "view-main";
+
+ZmiPad.IDS_ALL_VIEW = [ZmiPad.ID_VIEW_LIST,ZmiPad.ID_VIEW_CONTENT,ZmiPad.ID_VIEW_STATIC,ZmiPad.ID_VIEW_MAIN]
+
+//id's to show based on view pattern (i.e's) either CoLUMN VIEW or MAIN VIEW
+ZmiPad.COLUMN_VIEW = [ZmiPad.ID_VIEW_LIST,ZmiPad.ID_VIEW_CONTENT,ZmiPad.ID_VIEW_STATIC];
+ZmiPad.MAIN_VIEW = [ZmiPad.ID_VIEW_MAIN];
+
+
+ZmiPad.initMainView = function() {
+    for(var i = 0; i < ZmiPad.IDS_ALL_VIEW.length; i++) {
+        var viewDiv = $(ZmiPad.IDS_ALL_VIEW[i]);
+        if(viewDiv && ZmiPad.MAIN_VIEW.indexOf(ZmiPad.IDS_ALL_VIEW[i]) != -1) {
+            viewDiv.style.display = "block";
+        } else {
+            viewDiv.style.display = "none";
+        }
+    }
+};
+
+ZmiPad.initColumnView = function() {
+    for(var i = 0; i < ZmiPad.IDS_ALL_VIEW.length; i++) {
+        var viewDiv = $(ZmiPad.IDS_ALL_VIEW[i]);
+        if(viewDiv && ZmiPad.COLUMN_VIEW.indexOf(ZmiPad.IDS_ALL_VIEW[i]) != -1) {
+            viewDiv.style.display = "block";
+        } else {
+            viewDiv.style.display = "none";
+            viewDiv.innerHTML = "";    
+        }
+    }
+};
+
+//get param value from url
+ZmiPad.getParamFromURL = function(param, url) {
+
+  param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+param+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( url );
+  if( results == null )
+    return "";
+  else
+    return results[1];
+
+};
+
+ZmiPad.processScript = function(id) {
+    var scripts = $(id).getElementsByTagName("script");
+    for (var i = 0; i < scripts.length; i++) {
+        if (!scripts[i].src) {
+            try{eval(scripts[i].innerHTML);}catch(e){if(window.console){console.log(e);}}
+        }
+    }
+};
+
+/*
+ZmiPadMail to process all Mail responses
+ */
+function ZmiPadMail() {
+
+};
+
+ZmiPadMail.processResponse = function (respData, url) {
+
+    ZmiPad.initColumnView();
+    $("conv-view-list").style.display = "none";
+    
+    if(ZmiPad.getParamFromURL("st",url) == "conversation" && (ZmiPad.getParamFromURL("hc",url) == "1" || ZmiPad.getParamFromURL("mview",url) == "1")) {
+		$("conv-view-list").style.display = "block";
+    }
+    
+    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1)  && (url.indexOf('hc=1') == -1)) {
+
+        $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
+        if(ZmiPad.getParamFromURL("mview",url) == "1") { $(ZmiPad.ID_VIEW_LIST).style.display = "none"; }
+        if(url.indexOf('action=view') != -1) ZmiPad.processScript(ZmiPad.ID_VIEW_CONTENT);
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        initContentScroll();
+        var targ = $(mailId);
+        if (targ && ((targ.tagName  == "a" || targ.tagName == "A") && (targ.id.toString().charAt(0) == 'a'))) {
+            var targId = targ.id.toString();
+            var chitid = targId.substr(1, targId.length-1);
+            var elem = "conv" + chitid;
+            var element = $(elem);
+			if (element.className.indexOf('list-row-unread') != -1) { 
+				addClass(element, "list-row"); 
+				delClass(element, "list-row-unread");
+			}
+		}
+    } else if(ZmiPad.getParamFromURL("showFolderCreate",url) == "1" || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1") {
+
+        $('compose-body').innerHTML = respData;
+        ZmiPad.processScript('compose-body');
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";      
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+        toggleCompose('compose-pop','veil');
+               
+    } else if(ZmiPad.getParamFromURL("doFolderAction", url) == "1") {
+		toggleCompose('compose-pop','veil');
+		$(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+        $("sq").blur();
+        initListScroll();
+    } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1 ) {
+
+        $('compose-body').innerHTML = respData;
+        ZmiPad.processScript('compose-body');
+        if(ZmiPad.getParamFromURL("compose",url) != "new") {
+          if($(ZmiPad.ID_VIEW_CONTENT).style.display == "none") { 
+          	$(ZmiPad.ID_VIEW_STATIC).style.display = "block"; 
+          } 
+        } else {
+          $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";      
+          $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+        }
+        if(ZmiPad.getParamFromURL("mview", url) == "1") {
+        	$(ZmiPad.ID_VIEW_LIST).style.display = "none";
+        	$("conv-view-list").style.display = "block";
+        }
+        toggleCompose('compose-pop','veil');
+        initComposeAutoComplete();
+
+    } else if(url.indexOf('show=more') != -1) {
+
+        $("dlist-view").removeChild(document.getElementById('more-div'));
+        $("dlist-view").innerHTML = $("dlist-view").innerHTML + respData;
+        
+        setTimeout(function(){listScroll.refresh();}, 1000);
+        
+    } else if(ZmiPad.getParamFromURL("st",url) == "conversation" && ZmiPad.getParamFromURL("isto",url) != "") {    //isto:iscroll to which element 
+		$("conv-view-list").style.display = "none";
+		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+        $("sq").blur();
+        //initListScroll();
+        if(selectedConvId != null) {
+	        var lastConvId = "conv" + selectedConvId;
+	        
+	        if(lastConvId != ZmiPad.getParamFromURL("isto",url)) {
+	        	$("dlist-view").removeChild($(lastConvId));
+	        }
+	        
+	        selectedConvId = null;
+        }
+        $(ZmiPad.ID_VIEW_LIST).style.display = "block";
+        
+        if($(ZmiPad.getParamFromURL("isto",url))) {
+        	listScroll.scrollToElement($(ZmiPad.getParamFromURL("isto",url)));
+        }
+        
+    } else {
+    	if(ZmiPad.getParamFromURL("st",url) == "conversation" && (ZmiPad.getParamFromURL("hc",url) == "1" || ZmiPad.getParamFromURL("mview",url) == "1")) {
+    		$("conv-view-list").innerHTML = respData;
+  			$("conv-view-list").style.display = "block";
+  			
+    		$(ZmiPad.ID_VIEW_LIST).style.display = "none";
+    		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+    		
+    		$(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+    		
+    		if(selectedConvId == null) {
+    			selectedConvId = ZmiPad.getParamFromURL("cid",url);
+    		}
+    		
+    		initConvListScroll();
+    		
+    	} else {
+    		$(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
+    		$(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+    		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+    		$("conv-view-list").style.display = "none";
+    		initListScroll();
+    	}
+    	
+        $("sq").blur();
+    }
+}
+
+ZmiPadMail.processPostComposeAction = function(statusMsg, compAction, response, iframeId) {
+	if(compAction == 'iPadDraft') {
+		$('compose-body').innerHTML = response;
+	} else if(compAction == 'iPadSend'){
+		toggleCompose('compose-pop','veil');
+		$('eaMsgDiv').innerHTML = statusMsg;
+		$('eaMsgDiv').style.display = '';
+		setTimeout(function() {return zClickLink('mail');},300);
+	}
+}
+
+
+
+/*
+ZmiPadContacts to process all Contact responses
+ */
+function ZmiPadContacts() {
+};
+
+ZmiPadContacts.processResponse = function (respData, url) {
+
+    ZmiPad.initColumnView();
+	$("conv-view-list").style.display = "none";
+	
+    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1) && (url.indexOf('hc=1') == -1)) {
+        $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        initContentScroll();
+    } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
+        $('compose-body').innerHTML = respData;
+        if(ZmiPad.getParamFromURL("compose",url) != "new") {
+          $(ZmiPad.ID_VIEW_STATIC).style.display = "none";  
+        } else {
+          $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+          $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+        }
+        toggleCompose('compose-pop','veil');
+    } else if(ZmiPad.getParamFromURL("showABCreate",url) == "1" || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1") {
+        $('compose-body').innerHTML = respData;
+        ZmiPad.processScript('compose-body');
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";      
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+        toggleCompose('compose-pop','veil');
+    } else if(ZmiPad.getParamFromURL("doFolderAction",url) == "1") {
+		toggleCompose('compose-pop','veil');
+		$(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+        $("sq").blur();
+        initListScroll();
+    } else if(url.indexOf('show=more') != -1) {
+        $("dlist-view").removeChild(document.getElementById('more-div'));
+        $("dlist-view").innerHTML = $("dlist-view").innerHTML + respData;
+        setTimeout(function(){listScroll.refresh(); }, 1000);
+    } else {
+        $(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+        $("sq").blur();
+        initListScroll();
+
+    }
+
+};
+
+/*
+ZmiPaCal to process all Calendar responses
+ */
+function ZmiPadCal() {
+};
+
+ZmiPadCal.processResponse = function (respData, url) {
+    ZmiPad.initMainView();
+    $("conv-view-list").style.display = "none";
+    
+    if(ZmiPad.getParamFromURL("st",url) == "newappt") {
+        $('compose-body').innerHTML = respData;
+        ZmiPad.processScript('compose-body');
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        if(ZmiPad.getParamFromURL("action",url) != "popup") {
+            toggleCompose('compose-pop','veil');                        
+        }
+    } else if(ZmiPad.getParamFromURL("action",url) == "view") {
+        $('compose-body').innerHTML = respData;
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+        toggleCompose('compose-pop','veil');
+    } else if(ZmiPad.getParamFromURL("view",url) == "day") {
+        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
+        initListScroll();
+        initContentScroll();
+    } else if(ZmiPad.getParamFromURL("view",url) == "list") {
+        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
+        initListScroll();
+        initContentScroll();   
+    } else if(ZmiPad.getParamFromURL("zoom",url) == "true") {
+        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;    
+        initContentScroll();
+    } else {
+        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
+    }
+}
+
+ZmiPadCal.processPostComposeAction = function(statusMsg, compAction, response, iframeId) {
+	if(compAction == 'iPadApptInvalid') {
+		$('compose-body').innerHTML = response;
+	} else if(compAction == 'iPadApptSave'){
+		toggleCompose('compose-pop','veil');
+		$('eaMsgDiv').innerHTML = statusMsg;
+		$('eaMsgDiv').style.display = '';
+		setTimeout(function() {return zClickLink('cal');},300);
+	}
+}
+
+/*
+ZmiPadTasks to process all the tasks responses
+ */
+//function ZmiPadTasks() {
+//};
+//
+//ZmiPadTasks.processResponse = function (respData, url) {
+//    ZmiPad.initColumnView();
+//
+//    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showTaskCreate') !=-1)  && (url.indexOf('hc=1') == -1)) {
+//        $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
+//        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
+//        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
+//        initContentScroll();
+//    } else {
+//        $(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
+//        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+//        $("sq").blur();
+//        initListScroll();
+//    }
+//}
+
+/*
+ZmiPadPrefs to process Preferences related responses
+ */
+function ZmiPadPrefs() {
+};
+
+ZmiPadPrefs.processResponse = function (respData, url) {
+    //if(ZmiPad.getParamFromURL("doPrefsAction",url) == 1) {
+        //Preferences have been saved, redirect to the mail app(default)
+    //    loading = false;
+        //zClickLink('mail');
+    //} else {
+        ZmiPad.initMainView();
+        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
+        initPrefScroll();
+    //}
+}
+window.addEventListener('load', init);
 
 <c:if test="${scriptTag}">
 //-->

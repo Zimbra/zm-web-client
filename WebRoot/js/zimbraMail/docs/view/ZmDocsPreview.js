@@ -18,6 +18,9 @@ ZmDocsPreview = function(container, params){
     this._container = document.getElementById(container);
 
     params = params || {};
+    if(params.versionCont)
+        params.versionCont = document.getElementById(params.versionCont);
+    this._params = params;
 
     if(!params.deferInit)   this.init();
 
@@ -55,7 +58,11 @@ function(callback){
 
     var serverUrl = window.location.href;
     serverUrl = serverUrl.replace(/\?.*/,''); //Cleanup Params
-    AjxRpc.invoke("fmt=html", serverUrl, null, new AjxCallback(this, this._handleFetchContent, callback), true );
+    var version = this._params.version;
+    var urlParams = version ? ("?ver="+version) : "";
+    serverUrl = serverUrl +  urlParams;
+    AjxRpc.invoke(urlParams, serverUrl, null, new AjxCallback(this, this._handleFetchContent, callback), true);
+    
 };
 
 ZmDocsPreview.prototype._handleFetchContent =
@@ -69,6 +76,9 @@ ZmDocsPreview.prototype.show =
 function(){
     var previewHTML = this._content;
     this._container.innerHTML = previewHTML;
+    if(this._params.versionCont){
+        this._params.versionCont.innerHTML = this._params.version;
+    }
 };
 
 ZmDocsPreview._createDBG = function(devMode){

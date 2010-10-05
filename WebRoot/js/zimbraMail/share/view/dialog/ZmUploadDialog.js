@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -21,10 +21,10 @@
  * Creates an upload dialog.
  * @class
  * This class represents an upload dialog.
- *
+ * 
  * @param	{DwtComposite}	shell		the parent
  * @param	{String}	className		the class name
- *
+ *  
  * @extends		DwtDialog
  */
 ZmUploadDialog = function(shell, className) {
@@ -61,22 +61,20 @@ ZmUploadDialog.prototype._uploadCallback;
 
 ZmUploadDialog.prototype._extensions;
 
-ZmUploadDialog.supportsHTML5 = ( window.FileReader/*Firefox*/ || AjxEnv.isChrome || AjxEnv.isSafari4up );
-
 // Public methods
 /**
  * Enables the link title option.
- *
+ * 
  * @param	{Boolean}	enabled		if <code>true</code>, to enbled the link title option
  */
 ZmUploadDialog.prototype.enableLinkTitleOption =
 function(enabled) {
-    this._showLinkTitleText = enabled;
+    this._showLinkTitleText = enabled;    
 };
 
 /**
  * Sets allowed extensions.
- *
+ * 
  * @param	{Array}		array		an array of extensions
  */
 ZmUploadDialog.prototype.setAllowedExtensions =
@@ -94,7 +92,7 @@ function(folder, callback, title, loc, oneFileOnly, noResolveAction) {
 	this._uploadFolder = folder;
 	this._uploadCallback = callback;
 
-    this._supportsHTML5 = ZmUploadDialog.supportsHTML5 && !this._showLinkTitleText && (appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) != null);
+    this._supportsHTML5 = AjxEnv.supportsHTML5File && !this._showLinkTitleText && (appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) != null);
 
 	this.setTitle(title || ZmMsg.uploadDocs);
 
@@ -183,7 +181,7 @@ ZmUploadDialog.prototype._upload = function(){
         this._msgInfo.innerHTML = "";
         if(this._supportsHTML5){
             if(this._validateSize()){
-                var f = element.files;
+                var f = element.files; 
                 for(var j=0; j<f.length; j++){
                     files.push({name:f[j].name, fullname: f[j].name});
                 }
@@ -211,7 +209,7 @@ ZmUploadDialog.prototype._upload = function(){
 	if (files.length == 0) {
 		return;
 	}
-
+    
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, false);
 
@@ -258,7 +256,7 @@ function(){
             }
         }
     }
-	return true;
+	return true;        
 };
 
 ZmUploadDialog.prototype._popupErrorDialog = function(message) {
@@ -412,7 +410,7 @@ ZmUploadDialog.prototype._finishUpload = function(files, status, guids) {
 	for (var i in files) {
         var name = files[i].name;
         if(this._linkText[name]) {
-            files[i].linkText = this._linkText[name];
+            files[i].linkText = this._linkText[name]; 
         }
 		filenames.push(name);
 	}
@@ -450,7 +448,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 
     if(oneInputOnly){
         cell.colSpan = 3;
-    }else{
+    }else{    
         var cell = row.insertCell(-1);
         cell.innerHTML = [
             "<span ",
@@ -517,6 +515,7 @@ function(inputEl, sizeEl){
         else
             Dwt.delClass(sizeEl, "RedC");
     }
+    
 };
 
 ZmUploadDialog._removeHandler = function(event) {
@@ -536,7 +535,7 @@ ZmUploadDialog._removeHandler = function(event) {
            endRow = txtRow;
        }
     }
-
+    
 	if (row.previousSibling == null && endRow.nextSibling == null) {
 		var comp = DwtControl.findControl(span);
 		comp._addFileInputRow();

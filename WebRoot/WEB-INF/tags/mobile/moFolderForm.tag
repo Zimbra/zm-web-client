@@ -28,7 +28,7 @@
 </mo:handleError>
 <zm:getMailbox var="mailbox"/>
 <c:choose>
-<c:when test="${type eq 'folder'}">
+<c:when test="${type eq 'folder' or type eq 'ab'}">
     <c:url var=" caction" value="${prevUrl}">
     <c:if test="${param.pid!=null}">
         <c:param name="action" value="view"/>
@@ -43,32 +43,39 @@
     </c:if>
      <div class="tbl View" id="nfldrfrm" style="${hide ? 'display:none':''};">
          <form action="${url}" method="post" onsubmit="return submitForm(this);">
+         <c:if test="${not empty id}"><c:set var="efolder" value="${zm:getFolder(pageContext, fn:escapeXml(id))}"/><input type="hidden" name="efolderid" value="${efolder.id}"></c:if>
          <c:if test="${ua.isiPad == true}">
-            <div class="tb tbl">
-                <div class="tr">
-                <span class='zo_tb_submit td toolbar'>
-                    <div class="buttonRight button"><a id="cancel" href="${caction}"><span onclick="return zClickLink('cancel')"><fmt:message key="cancel"/></span></a></div>
-                    <div class="compose button"><input class="zo_button" name="action${empty id ? 'Save' : 'Delete'}Folder" type="submit" value="<fmt:message key="${empty id? 'save' :'delete'}"/>"></div>
-                </span>
+            <div class="composeToolbar">
+        		<div class="compose button"><span><input class="zo_button" type="submit" name="action${not empty efolder ? 'Modify':'Save'}Folder" value="<fmt:message key='save'/>"></span></div>
+        		<c:if test="${not empty efolder}">
+        			<div class="compose button"><span><input type="submit" class="zo_button delete_button" name="action${efolder.parentId eq mailbox.trash.id ? 'Hard' : ''}DeleteFolder" value="<fmt:message key="delete"/>"></span></div>
+        		</c:if>
+        		<div class="header alignLeft" style="margin-left: 25%;">
+            	<div class="subject">
+                    <c:choose>
+                    <c:when test="${type eq 'folder'}"><fmt:message key="createNewFolder"/></c:when>
+                    <c:when test="${type eq 'ab'}"><fmt:message key="createNewAddressBook"/></c:when>
+                    </c:choose>
                 </div>
             </div>
-            <div class="header">
-            	<div class="subject"><fmt:message key="createNewFolder"/></div>
-            </div>
+        		
+		        <div class="buttonRight button" onclick="return toggleCompose('compose-pop','veil');"><span><fmt:message key="cancel"/></span></div>
+    		</div>
+            
          </c:if>
-         <c:if test="${not empty id}"><c:set var="efolder" value="${zm:getFolder(pageContext, fn:escapeXml(id))}"/><input type="hidden" name="efolderid" value="${efolder.id}"></c:if>
          <input type="hidden" name="doFolderAction" value="1">
          <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
          <input name="st" type="hidden" value="${fn:escapeXml(st)}"/>
-                   
-         <div class="msgBody">
+         
+         ${ua.isiPad eq true ? '<div class="Stripes cmp_container composeFields">' : '<div class="msgBody">'}
                     <div class="tbl" width="100%"><div class="tr">
-                        <span class="label td"><fmt:message key="nameLabel"/><input type="text" name="folder_name" style="" class="Textarea" value="${efolder.name}">
+                        <span class="label td"><fmt:message key="nameLabel"/><input type="text" name="folder_name" ${ua.isiPad eq true ? 'style="width:50%;"' : 'style=""'} class="Textarea" value="${efolder.name}">
                         <c:if test="${ua.isiPad == false}">
-                        <input class="zo_button" type="submit" name="action${not empty efolder ? 'Modify':'Save'}Folder" value="<fmt:message key='save'/>"></c:if></span>
+                        	<input class="zo_button" type="submit" name="action${not empty efolder ? 'Modify':'Save'}Folder" value="<fmt:message key='save'/>">
+                        </c:if>
                     </div></div>
                     
-                    <div class="tbl"><div class="tr"><div class="td">
+                    <div class="tbl"><div class="tr"><div class="td label">
                                 <c:choose>
                                     <c:when test="${empty st || st eq 'folders' || st eq mailbox.prefs.groupMailBy}">
                                         <hr size="1"/>
@@ -181,56 +188,84 @@
 </c:when>
 <c:when test="${type eq 'search'}">
     <div class="tbl View" id="nsrchfrm" style="${hide ?'display:none':''};">
-        <div class="tr">
-            <div class="td">
-                <form action="${url}" method="post" onsubmit="return submitForm(this);">
-                    <input type="hidden" name="doFolderAction" value="1">
-                    <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-                    <input name="st" type="hidden" value="${fn:escapeXml(st)}"/>
-                    <c:if test="${not empty id}">
+            <form action="${url}&faction=submit&" method="post" onsubmit="return submitForm(this);">
+            		<c:if test="${not empty id}">
                         <c:set var="efolder" value="${zm:getFolder(pageContext, fn:escapeXml(id))}"/>
                         <input type="hidden" name="esearchid" value="${efolder.id}">
                         <input type="hidden" name="parentid" value="${efolder.parentId}">
                     </c:if>
+                    
+                <c:if test="${ua.isiPad == true}">
+	                <div class="composeToolbar">
+        				<div class="compose button"><span><input class="zo_button" type="submit" name="action${empty efolder ? 'Save' : 'Modify'}Search" value="<fmt:message key='save'/>"></span></div>
+        				<c:if test="${not empty efolder}">
+                        	<div class="compose button"><span><input type="submit" class="zo_button delete_button" name="action${efolder.parentId eq mailbox.trash.id ? 'Hard' : ''}DeleteSearch" value="<fmt:message key="delete"/>"></span></div>
+                    	</c:if>
+                    	<div class="header alignLeft" style="margin-left: 25%;">
+		                <div class="subject">
+		                    <fmt:message key="folderCreateSearch"/>
+		                </div>
+	                </div>
+		        		<div class="buttonRight button" onclick="return toggleCompose('compose-pop','veil');"><span><fmt:message key="cancel"/></span></div>
+    				</div>
+	                
+                </c:if>
+                    <input type="hidden" name="doFolderAction" value="1">
+                    <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+                    <input name="st" type="hidden" value="${fn:escapeXml(st)}"/>
                     <c:if test="${empty id}"><input type="hidden" name="parentid" value="${mailbox.inbox.parentId}"></c:if>
+                    ${ua.isiPad eq true ? '<div class="Stripes cmp_container composeFields">' : '<div class="msgBody">'}
                     <div class="tbl" width="100%">
                         <div class="tr">
-                        <span class="label td"> <fmt:message key="nameLabel"/>  <input type="text" name="sname" style="width:100px;" class="Textarea" value="${efolder.name}">
-                            <input class="zo_button" type="submit" name="action${empty efolder ? 'Save' : 'Modify'}Search" value="<fmt:message key='save'/>">
+                        <span class="label td"> <fmt:message key="nameLabel"/>  <input type="text" name="sname" ${ua.isiPad eq true ? 'style="width:50%;"' : 'style="width:100px;"'}  class="Textarea" value="${efolder.name}">
+                            <c:if test="${ua.isiPad == false}"><input class="zo_button" type="submit" name="action${empty efolder ? 'Save' : 'Modify'}Search" value="<fmt:message key='save'/>"></c:if>
                         </span>
                         </div>
-                    </div><hr size="1"/>
-                    <div class="tbl" width="100%"><div class="tr"><span class="label td"> <fmt:message key="searchQueryLabel"/> <input type="text" name="query" style="width:100px;" class="Textarea" value="${efolder.query}"> </span></div></div>
-                    <c:if test="${not empty efolder}"><hr size="1"/>
+                    </div>
+                    <div class="tbl" width="100%"><div class="tr"><span class="label td"> <fmt:message key="searchQueryLabel"/> <input type="text" name="query" ${ua.isiPad eq true ? 'style="width:50%;"' : 'style="width:100px; height; 70px;"'}  class="Textarea" value="${efolder.query}"> </span></div></div>
+                    <c:if test="${not empty efolder and ua.isiPad == false}"><hr size="1"/>
                         <div align="center"><input type="submit" class="zo_button delete_button" name="action${efolder.parentId eq mailbox.trash.id ? 'Hard' : ''}DeleteSearch" value="<fmt:message key="delete"/>"></div>
                     </c:if>
+                    </div>
             </form>
-            </div>
             <a name="searches" style="padding:0px;margin:0px;"></a>
-        </div>
     </div>
 </c:when>
 <c:when test="${type eq 'tag'}">
     <div class="tbl View" id="ntagfrm" style="${hide ? 'display:none' : ''};">
-        <div class="tr">
-            <div class="td">
-                <form action="${url}" method="post"
-                      onsubmit="return submitForm(this);">
-                    <input type="hidden" name="doFolderAction" value="1">
-                    <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-                    <c:if test="${not empty id}">
+        <form action="${url}&faction=submit&" method="post" onsubmit="return submitForm(this);">
+        			<c:if test="${not empty id}">
                         <c:set var="etag" value="${zm:getTag(pageContext, fn:escapeXml(id))}"/>
                         <input type="hidden" name="etagid" value="${etag.id}">
                     </c:if>
+                    
+                    <c:if test="${ua.isiPad == true}">
+	                    <div class="composeToolbar">
+	        				<div class="compose button"><span><input type="submit" class="zo_button" name="action${empty etag ? 'Save':'Modify'}Tag" value="<fmt:message key='save'/>"></span></div>
+	        				<c:if test="${not empty etag}"><div class="compose button"><span><input type="submit" class="zo_button delete_button" name="actionDeleteTag" value="<fmt:message key="delete"/>"></span></div></c:if>
+			        		<div class="header alignLeft" style="margin-left: 25%;">
+		                    <div class="subject">
+		                        <fmt:message key="createTag"/>
+		                    </div>
+	                    	</div>
+			        		<div class="buttonRight button" onclick="return toggleCompose('compose-pop','veil');"><span><fmt:message key="cancel"/></span></div>
+	    				</div>
+	                    
+                    </c:if>
+                    <input type="hidden" name="doFolderAction" value="1">
+                    <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+                    
+                    ${ua.isiPad eq true ? '<div class="Stripes cmp_container composeFields">' : '<div class="msgBody">'}
                     <div class="tbl"><div class="tr">
                         <c:if test="${not empty etag}"><span class="SmlIcnHldr Tag${etag.color}">&nbsp;</span></c:if>
                         <span class="label td"><fmt:message key="nameLabel"/>
-                        <input type="text" style="width:100px;" class="Textarea" name="tag_name" value="${etag.name}">
-                        <input type="submit" class="zo_button" name="action${empty etag ? 'Save':'Modify'}Tag" value="<fmt:message key='save'/>">
+                        <input type="text" ${ua.isiPad eq true ? 'style="width:50%;"' : 'style="width:100px;"'} class="Textarea" name="tag_name" value="${etag.name}">
+                        <c:if test="${ua.isiPad == false}"><input type="submit" class="zo_button" name="action${empty etag ? 'Save':'Modify'}Tag" value="<fmt:message key='save'/>"></c:if>
                         </span>
                     </div></div> 
-                    <hr size="1"/>
-                    <div class="tbl"><div class="tr"><div class="td">
+                    <div class="tbl"><div class="tr">
+                   
+                    <div class="td label">Tag Color: 
                                 <select name="tag_color">
                                     <optgroup label="<fmt:message key='color'/>">
                                         <option value="cyan" ${etag.color eq 'cyan' ? 'selected=selected' : ''}>
@@ -250,11 +285,10 @@
                                     </optgroup>
                                 </select>
                     </div></div></div>
-                    <c:if test="${not empty etag}"><hr size="1"/><div align="center"><input type="submit" class="zo_button delete_button" name="actionDeleteTag" value="<fmt:message key="delete"/>"></div></c:if>
+                    <c:if test="${not empty etag and ua.isiPad == false}"><hr size="1"/><div align="center"><input type="submit" class="zo_button delete_button" name="actionDeleteTag" value="<fmt:message key="delete"/>"></div></c:if>
+                    </div>
                 </form>
-            </div>
-            <a name="tags" style="padding:0px;margin:0px;"></a>
-        </div>
+        <a name="tags" style="padding:0px;margin:0px;"></a>
     </div>
 </c:when>
 </c:choose>

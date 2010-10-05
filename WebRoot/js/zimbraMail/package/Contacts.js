@@ -36,3 +36,5 @@ AjxPackage.require("zimbraMail.abook.view.ZmContactAssistant");
 AjxPackage.require("zimbraMail.abook.controller.ZmContactListController");
 AjxPackage.require("zimbraMail.abook.controller.ZmContactController");
 AjxPackage.require("zimbraMail.abook.controller.ZmAddrBookTreeController");
+
+AjxPackage.require("zimbraMail.abook.view.ZmContactSearch");

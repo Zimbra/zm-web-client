@@ -219,7 +219,7 @@ AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(pageContext.request.locale)}";
             try {
                 ZaZimbraAdmin.run(document.domain);
             }catch (ex) {
-                if (AjxEnv && AjxEnv.hasFirebug) console.error ("Exception in launch(): " + ex.msg ) ;
+                if (console && console.error) console.error ("Exception in launch(): " + ex.msg ) ;
             }
         }
 

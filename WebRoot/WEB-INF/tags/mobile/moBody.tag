@@ -25,7 +25,7 @@
 
 <zm:getUserAgent var="ua" session="true"/>
 <c:choose>
-    <c:when test="${ua.isiPhone or ua.isiPod}">
+    <c:when test="${ua.isiPhone or ua.isiPod or ua.isiPad}">
         <c:choose>
             <c:when test="${body.isTextHtml}">
         <script type="text/javascript">

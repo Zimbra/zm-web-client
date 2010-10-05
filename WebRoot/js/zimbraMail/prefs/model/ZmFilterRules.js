@@ -27,7 +27,7 @@
  * 
  * @extends		ZmModel
  */
-ZmFilterRules = function(accountName) {
+ZmFilterRules = function(accountName, outgoing) {
 
 	ZmModel.call(this, ZmEvent.S_FILTER);
 
@@ -36,6 +36,7 @@ ZmFilterRules = function(accountName) {
 	this._ruleNameHash = {};
 	this._initialized = false;
 	this._accountName = accountName;
+	this._outgoing = outgoing;
 };
 
 ZmFilterRules.prototype = new ZmModel;
@@ -138,6 +139,16 @@ function() {
 };
 
 /**
+ * Gets the active rules in the list.
+ * 
+ * @return	{AjxVector}		the active rules
+ */
+ZmFilterRules.prototype.getActiveRules = 
+function() {
+	return this._vector.sub(function(rule){return !rule.active});
+};
+
+/**
  * Gets the numeric index of the rule in the list.
  *
  * @param {ZmFilterRule}	rule	a rule
@@ -181,6 +192,11 @@ function(name) {
 	return this._ruleNameHash[name];
 };
 
+ZmFilterRules.prototype.getOutgoing = 
+function(name) {
+	return this._outgoing
+};
+
 /**
  * Loads the rules from the server.
  *
@@ -201,7 +217,7 @@ function(force, callback) {
 	// fetch from server:
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: load rules");
 	var params = {
-		soapDoc: AjxSoapDoc.create("GetFilterRulesRequest", "urn:zimbraMail"),
+		soapDoc: AjxSoapDoc.create(this._outgoing ? "GetOutgoingFilterRulesRequest" : "GetFilterRulesRequest", "urn:zimbraMail"),
 		asyncMode: true,
 		callback: (new AjxCallback(this, this._handleResponseLoadRules, [callback])),
 		accountName:this._accountName
@@ -215,7 +231,8 @@ function(callback, result) {
 	this._ruleIdHash = {};
 	this._ruleNameHash = {};
 
-	var resp = result.getResponse().GetFilterRulesResponse;
+	var r = result.getResponse();
+	var resp = this._outgoing ? r.GetOutgoingFilterRulesResponse : r.GetFilterRulesResponse;
 	var children = resp.filterRules[0].filterRule;
 	if (children) {
 		for (var i = 0; i < children.length; i++) {
@@ -246,8 +263,11 @@ function(callback, result) {
  */
 ZmFilterRules.prototype._saveRules = 
 function(index, notify, callback) {
-	var jsonObj = {ModifyFilterRulesRequest:{_jsns:"urn:zimbraMail"}};
-	var request = request = jsonObj.ModifyFilterRulesRequest;
+	var requestKey = this._outgoing ? "ModifyOutgoingFilterRulesRequest" : "ModifyFilterRulesRequest";
+	var jsonObj = {};
+	jsonObj[requestKey] = {_jsns:"urn:zimbraMail"};
+
+	var request = jsonObj[requestKey];
 
 	var rules = this._vector.getArray();
 	if (rules.length > 0) {
@@ -324,7 +344,9 @@ function() {
 	var prefsView = prefController.getPrefsView();
 	var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
 	if (section && prefsView && prefsView.getView(section.id)) {
-		prefController.getFilterRulesController().resetListView();
+		var filterController = prefController.getFilterController();
+		var filterRulesController = this._outgoing ? filterController.getOutgoingFilterRulesController() : filterController.getIncomingFilterRulesController();
+		filterRulesController.resetListView();
 	}
 };
 

@@ -1,0 +1,44 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+
+<html>
+<script type="text/javascript">
+/*
+Sets the id of the saved draft in the compose page, needed to refer in case the same draft is saved again.
+Removes the iframe as form target.
+Displays the status message after autosaving the draft.
+*/
+
+function init()
+{
+    var draftId =  window.parent.document.getElementsByName('draftid')[0];
+    draftId.value = document.getElementById('draftId').value;
+
+    var composeForm = window.parent.document.getElementsByName('composeForm')[0];
+    composeForm.target = '';
+    
+    var elem = window.parent.document.getElementById('OPAUTOSAVE');
+    composeForm.removeChild(elem);
+
+    var statusDiv = window.parent.document.getElementById('app_status_container');
+    statusDiv.innerHTML = document.getElementById('appstatuscontainer').innerHTML;
+    
+    window.setTimeout(function() {statusDiv.innerHTML='';}, 4000);
+}
+</script>
+<head>
+    <title></title>
+</head>
+
+<body onload="init();">
+<input name="draftId" id="draftId" value="${requestScope.draftid}" type="hidden"/>
+<div id="appstatuscontainer">
+    <app:appStatus/>
+</div>
+</body>
+</html>

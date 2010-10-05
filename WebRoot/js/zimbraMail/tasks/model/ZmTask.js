@@ -39,6 +39,9 @@ ZmTask = function(list, id, folderId) {
 	this.status = ZmCalendarApp.STATUS_NEED;
     this.startDate = new Date();
     this.endDate = this.startDate;
+    this.remindDate = this.startDate;
+    this.alarm = false;
+	this._useAbsoluteReminder = true;
 };
 
 ZmTask.prototype = new ZmCalItem;
@@ -283,7 +286,8 @@ function(node, instNode) {
 	if (node.invId) {
 		this.invId = node.invId;
 	} else if (inv) {
-		var remoteIndex = inv.id.indexOf(":");
+		var remoteIndex = inv.id;
+        remoteIndex = remoteIndex.toString().indexOf(":");
 		if (remoteIndex != -1) {
 			this.invId = this.id + "-" + inv.id.substring(remoteIndex+1);
 		} else {
@@ -309,7 +313,9 @@ function(node, instNode) {
     if(!node.dur) {
         this.startDate = null;
     }
-
+    
+    if(node.alarm) this.alarm = node.alarm;
+    
 	if (node.name || comp)				this.name		= this._getAttr(node, comp, "name");
 	if (node.loc || comp)				this.location	= this._getAttr(node, comp, "loc");
 	if (node.allDay || comp)			this.setAllDayEvent(this._getAttr(node, comp, "allDay"));
@@ -341,7 +347,44 @@ function(node, comp, name) {
 ZmTask.prototype._setExtrasFromMessage =
 function(message) {
 	this.location = message.invite.getLocation();
+    this._setAlarmFromMessage(message);
 };
+
+ZmTask.prototype._setAlarmFromMessage =
+function(message) {
+	this._reminderMinutes = 0;
+	var alarm = message.invite.getAlarm();
+	if (alarm) {
+		for (var i in alarm) {
+			if (alarm[i] && (alarm[i].action == "DISPLAY")) {
+				this.parseAlarm(alarm[i]);
+				break;
+			}
+		}
+	}
+};
+
+/**
+ * @private
+ */
+ZmTask.prototype.parseAlarm =
+function(tmp) {
+	if (!tmp) { return; }
+
+	var d;
+	var trigger = (tmp) ? tmp.trigger : null;
+	var abs = (trigger && (trigger.length > 0)) ? trigger[0].abs : null;
+	d = (abs && (abs.length > 0)) ? abs[0].d : null;
+
+	this._reminderMinutes = 0;
+	if (tmp && (tmp.action == "DISPLAY")) {
+		if (d != null) {
+			this._reminderAbs = d;
+            this.remindDate = d ? AjxDateUtil.parseServerDateTime(d) : null;
+		}
+	}
+};
+
 
 /**
  * @private
@@ -392,3 +435,12 @@ ZmTask.prototype._getInviteFromError =
 function(result) {
 	return (result._data.GetTaskResponse.task[0].inv[0]);
 };
+
+/**
+ * @private
+ */
+ZmTask.prototype.setTaskReminder =
+function(absStr) {
+    this._reminderAbs = absStr;
+};
+

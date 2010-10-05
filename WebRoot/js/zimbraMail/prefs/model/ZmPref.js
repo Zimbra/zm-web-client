@@ -365,6 +365,26 @@ function(value) {
 	return value;
 };
 
+ZmPref.setFormValue =
+function(pref, value) {
+	var app = appCtxt.getApp(ZmApp.PREFERENCES);
+	var section = ZmPref.getPrefSectionWithPref(pref);
+	if (app && section) {
+		var page = app.getPreferencesPage(section.id);
+		if (page) page.setFormValue(pref, value);
+	}
+};
+
+ZmPref.getFormValue =
+function(pref) {
+	var app = appCtxt.getApp(ZmApp.PREFERENCES);
+	var section = ZmPref.getPrefSectionWithPref(pref);
+	if (app && section) {
+		var page = app.getPreferencesPage(section.id);
+		if (page) return page.getFormValue(pref);
+	}
+};
+
 ZmPref.setIncludeOrig =
 function(pref, value, list) {
 
@@ -416,6 +436,49 @@ function(select, show) {
 			cbox.setVisible(show);
 		}
 	}
+};
+
+ZmPref.getSendToFiltersActive =
+function(ev, callback) {
+	if (ev.target.checked) {
+		if (callback)
+			callback.run(false);
+		return false;
+	}
+	AjxDispatcher.run("GetFilterController").hasOutgoingFiltersActive(callback);
+};
+
+ZmPref.onChangeConfirm =
+function(confirmMsg, showIfCallback, useCallback, revertCallback, ev) {
+	var show = false;
+	var callback = useCallback ? new AjxCallback(this, ZmPref._showOnChangeConfirm, [confirmMsg, revertCallback]) : null;
+	if (AjxUtil.isFunction(showIfCallback))
+		show = showIfCallback(ev, callback);
+	else if (AjxUtil.isInstance(showIfCallback, AjxCallback))
+		show = showIfCallback.run(ev, callback);
+	else
+		show = showIfCallback;
+	ZmPref._showOnChangeConfirm(confirmMsg, revertCallback, show);
+};
+
+ZmPref._showOnChangeConfirm =
+function(confirmMsg, revertCallback, show) {
+	if (show) {
+		if (show) {
+			var dialog = appCtxt.getYesNoMsgDialog();
+			dialog.reset();
+			dialog.setMessage(confirmMsg);
+			dialog.setButtonListener(DwtDialog.NO_BUTTON, new AjxListener(null, ZmPref._handleOnChangeConfirmNo, [revertCallback]));
+			dialog.popup();
+		}
+	}
+};
+
+ZmPref._handleOnChangeConfirmNo =
+function(revertCallback) {
+	if (revertCallback)
+		revertCallback.run();
+	appCtxt.getYesNoMsgDialog().popdown();
 };
 
 // Comparators

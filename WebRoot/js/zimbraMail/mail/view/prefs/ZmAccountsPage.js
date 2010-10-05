@@ -85,9 +85,6 @@ function() {
 			displayContainer:	ZmPref.TYPE_COMBOBOX,
 			hint:				ZmMsg.emailAddr
 		},
-		SIGNATURE: {
-			displayContainer:	ZmPref.TYPE_SELECT
-		},
 		// External
 		ACCOUNT_TYPE: {
 			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
@@ -184,8 +181,7 @@ function() {
 				"FROM_EMAIL",			// I
 				"REPLY_TO",				// I
 				"REPLY_TO_NAME",		// I
-				"REPLY_TO_EMAIL",		// I
-				"SIGNATURE"				// I
+				"REPLY_TO_EMAIL"		// I
 			]
 		},
 		EXTERNAL: {
@@ -211,8 +207,7 @@ function() {
 				"FROM_EMAIL",				// I
 				"REPLY_TO",					// I
 				"REPLY_TO_NAME",			// I
-				"REPLY_TO_EMAIL",			// I
-				"SIGNATURE"					// I
+				"REPLY_TO_EMAIL"			// I
 			]
 		},
 		PERSONA: {
@@ -225,7 +220,6 @@ function() {
 				"REPLY_TO",					// I
 				"REPLY_TO_NAME",			// I
 				"REPLY_TO_EMAIL",			// I
-				"SIGNATURE",				// I
 				"WHEN_SENT_TO",				// I
 				"WHEN_SENT_TO_LIST",		// I
 				"WHEN_IN_FOLDER",			// I
@@ -278,7 +272,6 @@ ZmAccountsPage.IDENTITY_PROPS = {
 	"REPLY_TO":				"setReplyTo",
 	"REPLY_TO_NAME":		"setReplyToDisplay",
 	"REPLY_TO_EMAIL":		"setReplyToAddress",
-	"SIGNATURE":			"signature",
 	"WHEN_SENT_TO":			"useWhenSentTo",
 	"WHEN_SENT_TO_LIST":	"whenSentToAddresses",
 	"WHEN_IN_FOLDER":		"useWhenInFolder",
@@ -430,7 +423,7 @@ function(useDefaults) {
 	// add data sources unless we're in offline mode
 	if (!appCtxt.isOffline && active.isMain) {
 		var dataSourceCollection = appCtxt.getDataSourceCollection();
-		var dataSources = dataSourceCollection.getItems(); // TODO: rename getItems or rename getIdentities/getSignatures
+		var dataSources = dataSourceCollection.getItems(); // TODO: rename getItems or rename getIdentities
 		for (var i = 0; i < dataSources.length; i++) {
 			var datasource = dataSources[i];
 			var ident = datasource.getIdentity();
@@ -757,7 +750,6 @@ function(account, section) {
 	this._setControlValue("REPLY_TO_NAME", section, identity.setReplyToDisplay);
 	this._setControlValue("REPLY_TO_EMAIL", section, identity.setReplyToAddress);
 	this._setControlValue("READ_RECEIPT_TO_ADDR", section, identity.readReceiptAddr);
-	this._setControlValue("SIGNATURE", section, identity.signature);
 	this._setControlValue("WHEN_SENT_TO", section, identity.useWhenSentTo);
 	this._setControlValue("WHEN_SENT_TO_LIST", section, identity.whenSentToAddresses);
 	this._setControlValue("WHEN_IN_FOLDER", section, identity.useWhenInFolder);
@@ -1034,14 +1026,14 @@ function(account, section, dontClearFolder) {
 	var identity = account.getIdentity();
 	for (var id in ZmAccountsPage.IDENTITY_PROPS) {
 		var control = section.controls[id];
-		if (!control) continue;
+		if (!control) { continue; }
 
 		var prop = ZmAccountsPage.IDENTITY_PROPS[id];
 		var isField = AjxUtil.isString(prop);
 
 		var ovalue = isField ? identity[prop] : identity[prop.getter]();
 		var nvalue = this._getControlValue(id, section);
-		if (this._valuesEqual(ovalue, nvalue)) continue;
+		if (this._valuesEqual(ovalue, nvalue)) { continue; }
 
 		account._dirty = true;
 		if (isField) {
@@ -1180,11 +1172,6 @@ function(id, setup, value) {
 	}
 	if (!select) {
 		select = ZmPreferencesPage.prototype._setupSelect.apply(this, arguments);
-	}
-	if (id == "SIGNATURE") {
-		var collection = appCtxt.getSignatureCollection();
-		collection.addChangeListener(new AjxListener(this, this._resetSignatureSelect, [select]));
-		this._resetSignatureSelect(select);
 	}
 	if (id == "PROVIDER") {
 		select.addChangeListener(new AjxListener(this, this._handleProviderChange));
@@ -1328,17 +1315,6 @@ function(accountOrIndex) {
 	}
 	this._accountListView.setSelection(account || appCtxt.accountList.mainAccount);
 	this._updateReplyToEmail();
-};
-
-ZmAccountsPage.prototype._resetSignatureSelect =
-function(select) {
-	var selectedValue = select.getValue();
-	select.clearOptions();
-	var options = appCtxt.getSignatureCollection().getSignatureOptions();
-	for (var i = 0; i < options.length; i++) {
-		select.addOption(options[i]);
-	}
-	select.setSelectedValue(selectedValue);
 };
 
 // account buttons
@@ -1716,14 +1692,6 @@ function(evt) {
 	this._setReplyToControls();
 };
 
-ZmAccountsPage.prototype._handleSignatureChange =
-function(select, evt) {
-	if (evt.event == ZmEvent.E_CREATE || evt.event == ZmEvent.E_DELETE ||
-		(evt.event == ZmEvent.E_MODIFY && evt.getDetail("rename"))) {
-		this._resetSignatureSelect(select);
-	}
-};
-
 ZmAccountsPage.prototype._handleWhenSentTo =
 function(evt) {
 	this._setWhenSentToControls();
@@ -1762,7 +1730,7 @@ function(continueCallback) {
     // make sure that the current object proxy is up-to-date
     this._setAccountFields(this._currentAccount, this._currentSection);
 
-    if(appCtxt.isOffline) {
+    if (appCtxt.isOffline) {
         // skip account tests  
         this._preSaveCreateFolders(continueCallback);
     } else {
@@ -1942,6 +1910,7 @@ function(continueCallback, result, exceptions) {
 
 ZmAccountsPage.prototype._handleSaveAccount =
 function(account, resp) {
+
 	delete account._dirty;
 
 	var mboxes = appCtxt.accountList.getAccounts();
@@ -1957,9 +1926,6 @@ function(account, resp) {
 			}
 		}
 	}
-
-
-
 };
 
 ZmAccountsPage.prototype._handleSaveVisibleAccount =

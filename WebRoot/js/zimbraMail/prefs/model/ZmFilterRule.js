@@ -91,6 +91,7 @@ var i = 1;
 ZmFilterRule.C_FROM			= i++;
 ZmFilterRule.C_TO			= i++;
 ZmFilterRule.C_CC			= i++;
+ZmFilterRule.C_TO_CC		= i++;
 ZmFilterRule.C_SUBJECT		= i++;
 ZmFilterRule.C_HEADER		= i++;
 ZmFilterRule.C_SIZE			= i++;
@@ -105,6 +106,7 @@ ZmFilterRule.C_HEADER_VALUE = {};
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM]	= "from";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_TO]		= "to";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_CC]		= "cc";
+ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_TO_CC]	= "to,cc";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT]	= "subject";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_HEADER]	= "header";
 
@@ -117,6 +119,7 @@ ZmFilterRule.C_LABEL = {};
 ZmFilterRule.C_LABEL[ZmFilterRule.C_FROM]		= ZmMsg.from;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_TO]			= ZmMsg.to;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_CC]			= ZmMsg.cc;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_TO_CC]		= ZmMsg.toCc;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_SUBJECT]	= ZmMsg.subject;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_HEADER]		= ZmMsg.headerNamed;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_SIZE]		= ZmMsg.size;
@@ -145,6 +148,7 @@ ZmFilterRule.C_TEST_MAP = {};
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_FROM]		= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO]			= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_CC]			= ZmFilterRule.TEST_HEADER;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO_CC]		= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SUBJECT]		= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_HEADER]		= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SIZE]		= ZmFilterRule.TEST_SIZE;
@@ -276,6 +280,11 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_CC] = {
 		opsOptions:	ZmFilterRule.MATCHING_OPS,
 		value:		ZmFilterRule.TYPE_INPUT
 };
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_TO_CC] = {
+		ops:		ZmFilterRule.TYPE_SELECT,
+		opsOptions:	ZmFilterRule.MATCHING_OPS,
+		value:		ZmFilterRule.TYPE_INPUT
+};
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_SUBJECT] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
 		opsOptions:	ZmFilterRule.MATCHING_OPS,
@@ -329,6 +338,7 @@ ZmFilterRule.CONDITIONS_LIST = [
 	ZmFilterRule.C_FROM,
 	ZmFilterRule.C_TO,
 	ZmFilterRule.C_CC,
+	ZmFilterRule.C_TO_CC,
 	ZmFilterRule.C_SUBJECT,
 	ZmFilterRule.C_HEADER,
 	ZmFilterRule.C_SIZE,
@@ -345,6 +355,7 @@ ZmFilterRule.IS_HEADER = {};
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_FROM]		= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_TO]		= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_CC]		= true;
+ZmFilterRule.IS_HEADER[ZmFilterRule.C_TO_CC]	= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_SUBJECT]	= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_HEADER]	= true;
 
@@ -354,6 +365,10 @@ var i = 1;
  * Defines the "keep" action type.
  */
 ZmFilterRule.A_KEEP		= i++;
+/**
+ * Defines the "keep" action type.
+ */
+ZmFilterRule.A_KEEP_SENT	= i++;
 /**
  * Defines the "folder" action type.
  */
@@ -384,6 +399,10 @@ ZmFilterRule.A_FORWARD	= i++;
  */
 ZmFilterRule.A_NAME_KEEP						= "actionKeep";
 /**
+ * Defines the "keep" action name.
+ */
+ZmFilterRule.A_NAME_KEEP_SENT					= "actionKeep";
+/**
  * Defines the "file into a folder" action name.
  */
 ZmFilterRule.A_NAME_FOLDER						= "actionFileInto";
@@ -410,6 +429,7 @@ ZmFilterRule.A_NAME_FORWARD						= "actionRedirect";
 
 ZmFilterRule.A_VALUE = {};
 ZmFilterRule.A_VALUE[ZmFilterRule.A_KEEP]		= ZmFilterRule.A_NAME_KEEP;
+ZmFilterRule.A_VALUE[ZmFilterRule.A_KEEP_SENT]	= ZmFilterRule.A_NAME_KEEP_SENT;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_FOLDER]		= ZmFilterRule.A_NAME_FOLDER;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_DISCARD]	= ZmFilterRule.A_NAME_DISCARD;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_STOP]		= ZmFilterRule.A_NAME_STOP;
@@ -425,6 +445,7 @@ delete i;
 
 ZmFilterRule.A_LABEL = {};
 ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP]		= ZmMsg.keepInInbox;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP_SENT]	= ZmMsg.keepInSent;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_FOLDER]		= ZmMsg.fileIntoFolder;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_DISCARD]	= ZmMsg.discard;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_STOP]		= ZmMsg.stopEvaluation;
@@ -448,6 +469,7 @@ ZmFilterRule.A_LABEL[ZmFilterRule.A_FORWARD]	= ZmMsg.forwardToAddress;
  */
 ZmFilterRule.ACTIONS = {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_KEEP] = {};
+ZmFilterRule.ACTIONS[ZmFilterRule.A_KEEP_SENT] = {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_DISCARD] = {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_STOP] = {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FOLDER] = {
@@ -469,6 +491,15 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD] = {
 
 ZmFilterRule.ACTIONS_LIST = [
 	ZmFilterRule.A_KEEP,
+	ZmFilterRule.A_DISCARD,
+	ZmFilterRule.A_FOLDER,
+	ZmFilterRule.A_TAG,
+	ZmFilterRule.A_FLAG,
+	ZmFilterRule.A_FORWARD
+];
+
+ZmFilterRule.ACTIONS_OUTGOING_LIST = [
+	ZmFilterRule.A_KEEP_SENT,
 	ZmFilterRule.A_DISCARD,
 	ZmFilterRule.A_FOLDER,
 	ZmFilterRule.A_TAG,

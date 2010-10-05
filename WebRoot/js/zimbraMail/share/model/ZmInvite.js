@@ -33,6 +33,14 @@ ZmInvite = function() {
 ZmInvite.prototype = new ZmModel;
 ZmInvite.prototype.constructor = ZmInvite;
 
+
+// Consts
+ZmInvite.CHANGES_LOCATION	= "location";
+ZmInvite.CHANGES_SUBJECT	= "subject";
+ZmInvite.CHANGES_RECURRENCE	= "recurrence";
+ZmInvite.CHANGES_TIME		= "time";
+
+
 /**
  * Returns a string representation of the object.
  * 
@@ -68,55 +76,55 @@ function(node) {
 		invite.components = [{}];
 		invite.components.empty = true;
 	}
-    var inv = node[0];
-    if (inv.tz) {
-        for (var i = 0; i < inv.tz.length; i++) {
-            // get known rule
-            var tz = inv.tz[i];
-            var rule = AjxTimezone.getRule(tz.id);
+	var inv = node[0];
+	if (inv.tz) {
+		for (var i = 0; i < inv.tz.length; i++) {
+			// get known rule
+			var tz = inv.tz[i];
+			var rule = AjxTimezone.getRule(tz.id);
 
-            // get known rule that exactly matches tz definition
-            if (!rule) {
-                var tzrule = {
-                    standard: tz.standard ? AjxUtil.createProxy(tz.standard[0]) : {},
-                    daylight: tz.daylight ? AjxUtil.createProxy(tz.daylight[0]) : null
-                };
-                tzrule.standard.offset = tz.stdoff;
-                delete tzrule.standard._object_;
-                if (tz.daylight) {
-                    tzrule.daylight.offset = tz.dayoff;
-                    delete tzrule.daylight._object_;
-                }
+			// get known rule that exactly matches tz definition
+			if (!rule) {
+				var tzrule = {
+					standard: tz.standard ? AjxUtil.createProxy(tz.standard[0]) : {},
+					daylight: tz.daylight ? AjxUtil.createProxy(tz.daylight[0]) : null
+				};
+				tzrule.standard.offset = tz.stdoff;
+				delete tzrule.standard._object_;
+				if (tz.daylight) {
+					tzrule.daylight.offset = tz.dayoff;
+					delete tzrule.daylight._object_;
+				}
 
-                rule = AjxTimezone.getRule(tz.id, tzrule);
-                if (rule) {
-                    var alias = AjxUtil.createProxy(rule);
-                    alias.aliasId = rule.clientId;
-                    alias.clientId = tz.id;
-                    alias.serverId = tz.id;
-                    AjxTimezone.addRule(alias);
-                }
-            }
+				rule = AjxTimezone.getRule(tz.id, tzrule);
+				if (rule) {
+					var alias = AjxUtil.createProxy(rule);
+					alias.aliasId = rule.clientId;
+					alias.clientId = tz.id;
+					alias.serverId = tz.id;
+					AjxTimezone.addRule(alias);
+				}
+			}
 
-            // add custom rule to known list
-            if (!rule) {
-                rule = { clientId: tz.id, serverId: tz.id, autoDetected: true };
-                if (tz.daylight) {
-                    rule.standard = AjxUtil.createProxy(tz.standard[0]);
-                    rule.standard.offset = tz.stdoff;
-                    rule.standard.trans = AjxTimezone.createTransitionDate(rule.standard);
-                    
-                    rule.daylight = AjxUtil.createProxy(tz.daylight[0]);
-                    rule.daylight.offset = tz.dayoff;
-                    rule.daylight.trans = AjxTimezone.createTransitionDate(rule.daylight);
-                }
-                else {
-                    rule.standard = { offset: tz.stdoff };
-                }
-                AjxTimezone.addRule(rule);
-            }
-        }
-    }
+			// add custom rule to known list
+			if (!rule) {
+				rule = { clientId: tz.id, serverId: tz.id, autoDetected: true };
+				if (tz.daylight) {
+					rule.standard = AjxUtil.createProxy(tz.standard[0]);
+					rule.standard.offset = tz.stdoff;
+					rule.standard.trans = AjxTimezone.createTransitionDate(rule.standard);
+
+					rule.daylight = AjxUtil.createProxy(tz.daylight[0]);
+					rule.daylight.offset = tz.dayoff;
+					rule.daylight.trans = AjxTimezone.createTransitionDate(rule.daylight);
+				}
+				else {
+					rule.standard = { offset: tz.stdoff };
+				}
+				AjxTimezone.addRule(rule);
+			}
+		}
+	}
 	invite.type = inv && inv.type ? inv.type : "appt";
 	return invite;
 };
@@ -160,21 +168,6 @@ function(id) {
 ZmInvite.prototype.getComponents = 
 function () {
 	return this.components;
-};
-
-/**
- * Gets the component by uid.
- * 
- * @param	{String}	uid		the component uid
- * @return	{Object}	the component
- */
-ZmInvite.prototype.getComponentByUid = 
-function(uid) {
-	for (var i = 0 ; i < components.length ; ++i) {
-		if (components.uid == uid) {
-			break;
-		}
-	}
 };
 
 /**
@@ -334,7 +327,7 @@ function(compNum) {
 	var att = this.components[cn].at;
 	var list = [];
 
-	if (!(att && att.length)) return list;
+	if (!(att && att.length)) { return list; }
 
 	for (var i = 0; i < att.length; i++) {
 		if (!att[i].cutype || (att[i].cutype == ZmCalendarApp.CUTYPE_INDIVIDUAL)) {
@@ -368,7 +361,7 @@ function(compNum) {
 	var att = this.components[cn].at;
 	var list = [];
 
-	if (!(att && att.length)) return list;
+	if (!(att && att.length)) { return list; }
 
 	for (var i = 0; i < att.length; i++) {
 		if (att[i].cutype == ZmCalendarApp.CUTYPE_RESOURCE) {
@@ -387,7 +380,8 @@ function(compNum) {
 ZmInvite.prototype.getExceptId =
 function(compNum) {
 	var cn = compNum || 0;
-	return (this.components[cn] && this.components[cn].exceptId) ? this.components[cn].exceptId[0] : null;
+	return (this.components[cn] && this.components[cn].exceptId)
+		? this.components[cn].exceptId[0] : null;
 };
 
 /**
@@ -483,17 +477,19 @@ function(compNum) {
  */
 ZmInvite.prototype.getComponentDescriptionHtml =
 function(compNum) {
-    var cn = compNum || 0;
-    var comp = this.components[cn];
-    if (comp == null) return;
+	var cn = compNum || 0;
+	var comp = this.components[cn];
+	if (comp == null) { return; }
+
 	var desc = comp.descHtml;
 	var content = desc && desc[0]._content || null;
-    if(!content){
-        var txtContent = comp.desc;
-        txtContent = (txtContent && txtContent[0]._content) || null;
-        if(!txtContent)
-            content = this.getApptSummary(true);
-    }
+	if (!content) {
+		var txtContent = comp.desc;
+		txtContent = (txtContent && txtContent[0]._content) || null;
+		if (!txtContent) {
+			content = this.getApptSummary(true);
+		}
+	}
 	return content;
 };
 
@@ -505,17 +501,19 @@ function(compNum) {
  */
 ZmInvite.prototype.getComponentDescription =
 function(compNum) {
-    var cn = compNum || 0;
-    var comp = this.components[cn];
-    if (comp == null) return;
+	var cn = compNum || 0;
+	var comp = this.components[cn];
+	if (comp == null) { return; }
+
 	var desc = comp.desc;
 	var content = desc && desc[0]._content || null;
-    if(!content){
-        var htmlContent = comp.descHtml;
-        htmlContent = (htmlContent && htmlContent[0]._content) || null;
-        if(!htmlContent)
-            content = this.getApptSummary();
-    }
+	if (!content) {
+		var htmlContent = comp.descHtml;
+		htmlContent = (htmlContent && htmlContent[0]._content) || null;
+		if (!htmlContent) {
+			content = this.getApptSummary();
+		}
+	}
 	return content;
 };
 
@@ -528,7 +526,7 @@ function(compNum) {
 ZmInvite.prototype.getServerEndTime =
 function(compNum) {
 	var cn = compNum || 0;
-	if (this.components[cn] == null) return;
+	if (this.components[cn] == null) { return; }
 
 	if (this._serverEndTime == null) {
 		if (this.components[cn].e != null ) {
@@ -622,7 +620,7 @@ function(compNum) {
 ZmInvite.prototype.getServerStartTimeTz = 
 function(compNum) {
 	var cn = compNum || 0;
-	if (this.components[cn] == null) return;
+	if (this.components[cn] == null) { return; }
 
 	if (this._serverStartTimeZone == null) {
 		var startTime = this.getServerStartTime();
@@ -642,13 +640,13 @@ function(compNum) {
 ZmInvite.prototype.getServerEndTimeTz = 
 function(compNum) {
 	var cn = compNum || 0;
-	if (this.components[cn] == null) return;
+	var endComp = this.components[cn] && this.components[cn].e;
+	if (!endComp) { return null; }
 
-	if (this._serverEndTimeZone == null) {
+	if (!this._serverEndTimeZone) {
 		var endTime = this.getServerEndTime();
-		this._serverEndTimeZone = endTime && startTime.charAt(endTime.length -1) == 'Z'
-			? AjxTimezone.GMT_NO_DST
-			: this.components[cn].e[0].tz;
+		this._serverEndTimeZone = (endTime && endTime.charAt(endTime.length -1) == 'Z')
+			? AjxTimezone.GMT_NO_DST : endComp[0].tz;
 	}
 	return this._serverEndTimeZone;
 };
@@ -656,68 +654,56 @@ function(compNum) {
 /**
  * Gets the duration text.
  * 
- * @param	{int}	compNum		the component number
+ * @param	{int}		compNum			the component number
  * @param	{Boolean}	emptyAllDay		<code>true</code> to return an empty string "" if all day event.
  * @param	{Boolean}	startOnly		<code>true</code> to include start only
  * @param	{Boolean}	isText			<code>true</code> to return as text, not html
+ * @param	{Date}		startDate		Optional. Start date to use instead of the original start date
+ * @param	{Date}		endDate			Optional. End date to use instead of the original end date
+ *
  * @return	{String}	the duration
  */
 ZmInvite.prototype.getDurationText =
-function(compNum, emptyAllDay, startOnly, isText) {
+function(compNum, emptyAllDay, startOnly, isText, startDate, endDate) {
 	var component = this.components[compNum];
-    var sdt = this.getServerStartDate(compNum);
-    var edt = this.getServerEndDate(compNum);
-    if(!sdt && !edt) return "";
-	if (this.isAllDayEvent(compNum)) {
-		if (emptyAllDay) {
-			return "";
-		}
+	var sd = startDate || this.getServerStartDate(compNum);
+	var ed = endDate || this.getServerEndDate(compNum);
+	if (!sd && !ed) { return ""; }
 
-		var sd = this.getServerStartDate(compNum);
+	// all day
+	if (this.isAllDayEvent(compNum)) {
+		if (emptyAllDay) { return ""; }
+
 		if (this.isMultiDay(compNum)) {
-			var ed = this.getServerEndDate(compNum);
-			
 			var dateFormatter = AjxDateFormat.getDateInstance();
 			var startDay = dateFormatter.format(sd);
 			var endDay = dateFormatter.format(ed);
-			
+
 			if (!ZmInvite._daysFormatter) {
 				ZmInvite._daysFormatter = new AjxMessageFormat(ZmMsg.durationDays);
 			}
-			return ZmInvite._daysFormatter.format( [ startDay, endDay ] );
+			return ZmInvite._daysFormatter.format([startDay, endDay]);
 		} 
-		else {
-			var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
-			return dateFormatter.format(sd);
-		}
-
-	} 
-	else {
-		var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
-		var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-
-		var sd = this.getServerStartDate(compNum);
-        var a = [];
-        if(sd){
-		    a = [ dateFormatter.format(sd), isText ? " " : "<br>" ];
-            if (startOnly) {
-			    a.push(timeFormatter.format(sd));
-		    }
-		    else {
-                var ed = this.getServerEndDate(compNum);
-                if(ed){
-                    var startHour = timeFormatter.format(sd);
-                    var endHour = timeFormatter.format(ed);
-
-                    if (!ZmInvite._hoursFormatter) {
-                        ZmInvite._hoursFormatter = new AjxMessageFormat(ZmMsg.durationHours);
-                    }
-                    a.push(ZmInvite._hoursFormatter.format( [ startHour, endHour ] ));
-                }
-		    }
-        }
-		return a.join("");
+		return AjxDateFormat.getDateInstance(AjxDateFormat.FULL).format(sd);
 	}
+
+	var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
+	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+
+	var a = [dateFormatter.format(sd), isText ? " " : "<br>"];
+	if (startOnly) {
+		a.push(timeFormatter.format(sd));
+	}
+	else {
+		var startHour = timeFormatter.format(sd);
+		var endHour = timeFormatter.format(ed);
+
+		if (!ZmInvite._hoursFormatter) {
+			ZmInvite._hoursFormatter = new AjxMessageFormat(ZmMsg.durationHours);
+		}
+		a.push(ZmInvite._hoursFormatter.format([startHour, endHour]));
+	}
+	return a.join("");
 };
 
 /**
@@ -869,22 +855,17 @@ function() {
  */
 ZmInvite.prototype.getApptSummary =
 function(isHtml) {
+	var msg = appCtxt.getById(this.getMessageId());
+	var appt;
 
-    var msgId = this.getMessageId();
-    var msg = appCtxt.getById(this.getMessageId());
-    var appt;
+	if (msg) {
+		AjxDispatcher.require("CalendarCore");
+		appt = new ZmAppt();
+		appt.setFromMessage(msg);
+	}
 
-    if(msg){
-        AjxDispatcher.require("CalendarCore");
-        appt = new ZmAppt();
-        appt.setFromMessage(msg);
-    }
-
-    return appt ? appt.getSummary(isHtml) : this.getSummary(isHtml);
-    
+	return appt ? appt.getSummary(isHtml) : this.getSummary(isHtml);
 };
-
-
 
 /**
  * Gets the summary.
@@ -894,21 +875,14 @@ function(isHtml) {
  */
 ZmInvite.prototype.getSummary =
 function(isHtml) {
-	var compNum = 0;
-
-    var orgName = this.getOrganizerName(compNum);
-	var whenSummary = this.getDurationText(compNum, false, false, true);
-    var locationSummary = this.getLocation(compNum);
-
-	if (this.isRecurring(compNum)) {
+	if (this.isRecurring()) {
 		if (!this._recurBlurb) {
 			AjxDispatcher.require("CalendarCore");
 			var recur = new ZmRecurrence();
-			recur.setRecurrenceRules(this.getRecurrenceRules(compNum), this.getServerStartDate(compNum));
+			recur.setRecurrenceRules(this.getRecurrenceRules(), this.getServerStartDate());
 			this._recurBlurb = recur.getBlurb();
 		}
 	}
-    var recurSummary =  this._recurBlurb;
 
 	var buf = [];
 	var i = 0;
@@ -919,36 +893,38 @@ function(isHtml) {
 	}
 	var formatter = isHtml ? this._summaryHtmlLineFormatter : this._summaryTextLineFormatter;
 
-    var params = [];
-    
+	var params = [];
+
 	if (isHtml) {
 		buf[i++] = "<p>\n<table border='0'>\n";
 	}
 
-
+	var orgName = this.getOrganizerName();
 	if (orgName) {
 		params = [ZmMsg.organizerLabel, orgName, ""];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
 
+	var whenSummary = this.getDurationText(0, false, false, true);
 	if (whenSummary) {
 		params = [ZmMsg.whenLabel, whenSummary, ""];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
 
-    if (locationSummary) {
-        params = [ZmMsg.locationLabel, locationSummary, ""];
-        buf[i++] = formatter.format(params);
-        buf[i++] = "\n";
-    }
+	var locationSummary = this.getLocation();
+	if (locationSummary) {
+		params = [ZmMsg.locationLabel, locationSummary, ""];
+		buf[i++] = formatter.format(params);
+		buf[i++] = "\n";
+	}
 
-    if (recurSummary) {
-        params = [ZmMsg.repeatLabel, recurSummary, ""];
-        buf[i++] = formatter.format(params);
-        buf[i++] = "\n";
-    }
+	if (this._recurBlurb) {
+		params = [ZmMsg.repeatLabel, this._recurBlurb, ""];
+		buf[i++] = formatter.format(params);
+		buf[i++] = "\n";
+	}
 
 	if (isHtml) {
 		buf[i++] = "</table>\n";
@@ -991,13 +967,13 @@ function(field, data, html, idx, wrap, width, asIs) {
  * @return	{Boolean}	<code>true</code> if the invite has acceptable components
  */
 ZmInvite.prototype.hasAcceptableComponents =
-function() {	
-	for(var i  in this.components) {
-		if(this.getStatus(i) != ZmCalendarApp.STATUS_CANC){
+function() {
+	for (var i  in this.components) {
+		if (this.getStatus(i) != ZmCalendarApp.STATUS_CANC) {
 			return true;
-		};
+		}
 	}
-	
+
 	return false;
 };
 
@@ -1009,9 +985,10 @@ function() {
  */
 ZmInvite.prototype.hasInviteReplyMethod =
 function(compNum) {
-    var methodName = this.getInviteMethod(compNum);
-    var publishOrRequest = (methodName == ZmCalendarApp.METHOD_REQUEST || methodName == ZmCalendarApp.METHOD_PUBLISH);
-    return ((methodName == null) || publishOrRequest);
+	var methodName = this.getInviteMethod(compNum);
+	var publishOrRequest = (methodName == ZmCalendarApp.METHOD_REQUEST ||
+							methodName == ZmCalendarApp.METHOD_PUBLISH);
+	return ((methodName == null) || publishOrRequest);
 };
 
 /**
@@ -1022,8 +999,7 @@ function(compNum) {
  */
 ZmInvite.prototype.hasCounterMethod =
 function(compNum) {
-    var methodName = this.getInviteMethod(compNum);
-    return (methodName == ZmCalendarApp.METHOD_COUNTER);
+	return (this.getInviteMethod(compNum) == ZmCalendarApp.METHOD_COUNTER);
 };
 
 /**
@@ -1034,9 +1010,35 @@ function(compNum) {
  */
 ZmInvite.prototype.getProposedTimeStr =
 function(compNum) {
-    var methodName = this.getInviteMethod(compNum);
-    if (methodName == ZmCalendarApp.METHOD_COUNTER) {
-        return this.getDurationText(compNum, false, false, true);                
-    }
-    return "";
+	var methodName = this.getInviteMethod(compNum);
+	if (methodName == ZmCalendarApp.METHOD_COUNTER) {
+		return this.getDurationText(compNum, false, false, true);
+	}
+	return "";
+};
+
+ZmInvite.prototype.getChanges =
+function(compNum) {
+	var cn = compNum || 0;
+	var changesStr = this.components[cn] && this.components[cn].changes;
+	var changesArr = changesStr && changesStr.split(",");
+	if (changesArr && changesArr.length > 0) {
+		var changes = {};
+		for (var i = 0; i < changesArr.length; i++) {
+			changes[changesArr[i]] = true;
+		}
+		return changes;
+	}
+
+	return null;
+};
+
+/**
+ * Returns true if this invite has attendees, one of which replied back with an
+ * "actioned" response (e.g. accept/decline/tentative)
+ */
+ZmInvite.prototype.hasAttendeeResponse =
+function() {
+	var att = this.getAttendees();
+	return (att.length > 0 && att[0].ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
 };

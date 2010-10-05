@@ -154,6 +154,15 @@
                 <c:set var="noComposeView" scope="session" value="${true}"/>
             </app:handleError>
         </c:when>
+        <c:when test="${uploader.isAutoSave}">
+            <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
+            <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
+            <c:set scope="request" var="draftid" value="${draftResult.id}"/>
+            <c:remove var="temp_draftid" scope="session"/>
+            <app:status><fmt:message key="draftSavedAuto"/></app:status>
+            <c:set var="needComposeView" value="${false}"/>
+            <c:import url="/h/autoSaveDraft"/>
+        </c:when>
         <c:when test="${uploader.isDraft}">
             <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
             <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
@@ -168,6 +177,6 @@
 </app:handleError>
 
 <c:if test="${needComposeView}">
-    <%--<jsp:forward page="/h/compose"/>--%>
     <c:import url="/h/compose"/>
 </c:if>
+

@@ -133,6 +133,8 @@ action_stop                         stop checkbox (true)
                     <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="to"/></fmt:param></fmt:message>
             <option <c:if test="${selected eq 'cc'}">selected</c:if> value="cc">
                     <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="cc"/></fmt:param></fmt:message>
+            <option <c:if test="${selected eq 'to,cc'}">selected</c:if> value="to,cc">
+                    <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="tocc"/></fmt:param></fmt:message>
             <option <c:if test="${selected eq 'bcc'}">selected</c:if> value="bcc">
                     <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="bcc"/></fmt:param></fmt:message>
         </select>
@@ -197,12 +199,13 @@ action_stop                         stop checkbox (true)
 <c:when test="${zm:isHeaderCondition(condition)}">
     <c:set var="hdr" value="${zm:getHeader(condition)}"/>
     <c:choose>
-        <c:when test="${hdr.headerName eq 'subject' or hdr.headerName eq 'to' or hdr.headerName eq 'cc' or hdr.headerName eq 'from'}">
+        <c:when test="${hdr.headerName eq 'subject' or hdr.headerName eq 'to' or hdr.headerName eq 'cc' or hdr.headerName eq 'to,cc' or hdr.headerName eq 'from'}">
             <td>
                 <select name='${condi}_header'>
                     <option <c:if test="${hdr.headerName eq 'subject'}">selected</c:if> value="subject"><fmt:message key="FILT_COND_HEADER_subject"/>
                     <option <c:if test="${hdr.headerName eq 'to'}">selected</c:if> value="to"><fmt:message key="FILT_COND_HEADER_to"/>
                     <option <c:if test="${hdr.headerName eq 'cc'}">selected</c:if> value="cc"><fmt:message key="FILT_COND_HEADER_cc"/>
+                    <option <c:if test="${hdr.headerName eq 'to,cc'}">selected</c:if> value="to,cc"><fmt:message key="FILT_COND_HEADER_to,cc"/>
                     <option <c:if test="${hdr.headerName eq 'from'}">selected</c:if> value="from"><fmt:message key="FILT_COND_HEADER_from"/>
                 </select>
             </td>
@@ -276,6 +279,7 @@ action_stop                         stop checkbox (true)
             <option value="from"><fmt:message key="EFILT_NEW_COND_FROM"/>
             <option value="to"><fmt:message key="EFILT_NEW_COND_TO"/>
             <option value="cc"><fmt:message key="EFILT_NEW_COND_CC"/>
+            <option value="to,cc"><fmt:message key="EFILT_NEW_COND_TOCC"/>
             <option value="subject"><fmt:message key="EFILT_NEW_COND_SUBJECT"/>
             <option value="header"><fmt:message key="EFILT_NEW_COND_HEADER"/>
             <option value="headerexists"><fmt:message key="EFILT_NEW_COND_HEADER_EXISTS"/>

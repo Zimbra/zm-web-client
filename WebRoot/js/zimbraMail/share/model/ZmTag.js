@@ -28,11 +28,6 @@
  */
 ZmTag = function(params) {
 	params.type = ZmOrganizer.TAG;
-	// bug 41850
-	var rgb = String(params.rgb).toUpperCase();
-	if (params.color == 9 && rgb != "#FF8000") {
-		params.color = ZmTag.__OLD_COLORS[rgb] || ZmOrganizer.DEFAULT_COLOR[params.type];
-	}
 	ZmOrganizer.call(this, params);
 };
 
@@ -68,12 +63,6 @@ ZmTag.ID_FROM_ME	= 34;
 ZmTag.ID_REPLIED	= 35;
 ZmTag.ID_FORWARDED	= 36;
 ZmTag.ID_ATTACHED	= 37;
-
-// bug 41850
-ZmTag.__OLD_COLORS = {
-	"#000000": 0, "#0000FF": 1, "#008284": 2, "#008200": 3, "#840084": 4,
-	"#FF0000": 5, "#848200": 6, "#FF0084": 7, "#848284": 8, "#FF8000": 9
-};
 
 /**
  * Tags come from back end as a flat list, and we manually create a root tag, so all tags
@@ -151,6 +140,15 @@ function(color) {
 	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR)) ? color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 };
 
+ZmTag.getIcon = function(color) {
+    var object = { getIcon:ZmTag.prototype.getIcon, color:color };
+    if (String(color).match(/^#/)) {
+        object.rgb = color;
+        object.color = null;
+    }
+    return ZmTag.prototype.getIconWithColor.call(object);
+}
+
 /**
  * Creates a tag.
  * 
@@ -161,10 +159,13 @@ function(params) {
 	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
 	var tagNode = soapDoc.set("tag");
 	tagNode.setAttribute("name", params.name);
-	var color = ZmOrganizer.checkColor(params.color);
-	if (color && (color != ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG])) {
-		tagNode.setAttribute("color", color);
-	}
+    if (params.rgb) {
+        tagNode.setAttribute("rgb", params.rgb);
+    }
+    else {
+        var color = ZmOrganizer.checkColor(params.color) || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
+        tagNode.setAttribute("color", color);
+    }
 	var errorCallback = new AjxCallback(null, ZmTag._handleErrorCreate, params);
 	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback, accountName:params.accountName});
 };
@@ -191,7 +192,7 @@ function(params, ex) {
  */
 ZmTag.prototype.getIcon = 
 function() {
-	return (this.id == ZmOrganizer.ID_ROOT) ? null : ZmTag.COLOR_ICON[this.color];
+	return (this.id == ZmOrganizer.ID_ROOT) ? null : "Tag";
 };
 
 /**

@@ -56,8 +56,13 @@
                         <td>
                             <select name="zimbraPrefHtmlEditorDefaultFontFamily" id="composeFont">
                                 <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Arial'}"> selected</c:if> value="Arial">Arial</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Arial Black'}"> selected</c:if> value="Arial Black">Arial Black</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Comic Sans MS'}"> selected</c:if> value="Comic Sans MS">Comic Sans MS</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Courier New'}"> selected</c:if> value="Courier New">Courier New</option>                                
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Lucida Console'}"> selected</c:if> value="Lucida Console">Lucida Console</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Tahoma'}"> selected</c:if> value="Tahoma">Tahoma</option>
                                 <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Times New Roman'}"> selected</c:if> value="Times New Roman">Times New Roman</option>
-                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Courier'}"> selected</c:if> value="Courier">Courier</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Trebuchet MS'}"> selected</c:if> value="Trebuchet MS">Trebuchet MS</option>
                                 <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Verdana'}"> selected</c:if> value="Verdana">Verdana</option>
                             </select>
                         </td>

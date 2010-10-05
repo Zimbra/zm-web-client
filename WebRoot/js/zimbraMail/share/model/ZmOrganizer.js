@@ -86,7 +86,10 @@ ZmOrganizer = function(params) {
 	// NOTE: has been set. In other words, the color parameter will only
 	// NOTE: be specified if explicitly set that way and not as an explicit
 	// NOTE: RGB value.
-	this.rgb = ZmOrganizer.COLOR_VALUES[params.color] || params.rgb;
+    // NOTE: It looks like the server IS sending a color value even though
+    // NOTE: it shouldn't when an explicit RGB is set. So, instead, try to
+    // NOTE: handle this situation as well.
+	this.rgb = params.rgb || ZmOrganizer.COLOR_VALUES[params.color];
 
 	if (appCtxt.isOffline && !this.account && this.id == this.nId) {
 		this.account = appCtxt.accountList.mainAccount;
@@ -124,7 +127,7 @@ ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
 ZmOrganizer.ID_BRIEFCASE		= 16;
-ZmOrganizer.ID_ALL_MAILBOXES	= 249;
+ZmOrganizer.ID_ALL_MAILBOXES	= 249; 
 ZmOrganizer.ID_NOTIFICATION_MP	= 250;
 ZmOrganizer.ID_SYNC_FAILURES	= 252;		// offline only
 ZmOrganizer.ID_OUTBOX    		= 254;		// offline only
@@ -936,7 +939,7 @@ ZmOrganizer.prototype.getIcon = function() {};
 ZmOrganizer.prototype.getIconWithColor =
 function() {
 	var icon = this.getIcon() || "";
-	var color = this.rgb || this.color;
+	var color = this.rgb || ZmOrganizer.COLOR_VALUES[this.color];
 	return color ? [icon,color].join(",color=") : icon;
 };
 
@@ -1006,9 +1009,10 @@ function(attrs) {
  * Assigns the organizer a new parent, moving it within its tree.
  *
  * @param {ZmOrganizer}		newParent		the new parent of this organizer
+ * @param {boolean}		undoing			if true, action is not undoable
  */
 ZmOrganizer.prototype.move =
-function(newParent) {
+function(newParent, undoing) {
 	var newId = (newParent.nId > 0)
 		? newParent.id
 		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
@@ -1019,13 +1023,20 @@ function(newParent) {
 	{
 		return;
 	}
+	var params = {};
 
 	if (newId == ZmOrganizer.ID_TRASH) {
-		this._organizerAction({action: "trash"});
+		params.action = "trash";
+		params.undoing = undoing;
 	}
 	else {
-		this._organizerAction({action: "move", attrs: {l: newId}});
+		params.actionText = (undoing) ? ZmMsg.actionUndoMove : ZmMsg.actionMove;
+		params.actionArg = newParent.getName(false, false, true);
+		params.action = "move";
+		params.attrs = {l: newId};
+		params.undoing = undoing;
 	}
+	this._organizerAction(params);
 };
 
 /**
@@ -1739,7 +1750,10 @@ function(params) {
 		}
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	}
-	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, params);
+	var actionController = appCtxt.getActionController();
+	actionController.dismiss();
+	var actionLogItem = (!params.undoing && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
+	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
 	} else {
@@ -1762,10 +1776,29 @@ function(params) {
  * @private
  */
 ZmOrganizer.prototype._handleResponseOrganizerAction =
-function(params, result) {
+function(params, actionLogItem, result) {
+	if (actionLogItem) {
+		actionLogItem.setComplete();
+	}
 	if (params.callback) {
 		params.callback.run(result);
 	}
+	if (params.actionText) {
+		var actionController = appCtxt.getActionController();
+		var summary = ZmOrganizer.getActionSummary(params.actionText, params.numItems || 1, this.type, params.actionArg);
+		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
+		if (undoLink) {
+			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: actionController.getStatusTransitions()});
+		} else {
+			appCtxt.setStatusMsg(summary);
+		}
+	}
+};
+
+ZmOrganizer.getActionSummary =
+function(text, num, type, arg) {
+	var typeText = ZmMsg[ZmOrganizer.MSG_KEY[type]];
+	return AjxMessageFormat.format(text, [num, typeText, arg]);
 };
 
 /**

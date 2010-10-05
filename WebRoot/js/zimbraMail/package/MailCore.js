@@ -31,6 +31,7 @@ AjxPackage.require("zimbraMail.mail.view.object.ZmImageAttachmentObjectHandler")
 AjxPackage.require("zimbraMail.mail.view.ZmMailListView");
 AjxPackage.require("zimbraMail.mail.view.ZmDoublePaneView");
 AjxPackage.require("zimbraMail.mail.view.ZmTradView");
+AjxPackage.require("zimbraMail.mail.view.ZmInviteMsgView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailMsgView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailMsgListView");
 AjxPackage.require("zimbraMail.mail.view.ZmConvListView");

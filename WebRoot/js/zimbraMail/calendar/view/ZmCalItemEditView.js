@@ -54,7 +54,7 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle) 
 
 	this._kbMgr = appCtxt.getKeyboardMgr();
     this._isForward = false;
-    this._isProposeTime = false;    
+    this._isProposeTime = false;
 };
 
 ZmCalItemEditView.prototype = new DwtComposite;
@@ -127,11 +127,13 @@ function() {
 
 	// clear out all input fields
 	this._subjectField.setValue("");
-	this._repeatDescField.innerHTML = "";
 	this._notesHtmlEditor.setContent("");
 
-	// reinit non-time sensitive selects option values
-	this._repeatSelect.setSelectedValue(ZmApptViewHelper.REPEAT_OPTIONS[0].value);
+    if(this._hasRepeatSupport) {
+        this._repeatDescField.innerHTML = "";
+        // reinit non-time sensitive selects option values
+        this._repeatSelect.setSelectedValue(ZmApptViewHelper.REPEAT_OPTIONS[0].value);
+    }
 
 	// remove attachments if any were added
 	this._removeAllAttachments();
@@ -182,7 +184,7 @@ function(excludeAttendees) {
 ZmCalItemEditView.prototype.isReminderOnlyChanged =
 function() {
 
-	if(!this._hasReminderSupport) { return false; }
+	if (!this._hasReminderSupport) { return false; }
 
 	var formValue = this._origFormValueMinusReminder;
 
@@ -256,6 +258,7 @@ function(calItem, attach) {
 
 	var attachRemoveId = "_att_" + Dwt.getNextId();
 	var attachInputId = "_att_" + Dwt.getNextId();
+    var sizeContId = "_att_" + Dwt.getNextId();
 
 	if (attach) {
 		div.innerHTML = calItem.getAttachListHtml(attach, true);
@@ -264,6 +267,7 @@ function(calItem, attach) {
 			id: this._htmlElId,
 			attachInputId: attachInputId,
 			attachRemoveId: attachRemoveId,
+            sizeId: sizeContId,
 			uploadFieldName: ZmCalItemEditView.UPLOAD_FIELD_NAME
 		};
 		div.innerHTML = AjxTemplate.expand("calendar.Appointment#AttachAdd", subs);
@@ -281,15 +285,47 @@ function(calItem, attach) {
 		attachRemoveSpan._editViewId = tvpId;
 		attachRemoveSpan._parentDiv = div;
 		Dwt.setHandler(attachRemoveSpan, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+
+        var attachInputEl = document.getElementById(attachInputId);
 		// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
 		if (AjxEnv.isIE) {
-			var attachInputEl = document.getElementById(attachInputId);
+			//var attachInputEl = document.getElementById(attachInputId);
 			attachInputEl._editViewId = tvpId;
 			Dwt.setHandler(attachInputEl, DwtEvent.ONKEYDOWN, ZmCalItemEditView._onKeyDown);
-		}
-	}
+        }
+
+        //HTML5
+        if(AjxEnv.supportsHTML5File){
+            var sizeEl = document.getElementById(sizeContId);
+            Dwt.setHandler(attachInputEl, "onchange", AjxCallback.simpleClosure(this._handleFileSize, this, attachInputEl, sizeEl));
+        }
+    }
 
     this.resize();
+};
+
+ZmCalItemEditView.prototype._handleFileSize =
+function(inputEl, sizeEl){
+
+    var files = inputEl.files;
+    if(!files) return;
+
+    var sizeStr = [], className, totalSize =0;
+    for(var i=0; i<files.length;i++){
+        var file = files[i];
+        var size = file.size || file.fileSize /*Safari*/;
+        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))
+            className = "RedC";
+        totalSize += size;
+    }
+
+    if(sizeEl) {
+        sizeEl.innerHTML = "  ("+AjxUtil.formatSize(totalSize, true)+")";
+        if(className)
+            Dwt.addClass(sizeEl, "RedC");
+        else
+            Dwt.delClass(sizeEl, "RedC");
+    }
 };
 
 ZmCalItemEditView.prototype.resize =
@@ -367,14 +403,19 @@ function(calItem, mode, firstTime) {
 
 	// disable the recurrence select object for editing single instance
     var enableRepeat = ((mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) && enableTimeSelection && !this._isProposeTime);
-	this._enableRepeat(enableRepeat);
+    var repeatOptions = document.getElementById(this._htmlElId + "_repeat_options");
+	if(repeatOptions) this._enableRepeat(enableRepeat);
 
     //show 'to' fields for forward action
     var forwardOptions = document.getElementById(this._htmlElId + "_forward_options");
     if(forwardOptions) Dwt.setVisible(forwardOptions, this._isForward || this._isProposeTime);
 
     var reminderOptions = document.getElementById(this._htmlElId + "_reminder_options");
-    if(reminderOptions) Dwt.setVisible(reminderOptions, !this._isForward && !this._isProposeTime);
+    if(reminderOptions) {
+        var enableReminder = !this._isForward && !this._isProposeTime;
+        this._reminderSelectInput.setEnabled(enableReminder);
+        this._reminderButton.setEnabled(enableReminder);
+    }
 
 	// if first time reset'ing, delay saving form value since all widgets
 	// (i.e. html editor) may not have finished initializing yet.
@@ -457,11 +498,14 @@ function(calItem) {
 	if (this._hasReminderSupport) {
 		//calItem.setReminderMinutes(this._reminderSelect.getValue());
         var reminderString = this._reminderSelectInput.getValue();
-        if(!reminderString || reminderString == ZmMsg.apptRemindNever) {
+        if (!reminderString || reminderString == ZmMsg.apptRemindNever) {
             calItem.setReminderMinutes(0);                        
-        }else {
+        } else {
             var reminderInfo = ZmCalendarApp.parseReminderString(reminderString);
-            calItem.setReminderUnits(reminderInfo.reminderValue,  reminderInfo.reminderUnits);            
+			if (this._reminderEmailCheckbox && this._reminderEmailCheckbox.checked) {
+				calItem.addReminderAction(ZmCalItem.ALARM_EMAIL);
+			}
+            calItem.setReminderUnits(reminderInfo.reminderValue,  reminderInfo.reminderUnits);
         }
 	}
 
@@ -472,10 +516,12 @@ ZmCalItemEditView.prototype._populateForEdit =
 function(calItem, mode) {
 	// set subject
 	this._subjectField.setValue(calItem.getName());
-	this._repeatSelect.setSelectedValue(calItem.getRecurType());
 
-	// recurrence string
-	this._setRepeatDesc(calItem);
+    if (this._hasRepeatSupport) {
+        this._repeatSelect.setSelectedValue(calItem.getRecurType());
+        // recurrence string
+	    this._setRepeatDesc(calItem);
+    }
 
 	// attachments
 	this._attachDiv = document.getElementById(this._attachDivId);
@@ -492,13 +538,15 @@ function(calItem, mode) {
 	this._setContent(calItem, mode);
 	if (this._hasReminderSupport) {
 		this.adjustReminderValue(calItem);
+		if (calItem.alarmActions.contains(ZmCalItem.ALARM_EMAIL)) {
+			this._reminderEmailCheckbox.checked = true;
+		}
 	}
 };
 
 ZmCalItemEditView.prototype.adjustReminderValue =
 function(calItem) {
     this._reminderSelectInput.setValue(ZmCalendarApp.getReminderSummary(calItem._reminderMinutes));
-    return
 };
 
 ZmCalItemEditView.prototype._setRepeatDesc =
@@ -615,18 +663,22 @@ function(width) {
 	};
 	this._subjectField = new DwtInputField(params);
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), width, "22px");
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
 
 	// CalItem folder DwtSelect
 	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
 
-	// recurrence DwtSelect
-	this._repeatSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_repeatSelect")});
-	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
-	for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length; i++) {
-		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
-		this._repeatSelect.addOption(option.label, option.selected, option.value);
-	}
+    this._hasRepeatSupport = Boolean(Dwt.byId(this._htmlElId + "_repeatSelect") != null);
+
+    if(this._hasRepeatSupport) {
+        // recurrence DwtSelect
+        this._repeatSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_repeatSelect")});
+        this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
+        for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length; i++) {
+            var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
+            this._repeatSelect.addOption(option.label, option.selected, option.value);
+        }
+    }
 
 	this._hasReminderSupport = Boolean(Dwt.byId(this._htmlElId + "_reminderSelect") != null);
 
@@ -654,6 +706,12 @@ function(width) {
 		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
 		var reminderSelectionListener = new AjxListener(this, this._reminderSelectionListener);
 		this._reminderButton = ZmCalendarApp.createReminderButton(this, this._htmlElId + "_reminderSelect", reminderButtonListener, reminderSelectionListener);
+
+		this._reminderEmailCell = document.getElementById(this._htmlElId + "_reminderEmailCell");
+		this._reminderEmailCheckbox = document.getElementById(this._htmlElId + "_reminderEmailCheckbox");
+		this._setEmailReminderControls();
+		var listener = new AjxListener(this, this._settingChangeListener);
+		appCtxt.getSettings().getSetting(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS).addChangeListener(listener);
 	}
 
     this._notesContainer = document.getElementById(this._htmlElId + "_notes");
@@ -949,28 +1007,33 @@ function(ev) {
 		if (ed && (ed.valueOf() < ev.detail.valueOf()))
 			this._endDateField.value = newDate;
 		this._startDateField.value = newDate;
-	} else {
+	} else if(parentButton == this._endDateButton) {
 		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 		if (sd && (sd.valueOf() > ev.detail.valueOf()))
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
 	var calItem = this._calItem;
-	var repeatType = this._repeatSelect.getValue();
-	
-	if (calItem.isCustomRecurrence() &&
-		this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
-	{
-		this._checkRecurrenceValidity = true;
-		this._initRecurDialog(repeatType);
-		this._recurOkListener();		
-	}
-	else
-	{
-		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-		this._calItem._recurrence.setRecurrenceStartTime(sd.getTime());
-		this._setRepeatDesc(this._calItem);
-	}
+
+    if(this._hasRepeatSupport) {
+        var repeatType = this._repeatSelect.getValue();
+
+        if (calItem.isCustomRecurrence() &&
+            this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
+        {
+            this._checkRecurrenceValidity = true;
+            this._initRecurDialog(repeatType);
+            this._recurOkListener();
+        }
+        else
+        {
+            var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+            if(sd) {
+                this._calItem._recurrence.setRecurrenceStartTime(sd.getTime());
+                this._setRepeatDesc(this._calItem);
+            }
+        }
+    }    
 };
 
 ZmCalItemEditView.prototype._resetRecurrence =
@@ -1172,6 +1235,22 @@ function(sd) {
 	{
 		calItem._recurrence.setRecurrenceStartTime(sd.getTime());
 		this._setRepeatDesc(calItem);
+	}
+};
+
+ZmCalItemEditView.prototype._setEmailReminderControls =
+function() {
+	var enabled = Boolean(appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS));
+	this._reminderEmailCell.className = enabled ? "" : "DisabledText";
+	this._reminderEmailCheckbox.disabled = !enabled;
+};
+
+ZmCalItemEditView.prototype._settingChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) { return; }
+	var id = ev.source.id;
+	if (id == ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS) {
+		this._setEmailReminderControls();
 	}
 };
 

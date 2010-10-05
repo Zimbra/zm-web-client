@@ -1,0 +1,97 @@
+.LoginScreen {
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:11px;
+	background-color: @LoginColor@;
+	background-image: -moz-linear-gradient(top, @LoginColor@, @darken(LoginColor,50)@); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @LoginColor@),color-stop(1, @darken(LoginColor,50)@)); /* Saf4+, Chrome */
+ 	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@LoginColor@', EndColorStr='@darken(LoginColor,50)@'); /* IE6,IE7 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@LoginColor@', EndColorStr='@darken(LoginColor,50)@')"; /* IE8 */
+
+}
+.LoginScreen #center {
+	width:500px;
+	min-height:300px;
+	margin-top:-150px;
+	margin-left:-250px;
+}
+.LoginScreen #center-small {
+	width:350px;
+	height:270px;
+	margin-top:-135px;
+	margin-left:-175px;
+}
+.LoginScreen #center, .LoginScreen #center-small {
+	position:absolute;
+	top:50%;
+	left:50%;
+	overflow:visible;
+	
+	/*Linear gradient backgrounds*/
+	background-color: @darken(LoginColor,30)@;
+	background-image: -moz-linear-gradient(top, @LoginColor@, @darken(LoginColor,50)@); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @LoginColor@),color-stop(1, @darken(LoginColor,50)@)); /* Saf4+, Chrome */
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@LoginColor@', EndColorStr='@darken(LoginColor,50)@'); /* IE6,IE7 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@LoginColor@', EndColorStr='@darken(LoginColor,50)@')"; /* IE8 */
+
+	/*Radial gradient backgrounds*/
+	background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @LoginColor@ 0%, @darken(LoginColor,50)@ 100%); /* FF3.6 */
+	background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@LoginColor@), to(@darken(LoginColor,50)@) ); /* Saf4+, Chrome */
+
+	-moz-border-radius: 15px; /* FF1+ */
+	-webkit-border-radius: 15px; /* Saf3-4 */
+	border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
+	
+	-moz-box-shadow: 0px 0px 10px #000000; /* FF3.5+ */
+	-webkit-box-shadow: 0px 0px 10px #000000; /* Saf3.0+, Chrome */
+	box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
+	filter: progid:DXImageTransform.Microsoft.Glow(Color=@darken(LoginColor,50)@, Strength=3); /* IE6,IE7 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.Glow(Color=@darken(LoginColor,50)@, Strength=3)"; /* IE8 */
+}
+form {
+	text-align:center;
+}
+.form {
+	color: #FFFFFF;
+	margin: 0px auto;
+	border-collapse:collapse;
+	text-align:left;
+}
+#center .form label {margin-right:20px;}
+.form td {padding-bottom:10px;}
+.form input[type='text'], 
+.form input[type='password'] {
+	width:225px;
+}
+.form select {
+	width:165px;
+}
+#ZLoginErrorPanel {
+	padding-bottom:0px;
+}
+#ZLoginWhatsThisAnchor {
+	color: white;
+	text-decoration:none;
+	margin-left:5px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+}
+#ZLoginWhatsThis {
+	position:absolute;
+	border:2px solid @lighten(LoginColor,65)@;
+	background-color: #ffffff
+}
+#login {
+	float:right;
+}
+h1 {margin-left:20px;}
+#copyright {
+	color:@lighten(LoginColor,36)@; 
+	text-align:center;
+	margin-bottom:3px;
+}

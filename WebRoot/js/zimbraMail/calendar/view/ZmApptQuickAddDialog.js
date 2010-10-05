@@ -89,7 +89,7 @@ function(appt) {
 		this._endTimeSelect.set(appt.endDate);
         //need to capture initial time set while composing/editing appt
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);        
-	}else {
+	} else {
         this._dateInfo = {};
     }
 
@@ -141,6 +141,10 @@ function() {
 
 	//set alarm for reminders
 	appt.setReminderMinutes(this._reminderSelect.getValue());
+	if (this._reminderEmailCheckbox && this._reminderEmailCheckbox.checked) {
+		appt.addReminderAction(ZmCalItem.ALARM_EMAIL);
+	}
+
 	return appt;
 };
 
@@ -306,6 +310,12 @@ function() {
 	}
 	this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
 
+	this._reminderEmailCell = document.getElementById(this._htmlElId + "_reminderEmailCell");
+	this._reminderEmailCheckbox = document.getElementById(this._htmlElId + "_reminderEmailCheckbox");
+	this._setEmailReminderControls();
+	var listener = new AjxListener(this, this._settingChangeListener);
+	appCtxt.getSettings().getSetting(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS).addChangeListener(listener);
+
 	// init auto-complete widget if contacts app enabled
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		this._initAutocomplete();
@@ -412,6 +422,7 @@ function() {
 	vals.push(this._startDateField.value);
 	vals.push(this._endDateField.value);
 	vals.push(this._reminderSelect.getValue());
+	vals.push(this._reminderEmailCheckbox.value);
 	if (!this._appt.isAllDayEvent()) {
 		vals.push(
 			AjxDateUtil.getServerDateTime(this._startTimeSelect.getValue()),
@@ -480,6 +491,22 @@ function(ev, id) {
     if (!this._appt.isAllDayEvent()) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
     }
+};
+
+ZmApptQuickAddDialog.prototype._setEmailReminderControls =
+function() {
+	var enabled = Boolean(appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS));
+	this._reminderEmailCell.className = enabled ? "" : "DisabledText";
+	this._reminderEmailCheckbox.disabled = !enabled;
+};
+
+ZmApptQuickAddDialog.prototype._settingChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) { return; }
+	var id = ev.source.id;
+	if (id == ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS) {
+		this._setEmailReminderControls();
+	}
 };
 
 // Static methods

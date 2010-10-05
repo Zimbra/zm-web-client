@@ -348,9 +348,11 @@ A:visited { color: blue; }
 
 .Unread {	font-weight:bold; }
 
-.RowSelected TD { @SelectedBg@ }
+.RowSelected TD { @SelectedRow@ !important}
 .RowMatched TD { background-color: @HilightColor@ }
-
+.ZhConvExpanded TD {
+	background-color:#eeeeff;
+}
 
 .Folder { padding-bottom: 2px;  }
 

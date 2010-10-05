@@ -21,3 +21,7 @@
 	@tlRadius@: 3px;
 	@trRadius@: 3px; 
 }
+
+.ZhConvExpanded TD{
+	background-color: #F0D8D8;
+}

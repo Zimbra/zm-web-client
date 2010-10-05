@@ -54,7 +54,7 @@
         <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
 </app:handleError>
-<table width="100%"  cellpadding="0" cellspacing="0" border="0">
+<table width="100%"  cellpadding="0" cellspacing="0" border="0" class="zPrintMsgs">
     <tr>
         <td class='ZhAppContent'>
             <table width="100%" class='ZhCalMonthHeaderTable' cellpadding=2 cellspacing=0 border=0>
@@ -110,3 +110,9 @@
         </td>
     </tr>
 </table>
+
+<style type="text/css">
+    .zPrintMsgs *{
+        font-size:${mailbox.prefs.defaultPrintFontSize} !important;
+    }
+</style>

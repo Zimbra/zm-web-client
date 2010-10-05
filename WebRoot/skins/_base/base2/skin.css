@@ -47,8 +47,13 @@ BODY						{	margin:0px; 				}
 #skin_container_logo					{	width:@TreeStartWidth@;			}
 	
 /** Search box **/	
-#skin_spacing_search					{	width:100%; padding:0px 10px 4px @cssValue(HSashContainer,width)@;			}
-#skin_container_search					{	@SkinBorderSearch@	}
+#skin_spacing_search,
+#skin_spacing_people_search				{	width:100%; padding:0px 10px 4px @cssValue(HSashContainer,width)@;			}
+
+#skin_container_search,
+#skin_container_people_search			{	@SkinBorderSearch@	}
+
+#skin_container_people_search			{	width:200px; }
 
 	
 

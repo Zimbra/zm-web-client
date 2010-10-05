@@ -120,6 +120,16 @@ function(on) {
 	this._notify(ZmEvent.E_FLAGS, {flags:[ZmItem.FLAG_UNREAD]});
 };
 
+ZmMailItem.prototype.setAutoSendTime =
+function(autoSendTime) {
+	var wasScheduled = this.isScheduled;
+	var isDate = AjxUtil.isDate(autoSendTime);
+	this.flagLocal(ZmItem.FLAG_ISSCHEDULED, isDate);
+	this.autoSendTime = isDate ? autoSendTime : null;
+	if (wasScheduled != this.isScheduled)
+		this._notify(ZmEvent.E_FLAGS, {flags: ZmItem.FLAG_ISSCHEDULED});
+};
+
 ZmMailItem.prototype._parseParticipantNode =
 function(node) {
 	var type = AjxEmailAddress.fromSoapType[node.t];

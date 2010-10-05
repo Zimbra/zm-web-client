@@ -39,6 +39,10 @@ function() {
 	return "ZmCalItemComposeController";
 };
 
+ZmCalItemComposeController.DEFAULT_TAB_TEXT = ZmMsg.appointment;
+ZmCalItemComposeController.SEND = "SEND";
+ZmCalItemComposeController.SAVE  = "SAVE";
+
 // Public methods
 
 ZmCalItemComposeController.prototype.show =
@@ -47,7 +51,7 @@ function(calItem, mode, isDirty) {
 	this._initToolbar(mode);
 	var initial = this.initComposeView();
 
-	this._app.pushView(this._getViewType());
+	this._app.pushView(this.viewId);
 	this._composeView.set(calItem, mode, isDirty);
 	this._composeView.reEnableDesignMode();
 
@@ -142,13 +146,19 @@ function(initHide) {
 			this._createToolBar();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-		this._app.createView({viewId:this._getViewType(), elements:elements, callbacks:callbacks, isTransient:true});
+		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
 		if (initHide) {
 			this._composeView.preload();
 		}
 		return true;
 	}
 	return false;
+};
+
+ZmCalItemComposeController.prototype._getTabParams =
+function() {
+	return {id:this.tabId, image:"NewAppointment", text:ZmCalItemComposeController.DEFAULT_TAB_TEXT, textPrecedence:76,
+			tooltip:ZmCalItemComposeController.DEFAULT_TAB_TEXT};
 };
 
 ZmCalItemComposeController.prototype._createComposeView =
@@ -238,13 +248,26 @@ function(skipNotify, composeMode) {
 	}
 };
 
+ZmCalItemComposeController.prototype.setOptionsBtnItem =
+function(skipNotify, composeMode) {
+	var mode;
+	if (composeMode) {
+		mode = composeMode;
+	} else {
+		var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+		var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+		mode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
+			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+	}
+
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	if (formatBtn) {
+		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
+	}
+};
+
 // Private / Protected methods
 
-
-ZmCalItemComposeController.prototype._getViewType =
-function() {
-	// override
-};
 
 ZmCalItemComposeController.prototype._initToolbar =
 function(mode) {
@@ -280,26 +303,29 @@ function(mode) {
 		printButton.setEnabled(!isNew);
 	}
 
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._getViewType()], {waitUntilLoaded:true});
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this.viewId], {waitUntilLoaded:true});
 };
 
 ZmCalItemComposeController.prototype._createToolBar =
 function() {
 	
-	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];
+	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];    
 
-	if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-		buttons.push(ZmOperation.PRINT);
-	}
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
 		buttons.push(ZmOperation.ATTACHMENT);
 	}
+
+    if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+		buttons.push(ZmOperation.PRINT);
+	}
+
 	if (!appCtxt.isOffline) {
 		buttons.push(ZmOperation.SPELL_CHECK);
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
+	buttons.push(ZmOperation.COMPOSE_OPTIONS);
 
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._getViewType(), controller:this});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this.viewId, controller:this});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 
@@ -362,7 +388,10 @@ function(calItem, attId, notifyList) {
         if(this._composeView.isReminderOnlyChanged()) {
             calItem.setMailNotificationOption(false);
         }
-		calItem.save(attId, callback, errorCallback, notifyList);
+        if(this._action == ZmCalItemComposeController.SEND)
+            calItem.send(attId, callback, errorCallback, notifyList);
+        else
+		    calItem.save(attId, callback, errorCallback, notifyList);
 	} else {
 		// bug: 27600 clean up edit view to avoid stagnant attendees
 		this._composeView.cleanup();
@@ -429,6 +458,7 @@ function(enabled) {
 // Save button was pressed
 ZmCalItemComposeController.prototype._saveListener =
 function(ev) {
+    this._action = ZmCalItemComposeController.SAVE;
     this.enableToolbar(false);
 	if (this._doSave() === false) {
 		return;

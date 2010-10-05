@@ -170,6 +170,7 @@ function(item, index) {
 		if (item.id) {
 			this._idHash[item.id] = item;
 		}
+		this._updateHashes(item, true);
 	}
 };
 
