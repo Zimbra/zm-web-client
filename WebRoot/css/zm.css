@@ -2595,7 +2595,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmPeopleAutocompleteListView td {
-	border-bottom: 0px;
+    border-width:0px 0px;
 }
 
 .ZmPeopleSearch-toolbar {
