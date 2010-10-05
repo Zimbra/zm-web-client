@@ -57,6 +57,8 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 ZmDetailListView.prototype = new ZmBriefcaseBaseView;
 ZmDetailListView.prototype.constructor = ZmDetailListView;
 
+ZmDetailListView.ROW_DOUBLE_CLASS	= "RowDouble";
+
 /**
  * Returns a string representation of the object.
  * 
@@ -238,7 +240,7 @@ function() {
 		this.headerColCreated = false;
 		this._headerList = this._getHeaderList();
 		this._rowHeight = null;
-		this._normalClass = isMultiColumn ? DwtListView.ROW_CLASS : ZmTaskListView.ROW_DOUBLE_CLASS;
+		this._normalClass = isMultiColumn ? DwtListView.ROW_CLASS : ZmDetailListView.ROW_DOUBLE_CLASS;
 		var list = this.getList() || (new AjxVector());
 		this.set(list.clone());
 		this._restoreState();
