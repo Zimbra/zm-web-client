@@ -189,7 +189,7 @@ function() {
 ZmCalendarPrefsPage.prototype._postSave =
 function(callback) {
 	if (this._workHoursControl) {
-		this._workHoursControl.reloadWorkHours();
+		this._workHoursControl.reloadWorkHours(this._workHoursControl.getValue());
 	}
     if (callback) {
 		callback.run();
@@ -443,7 +443,7 @@ ZmWorkHours.prototype.getTabGroup = ZmWorkHours.prototype.getTabGroupMember;
 
 ZmWorkHours.prototype.reloadWorkHours =
 function(value) {
-    value = value || ZmCalBaseView.getWorkingHours();
+    value = value || appCtxt.get(ZmSetting.CAL_WORKING_HOURS);
     var workHours = this._workHours = this.decodeWorkingHours(value),
         dayIdx = new Date().getDay();
     this._startTime = new Date();
@@ -753,7 +753,7 @@ ZmCustomWorkHoursDlg.prototype.initialize = function(workHours) {
 
 ZmCustomWorkHoursDlg.prototype.reloadWorkHours =
 function(workHours) {
-    workHours = workHours || ZmCalBaseView.getWorkingHours();
+    workHours = workHours || appCtxt.get(ZmSetting.CAL_WORKING_HOURS);
     this._workHours = workHours;
 };
 
