@@ -1641,7 +1641,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					(folder && !folder.isRemote()))
 				{
 					var partLabel = props.label;
-					partLabel = partLabel.replace(/\x27/g,"\\'");
+					partLabel = partLabel.replace(/\x27/g,"&apos;");
 					var onclickStr1 = "ZmMailMsgView.briefcaseCallback(\"" + this.id + "\",\"" + attach.part + "\",\""+partLabel+"\");";
 					props.briefcaseLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
 				}
