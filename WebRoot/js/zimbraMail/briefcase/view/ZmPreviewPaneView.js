@@ -282,7 +282,7 @@ ZmPreviewPaneView.prototype._selectFirstItem =
 function() {
 	var list = this._detailListView.getList();
 	var selectedItem = list ? list.get(0) : null;
-	if (selectedItem) {
+	if (selectedItem && !selectedItem.isFolder) {
 		this._detailListView.setSelection(selectedItem);
 	}else{
         this._previewView.enablePreview(false);
@@ -318,8 +318,10 @@ function(list, sortField) {
 
 ZmPreviewPaneView.prototype._listSelectionListener =
 function(ev){
-    if(this._controller.isReadingPaneOn())
-        this._previewView.set(ev.item);
+    var item = ev.item
+    if(this._controller.isReadingPaneOn() && !item.isFolder){
+        this._previewView.set(item);
+    }
 };
 
 

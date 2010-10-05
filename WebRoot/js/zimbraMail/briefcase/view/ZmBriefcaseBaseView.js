@@ -172,21 +172,30 @@ function(list){
 
 ZmBriefcaseBaseView.prototype.appendFolders =
 function(srcList){
+
+    if(srcList._foldersAdded)
+        return srcList;
+
     var subs = this._folders = this._controller._getSubfolders();
     var subsLen = subs ? subs.length : 0;
-    var newList;
+    var newList = srcList;
     if(subsLen > 0){
-        newList = this._cloneList(srcList);
-        for(var i=0; i<subsLen; i++){
+        for(var i=subsLen-1; i>=0; i--){
             newList.add(subs[i], 0);
-        }        
+        }
+        newList._foldersAdded = true;
     }
     return newList;
 };
 
 ZmBriefcaseBaseView.prototype.set =
-function(list, sortField){
+function(list, sortField, doNotIncludeFolders){
     this.cleanup();
+
+    if(!doNotIncludeFolders){
+        list = this.appendFolders(list);
+    }
+
     this._zmList = list;
     ZmListView.prototype.set.call(this, list, sortField);
 };
@@ -289,5 +298,21 @@ ZmBriefcaseBaseView.prototype.cleanup =
 function(){
     if(this._renameField)
         this.resetRenameFile();
+};
+
+ZmBriefcaseBaseView.prototype._itemClicked =
+function(clickedEl, ev) {
+		
+    ZmListView.prototype._itemClicked.call(this, clickedEl, ev);
+
+    if (ev.button == DwtMouseEvent.LEFT) {
+        var items = this.getSelection();
+        if (items && items.length) {
+            var item = items[0];
+            if (item.isFolder) {
+                this._controller._app.search({folderId:item.id, noClear:true});
+            }
+        }
+    }
 };
 

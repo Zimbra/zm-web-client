@@ -121,12 +121,14 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_SUBJECT) {
 		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+AjxStringUtil.htmlEncode(item.name)+"</div>";
 	} else if (field == ZmItem.F_FILE_TYPE) {
-		var mimeInfo = item.contentType ? ZmMimeTable.getInfo(item.contentType) : null;
-		htmlArr[idx++] = mimeInfo ? mimeInfo.desc : "&nbsp;";
+        if(item.isFolder){
+            htmlArr[idx++] = ZmMsg.folder;
+        }else{
+            var mimeInfo = item.contentType ? ZmMimeTable.getInfo(item.contentType) : null;
+            htmlArr[idx++] = mimeInfo ? mimeInfo.desc : "&nbsp;";
+        }
 	} else if (field == ZmItem.F_SIZE) {
-		if (!item.isFolder) {
-			htmlArr[idx++] = AjxUtil.formatSize(item.size);
-		}
+	    htmlArr[idx++] = AjxUtil.formatSize(item.size);
 	} else if (field == ZmItem.F_DATE) {
 		if (item.modifyDate) {
 			htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(item.modifyDate);
@@ -169,7 +171,7 @@ function(item, colIdx) {
 	html[idx++] = "</center></td>";
 	html[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_SUBJECT) + "'>";
     //html[idx++] =    "&nbsp;"+AjxStringUtil.htmlEncode(item.name);
-    html[idx++] = "&nbsp;"+AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version]);
+    html[idx++] = "&nbsp;"+  ( item.isFolder ? AjxStringUtil.htmlEncode(item.name) : AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version]));
 	html[idx++] = "</td>";
 
     html[idx++] = "<td style='vertical-align:middle;text-align:left;' width=40 id='" + this._getFieldId(item, ZmItem.F_SIZE) + "'>";

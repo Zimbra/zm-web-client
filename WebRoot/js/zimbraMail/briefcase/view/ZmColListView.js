@@ -66,19 +66,12 @@ ZmColListView.KEY_ID = "_keyId";
 ZmColListView.prototype.set =
 function(list, sortField, doNotIncludeFolders) {
 
+	ZmBriefcaseBaseView.prototype.set.call(this, list, sortField);
 
-    //Add Folders accordingly
-    var paging = Boolean(this._itemsToAdd), newList;
-    if(!doNotIncludeFolders && !paging){        
-        newList = this.appendFolders(list);
-    }
-
-    newList = newList || list;
-	ZmBriefcaseBaseView.prototype.set.call(this, newList, sortField);
     this.focus();
     
     //bug 47240: return the new modified list with change listeners.
-    return newList;
+    return list;
 };
 
 ZmColListView.prototype.getController =

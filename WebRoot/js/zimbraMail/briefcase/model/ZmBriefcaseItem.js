@@ -496,6 +496,8 @@ ZmBriefcaseFolderItem = function(folder) {
 	this.folderId = folder.parent && folder.parent.id;
 	this.isFolder = true;
 	this.folder = folder;
+    this.size = folder.sizeTotal;
+    this.creator = folder.getOwner();
 
 	this._data = {};
 };
@@ -516,4 +518,12 @@ function(key) {
 ZmBriefcaseFolderItem.prototype.setData =
 function(key, value) {
   this._data[key] = value;
+};
+
+ZmBriefcaseFolderItem.prototype.getIcon =
+function(baseIcon, large){
+    if(baseIcon)
+        return ZmBriefcaseItem.prototype.getIcon.call(this, true);
+    else
+        return this.folder.getIconWithColor();  
 };

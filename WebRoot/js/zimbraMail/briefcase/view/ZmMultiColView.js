@@ -54,7 +54,7 @@ ZmMultiColView = function(parent, controller, dropTgt) {
 	//override the default style set on DwtControl module
 	var el = this.getHtmlElement();
 	el.style.overflow = "";
-}
+};
 
 ZmMultiColView.prototype = new DwtComposite;
 ZmMultiColView.prototype.constructor = ZmMultiColView;
