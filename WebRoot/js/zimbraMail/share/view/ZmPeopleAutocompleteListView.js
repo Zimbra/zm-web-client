@@ -85,9 +85,10 @@ function(list) {
 
 		// zimlet support
 		appCtxt.notifyZimlets("onPeopleSearchData", [data]);
-
 		var rowHtml = AjxTemplate.expand("share.Widgets#ZmPeopleAutocompleteListView", data);
-		var rowEl = table.appendChild(Dwt.parseHtmlFragment(rowHtml, true));
+        var tbody = document.createElement("tbody");
+        tbody.appendChild(Dwt.parseHtmlFragment(rowHtml, true));
+		var rowEl = table.appendChild(tbody);
 		Dwt.associateElementWithObject(rowEl, contact, "contact");
 	}
 
@@ -102,7 +103,9 @@ function() {
 	var table = this._getTable();
 	var data = { id: this._htmlElId, rowId: ZmPeopleAutocompleteListView.NO_RESULTS };
 	var rowHtml = AjxTemplate.expand("share.Widgets#ZmPeopleAutocompleteListView-NoResults", data);
-	table.appendChild(Dwt.parseHtmlFragment(rowHtml, true));
+    var tbody =   document.createElement("tbody");
+    tbody.appendChild(Dwt.parseHtmlFragment(rowHtml, true));
+	table.appendChild(tbody);
 
 	this.show(true);
 };
