@@ -196,7 +196,8 @@ function(result) {
 		}
 
 		var ptstEl = document.getElementById(this._ptstId);
-		ptstEl.innerHTML = html.join("");
+        if(ptstEl)
+            ptstEl.innerHTML = html.join("");
 	}
 
 	this._showFreeBusy();
@@ -329,7 +330,7 @@ function(subs, sentBy, sentByAddr) {
 		}
 	}
 
-    if(this._invite.hasAttendeeResponse()){
+    if(this._invite && this._invite.hasAttendeeResponse() && this._invite.getAppointmentId()){
         // set an Id for adding more detailed info later
         subs.ptstId = this._ptstId = (this.parent._htmlElId + "_ptst");
     }
