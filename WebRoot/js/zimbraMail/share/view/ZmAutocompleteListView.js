@@ -1193,9 +1193,9 @@ function(email, textId, rowId) {
 		if (!contact) {
 			contact = new ZmContact(null);
 			contact.initFromEmail(email);
-			contact.isDL = true;
 			contactsApp.updateCache(contact, true);
 		}
+		contact.isDL = true;
 		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact]));
 		this._curExpanded = textId;
 		this._setExpandText(textId, true);
