@@ -902,7 +902,7 @@ function(notify) {
 
 	// first, see if we are deleting any virtual convs (which have negative IDs)
 	var virtConvDeleted = false;
-	var deletedIds = notify.deleted.id.split(",");
+	var deletedIds = notify.deleted.id && notify.deleted.id.split(",");
 	var virtConv = {};
 	var newDeletedIds = [];
 	for (var i = 0; i < deletedIds.length; i++) {
@@ -923,15 +923,17 @@ function(notify) {
 	var createdConvs = {};
 	for (var name in notify.created) {
 		var list = notify.created[name];
-		for (var i = 0; i < list.length; i++) {
-			var create = list[i];
-			var id = create.id;
-			if (name == "m") {
-				createdMsgs[id] = create;
-			} else if (name == "c" && (create.n > 1)) {
-				// this is *probably* a create for a real conv from a virtual conv
-				createdConvs[id] = create;
-				gotNewConv = true;
+		if (list && list.length) {
+			for (var i = 0; i < list.length; i++) {
+				var create = list[i];
+				var id = create.id;
+				if (name == "m") {
+					createdMsgs[id] = create;
+				} else if (name == "c" && (create.n > 1)) {
+					// this is *probably* a create for a real conv from a virtual conv
+					createdConvs[id] = create;
+					gotNewConv = true;
+				}
 			}
 		}
 	}
@@ -942,22 +944,24 @@ function(notify) {
 	var newToOldCid = {};
 	var movedMsgs = {};
 	var list = notify.modified.m;
-	for (var i = 0; i < list.length; i++) {
-		var mod = list[i];
-		var id = mod.id;
-		var nId = ZmOrganizer.normalizeId(id);
-		var virtCid = nId * -1;
-		if (virtConv[virtCid] && createdConvs[mod.cid]) {
-			msgMoved = true;
-			movedMsgs[id] = mod;
-			newToOldCid[mod.cid] = appCtxt.multiAccounts ? ZmOrganizer.getSystemId(virtCid) : virtCid;
-			createdConvs[mod.cid]._wasVirtConv = true;
-			createdConvs[mod.cid].m = [{id:id}];
-			// go ahead and update the msg cid, since it's used in
-			// notification processing for creates
-			var msg = appCtxt.getById(id);
-			if (msg) {
-				msg.cid = mod.cid;
+	if (list && list.length) {
+		for (var i = 0; i < list.length; i++) {
+			var mod = list[i];
+			var id = mod.id;
+			var nId = ZmOrganizer.normalizeId(id);
+			var virtCid = nId * -1;
+			if (virtConv[virtCid] && createdConvs[mod.cid]) {
+				msgMoved = true;
+				movedMsgs[id] = mod;
+				newToOldCid[mod.cid] = appCtxt.multiAccounts ? ZmOrganizer.getSystemId(virtCid) : virtCid;
+				createdConvs[mod.cid]._wasVirtConv = true;
+				createdConvs[mod.cid].m = [{id:id}];
+				// go ahead and update the msg cid, since it's used in
+				// notification processing for creates
+				var msg = appCtxt.getById(id);
+				if (msg) {
+					msg.cid = mod.cid;
+				}
 			}
 		}
 	}
@@ -977,11 +981,13 @@ function(notify) {
 	// get rid of creates for virtual convs, since they aren't really creates
 	var tmp = [];
 	var list = notify.created.c;
-	for (var i = 0; i < list.length; i++) {
-		var create = list[i];
-		var c = createdConvs[create.id];
-		if (!(c && c._wasVirtConv)) {
-			tmp.push(create);
+	if (list && list.length) {
+		for (var i = 0; i < list.length; i++) {
+			var create = list[i];
+			var c = createdConvs[create.id];
+			if (!(c && c._wasVirtConv)) {
+				tmp.push(create);
+			}
 		}
 	}
 	if (tmp && tmp.length) {
