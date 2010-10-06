@@ -1081,6 +1081,7 @@ function(file, width, height) {
 	} else {
 		img.removeAttribute('height');
 	}
+	img.style.border = "0"; // set border explicitly to 0, since otherwise a border is added implicitly in case it's wrapped with a link 
 
 	var df = doc.createDocumentFragment();
 	df.appendChild(img);
@@ -1110,8 +1111,9 @@ function() {
 
 	dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this,function() {
 		var imgUrl = this._imgSelField.value;
-		if(imgUrl != '')
-			this.insertImage(imgUrl);
+		if (imgUrl != '') {
+			this.insertImage(imgUrl, true); //do not use execcommand - since it has no way of adding 0 border, which is necessary if image is wrapped in a link
+		}
 		dlg.popdown();
 	}));
 
