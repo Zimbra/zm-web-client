@@ -221,14 +221,6 @@ function() {
 	return ZmListView.DEFAULT_REPLENISH_THRESHOLD;
 };
 
-/**
- * Returns the underlying ZmList.
- */
-ZmListView.prototype.getItemList =
-function() {
-	return this._controller && this._controller._list;
-};
-
 ZmListView.prototype._changeListener =
 function(ev) {
 
@@ -257,31 +249,15 @@ function(ev) {
 	// move/delete support batch notification mode
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		var items = ev.batchMode ? this._getItemsFromBatchEvent(ev) : [item];
-		var needsSort = false;
 		for (var i = 0, len = items.length; i < len; i++) {
 			var item = items[i];
-			if ((this.type==ZmId.ITEM_CONV ? (item.folders[this._folderId]) : (item.folderId == this._folderId)) && ev.event == ZmEvent.E_MOVE) {
-				// We've moved the item into this folder
-				if (this._getRowIndex(item) === null) { // Not already here
-					this.addItem(item);
-					needsSort = true;
-				}
-			} else {
-				this.removeItem(item, true, ev.batchMode);
-				// if we've removed it from the view, we should remove it from the reference
-				// list as well so it doesn't get resurrected via replenishment *unless*
-				// we're dealing with a canonical list (i.e. contacts)
-				var itemList = this.getItemList();
-				if (ev.event != ZmEvent.E_MOVE || !itemList.isCanonical) {
-					itemList.remove(item);
-				}
+			this.removeItem(item, true, ev.batchMode);
+			// if we've removed it from the view, we should remove it from the reference
+			// list as well so it doesn't get resurrected via replenishment *unless*
+			// we're dealing with a canonical list (i.e. contacts)
+			if (ev.event != ZmEvent.E_MOVE || !this._controller._list.isCanonical) {
+				this._controller._list.remove(item);
 			}
-		}
-		if (needsSort) {
-			var col = Dwt.byId(this._currentColId);
-			var hdr = col && this.getItemFromElement(col);
-			if (hdr)
-				this._sortColumn(hdr, this._bSortAsc);
 		}
 		if (ev.batchMode) {
 			this._fixAlternation(0);
@@ -965,7 +941,7 @@ function(item) {
 		var tag = tagList.getById(tags[i]);
         if (!tag) { continue; }        
         html[idx++] = "<table><tr><td>";
-		html[idx++] = AjxImg.getImageHtml(tag.getIconWithColor());
+		html[idx++] = AjxImg.getImageHtml(ZmTag.COLOR_ICON[tag.color]);
 		html[idx++] = "</td><td valign='middle'>";
 		html[idx++] = AjxStringUtil.htmlEncode(tag.name);
 		html[idx++] = "</td></tr></table>";
@@ -1146,62 +1122,43 @@ function() {
  * below the fold. Nonstandard list views may override.
  */
 ZmListView.prototype._getItemsNeeded =
-function(skipMoreCheck) {
+function() {
 
-	if (!skipMoreCheck) {
-		var itemList = this.getItemList();
-		if (!(itemList && itemList.hasMore()) || !this._list) { return 0; }
-	}
+	if (!(this._controller._list && this._controller._list.hasMore()) || !this._list) { return 0; }
 	if (!this._rendered || !this._rowHeight) { return 0; }
 
 	DBG.println(AjxDebug.DBG2, "List view: checking item count");
-
-	var sbCallback = new AjxCallback(null, AjxTimedAction.scheduleAction, [new AjxTimedAction(this, this._resetColWidth), 100]);
-	var params = {scrollDiv:	this._getScrollDiv(),
-				  rowHeight:	this._rowHeight,
-				  threshold:	this.getPagelessThreshold(),
-				  limit:		this.getLimit(1),
-				  listSize:		this._list.size(),
-				  sbCallback:	sbCallback};
-	return ZmListView.getRowsNeeded(params);
-};
-
-ZmListView.prototype._getScrollDiv =
-function() {
-	return this._parentEl;
-};
-
-ZmListView.getRowsNeeded =
-function(params) {
-
-	var div = params.scrollDiv;
-	var sh = div.scrollHeight, st = div.scrollTop, rh = params.rowHeight;
+	var scrollDiv = this._getScrollDiv();
+	var sh = scrollDiv.scrollHeight, st = scrollDiv.scrollTop, rh = this._rowHeight;
 
 	// view (porthole) height - everything measured relative to its top
 	// prefer clientHeight since (like scrollHeight) it doesn't include borders
-	var h = div.clientHeight || Dwt.getSize(div).y;
+	var h = scrollDiv.clientHeight || Dwt.getSize(scrollDiv).y;
 
 	// where we'd like bottom of list view to be (with extra hidden items at bottom)
-	var target = h + (params.threshold * rh);
+	var target = h + (this.getPagelessThreshold() * this._rowHeight);
 
 	// where bottom of list view is (including hidden items)
 	var bottom = sh - st;
 
 	if (bottom == h) {
-		// handle cases where there's no scrollbar, but we have more items (eg tall browser, or replenishment)
-		bottom = (params.listSize * rh) - st;
-		if (st == 0 && params.sbCallback) {
-			// give list view a chance to fix width since it may be getting a scrollbar
-			params.sbCallback.run();
+		// handle cases where list view isn't full, but we have more items (eg tall browser, or replenishment)
+		bottom = (this._list.size() * rh) - st;
+		if (st == 0) {
+			// fix list view width since we are getting a scrollbar
+			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._resetColWidth), 100);
 		}
 	}
-
-	var rowsNeeded = 0;
+	var itemsNeeded = 0;
 	if (bottom < target) {
 		// buffer below visible bottom of list view is not full
-		rowsNeeded = Math.max(Math.floor((target - bottom) / rh), params.limit);
+		return Math.max(Math.floor((target - bottom) / rh), this.getLimit(1));
 	}
-	return rowsNeeded;
+};
+
+ZmListView.prototype._getScrollDiv =
+function() {
+	return this._parentEl;
 };
 
 ZmListView.prototype._sizeChildren =

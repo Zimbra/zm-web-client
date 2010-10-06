@@ -262,12 +262,8 @@ function() {
 				if (setup.initFunction) {
 					setup.initFunction(control, value);
 				}
-				if (setup.changeFunction) {
-					if (control.addChangeListener) {
-						control.addChangeListener(setup.changeFunction);
-					} else if (control.addSelectionListener) {
-						control.addSelectionListener(setup.changeFunction);
-					}
+				if (setup.changeFunction && control.addChangeListener) {
+					control.addChangeListener(setup.changeFunction);
 				}
 			}
 		}

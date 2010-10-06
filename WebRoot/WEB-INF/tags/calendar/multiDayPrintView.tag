@@ -83,16 +83,10 @@
     </tr>
 </table>
 <br>
-<table width="98%" align="center" cellpadding="0" cellspacing="0" border="0" class="zPrintMsgs" >
+<table width="98%" align="center" cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td colspan="4" class='ZhAppContent'>
             ${multiDay}
         </td>
     </tr>
 </table>
-
-<style type="text/css">
-    .zPrintMsgs *{
-        font-size:${mailbox.prefs.defaultPrintFontSize} !important;
-    }
-</style>

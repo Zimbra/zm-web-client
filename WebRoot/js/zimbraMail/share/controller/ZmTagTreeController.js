@@ -64,7 +64,10 @@ function() {
 	if (menu && !menu._initialized) {
 		var mi = menu.getMenuItem(ZmOperation.TAG_COLOR_MENU);
 		if (mi) {
-            mi.getMenu().addSelectionListener(this._listeners[ZmOperation.TAG_COLOR_MENU]);
+			var items = mi.getMenu().getItems();
+			for (var i = 0; i < items.length; i++) {
+				items[i].addSelectionListener(this._listeners[ZmOperation.TAG_COLOR_MENU]);
+			}
 		}
 		menu._initialized = true;
 	}
@@ -204,13 +207,7 @@ ZmTagTreeController.prototype._colorListener =
 function(ev) {
 	var tag = this._getActionedOrganizer(ev);
 	if (tag) {
-        var color = ev.item.getData(ZmOperation.MENUITEM_ID);
-        if (String(color).match(/^#/)) {
-            tag.setRGB(color);
-        }
-        else {
-            tag.setColor(color);
-        }
+		tag.setColor(ev.item.getData(ZmOperation.MENUITEM_ID));
 	}
 };
 
@@ -278,7 +275,7 @@ function(ev, treeView, overviewId) {
 		if (ev.event == ZmEvent.E_MODIFY && ((fields && fields[ZmOrganizer.F_COLOR]))) {
 			var node = treeView.getTreeItemById(tag.id);
 			if (node)
-				node.setImage(tag.getIconWithColor());
+				node.setImage(ZmTag.COLOR_ICON[tag.color]);
 		} else {
 			ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 		}

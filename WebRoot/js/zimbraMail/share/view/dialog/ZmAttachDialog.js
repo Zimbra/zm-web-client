@@ -591,23 +591,16 @@ function(inputEl, sizeEl){
 
     var files = inputEl.files;
     if(!files) return;
-
-    var sizeStr = [], className, totalSize =0;
-    for(var i=0; i<files.length;i++){
-        var file = files[i];
-        var size = file.size || file.fileSize /*Safari*/;
-        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))
-            className = "RedC";
-        totalSize += size;
-    }
-
+    
+    var file = files[0];
+    var size = file.size || file.fileSize /*Safari*/;
     if(sizeEl) {
-        sizeEl.innerHTML = "  ("+AjxUtil.formatSize(totalSize, true)+")";
-        if(className)
+        sizeEl.innerHTML = "  ("+AjxUtil.formatSize(size, true)+")";
+        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))
             Dwt.addClass(sizeEl, "RedC");
         else
             Dwt.delClass(sizeEl, "RedC");
-    }
+    }    
 };
 
 
@@ -694,12 +687,10 @@ function(){
 	for (var i = 0; i < atts.length; i++){
         file = atts[i].files;
         if(!file || file.length == 0) continue;
-        for(var j=0; j<file.length;j++){
-            var f = file[j];
-            size = f.size || f.fileSize /*Safari*/;
-            if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)){
-                return false;
-            }
+        file = file[0];
+        size = file.size || file.fileSize /*Safari*/;
+        if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)){
+            return false;
         }
     }
 	return true;

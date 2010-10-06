@@ -39,8 +39,6 @@
 </mo:handleError>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
-
-<c:if test="${empty param.show}">
 <form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doMessageAction" value="1"/>
@@ -56,8 +54,6 @@
     </c:choose>
     <div class="wrap-dlist" id="wrap-dlist-view">
     <div class="tbl dlist" id="dlist-view">
-</c:if>
-
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="mhit" value="${hit.messageHit}"/>
         <c:choose>
@@ -75,10 +71,12 @@
         <div id="conv${mhit.id}" class="tr msg_lv_list_row list-row${mhit.isUnread ? '-unread' : ''}">
                <%--<mo:img src="mail/ImgEnvelope${mhit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
                <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/> 
-               <span class="td f" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>>
+               <span class="td f">
                    <c:set value=",${mhit.id}," var="stringToCheck"/>
-                   <input <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if> class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"':''} name="id" value="${mhit.id}"/>
-                   <c:if test="${ua.isiPad eq false}" ><span class="SmlIcnHldr ${class}">&nbsp;</span></c:if>
+                   <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"':''} name="id" value="${mhit.id}"/>
+                   <c:if test="${ua.isiPad == false}">
+                   <span class="SmlIcnHldr ${class}">&nbsp;</span>
+                   </c:if>
                </span>
                <span class="td m" onclick='return zClickLink("a${mhit.id}");'>
                    <div class="from-span">
@@ -91,11 +89,13 @@
                        <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
                        ${fn:escapeXml(_f)}
                    </div>
-                   <div class="frag-span small-gray-text">
-                       <c:set var="_f" value="${mhit.fragment}"/>
-                        <c:if test="${fn:length(_f) > 45}"><c:set var="_f" value="${fn:substring(_f, 0, 45)}..."/></c:if>
-                        ${fn:escapeXml(_f)}
-                    </div>
+                   <c:if test="${ua.isiPad == false}">
+                       <div class="frag-span small-gray-text">
+                           <c:set var="_f" value="${mhit.fragment}"/>
+                           <c:if test="${fn:length(_f) > 45}"><c:set var="_f" value="${fn:substring(_f, 0, 45)}..."/></c:if>
+                           ${fn:escapeXml(_f)}
+                       </div>
+                   </c:if>
                </span>
                <span class="td l">
                    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${mhit.date}"/>
@@ -114,23 +114,10 @@
                    </c:if>
                    <span class="small-gray-text">(${fn:escapeXml(zm:displaySize(pageContext, mhit.size))})</span>
                </span>
-        </div>
+           </div>
     </c:forEach>
-    <c:if test="${ua.isiPad == true}">
-        <c:if test="${context.searchResult.hasNextPage}">
-            <div id="more-div" class='tr list-row'>
-                <span class="td"></span>
-                <span class="td" onclick="return zClickLink('more-a')"><zm:nextResultUrl var="url" value="${context_url}" index="0" context="${context}"/>
-                    <div class="moreButton">
-                    <a id="more-a" accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(url)}&show=more">More</a>
-                </div>
-                </span>
-                <span class="td"></span>
-                	<input type="hidden" name="ipadcoffset" value="${empty requestScope.lmt ? context.searchResult.nextOffset : requestScope.lmt}"/>
-                </div>
-        </c:if>
-    </c:if>    
-<c:if test="${empty param.show}">
+    </div>
+    </div>    
     <c:if test="${empty context || empty context.searchResult || context.searchResult.size == 0}">
         <div class='tbl'>
                 <div class="tr">
@@ -140,10 +127,8 @@
                 </div>
             </div>
     </c:if>
-    </div>
-    </div>          
     <c:if test="${ua.isiPad == false}">
         <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="false" mailbox="${mailbox}"/>
     </c:if>
 </form>
-</c:if>
+

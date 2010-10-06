@@ -705,71 +705,68 @@ function(isFlagged, isMouseover) {
 		: (this._isMultiColumn ? "Blank_16" : "FlagDis");
 };
 
-/**
- * Returns a list of the largest subset of the given participants that will fit within the
- * given width. The participants are assumed to be ordered oldest to most recent. We return
- * as many of the most recent as possible.
- *
- * @private
- * @param {array}		participants		list of AjxEmailAddress
- * @param {ZmMailItem}	item				item that contains the participants
- * @param {int}			width				available space in pixels
- * 
- * @return list of participant objects with 'name' and 'index' fields
- */
-ZmMailListView.prototype._fitParticipants =
-function(participants, item, availWidth) {
-
-	availWidth -= 15;	// safety margin
-
-	var sepWidth = AjxStringUtil.getWidth(AjxStringUtil.LIST_SEP, item.isUnread);
-	var ellWidth = AjxStringUtil.getWidth(AjxStringUtil.ELLIPSIS, item.isUnread);
-
-	// first see if we can fit everyone with their full names
-	var list = [];
-	var pLen = participants.length;
-	var width = 0;
-	for (var i = 0; i < pLen; i++) {
-		var p = participants[i];
-		var field = p.name || p.address || p.company || "";
-		width += AjxStringUtil.getWidth(field, item.isUnread);
-		list.push({name:field, index:i});
+// Figure out how many of the participants will fit into a given pixel width.
+// We always include the originator, and then as many of the most recent participants
+// as possible. If any have been elided (either by the server or because they don't
+// fit), there will be an ellipsis after the originator.
+//
+// The length of a participants string is determined mathematically. Since each letter
+// is assumed to be an em in width, the calculated length is significantly longer than
+// the actual length. The only way I've found to get the actual length is to create
+// invisible divs and measure them, but that's expensive. The calculated length seems to
+// run about 50% greater than the actual length, so we use a 30% fudge factor. The text 
+// that's tested is bolded, since that's bigger and the conv may be unread.
+//
+// Returns a list of objects with name and original index.
+ZmMailListView.prototype._fitParticipants = 
+function(participants, participantsElided, width) {
+	// fudge factor since we're basing calc on em width; the actual ratio is around 1.5
+	width = width * 1.3;
+	// only one participant, no need to test width
+	if (participants.length == 1) {
+		var p = participants[0];
+		var name = p.name || p.dispName || p.address;
+		var tmp = {name: AjxStringUtil.htmlEncode(name), index: 0};
+		return [tmp];
 	}
-	width += (pLen - 1) * sepWidth;
-	if (width < availWidth) {
-		return list;
+	// create a list of "others" (not the originator)
+	var list = new Array();
+	for (var i = 0; i < participants.length; i++) {
+		var tmp = {name: AjxStringUtil.htmlEncode(participants[i].dispName || participants[i].address), index: i};
+		list.push(tmp);
 	}
-
-	// now try with display (first) names; fit as many of the most recent as we can
-	list = [];
-	for (var i = 0; i < pLen; i++) {
-		var p = participants[i];
-		var field = p.dispName || p.address || p.company || "";
-		list.push({name:field, index:i});
-	}
+	var origLen = list.length;
+	var originator = list.shift();
+	// test originator + others
+	// if it's too big, remove the oldest from others
 	while (list.length) {
-		var width = 0;
-		// total the width of the names
-		for (var i = 0; i < list.length; i++) {
-			width += AjxStringUtil.getWidth(list[i].name, item.isUnread);
+		var test = [originator];
+		test = test.concat(list);
+		var text;
+		var tmp = [];
+		var w = 0;
+		for (var i = 0; i < test.length; i++)
+			w = w + (test[i].name.length * DwtUnits.WIDTH_EM); // total width of names
+		if ((test.length == origLen) && !participantsElided) {
+			w = w + (test.length - 1) * DwtUnits.WIDTH_SEP; // none left out, comma join
+			for (var i = 0; i < test.length; i++)
+				tmp.push(test[i].name);
+			text = tmp.join(", ");
+		} else {
+			w = w + DwtUnits.WIDTH_ELLIPSIS;				// some left out, add in ellipsis
+			w = w + (test.length - 2) * DwtUnits.WIDTH_SEP; // and remaining commas
+			for (var i = 0; i < list.length; i++)
+				tmp.push(list[i].name);
+			text = originator.name + AjxStringUtil.ELLIPSIS + tmp.join(", ");
 		}
-		// add the width of the separators
-		width += (list.length - 1) * sepWidth;
-		// add the width of the ellipsis if we've dropped anyone
-		if (list.length < pLen) {
-			width += ellWidth;
-		}
-		if (width < availWidth) {
-			return list;
+		//DBG.println(AjxDebug.DBG3, "calc width of [" + text + "] = " + w);
+		if (w <= width) {
+			return test;
 		} else {
 			list.shift();
 		}
 	}
-
-	// not enough room for even one participant, just return the last one
-	var p = participants[pLen - 1];
-	var field = p.dispName || p.address || p.company || "";
-	return [{name:field, index:pLen - 1}];
+	return [originator];
 };
 
 ZmMailListView.prototype._getActionMenuForColHeader =
@@ -871,7 +868,7 @@ function(ev) {
 	var item = this._getItemFromEvent(ev);
 	if (!item || ev.handled || !this._handleEventType[item.type]) { return; }
 
-	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" and "isScheduled" flag
+	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" flag
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: FLAGS");
 		var flags = ev.getDetail("flags");
 		for (var j = 0; j < flags.length; j++) {
@@ -879,8 +876,6 @@ function(ev) {
 			if (flag == ZmItem.FLAG_UNREAD) {
 				var on = item[ZmItem.FLAG_PROP[flag]];
 				this.markUIAsRead(item, !on);
-			} else if (flag == ZmItem.FLAG_ISSCHEDULED) {
-				this._setImage(item, ZmItem.F_STATUS, item.getStatusIcon());
 			}
 		}
 	}
@@ -954,7 +949,7 @@ function() {
 	if (this._itemToSelect) {
 		var item = this._getItemToSelect();
 		if (item) {
-			DBG.println("focus", "ZmMailListView._setNextSelection: select item with ID: " + item.id);
+			DBG.println("kbnav", "ZmMailListView._setNextSelection: select item with ID: " + item.id);
 			this.setSelection(item, false);
 			this._itemToSelect = null;
 		}

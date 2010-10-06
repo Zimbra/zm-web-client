@@ -85,14 +85,14 @@ function(item, params) {
 	var html = [], idx = 0;
 	var id = this._getFieldId(item, ZmItem.F_NAME);
 	html[idx++] = "<div class='ZmThumbnailItem' id='" + id + "'>";
-	var className = "Img" + item.getIcon(true, true) + " ZmThumbnailIcon";
+	var className = "Img" + item.getIcon(true) + " ZmThumbnailIcon";
 	id = this._getFieldId(item, ZmItem.F_SUBJECT);
-	html[idx++] = "<div class='" + className + "'></div>";
+	html[idx++] = "<div class='" + className + "' id='" + id + "'></div>";
 	html[idx++] = "</div>";
 	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width='100%'>";
 	html[idx++] = "<tr>";
 	html[idx++] = "<td align='left'>";
-	html[idx++] = "<div class='ZmThumbnailName' id='" + id + "'>";
+	html[idx++] = "<div class='ZmThumbnailName'>";
 	html[idx++] = "<span>" + nameText + "</span>";
 	html[idx++] = "</div></td>";
 	html[idx++] = "<td align='right'>";
@@ -123,8 +123,17 @@ function(clickedEl, ev) {
         ")\\b", "g"
     );
 
-    ZmBriefcaseBaseView.prototype._itemClicked.call(this, clickedEl, ev);
-
+    ZmListView.prototype._itemClicked.call(this, clickedEl, ev);
+    
+    if (ev.button == DwtMouseEvent.LEFT) {
+        var items = this.getSelection();
+        if (items && items.length) {
+            var item = items[0];
+            if (item.isFolder) {
+                this._controller._app.search({folderId:item.id, noClear:true});
+            }
+        }
+    }
 };
 
 // Protected methods
@@ -159,8 +168,17 @@ function() {
 
 ZmBriefcaseView.prototype.set =
 function(list) {
-    
-	ZmBriefcaseBaseView.prototype.set.call(this, list);
+
+
+    //Add Folders accordingly
+    var paging = Boolean(this._itemsToAdd), newList;
+    if(!paging){        
+        newList = this.appendFolders(list);
+        //TODO: Add "UP" folder to go to the parent folder
+    }
+
+    newList = newList || list;
+	ZmBriefcaseBaseView.prototype.set.call(this, newList);
     this.focus();
 
 };

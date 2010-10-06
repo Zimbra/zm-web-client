@@ -625,13 +625,6 @@ function(convNode) {
 			}
 		}
 	}
-
-	if (convNode.autoSendTime) {
-		var timestamp = parseInt(convNode.autoSendTime) || null;
-		if (timestamp) {
-			this.setAutoSendTime(new Date(timestamp));
-		}
-	}
 };
 
 ZmConv.prototype._loadFromMsg =

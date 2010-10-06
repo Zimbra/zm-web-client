@@ -3,105 +3,97 @@
 		<table class='MsgHeaderTable' id='${id}_headerElement'cellspacing=0 cellpadding=0 border=0 width=100%>
 			<tr>
 				<td>
-					<$ if (data.isOutDated) { $>
-						<div class="InviteOutDated">
-							<table border=0 cellpadding=0 cellspacing=0>
-								<tr>
-									<td><$= AjxImg.getImageHtml("Warning") $></td>
-									<td>&nbsp;</td>
-									<td><$= ZmMsg.inviteNotCurrent $></td>
-								</tr>
-							</table>
+					<table cellspacing=0 cellpadding=0 border=0 width=100%>
+						<tr id='${hdrTableTopRowId}'>
+							<$ if (data.closeBtnCellId) { $>
+								<td>&nbsp;</td>
+								<td id='${closeBtnCellId}'></td>
+								<td>&nbsp;</td>
+							<$ } $>
+							<$ if (data.isSyncFailureMsg) { $>
+								<td>&nbsp;</td>
+								<td id='${reportBtnCellId}'></td>
+								<td>&nbsp;</td>
+							<$ } $>
+							<td class='LabelColValue SubjectCol' valign=top width=100%>
+								<$= data.subject $>
+							</td>
+							<td class='LabelColValue DateCol' align=right>${dateString}</td>
+							<td>&nbsp;</td>
+						</tr>
+					</table>
+
+					<table id='${hdrTableId}' cellspacing=0 cellpadding=1 border=0>
+                        <$ if (data.inviteMessage) { $>
+                        <tr>
+                            <td class='LabelColValue' colspan=11>
+                                <table border=0 cellpadding=1 cellspacing=0 width="100%">
+                                    <tr>
+                                        <td width=20><$= AjxImg.getImageHtml("Information") $></td>
+                                        <td width="99%"><$= data.inviteMessage $></td>
+                                    </tr>
+                                </table>    
+                            </td>
+                        </tr>
+                        <$ } $>
+						<tr id='${expandRowId}'>
+							<td>
+								<table align=right border=0 cellpadding=0 cellspacing=0>
+									<tr>
+										<td valign=top id='${expandHeaderId}' class='arrowbtn'></td>
+										<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
+									</tr>
+								</table>
+							</td>
+							<td class='LabelColValue' valign=top colspan=10>
+								<table border=0 cellpadding=0 cellspacing=0>
+									<tr>
+										<$ if (data.sentByIcon) { $>
+											<td valign=top>
+												<a href="javascript:;" onclick="ZmMailMsgView.contactIconCallback('<$=AjxStringUtil.xmlAttrEncode(data.sentByNormal)$>', '${sentByIcon}'); return false;">
+													<$= AjxImg.getImageHtml(data.sentByIcon, "cursor:pointer") $>
+												</a>
+											</td>
+											<td>&nbsp;</td>
+										<$ } $>
+										<td>${sentBy}&nbsp;&nbsp;</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+
+						<$ if (data.obo && (AjxStringUtil.stripTags(data.obo) != AjxStringUtil.stripTags(data.sentBy))) { // if Email zimlet is deployed. $>
+							<tr>
+								<td valign='top' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
+								<td class='LabelColValue' colspan=10><$= data.obo $></td>
+							</tr>
+						<$ } $>
+
+						<$ for (var i = 0; i < data.participants.length; i++) { $>
+							<tr>
+								<td class='LabelColName'>
+									<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.participants[i].prefix) $>
+								</td>
+								<td class='LabelColValue' colspan='10'><$= data.participants[i].partStr $></td>
+							</tr>
+						<$ } $>
+						<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
+							<tr>
+								<td valign='top' class='LabelColName'>
+									<$= data.additionalHdrs[i].hdrName $>
+								</td>
+								<td class='LabelColValue' colspan='10'>	
+									<$=  data.additionalHdrs[i].hdrVal $>
+								</td>
+							</tr>
+						<$ } $>
+					</table>
+
+					<$ if (data.hasAttachments) { $>
+						<div class="MessageHeaderAttachments" id="${attachId}_container">
+							<div id="${attachId}" style='overflow:auto;'></div>
 						</div>
 					<$ } $>
-					<div class="ZmMailMsgViewDiv">
-						<table cellspacing=0 cellpadding=0 border=0 width=100%>
-							<tr id='${hdrTableTopRowId}'>
-								<$ if (data.closeBtnCellId) { $>
-									<td>&nbsp;</td>
-									<td id='${closeBtnCellId}'></td>
-									<td>&nbsp;</td>
-								<$ } $>
-								<$ if (data.isSyncFailureMsg) { $>
-									<td>&nbsp;</td>
-									<td id='${reportBtnCellId}'></td>
-									<td>&nbsp;</td>
-								<$ } $>
-								<td class='LabelColValue SubjectCol' valign=top width=100%>
-									<$= data.subject $>
-								</td>
-								<td class='LabelColValue DateCol' align=right>${dateString}</td>
-								<td>&nbsp;</td>
-							</tr>
-						</table>
-						<table id='${hdrTableId}' cellspacing=0 cellpadding=1 border=0>
-							<tr id='${expandRowId}'>
-								<td>
-									<table align=right border=0 cellpadding=0 cellspacing=0>
-										<tr>
-											<td valign=top id='${expandHeaderId}' class='arrowbtn'></td>
-											<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
-										</tr>
-									</table>
-								</td>
-								<td class='LabelColValue' valign=top colspan=10>
-									<table border=0 cellpadding=0 cellspacing=0>
-										<tr>
-											<$ if (data.sentByIcon) { $>
-												<td valign=top>
-													<a href="javascript:;" onclick="ZmMailMsgView.contactIconCallback('<$=AjxStringUtil.xmlAttrEncode(data.sentByNormal)$>', '${sentByIcon}'); return false;">
-														<$= AjxImg.getImageHtml(data.sentByIcon, "cursor:pointer") $>
-													</a>
-												</td>
-												<td>&nbsp;</td>
-											<$ } $>
-											<td>${sentBy}&nbsp;&nbsp;</td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-
-							<$ if (data.obo && (AjxStringUtil.stripTags(data.obo) != AjxStringUtil.stripTags(data.sentBy))) { // if Email zimlet is deployed. $>
-								<tr>
-									<td valign='top' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
-									<td class='LabelColValue' colspan=10><$= data.obo $></td>
-								</tr>
-							<$ } $>
-
-							<$ for (var i = 0; i < data.participants.length; i++) { $>
-								<tr>
-									<td class='LabelColName'>
-										<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.participants[i].prefix) $>
-									</td>
-									<td class='LabelColValue' colspan='10'><$= data.participants[i].partStr $></td>
-								</tr>
-							<$ } $>
-
-							<$ if (data.autoSendTime) { $>
-								<tr>
-									<td valign='top' class='LabelColName'><$= ZmMsg.messageScheduledSendLabel $></td>
-									<td class='LabelColValue' colspan=10><$= data.autoSendTime $></td>
-								</tr>
-							<$ } $>
-
-							<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
-								<tr>
-									<td valign='top' class='LabelColName'>
-										<$= data.additionalHdrs[i].hdrName $>
-									</td>
-									<td class='LabelColValue' colspan='10'>
-										<$=  data.additionalHdrs[i].hdrVal $>
-									</td>
-								</tr>
-							<$ } $>
-						</table>
-
-						<$ if (data.hasAttachments) { $>
-							<div class="MessageHeaderAttachments" id="${attachId}_container">
-								<div id="${attachId}" style='overflow:auto;'></div>
-							</div>
-						<$ } $>
-					</div>
 				</td>
 				<td id='${id}_contactArea' class='ContactArea'>
 					<!-- Area reserved zimlets to add to message views. -->
@@ -111,120 +103,6 @@
 		<div id='${infoBarId}'></div>
 	</div>
 </template>
-
-<template id='mail.Message#InviteHeader'>
-	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
-		<table class='InvHeaderTable' id='${id}_headerElement'cellspacing=0 cellpadding=0 border=0 width=100%>
-			<tr>
-				<td>
-					<$ if (data.ptstMsg) { $>
-						<div class="${ptstClassName}">
-							<table border=0 cellpadding=0 cellspacing=0>
-								<tr>
-									<td><$= AjxImg.getImageHtml(data.ptstIcon) $></td>
-									<td>&nbsp;</td>
-									<td>${ptstMsg}</td>
-								</tr>
-							</table>
-						</div>
-					<$ } $>
-					<div class='InvHeaderDiv'>
-						<table cellspacing=0 cellpadding=0 border=0 width=100%>
-							<tr id='${hdrTableTopRowId}'>
-								<$ if (data.closeBtnCellId) { $>
-									<td>&nbsp;</td>
-									<td id='${closeBtnCellId}'></td>
-									<td>&nbsp;</td>
-								<$ } $>
-								<td class='LabelColValue SubjectCol ${subjChangeClass}' valign=top width=100%>
-									<$= data.subject $>
-								</td>
-								<td class='LabelColValue DateCol' align=right>${dateString}</td>
-								<td>&nbsp;</td>
-							</tr>
-						</table>
-
-						<table id='${hdrTableId}' cellspacing=0 cellpadding=1 border=0 width=100%>
-							<$ if (data.counterInvMsg) { $>
-								<tr>
-									<td class='LabelColValue' colspan=11>
-										<div class='InvCounter'>
-											<table border=0 cellpadding=0 cellspacing=0 width="100%">
-												<tr>
-													<td width=20><$= AjxImg.getImageHtml("Information") $></td>
-													<td class='LabelColValue'><$= data.counterInvMsg $></td>
-												</tr>
-											</table>
-										</div>
-									</td>
-								</tr>
-							<$ } $>
-							<tr>
-								<td class='LabelColName' width=75><$= ZmMsg.organizerLabel $></td>
-								<td class='LabelColValue'><$= data.invOrganizer $></td>
-							</tr>
-							<$ if (data.invSentBy) { $>
-								<tr>
-									<td class='LabelColName' width=75><$= ZmMsg.sentByLabel $></td>
-									<td class='LabelColValue'><$= data.invSentBy $></td>
-								</tr>
-							<$ } $>
-							<tr>
-								<td class='LabelColName ${timeChangeClass}'><$= data.counterInvMsg ? ZmMsg.proposedTimeLabel : ZmMsg.timeLabel $></td>
-								<td class='LabelColValue ${timeChangeClass}'>
-									<$= data.invDate $><br>
-									<$= data.timezone $>
-								</td>
-							</tr>
-							<$ if (data.invite.getLocation()) { $>
-								<tr>
-									<td class='LabelColName ${locChangeClass}'><$= ZmMsg.locationLabel $></td>
-									<td class='LabelColValue ${locChangeClass}'><$= data.invite.getLocation() $></td>
-								</tr>
-							<$ } $>
-							<$ if (data.ptstId) { $>
-								<tr>
-									<td class='LabelColName'><$= ZmMsg.inviteesLabel $></td>
-									<td class='LabelColValue' id='${ptstId}'></td>
-								</tr>
-							<$ } else if (data.invite.hasOtherAttendees()) { $>
-								<tr>
-									<td class='LabelColName'><$= ZmMsg.inviteesLabel $></td>
-									<td class='LabelColValue'><$= data.invitees $></td>
-								</tr>
-							<$ } $>
-							<$ if (data.recur) { $>
-								<tr>
-									<td class='LabelColName'><$= ZmMsg.repeats $>:</td>
-									<td class='LabelColValue'><$= data.recur $></td>
-								</tr>
-							<$ } $>
-						</table>
-						<$ if (data.hasAttachments) { $>
-							<div class="MessageHeaderAttachments" id="${attachId}_container">
-								<div id="${attachId}" style='overflow:auto;'></div>
-							</div>
-						<$ } $>
-					</div>
-				</td>
-				<td id='${id}_contactArea' class='ContactArea'>
-					<!-- Area reserved zimlets to add to message views. -->
-				</td>
-			</tr>
-		</table>
-		<div id='${infoBarId}'></div>
-	</div>
-</template>
-
-<template id='mail.Message#InviteHeaderPtst'>
-	<table border=0>
-		<tr>
-			<td><$= AjxImg.getImageHtml(data.icon) $></td>
-			<td class='LabelColValue'>${attendee}</td>
-		</tr>
-	</table>
-</template>
-
 
 <template id='mail.Message#AttachmentsView'>
 	<table border='0' width='100%' height='100%'>

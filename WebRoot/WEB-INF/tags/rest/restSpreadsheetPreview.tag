@@ -116,11 +116,6 @@
                 </c:otherwise>
             </c:choose>
         </c:forEach>
-
-        <c:set var="version" value="${spreadsheet.version}"/>
-        <c:if test="${not empty param.ver}">
-            <c:set var="version" value="${param.ver}"/>
-        </c:if>
               
     </head>
     <body>
@@ -140,7 +135,7 @@
                     </tr>
                     <tr>
                         <td><fmt:message key="labelBy"/>&nbsp;${spreadsheet.creator}</td>
-                        <td align="right"><fmt:message key="labelVersion"/>: <span id="version_cont">${spreadsheet.version}</span>  |  <fmt:message key="labelModifiedOn"/>: <fmt:formatDate value="${spreadsheet.modifiedDate}" pattern="M/d/yyyy hh:mm" timeZone="${timeZone}"/></td>
+                        <td align="right"><fmt:message key="labelVersion"/>: ${spreadsheet.version}  |  <fmt:message key="labelModifiedOn"/>: <fmt:formatDate value="${spreadsheet.modifiedDate}" pattern="M/d/yyyy hh:mm" timeZone="${timeZone}"/></td>
                     </tr>
                     </table>
                 </td>
@@ -165,11 +160,7 @@
     </table>
     <script type="text/javascript">
         ZmSpreadSheetPreview._createDBG('${isDevMode}');
-
-        ZmSpreadSheetPreview.launch('spreadsheet',{
-            version: '${version}',
-            versionCont: "version_cont" 
-        });
+        ZmSpreadSheetPreview.launch('spreadsheet');
     </script>
     </body>
 </html>

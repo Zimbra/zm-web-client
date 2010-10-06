@@ -57,12 +57,7 @@ AjxPackage.require("zimbraMail.share.model.ZmAutocomplete");
 AjxPackage.require("zimbraMail.share.model.ZmInvite");
 
 AjxPackage.require("zimbraMail.share.view.ZmAutocompleteListView");
-AjxPackage.require("zimbraMail.share.view.ZmPeopleAutocompleteListView");
-AjxPackage.require("zimbraMail.share.view.ZmDLAutocompleteListView");
 AjxPackage.require("zimbraMail.share.view.assistant.ZmAssistant");
-
-AjxPackage.require("zimbraMail.share.view.ZmColorMenu");
-AjxPackage.require("zimbraMail.share.view.ZmColorButton");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmAdvancedHtmlEditor");
@@ -76,11 +71,9 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmNewSearchDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewTagDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderPropsDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmQuickAddDialog");
-AjxPackage.require("zimbraMail.share.view.dialog.ZmTimeDialog");
 AjxPackage.require("zimbraMail.core.ZmNewWindow");
 
 AjxPackage.require("zimbraMail.calendar.model.ZmCalMgr");
-AjxPackage.require("zimbraMail.tasks.model.ZmTaskMgr");
 AjxPackage.require("zimbraMail.calendar.model.ZmMiniCalCache");
 AjxPackage.require("zimbraMail.calendar.controller.ZmReminderController");
 AjxPackage.require("zimbraMail.calendar.view.ZmReminderDialog");

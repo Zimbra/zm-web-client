@@ -35,7 +35,6 @@
                 <zm:pref name="zimbraPrefSkin" value="${param.zimbraPrefSkin}"/>
             </c:if>
             <zm:pref name="zimbraPrefTimeZoneId" value="${param.zimbraPrefTimeZoneId}"/>
-            <zm:pref name="zimbraPrefDefaultPrintFontSize" value="${param.zimbraPrefDefaultPrintFontSize}"/>
         </c:when>
         <%-- MAIL --%>
         <c:when test="${selected eq 'mail'}">
@@ -44,7 +43,6 @@
             </c:if>
             <zm:pref name="zimbraPrefMailItemsPerPage" value="${param.zimbraPrefMailItemsPerPage}"/>
             <zm:pref name="zimbraPrefShowFragments" value="${param.zimbraPrefShowFragments eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
-            <zm:pref name="zimbraPrefReadingPaneLocation" value="${param.zimbraPrefReadingPaneLocation}"/>
             <zm:pref name="zimbraPrefReadingPaneEnabled" value="${param.zimbraPrefReadingPaneEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             <c:if test="${mailbox.features.initialSearchPreference}">
                 <zm:pref name="zimbraPrefMailInitialSearch" value="${param.zimbraPrefMailInitialSearch}"/>

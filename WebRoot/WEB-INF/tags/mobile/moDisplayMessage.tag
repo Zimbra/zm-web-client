@@ -53,9 +53,6 @@
 <c:set var="sender" value="${message.displaySender}"/>
 <c:if test="${ua.isiPad == true}">
 <fmt:message var="noSubject" key="noSubject"/>
-    <div class="wrap-dcontent" id="wrap-dcontent-view">
-                    <div id="dcontent-view" style="padding-bottom:5px;">
-
 <div class="header">
 <div class="alignLeft subject">${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
     <c:if test="${message.isFlagged}"><span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
@@ -147,11 +144,10 @@
         </c:forEach>
     </c:if>
 </div>
+</div>
+
 
 <c:if test="${not empty message.attachments}"><div class="View attachments"><a name="attachments${message.partName}"></a><mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/></div></c:if>
 <c:if test="${not empty param.debug}"><div><pre>${fn:escapeXml(message)}</pre></div></c:if></c:if>
 
-</div>
-</div>
-</div>
 </div>

@@ -81,59 +81,6 @@
 	</table>
 </template>
 
-<template id='share.Widgets#ZmPeopleSearchToolBar'>
-	<table border=0 cellpadding=0 cellspacing=0 width='100%' height='100%'>
-		<tr>
-			<td>
-				<div width='100%' class='ZmPeopleSearchToolbarDiv'>
-					<table border=0 cellpadding=0 cellspacing=0 class='ZmPeopleSearchToolbarTable'>
-						<tr>
-							<td id='${id}_inputField' width='100%'></td>
-							<td><$= AjxImg.getImageHtml("Search2") $></td>
-						</tr>
-					</table>
-				</div>
-			</td>
-		</tr>
-	</table>
-</template>
-
-<template id='share.Widgets#ZmPeopleAutocompleteListView'>
-	<tr id='${rowId}'>
-		<td>
-			<table border=0>
-				<tr>
-					<$ if (data.photoUrl) { $>
-						<td><img src="${photoUrl}" width=32 height=32></img></td>
-					<$ } else { $>
-						<td><$= AjxImg.getImageHtml("Person_32") $></td>
-					<$ } $>
-					<td>
-						<table border=0 cellpadding=0 cellspacing=0>
-							<tr>
-								<td class='ZmPeopleSearch-fullname'>${fullName}</td>
-								<td class='ZmPeopleSearch-busy' id='${rowId}-freebusy'></td>
-							</tr>
-						</table>
-						<$ if (data.title) { $>
-							<div>${title}</div>
-						<$ } $>
-						<div>${email}</div>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-</template>
-
-<template id='share.Widgets#ZmPeopleAutocompleteListView-NoResults'>
-	<tr id='${rowId}'>
-		<td class="ZmPeopleSearch-noresults">
-			<$= ZmMsg.noCallResults $>
-		</td>
-	</tr>
-</template>
-
 <template id='share.Widgets#ZmChooseFolderDialog'>
 	<div class='ChooserDialog'>
 		<span id='${id}_folderDescDivId' style='margin: 0; margin-bottom: 2px'></span>
@@ -164,14 +111,4 @@
 		<div id='${id}_inputDivId'></div>
 		<div style='background-color:white; width:100%; overflow:auto' id='${id}_tagTreeDivId'></div>
 	</div>
-</template>
-
-<template id='share.Widgets#ZmDebugLogDialog'>
-	<div class='DebugLogDialog-desc'><$= ZmMsg.debugLogDesc $></div>
-	<div class='DebugLogDialog-log' id='${id}_log'></div>
-</template>
-
-<template id='share.Widgets#ZmDumpsterDialog'>
-	<div id='${id}_toolbar'></div>
-	<div id='${id}_listview'></div>
 </template>

@@ -79,8 +79,8 @@ function(ev) {
 
     if(ev.event == ZmEvent.E_MOVE){
         var folderId = this._controller._folderId || this.folderId || this._folderId;
-        var item = items && items.length ? items[0] : items;
-        if(item && item.folderId == folderId && this._getRowIndex(item) === null){
+        var item = items.length ? items[0] : items;
+        if(item && item.folderId == folderId){
             this.addItem(item, 0, true);
             item.handled = true;
         }
@@ -172,147 +172,21 @@ function(list){
 
 ZmBriefcaseBaseView.prototype.appendFolders =
 function(srcList){
-
-    if(srcList._foldersAdded)
-        return srcList;
-
     var subs = this._folders = this._controller._getSubfolders();
     var subsLen = subs ? subs.length : 0;
-    var newList = srcList;
+    var newList;
     if(subsLen > 0){
-        for(var i=subsLen-1; i>=0; i--){
+        newList = this._cloneList(srcList);
+        for(var i=0; i<subsLen; i++){
             newList.add(subs[i], 0);
-        }
-        newList._foldersAdded = true;
+        }        
     }
     return newList;
 };
 
 ZmBriefcaseBaseView.prototype.set =
-function(list, sortField, doNotIncludeFolders){
-    this.cleanup();
-
-    if(!doNotIncludeFolders){
-        list = this.appendFolders(list);
-    }
-
+function(list, sortField){
     this._zmList = list;
     ZmListView.prototype.set.call(this, list, sortField);
-};
-
-ZmBriefcaseBaseView.prototype.renameFile =
-function(item){
-    //TODO: Make rename field singleton across briefcase views
-    var fileNameEl = this._getFieldId(item, ZmItem.F_SUBJECT);
-    fileNameEl = document.getElementById(fileNameEl);
-    var fileNameBounds = Dwt.getBounds(fileNameEl);
-
-    var fileInput = this._enableRenameInput(true, fileNameBounds);
-    fileInput.setValue(item.name);
-    this._fileItem = item;
-};
-
-ZmBriefcaseBaseView.prototype._enableRenameInput =
-function(enable, bounds){
-    var fileInput = this._getRenameInput();
-    if(enable){
-        fileInput.setBounds(bounds.x, bounds.y, bounds.width ,  18);
-        fileInput.setDisplay(Dwt.DISPLAY_INLINE);
-        fileInput.focus();
-    }else{
-        fileInput.setDisplay(Dwt.DISPLAY_NONE);
-        fileInput.setLocation("-10000px", "-10000px");
-    }
-    return fileInput;
-};
-
-ZmBriefcaseBaseView.prototype._getRenameInput =
-function(){
-    if(!this._renameField){
-        this._renameField = new DwtInputField({parent:appCtxt.getShell(), className:"RenameInput DwtInputField", posStyle: Dwt.ABSOLUTE_STYLE});
-        this._renameField.setZIndex(Dwt.Z_VIEW + 10); //One layer above the VIEW
-        this._renameField.setDisplay(Dwt.DISPLAY_NONE);
-        this._renameField.setLocation("-10000px", "-10000px");
-        this._renameField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
-        this.addSelectionListener(new AjxListener(this, this.cleanup));
-    }
-    return this._renameField;
-};
-
-ZmBriefcaseBaseView.prototype._handleKeyUp =
-function(ev) {
-    var allowDefault = true;
-	var key = DwtKeyEvent.getCharCode(ev);
-    var item = this._fileItem;
-    if(key == DwtKeyEvent.KEY_ENTER){
-        var fileName = this._renameField.getValue();
-        if(fileName != '' && fileName != item.name){
-            if(this._checkDuplicate(fileName)){
-                this._redrawItem(item);
-                var warning = appCtxt.getMsgDialog();
-                warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, fileName), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
-                warning.popup();
-            }else{
-                item.rename(fileName, new AjxCallback(this, this.resetRenameFile));
-            }
-        }else{
-            this._redrawItem(item);
-        }
-        allowDefault = false;
-    }else if( key == DwtKeyEvent.KEY_ESCAPE){
-        this._redrawItem(item);
-        allowDefault = false;
-    }
-	DwtUiEvent.setBehaviour(ev, true, allowDefault);
-};
-
-ZmBriefcaseBaseView.prototype.resetRenameFile =
-function(){
-    this._enableRenameInput(false);
-    this._fileItem = null;
-};
-
-ZmBriefcaseBaseView.prototype._redrawItem =
-function(item){
-    this.resetRenameFile();
-    this.redrawItem(item);
-};
-
-ZmBriefcaseBaseView.prototype._checkDuplicate =
-function(name){
-
-    name = name.toLowerCase();
-    var list = this.getList();
-    if(list){
-        list = list.getArray();
-        for (var i = 0; i < list.length; i++) {
-            var item = list[i];
-            if(item.name.toLowerCase() == name)
-                return true;
-        }
-    }
-    return false;   
-};
-
-ZmBriefcaseBaseView.prototype.cleanup =
-function(){
-    if(this._renameField)
-        this.resetRenameFile();
-};
-
-ZmBriefcaseBaseView.prototype._itemClicked =
-function(clickedEl, ev) {
-		
-    ZmListView.prototype._itemClicked.call(this, clickedEl, ev);
-
-    if (ev.button == DwtMouseEvent.LEFT) {
-        var items = this.getSelection();
-        if (items && items.length) {
-            var item = items[0];
-            if (item.isFolder) {
-                this._controller._app.search({folderId:item.id, noClear:true});
-            }
-        }
-    }
 };
 

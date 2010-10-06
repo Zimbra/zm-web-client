@@ -31,11 +31,6 @@
     </tag-file>
 
     <tag-file>
-        <name>briefcase</name>
-        <path>/WEB-INF/tags/rest/restBriefcase.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>document</name>
         <path>/WEB-INF/tags/rest/restDocument.tag</path>
     </tag-file>    

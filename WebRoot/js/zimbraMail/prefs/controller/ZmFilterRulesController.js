@@ -26,18 +26,14 @@
  * 
  * @extends		ZmController
  */
-ZmFilterRulesController = function(container, prefsApp, prefsView, parent, outgoing) {
+ZmFilterRulesController = function(container, prefsApp, prefsView) {
 
 	ZmController.call(this, container, prefsApp);
 
 	ZmFilterRule._setPreconditions();
 
 	this._prefsView = prefsView;
-	this._parent = parent;
-
-	this._filterRulesView = new ZmFilterRulesView(this._prefsView, this);
-
-	this._outgoing = Boolean(outgoing);
+	this._filterRulesView = new ZmFilterRulesView(this._prefsView._parent, this);
 
 	this._buttonListeners = {};
 	this._buttonListeners[ZmOperation.ADD_FILTER_RULE] = new AjxListener(this, this._addListener);
@@ -54,11 +50,6 @@ ZmFilterRulesController.prototype.constructor = ZmFilterRulesController;
 ZmFilterRulesController.prototype.toString =
 function() {
 	return "ZmFilterRulesController";
-};
-
-ZmFilterRulesController.prototype.isOutgoing =
-function() {
-	return this._outgoing;
 };
 
 /**
@@ -80,7 +71,7 @@ function() {
 ZmFilterRulesController.prototype.initialize =
 function(toolbar, listView) {
 	// always reset the the rules to make sure we get the right one for the *active* account
-	this._rules = AjxDispatcher.run(this._outgoing ? "GetOutgoingFilterRules" : "GetFilterRules");
+	this._rules = AjxDispatcher.run("GetFilterRules");
 
 	if (toolbar) {
 		var buttons = this.getToolbarButtons();
@@ -99,13 +90,6 @@ function(toolbar, listView) {
 		listView.addActionListener(new AjxListener(this, this._listActionListener));
 		this.resetListView();
 	}
-};
-
-ZmFilterRulesController.prototype.getRules =
-function() {
-	if (!this._rules)
-		this._rules = AjxDispatcher.run(this._outgoing ? "GetOutgoingFilterRules" : "GetFilterRules");
-	return this._rules;
 };
 
 ZmFilterRulesController.prototype.getToolbarButtons =
@@ -255,59 +239,10 @@ function(menu) {
 ZmFilterRulesController.prototype._addListener =
 function(ev) {
 	if (!this._listView) { return; }
-	this.handleBeforeFilterChange(new AjxCallback(this, this._popUpAdd));
-};
 
-ZmFilterRulesController.prototype.handleBeforeFilterChange =
-function(okCallback, cancelCallback) {
-	if (this._outgoing && (appCtxt.getSettings().getSetting(ZmSetting.SAVE_TO_SENT).getValue()===false || ZmPref.getFormValue(ZmSetting.SAVE_TO_SENT)===false)) {
-		var dialog = appCtxt.getConfirmationDialog();
-		if (!this._saveToSentMessage) {
-			var html = [];
-			var i = 0;
-			html[i++] = "<table cellspacing=0 cellpadding=0 border=0><tr><td valign='top'>";
-			html[i++] = AjxImg.getImageHtml("Warning_32");
-			html[i++] = "</td><td class='DwtMsgArea'>";
-			html[i++] = ZmMsg.filterOutgoingNoSaveToSentWarning;
-			html[i++] = "</td></tr></table>";
-			this._saveToSentMessage = html.join("");
-		}
-		var handleSaveToSentYesListener = new AjxListener(this, this._handleSaveToSentYes, [okCallback]);
-		var handleSaveToSentNoListener = new AjxListener(this, this._handleSaveToSentNo, [okCallback]);
-		
-		dialog.popup(this._saveToSentMessage, handleSaveToSentYesListener, handleSaveToSentNoListener, cancelCallback);
-		dialog.setTitle(AjxMsg.warningMsg);
-	} else {
-		if (okCallback)
-			okCallback.run();
-	}
-};
-
-ZmFilterRulesController.prototype._handleSaveToSentYes =
-function(callback) {
-	var settings = appCtxt.getSettings();
-	var setting = settings.getSetting(ZmSetting.SAVE_TO_SENT);
-	ZmPref.setFormValue(ZmSetting.SAVE_TO_SENT, true);
-	if (!setting.getValue()) {
-		setting.setValue(true);
-		settings.save([setting], callback);
-	} else {
-		if (callback)
-			callback.run();
-	}
-};
-
-ZmFilterRulesController.prototype._handleSaveToSentNo =
-function(callback) {
-	if (callback)
-		callback.run();
-};
-
-ZmFilterRulesController.prototype._popUpAdd =
-function() {
 	var sel = this._listView.getSelection();
 	var refRule = sel.length ? sel[sel.length - 1] : null;
-	appCtxt.getFilterRuleDialog().popup(null, false, refRule, null, this._outgoing);
+	appCtxt.getFilterRuleDialog().popup(null, false, refRule);
 };
 
 /**
@@ -320,7 +255,7 @@ function(ev) {
 	if (!this._listView) { return; }
 
 	var sel = this._listView.getSelection();
-	appCtxt.getFilterRuleDialog().popup(sel[0], true, null, null, this._outgoing);
+	appCtxt.getFilterRuleDialog().popup(sel[0], true);
 };
 
 /**
@@ -401,7 +336,7 @@ function(dialog, folderList) {
 
 	var sel = this._listView && this._listView.getSelection();
 	if (sel && sel.length) {
-		var soapDoc = AjxSoapDoc.create(this._outgoing ? "ApplyOutgoingFilterRulesRequest" : "ApplyFilterRulesRequest", "urn:zimbraMail");
+		var soapDoc = AjxSoapDoc.create("ApplyFilterRulesRequest", "urn:zimbraMail");
 		var filterRules = soapDoc.set("filterRules", null);
 		for (var i = 0; i < sel.length; i++) {
 			var rule = soapDoc.set("filterRule", null, filterRules);

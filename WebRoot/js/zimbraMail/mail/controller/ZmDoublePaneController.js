@@ -720,9 +720,7 @@ function(msg) {
 	rule.addAction(ZmFilterRule.A_KEEP);
 
 	var accountName = appCtxt.multiAccounts && msg.getAccount().name;
-	var outgoing = AjxUtil.indexOf(ZmFolder.OUTBOUND, msg.getFolderId()) != -1;
-
-	appCtxt.getFilterRuleDialog().popup(rule, null, null, accountName, outgoing);
+	appCtxt.getFilterRuleDialog().popup(rule, null, null, accountName);
 };
 
 ZmDoublePaneController.prototype._dragListener =

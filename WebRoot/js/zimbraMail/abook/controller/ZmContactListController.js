@@ -36,7 +36,6 @@
  */
 ZmContactListController = function(container, contactsApp) {
 
-	if (arguments.length == 0) { return; }
 	ZmListController.call(this, container, contactsApp);
 
 	this._viewFactory = {};
@@ -774,7 +773,7 @@ function(ev) {
         contact = selection[i];
         email   = contact.isGroup() ? contact.getGroupMembers().good : contact.getEmail();
         if(email){
-            email   = contact.isGroup() ? email : new AjxEmailAddress(email, AjxEmailAddress.TO, contact.getFullName());
+            email   = contact.isGroup() ? email : new AjxEmailAddress(email);
             email   = email.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR;
             name   += email;
         }

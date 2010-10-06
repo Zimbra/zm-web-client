@@ -42,15 +42,8 @@
 
 </mo:handleError>
     <c:set var="title" scope="request" value="${requestScope.title} : ${zm:truncate(msg.subject,10,true)}"/>
-    <c:choose>
-    <c:when test="${ua.isiPad eq true}">
-        <mo:ipadToolbar mailbox="${mailbox}" app="${'cal'}" context="${context}" keys="false" invId="${invite.component.isOrganizer ? id : ''}"  urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${true}"/>
-    </c:when>
-    <c:otherwise>
-        <mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}"  urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${true}"/>
-    </c:otherwise>    
-    </c:choose>
-    <div class="Stripes ${ua.isiPad eq true ? 'composeFields' : ''}">
+    <mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}"  urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${true}"/>
+    <div class="Stripes">
                 <c:set var="extImageUrl" value=""/>
                 <c:if test="${empty param.xim}">
                     <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
@@ -60,23 +53,20 @@
                                 inviteReplyAllDay="${isInstance and invite.component.allDay ? '1' : ''}"/>
                     <%-- <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/> --%>
                 <c:if test="${empty sessionScope.calendar}">
-                <div class="roundness View ${apptFolder.styleColor}Bg" style="padding: 5px;">
+                <div class="View ${apptFolder.styleColor}Bg">
                 <span class="label"><fmt:message
                         key="calendarLabel"/></span> ${fn:escapeXml(zm:getFolderName(pageContext,apptFolder.id))}
-                </div><br>
+                </div>
                 </c:if>    
                 <mo:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}"
                                        showInviteReply="${not readOnly}" externalImageUrl="${extImageUrl}"
                                        composeUrl="${composeUrl}" newWindowUrl=""/>
                 <c:set var="repeat" value="${invite.component.simpleRecurrence}"/>
                 <c:if test="${repeat != null && repeat.type != null && !repeat.type.none}">
-                    <div class="View lineHeight">
+                    <div class="View">
                     <span class="label"><fmt:message
                             key="repeatsLabel"/></span> ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, invite.component.start.date))}
                     </div>
                 </c:if>
     </div>
-
-<c:if test="${ua.isiPad eq false}">
-    <mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}" urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${false}"/>
-</c:if>
+<mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}" urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${false}"/>
