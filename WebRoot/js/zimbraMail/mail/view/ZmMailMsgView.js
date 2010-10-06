@@ -93,7 +93,7 @@ ZmMailMsgView.OBJ_SIZE_HTML 		= 50; // similar for HTML emails.
 ZmMailMsgView.REPLY_INVITE_EVENT	= "inviteReply";
 ZmMailMsgView.SHARE_EVENT 			= "share";
 ZmMailMsgView.IMG_FIX_RE			= new RegExp("(<img\\s+.*dfsrc\\s*=\\s*)[\"']http[^'\"]+part=([\\d\\.]+)[\"']([^>]*>)", "gi");
-ZmMailMsgView.FILENAME_INV_CHARS_RE = /[\./?*:;{}\\]/g; // Chars we do not allow in a filename
+ZmMailMsgView.FILENAME_INV_CHARS_RE = /[\./?*:;{}'\\]/g; // Chars we do not allow in a filename
 ZmMailMsgView.SETHEIGHT_MAX_TRIES	= 3;
 
 
