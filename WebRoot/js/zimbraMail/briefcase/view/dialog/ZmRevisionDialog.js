@@ -172,7 +172,7 @@ function(revisions) {
 ZmRevisionListView.prototype._getHeaderList =
 function() {
 	return [
-		(new DwtListHeaderItem({field:ZmRevisionListView.FIELD_VERSION, text:ZmMsg.versionLabel, width: 50})),
+		(new DwtListHeaderItem({field:ZmRevisionListView.FIELD_VERSION, text:ZmMsg.versionHeaderLabel, width: 50})),
 		(new DwtListHeaderItem({field:ZmRevisionListView.FIELD_DATE, text:ZmMsg.date, width:150})),
         (new DwtListHeaderItem({field:ZmRevisionListView.FIELD_USER, text:ZmMsg.user, width:180})),
         (new DwtListHeaderItem({field:ZmRevisionListView.FIELD_NOTES, text:ZmMsg.notes}))    
