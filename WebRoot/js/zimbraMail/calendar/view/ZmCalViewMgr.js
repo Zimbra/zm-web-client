@@ -266,6 +266,9 @@ function() {
     // size content
     var view = this._views[this._currentViewName];
     view.setBounds(0, 0, contentWidth, contentHeight);
+
+    //need to reset layout for time view renderings
+    if(view instanceof ZmCalBaseView) view.layoutView();    
 };
 
 ZmCalViewMgr.prototype._controlListener =

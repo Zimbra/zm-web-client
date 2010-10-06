@@ -822,6 +822,11 @@ function() {
 	this._selectedItems.removeAll();
 };
 
+ZmCalBaseView.prototype.layoutView =
+function() {
+    this._layout();
+};
+
 ZmCalBaseView.prototype.getCalTitle = 
 function() {
 	return this._title;
