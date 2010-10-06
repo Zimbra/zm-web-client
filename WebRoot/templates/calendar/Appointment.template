@@ -74,16 +74,13 @@
                                 <table border=0 cellpadding=0 cellspacing=0><tr>
                                     <td id='${id}_reminderSelectInput'></td>
                                     <td id='${id}_reminderSelect'> </td>
+                                    <td>
+                                        <input type='checkbox' id='${id}_reminderEmailCheckbox'>&nbsp;&nbsp;
+                                    </td>
+                                    <td id='${id}_reminderEmailCell'><$= ZmMsg.sendEmail $></td>                                    
                                 </tr></table>
                             </td>
-                            <td>
-								<table border=0 cellpadding=0 cellspacing=0><tr>
-									<td>
-										<input type='checkbox' id='${id}_reminderEmailCheckbox'>&nbsp;&nbsp;
-									</td>
-									<td id='${id}_reminderEmailCell'><$= ZmMsg.sendEmail $></td>
-								</tr></table>
-                            </td>
+                            <td>&nbsp;</td>
                         </tr>
                         <tr>
                             <td width='65' class='ZmApptTabViewPageField'><nobr><$= (data.isAppt ? ZmMsg.endLabel : ZmMsg.dateDueLabel ) $></nobr></td>
