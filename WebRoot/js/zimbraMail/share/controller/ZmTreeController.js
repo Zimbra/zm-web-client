@@ -513,12 +513,19 @@ function(ev) {
  * @private
  */
 ZmTreeController.prototype._getActionMenu =
-function(ev) {
-	if (this._actionMenu instanceof AjxCallback) {
-		var callback = this._actionMenu;
-		this._actionMenu = callback.run();
+function(ev, item) {
+    var controller = this;
+
+    // special case - search folder. might have moved under a regular folder  
+    if (item.type == ZmOrganizer.SEARCH) {
+        controller = this._opc.getTreeController(ZmOrganizer.SEARCH);
+    }
+
+	if (controller._actionMenu instanceof AjxCallback) {
+		var callback = controller._actionMenu;
+		controller._actionMenu = callback.run();
 	}
-	return this._actionMenu;
+	return controller._actionMenu;
 };
 
 /**
@@ -723,7 +730,7 @@ function(ev) {
 		if (overview.actionSupported) {
 			var actionMenu = (item.nId == ZmOrganizer.ID_ROOT || item.isDataSource(ZmAccount.TYPE_IMAP))
 				? this._getHeaderActionMenu(ev)
-				: this._getActionMenu(ev);
+				: this._getActionMenu(ev, item);
 			if (actionMenu) {
 				this.resetOperations(actionMenu, type, id);
 				actionMenu.popup(0, ev.docX, ev.docY);
