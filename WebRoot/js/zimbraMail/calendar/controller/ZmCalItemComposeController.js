@@ -377,8 +377,8 @@ function(errorMsg) {
 };
 
 ZmCalItemComposeController.prototype._saveCalItemFoRealz =
-function(calItem, attId, notifyList) {
-	if (this._composeView.isDirty()) {
+function(calItem, attId, notifyList, force) {
+	if (this._composeView.isDirty() || force) {
 		// bug: 16112 - check for folder existance
 		if (calItem.getFolder() && calItem.getFolder().noSuchFolder) {
 			var msg = AjxMessageFormat.format(ZmMsg.errorInvalidFolder, calItem.getFolder().name);

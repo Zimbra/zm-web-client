@@ -813,6 +813,13 @@ function(appt, attId, dlg) {
 	this._app.popView(true);
 };
 
+ZmApptComposeController.prototype._saveCalItemFoRealz =
+function(calItem, attId, notifyList, force){
+    force = force || ( this._action == ZmCalItemComposeController.SEND );
+    ZmCalItemComposeController.prototype._saveCalItemFoRealz.call(this, calItem, attId, notifyList, force);    
+};
+
+
 ZmApptComposeController.prototype._clearInvalidAttendeesCallback =
 function(appt, attId, dlg) {
 	dlg.popdown();
