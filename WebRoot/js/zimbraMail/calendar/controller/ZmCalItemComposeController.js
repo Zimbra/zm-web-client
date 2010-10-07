@@ -48,13 +48,15 @@ ZmCalItemComposeController.SAVE  = "SAVE";
 ZmCalItemComposeController.prototype.show =
 function(calItem, mode, isDirty) {
 
-	this._initToolbar(mode);
+	if (!this._toolbar) {
+		this._createToolBar();
+	}
 	var initial = this.initComposeView();
 
 	this._app.pushView(this.viewId);
 	this._composeView.set(calItem, mode, isDirty);
 	this._composeView.reEnableDesignMode();
-
+    this._initToolbar(mode);
 	if (initial) {
 		this._setComposeTabGroup();
 	}
@@ -409,7 +411,8 @@ function(calItem, result) {
     calItem.handlePostSaveCallbacks();
 
 	this._composeView.cleanup();
-	appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success 
+    appCtxt.setStatusMsg(ZmMsg.apptCreated);
+    appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success 
 };
 
 ZmCalItemComposeController.prototype._handleErrorSave =
