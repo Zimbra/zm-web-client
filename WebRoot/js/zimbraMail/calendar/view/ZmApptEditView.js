@@ -369,12 +369,12 @@ function() {
 };
 
 ZmApptEditView.prototype.showMeetingFields =
-function(show){
+function(show, hideSendBtn){
     if(AjxUtil.isUndefined(show)){
         show = !Dwt.getVisible(this._attendeesContainer); 
     }
     Dwt.setVisible(this._attendeesContainer, show);
-    Dwt.setVisible(this._inviteSendBtnContainer, show);
+    Dwt.setVisible(this._inviteSendBtnContainer, !hideSendBtn && show);
     this.setSchedulerVisibility(show);
     this.resize();
 };
@@ -442,7 +442,7 @@ function(calItem, mode) {
 	// attendees
 	var attendees = calItem.getAttendees(ZmCalBaseItem.PERSON);
 	if (attendees && attendees.length) {
-        this.showMeetingFields(true);
+        this.showMeetingFields(true, this._isForward);
 		if (this.GROUP_CALENDAR_ENABLED) {
 			this._attendeesInputField.setValue(calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED));
 			this._optAttendeesInputField.setValue(calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL));

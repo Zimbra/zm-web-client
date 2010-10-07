@@ -230,6 +230,22 @@ function(attId) {
 	return false;
 };
 
+ZmApptComposeController.prototype._initToolbar =
+function(mode) {
+
+    ZmCalItemComposeController.prototype._initToolbar.call(this, mode);
+
+    //use send button for forward appt view
+    //Switch Save Btn label n listeners 
+    var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
+    saveButton.removeSelectionListeners();
+    if(ZmCalItem.FORWARD_MAPPING[mode]) {
+        saveButton.addSelectionListener(new AjxListener(this, this._sendListener));
+    }else {
+        saveButton.addSelectionListener(new AjxListener(this, this._saveListener));
+    }
+};
+
 ZmApptComposeController.prototype._sendListener =
 function(ev){
     this._action = ZmCalItemComposeController.SEND;
