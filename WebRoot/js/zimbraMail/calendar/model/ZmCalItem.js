@@ -1466,6 +1466,11 @@ function(cancelFutureInstances) {
     this._cancelFutureInstances = cancelFutureInstances;    
 };
 
+ZmCalItem.prototype._sendCancelMsg =
+function(callback){
+    this.save(null, callback);
+};
+
 /**
  * @private
  */
@@ -1481,7 +1486,7 @@ function(mode, callback, msg, batchCmd, result) {
         recurrence.repeatEndType = "D";
 
         this.viewMode = ZmCalItem.MODE_EDIT_SERIES;
-        this.save(null, callback);
+        this._sendCancelMsg(callback);
         return;
     }
 

@@ -957,7 +957,7 @@ function(attachmentId, callback, errorCallback, notifyList){
     this._mode = ZmAppt.ACTION_SEND;
     this.isSend = true;
     ZmCalItem.prototype.save.call(this, attachmentId, callback, errorCallback, notifyList);
-}
+};
 
 ZmAppt.prototype.save =
 function(attachmentId, callback, errorCallback, notifyList){
@@ -965,6 +965,19 @@ function(attachmentId, callback, errorCallback, notifyList){
     this.isSend = false;
     ZmCalItem.prototype.save.call(this, attachmentId, callback, errorCallback, notifyList);
 };
+
+ZmAppt.prototype._doCancel =
+function(mode, callback, msg, batchCmd, result){
+    this._mode = ZmAppt.ACTION_SEND;
+    this.isSend = true;
+    ZmCalItem.prototype._doCancel.call(this, mode, callback, msg, batchCmd, result);
+};
+
+ZmAppt.prototype._sendCancelMsg =
+function(callback){
+    this.send(null, callback);  
+};
+
 
 ZmAppt.prototype._setSimpleSoapAttributes =
 function(soapDoc, attachmentId, notifyList, accountName) {

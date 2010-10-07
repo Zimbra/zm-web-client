@@ -2306,7 +2306,7 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [callback]);
 		var respErrCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [errorCallback]);
 		appCtxt.getShell().setBusy(true);
-		appt.save(null, respCallback, respErrCallback);
+		appt.send(null, respCallback, respErrCallback);
 	} catch (ex) {
 		appCtxt.getShell().setBusy(false);
 		if (ex.msg) {
