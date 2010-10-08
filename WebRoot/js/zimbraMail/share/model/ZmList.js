@@ -1020,8 +1020,9 @@ function(summary, actionLogItem) {
 	if (summary) {
 		var actionController = appCtxt.getActionController();
 		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
-		if (undoLink) {
-			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: actionController.getStatusTransitions()});
+		var dismissLink = actionController && actionController.getDismissLink() || "";
+		if (undoLink && actionController) {
+			appCtxt.setStatusMsg({msg: summary+undoLink+dismissLink, transitions: actionController.getStatusTransitions()});
 		} else {
 			appCtxt.setStatusMsg(summary);
 		}

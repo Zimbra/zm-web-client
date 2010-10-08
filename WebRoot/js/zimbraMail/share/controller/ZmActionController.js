@@ -25,6 +25,7 @@
 ZmActionController = function() {
 	this._actionStack = new ZmActionStack(1);
 	this._statusTransitions = ZmActionController._substituteTransitions(appCtxt.getSkinHint("toast", "transitions") || ZmToast.DEFAULT_TRANSITIONS);
+	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this.dismiss));
 };
 
 ZmActionController.prototype.toString =
@@ -63,6 +64,12 @@ ZmActionController.prototype.getUndoLink = function(actionElement, text) {
 		var undoId = ZmActionController._registerCallback(new AjxCallback(this, this.undoCurrent));
 		return ["<a onclick='ZmActionController.callRegisteredCallback(",undoId,")' href='javascript:;' class='undo'>", text || ZmMsg.undo, "</a>"].join("");
 	} else return ""; // We can't risk displaying "null" or "undefined" wherever this function is called from, and an empty string is just as falsy
+};
+
+ZmActionController.prototype.getDismissLink = function() {
+	var style = "vertical-align: middle; display: inline-block; margin-left: 10px; cursor: pointer;";
+	var attrs = "onclick='appCtxt.dismissStatusMsg()'"; // Not pretty, but since we don't have the DOM element yet, we'll attach the handler "the oldschool way"
+	return AjxImg.getImageHtml("Cancel", style, attrs);
 };
 
 ZmActionController.prototype.getStatusTransitions = function() {
