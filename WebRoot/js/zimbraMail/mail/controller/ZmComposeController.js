@@ -868,7 +868,7 @@ function() {
 	if (this._toolbar) { return; }
 
 	var buttons = [];
-	if (this._canSaveDraft()) {
+	if (this._canSaveDraft() && appCtxt.get(ZmSetting.MAIL_SEND_LATER_ENABLED)) {
 		buttons.push(ZmOperation.SEND_MENU);
 	} else {
 		buttons.push(ZmOperation.SEND);
