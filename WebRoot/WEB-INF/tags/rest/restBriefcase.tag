@@ -23,7 +23,7 @@
 <%@ taglib prefix="rest" uri="com.zimbra.restclient" %>
 
 <rest:handleError>
-    <zm:getBriefcase varSearch="searchResult" varFolder="folder" box="${mailbox}" id="${requestScope.zimbra_target_item_id}"/>
+    <zm:getBriefcase varSearch="searchResult" varFolder="folder" box="${mailbox}" id="${requestScope.zimbra_target_item_id}" resttargetaccountid="${requestScope.zimbra_target_account_id}" timezone="${timezone}"/>
     <fmt:message key="noName" var="noName"/>
 </rest:handleError>
 
