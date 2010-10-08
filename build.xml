@@ -294,6 +294,9 @@
 			<fileset dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.files}'/>
 			<fileset refid='customer.webinf.fileset' />
         </copy>
+        <copy todir="${webapp.dir}/WEB-INF/lib" verbose="${sync.verbose}">
+            <fileset file="${taglib.build.dir}/zimbrataglib.jar" />
+        </copy>
         <copy todir='${webapp.dir}/WEB-INF/classes' verbose='${sync.verbose}'>
             <fileset dir='${build.classes.dir}'/>
         </copy>
@@ -1308,6 +1311,7 @@ if (ext == null) ext = "";
         <ant dir='${taglib.dir}' target='jar'/>
     </target>
     <target name='deploy-html' depends='server-war,taglib-jar,deploy'/>
+    <target name='sync-html' depends='taglib-jar,sync' />
 
     <!-- LEGACY TARGETS -->
     <target name='dev-sync' depends='sync'/>
