@@ -157,8 +157,20 @@ function(bEnableInputs) {
 		}
 		this._attendeesInputField.setEnabled(bEnableAttendees);
 		this._optAttendeesInputField.setEnabled(bEnableAttendees);
+        this.enablePickers(bEnableAttendees);        
 	}
 	this._attInputField[ZmCalBaseItem.LOCATION].setEnabled(bEnableInputs);
+};
+
+ZmApptEditView.prototype.enablePickers =
+function(bEnablePicker) {
+    for (var t = 0; t < this._attTypes.length; t++) {
+        var type = this._attTypes[t];
+        if(this._pickerButton[type]) this._pickerButton[type].setEnabled(bEnablePicker);
+    }
+
+    if(this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON]) this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON].setEnabled(bEnablePicker);
+
 };
 
 ZmApptEditView.prototype.isValid =
