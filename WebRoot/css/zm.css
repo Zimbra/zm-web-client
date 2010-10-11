@@ -4270,7 +4270,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmEditContactView .rowLabel, .ZmContactSplitView .rowLabel {
-	padding:.25em .5em;
+	padding:.7em .5em .25em;
 	text-align: right;
 	font-weight: bold;
 }
