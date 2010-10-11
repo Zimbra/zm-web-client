@@ -380,7 +380,7 @@ function(params) {
     if(this._attendees.length == 0) {
         this.resizeTimeSuggestions();
         this.showCustomize(true);
-        this._timeSuggestions.setNoResultsHtml();
+        this._timeSuggestions.setNoAttendeesHtml();
         return;
     }
 
@@ -525,6 +525,8 @@ function(params) {
     var endTime = endDate.getTime();
     var duration = this._duration = this._editView.getDuration();
 
+    params.duration = duration;
+
     this._fbStat = new AjxVector();
     this._fbStatMap = {};
     this._totalUsers = this._attendees.length;
@@ -667,7 +669,12 @@ ZmScheduleAssistantView.prototype.renderSuggestions =
 function(params) {
     this.resizeTimeSuggestions();
     this.showCustomize(true);
-    this._timeSuggestions.set(this._fbStat, this._totalUsers, this._totalLocations, params.itemsById, params.itemsByIdx);
+
+    params.list = this._fbStat;
+    params.totalUsers = this._totalUsers;
+    params.totalLocations = this._totalLocations;
+
+    this._timeSuggestions.set(params);
     if(params.focus) this._timeSuggestions.focus();
 };
 

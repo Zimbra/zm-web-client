@@ -4426,3 +4426,8 @@ If you feel compelled to have a background color, please do so on a per skin lev
     padding-bottom:20px;
     padding-top:20px;
 }
+
+.NoSuggestions {
+	font-size: 10pt;
+	text-align: center;
+}

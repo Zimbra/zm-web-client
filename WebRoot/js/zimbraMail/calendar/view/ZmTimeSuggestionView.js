@@ -42,14 +42,19 @@ ZmTimeSuggestionView.prototype = new ZmListView;
 ZmTimeSuggestionView.prototype.constructor = ZmTimeSuggestionView;
 
 ZmTimeSuggestionView.SHOW_MORE_VALUE = '-1';
+ZmTimeSuggestionView.F_LABEL = 'ts';
 
 ZmTimeSuggestionView.prototype.set =
-function(list, totalUsers, totalLocations, itemsById, itemsByIdx) {
-    this._itemsById = itemsById;
-    this._itemsByIdx = itemsByIdx;
-    this._totalUsers = totalUsers;
-    this._totalLocations = totalLocations;
-    ZmListView.prototype.set.call(this, list);
+function(params) {
+
+    this._itemsById = params.itemsById;
+    this._itemsByIdx = params.itemsByIdx;
+    this._totalUsers = params.totalUsers;
+    this._totalLocations = params.totalLocations;
+    this._duration = params.duration;
+    this._startDate = params.timeFrame.start;
+
+    ZmListView.prototype.set.call(this, params.list);
 };
 
 ZmTimeSuggestionView.prototype._createItemHtml =
@@ -165,12 +170,29 @@ function() {
     this.handleLocationOverflow();
 };
 
-ZmTimeSuggestionView.prototype.setNoResultsHtml =
+ZmTimeSuggestionView.prototype.setNoAttendeesHtml =
 function() {
     this.removeAll();
     var	div = document.createElement("div");
     div.innerHTML = AjxTemplate.expand("calendar.Appointment#TimeSuggestion-NoAttendees");
     this._addRow(div);
+};
+
+ZmTimeSuggestionView.prototype._setNoResultsHtml =
+function() {
+	var	div = document.createElement("div");
+	var subs = {
+		message: this._getNoResultsMessage(),
+		type: this.type
+	};
+	div.innerHTML = AjxTemplate.expand("calendar.Appointment#TimeSuggestion-NoSuggestions", subs);
+	this._addRow(div);
+};
+
+ZmTimeSuggestionView.prototype._getNoResultsMessage =
+function() {
+    var durationStr = AjxDateUtil.computeDuration(this._duration);
+    return AjxMessageFormat.format(ZmMsg.noSuggestionsFound, [this._startDate, durationStr])
 };
 
 ZmTimeSuggestionView.prototype.setLoadingHtml =

@@ -940,6 +940,14 @@
     </center>
 </template>
 
+<template id='calendar.Appointment#TimeSuggestion-NoSuggestions'>
+    <center>
+        <div class='NoSuggestions'>
+            <br><br>${message}
+        </div>
+    </center>
+</template>
+
 <template id='calendar.Appointment#TimeSuggestion-Loading'>
     <center>
         <div>
