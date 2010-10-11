@@ -273,6 +273,12 @@ function(ev, force) {
         dlg.popdown();
     }
     this._action = isMeeting ? ZmCalItemComposeController.SAVE : ZmCalItemComposeController.SAVE_CLOSE;
+
+    //attendee should not have send/save option
+    if(!this._composeView.isOrganizer()) {
+        this._action = ZmCalItemComposeController.SAVE_CLOSE;
+    }
+
     this.enableToolbar(false);
 	if (this._doSave() === false) {
 		return;

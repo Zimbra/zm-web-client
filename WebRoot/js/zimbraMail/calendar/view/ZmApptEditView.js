@@ -162,6 +162,11 @@ function(bEnableInputs) {
 	this._attInputField[ZmCalBaseItem.LOCATION].setEnabled(bEnableInputs);
 };
 
+ZmApptEditView.prototype.isOrganizer =
+function() {
+    return Boolean(this._isOrganizer);
+};
+
 ZmApptEditView.prototype.enablePickers =
 function(bEnablePicker) {
     for (var t = 0; t < this._attTypes.length; t++) {
@@ -381,7 +386,7 @@ function() {
 
 ZmApptEditView.prototype.updateToolbarOps =
 function(){
-    this._controller.updateToolbarOps(this.isAttendeesEmpty() ? ZmCalItemComposeController.APPT_MODE : ZmCalItemComposeController.MEETING_MODE);
+    this._controller.updateToolbarOps((this.isAttendeesEmpty() || !this.isOrganizer()) ? ZmCalItemComposeController.APPT_MODE : ZmCalItemComposeController.MEETING_MODE);
 };
 
 ZmApptEditView.prototype.isAttendeesEmpty =

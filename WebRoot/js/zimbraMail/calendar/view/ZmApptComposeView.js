@@ -271,7 +271,12 @@ function() {
     return this._apptEditView.isAttendeesEmpty();
 };
 
-ZmApptComposeView.prototype.getTitle = 
+ZmApptComposeView.prototype.isOrganizer =
+function() {
+    return this._apptEditView.isOrganizer();
+};
+
+ZmApptComposeView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, ZmMsg.appointment].join(": ");
 };
