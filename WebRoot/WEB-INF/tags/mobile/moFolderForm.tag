@@ -268,19 +268,19 @@
                     <div class="td label">Tag Color: 
                                 <select name="tag_color">
                                     <optgroup label="<fmt:message key='color'/>">
-                                        <option value="cyan" ${etag.color eq 'cyan' ? 'selected=selected' : ''}>
+                                        <option value="<fmt:message key="colorCyan"/>" ${etag.color eq 'cyan' ? 'selected=selected' : ''}>
                                             <fmt:message key="cyan"/></option>
-                                        <option value="blue" ${etag.color eq 'blue' ? 'selected=selected' : ''}>
+                                        <option value="<fmt:message key="colorBlue"/>" ${etag.color eq 'blue' ? 'selected=selected' : ''}>
                                             <fmt:message key="blue"/></option>
-                                        <option value="purple" ${etag.color eq 'purple' ? 'selected=selected' : ''}>
+                                        <option value="<fmt:message key="colorPurple"/>" ${etag.color eq 'purple' ? 'selected=selected' : ''}>
                                             <fmt:message key="purple"/></option>
-                                        <option value="red" ${etag.color eq 'red' ? 'selected=selected' : ''}>
+                                        <option value="<fmt:message key="colorRed"/>" ${etag.color eq 'red' ? 'selected=selected' : ''}>
                                             <fmt:message key="red"/></option>
-                                        <option value="orange" ${etag.color eq 'orange' ? 'selected=selected' : ''}>
+                                        <option value="<fmt:message key="colorOrange"/>" ${etag.color eq 'orange' ? 'selected=selected' : ''}>
                                             <fmt:message key="orange"/></option>
-                                        <option value="yellow ${etag.color eq 'yellow' ? 'selected=selected' : ''}">
+                                        <option value="<fmt:message key="colorYellow"/>" ${etag.color eq 'yellow' ? 'selected=selected' : ''}>
                                             <fmt:message key="yellow"/></option>
-                                        <option value="green" ${etag.color eq 'green' ? 'selected=selected' : ''}>
+                                        <option value="<fmt:message key="colorGreen"/>" ${etag.color eq 'green' ? 'selected=selected' : ''}>
                                             <fmt:message key="green"/></option>
                                     </optgroup>
                                 </select>
