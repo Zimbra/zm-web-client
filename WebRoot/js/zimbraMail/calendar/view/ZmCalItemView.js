@@ -303,8 +303,10 @@ function(ev) {
 		mode = this._mode || ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
 	}
 	item.setViewMode(mode);
-	this._controller._viewMgr.setView(this._prevView);
-	this._controller._currentView = this._prevView;
+	if(this._prevView) {
+        this._controller._viewMgr.setView(this._prevView);
+	    this._controller._currentView = this._prevView;
+    }
 	this._controller._resetToolbarOperations();
 	var app = this._controller._app;
 	app.getApptComposeController().show(item, mode);
