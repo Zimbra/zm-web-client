@@ -200,11 +200,11 @@ function(ev) {
 };
 
 ZmScheduleAssistantView.prototype.updateTime =
-function(clearSelection) {
+function(clearSelection, forceRefresh) {
     if(clearSelection) this._date = null;
     var tf = this._getTimeFrame();
     this._miniCalendar.setDate(tf.start, true);
-    this.reset(tf.start, this._attendees);    
+    this.reset(tf.start, this._attendees, forceRefresh);    
 };
 
 ZmScheduleAssistantView.prototype.addOrganizer =
@@ -258,9 +258,10 @@ function(attendee) {
 ZmScheduleAssistantView.prototype.reset =
 function(date, attendees, forceRefresh) {
     this.resizeTimeSuggestions();
+    var newDuration = this._editView.getDuration();
     var newKey = this.getFormKey(date, attendees);
     this._date = date;
-    if(newKey != this._key) {
+    if(newKey != this._key || newDuration != this._duration) {
         if(this._timeSuggestions){
             this.showCustomize(false);
             this._timeSuggestions.removeAll();
@@ -421,7 +422,7 @@ function(attendeeObj, params, emails) {
 
 ZmScheduleAssistantView.prototype.getFormKey =
 function(startDate, attendees) {
-    return startDate.getTime() + "-" + attendees.join(",");    
+    return startDate.getTime() + "-" + attendees.join(",");
 };
 
 ZmScheduleAssistantView.prototype._handleResponseFreeBusy =
@@ -522,7 +523,7 @@ function(params) {
     var endDate = new Date(startTime);
     endDate.setHours(23, 59, 0, 0);
     var endTime = endDate.getTime();
-    var duration = this._editView.getDuration();
+    var duration = this._duration = this._editView.getDuration();
 
     this._fbStat = new AjxVector();
     this._fbStatMap = {};

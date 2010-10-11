@@ -1465,7 +1465,7 @@ function(ev) {
         this._scheduleView._updateFreeBusy();
     }
     
-    if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true);
+    if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);
 };
 
 
