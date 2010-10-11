@@ -87,9 +87,9 @@
                     </div>
 
 
-                    <div class="icons button"><input type="image" name="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}" src="/zimbra/img/startup/ImgTrash.gif" value="<fmt:message key='delete'/>" onclick="return submitForm(document.getElementById('zForm'),null,this.value);"/></div>
+                    <!-- div class="icons button"><input type="image" name="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}" src="/zimbra/img/startup/ImgTrash.gif" value="<fmt:message key='delete'/>" onclick="return submitForm(document.getElementById('zForm'),null,this.value);"/></div -->
 
-                    <div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
+                    <!-- div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div -->
                     
                     <div class="select button">
                         
