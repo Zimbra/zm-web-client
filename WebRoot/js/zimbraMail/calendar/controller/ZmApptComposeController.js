@@ -290,7 +290,9 @@ function() {
 
     ZmCalItemComposeController.prototype._createToolBar.call(this);
 
-    var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+    var optionsButton = new DwtToolBarButton({id:ZmOperation.COMPOSE_OPTIONS, parent:this._toolbar});
+    optionsButton.setText(ZmMsg.options);
+    optionsButton.setImage("Preferences");
 
     var m = new DwtMenu({parent:optionsButton});
     optionsButton.setMenu(m);
