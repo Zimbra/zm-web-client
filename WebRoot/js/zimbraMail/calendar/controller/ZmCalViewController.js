@@ -2171,7 +2171,7 @@ function(ev) {
 					throw AjxMessageFormat.format(ZmMsg.errorInvalidFolder, appt.getFolder().name);
 				}
 				this._quickAddDialog.popdown();
-				appt.save();
+				appt.save(null, new AjxCallback(this, this._quickAddCallback));
 			}
 		}
 	} catch(ex) {
@@ -2182,6 +2182,11 @@ function(ev) {
 			errorDialog.popup();
 		}
 	}
+};
+
+ZmCalViewController.prototype._quickAddCallback =
+function(response) {
+    appCtxt.setStatusMsg(ZmMsg.apptCreated);
 };
 
 ZmCalViewController.prototype._quickAddMoreListener =
