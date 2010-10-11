@@ -845,6 +845,17 @@ function() {
 	this.setIcon(this._origIcon);
 };
 
+
+/**
+ * Reset the toolbar
+ *
+ * @param	{ZmButtonToolBar|ZmActionMenu}  parent  the toolbar or action menu
+ * @param	{int}   enable  number of items selected
+ */
+ZmZimletBase.prototype.resetToolbarOperations =
+function(parent, num){};
+
+
 /**
  * Saves the user properties.
  * 

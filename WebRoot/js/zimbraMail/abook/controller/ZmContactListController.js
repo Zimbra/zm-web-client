@@ -675,9 +675,11 @@ function(parent, num) {
 
 	var printOp = (parent instanceof ZmActionMenu) ? ZmOperation.PRINT_CONTACT : ZmOperation.PRINT;
 
+    
 	if (!this.isGalSearch()) {
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable(printOp, num > 0);
+        appCtxt.notifyZimlets("resetToolbarOperations",[parent, num]);
 
 		// a valid folderId means user clicked on an addrbook
 		if (this._folderId) {
@@ -689,6 +691,7 @@ function(parent, num) {
 			parent.enable([ZmOperation.TAG_MENU], (!isShare && num > 0));
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !isInTrash);
+
 
 			if (printMenuItem) {
 				var text = isShare ? ZmMsg.printResults : ZmMsg.printAddrBook;
