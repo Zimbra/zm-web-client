@@ -1322,6 +1322,11 @@ function() {
 		inputEl.onblur = AjxCallback.simpleClosure(this._handleOnBlur, this, inputEl);
 	}
 
+    if(this._subjectField) {
+        var inputEl = this._subjectField.getInputElement();
+		inputEl.onblur = AjxCallback.simpleClosure(this._handleSubjectOnBlur, this, inputEl);
+    }
+
 	inputEl = this._attInputField[ZmCalBaseItem.LOCATION].getInputElement();
 	inputEl.onkeypress = AjxCallback.simpleClosure(this._handleKeyPress, this);
     if(AjxEnv.isIE) inputEl.onkeydown = AjxCallback.simpleClosure(this._handleKeyPress, this);
@@ -1644,6 +1649,15 @@ ZmApptEditView.prototype._handleOnBlur =
 function(inputEl) {
 	this._handleAttendeeField(inputEl._attType);
 	this._activeInputField = null;
+};
+
+ZmApptEditView.prototype._handleSubjectOnBlur =
+function(inputEl) {
+	var subject = AjxStringUtil.trim(this._subjectField.getValue());
+    if(subject) {
+        var buttonText = subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
+        appCtxt.getAppViewMgr().setTabTitle(this._controller.viewId, buttonText);
+    }
 };
 
 ZmApptEditView.prototype._handleKeyPress =

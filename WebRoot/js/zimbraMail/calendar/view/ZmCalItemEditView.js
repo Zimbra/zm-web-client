@@ -515,8 +515,14 @@ function(calItem) {
 ZmCalItemEditView.prototype._populateForEdit =
 function(calItem, mode) {
 	// set subject
-	this._subjectField.setValue(calItem.getName());
-
+    var subject = calItem.getName(),
+        buttonText;
+    
+	this._subjectField.setValue(subject);
+    if(subject) {
+        buttonText = subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
+        appCtxt.getAppViewMgr().setTabTitle(this._controller.viewId, buttonText);
+    }
     if (this._hasRepeatSupport) {
         this._repeatSelect.setSelectedValue(calItem.getRecurType());
         // recurrence string
