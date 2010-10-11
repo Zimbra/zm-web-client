@@ -1002,6 +1002,10 @@ function(message, viewMode) {
 ZmCalItem.prototype.setFromSavedResponse =
 function(result) {
     this.invId = result.invId;
+    if(this.message) {
+        this.message.rev = result.rev;
+        this.message.ms = result.ms;
+    }
 };
 
 /**
