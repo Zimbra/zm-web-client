@@ -428,7 +428,8 @@ function(dialog, folderList) {
 
 ZmFilterRulesController.prototype._handleRunFilter =
 function(result) {
-	var resp = result.getResponse().ApplyFilterRulesResponse;
+	var r = result.getResponse();
+	var resp = this._outgoing ? r.ApplyOutgoingFilterRulesResponse : r.ApplyFilterRulesResponse;
 	var num = (resp && resp.m && resp.m.length)
 		? (resp.m[0].ids.split(",").length) : 0;
 	var msg = AjxMessageFormat.format(ZmMsg.filterRuleApplied, num);
