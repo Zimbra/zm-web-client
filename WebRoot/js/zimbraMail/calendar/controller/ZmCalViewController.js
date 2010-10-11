@@ -378,12 +378,13 @@ function() {
 		}
 	} else {
 		this._app._createDeferredFolders(ZmApp.CALENDAR);
-		var list = appCtxt.accountList.visibleAccounts;
+        var ac = window.parentAppCtxt || window.appCtxt;
+		var list = ac.accountList.visibleAccounts;
 		for (var i = 0; i < list.length; i++) {
 			var acct = list[i];
-			if (!appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
+			if (!ac.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
 
-			var calendars = appCtxt.getFolderTree(acct).getByType(ZmOrganizer.CALENDAR);
+			var calendars = ac.getFolderTree(acct).getByType(ZmOrganizer.CALENDAR);
 			for (var j = 0; j < calendars.length; j++) {
 				// bug: 43067: skip the default calendar for caldav based accounts
 				if (acct.isCalDavBased() && calendars[j].nId == ZmOrganizer.ID_CALENDAR) {
