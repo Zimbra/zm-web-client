@@ -24,11 +24,11 @@ a:hover{
 @media (orientation:landscape) {
 
     .wrap-dlist {
-       height: 563px;   
+       height: 613px;   
     }
 
 	.wrap-dcontent {
-       height: 563px;
+       height: 613px;
     }
 
     .wrap-dcal {
@@ -105,11 +105,11 @@ a:hover{
 
 @media (orientation:portrait) {
 	.wrap-dlist {
-       height: 820px;   
+       height: 870px;   
     }
 
     .wrap-dcontent {
-       height: 820px;
+       height: 870px;
    	}
 
     .wrap-dcal {
@@ -233,7 +233,8 @@ html, body{
 	width: 80px;
 	height: 20px;
 	float: left;
-	margin: 15px 0 0 15px;
+	/*margin: 15px 0 0 15px;*/
+	margin: 5px 0 0 10px;
 }
 
 .search input{
@@ -275,10 +276,14 @@ html, body{
 /* Toolbar Style */
 
 .toolbar{
- /*	background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left; */
+ /*	background: #7f7b6f url("/img/mobile/ipad/toolbar-bg.gif") repeat-x bottom left;
 	background-color: #E5E5E5;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E5E5E5), to(#A0A0A0));
-	background-image: -moz-linear-gradient(100% 100% 90deg, #564e3c, #A0A0A0);
+	background-image: -moz-linear-gradient(100% 100% 90deg, #564e3c, #A0A0A0); */
+	
+	background-color: #8d8d8d;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#8d8d8d), to(#454545));  /*from(#f7ecd2), to(#c8bc9e)) from: e8ddc3 to: a49479*/
+	background-image: -moz-linear-gradient(100% 100% 90deg, #8d8d8d, #454545);
 	height: 45px;
 	overflow: hidden;
 	border: none;
@@ -295,34 +300,38 @@ html, body{
 
 
 .button{
- /*	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left; */
+ /*	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left; 
 	background-color: #f6f6f6;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#CCCCCC));
-	background-image: -moz-linear-gradient(100% 100% 90deg, #f6f6f6, #CCCCCC);
+	background-image: -moz-linear-gradient(100% 100% 90deg, #f6f6f6, #CCCCCC);*/
+	
+	background-color: #bfc3c8;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bfc3c8), to(#868c98));
+	background-image: -moz-linear-gradient(100% 100% 90deg, #bfc3c8, #868c98);
 	-webkit-border-radius: 6px;
 	box-shadow: 0 1px 0 #c4c4c4;
-	-webkit-box-shadow: 0 1px 0 #c4c4c4;
+	/*-webkit-box-shadow: 0 1px 0 #c4c4c4;*/
 	height: 22px;
 	padding: 8px 4px 0 4px;
 	font-size: 12px;
 	font-weight: bold;
 	text-align: center;
-	border: 1px solid #a2a2a2;
+	/*border: 1px solid #a2a2a2; */
 }
 
 	.button:active{
 	 /* background: #7b7769 url("/img/mobile/ipad/button-selected-bg.gif") repeat-x top left; */
-		background-color: #666;
-		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#999));
-		background-image: -moz-linear-gradient(100% 100% 90deg, #666, #999);
+		background-color: #868c98;
+		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#868c98), to(#bfc3c8));
+		background-image: -moz-linear-gradient(100% 100% 90deg, #868c98, #bfc3c8);
 		color: white;
 	}
 
 		.button a, .buttonRight a, .buttonRight{
 			text-decoration: none;
-			color: #3b3b3b;
+			color: white;
 			vertical-align: middle;
-			text-shadow: #f6f6f6 0px 1px;	
+			text-shadow: #727781 0px 1px;	
 		}
 	
 		.button a:active{
@@ -332,7 +341,7 @@ html, body{
 		.button input{
 			background-color: transparent;
 			border: none;
-			color: #3b3b3b;
+			color: white;
 			font-weight: bold;
 		}		
 	
@@ -381,10 +390,10 @@ html, body{
 		background: transparent;
 		border: none;
 		width: 70px;
-		color: #3b3b3b;
+		color: white;
 		font-weight: bold;
 		margin-top: -3px !important;
-		text-shadow: #f6f6f6 0px 1px;
+		text-shadow: #727781 0px 1px;
 	}
 
 
@@ -538,8 +547,10 @@ html, body{
 .view{
 	width: 100%;
 	overflow: hidden;
-	background: transparent url("/img/mobile/ipad/pattern.jpg") top left;
-	/*background-color: #ece4d0;
+	background-color: white;
+	
+	/*background: transparent url("/img/mobile/ipad/pattern.jpg") top left;
+	background-color: #ece4d0;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#999999), to(#666666));
 	background-image: -moz-linear-gradient(100% 100% 90deg, #ece4d0, #d9ceb2);*/
 }
@@ -615,23 +626,23 @@ ul.list li{
 	
 	
 .subject{
-	color: white;
-	font-size: 18px;
+	color: black;
+	font-size: 16px;
 	font-weight: bold;
-	width: 70%;
+	/*width: 70%; */
 }
 
 .time{
-	width: 29.9%;
-	color: white;
-	text-align: right;
+	/*width: 29.9%; 
+	text-align: right;*/
+	color: black;
 	margin-top: 2px;
 }
 
 	.time a {
 		text-decoration: none;
-		color: white;
-		text-align: right;
+		color: black;
+		/*text-align: right;*/
 	}
 	
 .msgBody,.emptyBody,.calBody,.prefBody {
@@ -671,6 +682,8 @@ ul.list li{
 	letter-spacing: 1px;
 	border-bottom: 1px solid #F1EEE6;
 	padding: 6px;
+	background-color: #e5e5e5;
+	
 }
 a.accept,a.tentative,a.decline{
  /*	background: #dbd0b5 url("/img/mobile/ipad/button-bg.gif") repeat-x bottom left; */

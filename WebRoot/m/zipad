@@ -139,8 +139,10 @@
         </div>
     </div>
     
-	<div class="topbar footer">
+	<div class="toolbar footer">
+       <!--
        <div class="listViewPane" style="background-color:transparent;">		
+			< 
 			<div class="quota">
                 <c:set var="userQuota" value="0"/>
                 <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
@@ -160,7 +162,7 @@
                 </div><span>${quotaUsage}</span>
 			</div>
 		</div>		
-			
+		 	
         <div class="contentViewPane">
         <div class="userInfo alignLeft">
 				${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}
@@ -168,15 +170,21 @@
         	<div class ="alignLeft copyrights">
        		 	&copy; 2010 <a href="#">Zimbra</a>. All rights reserved.
         	</div>
+        	-->
+        	
+        	<div class="button alignLeft" style="width: 20px; margin: 5px 0 0 10px; height: 14px; padding: 4px;"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
+        	<a href="www.zimbra.com" target="_new" class="alignLeft"><div class="logo"></div></a>
         	<div class ="alignRight buttonBottom">
         		<c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:url>
        		 	<a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>
         	</div>
         </div>
+        
+        
     </div>
        
     
-	<div class="topbar">
+	<div class="topbar" style="display:none;">
 
 		<a href="www.zimbra.com" target="_new"><div class="logo"></div></a>
 
