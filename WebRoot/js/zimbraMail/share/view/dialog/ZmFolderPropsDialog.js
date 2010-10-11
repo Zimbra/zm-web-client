@@ -79,7 +79,7 @@ function(organizer) {
 	if (this._color) {
         var icon = organizer.getIcon(); 
         this._color.setImage(icon);
-        this._color.setValue(organizer.rgb);
+        this._color.setValue(organizer.color);
 	}
 
 	this._handleFolderChange();
@@ -281,7 +281,7 @@ function(event) {
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
 	this._urlEl.innerHTML = organizer.url || "";
 	if (this._color) {
-		this._color.setValue(organizer.rgb || ZmOrganizer.COLOR_VALUES[organizer.color]);
+		this._color.setValue(organizer.color || ZmOrganizer.COLOR_VALUES[organizer.color]);
 		var isVisible = (organizer.type != ZmOrganizer.FOLDER ||
 						 (organizer.type == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)));
 		this._props.setPropertyVisible(this._colorId, isVisible);
