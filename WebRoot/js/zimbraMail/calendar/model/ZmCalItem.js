@@ -472,6 +472,14 @@ function(mode) {
 };
 
 /**
+ * Gets the view mode
+ */
+ZmCalItem.prototype.getViewMode =
+function(mode) {
+	return this.viewMode;
+};
+
+/**
  * Gets the notes part. This method will walk the notesParts array looking for
  * the first part that matches given content type.
  * 
@@ -984,6 +992,16 @@ function(message, viewMode) {
 	this.getAttachments();
 
 	this._currentlyLoaded = message;
+};
+
+/**
+ * Sets the required data from saved response
+ *
+ * @param	{Object} result create/moify appt response
+ */
+ZmCalItem.prototype.setFromSavedResponse =
+function(result) {
+    this.invId = result.invId;
 };
 
 /**

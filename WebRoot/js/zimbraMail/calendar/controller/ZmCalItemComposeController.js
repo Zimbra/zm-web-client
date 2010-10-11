@@ -40,8 +40,11 @@ function() {
 };
 
 ZmCalItemComposeController.DEFAULT_TAB_TEXT = ZmMsg.appointment;
+ZmCalItemComposeController.SAVE_CLOSE = "SAVE_CLOSE";
 ZmCalItemComposeController.SEND = "SEND";
 ZmCalItemComposeController.SAVE  = "SAVE";
+ZmCalItemComposeController.APPT_MODE  = "APPT";
+ZmCalItemComposeController.MEETING_MODE  = "MEETING";
 
 // Public methods
 
@@ -295,9 +298,6 @@ function(mode) {
     if(ZmCalItem.FORWARD_MAPPING[mode]) {
         saveButton.setText(ZmMsg.send);
         saveButton.setImage("Send");
-    }else {
-        saveButton.setText(ZmMsg.save);
-        saveButton.setImage("Save");
     }
 
 	var printButton = this._toolbar.getButton(ZmOperation.PRINT);
@@ -308,10 +308,29 @@ function(mode) {
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this.viewId], {waitUntilLoaded:true});
 };
 
+ZmCalItemComposeController.prototype.updateToolbarOps =
+function(mode) {
+
+    var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
+    var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
+
+    if(mode == ZmCalItemComposeController.APPT_MODE) {
+        saveButton.setText(ZmMsg.saveClose);
+        saveButton.setImage("Save");
+        sendButton.setVisible(false);
+    }else {
+        sendButton.setVisible(true);
+        saveButton.setVisible(true);
+        saveButton.setText(ZmMsg.save);
+        saveButton.setImage("Save");
+    }
+        
+};
+
 ZmCalItemComposeController.prototype._createToolBar =
 function() {
-	
-	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];    
+
+	var buttons = [ZmOperation.SEND_INVITE, ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];
 
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
 		buttons.push(ZmOperation.ATTACHMENT);
@@ -338,6 +357,9 @@ function() {
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
 		this._toolbar.addSelectionListener(ZmOperation.ATTACHMENT, new AjxListener(this, this._attachmentListener));
 	}
+
+    var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
+    sendButton.setVisible(false);
 
 	// change default button style to toggle for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
@@ -396,8 +418,17 @@ function(calItem, attId, notifyList, force) {
 		    calItem.save(attId, callback, errorCallback, notifyList);
 	} else {
 		// bug: 27600 clean up edit view to avoid stagnant attendees
-		this._composeView.cleanup();
+		if(this.isCloseAction()) this._composeView.cleanup();
+
+        if(this._action == ZmCalItemComposeController.SAVE && !this._composeView.isDirty()) {
+            this.enableToolbar(true);                                
+        }
 	}
+};
+
+ZmCalItemComposeController.prototype.isCloseAction =
+function() {
+    return ( this._action == ZmCalItemComposeController.SEND ||  this._action == ZmCalItemComposeController.SAVE_CLOSE );
 };
 
 ZmCalItemComposeController.prototype._handleResponseSave =

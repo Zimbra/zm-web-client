@@ -244,6 +244,10 @@ function(mode) {
     }else {
         saveButton.addSelectionListener(new AjxListener(this, this._saveListener));
     }
+
+    var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
+    sendButton.removeSelectionListeners();
+    sendButton.addSelectionListener(new AjxListener(this, this._sendListener));
 };
 
 ZmApptComposeController.prototype._sendListener =
@@ -258,7 +262,7 @@ function(ev){
 
 ZmApptComposeController.prototype._saveListener =
 function(ev, force) {
-    var isMeeting = this._composeView.isMeetingAppt();
+    var isMeeting = !this._composeView.isAttendeesEmpty();
     var dlg = appCtxt.getOkCancelMsgDialog();
     if(isMeeting && !force){
         dlg.setMessage(ZmMsg.inviteNotSentMsg);
@@ -268,7 +272,7 @@ function(ev, force) {
     }else if(dlg.isPoppedUp()){
         dlg.popdown();
     }
-    this._action = ZmCalItemComposeController.SAVE;
+    this._action = isMeeting ? ZmCalItemComposeController.SAVE : ZmCalItemComposeController.SAVE_CLOSE;
     this.enableToolbar(false);
 	if (this._doSave() === false) {
 		return;
@@ -276,19 +280,15 @@ function(ev, force) {
     if(isMeeting){
         this._composeView.setApptMessage(ZmMsg.inviteNotSent);
         return;
+    }else {
+        this._app.popView(true);        
     }
-	this._app.popView(true);        
 };
 
 ZmApptComposeController.prototype._createToolBar =
 function() {
 
     ZmCalItemComposeController.prototype._createToolBar.call(this);
-
-    var btn = this._inviteAttendeesBtn = new DwtToolBarButton({id:ZmOperation.INVITE_ATTENDEES, parent:this._toolbar, index:3});
-    this._inviteAttendeesBtn.setText(ZmMsg.inviteAttendees);
-    this._inviteAttendeesBtn.setImage("ApptMeeting");
-    this._inviteAttendeesBtn.addSelectionListener(new AjxListener(this, this._inviteAttendeesListener));
 
     var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 
@@ -304,11 +304,6 @@ function() {
     mi.setChecked(true, true);
 
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
-};
-
-ZmApptComposeController.prototype._inviteAttendeesListener =
-function(){
-    this._composeView.showMeetingFields();  
 };
 
 ZmApptComposeController.prototype.setRequestResponses =
@@ -335,6 +330,18 @@ function(addrs) {
 
     return notifyList;
 }; 
+
+ZmApptComposeController.prototype.isAttendeesEmpty =
+function(appt) {
+    var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
+	var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
+	var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
+
+	var isAttendeesNotEmpty = (attendees && attendees.length > 0) ||
+							   (resources && resources.length > 0) ||
+							   (locations && locations.length > 0);
+    return !isAttendeesNotEmpty
+};
 
 ZmApptComposeController.prototype.checkConflicts =
 function(appt, attId, notifyList) {
@@ -617,7 +624,7 @@ function(appt, attId, notifyList, msgDialog) {
 ZmApptComposeController.prototype.saveCalItemContinue =
 function(appt, attId, notifyList) {
 	this._saveCalItemFoRealz(appt, attId, notifyList);
-	this._app.popView(true);
+	if(this.isCloseAction()) this._app.popView(true);
 };
 
 ZmApptComposeController.prototype.handleCheckPermissionResponseError =
@@ -819,6 +826,40 @@ function(calItem, attId, notifyList, force){
     ZmCalItemComposeController.prototype._saveCalItemFoRealz.call(this, calItem, attId, notifyList, force);    
 };
 
+ZmApptComposeController.prototype._handleResponseSave =
+function(calItem, result) {
+	if (calItem.__newFolderId) {
+		var folder = appCtxt.getById(calItem.__newFolderId);
+		calItem.__newFolderId = null;
+		this._app.getListController()._doMove(calItem, folder, null, false);
+	}
+
+    if(this.isCloseAction()) {
+        calItem.handlePostSaveCallbacks();
+	    this._composeView.cleanup();
+    }else {
+        this.enableToolbar(true);
+        var viewMode = calItem.getViewMode();
+        if(viewMode == ZmCalItem.MODE_NEW || viewMode == ZmCalItem.MODE_NEW_FROM_QUICKADD || viewMode == ZmAppt.MODE_DRAG_OR_SASH) {
+            viewMode = calItem.isRecurring() ? ZmCalItem.MODE_EDIT_SERIES : ZmCalItem.MODE_EDIT;            
+        }
+        calItem.setFromSavedResponse(result);
+        this._composeView.set(calItem, viewMode);        
+    }
+
+    appCtxt.setStatusMsg(ZmMsg.apptCreated);
+    appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success
+};
+
+ZmApptComposeController.prototype._getViewType =
+function() {
+	return ZmId.VIEW_APPOINTMENT;
+};
+
+ZmApptComposeController.prototype._resetNavToolBarButtons =
+function(view) {
+	//do nothing
+};
 
 ZmApptComposeController.prototype._clearInvalidAttendeesCallback =
 function(appt, attId, dlg) {
