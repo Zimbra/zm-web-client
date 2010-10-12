@@ -136,7 +136,7 @@ ZmBriefcaseApp.prototype._registerOrganizers =
 function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.BRIEFCASE,
 							{app            : ZmApp.BRIEFCASE,
-							 nameKey        : "folders",
+							 nameKey        : "folder",
 							 defaultFolder  : ZmOrganizer.ID_BRIEFCASE,
 							 soapCmd        : "FolderAction",
 							 firstUserId    : 256,
@@ -147,7 +147,7 @@ function() {
 							 itemsKey       : "files",
 							 treeType       : ZmOrganizer.FOLDER,
 							 views          : ["document"],
-							 folderKey      : "briefcase",
+							 folderKey      : "briefcase",                                                      
 							 mountKey       : "mountFolder",
 							 createFunc     : "ZmOrganizer.create",
 							 compareFunc    : "ZmBriefcase.sortCompare",
