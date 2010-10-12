@@ -40,9 +40,11 @@ function() {
  */
 ZmAppAlert.prototype.start =
 function() {
-	if (!this.app.isActive()) {
+    var view = appCtxt.getCurrentViewId();
+    //flash alert for all tabs but mail tab 
+    if(view!=ZmId.VIEW_CONVLIST && view!=ZmId.VIEW_TRAD && view!=ZmId.VIEW_MSG && view!=ZmId.VIEW_CONV){
 		this._getAppButton().showAlert(true);
-	}
+    }
 };
 
 /**
