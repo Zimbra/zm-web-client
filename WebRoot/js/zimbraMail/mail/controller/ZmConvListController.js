@@ -588,3 +588,17 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	// bug fix #5134 - overload to ignore resetting the selection since it is handled by setView
 	ZmListController.prototype._handleResponsePaginate.call(this, view, saveSelection, loadIndex, offset, result, true);
 };
+
+ZmConvListController.prototype.addTrustedAddr =
+function(addr, callback, errorCallback) {
+   var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+   var node = soapDoc.set("pref", addr);
+   node.setAttribute("name", "zimbraPrefMailTrustedSenderList");
+   
+   return appCtxt.getAppController().sendRequest({
+       soapDoc: soapDoc,
+       asyncMode: true,
+       callback: callback,
+       errorCallback: errorCallback
+   });
+};

@@ -51,6 +51,7 @@ AjxPackage.require("zimbraMail.mail.view.prefs.ZmAccountsPage");
 AjxPackage.require("zimbraMail.mail.view.prefs.ZmAccountTestDialog");
 AjxPackage.require("zimbraMail.mail.view.prefs.ZmMailPrefsPage");
 AjxPackage.require("zimbraMail.mail.view.prefs.ZmSignaturesPage");
+AjxPackage.require("zimbraMail.mail.view.prefs.ZmTrustedPage");
 
 AjxPackage.require("zimbraMail.im.view.prefs.ZmImGatewayControl");
 

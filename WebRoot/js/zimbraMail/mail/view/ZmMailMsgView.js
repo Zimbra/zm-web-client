@@ -656,7 +656,25 @@ function(msg, elem, aname) {
 ZmMailMsgView.prototype._createDisplayImageClickClosure =
 function(msg, idoc, id, iframe) {
 	var self = this;
-	return function() {
+	return function(ev) {
+        var target = DwtUiEvent.getTarget(ev),
+            targetId = target ? target.id : null,
+            addrToAdd = "";
+        if(targetId) {
+            if(targetId.indexOf("domain") != -1) {
+                //clicked on domain
+                addrToAdd = msg.sentByDomain;
+            }
+            else if(targetId.indexOf("email") != -1) {
+                //clicked on email
+                addrToAdd = msg.sentByAddr;
+            }
+            //Create a modifyprefs req and add the addr to modify
+            if(addrToAdd) {
+                self._trustedList.add(addrToAdd, null, true);
+                self._controller.addTrustedAddr(self._trustedList.join(","), new AjxCallback(self, self._addTrustedAddrCallback, [addrToAdd]), new AjxCallback(self, self._addTrustedAddrErrorCallback, [addrToAdd]));
+            }
+        }
 		var images = idoc.getElementsByTagName("img");
 		var onload = function() {            
 			ZmMailMsgView._resetIframeHeight(self, iframe);
@@ -761,9 +779,13 @@ function(container, html, isTextMsg, isTruncated) {
 				var subs = {
 					id: this._displayImagesId,
 					text: ZmMsg.externalImages,
-					link: ZmMsg.displayExternalImages
+					link: ZmMsg.displayExternalImages,
+					alwaysText: ZmMsg.alwaysDisplayExternalImages,
+                    domain: this._msg.sentByDomain,
+                    email: this._msg.sentByAddr,
+                    or: ZmMsg.or
 				};
-				var extImagesHtml = AjxTemplate.expand("mail.Message#InformationBar", subs);
+				var extImagesHtml = AjxTemplate.expand("mail.Message#ExtImageInformationBar", subs);
 				displayImages = Dwt.parseHtmlFragment(extImagesHtml);
 				infoBarDiv.appendChild(displayImages);
 			}
@@ -904,6 +926,35 @@ function(container, html, isTextMsg, isTruncated) {
 	this._resetIframeHeightOnTimer(ifw.getIframe());
 };
 
+ZmMailMsgView.prototype._addTrustedAddrCallback =
+function(addr) {
+    this._trustedList.add(addr, null, true);
+    appCtxt.set(ZmSetting.TRUSTED_ADDR_LIST, [this._trustedList.getArray().join(",")])
+};
+
+ZmMailMsgView.prototype._addTrustedAddrErrorCallback =
+function(addr) {
+    this._trustedList.remove(addr);
+};
+
+ZmMailMsgView.prototype._isTrustedSender =
+function(msg) {
+    if(!this._trustedList) {
+        var trustedList = appCtxt.get(ZmSetting.TRUSTED_ADDR_LIST);
+        if(trustedList) {
+            this._trustedList = AjxVector.fromArray(trustedList[0].split(","));
+        }
+        else {
+            this._trustedList = new AjxVector();
+        }
+    }
+
+    if (this._trustedList.contains(msg.sentByAddr) || this._trustedList.contains(msg.sentByDomain)){
+        return true;
+    }
+    return false;
+};
+
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
 	var acctId = appCtxt.getActiveAccount().id;
@@ -919,10 +970,11 @@ function(msg, container, callback) {
 	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
 	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
 	var sentBy = (sender && sender.address) ? sender : addr;
-	var sentByAddr = String(sentBy);
-	var sentByContact = cl	? cl.getContactByEmail((sentBy && sentBy.address ) ? sentBy.address : sentByAddr ) : null;
-	if (sentByContact && sentByContact.attr) {
-		msg.showImages = (sentByContact.attr.autoLoadRemoteImages == ZmContact.SHOW_EXT_IMG);
+	var sentByAddr = sentBy.getAddress();
+    msg.sentByAddr = sentByAddr;
+    msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@")+1);
+	if (this._isTrustedSender(msg)) {
+		msg.showImages = true;
 	}
 	var sentByIcon = cl	? (cl.getContactByEmail((sentBy && sentBy.address ) ? sentBy.address : sentByAddr ) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;

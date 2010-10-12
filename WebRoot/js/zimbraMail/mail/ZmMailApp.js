@@ -169,6 +169,8 @@ function(settings) {
 	settings.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 	settings.registerSetting("MAIL_ATTACH_VIEW_ENABLED",		{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_BLACKLIST",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST});
+    settings.registerSetting("TRUSTED_ADDR_LIST",			    {name:"zimbraPrefMailTrustedSenderList", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
+	settings.registerSetting("TRUSTED_ADDR_LIST_MAX_NUM_ENTRIES",	{name:"zimbraMailTrustedSenderListMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
 	settings.registerSetting("MAIL_BLACKLIST_MAX_NUM_ENTRIES",	{name:"zimbraMailBlacklistMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
 	settings.registerSetting("MAIL_FOLDER_COLORS_ENABLED",		{name:"zimbraPrefFolderColorEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("MAIL_FORWARDING_ADDRESS",			{name:"zimbraPrefMailForwardingAddress", type:ZmSetting.T_PREF});
@@ -336,6 +338,21 @@ function() {
 			createView: function(parent, section, controller) {
 				return controller.getFilterController(section).getFilterView();
 			}
+		},
+        TRUSTED_ADDR: {
+            parentId: "MAIL",
+			title: ZmMsg.trustedAddrs,
+			icon: "Shortcut",
+			templateId: "prefs.Pages#Trusted",
+			priority: 60,
+			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
+			createView: function(parent, section, controller) {
+				return new ZmTrustedPage(parent, section, controller);
+			},
+            manageDirty: true,
+            prefs: [
+				    ZmSetting.TRUSTED_ADDR_LIST
+                ]
 		}
 	};
 
@@ -387,6 +404,10 @@ function() {
 	});
 
 	ZmPref.registerPref("MAIL_BLACKLIST", {
+		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
+
+    ZmPref.registerPref("TRUSTED_ADDR_LIST", {
 		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 

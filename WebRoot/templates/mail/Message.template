@@ -262,6 +262,17 @@
 	</div>
 </template>
 
+<template id='mail.Message#ExtImageInformationBar'>
+	<div class='DisplayImages' id='${id}'>
+		<table width='100%' cellspacing=0 cellpadding=0>
+			<tr>
+				<td style='width:20px'><$= AjxImg.getImageHtml("Status") $></td>
+				<td>${text} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline'>${link}</a> ${alwaysText} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_domain'>${domain}</a> ${or} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_email'>${email}<a></td>
+			</tr>
+		</table>
+	</div>
+</template>
+
 <template id='mail.Message#AllAttachments'>
 	<table border=0 cellspacing=0 style='margin:5px 0px 1px 0px'>
 		<$ if (data.viewAllUrl) { $>
