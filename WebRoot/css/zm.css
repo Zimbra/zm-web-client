@@ -1606,9 +1606,10 @@ line-height:normal;
 	overflow:hidden;
 	border:1px solid;
 	border-color:#AAAAAA #333333 #333333 #AAAAAA;
+	border-radius: 4px;
 #IFDEF GECKO
 	-moz-user-select: none;
-    -moz-border-radius:2 2 2 2;
+    -moz-border-radius:4px;
 #ENDIF
     margin:0 0 0 -1;
 }
@@ -1617,11 +1618,12 @@ line-height:normal;
 .appt-selected .appt_30_body {
 	position:relative;
 	overflow:hidden;
-	border:4px solid;
+	border:2px solid;
 	border-color:#339999 #003030 #003030 #339999;
+	border-radius: 2px;
 #IFDEF GECKO
 	-moz-user-select: none;
-	-moz-border-radius:2 2 2 2;
+	-moz-border-radius:4px;
 #ENDIF
 	margin:0 -2 -2 0;
 }
