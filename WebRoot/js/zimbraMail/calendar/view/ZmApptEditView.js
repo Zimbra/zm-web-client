@@ -684,8 +684,10 @@ function(width) {
     this._showOptional = document.getElementById(this._showOptionalId);
     this._schButton = document.getElementById(this._schButtonId);
     this._schButton._editViewId = edvId;
-    this._schImage = document.getElementById(this._htmlElId + "_scheduleImage");    
+    this._schImage = document.getElementById(this._htmlElId + "_scheduleImage");
+    this._schImage._editViewId = edvId;
     Dwt.setHandler(this._schButton, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+    Dwt.setHandler(this._schImage, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 
 	this._resourcesContainer = document.getElementById(this._htmlElId + "_resourcesContainer");
 
@@ -1648,7 +1650,7 @@ function(el) {
 		if (el.checked && this._reminderSelect) {
 			this._reminderSelect.setSelectedValue(1080);
 		}
-	} else if(el.id == this._schButtonId) {
+	} else if(el.id == this._schButtonId || el.id == this._htmlElId + "_scheduleImage") {
         this._toggleInlineScheduler();
 	} else if(el.id == this._showOptionalId) {
         this._toggleOptionalAttendees();
