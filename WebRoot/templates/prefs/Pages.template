@@ -29,11 +29,18 @@ and the container element is replaced with that control.
 				<table width=100%>
 				<$ if (!appCtxt.isOffline) { $>
 					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><div id='${id}_PASSWORD' tabindex='50'></div></td>
+					</tr>
+					<tr>
 						<td class='ZOptionsLabelTop'><$=ZmMsg.loginLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_CLIENT_TYPE' tabindex='20'></div></td>
 					</tr>
 				<$ } $>
-
+				<$ if (!appCtxt.isOffline) { $>
+					<tr><td colspan=2><hr></td></tr>
+					
+				<$ } $>
 				<$ if (data.isEnabled(ZmSetting.SKIN_CHANGE_ENABLED)) { $>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.themeLabel$></td>
@@ -50,13 +57,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'><$=ZmMsg.defaultTimezone$></td>
 						<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE' tabindex='45'></div></td>
 					</tr>
-                <$ if (!appCtxt.isOffline) { $>
-					<tr><td colspan=2><hr></td></tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><div id='${id}_PASSWORD' tabindex='50'></div></td>
-					</tr>
-				<$ } $>
+                
 				</table>
 			</td>
 		</tr>
