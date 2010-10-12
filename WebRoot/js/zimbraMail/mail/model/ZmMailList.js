@@ -648,7 +648,7 @@ function(items) {
 		if (!(searchFolder && searchFolder.nId == folder)) {
 			var found = false;
 			for (var j=0; j<items.length; j++) {
-				var item = items[i];
+				var item = items[j];
 				if (item && ((item.folders && item.folders[folder]) || (item.folderId == folder))) {
 					found = true;
 					break;
