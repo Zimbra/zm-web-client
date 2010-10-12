@@ -73,6 +73,7 @@ AjxPackage.require("zimbraMail.share.controller.ZmTreeController");
 AjxPackage.require("zimbraMail.share.controller.ZmTagTreeController");
 AjxPackage.require("zimbraMail.share.controller.ZmFolderTreeController");
 AjxPackage.require("zimbraMail.share.controller.ZmSearchTreeController");
+AjxPackage.require("zimbraMail.share.controller.ZmShareTreeController");
 AjxPackage.require("zimbraMail.share.controller.ZmOverviewController");
 AjxPackage.require("zimbraMail.share.controller.ZmSearchController");
 AjxPackage.require("zimbraMail.share.controller.ZmActionController");

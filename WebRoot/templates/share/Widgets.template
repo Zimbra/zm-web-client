@@ -175,3 +175,57 @@
 	<div id='${id}_toolbar'></div>
 	<div id='${id}_listview'></div>
 </template>
+
+<template id='share.Widgets#ZmAddShareLink'>
+    <a id="${id}_addshare_link" href="#"><$=ZmMsg.sharedFoldersLink$></a>
+</template>
+
+<template id='share.Widgets#ZmShareProxyToolTip'>
+    <div style="width:250px">
+        <div class="Img${icon}" style="float:left;vertical-align:top"></div>
+        <div style="font-weight:bold;font-size:1.1em;padding:3px;">
+            <$= AjxStringUtil.htmlEncode(data.normalizedFolderPath) $>
+        </div>
+        <div style="clear:both;">
+            <table border="0" cellpadding="0" cellspacing="3">
+                <tr valign="top">
+                    <th align="right"><$= ZmMsg.ownerLabel $></th>
+                    <td><$= AjxStringUtil.htmlEncode(data.normalizedOwnerName) $></td>
+                </tr>
+                <tr valign="top">
+                    <th align="right"><$= ZmMsg.granteeLabel $></th>
+                    <td><$= AjxStringUtil.htmlEncode(data.normalizedGranteeName) $></td>
+                </tr>
+                <tr valign="top">
+                    <th align="right"><$= ZmMsg.roleLabel $></th>
+                    <td>${roleName} (${roleActions})</td>
+                </tr>
+                <tr height="4"><td></td><td></td></tr>
+                <tr valign="top">
+                    <th align="right"><$= ZmMsg.noteLabel $></th>
+                    <td><div style="margin-top:4px;font-size:.9em;">
+                            <$= AjxMessageFormat.format(
+                                    ZmMsg.sharedFoldersLinkHint,
+                                    [AjxStringUtil.htmlEncode(data.defaultMountpointName)]
+                                )
+                            $>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</template>
+
+<template id="share.Widgets#ZmShareSearchView">
+    <div class="FilterTree">
+        <div id="${id}_FILTER" tabindex="100"></div>
+        <div id="${id}_TREE" tabindex="200"></div>
+    </div>
+    <table border="0" cellspacing="3" width="100%">
+        <tr><td><$=ZmMsg.sharedFoldersFindLabel$></td>
+            <td><div id="${id}_EMAIL" tabindex="300"></div></td>
+            <td><div id="${id}_SEARCH" tabindex="400"></div></td>
+        </tr>
+    </table>
+</template>

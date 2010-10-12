@@ -646,6 +646,14 @@ function() {
 	return this._sharePropsDialog;
 };
 
+ZmAppCtxt.prototype.getShareSearchDialog = function() {
+	if (!this._shareSearchDialog) {
+		AjxDispatcher.require("Share");
+		this._shareSearchDialog = new ZmShareSearchDialog({parent:this._shell});
+	}
+	return this._shareSearchDialog;
+};
+
 /**
  * Gets the accept share dialog.
  * 

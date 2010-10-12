@@ -37,7 +37,7 @@
  * @param {Boolean}	params.isCheckedByDefault	sets the default state of "checked" tree style
  * @param {Hash}	params.allowedTypes			a hash of org types this tree may display
  * @param {Hash}	params.allowedSubTypes		a hash of org types this tree may display below top level
- * 
+ *
  * @extends		DwtTree
  */
 ZmTreeView = function(params) {
@@ -124,6 +124,8 @@ function() {
 	return "ZmTreeView";
 };
 
+ZmTreeView.prototype.SHARE_LINK_TEMPLATE = "share.Widgets#ZmAddShareLink";
+
 /**
  * Populates the tree view with the given data and displays it.
  *
@@ -141,8 +143,9 @@ ZmTreeView.prototype.set =
 function(params) {
 	this._showUnread = params.showUnread;
 	this._dataTree = params.dataTree;
+    this._newButton = params.newButton;
 
-	this.clear();
+	this.clearItems();
 
 	// create header item
 	var root = this._dataTree.root;
@@ -154,8 +157,8 @@ function(params) {
 		imageInfo:			imageInfo,
 		id:					ZmId.getTreeItemId(this.overviewId, null, this.type),
 		button:				isMultiAcctSubHeader ? null : params.newButton,
-		dndScrollCallback:	this._overview._dndScrollCallback,
-		dndScrollId:		this._overview._scrollableContainerId,
+		dndScrollCallback:	this._overview && this._overview._dndScrollCallback,
+		dndScrollId:		this._overview && this._overview._scrollableContainerId,
 		selectable:			(appCtxt.multiAccounts && this.type != ZmOrganizer.SEARCH && this.type != ZmOrganizer.TAG)
 	});
 	ti._isHeader = true;
@@ -181,6 +184,32 @@ function(params) {
 	if (!appCtxt.multiAccounts) {
 		this.addSeparator();
 	}
+
+    // TODO: Find a better way to indicate which trees show the share link 
+    var addShareLink =
+        appCtxt.get(ZmSetting.SHARING_ENABLED) && 
+        (
+            this.type == ZmOrganizer.FOLDER   ||
+            this.type == ZmOrganizer.ADDRBOOK ||
+            this.type == ZmOrganizer.CALENDAR ||
+            this.type == ZmOrganizer.TASKS    ||
+            this.type == ZmOrganizer.BRIEFCASE
+        )
+    ;
+    if (addShareLink) {
+        var item = new DwtTreeItem({
+            parent:this._treeItemHash[root.id],
+            deferred:false // NOTE: Needed so we can grab link element
+        });
+        item.setImage("Blank_16");
+        item.enableSelection(false);
+        item.showCheckBox(false);
+
+        var id = item.getHTMLElId();
+        item.setText(AjxTemplate.expand(this.SHARE_LINK_TEMPLATE, id));
+        var linkEl = document.getElementById(id+"_addshare_link");
+        linkEl.onclick = AjxCallback.simpleClosure(this._handleAddShareLink, this);
+    }
 
 	if (appCtxt.getSkinHint("noOverviewHeaders") ||
 		this._hideHeaderTreeItem())
@@ -420,8 +449,8 @@ function(parentNode, organizer, index, noTooltips, omit) {
 					text:					parentOrganizer.getName(),
 					imageInfo:				parentOrganizer.getIconWithColor(),
 					forceNotifySelection:	true,
-					dndScrollCallback:		this._overview._dndScrollCallback,
-					dndScrollId:			this._overview._scrollableContainerId,
+					dndScrollCallback:		this._overview && this._overview._dndScrollCallback,
+					dndScrollId:			this._overview && this._overview._scrollableContainerId,
 					id:						ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
 				});
 				parentNode.setData(Dwt.KEY_ID, parentOrganizer.id);
@@ -435,8 +464,8 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			parent:				parentNode,
 			index:				index,
 			text:				organizer.getName(this._showUnread),
-			dndScrollCallback:	this._overview._dndScrollCallback,
-			dndScrollId:		this._overview._scrollableContainerId,
+			dndScrollCallback:	this._overview && this._overview._dndScrollCallback,
+			dndScrollId:		this._overview && this._overview._scrollableContainerId,
 			imageInfo:			organizer.getIconWithColor(),
 			id:					ZmId.getTreeItemId(this.overviewId, organizer.id)
 		};
@@ -572,7 +601,7 @@ function(params) {
 ZmTreeView.prototype._getNextTreeItem =
 function(next) {
 	var nextItem = DwtTree.prototype._getNextTreeItem.apply(this, arguments);
-	return nextItem || this._overview._getNextTreeItem(next, this);
+	return nextItem || (this._overview && this._overview._getNextTreeItem(next, this));
 };
 
 ZmTreeView.prototype._hideHeaderTreeItem =
@@ -595,4 +624,60 @@ function() {
 		if (this.type == ZmOrganizer.TAG)		{ return "TagStack"; }
 	}
 	return null;
+};
+
+ZmTreeView.prototype._handleAddShareLink = function(htmlEvent) {
+    try {
+        var dialog = appCtxt.getShareSearchDialog();
+        var addCallback = new AjxCallback(this, this._handleAddShare);
+        dialog.popup(this.type, addCallback);
+    }
+    finally {
+        // make sure link is not followed, no matter what!
+        return false;
+    }
+};
+
+ZmTreeView.prototype._handleAddShare = function() {
+    var dialog = appCtxt.getShareSearchDialog();
+    var shares = dialog.getShares();
+    dialog.popdown();
+    if (shares.length == 0) return;
+
+    AjxDispatcher.require("Share");
+    var requests = [];
+    for (var i = 0; i < shares.length; i++) {
+        var share = shares[i];
+        var name = share.folderPath.substr(1).replace("/"," ");
+        requests.push({
+            _jsns: "urn:zimbraMail",
+            link: {
+                l: ZmOrganizer.ID_ROOT,
+                name: ZmShare.getDefaultMountpointName(share.ownerName, name),
+                view: share.view,
+                zid: share.ownerId,
+                rid: share.folderId
+            }
+        });
+        var params = {
+            jsonObj: {
+                BatchRequest: {
+                    _jsns: "urn:zimbra",
+                    CreateMountpointRequest: requests
+                }
+            },
+            asyncMode: true,
+            callback: new AjxCallback(this, this._handleAddShareResponse),
+            errorCallback: new AjxCallback(this, this._handleAddShareError)
+        };
+        appCtxt.getAppController().sendRequest(params);
+    }
+};
+
+ZmTreeView.prototype._handleAddShareResponse = function(resp) {
+    // TODO
+};
+
+ZmTreeView.prototype._handleAddShareError = function(resp) {
+    // TODO
 };

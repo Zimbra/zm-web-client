@@ -48,6 +48,7 @@ ZmEvent.S_PICKER		= "PICKER";
 ZmEvent.S_SEARCH		= "SEARCH";
 ZmEvent.S_SETTING		= "SETTING";
 ZmEvent.S_SETTINGS		= "SETTINGS";
+ZmEvent.S_SHARE         = "SHARE";
 ZmEvent.S_MOUNTPOINT	= "MOUNTPOINT";
 ZmEvent.S_ZIMLET		= "ZIMLET";
 

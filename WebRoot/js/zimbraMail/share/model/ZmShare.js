@@ -320,6 +320,13 @@ ZmShare._XML = null;
 
 // Utility methods
 
+ZmShare.getDefaultMountpointName = function(owner, name) {
+    if (!ZmShare._defaultNameFormatter) {
+        ZmShare._defaultNameFormatter = new AjxMessageFormat(ZmMsg.shareNameDefault);
+    }
+    return ZmShare._defaultNameFormatter.format([owner, name]);
+};
+
 /**
  * Gets the role name.
  * 
@@ -426,7 +433,7 @@ function() {
 ZmShare.prototype.setPermissions =
 function(perm) {
 	this.link.perm = perm;
-	this.link.role = ZmShare._getRoleFromPerm(perm);
+	this.link.role = ZmShare.getRoleFromPerm(perm);
 };
 
 /**
@@ -1056,7 +1063,7 @@ function(mode) {
  */
 ZmShare.prototype._createContent =
 function(formatter) {
-	var role = ZmShare._getRoleFromPerm(this.link.perm);
+	var role = ZmShare.getRoleFromPerm(this.link.perm);
 	var params = [
 		this.link.name, 
 		"(" + ZmShare._getFolderType(this.link.view) + ")",
@@ -1068,11 +1075,7 @@ function(formatter) {
 	return formatter.format(params);
 };
 
-/**
- * @private
- */
-ZmShare._getRoleFromPerm =
-function(perm) {
+ZmShare.getRoleFromPerm = function(perm) {
 	if (!perm) { return ZmShare.ROLE_NONE; }
 
 	if (perm.indexOf(ZmShare.PERM_ADMIN) != -1) {
@@ -1087,6 +1090,12 @@ function(perm) {
 
 	return ZmShare.ROLE_NONE;
 };
+
+/**
+ * Backwards compatibility.
+ * @private
+ */
+ZmShare._getRoleFromPerm = ZmShare.getRoleFromPerm;
 
 /**
  * Revokes all grants for the given zid (one whose account has been

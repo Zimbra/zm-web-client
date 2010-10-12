@@ -1474,6 +1474,15 @@ function() {
 							 displayOrder:		300
 							});
 
+    ZmOrganizer.registerOrg(ZmOrganizer.SHARE, {
+        orgClass:       "ZmShareProxy",
+        treeController: "ZmShareTreeController",
+        labelKey:       "sharedFoldersHeader",
+        compareFunc:	"ZmFolder.sortCompare",
+        displayOrder:	101, // NOTE: Always show shares below primary folder tree
+        hideEmpty:		false
+    });
+
 	ZmOrganizer.registerOrg(ZmOrganizer.TAG,
 							{app:				ZmApp.MAIN,
 							 nameKey:			"tag",

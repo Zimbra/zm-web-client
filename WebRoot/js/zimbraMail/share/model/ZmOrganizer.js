@@ -112,6 +112,7 @@ ZmOrganizer = function(params) {
 // global organizer types
 ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
+ZmOrganizer.SHARE               = ZmEvent.S_SHARE;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 
@@ -1657,6 +1658,8 @@ function () {
 	return Boolean(this.url);
 };
 
+/** Returns true if organizer has feeds. */
+ZmOrganizer.prototype.hasFeeds = function() { return false; };
 
 /**
  * Checks if this folder maps to a datasource. If type is given, returns

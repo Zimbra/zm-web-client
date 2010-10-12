@@ -4431,3 +4431,19 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	font-size: 10pt;
 	text-align: center;
 }
+
+.ZmShareSearchView {
+    margin: 4px;
+}
+.ZmShareSearchDialog .FilterTree {
+    @TreeContainer@
+    @NormalInsetBorder@
+    @BoxPadding@
+}
+.ZmShareSearchDialog .FilterTree INPUT {
+    width: 100%;
+    margin-bottom: 4px;
+}
+.ZmShareSearchDialog .ZmShareTreeView {
+    height: 140px;
+}

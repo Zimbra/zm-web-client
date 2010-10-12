@@ -13,7 +13,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmMailFolderTreeController = function() {
+ZmMailFolderTreeController = function(type, dropTgt) {
+    if (arguments.length == 0) return;
 	ZmFolderTreeController.apply(this, arguments);
 };
 ZmMailFolderTreeController.prototype = new ZmFolderTreeController;
