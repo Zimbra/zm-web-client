@@ -369,7 +369,7 @@ function(ev) {
 	var params = {
 		treeIds:		[ZmOrganizer.FOLDER],
 		title:			ZmMsg.chooseFolder,
-		overviewId:		this.toString(),
+		overviewId:		this.toString() + (this._outgoing ? "_outgoing":"_incoming"),
 		description:	ZmMsg.chooseFolderToFilter,
 		skipReadOnly:	true,
 		hideNewButton:	true,
