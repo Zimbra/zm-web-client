@@ -279,9 +279,12 @@ function(ev) {
 		}
 		if (needsSort) {
 			var col = Dwt.byId(this._currentColId);
-			var hdr = col && this.getItemFromElement(col);
-			if (hdr)
+			var hdr = (col && this.getItemFromElement(col)) || this._headerHash[ZmItem.F_SORTED_BY] || null;
+			if (hdr) {
+				this._saveState({scroll:true,selection:true,focus:true});
 				this._sortColumn(hdr, this._bSortAsc);
+				this._restoreState();
+			}
 		}
 		if (ev.batchMode) {
 			this._fixAlternation(0);
@@ -1289,6 +1292,5 @@ function() {
 	if (s.rowHeight) {
 		this._listDiv.scrollTop = s.scrollTop * (this._rowHeight / s.rowHeight);
 	}
-
 	this._state = {};
 };
