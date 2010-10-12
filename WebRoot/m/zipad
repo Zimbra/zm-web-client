@@ -127,7 +127,7 @@
 <meta content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width" name="viewport">
 <script type="text/javascript">window.onerror=function(m,u,l){if(window.console){window.console.log("An error occured in: "+u+"\n{\n\tmsg: "+m+",\n\tline: "+l+"\n}");}return false;};</script>
 <c:if test="${empty djs or not djs}"><script type="text/javascript">window.currentUrl='<c:url value="${currentUrl}"><c:param name="ajax" value="true"/></c:url>';<c:import url="/m/mojs${dbg ? '?dev=1':''}"/></script></c:if>
-<link href="<c:url value='/css/iphone-cal,ipad.css'/>" type="text/css" rel="stylesheet"/>
+<link href="<c:url value='/css/ipad.css'/>" type="text/css" rel="stylesheet"/>
 </head>
 
 <body>
@@ -142,8 +142,8 @@
 	<div class="toolbar footer">
        <!--
        <div class="listViewPane" style="background-color:transparent;">		
-			< 
 			<div class="quota">
+
                 <c:set var="userQuota" value="0"/>
                 <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
                 <c:if test="${max != 0}">
@@ -172,13 +172,12 @@
         	</div>
         	-->
         	
-        	<div class="button alignLeft" style="width: 20px; margin: 5px 0 0 10px; height: 14px; padding: 4px;"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
+       <div class="button alignLeft" style="width: 20px; margin: 5px 0 0 10px; height: 14px; padding: 4px;"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
         	<a href="www.zimbra.com" target="_new" class="alignLeft"><div class="logo"></div></a>
         	<div class ="alignRight buttonBottom">
         		<c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:url>
        		 	<a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>
         	</div>
-        </div>
         
         
     </div>
@@ -198,12 +197,12 @@
 		
 
         <div class="search alignRight">
-        <form method="post" accept-charset="UTF-8" action="${context_url}" onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
-            <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-            <input type="hidden" name="st" id="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>
-            <input type="hidden" name="search" value="1"/>
-            <input type="search" id="sq" name="sq" placeholder="Search..." onclick="this.value=''">
-        </form>
+            <form method="post" accept-charset="UTF-8" action="${context_url}" onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
+                <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+                <input type="hidden" name="st" id="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>
+                <input type="hidden" name="search" value="1"/>
+                <input type="search" id="sq" name="sq" placeholder="Search..." onclick="this.value=''">
+            </form>
         </div>
 
 
@@ -256,8 +255,8 @@
             ${response}
       </div>
 	  
-	  <div class="listViewPane" id="conv-view-list" style="display:none;"></div>
-       		
+	  <div class="listViewPane" id="folder-list" style="display:none;"></div>
+
       <div class="contentViewPane" id="view-content" style="display:none;"></div>
         
       <div class="contentViewPane" id="static-content">

@@ -790,10 +790,10 @@ var initListScroll = function () {
     return listScroll;
 };
 
-var initConvListScroll = function () {
-	if($('conv-view-dlist')) {
-    	$('conv-view-dlist').addEventListener('touchmove', function(e){ e.preventDefault(); });
-    	listConvListScroll = new iScroll('conv-view-dlist',{ checkDOMChanges: false, desktopCompatibility: true });
+var initFldrListScroll = function () {
+	if($('folder-dlist')) {
+    	$('folder-dlist').addEventListener('touchmove', function(e){ e.preventDefault(); });
+    	listConvListScroll = new iScroll('folder-dlist',{ checkDOMChanges: false, desktopCompatibility: true });
 	}
 };
 
@@ -881,6 +881,10 @@ ZmiPad.processScript = function(id) {
     }
 };
 
+ZmiPad.insertAfter = function(parent, node, referenceNode) {
+  parent.insertBefore(node, referenceNode.nextSibling);
+};
+
 /*
 ZmiPadMail to process all Mail responses
  */
@@ -891,16 +895,12 @@ function ZmiPadMail() {
 ZmiPadMail.processResponse = function (respData, url) {
 
     ZmiPad.initColumnView();
-    $("conv-view-list").style.display = "none";
-    
-    if(ZmiPad.getParamFromURL("st",url) == "conversation" && (ZmiPad.getParamFromURL("hc",url) == "1" || ZmiPad.getParamFromURL("mview",url) == "1")) {
-		$("conv-view-list").style.display = "block";
-    }
-    
+
+    $("folder-list").style.display = "none";
+
     if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1)  && (url.indexOf('hc=1') == -1)) {
 
         $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
-        if(ZmiPad.getParamFromURL("mview",url) == "1") { $(ZmiPad.ID_VIEW_LIST).style.display = "none"; }
         if(url.indexOf('action=view') != -1) ZmiPad.processScript(ZmiPad.ID_VIEW_CONTENT);
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
         $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
@@ -920,13 +920,20 @@ ZmiPadMail.processResponse = function (respData, url) {
 
         $('compose-body').innerHTML = respData;
         ZmiPad.processScript('compose-body');
+        $("folder-list").style.display = "block";
+
+        $(ZmiPad.ID_VIEW_LIST).style.display="none";
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";      
         $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+
         toggleCompose('compose-pop','veil');
                
     } else if(ZmiPad.getParamFromURL("doFolderAction", url) == "1") {
 		toggleCompose('compose-pop','veil');
-		$(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
+		$("folder-list").innerHTML = respData;
+        $("folder-list").style.display = "block";
+
+        $(ZmiPad.ID_VIEW_LIST).style.display="none";    
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
         $("sq").blur();
         initListScroll();
@@ -934,6 +941,7 @@ ZmiPadMail.processResponse = function (respData, url) {
 
         $('compose-body').innerHTML = respData;
         ZmiPad.processScript('compose-body');
+
         if(ZmiPad.getParamFromURL("compose",url) != "new") {
           if($(ZmiPad.ID_VIEW_CONTENT).style.display == "none") { 
           	$(ZmiPad.ID_VIEW_STATIC).style.display = "block"; 
@@ -942,10 +950,7 @@ ZmiPadMail.processResponse = function (respData, url) {
           $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";      
           $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
         }
-        if(ZmiPad.getParamFromURL("mview", url) == "1") {
-        	$(ZmiPad.ID_VIEW_LIST).style.display = "none";
-        	$("conv-view-list").style.display = "block";
-        }
+
         toggleCompose('compose-pop','veil');
         initComposeAutoComplete();
 
@@ -956,47 +961,23 @@ ZmiPadMail.processResponse = function (respData, url) {
         
         setTimeout(function(){listScroll.refresh();}, 1000);
         
-    } else if(ZmiPad.getParamFromURL("st",url) == "conversation" && ZmiPad.getParamFromURL("isto",url) != "") {    //isto:iscroll to which element 
-		$("conv-view-list").style.display = "none";
-		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
-        $("sq").blur();
-        //initListScroll();
-        if(selectedConvId != null) {
-	        var lastConvId = "conv" + selectedConvId;
-	        
-	        if(lastConvId != ZmiPad.getParamFromURL("isto",url)) {
-	        	$("dlist-view").removeChild($(lastConvId));
-	        }
-	        
-	        selectedConvId = null;
-        }
-        $(ZmiPad.ID_VIEW_LIST).style.display = "block";
-        
-        if($(ZmiPad.getParamFromURL("isto",url))) {
-        	listScroll.scrollToElement($(ZmiPad.getParamFromURL("isto",url)));
-        }
-        
     } else {
     	if(ZmiPad.getParamFromURL("st",url) == "conversation" && (ZmiPad.getParamFromURL("hc",url) == "1" || ZmiPad.getParamFromURL("mview",url) == "1")) {
-    		$("conv-view-list").innerHTML = respData;
-  			$("conv-view-list").style.display = "block";
-  			
-    		$(ZmiPad.ID_VIEW_LIST).style.display = "none";
+            var sConvId = ZmiPad.getParamFromURL("cid",url);
+            $("list"+sConvId).innerHTML = respData;
+            setTimeout(function(){listScroll.refresh();}, 1000);
+    	} else if(ZmiPad.getParamFromURL("st",url) == "folders") {
+            $("folder-list").innerHTML = respData;
+            $("folder-list").style.display = "block";
+
+            $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
     		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
-    		
-    		$(ZmiPad.ID_VIEW_STATIC).style.display = "block";
-    		
-    		if(selectedConvId == null) {
-    			selectedConvId = ZmiPad.getParamFromURL("cid",url);
-    		}
-    		
-    		initConvListScroll();
-    		
-    	} else {
+            $(ZmiPad.ID_VIEW_LIST).style.display="none";
+
+        } else {
     		$(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
     		$(ZmiPad.ID_VIEW_STATIC).style.display = "block";
     		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
-    		$("conv-view-list").style.display = "none";
     		initListScroll();
     	}
     	
@@ -1026,7 +1007,6 @@ function ZmiPadContacts() {
 ZmiPadContacts.processResponse = function (respData, url) {
 
     ZmiPad.initColumnView();
-	$("conv-view-list").style.display = "none";
 	
     if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1) && (url.indexOf('hc=1') == -1)) {
         $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
@@ -1076,7 +1056,6 @@ function ZmiPadCal() {
 
 ZmiPadCal.processResponse = function (respData, url) {
     ZmiPad.initMainView();
-    $("conv-view-list").style.display = "none";
     
     if(ZmiPad.getParamFromURL("st",url) == "newappt") {
         $('compose-body').innerHTML = respData;

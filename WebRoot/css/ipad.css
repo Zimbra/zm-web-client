@@ -24,11 +24,11 @@ a:hover{
 @media (orientation:landscape) {
 
     .wrap-dlist {
-       height: 613px;   
+       height: 570px; /*changed for new ui changes*/
     }
 
 	.wrap-dcontent {
-       height: 613px;
+       height: 570px;
     }
 
     .wrap-dcal {
@@ -60,7 +60,7 @@ a:hover{
     }
     
 	.view{
-		height: 640px;
+		height: 665px;
 	}
 	
 	.composeBox{
@@ -105,11 +105,11 @@ a:hover{
 
 @media (orientation:portrait) {
 	.wrap-dlist {
-       height: 870px;   
+       height: 825px;   
     }
 
     .wrap-dcontent {
-       height: 870px;
+       height: 825px;
    	}
 
     .wrap-dcal {
@@ -140,7 +140,7 @@ a:hover{
     }
 
 	.view{
-		height: 896px;
+		height: 916px;
 	}
 	
 	.composeBox{
@@ -241,7 +241,7 @@ html, body{
 	-webkit-border-radius: 12px;
 	outline: none;
 	padding: 4px 10px;
-	width: 98%;
+	width: 100%;
 	font-size: 12px;
 	background-color: white;
     color: #333;
@@ -384,7 +384,20 @@ html, body{
 	float: right;
 	margin-right: 10px;
 	width: 70px;
+    position: relative;
 }
+
+    .menu{
+        position: absolute;
+        top: 20px;
+        left: 5px;
+        -webkit-border-radius: 10px;
+        background-color: gray;
+        z-index:15;
+        width: 200px;
+        height: 300px;
+        border: 1px solid black;
+    }
 
 	.select select{
 		background: transparent;
@@ -645,7 +658,7 @@ ul.list li{
 		/*text-align: right;*/
 	}
 	
-.msgBody,.emptyBody,.calBody,.prefBody {
+/*.msgBody,.emptyBody,.calBody,.prefBody {
     background-color: white;
     -webkit-border-radius: 12px;
     margin: 10px ;
@@ -653,7 +666,7 @@ ul.list li{
     overflow: auto;
     word-break: break-all;
     -webkit-box-shadow: 2px 2px 3px #666;
-}
+} */
 
 .emptyBody{
 	text-transform: capitalize;
