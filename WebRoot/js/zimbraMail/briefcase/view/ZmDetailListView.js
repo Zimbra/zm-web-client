@@ -196,11 +196,23 @@ function(item, colIdx) {
         html[idx++] = "</center></td>";
     }
 
+    var subject;
+    if(item.isFolder){
+        subject = AjxStringUtil.htmlEncode(item.name);
+    }else if(item.isRevision){
+        subject = ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + item.subject );
+    }else{
+        if(parseInt(item.version) == 1)
+            subject = AjxStringUtil.htmlEncode(item.name);
+        else
+            subject = AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version])
+    }
+
 	html[idx++] = "<td style='vertical-align:middle;' width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
 	html[idx++] = AjxImg.getImageHtml(item.getIcon());
 	html[idx++] = "</center></td>";
 	html[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_SUBJECT) + "'>";
-    html[idx++] = "&nbsp;"+  ( item.isFolder ? AjxStringUtil.htmlEncode(item.name) : ( item.isRevision ? ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + item.subject ) : AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version])));
+    html[idx++] = "&nbsp;"+ subject;
 	html[idx++] = "</td>";
 
     html[idx++] = "<td style='vertical-align:middle;text-align:left;' width=40 id='" + this._getFieldId(item, ZmItem.F_SIZE) + "'>";
