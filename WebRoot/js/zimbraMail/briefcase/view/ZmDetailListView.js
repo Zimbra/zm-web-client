@@ -279,11 +279,21 @@ function(item, revisions){
 };
 
 ZmDetailListView.prototype.collapse =
-function(item){
+function(item, clear){
      var rowIds = this._itemRowIdList[item.id];
      this._showRows(rowIds, false);
      this._setImage(item, ZmItem.F_EXPAND, "NodeCollapsed");
 	 this._expanded[item.id] = false;
+     if(clear){
+         this._itemRowIdList[item.id] = null;
+     }
+};
+
+ZmDetailListView.prototype.refreshItem =
+function(item){
+     if(this._expanded[item.id]){
+         var rowIds = this._itemRowIdList[item.id];
+     }
 };
 
 ZmDetailListView.prototype._showRows =

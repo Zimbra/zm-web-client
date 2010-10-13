@@ -59,7 +59,7 @@ ZmBriefcaseController = function(container, app) {
     this._listeners[ZmOperation.DISCARD_CHECKOUT] = new AjxListener(this, this._handleDiscardCheckout);    
     //this._listeners[ZmOperation.VERSION_HISTORY] = new AjxListener(this, this.showVersionHistory);
     this._listeners[ZmOperation.DELETE_VERSION] = new AjxListener(this, this._delVersionListener);
-    this._listeners[ZmOperation.RESTORE_VERSION] = new AjxListener(this, this._restoreVersionListener);
+    this._listeners[ZmOperation.RESTORE_VERSION] = new AjxListener(this, this._restoreVerListener);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
@@ -528,6 +528,19 @@ function(ev) {
 	if (op) {
 		op.setEnabled(item && item.isWebDoc() && !item.isRevision);
 	}
+};
+
+ZmBriefcaseController.prototype._delVersionListener =
+function(){
+    var view = this._parentView[this._currentView];
+    view._deleteVerListener();
+};
+
+ZmBriefcaseController.prototype._restoreVerListener =
+function(){
+    var view = this._parentView[this._currentView];
+    view._restoreVerListener();
+
 };
 
 //Versioning

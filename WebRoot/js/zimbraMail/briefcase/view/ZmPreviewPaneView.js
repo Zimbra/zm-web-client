@@ -386,6 +386,48 @@ function(rev){
     return ( rev.id +'_'+(rev.version||rev.ver));    
 };
 
+ZmPreviewPaneView.prototype._deleteVerListener =
+function(){
+    var items = this._detailListView.getSelection();
+    if(!items || items.length == 0) return;
+    var verItem = items[0];
+    this.deleteVersion(verItem);
+};
+
+ZmPreviewPaneView.prototype._restoreVerListener =
+function(){
+    var items = this._detailListView.getSelection();
+    if(!items || items.length == 0) return;
+    var verItem = items[0];
+    this.restoreVersion(verItem);
+};
+
+ZmPreviewPaneView.prototype.restoreVersion =
+function(verItem){
+    if(verItem.isRevision){
+        var item =  verItem.parent;
+        if(item && item.version != verItem.revision ){
+            item.restoreVersion(verItem.version, new AjxCallback(this, this.refreshItem, item));
+        }
+    }
+};
+
+ZmPreviewPaneView.prototype.deleteVersion =
+function(verItem){
+    if(verItem.isRevision){
+        var item =  verItem.parent;
+        if(item && item.version != verItem.revision ){
+            item.deleteVersion(verItem.version, new AjxCallback(this, this.refreshItem, item));
+        }
+    }
+};
+
+ZmPreviewPaneView.prototype.refreshItem =
+function(item){
+    this._detailListView.collapse(item, true);    
+    this._expand(item);
+};
+
 
 //ZmPreviewView
 
