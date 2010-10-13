@@ -236,6 +236,9 @@ function(wHrsString) {
                     (startDayIdx < curDayIdx  && endDayIdx == curDayIdx)) {
                 //Case 2 working time starts prev day and ends on current day
                 startDayIdx = idx-1;
+                if(startDayIdx < 0) {
+                   startDayIdx = 6;
+                }
                 setWorkingDay(startDayIdx, startDate.getHours() + "" + startDate.getMinutes(), "2400");
                 setWorkingDay(idx, "0000", endDate.getHours() + "" + endDate.getMinutes());
             }
@@ -243,6 +246,9 @@ function(wHrsString) {
                     (startDayIdx == curDayIdx  && endDayIdx > curDayIdx)) {
                 //Case 3 working time starts current day and ends on next day
                 endDayIdx = idx+1;
+                if(endDayIdx > 6) {
+                   endDayIdx = 0; 
+                }
                 setWorkingDay(endDayIdx, "0000", endDate.getHours() + "" + endDate.getMinutes());
                 setWorkingDay(idx, startDate.getHours() + "" + startDate.getMinutes(), "2400");
             }
@@ -266,8 +272,7 @@ function(wHrsString) {
                 if(!isWorkingDay(idx)) {
                     setNonWorkingDay(idx);
                 }
-            }
-
+            }            
         }
         else {
             //There is no timezone diff, client and server are in the same timezone
