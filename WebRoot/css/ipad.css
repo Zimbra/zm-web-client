@@ -101,6 +101,14 @@ a:hover{
 	.contentViewPane{
 		width: 63.9%;
 	}
+	
+	.menu{
+	    left: 215px;
+	}
+	
+	.arrowHead{
+		left: 88px;	
+	}
 }
 
 @media (orientation:portrait) {
@@ -180,6 +188,14 @@ a:hover{
 	.contentViewPane{
 		width: 59.9%;
 	}
+	
+	.menu{
+	    left: 155px;
+	}
+	
+	.arrowHead{
+		left: 88px;
+	}
 }
 
 
@@ -237,11 +253,23 @@ html, body{
 	margin: 5px 0 0 10px;
 }
 
+.searchBar {
+ /*	background: #dbd0b5 url("/img/mobile/ipad/topbar-bg.gif") repeat-x top left; */
+	background-color: #fcfdfc;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fcfdfc), to(#c5c4c9));  /*from(#f7ecd2), to(#c8bc9e)) from: e8ddc3 to: a49479*/
+	background-image: -moz-linear-gradient(100% 100% 90deg, #fcfdfc, #c5c4c9);
+	height: 40px;
+	overflow: hidden;
+	color: #5f5a4a; 
+
+}
+
+
 .search input{
 	-webkit-border-radius: 12px;
 	outline: none;
 	padding: 4px 10px;
-	width: 100%;
+	width: 94%;
 	font-size: 12px;
 	background-color: white;
     color: #333;
@@ -384,20 +412,7 @@ html, body{
 	float: right;
 	margin-right: 10px;
 	width: 70px;
-    position: relative;
 }
-
-    .menu{
-        position: absolute;
-        top: 20px;
-        left: 5px;
-        -webkit-border-radius: 10px;
-        background-color: gray;
-        z-index:15;
-        width: 200px;
-        height: 300px;
-        border: 1px solid black;
-    }
 
 	.select select{
 		background: transparent;
@@ -408,6 +423,45 @@ html, body{
 		margin-top: -3px !important;
 		text-shadow: #727781 0px 1px;
 	}
+
+.menu{
+    position: absolute;
+    top: 55px;
+    -webkit-border-radius: 6px;
+    background-color: #808691;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 18%, from(#808691), to(#242836));
+    z-index:15;
+    width: 200px;
+    min-height: 160px;
+    padding: 6px;
+}
+
+.arrowBox{
+	position: relative;
+}
+	
+	.arrowHead{
+		color: #808691;
+		position: absolute;
+		top: -21px;
+		z-index: 16;
+		font-size: 20px;
+	}
+
+.menuButton{
+	background-color: white;
+	background-image: -webkit-gradient(linear, 0% 50%, 0% 59%, from(#FFFFFF), to(#EBEFF5));
+	font-size: 14px;
+	font-weight: bold;
+	width: 98%;
+	padding: 10px;
+	-webkit-border-radius: 4px;
+	text-shadow: #fff 0px 1px;
+	text-transform: uppercase;
+	display: inline-block;
+	margin-bottom: 5px;
+	border: none;
+}
 
 
 .icons{
@@ -482,7 +536,7 @@ html, body{
 	font-size: 12px;
 	font-weight: bold;
 	text-align: center;
-	margin-left: 8px;	
+	margin: auto;	
 }
 
 		.moreButton:active{
@@ -521,8 +575,8 @@ html, body{
 	}
 	
 	.quota{
-		color: #DDDDDD;
-		font-size: 10px !important;
+		color: #999;
+		font-size: 11px !important;
 	}
 	
 .userInfo{
@@ -614,7 +668,17 @@ ul.list li{
     overflow:hidden;
 }
 
+.convView{
+	padding-left: 10px;
+	background-color: #b0f1c5;
+}
+	.convView .list-row, .convView .list-row-unread{
+		background-color: #f5f5f5;
+	}
 
+.cushion{
+	padding: 10px 10px 0;
+}	
 .checkBox{
 	width: 5%;
 }
@@ -635,7 +699,6 @@ ul.list li{
 		padding: 0 !important;
 		margin-bottom: 0 !important;
 	}
-	
 	
 	
 .subject{
