@@ -941,7 +941,7 @@ ZmMailMsgView.prototype._isTrustedSender =
 function(msg) {
     if(!this._trustedList) {
         var trustedList = appCtxt.get(ZmSetting.TRUSTED_ADDR_LIST);
-        if(trustedList) {
+        if(trustedList && trustedList[0]) {
             this._trustedList = AjxVector.fromArray(trustedList[0].split(","));
         }
         else {
