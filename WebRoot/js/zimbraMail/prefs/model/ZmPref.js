@@ -44,6 +44,8 @@ ZmPref.TYPE_LOCALES			= "LOCALES";
 ZmPref.ORIENT_VERTICAL		= "vertical";
 ZmPref.ORIENT_HORIZONTAL	= "horizontal";
 
+ZmPref.MAX_ROWS	= 7;
+
 // custom functions for loading and validation
 
 ZmPref.loadSkins =
