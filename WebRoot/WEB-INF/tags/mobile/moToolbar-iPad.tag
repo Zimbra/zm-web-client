@@ -95,23 +95,27 @@
                     <!-- div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div -->
                     
                     <div class="select button" onclick="toggle">
-                    </div>
+                   		<a>Actions</a> 
                     <div class="menu">
-                        <button type="submit" name="anAction" value="actionMarkRead"><fmt:message key="MO_read"/></button>
-                        <br>
-                        <button type="submit" name="anAction" value="actionMarkUnread"><fmt:message key="MO_unread"/></button>
-                        <br>
+                         <span class="arrowBox"><span class="arrowHead">&#9650;</span></span>
+                        <button type="submit" name="anAction" value="actionMarkRead" class="menuButton"><fmt:message key="MO_read"/></button>
+                        
+                        <button type="submit" name="anAction" value="actionMarkUnread" class="menuButton"><fmt:message key="MO_unread"/></button>
+                        
                         <c:choose>
                             <c:when test="${context.folder.isSpam}"><button type="submit" name="anAction" value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></button></c:when>
-                            <c:otherwise><button type="submit" name="anAction" value="actionMarkSpam"><fmt:message key="actionSpam"/></button></c:otherwise>
+                            <c:otherwise><button type="submit" name="anAction" value="actionMarkSpam" class="menuButton"><fmt:message key="actionSpam"/></button></c:otherwise>
                         </c:choose>
-                        <br>
-                        <button type="submit" name="anAction" value="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}"><fmt:message key='delete'/></button>
+                        
+                        <button type="submit" name="anAction" value="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}" class="menuButton"><fmt:message key='delete'/></button>
+                    
                     </div>
+                    </div>
+                    
                 </div>
                 </div>
                 <div class="tr">
-                  <div class="td toolbar">  
+                  <div class="td searchBar">  
                       <div>
 
                           <c:set var="userQuota" value="0"/>
@@ -124,14 +128,14 @@
                               </fmt:message>
                           </c:catch>
                           
-                        <div class="userInfo">
+                        <div class="quota">
 				            ${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)} (${quotaUsage})
 			            </div>
                         <form method="post" accept-charset="UTF-8" action="${context_url}" onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
                             <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                             <input type="hidden" name="st" id="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>
                             <input type="hidden" name="search" value="1"/>
-                            <input type="search" id="sq" name="sq" placeholder="Search..." onclick="this.value=''" style="width: 96%">
+                            <span class="search"><input type="search" id="sq" name="sq" placeholder="Search..." onclick="this.value=''"></span>
                         </form>
                       </div>
                   </div>    

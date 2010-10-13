@@ -119,13 +119,15 @@
     <c:if test="${ua.isiPad == true}">
         <c:if test="${context.searchResult.hasNextPage}">
             <div id="more-div" class='tr list-row'>
-                <span class="td"></span>
+                
                 <span class="td" onclick="return zClickLink('more-a')"><zm:nextResultUrl var="url" value="${context_url}" index="0" context="${context}"/>
                     <div class="moreButton">
                     <a id="more-a" accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(url)}&show=more">More</a>
-                </div>
+                </div> 
+                <br>
+                &copy; Vmware and Zimbra. All rights reserved.
                 </span>
-                <span class="td"></span>
+                
                 	<input type="hidden" name="ipadcoffset" value="${empty requestScope.lmt ? context.searchResult.nextOffset : requestScope.lmt}"/>
                 </div>
         </c:if>

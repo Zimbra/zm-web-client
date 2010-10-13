@@ -65,6 +65,7 @@
     <span class=""><span id="d_from">${fn:escapeXml(from)}</span>
 </span>
 </div>
+<div class="cushion">
 <div class="subject">${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
     <c:if test="${message.isFlagged}"><span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
     <c:if test="${message.hasTags and mailbox.features.tagging}">
@@ -149,6 +150,7 @@
 <c:if test="${not empty message.attachments}"><div class="View attachments"><a name="attachments${message.partName}"></a><mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/></div></c:if>
 <c:if test="${not empty param.debug}"><div><pre>${fn:escapeXml(message)}</pre></div></c:if></c:if>
 
+</div>
 </div>
 </div>
 </div>

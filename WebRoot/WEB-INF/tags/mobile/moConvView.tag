@@ -117,7 +117,7 @@
 <fmt:message var="unknownSubject" key="noSubject"/>
 <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
             <c:set var="folders" value="${zm:getFolder(pageContext,mhit.folderId)}"/>
-            <div class="tbl" style="padding-left:20px; background-color:yellow;">
+            <div class="tbl convView">
                 <div id="conv${mhit.id}" pconv="${convSummary.id}" class="tr conv_v_list_row list-row${mhit.isUnread ? '-unread' : ''}" style="${folders.isTrash ? 'text-decoration:line-through;' : ''}">
                    <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/>
                    <span class="td f" <c:if test="${ua.isiPad == true}" > style='width:10%;' onclick='return zCheckUnCheck(this);'</c:if>>
