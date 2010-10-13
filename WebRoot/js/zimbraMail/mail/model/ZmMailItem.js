@@ -125,7 +125,11 @@ function(autoSendTime) {
 	var wasScheduled = this.isScheduled;
 	var isDate = AjxUtil.isDate(autoSendTime);
 	this.flagLocal(ZmItem.FLAG_ISSCHEDULED, isDate);
-	this.autoSendTime = isDate ? autoSendTime : null;
+	var autoSendTime = isDate ? autoSendTime : null;
+	if (autoSendTime != this.autoSendTime) {
+		this.autoSendTime = autoSendTime;
+		this._notify(ZmEvent.E_MODIFY);
+	}
 	if (wasScheduled != this.isScheduled)
 		this._notify(ZmEvent.E_FLAGS, {flags: ZmItem.FLAG_ISSCHEDULED});
 };

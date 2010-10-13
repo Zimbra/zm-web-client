@@ -1167,6 +1167,16 @@ function(isDraft, callback, result) {
 		}
 	} else {
 		this._loadFromDom(resp);
+		if (resp.autoSendTime) {
+			var msg = this;
+			while (!msg.list && msg._origMsg) {
+				msg = msg._origMsg;
+			}
+			if (msg != this) {
+				msg.setAutoSendTime(this.autoSendTime);
+			}
+			this._notifySendListeners();
+		}
 	}
 
 	if (callback) {
@@ -1458,17 +1468,24 @@ function(params, result) {
 
 ZmMailMsg.prototype._notifySendListeners =
 function() {
-	var flag;
+	var flag, msg;
 	if (this.isForwarded) {
 		flag = ZmItem.FLAG_FORWARDED;
+		msg = this._origMsg;
 	} else if (this.isReplied) {
 		flag = ZmItem.FLAG_REPLIED;
+		msg = this._origMsg;
+	} else if (this.isScheduled) {
+		flag = ZmItem.FLAG_ISSCHEDULED;
+		msg = this;
+		while (!msg.list && msg._origMsg)
+			msg = msg._origMsg;
 	}
 
-	if (flag && this._origMsg) {
-		this._origMsg[ZmItem.FLAG_PROP[flag]] = true;
-		if (this._origMsg.list) {
-			this._origMsg.list._notify(ZmEvent.E_FLAGS, {items: [this._origMsg], flags: [flag]});
+	if (flag && msg) {
+		msg[ZmItem.FLAG_PROP[flag]] = true;
+		if (msg.list) {
+			msg.list._notify(ZmEvent.E_FLAGS, {items: [msg.list], flags: [flag]});
 		}
 	}
 };

@@ -150,8 +150,8 @@ function() {
 };
 
 ZmMailMsgView.prototype.set =
-function(msg) {
-	if (this._msg && msg && (this._msg.id == msg.id)) { return; }
+function(msg, force) {
+	if (!force && this._msg && msg && (this._msg.id == msg.id)) { return; }
 
 	var oldMsg = this._msg;
 	this.reset();
@@ -387,14 +387,12 @@ function(msg, oldMsg) {
 	}
 
 	if (!appCtxt.isChildWindow) {
-		if (this._mode == ZmId.VIEW_MSG) {
-			this._setTags(msg);
-			// Remove listener for current msg if it exists
-			if (oldMsg) {
-				oldMsg.removeChangeListener(this._changeListener);
-			}
-			msg.addChangeListener(this._changeListener);
+		this._setTags(msg);
+		// Remove listener for current msg if it exists
+		if (oldMsg) {
+			oldMsg.removeChangeListener(this._changeListener);
 		}
+		msg.addChangeListener(this._changeListener);
 	}
 
 	// reset scroll view to top most
@@ -1573,6 +1571,9 @@ function(ev) {
 		}
 	} else if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		this._setTags(this._msg);
+	} else if (ev.event == ZmEvent.E_MODIFY) {
+		if (ev.source.id == this._msg.id)
+			this.set(ev.source, true);
 	}
 };
 
