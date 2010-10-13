@@ -338,7 +338,7 @@ function(itemId, version, callback, errorCallback, accountName) {
 			doc: {
 				id:	itemId,
                 ver: version,   //verion=-1 for all versions of count
-                count: 10       //parametrize count to allow pagination
+                count: 50       //parametrize count to allow pagination
 			}
 		}
 	};
@@ -527,3 +527,59 @@ function(baseIcon, large){
     else
         return this.folder.getIconWithColor();  
 };
+
+
+//ZmRevisionItem
+ZmRevisionItem = function(id, parentItem){
+    if(arguments.length == 0) return;
+    this.parent = parentItem;
+    this.isRevision = true;
+    this.id = id;
+    ZmBriefcaseItem.call(this, id);
+};
+
+ZmRevisionItem.prototype = new ZmBriefcaseItem;
+ZmRevisionItem.prototype.constructor = ZmRevisionItem;
+
+ZmRevisionItem.prototype.set =
+function(data){
+
+    //Props
+    //this.id =       this.id || data.id;
+    this.version =  data.ver;
+    if (data.name)  this.name = data.name;
+    if (data.l)     this.folderId = data.l;
+    if (data.ct)    this.contentType = data.ct.split(";")[0];
+    if (data.s)     this.size = Number(data.s);
+
+    //Data
+    if (data.cr)    this.creator = data.cr;
+    if (data.cd)    this.createDate = new Date(Number(data.cd));
+    if (data.leb)   this.modifier = data.leb;
+    if (data.md)    this.modifyDate = new Date(Number(data.md));
+	if (data.desc)  this.notes = data.desc;
+
+    this.subject = this.getNotes();
+    this._parseTags(data.t);
+
+};
+
+ZmRevisionItem.prototype.getNotes =
+function(){
+    return ( "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + AjxMessageFormat.format(ZmMsg.revisionNotes, [this.version, (this.notes || ZmMsg.emptyNotes)]) );  
+};
+
+ZmRevisionItem.prototype.getRestUrl =
+function(){
+    var restUrl = ZmBriefcaseItem.prototype.getRestUrl.call(this);
+    if(this.version){
+        restUrl = restUrl + "&ver="+this.version;
+    }
+    return restUrl;
+};
+
+ZmRevisionItem.prototype.getIcon =
+function(){
+   return null; 
+};
+

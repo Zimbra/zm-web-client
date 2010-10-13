@@ -99,6 +99,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_DISCARD_CHECKOUT, {textKey: "checkOutFileDiscard", image:"DiscardCheckout"});    
     ZmOperation.registerOp(ZmId.OP_VERSION_HISTORY, {textKey: "versionHistory", image:"VersionHistory"});
     ZmOperation.registerOp(ZmId.OP_RESTORE_VERSION, {textKey: "restoreCurrentVersion", image:"RestoreVersion"});
+    ZmOperation.registerOp(ZmId.OP_DELETE_VERSION, {textKey: "deleteVersion", image:"Delete"});
 
 };
 

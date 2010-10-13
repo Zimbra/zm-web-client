@@ -101,6 +101,24 @@ function() {
 	this._resetSize(sz.x, sz.y, true);
 };
 
+ZmPreviewPaneView.prototype.reRenderListView =
+function(force){
+    var tlv = this._detailListView;
+    tlv.reRenderListView(force  );
+    var sz = this.getSize();
+	this._resetSize(sz.x, sz.y, true);
+};
+
+ZmPreviewPaneView.prototype.enableRevisionView =
+function(enabled){
+    this._detailListView.enableRevisionView(enabled);    
+};
+
+ZmPreviewPaneView.prototype.isRevisionViewEnabled =
+function(){
+    return this._detailListView._revisionView;  
+};
+
 ZmPreviewPaneView.prototype.resetPreviewPane =
 function(newPreviewStatus, oldPreviewStatus){
 
@@ -318,10 +336,54 @@ function(list, sortField) {
 
 ZmPreviewPaneView.prototype._listSelectionListener =
 function(ev){
-    var item = ev.item
-    if(this._controller.isReadingPaneOn() && !item.isFolder){
+    var item = ev.item, handled = false;
+    if(ev.field == ZmItem.F_EXPAND && this._detailListView._isExpandable(item)){
+        this._detailListView.expandItem(item);   
+    }else if(this._controller.isReadingPaneOn() && !item.isFolder){
         this._previewView.set(item);
     }
+};
+
+ZmPreviewPaneView.prototype._toggle =
+function(item){
+    if(this._detailListView._expanded[item.id]){
+        this._detailListView.collapse(item);
+    }else{
+        this._expand(item);
+    }   
+};
+
+ZmPreviewPaneView.prototype._expand =
+function(item){
+    var handleCallback = new AjxCallback(this, this._handleVersions, item);
+    if(item && item instanceof ZmBriefcaseItem)
+        item.getRevisions(handleCallback);
+};
+
+ZmPreviewPaneView.prototype._handleVersions =
+function(item, result){
+    result =  result.getResponse();
+    result = result.ListDocumentRevisionsResponse.doc;
+
+    var revisions = this._getRevisionItems(item, result);
+    this._detailListView.expand(item, revisions);
+};
+
+ZmPreviewPaneView.prototype._getRevisionItems =
+function(item, revisions){
+    var revisionItems = [];
+    for(var i=0; i<revisions.length; i++){
+        var rev = revisions[i];
+        var rItem = new ZmRevisionItem(this._getRevisionId(rev), item);
+        rItem.set(rev);
+        revisionItems.push(rItem);        
+    }
+    return AjxVector.fromArray(revisionItems);
+};
+
+ZmPreviewPaneView.prototype._getRevisionId =
+function(rev){
+    return ( rev.id +'_'+(rev.version||rev.ver));    
 };
 
 
@@ -415,6 +477,7 @@ function(item){
     //Load Body
     var html=[], idx=0;
     var restUrl = item.getRestUrl();
+
     restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
     if(ZmMimeTable.isRenderableImage(item.contentType)){
         //this._iframePreview.setSrc();
@@ -424,7 +487,7 @@ function(item){
             "</div>"
         ].join('');
         this._iframePreview.setIframeContent(html);
-    }else if( this.isConvertable(item) && appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)){
+    }else if( this.isConvertable(item)){
         restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "view=html";
         this._iframePreview.setSrc(restUrl);
     }else if(ZmMimeTable.isRenderableImage(item.contentType)){

@@ -4423,6 +4423,11 @@ If you feel compelled to have a background color, please do so on a per skin lev
     white-space: nowrap;
 }
 
+
+.BriefcaseItemExpanded {
+    background-color:#EEEEFF;
+}
+
 /*Calendar Appt Send button*/
 .InviteButton .ZWidgetTitle{
     padding-bottom:20px;

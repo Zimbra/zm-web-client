@@ -52,7 +52,12 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 			this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
 		}
 	}
-}
+
+    this.enableRevisionView(false);
+
+    this._expanded = {};
+    this._itemRowIdList = {};
+};
 
 ZmDetailListView.prototype = new ZmBriefcaseBaseView;
 ZmDetailListView.prototype.constructor = ZmDetailListView;
@@ -77,6 +82,11 @@ ZmDetailListView.COLWIDTH_ICON = 20;
 
 // Protected methods
 
+ZmDetailListView.prototype.enableRevisionView =
+function(enabled){
+    this._revisionView = enabled;    
+};
+
 ZmDetailListView.prototype._getHeaderList =
 function(parent) {
 	// Columns: tag, name, type, size, date, owner, folder
@@ -87,6 +97,11 @@ function(parent) {
 											name:ZmMsg.selection}));
 	}
     if(this.isMultiColumn()){
+
+        if(this._revisionView){
+            headers.push(new DwtListHeaderItem({field:ZmItem.F_EXPAND, icon: "NodeCollapsed", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.expand}));            
+        }
+
         if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
             headers.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmDetailListView.COLWIDTH_ICON,
                 name:ZmMsg.tag}));
@@ -108,12 +123,19 @@ function(parent) {
 	return headers;
 };
 
+ZmDetailListView.prototype._isExpandable =
+function(item){
+    return (!item.isFolder && !item.isRevision && parseInt(item.version) > 1 );
+};
+
 ZmDetailListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 
 	if (field == ZmItem.F_SELECTION) {
 		var icon = params.bContained ? "CheckboxChecked" : "CheckboxUnchecked";
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(item, field));
+    } else if (field == ZmItem.F_EXPAND) {
+		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));   
 	} else if (field == ZmItem.F_TYPE) {
 		htmlArr[idx++] = AjxImg.getImageHtml(item.getIcon());
 	} else if (field == ZmItem.F_LOCK) {
@@ -121,7 +143,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_VERSION) {
 		htmlArr[idx++] = item.version;
 	} else if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+AjxStringUtil.htmlEncode(item.name)+"</div>";
+		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+( item.subject || AjxStringUtil.htmlEncode(item.name) )+"</div>";
 	} else if (field == ZmItem.F_FILE_TYPE) {
         if(item.isFolder){
             htmlArr[idx++] = ZmMsg.folder;
@@ -130,7 +152,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
             htmlArr[idx++] = mimeInfo ? mimeInfo.desc : "&nbsp;";
         }
 	} else if (field == ZmItem.F_SIZE) {
-	    htmlArr[idx++] = AjxUtil.formatSize(item.size);
+	    htmlArr[idx++] = item.isFolder ? ZmMsg.folder : AjxUtil.formatSize(item.size);
 	} else if (field == ZmItem.F_DATE) {
 		if (item.modifyDate) {
 			htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(item.modifyDate);
@@ -168,12 +190,17 @@ function(item, colIdx) {
 	idx = this._getTable(html, idx, item);
 	idx = this._getRow(html, idx, item);
 
+    if(this._revisionView){
+        html[idx++] = "<td style='vertical-align:middle;' width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
+        idx = this._getCellContents(html, idx, item, ZmItem.F_EXPAND, colIdx);
+        html[idx++] = "</center></td>";
+    }
+
 	html[idx++] = "<td style='vertical-align:middle;' width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
 	html[idx++] = AjxImg.getImageHtml(item.getIcon());
 	html[idx++] = "</center></td>";
 	html[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_SUBJECT) + "'>";
-    //html[idx++] =    "&nbsp;"+AjxStringUtil.htmlEncode(item.name);
-    html[idx++] = "&nbsp;"+  ( item.isFolder ? AjxStringUtil.htmlEncode(item.name) : AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version]));
+    html[idx++] = "&nbsp;"+  ( item.isFolder ? AjxStringUtil.htmlEncode(item.name) : ( item.subject || AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version])));
 	html[idx++] = "</td>";
 
     html[idx++] = "<td style='vertical-align:middle;text-align:left;' width=40 id='" + this._getFieldId(item, ZmItem.F_SIZE) + "'>";
@@ -201,6 +228,111 @@ function(item, colIdx) {
 
 	return html.join('');
 };
+
+ZmDetailListView.prototype._getDivClass =
+function(base, item, params) {
+	if (item.isRevision) {
+	    return [base, "BriefcaseItemExpanded"].join(" ");
+	} else {
+		return ZmBriefcaseBaseView.prototype._getDivClass.apply(this, arguments);
+	}
+};
+
+
+
+ZmDetailListView.prototype.expandItem =
+function(item) {
+	if (item && this._isExpandable(item) && this._revisionView) {
+		this.parent._toggle(item);
+	}
+};
+
+
+ZmDetailListView.prototype.expand =
+function(item, revisions){
+
+    if(!revisions || revisions.size() == 0 ) return;
+
+    this._addRevisionRows(item, revisions);
+       
+    this._setImage(item, ZmItem.F_EXPAND, "NodeExpanded");
+    this._expanded[item.id] = true;
+};
+
+ZmDetailListView.prototype._addRevisionRows =
+function(item, revisions){
+
+    var rowIds = this._itemRowIdList[item.id];
+    if(rowIds && rowIds.length && this._rowsArePresent(item)){
+        this._showRows(rowIds, true);
+    }else{
+        var index = this._getRowIndex(item);
+        this._itemRowIdList[item.id] = [];
+        for(var i=0; i< revisions.size(); i++){
+            var rev = revisions.get(i);
+            var div = this._createItemHtml(rev);
+            this._addRow(div, index+i+1);
+            this._itemRowIdList[item.id].push(div.id);
+        }
+    }
+    
+};
+
+ZmDetailListView.prototype.collapse =
+function(item){
+     var rowIds = this._itemRowIdList[item.id];
+     this._showRows(rowIds, false);
+     this._setImage(item, ZmItem.F_EXPAND, "NodeCollapsed");
+	 this._expanded[item.id] = false;
+};
+
+ZmDetailListView.prototype._showRows =
+function(rowIds, show){
+   if (rowIds && rowIds.length) {
+        for (var i = 0; i < rowIds.length; i++) {
+            var row = document.getElementById(rowIds[i]);
+            if (row) {
+                Dwt.setVisible(row, show);
+            }
+        }
+     }
+};
+
+ZmDetailListView.prototype._rowsArePresent =
+function(item) {
+	var rowIds = this._itemRowIdList[item.id];
+	if (rowIds && rowIds.length) {
+		for (var i = 0; i < rowIds.length; i++) {
+			if (document.getElementById(rowIds[i])) {
+				return true;
+			}
+		}
+	}
+	this._itemRowIdList[item.id] = [];	// start over
+	this._expanded[item.id] = false;
+	return false;
+};
+
+
+
+ZmDetailListView.prototype._allowFieldSelection =
+function(id, field) {
+	// allow left selection if clicking on blank icon
+	if (field == ZmItem.F_EXPAND) {
+		var item = appCtxt.getById(id);
+		return (item && !this._isExpandable(item));
+	} else {
+		return ZmListView.prototype._allowFieldSelection.apply(this, arguments);
+	}
+};
+
+ZmDetailListView.prototype._getHeaderToolTip =
+function(field, itemIdx) {
+    return (field == ZmItem.F_EXPAND)
+		? ZmMsg.expandCollapse
+		: ZmBriefcaseBaseView.prototype._getHeaderToolTip.call(this, field, itemIdx);
+};
+
 
 // listeners
 
@@ -232,17 +364,17 @@ function(controller) {
 
 
 ZmDetailListView.prototype.reRenderListView =
-function() {
+function(force) {
 	var isMultiColumn = this.isMultiColumn();
-	if (isMultiColumn != this._isMultiColumn) {
+	if (isMultiColumn != this._isMultiColumn || force) {
 		this._saveState({selection:true, focus:true, scroll:true, expansion:true});
 		this._isMultiColumn = isMultiColumn;
 		this.headerColCreated = false;
 		this._headerList = this._getHeaderList();
 		this._rowHeight = null;
 		this._normalClass = isMultiColumn ? DwtListView.ROW_CLASS : ZmDetailListView.ROW_DOUBLE_CLASS;
-		var list = this.getList() || (new AjxVector());
-		this.set(list.clone());
+		var list = this._zmList || this.getList() || (new AjxVector());
+		this.set(list);
 		this._restoreState();
 	}
 };
