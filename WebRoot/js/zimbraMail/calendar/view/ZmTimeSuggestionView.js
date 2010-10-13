@@ -102,12 +102,19 @@ function(item, id) {
     var locationC = document.getElementById(locId);
     if(!locationC) return;
 
-    locationC.innerHTML = "";
+    var roomsAvailable = (item.locations.length > 0);
+
+    if(!this._locSelect && !roomsAvailable) {
+        return;
+    }
+
+    if(roomsAvailable) locationC.innerHTML = "";
+
     if(!this._locSelect) {
         this._locSelect = new DwtSelect({parent:this, parentElement: locId});
         this._locSelect.addChangeListener(new AjxListener(this, this._locationListener));
     }else {
-        this._locSelect.reparentHtmlElement(locId);
+        if(roomsAvailable) this._locSelect.reparentHtmlElement(locId);
         this._locSelect.clearOptions();
         if(this._locSelect.itemId != id) this._restorePrevLocationInfo();
     }
