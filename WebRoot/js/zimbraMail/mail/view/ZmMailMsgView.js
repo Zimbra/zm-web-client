@@ -1572,8 +1572,9 @@ function(ev) {
 	} else if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		this._setTags(this._msg);
 	} else if (ev.event == ZmEvent.E_MODIFY) {
-		if (ev.source.id == this._msg.id)
+		if (ev.source == this._msg) {
 			this.set(ev.source, true);
+		}
 	}
 };
 

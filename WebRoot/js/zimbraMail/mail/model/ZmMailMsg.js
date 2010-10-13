@@ -1168,13 +1168,6 @@ function(isDraft, callback, result) {
 	} else {
 		this._loadFromDom(resp);
 		if (resp.autoSendTime) {
-			var msg = this;
-			while (!msg.list && msg._origMsg) {
-				msg = msg._origMsg;
-			}
-			if (msg != this) {
-				msg.setAutoSendTime(this.autoSendTime);
-			}
 			this._notifySendListeners();
 		}
 	}
@@ -2204,4 +2197,28 @@ function() {
 		}
 	}
 	return false;
+};
+
+ZmMailMsg.prototype.setAutoSendTime =
+function(autoSendTime) {
+	var msg = this;
+	while (msg) {
+		msg._setAutoSendTime(autoSendTime);
+		msg = msg._origMsg;
+	}
+};
+
+ZmMailMsg.prototype._setAutoSendTime =
+function(autoSendTime) {
+	var wasScheduled = this.isScheduled;
+	var isDate = AjxUtil.isDate(autoSendTime);
+	this.flagLocal(ZmItem.FLAG_ISSCHEDULED, isDate);
+	var autoSendTime = isDate ? autoSendTime : null;
+	if (autoSendTime != this.autoSendTime) {
+		this.autoSendTime = autoSendTime;
+		this._notify(ZmEvent.E_MODIFY);
+	}
+	if (wasScheduled != this.isScheduled) {
+		this._notify(ZmEvent.E_FLAGS, {flags: ZmItem.FLAG_ISSCHEDULED});
+	}
 };
