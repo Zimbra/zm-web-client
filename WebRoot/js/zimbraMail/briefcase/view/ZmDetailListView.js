@@ -143,7 +143,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_VERSION) {
 		htmlArr[idx++] = item.version;
 	} else if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+( item.subject || AjxStringUtil.htmlEncode(item.name) )+"</div>";
+		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+( item.isRevision ? ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + item.subject ) : AjxStringUtil.htmlEncode(item.name) )+"</div>";
 	} else if (field == ZmItem.F_FILE_TYPE) {
         if(item.isFolder){
             htmlArr[idx++] = ZmMsg.folder;
@@ -200,7 +200,7 @@ function(item, colIdx) {
 	html[idx++] = AjxImg.getImageHtml(item.getIcon());
 	html[idx++] = "</center></td>";
 	html[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_SUBJECT) + "'>";
-    html[idx++] = "&nbsp;"+  ( item.isFolder ? AjxStringUtil.htmlEncode(item.name) : ( item.subject || AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version])));
+    html[idx++] = "&nbsp;"+  ( item.isFolder ? AjxStringUtil.htmlEncode(item.name) : ( item.isRevision ? ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + item.subject ) : AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version])));
 	html[idx++] = "</td>";
 
     html[idx++] = "<td style='vertical-align:middle;text-align:left;' width=40 id='" + this._getFieldId(item, ZmItem.F_SIZE) + "'>";

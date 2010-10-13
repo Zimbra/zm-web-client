@@ -499,9 +499,63 @@ function(){
     this._headerModified = document.getElementById(this._htmlElId+"_modified");
     this._headerModifier = document.getElementById(this._htmlElId+"_modifier");
 
-    this._headerItemDownload = document.getElementById(this._htmlElId+"_download");
-    this._headerItemEmail = document.getElementById(this._htmlElId+"_email");
+    this._headerNotesSection = document.getElementById(this._htmlElId+"_notes_section");
+    this._headerNotes = document.getElementById(this._htmlElId+"_notes");
+    this._headerExpand = document.getElementById(this._htmlElId+"_expand");
 
+};
+
+ZmPreviewView._errorCallback =
+function(errorCode, error){
+
+    var previewView = window._zmPreviewView;
+    previewView._handleError(previewView._previewItem, errorCode, error);
+
+};
+
+ZmPreviewView.prototype._handleError =
+function(item, errorCode, error){
+
+    this.enablePreview(true);
+
+    if(item){
+
+        var restUrl = item.getRestUrl();
+        restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
+
+        //Try to generate, otherwise fallback
+        if(ZmMimeTable.isRenderableImage(item.contentType)){
+            this._iframePreview.setSrc(restUrl);
+        }else if(ZmMimeTable.isMultiMedia(item.contentType)){
+            html = [
+                "<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;'>",
+                "<embed src='",restUrl,"'/>",
+                "</div>"
+            ].join('');
+            this._iframePreview.setIframeContent(html);
+        }else{
+            //Show Download Link
+            var downloadLink = restUrl+ "?disp=a";
+            var html = [
+                "<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;'>",
+                    AjxMessageFormat.format(ZmMsg.previewDownloadLink, downloadLink),
+                "</div>"
+            ].join('');
+            this._iframePreview.setIframeContent(html);
+        }
+        
+    }    
+};        
+
+ZmPreviewView.prototype._setupErrorCallback =
+function(url){
+
+    if(!window._zmPreviewView)
+        window._zmPreviewView = this;
+
+    url = url + ( url.match(/\?/) ? '&' : '?' ) + "callback=ZmPreviewView._errorCallback";
+
+    return url;
 };
 
 ZmPreviewView.prototype.set =
@@ -512,60 +566,33 @@ function(item){
         return;
     }
 
+    this._previewItem = item;
     this.enablePreview(true);
-
     this._setHeader(item);
 
-    //Load Body
-    var html=[], idx=0;
     var restUrl = item.getRestUrl();
-
     restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
-    if(ZmMimeTable.isRenderableImage(item.contentType)){
-        //this._iframePreview.setSrc();
-        html = [
-            "<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;'>",
-                "<img src='",restUrl,"'>",
-            "</div>"
-        ].join('');
-        this._iframePreview.setIframeContent(html);
-    }else if( this.isConvertable(item)){
-        restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "view=html";
-        this._iframePreview.setSrc(restUrl);
-    }else if(ZmMimeTable.isRenderableImage(item.contentType)){
-        this._iframePreview.setSrc(restUrl);
-    }else if(ZmMimeTable.isMultiMedia(item.contentType)){
-        html = [
-            "<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;'>",
-                "<embed src='",restUrl,"'/>",
-            "</div>"
-        ].join('');
-        this._iframePreview.setIframeContent(html);
-    }else if(ZmMimeTable.isWebDoc(item.contentType)){
-        restUrl = restUrl +"&preview=1&viewonly=1";
-        this._iframePreview.setSrc(restUrl);        
+
+    if(ZmMimeTable.isWebDoc(item.contentType)){
+        restUrl = restUrl + ( restUrl.match(/\?/) ? '&' : '?' ) + "preview=1&viewonly=1";
     }else{
-        //Show Download Link
 
-        var downloadLink = restUrl+ "?disp=a"+(item.version ? "&ver="+item.version : "");
+        this._setupLoading();
 
-        html = [
-            "<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;'>",
-                "We cannot generate the preview of the file. Click here to <a href='",downloadLink,"' target='_blank' >download</a> it.",
-            "</div>"
-        ].join('');
-        this._iframePreview.setIframeContent(html);
+        //Send everything trough ConvertD
+        restUrl = this._setupErrorCallback(restUrl);
+        restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "view=html";
     }
 
-   // AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._resetIframeHeight), 100);
+    this._iframePreview.setSrc(restUrl);
 };
 
-
-ZmPreviewView.prototype.isConvertable =
-function(item){
-    var type = item.contentType;
-    return ( this._controller.isConvertable(item)/*name based*/ ||
-            type == ZmMimeTable.TEXT_HTML || type == ZmMimeTable.TEXT_PLAIN );   //CT based
+ZmPreviewView.prototype._setupLoading =
+function(){
+    var html = [
+        "<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;'>",ZmMsg.generatingPreview,"</div>"
+    ].join('');
+    this._iframePreview.setIframeContent(html);
 };
 
 ZmPreviewView.prototype._resetIframeHeight =
@@ -620,21 +647,29 @@ function(item){
 
     //Modified & Created
     var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
-    this._headerModified.innerHTML = dateFormatter.format(item.modifyDate);
-    this._headerModifier.innerHTML = item.modifier;
-    this._headerCreated.innerHTML = dateFormatter.format(item.createDate);
-    this._headerCreator.innerHTML = item.creator;
+    if(this._headerModified)
+        this._headerModified.innerHTML = dateFormatter.format(item.modifyDate);
+    if(this._headerModifier)
+        this._headerModifier.innerHTML = item.modifier;
+    if(this._headerCreated)
+        this._headerCreated.innerHTML = dateFormatter.format(item.createDate);
+    if(this._headerCreator)
+        this._headerCreator.innerHTML = item.creator;
 
-    if(ZmMimeTable.isWebDoc(item.contentType)) {
-        this._headerItemDownload.innerHTML = ZmMsg.edit;
-        Dwt.setHandler(this._headerItemDownload, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this.editListener, this, item));
-    }else{
-        this._headerItemDownload.innerHTML = ZmMsg.download;
-        Dwt.setHandler(this._headerItemDownload, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this.downloadListener, this, item));
-    }
-    Dwt.setHandler(this._headerItemEmail, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this.emailListener, this, item));
-
+    this.setNotes(item);
 };
+
+ZmPreviewView.prototype.setNotes =
+function(item){
+    var visible = item.isRevision && item.subject;
+    Dwt.setVisible(this._headerNotesSection, visible);
+    if(visible){
+        if(this._headerNotes)
+            this._headerNotes.innerHTML = item.subject
+        if(this._headerExpand)
+            this._headerExpand.innerHTML = AjxImg.getImageHtml("NodeExpanded");
+    }
+};        
 
 ZmPreviewView.prototype.downloadListener =
 function(item){

@@ -566,14 +566,14 @@ function(data){
 
 ZmRevisionItem.prototype.getNotes =
 function(){
-    return ( "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + AjxMessageFormat.format(ZmMsg.revisionNotes, [this.version, (this.notes || ZmMsg.emptyNotes)]) );  
+    return AjxMessageFormat.format(ZmMsg.revisionNotes, [this.version, (this.notes || ZmMsg.emptyNotes)]);  
 };
 
 ZmRevisionItem.prototype.getRestUrl =
 function(){
     var restUrl = ZmBriefcaseItem.prototype.getRestUrl.call(this);
     if(this.version){
-        restUrl = restUrl + "&ver="+this.version;
+        restUrl = restUrl + ( restUrl.match(/\?/) ? '&' : '?' ) + "ver="+this.version;
     }
     return restUrl;
 };
