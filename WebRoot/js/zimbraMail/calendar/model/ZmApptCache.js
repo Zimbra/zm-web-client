@@ -437,7 +437,7 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 
 	if (!searchResp || !searchParams) {
 		if (searchParams) {
-			if (searchParams.accountFolderIds.length > 0) {
+			if (searchParams.accountFolderIds && searchParams.accountFolderIds.length > 0) {
 				this._doBatchRequest(searchParams, miniCalParams);
 			} else if (searchParams.callback) {
 				searchParams.callback.run(this._accountsSearchList);
