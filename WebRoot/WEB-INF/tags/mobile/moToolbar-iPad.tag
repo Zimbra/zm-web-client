@@ -46,9 +46,10 @@
 </c:choose>
 </mo:handleError>
 <%--This takes care of the toolbar on the right pane, decide the buttons to be displayed depending on the app--%>
-<div class="tb tbl"><div class="tr">
+<div class="tb tbl">
         <c:choose>
             <c:when test="${app eq 'contact' || app eq 'ab'}">
+                <div class="tr">
                 <div class="td toolbar">
                 <div class="folder button"><a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab&_pv=1"><fmt:message key="addressBooks"/></a></div>
                 <c:if test="${top_fldr_select eq '1'}"><select class="_zo_select_button" name="sfi" onchange="document.location.href='?sfi='+this.value+'&amp;st=contact';"><c:set var="count" value="${0}"/>
@@ -77,9 +78,11 @@
                        </select>
                     </div>
                 </div>
+                </div>
                 </div>    
             </c:when>
             <c:when test="${app eq 'message' || app eq 'conversation'}">
+                <div class="tr">
                 <div class="td toolbar">
                     <div class="folder button">
                             <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders&_pv=1"><fmt:message key="folders"/></a> 
@@ -91,58 +94,51 @@
 
                     <!-- div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div -->
                     
-                    <div class="select button">
-                        
-                            <select class="zo_select_button" name="anAction" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
-                                <option value="" selected="selected"><fmt:message key="moreActions"/></option>
-                                <optgroup label="<fmt:message key='select'/>">
-                                    <option value="selectAll"><fmt:message key="all"/></option>
-                                    <option value="selectNone"><fmt:message key="none"/></option>
-                                </optgroup><c:choose><c:when test="${context.isConversationSearch || context.isMessageSearch}">
-                                <optgroup label="<fmt:message key="markAs"/>">
-                                    <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
-                                    <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option><c:choose>
-                                    <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
-                                    <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise></c:choose>
-                                </optgroup></c:when><c:when test="${context.isContactSearch}">
-                                <optgroup label="<fmt:message key="compose"/>">
-                                    <option value="composeTo"><fmt:message key="to"/></option>
-                                    <option value="composeCC"><fmt:message key="cc"/></option>
-                                    <option value="composeBCC"><fmt:message key="bcc"/></option>
-                                </optgroup></c:when></c:choose>
-                                <optgroup label="<fmt:message key="MO_flag"/>">
-                                    <option value="actionFlag"><fmt:message key="add"/></option>
-                                    <option value="actionUnflag"><fmt:message key="remove"/></option>
-                                </optgroup>
-                                <optgroup label="<fmt:message key="moveAction"/>">
-                                    <c:choose>
-                                        <c:when test="${context.isContactSearch}"><c:set var="count" value="${0}"/>
-                                            <zm:forEachFolder var="folder">
-                                                <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isContactMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if>
-                                            </zm:forEachFolder>
-                                        </c:when>
-                                        <c:otherwise><c:set var="count" value="${0}"/>
-                                            <zm:forEachFolder var="folder">
-                                                <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if>
-                                            </zm:forEachFolder>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </optgroup>
-                                <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
-                                <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
-                                <optgroup label="<fmt:message key="MO_actionAddTag"/>">
-                                    <c:forEach var="atag" items="${allTags}"><option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
-                                </optgroup>
-                                <optgroup label="<fmt:message key="MO_actionRemoveTag"/>">
-                                    <c:forEach var="atag" items="${allTags}"><option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
-                                </optgroup>
-                                </c:if>
-                            </select>
-                        
+                    <div class="select button" onclick="toggle">
                     </div>
-                  </div>
+                    <div class="menu">
+                        <button type="submit" name="anAction" value="actionMarkRead"><fmt:message key="MO_read"/></button>
+                        <br>
+                        <button type="submit" name="anAction" value="actionMarkUnread"><fmt:message key="MO_unread"/></button>
+                        <br>
+                        <c:choose>
+                            <c:when test="${context.folder.isSpam}"><button type="submit" name="anAction" value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></button></c:when>
+                            <c:otherwise><button type="submit" name="anAction" value="actionMarkSpam"><fmt:message key="actionSpam"/></button></c:otherwise>
+                        </c:choose>
+                        <br>
+                        <button type="submit" name="anAction" value="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}"><fmt:message key='delete'/></button>
+                    </div>
+                </div>
+                </div>
+                <div class="tr">
+                  <div class="td toolbar">  
+                      <div>
+
+                          <c:set var="userQuota" value="0"/>
+                          <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
+                          <c:catch>
+                              <fmt:message var="unlimited" key="unlimited"/>
+                              <fmt:message key="quotaUsage" var="quotaUsage">
+                                  <fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/>
+                                  <fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,2)}"/>
+                              </fmt:message>
+                          </c:catch>
+                          
+                        <div class="userInfo">
+				            ${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)} (${quotaUsage})
+			            </div>
+                        <form method="post" accept-charset="UTF-8" action="${context_url}" onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
+                            <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+                            <input type="hidden" name="st" id="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>
+                            <input type="hidden" name="search" value="1"/>
+                            <input type="search" id="sq" name="sq" placeholder="Search..." onclick="this.value=''" style="width: 96%">
+                        </form>
+                      </div>
+                  </div>    
+                </div>
             </c:when>
             <c:when test="${app eq 'cal' || app eq 'cals'}">
+                <div class="tr">
                 <fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd" timeZone="${timezone}"/>
                 <mo:calendarUrl var="dayViewUrl" view="day" date="${dateDf}" _replaceDate="1"/>
                 <mo:calendarUrl var="listViewUrl" view="list" date="${dateDf}" _replaceDate="1"/>
@@ -206,7 +202,8 @@
                     </div>
                 </c:otherwise>
                 </c:choose>
+                </div>    
             </c:when>
         </c:choose>
-</div></div>
+</div>
 

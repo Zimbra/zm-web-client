@@ -87,18 +87,6 @@
 </c:choose>
 
 <c:choose>
-<c:when test="${empty param.cid and (convSummary.id eq context.currentItem.id)}">
-<div class="wrap-dlist" id="wrap-dlist-view">    
-<div class="msg-list-in-conv tbl dlist" id="dlist-view">    
-	<div class='tbl'>
-                <div class="tr">
-                    <div class="td zo_noresults">
-                        <fmt:message key="noResultsFound"/>
-                     </div>
-                </div>
-            </div>
-</div></div>            
-</c:when>
 <c:when test="${singleMessage}">
     <div class="Stripes">
             <c:set var="extImageUrl" value="${context_url}"/>
@@ -128,8 +116,9 @@
 <fmt:message var="unknownRecipient" key="unknownRecipient"/>
 <fmt:message var="unknownSubject" key="noSubject"/>
 <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
+            <c:set var="folders" value="${zm:getFolder(pageContext,mhit.folderId)}"/>
             <div class="tbl" style="padding-left:20px; background-color:yellow;">
-                <div id="conv${mhit.id}" class="tr conv_v_list_row list-row${mhit.isUnread ? '-unread' : ''}">
+                <div id="conv${mhit.id}" pconv="${convSummary.id}" class="tr conv_v_list_row list-row${mhit.isUnread ? '-unread' : ''}" style="${folders.isTrash ? 'text-decoration:line-through;' : ''}">
                    <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/>
                    <span class="td f" <c:if test="${ua.isiPad == true}" > style='width:10%;' onclick='return zCheckUnCheck(this);'</c:if>>
                        <c:set value=",${mhit.id}," var="stringToCheck"/>
@@ -170,6 +159,7 @@
                             </c:if>
                        <span class="small-gray-text">(${fn:escapeXml(zm:displaySize(pageContext, mhit.size))})</span>
                    </span>
+                   <input type="hidden" class="istrash${convSummary.id}" value="${folders.isTrash}"/> 
                </div>
            </div> 
 </c:forEach>

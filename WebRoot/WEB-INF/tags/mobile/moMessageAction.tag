@@ -384,3 +384,9 @@
 </c:otherwise>
 </c:choose>
 <c:remove var="op"/>
+
+<c:if test="${ua.isiPad}">
+    <jsp:forward page="/m/moipadredirect">
+        <jsp:param name="ids" value="${ids}"/>
+    </jsp:forward>
+</c:if>

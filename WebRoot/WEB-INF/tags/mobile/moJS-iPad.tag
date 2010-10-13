@@ -344,6 +344,7 @@ var getFormValues = function(obj) {
         var type = control.type ;
         if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password" || (type == "image" && control._wasClicked) || type == "search") {
             getstr += control.name + "=" + escape(control.value) + "&";
+
         }
         if (type == "checkbox" || type == "radio") {
             if (control.checked) {
@@ -354,6 +355,14 @@ var getFormValues = function(obj) {
             getstr += control.name + "=" + control.options[control.selectedIndex].value + "&";
         }
 
+    }
+    for (i = 0, but = obj.getElementsByTagName("BUTTON"), len = but.length; i < len; i++) {
+        var control = but[i];//obj.getElementsByTagName("input")[i];
+        var type = control.type;
+        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked)) {
+            getstr += control.name + "=" + escape(control.value) + "&";
+            control._wasClicked = false;
+        }
     }
     for (i = 0, sel = obj.getElementsByTagName("SELECT"), len = sel.length; i < len; i++) {
         control = sel[i];//obj.getElementsByTagName("SELECT")[i];
@@ -440,7 +449,7 @@ var customClick = function (e) {
     } else {
         var tname = targ.tagName;
         var ttype = targ.type;
-        if(tname.match(/input/ig) && (ttype.match(/submit/ig) || ttype.match(/image/ig))){ //submit button; add clicked=true to it
+        if(tname.match(/input/ig) || tname.match(/button/ig) && (ttype.match(/submit/ig) || ttype.match(/image/ig))){ //submit button; add clicked=true to it
             targ._wasClicked = true;                                                          //ajxForm submit will send only clicked btns to server
             return true;
         }
@@ -757,7 +766,7 @@ var GC = function(id) {
 
 var zCheckUnCheck = function(el) {
 	var chkEl = (el.nodeName == 'INPUT') ? el : el.getElementsByClassName('chk')[0];
-	if(chkEl && chkEl.checked) {
+    if(chkEl && chkEl.checked) {
 		chkEl.checked = false;
 	} else if(chkEl && !chkEl.checked) {
 		chkEl.checked = true;
@@ -937,6 +946,80 @@ ZmiPadMail.processResponse = function (respData, url) {
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
         $("sq").blur();
         initListScroll();
+    } else if(ZmiPad.getParamFromURL("doMessageAction", url) == "1") {
+        $("eaMsgDiv").innerHTML = respData;
+        $("eaMsgDiv").style.display = "";
+        if($("messageActionIds").value != "" && ZmiPad.getParamFromURL("anAction", url) != "") {
+              var actionIds = ($("messageActionIds").value).split(",");                                         //messageActionIds comes from moipadredirect it gives all the action performed ids
+              var sConvId = ZmiPad.getParamFromURL("cid",url);
+
+              if(ZmiPad.getParamFromURL("anAction", url) == "actionDelete" || ZmiPad.getParamFromURL("anAction", url) == "actionHardDelete") {
+
+                 for(var i = 0; i < actionIds.length; i++){   //loop through all the checked ConvMsgList
+                    if(actionIds[i] && actionIds[i] != "") {
+                       if($("conv"+actionIds[i]) && $("conv"+actionIds[i]).getAttributeNode("pconv")) {         //check if the checked id has convList else its just conversation
+                            var pConv = $("conv"+actionIds[i]).getAttributeNode("pconv").value;
+                            $("conv"+actionIds[i]).style.textDecoration = "line-through";                       //present it as deleted
+                            $("conv"+actionIds[i]).getElementsByClassName('istrash'+pConv)[0].value = "true";   //update in our hidden tag
+
+                            var isTrashEls = document.getElementsByClassName('istrash'+pConv);                  //get all those hidden tag for the convList
+                            var allTrashed = false;
+                            for(var k = 0; k < isTrashEls.length; k++) {                                        //loop through to check everything is marked for delete or not
+                                if(isTrashEls[k].value == "true") {
+                                    allTrashed = true;
+                                } else {
+                                    allTrashed = false;
+                                    break;
+                                }
+                            }
+                            if(allTrashed) {                                                                    //if everthing is deleted
+                                var convParentNode = $("conv"+pConv).parentNode;                                //remove the conv
+                                convParentNode.removeChild($("conv"+pConv));                                    //remove the convList
+                                if($("list"+pConv)) {
+                                    var listParentNode = $("list"+pConv).parentNode;
+                                    listParentNode.removeChild($("list"+pConv));
+                                }
+                            }    
+                       } else {
+                            var convParentNode = $("conv"+actionIds[i]).parentNode;
+                            convParentNode.removeChild($("conv"+actionIds[i]));
+                            if($("list"+actionIds[i])) {
+                                var listParentNode = $("list"+actionIds[i]).parentNode;
+                                listParentNode.removeChild($("list"+actionIds[i]));
+                            }
+                       } 
+                    }
+                 }
+                 setTimeout(function(){listScroll.refresh();}, 1000);
+              } else if(ZmiPad.getParamFromURL("anAction", url) == "actionMarkSpam" || ZmiPad.getParamFromURL("anAction", url) == "actionMarkUnspam") {
+
+                 for(var i = 0; i < actionIds.length; i++){   //loop through all the checked ConvMsgList
+                    if(actionIds[i] && actionIds[i] != "") {
+                       if($("conv"+actionIds[i]) && $("conv"+actionIds[i]).getAttributeNode("pconv")) {         //check if the checked id has convList else its just conversation
+                            var pConv = $("conv"+actionIds[i]).getAttributeNode("pconv").value;
+
+                            var convPrntNode = $("conv"+actionIds[i]).parentNode.parentNode;
+                            convPrntNode.removeChild($("conv"+actionIds[i]).parentNode);
+
+                            if(trim($("list"+pConv).childNodes[1].innerHTML) == "") {
+                                var listParentNode = $("list"+pConv).parentNode;
+                                listParentNode.removeChild($("list"+pConv));
+                                var convParentNode = $("conv"+pConv).parentNode;
+                                convParentNode.removeChild($("conv"+pConv));
+                            }
+                            
+                       } else {
+                            var convParentNode = $("conv"+actionIds[i]).parentNode;
+                            convParentNode.removeChild($("conv"+actionIds[i]));
+                            if($("list"+actionIds[i])) {
+                                var listParentNode = $("list"+actionIds[i]).parentNode;
+                                listParentNode.removeChild($("list"+actionIds[i]));
+                            }
+                       }
+                    }
+                 }
+              }
+        }
     } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1 ) {
 
         $('compose-body').innerHTML = respData;
