@@ -1247,6 +1247,13 @@ ZmCalendarApp.prototype._handleImportApptResponse =
 function(folderId,response) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.addedToCalendar);
 	appCtxt.getChooseFolderDialog().popdown();
+
+    var ac = window.parentAppCtxt || window.appCtxt;
+    if(ac.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
+        var calMgr = ac.getCalManager();
+        calMgr.getMiniCalCache().clearCache();
+        calMgr.highlightMiniCal();
+    }
 };
 
 ZmCalendarApp.prototype._handleImportApptError =
