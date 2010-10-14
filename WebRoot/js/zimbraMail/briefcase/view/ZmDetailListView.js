@@ -113,7 +113,7 @@ function(parent) {
                 new DwtListHeaderItem({field:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmMsg.COLUMN_WIDTH_TYPE_DLV}),
                 new DwtListHeaderItem({field:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE_DLV, sortable:ZmItem.F_SIZE}),
                 new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.date, width:ZmMsg.COLUMN_WIDTH_DATE_DLV, sortable:ZmItem.F_DATE}),
-                new DwtListHeaderItem({field:ZmItem.F_FROM, text:ZmMsg.owner, width:ZmMsg.COLUMN_WIDTH_OWNER_DLV}),
+                new DwtListHeaderItem({field:ZmItem.F_FROM, text:ZmMsg.user, width:ZmMsg.COLUMN_WIDTH_OWNER_DLV}),
                 new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER_DLV}),
                 new DwtListHeaderItem({field:ZmItem.F_VERSION, text:ZmMsg.version, width:ZmMsg.COLUMN_WIDTH_VERSION_DLV})
                 );
@@ -158,7 +158,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 			htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(item.modifyDate);
 		}
 	} else if (field == ZmItem.F_FROM) {
-        var creator = item.modifer || item.creator;
+        var creator = item.modifier || item.creator;
 		creator = creator ? creator.split("@") : [""];
 		var cname = creator[0];
 		var uname = appCtxt.get(ZmSetting.USERNAME);
