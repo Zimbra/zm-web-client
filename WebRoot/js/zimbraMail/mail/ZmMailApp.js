@@ -1454,8 +1454,6 @@ function(params, callback) {
 				return;
 			}
 		}
-	} else if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && !appCtxt.multiAccounts) {
-		if (appCtxt.getAppController().handleOfflineMailTo(location.search, callback)) { return; }
 	}
 
 	this.mailSearch(query, callback, params.searchResponse);
@@ -1551,13 +1549,6 @@ function(query, callback, response, type) {
 	};
 	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
 	sc.search(params);
-};
-
-ZmMailApp.prototype._handleOfflineMailSearch =
-function() {
-	if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO)) {
-		appCtxt.getAppController().handleOfflineMailTo(location.search);
-	}
 };
 
 ZmMailApp.prototype.getSearchParams =

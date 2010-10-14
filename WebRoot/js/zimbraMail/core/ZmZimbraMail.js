@@ -580,6 +580,10 @@ function(params, result) {
 	{
 		this.handleCalendarComponents();
 	}
+	
+    if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && appCtxt.isOffline) {
+        this.handleOfflineMailTo(location.search);
+    }
 };
 
 /**
