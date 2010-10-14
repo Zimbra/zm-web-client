@@ -116,7 +116,7 @@ function() {
 
 	this._dateField = Dwt.byId(this._htmlElId + "_date");
 
-	this._tzoneSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzSelect"), cascade:true});
+	this._tzoneSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzSelect"), layout:DwtMenu.LAYOUT_SCROLL, maxRows: 7});
 };
 
 ZmTimeDialog.prototype.showTimeFields = 

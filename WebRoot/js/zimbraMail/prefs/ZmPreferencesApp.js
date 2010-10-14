@@ -423,7 +423,7 @@ function() {
     ZmPref.registerPref("DEFAULT_TIMEZONE", {
         displayName:		ZmMsg.selectTimezone,
         displayContainer:	ZmPref.TYPE_SELECT,
-        displayParams:		{ cascade: DwtMenu.LAYOUT_SCROLL, maxRows:ZmPref.MAX_ROWS },
+        displayParams:		{ layout: DwtMenu.LAYOUT_SCROLL, maxRows:ZmPref.MAX_ROWS },
         displayOptions:		AjxTimezone.getZonePreferences(),
         options:			AjxTimezone.getZonePreferencesOptions()
     });

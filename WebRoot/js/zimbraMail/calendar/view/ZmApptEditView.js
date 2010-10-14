@@ -734,11 +734,11 @@ function(width) {
 	// timezone DwtSelect
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
 
-	this._tzoneSelectStart = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzoneSelectStart"), cascade:false});
+	this._tzoneSelectStart = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzoneSelectStart"), layout: DwtMenu.LAYOUT_SCROLL, maxRows:7});
 	this._tzoneSelectStart.addChangeListener(timezoneListener);
     this._tzoneSelectStartElement = document.getElementById(this._htmlElId + "_tzoneSelectStart");
 
-	this._tzoneSelectEnd = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzoneSelectEnd"), cascade:false});
+	this._tzoneSelectEnd = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzoneSelectEnd"), layout: DwtMenu.LAYOUT_SCROLL, maxRows:7});
 	this._tzoneSelectEnd.addChangeListener(timezoneListener);
     this._tzoneSelectEndElement = document.getElementById(this._htmlElId + "_tzoneSelectEnd");
 
