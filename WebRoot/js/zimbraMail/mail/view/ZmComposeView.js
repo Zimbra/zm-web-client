@@ -558,19 +558,28 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 		var textPart = new ZmMimePart();
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		var self = this;
-		var convertor = {"hr":
-			function(el) {
+		var convertor = {
+			"hr": function(el) {
 				return ZmComposeView._convertHtmlPreface(self, el);
+			},
+			"blockquote": function(el) {
+				return "\n<blockquote>\n";
+			},
+			"/blockquote": function(el) {
+				return "\n</blockquote>\n";
 			}
 		}
-		textPart.setContent(this._htmlEditor.getTextVersion(convertor));
+		var text = this._htmlEditor.getTextVersion(convertor);
+		text = this._applyHtmlPrefix(text, "<blockquote>", "</blockquote>");
+
+		textPart.setContent(text);
 		top.children.add(textPart);
 
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);		
 
 		var idoc = this._htmlEditor._getIframeDoc();
-        this._cleanupFileRefImages(idoc);
+		this._cleanupFileRefImages(idoc);
 		this._restoreMultipartRelatedImages(idoc);
 		if (!isDraft) {
 			this._cleanupSignatureIds(idoc);
@@ -2153,6 +2162,40 @@ ZmComposeView._convertHtmlPreface =
 function(self, el) {
 	return (el && el.id == "zwchr") ? self._getPreface(DwtHtmlEditor.TEXT) + ZmMsg.CRLF : null;
 };
+
+ZmComposeView.prototype._applyHtmlPrefix =
+function(text, tagStart, tagEnd) {
+	var incOptions = this._controller._curIncOptions;
+	if (incOptions && incOptions.prefix) {
+		var wrapParams = ZmHtmlEditor.getWrapParams(false, incOptions);
+		wrapParams.preserveReturns = true;
+
+		var lines = text.split("\n");
+		var level = 0;
+		var out = [];
+		var k = 0;
+		for (var i=0; i<lines.length; i++) {
+			var line = lines[i];
+			if (line==tagStart) {
+				level++;
+			} else if (line==tagEnd) {
+				level--;
+			} else {
+				wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
+				for (var j=0; j<level; j++) {
+					wrapParams.text = line;
+					line = AjxStringUtil.wordWrap(wrapParams);
+				}
+				out[k++] = line;
+			}
+		}
+		return out.join("");
+	} else {
+		return text.replace(tagStart,"").replace(tagEnd,"");
+	}
+}
+
+
 
 ZmComposeView.prototype.resetBody =
 function(action, msg, extraBodyText, incOptions) {
