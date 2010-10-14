@@ -4,521 +4,514 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
     version="2.4">
 
-    <context-param>
-        <param-name>org.mortbay.jetty.servlet.SessionPath</param-name>
-        <param-value>/</param-value>
-    </context-param>
-    
-    <context-param>
-		<param-name>
-			javax.servlet.jsp.jstl.fmt.fallbackLocale
-		</param-name>
-		<param-value>en</param-value>
-	</context-param>
-	<context-param>
-		<param-name>admin.allowed.ports</param-name>
-		<param-value>%%zimbraAdminPort%%</param-value>
-	</context-param>
+  <context-param>
+    <param-name>org.mortbay.jetty.servlet.SessionPath</param-name>
+    <param-value>/</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>javax.servlet.jsp.jstl.fmt.fallbackLocale</param-name>
+    <param-value>en</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>admin.allowed.ports</param-name>
+    <param-value>%%zimbraAdminPort%%</param-value>
+  </context-param>
 
     <!-- =============
-	<context-param>
-	   <param-name>zimbra.soap.url</param-name>
-	   <param-value>http://localhost:7070/service/soap</param-value>
-	</context-param>
+  <context-param>
+     <param-name>zimbra.soap.url</param-name>
+     <param-value>http://localhost:7070/service/soap</param-value>
+  </context-param>
     -->
-	<context-param>
-	   <param-name>zimbra.jsp.session.timeout</param-name>
-	   <param-value>300</param-value>
-	</context-param>
-	<context-param>
-        <!-- how long to cache the result of the zm:getDomainInfo tag result  -->
-       <param-name>zimbra.domaininfo.ttl</param-name>
-	   <param-value>60m</param-value>
-	</context-param>
-    <context-param>
-	   <param-name>zimbraShowAds</param-name>
-	   <param-value>0</param-value>
-	</context-param>
+  <context-param>
+    <param-name>zimbra.jsp.session.timeout</param-name>
+    <param-value>300</param-value>
+  </context-param>
 
-    <context-param>
-        <param-name>zimbraCacheBusterVersion</param-name>
-		<param-value>@jsVersion@</param-value>
-    </context-param>
+  <context-param>
+    <!-- how long to cache the result of the zm:getDomainInfo tag result  -->
+    <param-name>zimbra.domaininfo.ttl</param-name>
+    <param-value>60m</param-value>
+  </context-param>
 
-    <context-param>
-        <param-name>zimbraDefaultSkin</param-name>
-		<param-value>beach</param-value>
-    </context-param>
+  <context-param>
+    <param-name>zimbraShowAds</param-name>
+    <param-value>0</param-value>
+  </context-param>
 
-    <context-param>
-        <!-- Enter a comma-separated list of servers that host images. -->
-        <param-name>zimbraImageServers</param-name>
-		<param-value></param-value>
-    </context-param>
+  <context-param>
+    <param-name>zimbraCacheBusterVersion</param-name>
+    <param-value>@jsVersion@</param-value>
+  </context-param>
 
-	<!-- NOTE: This filter needs to be first because Jetty will ignore
-	     NOTE: HttpServletRequest.setCharacterEncoding as soon as *anyone*
-	     NOTE: has queried the input stream.
-	-->
-	<filter>
-	    <filter-name>CharEncodingFilter</filter-name>
-	    <filter-class>
-	        com.zimbra.webClient.filters.CharEncodingFilter
-	    </filter-class>
-	</filter>
-	<filter-mapping>
-	    <filter-name>CharEncodingFilter</filter-name>
-		<url-pattern>/h/*</url-pattern>
-        <url-pattern>/public/login.jsp</url-pattern>
-        <url-pattern>/</url-pattern>
-		<url-pattern>/m/*</url-pattern>
-	</filter-mapping>
+  <context-param>
+    <param-name>zimbraDefaultSkin</param-name>
+    <param-value>beach</param-value>
+  </context-param>
 
-    <filter>
-        <filter-name>GzipFilter</filter-name>
-        <filter-class>
-	    org.mortbay.servlet.jetty.IncludableGzipFilter
-        </filter-class>
+  <context-param>
+    <!-- Enter a comma-separated list of servers that host images. -->
+    <param-name>zimbraImageServers</param-name>
+    <param-value></param-value>
+  </context-param>
 
-        <init-param>
-            <param-name>mimeTypes</param-name>
-            <param-value>text/html,text/plain,text/css,application/soap+xml</param-value>
-        </init-param>
+  <!-- NOTE: This filter needs to be first because Jetty will ignore
+       NOTE: HttpServletRequest.setCharacterEncoding as soon as *anyone*
+       NOTE: has queried the input stream.
+  -->
+  <filter>
+    <filter-name>CharEncodingFilter</filter-name>
+    <filter-class>com.zimbra.webClient.filters.CharEncodingFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>CharEncodingFilter</filter-name>
+    <url-pattern>/h/*</url-pattern>
+    <url-pattern>/public/login.jsp</url-pattern>
+    <url-pattern>/</url-pattern>
+    <url-pattern>/m/*</url-pattern>
+  </filter-mapping>
 
-        <init-param>
-            <param-name>userAgent</param-name>
-            <param-value>(?:Mozilla[^\(]*\(compatible;\s*+([^;]*);.*)|(?:.*?([^\s]+/[^\s]+).*)</param-value>
-        </init-param>
+  <filter>
+    <filter-name>ThrottlingFilter</filter-name>
+    <filter-class>com.zimbra.webClient.filters.ThrottlingFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>ThrottlingFilter</filter-name>
+    <url-pattern>/h/*</url-pattern>
+    <url-pattern>/m/*</url-pattern>
+  </filter-mapping>
 
-        <init-param>
-            <param-name>excludedAgents</param-name>
-            <param-value>MSIE 6.0</param-value>
-        </init-param>
+  <filter>
+    <filter-name>GzipFilter</filter-name>
+    <filter-class>org.mortbay.servlet.jetty.IncludableGzipFilter</filter-class>
+    <init-param>
+      <param-name>mimeTypes</param-name>
+      <param-value>text/html,text/plain,text/css,application/soap+xml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>userAgent</param-name>
+      <param-value>(?:Mozilla[^\(]*\(compatible;\s*+([^;]*);.*)|(?:.*?([^\s]+/[^\s]+).*)</param-value>
+    </init-param>
+    <init-param>
+      <param-name>excludedAgents</param-name>
+      <param-value>MSIE 6.0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>minGzipSize</param-name>
+      <param-value>2048</param-value>
+    </init-param>
+    <init-param>
+      <param-name>uncheckedPrintWriter</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>GzipFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
-        <init-param>
-            <param-name>minGzipSize</param-name>
-            <param-value>2048</param-value>
-        </init-param>
-
-        <init-param>
-            <param-name>uncheckedPrintWriter</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>GzipFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter>
-		<filter-name>Set Header Filter</filter-name>
-		<filter-class>
-			com.zimbra.webClient.filters.SetHeaderFilter
-		</filter-class>
-		<init-param>
-			<param-name>debug</param-name>
-			<param-value>0</param-value>
-		</init-param>
-		<init-param>
-			<param-name>jsVersion</param-name>
-			<param-value>@jsVersion@</param-value>
-		</init-param>
-		<init-param>
-			<param-name>extensions</param-name>
-			<param-value>.zgz</param-value>
-		</init-param>
-		<init-param>
-			<param-name>GzipExtension</param-name>
-			<param-value>.zgz</param-value>
-		</init-param>
-		<init-param>
-			<param-name>shouldSupportGzip</param-name>
-			<param-value>true</param-value>
-		</init-param>
-		<init-param>
-			<param-name>Expires</param-name>
-			<param-value>604800</param-value>
-			<!--
-				Expires should be the number of seconds from now when a
-				given static resource should expire
-			-->
-		</init-param>
-		<init-param>
-			<param-name>ProdMode</param-name>
-			<param-value>@prodMode@</param-value>
-			<!--
-				This paramater value is filled in by the build depending
-				on whether the build is a dev or prod build. This
-				controls the way the query parameters are interpreted by
-				the filter and the jsp pages.
-			-->
-		</init-param>
-		<init-param>
-			<param-name>noCachePatternList</param-name>
-			<param-value>
+  <filter>
+    <filter-name>Set Header Filter</filter-name>
+    <filter-class>com.zimbra.webClient.filters.SetHeaderFilter</filter-class>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jsVersion</param-name>
+      <param-value>@jsVersion@</param-value>
+    </init-param>
+    <init-param>
+      <param-name>extensions</param-name>
+      <param-value>.zgz</param-value>
+    </init-param>
+    <init-param>
+      <param-name>GzipExtension</param-name>
+      <param-value>.zgz</param-value>
+    </init-param>
+    <init-param>
+      <param-name>shouldSupportGzip</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>Expires</param-name>
+      <param-value>604800</param-value>
+      <!--
+        Expires should be the number of seconds from now when a
+        given static resource should expire
+      -->
+    </init-param>
+    <init-param>
+      <param-name>ProdMode</param-name>
+      <param-value>@prodMode@</param-value>
+      <!--
+        This paramater value is filled in by the build depending
+        on whether the build is a dev or prod build. This
+        controls the way the query parameters are interpreted by
+        the filter and the jsp pages.
+      -->
+    </init-param>
+    <init-param>
+      <param-name>noCachePatternList</param-name>
+      <param-value>
                 %%zimbraMailURL%%/,%%zimbraMailURL%%/mail,%%zimbraMailURL%%/auth/,.jsp,%%zimbraAdminURL%%/,%%zimbraMailURL%%/h/,%%zimbraMailURL%%/h/.*,/h/.*,%%zimbraMailURL%%/m/.*,/m/.*,%%zimbraMailURL%%/y/.*,/y/.*
-			</param-value>
-			<!--
-				List of patterns for which no-cache headers will be returned.
-			-->
-		</init-param>
-	</filter>
+      </param-value>
+      <!--
+        List of patterns for which no-cache headers will be returned.
+      -->
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>Set Header Filter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
-    <filter-mapping>
-		<filter-name>Set Header Filter</filter-name>
-		<url-pattern>/*</url-pattern>
-    </filter-mapping>
+  <filter>
+    <filter-name>StandardRedirectHelp</filter-name>
+    <filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
+    <init-param>
+      <param-name>input.dir</param-name>
+      <param-value>/bhelp</param-value>
+    </init-param>
+    <init-param>
+      <param-name>output.dir</param-name>
+        <param-value>/help/{locale}/standard</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>StandardRedirectHelp</filter-name>
+    <url-pattern>/bhelp/*</url-pattern>
+  </filter-mapping>
 
-	<filter>
-		<filter-name>StandardRedirectHelp</filter-name>
-		<filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
-		<init-param>
-			<param-name>input.dir</param-name>
-			<param-value>/bhelp</param-value>
-		</init-param>
-		<init-param>
-			<param-name>output.dir</param-name>
-			<param-value>/help/{locale}/standard</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>StandardRedirectHelp</filter-name>
-		<url-pattern>/bhelp/*</url-pattern>
-	</filter-mapping>
+  <filter>
+    <filter-name>AdvancedRedirectHelp</filter-name>
+    <filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
+    <init-param>
+      <param-name>input.dir</param-name>
+      <param-value>/help</param-value>
+    </init-param>
+    <init-param>
+      <param-name>output.dir</param-name>
+      <param-value>/help/{locale}</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>AdvancedRedirectHelp</filter-name>
+    <url-pattern>/help/*</url-pattern>
+  </filter-mapping>
 
-	<filter>
-		<filter-name>AdvancedRedirectHelp</filter-name>
-		<filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
-		<init-param>
-			<param-name>input.dir</param-name>
-			<param-value>/help</param-value>
-		</init-param>
-		<init-param>
-			<param-name>output.dir</param-name>
-			<param-value>/help/{locale}</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>AdvancedRedirectHelp</filter-name>
-		<url-pattern>/help/*</url-pattern>
-	</filter-mapping>
+  <filter>
+    <filter-name>AdminRedirectHelp</filter-name>
+    <filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
+    <init-param>
+      <param-name>input.dir</param-name>
+      <param-value>/adminhelp</param-value>
+    </init-param>
+    <init-param>
+      <param-name>output.dir</param-name>
+      <param-value>/help/{locale}/admin</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>AdminRedirectHelp</filter-name>
+    <url-pattern>/adminhelp/*</url-pattern>
+  </filter-mapping>
 
-	<filter>
-		<filter-name>AdminRedirectHelp</filter-name>
-		<filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
-		<init-param>
-			<param-name>input.dir</param-name>
-			<param-value>/adminhelp</param-value>
-		</init-param>
-		<init-param>
-			<param-name>output.dir</param-name>
-			<param-value>/help/{locale}/admin</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>AdminRedirectHelp</filter-name>
-		<url-pattern>/adminhelp/*</url-pattern>
-	</filter-mapping>
+  <!-- NOTE: This filter has to be *after* the redirects -->
+  <filter>
+    <filter-name>InsertHelpBranding</filter-name>
+    <filter-class>com.zimbra.webClient.filters.InsertHelpBranding</filter-class>
+    <init-param>
+      <param-name>exts</param-name>
+      <param-value>.htm,.xml</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>InsertHelpBranding</filter-name>
+    <url-pattern>/help/*</url-pattern>
+  </filter-mapping>
 
-    <!-- NOTE: This filter has to be *after* the redirects -->
-    <filter>
-        <filter-name>InsertHelpBranding</filter-name>
-        <filter-class>com.zimbra.webClient.filters.InsertHelpBranding</filter-class>
-        <init-param>
-            <param-name>exts</param-name>
-            <param-value>.htm,.xml</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>InsertHelpBranding</filter-name>
-        <url-pattern>/help/*</url-pattern>
-    </filter-mapping>
+  <filter>
+    <filter-name>TimezoneFilter</filter-name>
+    <filter-class>com.zimbra.webClient.filters.TimezoneFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>TimezoneFilter</filter-name>
+    <url-pattern>/js/ajax/util/AjxTimezoneData.js</url-pattern>
+  </filter-mapping>
 
-	<filter>
-		<filter-name>TimezoneFilter</filter-name>
-		<filter-class>com.zimbra.webClient.filters.TimezoneFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>TimezoneFilter</filter-name>
-		<url-pattern>/js/ajax/util/AjxTimezoneData.js</url-pattern>
-	</filter-mapping>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/public/error.jsp</location>
+  </error-page>
 
-    <error-page>
-		<error-code>404</error-code>
-		<location>/public/error.jsp</location>
-	</error-page>
+  <servlet>
+    <servlet-name>Forwarder</servlet-name>
+    <servlet-class>com.zimbra.webClient.servlet.Forward</servlet-class>
+  </servlet>
 
-    <servlet>
-		<servlet-name>Forwarder</servlet-name>
-		<servlet-class>
-			com.zimbra.webClient.servlet.Forward
-		</servlet-class>
-	</servlet>
+  <servlet-mapping>
+    <servlet-name>Forwarder</servlet-name>
+    <url-pattern>/mail</url-pattern>
+  </servlet-mapping>
 
-	<servlet-mapping>
-		<servlet-name>Forwarder</servlet-name>
-		<url-pattern>/mail</url-pattern>
-	</servlet-mapping>
+  <servlet>
+    <servlet-name>SetCookieServlet</servlet-name>
+    <servlet-class>com.zimbra.webClient.servlet.SetCookieServlet</servlet-class>
+  </servlet>
 
-	<servlet>
-		<servlet-name>SetCookieServlet</servlet-name>
-		<servlet-class>
-			com.zimbra.webClient.servlet.SetCookieServlet
-		</servlet-class>
-	</servlet>
+  <servlet-mapping>
+    <servlet-name>SetCookieServlet</servlet-name>
+    <url-pattern>/auth/</url-pattern>
+  </servlet-mapping>
 
-	<servlet-mapping>
-		<servlet-name>SetCookieServlet</servlet-name>
-		<url-pattern>/auth/</url-pattern>
-	</servlet-mapping>
+  <servlet>
+    <servlet-name>jsp</servlet-name>
+    <servlet-class>com.zimbra.webClient.servlet.JspServlet</servlet-class>
+    <init-param>
+      <param-name>logVerbosityLevel</param-name>
+      <param-value>DEBUG</param-value>
+    </init-param>
+    <init-param>
+      <param-name>fork</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>xpoweredBy</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>trimSpaces</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <!--
+    <init-param>
+      <param-name>classpath</param-name>
+      <param-value>?</param-value>
+    </init-param>
+    -->
+    <load-on-startup>0</load-on-startup>
+  </servlet>
 
-	<servlet>
-	  <servlet-name>jsp</servlet-name>
-	  <servlet-class>com.zimbra.webClient.servlet.JspServlet</servlet-class>
-	  <init-param>
-		  <param-name>logVerbosityLevel</param-name>
-		  <param-value>DEBUG</param-value>
-	  </init-param>
-	  <init-param>
-		  <param-name>fork</param-name>
-		  <param-value>false</param-value>
-	  </init-param>
-	  <init-param>
-		  <param-name>xpoweredBy</param-name>
-		  <param-value>false</param-value>
-	  </init-param>
-	  <init-param>
-		  <param-name>trimSpaces</param-name>
-		  <param-value>true</param-value>
-	  </init-param>
-	  <!--
-	  <init-param>
-		  <param-name>classpath</param-name>
-		  <param-value>?</param-value>
-	  </init-param>
-	  -->
-	  <load-on-startup>0</load-on-startup>
-	</servlet>
+  <servlet-mapping>
+    <servlet-name>jsp</servlet-name>
+    <url-pattern>*.jsp</url-pattern>
+    <url-pattern>*.jspf</url-pattern>
+    <url-pattern>*.jspx</url-pattern>
+    <url-pattern>*.xsp</url-pattern>
+    <url-pattern>*.JSP</url-pattern>
+    <url-pattern>*.JSPF</url-pattern>
+    <url-pattern>*.JSPX</url-pattern>
+    <url-pattern>*.XSP</url-pattern>
+  </servlet-mapping>
 
-	<servlet-mapping>
-	  <servlet-name>jsp</servlet-name>
-	  <url-pattern>*.jsp</url-pattern>
-	  <url-pattern>*.jspf</url-pattern>
-	  <url-pattern>*.jspx</url-pattern>
-	  <url-pattern>*.xsp</url-pattern>
-	  <url-pattern>*.JSP</url-pattern>
-	  <url-pattern>*.JSPF</url-pattern>
-	  <url-pattern>*.JSPX</url-pattern>
-	  <url-pattern>*.XSP</url-pattern>
-	</servlet-mapping>
+  <servlet>
+    <servlet-name>Properties2Javascript</servlet-name>
+    <servlet-class>com.zimbra.webClient.servlet.Props2JsServlet</servlet-class>
+    <init-param>
+      <param-name>basename-patterns</param-name>
+      <param-value>
+        <!--WEB-INF/classes/${dir}/${name}-->
+        WEB-INF/classes/messages/${name},
+        WEB-INF/classes/keys/${name},
+        WEB-INF/classes/${dir}/${name},
+        /opt/zimbra/zimlets-deployed/${name}/${name},
+        /opt/zimbra/zimlets-deployed/_dev/${name}/${name}
+      </param-value>
+    </init-param>
+  </servlet>
 
-	<servlet>
-		<servlet-name>Properties2Javascript</servlet-name>
-		<servlet-class>
-			com.zimbra.webClient.servlet.Props2JsServlet
-		</servlet-class>
-		<init-param>
-			<param-name>basename-patterns</param-name>
-			<param-value>
-				<!--WEB-INF/classes/${dir}/${name}-->
-				WEB-INF/classes/messages/${name},
-				WEB-INF/classes/keys/${name},
-				WEB-INF/classes/${dir}/${name},
-                /opt/zimbra/zimlets-deployed/${name}/${name},
-				/opt/zimbra/zimlets-deployed/_dev/${name}/${name}
-			</param-value>
-		</init-param>
-	</servlet>
+  <servlet>
+    <servlet-name>SkinResources</servlet-name>
+    <servlet-class>com.zimbra.webClient.servlet.SkinResources</servlet-class>
+    <!--
+    <init-param>
+      <description>Override the request server name.</description>
+      <param-name>server-name</param-name>
+      <param-value>example.com</param-value>
+    </init-param>
+    <init-param>
+      <description>The initial size of the resource cache.</description>
+      <param-name>resource-cache-size</param-name>
+      <param-value>1000</param-value>
+    </init-param>
+    -->
+    <init-param>
+      <description>
+        The temp directory of the resource cache. The servlet creates
+        a "skinres" sub-directory in the specified directory. So you
+        should NOT append that to the directory.
+        NOTE: The special string "${webapp}" can be used to specify
+        the webapp/zimbra/ directory. It should ONLY be used at the
+        beginning of the parameter value.
+      </description>
+      <param-name>resource-cache-dir</param-name>
+      <param-value>${webapp}/../../work/resource-cache</param-value>
+    </init-param>
+  </servlet>
 
-	<servlet>
-		<servlet-name>SkinResources</servlet-name>
-		<servlet-class>com.zimbra.webClient.servlet.SkinResources</servlet-class>
-		<!--
-		<init-param>
-			<description>Override the request server name.</description>
-			<param-name>server-name</param-name>
-			<param-value>example.com</param-value>
-		</init-param>
-		<init-param>
-			<description>The initial size of the resource cache.</description>
-			<param-name>resource-cache-size</param-name>
-			<param-value>1000</param-value>
-		</init-param>
-		-->
-		<init-param>
-			<description>
-				The temp directory of the resource cache. The servlet creates
-				a "skinres" sub-directory in the specified directory. So you
-				should NOT append that to the directory.
-				NOTE: The special string "${webapp}" can be used to specify
-				the webapp/zimbra/ directory. It should ONLY be used at the
-				beginning of the parameter value.
-			</description>
-			<param-name>resource-cache-dir</param-name>
-			<param-value>${webapp}/../../work/resource-cache</param-value>
-		</init-param>
-	</servlet>
+  <servlet-mapping>
+    <servlet-name>SkinResources</servlet-name>
+    <url-pattern>/css/*</url-pattern>
+    <url-pattern>/html/*</url-pattern>
+    <url-pattern>/js/skin.js</url-pattern>
+  </servlet-mapping>
 
-	<servlet-mapping>
-		<servlet-name>SkinResources</servlet-name>
-		<url-pattern>/css/*</url-pattern>
-		<url-pattern>/html/*</url-pattern>
-		<url-pattern>/js/skin.js</url-pattern>
-	</servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Properties2Javascript</servlet-name>
+    <url-pattern>/res/*</url-pattern>
+    <url-pattern>/messages/*</url-pattern>
+    <url-pattern>/keys/*</url-pattern>
+  </servlet-mapping>
 
-	<servlet-mapping>
-		<servlet-name>Properties2Javascript</servlet-name>
-		<url-pattern>/res/*</url-pattern>
-		<url-pattern>/messages/*</url-pattern>
-		<url-pattern>/keys/*</url-pattern>
-	</servlet-mapping>
+  <servlet>
+    <servlet-name>AdminResources</servlet-name>
+    <servlet-class>com.zimbra.webClient.servlet.AdminServlet</servlet-class>
+  </servlet>
 
-	<servlet>
-		<servlet-name>AdminResources</servlet-name>
-		<servlet-class>com.zimbra.webClient.servlet.AdminServlet</servlet-class>
-	</servlet>
+  <servlet-mapping>
+    <servlet-name>AdminResources</servlet-name>
+    <url-pattern>/adminres</url-pattern>
+  </servlet-mapping>
 
-	<servlet-mapping>
-		<servlet-name>AdminResources</servlet-name>
-		<url-pattern>/adminres</url-pattern>
-	</servlet-mapping>
+  <welcome-file-list>
+    <welcome-file>login</welcome-file>
+    <welcome-file>public/login.jsp</welcome-file>
+    <welcome-file>public/admin.jsp</welcome-file>
+  </welcome-file-list>
 
-	<welcome-file-list>
-        <welcome-file>login</welcome-file>
-        <welcome-file>public/login.jsp</welcome-file>
-		<welcome-file>public/admin.jsp</welcome-file>
-    </welcome-file-list>
+  <env-entry>
+    <description>
+      The protocol mode can be one of three modes - mixed, http,
+      or https.
+    </description>
+    <env-entry-name>protocolMode</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraMailMode%%</env-entry-value><!-- PROTOCOL MODE -->
+  </env-entry>
 
-	<env-entry>
-		<description>
-			The protocol mode can be one of three modes - mixed, http,
-			or https.
-		</description>
-		<env-entry-name>protocolMode</env-entry-name>
-		<env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>%%zimbraMailMode%%</env-entry-value><!-- PROTOCOL MODE -->
-	</env-entry>
-	<env-entry>
-		<description>
-			The http and httpsPort need to be in sync with the webserver
-			or the proxy - these are the ports that will be used in
-			redirects.
-		</description>
-		<env-entry-name>httpsPort</env-entry-name>
-		<env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>%%zimbraMailSSLPort%%</env-entry-value>
-	</env-entry>
+  <env-entry>
+    <description>
+      The http and httpsPort need to be in sync with the webserver
+      or the proxy - these are the ports that will be used in
+      redirects.
+    </description>
+    <env-entry-name>httpsPort</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraMailSSLPort%%</env-entry-value>
+  </env-entry>
 
-	<env-entry>
-		<env-entry-name>httpPort</env-entry-name>
-        <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>%%zimbraMailPort%%</env-entry-value>
-	</env-entry>
+  <env-entry>
+    <env-entry-name>httpPort</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraMailPort%%</env-entry-value>
+  </env-entry>
 
-	<env-entry>
-		<env-entry-name>mailUrl</env-entry-name>
-        <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>%%zimbraMailURL%%</env-entry-value>
-	</env-entry>
+  <env-entry>
+    <env-entry-name>mailUrl</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraMailURL%%</env-entry-value>
+  </env-entry>
 
-	<env-entry>
-		<env-entry-name>adminUrl</env-entry-name>
-        <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>%%zimbraAdminURL%%</env-entry-value>
-	</env-entry>
+  <env-entry>
+    <env-entry-name>adminUrl</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraAdminURL%%</env-entry-value>
+  </env-entry>
 
-	<env-entry>
-		<env-entry-name>trustedIPs</env-entry-name>
-        <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>%%zimbraMailTrustedIP%%</env-entry-value>
-	</env-entry>
+  <env-entry>
+    <env-entry-name>trustedIPs</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraMailTrustedIP%%</env-entry-value>
+  </env-entry>
 
-    <jsp-config>
-      <jsp-property-group>
-          <url-pattern>/h/ac</url-pattern>
-          <url-pattern>/h/addattendees</url-pattern>
-          <url-pattern>/h/addcontacts</url-pattern>
-          <url-pattern>/h/addcontactconfirmation</url-pattern>
-          <url-pattern>/h/addgroupcontact</url-pattern>
-          <url-pattern>/h/ads</url-pattern>
-          <url-pattern>/h/attachments</url-pattern>
-          <url-pattern>/h/calendar</url-pattern>
-          <url-pattern>/h/changepass</url-pattern>
-          <url-pattern>/h/brandedchangepass</url-pattern>
-          <url-pattern>/h/checkspelling</url-pattern>
-          <url-pattern>/h/compose</url-pattern>
-          <url-pattern>/h/eappt</url-pattern>
-          <url-pattern>/h/econtact</url-pattern>
-          <url-pattern>/h/egroup</url-pattern>
-          <url-pattern>/h/etask</url-pattern>
-          <url-pattern>/h/task</url-pattern>
-		  <url-pattern>/h/home</url-pattern>
-		  <url-pattern>/h/homevoice</url-pattern>
-          <url-pattern>/h/imessage</url-pattern>
-          <url-pattern>/h/login</url-pattern>
-          <url-pattern>/h/maddrbooks</url-pattern>
-          <url-pattern>/h/mcalendars</url-pattern>
-          <url-pattern>/h/message</url-pattern>
-          <url-pattern>/h/mfolders</url-pattern>
-          <url-pattern>/h/mtags</url-pattern>
-          <url-pattern>/h/mtasks</url-pattern>
-          <url-pattern>/h/options</url-pattern>
-          <url-pattern>/h/printcalls</url-pattern>
-          <url-pattern>/h/printcalendar</url-pattern>
-          <url-pattern>/h/printvoicemails</url-pattern>
-          <url-pattern>/h/printappointments</url-pattern>          
-          <url-pattern>/h/repeat</url-pattern>
-          <url-pattern>/h/rest</url-pattern>
-          <url-pattern>/h/search</url-pattern>
-          <url-pattern>/h/test</url-pattern>
-          <url-pattern>/h/upsell</url-pattern>
-          <url-pattern>/h/voicemail</url-pattern>
-          <url-pattern>/m/login</url-pattern>
-          <url-pattern>/m/main</url-pattern>
-          <url-pattern>/m/mojs</url-pattern>
-          <url-pattern>/m/mobriefcases</url-pattern>
-          <url-pattern>/m/mocals</url-pattern>
-          <url-pattern>/m/moversions</url-pattern>
-          <url-pattern>/m/mainx</url-pattern>
-          <url-pattern>/m/zmain</url-pattern>
-          <url-pattern>/m/zipad</url-pattern>
-          <url-pattern>/m/moipadredirect</url-pattern>
-          <url-pattern>/m/zmview</url-pattern>
-          <url-pattern>/m/mosearch</url-pattern>
-          <url-pattern>/m/mocalendar</url-pattern>
-          <url-pattern>/m/motasks</url-pattern>
-          <url-pattern>/m/moapptcompose</url-pattern>
-          <url-pattern>/m/mofolders</url-pattern>
-          <url-pattern>/m/moaddrbooks</url-pattern>
-          <url-pattern>/m/moprefs</url-pattern>
-          <url-pattern>/m/moquery</url-pattern>
-          <url-pattern>/m/mocompose</url-pattern>
-          <url-pattern>/h/overviewAds</url-pattern>
-          <url-pattern>/h/sidebarads</url-pattern>
-          <url-pattern>/h/printcontacts</url-pattern>
-          <url-pattern>/h/printconversations</url-pattern>
-          <url-pattern>/h/printmessage</url-pattern>
-		  <url-pattern>/h/printtasks</url-pattern>
-          <url-pattern>/y/calendar</url-pattern>
-          <url-pattern>/y/eappt</url-pattern>
-          <url-pattern>/y/mcalendars</url-pattern>
-          <url-pattern>/y/options</url-pattern>
-          <url-pattern>/y/repeat</url-pattern>
-          <url-pattern>/y/search</url-pattern>
-          <url-pattern>/y/todo</url-pattern>
-          <url-pattern>/h/briefcaseupload</url-pattern>
-          <url-pattern>/h/mbriefcases</url-pattern>
-          <url-pattern>/h/viewimages</url-pattern>
-          <url-pattern>/h/autoSaveDraft</url-pattern>
-      </jsp-property-group>
-    </jsp-config>
+  <jsp-config>
+    <jsp-property-group>
+      <url-pattern>/h/ac</url-pattern>
+      <url-pattern>/h/addattendees</url-pattern>
+      <url-pattern>/h/addcontacts</url-pattern>
+      <url-pattern>/h/addcontactconfirmation</url-pattern>
+      <url-pattern>/h/addgroupcontact</url-pattern>
+      <url-pattern>/h/ads</url-pattern>
+      <url-pattern>/h/attachments</url-pattern>
+      <url-pattern>/h/calendar</url-pattern>
+      <url-pattern>/h/changepass</url-pattern>
+      <url-pattern>/h/brandedchangepass</url-pattern>
+      <url-pattern>/h/checkspelling</url-pattern>
+      <url-pattern>/h/compose</url-pattern>
+      <url-pattern>/h/eappt</url-pattern>
+      <url-pattern>/h/econtact</url-pattern>
+      <url-pattern>/h/egroup</url-pattern>
+      <url-pattern>/h/etask</url-pattern>
+      <url-pattern>/h/task</url-pattern>
+      <url-pattern>/h/home</url-pattern>
+      <url-pattern>/h/homevoice</url-pattern>
+      <url-pattern>/h/imessage</url-pattern>
+      <url-pattern>/h/login</url-pattern>
+      <url-pattern>/h/maddrbooks</url-pattern>
+      <url-pattern>/h/mcalendars</url-pattern>
+      <url-pattern>/h/message</url-pattern>
+      <url-pattern>/h/mfolders</url-pattern>
+      <url-pattern>/h/mtags</url-pattern>
+      <url-pattern>/h/mtasks</url-pattern>
+      <url-pattern>/h/options</url-pattern>
+      <url-pattern>/h/printcalls</url-pattern>
+      <url-pattern>/h/printcalendar</url-pattern>
+      <url-pattern>/h/printvoicemails</url-pattern>
+      <url-pattern>/h/printappointments</url-pattern>
+      <url-pattern>/h/repeat</url-pattern>
+      <url-pattern>/h/rest</url-pattern>
+      <url-pattern>/h/search</url-pattern>
+      <url-pattern>/h/test</url-pattern>
+      <url-pattern>/h/upsell</url-pattern>
+      <url-pattern>/h/voicemail</url-pattern>
+      <url-pattern>/m/login</url-pattern>
+      <url-pattern>/m/main</url-pattern>
+      <url-pattern>/m/mojs</url-pattern>
+      <url-pattern>/m/mobriefcases</url-pattern>
+      <url-pattern>/m/mocals</url-pattern>
+      <url-pattern>/m/moversions</url-pattern>
+      <url-pattern>/m/mainx</url-pattern>
+      <url-pattern>/m/zmain</url-pattern>
+      <url-pattern>/m/zipad</url-pattern>
+      <url-pattern>/m/moipadredirect</url-pattern>
+      <url-pattern>/m/zmview</url-pattern>
+      <url-pattern>/m/mosearch</url-pattern>
+      <url-pattern>/m/mocalendar</url-pattern>
+      <url-pattern>/m/motasks</url-pattern>
+      <url-pattern>/m/moapptcompose</url-pattern>
+      <url-pattern>/m/mofolders</url-pattern>
+      <url-pattern>/m/moaddrbooks</url-pattern>
+      <url-pattern>/m/moprefs</url-pattern>
+      <url-pattern>/m/moquery</url-pattern>
+      <url-pattern>/m/mocompose</url-pattern>
+      <url-pattern>/h/overviewAds</url-pattern>
+      <url-pattern>/h/sidebarads</url-pattern>
+      <url-pattern>/h/printcontacts</url-pattern>
+      <url-pattern>/h/printconversations</url-pattern>
+      <url-pattern>/h/printmessage</url-pattern>
+      <url-pattern>/h/printtasks</url-pattern>
+      <url-pattern>/y/calendar</url-pattern>
+      <url-pattern>/y/eappt</url-pattern>
+      <url-pattern>/y/mcalendars</url-pattern>
+      <url-pattern>/y/options</url-pattern>
+      <url-pattern>/y/repeat</url-pattern>
+      <url-pattern>/y/search</url-pattern>
+      <url-pattern>/y/todo</url-pattern>
+      <url-pattern>/h/briefcaseupload</url-pattern>
+      <url-pattern>/h/mbriefcases</url-pattern>
+      <url-pattern>/h/viewimages</url-pattern>
+      <url-pattern>/h/autoSaveDraft</url-pattern>
+    </jsp-property-group>
+  </jsp-config>
 
 <!-- REDIRECTBEGIN
     <security-constraint>
         <web-resource-collection>
         <web-resource-name>force https</web-resource-name>
-	    <url-pattern>/*</url-pattern>
+      <url-pattern>/*</url-pattern>
         </web-resource-collection>
         <user-data-constraint>
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
