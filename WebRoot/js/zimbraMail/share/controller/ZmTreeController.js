@@ -517,7 +517,7 @@ function(ev, item) {
     var controller = this;
 
     // special case - search folder. might have moved under a regular folder  
-    if (item.type == ZmOrganizer.SEARCH) {
+    if (item && item.type == ZmOrganizer.SEARCH) {
         controller = this._opc.getTreeController(ZmOrganizer.SEARCH);
     }
 
