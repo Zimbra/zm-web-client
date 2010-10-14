@@ -295,9 +295,8 @@ function(items) {
 	var dialog = appCtxt.getConfirmationDialog();
 	var message = (items instanceof Array && items.length > 1) ? ZmMsg.confirmDeleteItemList : null;
 	if (!message) {
-		if (!this._confirmDeleteFormatter) {
-			this._confirmDeleteFormatter = new AjxMessageFormat(ZmMsg.confirmDeleteItem);
-		}
+
+        this._confirmDeleteFormatter = !(this._folderId == String(ZmOrganizer.ID_TRASH)) ? new AjxMessageFormat(ZmMsg.confirmDeleteItem) : new AjxMessageFormat(ZmMsg.confirmPermanentDeleteItem);        
 
 		var item = (items instanceof Array) ? items[0] : items;
 		if (!item) { return; }
