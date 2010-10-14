@@ -453,9 +453,7 @@ function(params) {
 		params1.action = "move";
         params1.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
         if (params1.folder.id == ZmFolder.ID_TRASH) {
-			if (softMove.length > 1) {
-	            params1.actionText = ZmMsg.actionTrash;
-			}
+            params1.actionText = ZmMsg.actionTrash;
             // bug: 47389 avoid moving to local account's Trash folder.
             params1.accountName = appCtxt.multiAccounts && params.items[0].getAccount().name;
         } else {
