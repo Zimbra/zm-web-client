@@ -296,7 +296,7 @@ function(params) {
 ZmTreeController.prototype._getTreeChangeListener =
 function() {
 	if (!this._dataChangeListener) {
-		this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
+		this._dataChangeListener = appCtxt.isChildWindow ? AjxCallback.simpleClosure(this._treeChangeListener, this) : new AjxListener(this, this._treeChangeListener);
 	}
 	return this._dataChangeListener;
 };
@@ -946,6 +946,7 @@ function(ev, treeView, overviewId) {
 			}
 			if (parentNode) {
 				parentNode.setExpanded(true); // so that new node is visible
+
 				this._fixupTreeNode(node, organizer, treeView);
 			}
 			this._checkTreeView(overviewId);

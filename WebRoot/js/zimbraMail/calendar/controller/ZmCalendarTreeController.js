@@ -381,7 +381,8 @@ function(ev, treeView, overviewId) {
 		ev.event == ZmEvent.E_DELETE ||
 		(ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_FLAGS]))
 	{
-		var controller = appCtxt.getApp(ZmApp.CALENDAR).getCalController();
+		var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+		var controller = aCtxt.getApp(ZmApp.CALENDAR).getCalController();
 		controller._updateCheckedCalendars();
 
 		// if calendar is deleted, notify will initiate the refresh action
