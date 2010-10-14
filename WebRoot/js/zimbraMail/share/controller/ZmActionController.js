@@ -67,9 +67,8 @@ ZmActionController.prototype.getUndoLink = function(actionElement, text) {
 };
 
 ZmActionController.prototype.getDismissLink = function() {
-	var style = "vertical-align: middle; display: inline-block; margin-left: 10px; cursor: pointer;";
-	var attrs = "onclick='appCtxt.dismissStatusMsg()'"; // Not pretty, but since we don't have the DOM element yet, we'll attach the handler "the oldschool way"
-	return AjxImg.getImageHtml("Cancel", style, attrs);
+	var style = "vertical-align: middle; display: inline-block; cursor: pointer; margin-right: 4px;";
+	return ["<a onclick='appCtxt.dismissStatusMsg()' href='javascript:;' class='undo'>", AjxImg.getImageHtml("Close", style), ZmMsg.close, "</a>"].join("");
 };
 
 ZmActionController.prototype.getStatusTransitions = function() {
