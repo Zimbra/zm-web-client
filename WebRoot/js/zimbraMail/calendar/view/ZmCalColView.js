@@ -454,14 +454,16 @@ function() {
 	var lastDay = this.numDays - 1;
     var j = 0;
 	for (var i=0; i < 7; i++) {
-        if (this.view === ZmId.VIEW_CAL_WEEK || this.workingHours[d.getDay()].isWorkingDay === true) {
+        var wHrs = this.workingHours[d.getDay()];
+        var isWorkingDay = wHrs && wHrs.isWorkingDay ? wHrs.isWorkingDay : false;
+        if (this.view === ZmId.VIEW_CAL_WEEK || isWorkingDay === true) {
             var day = this._days[j] = {};
             day.index = j;
             day.date = new Date(d);
             day.endDate = new Date(d);
             day.endDate.setHours(23,59,59,999);
             day.isToday = day.date.getTime() == today.getTime();
-            day.isWorkingDay = this.workingHours[d.getDay()].isWorkingDay;
+            day.isWorkingDay = isWorkingDay;
             this._dateToDayIndex[this._dayKey(day.date)] = day;
             if (!this._scheduleMode && this._columns[j]) {
                 var id = this._columns[j].titleId;
