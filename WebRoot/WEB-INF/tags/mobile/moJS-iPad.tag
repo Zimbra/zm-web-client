@@ -796,7 +796,7 @@ var initPrefScroll = function () {
 var initContentScroll = function() {
    if($("dcontent-view")) {
        $("dcontent-view").addEventListener('touchmove', function(e){ e.preventDefault(); });
-       contentScroll = new iScroll('dcontent-view',{ checkDOMChanges: false, desktopCompatibility: true, hScrollbar: true, vScrollbar: true });
+       contentScroll = new iScroll('dcontent-view',{ desktopCompatibility: true, hScrollbar: true, vScrollbar: true });
    }
 }
 
@@ -942,7 +942,7 @@ ZmiPadMail.processResponse = function (respData, url) {
 
                  for(var i = 0; i < actionIds.length; i++){   //loop through all the checked ConvMsgList
                     if(actionIds[i] && actionIds[i] != "") {
-                       if($("conv"+actionIds[i]) && $("conv"+actionIds[i]).getAttributeNode("pconv")) {         //check if the checked id has convList else its just conversation
+                       if($("conv"+actionIds[i]) && $("conv"+actionIds[i]).getAttributeNode("pconv")) {         //check if the checked id has convList else its just message
                             var pConv = $("conv"+actionIds[i]).getAttributeNode("pconv").value;
                             $("conv"+actionIds[i]).style.textDecoration = "line-through";                       //present it as deleted
                             $("conv"+actionIds[i]).getElementsByClassName('istrash'+pConv)[0].value = "true";   //update in our hidden tag
@@ -980,7 +980,7 @@ ZmiPadMail.processResponse = function (respData, url) {
 
                  for(var i = 0; i < actionIds.length; i++){   //loop through all the checked ConvMsgList
                     if(actionIds[i] && actionIds[i] != "") {
-                       if($("conv"+actionIds[i]) && $("conv"+actionIds[i]).getAttributeNode("pconv")) {         //check if the checked id has convList else its just conversation
+                       if($("conv"+actionIds[i]) && $("conv"+actionIds[i]).getAttributeNode("pconv")) {         //check if the checked id has convList else its just message
                             var pConv = $("conv"+actionIds[i]).getAttributeNode("pconv").value;
 
                             var convPrntNode = $("conv"+actionIds[i]).parentNode.parentNode;
@@ -1002,6 +1002,24 @@ ZmiPadMail.processResponse = function (respData, url) {
                             }
                        }
                     }
+                 }
+              } else if (ZmiPad.getParamFromURL("anAction", url) == "actionMarkRead") {   //TODO if its conversation is markedread need to markread on all convMsgList
+                 for(var i = 0; i < actionIds.length; i++){
+                     if($("conv"+actionIds[i])) {
+                         var msgEl = $("conv"+actionIds[i]);   
+                         if (msgEl.className.indexOf('list-row-unread') != -1) {
+				            delClass(msgEl, "list-row-unread", "list-row");
+			             }
+                     }
+                 }
+              } else if (ZmiPad.getParamFromURL("anAction", url) == "actionMarkUnread") {  //TODO if its conversation is markeUnRead need to markUnread on all convMsgList
+                 for(var i = 0; i < actionIds.length; i++){
+                     if($("conv"+actionIds[i])) {
+                         var msgEl = $("conv"+actionIds[i]);
+                         if (msgEl.className.indexOf('list-row') != -1) {
+				            delClass(msgEl, "list-row","list-row-unread");
+			             }
+                     }
                  }
               }
         }

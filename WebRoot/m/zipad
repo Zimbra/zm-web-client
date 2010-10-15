@@ -271,9 +271,8 @@
             <div class ="compose button" id="view-mail" style="display:block;"><a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" id="compose"><fmt:message key="compose"/></a></div>
           </div></div></div>
           <div class="emptyBody" id="empty-message">
-          	<h2>Need to view one of those email/contact&#63;</h2>
-          	<span>Just click on an email/contact to view it here in this handy reading pane.</span>
-          </div> <!--<fmt:message key="emptyMessage"/> -->
+          	<h2><fmt:message key="viewMessage"/></h2>
+          </div>
       </div>
     </div>
 </c:if>

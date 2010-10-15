@@ -98,12 +98,17 @@
                    		<a id='aActionMenu' onclick="return toggleElem('actListMenu');"><fmt:message key="moreActions"/></a>
                         <div class="menu" style="display:none;" id="actListMenu">
                             <span class="arrowBox"><span class="arrowHead">&#9650;</span></span>
-                            <button type="submit" name="anAction" value="actionMarkRead" class="menuButton"><fmt:message key="MO_read"/></button>
+                            
+                            <button type="button" name="" value="" class="menuButton"><fmt:message key="refresh"/></button>
+                            
+                            <button type="submit" name="anAction" value="actionMarkRead" class="menuButton"><fmt:message key="actionMarkRead"/></button>
 
-                            <button type="submit" name="anAction" value="actionMarkUnread" class="menuButton"><fmt:message key="MO_unread"/></button>
+                            <button type="submit" name="anAction" value="actionMarkUnread" class="menuButton"><fmt:message key="actionMarkUnread"/></button>
 
+                            <button type="button" class="menuButton"><fmt:message key="actionMove"/></button>
+                            
                             <c:choose>
-                                <c:when test="${context.folder.isSpam}"><button type="submit" name="anAction" value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></button></c:when>
+                                <c:when test="${context.folder.isSpam}"><button type="submit" name="anAction" value="actionMarkUnspam" class="menuButton"><fmt:message key="actionNotSpam"/></button></c:when>
                                 <c:otherwise><button type="submit" name="anAction" value="actionMarkSpam" class="menuButton"><fmt:message key="actionSpam"/></button></c:otherwise>
                             </c:choose>
 
