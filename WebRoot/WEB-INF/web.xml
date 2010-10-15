@@ -75,7 +75,7 @@
 
   <filter>
     <filter-name>ThrottlingFilter</filter-name>
-    <filter-class>com.zimbra.webClient.filters.ThrottlingFilter</filter-class>
+    <filter-class>com.zimbra.cs.servlet.ThrottlingFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>ThrottlingFilter</filter-name>
