@@ -225,8 +225,8 @@ function(callback, errorCallback, accountName, response, batchCommand) {
  */
 ZmSettings.prototype._handleResponseLoadUserSettings =
 function(callback, accountName, result) {
-	var obj = this.getInfoResponse = result.getResponse().GetInfoResponse;
 
+	var obj = this.getInfoResponse = result.getResponse().GetInfoResponse;
 	if (obj.name) 			{ this._settings[ZmSetting.USERNAME].setValue(obj.name); }
 	if (obj.lifetime)		{ this._settings[ZmSetting.TOKEN_LIFETIME].setValue(obj.lifetime); }
 	if (obj.accessed)		{ this._settings[ZmSetting.LAST_ACCESS].setValue(obj.accessed); }
@@ -604,6 +604,7 @@ function(list, callback, result) {
  */
 ZmSettings.prototype._setDefaults =
 function() {
+
 	var value = AjxUtil.formatUrl({host:location.hostname, path:"/service/soap/", qsReset:true});
 	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value, null, false, true);
 
@@ -622,6 +623,19 @@ function() {
 	// CSFE EXPORT URI
 	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co", id:"{0}", fmt:"csv"}});
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
+
+	var h = location.hostname;
+	var isDev = ((h.indexOf(".zimbra.com") != -1) || /\.local$/.test(h) || h == "localhost");
+	this._settings[ZmSetting.IS_DEV_SERVER].setValue(isDev);
+	if (isDev) {
+		this._settings[ZmSetting.SHOW_SCRIPT_ERRORS].setValue(true, null, false, true);
+	}
+
+	// script error reporting
+	var rse = AjxException.reportScriptErrors = this._settings[ZmSetting.SHOW_SCRIPT_ERRORS].getValue();
+	if (rse) {
+		AjxException.setScriptErrorHandler(ZmController.handleScriptError);
+	}
 
 	// default sorting preferences
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONVLIST, true, true);
@@ -664,10 +678,12 @@ function() {
 	this.registerSetting("HTTPS_PORT",						{type:ZmSetting.T_CONFIG, defaultValue:ZmSetting.HTTPS_DEFAULT_PORT});
 	this.registerSetting("INSTANT_NOTIFY_INTERVAL",			{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:500}); // milliseconds
 	this.registerSetting("INSTANT_NOTIFY_TIMEOUT",			{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300}); // seconds
+	this.registerSetting("IS_DEV_SERVER",					{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("LOG_REQUEST",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("LOGO_URI",						{type:ZmSetting.T_CONFIG, defaultValue:null});
 	this.registerSetting("PROTOCOL_MODE",					{type:ZmSetting.T_CONFIG, defaultValue:ZmSetting.PROTO_HTTP});
 	this.registerSetting("SERVER_VERSION",					{type:ZmSetting.T_CONFIG});
+	this.registerSetting("SHOW_SCRIPT_ERRORS",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("TIMEOUT",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:30}); // seconds
 	this.registerSetting("USE_XML",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
