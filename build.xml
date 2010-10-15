@@ -134,7 +134,7 @@
         <property name='common.jsp.includes' value='${custom.jsp.includes},**'/>
         <property name='common.jsp.excludes' value='${custom.jsp.excludes}'/>
         <property name='common.img.includes' value='${custom.img.includes},**'/>
-		<property name='common.img.excludes' value='${custom.img.excludes},_*/**,**/_*,**/favicon.ico,**/apple-touch-icon.png'/>
+		<property name='common.img.excludes' value='${custom.img.excludes},_*/**,**/_*,**/apple-touch-icon.png'/>
         <property name='common.template.includes' value='${custom.template.includes},**/*.template'/>
         <property name='common.template.excludes' value='${custom.template.excludes}'/>
         <property name='common.jam.includes' value='${custom.jam.includes},**/package/*.js'/>
