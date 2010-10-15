@@ -102,8 +102,3 @@ body, #skin_container_splash_screen	{
 .ZmApptComposeView {
 	@PanelBg@
 }
-
-.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
-	background-color: #fff;
-	border-bottom-color: #fff;
-}

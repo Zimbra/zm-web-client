@@ -119,15 +119,8 @@ ZmDocsEditApp._createDBG = function(devMode){
     }
 };
 
-ZmDocsEditApp._beforeUnload =
-function(){
-    var appCtrl = appCtxt.getAppController();
-    return appCtrl.exit();
-};
-
 window.onload = function() {
     setTimeout(function() {
             ZmDocsEditApp.launch();
-            window.onbeforeunload = ZmDocsEditApp._beforeUnload;
     }, 200);
 };

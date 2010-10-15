@@ -92,15 +92,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE_AS_ATT, {textKey:"sendAsAttachment", tooltipKey:"sendAsAttachment", image:"Attachment"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE_MENU, {textKey:"send", image:"Send", textPrecedence:75});
 	ZmOperation.registerOp(ZmId.OP_CREATE_SLIDE_SHOW, {textKey:"createSlideShow", image:"Presentation"});
-    ZmOperation.registerOp(ZmId.OP_EDIT_FILE, {textKey: "editFile", image:"Edit"});
-    ZmOperation.registerOp(ZmId.OP_RENAME_FILE, {textKey: "rename", image:"FileRename"});
-    ZmOperation.registerOp(ZmId.OP_CHECKIN, {textKey: "checkInFile", image:"Checkin"});
-    ZmOperation.registerOp(ZmId.OP_CHECKOUT, {textKey: "checkOutFile", image:"Checkout"});
-    ZmOperation.registerOp(ZmId.OP_DISCARD_CHECKOUT, {textKey: "checkOutFileDiscard", image:"DiscardCheckout"});    
-    ZmOperation.registerOp(ZmId.OP_VERSION_HISTORY, {textKey: "versionHistory", image:"VersionHistory"});
-    ZmOperation.registerOp(ZmId.OP_RESTORE_VERSION, {textKey: "restoreCurrentVersion", image:"RestoreVersion"});
-    ZmOperation.registerOp(ZmId.OP_DELETE_VERSION, {textKey: "deleteVersion", image:"Delete"});
-
+    ZmOperation.registerOp(ZmId.OP_EDIT, {textKey: "edit", image:"Edit"});
 };
 
 ZmBriefcaseApp.prototype._registerSettings =
@@ -137,7 +129,7 @@ ZmBriefcaseApp.prototype._registerOrganizers =
 function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.BRIEFCASE,
 							{app            : ZmApp.BRIEFCASE,
-							 nameKey        : "folder",
+							 nameKey        : "folders",
 							 defaultFolder  : ZmOrganizer.ID_BRIEFCASE,
 							 soapCmd        : "FolderAction",
 							 firstUserId    : 256,
@@ -148,7 +140,7 @@ function() {
 							 itemsKey       : "files",
 							 treeType       : ZmOrganizer.FOLDER,
 							 views          : ["document"],
-							 folderKey      : "briefcase",                                                      
+							 folderKey      : "briefcase",
 							 mountKey       : "mountFolder",
 							 createFunc     : "ZmOrganizer.create",
 							 compareFunc    : "ZmBriefcase.sortCompare",
@@ -176,6 +168,7 @@ function() {
 ZmBriefcaseApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
+	newItemOps[ZmOperation.NEW_FILE]		= "uploadNewFile";
 	newItemOps[ZmOperation.NEW_DOC]			= "document";
 
 	var newOrgOps = {};
@@ -202,7 +195,7 @@ function() {
 					  newOrgOps:			newOrgOps,
 					  actionCodes:			actionCodes,
 					  gotoActionCode:		ZmKeyMap.GOTO_BRIEFCASE,
-					  newActionCode:		ZmKeyMap.NEW_DOC,
+					  newActionCode:		ZmKeyMap.NEW_FILE,
 					  chooserSort:			70,
 					  defaultSort:			60
 					  });

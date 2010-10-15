@@ -350,17 +350,10 @@ ZmWhiteBlackList = function(parent, id, templateId) {
 
 	this._settingId = id;
 	this._tabGroup = new DwtTabGroup(this._htmlElId);
-    switch(id) {
-        case ZmSetting.MAIL_BLACKLIST:
-            this._max = appCtxt.get(ZmSetting.MAIL_BLACKLIST_MAX_NUM_ENTRIES);
-            break;
-        case ZmSetting.MAIL_WHITELIST:
-            this._max = appCtxt.get(ZmSetting.MAIL_WHITELIST_MAX_NUM_ENTRIES);
-            break;
-        case ZmSetting.TRUSTED_ADDR_LIST:
-            this._max = appCtxt.get(ZmSetting.TRUSTED_ADDR_LIST_MAX_NUM_ENTRIES);
-            break;
-    }
+	this._max = (this._settingId == ZmSetting.MAIL_BLACKLIST)
+		? appCtxt.get(ZmSetting.MAIL_BLACKLIST_MAX_NUM_ENTRIES)
+		: appCtxt.get(ZmSetting.MAIL_WHITELIST_MAX_NUM_ENTRIES);
+
 	this._setContent(templateId);
 
 	this._list = [];
@@ -393,18 +386,11 @@ function() {
 	this.updateNumUsed();
 };
 
-ZmWhiteBlackList.prototype.getValue =
-function() {
-    return this._listView.getList().clone().getArray().join(",");
-};
-
-
 ZmWhiteBlackList.prototype.loadFromJson =
 function(data) {
 	if (data) {
 		for (var i = 0; i < data.length; i++) {
-            var content = data[i]._content ? data[i]._content : data[i];
-			var item = this._addEmail(content);
+			var item = this._addEmail(data[i]._content);
 			this._list.push(item);
 		}
 	}

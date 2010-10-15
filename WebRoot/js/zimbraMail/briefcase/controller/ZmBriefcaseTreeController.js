@@ -243,7 +243,7 @@ function(overviewId) {
 			return root.getItems();
 		}
 	}
-	return [];  
+	return [];
 };
 
 ZmBriefcaseTreeController.prototype._trashChangeListener =

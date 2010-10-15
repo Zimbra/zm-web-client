@@ -33,7 +33,6 @@ ZmPreferencesApp = function(container, parentController) {
 
 	// must be hash for case of multi-accounts
 	this._filterRules = {};
-	this._outgoingFilterRules = {};
 };
 
 // Organizer and item-related constants
@@ -110,7 +109,7 @@ function() {
 ZmPreferencesApp.prototype.getFilterController =
 function() {
 	if (!this._filterController) {
-		this._filterController = this.getPrefController().getFilterController();
+		this._filterController = new ZmFilterController(this._container, this);
 	}
 	return this._filterController;
 };
@@ -130,23 +129,6 @@ function(accountName) {
 		this._filterRules[acct] = new ZmFilterRules(acct);
 	}
 	return this._filterRules[acct];
-};
-
-/**
- * Gets the outgoing filter rules.
- * 
- * @param	{String}	[accountName]		the account name or <code>null</code> to use the active account
- * @return	{ZmFilterRules}		the filter rules
- */
-ZmPreferencesApp.prototype.getOutgoingFilterRules =
-function(accountName) {
-	var ac = window.parentAppCtxt || window.appCtxt;
-	var acct = accountName || ac.getActiveAccount().name;
-
-	if (!this._outgoingFilterRules[acct]) {
-		this._outgoingFilterRules[acct] = new ZmFilterRules(acct, true);
-	}
-	return this._outgoingFilterRules[acct];
 };
 
 ZmPreferencesApp.prototype.modifyNotify =
@@ -179,7 +161,6 @@ function(refresh) {
 ZmPreferencesApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.registerMethod("GetFilterRules", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterRules));
-	AjxDispatcher.registerMethod("GetOutgoingFilterRules", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getOutgoingFilterRules));
 	AjxDispatcher.registerMethod("GetPrefController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getPrefController));
 	AjxDispatcher.registerMethod("GetFilterController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterController));
 };
@@ -253,7 +234,6 @@ function() {
 				ZmSetting.SKIN_NAME,
 				ZmSetting.CLIENT_TYPE,
 				ZmSetting.DEFAULT_TIMEZONE,
-                ZmSetting.DEFAULT_PRINTFONTSIZE,
 				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
 				ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED // offline
 			]
@@ -295,17 +275,6 @@ function() {
 				AjxDispatcher.require("Share");
 				return new ZmSharingPage(parent, section, controller);
 			}
-		},
-		NOTIFICATIONS: {
-			title: ZmMsg.reminders,
-			icon: "ApptReminder",
-			templateId: "prefs.Pages#Notifications",
-			priority: 88,
-			precondition: ZmSetting.CALENDAR_ENABLED,
-			prefs: [
-				ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS,
-				ZmSetting.CAL_EMAIL_REMINDERS_ENABLED
-			]
 		},
 		MOBILE: {
 			title: ZmMsg.mobileDevices,
@@ -391,8 +360,8 @@ function() {
 	ZmPref.registerPref("COMPOSE_INIT_FONT_FAMILY", {
 		displayName:		ZmMsg.defaultFontSettings,
 		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions: 	["Arial", "Arial Black","Comic Sans MS","Courier New", "Lucida Console", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana"],
-		options: 			["Arial", "Arial Black","Comic Sans MS","Courier New", "Lucida Console", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana"],
+		displayOptions: 	["Arial", "Times New Roman", "Courier", "Verdana"],
+		options: 			["Arial", "Times New Roman", "Courier", "Verdana"],
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
@@ -423,17 +392,10 @@ function() {
     ZmPref.registerPref("DEFAULT_TIMEZONE", {
         displayName:		ZmMsg.selectTimezone,
         displayContainer:	ZmPref.TYPE_SELECT,
-        displayParams:		{ layout: DwtMenu.LAYOUT_SCROLL, maxRows:ZmPref.MAX_ROWS },
+        displayParams:		{ cascade: false },
         displayOptions:		AjxTimezone.getZonePreferences(),
         options:			AjxTimezone.getZonePreferencesOptions()
     });
-
-    ZmPref.registerPref("DEFAULT_PRINTFONTSIZE", {
-		displayName:		ZmMsg.printFontSizePref,
-		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions: 	fontSizeOptions,
-        options:            fontSizeValueOptions
-	});
 
     ZmPref.registerPref("EXPORT_FOLDER", {
         displayContainer:	ZmPref.TYPE_CUSTOM
@@ -622,8 +584,7 @@ function() {
 	ZmPref.registerPref("SAVE_TO_SENT", {
 		displayName:		ZmMsg.saveToSent,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		ZmSetting.MAIL_ENABLED,
-		changeFunction:		AjxCallback.simpleClosure(ZmPref.onChangeConfirm, null, ZmMsg.saveToSentWarning, ZmPref.getSendToFiltersActive, true, new AjxCallback(null, ZmPref.setFormValue, ["SAVE_TO_SENT", true]))
+		precondition:		ZmSetting.MAIL_ENABLED
 	});
 
 	ZmPref.registerPref("SEARCH_INCLUDES_SPAM", {
@@ -696,18 +657,13 @@ function(callback) {
 
 ZmPreferencesApp.prototype._getSharingView =
 function() {
-	var sharingSection = this.getPreferencesPage("SHARING");
-	return (sharingSection && sharingSection.view);
-};
-
-ZmPreferencesApp.prototype.getPreferencesPage =
-function(id) {
 	if (!this._prefController) {
 		return null;
 	}
 	var prefCtlr = this.getPrefController();
 	var prefsView = prefCtlr && prefCtlr.getPrefsView();
-	return prefsView && prefsView.getView(id);
+	var sharingSection = prefsView && prefsView.getView("SHARING");
+	return (sharingSection && sharingSection.view);
 };
 
 // needed to hide zimlet tree view for multi-account

@@ -39,6 +39,7 @@ ZmAcceptShareDialog = function(parent, className) {
 	// create formatters
 	this._headerFormatter = new AjxMessageFormat(ZmMsg.acceptShareHeader);
 	this._detailsFormatter = new AjxMessageFormat(ZmMsg.acceptShareDetails);
+	this._defaultNameFormatter = new AjxMessageFormat(ZmMsg.shareNameDefault);
 };
 
 ZmAcceptShareDialog.prototype = new DwtDialog;
@@ -76,7 +77,7 @@ function(share, fromAddr) {
 	this._questionEl.innerHTML = "<b>" + ZmMsg.acceptShareQuestion + "</b>";
 
 	var namePart = share.grantor.name || (share.grantor.email && share.grantor.email.substr(0, share.grantor.email.indexOf('@')));
-	this._nameEl.value = ZmShare.getDefaultMountpointName(namePart, share.link.name);
+	this._nameEl.value = this._defaultNameFormatter.format([namePart, share.link.name]);
 
 	this._reply.setReplyType(ZmShareReply.NONE);
 	this._reply.setReplyNote("");

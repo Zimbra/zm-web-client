@@ -54,7 +54,7 @@ ZmMultiColView = function(parent, controller, dropTgt) {
 	//override the default style set on DwtControl module
 	var el = this.getHtmlElement();
 	el.style.overflow = "";
-};
+}
 
 ZmMultiColView.prototype = new DwtComposite;
 ZmMultiColView.prototype.constructor = ZmMultiColView;
@@ -258,7 +258,7 @@ function(ev){
     if(ev.event == ZmEvent.E_MOVE){
         //If the col list visible, add the briefcase item
         var lv = this._getItemListView(item.folderId);
-        if(lv && lv._getRowIndex(item) === null){
+        if(lv){
             lv.addItem(item, 0, true);   
         }
     }
@@ -267,9 +267,9 @@ function(ev){
 ZmMultiColView.prototype.handleNotifyCreate =
 function(create){
     var fId = create.folderId || create.l;
-    var lv = this._getItemListView(fId) || this._curListView;    
+    var lv = this._getItemListView(fId) || this._curListView;
     var list = lv && lv._zmList;    
-    if(list && !list.getById(create.id)){
+    if(list){
         list.notifyCreate(create);
     }
 };        

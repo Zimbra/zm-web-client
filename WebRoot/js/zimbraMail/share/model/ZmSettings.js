@@ -43,7 +43,7 @@ ZmSettings = function(noInit) {
 	this._handleImplicitChange = new AjxListener(this, this._implicitChangeListener);
 
 	if (!noInit) {
-        this.initialize();
+		this.initialize();
 	}
 };
 
@@ -486,10 +486,9 @@ function(result){
  * @param {AjxCallback}	callback		the callback to run after response is received
  * @param {ZmBatchCommand}	batchCommand	the batch command
  * @param {ZmZimbraAccount}	account		the account to save under
- * @param {boolean}			isImplicit	if true, we are saving implicit settings
  */
 ZmSettings.prototype.save =
-function(list, callback, batchCommand, account, isImplicit) {
+function(list, callback, batchCommand, account) {
 	if (!(list && list.length)) { return; }
 
 	var acct = account || appCtxt.getActiveAccount();
@@ -547,14 +546,15 @@ function(list, callback, batchCommand, account, isImplicit) {
 
 	if (gotOne) {
 		var respCallback;
+		var asyncMode = false;
 		if (callback || batchCommand) {
 			respCallback = new AjxCallback(this, this._handleResponseSave, [list, callback]);
+			asyncMode = true;
 		}
 		if (batchCommand) {
 			batchCommand.addNewRequestParams(soapDoc, respCallback);
 		} else {
-			appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
-			 										accountName:acct.name, noBusyOverlay:isImplicit});
+			appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:asyncMode, callback:respCallback, accountName:acct.name});
 		}
 	}
 };
@@ -566,10 +566,8 @@ ZmSettings.prototype._handleResponseSaveMetaData =
 function(list, result) {
 	for (var i = 0; i < list.length; i++) {
 		var setting = list[i];
-		if (!ZmSetting.IS_IMPLICIT[setting.id]) {
-			setting.origValue = setting.copyValue();
-			setting._notify(ZmEvent.E_MODIFY);
-		}
+		setting.origValue = setting.copyValue();
+		setting._notify(ZmEvent.E_MODIFY);
 	}
 };
 
@@ -584,9 +582,7 @@ function(list, callback, result) {
 		for (var i = 0; i < list.length; i++) {
 			var setting = list[i];
 			setting.origValue = setting.copyValue();
-			if (!ZmSetting.IS_IMPLICIT[setting.id]) {
-				setting._notify(ZmEvent.E_MODIFY);
-			}
+			setting._notify(ZmEvent.E_MODIFY);
 		}
 		// notify any listeners on the settings as a whole
 		this._notify(ZmEvent.E_MODIFY, {settings:list});
@@ -645,7 +641,7 @@ function() {
 	// CONFIG SETTINGS
 	this.registerSetting("AC_TIMER_INTERVAL",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300});
 	this.registerSetting("ASYNC_MODE",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"main"});
+	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"GNR"});
 
 	// next 3 are replaced during deployment
 	this.registerSetting("CLIENT_DATETIME",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildDateTime@"});
@@ -696,7 +692,6 @@ function() {
 	this.registerSetting("VOICE_ENABLED",					{name:"zimbraFeatureVoiceEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("VOICE_UPSELL_ENABLED",			{name:"zimbraFeatureVoiceUpsellEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("VOICE_UPSELL_URL",				{name:"zimbraFeatureVoiceUpsellURL", type:ZmSetting.T_COS});
-	this.registerSetting("MAIL_SEND_LATER_ENABLED",				{name:"zimbraFeatureMailSendLaterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
 	// COS SETTINGS
 	this.registerSetting("ATTACHMENTS_BLOCKED",				{name:"zimbraAttachmentsBlocked", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -705,10 +700,8 @@ function() {
 	this.registerSetting("BROWSE_ENABLED",					{name:"zimbraFeatureAdvancedSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("CHANGE_PASSWORD_ENABLED",			{name:"zimbraFeatureChangePasswordEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("DISPLAY_NAME",					{name:"displayName", type:ZmSetting.T_COS});
-	this.registerSetting("DUMPSTER_ENABLED",				{name:"zimbraDumpsterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("ERROR_REPORT_URL",				{name:"zimbraErrorReportUrl", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
 	this.registerSetting("FLAGGING_ENABLED",				{name:"zimbraFeatureFlaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("FOLDERS_EXPANDED",				{name:"zimbraPrefFoldersExpanded", type:ZmSetting.T_METADATA, dataType: ZmSetting.D_HASH, isImplicit:true, section:ZmSetting.M_IMPLICIT});
 	this.registerSetting("FOLDER_TREE_OPEN",				{name:"zimbraPrefFolderTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isImplicit:true});
 	this.registerSetting("GAL_AUTOCOMPLETE_ENABLED",		{name:"zimbraFeatureGalAutoCompleteEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:false});
 	this.registerSetting("GAL_ENABLED",						{name:"zimbraFeatureGalEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:true});
@@ -724,7 +717,6 @@ function() {
 	this.registerSetting("MIN_POLLING_INTERVAL",			{name:"zimbraMailMinPollingInterval", type:ZmSetting.T_COS, dataType:ZmSetting.D_LDAP_TIME, defaultValue:120});
 	this.registerSetting("MOBILE_SYNC_ENABLED",				{name:"zimbraFeatureMobileSyncEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("MOBILE_POLICY_ENABLED",			{name:"zimbraFeatureMobilePolicyEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("PEOPLE_SEARCH_ENABLED",			{name:"zimbraFeaturePeopleSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("POP_ACCOUNTS_ENABLED",			{name:"zimbraFeaturePop3DataSourceEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("PORTAL_NAME",						{name:"zimbraPortalName", type:ZmSetting.T_COS, defaultValue:"example"});
 	this.registerSetting("PWD_MAX_LENGTH",					{name:"zimbraPasswordMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:64});
@@ -786,7 +778,6 @@ function() {
 	this.registerSetting("COMPOSE_INIT_FONT_FAMILY",		{name:"zimbraPrefHtmlEditorDefaultFontFamily", type:ZmSetting.T_PREF, defaultValue:ZmSetting.COMPOSE_FONT_FAM, isGlobal:true});
 	this.registerSetting("COMPOSE_INIT_FONT_SIZE",			{name:"zimbraPrefHtmlEditorDefaultFontSize", type:ZmSetting.T_PREF, defaultValue:ZmSetting.COMPOSE_FONT_SIZE, isGlobal:true});
 	this.registerSetting("DEFAULT_TIMEZONE",				{name:"zimbraPrefTimeZoneId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:AjxTimezone.getServerId(AjxTimezone.DEFAULT), isGlobal:true});
-    this.registerSetting("DEFAULT_PRINTFONTSIZE",	    	{name:"zimbraPrefDefaultPrintFontSize", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.PRINT_FONT_SIZE, isGlobal:true});    
 	this.registerSetting("FILTERS",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("IDENTITIES",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("INITIALLY_SEARCH_GAL",			{name:"zimbraPrefGalSearchEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -915,7 +906,7 @@ function(ev) {
 	var id = ev.source.id;
 	var setting = this.getSetting(id);
 	if (ZmSetting.IS_IMPLICIT[id] && setting) {
-		this.save([setting], null, null, appCtxt.getActiveAccount(), true);
+		this.save([setting]);
 	}
 };
 

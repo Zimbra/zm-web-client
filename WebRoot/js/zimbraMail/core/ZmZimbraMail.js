@@ -303,7 +303,10 @@ ZmZimbraMail.killSplash =
 function() {
 	// 	Splash screen is now a part of the skin, loaded in statically via the JSP
 	//	as a well-known ID.  To hide the splash screen, just hide that div.
-	Dwt.hide("skin_container_splash_screen");
+	var splashDiv = Dwt.byId("skin_container_splash_screen");
+	if (splashDiv) {
+		Dwt.hide(splashDiv);
+	}
 };
 
 /**
@@ -409,11 +412,7 @@ function(params) {
 				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account)) {
 					this.handleCalendarComponents();
 				}
-				var sc = appCtxt.getSearchController();
-				sc.getSearchToolbar().initAutocomplete();
-				if (!appCtxt.isChildWindow) {
-					sc.peopleSearchToolBar.initAutocomplete();
-				}
+				appCtxt.getSearchController().getSearchToolbar().initAutocomplete();
 			});
 		this.addPostRenderCallback(callback, 0, 0, true);
 	}
@@ -453,16 +452,6 @@ function() {
 	var calMgr = appCtxt.getCalManager();
 	var reminderController = calMgr.getReminderController();
 	reminderController.refresh();
-};
-
-/**
- * Shows reminders.
- */
-ZmZimbraMail.prototype.showTaskReminder =
-function() {
-	var taskMgr = appCtxt.getTaskManager();
-	var taskReminderController = taskMgr.getReminderController();
-	taskReminderController.refresh();
 };
 
 /**
@@ -591,10 +580,10 @@ function(params, result) {
 	{
 		this.handleCalendarComponents();
 	}
-
+	
     if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && appCtxt.isOffline) {
         this.handleOfflineMailTo(location.search);
-    }   
+    }
 };
 
 /**
@@ -616,14 +605,6 @@ function() {
 		var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
 		AjxTimedAction.scheduleAction(reminderAction, delay);
 	}
-	
-	// reminder controlled by calendar preferences setting
-	if (appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) != 0) {
-		var reminderAction = new AjxTimedAction(this, this.showTaskReminder);
-		var delay = appCtxt.isOffline ? 0 : ZmTasksApp.REMINDER_START_DELAY;
-		AjxTimedAction.scheduleAction(reminderAction, delay);
-	}
-	
 };
 
 /**
@@ -647,18 +628,7 @@ function(params) {
 	this.setUserInfo();
 
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().searchPanel;
-	}
-
-	if (appCtxt.get(ZmSetting.PEOPLE_SEARCH_ENABLED) &&
-		(appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
-		appCtxt.get(ZmSetting.GAL_ENABLED) ||
-		appCtxt.isOffline))
-	{
-		this._components[ZmAppViewMgr.C_PEOPLE_SEARCH] = appCtxt.getSearchController().peopleSearchToolBar;
-	}
-	else {
-		Dwt.hide(ZmId.SKIN_PEOPLE_SEARCH);
+		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().getSearchPanel();
 	}
 
 	this.getKeyMapMgr();	// make sure keyboard handling is initialized
@@ -1478,15 +1448,6 @@ function() {
 							 displayOrder:		300
 							});
 
-    ZmOrganizer.registerOrg(ZmOrganizer.SHARE, {
-        orgClass:       "ZmShareProxy",
-        treeController: "ZmShareTreeController",
-        labelKey:       "sharedFoldersHeader",
-        compareFunc:	"ZmFolder.sortCompare",
-        displayOrder:	101, // NOTE: Always show shares below primary folder tree
-        hideEmpty:		false
-    });
-
 	ZmOrganizer.registerOrg(ZmOrganizer.TAG,
 							{app:				ZmApp.MAIN,
 							 nameKey:			"tag",
@@ -2294,24 +2255,12 @@ function(id) {
  * @param {constant}	[params.level] ZmStatusView.LEVEL_INFO, ZmStatusView.LEVEL_WARNING, or ZmStatusView.LEVEL_CRITICAL
  * @param {constant}	[params.detail] 	the details
  * @param {constant}	[params.transitions]		the transitions
- * @param {constant}	[params.toast]		the toast control 
- * @param {boolean}     [force]        force any displayed toasts out of the way (dismiss them and run their dismissCallback). Enqueued messages that are not yet displayed will not be displayed
- * @param {AjxCallback}    [dismissCallback]    callback to run when the toast is dismissed (by another message using [force], or explicitly calling ZmStatusView.prototype.dismiss())
- * @param {AjxCallback}    [finishCallback]     callback to run when the toast finishes its transitions by itself (not when dismissed)
+ * @param {constant}	[params.toast]		the toast control
  */
 ZmZimbraMail.prototype.setStatusMsg =
 function(params) {
 	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
 	this.statusView.setStatusMsg(params);
-};
-
-/**
- * Dismisses the displayed status message, if any
- */
-
-ZmZimbraMail.prototype.dismissStatusMsg =
-function(all) {
-	this.statusView.dismissStatusMsg(all);
 };
 
 /**
@@ -2340,7 +2289,6 @@ ZmZimbraMail.prototype.handleKeyAction =
 function(actionCode, ev) {
 
 	DwtMenu.closeActiveMenu();
-	this.dismissStatusMsg();
 
 	var app = ZmApp.GOTO_ACTION_CODE_R[actionCode];
 	if (app) {
@@ -2428,15 +2376,6 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.FOCUS_TOOLBAR: {
 			this.focusToolbar();
-			break;
-		}
-
-		case ZmKeyMap.UNDO: {
-			if (!appCtxt.isChildWindow) {
-				var actionController = appCtxt.getActionController();
-				if (actionController)
-					actionController.undoCurrent();
-			}
 			break;
 		}
 

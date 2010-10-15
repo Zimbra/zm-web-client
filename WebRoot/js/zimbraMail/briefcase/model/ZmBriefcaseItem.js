@@ -264,56 +264,6 @@ function(msgId, partId, name, folderId, replaceFile) {
 	appCtxt.getAppController().sendRequest(params);
 };
 
-ZmBriefcaseItem.prototype.restoreVersion =
-function(restoreVerion, callback){
-
-    var json = {
-		SaveDocumentRequest: {
-			_jsns: "urn:zimbraMail",
-			doc: {
-				id:	this.id,
-                ver: this.version,
-                doc: {
-                    id: this.id,
-                    ver: restoreVerion
-                }
-			}
-		}
-	};
-
-	var params = {
-		jsonObj:		json,
-		asyncMode:		true,
-		callback:		callback
-	};
-	return appCtxt.getAppController().sendRequest(params);
-    
-};
-
-ZmBriefcaseItem.prototype.deleteVersion =
-function(version, callback){
-
-    var json = {
-		PurgeRevisionRequest: {
-			_jsns: "urn:zimbraMail",
-			revision: {
-				id:	this.id,
-                ver: version,
-                includeOlderRevisions: false
-			}
-		}
-	};
-
-	var params = {
-		jsonObj:		json,
-		asyncMode:		true,
-		callback:		callback
-	};
-	return appCtxt.getAppController().sendRequest(params);
-
-};
-
-
 ZmBriefcaseItem.prototype._handleResponseCreateItem =
 function(folderId,response) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.fileCreated);
@@ -323,88 +273,6 @@ function(folderId,response) {
 ZmBriefcaseItem.prototype._handleErrorCreateItem =
 function(ex) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateFile, ZmStatusView.LEVEL_CRITICAL);
-};
-
-ZmBriefcaseItem.prototype.getRevisions =
-function(callback, errorCallback, accountName){
-    ZmBriefcaseItem.getRevision(this.id, -1 ,callback, errorCallback, accountName);
-};
-
-ZmBriefcaseItem.getRevision =
-function(itemId, version, callback, errorCallback, accountName) {
-	var json = {
-		ListDocumentRevisionsRequest: {
-			_jsns: "urn:zimbraMail",
-			doc: {
-				id:	itemId,
-                ver: version,   //verion=-1 for all versions of count
-                count: 50       //parametrize count to allow pagination
-			}
-		}
-	};
-
-	var params = {
-		jsonObj:		json,
-		asyncMode:		Boolean(callback),
-		callback:		callback,
-		errorCallback:	errorCallback,
-		accountName:	accountName
-	};
-	return appCtxt.getAppController().sendRequest(params);
-};
-
-ZmBriefcaseItem.prototype.lock =
-function(callback, errorCallback, accountName){
-    ZmBriefcaseItem.lock(this.id, callback, errorCallback, accountName);  
-};
-
-ZmBriefcaseItem.lock =
-function(itemId, callback, errorCallback, accountName) {
-	var json = {
-		ItemActionRequest: {
-			_jsns: "urn:zimbraMail",
-			action: {
-				id:	itemId instanceof Array ? itemId.join() : itemId,
-				op:	"lock"
-			}
-		}
-	};
-
-	var params = {
-		jsonObj:		json,
-		asyncMode:		Boolean(callback),
-		callback:		callback,
-		errorCallback:	errorCallback,
-		accountName:	accountName
-	};
-	return appCtxt.getAppController().sendRequest(params);
-};
-
-ZmBriefcaseItem.prototype.unlock =
-function(callback, errorCallback, accountName){
-    ZmBriefcaseItem.unlock(this.id, callback, errorCallback, accountName);
-};
-
-ZmBriefcaseItem.unlock =
-function(itemId, callback, errorCallback, accountName) {
-	var json = {
-		ItemActionRequest: {
-			_jsns: "urn:zimbraMail",
-			action: {
-				id:	itemId instanceof Array ? itemId.join() : itemId,
-				op:	"unlock"
-			}
-		}
-	};
-
-	var params = {
-		jsonObj:		json,
-		asyncMode:		Boolean(callback),
-		callback:		callback,
-		errorCallback:	errorCallback,
-		accountName:	accountName
-	};
-	return appCtxt.getAppController().sendRequest(params);
 };
 
 /**
@@ -434,14 +302,6 @@ function(node) {
 	if (node.ver)	{ this.version = Number(node.ver) || 0; }
 	if (node.ct)	{ this.contentType = node.ct.split(";")[0]; }
 	if (node.t)		{ this._parseTags(node.t); }
-
-    this.locked = false;
-    if (node.loid)    {
-        this.locked = true;
-        this.lockId = node.loid;
-        this.lockUser = node.loe;
-        this.lockTime = node.lt;
-    }
 };
 
 // Mendoza line
@@ -461,13 +321,6 @@ function(data) {
 	if (data.ver) this.version = Number(data.ver);
 	if (data.ct) this.contentType = data.ct.split(";")[0];
 	this._parseTags(data.t);
-    this.locked = false;
-    if (data.loid)    {
-        this.locked = true;
-        this.lockId = data.loid;
-        this.lockUser = data.loe;
-        this.lockTime = data.lt;
-    }
 };
 
 ZmBriefcaseItem.prototype.notifyModify =
@@ -496,8 +349,6 @@ ZmBriefcaseFolderItem = function(folder) {
 	this.folderId = folder.parent && folder.parent.id;
 	this.isFolder = true;
 	this.folder = folder;
-    this.size = folder.sizeTotal;
-    this.creator = folder.getOwner();
 
 	this._data = {};
 };
@@ -519,67 +370,3 @@ ZmBriefcaseFolderItem.prototype.setData =
 function(key, value) {
   this._data[key] = value;
 };
-
-ZmBriefcaseFolderItem.prototype.getIcon =
-function(baseIcon, large){
-    if(baseIcon)
-        return ZmBriefcaseItem.prototype.getIcon.call(this, true);
-    else
-        return this.folder.getIconWithColor();  
-};
-
-
-//ZmRevisionItem
-ZmRevisionItem = function(id, parentItem){
-    if(arguments.length == 0) return;
-    this.parent = parentItem;
-    this.isRevision = true;
-    this.id = id;
-    ZmBriefcaseItem.call(this, id);
-};
-
-ZmRevisionItem.prototype = new ZmBriefcaseItem;
-ZmRevisionItem.prototype.constructor = ZmRevisionItem;
-
-ZmRevisionItem.prototype.set =
-function(data){
-
-    //Props
-    //this.id =       this.id || data.id;
-    this.version =  data.ver;
-    if (data.name)  this.name = data.name;
-    if (data.l)     this.folderId = data.l;
-    if (data.ct)    this.contentType = data.ct.split(";")[0];
-    if (data.s)     this.size = Number(data.s);
-
-    //Data
-    if (data.cr)    this.creator = data.cr;
-    if (data.cd)    this.createDate = new Date(Number(data.cd));
-    if (data.leb)   this.modifier = data.leb;
-    if (data.md)    this.modifyDate = new Date(Number(data.md));
-	if (data.desc)  this.notes = data.desc;
-
-    this.subject = this.getNotes();
-    this._parseTags(data.t);
-
-};
-
-ZmRevisionItem.prototype.getNotes =
-function(){
-    return AjxMessageFormat.format(ZmMsg.revisionNotes, [this.version, (this.notes || ZmMsg.emptyNotes)]);  
-};
-
-ZmRevisionItem.prototype.getRestUrl =
-function(){
-    var restUrl = ZmBriefcaseItem.prototype.getRestUrl.call(this);
-    if(this.version){
-        restUrl = restUrl + ( restUrl.match(/\?/) ? '&' : '?' ) + "ver="+this.version;
-    }
-    return restUrl;
-};
-
-ZmRevisionItem.prototype.getIcon =
-function(){
-   return null; 
-};
-

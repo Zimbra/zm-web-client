@@ -7,7 +7,6 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    ${zm:clearMessageCache(mailbox)}
     <c:choose>
         <c:when test="${not empty mailbox.prefs.locale}">
             <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
@@ -32,23 +31,12 @@
             font-size:8pt;
             color:#666;
         }
-        .ZhCallListPrintView td, .zPrintMsgs *{
-            font-family:Tahoma,Arial,Helvetica,sans-serif;
-            font-size:${mailbox.prefs.defaultPrintFontSize} !important;
-        }
-        .companyName{
-             color: #555555 !important;
-        }
-        .sectionLabel{
-             color: gray !important;
-        }
     </style>
 </head>
 <body style='background:white;'>
-<div class="ZhCallListPrintView">
 <table><tr>
-    <td><b><fmt:message key="zimbraTitle"/></b></td>
-    <td nowrap width='1%'>${fn:escapeXml(mailbox.name)}</td>
+    <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
+    <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
 </tr></table>
 <hr/>
 <c:set var="taskIds" value="${fn:join(paramValues.id, ',')}"/>
@@ -58,8 +46,8 @@
             <app:handleError>
                 <zm:composeUploader var="uploader"/>
                 <c:set var="compose" value="${uploader.compose}"/>
-                
-                <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}"/>
+
+                <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
                 <c:choose>
                     <c:when test="${empty compose}">
                         <zm:messageCompose var="compose" message="${message}" action="${empty message ? 'apptnew' : 'apptedit'}"
@@ -75,17 +63,10 @@
                         <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
                     </c:when>
                 </c:choose>
-
-                <c:set var="body" value="${message.body}"/>
-                <c:set var="theBody">
-                    <c:if test="${body.isTextHtml or body.isTextPlain}">
-                        ${zm:getPartHtmlContent(body, message)}
-                    </c:if>
-                </c:set>
             </app:handleError>
 
 
-            <div class="zPrintMsgs" style="width: 100%;">
+            <div style="width: 100%;">
                 <table cellpadding="2" cellspacing="0" width="100%">
                     <tr>
                         <td colspan="2">
@@ -153,22 +134,11 @@
             <hr/>
             <table cellpadding="2" cellspacing="0" width="100%"><tr><td>
                     <c:choose>
-                        <c:when test="${body.isTextHtml}">
-                            <c:url var="iframeUrl" value="/h/imessage">
-                                <c:param name="id" value="${message.id}"/>
-                                <c:param name="part" value="${message.partName}"/>
-                                <c:param name="xim" value="${true}"/>
-                            </c:url>
-                            <app:body message="${message}" body="${message.body}" theBody="${theBody}" mailbox="${mailbox}" isPrintView="${true}" counter="${status.index}"/>
-                        </c:when>
-                        <c:when test="${message.invite.component.isNoBlob}">
-                            <app:body message="${message}" body="${message.body}" theBody="${not empty compose.descriptionHtml ? compose.descriptionHtml : compose.description}" mailbox="${mailbox}" isPrintView="${true}" counter="${status.index}"/>
-                        </c:when>
+                        <c:when test="${not empty compose.descriptionHtml}">${compose.descriptionHtml}</c:when>
                         <c:otherwise>
-                            ${theBody}
+                            ${fn:escapeXml(empty compose.description ? compose.content : compose.description)}
                         </c:otherwise>
                     </c:choose>
-
                 </td></tr>
             </table>
             <hr/>
@@ -185,7 +155,7 @@
                 <zm:composeUploader var="uploader"/>
                 <c:set var="compose" value="${uploader.compose}"/>
 
-                <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}"/>
+                <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
                 <c:choose>
                     <c:when test="${empty compose}">
                         <zm:messageCompose var="compose" message="${message}" action="${empty message ? 'apptnew' : 'apptedit'}"
@@ -201,15 +171,10 @@
                         <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
                     </c:when>
                 </c:choose>
-                <c:set var="body" value="${message.body}"/>
-                <c:set var="theBody">
-                    <c:if test="${body.isTextHtml or body.isTextPlain}">
-                        ${zm:getPartHtmlContent(body, message)}
-                    </c:if>
-                </c:set>
+                
             </app:handleError>
 
-            <div class="zPrintMsgs" style="width: 100%;">
+            <div style="width: 100%;">
                 <table cellpadding="2" cellspacing="0" width="100%">
                     <tr>
                         <td colspan="2">
@@ -276,20 +241,10 @@
             </div>
             <hr/>
             <table cellpadding="2" cellspacing="0" width="100%"><tr><td>
-                   <c:choose>
-                        <c:when test="${body.isTextHtml}">
-                            <c:url var="iframeUrl" value="/h/imessage">
-                                <c:param name="id" value="${message.id}"/>
-                                <c:param name="part" value="${message.partName}"/>
-                                <c:param name="xim" value="${true}"/>
-                            </c:url>
-                            <app:body message="${message}" body="${message.body}" theBody="${theBody}" mailbox="${mailbox}" isPrintView="${true}" counter="${status.index}"/>
-                        </c:when>
-                        <c:when test="${message.invite.component.isNoBlob}">
-                            <app:body message="${message}" body="${message.body}" theBody="${not empty compose.descriptionHtml ? compose.descriptionHtml : compose.description}" mailbox="${mailbox}" isPrintView="${true}" counter="${status.index}"/>
-                        </c:when>
+                    <c:choose>
+                        <c:when test="${not empty compose.descriptionHtml}">${compose.descriptionHtml}</c:when>
                         <c:otherwise>
-                            ${theBody}
+                            ${fn:escapeXml(empty compose.description ? compose.content : compose.description)}
                         </c:otherwise>
                     </c:choose>
                 </td></tr>
@@ -298,7 +253,6 @@
         </c:forEach>
     </c:otherwise>
 </c:choose>
-</div> 
 <script type="text/javascript">
 	<!--
 	window.print();

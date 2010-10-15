@@ -35,6 +35,10 @@
 ZmMailApp = function(container, parentController) {
 	ZmApp.call(this, ZmApp.MAIL, container, parentController);
 
+	this._sessionController		= {};
+	this._sessionId				= {};
+	this._curSessionId			= {};
+
 	this._dataSourceCollection	= {};
 	this._identityCollection	= {};
 	this._signatureCollection	= {};
@@ -169,8 +173,6 @@ function(settings) {
 	settings.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 	settings.registerSetting("MAIL_ATTACH_VIEW_ENABLED",		{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_BLACKLIST",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST});
-    settings.registerSetting("TRUSTED_ADDR_LIST",			    {name:"zimbraPrefMailTrustedSenderList", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
-	settings.registerSetting("TRUSTED_ADDR_LIST_MAX_NUM_ENTRIES",	{name:"zimbraMailTrustedSenderListMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
 	settings.registerSetting("MAIL_BLACKLIST_MAX_NUM_ENTRIES",	{name:"zimbraMailBlacklistMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
 	settings.registerSetting("MAIL_FOLDER_COLORS_ENABLED",		{name:"zimbraPrefFolderColorEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("MAIL_FORWARDING_ADDRESS",			{name:"zimbraPrefMailForwardingAddress", type:ZmSetting.T_PREF});
@@ -336,23 +338,8 @@ function() {
 			],
 			manageChanges: true,
 			createView: function(parent, section, controller) {
-				return controller.getFilterController(section).getFilterView();
+				return controller.getFilterRulesController().getFilterRulesView();
 			}
-		},
-        TRUSTED_ADDR: {
-            parentId: "MAIL",
-			title: ZmMsg.trustedAddrs,
-			icon: "Trusted",
-			templateId: "prefs.Pages#Trusted",
-			priority: 60,
-			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
-			createView: function(parent, section, controller) {
-				return new ZmTrustedPage(parent, section, controller);
-			},
-            manageDirty: true,
-            prefs: [
-				    ZmSetting.TRUSTED_ADDR_LIST
-                ]
 		}
 	};
 
@@ -404,10 +391,6 @@ function() {
 	});
 
 	ZmPref.registerPref("MAIL_BLACKLIST", {
-		displayContainer:	ZmPref.TYPE_CUSTOM
-	});
-
-    ZmPref.registerPref("TRUSTED_ADDR_LIST", {
 		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 
@@ -780,12 +763,10 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_RESET, {textKey:"reset", image:"Refresh", tooltipKey: "refreshFilters"});
 	ZmOperation.registerOp(ZmId.OP_RUN_FILTER_RULE, {textKey:"filterRun", image:"SwitchFormat"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SAVE_DRAFT, {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder", shortcut:ZmKeyMap.SAVE}, ZmSetting.SAVE_DRAFT_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_SEND_MENU, {textKey:"send", tooltipKey:"sendTooltip", image:"Send"}, ZmSetting.SAVE_DRAFT_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_SEND_LATER, {textKey:"sendLater", tooltipKey:"sendLaterTooltip", image:"SendLater"}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHOW_BCC, {textKey:"showBcc"});
 	ZmOperation.registerOp(ZmId.OP_SHOW_ONLY_MAIL, {textKey:"showOnlyMail", image:"Conversation"}, ZmSetting.MIXED_VIEW_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHOW_ORIG, {textKey:"showOrig", image:"Message"});
-	ZmOperation.registerOp(ZmId.OP_SPAM, {textKey:"junkLabel", tooltipKey:"junkTooltip", image:"JunkMail", shortcut:ZmKeyMap.SPAM, textPrecedence:70}, ZmSetting.SPAM_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SPAM, {textKey:"junk", tooltipKey:"junkTooltip", image:"JunkMail", shortcut:ZmKeyMap.SPAM, textPrecedence:70}, ZmSetting.SPAM_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_USE_PREFIX, {textKey:"usePrefix"});
 };
 
@@ -1753,6 +1734,40 @@ function(sessionId) {
 ZmMailApp.prototype.getCurrentSessionId =
 function(type) {
 	return this._curSessionId[type];
+};
+
+ZmMailApp.prototype.getSessionController =
+function(type, controllerClass, sessionId) {
+
+	if (!this._sessionController[type]) {
+		this._sessionController[type] = {};
+		this._sessionId[type] = 1;
+	}
+
+	if (sessionId && this._sessionController[type][sessionId]) {
+		return this._sessionController[type][sessionId];
+	}
+
+	var controllers = this._sessionController[type];
+	var controller;
+	for (var id in controllers) {
+		if (controllers[id].inactive) {
+			controller = controllers[id];
+			break;
+		}
+	}
+
+	sessionId = controller ? controller.sessionId : this._sessionId[type]++;
+
+	if (!controller) {
+		var ctlrClass = eval(controllerClass);
+		controller = this._sessionController[type][sessionId] = new ctlrClass(this._container, this);
+	}
+	controller.setSessionId(type, sessionId);
+	this._curSessionId[type] = sessionId;
+	controller.inactive = false;
+
+	return controller;
 };
 
 ZmMailApp.prototype.getConfirmController =

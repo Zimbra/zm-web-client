@@ -13,30 +13,28 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCalBaseView = function(parent, className, posStyle, controller, view, readonly) {
+ZmCalBaseView = function(parent, className, posStyle, controller, view) {
 	if (arguments.length == 0) { return; }
 
 	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
 
-	this._isReadOnly = readonly;
-
 	// BEGIN LIST-RELATED
 	this._setMouseEventHdlrs();
 	this.setCursor("default");
-
+	
 	this._listenerMouseOver = new AjxListener(this, ZmCalBaseView.prototype._mouseOverListener);
 	this._listenerMouseOut = new AjxListener(this, ZmCalBaseView.prototype._mouseOutListener);
-	this._listenerDoubleClick = new AjxListener(this, ZmCalBaseView.prototype._doubleClickListener);
 	this._listenerMouseDown = new AjxListener(this, ZmCalBaseView.prototype._mouseDownListener);
 	this._listenerMouseUp = new AjxListener(this, ZmCalBaseView.prototype._mouseUpListener);
 	this._listenerMouseMove = new AjxListener(this, ZmCalBaseView.prototype._mouseMoveListener);
+	this._listenerDoubleClick = new AjxListener(this, ZmCalBaseView.prototype._doubleClickListener);
 	this.addListener(DwtEvent.ONMOUSEOVER, this._listenerMouseOver);
 	this.addListener(DwtEvent.ONMOUSEOUT, this._listenerMouseOut);
-	this.addListener(DwtEvent.ONDBLCLICK, this._listenerDoubleClick);
 	this.addListener(DwtEvent.ONMOUSEDOWN, this._listenerMouseDown);
 	this.addListener(DwtEvent.ONMOUSEUP, this._listenerMouseUp);
 	this.addListener(DwtEvent.ONMOUSEMOVE, this._listenerMouseMove);
-
+	this.addListener(DwtEvent.ONDBLCLICK, this._listenerDoubleClick);
+	
 	this._controller = controller;
 	this.view = view;	
 	this._evtMgr = new AjxEventMgr();	 
@@ -86,7 +84,6 @@ ZmCalBaseView.deepenThreshold = .3;
 
 ZmCalBaseView._getColors = function(color) {
 	// generate header and body colors
-    color = color || ZmOrganizer.COLOR_VALUES[ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.CALENDAR]];
 	var hs = { bgcolor: AjxColor.darken(color, ZmCalBaseView.headerColorDelta) };
 	var hd = { bgcolor: AjxColor.deepen(hs.bgcolor, ZmCalBaseView.deepenColorAdjustment) };
 	var bs = { bgcolor: AjxColor.lighten(color, ZmCalBaseView.bodyColorDelta)  };
@@ -134,153 +131,6 @@ function() {
 ZmCalBaseView.prototype.firstDayOfWeek =
 function() {
 	return appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
-};
-
-
-ZmCalBaseView.getWorkingHours =
-function() {
-	return appCtxt.get(ZmSetting.CAL_WORKING_HOURS) || 0;
-};
-
-ZmCalBaseView.parseWorkingHours =
-function(wHrsString) {
-    if(wHrsString === 0) {
-        return [];
-    }
-	var userTimeZone = appCtxt.get(ZmSetting.DEFAULT_TIMEZONE),
-        currentTimeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT),
-        wHrsPerDay = wHrsString.split(','),
-        i,
-        wHrs = [],
-        wDay,
-        w,
-        offset1,
-        offset2,
-        hourMinOffset = 0,
-        idx,
-        startDate = new Date(),
-        endDate = new Date(),
-        hourMin,
-        startDayIdx,
-        endDayIdx,
-        curDayIdx = endDate.getDay();
-
-    //Helper inner functions, these functions takes the advantage of the fact that wHrs is available in local scope
-    function isWorkingDay(idx) {
-        return wHrs[idx] && wHrs[idx].isWorkingDay;
-    }
-
-    function setWorkingDay(idx, startTime, endTime) {
-        if(isWorkingDay(idx)) {
-            addWorkingTime(idx, startTime, endTime);
-        }
-        else {
-            addWorkingDay(idx, startTime, endTime);
-        }
-    }
-
-    function setNonWorkingDay(idx) {
-        wHrs[idx] = {};
-        wHrs[idx].isWorkingDay = false;
-        wHrs[idx].startTime = ["0000"];
-        wHrs[idx].endTime = ["0000"];
-    }
-
-    function addWorkingDay(idx, startTime, endTime) {
-        wHrs[idx] = {};
-        wHrs[idx].isWorkingDay = true;
-        wHrs[idx].startTime = [startTime];
-        wHrs[idx].endTime = [endTime];
-    }
-
-    function addWorkingTime(idx, startTime, endTime) {
-        wHrs[idx].startTime.push(startTime);
-        wHrs[idx].endTime.push(endTime);
-    }
-    
-    if(userTimeZone != currentTimeZone) {
-        offset1 = AjxTimezone.getOffset(AjxTimezone.getClientId(currentTimeZone), startDate);
-        offset2 = AjxTimezone.getOffset(AjxTimezone.getClientId(userTimeZone), startDate);
-        hourMinOffset = offset2 - offset1;
-    }
-    for(i=0; i<wHrsPerDay.length; i++) {
-        wDay = wHrsPerDay[i].split(':');
-        w = {};
-        idx = wDay[0]-1;
-        if(wDay[1] === "N") {
-            if(!isWorkingDay(idx)) {
-                setNonWorkingDay(idx);
-            }
-            continue;
-        }
-
-        if(hourMinOffset) {
-            endDate = new Date();
-            startDate = new Date();
-            
-            endDate.setHours(wDay[3]/100, wDay[3]%100);
-            hourMin = endDate.getHours() * 60 + endDate.getMinutes() - hourMinOffset;
-            endDate.setHours(hourMin/60, hourMin%60);
-            endDayIdx = endDate.getDay();
-
-            startDate.setHours(wDay[2]/100, wDay[2]%100);
-            hourMin = startDate.getHours() * 60 + startDate.getMinutes() - hourMinOffset;
-            startDate.setHours(hourMin/60, hourMin%60);
-            startDayIdx = startDate.getDay();
-
-            if(startDayIdx == curDayIdx && endDayIdx == curDayIdx) {
-                //Case 1 working time starts current day and ends on the current day -- IDEAL one :)
-                setWorkingDay(idx, startDate.getHours() + "" + startDate.getMinutes(), endDate.getHours() + "" + endDate.getMinutes());
-            }
-            else if((endDayIdx == 0 && startDayIdx == 6) ||
-                    (startDayIdx < curDayIdx  && endDayIdx == curDayIdx)) {
-                //Case 2 working time starts prev day and ends on current day
-                startDayIdx = idx-1;
-                if(startDayIdx < 0) {
-                   startDayIdx = 6;
-                }
-                setWorkingDay(startDayIdx, startDate.getHours() + "" + startDate.getMinutes(), "2400");
-                setWorkingDay(idx, "0000", endDate.getHours() + "" + endDate.getMinutes());
-            }
-            else if((startDayIdx == 6 && endDayIdx == 0) || 
-                    (startDayIdx == curDayIdx  && endDayIdx > curDayIdx)) {
-                //Case 3 working time starts current day and ends on next day
-                endDayIdx = idx+1;
-                if(endDayIdx > 6) {
-                   endDayIdx = 0; 
-                }
-                setWorkingDay(endDayIdx, "0000", endDate.getHours() + "" + endDate.getMinutes());
-                setWorkingDay(idx, startDate.getHours() + "" + startDate.getMinutes(), "2400");
-            }
-            else if(startDayIdx < curDayIdx &&
-                    endDayIdx < curDayIdx &&
-                    startDayIdx == endDayIdx) {
-                //EDGE CASE 1: working time starts and ends on the prev day
-                startDayIdx = idx-1;
-                setWorkingDay(startDayIdx, startDate.getHours() + "" + startDate.getMinutes(), endDate.getHours() + "" + endDate.getMinutes());
-                if(!isWorkingDay(idx)) {
-                    setNonWorkingDay(idx);
-                }
-            }
-
-            else if(startDayIdx > curDayIdx &&
-                    endDayIdx > curDayIdx &&
-                    startDayIdx == endDayIdx) {
-                //EDGE CASE 2: working time starts and ends on the next day
-                endDayIdx = idx+1;
-                setWorkingDay(endDayIdx, startDate.getHours() + "" + startDate.getMinutes(), endDate.getHours() + "" + endDate.getMinutes());
-                if(!isWorkingDay(idx)) {
-                    setNonWorkingDay(idx);
-                }
-            }            
-        }
-        else {
-            //There is no timezone diff, client and server are in the same timezone
-            setWorkingDay(idx, wDay[2], wDay[3]);
-        }
-
-    }
-    return wHrs;
 };
 
 ZmCalBaseView.prototype.addViewActionListener =
@@ -437,8 +287,6 @@ function(elem, attr) {
 
 ZmCalBaseView.prototype._mouseDownListener = 
 function(ev) {
-	if (this._isReadOnly) { return; }
-
 	var div = this.getTargetItemDiv(ev);
 	if (!div) {
 		return this._mouseDownAction(ev, div);
@@ -819,17 +667,12 @@ function() {
 		}
 	}
 	list.removeAll();
-	this.removeAll();
+	this.removeAll();	
 };
 
 ZmCalBaseView.prototype.removeAll =
 function() {
 	this._selectedItems.removeAll();
-};
-
-ZmCalBaseView.prototype.layoutView =
-function() {
-    this._layout();
 };
 
 ZmCalBaseView.prototype.getCalTitle = 

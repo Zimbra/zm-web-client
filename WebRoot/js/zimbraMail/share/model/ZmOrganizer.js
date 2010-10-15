@@ -86,10 +86,7 @@ ZmOrganizer = function(params) {
 	// NOTE: has been set. In other words, the color parameter will only
 	// NOTE: be specified if explicitly set that way and not as an explicit
 	// NOTE: RGB value.
-    // NOTE: It looks like the server IS sending a color value even though
-    // NOTE: it shouldn't when an explicit RGB is set. So, instead, try to
-    // NOTE: handle this situation as well.
-	this.rgb = params.rgb || ZmOrganizer.COLOR_VALUES[params.color];
+	this.rgb = ZmOrganizer.COLOR_VALUES[params.color] || params.rgb;
 
 	if (appCtxt.isOffline && !this.account && this.id == this.nId) {
 		this.account = appCtxt.accountList.mainAccount;
@@ -112,7 +109,6 @@ ZmOrganizer = function(params) {
 // global organizer types
 ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
-ZmOrganizer.SHARE               = ZmEvent.S_SHARE;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 
@@ -128,7 +124,7 @@ ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
 ZmOrganizer.ID_BRIEFCASE		= 16;
-ZmOrganizer.ID_ALL_MAILBOXES	= 249; 
+ZmOrganizer.ID_ALL_MAILBOXES	= 249;
 ZmOrganizer.ID_NOTIFICATION_MP	= 250;
 ZmOrganizer.ID_SYNC_FAILURES	= 252;		// offline only
 ZmOrganizer.ID_OUTBOX    		= 254;		// offline only
@@ -940,7 +936,7 @@ ZmOrganizer.prototype.getIcon = function() {};
 ZmOrganizer.prototype.getIconWithColor =
 function() {
 	var icon = this.getIcon() || "";
-	var color = this.rgb || ZmOrganizer.COLOR_VALUES[this.color];
+	var color = this.rgb || this.color;
 	return color ? [icon,color].join(",color=") : icon;
 };
 
@@ -1010,10 +1006,9 @@ function(attrs) {
  * Assigns the organizer a new parent, moving it within its tree.
  *
  * @param {ZmOrganizer}		newParent		the new parent of this organizer
- * @param {boolean}		undoing			if true, action is not undoable
  */
 ZmOrganizer.prototype.move =
-function(newParent, undoing) {
+function(newParent) {
 	var newId = (newParent.nId > 0)
 		? newParent.id
 		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
@@ -1024,20 +1019,13 @@ function(newParent, undoing) {
 	{
 		return;
 	}
-	var params = {};
 
 	if (newId == ZmOrganizer.ID_TRASH) {
-		params.action = "trash";
-		params.undoing = undoing;
+		this._organizerAction({action: "trash"});
 	}
 	else {
-		params.actionText = (undoing) ? ZmMsg.actionUndoMove : ZmMsg.actionMove;
-		params.actionArg = newParent.getName(false, false, true);
-		params.action = "move";
-		params.attrs = {l: newId};
-		params.undoing = undoing;
+		this._organizerAction({action: "move", attrs: {l: newId}});
 	}
-	this._organizerAction(params);
 };
 
 /**
@@ -1658,8 +1646,6 @@ function () {
 	return Boolean(this.url);
 };
 
-/** Returns true if organizer has feeds. */
-ZmOrganizer.prototype.hasFeeds = function() { return false; };
 
 /**
  * Checks if this folder maps to a datasource. If type is given, returns
@@ -1753,10 +1739,7 @@ function(params) {
 		}
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	}
-	var actionController = appCtxt.getActionController();
-	actionController.dismiss();
-	var actionLogItem = (!params.undoing && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
-	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
+	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, params);
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
 	} else {
@@ -1779,30 +1762,10 @@ function(params) {
  * @private
  */
 ZmOrganizer.prototype._handleResponseOrganizerAction =
-function(params, actionLogItem, result) {
-	if (actionLogItem) {
-		actionLogItem.setComplete();
-	}
+function(params, result) {
 	if (params.callback) {
 		params.callback.run(result);
 	}
-	if (params.actionText) {
-		var actionController = appCtxt.getActionController();
-		var summary = ZmOrganizer.getActionSummary(params.actionText, params.numItems || 1, this.type, params.actionArg);
-		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
-		var dismissLink = actionController && actionController.getDismissLink() || "";
-		if (undoLink && actionController) {
-			appCtxt.setStatusMsg({msg: summary+undoLink+dismissLink, transitions: actionController.getStatusTransitions()});
-		} else {
-			appCtxt.setStatusMsg(summary);
-		}
-	}
-};
-
-ZmOrganizer.getActionSummary =
-function(text, num, type, arg) {
-	var typeText = ZmMsg[ZmOrganizer.MSG_KEY[type]];
-	return AjxMessageFormat.format(text, [num, typeText, arg]);
 };
 
 /**

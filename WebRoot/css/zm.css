@@ -242,8 +242,7 @@
 /* toolbars in read message view that let you accept an appointment, share, etc (with no border) */
 .ZmInviteToolBar, .ZmShareToolBar {
 	@InlineToolbarContainer@
-	padding-left:@BoxPaddingSize@;
-	background-color:@lighten(AppC,90)@; 
+	padding-left:@BoxPaddingSize@
 }
 
 .ZmInviteToolBar .ZToolbarTable, .ZmShareToolBar .ZToolbarTable {
@@ -286,13 +285,8 @@ td.DDSepInvisible div {
 
 
 /* Search input field */
-.search_input, .people_search_input {
+.search_input {
 	width:100%;
-}
-
-INPUT[type="text"].people_search_input {
-	border: 0px !important;
-	height: 100% !important;
 }
 
 /* the entire search toolbar */
@@ -305,38 +299,9 @@ INPUT[type="text"].people_search_input {
 	padding:0px 2px;
 }
 
-.ZmPeopleSearchToolbarDiv {
-	height: 16px;
-	margin:0px 1px 3px 2px;
-	@FieldBorder@
-}
-
-.ZmPeopleSearchToolbarTable {
-	width: 100%;
-	height: 100%;
-	background-color: #ffffff;
-}
-
 /* cell surrounding a separator in the search toolbar */
 .ZmSearchToolbarSeparatorCell {}
 
-.ZmPeopleSearchToolbar {
-	width: 250px;
-}
-
-.ZmPeopleSearch-fullname {
-	font-weight: bold;
-}
-
-.ZmPeopleSearch-busy {
-	padding-left: 3px;
-}
-
-.ZmPeopleSearch-noresults {
-	font-style: italic;
-	padding: 3px;
-	border: 2px solid @AltC@ !important;
-}
 
 /*
  * Search builder
@@ -492,21 +457,6 @@ INPUT[type="text"].people_search_input {
 	@MailMsgHeaderLight@
 }
 
-/* Container for the header of the message */
-.ZmMailMsgView .InvHeaderTable {
-	@MailInvHeaderLight@
-	border-bottom: 1px solid #999999;
-}
-
-.ZmMailMsgView .ZmMailMsgViewDiv, .ZmMailMsgView .InvHeaderDiv {
-	padding: 0px 10px;
-}
-
-.ZmConvDoublePaneView .calendar_view, .ZmConvView .calendar_view {
-	@TopSeparator@
-	@LeftSeparator@
-}
-
 .MessageHeaderAttachments {
 	@MailMsgAttachments@
 }
@@ -546,44 +496,6 @@ INPUT[type="text"].people_search_input {
 .ZmMailMsgView .AttName-matched {
 	@Anchor-matched@
 	white-space: nowrap;
-}
-
-.InvHeaderTable .LabelColName {
-	@MailMsgHeaderLabel@
-	font-weight: bold;
-	font-size: 12px;
-	vertical-align: top;
-	padding: 3px 0px 3px 0px;
-	white-space: nowrap;
-	text-align: left;
-}
-
-.InvHeaderTable .LabelColValue {
-	@MailMsgHeaderText@
-	font-size: 12px;
-	white-space: normal;
-	vertical-align: top;
-	padding: 3px;
-}
-
-.InvHeaderTable .SubjectCol {
-	@FontSize-biggest@
-}
-
-.InvHeaderTable .DateCol {
-	white-space: nowrap;
-}
-
-.InvHeaderTable .InvCounter {
-	@WarningContainer@
-	@WarningText@
-	@ActiveCursor@
-	padding-left: 5px;
-}
-
-.InvHeaderTable .InvChanged, .InvHeaderTable .InvChanged .Object {
-	color: #eb7400;
-	font-style: italic;
 }
 
 /* the sash next to overview does not need borders or a background color */
@@ -1282,15 +1194,6 @@ line-height:normal;
 	@SeparatorBg@
 }
 
-/* Separator between details and notes section of the calendar compose view*/
-.calendar_edit_view_separator {
-	@BottomSeparator@
-}
-
-.calendar_edit_field {
-    font-weight: bold;
-}
-
 /* container for the hour labels of the day grid */
 .calendar_hour_scroll {
 	position:absolute;
@@ -1523,26 +1426,8 @@ line-height:normal;
 	font-weight:bold;
 }
 
-.calendar_date_search {
-	height: 32px;
-	margin-right: 5px;
-	@DateSearchBackground@;
-	border-bottom: 1px solid @darken(AppC,30)@;
-}
 
-.calendar_date_search_td {
-	padding: 5px 0px 5px 5px;
-	white-space: nowrap;
-}
 
-.calendar_date_search-dateRange {
-	color: #4c4c4c;
-	font-size: 16px;
-	font-weight: bold;
-	padding-right: 10px;
-	text-align: right;
-	width: 100%;
-}
 
 /* ??? USED? */
 .allday {
@@ -1604,12 +1489,11 @@ line-height:normal;
 .appt_30_body {
 	position:relative;
 	overflow:hidden;
-	border:1px solid;
+	border:2px solid;
 	border-color:#AAAAAA #333333 #333333 #AAAAAA;
-	border-radius: 4px;
 #IFDEF GECKO
 	-moz-user-select: none;
-    -moz-border-radius:4px;
+    -moz-border-radius:2 2 2 2;
 #ENDIF
     margin:0 0 0 -1;
 }
@@ -1618,12 +1502,11 @@ line-height:normal;
 .appt-selected .appt_30_body {
 	position:relative;
 	overflow:hidden;
-	border:2px solid;
+	border:4px solid;
 	border-color:#339999 #003030 #003030 #339999;
-	border-radius: 2px;
 #IFDEF GECKO
 	-moz-user-select: none;
-	-moz-border-radius:4px;
+	-moz-border-radius:2 2 2 2;
 #ENDIF
 	margin:0 -2 -2 0;
 }
@@ -1828,22 +1711,17 @@ HTML>BODY .appt-selected .appt_allday_body
 	width: 1%;
 }
 
-.ZmApptComposeField {
-    float: left;
-    padding-right: 5px;
-}
 
 
 /*
  *	Free/busy view
  */
 /* Colors for the free/busy blocks */		/*??? SKIN THIS ? */
-.ZmScheduler-free 		{	background-color: #F3F3ED;	}
-.ZmScheduler-busy 		{	background-color: #4AA6F1;	}
-.ZmScheduler-tentative 	{	background-color: #BAE0E3;	}
-.ZmScheduler-outOfOffice {	background-color: #7B5BAC;	}
+.ZmScheduler-free 		{	background-color: #FFFFFF;	}
+.ZmScheduler-busy 		{	background-color: #990000;	}
+.ZmScheduler-tentative 	{	background-color: #FF3300;	}
+.ZmScheduler-outOfOffice {	background-color: #FFCC00;	}
 .ZmScheduler-unknown 	{	background-color: #FFF5CC;	}
-.ZmScheduler-working 	{	background-color: #FFFFFF;	}
 
 .ZmSchedulerPTST-needsaction {	color: #0066CC !important;}
 .ZmSchedulerPTST-declined 	 {	color: #FF0000 !important;}
@@ -1851,11 +1729,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSchedulerPTST-deferred    {	color: #009900 !important;}
 .ZmSchedulerPTST-delegated 	 {	color: #996633 !important;}
 .ZmSchedulerPTST-waiting     {  color: #666666 !important;}
-
-.ZmSchedulerApptBorder-free         { border-style:dotted; }
-.ZmSchedulerApptBorder-busy         { border-style:solid; }
-.ZmSchedulerApptBorder-tentative    { border-style:dashed; }
-.ZmSchedulerApptBorder-outOfOffice  { border-style:solid; }
 
 .ZmSchedulerNormalRow {
 	@AppBg@
@@ -1891,12 +1764,15 @@ HTML>BODY .appt-selected .appt_allday_body
 /* Table that contains the hour labels -- scootch it to the right a little bit */
 .ZmSchedulerGridHeaderTable {
 	position:relative;
-    width:103%;
+	left:-13px;
+	top:4px;
 }
 
 .ZmSchedulerGridHeaderCell {
+	@FreeBusyViewHeaderWidth@;
 	@NoWrap@
 	@Label@
+	text-align: center;
 }
 
 .ZmSchedulerOrgIconTd {
@@ -1904,32 +1780,14 @@ HTML>BODY .appt-selected .appt_allday_body
 	@LeftSeparator@
 }
 
-.ZmSchedulerViewAttendeeTd {
-    @RightSeparator@
-	@LeftSeparator@
-    @BottomSeparator@
-}
-
 .ZmSchedulerNameTd {
 	@FreeBusyViewGridHeight@
 	@NoWrap@
 	@RightSeparator@
 	@BottomSeparator@
-    border-top: 1px solid #000000;
-    border-left: 1px solid #000000;
-    background-color: #FFFFFF;
 	vertical-align: middle;
 	@TextCursor@
 /*	color: #AAAAAA;	*/
-}
-
-.ZmSchedulerPTSTTd {
-	@FreeBusyViewGridHeight@
-	@NoWrap@
-	@RightSeparator@
-	@BottomSeparator@
-	vertical-align: middle;
-	@TextCursor@
 }
 
 /* "All attendees" label */
@@ -1942,31 +1800,15 @@ HTML>BODY .appt-selected .appt_allday_body
 	@InactiveCursor@
 }
 
-/* "All attendees" label */
-.ZmSchedulerAllLabel {
-	@NoWrap@
-	@Text-disabled@
-	font-weight: bold;
-	text-align: center;
-	@InactiveCursor@
-}
-
 /* input field for f/b attendees */
 .ZmSchedulerInput {
 	@FullSize@
 	border: 0px;
 	padding-top: 3px;
-    height: 22px;    
-}
-
-.ZmSchedulerInputDisabledTd {
-	@RightSeparator@
-    @FreeBusyViewGridHeight@
 }
 
 .ZmSchedulerInputDisabled {
 	@TextPadding@
-    @FreeBusyViewGridHeight@
 }
 
 /*
@@ -1998,6 +1840,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSchedulerGridDiv-halfHour,
 .ZmSchedulerGridDiv-start,
 .ZmSchedulerGridDiv-end {
+	@FreeBusyViewGridWidth@;
 	@FreeBusyViewGridHeight@
 }
 
@@ -2006,14 +1849,21 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmSchedulerGridDiv-halfHour {
+	@RightSeparator-light@
 }
 
 .ZmSchedulerGridDiv-start {
 	border-right:3px solid green;
+	#IFNDEF MSIE
+	width: 10px;
+	#ENDIF
 }
 
 .ZmSchedulerGridDiv-end {
 	border-right:3px solid darkred;
+	#IFNDEF MSIE
+	width: 10px;
+	#ENDIF
 }
 
 
@@ -2548,23 +2398,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	@Text-light@
 }
 
-.ZmContactSearch {
-	width: 500px;
-}
-.ZmContactSearch .contactSearchResultsDiv {
-	margin-top: 15px;
-}
-
-.ZmContactSearch .ZmContactSearchListView {
-	width: 100%;
-	height: 300px;
-	background-color: white;
-}
-
-.ZmContactSearch .searchFieldHint {
-	@Text-light@
-}
-
 /*
  *  Autocompletion
  */
@@ -2596,23 +2429,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	border-top-color:@ListItemBgColor-normal@;
 }
 
-.ZmPeopleAutocompleteListView td {
-    border-width:0px 0px;
-}
-
-.ZmPeopleSearch-toolbar {
-	display: none;
-	@ListItemContainer-selected@
-	@blRadius@:5px;
-	@brRadius@:5px;
-	border: 1px solid @darken(SelC,15)@;
-	border-top: 0px;
-	z-index: 1000;
-}
-.ZmPeopleSearch-toolbar table {
-	padding: 1px 5px;
-}
-
 .acRow td {
 	@ListItemText@
 }
@@ -2633,28 +2449,24 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding-right:3px;
 }
 
-.ZmAutocompleteListView .Link {
+.ZmAutocompleteListView .Forget {
 	text-align:right;
 }
 
-.ZmAutocompleteListView .Link a:hover {
-	text-decoration:none;
-}
-
-.ZmAutocompleteListView .LinkText, .ZmAutocompleteListView .LinkText-hide {
+.ZmAutocompleteListView .ForgetText, .ZmAutocompleteListView .ForgetText-hide {
 	padding-left:8px;
 	@FontSize-small@;
 }
 
-.ZmAutocompleteListView .LinkText {
+.ZmAutocompleteListView .ForgetText {
 	color:blue;
 }
 
-.ZmAutocompleteListView .LinkText-hide {
+.ZmAutocompleteListView .ForgetText-hide {
 	color:@ListItemBgColor-normal@;
 }
 
-.ZmAutocompleteListView .LinkText-hide-selected {
+.ZmAutocompleteListView .ForgetText-hide-selected {
 	color:@ListItemBgColor-selected@;
 }
 
@@ -2707,11 +2519,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:99%;
 }
 
-.ZmPreferencesPage .Label {
-	padding-right: 5px;
-	@NoWrap@
-}
-
 /* table that holds the 'restore defaults' button */
 .ZOptionsDefaultsTable {
 	margin-bottom: 0.5em;
@@ -2740,48 +2547,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	@ChromeBg@
 	padding:1em;
 }
-
-.ZOptionsSectionTabView .ZmPreferencesPage,
-.ZOptionsSectionTabView .ZSelectedPrev .ZTabBorder {
-	border-style: solid;
-	border-color: @Darken(TabColor,20)@;
-	border-width: 1px;
-	width: 100%;
-	padding: 0;
-}
-
-.ZOptionsSectionTabView .ZOptionsSectionTable {
-	padding: 0;
-	margin: 0;
-}
-
-.ZOptionsSectionTabView .ZTabBar {
-	background-color: transparent;
-}
-
-.ZOptionsSectionTabView .ZTab {
-	margin-bottom: -1px;
-	margin-right: 3px;
-	position: relative !important;
-}
-
-.ZOptionsSectionTabView .ZTabBarPrefix,
-.ZOptionsSectionTabView .ZTabBarSuffix {
-	border-width: 0;
-}
-
-.ZOptionsSectionTabView .ZTabBorder {
-	background-color: @TabColor@;
-	border-width: 1px;
-	@TabRoundCorners@
-}
-
-.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
-	background-color: @AppC@;
-	border-bottom-color: @AppC@;
-}
-
-
 .ZOptionsLabel,
 .ZOptionsLabelTop,
 .ZOptionsLabelNarrow,
@@ -2825,13 +2590,12 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZOptionsTableRow INPUT[disabled] {
 	height: auto;
 }
-
 .ZOptionsField input[type="checkbox"] {
 		@ActiveCursor@
 }
 
 #IFDEF MSIE
-.ZOptionsField input {
+.ZOptionsField input{
 	cursor: expression(this.type=="checkbox"?'pointer':'');
 }
 #ENDIF
@@ -2862,32 +2626,12 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmSignatureListView {
 	width: 150px !important;
-	background-color:white;
-}
-
-.ZmSignatureListView td {
-	padding-left:5px;
 }
 
 .ZmFilterRulesView .DwtListView-Rows {
 	/*overflow: visible;*/
 	height: auto;
-	min-height: 185px;
 }
-
-.ZmFilterRulesView .FilterActiveCell {
-	text-align: center;
-}
-
-.ZmFilterRulesView .DwtListView-Rows input {
-	margin: 1px;
-}
-
-#IFDEF MSIE
-* html .ZmFilterRulesView .DwtListView-Rows {
-	height: 185px;
-}
-#ENDIF
 
 /* Container for the set of preference pages (including tabs) */
 .ZmPrefView {
@@ -3035,27 +2779,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	overflow:hidden;
 }
 .ZmLoginDialog-Transparent {background-color: transparent;}
-
-
-/*
- * Dumpster dialog
- */
-.ZmDumpsterDialog {
-	height: 300px;
-}
-
-.ZmDumpsterDialog .DwtDialogBody {
-	width: 450px;
-}
-
-.ZmDumpsterDialog-toolbar {
-    @ToolbarBg@
-	border-bottom: 1px solid @Darken(AltC, 25)@;
-}
-
-.ZmDumpsterDialog .DwtListView-Rows {
-	height: 278px;
-}
 
 
 /*
@@ -3231,20 +2954,6 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 .ZmTestNote {
     @Text-disabled@
-}
-
-.DebugLogDialog-desc {
-	width: 500px;
-	font-size: 14px;
-	padding: 10px;
-}
-
-.DebugLogDialog-log {
-	width: 600px;
-	height: 400px;
-	border: 2px solid black;
-	overflow: auto;
-	padding: 5px;
 }
 
 /*
@@ -4033,11 +3742,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	@ToastText@
 }
 
-.ZToastText a.undo {
-	font-size: 0.75em;
-	margin-left: 20px;
-}
-
 .ZToastBG 				{	@ToastContainer@		}
 
 /* Removed per new Toastie look and feel, which includes an icon instead of a background color to differentiate the status.
@@ -4202,31 +3906,6 @@ If you feel compelled to have a background color, please do so on a per skin lev
     text-align: right;
 }
 
-.InviteStatusAccept, .InviteStatusDecline, .InviteStatusTentative, .InviteOutDated {
-	padding: 7px;
-	border-bottom: 1px solid #cccccc;
-}
-
-.InviteStatusAccept td, InviteStatusDecline td, InviteStatusTentative td, .InviteOutDated td {
-	font-size: 13px;
-}
-
-.InviteStatusAccept {
-	background-color: #CAE7B2;
-}
-
-.InviteStatusDecline {
-	background-color: #E7B2B2;
-}
-
-.InviteStatusTentative {
-	background-color: #FFFFCC;
-}
-
-.InviteOutDated {
-	background-color:@lighten(AppC,90)@;
-}
-
 .ZmEditContactViewDetailsButton {
 	border: solid @darken(AppC,40)@ 1px;
 	background-color: @WidgetBgColor@;
@@ -4272,7 +3951,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmEditContactView .rowLabel, .ZmContactSplitView .rowLabel {
-	padding:.7em .5em .25em;
+	padding:.25em .5em;
 	text-align: right;
 	font-weight: bold;
 }
@@ -4356,101 +4035,4 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .PreviewFrame{
     height:100%;
-}
-
-.RenameInput input {
-    width:100%;
-    heigth:19px;
-}
-
-/*Calendar Styles*/
-.ZmAppt-busy {
-	background-color: #4AA6F1;
-}
-
-.ZmAppt-ooo {
-	background-color: #7B5BAC;
-	background-image: url('/zimbra/img/calendar/freeBusyBar_ooo.png');
-}
-
-.ZmAppt-tentative {
-	background-color: #BAE0E3;
-	background-image: url('/zimbra/img/calendar/freeBusyBar_tentative.png');
-}
-
-.ZmAppt-free {
-	background-color: #FFFFFF;
-	background-image: url('/zimbra/img/calendar/freeBusyBar_free.png');
-}
-
-.ZmAppt-no-response {
-	background-color: #F30;
-}
-
-.ZmFBBar-tentative {
-    background-color: #BAE0E3;
-}
-
-.ZmFBBar-ooo {
-   background-color: #7B5BAC;
-}
-
-.ZmFBBar-busy {
-	background-color: #4AA6F1;
-}
-
-.ZmFBBar-free {
-	background-color: #FFFFFF;
-}
-
-/* Version History */
-.VersionHistoryToolbar {
-    @ToolbarBg@   
-}
-
-.SuggestBtn .ZButtonTable {
-    width: 100%;    
-}
-
-.SuggestBtn {
-    height: 32px;
-    padding: 5px;
-    @SelectedBg@
-    border-bottom: 1px solid @AppC@
-}
-
-.ZmCalListViewSearchBar .DwtCompositeCell {
-    white-space: nowrap;
-}
-
-
-.BriefcaseItemExpanded {
-    background-color:#EEEEFF;
-}
-
-/*Calendar Appt Send button*/
-.InviteButton .ZWidgetTitle{
-    padding-bottom:20px;
-    padding-top:20px;
-}
-
-.NoSuggestions {
-	font-size: 10pt;
-	text-align: center;
-}
-
-.ZmShareSearchView {
-    margin: 4px;
-}
-.ZmShareSearchDialog .FilterTree {
-    @TreeContainer@
-    @NormalInsetBorder@
-    @BoxPadding@
-}
-.ZmShareSearchDialog .FilterTree INPUT {
-    width: 100%;
-    margin-bottom: 4px;
-}
-.ZmShareSearchDialog .ZmShareTreeView {
-    height: 140px;
 }

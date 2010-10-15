@@ -71,11 +71,9 @@ function(organizerType, folderId, user, path) {
 	// set title
 	this.setTitle(ZmMsg[ZmOrganizer.MOUNT_KEY[organizerType]] || ZmMsg[ZmOrganizer.MOUNT_KEY[ZmOrganizer.FOLDER]]);
 
-    // clear prev options and insert default
-	this._folderSelect.clearOptions();
-    this._folderSelect.addOption(ZmMsg.chooseFolder, true, ZmMsg.folder);
-    // reset input fields
+	// reset input fields
 	this._userInput.setValue(user || "");
+	this._pathInput.setValue(path || "");
 	this._nameInput.setValue("");
 	this._nameInputDirty = false;
 
@@ -126,7 +124,7 @@ function(ev) {
 
 	if (!this._nameInputDirty) {
 		var user = this._userInput.getValue();
-		var path = this._folderSelect.getValue();
+		var path = this._pathInput.getValue();
 
 		if (user != "" && path != "") {
 			if (!this._nameFormatter) {
@@ -160,11 +158,10 @@ function(ev) {
 ZmMountFolderDialog.prototype._enableFieldsOnEdit =
 function() {
 	var user = this._userInput.getValue();
-//	var path = this._folderSelect.getValue();
+	var path = this._pathInput.getValue();
 	var name = this._nameInput.getValue();
 	var enabled = user.length > 0 && user.match(/\S/) &&
-//				  path.length > 0 && path.match(/\S/) && !path.match(/^\/+$/) &&
-//                  folder.length > 0 &&
+				  path.length > 0 && path.match(/\S/) && !path.match(/^\/+$/) &&
 				  name.length > 0 && name.match(/\S/);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, enabled);
 };
@@ -177,7 +174,7 @@ function(ev) {
 		"l": this._folderId,
 		"name": this._nameInput.getValue(),
 		"owner": this._userInput.getValue(),
-		"path": this._folderSelect.getValue(),
+		"path": this._pathInput.getValue(),
 		"view": (ZmOrganizer.VIEWS[this._organizerType][0] || ZmOrganizer.VIEWS[ZmOrganizer.FOLDER][0]),
 		"color": this._colorSelect.getValue()
 	};
@@ -202,11 +199,8 @@ function() {
 	var params = {parent:this, required:true};
 	this._userInput = new DwtInputField(params);
 	this._userInput.reparentHtmlElement(this._htmlElId + "_email");
-    this._folderSelect = new DwtSelect({parent:this});
-	this._folderSelect.reparentHtmlElement(this._htmlElId + "_folder");
-    var selectChangeListener = new AjxListener(this, this._handleOtherKeyUp);
-    this._folderSelect.addChangeListener(selectChangeListener);
-
+	this._pathInput = new DwtInputField(params);
+	this._pathInput.reparentHtmlElement(this._htmlElId + "_path");
 	this._nameInput = new DwtInputField(params);
 	this._nameInput.reparentHtmlElement(this._htmlElId + "_name");
 
@@ -225,62 +219,12 @@ function() {
 	} else {
 		inputEl.onkeyup = AjxCallback.simpleClosure(this._handleOtherKeyUp, this);
 	}
-    inputEl.onkeydown = AjxCallback.simpleClosure(this._onKeyDown, this);
+
+	inputEl = this._pathInput.getInputElement();
+	inputEl.style.width = "25em";
+	inputEl.onkeyup = AjxCallback.simpleClosure(this._handleOtherKeyUp, this);
 
 	inputEl = this._nameInput.getInputElement();
 	inputEl.style.width = "25em";
 	inputEl.onkeyup = AjxCallback.simpleClosure(this._handleNameKeyUp, this);
-};
-
-ZmMountFolderDialog.prototype._onKeyDown =
-function(ev) {
-    ev = ev || window.event;
-    var el = DwtUiEvent.getTarget(ev);
-    var key = DwtKeyEvent.getCharCode(ev);
-    if(key == DwtKeyEvent.KEY_ENTER){
-        var email = this._userInput.getValue();
-        var respCallback = new AjxCallback(this, this.showSharedFolders);
-        var shares = this.getShares(null, email, respCallback);
-    }
-};
-
-ZmMountFolderDialog.prototype.getShares =
-function(type, owner, callback) {
-
-	var jsonObj = {GetShareInfoRequest:{_jsns:"urn:zimbraAccount"}};
-	var request = jsonObj.GetShareInfoRequest;
-	if (type && type != ZmShare.TYPE_ALL) {
-		request.grantee = {type:type};
-	}
-	if (owner) {
-		request.owner = {by:"name", _content:owner};
-	}
-	var respCallback = new AjxCallback(this, this._handleGetSharesResponse, [callback]);
-	appCtxt.getAppController().sendRequest({jsonObj:	jsonObj,
-											asyncMode:	true,
-											callback:	respCallback});
-};
-
-ZmMountFolderDialog.prototype._handleGetSharesResponse =
-function(callback, result) {
-
-	var resp = result.getResponse().GetShareInfoResponse;
-	if (callback) {
-		callback.run(resp.share);
-	}
-};
-
-ZmMountFolderDialog.prototype.showSharedFolders =
-function(shares) {
-    this._folderSelect.clearOptions();
-    if (shares && shares.length) {
-        for (var i = 0; i < shares.length; i++) {
-            var folderPath = shares[i].folderPath;
-            var folderName = folderPath.replace(/\/$/,"");
-            folderName = folderName.replace(/^.*\//,"");
-            this._folderSelect.addOption(folderName, i == 0, folderPath);
-        }
-        // update the name field
-        this._handleOtherKeyUp();
-    }
 };

@@ -65,12 +65,12 @@ function(bPoppedUp) {
 ZmTimezonePicker.prototype._setTimezoneMenu =
 function() {
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
-	this._tzoneSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzSelect"), layout: DwtMenu.LAYOUT_SCROLL, maxRows:7});
+	this._tzoneSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzSelect"), cascade:false});
 	this._tzoneSelect.addChangeListener(timezoneListener);
 
-	this._tzoneShowAll = new DwtCheckbox({parent:this, parentElement:(this._htmlElId+"_tzShowAll")});
-	this._tzoneShowAll.setText(ZmMsg.selectTimezoneIShowAll);
-	this._tzoneShowAll.addSelectionListener(new AjxListener(this, this._handleShowAllChange));
+    this._tzoneShowAll = new DwtCheckbox({parent:this, parentElement:(this._htmlElId+"_tzShowAll")});
+    this._tzoneShowAll.setText(ZmMsg.selectTimezoneIShowAll);
+    this._tzoneShowAll.addSelectionListener(new AjxListener(this, this._handleShowAllChange));
 };
 
 ZmTimezonePicker.prototype._initTzSelect =

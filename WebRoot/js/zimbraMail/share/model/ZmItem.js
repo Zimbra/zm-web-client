@@ -101,9 +101,7 @@ ZmItem.F_SUBJECT		= ZmId.FLD_SUBJECT;
 ZmItem.F_TAG			= ZmId.FLD_TAG;
 ZmItem.F_TAG_CELL		= ZmId.FLD_TAG_CELL;
 ZmItem.F_TYPE			= ZmId.FLD_TYPE;
-ZmItem.F_VERSION        = ZmId.FLD_VERSION;
 ZmItem.F_WORK_PHONE		= ZmId.FLD_WORK_PHONE;
-ZmItem.F_LOCK           = ZmId.FLD_LOCK;
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};
@@ -116,7 +114,6 @@ ZmItem.FLAG_ATTACH				= "a";
 ZmItem.FLAG_FLAGGED				= "f";
 ZmItem.FLAG_FORWARDED			= "w";
 ZmItem.FLAG_ISDRAFT 			= "d";
-ZmItem.FLAG_ISSCHEDULED 		= "c";
 ZmItem.FLAG_ISSENT				= "s";
 ZmItem.FLAG_READ_RECEIPT_SENT	= "n";
 ZmItem.FLAG_REPLIED				= "r";
@@ -133,7 +130,6 @@ ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_ISSENT,
 	ZmItem.FLAG_READ_RECEIPT_SENT,
 	ZmItem.FLAG_ISDRAFT,
-	ZmItem.FLAG_ISSCHEDULED,
 	ZmItem.FLAG_HIGH_PRIORITY,
 	ZmItem.FLAG_LOW_PRIORITY
 ];
@@ -144,7 +140,6 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_ATTACH]			= "hasAttach";
 ZmItem.FLAG_PROP[ZmItem.FLAG_FLAGGED]			= "isFlagged";
 ZmItem.FLAG_PROP[ZmItem.FLAG_FORWARDED]			= "isForwarded";
 ZmItem.FLAG_PROP[ZmItem.FLAG_ISDRAFT] 			= "isDraft";
-ZmItem.FLAG_PROP[ZmItem.FLAG_ISSCHEDULED] 		= "isScheduled";
 ZmItem.FLAG_PROP[ZmItem.FLAG_ISSENT]			= "isSent";
 ZmItem.FLAG_PROP[ZmItem.FLAG_READ_RECEIPT_SENT]	= "readReceiptSent";
 ZmItem.FLAG_PROP[ZmItem.FLAG_REPLIED]			= "isReplied";
@@ -391,7 +386,7 @@ function() {
 			? ([this.getAccount().id, this.tags[0]].join(":"))
 			: (ZmOrganizer.getSystemId(this.tags[0]));
 		var tag = appCtxt.getById(tagId);
-		tagImageInfo = tag ? tag.getIconWithColor() : "Blank_16";
+		tagImageInfo = tag ? ZmTag.COLOR_ICON[tag.color] : "Blank_16";
 	}
 	else {
 		tagImageInfo = "TagStack";
@@ -704,45 +699,4 @@ function(event, details) {
 ZmItem.prototype._getFlags =
 function() {
 	return [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH];
-};
-
-/**
- * Rename the item.
- *
- * @param	{String}	newName
- * @param	{AjxCallback}	callback		the callback
- * @param	{AjxCallback}	errorCallback	the callback on error
- * @return	{Object}		the result of the move
- */
-ZmItem.prototype.rename =
-function(newName, callback, errorCallback) {
-	return ZmItem.rename(this.id, newName, callback, errorCallback);
-};
-
-/**
- * Rename the item.
- *
- * @return	{Object}		the result of the move
- */
-ZmItem.rename =
-function(itemId, newName, callback, errorCallback, accountName) {
-    var json = {
-		ItemActionRequest: {
-			_jsns: "urn:zimbraMail",
-			action: {
-				id:	itemId instanceof Array ? itemId[0] : itemId,
-				op:	"rename",
-				name:	newName
-			}
-		}
-	};	
-
-	var params = {
-		jsonObj:		json,
-		asyncMode:		Boolean(callback),
-		callback:		callback,
-		errorCallback:	errorCallback,
-		accountName:	accountName
-	};
-	return appCtxt.getAppController().sendRequest(params);
 };

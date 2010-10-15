@@ -36,7 +36,6 @@ AjxPackage.require("zimbraMail.mail.controller.ZmMsgController");
 // base class for ZmApptView
 AjxPackage.require("zimbraMail.mail.view.ZmMailMsgView");
 
-AjxPackage.require("zimbraMail.calendar.view.ZmApptListView");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalViewMgr");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalBaseView");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalColView");

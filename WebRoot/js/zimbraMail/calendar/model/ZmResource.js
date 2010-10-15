@@ -35,10 +35,9 @@ ZmResource = function(id, list, resType) {
 ZmResource.F_capacity			= "zimbraCalResCapacity";
 ZmResource.F_contactMail		= "zimbraCalResContactEmail";
 ZmResource.F_locationName		= "zimbraCalResLocationDisplayName";
-ZmResource.F_mail			= "email";
-ZmResource.F_name			= "fullName";
-ZmResource.F_type			= "zimbraCalResType";
-ZmResource.F_description		= "notes";
+ZmResource.F_mail				= "mail";
+ZmResource.F_name				= "displayName";
+ZmResource.F_type				= "zimbraCalResType";
 
 ZmResource.ATTR_LOCATION	= "Location";
 ZmResource.ATTR_EQUIPMENT	= "Equipment";

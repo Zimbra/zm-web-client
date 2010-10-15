@@ -22,9 +22,9 @@
  * Creates and initializes the calendar application.
  * @class
  * The calendar application manages the creation and display of appointments.
- *
+ * 
  * @param	{DwtControl}	container		the container
- *
+ * 
  * @author Conrad Damon
  * 
  * @extends		ZmApp
@@ -106,8 +106,6 @@ ZmCalendarApp.METHOD_REPLY				= "REPLY";
 ZmCalendarApp.METHOD_REQUEST			= "REQUEST";
 ZmCalendarApp.METHOD_COUNTER			= "COUNTER";
 
-ZmCalendarApp.DEFAULT_WORKING_HOURS			= "0:N:0800:1700,1:Y:0800:1700,2:Y:0800:1700,3:Y:0800:1700,4:Y:0800:1700,5:Y:0800:1700,6:N:0800:1700";
-
 ZmCalendarApp.prototype = new ZmApp;
 ZmCalendarApp.prototype.constructor = ZmCalendarApp;
 
@@ -133,8 +131,6 @@ function(settings) {
 	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("CAL_ALWAYS_SHOW_MINI_CAL",	{name: "zimbraPrefCalendarAlwaysShowMiniCal", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
 	settings.registerSetting("CAL_APPT_VISIBILITY",			{name: "zimbraPrefCalendarApptVisibility", type: ZmSetting.T_PREF, dataType: ZmSetting.D_STRING, defaultValue: "public", isGlobal:true});
-	settings.registerSetting("CAL_EMAIL_REMINDERS_ENABLED",	{name: "zimbraPrefCalendarReminderSendEmail", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
-	settings.registerSetting("CAL_EMAIL_REMINDERS_ADDRESS",	{name: "zimbraPrefCalendarReminderEmail", type:ZmSetting.T_PREF, isGlobal:true});
 	settings.registerSetting("CAL_EXPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("CAL_FIRST_DAY_OF_WEEK",		{name: "zimbraPrefCalendarFirstDayOfWeek", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0, isGlobal:true});
 	settings.registerSetting("CAL_FREE_BUSY_ACL",			{type: ZmSetting.T_PREF, defaultValue:ZmSetting.ACL_ALL});
@@ -149,7 +145,6 @@ function(settings) {
 	settings.registerSetting("CAL_SHOW_TIMEZONE",			{name: "zimbraPrefUseTimeZoneListInCalendar", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
 	settings.registerSetting("CAL_USE_QUICK_ADD",			{name: "zimbraPrefCalendarUseQuickAdd", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
 	settings.registerSetting("CALENDAR_INITIAL_VIEW",		{name: "zimbraPrefCalendarInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CAL_DAY, isGlobal:true});
-    settings.registerSetting("CAL_WORKING_HOURS",           {name: "zimbraPrefCalendarWorkingHours", type: ZmSetting.T_PREF, defaultValue: ZmCalendarApp.DEFAULT_WORKING_HOURS, isGlobal:true});
 	settings.registerSetting("DELETE_INVITE_ON_REPLY",		{name: "zimbraPrefDeleteInviteOnReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
 	settings.registerSetting("ENABLE_APPL_ICAL_DELEGATION", {name: "zimbraPrefAppleIcalDelegationEnabled",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
 	settings.registerSetting("CAL_AUTO_ADD_INVITES",		{name: "zimbraPrefCalendarAutoAddInvites",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
@@ -185,7 +180,6 @@ function() {
 				ZmSetting.CAL_SHOW_TIMEZONE,
 				ZmSetting.CAL_USE_QUICK_ADD,
 				ZmSetting.CALENDAR_INITIAL_VIEW,
-				ZmSetting.CAL_WORKING_HOURS,
 				ZmSetting.DELETE_INVITE_ON_REPLY,
 				ZmSetting.ENABLE_APPL_ICAL_DELEGATION,
 				ZmSetting.CAL_FREE_BUSY_ACL,
@@ -214,10 +208,6 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
-    ZmPref.registerPref("CAL_WORKING_HOURS", {
-		displayContainer:	ZmPref.TYPE_CUSTOM
-	});
-
 	ZmPref.registerPref("CAL_AUTO_ADD_INVITES", {
 		displayName:		ZmMsg.autoAddInvites,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
@@ -225,20 +215,6 @@ function() {
 
 	ZmPref.registerPref("CAL_SEND_INV_DENIED_REPLY", {
 		displayName:		ZmMsg.sendInvDeniedAutoReply,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
-	ZmPref.registerPref("CAL_EMAIL_REMINDERS_ADDRESS", {
-		displayName:		ZmMsg.emailNotificationsDescription,
-		displayContainer:	ZmPref.TYPE_INPUT,
-//		validationFunction: ZmMailApp.validateForwardEmail,
-		errorMessage:       ZmMsg.invalidEmail,
-		precondition:		ZmSetting.CAL_EMAIL_REMINDERS_ENABLED,
-		hint:				ZmMsg.enterEmailAddress
-	});
-
-	ZmPref.registerPref("CAL_EMAIL_REMINDERS_ENABLED", {
-		displayName:		ZmMsg.enabled,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
@@ -295,14 +271,14 @@ function() {
 	 	displayName:		ZmMsg.useQuickAdd,
 	 	displayContainer:	ZmPref.TYPE_CHECKBOX
 	 });
-
+	
 	ZmPref.registerPref("CALENDAR_INITIAL_VIEW", {
 		displayName:		ZmMsg.calendarInitialView,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewList, ZmMsg.calViewSchedule],
 		options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_LIST, ZmSetting.CAL_SCHEDULE]
 	});
-
+	
 	ZmPref.registerPref("CAL_REMINDER_NOTIFY_SOUNDS", {
 		displayName:		ZmMsg.playSound,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
@@ -380,7 +356,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_ALLDAY_APPT, {textKey:"newAllDayAppt", tooltipKey:"newAllDayApptTooltip", image:"NewAppointment"});
 	ZmOperation.registerOp(ZmId.OP_NEW_APPT, {textKey:"newAppt", tooltipKey:"newApptTooltip", image:"NewAppointment", shortcut:ZmKeyMap.NEW_APPT});
 	ZmOperation.registerOp(ZmId.OP_NEW_CALENDAR, {textKey:"newCalendar", image:"NewAppointment", tooltipKey: "newCalendarTooltip", shortcut:ZmKeyMap.NEW_CALENDAR});
-    ZmOperation.registerOp(ZmId.OP_PROPOSE_NEW_TIME, {textKey:"proposeNewTime", image:"ProposeTime"});		
+    ZmOperation.registerOp(ZmId.OP_PROPOSE_NEW_TIME, {textKey:"proposeNewTime", image:"ProposeTime"});        
 	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT_NOTIFY, {textKey:"notifyOrganizerLabel", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT_IGNORE, {textKey:"dontNotifyOrganizerLabel", image:"Check"});
@@ -406,12 +382,9 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPT_SERIES, {textKey:"apptSeries", image:"Appointment"});
 	ZmOperation.registerOp(ZmId.OP_WEEK_VIEW, {textKey:"viewWeek", tooltipKey:"viewWeekTooltip", image:"WeekView", shortcut:ZmKeyMap.CAL_WEEK_VIEW});
 	ZmOperation.registerOp(ZmId.OP_WORK_WEEK_VIEW, {textKey:"viewWorkWeek", tooltipKey:"viewWorkWeekTooltip", image:"WorkWeekView", shortcut:ZmKeyMap.CAL_WORK_WEEK_VIEW});
-	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT, {textKey:"forward", tooltipKey:"forward", image:"Forward"});
+	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT, {textKey:"forward", tooltipKey:"forward", image:"Forward"});	
 	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT_INSTANCE, {textKey:"forwardInstance", tooltipKey:"forwardInstance", image:"Forward"});
 	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT_SERIES, {textKey:"forwardSeries", tooltipKey:"forwardSeries", image:"Forward"});
-	ZmOperation.registerOp(ZmId.OP_DUPLICATE_APPT, {textKey:"createCopy", tooltipKey:"createCopy", image:"Copy"});
-    ZmOperation.registerOp(ZmId.OP_INVITE_ATTENDEES, {textKey:"inviteAttendees", tooltipKey:"inviteAttendees", image:"Group"});
-    ZmOperation.registerOp(ZmId.OP_SEND_INVITE, {textKey:"send", tooltipKey:"send", image:"MeetingRequest"});
 };
 
 ZmCalendarApp.prototype._registerItems =
@@ -547,7 +520,7 @@ function(ids, force) {
 /**
  * Checks for the creation of a calendar or a mount point to one, or an
  * appointment.
- *
+ * 
  * @param {Hash}	creates	a hash of create notifications
  * 
  * @private
@@ -556,13 +529,13 @@ ZmCalendarApp.prototype.createNotify =
 function(creates, force) {
 	if (!creates["folder"] && !creates["appt"] && !creates["link"]) { return; }
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
-
+	
 	for (var name in creates) {
 		var list = creates[name];
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
 			if (appCtxt.cacheGet(create.id)) { continue; }
-
+	
 			if (name == "folder") {
 				this._handleCreateFolder(create, ZmOrganizer.CALENDAR);
 			} else if (name == "link") {
@@ -587,7 +560,7 @@ function(modifies, force) {
 ZmCalendarApp.prototype.postNotify =
 function(notify) {
 	if(this._calController != null) {
-		this._calController.notifyComplete(notify);
+		this._calController.notifyComplete();
 	}
 };
 
@@ -683,26 +656,8 @@ function(active) {
 };
 
 /**
- * Sets the overview tree to display overview content for this application.
- *
- * @param {Boolean}	reset		if <code>true</code>, clear the content first
- */
-ZmCalendarApp.prototype.setOverviewPanelContent =
-function(reset) {
-    var viewId = appCtxt.getCurrentViewId();
-    if(viewId.indexOf(ZmId.VIEW_APPOINTMENT) != 0) {
-        ZmApp.prototype.setOverviewPanelContent.apply(this, arguments);
-    }else {
-        ZmApp.prototype.setOverviewPanelContent.apply(this, arguments);
-        var controller = appCtxt.getCurrentView().getController();
-        controller.setSchedulerPanelContent();
-    }
-};
-
-
-/**
  * Shows the mini-calendar.
- *
+ * 
  * @param	{Boolean}	show		if <code>true</code>, show the mini-calendar
  * @param	{int}	delay			the delay (in seconds)
  */
@@ -719,9 +674,9 @@ function(show, delay) {
 // common API shared by tasks app
 /**
  * Gets the list controller.
- *
+ * 
  * @return	{ZmCalViewController}		the controller
- *
+ * 
  * @see		#getCalController
  */
 ZmCalendarApp.prototype.getListController =
@@ -745,7 +700,7 @@ function() {
 
 /**
  * Gets the reminder controller.
- *
+ * 
  * @return	{ZmReminderController}	the controller
  */
 ZmCalendarApp.prototype.getReminderController =
@@ -764,10 +719,13 @@ function() {
  * 
  * @return	{ZmApptComposeController}	the controller
  */
-ZmCalendarApp.prototype.getApptComposeController =
-function(sessionId) {
-	AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
-	return this.getSessionController(ZmId.VIEW_APPOINTMENT, "ZmApptComposeController", sessionId);
+ZmCalendarApp.prototype.getApptComposeController = 
+function() {
+	if (!this._apptController) {
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+		this._apptController = new ZmApptComposeController(this._container, this);
+	}
+	return this._apptController;
 };
 
 ZmCalendarApp.prototype.initResources =
@@ -806,7 +764,7 @@ function() {
  * 
  * @return	{ZmResourceList}	the resource list
  */
-ZmCalendarApp.prototype.getLocations =
+ZmCalendarApp.prototype.getLocations = 
 function() {
 	this.initResources();
 	return this._locations;
@@ -817,7 +775,7 @@ function() {
  * 
  * @return	{ZmResourceList}	the resource list
  */
-ZmCalendarApp.prototype.getEquipment =
+ZmCalendarApp.prototype.getEquipment = 
 function() {
 	this.initResources();
 	return this._equipment;
@@ -826,15 +784,15 @@ function() {
 /**
  * Gets the list of checked calendar ids. If calendar packages are not loaded,
  * gets the list from deferred folder ids.
- *
+ * 
  * @param	{Boolean}		localOnly	if <code>true</code>, use local calendar only
  * @return	{Array}	an array of ids
  */
 ZmCalendarApp.prototype.getCheckedCalendarFolderIds =
-function(localOnly, includeTrash) {
+function(localOnly) {
 	var folderIds = [];
 	if (AjxDispatcher.loaded("CalendarCore")) {
-		folderIds = this.getCalController().getCheckedCalendarFolderIds(localOnly, includeTrash);
+		folderIds = this.getCalController().getCheckedCalendarFolderIds(localOnly);
 	} else {
 		// will be used in reminder dialog
 		this._folderNames = {};
@@ -845,9 +803,6 @@ function(localOnly, includeTrash) {
 				if (localOnly && params.obj.zid != null) {
 					continue;
 				}
-                if (params.obj.id == ZmOrganizer.ID_TRASH && !includeTrash) {
-                    continue;
-                }
 				folderIds.push(params.obj.id);
 				// _folderNames are used when deferred folders are not created
 				// and calendar name is required. example: calendar name
@@ -1064,7 +1019,7 @@ function(prefLabel, prefValue) {
 
 /**
  * Parses the given string and return reminder info containing units and exact value
- *
+ * 
  * @param reminderString 	reminder string eg. "20 minutes before"
  * 
  * @private
@@ -1247,16 +1202,9 @@ ZmCalendarApp.prototype._handleImportApptResponse =
 function(folderId,response) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.addedToCalendar);
 	appCtxt.getChooseFolderDialog().popdown();
-
-    var ac = window.parentAppCtxt || window.appCtxt;
-    if(ac.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
-        var calMgr = ac.getCalManager();
-        calMgr.getMiniCalCache().clearCache();
-        calMgr.highlightMiniCal();
-    }
 };
 
 ZmCalendarApp.prototype._handleImportApptError =
 function(ex) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.errorImportAppt, ZmStatusView.LEVEL_CRITICAL);
-}; 
+};
