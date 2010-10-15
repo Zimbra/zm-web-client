@@ -55,7 +55,7 @@
         </c:otherwise>
     </c:choose>
     <div class="wrap-dlist" id="wrap-dlist-view">
-    <div class="tbl dlist" id="dlist-view">
+    <div class="dlist" id="dlist-view">
 </c:if>
 
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
@@ -72,6 +72,7 @@
                                      context="${context}" id="${mhit.id}"/>
             </c:otherwise>
         </c:choose>
+        <div class="tbl">
         <div id="conv${mhit.id}" class="tr msg_lv_list_row list-row${mhit.isUnread ? '-unread' : ''}">
                <%--<mo:img src="mail/ImgEnvelope${mhit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
                <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/> 
@@ -114,6 +115,7 @@
                    </c:if>
                    <span class="small-gray-text">(${fn:escapeXml(zm:displaySize(pageContext, mhit.size))})</span>
                </span>
+        </div>
         </div>
     </c:forEach>
     <c:if test="${ua.isiPad == true}">

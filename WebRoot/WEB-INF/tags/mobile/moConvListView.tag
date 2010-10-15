@@ -61,7 +61,7 @@
         </c:otherwise>
     </c:choose>
     <div class="tbl">
-        <div id="conv${chit.id}" class="tr conv_lv_list_row list-row${chit.isUnread ? '-unread' : ''}">
+        <div id="conv${chit.id}" style="height:50px;" class="tr conv_lv_list_row list-row${chit.isUnread ? '-unread' : ''}">
             <c:if test="${chit.messageCount ge 2}">
                 <c:set value="Conv" var="class"/>
                 <%--<mo:img src="startup/ImgConversationView.gif" class="left-icon"/>--%>
@@ -81,17 +81,18 @@
                     <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
                     <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
                     <c:if test="${chit.messageCount gt 1}"><c:url var="convUrl" value="${convUrl}"><c:param name="hc" value="1"/></c:url></c:if>
-                    <a class="zo_m_list_from" id="a${chit.id}" href="${fn:escapeXml(convUrl)}">${fn:escapeXml(_f)}</a></div>
-                <div class="sub-span">
-                    <c:set var="_f" value="${empty chit.subject ? unknownSubject : chit.subject}"/>
-                    <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
-                    ${fn:escapeXml(_f)}
+                    <a class="zo_m_list_from" id="a${chit.id}" href="${fn:escapeXml(convUrl)}">${fn:escapeXml(_f)}</a>
                 </div>
-                <div class="frag-span small-gray-text">
-                    <c:set var="_f" value="${chit.fragment}"/>
-                    <c:if test="${fn:length(_f) > 47}"><c:set var="_f" value="${fn:substring(_f, 0, 47)}..."/></c:if>
-                    ${fn:escapeXml(_f)}
-                </div>
+                    <div class="sub-span">
+                        <c:set var="_f" value="${empty chit.subject ? unknownSubject : chit.subject}"/>
+                        <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                            ${fn:escapeXml(_f)}
+                    </div>
+                    <div class="frag-span small-gray-text">
+                        <c:set var="_f" value="${chit.fragment}"/>
+                        <c:if test="${fn:length(_f) > 47}"><c:set var="_f" value="${fn:substring(_f, 0, 47)}..."/></c:if>
+                            ${fn:escapeXml(_f)}
+                    </div>
             </span>
             <span class="td l">
                 <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${chit.date}"/>

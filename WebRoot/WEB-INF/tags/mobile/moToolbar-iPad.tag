@@ -94,22 +94,22 @@
 
                     <!-- div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div -->
                     
-                    <div class="select button" onclick="toggle">
-                   		<a>Actions</a> 
-                    <div class="menu">
-                         <span class="arrowBox"><span class="arrowHead">&#9650;</span></span>
-                        <button type="submit" name="anAction" value="actionMarkRead" class="menuButton"><fmt:message key="MO_read"/></button>
-                        
-                        <button type="submit" name="anAction" value="actionMarkUnread" class="menuButton"><fmt:message key="MO_unread"/></button>
-                        
-                        <c:choose>
-                            <c:when test="${context.folder.isSpam}"><button type="submit" name="anAction" value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></button></c:when>
-                            <c:otherwise><button type="submit" name="anAction" value="actionMarkSpam" class="menuButton"><fmt:message key="actionSpam"/></button></c:otherwise>
-                        </c:choose>
-                        
-                        <button type="submit" name="anAction" value="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}" class="menuButton"><fmt:message key='delete'/></button>
-                    
-                    </div>
+                    <div class="select button">
+                   		<a id='aActionMenu' onclick="return toggleElem('actListMenu');"><fmt:message key="moreActions"/></a>
+                        <div class="menu" style="display:none;" id="actListMenu">
+                            <span class="arrowBox"><span class="arrowHead">&#9650;</span></span>
+                            <button type="submit" name="anAction" value="actionMarkRead" class="menuButton"><fmt:message key="MO_read"/></button>
+
+                            <button type="submit" name="anAction" value="actionMarkUnread" class="menuButton"><fmt:message key="MO_unread"/></button>
+
+                            <c:choose>
+                                <c:when test="${context.folder.isSpam}"><button type="submit" name="anAction" value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></button></c:when>
+                                <c:otherwise><button type="submit" name="anAction" value="actionMarkSpam" class="menuButton"><fmt:message key="actionSpam"/></button></c:otherwise>
+                            </c:choose>
+
+                            <button type="submit" name="anAction" value="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}" class="menuButton"><fmt:message key='delete'/></button>
+
+                        </div>
                     </div>
                     
                 </div>

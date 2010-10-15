@@ -439,6 +439,12 @@ var customClick = function (e) {
     if (targ.nodeType == 3) {// defeat Safari bug
         targ = targ.parentNode;
     }
+
+    //hide actionMenu
+    if($('actListMenu') && $('actListMenu').style.display != 'none' && targ.id != 'aActionMenu') {
+        $('actListMenu').style.display = "none";
+    }
+
     if ((targ.tagName == "a" || targ.tagName == "A")) {
         e.returnValue = zClickLink(targ.id, targ);
         if (!e.returnValue) {
@@ -657,30 +663,6 @@ var openURL = function(url) {
     window.location = url.replace(/date=......../, "date=" + currentDate);
 };
 
-var startX,startY,iH=[],xD=0,yD=0,dV=[],dId=0;
-var updateChecked = function(disabled,doItAll){
-   var fbbar = $("fbbar");
-   if(!dV[dId] && !fbbar) return;
-   var cCount = 0,cbs=$('zForm').getElementsByClassName('chk');
-   for(var i=0, len = (cbs !== undefined) ? cbs.length : 0; i < len; i++){
-       if(cbs[i].checked){ cCount++;cbs[i].disabled = disabled;}
-   }
-   if(cCount > 0){
-    fbbar.style.display = "table";
-    uFB();
-    $("sc").innerHTML = "<span class='small-gray-text'>"+cCount+"</span>";
-   }else{
-    fbbar.style.display = "none";
-    $("sc").innerHTML = "";
-   }
-   if(doItAll && dV[dId])
-    if(cCount <= 0)
-        hideDelete(dId);
-    else
-        $('delBtn').value = "<fmt:message key="delete"/> ("+cCount+")";
-   return cCount;
-};
-
 var toggleElem = function(elem, me, minMsg, maxMsg) {
     if (!elem && !$(elem)) {return false;}
     if(typeof(elem) == "string"){elem = $(elem);}
@@ -744,7 +726,6 @@ var checkAll = function(cb, checked) {
             cb[i].checked = checked;
     else
         cb.checked = checked;
-    <c:if test="${ua.isiPhone or ua.isiPod}">updateChecked(false,true);</c:if>
 };
 
 var rqT = function (xhr,msg,status){ // request timeout
@@ -795,7 +776,7 @@ if(window.location.hash){
 
 var initListScroll = function () {
     $('dlist-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
-    listScroll = new iScroll('dlist-view',{ checkDOMChanges: false, desktopCompatibility: true });
+    listScroll = new iScroll('dlist-view',{ checkDOMChanges: false, desktopCompatibility: true, hScrollbar: false, vScrollbar: true });
     return listScroll;
 };
 
@@ -815,7 +796,7 @@ var initPrefScroll = function () {
 var initContentScroll = function() {
    if($("dcontent-view")) {
        $("dcontent-view").addEventListener('touchmove', function(e){ e.preventDefault(); });
-       contentScroll = new iScroll('dcontent-view',{ checkDOMChanges: false, desktopCompatibility: true });
+       contentScroll = new iScroll('dcontent-view',{ checkDOMChanges: false, desktopCompatibility: true, hScrollbar: true, vScrollbar: true });
    }
 }
 
@@ -823,7 +804,9 @@ var init = function () {
     var dlistview = document.getElementById('dlist-view');
     if(dlistview) {
 	    dlistview.addEventListener('touchmove', function(e){ e.preventDefault(); });
-	    listScroll = new iScroll('dlist-view',{ checkDOMChanges: false,desktopCompatibility: true });
+	    listScroll = new iScroll('dlist-view',{ checkDOMChanges: false,desktopCompatibility: true, hScrollbar: false, vScrollbar: true });
+        rSH(dlistview);
+
     }
 }
 
@@ -949,6 +932,8 @@ ZmiPadMail.processResponse = function (respData, url) {
     } else if(ZmiPad.getParamFromURL("doMessageAction", url) == "1") {
         $("eaMsgDiv").innerHTML = respData;
         $("eaMsgDiv").style.display = "";
+        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
+        $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
         if($("messageActionIds").value != "" && ZmiPad.getParamFromURL("anAction", url) != "") {
               var actionIds = ($("messageActionIds").value).split(",");                                         //messageActionIds comes from moipadredirect it gives all the action performed ids
               var sConvId = ZmiPad.getParamFromURL("cid",url);
@@ -1048,6 +1033,8 @@ ZmiPadMail.processResponse = function (respData, url) {
     	if(ZmiPad.getParamFromURL("st",url) == "conversation" && (ZmiPad.getParamFromURL("hc",url) == "1" || ZmiPad.getParamFromURL("mview",url) == "1")) {
             var sConvId = ZmiPad.getParamFromURL("cid",url);
             $("list"+sConvId).innerHTML = respData;
+            $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
+    		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
             setTimeout(function(){listScroll.refresh();}, 1000);
     	} else if(ZmiPad.getParamFromURL("st",url) == "folders") {
             $("folder-list").innerHTML = respData;
@@ -1217,6 +1204,144 @@ ZmiPadPrefs.processResponse = function (respData, url) {
         initPrefScroll();
     //}
 }
+
+<c:if test="${ua.isiPad}">
+var startX,startY,iH=[],xD=0,yD=0,dV=[],dId=0;
+var rSH = function(frm){ //Register swipe handler
+    if(frm){
+        frm.addEventListener('touchstart', function(e) {
+            if (e.targetTouches.length != 1){
+                return false;
+            }
+            var p = e.target;
+
+            window.evHandled=false;
+            while(p && (!p.className || $iO(p.className,"list-row") < 0)){
+                p = p.parentNode;
+            }
+            if(!p || !p.className || $iO(p.className,"list-row") < 0) {return;}
+            if(p && dId && dId != p.id && dV[dId]){
+                            hideSwipe(dId);
+            }
+            xD=0,yD=0;
+            startX = e.targetTouches[0].pageX;
+            startY = e.targetTouches[0].pageY;
+            frm.addEventListener('touchmove', function(e) {
+
+                //e.preventDefault();
+
+                if (e.targetTouches.length != 1){
+                    return false;
+                }
+                var p = e.target;
+                while(p && (!p.className || $iO(p.className,"list-row") < 0)){
+                    p = p.parentNode;
+                }
+                if(!p || !p.className || $iO(p.className,"list-row") < 0) {return;}
+
+                xD = e.targetTouches[0].pageX - startX;
+                yD = e.targetTouches[0].pageY - startY;
+
+                if(Math.abs(xD) > 50 && Math.abs(yD) < 15 ){
+                   var l = p.getElementsByClassName("l");
+                   if(p){
+                       if(dId && dId != p.id && dV[dId]){
+                            hideSwipe(dId);
+                       }
+                       l = l[0];
+                       dId = p.id;
+                       if(!dV[dId]){
+                           showSwipe(dId);
+                       }else{
+                           hideSwipe(dId);
+                       }
+                       //stopEvent(e);
+                       e.returnValue = false;
+                       //window.evHandled=true;
+                       frm.removeEventListener('touchmove');
+                       frm.removeEventListener('touchend');
+                   }
+                }
+                xD=0;
+            }, false);
+            frm.addEventListener('touchend', function(e) {
+                var p = e.target;
+                while(p && (!p.className || $iO(p.className,"list-row") < 0)){
+                    p = p.parentNode;
+                }
+                if(!p || !p.className || $iO(p.className,"list-row") < 0) {return;}
+                
+                /*if(Math.abs(xD) > 50 && Math.abs(yD) < 15 ){
+                   var l = p.getElementsByClassName("l");
+                   if(p){
+                       if(dId && dId != p.id && dV[dId]){
+                            hideSwipe(dId);
+                       }
+                       l = l[0];
+                       dId = p.id;
+                       if(!dV[dId]){
+                           showSwipe(dId);
+                       }else{
+                           hideSwipe(dId);
+                       }
+                       //stopEvent(e);
+                       e.returnValue = false;
+                       //window.evHandled=true;
+                       frm.removeEventListener('touchmove');
+                       frm.removeEventListener('touchend');
+                   }
+                }*/
+                xD=0;
+            }, false);
+        }, false);
+
+    }
+};
+var hideSwipe = function(id) {
+  var p = $(id);
+  if(!p) {return ;}
+  if(p && dV[id]){
+    p.innerHTML = iH[id];
+    dV[id]=false;
+    delete iH[id];
+  }
+};
+
+var showSwipe = function(id) {
+  var sHTML = [];
+  var i = 0;
+
+  var p = $(id);
+  if(!p) {return ;}
+  if(p && !dV[id]){
+
+      iH[id] = p.innerHTML;
+      var fromEl = p.getElementsByClassName("from-span")[0];
+      var msgId = p.getElementsByClassName("chk")[0].value;
+      sHTML[i++] = "<span class='td f' style='width:25px;background-color:grey;'><input type='hidden' name='cid' value='" + msgId + "'/></span>";
+      sHTML[i++] = "<span class='td m ' style='height:50px;background-color:grey;'><div class='from-span' style='font-color:white;'>"+ fromEl.innerHTML +"</div>";
+      sHTML[i++] = "<span><button type='submit' style='z-index:-999' class='zo_button delete_button delBtnV' name='anAction' value='actionDelete'><fmt:message key="delete"/></button></span>";
+      sHTML[i++] = "<span><button type='button' style='z-index:-999' class='zo_button delete_button delBtnV'><a href='?st=newmail&amp;op=reply&amp;id="+ msgId.replace("-","") + "'><fmt:message key="reply"/></a></button></span>";
+      sHTML[i++] = "<span><button type='button' style='z-index:-999' class='zo_button delete_button delBtnV'><a href='?st=newmail&amp;op=replyAll&amp;id="+ msgId.replace("-","") + "'><fmt:message key="replyAll"/></a></button></span>";
+      sHTML[i++] = "<span><button type='submit' style='z-index:-999' class='zo_button delete_button delBtnV' name='anAction' value='actionFlag'><fmt:message key="MO_flag"/></button></span>";
+      sHTML[i++] = "</span>";
+    
+      p.innerHTML = sHTML.join("");
+    
+      dV[id]=true;
+  }  
+};
+    
+</c:if>
+
+
+
+
+
+
+
+
+
 window.addEventListener('load', init);
 
 <c:if test="${scriptTag}">
