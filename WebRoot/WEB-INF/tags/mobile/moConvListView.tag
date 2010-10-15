@@ -75,22 +75,28 @@
                 <input <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if> class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedCids,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''} name="cid" value="${chit.id}"/>
                 <c:if test="${ua.isiPad eq false}" > <span class="SmlIcnHldr ${class}">&nbsp;</span> </c:if>
             </span>
+            <span class="td" style="width:1%;">
+                <c:if test="${chit.messageCount gt 1 and ua.isiPad eq true}"></c:if>
+            </span>
             <span class="td m" onclick='return zClickLink("a${chit.id}");'>
                 <div class="from-span">
                     <c:set var="dispRec" value="${chit.displayRecipients}"/>
                     <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
-                    <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                    <c:if test="${fn:length(_f) > 20 and ua.isiPad eq false}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                    <c:if test="${fn:length(_f) > 30 and ua.isiPad eq true}"><c:set var="_f" value="${fn:substring(_f, 0, 30)}..."/></c:if>
                     <c:if test="${chit.messageCount gt 1}"><c:url var="convUrl" value="${convUrl}"><c:param name="hc" value="1"/></c:url></c:if>
                     <a class="zo_m_list_from" id="a${chit.id}" href="${fn:escapeXml(convUrl)}">${fn:escapeXml(_f)}</a>
                 </div>
                     <div class="sub-span">
                         <c:set var="_f" value="${empty chit.subject ? unknownSubject : chit.subject}"/>
-                        <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                        <c:if test="${fn:length(_f) > 20 and ua.isiPad eq false}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                        <c:if test="${fn:length(_f) > 30 and ua.isiPad eq true}"><c:set var="_f" value="${fn:substring(_f, 0, 30)}..."/></c:if>
                             ${fn:escapeXml(_f)}
                     </div>
                     <div class="frag-span small-gray-text">
                         <c:set var="_f" value="${chit.fragment}"/>
-                        <c:if test="${fn:length(_f) > 47}"><c:set var="_f" value="${fn:substring(_f, 0, 47)}..."/></c:if>
+                        <c:if test="${fn:length(_f) > 47 and ua.isiPad eq false}"><c:set var="_f" value="${fn:substring(_f, 0, 47)}..."/></c:if>
+                        <c:if test="${fn:length(_f) > 38 and ua.isiPad eq true}"><c:set var="_f" value="${fn:substring(_f, 0, 38)}..."/></c:if>
                             ${fn:escapeXml(_f)}
                     </div>
             </span>

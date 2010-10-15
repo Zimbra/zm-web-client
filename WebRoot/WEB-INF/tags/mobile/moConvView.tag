@@ -129,16 +129,19 @@
                        <div class="from-span">
                            <c:set var="dispRec" value="${mhit.displayAddresses}"/>
                            <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
-                           <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                           <c:if test="${fn:length(_f) > 20 and ua.isiPad eq false}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                           <c:if test="${fn:length(_f) > 30 and ua.isiPad eq true}"><c:set var="_f" value="${fn:substring(_f, 0, 30)}..."/></c:if>
                            <a class="zo_m_list_from" id="a${mhit.id}" href="${fn:escapeXml(msgUrl)}">${fn:escapeXml(_f)}</a></div>
                        <div class="sub-span">
                            <c:set var="_f" value="${empty mhit.subject ? unknownSubject : mhit.subject}"/>
-                           <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                           <c:if test="${fn:length(_f) > 20 and ua.isiPad eq false}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                           <c:if test="${fn:length(_f) > 30 and ua.isiPad eq true}"><c:set var="_f" value="${fn:substring(_f, 0, 30)}..."/></c:if>
                            ${fn:escapeXml(_f)}
                        </div>
                        <div class="frag-span small-gray-text">
                            <c:set var="_f" value="${mhit.fragment}"/>
-                           <c:if test="${fn:length(_f) > 45}"><c:set var="_f" value="${fn:substring(_f, 0, 45)}..."/></c:if>
+                           <c:if test="${fn:length(_f) > 45 and ua.isiPad eq false}"><c:set var="_f" value="${fn:substring(_f, 0, 45)}..."/></c:if>
+                           <c:if test="${fn:length(_f) > 38 and ua.isiPad eq true}"><c:set var="_f" value="${fn:substring(_f, 0, 38)}..."/></c:if>
                            ${fn:escapeXml(_f)}
                        </div>
                    </span>

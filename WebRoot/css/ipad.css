@@ -94,12 +94,12 @@ a:hover{
     }
 	
 	.listViewPane{
-		width: 35.9%;
+		width: 32%;
 	
 	}
 	
 	.contentViewPane{
-		width: 63.9%;
+		width: 67.9%;
 	}
 	
 	.menu{
@@ -181,12 +181,12 @@ a:hover{
     }
 	
 	.listViewPane{
-		width: 39.9%;
+		width: 39%;
 	
 	}
 	
 	.contentViewPane{
-		width: 59.9%;
+		width: 60.9%;
 	}
 	
 	.menu{
@@ -451,13 +451,13 @@ html, body{
 .menuButton{
 	background-color: white;
 	background-image: -webkit-gradient(linear, 0% 50%, 0% 59%, from(#FFFFFF), to(#EBEFF5));
-	font-size: 14px;
+	font-size: 12px;
 	font-weight: bold;
 	width: 98%;
 	padding: 10px;
 	-webkit-border-radius: 4px;
 	text-shadow: #fff 0px 1px;
-	text-transform: uppercase;
+	/*text-transform: uppercase;*/
 	display: inline-block;
 	margin-bottom: 5px;
 	border: none;
@@ -855,6 +855,7 @@ a.accept,a.tentative,a.decline{
 
 .list-row-unread {
     font-weight: bold;
+    font-size:14px;
 }
 
 .list-row-sel{
@@ -876,10 +877,15 @@ a.accept,a.tentative,a.decline{
 	font-weight: normal;
 }
 
+.list-row-unread .from-span a{
+	font-weight: bold;
+}
+
 .from-span a {
     color: black;
     text-decoration: none;
-	font-weight: bold;
+	font-weight: normal;
+    font-size:14px;
 }
 
 .ConvOpen{
