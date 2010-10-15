@@ -559,10 +559,25 @@ function(calItem, mode) {
     }
 
     if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true);
-
-    this.setApptMessage(calItem.isDraft ? ZmMsg.inviteNotSent : null);
+    
+    this.setApptMessage(this._getMeetingStatusMsg(calItem));
 
     this.updateToolbarOps();
+};
+
+ZmApptEditView.prototype._getMeetingStatusMsg =
+function(calItem){
+    var statusMsg = null;
+    if(calItem.isDraft){
+        statusMsg = ZmMsg.inviteNotSent;
+        var msg = calItem.message;
+        if(msg){
+            if(msg.getAddress(AjxEmailAddress.TO)){ //isInviteSentOnce
+                statusMsg = ZmMsg.updatedInviteNotSent;
+            }
+        }
+    }
+    return statusMsg;
 };
 
 ZmApptEditView.prototype.setApptMessage =

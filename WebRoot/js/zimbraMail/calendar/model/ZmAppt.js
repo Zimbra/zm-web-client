@@ -821,6 +821,7 @@ function(calItemNode, instNode) {
 	this.transparency = this._getAttr(calItemNode, instNode, "transp");
 	this.otherAttendees = this._getAttr(calItemNode, instNode, "otherAtt");
 	this.location = this._getAttr(calItemNode, instNode, "loc");
+    this.isDraft = this._getAttr(calItemNode, instNode, "draft");
 };
 
 ZmAppt.prototype._getSoapForMode =
@@ -870,6 +871,13 @@ function(soapDoc, inv, comp) {
 	comp.setAttribute("fb", this.freeBusy);
 	comp.setAttribute("class", this.privacy);
 	comp.setAttribute("transp", this.transparency);
+
+    //Add Draft flag    
+    var isDraft = 0;
+    if(this.hasAttendees()){
+        isDraft = this.isSend ? 0 : 1;
+    }
+	comp.setAttribute("draft", isDraft);
 };
 
 ZmAppt.prototype.setRsvp =
@@ -984,15 +992,6 @@ function(mode, callback, msg, batchCmd, result){
 ZmAppt.prototype._sendCancelMsg =
 function(callback){
     this.send(null, callback);  
-};
-
-
-ZmAppt.prototype._setSimpleSoapAttributes =
-function(soapDoc, attachmentId, notifyList, accountName) {
-    var soapNodes = ZmCalItem.prototype._setSimpleSoapAttributes.call(this, soapDoc, attachmentId, notifyList, accountName);
-    if(this.hasAttendees() && !this.isSend)
-        soapNodes.m.setAttribute("f", ZmItem.FLAG_ISDRAFT);
-    return soapNodes;
 };
 
 ZmAppt.prototype._addAttendeesToSoap =

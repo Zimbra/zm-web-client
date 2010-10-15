@@ -171,7 +171,7 @@ function(attId) {
 				var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
 				if (attendees.length > 0) {
 					// check whether organizer has added/removed any attendees
-					if (this._attendeesUpdated(appt, attId, attendees, origAttendees))
+					if (this._action == ZmCalItemComposeController.SEND && this._attendeesUpdated(appt, attId, attendees, origAttendees))
 						return false;
 				}
 			}
@@ -852,10 +852,24 @@ function(calItem, result) {
             viewMode = calItem.isRecurring() ? ZmCalItem.MODE_EDIT_SERIES : ZmCalItem.MODE_EDIT;            
         }
         calItem.setFromSavedResponse(result);
+        if(this._action == ZmCalItemComposeController.SAVE){
+            calItem.isDraft = true;
+        }
         this._composeView.set(calItem, viewMode);        
     }
 
-    appCtxt.setStatusMsg(ZmMsg.apptCreated);
+    var msg = ZmMsg.apptCreated;
+    if(calItem.hasAttendees()){
+        if(this._action == ZmCalItemComposeController.SAVE){
+            msg = ZmMsg.apptSaved;
+        }else{
+            if(viewMode != ZmCalItem.MODE_NEW){
+                msg = ZmMsg.apptSent;
+            }
+        }              
+    }
+    appCtxt.setStatusMsg(msg);
+    
     appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success
 };
 

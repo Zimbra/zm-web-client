@@ -13,7 +13,7 @@
                             <col width='80'/>
                         </colgroup>
                         <tr id='${id}_invitemsg_container' style='display:none;'>
-                            <td width="1%" align="right" id="${id}_invitemsgicon"><$= AjxImg.getImageHtml("Warning") $></td>
+                            <td width="1%" align="right" id="${id}_invitemsgicon"><$= AjxImg.getImageHtml("Information") $></td>
                             <td colspan="6" id="${id}_invitemsg"><!-- Invite message --></td>
                         </tr>
                         <tr  id='${id}_forward_options' style='display:none;'>

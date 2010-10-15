@@ -652,7 +652,8 @@ function(appt) {
 		tagIcon: tagIcon,
 		hideTime: is60,
 		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba),
-        boxBorder: ZmApptViewHelper.getBoxBorderFromId(appt.fba)
+        boxBorder: ZmApptViewHelper.getBoxBorderFromId(appt.fba),
+        isDraft: appt.isDraft
 	};
 
 	var template;
