@@ -603,6 +603,23 @@ function() {
 	return newList;
 };
 
+/**
+ * Gets the number of active session controllers
+ *
+ * @return	{number} the number of active session controllers
+ */
+ZmApp.prototype.getNumSessionControllers =
+function(type) {
+    var controllers = this._sessionController[type] || [];
+    var activeCount = 0;
+    for (var id in controllers) {
+        if (!controllers[id].inactive) {
+            activeCount++;
+        }
+    }
+    return activeCount;
+};
+
 ZmApp.prototype.getSessionController =
 function(type, controllerClass, sessionId) {
 

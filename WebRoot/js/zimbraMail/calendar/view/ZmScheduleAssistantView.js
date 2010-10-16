@@ -31,6 +31,8 @@ ZmScheduleAssistantView = function(parent, controller, apptEditView) {
 	this._controller = controller;
 	this._editView = apptEditView;
 
+    this._fbCache = controller.getApp().getFreeBusyCache();
+
 	this._rendered = false;
 	this._kbMgr = appCtxt.getKeyboardMgr();
 
@@ -388,22 +390,21 @@ function(params) {
 		appCtxt.getRequestMgr().cancelRequest(this._freeBusyRequest, null, true);
 	}
 
-    var requiredEmails = [], freeBusyKey;
-    for (var i = emails.length; --i >= 0;) {
-        freeBusyKey = this.getFreeBusyKey(tf, emails[i]);
-        if(!this._schedule[freeBusyKey]) requiredEmails.push(emails[i]);
-    }
+    var callback = new AjxCallback(this, this.getWorkingHours, [params]);
+    var acct = (appCtxt.multiAccounts)
+        ? this._editView.getCalendarAccount() : null;
 
-    if(requiredEmails.length) {
-	    this._freeBusyRequest = this._controller.getFreeBusyInfo(tf.start.getTime(),
-															 tf.end.getTime(),
-															 requiredEmails.join(","),
-															 new AjxCallback(this, this._handleResponseFreeBusy, [params]),
-															 null,
-															 true);
-    }else {
-        this.getWorkingHours(params);
-    }
+    var params = {
+                    startTime: tf.start.getTime(),
+                    endTime: tf.end.getTime(),
+                    emails: emails,
+                    callback: callback,
+                    errorCallback: callback,
+                    noBusyOverlay: true,
+                    account: acct
+    };
+
+    this._freeBusyRequest = this._fbCache.getFreeBusyInfo(params);
 };
 
 ZmScheduleAssistantView.prototype._addAttendee =
@@ -425,28 +426,6 @@ function(startDate, attendees) {
     return startDate.getTime() + "-" + attendees.join(",");
 };
 
-ZmScheduleAssistantView.prototype._handleResponseFreeBusy =
-function(params, result) {
-
-    this._freeBusyRequest = null;
-
-    //this._schedule = {};
-
-    var freeBusyKey;
-	var args = result.getResponse().GetFreeBusyResponse.usr;
-    for (var i = 0; i < args.length; i++) {
-		var usr = args[i];
-        var id = usr.id;
-        if (!id) {
-            continue;
-        }
-        freeBusyKey = this.getFreeBusyKey(params.timeFrame, id);
-        this._schedule[freeBusyKey] = usr;
-    };
-
-    this.getWorkingHours(params);
-};
-
 ZmScheduleAssistantView.prototype.clearCache =
 function() {
     this._organizerEmail = null;
@@ -460,6 +439,10 @@ function(timeFrame, id) {
 
 ZmScheduleAssistantView.prototype.getWorkingHours =
 function(params) {
+
+    //clear fb request info
+    this._freeBusyRequest = null;
+
     if (this._workingHoursRequest) {
         appCtxt.getRequestMgr().cancelRequest(this._workingHoursRequest, null, true);
     }
@@ -564,8 +547,7 @@ function(startTime, endTime, params) {
     var freeBusyKey;
     for(var i = this._attendees.length; --i >= 0;) {
         var attendee = this._attendees[i];
-        freeBusyKey = this.getFreeBusyKey(params.timeFrame, attendee);         
-        var sched = this._schedule[freeBusyKey];
+        var sched = this._fbCache.getFreeBusySlot(params.timeFrame.start.getTime(), params.timeFrame.end.getTime(), attendee);
 
         //show suggestions only in the organizer's working hours.
         var isFree = params.includeNonWorkingHours ? true : this.isUnderWorkingHour(this._organizerEmail, startTime, endTime);
@@ -592,8 +574,7 @@ function(startTime, endTime, params) {
 		if (resource instanceof Array) {
 			resource = resource[0];
 		}
-        freeBusyKey = this.getFreeBusyKey(params.timeFrame, resource);
-        var sched = this._schedule[freeBusyKey];
+        var sched = this._fbCache.getFreeBusySlot(params.timeFrame.start.getTime(), params.timeFrame.end.getTime(), resource);
         var isFree = true;
         if(sched.b) isFree = isFree && this.isBooked(sched.b, startTime, endTime);
         if(sched.t) isFree = isFree && this.isBooked(sched.t, startTime, endTime);

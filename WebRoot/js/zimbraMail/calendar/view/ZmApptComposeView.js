@@ -376,3 +376,13 @@ function(ev) {
 
 	this._apptEditView.resize(newWidth, newHeight);
 };
+
+ZmApptComposeView.prototype.deactivate =
+function() {
+	this._controller.inactive = true;
+
+    //clear the free busy cache if the last tabbed compose view session is closed
+    var activeComposeSesions = this._app.getNumSessionControllers(ZmId.VIEW_APPOINTMENT);
+    if(activeComposeSesions == 0) this._app.getFreeBusyCache().clearCache();
+
+};

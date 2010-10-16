@@ -744,6 +744,20 @@ function() {
 };
 
 /**
+ * Gets the free busy cache.
+ *
+ * @return	{ZmFreeBusyCache} free busy cache object
+ */
+ZmCalendarApp.prototype.getFreeBusyCache =
+function() {
+	if (!this._freeBusyCache) {
+		AjxDispatcher.require("CalendarCore");
+		this._freeBusyCache = new ZmFreeBusyCache(this);
+	}
+	return this._freeBusyCache;
+};
+
+/**
  * Gets the reminder controller.
  *
  * @return	{ZmReminderController}	the controller
