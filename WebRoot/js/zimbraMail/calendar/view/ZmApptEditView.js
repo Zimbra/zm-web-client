@@ -1607,7 +1607,7 @@ function(type, attendees) {
 
     if(this._schedulerOpened) {
         var organizer = this._isProposeTime ? this.getCalItemOrganizer() : this.getOrganizer();
-        this._scheduleView.set(this._dateInfo, organizer, this._attendees);
+        this._scheduleView.update(this._dateInfo, organizer, this._attendees);
         this.autoSize();
     }
 
@@ -1836,6 +1836,11 @@ function(ev) {
     var key = DwtKeyEvent.getCharCode(ev);
 
     if(key == 32 || key == 59) {
-        edv._handleAttendeeField(ZmCalBaseItem.PERSON);                
+        edv.handleAttendeeChange();
     }
+};
+
+ZmApptEditView.prototype.handleAttendeeChange =
+function(ev) {
+    AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._handleAttendeeField, ZmCalBaseItem.PERSON), 300);
 };

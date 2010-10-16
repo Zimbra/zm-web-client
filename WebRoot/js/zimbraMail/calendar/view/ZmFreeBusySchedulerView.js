@@ -161,6 +161,12 @@ function(dateInfo, organizer, attendees) {
 	this._outlineAppt();
 };
 
+ZmFreeBusySchedulerView.prototype.update =
+function(dateInfo, organizer, attendees) {
+	this._updateAttendees(organizer, attendees);
+	this._outlineAppt();
+};
+
 ZmFreeBusySchedulerView.prototype.cleanup =
 function() {
 	if (!this._rendered) return;
@@ -198,6 +204,7 @@ function() {
 	}
 
     this._emailAliasMap = {};
+    this._emptyRowIndex = null;
 };
 
 // Private / protected methods
@@ -298,7 +305,7 @@ function(tabGroup) {
 	}
 };
 
-ZmFreeBusySchedulerView.prototype._deleteAttendeeRow =
+ZmFreeBusySchedulerView.prototype._deleteAttendeeEntry =
 function(email) {
     var index = this._emailToIdx[email];
     if(!index) {
@@ -307,10 +314,14 @@ function(email) {
     delete this._emailToIdx[email];
     Dwt.setDisplay(this._attendeesTable.rows[index], 'none');
     this._schedTable[index] = null;
+};
+
+ZmFreeBusySchedulerView.prototype._deleteAttendeeRow =
+function(email) {
+    this._deleteAttendeeEntry(email);
+
     //remove appt divs created for attendee/calendar
-
     this._editView.removeApptByEmail(email);
-
 
     this._updateFreeBusy();
     this._editView.removeMetadataAttendees(this._schedTable[this._organizerIndex].attendee, email);
@@ -583,7 +594,7 @@ function(inputEl, attendee, useException) {
             }
             if (!curAttendee) {
 				// user added attendee in empty slot
-				var value = this._addAttendeeRow(false, null, true, null, true, true); // add new empty slot
+				var value = this._emptyRowIndex = this._addAttendeeRow(false, null, true, null, true, true); // add new empty slot
                 if(this.isComposeMode) this._editView.autoSize();
                 return value;
 			}
@@ -700,7 +711,7 @@ function(organizer, attendees) {
 	}
 
 	// make sure there's always an empty slot
-	this._addAttendeeRow(false, null, false, null, true, false);
+	this._emptyRowIndex = this._addAttendeeRow(false, null, false, null, true, false);
 
 	if (emails.length) {
 		this._getFreeBusyInfo(this._getStartTime(), emails.join(","), this._fbCallback, this._workCallback);
@@ -709,6 +720,59 @@ function(organizer, attendees) {
     if(this._appt) {
         this.enableAttendees(this._appt.isOrganizer());
     }
+};
+
+ZmFreeBusySchedulerView.prototype._updateAttendees =
+function(organizer, attendees) {
+
+    var emails = [], newEmails = {};
+
+	// create a slot for the organizer
+	//this._organizerIndex = this._addAttendeeRow(false, organizer.getAttendeeText(ZmCalBaseItem.PERSON, true), false);
+	//emails.push(this._setAttendee(this._organizerIndex, organizer, ZmCalBaseItem.PERSON, true));
+
+
+    //update newly added attendee
+	for (var t = 0; t < this._attTypes.length; t++) {
+		var type = this._attTypes[t];
+        if(attendees[type]) {
+            var att = attendees[type].getArray ? attendees[type].getArray() : attendees[type];
+            for (var i = 0; i < att.length; i++) {
+                var email = att[i] ? att[i].getEmail() : null;
+                if(email) newEmails[email] = true;
+                if (email && !this._emailToIdx[email]) {
+                    var index;
+                    if(this._emptyRowIndex != null) {
+                        emails.push(this._setAttendee(this._emptyRowIndex, att[i], type, false));
+                        this._emptyRowIndex = null;
+                    }else {
+                        index = this._addAttendeeRow(false, null, false); // create a slot for this attendee
+                        emails.push(this._setAttendee(index, att[i], type, false));
+                    }
+                }
+            }
+        }
+	}
+
+    //update deleted attendee
+    for(var id in this._emailToIdx) {
+        if(!newEmails[id]) {
+            var idx = this._emailToIdx[id];
+            if(this._organizerIndex == idx) continue;
+            var sched = this._schedTable[idx];
+            this._resetRow(sched, false, sched.attType, false, true);
+            this._deleteAttendeeEntry(id);
+        }
+    }
+
+    if(emails.length > 0) {
+	    // make sure there's always an empty slot
+	    this._emptyRowIndex = this._addAttendeeRow(false, null, false, null, true, false);
+    }
+
+	if (emails.length) {
+		this._getFreeBusyInfo(this._getStartTime(), emails.join(","), this._fbCallback, this._workCallback);
+	}
 };
 
 ZmFreeBusySchedulerView.prototype._setAttendee =
@@ -811,14 +875,15 @@ function(sched, attendee, index) {
  * @param resetSelect	[boolean]*		if true, set select to PERSON
  * @param type			[constant]*		attendee type
  * @param noClear		[boolean]*		if true, don't clear input field
+ * @param noUpdate		[boolean]*		if true, don't update parent view
  */
 ZmFreeBusySchedulerView.prototype._resetRow =
-function(sched, resetSelect, type, noClear) {
+function(sched, resetSelect, type, noClear, noUpdate) {
 
 	var input = sched.inputObj;
 	if (sched.attendee && type) {
 
-        if(this.isComposeMode) {
+        if(this.isComposeMode && !noUpdate) {
             this._editView.parent.updateAttendees(sched.attendee, type, ZmApptComposeView.MODE_REMOVE);
             this._editView._setAttendees();
         }
