@@ -123,13 +123,16 @@
         </c:otherwise>
     </c:choose>
 </c:when>
-<c:when test="${empty ids}">
+<c:when test="${empty ids and param.doMessageAction eq '1'}">
     <mo:status style="Warning"><fmt:message key="actionNoMessageSelected"/></mo:status>
 </c:when>
 <c:otherwise>
 <c:choose>
 <%--Consolidated group actions using moreAction param, actual action to perform is specified by anAction param--%>
-<c:when test="${(zm:actionSet(param,'moreActions') && empty anAction && empty param.actionDelete) }">
+<c:when test="${not empty param.sq and ua.isiPad eq true and param.doMessageAction eq '0'}">
+    
+</c:when>
+<c:when test="${(zm:actionSet(param,'moreActions') && empty anAction && empty param.actionDelete)}">
     <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionMarkSpam') || (zm:actionSet(param,'moreActions') && anAction eq 'actionMarkSpam') }">
@@ -385,7 +388,7 @@
 </c:choose>
 <c:remove var="op"/>
 
-<c:if test="${ua.isiPad}">
+<c:if test="${ua.isiPad and param.doMessageAction eq '1'}">
     <jsp:forward page="/m/moipadredirect">
         <jsp:param name="ids" value="${ids}"/>
     </jsp:forward>

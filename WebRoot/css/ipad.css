@@ -28,7 +28,7 @@ a:hover{
     }
 
 	.wrap-dcontent {
-       height: 570px;
+       height: 640px;
     }
 
     .wrap-dcal {
@@ -48,7 +48,7 @@ a:hover{
     }
 
 	.emptyBody {
-		min-height: 520px;
+		min-height: 640px;
 	}
 
 	.msgBody {
@@ -117,7 +117,7 @@ a:hover{
     }
 
     .wrap-dcontent {
-       height: 825px;
+       height: 870px;
    	}
 
     .wrap-dcal {
@@ -136,7 +136,7 @@ a:hover{
         height:320px;   
     }
 	.emptyBody {
-		min-height: 776px;
+		min-height: 870px;
 	}
 	
 	.msgBody {

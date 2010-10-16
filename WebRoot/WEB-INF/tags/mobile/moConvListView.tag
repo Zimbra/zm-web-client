@@ -31,9 +31,10 @@
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <c:if test="${empty param.show}">
-<form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
+<form id="zForm" name="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
+<input type="hidden" name="actionURL" value="${fn:escapeXml(actionUrl)}"/>    
 <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
 <c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
     <c:choose>

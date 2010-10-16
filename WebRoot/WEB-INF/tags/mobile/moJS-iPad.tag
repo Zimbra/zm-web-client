@@ -787,7 +787,6 @@ var initFldrListScroll = function () {
 	}
 };
 
-
 var initPrefScroll = function () {
     $('dlist-pref').addEventListener('touchmove', function(e){ e.preventDefault(); });
     listScroll = new iScroll('dlist-pref',{ checkDOMChanges: false, desktopCompatibility: true });
@@ -928,7 +927,8 @@ ZmiPadMail.processResponse = function (respData, url) {
         $(ZmiPad.ID_VIEW_LIST).style.display="none";    
         $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
         $("sq").blur();
-        initListScroll();
+        initFldrListScroll();
+
     } else if(ZmiPad.getParamFromURL("doMessageAction", url) == "1") {
         $("eaMsgDiv").innerHTML = respData;
         $("eaMsgDiv").style.display = "";
@@ -1061,12 +1061,14 @@ ZmiPadMail.processResponse = function (respData, url) {
             $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
     		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
             $(ZmiPad.ID_VIEW_LIST).style.display="none";
+            initFldrListScroll();
 
         } else {
     		$(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
     		$(ZmiPad.ID_VIEW_STATIC).style.display = "block";
     		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
     		initListScroll();
+            rSH($('dlist-view'));
     	}
     	
         $("sq").blur();
