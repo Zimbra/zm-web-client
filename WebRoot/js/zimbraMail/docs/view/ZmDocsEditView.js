@@ -45,16 +45,8 @@ ZmDocsEditView.prototype.save = function(){
 
     var fileInfo = ZmDocsEditApp.fileInfo;
     var fileName = this._buttons.fileName.getValue();
-    var message;
-
-    if(!fileInfo.id){
-        if (fileName == "") {
-            message = ZmMsg.emptyDocName;
-        } else {
-            message = this._docMgr.checkInvalidDocName(fileName);
-        }
-    }
-
+    
+    var message = this._docMgr.checkInvalidDocName(fileName);
     if (message) {
 		var style = DwtMessageDialog.WARNING_STYLE;
 		var dialog = this.warngDlg = appCtxt.getMsgDialog();

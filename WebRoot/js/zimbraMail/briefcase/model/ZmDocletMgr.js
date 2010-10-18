@@ -315,7 +315,9 @@ ZmDocletMgr.prototype.checkInvalidDocName = function(fileName) {
     var message;
     fileName = fileName.replace(/^\s+/,"").replace(/\s+$/,"");
 
-    if (!ZmOrganizer.VALID_NAME_RE.test(fileName) || ZmDocletMgr.INVALID_DOC_NAME_RE.test(fileName)) {
+    if(fileName == ""){
+        message = ZmMsg.emptyDocName;
+    }else if (!ZmOrganizer.VALID_NAME_RE.test(fileName) || ZmDocletMgr.INVALID_DOC_NAME_RE.test(fileName)) {
         message = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName));
     } else if ( fileName.length > ZmOrganizer.MAX_NAME_LENGTH){
         message = AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
