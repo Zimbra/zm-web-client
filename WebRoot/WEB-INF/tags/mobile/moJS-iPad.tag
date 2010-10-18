@@ -949,6 +949,10 @@ ZmiPadMail.processResponse = function (respData, url) {
 
                  for(var i = 0; i < actionIds.length; i++){   //loop through all the checked ConvMsgList
                     if(actionIds[i] && actionIds[i] != "") {
+                       var msgEl = $("conv"+actionIds[i]);
+                       if(msgEl && dId && dId == msgEl.id && dV[dId]){
+                             hideSwipe(dId);
+                       }
                        if($("conv"+actionIds[i]) && $("conv"+actionIds[i]).getAttributeNode("pconv")) {         //check if the checked id has convList else its just message
                             var pConv = $("conv"+actionIds[i]).getAttributeNode("pconv").value;
                             $("conv"+actionIds[i]).style.textDecoration = "line-through";                       //present it as deleted
@@ -1010,7 +1014,7 @@ ZmiPadMail.processResponse = function (respData, url) {
                        }
                     }
                  }
-              } else if (ZmiPad.getParamFromURL("anAction", url) == "actionMarkRead") {   //TODO if its conversation is markedread need to markread on all convMsgList
+              } else if (ZmiPad.getParamFromURL("anAction", url) == "actionMarkRead") {   //TODO if its conversation is markread need to markread on all convMsgList
                  for(var i = 0; i < actionIds.length; i++){
                      if($("conv"+actionIds[i])) {
                          var msgEl = $("conv"+actionIds[i]);   
@@ -1019,13 +1023,31 @@ ZmiPadMail.processResponse = function (respData, url) {
 			             }
                      }
                  }
-              } else if (ZmiPad.getParamFromURL("anAction", url) == "actionMarkUnread") {  //TODO if its conversation is markeUnRead need to markUnread on all convMsgList
+              } else if (ZmiPad.getParamFromURL("anAction", url) == "actionMarkUnread") {  //TODO if its conversation is markUnRead need to markUnread on all convMsgList
                  for(var i = 0; i < actionIds.length; i++){
                      if($("conv"+actionIds[i])) {
                          var msgEl = $("conv"+actionIds[i]);
                          if (msgEl.className.indexOf('list-row') != -1) {
 				            delClass(msgEl, "list-row","list-row-unread");
 			             }
+                     }
+                 }
+              } else if (ZmiPad.getParamFromURL("anAction", url) == "actionFlag" || ZmiPad.getParamFromURL("anAction", url) == "actionUnflag") {  //TODO if its conversation is markFlag need to markFlag on all convMsgList
+                 for(var i = 0; i < actionIds.length; i++){
+                     if($("conv"+actionIds[i])) {
+                         var msgEl = $("conv"+actionIds[i]);
+                         if(msgEl && dId && dId == msgEl.id && dV[dId]){
+                            hideSwipe(dId);
+                         }
+                         if(msgEl.getElementsByClassName("l")[0]) {
+                          var liHtml = msgEl.getElementsByClassName("l")[0].innerHTML;
+
+                          if(liHtml.indexOf("SmlIcnHldr Flag") == -1) {
+                            msgEl.getElementsByClassName("l")[0].innerHTML += '<span class="SmlIcnHldr Flag">&nbsp;</span>'
+                          } else {
+                            msgEl.getElementsByClassName("l")[0].innerHTML = (msgEl.getElementsByClassName("l")[0].innerHTML).replace("SmlIcnHldr Flag","");
+                          }
+                         }
                      }
                  }
               }
@@ -1350,13 +1372,19 @@ var showSwipe = function(id) {
 
       iH[id] = p.innerHTML;
       var fromEl = p.getElementsByClassName("from-span")[0];
-      var msgId = p.getElementsByClassName("chk")[0].value;
-      sHTML[i++] = "<span class='td f' style='width:25px;background-color:grey;'><input type='hidden' name='cid' value='" + msgId + "'/></span>";
+      var msgId = p.getElementsByClassName("chk")[0];
+
+      sHTML[i++] = "<span class='td f' style='width:25px;background-color:grey;'><input type='hidden' name='" + msgId.name + "' value='" + msgId.value + "'/></span>";
       sHTML[i++] = "<span class='td m ' style='height:50px;background-color:grey;'><div class='from-span' style='font-color:white;'>"+ fromEl.innerHTML +"</div>";
       sHTML[i++] = "<span><button type='submit' style='z-index:-999' class='zo_button delete_button delBtnV' name='anAction' value='actionDelete'><fmt:message key="delete"/></button></span>";
-      sHTML[i++] = "<span><button type='button' style='z-index:-999' class='zo_button delete_button delBtnV'><a href='?st=newmail&amp;op=reply&amp;id="+ msgId.replace("-","") + "'><fmt:message key="reply"/></a></button></span>";
-      sHTML[i++] = "<span><button type='button' style='z-index:-999' class='zo_button delete_button delBtnV'><a href='?st=newmail&amp;op=replyAll&amp;id="+ msgId.replace("-","") + "'><fmt:message key="replyAll"/></a></button></span>";
-      sHTML[i++] = "<span><button type='submit' style='z-index:-999' class='zo_button delete_button delBtnV' name='anAction' value='actionFlag'><fmt:message key="MO_flag"/></button></span>";
+      sHTML[i++] = "<span><button type='button' style='z-index:-999' class='zo_button delete_button delBtnV'><a href='?st=newmail&amp;op=reply&amp;id="+ (msgId.value).replace("-","") + "'><fmt:message key="reply"/></a></button></span>";
+      sHTML[i++] = "<span><button type='button' style='z-index:-999' class='zo_button delete_button delBtnV'><a href='?st=newmail&amp;op=replyAll&amp;id="+ (msgId.value).replace("-","") + "'><fmt:message key="replyAll"/></a></button></span>";
+      var lastEl = p.getElementsByClassName("l")[0];
+      if(p && lastEl && (lastEl.innerHTML).indexOf("SmlIcnHldr Flag") != -1 ) {
+        sHTML[i++] = "<span><button type='submit' style='z-index:-999' class='zo_button delete_button delBtnV' name='anAction' value='actionUnflag'><fmt:message key="MO_Unflag"/></button></span>";
+      } else {
+        sHTML[i++] = "<span><button type='submit' style='z-index:-999' class='zo_button delete_button delBtnV' name='anAction' value='actionFlag'><fmt:message key="MO_flag"/></button></span>";
+      }
       sHTML[i++] = "</span>";
     
       p.innerHTML = sHTML.join("");

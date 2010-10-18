@@ -48,7 +48,7 @@
 </c:choose>
 
 <c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showFolderCreate and ua.isiPad eq true)}" >
-	<div class="wrap-dlist" id="wrap-dlist-view">
+	<div class="wrap-dlist wrap-folder-dlist" id="wrap-dlist-view">
 	<div id="folder-dlist">
 </c:if>
 

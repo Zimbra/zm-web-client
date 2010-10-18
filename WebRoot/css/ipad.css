@@ -27,6 +27,10 @@ a:hover{
        height: 570px; /*changed for new ui changes*/
     }
 
+    .wrap-folder-dlist {
+       height: 620px; /*changed for new ui changes*/
+    }
+
 	.wrap-dcontent {
        height: 640px;
     }
@@ -114,6 +118,10 @@ a:hover{
 @media (orientation:portrait) {
 	.wrap-dlist {
        height: 825px;   
+    }
+
+    .wrap-folder-dlist {
+       height: 875px; /*changed for new ui changes*/
     }
 
     .wrap-dcontent {
