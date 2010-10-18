@@ -755,9 +755,9 @@ function() {
 		ZmOperation.SEP,
 		ZmOperation.TAG_MENU,
 		ZmOperation.SEP,
-		ZmOperation.VIEW_MENU,
-		ZmOperation.SEP,
-		ZmOperation.TODAY
+		ZmOperation.TODAY,
+        ZmOperation.SEP,
+        ZmOperation.VIEW_MENU
 	];
 };
 

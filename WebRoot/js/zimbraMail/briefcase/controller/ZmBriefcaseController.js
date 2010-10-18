@@ -137,23 +137,24 @@ function() {
 			ZmOperation.DELETE, ZmOperation.MOVE,
 			ZmOperation.SEP,
 			ZmOperation.TAG_MENU,
-			ZmOperation.SEP,
-			ZmOperation.VIEW_MENU,
-			ZmOperation.SEP];
+			ZmOperation.SEP
+			];
 
 	if (appCtxt.get(ZmSetting.DOCS_ENABLED)) {
-		   ops.push(ZmOperation.NEW_DOC);
+		   ops.push(ZmOperation.NEW_DOC,ZmOperation.SEP);
 	}
 	if (appCtxt.get(ZmSetting.SPREADSHEET_ENABLED)) {
-		ops.push(ZmOperation.NEW_SPREADSHEET);
+		ops.push(ZmOperation.NEW_SPREADSHEET,ZmOperation.SEP);
 	}
 	if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
-		ops.push(ZmOperation.NEW_PRESENTATION);
+		ops.push(ZmOperation.NEW_PRESENTATION,ZmOperation.SEP);
 	}
 
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		ops.push(ZmOperation.SEND_FILE_MENU);
+		ops.push(ZmOperation.SEND_FILE_MENU,ZmOperation.SEP);
 	}
+
+    ops.push(ZmOperation.VIEW_MENU);
 
 	return ops;
 };

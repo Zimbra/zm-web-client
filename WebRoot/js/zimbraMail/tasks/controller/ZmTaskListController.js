@@ -335,10 +335,12 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.TAG_MENU,
 			ZmOperation.SEP,
-            ZmOperation.VIEW_MENU,
             ZmOperation.SORTBY_MENU,
             ZmOperation.SEP,
-            ZmOperation.MARK_AS_COMPLETED);
+            ZmOperation.MARK_AS_COMPLETED,
+            ZmOperation.SEP,
+            ZmOperation.VIEW_MENU
+            );
 	
 	return toolbarOps;
 };
