@@ -338,6 +338,11 @@ INPUT[type="text"].people_search_input {
 	border: 2px solid @AltC@ !important;
 }
 
+.ZmPeopleSearchText-hover {
+    @Text-anchor-hover@
+	@ActiveCursor@
+}
+
 /*
  * Search builder
  */

@@ -23,7 +23,6 @@ ZmPeopleAutocompleteListView = function(params) {
 
 	this.addClassName("ZmPeopleAutocompleteListView");
 	this.setScrollStyle(DwtControl.CLIP);
-	this._initToolbar(params.parent);
 	this._outsideListener = new AjxListener(null, ZmPeopleAutocompleteListView._outsideMouseDownListener);
 };
 
@@ -45,15 +44,6 @@ ZmPeopleAutocompleteListView.NO_RESULTS			= "no-results";
 ZmPeopleAutocompleteListView.prototype.toString =
 function() {
 	return "ZmPeopleAutocompleteListView";
-};
-
-ZmPeopleAutocompleteListView.prototype.show =
-function(show, loc) {
-	if (!show) {
-		this._toolbar.setDisplay(Dwt.DISPLAY_NONE);
-	}
-
-	ZmAutocompleteListView.prototype.show.apply(this, arguments);
 };
 
 
@@ -80,22 +70,58 @@ function(list) {
 			rowId: rowId,
 			fullName: contact.getFullName(),
 			title: contact.getAttr(ZmContact.F_jobTitle),
-			email: contact.getEmail()
+			email: contact.getEmail(),
+            phone: contact.getAttr(ZmContact.F_workPhone)
 		};
-
-		// zimlet support
-		appCtxt.notifyZimlets("onPeopleSearchData", [data]);
+        
 		var rowHtml = AjxTemplate.expand("share.Widgets#ZmPeopleAutocompleteListView", data);
+
+        var row = Dwt.parseHtmlFragment(rowHtml, true);
         var tbody = document.createElement("tbody");
-        tbody.appendChild(Dwt.parseHtmlFragment(rowHtml, true));
+        tbody.appendChild(row);
 		var rowEl = table.appendChild(tbody);
-		Dwt.associateElementWithObject(rowEl, contact, "contact");
+
+        if (data.email){
+            var emailTxt = new DwtText({parent:this, parentElement:rowId + "-email", index:0, id:"NewMsg", className:"FakeAnchor"});
+            emailTxt.isLinkText = true;
+            emailTxt.setText(data.email);
+            emailTxt.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._peopleItemListener));
+            emailTxt.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this.peopleItemMouseOverListener));
+            emailTxt.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this.peopleItemMouseOutListener));
+        }
+
+        if (data.fullName){
+            var nameTxt = new DwtText({parent:this, parentElement:rowId + "-fullName", index:0, id:"NewContact", className:"ZmPeopleSearch-fullname"});
+            nameTxt.isLinkText = true;
+            nameTxt.setText(data.fullName);
+            nameTxt.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._peopleItemListener));
+            nameTxt.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this.peopleItemMouseOverListener));
+            nameTxt.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this.peopleNameMouseOutListener));
+        }
+		Dwt.associateElementWithObject(row, contact, "contact");
+        // ask zimlets if they want to make data into links
+		appCtxt.notifyZimlets("onPeopleSearchShow", [this, contact, rowId]);
+
+        if (i==0)
+            this._setSelected(rowId);
+
 	}
 
-	// fetch free/busy info for all results
-	if (list.length > 0) {
+	//leave this out as part of bug 50692
+	/*
+	     //fetch free/busy info for all results;
+	    if (list.length > 0) {
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._getFreeBusyInfo, [list]), 100);
-	}
+	} */
+};
+
+/*
+    Called by zimlet to clear existing text when DwtText item is created.
+ */
+ZmPeopleAutocompleteListView.prototype._clearText =
+function(id) {
+    if (document.getElementById(id)!=null)
+        document.getElementById(id).innerHTML="";
 };
 
 ZmPeopleAutocompleteListView.prototype._showNoResults =
@@ -112,7 +138,7 @@ function() {
 
 ZmPeopleAutocompleteListView.prototype._setSelected =
 function(id) {
-	if (id == ZmPeopleAutocompleteListView.NO_RESULTS || id == this.getHtmlElement().id) { return; }
+    if (id == ZmPeopleAutocompleteListView.NO_RESULTS || id == this.getHtmlElement().id) { return; }
 
 	if (id == ZmAutocompleteListView.NEXT || id == ZmAutocompleteListView.PREV) {
 		var table = document.getElementById(this._tableId);
@@ -124,20 +150,6 @@ function(id) {
 	var rowEl = document.getElementById(id);
 	if (rowEl) {
 		this._activeContact = Dwt.getObjectFromElement(rowEl, "contact");
-
-		// show/hide IM button based on whether active contact is online
-		var imButton = this._toolbar.getButton(ZmPeopleAutocompleteListView.ACTION_IM);
-		if (imButton) {
-			var imPresence = this._activeContact && this._activeContact.getImPresence();
-			imButton.setVisible(imPresence && (imPresence.getShow() == ZmRosterPresence.SHOW_ONLINE));
-		}
-
-		// ask zimlets if they want to inject any buttons into the toolbar
-		appCtxt.notifyZimlets("onPeopleSearchToolbarShow", [this._toolbar, this._activeContact]);
-
-		var loc = Dwt.getLocation(rowEl);
-		this._toolbar.setDisplay(Dwt.DISPLAY_BLOCK);
-		this._toolbar.setLocation(loc.x+40, loc.y+Dwt.getSize(rowEl).y);
 	}
 
 	ZmAutocompleteListView.prototype._setSelected.apply(this, arguments);
@@ -174,11 +186,23 @@ function(emailHash, result) {
 
 	var fb = result.getResponse().GetFreeBusyResponse.usr;
 	for (var i = 0; i < fb.length; i++) {
-		var id = fb[i].b && fb[i].id;
+		var id = fb[i].id;
 		var el = id && (document.getElementById(emailHash[id] + "-freebusy"));
-		if (el) {
-			el.innerHTML = AjxImg.getImageHtml("FreeBusyDotBusy");
-		}
+        var td = document.createElement("td");
+        td.innerHTML="- ";
+        td.className="ZmPeopleSearch-busy";
+        el.parentNode.insertBefore(td, el);
+        var text = new DwtText({parent:this, parentElement:el, index:1, id:"NewAppt", className:"FakeAnchor"});
+        text.isLinkText = true;
+        text.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._peopleItemListener));
+        text.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this.peopleItemMouseOverListener));
+        text.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this.peopleItemMouseOutListener));
+
+		if (el && fb[i].b) {
+            text.setText("Busy");
+		}else if(el) {
+            text.setText("Available");
+        }
 	}
 };
 
@@ -198,82 +222,81 @@ function() {
 	ZmAutocompleteListView.prototype._removeAll.apply(this, arguments);
 };
 
-ZmPeopleAutocompleteListView.prototype._initToolbar =
-function(parent) {
-	var params = {
-		parent: parent,
-		className: "ZmPeopleSearch-toolbar"
-	};
-	this._toolbar = new ZmToolBar(params);
 
-	var buttonListener = new AjxListener(this, this._toolbarButtonListener);
-
-	// add the basic set of buttons
-	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		this._addButton(ZmPeopleAutocompleteListView.ACTION_MESSAGE, "NewMessage", buttonListener);
-	}
-
-	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-		this._addButton(ZmPeopleAutocompleteListView.ACTION_APPT, "NewAppointment", buttonListener);
-	}
-
-	if (appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
-		this._addButton(ZmPeopleAutocompleteListView.ACTION_IM, "NewIM", buttonListener);
-	}
-};
-
-ZmPeopleAutocompleteListView.prototype._addButton =
-function(id, icon, listener) {
-	this._toolbar.createButton(id, {image:icon});
-	this._toolbar.addSelectionListener(id, listener);
-};
-
-ZmPeopleAutocompleteListView.prototype._toolbarButtonListener =
+ZmPeopleAutocompleteListView.prototype._listSelectionListener =
 function(ev) {
-	var buttonId = this._activeContact && ev.item && ev.item.getData("_buttonId");
+    var curList = ZmAutocompleteListView._activeAcList;
+    if (curList){
+        curList.show(false);
+    }
+};
 
-	// hide the autocomplete listview
-	var curList = ZmAutocompleteListView._activeAcList;
-	if (curList) {
-		curList.show(false);
-	}
+ZmPeopleAutocompleteListView.prototype._peopleItemListener =
+ function(ev){
+    var target = DwtUiEvent.getTargetWithProp(ev, "id");
+    var action = "";
+    if (target && target.id)
+        action = target.id.split("_")[0]; //ids are inserted by DwtText, clean up as necessary
+     
+    switch (action){
+        case "NewMsg":
+            var params = {action:ZmOperation.NEW_MESSAGE, toOverride: new AjxEmailAddress(this._activeContact.getEmail(),
+            AjxEmailAddress.TO, this._activeContact.getFullName())};
+	        AjxDispatcher.run("Compose", params);
+        break;
 
-	switch (buttonId) {
-		case ZmPeopleAutocompleteListView.ACTION_MESSAGE:
-			var params = {action:ZmOperation.NEW_MESSAGE, toOverride: this._activeContact.getEmail()};
-			AjxDispatcher.run("Compose", params);
-			break;
-
-		case ZmPeopleAutocompleteListView.ACTION_APPT:
-			AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+        case "NewAppt":
+            AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 			var cc = AjxDispatcher.run("GetCalController");
 			var appt = cc.newApptObject((new Date()));
 			appt.setAttendees([this._activeContact.getEmail()], ZmCalBaseItem.PERSON);
 			cc.newAppointment(appt);
 			break;
 
-		case ZmPeopleAutocompleteListView.ACTION_IM:
-			AjxDispatcher.require(["IMCore", "IM"]);
-			var buddy = this._activeContact.getBuddy();
-			if (buddy && this._activeContact.getImPresence().getShow() == ZmRosterPresence.SHOW_ONLINE) {
-				ZmTaskbarController.INSTANCE.chatWithRosterItem(buddy);
-			}
-			break;
-	}
-};
+        case "NewContact":
+            AjxDispatcher.require(["ContactsCore", "Contacts"]);
+            var cc = AjxDispatcher.run("GetContactListController");
+            var list = new ZmContactList((new ZmSearch()), true);
+            list.add(this._activeContact);
+	        cc.show(list, true);
+            break;
+    }
+
+ };
+
+ ZmPeopleAutocompleteListView.prototype.peopleItemMouseOverListener =
+ function(ev){
+	 var target = DwtUiEvent.getTargetWithProp(ev, "id");
+     target.className="ZmPeopleSearchText-hover";
+ };
+
+ ZmPeopleAutocompleteListView.prototype.peopleItemMouseOutListener =
+ function(ev){
+	 var target = DwtUiEvent.getTargetWithProp(ev, "id");
+     target.className="FakeAnchor";
+ };
+
+ ZmPeopleAutocompleteListView.prototype.peopleNameMouseOutListener =
+ function(ev){
+	 var target = DwtUiEvent.getTargetWithProp(ev, "id");
+     target.className="ZmPeopleSearch-fullname";
+ };
+
 
 ZmPeopleAutocompleteListView._outsideMouseDownListener =
 function(ev) {
 	var curList = ZmAutocompleteListView._activeAcList;
-	if (curList && curList._toolbar) {
+	if (curList) {
 		var obj = DwtControl.getTargetControl(ev);
 		if (obj && obj.parent && obj.parent == curList._toolbar) {
 			return;
 		}
-		curList._toolbar.setDisplay(Dwt.DISPLAY_NONE);
 	}
 
 	ZmAutocompleteListView._outsideMouseDownListener(ev);
+    ZmPeopleAutocompleteListView.prototype._listSelectionListener(ev);
+
+
 };
 
 ZmPeopleAutocompleteListView.prototype._addMouseDownListener =
@@ -289,4 +312,3 @@ function() {
 	this.shell._setEventHdlrs([DwtEvent.ONMOUSEDOWN], true);
 	this.shell.removeListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
 };
-
