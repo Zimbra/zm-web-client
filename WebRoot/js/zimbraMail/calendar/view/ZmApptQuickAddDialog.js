@@ -236,7 +236,7 @@ function() {
 	this._showAsSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_showAs")});
 	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
-		this._showAsSelect.addOption(option.label, option.selected, option.value);
+		this._showAsSelect.addOption(option.label, option.selected, option.value, "showAs" + option.value);
 	}
 
 	this._privacySelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_privacy")});
