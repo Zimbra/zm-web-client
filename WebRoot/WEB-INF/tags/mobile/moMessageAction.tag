@@ -34,6 +34,7 @@
 <c:set var="selectedCidsString" scope="request" value=",${requestScope.selectedIdsString},"/>
 <c:set var="anAction"
        value="${not empty paramValues.anAction[0] ? paramValues.anAction[0] :  paramValues.anAction[1]}"/>
+<c:catch var="msgActionException">
 <c:choose>
 <c:when test="${zm:actionSet(param,'moreActions') && anAction eq 'selectAll'}">
     <c:set var="select" value="all" scope="request"/>
@@ -386,10 +387,28 @@
 </c:choose>
 </c:otherwise>
 </c:choose>
+</c:catch>
 <c:remove var="op"/>
+<c:if test="${!empty msgActionException}">
+    <zm:getException var="error" exception="${msgActionException}"/>
+    <c:choose>
+        <c:when test="${error.code eq 'ztaglib.SERVER_REDIRECT'}">
+            <c:redirect url="${not empty requestScope.SERVIER_REDIRECT_URL ? requestScope.SERVIER_REDIRECT_URL : '/'}"/>
+        </c:when>
+        <c:when test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
+            <c:redirect url="/?loginOp=relogin&client=mobile&loginErrorCode=${error.code}"/>
+        </c:when>
+        <c:otherwise>
+            <mo:status style="Critical">
+                <fmt:message key="${error.code}"/>
+            </mo:status>
+        </c:otherwise>
+    </c:choose>
+</c:if>
 
 <c:if test="${ua.isiPad and param.doMessageAction eq '1'}">
+    
     <jsp:forward page="/m/moipadredirect">
-        <jsp:param name="ids" value="${ids}"/>
+        <jsp:param name="ids" value="${empty msgActionException ? ids : ''}"/>
     </jsp:forward>
 </c:if>

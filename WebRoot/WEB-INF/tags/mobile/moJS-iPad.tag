@@ -577,7 +577,7 @@ var parseResponse = function (request, container,url) {
             if (data) {
                 <c:if test="${!ua.isIE}">window.scrollTo(0,1);</c:if>
                 if(match) {  //TODO: need to clean up a lot 
-                    var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals|newappt)/ig,'cal').replace(/(message|conversation|folders|newmail)/,'mail').replace(/(ab)/,'contact').replace(/(prefs)/,'options');
+                    var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals|newappt)/ig,'cal').replace(/(message|conversation|folders|newmail|moveto)/,'mail').replace(/(ab)/,'contact').replace(/(prefs)/,'options');
                     var targ = $(tabId);
                     if(targ) {
                         if(targ.id == 'cal' && targ.parentNode.className == 'sel') {
@@ -590,7 +590,7 @@ var parseResponse = function (request, container,url) {
                            ZmiPadPrefs.processResponse(data,url);
                         } else if (ZmiPad.getParamFromURL("st",url) == "newmail") {
                            ZmiPadMail.processResponse(data,url);
-                        } 
+                        }
                     }
                 }
             }
@@ -754,6 +754,13 @@ var zCheckUnCheck = function(el) {
 	}
 	return true;
 };
+
+var moveToFldr = function(mTo) {
+    $('mvTo').value = mTo;
+    toggleCompose('compose-pop','veil');
+    return submitForm($('zMoveForm'));
+};
+
 
 //Init vals
 var MAX_CACHE_REQUEST = 50; // No of ajx get requests to cache
@@ -976,7 +983,7 @@ ZmiPadMail.processResponse = function (respData, url) {
                     }
                  }
                  setTimeout(function(){listScroll.refresh();}, 1000);
-              } else if(ZmiPad.getParamFromURL("anAction", url) == "actionMarkSpam" || ZmiPad.getParamFromURL("anAction", url) == "actionMarkUnspam") {
+              } else if(ZmiPad.getParamFromURL("anAction", url) == "actionMarkSpam" || ZmiPad.getParamFromURL("anAction", url) == "actionMarkUnspam" || url.indexOf("anAction=moveTo_") != -1) {
 
                  for(var i = 0; i < actionIds.length; i++){   //loop through all the checked ConvMsgList
                     if(actionIds[i] && actionIds[i] != "") {
@@ -1023,6 +1030,12 @@ ZmiPadMail.processResponse = function (respData, url) {
                  }
               }
         }
+    } else if(ZmiPad.getParamFromURL("st",url) == "moveto" && ZmiPad.getParamFromURL("sfi",url) != "") {
+
+        $('compose-body').innerHTML = respData;
+        ZmiPad.processScript('compose-body');
+        toggleCompose('compose-pop','veil');
+
     } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1 ) {
 
         $('compose-body').innerHTML = respData;
@@ -1353,17 +1366,7 @@ var showSwipe = function(id) {
 };
     
 </c:if>
-
-
-
-
-
-
-
-
-
 window.addEventListener('load', init);
-
 <c:if test="${scriptTag}">
 //-->
 </script>

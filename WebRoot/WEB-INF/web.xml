@@ -477,6 +477,7 @@
       <url-pattern>/m/zmain</url-pattern>
       <url-pattern>/m/zipad</url-pattern>
       <url-pattern>/m/moipadredirect</url-pattern>
+      <url-pattern>/m/momoveto</url-pattern>  
       <url-pattern>/m/zmview</url-pattern>
       <url-pattern>/m/mosearch</url-pattern>
       <url-pattern>/m/mocalendar</url-pattern>

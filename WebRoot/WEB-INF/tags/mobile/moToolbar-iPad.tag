@@ -105,7 +105,7 @@
 
                             <button type="submit" name="anAction" value="actionMarkUnread" class="menuButton"><fmt:message key="actionMarkUnread"/></button>
 
-                            <button type="button" class="menuButton"><fmt:message key="actionMove"/></button>
+                            <button type="button" onclick="return zClickLink('aMoveTo');" class="menuButton"><a id='aMoveTo' style="color:black;text-shadow:;" href="zipad?st=moveto&sfi=${context.folder.id}"><fmt:message key="actionMove"/></a></button>
                             
                             <c:choose>
                                 <c:when test="${context.folder.isSpam}"><button type="submit" name="anAction" value="actionMarkUnspam" class="menuButton"><fmt:message key="actionNotSpam"/></button></c:when>
