@@ -135,14 +135,16 @@
 </template>
 
 <template id='share.Widgets#ZmPeopleAutocompleteListView-MoreResults'>
+	<tr>
 		<td>
 		    <table>
 		        <tr>
 		            <td width='32'>&nbsp;</td>
-		            <td><$= ZmMsg.moreCallResults $></td>
+		            <td><$= ZmMsg.morePeopleResults $></td>
 		         </tr>
 		    </table>
 		</td>
+	</tr>
 </template>
 
 

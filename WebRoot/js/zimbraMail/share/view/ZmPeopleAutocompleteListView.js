@@ -138,6 +138,10 @@ function() {
 
 ZmPeopleAutocompleteListView.prototype._setSelected =
 function(id) {
+    if (id) {
+        id = id.split("-")[0]; 
+    }
+
     if (id == ZmPeopleAutocompleteListView.NO_RESULTS || id == this.getHtmlElement().id) { return; }
 
 	if (id == ZmAutocompleteListView.NEXT || id == ZmAutocompleteListView.PREV) {
@@ -311,4 +315,55 @@ function() {
 	DwtEventManager.removeListener(DwtEvent.ONMOUSEDOWN, ZmPeopleAutocompleteListView._outsideMouseDownListener);
 	this.shell._setEventHdlrs([DwtEvent.ONMOUSEDOWN], true);
 	this.shell.removeListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
+};
+
+/*
+    Display message to user that more results are available than fit in the current display
+    @param {int}    availHeight available height of display
+ */
+ZmPeopleAutocompleteListView.prototype._showMoreResultsText =
+function (availHeight) {
+      var rowNum = this._getNumberofAllowedRows(availHeight);
+      var textPos = rowNum > 1 ? rowNum-1 : 0;
+      var rowEl = this._getTable().rows[textPos];
+      var rowCell = Dwt.parseHtmlFragment(AjxTemplate.expand("share.Widgets#ZmPeopleAutocompleteListView-MoreResults"), true);
+      rowEl.parentNode.insertBefore(rowCell, rowEl);
+      //remove rows below text so they are not displayed
+      this._removeRows(rowNum);
+};
+
+/* remove rows from bottom to index number */
+ZmPeopleAutocompleteListView.prototype._removeRows =
+function(idx) {
+	this._matches = null;
+	var table = this._getTable();
+	for (var i = table.rows.length - 1; i >= 0 && i >= idx; i--) {
+		var row = table.rows[i];
+		if (row != this._waitingRow) {
+			table.deleteRow(i);
+		}
+	}
+};
+
+/*
+    Get the number of rows within the available height
+    @param {int}    availHeight available height for display
+    @return {int}   return the number of rows
+ */
+ZmPeopleAutocompleteListView.prototype._getNumberofAllowedRows =
+function(availHeight) {
+   var rowCount = 0;
+   var totalHeight = 0;
+   for(var i = 0; i< this._getTable().rows.length; i++){
+       var row = this._getTable().rows[i];
+       totalHeight += Dwt.getSize(row).y;
+       if (totalHeight < availHeight){
+           rowCount++;
+       } else {
+           break;
+       }
+   }
+
+    return rowCount;
+
 };

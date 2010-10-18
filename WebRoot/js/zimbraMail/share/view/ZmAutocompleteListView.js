@@ -959,13 +959,16 @@ function(loc) {
 	this.setVisible(true);
 	var curSize = this.getSize();
 	if (availHeight < fullHeight) {
-		// if we don't fit, resize so we are scrollable
-		this.setSize(Dwt.DEFAULT, availHeight - (AjxEnv.isIE ? 30 : 10));
-		// see if we need to account for width of vertical scrollbar
-		var div = this.getHtmlElement();
-		if (div.clientWidth != div.scrollWidth) {
+	  //we are short add text to alert user to keep typing
+      this._showMoreResultsText(availHeight);
+      // if we don't fit, resize so we are scrollable
+      this.setSize(Dwt.DEFAULT, availHeight - (AjxEnv.isIE ? 30 : 10));
+	   // see if we need to account for width of vertical scrollbar
+	  var div = this.getHtmlElement();
+	  if (div.clientWidth != div.scrollWidth) {
 			this.setSize(curSize.x + Dwt.SCROLLBAR_WIDTH, Dwt.DEFAULT);
-		}
+	  }
+      
 	} else if (curSize.y < fullHeight) {
 		this.setSize(Dwt.CLEAR, fullHeight);
 	} else {
@@ -990,6 +993,16 @@ function() {
 	ZmAutocompleteListView._activeAcList = null;
 	this._removeMouseDownListener();
 };
+
+/*
+    Display message to user that more results are available than fit in the current display
+    @param {int}    availHeight available height of display
+ */
+ZmAutocompleteListView.prototype._showMoreResultsText =
+function (availHeight){
+    //over load for implementation
+};
+
 
 ZmAutocompleteListView.prototype._addMouseDownListener =
 function() {
@@ -1078,6 +1091,8 @@ function() {
 	}
 	return this._rowHeight || 18;
 };
+
+
 
 // Miscellaneous
 
