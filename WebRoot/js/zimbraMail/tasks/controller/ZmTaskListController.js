@@ -681,7 +681,7 @@ function(task,ftask) {
 };
 
 	
-ZmTaskListController.prototype._handleDelete =
+ZmTaskListController.prototype._handleCancel =
 function(tasks) {
 	var batchCmd = new ZmBatchCommand();
 	for (var i = 0; i < tasks.length; i++) {
@@ -690,8 +690,7 @@ function(tasks) {
 		batchCmd.add(cmd);
 	}
 	batchCmd.run();
-    // TODO: Change message to moved to trash!
-	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, tasks.length, ZmItem.TASK);
+    var summary = ZmList.getActionSummary(ZmMsg.actionTrash, tasks.length, ZmItem.TASK);
 	appCtxt.setStatusMsg(summary);
 };
 
