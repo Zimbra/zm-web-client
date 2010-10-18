@@ -58,6 +58,8 @@ ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo) {
     this.addListener(DwtEvent.ONMOUSEDOWN, parent._listenerMouseDown);
 
     this.isComposeMode = true;
+
+    this._fbCache = controller.getApp().getFreeBusyCache();
 };
 
 ZmFreeBusySchedulerView.prototype = new DwtComposite;
@@ -572,7 +574,7 @@ function(inputEl, attendee, useException) {
 
 			// go get this attendee's free/busy info if we haven't already
 			if (sched.uid != email) {
-				this._getFreeBusyInfo(this._getStartTime(), email, this._fbCallback, this._workCallback);
+				this._getFreeBusyInfo(this._getStartTime(), email);
 			}
             var roleType = sched.selectObj ? sched.selectObj.getValue() : null;
             var isOptionalAttendee = (roleType == ZmCalItem.ROLE_OPTIONAL); 
@@ -676,7 +678,7 @@ function() {
 
 	if (uids.length) {
 		var emails = uids.join(",");
-		this._getFreeBusyInfo(this._getStartTime(), emails, this._fbCallback, this._workCallback);
+		this._getFreeBusyInfo(this._getStartTime(), emails);
 	}
 };
 
@@ -714,11 +716,26 @@ function(organizer, attendees) {
 	this._emptyRowIndex = this._addAttendeeRow(false, null, false, null, true, false);
 
 	if (emails.length) {
-		this._getFreeBusyInfo(this._getStartTime(), emails.join(","), this._fbCallback, this._workCallback);
-	}
+		this._getFreeBusyInfo(this._getStartTime(), emails.join(","));
+	}else {
+        this.postUpdateHandler()
+    }
 
     if(this._appt) {
         this.enableAttendees(this._appt.isOrganizer());
+    }
+};
+
+ZmFreeBusySchedulerView.prototype.setUpdateCallback =
+function(callback) {
+    this._updateCallback = callback;
+};
+
+ZmFreeBusySchedulerView.prototype.postUpdateHandler =
+function() {
+    if(this._updateCallback) {
+        this._updateCallback.run();
+        this._updateCallback = null;
     }
 };
 
@@ -726,11 +743,6 @@ ZmFreeBusySchedulerView.prototype._updateAttendees =
 function(organizer, attendees) {
 
     var emails = [], newEmails = {};
-
-	// create a slot for the organizer
-	//this._organizerIndex = this._addAttendeeRow(false, organizer.getAttendeeText(ZmCalBaseItem.PERSON, true), false);
-	//emails.push(this._setAttendee(this._organizerIndex, organizer, ZmCalBaseItem.PERSON, true));
-
 
     //update newly added attendee
 	for (var t = 0; t < this._attTypes.length; t++) {
@@ -771,8 +783,10 @@ function(organizer, attendees) {
     }
 
 	if (emails.length) {
-		this._getFreeBusyInfo(this._getStartTime(), emails.join(","), this._fbCallback, this._workCallback);
-	}
+		this._getFreeBusyInfo(this._getStartTime(), emails.join(","));
+	}else {
+        this.postUpdateHandler();
+    }
 };
 
 ZmFreeBusySchedulerView.prototype._setAttendee =
@@ -1235,22 +1249,51 @@ function(status) {
 	return ZmFreeBusySchedulerView.PSTATUS_CLASSES[status];
 };
 
+ZmFreeBusySchedulerView.prototype._getFreeBusyInfo =
+function(startTime, emailList) {
+
+    var endTime = startTime + AjxDateUtil.MSEC_PER_DAY;
+    var emails = emailList.split(",");
+    var freeBusyParams  = {
+        emails: emails,
+        startTime: startTime,
+        endTime: endTime
+    };
+
+    var callback = new AjxCallback(this, this._handleResponseFreeBusy, [freeBusyParams]);    
+	var errorCallback = new AjxCallback(this, this._handleErrorFreeBusy, [freeBusyParams]);
+
+    var acct = (appCtxt.multiAccounts)
+        ? this._editView.getCalendarAccount() : null;
+
+    var params = {
+        startTime: startTime,
+        endTime: endTime,
+        emails: emails,
+        callback: callback,
+        errorCallback: errorCallback,
+        noBusyOverlay: true,
+        account: acct
+    };
+
+    this._freeBusyRequest = this._fbCache.getFreeBusyInfo(params);
+};
+
 // Callbacks
 
 ZmFreeBusySchedulerView.prototype._handleResponseFreeBusy =
-function(result) {
-	var args = result.getResponse().GetFreeBusyResponse.usr;
-
-	for (var i = 0; i < args.length; i++) {
-		var usr = args[i];
-
+function(params, result) {
+	for (var i = 0; i < params.emails.length; i++) {
+		var email = params.emails[i];
 		// first clear out the whole row for this email id
-		var sched = this._schedTable[this._emailToIdx[usr.id]];
+		var sched = this._schedTable[this._emailToIdx[email]];
 		var table = sched ? document.getElementById(sched.dwtTableId) : null;
 		if (table) {
 			table.rows[0].className = "ZmSchedulerNormalRow";
-
 			this._clearColoredCells(sched);
+
+            var usr = this._fbCache.getFreeBusySlot(params.startTime, params.endTime, email);
+            if(!usr) continue;
 			sched.uid = usr.id;
 
             // next, for each free/busy status, color the row for given start/end times
@@ -1261,10 +1304,14 @@ function(result) {
 		}
 	}
 	this._colorAllAttendees();
+
+    var workingHrsCallback = new AjxCallback(this, this._handleResponseWorking, [params]);
+    var errorCallback = new AjxCallback(this, this._handleErrorFreeBusy, [params]);    
+    this._controller.getWorkingInfo(params.startTime, params.endTime, params.emails, workingHrsCallback, errorCallback);
 };
 
 ZmFreeBusySchedulerView.prototype._handleResponseWorking =
-function(result) {
+function(params, result) {
 	var args = result.getResponse().GetWorkingHoursResponse.usr;
 
 	for (var i = 0; i < args.length; i++) {
@@ -1280,6 +1327,8 @@ function(result) {
 		}
 	}
 	this._colorAllAttendees();
+
+    this.postUpdateHandler();
 };
 
 ZmFreeBusySchedulerView.prototype.colorAppt =
@@ -1331,9 +1380,9 @@ function(appt, div) {
 };
 
 ZmFreeBusySchedulerView.prototype._handleErrorFreeBusy =
-function(emailList, result) {
+function(params, result) {
 	if (result.code == ZmCsfeException.OFFLINE_ONLINE_ONLY_OP) {
-		var emails = emailList.split(",");
+		var emails = params.emails;
 		for (var i = 0; i < emails.length; i++) {
 			var e = emails[i];
 			var sched = this._schedTable[this._emailToIdx[e]];
@@ -1370,14 +1419,6 @@ function() {
 		}
 	}
 	return null;
-};
-
-ZmFreeBusySchedulerView.prototype._getFreeBusyInfo =
-function(startTime, emailList, fbCallback, workCallback) {
-	var endTime = startTime + AjxDateUtil.MSEC_PER_DAY;
-	var errorCallback = new AjxCallback(this, this._handleErrorFreeBusy, emailList);
-	this._controller.getFreeBusyInfo(startTime, endTime, emailList, fbCallback, errorCallback);
-	this._controller.getWorkingInfo(startTime, endTime, emailList, workCallback, errorCallback);
 };
 
 ZmFreeBusySchedulerView.prototype.showFreeBusyToolTip =

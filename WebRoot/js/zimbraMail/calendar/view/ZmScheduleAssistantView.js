@@ -184,8 +184,8 @@ function() {
 	ZmApptViewHelper.getDateInfo(this._editView, di);
 	var startDate = this._date || AjxDateUtil.simpleParseDateStr(di.startDate);
     var endDate = new Date(startDate);
-    endDate.setHours(23, 59, 0, 0);
     startDate.setHours(0, 0, 0, 0);
+    endDate.setTime(startDate.getTime() + AjxDateUtil.MSEC_PER_DAY);
 	return {start:startDate, end:endDate};
 };
 
