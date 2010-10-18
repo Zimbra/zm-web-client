@@ -275,9 +275,10 @@ if (application.getInitParameter("offlineMode") != null)  {
 <body onload="onLoad();">
 
 	<div class="LoginScreen">
-		<div id="${smallScreen?'center-small':'center'}">
+		<div class="${smallScreen?'center-small':'center'}">
+			<div class="ImgAltBanner"></div>
 			<h1><a href="http://www.zimbra.com/" id="bannerLink" target="_new">
-				<span style="cursor:pointer;display:block;" class="Img${smallScreen?'App':'Login'}Banner"></span>
+				<span class="Img${smallScreen?'App':'Login'}Banner"></span>
 			</a></h1>
 			<!--div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div-->
             <c:choose>
@@ -345,23 +346,16 @@ if (application.getInitParameter("offlineMode") != null)  {
                     <tr>
                         <td>
                             <label for="client">
-                                <c:choose>
-                                    <c:when test="${!smallScreen}">
-                                        <fmt:message key="chooseClient"/>:
-                                    </c:when>
-                                    <c:otherwise>
-                                        <fmt:message key="versionLabel"/>:
-                                    </c:otherwise>
-                                </c:choose>
-</label>
-</td>
-<td>
-<select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
-	<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
-	<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
-	<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
-    <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
-</select>
+                                <fmt:message key="versionLabel"/>
+                            </label>
+                        </td>
+                        <td>
+							<select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
+								<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
+								<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
+								<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
+							    <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
+							</select>
 <script TYPE="text/javascript">
 	// show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 	function clientChange(selectValue) {
@@ -386,14 +380,14 @@ if (application.getInitParameter("offlineMode") != null)  {
     }
 	document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
 </script>
-<div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;text-align:left;width:90%;"><fmt:message key="clientWhatsThisMessage"/></div>
-<div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none"><fmt:message key="clientUnsupported"/></div>
+<div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientWhatsThisMessage"/></div>
+<div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
 </td>
 </tr>
 </table>
 <!--div><fmt:message key="clientLoginNotice"/></div-->
 
-<div id="copyright"><fmt:message key="splashScreenCopyright"/></div>
+<div class="copyright"><fmt:message key="splashScreenCopyright"/></div>
 
 </div>
 </div>                                 

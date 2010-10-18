@@ -13,19 +13,19 @@
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@LoginColor@', EndColorStr='@darken(LoginColor,50)@')"; /* IE8 */
 
 }
-.LoginScreen #center {
+.LoginScreen .center {
 	width:500px;
 	min-height:300px;
 	margin-top:-150px;
 	margin-left:-250px;
 }
-.LoginScreen #center-small {
+.LoginScreen .center-small {
 	width:350px;
 	height:270px;
 	margin-top:-135px;
 	margin-left:-175px;
 }
-.LoginScreen #center, .LoginScreen #center-small {
+.LoginScreen .center, .LoginScreen .center-small {
 	position:absolute;
 	top:50%;
 	left:50%;
@@ -52,28 +52,57 @@
 	filter: progid:DXImageTransform.Microsoft.Glow(Color=@darken(LoginColor,50)@, Strength=3); /* IE6,IE7 */
 	-ms-filter: "progid:DXImageTransform.Microsoft.Glow(Color=@darken(LoginColor,50)@, Strength=3)"; /* IE8 */
 }
-form {
-	text-align:center;
+
+.LoginScreen .ImgLoginBanner, 
+.LoginScreen .ImgAppBanner {
+	cursor:pointer;
+	display:block;
+	background-repeat:no-repeat;
 }
+.LoginScreen .ImgAltBanner {
+	margin:20px 0px 0px 20px;
+	width:71px;
+	height:11px;
+	background-image:url("@SkinImgDir@/vmwareLogo_login.png");
+	background-repeat:repeat-x;
+}
+.LoginScreen h1 {margin:22px 20px 32px 20px;}
+
 .form {
 	color: #FFFFFF;
 	margin: 0px auto;
 	border-collapse:collapse;
 	text-align:left;
 }
-#center .form label {margin-right:20px;}
+.form td:first-child label {margin-right:20px;}
 .form td {padding-bottom:10px;}
 .form input[type='text'], 
 .form input[type='password'] {
 	width:225px;
+	border:1px solid @LoginColor@;
+}
+.form input[type='text']:focus, 
+.form input[type='password']:focus{
+	border:1px solid @SelC@;
 }
 .form select {
 	width:165px;
 }
-#ZLoginErrorPanel {
-	padding-bottom:0px;
+.LoginScreen #ZLoginErrorPanel {
+	margin:10px 10%;
+	padding:5px;
+	background-color:#FF9;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+	border-width:0px;
+	border-radius:10px;
+	-moz-box-shadow:0px 0px 10px #FF9;
+	-webkit-box-shadow:0px 0px 10px #FF9;
+	box-shadow:0px 0px 10px #FF9;
+	position:relative;
+	left:auto;
 }
-#ZLoginWhatsThisAnchor {
+.LoginScreen #ZLoginWhatsThisAnchor {
 	color: white;
 	text-decoration:none;
 	margin-left:5px;
@@ -81,17 +110,25 @@ form {
 	-webkit-border-radius: 10px;
 	border-radius: 10px;
 }
-#ZLoginWhatsThis {
+.LoginScreen #ZLoginWhatsThis {
 	position:absolute;
 	border:2px solid @lighten(LoginColor,65)@;
-	background-color: #ffffff
+	background-color: #ffffff;	
 }
-#login {
+.LoginScreen .ZLoginInfoMessage {
+	text-align:left;
+	width:40em;
+	margin-left:-10em;
+}
+.LoginScreen #login {
 	float:right;
 }
-h1 {margin-left:20px;}
-#copyright {
+.LoginScreen .copyright {
 	color:@lighten(LoginColor,36)@; 
+	font-size:9px;
+	margin:13px 0px 3px;
 	text-align:center;
-	margin-bottom:3px;
+}
+.LoginScreen .center-small .copyright {
+	margin:13px 20px 3px;
 }

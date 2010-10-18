@@ -39,21 +39,24 @@ BODY						{	margin:0px; 				}
 
 
 /** set the height for the top row -- must be set to a fixed number! **/
-#skin_spacing_top_row					{	height:40px; 
+#skin_spacing_top_row					{	height:36px; 
 											background-color: @MastheadColor@;
 											background-image: -moz-linear-gradient(top, @MastheadColor@, @darken(MastheadColor,50)@); /* FF3.6 */
  											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @MastheadColor@),color-stop(1, @darken(MastheadColor,50)@)); /* Saf4+, Chrome */
     										filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@MastheadColor@', EndColorStr='@darken(MastheadColor,50)@'); /* IE6,IE7 */
     										-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@MastheadColor@', EndColorStr='@darken(MastheadColor,50)@')"; /* IE8 */
 }
-
+#skin_spacing_top_row .divider			{	margin:0px 15px;
+											border-left:1px solid #fff;
+											height:24px;
+}
 
 /** Logo displayed in the app **/
 #skin_spacing_logo						{}
 #skin_container_logo					{	width:auto;		}
 		
 #skin_spacing_filler				{	
-	height:15px; 
+	height:12px; 
 	background-color: #FFFFFF;
 	background-image: -moz-linear-gradient(top, #FFFFFF, @AppC@); /* FF3.6 */
  	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #FFFFFF),color-stop(1, @AppC@)); /* Saf4+, Chrome */
@@ -82,10 +85,10 @@ BODY						{	margin:0px; 				}
 #skin_spacing_tree_top					{	text-align:center;	}
 #skin_container_tree_top				{	@SkinBorderUsername@	}
 
-#skin_container_links					{	padding: 0px 5px 0px 20px; }
+#skin_container_links					{	padding: 0px; }
 
 /** User Name section **/
-#skin_container_username				{	height:auto; padding-top:2px;	}
+#skin_container_username				{	height:auto; padding-top:0px;	}
 #skin_container_username *				{	color:#FFF; font-weight:normal;	}
 
 /** Quota section **/	
@@ -95,22 +98,30 @@ BODY						{	margin:0px; 				}
 #skin_spacing_current_app				{}
 #skin_container_current_app				{	@SkinBorderCurrentApp@		}
 
-#skin_container_adminlink				{	padding-right: 7px			}
+#skin_container_adminlink				{	padding-right: 7px;			}
+
+#skin_container_helpLogoff 				{	white-space:nowrap;	}
 
 #skin_td_switch_offline,
 #skin_container_help,
 #skin_container_logoff					{
+	color:#fff;
+	display:inline-block;
 	white-space:nowrap;
 	text-align: center;
+	margin:0px 10px 0px 0px;
 }
 #skin_td_switch_offline a,
 #skin_container_help a:link,
-#skin_container_logoff a:link				{	color:#fff;		}	
+#skin_container_logoff a:link				{	color:#fff;		}
+
+#skin_td_switch_offline a:hover,
+#skin_container_help a:hover,
+#skin_container_logoff a:hover				{	background-color:transparent;	}	
 
 #skin_container_help,
 #skin_container_logoff					{
-	padding-left: 5px;
-	padding-right: 10px;
+	padding: 0px 5px;
 }
 
 /** Tree Toolbar **/
@@ -142,17 +153,17 @@ BODY						{	margin:0px; 				}
 	background-image: url("@SkinImgDir@/vmwareLogo.png");
 	background-position: right center;
 	background-repeat:no-repeat;
-	padding:0px 10px 0px; 
-	margin-top:-4px;
+	padding:0px 7px; 
 }
 #skin_spacing_app_chooser				{}
-#skin_border_app_chooser				{ height:27px;}
+#skin_border_app_chooser				{ height:21px;}
 
 #skin_container_app_chooser				{
 	position:absolute;
 	width:auto;
 	z-index:1;
 	height:30px;
+	top:33px;
 }
 
 /** App Toolbar **/
@@ -221,19 +232,19 @@ BODY						{	margin:0px; 				}
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@SplashColor@', EndColorStr='@darken(LoginColor,50)@'); /* IE6,IE7 */
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@SplashColor@', EndColorStr='@darken(LoginColor,50)@')"; /* IE8 */
 }
-.SplashScreen #center {	
+.SplashScreen .center {	
 	width:500px;
 	min-height:300px;
 	margin-top:-150px;
 	margin-left:-250px;
 }	
-.SplashScreen #center-small {
+.SplashScreen .center-small {
 	width:350px;
 	height:270px;
 	margin-top:-135px;
 	margin-left:-175px;
 }
-.SplashScreen #center, .SplashScreen #center-small {
+.SplashScreen .center, .SplashScreen .center-small {
 	position:absolute;
 	top:50%;
 	left:50%;
@@ -260,51 +271,48 @@ BODY						{	margin:0px; 				}
 	filter: progid:DXImageTransform.Microsoft.Glow(Color=@darken(LoginColor,50)@, Strength=3); /* IE6,IE7 */
 	-ms-filter: "progid:DXImageTransform.Microsoft.Glow(Color=@darken(LoginColor,50)@, Strength=3)"; /* IE8 */
 }
-.SplashScreen #title {
-	margin:0px;
-	font-size:1px;
-	height:135px;
-	background-color:#4d4d4d;
-	color:#b3b3b3;
-	padding:20px 0px 0px 75px;
-	border:solid #676767;
-	border-width:1px 1px 0px;
-	
-	-moz-border-radius-topleft: 15px;
-	-moz-border-radius-topright: 15px;
-	-webkit-border-top-left-radius: 15px;
-	-webkit-border-top-right-radius: 15px;
-	border-top-left-radius: 15px;
-	border-top-right-radius: 15px;
+.SplashScreen h1 {
+	margin:22px 100px 32px 20px;
 }
-.SplashScreen #content {
+.SplashScreen .ImgLoginBanner {
+	cursor:pointer;
+}
+.SplashScreen .ImgAltBanner {
+	margin:20px 0px 0px 20px;
+	width:71px;
+	height:11px;
+	background-image:url("@SkinImgDir@/vmwareLogo_login.png");
+	background-repeat:repeat-x;
+}
+.SplashScreen .content {
 	color:@lighten(LoginColor,36)@; 
 	font-size:10px;
 	text-align:center;
 }
-.SplashScreen #message {
+.SplashScreen .message {
 	color:#FFFFFF;
 	font-size:14px;
 	font-weight:bold;
 	padding-top:20px;
 }
-.SplashScreen #switch{
+.SplashScreen .switch{
 	margin:30px 0px 60px;
 }
-.SplashScreen #switch a{
+.SplashScreen .switch a{
 	color: #FFFFFF;
 }
-.SplashScreen #copyright {
+.SplashScreen .copyright {
 	color:@lighten(LoginColor,36)@; 
+	font-size:9px;
+	margin:13px 0px 3px;
 	text-align:center;
-	margin:3px 0px;
 }
 
 
 
 /** Logo Images **/
 .ImgAppBanner			{	@AppBanner@	background-repeat:no-repeat;	}
-.ImgLoginBanner			{	@LoginBanner@	}	
+.ImgLoginBanner			{	@LoginBanner@ background-repeat:no-repeat;	}	
 
 
 
