@@ -81,7 +81,7 @@ ZmController.prototype.getApp = function() {
  * @param	{Boolean}	hideReportButton		if <code>true</code>, hide the "Send error report" button
  */
 ZmController.prototype.popupErrorDialog = 
-function(msg, ex, noExecReset, hideReportButton)  {
+function(msg, ex, noExecReset, hideReportButton) {
 	// popup alert
 	var errorDialog = appCtxt.getErrorDialog();
 	var detailStr = "";
@@ -114,6 +114,19 @@ function(msg, ex, noExecReset, hideReportButton)  {
 	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 	errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
 	errorDialog.popup(null, hideReportButton);
+};
+
+ZmController.handleScriptError =
+function(ex) {
+	var ctlr = appCtxt.getAppController();
+	var msg = ZmMsg.scriptError + ": " + ex.message;
+	var m = ex.fileName && ex.fileName.match(/(\w+\.js)/);
+	if (m && m.length) {
+		msg += " - " + m[1] + ":" + ex.lineNumber;
+	}
+	var text = "File: " + ex.fileName + "<br>Line: " + ex.lineNumber + "<br>Error: " + ex.name +
+			   "<br>Stack: " + ex.stack.replace("\n", "<br>", "g");
+	ctlr.popupErrorDialog(msg, text);
 };
 
 /**
