@@ -625,7 +625,7 @@ function() {
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
 
 	var h = location.hostname;
-	var isDev = ((h.indexOf(".zimbra.com") != -1) || /\.local$/.test(h) || h == "localhost");
+	var isDev = ((h.indexOf(".zimbra.com") != -1) || (appDevMode && (/\.local$/.test(h) || h == "localhost")));
 	this._settings[ZmSetting.IS_DEV_SERVER].setValue(isDev);
 	if (isDev) {
 		this._settings[ZmSetting.SHOW_SCRIPT_ERRORS].setValue(true, null, false, true);
