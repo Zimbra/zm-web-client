@@ -273,7 +273,15 @@
 <input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <%--input element used to set the draftid during autosave--%>
-<input type="hidden" name="draftid" value="${message.id}"/>
+<c:choose>
+    <c:when test="${message.isDraft}">
+       <input type="hidden" name="draftid" value="${message.id}"/>
+    </c:when>
+    <c:otherwise>
+        <input type="hidden" name="draftid" value=""/>
+    </c:otherwise>
+</c:choose>
+    
 </form>
 <form id="SpellCheckForm">
     <input type="hidden" id="SpellCheckData" name="SpellCheckData" value=""/>
