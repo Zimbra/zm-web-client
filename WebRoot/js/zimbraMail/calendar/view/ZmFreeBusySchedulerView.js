@@ -409,6 +409,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 			select.addChangeListener(this._selectChangeListener);
 			select.setSize("45");
 			select.setText("");
+			select.dynamicButtonWidth();
             select._schedTableIdx = index;
 			sched.selectObj = select;
 		}
