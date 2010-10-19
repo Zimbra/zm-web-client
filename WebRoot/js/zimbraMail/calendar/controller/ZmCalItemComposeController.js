@@ -51,11 +51,11 @@ ZmCalItemComposeController.MEETING_MODE  = "MEETING";
 ZmCalItemComposeController.prototype.show =
 function(calItem, mode, isDirty) {
 
+    this._mode = mode;
 	if (!this._toolbar) {
 		this._createToolBar();
 	}
 	var initial = this.initComposeView();
-
 	this._app.pushView(this.viewId);
 	this._composeView.set(calItem, mode, isDirty);
 	this._composeView.reEnableDesignMode();
@@ -323,6 +323,11 @@ function(mode) {
         saveButton.setVisible(true);
         saveButton.setText(ZmMsg.save);
         saveButton.setImage("Save");
+    }
+
+    if((this._mode == ZmCalItem.MODE_PROPOSE_TIME) || ZmCalItem.FORWARD_MAPPING[this._mode]) {
+        sendButton.setVisible(true);
+        saveButton.setVisible(false);
     }
         
 };
