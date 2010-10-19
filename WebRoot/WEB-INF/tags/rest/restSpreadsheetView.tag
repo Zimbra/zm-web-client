@@ -147,6 +147,7 @@
 
     window.contextPath = '${pageContext.request.contextPath}';
     window.appContextPath = '${pageContext.request.contextPath}';
+     window.appDevMode     = ${isDevMode};
 
     ZmSpreadSheetApp._createDBG('${isDevMode}');
 
