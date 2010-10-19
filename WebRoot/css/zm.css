@@ -1611,7 +1611,9 @@ line-height:normal;
 	overflow:hidden;
 	border:1px solid;
 	border-color:#AAAAAA #333333 #333333 #AAAAAA;
-	border-radius: 4px;
+#IFDEF SAFARI
+	-webkit-border-radius: 4px;
+#ENDIF
 #IFDEF GECKO
 	-moz-user-select: none;
     -moz-border-radius:4px;
@@ -1625,7 +1627,9 @@ line-height:normal;
 	overflow:hidden;
 	border:2px solid;
 	border-color:#339999 #003030 #003030 #339999;
-	border-radius: 2px;
+#IFDEF SAFARI
+	-webkit-border-radius: 4px;
+#ENDIF
 #IFDEF GECKO
 	-moz-user-select: none;
 	-moz-border-radius:4px;
@@ -2272,7 +2276,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWindowChatEntry-sep { border-top: 1px solid #edd; margin-top: 4px; margin-bottom: 2px; font-size: 1px; line-height: 1px; overflow: hidden; height: 1px; }
 
 .ZmChatWindowChatEntry .from { font-weight: bold; margin-bottom: 5px; }
-.ZmChatWindowChatEntry .time { vertical-align:top; width:10px; paddling-left:3px; color: #888; }
+.ZmChatWindowChatEntry .time { vertical-align:top; width:10px; padding-left:3px; color: #888; }
 .ZmChatWindowChatEntry .body { vertical-align:top; padding-left: 15px; margin-right: 4.2em; color: black;}
 
 .ZmChatWindowChatEntryMe .from { color: #00c; }
@@ -4115,7 +4119,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 /*Attachments View*/
 .ZmFilterTree {
-   broder-width: 0px;
+   border-width: 0px;
 }
 
 /*IE hack - To stop the button shake in the MSg Header*/
@@ -4365,7 +4369,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .RenameInput input {
     width:100%;
-    heigth:19px;
+    height:19px;
 }
 
 /*Calendar Styles*/
