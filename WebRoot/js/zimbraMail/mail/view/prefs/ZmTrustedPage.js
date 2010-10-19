@@ -95,7 +95,7 @@ function() {
 
 ZmTrustedPage.prototype.addCommand =
 function(batchCmd) {
-    if(this._trustedListControl) {
+    if(this._trustedListControl && this._trustedListControl.isDirty()) {
         var value = this._trustedListControl.getValue(),
             soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount"),
             node = soapDoc.set("pref", value),
