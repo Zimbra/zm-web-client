@@ -1283,7 +1283,10 @@ function(startTime, emailList) {
 
 ZmFreeBusySchedulerView.prototype._handleResponseFreeBusy =
 function(params, result) {
-	for (var i = 0; i < params.emails.length; i++) {
+
+    this._freeBusyRequest = null;
+
+    for (var i = 0; i < params.emails.length; i++) {
 		var email = params.emails[i];
 		// first clear out the whole row for this email id
 		var sched = this._schedTable[this._emailToIdx[email]];
@@ -1305,17 +1308,32 @@ function(params, result) {
 	}
 	this._colorAllAttendees();
 
+    var acct = (appCtxt.multiAccounts)
+        ? this._editView.getCalendarAccount() : null;
+    
     var workingHrsCallback = new AjxCallback(this, this._handleResponseWorking, [params]);
-    var errorCallback = new AjxCallback(this, this._handleErrorFreeBusy, [params]);    
-    this._controller.getWorkingInfo(params.startTime, params.endTime, params.emails, workingHrsCallback, errorCallback);
+    var errorCallback = new AjxCallback(this, this._handleErrorFreeBusy, [params]);        
+    var whrsParams = {
+        startTime: params.startTime,
+        endTime: params.endTime,
+        emails: params.emails,
+        callback: workingHrsCallback,
+        errorCallback: errorCallback,
+        noBusyOverlay: true,
+        account: acct
+    };
+
+    this._workingHoursRequest = this._fbCache.getWorkingHours(whrsParams);
 };
 
 ZmFreeBusySchedulerView.prototype._handleResponseWorking =
 function(params, result) {
-	var args = result.getResponse().GetWorkingHoursResponse.usr;
 
-	for (var i = 0; i < args.length; i++) {
-		var usr = args[i];
+    this._workingHoursRequest = null;
+
+	for (var i = 0; i < params.emails.length; i++) {
+		var email = params.emails[i];
+        var usr = this._fbCache.getWorkingHrsSlot(params.startTime, params.endTime, email);
 
 		// first clear out the whole row for this email id
 		var sched = this._schedTable[this._emailToIdx[usr.id]];
@@ -1381,7 +1399,11 @@ function(appt, div) {
 
 ZmFreeBusySchedulerView.prototype._handleErrorFreeBusy =
 function(params, result) {
-	if (result.code == ZmCsfeException.OFFLINE_ONLINE_ONLY_OP) {
+
+    this._freeBusyRequest = null;
+    this._workingHoursRequest = null;
+
+    if (result.code == ZmCsfeException.OFFLINE_ONLINE_ONLY_OP) {
 		var emails = params.emails;
 		for (var i = 0; i < emails.length; i++) {
 			var e = emails[i];

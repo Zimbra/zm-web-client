@@ -394,7 +394,7 @@ function(params) {
     var acct = (appCtxt.multiAccounts)
         ? this._editView.getCalendarAccount() : null;
 
-    var params = {
+    var fbParams = {
                     startTime: tf.start.getTime(),
                     endTime: tf.end.getTime(),
                     emails: emails,
@@ -404,7 +404,7 @@ function(params) {
                     account: acct
     };
 
-    this._freeBusyRequest = this._fbCache.getFreeBusyInfo(params);
+    this._freeBusyRequest = this._fbCache.getFreeBusyInfo(fbParams);
 };
 
 ZmScheduleAssistantView.prototype._addAttendee =
@@ -460,12 +460,21 @@ function(params) {
         this.suggestTimeSlots(params);
     }else {
         this._workingHoursKey = this.getWorkingHoursKey();
-        this._workingHoursRequest = this._controller.getWorkingInfo(this._timeFrame.start.getTime(),
-                                                             this._timeFrame.end.getTime(),
-                                                             this._organizerEmail,
-                                                             new AjxCallback(this, this._handleWorkingHoursResponse, [params]),
-                                                             new AjxCallback(this, this._handleWorkingHoursError, [params]),
-                                                             true);
+
+        var acct = (appCtxt.multiAccounts)
+            ? this._editView.getCalendarAccount() : null;
+
+        var whrsParams = {
+            startTime: this._timeFrame.start.getTime(),
+            endTime: this._timeFrame.end.getTime(),
+            emails: [this._organizerEmail],
+            callback: new AjxCallback(this, this._handleWorkingHoursResponse, [params]),
+            errorCallback: new AjxCallback(this, this._handleWorkingHoursError, [params]),
+            noBusyOverlay: true,
+            account: acct
+        };
+
+        this._workingHoursRequest = this._fbCache.getWorkingHours(whrsParams);
     }
 };
 
@@ -475,15 +484,7 @@ function(params, result) {
     this._workingHoursRequest = null;
     this._workingHours = {};
     
-    var args = result.getResponse().GetWorkingHoursResponse.usr;
-    for (var i = 0; i < args.length; i++) {
-		var usr = args[i];
-        var id = usr.id;
-        if (!id) {
-            continue;
-        }
-        this._workingHours[id] = usr;
-    };
+    if(this._organizerEmail) this._workingHours[this._organizerEmail] = this._fbCache.getWorkingHrsSlot(params.timeFrame.start.getTime(), params.timeFrame.end.getTime(), this._organizerEmail);
 
     this.suggestTimeSlots(params);
 };

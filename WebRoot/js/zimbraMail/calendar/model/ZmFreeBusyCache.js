@@ -27,6 +27,7 @@ ZmFreeBusyCache.prototype.clearCache =
 function() {
     DBG.println("clearing free busy cache");
     this._schedule = {};
+    this._workingHrs = {};
 };
 
 ZmFreeBusyCache.prototype.getFreeBusyKey =
@@ -114,5 +115,84 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, 
 	});
 };
 
+//working hrs related code
+ZmFreeBusyCache.prototype.getWorkingHours =
+function(params) {
 
+    var requiredEmails = [], freeBusyKey, emails = params.emails;
+    for (var i = emails.length; --i >= 0;) {
+        freeBusyKey = this.getFreeBusyKey(params.startTime, params.endTime, emails[i]);
+        //check local cache
+        if(!this._workingHrs[freeBusyKey]) requiredEmails.push(emails[i]);
+    }
+
+    var fbCallback = new AjxCallback(this, this._handleResponseWorkingHrs, [params]);
+    var fbErrorCallback = new AjxCallback(this, this._handleErrorWorkingHrs, [params]);
+
+    if(requiredEmails.length) {
+	    return this._getWorkingHours(params.startTime,
+                                     params.endTime,
+                                     requiredEmails.join(","),
+                                     fbCallback,
+                                     fbErrorCallback,
+                                     params.noBusyOverlay,
+                                     params.account);
+    }else {
+        if(params.callback) {
+            params.callback.run();
+        }
+        return null;
+    }
+
+};
+
+ZmFreeBusyCache.prototype._handleResponseWorkingHrs =
+function(params, result) {
+
+    var freeBusyKey;
+	var args = result.getResponse().GetWorkingHoursResponse.usr;
+    for (var i = 0; i < args.length; i++) {
+		var usr = args[i];
+        var id = usr.id;
+        if (!id) {
+            continue;
+        }
+        freeBusyKey = this.getFreeBusyKey(params.startTime, params.endTime, id);
+        this._workingHrs[freeBusyKey] = usr;
+    };
+
+    if(params.callback) {
+        params.callback.run(result);
+    }
+};
+
+ZmFreeBusyCache.prototype._handleErrorWorkingHrs =
+function(params, result) {
+    if(params.errorCallback) {
+        params.errorCallback.run(result);
+    }
+};
+
+ZmFreeBusyCache.prototype._getWorkingHours =
+function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, acct) {
+    var soapDoc = AjxSoapDoc.create("GetWorkingHoursRequest", "urn:zimbraMail");
+    soapDoc.setMethodAttribute("s", startTime);
+    soapDoc.setMethodAttribute("e", endTime);
+    soapDoc.setMethodAttribute("name", emailList);
+
+    return appCtxt.getAppController().sendRequest({
+        soapDoc: soapDoc,
+        asyncMode: true,
+        callback: callback,
+        errorCallback: errorCallback,
+        noBusyOverlay: noBusyOverlay,
+        accountName: (acct ? acct.name : null)
+    });
+};
+
+ZmFreeBusyCache.prototype.getWorkingHrsSlot =
+function(startTime, endTime, id) {
+    var key = this.getFreeBusyKey(startTime, endTime, id);
+    return this._workingHrs[key];
+};
 
