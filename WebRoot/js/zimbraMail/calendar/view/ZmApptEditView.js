@@ -563,6 +563,9 @@ function(calItem, mode) {
     this.setApptMessage(this._getMeetingStatusMsg(calItem));
 
     this.updateToolbarOps();
+
+    this._schedulerOpened = null;        
+    this._closeScheduler();
 };
 
 ZmApptEditView.prototype._getMeetingStatusMsg =
@@ -835,15 +838,22 @@ function() {
     this._toggleOptionalAttendees(true);
 };
 
+ZmApptEditView.prototype._closeScheduler =
+function() {
+    this._schButton.innerHTML = ZmMsg.show;
+    this._schImage.className = "ImgSelectPullDownArrow";
+    if(this._scheduleView) {
+        this._scheduleView.setVisible(false);
+        this.autoSize();        
+    }
+};
+
 ZmApptEditView.prototype._toggleInlineScheduler =
 function(forceShow) {
 
     if(this._schedulerOpened && !forceShow) {
-        this._schedulerOpened = false;
-        this._schButton.innerHTML = ZmMsg.show;
-        this._schImage.className = "ImgSelectPullDownArrow";
-        this._scheduleView.setVisible(false);
-        this.autoSize();
+        this._schedulerOpened = false;        
+        this._closeScheduler();
         return;
     }
 
