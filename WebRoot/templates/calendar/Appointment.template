@@ -10,7 +10,7 @@
                             <col id='${id}_timezoneColumn' width='250'/>
                             <col id='${id}_labelColumn' width='160'/>
                             <col/>
-                            <col width='80'/>
+                            <col width='90'/>
                         </colgroup>
                         <tr id='${id}_invitemsg_container' style='display:none;'>
                             <td width="1%" align="right" id="${id}_invitemsgicon"><$= AjxImg.getImageHtml("Information") $></td>
@@ -44,7 +44,7 @@
                         <tr>
                             <td width='65' align='right' valign='top'><div id='${id}_loc_picker'><legend><$= ZmMsg.locationLabel $></legend></div></td>
                             <td colspan='5' id='${id}_location'></td>
-                            <td id='${id}_res_btn'>&nbsp;</td>
+                            <td id='${id}_res_btn'><$= ZmMsg.findResources $></td>
                         </tr>
                         <$ if (data.isGalEnabled) { $>
                         <tr id='${id}_resourcesContainer'>

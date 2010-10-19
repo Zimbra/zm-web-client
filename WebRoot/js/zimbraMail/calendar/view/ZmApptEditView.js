@@ -815,12 +815,7 @@ function(pickerId, listener, addrType, isForwardPicker) {
         }else {
             this._pickerButton[addrType] = button;            
         }
-        if(addrType == ZmCalBaseItem.EQUIPMENT) {
-            button.setImage("Resource");
-            button.setSize("16px", Dwt.DEFAULT);
-        }else {
-            button.setText(pickerEl.innerHTML);
-        }
+        button.setText(pickerEl.innerHTML);
         button.replaceElement(pickerEl);
 
         button.addSelectionListener(listener);
