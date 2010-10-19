@@ -71,7 +71,6 @@ ZmContact.F_email					= "email";
 ZmContact.F_email2					= "email2";
 ZmContact.F_email3					= "email3";
 ZmContact.F_fileAs					= "fileAs";
-ZmContact.F_showExtImg				= "autoLoadRemoteImages";
 ZmContact.F_firstName				= "firstName";
 ZmContact.F_folderId				= "folderId";
 ZmContact.F_homeCity				= "homeCity";
@@ -149,9 +148,6 @@ ZmContact.FA_COMPANY_LAST_C_FIRST	= i++;
 ZmContact.FA_COMPANY_FIRST_LAST		= i++;
 ZmContact.FA_CUSTOM					= i++;
 
-ZmContact.SHOW_EXT_IMG = "Y";
-ZmContact.HIDE_EXT_IMG = "N";
-
 // Field information
 
 ZmContact.ADDRESS_FIELDS = [
@@ -219,8 +215,7 @@ ZmContact.PRIMARY_FIELDS = [
 	ZmContact.F_company,
 	ZmContact.F_fileAs,
 	ZmContact.F_folderId,
-	ZmContact.F_notes,
-	ZmContact.F_showExtImg
+	ZmContact.F_notes
 ];
 ZmContact.URL_FIELDS = [
     // NOTE: sync with field order in ZmEditContactView's templates
