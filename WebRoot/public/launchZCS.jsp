@@ -154,7 +154,7 @@
 	appContextPath = "${zm:jsEncode(contextPath)}";
 	appCurrentSkin = "${zm:jsEncode(skin)}";
 	appExtension   = "${zm:jsEncode(ext)}";
-	appDevMode     = ${isDevMode};
+	window.appDevMode     = ${isDevMode};
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >

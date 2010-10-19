@@ -1228,14 +1228,14 @@ function(fullVersion, width, height) {
 	if (fullVersion) {
 		url[i++] = "&full=1";
 	}
-	if (appDevMode) {
+	if (window.appDevMode) {
 		url[i++] = "&dev=1";
 	}
 
 	width = width || 705;
 	height = height || 465;
 	var args = ["height=", height, ",width=", width, ",location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no"].join("");
-	if (appDevMode) {
+	if (window.appDevMode) {
 		args = ["height=", height, ",width=", width, ",location=yes,menubar=yes,resizable=yes,scrollbars=no,status=yes,toolbar=yes"].join("");
 	}
 	var newWin = window.open(url.join(""), "_blank", args);
