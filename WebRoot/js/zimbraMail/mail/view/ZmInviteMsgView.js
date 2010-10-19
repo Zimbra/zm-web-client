@@ -211,6 +211,12 @@ function() {
 		(ac.get(ZmSetting.CALENDAR_ENABLED) || ac.multiAccounts) &&
 		(this._invite && this._invite.type != "task"))
 	{
+
+		var inviteDate = this._invite.getServerStartDate();
+		if (inviteDate == null) { /* not sure when this happens (probably a bug) but this is defensive check for bug 51754 */
+			return;
+		}
+
 		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		var cc = AjxDispatcher.run("GetCalController");
 
@@ -222,7 +228,6 @@ function() {
 			this._dayView.setZIndex(Dwt.Z_VIEW); // needed by ZmMsgController's msgview
 		}
 
-		var inviteDate = this._invite.getServerStartDate();
 		this._dayView.setDisplay(Dwt.DISPLAY_BLOCK);
 		this._dayView.setDate(inviteDate, 0, false);
 		this.resize();
