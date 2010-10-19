@@ -1302,12 +1302,13 @@ function(text, el, match) {
 			this._isKnownLocation = true;
 		}
 
-        if(type == ZmCalBaseItem.PERSON && this._scheduleAssistant) this._scheduleAssistant.updateAttendee(attendee);
+        this._updateScheduler(type, attendee);
+        
 	}else if(match.email){
         if(type == ZmCalBaseItem.PERSON && this._scheduleAssistant) {
             var attendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.PERSON].getValue());
-            this._scheduleAssistant.updateAttendees(attendees);
             this.parent.updateAttendees(attendees, type, (type == ZmCalBaseItem.LOCATION )?ZmApptComposeView.MODE_REPLACE : ZmApptComposeView.MODE_ADD);
+            this._updateScheduler(type, attendees);
         }
     }
 
@@ -1599,32 +1600,39 @@ ZmApptEditView.prototype._updateAttendeeFieldValues =
 function(type, attendees) {
 	// *always* force replace of attendees list with what we've found
 	this.parent.updateAttendees(attendees, type);
+    this._updateScheduler(type, attendees);
+};
 
+ZmApptEditView.prototype._updateScheduler =
+function(type, attendees) {
+        // *always* force replace of attendees list with what we've found
+
+    attendees = (attendees instanceof AjxVector) ? attendees.getArray() :
+                (attendees instanceof Array) ? attendees : [attendees];
+    
     //avoid duplicate freebusy request by updating the view in sequence
     if(type == ZmCalBaseItem.PERSON) {
-        this._scheduleView.setUpdateCallback(new AjxCallback(this, this.updateScheduleAssistant, [attendees]))
+        this._scheduleView.setUpdateCallback(new AjxCallback(this, this.updateScheduleAssistant, [attendees, type]))
     }
 
     if(this._schedulerOpened) {
         var organizer = this._isProposeTime ? this.getCalItemOrganizer() : this.getOrganizer();
         this._scheduleView.update(this._dateInfo, organizer, this._attendees);
         this.autoSize();
-    }
-
-
-    attendees = (attendees instanceof AjxVector) ? attendees.getArray() :
-                (attendees instanceof Array) ? attendees : [attendees];
-
-    if(this._schedulerOpened == null && type == ZmCalBaseItem.PERSON && attendees.length > 0) {
-        this._toggleInlineScheduler(true);        
-    }
+    }else {
+        if(this._schedulerOpened == null && attendees.length > 0) {
+            this._toggleInlineScheduler(true);
+        }else {
+            this.updateScheduleAssistant(attendees, type)
+        }
+    };
 
     this.updateToolbarOps();
 };
 
 ZmApptEditView.prototype.updateScheduleAssistant =
-function(attendees) {
-    if(this._scheduleAssistant) this._scheduleAssistant.updateAttendees(attendees);
+function(attendees, type) {
+    if(this._scheduleAssistant && type == ZmCalBaseItem.PERSON) this._scheduleAssistant.updateAttendees(attendees);
 };
 
 ZmApptEditView.prototype._getAttendeeByName =
