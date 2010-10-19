@@ -29,7 +29,7 @@ and the container element is replaced with that control.
 				<table width=100%>
 				<$ if (!appCtxt.isOffline) { $>
 					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsLabel'><$=ZmMsg.password$>:</td>
 						<td class='ZOptionsField'><div id='${id}_PASSWORD' tabindex='50'></div></td>
 					</tr>
 					<tr>
