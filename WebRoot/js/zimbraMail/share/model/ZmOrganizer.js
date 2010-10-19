@@ -76,20 +76,19 @@ ZmOrganizer = function(params) {
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
 
-	var color = (this.parent && !params.color) ? this.parent.color : params.color;
-	this.color = color ||
-				 ZmOrganizer.ORG_COLOR[id] ||
-				 ZmOrganizer.ORG_COLOR[this.nId] ||
-				 ZmOrganizer.DEFAULT_COLOR[this.type] ||
-				 ZmOrganizer.C_NONE;
-	// NOTE: The server should not send a color parameter if a custom RGB
-	// NOTE: has been set. In other words, the color parameter will only
-	// NOTE: be specified if explicitly set that way and not as an explicit
-	// NOTE: RGB value.
-    // NOTE: It looks like the server IS sending a color value even though
-    // NOTE: it shouldn't when an explicit RGB is set. So, instead, try to
-    // NOTE: handle this situation as well.
-	this.rgb = params.rgb || ZmOrganizer.COLOR_VALUES[params.color];
+	this.color =
+        params.color ||
+        (this.parent && this.parent.color) ||
+        ZmOrganizer.ORG_COLOR[id] ||
+        ZmOrganizer.ORG_COLOR[this.nId] ||
+        ZmOrganizer.DEFAULT_COLOR[this.type] ||
+        ZmOrganizer.C_NONE
+    ;
+	this.rgb =
+        params.rgb ||
+        ZmOrganizer.COLOR_VALUES[this.color] ||
+        ZmOrganizer.COLOR_VALUES[ZmOrganizer.ORG_DEFAULT_COLOR]
+    ;
 
 	if (appCtxt.isOffline && !this.account && this.id == this.nId) {
 		this.account = appCtxt.accountList.mainAccount;
@@ -1191,16 +1190,17 @@ function(obj, details) {
 		doNotify = true;
 	}
 	if ((obj.rgb != null || obj.color != null) && !obj._isRemote) {
-		var color = ZmOrganizer.checkColor(obj.color);
-		if (this.color != color) {
+		var color = ZmOrganizer.checkColor(obj.color) || ZmOrganizer.DEFAULT_COLOR[this.type] || ZmOrganizer.ORG_DEFAULT_COLOR;
+		if (color != this.color) {
 			this.color = color;
 			fields[ZmOrganizer.F_COLOR] = true;
+            fields[ZmOrganizer.F_RGB] = true;
 		}
-		if (obj.rgb != this.rgb) {
-			this.rgb = obj.rgb;
-			fields[ZmOrganizer.F_RBG] = true;
-			// NOTE: Denote color change for code looking at "color" property.
-			fields[ZmOrganizer.F_COLOR] = true;
+        var rgb = obj.rgb || ZmOrganizer.COLOR_VALUES[color];
+		if (rgb != this.rgb) {
+			this.rgb = rgb;
+            fields[ZmOrganizer.F_COLOR] = true;
+            fields[ZmOrganizer.F_RGB] = true;
 		}
 		doNotify = true;
 	}
