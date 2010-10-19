@@ -823,7 +823,9 @@ function(ev) {
 		ev.event == ZmEvent.MODIFY)
 	{
 		var tagCell = document.getElementById(this._tagCellId);
-		tagCell.innerHTML = this._getTagHtml();
+        if (tagCell) {
+		    tagCell.innerHTML = this._getTagHtml();
+        }
 	}
 };
 
