@@ -180,9 +180,15 @@ function(partNode, attachments, bodyParts, parentNode) {
 			}
 		}
 
-		if (this.node.body && (ZmMimeTable.isRenderable(this.node.ct) || ZmMimeTable.isTextType(this.node.ct)) ) {
-			bodyParts.push(this.node);
-		}
+        if(this.node.body){
+            if((ZmMimeTable.isRenderable(this.node.ct) || ZmMimeTable.isTextType(this.node.ct) || this.node.content)) {
+                bodyParts.push(this.node);
+            }else if(AjxUtil.isUndefined(this.node.content) && this.node.size != 0){
+                if(!this.isIgnoredPart(parentNode)){
+                    attachments.push(this.node);
+                }
+            }
+        }
 
 		// bug fix #4616 - dont add attachments part of a rfc822 msg part
 		if (this.node.mp && this.node.ct != ZmMimeTable.MSG_RFC822) {
