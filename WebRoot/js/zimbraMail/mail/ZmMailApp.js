@@ -1173,7 +1173,8 @@ function(creates) {
 					: (msg.fragment || "");
 
 				var from = msg.getAddress(AjxEmailAddress.FROM);
-				var email = from.getName() || from.getAddress();
+				var email = (from && from instanceof AjxEmailAddress) ? from.getName() || from.getAddress() :
+							(from && typeof from == "string") ? from : ZmMsg.unknown;
 				var title = (appCtxt.accountList.size() > 1)
 					? AjxMessageFormat.format(ZmMsg.newMailWithAccount, [email, acct.getDisplayName()])
 					: AjxMessageFormat.format(ZmMsg.newMail, email);
