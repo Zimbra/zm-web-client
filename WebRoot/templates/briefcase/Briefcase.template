@@ -147,7 +147,7 @@
 <template id='briefcase.Briefcase#PreviewView'>
     <div id='${id}_filepreview'>
         <table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100% height=100%>
-            <tr>
+            <tr style="height:70px;">
                 <td style="background-color:#eee;vertical-align:middle;">
                     <div id='${id}_header' class="PreviewViewHeader">
 
@@ -159,7 +159,7 @@
                                 <td width="100%">
                                     <table cellspacing=0 cellpadding=0 border=0 width=100% height=100%>
                                         <tr>
-                                            <td width="30%">
+                                            <td width="70%">
                                                 <div id="${id}_name" class="itemName"></div>
                                                 <div class="itemMeta"><span id="${id}_modified"></span> by <span id="${id}_modifier"></span></div>
                                             </td>
@@ -183,7 +183,7 @@
                     </div>
                 </td>
             </tr>
-            <tr colspan="2">
+            <tr>
                 <td align="center">
                     <div id="${id}_body" style="width:100%;height:100%;" class="PreviewViewBody">
                         <!-- Body Iframe -->
