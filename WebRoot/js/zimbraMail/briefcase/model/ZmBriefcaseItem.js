@@ -571,7 +571,7 @@ function(){
 
 ZmRevisionItem.prototype.getRestUrl =
 function(){
-    var restUrl = ZmBriefcaseItem.prototype.getRestUrl.call(this);
+    var restUrl = this.parent.getRestUrl();
     if(this.version){
         restUrl = restUrl + ( restUrl.match(/\?/) ? '&' : '?' ) + "ver="+this.version;
     }
