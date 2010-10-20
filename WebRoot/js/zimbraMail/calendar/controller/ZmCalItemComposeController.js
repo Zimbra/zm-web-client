@@ -317,6 +317,7 @@ function(mode) {
     if(mode == ZmCalItemComposeController.APPT_MODE) {
         saveButton.setText(ZmMsg.saveClose);
         saveButton.setImage("Save");
+        saveButton.setVisible(true);
         sendButton.setVisible(false);
     }else {
         sendButton.setVisible(true);
