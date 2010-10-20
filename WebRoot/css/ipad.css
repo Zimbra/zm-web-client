@@ -17,7 +17,7 @@ a{
 }
 
 a:hover{
-	color: orange;
+	color: lightslategray;
 } 
 /* Orientation specific styles */
 
@@ -281,6 +281,8 @@ html, body{
 	font-size: 12px;
 	background-color: white;
     color: #333;
+    -webkit-box-shadow: #CCC 0px 0px 3px inset;
+	border-color: transparent;
 }
 
 
@@ -470,6 +472,11 @@ html, body{
 	margin-bottom: 5px;
 	border: none;
 }
+
+	.menuButton a{
+		text-shadow: none;
+		color: black;
+	}
 
 
 .icons{
@@ -764,7 +771,7 @@ ul.list li{
  .address{
 	color: #333333;
 	letter-spacing: 1px;
-	border-bottom: 1px solid #F1EEE6;
+	border-bottom: 1px solid #f5f5f5;
 	padding: 6px;
 	background-color: #e5e5e5;
 	

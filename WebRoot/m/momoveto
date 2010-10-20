@@ -40,17 +40,16 @@
     <input name="st" type="hidden" value="${param.st}"/>    
     
     <div class="Stripes cmp_container composeFields">
-        <div class="tbl" width="100%">
+  
             <c:set var="count" value="${0}"/>
             <zm:forEachFolder var="folder">
                 <c:if test="${count lt sessionScope.F_LIMIT and folder.id != param.sfi and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                    <div class="tr">
-                        <span class="td alignLeft" style="margin-left:10px;" onclick="return moveToFldr('moveTo_${folder.id}');">${zm:getFolderPath(pageContext, folder.id)}</span>
-                    </div>
+                    
+                        <div style="margin-left:10px; padding: 10px; border-bottom: 1px solid #dbdbdc; text-align: left;" onclick="return moveToFldr('moveTo_${folder.id}');">${zm:getFolderPath(pageContext, folder.id)}</div>
+                    
                     <c:set var="count" value="${count+1}"/>
                 </c:if>
             </zm:forEachFolder>
-        </div>      
     </div>
     </form>    
 </div>

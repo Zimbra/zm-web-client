@@ -1374,8 +1374,8 @@ var showSwipe = function(id) {
       var fromEl = p.getElementsByClassName("from-span")[0];
       var msgId = p.getElementsByClassName("chk")[0];
 
-      sHTML[i++] = "<span class='td f' style='width:25px;background-color:grey;'><input type='hidden' name='" + msgId.name + "' value='" + msgId.value + "'/></span>";
-      sHTML[i++] = "<span class='td m ' style='height:50px;background-color:grey;'><div class='from-span' style='font-color:white;'>"+ fromEl.innerHTML +"</div>";
+      sHTML[i++] = "<span class='td f' style='width:25px;background-color:gray;'><input type='hidden' name='" + msgId.name + "' value='" + msgId.value + "'/></span>";
+      sHTML[i++] = "<span class='td m ' style='height:50px;background-color:gray;'><div class='from-span' style='font-color:white;'>"+ fromEl.innerHTML +"</div>";
       sHTML[i++] = "<span><button type='submit' style='z-index:-999' class='zo_button delete_button delBtnV' name='anAction' value='actionDelete'><fmt:message key="delete"/></button></span>";
       sHTML[i++] = "<span><button type='button' style='z-index:-999' class='zo_button delete_button delBtnV'><a href='?st=newmail&amp;op=reply&amp;id="+ (msgId.value).replace("-","") + "'><fmt:message key="reply"/></a></button></span>";
       sHTML[i++] = "<span><button type='button' style='z-index:-999' class='zo_button delete_button delBtnV'><a href='?st=newmail&amp;op=replyAll&amp;id="+ (msgId.value).replace("-","") + "'><fmt:message key="replyAll"/></a></button></span>";

@@ -81,8 +81,9 @@
     </div><script type="text/javascript">var elem =  document.getElementById('d_div');if(elem) elem.style.display = 'none';elem = document.getElementById('d_btn_td');if(elem) elem.style.display = 'block';</script>
 </c:if>
 
-<div class="cushion">
+
     <c:if test="${ua.isiPad eq true}">
+       <div style="background-color: #ececed;border-bottom: 1px solid #dbdbdc; padding: 4px 6px;">
         <div class="subject">${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
             <c:if test="${message.isFlagged}"><span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
             <c:if test="${message.hasTags and mailbox.features.tagging}">
@@ -97,7 +98,9 @@
             <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" value="${message.sentDate}" pattern="yyyyMMdd" var="caldt"/>
             <a <c:if test="${mailbox.features.calendar}">href="?st=cal&amp;view=month&amp;date=${caldt}" </c:if>><fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></a>
         </div>
+       </div> 
     </c:if>
+<div class="cushion">
 <div class="View">
 
     <c:if test="${ua.isiPad == false}">
