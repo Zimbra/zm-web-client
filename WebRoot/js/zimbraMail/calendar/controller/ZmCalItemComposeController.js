@@ -446,7 +446,6 @@ function(calItem, result) {
     calItem.handlePostSaveCallbacks();
 
 	this._composeView.cleanup();
-    appCtxt.setStatusMsg(ZmMsg.apptCreated);
     appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success 
 };
 
