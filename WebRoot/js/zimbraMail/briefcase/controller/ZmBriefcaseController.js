@@ -218,6 +218,7 @@ function(parent, num) {
 	var isItemSelected = (num>0);
 	var isZimbraAccount = appCtxt.getActiveAccount().isZimbraAccount;
 	var isMailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
+    var isAdmin = briefcase.isAdmin(); 
 
     var item = items[0];
     var isRevision = item && item.isRevision;
@@ -253,18 +254,27 @@ function(parent, num) {
         var isWebDoc = firstItem && !firstItem.isFolder && firstItem.isWebDoc();
         var isLocked = firstItem && !firstItem.isFolder && firstItem.locked;
         var isLockOwner = isLocked && (item.lockUser == appCtxt.getActiveAccount().name);
-        
-        var versionEnabled =  num ==1 && firstItem;        
-        var checkinEnabled = !isReadOnly && num == 1 && isLockOwner && !isWebDoc && !isRevision;
-        var checkoutEnabled = !isReadOnly && num == 1 && !isLocked && !isWebDoc && !isRevision;
-        var discardCheckoutEnabled = !isReadOnly && isLocked && !isWebDoc && !isRevision;
 
+        //Case 1: Multiple Admins
+        //Case 2: Stale Lock ( Handle exception )
+
+        //Checkin
+        var checkinEnabled = !isReadOnly && num == 1 && isLockOwner && !isWebDoc && !isRevision;
         parent.getOp(ZmOperation.CHECKIN).setVisible(checkinEnabled);
-        parent.getOp(ZmOperation.CHECKOUT).setVisible(checkoutEnabled);
+
+        //Checkout / Edit
+        var checkoutEnabled = !isReadOnly && num == 1 && !isLocked && !isRevision;
+        parent.getOp(ZmOperation.CHECKOUT).setVisible(checkoutEnabled && !isWebDoc);
+        parent.enable(ZmOperation.EDIT_FILE, ( checkoutEnabled || isLockOwner ) && isWebDoc);
+
+        //Discard Checkout
+        var discardCheckoutEnabled = (num == 1) && isLocked && !isRevision && (isAdmin || isLockOwner || !isShared);
         parent.getOp(ZmOperation.DISCARD_CHECKOUT).setVisible(discardCheckoutEnabled);
-        //parent.enable(ZmOperation.VERSION_HISTORY, versionEnabled );
+
+        //Versioning
         parent.getOp(ZmOperation.RESTORE_VERSION).setVisible(num == 1 && isRevision && !isHightestVersion);
         parent.getOp(ZmOperation.DELETE_VERSION).setVisible(num == 1 && isRevision);
+
 
     }
 
@@ -524,10 +534,7 @@ function(ev) {
 	if (op) {
 		op.setEnabled(item && item.isRealFile());
 	}
-    var op = actionMenu.getOp(ZmOperation.EDIT_FILE);
-	if (op) {
-		op.setEnabled(item && item.isWebDoc() && !item.isRevision);
-	}
+    
 };
 
 ZmBriefcaseController.prototype._delVersionListener =
@@ -599,9 +606,7 @@ function(item, file){
     //Update item attribs
     item.version = file.version;
     item.name = file.name;
-
-    //Unlock Item
-    item.unlock();
+    this.unlockItem(item);
 
 };
 
@@ -609,18 +614,52 @@ ZmBriefcaseController.prototype._handleDiscardCheckout =
 function(){    
     var item = this._getSelectedItem();
     if(item && item instanceof ZmBriefcaseItem)
-       item.unlock();
+        this.unlockItem(item);
 };
 
 ZmBriefcaseController.prototype.checkout =
-function(item, callback){
-    item.lock(callback);
+function(item, callback){        
+    this.lockItem(item, callback);
 };
 
 ZmBriefcaseController.prototype.checkin =
 function(item, callback){
-    item.unlock(callback);  
+    this.unlockItem(item, callback);
 };
+
+ZmBriefcaseController.prototype.unlockItem =
+function(item, callback){
+   item.unlock(callback, new AjxCallback(this, this._handleErrorResponse, item)); 
+};
+
+ZmBriefcaseController.prototype.lockItem =
+function(item, callback){
+   item.lock(callback, new AjxCallback(this, this._handleErrorResponse, item));
+};
+
+ZmBriefcaseController.prototype._handleErrorResponse =
+function(item, response){
+    if(!(response && response.code)) return;
+
+    var msg;
+    switch(response.code){
+        case ZmCsfeException.CANNOT_UNLOCK:
+            msg = ZmMsg.unlockSufficientPermission;
+            break;
+
+        case ZmCsfeException.CANNOT_LOCK:
+            msg = ZmMsg.lockSuffientPermissions;
+            break;
+    }
+
+    if(msg){
+        var dialog = appCtxt.getMsgDialog();
+        dialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+        dialog.popup();
+    }
+
+    return msg;
+};        
 
 ZmBriefcaseController.prototype._getSelectedItem =
 function(){
@@ -706,6 +745,7 @@ function() {
 	if (!items) { return; }
     items = AjxUtil.toArray(items);
     var item = items[0];
+    
     if(item.contentType == ZmMimeTable.APP_ZIMBRA_DOC)
         this.checkout(item, new AjxCallback(this, this.editFile, item));
     else
