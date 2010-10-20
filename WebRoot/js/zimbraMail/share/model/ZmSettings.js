@@ -627,7 +627,7 @@ function() {
 	var h = location.hostname;
 	var isDev = ((h.indexOf(".zimbra.com") != -1) || (window.appDevMode && (/\.local$/.test(h) || h == "localhost")));
 	this._settings[ZmSetting.IS_DEV_SERVER].setValue(isDev);
-	if (isDev) {
+	if (isDev || window.isScriptErrorOn) {
 		this._settings[ZmSetting.SHOW_SCRIPT_ERRORS].setValue(true, null, false, true);
 	}
 
