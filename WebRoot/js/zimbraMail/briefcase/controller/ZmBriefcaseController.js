@@ -606,7 +606,7 @@ function(item, file){
     //Update item attribs
     item.version = file.version;
     item.name = file.name;
-    this.unlockItem(item);
+    this.unlockItem(item, new AjxCallback(this, this.refreshItem, item));
 
 };
 
@@ -615,6 +615,13 @@ function(){
     var item = this._getSelectedItem();
     if(item && item instanceof ZmBriefcaseItem)
         this.unlockItem(item);
+};
+
+ZmBriefcaseController.prototype.refreshItem =
+function(item){
+    //TODO: Handle version notifications than hard refresh
+    var view = this._parentView[this._currentView];
+    view.refreshItem(item);
 };
 
 ZmBriefcaseController.prototype.checkout =
