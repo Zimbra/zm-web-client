@@ -153,6 +153,7 @@
 .DwtHorizontalSash					{	@HSashContainer@	}
 .DwtHorizontalSash DIV				{	@HSashThumb@		}
 
+.RightBorderSeparator           {   border-right:5px solid @SeparatorColor@}
 
 
 

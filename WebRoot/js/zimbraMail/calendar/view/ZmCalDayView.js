@@ -13,8 +13,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCalDayView = function(parent, posStyle, controller, dropTgt, view, numDays, readonly) {
-	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_DAY, 1, false, readonly);
+ZmCalDayView = function(parent, posStyle, controller, dropTgt, view, numDays, readonly, isInviteMessage, isRight) {
+	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_DAY, 1, false, readonly, isInviteMessage, isRight);
 	this._compactMode = false;
 };
 

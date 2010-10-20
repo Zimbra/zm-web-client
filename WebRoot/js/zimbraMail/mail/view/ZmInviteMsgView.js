@@ -223,7 +223,7 @@ function() {
 		if (!this._dayView) {
 			// create a new ZmCalDayView under msgview's parent otherwise, we
 			// cannot position the day view correctly.
-			this._dayView = new ZmCalDayView(this.parent.parent, DwtControl.ABSOLUTE_STYLE, cc, null, null, null, true);
+			this._dayView = new ZmCalDayView(this.parent.parent, DwtControl.ABSOLUTE_STYLE, cc, null, null, null, true, true, this.isRight());
 			this._dayView.addSelectionListener(new AjxListener(this, this._apptSelectionListener));
 			this._dayView.setZIndex(Dwt.Z_VIEW); // needed by ZmMsgController's msgview
 		}
@@ -244,6 +244,11 @@ function() {
 	}
 };
 
+ZmInviteMsgView.prototype.isRight =
+function() {
+	return this.parent._controller.isReadingPaneOnRight(); 
+}
+
 /**
  * Resizes the view depending on whether f/b is being shown or not.
  *
@@ -253,7 +258,7 @@ ZmInviteMsgView.prototype.resize =
 function(reset) {
 	if (appCtxt.isChildWindow) { return; }
 
-	var isRight = this.parent._controller.isReadingPaneOnRight();
+	var isRight = this.isRight();
 	var grandParentSize = this.parent.parent.getSize();
 
 	if (reset) {
@@ -284,15 +289,18 @@ function(reset) {
 			// don't call DwtControl's setSize() since it triggers control
 			// listener and leads to infinite loop
 			Dwt.setSize(this.parent.getHtmlElement(), Dwt.DEFAULT, mvHeight);
+			Dwt.delClass(this.parent.getHtmlElement(), "RightBorderSeparator");
 		} else {
 			var parentWidth = grandParentSize.x;
 			var dvWidth = Math.floor(parentWidth / 3);
-			var mvWidth = parentWidth - dvWidth;
+			var separatorWidth = 5;
+			var mvWidth = parentWidth - dvWidth - separatorWidth; 
 
-			this._dayView.setBounds(mvWidth+padding, mvBounds.y, dvWidth, mvBounds.height);
+			this._dayView.setBounds(mvWidth + padding + separatorWidth, mvBounds.y, dvWidth, mvBounds.height);
 			// don't call DwtControl's setSize() since it triggers control
 			// listener and leads to infinite loop
 			Dwt.setSize(this.parent.getHtmlElement(), mvWidth, Dwt.DEFAULT);
+			Dwt.addClass(this.parent.getHtmlElement(), "RightBorderSeparator");
 		}
 	}
 };
@@ -495,6 +503,7 @@ function() {
 	label.setText(ZmMsg.calendarLabel);
 	tb.addSpacer();
 	this._inviteMoveSelect = new DwtSelect({parent:tb});
+	tb.addSpacer();
 
 	return tb;
 };

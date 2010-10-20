@@ -13,7 +13,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, scheduleMode, readonly) {
+ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, scheduleMode, readonly, isInviteMessage, isRight) {
 	if (arguments.length == 0) { return; }
 
 	view = view || ZmId.VIEW_CAL_DAY;
@@ -25,6 +25,10 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	this._layoutMap = [];
 	this._unionBusyDivIds = [];													// div ids for layingout union
     this._fbBarEnabled = this.fbStatusBarEnabled();
+
+	//we need special alignment for this case.
+	this._isInviteMessage = isInviteMessage; 
+	this._isRight = isRight;
 
 	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, view, readonly);
 
@@ -779,7 +783,10 @@ function(abook) {
 	}
 
 	// year heading
-	html.append("<div id='", this._yearHeadingDivId, "' class=calendar_heading style='position:absolute'>");
+	var inviteMessageHeaderStyle = (this._isInviteMessage && !this._isRight ? "height:26px;" : ""); //override class css in this case, so the header height aligns with the message view on the left
+	var headerStyle = "position:absolute;" + inviteMessageHeaderStyle;
+	
+	html.append("<div id='", this._yearHeadingDivId, "' class='calendar_heading' style='", headerStyle,	"'>");
 	html.append("<div id='", this._headerYearId,
 		"' class=calendar_heading_year_text style='position:absolute; width:", ZmCalColView._HOURS_DIV_WIDTH,"px;'></div>");
 	html.append("</div>");
@@ -807,10 +814,10 @@ function(abook) {
 	html.append("<div id='", this._allDayScrollDivId, "' style='position:absolute; overflow:hidden;'>");
 
 	// all day headings
-	html.append("<div id='", this._allDayHeadingDivId, "' class=calendar_heading style='position:absolute'>");
+	html.append("<div id='", this._allDayHeadingDivId, "' class='calendar_heading' style='", headerStyle,	"'>");
 	if (!this._scheduleMode) {
 		for (var i =0; i < this.numDays; i++) {
-			html.append("<div id='", this._columns[i].titleId, "' class=calendar_heading_day style='position:absolute;'></div>");
+			html.append("<div id='", this._columns[i].titleId, "' class='calendar_heading_day' style='position:absolute;'></div>");
 		}
 	}
 	html.append("</div>");
