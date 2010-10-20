@@ -1044,7 +1044,10 @@ function(ev) {
     if(type == ZmCalBaseItem.PERSON || type == ZmCalItem.ROLE_REQUIRED || type == ZmCalItem.ROLE_OPTIONAL) {
         if(sched.attendee) {
             sched.attendee.setParticipantRole((type == ZmCalItem.ROLE_OPTIONAL) ? ZmCalItem.ROLE_OPTIONAL : ZmCalItem.ROLE_REQUIRED);
-            if(this.isComposeMode) this._editView._setAttendees();
+            if(this.isComposeMode) {
+                this._editView._setAttendees();
+                if(type == ZmCalItem.ROLE_OPTIONAL) this._editView.showOptional();  
+            }
         }
         type = ZmCalBaseItem.PERSON;
     }
