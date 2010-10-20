@@ -754,10 +754,12 @@ function(width) {
 
 	this._tzoneSelectStart = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzoneSelectStart"), layout: DwtMenu.LAYOUT_SCROLL, maxRows:7});
 	this._tzoneSelectStart.addChangeListener(timezoneListener);
+    this._tzoneSelectStart.dynamicButtonWidth();
     this._tzoneSelectStartElement = document.getElementById(this._htmlElId + "_tzoneSelectStart");
 
 	this._tzoneSelectEnd = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzoneSelectEnd"), layout: DwtMenu.LAYOUT_SCROLL, maxRows:7});
 	this._tzoneSelectEnd.addChangeListener(timezoneListener);
+    this._tzoneSelectEnd.dynamicButtonWidth();
     this._tzoneSelectEndElement = document.getElementById(this._htmlElId + "_tzoneSelectEnd");
 
 
