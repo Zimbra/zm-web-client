@@ -1223,7 +1223,7 @@ function(date, duration, roll) {
 		if (ZmId.VIEW_CAL_MONTH == this._currentView) {
 			title = this._viewMgr.getCurrentView().getShortCalTitle();
 		}
-        if (ZmId.VIEW_CAL_SCHEDULE == this._currentView && roll && this._viewMgr._showNewScheduleView) {
+        if (ZmId.VIEW_CAL_SCHEDULE == this._currentView && roll && appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
             currentView._navDateChangeListener(date);
 		}
 		this._navToolBar[ZmId.VIEW_CAL].setText(title);
@@ -1265,14 +1265,7 @@ function(startDate, duration, folderId, mailItem) {
 	newAppt.resetRepeatMonthlyDayList();
 	newAppt.resetRepeatYearlyMonthsList(startDate.getMonth()+1);
 	newAppt.resetRepeatCustomDayOfWeek();
-    var currentView = this._viewMgr.getCurrentView();
-    if(currentView) {
-        var attendees = currentView.getAtttendees();
-    }
-    if(attendees && attendees.length > 0) {
-        newAppt.setAttendees(attendees, ZmCalBaseItem.PERSON);
-    }
-	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
+    var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
 	if (defaultWarningTime) {
 		newAppt.setReminderMinutes(defaultWarningTime);
 	}
@@ -1937,7 +1930,14 @@ function(newAppt, mode, isDirty, startDate) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
 	var appt = newAppt || this._newApptObject(sd, AjxDateUtil.MSEC_PER_HALF_HOUR);
-	if (AjxTimezone.TIMEZONE_CONFLICT || AjxTimezone.DEFAULT_RULE.autoDetected) {
+
+    //certain views can set attendees before creating appointment
+    if(this._viewVisible) {
+        var attendees = this._viewMgr.getCurrentView().getAtttendees();
+        if(attendees && attendees.length > 0) appt.setAttendees(attendees, ZmCalBaseItem.PERSON);
+    }
+
+    if (AjxTimezone.TIMEZONE_CONFLICT || AjxTimezone.DEFAULT_RULE.autoDetected) {
 		var timezonePicker = this.getTimezonePicker();
 		var callback = new AjxCallback(this, this.handleTimezoneSelection, [appt, mode, isDirty]);
 		timezonePicker.setCallback(callback);
