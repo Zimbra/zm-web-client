@@ -31,7 +31,7 @@ ZmCalViewMgr = function(parent, controller, dropTgt) {
 
 	this._controller = controller;
 	this._dropTgt = dropTgt;
-
+    this._showNewScheduleView = appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED);
 	// View hash. Holds the various views e.g. day, month, week, etc...
 	this._views = {};
 	this._date = new Date();
@@ -41,7 +41,12 @@ ZmCalViewMgr = function(parent, controller, dropTgt) {
 	this._viewFactory[ZmId.VIEW_CAL_WEEK]		= ZmCalWeekView;
 	this._viewFactory[ZmId.VIEW_CAL_MONTH]		= ZmCalMonthView;
 	this._viewFactory[ZmId.VIEW_CAL_LIST]		= ZmCalListView;
-	this._viewFactory[ZmId.VIEW_CAL_SCHEDULE]	= ZmCalScheduleView;
+    if(this._showNewScheduleView) {
+	    this._viewFactory[ZmId.VIEW_CAL_SCHEDULE]	= ZmCalNewScheduleView;
+    }
+    else {
+        this._viewFactory[ZmId.VIEW_CAL_SCHEDULE]	= ZmCalScheduleView;    
+    }
 	this._viewFactory[ZmId.VIEW_CAL_APPT]		= ZmApptView;
     this._viewFactory[ZmId.VIEW_CAL_TRASH]		= ZmApptListView;
 

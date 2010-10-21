@@ -634,6 +634,11 @@ ZmCalBaseView.prototype.getDate =
 function() {
 	return this._date;
 };
+//to override
+ZmCalBaseView.prototype.getAtttendees =
+function() {
+    return null;
+};
 
 ZmCalBaseView.prototype.getTimeRange =
 function() {

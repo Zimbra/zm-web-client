@@ -12,7 +12,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-
+/****************** OLD VERSION OF SCHEDULE VIEW *********************/
 ZmCalScheduleView = function(parent, posStyle, controller, dropTgt) {
 	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_SCHEDULE, 1, true);
 };
@@ -20,17 +20,36 @@ ZmCalScheduleView = function(parent, posStyle, controller, dropTgt) {
 ZmCalScheduleView.prototype = new ZmCalColView;
 ZmCalScheduleView.prototype.constructor = ZmCalScheduleView;
 
-ZmCalScheduleView.prototype.toString = 
+ZmCalScheduleView.prototype.toString =
 function() {
 	return "ZmCalScheduleView";
 };
 
-ZmCalScheduleView.ATTENDEES_METADATA = 'MD_SCHED_VIEW_ATTENDEES';
 
 
-ZmCalScheduleView.prototype._createHtml =
+
+
+
+
+/****************** NEW VERSION OF SCHEDULE VIEW *********************/
+ZmCalNewScheduleView = function(parent, posStyle, controller, dropTgt) {
+	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_SCHEDULE, 1, true);
+};
+
+ZmCalNewScheduleView.prototype = new ZmCalColView;
+ZmCalNewScheduleView.prototype.constructor = ZmCalNewScheduleView;
+
+ZmCalNewScheduleView.prototype.toString = 
+function() {
+	return "ZmCalNewScheduleView";
+};
+
+ZmCalNewScheduleView.ATTENDEES_METADATA = 'MD_SCHED_VIEW_ATTENDEES';
+
+
+ZmCalNewScheduleView.prototype._createHtml =
 function(abook) {
-	DBG.println(AjxDebug.DBG2, "ZmCalScheduleView in _createHtml!");
+	DBG.println(AjxDebug.DBG2, "ZmCalNewScheduleView in _createHtml!");
     //TODO: Check and remove unnecessary instance vars
     this._days = {};
 	this._columns = [];
@@ -82,24 +101,30 @@ function(abook) {
 };
 
 
-ZmCalScheduleView.prototype._layout =
+ZmCalNewScheduleView.prototype._layout =
 function(refreshApptLayout) {
 	DBG.println(AjxDebug.DBG2, "ZmCalColView in layout!");
     //this._layoutAllDayAppts();
 	
 };
+
+ZmCalNewScheduleView.prototype.getCalendarAccount =
+function() {
+	return null;
+};
+
 //mouse actions removed for now
-ZmCalScheduleView.prototype._apptMouseDownAction =
+ZmCalNewScheduleView.prototype._apptMouseDownAction =
 function(ev, apptEl) {
     DBG.println(AjxDebug.DBG2,  "mouse listeners");    
 };
 
-ZmCalScheduleView.prototype._doubleClickAction =
+ZmCalNewScheduleView.prototype._doubleClickAction =
 function(ev, div) {
     this._mouseDownAction(ev, div, true);
 };
 
-ZmCalScheduleView.prototype._mouseDownAction =
+ZmCalNewScheduleView.prototype._mouseDownAction =
 function(ev, div, isDblClick) {
     DBG.println(AjxDebug.DBG2,  "mouse down action");
     var target = DwtUiEvent.getTarget(ev),
@@ -131,23 +156,23 @@ function(ev, div, isDblClick) {
     }
 };
 
-ZmCalScheduleView.prototype.getOrganizer =
+ZmCalNewScheduleView.prototype.getOrganizer =
 function() {
     var organizer = new ZmContact(null);
 	organizer.initFromEmail(appCtxt.getUsername(), true);
     return organizer;
 };
 //overridden method - do not remove
-ZmCalScheduleView.prototype.getRsvp =
+ZmCalNewScheduleView.prototype.getRsvp =
 function() {
     return false;
 };
 //overridden method - do not remove
-ZmCalScheduleView.prototype._scrollToTime =
+ZmCalNewScheduleView.prototype._scrollToTime =
 function(hour) {
 };
 
-ZmCalScheduleView.prototype.getDateInfo =
+ZmCalNewScheduleView.prototype.getDateInfo =
 function(date) {
     var dateInfo = {},
         d = date || new Date();
@@ -157,17 +182,17 @@ function(date) {
     return dateInfo;
 };
 
-ZmCalScheduleView.prototype._navDateChangeListener =
+ZmCalNewScheduleView.prototype._navDateChangeListener =
 function(date) {
     this._date = date;
     this._scheduleView.changeDate(this.getDateInfo(date));
 };
 //overridden method - do not remove
-ZmCalScheduleView.prototype._dateUpdate =
+ZmCalNewScheduleView.prototype._dateUpdate =
 function(rangeChanged) {
 };
 
-ZmCalScheduleView.prototype.set =
+ZmCalNewScheduleView.prototype.set =
 function(list, skipMiniCalUpdate) {
     this._preSet();
     //Check added for sync issue - not sure if schedule view is ready by this time
@@ -179,7 +204,7 @@ function(list, skipMiniCalUpdate) {
     this.renderAppts(list);
 };
 
-ZmCalScheduleView.prototype.resetListItems =
+ZmCalNewScheduleView.prototype.resetListItems =
 function(list) {
     this._selectedItems.removeAll();
     var newList = list;
@@ -190,7 +215,7 @@ function(list) {
     this._list = newList;
 };
 
-ZmCalScheduleView.prototype.renderAppts =
+ZmCalNewScheduleView.prototype.renderAppts =
 function(list) {
     var timeRange = this.getTimeRange();
 	if (list) {
@@ -208,7 +233,7 @@ function(list) {
 	}
 };
 
-ZmCalScheduleView.prototype.addAppt =
+ZmCalNewScheduleView.prototype.addAppt =
 function(appt) {
     if(this._scheduleView) {
         var item = this._createItemHtml(appt),
@@ -221,7 +246,7 @@ function(appt) {
     }
 };
 
-ZmCalScheduleView.prototype.removeAppt =
+ZmCalNewScheduleView.prototype.removeAppt =
 function(appt) {
     if(this._scheduleView) {
         var itemId = this._getItemId(appt),
@@ -234,7 +259,7 @@ function(appt) {
     }
 };
 
-ZmCalScheduleView.prototype.removeApptByEmail =
+ZmCalNewScheduleView.prototype.removeApptByEmail =
 function(email) {
     if(this._scheduleView) {
         for (var i = 0; i<this._list.size(); i++) {
@@ -252,7 +277,7 @@ function(email) {
     }
 };
 
-ZmCalScheduleView.prototype.refreshAppts =
+ZmCalNewScheduleView.prototype.refreshAppts =
 function() {
     this._selectedItems.removeAll();
     var newList = this._list.clone();
@@ -262,18 +287,23 @@ function() {
 };
 
 //overridden method - do not remove
-ZmCalScheduleView.prototype._layoutAllDayAppts =
+ZmCalNewScheduleView.prototype._layoutAllDayAppts =
 function() {
 };
 
-ZmCalScheduleView.prototype.getMetadataAttendees =
+ZmCalNewScheduleView.prototype.getAtttendees =
+function() {
+    return this._attendees[ZmCalBaseItem.PERSON].getArray();
+};
+
+ZmCalNewScheduleView.prototype.getMetadataAttendees =
 function(organizer) {
     var md = new ZmMetaData(organizer.getAccount());
     var callback = new AjxCallback(this, this.processMetadataAttendees);
     md.get('MD_SCHED_VIEW_ATTENDEES', null, callback);
 };
 
-ZmCalScheduleView.prototype.processMetadataAttendees =
+ZmCalNewScheduleView.prototype.processMetadataAttendees =
 function(metadataResponse) {
     var objAttendees = metadataResponse.getResponse().BatchResponse.GetMailboxMetadataResponse[0].meta[0]._attrs,
         emails = [],
@@ -308,7 +338,7 @@ function(metadataResponse) {
     delete this._calNotRenderedList;
 };
 
-ZmCalScheduleView.prototype.setMetadataAttendees =
+ZmCalNewScheduleView.prototype.setMetadataAttendees =
 function(organizer, email) {
     if(!organizer) {
         organizer = this.getOrganizer();
@@ -318,10 +348,10 @@ function(organizer, email) {
     }
     var md = new ZmMetaData(organizer.getAccount());
     this._mdAttendees.add(email, null, true);
-    return md.set(ZmCalScheduleView.ATTENDEES_METADATA, this._mdAttendees.getArray());
+    return md.set(ZmCalNewScheduleView.ATTENDEES_METADATA, this._mdAttendees.getArray());
 };
 
-ZmCalScheduleView.prototype.removeMetadataAttendees =
+ZmCalNewScheduleView.prototype.removeMetadataAttendees =
 function(organizer, email) {
     if(!organizer) {
         organizer = this.getOrganizer();
@@ -331,10 +361,10 @@ function(organizer, email) {
     }
     var md = new ZmMetaData(organizer.getAccount());
     this._mdAttendees.remove(email, null, true);
-    return md.set(ZmCalScheduleView.ATTENDEES_METADATA, this._mdAttendees.getArray());
+    return md.set(ZmCalNewScheduleView.ATTENDEES_METADATA, this._mdAttendees.getArray());
 };
 
-ZmCalScheduleView.prototype._resetCalendarData =
+ZmCalNewScheduleView.prototype._resetCalendarData =
 function() {
     var i,
         tb,
@@ -375,7 +405,5 @@ function() {
     else {
         this._mdAttendees = new AjxVector();
         this.getMetadataAttendees(organizer);        
-    }
-
-    
+    }    
 };

@@ -121,7 +121,7 @@ function(overviewId, owner) {
 		var item = items[i];
 		if (!item || item._isSeparator) { continue; }
 		var calendar = item.getData(Dwt.KEY_OBJECT);
-		if (calendar.getOwner() == owner) {
+		if (calendar && calendar.getOwner() == owner) {
 			calendars.push(calendar);
 		}
 	}

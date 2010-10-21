@@ -872,7 +872,7 @@ function(sched, attendee, index) {
         }
         else {
             var deleteButton = new DwtBorderlessButton({parent:this, className:"Label"});
-            deleteButton.setImage("Trash");
+            deleteButton.setImage("Disable");
             deleteButton.setText("");
             deleteButton.addSelectionListener(new AjxListener(this, this._deleteAttendeeRow, [attendee.getEmail()]));
             deleteButton.getHtmlElement().style.cursor = 'pointer';
@@ -1507,7 +1507,8 @@ function(params) {
         tooltipContent = "<b>" + ZmMsg.statusLabel + " " + fbStatusMsg[params.status] + "</b>";
     }else {
         var acct = this._editView.getCalendarAccount();
-        tooltipContent = cc.getUserStatusToolTipText(params.startDate, params.endDate, true, params.email, (acct.name == params.email) ? fbStatusMsg[params.status] : ZmMsg.unknown);
+        var emptyMsg = acct && (acct.name == params.email) ? fbStatusMsg[params.status] : ZmMsg.unknown;
+        tooltipContent = cc.getUserStatusToolTipText(params.startDate, params.endDate, true, params.email, emptyMsg);
     }
     var shell = DwtShell.getShell(window);
     var tooltip = shell.getToolTip();

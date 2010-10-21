@@ -150,6 +150,7 @@ function(settings) {
 	settings.registerSetting("CAL_USE_QUICK_ADD",			{name: "zimbraPrefCalendarUseQuickAdd", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
 	settings.registerSetting("CALENDAR_INITIAL_VIEW",		{name: "zimbraPrefCalendarInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CAL_DAY, isGlobal:true});
     settings.registerSetting("CAL_WORKING_HOURS",           {name: "zimbraPrefCalendarWorkingHours", type: ZmSetting.T_PREF, defaultValue: ZmCalendarApp.DEFAULT_WORKING_HOURS, isGlobal:true});
+    settings.registerSetting("FREE_BUSY_VIEW_ENABLED",      {name:"zimbraFeatureFreeBusyViewEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("DELETE_INVITE_ON_REPLY",		{name: "zimbraPrefDeleteInviteOnReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
 	settings.registerSetting("ENABLE_APPL_ICAL_DELEGATION", {name: "zimbraPrefAppleIcalDelegationEnabled",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
 	settings.registerSetting("CAL_AUTO_ADD_INVITES",		{name: "zimbraPrefCalendarAutoAddInvites",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
