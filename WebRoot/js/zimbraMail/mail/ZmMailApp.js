@@ -342,7 +342,7 @@ function() {
         TRUSTED_ADDR: {
             parentId: "MAIL",
 			title: ZmMsg.trustedAddrs,
-			icon: "Trusted",
+			icon: "AllowUser",
 			templateId: "prefs.Pages#Trusted",
 			priority: 60,
 			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
