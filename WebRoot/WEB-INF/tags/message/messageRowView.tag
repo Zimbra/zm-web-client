@@ -122,7 +122,7 @@
                                     </c:if>
                                     <td class="Img"><app:img src="${msgHit.statusImage}" altkey='${msgHit.statusImageAltKey}'/></td>
                                     <td width='160'><%-- allow this column to wrap --%>
-                                        <c:set var="dispRec" value="${zm:truncate(msgHit.displaySender,20,true)}"/>${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}
+                                        <c:set var="dispAddr" value="${zm:truncate(msgHit.displayAddresses,20,true)}"/>${fn:escapeXml(empty dispAddr ? unknownRecipient : dispAddr)}
                                     </td>
                                     <td class='Img'><app:attachmentImage attachment="${msgHit.hasAttachment}"/></td>
                                     <%--<td></td>--%>
