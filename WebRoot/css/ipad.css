@@ -1582,28 +1582,32 @@ span.aleft > div:first-child, .contactHeader {
 	border-bottom: none !important;
 }
 
+
 /* Status Info */
 
 .loadingDiv, .StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
     -webkit-transition: opacity 200ms linear;
     position:absolute;
-    top:0px;
+    bottom: 50px;
     width:30%; 
     z-index:1000;
-    margin: 0 30%;
-    -webkit-border-bottom-left-radius: 6px;
-	-webkit-border-bottom-right-radius: 6px;
-	-webkit-border-top-left-radius: 0px;
-	-webkit-border-top-right-radius: 0px;
+    margin: 0 45%;
+    -webkit-border-radius: 6px;
+	padding-top: 6px !important;
+	-webkit-box-shadow: #e5e5e5 0 1px 2px;
+	-webkit-transition: color 0.15s ease-out;
+	opacity: 0.9;
 }
 
 .loadingDiv, .StatusWarning{
   	background-color:#ffffe1;
+    border: 3px solid #ffffbf;
+  	
 }
 	.loadingDiv .td, .StatusInfo .td, .StatusWarning .td, .StatusCritical .td, .zo_noresults .td{
-		padding-top: 3px !important;
-		padding-bottom: 3px !important;
+		padding-top: 6px !important;
 		font-weight: bold;
+ 
 	}
 	
 .hidden {
@@ -1616,11 +1620,15 @@ span.aleft > div:first-child, .contactHeader {
     text-align: center;
 }
 .StatusInfo {
-    background-color: lightgreen !important;
+    background-color: #cdffda !important;
+	border: 3px solid #9affb4;
+
 }
 
 .StatusCritical {
-    background-color: red !important;
+    background-color: #fecdd0 !important;
+    border: 3px solid #feacb0;
+    
 }
 
 .Cancel{

@@ -211,7 +211,7 @@
 
 <c:if test="${empty param.show}">
 	<c:if test="${empty param.ajax}">
-		<div class="loadingDiv hidden" id="loadingDiv" onclick="function(){return requestTimeout(false,'Aborted by user.');}"></div>
+		<div class="loadingDiv " id="loadingDiv" onclick="function(){return requestTimeout(false,'Aborted by user.');}"></div>
 	</c:if>
 	<c:choose>
 			<c:when test="${not empty param.appmsg}"><c:set var="statusMessage" value="${fn:escapeXml(param.appmsg)}"/>
