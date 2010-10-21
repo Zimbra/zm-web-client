@@ -73,7 +73,7 @@
     <url-pattern>/m/*</url-pattern>
   </filter-mapping>
 
-  <filter>
+  <!-- <filter>
     <filter-name>ThrottlingFilter</filter-name>
     <filter-class>com.zimbra.cs.servlet.ThrottlingFilter</filter-class>
   </filter>
@@ -82,7 +82,7 @@
     <url-pattern>/h/*</url-pattern>
     <url-pattern>/m/*</url-pattern>
   </filter-mapping>
-
+ -->
   <filter>
     <filter-name>GzipFilter</filter-name>
     <filter-class>org.mortbay.servlet.jetty.IncludableGzipFilter</filter-class>
