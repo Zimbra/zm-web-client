@@ -604,7 +604,7 @@ ZmSearchAutocomplete = function() {
 
 	params = {
 		listType:	ZmId.ORG_FOLDER,
-		text:		function(o) { return o.getPath(false, false, null, true, true); },
+		text:		function(o) { return o.getPath(false, false, null, true, false); },
 		icon:		function(o) { return o.getIcon(); },
 		matchText:	function(o) { return o.createQuery(); }
 	};
