@@ -37,7 +37,7 @@ ZmPreviewPaneView = function(parent, controller, dropTgt) {
 	this._previewView = new ZmPreviewView({parent:this, posStyle:DwtControl.ABSOLUTE_STYLE, controller: this._controller});
 
     this._detailListView = new ZmDetailListView(this, this._controller, this._controller._dropTgt );
-    this._detailListView.addSelectionListener(new AjxListener(this, this._listSelectionListener));  
+    this._detailListView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
 
 	this.setReadingPane();
 };
@@ -329,7 +329,7 @@ function() {
 };
 
 ZmPreviewPaneView.prototype.set =
-function(list, sortField) { 
+function(list, sortField) {
 	this._detailListView.set(list, sortField);
     this._selectFirstItem();
 };
@@ -581,7 +581,7 @@ function(item){
 
         //Send everything trough ConvertD
         restUrl = this._setupErrorCallback(restUrl);
-        restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "view=html";
+        restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "fmt=native&view=html";
     }
 
     this._iframePreview.setSrc(restUrl);
