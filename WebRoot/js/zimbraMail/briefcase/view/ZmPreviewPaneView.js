@@ -331,7 +331,23 @@ function() {
 ZmPreviewPaneView.prototype.set =
 function(list, sortField) {
 	this._detailListView.set(list, sortField);
+    var list = this._detailListView._zmList;
+    if(list)
+        list.addChangeListener(new AjxListener(this, this._listViewChangeListener));
     this._selectFirstItem();
+};
+
+ZmPreviewPaneView.prototype._listViewChangeListener =
+function(ev){
+   
+    var item = this._detailListView.getSelection();
+    item = item && item[0];
+    if(item){
+         this._listSelectionListener(ev, item);
+    }else{
+         this._previewView.enablePreview(false);
+    }
+    
 };
 
 ZmPreviewPaneView.prototype._listSelectionListener =
