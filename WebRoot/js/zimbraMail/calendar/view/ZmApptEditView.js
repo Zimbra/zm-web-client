@@ -1304,6 +1304,7 @@ function(text, el, match) {
 
         //controller tracks both optional & required attendees in common var
         if (type == ZmCalBaseItem.OPTIONAL_PERSON) {
+            this.setAttendeesRole(attendee, ZmCalItem.ROLE_OPTIONAL);
             type = ZmCalBaseItem.PERSON;
         }
 
@@ -1317,8 +1318,12 @@ function(text, el, match) {
         this._updateScheduler(type, attendee);
         
 	}else if(match.email){
-        if(type == ZmCalBaseItem.PERSON && this._scheduleAssistant) {
+        if((type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.OPTIONAL_PERSON) && this._scheduleAssistant) {
             var attendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.PERSON].getValue());
+            this.setAttendeesRole(attendees, (type == ZmCalBaseItem.OPTIONAL_PERSON) ? ZmCalItem.ROLE_OPTIONAL : ZmCalItem.ROLE_REQUIRED);
+            if (type == ZmCalBaseItem.OPTIONAL_PERSON) {
+                type = ZmCalBaseItem.PERSON;
+            }
             this.parent.updateAttendees(attendees, type, (type == ZmCalBaseItem.LOCATION )?ZmApptComposeView.MODE_REPLACE : ZmApptComposeView.MODE_ADD);
             this._updateScheduler(type, attendees);
         }
@@ -1573,8 +1578,11 @@ function(type, useException) {
 
     if(type == ZmCalBaseItem.OPTIONAL_PERSON || type == ZmCalBaseItem.PERSON) {
         attendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.PERSON].getValue());
+        this.setAttendeesRole(attendees, ZmCalItem.ROLE_REQUIRED);
         var optionalAttendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].getValue(), true);
-        //merge optional & required attendees to update parent controller                
+        this.setAttendeesRole(optionalAttendees, ZmCalItem.ROLE_OPTIONAL);
+
+        //merge optional & required attendees to update parent controller
         attendees.addList(optionalAttendees);
         type = ZmCalBaseItem.PERSON;
     }else {
@@ -1583,6 +1591,18 @@ function(type, useException) {
     }
 
     return this._updateAttendeeFieldValues(type, attendees);
+};
+
+ZmApptEditView.prototype.setAttendeesRole =
+function(attendees, role) {
+
+    var personalAttendees = (attendees instanceof AjxVector) ? attendees.getArray() :
+                (attendees instanceof Array) ? attendees : [attendees];
+
+    for (var i = 0; i < personalAttendees.length; i++) {
+        var attendee = personalAttendees[i];
+        if(attendee) attendee.setParticipantRole(role);
+    }
 };
 
 ZmApptEditView.prototype.getAttendeesFromString =
