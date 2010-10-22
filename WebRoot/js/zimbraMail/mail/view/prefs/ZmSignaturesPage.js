@@ -457,7 +457,7 @@ function(ev) {
 	}
 };
 
-	ZmSignaturesPage.prototype._resetSize =
+ZmSignaturesPage.prototype._resetSize =
 function() {
 	this._resetEditorSize();
 
@@ -728,16 +728,55 @@ function() {
 	this._deleteBtn.setText(this._deleteState ? ZmMsg.del : ZmMsg.clear);
 };
 
+ZmSignaturesPage.prototype._setFormat =
+function(isText) {
+	this._sigEditor.setMode(isText ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML, true);
+	this._selSignature.setContentType(isText ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML);
+	this._resetSize();
+};
+
+
+ZmSignaturesPage.prototype._formatOkCallback =
+function(isText) {
+	this._formatWarningDialog.popdown();
+	this._setFormat(isText);
+};
+
+ZmSignaturesPage.prototype._formatCancelCallback =
+function(isText) {
+	this._formatWarningDialog.popdown();
+
+	// reset the option
+	this._sigFormat.setSelectedValue(!isText);
+};
+
+
 // buttons
 ZmSignaturesPage.prototype._handleFormatSelect =
 function(ev) {
-	var signature = this._selSignature;
 	var isText = this._sigFormat ? this._sigFormat.getValue() : true;
-	this._sigEditor.setMode( isText ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML, true);
+	var currentIsText = this._sigEditor.getMode() === DwtHtmlEditor.TEXT;
+	if (isText == currentIsText) {
+		return;
+	}
 
-	signature.setContentType(isText ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
+	var content = this._sigEditor.getContent();
+	var contentIsEmpty = content == "<html><body><br></body></html>" || content == "";
 
-	this._resetSize();
+	if (!contentIsEmpty) {
+		if (!this._formatWarningDialog) {
+			this._formatWarningDialog = new DwtMessageDialog({parent : appCtxt.getShell(), buttons : [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
+		}
+		var dialog = this._formatWarningDialog;
+		dialog.registerCallback(DwtDialog.OK_BUTTON, this._formatOkCallback, this, [isText]);
+		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._formatCancelCallback, this, [isText]);
+		var msg  = isText ? ZmMsg.switchToText : ZmMsg.switchToHtml;
+		dialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+		dialog.popup();
+		return;
+	}
+	this._setFormat(isText);
+
 };
 
 ZmSignaturesPage.prototype._handleAddButton =
