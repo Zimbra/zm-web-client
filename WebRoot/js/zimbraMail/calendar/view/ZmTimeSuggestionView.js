@@ -26,7 +26,8 @@
  */
 ZmTimeSuggestionView = function(parent, controller, apptEditView) {
 
-	ZmListView.call(this, {parent: parent, posStyle: DwtControl.RELATIVE_STYLE, view: ZmId.VIEW_SCHEDULE_PANE});
+    var headerList = this._getHeaderList();
+	ZmListView.call(this, {parent: parent, posStyle: DwtControl.RELATIVE_STYLE, view: ZmId.VIEW_SCHEDULE_PANE, headerList: headerList});
 
 	this._controller = controller;
 	this._editView = apptEditView;
@@ -43,6 +44,7 @@ ZmTimeSuggestionView.prototype.constructor = ZmTimeSuggestionView;
 
 ZmTimeSuggestionView.SHOW_MORE_VALUE = '-1';
 ZmTimeSuggestionView.F_LABEL = 'ts';
+ZmTimeSuggestionView.COL_NAME	= "t";
 
 ZmTimeSuggestionView.prototype.set =
 function(params) {
@@ -55,6 +57,10 @@ function(params) {
     this._startDate = params.timeFrame.start;
 
     ZmListView.prototype.set.call(this, params.list);
+
+    var hdrLabelId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, ZmTimeSuggestionView.COL_NAME);
+    var labelCell = document.getElementById(hdrLabelId);
+    labelCell.innerHTML = AjxMessageFormat.format(ZmMsg.suggestedTimeLabel, [this._startDate]);    
 };
 
 ZmTimeSuggestionView.prototype._createItemHtml =
@@ -83,20 +89,28 @@ function (item) {
     return AjxTemplate.expand("calendar.Appointment#TimeSuggestion", params);
 };
 
+ZmTimeSuggestionView.prototype._getHeaderList =
+function() {
+    this._headerItem = (new DwtListHeaderItem({field:ZmTimeSuggestionView.COL_NAME, text:'&nbsp;'}));
+	return [
+	    this._headerItem	
+	];
+};
+
 ZmTimeSuggestionView.prototype._itemSelected =
 function(itemDiv, ev) {
     ZmListView.prototype._itemSelected.call(this, itemDiv, ev);
 
     var item = this.getItemFromElement(itemDiv);
     if(item) {
-        this.switchLocationSelect(item, itemDiv.id);
+        this.switchLocationSelect(item, itemDiv.id, ev);
         this._editView.setDate(new Date(item.startTime), new Date(item.endTime));
     }
 };
 
 
 ZmTimeSuggestionView.prototype.switchLocationSelect =
-function(item, id) {
+function(item, id, ev) {
     var locId = id + "_loc";
 
     var locationC = document.getElementById(locId);
@@ -113,6 +127,7 @@ function(item, id) {
     if(!this._locSelect) {
         this._locSelect = new DwtSelect({parent:this, parentElement: locId});
         this._locSelect.addChangeListener(new AjxListener(this, this._locationListener));
+        this._locSelect.dynamicButtonWidth();
     }else {
         if(roomsAvailable) this._locSelect.reparentHtmlElement(locId);
         this._locSelect.clearOptions();
@@ -136,6 +151,11 @@ function(item, id) {
             this._locSelect.addOption(ZmMsg.showMore, false, ZmTimeSuggestionView.SHOW_MORE_VALUE);
             break;
         }
+    }
+
+    //user clicked the link directly
+    if (ev.target && (ev.target.className == "fakeAnchor")) {
+        this._locSelect.popup();        
     }
 
     this.handleLocationOverflow();
@@ -199,7 +219,7 @@ function() {
 ZmTimeSuggestionView.prototype._getNoResultsMessage =
 function() {
     var durationStr = AjxDateUtil.computeDuration(this._duration);
-    return AjxMessageFormat.format(ZmMsg.noSuggestionsFound, [this._startDate, durationStr])
+    return AjxMessageFormat.format(ZmMsg.noSuggestionsFound, [this._startDate, durationStr]);
 };
 
 ZmTimeSuggestionView.prototype.setLoadingHtml =

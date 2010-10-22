@@ -1140,6 +1140,12 @@ function() {
 	for (var j = 1; j < this._schedTable.length; j++) {
 		this._updateBorders(this._schedTable[j]);
 	}
+
+    var graphKeySpacer = document.getElementById(this._htmlElId + '_graphKeySpacer');
+    if(graphKeySpacer) {
+        var size = Dwt.getSize(document.getElementById(this._navToolbarId));
+        Dwt.setSize(graphKeySpacer, size.x - 6, Dwt.DEFAULT);
+    }
 };
 
 /**

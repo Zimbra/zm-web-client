@@ -123,7 +123,6 @@
     </div>
     <div id='${id}_scheduler' style='padding:5px;display: block;'></div>
 	<!-- appointment notes -->
-    <div class="calendar_edit_field"  style='padding:5px;height:10px;'><$= ZmMsg.message $></div>
 	<div id='${id}_notes' style='padding:5px;'></div>
 </template>
 
@@ -646,10 +645,11 @@
 					</table>
 				</td>
 			</tr>
-            </table>            
+            </table>
+
             <table style='padding-left:3px; padding-top: 5px;' border=0 cellpadding=3 cellspacing=0>
                 <tr>
-                    <td><$= ZmMsg.keyLabel $></td>
+                    <td id='${id}_graphKeySpacer'>&nbsp;</td>
                     <td><div class='ZmGraphKeyColorBox ZmScheduler-free'></div></td>
                     <td class='ZmGraphKeyColorText'><$= ZmMsg.free $></td>
                     <td>&nbsp;</td>
