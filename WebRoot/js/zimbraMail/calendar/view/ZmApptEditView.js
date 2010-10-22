@@ -1528,6 +1528,9 @@ function() {
 		for (var i = 0; i < attendees.length; i++) {
             if(attendees[i].getParticipantRole() == ZmCalItem.ROLE_OPTIONAL) {
                 optionalList.push(attendees[i].getAttendeeText(type));                
+            }else if(type == ZmCalBaseItem.LOCATION){
+                var displayName = attendees[i].getAttr(ZmResource.F_locationName);
+			    list.push(displayName || attendees[i].getAttendeeText(type));
             }else {
 			    list.push(attendees[i].getAttendeeText(type));
             }
