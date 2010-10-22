@@ -132,11 +132,11 @@
 <hr size="1"/>
 </c:if>
 <c:if test="${not hideops}"><c:if test="${showInviteReply}"><div class="tbl"><div class="tr"><div class="td">
-            <span class="SmlIcnHldr Check">&nbsp;</span>
+            <span class="${ua.isiPad eq true ? '' : 'SmlIcnHldr Check'}">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="?st=newmail&id=${message.id}&amp;op=accept" class="Action accept"><fmt:message key="replyAccept"/></a> &nbsp;
-            <span class="SmlIcnHldr Question">&nbsp;</span>
+            <span class="${ua.isiPad eq true ? '' : 'SmlIcnHldr Question'}">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPTENT"</c:if> href="?st=newmail&id=${message.id}&amp;op=tentative" class="Action tentative"><fmt:message key="replyTentative"/></a>
-            <span class="SmlIcnHldr Cancel">&nbsp;</span>
+            <span class="${ua.isiPad eq true ? '' : 'SmlIcnHldr Cancel'}">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="?st=newmail&id=${message.id}&amp;op=decline" class="Action decline"><fmt:message key="replyDecline"/></a>
 </div></div></div><hr size="1"/></c:if></c:if>
 <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
