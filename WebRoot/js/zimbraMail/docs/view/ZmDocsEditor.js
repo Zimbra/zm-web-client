@@ -579,12 +579,12 @@ ZmDocsEditor.prototype.insertLinks = function(filenames, files) {
 			insertTarget = space;
 		}
 		var link = this._getIframeDoc().createElement("A");
-        var wAppCtxt = window.opener.appCtxt;        
-        var folder = wAppCtxt.getById(ZmDocsEditApp.fileInfo.folderId);
+        var wAppCtxt = window.opener && window.opener.appCtxt;
+        var folder = wAppCtxt && wAppCtxt.getById(ZmDocsEditApp.fileInfo.folderId);            
         var url = [
-            folder.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(files[i].name)
+            ( folder ? folder.getRestUrl() : "" ), "/", AjxStringUtil.urlComponentEncode(files[i].name)
         ].join("");
-		link.href = url;
+        link.href = url;
         var filename = decodeURI(files[i].name);
 		link.innerHTML = (files[i].linkText)? files[i].linkText : filename;
 		this._insertLink(link, insertTarget, true);
@@ -601,9 +601,13 @@ ZmDocsEditor.prototype._insertImages = function(filenames) {
         url.pop();
         url = url.join("/");
     }else {
-        var wAppCtxt = window.opener.appCtxt;
-        var folder = wAppCtxt.getById(ZmDocsEditApp.fileInfo.folderId);
-        url = folder.getRestUrl();
+        var wAppCtxt = window.opener && window.opener.appCtxt;
+        if(wAppCtxt){
+            var folder = wAppCtxt.getById(ZmDocsEditApp.fileInfo.folderId);
+            url = folder.getRestUrl();
+        }else{
+            url = "";
+        }
     }
 
     for (var i = 0; i < filenames.length; i++) {

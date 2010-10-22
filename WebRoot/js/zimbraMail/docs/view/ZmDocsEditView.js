@@ -93,7 +93,7 @@ function(files, conflicts) {
             if(window.isRestView) {
                 wAppCtxt = top.appCtxt;
             } else {
-                wAppCtxt = window.opener.appCtxt;
+                wAppCtxt = window.opener && window.opener.appCtxt;
             }
             appCtxt.setStatusMsg(ZmMsg.savedDoc, ZmStatusView.LEVEL_INFO);
 
@@ -123,9 +123,9 @@ ZmDocsEditView.prototype.setFooterInfo = function(item){
             if(window.isRestView) {
                wAppCtxt = top.appCtxt;
             } else {
-               wAppCtxt = window.opener.appCtxt;
+               wAppCtxt = window.opener && window.opener.appCtxt;
             }
-            var docs = wAppCtxt.getById(folderId);
+            var docs = wAppCtxt && wAppCtxt.getById(folderId);
             if(!docs) {
                 break;
             }
