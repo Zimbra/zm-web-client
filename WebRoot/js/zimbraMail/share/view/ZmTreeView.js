@@ -185,9 +185,12 @@ function(params) {
 		this.addSeparator();
 	}
 
+    //determine if call is from dialog/picker rather than nav tree
+    var isApp = this._overview && this._overview.isAppOverview;
+
     // TODO: Find a better way to indicate which trees show the share link 
     var addShareLink =
-        appCtxt.get(ZmSetting.SHARING_ENABLED) && 
+        appCtxt.get(ZmSetting.SHARING_ENABLED)  && isApp  &&
         (
             this.type == ZmOrganizer.FOLDER   ||
             this.type == ZmOrganizer.ADDRBOOK ||
