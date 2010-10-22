@@ -36,7 +36,6 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmLinkPropsDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmSharePropsDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmShareSearchDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmRevokeShareDialog");
-AjxPackage.require("zimbraMail.share.view.dialog.ZmMountFolderDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmFindnReplaceDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderNotifyDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmTimezonePicker");

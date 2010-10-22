@@ -36,7 +36,6 @@ ZmBriefcaseTreeController = function(type) {
 
 	this._listeners[ZmOperation.NEW_BRIEFCASE] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_BRIEFCASE] = new AjxListener(this, this._shareBriefcaseListener);
-	this._listeners[ZmOperation.MOUNT_BRIEFCASE] = new AjxListener(this, this._mountBriefcaseListener);
 	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
 	this._eventMgrs = {};
@@ -92,10 +91,6 @@ function(actionMenu, type, id) {
 
             if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
                 isBriefcase = (!isRoot && briefcase.parent.id == rootId);
-                menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_BRIEFCASE);
-                menuItem.setImage(isRoot ? "SharedNotebook" : "SharedSection");
-                menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR));
-
                 menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_BRIEFCASE);
                 menuItem.setText(ZmMsg.shareFolder);
                 menuItem.setImage(isBriefcase ? "SharedMailFolder" : "Section");
@@ -113,7 +108,6 @@ function(actionMenu, type, id) {
 
         // we always enable sharing in case we're in multi-mbox mode
         this._resetButtonPerSetting(actionMenu, ZmOperation.SHARE_BRIEFCASE, appCtxt.get(ZmSetting.SHARING_ENABLED));
-        this._resetButtonPerSetting(actionMenu, ZmOperation.MOUNT_BRIEFCASE, appCtxt.get(ZmSetting.SHARING_ENABLED));
 
 	}
 
@@ -143,9 +137,6 @@ function(organizer, perm) {
 ZmBriefcaseTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_BRIEFCASE];
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-		ops.push(ZmOperation.MOUNT_BRIEFCASE);
-	}
 	ops.push(
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SEP,
@@ -158,10 +149,6 @@ function() {
 ZmBriefcaseTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_BRIEFCASE];
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-		ops.push(ZmOperation.MOUNT_BRIEFCASE);
-	}
-	ops.push(ZmOperation.SEP);
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_BRIEFCASE);
 	}
@@ -206,15 +193,6 @@ function(ev) {
 
 	var sharePropsDialog = appCtxt.getSharePropsDialog();
 	sharePropsDialog.popup(ZmSharePropsDialog.NEW, briefcase, share);
-};
-
-ZmBriefcaseTreeController.prototype._mountBriefcaseListener =
-function(ev) {
-	this._pendingActionData = this._getActionedOrganizer(ev);
-	var briefcase = this._pendingActionData;
-
-	var dialog = appCtxt.getMountFolderDialog();
-	dialog.popup(ZmOrganizer.BRIEFCASE, briefcase.id/*, ...*/);
 };
 
 ZmBriefcaseTreeController.prototype._notifyListeners =

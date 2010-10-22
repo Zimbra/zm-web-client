@@ -31,7 +31,6 @@ ZmTaskTreeController = function() {
 
 	this._listeners[ZmOperation.NEW_TASK_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_TASKFOLDER] = new AjxListener(this, this._shareTaskFolderListener);
-	this._listeners[ZmOperation.MOUNT_TASK_FOLDER] = new AjxListener(this, this._mountTaskFolderListener);
 	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
 	this._eventMgrs = {};
@@ -98,7 +97,6 @@ function(parent, type, id) {
 
 	// we always enable sharing in case we're in multi-mbox mode
 	this._resetButtonPerSetting(parent, ZmOperation.SHARE_TASKFOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
-	this._resetButtonPerSetting(parent, ZmOperation.MOUNT_TASK_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
 
 ZmTaskTreeController.prototype._getAllowedSubTypes =
@@ -119,7 +117,7 @@ ZmTaskTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [
 		ZmOperation.NEW_TASK_FOLDER,
-		ZmOperation.MOUNT_TASK_FOLDER,
+		ZmOperation.BROWSE
 		ZmOperation.BROWSE
 	];
 };
@@ -143,11 +141,6 @@ ZmTaskTreeController.prototype._shareTaskFolderListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
-};
-
-ZmTaskTreeController.prototype._mountTaskFolderListener =
-function(ev) {
-	appCtxt.getMountFolderDialog().popup(ZmOrganizer.TASKS);
 };
 
 ZmTaskTreeController.prototype._deleteListener =

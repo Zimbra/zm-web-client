@@ -697,20 +697,6 @@ function() {
 };
 
 /**
- * Gets the mount folder dialog.
- * 
- * @return	{ZmMountFolderDialog}		the mount folder dialog
- */
-ZmAppCtxt.prototype.getMountFolderDialog =
-function() {
-	if (!this._mountFolderDialog) {
-		AjxDispatcher.require("Share");
-		this._mountFolderDialog = new ZmMountFolderDialog(this._shell);
-	}
-	return this._mountFolderDialog;
-};
-
-/**
  * Gets the timezone picker dialog.
  * 
  * @return	{ZmTimezonePicker}		the timezone picker dialog

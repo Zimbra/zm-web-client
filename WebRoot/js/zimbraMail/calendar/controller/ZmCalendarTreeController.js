@@ -34,7 +34,6 @@ ZmCalendarTreeController = function() {
 	this._listeners[ZmOperation.DETACH_WIN] = new AjxListener(this, this._detachListener);
 	this._listeners[ZmOperation.FREE_BUSY_LINK] = new AjxListener(this, this._freeBusyLinkListener);
 	this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
-	this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
 
 	this._eventMgrs = {};
 };
@@ -183,7 +182,6 @@ function(actionMenu, type, id) {
 
 		// we always enable sharing in case we're in multi-mbox mode
 		this._resetButtonPerSetting(actionMenu, ZmOperation.SHARE_CALENDAR, appCtxt.get(ZmSetting.SHARING_ENABLED));
-		this._resetButtonPerSetting(actionMenu, ZmOperation.MOUNT_CALENDAR, appCtxt.get(ZmSetting.SHARING_ENABLED));
 		this._resetButtonPerSetting(actionMenu, ZmOperation.FREE_BUSY_LINK, appCtxt.getActiveAccount().isZimbraAccount);
 	}
 };
@@ -230,7 +228,6 @@ function(ev){
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_CALENDAR];
-	ops.push(ZmOperation.MOUNT_CALENDAR);
 	ops.push(ZmOperation.CHECK_ALL,
 			ZmOperation.CLEAR_ALL,
 			ZmOperation.BROWSE,
@@ -430,11 +427,6 @@ ZmCalendarTreeController.prototype._shareCalListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
-};
-
-ZmCalendarTreeController.prototype._mountCalListener =
-function(ev) {
-	appCtxt.getMountFolderDialog().popup(ZmOrganizer.CALENDAR);
 };
 
 ZmCalendarTreeController.prototype._deleteListener =
