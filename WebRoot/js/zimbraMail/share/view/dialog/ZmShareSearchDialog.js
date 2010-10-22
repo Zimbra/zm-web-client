@@ -458,7 +458,8 @@ ZmShareSearchDialog.prototype.popup = function(organizerType, addCallback, cance
     var form = this._form;
     form.setValue("FILTER", "");
     form.setValue("EMAIL", "");
-
+    form.setEnabled("SEARCH", false);   //disable search button by default
+    
     this._resetTree();
     this._doGroupSearch();
 
