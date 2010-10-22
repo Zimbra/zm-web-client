@@ -42,7 +42,7 @@
             <c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />
             <zm:logout/>
             <c:if test="${not empty logoutRedirectUrl}" >
-                <c:redirect url="${logoutRedirectUrl}"/>
+            	<c:redirect url="${logoutRedirectUrl}"/>
             </c:if>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && !(empty trimmedUserName) && !(empty param.password)}">
@@ -250,7 +250,14 @@ if (application.getInitParameter("offlineMode") != null)  {
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
-    <link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml,skin.css'>
+    <link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml.css'>
+		<c:param name="skin"	value="${skin}" />
+		<c:param name="v"		value="${version}" />
+		<c:if test="${not empty param.customerDomain}">
+			<c:param name="customerDomain"	value="${param.customerDomain}" />
+		</c:if>	
+	</c:url>">
+	<link  rel="stylesheet" type="text/css" href="<c:url value='/css/skin.css'>
 		<c:param name="skin"	value="${skin}" />
 		<c:param name="v"		value="${version}" />
 		<c:if test="${not empty param.customerDomain}">
@@ -262,177 +269,128 @@ if (application.getInitParameter("offlineMode") != null)  {
         <fmt:message key="favIconUrl" var="favIconUrl"/>
 	</c:if>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
+    
 </head>
 <c:set value="/img" var="iconPath" scope="request"/>
 <body onload="onLoad();">
-<table width="100%" style="height:100%;">
-    <tr>
-        <td align="center" valign="middle">
-            <div id="ZloginPanel" ${smallScreen?'style="width:90%;max-width:500px;"':''}>
-                <table width="100%">
+
+	<div class="LoginScreen">
+		<div class="${smallScreen?'center-small':'center'}">
+			<div class="ImgAltBanner"></div>
+			<h1><a href="http://www.zimbra.com/" id="bannerLink" target="_new">
+				<span class="Img${smallScreen?'App':'Login'}Banner"></span>
+			</a></h1>
+			<!--div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div-->
+            <c:choose>
+                <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL}">
+                    <form method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
+                </c:when>
+                <c:otherwise>
+			        <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
+				    <input type="hidden" name="loginOp" value="login"/>
+                </c:otherwise>
+            </c:choose>
+
+				<c:if test="${errorCode != null}">
+				    <!-- ${fn:escapeXml(error.stackStrace)} -->
+				    <div id="ZloginErrorPanel">
+				        <img alt='<fmt:message key="ALT_ERROR"/>'
+				        	src="<app:imgurl value='dwt/ImgCritical_32.gif'/>"
+				        	style="float:left;margin:-3px 10px 10px 0px;"/>
+				        <c:out value="${errorMessage}"/>
+				        <div style="clear:both;height:0px;"></div>
+				    </div>
+				</c:if>
+            <table class="form">
+                <c:choose>
+                <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL}">
                     <tr>
-                        <td>
-                            <table width="100%">
-                                <tr>
-                                    <td ${!smallScreen?'align="center"':'align="left"'} valign="middle">
-                                        <a href="http://www.zimbra.com/" id="bannerLink" target="_new"><span style="cursor:pointer;display:block;" class="Img${smallScreen?'App':'Login'}Banner"></span></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div id="ZLoginAppName">
-                                            <fmt:message key="${(client eq 'mobile') ? 'splashScreenMobileAppName' : 'splashScreenAppName'}"/>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td id="ZloginBodyContainer">
-                            <c:if test="${errorCode != null}">
-                                <!-- ${fn:escapeXml(error.stackStrace)} -->
-                                <div id="ZloginErrorPanel">
-                                    <table width="100%">
-                                        <tr>
-                                            <td valign="top" width="40">
-                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<app:imgurl value='dwt/ImgCritical_32.gif'/>"/>
-                                            </td>
-                                            <td class="errorText">
-                                                <c:out value="${errorMessage}"/>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </c:if>
-
-                            <div id="ZloginFormPanel">
-                                <c:choose>
-                                    <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL}">
-                                        <form method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
-                                            <div class="LaunchButton">
-                                                <input type="submit" value="<fmt:message key="launch"/>" >
-                                            </div>
-                                    </c:when>
-                                    <c:otherwise>
-                                    <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
-                                    <input type="hidden" name="loginOp" value="login"/>
-                                    <table width="100%" cellpadding="4">
-                                        <tr>
-                                            <td class="zLoginLabelContainer"><label for="username"><fmt:message key="username"/>:</label></td>
-                                            <td colspan="2" class="zLoginFieldContainer">
-                                                <input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="zLoginLabelContainer"><label for="password"><fmt:message key="password"/>:</label></td>
-                                            <td colspan="2" class="zLoginFieldContainer">
-                                                <input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}"/>
-                                            </td>
-                                        </tr>
-                                        <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
-                                           <tr>
-                                               <td class="zLoginLabelContainer"><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
-                                               <td colspan="2" class="zLoginFieldContainer">
-                                                   <input id="loginNewPassword" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}"/>
-                                               </td>
-                                           </tr>
-                                            <tr>
-                                                <td class="zLoginLabelContainer"><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
-                                                <td colspan="2" class="zLoginFieldContainer">
-                                                    <input id="confirmNew" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
-                                                </td>
-                                            </tr>
-                                        </c:if>
-                                        <tr>
-                                            <td class="zLoginLabelContainer" ${smallScreen ? 'colspan=2' : ''}>${!smallScreen ? '</td><td>' : ''}
-                                                <table>
-                                                    <tr>
-                                                        <td><input id="remember" value="1" type="checkbox" name="zrememberme" /></td>
-                                                        <td class="zLoginCheckboxLabelContainer" ${smallScreen?'style="white-space:normal;"':''}><label for="remember"><fmt:message
-                                                                key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label></td>
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                            <td><input type="submit" class="zLoginButton"
-                                                       value="<fmt:message key="login"/>"/></td>
-                                        </tr>
-                                    </table>
-                                    </c:otherwise>
-                                </c:choose>
-                                    <table width="100%">
-                                        <tr>
-                                        	<td align="center">
-                                                <div class="ZLoginSeparator" style="margin-top:0px"></div>
-												<c:choose>
-                                                    <c:when test="${!smallScreen}">
-                                                        <fmt:message key="chooseClient"/>&nbsp;
-												    </c:when>
-                                                    <c:otherwise>
-                                                        <fmt:message key="versionLabel"/>&nbsp;
-                                                    </c:otherwise>
-                                                </c:choose>
-												<select name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
-													<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
-													<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
-													<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
-                                                    <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
-												</select>
-
-												<script TYPE="text/javascript">
-													// show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
-													function clientChange(selectValue) {
-														var useStandard = ${useStandard ? 'true' : 'false'};
-														useStandard = useStandard || (screen && (screen.width <= 800 && screen.height <= 600));
-                                                        var div = document.getElementById("ZLoginUnsupported");
-														div.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
-													}
-												
-													// if they have JS, write out a "what's this?" link that shows the message below
-													function showWhatsThis() {
-                                                        var div = document.getElementById("ZLoginWhatsThis");
-														div.style.display = (div.style.display == "block" ? "none" : "block");
-													}
-													
-													function onLoad() {
-                                                        var loginForm = document.loginForm;
-                                                        if(loginForm.username){
-														    loginForm.username.focus();
-                                                        }
-														clientChange("${zm:cook(client)}");
-													}
-													document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
-												</script>
-											</td>
-										</tr>
-										<tr>
-											<td align="center">
-                                                <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;text-align:left;width:90%;"><fmt:message key="clientWhatsThisMessage"/></div>
-                                                <div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none"><fmt:message key="clientUnsupported"/></div>
-
-                                                <div class="ZLoginSeparator"></div>
-			                                </td>
-                                        </tr>
-										<tr>
-                                            <td id="ZloginClientLevelContainer">
-                                                <fmt:message key="clientLoginNotice"/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td id="ZloginLicenseContainer">
-                                                <fmt:message key="splashScreenCopyright"/>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </form>
+                        <td colspan="2">
+                            <div class="LaunchButton">
+                                <input type="submit" value="<fmt:message key="launch"/>" >
                             </div>
                         </td>
                     </tr>
-                </table>
-            </div>
-        </td>
-    </tr>
+				</c:when>
+                <c:otherwise>
+                    <tr>
+                        <td><label for="username"><fmt:message key="username"/>:</label></td>
+                        <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="password"><fmt:message key="password"/>:</label></td>
+                        <td><input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}"/></td>
+                    </tr>
+                    <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
+                    <tr>
+                        <td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
+                        <td><input id="loginNewPassword" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
+                        <td><input id="confirmNew" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}"/></td>
+                    </tr>
+                    </c:if>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td style="text-align:right">
+                            <input type="submit" class="zLoginButton" value="<fmt:message key="login"/>" style="float:left;"/>
+                            <input id="remember" value="1" type="checkbox" name="zrememberme" />
+                            <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label></td>
+                    </tr>
+				</c:otherwise>
+				</c:choose>
+                    <tr>
+                        <td colspan="2"><hr/></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="client">
+                                <fmt:message key="versionLabel"/>
+                            </label>
+                        </td>
+                        <td>
+							<select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
+								<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
+								<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
+								<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
+							    <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
+							</select>
+<script TYPE="text/javascript">
+	// show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
+	function clientChange(selectValue) {
+		var useStandard = ${useStandard ? 'true' : 'false'};
+		useStandard = useStandard || (screen && (screen.width <= 800 && screen.height <= 600));
+        var div = document.getElementById("ZLoginUnsupported");
+		div.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
+	}
+
+	// if they have JS, write out a "what's this?" link that shows the message below
+	function showWhatsThis() {
+        var div = document.getElementById("ZLoginWhatsThis");
+		div.style.display = (div.style.display == "block" ? "none" : "block");
+	}
+
+    function onLoad() {
+        var loginForm = document.loginForm;
+        if(loginForm.username){
+            loginForm.username.focus();
+        }
+        clientChange("${zm:cook(client)}");
+    }
+	document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
+</script>
+<div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientWhatsThisMessage"/></div>
+<div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
+</td>
+</tr>
 </table>
+<!--div><fmt:message key="clientLoginNotice"/></div-->
+
+<div class="copyright"><fmt:message key="splashScreenCopyright"/></div>
+
+</div>
+</div>                                 
 <script>
   <jsp:include page="/js/skin.js">
     <jsp:param name="templates" value="false" />

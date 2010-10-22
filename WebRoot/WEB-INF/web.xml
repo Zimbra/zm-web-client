@@ -48,7 +48,7 @@
 
   <context-param>
     <param-name>zimbraDefaultSkin</param-name>
-    <param-value>beach</param-value>
+    <param-value>carbon</param-value>
   </context-param>
 
   <context-param>
