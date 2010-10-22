@@ -1345,6 +1345,8 @@ function(params, result) {
 		var email = params.emails[i];
         var usr = this._fbCache.getWorkingHrsSlot(params.startTime, params.endTime, email);
 
+        if(!usr) continue;
+
 		// first clear out the whole row for this email id
 		var sched = this._schedTable[this._emailToIdx[usr.id]];
 		var table = sched ? document.getElementById(sched.dwtTableId) : null;
