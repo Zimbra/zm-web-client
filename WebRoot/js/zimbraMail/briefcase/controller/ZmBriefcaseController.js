@@ -218,7 +218,7 @@ function(parent, num) {
 	var isItemSelected = (num>0);
 	var isZimbraAccount = appCtxt.getActiveAccount().isZimbraAccount;
 	var isMailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
-    var isAdmin = briefcase.isAdmin(); 
+    var isAdmin = briefcase && briefcase.isAdmin(); 
 
     var item = items[0];
     var isRevision = item && item.isRevision;
