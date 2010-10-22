@@ -1119,16 +1119,18 @@ function() {
 			if (slot.data) {
 				var appt = slot.data.appt;
 				var div = document.getElementById(this._getItemId(appt));
-				if (this._scheduleMode) {
-					var cal = this._getColForFolderId(appt.folderId);
-					this._positionAppt(div, cal.allDayX+0, rowY);
-					this._sizeAppt(div, cal.allDayWidth * slot.data.numDays - this._daySepWidth - 1,
-								 ZmCalColView._ALL_DAY_APPT_HEIGHT);
-				 } else {
-					this._positionAppt(div, this._columns[j].allDayX+0, rowY);
-					this._sizeAppt(div, this._columns[j].allDayWidth * slot.data.numDays - this._daySepWidth - 1,
-								 ZmCalColView._ALL_DAY_APPT_HEIGHT);
-				 }
+                if(div) {
+                    if (this._scheduleMode) {
+                        var cal = this._getColForFolderId(appt.folderId);
+                        this._positionAppt(div, cal.allDayX+0, rowY);
+                        this._sizeAppt(div, cal.allDayWidth * slot.data.numDays - this._daySepWidth - 1,
+                                     ZmCalColView._ALL_DAY_APPT_HEIGHT);
+                    } else {
+                        this._positionAppt(div, this._columns[j].allDayX+0, rowY);
+                        this._sizeAppt(div, this._columns[j].allDayWidth * slot.data.numDays - this._daySepWidth - 1,
+                                     ZmCalColView._ALL_DAY_APPT_HEIGHT);
+                    }
+                }
 			}
 		}
 		rowY += ZmCalColView._ALL_DAY_APPT_HEIGHT + ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD;
