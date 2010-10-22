@@ -310,6 +310,8 @@ function(subs, sentBy, sentByAddr) {
 
 	subs.invite = this._invite;
 
+	var isOrganizer = this._invite && this._invite.isOrganizer();
+	
 	// counter proposal
 	if (this._invite.hasCounterMethod() &&
 		this._msg.folderId != ZmFolder.ID_SENT)
@@ -318,8 +320,8 @@ function(subs, sentBy, sentByAddr) {
 		subs.newProposedTime = this._invite.getProposedTimeStr();
 	}
 	// if this an action'ed invite, show the status banner
-	else if (this._invite.hasAttendeeResponse()) {
-        AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	else if (isOrganizer && this._invite.hasAttendeeResponse()) {
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		var attendee = this._invite.getAttendees()[0];
 		var ptst = attendee && attendee.ptst;
 		if (ptst) {
@@ -339,11 +341,11 @@ function(subs, sentBy, sentByAddr) {
 					subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgTentative, [dispName]);
 					subs.ptstClassName = "InviteStatusTentative";
 					break;
-			}            
+			}
 		}
 	}
 
-    if(this._invite && this._invite.hasAttendeeResponse() && this._invite.getAppointmentId()){
+    if (isOrganizer && this._invite && this._invite.hasAttendeeResponse() && this._invite.getAppointmentId()){
         // set an Id for adding more detailed info later
         subs.ptstId = this._ptstId = (this.parent._htmlElId + "_ptst");
     }
