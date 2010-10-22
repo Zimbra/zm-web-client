@@ -232,7 +232,7 @@
 </template>
 
 <template id="share.Widgets#ZmShareSearchView">
-    <div class="FilterTree">
+    <div class="FilterTree" style="width:300px;">
         <div id="${id}_FILTER" tabindex="100"></div>
         <div id="${id}_TREE" tabindex="200"></div>
     </div>
