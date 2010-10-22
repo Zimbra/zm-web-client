@@ -371,6 +371,10 @@ BODY						{	margin:0px; 				}
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,50)@')"; /* IE8 */
 }
 
+.ZAlert .ZAppTabBorder {
+    background-image: none;
+}
+
 .ZAppTabBorder .ZLeftIcon 		{	padding-left:5px;			}
 .ZAppTabBorder .ZWidgetTitle 	{	padding-right:10px;			}
 
