@@ -185,7 +185,8 @@ function() {
 	// check for required subject
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
 
-	if (subj && subj.length) {
+    //bug: 49990 subject can be empty while proposing new time
+	if ((subj && subj.length) || this._isProposeTime) {
 		var allDay = this._allDayCheckbox.checked;
 		if (!ZmTimeInput.validStartEnd(this._startDateField, this._endDateField, (allDay ? null : this._startTimeSelect), (allDay ? null : this._endTimeSelect))) {
 				errorMsg = ZmMsg.errorInvalidDates;
