@@ -687,15 +687,15 @@ function(compNum, emptyAllDay, startOnly, isText, startDate, endDate) {
 		return AjxDateFormat.getDateInstance(AjxDateFormat.FULL).format(sd);
 	}
 
-	var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
-	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+    var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
+    var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 
-	var a = [dateFormatter.format(sd), isText ? " " : "<br>"];
-	if (startOnly) {
-		a.push(timeFormatter.format(sd));
+    var a = sd ? [dateFormatter.format(sd), isText ? " " : "<br>"] : [];
+    if (startOnly) {
+        a.push(sd ? timeFormatter.format(sd) : "");
 	}
 	else {
-		var startHour = timeFormatter.format(sd);
+        var startHour = sd ? timeFormatter.format(sd) : "";
 		var endHour = timeFormatter.format(ed);
 
 		if (!ZmInvite._hoursFormatter) {
