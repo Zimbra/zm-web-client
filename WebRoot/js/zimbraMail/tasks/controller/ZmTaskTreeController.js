@@ -118,7 +118,6 @@ function() {
 	return [
 		ZmOperation.NEW_TASK_FOLDER,
 		ZmOperation.BROWSE
-		ZmOperation.BROWSE
 	];
 };
 
