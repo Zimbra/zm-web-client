@@ -297,6 +297,18 @@ function() {
 		this._origFormValueMinusReminder = newMode ? "" : this._formValue(false, true);
 		this._origReminderValue = this._reminderSelectInput.getValue();
 	}
+    this._keyInfoValue = newMode ? "" : this._keyValue();
+};
+
+/**
+ * Checks if location/time/recurrence only are changed.
+ *
+ * @return	{Boolean}	<code>true</code> if location/time/recurrence only are changed
+ */
+ZmApptEditView.prototype.isKeyInfoChanged =
+function() {
+	var formValue = this._keyInfoValue;
+	return (this._keyValue() != formValue);
 };
 
 ZmApptEditView.prototype._getClone =
@@ -321,6 +333,8 @@ ZmApptEditView.prototype._populateForSave =
 function(calItem) {
 
     ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
+
+    if(this.isOrganizer() && this.isKeyInfoChanged()) this.resetParticipantStatus();
 
     //Handle Persona's
     var identity = this.getIdentity();
@@ -1469,6 +1483,29 @@ function(excludeAttendees, excludeReminder) {
 	return str;
 };
 
+ZmApptEditView.prototype._keyValue =
+function() {
+	var vals = [];
+	vals.push(this._attInputField[ZmCalBaseItem.LOCATION].getValue());
+	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.LOCATION].getArray(), ZmCalBaseItem.LOCATION));
+	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+    startDate = this._startTimeSelect.getValue(startDate);
+	endDate = this._endTimeSelect.getValue(endDate);
+	vals.push(
+		AjxDateUtil.getServerDateTime(startDate),
+		AjxDateUtil.getServerDateTime(endDate)
+	);
+	vals.push("" + this._allDayCheckbox.checked);
+	if (Dwt.getDisplay(this._tzoneSelectStart.getHtmlElement()) != Dwt.DISPLAY_NONE) {
+		vals.push(this._tzoneSelectStart.getValue());
+		vals.push(this._tzoneSelectEnd.getValue());
+    }
+	vals.push(this._repeatSelect.getValue());
+	var str = vals.join("|");
+	str = str.replace(/\|+/, "|");
+	return str;
+};
 
 // Listeners
 
@@ -1603,6 +1640,15 @@ function(attendees, role) {
     for (var i = 0; i < personalAttendees.length; i++) {
         var attendee = personalAttendees[i];
         if(attendee) attendee.setParticipantRole(role);
+    }
+};
+
+ZmApptEditView.prototype.resetParticipantStatus =
+function() {
+    var personalAttendees = this._attendees[ZmCalBaseItem.PERSON].getArray();
+    for (var i = 0; i < personalAttendees.length; i++) {
+        var attendee = personalAttendees[i];
+        if(attendee) attendee.setParticipantStatus(ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
     }
 };
 
