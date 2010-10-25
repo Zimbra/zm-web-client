@@ -521,7 +521,7 @@ ZmTimeInput.prototype._scrollToValue =
 function(str) {
     var index = this.getTimeIndex(str);
     if (index !== null)
-        this._hoursSelectMenu.scrollToIndex(index);
+        this._hoursSelectMenu.setSelectedItem(index);
 };
 
 /**
