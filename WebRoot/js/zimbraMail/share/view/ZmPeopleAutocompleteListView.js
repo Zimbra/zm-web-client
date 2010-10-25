@@ -24,6 +24,9 @@ ZmPeopleAutocompleteListView = function(params) {
 	this.addClassName("ZmPeopleAutocompleteListView");
 	this.setScrollStyle(DwtControl.CLIP);
 	this._outsideListener = new AjxListener(null, ZmPeopleAutocompleteListView._outsideMouseDownListener);
+    //fix for bug 52224
+    // TODO: Why is this required?
+    AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 };
 
 ZmPeopleAutocompleteListView.prototype = new ZmAutocompleteListView;
