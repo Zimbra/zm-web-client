@@ -177,14 +177,15 @@ FORM {
 	border-radius: 10px;
 }
 .LoginScreen #ZLoginWhatsThis {
+	margin-left:-10em;
 	position:absolute;
-	border:2px solid @lighten(AltC,53)@;
-	background-color: #ffffff;	
+	width:40em;
 }
 .LoginScreen .ZLoginInfoMessage {
+	background-color: @lighten(AltC,53)@;	
+	border:1px solid @lighten(AltC,25)@;
+	padding:3px;
 	text-align:left;
-	width:40em;
-	margin-left:-10em;
 }
 .LoginScreen #login {
 	float:right;
