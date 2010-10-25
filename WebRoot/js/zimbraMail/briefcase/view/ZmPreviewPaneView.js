@@ -582,6 +582,7 @@ function(item){
         return;
     }
 
+    this._oldItem = this._previewItem;
     this._previewItem = item;
     this.enablePreview(true);
     this._setHeader(item);
@@ -608,7 +609,14 @@ function(){
     var html = [
         "<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;'>",ZmMsg.generatingPreview,"</div>"
     ].join('');
-    this._iframePreview.setIframeContent(html);
+    try{
+        this._iframePreview.setIframeContent(html);
+    }catch(ex){
+        //At times the previous item is not loaded or in the process of loading, causes iframe.body to be null.
+        DBG.println("ZmPreviewView#_setupLoading");
+        DBG.println("New Item:"+ this._previewItem.name );
+		DBG.println("&nbsp;&nbsp;"+ex);
+    }
 };
 
 ZmPreviewView.prototype._resetIframeHeight =
