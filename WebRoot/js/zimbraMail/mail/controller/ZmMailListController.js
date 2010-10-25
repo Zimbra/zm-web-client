@@ -1737,3 +1737,18 @@ function(which, type, noBump) {
 };
 
 ZmMailListController.prototype._getNextItemToSelect = function() {};
+
+ZmMailListController.prototype.addTrustedAddr =
+function(addr, callback, errorCallback) {
+   var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+   var node = soapDoc.set("pref", addr);
+   node.setAttribute("name", "zimbraPrefMailTrustedSenderList");
+
+   return appCtxt.getAppController().sendRequest({
+       soapDoc: soapDoc,
+       asyncMode: true,
+       callback: callback,
+       errorCallback: errorCallback
+   });
+};
+
