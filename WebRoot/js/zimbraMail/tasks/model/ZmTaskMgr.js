@@ -62,8 +62,8 @@ function(params) {
 		return apptVec;
 	}
 
-	// this array will hold a list of appts as we collect them from the server
-	this._rawAppts = [];
+	// this array will hold a list of tasks as we collect them from the server
+	this._rawTasks = [];
 
 	if (params.callback) {
 		this._search(params);
@@ -136,8 +136,8 @@ ZmTaskMgr.prototype._setSoapParams =
 function(request, params) {
 	request.sortBy = "none";
 	request.limit = "500";
-	request.calExpandInstStart = params.start;
-	request.calExpandInstEnd = params.end;
+	//request.calExpandInstStart = params.start;
+	//request.calExpandInstEnd = params.end;
 	request.types = ZmSearch.TYPE[ZmItem.TASK];
 	request.offset = params.offset;
 
@@ -182,14 +182,14 @@ ZmTaskMgr.prototype.processSearchResponse =
 function(searchResp, params) {
 	if(!searchResp) { return; }
 
-	if (searchResp && searchResp.appt && searchResp.appt.length) {
-		this._rawAppts = this._rawAppts != null
-			? this._rawAppts.concat(searchResp.appt)
-			: searchResp.appt;
+	if (searchResp && searchResp.task && searchResp.task.length) {
+		this._rawTasks = this._rawTasks != null
+			? this._rawTasks.concat(searchResp.task)
+			: searchResp.task;
 
 		// if "more" flag set, keep requesting more appts
 		if (searchResp.more) {
-			var lastAppt = searchResp.appt[searchResp.appt.length-1];
+			var lastAppt = searchResp.task[searchResp.task.length-1];
 			if (lastAppt) {
 				params.offset += 500;
 				this._search(params);
@@ -199,20 +199,20 @@ function(searchResp, params) {
 	}
 
 	var newList = new AjxVector();
-	if (this._rawAppts && this._rawAppts.length) {
+	if (this._rawTasks && this._rawTasks.length) {
 		this._list = new ZmList(ZmItem.TASK);
-		for (var i = 0; i < this._rawAppts.length; i++) {
-			DBG.println(AjxDebug.DBG2, "appt[j]:" + this._rawAppts[i].name);
-			var apptNode = this._rawAppts[i];
-			var instances = apptNode ? apptNode.inst : null;
-			if (instances) {
+		for (var i = 0; i < this._rawTasks.length; i++) {
+			DBG.println(AjxDebug.DBG2, "task[j]:" + this._rawTasks[i].name);
+			var taskNode = this._rawTasks[i];
+			//var instances = taskNode ? taskNode.inst : null;
+			//if (instances) {
 				var args = {list:this._list};
-				for (var j = 0; j < instances.length; j++) {
-					var appt = ZmCalBaseItem.createFromDom(apptNode, args, instances[j]);
-					DBG.println(AjxDebug.DBG2, "lite appt :" + appt);
-					if (appt) newList.add(appt);
-				}
-			}
+				//for (var j = 0; j < instances.length; j++) {
+					var task = ZmTask.createFromDom(taskNode, args, null);
+					DBG.println(AjxDebug.DBG2, "lite task :" + task);
+					if (task) newList.add(task);
+				//}
+			//}
 		}
 
 	}
@@ -222,7 +222,7 @@ function(searchResp, params) {
 ZmTaskMgr.prototype.getCalendarName =
 function(folderId) {
 	var app = appCtxt.getApp(ZmApp.TASKS);
-	return app.getCalendarName(folderId);
+	return app.getTaskFolderName(folderId);
 };
 
 

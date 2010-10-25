@@ -395,8 +395,8 @@ function(localOnly) {
 		this._folderNames = {};
 		for (var i = 0; i < this._deferredFolders.length; i++) {
 			var params = this._deferredFolders[i];
-			var str = (params && params.obj && params.obj.f) ? params.obj.f : "";
-			if (str && (str.indexOf(ZmOrganizer.FLAG_CHECKED) != -1)) {
+			//var str = (params && params.obj && params.obj.f) ? params.obj.f : "";
+			//if (str && (str.indexOf(ZmOrganizer.FLAG_CHECKED) != -1)) {
 				if (localOnly && params.obj.zid != null) {
 					continue;
 				}
@@ -405,8 +405,37 @@ function(localOnly) {
 				// and calendar name is required. example: calendar name
 				// requirement in reminder module
 				this._folderNames[params.obj.id] = params.obj.name;
-			}
+			//}
 		}
 	}
 	return folderIds;
+};
+
+/**
+ * Gets the name of the calendar with specified id.
+ *
+ * @param	{String}	id		the id of the task
+ * @return	{String}	the name
+ */
+ZmTasksApp.prototype.getTaskFolderName =
+function(id) {
+	return appCtxt.getById(id) ? appCtxt.getById(id).name : this._folderNames[id];
+};
+
+
+/**
+ * Gets the reminder controller.
+ *
+ * @return	{ZmReminderController}	the controller
+ */
+ZmTasksApp.prototype.getReminderController =
+function() {
+	if (!this._reminderController) {
+		AjxDispatcher.require("TasksCore");
+		var taskMgr = appCtxt.getTaskManager();
+		this._reminderController = taskMgr.getReminderController();
+        this._reminderController._calController = taskMgr;
+		this._reminderController.refresh();
+	}
+	return this._reminderController;
 };

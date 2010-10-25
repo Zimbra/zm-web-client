@@ -937,14 +937,14 @@ function(localOnly) {
             if (appCtxt.multiAccounts) {
                 var overviews = this._app.getOverviewContainer().getOverviews();
                 for (var i in overviews) {
-                    cc = cc.concat(this._taskTreeController.getTaskFolders(i));
+                    cc = cc.concat(this._taskTreeController.getTaskFolders(i, false));
                 }
             } else {
                 // bug fix #25512 - avoid race condition
                 if (!this._app._overviewPanelContent) {
                     this._app.setOverviewPanelContent(true);
                 }
-                cc = this._taskTreeController.getTaskFolders(this._app.getOverviewId());
+                cc = this._taskTreeController.getTaskFolders(this._app.getOverviewId(), false);
             }
         } else {
             this._app._createDeferredFolders(ZmApp.TASKS);
@@ -955,8 +955,7 @@ function(localOnly) {
 
                 var tasks = appCtxt.getFolderTree(acct).getByType(ZmOrganizer.TASKS);
                 for (var j = 0; j < tasks.length; j++) {
-                    // bug: 43067: skip the default calendar for caldav based accounts
-                    if (acct.isCalDavBased() && tasks[j].nId == ZmOrganizer.ID_TASKS) {
+                    if (tasks[j].nId == ZmOrganizer.ID_TASKS) {
                         continue;
                     }
                     cc.push(tasks[j]);

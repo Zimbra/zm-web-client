@@ -309,13 +309,23 @@ function(node, instNode) {
 			this.endDate.setHours(0,0,0);
 		}
 	}
-    //bug: 47394 if no duration then startDate is null
-    if(!node.dur) {
+
+    var dur = this._getAttr(node, comp, "dur");
+	if (dur) {
+		var startTime = this.endDate.getTime() - (parseInt(dur));
+		this.startDate = new Date(startTime);
+        this.uniqStartTime = this.startDate.getTime();
+	} else if(!node.dur) { //bug: 47394 if no duration then startDate is null
         this.startDate = null;
     }
-    
+
     if(node.alarm) this.alarm = node.alarm;
-    
+    if(node.alarmData) this.alarmData = this._getAttr(node, instNode, "alarmData");
+
+    this.allDayEvent	= (instNode ? instNode.allDay : null || node.allDay)  ? "1" : "0";
+
+    this.tzo = 0;
+
 	if (node.name || comp)				this.name		= this._getAttr(node, comp, "name");
 	if (node.loc || comp)				this.location	= this._getAttr(node, comp, "loc");
 	if (node.allDay || comp)			this.setAllDayEvent(this._getAttr(node, comp, "allDay"));
@@ -329,6 +339,29 @@ function(node, instNode) {
 
 	if (node.f)	this._parseFlags(node.f);
 	if (node.t)	this._parseTags(node.t);
+
+    this.type = ZmItem.TASK;
+};
+
+/**
+ * Checks if alarm is in range (based on current time).
+ *
+ * @return	{Boolean}	<code>true</code> if the alarm is in range
+ */
+ZmTask.prototype.isAlarmInRange =
+function() {
+	if (!this.alarmData) { return false; }
+
+	var alarmData = this.alarmData[0];
+
+	if (!alarmData) { return false; }
+
+    this._nextAlarmTime = this.adjustMS(alarmData.nextAlarm, 0);
+    this._alarmInstStart = this.adjustMS(alarmData.alarmInstStart, this.tzo);
+
+	var currentTime = (new Date()).getTime();
+ 
+    return this._nextAlarmTime <= currentTime;
 };
 
 /**

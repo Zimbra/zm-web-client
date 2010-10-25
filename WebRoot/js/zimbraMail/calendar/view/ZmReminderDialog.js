@@ -39,9 +39,13 @@ ZmReminderDialog = function(parent, reminderController, calController) {
 	this._reminderController = reminderController;
 	this._calController = calController;
 
-	this.setContent(this._contentHtml(selectId));
-	this.setTitle(ZmMsg.apptReminders);
-	this.registerCallback(ZmReminderDialog.SNOOZE_BUTTON, this._handleSnoozeButton, this);
+    this.setContent(this._contentHtml(selectId));
+    if(this._calController instanceof ZmTaskMgr) {
+        this.setTitle(ZmMsg.taskReminder);
+    } else {
+        this.setTitle(ZmMsg.appointmentReminder);
+    }
+    this.registerCallback(ZmReminderDialog.SNOOZE_BUTTON, this._handleSnoozeButton, this);
 	this.registerCallback(ZmReminderDialog.DISMISS_ALL_BUTTON, this._handleDismissAllButton, this);
 };
 
@@ -70,7 +74,7 @@ function() {
 
     if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_BROWSER)) {
         AjxPackage.require("Alert");
-        ZmBrowserAlert.getInstance().start(ZmMsg.appointmentReminder);
+        ZmBrowserAlert.getInstance().start(ZmMsg.reminders);
     }
 
     if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_SOUNDS)) {
@@ -88,7 +92,7 @@ function() {
             var delta = this._formatDeltaString(this._computeDelta(appt));
             var text = [appt.getName(), ", ", this._getDurationText(appt), "\n(", delta, ")"].join("");
             if (AjxEnv.isMac) {
-                ZmDesktopAlert.getInstance().start(ZmMsg.appointmentReminder, text);
+                ZmDesktopAlert.getInstance().start(ZmMsg.reminders, text);
             } else if (AjxEnv.isWindows) {
                 winText.push(text);
             }
@@ -98,7 +102,7 @@ function() {
             if (appts.length > 5) {
                 winText.push(ZmMsg.andMore);
             }
-            ZmDesktopAlert.getInstance().start(ZmMsg.appointmentReminder, winText.join("\n"), 5);
+            ZmDesktopAlert.getInstance().start(ZmMsg.reminders, winText.join("\n"), 5);
         }
     }    
 };
@@ -201,8 +205,9 @@ function(html, idx, appt, data, needSep) {
 	data.deltaId = Dwt.getNextId();
 	data.rowId = Dwt.getNextId();
 
-	var calName = (appt.folderId != ZmOrganizer.ID_CALENDAR && this._calController)
+	var calName = (appt.folderId != ZmOrganizer.ID_CALENDAR && appt.folderId != ZmOrganizer.ID_TASKS && this._calController)
 		? this._calController.getCalendarName(appt.folderId) : null;
+
 
 	var calendar = appCtxt.getById(appt.folderId);
 
@@ -218,7 +223,8 @@ function(html, idx, appt, data, needSep) {
 		durationText: (AjxStringUtil.trim(this._getDurationText(appt))),
 		deltaId: data.deltaId,
 		openBtnId: data.openBtnId,
-		dismissBtnId: data.dismissBtnId
+		dismissBtnId: data.dismissBtnId,
+        type: appt.type ? appt.type : ZmItem.APPT
 	};
 	html[idx++] = AjxTemplate.expand("calendar.Calendar#ReminderDialogRow", params);
 	return idx;
@@ -233,7 +239,8 @@ function(ev) {
 	var obj = DwtControl.getTargetControl(ev);
 	var data = this._apptData[obj.apptUid];
 	var appt = data ? data.appt : null;
-	if (appt) {
+    var type = appt.type ? appt.type : ZmItem.APPT;
+	if (appt && type == ZmItem.APPT) {
 		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 
 		var cc = AjxDispatcher.run("GetCalController");
@@ -247,7 +254,21 @@ function(ev) {
 		}
 		var callback = new AjxCallback(cc, cc._showAppointmentDetails, newAppt);
 		newAppt.getDetails(null, callback, null, null, true);
-	}
+	} else if(appt && type == ZmItem.TASK) {
+        AjxDispatcher.require(["TasksCore", "Tasks"]);
+
+		var tlc = AjxDispatcher.run("GetTaskListController");
+
+		// the give appt object is a ZmCalBaseItem. We need a ZmAppt
+		var newTask = new ZmTask();
+		for (var i in appt) {
+			if (!AjxUtil.isFunction(appt[i])) {
+				newTask[i] = appt[i];
+			}
+		}
+		var callback = new AjxCallback(tlc, tlc._editTask, newTask);
+		newTask.getDetails(null, callback, null, null, true);
+    }
 };
 
 ZmReminderDialog.prototype._dismissButtonListener =

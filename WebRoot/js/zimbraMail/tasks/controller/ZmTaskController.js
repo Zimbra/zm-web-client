@@ -75,6 +75,9 @@ function(calItem) {
     calItem.cache();
 
 	appCtxt.setStatusMsg(ZmMsg.taskSaved);
+    if(calItem.alarm == true) {
+        this._app.getReminderController().refresh();
+    }    
 };
 
 ZmTaskController.prototype._createComposeView =

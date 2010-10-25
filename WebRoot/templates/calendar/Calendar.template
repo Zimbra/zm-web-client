@@ -192,7 +192,11 @@
 			<$ } $>
 
 			<$ if (data.calName) { $>
-				<$= ZmMsg.calendarLabel $> ${calName}<br>
+				<$ if(data.type == ZmItem.APPT) { $>
+				    <$= ZmMsg.calendarLabel $> ${calName}<br>
+				<$ } else if (data.type == ZmItem.TASK) { $>
+                    <$= ZmMsg.tasks $>: ${calName}<br>
+				<$ } $>     
 			<$ } $>
 
 			<$ if (data.accountName) { $>

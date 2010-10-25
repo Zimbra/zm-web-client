@@ -169,3 +169,58 @@ ZmTaskTreeController.prototype._itemClicked =
 function(folder) {
 	appCtxt.getApp(ZmApp.TASKS).search(folder);
 };
+
+/**
+ * Gets the task Folders.
+ *
+ * @param	{String}	overviewId		the overview id
+ * @param   {boolean}   includeTrash    True to include trash, if checked.
+ * @return	{Array}		an array of {@link ZmCalendar} objects
+ */
+ZmTaskTreeController.prototype.getTaskFolders =
+function(overviewId, includeTrash) {
+	var tasks = [];
+	var items = this._getItems(overviewId);
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		if (item._isSeparator) { continue; }
+		var task = item.getData(Dwt.KEY_OBJECT);
+        if (task && task.id == ZmOrganizer.ID_TRASH && !includeTrash && task.type) continue;
+		if (task) tasks.push(task);
+	}
+
+	return tasks;
+};
+
+
+ZmTaskTreeController.prototype._getItems =
+function(overviewId) {
+	var treeView = this.getTreeView(overviewId);
+	if (treeView) {
+		var account = appCtxt.multiAccounts ? treeView._overview.account : null;
+		if (!appCtxt.get(ZmSetting.TASKS_ENABLED, null, account)) { return []; }
+
+		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, account);
+		var root = treeView.getTreeItemById(rootId);
+		if (root) {
+			var totalItems = [];
+			this._getSubItems(root, totalItems);
+			return totalItems;
+		}
+	}
+	return [];
+};
+
+ZmTaskTreeController.prototype._getSubItems =
+function(root, totalItems) {
+	if (!root || (root && root._isSeparator)) { return; }
+
+	var items = root.getItems();
+	for (var i in items) {
+		var item = items[i];
+		if (item && !item._isSeparator) {
+			totalItems.push(item);
+			this._getSubItems(item, totalItems);
+		}
+	}
+};
