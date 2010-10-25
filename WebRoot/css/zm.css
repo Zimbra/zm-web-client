@@ -1292,6 +1292,10 @@ line-height:normal;
 	@BottomSeparator@
 }
 
+.calendar_edit_notes_separator {
+	@TopSeparator@
+}
+
 .calendar_edit_field {
     font-weight: bold;
 }
