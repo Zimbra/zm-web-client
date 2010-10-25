@@ -1318,6 +1318,23 @@ function(draftType, msg, resp) {
 			}
 		}
 	}
+
+	if (isScheduled) {
+		if (appCtxt.isChildWindow) {
+			var pAppCtxt = window.parentAppCtxt;
+			if(pAppCtxt.getAppViewMgr().getAppView(ZmApp.MAIL)) {
+				var listController = pAppCtxt.getApp(ZmApp.MAIL).getMailListController();
+				if (listController && listController._draftSaved) {
+					//Pass the mail response to the parent window such that the ZmMailMsg obj is created in the parent window.
+					listController._draftSaved(null, resp.m[0]);
+				}
+			}
+		} else {
+			if (this._listController && this._listController._draftSaved) {
+				this._listController._draftSaved(msg);
+			}
+		}
+	}
 };
 
 
