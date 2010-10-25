@@ -118,7 +118,7 @@ function(msg, ex, noExecReset, hideReportButton) {
 
 ZmController.handleScriptError =
 function(ex) {
-	var ctlr = appCtxt.getAppController();
+
 	var msg = ZmMsg.scriptError + ": " + ex.message;
 	var m = ex.fileName && ex.fileName.match(/(\w+\.js)/);
 	if (m && m.length) {
@@ -126,7 +126,7 @@ function(ex) {
 	}
 	var text = "File: " + ex.fileName + "<br>Line: " + ex.lineNumber + "<br>Error: " + ex.name +
 			   "<br>Stack: " + ex.stack.replace("\n", "<br>", "g");
-	ctlr.popupErrorDialog(msg, text);
+	appCtxt.getAppController().popupErrorDialog(msg, text);
 };
 
 /**
@@ -530,8 +530,13 @@ function(ex, continuation) {
 		} else if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
 			args = ex.data.name;
 		}
-		var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
-		this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
+		if (ex.lineNumber && !ex.detail) {
+			// JS error that was caught before our JS-specific handler got it
+			ZmController.handleScriptError(ex);
+		} else {
+			var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
+			this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
+		}
 	}
 };
 
