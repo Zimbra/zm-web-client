@@ -71,9 +71,14 @@ function(list) {
 			fullName: contact.getFullName(),
 			title: contact.getAttr(ZmContact.F_jobTitle),
 			email: contact.getEmail(),
-            phone: contact.getAttr(ZmContact.F_workPhone)
+            phone: contact.getAttr(ZmContact.F_workPhone),
+            photoFileName: contact.getAttr("photoFileName")
 		};
+
+        // zimlet support
+        appCtxt.notifyZimlets("onPeopleSearchData", [data]);
         
+
 		var rowHtml = AjxTemplate.expand("share.Widgets#ZmPeopleAutocompleteListView", data);
 
         var row = Dwt.parseHtmlFragment(rowHtml, true);
