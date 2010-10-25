@@ -703,6 +703,10 @@
 	@BoxPadding@
 }
 
+/* Outer container for the confirmation dialog */
+.DwtConfirmDialog {
+	max-width: 400px;
+}
 
 /* Font for confirmation dialogs ('Are you sure you want to delete?') */
 .DwtConfirmDialogQuestion {
