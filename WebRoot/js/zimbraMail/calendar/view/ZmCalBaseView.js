@@ -601,7 +601,7 @@ function(refresh) {
 
 ZmCalBaseView.prototype._getItemId =
 function(item) {
-	return item ? DwtId.getListViewItemId(DwtId.WIDGET_ITEM, this.view, item.getUniqueId()) : null;
+	return item ? (this._htmlElId + DwtId.SEP + DwtId.getListViewItemId(DwtId.WIDGET_ITEM, this.view, item.getUniqueId())) : null;
 };
 
 ZmCalBaseView.prototype.addTimeSelectionListener = 
