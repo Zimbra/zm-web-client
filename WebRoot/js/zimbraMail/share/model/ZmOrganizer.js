@@ -1790,9 +1790,8 @@ function(params, actionLogItem, result) {
 		var actionController = appCtxt.getActionController();
 		var summary = ZmOrganizer.getActionSummary(params.actionText, params.numItems || 1, this.type, params.actionArg);
 		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
-		var dismissLink = actionController && actionController.getDismissLink() || "";
 		if (undoLink && actionController) {
-			appCtxt.setStatusMsg({msg: summary+undoLink+dismissLink, transitions: actionController.getStatusTransitions()});
+			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: actionController.getStatusTransitions()});
 		} else {
 			appCtxt.setStatusMsg(summary);
 		}

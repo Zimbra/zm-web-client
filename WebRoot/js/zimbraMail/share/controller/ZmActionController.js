@@ -66,11 +66,6 @@ ZmActionController.prototype.getUndoLink = function(actionElement, text) {
 	} else return ""; // We can't risk displaying "null" or "undefined" wherever this function is called from, and an empty string is just as falsy
 };
 
-ZmActionController.prototype.getDismissLink = function() {
-	var style = "vertical-align: middle; display: inline-block; cursor: pointer; margin-right: 4px;";
-	return ["<a onclick='appCtxt.dismissStatusMsg()' href='javascript:;' class='undo'>", AjxImg.getImageHtml("Close", style), ZmMsg.close, "</a>"].join("");
-};
-
 ZmActionController.prototype.getStatusTransitions = function() {
 	return this._statusTransitions;
 };
