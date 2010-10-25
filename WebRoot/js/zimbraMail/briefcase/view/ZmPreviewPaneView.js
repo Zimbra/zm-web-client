@@ -355,7 +355,7 @@ function(ev){
     var item = ev.item, handled = false;
     if(ev.field == ZmItem.F_EXPAND && this._detailListView._isExpandable(item)){
         this._detailListView.expandItem(item);   
-    }else if(this._controller.isReadingPaneOn() && !item.isFolder){
+    }else if(this._controller.isReadingPaneOn() && item && !item.isFolder){
         this._previewView.set(item);
     }
 };
