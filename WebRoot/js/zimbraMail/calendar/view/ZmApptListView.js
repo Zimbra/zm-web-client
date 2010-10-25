@@ -97,6 +97,7 @@ ZmApptListView.prototype._getHeaderToolTip = function(field, itemIdx) {
 		case ZmItem.F_LOCATION: return ZmMsg.location;
 		case ZmItem.F_FOLDER:	return ZmMsg.calendar;
 		case ZmItem.F_DATE:		return ZmMsg.date;
+        case ZmItem.F_RECURRENCE:return ZmMsg.recurrence;       
 	}
 	return ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx);
 };
