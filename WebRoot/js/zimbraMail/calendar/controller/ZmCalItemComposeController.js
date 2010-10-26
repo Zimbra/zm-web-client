@@ -324,6 +324,11 @@ function(mode) {
         saveButton.setVisible(true);
         saveButton.setText(ZmMsg.save);
         saveButton.setImage("Save");
+
+        //change cancel button's text/icon to close
+        var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
+        cancelButton.setText(ZmMsg.close);
+		cancelButton.setImage("Close");
     }
 
     if((this._mode == ZmCalItem.MODE_PROPOSE_TIME) || ZmCalItem.FORWARD_MAPPING[this._mode]) {
