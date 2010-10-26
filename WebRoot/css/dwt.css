@@ -524,6 +524,11 @@
 	@FullSize@
 }
 
+
+.ZmContactSearchListView .DwtListView-Rows {
+    height: 276px;
+}
+
 /* ??? SHOTGUN */
 .DwtListView-Rows td {
 	@Text@
