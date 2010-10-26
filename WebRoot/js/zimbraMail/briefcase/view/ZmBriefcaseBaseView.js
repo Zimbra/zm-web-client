@@ -145,7 +145,7 @@ function() {
          }
    }
    return files;
-}
+};
 
 ZmBriefcaseBaseView.prototype.getListView =
 function(){
@@ -203,7 +203,7 @@ function(list, sortField, doNotIncludeFolders){
 ZmBriefcaseBaseView.prototype.renameFile =
 function(item){
     //TODO: Make rename field singleton across briefcase views
-    var fileNameEl = this._getFieldId(item, ZmItem.F_SUBJECT);
+    var fileNameEl = this._getFieldId(item, ZmItem.F_NAME);
     fileNameEl = document.getElementById(fileNameEl);
     var fileNameBounds = Dwt.getBounds(fileNameEl);
 

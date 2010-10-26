@@ -109,11 +109,11 @@ function(parent) {
         headers.push(
                 new DwtListHeaderItem({field:ZmItem.F_LOCK, icon: "PadLock", width:ZmDetailListView.COLWIDTH_ICON}),
                 new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"GenericDoc", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.icon}),
-                new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg._name, sortable:ZmItem.F_SUBJECT}),
+                new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, sortable:ZmItem.F_NAME}),
                 new DwtListHeaderItem({field:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmMsg.COLUMN_WIDTH_TYPE_DLV}),
                 new DwtListHeaderItem({field:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE_DLV, sortable:ZmItem.F_SIZE}),
-                new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.date, width:ZmMsg.COLUMN_WIDTH_DATE_DLV, sortable:ZmItem.F_DATE}),
-                new DwtListHeaderItem({field:ZmItem.F_FROM, text:ZmMsg.user, width:ZmMsg.COLUMN_WIDTH_OWNER_DLV}),
+                new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.modified, width:ZmMsg.COLUMN_WIDTH_DATE_DLV, sortable:ZmItem.F_DATE}),
+                new DwtListHeaderItem({field:ZmItem.F_FROM, text:ZmMsg.author, width:ZmMsg.COLUMN_WIDTH_OWNER_DLV}),
                 new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER_DLV}),
                 new DwtListHeaderItem({field:ZmItem.F_VERSION, text:ZmMsg.version, width:ZmMsg.COLUMN_WIDTH_VERSION_DLV})
                 );
@@ -121,6 +121,28 @@ function(parent) {
         headers.push(new DwtListHeaderItem({field:ZmItem.F_SORTED_BY, text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY, resizeable:false}));
     }
 	return headers;
+};
+
+ZmDetailListView.prototype._getHeaderToolTip =
+function(field, itemIdx, isOutboundFolder) {
+
+    var tooltip;
+    if(field == ZmItem.F_EXPAND){
+        tooltip = ZmMsg.expandCollapse;
+    }else if(field == ZmItem.F_LOCK){
+        tooltip = ZmMsg.fileLockStatus;
+    }else if(field == ZmItem.F_DATE){
+        tooltip = ZmMsg.sortByModified; 
+    }else if(field == ZmItem.F_FROM){
+        tooltip = ZmMsg.author;
+    }else if(field == ZmItem.F_VERSION){
+        tooltip = ZmMsg.latestVersion;
+    }else if(field == ZmItem.F_NAME){
+        tooltip = ZmMsg.sortByName;
+    }else{
+        tooltip = ZmBriefcaseBaseView.prototype._getHeaderToolTip.call(this, field, itemIdx, isOutboundFolder);
+    }   
+    return tooltip;
 };
 
 ZmDetailListView.prototype._isExpandable =
@@ -142,8 +164,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		htmlArr[idx++] = AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");
 	} else if (field == ZmItem.F_VERSION) {
 		htmlArr[idx++] = item.version;
-	} else if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+( item.isRevision ? ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + item.subject ) : AjxStringUtil.htmlEncode(item.name) )+"</div>";
+	} else if (field == ZmItem.F_NAME) {
+		htmlArr[idx++] = "<div id='"+this._getFieldId(item, ZmItem.F_NAME)+"'>"+( item.isRevision ? ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + item.subject ) : AjxStringUtil.htmlEncode(item.name) )+"</div>";
 	} else if (field == ZmItem.F_FILE_TYPE) {
         if(item.isFolder){
             htmlArr[idx++] = ZmMsg.folder;
@@ -211,7 +233,7 @@ function(item, colIdx) {
 	html[idx++] = "<td style='vertical-align:middle;' width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
 	html[idx++] = AjxImg.getImageHtml(item.getIcon());
 	html[idx++] = "</center></td>";
-	html[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_SUBJECT) + "'>";
+	html[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_NAME) + "'>";
     html[idx++] = "&nbsp;"+ subject;
 	html[idx++] = "</td>";
 
@@ -347,14 +369,6 @@ function(id, field) {
 		return ZmListView.prototype._allowFieldSelection.apply(this, arguments);
 	}
 };
-
-ZmDetailListView.prototype._getHeaderToolTip =
-function(field, itemIdx) {
-    return (field == ZmItem.F_EXPAND)
-		? ZmMsg.expandCollapse
-		: ZmBriefcaseBaseView.prototype._getHeaderToolTip.call(this, field, itemIdx);
-};
-
 
 // listeners
 
