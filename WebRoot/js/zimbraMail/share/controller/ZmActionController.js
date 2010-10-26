@@ -25,7 +25,13 @@
 ZmActionController = function() {
 	this._actionStack = new ZmActionStack(1);
 	this._statusTransitions = ZmActionController._substituteTransitions(appCtxt.getSkinHint("toast", "transitions") || ZmToast.DEFAULT_TRANSITIONS);
-	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this.dismiss));
+
+	this._mouseCapObj = new DwtMouseEventCapture({
+		targetObj:this,
+		id:"ZmActionController",
+		mouseDownHdlr:AjxCallback.simpleClosure(this.dismiss, this),
+		hardCapture:false
+	});
 };
 
 ZmActionController.prototype.toString =
@@ -88,10 +94,21 @@ ZmActionController.prototype.undoCurrent = function() {
 	this._actionStack.undo();
 };
 
+ZmActionController.prototype.onPopup = function() {
+	if (!this._capturing) {
+		this._capturing = true;
+		this._mouseCapObj.capture();
+	}
+};
+
 /**
  * Dismisses the popped up toast
  */
 ZmActionController.prototype.dismiss = function() {
+	if (this._capturing && DwtMouseEventCapture.getId() == "ZmActionController") {
+		this._capturing = false;
+		this._mouseCapObj.release();	
+	}
 	if (this._active) {
 		appCtxt.dismissStatusMsg(); // If we're active (an undoable action has been performed and we're showing the toast), clear one holding off the toast
 	}

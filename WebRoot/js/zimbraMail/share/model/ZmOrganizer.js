@@ -1791,6 +1791,7 @@ function(params, actionLogItem, result) {
 		var summary = ZmOrganizer.getActionSummary(params.actionText, params.numItems || 1, this.type, params.actionArg);
 		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 		if (undoLink && actionController) {
+			actionController.onPopup();
 			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: actionController.getStatusTransitions()});
 		} else {
 			appCtxt.setStatusMsg(summary);
