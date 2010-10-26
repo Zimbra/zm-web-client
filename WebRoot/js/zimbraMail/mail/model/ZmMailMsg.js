@@ -2201,24 +2201,18 @@ function() {
 
 ZmMailMsg.prototype.setAutoSendTime =
 function(autoSendTime) {
-	var msg = this;
-	while (msg) {
-		msg._setAutoSendTime(autoSendTime);
-		msg = msg._origMsg;
+	var item = this;
+	while (item instanceof ZmMailMsg) {
+		item._setAutoSendTime(autoSendTime);
+		item = item._origMsg;
 	}
 };
 
 ZmMailMsg.prototype._setAutoSendTime =
 function(autoSendTime) {
-	var wasScheduled = this.isScheduled;
-	var isDate = AjxUtil.isDate(autoSendTime);
-	this.flagLocal(ZmItem.FLAG_ISSCHEDULED, isDate);
-	var autoSendTime = isDate ? autoSendTime : null;
-	if (autoSendTime != this.autoSendTime) {
-		this.autoSendTime = autoSendTime;
-		this._notify(ZmEvent.E_MODIFY);
-	}
-	if (wasScheduled != this.isScheduled) {
-		this._notify(ZmEvent.E_FLAGS, {flags: ZmItem.FLAG_ISSCHEDULED});
+	ZmMailItem.prototype.setAutoSendTime.call(this, autoSendTime);
+	var conv = this.cid && appCtxt.getById(this.cid);
+	if (conv instanceof ZmConv) {
+		conv.setAutoSendTime(autoSendTime);
 	}
 };

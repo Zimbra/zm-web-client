@@ -880,7 +880,7 @@ function(ev) {
 				var on = item[ZmItem.FLAG_PROP[flag]];
 				this.markUIAsRead(item, !on);
 			} else if (flag == ZmItem.FLAG_ISSCHEDULED) {
-				this._setImage(item, ZmItem.F_STATUS, item.getStatusIcon());
+				this._setImage(item, ZmItem.F_STATUS, "SendLater");
 			}
 		}
 	}

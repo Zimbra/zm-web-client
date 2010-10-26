@@ -610,6 +610,13 @@ function(convNode) {
 			if (msgNode.s) {
 				this.size = msgNode.s;
 			}
+
+			if (msgNode.autoSendTime) {
+				var timestamp = parseInt(msgNode.autoSendTime);
+				if (timestamp) {
+					this.setAutoSendTime(new Date(timestamp));
+				}
+			}
 		}
 	}
 
@@ -623,13 +630,6 @@ function(convNode) {
 			for (a in convNode.meta[i]._attrs) {
 				this.meta[section]._attrs[a] = convNode.meta[i]._attrs[a];
 			}
-		}
-	}
-
-	if (convNode.autoSendTime) {
-		var timestamp = parseInt(convNode.autoSendTime) || null;
-		if (timestamp) {
-			this.setAutoSendTime(new Date(timestamp));
 		}
 	}
 };
