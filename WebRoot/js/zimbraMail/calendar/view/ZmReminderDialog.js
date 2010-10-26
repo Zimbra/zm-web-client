@@ -41,9 +41,9 @@ ZmReminderDialog = function(parent, reminderController, calController) {
 
     this.setContent(this._contentHtml(selectId));
     if(this._calController instanceof ZmTaskMgr) {
-        this.setTitle(ZmMsg.taskReminder);
+        this.setTitle(ZmMsg.taskReminders);
     } else {
-        this.setTitle(ZmMsg.appointmentReminder);
+        this.setTitle(ZmMsg.apptReminders);
     }
     this.registerCallback(ZmReminderDialog.SNOOZE_BUTTON, this._handleSnoozeButton, this);
 	this.registerCallback(ZmReminderDialog.DISMISS_ALL_BUTTON, this._handleDismissAllButton, this);
