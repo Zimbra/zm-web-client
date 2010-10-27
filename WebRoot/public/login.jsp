@@ -380,17 +380,15 @@ if (application.getInitParameter("offlineMode") != null)  {
     }
 	document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
 </script>
-<div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientWhatsThisMessage"/></div>
-<div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
-</td>
-</tr>
-</table>
-<!--div><fmt:message key="clientLoginNotice"/></div-->
-
-<div class="copyright"><fmt:message key="splashScreenCopyright"/></div>
-
-</div>
-</div>                                 
+							<div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientWhatsThisMessage"/></div>
+							<div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
+						</td>
+					</tr>
+			</table>
+			<div class="copyright"><fmt:message key="splashScreenCopyright"/></div>
+		</div>
+		<div id="ZLoginNotice"><fmt:message key="clientLoginNotice"/></div>
+	</div>                                 
 <script>
   <jsp:include page="/js/skin.js">
     <jsp:param name="templates" value="false" />

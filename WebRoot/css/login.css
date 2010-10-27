@@ -62,7 +62,7 @@ FORM {
 
 
 /*
- * major zones (TRs)
+ * major zones
  */
 .LoginScreen {
 	position:absolute;
@@ -96,6 +96,7 @@ FORM {
 	top:50%;
 	left:50%;
 	overflow:visible;
+	z-index:11;
 	
 	/*Linear gradient backgrounds*/
 	background-color: @darken(AppC,10)@;
@@ -129,11 +130,12 @@ FORM {
 	margin:20px 0px 0px 20px;
 	width:71px;
 	height:11px;
-	background-image:url("@SkinImgDir@/vmwareLogo_login.png");
+	background-image:url("@SkinImgDir@/altLogo_login.png");
 	background-repeat:repeat-x;
 }
 .LoginScreen h1 {margin:22px 20px 32px 20px;}
 
+form {text-align:center;}  /* fixes IE centering of form */
 .form {
 	color: @darken(AppC,50)@;
 	margin: 0px auto;
@@ -170,7 +172,7 @@ FORM {
 }
 .LoginScreen #ZLoginWhatsThisAnchor {
 	color: @darken(AppC,50)@;
-	text-decoration:none;
+	font-size:10px;
 	margin-left:5px;
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
@@ -186,6 +188,18 @@ FORM {
 	border:1px solid @lighten(AltC,25)@;
 	padding:3px;
 	text-align:left;
+}
+.LoginScreen #ZLoginNotice {
+	bottom:3px;
+	color:#FFF;
+	font-size:10px;
+	position:absolute;
+	text-align:center;
+	width:100%;
+	z-index:10;
+}
+.LoginScreen #ZLoginNotice a {
+	color:#FFF;
 }
 .LoginScreen #login {
 	float:right;
