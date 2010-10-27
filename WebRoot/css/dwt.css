@@ -706,6 +706,7 @@
 /* Text area for the message dialog, including icon */
 .DwtMsgArea {
 	@BoxPadding@
+	width: 100%;
 }
 
 /* Outer container for the confirmation dialog */
