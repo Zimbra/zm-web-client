@@ -25,13 +25,6 @@
 ZmNotificationsPage = function(parent, section, controller) {
     if (arguments.length == 0) return;
     ZmPreferencesPage.apply(this, arguments);
-
-    this._regionSelectionListener = new AjxListener(this, this._handleRegionSelection);
-
-    // listen to CAL_DEVICE_EMAIL_REMINDERS_ADDRESS changes
-    // NOTE: We can't actually listen to changes in this value because
-    // NOTE: ZmSetting doesn't notify the listeners when the value is
-    // NOTE: set *if* it has an actual LDAP name.
 };
 ZmNotificationsPage.prototype = new ZmPreferencesPage;
 ZmNotificationsPage.prototype.constructor = ZmNotificationsPage;
@@ -48,17 +41,6 @@ ZmNotificationsPage.prototype.toString = function() {
 
 ZmNotificationsPage.REGIONS = {};
 ZmNotificationsPage.CARRIERS = {};
-
-// 
-
-ZmNotificationsPage.CUSTOM = "Custom";
-ZmNotificationsPage.UNKNOWN = "Unknown";
-
-// code status values; also doubles as element class names 
-
-ZmNotificationsPage.CONFIRMED   = "DeviceCodeConfirmed";
-ZmNotificationsPage.PENDING     = "DeviceCodePending";
-ZmNotificationsPage.UNCONFIRMED = "DeviceCodeUnconfirmed";
 
 //
 // DwtControl methods
@@ -79,7 +61,7 @@ ZmNotificationsPage.prototype.showMe = function() {
 
     // setup controls
     var status = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS) ?
-            ZmNotificationsPage.CONFIRMED : ZmNotificationsPage.UNCONFIRMED;
+            ZmNotificationsPageForm.CONFIRMED : ZmNotificationsPageForm.UNCONFIRMED;
     this._form.setValue("DEVICE_EMAIL_CODE_STATUS_VALUE", status);
     this._form.setValue("EMAIL", appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS));
     this._form.update();
@@ -121,7 +103,7 @@ ZmNotificationsPage.prototype.isDirty = function() {
  *
  * @private
  */
-ZmNotificationsPage.prototype.validate = function() {	
+ZmNotificationsPage.prototype.validate = function() {
     return this._form.isValid("EMAIL");
 };
 
@@ -179,13 +161,116 @@ ZmNotificationsPage.prototype._resetPageListener = function() {
 };
 
 //
-// Public methods
+// Protected methods
 //
 
-ZmNotificationsPage.prototype.isCustom = function() {
+ZmNotificationsPage.prototype._setupCustomForm = function() {
+    return new ZmNotificationsPageForm({parent:this,sectionTemplate:this._section.templateId});
+};
+
+ZmNotificationsPage.prototype._smsDataLoaded = function() {
+    if (!window.ZmSMS) return;
+    this._form.setSMSData(window.ZmSMS);
+};
+
+//
+// Classes
+//
+
+ZmNotificationsPageForm = function(params) {
+    if (arguments.length == 0) return;
+    params.form = this._getFormParams(params.sectionTemplate);
+    DwtForm.apply(this, arguments);
+
+    this._regionSelectionListener = new AjxListener(this, this._handleRegionSelection);
+
+    // listen to CAL_DEVICE_EMAIL_REMINDERS_ADDRESS changes
+    // NOTE: We can't actually listen to changes in this value because
+    // NOTE: ZmSetting doesn't notify the listeners when the value is
+    // NOTE: set *if* it has an actual LDAP name.
+};
+ZmNotificationsPageForm.prototype = new DwtForm;
+ZmNotificationsPageForm.prototype.constructor = ZmNotificationsPageForm;
+
+ZmNotificationsPageForm.prototype.toString = function() {
+    return "ZmNotificationsPageForm";
+};
+
+// Constants: special region/carrier ids
+
+ZmNotificationsPageForm.CUSTOM  = "Custom";
+ZmNotificationsPageForm.UNKNOWN = "Unknown";
+
+// Constants: code status values; also doubles as element class names
+
+ZmNotificationsPageForm.CONFIRMED   = "DeviceCodeConfirmed";
+ZmNotificationsPageForm.PENDING     = "DeviceCodePending";
+ZmNotificationsPageForm.UNCONFIRMED = "DeviceCodeUnconfirmed";
+
+// Constants: private
+
+ZmNotificationsPageForm.__letters2NumbersMap = {
+                    a:2,b:2,c:2,d:3,e:3,f:3,
+    g:4,h:4,i:4,    j:5,k:5,l:5,m:6,n:6,o:6,
+    p:7,q:7,r:7,s:7,t:8,u:8,v:8,w:9,x:9,y:9,z:9
+};
+
+// Public
+
+ZmNotificationsPageForm.prototype.setSMSData = function(data) {
+    this._smsData = data;
+
+    // setup regions control
+    var regionMap = this._defineRegions(data);
+    var button = this.getControl("DEVICE_EMAIL_REGION");
+    var menu = this.__createRegionsMenu(button, regionMap);
+    if (menu == null) {
+        // always have at least one region
+        menu = new DwtMenu({parent:button});
+        this.__createRegionMenuItem(menu,ZmNotificationsPageForm.UNKNOWN,ZmMsg.unknown);
+    }
+    menu.addSelectionListener(this._regionSelectionListener);
+    button.setMenu(menu);
+
+    // set default region
+    this.setRegion(data.defaultRegionId);
+};
+
+ZmNotificationsPageForm.prototype.setRegion = function(regionId){
+    // decorate the region button
+    var region = ZmNotificationsPage.REGIONS[regionId] || { id:ZmNotificationsPageForm.UNKNOWN, label:ZmMsg.unknown };
+    var button = this.getControl("DEVICE_EMAIL_REGION");
+    button.setText(region.label);
+    button.setImage(region.image);
+    button.setData(Dwt.KEY_ID, region.id);
+
+    // update the form
+    this.setCarriers(regionId);
+    this.setValue("DEFAULT_EMAIL_REGION", regionId);
+    if (regionId == this._smsData.defaultRegionId && this._smsData.defaultCarrierId) {
+        this.setValue("DEVICE_EMAIL_CARRIER", this._smsData.defaultCarrierId);
+    }
+    this.update();
+};
+
+ZmNotificationsPageForm.prototype.setCarriers = function(regionId) {
+    var select = this.getControl("DEVICE_EMAIL_CARRIER");
+    select.clearOptions();
+    var region = ZmNotificationsPage.REGIONS[regionId] || {};
+    var carriers = ZmNotificationsPageForm.__getRegionCarriers(region, true);
+    carriers.sort(ZmNotificationsPageForm.__byLabel);
+    for (var i = 0; i < carriers.length; i++) {
+        var carrier = carriers[i];
+        var image = carrier.image || carrier.region.image;
+        select.addOption({displayValue:carrier.label, value:carrier.id, image:image});
+    }
+    select.addOption({displayValue:ZmMsg.custom, value:ZmNotificationsPageForm.CUSTOM, image:null});
+};
+
+ZmNotificationsPageForm.prototype.isCustom = function() {
     // user selected "Custom"
-    var carrierId = this._form && this._form.getValue("DEVICE_EMAIL_CARRIER");
-    if (carrierId == ZmNotificationsPage.CUSTOM) return true;
+    var carrierId = this.getValue("DEVICE_EMAIL_CARRIER");
+    if (carrierId == ZmNotificationsPageForm.CUSTOM) return true;
 
     // any entry w/o an email pattern is also custom
     var carrier = ZmNotificationsPage.CARRIERS[carrierId];
@@ -193,49 +278,135 @@ ZmNotificationsPage.prototype.isCustom = function() {
     return !hasPattern;
 };
 
-ZmNotificationsPage.prototype.getEmailAddress = function() {
-    var form = this._form;
-    if (!form) return ""; // NOTE: not initialized, yet
-
+ZmNotificationsPageForm.prototype.getEmailAddress = function() {
     if (this.isCustom()) {
-        var number = form.getValue("DEVICE_EMAIL_CUSTOM_NUMBER");
-        var address = form.getValue("DEVICE_EMAIL_CUSTOM_ADDRESS");
+        var number = this.getValue("DEVICE_EMAIL_CUSTOM_NUMBER");
+        var address = this.getValue("DEVICE_EMAIL_CUSTOM_ADDRESS");
         return number && address ? [number,address].join("@") : "";
     }
 
-    var phone = ZmNotificationsPage.normalizePhoneNumber(form.getValue("DEVICE_EMAIL_PHONE"));
-    var carrier = ZmNotificationsPage.CARRIERS[form.getValue("DEVICE_EMAIL_CARRIER")];
+    var phone = ZmNotificationsPageForm.normalizePhoneNumber(this.getValue("DEVICE_EMAIL_PHONE"));
+    var carrier = ZmNotificationsPage.CARRIERS[this.getValue("DEVICE_EMAIL_CARRIER")];
     return phone ? AjxMessageFormat.format(carrier.pattern, [phone]) : "";
 };
 
-//
-// Protected methods
-//
+ZmNotificationsPageForm.prototype.getCodeStatus = function() {
+    // remove other status class names
+    var controlEl = this.getControl("DEVICE_EMAIL_CODE_STATUS").getHtmlElement();
+    Dwt.delClass(controlEl, ZmNotificationsPageForm.CONFIRMED);
+    Dwt.delClass(controlEl, ZmNotificationsPageForm.PENDING);
+    Dwt.delClass(controlEl, ZmNotificationsPageForm.UNCONFIRMED);
 
-ZmNotificationsPage.prototype._smsDataLoaded = function() {
-    // is there anything to do?
-    if (!window.ZmSMS) return;
+    // add appropriate class name
+    var status = this.get("DEVICE_EMAIL_CODE_STATUS_VALUE");
+    Dwt.addClass(controlEl, status);
 
-    // setup regions control
-    var regionMap = this.__smsDataLoaded_defineRegions();
-    var button = this._form.getControl("DEVICE_EMAIL_REGION");
-    var menu = this.__createRegionsMenu(button, regionMap);
-    if (menu == null) {
-        // always have at least one region
-        menu = new DwtMenu({parent:button});
-        this.__createRegionMenuItem(menu,ZmNotificationsPage.UNKNOWN,ZmMsg.unknown);
+    // format status text
+    if (status == ZmNotificationsPageForm.CONFIRMED) {
+        var email = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS);
+        if (email) {
+            var pattern = ZmMsg.deviceEmailNotificationsVerificationStatusConfirmed;
+            return AjxMessageFormat.format(pattern, [email]);
+        }
+        // default back to unconfirmed
+        Dwt.delClass(controlEl, status, ZmNotificationsPageForm.UNCONFIRMED);
     }
-    menu.addSelectionListener(this._regionSelectionListener);
-    button.setMenu(menu);
-
-    // set default region
-    this._setRegion(ZmSMS.defaultRegionId);
+    return status == ZmNotificationsPageForm.PENDING ?
+        ZmMsg.deviceEmailNotificationsVerificationStatusPending :
+        ZmMsg.deviceEmailNotificationsVerificationStatusUnconfirmed
+    ;
 };
 
-ZmNotificationsPage.prototype.__smsDataLoaded_defineRegions = function() {
+ZmNotificationsPageForm.prototype.getPhoneHint = function() {
+    var carrierId = this.getValue("DEVICE_EMAIL_CARRIER");
+    var carrier = ZmNotificationsPage.CARRIERS[carrierId];
+    var carrierHint = carrier && carrier.hint;
+    var email = this.getEmailAddress();
+    var emailHint = email && AjxMessageFormat.format(ZmMsg.deviceEmailNotificationsPhoneNumber, [email]);
+    if (carrierHint || emailHint) {
+        if (!carrierHint) return emailHint;
+        if (!emailHint) return carrierHint;
+        return AjxMessageFormat.format(ZmMsg.deviceEmailNotificationsCarrierEmailHint, [emailHint,carrierHint]);
+    }
+    return "";
+};
+
+ZmNotificationsPageForm.normalizePhoneNumber = function(phone) {
+    if (phone) {
+        phone = phone.replace(/[a-z]/gi,ZmNotificationsPageForm.__letters2Numbers);
+        phone = phone.replace(/[^+#\*0-9]/g,"");
+    }
+    return phone;
+};
+
+// Protected
+
+ZmNotificationsPageForm.prototype._getFormParams = function(templateId) {
+    return {
+        template: templateId,
+        items: [
+            // default pref page controls
+            { id: "REVERT_PAGE", type: "DwtButton", label: ZmMsg.restorePage,
+                onclick: "this.parent._resetPageListener()"
+            },
+            // email
+            { id: "EMAIL", type: "DwtInputField", hint: ZmMsg.exampleEmailAddr },
+            // device email (aka SMS)
+            { id: "DEVICE_EMAIL_REGION", type: "DwtButton",
+                enabled: "this._smsData",
+                onclick: this._handleRegionClick
+            },
+            { id: "DEVICE_EMAIL_CARRIER", type: "DwtSelect", value: ZmNotificationsPageForm.CUSTOM,
+                enabled: "this.getControl('DEVICE_EMAIL_CARRIER').getOptionCount() > 0"
+            },
+            { id: "DEVICE_EMAIL_PHONE", type: "DwtInputField",
+                hint: ZmMsg.deviceEmailNotificationsPhoneHint,
+                visible: "!this.isCustom()",
+                onchange: this._handleCarrierChange
+            },
+            { id: "DEVICE_EMAIL_PHONE_HINT", type: "DwtText",
+                getter: this.getPhoneHint,
+                visible: "get('DEVICE_EMAIL_PHONE_HINT')" // NOTE: only show if there's a value
+            },
+            { id: "DEVICE_EMAIL_PHONE_SEND_CODE", type: "DwtButton",
+                label: ZmMsg.deviceEmailNotificationsVerificationCodeSend,
+                visible: "!this.isCustom()",
+                enabled: "get('DEVICE_EMAIL_PHONE')",
+                onclick: this._handleSendCode
+            },
+            { id: "DEVICE_EMAIL_CUSTOM_NUMBER", type: "DwtInputField",
+                visible: "this.isCustom()"
+            },
+            { id: "DEVICE_EMAIL_CUSTOM_ADDRESS", type: "DwtInputField",
+                visible: "this.isCustom()"
+            },
+            { id: "DEVICE_EMAIL_CUSTOM_SEND_CODE", type: "DwtButton",
+                label: ZmMsg.deviceEmailNotificationsVerificationCodeSend,
+                visible: "this.isCustom()",
+                enabled: "get('DEVICE_EMAIL_CUSTOM_NUMBER') && get('DEVICE_EMAIL_CUSTOM_ADDRESS')",
+                onclick: this._handleSendCode
+            },
+            { id: "DEVICE_EMAIL_CODE", type: "DwtInputField",
+                hint: ZmMsg.deviceEmailNotificationsVerificationCodeHint
+            },
+            { id: "DEVICE_EMAIL_CODE_VALIDATE", type: "DwtButton",
+                label: ZmMsg.deviceEmailNotificationsVerificationCodeValidate,
+                enabled: "get('DEVICE_EMAIL_CODE') && this.getEmailAddress()",
+                onclick: this._handleValidateCode
+            },
+            { id: "DEVICE_EMAIL_CODE_STATUS", type: "DwtText",
+                className: "DeviceCode", getter: this.getCodeStatus
+            },
+            // NOTE: This holds the current code status
+            { id: "DEVICE_EMAIL_CODE_STATUS_VALUE", value: ZmNotificationsPageForm.UNCONFIRMED }
+        ]
+    };
+};
+
+ZmNotificationsPageForm.prototype._defineRegions = function(data) {
     // define regions
     var regionMap = {};
-    for (var id in ZmSMS) {
+    for (var id in data) {
         // do we care about this entry?
         if (!id.match(/^region_/)) continue;
 
@@ -259,17 +430,17 @@ ZmNotificationsPage.prototype.__smsDataLoaded_defineRegions = function() {
         }
 
         // store property
-        region[prop] = ZmSMS[id];
+        region[prop] = data[id];
     }
 
     // define carriers
-    this.__smsDataLoaded_defineCarriers();
+    this._defineCarriers(data);
 
     return regionMap;
 };
 
-ZmNotificationsPage.prototype.__smsDataLoaded_defineCarriers = function() {
-    for (var id in ZmSMS) {
+ZmNotificationsPageForm.prototype._defineCarriers = function(data) {
+    for (var id in data) {
         // do we care about this entry?
         if (!id.match(/^carrier_/)) continue;
 
@@ -287,23 +458,107 @@ ZmNotificationsPage.prototype.__smsDataLoaded_defineCarriers = function() {
                 region.carriers = {};
             }
             carrier = region.carriers[carrierId] = ZmNotificationsPage.CARRIERS[carrierId] = {
-                id: carrierId, region: region 
+                id: carrierId, region: region
             };
         }
 
         // store property
-        carrier[prop] = ZmSMS[id];
+        carrier[prop] = data[id];
     }
     return ZmNotificationsPage.CARRIERS;
 };
 
-ZmNotificationsPage.prototype.__createRegionsMenu = function(parent, regionMap, parentRegion) {
-    var regions = AjxUtil.values(regionMap, ZmNotificationsPage.__acceptRegion);
+ZmNotificationsPageForm.prototype._handleRegionClick = function() {
+    var button = this.getControl("DEVICE_EMAIL_REGION");
+    var menu = button.getMenu();
+    if (menu.isPoppedUp()) {
+        menu.popdown();
+    }
+    else {
+        button.popup();
+    }
+};
+
+ZmNotificationsPageForm.prototype._handleCarrierChange = function() {
+    var controlId = this.isCustom() ? "DEVICE_EMAIL_NUMBER" : "DEVICE_EMAIL_PHONE";
+    var control = this.getControl(controlId);
+    if (control && control.focus) {
+        control.focus();
+    }
+};
+
+ZmNotificationsPageForm.prototype._handleSendCode = function() {
+    var params = {
+        jsonObj: {
+            SendVerificationCodeRequest: {
+                _jsns: "urn:zimbraMail",
+                a: this.getEmailAddress()
+            }
+        },
+        asyncMode: true,
+        callback: new AjxCallback(this, this._handleSendCodeResponse)
+    };
+    appCtxt.getAppController().sendRequest(params);
+};
+
+ZmNotificationsPageForm.prototype._handleSendCodeResponse = function(resp) {
+    appCtxt.setStatusMsg(ZmMsg.deviceEmailNotificationsVerificationCodeSendSuccess);
+
+    this.setValue("DEVICE_EMAIL_STATUS_CODE_VALUE", ZmNotificationsPageForm.PENDING);
+    this.update();
+};
+
+ZmNotificationsPageForm.prototype._handleRegionSelection = function(event) {
+    var regionId = event.item.getData(Dwt.KEY_ID);
+    this.setRegion(regionId);
+};
+
+ZmNotificationsPageForm.prototype._handleValidateCode = function() {
+    var params = {
+        jsonObj: {
+            VerifyCodeRequest: {
+                _jsns: "urn:zimbraMail",
+                a: this.getEmailAddress(),
+                code: this.getValue("DEVICE_EMAIL_CODE")
+            }
+        },
+        asyncMode: true,
+        callback: new AjxCallback(this, this._handleValidateCodeResponse)
+    };
+    appCtxt.getAppController().sendRequest(params);
+};
+
+ZmNotificationsPageForm.prototype._handleValidateCodeResponse = function(resp) {
+    var success = AjxUtil.get(resp.getResponse(), "VerifyCodeResponse", "success") == "1";
+    var params = {
+        msg: success ?
+                ZmMsg.deviceEmailNotificationsVerificationCodeValidateSuccess :
+                ZmMsg.deviceEmailNotificationsVerificationCodeValidateFailure,
+        level: success ? ZmStatusView.LEVEL_INFO : ZmStatusView.LEVEL_CRITICAL
+    };
+    appCtxt.setStatusMsg(params);
+
+    // NOTE: Since the preference values only come in at launch time,
+    // NOTE: manually set the confirmed email address so that we can
+    // NOTE: display the correct confirmed code status text
+    if (success) {
+        appCtxt.set(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS, this.getEmailAddress());
+    }
+
+    var status = success ? ZmNotificationsPageForm.CONFIRMED : ZmNotificationsPageForm.UNCONFIRMED;
+    this.setValue("DEVICE_EMAIL_CODE_STATUS_VALUE", status);
+    this.update();
+};
+
+// Private
+
+ZmNotificationsPageForm.prototype.__createRegionsMenu = function(parent, regionMap, parentRegion) {
+    var regions = AjxUtil.values(regionMap, ZmNotificationsPageForm.__acceptRegion);
     if (regions.length == 0) return null;
 
     var menu = new DwtMenu({parent:parent});
 
-    regions.sort(ZmNotificationsPage.__byLabel);
+    regions.sort(ZmNotificationsPageForm.__byLabel);
     for (var i = 0; i < regions.length; i++) {
         var region = regions[i];
         // add entry for this region
@@ -334,7 +589,7 @@ ZmNotificationsPage.prototype.__createRegionsMenu = function(parent, regionMap, 
     return menu;
 };
 
-ZmNotificationsPage.prototype.__createRegionMenuItem = function(parent, id, label, image, index) {
+ZmNotificationsPageForm.prototype.__createRegionMenuItem = function(parent, id, label, image, index) {
     var menuItem = new DwtMenuItem({parent:parent,index:index});
     menuItem.setText(label);
     menuItem.setImage(image);
@@ -342,305 +597,35 @@ ZmNotificationsPage.prototype.__createRegionMenuItem = function(parent, id, labe
     return menuItem;
 };
 
-ZmNotificationsPage.__acceptRegion = function(regionId, regionMap) {
+ZmNotificationsPageForm.__acceptRegion = function(regionId, regionMap) {
     var region = regionMap[regionId];
     var hasRegions = false;
     for (var id in region.regions) {
-        if (ZmNotificationsPage.__acceptRegion(id, region.regions)) {
+        if (ZmNotificationsPageForm.__acceptRegion(id, region.regions)) {
             hasRegions = true;
             break;
         }
     }
-    var hasCarriers = ZmNotificationsPage.__getRegionCarriers(region).length > 0;
+    var hasCarriers = ZmNotificationsPageForm.__getRegionCarriers(region).length > 0;
     return hasRegions || hasCarriers;
 };
 
-ZmNotificationsPage.__byLabel = AjxCallback.simpleClosure(AjxUtil.byStringProp, window, "label");
-
-ZmNotificationsPage.__getRegionCarriers = function(region, recurse) {
+ZmNotificationsPageForm.__getRegionCarriers = function(region, recurse) {
     if (region.carriers && !(region.carriers instanceof Array)) {
         region.carriers = AjxUtil.values(region.carriers);
-        region.carriers.sort(ZmNotificationsPage.__byLabel);
+        region.carriers.sort(ZmNotificationsPageForm.__byLabel);
     }
     var carriers = region.carriers || [];
     if (recurse && region.regions) {
         for (var regionId in region.regions) {
-            carriers = carriers.concat(ZmNotificationsPage.__getRegionCarriers(region.regions[regionId],true));
+            carriers = carriers.concat(ZmNotificationsPageForm.__getRegionCarriers(region.regions[regionId],true));
         }
     }
     return carriers;
 };
 
-ZmNotificationsPage.prototype._setupCustomForm = function() {
-    var params = {
-        parent: this,
-        form: {
-            template: this._section.templateId,
-            items: [
-                // default pref page controls
-                { id: "REVERT_PAGE", type: "DwtButton", label: ZmMsg.restorePage,
-                    onclick: "this.parent._resetPageListener()"
-                },
-                // email                                                            
-                { id: "EMAIL", type: "DwtInputField", hint: ZmMsg.exampleEmailAddr },
-                // device email (aka SMS)
-                { id: "DEVICE_EMAIL_REGION", type: "DwtButton",
-                    enabled: "window.ZmSMS",
-                    onclick: this._handleRegionClick
-                },
-                { id: "DEVICE_EMAIL_CARRIER", type: "DwtSelect", value: ZmNotificationsPage.CUSTOM,
-                    enabled: "this.getControl('DEVICE_EMAIL_CARRIER').getOptionCount() > 0"
-                },
-                { id: "DEVICE_EMAIL_PHONE", type: "DwtInputField",
-                    hint: ZmMsg.deviceEmailNotificationsPhoneHint,
-                    visible: "!this.parent.isCustom()",
-                    onchange: this._handleCarrierChange
-                },
-                { id: "DEVICE_EMAIL_PHONE_HINT", type: "DwtText", 
-                    getter: this._getPhoneHint,
-                    visible: "get('DEVICE_EMAIL_PHONE_HINT')" // NOTE: only show if there's a value 
-                },
-                { id: "DEVICE_EMAIL_PHONE_SEND_CODE", type: "DwtButton",
-                    label: ZmMsg.deviceEmailNotificationsVerificationCodeSend,
-                    visible: "!this.parent.isCustom()",
-                    enabled: "get('DEVICE_EMAIL_PHONE')",
-                    onclick: this._handleSendCode
-                },
-                { id: "DEVICE_EMAIL_CUSTOM_NUMBER", type: "DwtInputField",
-                    visible: "this.parent.isCustom()"
-                },
-                { id: "DEVICE_EMAIL_CUSTOM_ADDRESS", type: "DwtInputField",
-                    visible: "this.parent.isCustom()"
-                },
-                { id: "DEVICE_EMAIL_CUSTOM_SEND_CODE", type: "DwtButton",
-                    label: ZmMsg.deviceEmailNotificationsVerificationCodeSend,
-                    visible: "this.parent.isCustom()",
-                    enabled: "get('DEVICE_EMAIL_CUSTOM_NUMBER') && get('DEVICE_EMAIL_CUSTOM_ADDRESS')",
-                    onclick: this._handleSendCode
-                },
-                { id: "DEVICE_EMAIL_CODE", type: "DwtInputField",
-                    hint: ZmMsg.deviceEmailNotificationsVerificationCodeHint
-                },
-                { id: "DEVICE_EMAIL_CODE_VALIDATE", type: "DwtButton",
-                    label: ZmMsg.deviceEmailNotificationsVerificationCodeValidate,
-                    enabled: "get('DEVICE_EMAIL_CODE') && this.parent.getEmailAddress()",
-                    onclick: this._handleValidateCode
-                },
-                { id: "DEVICE_EMAIL_CODE_STATUS", type: "DwtText",
-                    className: "DeviceCode", getter: this._getCodeStatus 
-                },
-                // NOTE: This holds the current code status
-                { id: "DEVICE_EMAIL_CODE_STATUS_VALUE", value: ZmNotificationsPage.UNCONFIRMED }
-            ]
-        }
-    };
-    return new DwtForm(params);
-};
+ZmNotificationsPageForm.__byLabel = AjxCallback.simpleClosure(AjxUtil.byStringProp, window, "label");
 
-ZmNotificationsPage.prototype._setRegion = function(regionId){
-    // decorate the region button
-    var region = ZmNotificationsPage.REGIONS[regionId] || { id:ZmNotificationsPage.UNKNOWN, label:ZmMsg.unknown };
-    var button = this._form.getControl("DEVICE_EMAIL_REGION");
-    button.setText(region.label);
-    button.setImage(region.image);
-    button.setData(Dwt.KEY_ID, region.id);
-
-    // update the form
-    this._setCarriers(regionId);
-    this._form.setValue("DEFAULT_EMAIL_REGION", regionId);
-    if (regionId == ZmSMS.defaultRegionId && ZmSMS.defaultCarrierId) {
-        this._form.set("DEVICE_EMAIL_CARRIER", ZmSMS.defaultCarrierId);
-    }
-    this._form.update();
-};
-
-ZmNotificationsPage.prototype._setCarriers = function(regionId) {
-    var select = this._form.getControl("DEVICE_EMAIL_CARRIER");
-    select.clearOptions();
-    var region = ZmNotificationsPage.REGIONS[regionId] || {};
-    var carriers = ZmNotificationsPage.__getRegionCarriers(region, true);
-    carriers.sort(ZmNotificationsPage.__byLabel);
-    for (var i = 0; i < carriers.length; i++) {
-        var carrier = carriers[i];
-        var image = carrier.image || carrier.region.image;
-        select.addOption({displayValue:carrier.label, value:carrier.id, image:image});
-    }
-    select.addOption({displayValue:ZmMsg.custom, value:ZmNotificationsPage.CUSTOM, image:null});
-};
-
-ZmNotificationsPage.prototype._handleRegionSelection = function(event) {
-    var regionId = event.item.getData(Dwt.KEY_ID);
-    this._setRegion(regionId);
-};
-
-// form functions
-
-/**
- * <strong>Note:</strong>
- * This executes in the context of the DwtForm control.
- *
- * @private
- */
-ZmNotificationsPage.prototype._handleRegionClick = function() {
-    var button = this.getControl("DEVICE_EMAIL_REGION");
-    var menu = button.getMenu();
-    if (menu.isPoppedUp()) {
-        menu.popdown();
-    }
-    else {
-        button.popup();
-    }
-};
-
-/**
- * <strong>Note:</strong>
- * This executes in the context of the DwtForm control.
- *
- * @private
- */
-ZmNotificationsPage.prototype._handleCarrierChange = function() {
-    var controlId = this.parent.isCustom() ? "DEVICE_EMAIL_NUMBER" : "DEVICE_EMAIL_PHONE";
-    var control = this.getControl(controlId);
-    if (control && control.focus) {
-        control.focus();
-    }
-};
-
-/**
- * <strong>Note:</strong>
- * This executes in the context of the DwtForm control.
- *
- * @private
- */
-ZmNotificationsPage.prototype._handleSendCode = function() {
-    var params = {
-        jsonObj: {
-            SendVerificationCodeRequest: {
-                _jsns: "urn:zimbraMail",
-                a: this.parent.getEmailAddress()
-            }
-        },
-        asyncMode: true,
-        callback: new AjxCallback(this.parent, this.parent._handleSendCodeResponse)
-    };
-    appCtxt.getAppController().sendRequest(params);
-};
-
-ZmNotificationsPage.prototype._handleSendCodeResponse = function(resp) {
-    appCtxt.setStatusMsg(ZmMsg.deviceEmailNotificationsVerificationCodeSendSuccess);
-
-    this._form.setValue("DEVICE_EMAIL_STATUS_CODE_VALUE", ZmNotificationsPage.PENDING);
-    this._form.update();
-};
-
-/**
- * <strong>Note:</strong>
- * This executes in the context of the DwtForm control.
- *
- * @private
- */
-ZmNotificationsPage.prototype._handleValidateCode = function() {
-    var params = {
-        jsonObj: {
-            VerifyCodeRequest: {
-                _jsns: "urn:zimbraMail",
-                a: this.parent.getEmailAddress(),
-                code: this.getValue("DEVICE_EMAIL_CODE")
-            }
-        },
-        asyncMode: true,
-        callback: new AjxCallback(this.parent, this.parent._handleValidateCodeResponse)
-    };
-    appCtxt.getAppController().sendRequest(params);
-};
-
-ZmNotificationsPage.prototype._handleValidateCodeResponse = function(resp) {
-    var success = AjxUtil.get(resp.getResponse(), "VerifyCodeResponse", "success") == "1";
-    var params = {
-        msg: success ?
-                ZmMsg.deviceEmailNotificationsVerificationCodeValidateSuccess :
-                ZmMsg.deviceEmailNotificationsVerificationCodeValidateFailure,
-        level: success ? ZmStatusView.LEVEL_INFO : ZmStatusView.LEVEL_CRITICAL
-    };
-    appCtxt.setStatusMsg(params);
-
-    // NOTE: Since the preference values only come in at launch time,
-    // NOTE: manually set the confirmed email address so that we can
-    // NOTE: display the correct confirmed code status text
-    if (success) {
-        appCtxt.set(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS, this.getEmailAddress());
-    }
-
-    var status = success ? ZmNotificationsPage.CONFIRMED : ZmNotificationsPage.UNCONFIRMED;
-    this._form.setValue("DEVICE_EMAIL_CODE_STATUS_VALUE", status);
-    this._form.update();
-};
-
-ZmNotificationsPage.normalizePhoneNumber = function(phone) {
-    if (phone) {
-        phone = phone.replace(/[a-z]/gi,ZmNotificationsPage.__letters2Numbers);
-        phone = phone.replace(/[^+#\*0-9]/g,"");
-    }
-    return phone;
-};
-ZmNotificationsPage.__letters2Numbers = function($0) {
-    return ZmNotificationsPage.__letters2NumbersMap[$0.toLowerCase()];    
-};
-ZmNotificationsPage.__letters2NumbersMap = {
-                    a:2,b:2,c:2,d:3,e:3,f:3,
-    g:4,h:4,i:4,    j:5,k:5,l:5,m:6,n:6,o:6,
-    p:7,q:7,r:7,s:7,t:8,u:8,v:8,w:9,x:9,y:9,z:9
-}
-
-/**
- * <strong>Note:</strong>
- * This executes in the context of the DwtForm control.
- *
- * @private
- */
-ZmNotificationsPage.prototype._getCodeStatus = function() {
-    // remove other status class names
-    var controlEl = this.getControl("DEVICE_EMAIL_CODE_STATUS").getHtmlElement();
-    Dwt.delClass(controlEl, ZmNotificationsPage.CONFIRMED);
-    Dwt.delClass(controlEl, ZmNotificationsPage.PENDING);
-    Dwt.delClass(controlEl, ZmNotificationsPage.UNCONFIRMED);
-
-    // add appropriate class name
-    var status = this.get("DEVICE_EMAIL_CODE_STATUS_VALUE");
-    Dwt.addClass(controlEl, status);
-
-    // format status text
-    if (status == ZmNotificationsPage.CONFIRMED) {
-        var email = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS);
-        if (email) {
-            var pattern = ZmMsg.deviceEmailNotificationsVerificationStatusConfirmed;
-            return AjxMessageFormat.format(pattern, [email]);
-        }
-        // default back to unconfirmed
-        Dwt.delClass(controlEl, status, ZmNotificationsPage.UNCONFIRMED);
-    }
-    return status == ZmNotificationsPage.PENDING ?
-        ZmMsg.deviceEmailNotificationsVerificationStatusPending :
-        ZmMsg.deviceEmailNotificationsVerificationStatusUnconfirmed
-    ;
-};
-
-/**
- * <strong>Note:</strong>
- * This executes in the context of the DwtForm control.
- *
- * @private
- */
-ZmNotificationsPage.prototype._getPhoneHint = function() {
-    var carrierId = this.getValue("DEVICE_EMAIL_CARRIER");
-    var carrier = ZmNotificationsPage.CARRIERS[carrierId];
-    var carrierHint = carrier && carrier.hint;
-    var email = this.parent.getEmailAddress();
-    var emailHint = email && AjxMessageFormat.format(ZmMsg.deviceEmailNotificationsPhoneNumber, [email]);
-    if (carrierHint || emailHint) {
-        if (!carrierHint) return emailHint;
-        if (!emailHint) return carrierHint;
-        return AjxMessageFormat.format(ZmMsg.deviceEmailNotificationsCarrierEmailHint, [emailHint,carrierHint]);
-    }
-    return "";
+ZmNotificationsPageForm.__letters2Numbers = function($0) {
+    return ZmNotificationsPageForm.__letters2NumbersMap[$0.toLowerCase()];
 };
