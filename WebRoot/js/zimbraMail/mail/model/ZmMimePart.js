@@ -147,7 +147,7 @@ function(parentNode) {
 	}
 
 	// bug fix #7271 - dont show renderable body parts as attachments anymore
-	if (this.node.body &&
+	if (this.node.body && AjxUtil.isSpecified(this.node.content) && 
 		(this.node.ct == ZmMimeTable.TEXT_HTML || this.node.ct == ZmMimeTable.TEXT_PLAIN))
 	{
 		return true;
@@ -168,6 +168,7 @@ function(partNode, attachments, bodyParts, parentNode) {
 		if (this.node.content)
 			this._loaded = true;
 
+        var isAtt = false;
 		if (this.node.cd == "attachment" || 
 			this.node.ct == ZmMimeTable.MSG_RFC822 ||
             this.node.ct == ZmMimeTable.TEXT_CAL ||            
@@ -177,16 +178,17 @@ function(partNode, attachments, bodyParts, parentNode) {
 		{
 			if (!this.isIgnoredPart(parentNode)) {
 				attachments.push(this.node);
+                isAtt = true;
 			}
 		}
 
         if(this.node.body){
-            if((ZmMimeTable.isRenderable(this.node.ct) || ZmMimeTable.isTextType(this.node.ct) || this.node.content)) {
+            var hasContent = AjxUtil.isSpecified(this.node.content);
+            if((ZmMimeTable.isRenderableImage(this.node.ct) || hasContent)) {
                 bodyParts.push(this.node);
-            }else if(AjxUtil.isUndefined(this.node.content) && this.node.size != 0){
-                if(!this.isIgnoredPart(parentNode)){
-                    attachments.push(this.node);
-                }
+            }else if(!isAtt && this.node.size != 0 && !this.isIgnoredPart(parentNode)){
+                attachments.push(this.node);
+                isAtt = true;
             }
         }
 
