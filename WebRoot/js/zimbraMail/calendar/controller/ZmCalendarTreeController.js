@@ -443,6 +443,38 @@ function(organizer) {
 	this._doDelete(organizer);
 };
 
+/**
+ * Empties a folder.
+ * It removes all the items in the folder except sub-folders.
+ * If the folder is Trash, it empties even the sub-folders.
+ * A warning dialog will be shown before any folder is emptied.
+ *
+ * @param {DwtUiEvent}		ev		the UI event
+ *
+ * @private
+ */
+ZmCalendarTreeController.prototype._emptyListener =
+function(ev) {
+	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
+	var ds = this._emptyShield = appCtxt.getOkCancelMsgDialog();
+	ds.reset();
+	ds.registerCallback(DwtDialog.OK_BUTTON, this._emptyShieldYesCallback, this, organizer);
+	ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._emptyShield);
+	var msg = (organizer.nId != ZmFolder.ID_TRASH)
+		? (AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName()))
+		: ZmMsg.confirmEmptyTrashFolder;
+	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+
+	var focusButtonId = (organizer.nId == ZmFolder.ID_TRASH) ?  DwtDialog.OK_BUTTON : DwtDialog.CANCEL_BUTTON;
+	ds.associateEnterWithButton(focusButtonId);
+	ds.popup(null, focusButtonId);
+
+	if (!organizer.isInTrash()) {
+		var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
+		cancelButton.focus();
+	}
+};
+
 ZmCalendarTreeController.prototype._notifyListeners =
 function(overviewId, type, items, detail, srcEv, destEv) {
 	if (this._eventMgrs[overviewId] &&
