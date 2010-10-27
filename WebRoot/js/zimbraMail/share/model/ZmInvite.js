@@ -364,7 +364,8 @@ function(compNum) {
 	if (!(att && att.length)) { return list; }
 
 	for (var i = 0; i < att.length; i++) {
-		if (att[i].cutype == ZmCalendarApp.CUTYPE_RESOURCE) {
+		if (att[i].cutype == ZmCalendarApp.CUTYPE_RESOURCE || 
+		    att[i].cutype == ZmCalendarApp.CUTYPE_ROOM      ) {
 			list.push(att[i]);
 		}
 	}
