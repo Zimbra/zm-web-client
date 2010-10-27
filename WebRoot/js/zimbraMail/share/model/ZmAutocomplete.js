@@ -219,8 +219,11 @@ function(str, aclv, options, acType, callback, account, result) {
 
 	// we assume the results from the server are sorted by ranking
 	callback.run(list);
-
-	this._cacheResults(str, acType, list, hasGal, resp._respEl.canBeCached, null, account);
+	if (resp && resp.getAttribute("more")) {
+		DBG.println("ac", "Autocomplete result set is incomplete, don't cache it");
+	} else {
+		this._cacheResults(str, acType, list, hasGal, resp._respEl.canBeCached, null, account);
+	}
 };
 
 /**
