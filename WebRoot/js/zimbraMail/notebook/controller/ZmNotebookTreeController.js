@@ -192,6 +192,15 @@ function(ev) {
 	sharePropsDialog.popup(ZmSharePropsDialog.NEW, notebook, share);
 };
 
+ZmNotebookTreeController.prototype._mountNotebookListener =
+function(ev) {
+	this._pendingActionData = this._getActionedOrganizer(ev);
+	var notebook = this._pendingActionData;
+
+	var dialog = appCtxt.getMountFolderDialog();
+	dialog.popup(ZmOrganizer.NOTEBOOK, notebook.id/*, ...*/);
+};
+
 ZmNotebookTreeController.prototype._refreshListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);

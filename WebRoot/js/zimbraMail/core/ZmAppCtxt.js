@@ -122,9 +122,6 @@ function() {
  * @param	{String}	params.detail 	the details (may be <code>null</code>)
  * @param	{Object}	params.transitions 	the transitions (may be <code>null</code>)
  * @param	{Object}	params.toast	the toast control (may be <code>null</code>)
- * @param   {boolean}   params.force    force any displayed toasts out of the way (dismiss them and run their dismissCallback). Enqueued messages that are not yet displayed will not be displayed
- * @param   {AjxCallback} params.dismissCallback    callback to run when the toast is dismissed (by another message using [force], or explicitly calling ZmStatusView.prototype.dismiss())
- * @param   {AjxCallback} params.finishCallback     callback to run when the toast finishes its transitions by itself (not when dismissed)
  * </ul>
  * 
  */
@@ -132,15 +129,6 @@ ZmAppCtxt.prototype.setStatusMsg =
 function(params) {
 	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
 	this._appController.setStatusMsg(params);
-};
-
-/**
- * Dismisses the displayed status message, if any
- */
-
-ZmAppCtxt.prototype.dismissStatusMsg =
-function(all) {
-	this._appController.dismissStatusMsg(all);
 };
 
 /**
@@ -576,7 +564,7 @@ function() {
 		this._chooseAccountDialog = new ZmChooseAccountDialog(this._shell);
 	}
 	return this._chooseAccountDialog;
-};
+}
 
 /**
  * Gets the pick tag dialog.
@@ -646,14 +634,6 @@ function() {
 	return this._sharePropsDialog;
 };
 
-ZmAppCtxt.prototype.getShareSearchDialog = function() {
-	if (!this._shareSearchDialog) {
-		AjxDispatcher.require("Share");
-		this._shareSearchDialog = new ZmShareSearchDialog({parent:this._shell});
-	}
-	return this._shareSearchDialog;
-};
-
 /**
  * Gets the accept share dialog.
  * 
@@ -694,6 +674,20 @@ function() {
 		this._revokeShareDialog = new ZmRevokeShareDialog(this._shell);
 	}
 	return this._revokeShareDialog;
+};
+
+/**
+ * Gets the mount folder dialog.
+ * 
+ * @return	{ZmMountFolderDialog}		the mount folder dialog
+ */
+ZmAppCtxt.prototype.getMountFolderDialog =
+function() {
+	if (!this._mountFolderDialog) {
+		AjxDispatcher.require("Share");
+		this._mountFolderDialog = new ZmMountFolderDialog(this._shell);
+	}
+	return this._mountFolderDialog;
 };
 
 /**
@@ -780,15 +774,6 @@ function() {
 	return this._attachDialog;
 };
 
-ZmAppCtxt.prototype.getDumpsterDialog =
-function() {
-	if (!this._dumpsterDialog) {
-		AjxDispatcher.require("Extras");
-		this._dumpsterDialog = new ZmDumpsterDialog(this._shell);
-	}
-	return this._dumpsterDialog;
-};
-
 /**
  * Runs the attach dialog callbacks.
  *
@@ -871,20 +856,6 @@ function() {
 		this._addrSelectDialog = new ZmSelectAddrDialog(this._shell);
 	}
 	return this._addrSelectDialog;
-};
-
-/**
- * Gets the debug log dialog.
- *
- * @return	{ZmDebugLogDialog}		the debug log dialog
- */
-ZmAppCtxt.prototype.getDebugLogDialog =
-function() {
-	if (!this._debugLogDialog) {
-		AjxDispatcher.require("Extras");
-		this._debugLogDialog = new ZmDebugLogDialog(this._shell);
-	}
-	return this._debugLogDialog;
 };
 
 /**
@@ -1182,14 +1153,6 @@ function() {
 	return (ctlr && ctlr.getList) ? ctlr.getList() : this._list ? this._list : null;
 };
 
-ZmAppCtxt.prototype.getActionController =
-function() {
-	if (!this._actionController && !this.isChildWindow) {
-		this._actionController = new ZmActionController();
-	}
-	return this._actionController;
-};
-
 /**
  * Gets a new window.
  * 
@@ -1214,14 +1177,14 @@ function(fullVersion, width, height) {
 	if (fullVersion) {
 		url[i++] = "&full=1";
 	}
-	if (window.appDevMode) {
+	if (appDevMode) {
 		url[i++] = "&dev=1";
 	}
 
 	width = width || 705;
 	height = height || 465;
 	var args = ["height=", height, ",width=", width, ",location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no"].join("");
-	if (window.appDevMode) {
+	if (appDevMode) {
 		args = ["height=", height, ",width=", width, ",location=yes,menubar=yes,resizable=yes,scrollbars=no,status=yes,toolbar=yes"].join("");
 	}
 	var newWin = window.open(url.join(""), "_blank", args);
@@ -1459,20 +1422,6 @@ function() {
 };
 
 /**
- * Gets the task manager.
- *
- * @return	{ZmTaskMgr}	the task manager
- */
-ZmAppCtxt.prototype.getTaskManager =
-function() {
-	if (!this._taskMgr) {
-		this._taskMgr = new ZmTaskMgr(this._shell);
-	}
-	return this._taskMgr;
-};
-
-
-/**
  * Gets the ACL.
  * 
  * @param	{ZmZimbrAccount}	account		the account
@@ -1567,7 +1516,7 @@ function() {
 ZmAppCtxt.prototype.getAutocompleter =
 function() {
 	if (!this._autocompleter) {
-		this._autocompleter = new ZmAutocomplete(null);
+		this._autocompleter = new ZmAutocomplete();
 	}
 	return this._autocompleter;
 };

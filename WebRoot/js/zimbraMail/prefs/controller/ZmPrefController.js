@@ -29,8 +29,6 @@
  */
 ZmPrefController = function(container, prefsApp) {
 
-	if (arguments.length == 0) { return; }
-	
 	ZmController.call(this, container, prefsApp);
 
 	this._currentView = ZmId.VIEW_PREF;
@@ -85,16 +83,16 @@ function() {
 };
 
 /**
- * Gets the filter controller.
+ * Gets the filter rules controller.
  * 
- * @return	{ZmFilterController}	the filter controller
+ * @return	{ZmFilterRulesController}	the filter rules controller
  */
-ZmPrefController.prototype.getFilterController =
-function(section) {
-	if (!this._filterController) {
-		this._filterController = new ZmFilterController(this._container, this._app, this._prefsView, section || ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS), this);
+ZmPrefController.prototype.getFilterRulesController =
+function() {
+	if (!this._filterRulesController) {
+		this._filterRulesController = new ZmFilterRulesController(this._container, this._app, this._prefsView);
 	}
-	return this._filterController;
+	return this._filterRulesController;
 };
 
 /**
@@ -511,5 +509,5 @@ function() {
 
 ZmPrefController.prototype._getDefaultFocusItem = 
 function() {
-	return this._toolbar;
+	return this._prefsView.getTabGroupMember() || this._toolbar || null;
 };

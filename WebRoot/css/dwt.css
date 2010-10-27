@@ -153,7 +153,6 @@
 .DwtHorizontalSash					{	@HSashContainer@	}
 .DwtHorizontalSash DIV				{	@HSashThumb@		}
 
-.RightBorderSeparator           {   border-right:5px solid @SeparatorColor@}
 
 
 
@@ -234,10 +233,6 @@
 	padding-top:2px;		/* ??? */
 }
 
-.overviewHeader .ImgNodeExpanded,
-.overviewHeader .ImgNodeCollapsed {
-    @ActiveCursor@
-}
 
 /*
 * Buttons
@@ -391,25 +386,7 @@
 .DwtMenuCascadeCell 					{	@LeftSeparator@		}
 
 
-#IFDEF MSIE
-.DwtMenuScrollTop,
-.DwtMenuScrollBottom					{	text-align:center; 	}
-.DwtMenuScrollTop div,
-.DwtMenuScrollBottom div				{	display:inline; }
-#ENDIF
 
-#IFDEF GECKO
-.DwtMenuScrollTop div,
-.DwtMenuScrollBottom div				{	position:relative; top:@MenuScrollArrowMargin@;	}
-#ENDIF
-
-.DwtMenuScrollTop,
-.DwtMenuScrollBottom					{	width: 100%; @MenuScrollHeight@ 	}
-.DwtMenuScrollTop div,
-.DwtMenuScrollBottom div				{	margin:@MenuScrollArrowMargin@ auto;	}
-
-.DwtMenu-congruentLeft					{	@MenuCongruentLeft@	}
-.DwtMenu-congruentRight					{	@MenuCongruentRight@ 	}
 
 /* ??? */
 .DwtSelectMenu table{
@@ -522,11 +499,6 @@
 	position: relative;
 	overflow: auto;
 	@FullSize@
-}
-
-
-.ZmContactSearchListView .DwtListView-Rows {
-    height: 276px;
 }
 
 /* ??? SHOTGUN */
@@ -706,13 +678,8 @@
 /* Text area for the message dialog, including icon */
 .DwtMsgArea {
 	@BoxPadding@
-	width: 100%;
 }
 
-/* Outer container for the confirmation dialog */
-.DwtConfirmDialog {
-	max-width: 400px;
-}
 
 /* Font for confirmation dialogs ('Are you sure you want to delete?') */
 .DwtConfirmDialogQuestion {
@@ -793,46 +760,22 @@
 
 /* Container for the entire color picker, inside the menu */
 .DwtColorPicker {
+	@SeparatorBorder@
+}
+
+/* Single cell in the picker -- doesn't seem to have a visible effect*/
+/* ??? USED? */
+.DwtColorPicker table td img {
+	border: 1px none black;
 }
 
 
-.DwtColorPicker .Colors {
-    position: relative;
-    height: 12px;
-    clear: both;
+.DwtColorPicker .NoFill, .DwtColorPicker .SetInputColor {
+	@SeparatorBorder@
+	@ActiveCursor@
+	text-align: center;
 }
 
-.DwtColorPicker .Color {
-    display: inline;
-    float: left;
-    width: 12px;
-    height: 11px;
-    margin-left: 1px;
-    margin-right: 1px;
-    border: solid 1px black;
-    border-top: none;
-}
-
-.DwtColorPicker .First .Color {
-    border-top: solid 1px black;
-}
-
-.DwtColorPicker .Colors .ZHover {
-    width: 10px;
-    border-left-width: 2px;
-    border-right-width: 2px;
-}
-
-.DwtColorPicker .Text {
-    clear: both;
-    margin: 4 0 4 0;
-}
-
-.DwtColorPickerButton .Color {
-    width: 12px;
-    height: 11px;
-    border: solid 1px black !important;
-}
 
 /* ??? USED? */
 .DwtResizeGripper {
@@ -1470,18 +1413,6 @@ input.xform_field {
 	border-bottom-width:1px;
 	border-right-width:1px;
 }
-.dynselect_error_note,
-.oselect_error_note {
-    @MenuContainer@
-    @Text-error@
-    @NoticeContainer-warning@  
-    position:absolute;
-    z-index:10000000000;
-    border-bottom-width:1px;
-    border-right-width:1px;
-    white-space:nowrap;
-}
-
 .dynselect_menu,
 .oselect_menu {
 	@MenuContainer@
@@ -1835,7 +1766,7 @@ ZToolbarButtonTable {}
  *
  ***************/
 
-.ZSelectAutoSizingContainer 		{ overflow: hidden; height: 22px; width: auto; }		/* TODO: SIZE ASSUMPTION! */
+.ZSelectAutoSizingContainer 		{ overflow: visible; height: 22px; width: auto; }		/* TODO: SIZE ASSUMPTION! */
 
 .ZSelect									{	@Select@		@SelectSpacing@			}
 .ZSelect .ZWidgetTitle						{	padding-left: 5px; text-align: left;	}
@@ -1856,7 +1787,7 @@ ZToolbarButtonTable {}
 
 
 
-.ZSelectPseudoItem    		        { padding: 0 17px 6px; visibility: hidden; }
+.ZSelectPseudoItem    		        { padding-right: 23px; visibility: hidden; }
 
 /*
 .ZSelect .ZLeftIcon  DIV			{	position:relative; left:5px;}

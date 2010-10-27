@@ -6,30 +6,3 @@
   </div>
 </template>
 
-<template id='zimbra.Widgets#ZmErrorDialogContent'>
-	<table width='100%' height='100%'>
-		<tr>
-			<td>${message}</td>
-		</tr>
-		<$ if (data.showDetails) { $>
-		<tr>
-			<td>
-				<hr/>
-			</td>
-		</tr>
-		<tr>
-			<td style='height:100%'>
-				<textarea style='width:100%;height:100%;display:block' readonly>${detail}</textarea>
-			</td>
-		</tr>
-		<$ } $>
-	</table>
-</template>
-
-<template id='zimbra.Widgets#ZmColorMenuItem' class='ZWidget'>
-	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder' cellspacing='0' cellpadding='0'>
-		<tr>
-			<td id='${id}_title' class='ZWidgetTitle'></td>
-		</tr>
-	</table>
-</template>

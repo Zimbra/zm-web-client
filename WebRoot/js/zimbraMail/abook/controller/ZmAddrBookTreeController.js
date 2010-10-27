@@ -35,6 +35,7 @@ ZmAddrBookTreeController = function() {
 
 	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_ADDRBOOK] = new AjxListener(this, this._shareAddrBookListener);
+	this._listeners[ZmOperation.MOUNT_ADDRBOOK] = new AjxListener(this, this._mountAddrBookListener);
     this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
 	this._app = appCtxt.getApp(ZmApp.CONTACTS);
@@ -145,6 +146,7 @@ function(parent, type, id) {
 
 	// we always enable sharing in case we're in multi-mbox mode
 	this._resetButtonPerSetting(parent, ZmOperation.SHARE_ADDRBOOK, appCtxt.get(ZmSetting.SHARING_ENABLED));
+	this._resetButtonPerSetting(parent, ZmOperation.MOUNT_ADDRBOOK, appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
 
 
@@ -172,6 +174,9 @@ function() {
 	if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
 		ops.push(ZmOperation.NEW_ADDRBOOK);
 	}
+	ops.push(ZmOperation.MOUNT_ADDRBOOK,
+			ZmOperation.EXPAND_ALL,
+			ZmOperation.BROWSE);
 	return ops;
 };
 
@@ -225,6 +230,14 @@ ZmAddrBookTreeController.prototype._shareAddrBookListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
+};
+
+/**
+ * @private
+ */
+ZmAddrBookTreeController.prototype._mountAddrBookListener =
+function(ev) {
+	appCtxt.getMountFolderDialog().popup(ZmOrganizer.ADDRBOOK);
 };
 
 /**

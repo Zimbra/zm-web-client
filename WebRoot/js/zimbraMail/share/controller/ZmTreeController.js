@@ -296,7 +296,7 @@ function(params) {
 ZmTreeController.prototype._getTreeChangeListener =
 function() {
 	if (!this._dataChangeListener) {
-		this._dataChangeListener = appCtxt.isChildWindow ? AjxCallback.simpleClosure(this._treeChangeListener, this) : new AjxListener(this, this._treeChangeListener);
+		this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
 	}
 	return this._dataChangeListener;
 };
@@ -360,49 +360,18 @@ function(treeItem, organizer, treeView) {
 			this._setTreeItemColor(treeItem, organizer);
 		}
 		if (treeView.isCheckedStyle) {
-			if ((organizer.type == this.type && treeView.isCheckedStyle) ||
-                organizer.nId == ZmOrganizer.ID_TRASH || organizer.nId == ZmOrganizer.ID_DRAFTS) {
+			if (organizer.type == this.type && treeView.isCheckedStyle) {
 				treeItem.setChecked(organizer.isChecked, true);
 			} else {
 				treeItem.showCheckBox(false);
 				treeItem.enableSelection(true);
 			}
 		}
-
-		// set expand state per user's prefs
-		this._expandTreeItem(treeItem);
 	}
     var treeItems = treeItem.getItems();
     for (var i = 0; i < treeItems.length; i++) {
         this._fixupTreeNode(treeItems[i], null, treeView);
     }
-};
-
-ZmTreeController.prototype._expandTreeItem =
-function(treeItem) {
-	var expanded = appCtxt.get(ZmSetting.FOLDERS_EXPANDED);
-	var folderId = treeItem.getData(Dwt.KEY_ID);
-	var parentTi = treeItem.parent;
-
-	// only expand if the parent is also expanded
-	if (expanded[folderId] &&
-		parentTi && (parentTi instanceof DwtTreeItem) && parentTi.getExpanded())
-	{
-		treeItem.setExpanded(true);
-	}
-};
-
-ZmTreeController.prototype._expandTreeItems =
-function(treeItem) {
-	if (treeItem._isSeparator) { return; }
-
-	this._expandTreeItem(treeItem);
-
-	// recurse!
-	var treeItems = treeItem.getItems();
-	for (var i = 0; i < treeItems.length; i++) {
-		this._expandTreeItems(treeItems[i]);
-	}
 };
 
 /**
@@ -513,19 +482,12 @@ function(ev) {
  * @private
  */
 ZmTreeController.prototype._getActionMenu =
-function(ev, item) {
-    var controller = this;
-
-    // special case - search folder. might have moved under a regular folder  
-    if (item && item.type == ZmOrganizer.SEARCH) {
-        controller = this._opc.getTreeController(ZmOrganizer.SEARCH);
-    }
-
-	if (controller._actionMenu instanceof AjxCallback) {
-		var callback = controller._actionMenu;
-		controller._actionMenu = callback.run();
+function(ev) {
+	if (this._actionMenu instanceof AjxCallback) {
+		var callback = this._actionMenu;
+		this._actionMenu = callback.run();
 	}
-	return controller._actionMenu;
+	return this._actionMenu;
 };
 
 /**
@@ -730,7 +692,7 @@ function(ev) {
 		if (overview.actionSupported) {
 			var actionMenu = (item.nId == ZmOrganizer.ID_ROOT || item.isDataSource(ZmAccount.TYPE_IMAP))
 				? this._getHeaderActionMenu(ev)
-				: this._getActionMenu(ev, item);
+				: this._getActionMenu(ev);
 			if (actionMenu) {
 				this.resetOperations(actionMenu, type, id);
 				actionMenu.popup(0, ev.docX, ev.docY);
@@ -833,20 +795,6 @@ function(ev) {
 	var treeItem = ev && ev.item;
 	var overviewId = treeItem && treeItem._tree && treeItem._tree.overviewId;
 
-	// persist expand/collapse state for folders
-	var isExpand = ev.detail == DwtTree.ITEM_EXPANDED;
-	var folderId = (ev.detail == DwtTree.ITEM_COLLAPSED || isExpand)
-		? treeItem.getData(Dwt.KEY_ID) : null;
-
-	if (folderId && !treeItem._isHeader) {
-		appCtxt.set(ZmSetting.FOLDERS_EXPANDED, isExpand, folderId);
-
-		// check if any of this treeItem's children need to be expanded as well
-		if (isExpand) {
-			this._expandTreeItems(treeItem);
-		}
-	}
-
 	// only handle events that come from headers in app overviews
 	var overview = appCtxt.getOverviewController().getOverview(overviewId);
 	if (!(ev && ev.detail && overview && overview.isAppOverview && treeItem._isHeader)) { return; }
@@ -946,7 +894,6 @@ function(ev, treeView, overviewId) {
 			}
 			if (parentNode) {
 				parentNode.setExpanded(true); // so that new node is visible
-
 				this._fixupTreeNode(node, organizer, treeView);
 			}
 			this._checkTreeView(overviewId);
@@ -959,6 +906,8 @@ function(ev, treeView, overviewId) {
 					appCtxt.getApp(ZmApp.MAIL).getOverviewContainer().updateTooltip(organizer.nId);
 				}
 			}
+			var parentNode = this._getParentNode(organizer, ev, overviewId);
+			if (!parentNode) { return; }
 
 			if (fields[ZmOrganizer.F_NAME] ||
 				fields[ZmOrganizer.F_UNREAD] ||
@@ -967,8 +916,6 @@ function(ev, treeView, overviewId) {
 				((organizer.nId == ZmFolder.ID_DRAFTS || organizer.rid == ZmFolder.ID_DRAFTS ||
 				  organizer.nId == ZmOrganizer.ID_OUTBOX) && fields[ZmOrganizer.F_TOTAL]))
 			{
-				var parentNode = this._getParentNode(organizer, ev, overviewId);
-				if (!parentNode) { return; }
 				this._updateOverview(parentNode, node, fields, organizer, treeView);
 				this._evHandled[overviewId] = true;
 			}

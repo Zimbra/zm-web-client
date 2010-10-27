@@ -610,13 +610,6 @@ function(convNode) {
 			if (msgNode.s) {
 				this.size = msgNode.s;
 			}
-
-			if (msgNode.autoSendTime) {
-				var timestamp = parseInt(msgNode.autoSendTime);
-				if (timestamp) {
-					this.setAutoSendTime(new Date(timestamp));
-				}
-			}
 		}
 	}
 

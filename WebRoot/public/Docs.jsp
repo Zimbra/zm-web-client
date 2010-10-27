@@ -159,8 +159,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     window.contextPath = '<%= contextPath %>';
     window.isRestView = false;
     window.isTinyMCE = <%= isTinyMce %>;
-    window.appDevMode     = ${isDevMode};
-    
     ZmDocsEditApp._createDBG(${isDevMode});
 
     ZmDocsEditApp.setFile('${fileId}', '${fileName}', '${folderId}');

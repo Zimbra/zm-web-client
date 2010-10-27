@@ -86,7 +86,6 @@
 	}
     boolean isScriptErrorOn = getParameter(request, "scripterrors", "0").equals("1");
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
-	String debugLogTarget = getParameter(request, "log", getAttribute(request, "log", null));
 	String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
 	String startApp = getParameter(request, "app", "");
 	String noSplashScreen = getParameter(request, "nss", null);
@@ -127,7 +126,7 @@
 	pageContext.setAttribute("app", startApp);
 	pageContext.setAttribute("locale", locale);
 	pageContext.setAttribute("isDevMode", isDev);
-	pageContext.setAttribute("isScriptErrorOn", isScriptErrorOn);
+    pageContext.setAttribute("isScriptErrorOn", isScriptErrorOn);
 	pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));
 	pageContext.setAttribute("isProdMode", !prodMode.equals(""));
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
@@ -156,7 +155,7 @@
 	appContextPath = "${zm:jsEncode(contextPath)}";
 	appCurrentSkin = "${zm:jsEncode(skin)}";
 	appExtension   = "${zm:jsEncode(ext)}";
-	window.appDevMode     = ${isDevMode};
+	appDevMode     = ${isDevMode};
     window.isScriptErrorOn   = ${isScriptErrorOn};
 </script>
 <noscript>
@@ -308,10 +307,9 @@ for (var pkg in window.AjxTemplateMsg) {
 
 		var prodMode = ${isProdMode};
 		var debugLevel = "<%= (debug != null) ? debug : "" %>";
-		var debugLogTarget = "<%= (debugLogTarget != null) ? debugLogTarget : "" %>";
 		if (!prodMode || debugLevel) {
 			AjxDispatcher.require("Debug");
-			window.DBG = new AjxDebug({level:AjxDebug.NONE, target:debugLogTarget});
+			DBG = new AjxDebug(AjxDebug.NONE, null, false);
 			// figure out the debug level
 			if (debugLevel == 't') {
 				DBG.showTiming(true);

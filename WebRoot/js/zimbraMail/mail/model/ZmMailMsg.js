@@ -89,7 +89,7 @@ ZmMailMsg.HDR_DATE		= "DATE";
  */
 ZmMailMsg.HDR_SUBJECT	= "SUBJECT";
 
-ZmMailMsg.HDR_KEY = {};
+ZmMailMsg.HDR_KEY = new Object();
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_FROM]		= ZmMsg.from;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_TO]			= ZmMsg.to;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_CC]			= ZmMsg.cc;
@@ -100,7 +100,7 @@ ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE]		= ZmMsg.sentAt;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT]	= ZmMsg.subject;
 
 // Ordered list - first matching status wins
-ZmMailMsg.STATUS_LIST = ["isScheduled", "isDraft", "isReplied", "isForwarded", "isSent", "isUnread"];
+ZmMailMsg.STATUS_LIST = ["isDraft", "isReplied", "isForwarded", "isSent", "isUnread"];
 
 ZmMailMsg.STATUS_ICON = {};
 ZmMailMsg.STATUS_ICON["isDraft"]		= "MsgStatusDraft";
@@ -108,7 +108,6 @@ ZmMailMsg.STATUS_ICON["isReplied"]		= "MsgStatusReply";
 ZmMailMsg.STATUS_ICON["isForwarded"]	= "MsgStatusForward";
 ZmMailMsg.STATUS_ICON["isSent"]			= "MsgStatusSent";
 ZmMailMsg.STATUS_ICON["isUnread"]		= "MsgStatusUnread";
-ZmMailMsg.STATUS_ICON["isScheduled"]	= "SendLater";
 
 ZmMailMsg.PSTATUS_ACCEPT		= "AC";
 ZmMailMsg.PSTATUS_DECLINED		= "DE";
@@ -631,18 +630,6 @@ function(ids) {
 	this._forAttIds = ids;
 };
 
-/**
-* Sets the ID of the contacts that are to be attached as vCards
-*
-* @param {Array}	ids		a list of contact IDs
-*/
-ZmMailMsg.prototype.setContactAttIds =
-function(ids) {
-	ids = AjxUtil.toArray(ids);
-	this._onChange("contactAttIds", ids);
-	this._contactAttIds = ids;
-};
-
 // Actions
 
 /**
@@ -1108,11 +1095,9 @@ function(nfolder, resp) {
  * @param {Boolean}	noSave				if set, a copy will *not* be saved to sent regardless of account/identity settings
  * @param {Boolean}	requestReadReceipt	if set, a read receipt is sent to *all* recipients
  * @param {ZmBatchCommand} batchCmd		if set, request gets added to this batch command
- * @param {Date} sendTime				if set, tell server that this message should be sent at the specified time
  */
 ZmMailMsg.prototype.send =
-function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime) {
-
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd) {
 	var aName = accountName;
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
@@ -1141,7 +1126,7 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 		if (noSave) {
 			request.noSave = 1;
 		}
-		this._createMessageNode(request, isDraft, aName, requestReadReceipt, sendTime);
+		this._createMessageNode(request, isDraft, aName, requestReadReceipt);
 		appCtxt.notifyZimlets("addExtraMsgParts", [request, isDraft]);
 		var params = {
 			jsonObj: jsonObj,
@@ -1167,9 +1152,6 @@ function(isDraft, callback, result) {
 		}
 	} else {
 		this._loadFromDom(resp);
-		if (resp.autoSendTime) {
-			this._notifySendListeners();
-		}
 	}
 
 	if (callback) {
@@ -1178,7 +1160,7 @@ function(isDraft, callback, result) {
 };
 
 ZmMailMsg.prototype._createMessageNode =
-function(request, isDraft, accountName, requestReadReceipt, sendTime) {
+function(request, isDraft, accountName, requestReadReceipt) {
 
 	var msgNode = request.m = {};
 
@@ -1319,8 +1301,7 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 	if (this.attId ||
 		(this._msgAttIds && this._msgAttIds.length) ||
 		(this._docAttIds && this._docAttIds.length) ||
-		(this._forAttIds && this._forAttIds.length) ||
-		(this._contactAttIds && this._contactAttIds.length))
+		(this._forAttIds && this._forAttIds.length))
 	{
 		var attachNode = msgNode.attach = {};
 		if (this.attId) {
@@ -1375,24 +1356,6 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 				}
 			}
 		}
-
-		if (this._contactAttIds && this._contactAttIds.length) {
-			attachNode.cn = [];
-			for (var i = 0; i < this._contactAttIds.length; i++) {
-				attachNode.cn.push({id:this._contactAttIds[i]});
-			}
-		}
-	}
-
-	if (sendTime && sendTime.date) {
-		var date = sendTime.date; // See ZmTimeDialog.prototype.getValue
-		var timezone = sendTime.timezone || AjxTimezone.DEFAULT;
-		var offset = AjxTimezone.getOffset(timezone, date);
-		var utcEpochTime = date.getTime() - ((date.getTimezoneOffset() + offset) * 60 * 1000);
-		// date.getTime() is the selected timestamp in local machine time (NOT UTC)
-		// date.getTimezoneOffset() is negative minutes to UTC from local time (+ for West, - for East)
-		// offset is minutes to UTC from selected time (- for West, + for East)
-		msgNode.autoSendTime = utcEpochTime;
 	}
 };
 
@@ -1461,24 +1424,17 @@ function(params, result) {
 
 ZmMailMsg.prototype._notifySendListeners =
 function() {
-	var flag, msg;
+	var flag;
 	if (this.isForwarded) {
 		flag = ZmItem.FLAG_FORWARDED;
-		msg = this._origMsg;
 	} else if (this.isReplied) {
 		flag = ZmItem.FLAG_REPLIED;
-		msg = this._origMsg;
-	} else if (this.isScheduled) {
-		flag = ZmItem.FLAG_ISSCHEDULED;
-		msg = this;
-		while (!msg.list && msg._origMsg)
-			msg = msg._origMsg;
 	}
 
-	if (flag && msg) {
-		msg[ZmItem.FLAG_PROP[flag]] = true;
-		if (msg.list) {
-			msg.list._notify(ZmEvent.E_FLAGS, {items: [msg.list], flags: [flag]});
+	if (flag && this._origMsg) {
+		this._origMsg[ZmItem.FLAG_PROP[flag]] = true;
+		if (this._origMsg.list) {
+			this._origMsg.list._notify(ZmEvent.E_FLAGS, {items: [this._origMsg], flags: [flag]});
 		}
 	}
 };
@@ -1651,7 +1607,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					(folder && !folder.isRemote()))
 				{
 					var partLabel = props.label;
-					partLabel = partLabel.replace(/\x27/g,"&apos;");
+					partLabel = partLabel.replace(/\x27/g,"\\'");
 					var onclickStr1 = "ZmMailMsgView.briefcaseCallback(\"" + this.id + "\",\"" + attach.part + "\",\""+partLabel+"\");";
 					props.briefcaseLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
 				}
@@ -1750,9 +1706,6 @@ function(msgNode) {
 	if (msgNode._attrs) { this.attrs = msgNode._attrs; }
 	if (msgNode.sf) 	{ this.sf = msgNode.sf; }
 	if (msgNode.cif) 	{ this.cif = msgNode.cif; }
-	if (msgNode.md) 	{ this.md = msgNode.md; }
-	if (msgNode.ms) 	{ this.ms = msgNode.ms; }
-	if (msgNode.rev) 	{ this.rev = msgNode.rev; }
 
 	//Copying msg. header's
 	if (msgNode.header) {
@@ -1825,13 +1778,6 @@ function(msgNode) {
 		var parts = this.participants.getArray();
 		for (var j = 0; j < parts.length; j++ ) {
 			this.addAddress(parts[j]);
-		}
-	}
-
-	if (msgNode.autoSendTime) {
-		var timestamp = parseInt(msgNode.autoSendTime) || null;
-		if (timestamp) {
-			this.setAutoSendTime(new Date(timestamp));
 		}
 	}
 
@@ -1989,7 +1935,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		}
 
 		// bug #44857 - replies/forwards should save sent message into respective account
-		if (!onBehalfOf && appCtxt.isFamilyMbox && this._origMsg && folder) {
+		if (!onBehalfOf && appCtxt.isFamilyMbox && this._origMsg) {
 			onBehalfOf = (folder.getOwner() != mainAcct);
 		}
 
@@ -2165,11 +2111,10 @@ function() {
 		var icon = this.getStatusIcon();
 		status.push(ZmMailMsg.TOOLTIP[icon]);
 	}
-	if (this.isScheduled)	{ status.push(ZmMsg.scheduled); }
 	if (this.isUnread)		{ status.push(ZmMsg.unread); }
 	if (this.isReplied)		{ status.push(ZmMsg.replied); }
 	if (this.isForwarded)	{ status.push(ZmMsg.forwarded); }
-	if (this.isSent && !this.isDraft) { status.push(ZmMsg.sentAt); }
+	if (this.isSent)		{ status.push(ZmMsg.sentAt); }
 	if (status.length == 0) {
 		status = [ZmMsg.read];
 	}
@@ -2197,22 +2142,4 @@ function() {
 		}
 	}
 	return false;
-};
-
-ZmMailMsg.prototype.setAutoSendTime =
-function(autoSendTime) {
-	var item = this;
-	while (item instanceof ZmMailMsg) {
-		item._setAutoSendTime(autoSendTime);
-		item = item._origMsg;
-	}
-};
-
-ZmMailMsg.prototype._setAutoSendTime =
-function(autoSendTime) {
-	ZmMailItem.prototype.setAutoSendTime.call(this, autoSendTime);
-	var conv = this.cid && appCtxt.getById(this.cid);
-	if (conv instanceof ZmConv) {
-		conv.setAutoSendTime(autoSendTime);
-	}
 };

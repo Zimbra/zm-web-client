@@ -104,18 +104,23 @@ var XHR = function(justTest) { //get the ajx
     return xhr;
 };
 var sAT = function(tabId){ //set active tab
-    tabId = tabId.replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail').replace(/(prefs)/,'options');
+    tabId = tabId.replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail');
     var targ = $(tabId);
     if(targ && targ.id.match(/(mail|contact|cal|tasks|options)/ig)){
         var ids = ['mail','contact','cal','tasks','options'];
         for(var i=0, len = ids.length; i < len;i++){
             var eid = ids[i];
             var  e = $(eid);
-            if(e && e.id == targ.id){
+            if(e.id == targ.id){
                 e.parentNode.className = "sel";
-            } else if(e) {
+            } else {
                 e.parentNode.className = "";
             }
+        }
+    }
+    if(targ && targ.id.match(/(mail|contact)/ig)) {
+        if(myScroll) {
+            myScroll.scrollTo(0,0);
         }
     }
 };
@@ -266,57 +271,18 @@ var AC = function(f,c){ //Register auto complete on field f and populate contain
         f.addEventListener("keydown", function(e){if (!e) e = event ? event : window.event;var k = e.keyCode?  e.keyCode : e.which; if((k==13 || k == 38 || k==40) && c.style.display=="block"){ window.acon = true;stopEvent(e);return false;}},true);
     }
 };
-
-var delClass = function(el, del, add) {
-	if (el == null) { return; }
-	if (!del && !add) { return; }
-
-	if (typeof del == "string" && del.length) {
-		del = _DELCLASS_CACHE[del] || (_DELCLASS_CACHE[del] = new RegExp("\\b" + del + "\\b", "ig"));
-	}
-	var className = el.className || "";
-	className = className.replace(del, " ");
-	el.className = add ? className + " " + add : className;
-};
-
-_DELCLASS_CACHE = {};
-
-var addClass = function(el, add) {
-    delClass(el, add, add)
-}
-
-var selId = null;
-var mailId = null;
-
 var zClickLink = function(id, t, el) { //Click on href and make ajx req if available
-    mailId = id;
     if((window.evHandled) !== undefined && window.evHandled) { return false; }
     var targ = el ? el.parentNode : (id ? $(id) : t );
     if(!targ) {return false;}
     if (targ.onclick) {var r=false;<c:if test="${!ua.isIE && !ua.isOpera}">r = targ.onclick();</c:if> if(!r)return false;}
-
-    //highlight the selected item
-    // TODO:need to handle multiple selection, move this to a separate method
-    if ((targ.tagName  == "a" || targ.tagName == "A") && (targ.id.toString().charAt(0) == 'a')) {
-        var targId = targ.id.toString();
-        var chitid = targId.substr(1, targId.length-1);
-        var elem = "conv" + chitid;
-        var element = $(elem);
-        addClass(element, 'msgContainerSel');
-        if (selId) {
-            delClass(selId, 'msgContainerSel');
-            selId = element;
-        } else {
-            selId = element;            
-        }
-    }
     var href = targ.href;
     if (!href || loading) {return false;}
     if (targ.target) {return true;}
     var xhr = XHR(true);
-    /*if($iO(href,"_replaceDate") > -1){
+    if($iO(href,"_replaceDate") > -1){
         href = href.replace(/date=......../, "date=" + currentDate);
-    }*/
+    }
     if (targ.attributes.noajax || !xhr) {
         window.location = href;
         return false;
@@ -329,7 +295,7 @@ var zClickLink = function(id, t, el) { //Click on href and make ajx req if avail
 };
 var lfr = function(response,frameId){ //Load frame response
     var req = {responseText: response,status: 200, readyState: 4};
-    parseResponse(req,null,frameId);
+    parseResponse(req,GC(),$(frameId).src);
 };
 
 var toParams = function(url){
@@ -342,9 +308,8 @@ var getFormValues = function(obj) {
     for (var i = 0, inp = obj.getElementsByTagName("input"), len = inp !== undefined ? inp.length : 0; i < len; i++) {
         var control = inp[i];//obj.getElementsByTagName("input")[i];
         var type = control.type ;
-        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password" || (type == "image" && control._wasClicked) || type == "search") {
+        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password" || type == "image") {
             getstr += control.name + "=" + escape(control.value) + "&";
-
         }
         if (type == "checkbox" || type == "radio") {
             if (control.checked) {
@@ -355,14 +320,6 @@ var getFormValues = function(obj) {
             getstr += control.name + "=" + control.options[control.selectedIndex].value + "&";
         }
 
-    }
-    for (i = 0, but = obj.getElementsByTagName("BUTTON"), len = but.length; i < len; i++) {
-        var control = but[i];//obj.getElementsByTagName("input")[i];
-        var type = control.type;
-        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked)) {
-            getstr += control.name + "=" + escape(control.value) + "&";
-            control._wasClicked = false;
-        }
     }
     for (i = 0, sel = obj.getElementsByTagName("SELECT"), len = sel.length; i < len; i++) {
         control = sel[i];//obj.getElementsByTagName("SELECT")[i];
@@ -404,7 +361,7 @@ var submitForm = function(fobj, target, val) {
             createUploaderFrame(target);
         }
         fobj.target = target;
-        fobj.action = addParam(fobj.action,'ajax=true'); //fobj.action.replace('ajax=true', '');
+        fobj.action = fobj.action.replace('ajax=true', '');
         fobj.action = addParam(fobj.action,'isinframe=true');
         showLoadingMsg('<fmt:message key="MO_sendingRequestMsg"/>', true);
         fobj.submit();
@@ -439,12 +396,6 @@ var customClick = function (e) {
     if (targ.nodeType == 3) {// defeat Safari bug
         targ = targ.parentNode;
     }
-
-    //hide actionMenu
-    if($('actListMenu') && $('actListMenu').style.display != 'none' && targ.id != 'aActionMenu') {
-        $('actListMenu').style.display = "none";
-    }
-
     if ((targ.tagName == "a" || targ.tagName == "A")) {
         e.returnValue = zClickLink(targ.id, targ);
         if (!e.returnValue) {
@@ -455,7 +406,7 @@ var customClick = function (e) {
     } else {
         var tname = targ.tagName;
         var ttype = targ.type;
-        if(tname.match(/input/ig) || tname.match(/button/ig) && (ttype.match(/submit/ig) || ttype.match(/image/ig))){ //submit button; add clicked=true to it
+        if(tname.match(/input/ig) && ttype.match(/submit/ig)){ //submit button; add clicked=true to it
             targ._wasClicked = true;                                                          //ajxForm submit will send only clicked btns to server
             return true;
         }
@@ -508,9 +459,9 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
     }
     var xhr = false;
     if(((method == "GET" || method == "get")) && $iO(url,"_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
-           xhr = ajxCache.get(query ? [url,query].join("?") : url);
+           xhr = ajxCache.get([url,query].join("?"));
            if(xhr){
-                parseResponse(xhr, container, query ? [url,query].join("?") : url);
+                parseResponse(xhr, container,[url,query].join("?"));
                 return;
            }
     }
@@ -529,11 +480,11 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
             }
             if(xhr.readyState == 4){
                 if((method == "GET" || method == "get") && $iO(url,"_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
-                    ajxCache.set(query ? [url,query].join("?") : url,xhr,justPrefetch);
+                    ajxCache.set([url,query].join("?"),xhr,justPrefetch);
                 }
                 lastRendered = new Date().getTime();
                 if(!justPrefetch){
-                    parseResponse(xhr, container,query ? [url,query].join("?") : url);
+                    parseResponse(xhr, container,[url,query].join("?"));
                 }
             }
         };
@@ -556,18 +507,17 @@ var parseResponse = function (request, container,url) {
         }
         if(match){
             sAT(match[1]);
-            var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders|newmail)/,'mail').replace(/(prefs)/,'options');
+            var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail');
             var targ = $(tabId);
             if (targ) {
                 if (targ.id == 'contact') {
-                    $("st").value = 'contact';
                     $("view-contact").style.display = "block";
                     $("view-mail").style.display = "none";
                 } else if (targ.id == 'mail') {
-                    $("st").value = 'conversation';
                     $("view-mail").style.display = "block";
                     $("view-contact").style.display = "none";
-                }            }
+                }
+            }
             $("view-content").style.display = "none";
             $("static-content").style.display = "block";
         }
@@ -575,24 +525,36 @@ var parseResponse = function (request, container,url) {
             showLoadingMsg(null, false);
             var data = request.responseText;
             if (data) {
+                <c:if test="${(ua.isiPhone or ua.isiPod) and param.anim}">if(url.match(/st=prefs|action=edit|st=newmail|st=newappt|st=newtask/) || $('card').className.match(/flipped/)){
+                    slideElem(container,-1);
+                }else if(url.match(/_pv=1|_back|st=briefcases|st=notebooks|st=folders|st=tasks|st=ab|st=cals/)){
+                    slideElem(container,0);
+                }else if(url.match(/_pv=0|action=view|sti/)){
+                    slideElem(container,1);
+                }</c:if>
                 <c:if test="${!ua.isIE}">window.scrollTo(0,1);</c:if>
-                if(match) {  //TODO: need to clean up a lot 
-                    var tabId = match[1].replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'docs').replace(/(cals|newappt)/ig,'cal').replace(/(message|conversation|folders|newmail|moveto)/,'mail').replace(/(ab)/,'contact').replace(/(prefs)/,'options');
-                    var targ = $(tabId);
-                    if(targ) {
-                        if(targ.id == 'cal' && targ.parentNode.className == 'sel') {
-                           ZmiPadCal.processResponse(data,url);
-                        } else if (targ.id == 'mail' && targ.parentNode.className == 'sel') {
-                           ZmiPadMail.processResponse(data,url);
-                        } else if (targ.id == 'contact' && targ.parentNode.className == 'sel') {
-                           ZmiPadContacts.processResponse(data,url);
-                        } else if (targ.id == 'options') {
-                           ZmiPadPrefs.processResponse(data,url);
-                        } else if (ZmiPad.getParamFromURL("st",url) == "newmail") {
-                           ZmiPadMail.processResponse(data,url);
-                        }
+                if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showABCreate') !=-1)  && (url.indexOf('hc=1') == -1)) {
+                    $("view-content").innerHTML = data;
+                    $("view-content").style.display = "block";
+                    $("static-content").style.display = "none";
+                } else if(url.indexOf('st=newmail') != -1) {
+                    $('compose-body').innerHTML = data;
+                    $("view-content").style.display = "block";
+                    $("static-content").style.display = "none";
+                    toggleCompose('compose-pop','veil');
+                } else {
+                    $("view-list").innerHTML = data;
+                    $("view-content").style.display = "none";
+                    if(myScroll) {
+                        loaded();
                     }
                 }
+                /*var scripts = container.getElementsByTagName("script");
+                for (var i = 0; i < scripts.length; i++) {
+                    if (!scripts[i].src) {
+                        try{eval(scripts[i].innerHTML);}catch(e){if(window.console){console.log(e);}}
+                    }
+                }*/
             }
         } else {
             showLoadingMsg('<fmt:message key="error"/> : ' + request.status, true, 'Critical');
@@ -620,7 +582,7 @@ var showLoadingMsg = function(msg, show, status, timeout, divId) {
         if (msg && show) {
             aMsgDiv.className = aMsgDiv.className.replace("hidden","").replace("shown","").replace(/Status(Info|Warning|Critical)/,"");
             aMsgDiv.className += " "+status+" shown";
-            aMsgDiv.innerHTML = "<div class='tbl'><div class='tr'><span class='td loadingIcon'></span><span style='width:90%;' class='td'>" + msg + "</span></div></div>";
+            aMsgDiv.innerHTML = "<div class='tbl'><div class='tr'><span class='td loadingIcon'></span><span style='width:90%;text-align:left;' class='td'>" + msg + "</span><span style='overflow:hidden;height:16px;' class='SmlIcnHldr Cancel'></span></div></div>";
 
             if (timeout) {
                 setTimeout(function() {
@@ -663,6 +625,30 @@ var openURL = function(url) {
     window.location = url.replace(/date=......../, "date=" + currentDate);
 };
 
+var startX,startY,iH=[],xD=0,yD=0,dV=[],dId=0;
+var updateChecked = function(disabled,doItAll){
+   var fbbar = $("fbbar");
+   if(!dV[dId] && !fbbar) return;
+   var cCount = 0,cbs=$('zForm').getElementsByClassName('chk');
+   for(var i=0, len = (cbs !== undefined) ? cbs.length : 0; i < len; i++){
+       if(cbs[i].checked){ cCount++;cbs[i].disabled = disabled;}
+   }
+   if(cCount > 0){
+    fbbar.style.display = "table";
+    uFB();
+    $("sc").innerHTML = "<span class='small-gray-text'>"+cCount+"</span>";
+   }else{
+    fbbar.style.display = "none";
+    $("sc").innerHTML = "";
+   }
+   if(doItAll && dV[dId])
+    if(cCount <= 0)
+        hideDelete(dId);
+    else
+        $('delBtn').value = "<fmt:message key="delete"/> ("+cCount+")";
+   return cCount;
+};
+
 var toggleElem = function(elem, me, minMsg, maxMsg) {
     if (!elem && !$(elem)) {return false;}
     if(typeof(elem) == "string"){elem = $(elem);}
@@ -677,14 +663,6 @@ var toggleElem = function(elem, me, minMsg, maxMsg) {
             me.innerHTML = maxMsg;//'Hide';
     }
     return false;
-};
-
-//initialize auto complete for mail compose view
-var initComposeAutoComplete = function() {
-    var fields = ['to', 'cc', 'bcc'];
-    for(var i=0; i < fields.length; i++) {
-        AC(fields[i] + "Field", fields[i] + "Container");
-    }
 };
 
 var toggleCompose = function(elem, veil) {
@@ -726,6 +704,7 @@ var checkAll = function(cb, checked) {
             cb[i].checked = checked;
     else
         cb.checked = checked;
+    <c:if test="${ua.isiPhone or ua.isiPod}">updateChecked(false,true);</c:if>
 };
 
 var rqT = function (xhr,msg,status){ // request timeout
@@ -745,23 +724,6 @@ var GC = function(id) {
     return window.__container;
 };
 
-var zCheckUnCheck = function(el) {
-	var chkEl = (el.nodeName == 'INPUT') ? el : el.getElementsByClassName('chk')[0];
-    if(chkEl && chkEl.checked) {
-		chkEl.checked = false;
-	} else if(chkEl && !chkEl.checked) {
-		chkEl.checked = true;
-	}
-	return true;
-};
-
-var moveToFldr = function(mTo) {
-    $('mvTo').value = mTo;
-    toggleCompose('compose-pop','veil');
-    return submitForm($('zMoveForm'));
-};
-
-
 //Init vals
 var MAX_CACHE_REQUEST = 50; // No of ajx get requests to cache
 var CACHE_DATA_LIFE = 20000; // miliseconds to keep the cache alive
@@ -772,629 +734,25 @@ var reqCount = 0;
 var reqTimer = null;
 var lastRendered = new Date().getTime();
 var ajxCache = new AjxCache(CACHE_DATA_LIFE);
-var listScroll = null;
-var contentScroll = null;
-var selectedConvId = null;
-var listConvListScroll = null;
+var myScroll = null;
 
 if(window.location.hash){
     sAT(window.location.hash);
 };
 
-var initListScroll = function () {
-    $('dlist-view').addEventListener('touchmove', function(e){ e.preventDefault(); });
-    listScroll = new iScroll('dlist-view',{ checkDOMChanges: false, desktopCompatibility: true, hScrollbar: false, vScrollbar: true });
-    return listScroll;
+var setHeight = function (){
+    document.getElementById('wrap-dlist-view').style.height = window.orientation == 90 || window.orientation == -90 ? '608px' : '864px';   
 };
 
-var initFldrListScroll = function () {
-	if($('folder-dlist')) {
-    	$('folder-dlist').addEventListener('touchmove', function(e){ e.preventDefault(); });
-    	listConvListScroll = new iScroll('folder-dlist',{ checkDOMChanges: false, desktopCompatibility: true });
-	}
+var loaded = function () {
+	setHeight();
+    document.addEventListener('touchmove', function(e){ e.preventDefault(); });
+	myScroll = new iScroll('dlist-view');
 };
 
-var initPrefScroll = function () {
-    $('dlist-pref').addEventListener('touchmove', function(e){ e.preventDefault(); });
-    listScroll = new iScroll('dlist-pref',{ checkDOMChanges: false, desktopCompatibility: true });
-};
+window.addEventListener('orientationchange', setHeight);
+document.addEventListener('DOMContentLoaded', loaded);
 
-var initContentScroll = function() {
-   if($("dcontent-view")) {
-       $("dcontent-view").addEventListener('touchmove', function(e){ e.preventDefault(); });
-       contentScroll = new iScroll('dcontent-view',{ desktopCompatibility: true, hScrollbar: true, vScrollbar: true });
-   }
-}
-
-var init = function () {
-    var dlistview = document.getElementById('dlist-view');
-    if(dlistview) {
-	    dlistview.addEventListener('touchmove', function(e){ e.preventDefault(); });
-	    listScroll = new iScroll('dlist-view',{ checkDOMChanges: false,desktopCompatibility: true, hScrollbar: false, vScrollbar: true });
-        rSH(dlistview);
-
-    }
-}
-
-
-function ZmiPad() {
-};
-
-//div id's for all views
-ZmiPad.ID_VIEW_LIST = "view-list";
-ZmiPad.ID_VIEW_CONTENT = "view-content";
-ZmiPad.ID_VIEW_STATIC = "static-content";
-ZmiPad.ID_VIEW_MAIN = "view-main";
-
-ZmiPad.IDS_ALL_VIEW = [ZmiPad.ID_VIEW_LIST,ZmiPad.ID_VIEW_CONTENT,ZmiPad.ID_VIEW_STATIC,ZmiPad.ID_VIEW_MAIN]
-
-//id's to show based on view pattern (i.e's) either CoLUMN VIEW or MAIN VIEW
-ZmiPad.COLUMN_VIEW = [ZmiPad.ID_VIEW_LIST,ZmiPad.ID_VIEW_CONTENT,ZmiPad.ID_VIEW_STATIC];
-ZmiPad.MAIN_VIEW = [ZmiPad.ID_VIEW_MAIN];
-
-
-ZmiPad.initMainView = function() {
-    for(var i = 0; i < ZmiPad.IDS_ALL_VIEW.length; i++) {
-        var viewDiv = $(ZmiPad.IDS_ALL_VIEW[i]);
-        if(viewDiv && ZmiPad.MAIN_VIEW.indexOf(ZmiPad.IDS_ALL_VIEW[i]) != -1) {
-            viewDiv.style.display = "block";
-        } else {
-            viewDiv.style.display = "none";
-        }
-    }
-};
-
-ZmiPad.initColumnView = function() {
-    for(var i = 0; i < ZmiPad.IDS_ALL_VIEW.length; i++) {
-        var viewDiv = $(ZmiPad.IDS_ALL_VIEW[i]);
-        if(viewDiv && ZmiPad.COLUMN_VIEW.indexOf(ZmiPad.IDS_ALL_VIEW[i]) != -1) {
-            viewDiv.style.display = "block";
-        } else {
-            viewDiv.style.display = "none";
-            viewDiv.innerHTML = "";    
-        }
-    }
-};
-
-//get param value from url
-ZmiPad.getParamFromURL = function(param, url) {
-
-  param = param.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regexS = "[\\?&]"+param+"=([^&#]*)";
-  var regex = new RegExp( regexS );
-  var results = regex.exec( url );
-  if( results == null )
-    return "";
-  else
-    return results[1];
-
-};
-
-ZmiPad.processScript = function(id) {
-    var scripts = $(id).getElementsByTagName("script");
-    for (var i = 0; i < scripts.length; i++) {
-        if (!scripts[i].src) {
-            try{eval(scripts[i].innerHTML);}catch(e){if(window.console){console.log(e);}}
-        }
-    }
-};
-
-ZmiPad.insertAfter = function(parent, node, referenceNode) {
-  parent.insertBefore(node, referenceNode.nextSibling);
-};
-
-/*
-ZmiPadMail to process all Mail responses
- */
-function ZmiPadMail() {
-
-};
-
-ZmiPadMail.processResponse = function (respData, url) {
-
-    ZmiPad.initColumnView();
-
-    $("folder-list").style.display = "none";
-
-    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1)  && (url.indexOf('hc=1') == -1)) {
-
-        $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
-        if(url.indexOf('action=view') != -1) ZmiPad.processScript(ZmiPad.ID_VIEW_CONTENT);
-        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
-        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
-        initContentScroll();
-        var targ = $(mailId);
-        if (targ && ((targ.tagName  == "a" || targ.tagName == "A") && (targ.id.toString().charAt(0) == 'a'))) {
-            var targId = targ.id.toString();
-            var chitid = targId.substr(1, targId.length-1);
-            var elem = "conv" + chitid;
-            var element = $(elem);
-			if (element.className.indexOf('list-row-unread') != -1) { 
-				addClass(element, "list-row"); 
-				delClass(element, "list-row-unread");
-			}
-		}
-    } else if(ZmiPad.getParamFromURL("showFolderCreate",url) == "1" || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1") {
-
-        $('compose-body').innerHTML = respData;
-        ZmiPad.processScript('compose-body');
-        $("folder-list").style.display = "block";
-
-        $(ZmiPad.ID_VIEW_LIST).style.display="none";
-        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";      
-        $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
-
-        toggleCompose('compose-pop','veil');
-               
-    } else if(ZmiPad.getParamFromURL("doFolderAction", url) == "1") {
-		toggleCompose('compose-pop','veil');
-		$("folder-list").innerHTML = respData;
-        $("folder-list").style.display = "block";
-
-        $(ZmiPad.ID_VIEW_LIST).style.display="none";    
-        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
-        $("sq").blur();
-        initFldrListScroll();
-
-    } else if(ZmiPad.getParamFromURL("doMessageAction", url) == "1") {
-        $("eaMsgDiv").innerHTML = respData;
-        $("eaMsgDiv").style.display = "";
-        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
-        $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
-        if($("messageActionIds").value != "" && ZmiPad.getParamFromURL("anAction", url) != "") {
-              var actionIds = ($("messageActionIds").value).split(",");                                         //messageActionIds comes from moipadredirect it gives all the action performed ids
-              var sConvId = ZmiPad.getParamFromURL("cid",url);
-
-              if(ZmiPad.getParamFromURL("anAction", url) == "actionDelete" || ZmiPad.getParamFromURL("anAction", url) == "actionHardDelete") {
-
-                 for(var i = 0; i < actionIds.length; i++){   //loop through all the checked ConvMsgList
-                    if(actionIds[i] && actionIds[i] != "") {
-                       var msgEl = $("conv"+actionIds[i]);
-                       if(msgEl && dId && dId == msgEl.id && dV[dId]){
-                             hideSwipe(dId);
-                       }
-                       if($("conv"+actionIds[i]) && $("conv"+actionIds[i]).getAttributeNode("pconv")) {         //check if the checked id has convList else its just message
-                            var pConv = $("conv"+actionIds[i]).getAttributeNode("pconv").value;
-                            $("conv"+actionIds[i]).style.textDecoration = "line-through";                       //present it as deleted
-                            $("conv"+actionIds[i]).getElementsByClassName('istrash'+pConv)[0].value = "true";   //update in our hidden tag
-
-                            var isTrashEls = document.getElementsByClassName('istrash'+pConv);                  //get all those hidden tag for the convList
-                            var allTrashed = false;
-                            for(var k = 0; k < isTrashEls.length; k++) {                                        //loop through to check everything is marked for delete or not
-                                if(isTrashEls[k].value == "true") {
-                                    allTrashed = true;
-                                } else {
-                                    allTrashed = false;
-                                    break;
-                                }
-                            }
-                            if(allTrashed) {                                                                    //if everthing is deleted
-                                var convParentNode = $("conv"+pConv).parentNode;                                //remove the conv
-                                convParentNode.removeChild($("conv"+pConv));                                    //remove the convList
-                                if($("list"+pConv)) {
-                                    var listParentNode = $("list"+pConv).parentNode;
-                                    listParentNode.removeChild($("list"+pConv));
-                                }
-                            }    
-                       } else {
-                            var convParentNode = $("conv"+actionIds[i]).parentNode;
-                            convParentNode.removeChild($("conv"+actionIds[i]));
-                            if($("list"+actionIds[i])) {
-                                var listParentNode = $("list"+actionIds[i]).parentNode;
-                                listParentNode.removeChild($("list"+actionIds[i]));
-                            }
-                       } 
-                    }
-                 }
-                 setTimeout(function(){listScroll.refresh();}, 1000);
-              } else if(ZmiPad.getParamFromURL("anAction", url) == "actionMarkSpam" || ZmiPad.getParamFromURL("anAction", url) == "actionMarkUnspam" || url.indexOf("anAction=moveTo_") != -1) {
-
-                 for(var i = 0; i < actionIds.length; i++){   //loop through all the checked ConvMsgList
-                    if(actionIds[i] && actionIds[i] != "") {
-                       if($("conv"+actionIds[i]) && $("conv"+actionIds[i]).getAttributeNode("pconv")) {         //check if the checked id has convList else its just message
-                            var pConv = $("conv"+actionIds[i]).getAttributeNode("pconv").value;
-
-                            var convPrntNode = $("conv"+actionIds[i]).parentNode.parentNode;
-                            convPrntNode.removeChild($("conv"+actionIds[i]).parentNode);
-
-                            if(trim($("list"+pConv).childNodes[1].innerHTML) == "") {
-                                var listParentNode = $("list"+pConv).parentNode;
-                                listParentNode.removeChild($("list"+pConv));
-                                var convParentNode = $("conv"+pConv).parentNode;
-                                convParentNode.removeChild($("conv"+pConv));
-                            }
-                            
-                       } else {
-                            var convParentNode = $("conv"+actionIds[i]).parentNode;
-                            convParentNode.removeChild($("conv"+actionIds[i]));
-                            if($("list"+actionIds[i])) {
-                                var listParentNode = $("list"+actionIds[i]).parentNode;
-                                listParentNode.removeChild($("list"+actionIds[i]));
-                            }
-                       }
-                    }
-                 }
-              } else if (ZmiPad.getParamFromURL("anAction", url) == "actionMarkRead") {   //TODO if its conversation is markread need to markread on all convMsgList
-                 for(var i = 0; i < actionIds.length; i++){
-                     if($("conv"+actionIds[i])) {
-                         var msgEl = $("conv"+actionIds[i]);   
-                         if (msgEl.className.indexOf('list-row-unread') != -1) {
-				            delClass(msgEl, "list-row-unread", "list-row");
-			             }
-                     }
-                 }
-              } else if (ZmiPad.getParamFromURL("anAction", url) == "actionMarkUnread") {  //TODO if its conversation is markUnRead need to markUnread on all convMsgList
-                 for(var i = 0; i < actionIds.length; i++){
-                     if($("conv"+actionIds[i])) {
-                         var msgEl = $("conv"+actionIds[i]);
-                         if (msgEl.className.indexOf('list-row') != -1) {
-				            delClass(msgEl, "list-row","list-row-unread");
-			             }
-                     }
-                 }
-              } else if (ZmiPad.getParamFromURL("anAction", url) == "actionFlag" || ZmiPad.getParamFromURL("anAction", url) == "actionUnflag") {  //TODO if its conversation is markFlag need to markFlag on all convMsgList
-                 for(var i = 0; i < actionIds.length; i++){
-                     if($("conv"+actionIds[i])) {
-                         var msgEl = $("conv"+actionIds[i]);
-                         if(msgEl && dId && dId == msgEl.id && dV[dId]){
-                            hideSwipe(dId);
-                         }
-                         if(msgEl.getElementsByClassName("l")[0]) {
-                          var liHtml = msgEl.getElementsByClassName("l")[0].innerHTML;
-
-                          if(liHtml.indexOf("SmlIcnHldr Flag") == -1) {
-                            msgEl.getElementsByClassName("l")[0].innerHTML += '<span class="SmlIcnHldr Flag">&nbsp;</span>'
-                          } else {
-                            msgEl.getElementsByClassName("l")[0].innerHTML = (msgEl.getElementsByClassName("l")[0].innerHTML).replace("SmlIcnHldr Flag","");
-                          }
-                         }
-                     }
-                 }
-              }
-        }
-    } else if(ZmiPad.getParamFromURL("st",url) == "moveto" && ZmiPad.getParamFromURL("sfi",url) != "") {
-
-        $('compose-body').innerHTML = respData;
-        ZmiPad.processScript('compose-body');
-        toggleCompose('compose-pop','veil');
-
-    } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1 ) {
-
-        $('compose-body').innerHTML = respData;
-        ZmiPad.processScript('compose-body');
-
-        if(ZmiPad.getParamFromURL("compose",url) != "new") {
-          if($(ZmiPad.ID_VIEW_CONTENT).style.display == "none") { 
-          	$(ZmiPad.ID_VIEW_STATIC).style.display = "block"; 
-          } 
-        } else {
-          $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";      
-          $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
-        }
-
-        toggleCompose('compose-pop','veil');
-        initComposeAutoComplete();
-
-    } else if(url.indexOf('show=more') != -1) {
-
-        $("dlist-view").removeChild(document.getElementById('more-div'));
-        $("dlist-view").innerHTML = $("dlist-view").innerHTML + respData;
-        
-        setTimeout(function(){listScroll.refresh();}, 1000);
-        
-    } else {
-    	if(ZmiPad.getParamFromURL("st",url) == "conversation" && (ZmiPad.getParamFromURL("hc",url) == "1" || ZmiPad.getParamFromURL("mview",url) == "1")) {
-            var sConvId = ZmiPad.getParamFromURL("cid",url);
-            $("list"+sConvId).innerHTML = respData;
-            $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
-    		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
-            setTimeout(function(){listScroll.refresh();}, 1000);
-    	} else if(ZmiPad.getParamFromURL("st",url) == "folders") {
-            $("folder-list").innerHTML = respData;
-            $("folder-list").style.display = "block";
-
-            $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
-    		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
-            $(ZmiPad.ID_VIEW_LIST).style.display="none";
-            initFldrListScroll();
-
-        } else {
-    		$(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
-    		$(ZmiPad.ID_VIEW_STATIC).style.display = "block";
-    		$(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
-    		initListScroll();
-            rSH($('dlist-view'));
-    	}
-    	
-        $("sq").blur();
-    }
-}
-
-ZmiPadMail.processPostComposeAction = function(statusMsg, compAction, response, iframeId) {
-	if(compAction == 'iPadDraft') {
-		$('compose-body').innerHTML = response;
-	} else if(compAction == 'iPadSend'){
-		toggleCompose('compose-pop','veil');
-		$('eaMsgDiv').innerHTML = statusMsg;
-		$('eaMsgDiv').style.display = '';
-		setTimeout(function() {return zClickLink('mail');},300);
-	}
-}
-
-
-
-/*
-ZmiPadContacts to process all Contact responses
- */
-function ZmiPadContacts() {
-};
-
-ZmiPadContacts.processResponse = function (respData, url) {
-
-    ZmiPad.initColumnView();
-	
-    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1) && (url.indexOf('hc=1') == -1)) {
-        $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
-        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
-        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
-        initContentScroll();
-    } else if(url.indexOf('st=newmail') != -1 || url.indexOf('action=compose') != -1) {
-        $('compose-body').innerHTML = respData;
-        if(ZmiPad.getParamFromURL("compose",url) != "new") {
-          $(ZmiPad.ID_VIEW_STATIC).style.display = "none";  
-        } else {
-          $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
-          $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
-        }
-        toggleCompose('compose-pop','veil');
-    } else if(ZmiPad.getParamFromURL("showABCreate",url) == "1" || ZmiPad.getParamFromURL("showSearchCreate",url) == "1" || ZmiPad.getParamFromURL("showTagCreate",url) == "1") {
-        $('compose-body').innerHTML = respData;
-        ZmiPad.processScript('compose-body');
-        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";      
-        $(ZmiPad.ID_VIEW_STATIC).style.display = "block";
-        toggleCompose('compose-pop','veil');
-    } else if(ZmiPad.getParamFromURL("doFolderAction",url) == "1") {
-		toggleCompose('compose-pop','veil');
-		$(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
-        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
-        $("sq").blur();
-        initListScroll();
-    } else if(url.indexOf('show=more') != -1) {
-        $("dlist-view").removeChild(document.getElementById('more-div'));
-        $("dlist-view").innerHTML = $("dlist-view").innerHTML + respData;
-        setTimeout(function(){listScroll.refresh(); }, 1000);
-    } else {
-        $(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
-        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
-        $("sq").blur();
-        initListScroll();
-
-    }
-
-};
-
-/*
-ZmiPaCal to process all Calendar responses
- */
-function ZmiPadCal() {
-};
-
-ZmiPadCal.processResponse = function (respData, url) {
-    ZmiPad.initMainView();
-    
-    if(ZmiPad.getParamFromURL("st",url) == "newappt") {
-        $('compose-body').innerHTML = respData;
-        ZmiPad.processScript('compose-body');
-        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
-        if(ZmiPad.getParamFromURL("action",url) != "popup") {
-            toggleCompose('compose-pop','veil');                        
-        }
-    } else if(ZmiPad.getParamFromURL("action",url) == "view") {
-        $('compose-body').innerHTML = respData;
-        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
-        toggleCompose('compose-pop','veil');
-    } else if(ZmiPad.getParamFromURL("view",url) == "day") {
-        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
-        initListScroll();
-        initContentScroll();
-    } else if(ZmiPad.getParamFromURL("view",url) == "list") {
-        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
-        initListScroll();
-        initContentScroll();   
-    } else if(ZmiPad.getParamFromURL("zoom",url) == "true") {
-        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;    
-        initContentScroll();
-    } else {
-        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
-    }
-}
-
-ZmiPadCal.processPostComposeAction = function(statusMsg, compAction, response, iframeId) {
-	if(compAction == 'iPadApptInvalid') {
-		$('compose-body').innerHTML = response;
-	} else if(compAction == 'iPadApptSave'){
-		toggleCompose('compose-pop','veil');
-		$('eaMsgDiv').innerHTML = statusMsg;
-		$('eaMsgDiv').style.display = '';
-		setTimeout(function() {return zClickLink('cal');},300);
-	}
-}
-
-/*
-ZmiPadTasks to process all the tasks responses
- */
-//function ZmiPadTasks() {
-//};
-//
-//ZmiPadTasks.processResponse = function (respData, url) {
-//    ZmiPad.initColumnView();
-//
-//    if((url.indexOf('action=edit') != -1 || url.indexOf('action=view') != -1 || url.indexOf('showTaskCreate') !=-1)  && (url.indexOf('hc=1') == -1)) {
-//        $(ZmiPad.ID_VIEW_CONTENT).innerHTML = respData;
-//        $(ZmiPad.ID_VIEW_CONTENT).style.display = "block";
-//        $(ZmiPad.ID_VIEW_STATIC).style.display = "none";
-//        initContentScroll();
-//    } else {
-//        $(ZmiPad.ID_VIEW_LIST).innerHTML = respData;
-//        $(ZmiPad.ID_VIEW_CONTENT).style.display = "none";
-//        $("sq").blur();
-//        initListScroll();
-//    }
-//}
-
-/*
-ZmiPadPrefs to process Preferences related responses
- */
-function ZmiPadPrefs() {
-};
-
-ZmiPadPrefs.processResponse = function (respData, url) {
-    //if(ZmiPad.getParamFromURL("doPrefsAction",url) == 1) {
-        //Preferences have been saved, redirect to the mail app(default)
-    //    loading = false;
-        //zClickLink('mail');
-    //} else {
-        ZmiPad.initMainView();
-        $(ZmiPad.ID_VIEW_MAIN).innerHTML = respData;
-        initPrefScroll();
-    //}
-}
-
-<c:if test="${ua.isiPad}">
-var startX,startY,iH=[],xD=0,yD=0,dV=[],dId=0;
-var rSH = function(frm){ //Register swipe handler
-    if(frm){
-        frm.addEventListener('touchstart', function(e) {
-            if (e.targetTouches.length != 1){
-                return false;
-            }
-            var p = e.target;
-
-            window.evHandled=false;
-            while(p && (!p.className || $iO(p.className,"list-row") < 0)){
-                p = p.parentNode;
-            }
-            if(!p || !p.className || $iO(p.className,"list-row") < 0) {return;}
-            if(p && dId && dId != p.id && dV[dId]){
-                            hideSwipe(dId);
-            }
-            xD=0,yD=0;
-            startX = e.targetTouches[0].pageX;
-            startY = e.targetTouches[0].pageY;
-            frm.addEventListener('touchmove', function(e) {
-
-                //e.preventDefault();
-
-                if (e.targetTouches.length != 1){
-                    return false;
-                }
-                var p = e.target;
-                while(p && (!p.className || $iO(p.className,"list-row") < 0)){
-                    p = p.parentNode;
-                }
-                if(!p || !p.className || $iO(p.className,"list-row") < 0) {return;}
-
-                xD = e.targetTouches[0].pageX - startX;
-                yD = e.targetTouches[0].pageY - startY;
-
-                if(Math.abs(xD) > 50 && Math.abs(yD) < 15 ){
-                   var l = p.getElementsByClassName("l");
-                   if(p){
-                       if(dId && dId != p.id && dV[dId]){
-                            hideSwipe(dId);
-                       }
-                       l = l[0];
-                       dId = p.id;
-                       if(!dV[dId]){
-                           showSwipe(dId);
-                       }else{
-                           hideSwipe(dId);
-                       }
-                       //stopEvent(e);
-                       e.returnValue = false;
-                       //window.evHandled=true;
-                       frm.removeEventListener('touchmove');
-                       frm.removeEventListener('touchend');
-                   }
-                }
-                xD=0;
-            }, false);
-            frm.addEventListener('touchend', function(e) {
-                var p = e.target;
-                while(p && (!p.className || $iO(p.className,"list-row") < 0)){
-                    p = p.parentNode;
-                }
-                if(!p || !p.className || $iO(p.className,"list-row") < 0) {return;}
-                
-                /*if(Math.abs(xD) > 50 && Math.abs(yD) < 15 ){
-                   var l = p.getElementsByClassName("l");
-                   if(p){
-                       if(dId && dId != p.id && dV[dId]){
-                            hideSwipe(dId);
-                       }
-                       l = l[0];
-                       dId = p.id;
-                       if(!dV[dId]){
-                           showSwipe(dId);
-                       }else{
-                           hideSwipe(dId);
-                       }
-                       //stopEvent(e);
-                       e.returnValue = false;
-                       //window.evHandled=true;
-                       frm.removeEventListener('touchmove');
-                       frm.removeEventListener('touchend');
-                   }
-                }*/
-                xD=0;
-            }, false);
-        }, false);
-
-    }
-};
-var hideSwipe = function(id) {
-  var p = $(id);
-  if(!p) {return ;}
-  if(p && dV[id]){
-    p.innerHTML = iH[id];
-    dV[id]=false;
-    delete iH[id];
-  }
-};
-
-var showSwipe = function(id) {
-  var sHTML = [];
-  var i = 0;
-
-  var p = $(id);
-  if(!p) {return ;}
-  if(p && !dV[id]){
-
-      iH[id] = p.innerHTML;
-      var fromEl = p.getElementsByClassName("from-span")[0];
-      var msgId = p.getElementsByClassName("chk")[0];
-
-      sHTML[i++] = "<span class='td f' style='width:25px;background-color:gray;'><input type='hidden' name='" + msgId.name + "' value='" + msgId.value + "'/></span>";
-      sHTML[i++] = "<span class='td m ' style='height:50px;background-color:gray;'><div class='from-span' style='font-color:white;'>"+ fromEl.innerHTML +"</div>";
-      sHTML[i++] = "<span><button type='submit' style='z-index:-999' class='zo_button delete_button delBtnV' name='anAction' value='actionDelete'><fmt:message key="delete"/></button></span>";
-      sHTML[i++] = "<span><button type='button' style='z-index:-999' class='zo_button delete_button delBtnV'><a href='?st=newmail&amp;op=reply&amp;id="+ (msgId.value).replace("-","") + "'><fmt:message key="reply"/></a></button></span>";
-      sHTML[i++] = "<span><button type='button' style='z-index:-999' class='zo_button delete_button delBtnV'><a href='?st=newmail&amp;op=replyAll&amp;id="+ (msgId.value).replace("-","") + "'><fmt:message key="replyAll"/></a></button></span>";
-      var lastEl = p.getElementsByClassName("l")[0];
-      if(p && lastEl && (lastEl.innerHTML).indexOf("SmlIcnHldr Flag") != -1 ) {
-        sHTML[i++] = "<span><button type='submit' style='z-index:-999' class='zo_button delete_button delBtnV' name='anAction' value='actionUnflag'><fmt:message key="MO_Unflag"/></button></span>";
-      } else {
-        sHTML[i++] = "<span><button type='submit' style='z-index:-999' class='zo_button delete_button delBtnV' name='anAction' value='actionFlag'><fmt:message key="MO_flag"/></button></span>";
-      }
-      sHTML[i++] = "</span>";
-    
-      p.innerHTML = sHTML.join("");
-    
-      dV[id]=true;
-  }  
-};
-    
-</c:if>
-window.addEventListener('load', init);
 <c:if test="${scriptTag}">
 //-->
 </script>

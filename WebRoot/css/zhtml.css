@@ -348,11 +348,9 @@ A:visited { color: blue; }
 
 .Unread {	font-weight:bold; }
 
-.RowSelected TD { @SelectedRow@ !important}
+.RowSelected TD { @SelectedBg@ }
 .RowMatched TD { background-color: @HilightColor@ }
-.ZhConvExpanded TD {
-	background-color:#eeeeff;
-}
+
 
 .Folder { padding-bottom: 2px;  }
 
@@ -1352,8 +1350,3 @@ input[type="password"] {
 input[disabled] {
 		@InputField-disabled@
 	}
-
-/* bug 51085: Hack to fix the alignment issue of Preferences header*/
-.ImgPrefsHeader{
-    width: auto !important;
-}

@@ -182,6 +182,7 @@ function(partNode, attachments, bodyParts, parentNode) {
 			}
 		}
 
+
         if(this.node.body){
             var hasContent = AjxUtil.isSpecified(this.node.content);
             if((ZmMimeTable.isRenderableImage(this.node.ct) || hasContent)) {

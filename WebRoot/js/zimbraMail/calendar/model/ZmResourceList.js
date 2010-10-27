@@ -41,7 +41,7 @@ ZmResourceList = function(resType, search) {
 
 ZmResourceList.ATTRS =
 	[ZmResource.F_name, ZmResource.F_mail, ZmResource.F_type, ZmResource.F_locationName,
-	 ZmResource.F_capacity, ZmResource.F_contactMail, ZmResource.F_description];
+	 ZmResource.F_capacity, ZmResource.F_contactMail, ZmContact.F_description];
 
 ZmResourceList.prototype = new ZmContactList;
 ZmResourceList.prototype.constructor = ZmResourceList;
@@ -79,10 +79,8 @@ ZmResourceList.prototype.searchCalResources =
 function(params) {
     var soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
     var method = soapDoc.getMethod();
-    if (params.attrs) {
-        AjxUtil.arrayRemove(params.attrs, "fullName");
+    if (params.attrs)
         method.setAttribute("attrs", params.attrs.join(","));
-    }
     var searchFilterEl = soapDoc.set("searchFilter");
     if (params.conds && params.conds.length) {
         var condsEl = soapDoc.set("conds", null, searchFilterEl);
@@ -91,14 +89,10 @@ function(params) {
         }
         for (var i = 0; i < params.conds.length; i++) {
             var cond = params.conds[i];
-            if (cond.attr=="fullName" && cond.op=="has") {
-                var nameEl = soapDoc.set("name", cond.value);
-            } else {
-                var condEl = soapDoc.set("cond", null, condsEl);
-                condEl.setAttribute("attr", cond.attr);
-                condEl.setAttribute("op", cond.op);
-                condEl.setAttribute("value", cond.value);
-            }
+            var condEl = soapDoc.set("cond", null, condsEl);
+            condEl.setAttribute("attr", cond.attr);
+            condEl.setAttribute("op", cond.op);
+            condEl.setAttribute("value", cond.value);
         }
     }
 

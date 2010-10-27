@@ -48,7 +48,6 @@ ZmEvent.S_PICKER		= "PICKER";
 ZmEvent.S_SEARCH		= "SEARCH";
 ZmEvent.S_SETTING		= "SETTING";
 ZmEvent.S_SETTINGS		= "SETTINGS";
-ZmEvent.S_SHARE         = "SHARE";
 ZmEvent.S_MOUNTPOINT	= "MOUNTPOINT";
 ZmEvent.S_ZIMLET		= "ZIMLET";
 
@@ -93,10 +92,6 @@ ZmEvent.E_TAGS			= "TAGS";
  * Defines the "zimlets" event type.
  */
 ZmEvent.E_ZIMLETS		= "ZIMLET";
-/**
- * Defines the "complete" event type.
- */
-ZmEvent.E_COMPLETE		= "COMPLETE";
 
 // Public methods
 

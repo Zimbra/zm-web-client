@@ -53,15 +53,9 @@
     
 </head>
 <body style='background:white;'>
-<style type="text/css">
-    .zPrintMsgs *{
-        font-family:Tahoma,Arial,Helvetica,sans-serif;
-        font-size:${mailbox.prefs.defaultPrintFontSize} !important;
-    }
-</style>
-<table width="90%" align="center" class="zPrintMsgs">
+<table width="90%" align="center">
     <tr>
-        <td><b><fmt:message key="zimbraTitle"/></b></td>
+        <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
         <td>
             <table cellpadding="2" cellspacing="2" >
                 <tr>
@@ -70,7 +64,7 @@
                             &nbsp;
                         </td>
                         <td>
-                         ${zm:getFolder(pageContext,checkedcal).name}
+                          <b> ${zm:getFolder(pageContext,checkedcal).name}</b>
                         </td>
                         <td>
                             &nbsp;&nbsp;
@@ -80,7 +74,7 @@
             </table>
 
         </td>
-        <td nowrap width='1%'>${fn:escapeXml(mailbox.name)}</td>
+        <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
     </tr>
 </table>
 <hr/>

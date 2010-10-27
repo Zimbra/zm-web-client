@@ -368,8 +368,8 @@
 			<td id='${id}_email'></td>
 		</tr>
 		<tr>
-			<td width=50 align=right><$= ZmMsg.folderLabel $></td>
-			<td id='${id}_folder'></td>
+			<td width=50 align=right><$= ZmMsg.pathLabel $></td>
+			<td id='${id}_path'></td>
 		</tr>
 		<tr><td><br></td></tr>
 		<tr>
@@ -452,7 +452,7 @@
 				<div class='attachText'><$= ZmMsg.attach $>:</div>
 			</td>
 			<td class='nobreak'>
-				<input id='${id}_input' type='file' multiple name='<$= data.uploadName $>' size=40>&nbsp;
+				<input id='${id}_input' type='file' name='<$= data.uploadName $>' size=40>&nbsp;
 				<span id='${id}_remove' onmouseover='this.style.cursor="pointer"' onmouseout='this.style.cursor="default"' class="ZmAttachDialog-removeLink"><$= ZmMsg.remove $></span>
                 <span id='${id}_size'>&nbsp;</span>
 			</td>
@@ -546,34 +546,4 @@
 			<td><input type='text' autocomplete='off' class='Field' id='${id}_name' /></td>
 		</tr>
 	</table>
-</template>
-
-<!-- time selection dialog template -->
-<template id='share.Dialogs#ZmTimeDialog'>
-	<table border=0 width=330>
-		<tr>
-			<td colspan=2>${description}</td>
-		</tr>
-		<tr>
-			<td class='Label'>${label}:</td>
-			<td>
-				<table border=0 cellpadding=0 cellspacing=0>
-					<tr>
-						<td><$=AjxTemplate.expand("#DateField",{id:data.id+"_date"})$></td>
-						<td id='${id}_miniCal'></td>
-						<td>&nbsp;</td>
-						<td id='${id}_time'></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-		<tr>
-			<td width=50><nobr><$= ZmMsg.selectTimezoneLabel $></nobr></td>
-			<td id='${id}_tzSelect'></td>
-		</tr>
-	</table>
-</template>
-
-<template id='share.Dialogs#DateField'>
-	<input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}' value='${value}'>
 </template>

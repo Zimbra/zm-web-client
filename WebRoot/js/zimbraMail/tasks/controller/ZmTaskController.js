@@ -20,9 +20,9 @@
  */
 
 /**
- * Creates a new task controller to manage task creation/editing.
+ * Creates a new appointment controller to manage appointment creation/editing.
  * @class
- * This class manages task creation/editing.
+ * This class manages appointment creation/editing.
  *
  * @author Parag Shah
  *
@@ -38,8 +38,6 @@ ZmTaskController = function(container, app) {
 
 ZmTaskController.prototype = new ZmCalItemComposeController;
 ZmTaskController.prototype.constructor = ZmTaskController;
-
-ZmTaskController.DEFAULT_TAB_TEXT = ZmMsg.task;
 
 /**
  * Returns a string representation of the object.
@@ -75,9 +73,6 @@ function(calItem) {
     calItem.cache();
 
 	appCtxt.setStatusMsg(ZmMsg.taskSaved);
-    if(calItem.alarm == true) {
-        this._app.getReminderController().refresh();
-    }    
 };
 
 ZmTaskController.prototype._createComposeView =
@@ -134,10 +129,9 @@ function(task, newFolderId) {
 
 // Private / Protected methods
 
-ZmTaskController.prototype._getTabParams =
+ZmTaskController.prototype._getViewType =
 function() {
-	return {id:this.tabId, image:"NewTask", text:ZmTaskController.DEFAULT_TAB_TEXT, textPrecedence:77,
-			tooltip:ZmTaskController.DEFAULT_TAB_TEXT};
+	return ZmId.VIEW_TASKEDIT;
 };
 
 // Callbacks

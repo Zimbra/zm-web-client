@@ -118,7 +118,7 @@ function(msg, ex, noExecReset, hideReportButton) {
 
 ZmController.handleScriptError =
 function(ex) {
-
+	var ctlr = appCtxt.getAppController();
 	var msg = ZmMsg.scriptError + ": " + ex.message;
 	var m = ex.fileName && ex.fileName.match(/(\w+\.js)/);
 	if (m && m.length) {
@@ -126,7 +126,7 @@ function(ex) {
 	}
 	var text = "File: " + ex.fileName + "<br>Line: " + ex.lineNumber + "<br>Error: " + ex.name +
 			   "<br>Stack: " + ex.stack.replace("\n", "<br>", "g");
-	appCtxt.getAppController().popupErrorDialog(msg, text);
+	ctlr.popupErrorDialog(msg, text);
 };
 
 /**
@@ -530,13 +530,8 @@ function(ex, continuation) {
 		} else if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
 			args = ex.data.name;
 		}
-		if (ex.lineNumber && !ex.detail) {
-			// JS error that was caught before our JS-specific handler got it
-			ZmController.handleScriptError(ex);
-		} else {
-			var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
-			this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
-		}
+		var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
+		this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
 	}
 };
 
@@ -757,7 +752,7 @@ function(dialog) {
 ZmController.prototype._menuPopdownActionListener = function() {};
 
 /**
- * Sets the session id, view id, and tab id (using the type and session id).
+ * Sets the session id and view id (using the type and session id).
  * Controller for a view that shows up in a tab within the app chooser bar.
  * Currently only mail views exist: compose, send confirmation, and msg view.
  *
@@ -768,7 +763,6 @@ ZmController.prototype.setSessionId =
 function(type, sessionId) {
 	this.sessionId = sessionId;
 	this.viewId = [type, this.sessionId].join("");
-	this.tabId = ["tab", this.viewId].join("_");
 };
 
 /**

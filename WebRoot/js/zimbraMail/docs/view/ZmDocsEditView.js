@@ -45,8 +45,16 @@ ZmDocsEditView.prototype.save = function(){
 
     var fileInfo = ZmDocsEditApp.fileInfo;
     var fileName = this._buttons.fileName.getValue();
-    
-    var message = this._docMgr.checkInvalidDocName(fileName);
+    var message;
+
+    if(!fileInfo.id){
+        if (fileName == "") {
+            message = ZmMsg.emptyDocName;
+        } else {
+            message = this._docMgr.checkInvalidDocName(fileName);
+        }
+    }
+
     if (message) {
 		var style = DwtMessageDialog.WARNING_STYLE;
 		var dialog = this.warngDlg = appCtxt.getMsgDialog();
@@ -93,13 +101,9 @@ function(files, conflicts) {
             if(window.isRestView) {
                 wAppCtxt = top.appCtxt;
             } else {
-                wAppCtxt = window.opener && window.opener.appCtxt;
+                wAppCtxt = window.opener.appCtxt;
             }
             appCtxt.setStatusMsg(ZmMsg.savedDoc, ZmStatusView.LEVEL_INFO);
-
-            if(this._saveClose){
-                window.close();
-            }
         }
     }
 
@@ -123,9 +127,9 @@ ZmDocsEditView.prototype.setFooterInfo = function(item){
             if(window.isRestView) {
                wAppCtxt = top.appCtxt;
             } else {
-               wAppCtxt = window.opener && window.opener.appCtxt;
+               wAppCtxt = window.opener.appCtxt;
             }
-            var docs = wAppCtxt && wAppCtxt.getById(folderId);
+            var docs = wAppCtxt.getById(folderId);
             if(!docs) {
                 break;
             }
@@ -323,12 +327,6 @@ function() {
 };
 
 ZmDocsEditView.prototype._saveButtonListener = function(ev) {
-    this._saveClose = false;
-    this.save();
-};
-
-ZmDocsEditView.prototype._saveCloseButtonListener = function(ev) {
-    this._saveClose = true;
     this.save();
 };
 
@@ -596,15 +594,6 @@ ZmDocsEditView.prototype._createToolbar = function(toolbar) {
     b.setToolTipContent(ZmMsg.save);
 
     new DwtControl({parent:toolbar, className:"vertSep"});
-
-    var b = this._buttons.saveAndCloseFile = new DwtToolBarButton(params);
-    b.setImage("Save");
-    b.setText(ZmMsg.saveClose);
-    b.setData(ZmDocsEditView.ZD_VALUE, "Save&Close");
-    b.addSelectionListener(new AjxListener(this, this._saveCloseButtonListener));
-    b.setToolTipContent(ZmMsg.saveClose);
-
-    new DwtControl({parent:toolbar, className:"vertSep"});    
 
     var listener = new AjxListener(this, this._tbActionListener);
     /*

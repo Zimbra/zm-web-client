@@ -272,13 +272,6 @@ function(params,response)
         if (data.ver) item.version = Number(data.ver);
         if (data.ct) item.contentType = data.ct.split(";")[0];
         item.folderId = docResp.l || ZmOrganizer.ID_BRIEFCASE;
-        item.locked = false;
-        if (data.loid)    {
-            item.locked = true;
-            item.lockId = data.loid;
-            item.lockUser = data.loe;
-            item.lockTime = data.lt;
-        }
     }
 
     if(callback){
@@ -315,37 +308,11 @@ ZmDocletMgr.prototype.checkInvalidDocName = function(fileName) {
     var message;
     fileName = fileName.replace(/^\s+/,"").replace(/\s+$/,"");
 
-    if(fileName == ""){
-        message = ZmMsg.emptyDocName;
-    }else if (!ZmOrganizer.VALID_NAME_RE.test(fileName) || ZmDocletMgr.INVALID_DOC_NAME_RE.test(fileName)) {
+    if (!ZmOrganizer.VALID_NAME_RE.test(fileName) || ZmDocletMgr.INVALID_DOC_NAME_RE.test(fileName)) {
         message = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName));
     } else if ( fileName.length > ZmOrganizer.MAX_NAME_LENGTH){
         message = AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
     }
 
     return message;
-};
-
-ZmDocletMgr.prototype.unlock =
-function(item, callback, errorCallback, accountName){
-
-    var json = {
-		ItemActionRequest: {
-			_jsns: "urn:zimbraMail",
-			action: {
-				id:	item.id,
-				op:	"unlock"
-			}
-		}
-	};
-
-	var params = {
-		jsonObj:		json,
-		asyncMode:		Boolean(callback),
-		callback:		callback,
-		errorCallback:	errorCallback,
-		accountName:	accountName
-	};
-	return this.sendRequest(params);
-
 };

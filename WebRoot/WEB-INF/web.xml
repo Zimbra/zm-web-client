@@ -16,7 +16,7 @@
 
   <context-param>
     <param-name>admin.allowed.ports</param-name>
-    <param-value>%%zimbraAdminPort%%</param-value>
+    <param-value>7071</param-value>
   </context-param>
 
     <!-- =============
@@ -48,7 +48,7 @@
 
   <context-param>
     <param-name>zimbraDefaultSkin</param-name>
-    <param-value>carbon</param-value>
+    <param-value>beach</param-value>
   </context-param>
 
   <context-param>
@@ -73,7 +73,7 @@
     <url-pattern>/m/*</url-pattern>
   </filter-mapping>
 
-  <!-- <filter>
+  <filter>
     <filter-name>ThrottlingFilter</filter-name>
     <filter-class>com.zimbra.cs.servlet.ThrottlingFilter</filter-class>
   </filter>
@@ -82,7 +82,7 @@
     <url-pattern>/h/*</url-pattern>
     <url-pattern>/m/*</url-pattern>
   </filter-mapping>
- -->
+
   <filter>
     <filter-name>GzipFilter</filter-name>
     <filter-class>org.mortbay.servlet.jetty.IncludableGzipFilter</filter-class>
@@ -217,20 +217,6 @@
   <filter-mapping>
     <filter-name>AdminRedirectHelp</filter-name>
     <url-pattern>/adminhelp/*</url-pattern>
-  </filter-mapping>
-
-  <!-- NOTE: This filter has to be *after* the redirects -->
-  <filter>
-    <filter-name>InsertHelpBranding</filter-name>
-    <filter-class>com.zimbra.webClient.filters.InsertHelpBranding</filter-class>
-    <init-param>
-      <param-name>exts</param-name>
-      <param-value>.htm,.xml</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>InsertHelpBranding</filter-name>
-    <url-pattern>/help/*</url-pattern>
   </filter-mapping>
 
   <filter>
@@ -389,7 +375,7 @@
     </description>
     <env-entry-name>protocolMode</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%zimbraMailMode%%</env-entry-value><!-- PROTOCOL MODE -->
+    <env-entry-value>http</env-entry-value><!-- PROTOCOL MODE -->
   </env-entry>
 
   <env-entry>
@@ -476,8 +462,6 @@
       <url-pattern>/m/mainx</url-pattern>
       <url-pattern>/m/zmain</url-pattern>
       <url-pattern>/m/zipad</url-pattern>
-      <url-pattern>/m/moipadredirect</url-pattern>
-      <url-pattern>/m/momoveto</url-pattern>  
       <url-pattern>/m/zmview</url-pattern>
       <url-pattern>/m/mosearch</url-pattern>
       <url-pattern>/m/mocalendar</url-pattern>
@@ -504,7 +488,6 @@
       <url-pattern>/h/briefcaseupload</url-pattern>
       <url-pattern>/h/mbriefcases</url-pattern>
       <url-pattern>/h/viewimages</url-pattern>
-      <url-pattern>/h/autoSaveDraft</url-pattern>
     </jsp-property-group>
   </jsp-config>
 

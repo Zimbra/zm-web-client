@@ -76,19 +76,17 @@ ZmOrganizer = function(params) {
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
 
-	this.color =
-        params.color ||
-        (this.parent && this.parent.color) ||
-        ZmOrganizer.ORG_COLOR[id] ||
-        ZmOrganizer.ORG_COLOR[this.nId] ||
-        ZmOrganizer.DEFAULT_COLOR[this.type] ||
-        ZmOrganizer.C_NONE
-    ;
-	this.rgb =
-        params.rgb ||
-        ZmOrganizer.COLOR_VALUES[this.color] ||
-        ZmOrganizer.COLOR_VALUES[ZmOrganizer.ORG_DEFAULT_COLOR]
-    ;
+	var color = (this.parent && !params.color) ? this.parent.color : params.color;
+	this.color = color ||
+				 ZmOrganizer.ORG_COLOR[id] ||
+				 ZmOrganizer.ORG_COLOR[this.nId] ||
+				 ZmOrganizer.DEFAULT_COLOR[this.type] ||
+				 ZmOrganizer.C_NONE;
+	// NOTE: The server should not send a color parameter if a custom RGB
+	// NOTE: has been set. In other words, the color parameter will only
+	// NOTE: be specified if explicitly set that way and not as an explicit
+	// NOTE: RGB value.
+	this.rgb = ZmOrganizer.COLOR_VALUES[params.color] || params.rgb;
 
 	if (appCtxt.isOffline && !this.account && this.id == this.nId) {
 		this.account = appCtxt.accountList.mainAccount;
@@ -111,7 +109,6 @@ ZmOrganizer = function(params) {
 // global organizer types
 ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
-ZmOrganizer.SHARE               = ZmEvent.S_SHARE;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 
@@ -127,7 +124,7 @@ ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
 ZmOrganizer.ID_BRIEFCASE		= 16;
-ZmOrganizer.ID_ALL_MAILBOXES	= 249; 
+ZmOrganizer.ID_ALL_MAILBOXES	= 249;
 ZmOrganizer.ID_NOTIFICATION_MP	= 250;
 ZmOrganizer.ID_SYNC_FAILURES	= 252;		// offline only
 ZmOrganizer.ID_OUTBOX    		= 254;		// offline only
@@ -939,7 +936,7 @@ ZmOrganizer.prototype.getIcon = function() {};
 ZmOrganizer.prototype.getIconWithColor =
 function() {
 	var icon = this.getIcon() || "";
-	var color = this.rgb || ZmOrganizer.COLOR_VALUES[this.color];
+	var color = this.rgb || this.color;
 	return color ? [icon,color].join(",color=") : icon;
 };
 
@@ -1009,10 +1006,9 @@ function(attrs) {
  * Assigns the organizer a new parent, moving it within its tree.
  *
  * @param {ZmOrganizer}		newParent		the new parent of this organizer
- * @param {boolean}		undoing			if true, action is not undoable
  */
 ZmOrganizer.prototype.move =
-function(newParent, undoing) {
+function(newParent) {
 	var newId = (newParent.nId > 0)
 		? newParent.id
 		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
@@ -1023,20 +1019,13 @@ function(newParent, undoing) {
 	{
 		return;
 	}
-	var params = {};
 
 	if (newId == ZmOrganizer.ID_TRASH) {
-		params.action = "trash";
-		params.undoing = undoing;
+		this._organizerAction({action: "trash"});
 	}
 	else {
-		params.actionText = (undoing) ? ZmMsg.actionUndoMove : ZmMsg.actionMove;
-		params.actionArg = newParent.getName(false, false, true);
-		params.action = "move";
-		params.attrs = {l: newId};
-		params.undoing = undoing;
+		this._organizerAction({action: "move", attrs: {l: newId}});
 	}
-	this._organizerAction(params);
 };
 
 /**
@@ -1190,17 +1179,16 @@ function(obj, details) {
 		doNotify = true;
 	}
 	if ((obj.rgb != null || obj.color != null) && !obj._isRemote) {
-		var color = ZmOrganizer.checkColor(obj.color) || ZmOrganizer.DEFAULT_COLOR[this.type] || ZmOrganizer.ORG_DEFAULT_COLOR;
-		if (color != this.color) {
+		var color = ZmOrganizer.checkColor(obj.color);
+		if (this.color != color) {
 			this.color = color;
 			fields[ZmOrganizer.F_COLOR] = true;
-            fields[ZmOrganizer.F_RGB] = true;
 		}
-        var rgb = obj.rgb || ZmOrganizer.COLOR_VALUES[color];
-		if (rgb != this.rgb) {
-			this.rgb = rgb;
-            fields[ZmOrganizer.F_COLOR] = true;
-            fields[ZmOrganizer.F_RGB] = true;
+		if (obj.rgb != this.rgb) {
+			this.rgb = obj.rgb;
+			fields[ZmOrganizer.F_RBG] = true;
+			// NOTE: Denote color change for code looking at "color" property.
+			fields[ZmOrganizer.F_COLOR] = true;
 		}
 		doNotify = true;
 	}
@@ -1658,8 +1646,6 @@ function () {
 	return Boolean(this.url);
 };
 
-/** Returns true if organizer has feeds. */
-ZmOrganizer.prototype.hasFeeds = function() { return false; };
 
 /**
  * Checks if this folder maps to a datasource. If type is given, returns
@@ -1753,10 +1739,7 @@ function(params) {
 		}
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	}
-	var actionController = appCtxt.getActionController();
-	actionController.dismiss();
-	var actionLogItem = (!params.undoing && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
-	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
+	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, params);
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
 	} else {
@@ -1779,30 +1762,10 @@ function(params) {
  * @private
  */
 ZmOrganizer.prototype._handleResponseOrganizerAction =
-function(params, actionLogItem, result) {
-	if (actionLogItem) {
-		actionLogItem.setComplete();
-	}
+function(params, result) {
 	if (params.callback) {
 		params.callback.run(result);
 	}
-	if (params.actionText) {
-		var actionController = appCtxt.getActionController();
-		var summary = ZmOrganizer.getActionSummary(params.actionText, params.numItems || 1, this.type, params.actionArg);
-		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
-		if (undoLink && actionController) {
-			actionController.onPopup();
-			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: actionController.getStatusTransitions()});
-		} else {
-			appCtxt.setStatusMsg(summary);
-		}
-	}
-};
-
-ZmOrganizer.getActionSummary =
-function(text, num, type, arg) {
-	var typeText = ZmMsg[ZmOrganizer.MSG_KEY[type]];
-	return AjxMessageFormat.format(text, [num, typeText, arg]);
 };
 
 /**
