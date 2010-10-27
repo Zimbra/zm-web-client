@@ -212,6 +212,7 @@ function(params) {
         item.setText(AjxTemplate.expand(this.SHARE_LINK_TEMPLATE, id));
         var linkEl = document.getElementById(id+"_addshare_link");
         linkEl.onclick = AjxCallback.simpleClosure(this._handleAddShareLink, this);
+        this._addShareLink = item;
     }
 
 	if (appCtxt.getSkinHint("noOverviewHeaders") ||
@@ -462,6 +463,11 @@ function(parentNode, organizer, index, noTooltips, omit) {
 				parentNode.setData(ZmTreeView.KEY_TYPE, parentOrganizer.type);
 				this._treeItemHash[parentOrganizer.id] = parentNode;
 			}
+		}
+		if (this._addShareLink && this._addShareLink.parent == parentNode) {
+			addShareIndex = parentNode.getChildIndex(this._addShareLink);
+			if (addShareIndex >= 0 && index > addShareIndex)
+				index = addShareIndex; // Bug 52053: We must make sure nothing has a higher index than that of this._addShareLink
 		}
 		var params = {
 			parent:				parentNode,
