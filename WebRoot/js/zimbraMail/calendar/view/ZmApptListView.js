@@ -58,6 +58,11 @@ ZmApptListView.prototype.setNeedsRefresh = function(needsRefresh) {
     return controller.getCurrentView().setNeedsRefresh(needsRefresh);
 };
 
+//to override
+ZmApptListView.prototype.getAtttendees = function() {
+    return null;
+};
+
 //
 // Protected methods
 //
