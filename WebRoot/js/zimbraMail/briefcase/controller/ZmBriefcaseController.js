@@ -945,7 +945,12 @@ function(items, callback){
     var docInfo = [];
     for (var i = 0; i < items.length; i++) {
         var item = items[i];
-        docInfo.push({id: item.id, ct: item.contentType, s: item.size});
+        docInfo.push({
+            id:     ( item.isRevision ? item.parent.id : item.id ),
+            ver:    ( item.isRevision ? item.version : null ),
+            ct:     item.contentType,
+            s:      item.size
+        });
     }
 
     if (docInfo.length == 0) { return; }

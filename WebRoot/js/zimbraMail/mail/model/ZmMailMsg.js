@@ -606,18 +606,18 @@ function(ids) {
  *
  * @param {Array}	ids	a list of document IDs
  */
-ZmMailMsg.prototype.setDocumentAttachmentId =
-function(ids) {
-	this._onChange("documentAttachmentId", ids);
-	this._docAttIds = ids;
+ZmMailMsg.prototype.setDocumentAttachments =
+function(docs) {
+	this._onChange("documentAttachmentId", docs);
+	this._docAtts = docs;
 };
 
-ZmMailMsg.prototype.addDocumentAttachmentId =
-function(id) {
-	if(!this._docAttIds) {
-		this._docAttIds = [];
+ZmMailMsg.prototype.addDocumentAttachment =
+function(doc) {
+	if(!this._docAtts) {
+		this._docAtts = [];
 	}
-	this._docAttIds.push(id);
+	this._docAtts.push(doc);
 };
 
 /**
@@ -1318,7 +1318,7 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 
 	if (this.attId ||
 		(this._msgAttIds && this._msgAttIds.length) ||
-		(this._docAttIds && this._docAttIds.length) ||
+		(this._docAtts && this._docAtts.length) ||
 		(this._forAttIds && this._forAttIds.length) ||
 		(this._contactAttIds && this._contactAttIds.length))
 	{
@@ -1337,10 +1337,13 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 
 
 		// attach docs
-		if (this._docAttIds) {
+		if (this._docAtts) {
 			var docs = attachNode.doc = [];
-			for (var i = 0; i < this._docAttIds.length; i++) {
-				docs.push({id:this._docAttIds[i]});
+			for (var i = 0; i < this._docAtts.length; i++) {
+                var d = this._docAtts[i];
+                var props = {id: d.id};
+                if(d.ver) props.ver = d.ver;
+				docs.push(props);
 			}
 		}
 

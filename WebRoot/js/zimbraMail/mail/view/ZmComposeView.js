@@ -802,10 +802,10 @@ function(msg, docIds) {
 				this._htmlEditor.insertImage("cid:" + cid, AjxEnv.isIE);
 				msg.addInlineDocAttachment(cid, docAtt.id);
 			} else {
-				msg.addDocumentAttachmentId(docAtt.id);
+				msg.addDocumentAttachment(docAtt);
 			}
 		}else {
-			msg.addDocumentAttachmentId(docAtt.id);
+			msg.addDocumentAttachment(docAtt);
 		}
 	}
 	if (zeroSizedAttachments){
