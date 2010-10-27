@@ -4467,3 +4467,13 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmShareSearchDialog .ZmShareTreeView {
     height: 140px;
 }
+
+.DeviceCodeConfirmed {
+    color: green;
+}
+.DeviceCodePending {
+    color: orange;
+}
+.DeviceCodeUnconfirmed {
+    color: red;
+}

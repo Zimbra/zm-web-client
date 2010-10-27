@@ -301,11 +301,14 @@ function() {
 			icon: "ApptReminder",
 			templateId: "prefs.Pages#Notifications",
 			priority: 88,
-			precondition: ZmSetting.CALENDAR_ENABLED,
+			precondition: [ZmSetting.CALENDAR_ENABLED, ZmSetting.TASKS_ENABLED],
 			prefs: [
-				ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS,
-				ZmSetting.CAL_EMAIL_REMINDERS_ENABLED
-			]
+                ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS,
+                ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS
+			],
+            createView: function(parent, section, controller) {
+                return new ZmNotificationsPage(parent, section, controller);
+            }
 		},
 		MOBILE: {
 			title: ZmMsg.mobileDevices,

@@ -398,7 +398,7 @@ function(id, value, setup, control) {
 		type == ZmPref.TYPE_RADIO_GROUP ||
 		type == ZmPref.TYPE_COLOR) {
 		var object = control || this.getFormObject(id);
-		if (!object) { return; }
+		if (!object) { return value; }
 
 		if (type == ZmPref.TYPE_COLOR) {
 			object.setColor(value);
@@ -436,7 +436,7 @@ function(id, value, setup, control) {
 		}
 	} else if (type == ZmPref.TYPE_INPUT) {
 		var object = control || this.getFormObject(id);
-		if (!object) { return; }
+		if (!object) { return value; }
 
 		var curValue = object.getValue();
 		if (value != null && (curValue != value)) {
@@ -444,15 +444,16 @@ function(id, value, setup, control) {
 		}
 	} else if (type == ZmPref.TYPE_LOCALES) {
 		var object = this._dwtObjects[ZmSetting.LOCALE_NAME];
-		if (!object) { return; }
+		if (!object) { return value; }
 		this._showLocale(value, object);
 	} else {
 		var prefId = [this._htmlElId, id].join("_");
 		var element = control || document.getElementById(prefId);
-		if (!element || element.value == value) { return; }
+		if (!element || element.value == value) { return value; }
 
 		element.value = value || "";
 	}
+    return value;
 };
 
 /**
