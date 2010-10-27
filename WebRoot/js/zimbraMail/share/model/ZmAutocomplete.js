@@ -216,14 +216,11 @@ function(str, aclv, options, acType, callback, account, result) {
 			list.push(match);
 		}
 	}
+	var complete = !(resp && resp.getAttribute("more"));
 
 	// we assume the results from the server are sorted by ranking
 	callback.run(list);
-	if (resp && resp.getAttribute("more")) {
-		DBG.println("ac", "Autocomplete result set is incomplete, don't cache it");
-	} else {
-		this._cacheResults(str, acType, list, hasGal, resp._respEl.canBeCached, null, account);
-	}
+	this._cacheResults(str, acType, list, hasGal, complete && resp._respEl.canBeCached, null, account);
 };
 
 /**
@@ -923,9 +920,9 @@ function(str, aclv, options, acType, callback, account, result) {
 		var match = new ZmAutocompleteMatch(resultList[i], options, true);
 		list.push(match);
 	}
+	var complete = !(resp && resp.getAttribute("more"));
 
 	// we assume the results from the server are sorted by ranking
 	callback.run(list);
-
-	this._cacheResults(str, acType, list, true, resp._respEl.canBeCached, null, account);
+	this._cacheResults(str, acType, list, true, complete && resp._respEl.canBeCached, null, account);
 };
