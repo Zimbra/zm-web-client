@@ -237,7 +237,7 @@ function(delta) {
 				var firstHdr = this._taskListView._headerList[0];
 				var hdrWidth = firstHdr._width;
 				if (hdrWidth == "auto") {
-					var header = document.getById(firstHdr._id);
+					var header = Dwt.byId(firstHdr._id);
 					hdrWidth = header && Dwt.getSize(header).x;
 				}
 				this._minMLVWidth = hdrWidth;
