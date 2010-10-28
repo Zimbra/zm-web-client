@@ -95,7 +95,7 @@
     
     String skin = (String)request.getAttribute("skin");
 	if (skin == null) {
-		skin = application.getInitParameter("zimbraDefaultSkin");
+		skin = application.getInitParameter("zimbraDefaultAdminSkin");
 	}
 	Cookie skinCookie = new Cookie("ZA_SKIN",skin);
 	response.addCookie(skinCookie);

@@ -52,6 +52,11 @@
   </context-param>
 
   <context-param>
+    <param-name>zimbraDefaultAdminSkin</param-name>
+    <param-value>beach</param-value>
+  </context-param>
+
+  <context-param>
     <!-- Enter a comma-separated list of servers that host images. -->
     <param-name>zimbraImageServers</param-name>
     <param-value></param-value>
