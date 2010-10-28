@@ -968,7 +968,7 @@ function(msg, container, callback) {
 	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
 	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
 	var sentBy = (sender && sender.address) ? sender : addr;
-	var sentByAddr = sentBy.getAddress();
+	var sentByAddr = sentBy && sentBy != ZmMsg.unknown ? sentBy.getAddress() : null;
     if (sentByAddr) {
         msg.sentByAddr = sentByAddr;
         msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@")+1);
