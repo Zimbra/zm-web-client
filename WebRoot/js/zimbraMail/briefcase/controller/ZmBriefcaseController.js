@@ -538,7 +538,7 @@ function(ev) {
 };
 
 ZmBriefcaseController.prototype._delVersionListener =
-function(){
+function(){    
     var view = this._parentView[this._currentView];
     view._deleteVerListener();
 };
@@ -1005,7 +1005,7 @@ function(view, firstTime) {
 			menu = new ZmPopupMenu(btn);
 			btn.setMenu(menu);
             
-            this._setupGroupByMenu(menu);
+            //this._setupGroupByMenu(menu);
             this._setupPreviewPaneMenu(menu);
 		}
 	}

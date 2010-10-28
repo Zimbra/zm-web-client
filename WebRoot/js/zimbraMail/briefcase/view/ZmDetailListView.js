@@ -53,7 +53,7 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 		}
 	}
 
-    this.enableRevisionView(false);
+    this.enableRevisionView(true);
 
     this._expanded = {};
     this._itemRowIdList = {};
