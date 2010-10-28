@@ -6,7 +6,7 @@ ZmCheckinDialog = function(parent, controller, className) {
 
     this._createUploadHtml();
 
-    this.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.checkInFile);
+    this.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.checkIn);
     this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._upload));
 };
 

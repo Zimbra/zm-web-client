@@ -224,7 +224,7 @@ function(parent, num) {
     var isRevision = item && item.isRevision;
     var isHightestVersion = item && item.isRevision && ( item.parent.version == item.version );
 
-	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+	/*if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		var isViewHtmlEnabled = true;
 
 		var items = this._listView[this._currentView].getSelection();
@@ -237,7 +237,7 @@ function(parent, num) {
 			}
 		}
 		parent.enable([ZmOperation.VIEW_FILE_AS_HTML], (isItemSelected && isViewHtmlEnabled));
-	}
+	}*/
 
 	parent.enable([ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isMailEnabled && isItemSelected && !isMultiFolder && !isFolderSelected));
 	parent.enable(ZmOperation.OPEN_FILE, (isItemSelected && !isMultiFolder));
@@ -255,6 +255,12 @@ function(parent, num) {
         var isLocked = firstItem && !firstItem.isFolder && firstItem.locked;
         var isLockOwner = isLocked && (item.lockUser == appCtxt.getActiveAccount().name);
 
+
+        //Open - webDocs
+        parent.getOp(ZmOperation.OPEN_FILE).setVisible(isItemSelected && !isMultiFolder && isWebDoc);
+        //Download - Files
+        parent.getOp(ZmOperation.SAVE_FILE).setVisible(isItemSelected && firstItem.isRealFile());
+	
         //Case 1: Multiple Admins
         //Case 2: Stale Lock ( Handle exception )
 
@@ -263,9 +269,11 @@ function(parent, num) {
         parent.getOp(ZmOperation.CHECKIN).setVisible(checkinEnabled);
 
         //Checkout / Edit
-        var checkoutEnabled = !isReadOnly && num == 1 && !isLocked && !isRevision;
+        var checkoutEnabled = !isReadOnly && !isLocked && !isRevision;
         parent.getOp(ZmOperation.CHECKOUT).setVisible(checkoutEnabled && !isWebDoc);
-        parent.enable(ZmOperation.EDIT_FILE, ( checkoutEnabled || isLockOwner ) && isWebDoc);
+        parent.enable(ZmOperation.CHECKOUT, num == 1);
+        parent.getOp(ZmOperation.EDIT_FILE).setVisible(( checkoutEnabled || isLockOwner ) && isWebDoc);
+        parent.enable(ZmOperation.EDIT_FILE, num == 1);
 
         //Discard Checkout
         var discardCheckoutEnabled = (num == 1) && isLocked && !isRevision && (isAdmin || isLockOwner || !isShared);
@@ -530,10 +538,6 @@ function(ev) {
 		actionMenu.setSelectedItem(0); // menu popped up via keyboard nav
 	}
 
-	var op = actionMenu.getOp(ZmOperation.SAVE_FILE);
-	if (op) {
-		op.setEnabled(item && item.isRealFile());
-	}
     
 };
 
@@ -720,9 +724,9 @@ function() {
 		ZmOperation.SEND_FILE,
 		ZmOperation.SEND_FILE_AS_ATT
 	];
-	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+	/*if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		list.push(ZmOperation.VIEW_FILE_AS_HTML);
-	}
+	}*/
     if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
 		list.push(ZmOperation.CREATE_SLIDE_SHOW);
 	}
