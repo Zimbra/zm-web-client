@@ -1936,7 +1936,10 @@ function(soapDoc, attachmentId, notifyList, accountName) {
     if(isRemote){
         var e = soapDoc.set("e", null, m);
         var addr, displayName;
-        identity = identity || appCtxt.getIdentityCollection().defaultIdentity;
+        if(!identity){
+            var identityC = appCtxt.getIdentityCollection();
+            identity = identityC && identityC.defaultIdentity;
+        }
         if(identity){
             addr = identity.sendFromAddress;
             displayName = identity.sendFromDisplay;
@@ -1967,7 +1970,10 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	if (!(appCtxt.isOffline && acct.isMain)) {
 		var me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
         var user, displayName, identityUser;
-        identity = identity || appCtxt.getIdentityCollection().defaultIdentity;
+        if(!identity){
+            var identityC = appCtxt.getIdentityCollection();
+            identity = identityC && identityC.defaultIdentity;
+        }        
         if(identity){ //If !Identity then consider the default identity
             identityUser = identity.sendFromAddress;
             displayName = identity.sendFromDisplay;
