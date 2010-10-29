@@ -165,7 +165,13 @@ function(actionMenu, type, id) {
 		} else {
 			nId = ZmOrganizer.normalizeId(id);
 		}
-		actionMenu.enable(ZmOperation.DELETE, nId != ZmOrganizer.ID_CALENDAR);
+
+
+		actionMenu.enable(ZmOperation.DELETE, (nId != ZmOrganizer.ID_CALENDAR && nId != ZmOrganizer.ID_TRASH));        
+        actionMenu.getOp(ZmOperation.EMPTY_FOLDER).setVisible(nId == ZmOrganizer.ID_TRASH);
+        var hasContent = ((calendar.numTotal > 0) || (calendar.children && (calendar.children.size() > 0)));
+        actionMenu.enable(ZmOperation.EMPTY_FOLDER,hasContent);
+
 		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		if (id == rootId) {
 			var items = this._getItems(this._actionedOverviewId);
