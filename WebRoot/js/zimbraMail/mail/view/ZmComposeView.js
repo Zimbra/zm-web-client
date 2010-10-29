@@ -434,6 +434,11 @@ function(msg, forwardAttIds) {
 	return [].concat(forwardAttIds, newFwdAttIds);
 };
 
+ZmComposeView.prototype._generateCid =
+function() {
+	return Dwt.getNextId() + "@zimbra";
+}
+
 /**
 * Returns the message from the form, after some basic input validation.
 */
@@ -507,7 +512,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 			}
 			var contentType = att.ct;
 			if (contentType && contentType.indexOf("image") != -1) {
-				var cid = Dwt.getNextId();
+				var cid = this._generateCid();
 				this._htmlEditor.insertImage("cid:" + cid, AjxEnv.isIE);
 				msg.addInlineAttachmentId(cid, att.aid);
 			} else {
@@ -798,7 +803,7 @@ function(msg, docIds) {
 		}
 		if (this._attachDialog && inline) {
 			if (contentType && contentType.indexOf("image") != -1) {
-				var cid = Dwt.getNextId();
+				var cid = this._generateCid();
 				this._htmlEditor.insertImage("cid:" + cid, AjxEnv.isIE);
 				msg.addInlineDocAttachment(cid, docAtt.id);
 			} else {
@@ -1081,7 +1086,7 @@ function(idoc) {
 			} else if (img.src && img.src.indexOf("cid:") == 0) {
 				cid = img.src;
 			} else if ( dfsrc && dfsrc.substring(0,4) == "doc:"){
-				cid = "cid:"+Dwt.getNextId();
+				cid = "cid:"+this._generateCid();
 				img.removeAttribute("dfsrc");
 				img.setAttribute("doc", dfsrc.substring(4, dfsrc.length));
 			} else {
