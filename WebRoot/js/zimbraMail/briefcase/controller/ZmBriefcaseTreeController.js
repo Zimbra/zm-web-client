@@ -74,11 +74,14 @@ function(actionMenu, type, id) {
         var isTrash = (briefcase.id == ZmFolder.ID_TRASH);
 
         var deleteText = ZmMsg.del;
+
+        actionMenu.getOp(ZmOperation.EMPTY_FOLDER).setVisible(isTrash);
+
         if (isTrash) {
             var hasContent = ((briefcase.numTotal > 0) || (briefcase.children && (briefcase.children.size() > 0)));
             actionMenu.enableAll(false);
-            actionMenu.enable(ZmOperation.DELETE, hasContent);
-            deleteText = ZmMsg.emptyTrash;
+            actionMenu.enable(ZmOperation.EMPTY_FOLDER,hasContent);
+            actionMenu.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);            
         }else{
             actionMenu.enableAll(true);
             var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE);
@@ -152,7 +155,7 @@ function() {
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_BRIEFCASE);
 	}
-	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS);
+	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.EMPTY_FOLDER);    
 	return ops;
 };
 

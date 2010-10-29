@@ -114,14 +114,17 @@ function(parent, type, id) {
 	var deleteText = ZmMsg.del;
 	var addrBook = appCtxt.getById(id);
 	var nId = addrBook ? addrBook.nId : ZmOrganizer.normalizeId(id);
-    var hasContent = ((addrBook.numTotal > 0) || (addrBook.children && (addrBook.children.size() > 0)));
+
+    parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(nId == ZmFolder.ID_TRASH);
 
 	if (nId == ZmFolder.ID_TRASH) {
 		parent.enableAll(false);
-        parent.enable(ZmOperation.DELETE, hasContent);
-		deleteText = ZmMsg.emptyTrash;
+        parent.enable(ZmOperation.DELETE, false);
+        var hasContent = ((addrBook.numTotal > 0) || (addrBook.children && (addrBook.children.size() > 0)));
+        parent.enable(ZmOperation.EMPTY_FOLDER,hasContent);
+        parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);        
 	} else {
-		parent.enableAll(true);
+		parent.enableAll(true);        
         if (addrBook) {
             if (addrBook.isSystem()) {
                 parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
@@ -190,7 +193,8 @@ function() {
 			ZmOperation.DELETE,
 			ZmOperation.RENAME_FOLDER,
 			ZmOperation.EDIT_PROPS,
-			ZmOperation.EXPAND_ALL);
+			ZmOperation.EXPAND_ALL,
+            ZmOperation.EMPTY_FOLDER);
 
 	return ops;
 };

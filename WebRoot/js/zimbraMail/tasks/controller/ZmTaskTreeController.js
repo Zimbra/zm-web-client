@@ -90,6 +90,11 @@ function(parent, type, id) {
         parent.enable(ZmOperation.SYNC, folder.isFeed());
 	}
 
+    parent.enable(ZmOperation.EMPTY_FOLDER,((folder.numTotal > 0) || (folder.children && (folder.children.size() > 0))));
+    parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(id==ZmOrganizer.ID_TRASH);
+    parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);
+
+
 	var op = parent.getOp(ZmOperation.DELETE);
 	if (op) {
 		op.setText(deleteText);
@@ -129,7 +134,8 @@ function() {
 		ZmOperation.DELETE,
 		ZmOperation.RENAME_FOLDER,
 		ZmOperation.EDIT_PROPS,
-		ZmOperation.SYNC
+		ZmOperation.SYNC,
+        ZmOperation.EMPTY_FOLDER
 	];
 };
 
