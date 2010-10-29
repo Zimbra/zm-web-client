@@ -684,14 +684,25 @@ function(task,ftask) {
 ZmTaskListController.prototype._handleCancel =
 function(tasks) {
 	var batchCmd = new ZmBatchCommand();
+	var actionController = appCtxt.getActionController();
+	var idList = [];
 	for (var i = 0; i < tasks.length; i++) {
 		var t = tasks[i];
 		var cmd = new AjxCallback(t, t.cancel, [ZmCalItem.MODE_DELETE]);
 		batchCmd.add(cmd);
+		idList.push(t.id);
 	}
+	var actionLogItem = (actionController && actionController.actionPerformed({op: "trash", ids: idList, attrs: {l: ZmOrganizer.ID_TRASH}})) || null;
 	batchCmd.run();
-    var summary = ZmList.getActionSummary(ZmMsg.actionTrash, tasks.length, ZmItem.TASK);
-	appCtxt.setStatusMsg(summary);
+	var summary = ZmList.getActionSummary(ZmMsg.actionTrash, tasks.length, ZmItem.TASK);
+	
+	var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
+	if (undoLink && actionController) {
+		actionController.onPopup();
+		appCtxt.setStatusMsg({msg: summary+undoLink, transitions: actionController.getStatusTransitions()});
+	} else {
+		appCtxt.setStatusMsg(summary);
+	}
 };
 
 ZmTaskListController.prototype._editTask =
