@@ -622,7 +622,7 @@ function(msg, elem, aname) {
 	var avalue = elem.getAttribute(df_aname);
 	if (avalue) {
 		if (avalue.substr(0,4) == "cid:") {
-			var cid = "<" + avalue.substr(4) + ">";
+			var cid = "<" + AjxStringUtil.urlComponentDecode(avalue.substr(4)) + ">"; // Parse percent-escaping per bug #52085 (especially %40 to @)
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
 			if (avalue) {
 				elem.setAttribute(aname, avalue);
