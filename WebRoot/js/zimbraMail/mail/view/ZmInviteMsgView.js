@@ -375,18 +375,12 @@ function(subs, sentBy, sentByAddr) {
 	subs.invitees = str.join(AjxEmailAddress.SEPARATOR);
 
 	// convert to local timezone if necessary
-	var sd, ed;
 	var inviteTz = this._invite.getServerStartTimeTz();
 	var defaultTz = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 
-	if (inviteTz != defaultTz) {
-		sd = this._invite.getServerStartDate();
-		ed = this._invite.getServerEndDate();
-		var offset1 = AjxTimezone.getOffset(AjxTimezone.DEFAULT, sd);
-		var offset2 = AjxTimezone.getOffset(AjxTimezone.getClientId(inviteTz), sd);
-		sd.setTime(sd.getTime() + (offset1 - offset2)*60*1000);
-		ed.setTime(ed.getTime() + (offset1 - offset2)*60*1000);
-	}
+	var sd = AjxTimezone.convertTimezone(this._invite.getServerStartDate(null, true), AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
+	var ed = AjxTimezone.convertTimezone(this._invite.getServerEndDate(null, true), AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
+
 	subs.timezone = AjxTimezone.getMediumName(defaultTz);
 
 	// duration text
