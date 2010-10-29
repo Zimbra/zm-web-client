@@ -443,16 +443,20 @@ function() {
 
 ZmCalItemComposeController.prototype._handleResponseSave =
 function(calItem, result) {
-	if (calItem.__newFolderId) {
-		var folder = appCtxt.getById(calItem.__newFolderId);
-		calItem.__newFolderId = null;
-		this._app.getListController()._doMove(calItem, folder, null, false);
-	}
+    try {
+        if (calItem.__newFolderId) {
+            var folder = appCtxt.getById(calItem.__newFolderId);
+            calItem.__newFolderId = null;
+            this._app.getListController()._doMove(calItem, folder, null, false);
+        }
 
-    calItem.handlePostSaveCallbacks();
-
-	this._composeView.cleanup();
-    appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success 
+        calItem.handlePostSaveCallbacks();
+        appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success
+    } catch (ex) {
+        DBG.println(ex);
+    } finally {
+        this._composeView.cleanup();
+    }
 };
 
 ZmCalItemComposeController.prototype._handleErrorSave =
@@ -618,8 +622,13 @@ function() {
 ZmCalItemComposeController.prototype._closeView =
 function() {
 	this._app.popView(true);
-	appCtxt.getAppViewMgr().showPendingView(true);
-	this._composeView.cleanup();
+    try{
+	    appCtxt.getAppViewMgr().showPendingView(true);
+    } catch(ex) {
+        // do nothing
+    } finally {
+	    this._composeView.cleanup();
+    }
 };
 
 ZmCalItemComposeController.prototype._textModeOkCallback =
