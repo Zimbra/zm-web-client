@@ -98,30 +98,19 @@ BODY						{	margin:0px; 				}
 #skin_spacing_current_app				{}
 #skin_container_current_app				{	@SkinBorderCurrentApp@		}
 
-#skin_container_adminlink				{	padding-right: 7px;			}
-
 #skin_container_helpLogoff 				{	white-space:nowrap;	}
 
 #skin_td_switch_offline,
+#skin_container_admin,
 #skin_container_help,
 #skin_container_logoff					{
+	background-color:transparent;
 	color:#fff;
 	display:inline-block;
-	white-space:nowrap;
-	text-align: center;
 	margin:0px 10px 0px 0px;
-}
-#skin_td_switch_offline a,
-#skin_container_help a:link,
-#skin_container_logoff a:link				{	color:#fff;		}
-
-#skin_td_switch_offline a:hover,
-#skin_container_help a:hover,
-#skin_container_logoff a:hover				{	background-color:transparent;	}	
-
-#skin_container_help,
-#skin_container_logoff					{
 	padding: 0px 5px;
+	text-align: center;
+	white-space:nowrap;
 }
 
 /** Tree Toolbar **/

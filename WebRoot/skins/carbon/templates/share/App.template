@@ -1,5 +1,8 @@
 <template id="share.App#UserInfo">
 	<div id='skin_container_helpLogoff'>
+		<$ if (data.adminUrl) { $>
+			<a id='skin_container_admin' href='${adminUrl}' target='_blank'><$= ZmMsg.adminLinkLabel $></a>
+		<$ } $>
 		<a id='skin_container_help' href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= ZmMsg.help $></a>
 		<a id='skin_container_logoff' href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>${logoutText}</a>
 	</div>
