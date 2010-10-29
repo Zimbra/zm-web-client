@@ -119,14 +119,20 @@ function(msg, ex, noExecReset, hideReportButton) {
 ZmController.handleScriptError =
 function(ex) {
 
-	var msg = ZmMsg.scriptError + ": " + ex.message;
-	var m = ex.fileName && ex.fileName.match(/(\w+\.js)/);
-	if (m && m.length) {
-		msg += " - " + m[1] + ":" + ex.lineNumber;
+	var text = [];
+	var eol = "\n";
+	if (ex) {
+		var msg = ZmMsg.scriptError + ": " + ex.message;
+		var m = ex.fileName && ex.fileName.match(/(\w+\.js)/);
+		if (m && m.length) {
+			msg += " - " + m[1] + ":" + ex.lineNumber;
+		}
+		if (ex.fileName)	{ text.push("File: " + ex.fileName); }
+		if (ex.lineNumber)	{ text.push("Line: " + ex.lineNumber); }
+		if (ex.name)		{ text.push("Error: " + ex.name); }
+		if (ex.stack)		{ text.push("Stack: " + ex.stack.replace("\n", eol, "g")); }
 	}
-	var text = "File: " + ex.fileName + "<br>Line: " + ex.lineNumber + "<br>Error: " + ex.name +
-			   "<br>Stack: " + ex.stack.replace("\n", "<br>", "g");
-	appCtxt.getAppController().popupErrorDialog(msg, text);
+	appCtxt.getAppController().popupErrorDialog(msg, text.join(eol));
 };
 
 /**
