@@ -542,9 +542,25 @@ function(ev) {
 };
 
 ZmBriefcaseController.prototype._delVersionListener =
-function(){    
+function(ev, items, force){
+
     var view = this._parentView[this._currentView];
-    view._deleteVerListener();
+   items = items || view.getSelection();
+
+    if(!force){
+        var dlg = this._delVerDlg = appCtxt.getOkCancelMsgDialog();
+        dlg.reset();
+        dlg.registerCallback(DwtDialog.OK_BUTTON, new AjxCallback(this, this._delVersionListener, [ev, items, true]));
+        dlg.setMessage(ZmMsg.delVersionShieldMsg, DwtMessageDialog.WARNING_STYLE);
+        dlg.associateEnterWithButton(DwtDialog.CANCEL_BUTTON);
+        dlg.popup(null, DwtDialog.CANCEL_BUTTON);
+        return;
+    }
+
+    if(this._delVerDlg)
+        this._delVerDlg.popdown();
+
+    view._deleteVerListener(items);
 };
 
 ZmBriefcaseController.prototype._restoreVerListener =

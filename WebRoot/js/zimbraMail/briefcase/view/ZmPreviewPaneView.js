@@ -403,8 +403,8 @@ function(rev){
 };
 
 ZmPreviewPaneView.prototype._deleteVerListener =
-function(){
-    var items = this._detailListView.getSelection();
+function(items){
+    items = items || this._detailListView.getSelection();
     if(!items || items.length == 0) return;
     var verItem = items[0];
     this.deleteVersion(verItem);
