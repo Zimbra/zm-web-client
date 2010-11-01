@@ -103,7 +103,7 @@ function(params) {
         var folderId = params.items[0].getFolderId();
         var fromFolder = appCtxt.getById(folderId);
 		if ((params.items[0].isDraft && params.folder.id == ZmFolder.ID_DRAFTS) ||
-			(params.folder.isRemote()) || (fromFolder.isRemote()))
+			(params.folder.isRemote()) || (fromFolder && fromFolder.isRemote()))
 		{
 			params1.accountName = params.items[0].getAccount().name;
 		}
