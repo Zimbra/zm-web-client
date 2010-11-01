@@ -165,7 +165,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_VERSION) {
 		htmlArr[idx++] = item.version;
 	} else if (field == ZmItem.F_NAME) {
-		htmlArr[idx++] = "<div id='"+this._getFieldId(item, ZmItem.F_NAME)+"'>"+( item.isRevision ? ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + item.subject ) : AjxStringUtil.htmlEncode(item.name) )+"</div>";
+		htmlArr[idx++] = "<div id='"+this._getFieldId(item, ZmItem.F_NAME)+"'>"+this._getDisplayName(item)+"</div>";
 	} else if (field == ZmItem.F_FILE_TYPE) {
         if(item.isFolder){
             htmlArr[idx++] = ZmMsg.folder;
@@ -205,6 +205,17 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	return idx;
 };
 
+ZmDetailListView.prototype._getDisplayName =
+function(item){
+    var subject;
+    if(item.isRevision){
+        subject = ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + item.subject );
+    }else if(parseInt(item.version) > 1){
+        subject = AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version])
+    }
+    return subject || (AjxStringUtil.htmlEncode(item.name));
+};
+
 ZmDetailListView.prototype._getAbridgedContent =
 function(item, colIdx) {
 
@@ -218,23 +229,11 @@ function(item, colIdx) {
         html[idx++] = "</center></td>";
     }
 
-    var subject;
-    if(item.isFolder){
-        subject = AjxStringUtil.htmlEncode(item.name);
-    }else if(item.isRevision){
-        subject = ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + item.subject );
-    }else{
-        if(parseInt(item.version) == 1)
-            subject = AjxStringUtil.htmlEncode(item.name);
-        else
-            subject = AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version])
-    }
-
 	html[idx++] = "<td style='vertical-align:middle;' width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
 	html[idx++] = AjxImg.getImageHtml(item.getIcon());
 	html[idx++] = "</center></td>";
 	html[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_NAME) + "'>";
-    html[idx++] = "&nbsp;"+ subject;
+    html[idx++] = "&nbsp;"+ this._getDisplayName(item);
 	html[idx++] = "</td>";
 
     html[idx++] = "<td style='vertical-align:middle;text-align:left;' width=40 id='" + this._getFieldId(item, ZmItem.F_SIZE) + "'>";
