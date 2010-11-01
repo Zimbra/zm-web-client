@@ -386,9 +386,9 @@ function(msg, handleInlineDocs){
 		dfsrc = images[i].getAttribute("dfsrc") || images[i].getAttribute("mce_src") || images[i].src;
 		if (dfsrc) {
 			if (dfsrc.substring(0,4) == "cid:") {
-				cid = dfsrc.substring(4);
+				cid = dfsrc.substring(4).replace("%40","@");
 				var docpath = images[i].getAttribute("doc");
-				if(docpath){
+				if (docpath){
 					msg.addInlineDocAttachment(cid, null, docpath);
 					handled = true;
 				} else {
@@ -436,7 +436,9 @@ function(msg, forwardAttIds) {
 
 ZmComposeView.prototype._generateCid =
 function() {
-	return Dwt.getNextId() + "@zimbra";
+	var timeStr = ""+new Date().getTime();
+	var hash = AjxSHA1.hex_sha1(timeStr + Dwt.getNextId());
+	return hash + "@zimbra";
 }
 
 /**
@@ -1019,7 +1021,7 @@ function(msg, idoc) {
 		if (dfsrc) {
 			if (dfsrc.substring(0,4) == "cid:") {
 				num++;
-				var cid = "<" + dfsrc.substring(4) + ">";
+				var cid = "<" + dfsrc.substring(4).replace("%40","@") + ">";
 				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
 				//Cache cleared, becoz part id's may change.
 				src = src + "&t=" + (new Date()).getTime();
