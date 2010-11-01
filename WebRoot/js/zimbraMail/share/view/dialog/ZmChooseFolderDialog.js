@@ -43,6 +43,7 @@ ZmChooseFolderDialog = function(parent, className) {
 
 	this._multiAcctOverviews = {};
 	this._lastVal = "";
+    this._selected = "";
 };
 
 ZmChooseFolderDialog.prototype = new ZmDialog;
@@ -187,7 +188,11 @@ function(params) {
 		var overviews = ov.getOverviews();
 		for (var i in overviews) {
 			var overview = overviews[i];
-			this._resetTree(params.treeIds, overview);
+            // zimlet overview resets folder list
+            // need to stop resetting folder list for each overview
+            if (overview._treeIds[0].toLowerCase() != "zimlet") {
+                this._resetTree(params.treeIds, overview);
+            }
 		}
 
 		ov.expandAccountOnly(appCtxt.getActiveAccount());
@@ -303,7 +308,8 @@ function(ev) {
 
 ZmChooseFolderDialog.prototype._okButtonListener =
 function(ev) {
-	var tgtFolder = this._getOverview().getSelected();
+	//var tgtFolder = this._getOverview().getSelected();
+    var tgtFolder = appCtxt.getById(this._selected);
 	var folderList = (tgtFolder && (!(tgtFolder instanceof Array)))
 		? [tgtFolder] : tgtFolder;
 
@@ -387,9 +393,9 @@ function(ev) {
 				(path.indexOf(testPath) == 0 && (path.substr(testPath.length).indexOf("/") == -1))) {
 
 				matches.push(ti);
-				if (!firstMatch) {
-					firstMatch = folderInfo;
-				}
+                if (!firstMatch || (folderInfo.accountId == appCtxt.getActiveAccount().id)) {
+                    firstMatch = folderInfo;
+                }
 			}
 		}
 	}
@@ -406,7 +412,14 @@ function(ev) {
 	if (firstMatch) {
 		var tv = this._treeView[firstMatch.accountId][firstMatch.type];
 		tv.setSelected(appCtxt.getById(firstMatch.id), true, true);
-	}
+        this._selected = firstMatch.id;
+        if (appCtxt.multiAccounts) {
+            var ov = this._getOverview();
+            for (var h in ov._headerItems) {
+                ov._headerItems[h].setExpanded((h == firstMatch.accountId), false, false);
+            }
+        }
+    }
 	this._lastVal = value;
 };
 
