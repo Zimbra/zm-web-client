@@ -277,7 +277,7 @@ function(params,response)
             item.locked = true;
             item.lockId = data.loid;
             item.lockUser = data.loe;
-            item.lockTime = new Date(Number(node.lt));
+            item.lockTime = new Date(Number(data.lt));
         }
     }
 
