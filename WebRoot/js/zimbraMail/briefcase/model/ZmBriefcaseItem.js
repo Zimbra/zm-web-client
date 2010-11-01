@@ -440,7 +440,7 @@ function(node) {
         this.locked = true;
         this.lockId = node.loid;
         this.lockUser = node.loe;
-        this.lockTime = node.lt;
+        this.lockTime = new Date(Number(node.lt));
     }
 };
 

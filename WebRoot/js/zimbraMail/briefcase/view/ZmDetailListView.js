@@ -161,7 +161,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_TYPE) {
 		htmlArr[idx++] = AjxImg.getImageHtml(item.getIcon());
 	} else if (field == ZmItem.F_LOCK) {
-		htmlArr[idx++] = AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");
+		idx = this._getImageHtml(htmlArr, idx, (item.locked ? "PadLock" : "Blank_16") , this._getFieldId(item, field)); //AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");
 	} else if (field == ZmItem.F_VERSION) {
 		htmlArr[idx++] = item.version;
 	} else if (field == ZmItem.F_NAME) {
@@ -224,7 +224,7 @@ function(item, colIdx) {
 	idx = this._getRow(html, idx, item);
 
     if(this._revisionView){
-        html[idx++] = "<td style='vertical-align:middle;' width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
+        html[idx++] = "<td style='vertical-align:middle;' width=16 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
         idx = this._getCellContents(html, idx, item, ZmItem.F_EXPAND, colIdx);
         html[idx++] = "</center></td>";
     }
@@ -240,11 +240,6 @@ function(item, colIdx) {
 	idx = this._getCellContents(html, idx, item, ZmItem.F_SIZE, colIdx);
 	html[idx++] = "</td>";
 
-    html[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_LOCK)+"' ";
-    html[idx++] = item.locked ? "class='ImgPadLock' ":" ";
-    html[idx++] = " >";
-	html[idx++] = "</td>";
-
     html[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_TAG)+"'>";
     idx = this._getImageHtml(html, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
 	html[idx++] = "</td>";
@@ -257,7 +252,11 @@ function(item, colIdx) {
     idx = this._getCellContents(html, idx, item, ZmItem.F_FROM, colIdx);
     html[idx++] = "<td style='text-align:right;padding-right:50px;'>";
     idx = this._getCellContents(html, idx, item, ZmItem.F_DATE, colIdx);
-    html[idx++] = "</td></tr></table>";
+    html[idx++] = "</td>";
+    html[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_LOCK)+"' ";
+    idx =   this._getImageHtml(html, idx, (item.locked ? "PadLock" : "Blank_16") , this._getFieldId(item, ZmItem.F_LOCK));
+	html[idx++] = "</td>";
+    html[idx++] = "</tr></table>";
 
 	return html.join('');
 };
@@ -439,6 +438,27 @@ function() {
 			DwtListView.prototype._resetColWidth.apply(this, arguments);
 		}
 	}
+};
+
+ZmDetailListView.prototype._getToolTip =
+function(params) {
+
+    if( params.field == ZmItem.F_LOCK){
+        var item = params.item;
+        if(item.locked){
+            var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
+            var subs = {
+                title: ZmMsg.checkedOutFile,
+                fileProperties:	[
+                    {name: ZmMsg.lockedTo, value:item.lockUser},
+                    {name: ZmMsg.when, value: dateFormatter.format(item.lockTime)}
+                ]
+            };
+            return AjxTemplate.expand("briefcase.Briefcase#Tooltip", subs);
+        }
+    }
+    
+	return ZmBriefcaseBaseView.prototype._getToolTip.call(this, params);
 };
 
 

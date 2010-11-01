@@ -105,7 +105,12 @@ function(params) {
 		prop.push({name:ZmMsg.briefcasePropModified, value:dateStr});
 	}
 
+    if(item.locked){
+        prop.push({name:ZmMsg.status, value:ZmMsg.locked});
+    }
+
 	var subs = {
+        title: ZmMsg.briefcaseFileProps,
 		fileProperties:	prop,
 		tagTooltip:		this._getTagToolTip(item)
 	};

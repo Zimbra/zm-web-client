@@ -519,6 +519,25 @@ function(){
     this._headerNotes = document.getElementById(this._htmlElId+"_notes");
     this._headerExpand = document.getElementById(this._htmlElId+"_expand");
 
+    this._newWindow = document.getElementById(this._htmlElId+"_window");
+    if(this._newWindow){
+        this._newWindow.innerHTML = AjxImg.getImageHtml("OpenInNewWindow");
+        Dwt.setHandler(this._newWindow, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._newWindowListener, this));
+    }
+
+    this._lockStatus = document.getElementById(this._htmlElId+"_lock");
+
+};
+
+ZmPreviewView.prototype._newWindowListener =
+function(){
+
+   var item = this._previewItem;
+    var restUrl = item && item.getRestUrl();
+    if (restUrl) {
+        restUrl += (restUrl.match(/\?/) ? "&" : "?") + "view=html";
+        window.open(restUrl)
+    }
 };
 
 ZmPreviewView._errorCallback =
@@ -679,6 +698,9 @@ function(item){
         this._headerCreated.innerHTML = dateFormatter.format(item.createDate);
     if(this._headerCreator)
         this._headerCreator.innerHTML = item.creator;
+
+    if(this._lockStatus)
+        this._lockStatus.innerHTML = AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");   
 
     this.setNotes(item);
 };
