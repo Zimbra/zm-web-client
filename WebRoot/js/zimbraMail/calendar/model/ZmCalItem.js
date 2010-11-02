@@ -1877,7 +1877,7 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	if (!(appCtxt.isOffline && acct.isMain)) {
 		var me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
         var user, displayName, identityUser;
-        identity = identity || appCtxt.getIdentityCollection().defaultIdentity;
+        identity = identity || appCtxt.getIdentityCollection(acct).defaultIdentity;
         if(identity){ //If !Identity then consider the default identity
             identityUser = identity.sendFromAddress;
             displayName = identity.sendFromDisplay;
