@@ -440,7 +440,9 @@ function() {
 ZmAppCtxt.prototype.getNewFolderDialog =
 function() {
 	if (!this._newFolderDialog) {
-		this._newFolderDialog = new ZmNewFolderDialog(this._shell);
+        var title = ZmMsg.createNewFolder;
+        var type = ZmOrganizer.FOLDER;
+        this._newFolderDialog = new ZmNewOrganizerDialog(this._shell, null, title, type)
 	}
 	return this._newFolderDialog;
 };

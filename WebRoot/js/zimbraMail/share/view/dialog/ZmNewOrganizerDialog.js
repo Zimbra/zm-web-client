@@ -50,20 +50,21 @@ function() {
 /**
  * Pops-up the dialog.
  * 
- * @param {ZmFolder}	folder		the folder to select initially
+ * @param {ZmOrganizer|hash}	params      popup parameters
  * @param	{ZmAccount}	account		the account
  */
 ZmNewOrganizerDialog.prototype.popup =
-function(folder, account) {
+function(params, account) {
+    var folder = params instanceof ZmOrganizer ? params : (params && params.organizer);
 	if (this._folderTreeCellId) {
-		var params = {
+		var overviewParams = {
 			overviewId:		this.toString(),
 			treeIds:		this._treeIds,
 			omit:			this._omit,
 			fieldId:		this._folderTreeCellId,
 			overviewTrees:	[this._organizerType]
 		};
-		this._setOverview(params);
+		this._setOverview(overviewParams);
 
 		if (this._folderTreeView) {
 			// bug #18533 - always make sure header item is visible in "New" dialog
@@ -90,13 +91,17 @@ function(folder, account) {
 		}
 	}
 
-	// dont allow "None" option in color picker
-    // bug 22490 removed None option when not in use
-    if (folder && (folder.type != ZmOrganizer.FOLDER) && this._colorSelect) {
-        var noneOption = this._colorSelect.getMenu().getItem(0);
-        if (noneOption.getText() == ZmOrganizer.COLOR_TEXT[0]) {
-            this._colorSelect.getMenu().removeChild(noneOption);
+    if (this._colorSelect) {
+        var icon = null;
+        var orgType = this._organizerType; 
+        var orgClass = ZmOrganizer.ORG_CLASS[orgType];
+        if (orgClass) {
+            var prototype = window[orgClass].prototype;
+            // HACK: to get default icon regardless of organizer type
+            icon = prototype.getIcon.apply(prototype);
         }
+        this._colorSelect.setValue(ZmOrganizer.DEFAULT_COLOR[orgType]);
+        this._colorSelect.setImage(icon);
     }
 
 	var ovContainer = appCtxt.multiAccounts && this._opc.getOverviewContainer(this.toString());
@@ -130,10 +135,6 @@ ZmNewOrganizerDialog.prototype.reset =
 function(account) {
 	ZmDialog.prototype.reset.apply(this, arguments);
 
-	if (this._colorSelect) {
-		this._initColorSelect(account);
-	}
-
 	if (this._remoteCheckboxField) {
 		this._remoteCheckboxField.checked = false;
 		var urlRow = document.getElementById(this._remoteCheckboxFieldId+"URLrow");
@@ -160,14 +161,6 @@ ZmNewOrganizerDialog.prototype._getRemoteLabel =
 function() {
 	return ZmMsg.subscribeToFeed;
 };
-
-ZmNewOrganizerDialog.prototype._initColorSelect =
-function(account) {
-	var color = (this._colorSelect.getValue() + 1) % ZmOrganizer.COLOR_CHOICES.length;
-	var option = this._colorSelect.getOptionWithValue(color);
-	this._colorSelect.setSelectedOption(option);
-};
-
 
 // create html
 
@@ -254,15 +247,8 @@ function() {
 
 ZmNewOrganizerDialog.prototype._setupColorControl =
 function() {
-	this._colorSelect = new DwtSelect({parent:this});
-	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
-		var choice = ZmOrganizer.COLOR_CHOICES[i];
-		this._colorSelect.addOption(choice.label, i == 0, choice.value);
-	}
-	var colorTd = document.getElementById(this._colorSelectId);
-	if (colorTd) {
-		colorTd.appendChild(this._colorSelect.getHtmlElement());
-	}
+    var el = document.getElementById(this._colorSelectId);
+	this._colorSelect = new ZmColorButton({parent:this,parentElement:el});
 };
 
 ZmNewOrganizerDialog.prototype._setupExtraControls =
@@ -352,8 +338,17 @@ function() {
 		msg = AjxMessageFormat.format(ZmMsg.errorSubFolderNotAllowed, parentFolder.name);
 	}
 
+    if (msg) {
+        return this._showError(msg);
+    }
+
 	var account = appCtxt.multiAccounts ? parentFolder.getAccount() : null;
-	return (msg ? this._showError(msg) : {l:parentFolder.id, name:name, color:color, url:url, account:account});
+	var params = {l:parentFolder.id, name:name, color:color, url:url, account:account};
+    if (String(color).match(/^#/)) {
+        params.rgb = color;
+        delete params.color;
+    }
+    return params;
 };
 
 ZmNewOrganizerDialog.prototype._getTabGroupMembers =

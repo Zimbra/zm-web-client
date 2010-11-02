@@ -37,32 +37,6 @@ function(account) {
 
 // Protected methods
 
-ZmNewCalendarDialog.prototype._initColorSelect =
-function(account) {
-	var defaultColor = account && account.getDefaultColor();
-	if (!defaultColor) {
-		// call base class if no default color for this account type
-		ZmNewOrganizerDialog.prototype._initColorSelect.apply(this, arguments);
-	} else {
-		var option = this._colorSelect.getOptionWithValue(defaultColor);
-		this._colorSelect.setSelectedOption(option);
-	}
-};
-
-ZmNewCalendarDialog.prototype._setupColorControl =
-function() {
-	this._colorSelect = new DwtSelect({parent:this});
-	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
-        if(i == ZmOrganizer.C_NONE) continue;
-		var choice = ZmOrganizer.COLOR_CHOICES[i];
-		this._colorSelect.addOption(choice.label, i == 1, choice.value);
-	}
-	var colorTd = document.getElementById(this._colorSelectId);
-	if (colorTd) {
-		colorTd.appendChild(this._colorSelect.getHtmlElement());
-	}
-};
-
 ZmNewCalendarDialog.prototype._getRemoteLabel =
 function() {
 	return ZmMsg.addRemoteAppts;
