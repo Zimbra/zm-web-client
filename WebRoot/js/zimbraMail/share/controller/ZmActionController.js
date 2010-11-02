@@ -109,9 +109,7 @@ ZmActionController.prototype.dismiss = function() {
 		this._capturing = false;
 		this._mouseCapObj.release();	
 	}
-	if (this._active) {
-		appCtxt.dismissStatusMsg(); // If we're active (an undoable action has been performed and we're showing the toast), clear one holding off the toast
-	}
+	appCtxt.dismissStatusMsg(true);
 	this._active = false;
 };
 

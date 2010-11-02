@@ -1405,7 +1405,7 @@ function() {
 
 ZmZimbraMail.prototype.handleAnyKey =
 function(ev) {
-	this.dismissStatusMsg();
+	this.dismissStatusMsg(true);
 };
 
 /**
