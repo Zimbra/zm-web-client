@@ -499,7 +499,7 @@ ZmNotificationsPageForm.prototype._handleSendCode = function() {
 ZmNotificationsPageForm.prototype._handleSendCodeResponse = function(resp) {
     appCtxt.setStatusMsg(ZmMsg.deviceEmailNotificationsVerificationCodeSendSuccess);
 
-    this.setValue("DEVICE_EMAIL_STATUS_CODE_VALUE", ZmNotificationsPageForm.PENDING);
+    this.setValue("DEVICE_EMAIL_CODE_STATUS_VALUE", ZmNotificationsPageForm.PENDING);
     this.update();
 };
 
