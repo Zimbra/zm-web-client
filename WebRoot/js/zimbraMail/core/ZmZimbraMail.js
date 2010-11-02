@@ -1403,6 +1403,11 @@ function() {
 	}
 };
 
+ZmZimbraMail.prototype.handleAnyKey =
+function(ev) {
+	this.dismissStatusMsg();
+};
+
 /**
  * @private
  */
@@ -2336,7 +2341,6 @@ ZmZimbraMail.prototype.handleKeyAction =
 function(actionCode, ev) {
 
 	DwtMenu.closeActiveMenu();
-	this.dismissStatusMsg();
 
 	var app = ZmApp.GOTO_ACTION_CODE_R[actionCode];
 	if (app) {
