@@ -29,10 +29,6 @@
 	-ms-filter: "progid:DXImageTransform.Microsoft.Glow(Color=@darken(LoginColor,50)@, Strength=3)"; /* IE8 */
 }
 
-.LoginScreen .ImgAltBanner {
-	background-image:url("@SkinImgDir@/vmwareLogo_login.png");
-}
-
 .form {
 	color: #FFFFFF;
 }

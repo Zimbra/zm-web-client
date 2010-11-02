@@ -130,7 +130,7 @@ FORM {
 	margin:20px 0px 0px 20px;
 	width:71px;
 	height:11px;
-	background-image:url("@SkinImgDir@/altLogo_login.png");
+	background-image:url("@LogoImgDir@/AltBanner.png");
 	background-repeat:repeat-x;
 }
 .LoginScreen h1 {margin:22px 20px 32px 20px;}
