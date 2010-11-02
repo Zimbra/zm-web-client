@@ -2011,7 +2011,7 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 		var me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
         var user, displayName, identityUser;
         if(!identity){
-            var identityC = appCtxt.getIdentityCollection();
+            var identityC = appCtxt.getIdentityCollection(acct);
             identity = identityC && identityC.defaultIdentity;
         }        
         if(identity){ //If !Identity then consider the default identity
