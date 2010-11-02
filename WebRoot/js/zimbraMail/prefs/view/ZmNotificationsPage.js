@@ -89,12 +89,7 @@ ZmNotificationsPage.prototype.showMe = function() {
  * @private
  */
 ZmNotificationsPage.prototype.isDirty = function() {
-    // TODO: Even though this returns the correct dirty status for pref
-    // TODO: saving, we also need to adjust the pref's origValue so that
-    // TODO: the default processing doesn't save the value even though
-    // TODO: it hasn't changed. But, in the short term, this isn't a
-    // TODO: terrible thing.
-    return this._form.isDirty("EMAIL");
+    return this._form.getValue("EMAIL") != appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS);
 };
 
 /**

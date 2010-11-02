@@ -1449,6 +1449,8 @@ function(excludeAttendees, excludeReminder) {
 
 	if (!excludeReminder) {
 		vals.push(this._reminderSelectInput.getValue());
+        vals.push(this._reminderEmailCheckbox.isSelected());
+        vals.push(this._reminderDeviceEmailCheckbox.isSelected());
 	}
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);

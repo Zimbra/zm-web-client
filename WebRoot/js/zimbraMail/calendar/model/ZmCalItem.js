@@ -189,7 +189,7 @@ ZmCalItem.REMINDER_NONE             = "none";
 // Alarm actions
 ZmCalItem.ALARM_DISPLAY	= "DISPLAY";
 ZmCalItem.ALARM_EMAIL	= "EMAIL";
-
+ZmCalItem.ALARM_DEVICE_EMAIL = "DEVICE_EMAIL"; // SMS
 
 // Getters
 
@@ -655,14 +655,14 @@ function(tmp) {
 	if (!tmp) { return; }
 
 	var m, h, d;
-	var trigger = (tmp) ? tmp.trigger : null;
+	var trigger = tmp.trigger;
 	var rel = (trigger && (trigger.length > 0)) ? trigger[0].rel : null;
 	m = (rel && (rel.length > 0)) ? rel[0].m : null;
 	d = (rel && (rel.length > 0)) ? rel[0].d : null;
 	h = (rel && (rel.length > 0)) ? rel[0].h : null;
 
 	this._reminderMinutes = 0;
-	if (tmp && (tmp.action == ZmCalItem.ALARM_DISPLAY)) {
+	if (tmp.action == ZmCalItem.ALARM_DISPLAY) {
 		if (m != null) {
 			this._reminderMinutes = m;
             this._origReminderUnits = ZmCalItem.REMINDER_UNIT_MINUTES;
@@ -1084,11 +1084,45 @@ function(message, viewMode) {
 };
 
 /**
+ * Override to add specific initialization but remember to call
+ * the base implementation.
+ *
  * @private
  */
 ZmCalItem.prototype._setExtrasFromMessage =
 function(message) {
-	// override
+    this._setAlarmFromMessage(message);
+};
+
+ZmCalItem.prototype._setAlarmFromMessage =
+function(message) {
+	this._reminderMinutes = 0;
+	var alarm = message.invite.getAlarm();
+	if (alarm) {
+		for (var i in alarm) {
+            var alarmInst = alarm[i];
+            if (!alarmInst) continue;
+
+            var action = alarmInst.action;
+			if (action == ZmCalItem.ALARM_DISPLAY) {
+				this.parseAlarm(alarmInst);
+                // NOTE: No need to add a display alarm because it's
+                // NOTE: added by default in the constructor.
+                continue;
+			}
+
+            // NOTE: Both email and device-email/sms reminders appear
+            // NOTE: as "EMAIL" alarms but we distinguish between them
+            // NOTE: upon loading.
+            if (action == ZmCalItem.ALARM_EMAIL) {
+                var email = AjxUtil.get(alarmInst, "at", 0, "a");
+                if (email == appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS)) {
+                    action = ZmCalItem.ALARM_DEVICE_EMAIL;
+                }
+                this.addReminderAction(action);
+            }
+		}
+	}
 };
 
 /**
@@ -1293,6 +1327,12 @@ function(soapDoc, comp) {
 			var email = appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS);
 			if (!email) { continue; }
 		}
+        if (action == ZmCalItem.ALARM_DEVICE_EMAIL) {
+            var email = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS);
+            if (!email) { continue; }
+            // NOTE: treat device email alarm as a standard email alarm
+            action = ZmCalItem.ALARM_EMAIL;
+        }
 		var alarm = soapDoc.set("alarm", null, comp);
 		alarm.setAttribute("action", action);
 		var trigger = soapDoc.set("trigger", null, alarm);
