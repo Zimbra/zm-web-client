@@ -53,7 +53,7 @@
 
   <context-param>
     <param-name>zimbraDefaultAdminSkin</param-name>
-    <param-value>beach</param-value>
+    <param-value>carbon</param-value>
   </context-param>
 
   <context-param>
