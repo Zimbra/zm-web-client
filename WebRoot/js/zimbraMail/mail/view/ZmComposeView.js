@@ -2699,7 +2699,9 @@ function(msg) {
 		selectedIdentity = ac.getIdentityCollection(active).defaultIdentity;
 	}
 
-	this._fromSelect.setSelectedValue(selectedIdentity.id);
+    if(selectedIdentity && selectedIdentity.id) {
+        this._fromSelect.setSelectedValue(selectedIdentity.id);
+    }
 
 	// for cross account searches, the active account isn't necessarily the
 	// account of the selected conv/msg so reset it based on the selected option.
