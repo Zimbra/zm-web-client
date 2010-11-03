@@ -297,7 +297,7 @@ function() {
 			}
 		},
 		NOTIFICATIONS: {
-			title: ZmMsg.reminders,
+			title: ZmMsg.notifications,
 			icon: "ApptReminder",
 			templateId: "prefs.Pages#Notifications",
 			priority: 88,
