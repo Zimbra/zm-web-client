@@ -241,7 +241,7 @@ function() {
     var size = this.getSize();
 
     // create sub-content, if needed
-    var showSubContent = this.getCurrentViewName() != ZmId.VIEW_CAL_LIST && this._subContentShown;
+    var showSubContent = this._subContentShown;
     if (showSubContent && !this._subContentInitialized) {
         Dwt.setSize(this._contentEl, null, 2 * size.y / 3);
         Dwt.setSize(this._subContentEl, null, size.y / 3);
