@@ -612,7 +612,7 @@ input.admin_xform_name_input_disabled {
 	padding: 0px ;	
 }
 
-.ZaShowSavedSearchArrowButton .ZWidgetTable .ZLeftIcon div {
+.ZaShowSavedSearchArrowButton .ZWidgetTable .ZLeftIcon DIV, .ZaShowSavedSearchArrowButton .ZWidgetTable .ZLeftIcon IMG {
 	margin-left: 3px ;	
 }
 

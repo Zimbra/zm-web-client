@@ -2244,7 +2244,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWidget .ZToolbarTable td { vertical-align: middle; }
 
 .ZmChatWidget .ZToolbarTable .ZButton { min-width: 0; }
-.ZmChatWidget .ZToolbarTable .ZButton .ZLeftIcon div { margin-left: 2px; margin-right: 2px; }
+.ZmChatWidget .ZToolbarTable .ZButton .ZLeftIcon DIV, .ZmChatWidget .ZToolbarTable .ZButton .ZLeftIcon IMG { margin-left: 2px; margin-right: 2px; }
 .ZmChatWidget .ZToolbarTable .ZButton .ZWidgetTitle { padding: 0; }
 
 .ZmSendButton {
@@ -2422,7 +2422,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable { width: auto; }
 /* .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTitle { width: auto; padding-top: 0; padding-bottom: 0; } */
 .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTitle { width: auto; padding: 0; }
-.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable .ZLeftIcon div { margin-left: 0; }
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable .ZLeftIcon DIV, .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable .ZLeftIcon IMG { margin-left: 0; }
 .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable div { margin: 0; }
 .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZButton { min-width: 0; height: auto; }
 
@@ -3984,7 +3984,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:30px; min-width:30px;
 }
 
-.ZmSoundPlayer .ZButton .ZLeftIcon  DIV {
+.ZmSoundPlayer .ZButton .ZLeftIcon DIV, .ZmSoundPlayer .ZButton .ZLeftIcon IMG {
 	margin-left:5px;
 	margin-right:5px;
 }

@@ -1734,12 +1734,12 @@ input.xform_field {
 .ZWidgetTable DIV				{	}
 .ZHasText .ZWidgetTitle			{	padding:0px 4px;	}
 
-.ZWidgetTable .ZLeftIcon DIV	{	margin:1px 4px;	}
-.ZWidgetTable .ZRightIcon DIV	{	margin:1px 4px;	}
-.ZWidgetTable .ZDropDown DIV	{	margin:1px 4px;	}
+.ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG	    {	margin:1px 4px;	}
+.ZWidgetTable .ZRightIcon DIV, .ZWidgetTable .ZRightIcon IMG	{	margin:1px 4px;	}
+.ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG	    {	margin:1px 4px;	}
 
-.ZHasText .ZLeftIcon DIV		{	margin-right:0px !important;	}
-.ZHasText .ZRightIcon DIV 		{	margin-left:0px !important;		}
+.ZHasText .ZLeftIcon DIV, .ZHasText .ZLeftIcon IMG		{	margin-right:0px !important;	}
+.ZHasText .ZRightIcon DIV, .ZHasText .ZRightIcon IMG	{	margin-left:0px !important;		}
 .ZHasText .ZDropDown DIV		{	margin-left:0px !important;		}
 
 .DwtDragProxy .ZWidgetTitle		{ width: auto; }
@@ -1803,7 +1803,7 @@ input.xform_field {
  *	ZToolbarButton	-- more subtle buttons, inside toolbars
  *
  ***************/
-ZToolbarButtonTable {}
+.ZToolbarButtonTable {}
 
 .ZToolbarButton									{	@ToolbarButton@			@ToolbarButtonSpacing@			}
 
@@ -1820,13 +1820,6 @@ ZToolbarButtonTable {}
 .ZFocused	.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-focused@		}
 .ZActive	.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-active@		}
 .ZSelected	.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-selected@	}
-
-/*
-.ZToolbarButton .ZLeftIcon  DIV		{	margin-left:2px;}
-.ZToolbarButton .ZRightIcon DIV		{	margin-left:2px; margin-right:2px;}
-*/
-
-
 
 
 /***************
@@ -1857,13 +1850,6 @@ ZToolbarButtonTable {}
 
 
 .ZSelectPseudoItem    		        { padding: 0 17px 6px; visibility: hidden; }
-
-/*
-.ZSelect .ZLeftIcon  DIV			{	position:relative; left:5px;}
-.ZSelect .ZRightIcon DIV			{	margin-left:2px; margin-right:4px;}
-*/
-
-
 
 
 /***************
@@ -2148,16 +2134,16 @@ ZToolbarButtonTable {}
 	make the shim div in all items have the proper width
 	so things line up properly
 */
-.ZHasIcon .ZMenuItemBorder .ZLeftIcon DIV 		{	width:16px; height:16px; }
-.ZHasCheck .ZMenuItemBorder .ZCheckIcon DIV 	{	width:9px;	height:9px; }
-.ZHasSubmenu .ZMenuItemBorder .ZDropDown DIV 	{	width:16px;	height:16px; }
+.ZHasIcon .ZMenuItemBorder .ZLeftIcon DIV, .ZHasIcon .ZMenuItemBorder .ZLeftIcon IMG 		{	width:16px; height:16px; }
+.ZHasCheck .ZMenuItemBorder .ZCheckIcon DIV, .ZHasCheck .ZMenuItemBorder .ZCheckIcon IMG 	{	width:9px;	height:9px; }
+.ZHasSubmenu .ZMenuItemBorder .ZDropDown DIV, .ZHasSubmenu .ZMenuItemBorder .ZDropDown IMG 	{	width:16px;	height:16px; }
 
 
 .ZMenuItem-Separator	 						{	@MenuItemSeparator@	}
 .ZMenuItemSeparatorBorder TD					{	height:12px !important;}
 
-.ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon DIV,
-.ZHasCheck .ZMenuItemSeparatorBorder .ZCheckIcon DIV,
+.ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon DIV, .ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon IMG,
+.ZHasCheck .ZMenuItemSeparatorBorder .ZCheckIcon DIV, .ZHasCheck .ZMenuItemSeparatorBorder .ZCheckIcon IMG,
 .ZHasSubmenu .ZMenuItemSeparatorBorder .ZDropDown DIV 		{	height:1px !important; }
 
 
