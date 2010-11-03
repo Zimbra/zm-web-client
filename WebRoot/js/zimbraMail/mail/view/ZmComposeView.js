@@ -1139,11 +1139,25 @@ function(bEnableInputs) {
 		this._acAddrSelectList.show(false);
 	}
 
+	if (this._useAcAddrBubbles) {
+		this._bubble = {};
+	}
+
 	// reset To/CC/BCC fields
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		var textarea = this._field[ZmMailMsg.COMPOSE_ADDRS[i]];
+		var type = ZmMailMsg.COMPOSE_ADDRS[i];
+		var textarea = this._field[type];
 		textarea.value = "";
 		this._adjustAddrHeight(textarea, true);
+		if (this._useAcAddrBubbles) {
+			// scrubbing bubbles
+			for (var id in this._bubbleHolderDiv) {
+				var div = this._bubbleHolderDiv[id];
+				while (div && div.firstChild) {
+					div.removeChild(div.firstChild);
+				}
+			}
+		}
 	}
 
 	// reset subject / body fields
@@ -1734,25 +1748,32 @@ function(ev, acListView, result) {
 
 ZmComposeView.prototype._adjustAddrHeight =
 function(textarea, skipResetBodySize) {
+
+	if (this._useAcAddrBubbles && textarea) { return; }
+
 	if (textarea.value.length == 0) {
 		textarea.style.height = "21px";
 
-		if (AjxEnv.isIE) // for IE use overflow-y
+		if (AjxEnv.isIE) {
+			// for IE use overflow-y
 			textarea.style.overflowY = "hidden";
-		else
+		}
+		else {
 			textarea.style.overflow = "hidden";
+		}
 
-		if (!skipResetBodySize)
+		if (!skipResetBodySize) {
 			this._resetBodySize();
+		}
 
 		return;
 	}
 
-	if (textarea.scrollHeight > textarea.clientHeight) {
+	var sh = textarea.scrollHeight;
+	if (sh > textarea.clientHeight) {
 		var taHeight = parseInt(textarea.style.height) || 0;
 		if (taHeight <= 65) {
-			var sh = textarea.scrollHeight;
-			if (textarea.scrollHeight >= 65) {
+			if (sh >= 65) {
 				sh = 65;
 				if (AjxEnv.isIE)
 					textarea.style.overflowY = "scroll";
@@ -1762,12 +1783,15 @@ function(textarea, skipResetBodySize) {
 			textarea.style.height = sh + 13;
 			this._resetBodySize();
 		} else {
-			if (AjxEnv.isIE) // for IE use overflow-y
+			if (AjxEnv.isIE) {
+				// for IE use overflow-y
 				textarea.style.overflowY = "scroll";
-			else
+			}
+			else {
 				textarea.style.overflow = "auto";
+			}
 
-			textarea.scrollTop = textarea.scrollHeight;
+			textarea.scrollTop = sh;
 		}
 	}
 };
@@ -2257,6 +2281,9 @@ function() {
  */
 ZmComposeView.prototype._initialize =
 function(composeMode) {
+
+	this._useAcAddrBubbles = appCtxt.get(ZmSetting.AUTOCOMPLETE_ADDR_BUBBLES);
+
 	// init address field objects
 	this._divId = {};
 	this._buttonTdId = {};
@@ -2265,6 +2292,9 @@ function(composeMode) {
 	this._button = {};
 	this._field = {};
 	this._divEl = {};
+	if (this._useAcAddrBubbles) {
+		this._bubbleHolderDiv = {};
+	}
 	this._internalId = AjxCore.assignId(this);
 
 	// init html
@@ -2300,6 +2330,7 @@ function(composeMode) {
 
 ZmComposeView.prototype._createHtml =
 function(templateId) {
+
 	var data = {
 		id:					this._htmlElId,
 		headerId:			ZmId.getViewId(this._view, ZmId.CMP_HEADER),
@@ -2327,11 +2358,25 @@ function(templateId) {
 		zdndToolTipId:		ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP)
 	};
 
+	if (this._useAcAddrBubbles) {
+		data.acAddrBubbles = true;
+		data.toBubbleDivId = ZmId.getViewId(this._view, ZmId.CMP_TO_BUBBLE_DIV);
+		data.ccBubbleDivId = ZmId.getViewId(this._view, ZmId.CMP_CC_BUBBLE_DIV);
+		data.bccBubbleDivId = ZmId.getViewId(this._view, ZmId.CMP_BCC_BUBBLE_DIV);
+		data.toBubbleHolderDivId = ZmId.getViewId(this._view, ZmId.CMP_TO_BUBBLE_HOLDER_DIV);
+		data.ccBubbleHolderDivId = ZmId.getViewId(this._view, ZmId.CMP_CC_BUBBLE_HOLDER_DIV);
+		data.bccBubbleHolderDivId = ZmId.getViewId(this._view, ZmId.CMP_BCC_BUBBLE_HOLDER_DIV);
+		data.toBubbleInputDivId = ZmId.getViewId(this._view, ZmId.CMP_TO_BUBBLE_INPUT_DIV);
+		data.ccBubbleInputDivId = ZmId.getViewId(this._view, ZmId.CMP_CC_BUBBLE_INPUT_DIV);
+		data.bccBubbleInputDivId = ZmId.getViewId(this._view, ZmId.CMP_BCC_BUBBLE_INPUT_DIV);
+	}
+
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
 };
 
 ZmComposeView.prototype._createHtmlFromTemplate =
 function(templateId, data) {
+
 	DwtComposite.prototype._createHtmlFromTemplate.call(this, templateId, data);
 
 	// global identifiers
@@ -2340,12 +2385,16 @@ function(templateId, data) {
 	// init autocomplete list
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.isOffline) {
 		var params = {
-			parent: appCtxt.getShell(),
-			dataClass: appCtxt.getAutocompleter(),
-			matchValue: ZmAutocomplete.AC_VALUE_FULL,
-			compCallback: (new AjxCallback(this, this._acCompHandler)),
-			keyUpCallback: (new AjxCallback(this, this._acKeyupHandler))
+			dataClass:		appCtxt.getAutocompleter(),
+			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
+			compCallback:	(new AjxCallback(this, this._acCompHandler)),
+			keyUpCallback:	(new AjxCallback(this, this._acKeyupHandler)),
+			options:		{addrBubbles:this._useAcAddrBubbles}
 		};
+		if (this._useAcAddrBubbles) {
+			params.matchValue = ZmAutocomplete.AC_VALUE_FULL;
+			params.parentView = this;
+		}
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 
@@ -2362,9 +2411,22 @@ function(templateId, data) {
 		// save identifiers
 		this._divId[type] = [data.id, typeStr, "row"].join("_");
 		this._buttonTdId[type] = [data.id, typeStr, "picker"].join("_");
-		this._fieldId[type] = [data.id, typeStr, "control"].join("_");
+		var inputId = this._fieldId[type] = [data.id, typeStr, "control"].join("_");
+
 		// save field elements
 		this._divEl[type] = document.getElementById(this._divId[type]);
+		if (this._useAcAddrBubbles) {
+			var div = this._bubbleHolderDiv[inputId] = document.getElementById([data.id, typeStr, "bubble_holder_div"].join("_"));
+			if (div) {
+				// focus input when holder div is clicked
+				div.onclick = function(id) {
+					return function() {
+						ZmComposeView.onClickBubbleDiv(id);
+					}
+				}(inputId);
+			}
+			var x;
+		}
 
 		// save field control
 		this._field[type] = document.getElementById(this._fieldId[type]);
@@ -3239,4 +3301,31 @@ function() {
 ZmComposeView.prototype.deactivate =
 function() {
 	this._controller.inactive = true;
+};
+
+ZmComposeView.prototype.getBubbleHolder =
+function(inputId) {
+	return this._bubbleHolderDiv[inputId];
+};
+
+// height will be adjusted by _acCompHandler
+ZmComposeView.prototype.bubbleAdded =
+function(bubbleId, divId, inputId) {
+
+	this._bubble[divId] = this._bubble[divId] || [];
+	this._bubble[divId].push(bubbleId);
+	appCtxt.getKeyboardMgr().grabFocus(inputId);
+};
+
+ZmComposeView.prototype.bubbleRemoved =
+function(bubbleId, divId, inputId) {
+
+	AjxUtil.arrayRemove(this._bubble[divId], bubbleId);
+	delete this._bubble[divId];
+	appCtxt.getKeyboardMgr().grabFocus(inputId);
+};
+
+ZmComposeView.onClickBubbleDiv =
+function(inputId) {
+	appCtxt.getKeyboardMgr().grabFocus(inputId);
 };

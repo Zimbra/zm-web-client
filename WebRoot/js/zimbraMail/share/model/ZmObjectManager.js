@@ -294,10 +294,12 @@ function(obj){
  * @param	{Boolean}	htmlEncode	<code>true</code> to HTML encode the content
  * @param	{constant}	type		the type
  * @param	{Boolean}	isTextMsg	<code>true</code> if is text msg
+ * @param	{hash}		options		arbitrary options to pass to handler
+ *
  * @return	{String}	the object
  */
 ZmObjectManager.prototype.findObjects =
-function(content, htmlEncode, type, isTextMsg) {
+function(content, htmlEncode, type, isTextMsg, options) {
 	if  (!content) {return "";}
 	var html = [];
 	var idx = 0;
@@ -342,7 +344,7 @@ function(content, htmlEncode, type, isTextMsg) {
 			if (type == "email" || content instanceof AjxEmailAddress) {
 				if (lowestHandler) {
                     content = this._getAjxEmailAddress(content);
-					this.generateSpan(lowestHandler, html, idx, content, null);
+					this.generateSpan(lowestHandler, html, idx, content, null, options);
 				} else {
 					html[idx++] = AjxStringUtil.htmlEncode(content.toString());
 				}
@@ -857,10 +859,10 @@ function(type, name, value) {
  * @private
  */
 ZmObjectManager.prototype.generateSpan =
-function(handler, html, idx, obj, context) {
+function(handler, html, idx, obj, context, options) {
 	var id = this._objectIdPrefix + Dwt.getNextId();
 	this._objects[id] = {object: obj, handler: handler, id: id, context: context };
-	return handler.generateSpan(html, idx, obj, id, context);
+	return handler.generateSpan(html, idx, obj, id, context, options);
 };
 
 /**
@@ -884,7 +886,7 @@ function(ev) {
 	var object = this._objects[span.id];
 	if (!object) {return false;}
 
-	span.className = object.handler.getHoveredClassName(object.object, object.context);
+	span.className = object.handler.getHoveredClassName(object.object, object.context, span.id);
 	if (object.handler.hasToolTipText()) {
 		var shell = DwtShell.getShell(window);
 		var manager = shell.getHoverMgr();
@@ -912,7 +914,7 @@ function(ev) {
 	var object = span ? this._objects[span.id] : null;
 
 	if (object) {
-		span.className = object.handler.getClassName(object.object, object.context);
+		span.className = object.handler.getClassName(object.object, object.context, span.id);
 		var shell = DwtShell.getShell(window);
 		var manager = shell.getHoverMgr();
 		manager.setHoverOutDelay(0);
@@ -984,7 +986,7 @@ function(ev) {
 	manager.setHoverOutListener(this._hoverOutListener);
 	manager.hoverOut();
 
-	span.className = object.handler.getActiveClassName(object.object, object.context);
+	span.className = object.handler.getActiveClassName(object.object, object.context, span.id);
 	if (ev.button == DwtMouseEvent.RIGHT) {
 		// NOTE: we need to know if the current view is a dialog since action
 		//       menu needs to be a higher z-index
@@ -1021,7 +1023,7 @@ function(ev) {
 	var object = this._objects[span.id];
 	if (!object) {return false;}
 
-	span.className = object.handler.getHoveredClassName(object.object, object.context);
+	span.className = object.handler.getHoveredClassName(object.object, object.context, span.id);
 	return false;
 };
 

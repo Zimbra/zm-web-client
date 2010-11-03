@@ -701,7 +701,44 @@ INPUT[type="text"].people_search_input {
 	margin: 0 0 0 65px;
 }
 
+/* Styles to support the autocomplete option to show addresses in bubbles */
 
+.addrBubbleContainer {
+	background-color: white;
+	cursor: text;
+	border: 1px inset #F0F0F0;
+}
+
+.addrBubbleHolder {
+	padding: 2px 0;
+	margin-top: 2px;
+}
+
+.addrBubbleContainer input {
+	border: 0px;
+	width: 100%;
+}
+
+.addrBubble {
+	color: black;
+	background-color: #EEEEEE;
+	border: 1px solid #333333;
+	padding: 1px 3px;
+	margin: 0 0 2px 3px;
+	display: inline-block;
+
+	#IFDEF SAFARI
+		-webkit-border-radius: 4px;
+	#ENDIF
+	#IFDEF GECKO
+		-moz-border-radius:4px;
+	#ENDIF
+}
+
+.addrBubble .remove {
+	color: #666666;
+	cursor: pointer;
+}
 
 /*
  *	ZmHtmlEditor -- HTML editor stuff
@@ -2586,6 +2623,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	background-color:@ListItemBgColor-normal@;
 	width: auto;
 	padding: 0px !important;
+	border-width: 1px;
 }
 
 .acRow, .acRow-selected {
@@ -2875,6 +2913,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmSignatureListView {
 	width: 150px !important;
+	height: 100%;
 	background-color:white;
 }
 

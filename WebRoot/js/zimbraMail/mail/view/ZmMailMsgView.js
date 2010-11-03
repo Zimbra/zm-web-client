@@ -1012,6 +1012,7 @@ function(msg, container, callback) {
 		}
 	}
 
+	var options = {addrBubbles:true};
 	if (this._objectManager) {
 		this._lazyCreateObjectManager();
 
@@ -1023,7 +1024,7 @@ function(msg, container, callback) {
 											this._dateObjectHandlerDate);
 
 		subject 	= this._objectManager.findObjects(subject, true);
-		sentBy		= this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL);
+		sentBy		= this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL, false, options);
 		dateString	= this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE);
 		if (obo) {
 			obo		= this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
@@ -1046,13 +1047,14 @@ function(msg, container, callback) {
 			var parts = [];
 			for (var j = 0; j < addrs.length; j++) {
 				if (j > 0) {
-					parts[idx++] = AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR);
+//					parts[idx++] = AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR);
+					parts[idx++] = " "; // no need for semicolon now that we use addr bubbles
 				}
 
 				var email = addrs[j];
 				if (email.address) {
 					parts[idx++] = this._objectManager
-						? (this._objectManager.findObjects(email, true, ZmObjectManager.EMAIL))
+						? (this._objectManager.findObjects(email, true, ZmObjectManager.EMAIL, false, options))
 						: AjxStringUtil.htmlEncode(email.address);
 				} else {
 					parts[idx++] = AjxStringUtil.htmlEncode(email.name);

@@ -61,7 +61,8 @@
  * @param	{AjxCallback}	keyPressCallback	the additional client ONKEYPRESS handler
  * @param	{AjxCallback}	keyUpCallback		the additional client ONKEYUP handler
  * @param	{AjxCallback}	enterCallback		the client handler for Enter key
- * @param	{Hash}			options				the additional options for autocompleteMatch() in data class
+ * @param	{object}		parentView			the view control that created us
+ * @param	{Hash}			options				the additional options for the data class
  * 
  * @extends		DwtComposite
  */
@@ -82,6 +83,7 @@ ZmAutocompleteListView = function(params) {
 	this._keyPressCallback = params.keyPressCallback;
 	this._keyUpCallback = params.keyUpCallback;
 	this._enterCallback = params.enterCallback;
+	this._parentView = params.parentView;
     this._options = params.options || {};
 
 	this._isDelim = AjxUtil.arrayAsHash(params.delims || ZmAutocompleteListView.DELIMS);
@@ -722,6 +724,9 @@ function(text, str, hasDelim, match) {
 	DBG.println(AjxDebug.DBG2, "update replace range: " + start + " - " + end);
 	var value = this._getCompletionValue(match);
 	var newText = [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
+	if (this._options.addrBubbles) {
+		newText = value;
+	}
 	if (value) {
 		this._done[value] = true;
 	}
@@ -748,10 +753,36 @@ function(match) {
 // Resets the value of an element to the given text.
 ZmAutocompleteListView.prototype._updateField =
 function(text, match) {
+
 	var el = this._element;
-	el.value = text;
-	el.focus();
-	Dwt.setSelectionRange(el, text.length, text.length);
+	if (this._options.addrBubbles) {
+		this._element.value = "";
+		var bubble = document.createElement("span");
+		var bubbleId = bubble.id = Dwt.getNextId();
+		bubble.className = "addrBubble";
+		bubble._aclvId = this._htmlElId;
+		var inputId = this._element.id;
+		var bubbleDiv = this._parentView.getBubbleHolder(inputId);
+		var expandLinkText = "", divId = bubbleDiv.id;
+		if (match.isDL) {
+			var expandLinkId = bubbleId + "_expand";
+			var expandLink = 'ZmAutocompleteListView.expandBubble("' + bubbleId + '","' + match.email + '");';
+			var expandLinkText = "<a id='" + expandLinkId + "' onclick='" + expandLink + "' class='remove'>+</a> ";
+		}
+		var removeLinkId = bubbleId + "_remove";
+		var removeLink = 'ZmAutocompleteListView.removeBubble("' + bubbleId + '","' + divId + '","' + inputId + '");';
+		var removeLinkText = " <a id='" + removeLinkId + "' onclick='" + removeLink + "' class='remove'>x</a>";
+//		removeLinkText = "<div style='display:inline-block' class='ImgClose'></div>";
+		bubble.innerHTML = expandLinkText + AjxStringUtil.htmlEncode(text) + removeLinkText;
+		bubbleDiv.appendChild(bubble);
+		this._parentView.bubbleAdded(bubbleId, divId, inputId);
+		el = bubbleDiv;
+	}
+	else {
+		el.value = text;
+		el.focus();
+		Dwt.setSelectionRange(el, text.length, text.length);
+	}
 
 	this.reset();
 	this._hasCompleted = true;
@@ -950,6 +981,9 @@ function(loc) {
 		var elSize = Dwt.getSize(this._element);
 		var x = elLoc.x;
 		var y = elLoc.y + elSize.y;
+		if (this._options.addrBubbles) {
+			y += 3;
+		}
 	}
 
 	var shellHeight = this.shell.getSize().y;
@@ -1183,12 +1217,14 @@ function(email, rowId) {
 /**
  * Displays a second popup list with the members of the given distribution list.
  *
- * @param {string}		email		address of a distribution list
- * @param {string}		textId		ID of link text
- * @param {string}		rowId		ID of row
+ * @param {string}			email		address of a distribution list
+ * @param {string}			textId		ID of link text
+ * @param {string}			rowId		ID or list view row
+ * @param {DwtMouseEvent}	ev			mouse event
+ * @param {DwtPoint}		loc			location to popup at; default is right of parent ACLV
  */
 ZmAutocompleteListView.prototype.expandDL =
-function(email, textId, rowId) {
+function(email, textId, rowId, ev, loc) {
 
 	if (!this._dataAPI.expandDL) { return; }
 
@@ -1211,9 +1247,37 @@ function(email, textId, rowId) {
 			contactsApp.updateCache(contact, true);
 		}
 		contact.isDL = true;
-		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact]));
-		this._curExpanded = textId;
-		this._setExpandText(textId, true);
+		if (textId) {
+			this._curExpanded = textId;
+			this._setExpandText(textId, true);
+		}
+		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact, loc]));
+	}
+};
+
+ZmAutocompleteListView.prototype._handleResponseExpandDL =
+function(contact, loc, matches) {
+
+	var mlv = this._memberListView;
+	if (!mlv) {
+		mlv = this._memberListView = new ZmDLAutocompleteListView({parent:appCtxt.getShell(), parentAclv:this});
+		mlv._element = this._element;
+	}
+	mlv._dlContact = contact;
+	mlv._removeAll();
+	mlv._set(matches, contact);
+
+	if (!loc) {
+		// default position is just to right of parent ac list
+		var loc = this.getLocation();
+		loc.x += this.getSize().x;
+	}
+	mlv.show(true, loc);
+	if (!mlv._rowHeight) {
+		var table = document.getElementById(mlv._tableId);
+		if (table) {
+			mlv._rowHeight = Dwt.getSize(table.rows[0]).y;
+		}
 	}
 };
 
@@ -1225,26 +1289,25 @@ function(textId, expanded) {
 	}
 };
 
-ZmAutocompleteListView.prototype._handleResponseExpandDL =
-function(contact, matches) {
+ZmAutocompleteListView.expandBubble =
+function(bubbleId, email) {
 
-	var mlv = this._memberListView;
-	if (!mlv) {
-		mlv = this._memberListView = new ZmDLAutocompleteListView({parent:appCtxt.getShell(), parentAclv:this});
-		mlv._element = this._element;
+	var bubble = document.getElementById(bubbleId);
+	if (bubble) {
+		var aclv = DwtControl.ALL_BY_ID[bubble._aclvId];
+		var loc = Dwt.getLocation(bubble);
+		loc.y += Dwt.getSize(bubble).y + 2;
+		aclv.expandDL(email, bubbleId, null, null, loc);
 	}
-	mlv._dlContact = contact;
-	mlv._removeAll();
-	mlv._set(matches, contact);
+};
 
-	// position just to right of parent ac list
-	var loc = this.getLocation();
-	loc.x += this.getSize().x;
-	mlv.show(true, loc);
-	if (!mlv._rowHeight) {
-		var table = document.getElementById(mlv._tableId);
-		if (table) {
-			mlv._rowHeight = Dwt.getSize(table.rows[0]).y;
-		}
+ZmAutocompleteListView.removeBubble =
+function(bubbleId, divId, inputId) {
+
+	var bubble = document.getElementById(bubbleId);
+	if (bubble) {
+		var aclv = DwtControl.ALL_BY_ID[bubble._aclvId];
+		aclv._parentView.bubbleRemoved(bubbleId, divId, inputId);
+		bubble.parentNode.removeChild(bubble);
 	}
 };

@@ -334,7 +334,16 @@
 				<div id='${toPickerId}'><$=ZmMsg.toLabel$></div>
 			</td>
 			<td width='96%' colspan=2>
-				<textarea id='${toInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+				<$ if (data.acAddrBubbles) { $>
+					<div id='${toBubbleDivId}' class='addrBubbleContainer'>
+						<div id='${toBubbleHolderDivId}' class='addrBubbleHolder'></div>
+						<div id='${toBubbleInputDivId}'>
+							<input id='${toInputId}'>
+						</div>
+					</div>
+				<$ } else { $>
+					<textarea id='${toInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+				<$ } $>
 			</td>
 		</tr>
 
@@ -343,7 +352,16 @@
 				<div id='${ccPickerId}'><$=ZmMsg.ccLabel$></div>
 			</td>
 			<td>
-				<textarea id='${ccInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+				<$ if (data.acAddrBubbles) { $>
+				<div id='${ccBubbleDivId}' class='addrBubbleContainer'>
+					<div id='${ccBubbleHolderDivId}' class='addrBubbleHolder'></div>
+					<div id='${ccBubbleInputDivId}'>
+						<input id='${ccInputId}'>
+					</div>
+				</div>
+				<$ } else { $>
+					<textarea id='${ccInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+				<$ } $>
 			</td>
 			<td width='5%'>
 				<nobr><a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a></nobr>
@@ -355,7 +373,16 @@
 				<div id='${bccPickerId}'><$=ZmMsg.bccLabel$></div>
 			</td>
 			<td colspan='2'>
-				<textarea id='${bccInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+				<$ if (data.acAddrBubbles) { $>
+				<div id='${bccBubbleDivId}' class='addrBubbleContainer'>
+					<div id='${bccBubbleHolderDivId}' class='addrBubbleHolder'></div>
+					<div id='${bccBubbleInputDivId}'>
+						<input id='${bccInputId}'>
+					</div>
+				</div>
+				<$ } else { $>
+					<textarea id='${bccInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+				<$ } $>
 			</td>
 		</tr>
 

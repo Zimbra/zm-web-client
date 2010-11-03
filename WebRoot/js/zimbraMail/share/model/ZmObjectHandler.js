@@ -84,23 +84,27 @@ function() {
  * 
  * @param	{Object}		obj			the object
  * @param	{Object}		context		the content
+ * @param	{string}		spanId		ID of the SPAN
+ *
  * @return	{string}		the class name
  */
 ZmObjectHandler.prototype.getClassName =
-function(obj, context) {
+function(obj, context, spanId) {
 	return this._className;
 };
 
 /**
  * Gets the hovered class name for the given object.
  * 
- * @param	{Object}		obj		the object
+ * @param	{Object}		obj			the object
  * @param	{Object}		context		the content
+ * @param	{string}		spanId		ID of hovered SPAN
+ *
  * @return	{string}		the hovered class name
  */
 ZmObjectHandler.prototype.getHoveredClassName =
-function(obj, context) {
-	var cname = this.getClassName(obj);
+function(obj, context, spanId) {
+	var cname = this.getClassName(obj, context, spanId);
 	if (this._cachedClassNameForHovered !== cname) {
 		this._cachedClassNameForHovered = cname;
 		this._classNameHovered = cname + "-" + DwtCssStyle.HOVER;
@@ -113,11 +117,13 @@ function(obj, context) {
  * 
  * @param	{Object}		obj		the object
  * @param	{Object}		context		the content
+ * @param	{string}		spanId		ID of the SPAN
+ *
  * @return	{string}		the active class name
  */
 ZmObjectHandler.prototype.getActiveClassName =
-function(obj, context) {
-	var cname = this.getClassName(obj);
+function(obj, context, spanId) {
+	var cname = this.getClassName(obj, context, spanId);
 	if (this._cachedClassNameForActive !== cname) {
 		this._cachedClassNameForActive = cname;
 		this._classNameActive = cname + "-" + DwtCssStyle.ACTIVE;
@@ -184,7 +190,7 @@ function(html, idx, obj, context, spanId) {
  * @private
  */
 ZmObjectHandler.prototype.generateSpan = 
-function(html, idx, obj, spanId, context) {
+function(html, idx, obj, spanId, context, options) {
 	html[idx++] = "<span class='";
 	html[idx++] = this.getClassName(obj);
 	html[idx++] = "' id='";
