@@ -530,14 +530,8 @@ function(){
 };
 
 ZmPreviewView.prototype._newWindowListener =
-function(){
-
-   var item = this._previewItem;
-    var restUrl = item && item.getRestUrl();
-    if (restUrl) {
-        restUrl += (restUrl.match(/\?/) ? "&" : "?") + "view=html";
-        window.open(restUrl)
-    }
+function(){   
+   this._controller.openFile(this._previewItem);
 };
 
 ZmPreviewView._errorCallback =

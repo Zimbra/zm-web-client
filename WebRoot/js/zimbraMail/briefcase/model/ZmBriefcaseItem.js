@@ -466,7 +466,7 @@ function(data) {
         this.locked = true;
         this.lockId = data.loid;
         this.lockUser = data.loe;
-        this.lockTime = data.lt;
+        this.lockTime = new Date(Number(data.lt));
     }
 };
 
