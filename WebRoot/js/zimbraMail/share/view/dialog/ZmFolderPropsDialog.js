@@ -80,6 +80,7 @@ function(organizer) {
         var icon = organizer.getIcon(); 
         this._color.setImage(icon);
         this._color.setValue(organizer.color);
+        this._color.setEnabled(organizer.id != ZmFolder.ID_DRAFTS);
 	}
 
 	this._handleFolderChange();
