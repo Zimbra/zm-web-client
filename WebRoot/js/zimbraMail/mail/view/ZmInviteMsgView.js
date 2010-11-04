@@ -134,7 +134,7 @@ function(msg) {
 					var isSelected = (calAcct && msgAcct)
 						? (calAcct == msgAcct && calendar.nId == ZmOrganizer.ID_CALENDAR)
 						: calendar.nId == ZmOrganizer.ID_CALENDAR;
-					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null, icon);
+					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null);
 					this._inviteMoveSelect.addOption(option);
 				}
 
