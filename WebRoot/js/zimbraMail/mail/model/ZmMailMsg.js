@@ -1884,6 +1884,14 @@ function () {
 	return (this.invite != null);
 };
 
+ZmMailMsg.prototype.forwardAsInvite =
+function () {
+	if(!this.invite) {
+		return false;
+	}
+	return this.invite.getInviteMethod() == "REQUEST";
+};
+
 ZmMailMsg.prototype.needsRsvp =
 function () {
 	if (!this.isInvite() || this.invite.isOrganizer()) { return false; }

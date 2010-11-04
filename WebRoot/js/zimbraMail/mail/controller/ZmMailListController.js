@@ -823,9 +823,8 @@ function(params, msg) {
 	// special handling for multiple forward action
 	var action = params.action;
 	if (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE) {
-
 		// bug 43428 - invitation should be forwarded using apt forward view
-		if (msg.isInvite()) {
+		if (msg.forwardAsInvite()) {
 			var ac = window.parentAppCtxt || window.appCtxt;
 			var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
 			controller.forwardInvite(msg);
