@@ -39,6 +39,10 @@ function() {
 
 ZmAlert.prototype._stopLoop =
 function() {
+	//no need to do anything if already not looping
+	if (!this._isLooping) {
+		return;
+	}
 	if (ZmAlertLoop.INSTANCE) {
 		ZmAlertLoop.INSTANCE._remove(this);
 	}
