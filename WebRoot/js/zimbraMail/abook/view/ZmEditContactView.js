@@ -968,10 +968,10 @@ function(nattrs,id,prefixes,onlyvalue,listAttrs) {
 
 	// add attributes on contact that we don't know about
 	for (var aname in nattrs) {
-		aname = aname.replace(/\d+$/,"");
-		if (ZmContact.IS_IGNORE[aname]) continue;
-		if (!(aname in attributes)) {
-			array.push({type:aname,value:nattrs[aname]});
+		var anameNormalized = aname.replace(/\d+$/,"");
+		if (ZmContact.IS_IGNORE[anameNormalized]) continue;
+		if (!(anameNormalized in attributes)) {
+			array.push({type:anameNormalized,value:nattrs[aname]});
 			if (!listAttrs[id]) listAttrs[id] = [];
 			listAttrs[id].push(aname);
 		}

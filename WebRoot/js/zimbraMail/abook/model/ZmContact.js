@@ -124,6 +124,7 @@ ZmContact.X_fileAs					= "fileAs";				// extra fields
 ZmContact.X_firstLast				= "firstLast";
 ZmContact.X_fullName				= "fullName";
 ZmContact.X_vcardXProps             = "vcardXProps";
+ZmContact.X_outlookUserField        = "outlookUserField";
 ZmContact.MC_cardOwner				= "cardOwner";			// My card fields
 ZmContact.MC_workCardMessage		= "workCardMessage";
 ZmContact.MC_homeCardMessage		= "homeCardMessage";
@@ -298,6 +299,7 @@ ZmContact.updateFieldConstants();
 ZmContact.IS_ADDONE = {};
 ZmContact.IS_ADDONE[ZmContact.F_custom] = true;
 ZmContact.IS_ADDONE[ZmContact.F_imAddress] = true;
+ZmContact.IS_ADDONE[ZmContact.X_outlookUserField] = true;
 
 /**
  * Gets an indexed attribute name taking into account if the field
