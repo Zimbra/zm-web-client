@@ -135,7 +135,7 @@ FORM {
 }
 .LoginScreen h1 {margin:22px 20px 32px 20px;}
 
-form {text-align:center;}  /* fixes IE centering of form */
+.LoginScreen form {text-align:center;}  /* fixes IE centering of form */
 .form {
 	color: @darken(AppC,50)@;
 	margin: 0px auto;
