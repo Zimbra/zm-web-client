@@ -936,6 +936,18 @@
 	@MiniCalDay-wrongMonth@
 }
 
+.DwtCalendarDay-green {
+    background-color: #89DE97;
+}
+
+.DwtCalendarDay-red {
+    background-color: #DF898B;
+}
+
+.DwtCalendarDay-orange {
+    background-color: #C45C21;
+}
+
 .DwtMenu .DwtCalendar {
     width: 170px;
 }

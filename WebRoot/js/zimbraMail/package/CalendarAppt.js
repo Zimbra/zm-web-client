@@ -44,6 +44,7 @@ AjxPackage.require("zimbraMail.calendar.view.ZmScheduleAssistantView");
 AjxPackage.require("zimbraMail.calendar.view.ZmTimeSuggestionView");
 AjxPackage.require("zimbraMail.calendar.view.ZmTimeSuggestionPrefDialog");
 AjxPackage.require("zimbraMail.calendar.view.ZmAttendeePicker");
+AjxPackage.require("zimbraMail.calendar.view.ZmMiniCalendar");
 
 AjxPackage.require("zimbraMail.calendar.controller.ZmCalItemComposeController");
 AjxPackage.require("zimbraMail.calendar.controller.ZmApptComposeController");

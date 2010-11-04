@@ -111,7 +111,7 @@ function(date) {
     var serverId = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
     var useISO8601WeekNo = (serverId && serverId.indexOf("Europe")==0 && serverId != "Europe/London");
 
-	this._miniCalendar = new DwtCalendar({parent: this, posStyle:DwtControl.RELATIVE_STYLE,
+	this._miniCalendar = new ZmMiniCalendar({parent: this, posStyle:DwtControl.RELATIVE_STYLE,
 										  firstDayOfWeek: firstDayOfWeek, showWeekNumber: appCtxt.get(ZmSetting.CAL_SHOW_CALENDAR_WEEK), useISO8601WeekNo: useISO8601WeekNo});
 	this._miniCalendar.setDate(date);
 	this._miniCalendar.setScrollStyle(Dwt.CLIP);
@@ -267,6 +267,7 @@ function(date, attendees, forceRefresh) {
         if(this._timeSuggestions){
             this.showCustomize(false);
             this._timeSuggestions.removeAll();
+            this.clearMiniCal();
         }
         if(forceRefresh) this.suggestAction(false);
     }
@@ -274,7 +275,9 @@ function(date, attendees, forceRefresh) {
 
 ZmScheduleAssistantView.prototype._miniCalDateRangeListener =
 function(ev) {
-    //todo: change scheduler suggestions
+    //clear current mini calendar suggestions
+    this._miniCalendar.setColor([], true, []);
+    this.highlightMiniCal();
 };
 
 ZmScheduleAssistantView.prototype._miniCalMouseOverDayCallback =
@@ -524,10 +527,16 @@ function(params) {
     this._fbStat.sort(ZmScheduleAssistantView._slotComparator);
     DBG.dumpObj(this._fbStat);
     this.renderSuggestions(params);
+
+    //highlight minicalendar to mark suggested days in month
+    this.highlightMiniCal();
 };
 
 ZmScheduleAssistantView.prototype.computeAvailability =
 function(startTime, endTime, params) {
+
+    var dayStartTime = (new Date(startTime)).setHours(0,0,0,0);
+    var dayEndTime = dayStartTime + AjxDateUtil.MSEC_PER_DAY;
 
     var key = this.getKey(startTime, endTime);
     var fbInfo;
@@ -548,7 +557,7 @@ function(startTime, endTime, params) {
     var freeBusyKey;
     for(var i = this._attendees.length; --i >= 0;) {
         var attendee = this._attendees[i];
-        var sched = this._fbCache.getFreeBusySlot(params.timeFrame.start.getTime(), params.timeFrame.end.getTime(), attendee);
+        var sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, attendee);
 
         //show suggestions only in the organizer's working hours.
         var isFree = params.includeNonWorkingHours ? true : this.isUnderWorkingHour(this._organizerEmail, startTime, endTime);
@@ -575,7 +584,7 @@ function(startTime, endTime, params) {
 		if (resource instanceof Array) {
 			resource = resource[0];
 		}
-        var sched = this._fbCache.getFreeBusySlot(params.timeFrame.start.getTime(), params.timeFrame.end.getTime(), resource);
+        var sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, resource);
         var isFree = true;
         if(sched.b) isFree = isFree && this.isBooked(sched.b, startTime, endTime);
         if(sched.t) isFree = isFree && this.isBooked(sched.t, startTime, endTime);
@@ -629,7 +638,10 @@ function(slots, startTime, endTime) {
 ZmScheduleAssistantView.prototype.isUnderWorkingHour =
 function(attendee, startTime, endTime) {
 
-    var workingHours = this._workingHours[attendee];
+    var dayStartTime = (new Date(startTime)).setHours(0,0,0,0);
+    var dayEndTime = dayStartTime + AjxDateUtil.MSEC_PER_DAY;
+
+    var workingHours = this._fbCache.getWorkingHrsSlot(dayStartTime, dayEndTime, attendee);
 
     //if working hours could not be retrieved consider all time slots for suggestion
     if(!workingHours || workingHours.n) return true;
@@ -639,8 +651,14 @@ function(attendee, startTime, endTime) {
     //working hours are indicated as free slots
     if(!slots) return false;
 
+    //convert working hrs relative to the searching time before comparing
+    var slotStartDate, slotEndDate, slotStartTime, slotEndTime;
     for (var i = 0; i < slots.length; i++) {
-        if(startTime >= slots[i].s && endTime <= slots[i].e) {
+        slotStartDate = new Date(slots[i].s);
+        slotEndDate = new Date(slots[i].e);
+        slotStartTime = (new Date(startTime)).setHours(slotStartDate.getHours(), slotStartDate.getMinutes(), 0, 0);
+        slotEndTime = (new Date(endTime)).setHours(slotEndDate.getHours(), slotEndDate.getMinutes(), 0, 0);
+        if(startTime >= slotStartTime && endTime <= slotEndTime) {
             return true;
         }
     };
@@ -676,4 +694,221 @@ function() {
 ZmScheduleAssistantView.prototype.showCustomize =
 function(visible) {
     this._customizeBtn.setVisible(visible);
+};
+
+
+//modules for handling mini calendar suggestions
+
+ZmScheduleAssistantView.prototype.highlightMiniCal =
+function() {
+    this.getMonthFreeBusyInfo();
+};
+
+ZmScheduleAssistantView.prototype.clearMiniCal =
+function() {
+    this._miniCalendar.setColor([], true, []);
+};
+
+ZmScheduleAssistantView.prototype.getMonthFreeBusyInfo =
+function() {
+    var range = this._miniCalendar.getDateRange();
+
+    var params = {
+        itemsById: {},
+        itemsByIdx: [],
+        focus: false,
+        timeFrame: {
+            start: range.start,
+            end: range.end
+        },
+        miniCalSuggestion: true
+    };
+
+
+    var list = this._resources;
+    var emails = [];
+
+
+    for (var i = list.length; --i >= 0;) {
+        var item = list[i];
+        var email = item.getEmail();
+        if (email instanceof Array) {
+            email = email[0];
+        }
+        emails.push(email);
+
+        //add idx -> email -> resource object mapping
+        params.itemsByIdx.push(email);
+        item._itemMonthIndex = params.itemsByIdx.length-1;
+		params.itemsById[email] = item;        
+    }
+
+    var attendees = this._editView.getAttendees(ZmCalBaseItem.PERSON).getArray();
+
+    //include organizer in the scheduler suggestions
+    var organizer = this._editView.getOrganizer();
+    var orgEmail = organizer.getEmail();
+    if (orgEmail instanceof Array) {
+        orgEmail = orgEmail[0];
+    }
+
+    //add idx -> email -> attendee object mapping
+    params.itemsByIdx.push(orgEmail);
+    organizer._itemMonthIndex = params.itemsByIdx.length-1;
+    params.itemsById[orgEmail] = organizer;
+    emails.push(orgEmail);
+
+    for (var i = attendees.length; --i >= 0;) {
+        if(attendees[i].getParticipantRole() == ZmCalItem.ROLE_OPTIONAL) continue;
+        var attendee = attendees[i].getEmail();
+        if (attendee instanceof Array) {
+            attendee = attendee[0];
+        }
+
+        //add idx -> email -> attendee object mapping
+        params.itemsByIdx.push(attendee);
+        attendees[i]._itemMonthIndex = params.itemsByIdx.length-1;
+        params.itemsById[attendee] = attendees[i];
+
+        emails.push(attendee);
+    }
+
+
+    var callback = new AjxCallback(this, this._handleMonthFreeBusyInfo, [params]);
+    var acct = (appCtxt.multiAccounts)
+            ? this._editView.getCalendarAccount() : null;
+
+
+    var fbParams = {
+        startTime: range.start.getTime(),
+        endTime: range.end.getTime(),
+        emails: emails,
+        callback: callback,
+        errorCallback: callback,
+        noBusyOverlay: true,
+        account: acct
+    };
+
+    this._monthFreeBusyRequest = this._fbCache.getFreeBusyInfo(fbParams);
+};
+
+ZmScheduleAssistantView.prototype._handleMonthFreeBusyInfo =
+function(params) {
+
+    //clear fb request info
+    this._monthFreeBusyRequest = null;
+
+    if (this._monthWorkingHrsReq) {
+        appCtxt.getRequestMgr().cancelRequest(this._monthWorkingHrsReq, null, true);
+    }
+
+    var includeNonWorkingHours = params.includeNonWorkingHours = this._prefDialog ? (this._prefDialog.getPreference("non_working_hrs") == 'true') : false;
+    if(includeNonWorkingHours) {
+        this.suggestMonthTimeSlots(params);
+        return;
+    }
+
+    var organizer = this._editView.getOrganizer();
+    this._organizerEmail = organizer.getEmail();
+
+    this._workingHoursKey = this.getWorkingHoursKey();
+
+    var acct = (appCtxt.multiAccounts)
+            ? this._editView.getCalendarAccount() : null;
+
+    //optimization: fetch working hrs for a week - wrking hrs pattern repeat everyweek
+    var weekStartDate = params.timeFrame.start;
+    var dow = weekStartDate.getDay();
+    weekStartDate.setDate(weekStartDate.getDate()-((dow+7))%7);
+
+    var whrsParams = {
+        startTime: weekStartDate.getTime(),
+        endTime: weekStartDate.getTime() + 7*AjxDateUtil.MSEC_PER_DAY,
+        emails: [this._organizerEmail],
+        callback: new AjxCallback(this, this._handleMonthWorkingHoursResponse, [params]),
+        errorCallback: new AjxCallback(this, this._handleMonthWorkingHoursError, [params]),
+        noBusyOverlay: true,
+        account: acct
+    };
+
+    this._monthWorkingHrsReq = this._fbCache.getWorkingHours(whrsParams);
+};
+
+
+ZmScheduleAssistantView.prototype._handleMonthWorkingHoursResponse =
+function(params, result) {
+
+    this._monthWorkingHrsReq = null;
+    this.suggestMonthTimeSlots(params);
+};
+
+ZmScheduleAssistantView.prototype._handleMonthWorkingHoursError =
+function(params, result) {
+
+    this._monthWorkingHrsReq = null;
+    this.suggestMonthTimeSlots(params);
+};
+
+
+ZmScheduleAssistantView.prototype.suggestMonthTimeSlots =
+function(params) {
+
+    var startDate = params.timeFrame.start;
+    startDate.setHours(0, 0, 0, 0);
+    var startTime = startDate.getTime();
+    var endTime = params.timeFrame.end.getTime();
+    var duration = this._duration = this._editView.getDuration();
+
+    params.duration = duration;
+
+    this._fbStat = new AjxVector();
+    this._fbStatMap = {};
+    this._totalUsers = this._attendees.length;
+    this._totalLocations =  this._resources.length;
+
+    params.dates = [];
+    params.colors = [];
+
+    var key, fbStat, freeSlotFound = false;
+
+    //suggest for entire minicalendar range
+    while(startTime < endTime) {
+
+        var dayStartTime = startTime;
+        var dayEndTime = (new Date(startTime)).setHours(23, 59, 0, 0);
+
+        freeSlotFound = false
+        
+        while(dayStartTime < dayEndTime) {
+            key = this.getKey(dayStartTime, dayStartTime + duration); 
+            this.computeAvailability(dayStartTime, dayStartTime + duration, params);
+            dayStartTime += AjxDateUtil.MSEC_PER_HALF_HOUR;
+            fbStat = this._fbStatMap[key];
+
+            if(fbStat && fbStat.availableUsers == this._totalUsers && fbStat.availableLocations > 0) {
+                this._addColorCode(params, startTime, ZmMiniCalendar.COLOR_GREEN);
+                freeSlotFound = true;
+                //found atleast one free slot that can accomodate all attendees and atleast one recources
+                break;
+            }
+        }
+
+        if(!freeSlotFound) {                        
+            this._addColorCode(params, startTime, ZmMiniCalendar.COLOR_RED); 
+        }
+
+        startTime += AjxDateUtil.MSEC_PER_DAY;
+    }
+
+    this._miniCalendar.setColor(params.dates, true, params.colors);
+    DBG.dumpObj(this._fbStat);
+};
+
+
+ZmScheduleAssistantView.prototype._addColorCode =
+function(params, startTime, code) {
+    var sd = new Date(startTime);
+    var str = AjxDateFormat.format("yyyyMMdd", sd);
+    params.dates[str] = sd;
+    params.colors[str] = code;
 };

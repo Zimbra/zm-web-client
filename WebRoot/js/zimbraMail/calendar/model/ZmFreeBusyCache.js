@@ -18,6 +18,16 @@ ZmFreeBusyCache = function(controller) {
 	this.clearCache();
 };
 
+ZmFreeBusyCache.STATUS_UNKNOWN = 'n';
+ZmFreeBusyCache.STATUS_TENTATIVE = 't';
+ZmFreeBusyCache.STATUS_BUSY = 'b';
+ZmFreeBusyCache.STATUS_OUT = 'o';
+ZmFreeBusyCache.STATUS_FREE = 'f';
+
+ZmFreeBusyCache.STATUS_WORKING_HRS = 'f';
+ZmFreeBusyCache.STATUS_NON_WORKING_HRS = 'u';
+ZmFreeBusyCache.STATUS_UNKNOWN = 'n';
+
 ZmFreeBusyCache.prototype.toString =
 function() {
 	return "ZmFreeBusyCache";
@@ -31,24 +41,68 @@ function() {
 };
 
 ZmFreeBusyCache.prototype.getFreeBusyKey =
-function(startTime, endTime, id) {
-    return startTime + "-" + endTime + "-" + id;
+function(startTime, id) {
+    return startTime + "-" + id;
 };
 
+ZmFreeBusyCache.prototype.getWorkingHoursKey =
+function(id, day) {
+    return id + "-" + day;
+};
+
+//filter free busy slots for given time from compressed/accumulated free busy response that got cached already
 ZmFreeBusyCache.prototype.getFreeBusySlot =
 function(startTime, endTime, id) {
-    var key = this.getFreeBusyKey(startTime, endTime, id);
-    return this._schedule[key];    
+    var slotDate = new Date(startTime);
+    slotDate.setHours(0, 0, 0, 0);
+
+    var fbSlots = this._schedule[id] || [];
+    var fbResult = {id: id};
+
+    //free busy response is always merged
+    for(var i= fbSlots.length; --i >= 0;) {
+        var usr = fbSlots[i];
+        if (usr.n) this._addFBInfo(usr.n, id, ZmFreeBusyCache.STATUS_UNKNOWN, startTime, endTime, fbResult);
+        if (usr.t) this._addFBInfo(usr.t, id, ZmFreeBusyCache.STATUS_TENTATIVE, startTime, endTime, fbResult);
+        if (usr.b) this._addFBInfo(usr.b, id, ZmFreeBusyCache.STATUS_BUSY, startTime, endTime, fbResult);
+        if (usr.u) this._addFBInfo(usr.u, id, ZmFreeBusyCache.STATUS_OUT, startTime, endTime, fbResult);
+        if (usr.f) this._addFBInfo(usr.f, id, ZmFreeBusyCache.STATUS_FREE, startTime, endTime, fbResult);
+    }
+
+    return fbResult;
+};
+
+ZmFreeBusyCache.prototype._addFBInfo =
+function(slots, id, status, startTime, endTime, fbResult) {
+
+    if(!fbResult[status]) fbResult[status] = [];
+
+    for (var i = 0; i < slots.length; i++) {
+        if(startTime >= slots[i].s && endTime  <= slots[i].e) {
+            fbResult[status].push({s: startTime, e: endTime});
+        }else if(startTime >= slots[i].s && startTime  <= slots[i].e) {
+            fbResult[status].push({s: startTime, e: slots[i].e});            
+        }else if(endTime >= slots[i].s && endTime  <= slots[i].e) {
+            fbResult[status].push({s: slots[i].s, e: endTime});
+        }
+    };
+
+    if(fbResult[status].length == 0) fbResult[status] = null;
 };
 
 ZmFreeBusyCache.prototype.getFreeBusyInfo =
 function(params) {
 
-    var requiredEmails = [], freeBusyKey, emails = params.emails;
+    var requiredEmails = [], freeBusyKey, emails = params.emails, fbSlot;
     for (var i = emails.length; --i >= 0;) {
-        freeBusyKey = this.getFreeBusyKey(params.startTime, params.endTime, emails[i]);
+        freeBusyKey = params.startTime + "";
         //check local cache
-        if(!this._schedule[freeBusyKey]) requiredEmails.push(emails[i]);
+        var entryExists = false
+        if(this._schedule[emails[i]]) {
+            var fbSlots = this.getFreeBusySlot(params.startTime, params.endTime, emails[i]);
+            if(fbSlots.f || fbSlots.u || fbSlots.b || fbSlots.t || fbSlots.n) entryExists = true;            
+        };
+        if(!entryExists) requiredEmails.push(emails[i]);
     }
 
     var fbCallback = new AjxCallback(this, this._handleResponseFreeBusy, [params]);
@@ -71,7 +125,8 @@ function(params) {
 
 };
 
-ZmFreeBusyCache.prototype._handleResponseFreeBusy =
+//cache free busy response in user-id -> slots hash map
+ZmFreeBusyCache.prototype. _handleResponseFreeBusy =
 function(params, result) {
 
     var freeBusyKey;
@@ -82,8 +137,11 @@ function(params, result) {
         if (!id) {
             continue;
         }
-        freeBusyKey = this.getFreeBusyKey(params.startTime, params.endTime, id);
-        this._schedule[freeBusyKey] = usr;
+        if(!this._schedule[id]) {
+            this._schedule[id] = [];
+        }
+
+        this._schedule[id].push(usr);
     };
 
     if(params.callback) {
@@ -119,11 +177,11 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, 
 ZmFreeBusyCache.prototype.getWorkingHours =
 function(params) {
 
-    var requiredEmails = [], freeBusyKey, emails = params.emails;
+    var requiredEmails = [], whKey, emails = params.emails;
     for (var i = emails.length; --i >= 0;) {
-        freeBusyKey = this.getFreeBusyKey(params.startTime, params.endTime, emails[i]);
+        whKey = this.getWorkingHoursKey(emails[i], (new Date(params.startTime)).getDay());
         //check local cache
-        if(!this._workingHrs[freeBusyKey]) requiredEmails.push(emails[i]);
+        if(!this._workingHrs[whKey]) requiredEmails.push(emails[i]);
     }
 
     var fbCallback = new AjxCallback(this, this._handleResponseWorkingHrs, [params]);
@@ -157,14 +215,41 @@ function(params, result) {
         if (!id) {
             continue;
         }
-        freeBusyKey = this.getFreeBusyKey(params.startTime, params.endTime, id);
-        this._workingHrs[freeBusyKey] = usr;
+        this._addWorkingHrInfo(params.startTime, params.endTime, usr);
     };
 
     if(params.callback) {
         params.callback.run(result);
     }
 };
+
+ZmFreeBusyCache.prototype._addWorkingHrInfo =
+function(startTime, endTime, usr) {
+    var id = usr.id;
+    if (usr.f) this._addWorkingHrSlot(usr.f, id, ZmFreeBusyCache.STATUS_WORKING_HRS);
+    if (usr.u) this._addWorkingHrSlot(usr.u, id, ZmFreeBusyCache.STATUS_NON_WORKING_HRS);
+    if (usr.n) this._addWorkingHrSlot(usr.n, id, ZmFreeBusyCache.STATUS_UNKNOWN);
+};
+
+ZmFreeBusyCache.prototype._addWorkingHrSlot =
+function(slots, id, status) {
+    var slotTime, slotDate, whKey, whSlots;
+    for (var i = 0; i < slots.length; i++) {
+        slotTime = slots[i].s;
+        slotDate = new Date(slotTime);
+        whKey = this.getWorkingHoursKey(id, slotDate.getDay());
+        whSlots = this._workingHrs[whKey];
+        if(!whSlots) {
+            this._workingHrs[whKey] = whSlots = {id: id};
+        }
+
+        if(!whSlots[status]) {
+            whSlots[status] = [];
+        }
+        whSlots[status].push(slots[i]);
+    };
+};
+
 
 ZmFreeBusyCache.prototype._handleErrorWorkingHrs =
 function(params, result) {
@@ -192,7 +277,31 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, 
 
 ZmFreeBusyCache.prototype.getWorkingHrsSlot =
 function(startTime, endTime, id) {
-    var key = this.getFreeBusyKey(startTime, endTime, id);
-    return this._workingHrs[key];
+    var whKey = this.getWorkingHoursKey(id, (new Date(startTime)).getDay());
+    var whSlots = this._workingHrs[whKey] || {};
+    var whResult = {id: id};
+
+    if(whSlots[ZmFreeBusyCache.STATUS_WORKING_HRS]) whResult[ZmFreeBusyCache.STATUS_WORKING_HRS] = whSlots[ZmFreeBusyCache.STATUS_WORKING_HRS];
+    if(whSlots[ZmFreeBusyCache.STATUS_NON_WORKING_HRS]) whResult[ZmFreeBusyCache.STATUS_NON_WORKING_HRS] = whSlots[ZmFreeBusyCache.STATUS_NON_WORKING_HRS];
+    if(whSlots[ZmFreeBusyCache.STATUS_UNKNOWN]) whResult[ZmFreeBusyCache.STATUS_UNKNOWN] = whSlots[ZmFreeBusyCache.STATUS_UNKNOWN];
+
+    return whResult;        
 };
 
+ZmFreeBusyCache.prototype._addWHInfo =
+function(slots, id, status, startTime, endTime, whResult) {
+
+    if(!whResult[status]) whResult[status] = [];
+
+    for (var i = 0; i < slots.length; i++) {
+        if(slots[i].s >= startTime && slots[i].e <= endTime) {
+            whResult[status].push({s: slots[i].s, e: slots[i].e});
+        }else if(slots[i].s >= startTime && slots[i].s  <= endTime) {
+            whResult[status].push({s: slots[i].s, e: endTime});
+        }else if(slots[i].e >= startTime && slots[i].e  <= endTime) {
+            whResult[status].push({s: startTime, e: slots[i].e});
+        }
+    };
+
+    if(whResult[status].length == 0) whResult[status] = null;
+};
