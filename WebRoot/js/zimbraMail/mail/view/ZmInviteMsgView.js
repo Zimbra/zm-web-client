@@ -410,6 +410,9 @@ function(subs, sentBy, sentByAddr) {
 ZmInviteMsgView.prototype.truncateBodyContent =
 function(content, isHtml) {
 	var sepIdx = content.indexOf(ZmItem.NOTES_SEPARATOR);
+	if (sepIdx == -1) {
+		return content;
+	}
 	return isHtml
 		? (content.substring(content.indexOf(">", sepIdx)+1))
 		: (content.substring(sepIdx+ZmItem.NOTES_SEPARATOR.length));
