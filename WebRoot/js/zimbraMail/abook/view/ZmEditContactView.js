@@ -2239,6 +2239,7 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
         // TODO: use template?
 
 		var calendar = new DwtCalendar({parent:container});
+        calendar.setSkipNotifyOnPage(true);
 		calendar.setDate(new Date());
 		calendar.setFirstDayOfWeek(appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0);
 		calendar.addSelectionListener(new AjxListener(this,this._handleDateSelection,[calendar]));
