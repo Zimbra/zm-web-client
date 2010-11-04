@@ -302,12 +302,15 @@ function(addr, callback) {
 	var jsonObj = {RankingActionRequest:{_jsns:"urn:zimbraMail"}};
 	jsonObj.RankingActionRequest.action = {op:"delete", email:addr};
 	var respCallback = new AjxCallback(this, this._handleResponseForget, [callback]);
-	appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+	var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+	aCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
 
 ZmAutocomplete.prototype._handleResponseForget =
 function(callback) {
 	appCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
+	if (appCtxt.isChildWindow)
+		parentAppCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
 	if (callback) {
 		callback.run();
 	}
