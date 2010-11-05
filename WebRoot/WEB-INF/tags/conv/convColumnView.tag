@@ -271,6 +271,10 @@
 		document.getElementById("viewOp").value = val;
 		zclick('SOPSET');
 	}
+	function setreadingPaneOp(val) {
+    	document.getElementById("readingPaneOp").value = val;
+		zclick("SOPVIEW");
+	}
 	function zSelectRow(ev,id,cid) {
 		var t = ev.target || ev.srcElement;
 		if (t&&t.className=="CB") {
