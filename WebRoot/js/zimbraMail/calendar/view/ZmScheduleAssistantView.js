@@ -66,7 +66,6 @@ function() {
 ZmScheduleAssistantView.prototype.cleanup =
 function() {
     this._attendees = [];
-    this._timeFrame = null;
     this._schedule = {};
 };
 
