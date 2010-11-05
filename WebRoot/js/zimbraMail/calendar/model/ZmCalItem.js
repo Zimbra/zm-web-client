@@ -1576,7 +1576,7 @@ function(mode, callback, msg, batchCmd, result) {
 		}
 
 		var m = soapDoc.set("m");
-		if (this.isOrganizer()) {
+		if (this.isOrganizer() && !this.isDraft) {
 			// NOTE: We only use the explicit list of addresses if sending via
 			//       a message compose.
 			if (msg) {
