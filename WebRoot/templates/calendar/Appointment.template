@@ -44,7 +44,7 @@
                         <tr>
                             <td width='65' align='right' valign='top'><div id='${id}_loc_picker'><legend><$= ZmMsg.locationLabel $></legend></div></td>
                             <td colspan='5' id='${id}_location'></td>
-                            <td id='${id}_res_btn'><$= ZmMsg.findResources $></td>
+                            <td><div id='${id}_res_btn'><$= ZmMsg.findResources $></div></td>
                         </tr>
                         <$ if (data.isGalEnabled) { $>
                         <tr id='${id}_resourcesContainer'>
