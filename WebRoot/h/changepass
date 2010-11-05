@@ -84,11 +84,6 @@
                                         <a href="http://www.zimbra.com/" target="_new"><div class='ImgLoginBanner'/></a>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <div id='ZLoginAppName'><fmt:message key="splashScreenAppName"/></div>
-                                    </td>
-                                </tr>
                             </table>
                         </td>
                         <td>
