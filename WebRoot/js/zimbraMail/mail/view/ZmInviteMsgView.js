@@ -87,8 +87,7 @@ function(msg) {
 		}
 		else if (invite.hasInviteReplyMethod()) {
 			var ac = window.parentAppCtxt || window.appCtxt;
-
-			if (!this._inviteToolbar) {
+			if (!this._inviteToolbar || AjxEnv.isIE) {
 				this._inviteToolbar = this._getInviteToolbar();
 			}
 			this._inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement(), 0);
