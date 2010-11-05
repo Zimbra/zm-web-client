@@ -40,10 +40,13 @@ function() {
  */
 ZmAppAlert.prototype.start =
 function() {
-    var view = appCtxt.getCurrentViewId();
-    //flash alert for all tabs but mail tab 
-    if(view!=ZmId.VIEW_CONVLIST && view!=ZmId.VIEW_TRAD && view!=ZmId.VIEW_MSG && view!=ZmId.VIEW_CONV){
+    if (!this._getAppButton().isSelected) {
 		this._getAppButton().showAlert(true);
+        //add a stop alert listener
+        if (!this._stopAlertListenerObj) {
+           this._stopAlertListenerObj = new AjxListener(this, this.stop);
+           this._getAppButton().addSelectionListener(this._stopAlertListenerObj);
+        }
     }
 };
 
@@ -52,7 +55,9 @@ function() {
  */
 ZmAppAlert.prototype.stop =
 function() {
-	this._getAppButton().showAlert(false);
+    if (this._getAppButton().isSelected) {
+        this._getAppButton().showAlert(false);
+    }
 };
 
 ZmAppAlert.prototype._getAppButton =
