@@ -106,7 +106,7 @@
                             </td>
                             <td valign="top" id='${id}_timezoneSpacer'>&nbsp;</td>
                             <td class='ZmFieldLabelRight'><nobr><$= data.isAppt ? ZmMsg.calendarLabel : ZmMsg.taskFolder $></nobr></td>
-                            <td>
+                            <td colspan="2">
                                 <table border=0>
                                     <tr>
                                         <td id='${id}_folderSelect'></td>
