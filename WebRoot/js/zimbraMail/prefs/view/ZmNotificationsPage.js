@@ -286,8 +286,12 @@ ZmNotificationsPageForm.prototype.getEmailAddress = function() {
 };
 
 ZmNotificationsPageForm.prototype.getCodeStatus = function() {
+    // is there anything to do?
+    var control = this.getControl("DEVICE_EMAIL_CODE_STATUS");
+    if (!control) return "";
+
     // remove other status class names
-    var controlEl = this.getControl("DEVICE_EMAIL_CODE_STATUS").getHtmlElement();
+    var controlEl = control.getHtmlElement();
     Dwt.delClass(controlEl, ZmNotificationsPageForm.CONFIRMED);
     Dwt.delClass(controlEl, ZmNotificationsPageForm.PENDING);
     Dwt.delClass(controlEl, ZmNotificationsPageForm.UNCONFIRMED);
@@ -352,7 +356,7 @@ ZmNotificationsPageForm.prototype._getFormParams = function(templateId) {
                 onclick: this._handleRegionClick
             },
             { id: "DEVICE_EMAIL_CARRIER", type: "DwtSelect", value: ZmNotificationsPageForm.CUSTOM,
-                enabled: "this.getControl('DEVICE_EMAIL_CARRIER').getOptionCount() > 0"
+                enabled: this._isCarrierEnabled
             },
             { id: "DEVICE_EMAIL_PHONE", type: "DwtInputField",
                 hint: ZmMsg.deviceEmailNotificationsPhoneHint,
@@ -396,6 +400,11 @@ ZmNotificationsPageForm.prototype._getFormParams = function(templateId) {
             { id: "DEVICE_EMAIL_CODE_STATUS_VALUE", value: ZmNotificationsPageForm.UNCONFIRMED }
         ]
     };
+};
+
+ZmNotificationsPageForm.prototype._isCarrierEnabled = function() {
+    var control = this.getControl('DEVICE_EMAIL_CARRIER');
+    return control && control.getOptionCount() > 0;
 };
 
 ZmNotificationsPageForm.prototype._defineRegions = function(data) {

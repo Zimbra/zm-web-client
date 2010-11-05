@@ -2264,6 +2264,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 	</table>
     
+    <$ if (appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)) { $>
     <table border=0 cellspacing=0 cellpadding=0 width=100%>
         <tr class='ZOptionsHeaderRow'>
             <td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -2321,4 +2322,5 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
             </tr>
         </table>
     </div>
+    <$ } $>
 </template>
