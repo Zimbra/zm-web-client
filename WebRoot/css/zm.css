@@ -539,6 +539,7 @@ INPUT[type="text"].people_search_input {
 
 .ZmMailMsgView .DateCol {
 	white-space: nowrap;
+    padding-right: 10px;
 }
 
 /* ??? USE? */
@@ -577,6 +578,7 @@ INPUT[type="text"].people_search_input {
 
 .InvHeaderTable .DateCol {
 	white-space: nowrap;
+    padding-right: 10px;
 }
 
 .InvHeaderTable .InvCounter {
