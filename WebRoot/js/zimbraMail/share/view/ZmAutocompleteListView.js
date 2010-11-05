@@ -117,6 +117,11 @@ ZmAutocompleteListView = function(params) {
 	this._showLinkTextClass = "LinkText";
 	this._hideLinkTextClass = "LinkText-hide";
 	this._hideSelLinkTextClass = "LinkText-hide-selected";
+	if (this._options.addrBubbles) {
+		this._bubbleClassName = "addrBubble";
+		this._selectedBubbleClassName = this._bubbleClassName + "-" + DwtCssStyle.SELECTED;
+		this._bubbleHolderDiv = {};
+	}
 
 	this._numChars = 0;
 	this._done = {};
@@ -295,6 +300,18 @@ function(ev) {
 	}
 	// if the field is empty, clear the list
 	if (!value) {
+		if (aclv._options.addrBubbles && key == 8) {
+			if (aclv._selectedBubbleId) {
+				ZmAutocompleteListView.removeBubble(aclv._selectedBubbleId, element.id);
+			}
+			else {
+				var bubbleHolderDiv = document.getElementById(aclv._bubbleHolderDiv[element.id]);
+				var bubble = bubbleHolderDiv && bubbleHolderDiv.lastChild;
+				if (bubble) {
+					ZmAutocompleteListView.bubbleClick(null, bubble);
+				}
+			}
+		}
 		aclv.reset();
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
@@ -412,12 +429,16 @@ function(account) {
  * Adds autocompletion to the given field by setting key event handlers.
  *
  * @param {Element}	element		an HTML element
+ * @param {string}	holderId	ID of container (for addr bubbles)
  * 
  * @private
  */
 ZmAutocompleteListView.prototype.handle =
-function(element) {
+function(element, holderId) {
 	element._aclvId = this._htmlElId;
+	if (holderId) {
+		this._bubbleHolderDiv[element.id] = holderId;
+	}
 	Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmAutocompleteListView.onKeyDown);
 	Dwt.setHandler(element, DwtEvent.ONKEYPRESS, ZmAutocompleteListView.onKeyPress);
 	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
@@ -759,10 +780,10 @@ function(text, match) {
 		this._element.value = "";
 		var bubble = document.createElement("span");
 		var bubbleId = bubble.id = Dwt.getNextId();
-		bubble.className = "addrBubble";
+		bubble.className = this._bubbleClassName;
 		bubble._aclvId = this._htmlElId;
 		var inputId = this._element.id;
-		var bubbleDiv = this._parentView.getBubbleHolder(inputId);
+		var bubbleDiv = document.getElementById(this._bubbleHolderDiv[inputId]);
 		var expandLinkText = "", divId = bubbleDiv.id;
 		if (match.isDL) {
 			var expandLinkId = bubbleId + "_expand";
@@ -773,9 +794,11 @@ function(text, match) {
 		var removeLink = 'ZmAutocompleteListView.removeBubble("' + bubbleId + '","' + divId + '","' + inputId + '");';
 		var removeLinkText = " <a id='" + removeLinkId + "' onclick='" + removeLink + "' class='remove'>x</a>";
 //		removeLinkText = "<div style='display:inline-block' class='ImgClose'></div>";
-		bubble.innerHTML = expandLinkText + AjxStringUtil.htmlEncode(text) + removeLinkText;
+		var separator = "<span style='visibility:hidden'>" + this._separator + "</span>";
+		bubble.innerHTML = expandLinkText + AjxStringUtil.htmlEncode(text) + separator + removeLinkText;
 		bubbleDiv.appendChild(bubble);
-		this._parentView.bubbleAdded(bubbleId, divId, inputId);
+		Dwt.setHandler(bubble, DwtEvent.ONCLICK, ZmAutocompleteListView.bubbleClick);
+		this._parentView.bubbleAdded(inputId);
 		el = bubbleDiv;
 	}
 	else {
@@ -1302,12 +1325,37 @@ function(bubbleId, email) {
 };
 
 ZmAutocompleteListView.removeBubble =
-function(bubbleId, divId, inputId) {
+function(bubbleId, inputId) {
 
 	var bubble = document.getElementById(bubbleId);
 	if (bubble) {
 		var aclv = DwtControl.ALL_BY_ID[bubble._aclvId];
-		aclv._parentView.bubbleRemoved(bubbleId, divId, inputId);
+		aclv._parentView.bubbleRemoved(inputId);
 		bubble.parentNode.removeChild(bubble);
+	}
+	if (bubbleId == aclv._selectedBubbleId) {
+		aclv._selectedBubbleId = null;
+	}
+};
+
+ZmAutocompleteListView.bubbleClick =
+function(ev, bubble) {
+
+	bubble = bubble || DwtUiEvent.getTarget(ev);
+	if (!(bubble && bubble.tagName && bubble.tagName.toLowerCase() == "span")) { return; }
+
+	var aclv = DwtControl.ALL_BY_ID[bubble._aclvId];
+	var curSel = aclv._selectedBubbleId;
+	if (curSel == bubble.id) {
+		bubble.className = aclv._bubbleClassName;
+		aclv._selectedBubbleId = null;
+	}
+	else {
+		bubble.className = aclv._selectedBubbleClassName;
+		var curBubble = curSel && document.getElementById(curSel);
+		if (curBubble) {
+			curBubble.className = aclv._bubbleClassName;
+		}
+		aclv._selectedBubbleId = bubble.id;
 	}
 };

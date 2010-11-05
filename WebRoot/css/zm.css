@@ -719,10 +719,9 @@ INPUT[type="text"].people_search_input {
 	width: 100%;
 }
 
-.addrBubble {
+.addrBubble, .addrBubble-selected {
 	color: black;
-	background-color: #EEEEEE;
-	border: 1px solid #333333;
+	border: 1px solid #999999;
 	padding: 1px 3px;
 	margin: 0 0 2px 3px;
 	display: inline-block;
@@ -733,6 +732,14 @@ INPUT[type="text"].people_search_input {
 	#IFDEF GECKO
 		-moz-border-radius:4px;
 	#ENDIF
+}
+
+.addrBubble {
+	background-color: #EEEEEE;
+}
+
+.addrBubble-selected {
+	background-color: @SelC@;
 }
 
 .addrBubble .remove {

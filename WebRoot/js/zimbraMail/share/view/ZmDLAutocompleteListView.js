@@ -114,6 +114,7 @@ function(hasDelim) {
 		}
 	} else {
 		this._doUpdate(hasDelim);
+		this.reset();
 	}
 };
 
@@ -122,15 +123,19 @@ function(hasDelim, result) {
 
 	var mv = this._parentAclv._matchValue;
 	var field = (mv instanceof Array) ? mv[0] : mv;
-	var match = this._matchHash[this._selectAllRowId] = new ZmAutocompleteMatch();
-	match[field] = result.list.join(this._parentAclv._separator);
-	this._doUpdate(hasDelim);
+	if (result.list && result.list.length) {
+		for (var i = 0, len = result.list.length; i < len; i++) {
+			var match = this._matchHash[this._selectAllRowId] = new ZmAutocompleteMatch();
+			match[field] = result.list[i];
+			this._doUpdate(hasDelim);
+		}
+	}
+	this.reset();
 };
 
 ZmDLAutocompleteListView.prototype._doUpdate =
 function(hasDelim) {
 	var sel = this._matchHash[this._selected];
-	this.reset();
 	this._parentAclv._update(hasDelim, sel);
 };
 
