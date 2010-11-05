@@ -4523,3 +4523,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .DeviceCodeUnconfirmed {
     color: red;
 }
+
+.ZPicker .ZButtonTable {
+    width: 100%;    
+}

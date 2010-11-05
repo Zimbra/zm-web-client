@@ -178,6 +178,19 @@ function(bEnablePicker) {
 
 };
 
+ZmApptEditView.prototype.resizePickers =
+function() {
+    if(this._maxPickerWidth) {
+        for (var t = 0; t < this._attTypes.length; t++) {
+            var type = this._attTypes[t];
+            if(type == ZmCalBaseItem.EQUIPMENT) continue;
+            if(this._pickerButton[type]) this._pickerButton[type].setSize(AjxEnv.isIE ? this._maxPickerWidth : '100%', Dwt.DEFAULT);
+        }
+        if(this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON]) this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON].setSize(AjxEnv.isIE ? this._maxPickerWidth : '100%', Dwt.DEFAULT);
+        document.getElementById(this._htmlElId + "_pickerColumn").setAttribute("width", this._maxPickerWidth + (AjxEnv.isIE ? 10 : 15));
+    }
+};
+
 ZmApptEditView.prototype.isValid =
 function() {
 	var errorMsg;
@@ -794,6 +807,7 @@ function(width) {
     this._organizerData = document.getElementById(this._htmlElId + "_organizer");
     this._optionalAttendeesContainer = document.getElementById(this._htmlElId + "_optionalContainer");
 
+    this._maxPickerWidth = 0;    
     var isPickerEnabled = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
 						   appCtxt.get(ZmSetting.GAL_ENABLED) ||
 						   appCtxt.multiAccounts);
@@ -805,6 +819,7 @@ function(width) {
 
     this._createContactPicker(this._htmlElId + "_loc_picker", new AjxListener(this, this._locationButtonListener, ZmCalBaseItem.LOCATION), ZmCalBaseItem.LOCATION);
     this._createContactPicker(this._htmlElId + "_res_btn", new AjxListener(this, this._locationButtonListener, ZmCalBaseItem.EQUIPMENT), ZmCalBaseItem.EQUIPMENT);
+    this.resizePickers();
 
     //Personas
     //TODO: Remove size check once we add identityCollection change listener.
@@ -829,7 +844,7 @@ function(pickerId, listener, addrType, isForwardPicker) {
     var pickerEl = document.getElementById(pickerId);
     if (pickerEl) {
         var buttonId = Dwt.getNextId();
-        var button = new DwtButton({parent:this, id:buttonId});
+        var button = new DwtButton({parent:this, id:buttonId, className: "ZButton ZPicker"});
         if(isForwardPicker) {
             this._forwardPicker = button;
         }else {
@@ -840,6 +855,9 @@ function(pickerId, listener, addrType, isForwardPicker) {
 
         button.addSelectionListener(listener);
         button.addrType = addrType;
+
+        var btnWidth = button.getSize().x;
+        if(addrType != ZmCalBaseItem.EQUIPMENT &&  btnWidth > this._maxPickerWidth) this._maxPickerWidth = btnWidth;
     }
 };
 

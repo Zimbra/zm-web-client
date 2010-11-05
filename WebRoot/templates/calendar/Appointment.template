@@ -4,7 +4,7 @@
 	<div id='${id}_top'>
                     <table border=0 width=100% style='table-layout:fixed;margin-top: 5px;' id='${id}_table' class='calendar_edit_view_separator'>
                         <colgroup>
-                            <col width='65' />
+                            <col id='${id}_pickerColumn' width='65' />
                             <col width='140'/>
                             <col width='100'/>
                             <col id='${id}_timezoneColumn' width='250'/>
