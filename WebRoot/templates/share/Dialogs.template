@@ -577,3 +577,28 @@
 <template id='share.Dialogs#DateField'>
 	<input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}' value='${value}'>
 </template>
+        
+<template id="share.Dialogs#UploadDialog">
+	<div style='overflow:auto'>
+        <div id="{id}_label" style="margin-bottom:0.5em;"><$=ZmMsg.uploadChoose$></div>
+        <div style="margin-bottom:0.5em;margin-left:1em;">
+            <form accept-charset='utf-8' method='POST' action='<$= data.uri $>' id='${id}_form' enctype='multipart/form-data'>
+                <table id='${id}_table' cellspacing=4 cellpadding=3 border=0></table>
+            </form>
+        </div>
+        <table border=0 cellpadding="0" cellspacing="4">
+            <tr id="${id}_actionRow">
+                <td><$= ZmMsg.uploadAction $></td>
+                <td id="${id}_conflict"></td>
+            </tr>
+            <tr>
+                <td colspan="2" id="${id}_notesTD">
+                    <div><$=ZmMsg.notesLabel$></div>
+                    <textarea id="${id}_notes" style="height: 80px; width: 450px;"></textarea>
+                </td>
+            </tr>
+            <tr><td colspan="2" id="${id}_info"></td></tr>
+            <tr><td colspan="2" id="${id}_msg"></td></tr>
+        </table>                
+	</div>	
+</template>

@@ -449,7 +449,7 @@ function(itemId) {
 };
 
 ZmBriefcaseController.prototype.__popupUploadDialog =
-function(callback, title) {
+function(title, callback) {
 
 
 	var folderId = this._folderId;
@@ -458,7 +458,9 @@ function(callback, title) {
     
     if(this.chkFolderPermission(folderId)){
         var cFolder = appCtxt.getById(folderId);
-		appCtxt.getUploadDialog().popup(cFolder, callback, title);
+		var uploadDialog = appCtxt.getUploadDialog();
+        uploadDialog.setConflictAction(ZmUploadDialog.ACTION_KEEP_MINE);
+        uploadDialog.popup(cFolder, callback, title, null, false, true, true);
     }	
 };
 
@@ -674,7 +676,7 @@ function() {
 		list.push(ZmOperation.CREATE_SLIDE_SHOW);
 	}
     list.push(ZmOperation.SEP);
-    list.push(ZmOperation.RESTORE_VERSION, ZmOperation.DELETE_VERSION, ZmOperation.CHECKOUT, ZmOperation.DISCARD_CHECKOUT, ZmOperation.CHECKIN);
+    list.push(ZmOperation.RESTORE_VERSION, ZmOperation.DELETE_VERSION, ZmOperation.CHECKOUT, ZmOperation.CHECKIN, ZmOperation.DISCARD_CHECKOUT);
 
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
@@ -811,7 +813,37 @@ function(restUrl) {
 
 ZmBriefcaseController.prototype._uploadFileListener =
 function() {
-	this._app._handleNewItem();
+    this.__popupUploadDialog(ZmMsg.uploadFileToBriefcase, new AjxCallback(this, this._handlePostUpload));
+};
+
+ZmBriefcaseController.prototype._handlePostUpload =
+function(folder, filenames, files){
+
+    var dlg = appCtxt.getMsgDialog();
+    var html =[], idx=0;
+    var notes = "";
+    html[idx++] = "<div style='padding:10px;'>";
+    for(var i=0; i<files.length; i++){
+        var f = files[i];
+        html[idx++] = "<div style='padding: 5px 5px 10px;'>";
+        f.version = Number(f.version);
+        if(f.version == 1){
+            html[idx++] = AjxMessageFormat.format(ZmMsg.uploadCreated, f.name);
+        }else{
+            html[idx++] = AjxMessageFormat.format(ZmMsg.uploadExists, [f.name, (Number(f.version))]);
+        }
+        html[idx++] =  "</div>";
+        notes = f.notes;
+    }
+
+    if(notes)
+        html[idx++] = ["<div style='padding: 5px;'><div style='font-weight: bold;'>",ZmMsg.notesLabel,"</div><div style='width: 300px;'>", notes,"</div>"].join('');
+
+    html[idx++] = "</div>";
+
+    dlg.setTitle(ZmMsg.successfullyUploaded);
+    dlg.setContent(html.join(''));
+    dlg.popup();
 };
 
 ZmBriefcaseController.prototype._sendFileListener =
