@@ -335,9 +335,9 @@
 			</td>
 			<td width='96%' colspan=2>
 				<$ if (data.acAddrBubbles) { $>
-					<div id='${toBubbleDivId}' class='addrBubbleContainer'>
+					<div class='addrBubbleContainer'>
 						<div id='${toBubbleHolderDivId}' class='addrBubbleHolder'></div>
-						<div id='${toBubbleInputDivId}'>
+						<div>
 							<input id='${toInputId}'>
 						</div>
 					</div>
@@ -353,9 +353,9 @@
 			</td>
 			<td>
 				<$ if (data.acAddrBubbles) { $>
-				<div id='${ccBubbleDivId}' class='addrBubbleContainer'>
+				<div class='addrBubbleContainer'>
 					<div id='${ccBubbleHolderDivId}' class='addrBubbleHolder'></div>
-					<div id='${ccBubbleInputDivId}'>
+					<div>
 						<input id='${ccInputId}'>
 					</div>
 				</div>
@@ -374,9 +374,9 @@
 			</td>
 			<td colspan='2'>
 				<$ if (data.acAddrBubbles) { $>
-				<div id='${bccBubbleDivId}' class='addrBubbleContainer'>
+				<div class='addrBubbleContainer'>
 					<div id='${bccBubbleHolderDivId}' class='addrBubbleHolder'></div>
-					<div id='${bccBubbleInputDivId}'>
+					<div>
 						<input id='${bccInputId}'>
 					</div>
 				</div>

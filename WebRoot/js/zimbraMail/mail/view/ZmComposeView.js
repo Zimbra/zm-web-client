@@ -46,6 +46,7 @@ ZmComposeView = function(parent, controller, composeMode) {
 	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE]	= ZmOperation.REPLY_TENTATIVE_NOTIFY;
 
 	this._onMsgDataChange = new AjxCallback(this, this._onMsgDataChange);
+	this._useAcAddrBubbles = appCtxt.get(ZmSetting.AUTOCOMPLETE_ADDR_BUBBLES);
 
 	this._controller = controller;
 	this._initialize(composeMode);
@@ -1141,11 +1142,12 @@ function(bEnableInputs) {
 
 	if (this._useAcAddrBubbles) {
 		// scrubbing bubbles
-		for (var id in this._bubbleHolderDiv) {
-			var div = document.getElementById(this._bubbleHolderDiv[id]);
+		for (var id in this._bubbleHolderDivId) {
+			var div = document.getElementById(this._bubbleHolderDivId[id]);
 			while (div && div.firstChild) {
 				div.removeChild(div.firstChild);
 			}
+			this._bubbleAddress[id] = [];
 		}
 	}
 
@@ -2279,8 +2281,6 @@ function() {
 ZmComposeView.prototype._initialize =
 function(composeMode) {
 
-	this._useAcAddrBubbles = appCtxt.get(ZmSetting.AUTOCOMPLETE_ADDR_BUBBLES);
-
 	// init address field objects
 	this._divId = {};
 	this._buttonTdId = {};
@@ -2290,7 +2290,8 @@ function(composeMode) {
 	this._field = {};
 	this._divEl = {};
 	if (this._useAcAddrBubbles) {
-		this._bubbleHolderDiv = {};
+		this._bubbleHolderDivId = {};
+		this._bubbleAddress = {};
 	}
 	this._internalId = AjxCore.assignId(this);
 
@@ -2357,15 +2358,9 @@ function(templateId) {
 
 	if (this._useAcAddrBubbles) {
 		data.acAddrBubbles = true;
-		data.toBubbleDivId = ZmId.getViewId(this._view, ZmId.CMP_TO_BUBBLE_DIV);
-		data.ccBubbleDivId = ZmId.getViewId(this._view, ZmId.CMP_CC_BUBBLE_DIV);
-		data.bccBubbleDivId = ZmId.getViewId(this._view, ZmId.CMP_BCC_BUBBLE_DIV);
 		data.toBubbleHolderDivId = ZmId.getViewId(this._view, ZmId.CMP_TO_BUBBLE_HOLDER_DIV);
 		data.ccBubbleHolderDivId = ZmId.getViewId(this._view, ZmId.CMP_CC_BUBBLE_HOLDER_DIV);
 		data.bccBubbleHolderDivId = ZmId.getViewId(this._view, ZmId.CMP_BCC_BUBBLE_HOLDER_DIV);
-		data.toBubbleInputDivId = ZmId.getViewId(this._view, ZmId.CMP_TO_BUBBLE_INPUT_DIV);
-		data.ccBubbleInputDivId = ZmId.getViewId(this._view, ZmId.CMP_CC_BUBBLE_INPUT_DIV);
-		data.bccBubbleInputDivId = ZmId.getViewId(this._view, ZmId.CMP_BCC_BUBBLE_INPUT_DIV);
 	}
 
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
@@ -2414,7 +2409,8 @@ function(templateId, data) {
 		this._divEl[type] = document.getElementById(this._divId[type]);
 		var bhdId;
 		if (this._useAcAddrBubbles) {
-			bhdId = this._bubbleHolderDiv[inputId] = [data.id, typeStr, "bubble_holder_div"].join("_");
+			bhdId = this._bubbleHolderDivId[inputId] = [data.id, typeStr, "bubble_holder_div"].join("_");
+			this._bubbleAddress[inputId] = [];
 			var bubbleHolderDiv = document.getElementById(bhdId);
 			if (bubbleHolderDiv) {
 				// focus input when holder div is clicked
@@ -2911,17 +2907,31 @@ function() {
 	addrs[ZmComposeView.BAD] = new AjxVector();
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		if (!this._using[type]) continue;
-		var val = AjxStringUtil.trim(this._field[type].value);
-		if (val.length == 0) continue;
+		if (!this._using[type]) { continue; }
+		var input = this._field[type], val;
+		if (this._useAcAddrBubbles) {
+			var bubbleAddrs = [];
+			var list = this._bubbleAddress[input.id];
+			if (list && list.length) {
+				for (var j = 0, len = list.length; j < len; j++) {
+					bubbleAddrs.push(list[j].address);
+				}
+			}
+			val = bubbleAddrs.join(AjxEmailAddress.SEPARATOR);
+		}
+		else {
+			val = AjxStringUtil.trim(input.value);
+		}
+		if (val.length == 0) { continue; }
 		var result = AjxEmailAddress.parseEmailString(val, type, false);
 		if (result.all.size() == 0) continue;
 		addrs.gotAddress = true;
 		addrs[type] = result;
 		if (result.bad.size()) {
 			addrs[ZmComposeView.BAD].addList(result.bad);
-			if (!addrs.badType)
+			if (!addrs.badType) {
 				addrs.badType = type;
+			}
 		}
 	}
 	return addrs;
@@ -3303,12 +3313,23 @@ function() {
 
 // height will be adjusted by _acCompHandler
 ZmComposeView.prototype.bubbleAdded =
-function(inputId) {
+function(inputId, bubbleId, address) {
+	this._bubbleAddress[inputId].push({bubbleId:bubbleId, address:address});
 	appCtxt.getKeyboardMgr().grabFocus(inputId);
 };
 
 ZmComposeView.prototype.bubbleRemoved =
-function(inputId) {
+function(inputId, bubbleId) {
+	var list = this._bubbleAddress[inputId];
+	var newList = [];
+	if (list && list.length) {
+		for (var i = 0, len = list.length; i < len; i++) {
+			if (list[i].bubbleId != bubbleId) {
+				newList.push(list[i]);
+			}
+		}
+		this._bubbleAddress[inputId] = newList;
+	}
 	appCtxt.getKeyboardMgr().grabFocus(inputId);
 };
 

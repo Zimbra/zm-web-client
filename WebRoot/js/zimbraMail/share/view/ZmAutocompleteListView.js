@@ -791,14 +791,14 @@ function(text, match) {
 			var expandLinkText = "<a id='" + expandLinkId + "' onclick='" + expandLink + "' class='remove'>+</a> ";
 		}
 		var removeLinkId = bubbleId + "_remove";
-		var removeLink = 'ZmAutocompleteListView.removeBubble("' + bubbleId + '","' + divId + '","' + inputId + '");';
+		var removeLink = 'ZmAutocompleteListView.removeBubble("' + bubbleId + '","' + inputId + '");';
 		var removeLinkText = " <a id='" + removeLinkId + "' onclick='" + removeLink + "' class='remove'>x</a>";
 //		removeLinkText = "<div style='display:inline-block' class='ImgClose'></div>";
 		var separator = "<span style='visibility:hidden'>" + this._separator + "</span>";
 		bubble.innerHTML = expandLinkText + AjxStringUtil.htmlEncode(text) + separator + removeLinkText;
 		bubbleDiv.appendChild(bubble);
 		Dwt.setHandler(bubble, DwtEvent.ONCLICK, ZmAutocompleteListView.bubbleClick);
-		this._parentView.bubbleAdded(inputId);
+		this._parentView.bubbleAdded(inputId, bubbleId, match.fullAddress);
 		el = bubbleDiv;
 	}
 	else {
@@ -1330,7 +1330,7 @@ function(bubbleId, inputId) {
 	var bubble = document.getElementById(bubbleId);
 	if (bubble) {
 		var aclv = DwtControl.ALL_BY_ID[bubble._aclvId];
-		aclv._parentView.bubbleRemoved(inputId);
+		aclv._parentView.bubbleRemoved(inputId, bubbleId);
 		bubble.parentNode.removeChild(bubble);
 	}
 	if (bubbleId == aclv._selectedBubbleId) {
