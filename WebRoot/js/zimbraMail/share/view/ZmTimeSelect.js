@@ -443,6 +443,27 @@ function(ev, startSelect, endSelect, startDateField, endDateField, dateInfo, id)
         if (endDateField.value != endDateOrig) {
             return endDateField;
         }
+    } else if (id == ZmTimeInput.END){
+        var timeStr = dateInfo ? dateInfo.endTimeStr : endSelect.getTimeString();
+        var oldEndDateMs = ZmTimeInput.getDateFromFields(timeStr, endDate).getTime();
+        var newEndDateMs = ZmTimeInput.getDateFromFields(endSelect.getTimeString(), endDate).getTime();
+        var oldStartDateMs = ZmTimeInput.getDateFromFields(startSelect.getTimeString(), startDate).getTime();
+
+        var delta = oldEndDateMs - oldStartDateMs;
+        if (!delta) return null;
+
+        var newStartDateMs = newEndDateMs - delta;
+        var newStartDate = new Date(newStartDateMs);
+
+        startSelect.set(newStartDate);
+        endSelect.set(new Date(newEndDateMs));
+        startDateField.value = AjxDateUtil.simpleComputeDateStr(newStartDate);
+        endDateField.value = AjxDateUtil.simpleComputeDateStr(new Date(newEndDateMs));
+
+        if (startDateField.value != startDateOrig) {
+            return startDateField;
+        }
+
     } else {
         return null;
     }
