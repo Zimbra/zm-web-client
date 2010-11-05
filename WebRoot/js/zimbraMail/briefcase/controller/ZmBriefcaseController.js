@@ -244,7 +244,7 @@ function(parent, num) {
 
     // Edit
     parent.enable(ZmOperation.OPEN_FILE, (num == 1 && isWebDoc));
-    parent.enable(ZmOperation.EDIT_FILE, ( !isReadOnly || !isLocked || isLockOwner ) && isWebDoc && !isRevision && num == 1);
+    parent.enable(ZmOperation.EDIT_FILE, !isReadOnly && (  !isLocked || isLockOwner ) && isWebDoc && !isRevision && num == 1);
 
     if(parent &&  parent instanceof ZmActionMenu){
 
@@ -260,16 +260,19 @@ function(parent, num) {
 
         //Checkout
         var checkoutEnabled = !isReadOnly && !isLocked && !isRevision;
-        parent.getOp(ZmOperation.CHECKOUT).setVisible(checkoutEnabled);
-        parent.enable(ZmOperation.CHECKOUT, num == 1);
+        parent.getOp(ZmOperation.CHECKOUT).setVisible(!isRevision && !isLocked);
+        parent.enable(ZmOperation.CHECKOUT, checkoutEnabled && num == 1);
 
         //Discard Checkout
         var discardCheckoutEnabled = (num == 1) && isLocked && !isRevision && (isAdmin || isLockOwner || !isShared);
         parent.getOp(ZmOperation.DISCARD_CHECKOUT).setVisible(discardCheckoutEnabled);
 
         //Versioning
-        parent.getOp(ZmOperation.RESTORE_VERSION).setVisible(num == 1 && isRevision && !isHightestVersion);
-        parent.getOp(ZmOperation.DELETE_VERSION).setVisible(num == 1 && isRevision);
+        var versionEnabled = (!isReadOnly && num == 1 && isRevision);
+        parent.getOp(ZmOperation.RESTORE_VERSION).setVisible(isRevision);
+        parent.enable(ZmOperation.RESTORE_VERSION, versionEnabled && !isHightestVersion);
+        parent.getOp(ZmOperation.DELETE_VERSION).setVisible(isRevision);
+        parent.enable(ZmOperation.DELETE_VERSION, versionEnabled);
 
 
     }
@@ -676,7 +679,7 @@ function() {
 		list.push(ZmOperation.CREATE_SLIDE_SHOW);
 	}
     list.push(ZmOperation.SEP);
-    list.push(ZmOperation.RESTORE_VERSION, ZmOperation.DELETE_VERSION, ZmOperation.CHECKOUT, ZmOperation.CHECKIN, ZmOperation.DISCARD_CHECKOUT);
+    list.push(ZmOperation.CHECKOUT, ZmOperation.CHECKIN, ZmOperation.DISCARD_CHECKOUT, ZmOperation.RESTORE_VERSION, ZmOperation.DELETE_VERSION);
 
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());

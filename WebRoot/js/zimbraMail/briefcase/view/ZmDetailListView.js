@@ -450,7 +450,7 @@ function(params) {
             var subs = {
                 title: ZmMsg.checkedOutFile,
                 fileProperties:	[
-                    {name: ZmMsg.lockedTo, value:item.lockUser},
+                    {name: ZmMsg.checkoutTo, value:item.lockUser},
                     {name: ZmMsg.when, value: dateFormatter.format(item.lockTime)}
                 ]
             };
