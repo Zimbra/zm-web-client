@@ -724,6 +724,16 @@ function() {
         miniCalSuggestion: true
     };
 
+    //avoid suggestions for past date
+    var currentDayTime = (new Date()).setHours(0,0,0,0);
+    if(currentDayTime >= range.start.getTime()) {
+        range.start = params.timeFrame.start = new Date(currentDayTime);
+
+        if(range.end.getTime() < currentDayTime) {
+            range.end = params.timeFrame.end = new Date(currentDayTime);
+        }
+    }
+
 
     var list = this._resources;
     var emails = [];
@@ -817,7 +827,7 @@ function(params) {
             ? this._editView.getCalendarAccount() : null;
 
     //optimization: fetch working hrs for a week - wrking hrs pattern repeat everyweek
-    var weekStartDate = params.timeFrame.start;
+    var weekStartDate = new Date(params.timeFrame.start.getTime());
     var dow = weekStartDate.getDay();
     weekStartDate.setDate(weekStartDate.getDate()-((dow+7))%7);
 

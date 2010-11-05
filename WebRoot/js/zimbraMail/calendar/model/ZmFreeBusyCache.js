@@ -24,8 +24,8 @@ ZmFreeBusyCache.STATUS_BUSY = 'b';
 ZmFreeBusyCache.STATUS_OUT = 'o';
 ZmFreeBusyCache.STATUS_FREE = 'f';
 
-ZmFreeBusyCache.STATUS_WORKING_HRS = 'f';
-ZmFreeBusyCache.STATUS_NON_WORKING_HRS = 'u';
+ZmFreeBusyCache.STATUS_WORKING_HOURS = 'f';
+ZmFreeBusyCache.STATUS_NON_WORKING_HOURS = 'u';
 ZmFreeBusyCache.STATUS_UNKNOWN = 'n';
 
 ZmFreeBusyCache.prototype.toString =
@@ -226,8 +226,8 @@ function(params, result) {
 ZmFreeBusyCache.prototype._addWorkingHrInfo =
 function(startTime, endTime, usr) {
     var id = usr.id;
-    if (usr.f) this._addWorkingHrSlot(usr.f, id, ZmFreeBusyCache.STATUS_WORKING_HRS);
-    if (usr.u) this._addWorkingHrSlot(usr.u, id, ZmFreeBusyCache.STATUS_NON_WORKING_HRS);
+    if (usr.f) this._addWorkingHrSlot(usr.f, id, ZmFreeBusyCache.STATUS_WORKING_HOURS);
+    if (usr.u) this._addWorkingHrSlot(usr.u, id, ZmFreeBusyCache.STATUS_NON_WORKING_HOURS);
     if (usr.n) this._addWorkingHrSlot(usr.n, id, ZmFreeBusyCache.STATUS_UNKNOWN);
 };
 
@@ -281,8 +281,8 @@ function(startTime, endTime, id) {
     var whSlots = this._workingHrs[whKey] || {};
     var whResult = {id: id};
 
-    if(whSlots[ZmFreeBusyCache.STATUS_WORKING_HRS]) whResult[ZmFreeBusyCache.STATUS_WORKING_HRS] = whSlots[ZmFreeBusyCache.STATUS_WORKING_HRS];
-    if(whSlots[ZmFreeBusyCache.STATUS_NON_WORKING_HRS]) whResult[ZmFreeBusyCache.STATUS_NON_WORKING_HRS] = whSlots[ZmFreeBusyCache.STATUS_NON_WORKING_HRS];
+    if(whSlots[ZmFreeBusyCache.STATUS_WORKING_HOURS]) whResult[ZmFreeBusyCache.STATUS_WORKING_HOURS] = whSlots[ZmFreeBusyCache.STATUS_WORKING_HOURS];
+    if(whSlots[ZmFreeBusyCache.STATUS_NON_WORKING_HOURS]) whResult[ZmFreeBusyCache.STATUS_NON_WORKING_HOURS] = whSlots[ZmFreeBusyCache.STATUS_NON_WORKING_HOURS];
     if(whSlots[ZmFreeBusyCache.STATUS_UNKNOWN]) whResult[ZmFreeBusyCache.STATUS_UNKNOWN] = whSlots[ZmFreeBusyCache.STATUS_UNKNOWN];
 
     return whResult;        
