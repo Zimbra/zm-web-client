@@ -312,7 +312,7 @@ function() {
     mi.setChecked(true, true);
 
     mi = this._markAsPrivate = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
-    mi.setText(ZmMsg.markAsPrivate);
+    mi.setText(ZmMsg.markApptPrivate);
     mi.setChecked(false, true);
 
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
