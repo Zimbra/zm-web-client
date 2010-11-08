@@ -351,7 +351,8 @@ function(role) {
 	if (perm) {
 		for (var i = 0; i < perm.length; i++) {
 			var c = perm.charAt(i);
-			if (c == "-") {
+			if(c == 'x') continue;
+            if (c == "-") {
 				c += perm.charAt(++i);
 			}
 			actions.push(ZmShare.PERMS[c]);
