@@ -762,8 +762,9 @@ ZmOrganizer.prototype.getRestUrl =
 function() {
 	var restUrl = appCtxt.get(ZmSetting.REST_URL);
 	if (restUrl) {
+		var path = AjxStringUtil.urlEncode(this.getSearchPath()).replace("#","%23"); // User may type in a # in a folder name, but that's not ok for our urls
 		// return REST URL as seen by the GetInfoResponse
-		return ([restUrl, "/", AjxStringUtil.urlEncode(this.getSearchPath())].join(""));
+		return ([restUrl, "/", path].join(""));
 	}
 
 	// return REST URL as seen by server
@@ -792,9 +793,10 @@ function() {
 		host = host + ":" + loc.port;
 	}
 
+	var path = AjxStringUtil.urlEncode(this.getSearchPath()).replace("#","%23"); // User may type in a # in a folder name, but that's not ok for our urls
+		
 	return [
-		loc.protocol, "//", host, "/service/user/", uname, "/",
-		AjxStringUtil.urlEncode(this.getSearchPath())
+		loc.protocol, "//", host, "/service/user/", uname, "/",	path
 	].join("");
 };
 
