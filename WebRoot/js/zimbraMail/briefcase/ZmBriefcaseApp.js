@@ -110,6 +110,7 @@ function(settings) {
 	settings.registerSetting("SLIDES_ENABLED",		{name:"zimbraFeatureBriefcaseSlidesEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("DOCS_ENABLED",		{name:"zimbraFeatureBriefcaseDocsEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
     settings.registerSetting("PREVIEW_ENABLED",		{ type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("READING_PANE_LOCATION_BRIEFCASE",		{name:"zimbraPrefBriefcaseReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true});
 };
 
 ZmBriefcaseApp.prototype._registerItems =

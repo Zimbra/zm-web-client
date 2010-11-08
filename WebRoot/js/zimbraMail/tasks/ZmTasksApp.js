@@ -80,6 +80,12 @@ function() {
     ZmOperation.registerOp(ZmId.OP_MARK_AS_COMPLETED, {tooltipKey:"markAsCompleted", textKey:"markAsCompleted", image:"CheckboxChecked", textPrecedence:80});
 };
 
+ZmTasksApp.prototype._registerSettings =
+function(settings) {
+	settings = settings || appCtxt.getSettings();
+	settings.registerSetting("READING_PANE_LOCATION_TASKS",		{name:"zimbraPrefTasksReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true});
+};
+
 ZmTasksApp.prototype._registerItems =
 function() {
 	ZmItem.registerItem(ZmItem.TASK,

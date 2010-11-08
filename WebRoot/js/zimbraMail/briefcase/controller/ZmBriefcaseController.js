@@ -1039,7 +1039,7 @@ function(menu){
 
 	var miParams = {text:ZmMsg.readingPaneAtBottom, style:DwtMenuItem.RADIO_STYLE, radioGroupId:"RP"};
 	var ids = ZmDoublePaneController.RP_IDS;
-	var pref = appCtxt.get(ZmSetting.READING_PANE_LOCATION);
+	var pref = appCtxt.get(ZmSetting.READING_PANE_LOCATION_BRIEFCASE);
 	for (var i = 0; i < ids.length; i++) {
 		var id = ids[i];
 		if (!menu._menuItems[id]) {
@@ -1091,18 +1091,18 @@ function() {
 
 ZmBriefcaseController.prototype._getReadingPanePref =
 function() {
-	return appCtxt.get(ZmSetting.READING_PANE_LOCATION);
+	return appCtxt.get(ZmSetting.READING_PANE_LOCATION_BRIEFCASE);
 };
 
 ZmBriefcaseController.prototype._setReadingPanePref =
 function(value) {
-	appCtxt.set(ZmSetting.READING_PANE_LOCATION, value);
+	appCtxt.set(ZmSetting.READING_PANE_LOCATION_BRIEFCASE, value);
 };
 
 ZmBriefcaseController.prototype._previewPaneListener =
 function(newPreviewStatus){
-    var oldPreviewStatus = appCtxt.get(ZmSetting.READING_PANE_LOCATION);
-    appCtxt.set(ZmSetting.READING_PANE_LOCATION, newPreviewStatus);
+    var oldPreviewStatus = appCtxt.get(ZmSetting.READING_PANE_LOCATION_BRIEFCASE);
+    appCtxt.set(ZmSetting.READING_PANE_LOCATION_BRIEFCASE, newPreviewStatus);
     var lv = this._parentView[this._currentView];
     lv.resetPreviewPane(newPreviewStatus, oldPreviewStatus);
 };
