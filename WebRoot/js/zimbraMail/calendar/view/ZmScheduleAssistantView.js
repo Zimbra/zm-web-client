@@ -302,7 +302,7 @@ function(callback, sortBy) {
     if(this._prefDialog) {
         for (var i = 0; i < ZmTimeSuggestionPrefDialog.PREF_FIELDS.length; i++) {
             var sf = ZmTimeSuggestionPrefDialog.PREF_FIELDS[i];
-            if(sf == "non_working_hrs") continue;
+            if(sf == ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) continue;
             value = AjxStringUtil.trim(this._prefDialog.getPreference(sf));
             if (value.length) {
                 var attr = ZmTimeSuggestionPrefDialog.SF_ATTR[sf];
@@ -379,6 +379,8 @@ function(params) {
             this._addAttendee(attendees[i], params, emails);
     }
 
+    params.emails = emails;
+
     this._key = this.getFormKey(tf.start, this._attendees);
 
     if(this._attendees.length == 0) {
@@ -449,7 +451,9 @@ function(params) {
         appCtxt.getRequestMgr().cancelRequest(this._workingHoursRequest, null, true);
     }
 
-    var includeNonWorkingHours = params.includeNonWorkingHours = this._prefDialog ? (this._prefDialog.getPreference("non_working_hrs") == 'true') : false;
+    var includeNonWorkingHours = params.includeNonWorkingHours = this._prefDialog ? this.isNonWorkingHoursIncluded() : false;
+    params.workingHoursPref  = this._prefDialog ? this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) : ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS;
+
     if(includeNonWorkingHours) {
          this.suggestTimeSlots(params);
          return;   
@@ -458,6 +462,7 @@ function(params) {
     var organizer = this._editView.getOrganizer();
     this._organizerEmail = organizer.getEmail();
 
+    var emails = (this.getWorkingHoursPref() == ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS) ?  params.emails : [this._organizerEmail];
     if(this._workingHoursKey == this.getWorkingHoursKey()) {
         this.suggestTimeSlots(params);
     }else {
@@ -469,7 +474,7 @@ function(params) {
         var whrsParams = {
             startTime: this._timeFrame.start.getTime(),
             endTime: this._timeFrame.end.getTime(),
-            emails: [this._organizerEmail],
+            emails: emails,
             callback: new AjxCallback(this, this._handleWorkingHoursResponse, [params]),
             errorCallback: new AjxCallback(this, this._handleWorkingHoursError, [params]),
             noBusyOverlay: true,
@@ -478,6 +483,12 @@ function(params) {
 
         this._workingHoursRequest = this._fbCache.getWorkingHours(whrsParams);
     }
+};
+
+ZmScheduleAssistantView.prototype.isNonWorkingHoursIncluded =
+function() {
+    var workingHoursPref = this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD);
+    return workingHoursPref == ZmTimeSuggestionPrefDialog.INCLUDE_NON_WORKING_HOURS;
 };
 
 ZmScheduleAssistantView.prototype._handleWorkingHoursResponse =
@@ -531,9 +542,14 @@ function(params) {
     this.highlightMiniCal();
 };
 
+ZmScheduleAssistantView.prototype.getWorkingHoursPref =
+function() {
+      return this._prefDialog ? this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) : ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS;
+};
+
 ZmScheduleAssistantView.prototype.computeAvailability =
 function(startTime, endTime, params) {
-
+    
     var dayStartTime = (new Date(startTime)).setHours(0,0,0,0);
     var dayEndTime = dayStartTime + AjxDateUtil.MSEC_PER_DAY;
 
@@ -559,7 +575,7 @@ function(startTime, endTime, params) {
         var sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, attendee);
 
         //show suggestions only in the organizer's working hours.
-        var isFree = params.includeNonWorkingHours ? true : this.isUnderWorkingHour(this._organizerEmail, startTime, endTime);
+        var isFree = params.includeNonWorkingHours ? true : this.isUnderWorkingHour((this.getWorkingHoursPref() == ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS) ? attendee : this._organizerEmail, startTime, endTime);
 
         //ignore time slots for non-working hours of this user
         if(!isFree) continue;
@@ -784,6 +800,7 @@ function() {
         emails.push(attendee);
     }
 
+    params.emails = emails;
 
     var callback = new AjxCallback(this, this._handleMonthFreeBusyInfo, [params]);
     var acct = (appCtxt.multiAccounts)
@@ -813,7 +830,7 @@ function(params) {
         appCtxt.getRequestMgr().cancelRequest(this._monthWorkingHrsReq, null, true);
     }
 
-    var includeNonWorkingHours = params.includeNonWorkingHours = this._prefDialog ? (this._prefDialog.getPreference("non_working_hrs") == 'true') : false;
+    var includeNonWorkingHours = params.includeNonWorkingHours = this._prefDialog ? this.isNonWorkingHoursIncluded() : false;
     if(includeNonWorkingHours) {
         this.suggestMonthTimeSlots(params);
         return;
@@ -832,10 +849,11 @@ function(params) {
     var dow = weekStartDate.getDay();
     weekStartDate.setDate(weekStartDate.getDate()-((dow+7))%7);
 
+    var emails = (this.getWorkingHoursPref() == ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS) ?  params.emails : [this._organizerEmail];
     var whrsParams = {
         startTime: weekStartDate.getTime(),
         endTime: weekStartDate.getTime() + 7*AjxDateUtil.MSEC_PER_DAY,
-        emails: [this._organizerEmail],
+        emails: emails,
         callback: new AjxCallback(this, this._handleMonthWorkingHoursResponse, [params]),
         errorCallback: new AjxCallback(this, this._handleMonthWorkingHoursError, [params]),
         noBusyOverlay: true,
