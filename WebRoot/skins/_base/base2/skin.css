@@ -178,9 +178,11 @@ BODY						{	margin:0px; 				}
 .ImgAppBanner			{	@AppBanner@		}
 .ImgLoginBanner			{	@LoginBanner@	}	
 
-
-
-
+#IFDEF MSIE
+#skin_container_logo A, #skin_container_logo A:hover, #skin_container_logo A:link {
+    background-color: transparent;
+}
+#ENDIF
 
 /* TO INTEGRATE */
 .DwtVerticalSash div {
