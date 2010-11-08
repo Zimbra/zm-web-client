@@ -1439,8 +1439,7 @@ function(dateInfo) {
     if (this._tzoneSelectStartElement) Dwt.setDisplay(this._tzoneSelectStartElement, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
     if (this._tzoneSelectEndElement) Dwt.setDisplay(this._tzoneSelectEndElement, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
     if (this._timezoneSpacer) Dwt.setDisplay(this._timezoneSpacer, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
-    if (this._timezoneColumn) this._timezoneColumn.setAttribute("width", showTimezone ? 230 : 60);
-    if (this._labelColumn) this._labelColumn.setAttribute("width", showTimezone ? 60 : 240);
+    if (this._timezoneColumn) this._timezoneColumn.setAttribute("width", showTimezone ? 200 : 60);
 };
 
 ZmApptEditView.prototype._showTimeFields =
