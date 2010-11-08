@@ -2908,7 +2908,9 @@ function() {
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		if (!this._using[type]) { continue; }
-		var input = this._field[type], val;
+		var input = this._field[type];
+		var inputVal = AjxStringUtil.trim(input.value);
+		var val;
 		if (this._useAcAddrBubbles) {
 			var bubbleAddrs = [];
 			var list = this._bubbleAddress[input.id];
@@ -2918,9 +2920,13 @@ function() {
 				}
 			}
 			val = bubbleAddrs.join(AjxEmailAddress.SEPARATOR);
+			var both = [];
+			if (val) { both.push(val); }
+			if (inputVal) { both.push(inputVal); }
+			val = both.join(AjxEmailAddress.SEPARATOR);
 		}
 		else {
-			val = AjxStringUtil.trim(input.value);
+			val = inputVal;
 		}
 		if (val.length == 0) { continue; }
 		var result = AjxEmailAddress.parseEmailString(val, type, false);
