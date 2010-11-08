@@ -695,7 +695,7 @@ function(expand) {
 };
 
 ZmConvListView.prototype._sortColumn =
-function(columnItem, bSortAsc) {
+function(columnItem, bSortAsc, callback) {
 
 	// call base class to save the new sorting pref
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
@@ -717,7 +717,8 @@ function(columnItem, bSortAsc) {
 			queryHint: queryHint,
 			types: [ZmItem.CONV],
 			sortBy: this._sortByString,
-			limit:this.getLimit()
+			limit:this.getLimit(),
+			callback: callback
 		};
 		appCtxt.getSearchController().search(params);
 	}

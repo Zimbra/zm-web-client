@@ -359,7 +359,7 @@ function(parent, controller) {
 };
 
 ZmMailMsgListView.prototype._sortColumn = 
-function(columnItem, bSortAsc) {
+function(columnItem, bSortAsc, callback) {
 
 	// call base class to save new sorting pref
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
@@ -380,7 +380,7 @@ function(columnItem, bSortAsc) {
 		if (this._mode == ZmId.VIEW_CONV) {
 			var conv = controller.getConv();
 			if (conv) {
-				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller]);
+				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller, callback]);
 				var params = {
 					query: query,
 					queryHint: queryHint,
@@ -395,7 +395,8 @@ function(columnItem, bSortAsc) {
 				queryHint: queryHint,
 				types: [ZmItem.MSG],
 				sortBy: this._sortByString,
-				limit: this.getLimit()
+				limit: this.getLimit(),
+				callback: callback
 			};
 			appCtxt.getSearchController().search(params);
 		}
@@ -408,7 +409,7 @@ function(columnItem) {
 };
 
 ZmMailMsgListView.prototype._handleResponseSortColumn =
-function(conv, columnItem, controller, result) {
+function(conv, columnItem, controller, callback, result) {
 	var searchResult = result.getResponse();
 	var list = searchResult.getResults(ZmItem.MSG);
 	controller.setList(list); // set the new list returned
@@ -416,6 +417,8 @@ function(conv, columnItem, controller, result) {
 	this.offset = 0;
 	this.set(conv.msgs, columnItem);
 	this.setSelection(conv.getFirstHotMsg({offset:this.offset, limit:this.getLimit(this.offset)}));
+	if (callback instanceof AjxCallback)
+		callback.run();
 };
 
 ZmMailMsgListView.prototype._getParentForColResize = 

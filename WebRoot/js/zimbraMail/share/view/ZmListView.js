@@ -282,8 +282,7 @@ function(ev) {
 			var hdr = (col && this.getItemFromElement(col)) || (this._headerHash && this._headerHash[ZmItem.F_SORTED_BY]) || null;
 			if (hdr) {
 				this._saveState({scroll:true,selection:true,focus:true});
-				this._sortColumn(hdr, this._bSortAsc);
-				this._restoreState();
+				this._sortColumn(hdr, this._bSortAsc, new AjxCallback(this, this._restoreState));
 			}
 		}
 		if (ev.batchMode) {
@@ -1061,7 +1060,7 @@ function(id, field) {
 };
 
 ZmListView.prototype._sortColumn =
-function(columnItem, bSortAsc) {
+function(columnItem, bSortAsc, callback) {
 	// change the sort preference for this view in the settings
 	var sortBy;
 	switch (columnItem._sortable) {
@@ -1076,6 +1075,8 @@ function(columnItem, bSortAsc) {
 		this._sortByString = sortBy;
 		appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
 	}
+	if (callback)
+		callback.run();
 };
 
 ZmListView.prototype._setNextSelection =
