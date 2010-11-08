@@ -1121,7 +1121,6 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			aName = acct.name;
 		}
 	}
-
 	// if we have an invite reply, we have to send a different message
 	if (this.isInviteReply && !isDraft) {
 		// TODO: support for batchCmd here as well
@@ -1181,17 +1180,25 @@ ZmMailMsg.prototype._createMessageNode =
 function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 
 	var msgNode = request.m = {};
+	var ac = window.parentAppCtxt || window.appCtxt;
+	var activeAccount = ac.accountList.activeAccount;
+	var mainAccount = ac.accountList.mainAccount;
+
+	//When fwding an email in Parent's(main) account(main == active), but we are sending on-behalf-of child(active != accountName)
+	var doQualifyIds = !ac.isOffline && ac.multiAccounts && ((activeAccount.name == mainAccount.name) && (activeAccount.name != accountName));
 
 	// if origId is given, means we're saving a draft or sending a msg that was
 	// originally a reply/forward
 	if (this.origId) {
-		msgNode.origid = this.origId;
+		var id = this.origId;
+		if(doQualifyIds) {
+			id = ZmOrganizer.getSystemId(this.origId, mainAccount, true);
+		}
+		msgNode.origid = id;
 	}
-
 	// if id is given, means we are re-saving a draft
 	var oboDraftMsgId = null; // On Behalf of Draft MsgId
 	if ((isDraft || this.isDraft) && this.id) {
-		var ac = window.parentAppCtxt || window.appCtxt;
 		// bug fix #26508 - check whether previously saved draft was moved to Trash
 		var msg = ac.getById(this.id);
 		var folder = msg ? ac.getById(msg.folderId) : null;
@@ -1282,8 +1289,12 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 								if (!id && this._origMsg) {
 									id = this._origMsg.id;
 								}
-
-								attachNode.mp = [{mid:id, part:inlineAtts[j].part}];
+								if (id && doQualifyIds) {
+									id = ZmOrganizer.getSystemId(id, mainAccount, true);
+								}
+								if(id) {
+									attachNode.mp = [{mid:id, part:inlineAtts[j].part}];
+								}
 							}
 							subPartNodes.push(inlineAttNode);
 						}
@@ -1367,14 +1378,12 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 					}
 
 					// bug fix #33312 - should be reverted(?) once bug #33691 is fixed.
-					if (id && appCtxt.multiAccounts &&
-						(appCtxt.getActiveAccount().name != accountName) &&
-						(isDraft || this.isDraft))
-					{
-						id = ZmOrganizer.getSystemId(id, appCtxt.accountList.mainAccount, true);
+					if (id && doQualifyIds) {
+						id = ZmOrganizer.getSystemId(id, mainAccount, true);
 					}
-
-					parts.push({mid:id, part:attIds[i]});
+					if(id) {
+						parts.push({mid:id, part:attIds[i]});
+					}
 				}
 			}
 		}
