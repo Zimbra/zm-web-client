@@ -308,8 +308,10 @@ function(ev) {
 
 ZmChooseFolderDialog.prototype._okButtonListener =
 function(ev) {
-	//var tgtFolder = this._getOverview().getSelected();
-    var tgtFolder = appCtxt.getById(this._selected);
+    var tgtFolder = this._getOverview().getSelected();
+    if  (!tgtFolder) {
+        tgtFolder = appCtxt.getById(this._selected);
+    }
 	var folderList = (tgtFolder && (!(tgtFolder instanceof Array)))
 		? [tgtFolder] : tgtFolder;
 
