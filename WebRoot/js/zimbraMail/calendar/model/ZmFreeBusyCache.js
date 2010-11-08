@@ -62,6 +62,12 @@ function(startTime, endTime, id) {
     //free busy response is always merged
     for(var i= fbSlots.length; --i >= 0;) {
         var usr = fbSlots[i];
+        var searchRange = usr.searchRange;
+        if(searchRange) {
+            var newSearchInRange = (startTime >= searchRange.startTime && endTime <= searchRange.endTime);
+            if(!newSearchInRange) continue;
+        }
+
         if (usr.n) this._addFBInfo(usr.n, id, ZmFreeBusyCache.STATUS_UNKNOWN, startTime, endTime, fbResult);
         if (usr.t) this._addFBInfo(usr.t, id, ZmFreeBusyCache.STATUS_TENTATIVE, startTime, endTime, fbResult);
         if (usr.b) this._addFBInfo(usr.b, id, ZmFreeBusyCache.STATUS_BUSY, startTime, endTime, fbResult);
@@ -141,6 +147,7 @@ function(params, result) {
             this._schedule[id] = [];
         }
 
+        usr.searchRange = {startTime: params.startTime,  endTime: params.endTime};
         this._schedule[id].push(usr);
     };
 

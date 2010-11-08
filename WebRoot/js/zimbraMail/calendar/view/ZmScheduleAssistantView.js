@@ -540,7 +540,7 @@ function(startTime, endTime, params) {
     var key = this.getKey(startTime, endTime);
     var fbInfo;
 
-    if(this._fbStatMap[key]) {
+    if(!params.miniCalSuggestions && this._fbStatMap[key]) {
         fbInfo = this._fbStatMap[key];
     }else {
         fbInfo = {
@@ -570,7 +570,7 @@ function(startTime, endTime, params) {
         var key = startTime + "-" + endTime;
         
         if(isFree) {
-            fbInfo.attendees.push(params.itemsById[attendee]._itemIndex);
+            if(!params.miniCalSuggestions) fbInfo.attendees.push(params.itemsById[attendee]._itemIndex);
             fbInfo.availableUsers++;
         }
     }
@@ -590,15 +590,17 @@ function(startTime, endTime, params) {
         if(sched.u) isFree = isFree && this.isBooked(sched.u, startTime, endTime);
         
         if(isFree) {
-            fbInfo.locations.push(params.itemsById[resource]._itemIndex);
+            if(!params.miniCalSuggestions) fbInfo.locations.push(params.itemsById[resource]._itemIndex);
             fbInfo.availableLocations++;
         }
 	}
 
-    if(fbInfo.availableUsers > 0) {
+    if(!params.miniCalSuggestions && fbInfo.availableUsers > 0) {
         this._fbStat.add(fbInfo);
         this._fbStatMap[key] = fbInfo;
     }
+
+    return fbInfo;
 };
 
 ZmScheduleAssistantView._slotComparator =
@@ -720,7 +722,7 @@ function() {
             start: range.start,
             end: range.end
         },
-        miniCalSuggestion: true
+        miniCalSuggestions: true
     };
 
     //avoid suggestions for past date
@@ -884,15 +886,13 @@ function(params) {
     while(startTime < endTime) {
 
         var dayStartTime = startTime;
-        var dayEndTime = (new Date(startTime)).setHours(23, 59, 0, 0);
+        var dayEndTime = startTime + AjxDateUtil.MSEC_PER_DAY;
 
         freeSlotFound = false
-        
+
         while(dayStartTime < dayEndTime) {
-            key = this.getKey(dayStartTime, dayStartTime + duration); 
-            this.computeAvailability(dayStartTime, dayStartTime + duration, params);
+            fbStat = this.computeAvailability(dayStartTime, dayStartTime + duration, params);
             dayStartTime += AjxDateUtil.MSEC_PER_HALF_HOUR;
-            fbStat = this._fbStatMap[key];
 
             if(fbStat && fbStat.availableUsers == this._totalUsers && fbStat.availableLocations > 0) {
                 this._addColorCode(params, startTime, ZmMiniCalendar.COLOR_GREEN);
@@ -910,7 +910,6 @@ function(params) {
     }
 
     this._miniCalendar.setColor(params.dates, true, params.colors);
-    DBG.dumpObj(this._fbStat);
 };
 
 
