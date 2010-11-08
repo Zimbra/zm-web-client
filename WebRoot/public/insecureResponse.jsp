@@ -28,10 +28,12 @@
 		// TODO: protecting against script tag in text is making some assumptions
 		data = data.replaceAll("(</[Ss][Cc])([Rr][Ii])","$1\"+\"$2");
 	}
+
+    pageContext.setAttribute("data", data);
 %>
 <script>
 var reqId = "${zm:jsEncode(param.reqId)}";
-var data = <%=data != null && !data.equals("") ? data : "{}"%>;
+var data = ${ (not empty data and data ne "") ? zm:cook(data) : "{}"};
 </script>
 <script>
 parent.parent.parent.appCtxt.getRequestMgr().sendRequest({reqId:reqId,response:data});

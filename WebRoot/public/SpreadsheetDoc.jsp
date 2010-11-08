@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ page import="java.util.Locale" %>
+<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
@@ -106,7 +107,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <link href="<c:url value="/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,presentation,slides,images,skin.css">
         <c:param name="v" value="${vers}" />
 	    <c:param name="debug" value='${isDebug?"1":""}' />
-	    <c:param name="skin" value="${skin}" />
+	    <c:param name="skin" value="${zm:cook(skin)}" />
 	    <c:param name="locale" value="${locale}" />
 	    <c:if test="${not empty param.customerDomain}">
 		    <c:param name="customerDomain"	value="${param.customerDomain}" />
@@ -136,7 +137,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
             if (extraPackages.equals("dev")) {
                 extraPackages = "Leaks,Debug";
             }
-            packages += "," + extraPackages;
+            packages += "," + BeanUtils.cook(extraPackages);
         }        
 
         String pprefix = isDevMode ? "public/jsp" : "js";

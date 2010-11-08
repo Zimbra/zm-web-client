@@ -1,3 +1,4 @@
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <!--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
@@ -27,6 +28,9 @@
 	String skin = request.getParameter("skin");
 	if (skin == null) skin = application.getInitParameter("zimbraDefaultSkin");
 
+    pageContext.setAttribute("template", template);
+    pageContext.setAttribute("controller", controller);
+
 %><html>
 <head>
 <link rel='stylesheet' type="text/css"
@@ -53,7 +57,7 @@ function onLoad() {
 	var body = document.getElementsByTagName("BODY")[0];
 
 
-	var templateId = window.templateId = "<%=template!=null?template:""%>" || AjxCookie.getCookie(document,"template");
+	var templateId = window.templateId = "${not empty template ? zm:cook(template) : ""}" || AjxCookie.getCookie(document,"template");
 	if (templateId == null) {
 		body.innerHTML = "No template -- specify as ?template=app.Name%23foo";
 		return;
@@ -61,7 +65,7 @@ function onLoad() {
 	AjxCookie.setCookie(document, "template", templateId);
 	document.title = templateId;
 	
-	var controllerId = "<%=controller!=null?controller:""%>" || templateId.replace(/#.*$/,"")+"_test";
+	var controllerId = "${not empty controller ? zm:cook(controller) : ""}" || templateId.replace(/#.*$/,"")+"_test";
 
 	AjxPackage.setBasePath("<%=path%>/js");
 	AjxPackage.setQueryString("ts="+(new Date().getTime()));

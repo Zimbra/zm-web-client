@@ -1,5 +1,6 @@
 <%@ page buffer="8kb" session="false" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.*,javax.naming.*,com.zimbra.cs.zclient.ZAuthResult" %>
+<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -119,7 +120,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <title>Zimbra Presentations</title>
     <style type="text/css">                                                               
         <!--
-        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,presentation,slides,images,skin.css?v=<%= vers %><%= isSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,presentation,slides,images,skin.css?v=<%= vers %><%= isSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)};
         -->
     </style>
     <jsp:include page="Resources.jsp">
@@ -136,7 +137,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         //String packages = "DocsStartup,Slides";
 
         String extraPackages = request.getParameter("packages");
-        if (extraPackages != null) packages += ","+extraPackages;
+        if (extraPackages != null) packages += ","+ BeanUtils.cook(extraPackages);
 
         String pprefix = isDevMode ? "public/jsp" : "js";
         String psuffix = isDevMode ? ".jsp" : "_all.js";
