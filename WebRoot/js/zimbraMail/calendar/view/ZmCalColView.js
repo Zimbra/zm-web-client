@@ -460,7 +460,10 @@ function() {
 	for (var i=0; i < 7; i++) {
         var wHrs = this.workingHours[d.getDay()];
         var isWorkingDay = wHrs && wHrs.isWorkingDay ? wHrs.isWorkingDay : false;
-        if (this.view === ZmId.VIEW_CAL_WEEK || isWorkingDay === true) {
+        if (this.view === ZmId.VIEW_CAL_WEEK    || 
+            this.view === ZmId.VIEW_CAL_DAY     ||
+            isWorkingDay === true ) {
+
             var day = this._days[j] = {};
             day.index = j;
             day.date = new Date(d);
@@ -619,7 +622,7 @@ function(appt) {
 	var isRemote = Boolean(calendar.url);
 	var is30 = this._scheduleMode || (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
 	var is60 = (appt._orig.getDuration() <= 2*AjxDateUtil.MSEC_PER_HALF_HOUR);
-	var apptName = appt.getName();
+	var apptName = AjxStringUtil.htmlEncode(appt.getName());
 	var tagIcon = (!appt.getFolder().link && appt.tags.length > 0)
 		? appt.getTagImageInfo() : null;
 	// normalize location
