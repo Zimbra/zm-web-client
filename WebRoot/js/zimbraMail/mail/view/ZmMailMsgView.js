@@ -142,6 +142,7 @@ function() {
 		this._objectManager.reset();
 	}
 	this.setScrollWithIframe(this._scrollWithIframe);
+    this._resetTrustedSenders();
 };
 
 ZmMailMsgView.prototype.preventSelection =
@@ -935,6 +936,11 @@ function(addr) {
     this._trustedList.remove(addr);
 };
 
+ZmMailMsgView.prototype._resetTrustedSenders =
+function() {
+    this._trustedList = null;
+};
+
 ZmMailMsgView.prototype._isTrustedSender =
 function(msg) {
     if(!this._trustedList) {
@@ -972,9 +978,7 @@ function(msg, container, callback) {
     if (sentByAddr) {
         msg.sentByAddr = sentByAddr;
         msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@")+1);
-        if (this._isTrustedSender(msg)) {
-            msg.showImages = true;
-        }
+        msg.showImages = this._isTrustedSender(msg);
     }
 	var sentByIcon = cl	? (cl.getContactByEmail((sentBy && sentBy.address ) ? sentBy.address : sentByAddr ) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;

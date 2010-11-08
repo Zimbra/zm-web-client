@@ -1973,6 +1973,7 @@ function() {
 
 	var settings = appCtxt.getSettings();
 	settings.getSetting(ZmSetting.VIEW_AS_HTML).addChangeListener(this._settingListener);
+	settings.getSetting(ZmSetting.TRUSTED_ADDR_LIST).addChangeListener(this._settingListener);
 	settings.addChangeListener(this._settingsListener);
 };
 
@@ -1988,7 +1989,7 @@ function(ev) {
 	var setting = ev.source;
 	var mlc = this.getMailListController();
 
-	if (mlc && setting.id == ZmSetting.VIEW_AS_HTML) {
+	if (mlc && (setting.id == ZmSetting.VIEW_AS_HTML || setting.id == ZmSetting.TRUSTED_ADDR_LIST)) {
 		var dpv = mlc._doublePaneView;
 		var msg = dpv ? dpv.getMsg() : null;
 		if (msg) {

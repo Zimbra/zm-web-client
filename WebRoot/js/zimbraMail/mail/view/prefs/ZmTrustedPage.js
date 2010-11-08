@@ -108,6 +108,9 @@ function(batchCmd) {
 ZmTrustedPage.prototype._postSaveBatchCmd =
 function(value) {
     appCtxt.set(ZmSetting.TRUSTED_ADDR_LIST, [value]);
+    var settings = appCtxt.getSettings();
+    var trustedListSetting = settings.getSetting(ZmSetting.TRUSTED_ADDR_LIST);
+    trustedListSetting._notify(ZmEvent.E_MODIFY); 
     if(this._trustedListControl) {
         this._trustedListControl.saveLocal();
     }
