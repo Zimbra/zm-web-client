@@ -311,6 +311,10 @@ function() {
     mi.setText(ZmMsg.sendNotificationMail);
     mi.setChecked(true, true);
 
+    mi = this._markAsPrivate = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
+    mi.setText(ZmMsg.markAsPrivate);
+    mi.setChecked(false, true);
+
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
 };
 
@@ -327,6 +331,21 @@ function() {
 ZmApptComposeController.prototype.setNotificationMail =
 function(sendNotificationMail) {
    this._sendNotificationMail.setChecked(sendNotificationMail);
+};
+
+ZmApptComposeController.prototype.markApptAsPrivate =
+function(isPrivate) {
+   this._markAsPrivate.setChecked(isPrivate);
+};
+
+ZmApptComposeController.prototype.isApptPrivate =
+function() {
+   return this._markAsPrivate.getChecked();
+};
+
+ZmApptComposeController.prototype.enablePrivateOption =
+function(enabled) {
+   return this._markAsPrivate.setEnabled(enabled);
 };
 
 ZmApptComposeController.prototype.getNotifyList =

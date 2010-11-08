@@ -97,9 +97,6 @@
                                         <td align="left">
                                             <input type='checkbox' id='${id}_allDayCheckbox'>
                                             <nobr>&nbsp;<$= ZmMsg.allDay $></nobr>
-                                            &nbsp;
-                                            <input type='checkbox' id='${id}_privateCheckbox'>
-                                            <nobr>&nbsp;<$= ZmMsg._private $></nobr>
                                         </td>
                                     </tr>
                                 </table>

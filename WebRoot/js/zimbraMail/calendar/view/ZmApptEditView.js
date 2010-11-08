@@ -284,16 +284,20 @@ function() {
 ZmApptEditView.prototype._addTabGroupMembers =
 function(tabGroup) {
 	tabGroup.addMember(this._subjectField);
+    if(this.GROUP_CALENDAR_ENABLED) {
+        tabGroup.addMember(this._attInputField[ZmCalBaseItem.PERSON]);
+        tabGroup.addMember(this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON]);
+    }    
 	tabGroup.addMember(this._attInputField[ZmCalBaseItem.LOCATION]);
     tabGroup.addMember(this._startDateField);
 	tabGroup.addMember(this._startTimeSelect.getInputField());
 	tabGroup.addMember(this._endDateField);
 	tabGroup.addMember(this._endTimeSelect.getInputField());
+    tabGroup.addMember(this._allDayCheckbox);
+    tabGroup.addMember(this._reminderSelectInput);
 
-	if(this.GROUP_CALENDAR_ENABLED) {
-		tabGroup.addMember(this._attInputField[ZmCalBaseItem.PERSON]);
-		tabGroup.addMember(this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON]);
-	}
+    if(this._repeatSelect) tabGroup.addMember(this._repeatSelect);
+
 	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
 	tabGroup.addMember(document.getElementById(bodyFieldId));
 };
@@ -357,7 +361,7 @@ function(calItem) {
     }
 
 	calItem.freeBusy = this._showAsSelect.getValue();
-	calItem.privacy = this._privacyCheckbox.checked ? ZmApptEditView.PRIVACY_OPTION_PRIVATE : ZmApptEditView.PRIVACY_OPTION_PUBLIC;
+	calItem.privacy = this._controller.isApptPrivate() ? ZmApptEditView.PRIVACY_OPTION_PRIVATE : ZmApptEditView.PRIVACY_OPTION_PUBLIC;
 
 	// set the start date by aggregating start date/time fields
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
@@ -441,7 +445,7 @@ function(calItem, mode) {
 
 	this._showAsSelect.setSelectedValue(calItem.freeBusy);
     this._showAsSelect.setEnabled(enableApptDetails);
-    this._privacyCheckbox.checked = (calItem.privacy == ZmApptEditView.PRIVACY_OPTION_PRIVATE);
+    this._controller.markApptAsPrivate(calItem.privacy == ZmApptEditView.PRIVACY_OPTION_PRIVATE);
 
 
 	// reset the date/time values based on current time
@@ -524,15 +528,13 @@ function(calItem, mode) {
 	}
 
 	// privacy
-	if (this._privacyCheckbox) {
-		var isRemote = calItem.isShared();
-		var cal = isRemote ? appCtxt.getById(calItem.folderId) : null;
-		var isPrivacyEnabled = ((!isRemote || (cal && cal.hasPrivateAccess())) && enableApptDetails);
-		var defaultPrivacyOption = (appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY) == ZmSetting.CAL_VISIBILITY_PRIV);
+    var isRemote = calItem.isShared();
+    var cal = isRemote ? appCtxt.getById(calItem.folderId) : null;
+    var isPrivacyEnabled = ((!isRemote || (cal && cal.hasPrivateAccess())) && enableApptDetails);
+    var defaultPrivacyOption = (appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY) == ZmSetting.CAL_VISIBILITY_PRIV);
 
-        this._privacyCheckbox.checked = (isPrivacyEnabled ? ((calItem.privacy == ZmApptEditView.PRIVACY_OPTION_PRIVATE) || defaultPrivacyOption) : false);
-		this._privacyCheckbox.disabled = !isPrivacyEnabled;
-	}
+    this._controller.markApptAsPrivate((isPrivacyEnabled ? ((calItem.privacy == ZmApptEditView.PRIVACY_OPTION_PRIVATE) || defaultPrivacyOption) : false));
+    this._controller.enablePrivateOption(isPrivacyEnabled);
 
 	// set the equipment attendee(s)
 	var equipment = calItem.getAttendees(ZmCalBaseItem.EQUIPMENT);
@@ -748,8 +750,6 @@ function(width) {
 		this._showAsSelect.addOption(option.label, option.selected, option.value, "showAs" + option.value);
 	}
 
-
-    this._privacyCheckbox =  document.getElementById(this._htmlElId + "_privateCheckbox");
 	this._folderSelect.addChangeListener(new AjxListener(this, this._folderListener));
 
 	// time ZmTimeSelect
@@ -1195,8 +1195,6 @@ function() {
 
 ZmApptEditView.prototype._folderListener =
 function() {
-	if (!this._privacyCheckbox) { return; }
-
 	var calId = this._folderSelect.getValue();
 	var cal = appCtxt.getById(calId);
 
@@ -1212,7 +1210,7 @@ function() {
 	var isRemote = (id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0);
 	var isEnabled = !isRemote || cal.hasPrivateAccess();
 
-    this._privacyCheckbox.disabled = !isEnabled;
+    this._controller.enablePrivateOption(isEnabled);
 };
 
 ZmApptEditView.prototype.setSchedulerVisibility =
@@ -1462,7 +1460,7 @@ function(excludeAttendees, excludeReminder) {
 	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.LOCATION].getArray(), ZmCalBaseItem.LOCATION));
 	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.EQUIPMENT].getArray(), ZmCalBaseItem.EQUIPMENT));
 	vals.push(this._showAsSelect.getValue());
-	vals.push(this._privacyCheckbox.checked ? ZmApptEditView.PRIVACY_OPTION_PRIVATE : ZmApptEditView.PRIVACY_OPTION_PUBLIC);
+	vals.push(this._controller.isApptPrivate() ? ZmApptEditView.PRIVACY_OPTION_PRIVATE : ZmApptEditView.PRIVACY_OPTION_PUBLIC);
 	vals.push(this._folderSelect.getValue());
 
 	if (!excludeReminder) {
