@@ -118,10 +118,29 @@ function(file, status, guid) {
     var params = {
         jsonObj:    json,
         asyncMode:  true,
-        callback:   callback
+        callback:   callback,
+        errorCallback: new AjxCallback(this, this._handleSaveDocError, [file, status, guid])
     };
     appCtxt.getAppController().sendRequest(params);    
 };
+
+ZmCheckinDialog.prototype._handleSaveDocError =
+function(file, status, guid, ex){
+
+    this.setButtonEnabled(DwtDialog.OK_BUTTON, true );
+    this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
+
+    if(ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS){
+        //Warning Message
+        var warning = appCtxt.getMsgDialog();
+        warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, file.name), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
+        warning.popup();
+        //Error Handled
+        return true;
+    }
+
+    return false;
+};        
 
 ZmCheckinDialog.prototype._uploadSaveDocsResponse =
 function(file, status, guid, response) {

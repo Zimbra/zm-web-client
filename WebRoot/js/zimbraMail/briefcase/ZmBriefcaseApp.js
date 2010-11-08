@@ -367,7 +367,7 @@ function(item) {
 ZmBriefcaseApp.prototype._handleNewItem =
 function() {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
-	this.getBriefcaseController().__popupUploadDialog(null, ZmMsg.uploadFileToBriefcase);
+	this.getBriefcaseController().__popupUploadDialog(ZmMsg.uploadFileToBriefcase);
 };
 
 ZmBriefcaseApp.prototype._handleLoadNewBriefcase =
