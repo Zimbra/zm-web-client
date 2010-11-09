@@ -38,6 +38,7 @@ ZmScheduleAssistantView = function(parent, controller, apptEditView) {
 
     this.type = ZmCalBaseItem.LOCATION;
     this._attendees = [];
+    this._resources = [];
     this._workingHours = {};
     this._fbStat = new AjxVector();
     this._fbStatMap = {};
@@ -147,7 +148,7 @@ function(ev) {
 
 ZmScheduleAssistantView.prototype._prefChangeListener =
 function() {
-    this._resources = null;
+    this._resources = [];
     this.suggestAction(true);
 };
 
@@ -170,7 +171,7 @@ function(focusOnSuggestion) {
 
     this.showCustomize(true);
     this._timeSuggestions.setLoadingHtml();
-    if(!this._resources) {
+    if(this._resources.length == 0) {
         this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
     }else {
         this._findFreeBusyInfo(params);
