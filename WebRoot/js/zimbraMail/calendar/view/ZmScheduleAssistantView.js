@@ -517,6 +517,15 @@ function(params) {
     var startDate = this._timeFrame.start;
     startDate.setHours(0, 0, 0, 0);
     var startTime = startDate.getTime();
+
+    var cDate = new Date();
+
+    //ignore suggestions that are in past
+    if(startTime == cDate.setHours(0, 0, 0, 0)) {
+        startDate = new Date();
+        startTime = startDate.setHours(startDate.getHours(), ((startDate.getMinutes() >=30) ? 60 : 30), 0, 0);
+    }
+
     var endDate = new Date(startTime);
     endDate.setHours(23, 59, 0, 0);
     var endTime = endDate.getTime();

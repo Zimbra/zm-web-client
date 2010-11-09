@@ -68,13 +68,12 @@ function (item) {
     var id = this.associateItemWithElement(item, null, null, null);
 
     var attendeeImage = "AttendeeOrange";
-    var locationImage = "LocationOrange";
+    var locationImage = "LocationRed";
 
     if(item.availableUsers == this._totalUsers) attendeeImage = "AttendeeGreen";
-    if(item.availableLocations == this._totalLocations) locationImage = "LocationGreen";
 
     if(item.availableUsers < Math.ceil(this._totalUsers/2)) attendeeImage = "AttendeeRed";
-    if(item.availableLocations < Math.ceil(this._totalLocations/2)) locationImage = "LocationRed";
+    if(item.availableLocations >0) locationImage = "LocationGreen";
 
     var params = {
         id: id,
