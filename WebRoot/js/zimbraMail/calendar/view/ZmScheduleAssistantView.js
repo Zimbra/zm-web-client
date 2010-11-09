@@ -674,7 +674,7 @@ function(attendee, startTime, endTime) {
         slotStartDate = new Date(slots[i].s);
         slotEndDate = new Date(slots[i].e);
         slotStartTime = (new Date(startTime)).setHours(slotStartDate.getHours(), slotStartDate.getMinutes(), 0, 0);
-        slotEndTime = (new Date(endTime)).setHours(slotEndDate.getHours(), slotEndDate.getMinutes(), 0, 0);
+        slotEndTime = slotStartTime + (slots[i].e - slots[i].s);
         if(startTime >= slotStartTime && endTime <= slotEndTime) {
             return true;
         }
