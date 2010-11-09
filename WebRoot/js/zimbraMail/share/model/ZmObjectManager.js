@@ -861,6 +861,9 @@ function(type, name, value) {
 ZmObjectManager.prototype.generateSpan =
 function(handler, html, idx, obj, context, options) {
 	var id = this._objectIdPrefix + Dwt.getNextId();
+    if (handler && handler.name) {
+        id = id + "_" + handler.name;
+    }
 	this._objects[id] = {object: obj, handler: handler, id: id, context: context };
 	return handler.generateSpan(html, idx, obj, id, context, options);
 };
