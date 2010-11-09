@@ -452,13 +452,16 @@ function(ev, startSelect, endSelect, startDateField, endDateField, dateInfo, id)
         var delta = oldEndDateMs - oldStartDateMs;
         if (!delta) return null;
 
-        var newStartDateMs = newEndDateMs - delta;
-        var newStartDate = new Date(newStartDateMs);
+        //adjust start date only when the end date falls earlier than start date
+        if(newEndDateMs < oldStartDateMs) {
+            var newStartDateMs = newEndDateMs - delta;
+            var newStartDate = new Date(newStartDateMs);
 
-        startSelect.set(newStartDate);
-        endSelect.set(new Date(newEndDateMs));
-        startDateField.value = AjxDateUtil.simpleComputeDateStr(newStartDate);
-        endDateField.value = AjxDateUtil.simpleComputeDateStr(new Date(newEndDateMs));
+            startSelect.set(newStartDate);
+            endSelect.set(new Date(newEndDateMs));
+            startDateField.value = AjxDateUtil.simpleComputeDateStr(newStartDate);
+            endDateField.value = AjxDateUtil.simpleComputeDateStr(new Date(newEndDateMs));
+        }
 
         if (startDateField.value != startDateOrig) {
             return startDateField;
