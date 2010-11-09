@@ -177,6 +177,10 @@ function() {
 
 ZmApptComposeView.prototype.isDirty =
 function() {
+    //if view is inactive or closed return false
+    if(this._controller.inactive) {
+        return false;
+    }
 	//drag and drop changed appts will be dirty even if nothing is changed
 	var apptEditView = this._apptEditView;
 	if( apptEditView && apptEditView._calItem && apptEditView._calItem.dndUpdate){
