@@ -67,7 +67,7 @@ ZmNotificationsPage.prototype.showMe = function() {
     this._form.update();
 
     // load SMS data, if needed
-    if (initialize) {
+    if (initialize && this._form.getControl("DEVICE_EMAIL_REGION") != null) {
         var includes = [
             [   appContextPath,
                 "/res/ZmSMS.js",
