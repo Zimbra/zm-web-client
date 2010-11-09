@@ -114,7 +114,7 @@ function(hasDelim) {
 		}
 	} else {
 		this._doUpdate(hasDelim);
-		this.reset();
+		this.reset(true);
 	}
 };
 
@@ -130,7 +130,7 @@ function(hasDelim, result) {
 			this._doUpdate(hasDelim);
 		}
 	}
-	this.reset();
+	this.reset(true);
 };
 
 ZmDLAutocompleteListView.prototype._doUpdate =
@@ -181,4 +181,20 @@ function(view, matches) {
 ZmDLAutocompleteListView.prototype.getDLSize =
 function() {
 	return this.size() - 1;
+};
+
+// optionally removes the DL address bubble
+ZmDLAutocompleteListView.prototype.reset =
+function(clearDL) {
+
+	if (clearDL) {
+		var dlBubble = document.getElementById(this._parentAclv._curExpanded);
+		if (dlBubble) {
+			var addrInput = DwtControl.ALL_BY_ID[dlBubble._aifId];
+			if (addrInput) {
+				addrInput.removeBubble(dlBubble.id);
+			}
+		}
+	}
+	ZmAutocompleteListView.prototype.reset.call(this);
 };

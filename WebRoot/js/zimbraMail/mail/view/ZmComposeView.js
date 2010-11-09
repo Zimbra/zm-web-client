@@ -833,12 +833,26 @@ function(msg, docIds) {
  */
 ZmComposeView.prototype.setAddress =
 function(type, addr) {
-	addr = addr ? addr : "";
+
+	addr = addr || "";
 	if (addr.length && !this._using[type]) {
 		this._using[type] = true;
 		this._showAddressField(type, true);
 	}
-	this._field[type].value = addr;
+	if (addr && this._useAcAddrBubbles) {
+		var addrInput = this._addrInputField[type];
+		if (addrInput) {
+			var addrs = AjxEmailAddress.split(addr);
+			if (addrs && addrs.length) {
+				for (var i = 0, len = addrs.length; i < len; i++) {
+					addrInput.add(addrs[i]);
+				}
+			}
+		}
+	}
+	else {
+		this._field[type].value = addr;
+	}
 
 	// Use a timed action so that first time through, addr textarea
 	// has been sized by browser based on content before we try to
@@ -1140,23 +1154,18 @@ function(bEnableInputs) {
 		this._acAddrSelectList.show(false);
 	}
 
-	if (this._useAcAddrBubbles) {
-		// scrubbing bubbles
-		for (var id in this._bubbleHolderDivId) {
-			var div = document.getElementById(this._bubbleHolderDivId[id]);
-			while (div && div.firstChild) {
-				div.removeChild(div.firstChild);
-			}
-			this._bubbleAddress[id] = [];
-		}
-	}
-
 	// reset To/CC/BCC fields
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		var textarea = this._field[type];
 		textarea.value = "";
 		this._adjustAddrHeight(textarea, true);
+		if (this._useAcAddrBubbles) {
+			var addrInput = this._addrInputField[type];
+			if (addrInput) {
+				addrInput.clear();
+			}
+		}
 	}
 
 	// reset subject / body fields
@@ -2290,8 +2299,7 @@ function(composeMode) {
 	this._field = {};
 	this._divEl = {};
 	if (this._useAcAddrBubbles) {
-		this._bubbleHolderDivId = {};
-		this._bubbleAddress = {};
+		this._addrInputField = {};
 	}
 	this._internalId = AjxCore.assignId(this);
 
@@ -2336,13 +2344,16 @@ function(templateId) {
 		toRowId:			ZmId.getViewId(this._view, ZmId.CMP_TO_ROW),
 		toPickerId:			ZmId.getViewId(this._view, ZmId.CMP_TO_PICKER),
 		toInputId:			ZmId.getViewId(this._view, ZmId.CMP_TO_INPUT),
+		toCellId:			ZmId.getViewId(this._view, ZmId.CMP_TO_CELL),
 		ccRowId:			ZmId.getViewId(this._view, ZmId.CMP_CC_ROW),
 		ccPickerId:			ZmId.getViewId(this._view, ZmId.CMP_CC_PICKER),
 		ccInputId:			ZmId.getViewId(this._view, ZmId.CMP_CC_INPUT),
+		ccCellId:			ZmId.getViewId(this._view, ZmId.CMP_CC_CELL),
 		bccRowId:			ZmId.getViewId(this._view, ZmId.CMP_BCC_ROW),
 		bccPickerId:		ZmId.getViewId(this._view, ZmId.CMP_BCC_PICKER),
 		bccInputId:			ZmId.getViewId(this._view, ZmId.CMP_BCC_INPUT),
 		bccToggleId:		ZmId.getViewId(this._view, ZmId.CMP_BCC_TOGGLE),
+		bccCellId:			ZmId.getViewId(this._view, ZmId.CMP_BCC_CELL),
 		subjectRowId:		ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_ROW),
 		subjectInputId:		ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_INPUT),
 		oboRowId:			ZmId.getViewId(this._view, ZmId.CMP_OBO_ROW),
@@ -2353,15 +2364,9 @@ function(templateId) {
 		priorityId:			ZmId.getViewId(this._view, ZmId.CMP_PRIORITY),
 		attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
 		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV),
-		zdndToolTipId:		ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP)
+		zdndToolTipId:		ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP),
+		acAddrBubbles:		this._useAcAddrBubbles
 	};
-
-	if (this._useAcAddrBubbles) {
-		data.acAddrBubbles = true;
-		data.toBubbleHolderDivId = ZmId.getViewId(this._view, ZmId.CMP_TO_BUBBLE_HOLDER_DIV);
-		data.ccBubbleHolderDivId = ZmId.getViewId(this._view, ZmId.CMP_CC_BUBBLE_HOLDER_DIV);
-		data.bccBubbleHolderDivId = ZmId.getViewId(this._view, ZmId.CMP_BCC_BUBBLE_HOLDER_DIV);
-	}
 
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
 };
@@ -2407,19 +2412,16 @@ function(templateId, data) {
 
 		// save field elements
 		this._divEl[type] = document.getElementById(this._divId[type]);
-		var bhdId;
+		var aifId;
 		if (this._useAcAddrBubbles) {
-			bhdId = this._bubbleHolderDivId[inputId] = [data.id, typeStr, "bubble_holder_div"].join("_");
-			this._bubbleAddress[inputId] = [];
-			var bubbleHolderDiv = document.getElementById(bhdId);
-			if (bubbleHolderDiv) {
-				// focus input when holder div is clicked
-				bubbleHolderDiv.onclick = function(id) {
-					return function() {
-						ZmComposeView.onClickBubbleDiv(id);
-					}
-				}(inputId);
+			var aifParams = {
+				autocompleteListView:	this._acAddrSelectList,
+				inputId:				inputId
 			}
+			var aif = this._addrInputField[type] = new ZmAddressInputField(aifParams);
+			aifId = aif._htmlElId;
+			var cellId = [data.id, typeStr, "cell"].join("_");
+			aif.reparentHtmlElement(cellId);
 		}
 
 		// save field control
@@ -2444,7 +2446,7 @@ function(templateId, data) {
 
 				// autocomplete-related handlers
 				if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.isOffline) {
-					this._acAddrSelectList.handle(this._field[type], bhdId);
+					this._acAddrSelectList.handle(this._field[type], aifId);
 				} else {
 					this._setEventHandler(this._fieldId[type], "onKeyUp");
 				}
@@ -2908,26 +2910,18 @@ function() {
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		if (!this._using[type]) { continue; }
-		var input = this._field[type];
+
+		var input = this._field[type], bubbleVal = "";
 		var inputVal = AjxStringUtil.trim(input.value);
-		var val;
 		if (this._useAcAddrBubbles) {
-			var bubbleAddrs = [];
-			var list = this._bubbleAddress[input.id];
-			if (list && list.length) {
-				for (var j = 0, len = list.length; j < len; j++) {
-					bubbleAddrs.push(list[j].address);
-				}
+			var addrInput = this._addrInputField[type];
+			if (addrInput) {
+				bubbleVal = addrInput.getValue();
 			}
-			val = bubbleAddrs.join(AjxEmailAddress.SEPARATOR);
-			var both = [];
-			if (val) { both.push(val); }
-			if (inputVal) { both.push(inputVal); }
-			val = both.join(AjxEmailAddress.SEPARATOR);
 		}
-		else {
-			val = inputVal;
-		}
+		var val = (bubbleVal && inputVal) ? [bubbleVal, inputVal].join(AjxEmailAddress.SEPARATOR) :
+			  								bubbleVal || inputVal;
+
 		if (val.length == 0) { continue; }
 		var result = AjxEmailAddress.parseEmailString(val, type, false);
 		if (result.all.size() == 0) continue;
@@ -3315,31 +3309,4 @@ function() {
 ZmComposeView.prototype.deactivate =
 function() {
 	this._controller.inactive = true;
-};
-
-// height will be adjusted by _acCompHandler
-ZmComposeView.prototype.bubbleAdded =
-function(inputId, bubbleId, address) {
-	this._bubbleAddress[inputId].push({bubbleId:bubbleId, address:address});
-	appCtxt.getKeyboardMgr().grabFocus(inputId);
-};
-
-ZmComposeView.prototype.bubbleRemoved =
-function(inputId, bubbleId) {
-	var list = this._bubbleAddress[inputId];
-	var newList = [];
-	if (list && list.length) {
-		for (var i = 0, len = list.length; i < len; i++) {
-			if (list[i].bubbleId != bubbleId) {
-				newList.push(list[i]);
-			}
-		}
-		this._bubbleAddress[inputId] = newList;
-	}
-	appCtxt.getKeyboardMgr().grabFocus(inputId);
-};
-
-ZmComposeView.onClickBubbleDiv =
-function(inputId) {
-	appCtxt.getKeyboardMgr().grabFocus(inputId);
 };

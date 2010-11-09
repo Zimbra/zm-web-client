@@ -717,7 +717,8 @@ INPUT[type="text"].people_search_input {
 }
 
 .addrBubbleContainer input {
-	border: 0px;
+	border: 0px !important;
+	outline: none !important;
 	width: 100%;
 }
 
@@ -744,7 +745,7 @@ INPUT[type="text"].people_search_input {
 	background-color: @SelC@;
 }
 
-.addrBubble .remove {
+.addrBubble .link {
 	color: #666666;
 	cursor: pointer;
 }

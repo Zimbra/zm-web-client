@@ -696,9 +696,9 @@ ZmId.CMP_ATT_ROW			= "_attachments_row";
 ZmId.CMP_ATT_DIV			= "_attachments_div";
 ZmId.CMP_DND_TOOLTIP        = "_zdnd_tooltip";
 
-ZmId.CMP_TO_BUBBLE_HOLDER_DIV	= "_to_bubble_holder_div";
-ZmId.CMP_CC_BUBBLE_HOLDER_DIV	= "_cc_bubble_holder_div";
-ZmId.CMP_BCC_BUBBLE_HOLDER_DIV	= "_bcc_bubble_holder_div";
+ZmId.CMP_TO_CELL			= "_to_cell";
+ZmId.CMP_CC_CELL			= "_cc_cell";
+ZmId.CMP_BCC_CELL			= "_bcc_cell";
 
 // compose operations
 ZmId.CMP_TO					= "TO";
