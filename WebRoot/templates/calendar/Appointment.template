@@ -998,8 +998,8 @@
                 <td><input type="text" id="${id}_floor" nowrap="" size="30" autocomplete="off"></td>
             </tr>
             <tr>
-                <td align="right">&nbsp;</td>
-                <td colspan=4 align="left"><input type="checkbox" id="${id}_non_working_hrs"><$= ZmMsg.includeNonWorkingHours $></td>
+                <td align="right"><$= ZmMsg.includeLabel $>&nbsp;</td>
+                <td colspan=4 align="left" id="${id}_incSelect"></td>
             </tr>        
         </tbody>
     </table>
