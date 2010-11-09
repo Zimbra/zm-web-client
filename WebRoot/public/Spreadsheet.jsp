@@ -1,3 +1,5 @@
+<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
@@ -52,7 +54,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <title>Zimbra Spreadsheet Prototype</title>
 	<style type="text/css">
 	<!--
-    @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+    @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)});
 	-->
 	</style>
 	<jsp:include page="Resources.jsp">
@@ -67,7 +69,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
       String packages = "Ajax,SpreadsheetALE";
 
       String extraPackages = request.getParameter("packages");
-      if (extraPackages != null) packages += ","+extraPackages;
+      if (extraPackages != null) packages += ","+ BeanUtils.cook(extraPackages);
 
       String pprefix = inDevMode ? "public/jsp" : "js";
       String psuffix = inDevMode ? ".jsp" : "_all.js";

@@ -64,6 +64,8 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 	if (resources == null) {
 		resources = request.getParameter("res");
 	}
+    resources = resources.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;");
+    
 	String query = "v="+vers+(inSkinDebugMode||inDevMode?"&debug=1":"")+localeQs+"&skin="+skin;
 
 %><script type="text/javascript" src="<%=contextPath%>/res/<%=resources%>.js<%=ext%>?<%=query%>"></script>

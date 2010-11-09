@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ page import="java.util.Locale" %>
+<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
@@ -107,12 +108,12 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <title>Zimbra Docs</title>
     <style type="text/css">
         <!--
-        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,docs,images,skin.css?v=<%= vers %><%= inSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,docs,images,skin.css?v=<%= vers %><%= inSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)});
         -->
     </style>
     <jsp:include page="Resources.jsp">
         <jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys" />
-        <jsp:param name="skin" value="${skin}" />
+        <jsp:param name="skin" value="${zm:cook(skin)}" />
     </jsp:include>
     <jsp:include page="Boot.jsp"/>
     <script>
@@ -124,7 +125,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         String packages = "Ajax,Startup1_1,Startup1_2,Startup2,Docs";
 
         String extraPackages = request.getParameter("packages");
-        if (extraPackages != null) packages += ","+extraPackages;
+        if (extraPackages != null) packages += ","+ BeanUtils.cook(extraPackages);
 
         String pprefix = isDevMode ? "public/jsp" : "js";
         String psuffix = isDevMode ? ".jsp" : "_all.js";
