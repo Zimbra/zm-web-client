@@ -930,7 +930,8 @@ function(task) {
 	var restUrl = task.getRestUrl();
 	if (restUrl) {
 		var url = [restUrl, (restUrl.indexOf("?")==-1) ? "?" : "&", "mime=text/plain", "&", "noAttach=1"].join("");
-		window.open(url, "TaskSource", "menubar=yes,resizable=yes,scrollbars=yes");
+		var win = window.open(url, "TaskSource", "menubar=yes,resizable=yes,scrollbars=yes");
+		appCtxt.handlePopupBlocker(win);
 	}
 };
 

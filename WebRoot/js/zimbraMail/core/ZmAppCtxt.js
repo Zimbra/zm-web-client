@@ -1227,26 +1227,27 @@ function(fullVersion, width, height) {
 		args = ["height=", height, ",width=", width, ",location=yes,menubar=yes,resizable=yes,scrollbars=no,status=yes,toolbar=yes"].join("");
 	}
 	var newWin = window.open(url.join(""), "_blank", args);
-
-	// Chrome-specific way to detect popup-blocker (I know, it's ugly as hell isn't it?)
-	if (newWin && AjxEnv.isChrome) {
-		var oldOnload = newWin.onload;
-		newWin.onload = function() {
-			if (oldOnload)
-				oldOnload();
-			setTimeout(function() { // need to halt this for a bit so innerHeight can get in place (otherwise we may display the statusmsg when the window is not actually blocked)
-					if (newWin.innerHeight == 0)
-						appCtxt.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
-				}, 1);
-		};
-	}
-
-	if (!newWin) {
-		this.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
-	} else {
+	this.handlePopupBlocker(newWin);
+	if(newWin) {
 		// add this new window to global list so parent can keep track of child windows!
 		return this.getAppController().addChildWindow(newWin);
 	}
+};
+
+/**
+ * Handle Popup bloker for a given window
+ * @param {Object}	win  A Window object
+ */
+ZmAppCtxt.prototype.handlePopupBlocker =
+function(win) {
+	if (!win) {
+		this.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
+	} else if (win && AjxEnv.isChrome) {
+		setTimeout(function() { 
+					if (win.innerHeight == 0)
+						appCtxt.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
+				}, 50);
+		};
 };
 
 /**
