@@ -279,6 +279,15 @@ function(reset) {
 
 		var mvBounds = this.parent.getBounds();
 
+		/* on IE sometimes the value of top and left is "auto", in which case we get a NaN value here due to parseInt in getLocation. */
+		/* not sure if 0 is the right value we should use in this case, but it seems to work */
+		if (isNaN(mvBounds.x)) {
+			mvBounds.x = 0;
+		}
+		if (isNaN(mvBounds.y)) {
+			mvBounds.y = 0;
+		}
+
 		if (isRight) {
 			var parentHeight = grandParentSize.y;
 			var dvHeight = Math.floor(parentHeight / 3);
