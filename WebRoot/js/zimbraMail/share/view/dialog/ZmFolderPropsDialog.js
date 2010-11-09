@@ -75,11 +75,16 @@ ZmFolderPropsDialog.prototype.popup =
 function(organizer) {
 	this._organizer = organizer;
 	organizer.addChangeListener(this._folderChangeListener);
-
+	var colorCode = 0;
 	if (this._color) {
         var icon = organizer.getIcon(); 
         this._color.setImage(icon);
-        this._color.setValue(organizer.color);
+		if(ZmOrganizer.COLOR_VALUES[organizer.color] && (organizer.rgb != ZmOrganizer.COLOR_VALUES[organizer.color])) {
+			colorCode = organizer.rgb;
+		} else {
+			colorCode = organizer.color;
+		}
+        this._color.setValue(colorCode);
         this._color.setEnabled(organizer.id != ZmFolder.ID_DRAFTS);
 	}
 
@@ -282,7 +287,13 @@ function(event) {
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
 	this._urlEl.innerHTML = organizer.url || "";
 	if (this._color) {
-		this._color.setValue(organizer.color || ZmOrganizer.COLOR_VALUES[organizer.color]);
+		var colorCode = 0;
+		if(ZmOrganizer.COLOR_VALUES[organizer.color] && (organizer.rgb != ZmOrganizer.COLOR_VALUES[organizer.color])) {
+			colorCode = organizer.rgb;
+		} else {
+			colorCode = organizer.color;
+		}
+		this._color.setValue(colorCode);
 		var isVisible = (organizer.type != ZmOrganizer.FOLDER ||
 						 (organizer.type == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)));
 		this._props.setPropertyVisible(this._colorId, isVisible);

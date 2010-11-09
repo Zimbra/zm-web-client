@@ -40,7 +40,12 @@ ZmColorButton.prototype.setImage = function(image, skipMenu) {
 };
 
 ZmColorButton.prototype.setValue = function(color) {
+	var standardColorCode = ZmOrganizer.getStandardColorNumber(color);
+	if(standardColorCode != -1) {
+	 this._color = standardColorCode;
+	} else {
     this._color = color;
+	}
     var image = this.getImage();
     if (image) {
         image = image.replace(/,.*$/,"");

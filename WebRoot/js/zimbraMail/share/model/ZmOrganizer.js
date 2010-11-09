@@ -996,6 +996,28 @@ ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback) {
 };
 
 /**
+ * Returns color number b/w 0-9 for a given color code
+ * 
+ * @param	{String}	color	The color (usually in #43eded format
+ * @return {int} Returns 0-9 for a standard color and returns -1 for custom color
+ */
+ZmOrganizer.getStandardColorNumber =
+function(color) {
+	if (String(color).match(/^#/)) {
+		var len = ZmOrganizer.COLOR_VALUES.length;
+		for(var i =0; i < len; i++) {
+			var currentVal = ZmOrganizer.COLOR_VALUES[i];
+			if(currentVal && currentVal == color) {
+				return i;
+			}
+		}
+	} else if(color <= 9 && color >= 0) {
+		return color;
+	}
+	return -1;
+};
+
+/**
  * Updates the folder. Although it is possible to use this method to change just about any folder
  * attribute, it should only be used to set multiple attributes at once since it
  * has extra overhead on the server.
