@@ -84,7 +84,9 @@ function(slots, id, status, startTime, endTime, fbResult) {
     if(!fbResult[status]) fbResult[status] = [];
 
     for (var i = 0; i < slots.length; i++) {
-        if(startTime >= slots[i].s && endTime  <= slots[i].e) {
+        if(slots[i].s >= startTime && slots[i].e  <= endTime) {
+            fbResult[status].push({s: slots[i].s, e: slots[i].e});
+        }else if(startTime >= slots[i].s && endTime  <= slots[i].e) {
             fbResult[status].push({s: startTime, e: endTime});
         }else if(startTime >= slots[i].s && startTime  <= slots[i].e) {
             fbResult[status].push({s: startTime, e: slots[i].e});            
