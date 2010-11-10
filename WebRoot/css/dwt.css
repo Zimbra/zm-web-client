@@ -705,6 +705,7 @@
 .DwtAlertInfo {
 	@NoticeText@
 	@NoticeContainer-info@
+	max-width:770px;
 }
 
 /* Alert appearance for warning-level message */
