@@ -107,6 +107,65 @@ function(itemDiv, ev) {
     }
 };
 
+ZmTimeSuggestionView.prototype.getToolTipContent =
+function(ev) {
+	var div = this.getTargetItemDiv(ev);
+	if (!div) { return; }
+	var id = ev.target.id || div.id;
+	if (!id) { return ""; }
+
+    var tooltip;
+    var item = this.getItemFromElement(div);
+    if(item) {
+        var params = {item:item, ev:ev, div:div};
+        tooltip = this._getToolTip(params);
+    }
+    return tooltip;
+};
+
+ZmTimeSuggestionView.prototype._getToolTip =
+function(params) {
+    var tooltip, target = params.ev.target, item = params.item;
+
+    if(!item) return;
+
+    //show all unavailable attendees on tooltip
+    if(item.availableUsers < this._totalUsers) {
+
+        //get unavailable attendees from available & total attendees list
+        var freeUsers = [], busyUsers = [], attendee;
+        for (var i = item.attendees.length; --i >=0;) {
+            attendee = this._itemsByIdx[item.attendees[i]];
+            freeUsers[attendee] = true;
+        }
+
+        var attendees = this._editView.getAttendees(ZmCalBaseItem.PERSON).getArray();
+        var attEmail;
+
+        var organizer = this._editView.getOrganizer();
+        var orgEmail = organizer.getEmail();
+        if (orgEmail instanceof Array) {
+            orgEmail = orgEmail[0];
+        }
+        if(!freeUsers[orgEmail]) {
+            busyUsers.push(organizer.getAttendeeText());
+        }
+
+        for (var i = 0; i < attendees.length; i++) {
+            attendee = attendees[i];
+            attEmail = attendees[i].getEmail();
+            if (attEmail instanceof Array) {
+                attEmail = attEmail[0];
+            }
+            if(!freeUsers[attEmail]) {
+                busyUsers.push(attendee.getAttendeeText());
+            }
+        }
+
+        if(busyUsers.length) tooltip = AjxTemplate.expand("calendar.Appointment#SuggestionTooltip", {attendees: busyUsers})
+    }
+    return tooltip;
+};
 
 ZmTimeSuggestionView.prototype.switchLocationSelect =
 function(item, id, ev) {

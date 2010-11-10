@@ -1004,7 +1004,18 @@
             <tr>
                <td align="right">&nbsp;</td>
                <td colspan=4 align="left"><input type="checkbox" id="${id}_green_suggestions"><$= ZmMsg.showOnlyGreenSuggestions $></td>
-           </tr>        
+            </tr>        
         </tbody>
     </table>
+</template>
+
+<template id='calendar.Appointment#SuggestionTooltip'>
+    <b><$= ZmMsg.busy $></b>
+    <$
+        for (var i=0; i < data.attendees.length; i++) {
+    $>
+        <br><span class="suggestion_tooltip_attendee"><$= AjxStringUtil.htmlEncode(data.attendees[i]) $></span>
+    <$
+        }
+    $>
 </template>

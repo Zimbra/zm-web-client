@@ -562,6 +562,11 @@ function() {
       return this._prefDialog ? (this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD) == 'true') : false;
 };
 
+ZmScheduleAssistantView.prototype.getAttendees =
+function() {
+    return this._attendees;
+};
+
 ZmScheduleAssistantView.prototype.computeAvailability =
 function(startTime, endTime, params) {
     

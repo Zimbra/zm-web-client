@@ -1579,6 +1579,10 @@ line-height:normal;
 	font-weight:bold;
 }
 
+.suggestion_tooltip_attendee {
+    padding: 3px;
+}
+
 .calendar_date_search {
 	height: 32px;
 	margin-right: 5px;
