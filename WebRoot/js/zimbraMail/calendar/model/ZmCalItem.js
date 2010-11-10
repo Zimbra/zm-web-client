@@ -1115,11 +1115,15 @@ function(message) {
             // NOTE: as "EMAIL" alarms but we distinguish between them
             // NOTE: upon loading.
             if (action == ZmCalItem.ALARM_EMAIL) {
-                var email = AjxUtil.get(alarmInst, "at", 0, "a");
-                if (email == appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS)) {
-                    action = ZmCalItem.ALARM_DEVICE_EMAIL;
+                var emails = alarmInst.at;
+                if (!emails) continue;
+                for (var j = 0; j < emails.length; j++) {
+                    var email = emails[j].a;
+                    if (email == appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS)) {
+                        action = ZmCalItem.ALARM_DEVICE_EMAIL;
+                    }
+                    this.addReminderAction(action);
                 }
-                this.addReminderAction(action);
             }
 		}
 	}
@@ -1321,27 +1325,36 @@ function(soapDoc, comp) {
 	var time = useAbs ? this._reminderAbs : this._reminderMinutes;
 	if (!time) { return; }
 
+    var emailAlarmNode, email;
 	for (var i = 0, len = this.alarmActions.size(); i < len; i++) {
 		var action = this.alarmActions.get(i);
 		if (action == ZmCalItem.ALARM_EMAIL) {
-			var email = appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS);
+			email = appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS);
 			if (!email) { continue; }
 		}
         if (action == ZmCalItem.ALARM_DEVICE_EMAIL) {
-            var email = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS);
+            email = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS);
             if (!email) { continue; }
             // NOTE: treat device email alarm as a standard email alarm
             action = ZmCalItem.ALARM_EMAIL;
         }
-		var alarm = soapDoc.set("alarm", null, comp);
-		alarm.setAttribute("action", action);
-		var trigger = soapDoc.set("trigger", null, alarm);
-		this._setReminderUnits(soapDoc, trigger, time);
+        var isEmailAlarm = action == ZmCalItem.ALARM_EMAIL;
+        var alarm = isEmailAlarm && emailAlarmNode;
+        if (!alarm) {
+            alarm = soapDoc.set("alarm", null, comp);
+            alarm.setAttribute("action", action);
+            var trigger = soapDoc.set("trigger", null, alarm);
+            this._setReminderUnits(soapDoc, trigger, time);
+            this._addXPropsToAlarm(soapDoc, alarm);
+            if (isEmailAlarm) {
+                emailAlarmNode = alarm;
+            }
+        }
 		if (email) {
 			var at = soapDoc.set("at", null, alarm);
 			at.setAttribute("a", email);
+            email = null;
 		}
-		this._addXPropsToAlarm(soapDoc, alarm);
 	}
 };
 
