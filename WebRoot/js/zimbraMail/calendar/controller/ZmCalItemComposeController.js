@@ -516,6 +516,7 @@ function(ev) {
 // Cancel button was pressed
 ZmCalItemComposeController.prototype._cancelListener =
 function(ev) {
+	this._action = ZmCalItemComposeController.SAVE_CLOSE;
 	this._app.popView();
 };
 
