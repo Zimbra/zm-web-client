@@ -165,6 +165,8 @@ function(text) {
 ZmTimeSuggestionPrefDialog.prototype.getPreferenceFieldValue =
 function(id) {
     var field = this._prefFields[id];
+    if(!field) return;
+
     if(id == ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) {
         return field.getValue();
     }else if(id == ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD){
@@ -177,6 +179,8 @@ function(id) {
 ZmTimeSuggestionPrefDialog.prototype.setPreferenceFieldValue =
 function(id, value) {
     var field = this._prefFields[id];
+    if(!field) return;
+    
     if(id == ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) {
         field.setSelectedValue(value);
     }else if(id == ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD){
