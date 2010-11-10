@@ -1539,7 +1539,7 @@ function() {
 			content = bodyPart.content;
 			var msgRef = this;
 			content.replace(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
-				var attach = msgRef.findInlineAtt("<" + cid + ">");
+				var attach = msgRef.findInlineAtt("<" + AjxStringUtil.urlComponentDecode(cid)  + ">");
 				if (attach) {
 					attach.foundInMsgBody = true;
 				}
