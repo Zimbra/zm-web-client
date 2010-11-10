@@ -46,7 +46,7 @@ ZmTimeSuggestionPrefDialog.prototype.constructor = ZmTimeSuggestionPrefDialog;
 // Constants
 
 ZmTimeSuggestionPrefDialog.META_DATA_KEY = "MD_LOCATION_SEARCH_PREF";
-ZmTimeSuggestionPrefDialog.PREF_FIELDS = ["name", "site", "capacity", "building", "desc", "floor", "working_hrs_pref"];
+ZmTimeSuggestionPrefDialog.PREF_FIELDS = ["name", "site", "capacity", "building", "desc", "floor", "green_suggestions", "working_hrs_pref"];
 
 // corresponding attributes for search command
 ZmTimeSuggestionPrefDialog.SF_ATTR = {};
@@ -74,6 +74,7 @@ ZmTimeSuggestionPrefDialog.INCLUDE_OPTIONS = [
 ];
 
 ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD = 'working_hrs_pref';
+ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD = 'green_suggestions';
 
 // Public methods
 
@@ -136,12 +137,10 @@ function(text) {
     for(var i=0; i<ZmTimeSuggestionPrefDialog.PREF_FIELDS.length; i++) {
         id = ZmTimeSuggestionPrefDialog.PREF_FIELDS[i];
         this._prefFields[id] = field = document.getElementById(this.getHTMLElId() + "_" + id);
-        if(id != ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) {
-            this._prefs[id] = field.value;
-        }else {
-            this._prefs[id] = this._includeSelect.getValue();
-            this._prefFields[id] = this._includeSelect;
+        if(id == ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) {
+            field = this._prefFields[id] = this._includeSelect;
         }
+        this._prefs[id] = this.getPreferenceFieldValue(id);
     }
 };
 
@@ -159,12 +158,31 @@ ZmTimeSuggestionPrefDialog.prototype.readPrefs =
 function(text) {
     var field;
     for(var id in this._prefFields) {
-        field = this._prefFields[id];
-        if(id != ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) {
-            this._prefs[id] = field.value;
-        }else {
-            this._prefs[id] = field.getValue();
-        }
+        this._prefs[id] = this.getPreferenceFieldValue(id)
+    }
+};
+
+ZmTimeSuggestionPrefDialog.prototype.getPreferenceFieldValue =
+function(id) {
+    var field = this._prefFields[id];
+    if(id == ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) {
+        return field.getValue();
+    }else if(id == ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD){
+        return field.checked ? 'true' : 'false';
+    }else {
+        return field.value;
+    }
+};
+
+ZmTimeSuggestionPrefDialog.prototype.setPreferenceFieldValue =
+function(id, value) {
+    var field = this._prefFields[id];
+    if(id == ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) {
+        field.setSelectedValue(value);
+    }else if(id == ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD){
+        field.checked = (value == 'true');
+    }else {
+        field.value = value || "";
     }
 };
 
@@ -183,11 +201,7 @@ function(metadataResponse) {
     for (name in objPrefs) {
         if(name && objPrefs[name]) {
             this._prefs[name] = objPrefs[name];
-            if(name != ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) {
-                this._prefFields[name].value = this._prefs[name] || "";
-            }else {
-                this._prefFields[name].setSelectedValue(this._prefs[name]); 
-            }
+            this.setPreferenceFieldValue(name, this._prefs[name]);
         }
     }
 };

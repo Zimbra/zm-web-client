@@ -303,7 +303,7 @@ function(callback, sortBy) {
     if(this._prefDialog) {
         for (var i = 0; i < ZmTimeSuggestionPrefDialog.PREF_FIELDS.length; i++) {
             var sf = ZmTimeSuggestionPrefDialog.PREF_FIELDS[i];
-            if(sf == ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) continue;
+            if(sf == ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD || sf == ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD) continue;
             value = AjxStringUtil.trim(this._prefDialog.getPreference(sf));
             if (value.length) {
                 var attr = ZmTimeSuggestionPrefDialog.SF_ATTR[sf];
@@ -557,6 +557,11 @@ function() {
       return this._prefDialog ? this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD) : ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS;
 };
 
+ZmScheduleAssistantView.prototype.isShowOnlyGreenSuggestions =
+function() {
+      return this._prefDialog ? (this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD) == 'true') : false;
+};
+
 ZmScheduleAssistantView.prototype.computeAvailability =
 function(startTime, endTime, params) {
     
@@ -622,8 +627,11 @@ function(startTime, endTime, params) {
 	}
 
     if(!params.miniCalSuggestions && fbInfo.availableUsers > 0) {
-        this._fbStat.add(fbInfo);
-        this._fbStatMap[key] = fbInfo;
+        var showOnlyGreenSuggestions = this.isShowOnlyGreenSuggestions();
+        if(!showOnlyGreenSuggestions || (fbInfo.availableUsers == this._totalUsers)) {
+            this._fbStat.add(fbInfo);
+            this._fbStatMap[key] = fbInfo;            
+        }
     }
 
     return fbInfo;
