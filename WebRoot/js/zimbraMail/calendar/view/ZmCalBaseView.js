@@ -83,6 +83,7 @@ ZmCalBaseView.bodyColorDelta = .5;
 ZmCalBaseView.deepenColorAdjustment = .9;
 ZmCalBaseView.darkThreshold = (256 * 3) / 2;
 ZmCalBaseView.deepenThreshold = .3;
+ZmCalBaseView.WORK_HOURS_TIME_FORMAT = "HHmm";
 
 ZmCalBaseView._getColors = function(color) {
 	// generate header and body colors
@@ -163,7 +164,8 @@ function(wHrsString) {
         hourMin,
         startDayIdx,
         endDayIdx,
-        curDayIdx = endDate.getDay();
+        curDayIdx = endDate.getDay(),
+        tf = new AjxDateFormat(ZmCalBaseView.WORK_HOURS_TIME_FORMAT);
 
     //Helper inner functions, these functions takes the advantage of the fact that wHrs is available in local scope
     function isWorkingDay(idx) {
@@ -230,7 +232,7 @@ function(wHrsString) {
 
             if(startDayIdx == curDayIdx && endDayIdx == curDayIdx) {
                 //Case 1 working time starts current day and ends on the current day -- IDEAL one :)
-                setWorkingDay(idx, startDate.getHours() + "" + startDate.getMinutes(), endDate.getHours() + "" + endDate.getMinutes());
+                setWorkingDay(idx, tf.format(startDate), tf.format(endDate));
             }
             else if((endDayIdx == 0 && startDayIdx == 6) ||
                     (startDayIdx < curDayIdx  && endDayIdx == curDayIdx)) {
@@ -239,8 +241,8 @@ function(wHrsString) {
                 if(startDayIdx < 0) {
                    startDayIdx = 6;
                 }
-                setWorkingDay(startDayIdx, startDate.getHours() + "" + startDate.getMinutes(), "2400");
-                setWorkingDay(idx, "0000", endDate.getHours() + "" + endDate.getMinutes());
+                setWorkingDay(startDayIdx, tf.format(startDate), "2400");
+                setWorkingDay(idx, "0000", tf.format(endDate));
             }
             else if((startDayIdx == 6 && endDayIdx == 0) || 
                     (startDayIdx == curDayIdx  && endDayIdx > curDayIdx)) {
@@ -249,15 +251,15 @@ function(wHrsString) {
                 if(endDayIdx > 6) {
                    endDayIdx = 0; 
                 }
-                setWorkingDay(endDayIdx, "0000", endDate.getHours() + "" + endDate.getMinutes());
-                setWorkingDay(idx, startDate.getHours() + "" + startDate.getMinutes(), "2400");
+                setWorkingDay(endDayIdx, "0000", tf.format(endDate));
+                setWorkingDay(idx, tf.format(startDate), "2400");
             }
             else if(startDayIdx < curDayIdx &&
                     endDayIdx < curDayIdx &&
                     startDayIdx == endDayIdx) {
                 //EDGE CASE 1: working time starts and ends on the prev day
                 startDayIdx = idx-1;
-                setWorkingDay(startDayIdx, startDate.getHours() + "" + startDate.getMinutes(), endDate.getHours() + "" + endDate.getMinutes());
+                setWorkingDay(startDayIdx, tf.format(startDate), tf.format(endDate));
                 if(!isWorkingDay(idx)) {
                     setNonWorkingDay(idx);
                 }
@@ -268,7 +270,7 @@ function(wHrsString) {
                     startDayIdx == endDayIdx) {
                 //EDGE CASE 2: working time starts and ends on the next day
                 endDayIdx = idx+1;
-                setWorkingDay(endDayIdx, startDate.getHours() + "" + startDate.getMinutes(), endDate.getHours() + "" + endDate.getMinutes());
+                setWorkingDay(endDayIdx, tf.format(startDate), tf.format(endDate));
                 if(!isWorkingDay(idx)) {
                     setNonWorkingDay(idx);
                 }
