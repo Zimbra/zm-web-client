@@ -32,7 +32,6 @@
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
-<c:if test="${empty param.show and ua.isiPad == true}"> 
 <form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doContactAction" value="1"/>
@@ -45,6 +44,7 @@
             <mo:ipadToolbar  app="${param.st}" urlTarget="${context_url}" context="${context}" keys="false" mailbox="${mailbox}"/> 
         </c:otherwise>
     </c:choose>
+<c:if test="${empty param.show and ua.isiPad == true}">
     <div class="wrap-dlist" id="wrap-dlist-view">
     <div class="tbl dlist" id="dlist-view">
 </c:if>    
