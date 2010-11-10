@@ -49,14 +49,14 @@ ZmCalViewMgr = function(parent, controller, dropTgt) {
     }
 	this._viewFactory[ZmId.VIEW_CAL_APPT]		= ZmApptView;
     this._viewFactory[ZmId.VIEW_CAL_TRASH]		= ZmApptListView;
-
-    this._createHtml();
 };
 
 ZmCalViewMgr.prototype = new DwtComposite;
 ZmCalViewMgr.prototype.constructor = ZmCalViewMgr;
 
 ZmCalViewMgr._SEP = 5;
+
+ZmCalViewMgr.MIN_CONTENT_SIZE = 100;
 
 ZmCalViewMgr.prototype.toString = 
 function() {
@@ -157,14 +157,37 @@ ZmCalViewMgr.prototype._createSubContent = function() {
     this._subContentInitialized = true;
 
     this._sash = new DwtSash({parent:this,posStyle:Dwt.ABSOLUTE_STYLE,style:DwtSash.VERTICAL_STYLE});
+    this._sash.registerCallback(this._handleSashAdjustment, this);
     this._list = this.createView(ZmId.VIEW_CAL_TRASH);
     this._list.set(new AjxVector([]));
 
-    this._subContentEl.appendChild(this._sash.getHtmlElement());
-    this._subContentEl.appendChild(this._list.getHtmlElement());
-
     this._populateTrashListView(this._list);
     return this._list;
+};
+
+ZmCalViewMgr.prototype._handleSashAdjustment = function(delta) {
+    // sash moved too far up
+    var sashLocation = this._sash.getLocation();
+    if (sashLocation.y + delta < ZmCalViewMgr.MIN_CONTENT_SIZE) {
+        delta = ZmCalViewMgr.MIN_CONTENT_SIZE - sashLocation.y;
+    }
+
+    // sash moved to0 far down
+    else {
+        var size = this.getSize();
+        if (sashLocation.y + delta > size.y - ZmCalViewMgr.MIN_CONTENT_SIZE) {
+            delta = size.y - ZmCalViewMgr.MIN_CONTENT_SIZE - sashLocation.y;
+        }
+    }
+
+    // adjust sub-content
+    if (delta != 0) {
+        var listSize = this._list.getSize();
+        this._list.setSize(listSize.x, listSize.y - delta);
+        this._layoutControls(true);
+    }
+
+    return delta;
 };
 
 ZmCalViewMgr.prototype._populateTrashListView = function(listView) {
@@ -238,42 +261,49 @@ function(viewName) {
 
 ZmCalViewMgr.prototype._layout =
 function() {
-    var size = this.getSize();
-
     // create sub-content, if needed
     var showSubContent = this._subContentShown;
     if (showSubContent && !this._subContentInitialized) {
-        Dwt.setSize(this._contentEl, null, 2 * size.y / 3);
-        Dwt.setSize(this._subContentEl, null, size.y / 3);
         this._createSubContent();
+
+        // NOTE: The list maintains its size so we can toggle back and forth
+        var size = this.getSize();
+        this._list.setSize(null, size.y / 3);
     }
 
     // show sub-content
-    Dwt.setVisible(this._subContentEl, showSubContent);
     if (this._sash) {
         this._sash.setVisible(showSubContent);
         this._list.setVisible(showSubContent);
     }
 
-    // size sub-content
-    var contentWidth = size.x;
-    var contentHeight = size.y;
-    if (showSubContent) {
-        var subContentHeight = Dwt.getSize(this._subContentEl).y;
-        var sashHeight = this._sash.getSize().y;
+    // layout the controls
+    this._layoutControls();
+};
 
-        this._sash.setBounds(0, 0, contentWidth, sashHeight);
-        this._list.setBounds(0, sashHeight, contentWidth, subContentHeight - sashHeight);
+ZmCalViewMgr.prototype._layoutControls = function(skipSash) {
+    // size sub-content
+    var size = this.getSize();
+    var contentHeight = size.y;
+    if (this._subContentShown) {
+        var listSize = this._list.getSize();
+        var sashSize = this._sash.getSize();
+        var subContentHeight = listSize.y + sashSize.y;
 
         contentHeight -= subContentHeight;
+
+        if (!skipSash) {
+            this._sash.setBounds(0, contentHeight, size.x, sashSize.y);
+        }
+        this._list.setBounds(0, contentHeight+sashSize.y, size.x, listSize.y);
     }
 
     // size content
     var view = this._views[this._currentViewName];
-    view.setBounds(0, 0, contentWidth, contentHeight);
+    view.setBounds(0, 0, size.x, contentHeight);
 
     //need to reset layout for time view renderings
-    if(view instanceof ZmCalBaseView) view.layoutView();    
+    if (view instanceof ZmCalBaseView) view.layoutView();
 };
 
 ZmCalViewMgr.prototype._controlListener =
@@ -307,14 +337,4 @@ function(ev) {
 	if (this.isListenerRegistered(DwtEvent.DATE_RANGE)) {
 		this.notifyListeners(DwtEvent.DATE_RANGE, ev);
 	}
-};
-
-ZmCalViewMgr.prototype._createHtml = function(templateId) {
-    this._createHtmlFromTemplate(templateId||this.TEMPLATE, {id:this.getHTMLElId()});
-};
-
-ZmCalViewMgr.prototype._createHtmlFromTemplate = function(templateId, data) {
-    DwtComposite.prototype._createHtmlFromTemplate.apply(this, arguments);
-    this._contentEl = document.getElementById(data.id+"_content");
-    this._subContentEl = document.getElementById(data.id+"_subcontent");
 };

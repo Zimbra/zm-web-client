@@ -226,8 +226,3 @@
 		</td>
 	</tr>
 </template>
-
-<template id='calendar.Calendar#ZmCalViewMgr'>
-    <div id='${id}_content' style='position:relative;width:100%;height:100%'></div>
-    <div id='${id}_subcontent' style='position:relative;height:50%;display:none;'></div>
-</template>
