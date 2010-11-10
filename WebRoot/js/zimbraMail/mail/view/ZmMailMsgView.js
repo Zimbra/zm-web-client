@@ -142,7 +142,8 @@ function() {
 		this._objectManager.reset();
 	}
 	this.setScrollWithIframe(this._scrollWithIframe);
-    this._resetTrustedSenders();
+	this._resetTrustedSenders();
+	this.focus(); // Re-grab focus
 };
 
 ZmMailMsgView.prototype.preventSelection =
