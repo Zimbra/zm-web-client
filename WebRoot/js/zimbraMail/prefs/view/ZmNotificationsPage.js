@@ -510,6 +510,12 @@ ZmNotificationsPageForm.prototype._handleSendCodeResponse = function(resp) {
 
     this.setValue("DEVICE_EMAIL_CODE_STATUS_VALUE", ZmNotificationsPageForm.PENDING);
     this.update();
+
+    var dialog = appCtxt.getMsgDialog();
+    var email = appCtxt.get(ZmSetting.USERNAME);
+    var message = AjxMessageFormat.format(ZmMsg.deviceEmailNotificationsVerificationCodeSendNote, [email]);
+    dialog.setMessage(message);
+    dialog.popup();
 };
 
 ZmNotificationsPageForm.prototype._handleRegionSelection = function(event) {
