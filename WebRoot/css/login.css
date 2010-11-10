@@ -191,7 +191,7 @@ FORM {
 .LoginScreen #ZLoginNotice {
 	bottom:3px;
 	color:#FFF;
-	font-size:10px;
+	font-size:11px;
 	position:absolute;
 	text-align:center;
 	width:100%;
@@ -205,7 +205,7 @@ FORM {
 }
 .LoginScreen .copyright {
 	color: @darken(AppC,50)@; 
-	font-size:9px;
+	font-size:11px;
 	margin:13px 0px 3px;
 	text-align:center;
 }
