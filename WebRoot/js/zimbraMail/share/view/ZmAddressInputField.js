@@ -73,10 +73,15 @@ function(address, match) {
 
 	this._bubble[bubbleId] = bubble;
 	this._addresses.push(address);
-	this._addressHash[bubbleId] = address;
+	this._addressHash[address] = true;
+	this._bubbleAddress[bubbleId] = address;
 
 	var expandLinkText = "";
 	var style = "display:inline-block;cursor:pointer;";
+	if (AjxEnv.isIE) {
+		// hack - IE won't display block elements inline via inline-block
+		style = style + "*display:inline;zoom:1;";
+	}
 	if (match && match.isDL) {
 		this._dlAddress[bubbleId] = match.email;
 		var expandLinkId = bubbleId + "_expand";
@@ -101,9 +106,9 @@ function(address, match) {
  */
 ZmAddressInputField.prototype.clear =
 function() {
-	var div = this._holder;
-	while (div && div.firstChild) {
-		div.removeChild(div.firstChild);
+
+	for (var id in this._bubble) {
+		this.removeBubble(id);
 	}
 	this._reset();
 };
@@ -113,7 +118,37 @@ function() {
  */
 ZmAddressInputField.prototype.getValue =
 function() {
-	return this._addresses.join(this._separator);
+
+	var list = [].concat(this._addresses);
+	if (this._input.value) {
+		list.push(this._input.value);
+	}
+	return list.join(this._separator);
+};
+
+/**
+ * Parses the given text into email addresses, and adds a bubble for each one
+ * that we don't already have. Any part that doesn't parse is left in the input.
+ *
+ * @param {string}	text	email addresses
+ */
+ZmAddressInputField.prototype.setValue =
+function(text) {
+
+	var parsed = AjxEmailAddress.parseEmailString(text);
+	var addrs = parsed.good.getArray();
+	for (var i = 0, len = addrs.length; i < len; i++) {
+		var addr = addrs[i].toString();
+		if (!this._addressHash[addr]) {
+			this.add(addr);
+		}
+	}
+	if (parsed.bad && parsed.bad.size()) {
+		this._input.value = parsed.bad.toString(AjxEmailAddress.SEPARATOR);
+	}
+	else {
+		this._input.value = "";
+	}
 };
 
 /**
@@ -167,11 +202,40 @@ ZmAddressInputField.onClick =
 function(ev) {
 
 	var bubble = DwtUiEvent.getTarget(ev);
-	if (!(bubble && bubble.tagName && bubble.tagName.toLowerCase() == "span")) { return; }
-
-	var addrInput = DwtControl.ALL_BY_ID[bubble._aifId];
+	var addrInput = bubble && DwtControl.ALL_BY_ID[bubble._aifId];
 	if (addrInput) {
 		addrInput.setSelected(bubble.id);
+	}
+};
+
+ZmAddressInputField.onPaste =
+function(ev) {
+
+	var input = DwtUiEvent.getTarget(ev);
+	var addrInput = input && DwtControl.ALL_BY_ID[input._aifId];
+	if (addrInput) {
+		// give browser time to update input - easier than dealing with clipboard
+		AjxTimedAction.scheduleAction(new AjxTimedAction(addrInput, addrInput.handlePaste), 100);
+	}
+};
+
+ZmAddressInputField.prototype.handlePaste =
+function() {
+
+	var text = this._input.value;
+	if (text) {
+		this.setValue(text);
+	}
+};
+
+// focus input when holder div is clicked
+ZmAddressInputField.onHolderClick =
+function(ev) {
+
+	var holder = DwtUiEvent.getTarget(ev);
+	var addrInput = holder && DwtControl.ALL_BY_ID[holder._aifId];
+	if (addrInput) {
+		appCtxt.getKeyboardMgr().grabFocus(addrInput._inputId);
 	}
 };
 
@@ -188,9 +252,12 @@ function(bubbleId) {
 		bubble.parentNode.removeChild(bubble);
 	}
 
-	AjxUtil.arrayRemove(this._addresses, this._addressHash[bubbleId]);
-	delete this._addressHash[bubbleId];
+	var addr = this._bubbleAddress[bubbleId];
+	AjxUtil.arrayRemove(this._addresses, addr);
+	delete this._bubbleAddress[bubbleId];
+	this._bubble[bubbleId] = null;
 	delete this._bubble[bubbleId];
+	delete this._addressHash[addr];
 	if (bubbleId == this._selectedBubbleId) {
 		this._selectedBubbleId = null;
 	}
@@ -243,6 +310,19 @@ function(bubbleId, email) {
 	}
 };
 
+ZmAddressInputField.prototype.getInputElement =
+function() {
+
+	return this._input;
+};
+
+ZmAddressInputField.prototype.setEnabled =
+function(enabled) {
+
+	DwtControl.prototype.setEnabled.call(this, enabled);
+	this._input.disabled = !enabled;
+};
+
 ZmAddressInputField.prototype._initialize =
 function(params) {
 
@@ -255,21 +335,19 @@ function(params) {
 	this._createHtmlFromTemplate(params.templateId || this.TEMPLATE, data);
 
 	this._holder = document.getElementById(this._holderId);
+	this._holder._aifId = this._htmlElId;
 	this._input = document.getElementById(this._inputId);
 
-	// focus input when holder div is clicked
-	// TODO - change to regular handler, map holder ID to input ID
-	this._holder.onclick = function(id) {
-		return function() {
-			appCtxt.getKeyboardMgr().grabFocus(id);
-		}
-	}(this._inputId);
+	Dwt.setHandler(this._holder, DwtEvent.ONCLICK, ZmAddressInputField.onHolderClick);
+	Dwt.setHandler(this._input, DwtEvent.ONPASTE, ZmAddressInputField.onPaste);
 };
 
 ZmAddressInputField.prototype._reset =
 function() {
-	this._bubble = {};
-	this._addresses = [];
-	this._addressHash = {};
-	this._dlAddress = {};
+
+	this._bubble		= {};	// bubbles by bubble ID
+	this._addresses		= [];	// ordered address list
+	this._addressHash	= {};	// used addresses, so we can check for dupes
+	this._bubbleAddress	= {};	// addresses by bubble ID
+	this._dlAddress		= {};	// DL addresses by bubble ID, for expanding
 };

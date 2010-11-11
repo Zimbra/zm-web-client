@@ -769,7 +769,7 @@ function(text, match) {
 		var addrInput = DwtControl.ALL_BY_ID[this._element._aifId];
 		if (addrInput) {
 			addrInput.add(text, match);
-			el = addrInput._holder;
+			el = addrInput._input;
 		}
 	}
 	else {

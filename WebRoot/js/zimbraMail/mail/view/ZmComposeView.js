@@ -2386,12 +2386,9 @@ function(templateId, data) {
 			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
 			compCallback:	(new AjxCallback(this, this._acCompHandler)),
 			keyUpCallback:	(new AjxCallback(this, this._acKeyupHandler)),
-			options:		{addrBubbles:this._useAcAddrBubbles}
+			options:		{addrBubbles:this._useAcAddrBubbles},
+			parentView:		this
 		};
-		if (this._useAcAddrBubbles) {
-			params.matchValue = ZmAutocomplete.AC_VALUE_FULL;
-			params.parentView = this;
-		}
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 

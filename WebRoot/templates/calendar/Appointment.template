@@ -11,7 +11,7 @@
                             <col width='65' />
                             <col id='${id}_labelColumn' width='60'/>
                             <col/>
-                            <col width='90'/>
+                            <col width='100'/>
                         </colgroup>
                         <tr id='${id}_invitemsg_container' style='display:none;'>
                             <td width="1%" align="right" id="${id}_invitemsgicon"><$= AjxImg.getImageHtml("Information") $></td>
