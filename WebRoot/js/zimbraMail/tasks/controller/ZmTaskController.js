@@ -63,7 +63,7 @@ function(attId) {
 };
 
 ZmTaskController.prototype._handleResponseSave =
-function(calItem) {
+function(calItem, result) {
 	ZmCalItemComposeController.prototype._handleResponseSave.call(this, calItem);
 
 	// XXX: null out message so we re-fetch task next time its opened
@@ -73,7 +73,9 @@ function(calItem) {
 
     //Cache the item for further processing
     calItem.cache();
-
+    //need to set rev,ms for next soap request
+    calItem.setFromSavedResponse(result);
+    
 	appCtxt.setStatusMsg(ZmMsg.taskSaved);
     if(calItem.alarm == true) {
         this._app.getReminderController().refresh();
