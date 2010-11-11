@@ -91,7 +91,9 @@ function(parent, type, id) {
 	}
 
     parent.enable(ZmOperation.EMPTY_FOLDER,((folder.numTotal > 0) || (folder.children && (folder.children.size() > 0))));
-    parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(id==ZmOrganizer.ID_TRASH);
+	var isTrash = id == ZmOrganizer.ID_TRASH;
+	parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(isTrash);
+	parent.enable(ZmOperation.EDIT_PROPS, !isTrash);
     parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);
 
 
@@ -101,7 +103,8 @@ function(parent, type, id) {
 	}
 
 	// we always enable sharing in case we're in multi-mbox mode
-	this._resetButtonPerSetting(parent, ZmOperation.SHARE_TASKFOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
+	// But no sharing for trash folder
+	this._resetButtonPerSetting(parent, ZmOperation.SHARE_TASKFOLDER, !isTrash && appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
 
 ZmTaskTreeController.prototype._getAllowedSubTypes =
