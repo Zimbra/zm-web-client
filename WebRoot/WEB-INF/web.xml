@@ -326,18 +326,6 @@
         /opt/zimbra/zimlets-deployed/_dev/${name}/${name}
       </param-value>
     </init-param>
-      <init-param>
-        <description>
-          The temp directory of the resource cache. The servlet creates
-          a "uistrings" sub-directory in the specified directory. So you
-          should NOT append that to the directory.
-          NOTE: The special string "${webapp}" can be used to specify
-          the webapp/zimbra/ directory. It should ONLY be used at the
-          beginning of the parameter value.
-        </description>
-        <param-name>resource-cache-dir</param-name>
-        <param-value>${webapp}/../../work/resource-cache</param-value>
-      </init-param>
   </servlet>
 
   <servlet>
