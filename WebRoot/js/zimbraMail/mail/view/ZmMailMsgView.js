@@ -1040,6 +1040,8 @@ function(msg, container, callback) {
 		}
 	}
 
+	var emailZimletEnabled = Boolean(appCtxt.getZimletMgr().getZimletByName("com_zimbra_email"));
+
 	var participants = [];
 	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
@@ -1051,8 +1053,8 @@ function(msg, container, callback) {
 			var parts = [];
 			for (var j = 0; j < addrs.length; j++) {
 				if (j > 0) {
-//					parts[idx++] = AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR);
-					parts[idx++] = " "; // no need for semicolon now that we use addr bubbles
+					// no need for semicolon if we're showing addr bubbles
+					parts[idx++] = emailZimletEnabled ? " " : AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR);
 				}
 
 				var email = addrs[j];
