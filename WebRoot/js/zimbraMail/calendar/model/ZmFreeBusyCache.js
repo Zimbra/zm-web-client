@@ -303,7 +303,9 @@ function(slots, id, status, startTime, endTime, whResult) {
     if(!whResult[status]) whResult[status] = [];
 
     for (var i = 0; i < slots.length; i++) {
-        if(slots[i].s >= startTime && slots[i].e <= endTime) {
+        if(startTime >= slots[i].s && endTime <= slots[i].e) {
+            whResult[status].push({s: startTime, e: endTime});
+        }else if(slots[i].s >= startTime && slots[i].e <= endTime) {
             whResult[status].push({s: slots[i].s, e: slots[i].e});
         }else if(slots[i].s >= startTime && slots[i].s  <= endTime) {
             whResult[status].push({s: slots[i].s, e: endTime});
@@ -313,4 +315,21 @@ function(slots, id, status, startTime, endTime, whResult) {
     };
 
     if(whResult[status].length == 0) whResult[status] = null;
+};
+
+/**
+ * converts working hours in different time base to required or current time base
+ * this is done due to the fact that working hrs pattern repeat everyweek and
+ * working hours are not fetched for every date change to optimize client code
+ * @param slot  {object} working hrs slot with start and end time in milliseconds
+ * @param relativeDate {date} optional date object relative to which the slot timings are converted
+ */
+ZmFreeBusyCache.prototype.convertWorkingHours =
+function(slot, relativeDate) {
+    relativeDate = relativeDate || new Date();
+    var slotStartDate = new Date(slot.s);
+    var slotEndDate = new Date(slot.e);
+    var dur = slot.e - slot.s;
+    slot.s = (new Date(relativeDate.getTime())).setHours(slotStartDate.getHours(), slotStartDate.getMinutes(), 0, 0);
+    slot.e = slot.s + dur;
 };

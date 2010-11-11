@@ -472,9 +472,15 @@ function(params) {
         var acct = (appCtxt.multiAccounts)
             ? this._editView.getCalendarAccount() : null;
 
+        //optimization: fetch working hrs for a week - wrking hrs pattern repeat everyweek
+        var weekStartDate = new Date(params.timeFrame.start.getTime());
+        var dow = weekStartDate.getDay();
+        weekStartDate.setDate(weekStartDate.getDate()-((dow+7))%7);
+        
+
         var whrsParams = {
-            startTime: this._timeFrame.start.getTime(),
-            endTime: this._timeFrame.end.getTime(),
+            startTime: weekStartDate.getTime(),
+            endTime: weekStartDate.getTime() + 7*AjxDateUtil.MSEC_PER_DAY,
             emails: emails,
             callback: new AjxCallback(this, this._handleWorkingHoursResponse, [params]),
             errorCallback: new AjxCallback(this, this._handleWorkingHoursError, [params]),
@@ -660,7 +666,13 @@ function(startTime, endTime) {
 
 ZmScheduleAssistantView.prototype.getWorkingHoursKey =
 function() {
-    return this._timeFrame ? this._timeFrame.start.getTime() + "-" + this._timeFrame.end.getTime() + "-" + this._organizerEmail : ""; 
+
+    if(!this._timeFrame) return;
+
+    var weekStartDate = new Date(this._timeFrame.start.getTime());
+    var dow = weekStartDate.getDay();
+    weekStartDate.setDate(weekStartDate.getDate()-((dow+7))%7);
+    return [weekStartDate.getTime(), weekStartDate.getTime() + 7*AjxDateUtil.MSEC_PER_DAY, this._organizerEmail].join("-");
 };
 
 ZmScheduleAssistantView.prototype.isBooked =
@@ -929,7 +941,7 @@ function(params) {
         var dayStartTime = startTime;
         var dayEndTime = startTime + AjxDateUtil.MSEC_PER_DAY;
 
-        freeSlotFound = false
+        freeSlotFound = false;
 
         while(dayStartTime < dayEndTime) {
             fbStat = this.computeAvailability(dayStartTime, dayStartTime + duration, params);

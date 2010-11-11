@@ -1090,6 +1090,7 @@ function(status, slots, table, sched) {
 	if (row && className) {
 		// figure out the table cell that needs to be colored
 		for (var i = 0; i < slots.length; i++) {
+            this._fbCache.convertWorkingHours(slots[i], currentDate);
 			var startIdx = this._getIndexFromTime(slots[i].s);
 			var endIdx = this._getIndexFromTime(slots[i].e, true);
 
@@ -1322,10 +1323,17 @@ function(params, result) {
         ? this._editView.getCalendarAccount() : null;
     
     var workingHrsCallback = new AjxCallback(this, this._handleResponseWorking, [params]);
-    var errorCallback = new AjxCallback(this, this._handleErrorFreeBusy, [params]);        
+    var errorCallback = new AjxCallback(this, this._handleErrorFreeBusy, [params]);
+
+    //optimization: fetch working hrs for a week - wrking hrs pattern repeat everyweek
+    var weekStartDate = new Date(params.startTime);
+    var dow = weekStartDate.getDay();
+    weekStartDate.setDate(weekStartDate.getDate()-((dow+7))%7);
+
+
     var whrsParams = {
-        startTime: params.startTime,
-        endTime: params.endTime,
+        startTime: weekStartDate.getTime(),
+        endTime: weekStartDate.getTime() + 7*AjxDateUtil.MSEC_PER_DAY,
         emails: params.emails,
         callback: workingHrsCallback,
         errorCallback: errorCallback,
