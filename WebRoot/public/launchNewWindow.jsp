@@ -113,7 +113,7 @@
 	appCurrentSkin = "${skin}";
 	// NOTE: Force zimlets to load individually to avoid aggregation!
 	appExtension   = "js";
-	appDevMode     = true;
+	window.appDevMode     = true;
     <c:if test="${isOfflineMode}">
         isTinyMCE      = true;
     </c:if>

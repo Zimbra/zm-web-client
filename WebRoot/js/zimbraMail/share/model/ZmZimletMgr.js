@@ -501,7 +501,7 @@ function(zimletArray, zimletNames, isJS) {
 
 
 		// include messages
-		if (appDevMode && isJS) {
+		if (window.appDevMode && isJS) {
 			includes.push([appContextPath, "/res/", zimlet.name, ".js", query].join(""));
 		}
 
@@ -514,14 +514,14 @@ function(zimletArray, zimletNames, isJS) {
 				includes.push(fullurl);
 				continue;
 			}
-			if (appDevMode || isDevZimlet) {
+			if (window.appDevMode || isDevZimlet) {
 				includes.push([baseUrl, url, query].join(""));
 			}
 		}
 	}
 
 	// add link to aggregated files
-	if (!appDevMode) {
+	if (!window.appDevMode) {
 		var extension = (!AjxEnv.isIE || (!AjxEnv.isIE6 && AjxEnv.isIE6up)) ? appExtension : "";
 		includes.unshift([
 			"/service/zimlet/res/Zimlets-nodev_all",
