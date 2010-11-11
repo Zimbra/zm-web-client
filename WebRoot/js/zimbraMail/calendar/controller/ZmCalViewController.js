@@ -1988,7 +1988,9 @@ function(ev) {
 			var msg = ex ? AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, ex) : ZmMsg.errorSaving;
 			errorDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 			errorDialog.popup();
-		}
+		}else{
+            ZmController.handleScriptError(ex);
+        }
 	}
 };
 
