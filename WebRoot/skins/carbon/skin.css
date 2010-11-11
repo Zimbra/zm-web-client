@@ -366,6 +366,9 @@ BODY						{	margin:0px; 				}
 
 .ZAlert .ZAppTabBorder {
     background-image: none;
+    /* for IE background image is not enough, clear the filter*/
+    filter: ''; /* IE6,IE7 */
+    -ms-filter: ''; /* IE8 */
 }
 
 .ZAppTabBorder .ZLeftIcon 		{	padding-left:5px;			}
