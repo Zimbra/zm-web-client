@@ -540,3 +540,6 @@ SELECT						{	@FieldBorder@	}
 
 /* People Search */
 .ZmPeopleSearchToolbarDiv	{	background-color: #FFF;	}
+
+/* Toast */
+.ZToastText a.undo          {   font-size: 11px;    }

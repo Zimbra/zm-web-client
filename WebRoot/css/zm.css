@@ -4086,7 +4086,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-top: 10px;  */
 }
 .ZToastContent {
-	padding: 0.75em 1.4em;
+	@ToastContent@
 }
 
 .ZToastIcon {
