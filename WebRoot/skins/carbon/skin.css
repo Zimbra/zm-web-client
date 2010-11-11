@@ -292,7 +292,8 @@ BODY						{	margin:0px; 				}
     border-bottom: 1px dotted #FFFFFF;
 }
 .SplashScreen .switch a:hover{
-    border-style-bottom: solid;
+    border-bottom: 1px solid #FFFFFF;
+    background-color:transparent;
 }
 .SplashScreen .copyright {
     color:@lighten(LoginColor,36)@; 

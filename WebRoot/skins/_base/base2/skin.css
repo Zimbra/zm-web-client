@@ -174,6 +174,95 @@ BODY						{	margin:0px; 				}
 #ZSplashPanel			{	@SplashOuterBorder@		}
 #ZSplashBodyContainer	{	@SplashInnerBorder@		}
 
+.SplashScreen { position:absolute;
+    left:0px;
+    top:0px;
+    width:100%;
+    height:100%;
+    font-family:@font-default@;
+    font-size:11px;
+    background-color: @AltC@;
+    background-image: -moz-linear-gradient(top, @AltC@, @darken(AltC,19)@); /* FF3.6 */
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @darken(AltC,19)@)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@')"; /* IE8 */
+}
+.SplashScreen .center { 
+    width:500px;
+    min-height:300px;
+    margin-top:-150px;
+    margin-left:-250px;
+}   
+.SplashScreen .center-small {
+    width:350px;
+    height:270px;
+    margin-top:-135px;
+    margin-left:-175px;
+}
+.SplashScreen .center, .SplashScreen .center-small {
+    position:absolute;
+    top:50%;
+    left:50%;
+    overflow:visible;
+
+    /*Linear gradient backgrounds*/
+    background-color: @darken(AppC,10)@;
+    background-image: -moz-linear-gradient(top, @AppC@, @darken(AppC,10)@); /* FF3.6 */
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @darken(AppC,10)@)); /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')"; /* IE8 */
+
+    /*Radial gradient backgrounds*/
+    background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @AppC@ 0%, @darken(AppC,10)@ 100%); /* FF3.6 */
+    background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
+
+    -moz-border-radius: 15px; /* FF1+ */
+    -webkit-border-radius: 15px; /* Saf3-4 */
+    border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
+    
+    -moz-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* FF3.5+ */
+    -webkit-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* Saf3.0+, Chrome */
+    box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
+    filter: progid:DXImageTransform.Microsoft.Glow(Color=@darken(AltC,10)@, Strength=3); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Glow(Color=@darken(AltC,10)@, Strength=3)"; /* IE8 */
+}
+.SplashScreen h1 {
+    margin:22px 100px 0px 20px;
+}
+.SplashScreen h2 {
+    margin:0px 0px 32px 100px;
+}
+.SplashScreen .ImgLoginBanner {
+    cursor:pointer;
+}
+.SplashScreen .ImgAltBanner {
+    background-image:url("@LogoImgDir@/AltBanner.png");
+    background-repeat:repeat-x;
+    height:11px;
+    margin:20px 0px 0px 20px;
+    width:71px;
+}
+.SplashScreen .content {
+    color: @darken(AppC,50)@;
+    font-size:10px;
+    text-align:center;
+}
+.SplashScreen .message {
+    color:#000000;
+    font-size:14px;
+    font-weight:bold;
+    padding-top:20px;
+}
+.SplashScreen .switch{
+    margin:30px 100px 60px;
+}
+.SplashScreen .copyright {
+    color: @darken(AppC,50)@; 
+    font-size:11px;
+    margin:13px 0px 3px;
+    text-align:center;
+}
+
 /** Logo Images **/
 .ImgAppBanner			{	@AppBanner@		}
 .ImgLoginBanner			{	@LoginBanner@	}	
