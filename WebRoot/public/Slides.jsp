@@ -168,6 +168,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 
     window.contextPath = '<%= contextPath %>';
     window.appContextPath = '<%= contextPath %>';
+    window.appDevMode     = ${isDevMode};
 
 
     createDummyDBG =
