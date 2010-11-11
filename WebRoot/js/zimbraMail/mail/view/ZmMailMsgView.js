@@ -1031,7 +1031,7 @@ function(msg, container, callback) {
 		sentBy		= this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL, false, options);
 		dateString	= this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE);
 		if (obo) {
-			obo		= this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
+			obo		= this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL, false, options);
 		}
 	} else {
 		sentBy = AjxStringUtil.htmlEncode(sentBy.toString());
