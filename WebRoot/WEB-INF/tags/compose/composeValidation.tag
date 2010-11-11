@@ -140,11 +140,13 @@
 
     window.onbeforeunload = function(e) {
         clearTimeout(timer);
-        var activeElement = e.target.activeElement;
+        if (!e) e = window.event;
+        var activeElement = e && e.target && e.target.activeElement || document.activeElement;
         // If user opts to cancel the confirmation dialog, focus shifts to the last activeElement which triggered this activity.
         // Register a onFocus handler which will trigger the timer for autosave, then remove the onfocus listener.
         // Note that this handler will be invoked only if the confirmation dialog is cancelled.
-        activeElement.addEventListener('focus',onElementFocus,false);
+        if (activeElement)
+                activeElement.addEventListener('focus',onElementFocus,false);
         return checkForChanges();
     };
 
