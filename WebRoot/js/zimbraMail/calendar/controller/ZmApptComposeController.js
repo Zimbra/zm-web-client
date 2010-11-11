@@ -1014,3 +1014,8 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) 
        accountName: (acct ? acct.name : null)
    });
 };
+
+ZmApptComposeController.prototype._resetToolbarOperations =
+function() {
+    //do nothing - this  gets called when this controller handles a list view
+};
