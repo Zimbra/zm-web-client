@@ -147,7 +147,7 @@ function(calItem, mode) {
     }
 
 	this._location.setValue(calItem.getLocation());
-	this._prioritySelect.setSelectedValue(calItem.priority);
+	this._setPriority(calItem.priority);
 	this._statusSelect.setSelectedValue(calItem.status);
 	this._pCompleteSelect.setSelectedValue(calItem.pComplete);
 	this._statusCheckbox.checked = calItem.status == ZmCalendarApp.STATUS_COMP && calItem.pComplete == 100;
@@ -203,7 +203,7 @@ function(calItem) {
     
 	calItem.setAllDayEvent(true);
 	calItem.pComplete = this._pCompleteSelect.getValue();
-	calItem.priority = this._prioritySelect.getValue();
+	calItem.priority = this._getPriority();
 	calItem.status = this._statusSelect.getValue();
 
 //	XXX: uncomment when supported
@@ -264,6 +264,58 @@ function() {
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#EditView", subs);
 };
 
+ZmTaskEditView.prototype._getPriorityImage =
+function(flag) {
+	if (flag == ZmCalItem.PRIORITY_HIGH)	{ return "PriorityHigh"; }
+	if (flag == ZmCalItem.PRIORITY_LOW)	{ return "PriorityLow"; }
+	return "PriorityNormal";
+};
+
+ZmTaskEditView.prototype._getPriorityText =
+function(flag) {
+	if (flag == ZmCalItem.PRIORITY_HIGH)	{ return ZmMsg.high; }
+	if (flag == ZmCalItem.PRIORITY_LOW)	{ return ZmMsg.low; }
+	return ZmMsg.normal;
+};
+
+ZmTaskEditView.prototype._createPriorityMenuItem =
+function(menu, text, flag) {
+	var item = DwtMenuItem.create({parent:menu, imageInfo:this._getPriorityImage(flag), text:text});
+	item._priorityFlag = flag;
+	item.addSelectionListener(this._priorityMenuListnerObj);
+};
+
+ZmTaskEditView.prototype._priorityButtonMenuCallback =
+function() {
+	var menu = new DwtMenu({parent:this._prioritySelect});
+	this._priorityMenuListnerObj = new AjxListener(this, this._priorityMenuListner);
+	this._createPriorityMenuItem(menu, ZmMsg.high, ZmCalItem.PRIORITY_HIGH);
+	this._createPriorityMenuItem(menu, ZmMsg.normal, ZmCalItem.PRIORITY_NORMAL);
+	this._createPriorityMenuItem(menu, ZmMsg.low, ZmCalItem.PRIORITY_LOW);
+	return menu;
+};
+
+ZmTaskEditView.prototype._priorityMenuListner =
+function(ev) {
+	this._setPriority(ev.dwtObj._priorityFlag);
+};
+
+ZmTaskEditView.prototype._getPriority =
+function() {
+	return (this._prioritySelect)
+		? (this._prioritySelect._priorityFlag || "") : "";
+};
+
+ZmTaskEditView.prototype._setPriority =
+function(flag) {
+	if (this._prioritySelect) {
+		flag = flag || "";
+		this._prioritySelect.setImage(this._getPriorityImage(flag));
+        this._prioritySelect.setText(this._getPriorityText(flag))
+		this._prioritySelect._priorityFlag = flag;
+	}
+};
+
 ZmTaskEditView.prototype._createWidgets =
 function(width) {
 	ZmCalItemEditView.prototype._createWidgets.call(this, width);
@@ -274,12 +326,10 @@ function(width) {
 	Dwt.setSize(this._location.getInputElement(), width, "22px");
 	this._location.reparentHtmlElement(this._htmlElId + "_location");
 
-	// add priority DwtSelect
-	this._prioritySelect = new DwtSelect({parent:this});
-	for (var i = 0; i < ZmTaskEditView.PRIORITY_VALUES.length; i++) {
-		var v = ZmTaskEditView.PRIORITY_VALUES[i];
-		this._prioritySelect.addOption(ZmCalItem.getLabelForPriority(v), i==1, v);
-	}
+	// add priority DwtButton
+	this._prioritySelect = new DwtButton({parent:this});
+    this._prioritySelect.setSize(60, Dwt.DEFAULT);
+	this._prioritySelect.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
 	this._prioritySelect.reparentHtmlElement(this._htmlElId + "_priority");
 
 	var listener = new AjxListener(this, this._selectListener);
@@ -437,7 +487,7 @@ function(excludeAttendees) {
 
 	vals.push(this._subjectField.getValue());
 	vals.push(this._location.getValue());
-	vals.push(this._prioritySelect.getValue());
+	vals.push(this._getPriority());
 	vals.push(this._folderSelect.getValue());
 	vals.push("" + this._statusCheckbox.checked);
 	vals.push(this._pCompleteSelect.getValue());
