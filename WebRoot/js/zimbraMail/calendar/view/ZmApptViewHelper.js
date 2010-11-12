@@ -467,6 +467,7 @@ function(appt, id, bodyStyle, controller) {
     AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
 	var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
+    var fba = isNew ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
 	bodyStyle += ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
 	var subs = {
 		id: id,
@@ -480,8 +481,8 @@ function(appt, id, bodyStyle, controller) {
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
 		icon: appt.isPrivate() ? "ReadOnly" : null,
-		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba),
-        boxBorder: ZmApptViewHelper.getBoxBorderFromId(appt.fba)
+		showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba),
+        boxBorder: ZmApptViewHelper.getBoxBorderFromId(fba)
 	};
     return AjxTemplate.expand("calendar.Calendar#calendar_appt_allday", subs);
 };
@@ -489,6 +490,7 @@ function(appt, id, bodyStyle, controller) {
 ZmApptViewHelper._getShowAsColorFromId =
 function(id) {
 	switch(id) {
+        case ZmCalBaseItem.PSTATUS_NEEDS_ACTION: return "ZmAppt-no-response";
 		case "F": return "ZmAppt-free";
 		case "B": return "ZmAppt-busy";
 		case "T": return "ZmAppt-tentative";
@@ -501,6 +503,7 @@ ZmApptViewHelper.getBoxBorderFromId =
 function(id) {
 	switch(id) {
 		case "F": return "ZmSchedulerApptBorder-free";
+        case ZmCalBaseItem.PSTATUS_NEEDS_ACTION:
 		case "B": return "ZmSchedulerApptBorder-busy";
 		case "T": return "ZmSchedulerApptBorder-tentative";
 		case "O": return "ZmSchedulerApptBorder-outOfOffice";

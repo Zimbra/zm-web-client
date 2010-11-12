@@ -297,7 +297,8 @@ function(appt) {
 	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
 	var headerStyle = ZmCalBaseView._toColorsCss(needsAction ? colors.deeper.header : colors.standard.header);
 	var bodyStyle = ZmCalBaseView._toColorsCss(needsAction ? colors.deeper.body : colors.standard.body);
-
+    var fba = needsAction ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
+    
 	var data = {
 		appt: appt,
 		duration: appt.getShortStartHour(),
@@ -306,7 +307,7 @@ function(appt) {
 		multiday: appt._fanoutFirst != null,
 		first: appt._fanoutFirst,
 		last: appt._fanoutLast,
-		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba)
+		showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba)
 	};
 
 	var cell = result.insertCell(-1);

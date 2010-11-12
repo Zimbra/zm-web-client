@@ -644,7 +644,7 @@ function(appt) {
 	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
 	var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
 	var bodyStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
-
+    var fba = isNew ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
 	var subs = {
 		id: id,
 		newState: isNew ? "_new" : "",
@@ -658,8 +658,8 @@ function(appt) {
 		icon: ((appt.isPrivate()) ? "ReadOnly" : null),
 		tagIcon: tagIcon,
 		hideTime: is60,
-		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba),
-        boxBorder: ZmApptViewHelper.getBoxBorderFromId(appt.fba),
+		showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba),
+        boxBorder: ZmApptViewHelper.getBoxBorderFromId(fba),
         isDraft: appt.isDraft
 	};
 
