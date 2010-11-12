@@ -832,6 +832,7 @@ function(idTag, attType) {
 	}
 
 	var inputEl = input.getInputElement();
+	Dwt.setSize(inputEl, "100%", Dwt.DEFAULT);
 	inputEl._attType = attType;
 
 	return input;
