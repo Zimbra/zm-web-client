@@ -4479,10 +4479,15 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .SuggestBtn {
-    height: 32px;
-    padding: 5px;
+    height: 24px;
     @SelectedBg@
     border-bottom: 1px solid @AppC@
+}
+
+.SuggestBtn .ZButtonTable .ZWidgetTitle {
+    color:#000000;
+    text-align:left;
+    font-weight: bold;
 }
 
 .ZmCalListViewSearchBar .DwtCompositeCell {
@@ -4538,4 +4543,8 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmTimeSuggestionView-Column {
     @ListColHeaderContainer@
     @WidgetHeaderContainer@
+}
+
+.ZmScheduleAssistantView .DwtCalendar {
+    border-bottom: 1px solid @AppC@    
 }

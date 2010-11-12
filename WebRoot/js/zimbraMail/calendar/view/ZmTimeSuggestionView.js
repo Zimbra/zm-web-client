@@ -26,8 +26,7 @@
  */
 ZmTimeSuggestionView = function(parent, controller, apptEditView) {
 
-    var headerList = this._getHeaderList();
-	ZmListView.call(this, {parent: parent, posStyle: DwtControl.RELATIVE_STYLE, view: ZmId.VIEW_SCHEDULE_PANE, headerList: headerList});
+	ZmListView.call(this, {parent: parent, posStyle: DwtControl.RELATIVE_STYLE, view: ZmId.VIEW_SCHEDULE_PANE});
 
 	this._controller = controller;
 	this._editView = apptEditView;
@@ -58,10 +57,6 @@ function(params) {
     this._startDate = params.timeFrame.start;
 
     ZmListView.prototype.set.call(this, params.list);
-
-    var hdrLabelId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, ZmTimeSuggestionView.COL_NAME);
-    var labelCell = document.getElementById(hdrLabelId);
-    labelCell.innerHTML = AjxMessageFormat.format(ZmMsg.suggestedTimeLabel, [this._startDate]);    
 };
 
 ZmTimeSuggestionView.prototype._createItemHtml =

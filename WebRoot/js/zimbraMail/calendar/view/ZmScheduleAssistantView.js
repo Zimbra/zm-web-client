@@ -26,7 +26,7 @@
  */
 ZmScheduleAssistantView = function(parent, controller, apptEditView) {
 
-	DwtComposite.call(this, {parent: parent, posStyle: DwtControl.ABSOLUTE_STYLE});
+	DwtComposite.call(this, {parent: parent, posStyle: DwtControl.ABSOLUTE_STYLE, className: "ZmScheduleAssistantView"});
 
 	this._controller = controller;
 	this._editView = apptEditView;
@@ -72,17 +72,18 @@ function() {
 
 ZmScheduleAssistantView.prototype._createWidgets =
 function() {
+
+    this._customizeBtn = new DwtButton({parent:this, style:DwtLabel.IMAGE_RIGHT, className: 'ZButton SuggestBtn'});
+    this._customizeBtn.setImage("Resource");
+    this._customizeBtn.setSize('100%', Dwt.DEFAULT);
+    this._customizeBtn.setText(ZmMsg.suggestedTimes);
+    this._customizeBtn.setToolTipContent(ZmMsg.customizeSuggestions);
+    this._customizeBtn.addSelectionListener(new AjxListener(this, this._prefListener));
+
+
     this._createMiniCalendar();
 
     var id = this.getHTMLElId();
-
-    this._customizeBtn = new DwtButton({parent:this, className: 'ZButton SuggestBtn'});
-    this._customizeBtn.setImage("Preferences");    
-    this._customizeBtn.setSize('100%', Dwt.DEFAULT);
-    this._customizeBtn.addSelectionListener(new AjxListener(this, this._prefListener));
-    this._customizeBtn.setText(ZmMsg.customizeSuggestions);
-
-    this.showCustomize(false);
     this._timeSuggestions = new ZmTimeSuggestionView(this, this._controller, this._editView);
 
     var prefDlg = this.getPrefDialog();
@@ -169,7 +170,6 @@ function(focusOnSuggestion) {
         focus: focusOnSuggestion
     };
 
-    this.showCustomize(true);
     this._timeSuggestions.setLoadingHtml();
     if(this._resources.length == 0) {
         this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
@@ -265,7 +265,6 @@ function(date, attendees, forceRefresh) {
     this._date = date;
     if(newKey != this._key || newDuration != this._duration) {
         if(this._timeSuggestions){
-            this.showCustomize(false);
             this._timeSuggestions.removeAll();
             this.clearMiniCal();
         }
@@ -386,7 +385,6 @@ function(params) {
 
     if(this._attendees.length == 0) {
         this.resizeTimeSuggestions();
-        this.showCustomize(true);
         this._timeSuggestions.setNoAttendeesHtml();
         return;
     }
@@ -720,7 +718,6 @@ function(attendee, startTime, endTime) {
 ZmScheduleAssistantView.prototype.renderSuggestions =
 function(params) {
     this.resizeTimeSuggestions();
-    this.showCustomize(true);
 
     params.list = this._fbStat;
     params.totalUsers = this._totalUsers;
