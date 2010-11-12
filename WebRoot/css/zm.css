@@ -4534,3 +4534,8 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZPicker .ZButtonTable {
     width: 100%;    
 }
+
+.ZmTimeSuggestionView-Column {
+    @ListColHeaderContainer@
+    @WidgetHeaderContainer@
+}

@@ -36,6 +36,7 @@ ZmTimeSuggestionView = function(parent, controller, apptEditView) {
 	this._kbMgr = appCtxt.getKeyboardMgr();
     this._normalClass = DwtListView.ROW_CLASS;
     this._selectedClass = [DwtListView.ROW_CLASS, DwtCssStyle.SELECTED].join("-");
+    this._sectionHeaderHtml = {};
     this.setMultiSelect(false);
 };
 
@@ -79,7 +80,7 @@ function (item) {
         id: id,
         item: item,
         timeLabel: AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT).format(new Date(item.startTime)),
-        locationCountStr: AjxMessageFormat.format(ZmMsg.availableRoomsCount, [item.availableLocations]),
+        locationCountStr: item.availableLocations,
         attendeeImage: attendeeImage,
         locationImage: locationImage,
         totalUsers: this._totalUsers, 
@@ -102,8 +103,11 @@ function(itemDiv, ev) {
 
     var item = this.getItemFromElement(itemDiv);
     if(item) {
-        this.switchLocationSelect(item, itemDiv.id, ev);
         this._editView.setDate(new Date(item.startTime), new Date(item.endTime));
+        //user clicked the link directly
+        if (ev.target && (ev.target.className == "fakeAnchor" || ev.target.className == "ImgLocationGreen" || ev.target.className == "ImgLocationRed")) {
+            this.showMore(item);        
+        }
     }
 };
 
@@ -301,4 +305,69 @@ function(locationInfo) {
     var attendeePicker = this._editView.getAttendeePicker(ZmCalBaseItem.LOCATION);
     attendeePicker.showSuggestedItems(items);    
 };
+
+ZmTimeSuggestionView.prototype._getHeaderColor = 
+function(item) {
+    var className = (item.availableUsers == this._totalUsers) ? "GreenLight" : "OrangeLight";
+    if(item.availableUsers < Math.ceil(this._totalUsers/2)) className = "RedLight";
+    return className;
+};
+
+ZmTimeSuggestionView.prototype._renderListSectionHdr =
+function(hdrKey, item) {
+    if(!this._sectionHeaderHtml[hdrKey]) {
+        var htmlArr = [];
+        var idx = 0;
+        htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='ZmTimeSuggestionView-Column ";
+        htmlArr[idx++] =  this._getHeaderColor(item);        
+        htmlArr[idx++] = "'><tr>";
+        htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label ";
+        htmlArr[idx++] = "' style='padding:0px 0px 2px 2px;'>";
+        htmlArr[idx++] = AjxMessageFormat.format(ZmMsg.availableCount, [item.availableUsers, this._totalUsers]);
+        htmlArr[idx++] = "</div></td>";
+        htmlArr[idx++] = "</tr></table>";
+        this._sectionHeaderHtml[hdrKey] = htmlArr.join("");
+   }
+
+   return this._sectionHeaderHtml[hdrKey];
+};
+
+ZmTimeSuggestionView.prototype._renderList =
+function(list, noResultsOk, doAdd) {
+	if (list instanceof AjxVector && list.size()) {
+		var now = new Date();
+		var size = list.size();
+		var htmlArr = [], hdrKey, hdrListed = {};
+		for (var i = 0; i < size; i++) {
+			var item = list.get(i);
+
+            hdrKey = item.availableUsers + '-' + this._totalUsers;
+
+            if(!hdrListed[hdrKey]) {
+                var sectionHeaderHtml = this._renderListSectionHdr(hdrKey, item);
+                if(sectionHeaderHtml) htmlArr.push(sectionHeaderHtml);
+                hdrListed[hdrKey] = true;
+            }
+
+			var div = this._createItemHtml(item, {now:now}, !doAdd, i);
+			if (div) {
+				if (div instanceof Array) {
+					for (var j = 0; j < div.length; j++){
+						this._addRow(div[j]);
+					}
+				} else if (div.tagName || doAdd) {
+					this._addRow(div);
+				} else {
+					htmlArr.push(div);
+				}
+			}
+		}
+		if (htmlArr.length) {
+			this._parentEl.innerHTML = htmlArr.join("");
+		}
+	} else if (!noResultsOk) {
+		this._setNoResultsHtml();
+	}
+};
+
 
