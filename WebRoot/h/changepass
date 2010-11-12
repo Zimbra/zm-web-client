@@ -74,7 +74,7 @@
 <table width=100% height=100%>
     <tr>
         <td align=center valign=middle>
-            <div id="ZloginPanel">
+            <div id="ZLoginPanel">
                 <table width=100%>
                     <tr>
                         <td>
@@ -89,10 +89,10 @@
                         <td>
                     </tr>
                     <tr>
-                        <td id='ZloginBodyContainer'>
+                        <td id='ZLoginBodyContainer'>
                             <c:if test="${not empty errorMessage}">
                                 <!-- ${fn:escapeXml(error.stackStrace)} -->
-                                <div id='ZloginErrorPanel'>
+                                <div id='ZLoginErrorPanel'>
                                     <table width=100%>
                                         <tr>
                                             <td valign='top' width='40'>
@@ -107,7 +107,7 @@
                             </c:if>
                             
                             <c:if test="${successfullLogin ne 'true'}">
-                                <div id='ZloginFormPanel'>
+                                <div id='ZLoginFormPanel'>
                                     <form method='post' name="changePassForm" action="" autocomplete="off" accept-charset="utf-8">
                                         <input type="hidden" name="loginOp" value="login"/>
                                         <table width=100% cellpadding=4>

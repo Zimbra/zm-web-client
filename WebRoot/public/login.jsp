@@ -293,10 +293,10 @@ if (application.getInitParameter("offlineMode") != null)  {
 
 				<c:if test="${errorCode != null}">
 				    <!-- ${fn:escapeXml(error.stackStrace)} -->
-				    <div id="ZloginErrorPanel">
+				    <div id="ZLoginErrorPanel">
 				        <img alt='<fmt:message key="ALT_ERROR"/>'
 				        	src="<app:imgurl value='dwt/ImgCritical_32.gif'/>"
-				        	style="float:left;margin:-3px 10px 10px 0px;"/>
+				        	style="float:left;margin:-3px 10px 10px 0px;position:relative;"/>
 				        <c:out value="${errorMessage}"/>
 				        <div style="clear:both;height:0px;"></div>
 				    </div>
@@ -401,7 +401,7 @@ if (application.getInitParameter("offlineMode") != null)  {
   }
   <c:if test="${smallScreen && ua.isIE}">       /*HACK FOR IE*/
   var resizeLoginPanel = function(){
-      var panelElem = document.getElementById('ZloginPanel');
+      var panelElem = document.getElementById('ZLoginPanel');
       if(panelElem && !panelElem.style.maxWidth) { if(document.body.clientWidth >= 500) { panelElem.style.width="500px";}else{panelElem.style.width="90%";} }
   }
   resizeLoginPanel();

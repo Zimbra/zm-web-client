@@ -55,7 +55,7 @@ FORM {
 /* Outer panel for the entire login/splash dialog */
 #ZLoginPanel {
 	position:relative;
-	width:500;
+	width:500px;
 	overflow:visible;
 	@LightWindowOuterBorder@
 }
