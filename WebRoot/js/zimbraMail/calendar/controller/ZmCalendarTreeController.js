@@ -168,7 +168,7 @@ function(actionMenu, type, id) {
 
 
 		actionMenu.enable(ZmOperation.DELETE, (nId != ZmOrganizer.ID_CALENDAR && nId != ZmOrganizer.ID_TRASH));        
-        actionMenu.getOp(ZmOperation.EMPTY_FOLDER).setVisible(nId == ZmOrganizer.ID_TRASH);
+		this.setVisibleIfExists(actionMenu, ZmOperation.EMPTY_FOLDER, nId == ZmFolder.ID_TRASH);
         var hasContent = ((calendar.numTotal > 0) || (calendar.children && (calendar.children.size() > 0)));
         actionMenu.enable(ZmOperation.EMPTY_FOLDER,hasContent);
 

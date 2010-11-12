@@ -92,9 +92,13 @@ function(parent, type, id) {
 
     parent.enable(ZmOperation.EMPTY_FOLDER,((folder.numTotal > 0) || (folder.children && (folder.children.size() > 0))));
 	var isTrash = id == ZmOrganizer.ID_TRASH;
-	parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(isTrash);
+	this.setVisibleIfExists(parent, ZmOperation.EMPTY_FOLDER, isTrash);
+
 	parent.enable(ZmOperation.EDIT_PROPS, !isTrash);
-    parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);
+	var emptyFolderOp = parent.getOp(ZmOperation.EMPTY_FOLDER);
+	if (emptyFolderOp) {
+		emptyFolderOp.setText(ZmMsg.emptyTrash);
+	}
 
 
 	var op = parent.getOp(ZmOperation.DELETE);

@@ -115,7 +115,7 @@ function(parent, type, id) {
 	var addrBook = appCtxt.getById(id);
 	var nId = addrBook ? addrBook.nId : ZmOrganizer.normalizeId(id);
 
-    parent.getOp(ZmOperation.EMPTY_FOLDER).setVisible(nId == ZmFolder.ID_TRASH);
+	this.setVisibleIfExists(parent, ZmOperation.EMPTY_FOLDER, nId == ZmFolder.ID_TRASH);
 
 	if (nId == ZmFolder.ID_TRASH) {
 		parent.enableAll(false);

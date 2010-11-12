@@ -268,6 +268,16 @@ function(account) {
 	return dataTree;
 };
 
+
+ZmTreeController.prototype.setVisibleIfExists =
+function(parent, opId, visible) {
+	var op = parent.getOp(opId);
+	if (!op) {
+		return;
+	}
+	op.setVisible(visible);
+};
+
 // Private and protected methods
 
 /**
