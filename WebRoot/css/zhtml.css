@@ -306,8 +306,8 @@ A:visited { color: blue; }
 /* IE Hack to prevent buttons creating spaces around the text */
 .IEbutton input{
 #IFDEF MSIE
-	width: 10px;
-	overflow: visible;
+	width: 100%;
+	margin-left: 2px;
 #ENDIF
 }
 
