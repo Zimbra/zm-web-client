@@ -195,7 +195,7 @@ ZmImportExportBaseView.prototype._setFolderButton = function(folder) {
 	this._folderId = folder ? folder.id : -1;
 	if (folder) {
 		var isRoot = folder.nId == ZmOrganizer.ID_ROOT;
-		this.setLabel("FOLDER_BUTTON", isRoot ? ZmMsg.allFolders : folder.name);
+		this.setLabel("FOLDER_BUTTON", isRoot ? ZmMsg.allFolders : AjxStringUtil.htmlEncode(folder.name));
 	}
 	else {
 		this.setLabel("FOLDER_BUTTON", ZmMsg.browse);

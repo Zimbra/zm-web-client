@@ -59,9 +59,9 @@ function(calItem, mode, type) {
 	if (type == ZmItem.APPT) {
 		m = (calItem instanceof Array)
 			? ZmMsg.isRecurringApptList
-			: AjxMessageFormat.format(ZmMsg.isRecurringAppt, [calItem.getName()]);
+			: AjxMessageFormat.format(ZmMsg.isRecurringAppt, [AjxStringUtil.htmlEncode(calItem.getName())]);
 	} else {
-		m = AjxMessageFormat.format(ZmMsg.isRecurringTask, [calItem.getName()]);
+		m = AjxMessageFormat.format(ZmMsg.isRecurringTask, [AjxStringUtil.htmlEncode(calItem.getName())]);
 	}
 	if (mode == ZmCalItem.MODE_EDIT) {
 		this.setTitle(ZmMsg.openRecurringItem);
