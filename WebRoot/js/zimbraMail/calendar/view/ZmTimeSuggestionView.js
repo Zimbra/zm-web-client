@@ -249,7 +249,7 @@ function() {
 
     var location = this._itemsById[id];
     if(location) {
-        this._editView.updateLocation(location, this._locSelect.getSelectedOption() ? this._locSelect.getSelectedOption().getDisplayValue() : id);
+        this._editView.updateLocation(location);
     }
     this.handleLocationOverflow();
 };

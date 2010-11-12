@@ -491,6 +491,7 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 		this.email = match.getEmail();
 		this.item = match;
 		this.type = ZmContact.getAttr(match, ZmResource.F_type) || ZmAutocomplete.AC_TYPE_GAL;
+        this.fullAddress = match.getAttendeeText();
 	} else {
 		this.isGroup = Boolean(match.isGroup);
 		this.isDL = (this.isGroup && this.type == ZmAutocomplete.AC_TYPE_GAL);

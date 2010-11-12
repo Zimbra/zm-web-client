@@ -116,12 +116,12 @@ function() {
 		this._optAttendeesInputField.clear();
         this._forwardToField.clear();
 	}
-	this._attInputField[ZmCalBaseItem.LOCATION].setValue("");
+    this._attInputField[ZmCalBaseItem.LOCATION].setValue("");
 	this._locationTextMap = {};
 
 	if (this._resourcesContainer) {
-		Dwt.setVisible(this._resourcesContainer, false);
-		this._resourcesData.innerHTML = "";
+        this.showResourceField(false);
+        this._resourceInputField.clear();
 	}
 
 	this._allDayCheckbox.checked = false;
@@ -268,8 +268,8 @@ function(dateInfo) {
 ZmApptEditView.prototype.updateLocation =
 function(location, locationStr) {
     this._updateAttendeeFieldValues(ZmCalBaseItem.LOCATION, [location]);
+    locationStr = locationStr || location.getAttendeeText(ZmCalBaseItem.LOCATION);
     this.setApptLocation(locationStr);
-    this._addResourcesDiv(); 
 };
 
 // Private / protected methods
@@ -525,13 +525,24 @@ function(calItem, mode) {
         this._attInputField[ZmCalBaseItem.PERSON] = this._isForward ? this._forwardToField : this._attendeesInputField;        
     }
 
-	// set the location *label*
-	this._attInputField[ZmCalBaseItem.LOCATION].setValue(calItem.getLocation());
-
 	// set the location attendee(s)
 	var locations = calItem.getAttendees(ZmCalBaseItem.LOCATION);
 	if (locations && locations.length) {
 		this._attendees[ZmCalBaseItem.LOCATION] = AjxVector.fromArray(locations);
+        var locStr = ZmApptViewHelper.getAttendeesString(locations, ZmCalBaseItem.LOCATION);
+        this._attInputField[ZmCalBaseItem.LOCATION].setValue(locStr);
+	}else{
+        // set the location *label*
+	    this._attInputField[ZmCalBaseItem.LOCATION].setValue(calItem.getLocation());
+    }
+
+    // set the equipment attendee(s)
+	var equipment = calItem.getAttendees(ZmCalBaseItem.EQUIPMENT);
+	if (equipment && equipment.length) {
+        this._toggleResourcesField(true);
+		this._attendees[ZmCalBaseItem.EQUIPMENT] = AjxVector.fromArray(equipment);
+        var equipStr = ZmApptViewHelper.getAttendeesString(equipment, ZmCalBaseItem.EQUIPMENT);
+        this._attInputField[ZmCalBaseItem.EQUIPMENT].setValue(equipStr);        
 	}
 
 	// privacy
@@ -542,14 +553,6 @@ function(calItem, mode) {
 
     this._controller.markApptAsPrivate((isPrivacyEnabled ? ((calItem.privacy == ZmApptEditView.PRIVACY_OPTION_PRIVATE) || defaultPrivacyOption) : false));
     this._controller.enablePrivateOption(isPrivacyEnabled);
-
-	// set the equipment attendee(s)
-	var equipment = calItem.getAttendees(ZmCalBaseItem.EQUIPMENT);
-	if (equipment && equipment.length) {
-		this._attendees[ZmCalBaseItem.EQUIPMENT] = AjxVector.fromArray(equipment);
-	}
-
-	this._addResourcesDiv();
 
 	if (this.GROUP_CALENDAR_ENABLED) {
         this._controller.setRequestResponses((attendees && attendees.length) ? calItem.shouldRsvp() : true);
@@ -638,37 +641,6 @@ function() {
 	return organizer;
 };
 
-
-ZmApptEditView.prototype._addResourcesDiv =
-function(calItem) {
-	if (!(this._resourcesData && this._resourcesContainer)) { return; }
-
-	var html = [];
-	var i = 0;
-	var location = ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.LOCATION].getArray(), ZmCalBaseItem.LOCATION);
-	var equipment = ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.EQUIPMENT].getArray(), ZmCalBaseItem.EQUIPMENT);
-	if (location.length || equipment.length) {
-		Dwt.setVisible(this._resourcesContainer, true);
-		if (location.length) {
-			html[i++] = "<div style='padding-left:2px;float: left;'>";
-			html[i++] = AjxImg.getImageSpanHtml("Location","float:left");
-			html[i++] = "&nbsp;";
-			html[i++] = location;
-			html[i++] = "</div>";
-		}
-		if (equipment.length) {
-			html[i++] = "<div style='padding-left:2px;float: left;'>";
-			html[i++] = AjxImg.getImageSpanHtml("Resource", "float:left");
-			html[i++] = "&nbsp;";
-			html[i++] = equipment;
-			html[i++] = "</div>";
-		}
-	} else {
-		Dwt.setVisible(this._resourcesContainer, false);
-	}
-	this._resourcesData.innerHTML = html.join("");
-};
-
 ZmApptEditView.prototype._createHTML =
 function() {
 	// cache these Id's since we use them more than once
@@ -704,11 +676,17 @@ function(width) {
 	// add location input field
 	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION);
 
+    //add Resources Field
+    this._attInputField[ZmCalBaseItem.EQUIPMENT] = this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT);
+
     var edvId = AjxCore.assignId(this);    
     this._schButtonId = this._htmlElId + "_scheduleButton";
     this._showOptionalId = this._htmlElId + "_show_optional";
+    this._showResourcesId = this._htmlElId + "_show_resources";
     
     this._showOptional = document.getElementById(this._showOptionalId);
+    this._showResources = document.getElementById(this._showResourcesId);
+
     this._schButton = document.getElementById(this._schButtonId);
     this._schButton._editViewId = edvId;
     this._schImage = document.getElementById(this._htmlElId + "_scheduleImage");
@@ -803,6 +781,7 @@ function(width) {
     this.updateToolbarOps();
 
     Dwt.setVisible(this._optionalAttendeesContainer, false);
+    Dwt.setVisible(this._resourcesContainer, false);
 
     this._inviteMsgContainer = document.getElementById(this._htmlElId + "_invitemsg_container");
     this._inviteMsg = document.getElementById(this._htmlElId + "_invitemsg");
@@ -866,6 +845,19 @@ function(forceShow) {
     this._showOptional.innerHTML = this._optionalAttendeesShown ? ZmMsg.hideOptional : ZmMsg.showOptional;
     Dwt.setVisible(this._optionalAttendeesContainer, Boolean(this._optionalAttendeesShown))
 };
+
+ZmApptEditView.prototype._toggleResourcesField =
+function(forceShow) {
+    this._resourcesShown = ! this._resourcesShown || forceShow;
+    this.showResourceField(this._resourcesShown);
+};
+
+ZmApptEditView.prototype.showResourceField =
+function(show){
+    this._showResources.innerHTML = show ? ZmMsg.hideResources : ZmMsg.showResources;
+    Dwt.setVisible(this._resourcesContainer, Boolean(show))
+};
+
 
 ZmApptEditView.prototype.showOptional =
 function() {
@@ -1106,15 +1098,20 @@ function(addrType, attendees) {
         this._activeInputField = addrType;        
     }
 
-    if(addrType == ZmCalBaseItem.LOCATION) {
-        var location = ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.LOCATION].getArray(), ZmCalBaseItem.LOCATION);
-        this.setApptLocation(location);
-        this._handleAttendeeField(addrType);        
+    if(addrType == ZmCalBaseItem.LOCATION || addrType == ZmCalBaseItem.EQUIPMENT) {
+        var attendeeStr = ZmApptViewHelper.getAttendeesString(this._attendees[addrType].getArray(), addrType);
+        this.setAttendeesField(addrType, attendeeStr);        
     }
-
-    this._addResourcesDiv();
+    
 	this._attendeePicker[addrType].popdown();
 };
+
+ZmApptEditView.prototype.setAttendeesField =
+function(addrType, attendees){
+    this._attInputField[addrType].setValue(attendees);
+    this._handleAttendeeField(addrType);
+};
+
 
 ZmApptEditView.prototype._attendeePickerCancelCallback =
 function(addrType) {
@@ -1279,11 +1276,10 @@ function() {
         }
 	}
 
-	if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		// autocomplete for locations
-		var locChangeCallback = new AjxCallback(this, this._handleLocationChange);
-		params.matchValue = ZmAutocomplete.AC_VALUE_NAME;
-		params.keyUpCallback = locChangeCallback;
+	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		// autocomplete for locations		
+		params.keyUpCallback = new AjxCallback(this, this._handleLocationChange);
+        //params.matchValue = ZmAutocomplete.AC_VALUE_NAME;
 		params.options = {addrBubbles:	this._useAcAddrBubbles,
 						  type:			ZmAutocomplete.AC_TYPE_LOCATION};
 		if (AjxEnv.isIE) {
@@ -1292,7 +1288,28 @@ function() {
 		var aclv = this._acLocationsList = new ZmAutocompleteListView(params);
 		this._setAutocompleteHandler(aclv, ZmCalBaseItem.LOCATION);
 	}
+
+    if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		// autocomplete for locations
+		var app = appCtxt.getApp(ZmApp.CALENDAR);
+        params.keyUpCallback = new AjxCallback(this, this._handleResourceChange);
+        //params.matchValue = ZmAutocomplete.AC_VALUE_NAME;
+        params.options = {addrBubbles:	this._useAcAddrBubbles,
+                          type:ZmAutocomplete.AC_TYPE_EQUIPMENT};		
+		var aclv = this._acResourcesList = new ZmAutocompleteListView(params);
+        this._setAutocompleteHandler(aclv, ZmCalBaseItem.EQUIPMENT);
+	}
 };
+
+ZmApptEditView.prototype._handleResourceChange =
+function(event, aclv, result) {
+	var val = this._attInputField[ZmCalBaseItem.EQUIPMENT].getValue();
+	if (val == "") {
+		this.parent.updateAttendees([], ZmCalBaseItem.EQUIPMENT);
+		this._isKnownResource = false;
+	}
+};
+
 
 ZmApptEditView.prototype._setAutocompleteHandler =
 function(aclv, attType, input) {
@@ -1313,7 +1330,6 @@ function(event, aclv, result) {
 	var val = this._attInputField[ZmCalBaseItem.LOCATION].getValue();
 	if (val == "") {
 		this.parent.updateAttendees([], ZmCalBaseItem.LOCATION);
-		this._addResourcesDiv();
 		this._isKnownLocation = false;
 	}
 };
@@ -1331,8 +1347,8 @@ function(text, el, match) {
             DBG.println("forward auto complete match : " + match)
             return;
         }
-		if (type == ZmCalBaseItem.LOCATION) {
-			var name = attendee.getFullName();
+		if (type == ZmCalBaseItem.LOCATION || type == ZmCalBaseItem.EQUIPMENT) {
+			var name = attendee.getAttendeeText();
 			if(name) {
 				this._locationTextMap[name] = attendee;
 			}
@@ -1353,12 +1369,13 @@ function(text, el, match) {
             type = ZmCalBaseItem.PERSON;
         }
 
-		this.parent.updateAttendees(attendee, type, (type == ZmCalBaseItem.LOCATION )?ZmApptComposeView.MODE_REPLACE : ZmApptComposeView.MODE_ADD);
+		this.parent.updateAttendees(attendee, type, (type == ZmCalBaseItem.LOCATION || type == ZmCalBaseItem.EQUIPMENT )?ZmApptComposeView.MODE_REPLACE : ZmApptComposeView.MODE_ADD);
 
 		if (type == ZmCalBaseItem.LOCATION) {
-			this._addResourcesDiv();
 			this._isKnownLocation = true;
-		}
+		}else if(type == ZmCalBaseItem.EQUIPMENT){
+            this._isKnownResource = true;
+        }
 
         this._updateScheduler(type, attendee);
         
@@ -1385,6 +1402,7 @@ function() {
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 	Dwt.setHandler(this._showOptional, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+    Dwt.setHandler(this._showResources, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
 	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
@@ -1393,9 +1411,10 @@ function() {
 	this._allDayCheckbox._editViewId = this._repeatDescField._editViewId = edvId;
 	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
     this._showOptional._editViewId = edvId;
+    this._showResources._editViewId = edvId;
 
 	var inputFields = [this._attendeesInputField, this._optAttendeesInputField,
-					   this._locationInputField, this._forwardToField];
+					   this._locationInputField, this._forwardToField, this._resourceInputField];
 	for (var i = 0; i < inputFields.length; i++) {
 		var inputEl = inputFields[i].getInputElement();
 		inputEl.onfocus = AjxCallback.simpleClosure(this._handleOnFocus, this, inputEl);
@@ -1586,16 +1605,24 @@ function() {
 		for (var i = 0; i < attendees.length; i++) {
             if(attendees[i].getParticipantRole() == ZmCalItem.ROLE_OPTIONAL) {
                 optionalList.push(attendees[i].getAttendeeText(type));                
-            }else if(type == ZmCalBaseItem.LOCATION){
+            }/*else if(type == ZmCalBaseItem.LOCATION){
                 var displayName = attendees[i].getAttr(ZmResource.F_locationName);
 			    list.push(displayName || attendees[i].getAttendeeText(type));
-            }else {
+            }*/else {
 			    list.push(attendees[i].getAttendeeText(type));
             }
 		}
 		var val = list.length ? list.join(ZmAppt.ATTENDEES_SEPARATOR) : "";
 
-		if (type == ZmCalBaseItem.LOCATION) {
+		if (type == ZmCalBaseItem.EQUIPMENT) {
+			var curVal = AjxStringUtil.trim(this._attInputField[type].getValue());
+			if (curVal == "" || (val!= "" && curVal != val)) {
+                if(val != ""){
+                    this._toggleResourcesField(true);
+                }
+				this._attInputField[type].setValue(val);
+			}
+		}else if (type == ZmCalBaseItem.LOCATION) {
 			var curVal = AjxStringUtil.trim(this._attInputField[type].getValue());
 			if (curVal == "" || (!this._knownLocation && val!= "" && curVal != val) || this._isKnownLocation) {
 				this._attInputField[type].setValue(val);
@@ -1608,7 +1635,6 @@ function() {
             this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].setValue(optionalAttendees);            
 		}
 	}
-	this._addResourcesDiv();
 };
 
 ZmApptEditView.prototype.setApptLocation =
@@ -1685,7 +1711,7 @@ function(type, value, markAsOptional) {
 		if (attendee) {
             if(markAsOptional) attendee.setParticipantRole(ZmCalItem.ROLE_OPTIONAL);
 			attendees.add(attendee);
-		} else {
+		} else if(type != ZmCalBaseItem.LOCATION){
 			this._controller._invalidAttendees.push(item);
 		}
 	}
@@ -1785,7 +1811,9 @@ function(el) {
         this._toggleInlineScheduler();
 	} else if(el.id == this._showOptionalId) {
         this._toggleOptionalAttendees();
-    }else {
+    }else if(el.id == this._showResourcesId){
+        this._toggleResourcesField();
+    }else{
 		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
 	}
 };
