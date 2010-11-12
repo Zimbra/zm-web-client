@@ -677,7 +677,7 @@ function(width) {
 	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION);
 
     //add Resources Field
-    this._attInputField[ZmCalBaseItem.EQUIPMENT] = this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT);
+    this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT);
 
     var edvId = AjxCore.assignId(this);    
     this._schButtonId = this._htmlElId + "_scheduleButton";
