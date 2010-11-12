@@ -2902,26 +2902,27 @@ function(type, show, skipNotify, skipFocus) {
 // returned. If the field is hidden, its contents are ignored.
 ZmComposeView.prototype._collectAddrs =
 function() {
+
 	var addrs = {};
 	addrs[ZmComposeView.BAD] = new AjxVector();
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		if (!this._using[type]) { continue; }
 
-		var input = this._field[type], bubbleVal = "";
-		var inputVal = AjxStringUtil.trim(input.value);
+		var val;
 		if (this._useAcAddrBubbles) {
 			var addrInput = this._addrInputField[type];
 			if (addrInput) {
-				bubbleVal = addrInput.getValue();
+				val = addrInput.getValue();
 			}
 		}
-		var val = (bubbleVal && inputVal) ? [bubbleVal, inputVal].join(AjxEmailAddress.SEPARATOR) :
-			  								bubbleVal || inputVal;
+		else {
+			val = AjxStringUtil.trim(this._field[type].value)
+		}
 
 		if (val.length == 0) { continue; }
 		var result = AjxEmailAddress.parseEmailString(val, type, false);
-		if (result.all.size() == 0) continue;
+		if (result.all.size() == 0) { continue; }
 		addrs.gotAddress = true;
 		addrs[type] = result;
 		if (result.bad.size()) {

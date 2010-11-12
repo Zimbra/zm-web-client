@@ -381,7 +381,7 @@ function(echo, ev) {
 ZmAutocompleteListView._outsideMouseDownListener =
 function(ev) {
 	var curList = ZmAutocompleteListView._activeAcList;
-    if (curList.getVisible()) {
+    if (curList && curList.getVisible()) {
 		var obj = DwtControl.getTargetControl(ev);
 		var target = DwtUiEvent.getTargetWithProp(ev, "id");
 		if (obj && obj != curList && !obj.isLinkText && target != obj.getHtmlElement()) {
