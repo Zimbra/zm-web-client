@@ -192,6 +192,12 @@
 									<td class='LabelColName'><$= ZmMsg.inviteesLabel $></td>
 									<td class='LabelColValue'><$= data.invitees $></td>
 								</tr>
+								<$ if (data.optInvitees) { $>
+								<tr>
+									<td class='LabelColName'><$= ZmMsg.optionalLabel $></td>
+									<td class='LabelColValue'><$= data.optInvitees $></td>
+								</tr>
+								<$ } $>
 							<$ } $>
 							<$ if (data.recur) { $>
 								<tr>

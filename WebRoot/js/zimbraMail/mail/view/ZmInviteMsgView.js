@@ -372,15 +372,21 @@ function(subs, sentBy, sentByAddr) {
 
 	// inviteees
 	var str = [];
-	var j = 0;
+    var opt = [];
 
 	var list = this._invite.getAttendees();
 	for (var i = 0; i < list.length; i++) {
 		var at = list[i];
 		var attendee = new AjxEmailAddress(at.a, null, at.d);
-		str[j++] = om ? om.findObjects(attendee, true, ZmObjectManager.EMAIL) : attendee.toString();
+        if(at.role == ZmCalItem.ROLE_OPTIONAL) {
+            opt.push(om ? om.findObjects(attendee, true, ZmObjectManager.EMAIL) : attendee.toString());
+        }
+        else {
+            str.push(om ? om.findObjects(attendee, true, ZmObjectManager.EMAIL) : attendee.toString());
+        }
 	}
 	subs.invitees = str.join(AjxEmailAddress.SEPARATOR);
+	subs.optInvitees = opt.join(AjxEmailAddress.SEPARATOR);
 
 	// convert to local timezone if necessary
 	var inviteTz = this._invite.getServerStartTimeTz();
