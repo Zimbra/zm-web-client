@@ -326,16 +326,23 @@ function() {
 
 ZmConv.prototype.getAccount =
 function() {
-	// always pull out the account from the fully-qualified ID
-	if (!this.account) {
-		this.account = ZmOrganizer.parseId(this.id).account;
-	}
+    // try to pull out account from folder
+    if (!this.account) {
+        var folderId = this.getFolderId();
+        var folder = folderId && appCtxt.getById(folderId);
+        this.account = folder && folder.getAccount();
+    }
 
-	// fallback on the active account if account not found from parsed ID (most
-	// likely means this is a conv inside a shared folder of the active acct)
-	if (!this.account) {
-		this.account = appCtxt.getActiveAccount();
-	}
+    // pull out the account from the fully-qualified ID
+    if (!this.account) {
+        this.account = ZmOrganizer.parseId(this.id).account;
+    }
+
+    // fallback on the active account if account not found from parsed ID (most
+    // likely means this is a conv inside a shared folder of the active acct)
+    if (!this.account) {
+        this.account = appCtxt.getActiveAccount();
+    }
 
 	return this.account;
 };
