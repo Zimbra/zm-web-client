@@ -76,7 +76,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHARE_TASKFOLDER, {textKey:"shareTaskFolder", image:"TaskList"});
 	ZmOperation.registerOp(ZmId.OP_PRINT_TASK, {textKey:"printTask", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_TASKFOLDER, {textKey:"printTaskFolder", image:"Print"}, ZmSetting.PRINT_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_SORTBY_MENU, {tooltipKey:"viewTooltip", textKey:"sortBy", image:"SplitPane", textPrecedence:80});
+    ZmOperation.registerOp(ZmId.OP_SORTBY_MENU, {tooltipKey:"viewTooltip", textKey:"taskFilterBy", image:"SplitPane", textPrecedence:80});
     ZmOperation.registerOp(ZmId.OP_MARK_AS_COMPLETED, {tooltipKey:"markAsCompleted", textKey:"markAsCompleted", image:"CheckboxChecked", textPrecedence:80});
 };
 
@@ -92,7 +92,7 @@ function() {
 						{app:			ZmApp.TASKS,
 						 nameKey:		"task",
 						 countKey:  	"typeTask",
-						 icon:			"TaskList",
+						 icon:			"TasksApp",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmTask",
 						 node:			"task",
@@ -138,7 +138,7 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmItem.TASK,
 								{msgKey:		"tasks",
 								 tooltipKey:	"searchTasks",
-								 icon:			"TaskList",
+								 icon:			"TasksApp",
 								 shareIcon:		"SharedTaskList",
 								 setting:		ZmSetting.TASKS_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_TASK)
@@ -159,7 +159,7 @@ function() {
 	ZmApp.registerApp(ZmApp.TASKS,
 							 {mainPkg:				"Tasks",
 							  nameKey:				"tasks",
-							  icon:					"TaskList",
+							  icon:					"TasksApp",
 							  textPrecedence:		20,
 							  chooserTooltipKey:	"goToTasks",
 							  defaultSearch:		ZmItem.TASK,
