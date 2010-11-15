@@ -65,7 +65,7 @@
                             <td colspan="1">
                                 <table border=0 width="100%">
                                     <tr>
-                                        <td align="left">
+                                        <td align="left" nowrap="true">
                                             <input type='checkbox' id='${id}_allDayCheckbox'>
                                             <nobr>&nbsp;<$= ZmMsg.allDay $></nobr>
                                         </td>
