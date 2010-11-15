@@ -74,7 +74,7 @@ ZmScheduleAssistantView.prototype._createWidgets =
 function() {
 
     this._customizeBtn = new DwtButton({parent:this, style:DwtLabel.IMAGE_RIGHT, className: 'ZButton SuggestBtn'});
-    this._customizeBtn.setImage("Resource");
+    this._customizeBtn.setImage("Preferences");
     this._customizeBtn.setSize('100%', Dwt.DEFAULT);
     this._customizeBtn.setText(ZmMsg.suggestedTimes);
     this._customizeBtn.setToolTipContent(ZmMsg.customizeSuggestions);
