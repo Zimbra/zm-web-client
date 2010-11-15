@@ -654,8 +654,10 @@ ZmTaskListController.prototype._handleDeleteResponse = function(tasks, resp) {
 
 ZmTaskListController.prototype._doCheckCompleted =
 function(task,ftask) {
-	var callback = new AjxCallback(this, this._doCheckCompletedResponse, [task,ftask]);
-	task.getDetails(ZmCalItem.MODE_EDIT, callback);
+    var clone = ZmTask.quickClone(task);
+    clone.message = null;
+	var callback = new AjxCallback(this, this._doCheckCompletedResponse, [clone,ftask]);
+	clone.getDetails(ZmCalItem.MODE_EDIT, callback);
 };
 
 ZmTaskListController.prototype._doCheckCompletedResponse =
@@ -718,7 +720,8 @@ function(task) {
     
     if (!canEdit) {
 		if (task.isException) mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
-		task.getDetails(mode, new AjxCallback(this, this._showTaskReadOnlyView, task));
+        var clone = ZmTask.quickClone(task);
+		clone.getDetails(mode, new AjxCallback(this, this._showTaskReadOnlyView, clone));
 	} else {
 		if (task.isRecurring()) {
 			// prompt user to edit instance vs. series if recurring but not exception
@@ -729,6 +732,7 @@ function(task) {
 				return;
 			}
 		}
+        task.message = null; //null out message so we re-fetch task next time its opened
 		task.getDetails(mode, new AjxCallback(this, this._showTaskEditView, [task, mode]));
 	}
 };
@@ -824,7 +828,8 @@ function(ev) {
 	} else if(this.isReadingPaneOn()) {
         var task = ev.item;
         var mode = ZmCalItem.MODE_EDIT;
-        task.getDetails(mode, new AjxCallback(this, this._showTaskReadOnlyView, task));
+        var clone = ZmTask.quickClone(task);
+        clone.getDetails(mode, new AjxCallback(this, this._showTaskReadOnlyView, clone));
     }
 };
 

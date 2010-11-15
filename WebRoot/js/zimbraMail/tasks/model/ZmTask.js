@@ -69,7 +69,10 @@ function(task) {
 	var newTask = new ZmTaskClone();
 	newTask.startDate = task.startDate ? (new Date(task.startDate.getTime())) : null;
 	newTask.endDate = task.endDate ? (new Date(task.endDate.getTime())) : null;
+    newTask._uniqId = Dwt.getNextId();
 
+    newTask._validAttachments = AjxUtil.createProxy(task._validAttachments);
+    
 	if (!newTask._orig)
 		newTask._orig = task;
 
