@@ -611,6 +611,12 @@
     }
 
     checkForChanges = function(){
+        if(${uploader.isRepeatDone})
+            return (confirm("<fmt:message key="optionsExitConfirmation"/>"));
+
+        if(${uploader.isContactDone})
+            return (confirm("<fmt:message key="optionsExitConfirmation"/>"));
+
         var _el = _form.elements;
         var _checkFail = false;
         for ( var _i=0;_i < _el.length; _i++){
