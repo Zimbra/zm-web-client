@@ -1357,14 +1357,12 @@ function(request, isDraft, accountName, requestReadReceipt) {
 					}
 
 					// bug fix #33312 - should be reverted(?) once bug #33691 is fixed.
-					if (id && appCtxt.multiAccounts &&
-						(appCtxt.getActiveAccount().name != accountName) &&
-						(isDraft || this.isDraft))
-					{
-						id = ZmOrganizer.getSystemId(id, appCtxt.accountList.mainAccount, true);
+					if (id && doQualifyIds) {
+						id = ZmOrganizer.getSystemId(id, mainAccount, true);
 					}
-
-					parts.push({mid:id, part:attIds[i]});
+					if(id) {
+						parts.push({mid:id, part:attIds[i]});
+					}
 				}
 			}
 		}
