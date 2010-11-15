@@ -1654,8 +1654,8 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._promptDeleteFutureInstances =
 function(appt, mode) {
-	if (!this._delFutureInstNotifyDlg) {
-		this._delFutureInstNotifyDlg = new ZmApptDeleteNotifyDialog({
+	if (appt.getAttendees(ZmCalBaseItem.PERSON).length>0) {		
+        this._delFutureInstNotifyDlg = new ZmApptDeleteNotifyDialog({
 			parent: this._shell,
 			title: AjxMsg.confirmTitle,
 			confirmMsg: ZmMsg.confirmCancelApptSeries,
@@ -1663,6 +1663,15 @@ function(appt, mode) {
 			choiceLabel2 : ZmMsg.confirmCancelApptFutureInstances
 		});
 	}
+    else{
+           this._delFutureInstNotifyDlg = new ZmApptDeleteNotifyDialog({
+			parent: this._shell,
+			title: ZmMsg.confirmDeleteApptTitle,
+			confirmMsg: ZmMsg.confirmCancelApptSeries,
+			choiceLabel1: ZmMsg.confirmDeleteApptWholeSeries,
+			choiceLabel2 : ZmMsg.confirmDeleteApptFutureInstances
+		    });
+    }
 	this._delFutureInstNotifyDlg.popup(new AjxCallback(this, this._deleteFutureInstYesCallback, [appt,mode]));
 };
 
