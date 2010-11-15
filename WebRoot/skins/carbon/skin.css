@@ -555,3 +555,9 @@ SELECT						{	@FieldBorder@	}
 
 /* Toast */
 .ZToastText a.undo          {   font-size: 11px;    }
+
+/* HTML Client */
+.link a, .link a:visited{
+	color: white;
+	text-decoration: none;
+}
