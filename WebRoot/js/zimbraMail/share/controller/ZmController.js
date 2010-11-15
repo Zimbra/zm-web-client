@@ -79,9 +79,10 @@ ZmController.prototype.getApp = function() {
  * @param	{ZmCsfeException}	ex		the exception
  * @param	{Boolean}	noExecReset		(not used)
  * @param	{Boolean}	hideReportButton		if <code>true</code>, hide the "Send error report" button
+ * @param	{Boolean}	expanded		if <code>true</code>, contents are expanded by default
  */
 ZmController.prototype.popupErrorDialog = 
-function(msg, ex, noExecReset, hideReportButton) {
+function(msg, ex, noExecReset, hideReportButton, expanded) {
 	// popup alert
 	var errorDialog = appCtxt.getErrorDialog();
 	var detailStr = "";
@@ -114,13 +115,15 @@ function(msg, ex, noExecReset, hideReportButton) {
 	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 	errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
 	errorDialog.popup(null, hideReportButton);
+	if (expanded)
+		errorDialog.showDetail();
 };
 
 ZmController.handleScriptError =
 function(ex) {
 
 	var text = [];
-	var eol = "\n";
+	var eol = "<br/>";
 	if (ex) {
 		var msg = ZmMsg.scriptError + ": " + ex.message;
 		var m = ex.fileName && ex.fileName.match(/(\w+\.js)/);
@@ -132,7 +135,7 @@ function(ex) {
 		if (ex.name)		{ text.push("Error: " + ex.name); }
 		if (ex.stack)		{ text.push("Stack: " + ex.stack.replace("\n", eol, "g")); }
 	}
-	appCtxt.getAppController().popupErrorDialog(msg, text.join(eol));
+	appCtxt.getAppController().popupErrorDialog(msg, text.join(eol), null, false, true);
 };
 
 /**
