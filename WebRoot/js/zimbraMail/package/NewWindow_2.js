@@ -128,6 +128,7 @@ AjxPackage.require("zimbraMail.mail.ZmMailApp");
 AjxPackage.require("zimbraMail.calendar.ZmCalendarApp");
 AjxPackage.require("zimbraMail.tasks.ZmTasksApp");
 AjxPackage.require("zimbraMail.abook.ZmContactsApp");
+AjxPackage.require("zimbraMail.abook.model.ZmContact");
 AjxPackage.require("zimbraMail.briefcase.ZmBriefcaseApp");
 
 AjxPackage.require("zimbraMail.calendar.model.ZmCalBaseItem");
@@ -160,3 +161,4 @@ AjxPackage.require("zimbraMail.mail.controller.ZmMailConfirmController");
 AjxPackage.require("zimbraMail.mail.view.object.ZmImageAttachmentObjectHandler");
 
 AjxPackage.require("zimbra.common.ZmErrorDialog");
+
