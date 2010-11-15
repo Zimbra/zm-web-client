@@ -141,6 +141,15 @@ FORM {
 	border-collapse:collapse;
 	text-align:left;
 }
+.offline {
+	color: @darken(AppC,50)@;
+	text-align: center;
+}
+
+.offline a, .offline a:visited {
+	color: @darken(AppC,50)@;
+}
+
 .form td:first-child label {margin-right:20px;}
 .form td {padding-bottom:10px;}
 .form input[type='text'], 

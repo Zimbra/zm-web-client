@@ -30,14 +30,14 @@
 	#ENDIF
 }
 
-.form {
+.form, .offline {
 	color: #FFFFFF;
 }
 .form input[type='text'], 
 .form input[type='password'] {
 	border:1px solid @LoginColor@;
 }
-.LoginScreen #ZLoginWhatsThisAnchor {
+.LoginScreen #ZLoginWhatsThisAnchor, .offline a, .offline a:visited {
 	border-bottom: 1px dotted #FFF;
 	color: #FFF;
 	text-decoration:none;
