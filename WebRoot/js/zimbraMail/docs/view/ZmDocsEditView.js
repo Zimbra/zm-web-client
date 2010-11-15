@@ -16,10 +16,12 @@
 ZmDocsEditView = function(parent, className, posStyle, controller, deferred) {
     className = className || "ZmDocsEditView";
     DwtComposite.call(this, {parent:parent, className:className, posStyle:DwtControl.ABSOLUTE_STYLE});
+
     this._buttons = {};
     this._controller = controller;
     this._docMgr = new ZmDocletMgr();
     this._initialize();    
+	this.getHtmlElement().style.overflow = "auto";
 };
 
 ZmDocsEditView.prototype = new DwtComposite;
