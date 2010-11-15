@@ -384,7 +384,12 @@ if (application.getInitParameter("offlineMode") != null)  {
 							<div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
 						</td>
 					</tr>
+					<tr>
+                        <td colspan="2"><hr/></td>
+                    </tr>
+                    
 			</table>
+			<div class="offline"><fmt:message key="switchToOfflineClientEx"/></div>
 			<div class="copyright"><fmt:message key="splashScreenCopyright"/></div>
 		</div>
 		<div id="ZLoginNotice"><fmt:message key="clientLoginNotice"/></div>
