@@ -7,6 +7,8 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <app:handleError>
 <zm:getMailbox var="mailbox"/>
+${zm:refreshPrefs(mailbox)}
+
 <c:set var="skin" value="${not empty param.skin ? param.skin : (not empty sessionScope.skin ? sessionScope.skin : mailbox.prefs.skin)}"/>
 <c:choose>
 	<c:when test="${not empty mailbox.prefs.locale}">
@@ -19,6 +21,7 @@
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <c:set var="messageIds" value="${fn:join(paramValues.id, ',')}"/>
 ${zm:clearMessageCache(mailbox)}
+
 </app:handleError>
 <html>
 <app:head mailbox="${mailbox}"/>
