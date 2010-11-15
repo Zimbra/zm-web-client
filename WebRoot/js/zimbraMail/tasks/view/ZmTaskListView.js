@@ -497,6 +497,7 @@ function(columnItem, bSortAsc) {
 		case ZmItem.F_STATUS:		sortBy = bSortAsc ? ZmSearch.STATUS_ASC : ZmSearch.STATUS_DESC; break;
 		case ZmItem.F_PCOMPLETE:	sortBy = bSortAsc ? ZmSearch.PCOMPLETE_ASC : ZmSearch.PCOMPLETE_DESC; break;
 		case ZmItem.F_DATE:			sortBy = bSortAsc ? ZmSearch.DUE_DATE_ASC : ZmSearch.DUE_DATE_DESC;	break;
+        case ZmItem.F_SORTED_BY:    sortBy = bSortAsc ? ZmSearch.DUE_DATE_ASC : ZmSearch.DUE_DATE_DESC;	break;
 	}
 
 	if (sortBy) {
@@ -566,7 +567,7 @@ function(parent) {
         hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.dateDue, width:ZmTaskListView.COL_WIDTH_DATE_DUE, sortable:ZmItem.F_DATE}));
     }
 	else {
-        hList.push(new DwtListHeaderItem({field:ZmItem.F_SORTED_BY, text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY, resizeable:false}));
+        hList.push(new DwtListHeaderItem({field:ZmItem.F_SORTED_BY, text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.dateDue), sortable:ZmItem.F_SORTED_BY, resizeable:false}));
 	}
 	return hList;
 };
@@ -651,11 +652,15 @@ function(ev) {
 		}
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var task = items[0];
-		var div = this._getElFromItem(task);
+        var div = this._getElFromItem(task);
 		if (div) {
 			var bContained = this._selectedItems.contains(div);
 			this._createItemHtml(task, {div:div, bContained:bContained});
 			this.associateItemWithElement(task, div);
+            if(this._controller.isReadingPaneOn()) {
+                task.message = null;
+			    task.getDetails(ZmCalItem.MODE_EDIT, new AjxCallback(this._controller, this._controller._showTaskReadOnlyView, task));
+		    }
 		}
 	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		for (var i = 0; i < items.length; i++) {
