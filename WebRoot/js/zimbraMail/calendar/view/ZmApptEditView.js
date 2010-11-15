@@ -190,11 +190,10 @@ function() {
     if(this._maxPickerWidth) {
         for (var t = 0; t < this._attTypes.length; t++) {
             var type = this._attTypes[t];
-            if(type == ZmCalBaseItem.EQUIPMENT) continue;
             if(this._pickerButton[type]) this._pickerButton[type].setSize(AjxEnv.isIE ? this._maxPickerWidth : '100%', Dwt.DEFAULT);
         }
         if(this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON]) this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON].setSize(AjxEnv.isIE ? this._maxPickerWidth : '100%', Dwt.DEFAULT);
-        document.getElementById(this._htmlElId + "_pickerColumn").setAttribute("width", this._maxPickerWidth + (AjxEnv.isIE ? 10 : 15));
+        document.getElementById(this._htmlElId + "_pickerColumn").setAttribute("width", this._maxPickerWidth + (AjxEnv.isIE ? 10 : 25));
     }
 };
 
@@ -835,7 +834,7 @@ function(pickerId, listener, addrType, isForwardPicker) {
         button.addrType = addrType;
 
         var btnWidth = button.getSize().x;
-        if(addrType != ZmCalBaseItem.EQUIPMENT &&  btnWidth > this._maxPickerWidth) this._maxPickerWidth = btnWidth;
+        if(btnWidth > this._maxPickerWidth) this._maxPickerWidth = btnWidth;
     }
 };
 
