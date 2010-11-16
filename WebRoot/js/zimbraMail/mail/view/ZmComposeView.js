@@ -679,6 +679,13 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	msg.setTopPart(top);
 	msg.setSubject(subject);
 	msg.setForwardAttIds(forwardAttIds);
+    if (!contactId) {
+    //contactId not passed in, but vcard signature may be set
+        if (this._msg._contactAttIds){
+            contactId = this._msg._contactAttIds;
+            this._msg.setContactAttIds([]);
+        }
+    }
 	msg.setContactAttIds(contactId);
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
@@ -1262,8 +1269,20 @@ function(signatureId) {
 
 	var signature = this.getSignatureById(signatureId);
 	if (signature && signature.contactId) {
-		this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL, null, null, null, signature.contactId);
+        if (!this._msg){
+            this._msg = new ZmMailMsg();
+        }
+        this._msg.setContactAttIds(signature.contactId);
+        //come back later and see if we need to save the draft
+        AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._checkSaveDraft), 500);
 	}
+};
+
+ZmComposeView.prototype._checkSaveDraft =
+function(){
+    if (this._msg && this._msg._contactAttIds && this._msg._contactAttIds.length > 0) {
+        this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL, null, null, null, this._msg._contactAttIds);
+    }
 };
 
 /**
@@ -1366,9 +1385,22 @@ function(content, oldSignatureId, account) {
 			var vcardPart;
 			var atts = this._msg && this._msg.attachments;
 			if (atts && atts.length) {
-				for (var i = 0; i < atts.length; i++) {
+               //we need to figure out what input to uncheck
+               if (appCtxt.cacheGet(oldSig.contactId) && appCtxt.cacheGet(oldSig.contactId) instanceof ZmContact) {
+                   var sigContact = appCtxt.cacheGet(oldSig.contactId);
+
+                }
+				for (var i = 0; i < atts.length && !vcardPart; i++) {
 					if (atts[i].ct == ZmMimeTable.TEXT_VCARD) {
-						vcardPart = atts[i].part;
+                        //we may have multiple vcards, determine which one to remove based on signature in cache
+                        if (sigContact) {
+                            var name = atts[i].filename.substring(0, atts[i].filename.length -4)
+                            if (name == sigContact._fileAs)
+                                vcardPart = atts[i].part
+                        }
+                        else {
+						    vcardPart = atts[i].part;
+                        }
 					}
 				}
 			}
@@ -1618,6 +1650,7 @@ function(all) {
 	// make sure att IDs don't get reused
 	if (this._msg) {
 		this._msg.attId = null;
+        this._msg._contactAttIds = [];
 	}
 };
 
@@ -2110,7 +2143,7 @@ function(action, msg, extraBodyText) {
 	this._showForwardField(msg, action, incOptions, hasInlineImages, bodyInfo && bodyInfo.hasInlineAtts);
 
 	if (sigId) {
-		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._attachSignatureVcard, [sigId]), 10);
+        this._attachSignatureVcard(sigId);
 	}
 };
 
