@@ -143,7 +143,9 @@ ZmDocsEditController.prototype.checkForChanges = function() {
    /*if(!ZmDocsEditApp.fileInfo.id) {
      return ZmMsg.exitDocNotSaved;
    }*/
-   if(curDoc == '<html><body><br></body></html>') {
+   if(  ZmDocsEditController.savedDoc == null &&
+       (curDoc == '<html><body></body></html>' ||
+       !curDoc)) {
         return;     
    } else if(curDoc != ZmDocsEditController.savedDoc) {
         return ZmMsg.exitDocUnSavedChanges;

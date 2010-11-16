@@ -338,13 +338,10 @@ ZmDocsEditView.prototype._tbActionListener = function(ev) {
    var action = ev.item.getData(ZmDocsEditView.ZD_VALUE);
 
    if(action == "NewDocument") {
-
-      if(confirm(ZmMsg.exitDocUnSavedChanges)) {
-          this._buttons.fileName.setValue("");
-          ZmDocsEditApp.setFile();
-          this._pushIframeContent(this._iframe);
-          this._editor._enableDesignMode(this._editor._getIframeDoc());
-      }
+        var fileInfo = ZmDocsEditApp.fileInfo;
+        var url = ZmDocletMgr.getEditURLForContentType(fileInfo.contentType) + "?l="+fileInfo.folderId + (window.isTinyMCE ? "&editor=tinymce" : "") + (window.skin ? "&skin="+window.skin : "") + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
+        var winName = (new Date()).getTime().toString();
+        window.open(url, winName);
 
    } else if(action = "OpenDocument") {
        /*if(!this._openDocDlg) {

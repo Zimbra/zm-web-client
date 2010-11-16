@@ -349,3 +349,16 @@ function(item, callback, errorCallback, accountName){
 	return this.sendRequest(params);
 
 };
+
+ZmDocletMgr.getEditURLForContentType =
+function(contentType) {
+	AjxDispatcher.require("Startup1_1");
+	var editPage = "Slides.jsp";
+	switch(contentType) {
+		case ZmMimeTable.APP_ZIMBRA_SLIDES:			editPage = "Slides.jsp"; break;
+		case ZmMimeTable.APP_ZIMBRA_SPREADSHEET:	editPage = "SpreadsheetDoc.jsp"; break;
+		case ZmMimeTable.APP_ZIMBRA_DOC:			editPage = "Docs.jsp"; break;
+		default: return null;
+	};
+	return (window.appContextPath + "/public/" + editPage);
+};
