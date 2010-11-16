@@ -46,6 +46,7 @@ ZmCalViewController = function(container, calApp) {
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.CAL_LIST_VIEW]	= ZmId.VIEW_CAL_LIST;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmId.VIEW_CAL_SCHEDULE;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.FB_VIEW]	= ZmId.VIEW_CAL_FB;
 
 	// get op based on view
 	ZmCalViewController.VIEW_TO_OP = {};
@@ -88,7 +89,9 @@ ZmCalViewController = function(container, calApp) {
 		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
 		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW, ZmOperation.SCHEDULE_VIEW
 	];
-
+    if(appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
+        ZmCalViewController.OPS.push(ZmOperation.FB_VIEW);    
+    }
 	var viewOpsListener = new AjxListener(this, this._viewActionMenuItemListener);
 	for (var i = 0; i < ZmCalViewController.OPS.length; i++) {
 		var op = ZmCalViewController.OPS[i];
@@ -122,6 +125,7 @@ ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WORK_WEEK_VIEW]	= ZmId.VIEW
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_LIST_VIEW]			= ZmId.VIEW_CAL_LIST;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_SCHEDULE_VIEW]		= ZmId.VIEW_CAL_SCHEDULE;
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_FB_VIEW]		    = ZmId.VIEW_CAL_FB;
 
 ZmCalViewController.prototype.toString =
 function() {
@@ -773,7 +777,7 @@ function(viewId) {
 
 	// Set the other view toolbar entries to point to the Day view entry. Hack
 	// to fool the ZmListController into thinking there are multiple toolbars
-	this._toolbar[ZmId.VIEW_CAL_SCHEDULE] = this._toolbar[ZmId.VIEW_CAL_WEEK] =
+	this._toolbar[ZmId.VIEW_CAL_FB] = this._toolbar[ZmId.VIEW_CAL_SCHEDULE] = this._toolbar[ZmId.VIEW_CAL_WEEK] =
 	this._toolbar[ZmId.VIEW_CAL_WORK_WEEK] = this._toolbar[ZmId.VIEW_CAL_MONTH] =
 	this._toolbar[ZmId.VIEW_CAL_APPT] = this._toolbar[ZmId.VIEW_CAL_LIST] =
 	this._toolbar[ZmId.VIEW_CAL_DAY];
@@ -3346,6 +3350,7 @@ function(actionCode) {
 		case ZmKeyMap.CAL_MONTH_VIEW:
 		case ZmKeyMap.CAL_SCHEDULE_VIEW:
 		case ZmKeyMap.CAL_LIST_VIEW:
+		case ZmKeyMap.CAL_FB_VIEW:
 			this.show(ZmCalViewController.ACTION_CODE_TO_VIEW[actionCode]);
 			break;
 

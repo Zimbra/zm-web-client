@@ -91,6 +91,7 @@ ZmKeyMap.ADDRESS_PICKER			= "AddressPicker";
 ZmKeyMap.ASSISTANT				= "Assistant";
 ZmKeyMap.ATTACHMENT				= "Attachment";
 ZmKeyMap.CAL_DAY_VIEW			= "DayView";
+ZmKeyMap.CAL_FB_VIEW			= "FBView";
 ZmKeyMap.CAL_LIST_VIEW			= "CalListView";
 ZmKeyMap.CAL_MONTH_VIEW			= "MonthView";
 ZmKeyMap.CAL_SCHEDULE_VIEW		= "ScheduleView";
