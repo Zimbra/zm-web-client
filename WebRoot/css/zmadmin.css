@@ -732,3 +732,244 @@ div.ZaSearchBuilderOptionRemoveAll table  {
 	@ImagePadding@
 	text-decoration: underline;
 }
+
+/* Cell for the 'header' (logo/app name/version) */
+#ZLoginHeaderContainer {}
+
+/* Cell for the 'body' (notice/form/about/license) */
+#ZLoginBodyContainer {
+	@LightWindowInnerBorder@
+	@AppBg@
+	padding-top:20px;
+}
+
+/* Cell for the 'license' (copyright, etc) */
+#ZLoginLicenseContainer {
+	padding-top:5px;
+	padding-bottom:5px;
+	text-align:center;
+	vertical-align:bottom;
+	@Text-disabled@
+	font-size:9px;
+}
+
+/* Cell for the client level (basic/advanced) */
+#ZLoginClientLevelContainer {
+	padding-top:5px;
+	padding-bottom:5px;
+	text-align:center;
+	vertical-align:bottom;
+	@FontSize-smaller@
+}
+
+/* What's this anchor */
+#ZLoginWhatsThisAnchor {
+	@FontSize-smaller@
+}
+
+
+/*
+ * 	Banner (top) zone
+ */
+
+/* Cell for the 'banner' */
+#ZLoginBannerContainer {}
+
+/* Outer element for the 'banner' (image/app name/version) */
+#ZLoginBannerPanel {
+	margin:10px;
+	position:relative;
+}
+
+/* Application logo.  Use this for positioning only, image comes from .ImgLoginBanner */
+#ZLoginBannerImage {}
+
+
+/* (optional) Short version of the app -- eg:  'Beta' */
+#ZLoginShortVersion {
+	vertical-align:top;
+	font-size:18px;
+	font-weight:normal;
+	color:#666666;
+}
+
+/* Name of the app -- eg:  'Collaboration Suite' */
+#ZLoginAppName {
+	margin-top:5px;
+	margin-bottom:5px;
+	width:95%;
+	text-align:right;
+	@FontSize-biggest@
+}
+
+/* (optional) Product name -- eg:  'Administration Console' */
+#ZLoginProductName {
+	@FontSize-bigger@
+	width:100%;
+	font-weight:normal;
+	text-align:right;
+}
+
+/* Long version number, eg:  'Version 3.5 (April 18, 2005)' */
+#ZLoginLongVersion {
+	@Text-disabled@
+	margin-top:3px;
+	font-size:9px;
+	width:100%;
+	font-weight:normal;
+	text-align:right;
+}
+
+
+/* Panel that shows an error or notice */
+#ZLoginErrorPanel {
+	position:relative;
+	left:10%;
+	width:80%;
+	margin-top:10px;
+	margin-bottom:10px;
+	padding:5px;
+	@NormalOutsetBorder@
+	background-color:@HilightColor@;
+}
+
+
+
+/* Error icon -- use for positioning only, image comes from .ImgLoginError */
+#ZLoginErrorIcon {}
+
+
+/* Login error message text -- use for positioning only, text style comes from .errorText */
+#ZLoginErrorMsg {}
+.errorText {}
+
+
+/* Panel that contains all versions of the login panel */
+#ZLoginFormPanel {
+	position:relative;
+	left:5%;
+	width:90%;
+}
+
+
+/* Container that owns the login button */
+#ZLoginButton {}
+
+/* Container that owns the name of the login button */
+#ZLoginButtonText {}
+
+/* Containers that hold the various login form pieces -- set display:none on these to hide each piece */
+#ZLoginUserTr {}
+#ZLoginPasswordTr {}
+#ZLoginNewPassword1Tr {}
+#ZLoginNewPassword2Tr {}
+
+
+/* Container for the "remember me" checkbox */
+#ZLoginRememberMeContainer {}
+
+
+/* Generic table in login panel -- used to make spacing easier */
+.zLoginTable {}
+
+/* Field label (right-aligned) */
+.zLoginLabelContainer {
+	@Label@
+	text-align:right;
+	width:80px;
+}
+
+/* Field label (left-aligned) */
+.zLoginCheckboxLabelContainer {
+	@Label@
+}
+
+/* Field <input> element */
+.zLoginField {
+	width:100%;
+}
+
+/* Container (td) for fields */
+.zLoginFieldContainer {}
+
+
+/* Container (td) for buttons */
+.zLoginButtonContainer {}
+
+
+/* Panel to show the "loading..." message */
+#ZLoginLoadingPanel {
+	position:relative;
+	left:10%;
+	width:80%;
+	margin-top:10px;
+	margin-bottom:10px;
+	padding:5px;
+}
+
+
+#ZLoginSwitchMsg {
+	padding-top:10px;
+}
+
+/* Container for the "loading..." message */
+#ZLoginLoadingMsg {
+	@FontSize-bigger@
+}
+
+
+/* Panel to show the "About" message */
+#ZLoginAboutPanel {
+	position:relative;
+	left:10%;
+	width:80%;
+	margin-top:10px;
+	margin-bottom:10px;
+	padding:5px;
+	font-size:15px;
+}
+
+
+
+/* Container to show/hide the license message text */
+#ZLoginLicenseMsgContainer {}
+
+/* Actual place where the license message text lives */
+#ZLoginLicenseMsg {
+	@FontSize-bigger@
+}
+
+
+
+/* Container to show an info message to the user */
+.ZLoginInfoMessage {
+	@ToastContainer@
+	@ToastContainer-warning@
+	width:80%;
+	margin:10px;
+	@BoxPadding@
+}
+
+/* Separator in the login dialog */
+.ZLoginSeparator {
+	position:relative;
+	width:100%;	
+	@BottomSeparator@
+	margin:10px 0px;
+}
+
+
+
+.error {  
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: @BoxPaddingSize@;
+	width: 85%;
+	background-color: rgb(255, 255, 204); 
+	border: 1px solid rgb(124, 124, 148);
+	text-align:left;
+}
+
+.focusBorder { 
+	border: 1px dotted black;
+}
