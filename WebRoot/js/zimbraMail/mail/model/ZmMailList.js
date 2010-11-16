@@ -99,7 +99,7 @@ function(params) {
 		// check if we're moving to or from a shared folder, in which case, always send
 		// request on-behalf-of the account the item originally belongs to.
         var folderId = params.items[0].getFolderId();
-        var fromFolder = appCtxt.getById(folderId);
+        var fromFolder = folderId && appCtxt.getById(folderId);
 		if ((params.items[0].isDraft && params.folder.id == ZmFolder.ID_DRAFTS) ||
 			(params.folder.isRemote()) || (fromFolder && fromFolder.isRemote()))
 		{
