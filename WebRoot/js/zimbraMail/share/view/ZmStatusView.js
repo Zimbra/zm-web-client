@@ -277,6 +277,7 @@ ZmToast.DEFAULT_STATE["slide-in"] = { start: -40, end: 0, step: 1, duration: 100
 ZmToast.DEFAULT_STATE["slide-out"] = { start: 0, end: -40, step: -1, duration: 100, multiplier: 1 };
 
 ZmToast.LEVEL_RE = /\b(ZToastCrit|ZToastWarn|ZToastInfo)\b/g;
+ZmToast.DISMISSABLE_STATES = [ZmToast.HOLD];
 
 // Data
 
@@ -475,7 +476,7 @@ function() {
 
 ZmToast.prototype.__pause =
 function() {
-    if (this._dismissed) {
+    if (this._dismissed && ZmToast.__mayDismiss(ZmToast.PAUSE)) {
         this._funcs["next"]();
     } else {
         this._pauseTimer = setTimeout(this._funcs["next"], this._state.duration);
@@ -488,23 +489,30 @@ function() {
  */
 ZmToast.prototype.__hold =
 function() {
-    if (this._dismissed) {
+    if (this._dismissed && ZmToast.__mayDismiss(ZmToast.HOLD)!=-1) {
         this._funcs["next"]();
     } else {
         this._held = true;
     }
 };
 
+ZmToast.__mayDismiss =
+function(state) {
+    return AjxUtil.indexOf(ZmToast.DISMISSABLE_STATES, state)!=-1;
+};
+
 /**
- * Dismiss (continue) a held or paused toast. If not yet held or paused, those states will be skipped when they occur
+ * Dismiss (continue) a held or paused toast (Given that ZmToast.DISMISSABLE_STATES agrees). If not yet held or paused, those states will be skipped when they occur
  */
 ZmToast.prototype.dismiss =
 function() {
     if (!this._dismissed && this._poppedUp) {
-        this._dismissed = true;
-        if (this._pauseTimer || this._held) {
+        var doDismiss = (this._pauseTimer && ZmToast.__mayDismiss(ZmToast.PAUSE)) || 
+            (this._held && ZmToast.__mayDismiss(ZmToast.HOLD));
+        if (doDismiss) {
             this._funcs["next"]();
         }
+        this._dismissed = true;
         if (this._dismissCallback instanceof AjxCallback) {
             this._dismissCallback.run();
         }
