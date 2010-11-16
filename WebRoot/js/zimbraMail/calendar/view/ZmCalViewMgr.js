@@ -149,6 +149,7 @@ ZmCalViewMgr.prototype.setSubContentVisible = function(visible) {
 };
 
 ZmCalViewMgr.prototype._createSubContent = function() {
+    if (!this._subContentShown) return null;
     if (this._subContentInitialized) return this._list;
 
     this._subContentInitialized = true;
