@@ -3093,12 +3093,14 @@ ZmCalViewController.__AjxVector_getById = function(vector, id) {
 ZmCalViewController.prototype._updateSubContent = function(appt) {
     if (appt) {
         var listView = this._viewMgr.getSubContentView();
-        listView.getApptList().add(appt);
-        listView.setNeedsRefresh(true);
-        if (!this._modifyAppts || --this._modifyAppts.adds <= 0) {
-            listView.refresh();
-            this._clearCache = true;
-            this.refreshHandler();
+        if (listView) {
+            listView.getApptList().add(appt);
+            listView.setNeedsRefresh(true);
+            if (!this._modifyAppts || --this._modifyAppts.adds <= 0) {
+                listView.refresh();
+                this._clearCache = true;
+                this.refreshHandler();
+            }
         }
     }
 };
@@ -3114,9 +3116,11 @@ function(notify) {
         var adds = this._modifyAppts.adds;
         if (removes || adds) {
             var listView = this._viewMgr.getSubContentView();
-            listView.setNeedsRefresh(true);
-            listView.refresh();
-            this._clearCache = true;
+            if (listView) {
+                listView.setNeedsRefresh(true);
+                listView.refresh();
+                this._clearCache = true;
+            }
         }
         this._modifyAppts.removes = 0;
     }
