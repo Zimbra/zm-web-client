@@ -289,20 +289,26 @@ function() {
 
 ZmApptEditView.prototype._addTabGroupMembers =
 function(tabGroup) {
-	tabGroup.addMember(this._subjectField);
+	tabGroup.addMember(this._subjectField.getInputElement());
     if(this.GROUP_CALENDAR_ENABLED) {
-        tabGroup.addMember(this._attInputField[ZmCalBaseItem.PERSON]);
-        tabGroup.addMember(this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON]);
+        tabGroup.addMember(this._attInputField[ZmCalBaseItem.PERSON].getInputElement());
+        tabGroup.addMember(this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].getInputElement());
     }    
-	tabGroup.addMember(this._attInputField[ZmCalBaseItem.LOCATION]);
+	tabGroup.addMember(this._attInputField[ZmCalBaseItem.LOCATION].getInputElement());
+    if(this.GROUP_CALENDAR_ENABLED) {
+	    tabGroup.addMember(this._attInputField[ZmCalBaseItem.EQUIPMENT].getInputElement());
+    }
     tabGroup.addMember(this._startDateField);
 	tabGroup.addMember(this._startTimeSelect.getInputField());
 	tabGroup.addMember(this._endDateField);
 	tabGroup.addMember(this._endTimeSelect.getInputField());
     tabGroup.addMember(this._allDayCheckbox);
-    tabGroup.addMember(this._reminderSelectInput);
+    tabGroup.addMember(this._showAsSelect);
+    tabGroup.addMember(this._folderSelect);
 
     if(this._repeatSelect) tabGroup.addMember(this._repeatSelect);
+    tabGroup.addMember(this._reminderSelectInput);
+
 
 	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
 	tabGroup.addMember(document.getElementById(bodyFieldId));
@@ -781,6 +787,8 @@ function(width) {
 
     Dwt.setVisible(this._optionalAttendeesContainer, false);
     Dwt.setVisible(this._resourcesContainer, false);
+    Dwt.setVisible(this._optAttendeesInputField.getInputElement(), false);
+    Dwt.setVisible(this._resourceInputField.getInputElement(), false);
 
     this._inviteMsgContainer = document.getElementById(this._htmlElId + "_invitemsg_container");
     this._inviteMsg = document.getElementById(this._htmlElId + "_invitemsg");
@@ -843,12 +851,18 @@ function(forceShow) {
     this._optionalAttendeesShown = ! this._optionalAttendeesShown || forceShow;
     this._showOptional.innerHTML = this._optionalAttendeesShown ? ZmMsg.hideOptional : ZmMsg.showOptional;
     Dwt.setVisible(this._optionalAttendeesContainer, Boolean(this._optionalAttendeesShown))
+
+    var inputEl = this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].getInputElement();
+    Dwt.setVisible(inputEl, Boolean(this._optionalAttendeesShown));
 };
 
 ZmApptEditView.prototype._toggleResourcesField =
 function(forceShow) {
     this._resourcesShown = ! this._resourcesShown || forceShow;
     this.showResourceField(this._resourcesShown);
+
+    var inputEl = this._attInputField[ZmCalBaseItem.EQUIPMENT].getInputElement();
+    Dwt.setVisible(inputEl, Boolean(this._resourcesShown));
 };
 
 ZmApptEditView.prototype.showResourceField =
@@ -1423,6 +1437,7 @@ function() {
     if (this._subjectField) {
         var inputEl = this._subjectField.getInputElement();
 		inputEl.onblur = AjxCallback.simpleClosure(this._handleSubjectOnBlur, this, inputEl);
+		inputEl.onfocus = AjxCallback.simpleClosure(this._handleSubjectOnFocus, this, inputEl);
     }
 };
 
@@ -1820,6 +1835,16 @@ function(el) {
 ZmApptEditView.prototype._handleOnFocus =
 function(inputEl) {
 	this._activeInputField = inputEl._attType;
+    this.setFocusMember(inputEl);
+};
+
+ZmApptEditView.prototype.setFocusMember =
+function(member) {
+    var kbMgr = appCtxt.getKeyboardMgr();
+    var tabGroup = kbMgr.getCurrentTabGroup();
+    if (tabGroup) {
+        tabGroup.setFocusMember(member);
+    }
 };
 
 ZmApptEditView.prototype._handleOnBlur =
@@ -1835,6 +1860,11 @@ function(inputEl) {
         var buttonText = subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
         appCtxt.getAppViewMgr().setTabTitle(this._controller.viewId, buttonText);
     }
+};
+
+ZmApptEditView.prototype._handleSubjectOnFocus =
+function(inputEl) {
+   this.setFocusMember(inputEl); 
 };
 
 ZmApptEditView.prototype._resetKnownLocation =

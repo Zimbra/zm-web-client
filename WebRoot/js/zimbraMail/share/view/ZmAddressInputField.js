@@ -351,3 +351,15 @@ function() {
 	this._bubbleAddress	= {};	// addresses by bubble ID
 	this._dlAddress		= {};	// DL addresses by bubble ID, for expanding
 };
+
+/**
+ * Focuses on this field.
+ */
+ZmAddressInputField.prototype.focus =
+function() {
+	if (this.getEnabled()) {
+		this._hasFocus = true;
+		this.getInputElement().focus();
+	}
+};
+
