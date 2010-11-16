@@ -57,3 +57,7 @@
 .LoginScreen .copyright {
 	color:@lighten(LoginColor,36)@; 
 }
+
+.LoginScreen a:hover {
+    background-color:transparent;
+}
