@@ -945,7 +945,7 @@ function(items, callback){
     cc._setView({action:action, msg:msg, toOverride:toOverride, inNewWindow:false});
     var draftType = ZmComposeController.DRAFT_TYPE_AUTO;
     var sendDocsCallback = new AjxCallback(cc, cc._handleResponseSaveDraftListener, [draftType, callback]);
-    cc.sendDocs(docInfo, draftType, sendDocsCallback);
+    cc.saveDraft(draftType, null, docInfo, sendDocsCallback);
 };
 
 ZmBriefcaseController.prototype._resetOpForCurrentView =
