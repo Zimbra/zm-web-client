@@ -1061,7 +1061,7 @@ function(items, folder, attrs, isShiftKey) {
 	if (items[0] instanceof ZmItem) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			if (!item.folderId || (item.folderId != folder.id || attrs.op == "recover")) {
+			if (!item.folderId || (item.folderId != folder.id || (attrs && attrs.op == "recover"))) {
 				if (!this._isItemMovable(item, isShiftKey, folder)) {
 					copy.push(item);
 				} else {
