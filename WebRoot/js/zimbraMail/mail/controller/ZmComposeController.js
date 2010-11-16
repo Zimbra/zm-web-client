@@ -387,8 +387,8 @@ function(attId, draftType, callback, contactId) {
  * @param	{AjxCallback}	callback		the callback
  */
 ZmComposeController.prototype.sendDocs =
-function(docIds, draftType, callback) {
-	return this._sendMsg(null, docIds, draftType, callback);
+function(docIds, draftType, callback, contactId) {
+	return this._sendMsg(null, docIds, draftType, callback, contactId);
 };
 
 /**
@@ -866,6 +866,7 @@ function(params) {
 	if (params.callback) {
 		params.callback.run(this);
 	}
+    
 };
 
 ZmComposeController.prototype._initializeToolBar =
@@ -1526,7 +1527,7 @@ function(draftType, attId, docIds, callback, contactId) {
 	if (!docIds) {
 		this.sendMsg(attId, draftType, respCallback, contactId);
 	} else {
-		this.sendDocs(docIds, draftType, respCallback);
+		this.sendDocs(docIds, draftType, respCallback, contactId);
 	}
 };
 
