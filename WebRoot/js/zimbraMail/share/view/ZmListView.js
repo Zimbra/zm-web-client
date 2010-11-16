@@ -1065,6 +1065,7 @@ function(columnItem, bSortAsc, callback) {
 	var sortBy;
 	switch (columnItem._sortable) {
 		case ZmItem.F_FROM:		sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC; break;
+		case ZmItem.F_NAME:		sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC; break; //used for Briefcase only now. SUBJ is mappaed to the filename of the document on the server side
 		case ZmItem.F_SUBJECT:	sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC;	break;
 		case ZmItem.F_DATE:		sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;	break;
 		case ZmItem.F_SIZE:		sortBy = bSortAsc ? ZmSearch.SIZE_ASC : ZmSearch.SIZE_DESC;	break;
