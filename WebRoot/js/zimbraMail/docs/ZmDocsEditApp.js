@@ -48,7 +48,7 @@ ZmDocsEditApp.launch = function(){
 
     appCtxt.rememberMe = false;
 
-    window.skin = null;
+    //window.skin = null;
 
     // Create and initialize settings
     var settings = new ZmSettings();
@@ -122,6 +122,10 @@ ZmDocsEditApp._createDBG = function(devMode){
 ZmDocsEditApp._beforeUnload =
 function(){
     var appCtrl = appCtxt.getAppController();
+    var msg = appCtrl.checkForChanges();
+    if(msg) {
+        return msg;
+    }
     return appCtrl.exit();
 };
 
