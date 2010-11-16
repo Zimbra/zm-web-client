@@ -39,20 +39,6 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 				  controller:controller, headerList:headerList, dropTgt:dropTgt};
 	ZmBriefcaseBaseView.call(this, params);
 
-	// create a action menu for the header list
-	this._colHeaderActionMenu = new ZmPopupMenu(this);
-	var actionListener = new AjxListener(this, this._colHeaderActionListener);
-	for (var i = 0; i < headerList.length; i++) {
-		var hCol = headerList[i];
-		// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
-		if (hCol._width) {
-			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
-			mi.setData(ZmDetailListView.KEY_ID, hCol._id);
-			mi.setChecked(true, true);
-			this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
-		}
-	}
-
     this.enableRevisionView(true);
 
     this._expanded = {};
@@ -63,6 +49,14 @@ ZmDetailListView.prototype = new ZmBriefcaseBaseView;
 ZmDetailListView.prototype.constructor = ZmDetailListView;
 
 ZmDetailListView.ROW_DOUBLE_CLASS	= "RowDouble";
+
+
+ZmDetailListView.SINGLE_COLUMN_SORT = [
+	{field:ZmItem.F_NAME, msg:"name"},
+	{field:ZmItem.F_SIZE, msg:"size"},
+	{field:ZmItem.F_DATE, msg:"date"}
+];
+
 
 /**
  * Returns a string representation of the object.
@@ -118,7 +112,7 @@ function(parent) {
                 new DwtListHeaderItem({field:ZmItem.F_VERSION, text:ZmMsg.version, width:ZmMsg.COLUMN_WIDTH_VERSION_DLV})
                 );
     }else{
-        headers.push(new DwtListHeaderItem({field:ZmItem.F_SORTED_BY, text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY, resizeable:false}));
+        headers.push(new DwtListHeaderItem({field:ZmItem.F_SORTED_BY, text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.name), sortable:ZmItem.F_SORTED_BY, resizeable:false}));
     }
 	return headers;
 };
@@ -144,6 +138,33 @@ function(field, itemIdx, isOutboundFolder) {
     }   
     return tooltip;
 };
+
+
+ZmDetailListView.prototype._getActionMenuForColHeader =
+function(force) {
+
+	if (!this.isMultiColumn()) {
+		if (!this._colHeaderActionMenu || force) {
+			this._colHeaderActionMenu = this._getSortMenu(ZmDetailListView.SINGLE_COLUMN_SORT, ZmItem.F_NAME);
+		}
+		return this._colHeaderActionMenu;
+	}
+
+	var menu = ZmListView.prototype._getActionMenuForColHeader.call(this, force);
+
+	return menu;
+};
+
+ZmDetailListView.prototype._colHeaderActionListener =
+function(ev) {
+	if (!this.isMultiColumn()) {
+		this._sortMenuListener(ev);
+	}
+	else {
+		ZmListView.prototype._colHeaderActionListener.apply(this, arguments);
+	}
+};
+
 
 ZmDetailListView.prototype._isExpandable =
 function(item){

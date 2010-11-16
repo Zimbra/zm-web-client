@@ -802,6 +802,44 @@ function() {
 	this._rendered = true;
 };
 
+/*
+ get sort menu for views that provide a right-click sort by menu in single-column view (currently mail and briefcase)
+ */
+ZmListView.prototype._getSortMenu =
+function (sortFields, defaultSortField) {
+	// create a action menu for the header list
+	var menu = new ZmPopupMenu(this);
+	var actionListener = new AjxListener(this, this._colHeaderActionListener);
+
+	for (var i = 0; i < sortFields.length; i++) {
+		var column = sortFields[i];
+		var label = AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg[column.msg]);
+		var mi = menu.createMenuItem(column.field, {text:label, style:DwtMenuItem.RADIO_STYLE});
+		if (column.field == defaultSortField) {
+			mi.setChecked(true, true);
+		}
+		mi.setData(ZmListView.KEY_ID, column.field);
+		menu.addSelectionListener(column.field, actionListener);
+	}
+	return menu;
+}
+
+
+/*
+listener used by views that provide a right-click sort by menu in single-column view (currently mail and briefcase)
+ */
+ZmListView.prototype._sortMenuListener =
+function(ev) {
+	var column = this._headerHash[ZmItem.F_SORTED_BY];
+	var cell = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, column._field));
+	if (cell) {
+		cell.innerHTML = ev.item.getText();
+	}
+	column._sortable = ev.item.getData(ZmListView.KEY_ID);
+	this._sortColumn(column, this._bSortAsc);
+}
+
+
 ZmListView.prototype._getActionMenuForColHeader =
 function(force) {
 	if (!this._colHeaderActionMenu || force) {

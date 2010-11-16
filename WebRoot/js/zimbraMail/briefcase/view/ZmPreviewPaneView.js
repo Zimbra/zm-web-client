@@ -122,6 +122,8 @@ function(){
 ZmPreviewPaneView.prototype.resetPreviewPane =
 function(newPreviewStatus, oldPreviewStatus){
 
+	this._detailListView._colHeaderActionMenu = null;  //action menu needs to be recreated as it's different for different views
+
     this.setReadingPane();
 
     if(oldPreviewStatus == ZmSetting.RP_OFF){
