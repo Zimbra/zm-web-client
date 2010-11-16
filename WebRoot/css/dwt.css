@@ -1747,6 +1747,15 @@ input.xform_field {
 .ZWidgetTable DIV				{	}
 .ZHasText .ZWidgetTitle			{	padding:0px 4px;	}
 
+#IFDEF MSIE
+.ZWidgetTable .ZLeftIcon .IEImage DIV, .ZWidgetTable .ZLeftIcon .IEImage IMG {
+    margin: 0px !important;
+}
+.ZHasIcon .ZMenuItemBorder .ZLeftIcon .IEImageMask IMG {
+	width: auto; height: auto;
+}
+#ENDIF
+
 .ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG	    {	margin:1px 4px;	}
 .ZWidgetTable .ZRightIcon DIV, .ZWidgetTable .ZRightIcon IMG	{	margin:1px 4px;	}
 .ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG	    {	margin:1px 4px;	}
