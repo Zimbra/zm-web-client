@@ -777,20 +777,7 @@ function(force) {
 
 	if (!this.isMultiColumn()) {
 		if (!this._colHeaderActionMenu || force) {
-			// create a action menu for the header list
-			var menu = this._colHeaderActionMenu = new ZmPopupMenu(this);
-			var actionListener = new AjxListener(this, this._colHeaderActionListener);
-
-			for (var i = 0; i < ZmMailListView.SINGLE_COLUMN_SORT.length; i++) {
-				var column = ZmMailListView.SINGLE_COLUMN_SORT[i];
-				var label = AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg[column.msg]);
-				var mi = menu.createMenuItem(column.field, {text:label, style:DwtMenuItem.RADIO_STYLE});
-				if (column.field == ZmItem.F_DATE) {
-					mi.setChecked(true, true);
-				}
-				mi.setData(ZmListView.KEY_ID, column.field);
-				menu.addSelectionListener(column.field, actionListener);
-			}
+			this._colHeaderActionMenu = this._getSortMenu(ZmMailListView.SINGLE_COLUMN_SORT, ZmItem.F_DATE);
 		}
 		var mi = this._colHeaderActionMenu.getItemById(ZmItem.F_FROM);
 		if (mi) {
@@ -813,13 +800,7 @@ function(force) {
 ZmMailListView.prototype._colHeaderActionListener =
 function(ev) {
 	if (!this.isMultiColumn()) {
-		var column = this._headerHash[ZmItem.F_SORTED_BY];
-		var cell = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, column._field));
-		if (cell) {
-			cell.innerHTML = ev.item.getText();
-		}
-		column._sortable = ev.item.getData(ZmListView.KEY_ID);
-		this._sortColumn(column, this._bSortAsc);
+		this._sortMenuListener(ev);
 	}
 	else {
 		ZmListView.prototype._colHeaderActionListener.apply(this, arguments);
