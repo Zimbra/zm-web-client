@@ -167,9 +167,6 @@ function(bEnableInputs) {
  */
 ZmCalItemEditView.prototype.isDirty =
 function(excludeAttendees) {
-    if(this._controller.inactive) {
-        return false;
-    }
 	var formValue = excludeAttendees && this._origFormValueMinusAttendees
 		? this._origFormValueMinusAttendees
 		: this._origFormValue;
@@ -1324,11 +1321,6 @@ function(ev) {
 	if (id == ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS || id == ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS) {
 		this._setEmailReminderControls();
 	}
-};
-
-ZmCalItemEditView.prototype.deactivate =
-function() {
-	this._controller.inactive = true;
 };
 
 // Static methods
