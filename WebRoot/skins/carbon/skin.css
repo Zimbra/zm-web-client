@@ -268,8 +268,9 @@ BODY						{	margin:0px; 				}
     -moz-box-shadow: 0px 0px 10px #000000; /* FF3.5+ */
     -webkit-box-shadow: 0px 0px 10px #000000; /* Saf3.0+, Chrome */
     box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
-    filter: progid:DXImageTransform.Microsoft.Glow(Color=@darken(LoginColor,50)@, Strength=3); /* IE6,IE7 */
-    -ms-filter: "progid:DXImageTransform.Microsoft.Glow(Color=@darken(LoginColor,50)@, Strength=3)"; /* IE8 */
+    #IFDEF MSIE
+    border: 1px solid #000; /* Plain border for IE */
+    #ENDIF
 }
 .SplashScreen h1 {
     margin:22px 100px 32px 20px;
