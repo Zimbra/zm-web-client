@@ -417,15 +417,12 @@ function(calItem, attId, notifyList, force) {
 			this._showErrorMessage(msg);
 			return false;
 		}
-		var callback = new AjxCallback(this, this._handleResponseSave, calItem);
-		var errorCallback = new AjxCallback(this, this._handleErrorSave, calItem);
         if(this._composeView.isReminderOnlyChanged()) {
             calItem.setMailNotificationOption(false);
         }
-        if(this._action == ZmCalItemComposeController.SEND)
-            calItem.send(attId, callback, errorCallback, notifyList);
-        else
-		    calItem.save(attId, callback, errorCallback, notifyList);
+        var callback = new AjxCallback(this, this._handleResponseSave, calItem);
+		var errorCallback = new AjxCallback(this, this._handleErrorSave, calItem);
+        this._doSaveCalItem(calItem, attId, callback, errorCallback, notifyList);
 	} else {
 		// bug: 27600 clean up edit view to avoid stagnant attendees
 		if(this.isCloseAction()) this._composeView.cleanup();
@@ -434,6 +431,14 @@ function(calItem, attId, notifyList, force) {
             this.enableToolbar(true);                                
         }
 	}
+};
+
+ZmCalItemComposeController.prototype._doSaveCalItem =
+function(calItem, attId, callback, errorCallback, notifyList){
+    if(this._action == ZmCalItemComposeController.SEND)
+        calItem.send(attId, callback, errorCallback, notifyList);
+    else
+        calItem.save(attId, callback, errorCallback, notifyList);
 };
 
 ZmCalItemComposeController.prototype.isCloseAction =

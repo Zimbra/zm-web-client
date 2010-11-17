@@ -108,7 +108,34 @@ function(dialog, appt) {
 ZmApptComposeController.prototype._apptForwardCallback =
 function() {
 	this._app.popView(true);
-};      
+};
+
+ZmApptComposeController.prototype._checkIsDirty =
+function(type, attribs){
+    return this._composeView.checkIsDirty(type, attribs)
+};
+
+ZmApptComposeController.prototype._getChangesDialog =
+function(){
+    if(!this._changesDialog){
+       var dlg = this._changesDialog = new DwtDialog({parent:appCtxt.getShell()});
+       var id = this._changesDialogId = Dwt.getNextId();
+       dlg.setContent(AjxTemplate.expand("calendar.Appointment#ChangesDialog", {id: id}));
+       dlg.setTitle(ZmMsg.apptSave); 
+       dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._changesDialogListener, id));
+    }
+    return this._changesDialog;
+};
+
+ZmApptComposeController.prototype._changesDialogListener =
+function(id){
+
+    var sendAppt = document.getElementById(id+"_send");
+    if(sendAppt.checked){
+        this._sendListener();
+    }
+    this._changesDialog.popdown();
+};
 
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
@@ -156,13 +183,23 @@ function(attId) {
 		if (this._invalidAttendees && this._invalidAttendees.length > 0) {
 			var dlg = appCtxt.getYesNoMsgDialog();
 			dlg.registerCallback(DwtDialog.YES_BUTTON, this._clearInvalidAttendeesCallback, this, [appt, attId, dlg]);
-			var msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, this._invalidAttendees.join(","));
+			var msg = AjxMessageFormat.format(ZmMsg.apptSignificantChanges, this._invalidAttendees.join(","));
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
             this.enableToolbar(true);
 			return false;
 		}
-		
+
+        //Validation Check for Significant / Insignificant / Local changes
+        if(this._action == ZmCalItemComposeController.SAVE && !appt.inviteNeverSent){
+             //Check for Significant Changes
+            if(this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT)){
+                this._getChangesDialog().popup();
+                this.enableToolbar(true);
+                return false;
+            }
+        }
+
 		var origAttendees = appt.origAttendees;						// bug fix #4160
 		if (origAttendees && origAttendees.length > 0 && 			// make sure we're not u/l'ing a file
 			attId == null) 											// make sure we are editing an existing appt w/ attendees
@@ -283,10 +320,7 @@ function(ev, force) {
 	if (this._doSave() === false) {
 		return;
     }
-    if(isMeeting){
-        this._composeView.setApptMessage(ZmMsg.inviteNotSent);
-        return;
-    }else {
+    if(!isMeeting){       
         this._app.popView(true);        
     }
 };
@@ -853,6 +887,17 @@ function(calItem, attId, notifyList, force){
     ZmCalItemComposeController.prototype._saveCalItemFoRealz.call(this, calItem, attId, notifyList, force);    
 };
 
+ZmApptComposeController.prototype._doSaveCalItem =
+function(appt, attId, callback, errorCallback, notifyList){        
+    if(this._action == ZmCalItemComposeController.SEND){
+        appt.send(attId, callback, errorCallback, notifyList);
+    }else{
+        this._draftFlag = appt.isDraft || appt.inviteNeverSent || (appt.hasAttendees() && this._checkIsDirty(ZmApptEditView.CHANGES_INSIGNIFICANT));
+        appt.save(attId, callback, errorCallback, notifyList, this._draftFlag);
+
+    }
+};
+
 ZmApptComposeController.prototype._handleResponseSave =
 function(calItem, result) {
 	if (calItem.__newFolderId) {
@@ -872,7 +917,7 @@ function(calItem, result) {
         }
         calItem.setFromSavedResponse(result);
         if(this._action == ZmCalItemComposeController.SAVE){
-            calItem.isDraft = true;
+            calItem.isDraft = this._draftFlag;
         }
         this._composeView.set(calItem, viewMode);        
     }

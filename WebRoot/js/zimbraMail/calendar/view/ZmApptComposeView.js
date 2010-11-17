@@ -390,3 +390,8 @@ function() {
     if(activeComposeSesions == 0) this._app.getFreeBusyCache().clearCache();
 
 };
+
+ZmApptComposeView.prototype.checkIsDirty =
+function(type, attribs){
+    return this._apptEditView.checkIsDirty(type, attribs);  
+};
