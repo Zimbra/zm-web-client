@@ -85,46 +85,52 @@ ZmActionStack.prototype.logAction = function(params) {
 	var multi = items.length>1;
 
 	var action = null;
-	var folder;
+	var folderId;
 	switch (op) {
 		case "trash":
-			folder = ZmFolder.ID_TRASH;
+			folderId = ZmFolder.ID_TRASH;
 			break;
 		case "spam":
-			folder = ZmFolder.ID_SPAM;
+			folderId = ZmFolder.ID_SPAM;
 			break;
 		case "move":
 		case "!spam":
-			folder = attrs.l;
+			folderId = attrs.l;
 			break;
 	}
 
-	switch (op) {
-		case "trash":
-		case "move":
-		case "spam":
-		case "!spam":
-			for (var i=0; i<items.length; i++) {
-				var item = items[i];
-				var moveAction;
-				if (item instanceof ZmItem) {
-					moveAction = new ZmItemMoveAction(item, item.getFolderId(), folder, op);
-				} else if (item instanceof ZmOrganizer) {
-					moveAction = new ZmOrganizerMoveAction(item, item.parent.id, folder, op);
-				}
-				if (moveAction) {
-					if (multi) {
-						if (!action) action = new ZmCompositeAction();
-						action.addAction(moveAction);
-					} else {
-						action = moveAction;
+	var folder = appCtxt.getById(folderId);
+	if (folder && !folder.isRemote()) { // Enable undo only when destination folder exists (it should!!) and is not remote (bug #51656)
+		switch (op) {
+			case "trash":
+			case "move":
+			case "spam":
+			case "!spam":
+				for (var i=0; i<items.length; i++) {
+					var item = items[i];
+					var moveAction;
+				
+					if (item instanceof ZmItem) {
+						if (!item.isShared()) // Moving shared items is not undoable
+							moveAction = new ZmItemMoveAction(item, item.getFolderId(), folderId, op);
+					} else if (item instanceof ZmOrganizer) {
+						if (!item.isRemote()) // Moving remote organizers is not undoable
+							moveAction = new ZmOrganizerMoveAction(item, item.parent.id, folderId, op);
+					}
+					if (moveAction) {
+						if (multi) {
+							if (!action) action = new ZmCompositeAction();
+							action.addAction(moveAction);
+						} else {
+							action = moveAction;
+						}
 					}
 				}
-			}
-			break;
-	}
-	if (action) {
-		this._push(action);
+				break;
+		}
+		if (action) {
+			this._push(action);
+		}
 	}
 
 	return action;
