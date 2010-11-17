@@ -2084,7 +2084,7 @@ function(appt, all, result) {
 		}
 	}
 	
-	var data = {action: all ? ZmOperation.REPLY_ALL : ZmOperation.REPLY, msg: msg};
+	var data = {action: all ? ZmOperation.CAL_REPLY_ALL : ZmOperation.CAL_REPLY, msg: msg};
 	AjxDispatcher.run("GetComposeController").doAction(data);
 };
 
