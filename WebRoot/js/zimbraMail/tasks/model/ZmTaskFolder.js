@@ -117,7 +117,7 @@ function(what) {
 				for (var i = 0; i < items.length; i++) {
 					var item = items[i];
 					var folder = appCtxt.getById(item.folderId);
-					if (item.viewMode == ZmCalItem.MODE_NEW || folder != this) {
+					if (folder != this) {
 						invalid = false;
 						break;
 					}
