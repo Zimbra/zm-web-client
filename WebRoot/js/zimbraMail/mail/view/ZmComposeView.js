@@ -681,7 +681,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	msg.setForwardAttIds(forwardAttIds);
     if (!contactId) {
     //contactId not passed in, but vcard signature may be set
-        if (this._msg._contactAttIds){
+        if (this._msg && this._msg._contactAttIds){
             contactId = this._msg._contactAttIds;
             this._msg.setContactAttIds([]);
         }
@@ -1272,7 +1272,11 @@ function(signatureId) {
         if (!this._msg){
             this._msg = new ZmMailMsg();
         }
-        this._msg.setContactAttIds(signature.contactId);
+        if (this._msg._contactAttIds)
+            this._msg._contactAttIds.push(signature.contactId);
+        else
+            this._msg.setContactAttIds(signature.contactId);
+        
         //come back later and see if we need to save the draft
         AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._checkSaveDraft), 500);
 	}
