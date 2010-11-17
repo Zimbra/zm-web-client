@@ -593,48 +593,50 @@ function(startTime, endTime, params) {
         };
     }
 
-    var freeBusyKey;
+    var attendee, sched, isFree;
     for(var i = this._attendees.length; --i >= 0;) {
-        var attendee = this._attendees[i];
-        var sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, attendee);
+        attendee = this._attendees[i];
+        sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, attendee);
 
         //show suggestions only in the organizer's working hours.
-        var isFree = params.includeNonWorkingHours ? true : this.isUnderWorkingHour((this.getWorkingHoursPref() == ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS) ? attendee : this._organizerEmail, startTime, endTime);
+        isFree = params.includeNonWorkingHours ? true : this.isUnderWorkingHour((this.getWorkingHoursPref() == ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS) ? attendee : this._organizerEmail, startTime, endTime);
 
         //ignore time slots for non-working hours of this user
         if(!isFree) continue;
         
         if(sched.b) isFree = isFree && this.isBooked(sched.b, startTime, endTime);
         if(sched.t) isFree = isFree && this.isBooked(sched.t, startTime, endTime);
-        if(sched.u) isFree = isFree && this.isBooked(sched.u, startTime, endTime);
-        var key = startTime + "-" + endTime;
-        
+        if(sched.u) isFree = isFree && this.isBooked(sched.u, startTime, endTime);        
+
+        //collect all the item indexes of the attendees available at this slot
         if(isFree) {
             if(!params.miniCalSuggestions) fbInfo.attendees.push(params.itemsById[attendee]._itemIndex);
             fbInfo.availableUsers++;
         }
     }
 
-    var list = this._resources;
+    var list = this._resources, resource;
 	for (var i = list.length; --i >= 0;) {
-		var item = list[i];
-		var resource = item.getEmail();
+		attendee = list[i];
+		resource = attendee.getEmail();
 
 		if (resource instanceof Array) {
 			resource = resource[0];
 		}
-        var sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, resource);
-        var isFree = true;
+        sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, resource);
+        isFree = true;
         if(sched.b) isFree = isFree && this.isBooked(sched.b, startTime, endTime);
         if(sched.t) isFree = isFree && this.isBooked(sched.t, startTime, endTime);
         if(sched.u) isFree = isFree && this.isBooked(sched.u, startTime, endTime);
-        
+
+        //collect all the item indexes of the locations available at this slot
         if(isFree) {
             if(!params.miniCalSuggestions) fbInfo.locations.push(params.itemsById[resource]._itemIndex);
             fbInfo.availableLocations++;
         }
 	}
 
+    //mini calendar suggestions should avoid collecting all computed information in array for optimiziation
     if(!params.miniCalSuggestions && fbInfo.availableUsers > 0) {
         var showOnlyGreenSuggestions = this.isShowOnlyGreenSuggestions();
         if(!showOnlyGreenSuggestions || (fbInfo.availableUsers == this._totalUsers)) {
@@ -646,6 +648,7 @@ function(startTime, endTime, params) {
     return fbInfo;
 };
 
+//module to sort the computed time slots in order of 1)available users 2)time
 ZmScheduleAssistantView._slotComparator =
 function(slot1, slot2) {
 	if(slot1.availableUsers < slot2.availableUsers) {
@@ -653,7 +656,7 @@ function(slot1, slot2) {
     }else if(slot1.availableUsers > slot2.availableUsers) {
         return -1;
     }else {
-        return slot1.availableLocations < slot2.availableLocations ? 1 : (slot1.availableLocations > slot2.availableLocations ? -1 : 0);
+        return slot1.startTime < slot2.startTime ? -1 : (slot1.startTime > slot2.startTime ? 1 : 0);
     }
 };
 
@@ -662,6 +665,7 @@ function(startTime, endTime) {
     return startTime + "-" + endTime;
 };
 
+//working hours pattern repeats every week - fetch it for just one week 
 ZmScheduleAssistantView.prototype.getWorkingHoursKey =
 function() {
 
@@ -930,13 +934,13 @@ function(params) {
     params.dates = [];
     params.colors = [];
 
-    var key, fbStat, freeSlotFound = false;
+    var key, fbStat, freeSlotFound = false, dayStartTime, dayEndTime;
 
     //suggest for entire minicalendar range
     while(startTime < endTime) {
 
-        var dayStartTime = startTime;
-        var dayEndTime = startTime + AjxDateUtil.MSEC_PER_DAY;
+        dayStartTime = startTime;
+        dayEndTime = dayStartTime + AjxDateUtil.MSEC_PER_DAY;
 
         freeSlotFound = false;
 

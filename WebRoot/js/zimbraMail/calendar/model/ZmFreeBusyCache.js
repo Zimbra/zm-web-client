@@ -60,12 +60,14 @@ function(startTime, endTime, id) {
     var fbResult = {id: id};
 
     //free busy response is always merged
+    var usr, searchRange, newSearchIsInRange;
     for(var i= fbSlots.length; --i >= 0;) {
-        var usr = fbSlots[i];
-        var searchRange = usr.searchRange;
+        usr = fbSlots[i];
+        searchRange = usr.searchRange;
+
         if(searchRange) {
-            var newSearchInRange = (startTime >= searchRange.startTime && endTime <= searchRange.endTime);
-            if(!newSearchInRange) continue;
+            newSearchIsInRange = (startTime >= searchRange.startTime && endTime <= searchRange.endTime);
+            if(!newSearchIsInRange) continue;
         }
 
         if (usr.n) this._addFBInfo(usr.n, id, ZmFreeBusyCache.STATUS_UNKNOWN, startTime, endTime, fbResult);
