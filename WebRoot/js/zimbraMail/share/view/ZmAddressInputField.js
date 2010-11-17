@@ -98,7 +98,7 @@ function(address, match) {
 	bubble.innerHTML = expandLinkText + AjxStringUtil.htmlEncode(address) + separator + removeLinkText;
 	this._holder.appendChild(bubble);
 	Dwt.setHandler(bubble, DwtEvent.ONCLICK, ZmAddressInputField.onClick);
-	appCtxt.getKeyboardMgr().grabFocus(this._inputId);
+	this.focus();
 };
 
 /**
@@ -235,7 +235,7 @@ function(ev) {
 	var holder = DwtUiEvent.getTarget(ev);
 	var addrInput = holder && DwtControl.ALL_BY_ID[holder._aifId];
 	if (addrInput) {
-		appCtxt.getKeyboardMgr().grabFocus(addrInput._inputId);
+		addrInput.focus;
 	}
 };
 
@@ -275,6 +275,7 @@ function(bubbleId) {
 	var addrInput = bubble && DwtControl.ALL_BY_ID[bubble._aifId];
 	if (addrInput) {
 		addrInput.removeBubble(bubbleId);
+		addrInput.focus();
 	}
 };
 
