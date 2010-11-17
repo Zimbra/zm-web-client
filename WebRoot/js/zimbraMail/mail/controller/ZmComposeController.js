@@ -103,6 +103,8 @@ function() {
 	ZmComposeController.RADIO_GROUP = {};
 	ZmComposeController.RADIO_GROUP[ZmOperation.REPLY]				= 1;
 	ZmComposeController.RADIO_GROUP[ZmOperation.REPLY_ALL]			= 1;
+    ZmComposeController.RADIO_GROUP[ZmOperation.CAL_REPLY]			= 1;
+	ZmComposeController.RADIO_GROUP[ZmOperation.CAL_REPLY_ALL]		= 1;
 	ZmComposeController.RADIO_GROUP[ZmOperation.FORMAT_HTML]		= 2;
 	ZmComposeController.RADIO_GROUP[ZmOperation.FORMAT_TEXT]		= 2;
 	ZmComposeController.RADIO_GROUP[ZmOperation.INC_ATTACHMENT]		= 3;
@@ -125,6 +127,8 @@ function() {
 	ZmComposeController.OPTIONS_TT[ZmOperation.NEW_MESSAGE]		= "composeOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.REPLY]			= "replyOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.REPLY_ALL]		= "replyOptions";
+    ZmComposeController.OPTIONS_TT[ZmOperation.CAL_REPLY]			= "replyOptions";
+	ZmComposeController.OPTIONS_TT[ZmOperation.CAL_REPLY_ALL]		= "replyOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_ATT]		= "forwardOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_INLINE]	= "forwardOptions";
 
@@ -927,12 +931,13 @@ function() {
 		}
 	}
 
-	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT, ZmOperation.DECLINE_PROPOSAL];
+	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT, ZmOperation.DECLINE_PROPOSAL, ZmOperation.CAL_REPLY];
 	this._optionsMenu = {};
 	for (var i = 0; i < actions.length; i++) {
 		this._optionsMenu[actions[i]] = this._createOptionsMenu(actions[i]);
 	}
 	this._optionsMenu[ZmOperation.REPLY_ALL] = this._optionsMenu[ZmOperation.REPLY];
+    this._optionsMenu[ZmOperation.CAL_REPLY_ALL] = this._optionsMenu[ZmOperation.CAL_REPLY];
 	this._optionsMenu[ZmOperation.FORWARD_INLINE] = this._optionsMenu[ZmOperation.FORWARD_ATT];
 	this._optionsMenu[ZmOperation.REPLY_CANCEL] = this._optionsMenu[ZmOperation.REPLY_ACCEPT] =
 		this._optionsMenu[ZmOperation.DECLINE_PROPOSAL] = this._optionsMenu[ZmOperation.REPLY_DECLINE] = this._optionsMenu[ZmOperation.REPLY_TENTATIVE] =
@@ -994,9 +999,10 @@ ZmComposeController.prototype._createOptionsMenu =
 function(action) {
 
 	var isReply = (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
+	var isCalReply = (action == ZmOperation.CAL_REPLY || action == ZmOperation.CAL_REPLY_ALL);
 	var isForward = (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE);
 	var list = [];
-	if (isReply) {
+	if (isReply || isCalReply) {
 		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.SEP);
 	}
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
@@ -1007,7 +1013,7 @@ function(action) {
 	} else if (isForward) {
         list.push(ZmOperation.SEP, ZmOperation.INC_BODY, ZmOperation.INC_ATTACHMENT);
 	}
-    if (isReply || isForward) {
+    if (isReply || isForward || isCalReply) {
         list.push(ZmOperation.SEP, ZmOperation.USE_PREFIX, ZmOperation.INCLUDE_HEADERS);
     }
 
@@ -1034,7 +1040,7 @@ function(action) {
 			overrides[op].style = DwtMenuItem.RADIO_STYLE;
 			overrides[op].radioGroupId = ZmComposeController.RADIO_GROUP[op];
 		}
-		if (op == ZmOperation.REPLY) {
+		if (op == ZmOperation.REPLY || op == ZmOperation.CAL_REPLY) {
 			overrides[op].text = ZmMsg.replySender;
 		}
 	}
@@ -1090,7 +1096,8 @@ function(composeMode, incOptions) {
 		}
 	}
 
-	if (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL) {
+	if (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL  ||
+        this._action == ZmOperation.CAL_REPLY || this._action == ZmOperation.CAL_REPLY_ALL) {
 		menu.checkItem(ZmOperation.KEY_ID, this._action, true);
 	}
 
@@ -1411,7 +1418,7 @@ function(ev) {
 	// ignore UNCHECKED for radio buttons
 	if (ev.detail != DwtMenuItem.CHECKED && !ZmComposeController.OP_CHECK[op]) { return; }
 
-	if (op == ZmOperation.REPLY || op == ZmOperation.REPLY_ALL) {
+	if (op == ZmOperation.REPLY || op == ZmOperation.REPLY_ALL || op == ZmOperation.CAL_REPLY || op == ZmOperation.CAL_REPLY_ALL) {
 		this._composeView._setAddresses(op, AjxEmailAddress.TO, this._toOverride);
 	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
 		if (this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE))) {
