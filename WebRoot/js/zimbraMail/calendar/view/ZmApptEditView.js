@@ -115,6 +115,8 @@ function() {
 		this._attendeesInputField.clear();
 		this._optAttendeesInputField.clear();
         this._forwardToField.clear();
+        this._adjustAddrHeight(this._attendeesInputField.getInputElement());
+        this._adjustAddrHeight(this._optAttendeesInputField.getInputElement());
 	}
     this._attInputField[ZmCalBaseItem.LOCATION].setValue("");
 	this._locationTextMap = {};
@@ -801,7 +803,9 @@ function(width) {
 
 ZmApptEditView.prototype._createInputField =
 function(idTag, attType) {
-
+    var height = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "52px;" : "21px";
+    var overflow = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? false : true;
+    
 	var inputId = this._htmlElId + idTag + "_input";
 	var cellId = this._htmlElId + idTag;
 	var input;
@@ -818,11 +822,16 @@ function(idTag, attType) {
 			parentElement:	cellId,
 			inputId:		inputId
 		};
+        if (idTag == '_person' ||
+            idTag == '_optional' ||
+            idTag == '_to_control') {
+            params.forceMultiRow = true;
+        }
 		input = this._attInputField[attType] = new DwtInputField(params);
 	}
 
 	var inputEl = input.getInputElement();
-	Dwt.setSize(inputEl, "100%", Dwt.DEFAULT);
+	Dwt.setSize(inputEl, "100%", height);
 	inputEl._attType = attType;
 
 	return input;
@@ -1243,11 +1252,13 @@ function(enabled) {
 	var attField = this._attInputField[ZmCalBaseItem.PERSON];
 	if (attField) {
 		attField.setEnabled(enabled);
+        this._adjustAddrHeight(attField.getInputElement());
 	}
 
 	attField = this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON];
 	if (attField) {
 		attField.setEnabled(enabled);
+        this._adjustAddrHeight(attField.getInputElement());
 	}
 };
 
@@ -1434,8 +1445,10 @@ function() {
 					   this._locationInputField, this._forwardToField, this._resourceInputField];
 	for (var i = 0; i < inputFields.length; i++) {
 		var inputEl = inputFields[i].getInputElement();
+        inputEl._editViewId = edvId;
 		inputEl.onfocus = AjxCallback.simpleClosure(this._handleOnFocus, this, inputEl);
 		inputEl.onblur = AjxCallback.simpleClosure(this._handleOnBlur, this, inputEl);
+        inputEl.onkeyup = AjxCallback.simpleClosure(this._onAttendeesChange, this);
 	}
 
     if (this._subjectField) {
@@ -2015,6 +2028,11 @@ function(ev) {
 	if (el.id == this._forwardToField._inputId) { return; }
 
     var key = DwtKeyEvent.getCharCode(ev);
+        this._adjustAddrHeight(el);
+    if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+                    this.GROUP_CALENDAR_ENABLED) {
+                ZmAutocompleteListView.onKeyUp(ev);
+    }
     if (key == 32 || key == 59 || key == 186) {
         this.handleAttendeeChange();
     }
@@ -2026,4 +2044,46 @@ function(ev) {
 ZmApptEditView.prototype.handleAttendeeChange =
 function(ev) {
     AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._handleAttendeeField, ZmCalBaseItem.PERSON), 300);
+};
+
+ZmApptEditView.prototype._adjustAddrHeight =
+function(textarea) {
+
+	if (this._useAcAddrBubbles || !textarea) { return; }
+
+	if (textarea.value.length == 0) {
+		textarea.style.height = "21px";
+		if (AjxEnv.isIE) {
+			// for IE use overflow-y
+			textarea.style.overflowY = "hidden";
+		}
+		else {
+			textarea.style.overflow = "hidden";
+		}
+		return;
+	}
+
+	var sh = textarea.scrollHeight;
+	if (sh > textarea.clientHeight) {
+		var taHeight = parseInt(textarea.style.height) || 0;
+		if (taHeight <= 65) {
+			if (sh >= 65) {
+				sh = 65;
+				if (AjxEnv.isIE)
+					textarea.style.overflowY = "scroll";
+				else
+					textarea.style.overflow = "auto";
+			}
+			textarea.style.height = sh + 13;
+		} else {
+			if (AjxEnv.isIE) {
+				// for IE use overflow-y
+				textarea.style.overflowY = "scroll";
+			}
+			else {
+				textarea.style.overflow = "auto";
+			}
+			textarea.scrollTop = sh;
+		}
+	}
 };
