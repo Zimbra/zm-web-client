@@ -1095,7 +1095,12 @@ function(parent) {
 		var folder = appCtxt.getById(folderId);
 		var inSpamFolder = ((folder && folder.nId == ZmFolder.ID_SPAM) ||
 							(!folder && folderId == ZmFolder.ID_SPAM)); // fall back
-		item.setText(inSpamFolder ? ZmMsg.notJunkLabel : ZmMsg.junkLabel);
+		var inPopupMenu = (parent instanceof ZmActionMenu);
+		if (inPopupMenu) {
+			item.setText(inSpamFolder ? ZmMsg.notJunkMarkLabel : ZmMsg.junkMarkLabel);
+		} else {
+			item.setText(inSpamFolder ? ZmMsg.notJunkLabel : ZmMsg.junkLabel);
+		}
 		item.setImage(inSpamFolder ? 'Inbox' : 'JunkMail');
 		if (item.setToolTipContent) {
 			var tooltip = inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip;
