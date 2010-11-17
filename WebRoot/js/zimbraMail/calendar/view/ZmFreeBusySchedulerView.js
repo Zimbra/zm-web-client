@@ -1025,9 +1025,15 @@ function(dateBorder) {
 };
 ZmFreeBusySchedulerView.prototype._timeChangeListener =
 function(ev, id) {
+    this.handleTimeChange();
+};
+
+ZmFreeBusySchedulerView.prototype.handleTimeChange =
+function() {
     if(this.isComposeMode) ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
 	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 	this._outlineAppt();
+    this._updateFreeBusy();
 };
 
 ZmFreeBusySchedulerView.prototype._selectChangeListener =

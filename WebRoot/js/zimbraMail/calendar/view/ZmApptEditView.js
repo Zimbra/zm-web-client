@@ -255,6 +255,10 @@ function(startDate, endDate, ignoreTimeUpdate) {
         this._startTimeSelect.set(startDate);
         this._endTimeSelect.set(endDate);
     }
+
+    if(this._schedulerOpened) {
+        this._scheduleView.handleTimeChange();
+    }
 };
 
 ZmApptEditView.prototype.updateTimezone =
