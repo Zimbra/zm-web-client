@@ -167,9 +167,7 @@ ZmMimeTable.isRenderable =
 function(type) {
 	return (type == ZmMimeTable.TEXT_HTML ||
 			type == ZmMimeTable.TEXT_PLAIN ||
-			type == ZmMimeTable.IMG_JPEG ||
-			type == ZmMimeTable.IMG_GIF ||
-			type == ZmMimeTable.IMG_PNG);
+			ZmMimeTable.isRenderableImage(type));
 };
 
 ZmMimeTable.isTextType =

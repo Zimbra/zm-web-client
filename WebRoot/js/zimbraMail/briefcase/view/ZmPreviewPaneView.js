@@ -555,7 +555,7 @@ function(item, errorCode, error){
         restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
 
         //Try to generate, otherwise fallback
-        if(ZmMimeTable.isRenderableImage(item.contentType)){
+        if(ZmMimeTable.isRenderable(item.contentType)){
             this._iframePreview.setSrc(restUrl);
         }else if(ZmMimeTable.isMultiMedia(item.contentType)){
             html = [
