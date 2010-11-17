@@ -40,6 +40,7 @@ ZmAppt = function(list, noinit) {
 	this.endDate = new Date(this.startDate.getTime() + (30*60*1000));
 	this.otherAttendees = false;
 	this.rsvp = true;
+    this.inviteNeverSent = true;
 
 	// attendees by type
 	this._attendees = {};
@@ -809,6 +810,7 @@ function(calItemNode, instNode) {
 	this.otherAttendees = this._getAttr(calItemNode, instNode, "otherAtt");
 	this.location = this._getAttr(calItemNode, instNode, "loc");
     this.isDraft = this._getAttr(calItemNode, instNode, "draft");
+    this.inviteNeverSent = this._getAttr(calItemNode, instNode, "neverSent") || false; 
 };
 
 ZmAppt.prototype._getSoapForMode =
@@ -860,11 +862,12 @@ function(soapDoc, inv, comp) {
 	comp.setAttribute("transp", this.transparency);
 
     //Add Draft flag    
-    var isDraft = 0;
-    if(this.hasAttendees()){
-        isDraft = this.isSend ? 0 : 1;
+    var draftFlag = false;
+    if(!this.isSend){
+        draftFlag = this.isDraft || this.makeDraft;
     }
-	comp.setAttribute("draft", isDraft);
+    draftFlag = draftFlag ? 1 : 0;
+	comp.setAttribute("draft", draftFlag);
 };
 
 ZmAppt.prototype.setRsvp =
@@ -963,9 +966,10 @@ function(attachmentId, callback, errorCallback, notifyList){
 };
 
 ZmAppt.prototype.save =
-function(attachmentId, callback, errorCallback, notifyList){
+function(attachmentId, callback, errorCallback, notifyList, makeDraft){
     this._mode = ZmAppt.ACTION_SAVE;
     this.isSend = false;
+    this.makeDraft = AjxUtil.isUndefined(makeDraft) ? this.hasAttendees() : makeDraft;
     ZmCalItem.prototype.save.call(this, attachmentId, callback, errorCallback, notifyList);
 };
 

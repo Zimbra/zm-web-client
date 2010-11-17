@@ -322,11 +322,16 @@ function(tabGroup) {
 
 ZmApptEditView.prototype._finishReset =
 function() {
-	ZmCalItemEditView.prototype._finishReset.call(this);
+    ZmCalItemEditView.prototype._finishReset.call(this);
 
-    var newMode = (this._mode == ZmCalItem.MODE_NEW);
+    this._apptFormValue = {};
+    this._apptFormValue[ZmApptEditView.CHANGES_SIGNIFICANT]      = this._getFormValue(ZmApptEditView.CHANGES_SIGNIFICANT);
+    this._apptFormValue[ZmApptEditView.CHANGES_INSIGNIFICANT]    = this._getFormValue(ZmApptEditView.CHANGES_INSIGNIFICANT);
+    this._apptFormValue[ZmApptEditView.CHANGES_LOCAL]            = this._getFormValue(ZmApptEditView.CHANGES_LOCAL);
 
-	// save the original form data in its initialized state
+    var newMode = (this._mode == ZmCalItem.MODE_NEW);        
+
+    // save the original form data in its initialized state
 	this._origFormValueMinusAttendees = newMode ? "" : this._formValue(true);
 	if (this._hasReminderSupport) {
 		this._origFormValueMinusReminder = newMode ? "" : this._formValue(false, true);
@@ -623,12 +628,10 @@ ZmApptEditView.prototype._getMeetingStatusMsg =
 function(calItem){
     var statusMsg = null;
     if(calItem.isDraft){
-        statusMsg = ZmMsg.inviteNotSent;
-        var msg = calItem.message;
-        if(msg){
-            if(msg.getAddress(AjxEmailAddress.TO)){ //isInviteSentOnce
-                statusMsg = ZmMsg.updatedInviteNotSent;
-            }
+        if(calItem.inviteNeverSent){
+            statusMsg = ZmMsg.inviteNotSent;
+        }else{
+            statusMsg = ZmMsg.updatedInviteNotSent;
         }
     }
     return statusMsg;
@@ -638,7 +641,7 @@ ZmApptEditView.prototype.setApptMessage =
 function(msg, icon){
     if(msg){
         Dwt.setVisible(this._inviteMsgContainer, true);
-        this._inviteMsg.innerHTML = ZmMsg.inviteNotSent;
+        this._inviteMsg.innerHTML = msg;
     }else{
         Dwt.setVisible(this._inviteMsgContainer, false);
     }
@@ -1497,79 +1500,106 @@ function(show) {
 	this._setTimezoneVisible(this._dateInfo);
 };
 
+ZmApptEditView.CHANGES_LOCAL            = 1;
+ZmApptEditView.CHANGES_SIGNIFICANT      = 2;
+ZmApptEditView.CHANGES_INSIGNIFICANT    = 3;
+
+
+ZmApptEditView.prototype._getFormValue =
+function(type, attribs){
+
+   var vals = [];
+   attribs = attribs || {};
+    
+   switch(type){
+
+       case ZmApptEditView.CHANGES_LOCAL:
+            vals.push(this._folderSelect.getValue());           // Folder
+            vals.push(this._showAsSelect.getValue());           // Busy Status
+            if(!attribs.excludeReminder){                       // Reminder
+                vals.push(this._reminderSelectInput.getValue());
+                vals.push(this._reminderEmailCheckbox.isSelected());
+                vals.push(this._reminderDeviceEmailCheckbox.isSelected());
+            }
+            break;
+
+       case ZmApptEditView.CHANGES_SIGNIFICANT:
+           var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+           var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+           startDate = this._startTimeSelect.getValue(startDate);
+           endDate = this._endTimeSelect.getValue(endDate);
+           vals.push(
+                   AjxDateUtil.getServerDateTime(startDate),       // Start DateTime
+                   AjxDateUtil.getServerDateTime(endDate)          // End DateTime
+                   );
+           if (Dwt.getDisplay(this._tzoneSelectStart.getHtmlElement()) != Dwt.DISPLAY_NONE) {
+               vals.push(this._tzoneSelectStart.getValue());    // Start timezone
+               vals.push(this._tzoneSelectEnd.getValue());      // End timezone
+           }
+           vals.push("" + this._allDayCheckbox.checked);       // All Day Appt.
+           if (!attribs.excludeAttendees) {                    //Attendees
+               vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.PERSON].getArray(), ZmCalBaseItem.PERSON, false, true));
+           }
+           if(!attribs.excludeLocation) {
+               vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.LOCATION].getArray(), ZmCalBaseItem.LOCATION, false, true));
+           }
+           if(!attribs.excludeEquipment) {
+               vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.EQUIPMENT].getArray(), ZmCalBaseItem.EQUIPMENT, false, true));
+           }
+
+           //TODO: Detailed Recurrence, Repeat support
+           vals.push(this._repeatSelect.getValue());        //Recurrence    
+           if(this._isForward) {
+               vals.push(this._forwardToField.getValue()); //ForwardTo
+           }
+           if(this.identitySelect){
+               vals.push(this.getIdentity().id);            //Identity Select
+           }
+           break;
+
+       case ZmApptEditView.CHANGES_INSIGNIFICANT:
+           vals.push(this._subjectField.getValue());
+           vals.push(this._notesHtmlEditor.getContent());
+           vals.push(this._controller.isApptPrivate() ? ZmApptEditView.PRIVACY_OPTION_PRIVATE : ZmApptEditView.PRIVACY_OPTION_PUBLIC);
+           //TODO: Attachments, Priority    
+           break;
+   }
+
+   vals = vals.join("|").replace(/\|+/, "|");
+
+   return vals;
+};
+
 // Returns a string representing the form content
 ZmApptEditView.prototype._formValue =
 function(excludeAttendees, excludeReminder) {
-	var vals = [];
 
-	vals.push(this._subjectField.getValue());
-	vals.push(this._attInputField[ZmCalBaseItem.LOCATION].getValue());
-	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.LOCATION].getArray(), ZmCalBaseItem.LOCATION));
-	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.EQUIPMENT].getArray(), ZmCalBaseItem.EQUIPMENT));
-	vals.push(this._showAsSelect.getValue());
-	vals.push(this._controller.isApptPrivate() ? ZmApptEditView.PRIVACY_OPTION_PRIVATE : ZmApptEditView.PRIVACY_OPTION_PUBLIC);
-	vals.push(this._folderSelect.getValue());
+    var attribs = {
+        excludeAttendees: excludeAttendees,
+        excludeReminder: excludeReminder
+    };
 
-	if (!excludeReminder) {
-		vals.push(this._reminderSelectInput.getValue());
-        vals.push(this._reminderEmailCheckbox.isSelected());
-        vals.push(this._reminderDeviceEmailCheckbox.isSelected());
-	}
-	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+    var sigFormValue      = this._getFormValue(ZmApptEditView.CHANGES_SIGNIFICANT, attribs);
+    var insigFormValue    = this._getFormValue(ZmApptEditView.CHANGES_INSIGNIFICANT, attribs);
+    var localFormValue    = this._getFormValue(ZmApptEditView.CHANGES_LOCAL, attribs);
 
-    startDate = this._startTimeSelect.getValue(startDate);
-	endDate = this._endTimeSelect.getValue(endDate);
-	vals.push(
-		AjxDateUtil.getServerDateTime(startDate),
-		AjxDateUtil.getServerDateTime(endDate)
-	);
-	vals.push("" + this._allDayCheckbox.checked);
-	if (Dwt.getDisplay(this._tzoneSelectStart.getHtmlElement()) != Dwt.DISPLAY_NONE) {
-		vals.push(this._tzoneSelectStart.getValue());
-		vals.push(this._tzoneSelectEnd.getValue());
-    }
-	vals.push(this._repeatSelect.getValue());
-	if (!excludeAttendees) {
-		vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.PERSON].getArray(), ZmCalBaseItem.PERSON, false, true));
-	}
-	vals.push(this._notesHtmlEditor.getContent());
+    var formVals = [];
+    formVals.push(sigFormValue, insigFormValue, localFormValue);
+    formVals = formVals.join('|').replace(/\|+/, "|");
+    return formVals;
+};
 
-    if(this._isForward) {
-	    vals.push(this._forwardToField.getValue());
-    }
 
-    if(this.identitySelect){
-        vals.push(this.getIdentity().id);        
-    }
-
-	var str = vals.join("|");
-	str = str.replace(/\|+/, "|");
-	return str;
+ZmApptEditView.prototype.checkIsDirty =
+function(type, attribs){
+    return (this._apptFormValue[type] != this._getFormValue(type, attribs))
 };
 
 ZmApptEditView.prototype._keyValue =
 function() {
-	var vals = [];
-	vals.push(this._attInputField[ZmCalBaseItem.LOCATION].getValue());
-	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.LOCATION].getArray(), ZmCalBaseItem.LOCATION));
-	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-    startDate = this._startTimeSelect.getValue(startDate);
-	endDate = this._endTimeSelect.getValue(endDate);
-	vals.push(
-		AjxDateUtil.getServerDateTime(startDate),
-		AjxDateUtil.getServerDateTime(endDate)
-	);
-	vals.push("" + this._allDayCheckbox.checked);
-	if (Dwt.getDisplay(this._tzoneSelectStart.getHtmlElement()) != Dwt.DISPLAY_NONE) {
-		vals.push(this._tzoneSelectStart.getValue());
-		vals.push(this._tzoneSelectEnd.getValue());
-    }
-	vals.push(this._repeatSelect.getValue());
-	var str = vals.join("|");
-	str = str.replace(/\|+/, "|");
-	return str;
+
+    return this._getFormValue(ZmApptEditView.CHANGES_SIGNIFICANT,
+                              {excludeAttendees: true, excludeEquipment: true});
 };
 
 // Listeners
