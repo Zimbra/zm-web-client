@@ -446,17 +446,13 @@ function(){
 
 ZmApptEditView.prototype.isAttendeesEmpty =
 function() {
-    var resources = this._attendees[ZmCalBaseItem.EQUIPMENT];
-	var locations = this._attendees[ZmCalBaseItem.LOCATION];
-	var attendees = this._attendees[ZmCalBaseItem.PERSON];
-	var zattendees = this._optAttendeesInputField.getValue() || this._optAttendeesInputField.getValue();
-
-	var isAttendeesNotEmpty = (attendees && attendees.size() > 0) ||
-							   (resources && resources.size() > 0) ||
-							   (locations && locations.size() > 0);
-    return !isAttendeesNotEmpty
+    var locations = this._attendees[ZmCalBaseItem.LOCATION];
+    //non-resource location labels also contributes to empty attendee
+    var isLocationResource =(locations && locations.size() > 0);
+	var isAttendeesNotEmpty = AjxStringUtil.trim(this._attendeesInputField.getValue()) || AjxStringUtil.trim(this._optAttendeesInputField.getValue()) || isLocationResource;
+    return !isAttendeesNotEmpty;
+    
 };
-
 
 ZmApptEditView.prototype._populateForEdit =
 function(calItem, mode) {
@@ -2065,7 +2061,10 @@ function(ev) {
     }
     if (key == 32 || key == 59 || key == 186) {
         this.handleAttendeeChange();
+    }else {
+        this.updateToolbarOps();
     }
+
 	if (el._attType == ZmCalBaseItem.LOCATION) {
 		this._resetKnownLocation();
 	}
