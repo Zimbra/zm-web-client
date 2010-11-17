@@ -752,17 +752,20 @@ function(items){
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		var restUrl = item.getRestUrl();
-		if (restUrl) {
-            if (item.isWebDoc()) {
-                //added for bug: 45150
-                restUrl = this._app.fixCrossDomainReference(restUrl);
-                restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
-                restUrl = restUrl + "&preview=1" + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
-			}else{
-                restUrl += (restUrl.match(/\?/) ? "&" : "?") + "view=html";
-            }
-			window.open(restUrl, this._getWindowName(item.name), item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
+		if (!restUrl) {
+			continue;
 		}
+		restUrl = this._app.fixCrossDomainReference(restUrl);
+		if (item.isWebDoc()) {
+			//added for bug: 45150
+			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
+			restUrl = restUrl + "&preview=1" + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
+		} else {
+			if (!ZmMimeTable.isRenderable(item.contentType) && !ZmMimeTable.isMultiMedia(item.contentType)) {
+               	restUrl += (restUrl.match(/\?/) ? "&" : "?") + "view=html";
+			}
+        }
+		window.open(restUrl, this._getWindowName(item.name), item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
 	}
 };
 
