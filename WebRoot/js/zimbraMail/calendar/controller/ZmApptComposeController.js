@@ -892,9 +892,13 @@ function(appt, attId, callback, errorCallback, notifyList){
     if(this._action == ZmCalItemComposeController.SEND){
         appt.send(attId, callback, errorCallback, notifyList);
     }else{
-        this._draftFlag = appt.isDraft || appt.inviteNeverSent || (appt.hasAttendees() && this._checkIsDirty(ZmApptEditView.CHANGES_INSIGNIFICANT));
+        var isMeeting = appt.hasAttendees();
+        if(isMeeting){
+            this._draftFlag = appt.isDraft || appt.inviteNeverSent || this._checkIsDirty(ZmApptEditView.CHANGES_INSIGNIFICANT);
+        }else{
+            this._draftFlag = false;
+        }
         appt.save(attId, callback, errorCallback, notifyList, this._draftFlag);
-
     }
 };
 

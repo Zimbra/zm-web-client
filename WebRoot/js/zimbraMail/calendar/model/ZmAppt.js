@@ -863,7 +863,7 @@ function(soapDoc, inv, comp) {
 
     //Add Draft flag    
     var draftFlag = false;
-    if(!this.isSend){
+    if(!this.isSend && this.hasAttendees()){
         draftFlag = this.isDraft || this.makeDraft;
     }
     draftFlag = draftFlag ? 1 : 0;
