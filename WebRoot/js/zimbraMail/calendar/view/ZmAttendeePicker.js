@@ -274,7 +274,7 @@ function(appt, mode, isDirty, apptComposeMode) {
 ZmAttendeePicker.prototype.resize =
 function() {
 	if (!this._rendered) { return; }
-	this._chooser.resize(this._chooserWidth, ZmAttendeePicker.CHOOSER_HEIGHT);
+    this._chooser.resize(Dwt.DEFAULT, ZmAttendeePicker.CHOOSER_HEIGHT);
 };
 
 ZmAttendeePicker.prototype.cleanup =
@@ -365,17 +365,14 @@ function() {
 		var addMultLocsCheckbox = (this.type == ZmCalBaseItem.LOCATION && j == fields.length - 1);
 		i = this._getSearchFieldHtml(sf, html, i, addButton, addMultLocsCheckbox);
 		if (!isEven || j == fields.length - 1) {
-			if (this.type == ZmCalBaseItem.PERSON) {
-				this._prevButtonId = Dwt.getNextId();
-				this._nextButtonId = Dwt.getNextId();
-				html[i++] = "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
-				html[i++] = "<td id='";
-				html[i++] = this._prevButtonId;
-				html[i++] = "'></td><td id='";
-				html[i++] = this._nextButtonId;
-				html[i++] = "'></td>";
-			}
-
+            this._prevButtonId = Dwt.getNextId();
+            this._nextButtonId = Dwt.getNextId();
+            html[i++] = "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
+            html[i++] = "<td id='";
+            html[i++] = this._prevButtonId;
+            html[i++] = "'></td><td id='";
+            html[i++] = this._nextButtonId;
+            html[i++] = "'></td>";
 			html[i++] = "</tr>";
 		}
 	}
@@ -510,8 +507,9 @@ function() {
     var width = this.getSize().x;
 	// add chooser
 	this._chooser = new ZmApptChooser(this);
-    this._chooserWidth = width + 100;
+    this._chooserWidth = width;
     this._chooser.resize(this._chooserWidth, ZmAttendeePicker.CHOOSER_HEIGHT);
+    
 	var chooserSourceListViewDiv = document.getElementById(this._chooserSourceListViewDivId);
 	var sourceListView = this._chooser.getSourceListView();
 	chooserSourceListViewDiv.appendChild(sourceListView);
@@ -552,8 +550,8 @@ function(tabGroup) {
 ZmAttendeePicker.prototype._searchButtonListener =
 function(ev) {
     this._list.removeAll();
+    this._offset = 0;    
 	if (this.type == ZmCalBaseItem.PERSON) {
-		this._offset = 0;
 		this.searchContacts();
 	} else {
 		this.searchCalendarResources();
@@ -588,7 +586,11 @@ function(ev) {
 				lastId = contact.id;
 				lastSortVal = contact.sf;
 			}
-			this.searchContacts(false, null, lastId, lastSortVal);
+            if (this.type == ZmCalBaseItem.PERSON) {
+			    this.searchContacts(false, null, lastId, lastSortVal);
+            }else {
+                this.searchCalendarResources(false, null, lastId, lastSortVal);
+            }
 		} else {
 			var more = this._list.hasMore;
 			if (!more) {
@@ -795,7 +797,7 @@ function(isPagingSupported, more, list) {
 };
 
 ZmAttendeePicker.prototype.searchCalendarResources =
-function(sortBy) {
+function(defaultSearch, sortBy, lastId, lastSortVal) {
 	var currAcct = this._editView.getCalendarAccount();
 	var fields = ZmAttendeePicker.SEARCH_FIELDS[this.type];
 	var conds = [];
@@ -815,14 +817,16 @@ function(sortBy) {
 	}
 	var params = {
 		sortBy: sortBy,
-		offset: 0,
+		offset: this._offset,
 		limit: ZmContactsApp.SEARCHFOR_MAX,
 		conds: conds,
 		attrs: ZmAttendeePicker.ATTRS[this.type],
+        lastId: lastId,
+        lastSortVal: lastSortVal,        
 		accountName: appCtxt.isOffline ? currAcct.name : null
 	};
 	var search = new ZmSearch(params);
-	search.execute({callback: new AjxCallback(this, this._handleResponseSearchCalendarResources)});
+	search.execute({callback: new AjxCallback(this, this._handleResponseSearchCalendarResources, [defaultSearch])});
 };
 
 ZmAttendeePicker.prototype._getTimeFrame =
@@ -930,12 +934,21 @@ function(item, view) {
 };
 
 ZmAttendeePicker.prototype._handleResponseSearchCalendarResources =
-function(result) {
+function(defaultSearch, result) {
 	var resp = result.getResponse();
-	resp = resp.getResults(ZmItem.RESOURCE).getVector();
-	this._fillFreeBusy(resp, AjxCallback.simpleClosure(function(items) {
-		this._chooser.setItems(items);
-	}, this));
+    var offset = resp.getAttribute("offset");
+    var isPagingSupported = AjxUtil.isSpecified(offset);
+    var more = resp.getAttribute("more");
+    var info = resp.getAttribute("info");
+    var expanded = info && info[0].wildcard[0].expanded == "0";
+
+    var list = resp.getResults(ZmItem.RESOURCE).getVector();
+    if (isPagingSupported) {
+        this._list.merge(offset, list);
+        this._list.hasMore = more;
+    }
+
+    this._showResults(isPagingSupported, more, list.getArray());    
 };
 
 ZmAttendeePicker.prototype._getDefaultFocusItem =

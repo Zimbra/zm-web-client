@@ -358,6 +358,8 @@ function(params) {
 				AjxUtil.arrayRemove(attrs, "fullName");
 				request.attrs = attrs.join(",");
 			}
+            request.offset = this.offset = (this.offset || 0);
+            request.limit = this._getLimit();
 			if (this.conds && this.conds.length) {
 				request.searchFilter = {conds:{}};
 				var conds = request.searchFilter.conds;
