@@ -177,7 +177,13 @@ function(html, insertFontStyle, onlyInnerContent) {
 	}
 
 	var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
-	if (insertFontStyle) {
+
+    var isReopened = false;
+    if (this.parent && this.parent.getController()) {
+          isReopened = this.parent.getController()._msg && this.parent.getController()._msg.isDraft;
+    }
+
+	if (insertFontStyle && !isReopened) {
 		html = this._getFontStyle(html);
 	}
 	return [
