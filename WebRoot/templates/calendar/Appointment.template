@@ -5,7 +5,7 @@
                     <table border=0 width=100% style='table-layout:fixed;margin-top: 5px;' id='${id}_table' class='calendar_edit_view_separator'>
                         <colgroup>
                             <col id='${id}_pickerColumn' width='65' />
-                            <col width='140'/>
+                            <col width='160'/>
                             <col width='100'/>
                             <col id='${id}_timezoneColumn' width='200'/>
                             <col width='65' />
@@ -49,7 +49,7 @@
                         </tr>
                         <$ if (data.isGalEnabled) { $>
                         <tr id='${id}_resourcesContainer'>
-                            <td width='60' class='ZmApptTabViewPageField'><div id='${id}_res_btn'><$= ZmMsg.resources $></div></td>
+                            <td width='60' class='ZmApptTabViewPageField'><div id='${id}_res_btn'><legend><$= ZmMsg.resourcesLabel $></legend></div></td>
                             <td colspan='6' id='${id}_resourcesData'></td>
                             <td>&nbsp;</td>
                         </tr>
