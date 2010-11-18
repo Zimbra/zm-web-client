@@ -937,7 +937,7 @@ ZmAttendeePicker.prototype._handleResponseSearchCalendarResources =
 function(defaultSearch, result) {
 	var resp = result.getResponse();
     var offset = resp.getAttribute("offset");
-    var isPagingSupported = AjxUtil.isSpecified(offset);
+    var isPagingSupported = resp.getAttribute("paginationSupported");
     var more = resp.getAttribute("more");
     var info = resp.getAttribute("info");
     var expanded = info && info[0].wildcard[0].expanded == "0";
