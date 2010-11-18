@@ -45,6 +45,7 @@ ZmIdentity.DEFAULT_NAME 			= "DEFAULT";
 ZmIdentity.FIELDS	= {};
 ZmIdentity._SOAP	= {};
 
+ZmIdentity.SIG_ID_NONE = "11111111-1111-1111-1111-111111111111";
 
 // Static inititialization
 
@@ -69,9 +70,9 @@ ZmIdentity.addField("REPLY_SIGNATURE",			{ name: "replySignature", soap: "zimbra
 
 // Used only for Persona
 ZmIdentity.addField("USE_WHEN_SENT_TO",			{ name: "useWhenSentTo", soap: "zimbraPrefWhenSentToEnabled", type: ZmSetting.D_BOOLEAN });
-ZmIdentity.addField("WHEN_SENT_TO_ADDRESSES",	{ name: "whenSentToAddresses", soap: "zimbraPrefWhenSentToAddresses", type: ZmSetting.D_ARRAY });
+ZmIdentity.addField("WHEN_SENT_TO_ADDRESSES",	{ name: "whenSentToAddresses", soap: "zimbraPrefWhenSentToAddresses", type: ZmSetting.D_LIST });
 ZmIdentity.addField("USE_WHEN_IN_FOLDER",		{ name: "useWhenInFolder", soap: "zimbraPrefWhenInFoldersEnabled", type: ZmSetting.D_BOOLEAN });
-ZmIdentity.addField("WHEN_IN_FOLDERIDS",		{ name: "whenInFolderIds", soap: "zimbraPrefWhenInFolderIds", type: ZmSetting.D_ARRAY });
+ZmIdentity.addField("WHEN_IN_FOLDERIDS",		{ name: "whenInFolderIds", soap: "zimbraPrefWhenInFolderIds", type: ZmSetting.D_LIST });
 
 
 // Public methods
@@ -144,7 +145,7 @@ function() {
 		switch (props.type) {
 			case ZmSetting.D_STRING:	this[props.name] = "";		break;
 			case ZmSetting.D_BOOLEAN:	this[props.name] = false;	break;
-			case ZmSetting.D_ARRAY:		this[props.name] = [];		break;
+			case ZmSetting.D_LIST:		this[props.name] = [];		break;
 		}
 	}
 };
@@ -169,7 +170,7 @@ function(requestType, respFunction, callback, errorCallback, batchCmd) {
 			var field = ZmIdentity.FIELDS[i];
 			if (this.hasOwnProperty(field.name)) {
 				var value = this.getField(i);
-				if (field.type == ZmSetting.D_ARRAY) {
+				if (field.type == ZmSetting.D_LIST) {
 					for (var j = 0, count = value.length; j < count; j++) {
 						if (value[j]) {
 							var propertyNode = soapDoc.set("a", value[j], identityNode);
@@ -180,8 +181,8 @@ function(requestType, respFunction, callback, errorCallback, batchCmd) {
 					if (field.type == ZmSetting.D_BOOLEAN) {
 						value = value ? "TRUE" : "FALSE";
 					}
-					var isSignature = i == ZmIdentity.SIGNATURE;
-					var isDisplayName = i == ZmIdentity.SEND_FROM_DISPLAY || i == ZmIdentity.SET_REPLY_TO_DISPLAY;
+					var isSignature = (i == ZmIdentity.SIGNATURE || i == ZmIdentity.REPLY_SIGNATURE);
+					var isDisplayName = (i == ZmIdentity.SEND_FROM_DISPLAY || i == ZmIdentity.SET_REPLY_TO_DISPLAY);
 					if (value || isSignature || isDisplayName) {
 						var propertyNode = soapDoc.set("a", value, identityNode);
 						propertyNode.setAttribute("name", field.soap);
@@ -221,7 +222,7 @@ function(data) {
 				if (field.type == ZmSetting.D_BOOLEAN) {
 					this[field.name] = (value.toString().toUpperCase() == "TRUE");
 				}
-				else if (field.type == ZmSetting.D_ARRAY) {
+				else if (field.type == ZmSetting.D_LIST) {
 					this[field.name] = AjxUtil.isArray(value) ? value : [value];
 				}
 				else {
@@ -241,11 +242,14 @@ function(data) {
 
 ZmIdentity.prototype._handleCreateResponse =
 function(callback, result, response) {
+
 	this.id = response.identity[0].id;
 	delete this._new;
 	delete this._dirty;
 
-	appCtxt.getIdentityCollection().add(this);
+	var collection = appCtxt.getIdentityCollection();
+	collection.add(this);
+	collection._notify(ZmEvent.E_CREATE, { item: this } );
 
 	if (callback) {
 		callback.run(this, result);
@@ -254,15 +258,13 @@ function(callback, result, response) {
 
 ZmIdentity.prototype._handleSaveResponse =
 function(callback, result, response) {
+
 	delete this._dirty;
 
 	var collection = appCtxt.getIdentityCollection();
 	collection.remove(this);
 	collection.add(this);
-
-	// TODO: Is this necessary?
-	var rename = this.hasOwnProperty("name");
-	collection.notifyModify(this, rename);
+	collection._notify(ZmEvent.E_MODIFY, { item: this } );
 
 	if (callback) {
 		callback.run(this, result);
@@ -271,7 +273,10 @@ function(callback, result, response) {
 
 ZmIdentity.prototype._handleDeleteResponse =
 function(callback, result, response) {
-	appCtxt.getIdentityCollection().remove(this);
+
+	var collection = appCtxt.getIdentityCollection();
+	collection.remove(this);
+	collection._notify(ZmEvent.E_DELETE, { item: this } );
 
 	if (callback) {
 		callback.run(this, result);
