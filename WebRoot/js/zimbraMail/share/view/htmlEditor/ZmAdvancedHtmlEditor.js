@@ -417,12 +417,12 @@ function(content) {
 	this._pendingContent = content;
 };
 
-ZmAdvancedHtmlEditor.prototype.addOnContentIntializedListener =
+ZmAdvancedHtmlEditor.prototype.addOnContentInitializedListener =
 function(callback) {
 	this._onContentInitializeCallback = callback;
 };
 
-ZmAdvancedHtmlEditor.prototype.removeOnContentIntializedListener =
+ZmAdvancedHtmlEditor.prototype.removeOnContentInitializedListener =
 function() {
 	this._onContentInitializeCallback = null;
 };

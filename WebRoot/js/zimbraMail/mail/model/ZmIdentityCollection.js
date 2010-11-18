@@ -118,7 +118,6 @@ function(identity) {
 
 		this._addToMaps(identity);
 		this._size++;
-		this._notify(ZmEvent.E_CREATE, { item: identity } );
 	}
 };
 
@@ -133,7 +132,6 @@ function(identity) {
 		this._removeFromMaps(identity);
 		delete this._idToIdentity[identity.id];
 		this._size--;
-		this._notify(ZmEvent.E_DELETE, { item: identity } );
 	}
 };
 
@@ -181,11 +179,6 @@ function(data) {
 		this.add(identity);
 	}
 	this._initialized = true;
-};
-
-ZmIdentityCollection.prototype.notifyModify =
-function(identity, isRename) {
-	this._notify(ZmEvent.E_MODIFY, { item: identity, rename: isRename } );
 };
 
 //
@@ -239,6 +232,31 @@ function(a, b) {
 	} else {
 		return a.name == b.name ? 0 : a.name < b.name ? -1 : 1;
 	}
+};
+
+ZmIdentityCollection.prototype.getSortIndex =
+function(identity) {
+
+	var identities = this.getIdentities(true);
+	if (!(identities && identities.length)) { return 0; }
+
+	if (this.getById(identity.id)) {
+		// already have the identity, find its current position
+		for (var i = 0; i < identities.length; i++) {
+			if (identities[i].id == identity.id) {
+				return i;
+			}
+		}
+	} else {
+		// hasn't been added yet, find where it should go
+		for (var i = 0; i < identities.length; i++) {
+			var test = ZmIdentityCollection._comparator(identity, identities[i]);
+			if (test == -1) {
+				return i;
+			}
+		}
+	}
+	return identities.length - 1;
 };
 
 ZmIdentityCollection.prototype._selectIdentityFromAddresses =

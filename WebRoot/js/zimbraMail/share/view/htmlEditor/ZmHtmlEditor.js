@@ -159,12 +159,12 @@ function() {
 	}
 };
 
-ZmHtmlEditor.prototype.addOnContentIntializedListener =
+ZmHtmlEditor.prototype.addOnContentInitializedListener =
 function(callback) {
 	this._onContentInitializeCallback = callback;
 };
 
-ZmHtmlEditor.prototype.removeOnContentIntializedListener =
+ZmHtmlEditor.prototype.removeOnContentInitializedListener =
 function() {
 	this._onContentInitializeCallback = null;
 };

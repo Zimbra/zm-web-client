@@ -1023,7 +1023,7 @@ function(msg) {
 	// first time the editor is initialized, idoc.getElementsByTagName("img") is empty
 	// Instead of waiting for 500ms, trying to add this callback. Risky but works.
 	if (!this._firstTimeFixImages) {
-		this._htmlEditor.addOnContentIntializedListener(new AjxCallback(this, this._fixMultipartRelatedImages, [msg, this._htmlEditor._getIframeDoc()]));
+		this._htmlEditor.addOnContentInitializedListener(new AjxCallback(this, this._fixMultipartRelatedImages, [msg, this._htmlEditor._getIframeDoc()]));
 	} else {
 		this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
 	}
@@ -1038,7 +1038,7 @@ function(msg) {
 ZmComposeView.prototype._fixMultipartRelatedImages =
 function(msg, idoc) {
 	if (!this._firstTimeFixImages) {
-		this._htmlEditor.removeOnContentIntializedListener();
+		this._htmlEditor.removeOnContentInitializedListener();
 		var self = this; // Fix possible hiccups during compose in new window
 		setTimeout(function() {
 				self._fixMultipartRelatedImages(msg, self._htmlEditor._getIframeDoc());
@@ -2670,7 +2670,7 @@ ZmComposeView.prototype._getIdentityOptions =
 function() {
 	var options = [];
 	var identityCollection = appCtxt.getIdentityCollection();
-	var identities = identityCollection.getIdentities();
+	var identities = identityCollection.getIdentities(true);
 	for (var i = 0, count = identities.length; i < count; i++) {
 		var identity = identities[i];
 		options.push(new DwtSelectOptionData(identity.id, this._getIdentityText(identity)));
@@ -2730,37 +2730,31 @@ function(identity, account) {
 
 ZmComposeView.prototype._identityChangeListener =
 function(ev) {
+
+	if (!this.identitySelect) { return; }
+
+	var identity = ev.getDetail("item");
+	if (!identity) { return; }
 	if (ev.event == ZmEvent.E_CREATE) {
+		// TODO: add identity in sort position
 		this._setIdentityVisible();
-		var identity = ev.getDetail("item");
 		var text = this._getIdentityText(identity);
 		var option = new DwtSelectOptionData(identity.id, text);
-		if (this.identitySelect) {
-			this.identitySelect.addOption(option);
-		}
+		this.identitySelect.addOption(option);
 	} else if (ev.event == ZmEvent.E_DELETE) {
-		// DwtSelect doesn't support removing an option, so recreate the whole thing.
-		if (this.identitySelect) {
-			this.identitySelect.clearOptions();
-			var options = this._getIdentityOptions();
-			for (var i = 0, count = options.length; i < count; i++)	 {
-				this.identitySelect.addOption(options[i]);
-			}
-			this._setIdentityVisible();
-		}
+		this.identitySelect.removeOptionWithValue(identity.id);
+		this._setIdentityVisible();
 	} else if (ev.event == ZmEvent.E_MODIFY) {
-		if (this.identitySelect) {
-			var identity = ev.getDetail("item");
-			var text = this._getIdentityText(identity);
-			this.identitySelect.rename(identity.id, text);
-		}
+		// TODO: see if it was actually name that changed
+		// TODO: re-sort list
+		var text = this._getIdentityText(identity);
+		this.identitySelect.rename(identity.id, text);
 	}
 };
 
 ZmComposeView.prototype._setIdentityVisible =
 function() {
-	if (!appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) return;
-
+	if (!appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) { return; }
 	var div = document.getElementById(this._identityDivId);
 	if (!div) return;
 
