@@ -84,7 +84,7 @@ function(files, conflicts) {
             ZmDocsEditApp.fileInfo.version = files[0].ver;
 
             var item = this.loadData(ZmDocsEditApp.fileInfo.id);
-            if(!item.rest){    //TODO: Change this code to construct a rest url
+            if(item && !item.rest){    //TODO: Change this code to construct a rest url
                 item.rest = ZmDocsEditApp.restUrl;
             }
             if(item != null) {

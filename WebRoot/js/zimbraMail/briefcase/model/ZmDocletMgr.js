@@ -224,6 +224,12 @@ function(params)
         handleResponse = new AjxCallback(this, this.handleGetItemResponse,[params]);
     }
 
+    var parentAppCtxt = window.opener && window.opener.appCtxt;
+    if (parentAppCtxt && parentAppCtxt.multiAccounts) {
+        var acct = parentAppCtxt.getActiveAccount();
+        params.accountName = acct && acct.name;
+    }
+
     var reqParams = {
         soapDoc: soapDoc,
         asyncMode: asyncMode,
