@@ -398,7 +398,7 @@ function() {
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
 };
 
-ZmCalItemComposeController.prototype._showErrorMessage =
+ZmCalItemComposeController.prototype.showErrorMessage =
 function(errorMsg) {
 	var dialog = appCtxt.getMsgDialog();
 	//var msg = ZmMsg.errorSaving + (errorMsg ? (":<p>" + errorMsg) : ".");
@@ -414,7 +414,7 @@ function(calItem, attId, notifyList, force) {
 		// bug: 16112 - check for folder existance
 		if (calItem.getFolder() && calItem.getFolder().noSuchFolder) {
 			var msg = AjxMessageFormat.format(ZmMsg.errorInvalidFolder, calItem.getFolder().name);
-			this._showErrorMessage(msg);
+			this.showErrorMessage(msg);
 			return false;
 		}
         if(this._composeView.isReminderOnlyChanged()) {
@@ -580,7 +580,7 @@ function() {
 		}
 	} catch(ex) {
 		if (AjxUtil.isString(ex)) {
-			this._showErrorMessage(ex);
+			this.showErrorMessage(ex);
 		} else {
 			DBG.dumpObj(AjxDebug.DBG1, ex);
 		}
