@@ -211,10 +211,15 @@ function() {
 		(this._invite && this._invite.type != "task"))
 	{
 
-		var inviteDate = this._invite.getServerStartDate();
+		var inviteDate = this._invite.getServerStartDate(null, true);
 		if (inviteDate == null) { /* not sure when this happens (probably a bug) but this is defensive check for bug 51754 */
 			return;
 		}
+
+		var inviteTz = this._invite.getServerStartTimeTz();
+
+		inviteDate = AjxTimezone.convertTimezone(inviteDate, AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
+
 
 		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		var cc = AjxDispatcher.run("GetCalController");
