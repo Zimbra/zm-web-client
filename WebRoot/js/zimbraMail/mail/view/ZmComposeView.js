@@ -856,6 +856,8 @@ ZmComposeView.prototype.setAddress =
 function(type, addr) {
 
 	addr = addr || "";
+	if (addr instanceof AjxEmailAddress)
+		addr = addr.getAddress();
 	if (addr.length && !this._using[type]) {
 		this._using[type] = true;
 		this._showAddressField(type, true);
