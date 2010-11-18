@@ -1250,8 +1250,7 @@ function(status, attId) {
 			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
 			default: 									msg += " "; break;
 		}
-
-		this._controller.popupErrorDialog(msg + ZmMsg.errorTryAgain, null, null, true);		
+		this._controller.showErrorMessage(msg + ZmMsg.errorTryAgain);
 	}
 };
 
