@@ -58,8 +58,9 @@ function(attId) {
 	var calItem = this._composeView.getCalItem(attId);
 	if (calItem) {
 		this._saveCalItemFoRealz(calItem, attId);
+        return true;
 	}
-	return true;
+	return false;
 };
 
 ZmTaskController.prototype._handleResponseSave =
@@ -148,11 +149,6 @@ ZmTaskController.prototype._printListener =
 function() {
 	var url = ("/h/printtasks?id=" + this._composeView._calItem.invId);
 	window.open(appContextPath+url, "_blank");
-};
-
-ZmTaskController.prototype._closeView = function() {
-    appCtxt.getAppViewMgr().showPendingView(true);
-	this._composeView.cleanup();
 };
 
 ZmTaskController.prototype.closeView = function() {
