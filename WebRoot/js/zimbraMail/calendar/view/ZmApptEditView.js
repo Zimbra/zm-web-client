@@ -627,7 +627,7 @@ function(calItem, mode) {
 ZmApptEditView.prototype._getMeetingStatusMsg =
 function(calItem){
     var statusMsg = null;
-    if(calItem.isDraft){
+    if(!this.isAttendeesEmpty() && calItem.isDraft){
         if(calItem.inviteNeverSent){
             statusMsg = ZmMsg.inviteNotSent;
         }else{

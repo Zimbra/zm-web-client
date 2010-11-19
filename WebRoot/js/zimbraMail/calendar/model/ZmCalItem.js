@@ -1893,9 +1893,9 @@ function(cancel, isHtml) {
     }else if (cancel) {
 		buf[i++] = singleInstance ? ZmMsg.apptInstanceCanceled : ZmMsg.apptCanceled;
 	} else if(!this.isForwardMode || this.isOrganizer()){
-		if (this.viewMode == ZmCalItem.MODE_EDIT ||
+		if (!this.inviteNeverSent && ( this.viewMode == ZmCalItem.MODE_EDIT ||
 			this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE ||
-			this.viewMode == ZmCalItem.MODE_EDIT_SERIES)
+			this.viewMode == ZmCalItem.MODE_EDIT_SERIES ) )
 		{
 			buf[i++] = singleInstance ? ZmMsg.apptInstanceModified : ZmMsg.apptModified;
 		}

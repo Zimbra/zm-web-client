@@ -367,7 +367,7 @@ function(isHtml) {
 
 	var orig = this._orig || this;
 
-	var isEdit = (this.viewMode == ZmCalItem.MODE_EDIT ||
+	var isEdit = !this.inviteNeverSent && (this.viewMode == ZmCalItem.MODE_EDIT ||
 				  this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE ||
 				  this.viewMode == ZmCalItem.MODE_EDIT_SERIES);
 
