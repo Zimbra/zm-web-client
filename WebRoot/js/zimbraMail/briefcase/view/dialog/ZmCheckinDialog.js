@@ -133,6 +133,7 @@ function(file, status, guid, ex){
     if(ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS){
         //Warning Message
         var warning = appCtxt.getMsgDialog();
+        warning.reset();
         warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, file.name), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
         warning.popup();
         //Error Handled
