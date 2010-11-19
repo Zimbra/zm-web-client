@@ -150,6 +150,7 @@ ZmMailMsg.requestHeaders = {};
  * @param {Boolean}	      params.noTruncate	if <code>true</code>, do not truncate message body
  * @param {ZmBatchCommand}      params.batchCmd		if set, request gets added to this batch command
  * @param {String}      params.accountName	the name of the account to send request on behalf of
+ * @param {boolean}      params.needExp	if <code>true</code>, have server check if addresses are DLs
  */
 ZmMailMsg.fetchMsg =
 function(params) {
@@ -165,6 +166,9 @@ function(params) {
 	}
 	if (params.getHtml) {
 		m.html = 1;
+	}
+	if (params.needExp) {
+		m.needExp = 1;
 	}
 
 	if (params.ridZ) {
@@ -675,6 +679,7 @@ function(node, args) {
  * @param {Boolean}      params.noTruncate	if <code>true</code>, do not set max limit on size of msg body
  * @param {ZmBatchCommand}      params.batchCmd		if set, request gets added to this batch command
  * @param {String}      params.accountName	the name of the account to send request on behalf of
+ * @param {boolean}      params.needExp	if <code>true</code>, have server check if addresses are DLs
  */
 ZmMailMsg.prototype.load =
 function(params) {
