@@ -604,10 +604,14 @@ function(calItem, mode) {
     if(calItem.isAcceptingProposal) this._isDirty = true;
 
     //Persona's   [ Should select Persona as combination of both DisplayName, FromAddress ]
-    var sentBy = calItem.sentBy;
-    sentBy = sentBy || (calItem.organizer != calItem.getFolder().getOwner() ? calItem.organizer : null);
-    if(sentBy){
-        this.setIdentity(appCtxt.getIdentityCollection().getIdentityBySendAddress(sentBy));
+    if(calItem.identity){
+        this.setIdentity(calItem.identity);
+    }else{
+        var sentBy = calItem.sentBy;
+        sentBy = sentBy || (calItem.organizer != calItem.getFolder().getOwner() ? calItem.organizer : null);
+        if(sentBy){
+            this.setIdentity(appCtxt.getIdentityCollection().getIdentityBySendAddress(sentBy));
+        }
     }
 
     if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true);
