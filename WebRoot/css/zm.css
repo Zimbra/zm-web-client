@@ -1623,29 +1623,29 @@ line-height:normal;
 .appt							{ 	z-index:10;	}
 .appt-selected					{ 	z-index:20;	}
 
-.appt-selected TD		 		{											font-weight:bold;											}
+.appt-selected TD		 		{	font-weight:bold;   }
 
 /* ??? USE? */
-.appt_new_tag					{											font-weight:bold;	color:#FFCC00;							}
+.appt_new_tag					{	font-weight:bold;	color:#FFCC00;    }
 
-.appt_name						{	@SmallBoxPadding@;															}
+.appt_name						{	@SmallBoxPadding@; font-weight:bold;  }
 .appt_new_name					{	@SmallBoxPadding@;	}
 
 .appt_30_name,
-.appt_allday_name				{	@SmallBoxPadding@;	padding-top:1px;										@NoWrap@	}
+.appt_allday_name				{	@SmallBoxPadding@; padding-top:1px; @NoWrap@	}
 .appt_30_new_name,
-.appt_allday_new_name 			{	@SmallBoxPadding@;	padding-top:1px; 										@NoWrap@	}
+.appt_allday_new_name 			{	@SmallBoxPadding@; padding-top:1px; @NoWrap@	}
 
 
-.appt_time						{	@SmallBoxPadding@;																}
+.appt_time						{	@SmallBoxPadding@;  }
 .appt_new_time					{	@SmallBoxPadding@;	}
-.appt_end_time					{	@SmallBoxPadding@;						color:#666666;	@NoWrap@	}
-.appt_location					{	@SmallBoxPadding@;						}
+.appt_end_time					{	@SmallBoxPadding@; color:#666666; @NoWrap@	}
+.appt_location					{	@SmallBoxPadding@; color:#666666; font-weight:normal;  }
 .appt_icon						{ 	position: relative; float: right;		}
 
 .appt_top_sash,
 .appt_bottom_sash{
-	height: 5px;
+	height:5px;
 	width:100%;
 	position:absolute;
 	font-size: 2pt;
@@ -1661,61 +1661,70 @@ line-height:normal;
 }
 
 .appt_body,
-.appt_30_body {
-	position:relative;
-	overflow:hidden;
-	border:1px solid;
-	border-color:#AAAAAA #333333 #333333 #AAAAAA;
+.appt_30_body,
+.appt_allday_body {
+    position:relative;
+    overflow:hidden;
+    border-style:solid;
+    border-color:#A3A3A3;
 #IFDEF SAFARI
-	-webkit-border-radius: 4px;
+    border-width:0;
+    -webkit-box-shadow:1px 1px 3px #666666;
+    box-shadow:1px 1px 3px #666666;
 #ENDIF
 #IFDEF GECKO
-	-moz-user-select: none;
-    -moz-border-radius:4px;
+    border-width:0;
+    -moz-user-select:none;
+    -moz-box-shadow:1px 1px 3px #666666;
+    box-shadow:1px 1px 3px #666666;
 #ENDIF
-    margin:0 0 0 -1;
+#IFDEF MSIE
+    border-width:0px 3px 2px 0px;
+#ENDIF
+    margin:0 0 0 -1px;
+}
+
+.appt_body table,
+.appt_30_body table,
+.appt_allday_body table         {   
+    border:1px solid #999999;
+    background-color: #e5e5e5;
+#IFDEF SAFARI
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #e5e5e5),color-stop(1, #ffffff));
+#ENDIF
+#IFDEF GECKO
+    background-image: -moz-linear-gradient(top, #e5e5e5, #ffffff);
+#ENDIF
+#IFDEF MSIE
+    /* commented out because IE's filter causes strange behaviour on the overlaid text */
+    /*filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#e5e5e5', EndColorStr='#ffffff');  IE6,IE7
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#e5e5e5', EndColorStr='#ffffff')"; IE8 */
+#ENDIF
 }
 
 .appt-selected .appt_body,
-.appt-selected .appt_30_body {
-	position:relative;
-	overflow:hidden;
-	border:2px solid;
-	border-color:#339999 #003030 #003030 #339999;
-#IFDEF SAFARI
-	-webkit-border-radius: 4px;
-#ENDIF
-#IFDEF GECKO
-	-moz-user-select: none;
-	-moz-border-radius:4px;
-#ENDIF
-	margin:0 -2 -2 0;
-}
-
-.appt_allday_body {
-	position:relative;
-	overflow:hidden;
-	border:2px solid #333333;
-#IFDEF GECKO
-    -moz-border-radius:2 2 2 2;
-#ENDIF
-	border-top-width:1px;
-	border-bottom-width:1px;
-	margin:0 0 -1 0;
-}
-
+.appt-selected .appt_30_body,
 .appt-selected .appt_allday_body {
-	position:relative;
-	overflow:hidden;
-	border-left:3px solid #339999;
-	border-top:2px solid #339999;
-	border-right:3px solid #003030;
-	border-bottom:2px solid #003030;
-#IFDEF GECKO
-    -moz-border-radius:2 2 2 2;
+    /*position:relative;
+    overflow:hidden;*/
+    border-width:0 4px 4px 0;
+#IFDEF SAFARI
+    border-width:0;
+    -webkit-box-shadow:2px 2px 4px #666666;
+    box-shadow:2px 2px 4px #666666;
 #ENDIF
-	margin: 0 -1 -1 0;
+#IFDEF GECKO
+    border-width:0;
+    -moz-user-select: none;
+    -moz-box-shadow:2px 2px 4px #666666;
+    box-shadow:2px 2px 4px #666666;
+#ENDIF
+    margin:0 -2px -2px 0;
 }
+
+.appt-selected .appt_body table,
+.appt-selected .appt_30_body table,
+.appt-selected .appt_allday_body table {    border:1px solid #666666;   }
 
 .appt-selected .appt_body TD,
 .appt-selected .appt_allday_body TD,

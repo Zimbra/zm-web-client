@@ -47,7 +47,7 @@
 				<td class=appt${newState}_name style='height:100%'>
 					${name}
 					<$ if (data.location) { $>
-						<BR>${location}
+						${location}
 					<$ } $>
 				</td>
 			</tr>

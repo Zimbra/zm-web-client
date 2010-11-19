@@ -628,7 +628,7 @@ function(appt) {
 	// normalize location
 	var location = appt.getLocation();
 	location = (location && location.length && !is60)
-		? ("<i>" + AjxStringUtil.htmlEncode(appt.getLocation()) + "</i>") : null;
+		? ("<div class='appt_location'>" + AjxStringUtil.htmlEncode(appt.getLocation()) + "</div>") : null;
 
 	if (is30 &&
 		(this.view != ZmId.VIEW_CAL_DAY) &&
