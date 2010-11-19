@@ -1901,8 +1901,10 @@ ZmMailMsgView.detachMsgInNewWindow =
 function(msg, isRfc822, mode) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var newWinObj = appCtxt.getNewWindow(true);
-	newWinObj.command = "msgViewDetach";
-	newWinObj.params = { msg:msg, isRfc822:isRfc822, mode:mode };
+	if(newWinObj) {// null check for popup blocker
+		newWinObj.command = "msgViewDetach";
+		newWinObj.params = { msg:msg, isRfc822:isRfc822, mode:mode };
+	}
 };
 
 ZmMailMsgView.rfc822Callback =
