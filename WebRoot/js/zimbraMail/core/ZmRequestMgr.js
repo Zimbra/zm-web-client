@@ -463,10 +463,16 @@ function(hdr) {
 			var sid = hdr.context && ZmCsfeCommand.extractSessionId(hdr.context.session);
             if (notify.seq > this._highestNotifySeen && !(sid && ZmCsfeCommand._staleSession[sid])) {
                 DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
+                if (window.isNotifyDebugOn) {
+                    appCtxt.setNotifyDebug(["Handling NOTIFY: [" + i + "] in _handleNotifications seq=", seq].join(""));
+                }
                 this._highestNotifySeen = seq;
                 this._notifyHandler(notify);
             } else {
             	DBG.println(AjxDebug.DBG1, "SKIPPING notification[" + i + "] seq=" + seq + " highestNotifySeen=" + this._highestNotifySeen);
+                if (window.isNotifyDebugOn) {
+                    appCtxt.setNotifyDebug(["Handling NOTIFY: Skipping notification[", i, "] seq=", seq, " highestNotifySeen=", this._highestNotifySeen].join(""));
+                }
 	      	}
     	}
 	}
@@ -572,7 +578,12 @@ function(type, unread, obj, objType, account) {
  */
 ZmRequestMgr.prototype._notifyHandler =
 function(notify) {
-	DBG.println(AjxDebug.DBG2, "Handling NOTIFY");
+	DBG.println(AjxDebug.DBG1, "Handling NOTIFY");
+    if (window.isNotifyDebugOn) {
+        var notifyStr = AjxStringUtil.objToString(notify)
+        appCtxt.setNotifyDebug("Handling NOTIFY: in ZmRequestMgr _notifyHandler");
+        appCtxt.setNotifyDebug(notifyStr);
+    }
 	this._controller.runAppFunction("preNotify", false, notify);
 	if (notify.deleted && notify.deleted.id) {
 		this._handleDeletes(notify.deleted);
@@ -636,6 +647,9 @@ function(creates) {
 			if (appCtxt.cacheGet(create.id) && name != "tag") { continue; }
 	
 			DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
+            if (window.isNotifyDebugOn) {
+    			appCtxt.setNotifyDebug(["Handling NOTIFY: in ZmRequestMgr - _handleCreates handling CREATE for node: ", name].join(""));
+            }
 			if (name == "tag") {
 				var account = appCtxt.multiAccounts && ZmOrganizer.parseId(create.id).account;
 				var tagTree = appCtxt.getTagTree(account);

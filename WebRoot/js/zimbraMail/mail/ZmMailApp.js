@@ -1047,6 +1047,7 @@ function(notify) {
 		mods["c"] = newMods;
 		appCtxt.getRequestMgr()._handleModifies(mods);
 	}
+    appCtxt.setNotifyDebug("Handling NOTIFY: in ZmMailApp - End of Prenotify");
 };
 
 /**
@@ -1063,6 +1064,7 @@ function(notify) {
  */
 ZmMailApp.prototype.createNotify =
 function(creates, force) {
+    appCtxt.setNotifyDebug("Handling NOTIFY: In ZmMailAppcreateNotify");
 	if (!creates["m"] && !creates["c"] && !creates["link"]) { return; }
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
