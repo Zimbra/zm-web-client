@@ -151,13 +151,13 @@
         {
         if(document.getElementById("C"+idex).checked) {
             cid = document.getElementById("C"+idex).value;
-            c += "id="+cid + "&";
+            c += "&id="+cid;
         }
             idex++ ;
         }
         }catch(ex){
         }
-        window.open("/h/printcontacts?st=${zm:cook(param.st)}&sfi=${context.folder.id}&"+c);
+        window.open("/h/printcontacts?st=${zm:cook(param.st)}&sfi=${context.folder.id}&sq=${zm:cook(param.sq)}"+c);
     }
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
     var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
