@@ -1292,11 +1292,16 @@ function() {
 	// reason that breaks polling in IE.
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
 	try {
-		if (this._pollInstantNotifications) {
-			var method = soapDoc.getMethod();
-			method.setAttribute("wait", 1);
-			method.setAttribute("limitToOneBlocked", 1);
-		}
+        if (this._pollInstantNotifications) {
+            var method = soapDoc.getMethod();
+            method.setAttribute("wait", 1);
+            method.setAttribute("limitToOneBlocked", 1);
+            if (window.isNotifyDebugOn) {
+                var str = appCtxt.getNotifyDebug();
+                soapDoc.set("DEBUG", str);
+                appCtxt.clearNotifyDebug();
+            }
+        }
 		var params = {
 			soapDoc: soapDoc,
 			asyncMode: true,

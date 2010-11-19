@@ -1675,3 +1675,27 @@ function(type, account) {
 		}
 	}
 };
+
+ZmAppCtxt.prototype.setNotifyDebug =
+function(notify) {
+
+    if (!window.isNotifyDebugOn) {
+        return;
+    }
+
+    if (this._notify) {
+        this._notify =  [this._notify, notify, "\n\n"].join("");
+    } else {
+        this._notify = ["\n\n", notify, "\n\n"].join("");
+    }
+};
+
+ZmAppCtxt.prototype.getNotifyDebug =
+function() {
+    return this._notify;
+};
+
+ZmAppCtxt.prototype.clearNotifyDebug =
+function() {
+    this._notify = "";
+};

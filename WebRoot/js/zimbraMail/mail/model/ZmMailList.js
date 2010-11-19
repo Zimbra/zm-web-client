@@ -371,7 +371,6 @@ function(convs, msgs) {
 	var sortBy = this.search ? this.search.sortBy : null;
 	var sortIndex = {};
 	if (this.type == ZmItem.CONV) {
-
 		// handle new convs first so we can set their fragments later from new msgs
 		for (var id in convs) {
 			if (this.getById(id)) { continue; }	// already have this conv
@@ -384,6 +383,7 @@ function(convs, msgs) {
 					// a new msg for this conv matches current search
 					conv.list = this;
 					newConvs.push(conv);
+                    appCtxt.setNotifyDebug("Handling NOTIFY: notifyCreate ZmMailList --- New conv added");
 				}
 			}
 		}
@@ -412,6 +412,7 @@ function(convs, msgs) {
 					newConvId[cid] = conv;
 					conv.folders[msg.folderId] = true;
 					newConvs.push(conv);
+                    appCtxt.setNotifyDebug("Handling NOTIFY: in ZmMailList - notifyCreate - New message becomes a conv");
 				}
 				conv.list = this;
 			}
@@ -471,6 +472,9 @@ function(convs, msgs) {
 				}
 			}
 		}
+        if (window.isNotifyDebugOn && newMsgs.length > 1) {
+            appCtxt.setNotifyDebug("Handling NOTIFY: notifyCreate ZmMailList --- New message added to list");
+        }
 	}
 
 	// sort item list in reverse so they show up in correct order when processed (oldest appears first)
