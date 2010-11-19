@@ -2099,7 +2099,7 @@ function() {
 	if (ZmCsfeCommand.getAuthToken()) {
 		appCtxt.accountList.saveImplicitPrefs();
 
-		if (!ZmZimbraMail._isOkToExit()) {
+		if (appCtxt.get(ZmSetting.WARN_ON_EXIT) && !ZmZimbraMail._isOkToExit()) {
 			ZmZimbraMail._isLogOff = false;
 			return ZmMsg.appExitWarning;
 		}
