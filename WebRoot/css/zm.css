@@ -1686,13 +1686,14 @@ line-height:normal;
 
 .appt_body table,
 .appt_30_body table,
-.appt_allday_body table         {   
+.appt_allday_body table         {
     border:1px solid #999999;
     background-color: #e5e5e5;
 #IFDEF SAFARI
     background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #e5e5e5),color-stop(1, #ffffff));
 #ENDIF
 #IFDEF GECKO
+    border-collapse: separate;
     background-image: -moz-linear-gradient(top, #e5e5e5, #ffffff);
 #ENDIF
 #IFDEF MSIE

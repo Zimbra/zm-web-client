@@ -558,15 +558,14 @@ function(div, allDay, folderId) {
 	div.className = this._getStyle(null, true);
 	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DND);
 	var calendar = appCtxt.getById(folderId);
-	var headerColor = calendar.rgb ? AjxColor.deepen(AjxColor.darken(calendar.rgb,ZmCalBaseView.headerColorDelta)) : "";
+	//var headerColor = calendar.rgb ? AjxColor.deepen(AjxColor.darken(calendar.rgb,ZmCalBaseView.headerColorDelta)) : "";
 	var bodyColor = calendar.rgb ? AjxColor.deepen(AjxColor.lighten(calendar.rgb,ZmCalBaseView.bodyColorDelta)) : "";
 	var subs = {
 		id: div.id,
 		newState: "",
 		headerColor: calendar.rgb ? "" : (color + "Light"),
 		bodyColor: calendar.rgb ? "" : (color + "Bg"),
-		headerStyle: calendar.rgb ? "background-color: "+headerColor+";" : "",
-		bodyStyle: calendar.rgb ? "background-color: "+bodyColor+";" : "",
+		headerStyle: calendar.rgb ? "background-color: "+bodyColor+";" : "",
 		name: AjxStringUtil.htmlEncode(ZmMsg.newAppt),
 		starttime: "",
 		endtime: "",
@@ -642,14 +641,14 @@ function(appt) {
 	}
 
 	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
-	var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
+    //bodyStyle is now new headerStyle
+	//var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
 	var bodyStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
     var fba = isNew ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
 	var subs = {
 		id: id,
 		newState: isNew ? "_new" : "",
-		headerStyle: headerStyle,
-		bodyStyle: bodyStyle,
+		headerStyle: bodyStyle,
 		name: apptName,
 		starttime: appt.getDurationText(true, true),
 		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate)),
@@ -669,7 +668,7 @@ function(appt) {
 		var bs = "";
 		if (!this.isStartInView(appt._orig)) bs = "border-left:none;";
 		if (!this.isEndInView(appt._orig)) bs += "border-right:none;";
-		if (bs != "") subs.bodyStyle += bs;
+		if (bs != "") subs.bodyStyle = bs;
 	} else if (is30) {
 		template = "calendar_appt_30";
 	} else if (appt._fanoutNum > 0) {
