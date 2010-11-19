@@ -192,7 +192,7 @@ function(attId) {
 
         //Validation Check for Significant / Insignificant / Local changes
         if(this._action == ZmCalItemComposeController.SAVE && !appt.inviteNeverSent){
-             //Check for Significant Changes
+            //Check for Significant Changes
             if(this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT)){
                 this._getChangesDialog().popup();
                 this.enableToolbar(true);
@@ -300,23 +300,36 @@ function(ev){
 ZmApptComposeController.prototype._saveListener =
 function(ev, force) {
     var isMeeting = !this._composeView.isAttendeesEmpty();
-    var dlg = appCtxt.getOkCancelMsgDialog();
-    if(isMeeting && !force){
-        dlg.setMessage(ZmMsg.inviteNotSentMsg);
-        dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._saveListener, ev, true));
-        dlg.popup();
-        return;
-    }else if(dlg.isPoppedUp()){
-        dlg.popdown();
-    }
+    
     this._action = isMeeting ? ZmCalItemComposeController.SAVE : ZmCalItemComposeController.SAVE_CLOSE;
 
     //attendee should not have send/save option
     if(!this._composeView.isOrganizer()) {
         this._action = ZmCalItemComposeController.SAVE_CLOSE;
     }
-
     this.enableToolbar(false);
+
+    var dlg = appCtxt.getOkCancelMsgDialog();
+    if(dlg.isPoppedUp()){
+        dlg.popdown();
+    }
+
+    if(!force && this._action == ZmCalItemComposeController.SAVE){
+        var appt = this._composeView.getApptEditView()._calItem;
+        var inviteNeverSent = (appt && appt.inviteNeverSent);
+        var showDlg = true;
+        if(!inviteNeverSent && (this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT)
+                ||  this._checkIsDirty(ZmApptEditView.CHANGES_LOCAL))){
+            showDlg = false;
+        }
+        if(showDlg){
+            dlg.setMessage(ZmMsg.inviteNotSentMsg);
+            dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._saveListener, [ev, true]));
+            dlg.popup();
+            return;
+        }
+    }
+
 	if (this._doSave() === false) {
 		return;
     }
