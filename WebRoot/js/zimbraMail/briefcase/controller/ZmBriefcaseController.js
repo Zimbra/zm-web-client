@@ -824,32 +824,11 @@ function() {
 
 ZmBriefcaseController.prototype._handlePostUpload =
 function(folder, filenames, files){
-
-    var dlg = appCtxt.getMsgDialog();
-    var html =[], idx=0;
-    var notes = "";
-    html[idx++] = "<div style='padding:10px;'>";
-    for(var i=0; i<files.length; i++){
-        var f = files[i];
-        html[idx++] = "<div style='padding: 5px 5px 10px;'>";
-        f.version = Number(f.version);
-        if(f.version == 1){
-            html[idx++] = AjxMessageFormat.format(ZmMsg.uploadCreated, f.name);
-        }else{
-            html[idx++] = AjxMessageFormat.format(ZmMsg.uploadExists, [f.name, (Number(f.version))]);
-        }
-        html[idx++] =  "</div>";
-        notes = f.notes;
-    }
-
-    if(notes)
-        html[idx++] = ["<div style='padding: 5px;'><div style='font-weight: bold;'>",ZmMsg.notesLabel,"</div><div style='width: 300px;'>", notes,"</div>"].join('');
-
-    html[idx++] = "</div>";
-
-    dlg.setTitle(ZmMsg.successfullyUploaded);
-    dlg.setContent(html.join(''));
-    dlg.popup();
+     var msg = ZmMsg.successfullyUploaded;
+     if(files.length > 1){
+         msg = AjxMessageFormat.format(ZmMsg.successfullyUploadedFiles, files.length);
+     }
+     appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);    
 };
 
 ZmBriefcaseController.prototype._sendFileListener =
