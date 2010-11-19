@@ -141,14 +141,12 @@ function(params, callback) {
 		};
 		var search = this.search = new ZmSearch(searchParams);
 
-		var fetchId = ((params.getFirstMsg && this.msgIds && this.msgIds.length) ? this.msgIds[0] : null);
 		var convParams = {
 			cid: this.id,
-			callback:	(new AjxCallback(this, this._handleResponseLoad, [params, callback])),
-			fetchId:	fetchId,
-			markRead:	params.markRead,
-			noTruncate:	params.noTruncate,
-			needExp:	fetchId && params.needExp
+			callback: (new AjxCallback(this, this._handleResponseLoad, [params, callback])), 
+			fetchId: ((params.getFirstMsg && this.msgIds && this.msgIds.length) ? this.msgIds[0] : null),
+			markRead: params.markRead,
+			noTruncate: params.noTruncate
 		};
 		search.getConv(convParams);
 	}

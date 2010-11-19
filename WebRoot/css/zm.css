@@ -1626,21 +1626,22 @@ line-height:normal;
 .appt-selected TD		 		{	font-weight:bold;   }
 
 /* ??? USE? */
-.appt_new_tag					{	font-weight:bold; color:#FFCC00;    }
+.appt_new_tag					{	font-weight:bold;	color:#FFCC00;    }
 
-.appt_name						{	@SmallBoxPadding@; font-weight:bold;	}
+.appt_name						{	@SmallBoxPadding@; font-weight:bold;  }
 .appt_new_name					{	@SmallBoxPadding@;	}
 
 .appt_30_name,
-.appt_allday_name				{	@SmallBoxPadding@; padding-top:1px; @NoWrap@ }
+.appt_allday_name				{	@SmallBoxPadding@; padding-top:1px; @NoWrap@	}
 .appt_30_new_name,
-.appt_allday_new_name 			{	@SmallBoxPadding@; padding-top:1px; @NoWrap@ }
+.appt_allday_new_name 			{	@SmallBoxPadding@; padding-top:1px; @NoWrap@	}
 
-.appt_time						{	@SmallBoxPadding@;	}
+
+.appt_time						{	@SmallBoxPadding@;  }
 .appt_new_time					{	@SmallBoxPadding@;	}
-.appt_end_time					{	@SmallBoxPadding@; color:#666666; @NoWrap@ }
-.appt_location					{	@SmallBoxPadding@; color:#666666; font-weight:normal;}
-.appt_icon						{ 	position:relative; float:right;  }
+.appt_end_time					{	@SmallBoxPadding@; color:#666666; @NoWrap@	}
+.appt_location					{	@SmallBoxPadding@; color:#666666; font-weight:normal;  }
+.appt_icon						{ 	position: relative; float: right;		}
 
 .appt_top_sash,
 .appt_bottom_sash{
@@ -1662,10 +1663,10 @@ line-height:normal;
 .appt_body,
 .appt_30_body,
 .appt_allday_body {
-	position:relative;
-	overflow:hidden;
-	border-style:solid;
-	border-color:#A3A3A3;
+    position:relative;
+    overflow:hidden;
+    border-style:solid;
+    border-color:#A3A3A3;
 #IFDEF SAFARI
     border-width:0;
     -webkit-box-shadow:1px 1px 3px #666666;
@@ -1673,7 +1674,7 @@ line-height:normal;
 #ENDIF
 #IFDEF GECKO
     border-width:0;
-	-moz-user-select:none;
+    -moz-user-select:none;
     -moz-box-shadow:1px 1px 3px #666666;
     box-shadow:1px 1px 3px #666666;
 #ENDIF
@@ -1705,8 +1706,8 @@ line-height:normal;
 .appt-selected .appt_body,
 .appt-selected .appt_30_body,
 .appt-selected .appt_allday_body {
-	/*position:relative;
-	overflow:hidden;*/
+    /*position:relative;
+    overflow:hidden;*/
     border-width:0 4px 4px 0;
 #IFDEF SAFARI
     border-width:0;
@@ -1715,11 +1716,11 @@ line-height:normal;
 #ENDIF
 #IFDEF GECKO
     border-width:0;
-	-moz-user-select: none;
+    -moz-user-select: none;
     -moz-box-shadow:2px 2px 4px #666666;
     box-shadow:2px 2px 4px #666666;
 #ENDIF
-	margin:0 -2px -2px 0;
+    margin:0 -2px -2px 0;
 }
 
 .appt-selected .appt_body table,

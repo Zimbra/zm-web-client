@@ -1293,7 +1293,8 @@ function() {
 		matchValue:			ZmAutocomplete.AC_VALUE_FULL,
 		compCallback:		acCallback,
 		keyPressCallback:	keyPressCallback,
-		options:			{addrBubbles:this._useAcAddrBubbles}
+		options:			{addrBubbles:this._useAcAddrBubbles},
+		parentView:			this
 	};
 
 	// autocomplete for attendees (required and optional) and forward recipients

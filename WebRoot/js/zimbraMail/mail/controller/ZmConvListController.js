@@ -322,7 +322,6 @@ function(params, callback) {
 	var item = (sel && sel.length) ? sel[0] : null;
 	if (item) {
 		params.markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
-		params.needExp = true;
 		if (item.type == ZmItem.CONV) {
 			var respCallback = new AjxCallback(this, this._handleResponseGetLoadedMsg, callback);
 			item.getFirstHotMsg(params, respCallback);

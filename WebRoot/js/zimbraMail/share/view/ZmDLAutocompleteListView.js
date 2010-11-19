@@ -105,47 +105,38 @@ function(table, match, rowId) {
 };
 
 ZmDLAutocompleteListView.prototype._update =
-function(hasDelim, match, ev) {
+function(hasDelim) {
 
 	if (this._selected == this._selectAllRowId) {
 		if (!this._matchHash[this._selectAllRowId]) {
-			var callback = new AjxCallback(this, this._handleResponseGetAllDLMembers, [hasDelim, ev]);
+			var callback = new AjxCallback(this, this._handleResponseGetAllDLMembers, [hasDelim]);
 			this._dlContact.getAllDLMembers(callback);
 		}
 	} else {
-		this._doUpdate(hasDelim, ev);
+		this._doUpdate(hasDelim);
 		this.reset(true);
 	}
 };
 
 ZmDLAutocompleteListView.prototype._handleResponseGetAllDLMembers =
-function(hasDelim, ev, result) {
+function(hasDelim, result) {
 
 	var mv = this._parentAclv._matchValue;
 	var field = (mv instanceof Array) ? mv[0] : mv;
 	if (result.list && result.list.length) {
-		// see if client wants addresses joined, or one at a time
-		if (this._parentAclv._options.massDLComplete) {
+		for (var i = 0, len = result.list.length; i < len; i++) {
 			var match = this._matchHash[this._selectAllRowId] = new ZmAutocompleteMatch();
-			match[field] = result.list.join(this._parentAclv._separator);
-			match.multipleAddresses = true;
-			this._doUpdate(hasDelim, ev);
-		}
-		else {
-			for (var i = 0, len = result.list.length; i < len; i++) {
-				var match = this._matchHash[this._selectAllRowId] = new ZmAutocompleteMatch();
-				match[field] = result.list[i];
-				this._doUpdate(hasDelim, ev);
-			}
+			match[field] = result.list[i];
+			this._doUpdate(hasDelim);
 		}
 	}
 	this.reset(true);
 };
 
 ZmDLAutocompleteListView.prototype._doUpdate =
-function(hasDelim, ev) {
+function(hasDelim) {
 	var sel = this._matchHash[this._selected];
-	this._parentAclv._update(hasDelim, sel, ev);
+	this._parentAclv._update(hasDelim, sel);
 };
 
 ZmDLAutocompleteListView.prototype.show =

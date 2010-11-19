@@ -54,14 +54,11 @@ function() {
 	return "DwtAddressInputField";
 };
 
-// tie a bubble SPAN to a widget that can handle clicks
-ZmAddressInputField.BUBBLE_OBJ_ID = {};
-
 /**
  * Creates a bubble for the given address and adds it into the holding area.
  *
  * @param {string}					address		address text to go in the bubble
- * @param {ZmAutocompleteMatch}		match		match object (optional)
+ * @param {ZmAutocompleteMatch}		match		match object
  */
 ZmAddressInputField.prototype.add =
 function(address, match) {
@@ -69,99 +66,39 @@ function(address, match) {
 	if (!address) { return; }
 
 	this._input.value = "";
+	var bubble = document.createElement("span");
+	var bubbleId = bubble.id = Dwt.getNextId();
+	bubble._aifId = this._htmlElId;
+	bubble.className = this._bubbleClassName;
 
-	var params = {
-		address:	address,
-		returnSpan:	true,
-		className:	this._bubbleClassName,
-		canRemove:	true,
-		canExpand:	match && match.isDL,
-		dlAddress:	match && match.email,
-		separator:	this._separator,
-		parentId:	this._htmlElId
-	};
-	var bubble = ZmAddressInputField.getBubble(params);
-
-	var bubbleId = bubble.id;
 	this._bubble[bubbleId] = bubble;
 	this._addresses.push(address);
 	this._addressHash[address] = true;
 	this._bubbleAddress[bubbleId] = address;
 
-	this._holder.appendChild(bubble);
-	Dwt.setHandler(bubble, DwtEvent.ONCLICK, ZmAddressInputField.onClick);
-	this.focus();
-};
-
-/**
- * Generates HTML content for an address bubble and returns either HTML, or the bubble
- * itself (a SPAN).
- *
- * @param {hash}		params		a hash of params:
- * @param {string}		id			element ID for the bubble (optional)
- * @param {string}		className	CSS class for the bubble (optional)
- * @param {string}		address		email address to display in the bubble
- * @param {boolean}		canRemove	if true, an x will be provided to remove the address bubble
- * @param {boolean}		canExpand	if true, a + will be provided to expand the DL address
- * @param {boolean}		returnSpan	if true, return SPAN element rather than HTML
- * @param {string}		separator	address separator - hidden, present for copy of text (optional)
- *
- * @return {Element|string}	SPAN element or HTML string
- */
-ZmAddressInputField.getBubble =
-function(params) {
-
-	params = params || {};
-	var id = params.id || Dwt.getNextId();
-	var className = params.className || "addrBubble";
-	var address = AjxStringUtil.htmlEncode(params.address);
-
-	var expandLinkText = "", removeLinkText = "";
+	var expandLinkText = "";
 	var style = "display:inline-block;cursor:pointer;";
 	if (AjxEnv.isIE) {
 		// hack - IE won't display block elements inline via inline-block
 		style = style + "*display:inline;zoom:1;";
 	}
-
-	if (params.canRemove) {
-		var removeLinkId = id + "_remove";
-		var removeLink = 'ZmAddressInputField.removeBubble("' + id + '");';
-		var removeLinkText = AjxImg.getImageHtml("BubbleDelete", style, "id='" + removeLinkId + "' onclick='" + removeLink + "'");
-	}
-
-	if (params.canExpand) {
-		var addr = params.dlAddress || params.address;
-		var expandLinkId = id + "_expand";
-		var expandLink = 'ZmAddressInputField.expandBubble("' + id + '","' + addr + '");';
+	if (match && match.isDL) {
+		this._dlAddress[bubbleId] = match.email;
+		var expandLinkId = bubbleId + "_expand";
+		var expandLink = 'ZmAddressInputField.expandBubble("' + bubbleId + '");';
 		var expStyle = style + "margin-right:3px;";
 		var expandLinkText = AjxImg.getImageHtml("BubbleExpand", expStyle, "id='" + expandLinkId + "' onclick='" + expandLink + "'");
 	}
 
-	if (params.separator) {
-		var sep = AjxStringUtil.trim(params.separator);
-		var separator = "<span style='visibility:hidden'>" + sep + "</span>";
-	}
-
-	var content = expandLinkText + address + separator + removeLinkText;
-	if (params.returnSpan) {
-		var bubble = document.createElement("span");
-		bubble.id = id;
-		if (params.parentId) {
-			bubble._aifId = params.parentId;
-		}
-		bubble.className = className;
-		bubble.innerHTML = content;
-		return bubble;
-	} else {
-		if (params.parentId) {
-			ZmAddressInputField.BUBBLE_OBJ_ID[id] = params.parentId;
-		}
-		var html = [], idx = 0;
-		html[idx++] = "<span class='" + className + "' id='" + id + "'>";
-		html[idx++] = content;
-		html[idx++] = "</span>";
-		return html.join("");
-	}
+	var removeLinkId = bubbleId + "_remove";
+	var removeLink = 'ZmAddressInputField.removeBubble("' + bubbleId + '");';
+	var removeLinkText = AjxImg.getImageHtml("BubbleDelete", style, "id='" + removeLinkId + "' onclick='" + removeLink + "'");
+	var sep = AjxStringUtil.trim(this._separator);
+	var separator = "<span style='visibility:hidden'>" + sep + "</span>";
+	bubble.innerHTML = expandLinkText + AjxStringUtil.htmlEncode(address) + separator + removeLinkText;
+	this._holder.appendChild(bubble);
+	Dwt.setHandler(bubble, DwtEvent.ONCLICK, ZmAddressInputField.onClick);
+	this.focus();
 };
 
 /**
@@ -305,7 +242,7 @@ function(ev) {
 /**
  * Removes the bubble with the given ID from the holding area.
  *
- * @param {string}	bubbleId	ID of bubble to remove
+ * @param {string}	bubbleId	ID of bubble to select
  */
 ZmAddressInputField.prototype.removeBubble =
 function(bubbleId) {
@@ -329,14 +266,13 @@ function(bubbleId) {
 /**
  * Removes the bubble with the given ID from the holding area.
  *
- * @param {string}	bubbleId	ID of bubble to remove
+ * @param {string}	bubbleId	ID of bubble to select
  */
 ZmAddressInputField.removeBubble =
 function(bubbleId) {
 
 	var bubble = document.getElementById(bubbleId);
-	var parentId = bubble._aifId || ZmAddressInputField.BUBBLE_OBJ_ID[bubbleId];
-	var addrInput = bubble && DwtControl.ALL_BY_ID[parentId];
+	var addrInput = bubble && DwtControl.ALL_BY_ID[bubble._aifId];
 	if (addrInput) {
 		addrInput.removeBubble(bubbleId);
 		addrInput.focus();
@@ -346,8 +282,7 @@ function(bubbleId) {
 /**
  * Expands the distribution list address of the bubble with the given ID.
  *
- * @param {string}	bubbleId	ID of bubble
- * @param {string}	email		address to expand
+ * @param {string}	bubbleId	ID of bubble to select
  */
 ZmAddressInputField.prototype.expandBubble =
 function(bubbleId, email) {
@@ -356,6 +291,7 @@ function(bubbleId, email) {
 	if (bubble) {
 		var loc = Dwt.getLocation(bubble);
 		loc.y += Dwt.getSize(bubble).y + 2;
+		var email = this._dlAddress[bubble.id];
 		this._aclv.expandDL(email, bubble.id, null, null, loc);
 	}
 };
@@ -363,15 +299,13 @@ function(bubbleId, email) {
 /**
  * Expands the distribution list address of the bubble with the given ID.
  *
- * @param {string}	bubbleId	ID of bubble
- * @param {string}	email		address to expand
+ * @param {string}	bubbleId	ID of bubble to select
  */
 ZmAddressInputField.expandBubble =
 function(bubbleId, email) {
 
 	var bubble = document.getElementById(bubbleId);
-	var parentId = bubble._aifId || ZmAddressInputField.BUBBLE_OBJ_ID[bubbleId];
-	var addrInput = bubble && DwtControl.ALL_BY_ID[parentId];
+	var addrInput = bubble && DwtControl.ALL_BY_ID[bubble._aifId];
 	if (addrInput) {
 		addrInput.expandBubble(bubbleId, email);
 	}
@@ -416,6 +350,7 @@ function() {
 	this._addresses		= [];	// ordered address list
 	this._addressHash	= {};	// used addresses, so we can check for dupes
 	this._bubbleAddress	= {};	// addresses by bubble ID
+	this._dlAddress		= {};	// DL addresses by bubble ID, for expanding
 };
 
 /**
