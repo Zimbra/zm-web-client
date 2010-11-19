@@ -513,6 +513,9 @@ function(params) {
 		if (this.getHtml) {
 			request.html = 1;			// get it as HTML
 		}
+		if (params.needExp) {			// indicate if addresses are DLs
+			request.needExp = 1;
+		}
 		// added headers to the request
 		if (ZmMailMsg.requestHeaders) {
 			for (var hdr in ZmMailMsg.requestHeaders) {

@@ -126,7 +126,10 @@ function(node) {
 	if (type == AjxEmailAddress.READ_RECEIPT) {
 		this.readReceiptRequested = true;
 	} else {
-		this.participants.add(new AjxEmailAddress(node.a, type, node.p, node.d));
+		var addr = new AjxEmailAddress(node.a, type, node.p, node.d);
+		addr.isGroup = node.isGroup;
+		addr.canExpand = node.exp;
+		this.participants.add(addr);
 	}
 };
 
