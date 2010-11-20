@@ -1892,6 +1892,13 @@ HTML>BODY .appt-selected .appt_allday_body
 	@FullWidth@
 }
 
+.ZmApptEditView .DwtCheckbox LABEL, .ZmTaskEditView .DwtCheckbox LABEL {
+    white-space: nowrap;
+}
+.ZmApptEditView .ZmFieldLabelRight .ZWidgetTitle, .ZmTaskEditView .ZmFieldLabelRight .ZWidgetTitle {
+    text-align: right;
+}
+
 /* Label for appt edit form */
 /* ??? RENAME TO ZmFieldLabelRight ? */
 .ZmApptTabViewPageField {

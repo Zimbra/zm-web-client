@@ -33,7 +33,7 @@
  */
 ZmApptEditView = function(parent, attendees, controller, dateInfo) {
 
-	ZmCalItemEditView.call(this, parent, attendees, controller, dateInfo);
+	ZmCalItemEditView.call(this, parent, attendees, controller, dateInfo, null, "ZmApptEditView");
 
 	// cache so we dont keep calling appCtxt
 	this.GROUP_CALENDAR_ENABLED = appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
@@ -185,18 +185,6 @@ function(bEnablePicker) {
 
     if(this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON]) this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON].setEnabled(bEnablePicker);
 
-};
-
-ZmApptEditView.prototype.resizePickers =
-function() {
-    if(this._maxPickerWidth) {
-        for (var t = 0; t < this._attTypes.length; t++) {
-            var type = this._attTypes[t];
-            if(this._pickerButton[type]) this._pickerButton[type].setSize(AjxEnv.isIE ? this._maxPickerWidth : '100%', Dwt.DEFAULT);
-        }
-        if(this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON]) this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON].setSize(AjxEnv.isIE ? this._maxPickerWidth : '100%', Dwt.DEFAULT);
-        document.getElementById(this._htmlElId + "_pickerColumn").setAttribute("width", this._maxPickerWidth + (AjxEnv.isIE ? 10 : 25));
-    }
 };
 
 ZmApptEditView.prototype.isValid =
@@ -742,21 +730,15 @@ function(width) {
 	// timezone DwtSelect
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
 
-	this._tzoneSelectStart = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzoneSelectStart"), layout: DwtMenu.LAYOUT_SCROLL, maxRows:7});
+    this._tzoneSelectStartElement = document.getElementById(this._htmlElId + "_tzoneSelectStart");
+	this._tzoneSelectStart = new DwtSelect({parent:this, parentElement:this._tzoneSelectStartElement, layout:DwtMenu.LAYOUT_SCROLL, maxRows:7});
 	this._tzoneSelectStart.addChangeListener(timezoneListener);
     this._tzoneSelectStart.dynamicButtonWidth();
-    this._tzoneSelectStartElement = document.getElementById(this._htmlElId + "_tzoneSelectStart");
 
-	this._tzoneSelectEnd = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzoneSelectEnd"), layout: DwtMenu.LAYOUT_SCROLL, maxRows:7});
+    this._tzoneSelectEndElement = document.getElementById(this._htmlElId + "_tzoneSelectEnd");
+	this._tzoneSelectEnd = new DwtSelect({parent:this, parentElement:this._tzoneSelectEndElement, layout:DwtMenu.LAYOUT_SCROLL, maxRows:7});
 	this._tzoneSelectEnd.addChangeListener(timezoneListener);
     this._tzoneSelectEnd.dynamicButtonWidth();
-    this._tzoneSelectEndElement = document.getElementById(this._htmlElId + "_tzoneSelectEnd");
-
-
-    this._timezoneColumn = document.getElementById(this._htmlElId + "_timezoneColumn");
-    this._labelColumn = document.getElementById(this._htmlElId + "_labelColumn");
-    this._timezoneSpacer = document.getElementById(this._htmlElId + "_timezoneSpacer");
-
 
 	// NOTE: tzone select is initialized later
 
@@ -781,7 +763,6 @@ function(width) {
 
     this._createContactPicker(this._htmlElId + "_loc_picker", new AjxListener(this, this._locationButtonListener, ZmCalBaseItem.LOCATION), ZmCalBaseItem.LOCATION);
     this._createContactPicker(this._htmlElId + "_res_btn", new AjxListener(this, this._locationButtonListener, ZmCalBaseItem.EQUIPMENT), ZmCalBaseItem.EQUIPMENT);
-    this.resizePickers();
 
     //Personas
     //TODO: Remove size check once we add identityCollection change listener.
@@ -1481,15 +1462,8 @@ function(dateInfo) {
 		showTimezone = appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) ||
 					   dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 	}
-
-    Dwt.setDisplay(this._tzoneSelectStart.getHtmlElement(), showTimezone ? Dwt.DISPLAY_INLINE : Dwt.DISPLAY_NONE);
-    Dwt.setDisplay(this._tzoneSelectEnd.getHtmlElement(), showTimezone ? Dwt.DISPLAY_INLINE : Dwt.DISPLAY_NONE);
-
-    //expand/collapse timezone column
-    if (this._tzoneSelectStartElement) Dwt.setDisplay(this._tzoneSelectStartElement, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
-    if (this._tzoneSelectEndElement) Dwt.setDisplay(this._tzoneSelectEndElement, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
-    if (this._timezoneSpacer) Dwt.setDisplay(this._timezoneSpacer, showTimezone ? Dwt.DISPLAY_TABLE_CELL : Dwt.DISPLAY_NONE);
-    if (this._timezoneColumn) this._timezoneColumn.setAttribute("width", showTimezone ? 200 : 100);
+    if (this._tzoneSelectStartElement) Dwt.setVisible(this._tzoneSelectStartElement, showTimezone);
+    if (this._tzoneSelectEndElement) Dwt.setVisible(this._tzoneSelectEndElement, showTimezone);
 };
 
 ZmApptEditView.prototype._showTimeFields =

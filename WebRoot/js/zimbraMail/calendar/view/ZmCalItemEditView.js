@@ -26,15 +26,16 @@
  * @param {ZmController}	controller		the compose controller for this view
  * @param {Object}	dateInfo			a hash of date info
  * @param {static|relative|absolute}	posStyle			the position style
+ * @param {string}  className   Class name
  * 
  * @extends	DwtComposite
  * 
  * @private
  */
-ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle) {
+ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, className) {
 	if (arguments.length == 0) { return; }
 
-	DwtComposite.call(this, {parent:parent, posStyle:posStyle});
+	DwtComposite.call(this, {parent:parent, posStyle:posStyle, className:className});
 
 	this._attendees = attendees;
 	this._controller = controller;
@@ -744,7 +745,10 @@ function(width) {
         this._reminderDeviceEmailCheckbox.setText(ZmMsg.deviceEmail);
         this._reminderConfigure = new DwtText({parent:this,className:"FakeAnchor"});
         this._reminderConfigure.setText(ZmMsg.remindersConfigure);
-        this._reminderConfigure.getHtmlElement().onclick = AjxCallback.simpleClosure(this._handleConfigureClick, this);
+        // NOTE: We can't query the section name based on the pref id
+        // NOTE: because that info won't be available until the first time
+        // NOTE: prefs app is launched.
+        this._reminderConfigure.getHtmlElement().onclick = AjxCallback.simpleClosure(skin.gotoPrefs, skin, "NOTIFICATIONS");
         this._reminderConfigure.replaceElement(document.getElementById(this._htmlElId+"_reminderConfigure"));
 		this._setEmailReminderControls();
 	    var settings = appCtxt.getSettings();
@@ -784,14 +788,6 @@ function(inputEl) {
 	var reminderInfo = ZmCalendarApp.parseReminderString(reminderString);
 	var reminderMinutes = ZmCalendarApp.convertReminderUnits(reminderInfo.reminderValue, reminderInfo.reminderUnits);
 	inputEl.value = ZmCalendarApp.getReminderSummary(reminderMinutes);
-};
-
-ZmCalItemEditView.prototype._handleConfigureClick = function() {
-    // go to reminders prefs page
-    // NOTE: We can't query the section name based on the pref id
-    // NOTE: because that info won't be available until the first time
-    // NOTE: prefs app is launched.
-    skin.gotoPrefs("NOTIFICATIONS");
 };
 
 ZmCalItemEditView.prototype._addEventHandlers =
@@ -1296,24 +1292,32 @@ function(sd) {
 ZmCalItemEditView.prototype._setEmailReminderControls =
 function() {
     var email = appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS);
+    var emailText = ZmCalItemEditView.__getReminderCheckboxText(ZmMsg.emailWithAddress, email);
     var emailEnabled = Boolean(email);
     this._reminderEmailCheckbox.setEnabled(emailEnabled);
-    this._reminderEmailCheckbox.setToolTipContent(emailEnabled ? email : null);
+    this._reminderEmailCheckbox.setText(emailText);
 
     var deviceEmail = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS);
-    var deviceEmailEnabled = Boolean(deviceEmail);
+    var deviceEmailText = ZmCalItemEditView.__getReminderCheckboxText(ZmMsg.deviceEmailWithAddress, deviceEmail);
+    var deviceEmailEnabled = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED) && Boolean(deviceEmail);
     this._reminderDeviceEmailCheckbox.setEnabled(deviceEmailEnabled);
-    this._reminderDeviceEmailCheckbox.setToolTipContent(deviceEmailEnabled ? deviceEmail : null);
+    this._reminderDeviceEmailCheckbox.setText(deviceEmailText);
 
     var configureEnabled = !emailEnabled && !deviceEmailEnabled;
-    // NOTE: Always show the main "Configure" link
-//    this._reminderConfigure.setVisible(configureEnabled);
     this._reminderEmailCheckbox.setVisible(!configureEnabled);
     this._reminderDeviceEmailCheckbox.setVisible(!configureEnabled);
+};
 
-    // TODO: Once compose screen is re-arranged, change send email
-    // TODO: and send SMS checkbox text to include the email addresses
-    // TODO: where the reminder will be sent.
+ZmCalItemEditView.__getReminderCheckboxText = function(pattern, email) {
+    if (!email) {
+        var onclick = 'skin.gotoPrefs("NOTIFICATIONS");return false;';
+        email = [
+            "<a href='#notifications' onclick='",onclick,"'>",
+                ZmMsg.remindersConfigureNow,
+            "</a>"
+        ].join("");
+    }
+    return AjxMessageFormat.format(pattern,[email]);
 };
 
 ZmCalItemEditView.prototype._settingChangeListener =
