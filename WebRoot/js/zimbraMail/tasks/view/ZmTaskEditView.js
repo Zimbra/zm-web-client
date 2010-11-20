@@ -29,7 +29,7 @@
  * @extends		ZmCalItemEditView
  */
 ZmTaskEditView = function(parent, controller) {
-	ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE);
+	ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE, "ZmTaskEditView");
 };
 
 ZmTaskEditView.prototype = new ZmCalItemEditView;
@@ -378,7 +378,7 @@ function(width) {
         this._reminderDeviceEmailCheckbox.setText(ZmMsg.deviceEmail);
         this._reminderConfigure = new DwtText({parent:this,className:"FakeAnchor"});
         this._reminderConfigure.setText(ZmMsg.remindersConfigure);
-        this._reminderConfigure.getHtmlElement().onclick = AjxCallback.simpleClosure(this._handleConfigureClick, this);
+        this._reminderConfigure.getHtmlElement().onclick = AjxCallback.simpleClosure(skin.gotoPrefs, skin, "NOTIFICATIONS");
         this._reminderConfigure.replaceElement(document.getElementById(this._htmlElId+"_reminderConfigure"));
         this._setEmailReminderControls();
         
