@@ -1670,6 +1670,7 @@ function(callback, queryStr) {
 	}
 
 	this._notifyRendered();
+    return composeController;
 };
 
 /**
