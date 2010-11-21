@@ -167,7 +167,9 @@
 <div class="View"><div class="tbl">
     <div class="tr cmp_to_row">
         <span class="label td"><fmt:message key="startLabel"/></span>
-        <span class="td value1" style="padding:0px; text-align:left;"><input class="Textarea" id="start" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}"> <fmt:message key="at"/>
+        <span class="td value1" style="padding:0px; text-align:left;"><input class="Textarea" id="start" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
+            <c:if test="${not param.st eq 'newtask'}">
+            <fmt:message key="at"/>
             <select name="startHour"><c:set var="h" value="${compose.startHour}"/>
             <c:forEach var="hi" begin="0" end="23"><option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>><fmt:formatDate value="${zm:getTodayHour(hi, tz).time}" pattern="${hourFmt}"/></option></c:forEach>
             </select>
@@ -185,10 +187,13 @@
                 <option <c:if test="${m eq 50}">selected </c:if> value="50">:50</option>
                 <option <c:if test="${m eq 55}">selected </c:if> value="55">:55</option>
             </select>
+            </c:if>
         </span>
     </div><div class="tr nr cmp_to_row">
         <span class="label td"><fmt:message key="endLabel"/></span>
-        <span class="td value1" style="padding:0px; text-align:left;"><input class="Textarea" id="end" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}"> <fmt:message key="at"/>
+        <span class="td value1" style="padding:0px; text-align:left;"><input class="Textarea" id="end" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
+            <c:if test="${not param.st eq 'newtask'}">
+            <fmt:message key="at"/>
             <select name="endHour"><c:set var="h" value="${compose.endHour}"/>
             <c:forEach var="hi" begin="0" end="23"><option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>><fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}"/></option></c:forEach>
             </select>
@@ -206,6 +211,7 @@
                 <option <c:if test="${m eq 50}">selected </c:if> value="50">:50</option>
                 <option <c:if test="${m eq 55}">selected </c:if> value="55">:55</option>
             </select>
+            </c:if>
      </span>
     </div>
 </div></div>
