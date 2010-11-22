@@ -40,8 +40,9 @@
         <c:when test="${param.loginOp eq 'logout'}">
             <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
             <c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />
+            <c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLogoutURLAllowedUA)}"/>
             <zm:logout/>
-            <c:if test="${not empty logoutRedirectUrl}" >
+            <c:if test="${not empty logoutRedirectUrl and (isAllowedUA eq true)}" >
             	<c:redirect url="${logoutRedirectUrl}"/>
             </c:if>
         </c:when>
@@ -191,7 +192,12 @@ if (application.getInitParameter("offlineMode") != null)  {
 <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 <c:if test="${(empty pageContext.request.queryString) or (fn:indexOf(pageContext.request.queryString,'customerDomain') == -1)}">
 	<c:set var="domainLoginRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLoginURL}" />
+    <c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLoginURLAllowedUA)}"/>
 </c:if>
+<%--
+param.sso is not set(Non spnego case), redirect to the domainLoginRedirectUrl irrespective of the UA.
+Whether the requests' UA matches any of the allowed UAs or not needs to be checked only if param.sso is set.
+--%>
 <c:if test="${not empty domainLoginRedirectUrl and empty param.sso and empty param.ignoreLoginURL}" >
     <c:redirect url="${domainLoginRedirectUrl}">
         <c:forEach var="p" items="${paramValues}">
@@ -282,7 +288,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 			</a></h1>
 			<!--div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div-->
             <c:choose>
-                <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL}">
+                <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
                     <form method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
                 </c:when>
                 <c:otherwise>
@@ -303,7 +309,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 				</c:if>
             <table class="form">
                 <c:choose>
-                <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL}">
+                <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
                     <tr>
                         <td colspan="2">
                             <div class="LaunchButton">
