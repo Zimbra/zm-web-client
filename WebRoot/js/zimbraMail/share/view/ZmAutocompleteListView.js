@@ -61,6 +61,7 @@
  * @param	{AjxCallback}	keyPressCallback	the additional client ONKEYPRESS handler
  * @param	{AjxCallback}	keyUpCallback		the additional client ONKEYUP handler
  * @param	{AjxCallback}	enterCallback		the client handler for Enter key
+ * @param	{object}		parentView			the view control that created us
  * @param	{Hash}			options				the additional options for the data class
  * 
  * @extends		DwtComposite
@@ -82,6 +83,7 @@ ZmAutocompleteListView = function(params) {
 	this._keyPressCallback = params.keyPressCallback;
 	this._keyUpCallback = params.keyUpCallback;
 	this._enterCallback = params.enterCallback;
+	this._parentView = params.parentView;
     this._options = params.options || {};
 
 	this._isDelim = AjxUtil.arrayAsHash(params.delims || ZmAutocompleteListView.DELIMS);
@@ -720,7 +722,6 @@ function(str, chunk, text, start, callback, list) {
  */
 ZmAutocompleteListView.prototype._complete =
 function(text, str, hasDelim, match) {
-
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _complete: selected is " + this._selected);
 	match = match || this._matchHash[this._selected];
 	if (!match && str && hasDelim && this._dataAPI.quickComplete) {
@@ -732,8 +733,10 @@ function(text, str, hasDelim, match) {
 	var end = hasDelim ? this._end + 1 : this._end;
 	DBG.println(AjxDebug.DBG2, "update replace range: " + start + " - " + end);
 	var value = this._getCompletionValue(match);
-	var newText = this._options.addrBubbles ? value :
-				  [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
+	var newText = [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
+	if (this._options.addrBubbles) {
+		newText = value;
+	}
 	if (value) {
 		this._done[value] = true;
 	}
@@ -759,22 +762,17 @@ function(match) {
 
 // Resets the value of an element to the given text.
 ZmAutocompleteListView.prototype._updateField =
-function(text, match, ev) {
+function(text, match) {
 
 	var el = this._element;
 	if (this._options.addrBubbles) {
-		var addrInput = el && el._aifId && DwtControl.ALL_BY_ID[el._aifId];
+		var addrInput = DwtControl.ALL_BY_ID[this._element._aifId];
 		if (addrInput) {
-			if (match && match.multipleAddresses) {
-				addrInput.setValue(text);
-			}
-			else {
-				addrInput.add(text, match);
-			}
+			addrInput.add(text, match);
 			el = addrInput._input;
 		}
 	}
-	else if (el) {
+	else {
 		el.value = text;
 		el.focus();
 		Dwt.setSelectionRange(el, text.length, text.length);
@@ -783,18 +781,16 @@ function(text, match, ev) {
 	this.reset();
 	this._hasCompleted = true;
 	if (this._compCallback) {
-		this._compCallback.run(text, el, match, ev);
+		this._compCallback.run(text, el, match);
 	}
 };
 
 // Updates the element with the currently selected match.
 ZmAutocompleteListView.prototype._update =
-function(hasDelim, match, ev) {
-
-	var value = this._element ? this._element.value : "";
-	var result = this._complete(value, null, hasDelim, match);
+function(hasDelim, match) {
+	var result = this._complete(this._element.value, null, hasDelim, match);
 	if (result) {
-		this._updateField(result.text, result.match, ev);
+		this._updateField(result.text, result.match);
 	}
 };
 
@@ -838,7 +834,7 @@ function(listener) {
 
 ZmAutocompleteListView.prototype._listSelectionListener = 
 function(ev) {
-	this._update(true, null, ev);
+	this._update(true);
 };
 
 // Layout
@@ -1227,7 +1223,7 @@ function(email, textId, rowId, ev, loc) {
 	if (!this._dataAPI.expandDL) { return; }
 
 	var mlv = this._memberListView;
-	if (mlv && textId && this._curExpanded == textId) {
+	if (mlv && this._curExpanded == textId) {
 		mlv.show(false, null, true);
 		this._curExpanded = null;
 		this._setExpandText(textId, false);
