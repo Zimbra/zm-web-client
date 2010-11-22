@@ -58,6 +58,8 @@ ZmContactSplitView.prototype.constructor = ZmContactSplitView;
 ZmContactSplitView.ALPHABET_HEIGHT = 35;
 ZmContactSplitView.NUM_DL_MEMBERS = 10;	// number of distribution list members to show initially
 
+ZmContactSplitView.LIST_MIN_WIDTH = 100;
+ZmContactSplitView.CONTENT_MIN_WIDTH = 200;
 /**
  * Returns a string representation of the object.
  * 
@@ -296,11 +298,22 @@ function(controller, dropTgt) {
 		this._alphabetBar.reparentHtmlElement(alphaDivId);
 	}
 
+	var splitviewCellId = this._htmlElId + "_splitview";
+	this._splitviewCell = document.getElementById(splitviewCellId);
+
 	// create listview based on *required* existence in template
 	var listviewCellId = this._htmlElId + "_listview";
-	var listviewCell = document.getElementById(listviewCellId);
+	this._listviewCell = document.getElementById(listviewCellId);
 	this._listPart = new ZmContactSimpleView({parent:this, controller:controller, dropTgt:dropTgt});
 	this._listPart.reparentHtmlElement(listviewCellId);
+
+	var sashCellId = this._htmlElId + "_sash";
+	this._sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 5, Dwt.ABSOLUTE_STYLE);
+	this._sash.registerCallback(this._sashCallback, this);
+	this._sash.replaceElement(sashCellId, false, true);
+
+	var contentCellId = this._htmlElId + "_contentCell";
+	this._contentCell = document.getElementById(contentCellId);
 
 	// define well-known Id's
 	this._iconCellId	= this._htmlElId + "_icon";
@@ -323,6 +336,8 @@ function(controller, dropTgt) {
 	this._contactView.reparentHtmlElement(this._contentId);
 	this._contactView._setMouseEventHdlrs();
 	this._objectManager = new ZmObjectManager(this._contactView);
+
+	this._contentCell.style.right = "0px";
 };
 
 /**
@@ -339,17 +354,15 @@ function(ev) {
 ZmContactSplitView.prototype._sizeChildren =
 function(width, height) {
 
-	var listviewCell = document.getElementById(this._htmlElId + "_listview");
-	var size = Dwt.getSize(listviewCell);
+	var fudge = AjxEnv.isIE ? 39 : 41;
+	this._listPart.setSize(Dwt.DEFAULT, height - fudge);
 
-	this._listPart.setSize(size.x, height-38);
-
-	var fudge = AjxEnv.isIE ? 45 : 38;
+	fudge = AjxEnv.isIE ? 45 : 43;
 	var view = (this._contact && this._contact.isGroup())
 		? this._contactGroupView : this._contactView;
 
 	if (view) {
-		view.setSize(Dwt.DEFAULT, height-fudge);
+		view.setSize(Dwt.DEFAULT, height - fudge);
 	}
 };
 
@@ -841,6 +854,38 @@ function(tagId) {
 			sc.search({query: tag.createQuery()});
 		}
 	}
+};
+
+ZmContactSplitView.prototype._sashCallback = function(delta) {
+	var sashWidth = this._sash.getSize().x;
+	var totalWidth = Dwt.getSize(this._splitviewCell).x;
+
+	var origListWidth = Dwt.getSize(this._listviewCell).x;
+	var newListWidth = origListWidth + delta;
+	var newContentPos = newListWidth + sashWidth;
+	var newContentWidth = totalWidth - newContentPos;
+
+	if (delta < 0 && newListWidth <= ZmContactSplitView.LIST_MIN_WIDTH) {
+		newListWidth = ZmContactSplitView.LIST_MIN_WIDTH;
+		newContentPos = newListWidth + sashWidth;
+		newContentWidth = totalWidth - newContentPos;
+	} else if (delta > 0 && newContentWidth <= ZmContactSplitView.CONTENT_MIN_WIDTH) {
+		newContentWidth = ZmContactSplitView.CONTENT_MIN_WIDTH;
+		newContentPos = totalWidth - newContentWidth;
+		newListWidth = newContentPos - sashWidth;
+	}
+		
+	delta = newListWidth - origListWidth;
+	
+	if (AjxEnv.isIE) {
+		newContentPos -= 1;
+		newContentWidth += 1;
+	}
+
+	Dwt.setSize(this._listviewCell, newListWidth, Dwt.DEFAULT);
+	Dwt.setBounds(this._contentCell, newContentPos, Dwt.DEFAULT, newContentWidth, Dwt.DEFAULT);
+
+	return delta;
 };
 
 /**
