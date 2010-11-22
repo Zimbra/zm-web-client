@@ -147,7 +147,7 @@ FORM {
 	text-align: center;
 }
 
-.offline a, .offline a:visited {
+.offline a:link, .offline a:visited {
 	color: @darken(AppC,50)@;
 }
 
@@ -271,3 +271,8 @@ FORM {
     font-weight: bold;
 }
 
+.spacer{
+	padding: 5px;
+	font-size: 1.3em;
+	line-height: 1.3em;
+}
