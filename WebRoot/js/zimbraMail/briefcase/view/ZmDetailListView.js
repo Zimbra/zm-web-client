@@ -81,6 +81,20 @@ function(enabled){
     this._revisionView = enabled;    
 };
 
+ZmDetailListView.prototype._changeListener =
+function(ev){
+
+    ZmBriefcaseBaseView.prototype._changeListener.call(this, ev);
+
+    if (this._revisionView && ( ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE )) {
+        var item, items = ev.getDetail("items");
+        for (var i = 0, len = items.length; i < len; i++) {
+			item = items[i];
+            this.collapse(item, true);
+        }
+    }
+};
+
 ZmDetailListView.prototype._getHeaderList =
 function(parent) {
 	// Columns: tag, name, type, size, date, owner, folder
