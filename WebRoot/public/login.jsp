@@ -350,6 +350,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                             </label>
                         </td>
                         <td>
+							<div class="postioning">
 							<select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
 								<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
 								<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
@@ -382,6 +383,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 </script>
 							<div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientWhatsThisMessage"/></div>
 							<div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
+						</div>
 						</td>
 					</tr>
 					<tr>
@@ -392,9 +394,11 @@ if (application.getInitParameter("offlineMode") != null)  {
 			<div class="offline"><fmt:message key="switchToOfflineClientEx"/></div>
 			<div class="copyright"><fmt:message key="splashScreenCopyright"/></div>
 		</div>
+						
 		<div id="ZLoginNotice"><fmt:message key="clientLoginNotice"/></div>
 	</div>                                 
 <script>
+
   <jsp:include page="/js/skin.js">
     <jsp:param name="templates" value="false" />
     <jsp:param name="client" value="advanced" />

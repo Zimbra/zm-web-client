@@ -101,8 +101,8 @@ FORM {
 	background-color: @darken(AppC,10)@;
 	background-image: -moz-linear-gradient(top, @AppC@, @darken(AppC,10)@); /* FF3.6 */
 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @darken(AppC,10)@)); /* Saf4+, Chrome */
-	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); /* IE6,IE7 */
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')"; /* IE8 */
+/*	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); */ /* IE6,IE7 */
+/*	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')";*/ /* IE8 */
 
 	/*Radial gradient backgrounds*/
 	background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @AppC@ 0%, @darken(AppC,10)@ 100%); /* FF3.6 */
@@ -179,6 +179,11 @@ FORM {
 	position:relative;
 	left:auto;
 }
+.LoginScreen .postioning{
+	position: relative;
+	z-index: 20;
+}
+
 .LoginScreen #ZLoginWhatsThisAnchor {
 	color: @darken(AppC,50)@;
 	font-size:10px;
@@ -191,6 +196,9 @@ FORM {
 	margin-left:-10em;
 	position:absolute;
 	width:40em;
+	top: 25px;
+	left: 0;
+	z-index: 30; 
 }
 .LoginScreen .ZLoginInfoMessage {
 	background-color: @lighten(AltC,53)@;	
