@@ -1611,10 +1611,11 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 			// use content location instead of built href flag
 			var useCL = false;
 			// set size info in any
+            var numFormater = AjxNumberFormat.getInstance();  
 			if (attach.s != null && attach.s >= 0) {
-				if (attach.s < 1024)		props.size = attach.s + " "+ZmMsg.b;//" B";
-				else if (attach.s < (1024*1024) )	props.size = Math.round((attach.s / 1024) * 10) / 10 + " "+ZmMsg.kb;//" KB";
-				else						props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " "+ZmMsg.mb;//" MB";
+				if (attach.s < 1024)		props.size = numFormater.format(attach.s) + " "+ZmMsg.b;//" B";
+				else if (attach.s < (1024*1024) )	props.size = numFormater.format(Math.round((attach.s / 1024) * 10) / 10) + " "+ZmMsg.kb;//" KB";
+				else						props.size = numFormater.format(Math.round((attach.s / (1024*1024)) * 10) / 10) + " "+ZmMsg.mb;//" MB";
 			} else {
 				useCL = attach.cl && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.cl));
 			}
