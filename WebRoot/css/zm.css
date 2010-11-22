@@ -934,7 +934,7 @@ line-height:normal;
 /* ??? RENAME */
 .ZmContactSimpleView {
 	@ListBg@
-	border:solid @darken(AppC,50)@; border-width:1px 1px 1px 1px;
+	border:solid @darken(AppC,50)@; border-width:1px 0px 1px 1px;
 }
 
 .ZmContactSimpleView .SimpleContact-right,
@@ -964,7 +964,6 @@ line-height:normal;
 .ZmContactInfoView {
 	@AppBg@
 	@AppBorder@
-	width: 100%;
 #IFDEF MSIE
 	height: 100%;
 #ENDIF
