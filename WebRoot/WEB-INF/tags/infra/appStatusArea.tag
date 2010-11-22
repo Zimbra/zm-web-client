@@ -24,7 +24,7 @@
 <div id="app_st_msg_div" style="display:block;">
     <table  class='${requestScope.statusClass}' cellpadding=2 cellspacing=2 align="center">
     <tr>
-        <td class="Status">
+        <td class="Status" nowrap="nowrap">
             &nbsp;${requestScope.statusHtml ? requestScope.statusMessage : fn:escapeXml(requestScope.statusMessage)}
         </td>
         <td width="20%" align="right"><a onclick="return dismissMsg();" href='?dmsg&${zm:cook(pageContext.request.queryString)}'><fmt:message key="close"/></a>&nbsp;&nbsp;</td>
