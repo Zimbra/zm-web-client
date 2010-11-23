@@ -183,7 +183,7 @@ function(attId) {
 		if (this._invalidAttendees && this._invalidAttendees.length > 0) {
 			var dlg = appCtxt.getYesNoMsgDialog();
 			dlg.registerCallback(DwtDialog.YES_BUTTON, this._clearInvalidAttendeesCallback, this, [appt, attId, dlg]);
-			var msg = AjxMessageFormat.format(ZmMsg.apptSignificantChanges, this._invalidAttendees.join(","));
+			var msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, this._invalidAttendees.join(","));
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
             this.enableToolbar(true);
@@ -323,7 +323,7 @@ function(ev, force) {
             showDlg = false;
         }
         if(showDlg){
-            dlg.setMessage(ZmMsg.inviteNotSentMsg);
+            dlg.setMessage(ZmMsg.saveApptInfoMsg);
             dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._saveListener, [ev, true]));
             dlg.popup();
             return;
@@ -333,7 +333,7 @@ function(ev, force) {
 	if (this._doSave() === false) {
 		return;
     }
-    if(!isMeeting){       
+    if(!isMeeting){
         this._app.popView(true);        
     }
 };
@@ -968,7 +968,11 @@ ZmApptComposeController.prototype._clearInvalidAttendeesCallback =
 function(appt, attId, dlg) {
 	dlg.popdown();
 	delete this._invalidAttendees;
-	this._saveListener();
+    if(this._action == ZmCalItemComposeController.SAVE){
+	    this._saveListener();
+    }else{
+        this._sendListener();
+    }
 };
 
 ZmApptComposeController.prototype.closeView =
