@@ -480,7 +480,7 @@ function(appt, callback) {
 	var mode = appt.viewMode;
 
 	if (mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
-		if(appt.isRecurring()) {
+		if(appt.isRecurring() && mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
 			// for recurring appt - user GetRecurRequest to get full recurrence
 			// information and use the component in CheckRecurConflictRequest
 			var recurInfoCallback = new AjxCallback(this, this._checkResourceConflictsSoap, [appt, callback]);
@@ -587,7 +587,7 @@ function(appt, callback, recurInfo) {
 	var comp = soapDoc.set("comp", null, soapDoc.getMethod());
 
 	appt._addDateTimeToSoap(soapDoc, soapDoc.getMethod(), comp);
-	appt._recurrence.setSoap(soapDoc, comp);
+	if(mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) appt._recurrence.setSoap(soapDoc, comp);
 
 	this.setExceptFromRecurInfo(soapDoc, recurInfo);
 
