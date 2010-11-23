@@ -77,7 +77,14 @@ ZmApptEditView.PRIVACY_OPTIONS = [
 //	{ label: ZmMsg.confidential,		value: "CON"					}		// see bug #21205
 ];
 
-ZmApptEditView.BAD						= "_bad_addrs_"
+ZmApptEditView.BAD						= "_bad_addrs_";
+
+ZmApptEditView.REMINDER_MAX_VALUE		= {};
+ZmApptEditView.REMINDER_MAX_VALUE[ZmCalItem.REMINDER_UNIT_DAYS]		    = 14;
+ZmApptEditView.REMINDER_MAX_VALUE[ZmCalItem.REMINDER_UNIT_MINUTES]		= 20160;
+ZmApptEditView.REMINDER_MAX_VALUE[ZmCalItem.REMINDER_UNIT_HOURS]		= 336;
+ZmApptEditView.REMINDER_MAX_VALUE[ZmCalItem.REMINDER_UNIT_WEEKS]		= 2;
+
 
 // Public Methods
 
@@ -189,7 +196,7 @@ function(bEnablePicker) {
 
 ZmApptEditView.prototype.isValid =
 function() {
-	var errorMsg;
+	var errorMsg = [];
 
 	// check for required subject
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
@@ -198,15 +205,21 @@ function() {
 	if ((subj && subj.length) || this._isProposeTime) {
 		var allDay = this._allDayCheckbox.checked;
 		if (!ZmTimeInput.validStartEnd(this._startDateField, this._endDateField, (allDay ? null : this._startTimeSelect), (allDay ? null : this._endTimeSelect))) {
-				errorMsg = ZmMsg.errorInvalidDates;
+				errorMsg.push(ZmMsg.errorInvalidDates);
 		}
 
 	} else {
-		errorMsg = ZmMsg.errorMissingSubject;
+		errorMsg.push(ZmMsg.errorMissingSubject);
 	}
-
-	if (errorMsg) {
-		throw errorMsg;
+    if (this._reminderSelectInput) {
+        var reminderString = this._reminderSelectInput.getValue();
+        var reminderInfo = ZmCalendarApp.parseReminderString(reminderString);
+        if (reminderInfo.reminderValue > ZmApptEditView.REMINDER_MAX_VALUE[reminderInfo.reminderUnits]) {
+            errorMsg.push(ZmMsg.errorInvalidReminderValue);
+        }
+    }
+	if (errorMsg.length > 0) {
+		throw errorMsg.join("<br>");
 	}
 
 	return true;
