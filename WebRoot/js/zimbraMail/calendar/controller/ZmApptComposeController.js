@@ -300,7 +300,7 @@ function(ev){
 ZmApptComposeController.prototype._saveListener =
 function(ev, force) {
     var isMeeting = !this._composeView.isAttendeesEmpty();
-    
+
     this._action = isMeeting ? ZmCalItemComposeController.SAVE : ZmCalItemComposeController.SAVE_CLOSE;
 
     //attendee should not have send/save option
@@ -924,14 +924,19 @@ function(calItem, result) {
 		this._app.getListController()._doMove(calItem, folder, null, false);
 	}
 
+    var isNewAppt;
+    var viewMode = calItem.getViewMode();
+    if(viewMode == ZmCalItem.MODE_NEW || viewMode == ZmCalItem.MODE_NEW_FROM_QUICKADD || viewMode == ZmAppt.MODE_DRAG_OR_SASH) {
+        isNewAppt = true;
+    }
+
     if(this.isCloseAction()) {
         calItem.handlePostSaveCallbacks();
 	    this._composeView.cleanup();
     }else {
         this.enableToolbar(true);
-        var viewMode = calItem.getViewMode();
-        if(viewMode == ZmCalItem.MODE_NEW || viewMode == ZmCalItem.MODE_NEW_FROM_QUICKADD || viewMode == ZmAppt.MODE_DRAG_OR_SASH) {
-            viewMode = calItem.isRecurring() ? ZmCalItem.MODE_EDIT_SERIES : ZmCalItem.MODE_EDIT;            
+        if(isNewAppt) {
+            viewMode = calItem.isRecurring() ? ZmCalItem.MODE_EDIT_SERIES : ZmCalItem.MODE_EDIT;
         }
         calItem.setFromSavedResponse(result);
         if(this._action == ZmCalItemComposeController.SAVE){
@@ -940,9 +945,9 @@ function(calItem, result) {
         this._composeView.set(calItem, viewMode);        
     }
 
-    var msg = ZmMsg.apptCreated;
+    var msg = isNewAppt ? ZmMsg.apptCreated : ZmMsg.apptSaved;
     if(calItem.hasAttendees()){
-        if(this._action == ZmCalItemComposeController.SAVE){
+        if(this._action == ZmCalItemComposeController.SAVE || this._action == ZmCalItemComposeController.SAVE_CLOSE){
             msg = ZmMsg.apptSaved;
         }else{
             if(viewMode != ZmCalItem.MODE_NEW){
