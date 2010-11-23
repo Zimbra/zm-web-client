@@ -754,6 +754,7 @@ function(visible) {
 
 ZmScheduleAssistantView.prototype.highlightMiniCal =
 function() {
+    this._customizeBtn.setText(AjxMessageFormat.format(ZmMsg.searchingMonthTitle, [this._miniCalendar.getDate()]));
     this.getMonthFreeBusyInfo();
 };
 
@@ -964,6 +965,7 @@ function(params) {
     }
 
     this._miniCalendar.setColor(params.dates, true, params.colors);
+    this._customizeBtn.setText(ZmMsg.suggestedTimes);
 };
 
 
