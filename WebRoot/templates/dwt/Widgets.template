@@ -644,7 +644,11 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder' cellspacing=0 cellpadding=0>
 		<tr>
 			<td><div id='${id}_color' class='Color'></div></td>
-			<td id='${id}_title' class='ZWidgetTitle'></td>
+			<td id='${id}_title' class='ZWidgetTitle'
+			<$ if (AjxEnv.isIE) { $>
+				style='width:auto;'
+			<$ } $>
+			></td>
 		</tr>
 	</table>
 </template>
