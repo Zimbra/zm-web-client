@@ -478,11 +478,14 @@ function(calItem, ex) {
 		msg = (invalid && invalid.length)
 			? AjxMessageFormat.format(ZmMsg.apptSendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
 			: ZmMsg.apptSendErrorAbort;
-	}
+	} else if(ex.code = ZmCsfeException.MAIL_MESSAGE_TOO_BIG) {
+        msg = (calItem.type == ZmItem.TASK) ? ZmMsg.taskSaveErrorToobig : ZmMsg.apptSaveErrorToobig;
+        this.enableToolbar(true);
+    }
 	if (msg) {
-		var msgDialog = appCtxt.getMsgDialog();
-		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-		msgDialog.popup();
+        var dialog = appCtxt.getMsgDialog();
+        dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+        dialog.popup();
 		appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);//notify Zimlets on success 
 		return true;
 	} else {
