@@ -397,6 +397,9 @@ ZmTimeInput.HOUR	= 1;
 ZmTimeInput.MINUTE	= 2;
 ZmTimeInput.AMPM	= 3;
 
+ZmTimeInput.ROWS	= 8; // Show 8 rows at a time
+ZmTimeInput.DEFAULT_TOP_ROW	= 8; // Make row 8 (8 AM) the initial topmost visible row unless overridden
+
 ZmTimeInput.getDateFromFields =
 function(timeStr, date) {
     var formattedDate = ZmTimeSelect.parse(timeStr);
@@ -650,7 +653,8 @@ function(ev) {
             now = new Date(),
             timeSelectButton = this._timeSelectBtn,
             timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT),
-            menuSelectionListener = new AjxListener(this, this._timeSelectionListener);
+            menuSelectionListener = new AjxListener(this, this._timeSelectionListener),
+            defaultTopMenuItem;
 
         for (j = 0; j < 24; j++) {
             now.setHours(j);
@@ -668,6 +672,7 @@ function(ev) {
             mi.setText(text);
             mi.setData("value", j*60);
             if (menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
+            if (j == ZmTimeInput.DEFAULT_TOP_ROW) defaultTopMenuItem = mi;
 
             minutesSelectMenu = new DwtMenu({parent:mi, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_CASCADE, maxRows:1, congruent: true});
             mi.setMenu(minutesSelectMenu, true);
@@ -681,6 +686,9 @@ function(ev) {
             }
         }
         this._hoursSelectMenu.setWidth(timeSelectButton.getW() + this._timeSelectInput.getW());
+
+	if (defaultTopMenuItem)
+		this._hoursSelectMenu.scrollToItem(defaultTopMenuItem);
         this._scrollToValue(timeFormatter.format(this.getValue()));
         this._menuItemsAdded = true;
     }
@@ -753,7 +761,7 @@ function() {
     }
     this._timeIndex = {};
     // create menu for button
-    this._hoursSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_SCROLL, maxRows:7});
+    this._hoursSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_SCROLL, maxRows:ZmTimeInput.ROWS});
     timeSelectButton.setMenu(this._hoursSelectMenu, true, false, false, true);
     this._menuItemsAdded = false;
     timeSelectButton.reparentHtmlElement(buttonId);
