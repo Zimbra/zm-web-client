@@ -326,6 +326,7 @@ function(ev, force) {
             dlg.setMessage(ZmMsg.saveApptInfoMsg);
             dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._saveListener, [ev, true]));
             dlg.popup();
+            this.enableToolbar(true);
             return;
         }
     }
