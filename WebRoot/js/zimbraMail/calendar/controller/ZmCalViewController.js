@@ -1341,7 +1341,7 @@ function(ev) {
 		for (var i = 0; i < list.length; i++) {
 			ids.push(list[i].invId);
 		}
-		url = "/h/printappointments?id=" + ids.join(",");
+		url = "/h/printappointments?id=" + ids.join(",") + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT);  //bug:53493
 
 	} else {
 		var date = this._viewMgr
@@ -1372,7 +1372,8 @@ function(ev) {
 		url = [
 			"/h/printcalendar?view=", view,
 			"&l=", l,
-			"&date=", date.getFullYear(), month, day
+			"&date=", date.getFullYear(), month, day,
+            "&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)                 //bug:53493
 		].join("");
 	}
 

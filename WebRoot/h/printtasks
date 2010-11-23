@@ -17,6 +17,16 @@
             <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
         </c:otherwise>
     </c:choose>
+
+    <c:choose>
+        <c:when test="${not empty param.tz}">
+            <fmt:setTimeZone var="tz" value="${param.tz}" scope="request"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
+        </c:otherwise>
+    </c:choose>
+    
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 
     <fmt:message var="title" key="zimbra"/>
@@ -135,20 +145,28 @@
                             &nbsp; ${compose.taskPercentComplete}%
                         </td>
                     </tr>
+                    <c:set var="taskObj" value="${message.invite.component}"/>
+                    <fmt:message var="tdtPattern" key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/>
+                    <c:if test="${not empty compose.startDate}">
                     <tr>
                         <td class="MsgHdrName"><fmt:message key="startDate"/>:</td>
                         <td class="MsgHdrValue">
-                                ${fn:escapeXml(compose.startDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
+                                <fmt:formatDate var="sDate" pattern="${tdtPattern}" value="${taskObj.start.date}"/>
+                                ${fn:escapeXml(sDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
+
                         </td>
 
                     </tr>
+                    </c:if>
+                    <c:if test="${not empty compose.endDate}">
                     <tr>
                         <td class="MsgHdrName"><fmt:message key="taskDueDate"/>:</td>
                         <td class="MsgHdrValue">
-                                ${fn:escapeXml(compose.endDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
+                                <fmt:formatDate var="eDate" pattern="${tdtPattern}" value="${taskObj.end.date}"/>
+                                ${fn:escapeXml(eDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
                         </td>
-
                     </tr>
+                    </c:if>
                 </table>
             </div>
             <hr/>
@@ -259,20 +277,28 @@
                             &nbsp; ${compose.taskPercentComplete}%
                         </td>
                     </tr>
+                    <c:set var="taskObj" value="${message.invite.component}"/>
+                    <fmt:message var="tdtPattern" key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/>
+                    <c:if test="${not empty compose.startDate}">
                     <tr>
                         <td class="MsgHdrName"><fmt:message key="startDate"/>:</td>
                         <td class="MsgHdrValue">
-                                ${fn:escapeXml(compose.startDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
+                                <fmt:formatDate var="sDate" pattern="${tdtPattern}" value="${taskObj.start.date}"/>
+                                ${fn:escapeXml(sDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
+
                         </td>
 
                     </tr>
+                    </c:if>
+                    <c:if test="${not empty compose.endDate}">
                     <tr>
                         <td class="MsgHdrName"><fmt:message key="taskDueDate"/>:</td>
                         <td class="MsgHdrValue">
-                                ${fn:escapeXml(compose.endDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
+                                <fmt:formatDate var="eDate" pattern="${tdtPattern}" value="${taskObj.end.date}"/>
+                                ${fn:escapeXml(eDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
                         </td>
-
                     </tr>
+                    </c:if>
                 </table>
             </div>
             <hr/>

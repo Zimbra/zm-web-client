@@ -869,7 +869,7 @@ function(ev) {
 ZmApptComposeController.prototype._printListener =
 function() {
 	var calItem = this._composeView._apptEditView._calItem;
-	var url = ("/h/printappointments?id=" + calItem.invId);
+	var url = ("/h/printappointments?id=" + calItem.invId + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT)); //bug:53493
 	window.open(appContextPath+url, "_blank");
 };
 
