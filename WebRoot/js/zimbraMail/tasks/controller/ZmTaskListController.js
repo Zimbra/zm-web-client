@@ -350,7 +350,7 @@ function(view) {
 	// set up double pane view (which creates the TLV and TV)
 	if (!this._taskMultiView){
 		var dpv = this._taskMultiView = new ZmTaskMultiView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE, controller:this, dropTgt:this._dropTgt});
-		this._taskListView = dpv.getTaskListView();
+        this._taskListView = dpv.getTaskListView();
 	}
     
     if(view == ZmId.VIEW_TASK) {
@@ -856,7 +856,7 @@ function(ev) {
 	}
 
 	var url = ("/h/printtasks?id=" + taskIds.join(","));
-	window.open(appContextPath+url, "_blank");
+	window.open(appContextPath+url + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT), "_blank");
 };
 
 ZmTaskListController.prototype._markAsCompletedListener = 
@@ -891,7 +891,7 @@ function(ev) {
 		}
 		url = ("/h/printtasks?id=" + taskIds.join(","));
 	}
-	window.open(appContextPath+url, "_blank");
+	window.open(appContextPath+url + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT), "_blank");
 };
 
 ZmTaskListController.prototype._setViewContents =

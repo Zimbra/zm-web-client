@@ -152,20 +152,20 @@ action="compose" paction="view" id="${msg.id}"/>
 
         <c:choose>
             <c:when test="${param.useInstance eq '1' and (not empty param.instStartTime and not empty param.instDuration)}">
-                <c:set var="startDateCal" value="${zm:getCalendar(param.instStartTime, mailbox.prefs.timeZone)}"/>
-                <c:set var="endDateCal" value="${zm:getCalendar(param.instStartTime + param.instDuration, mailbox.prefs.timeZone)}"/>
+                <c:set var="startDateCal" value="${zm:getCalendar(param.instStartTime, tz)}"/>
+                <c:set var="endDateCal" value="${zm:getCalendar(param.instStartTime + param.instDuration, tz)}"/>
                 <c:set var="startDate" value="${startDateCal.time}"/>
                 <c:set var="endDate" value="${endDateCal.time}"/>
             </c:when>
             <c:otherwise>
                 <c:set var="startDate" value="${appt.start.date}"/>
                 <c:set var="endDate" value="${appt.computedEndDate}"/>
-                <c:set var="startDateCal" value="${zm:getCalendar(startDate.time, mailbox.prefs.timeZone)}"/>
-                <c:set var="endDateCal" value="${zm:getCalendar(endDate.time, mailbox.prefs.timeZone)}"/>
+                <c:set var="startDateCal" value="${zm:getCalendar(startDate.time, tz)}"/>
+                <c:set var="endDateCal" value="${zm:getCalendar(endDate.time, tz)}"/>
             </c:otherwise>
         </c:choose>
-        ${fn:escapeXml(zm:getApptDateBlurb(pageContext, mailbox.prefs.timeZone, startDate.time, endDate.time, appt.allDay))}
-        &nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneCanonicalId}</span>
+        ${fn:escapeXml(zm:getApptDateBlurb(pageContext, tz, startDate.time, endDate.time, appt.allDay))}
+        &nbsp;<span class='ZhCalTimeZone'>${zm:getCanonicalId(tz)}</span>
     </td>
 </tr>
 <c:if test="${appt.exception}">
@@ -217,7 +217,7 @@ action="compose" paction="view" id="${msg.id}"/>
             :
         </td>
         <td class='MsgHdrValue'>
-                ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, appt.start.date))}
+                ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,tz, appt.start.date))}
         </td>
     </tr>
 </c:if>

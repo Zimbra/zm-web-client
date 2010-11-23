@@ -148,7 +148,7 @@ function() {
 ZmTaskController.prototype._printListener =
 function() {
 	var url = ("/h/printtasks?id=" + this._composeView._calItem.invId);
-	window.open(appContextPath+url, "_blank");
+	window.open(appContextPath+url + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT), "_blank");
 };
 
 ZmTaskController.prototype.closeView = function() {
