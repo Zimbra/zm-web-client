@@ -1500,17 +1500,16 @@ function(ev) {
 				}
 			}, this), 5);
 			if (ev.keyCode==46) {
-//				if (ev.preventDefault)
-//					ev.preventDefault();
-
 				if (!AjxEnv.isIE) {
 					var range = this._getRange();
 					var el = range.startContainer.childNodes[range.startOffset];
 					if (el && el.tagName && el.tagName.toLowerCase()=="br") {
 						this._removeElement(el);
+                        if (ev.preventDefault)
+                                ev.preventDefault();
+                        rv=false;
 					}
 				}
-//				rv=false;
 			}
 
 		}
