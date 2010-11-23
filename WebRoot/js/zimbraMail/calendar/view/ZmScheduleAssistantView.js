@@ -344,7 +344,7 @@ function(params) {
 
 	var tf = this._timeFrame = this._getTimeFrame();
 	var list = this._resources;
-	var emails = [];
+	var emails = [], attendeeEmails = [];
 
     params.itemsById = {};
     params.itemsByIdx = [];
@@ -371,15 +371,16 @@ function(params) {
 
     //include organizer in the scheduler suggestions
     var organizer = this._editView.getOrganizer();
-    this._addAttendee(organizer, params, emails);
+    this._addAttendee(organizer, params, emails, attendeeEmails);
 
     for (var i = attendees.length; --i >= 0;) {        
             //ignore optional attendees while suggesting
             if(attendees[i].getParticipantRole() == ZmCalItem.ROLE_OPTIONAL) continue;
-            this._addAttendee(attendees[i], params, emails);
+            this._addAttendee(attendees[i], params, emails, attendeeEmails);
     }
 
     params.emails = emails;
+    params.attendeeEmails = attendeeEmails;
 
     this._key = this.getFormKey(tf.start, this._attendees);
 
@@ -411,7 +412,7 @@ function(params) {
 };
 
 ZmScheduleAssistantView.prototype._addAttendee =
-function(attendeeObj, params, emails) {
+function(attendeeObj, params, emails, attendeeEmails) {
     var attendee = attendeeObj.getEmail();
     if (attendee instanceof Array) {
         attendee = attendeeObj[0];
@@ -420,6 +421,7 @@ function(attendeeObj, params, emails) {
     attendeeObj._itemIndex = params.itemsByIdx.length-1;
     params.itemsById[attendee] = attendeeObj;
     emails.push(attendee);
+    attendeeEmails.push(attendee);
     this._attendees.push(attendee);
 };
 
@@ -461,7 +463,7 @@ function(params) {
     var organizer = this._editView.getOrganizer();
     this._organizerEmail = organizer.getEmail();
 
-    var emails = (this.getWorkingHoursPref() == ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS) ?  params.emails : [this._organizerEmail];
+    var emails = (this.getWorkingHoursPref() == ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS) ?  params.attendeeEmails : [this._organizerEmail];
     if(this._workingHoursKey == this.getWorkingHoursKey()) {
         this.suggestTimeSlots(params);
     }else {
@@ -698,7 +700,12 @@ function(attendee, startTime, endTime) {
     var workingHours = this._fbCache.getWorkingHrsSlot(dayStartTime, dayEndTime, attendee);
 
     //if working hours could not be retrieved consider all time slots for suggestion
-    if(!workingHours || workingHours.n) return true;
+    if(workingHours && workingHours.n) {
+        workingHours = this._fbCache.getWorkingHrsSlot(dayStartTime, dayEndTime, this._organizerEmail);
+        if(workingHours && workingHours.n) return true;
+    }
+
+    if(!workingHours) return false;
 
     var slots = workingHours.f;
 
@@ -790,7 +797,7 @@ function() {
 
 
     var list = this._resources;
-    var emails = [];
+    var emails = [], attendeeEmails = [];
 
 
     for (var i = list.length; --i >= 0;) {
@@ -821,6 +828,7 @@ function() {
     organizer._itemMonthIndex = params.itemsByIdx.length-1;
     params.itemsById[orgEmail] = organizer;
     emails.push(orgEmail);
+    attendeeEmails.push(orgEmail);
 
     for (var i = attendees.length; --i >= 0;) {
         if(attendees[i].getParticipantRole() == ZmCalItem.ROLE_OPTIONAL) continue;
@@ -835,9 +843,11 @@ function() {
         params.itemsById[attendee] = attendees[i];
 
         emails.push(attendee);
+        attendeeEmails.push(email);        
     }
 
     params.emails = emails;
+    params.attendeeEmails = attendeeEmails;
 
     var callback = new AjxCallback(this, this._handleMonthFreeBusyInfo, [params]);
     var acct = (appCtxt.multiAccounts)
@@ -886,7 +896,7 @@ function(params) {
     var dow = weekStartDate.getDay();
     weekStartDate.setDate(weekStartDate.getDate()-((dow+7))%7);
 
-    var emails = (this.getWorkingHoursPref() == ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS) ?  params.emails : [this._organizerEmail];
+    var emails = (this.getWorkingHoursPref() == ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS) ?  params.attendeeEmails : [this._organizerEmail];
     var whrsParams = {
         startTime: weekStartDate.getTime(),
         endTime: weekStartDate.getTime() + 7*AjxDateUtil.MSEC_PER_DAY,

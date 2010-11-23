@@ -258,6 +258,11 @@ function(slots, id, status) {
             whSlots[status] = [];
         }
         whSlots[status].push(slots[i]);
+
+        //unknown working hours slots will be compressed on server response (will send one accumulated slots)
+        if(status == ZmFreeBusyCache.STATUS_UNKNOWN) {
+            this._workingHrs[id] = whSlots;
+        }
     };
 };
 
@@ -292,10 +297,17 @@ function(startTime, endTime, id) {
     var whSlots = this._workingHrs[whKey] || {};
     var whResult = {id: id};
 
+    //handle the case where the working hours are not available and slot dates are accumulated
+    var unknownSlots = this._workingHrs[id];
+    if(unknownSlots) {
+        return unknownSlots;
+    }
+
     if(whSlots[ZmFreeBusyCache.STATUS_WORKING_HOURS]) whResult[ZmFreeBusyCache.STATUS_WORKING_HOURS] = whSlots[ZmFreeBusyCache.STATUS_WORKING_HOURS];
     if(whSlots[ZmFreeBusyCache.STATUS_NON_WORKING_HOURS]) whResult[ZmFreeBusyCache.STATUS_NON_WORKING_HOURS] = whSlots[ZmFreeBusyCache.STATUS_NON_WORKING_HOURS];
     if(whSlots[ZmFreeBusyCache.STATUS_UNKNOWN]) whResult[ZmFreeBusyCache.STATUS_UNKNOWN] = whSlots[ZmFreeBusyCache.STATUS_UNKNOWN];
 
+    if(!whResult[ZmFreeBusyCache.STATUS_WORKING_HOURS] && !whResult[ZmFreeBusyCache.STATUS_NON_WORKING_HOURS] && !whResult[ZmFreeBusyCache.STATUS_UNKNOWN]) return null;
     return whResult;        
 };
 
