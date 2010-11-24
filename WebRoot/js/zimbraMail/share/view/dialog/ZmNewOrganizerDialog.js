@@ -100,8 +100,9 @@ function(params, account) {
             // HACK: to get default icon regardless of organizer type
             icon = prototype.getIcon.apply(prototype);
         }
-        this._colorSelect.setValue(ZmOrganizer.DEFAULT_COLOR[orgType]);
+
         this._colorSelect.setImage(icon);
+        this._colorSelect.setValue(ZmOrganizer.DEFAULT_COLOR[orgType]);
     }
 
 	var ovContainer = appCtxt.multiAccounts && this._opc.getOverviewContainer(this.toString());
