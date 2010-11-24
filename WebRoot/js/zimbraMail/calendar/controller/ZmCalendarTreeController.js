@@ -156,7 +156,7 @@ function(actionMenu, type, id) {
 		var nId;
 		if (calendar) {
 			nId = calendar.nId;
-            var isShareVisible = !calendar.link || calendar.isAdmin();
+            var isShareVisible = (!calendar.link || calendar.isAdmin()) && nId != ZmFolder.ID_TRASH;
             if (appCtxt.isOffline) {
                 isShareVisible = !calendar.getAccount().isMain;
             }
