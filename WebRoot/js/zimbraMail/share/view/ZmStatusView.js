@@ -435,14 +435,18 @@ function() {
 
 ZmToast.prototype.__position =
 function() {
+    var location = this._state.location || "C";
+    var containerId = "skin_container_toast"; // Skins may specify an optional element with this id. Toasts will then be placed relative to this element, rather than to the the zshell
+
     var el = this.getHtmlElement();
-    var bsize = Dwt.getSize(this.shell.getHtmlElement());
+    var container = Dwt.byId(containerId) || this.shell.getHtmlElement();
+    
+    var bsize = Dwt.getSize(container);
     var tsize = Dwt.getSize(el);
 
     var x = (bsize.x - tsize.x) / 2;
-    var y = (bsize.y - tsize.y) / 2
+    var y = (bsize.y - tsize.y) / 2;
 
-    var location = this._state.location || "C";
     switch (location.toUpperCase()) {
         case 'N': y = 0-tsize.y; break;
         case 'S': y = bsize.y - tsize.y; break;
@@ -454,6 +458,10 @@ function() {
         case 'SW': x = 0; y = bsize.y - tsize.y; break;
         case 'C': default: /* nothing to do */ break;
     }
+
+    var offset = Dwt.toWindow(container);
+    x += offset.x;
+    y += offset.y;
     Dwt.setLocation(el, x, y);
 
     this._funcs["next"]();

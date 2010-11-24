@@ -9,7 +9,7 @@
 //
 function CarbonSkin() {
     BaseSkin.call(this);
-    this.hints.toast = { location: "N", 
+    this.hints.toast = { location: "C", 
 		transitions: [
 				{ type: "fade-in", step: 5, duration: 50 },
                 { type: "pause", duration: 5000 },
