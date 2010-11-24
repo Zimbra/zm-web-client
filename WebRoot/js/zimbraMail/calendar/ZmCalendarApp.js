@@ -904,6 +904,8 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener) {
 	// create button
 	var dateButton = new DwtButton({parent:parent});
 	dateButton.addDropDownSelectionListener(dateButtonListener);
+	//make sure to listen to the tiny left-edge(thats not part of drop-down menu)
+	dateButton.addSelectionListener(dateButtonListener);
 	dateButton.setData(Dwt.KEY_ID, buttonId);
 	if (AjxEnv.isIE) {
 		dateButton.setSize("20");
