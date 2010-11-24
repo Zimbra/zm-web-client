@@ -856,6 +856,11 @@ function(ev) {
 	}
 
 	var url = ("/h/printtasks?id=" + taskIds.join(","));
+	if (appCtxt.isOffline) {
+		var folderId = this._folderId || ZmFolder.ID_CONTACTS;
+		var acctName = appCtxt.getById(folderId).getAccount().name;
+		url += "&acct=" + acctName ;
+	}
 	window.open(appContextPath+url + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT), "_blank");
 };
 
@@ -890,6 +895,11 @@ function(ev) {
 			taskIds.push(list[i].invId);
 		}
 		url = ("/h/printtasks?id=" + taskIds.join(","));
+	}
+	if (appCtxt.isOffline) {
+		var folderId = this._folderId || ZmFolder.ID_CONTACTS;
+		var acctName = appCtxt.getById(folderId).getAccount().name;
+		url += "&acct=" + acctName ;
 	}
 	window.open(appContextPath+url + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT), "_blank");
 };

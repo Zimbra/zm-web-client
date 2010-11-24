@@ -151,6 +151,10 @@ function() {
 ZmTaskController.prototype._printListener =
 function() {
 	var url = ("/h/printtasks?id=" + this._composeView._calItem.invId);
+    if (appCtxt.isOffline) {
+        var acctName = this._contact.getAccount().name;
+        url+="&acct=" + acctName ;
+    }
 	window.open(appContextPath+url + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT), "_blank");
 };
 
