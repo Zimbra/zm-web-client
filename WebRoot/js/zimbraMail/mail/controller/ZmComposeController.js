@@ -1490,6 +1490,9 @@ function(op) {
 			AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() { cv.getHtmlEditor().moveCaretToTop(); }), 200);
 		}
 	}
+    else if((cv._composeMode==DwtHtmlEditor.HTML && op==ZmOperation.FORMAT_HTML) || (cv._composeMode==DwtHtmlEditor.TEXT && op==ZmOperation.FORMAT_TEXT)){
+         userText = this._getBodyContent();
+    }
 
 	// forwarding actions are tied to inc option
 	var what = this._curIncOptions.what;
