@@ -1168,7 +1168,7 @@ function(request, isDraft, accountName, requestReadReceipt) {
 	var mainAccount = ac.accountList.mainAccount;
 
 	//When fwding an email in Parent's(main) account(main == active), but we are sending on-behalf-of child(active != accountName)
-	var doQualifyIds = !ac.isOffline && ac.multiAccounts && ((activeAccount.name == mainAccount.name) && (activeAccount.name != accountName));
+	var doQualifyIds = !ac.isOffline && ac.multiAccounts  && mainAccount.name != accountName;
 
 	// if origId is given, means we're saving a draft or sending a msg that was
 	// originally a reply/forward
