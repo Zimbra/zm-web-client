@@ -654,12 +654,13 @@ ZmCalItem.prototype.parseAlarm =
 function(tmp) {
 	if (!tmp) { return; }
 
-	var m, h, d;
+	var m, h, d, w;
 	var trigger = tmp.trigger;
 	var rel = (trigger && (trigger.length > 0)) ? trigger[0].rel : null;
 	m = (rel && (rel.length > 0)) ? rel[0].m : null;
 	d = (rel && (rel.length > 0)) ? rel[0].d : null;
 	h = (rel && (rel.length > 0)) ? rel[0].h : null;
+	w = (rel && (rel.length > 0)) ? rel[0].w : null;
 
 	this._reminderMinutes = 0;
 	if (tmp.action == ZmCalItem.ALARM_DISPLAY) {
@@ -676,6 +677,11 @@ function(tmp) {
 			d = parseInt(d);
 			this._reminderMinutes = d * 24 * 60;
             this._origReminderUnits = ZmCalItem.REMINDER_UNIT_DAYS;
+		}
+        if (w != null) {
+			w = parseInt(w);
+			this._reminderMinutes = w * 7 * 24 * 60;
+            this._origReminderUnits = ZmCalItem.REMINDER_UNIT_WEEKS;
 		}
 	}
 };
