@@ -602,23 +602,28 @@ function(what, folderType, ignoreExisting) {
 			invalid = true;
 		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;														// can't drop items into saved searches
-		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
+		} else if (item && (item.type == ZmItem.CONTACT) && item.isGal) {
 			invalid = true;
-		} else if ((item.type == ZmItem.CONV) && item.list && item.list.search && (item.list.search.folderId == this.id)) {
+		} else if (item && (item.type == ZmItem.CONV) && item.list && item.list.search && (item.list.search.folderId == this.id)) {
 			invalid = true;														// convs which are a result of a search for this folder
 		} else {																// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
-				if (items[i].type == ZmItem.CONTACT) {
+				var item = items[i];
+				if (!item) {
+					invalid = true;
+					break;
+				}
+				if (item == ZmItem.CONTACT) {
 					if (this.nId != ZmFolder.ID_TRASH) {
 						// can only move contacts into Trash
 						invalid = true;
 						break;
 					}
-				} else if (items[i].isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
+				} else if (item.isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
 					// can move drafts into Trash or Drafts
 					invalid = true;
 					break;
-				} else if ((this.nId == ZmFolder.ID_DRAFTS || this.rid == ZmFolder.ID_DRAFTS) && !items[i].isDraft)	{
+				} else if ((this.nId == ZmFolder.ID_DRAFTS || this.rid == ZmFolder.ID_DRAFTS) && !item.isDraft)	{
 					// only drafts can be moved into Drafts
 					invalid = true;
 					break;
@@ -629,7 +634,7 @@ function(what, folderType, ignoreExisting) {
 				// bug: 41531 - don't allow items to be moved into exchange
 				// account when moving across accounts
 				var acct = this.getAccount();
-				if (item.getAccount() != acct &&
+				if (acct && item.getAccount() != acct &&
 					(acct.type == ZmAccount.TYPE_MSE ||
 					 acct.type == ZmAccount.TYPE_EXCHANGE))
 				{
