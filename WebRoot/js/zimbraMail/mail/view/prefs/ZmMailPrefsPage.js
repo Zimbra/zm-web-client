@@ -188,33 +188,31 @@ function() {
 ZmMailPrefsPage.prototype._dateButtonListener =
 function(ev) {
 	var calDate = ev.item == this._startDateButton
-		? AjxDateUtil.simpleParseDateStr(this._startDateField.value)
-		: AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+		? this._fixAndGetValidDateFromField(this._startDateField)
+		: this._fixAndGetValidDateFromField(this._endDateField);
 
-	// if date was input by user and its foobar, reset to today's date
-	if (isNaN(calDate)) {
-		calDate = new Date();
-		var field = ev.item == this._startDateButton
-			? this._startDateField : this._endDateField;
-		field.value = AjxDateUtil.simpleComputeDateStr(calDate);
-	}
-
-	// always reset the date to current field's date
 	var menu = ev.item.getMenu();
-
 	var cal = menu.getItem(0);
 	cal.setDate(calDate, true);
 	ev.item.popup();
 };
 
+ZmMailPrefsPage.prototype._fixAndGetValidDateFromField =
+function(field) {
+	var d = AjxDateUtil.simpleParseDateStr(field.value);
+	if (!d || isNaN(d)) {
+		d = new Date();
+		field.value = AjxDateUtil.simpleComputeDateStr(d);
+	}
+	return d;
+};
 
 ZmMailPrefsPage.prototype._dateCalSelectionListener =
 function(ev) {
 	var parentButton = ev.item.parent.parent;
 
-	// do some error correction... maybe we can optimize this?
-	var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-	var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+	var sd = this._fixAndGetValidDateFromField(this._startDateField);
+	var ed = this._fixAndGetValidDateFromField(this._endDateField);
 	var newDate = AjxDateUtil.simpleComputeDateStr(ev.detail);
 
 	// change the start/end date if they mismatch
