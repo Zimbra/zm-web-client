@@ -318,7 +318,10 @@ function(ev, force) {
         var appt = this._composeView.getApptEditView()._calItem;
         var inviteNeverSent = (appt && appt.inviteNeverSent);
         var showDlg = true;
-        if(!inviteNeverSent && (this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT)
+        if(appt.isDraft){
+            showDlg = false;
+        }
+        if(showDlg && !inviteNeverSent && (this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT)
                 ||  this._checkIsDirty(ZmApptEditView.CHANGES_LOCAL))){
             showDlg = false;
         }
