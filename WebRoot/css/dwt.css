@@ -920,6 +920,11 @@
 	@MiniCalDay-selected@
 }
 
+.ZmScheduleAssistantView .DwtCalendar .DwtCalendarDay-selected {
+	@MiniCalButton@
+	@MiniCalDay-sched-selected@
+}
+
 .DwtCalendarDay-today {
 	@MiniCalButton@
 	@MiniCalButton-today@
