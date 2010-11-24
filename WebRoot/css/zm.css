@@ -4182,6 +4182,12 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	color:#FFFFFF;
 }
 
+.ZmBreifcaseNewWinButton .ZButtonTable {
+	background: none;
+    border: none;
+    cursor:pointer;
+}
+
 .ZmBriefcaseItemSelected .ZmThumbnailName span a {
 	color:#FFFFFF;
 }
