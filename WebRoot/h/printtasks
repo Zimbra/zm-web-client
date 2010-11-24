@@ -241,11 +241,13 @@
                                     <table border="0" cellpadding="2" cellspacing="2">
                                         <tr>
                                             <td class="companyName" width="100%">
-                                                <c:set var="folderImage" value="${zm:getFolder(pageContext, message.folderId).image}"/>
-                                                <c:set var="folderName" value="${fn:escapeXml(zm:getFolderName(pageContext, message.folderId))}"/>
-                                                <app:img alt='${folderName}' src="${folderImage}"/>
+                                                <c:set var="folder" value="${zm:getFolder(pageContext, message.folderId)}"/>
+                                                <c:set var="folderImage" value="${not empty folder ? folder.image : ''}"/>
+                                                <c:if test="${not empty folderImage}">
+                                                     <app:img alt='${folderName}' src="${folderImage}"/>
+                                                </c:if>
                                             </td>
-                                            <td class="companyFolder">${folderName}</td>
+                                            <td class="companyFolder">${not empty folder ? folder.name : ''}</td>
                                         </tr>
                                     </table>
                                 </td>
