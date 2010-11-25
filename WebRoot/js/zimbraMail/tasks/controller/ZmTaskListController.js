@@ -855,13 +855,13 @@ function(ev) {
 		taskIds.push(items[i].invId);
 	}
 
-	var url = ("/h/printtasks?id=" + taskIds.join(","));
+	var url = ["/h/printtasks?id=", taskIds.join(",")];
 	if (appCtxt.isOffline) {
 		var folderId = this._folderId || ZmFolder.ID_CONTACTS;
 		var acctName = appCtxt.getById(folderId).getAccount().name;
-		url += "&acct=" + acctName ;
+		url.push("&acct=", acctName);
 	}
-	window.open(appContextPath+url + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT), "_blank");
+	window.open([appContextPath, url.join(""), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)].join(""), "_blank");
 };
 
 ZmTaskListController.prototype._markAsCompletedListener = 
@@ -885,23 +885,23 @@ function(ev) {
 
 ZmTaskListController.prototype._printTaskFolderListener =
 function(ev) {
-	var url;
+	var url = ["/h/printtasks?"];
 	if (this._folderId) {
-		url = "/h/printtasks?st=task&sfi=" + this._folderId;
+		url.push("st=task&sfi=", this._folderId);
 	} else {
 		var taskIds = [];
 		var list = this._list.getArray();
 		for (var i = 0; i < list.length; i++) {
 			taskIds.push(list[i].invId);
 		}
-		url = ("/h/printtasks?id=" + taskIds.join(","));
+        url.push("id=", taskIds.join(","));
 	}
 	if (appCtxt.isOffline) {
 		var folderId = this._folderId || ZmFolder.ID_CONTACTS;
 		var acctName = appCtxt.getById(folderId).getAccount().name;
-		url += "&acct=" + acctName ;
+		url.push("&acct=", acctName);
 	}
-	window.open(appContextPath+url + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT), "_blank");
+	window.open([appContextPath, url.join(""), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)].join(""), "_blank");
 };
 
 ZmTaskListController.prototype._setViewContents =
