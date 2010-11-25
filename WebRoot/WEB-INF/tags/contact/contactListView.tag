@@ -147,17 +147,21 @@
         try{
         var idex = 0;
         var c ="";
-        while (idex <= zrc )
+        while (idex < zrc )
         {
         if(document.getElementById("C"+idex).checked) {
             cid = document.getElementById("C"+idex).value;
-            c += "&id="+cid;
+            c += cid + ",";
         }
             idex++ ;
         }
         }catch(ex){
         }
-        window.open("/h/printcontacts?st=${zm:cook(param.st)}&sfi=${context.folder.id}&sq=${zm:cook(param.sq)}"+c);
+        if (c == "") {
+            window.open("/h/printcontacts?st=${zm:cook(param.st)}&sfi=${context.folder.id}");
+        } else {
+            window.open("/h/printcontacts?id="+c);
+        }
     }
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
     var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
