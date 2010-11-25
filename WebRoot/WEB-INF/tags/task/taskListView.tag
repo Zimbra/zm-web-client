@@ -159,7 +159,7 @@
         try{
         var idex = 0;
         var c ="";
-        while (idex <= zrc )
+        while (idex < zrc )
         {
         if(document.getElementById("C"+idex).checked) {
             cid = document.getElementById("C"+idex).value;
