@@ -167,8 +167,8 @@
                                                 <div class="itemMeta"><span id="${id}_path" class="itemValue"></span></div>
                                                 <div class="itemTime"><span id="${id}_size" class="itemValue"></span></div>                                                
                                             </td>
-                                            <td align=right width=20 valign="top">
-                                                <div id="${id}_window" style="padding-bottom:5px;"></div>
+                                            <td align=right width=30 valign="top">
+                                                <div id="${id}_window" style="padding: 0px 7px"></div>
                                                 <div id="${id}_lock"></div>
                                             </td>
                                         </tr>

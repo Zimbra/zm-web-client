@@ -523,7 +523,9 @@ function(){
 
     this._newWindow = document.getElementById(this._htmlElId+"_window");
     if(this._newWindow){
-        this._newWindow.innerHTML = AjxImg.getImageHtml("OpenInNewWindow");
+        this._newWinButton = new DwtButton({parent:this, style:DwtLabel.ALIGN_RIGHT, className: "ZmBreifcaseNewWinButton", parentElement:(this._htmlElId+"_window")});
+        this._newWinButton.setImage("OpenInNewWindow");
+        this._newWinButton.setToolTipContent(ZmMsg.detach);
         Dwt.setHandler(this._newWindow, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._newWindowListener, this));
     }
 
