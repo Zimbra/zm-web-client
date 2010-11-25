@@ -2150,7 +2150,7 @@ function(action, msg, extraBodyText) {
 	var hasInlineImages = (bodyInfo && bodyInfo.hasInlineImages) || !appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	this._showForwardField(msg, action, incOptions, hasInlineImages, bodyInfo && bodyInfo.hasInlineAtts);
 
-	if (sigId) {
+	if (sigId && !isDraft) {
         this._attachSignatureVcard(sigId);
 	}
 };
