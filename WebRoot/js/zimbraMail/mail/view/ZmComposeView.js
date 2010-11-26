@@ -289,7 +289,7 @@ function() {
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		if (this._using[type]) {
-			addrs[type] = this._field[type].value;
+			addrs[type] = this._getAddrFieldValue(type);
 		}
 	}
 	return addrs;
@@ -862,20 +862,7 @@ function(type, addr) {
 		this._using[type] = true;
 		this._showAddressField(type, true);
 	}
-	if (addr && this._useAcAddrBubbles) {
-		var addrInput = this._addrInputField[type];
-		if (addrInput) {
-			var addrs = AjxEmailAddress.split(addr);
-			if (addrs && addrs.length) {
-				for (var i = 0, len = addrs.length; i < len; i++) {
-					addrInput.add(addrs[i]);
-				}
-			}
-		}
-	}
-	else {
-		this._field[type].value = addr;
-	}
+	this._setAddrFieldValue(type, addr);
 
 	// Use a timed action so that first time through, addr textarea
 	// has been sized by browser based on content before we try to
@@ -1798,14 +1785,14 @@ function(text, el, match) {
 };
 
 ZmComposeView.prototype._acKeyupHandler =
-function(ev, acListView, result) {
+function(ev, acListView, result, element) {
 	var key = DwtKeyEvent.getCharCode(ev);
 	// process any printable character or enter/backspace/delete keys
-	if (result && AjxStringUtil.isPrintKey(key) ||
-		key == 3 || key == 13 || key == 8 || key == 46 ||
-		(AjxEnv.isMac && key == 224)) // bug fix #24670
+	if (result && element && (AjxStringUtil.isPrintKey(key) ||
+		(key == 3 || key == 13 || key == 8 || key == 46 ||
+		(AjxEnv.isMac && key == 224)))) // bug fix #24670
 	{
-		this._adjustAddrHeight(DwtUiEvent.getTargetWithProp(ev, "id"));
+		this._adjustAddrHeight(element);
 	}
 };
 
@@ -2933,7 +2920,7 @@ ZmComposeView.prototype._showAddressField =
 function(type, show, skipNotify, skipFocus) {
 	this._using[type] = show;
 	Dwt.setVisible(this._divEl[type], show);
-	this._field[type].value = ""; // bug fix #750 and #3680
+	this._setAddrFieldValue(type, "");	 // bug fix #750 and #3680
 	this._field[type].noTab = !show;
 	var setting = ZmComposeView.ADDR_SETTING[type];
 	if (setting) {
@@ -2957,17 +2944,7 @@ function() {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		if (!this._using[type]) { continue; }
 
-		var val;
-		if (this._useAcAddrBubbles) {
-			var addrInput = this._addrInputField[type];
-			if (addrInput) {
-				val = addrInput.getValue();
-			}
-		}
-		else {
-			val = AjxStringUtil.trim(this._field[type].value)
-		}
-
+		var val = this._getAddrFieldValue(type);
 		if (val.length == 0) { continue; }
 		var result = AjxEmailAddress.parseEmailString(val, type, false);
 		if (result.all.size() == 0) { continue; }
@@ -2990,8 +2967,9 @@ function(incAddrs, incSubject) {
 	if (incAddrs) {
 		for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 			var type = ZmMailMsg.COMPOSE_ADDRS[i];
-			if (this._using[type])
-				vals.push(this._field[type].value);
+			if (this._using[type]) {
+				vals.push(this._getAddrFieldValue(type));
+			}
 		}
 	}
 	if (incSubject) {
@@ -3356,3 +3334,35 @@ ZmComposeView.prototype.deactivate =
 function() {
 	this._controller.inactive = true;
 };
+
+ZmComposeView.prototype._getAddrFieldValue =
+function(type) {
+
+	var val = "";
+	if (this._useAcAddrBubbles) {
+		var addrInput = this._addrInputField[type];
+		if (addrInput) {
+			val = addrInput.getValue();
+		}
+	}
+	else {
+		val = AjxStringUtil.trim(this._field[type].value)
+	}
+
+	return val;
+};
+
+ZmComposeView.prototype._setAddrFieldValue =
+function(type, value) {
+
+	if (this._useAcAddrBubbles) {
+		var addrInput = this._addrInputField[type];
+		if (addrInput) {
+			addrInput.setValue(value);
+		}
+	}
+	else {
+		this._field[type].value = value || "";
+	}
+};
+
