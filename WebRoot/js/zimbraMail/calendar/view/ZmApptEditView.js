@@ -1342,7 +1342,7 @@ function(aclv, attType, input) {
 	var aifId = null;
 	if (this._useAcAddrBubbles) {
 		aifId = input._htmlElId;
-		input._aclv = aclv;
+		input.setAutocompleteListView(aclv);
 	}
 	aclv.handle(input.getInputElement(), aifId);
 
