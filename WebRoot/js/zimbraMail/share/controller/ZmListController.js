@@ -1038,7 +1038,24 @@ function(items, hardDelete, attrs) {
 	var params = {items:items, hardDelete:hardDelete, attrs:attrs, childWin:appCtxt.isChildWindow && window};
 	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
 	var list = this._setupContinuation(this._doDelete, [hardDelete, attrs], params, allDoneCallback);
-	list.deleteItems(params);
+
+	if (!hardDelete) {
+		var anyScheduled = false;
+		for (var i=0, cnt=items.length; i<cnt; i++) {
+			if (items[i] && items[i].isScheduled) {
+				anyScheduled = true;
+				break;
+			}
+		}
+		if (anyScheduled) {
+			params.noUndo = true;
+			this._popupScheduledWarningDialog(new AjxCallback(list, list.deleteItems, params));
+		} else {
+			list.deleteItems(params);
+		}
+	} else {
+		list.deleteItems(params);
+	}
 };
 
 /**
@@ -1078,7 +1095,25 @@ function(items, folder, attrs, isShiftKey) {
 	if (move.length) {
 		params.items = move;
 		var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
-		list.moveItems(params);
+
+		if (folder.isInTrash()) {
+			var anyScheduled = false;
+			var mItems = AjxUtil.toArray(move);
+			for (var i=0, cnt=mItems.length; i<cnt; i++) {
+				if (mItems[i] && mItems[i].isScheduled) {
+					anyScheduled = true;
+					break;
+				}
+			}
+			if (anyScheduled) {
+				params.noUndo = true;
+				this._popupScheduledWarningDialog(new AjxCallback(list, list.moveItems, params));
+			} else {
+				list.moveItems(params);
+			}
+		} else {
+			list.moveItems(params);
+		}
 	}
 
 	if (copy.length) {
@@ -1086,6 +1121,21 @@ function(items, folder, attrs, isShiftKey) {
 		var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
 		list.copyItems(params);
 	}
+};
+
+
+ZmListController.prototype._popupScheduledWarningDialog = function(callback) {
+	var dialog = appCtxt.getOkCancelMsgDialog();
+	dialog.reset();
+	dialog.setMessage(ZmMsg.moveScheduledMessageWarning, DwtMessageDialog.WARNING_STYLE);
+	dialog.registerCallback(DwtDialog.OK_BUTTON, new AjxCallback(this, this._scheduledWarningDialogListener, [callback, dialog]));
+	dialog.associateEnterWithButton(DwtDialog.OK_BUTTON);
+	dialog.popup(null, DwtDialog.OK_BUTTON);
+};
+
+ZmListController.prototype._scheduledWarningDialogListener = function(callback, dialog) {
+	dialog.popdown()
+	callback.run();
 };
 
 /**

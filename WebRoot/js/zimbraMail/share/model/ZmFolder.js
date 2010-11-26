@@ -305,9 +305,11 @@ function() {
  * same name. A new name will be generated for this folder and a rename is performed before the move.
  * 
  * @param	{ZmFolder}	newParent		the new parent
+ * @param	{boolean}	noUndo			true if the action should not be undoable
+ * @param	{String}	actionText		optional custom action text to display as summary
  */
 ZmFolder.prototype.move =
-function(newParent, undoing) {
+function(newParent, noUndo, actionText) {
 	var origName = this.name;
 	var name = this.name;
 	while (newParent.hasChild(name)) {
@@ -316,7 +318,7 @@ function(newParent, undoing) {
 	if (origName != name) {
 		this.rename(name);
 	}
-	ZmOrganizer.prototype.move.call(this, newParent, undoing);
+	ZmOrganizer.prototype.move.call(this, newParent, noUndo, actionText);
 };
 
 /**

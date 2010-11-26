@@ -288,8 +288,9 @@ ZmOrganizerMoveAction.prototype.getToFolderId = function() {
 
 ZmOrganizerMoveAction.prototype._doMove = function(callback, errorCallback, folderId) {
 	var folder = appCtxt.getById(folderId);
-	if (folder)
-		this._organizer.move(folder, true);
+	if (folder) {
+		this._organizer.move(folder, true, ZmMsg.actionUndoMove);
+	}
 };
 
 ZmOrganizerMoveAction.prototype.undo = function(callback, errorCallback) {
