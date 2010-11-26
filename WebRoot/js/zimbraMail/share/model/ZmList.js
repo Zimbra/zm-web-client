@@ -476,12 +476,12 @@ function(params) {
  * @param	{AjxCallback}	params.callback			the callback to run after each sub-request
  * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
  * @param	{int}			params.count			the starting count for number of items processed
- * @param	{boolean}		params.undoing			true if the action is performed as an undo (different result text and not undoable)
+ * @param	{boolean}		params.noUndo			true if the action is not undoable (e.g. performed as an undo)
  * @param	{String}		params.actionText		optional text to display in the confirmation toast instead of the default summary
  */
 ZmList.prototype.moveItems =
 function(params) {
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "undoing", "actionText"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "noUndo", "actionText"]);
 
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		return this._mixedAction("moveItems", params);
@@ -812,7 +812,7 @@ function(items, folderId) {
  * @param	{String}	params.accountName		the account to send request on behalf of
  * @param	{int}		params.count			the starting count for number of items processed
  * @param	{ZmBatchCommand}batchCmd			if set, request data is added to batch request
- * @param	{boolean}	params.undoing			true if the action is performed as an undo (not undoable)
+ * @param	{boolean}	params.noUndo			true if the action is performed as an undo (not undoable)
  */
 ZmList.prototype._itemAction =
 function(params, batchCmd) {
@@ -869,7 +869,7 @@ function(params, batchCmd) {
 	}
 
 	var actionController = appCtxt.getActionController();
-	var actionLogItem = (!params.undoing && actionController && actionController.actionPerformed({op: params.action, ids: idList, attrs: params.attrs})) || null;
+	var actionLogItem = (!params.noUndo && actionController && actionController.actionPerformed({op: params.action, ids: idList, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseItemAction, [params.callback, actionLogItem]);
 
 	var params1 = {

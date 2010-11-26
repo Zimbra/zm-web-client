@@ -1033,10 +1033,11 @@ function(attrs) {
  * Assigns the organizer a new parent, moving it within its tree.
  *
  * @param {ZmOrganizer}		newParent		the new parent of this organizer
- * @param {boolean}		undoing			if true, action is not undoable
+ * @param {boolean}		noUndo			if true, action is not undoable
+ * @param {String}	actionText		optional custom action text to display as summary
  */
 ZmOrganizer.prototype.move =
-function(newParent, undoing) {
+function(newParent, noUndo, actionText) {
 	var newId = (newParent.nId > 0)
 		? newParent.id
 		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
@@ -1051,14 +1052,14 @@ function(newParent, undoing) {
 
 	if (newId == ZmOrganizer.ID_TRASH) {
 		params.action = "trash";
-		params.undoing = undoing;
+		params.noUndo = noUndo;
 	}
 	else {
-		params.actionText = (undoing) ? ZmMsg.actionUndoMove : ZmMsg.actionMove;
+		params.actionText = actionText || ZmMsg.actionMove;
 		params.actionArg = newParent.getName(false, false, true);
 		params.action = "move";
 		params.attrs = {l: newId};
-		params.undoing = undoing;
+		params.noUndo = noUndo;
 	}
 	this._organizerAction(params);
 };
@@ -1779,7 +1780,7 @@ function(params) {
 	}
 	var actionController = appCtxt.getActionController();
 	actionController.dismiss();
-	var actionLogItem = (!params.undoing && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
+	var actionLogItem = (!params.noUndo && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
@@ -1825,8 +1826,9 @@ function(params, actionLogItem, result) {
 
 ZmOrganizer.getActionSummary =
 function(text, num, type, arg) {
-	var typeText = ZmMsg[ZmOrganizer.MSG_KEY[type]];
-	return AjxMessageFormat.format(text, [num, typeText, arg]);
+	var typeTextAuto = ZmMsg[ZmOrganizer.MSG_KEY[type]];
+	var typeTextSingular = ZmMsg[ZmOrganizer.MSG_KEY[type]];
+	return AjxMessageFormat.format(text, [num, typeTextAuto, arg, typeTextSingular]);
 };
 
 /**
