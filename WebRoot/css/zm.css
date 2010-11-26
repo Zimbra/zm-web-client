@@ -714,6 +714,11 @@ INPUT[type="text"].people_search_input {
 .addrBubbleHolder {
 	padding: 2px 0;
 	margin-top: 2px;
+	#IFDEF MSIE
+	height: expression(this.scrollHeight > 105 ? "106px" : "auto");
+	#ENDIF
+	max-height: 98px;
+	overflow: auto;
 }
 
 .addrBubbleContainer input {
@@ -935,6 +940,7 @@ line-height:normal;
 .ZmContactSimpleView {
 	@ListBg@
 	border:solid @darken(AppC,50)@; border-width:1px 0px 1px 1px;
+	width: 100%;
 }
 
 .ZmContactSimpleView .SimpleContact-right,
