@@ -634,8 +634,12 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
                     <td><div id='${id}_button'></div></td>
                 </tr>
             </table>
-
-
+            <table class='DwtColorPickerLabel' border="0">
+		<tr><td><div><$=AjxMsg.previewResult$></div></td>
+		    <td><div id='${id}_preview' class='Color'></div></td>
+		    <td><div id='${id}_error'></div></td>
+		</tr>
+            </table>
         </div>
     <$ } $>
 </template>

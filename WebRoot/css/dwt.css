@@ -835,6 +835,11 @@
     border: solid 1px black !important;
 }
 
+.DwtColorPickerLabel .Color {
+    width: 12px;
+    height: 11px;
+    border: solid 1px black !important;
+}
 /* ??? USED? */
 .DwtResizeGripper {
 	border: none;
