@@ -180,6 +180,7 @@ ZmSetting.INC_SMART_PRE_HDR		= "includeSmartAndHeadersWithPrefix";
 ZmSetting.LICENSE_BAD			= "bad";					// license status (network only)
 ZmSetting.LICENSE_GOOD			= "good";
 ZmSetting.LICENSE_GRACE			= "inGracePeriod";
+ZmSetting.LICENSE_NOT_INSTALLED = "NOT_INSTALLED";
 ZmSetting.MARK_READ_NONE		= -1;						// zimbraPrefMarkMsgRead
 ZmSetting.MARK_READ_NOW			= 0;						// zimbraPrefMarkMsgRead
 ZmSetting.MARK_READ_TIME		= 1;						// zimbraPrefMarkMsgRead
