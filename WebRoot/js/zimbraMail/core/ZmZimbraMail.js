@@ -676,9 +676,19 @@ function(params) {
 
 	if (appCtxt.get(ZmSetting.LICENSE_STATUS) != ZmSetting.LICENSE_GOOD) {
 		AjxDispatcher.require("Startup2");
+        var licenseStatus = appCtxt.get(ZmSetting.LICENSE_STATUS);
+        var licenseMsg;
+        switch (licenseStatus) {
+            case ZmSetting.LICENSE_NOT_INSTALLED:
+                licenseMsg = ZmMsg.licenseNotInstalled;
+                break;
+            default:
+                licenseMsg = ZmMsg.licenseExpired;
+        }
+              
 		var dlg = appCtxt.getMsgDialog();
 		dlg.reset();
-		dlg.setMessage(ZmMsg.licenseExpired, DwtMessageDialog.WARNING_STYLE);
+        dlg.setMessage(licenseMsg, DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
 	}
 
