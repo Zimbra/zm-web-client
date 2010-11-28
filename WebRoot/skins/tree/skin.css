@@ -35,7 +35,7 @@ body, #skin_container_splash_screen	{
 }
 
 #skin_container_search {	
-	background: #72941c url("@SkinImgDir@/search_bg.png") top left repeat-x;
+	
 	color: #d5d5d3;	
 	border: 0;
 }
@@ -107,3 +107,10 @@ body, #skin_container_splash_screen	{
 	background-color: #fff;
 	border-bottom-color: #fff;
 }
+
+#skin_spacing_filler				{	
+	height:12px; 
+	border-top: solid 1px #455C42;
+	background: transparent;
+	
+ }
