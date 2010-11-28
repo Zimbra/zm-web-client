@@ -42,7 +42,7 @@ body	{  @ChromeBg@ }
 }
 
 #skin_container_search {	
-	background: #ad9b42 url("@SkinImgDir@/search_bg.png") top left repeat-x;
+	background: transparent;
 	color: #d5d5d3;	
 	border: 0;
 }
