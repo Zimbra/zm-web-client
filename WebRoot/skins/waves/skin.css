@@ -102,3 +102,10 @@ background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
 .ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
 	background-color: #E8E8E8;
 }
+
+#skin_spacing_filler				{	
+	height:12px; 
+	border-top: solid 1px #AAAAAA;
+	background: transparent;
+
+ }
