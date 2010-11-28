@@ -48,7 +48,7 @@ body	{  @ChromeBg@ }
 
 #skin_container_search {	
 	background: #919396 url("@SkinImgDir@/search_bg.png") top left repeat-x;
-	color: #d5d5d3;	
+	color: #333333;	
 	border: 0;
 }
 
@@ -126,3 +126,10 @@ body	{  @ChromeBg@ }
 	background-color: #fff;
 	border-bottom-color: #fff;
 }
+
+#skin_spacing_filler				{	
+	height:12px; 
+	border-top: solid 1px #939598;
+	background: transparent;
+
+ }
