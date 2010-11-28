@@ -41,7 +41,7 @@ body {
 }
 
 #skin_container_username *{
-	color: white;
+	color: #1b325f;
 }
 
 #skin_border_app_chooser				{	@SkinBorderAppChooser@ 		}
@@ -127,3 +127,12 @@ body {
 .ZmApptComposeView {
 	@PanelBg@
 }
+
+#skin_spacing_filler{	
+	height:12px; 
+	background-color: #193662;
+	background-image: -moz-linear-gradient(top, #193662, #e9f2f9); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #193662),color-stop(1, #e9f2f9));                /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#193662', EndColorStr='#e9f2f9');                          /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#193662', EndColorStr='#e9f2f9')";                     /* IE8 */
+ }
