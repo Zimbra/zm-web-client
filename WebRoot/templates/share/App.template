@@ -23,6 +23,7 @@
 
 <template id="share.App#UserInfo">
 	<table class='skin_table' cellpadding=0 cellspacing=0 border=0>
+<!--
 	<$ if (data.showOfflineLink) { $>
 		<tr>
 			<td id='skin_td_switch_offline' colspan=3>
@@ -30,14 +31,15 @@
 			</td>
 		</tr>
 	<$ } $>
+-->
 		<tr>
 			<$ if (data.adminUrl) { $>
 				<td id="skin_container_adminlink">
 					<table border=0 cellpadding=0 cellspacing=0>
 						<tr>
-							<td>
+							<!-- td>
 								<a target="_blank" href="${adminUrl}"><$= AjxImg.getImageHtml("Status", null, "border=0") $></a>
-							</td>
+							</td -->
 							<td style='white-space:nowrap; font-weight:bold'>
 								<a target="_blank" href="${adminUrl}"><$= ZmMsg.adminLinkLabel $></a>
 							</td>
@@ -49,9 +51,9 @@
 				<table border=0 cellpadding=0 cellspacing=0>
 					<tr>
 						<$ if (data.helpIcon) { $>
-							<td style='padding-right:3px;'>
+							<!-- td style='padding-right:3px;'>
 								<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= AjxImg.getImageHtml(data.helpIcon, null, "border=0") $></a>
-							</td>
+							</td -->
 						<$ } $>
 						<td style='white-space:nowrap; font-weight:bold'>
 							<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= ZmMsg.help $></a>
@@ -63,9 +65,9 @@
 				<table border=0 cellpadding=0 cellspacing=0>
 					<tr>
 						<$ if (data.logoutIcon) { $>
-							<td style='padding-right:3px;'>
+							<!-- td style='padding-right:3px;'>
 								<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'><$= AjxImg.getImageHtml(data.logoutIcon, null, "border=0") $></a>
-							</td>
+							</td -->
 						<$ } $>
 						<td style='white-space:nowrap; font-weight:bold'>
 							<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>${logoutText}</a>
