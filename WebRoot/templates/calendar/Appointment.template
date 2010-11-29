@@ -427,7 +427,8 @@
 	<tr>
 		<td class='ZmFieldLabelRight'><input type='checkbox' id='${id}_status_cbox'></td>
 		<td width=175 id='${id}_status'></td>
-		<td id='${id}_complete'></td>
+		<td id='${id}_pCompleteSelectInput' width='30'></td>
+		<td id='${id}_pCompleteSelect'></td>
 	</tr>
 	<tr>
 		<td></td>

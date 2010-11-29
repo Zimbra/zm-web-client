@@ -445,3 +445,40 @@ function() {
 	}
 	return this._reminderController;
 };
+
+
+/**
+ * Creates a new button with a reminder options as its menu.
+ *
+ * @param	{DwtComposite}	parent						the parent
+ * @param	{String}	buttonId 					the button id to fetch inside DOM and append DwtButton to
+ * @param	{AjxListener}	buttonListener			the listener to call when date button is pressed
+ * @param	{AjxListener}	menuSelectionListener	the listener to call when date is selected in {@link DwtCalendar}
+ */
+ZmTasksApp.createpCompleteButton =
+function(parent, buttonId, buttonListener, menuSelectionListener) {
+	// create button
+	var pCompleteButton = new DwtButton({parent:parent});
+	pCompleteButton.addDropDownSelectionListener(buttonListener);
+	pCompleteButton.setData(Dwt.KEY_ID, buttonId);
+	pCompleteButton.setSize("25");
+
+	// create menu for button
+	var pCompleteMenu = new DwtMenu({parent:pCompleteButton, style:DwtMenu.DROPDOWN_STYLE});
+	pCompleteMenu.setSize("100");
+	pCompleteButton.setMenu(pCompleteMenu, true);
+
+    var formatter = new AjxMessageFormat(AjxMsg.percentageString);
+	for (var i = 0; i <= 100; i += ZmTask.PCOMPLETE_INT) {
+		var mi = new DwtMenuItem({parent: pCompleteMenu, style: DwtMenuItem.NO_STYLE});
+		mi.setText((formatter.format(i)));
+		mi.setData("value", i);
+		if(menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
+	}
+    
+	// reparent and cleanup
+	pCompleteButton.reparentHtmlElement(buttonId);
+	delete buttonId;
+
+	return pCompleteButton;
+};
