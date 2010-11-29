@@ -1204,7 +1204,7 @@ function(attachment, controller) {
         var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
         file.initWithPath( filePath );
 
-        var contentType = Components.classes["@mozilla.org/mime;1"].getService(Components.interfaces.nsIMIMEService).getTypeFromFile(file);
+        var contentType = this._getAttachmentContentType(file);
 
         var inputStream = Components.classes[ "@mozilla.org/network/file-input-stream;1" ].createInstance(Components.interfaces.nsIFileInputStream);
         inputStream.init(file, -1, -1, false );
@@ -1228,6 +1228,18 @@ function(attachment, controller) {
         DBG.println(ex);
         this._attachmentsProcessed++;
     }
+};
+
+ZmZimbraMail.prototype._getAttachmentContentType =
+function(file) {
+	var contentType;
+	try {
+		contentType = Components.classes["@mozilla.org/mime;1"].getService(Components.interfaces.nsIMIMEService).getTypeFromFile(file);
+	}catch(ex) {
+		 DBG.println("exception in reading content type: " + ex);
+		 contentType =  "application/octet-stream";
+	}
+	return contentType;
 };
 
 ZmZimbraMail.prototype._handleUploadErrorResponse = function(respCode) {
