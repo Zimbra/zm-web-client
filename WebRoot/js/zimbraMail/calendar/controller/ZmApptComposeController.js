@@ -235,15 +235,6 @@ function(attId) {
 		var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
 
         var notifyList;
-        
-        //organizer forwarding an appt - add forward addr as attendees
-        if(appt.isForward) {
-            if(!attendees) attendees = [];
-            var fwdAddrs = appt.getForwardAddress();
-            attendees = attendees.concat(fwdAddrs);
-            appt.setAttendees(attendees, ZmCalBaseItem.PERSON);
-            notifyList = this.getNotifyList(fwdAddrs);
-        }        
 
 		var needsPermissionCheck = (attendees && attendees.length > 0) ||
 								   (resources && resources.length > 0) ||
@@ -821,6 +812,12 @@ function(appt, attId, attendees, origAttendees) {
 		var email = origAttendees[i].getEmail();
 		origEmails[email] = true;
 	}
+	var fwdEmails = {};
+	var fwdAddrs = appt.getForwardAddress();
+	for(var i=0;i<fwdAddrs.length;i++) {
+		var email = fwdAddrs[i].getAddress();
+		fwdEmails[email] = true;
+	}
 	var curEmails = {};
 	for (var i = 0; i < attendees.length; i++) {
 		var email = attendees[i].getEmail();
@@ -830,11 +827,11 @@ function(appt, attId, attendees, origAttendees) {
 	// walk the current list of attendees and check if there any new ones
 	for (var i = 0 ; i < attendees.length; i++) {
 		var email = attendees[i].getEmail();
-		if (!origEmails[email]) {
+		if (!origEmails[email] && !fwdEmails[email]) {
 			this._addedAttendees.push(email);
 		}
 	}
-
+    
 	for (var i = 0 ; i < origAttendees.length; i++) {
 		var email = origAttendees[i].getEmail();
 		if (!curEmails[email]) {
