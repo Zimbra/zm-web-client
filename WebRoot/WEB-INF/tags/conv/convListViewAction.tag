@@ -387,7 +387,7 @@
                 </app:status>
             </c:when>
             <c:when test="${not empty ids and empty msgids}">
-                <zm:markConversationSpam  var="convresult" id="${ids}" spam="true"/>
+                <zm:markConversationSpam  var="convresult" id="${ids}" spam="false"/>
                 <app:status>
                 <fmt:message key="actionConvMarkedNotSpam">
                     <fmt:param value="${convresult.idCount}"/>
@@ -395,7 +395,7 @@
                 </app:status>
             </c:when>
             <c:when test="${not empty msgids and empty ids}">
-                <zm:markMessageSpam var="msgresult" id="${msgids}" spam="true"/>
+                <zm:markMessageSpam var="msgresult" id="${msgids}" spam="false"/>
                 <app:status>
                 <fmt:message key="actionMessageMarkedNotSpam">
                     <fmt:param value="${msgresult.idCount}"/>
