@@ -1235,11 +1235,20 @@ function(msg, container, callback) {
 				// otherwise, get the text part if necessary
 				if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
 					// try to go retrieve the text part
-					var respCallback = new AjxCallback(this, this._handleResponseRenderMessage, [el, bodyPart, callback]);
-					var content = msg.getTextPart(respCallback);
-					if (content != null)
+					var content = msg.getTextPart();
+					if (content === -1) {
+						var respCallback = new AjxCallback(this, this._handleResponseRenderMessage, [el, bodyPart, callback]);
+						msg.fetchTextPart(respCallback);
+						return;
+					}
+					
+					if (content != null) {
 						this._makeIframeProxy(el, content, true);
+					}
+					if (callback) { callback.run(); }
+
 					return;
+
 				} else {
 					if (invite && !invite.isEmpty() && this._inviteMsgView) {
 						c = this._inviteMsgView.truncateBodyContent(c);
@@ -1303,6 +1312,9 @@ function(el, bodyPart, callback, result, isTruncated) {
 
 	this._setAttachmentLinks();
 	this._expandRows(this._expandHeader);
+
+	if (callback) { callback.run(); }
+	
 };
 
 ZmMailMsgView.prototype._setTags =

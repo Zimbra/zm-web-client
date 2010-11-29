@@ -894,7 +894,7 @@ function(xslt, canvas, result) {
  */
 ZmZimletContext._getMsgBody =
 function(o) {
-	var body = o.getTextPart();
+	var body = o.getOrFetchTextPart();
 	if (!body && o.getBodyPart(ZmMimeTable.TEXT_HTML)) {
 		var div = document.createElement("div");
 		div.innerHTML = o.getBodyPart(ZmMimeTable.TEXT_HTML).content;

@@ -815,31 +815,47 @@ function() {
 };
 
 /**
+ * loads the text part asyncroniously, if needed 
+ * @param callback
+ */
+ZmMailMsg.prototype.fetchTextPart =
+function(callback) {
+	// bug fix #19275 - if loaded and not viewing as HTML then assume no text part exists
+	if (!this._loaded || appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
+		var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, [callback]);
+		ZmMailMsg.fetchMsg({sender:appCtxt.getAppController(), msgId:this.id, getHtml:false, callback:respCallback});
+	}
+	else {
+		if (callback) { callback.run(); }
+	}
+};
+
+
+/**
  * Gets the text part.
- * 
- * @param	{AjxCallback}		callback		the callback
+ *
  */
 ZmMailMsg.prototype.getTextPart =
-function(callback) {
+function() {
 	var bodyPart = this.getBodyPart();
-
-	if (bodyPart && bodyPart.ct == ZmMimeTable.TEXT_PLAIN) {
-		return bodyPart.content;
-	} else if (bodyPart && bodyPart.body && ZmMimeTable.isTextType(bodyPart.ct)) {
+	if (bodyPart && (bodyPart.ct == ZmMimeTable.TEXT_PLAIN || bodyPart.body && ZmMimeTable.isTextType(bodyPart.ct))) {
 		return bodyPart.content;
 	} else if (bodyPart && bodyPart.ct != ZmMimeTable.TEXT_PLAIN && bodyPart.ct != ZmMimeTable.TEXT_HTML) {
 		// looks like the body of this message is the attachment itself
 		return "";
-	} else {
-		// bug fix #19275 - if loaded and not viewing as HTML then assume no text part exists
-		if (this._loaded && !appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
-			if (callback) callback.run();
-		} else {
-			var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, [callback]);
-			ZmMailMsg.fetchMsg({sender:appCtxt.getAppController(), msgId:this.id, getHtml:false, callback:respCallback});
-		}
 	}
+	return -1;
 };
+
+ZmMailMsg.prototype.getOrFetchTextPart =
+function() {
+	var textPart = this.getTextPart();
+	if (textPart === -1) {
+		this.fetchTextPart();
+		return null;
+	}
+	return textPart;
+}
 
 ZmMailMsg.prototype.getTextBodyPart =
 function(){
