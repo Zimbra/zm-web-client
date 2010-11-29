@@ -385,12 +385,18 @@ function(firstTime, result) {
 				lastSortVal = email.sf;
 			}
 		}
-		if (!lastSortVal) {
+        if (!lastSortVal && isPagingSupported) {
 			// BAIL. Server didn't send us enough info to make the next request
 			this._searchIcon.className = "ImgSearch";
 			return;
 		}
-		this.search(null, null, null, lastId, lastSortVal);
+        else if (!lastSortVal && !isPagingSupported) {
+            //paging not supported, show what we have
+            this._showResults(isPagingSupported, more, this.getSubList());
+        }
+        else {
+            this.search(null, null, null, lastId, lastSortVal);
+        }
 	}
 	else {
 		list = this.getSubList();
