@@ -283,9 +283,10 @@ function(list, noResultsOk, doAdd) {
 			}
 		}
         
-        if(htmlUpcomingArr.length) htmlArr.push(htmlUpcomingArr.join(""));
-        if(htmlTodayArr.length) htmlArr.push(htmlTodayArr.join(""));
+        //bug:50890 in chronological order
         if(htmlPastDueArr.length) htmlArr.push(htmlPastDueArr.join(""));
+        if(htmlTodayArr.length) htmlArr.push(htmlTodayArr.join(""));
+        if(htmlUpcomingArr.length) htmlArr.push(htmlUpcomingArr.join(""));
         if(htmlNoDueArr.length) htmlArr.push(htmlNoDueArr.join(""));
 
 		if (htmlArr.length) {
