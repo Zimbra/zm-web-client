@@ -93,6 +93,23 @@ function(params, result) {
 			this._faultHandler.run(folder);
 			return true;
 		}
+
+        if(id) {
+            var clearedInvalidFolder = false;
+            for(var i=params.folderIds.length; --i >= 0;) {
+                if(params.folderIds[i] == id) {
+                    params.folderIds.splice(i, 1);
+                    clearedInvalidFolder = true;
+                    break;
+                }
+            }
+
+            //get mini calendar data again with valid folder ids
+            if(clearedInvalidFolder) {
+                this._getMiniCalData(params);
+                return true;
+            }
+        }
 	}
 
 	//continue with callback operation
