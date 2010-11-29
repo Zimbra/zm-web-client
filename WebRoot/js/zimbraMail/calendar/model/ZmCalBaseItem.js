@@ -376,7 +376,7 @@ function(calItemNode, instNode) {
 
 	this.fba = this._getAttr(calItemNode, instNode, "fba");
 
-	var sd = this._getAttr(calItemNode, instNode, "s");
+	var sd = instNode.s !=null ? instNode.s : calItemNode.inst[0].s;
 	if (sd) {
         var tzo = this.tzo = instNode.tzo != null ? instNode.tzo : calItemNode.tzo;
 		var adjustMs = this.isAllDayEvent() ? (tzo + new Date(instNode.s).getTimezoneOffset()*60*1000) : 0;
