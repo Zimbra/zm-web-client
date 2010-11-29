@@ -448,7 +448,7 @@ function() {
     var locations = this._attendees[ZmCalBaseItem.LOCATION];
     //non-resource location labels also contributes to empty attendee
     var isLocationResource =(locations && locations.size() > 0);
-	var isAttendeesNotEmpty = AjxStringUtil.trim(this._attendeesInputField.getValue()) || AjxStringUtil.trim(this._optAttendeesInputField.getValue()) || isLocationResource;
+	var isAttendeesNotEmpty = AjxStringUtil.trim(this._attendeesInputField.getValue()) || AjxStringUtil.trim(this._optAttendeesInputField.getValue()) || AjxStringUtil.trim(this._resourceInputField.getValue()) || isLocationResource;
     return !isAttendeesNotEmpty;
     
 };
