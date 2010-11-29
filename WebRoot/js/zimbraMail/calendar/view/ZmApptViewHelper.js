@@ -332,7 +332,7 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 	 		// is it a contact/resource we already know about?
 			attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
 			if (!checkForAvailability && !attendee && !strictEmail) {
-				if (type == ZmCalBaseItem.PERSON) {
+				if (type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.FORWARD) {
 					attendee = new ZmContact(null);
 				} else if (type == ZmCalBaseItem.LOCATION) {
 					attendee = new ZmResource(null, ZmApptViewHelper._locations, ZmCalBaseItem.LOCATION);
@@ -353,7 +353,7 @@ ZmApptViewHelper._getAttendeeFromAddr =
 function(addr, type) {
 
 	var attendee = null;
-	if (type == ZmCalBaseItem.PERSON) {
+	if (type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.FORWARD) {
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		attendee = contactsApp && contactsApp.getContactByEmail(addr);
 	} else if (type == ZmCalBaseItem.LOCATION) {

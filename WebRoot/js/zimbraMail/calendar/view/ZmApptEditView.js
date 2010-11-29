@@ -406,7 +406,6 @@ function(calItem) {
 
     // set attendees
     for (var t = 0; t < this._attTypes.length; t++) {
-        if(this._isForward && type == ZmCalBaseItem.PERSON)  continue;
         var type = this._attTypes[t];
         calItem.setAttendees(this._attendees[type].getArray(), type);
     }
@@ -428,7 +427,6 @@ function(calItem) {
             a[AjxEmailAddress.TO] = addrs[AjxEmailAddress.TO].good.getArray();
         }        
         calItem.setForwardAddress(a[AjxEmailAddress.TO]);
-        calItem.setAttendees(this._fwdApptOrigAttendees, ZmCalBaseItem.PERSON);
     }
 
 	return calItem;
@@ -520,16 +518,13 @@ function(calItem, mode) {
                 this._toggleOptionalAttendees(true);
             }
 		}
-        if(!this._isForward) {
-		    this._attendees[ZmCalBaseItem.PERSON] = AjxVector.fromArray(attendees);
-            this._attInputField[ZmCalBaseItem.PERSON] = this._attendeesInputField;
-            this._fwdApptOrigAttendees = [];
-        }else {
-            this._attendees[ZmCalBaseItem.PERSON] = new AjxVector();
-            this._attInputField[ZmCalBaseItem.PERSON] = this._forwardToField;
-            this._fwdApptOrigAttendees = attendees;
+        if(this._isForward) {
+        	this._attInputField[ZmCalBaseItem.FORWARD] = this._forwardToField;
         }
-	}else {
+    	this._attendees[ZmCalBaseItem.PERSON] = AjxVector.fromArray(attendees);
+    	this._attInputField[ZmCalBaseItem.PERSON] = this._attendeesInputField;
+    	this._fwdApptOrigAttendees = [];
+	} else {
         if (this.GROUP_CALENDAR_ENABLED) {
             this._attendeesInputField.clear();
             this._optAttendeesInputField.clear();
@@ -736,8 +731,7 @@ function(width) {
 
     if (this.GROUP_CALENDAR_ENABLED) {
 		// create without saving in this._attInputField (will overwrite attendee input)
-		this._forwardToField = this._createInputField("_to_control");
-		this._forwardToField.getInputElement()._attType = ZmCalBaseItem.PERSON;
+		this._forwardToField = this._createInputField("_to_control",ZmCalBaseItem.FORWARD);
     }
 
 	// timezone DwtSelect
@@ -1296,7 +1290,7 @@ function() {
 		this._setAutocompleteHandler(aclv, ZmCalBaseItem.PERSON);
 		this._setAutocompleteHandler(aclv, ZmCalBaseItem.OPTIONAL_PERSON);
         if (this._forwardToField) {
-			this._setAutocompleteHandler(aclv, ZmCalBaseItem.PERSON, this._forwardToField);
+			this._setAutocompleteHandler(aclv, ZmCalBaseItem.FORWARD, this._forwardToField);
         }
 	}
 
@@ -1535,7 +1529,7 @@ function(type, attribs){
 
            //TODO: Detailed Recurrence, Repeat support
            vals.push(this._repeatSelect.getValue());        //Recurrence    
-           if(this._isForward) {
+           if(this._isForward && !attribs.excludeAttendees) {
                vals.push(this._forwardToField.getValue()); //ForwardTo
            }
            if(this.identitySelect){
@@ -1702,14 +1696,19 @@ function(type, useException) {
 
     var attendees;
 
-    if(type == ZmCalBaseItem.OPTIONAL_PERSON || type == ZmCalBaseItem.PERSON) {
+    if(type == ZmCalBaseItem.OPTIONAL_PERSON || type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.FORWARD) {
         attendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.PERSON].getValue());
         this.setAttendeesRole(attendees, ZmCalItem.ROLE_REQUIRED);
+        
         var optionalAttendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].getValue(), true);
         this.setAttendeesRole(optionalAttendees, ZmCalItem.ROLE_OPTIONAL);
+        
+        var forwardAttendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.FORWARD].getValue(), false);
+        this.setAttendeesRole(forwardAttendees, ZmCalItem.ROLE_REQUIRED);
 
         //merge optional & required attendees to update parent controller
         attendees.addList(optionalAttendees);
+        attendees.addList(forwardAttendees);
         type = ZmCalBaseItem.PERSON;
     }else {
         var value = this._attInputField[type].getValue();        
@@ -1807,6 +1806,9 @@ function(attendees, type) {
 
 ZmApptEditView.prototype._getAttendeeByName =
 function(type, name) {
+	if(!this._attendees[type]) {
+		return null;
+	}
 	var a = this._attendees[type].getArray();
 	for (var i = 0; i < a.length; i++) {
 		if (a[i].getFullName() == name) {
@@ -1818,6 +1820,9 @@ function(type, name) {
 
 ZmApptEditView.prototype._getAttendeeByItem =
 function(item, type) {
+	if(!this._attendees[type]) {
+		return null;
+	}
 	var attendees = this._attendees[type].getArray();
 	for (var i = 0; i < attendees.length; i++) {
 		var value = (type == ZmCalBaseItem.PERSON) ? attendees[i].getEmail() : attendees[i].getFullName();
@@ -2041,7 +2046,6 @@ function(ev) {
 
 	var el = DwtUiEvent.getTarget(ev);
 	// forward recipient is not an attendee
-	if (el.id == this._forwardToField._inputId) { return; }
 
     var key = DwtKeyEvent.getCharCode(ev);
         this._adjustAddrHeight(el);
