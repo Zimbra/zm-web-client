@@ -77,12 +77,12 @@ ZmAutocompleteListView = function(params) {
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
 	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
-	this._compCallback = params.compCallback;
-	this._keyDownCallback = params.keyDownCallback;
-	this._keyPressCallback = params.keyPressCallback;
-	this._keyUpCallback = params.keyUpCallback;
-	this._enterCallback = params.enterCallback;
     this._options = params.options || {};
+
+	this._callbacks = {};
+	for (var i = 0; i < ZmAutocompleteListView.CALLBACKS.length; i++) {
+		this._setCallbacks(ZmAutocompleteListView.CALLBACKS[i], params);
+	}
 
 	this._isDelim = AjxUtil.arrayAsHash(params.delims || ZmAutocompleteListView.DELIMS);
 	this._isDelimCode = AjxUtil.arrayAsHash(params.delimCodes || ZmAutocompleteListView.DELIM_CODES);
@@ -126,6 +126,21 @@ ZmAutocompleteListView = function(params) {
 ZmAutocompleteListView.prototype = new DwtComposite;
 ZmAutocompleteListView.prototype.constructor = ZmAutocompleteListView;
 
+ZmAutocompleteListView.CB_COMPLETION	= "comp";
+ZmAutocompleteListView.CB_KEYDOWN		= "keyDown";
+ZmAutocompleteListView.CB_KEYPRESS		= "keyPress";
+ZmAutocompleteListView.CB_KEYUP			= "keyUp";
+ZmAutocompleteListView.CB_ENTER			= "enter";
+ZmAutocompleteListView.CB_ADDR_FOUND	= "addrFound";
+ZmAutocompleteListView.CALLBACKS = [
+		ZmAutocompleteListView.CB_COMPLETION,
+		ZmAutocompleteListView.CB_KEYDOWN,
+		ZmAutocompleteListView.CB_KEYPRESS,
+		ZmAutocompleteListView.CB_KEYUP,
+		ZmAutocompleteListView.CB_ENTER,
+		ZmAutocompleteListView.CB_ADDR_FOUND
+];
+
 // map of characters that are completion characters
 ZmAutocompleteListView.DELIMS		= [',', ';', '\n', '\r', '\t'];	// used when list is not showing
 ZmAutocompleteListView.DELIM_CODES	= [188, 59, 186, 3, 13, 9];		// used when list is showing
@@ -157,8 +172,8 @@ function(ev) {
 	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
-	if (aclv && aclv._keyDownCallback) {
-		var cbResult = aclv._keyDownCallback.run(ev, aclv, result);
+	if (aclv) {
+		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYDOWN, element.id, [ev, aclv, result, element]);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 	return result;
@@ -185,8 +200,20 @@ function(ev) {
 	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
-	if (aclv && aclv._keyPressCallback) {
-		var cbResult = aclv._keyPressCallback.run(ev, aclv);
+
+	// check for empty value before input is updated - looking for Delete when field was already empty
+	var value = element && element.value;
+	if (!value) {
+		if (aclv._options.addrBubbles && key == 8) {
+			var addrInput = DwtControl.ALL_BY_ID[element._aifId];
+			if (addrInput) {
+				addrInput.handleDelete();
+			}
+		}
+	}
+
+	if (aclv) {
+		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYPRESS, element.id, [ev, aclv, result, element]);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 
@@ -210,8 +237,8 @@ function(ev) {
 	var result = ZmAutocompleteListView._onKeyUp(ev);
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
-	if (aclv && aclv._keyUpCallback) {
-		var cbResult = aclv._keyUpCallback.run(ev, aclv, result);
+	if (aclv) {
+		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYUP, element.id, [ev, aclv, result, element]);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 	return result;
@@ -293,12 +320,6 @@ function(ev) {
 	}
 	// if the field is empty, clear the list
 	if (!value) {
-		if (aclv._options.addrBubbles && key == 8) {
-			var addrInput = DwtControl.ALL_BY_ID[element._aifId];
-			if (addrInput) {
-				addrInput.handleDelete();
-			}
-		}
 		aclv.reset();
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
@@ -326,8 +347,8 @@ function(ev) {
 			aclv._focusAction.args = [ element ];
 			AjxTimedAction.scheduleAction(aclv._focusAction, 0);
 		}
-		if ((key == 13 || key == 3) && aclv._enterCallback) {
-			var result = aclv._enterCallback.run(ev);
+		if (key == 13 || key == 3) {
+			var result = aclv._runCallbacks(ZmAutocompleteListView.CB_ENTER, element.id, [ev]);
 			return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 		}
 		return ZmAutocompleteListView._echoKey(false, ev);
@@ -338,9 +359,9 @@ function(ev) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 
-	if ((key == 13 || key == 3) && aclv._enterCallback) {
+	if (key == 13 || key == 3) {
 		aclv.reset();
-		var result = aclv._enterCallback.run(ev);
+		var result = aclv._runCallbacks(ZmAutocompleteListView.CB_ENTER, element.id, [ev]);
 		return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 	}
 
@@ -613,16 +634,19 @@ function(text, start) {
 				c = text.charAt(++i);
 			}
 		}
-		if (this._isDelim[c]) {
+		if (this._isDelim[c] || (c == ' ' && this._options.addrBubbles)) {
 			var chunk = text.substring(start, i);
 			if (this._dataAPI.isComplete && this._dataAPI.isComplete(chunk)) {
 				DBG.println(AjxDebug.DBG3, "skipping completed chunk: " + chunk);
+				if (this._runCallbacks(ZmAutocompleteListView.CB_ADDR_FOUND, this._element.id, [this, chunk, c])) {
+					return null;
+				}
 				start = i + 1;
 				while (text.charAt(start) == ' ') {	// ignore leading space
 					start++;
 				}
 			} else {
-				return {text: text, str: chunk, start: start, end: i, delim: true};
+				return {text: text, str: chunk, start: start, end: i, delim: (c != ' ')};
 			}
 		}
 	}
@@ -782,9 +806,7 @@ function(text, match, ev) {
 
 	this.reset();
 	this._hasCompleted = true;
-	if (this._compCallback) {
-		this._compCallback.run(text, el, match, ev);
-	}
+	this._runCallbacks(ZmAutocompleteListView.CB_COMPLETION, el.id, [text, el, match, ev]);
 };
 
 // Updates the element with the currently selected match.
@@ -1285,4 +1307,45 @@ function(textId, expanded) {
 	if (textCtrl) {
 		textCtrl.setText(expanded ? ZmMsg.collapse : ZmMsg.expand);
 	}
+};
+
+ZmAutocompleteListView.prototype._setCallbacks =
+function(type, params) {
+
+	var cbKey = type + "Callback";
+	var list = this._callbacks[type] = [];
+	if (params[cbKey]) {
+		list.push({callback:params[cbKey]});
+	}
+};
+
+/**
+ * Adds a callback of the given type. In an input ID is provided, then the callback
+ * will only be run if the event happened in that input.
+ *
+ * @param {constant}	type		autocomplete callback type (ZmAutocompleteListView.CB_*)
+ * @param {AjxCallback}	callback	callback to add
+ * @param {string}		inputId		DOM ID of an input element (optional)
+ */
+ZmAutocompleteListView.prototype.addCallback =
+function(type, callback, inputId) {
+	this._callbacks[type].push({callback:callback, inputId:inputId});
+};
+
+ZmAutocompleteListView.prototype._runCallbacks =
+function(type, inputId, args) {
+
+	var result = null;
+	var list = this._callbacks[type];
+	if (list && list.length) {
+		for (var i = 0; i < list.length; i++) {
+			var cbObj = list[i];
+			if (inputId && cbObj.inputId && (inputId != cbObj.inputId)) { continue; }
+			var r = AjxCallback.prototype.run.apply(cbObj.callback, args);
+			if (r === true || r === false) {
+				result = (result == null) ? r : result && r;
+			}
+		}
+	}
+	return result;
 };
