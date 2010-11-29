@@ -149,7 +149,7 @@ function(calItem, mode) {
 	this._location.setValue(calItem.getLocation());
 	this._setPriority(calItem.priority);
 	this._statusSelect.setSelectedValue(calItem.status);
-	this._pCompleteSelect.setSelectedValue(calItem.pComplete);
+    this._pCompleteSelectInput.setValue(this.formatPercentComplete(calItem.pComplete));
 	this._statusCheckbox.checked = calItem.status == ZmCalendarApp.STATUS_COMP && calItem.pComplete == 100;
 };
 
@@ -202,7 +202,7 @@ function(calItem) {
     }
     
 	calItem.setAllDayEvent(true);
-	calItem.pComplete = this._pCompleteSelect.getValue();
+    calItem.pComplete = this.getpCompleteInputValue();
 	calItem.priority = this._getPriority();
 	calItem.status = this._statusSelect.getValue();
 
@@ -219,11 +219,14 @@ function() {
 
 	if (subj && subj.length) {
 		var endDate = this._endDateField.value;
-		if (endDate.length > 0 &&
-			(!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField)))
+		if (endDate.length > 0 && (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField)))
 		{
 			errorMsg = ZmMsg.errorInvalidDates;
 		}
+        if(Math.round(this.getpCompleteInputValue()) > 100)
+        {
+           errorMsg = ZmMsg.errorInvalidPercentage;
+        }
     } else {
 		errorMsg = ZmMsg.errorMissingSubject;
 	}
@@ -316,6 +319,21 @@ function(flag) {
 	}
 };
 
+ZmTaskEditView.prototype.getpCompleteInputValue = function() {
+  var pValue = this._pCompleteSelectInput.getValue();
+  return Math.round(pValue.replace(/[%]/g,""));  
+};
+
+ZmTaskEditView.prototype.formatPercentComplete = function(pValue) {
+
+   var formatter = new AjxMessageFormat(AjxMsg.percentageString);
+   if(AjxUtil.isString(pValue) && pValue.indexOf("%") != -1) {
+       return formatter.format(Math.round(pValue.replace(/[%]/g,"")));
+   } else {
+       return formatter.format(Math.round(pValue));
+   }
+};
+
 ZmTaskEditView.prototype._createWidgets =
 function(width) {
 	ZmCalItemEditView.prototype._createWidgets.call(this, width);
@@ -342,16 +360,23 @@ function(width) {
 	this._statusSelect.addChangeListener(listener);
 	this._statusSelect.reparentHtmlElement(this._htmlElId + "_status");
 
-	// add percent complete DwtSelect
-	this._pCompleteSelect = new DwtSelect({parent:this});
-    var formatter = new AjxMessageFormat(AjxMsg.percentageString);
-	for (var i = 0; i <= 100; i += ZmTask.PCOMPLETE_INT) {
-		this._pCompleteSelect.addOption((formatter.format(i)), i==0, i);
-	}
-	this._pCompleteSelect.addChangeListener(listener);
-	this._pCompleteSelect.reparentHtmlElement(this._htmlElId + "_complete");
+    var params = {
+        parent: this,
+        parentElement: (this._htmlElId + "_pCompleteSelectInput"),
+        type: DwtInputField.STRING,
+        errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+        validationStyle: DwtInputField.CONTINUAL_VALIDATION
+    };
+    this._pCompleteSelectInput = new DwtInputField(params);
+    var pCompleteInputEl = this._pCompleteSelectInput.getInputElement();
+    Dwt.setSize(pCompleteInputEl, Dwt.DEFAULT, "22px");
+    pCompleteInputEl.onblur = AjxCallback.simpleClosure(this._handleCompleteOnBlur, this, pCompleteInputEl);
 
-    this._hasReminderSupport = Dwt.byId(this._htmlElId + "_reminderCheckbox") != null;
+    var pCompleteButtonListener = new AjxListener(this, this._pCompleteButtonListener);
+    var pCompleteSelectListener = new AjxListener(this, this._pCompleteSelectListener);
+    this._pCompleteButton = ZmTasksApp.createpCompleteButton(this, this._htmlElId + "_pCompleteSelect", pCompleteButtonListener, pCompleteSelectListener);
+
+	this._hasReminderSupport = Dwt.byId(this._htmlElId + "_reminderCheckbox") != null;
 
     if (this._hasReminderSupport) {
         // reminder date DwtButton's
@@ -490,7 +515,7 @@ function(excludeAttendees) {
 	vals.push(this._getPriority());
 	vals.push(this._folderSelect.getValue());
 	vals.push("" + this._statusCheckbox.checked);
-	vals.push(this._pCompleteSelect.getValue());
+	vals.push(this.getpCompleteInputValue());
 	vals.push(this._statusSelect.getValue());
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	if (startDate) vals.push(AjxDateUtil.getServerDateTime(startDate));
@@ -543,7 +568,7 @@ function(isComplete) {
 		? ZmTaskEditView.STATUS_VALUES[1]
 		: ZmTaskEditView.STATUS_VALUES[0];
 	this._statusSelect.setSelectedValue(val);
-	this._pCompleteSelect.setSelected(isComplete ? (this._pCompleteSelect.size()-1) : 0);
+    this._pCompleteSelectInput.setValue(this.formatPercentComplete(isComplete ? 100 : 0));
 };
 
 ZmTaskEditView.prototype._setRemindersEnabled =
@@ -557,6 +582,54 @@ function(isEnabled) {
 };
 
 // Listeners
+ZmTaskEditView.prototype._handleCompleteOnBlur =
+function(inputEl) {
+	var pCompleteString = inputEl.value;
+    if (!pCompleteString) {
+		inputEl.value = this.formatPercentComplete(0);
+		return;
+	}
+    var newVal = this.getpCompleteInputValue();
+    if (newVal == 100) {
+        this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
+        this._statusCheckbox.checked = true;
+    } else if (newVal == 0) {
+        this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
+        this._statusCheckbox.checked = false;
+    } else if ((newVal > 0 || newVal < 100) && (this._statusSelect.getValue() != ZmCalendarApp.STATUS_COMP || this._statusSelect.getValue() != ZmCalendarApp.STATUS_NEED))
+    {
+        this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_INPR);
+        this._statusCheckbox.checked = false;
+    }
+    inputEl.value = this.formatPercentComplete(pCompleteString);
+};
+
+ZmTaskEditView.prototype._pCompleteButtonListener =
+function(ev) {
+	var menu = ev.item.getMenu();
+	ev.item.popup();
+};
+
+ZmTaskEditView.prototype._pCompleteSelectListener =
+function(ev) {
+	if(ev.item && ev.item instanceof DwtMenuItem){
+        var newVal = ev.item.getData("value");
+        this._pCompleteSelectInput.setValue(ev.item.getText());
+
+        if (newVal == 100) {
+			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
+			this._statusCheckbox.checked = true;
+		} else if (newVal == 0) {
+			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
+            this._statusCheckbox.checked = false;
+		} else if ((newVal > 0 || newVal < 100) && (this._statusSelect.getValue() != ZmCalendarApp.STATUS_COMP || this._statusSelect.getValue() != ZmCalendarApp.STATUS_NEED))
+		{
+			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_INPR);
+            this._statusCheckbox.checked = false;
+		}
+        return;
+    }
+};
 
 ZmTaskEditView.prototype._selectListener =
 function(ev) {
@@ -571,19 +644,19 @@ function(ev) {
 
 	if (selObj == this._statusSelect) {
 		if (newVal == ZmCalendarApp.STATUS_COMP) {
-			this._pCompleteSelect.setSelectedValue("100");
+			this._pCompleteSelectInput.setValue(this.formatPercentComplete(100));
 			this._statusCheckbox.checked = true;
 		} else if (newVal == ZmCalendarApp.STATUS_NEED) {
-			this._pCompleteSelect.setSelectedValue("0");
+			this._pCompleteSelectInput.setValue(this.formatPercentComplete(0));
 		} else if (newVal == ZmCalendarApp.STATUS_INPR) {
-			if (this._pCompleteSelect.getValue() == "100") {
-				this._pCompleteSelect.setSelectedValue("0");
+			if (this.getpCompleteInputValue() == "100") {
+				this._pCompleteSelectInput.setValue(this.formatPercentComplete(0));
 			}
 		}
 	} else {
 		if (newVal == 100) {
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
-			this._statusCheckbox.setSelected(true);
+			this._statusCheckbox.checked = true;
 		} else if (newVal == 0) {
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
 		} else if ((oldVal == 0 || oldVal == 100) &&
