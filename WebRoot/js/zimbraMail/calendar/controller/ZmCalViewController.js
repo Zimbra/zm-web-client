@@ -1651,7 +1651,7 @@ function(appt, mode) {
 	} else {
 		var msg = ZmMsg.confirmCancelAppt;
 		if (appt.isRecurring()) {
-			msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? ZmMsg.confirmCancelApptInst :  ZmMsg.confirmCancelApptSeries;
+	    	msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name) :  ZmMsg.confirmCancelApptSeries; 
 		}
 		confirmDialog.popup(msg, cancelNoReplyCallback);
 	}
