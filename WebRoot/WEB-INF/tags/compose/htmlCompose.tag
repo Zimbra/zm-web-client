@@ -51,11 +51,7 @@ var myEditor;
         width: '100%',
         dompath: false, //Turns on the bar at the bottom
         animate: true, //Animates the opening, closing and moving of Editor windows
-        <c:choose> <c:when test="${isHtmlCont}">
         plainText: false,
-        </c:when><c:otherwise>
-        plainText: true,
-        </c:otherwise></c:choose>
         <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
         focusAtStart: true,
         </c:if>
