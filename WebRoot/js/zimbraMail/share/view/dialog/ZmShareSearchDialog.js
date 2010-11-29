@@ -157,6 +157,7 @@ ZmShareSearchDialog.prototype._doGroupSearch = function() {
         jsonObj: {
             GetShareInfoRequest: {
                 _jsns: "urn:zimbraAccount",
+                includeSelf: 0,
                 grantee: { type: "grp" }
             }
         },
@@ -168,19 +169,26 @@ ZmShareSearchDialog.prototype._doGroupSearch = function() {
 };
 
 ZmShareSearchDialog.prototype._doUserSearch = function(emails) {
-    // build request
+    // collect unique email addresses
     emails = emails.split(/\s*[;,]\s*/);
-    var requests = [];
-    var emailMap = {}, requestIdMap = {};
+    var emailMap = {};
     for (var i = 0; i < emails.length; i++) {
         var email = AjxStringUtil.trim(emails[i]);
         if (!email) continue;
+        if (email == appCtxt.get(ZmSetting.USERNAME)) continue;
+        emailMap[email.toLowerCase()] = email;
+    }
 
+    // build request
+    var requests = [], requestIdMap = {};
+    var i = 0;
+    for (var emailId in emailMap) {
         // add request
         requests.push({
             _jsns: "urn:zimbraAccount",
             requestId: i,
-            owner: { by: "name", _content: email }
+            includeSelf: 0,
+            owner: { by: "name", _content: emailMap[emailId] }
         });
 
         // add loading placeholder node
@@ -192,8 +200,9 @@ ZmShareSearchDialog.prototype._doUserSearch = function(emails) {
         this._appendInfoNode(ZmOrganizer.ID_ROOT, loadingId, text);
 
         // remember the placeholder nodes
-        emailMap[email.toLowerCase()] = loadingId;
+        emailMap[emailId] = loadingId;
         requestIdMap[i] = loadingId;
+        i++;
     }
 
     // anything to do?
