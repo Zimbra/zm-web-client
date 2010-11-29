@@ -2026,7 +2026,7 @@ function() {
 	var table = document.getElementById(this._htmlElId + "_table");
 	this._attachmentRow = table.insertRow(-1);
 	var cell = this._attachmentRow.insertCell(-1);
-	cell.colSpan = 7;
+	cell.colSpan = 5;
 
 	this._uploadFormId = Dwt.getNextId();
 	this._attachDivId = Dwt.getNextId();
