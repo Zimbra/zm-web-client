@@ -928,7 +928,7 @@ function(container, html, isTextMsg, isTruncated) {
 ZmMailMsgView.prototype._addTrustedAddrCallback =
 function(addr) {
     this._trustedList.add(addr, null, true);
-    appCtxt.set(ZmSetting.TRUSTED_ADDR_LIST, [this._trustedList.getArray().join(",")])
+    appCtxt.set(ZmSetting.TRUSTED_ADDR_LIST, [this._trustedList.getArray().join(",")]);
 };
 
 ZmMailMsgView.prototype._addTrustedAddrErrorCallback =
@@ -1710,6 +1710,9 @@ function() {
 	this._msg.viewEntireMessage = true;
 
 	var url = ("/h/message?id=" + this._msg.id);
+    if (this._isTrustedSender(this._msg)) {
+        url += '&xim=1';
+    }
 	window.open(appContextPath+url, "_blank");
 };
 
