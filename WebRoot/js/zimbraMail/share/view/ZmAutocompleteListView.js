@@ -173,7 +173,7 @@ function(ev) {
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
 	if (aclv) {
-		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYDOWN, element.id, [ev, aclv, result, element]);
+		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYDOWN, element && element.id, [ev, aclv, result, element]);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 	return result;
@@ -213,7 +213,7 @@ function(ev) {
 	}
 
 	if (aclv) {
-		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYPRESS, element.id, [ev, aclv, result, element]);
+		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYPRESS, element && element.id, [ev, aclv, result, element]);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 
@@ -238,7 +238,7 @@ function(ev) {
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
 	if (aclv) {
-		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYUP, element.id, [ev, aclv, result, element]);
+		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYUP, element && element.id, [ev, aclv, result, element]);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 	return result;
@@ -348,7 +348,7 @@ function(ev) {
 			AjxTimedAction.scheduleAction(aclv._focusAction, 0);
 		}
 		if (key == 13 || key == 3) {
-			var result = aclv._runCallbacks(ZmAutocompleteListView.CB_ENTER, element.id, [ev]);
+			var result = aclv._runCallbacks(ZmAutocompleteListView.CB_ENTER, element && element.id, [ev]);
 			return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 		}
 		return ZmAutocompleteListView._echoKey(false, ev);
@@ -361,7 +361,7 @@ function(ev) {
 
 	if (key == 13 || key == 3) {
 		aclv.reset();
-		var result = aclv._runCallbacks(ZmAutocompleteListView.CB_ENTER, element.id, [ev]);
+		var result = aclv._runCallbacks(ZmAutocompleteListView.CB_ENTER, element && element.id, [ev]);
 		return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 	}
 
@@ -638,7 +638,7 @@ function(text, start) {
 			var chunk = text.substring(start, i);
 			if (this._dataAPI.isComplete && this._dataAPI.isComplete(chunk)) {
 				DBG.println(AjxDebug.DBG3, "skipping completed chunk: " + chunk);
-				if (this._runCallbacks(ZmAutocompleteListView.CB_ADDR_FOUND, this._element.id, [this, chunk, c])) {
+				if (this._runCallbacks(ZmAutocompleteListView.CB_ADDR_FOUND, this._element && this._element.id, [this, chunk, c])) {
 					return null;
 				}
 				start = i + 1;
@@ -806,7 +806,7 @@ function(text, match, ev) {
 
 	this.reset();
 	this._hasCompleted = true;
-	this._runCallbacks(ZmAutocompleteListView.CB_COMPLETION, el.id, [text, el, match, ev]);
+	this._runCallbacks(ZmAutocompleteListView.CB_COMPLETION, el && el.id, [text, el, match, ev]);
 };
 
 // Updates the element with the currently selected match.
