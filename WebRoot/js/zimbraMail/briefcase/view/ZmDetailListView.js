@@ -496,4 +496,29 @@ function(params) {
 	return ZmBriefcaseBaseView.prototype._getToolTip.call(this, params);
 };
 
+ZmDetailListView.prototype._folderChangeListener =
+function(ev){
+
+    ZmBriefcaseBaseView.prototype._folderChangeListener.call(this, ev);
+
+    var organizers = ev.getDetail("organizers");
+	var organizer = (organizers && organizers.length) ? organizers[0] : ev.source;
+    var currentFolderId = this._controller._folderId;
+
+    var refresh = false;
+    if (ev.event == ZmEvent.E_CREATE) {
+        if(organizer && currentFolderId == organizer.parent.id)
+            refresh = true;
+    }else if(ev.event == ZmEvent.E_MODIFY) {
+        var fields = ev.getDetail("fields");        
+        if( fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_COLOR] )
+            refresh = true;
+    }
+    
+    if(refresh) {
+        appCtxt.getApp(ZmApp.BRIEFCASE).search({folderId: currentFolderId});
+    }
+        
+};
+
 
