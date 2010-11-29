@@ -623,6 +623,7 @@ ZmTaskEditView.prototype._setEmailReminderControls = function() {
         this._reminderEmailCheckbox.setEnabled(false);
         this._reminderDeviceEmailCheckbox.setEnabled(false);
     }
+    this._reminderDeviceEmailCheckbox.setVisible(appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED));
 };
 
 ZmTaskEditView.prototype.adjustReminderValue = function(calItem) {

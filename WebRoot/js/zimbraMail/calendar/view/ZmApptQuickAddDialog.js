@@ -551,11 +551,11 @@ function() {
     var deviceEmailEnabled = Boolean(deviceEmail);
     this._reminderDeviceEmailCheckbox.setEnabled(enabled && deviceEmailEnabled);
     this._reminderDeviceEmailCheckbox.setToolTipContent(deviceEmailEnabled ? deviceEmail : null);
-    
+
     var configureEnabled = !emailEnabled && !deviceEmailEnabled;
     this._reminderConfigure.setVisible(configureEnabled);
     this._reminderEmailCheckbox.setVisible(!configureEnabled);
-    this._reminderDeviceEmailCheckbox.setVisible(!configureEnabled);
+    this._reminderDeviceEmailCheckbox.setVisible((!configureEnabled && appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)));
 };
 
 ZmApptQuickAddDialog.prototype._settingChangeListener =

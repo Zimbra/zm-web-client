@@ -1305,7 +1305,7 @@ function() {
 
     var configureEnabled = !emailEnabled && !deviceEmailEnabled;
     this._reminderEmailCheckbox.setVisible(!configureEnabled);
-    this._reminderDeviceEmailCheckbox.setVisible(!configureEnabled);
+    this._reminderDeviceEmailCheckbox.setVisible((!configureEnabled && appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)));
 };
 
 ZmCalItemEditView.__getReminderCheckboxText = function(pattern, email) {
