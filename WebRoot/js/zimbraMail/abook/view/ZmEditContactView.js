@@ -1082,7 +1082,7 @@ ZmEditContactViewImage.prototype.toString = function() {
 
 // Constants
 
-ZmEditContactViewImage.NO_IMAGE_URL = appContextPath + "/img/large/ImgPerson_48.gif";
+ZmEditContactViewImage.NO_IMAGE_URL = appContextPath + "/img/large/ImgPerson_48.png";
 ZmEditContactViewImage.IMAGE_URL = "/service/content/proxy?aid=@aid@";
 
 // Public methods
