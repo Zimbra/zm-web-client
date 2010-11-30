@@ -892,6 +892,7 @@ function() {
         sd.setTime(sd.getTime() + (offset1 - offset2)*60*1000);
         ed.setTime(ed.getTime() + (offset1 - offset2)*60*1000);
         this.setTimezone(localTZ);
+        this.setEndTimezone(localTZ);
     }
 };
 
@@ -1071,12 +1072,18 @@ function(message, viewMode) {
 	this.endsInUTC = end && start ? end.charAt(start.length-1) == "Z" : null;
 
 	// record timezone
+    var timezone;
 	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || viewMode == ZmCalItem.MODE_DELETE_INSTANCE || viewMode == ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE) {
-		this.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+        timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+		this.setTimezone(timezone);
+		this.setEndTimezone(timezone);
 	}
 	else {
 		var serverId = !this.startsInUTC && message.invite.getServerStartTimeTz();
-		this.setTimezone(serverId || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+        timezone = serverId || AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+		this.setTimezone(timezone);
+        var endServerId = !this.endsInUTC && message.invite.getServerEndTimeTz();
+		this.setEndTimezone(endServerId || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 		if(!this.startsInUTC && message.invite.getServerEndTimeTz()) this.setEndTimezone(message.invite.getServerEndTimeTz());
 	}
 
@@ -1086,6 +1093,7 @@ function(message, viewMode) {
 			tzrule = AjxTimezone.getRule(tzrule.aliasId) || tzrule;
 		}
 		this.setTimezone(tzrule.serverId);
+		this.setEndTimezone(tzrule.serverId);
 	}
 };
 
