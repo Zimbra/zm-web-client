@@ -575,6 +575,10 @@ function(params, result) {
 
 			var contactListPkg = appCtxt.multiAccounts ? "GetContactsForAllAccounts" : "GetContacts";
 			AjxDispatcher.run(contactListPkg);
+	
+			if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && appCtxt.isOffline) {
+				this.handleOfflineMailTo(location.search);
+			}
 		});
 	this.addPostRenderCallback(callback, 5, 100);
 
@@ -587,10 +591,6 @@ function(params, result) {
 	{
 		this.handleCalendarComponents();
 	}
-
-    if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && appCtxt.isOffline) {
-        this.handleOfflineMailTo(location.search);
-    }   
 };
 
 /**
