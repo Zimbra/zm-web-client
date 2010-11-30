@@ -981,6 +981,18 @@ function(appt, attId, dlg) {
     }
 };
 
+ZmApptComposeController.prototype.clearInvalidAttendees =
+function() {
+	this._invalidAttendees = [];
+};
+
+ZmApptComposeController.prototype.addInvalidAttendee =
+function(item) {
+	if (AjxUtil.indexOf(this._invalidAttendees, item)==-1) {
+		this._invalidAttendees.push(item);
+	}
+};
+
 ZmApptComposeController.prototype.closeView =
 function() {
 	this._closeView();

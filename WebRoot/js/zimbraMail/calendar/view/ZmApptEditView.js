@@ -1691,9 +1691,9 @@ function(type) {
 ZmApptEditView.prototype._handleAttendeeField =
 function(type, useException) {
 	if (!this._activeInputField) { return; }
-
-	this._controller._invalidAttendees = [];
-
+	if (type != ZmCalBaseItem.LOCATION) {
+		this._controller.clearInvalidAttendees();
+	}
     var attendees;
 
     if(type == ZmCalBaseItem.OPTIONAL_PERSON || type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.FORWARD) {
@@ -1757,8 +1757,8 @@ function(type, value, markAsOptional) {
 		if (attendee) {
             if(markAsOptional) attendee.setParticipantRole(ZmCalItem.ROLE_OPTIONAL);
 			attendees.add(attendee);
-		} else if(type != ZmCalBaseItem.LOCATION){
-			this._controller._invalidAttendees.push(item);
+		} else if (type != ZmCalBaseItem.LOCATION) {
+			this._controller.addInvalidAttendee(item);
 		}
 	}
 
