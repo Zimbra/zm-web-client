@@ -48,8 +48,6 @@ ZmDocsEditApp.launch = function(){
 
     appCtxt.rememberMe = false;
 
-    //window.skin = null;
-
     // Create and initialize settings
     var settings = new ZmSettings();
     appCtxt.setSettings(settings);
