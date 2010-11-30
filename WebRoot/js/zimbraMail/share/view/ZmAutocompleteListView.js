@@ -634,7 +634,7 @@ function(text, start) {
 				c = text.charAt(++i);
 			}
 		}
-		if (this._isDelim[c] || (c == ' ' && this._options.addrBubbles)) {
+		if (this._isDelim[c]) {
 			var chunk = text.substring(start, i);
 			if (this._dataAPI.isComplete && this._dataAPI.isComplete(chunk)) {
 				DBG.println(AjxDebug.DBG3, "skipping completed chunk: " + chunk);
