@@ -869,7 +869,7 @@ function(ev) {
 ZmApptComposeController.prototype._printListener =
 function() {
 	var calItem = this._composeView._apptEditView._calItem;
-	var url = ("/h/printappointments?id=" + calItem.invId + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+	var url = ("/h/printappointments?id=" + calItem.invId + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT)); //bug:53493
 	window.open(appContextPath+url, "_blank");
 };
 
@@ -979,6 +979,18 @@ function(appt, attId, dlg) {
     }else{
         this._sendListener();
     }
+};
+
+ZmApptComposeController.prototype.clearInvalidAttendees =
+function() {
+	this._invalidAttendees = [];
+};
+
+ZmApptComposeController.prototype.addInvalidAttendee =
+function(item) {
+	if (AjxUtil.indexOf(this._invalidAttendees, item)==-1) {
+		this._invalidAttendees.push(item);
+	}
 };
 
 ZmApptComposeController.prototype.closeView =
