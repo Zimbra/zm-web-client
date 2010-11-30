@@ -277,7 +277,7 @@ function(parent, num) {
         parent.getOp(ZmOperation.RESTORE_VERSION).setVisible(isRevision);
         parent.enable(ZmOperation.RESTORE_VERSION, versionEnabled && !isHightestVersion);
         parent.getOp(ZmOperation.DELETE_VERSION).setVisible(isRevision);
-        parent.enable(ZmOperation.DELETE_VERSION, versionEnabled);
+        parent.enable(ZmOperation.DELETE_VERSION, versionEnabled && !isHightestVersion);
 
 
     }
