@@ -438,10 +438,15 @@ function(ev) {
 ZmCalendarTreeController.prototype._deleteListener =
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
-	var callback = new AjxCallback(this, this._deleteListener2, [organizer]);
-	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteCalendar, organizer.name);
+    if (organizer.isInTrash()) {
+        var callback = new AjxCallback(this, this._deleteListener2, [organizer]);
+        var message = AjxMessageFormat.format(ZmMsg.confirmDeleteCalendar, organizer.name);
 
-	appCtxt.getConfirmationDialog().popup(message, callback);
+        appCtxt.getConfirmationDialog().popup(message, callback);
+    }
+    else {
+        this._doMove(organizer, appCtxt.getById(ZmFolder.ID_TRASH));
+    }
 };
 
 ZmCalendarTreeController.prototype._deleteListener2 =
