@@ -2948,7 +2948,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmSignatureListView {
-	width: 150px !important;
+/*	width: 180px !important;*/
 	height: 100%;
 	background-color:white;
 }
