@@ -385,6 +385,7 @@ function(bubbleId) {
 ZmAddressInputField.removeBubble =
 function(bubbleId) {
 
+    if (!this.getEnabled()) { return; }
 	var bubble = document.getElementById(bubbleId);
 	var parentId = bubble._aifId || ZmAddressInputField.BUBBLE_OBJ_ID[bubbleId];
 	var addrInput = bubble && DwtControl.ALL_BY_ID[parentId];
@@ -420,6 +421,7 @@ function(bubbleId, email) {
 ZmAddressInputField.expandBubble =
 function(bubbleId, email) {
 
+    if (!this.getEnabled()) { return; }
 	var bubble = document.getElementById(bubbleId);
 	var parentId = bubble._aifId || ZmAddressInputField.BUBBLE_OBJ_ID[bubbleId];
 	var addrInput = bubble && DwtControl.ALL_BY_ID[parentId];
