@@ -1224,6 +1224,12 @@ function() {
 	var isEnabled = !isRemote || cal.hasPrivateAccess();
 
     this._controller.enablePrivateOption(isEnabled);
+
+    if(this._schedulerOpened) {
+        var organizer = this._isProposeTime ? this.getCalItemOrganizer() : this.getOrganizer();
+        this._scheduleView.update(this._dateInfo, organizer, this._attendees);
+        this._scheduleView.updateFreeBusy();
+    }
 };
 
 ZmApptEditView.prototype.setSchedulerVisibility =
