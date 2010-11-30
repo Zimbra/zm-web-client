@@ -427,6 +427,7 @@
 		var department	= contact.getAttr(ZmContact.F_department);
 		var fullname	= contact.getFullName();
 		var accountName = appCtxt.multiAccounts && contact.account && contact.account.getDisplayName();
+		var imgClassName = contact.isGroup() ? "GroupPerson_48" : "Person_48"; 
 	$>
 	<table border=0 cellspacing=2 cellpadding=2 width=100% class='contactHeaderTable <$= data.contactHdrClass $>'>
 		<tr>
@@ -439,7 +440,7 @@
 				<$ } $>
 				 border=0></td>
 			<$ } else { $>
-				<td valign=bottom width=48 rowspan=2><$= AjxImg.getImageHtml("Person_48") $></td>
+				<td valign=bottom width=48 rowspan=2><$= AjxImg.getImageHtml(imgClassName) $></td>
 			<$ } $>
 			<td id='${id}_tags' align='right' colspan=2></td>
 		</tr>
