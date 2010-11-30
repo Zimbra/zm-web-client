@@ -1781,6 +1781,12 @@ function(name) {
 
 ZmComposeView.prototype._acCompHandler =
 function(text, el, match) {
+	
+	if (this._useAcAddrBubbles) {
+		this._resetBodySize(); // body size might change due to change in size of address field (due to new bubbles).
+		return;
+	}
+
 	this._adjustAddrHeight(el);
 };
 
