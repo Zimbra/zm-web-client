@@ -656,6 +656,11 @@ function() {
 	}
 };
 
+ZmFreeBusySchedulerView.prototype.updateFreeBusy =
+function() {
+    this._updateFreeBusy();    
+};
+
 ZmFreeBusySchedulerView.prototype._updateFreeBusy =
 function() {
 	// update the full date field
@@ -778,6 +783,8 @@ function(organizer, attendees) {
         }
     }
 
+    this._setAttendee(this._organizerIndex, organizer, ZmCalBaseItem.PERSON, true);
+
     if(emails.length > 0) {
 	    // make sure there's always an empty slot
 	    this._emptyRowIndex = this._addAttendeeRow(false, null, false, null, true, false);
@@ -803,6 +810,11 @@ function(index, attendee, type, isOrganizer) {
 		this._setAttendeeToolTip(sched, attendee, type);
 	}
 
+    var nameDiv = document.getElementById(sched.dwtNameId);
+    if(isOrganizer && nameDiv) {
+        nameDiv.innerHTML = '<div class="ZmSchedulerInputDisabled">' + attendee.getAttendeeText(type, true) + '</div>';
+    }
+
 	var select = sched.selectObj;
     var role = attendee.getParticipantRole() || ZmCalItem.ROLE_REQUIRED;
 
@@ -818,10 +830,12 @@ function(index, attendee, type, isOrganizer) {
     
 	var email = attendee.getEmail();
 	if (email instanceof Array) {
+        sched.uid = email[0];
 		for (var i in email) {
 			this._emailToIdx[email[i]] = index;
 		}
 	} else {
+        sched.uid = email;
 		this._emailToIdx[email] = index;
 	}
 
