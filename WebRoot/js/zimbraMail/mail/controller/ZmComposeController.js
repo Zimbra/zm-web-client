@@ -1188,7 +1188,7 @@ function(mode) {
 
 	var cv = this._composeView;
 	var dirty = cv.isDirty();
-	if (dirty || this._action == ZmOperation.DRAFT) {
+	if (!AjxUtil.isEmpty(this._getBodyContent())) {
 		if (!this._formatWarningDialog) {
 			this._formatWarningDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 		}
