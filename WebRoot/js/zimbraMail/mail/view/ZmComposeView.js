@@ -856,13 +856,30 @@ ZmComposeView.prototype.setAddress =
 function(type, addr) {
 
 	addr = addr || "";
-	if (addr instanceof AjxEmailAddress)
-		addr = addr.getAddress();
-	if (addr.length && !this._using[type]) {
+
+	var addrStr = addr.isAjxEmailAddress ? addr.getAddress() : addr;
+	if (this._useAcAddrBubbles) {
+		var addrInput = this._addrInputField[type];
+		if (!addrStr) {
+			addrInput.clear();
+		}
+		else {
+			if (addr.isAjxEmailAddress) {
+				addrInput.add(addrStr, {isDL: addr.isGroup && addr.canExpand, email: addrStr});
+			}
+			else {
+				this._setAddrFieldValue(type, addrStr);
+			}
+		}
+	}
+	else {
+		this._setAddrFieldValue(type, addrStr);
+	}
+
+	if (addrStr.length && !this._using[type]) {
 		this._using[type] = true;
 		this._showAddressField(type, true);
 	}
-	this._setAddrFieldValue(type, addr);
 
 	// Use a timed action so that first time through, addr textarea
 	// has been sized by browser based on content before we try to
@@ -1889,17 +1906,16 @@ function(action, type, override) {
 		// this._msg changes after a draft is saved.
 		if (!this._addressesMsg.isSent) {
 			var addrVec = this._addressesMsg.getReplyAddresses(action, used);
-			var addr = this._getAddrString(addrVec);
+			this._addAddresses(AjxEmailAddress.TO, addrVec, used);
 			if (action == ZmOperation.REPLY_ALL) {
 				for (var i = 0, len = addrVec.size(); i < len; i++) {
 					var a = addrVec.get(i).address;
 					used[a] = true;
 				}
 			}
-			this.setAddress(AjxEmailAddress.TO, addr);
 		} else if (action == ZmOperation.REPLY) {
 			var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
-			this.setAddress(AjxEmailAddress.TO, this._getAddrString(toAddrs));
+			this._addAddresses(AjxEmailAddress.TO, toAddrs);
 		}
 
 		// reply to all senders if reply all (includes To: and Cc:)
@@ -1911,21 +1927,38 @@ function(action, type, override) {
 			var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
 			if (this._addressesMsg.isSent) {
 				// sent msg replicates To: and Cc: (minus duplicates)
-				this.setAddress(AjxEmailAddress.TO, this._getAddrString(toAddrs, used));
+				this._addAddresses(AjxEmailAddress.TO, toAddrs, used);
 			} else {
 				addrs.addList(toAddrs);
 			}
-			this.setAddress(AjxEmailAddress.CC, this._getAddrString(addrs, used));
+			this._addAddresses(AjxEmailAddress.CC, addrs, used);
 		}
 	} else if (action == ZmOperation.DRAFT || action == ZmOperation.SHARE) {
 		for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 			var addrs = this._msg.getAddresses(ZmMailMsg.COMPOSE_ADDRS[i]);
-			this.setAddress(ZmMailMsg.COMPOSE_ADDRS[i], addrs.getArray().join(AjxEmailAddress.SEPARATOR));
+			this._addAddresses(ZmMailMsg.COMPOSE_ADDRS[i], addrs);
 		}
 	} else if(action == ZmOperation.DECLINE_PROPOSAL) {
         var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.FROM);
-        this.setAddress(AjxEmailAddress.TO, this._getAddrString(toAddrs));
+		this._addAddresses(AjxEmailAddress.TO, toAddrs);
     }
+};
+
+// if we're using address bubbles, we need to add each address separately in case it's a DL
+ZmComposeView.prototype._addAddresses =
+function(type, addrVec, used) {
+
+	if (this._useAcAddrBubbles) {
+		var addrs = addrVec && addrVec.getArray();
+		if (addrs && addrs.length) {
+			for (var i = 0, len = addrs.length; i < len; i++) {
+				this.setAddress(type, addrs[i]);
+			}
+		}
+	}
+	else {
+		this.setAddress(type, this._getAddrString(addrVec, used));
+	}
 };
 
 ZmComposeView.prototype._setObo =
