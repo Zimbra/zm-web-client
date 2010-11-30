@@ -1018,6 +1018,9 @@ function(ev) {
 	var cal = menu.getItem(0);
 	cal.setDate(calDate, true);
 	ev.item.popup();
+    if (AjxEnv.isIE) {
+        menu.getHtmlElement().style.width = "180px";
+    }        
 };
 
 ZmCalItemEditView.prototype._reminderButtonListener =
