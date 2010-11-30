@@ -226,18 +226,22 @@ function(parent, num) {
     var isHightestVersion = item && item.isRevision && ( item.parent.version == item.version );
 	
 	parent.enable([ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isMailEnabled && isItemSelected && !isMultiFolder && !isFolderSelected));
-	parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected && !isRevision));
 	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected && !isRevision));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 	parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared && !isRevision));
-    parent.enable(ZmOperation.RENAME_FILE, num ==1 && !isFolderSelected && !isReadOnly && !isRevision);
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
 
     var firstItem = items && items[0];
     var isWebDoc = firstItem && !firstItem.isFolder && firstItem.isWebDoc();
     var isLocked = firstItem && !firstItem.isFolder && firstItem.locked;
     var isLockOwner = isLocked && (item.lockUser == appCtxt.getActiveAccount().name);
+
+    //Delete Operation
+    parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected && !isRevision && (!isLocked || isLockOwner || isAdmin)));
+
+    //Rename Operation
+    parent.enable(ZmOperation.RENAME_FILE, ( num ==1 && !isFolderSelected && !isReadOnly && !isRevision && (!isLocked || isLockOwner || isAdmin) ));
 
     //Download - Files
     parent.enable(ZmOperation.SAVE_FILE, isItemSelected && firstItem.isRealFile() && num == 1);
@@ -264,8 +268,9 @@ function(parent, num) {
         parent.enable(ZmOperation.CHECKOUT, checkoutEnabled && num == 1);
 
         //Discard Checkout
-        var discardCheckoutEnabled = (num == 1) && isLocked && !isRevision && (isAdmin || isLockOwner || !isShared);
+        var discardCheckoutEnabled = (num == 1) && isLocked && !isRevision;
         parent.getOp(ZmOperation.DISCARD_CHECKOUT).setVisible(discardCheckoutEnabled);
+        parent.enable(ZmOperation.DISCARD_CHECKOUT, discardCheckoutEnabled && (isAdmin || isLockOwner || !isShared));
 
         //Versioning
         var versionEnabled = (!isReadOnly && num == 1 && isRevision);
