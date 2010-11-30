@@ -1013,6 +1013,10 @@ function(result) {
         this.message.rev = result.rev;
         this.message.ms = result.ms;
     }
+
+    if(this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE && !this.isException) {
+        this.isException = true;
+    }
 };
 
 /**
@@ -1306,6 +1310,7 @@ function(attachmentId, callback, errorCallback, notifyList) {
 		needsExceptionId = true;
 	}
 	else if (this.viewMode == ZmCalItem.MODE_EDIT ||
+			 this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || 
 			 this.viewMode == ZmCalItem.MODE_EDIT_SERIES)
 	{
 		this._addInviteAndCompNum(soapDoc);
