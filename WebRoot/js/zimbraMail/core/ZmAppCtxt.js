@@ -1552,7 +1552,7 @@ ZmAppCtxt.prototype.getSkinHint =
 function() {
 	if (arguments.length == 0) return "";
 	
-	var cur = skin && skin.hints;
+	var cur = window.skin && window.skin.hints;
 	if (!cur) { return ""; }
 	for (var i = 0; i < arguments.length; i++) {
 		var arg = arguments[i];
