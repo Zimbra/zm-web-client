@@ -318,7 +318,10 @@ function(node, instNode) {
 		var startTime = this.endDate.getTime() - (parseInt(dur));
 		this.startDate = new Date(startTime);
         this.uniqStartTime = this.startDate.getTime();
-	} else if(!node.dur) { //bug: 47394 if no duration then startDate is null
+	} else if(!node.dur && this.endDate) {
+        this.startDate = this.endDate;
+        this.uniqStartTime = this.startDate.getTime();
+    } else if(!node.dur && !this.endDate) { //bug: 47394 if no duration & enddate then startDate is null 
         this.startDate = null;
     }
 
