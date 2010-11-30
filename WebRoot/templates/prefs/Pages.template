@@ -775,38 +775,27 @@ and the container element is replaced with that control.
 	</table>
 </template>
 
-
-
 <template id="prefs.Pages#SignatureSplitView">
-    <table border=0 cellpadding=0 cellspacing=5 width='100%'>
-        <tr>
-            <td style="width:150px;min-width:150px" height='100%' valign='top'>
-				<div id='${id}_SIG_LIST' width='100%' tabindex='40'></div>
-			</td>
+    <table border=0 cellpadding=0 cellspacing=0 width='100%'>
+		<tr>
+			<td>&nbsp;</td>
 			<td>
 				<table border=0 cellpadding=0 cellspacing=0 width="100%">
 					<tr>
-						<td>
-							<table border=0 cellpadding=0 cellspacing=0 width="100%">
-								<tr>
-									<td class="Label"><$=ZmMsg.nameLabel$></td>
-									<td class='ZOptionsField'><input id='${id}_SIG_NAME' tabindex='50' size=30></td>
-									<td width="100%">&nbsp;</td>
-									<td><div id='${id}_SIG_FORMAT' tabIndex='60'></div></td>
-								</tr>
-							</table>
-							<div id='${id}_SIG_EDITOR' tabindex='80'></div>
-							<table border=0 cellpadding=0 cellspacing=0>
-								<tr>
-									<td class="Label"><$=ZmMsg.signatureVcardLabel$></td>
-									<td class='ZOptionsField'><input id='${id}_SIG_VCARD' tabindex='85' size=30></td>
-									<td><div id='${id}_SIG_VCARD_BROWSE' style='padding-right:5px; padding-left:5px;' tabIndex='86'></div></td>
-									<td><div id='${id}_SIG_VCARD_CLEAR' tabIndex='87'></div></td>
-								</tr>
-							</table>
-						</td>
+						<td class="Label"><$=ZmMsg.nameLabel$></td>
+						<td class='ZOptionsField'><input id='${id}_SIG_NAME' tabindex='50' size=30></td>
+						<td width="100%">&nbsp;</td>
+						<td><div id='${id}_SIG_FORMAT' tabIndex='60'></div></td>
 					</tr>
 				</table>
+			</td>
+		</tr>
+		<tr height=150>
+			<td width=180 height='100%' valign='top'>
+				<div id='${id}_SIG_LIST' width='100%' tabindex='40'></div>
+			</td>
+			<td>
+				<div id='${id}_SIG_EDITOR' tabindex='80'></div>
 			</td>
 		</tr>
 		<tr>
@@ -819,7 +808,16 @@ and the container element is replaced with that control.
 					</tr>
 				</table>
 			</td>
-			<td>&nbsp;</td>
+			<td align='right'>
+				<table border=0 cellpadding=0 cellspacing=0>
+					<tr>
+						<td class="Label"><$=ZmMsg.signatureVcardLabel$></td>
+						<td class='ZOptionsField'><input id='${id}_SIG_VCARD' tabindex='85' size=30></td>
+						<td><div id='${id}_SIG_VCARD_BROWSE' style='padding-right:5px; padding-left:5px;' tabIndex='86'></div></td>
+						<td><div id='${id}_SIG_VCARD_CLEAR' tabIndex='87'></div></td>
+					</tr>
+				</table>
+			</td>
 		</tr>
 	</table>
 </template>

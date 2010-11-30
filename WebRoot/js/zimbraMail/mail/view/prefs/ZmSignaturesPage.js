@@ -46,7 +46,7 @@ function() {
 	ZmPreferencesPage.prototype.showMe.call(this);
 
 	// bug fix #41719 - always resize when in multi-account mode.
-	if (appCtxt.multiAccounts && !this._firstTime) {
+	if (!this._firstTime) {
 		this._resetSize();
 		this._firstTime = true;
 	}
