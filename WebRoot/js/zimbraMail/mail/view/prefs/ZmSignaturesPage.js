@@ -64,7 +64,7 @@ function() {
 	var list = [];
 	for (var id in this._signatures) {
 		var signature = this._signatures[id];
-		if (signature._new) {
+		if (signature._new && !this._isInvalidSig(signature, true)) {
 			list.push(signature);
 		}
 	}
@@ -190,31 +190,46 @@ function() {
 
 	this._updateSignature();
 
-	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
 	for (var id in this._signatures) {
-		var signature = this._signatures[id];
-		var hasName = AjxStringUtil._NON_WHITESPACE.test(signature.name);
-		var hasValue = AjxStringUtil._NON_WHITESPACE.test(signature.getValue());
-		var isNameDefault = (this._newNames[signature.name] != null);
-		if (!hasName && !hasValue) {
-			this._deleteSignature(signature);
-		} else if (!hasName || (!hasValue && !isNameDefault)) {
-			this._errorMsg = !hasName ? ZmMsg.signatureNameMissingRequired : ZmMsg.signatureValueMissingRequired;
-			return false;
-		}
-		if (signature._new && hasName && this._nameUsed[signature.name]) {
-			this._errorMsg = AjxMessageFormat.format(ZmMsg.signatureNameDuplicate, signature.name);
-			return false;
-		}
-		var sigValue = signature.value;
-		if (sigValue.length > maxLength) {
-			this._errorMsg = AjxMessageFormat.format((signature.contentType == ZmMimeTable.TEXT_HTML)
-				? ZmMsg.errorHtmlSignatureTooLong
-				: ZmMsg.errorSignatureTooLong, maxLength);
+		var error = this._isInvalidSig(this._signatures[id]);
+		if (error) {
+			this._errorMsg = error;
 			return false;
 		}
 	}
 	return true;
+};
+
+// The 'strict' parameter will make the function return true if a signature is not
+// saveable, even if it can be safely ignored. Without it, the function returns an error
+// only if there's bad user input.
+ZmSignaturesPage.prototype._isInvalidSig =
+function(signature, strict) {
+
+	var hasName = AjxStringUtil._NON_WHITESPACE.test(signature.name);
+	var hasValue = AjxStringUtil._NON_WHITESPACE.test(signature.getValue());
+	var isNameDefault = (this._newNamesHash[signature.name] != null);
+	if (!hasName && !hasValue) {
+		this._deleteSignature(signature);
+		if (strict) {
+			return true;
+		}
+	} else if (!hasName || (!hasValue && !isNameDefault)) {
+		return !hasName ? ZmMsg.signatureNameMissingRequired : ZmMsg.signatureValueMissingRequired;
+	} else if (strict && isNameDefault && !hasValue) {
+		return true;
+	}
+	if (signature._new && hasName && this._nameUsed[signature.name]) {
+		return AjxMessageFormat.format(ZmMsg.signatureNameDuplicate, signature.name);
+	}
+	var sigValue = signature.value;
+	if (sigValue.length > appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH)) {
+		return AjxMessageFormat.format((signature.contentType == ZmMimeTable.TEXT_HTML)
+			? ZmMsg.errorHtmlSignatureTooLong
+			: ZmMsg.errorSignatureTooLong, maxLength);
+	}
+
+	return false;
 };
 
 ZmSignaturesPage.prototype.getErrorMessage =
@@ -675,8 +690,11 @@ ZmSignaturesPage.prototype._calcAutoSignatureNames =
 function(signatures) {
 
 	this._newNames = [];
+	this._newNamesHash = {};
 	for (var i = 1; i <= this._maxEntries; i++) {
-		this._newNames.push(AjxMessageFormat.format(ZmMsg.signatureNewName, i));
+		var sigName = AjxMessageFormat.format(ZmMsg.signatureNewName, i);
+		this._newNames.push(sigName);
+		this._newNamesHash[sigName] = true;
 	}
 };
 
