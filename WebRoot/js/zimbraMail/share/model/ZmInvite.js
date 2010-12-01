@@ -613,6 +613,19 @@ function(compNum, noSpecialUtcCase) {
 };
 
 /**
+ * Gets start date from exception ID.
+ *
+ * @param	{int}	compNum		the component number
+ */
+
+ZmInvite.prototype.getStartDateFromExceptId =
+function(compNum) {
+	var cn = compNum || 0;
+    return AjxDateUtil.parseServerDateTime(this.components[cn] && this.components[cn].exceptId
+		? this.components[cn].exceptId[0].d : null);
+};
+
+/**
  * Gets the server start time timezone.
  * 
  * @param	{int}	compNum		the component number
