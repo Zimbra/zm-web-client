@@ -192,7 +192,9 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		var icon = params.bContained ? "CheckboxChecked" : "CheckboxUnchecked";
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(item, field));
     } else if (field == ZmItem.F_EXPAND) {
-		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));   
+		idx = this._getImageHtml(htmlArr, idx, 
+				this._isExpandable(item) ? (this._expanded[item.id] ? "NodeExpanded" : "NodeCollapsed" )
+						: null, this._getFieldId(item, field));   
 	} else if (field == ZmItem.F_TYPE) {
 		htmlArr[idx++] = AjxImg.getImageHtml(item.getIcon());
 	} else if (field == ZmItem.F_LOCK) {
@@ -305,15 +307,12 @@ function(base, item, params) {
 	}
 };
 
-
-
 ZmDetailListView.prototype.expandItem =
 function(item) {
 	if (item && this._isExpandable(item) && this._revisionView) {
 		this.parent._toggle(item);
 	}
 };
-
 
 ZmDetailListView.prototype.expand =
 function(item, revisions){
