@@ -682,6 +682,9 @@ function(params) {
             case ZmSetting.LICENSE_NOT_INSTALLED:
                 licenseMsg = ZmMsg.licenseNotInstalled;
                 break;
+            case ZmSetting.LICENSE_NOT_ACTIVATED:
+                licenseMsg = ZmMsg.licenseNotActivated;
+                break;
             default:
                 licenseMsg = ZmMsg.licenseExpired;
         }
