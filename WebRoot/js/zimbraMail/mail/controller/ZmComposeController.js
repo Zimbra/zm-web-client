@@ -606,7 +606,8 @@ function() {
 
 ZmComposeController.prototype._identityChangeListener =
 function(setSignature, event) {
-	var signatureId = this._composeView.getIdentity().signature;
+
+	var signatureId = this._composeView._getSignatureIdForAction(null, this._action);
 	var resetBody = this._composeView.isDirty();
 
 	// don't do anything if signature is same
@@ -825,9 +826,6 @@ function(params) {
 	var identityCollection = appCtxt.getIdentityCollection(account);
 	var identity = (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
 	params.identity = identity;
-	if (identity) {
-		this._currentSignatureId = identity.signature;
-	}
 
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity);
 	this._curIncOptions = null;
@@ -838,6 +836,10 @@ function(params) {
 		cv = this._composeView;
 	} else {
 		cv.setComposeMode(this._composeMode);
+	}
+
+	if (identity) {
+		this._currentSignatureId = cv._getSignatureIdForAction(identity, action);
 	}
 
 	this._initializeToolBar();
@@ -998,9 +1000,9 @@ function(account) {
 ZmComposeController.prototype._createOptionsMenu =
 function(action) {
 
-	var isReply = (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
-	var isCalReply = (action == ZmOperation.CAL_REPLY || action == ZmOperation.CAL_REPLY_ALL);
-	var isForward = (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE);
+	var isReply = this._composeView._isReply(action);
+	var isCalReply = this._composeView._isCalReply(action);
+	var isForward = this._composeView._isForward(action);
 	var list = [];
 	if (isReply || isCalReply) {
 		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.SEP);
