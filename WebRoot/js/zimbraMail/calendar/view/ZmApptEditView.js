@@ -440,7 +440,7 @@ function() {
 
 ZmApptEditView.prototype.updateToolbarOps =
 function(){
-    this._controller.updateToolbarOps((this.isAttendeesEmpty() || !this.isOrganizer()) ? ZmCalItemComposeController.APPT_MODE : ZmCalItemComposeController.MEETING_MODE);
+    this._controller.updateToolbarOps((this.isAttendeesEmpty() || !this.isOrganizer()) ? ZmCalItemComposeController.APPT_MODE : ZmCalItemComposeController.MEETING_MODE, this._calItem);
 };
 
 ZmApptEditView.prototype.isAttendeesEmpty =
@@ -564,7 +564,6 @@ function(calItem, mode) {
 
 	if (this.GROUP_CALENDAR_ENABLED) {
         this._controller.setRequestResponses((attendees && attendees.length) ? calItem.shouldRsvp() : true);
-        this._controller.setNotificationMail(true);
 
 		this._isOrganizer = calItem.isOrganizer();
 		//this._attInputField[ZmCalBaseItem.PERSON].setEnabled(calItem.isOrganizer() || this._isForward);

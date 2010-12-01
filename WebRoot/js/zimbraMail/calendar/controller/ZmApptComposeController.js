@@ -144,7 +144,7 @@ function(attId) {
 
         if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
             appt.setRsvp(this._requestResponses.getChecked());
-            appt.setMailNotificationOption(this._sendNotificationMail.getChecked());
+            appt.setMailNotificationOption(true);
         }
 
         if(appt.isProposeTime && !appt.isOrganizer()) {
@@ -258,6 +258,47 @@ function(attId) {
 	return false;
 };
 
+ZmApptComposeController.prototype.updateToolbarOps =
+function(mode, appt) {
+
+    var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
+    var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
+
+    if(mode == ZmCalItemComposeController.APPT_MODE) {
+        saveButton.setText(ZmMsg.saveClose);
+        saveButton.setImage("Save");
+        saveButton.setVisible(true);
+        sendButton.setVisible(false);
+
+        this._requestResponses.setEnabled(false);
+        this.setRequestResponses(false);
+
+    }else {
+        sendButton.setVisible(true);
+        saveButton.setVisible(true);
+        saveButton.setText(ZmMsg.save);
+        saveButton.setImage("Save");
+
+        //change cancel button's text/icon to close
+        var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
+        cancelButton.setText(ZmMsg.close);
+		cancelButton.setImage("Close");
+
+        this._requestResponses.setEnabled(true);
+        this.setRequestResponses(appt && appt.hasAttendees() ? appt.shouldRsvp() : true);
+
+    }
+
+    if((this._mode == ZmCalItem.MODE_PROPOSE_TIME) || ZmCalItem.FORWARD_MAPPING[this._mode]) {
+        sendButton.setVisible(true);
+        saveButton.setVisible(false);
+        
+        this._requestResponses.setEnabled(false);
+        this.setRequestResponses(false);
+    }
+
+};
+
 ZmApptComposeController.prototype._initToolbar =
 function(mode) {
 
@@ -349,10 +390,6 @@ function() {
     mi.setText(ZmMsg.requestResponses);
     mi.setChecked(true, true);
 
-    mi = this._sendNotificationMail = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
-    mi.setText(ZmMsg.sendNotificationMail);
-    mi.setChecked(true, true);
-
     mi = this._markAsPrivate = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
     mi.setText(ZmMsg.markApptPrivate);
     mi.setChecked(false, true);
@@ -368,11 +405,6 @@ function(requestResponses) {
 ZmApptComposeController.prototype.getRequestResponses =
 function() {
    return this._requestResponses.getChecked();
-};
-
-ZmApptComposeController.prototype.setNotificationMail =
-function(sendNotificationMail) {
-   this._sendNotificationMail.setChecked(sendNotificationMail);
 };
 
 ZmApptComposeController.prototype.markApptAsPrivate =
@@ -897,7 +929,7 @@ function(appt, attId, dlg) {
 
 ZmApptComposeController.prototype._saveCalItemFoRealz =
 function(calItem, attId, notifyList, force){
-    force = force || ( this._action == ZmCalItemComposeController.SEND );
+    force = force || ( this._action == ZmCalItemComposeController.SEND );    
     ZmCalItemComposeController.prototype._saveCalItemFoRealz.call(this, calItem, attId, notifyList, force);    
 };
 
