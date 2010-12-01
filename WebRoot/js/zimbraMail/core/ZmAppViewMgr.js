@@ -1037,11 +1037,6 @@ function(view, force, isNewView) {
 
 ZmAppViewMgr.prototype._onShowView =
 function(view, force, isNewView) {
-	if (!appCtxt.isChildWindow) {
-		var actionController = appCtxt.getActionController();
-		if (actionController)
-			actionController.dismiss();
-	}
 	//bug:47048 removed param {noChildWindow:true}
 	appCtxt.notifyZimlets("onShowView", [view, isNewView]);
 };
