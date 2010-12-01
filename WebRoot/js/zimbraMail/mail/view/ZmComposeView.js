@@ -1364,7 +1364,7 @@ function(content, oldSignatureId, account) {
 
 			//Replace Signature
 			if (replaceRe.test(content)) {
-				content = content.replace(replaceRe, newSig);
+				content = content.replace(replaceRe, newSig || "\n");
 				done = true;
 			}
 		}
@@ -1597,6 +1597,8 @@ function() {
 
 ZmComposeView.prototype._getSignatureIdForAction =
 function(identity, action) {
+
+	identity = identity || this.getIdentity();
 	action = action || this._action;
 	var field = (this._isReply(action) || this._isForward(action)) ? ZmIdentity.REPLY_SIGNATURE : ZmIdentity.SIGNATURE;
 	return identity && identity.getField(field);
@@ -1709,6 +1711,14 @@ function(action) {
 	action = action || this._action;
 	return (action == ZmOperation.REPLY ||
 			action == ZmOperation.REPLY_ALL ||
+			this._isInviteReply(action));
+};
+
+ZmComposeView.prototype._isCalReply =
+function(action) {
+	action = action || this._action;
+	return (action == ZmOperation.CAL_REPLY ||
+			action == ZmOperation.CAL_REPLY_ALL ||
 			this._isInviteReply(action));
 };
 
