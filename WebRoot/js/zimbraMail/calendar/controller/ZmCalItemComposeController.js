@@ -308,35 +308,6 @@ function(mode) {
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this.viewId], {waitUntilLoaded:true});
 };
 
-ZmCalItemComposeController.prototype.updateToolbarOps =
-function(mode) {
-
-    var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
-    var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
-
-    if(mode == ZmCalItemComposeController.APPT_MODE) {
-        saveButton.setText(ZmMsg.saveClose);
-        saveButton.setImage("Save");
-        saveButton.setVisible(true);
-        sendButton.setVisible(false);
-    }else {
-        sendButton.setVisible(true);
-        saveButton.setVisible(true);
-        saveButton.setText(ZmMsg.save);
-        saveButton.setImage("Save");
-
-        //change cancel button's text/icon to close
-        var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
-        cancelButton.setText(ZmMsg.close);
-		cancelButton.setImage("Close");
-    }
-
-    if((this._mode == ZmCalItem.MODE_PROPOSE_TIME) || ZmCalItem.FORWARD_MAPPING[this._mode]) {
-        sendButton.setVisible(true);
-        saveButton.setVisible(false);
-    }
-        
-};
 
 ZmCalItemComposeController.prototype._createToolBar =
 function() {
