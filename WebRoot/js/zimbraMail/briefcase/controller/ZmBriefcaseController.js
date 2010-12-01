@@ -259,10 +259,10 @@ function(parent, num) {
     var isLockOwner = isLocked && (item.lockUser == appCtxt.getActiveAccount().name);
 
     //Delete Operation
-    parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected && !isRevision && (!isLocked || isLockOwner || isAdmin)));
+    parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected && !isRevision && (isLocked ? isLockOwner : true)));
 
     //Rename Operation
-    parent.enable(ZmOperation.RENAME_FILE, ( num ==1 && !isFolderSelected && !isReadOnly && !isRevision && (!isLocked || isLockOwner || isAdmin) ));
+    parent.enable(ZmOperation.RENAME_FILE, ( num ==1 && !isFolderSelected && !isReadOnly && !isRevision && (isLocked ? isLockOwner : true) ));
 
     //Download - Files
     parent.enable(ZmOperation.SAVE_FILE, isItemSelected && firstItem.isRealFile() && num == 1);
