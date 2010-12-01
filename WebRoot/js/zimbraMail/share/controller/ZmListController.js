@@ -882,7 +882,7 @@ function(ev) {
  * fine-grained control on what's a valid drop target. If you enter via an item and then drag to
  * the header, it will appear to be valid.
  * 
- * @private
+ * @protected
  */
 ZmListController.prototype._dropListener =
 function(ev) {

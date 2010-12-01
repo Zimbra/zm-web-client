@@ -121,6 +121,27 @@ ZmBriefcaseController.LIST_VIEW = {};
 ZmBriefcaseController.LIST_VIEW[ZmId.VIEW_BRIEFCASE_DETAIL] =   {image: "GenericDoc", text: ZmMsg.byLatestFile };
 ZmBriefcaseController.LIST_VIEW[ZmId.VIEW_BRIEFCASE_REVISION] = {image: "VersionHistory", text: ZmMsg.byVersionHistory };
 
+/**
+ * The list view as a whole is the drop target, since it's the lowest-level widget. Still, we
+ * need to find out which item got dropped onto, so we get that from the original UI event
+ * (a mouseup). The header is within the list view, but not an item, so it's not a valid drop
+ * target. One drawback of having the list view be the drop target is that we can't exercise
+ * fine-grained control on what's a valid drop target. If you enter via an item and then drag to
+ * the header, it will appear to be valid.
+ * 
+ * @protected
+ */
+ZmBriefcaseController.prototype._dropListener =
+function(ev) {
+	var view = this._listView[this._currentView];
+	var div = view.getTargetItemDiv(ev.uiEvent);
+	var item = view.getItemFromElement(div);
+	if(!item || !item.isRevision) {
+		ZmListController.prototype._dropListener.call(this,ev);
+	} else {
+		ev.doIt = false;
+	}
+}
 
 ZmBriefcaseController.prototype._standardActionMenuOps =
 function() {
