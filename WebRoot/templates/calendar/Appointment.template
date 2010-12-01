@@ -18,8 +18,15 @@
         <table border=0 width=100% style='table-layout:fixed;margin-top: 5px;' id='${id}_table' class='calendar_edit_view_separator'>
             <$= AjxTemplate.expand("#ComposeViewColumns") $>
             <tr id='${id}_invitemsg_container' style='display:none;'>
-                <td id="${id}_invitemsgicon" class='ZmFieldLabelRight'><$= AjxImg.getImageHtml("Information") $></td>
-                <td colspan="3" id="${id}_invitemsg"><!-- Invite message --></td>
+                <td class='ZmFieldLabelRight'>&nbsp;</td>
+                <td colspan="3">
+                    <table border=0>
+                        <tr>
+                            <td id="${id}_invitemsgicon" ><$= AjxImg.getImageHtml("Information") $></td>
+                            <td id="${id}_invitemsg"><!-- Invite message --></td>
+                        </tr>
+                    </table>
+                </td>
             </tr>
             <tr id='${id}_forward_options' style='display:none;'>
                 <td class='ZmFieldLabelRight'><div id='${id}_picker'><$=ZmMsg.toLabel$></div></td>
