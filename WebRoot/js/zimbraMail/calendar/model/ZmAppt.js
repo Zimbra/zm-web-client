@@ -1360,7 +1360,7 @@ function(invites, proposedInvite) {
 			if (invite.isRecurring()) {
 				this.isException = true;
 				this.recurring = this.getRecurrenceFromInvite(invites[0]);
-				this._origStartDate = proposedInvite.getServerStartDate();
+				this._origStartDate = proposedInvite.getStartDateFromExceptId();
 			}
 		}
 	} else {
