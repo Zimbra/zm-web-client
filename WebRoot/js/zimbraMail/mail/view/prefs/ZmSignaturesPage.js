@@ -307,7 +307,7 @@ ZmSignaturesPage.prototype._handleResponsePostSave =
 function() {
 
 	this._newSigId = {};	// clear this to prevent request loop
-	this._resetDeleteButton();
+	this._resetOperations();
 	this._origUsage = this._getUsage();	// form selects and data in identities should be in sync now
 };
 
@@ -624,7 +624,7 @@ function(ev) {
 	if (signature) {
 		this._resetSignature(this._signatures[signature.id]);
 	}
-	this._resetDeleteButton();
+	this._resetOperations();
 };
 
 // Updates name and format of selected sig based on form fields
@@ -759,7 +759,7 @@ function(signature, skipControls, reset, index, skipNotify) {
 		this._resetSignature(signature); // initialize state
 	}
 
-	this._resetAddButton();
+	this._resetOperations();
 
 	return signature;
 };
@@ -847,16 +847,12 @@ function(signature, clear) {
 	}
 };
 
-ZmSignaturesPage.prototype._resetAddButton =
+ZmSignaturesPage.prototype._resetOperations =
 function() {
+
 	if (this._sigAddBtn) {
 		this._sigAddBtn.setEnabled(this._sigList.size() < this._maxEntries);
 	}
-};
-
-ZmSignaturesPage.prototype._resetDeleteButton =
-function() {
-	this._deleteBtn.setEnabled(this._sigList.getSelectionCount() == 1);
 };
 
 ZmSignaturesPage.prototype._setFormat =
@@ -865,7 +861,6 @@ function(isText) {
 	this._selSignature.setContentType(isText ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML);
 	this._resetSize();
 };
-
 
 ZmSignaturesPage.prototype._formatOkCallback =
 function(isText) {
@@ -939,15 +934,18 @@ function(evt) {
 	this._deleteSignature();
 	this._selSignature = null;
 
-	var sel = this._sigList.getList().get(0);
-	if (sel) {
-		this._sigList.setSelection(sel);
+	if (this._sigList.size() > 0) {
+		var sel = this._sigList.getList().get(0);
+		if (sel) {
+			this._sigList.setSelection(sel);
+		}
 	}
 	else {
-		this._sigName.clear();
-		this._sigEditor.setContent("");
+		for (var i = 0; i < this._minEntries; i++) {
+			this._addNewSignature();
+		}
 	}
-	this._resetAddButton();
+	this._resetOperations();
 };
 
 // saving
