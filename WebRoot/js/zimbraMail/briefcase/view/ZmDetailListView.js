@@ -87,9 +87,9 @@ function(ev){
     ZmBriefcaseBaseView.prototype._changeListener.call(this, ev);
 
     if (this._revisionView && ( ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE )) {
-        var item, items = ev.getDetail("items");
+        var items = ev.getDetail("items") ? ev.getDetail("items") : [this._getItemFromEvent(ev)];
         for (var i = 0, len = items.length; i < len; i++) {
-			item = items[i];
+			var item = items[i];
             this.collapse(item, true);
         }
     }
