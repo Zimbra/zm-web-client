@@ -1729,31 +1729,6 @@ function(action) {
 			action == ZmOperation.FORWARD_ATT);
 };
 
-/*
-* Creates an address string from the given vector, excluding any that have
-* already been used.
-*
-* @param addrVec	[AjxVector]		vector of AjxEmailAddress
-* @param used		[Object]		hash of addresses that have been used
-*/
-ZmComposeView.prototype._getAddrString =
-function(addrVec, used) {
-	used = used || {};
-	var a = addrVec.getArray();
-	var addrs = [];
-	for (var i = 0; i < a.length; i++) {
-		var addr = a[i];
-		var email = addr ? addr.getAddress() : null;
-		if (!email) { continue; }
-		email = email.toLowerCase();
-		if (!used[email]) {
-			addrs.push(addr);
-		}
-		used[email] = true;
-	}
-	return addrs.join(AjxEmailAddress.SEPARATOR); // calls implicit toString() on each addr object
-};
-
 // returns the text part given a body part (if body part is HTML, converts it to text)
 ZmComposeView.prototype._getTextPart =
 function(bodyPart, encodeSpace) {
@@ -1954,20 +1929,35 @@ function(action, type, override) {
     }
 };
 
-// if we're using address bubbles, we need to add each address separately in case it's a DL
+// Adds the given addresses to the form. If we're using address bubbles, we need to add each
+// address separately in case it's a DL.
 ZmComposeView.prototype._addAddresses =
 function(type, addrVec, used) {
 
-	if (this._useAcAddrBubbles) {
-		var addrs = addrVec && addrVec.getArray();
-		if (addrs && addrs.length) {
-			for (var i = 0, len = addrs.length; i < len; i++) {
-				this.setAddress(type, addrs[i]);
+	used = used || {};
+	var addrList = [];
+	var addrs = addrVec && addrVec.getArray();
+	if (addrs && addrs.length) {
+		for (var i = 0, len = addrs.length; i < len; i++) {
+			var addr = addrs[i];
+			var email = addr && addr.getAddress();
+			if (!email) { continue; }
+			email = email.toLowerCase();
+			if (!used[email]) {
+				if (this._useAcAddrBubbles) {
+					this.setAddress(type, addr);	// add the bubble now
+				}
+				else {
+					addrList.push(addr);
+				}
 			}
+			used[email] = true;
 		}
-	}
-	else {
-		this.setAddress(type, this._getAddrString(addrVec, used));
+		if (!this._useAcAddrBubbles) {
+			// calls implicit toString() on each addr object
+			var addrStr = addrs.join(AjxEmailAddress.SEPARATOR);
+			this.setAddress(type, addrStr);
+		}
 	}
 };
 
