@@ -94,9 +94,7 @@ function() {
 
 	DwtDialog.prototype.popup.call(this);
 	if (this._focusElement) {
-        setTimeout(function(){
-            appCtxt.getKeyboardMgr().grabFocus(this._focusElement);
-        }, 10);
+		appCtxt.getKeyboardMgr().grabFocus(this._focusElement);	
 	}
 };
 
