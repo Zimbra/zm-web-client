@@ -678,6 +678,7 @@ function(ev) {
 	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		// a msg was moved or deleted, see if this conv's row should remain
 		if (this.list && this.list.search && !this.hasMatchingMsg(this.list.search, true)) {
+            this.moveLocal(ev.item && ev.item.folderId);
 			this._notify(ZmEvent.E_MOVE);
 		}
 	}
