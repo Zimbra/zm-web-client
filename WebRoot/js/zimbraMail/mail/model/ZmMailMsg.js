@@ -2254,7 +2254,7 @@ ZmMailMsg.prototype._setAutoSendTime =
 function(autoSendTime) {
 	ZmMailItem.prototype.setAutoSendTime.call(this, autoSendTime);
 	var conv = this.cid && appCtxt.getById(this.cid);
-	if (conv instanceof ZmConv) {
+	if (Dwt.instanceOf(conv, "ZmConv")) {
 		conv.setAutoSendTime(autoSendTime);
 	}
 };
