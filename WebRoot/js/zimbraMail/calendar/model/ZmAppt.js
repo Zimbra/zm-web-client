@@ -868,6 +868,10 @@ function(soapDoc, inv, comp) {
     }
     draftFlag = draftFlag ? 1 : 0;
 	comp.setAttribute("draft", draftFlag);
+
+    if(!this.isSend && this.hasAttendees()){
+        soapDoc.setMethodAttribute("echo", "1");
+    }
 };
 
 ZmAppt.prototype.setRsvp =

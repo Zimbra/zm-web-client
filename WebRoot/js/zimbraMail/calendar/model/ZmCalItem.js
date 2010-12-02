@@ -2339,10 +2339,22 @@ function(respName, callback, result) {
 	}
 
 	if (response.m != null) {
+        //echo=1 sends back GetMsgResponse, parse it
+        var msgNode = response.m;
+        if(response.m.length > 0){
+            msgNode = response.m[0];
+        }
 		var oldInvId = this.invId;
-		this.invId = response.m.id;
-		if (oldInvId != this.invId)
+		this.invId = msgNode.id;
+		if (AjxUtil.isSpecified(oldInvId) && oldInvId != this.invId){
 			this.message = null;
+        }else if(msgNode){
+            this.message = new ZmMailMsg(msgNode.id);
+            this.message._loadFromDom(msgNode);
+            delete this._validAttachments;
+            this._validAttachments = null;
+            this.getAttachments();
+        }
 	}
 
 	this._messageNode = null;
