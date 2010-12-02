@@ -731,7 +731,7 @@ function(ev, list) {
 };
 
 /**
- * @private
+ * @protected
  */
 ZmListController.prototype._getMoveParams =
 function(dlg) {

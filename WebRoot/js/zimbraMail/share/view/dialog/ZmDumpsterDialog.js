@@ -268,5 +268,6 @@ ZmDumpsterListController.prototype._getMoveParams =
 function(dlg) {	
 	var params = ZmListController.prototype._getMoveParams.call(this, dlg);
 	params.acceptFolderMatch = true;
+	params.showDrafts =	true;
 	return params;
 };
