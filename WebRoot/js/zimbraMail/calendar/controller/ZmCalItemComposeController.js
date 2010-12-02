@@ -51,6 +51,8 @@ ZmCalItemComposeController.MEETING_MODE  = "MEETING";
 ZmCalItemComposeController.prototype.show =
 function(calItem, mode, isDirty) {
 
+	this._setSearchToolbarVisibilityPerSkin(false);
+	
     this._mode = mode;
 	if (!this._toolbar) {
 		this._createToolBar();
@@ -67,6 +69,9 @@ function(calItem, mode, isDirty) {
 
 ZmCalItemComposeController.prototype._preHideCallback =
 function(view, force) {
+
+	this._setSearchToolbarVisibilityPerSkin(true);
+	
 	ZmController.prototype._preHideCallback.call(this);
 	return force ? true : this.popShield();
 };

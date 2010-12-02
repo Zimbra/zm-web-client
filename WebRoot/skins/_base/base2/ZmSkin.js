@@ -63,7 +63,10 @@ ZmSkin.hints = {
 					},
 	fullScreen:     { containers : ["!skin_td_tree", "!skin_td_tree_app_sash"] },
 	
-	allAds :		{ containers: ["skin_tr_top_ad", "skin_td_sidebar_ad", "skin_tr_bottom_ad", "skin_tr_tree_top_ad", "skin_tr_tree_bottom_ad"] }
+	allAds :		{ containers: ["skin_tr_top_ad", "skin_td_sidebar_ad", "skin_tr_bottom_ad", "skin_tr_tree_top_ad", "skin_tr_tree_bottom_ad"] },
+
+	hideSearchInCompose : true
+
 };
 
 

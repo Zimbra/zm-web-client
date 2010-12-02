@@ -176,6 +176,9 @@ function() {
 ZmComposeController.prototype.doAction =
 function(params) {
 
+
+	this._setSearchToolbarVisibilityPerSkin(false);
+
 	// is zdesktop, its possible there are no accounts that support smtp
 	var ac = window.parentAppCtxt || window.appCtxt;
 	if (ac.isOffline && !ac.get(ZmSetting.OFFLINE_COMPOSE_ENABLED)) {
@@ -295,6 +298,9 @@ function() {
 // focus member, and we want to start over each time
 ZmComposeController.prototype._preHideCallback =
 function(view, force) {
+
+	this._setSearchToolbarVisibilityPerSkin(true);
+
 	if (force && this._autoSaveTimer) {
 		this._autoSaveTimer.kill();
 

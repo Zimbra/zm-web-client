@@ -791,3 +791,26 @@ ZmController.prototype.isTransient =
 function(oldView, newView) {
 	return false;
 };
+
+/**
+ * If the skin asks (via hint) to not display the search toolbar in compose view (also compose appt view), we hide or display it based on the visible param.
+ *
+ * @param	{Boolean}	visible		should it be visible now?
+ */
+ZmController.prototype._setSearchToolbarVisibilityPerSkin =
+function(visible) {
+
+	if (!appCtxt.getSkinHint("hideSearchInCompose")) {
+		return;
+	}
+
+	var tb = document.getElementById(ZmId.SEARCH_TOOLBAR);
+
+	if (!tb) {
+		return;
+	}
+
+	tb.style.display = visible ? "block" : "none";
+
+};
+
