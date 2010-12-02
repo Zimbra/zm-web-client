@@ -146,18 +146,22 @@
     var zprint = function(){
         try{
         var idex = 0;
-        var c ="";
+        var c = [];
         while (idex <= zrc )
         {
         if(document.getElementById("C"+idex).checked) {
             cid = document.getElementById("C"+idex).value;
-            c += "id="+cid + "&";
+            c.push(cid);
         }
             idex++ ;
         }
         }catch(ex){
         }
-        window.open("/h/printcontacts?st=${zm:cook(param.st)}&sfi=${context.folder.id}&"+c);
+        if (c.length==0) {
+            window.open("/h/printcontacts?st=${zm:cook(param.st)}&sfi=${context.folder.id}");
+        } else {
+            window.open("/h/printcontacts?st=${zm:cook(param.st)}&sq=${param.sq}&id="+c.join("&id="));
+        }
     }
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
     var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
