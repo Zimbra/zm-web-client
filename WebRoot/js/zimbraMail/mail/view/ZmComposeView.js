@@ -2097,20 +2097,7 @@ function(action, msg, extraBodyText) {
 	}
 
 	if (action == ZmOperation.REPLY_CANCEL) {
-		var cancelledParts = [crlf];
-		var inv = msg && msg.invite;
-		if (inv) {
-			cancelledParts.push(ZmMsg.subjectLabel + " " + (msg.subject || inv.getName()) + crlf);
-			cancelledParts.push(ZmMsg.organizer + ": " + inv.getOrganizerName() + crlf);
-			var sd = msg._instanceDate || inv.getServerStartDate();
-			cancelledParts.push(ZmMsg.time + ": " + sd + crlf);
-			var loc = inv.getLocation();
-			if (loc) {
-				cancelledParts.push(ZmMsg.locationLabel + " " + loc + crlf);
-			}
-		}
-		cancelledParts.push(crlf + ZmItem.NOTES_SEPARATOR);
-		value += crlf + cancelledParts.join("");
+		value += crlf + sigPre;
 	} else if (incOptions.what == ZmSetting.INC_NONE) {
 		value = preText;
 	} else if (incOptions.what == ZmSetting.INC_ATTACH) {
