@@ -131,6 +131,11 @@ function(viewName) {
 		view.addViewActionListener(new AjxListener(this, this._viewActionListener));
 	}
 	this._views[viewName] = view;
+    if (viewName == ZmId.VIEW_CAL_TRASH) {
+        var controller = this._controller;
+        view.addSelectionListener(new AjxListener(controller, controller._listSelectionListener));
+        view.addActionListener(new AjxListener(controller, controller._listActionListener));
+    }
 	return view;
 };
 

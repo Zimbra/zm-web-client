@@ -134,6 +134,9 @@ function(calItem) {
 		this._editButton.setImage("Edit");
 		this._editButton.setText(ZmMsg.edit);
 		this._editButton.addSelectionListener(new AjxListener(this, this.edit));
+        var calendar = calItem && appCtxt.getById(calItem.folderId);
+        var isTrash = calendar && calendar.id == ZmOrganizer.ID_TRASH;
+        this._editButton.setEnabled(!isTrash);
 		this._editButton.reparentHtmlElement(editBtnCellId);
 	}
 

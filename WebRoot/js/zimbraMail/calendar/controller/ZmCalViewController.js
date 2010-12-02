@@ -298,17 +298,7 @@ function(includeTrash) {
 	if (!this._checkedCalendars) {
 		this._updateCheckedCalendars();
 	}
-    var calendars = this._checkedCalendars;
-    if (!includeTrash) {
-        calendars = [].concat(calendars);
-        for (var i = 0; i < calendars.length; i++) {
-            if (calendars[i].id == ZmOrganizer.ID_TRASH) {
-                calendars.splice(i, 1);
-                break;
-            }
-        }
-    }
-	return calendars;
+    return includeTrash ? this._checkedCalendarsAll : this._checkedCalendars;
 };
 
 /**
@@ -325,6 +315,7 @@ function(localOnly, includeTrash) {
 			return [ZmOrganizer.ID_CALENDAR];
 		}
 	}
+    // TODO: Do we also need to handle includeTrash here?
 	return localOnly
 		? this._checkedLocalCalendarIds
 		: this._checkedCalendarIds;
@@ -371,14 +362,14 @@ function() {
 		if (appCtxt.multiAccounts) {
 			var overviews = this._app.getOverviewContainer().getOverviews();
 			for (var i in overviews) {
-				cc = cc.concat(this._calTreeController.getCheckedCalendars(i));
+				cc = cc.concat(this._calTreeController.getCheckedCalendars(i, true));
 			}
 		} else {
 			// bug fix #25512 - avoid race condition
 			if (!this._app._overviewPanelContent) {
 				this._app.setOverviewPanelContent(true);
 			}
-			cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
+			cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId(), true);
 		}
 	} else {
 		this._app._createDeferredFolders(ZmApp.CALENDAR);
@@ -401,7 +392,18 @@ function() {
 		}
 	}
 
+    // see if trash is checked
+    var trashFolder = null;
+    for (var i = 0; i < cc.length; i++) {
+        if (cc[i].id == ZmOrganizer.ID_TRASH) {
+            trashFolder = cc[i];
+            cc.splice(i, 1);
+            break;
+        }
+    }
+
 	this._checkedCalendars = cc;
+    this._checkedCalendarsAll = trashFolder ? cc.concat(trashFolder) : cc;
 	this._checkedCalendarIds = [];
 	this._checkedLocalCalendarIds = [];
 	this._checkedAccountCalendarIds = [];
@@ -438,8 +440,9 @@ ZmCalViewController.prototype._calTreeSelectionListener =
 function(ev) {
 	if (ev.detail != DwtTree.ITEM_CHECKED) { return; }
 
-	// XXX: this is unnecessary since cal tree controller does this
-//	this._updateCheckedCalendars();
+    // NOTE: This isn't called by the cal tree controller in all cases so
+    // NOTE: we need to make sure the checked calendar list is up-to-date.
+	this._updateCheckedCalendars();
 
 	if (!this._calItemStatus) {
 		this._calItemStatus = {};
@@ -2120,7 +2123,8 @@ function(appt) {
 			}
 		} else {
 			// if simple appointment, no prompting necessary
-			if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
+            var isTrash = calendar.id == ZmOrganizer.ID_TRASH;
+			if (appt.isReadOnly() || calendar.isReadOnly() || isSynced || isTrash) {
 				var mode = appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
 				this.showApptReadOnlyView(appt, mode);
 			} else {
@@ -2519,19 +2523,20 @@ function(parent, num) {
 		}
 		var appt = this.getSelection()[0];
 		var calendar = appt && appt.getFolder();
+        var isTrash = calendar && calendar.id == ZmOrganizer.ID_TRASH;
 		var isReadOnly = calendar ? calendar.isReadOnly() : false;
 		var isSynced = Boolean(calendar && calendar.url);
 		var isShared = calendar ? calendar.isRemote() : false;
 		var disabled = isSynced || isReadOnly || (num == 0);
 		var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-		var isForwardable = calendar && !calendar.isReadOnly();
-		var isReplyable = appt && (num == 1);
+		var isForwardable = !isTrash && calendar && !calendar.isReadOnly();
+		var isReplyable = !isTrash && appt && (num == 1);
 		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled);
 		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], isReplyable);
 		parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
 		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
 		parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
-		parent.enable(ZmOperation.PROPOSE_NEW_TIME, (appt && !appt.isOrganizer()));
+		parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()));
 		parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null);
 	}
 
@@ -2573,6 +2578,7 @@ function(ev) {
 	delete actionMenu.__appt;
 
 	var calendar = appt.getFolder();
+    var isTrash = calendar && calendar.id == ZmOrganizer.ID_TRASH;
 	var isSynced = Boolean(calendar.url);
 	var mode = ZmCalItem.MODE_EDIT;
 	var menuItem = ev.item;
@@ -2583,7 +2589,7 @@ function(ev) {
 		case ZmOperation.VIEW_APPT_SERIES:		mode = ZmCalItem.MODE_EDIT_SERIES; break;
 	}
 	
-	if (appt.isReadOnly() || isSynced) {
+	if (appt.isReadOnly() || isSynced || isTrash) {
 		var clone = ZmAppt.quickClone(appt);
 		var callback = new AjxCallback(this, this._showApptReadOnlyView, [clone, mode]);
 		clone.getDetails(mode, callback, this._errorCallback);
@@ -2808,7 +2814,7 @@ function(appt, actionMenu) {
 	// find the checked calendar for this appt
 	var calendar;
 	var folderId = appt.getLocalFolderId();
-	var calendars = this.getCheckedCalendars();
+	var calendars = this.getCheckedCalendars(true);
 	for (var i = 0; i < calendars.length; i++) {
 		if (calendars[i].id == folderId) {
 			calendar = calendars[i];
@@ -2818,9 +2824,11 @@ function(appt, actionMenu) {
 
 	var share = calendar && calendar.link ? calendar.getMainShare() : null;
 	var workflow = share ? share.isWorkflow() : true;
+    var isTrash = calendar && calendar.id == ZmOrganizer.ID_TRASH;
 	var isPrivate = appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
 	var enabled = !isOrganizer && workflow && !isPrivate;
-	var isForwardable = calendar && !calendar.isReadOnly();
+    var isReplyable = !isTrash && appt.otherAttendees;
+	var isForwardable = !isTrash && calendar && !calendar.isReadOnly();
 
 	// reply action menu
 	actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
@@ -2829,8 +2837,8 @@ function(appt, actionMenu) {
 	actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled);
 	actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
 
-	actionMenu.enable(ZmOperation.REPLY, appt.otherAttendees && !isOrganizer);
-	actionMenu.enable(ZmOperation.REPLY_ALL, appt.otherAttendees);
+	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isOrganizer);
+	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);
 
 	// edit reply menu
 	if (enabled) {
@@ -3104,7 +3112,9 @@ ZmCalViewController.prototype._updateSubContent = function(appt) {
     if (appt) {
         var listView = this._viewMgr.getSubContentView();
         if (listView) {
-            listView.getApptList().add(appt);
+            if (!listView.hasItem(appt.id)) {
+                listView.getApptList().add(appt);
+            }
             listView.setNeedsRefresh(true);
             if (!this._modifyAppts || --this._modifyAppts.adds <= 0) {
                 listView.refresh();
