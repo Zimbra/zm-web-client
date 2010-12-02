@@ -56,7 +56,7 @@ ZmCalBaseItem = function(type, list, id, folderId) {
 
 ZmCalBaseItem.prototype = new ZmItem;
 ZmCalBaseItem.prototype.constructor = ZmCalBaseItem;
-
+ZmCalBaseItem.PRIVATE_FIELDS = {f:true,t:true,ex:true,fb:true,fba:true,transp:true,ptst:true,fr:true,priority:true,name:true,loc:true,geo:true,otherAtt:true,alarm:true};
 /**
  * Returns a string representation of the object.
  * 
@@ -408,7 +408,8 @@ function() {
  */
 ZmCalBaseItem.prototype._getAttr =
 function(calItem, inst, name) {
-	return inst[name] != null ? inst[name] : calItem[name];
+	return inst[name] != null ? inst[name] : 
+		( (inst["class"]=="PRI" && ZmCalBaseItem.PRIVATE_FIELDS[name]) ? null : calItem[name]);
 };
 
 /**
