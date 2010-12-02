@@ -3141,7 +3141,7 @@ ZmCalViewController.prototype.preNotify = function(notify) {
     DBG.println(AjxDebug.DBG2, "ZmCalViewController: preNotify");
     this._modifyAppts = null;
     if (notify.deleted || (notify.modified && notify.modified.appt)) {
-        var listView = this._viewMgr.getSubContentView();
+        var listView = this._viewMgr && this._viewMgr.getSubContentView();
         if (listView) {
             this._modifyAppts = { adds: 0, removes:0 };
         }
