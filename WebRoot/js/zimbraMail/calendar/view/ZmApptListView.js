@@ -132,8 +132,8 @@ ZmApptListView.prototype._getHeaderList = function() {
 //
 
 ZmApptListView.prototype._itemClicked = function() {
+    ZmListView.prototype._itemClicked.apply(this, arguments);
     this._controller.setCurrentListView(this);
-    return ZmListView.prototype._itemClicked.apply(this, arguments);
 };
 
 ZmApptListView.prototype.set = function(apptList, skipMiniCalUpdate, skipSort) {
@@ -207,8 +207,9 @@ ZmApptListView.prototype._getCellContents = function(htmlArr, idx, appt, field, 
         var rgb = calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color||ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.CALENDAR]]; 
 		var colors = ZmCalBaseView._getColors(rgb);
 		var subs = {
+            folder: calendar,
 			folderColor: colors.standard.header.bgcolor,
-			folderName: appt.getFolder().getName()
+			folderName: calendar.getName()
 		};
 		htmlArr[idx++] = AjxTemplate.expand("calendar.Calendar#ListViewFolder", subs);
 
