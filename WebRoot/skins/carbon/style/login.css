@@ -39,7 +39,7 @@
 }
 .LoginScreen #ZLoginWhatsThisAnchor, .offline a, .offline a:visited {
 	border-bottom: 1px dotted #FFF;
-	color: #FFF;
+	color: #FFF !important;
 	text-decoration:none;
 }
 .LoginScreen .ZLoginInfoMessage {
