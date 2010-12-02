@@ -146,21 +146,21 @@
     var zprint = function(){
         try{
         var idex = 0;
-        var c ="";
-        while (idex < zrc )
+        var c = [];
+        while (idex <= zrc )
         {
         if(document.getElementById("C"+idex).checked) {
             cid = document.getElementById("C"+idex).value;
-            c += cid + ",";
+            c.push(cid);
         }
             idex++ ;
         }
         }catch(ex){
         }
-        if (c == "") {
+        if (c.length==0) {
             window.open("/h/printcontacts?st=${zm:cook(param.st)}&sfi=${context.folder.id}");
         } else {
-            window.open("/h/printcontacts?id="+c);
+            window.open("/h/printcontacts?st=${zm:cook(param.st)}&sq=${param.sq}&id="+c.join("&id="));
         }
     }
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
