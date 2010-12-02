@@ -113,7 +113,7 @@
                         <td width="16" class="zmwiki-pageIcon"><div class="ImgSection"></div></td>
                         <td class="zmwiki-pageLink">
                             <c:set var="subFolderUrl" value="/home/${requestScope.zimbra_target_account_name}${folder.path}/${subFolder.name}"/>
-                            <a href="${fn:escapeXml(subFolderUrl)}" target="_blank">
+                            <a href="${fn:escapeXml(subFolderUrl)}">
                                 <c:set var='subFolderName' value="${empty subFolder.name  ? noName : zm:truncate(subFolder.name,100,true)}"/>
                                 <c:out value="${subFolderName}"/>
                             </a>
@@ -134,7 +134,7 @@
                                     <c:set var="briefUrl" value="/home/${requestScope.zimbra_target_account_name}${folder.path}/${briefHit.document.name}"/>
                                 </c:otherwise>
                             </c:choose>
-                            <a href="${fn:escapeXml(briefUrl)}" target="_blank">
+                            <a href="${fn:escapeXml(briefUrl)}">
                                 <c:set var='docName' value="${empty briefHit.document.name ? noName : zm:truncate(briefHit.document.name,100,true)}"/>
                                 <c:out value="${docName}"/>
                             </a>
