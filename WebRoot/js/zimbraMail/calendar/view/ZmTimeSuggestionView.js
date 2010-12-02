@@ -49,8 +49,9 @@ ZmTimeSuggestionView.COL_NAME	= "t";
 ZmTimeSuggestionView.prototype.set =
 function(params) {
 
-    this._itemsById = params.itemsById;
-    this._itemsByIdx = params.itemsByIdx;
+    this._items = params.items;
+    this._itemIndex = params.itemIndex;
+
     this._totalUsers = params.totalUsers;
     this._totalLocations = params.totalLocations;
     this._duration = params.duration;
@@ -134,7 +135,7 @@ function(params) {
         //get unavailable attendees from available & total attendees list
         var freeUsers = [], busyUsers = [], attendee;
         for (var i = item.attendees.length; --i >=0;) {
-            attendee = this._itemsByIdx[item.attendees[i]];
+            attendee = this._items[item.attendees[i]];
             freeUsers[attendee] = true;
         }
 
@@ -196,8 +197,8 @@ function(item, id, ev) {
 
     var location, name, locationObj;
     for (var i = item.locations.length; --i >=0;) {
-        location = this._itemsByIdx[item.locations[i]];
-        locationObj = this._itemsById[location];
+        location = this._items[item.locations[i]];
+        locationObj = this.parent.getLocationByEmail(location);
         name = location;
         if(locationObj) {
             name = locationObj.getAttr(ZmResource.F_locationName) || locationObj.getAttr(ZmResource.F_name);
@@ -247,9 +248,11 @@ function() {
         return;
     }
 
-    var location = this._itemsById[id];
+    var itemIndex = this._itemIndex[id];
+    var location = this._items[itemIndex];
     if(location) {
-        this._editView.updateLocation(location);
+        var locationObj = this.parent.getLocationByEmail(location);
+        this._editView.updateLocation(locationObj);
     }
     this.handleLocationOverflow();
 };
@@ -292,8 +295,8 @@ function(locationInfo) {
 
     var location, name, locationObj, items = new AjxVector();
     for (var i = locationInfo.locations.length; --i >=0;) {
-        location = this._itemsByIdx[locationInfo.locations[i]];
-        locationObj = this._itemsById[location];
+        location = this._items[locationInfo.locations[i]];
+        locationObj = this.parent.getLocationByEmail(location);
         if(locationObj) items.add(locationObj)
     }
 

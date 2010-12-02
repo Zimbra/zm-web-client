@@ -165,8 +165,8 @@ ZmScheduleAssistantView.prototype.suggestAction =
 function(focusOnSuggestion) {
 
     var params = {
-        itemsById: {},
-        itemsByIdx: [],
+        items: [],        
+        itemIndex: {},
         focus: focusOnSuggestion
     };
 
@@ -344,39 +344,37 @@ function(params) {
 
 	var tf = this._timeFrame = this._getTimeFrame();
 	var list = this._resources;
-	var emails = [], attendeeEmails = [];
+	var emails = [], attendeeEmails = [], email;
 
-    params.itemsById = {};
-    params.itemsByIdx = [];
+    params.itemIndex = {};
+    params.items = [];
+
     params.timeFrame = tf;
 
 	for (var i = list.length; --i >= 0;) {
 		var item = list[i];
-		emails[i] = item.getEmail();
+		email = item.getEmail();
 
 		// bug: 30824 - Don't list all addresses/aliases of a resource in
 		// GetFreeBusyRequest.  One should suffice.
-		if (emails[i] instanceof Array) {
-			emails[i] = emails[i][0];
+		if (email instanceof Array) {
+			email = email[0];
 		}
 
-        params.itemsByIdx.push(emails[i]);
-        item._itemIndex = params.itemsByIdx.length-1;
-		params.itemsById[emails[i]] = item;
+        params.items.push(email);
+        params.itemIndex[email] = params.items.length-1;
 	}
 
-    var attendees = this._editView.getAttendees(ZmCalBaseItem.PERSON).getArray();
-    var attendee;
+    var attendees = this._editView.getRequiredAttendeeEmails();
     this._attendees = [];
 
     //include organizer in the scheduler suggestions
-    var organizer = this._editView.getOrganizer();
+    var organizer = this._editView.getOrganizerEmail();
     this._addAttendee(organizer, params, emails, attendeeEmails);
 
-    for (var i = attendees.length; --i >= 0;) {        
-            //ignore optional attendees while suggesting
-            if(attendees[i].getParticipantRole() == ZmCalItem.ROLE_OPTIONAL) continue;
-            this._addAttendee(attendees[i], params, emails, attendeeEmails);
+    var attendee;
+    for (var i = attendees.length; --i >= 0;) {
+        this._addAttendee(attendees[i], params, emails, attendeeEmails);
     }
 
     params.emails = emails;
@@ -412,14 +410,9 @@ function(params) {
 };
 
 ZmScheduleAssistantView.prototype._addAttendee =
-function(attendeeObj, params, emails, attendeeEmails) {
-    var attendee = attendeeObj.getEmail();
-    if (attendee instanceof Array) {
-        attendee = attendeeObj[0];
-    }
-    params.itemsByIdx.push(attendee);
-    attendeeObj._itemIndex = params.itemsByIdx.length-1;
-    params.itemsById[attendee] = attendeeObj;
+function(attendee, params, emails, attendeeEmails) {
+    params.items.push(attendee);
+    params.itemIndex[attendee] = params.items.length-1;
     emails.push(attendee);
     attendeeEmails.push(attendee);
     this._attendees.push(attendee);
@@ -551,7 +544,7 @@ function(params) {
     }
 
     this._fbStat.sort(ZmScheduleAssistantView._slotComparator);
-    DBG.dumpObj(this._fbStat);
+    //DBG.dumpObj(this._fbStat);
     this.renderSuggestions(params);
 
     //highlight minicalendar to mark suggested days in month
@@ -612,7 +605,7 @@ function(startTime, endTime, params) {
 
         //collect all the item indexes of the attendees available at this slot
         if(isFree) {
-            if(!params.miniCalSuggestions) fbInfo.attendees.push(params.itemsById[attendee]._itemIndex);
+            if(!params.miniCalSuggestions) fbInfo.attendees.push(params.itemIndex[attendee]);
             fbInfo.availableUsers++;
         }
     }
@@ -633,7 +626,7 @@ function(startTime, endTime, params) {
 
         //collect all the item indexes of the locations available at this slot
         if(isFree) {
-            if(!params.miniCalSuggestions) fbInfo.locations.push(params.itemsById[resource]._itemIndex);
+            if(!params.miniCalSuggestions) fbInfo.locations.push(params.itemIndex[resource]);
             fbInfo.availableLocations++;
         }
 	}
@@ -770,13 +763,31 @@ function() {
     this._miniCalendar.setColor([], true, []);
 };
 
+ZmScheduleAssistantView.prototype.getLocationByEmail =
+function(item) {
+	var locations = this._resources;
+	for (var i = 0; i < locations.length; i++) {
+		var value = locations[i].getEmail();
+
+        if(value instanceof Array) {
+            for(var j = 0; j < value.length; j++) {
+                if(item == value[j]) return locations[i];
+            }
+        }
+		if (item == value) {
+			return locations[i];
+		}
+	}
+	return null;
+};
+
 ZmScheduleAssistantView.prototype.getMonthFreeBusyInfo =
 function() {
     var range = this._miniCalendar.getDateRange();
 
     var params = {
-        itemsById: {},
-        itemsByIdx: [],
+        items: [],
+        itemIndex: {},
         focus: false,
         timeFrame: {
             start: range.start,
@@ -808,42 +819,27 @@ function() {
         }
         emails.push(email);
 
-        //add idx -> email -> resource object mapping
-        params.itemsByIdx.push(email);
-        item._itemMonthIndex = params.itemsByIdx.length-1;
-		params.itemsById[email] = item;        
+        params.items.push(email);
+		params.itemIndex[email] = params.items.length -1;
+
     }
 
-    var attendees = this._editView.getAttendees(ZmCalBaseItem.PERSON).getArray();
+    var attendees = this._editView.getRequiredAttendeeEmails();
 
     //include organizer in the scheduler suggestions
-    var organizer = this._editView.getOrganizer();
-    var orgEmail = organizer.getEmail();
-    if (orgEmail instanceof Array) {
-        orgEmail = orgEmail[0];
-    }
+    var organizer = this._editView.getOrganizerEmail();
+    params.items.push(organizer);
+    params.itemIndex[organizer] = params.items.length-1;
+    emails.push(organizer);
+    attendeeEmails.push(organizer);
 
-    //add idx -> email -> attendee object mapping
-    params.itemsByIdx.push(orgEmail);
-    organizer._itemMonthIndex = params.itemsByIdx.length-1;
-    params.itemsById[orgEmail] = organizer;
-    emails.push(orgEmail);
-    attendeeEmails.push(orgEmail);
-
+    var attendee;
     for (var i = attendees.length; --i >= 0;) {
-        if(attendees[i].getParticipantRole() == ZmCalItem.ROLE_OPTIONAL) continue;
-        var attendee = attendees[i].getEmail();
-        if (attendee instanceof Array) {
-            attendee = attendee[0];
-        }
-
-        //add idx -> email -> attendee object mapping
-        params.itemsByIdx.push(attendee);
-        attendees[i]._itemMonthIndex = params.itemsByIdx.length-1;
-        params.itemsById[attendee] = attendees[i];
-
+        attendee = attendees[i];
+        params.items.push(attendee);
+        params.itemIndex[attendee] = params.items.length;        
         emails.push(attendee);
-        attendeeEmails.push(email);        
+        attendeeEmails.push(attendee);        
     }
 
     params.emails = emails;

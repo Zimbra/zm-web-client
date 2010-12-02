@@ -1693,6 +1693,37 @@ function(type) {
     return this.getAttendeesFromString(type, this._attInputField[type].getValue());
 };
 
+ZmApptEditView.prototype.getRequiredAttendeeEmails =
+function() {
+    var requiredEmails = this._attInputField[ZmCalBaseItem.PERSON].getValue();
+    var items = AjxEmailAddress.split(requiredEmails);
+    var attendees = [];
+    for (var i = 0; i < items.length; i++) {
+
+        var item = AjxStringUtil.trim(items[i]);
+        if (!item) { continue; }
+
+        var contact = AjxEmailAddress.parse(item);
+        if (!contact) { continue; }        
+
+        var email = contact.getAddress();
+        if(email instanceof Array) email = email[0];
+
+        attendees.push(email)
+    }
+    return attendees;
+};
+
+ZmApptEditView.prototype.getOrganizerEmail =
+function() {
+    var organizer = this.getOrganizer();
+    var email = organizer.getEmail();
+    if (email instanceof Array) {
+        email = email[0];
+    }
+    return email;
+};
+
 ZmApptEditView.prototype._handleAttendeeField =
 function(type, useException) {
 	if (!this._activeInputField) { return; }
@@ -1754,11 +1785,7 @@ function(type, value, markAsOptional) {
 		if (!item) { continue; }
 
         var contact = AjxEmailAddress.parse(item);
-
-		// see if it's an attendee we already know about (added via autocomplete or other tab)
-		var attendee = this._getAttendeeByName(type, (contact && contact.name) ? contact.name : item) ||
-					   this._getAttendeeByItem((contact && contact.address) ? contact.address : item, type) ||
-					   ZmApptViewHelper.getAttendeeFromItem(item, type);
+		var attendee = ZmApptViewHelper.getAttendeeFromItem(item, type);
 		if (attendee) {
             if(markAsOptional) attendee.setParticipantRole(ZmCalItem.ROLE_OPTIONAL);
 			attendees.add(attendee);
