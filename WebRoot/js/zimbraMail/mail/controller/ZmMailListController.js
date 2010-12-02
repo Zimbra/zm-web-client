@@ -1101,7 +1101,7 @@ function(parent) {
 		} else {
 			item.setText(inSpamFolder ? ZmMsg.notJunkLabel : ZmMsg.junkLabel);
 		}
-		item.setImage(inSpamFolder ? 'Inbox' : 'JunkMail');
+		item.setImage(inSpamFolder ? 'NotJunk' : 'JunkMail');
 		if (item.setToolTipContent) {
 			var tooltip = inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip;
 			item.setToolTipContent(ZmOperation.getToolTip(ZmOperation.SPAM, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip));
