@@ -589,10 +589,16 @@ function(modifies, force) {
 	AjxDispatcher.run("GetCalController").notifyModify(modifies);
 };
 
+ZmCalendarApp.prototype.preNotify = function(notify) {
+	if(this._calController != null) {
+		this._calController.preNotify(notify);
+	}
+};
+
 ZmCalendarApp.prototype.postNotify =
 function(notify) {
 	if(this._calController != null) {
-		this._calController.notifyComplete(notify);
+		this._calController.postNotify(notify);
 	}
 };
 

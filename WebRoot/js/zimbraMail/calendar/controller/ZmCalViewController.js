@@ -3041,6 +3041,17 @@ function(create) {
 
 ZmCalViewController.prototype.notifyDelete =
 function(ids) {
+    if (this._modifyAppts) {
+        var apptList = this._viewMgr.getSubContentView().getApptList();
+        for (var i = 0; i < ids.length; i++) {
+            var appt = ZmCalViewController.__AjxVector_getById(apptList, ids[i])
+            if (appt) {
+                apptList.remove(appt);
+                this._modifyAppts.removes++;
+            }
+        }
+    }
+
 	if (this._clearCache) { return; }
 
 	this._clearCache = this.apptCache.containsAnyId(ids);
@@ -3067,7 +3078,6 @@ function(modifies) {
     if (apptObjs && this._viewMgr) {
         var listView = this._viewMgr.getSubContentView();
         if (listView) {
-            this._modifyAppts = { adds: 0, removes:0 };
             for (var i = 0; i < apptObjs.length; i++) {
                 var apptObj = apptObjs[i];
                 // case 1: item moved *into* Trash
@@ -3125,10 +3135,22 @@ ZmCalViewController.prototype._updateSubContent = function(appt) {
     }
 };
 
-// this gets called afer all the above notify* methods get called
-ZmCalViewController.prototype.notifyComplete =
+// this gets called before all the above notify* methods get called
+ZmCalViewController.prototype.preNotify = function(notify) {
+    DBG.println(AjxDebug.DBG2, "ZmCalViewController: preNotify");
+    this._modifyAppts = null;
+    if (notify.deleted || (notify.modified && notify.modified.appt)) {
+        var listView = this._viewMgr.getSubContentView();
+        if (listView) {
+            this._modifyAppts = { adds: 0, removes:0 };
+        }
+    }
+};
+
+// this gets called after all the above notify* methods get called
+ZmCalViewController.prototype.postNotify =
 function(notify) {
-	DBG.println(AjxDebug.DBG2, "ZmCalViewController: notifyComplete: " + this._clearCache);
+	DBG.println(AjxDebug.DBG2, "ZmCalViewController: postNotify: " + this._clearCache);
 
     // update the trash list all at once
     if (this._modifyAppts) {
