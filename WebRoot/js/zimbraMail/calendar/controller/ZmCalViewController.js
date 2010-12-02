@@ -1648,13 +1648,14 @@ ZmCalViewController.prototype._promptCancelReply =
 function(appt, mode) {
 	var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
 	var confirmDialog = appCtxt.getConfirmationDialog();
+    confirmDialog.setTitle(ZmMsg.confirmDeleteApptTitle);
 	if (appt.otherAttendees && !appt.inviteNeverSent && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
 		confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
 	} else {
 		var msg = ZmMsg.confirmCancelAppt;
 		if (appt.isRecurring()) {
-			msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name) :  ZmMsg.confirmCancelApptSeries;            
+			msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name) :  ZmMsg.confirmCancelApptSeries;
 		}
 		confirmDialog.popup(msg, cancelNoReplyCallback);
 	}
