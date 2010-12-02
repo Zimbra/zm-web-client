@@ -68,6 +68,10 @@ ZmScheduleAssistantView.prototype.cleanup =
 function() {
     this._attendees = [];
     this._schedule = {};
+
+    if(this._timeSuggestions) this._timeSuggestions.removeAll();
+    if(this._miniCalendar) this.clearMiniCal();
+
 };
 
 ZmScheduleAssistantView.prototype._createWidgets =
@@ -260,6 +264,13 @@ function(attendee) {
 ZmScheduleAssistantView.prototype.reset =
 function(date, attendees, forceRefresh) {
     this.resizeTimeSuggestions();
+
+    if(!this._editView.isSuggestionsNeeded()) {
+        if(this._timeSuggestions) this._timeSuggestions.removeAll();
+        this.clearMiniCal();
+        return;
+    }
+
     var newDuration = this._editView.getDuration();
     var newKey = this.getFormKey(date, attendees);
     this._date = date;
@@ -276,6 +287,7 @@ ZmScheduleAssistantView.prototype._miniCalDateRangeListener =
 function(ev) {
     //clear current mini calendar suggestions
     this._miniCalendar.setColor([], true, []);
+    if(!this._editView.isSuggestionsNeeded()) return;
     this.highlightMiniCal();
 };
 

@@ -1199,6 +1199,11 @@ function(calItem, mode, isDirty, apptComposeMode) {
     scheduleView.initialize(calItem, mode, isDirty, apptComposeMode);
 };
 
+ZmApptEditView.prototype.isSuggestionsNeeded =
+function() {
+    return !this._isForward;
+};
+
 ZmApptEditView.prototype.getCalendarAccount =
 function() {
 	var cal = appCtxt.getById(this._folderSelect.getValue());
