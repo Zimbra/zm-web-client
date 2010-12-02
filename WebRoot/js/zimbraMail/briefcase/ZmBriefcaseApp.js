@@ -43,6 +43,11 @@ ZmBriefcaseApp.prototype.constructor = ZmBriefcaseApp;
 ZmEvent.S_BRIEFCASE_ITEM			= ZmId.ITEM_BRIEFCASE;
 ZmItem.BRIEFCASE_ITEM				= ZmEvent.S_BRIEFCASE_ITEM;
 ZmItem.BRIEFCASE					= ZmItem.BRIEFCASE_ITEM;	// back-compatibility
+
+ZmEvent.S_BRIEFCASE_REVISION_ITEM			= ZmId.ITEM_BRIEFCASE_REV;
+ZmItem.BRIEFCASE_REVISION_ITEM				= ZmEvent.S_BRIEFCASE_REVISION_ITEM;
+ZmItem.BRIEFCASE_REVISION					= ZmItem.BRIEFCASE_REVISION_ITEM;	// back-compatibility
+
 /**
  * Defines the "briefcase" organizer.
  */
@@ -504,6 +509,7 @@ function(dlg, msgId, partId) {
 		appName:		ZmApp.BRIEFCASE
 	};
     params.omit = {};
+    params.omit[ZmFolder.ID_DRAFTS] = true;
     params.omit[ZmFolder.ID_TRASH] = true;
     return params;
 };

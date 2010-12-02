@@ -19,9 +19,9 @@
  */
 
 /**
- * Creates a briefcase item.
+ * Abstract class
  * @class
- * This class represents a briefcase item.
+ * This class is a base class for briefcase item classes.
  * 
  * @param {int}			id			the unique id
  * @param {ZmList}		list		a list that contains this item
@@ -29,47 +29,18 @@
 
  * @extends		ZmItem
  * 
- * @see		ZmBriefcase
+ * @see		ZmBriefcaseBaseItem
  */
-ZmBriefcaseItem = function(id, list, noCache) {
+ZmBriefcaseBaseItem = function(id, list, noCache, type) {
 
 	if (arguments.length == 0) { return; }
-
-	ZmItem.call(this, ZmItem.BRIEFCASE_ITEM, id, list, noCache);
+	ZmItem.call(this, type, id, list, noCache);
 };
 
-ZmBriefcaseItem.prototype = new ZmItem;
-ZmBriefcaseItem.prototype.constructor = ZmBriefcaseItem;
+ZmBriefcaseBaseItem.prototype = new ZmItem;
+ZmBriefcaseBaseItem.prototype.constructor = ZmBriefcaseBaseItem;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmBriefcaseItem.prototype.toString =
-function() {
-	return "ZmBriefcaseItem";
-};
-
-
-// Static functions
-
-/**
- * Creates a briefcase item from the dom.
- * 
- * @param	{Object}	node		the node
- * @param	{Hash}		args		a hash of arguments
- * 
- * @return	{ZmBriefcaseItem}	the briefcase item
- */
-ZmBriefcaseItem.createFromDom =
-function(node, args) {
-	var item = new ZmBriefcaseItem(node.id, args.list);
-	item._loadFromDom(node);
-	return item;
-};
-
-// Public methods
+//Public methods
 
 /**
  * Gets the path.
@@ -77,7 +48,7 @@ function(node, args) {
  * @param	{Boolean}	dontIncludeThisName		if <code>true</code>, do not include this item name in the path
  * @return	{String}	the path
  */
-ZmBriefcaseItem.prototype.getPath =
+ZmBriefcaseBaseItem.prototype.getPath =
 function(dontIncludeThisName) {
 	var briefcase = appCtxt.getById(this.folderId);
 	var name = !dontIncludeThisName ? this.name : "";
@@ -91,7 +62,7 @@ function(dontIncludeThisName) {
  * @param	{Boolean}	ignoreCustomDocs		if <code>true</code>, ignore custom docs
  * @return	{String}	the REST URL
  */
-ZmBriefcaseItem.prototype.getRestUrl =
+ZmBriefcaseBaseItem.prototype.getRestUrl =
 function(dontIncludeThisName, ignoreCustomDocs) {
 	var url = ZmItem.prototype.getRestUrl.call(this);
 	if (dontIncludeThisName) {
@@ -108,7 +79,7 @@ function(dontIncludeThisName, ignoreCustomDocs) {
  * 
  * @return	{Boolean}	<code>true</code> if this item is a real file (not a web doc or folder)
  */
-ZmBriefcaseItem.prototype.isRealFile =
+ZmBriefcaseBaseItem.prototype.isRealFile =
 function() {
     return (!this.isFolder && !this.isWebDoc());  
 };
@@ -118,7 +89,7 @@ function() {
  * 
  * @return	{Boolean}	<code>true</code> if this item is a web doc
  */
-ZmBriefcaseItem.prototype.isWebDoc =
+ZmBriefcaseBaseItem.prototype.isWebDoc =
 function() {
     return (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES || this.contentType == ZmMimeTable.APP_ZIMBRA_SPREADSHEET || this.contentType == ZmMimeTable.APP_ZIMBRA_DOC);
 };
@@ -128,7 +99,7 @@ function() {
  *
  * @return	{Boolean}	<code>true</code> if this item is downloadable
  */
-ZmBriefcaseItem.prototype.isDownloadable =
+ZmBriefcaseBaseItem.prototype.isDownloadable =
 function() {
     return (!this.isWebDoc() && !ZmMimeTable.isRenderable(this.contentType) && !ZmMimeTable.isRenderableImage(this.contentType) && !ZmMimeTable.isTextType(this.contentType));
 };
@@ -138,7 +109,7 @@ function() {
  * 
  * @return	{Boolean}	<code>true</code> if this item is a slide doc
  */
-ZmBriefcaseItem.prototype.isSlideDoc =
+ZmBriefcaseBaseItem.prototype.isSlideDoc =
 function() {
     return (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES);
 };
@@ -148,7 +119,7 @@ function() {
  * 
  * @return	{String}	the content type
  */
-ZmBriefcaseItem.prototype.getContentType =
+ZmBriefcaseBaseItem.prototype.getContentType =
 function() {
     return this.contentType;
 };
@@ -159,7 +130,7 @@ function() {
  * @param	{Boolean}	large		if <code>true</code>, return the large icon
  * @return	{String}	the icon
  */
-ZmBriefcaseItem.prototype.getIcon =
+ZmBriefcaseBaseItem.prototype.getIcon =
 function(large) {
 
 	if (this.isFolder) {
@@ -185,7 +156,7 @@ function(large) {
  * 
  * @return	{Boolean}	<code>true</code> if this item is read only
  */
-ZmBriefcaseItem.prototype.isReadOnly =
+ZmBriefcaseBaseItem.prototype.isReadOnly =
 function() {
 	// if one of the ancestor is readonly then no chances of childs being writable
 	var isReadOnly = false;
@@ -207,7 +178,7 @@ function() {
  * 
  * @return	{ZmBriefcase}	the folder
  */
-ZmBriefcaseItem.prototype.getBriefcaseFolder =
+ZmBriefcaseBaseItem.prototype.getBriefcaseFolder =
 function() {
 	if (!this._briefcase) {
 		var folder = appCtxt.getById(this.folderId);
@@ -225,7 +196,7 @@ function() {
  * 
  * @return	{Boolean}	<code>true</code> if this item is shared
  */
-ZmBriefcaseItem.prototype.isShared =
+ZmBriefcaseBaseItem.prototype.isShared =
 function() {
 	var briefcase = this.getBriefcaseFolder();
 	return briefcase && briefcase.link;
@@ -239,7 +210,7 @@ function() {
  * @param	{String}	name		the item name
  * @param	{String}	folderId		the folder id
  */
-ZmBriefcaseItem.prototype.createFromAttachment =
+ZmBriefcaseBaseItem.prototype.createFromAttachment =
 function(msgId, partId, name, folderId, replaceFile) {
 	var acctId = appCtxt.getActiveAccount().id;
     
@@ -264,7 +235,7 @@ function(msgId, partId, name, folderId, replaceFile) {
 	appCtxt.getAppController().sendRequest(params);
 };
 
-ZmBriefcaseItem.prototype.restoreVersion =
+ZmBriefcaseBaseItem.prototype.restoreVersion =
 function(restoreVerion, callback){
 
     var json = {
@@ -290,7 +261,7 @@ function(restoreVerion, callback){
     
 };
 
-ZmBriefcaseItem.prototype.deleteVersion =
+ZmBriefcaseBaseItem.prototype.deleteVersion =
 function(version, callback){
 
     var json = {
@@ -314,110 +285,45 @@ function(version, callback){
 };
 
 
-ZmBriefcaseItem.prototype._handleResponseCreateItem =
+ZmBriefcaseBaseItem.prototype._handleResponseCreateItem =
 function(folderId,response) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.fileCreated);
 	appCtxt.getChooseFolderDialog().popdown();
 };
 
-ZmBriefcaseItem.prototype._handleErrorCreateItem =
+ZmBriefcaseBaseItem.prototype._handleErrorCreateItem =
 function(ex) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateFile, ZmStatusView.LEVEL_CRITICAL);
 };
 
-ZmBriefcaseItem.prototype.getRevisions =
-function(callback, errorCallback, accountName){
-    ZmBriefcaseItem.getRevision(this.id, -1 ,callback, errorCallback, accountName);
+ZmBriefcaseBaseItem.prototype.notifyModify =
+function(obj, batchMode) {
+
+	var result = ZmItem.prototype.notifyModify.apply(this, arguments);
+	if (result) {
+		return result;
+	}
+
+    var modified = false, doNotify = true, fields=[];    
+    //Updating modified attributes
+    this.set(obj);
+
+    if (doNotify) {
+		this._notify(ZmEvent.E_MODIFY, {fields: fields});
+	}
+	
 };
-
-ZmBriefcaseItem.getRevision =
-function(itemId, version, callback, errorCallback, accountName) {
-	var json = {
-		ListDocumentRevisionsRequest: {
-			_jsns: "urn:zimbraMail",
-			doc: {
-				id:	itemId,
-                ver: version,   //verion=-1 for all versions of count
-                count: 50       //parametrize count to allow pagination
-			}
-		}
-	};
-
-	var params = {
-		jsonObj:		json,
-		asyncMode:		Boolean(callback),
-		callback:		callback,
-		errorCallback:	errorCallback,
-		accountName:	accountName
-	};
-	return appCtxt.getAppController().sendRequest(params);
-};
-
-ZmBriefcaseItem.prototype.lock =
-function(callback, errorCallback, accountName){
-    ZmBriefcaseItem.lock(this.id, callback, errorCallback, accountName);  
-};
-
-ZmBriefcaseItem.lock =
-function(itemId, callback, errorCallback, accountName) {
-	var json = {
-		ItemActionRequest: {
-			_jsns: "urn:zimbraMail",
-			action: {
-				id:	itemId instanceof Array ? itemId.join() : itemId,
-				op:	"lock"
-			}
-		}
-	};
-
-	var params = {
-		jsonObj:		json,
-		asyncMode:		Boolean(callback),
-		callback:		callback,
-		errorCallback:	errorCallback,
-		accountName:	accountName
-	};
-	return appCtxt.getAppController().sendRequest(params);
-};
-
-ZmBriefcaseItem.prototype.unlock =
-function(callback, errorCallback, accountName){
-    ZmBriefcaseItem.unlock(this.id, callback, errorCallback, accountName);
-};
-
-ZmBriefcaseItem.unlock =
-function(itemId, callback, errorCallback, accountName) {
-	var json = {
-		ItemActionRequest: {
-			_jsns: "urn:zimbraMail",
-			action: {
-				id:	itemId instanceof Array ? itemId.join() : itemId,
-				op:	"unlock"
-			}
-		}
-	};
-
-	var params = {
-		jsonObj:		json,
-		asyncMode:		Boolean(callback),
-		callback:		callback,
-		errorCallback:	errorCallback,
-		accountName:	accountName
-	};
-	return appCtxt.getAppController().sendRequest(params);
-};
-
 /**
  * Gets the folder.
  * 
  * @return	{ZmFolder}		the folder
  */
-ZmBriefcaseItem.prototype.getFolder =
+ZmBriefcaseBaseItem.prototype.getFolder =
 function() {
 	return appCtxt.getById(this.folderId);
 };
 
-ZmBriefcaseItem.prototype._loadFromDom =
+ZmBriefcaseBaseItem.prototype._loadFromDom =
 function(node) {
 
 	this.id = node.id;
@@ -444,7 +350,141 @@ function(node) {
     }
 };
 
+/**
+ * Creates a briefcase item.
+ * @class
+ * This class represents a briefcase item.
+ * 
+ * @param {int}			id			the unique id
+ * @param {ZmList}		list		a list that contains this item
+ * @param {Boolean}		noCache		if <code>true</code>, do not cache this item
+
+ * @extends		ZmBriefcaseBaseItem
+ * 
+ * @see		ZmBriefcase
+ */
+ZmBriefcaseItem = function(id, list, noCache) {
+
+	if (arguments.length == 0) { return; }
+	ZmBriefcaseBaseItem.call(this, id, list, noCache, ZmItem.BRIEFCASE_ITEM);
+};
+
+ZmBriefcaseItem.prototype = new ZmBriefcaseBaseItem;
+ZmBriefcaseItem.prototype.constructor = ZmBriefcaseItem;
+
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmBriefcaseItem.prototype.toString =
+function() {
+	return "ZmBriefcaseItem";
+};
+
+
+// Static functions
+/**
+ * Creates a briefcase item from the dom.
+ * 
+ * @param	{Object}	node		the node
+ * @param	{Hash}		args		a hash of arguments
+ * 
+ * @return	{ZmBriefcaseItem}	the briefcase item
+ */
+ZmBriefcaseItem.createFromDom =
+function(node, args) {
+	var item = new ZmBriefcaseItem(node.id, args.list);
+	item._loadFromDom(node);
+	return item;
+};
+
+ZmBriefcaseItem.getRevision =
+function(itemId, version, callback, errorCallback, accountName) {
+	var json = {
+		ListDocumentRevisionsRequest: {
+			_jsns: "urn:zimbraMail",
+			doc: {
+				id:	itemId,
+                ver: version,   //verion=-1 for all versions of count
+                count: 50       //parametrize count to allow pagination
+			}
+		}
+	};
+
+	var params = {
+		jsonObj:		json,
+		asyncMode:		Boolean(callback),
+		callback:		callback,
+		errorCallback:	errorCallback,
+		accountName:	accountName
+	};
+	return appCtxt.getAppController().sendRequest(params);
+};
+
+ZmBriefcaseItem.lock =
+function(itemId, callback, errorCallback, accountName) {
+	var json = {
+		ItemActionRequest: {
+			_jsns: "urn:zimbraMail",
+			action: {
+				id:	itemId instanceof Array ? itemId.join() : itemId,
+				op:	"lock"
+			}
+		}
+	};
+
+	var params = {
+		jsonObj:		json,
+		asyncMode:		Boolean(callback),
+		callback:		callback,
+		errorCallback:	errorCallback,
+		accountName:	accountName
+	};
+	return appCtxt.getAppController().sendRequest(params);
+};
+
+
+ZmBriefcaseItem.unlock =
+function(itemId, callback, errorCallback, accountName) {
+	var json = {
+		ItemActionRequest: {
+			_jsns: "urn:zimbraMail",
+			action: {
+				id:	itemId instanceof Array ? itemId.join() : itemId,
+				op:	"unlock"
+			}
+		}
+	};
+
+	var params = {
+		jsonObj:		json,
+		asyncMode:		Boolean(callback),
+		callback:		callback,
+		errorCallback:	errorCallback,
+		accountName:	accountName
+	};
+	return appCtxt.getAppController().sendRequest(params);
+};
+	
+
 // Mendoza line
+
+ZmBriefcaseItem.prototype.getRevisions =
+function(callback, errorCallback, accountName){
+	ZmBriefcaseItem.getRevision(this.id, -1 ,callback, errorCallback, accountName);
+};
+
+ZmBriefcaseItem.prototype.lock =
+function(callback, errorCallback, accountName){
+	ZmBriefcaseItem.lock(this.id, callback, errorCallback, accountName);  
+};
+
+
+ZmBriefcaseItem.prototype.unlock =
+function(callback, errorCallback, accountName){
+	ZmBriefcaseItem.unlock(this.id, callback, errorCallback, accountName);
+};
 
 ZmBriefcaseItem.prototype.set =
 function(data) {
@@ -470,23 +510,6 @@ function(data) {
     }
 };
 
-ZmBriefcaseItem.prototype.notifyModify =
-function(obj, batchMode) {
-
-	var result = ZmItem.prototype.notifyModify.apply(this, arguments);
-	if (result) {
-		return result;
-	}
-
-    var modified = false, doNotify = true, fields=[];    
-    //Updating modified attributes
-    this.set(obj);
-
-    if (doNotify) {
-		this._notify(ZmEvent.E_MODIFY, {fields: fields});
-	}
-	
-};
 
 ZmBriefcaseFolderItem = function(folder) {
 
@@ -523,7 +546,7 @@ function(key, value) {
 ZmBriefcaseFolderItem.prototype.getIcon =
 function(baseIcon, large){
     if(baseIcon)
-        return ZmBriefcaseItem.prototype.getIcon.call(this, true);
+        return ZmBriefcaseBaseItem.prototype.getIcon.call(this, true);
     else
         return this.folder.getIconWithColor();  
 };
@@ -535,12 +558,15 @@ ZmRevisionItem = function(id, parentItem){
     this.parent = parentItem;
     this.isRevision = true;
     this.id = id;
-    ZmBriefcaseItem.call(this, id);
+    ZmBriefcaseBaseItem.call(this, id, null, false, ZmItem.BRIEFCASE_REVISION_ITEM);
 };
 
-ZmRevisionItem.prototype = new ZmBriefcaseItem;
+ZmRevisionItem.prototype = new ZmBriefcaseBaseItem;
 ZmRevisionItem.prototype.constructor = ZmRevisionItem;
 
+ZmRevisionItem.prototype.toString = function() {
+	return "ZmRevisionItem"; 
+}
 ZmRevisionItem.prototype.set =
 function(data){
 
