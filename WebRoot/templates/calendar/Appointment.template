@@ -150,7 +150,7 @@
                 </td>
             </tr>
 
-			<tr style='height:<$= AjxEnv.isIE ? "160" : "110" $>px'>
+			<tr>
 				<!-- appointmenet details section -->
 				<td valign=top>
 					<fieldset>
