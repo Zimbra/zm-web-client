@@ -790,8 +790,8 @@ and the container element is replaced with that control.
 				</table>
 			</td>
 		</tr>
-		<tr height=150>
-			<td width=180 height='100%' valign='top'>
+		<tr>
+			<td width=180 height=150 valign='top'>
 				<div id='${id}_SIG_LIST' width='100%' tabindex='40'></div>
 			</td>
 			<td>
