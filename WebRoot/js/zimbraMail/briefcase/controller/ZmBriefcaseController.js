@@ -221,16 +221,22 @@ function(parent, num) {
 
 	var isFolderSelected;
 	var items = this._listView[this._currentView].getSelection();
-	var noOfFolders = 0;
+	var noOfFolders = 0, isRevisionSelected=false, isBriefcaseItemSelected=false;
 	if (items) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			if (item.isFolder) {
 				isFolderSelected = true;
 				noOfFolders++;
-			}
+			}else if(item.isRevision){
+                isRevisionSelected = true;
+            }else{
+                isBriefcaseItemSelected = true;
+            }
 		}
 	}
+    
+    var isMixedSelected = isBriefcaseItemSelected && isRevisionSelected;
 
     var briefcase = appCtxt.getById(this._folderId);
     var isTrash = (briefcase && briefcase.nId == ZmOrganizer.ID_TRASH);
@@ -259,7 +265,7 @@ function(parent, num) {
     var isLockOwner = isLocked && (item.lockUser == appCtxt.getActiveAccount().name);
 
     //Delete Operation
-    parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected && !isRevision && (isLocked ? isLockOwner : true)));
+    parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected && !isRevision && (isLocked ? isLockOwner : true) && !isMixedSelected ));
 
     //Rename Operation
     parent.enable(ZmOperation.RENAME_FILE, ( num ==1 && !isFolderSelected && !isReadOnly && !isRevision && (isLocked ? isLockOwner : true) ));
