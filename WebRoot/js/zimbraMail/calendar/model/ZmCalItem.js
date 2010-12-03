@@ -2338,11 +2338,18 @@ function(respName, callback, result) {
 		this.uid = response.uid;
 	}
 
-	if (response.m != null) {
-        //echo=1 sends back GetMsgResponse, parse it
-        var msgNode = response.m;
-        if(response.m.length > 0){
-            msgNode = response.m[0];
+    var msgNode;
+    //echo=1 sends back echo response node, process it
+    if(response.echo){
+        msgNode = response.echo;
+        if(msgNode.length > 0){
+            msgNode = msgNode[0];
+        }
+    }
+    msgNode = msgNode.m || response.m;
+	if (msgNode != null) {
+        if(msgNode.length > 0){
+            msgNode = msgNode[0];
         }
 		var oldInvId = this.invId;
 		this.invId = msgNode.id;
