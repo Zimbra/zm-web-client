@@ -179,15 +179,16 @@ ZmItemMoveAction.prototype._doMove = function(callback, errorCallback, folderId)
 		items: [this._item],
 		folder: appCtxt.getById(folderId),
 		undoing: true,
-		finalCallback: new AjxCallback(this, this._handleDoMove, this._item.folderId),
+		finalCallback: new AjxCallback(this, this._handleDoMove, [this._item.folderId, folderId]),
 		actionText: ZmItemMoveAction.UNDO_MSG[this._op]
 	});
 };
 
-ZmItemMoveAction.prototype._handleDoMove = function(oldFolderId, params) {
+ZmItemMoveAction.prototype._handleDoMove = function(oldFolderId, newFolderId, params) {
 	var lists = [];
 	for (var id in params.idHash) {
 		var item = params.idHash[id];
+		item.folderId = newFolderId;
 		var list = item && item.list;
 		if (AjxUtil.indexOf(lists, list)==-1)
 			lists.push(list);

@@ -309,7 +309,7 @@ function(search, defaultValue) {
 		var msgs = this.msgs.getArray();
 		for (var i = 0; i < msgs.length; i++) {
 			var msg = msgs[i];
-			if (search.matches(msg) && !msg.ignoreJunkTrash()) {
+			if (search.matches(msg) && !msg.ignoreJunkTrash() && this.folders[msg.folderId]) {
 				return true;
 			}
 		}
