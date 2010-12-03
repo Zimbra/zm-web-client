@@ -1237,7 +1237,10 @@ function(draftType, msg, resp) {
 		} else {
 			if (appCtxt.isChildWindow && window.parentController) {
 				window.onbeforeunload = null;
-				if (!appCtxt.isOffline) { // see bug #29372
+				if (draftType == ZmComposeController.DRAFT_TYPE_DELAYSEND) {
+                    window.parentController.setStatusMsg(ZmMsg.messageScheduledSent);
+                }
+                else if (!appCtxt.isOffline) { // see bug #29372
 					window.parentController.setStatusMsg(ZmMsg.messageSent);
 				}
 			} else {
