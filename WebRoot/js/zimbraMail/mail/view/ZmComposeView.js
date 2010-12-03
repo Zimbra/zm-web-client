@@ -1783,7 +1783,7 @@ function(name) {
 
 ZmComposeView.prototype._acCompHandler =
 function(text, el, match) {
-	
+
 	if (this._useAcAddrBubbles) {
 		this._resetBodySize(); // body size might change due to change in size of address field (due to new bubbles).
 		return;
@@ -3066,6 +3066,11 @@ function(addrs) {
 		var addr = (vec.size() > 0) ? vec.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
 		this.setAddress(ZmMailMsg.COMPOSE_ADDRS[i], addr);
 	}
+
+	if (this._useAcAddrBubbles) {
+		this._resetBodySize(); // body size might change due to change in size of address field (due to new bubbles).
+	}
+	
 	this._contactPicker.removePopdownListener(this._controller._dialogPopdownListener);
 	this._contactPicker.popdown();
 	this.reEnableDesignMode();
