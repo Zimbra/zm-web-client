@@ -1,4 +1,6 @@
 <%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
+<%@ page import="java.util.regex.Pattern" %>
+<%@ page import="java.util.regex.Matcher" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
@@ -74,8 +76,15 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
       String pprefix = inDevMode ? "public/jsp" : "js";
       String psuffix = inDevMode ? ".jsp" : "_all.js";
 
+      Pattern p = Pattern.compile("\\.|\\/|\\\\");
       String[] pnames = packages.split(",");
       for (String pname : pnames) {
+           //bug: 52944
+           // Security: Avoid including external pages inline
+           Matcher matcher = p.matcher(pname);
+           if(matcher.find()){
+               continue;
+           }
           String pageurl = "/"+pprefix+"/"+pname+psuffix;
           if (inDevMode) { %>
               <jsp:include>
