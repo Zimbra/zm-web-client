@@ -463,11 +463,11 @@ function(params) {
 
 ZmAddressInputField.prototype._reset =
 function() {
-
 	this._bubble		= {};	// bubbles by bubble ID
 	this._addresses		= [];	// ordered address list
 	this._addressHash	= {};	// used addresses, so we can check for dupes
 	this._bubbleAddress	= {};	// addresses by bubble ID
+	this._input.value	= "";
 };
 
 /**
