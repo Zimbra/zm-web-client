@@ -2683,6 +2683,14 @@ HTML>BODY .appt-selected .appt_allday_body
 	border-top-color:@ListItemBgColor-normal@;
 }
 
+.acWaiting {
+	@ListItemHeight@
+	background-color:@ListItemBgColor-normal@;
+	width: auto;
+	border: 1px solid @darken(AltC,40)@;
+	padding: 0px 3px;
+}
+
 .ZmPeopleAutocompleteListView td {
     border-width:0px 0px;
 }
