@@ -328,11 +328,16 @@ function() {
 
 ZmConv.prototype.getAccount =
 function() {
-    // try to pull out account from folder
-    if (!this.account) {
+    // pull out the account from the fully-qualified ID
+	if (!this.account) {
         var folderId = this.getFolderId();
         var folder = folderId && appCtxt.getById(folderId);
-        this.account = folder && folder.getAccount();
+        // make sure current folder is not remote folder
+        // in that case getting account from parseID will fail if
+        // the shared account is also configured in ZD
+        if (!(folder && folder._isRemote)) {
+            this.account = ZmOrganizer.parseId(this.id).account;
+        }
     }
 
     // pull out the account from the fully-qualified ID
@@ -345,8 +350,8 @@ function() {
     if (!this.account) {
         this.account = appCtxt.getActiveAccount();
     }
+    return this.account;
 
-	return this.account;
 };
 
 /**
