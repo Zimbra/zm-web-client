@@ -1,5 +1,7 @@
 <%@ page session="false" %>
 <%@ page import='java.util.Locale' %>
+<%@ page import="java.util.regex.Pattern" %>
+<%@ page import="java.util.regex.Matcher" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
@@ -130,8 +132,15 @@
     String pprefix = isDevMode ? "public/jsp" : "js";
     String psuffix = isDevMode ? ".jsp" : "_all.js";
 
+    Pattern p = Pattern.compile("\\.|\\/|\\\\");
     String[] pnames = packages.split(",");
     for (String pname : pnames) {
+        //bug: 52944
+        // Security: Avoid including external pages inline
+        Matcher matcher = p.matcher(pname);
+        if(matcher.find()){
+            continue;
+        }
         String pageurl = "/"+pprefix+"/"+pname+psuffix;
 		pageContext.setAttribute("pageurl", pageurl);
 		if (isDevMode) { %>
