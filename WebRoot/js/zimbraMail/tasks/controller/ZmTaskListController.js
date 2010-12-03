@@ -589,11 +589,12 @@ function(parent, num) {
 	if (folderId) {
 		var folder = appCtxt.getById(folderId);
 		var isShare = folder && folder.link;
+        var isTrash = folder && folder.id == ZmOrganizer.ID_TRASH;
 		var canEdit = (folder == null || !folder.isReadOnly());
 
 		parent.enable([ZmOperation.MOVE, ZmOperation.DELETE], canEdit && num > 0);
-		parent.enable(ZmOperation.EDIT, canEdit && num == 1);
-		parent.enable(ZmOperation.MARK_AS_COMPLETED, canEdit && num > 0);
+		parent.enable(ZmOperation.EDIT, !isTrash && canEdit && num == 1);
+		parent.enable(ZmOperation.MARK_AS_COMPLETED, !isTrash && canEdit && num > 0);
 		parent.enable(ZmOperation.TAG_MENU, (!isShare && num > 0));
 	}
 	var printButton = (parent instanceof ZmButtonToolBar) ? parent.getButton(ZmOperation.PRINT) : null;
@@ -715,7 +716,7 @@ function(task) {
     var canEdit = null;
 
     if(folder) {
-        canEdit = (folder == null || !folder.isReadOnly());
+        canEdit = folder.id != ZmOrganizer.ID_TRASH && !folder.isReadOnly();
     }
     
     if (!canEdit) {
