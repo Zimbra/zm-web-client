@@ -755,8 +755,7 @@ function() {
     //create time select drop down button
     var timeSelectButton = this._timeSelectBtn = new DwtButton({parent:this});
     timeSelectButton.addDropDownSelectionListener(buttonListener);
-	//also add selection listener
-	timeSelectButton.addSelectionListener(buttonListener);
+
     timeSelectButton.setData(Dwt.KEY_ID, buttonId);
     if (AjxEnv.isIE) {
         timeSelectButton.setSize("20");

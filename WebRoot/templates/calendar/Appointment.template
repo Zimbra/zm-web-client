@@ -4,7 +4,7 @@
 <template id='calendar.Appointment#ComposeViewColumns'>
     <colgroup>
         <col width="80">
-        <col>
+        <col width="240">
         <col>
         <col>
         <col width="100">
