@@ -1841,7 +1841,7 @@ function(ev, div) {
 	if (Dwt.ffScrollbarCheck(ev)) { return false; }
 
 	var type = this._getItemData(div, "type");
-	if (type == ZmCalBaseView.TYPE_DAY_HEADER && !this._scheduleMode) {
+	if (type == ZmCalBaseView.TYPE_DAY_HEADER && !this._scheduleMode && ! this._isInviteMessage) {
 		var dayIndex = this._getItemData(div, "dayIndex");
 		var date = this._days[dayIndex].date;
 		var cc = appCtxt.getCurrentController();
