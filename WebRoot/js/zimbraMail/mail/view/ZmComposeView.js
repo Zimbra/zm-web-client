@@ -2087,7 +2087,7 @@ function(action, msg, extraBodyText) {
 	}
 
 	if (action == ZmOperation.REPLY_CANCEL) {
-	  	value += crlf + sigPre; 	
+		value += crlf + sigPre;
 	} else if (incOptions.what == ZmSetting.INC_NONE) {
 		value = preText;
 	} else if (incOptions.what == ZmSetting.INC_ATTACH) {
