@@ -194,11 +194,8 @@ if (application.getInitParameter("offlineMode") != null)  {
 	<c:set var="domainLoginRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLoginURL}" />
     <c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLoginURLAllowedUA)}"/>
 </c:if>
-<%--
-param.sso is not set(Non spnego case), redirect to the domainLoginRedirectUrl irrespective of the UA.
-Whether the requests' UA matches any of the allowed UAs or not needs to be checked only if param.sso is set.
---%>
-<c:if test="${not empty domainLoginRedirectUrl and empty param.sso and empty param.ignoreLoginURL}" >
+
+<c:if test="${not empty domainLoginRedirectUrl and empty param.sso and empty param.ignoreLoginURL and (isAllowedUA eq true)}" >
     <c:redirect url="${domainLoginRedirectUrl}">
         <c:forEach var="p" items="${paramValues}">
             <c:forEach var='value' items='${p.value}'>
