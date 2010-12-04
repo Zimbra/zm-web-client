@@ -58,7 +58,7 @@ function(attId) {
 	var calItem = this._composeView.getCalItem(attId);
 	if (calItem) {
 		this._saveCalItemFoRealz(calItem, attId);
-        //return true; bug:53035 handled closing view in handleResponseSave
+		return true;
 	}
 	return false;
 };
@@ -68,8 +68,6 @@ ZmTaskController.prototype._handleResponseSave =
 function(calItem, result) {
 	ZmCalItemComposeController.prototype._handleResponseSave.call(this, calItem);
 
-    this.closeView();
-    
 	// XXX: null out message so we re-fetch task next time its opened
 	// To optimize, we should save the modified contents into cache'd task item
 	if (calItem && calItem._orig)
