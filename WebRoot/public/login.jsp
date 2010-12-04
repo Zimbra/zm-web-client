@@ -297,11 +297,11 @@ if (application.getInitParameter("offlineMode") != null)  {
 				<c:if test="${errorCode != null}">
 				    <!-- ${fn:escapeXml(error.stackStrace)} -->
 				    <div id="ZLoginErrorPanel">
-				        <img alt='<fmt:message key="ALT_ERROR"/>'
-				        	src="<app:imgurl value='dwt/ImgCritical_32.gif'/>"
-				        	style="float:left;margin:-3px 10px 10px 0px;position:relative;"/>
-				        <c:out value="${errorMessage}"/>
-				        <div style="clear:both;height:0px;"></div>
+				        <table><tr>
+				            <td><img id="ZLoginErrorIcon" alt='<fmt:message key="ALT_ERROR"/>'
+				                src="<app:imgurl value='dwt/ImgCritical_32.gif'/>"/></td>
+				            <td><c:out value="${errorMessage}"/></td>
+				        </tr></table>
 				    </div>
 				</c:if>
             <table class="form">
