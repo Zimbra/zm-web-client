@@ -179,11 +179,13 @@ FORM {
 	position:relative;
 	left:auto;
 }
+.LoginScreen #ZLoginErrorIcon {
+    margin:auto 10px auto auto;
+}
 .LoginScreen .postioning{
 	position: relative;
 	z-index: 20;
 }
-
 .LoginScreen #ZLoginWhatsThisAnchor {
 	color: @darken(AppC,50)@;
 	font-size:10px;
