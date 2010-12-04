@@ -4380,7 +4380,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue {
-	padding:.25em .5em;
+	padding:.7em .5em .25em;
 	width: 150px;
 }
 
@@ -4390,7 +4390,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmEditContactView .rowType, .ZmContactSplitView .rowType {
-	padding:.25em .5em;
+	padding:.7em .5em .25em;
 }
 
 .itemSortIcon {
