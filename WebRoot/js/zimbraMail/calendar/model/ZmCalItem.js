@@ -2346,7 +2346,7 @@ function(respName, callback, result) {
             msgNode = msgNode[0];
         }
     }
-    msgNode = msgNode.m || response.m;
+    msgNode = msgNode ? msgNode.m : response.m;
 	if (msgNode != null) {
         if(msgNode.length > 0){
             msgNode = msgNode[0];
