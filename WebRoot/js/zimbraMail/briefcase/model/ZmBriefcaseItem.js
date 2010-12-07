@@ -500,13 +500,15 @@ function(data) {
 	if (data.s) this.size = Number(data.s);
 	if (data.ver) this.version = Number(data.ver);
 	if (data.ct) this.contentType = data.ct.split(";")[0];
-	this._parseTags(data.t);
-    this.locked = false;
+    if (data.t) this._parseTags(data.t);
     if (data.loid)    {
         this.locked = true;
         this.lockId = data.loid;
         this.lockUser = data.loe;
         this.lockTime = new Date(Number(data.lt));
+    } else if (data.loid===""){
+        //loid is not always set in response; set locked to false when value is blank
+        this.locked = false;
     }
 };
 
