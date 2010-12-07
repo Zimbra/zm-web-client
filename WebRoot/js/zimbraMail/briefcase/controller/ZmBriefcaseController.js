@@ -49,6 +49,7 @@ ZmBriefcaseController = function(container, app) {
 	this._listeners[ZmOperation.CREATE_SLIDE_SHOW] = new AjxListener(this, this._createSlideShow);
     this._listeners[ZmOperation.EDIT_FILE] = new AjxListener(this, this._editFileListener);
     this._listeners[ZmOperation.RENAME_FILE] = new AjxListener(this, this._renameFileListener);
+    this._listeners[ZmOperation.NEW_BRIEFCASE_WIN] = new AjxListener(this, this._newWinListener);
 
 	this._listeners[ZmOperation.NEW_SPREADSHEET] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_SPREADSHEET]);
 	this._listeners[ZmOperation.NEW_PRESENTATION] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_PRESENTATION]);
@@ -157,6 +158,7 @@ function() {
             ZmOperation.EDIT_FILE,
 			ZmOperation.SEP,
 			ZmOperation.DELETE, ZmOperation.MOVE,
+            ZmOperation.NEW_BRIEFCASE_WIN,
 			ZmOperation.SEP,
 			ZmOperation.TAG_MENU,
 			ZmOperation.SEP
@@ -258,6 +260,7 @@ function(parent, num) {
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 	parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared && !isRevision));
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
+    parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, ((isLocked ? isLockOwner : true) && isItemSelected && !isMixedSelected));
 
     var firstItem = items && items[0];
     var isWebDoc = firstItem && !firstItem.isFolder && firstItem.isWebDoc();
@@ -728,6 +731,19 @@ function(){
 
     view.renameFile(items[0]);
 };
+
+ZmBriefcaseController.prototype._newWinListener =
+function(){
+    var view = this._listView[this._currentView];
+	var items = view.getSelection();
+	if (!items) { return; }
+    items = AjxUtil.toArray(items);
+    var item = items[0];
+    if (item) {
+        this.openFile(item);
+    }
+};
+
 
 ZmBriefcaseController.prototype._editFileListener =
 function() {

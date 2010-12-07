@@ -521,21 +521,8 @@ function(){
     this._headerNotes = document.getElementById(this._htmlElId+"_notes");
     this._headerExpand = document.getElementById(this._htmlElId+"_expand");
 
-    this._newWindow = document.getElementById(this._htmlElId+"_window");
-    if(this._newWindow){
-        this._newWinButton = new DwtButton({parent:this, style:DwtLabel.ALIGN_RIGHT, className: "ZmBreifcaseNewWinButton", parentElement:(this._htmlElId+"_window")});
-        this._newWinButton.setImage("OpenInNewWindow");
-        this._newWinButton.setToolTipContent(ZmMsg.detach);
-        Dwt.setHandler(this._newWindow, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._newWindowListener, this));
-    }
-
     this._lockStatus = document.getElementById(this._htmlElId+"_lock");
 
-};
-
-ZmPreviewView.prototype._newWindowListener =
-function(){   
-   this._controller.openFile(this._previewItem);
 };
 
 ZmPreviewView._errorCallback =
