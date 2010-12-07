@@ -93,6 +93,17 @@ function() {
 	return "ZmApptEditView";
 };
 
+ZmApptEditView.getShowAsOptionLabel =
+function(value) {
+
+	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
+		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
+		if (option.value == value) {
+			return option.label;
+		}
+	}
+};
+
 ZmApptEditView.prototype.show =
 function() {
 	ZmCalItemEditView.prototype.show.call(this);
