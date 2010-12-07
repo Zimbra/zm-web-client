@@ -512,7 +512,9 @@ function(draftType, msg, callback, result) {
 	var resp = result.getResponse();
 	this._processSendMsg(draftType, msg, resp);
 
-	if (callback) {
+    this._msg = msg;
+
+    if (callback) {
 		callback.run(result);
 	}
 
