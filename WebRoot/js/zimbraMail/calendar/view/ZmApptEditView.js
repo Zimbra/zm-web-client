@@ -507,7 +507,8 @@ function(calItem, mode) {
     this._endDateButton.setEnabled(enableTimeSelection);
 
     this._fwdApptOrigAttendees = [];
-    
+
+    var showScheduleView = false;
 	// attendees
 	var attendees = calItem.getAttendees(ZmCalBaseItem.PERSON);
 	if (attendees && attendees.length) {
@@ -524,6 +525,7 @@ function(calItem, mode) {
     	this._attendees[ZmCalBaseItem.PERSON] = AjxVector.fromArray(attendees);
     	this._attInputField[ZmCalBaseItem.PERSON] = this._attendeesInputField;
     	this._fwdApptOrigAttendees = [];
+        showScheduleView = true;
 	} else {
         if (this.GROUP_CALENDAR_ENABLED) {
             this._attendeesInputField.clear();
@@ -539,6 +541,7 @@ function(calItem, mode) {
 		this._attendees[ZmCalBaseItem.LOCATION] = AjxVector.fromArray(locations);
         var locStr = ZmApptViewHelper.getAttendeesString(locations, ZmCalBaseItem.LOCATION);
         this._attInputField[ZmCalBaseItem.LOCATION].setValue(locStr);
+        showScheduleView = true;
 	}else{
         // set the location *label*
 	    this._attInputField[ZmCalBaseItem.LOCATION].setValue(calItem.getLocation());
@@ -550,7 +553,8 @@ function(calItem, mode) {
         this._toggleResourcesField(true);
 		this._attendees[ZmCalBaseItem.EQUIPMENT] = AjxVector.fromArray(equipment);
         var equipStr = ZmApptViewHelper.getAttendeesString(equipment, ZmCalBaseItem.EQUIPMENT);
-        this._attInputField[ZmCalBaseItem.EQUIPMENT].setValue(equipStr);        
+        this._attInputField[ZmCalBaseItem.EQUIPMENT].setValue(equipStr);
+        showScheduleView = true;
 	}
 
 	// privacy
@@ -615,8 +619,12 @@ function(calItem, mode) {
 
     this.updateToolbarOps();
 
-    this._schedulerOpened = null;        
-    this._closeScheduler();
+    if(showScheduleView && this._controller.isSave()){
+        this._toggleInlineScheduler(true);
+    }else{
+        this._schedulerOpened = null;
+        this._closeScheduler();
+    }
 };
 
 ZmApptEditView.prototype._getMeetingStatusMsg =

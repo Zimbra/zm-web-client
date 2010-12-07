@@ -329,6 +329,11 @@ function(ev){
 	this._app.popView(true);
 };
 
+ZmApptComposeController.prototype.isSave =
+function(){
+    return (this._action == ZmCalItemComposeController.SAVE); 
+};
+
 ZmApptComposeController.prototype._saveListener =
 function(ev, force) {
     var isMeeting = !this._composeView.isAttendeesEmpty();
