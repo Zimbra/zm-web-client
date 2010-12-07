@@ -111,6 +111,9 @@ ZmFreeBusySchedulerView.PSTATUS_CLASSES[ZmCalBaseItem.PSTATUS_WAITING]       = "
 // Hold on to this one separately because we use it often
 ZmFreeBusySchedulerView.FREE_CLASS = ZmFreeBusySchedulerView.STATUS_CLASSES[ZmFreeBusySchedulerView.STATUS_FREE];
 
+ZmFreeBusySchedulerView.DELAY = 200;
+ZmFreeBusySchedulerView.BATCH_SIZE = 25;
+
 // Public methods
 
 ZmFreeBusySchedulerView.prototype.toString =
@@ -160,7 +163,6 @@ function(dateInfo, organizer, attendees) {
     if(this.isComposeMode) ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
 
 	this._setAttendees(organizer, attendees);
-	this._outlineAppt();
 };
 
 ZmFreeBusySchedulerView.prototype.update =
@@ -172,6 +174,11 @@ function(dateInfo, organizer, attendees) {
 ZmFreeBusySchedulerView.prototype.cleanup =
 function() {
 	if (!this._rendered) return;
+
+    if(this._timedActionId)  {
+        AjxTimedAction.cancelAction(this._timedActionId);
+        this._timedActionId = null;
+    }
 
 	// remove all but first two rows (header and All Attendees)
 	while (this._attendeesTable.rows.length > 2) {
@@ -355,13 +362,16 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 	sched._coloredCells = [];
 	this._schedTable[index] = sched;
 
+    this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
+
 	var data = {
 		id: dwtId,
 		sched: sched,
 		isAllAttendees: isAllAttendees,
 		organizer: organizer,
 		cellCount: ZmFreeBusySchedulerView.FREEBUSY_NUM_CELLS,
-        isComposeMode: this.isComposeMode
+        isComposeMode: this.isComposeMode,
+        dateBorder: this._dateBorder
 	};
 
 	var tr = this._attendeesTable.insertRow(index);
@@ -375,7 +385,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 	td.innerHTML = AjxTemplate.expand("calendar.Appointment#AttendeeFreeBusy", data);
     td.style.padding = "0";
 
-	var freeBusyTable = document.getElementById(sched.dwtTableId);
+    var freeBusyTable = document.getElementById(sched.dwtTableId);
 	Dwt.setHandler(freeBusyTable, DwtEvent.ONMOUSEOVER, ZmFreeBusySchedulerView._onFreeBusyMouseOver);
 	Dwt.setHandler(freeBusyTable, DwtEvent.ONMOUSEOUT, ZmFreeBusySchedulerView._onFreeBusyMouseOut);
 
@@ -696,39 +706,81 @@ function(organizer, attendees) {
     //sync with date info from schedule view
     if(this.isComposeMode) ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
 
-    var emails = [];
+    var emails = [], email;
+    var isOrganizer = this._appt.isOrganizer();
 
 	// create a slot for the organizer
 	this._organizerIndex = this._addAttendeeRow(false, organizer.getAttendeeText(ZmCalBaseItem.PERSON, true), false);
 	emails.push(this._setAttendee(this._organizerIndex, organizer, ZmCalBaseItem.PERSON, true));
 
-	// create slots for each of the other attendees/resources
-	for (var t = 0; t < this._attTypes.length; t++) {
-		var type = this._attTypes[t];
+    var list = [];
+    for (var t = 0; t < this._attTypes.length; t++) {
+        var type = this._attTypes[t];
         if(attendees[type]) {
             var att = attendees[type].getArray ? attendees[type].getArray() : attendees[type];
             for (var i = 0; i < att.length; i++) {
-                var email = att[i] ? att[i].getEmail() : null;
-
-                if (email && !this._emailToIdx[email]) {
-                    var index = this._addAttendeeRow(false, null, false); // create a slot for this attendee
-                    emails.push(this._setAttendee(index, att[i], type, false));
-                }
+                list.push(att[i]);
+                email = att[i] ? att[i].getEmail() : null;
+                emails.push(email);
             }
         }
-	}
-
-	// make sure there's always an empty slot
-	this._emptyRowIndex = this._addAttendeeRow(false, null, false, null, true, false);
-
-	if (emails.length) {
-		this._getFreeBusyInfo(this._getStartTime(), emails.join(","));
-	}else {
-        this.postUpdateHandler()
     }
 
-    if(this._appt) {
-        this.enableAttendees(this._appt.isOrganizer());
+    this._updateBorders(this._allAttendeesSlot, true);
+    
+    //chunk processing of UI rendering
+    this.batchUpdate(list);
+
+    if (emails.length) {
+        this._getFreeBusyInfo(this._getStartTime(), emails.join(","));
+	}
+};
+
+ZmFreeBusySchedulerView.prototype.batchUpdate =
+function(list, updateCycle) {
+
+    if(list.length == 0) {
+        // make sure there's always an empty slot
+        this._emptyRowIndex = this._addAttendeeRow(false, null, false, null, true, false);
+        this._colorAllAttendees();
+        this.resizeKeySpacer();
+        return;
+    }
+
+    if(!updateCycle) updateCycle = 0;
+
+    var isOrganizer = this._appt.isOrganizer();
+    var emails = [], type;
+
+    for(var i=0; i < ZmFreeBusySchedulerView.BATCH_SIZE; i++) {
+        if(list.length == 0) break;
+        var att = list.shift();
+        type = (att instanceof ZmResource) ? att.resType : ZmCalBaseItem.PERSON;
+        this.addAttendee(att, type, isOrganizer, emails);
+    }
+    
+    this._editView.autoSize();
+    this.batchUpdateSequence(list, updateCycle+1);
+};
+
+ZmFreeBusySchedulerView.prototype.batchUpdateSequence =
+function(list,updateCycle) {
+    this._timedAction = new AjxTimedAction(this, this.batchUpdate, [list, updateCycle]);
+    this._timedActionId = AjxTimedAction.scheduleAction(this._timedAction, ZmFreeBusySchedulerView.DELAY);
+};
+
+ZmFreeBusySchedulerView.prototype.addAttendee =
+function(att, type, isOrganizer, emails) {
+    var email = att ? att.getEmail() : null;
+    if (email && !this._emailToIdx[email]) {
+        var index = this._addAttendeeRow(false, null, false); // create a slot for this attendee
+        emails.push(this._setAttendee(index, att, type, false));
+
+        var sched = this._schedTable[index];
+        if(this._appt && sched) {
+            if(sched.inputObj) sched.inputObj.setEnabled(isOrganizer);
+            if(sched.selectObj) sched.selectObj.setEnabled(isOrganizer);
+        }
     }
 };
 
@@ -1161,7 +1213,11 @@ function() {
 	for (var j = 1; j < this._schedTable.length; j++) {
 		this._updateBorders(this._schedTable[j]);
 	}
+    this.resizeKeySpacer();
+};
 
+ZmFreeBusySchedulerView.prototype.resizeKeySpacer =
+function() {
     var graphKeySpacer = document.getElementById(this._htmlElId + '_graphKeySpacer');
     if(graphKeySpacer) {
         var size = Dwt.getSize(document.getElementById(this._navToolbarId));
@@ -1281,14 +1337,15 @@ function(status) {
 };
 
 ZmFreeBusySchedulerView.prototype._getFreeBusyInfo =
-function(startTime, emailList) {
+function(startTime, emailList, callback) {
 
     var endTime = startTime + AjxDateUtil.MSEC_PER_DAY;
     var emails = emailList.split(",");
     var freeBusyParams  = {
         emails: emails,
         startTime: startTime,
-        endTime: endTime
+        endTime: endTime,
+        callback: callback
     };
 
     var callback = new AjxCallback(this, this._handleResponseFreeBusy, [freeBusyParams]);    
@@ -1337,7 +1394,6 @@ function(params, result) {
 			if (usr.u) this._colorSchedule(ZmFreeBusySchedulerView.STATUS_OUT, usr.u, table, sched);
 		}
 	}
-	this._colorAllAttendees();
 
     var acct = (appCtxt.multiAccounts)
         ? this._editView.getCalendarAccount() : null;
@@ -1384,9 +1440,12 @@ function(params, result) {
 			if (usr.f) this._colorSchedule(ZmFreeBusySchedulerView.STATUS_WORKING, usr.f, table, sched);
 		}
 	}
-	this._colorAllAttendees();
 
-    this.postUpdateHandler();
+    if(params.callback) {
+        params.callback.run();
+    }
+
+    this.postUpdateHandler();    
 };
 
 ZmFreeBusySchedulerView.prototype.colorAppt =

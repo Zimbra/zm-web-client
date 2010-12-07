@@ -692,9 +692,20 @@
 <template id='calendar.Appointment#AttendeeFreeBusy'>
 	<table id='${sched.dwtTableId}' class='ZmSchedulerGridTable<$= data.isAllAttendees ? "-allAttendees" : "" $>' border=0 cellpadding=0 cellspacing=0 <$= AjxEnv.isIE ? "width=99%" : "width=100%" $>>
 		<tr>
-			<$ for (var k = 0; k < data.cellCount; k++) { $>
+			<$
+            var normalClassName = "ZmSchedulerGridDiv", newClass;
+            for (var k = 0; k < data.cellCount; k++) {
+                newClass = normalClassName;
+                if(k == data.dateBorder.start) {
+                   newClass = normalClassName + "-start";
+                }else if(k == data.dateBorder.end) {
+                   newClass = normalClassName + "-end";
+                }else if (k % 2 == 0) {
+                    newClass = normalClassName + "-halfHour";
+                }
+            $>
 			<td class='ZmScheduler-free' width=2%>
-				<div id='${sched.dwtTableId}_<$= k $>' class='ZmSchedulerGrid<$= data.isAllAttendees ? "TopCell" : "Div" $>'></div>
+				<div id='${sched.dwtTableId}_<$= k $>' class='<$= newClass $>'></div>
 			</td>
 			<$ } $>
 		</tr>
