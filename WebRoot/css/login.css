@@ -209,7 +209,7 @@ FORM {
 	text-align:left;
 }
 .LoginScreen #ZLoginNotice {
-	bottom:3px;
+	bottom:30px;
 	color:#FFF;
 	font-size:11px;
 	position:absolute;
@@ -217,6 +217,16 @@ FORM {
 	width:100%;
 	z-index:10;
 }
+
+.LoginScreen #ZLoginCopyRight {
+	bottom:5px;
+	font-size:11px;
+	position:absolute;
+	text-align:center;
+	width:100%;
+	z-index:10;
+}
+
 .LoginScreen #ZLoginNotice a {
 	color:#FFF;
 }
