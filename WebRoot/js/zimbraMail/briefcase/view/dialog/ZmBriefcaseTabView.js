@@ -161,6 +161,7 @@ function(folderId, results) {
 		this._controller._list.setHasMore(searchResult.getAttribute("more"));
 		ZmListController.prototype.show.call(this._controller, searchResult, ZmId.VIEW_BRIEFCASE_ICON);
 		this._listView.set(list);
+        this._listView.focus();
 		this._controller._setItemCountText();
 	}
 };
