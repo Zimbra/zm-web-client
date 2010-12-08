@@ -719,7 +719,8 @@ function(width) {
 	// start/end date DwtCalendar's
 	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_startMiniCalBtn", dateButtonListener, dateCalSelectionListener);
 	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_endMiniCalBtn", dateButtonListener, dateCalSelectionListener);
-
+	this._startDateButton.setSize("20");
+	this._endDateButton.setSize("20");
 	if (this._hasReminderSupport) {
 		var params = {
 			parent: this,
@@ -736,7 +737,7 @@ function(width) {
 		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
 		var reminderSelectionListener = new AjxListener(this, this._reminderSelectionListener);
 		this._reminderButton = ZmCalendarApp.createReminderButton(this, this._htmlElId + "_reminderSelect", reminderButtonListener, reminderSelectionListener);
-
+		this._reminderButton.setSize("20");
         this._reminderEmailCheckbox = new DwtCheckbox({parent: this});
         this._reminderEmailCheckbox.replaceElement(document.getElementById(this._htmlElId + "_reminderEmailCheckbox"));
         this._reminderEmailCheckbox.setText(ZmMsg.email);
