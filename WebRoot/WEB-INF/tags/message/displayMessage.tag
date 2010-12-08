@@ -241,7 +241,7 @@
                                 </c:if>
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${fn:escapeXml(hurl)}&amp;op=reply">
-                                        <app:img src="startup/ImgReply.gif" alt="reply"/>
+                                        <app:img src="startup/ImgReply.gif" altkey="reply"/>
                                         &nbsp;
                                         <span><fmt:message key="reply"/></span>
                                     </a>
@@ -249,7 +249,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${fn:escapeXml(hurl)}&amp;op=replyAll">
-                                        <app:img src="startup/ImgReplyAll.gif" alt="replyall"/>
+                                        <app:img src="startup/ImgReplyAll.gif" altkey="replyAll"/>
                                         &nbsp;
                                         <span><fmt:message key="replyAll"/></span>
                                     </a>
@@ -257,7 +257,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${fn:escapeXml(hurl)}&amp;op=forward">
-                                        <app:img src="startup/ImgForward.gif" alt="forward"/>
+                                        <app:img src="startup/ImgForward.gif" altkey="forward"/>
                                         &nbsp;
                                         <span><fmt:message key="forward"/></span>
                                     </a>
