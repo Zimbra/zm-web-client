@@ -183,10 +183,19 @@ function(what, targetFolderType) {
                  || (what.isRemote() && !this._remoteMoveOk(what))
                  ||  what.disallowSubFolder
                  );
-    }else{ //ZmBriefcaseItem
+    } else { //ZmBriefcaseItem
         var items = AjxUtil.toArray(what);
 		var item = items[0];
-        if(item.type == ZmItem.BRIEFCASE_ITEM){
+        if (item.type == ZmItem.BRIEFCASE_ITEM){
+            // Can't move folder items to themselves
+            if (!invalid) {
+                for (var i = 0; i < items.length; i++) {
+                    if (items[i] instanceof ZmBriefcaseFolderItem && items[i].id == this.id) {
+                        invalid = true;
+                        break;
+                    }
+                }
+            }
             // can't move items to folder they're already in; we're okay if
             // we have one item from another folder
             if (!invalid && item.folderId) {
@@ -199,18 +208,18 @@ function(what, targetFolderType) {
                     }
                 }
             }
-        }else{
+        } else {
             invalid = true;
         }
         
         // attachments from mail can be moved inside briefcase
-		if(item && item.msgId && item.partId){
+		if (item && item.msgId && item.partId) {
 			invalid = false;
 		}
 
     }
 
-    if(!invalid && this.link){
+    if (!invalid && this.link) {
         invalid = this.isReadOnly();
     }	
 
