@@ -54,6 +54,7 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
 
     //used to preserve original attendees while forwarding appt
     this._fwdApptOrigAttendees = [];
+    this._attendeesHashMap = {};
 };
 
 ZmApptEditView.prototype = new ZmCalItemEditView;
@@ -163,6 +164,8 @@ function() {
 			this._attInputField[attType].clear();
 		}
 	}
+
+    this._attendeesHashMap = {};
 
     //Default Persona
     this.setIdentity();
@@ -1809,7 +1812,12 @@ function(type, value, markAsOptional) {
 		if (!item) { continue; }
 
         var contact = AjxEmailAddress.parse(item);
-		var attendee = ZmApptViewHelper.getAttendeeFromItem(item, type);
+        var addr = contact.getAddress();
+        var key = addr + "-" + type;
+        if(!this._attendeesHashMap[key]) {
+            this._attendeesHashMap[key] = ZmApptViewHelper.getAttendeeFromItem(item, type);
+        }
+        var attendee = this._attendeesHashMap[key];
 		if (attendee) {
             if(markAsOptional) attendee.setParticipantRole(ZmCalItem.ROLE_OPTIONAL);
 			attendees.add(attendee);
