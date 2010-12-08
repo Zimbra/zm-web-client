@@ -307,10 +307,11 @@ BODY						{	margin:0px; 				}
     background-color:transparent;
 }
 .SplashScreen .copyright {
-    color:@lighten(LoginColor,36)@; 
+    bottom:5px;
+    color:@lighten(LoginColor,36)@;
     font-size:11px;
-    margin:13px 0px 3px;
     text-align:center;
+    position:fixed;
 }
 
 /** Logo Images **/

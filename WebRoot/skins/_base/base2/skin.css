@@ -278,10 +278,11 @@ BODY						{	margin:0px; 				}
     margin:30px 100px 60px;
 }
 .SplashScreen .copyright {
-    color: @darken(AppC,50)@; 
+    bottom:5px;
+    color: @darken(AppC,50)@;
     font-size:11px;
-    margin:13px 0px 3px;
     text-align:center;
+    position:fixed;
 }
 
 /** Logo Images **/
