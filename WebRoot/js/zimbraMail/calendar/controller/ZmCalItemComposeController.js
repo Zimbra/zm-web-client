@@ -70,8 +70,6 @@ function(calItem, mode, isDirty) {
 ZmCalItemComposeController.prototype._preHideCallback =
 function(view, force) {
 
-	this._setSearchToolbarVisibilityPerSkin(true);
-	
 	ZmController.prototype._preHideCallback.call(this);
 	return force ? true : this.popShield();
 };
@@ -90,6 +88,7 @@ function(view, force) {
 ZmCalItemComposeController.prototype._postHideCallback =
 function() {
 	// overload me
+	this._setSearchToolbarVisibilityPerSkin(true);
 };
 
 ZmCalItemComposeController.prototype.popShield =

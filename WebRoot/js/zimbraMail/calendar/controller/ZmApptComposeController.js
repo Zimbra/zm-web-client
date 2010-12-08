@@ -1086,7 +1086,9 @@ function(type) {
 
 ZmApptComposeController.prototype._postHideCallback =
 function() {
-	// overload me
+
+	ZmCalItemComposeController.prototype._postHideCallback(); 
+
     if(appCtxt.getCurrentAppName() == ZmApp.CALENDAR || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
         appCtxt.getAppViewMgr().showTreeFooter(true);
     }
