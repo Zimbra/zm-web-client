@@ -22,12 +22,11 @@
 
 <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
 <zm:getMailbox var="mailbox"/>
-<c:set var="folder" value="${zm:getFolder(pageContext, contact.folderId)}"/>
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr>
     <td class='ZhBottomSep'>
         <table width="100%" cellspacing="0" cellpadding="0">
-            <tr class='${not empty folder ? folder.styleColor : 'Gray'}Bg'>
+            <tr class='${zm:getFolder(pageContext, contact.folderId).styleColor}Bg'>
         <td width="20"><center><app:img src="${contact.isGroup ? 'contacts/ImgGroup.gif' : 'contacts/ImgContact.gif'}" altkey="${contact.imageAltKey}"/></center></td>
         <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : (contact.isGalContact ? contact.fullName : contact.displayFileAs))} <c:if test="${contact.isGalContact}"> (${fn:escapeXml(contact.displayFileAs)}) </c:if>
         </td>
@@ -56,13 +55,11 @@
             </c:if>
         </td><td width="20">
         <c:if test="${!contact.isGalContact}">
-        <c:set var="folderImage" value="${not empty folder ? folder.image : ''}"/>
-            <c:if test="${not empty folderImage}">
-               <app:img altkey='ALT_CONTACT_FOLDER' src="${folderImage}"/>
-            </c:if>
+        <c:set var="folderImage" value="${zm:getFolder(pageContext, contact.folderId).image}"/>
+        <app:img altkey='ALT_CONTACT_FOLDER' src="${folderImage}"/>
         </c:if>
     </td><td
-            class="companyFolder">${not empty folder ? folder.name : ''}</td>
+            class="companyFolder">${fn:escapeXml(zm:getFolderName(pageContext, contact.folderId))}</td>
     </tr>
 </tbody></table>
     </td>

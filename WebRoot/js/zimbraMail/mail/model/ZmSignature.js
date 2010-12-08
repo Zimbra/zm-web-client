@@ -52,8 +52,7 @@ ZmSignature.prototype.value = "";
 // Static functions
 //
 
-ZmSignature.createFromJson =
-function(object) {
+ZmSignature.createFromJson = function(object) {
 	var signature = new ZmSignature(object.id);
 	signature.setFromJson(object);
 	return signature;
@@ -101,8 +100,7 @@ function(callback, errorCallback, batchCmd) {
  * @param	{AjxCallback}		errorCallback		the error callback
  * @param	{ZmBatchCommand}		batchCmd		the batch command
  */
-ZmSignature.prototype.doDelete =
-function(callback, errorCallback, batchCmd) {
+ZmSignature.prototype.doDelete = function(callback, errorCallback, batchCmd) {
 	var respCallback = callback ? new AjxCallback(this, this._handleDeleteResponse, [callback]) : null;
 	var resp = this._sendRequest("DeleteSignatureRequest", true, respCallback, errorCallback, batchCmd);
 	if (!callback && !batchCmd) {
@@ -115,18 +113,14 @@ function(callback, errorCallback, batchCmd) {
  * 
  * @param	{Object}	object		the object
  */
-ZmSignature.prototype.setFromJson =
-function(object) {
-
+ZmSignature.prototype.setFromJson = function(object) {
 	this.name = object.name || this.name;
-	var c = object.content;
-    if (c) {
-		var sig = c[0]._content ? c[0] : c[1];
-		this.contentType = sig.type || this.contentType;
-		this.value = sig._content || this.value;
+    if(object.content){
+        var content = (object.content[0]._content == "" && object.content[1]._content != "") ? object.content[1] : object.content[0]
     }
-	if (object.cid) {
-		this.contactId = object.cid[0]._content;
+	if (content) {
+		this.contentType = content.type || this.contentType;
+		this.value = content._content != null ? content._content : this.value;
 	}
 };
 
@@ -135,8 +129,7 @@ function(object) {
  * 
  * @return	{String}	the content type
  */
-ZmSignature.prototype.getContentType =
-function() {
+ZmSignature.prototype.getContentType = function(){
     return this.contentType;
 };
 
@@ -146,8 +139,7 @@ function() {
  * @param	{String}	ct		the content type
  * @see		ZmMimeTable
  */
-ZmSignature.prototype.setContentType =
-function(ct){
+ZmSignature.prototype.setContentType = function(ct){
     this.contentType = ct || ZmMimeTable.TEXT_PLAIN;  
 };
 
@@ -160,8 +152,7 @@ function(ct){
  *
  * @private
  */
-ZmSignature.prototype.getValue =
-function(outputType) {
+ZmSignature.prototype.getValue = function(outputType) {
 	
     var isHtml = this.contentType == ZmMimeTable.TEXT_HTML;
 	var value = this.value;
@@ -181,28 +172,6 @@ function(outputType) {
 
 ZmSignature.prototype._sendRequest =
 function(method, idOnly, respCallback, errorCallback, batchCmd) {
-
-/*
-	var jsonObj = {};
-	var request = jsonObj[method] = {_jsns:"urn:zimbraAccount"};
-	var sig = request.signature = {};
-	if (this.id) {
-		sig.id = this.id;
-	}
-	if (!idOnly) {
-		sig.name = this.name;
-		if (this.contactId) {
-			sig.cid = this.contactId;
-		}
-		sig.content = [];
-		sig.content.push({_content:this.value, type:this.contentType});
-
-        // Empty the other content type
-        var emptyType = (this.contentType == ZmMimeTable.TEXT_HTML) ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML;
-		sig.content.push({_content:"", type:emptyType});
-	}
-*/
-
 	var soapDoc = AjxSoapDoc.create(method, "urn:zimbraAccount");
 	var signatureEl = soapDoc.set("signature");
 	if (this.id) {
@@ -210,9 +179,6 @@ function(method, idOnly, respCallback, errorCallback, batchCmd) {
 	}
 	if (!idOnly) {
 		signatureEl.setAttribute("name", this.name);
-		if (this.contactId) {
-			soapDoc.set("cid", this.contactId, signatureEl);
-		}
 		var contentEl = soapDoc.set("content", this.value, signatureEl);
 		contentEl.setAttribute("type", this.contentType);
 
@@ -220,7 +186,7 @@ function(method, idOnly, respCallback, errorCallback, batchCmd) {
         var emptyType = (this.contentType == ZmMimeTable.TEXT_HTML) ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML;
         contentEl = soapDoc.set("content", "", signatureEl);
 		contentEl.setAttribute("type", emptyType);
-
+        
 	}
 
 	if (batchCmd) {
@@ -230,16 +196,15 @@ function(method, idOnly, respCallback, errorCallback, batchCmd) {
 
 	var appController = appCtxt.getAppController();
 	var params = {
-		soapDoc:		soapDoc,
-		asyncMode:		Boolean(respCallback),
-		callback:		respCallback,
-		errorCallback:	errorCallback
+		soapDoc: soapDoc,
+		asyncMode: Boolean(respCallback),
+		callback: respCallback,
+		errorCallback: errorCallback
 	}
 	return appController.sendRequest(params);
 };
 
-ZmSignature.prototype._handleCreateResponse =
-function(callback, resp) {
+ZmSignature.prototype._handleCreateResponse = function(callback, resp) {
 	// save id
 	this.id = resp._data.CreateSignatureResponse.signature[0].id;
 

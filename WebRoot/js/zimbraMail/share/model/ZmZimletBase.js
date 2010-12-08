@@ -155,15 +155,6 @@ function(key) {
 	return !key ? this._zimletContext : this._zimletContext.getVal(key);
 };
 
-/**
- * Gets the zimlet context.
- * 
- * @return	{ZimletContext}	the context
- */
-ZmZimletBase.prototype.getZimletContext =
-function() {
-	return	this._zimletContext;
-}
 
 /*
  * 
@@ -844,17 +835,6 @@ ZmZimletBase.prototype.resetIcon =
 function() {
 	this.setIcon(this._origIcon);
 };
-
-
-/**
- * Reset the toolbar
- *
- * @param	{ZmButtonToolBar|ZmActionMenu}  parent  the toolbar or action menu
- * @param	{int}   enable  number of items selected
- */
-ZmZimletBase.prototype.resetToolbarOperations =
-function(parent, num){};
-
 
 /**
  * Saves the user properties.

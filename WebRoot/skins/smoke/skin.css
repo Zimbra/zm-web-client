@@ -48,7 +48,7 @@ body	{  @ChromeBg@ }
 
 #skin_container_search {	
 	background: #919396 url("@SkinImgDir@/search_bg.png") top left repeat-x;
-	color: #333333;	
+	color: #d5d5d3;	
 	border: 0;
 }
 
@@ -121,15 +121,3 @@ body	{  @ChromeBg@ }
 .ZOptionsSectionTable .ZToolbarButtonTable .ZWidgetTitle {
 	color: #333;
 }
-
-.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
-	background-color: #fff;
-	border-bottom-color: #fff;
-}
-
-#skin_spacing_filler				{	
-	height:12px; 
-	border-top: solid 1px #939598;
-	background: transparent;
-
- }

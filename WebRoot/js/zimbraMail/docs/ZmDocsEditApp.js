@@ -48,6 +48,8 @@ ZmDocsEditApp.launch = function(){
 
     appCtxt.rememberMe = false;
 
+    window.skin = null;
+
     // Create and initialize settings
     var settings = new ZmSettings();
     appCtxt.setSettings(settings);
@@ -117,19 +119,8 @@ ZmDocsEditApp._createDBG = function(devMode){
     }
 };
 
-ZmDocsEditApp._beforeUnload =
-function(){
-    var appCtrl = appCtxt.getAppController();
-    var msg = appCtrl.checkForChanges();
-    if(msg) {
-        return msg;
-    }
-    return appCtrl.exit();
-};
-
 window.onload = function() {
     setTimeout(function() {
             ZmDocsEditApp.launch();
-            window.onbeforeunload = ZmDocsEditApp._beforeUnload;
     }, 200);
 };

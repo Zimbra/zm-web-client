@@ -180,18 +180,15 @@ ZmSetting.INC_SMART_PRE_HDR		= "includeSmartAndHeadersWithPrefix";
 ZmSetting.LICENSE_BAD			= "bad";					// license status (network only)
 ZmSetting.LICENSE_GOOD			= "good";
 ZmSetting.LICENSE_GRACE			= "inGracePeriod";
-ZmSetting.LICENSE_NOT_ACTIVATED = "NOT_ACTIVATED";
-ZmSetting.LICENSE_NOT_INSTALLED = "NOT_INSTALLED";
 ZmSetting.MARK_READ_NONE		= -1;						// zimbraPrefMarkMsgRead
 ZmSetting.MARK_READ_NOW			= 0;						// zimbraPrefMarkMsgRead
 ZmSetting.MARK_READ_TIME		= 1;						// zimbraPrefMarkMsgRead
-ZmSetting.PRINT_FONT_SIZE 	    = AjxMessageFormat.format(ZmMsg.pt,"12"); 			// zimbraPrefDefaultPrintFontSize
 ZmSetting.PROTO_HTTP			= "http:";
 ZmSetting.PROTO_HTTPS			= "https:";
 ZmSetting.PROTO_MIXED			= "mixed:";
 ZmSetting.RIGHT_VIEW_FREE_BUSY	= "viewFreeBusy";
 ZmSetting.RIGHT_INVITE			= "invite";
-ZmSetting.RP_BOTTOM				= "bottom";					// zimbraPrefReadingPaneLocation / zimbraPrefConvReadingPaneLocation / zimbraPrefTasksReadingPaneLocation / zimbraPrefBriefcaseReadingPaneLocation
+ZmSetting.RP_BOTTOM				= "bottom";					// zimbraPrefReadingPaneLocation / zimbraPrefConvReadingPaneLocation
 ZmSetting.RP_OFF				= "off";
 ZmSetting.RP_RIGHT				= "right";
 ZmSetting.SIG_INTERNET			= "internet";				// zimbraPrefMailSignatureStyle
@@ -217,8 +214,6 @@ ZmSetting.CALENDAR_UPSELL_ENABLED	= "CALENDAR_UPSELL_ENABLED";
 ZmSetting.CONTACTS_UPSELL_ENABLED	= "CONTACTS_UPSELL_ENABLED";
 ZmSetting.MAIL_UPSELL_ENABLED		= "MAIL_UPSELL_ENABLED";
 ZmSetting.VOICE_UPSELL_ENABLED		= "VOICE_UPSELL_ENABLED";
-
-ZmSetting.MAIL_SEND_LATER_ENABLED	= "MAIL_SEND_LATER_ENABLED";
 
 // remove this block when offline.jsp upgrades
 ZmSetting.APPS_COOKIE			= "ZM_APPS";

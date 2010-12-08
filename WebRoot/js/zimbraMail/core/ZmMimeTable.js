@@ -46,7 +46,6 @@ ZmMimeTable.APP_OCTET_STREAM		= "application/octet-stream";
 ZmMimeTable.APP_OPENXML_DOC			= "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 ZmMimeTable.APP_OPENXML_EXCEL		= "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 ZmMimeTable.APP_OPENXML_PPT			= "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-ZmMimeTable.APP_XML     			= "application/xml";
 ZmMimeTable.APP_ZIMBRA_DOC			= "application/x-zimbra-doc";
 ZmMimeTable.APP_ZIMBRA_SLIDES		= "application/x-zimbra-slides";
 ZmMimeTable.APP_ZIMBRA_SPREADSHEET	= "application/x-zimbra-xls";
@@ -99,7 +98,6 @@ ZmMimeTable._table[ZmMimeTable.APP_OCTET_STREAM]	= {desc: ZmMsg.unknownBinaryTyp
 ZmMimeTable._table[ZmMimeTable.APP_OPENXML_DOC]		= {desc: ZmMsg.msWordDocument, image: "MSWordDoc", imageLarge: "MSWordDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_OPENXML_EXCEL]	= {desc: ZmMsg.msExcelDocument, image: "MSExcelDoc", imageLarge: "MSExcelDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_OPENXML_PPT]		= {desc: ZmMsg.msPPTDocument, image: "MSPowerpointDoc", imageLarge: "MSPowerpointDoc_48"};
-ZmMimeTable._table[ZmMimeTable.APP_XML]			    = {desc: ZmMsg.xmlDocument, image: "GenericDoc", imageLarge: "GenericDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_ZIMBRA_DOC]  	= {desc: ZmMsg.zimbraDocument, image: "Doc", imageLarge: "Doc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_ZIMBRA_SLIDES]	= {desc: ZmMsg.zimbraPresentation, image: "Presentation", imageLarge: "Presentation_48"};
 ZmMimeTable._table[ZmMimeTable.APP_ZIMBRA_SPREADSHEET] = {desc: ZmMsg.zimbraSpreadsheet, image: "ZSpreadSheet", imageLarge: "ZSpreadSheet_48" };
@@ -167,7 +165,9 @@ ZmMimeTable.isRenderable =
 function(type) {
 	return (type == ZmMimeTable.TEXT_HTML ||
 			type == ZmMimeTable.TEXT_PLAIN ||
-			ZmMimeTable.isRenderableImage(type));
+			type == ZmMimeTable.IMG_JPEG ||
+			type == ZmMimeTable.IMG_GIF ||
+			type == ZmMimeTable.IMG_PNG);
 };
 
 ZmMimeTable.isTextType =

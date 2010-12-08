@@ -53,54 +53,46 @@
 <c:set var="sender" value="${message.displaySender}"/>
 <c:if test="${ua.isiPad == true}">
 <fmt:message var="noSubject" key="noSubject"/>
-    <div class="wrap-dcontent" id="wrap-dcontent-view">
-                    <div id="dcontent-view" style="padding-bottom:5px;">
-<div style="background: white;">
-</c:if>
-
-<c:if test="${not empty from}">
-<div class="View address">
-    <span class='label'><fmt:message key="fromLabel"/></span>
-    <span id="d_from">${fn:escapeXml(from)}</span>
-    <span style="float:right;" id="d_btn_td" <c:if test="${empty param.ajax}">style="display:none;"</c:if>>
-        <a id='d_btn' onclick="return toggleElem('d_div',this,'<fmt:message key="MO_hideDetails"/>','<fmt:message key="MO_showDetails"/>')"><fmt:message key="MO_showDetails"/></a>
-    </span>    
-</div>
-    <div id="d_div" style="display:${(empty param.ajax or ua.isiPad) ? 'block' : 'none'};" >
-        <c:if test="${not empty sender}">
-        <div class="View address">
-            <span valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="senderLabel"/></span>
-            <span class="">${fn:escapeXml(sender)}</span>
-        </div>
-        </c:if><c:if test="${not empty to}">
-        <div class="View address">
-            <span valign='top' class='label' nowrap="nowrap" width="35" align="right"><fmt:message key="toLabel"/></span>
-            <span class="" >${fn:escapeXml(to)}</span>
-        </div></c:if>
-        <c:if test="${not empty cc}"><div class="View address"><span valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="ccLabel"/></span><span class="" >${fn:escapeXml(cc)}</span></div></c:if>
-    </div><script type="text/javascript">var elem =  document.getElementById('d_div');if(elem) elem.style.display = 'none';elem = document.getElementById('d_btn_td');if(elem) elem.style.display = 'block';</script>
-</c:if>
-
-
-    <c:if test="${ua.isiPad eq true}">
-       <div style="background-color: #ececed;border-bottom: 1px solid #dbdbdc; padding: 4px 6px;">
-        <div class="subject">${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
-            <c:if test="${message.isFlagged}"><span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
-            <c:if test="${message.hasTags and mailbox.features.tagging}">
-         <span class="mo_taglist"><c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
-            <c:forEach items="${tags}" var="tag"><span class="SmlIcnHldr Tag${tag.color}">&nbsp;</span><span>${fn:escapeXml(tag.name)}</span></c:forEach>
-        </span>
-            </c:if>
-        </div>
-
-        <div class='time'>
-            <fmt:message var="dateFmt" key="formatDateSent"/>
-            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" value="${message.sentDate}" pattern="yyyyMMdd" var="caldt"/>
-            <a <c:if test="${mailbox.features.calendar}">href="?st=cal&amp;view=month&amp;date=${caldt}" </c:if>><fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></a>
-        </div>
-       </div> 
+<div class="header">
+<div class="alignLeft subject">${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
+    <c:if test="${message.isFlagged}"><span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
+    <c:if test="${message.hasTags and mailbox.features.tagging}">
+     <span class="mo_taglist"><c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
+        <c:forEach items="${tags}" var="tag"><span class="SmlIcnHldr Tag${tag.color}">&nbsp;</span><span>${fn:escapeXml(tag.name)}</span></c:forEach>
+    </span>
     </c:if>
-<div class="cushion">
+</div>
+
+<div class='alignLeft time'>
+    <fmt:message var="dateFmt" key="formatDateSent"/>
+    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" value="${message.sentDate}" pattern="yyyyMMdd" var="caldt"/>
+    <a <c:if test="${mailbox.features.calendar}">href="?st=cal&amp;view=month&amp;date=${caldt}" </c:if>><fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></a>
+</div>
+
+</div>
+
+</c:if>
+<div class="msgBody">
+<div class="View address"><c:if test="${not empty from}"><span class='label'><fmt:message key="fromLabel"/></span>
+    <c:if test="${ua.isiPad == false}">
+        <span class="" id="d_btn_td" <c:if test="${empty param.ajax}">style="display:none;"</c:if>> <a id='d_btn' onclick="return toggleElem('d_div',this,'<fmt:message key="hide"/>','<fmt:message key="details"/>')"><fmt:message key="details"/></a></span>
+    </c:if>
+    <span class=""><span id="d_from">${fn:escapeXml(from)}</span>
+</span></c:if></div>
+
+<div id="d_div" style="display:${(empty param.ajax or ua.isiPad) ? 'block' : 'none'};" >
+    <c:if test="${not empty sender}">
+    <div class="View">
+        <span valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="senderLabel"/></span>
+        <span class="">${fn:escapeXml(sender)}</span>
+    </div>
+    </c:if><c:if test="${not empty to}">
+    <div class="View address">
+        <span valign='top' class='label' nowrap="nowrap" width="35" align="right"><fmt:message key="toLabel"/></span>
+        <span class="" >${fn:escapeXml(to)}</span>
+    </div></c:if>
+    <c:if test="${not empty cc}"><div class="View address"><span valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="ccLabel"/></span><span class="" >${fn:escapeXml(cc)}</span></div></c:if>
+</div><script type="text/javascript">var elem =  document.getElementById('d_div');if(elem) elem.style.display = 'none';elem = document.getElementById('d_btn_td');if(elem) elem.style.display = 'block';</script>
 <div class="View">
 
     <c:if test="${ua.isiPad == false}">
@@ -132,11 +124,11 @@
 <hr size="1"/>
 </c:if>
 <c:if test="${not hideops}"><c:if test="${showInviteReply}"><div class="tbl"><div class="tr"><div class="td">
-            <span class="${ua.isiPad eq true ? '' : 'SmlIcnHldr Check'}">&nbsp;</span>
+            <span class="SmlIcnHldr Check">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="?st=newmail&id=${message.id}&amp;op=accept" class="Action accept"><fmt:message key="replyAccept"/></a> &nbsp;
-            <span class="${ua.isiPad eq true ? '' : 'SmlIcnHldr Question'}">&nbsp;</span>
+            <span class="SmlIcnHldr Question">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPTENT"</c:if> href="?st=newmail&id=${message.id}&amp;op=tentative" class="Action tentative"><fmt:message key="replyTentative"/></a>
-            <span class="${ua.isiPad eq true ? '' : 'SmlIcnHldr Cancel'}">&nbsp;</span>
+            <span class="SmlIcnHldr Cancel">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="?st=newmail&id=${message.id}&amp;op=decline" class="Action decline"><fmt:message key="replyDecline"/></a>
 </div></div></div><hr size="1"/></c:if></c:if>
 <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
@@ -152,12 +144,10 @@
         </c:forEach>
     </c:if>
 </div>
+</div>
+
 
 <c:if test="${not empty message.attachments}"><div class="View attachments"><a name="attachments${message.partName}"></a><mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/></div></c:if>
 <c:if test="${not empty param.debug}"><div><pre>${fn:escapeXml(message)}</pre></div></c:if></c:if>
 
-</div>
-</div>
-</div>
-</div>
 </div>

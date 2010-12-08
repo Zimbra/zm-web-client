@@ -20,9 +20,9 @@
  */
 
 /**
- * Creates a new task controller to manage task creation/editing.
+ * Creates a new appointment controller to manage appointment creation/editing.
  * @class
- * This class manages task creation/editing.
+ * This class manages appointment creation/editing.
  *
  * @author Parag Shah
  *
@@ -38,8 +38,6 @@ ZmTaskController = function(container, app) {
 
 ZmTaskController.prototype = new ZmCalItemComposeController;
 ZmTaskController.prototype.constructor = ZmTaskController;
-
-ZmTaskController.DEFAULT_TAB_TEXT = ZmMsg.task;
 
 /**
  * Returns a string representation of the object.
@@ -58,14 +56,12 @@ function(attId) {
 	var calItem = this._composeView.getCalItem(attId);
 	if (calItem) {
 		this._saveCalItemFoRealz(calItem, attId);
-		return true;
 	}
-	return false;
+	return true;
 };
 
-
 ZmTaskController.prototype._handleResponseSave =
-function(calItem, result) {
+function(calItem) {
 	ZmCalItemComposeController.prototype._handleResponseSave.call(this, calItem);
 
 	// XXX: null out message so we re-fetch task next time its opened
@@ -75,13 +71,8 @@ function(calItem, result) {
 
     //Cache the item for further processing
     calItem.cache();
-    //need to set rev,ms for next soap request
-    calItem.setFromSavedResponse(result);
-    
+
 	appCtxt.setStatusMsg(ZmMsg.taskSaved);
-    if(calItem.alarm == true) {
-        this._app.getReminderController().refresh();
-    }    
 };
 
 ZmTaskController.prototype._createComposeView =
@@ -138,23 +129,22 @@ function(task, newFolderId) {
 
 // Private / Protected methods
 
-ZmTaskController.prototype._getTabParams =
+ZmTaskController.prototype._getViewType =
 function() {
-	return {id:this.tabId, image:"NewTask", text:ZmTaskController.DEFAULT_TAB_TEXT, textPrecedence:77,
-			tooltip:ZmTaskController.DEFAULT_TAB_TEXT};
+	return ZmId.VIEW_TASKEDIT;
 };
 
 // Callbacks
 
 ZmTaskController.prototype._printListener =
 function() {
-	var url = ["/h/printtasks?id=", this._composeView._calItem.invId];
-    
-    if (appCtxt.isOffline) {
-        var acctName = this._composeView._calItem.getAccount().name;
-        url.push("&acct=", acctName);
-    }
-	window.open([appContextPath, url.join(""), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)].join(""), "_blank");
+	var url = ("/h/printtasks?id=" + this._composeView._calItem.invId);
+	window.open(appContextPath+url, "_blank");
+};
+
+ZmTaskController.prototype._closeView = function() {
+    appCtxt.getAppViewMgr().showPendingView(true);
+	this._composeView.cleanup();
 };
 
 ZmTaskController.prototype.closeView = function() {

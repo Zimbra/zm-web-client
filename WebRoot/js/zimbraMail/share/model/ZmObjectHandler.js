@@ -28,8 +28,8 @@
  * <br />
  * To write a zimlet, see {@link ZmZimletBase}. 
  * 
- * @param	{string}	typeName	the type name
- * @param	{string}	className	the class name
+ * @param	{String}	typeName	the type name
+ * @param	{String}	className	the class name
  */
 ZmObjectHandler = function(typeName, className) {
 	if (arguments.length > 0) {
@@ -42,8 +42,8 @@ ZmObjectHandler.prototype.constructor = ZmObjectHandler;
 /**
  * This method is called by the Zimlet framework to initialize the object.
  * 
- * @param	{string}	typeName	the type name
- * @param	{string}	className	the class name; if <code>null</code>, "Object" will be used
+ * @param	{String}	typeName	the type name
+ * @param	{String}	className	the class name; if <code>null</code>, "Object" will be used
  */
 ZmObjectHandler.prototype.init =
 function(typeName, className) {
@@ -54,7 +54,7 @@ function(typeName, className) {
 /**
  * Returns a string representation of the object.
  * 
- * @return		{string}		a string representation of the object
+ * @return		{String}		a string representation of the object
  */
 ZmObjectHandler.prototype.toString = 
 function() {
@@ -72,7 +72,7 @@ function() {
 /**
  * Gets the type name.
  * 
- * @return	{string}		the type name
+ * @return	{String}		the type name
  */
 ZmObjectHandler.prototype.getTypeName =
 function() {
@@ -84,27 +84,23 @@ function() {
  * 
  * @param	{Object}		obj			the object
  * @param	{Object}		context		the content
- * @param	{string}		spanId		ID of the SPAN
- *
- * @return	{string}		the class name
+ * @return	{String}		the class name
  */
 ZmObjectHandler.prototype.getClassName =
-function(obj, context, spanId) {
+function(obj, context) {
 	return this._className;
 };
 
 /**
  * Gets the hovered class name for the given object.
  * 
- * @param	{Object}		obj			the object
+ * @param	{Object}		obj		the object
  * @param	{Object}		context		the content
- * @param	{string}		spanId		ID of hovered SPAN
- *
- * @return	{string}		the hovered class name
+ * @return	{String}		the hovered class name
  */
 ZmObjectHandler.prototype.getHoveredClassName =
-function(obj, context, spanId) {
-	var cname = this.getClassName(obj, context, spanId);
+function(obj, context) {
+	var cname = this.getClassName(obj);
 	if (this._cachedClassNameForHovered !== cname) {
 		this._cachedClassNameForHovered = cname;
 		this._classNameHovered = cname + "-" + DwtCssStyle.HOVER;
@@ -117,13 +113,11 @@ function(obj, context, spanId) {
  * 
  * @param	{Object}		obj		the object
  * @param	{Object}		context		the content
- * @param	{string}		spanId		ID of the SPAN
- *
- * @return	{string}		the active class name
+ * @return	{String}		the active class name
  */
 ZmObjectHandler.prototype.getActiveClassName =
-function(obj, context, spanId) {
-	var cname = this.getClassName(obj, context, spanId);
+function(obj, context) {
+	var cname = this.getClassName(obj);
 	if (this._cachedClassNameForActive !== cname) {
 		this._cachedClassNameForActive = cname;
 		this._classNameActive = cname + "-" + DwtCssStyle.ACTIVE;
@@ -174,7 +168,7 @@ function(content, startIndex) {
 /**
  * Generates content inside the <code>&lt;span&gt;</code> tag.
  * 
- * @return	{number}	the content index
+ * @return	{Number}	the content index
  * @private
  * */
 ZmObjectHandler.prototype._getHtmlContent =
@@ -186,11 +180,11 @@ function(html, idx, obj, context, spanId) {
 /**
  * Generates the <code>&lt;span&gt;</code> tag.
  * 
- * @return	{number}	the content index
+ * @return	{Number}	the content index
  * @private
  */
 ZmObjectHandler.prototype.generateSpan = 
-function(html, idx, obj, spanId, context, options) {
+function(html, idx, obj, spanId, context) {
 	html[idx++] = "<span class='";
 	html[idx++] = this.getClassName(obj);
 	html[idx++] = "' id='";
@@ -218,7 +212,7 @@ function(obj, context) {
  * 
  * @param		{Object}	obj			the object
  * @param		{Object}	context		the context
- * @return		{string}	the handler has tool tip text
+ * @return		{String}	the handler has tool tip text
  */
 ZmObjectHandler.prototype.getToolTipText =
 function(obj, context) {
@@ -239,11 +233,9 @@ function(obj, context) {
  * Gets the action menu.
  * 
  * @param		{Object}	obj			the object
- * @param		{string}	span		the span element
+ * @param		{String}	span		the span element
  * @param		{Object}	context		the context
- * @return		{ZmActionMenu}	the action menu
- * 
- * @private
+ * @return		the action menu
  */
 ZmObjectHandler.prototype.getActionMenu =
 function(obj, span, context) {
@@ -254,7 +246,7 @@ function(obj, span, context) {
  * This method is called by the Zimlet framework when the handler is selected.
  * 
  * @param		{Object}	obj			the object
- * @param		{string}	span		the span element
+ * @param		{String}	span		the span element
  * @param		{Object}	ev			the event
  * @param		{Object}	context		the context
  * @see		#clicked
@@ -268,7 +260,7 @@ function(obj, span, ev, context) {
  * This method is called by the Zimlet framework when the handler is clicked.
  * 
  * @param		{Object}	obj			the object
- * @param		{string}	span		the span element
+ * @param		{String}	span		the span element
  * @param		{Object}	ev			the event
  * @param		{Object}	context		the context
  */

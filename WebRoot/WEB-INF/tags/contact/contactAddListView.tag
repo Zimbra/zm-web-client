@@ -124,19 +124,12 @@
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
                         <c:if test="${freeBusyStatusKey eq 'free'}">
-                            <c:set var="freeBusyStatusKey" value="busy"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualTentative}">
-                            <c:set var="freeBusyStatusKey" value="tentative"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualFree}">
-                            <c:set var="freeBusyStatusKey" value="free"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualUnavailable}">
-                            <c:set var="freeBusyStatusKey" value="outOfOffice"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualNoData}">
-                            <c:set var="freeBusyStatusKey" value="unknown"/>
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
                         </c:if>
                     </c:forEach>
                    <fmt:message key="${freeBusyStatusKey}"/>
@@ -183,20 +176,16 @@
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
-                        <c:if test="${appt.freeBusyActualBusy}">
-                            <c:set var="freeBusyStatusKey" value="busy"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualTentative}">
-                            <c:set var="freeBusyStatusKey" value="tentative"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualFree}">
-                            <c:set var="freeBusyStatusKey" value="free"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualUnavailable}">
-                            <c:set var="freeBusyStatusKey" value="outOfOffice"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualNoData}">
-                            <c:set var="freeBusyStatusKey" value="unknown"/>
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualOufOfOffice}">
+                                <c:set var="freeBusyStatusKey" value="outOfOffice"/>
+                            </c:if>
                         </c:if>
                     </c:forEach>
                    <fmt:message key="${freeBusyStatusKey}"/>
@@ -243,20 +232,16 @@
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
-                        <c:if test="${appt.freeBusyActualBusy}">
-                            <c:set var="freeBusyStatusKey" value="busy"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualTentative}">
-                            <c:set var="freeBusyStatusKey" value="tentative"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualFree}">
-                            <c:set var="freeBusyStatusKey" value="free"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualUnavailable}">
-                            <c:set var="freeBusyStatusKey" value="outOfOffice"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualNoData}">
-                            <c:set var="freeBusyStatusKey" value="unknown"/>
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualOufOfOffice}">
+                                <c:set var="freeBusyStatusKey" value="outOfOffice"/>
+                            </c:if>
                         </c:if>
                     </c:forEach>
                    <fmt:message key="${freeBusyStatusKey}"/>
@@ -303,20 +288,16 @@
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
-                        <c:if test="${appt.freeBusyActualBusy}">
-                            <c:set var="freeBusyStatusKey" value="busy"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualTentative}">
-                            <c:set var="freeBusyStatusKey" value="tentative"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualFree}">
-                            <c:set var="freeBusyStatusKey" value="free"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualUnavailable}">
-                            <c:set var="freeBusyStatusKey" value="outOfOffice"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualNoData}">
-                            <c:set var="freeBusyStatusKey" value="unknown"/>
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualOufOfOffice}">
+                                <c:set var="freeBusyStatusKey" value="outOfOffice"/>
+                            </c:if>
                         </c:if>
                     </c:forEach>
                    <fmt:message key="${freeBusyStatusKey}"/>
@@ -363,22 +344,18 @@
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
-                        <c:if test="${appt.freeBusyActualBusy}">
-                           <c:set var="freeBusyStatusKey" value="busy"/>
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualOufOfOffice}">
+                                <c:set var="freeBusyStatusKey" value="outOfOffice"/>
+                            </c:if>
                         </c:if>
-                        <c:if test="${appt.freeBusyActualTentative}">
-                           <c:set var="freeBusyStatusKey" value="tentative"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualFree}">
-                            <c:set var="freeBusyStatusKey" value="free"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualUnavailable}">
-                            <c:set var="freeBusyStatusKey" value="outOfOffice"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualNoData}">
-                            <c:set var="freeBusyStatusKey" value="unknown"/>
-                        </c:if>
-                      </c:forEach>
+                    </c:forEach>
                    <fmt:message key="${freeBusyStatusKey}"/>
                 </c:if>
             </td>
@@ -423,22 +400,18 @@
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
-                        <c:if test="${appt.freeBusyActualBusy}">
-                            <c:set var="freeBusyStatusKey" value="busy"/>
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualOufOfOffice}">
+                                <c:set var="freeBusyStatusKey" value="outOfOffice"/>
+                            </c:if>
                         </c:if>
-                        <c:if test="${appt.freeBusyActualTentative}">
-                            <c:set var="freeBusyStatusKey" value="tentative"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualFree}">
-                            <c:set var="freeBusyStatusKey" value="free"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualUnavailable}">
-                            <c:set var="freeBusyStatusKey" value="outOfOffice"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualNoData}">
-                            <c:set var="freeBusyStatusKey" value="unknown"/>
-                        </c:if>
-                     </c:forEach>
+                    </c:forEach>
                     <fmt:message key="${freeBusyStatusKey}"/>
                 </c:if>
             </td>
@@ -495,20 +468,16 @@
                <c:if test="${empty exp or exp eq null}">
                     <c:set var="freeBusyStatusKey" value="free"/>
                     <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
-                        <c:if test="${appt.freeBusyActualBusy}">
-                            <c:set var="freeBusyStatusKey" value="busy"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualTentative}">
-                            <c:set var="freeBusyStatusKey" value="tentative"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualFree}">
-                            <c:set var="freeBusyStatusKey" value="free"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualUnavailable}">
-                            <c:set var="freeBusyStatusKey" value="outOfOffice"/>
-                        </c:if>
-                        <c:if test="${appt.freeBusyActualNoData}">
-                            <c:set var="freeBusyStatusKey" value="unknown"/>
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualOufOfOffice}">
+                                <c:set var="freeBusyStatusKey" value="outOfOffice"/>
+                            </c:if>
                         </c:if>
                     </c:forEach>
                     <fmt:message key="${freeBusyStatusKey}"/>

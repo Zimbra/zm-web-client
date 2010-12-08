@@ -48,30 +48,3 @@
 	margin-top: 10px;
 	border-bottom: 1px solid #c0d9ee;		/* get this from skin.properties */
 }
-
-.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
-	background-color: #fff;
-	border-bottom-color: #fff;
-}
-
-#skin_spacing_filler				{	
-	height:12px; 
-	background-color: #FFFFFF;
-	background-image: -moz-linear-gradient(top, @AltC@, #FFFFFF); /* FF3.6 */
- 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, #FFFFFF));                /* Saf4+, Chrome */
-    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='#FFFFFF');                          /* IE6,IE7 */
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='#FFFFFF')";                     /* IE8 */
- }
- 
-#skin_spacing_app_row					{ 
-/*	background-color:@AppC@; 
-	background-image: url("@SkinImgDir@/vmwareLogo.png");
-	background-position: right center;
-	background-repeat:no-repeat; */
-	padding:0px 7px;
-	border-spacing: 0px; 
-}
-
-#skin_spacing_app_row table{
-	border-spacing: 0;
-}

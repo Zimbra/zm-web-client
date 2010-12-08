@@ -112,10 +112,9 @@
                     <fmt:message key="MO_selectFolder"/>
                 </option>
                 <zm:forEachFolder var="folder">
-                    <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
                     <c:if test="${not (folder.isSearchFolder or folder.isChats)}">
                         <option value=' in:"${folder.rootRelativePath}"'>
-                            ${fn:escapeXml(label)}
+                                ${fn:escapeXml(folder.rootRelativePath)}
                         </option>
                     </c:if>
                 </zm:forEachFolder>

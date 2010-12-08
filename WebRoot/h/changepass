@@ -74,7 +74,7 @@
 <table width=100% height=100%>
     <tr>
         <td align=center valign=middle>
-            <div id="ZLoginPanel">
+            <div id="ZloginPanel">
                 <table width=100%>
                     <tr>
                         <td>
@@ -84,15 +84,20 @@
                                         <a href="http://www.zimbra.com/" target="_new"><div class='ImgLoginBanner'/></a>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                        <div id='ZLoginAppName'><fmt:message key="splashScreenAppName"/></div>
+                                    </td>
+                                </tr>
                             </table>
                         </td>
                         <td>
                     </tr>
                     <tr>
-                        <td id='ZLoginBodyContainer'>
+                        <td id='ZloginBodyContainer'>
                             <c:if test="${not empty errorMessage}">
                                 <!-- ${fn:escapeXml(error.stackStrace)} -->
-                                <div id='ZLoginErrorPanel'>
+                                <div id='ZloginErrorPanel'>
                                     <table width=100%>
                                         <tr>
                                             <td valign='top' width='40'>
@@ -107,7 +112,7 @@
                             </c:if>
                             
                             <c:if test="${successfullLogin ne 'true'}">
-                                <div id='ZLoginFormPanel'>
+                                <div id='ZloginFormPanel'>
                                     <form method='post' name="changePassForm" action="" autocomplete="off" accept-charset="utf-8">
                                         <input type="hidden" name="loginOp" value="login"/>
                                         <table width=100% cellpadding=4>

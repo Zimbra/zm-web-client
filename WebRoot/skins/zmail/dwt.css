@@ -1,0 +1,47 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+.DwtTreeItem-selected, .DwtTreeItem-selected-focused {
+	background-color: #c3d9ff !important;
+	@Text-anchor@
+	@tlRadius@:3px; @blRadius@:3px;
+	font-weight: bold;
+	padding-left: 3px;
+}
+
+.DwtTreeItem-text {
+	padding-left: 3px;
+}
+
+/* text style for a right-clicked tree item */
+.DwtTreeItem-actioned {
+	@RightClickBg@
+	@Text-anchor@
+	@TreeItemSpacing@
+}
+
+.DwtDialogTitle {
+	background-color:#e0edfe;
+	color:#000000;
+	padding:8px;
+	font-size:12pt;
+	font-weight:bold;
+	@NoWrap@
+	vertical-align:top;
+	@MoveCursor@
+}
+
+.DwtChooserListView {
+	border-width:1px;
+}

@@ -56,7 +56,7 @@
                            <tr>
                                <td nowrap="nowrap">
                                    <label for="searchField"><fmt:message key="find"/>&nbsp;:&nbsp;</label>
-                                   <input onkeydown="return handleEnter(event);" style="background-color:#FFFFFF;height:auto;padding:2px 4px;cursor:text;" type="text" id="searchField" maxlength="50" name="contactsq" value="${fn:escapeXml(param.sq)}">
+                                   <input onkeydown="handleEnter(event);" style="background-color:#FFFFFF;height:auto;padding:2px 4px;cursor:text;" type="text" id="searchField" maxlength="50" name="contactsq" value="${fn:escapeXml(param.sq)}">
                                </td>
                                <td>
                                    <app:button name="actionSearch" id="SEARCH_CONTACT" tooltip="search" text="search"/>

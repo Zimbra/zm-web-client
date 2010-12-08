@@ -20,11 +20,9 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<app:handleError>
-    <c:set var="share" value="${message.share}"/>
-    <c:set var="calendar" value="${share.link.view.appointment}"/>
-    <c:set var="addressbook" value="${share.link.view.contact}"/>
-</app:handleError>
+<c:set var="share" value="${message.share}"/>
+<c:set var="calendar" value="${share.link.view.appointment}"/>
+<c:set var="addressbook" value="${share.link.view.contact}"/>
 
 <fmt:message var="createLabel" key="acceptShare"/>
 <c:choose>

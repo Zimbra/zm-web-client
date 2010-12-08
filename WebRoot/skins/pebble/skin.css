@@ -43,7 +43,7 @@ body, #skin_container_splash_screen { @ChromeBg@ }
 }
 
 #skin_container_search {	
-	background-color: transparent;
+	background-color: #ad8a4c;
 	color: #d5d5d3;
 	border: 0;
 }
@@ -115,17 +115,3 @@ body, #skin_container_splash_screen { @ChromeBg@ }
 .ZmPickerOverview .DwtCalendarTitle {
 	 color: #ffffff;
 }
-
-.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
-	background-color: #fff;
-	border-bottom-color: #fff;
-}
-
-#skin_spacing_filler				{	
-	height:12px; 
-	background-color: #aa915f;
-	background-image: -moz-linear-gradient(top, #aa915f, #5a5a43); /* FF3.6 */
- 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #aa915f),color-stop(1, #5a5a43));                /* Saf4+, Chrome */
-    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#aa915f', EndColorStr='#5a5a43');                          /* IE6,IE7 */
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#aa915f', EndColorStr='#5a5a43')";                     /* IE8 */
- }

@@ -188,31 +188,33 @@ function() {
 ZmMailPrefsPage.prototype._dateButtonListener =
 function(ev) {
 	var calDate = ev.item == this._startDateButton
-		? this._fixAndGetValidDateFromField(this._startDateField)
-		: this._fixAndGetValidDateFromField(this._endDateField);
+		? AjxDateUtil.simpleParseDateStr(this._startDateField.value)
+		: AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 
+	// if date was input by user and its foobar, reset to today's date
+	if (isNaN(calDate)) {
+		calDate = new Date();
+		var field = ev.item == this._startDateButton
+			? this._startDateField : this._endDateField;
+		field.value = AjxDateUtil.simpleComputeDateStr(calDate);
+	}
+
+	// always reset the date to current field's date
 	var menu = ev.item.getMenu();
+
 	var cal = menu.getItem(0);
 	cal.setDate(calDate, true);
 	ev.item.popup();
 };
 
-ZmMailPrefsPage.prototype._fixAndGetValidDateFromField =
-function(field) {
-	var d = AjxDateUtil.simpleParseDateStr(field.value);
-	if (!d || isNaN(d)) {
-		d = new Date();
-		field.value = AjxDateUtil.simpleComputeDateStr(d);
-	}
-	return d;
-};
 
 ZmMailPrefsPage.prototype._dateCalSelectionListener =
 function(ev) {
 	var parentButton = ev.item.parent.parent;
 
-	var sd = this._fixAndGetValidDateFromField(this._startDateField);
-	var ed = this._fixAndGetValidDateFromField(this._endDateField);
+	// do some error correction... maybe we can optimize this?
+	var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 	var newDate = AjxDateUtil.simpleComputeDateStr(ev.detail);
 
 	// change the start/end date if they mismatch
@@ -348,17 +350,10 @@ ZmWhiteBlackList = function(parent, id, templateId) {
 
 	this._settingId = id;
 	this._tabGroup = new DwtTabGroup(this._htmlElId);
-    switch(id) {
-        case ZmSetting.MAIL_BLACKLIST:
-            this._max = appCtxt.get(ZmSetting.MAIL_BLACKLIST_MAX_NUM_ENTRIES);
-            break;
-        case ZmSetting.MAIL_WHITELIST:
-            this._max = appCtxt.get(ZmSetting.MAIL_WHITELIST_MAX_NUM_ENTRIES);
-            break;
-        case ZmSetting.TRUSTED_ADDR_LIST:
-            this._max = appCtxt.get(ZmSetting.TRUSTED_ADDR_LIST_MAX_NUM_ENTRIES);
-            break;
-    }
+	this._max = (this._settingId == ZmSetting.MAIL_BLACKLIST)
+		? appCtxt.get(ZmSetting.MAIL_BLACKLIST_MAX_NUM_ENTRIES)
+		: appCtxt.get(ZmSetting.MAIL_WHITELIST_MAX_NUM_ENTRIES);
+
 	this._setContent(templateId);
 
 	this._list = [];
@@ -391,18 +386,11 @@ function() {
 	this.updateNumUsed();
 };
 
-ZmWhiteBlackList.prototype.getValue =
-function() {
-    return this._listView.getList().clone().getArray().join(",");
-};
-
-
 ZmWhiteBlackList.prototype.loadFromJson =
 function(data) {
 	if (data) {
 		for (var i = 0; i < data.length; i++) {
-            var content = data[i]._content ? data[i]._content : data[i];
-			var item = this._addEmail(content);
+			var item = this._addEmail(data[i]._content);
 			this._list.push(item);
 		}
 	}

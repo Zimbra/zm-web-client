@@ -31,7 +31,7 @@ ZmCalViewMgr = function(parent, controller, dropTgt) {
 
 	this._controller = controller;
 	this._dropTgt = dropTgt;
-    this._showNewScheduleView = appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED);
+
 	// View hash. Holds the various views e.g. day, month, week, etc...
 	this._views = {};
 	this._date = new Date();
@@ -41,11 +41,8 @@ ZmCalViewMgr = function(parent, controller, dropTgt) {
 	this._viewFactory[ZmId.VIEW_CAL_WEEK]		= ZmCalWeekView;
 	this._viewFactory[ZmId.VIEW_CAL_MONTH]		= ZmCalMonthView;
 	this._viewFactory[ZmId.VIEW_CAL_LIST]		= ZmCalListView;
-    this._viewFactory[ZmId.VIEW_CAL_FB]	        = ZmCalNewScheduleView;
-    this._viewFactory[ZmId.VIEW_CAL_SCHEDULE]	= ZmCalScheduleView;
-
+	this._viewFactory[ZmId.VIEW_CAL_SCHEDULE]	= ZmCalScheduleView;
 	this._viewFactory[ZmId.VIEW_CAL_APPT]		= ZmApptView;
-    this._viewFactory[ZmId.VIEW_CAL_TRASH]		= ZmApptListView;
 };
 
 ZmCalViewMgr.prototype = new DwtComposite;
@@ -53,17 +50,10 @@ ZmCalViewMgr.prototype.constructor = ZmCalViewMgr;
 
 ZmCalViewMgr._SEP = 5;
 
-ZmCalViewMgr.MIN_CONTENT_SIZE = 100;
-
 ZmCalViewMgr.prototype.toString = 
 function() {
 	return "ZmCalViewMgr";
 };
-
-ZmCalViewMgr.prototype.TEMPLATE = "calendar.Calendar#ZmCalViewMgr";
-
-ZmCalViewMgr.prototype._subContentShown = false;
-ZmCalViewMgr.prototype._subContentInitialized = false;
 
 ZmCalViewMgr.prototype.getController =
 function() {
@@ -125,95 +115,16 @@ ZmCalViewMgr.prototype.createView =
 function(viewName) {
 	var view = new this._viewFactory[viewName](this, DwtControl.ABSOLUTE_STYLE, this._controller, this._dropTgt);
 
-	if (viewName != ZmId.VIEW_CAL_APPT && viewName != ZmId.VIEW_CAL_TRASH) {
+	if (viewName != ZmId.VIEW_CAL_APPT) {
 		view.addTimeSelectionListener(new AjxListener(this, this._viewTimeSelectionListener));
 		view.addDateRangeListener(new AjxListener(this, this._viewDateRangeListener));
 		view.addViewActionListener(new AjxListener(this, this._viewActionListener));
 	}
 	this._views[viewName] = view;
-    if (viewName == ZmId.VIEW_CAL_TRASH) {
-        var controller = this._controller;
-        view.addSelectionListener(new AjxListener(controller, controller._listSelectionListener));
-        view.addActionListener(new AjxListener(controller, controller._listActionListener));
-    }
 	return view;
 };
 
-ZmCalViewMgr.prototype.getSubContentView = function() {
-    return this._list || this._createSubContent();
-};
-
-ZmCalViewMgr.prototype.setSubContentVisible = function(visible) {
-    if (this._subContentShown != visible) {
-        this._subContentShown = visible;
-        if (!visible) {
-            this._controller.setCurrentListView(null);
-        }
-        this._layout();
-    }
-};
-
-ZmCalViewMgr.prototype._createSubContent = function() {
-    if (!this._subContentShown) return null;
-    if (this._subContentInitialized) return this._list;
-
-    this._subContentInitialized = true;
-
-    this._sash = new DwtSash({parent:this,posStyle:Dwt.ABSOLUTE_STYLE,style:DwtSash.VERTICAL_STYLE});
-    this._sash.registerCallback(this._handleSashAdjustment, this);
-    this._list = this.createView(ZmId.VIEW_CAL_TRASH);
-    this._list.set(new AjxVector([]));
-
-    this._populateTrashListView(this._list);
-    return this._list;
-};
-
-ZmCalViewMgr.prototype._handleSashAdjustment = function(delta) {
-    // sash moved too far up
-    var sashLocation = this._sash.getLocation();
-    if (sashLocation.y + delta < ZmCalViewMgr.MIN_CONTENT_SIZE) {
-        delta = ZmCalViewMgr.MIN_CONTENT_SIZE - sashLocation.y;
-    }
-
-    // sash moved to0 far down
-    else {
-        var size = this.getSize();
-        if (sashLocation.y + delta > size.y - ZmCalViewMgr.MIN_CONTENT_SIZE) {
-            delta = size.y - ZmCalViewMgr.MIN_CONTENT_SIZE - sashLocation.y;
-        }
-    }
-
-    // adjust sub-content
-    if (delta != 0) {
-        var listSize = this._list.getSize();
-        this._list.setSize(listSize.x, listSize.y - delta);
-        this._layoutControls(true);
-    }
-
-    return delta;
-};
-
-ZmCalViewMgr.prototype._populateTrashListView = function(listView) {
-    var params = {
-        searchFor:ZmItem.APPT,
-        query:"inid:"+ZmOrganizer.ID_TRASH,
-        limit:20,
-        types:AjxVector.fromArray([ZmId.ITEM_APPOINTMENT]),
-        forceSearch: true,
-//        noRender: true,
-        callback: new AjxCallback(this, this._populateTrashListViewResults, [listView])
-    };
-    var search = new ZmSearch(params);
-    search.execute(params);
-};
-
-ZmCalViewMgr.prototype._populateTrashListViewResults = function(listView, results) {
-    var data = results && results._data;
-    var apptList = data && data._results && data._results.APPT;
-    listView.set(apptList || new AjxVector([]));
-};
-
-ZmCalViewMgr.prototype.addViewActionListener =
+ZmCalViewMgr.prototype.addViewActionListener = 
 function(listener) {
 	this.addListener(ZmCalBaseView.VIEW_ACTION, listener);
 };
@@ -264,49 +175,18 @@ function(viewName) {
 
 ZmCalViewMgr.prototype._layout =
 function() {
-    // create sub-content, if needed
-    var showSubContent = this._subContentShown;
-    if (showSubContent && !this._subContentInitialized) {
-        this._createSubContent();
+	var mySz = this.getSize();
+	if (mySz.x == 0 || mySz.y == 0) { return; }
 
-        // NOTE: The list maintains its size so we can toggle back and forth
-        var size = this.getSize();
-        this._list.setSize(null, size.y / 3);
-    }
-
-    // show sub-content
-    if (this._sash) {
-        this._sash.setVisible(showSubContent);
-        this._list.setVisible(showSubContent);
-    }
-
-    // layout the controls
-    this._layoutControls();
-};
-
-ZmCalViewMgr.prototype._layoutControls = function(skipSash) {
-    // size sub-content
-    var size = this.getSize();
-    var contentHeight = size.y;
-    if (this._subContentShown) {
-        var listSize = this._list.getSize();
-        var sashSize = this._sash.getSize();
-        var subContentHeight = listSize.y + sashSize.y;
-
-        contentHeight -= subContentHeight;
-
-        if (!skipSash) {
-            this._sash.setBounds(0, contentHeight, size.x, sashSize.y);
-        }
-        this._list.setBounds(0, contentHeight+sashSize.y, size.x, listSize.y);
-    }
-
-    // size content
-    var view = this._views[this._currentViewName];
-    view.setBounds(0, 0, size.x, contentHeight);
-
-    //need to reset layout for time view renderings
-    if (view instanceof ZmCalBaseView) view.layoutView();
+	var view = this._views[this._currentViewName];
+	var width = mySz.x - ZmCalViewMgr._SEP;
+	var height = mySz.y;
+	var viewSz = view.getSize();
+	if (viewSz.x == width && viewSz.y == height) {
+		view.setLocation(0, 0);
+	} else {
+		view.setBounds(0, 0, width, height);
+	}
 };
 
 ZmCalViewMgr.prototype._controlListener =

@@ -7,7 +7,6 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    ${zm:refreshPrefs(mailbox)}
     ${zm:clearContactCache(mailbox)}
     <c:choose>
         <c:when test="${not empty mailbox.prefs.locale}">
@@ -29,21 +28,22 @@
 <app:head mailbox="${mailbox}"/>
 <body style='background:white;'>
 <style>
-    .ZhCallListPrintView td, .zPrintMsgs *{
-        font-family:Tahoma,Arial,Helvetica,sans-serif;
-        font-size:${mailbox.prefs.defaultPrintFontSize} !important;
+    .contactHeader, .ZhFolderHeader {
+        font-size: small !important;
     }
     .companyName{
+        font-size: small !important;
         color: #555555 !important;
     }
     .sectionLabel{
+        font-size: small !important;
         color: gray !important;
     }
 </style>
 <div class='ZhCallListPrintView'>
 <table><tr>
-    <td><b><fmt:message key="zimbraTitle"/></b></td>
-    <td nowrap width='1%'><b>${(not empty param.acct ? param.acct : mailbox.name)}</b></td>
+    <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
+    <td nowrap width='1%'><b>${fn:escapeXml(not empty param.acct ? param.acct : mailbox.name)}</b></td>
 </tr></table>
 <hr/>
 <table cellpadding="0" cellspacing="5" width="99%" align="center">
@@ -85,10 +85,10 @@
 
 <c:if test="${empty contactIds}">
     <c:if test="${param.st ne 'gal'}">
-    <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true"/>
+    <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true" query="*"/>
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <zm:getContact id="${hit.contactHit.id}" var="contact"/>
-        <div class="zPrintMsgs" style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
+        <div style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
             <app:displayContact contact="${contact}"/>
         </div>
     </c:forEach>
@@ -96,7 +96,7 @@
     <c:if test="${param.st eq 'gal'}">
     <zm:searchGal var="result" query="*"/>
     <c:forEach items="${result.contacts}" var="contact" varStatus="status">
-        <div class="zPrintMsgs" style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
+        <div  style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
             <app:displayContact contact="${contact}"/>
         </div>
     </c:forEach>

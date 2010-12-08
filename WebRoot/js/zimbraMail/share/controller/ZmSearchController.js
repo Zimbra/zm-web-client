@@ -60,6 +60,16 @@ function() {
 };
 
 /**
+ * Gets the search panel.
+ * 
+ * @return	{Object}	the panel
+ */
+ZmSearchController.prototype.getSearchPanel =
+function() {
+	return this._searchPanel;
+};
+
+/**
  * Gets the search tool bar.
  * 
  * @return	{ZmButtonToolBar}		the tool bar
@@ -180,7 +190,7 @@ function(forceShow, callback) {
  */
 ZmSearchController.prototype._handleLoadShowBrowseView =
 function(callback) {
-	var bvc = this._browseViewController = new ZmBrowseController(this.searchPanel);
+	var bvc = this._browseViewController = new ZmBrowseController(this._searchPanel);
 	bvc.setBrowseViewVisible(true);
 	if (callback) {
 		callback.run(bvc.getBrowseView());
@@ -249,20 +259,14 @@ ZmSearchController.prototype._setView =
 function() {
 	// Create search panel - a composite is needed because the search builder
 	// element (ZmBrowseView) is added to it (can't add it to the toolbar)
-	this.searchPanel = new DwtComposite({parent:this._container, className:"SearchPanel", posStyle:Dwt.ABSOLUTE_STYLE});
-	this._searchToolBar = new ZmSearchToolBar(this.searchPanel, ZmId.SEARCH_TOOLBAR);
-
-	// create people search toolbar
-	if (!appCtxt.isChildWindow) {
-		this.peopleSearchToolBar = new ZmPeopleSearchToolBar(this._container, ZmId.PEOPLE_SEARCH_TOOLBAR);
-	}
+	this._searchPanel = new DwtComposite({parent:this._container, className:"SearchPanel", posStyle:Dwt.ABSOLUTE_STYLE});
+	this._searchToolBar = new ZmSearchToolBar(this._searchPanel, ZmId.SEARCH_TOOLBAR);
 
 	this._createTabGroup();
 	this._tabGroup.addMember(this._searchToolBar.getSearchField());
 	var buttons = this._searchToolBar.getButtons();
-	for (var i = 0; i < buttons.length; i++) {
+	for (var i=0; i<buttons.length; i++)
 		this._tabGroup.addMember(buttons[i]);
-	}
 
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
@@ -376,7 +380,6 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.accountName	= search.accountName;
 	params.searchFor	= this._searchFor;
 	params.idsOnly		= search.idsOnly;
-	params.inDumpster   = search.inDumpster;
 
 	if (changes) {
 		for (var key in changes) {
@@ -486,9 +489,6 @@ function(searchObj) {
 			var folderTree = appCtxt.getFolderTree();
 			var folder = folderTree && folderTree.getById(id);
 			type = folder ? folder.type : ZmOrganizer.FOLDER;
-            if (search.searchFor == ZmItem.TASK) {
-                type = ZmOrganizer.TASKS;
-            }
 		} else if (search.tagId) {
 			id = this._getNormalizedId(search.tagId);
 			type = ZmOrganizer.TAG;
@@ -518,7 +518,6 @@ function(types) {
 			case ZmItem.APPT:		viewType = ZmId.VIEW_CAL; break;
 			case ZmItem.TASK:		viewType = ZmId.VIEW_TASKLIST; break;
 			case ZmId.SEARCH_GAL:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
-			case ZmItem.BRIEFCASE_ITEM:	viewType = ZmId.VIEW_BRIEFCASE_DETAIL; break;
 			// more types go here as they are suported...
 		}
 
@@ -538,7 +537,6 @@ function(types) {
  * @param {String}	params.query	the search query
  * @param {String}	params.userText	the user text
  * @param {Array}	params.type		an array of types
- * @param {boolean} params.forceSearch     Ignores special processing and just executes the search.
  * @param {Boolean}	noRender		if <code>true</code>, the search results will not be rendered
  * @param {AjxCallback}	callback		the callback
  * @param {AjxCallback}	errorCallback	the error callback
@@ -595,9 +593,6 @@ function(params, noRender, callback, errorCallback) {
 	// only set contact source if we are searching for contacts
 	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmId.SEARCH_GAL))
 		? this._contactSource : null;
-	if (params.contactSource == ZmId.SEARCH_GAL) {
-		params.expandDL = true;
-	}
 
 	// find suitable sort by value if not given one (and if applicable)
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
@@ -611,7 +606,7 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	// calendar searching is special so hand it off if necessary
-	if (searchFor == ZmItem.APPT && !params.forceSearch) {
+	if (searchFor == ZmItem.APPT) {
 		var controller = AjxDispatcher.run("GetCalController");
 		if (controller && types.contains(ZmItem.APPT)) {
 			controller.handleUserSearch(params, respCallback);

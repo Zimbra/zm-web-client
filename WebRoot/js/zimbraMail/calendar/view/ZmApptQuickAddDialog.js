@@ -89,7 +89,7 @@ function(appt) {
 		this._endTimeSelect.set(appt.endDate);
         //need to capture initial time set while composing/editing appt
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);        
-	} else {
+	}else {
         this._dateInfo = {};
     }
 
@@ -140,16 +140,7 @@ function() {
 	appt.setAttendees(this._locations, ZmCalBaseItem.LOCATION);
 
 	//set alarm for reminders
-    if (this._hasReminderSupport) {
-        appt.setReminderMinutes(this._reminderSelect.getValue());
-        if (this._reminderEmailCheckbox && this._reminderEmailCheckbox.isSelected()) {
-            appt.addReminderAction(ZmCalItem.ALARM_EMAIL);
-        }
-        if (this._reminderDeviceEmailCheckbox && this._reminderDeviceEmailCheckbox.isSelected()) {
-            appt.addReminderAction(ZmCalItem.ALARM_DEVICE_EMAIL);
-        }
-    }
-
+	appt.setReminderMinutes(this._reminderSelect.getValue());
 	return appt;
 };
 
@@ -199,11 +190,8 @@ function(loc) {
 	}
 	this._tabGroup.setFocusMember(this._subjectField);
 
-    if (this._hasReminderSupport) {
-        var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
-        this._reminderSelect.setSelectedValue(defaultWarningTime);
-        this._setEmailReminderControls();
-    }
+	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
+	this._reminderSelect.setSelectedValue(defaultWarningTime);
 
 	var defaultPrivacyOption = appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY);
 	this._privacySelect.setSelectedValue((defaultPrivacyOption == ZmSetting.CAL_VISIBILITY_PRIV) ?  "PRI" : "PUB");
@@ -244,7 +232,7 @@ function() {
 	this._showAsSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_showAs")});
 	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
-		this._showAsSelect.addOption(option.label, option.selected, option.value, "showAs" + option.value);
+		this._showAsSelect.addOption(option.label, option.selected, option.value);
 	}
 
 	this._privacySelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_privacy")});
@@ -310,58 +298,18 @@ function() {
 	var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
 	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
 
-    this._hasReminderSupport = Dwt.byId(this._htmlElId + "_reminderSelect") != null;
-
-    if (this._hasReminderSupport) {
-        this._reminderSelect = new DwtSelect({parent:this});
-        this._reminderSelect.addChangeListener(new AjxListener(this, this._setEmailReminderControls));
-        for (var j = 0; j < options.length; j++) {
-            var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], labels[j]);
-            this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
-        }
-        this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
-
-        this._reminderEmailCheckbox = new DwtCheckbox({parent: this});
-        this._reminderEmailCheckbox.replaceElement(document.getElementById(this._htmlElId + "_reminderEmailCheckbox"));
-        this._reminderEmailCheckbox.setText(ZmMsg.email);
-        this._reminderDeviceEmailCheckbox = new DwtCheckbox({parent: this});
-        this._reminderDeviceEmailCheckbox.replaceElement(document.getElementById(this._htmlElId + "_reminderDeviceEmailCheckbox"));
-        this._reminderDeviceEmailCheckbox.setText(ZmMsg.deviceEmail);
-        this._reminderConfigure = new DwtText({parent:this,className:"FakeAnchor"});
-        this._reminderConfigure.setText(ZmMsg.remindersConfigure);
-        this._reminderConfigure.getHtmlElement().onclick = AjxCallback.simpleClosure(this._handleConfigureClick, this);
-        this._reminderConfigure.replaceElement(document.getElementById(this._htmlElId+"_reminderConfigure"));
-        this._setEmailReminderControls();
-
-        var settings = appCtxt.getSettings();
-        var listener = new AjxListener(this, this._settingChangeListener);
-        settings.getSetting(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS).addChangeListener(listener);
-        settings.getSetting(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS).addChangeListener(listener);
-    }
+	this._reminderSelect = new DwtSelect({parent:this});
+	this._reminderSelect.addChangeListener(new AjxListener(this, this._reminderChangeListener));
+	for (var j = 0; j < options.length; j++) {
+		var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], labels[j]);			
+		this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
+	}
+	this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
 
 	// init auto-complete widget if contacts app enabled
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		this._initAutocomplete();
 	}
-};
-
-ZmApptQuickAddDialog.prototype._handleConfigureClick = function() {
-    // transfer settings to new appt compose tab
-    var button = this._button[ZmApptQuickAddDialog.MORE_DETAILS_BUTTON];
-    if (button) {
-        button._emulateSingleClick(); // HACK: should be public method on DwtButton
-    }
-
-    // or just get rid of this modal dialog
-    else {
-        this.popdown();
-    }
-
-    // go to reminders prefs page
-    // NOTE: We can't query the section name based on the pref id
-    // NOTE: because that info won't be available until the first time
-    // NOTE: prefs app is launched.
-    skin.gotoPrefs("NOTIFICATIONS");
 };
 
 ZmApptQuickAddDialog.prototype._initAutocomplete =
@@ -463,11 +411,7 @@ function() {
 	vals.push(this._locationField.getValue());
 	vals.push(this._startDateField.value);
 	vals.push(this._endDateField.value);
-    if (this._hasReminderSupport) {
-        vals.push(this._reminderSelect.getValue());
-        vals.push(this._reminderEmailCheckbox.isSelected());
-        vals.push(this._reminderDeviceEmailCheckbox.isSelected());
-    }
+	vals.push(this._reminderSelect.getValue());
 	if (!this._appt.isAllDayEvent()) {
 		vals.push(
 			AjxDateUtil.getServerDateTime(this._startTimeSelect.getValue()),
@@ -536,35 +480,6 @@ function(ev, id) {
     if (!this._appt.isAllDayEvent()) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
     }
-};
-
-ZmApptQuickAddDialog.prototype._setEmailReminderControls =
-function() {
-    var enabled = this._reminderSelect.getValue() != 0;
-
-    var email = appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS);
-    var emailEnabled = Boolean(email);
-    this._reminderEmailCheckbox.setEnabled(enabled && emailEnabled);
-    this._reminderEmailCheckbox.setToolTipContent(emailEnabled ? email : null);
-
-    var deviceEmail = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS);
-    var deviceEmailEnabled = Boolean(deviceEmail);
-    this._reminderDeviceEmailCheckbox.setEnabled(enabled && deviceEmailEnabled);
-    this._reminderDeviceEmailCheckbox.setToolTipContent(deviceEmailEnabled ? deviceEmail : null);
-
-    var configureEnabled = !emailEnabled && !deviceEmailEnabled;
-    this._reminderConfigure.setVisible(configureEnabled);
-    this._reminderEmailCheckbox.setVisible(!configureEnabled);
-    this._reminderDeviceEmailCheckbox.setVisible((!configureEnabled && appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)));
-};
-
-ZmApptQuickAddDialog.prototype._settingChangeListener =
-function(ev) {
-	if (ev.type != ZmEvent.S_SETTING) { return; }
-	var id = ev.source.id;
-	if (id == ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS || id == ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS) {
-		this._setEmailReminderControls();
-	}
 };
 
 // Static methods

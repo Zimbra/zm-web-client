@@ -75,19 +75,21 @@ function(params) {
 		return ZmList.prototype.moveItems.apply(this, arguments);
 	}
 
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "noUndo", "actionText"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback"]);
 	params.items = AjxUtil.toArray(params.items);
 
 	var params1 = AjxUtil.hashCopy(params);
 
 	params1.attrs = {};
-	params1.attrs.tcon = this._getTcon(params.items);
+	params1.attrs.tcon = this._getTcon();
 	params1.attrs.l = params.folder.id;
 	params1.action = (params.folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
     if (params1.folder.id == ZmFolder.ID_TRASH) {
-        params1.actionText = params.actionText || ZmMsg.actionTrash;
+		if (params1.items.length > 1) {
+	        params1.actionText = ZmMsg.actionTrash;
+		}
     } else {
-        params1.actionText = params.actionText || ZmMsg.actionMove;
+        params1.actionText = ZmMsg.actionMove;
         params1.actionArg = params1.folder.getName(false, false, true);
     }
 	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
@@ -99,7 +101,7 @@ function(params) {
 		// check if we're moving to or from a shared folder, in which case, always send
 		// request on-behalf-of the account the item originally belongs to.
         var folderId = params.items[0].getFolderId();
-        var fromFolder = folderId && appCtxt.getById(folderId);
+        var fromFolder = appCtxt.getById(folderId);
 		if ((params.items[0].isDraft && params.folder.id == ZmFolder.ID_DRAFTS) ||
 			(params.folder.isRemote()) || (fromFolder && fromFolder.isRemote()))
 		{
@@ -171,7 +173,7 @@ function(params) {
 	if (params.folder) {
 		params1.attrs.l = params.folder.id;
 	}
-	params1.actionText = params.markAsSpam ? ZmMsg.actionMarkAsJunk : ZmMsg.actionMarkAsNotJunk;
+    params1.actionText = params.markAsSpam ? ZmMsg.actionMarkAsJunk : ZmMsg.actionMarkAsNotJunk;
 
 	params1.callback = new AjxCallback(this, this._handleResponseSpamItems, params);
 	this._itemAction(params1);
@@ -371,6 +373,7 @@ function(convs, msgs) {
 	var sortBy = this.search ? this.search.sortBy : null;
 	var sortIndex = {};
 	if (this.type == ZmItem.CONV) {
+
 		// handle new convs first so we can set their fragments later from new msgs
 		for (var id in convs) {
 			if (this.getById(id)) { continue; }	// already have this conv
@@ -383,7 +386,6 @@ function(convs, msgs) {
 					// a new msg for this conv matches current search
 					conv.list = this;
 					newConvs.push(conv);
-                    appCtxt.setNotifyDebug("Handling NOTIFY: notifyCreate ZmMailList --- New conv added");
 				}
 			}
 		}
@@ -412,7 +414,6 @@ function(convs, msgs) {
 					newConvId[cid] = conv;
 					conv.folders[msg.folderId] = true;
 					newConvs.push(conv);
-                    appCtxt.setNotifyDebug("Handling NOTIFY: in ZmMailList - notifyCreate - New message becomes a conv");
 				}
 				conv.list = this;
 			}
@@ -472,9 +473,6 @@ function(convs, msgs) {
 				}
 			}
 		}
-        if (window.isNotifyDebugOn && newMsgs.length > 1) {
-            appCtxt.setNotifyDebug("Handling NOTIFY: notifyCreate ZmMailList --- New message added to list");
-        }
 	}
 
 	// sort item list in reverse so they show up in correct order when processed (oldest appears first)
@@ -643,25 +641,16 @@ function(items, sortBy, event, details) {
 };
 
 ZmMailList.prototype._getTcon =
-function(items) {
+function() {
 	var chars = ["-"];
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
 	var searchFolder = this.search && appCtxt.getById(this.search.folderId);
 	for (var i = 0; i < folders.length; i++) {
-		var folder = folders[i];
-		if (!(searchFolder && searchFolder.nId == folder)) {
-			var found = false;
-			for (var j=0; j<items.length; j++) {
-				var item = items[j];
-				if (item && ((item.folders && item.folders[folder]) || (item.folderId == folder))) {
-					found = true;
-					break;
-				}
-			}
-			if (!found)
-				chars.push(ZmFolder.TCON_CODE[folder]);
+		if (!(searchFolder && searchFolder.nId == folders[i])) {
+			chars.push(ZmFolder.TCON_CODE[folders[i]]);
 		}
 	}
+
 	return chars.join("");
 };
 

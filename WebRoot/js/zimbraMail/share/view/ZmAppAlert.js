@@ -40,14 +40,9 @@ function() {
  */
 ZmAppAlert.prototype.start =
 function() {
-    if (!this._getAppButton().isSelected) {
+	if (!this.app.isActive()) {
 		this._getAppButton().showAlert(true);
-        //add a stop alert listener
-        if (!this._stopAlertListenerObj) {
-           this._stopAlertListenerObj = new AjxListener(this, this.stop);
-           this._getAppButton().addSelectionListener(this._stopAlertListenerObj);
-        }
-    }
+	}
 };
 
 /**
@@ -55,9 +50,7 @@ function() {
  */
 ZmAppAlert.prototype.stop =
 function() {
-    if (this._getAppButton().isSelected) {
-        this._getAppButton().showAlert(false);
-    }
+	this._getAppButton().showAlert(false);
 };
 
 ZmAppAlert.prototype._getAppButton =

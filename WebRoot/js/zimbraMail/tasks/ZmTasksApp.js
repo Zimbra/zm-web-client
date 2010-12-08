@@ -46,8 +46,6 @@ ZmApp.QS_ARG[ZmApp.TASKS]		= "tasks";
 ZmTasksApp.prototype = new ZmApp;
 ZmTasksApp.prototype.constructor = ZmTasksApp;
 
-ZmTasksApp.REMINDER_START_DELAY = 10000;
-
 /**
  * Returns a string representation of the object.
  * 
@@ -70,20 +68,12 @@ function() {
 
 ZmTasksApp.prototype._registerOperations =
 function() {
-//	ZmOperation.registerOp(ZmId.OP_MOUNT_TASK_FOLDER, {textKey:"mountTaskFolder", image:"TaskList"});
+	ZmOperation.registerOp(ZmId.OP_MOUNT_TASK_FOLDER, {textKey:"mountTaskFolder", image:"TaskList"});
 	ZmOperation.registerOp(ZmId.OP_NEW_TASK, {textKey:"newTask", tooltipKey:"newTaskTooltip", image:"NewTask", shortcut:ZmKeyMap.NEW_TASK});
 	ZmOperation.registerOp(ZmId.OP_NEW_TASK_FOLDER, {textKey:"newTaskFolder", tooltipKey:"newTaskFolderTooltip", image:"NewTaskList"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_TASKFOLDER, {textKey:"shareTaskFolder", image:"TaskList"});
 	ZmOperation.registerOp(ZmId.OP_PRINT_TASK, {textKey:"printTask", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_TASKFOLDER, {textKey:"printTaskFolder", image:"Print"}, ZmSetting.PRINT_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_SORTBY_MENU, {tooltipKey:"viewTooltip", textKey:"taskFilterBy", image:"SplitPane", textPrecedence:80});
-    ZmOperation.registerOp(ZmId.OP_MARK_AS_COMPLETED, {tooltipKey:"markAsCompleted", textKey:"markAsCompleted", image:"CheckboxChecked", textPrecedence:80});
-};
-
-ZmTasksApp.prototype._registerSettings =
-function(settings) {
-	settings = settings || appCtxt.getSettings();
-	settings.registerSetting("READING_PANE_LOCATION_TASKS",		{name:"zimbraPrefTasksReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true});
 };
 
 ZmTasksApp.prototype._registerItems =
@@ -92,7 +82,7 @@ function() {
 						{app:			ZmApp.TASKS,
 						 nameKey:		"task",
 						 countKey:  	"typeTask",
-						 icon:			"TasksApp",
+						 icon:			"TaskList",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmTask",
 						 node:			"task",
@@ -138,7 +128,7 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmItem.TASK,
 								{msgKey:		"tasks",
 								 tooltipKey:	"searchTasks",
-								 icon:			"TasksApp",
+								 icon:			"TaskList",
 								 shareIcon:		"SharedTaskList",
 								 setting:		ZmSetting.TASKS_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_TASK)
@@ -159,7 +149,7 @@ function() {
 	ZmApp.registerApp(ZmApp.TASKS,
 							 {mainPkg:				"Tasks",
 							  nameKey:				"tasks",
-							  icon:					"TasksApp",
+							  icon:					"TaskList",
 							  textPrecedence:		20,
 							  chooserTooltipKey:	"goToTasks",
 							  defaultSearch:		ZmItem.TASK,
@@ -319,8 +309,11 @@ function() {
  * @return	{ZmTaskController}	the controller
  */
 ZmTasksApp.prototype.getTaskController =
-function(sessionId) {
-	return this.getSessionController(ZmId.VIEW_TASKEDIT, "ZmTaskController", sessionId);
+function() {
+	if (!this._taskController) {
+		this._taskController = new ZmTaskController(this._container, this);
+	}
+	return this._taskController;
 };
 
 /**
@@ -382,103 +375,4 @@ function(parent, name, color) {
 	dialog.popdown();
 	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.TASKS)._doCreate(parent, name, color);
-};
-
-/**
- * Gets the list of checked calendar ids. If calendar packages are not loaded,
- * gets the list from deferred folder ids.
- *
- * @param	{Boolean}		localOnly	if <code>true</code>, use local calendar only
- * @return	{Array}	an array of ids
- */
-ZmTasksApp.prototype.getTaskFolderIds =
-function(localOnly) {
-	var folderIds = [];
-	if (AjxDispatcher.loaded("TasksCore")) {
-		folderIds = this.getTaskListController().getTaskFolderIds(localOnly);
-	} else {
-		// will be used in reminder dialog
-		this._folderNames = {};
-		for (var i = 0; i < this._deferredFolders.length; i++) {
-			var params = this._deferredFolders[i];
-			//var str = (params && params.obj && params.obj.f) ? params.obj.f : "";
-			//if (str && (str.indexOf(ZmOrganizer.FLAG_CHECKED) != -1)) {
-				if (localOnly && params.obj.zid != null) {
-					continue;
-				}
-				folderIds.push(params.obj.id);
-				// _folderNames are used when deferred folders are not created
-				// and calendar name is required. example: calendar name
-				// requirement in reminder module
-				this._folderNames[params.obj.id] = params.obj.name;
-			//}
-		}
-	}
-	return folderIds;
-};
-
-/**
- * Gets the name of the calendar with specified id.
- *
- * @param	{String}	id		the id of the task
- * @return	{String}	the name
- */
-ZmTasksApp.prototype.getTaskFolderName =
-function(id) {
-	return appCtxt.getById(id) ? appCtxt.getById(id).name : this._folderNames[id];
-};
-
-
-/**
- * Gets the reminder controller.
- *
- * @return	{ZmReminderController}	the controller
- */
-ZmTasksApp.prototype.getReminderController =
-function() {
-	if (!this._reminderController) {
-		AjxDispatcher.require("TasksCore");
-		var taskMgr = appCtxt.getTaskManager();
-		this._reminderController = taskMgr.getReminderController();
-        this._reminderController._calController = taskMgr;
-		this._reminderController.refresh();
-	}
-	return this._reminderController;
-};
-
-
-/**
- * Creates a new button with a reminder options as its menu.
- *
- * @param	{DwtComposite}	parent						the parent
- * @param	{String}	buttonId 					the button id to fetch inside DOM and append DwtButton to
- * @param	{AjxListener}	buttonListener			the listener to call when date button is pressed
- * @param	{AjxListener}	menuSelectionListener	the listener to call when date is selected in {@link DwtCalendar}
- */
-ZmTasksApp.createpCompleteButton =
-function(parent, buttonId, buttonListener, menuSelectionListener) {
-	// create button
-	var pCompleteButton = new DwtButton({parent:parent});
-	pCompleteButton.addDropDownSelectionListener(buttonListener);
-	pCompleteButton.setData(Dwt.KEY_ID, buttonId);
-	pCompleteButton.setSize("25");
-
-	// create menu for button
-	var pCompleteMenu = new DwtMenu({parent:pCompleteButton, style:DwtMenu.DROPDOWN_STYLE});
-	pCompleteMenu.setSize("100");
-	pCompleteButton.setMenu(pCompleteMenu, true);
-
-    var formatter = new AjxMessageFormat(AjxMsg.percentageString);
-	for (var i = 0; i <= 100; i += ZmTask.PCOMPLETE_INT) {
-		var mi = new DwtMenuItem({parent: pCompleteMenu, style: DwtMenuItem.NO_STYLE});
-		mi.setText((formatter.format(i)));
-		mi.setData("value", i);
-		if(menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
-	}
-    
-	// reparent and cleanup
-	pCompleteButton.reparentHtmlElement(buttonId);
-	delete buttonId;
-
-	return pCompleteButton;
 };

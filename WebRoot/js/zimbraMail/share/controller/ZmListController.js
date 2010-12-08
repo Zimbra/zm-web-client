@@ -147,16 +147,6 @@ function() {
 	return this._currentSearch ? this._currentSearch.queryHint : "";
 };
 
-ZmListController.prototype.getSelection = function(view) {
-    view = view || this.getCurrentView();
-    return view ? view.getSelection() : [];
-};
-
-ZmListController.prototype.getSelectionCount = function(view) {
-    view = view || this.getCurrentView();
-    return view ? view.getSelectionCount() : 0;
-};
-
 /**
  * Gets the current view.
  * 
@@ -240,12 +230,12 @@ function(actionCode) {
 			var tb = this._toolbar[this._currentView];
 			var button = tb && (tb.getButton(ZmOperation.DELETE) || tb.getButton(ZmOperation.DELETE_MENU));
 			if (button && button.getEnabled()) {
-				this._doDelete(this.getSelection());
+				this._doDelete(this._listView[this._currentView].getSelection());
 			}
 			break;
 
 		case ZmKeyMap.FLAG:
-			this._doFlag(this.getSelection());
+			this._doFlag(listView.getSelection());
 			break;
 
 		case ZmKeyMap.MOVE:
@@ -275,7 +265,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.TAG:
-			var items = this.getSelection();
+			var items = listView.getSelection();
 			if (items && items.length && (appCtxt.getTagTree().size() > 0)) {
 				var dlg = appCtxt.getPickTagDialog();
 				ZmController.showDialog(dlg, new AjxCallback(this, this._tagSelectionCallback, [items, dlg]));
@@ -284,7 +274,7 @@ function(actionCode) {
 
 		case ZmKeyMap.UNTAG:
 			if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-				var items = this.getSelection();
+				var items = listView.getSelection();
 				if (items && items.length) {
 					this._doRemoveAllTags(items);
 				}
@@ -590,13 +580,13 @@ function(ev) {
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._setTagMenu(actionMenu);
 	}
-	this._resetOperations(actionMenu, this.getSelectionCount());
+	this._resetOperations(actionMenu, this._listView[this._currentView].getSelectionCount());
 };
 
 ZmListController.prototype._menuPopdownActionListener =
 function() {
 	if (!this._pendingActionData) {
-		this.getCurrentView().handleActionPopdown();
+		this._listView[this._currentView].handleActionPopdown();
 	}
 };
 
@@ -654,7 +644,7 @@ function(ev) {
 	if (appCtxt.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
 		var tagEvent = ev.getData(ZmTagMenu.KEY_TAG_EVENT);
 		var tagAdded = ev.getData(ZmTagMenu.KEY_TAG_ADDED);
-		var items = this.getSelection();
+		var items = this._listView[this._currentView].getSelection();
 		if (tagEvent == ZmEvent.E_TAGS && tagAdded) {
 			this._doTag(items, ev.getData(Dwt.KEY_OBJECT), true);
 		} else if (tagEvent == ZmEvent.E_CREATE) {
@@ -694,7 +684,8 @@ function(items, dialog, tag) {
  */
 ZmListController.prototype._printListener =
 function(ev) {
-	var items = this.getSelection();
+	var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
 	var item = (items instanceof Array) ? items[0] : items;
 	window.open(item.getRestUrl(), "_blank");
 };
@@ -711,7 +702,7 @@ function(ev) {
  */
 ZmListController.prototype._deleteListener =
 function(ev) {
-	this._doDelete(this.getSelection());
+	this._doDelete(this._listView[this._currentView].getSelection());
 };
 
 /**
@@ -721,7 +712,7 @@ function(ev) {
  */
 ZmListController.prototype._moveListener =
 function(ev, list) {
-	this._pendingActionData = list || (this.getSelection());
+	this._pendingActionData = list || (this._listView[this._currentView].getSelection());
 	var moveToDialog = appCtxt.getChooseFolderDialog();
 	if (!this._moveCb) {
 		this._moveCb = new AjxCallback(this, this._moveCallback);
@@ -731,7 +722,7 @@ function(ev, list) {
 };
 
 /**
- * @protected
+ * @private
  */
 ZmListController.prototype._getMoveParams =
 function(dlg) {
@@ -882,7 +873,7 @@ function(ev) {
  * fine-grained control on what's a valid drop target. If you enter via an item and then drag to
  * the header, it will appear to be valid.
  * 
- * @protected
+ * @private
  */
 ZmListController.prototype._dropListener =
 function(ev) {
@@ -907,7 +898,7 @@ function(ev) {
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		view.dragDeselect(div);
 		var items = [item];
-		var sel = this.getSelection();
+		var sel = view.getSelection();
 		if (sel.length) {
 			var vec = AjxVector.fromArray(sel);
 			if (vec.contains(item))
@@ -1038,24 +1029,7 @@ function(items, hardDelete, attrs) {
 	var params = {items:items, hardDelete:hardDelete, attrs:attrs, childWin:appCtxt.isChildWindow && window};
 	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
 	var list = this._setupContinuation(this._doDelete, [hardDelete, attrs], params, allDoneCallback);
-
-	if (!hardDelete) {
-		var anyScheduled = false;
-		for (var i=0, cnt=items.length; i<cnt; i++) {
-			if (items[i] && items[i].isScheduled) {
-				anyScheduled = true;
-				break;
-			}
-		}
-		if (anyScheduled) {
-			params.noUndo = true;
-			this._popupScheduledWarningDialog(new AjxCallback(list, list.deleteItems, params));
-		} else {
-			list.deleteItems(params);
-		}
-	} else {
-		list.deleteItems(params);
-	}
+	list.deleteItems(params);
 };
 
 /**
@@ -1078,7 +1052,7 @@ function(items, folder, attrs, isShiftKey) {
 	if (items[0] instanceof ZmItem) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			if (!item.folderId || (item.folderId != folder.id || (attrs && attrs.op == "recover"))) {
+			if (!item.folderId || item.folderId != folder.id) {
 				if (!this._isItemMovable(item, isShiftKey, folder)) {
 					copy.push(item);
 				} else {
@@ -1095,25 +1069,7 @@ function(items, folder, attrs, isShiftKey) {
 	if (move.length) {
 		params.items = move;
 		var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
-
-		if (folder.isInTrash()) {
-			var anyScheduled = false;
-			var mItems = AjxUtil.toArray(move);
-			for (var i=0, cnt=mItems.length; i<cnt; i++) {
-				if (mItems[i] && mItems[i].isScheduled) {
-					anyScheduled = true;
-					break;
-				}
-			}
-			if (anyScheduled) {
-				params.noUndo = true;
-				this._popupScheduledWarningDialog(new AjxCallback(list, list.moveItems, params));
-			} else {
-				list.moveItems(params);
-			}
-		} else {
-			list.moveItems(params);
-		}
+		list.moveItems(params);
 	}
 
 	if (copy.length) {
@@ -1121,21 +1077,6 @@ function(items, folder, attrs, isShiftKey) {
 		var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
 		list.copyItems(params);
 	}
-};
-
-
-ZmListController.prototype._popupScheduledWarningDialog = function(callback) {
-	var dialog = appCtxt.getOkCancelMsgDialog();
-	dialog.reset();
-	dialog.setMessage(ZmMsg.moveScheduledMessageWarning, DwtMessageDialog.WARNING_STYLE);
-	dialog.registerCallback(DwtDialog.OK_BUTTON, new AjxCallback(this, this._scheduledWarningDialogListener, [callback, dialog]));
-	dialog.associateEnterWithButton(DwtDialog.OK_BUTTON);
-	dialog.popup(null, DwtDialog.OK_BUTTON);
-};
-
-ZmListController.prototype._scheduledWarningDialogListener = function(callback, dialog) {
-	dialog.popdown()
-	callback.run();
 };
 
 /**
@@ -1230,7 +1171,7 @@ function(parent) {
 		var tagMenu = parent.getTagMenu();
 
 		// dynamically build tag menu add/remove lists
-		var items = this.getSelection();
+		var items = this._listView[this._currentView].getSelection();
 		items = AjxUtil.toArray(items);
 
 		var account = (appCtxt.multiAccounts && items.length == 1) ? items[0].getAccount() : null;
@@ -1314,7 +1255,7 @@ function(parent, num) {
  */
 ZmListController.prototype._resetToolbarOperations =
 function() {
-	this._resetOperations(this._toolbar[this._currentView], this.getSelectionCount());
+	this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
 };
 
 /**
@@ -1480,11 +1421,11 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	this._cacheList(searchResult, offset);
 
 	var lv = this._listView[this._currentView];
-	var num = lv._isPageless ? this.getSelectionCount() : 0;
+	var num = lv._isPageless ? lv.getSelectionCount() : 0;
 	this._resetOperations(this._toolbar[view], num);
 
 	// remember selected index if told to
-	var selItem = saveSelection ? this.getSelection()[0] : null;
+	var selItem = saveSelection ? lv.getSelection()[0] : null;
 	var selectedIdx = selItem ? lv.getItemIndex(selItem) : -1;
 
 	var items = searchResult && searchResult.getResults().getArray();
@@ -1505,7 +1446,7 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 		}
 		lv.setSelectionHdrCbox(true);
 		DBG.println("scr", "pagination - selected more items: " + items.length);
-		DBG.println("scr", "items selected: " + this.getSelectionCount());
+		DBG.println("scr", "items selected: " + lv.getSelection().length);
 	}
 	this._resetNavToolBarButtons(view);
 
@@ -1535,7 +1476,7 @@ function(params) {
  */
 ZmListController.prototype._checkReplenish =
 function(callback) {
-	var view = this.getCurrentView();
+	var view = this._listView[this._currentView];
 	var list = view.getList();
 	// don't bother if the view doesn't really have a list
 	var replenishmentDone = false;
@@ -1596,7 +1537,7 @@ function(view, replCount, callback) {
  */
 ZmListController.prototype._resetSelection =
 function(idx) {
-	var list = this.getCurrentView().getList();
+	var list = this._listView[this._currentView].getList();
 	if (list) {
 		var selIdx = idx >= 0 ? idx : 0;
 		var first = list.get(selIdx);
@@ -1790,7 +1731,7 @@ function(event) {
  */
 ZmListController.prototype._getDefaultFocusItem =
 function() {
-	return this.getCurrentView();
+	return this._listView[this._currentView];
 };
 
 /**
@@ -1842,7 +1783,7 @@ function() {
 
 ZmListController.prototype._getItemCount =
 function() {
-	var lv = this.getCurrentView();
+	var lv = this._listView[this._currentView];
 	var list = lv && lv._list;
 	if (!list) { return null; }
 	return list.size();
@@ -1966,7 +1907,7 @@ function(params, actionParams) {
 			params.allDoneCallback.run();
 		}
 
-		ZmList.killProgressDialog(actionParams.actionSummary, actionParams.actionLogItem);
+		ZmList.killProgressDialog(actionParams.actionSummary);
 	}
 };
 

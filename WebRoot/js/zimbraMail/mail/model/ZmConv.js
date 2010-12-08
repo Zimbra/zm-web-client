@@ -141,14 +141,12 @@ function(params, callback) {
 		};
 		var search = this.search = new ZmSearch(searchParams);
 
-		var fetchId = ((params.getFirstMsg && this.msgIds && this.msgIds.length) ? this.msgIds[0] : null);
 		var convParams = {
 			cid: this.id,
-			callback:	(new AjxCallback(this, this._handleResponseLoad, [params, callback])),
-			fetchId:	fetchId,
-			markRead:	params.markRead,
-			noTruncate:	params.noTruncate,
-			needExp:	fetchId && params.needExp
+			callback: (new AjxCallback(this, this._handleResponseLoad, [params, callback])), 
+			fetchId: ((params.getFirstMsg && this.msgIds && this.msgIds.length) ? this.msgIds[0] : null),
+			markRead: params.markRead,
+			noTruncate: params.noTruncate
 		};
 		search.getConv(convParams);
 	}
@@ -309,7 +307,7 @@ function(search, defaultValue) {
 		var msgs = this.msgs.getArray();
 		for (var i = 0; i < msgs.length; i++) {
 			var msg = msgs[i];
-			if (search.matches(msg) && !msg.ignoreJunkTrash() && this.folders[msg.folderId]) {
+			if (search.matches(msg) && !msg.ignoreJunkTrash()) {
 				return true;
 			}
 		}
@@ -328,30 +326,18 @@ function() {
 
 ZmConv.prototype.getAccount =
 function() {
-    // pull out the account from the fully-qualified ID
+	// always pull out the account from the fully-qualified ID
 	if (!this.account) {
-        var folderId = this.getFolderId();
-        var folder = folderId && appCtxt.getById(folderId);
-        // make sure current folder is not remote folder
-        // in that case getting account from parseID will fail if
-        // the shared account is also configured in ZD
-        if (!(folder && folder._isRemote)) {
-            this.account = ZmOrganizer.parseId(this.id).account;
-        }
-    }
+		this.account = ZmOrganizer.parseId(this.id).account;
+	}
 
-    // pull out the account from the fully-qualified ID
-    if (!this.account) {
-        this.account = ZmOrganizer.parseId(this.id).account;
-    }
+	// fallback on the active account if account not found from parsed ID (most
+	// likely means this is a conv inside a shared folder of the active acct)
+	if (!this.account) {
+		this.account = appCtxt.getActiveAccount();
+	}
 
-    // fallback on the active account if account not found from parsed ID (most
-    // likely means this is a conv inside a shared folder of the active acct)
-    if (!this.account) {
-        this.account = appCtxt.getActiveAccount();
-    }
-    return this.account;
-
+	return this.account;
 };
 
 /**
@@ -624,13 +610,6 @@ function(convNode) {
 			if (msgNode.s) {
 				this.size = msgNode.s;
 			}
-
-			if (msgNode.autoSendTime) {
-				var timestamp = parseInt(msgNode.autoSendTime);
-				if (timestamp) {
-					this.setAutoSendTime(new Date(timestamp));
-				}
-			}
 		}
 	}
 
@@ -683,7 +662,6 @@ function(ev) {
 	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		// a msg was moved or deleted, see if this conv's row should remain
 		if (this.list && this.list.search && !this.hasMatchingMsg(this.list.search, true)) {
-            this.moveLocal(ev.item && ev.item.folderId);
 			this._notify(ZmEvent.E_MOVE);
 		}
 	}

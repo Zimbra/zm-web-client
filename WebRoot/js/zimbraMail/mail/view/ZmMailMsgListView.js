@@ -111,14 +111,13 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 			if (addrs && addrs.length) {
 				var fieldId = this._getFieldId(msg, ZmItem.F_PARTICIPANT);
 				var origLen = addrs.length;
-				var headerCol = this._headerHash[field];
-				var partColWidth = headerCol ? headerCol._width : ZmMsg.COLUMN_WIDTH_FROM_CLV;
-				var parts = this._fitParticipants(addrs, msg, partColWidth);
+				var partsElided = false; // may need to get this from server...
+				var parts = this._fitParticipants(addrs, partsElided, 145);
 				for (var j = 0; j < parts.length; j++) {
-					if (j == 0 && (parts.length < origLen)) {
+					if (j == 1 && (partsElided || parts.length < origLen)) {
 						htmlArr[idx++] = AjxStringUtil.ELLIPSIS;
 					} else if (parts.length > 1 && j > 0) {
-						htmlArr[idx++] = AjxStringUtil.LIST_SEP;
+						htmlArr[idx++] = ", ";
 					}
 					htmlArr[idx++] = "<span style='white-space: nowrap' id='";
 					// bug fix #3001 - always add one to index value (to take FROM: address into account)
@@ -126,11 +125,16 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 					htmlArr[idx++] = "'>";
 					htmlArr[idx++] = parts[j].name;
 					htmlArr[idx++] = "</span>";
+					if (parts.length == 1 && parts.length < origLen) {
+						htmlArr[idx++] = AjxStringUtil.ELLIPSIS;
+					}
 				}
 			} else {
 				htmlArr[idx++] = "&nbsp;"
 			}
-		} else {
+		}
+		else
+		{
 			var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 			if (fromAddr) {
 				if (this._mode == ZmId.VIEW_CONVLIST && this._isMultiColumn) {
@@ -359,7 +363,7 @@ function(parent, controller) {
 };
 
 ZmMailMsgListView.prototype._sortColumn = 
-function(columnItem, bSortAsc, callback) {
+function(columnItem, bSortAsc) {
 
 	// call base class to save new sorting pref
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
@@ -380,7 +384,7 @@ function(columnItem, bSortAsc, callback) {
 		if (this._mode == ZmId.VIEW_CONV) {
 			var conv = controller.getConv();
 			if (conv) {
-				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller, callback]);
+				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller]);
 				var params = {
 					query: query,
 					queryHint: queryHint,
@@ -395,8 +399,7 @@ function(columnItem, bSortAsc, callback) {
 				queryHint: queryHint,
 				types: [ZmItem.MSG],
 				sortBy: this._sortByString,
-				limit: this.getLimit(),
-				callback: callback
+				limit: this.getLimit()
 			};
 			appCtxt.getSearchController().search(params);
 		}
@@ -409,7 +412,7 @@ function(columnItem) {
 };
 
 ZmMailMsgListView.prototype._handleResponseSortColumn =
-function(conv, columnItem, controller, callback, result) {
+function(conv, columnItem, controller, result) {
 	var searchResult = result.getResponse();
 	var list = searchResult.getResults(ZmItem.MSG);
 	controller.setList(list); // set the new list returned
@@ -417,8 +420,6 @@ function(conv, columnItem, controller, callback, result) {
 	this.offset = 0;
 	this.set(conv.msgs, columnItem);
 	this.setSelection(conv.getFirstHotMsg({offset:this.offset, limit:this.getLimit(this.offset)}));
-	if (callback instanceof AjxCallback)
-		callback.run();
 };
 
 ZmMailMsgListView.prototype._getParentForColResize = 

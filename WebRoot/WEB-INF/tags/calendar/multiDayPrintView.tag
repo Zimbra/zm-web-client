@@ -83,21 +83,10 @@
     </tr>
 </table>
 <br>
-<table width="98%" align="center" cellpadding="0" cellspacing="0" border="0" class="zPrintMsgs" >
+<table width="98%" align="center" cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td colspan="4" class='ZhAppContent'>
             ${multiDay}
         </td>
     </tr>
 </table>
-
-<style type="text/css">
-    .zPrintMsgs *{
-        font-size:${mailbox.prefs.defaultPrintFontSize} !important;
-    }
-</style>
-<SCRIPT TYPE="text/javascript">
-<!--
-function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
-//-->
-</SCRIPT>

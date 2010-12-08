@@ -55,192 +55,255 @@ FORM {
 /* Outer panel for the entire login/splash dialog */
 #ZLoginPanel {
 	position:relative;
-	width:500px;
+	width:500;
 	overflow:visible;
 	@LightWindowOuterBorder@
 }
 
 
 /*
- * major zones
+ * major zones (TRs)
  */
-.LoginScreen {
-	position:absolute;
-	left:0px;
-	top:0px;
-	width:100%;
-	height:100%;
-	font-size:11px;
-	background-color: @AltC@;
-	background-image: -moz-linear-gradient(top, @AltC@, @darken(AltC,19)@); /* FF3.6 */
-	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @darken(AltC,19)@)); /* Saf4+, Chrome */
- 	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@'); /* IE6,IE7 */
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@')"; /* IE8 */
 
-}
-.LoginScreen .center {
-	width:500px;
-	min-height:300px;
-	margin-top:-150px;
-	margin-left:-250px;
-}
-.LoginScreen .center-small {
-	width:350px;
-	height:270px;
-	margin-top:-135px;
-	margin-left:-175px;
-}
-.LoginScreen .center, .LoginScreen .center-small {
-	position:absolute;
-	top:50%;
-	left:50%;
-	overflow:visible;
-	z-index:11;
-	
-	/*Linear gradient backgrounds*/
-	background-color: @darken(AppC,10)@;
-	background-image: -moz-linear-gradient(top, @AppC@, @darken(AppC,10)@); /* FF3.6 */
-	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @darken(AppC,10)@)); /* Saf4+, Chrome */
-/*	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); */ /* IE6,IE7 */
-/*	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')";*/ /* IE8 */
+/* Cell for the 'header' (logo/app name/version) */
+#ZLoginHeaderContainer {}
 
-	/*Radial gradient backgrounds*/
-	background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @AppC@ 0%, @darken(AppC,10)@ 100%); /* FF3.6 */
-	background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
-
-	-moz-border-radius: 15px; /* FF1+ */
-	-webkit-border-radius: 15px; /* Saf3-4 */
-	border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
-	
-	-moz-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* FF3.5+ */
-	-webkit-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* Saf3.0+, Chrome */
-	box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
-	#IFDEF MSIE
-	border: 1px solid @darken(AltC,50)@; /* Plain border for IE */
-	#ENDIF
+/* Cell for the 'body' (notice/form/about/license) */
+#ZLoginBodyContainer {
+	@LightWindowInnerBorder@
+	@AppBg@
+	padding-top:20px;
 }
 
-.LoginScreen .ImgLoginBanner, 
-.LoginScreen .ImgAppBanner {
-	cursor:pointer;
-	display:block;
-	background-repeat:no-repeat;
-}
-.LoginScreen .ImgAltBanner {
-	margin:20px 0px 0px 20px;
-	width:71px;
-	height:11px;
-	background-image:url("@LogoImgDir@/AltBanner.png");
-	background-repeat:repeat-x;
-}
-.LoginScreen h1 {margin:22px 20px 32px 20px;}
-
-.LoginScreen form {text-align:center;}  /* fixes IE centering of form */
-.form {
-	color: @darken(AppC,50)@;
-	margin: 0px auto;
-	border-collapse:collapse;
-	text-align:left;
-}
-.offline {
-	color: @darken(AppC,50)@;
-	text-align: center;
+/* Cell for the 'license' (copyright, etc) */
+#ZLoginLicenseContainer {
+	padding-top:5px;
+	padding-bottom:5px;
+	text-align:center;
+	vertical-align:bottom;
+	@Text-disabled@
+	font-size:9px;
 }
 
-.offline a:link, .offline a:visited {
-	color: @darken(AppC,50)@;
+/* Cell for the client level (basic/advanced) */
+#ZLoginClientLevelContainer {
+	padding-top:5px;
+	padding-bottom:5px;
+	text-align:center;
+	vertical-align:bottom;
+	@FontSize-smaller@
 }
 
-.form td:first-child label {margin-right:20px;}
-.form td {padding-bottom:10px;}
-.form input[type='text'], 
-.form input[type='password'] {
-	width:225px;
-	border:1px solid @AltC@;
+/* What's this anchor */
+#ZLoginWhatsThisAnchor {
+	@FontSize-smaller@
 }
-.form input[type='text']:focus, 
-.form input[type='password']:focus{
-	border:1px solid @SelC@;
-}
-.form select {
-	width:165px;
-}
-.LoginScreen #ZLoginErrorPanel {
-	margin:10px 10%;
-	padding:5px;
-	background-color:#FF9;
-	-moz-border-radius:10px;
-	-webkit-border-radius:10px;
-	border-width:0px;
-	border-radius:10px;
-	-moz-box-shadow:0px 0px 10px #FF9;
-	-webkit-box-shadow:0px 0px 10px #FF9;
-	box-shadow:0px 0px 10px #FF9;
+
+
+/*
+ *	Banner (top) zone
+ */
+
+/* Cell for the 'banner' */
+#ZLoginBannerContainer {}
+
+/* Outer element for the 'banner' (image/app name/version) */
+#ZLoginBannerPanel {
+	margin:10px;
 	position:relative;
-	left:auto;
 }
-.LoginScreen #ZLoginErrorIcon {
-    margin:auto 10px auto auto;
+
+/* Application logo.  Use this for positioning only, image comes from .ImgLoginBanner */
+#ZLoginBannerImage {}
+
+
+/* (optional) Short version of the app -- eg:  'Beta' */
+#ZLoginShortVersion {
+	vertical-align:top;
+	font-size:18px;
+	font-weight:normal;
+	color:#666666;
 }
-.LoginScreen .postioning{
-    position: relative;
-    z-index: 20;
+
+/* Name of the app -- eg:  'Collaboration Suite' */
+#ZLoginAppName {
+	margin-top:5px;
+	margin-bottom:5px;
+	width:95%;
+	text-align:right;
+	@FontSize-biggest@
 }
-.LoginScreen #ZLoginWhatsThisAnchor {
-	color: @darken(AppC,50)@;
-	font-size:10px;
-	margin-left:5px;
-	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;
-	border-radius: 10px;
+
+/* (optional) Product name -- eg:  'Administration Console' */
+#ZLoginProductName {
+	@FontSize-bigger@
+	width:100%;
+	font-weight:normal;
+	text-align:right;
 }
-.LoginScreen #ZLoginWhatsThis {
-	margin-left:-10em;
-	position:absolute;
-	width:40em;
-	top: 25px;
-	left: 0;
-	z-index: 30; 
+
+/* Long version number, eg:  'Version 3.5 (April 18, 2005)' */
+#ZLoginLongVersion {
+	@Text-disabled@
+	margin-top:3px;
+	font-size:9px;
+	width:100%;
+	font-weight:normal;
+	text-align:right;
 }
-.LoginScreen .ZLoginInfoMessage {
-	background-color: @lighten(AltC,53)@;	
-	border:1px solid @lighten(AltC,25)@;
-	padding:3px;
+
+
+/* Panel that shows an error or notice */
+#ZLoginErrorPanel {
+	position:relative;
+	left:10%;
+	width:80%;
+	margin-top:10px;
+	margin-bottom:10px;
+	padding:5px;
+	@NormalOutsetBorder@
+	background-color:@HilightColor@;
+}
+
+
+
+/* Error icon -- use for positioning only, image comes from .ImgLoginError */
+#ZLoginErrorIcon {}
+
+
+/* Login error message text -- use for positioning only, text style comes from .errorText */
+#ZLoginErrorMsg {}
+.errorText {}
+
+
+/* Panel that contains all versions of the login panel */
+#ZLoginFormPanel {
+	position:relative;
+	left:5%;
+	width:90%;
+}
+
+
+/* Container that owns the login button */
+#ZLoginButton {}
+
+/* Container that owns the name of the login button */
+#ZLoginButtonText {}
+
+/* Containers that hold the various login form pieces -- set display:none on these to hide each piece */
+#ZLoginUserTr {}
+#ZLoginPasswordTr {}
+#ZLoginNewPassword1Tr {}
+#ZLoginNewPassword2Tr {}
+
+
+/* Container for the "remember me" checkbox */
+#ZLoginRememberMeContainer {}
+
+
+/* Generic table in login panel -- used to make spacing easier */
+.zLoginTable {}
+
+/* Field label (right-aligned) */
+.zLoginLabelContainer {
+	@Label@
+	text-align:right;
+	width:80px;
+}
+
+/* Field label (left-aligned) */
+.zLoginCheckboxLabelContainer {
+	@Label@
+}
+
+/* Field <input> element */
+.zLoginField {
+	width:100%;
+}
+
+/* Container (td) for fields */
+.zLoginFieldContainer {}
+
+
+/* Container (td) for buttons */
+.zLoginButtonContainer {}
+
+
+/* Panel to show the "loading..." message */
+#ZLoginLoadingPanel {
+	position:relative;
+	left:10%;
+	width:80%;
+	margin-top:10px;
+	margin-bottom:10px;
+	padding:5px;
+}
+
+
+#ZLoginSwitchMsg {
+	padding-top:10px;
+}
+
+/* Container for the "loading..." message */
+#ZLoginLoadingMsg {
+	@FontSize-bigger@
+}
+
+
+/* Panel to show the "About" message */
+#ZLoginAboutPanel {
+	position:relative;
+	left:10%;
+	width:80%;
+	margin-top:10px;
+	margin-bottom:10px;
+	padding:5px;
+	font-size:15px;
+}
+
+
+
+/* Container to show/hide the license message text */
+#ZLoginLicenseMsgContainer {}
+
+/* Actual place where the license message text lives */
+#ZLoginLicenseMsg {
+	@FontSize-bigger@
+}
+
+
+
+/* Container to show an info message to the user */
+.ZLoginInfoMessage {
+	@ToastContainer@
+	@ToastContainer-warning@
+	width:80%;
+	margin:10px;
+	@BoxPadding@
+}
+
+/* Separator in the login dialog */
+.ZLoginSeparator {
+	position:relative;
+	width:100%;	
+	@BottomSeparator@
+	margin:10px 0px;
+}
+
+
+
+.error {  
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: @BoxPaddingSize@;
+	width: 85%;
+	background-color: rgb(255, 255, 204); 
+	border: 1px solid rgb(124, 124, 148);
 	text-align:left;
 }
-.LoginScreen #ZLoginNotice {
-	bottom:30px;
-	color:#FFF;
-	font-size:11px;
-	position:absolute;
-	text-align:center;
-	width:100%;
-	z-index:10;
-}
 
-.LoginScreen #ZLoginCopyRight {
-	bottom:5px;
-	font-size:11px;
-	position:absolute;
-	text-align:center;
-	width:100%;
-	z-index:10;
-}
-
-.LoginScreen #ZLoginNotice a {
-	color:#FFF;
-}
-.LoginScreen #login {  /*Is this used?*/
-	float:right;
-}
-.LoginScreen .copyright {
-	color: @darken(AppC,50)@; 
-	font-size:11px;
-	margin:13px 0px 3px;
-	text-align:center;
-}
-.LoginScreen .center-small .copyright {
-	margin:13px 20px 3px;
+.focusBorder { 
+	border: 1px dotted black;
 }
 
 
@@ -258,33 +321,4 @@ FORM {
 .DwtButton-selected .Text				{	@ButtonText@ @ButtonText-active@	}	
 .DwtButton-disabled .Text				{	@ButtonText@ @ButtonText-disabled@	}	
 .DwtButton-active .Text					{	@ButtonText@ @ButtonText-default@	}	
-.DwtButton-focused .Text				{	@ButtonText@ @ButtonText-focused@	}
-
-/*Launch Button*/
-
-.LaunchButton {
-    text-align:center;
-    padding:10px;
-}
-
-.LaunchButton input{
-    background-color:@lighten(AltC,15)@;
-    border-color:@lighten(AltC,45)@ @darken(AltC,25)@ @darken(AltC,25)@ @lighten(AltC,45)@;
-    border-style:solid;
-    border-width:1px;
-    color:#000000;
-    display:inline-block;
-    text-align:center;
-    text-decoration:none;
-    width: 300px;
-    height: 30px;
-    cursor:pointer;
-    font-size: 15px;
-    font-weight: bold;
-}
-
-.spacer{
-	padding: 5px;
-	font-size: 1.2em;
-	line-height: 1.3em;
-}
+.DwtButton-focused .Text				{	@ButtonText@ @ButtonText-focused@	}	

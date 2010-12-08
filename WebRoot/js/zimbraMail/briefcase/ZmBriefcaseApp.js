@@ -43,11 +43,6 @@ ZmBriefcaseApp.prototype.constructor = ZmBriefcaseApp;
 ZmEvent.S_BRIEFCASE_ITEM			= ZmId.ITEM_BRIEFCASE;
 ZmItem.BRIEFCASE_ITEM				= ZmEvent.S_BRIEFCASE_ITEM;
 ZmItem.BRIEFCASE					= ZmItem.BRIEFCASE_ITEM;	// back-compatibility
-
-ZmEvent.S_BRIEFCASE_REVISION_ITEM			= ZmId.ITEM_BRIEFCASE_REV;
-ZmItem.BRIEFCASE_REVISION_ITEM				= ZmEvent.S_BRIEFCASE_REVISION_ITEM;
-ZmItem.BRIEFCASE_REVISION					= ZmItem.BRIEFCASE_REVISION_ITEM;	// back-compatibility
-
 /**
  * Defines the "briefcase" organizer.
  */
@@ -89,24 +84,15 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_SPREADSHEET, {textKey:"newSpreadSheetBeta", tooltipKey:"newSpreadSheet", image:"ZSpreadSheet", textPrecedence:11});
 	ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", image:"Doc", shortcut:ZmKeyMap.NEW_DOC, textPrecedence:12});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
-//	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
-	ZmOperation.registerOp(ZmId.OP_SAVE_FILE, {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"DownArrow"});
-    ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE_WIN, {tooltipKey:"detach", image:"OpenInNewWindow"});
+	ZmOperation.registerOp(ZmId.OP_SAVE_FILE, {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"Save"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_FILE_AS_HTML, {textKey:"viewFileAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"sendLink", tooltipKey:"sendLink", image:"Send"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE_AS_ATT, {textKey:"sendAsAttachment", tooltipKey:"sendAsAttachment", image:"Attachment"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE_MENU, {textKey:"send", image:"Send", textPrecedence:75});
 	ZmOperation.registerOp(ZmId.OP_CREATE_SLIDE_SHOW, {textKey:"createSlideShow", image:"Presentation"});
-    ZmOperation.registerOp(ZmId.OP_EDIT_FILE, {textKey: "edit", image:"Edit"});
-    ZmOperation.registerOp(ZmId.OP_RENAME_FILE, {textKey: "rename", image:"FileRename"});
-    ZmOperation.registerOp(ZmId.OP_CHECKIN, {textKey: "checkInFile", image:"Checkin"});
-    ZmOperation.registerOp(ZmId.OP_CHECKOUT, {textKey: "checkOutFile", image:"Checkout"});
-    ZmOperation.registerOp(ZmId.OP_DISCARD_CHECKOUT, {textKey: "checkOutFileDiscard", image:"DiscardCheckout"});    
-    ZmOperation.registerOp(ZmId.OP_VERSION_HISTORY, {textKey: "versionHistory", image:"VersionHistory"});
-    ZmOperation.registerOp(ZmId.OP_RESTORE_VERSION, {textKey: "restoreCurrentVersion", image:"RestoreVersion"});
-    ZmOperation.registerOp(ZmId.OP_DELETE_VERSION, {textKey: "deleteVersion", image:"Delete"});
-
+    ZmOperation.registerOp(ZmId.OP_EDIT, {textKey: "edit", image:"Edit"});
 };
 
 ZmBriefcaseApp.prototype._registerSettings =
@@ -116,7 +102,6 @@ function(settings) {
 	settings.registerSetting("SLIDES_ENABLED",		{name:"zimbraFeatureBriefcaseSlidesEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("DOCS_ENABLED",		{name:"zimbraFeatureBriefcaseDocsEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
     settings.registerSetting("PREVIEW_ENABLED",		{ type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("READING_PANE_LOCATION_BRIEFCASE",		{name:"zimbraPrefBriefcaseReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true});
 };
 
 ZmBriefcaseApp.prototype._registerItems =
@@ -144,7 +129,7 @@ ZmBriefcaseApp.prototype._registerOrganizers =
 function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.BRIEFCASE,
 							{app            : ZmApp.BRIEFCASE,
-							 nameKey        : "folder",
+							 nameKey        : "folders",
 							 defaultFolder  : ZmOrganizer.ID_BRIEFCASE,
 							 soapCmd        : "FolderAction",
 							 firstUserId    : 256,
@@ -155,7 +140,7 @@ function() {
 							 itemsKey       : "files",
 							 treeType       : ZmOrganizer.FOLDER,
 							 views          : ["document"],
-							 folderKey      : "briefcase",                                                      
+							 folderKey      : "briefcase",
 							 mountKey       : "mountFolder",
 							 createFunc     : "ZmOrganizer.create",
 							 compareFunc    : "ZmBriefcase.sortCompare",
@@ -183,6 +168,7 @@ function() {
 ZmBriefcaseApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
+	newItemOps[ZmOperation.NEW_FILE]		= "uploadNewFile";
 	newItemOps[ZmOperation.NEW_DOC]			= "document";
 
 	var newOrgOps = {};
@@ -209,7 +195,7 @@ function() {
 					  newOrgOps:			newOrgOps,
 					  actionCodes:			actionCodes,
 					  gotoActionCode:		ZmKeyMap.GOTO_BRIEFCASE,
-					  newActionCode:		ZmKeyMap.NEW_DOC,
+					  newActionCode:		ZmKeyMap.NEW_FILE,
 					  chooserSort:			70,
 					  defaultSort:			60
 					  });
@@ -374,7 +360,7 @@ function(item) {
 ZmBriefcaseApp.prototype._handleNewItem =
 function() {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
-	this.getBriefcaseController().__popupUploadDialog(ZmMsg.uploadFileToBriefcase);
+	this.getBriefcaseController().__popupUploadDialog(null, ZmMsg.uploadFileToBriefcase);
 };
 
 ZmBriefcaseApp.prototype._handleLoadNewBriefcase =
@@ -510,7 +496,6 @@ function(dlg, msgId, partId) {
 		appName:		ZmApp.BRIEFCASE
 	};
     params.omit = {};
-    params.omit[ZmFolder.ID_DRAFTS] = true;
     params.omit[ZmFolder.ID_TRASH] = true;
     return params;
 };

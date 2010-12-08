@@ -518,7 +518,7 @@ ZmSchedTabViewPage.prototype._createDwtObjects =
 function() {
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
 
-	this._tzoneSelect = new DwtSelect({parent:this, layout: DwtMenu.LAYOUT_SCROLL, maxRows:7});
+	this._tzoneSelect = new DwtSelect({parent:this, cascade:false});
 	this._tzoneSelect.reparentHtmlElement(this._tzoneSelectId);
 	this._tzoneSelect.addChangeListener(timezoneListener);
 	// NOTE: tzone select is initialized later

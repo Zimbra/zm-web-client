@@ -422,10 +422,6 @@ function(shares, result) {
 		}
 		if (batchCmd)
 			batchCmd.run();
-
-        var shareMsg = (this._shareMode==ZmSharePropsDialog.NEW)?ZmMsg.shareCreatedSubject:ZmMsg.shareModifiedSubject;
-        appCtxt.setStatusMsg(shareMsg);
-
 	}
 };
 

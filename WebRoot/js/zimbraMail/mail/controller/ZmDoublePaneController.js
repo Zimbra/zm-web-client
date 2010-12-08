@@ -74,6 +74,7 @@ function(search, item, callback, markRead) {
 
 	if (this._doublePaneView) {
 		var mlv = this._doublePaneView._mailListView;
+		mlv._saveState({selection:true});
 		mlv.reset();
 	}
 	this._item = item;
@@ -719,9 +720,7 @@ function(msg) {
 	rule.addAction(ZmFilterRule.A_KEEP);
 
 	var accountName = appCtxt.multiAccounts && msg.getAccount().name;
-	var outgoing = AjxUtil.indexOf(ZmFolder.OUTBOUND, msg.getFolderId()) != -1;
-
-	appCtxt.getFilterRuleDialog().popup(rule, null, null, accountName, outgoing);
+	appCtxt.getFilterRuleDialog().popup(rule, null, null, accountName);
 };
 
 ZmDoublePaneController.prototype._dragListener =

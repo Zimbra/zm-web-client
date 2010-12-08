@@ -21,7 +21,6 @@
 <zm:requirePost/>
 <zm:checkCrumb crumb="${param.crumb}"/>
 <zm:getMailbox var="mailbox"/>
-<zm:getUserAgent var="ua" session="true"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/> <%--id param for messages--%>
 <c:set var="_selectedIds" scope="request" value=",${ids},"/> <%--Used to keep msg's selected in the list--%>
 <c:set var="_selectedCids" scope="request" value=",${fn:join(paramValues.cid,',')},"/> <%--Used to keep conv's selected in the list--%>
@@ -34,7 +33,6 @@
 <c:set var="selectedCidsString" scope="request" value=",${requestScope.selectedIdsString},"/>
 <c:set var="anAction"
        value="${not empty paramValues.anAction[0] ? paramValues.anAction[0] :  paramValues.anAction[1]}"/>
-<c:catch var="msgActionException">
 <c:choose>
 <c:when test="${zm:actionSet(param,'moreActions') && anAction eq 'selectAll'}">
     <c:set var="select" value="all" scope="request"/>
@@ -124,16 +122,13 @@
         </c:otherwise>
     </c:choose>
 </c:when>
-<c:when test="${empty ids and param.doMessageAction eq '1'}">
+<c:when test="${empty ids}">
     <mo:status style="Warning"><fmt:message key="actionNoMessageSelected"/></mo:status>
 </c:when>
 <c:otherwise>
 <c:choose>
 <%--Consolidated group actions using moreAction param, actual action to perform is specified by anAction param--%>
-<c:when test="${not empty param.sq and ua.isiPad eq true and param.doMessageAction eq '0'}">
-    
-</c:when>
-<c:when test="${(zm:actionSet(param,'moreActions') && empty anAction && empty param.actionDelete)}">
+<c:when test="${(zm:actionSet(param,'moreActions') && empty anAction && empty param.actionDelete) }">
     <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionMarkSpam') || (zm:actionSet(param,'moreActions') && anAction eq 'actionMarkSpam') }">
@@ -188,14 +183,9 @@
             <zm:deleteMessage var="result" id="${ids}"/>
         </c:otherwise>
     </c:choose>
-    <c:choose>
-	    <c:when test="${ua.isiPad eq true}">
-	        <c:set var="op" value="x" scope="request"/>
-	    </c:when>
-	    <c:when test="${param.action eq 'view' and ua.isiPad eq false}">
-	        <c:set var="op" value="x" scope="request"/>
-	    </c:when>
-	</c:choose>    
+     <c:if test="${param.action eq 'view'}">
+        <c:set var="op" value="x" scope="request"/>
+    </c:if>
     <mo:status>
         <fmt:message key="action${type}HardDeleted">
             <fmt:param value="${result.idCount}"/>
@@ -211,14 +201,9 @@
             <zm:trashMessage var="result" id="${ids}"/>
         </c:otherwise>
     </c:choose>
-    <c:choose>
-	    <c:when test="${ua.isiPad eq true}">
-	        <c:set var="op" value="x" scope="request"/>
-	    </c:when>
-	    <c:when test="${param.action eq 'view' and ua.isiPad eq false}">
-	        <c:set var="op" value="x" scope="request"/>
-	    </c:when>
-	</c:choose>
+     <c:if test="${param.action eq 'view'}">
+        <c:set var="op" value="x" scope="request"/>
+    </c:if>
     <mo:status>
         <fmt:message key="action${type}MovedTrash">
             <fmt:param value="${result.idCount}"/>
@@ -346,14 +331,9 @@
                     <fmt:param value="${zm:getFolderName(pageContext, folderId)}"/>
                 </fmt:message>
             </mo:status>
-            <c:choose>
-			    <c:when test="${ua.isiPad eq true}">
-			        <c:set var="op" value="x" scope="request"/>
-			    </c:when>
-			    <c:when test="${param.action eq 'view' and ua.isiPad eq false}">
-			        <c:set var="op" value="x" scope="request"/>
-			    </c:when>
-			</c:choose>
+             <c:if test="${param.action eq 'view'}">
+                <c:set var="op" value="x" scope="request"/>
+            </c:if>
         </c:when>
         <c:when test="${empty param.folderId}">  <%--In case of moveAction, we have to specify folderId param to move to--%>
             <mo:status style="Warning"><fmt:message key="actionNoFolderSelected"/></mo:status>
@@ -373,42 +353,13 @@
                     <fmt:param value="${zm:getFolderName(pageContext, param.folderId)}"/>
                 </fmt:message>
             </mo:status>
-             <c:choose>
-			    <c:when test="${ua.isiPad eq true}">
-			        <c:set var="op" value="x" scope="request"/>
-			    </c:when>
-			    <c:when test="${param.action eq 'view' and ua.isiPad eq false}">
-			        <c:set var="op" value="x" scope="request"/>
-			    </c:when>
-			</c:choose>
+             <c:if test="${param.action eq 'view'}">
+                <c:set var="op" value="x" scope="request"/>
+            </c:if>
         </c:when>
     </c:choose>
 </c:when>
 </c:choose>
 </c:otherwise>
 </c:choose>
-</c:catch>
 <c:remove var="op"/>
-<c:if test="${!empty msgActionException}">
-    <zm:getException var="error" exception="${msgActionException}"/>
-    <c:choose>
-        <c:when test="${error.code eq 'ztaglib.SERVER_REDIRECT'}">
-            <c:redirect url="${not empty requestScope.SERVIER_REDIRECT_URL ? requestScope.SERVIER_REDIRECT_URL : '/'}"/>
-        </c:when>
-        <c:when test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
-            <c:redirect url="/?loginOp=relogin&client=mobile&loginErrorCode=${error.code}"/>
-        </c:when>
-        <c:otherwise>
-            <mo:status style="Critical">
-                <fmt:message key="${error.code}"/>
-            </mo:status>
-        </c:otherwise>
-    </c:choose>
-</c:if>
-
-<c:if test="${ua.isiPad and param.doMessageAction eq '1'}">
-    
-    <jsp:forward page="/m/moipadredirect">
-        <jsp:param name="ids" value="${empty msgActionException ? ids : ''}"/>
-    </jsp:forward>
-</c:if>

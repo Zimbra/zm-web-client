@@ -66,12 +66,19 @@ ZmColListView.KEY_ID = "_keyId";
 ZmColListView.prototype.set =
 function(list, sortField, doNotIncludeFolders) {
 
-	ZmBriefcaseBaseView.prototype.set.call(this, list, sortField);
 
+    //Add Folders accordingly
+    var paging = Boolean(this._itemsToAdd), newList;
+    if(!doNotIncludeFolders && !paging){        
+        newList = this.appendFolders(list);
+    }
+
+    newList = newList || list;
+	ZmBriefcaseBaseView.prototype.set.call(this, newList, sortField);
     this.focus();
     
     //bug 47240: return the new modified list with change listeners.
-    return list;
+    return newList;
 };
 
 ZmColListView.prototype.getController =
@@ -115,16 +122,11 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
 	htmlArr[idx++] = AjxImg.getImageHtml(item.getIcon());
 	htmlArr[idx++] = "</center></td>";
-	htmlArr[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_SUBJECT) + "'>";
-    htmlArr[idx++] =    "&nbsp;"+AjxStringUtil.htmlEncode(item.name);
+	htmlArr[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_SUBJECT) + "'>&nbsp;";
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
 	htmlArr[idx++] = "</td>";
 
-    htmlArr[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_LOCK)+"' ";
-    htmlArr[idx++] = item.locked ? "class='ImgPadLock' ":" ";
-    htmlArr[idx++] = " >";
-	htmlArr[idx++] = "</td>";
-
-    htmlArr[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_TAG)+"'>";
+    htmlArr[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item,ZmItem.F_SUBJECT)+"'>";
     idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
 	htmlArr[idx++] = "</td>";
 

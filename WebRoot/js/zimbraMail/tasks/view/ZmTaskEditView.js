@@ -29,7 +29,7 @@
  * @extends		ZmCalItemEditView
  */
 ZmTaskEditView = function(parent, controller) {
-	ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE, "ZmTaskEditView");
+	ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE);
 };
 
 ZmTaskEditView.prototype = new ZmCalItemEditView;
@@ -119,37 +119,10 @@ function(calItem, mode) {
 		this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
 	}
 
-
-    var rd = new Date(calItem.remindDate.getTime());
-
-    if (calItem.alarm) {
-        if (calItem.remindDate && calItem._reminderAbs) {
-            this._remindTimeSelect.set(calItem.remindDate);
-        }
-    } else {
-        var now = AjxDateUtil.roundTimeMins(new Date(), 30);
-        this._remindTimeSelect.set(now);        
-    }
-
-    if (this._hasReminderSupport) {
-        this._remindDateField.value = AjxDateUtil.simpleComputeDateStr(rd);
-        this._reminderCheckbox.setSelected(calItem.alarm);
-        this._setRemindersEnabled(calItem.alarm);
-
-        if (calItem.alarmActions.contains(ZmCalItem.ALARM_EMAIL)) {
-            this._reminderEmailCheckbox.setSelected(true);
-        }
-        if (calItem.alarmActions.contains(ZmCalItem.ALARM_DEVICE_EMAIL)) {
-            this._reminderDeviceEmailCheckbox.setSelected(true);
-        }
-
-        this._setEmailReminderControls();
-    }
-
 	this._location.setValue(calItem.getLocation());
-	this._setPriority(calItem.priority);
+	this._prioritySelect.setSelectedValue(calItem.priority);
 	this._statusSelect.setSelectedValue(calItem.status);
-    this._pCompleteSelectInput.setValue(this.formatPercentComplete(calItem.pComplete));
+	this._pCompleteSelect.setSelectedValue(calItem.pComplete);
 	this._statusCheckbox.checked = calItem.status == ZmCalendarApp.STATUS_COMP && calItem.pComplete == 100;
 };
 
@@ -174,36 +147,9 @@ function(calItem) {
 		calItem.endDate = null;		// explicitly null out in case item has old data
 	}
 
-    //set reminder
-    if (this._hasReminderSupport && this._reminderCheckbox.isSelected()) {
-        var remindDate = AjxDateUtil.simpleParseDateStr(this._remindDateField.value);
-        calItem.alarm = true;
-        calItem.remindDate = remindDate;
-        remindDate = this._remindTimeSelect.getValue(remindDate);
-        var remindFmtStr = AjxDateUtil.getServerDateTime(remindDate,true);
-        calItem.setTaskReminder(remindFmtStr);
-        var reminders = [
-            { control: this._reminderEmailCheckbox,       action: ZmCalItem.ALARM_EMAIL        },
-            { control: this._reminderDeviceEmailCheckbox, action: ZmCalItem.ALARM_DEVICE_EMAIL }
-        ];
-        for (var i = 0; i < reminders.length; i++) {
-            var reminder = reminders[i];
-            if (reminder.control && reminder.control.isSelected()) {
-                calItem.addReminderAction(reminder.action);
-            }
-            else {
-                calItem.removeReminderAction(reminder.action);
-            }
-        }
-    } else {
-       calItem.alarm = false;
-       calItem.remindDate = new Date();
-       calItem.setTaskReminder(null);
-    }
-    
 	calItem.setAllDayEvent(true);
-    calItem.pComplete = this.getpCompleteInputValue();
-	calItem.priority = this._getPriority();
+	calItem.pComplete = this._pCompleteSelect.getValue();
+	calItem.priority = this._prioritySelect.getValue();
 	calItem.status = this._statusSelect.getValue();
 
 //	XXX: uncomment when supported
@@ -219,14 +165,11 @@ function() {
 
 	if (subj && subj.length) {
 		var endDate = this._endDateField.value;
-		if (endDate.length > 0 && (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField)))
+		if (endDate.length > 0 &&
+			(!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField)))
 		{
 			errorMsg = ZmMsg.errorInvalidDates;
 		}
-        if(Math.round(this.getpCompleteInputValue()) > 100)
-        {
-           errorMsg = ZmMsg.errorInvalidPercentage;
-        }
     } else {
 		errorMsg = ZmMsg.errorMissingSubject;
 	}
@@ -252,8 +195,7 @@ function() {
 ZmTaskEditView.prototype._createHTML =
 function() {
 	this._statusCheckboxId 	= this._htmlElId + "_status_cbox";
-
-	//this._repeatDescId		= this._htmlElId + "_repeatDesc";
+	this._repeatDescId		= this._htmlElId + "_repeatDesc";
     this._isAppt = false;
 	var subs = {
 		id: this._htmlElId,
@@ -267,73 +209,6 @@ function() {
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#EditView", subs);
 };
 
-ZmTaskEditView.prototype._getPriorityImage =
-function(flag) {
-	if (flag == ZmCalItem.PRIORITY_HIGH)	{ return "PriorityHigh"; }
-	if (flag == ZmCalItem.PRIORITY_LOW)	{ return "PriorityLow"; }
-	return "PriorityNormal";
-};
-
-ZmTaskEditView.prototype._getPriorityText =
-function(flag) {
-	if (flag == ZmCalItem.PRIORITY_HIGH)	{ return ZmMsg.high; }
-	if (flag == ZmCalItem.PRIORITY_LOW)	{ return ZmMsg.low; }
-	return ZmMsg.normal;
-};
-
-ZmTaskEditView.prototype._createPriorityMenuItem =
-function(menu, text, flag) {
-	var item = DwtMenuItem.create({parent:menu, imageInfo:this._getPriorityImage(flag), text:text});
-	item._priorityFlag = flag;
-	item.addSelectionListener(this._priorityMenuListnerObj);
-};
-
-ZmTaskEditView.prototype._priorityButtonMenuCallback =
-function() {
-	var menu = new DwtMenu({parent:this._prioritySelect});
-	this._priorityMenuListnerObj = new AjxListener(this, this._priorityMenuListner);
-	this._createPriorityMenuItem(menu, ZmMsg.high, ZmCalItem.PRIORITY_HIGH);
-	this._createPriorityMenuItem(menu, ZmMsg.normal, ZmCalItem.PRIORITY_NORMAL);
-	this._createPriorityMenuItem(menu, ZmMsg.low, ZmCalItem.PRIORITY_LOW);
-	return menu;
-};
-
-ZmTaskEditView.prototype._priorityMenuListner =
-function(ev) {
-	this._setPriority(ev.dwtObj._priorityFlag);
-};
-
-ZmTaskEditView.prototype._getPriority =
-function() {
-	return (this._prioritySelect)
-		? (this._prioritySelect._priorityFlag || "") : "";
-};
-
-ZmTaskEditView.prototype._setPriority =
-function(flag) {
-	if (this._prioritySelect) {
-		flag = flag || "";
-		this._prioritySelect.setImage(this._getPriorityImage(flag));
-        this._prioritySelect.setText(this._getPriorityText(flag))
-		this._prioritySelect._priorityFlag = flag;
-	}
-};
-
-ZmTaskEditView.prototype.getpCompleteInputValue = function() {
-  var pValue = this._pCompleteSelectInput.getValue();
-  return Math.round(pValue.replace(/[%]/g,""));  
-};
-
-ZmTaskEditView.prototype.formatPercentComplete = function(pValue) {
-
-   var formatter = new AjxMessageFormat(AjxMsg.percentageString);
-   if(AjxUtil.isString(pValue) && pValue.indexOf("%") != -1) {
-       return formatter.format(Math.round(pValue.replace(/[%]/g,"")));
-   } else {
-       return formatter.format(Math.round(pValue));
-   }
-};
-
 ZmTaskEditView.prototype._createWidgets =
 function(width) {
 	ZmCalItemEditView.prototype._createWidgets.call(this, width);
@@ -344,10 +219,12 @@ function(width) {
 	Dwt.setSize(this._location.getInputElement(), width, "22px");
 	this._location.reparentHtmlElement(this._htmlElId + "_location");
 
-	// add priority DwtButton
-	this._prioritySelect = new DwtButton({parent:this});
-    this._prioritySelect.setSize(60, Dwt.DEFAULT);
-	this._prioritySelect.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
+	// add priority DwtSelect
+	this._prioritySelect = new DwtSelect({parent:this});
+	for (var i = 0; i < ZmTaskEditView.PRIORITY_VALUES.length; i++) {
+		var v = ZmTaskEditView.PRIORITY_VALUES[i];
+		this._prioritySelect.addOption(ZmCalItem.getLabelForPriority(v), i==1, v);
+	}
 	this._prioritySelect.reparentHtmlElement(this._htmlElId + "_priority");
 
 	var listener = new AjxListener(this, this._selectListener);
@@ -360,119 +237,15 @@ function(width) {
 	this._statusSelect.addChangeListener(listener);
 	this._statusSelect.reparentHtmlElement(this._htmlElId + "_status");
 
-    var params = {
-        parent: this,
-        parentElement: (this._htmlElId + "_pCompleteSelectInput"),
-        type: DwtInputField.STRING,
-        errorIconStyle: DwtInputField.ERROR_ICON_NONE,
-        validationStyle: DwtInputField.CONTINUAL_VALIDATION
-    };
-    this._pCompleteSelectInput = new DwtInputField(params);
-    var pCompleteInputEl = this._pCompleteSelectInput.getInputElement();
-    Dwt.setSize(pCompleteInputEl, Dwt.DEFAULT, "22px");
-    pCompleteInputEl.onblur = AjxCallback.simpleClosure(this._handleCompleteOnBlur, this, pCompleteInputEl);
-
-    var pCompleteButtonListener = new AjxListener(this, this._pCompleteButtonListener);
-    var pCompleteSelectListener = new AjxListener(this, this._pCompleteSelectListener);
-    this._pCompleteButton = ZmTasksApp.createpCompleteButton(this, this._htmlElId + "_pCompleteSelect", pCompleteButtonListener, pCompleteSelectListener);
-
-	this._hasReminderSupport = Dwt.byId(this._htmlElId + "_reminderCheckbox") != null;
-
-    if (this._hasReminderSupport) {
-        // reminder date DwtButton's
-        var remindDateBtnListener = new AjxListener(this, this._remindDateBtnListener);
-        var remindDateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
-
-        this._reminderCheckbox = new DwtCheckbox({parent:this});
-        this._reminderCheckbox.replaceElement(this._htmlElId+"_reminderCheckbox");
-        this._reminderCheckbox.addSelectionListener(new AjxListener(this, this._setEmailReminderControls));
-
-        this._remindDateField = document.getElementById(this._htmlElId + "_remindDateField");
-        this._remindDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_remindMiniCalBtn", remindDateBtnListener, remindDateCalSelectionListener);
-        this._remindDateButton.reparentHtmlElement(this._htmlElId + "_remindMiniCalBtn");
-
-        // time ZmTimeSelect
-        this._remindTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
-        this._remindTimeSelect.reparentHtmlElement(this._htmlElId + "_remindTimeSelect");
-
-        this._reminderEmailCheckbox = new DwtCheckbox({parent: this});
-        this._reminderEmailCheckbox.replaceElement(document.getElementById(this._htmlElId + "_reminderEmailCheckbox"));
-        this._reminderEmailCheckbox.setText(ZmMsg.email);
-        this._reminderDeviceEmailCheckbox = new DwtCheckbox({parent: this});
-        this._reminderDeviceEmailCheckbox.replaceElement(document.getElementById(this._htmlElId + "_reminderDeviceEmailCheckbox"));
-        this._reminderDeviceEmailCheckbox.setText(ZmMsg.deviceEmail);
-        this._reminderConfigure = new DwtText({parent:this,className:"FakeAnchor"});
-        this._reminderConfigure.setText(ZmMsg.remindersConfigure);
-        this._reminderConfigure.getHtmlElement().onclick = AjxCallback.simpleClosure(skin.gotoPrefs, skin, "NOTIFICATIONS");
-        this._reminderConfigure.replaceElement(document.getElementById(this._htmlElId+"_reminderConfigure"));
-        this._setEmailReminderControls();
-        
-        var settings = appCtxt.getSettings();
-        var listener = new AjxListener(this, this._settingChangeListener);
-        settings.getSetting(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS).addChangeListener(listener);
-        settings.getSetting(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS).addChangeListener(listener);
-    }
-};
-
-ZmTaskEditView.prototype._remindDateBtnListener =
-function(ev) {
-	var calDate = ev.item == this._remindDateButton
-		? AjxDateUtil.simpleParseDateStr(this._remindDateField.value)
-		: null;
-
-	// if date was input by user and its foobar, reset to today's date
-	if (calDate == null || isNaN(calDate)) {
-		calDate = new Date();
-		var field = ev.item == this._remindDateButton ? this._remindDateField : null;
-
-        var calEndDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-        if (calEndDate != null || isNaN(calEndDate)) {
-            calDate = calEndDate;
-        }
-        
-        field.value = AjxDateUtil.simpleComputeDateStr(calDate);
+	// add percent complete DwtSelect
+	this._pCompleteSelect = new DwtSelect({parent:this});
+    var formatter = new AjxMessageFormat(AjxMsg.percentageString);
+	for (var i = 0; i <= 100; i += ZmTask.PCOMPLETE_INT) {
+		this._pCompleteSelect.addOption((formatter.format(i)), i==0, i);
 	}
-
-	// always reset the date to current field's date
-	var menu = ev.item.getMenu();
-	var cal = menu.getItem(0);
-	cal.setDate(calDate, true);
-	ev.item.popup();
+	this._pCompleteSelect.addChangeListener(listener);
+	this._pCompleteSelect.reparentHtmlElement(this._htmlElId + "_complete");
 };
-
-ZmTaskEditView.prototype._dateCalSelectionListener = function(ev) {
-
-    ZmCalItemEditView.prototype._dateCalSelectionListener.call(this,ev);
-
-    var parentButton = ev.item.parent.parent;
-	var newDate = AjxDateUtil.simpleComputeDateStr(ev.detail);
-
-    var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-    var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-    var rd = AjxDateUtil.simpleParseDateStr(this._remindDateField.value);
-
-	// change the start/end date if they mismatch
-	if (parentButton == this._endDateButton) {
-		if(rd && (rd.valueOf() > ev.detail.valueOf())) {
-            this._remindDateField.value = newDate;
-        }
-		//this._endDateField.value = newDate;
-	} else if(parentButton == this._remindDateButton) {
-        if (ed && (ed.valueOf() < ev.detail.valueOf())) {
-			this._endDateField.value = newDate;
-        }
-        if (ed == null && sd && (sd.valueOf() < ev.detail.valueOf())) {
-			this._startDateField.value = newDate;
-        }
-		this._remindDateField.value = newDate;
-	} else if(parentButton == this._startDateButton) {
-        if (ed == null && rd && (rd.valueOf() > ev.detail.valueOf())) {
-              this._remindDateField.value = newDate;
-        }
-    }
-    
-};
-
 
 ZmTaskEditView.prototype._addEventHandlers =
 function() {
@@ -480,15 +253,11 @@ function() {
 
 	// add event listeners where necessary
 	Dwt.setHandler(this._statusCheckbox, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
-	//Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
-	//Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
-	//Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
 
-	//this._repeatDescField._editViewId =
-    if (this._hasReminderSupport) {
-        // TODO: What is this for?
-        this._statusCheckbox._editViewId = this._reminderCheckbox._editViewId = edvId;
-    }
+	this._repeatDescField._editViewId = this._statusCheckbox._editViewId = edvId;
 };
 
 // cache all input fields so we dont waste time traversing DOM each time
@@ -496,13 +265,12 @@ ZmTaskEditView.prototype._cacheFields =
 function() {
 	ZmCalItemEditView.prototype._cacheFields.call(this);
 	this._statusCheckbox = document.getElementById(this._statusCheckboxId);
-    
+
 	// HACK: hide all recurrence-related fields until tasks supports it
-	//this._repeatSelect.setVisibility(false);
-	//var repeatLabel = document.getElementById(this._htmlElId + "_repeatLabel");
-	//Dwt.setVisibility(repeatLabel, false);
-	//Dwt.setVisibility(this._repeatDescField, false);
-    this._setRemindersEnabled(false);
+	this._repeatSelect.setVisibility(false);
+	var repeatLabel = document.getElementById(this._htmlElId + "_repeatLabel");
+	Dwt.setVisibility(repeatLabel, false);
+	Dwt.setVisibility(this._repeatDescField, false);
 };
 
 // Returns a string representing the form content
@@ -512,33 +280,16 @@ function(excludeAttendees) {
 
 	vals.push(this._subjectField.getValue());
 	vals.push(this._location.getValue());
-	vals.push(this._getPriority());
+	vals.push(this._prioritySelect.getValue());
 	vals.push(this._folderSelect.getValue());
 	vals.push("" + this._statusCheckbox.checked);
-	vals.push(this.getpCompleteInputValue());
+	vals.push(this._pCompleteSelect.getValue());
 	vals.push(this._statusSelect.getValue());
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	if (startDate) vals.push(AjxDateUtil.getServerDateTime(startDate));
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 	if (endDate) vals.push(AjxDateUtil.getServerDateTime(endDate));
-
-    if (this._hasReminderSupport) {
-        var hasReminder = this._reminderCheckbox.isSelected();
-        vals.push(hasReminder);
-        if (hasReminder) {
-            var remindDate = AjxDateUtil.simpleParseDateStr(this._remindDateField.value);
-            remindDate = this._remindTimeSelect.getValue(remindDate);
-            if(remindDate) {
-                vals.push(
-                    AjxDateUtil.getServerDateTime(remindDate)
-                );
-            }
-            vals.push(this._reminderEmailCheckbox.isSelected());
-            vals.push(this._reminderDeviceEmailCheckbox.isSelected());
-        }
-    }
-
-	//vals.push(this._repeatSelect.getValue());
+	vals.push(this._repeatSelect.getValue());
 	vals.push(this._notesHtmlEditor.getContent());
 
 	var str = vals.join("|");
@@ -568,68 +319,11 @@ function(isComplete) {
 		? ZmTaskEditView.STATUS_VALUES[1]
 		: ZmTaskEditView.STATUS_VALUES[0];
 	this._statusSelect.setSelectedValue(val);
-    this._pCompleteSelectInput.setValue(this.formatPercentComplete(isComplete ? 100 : 0));
+	this._pCompleteSelect.setSelected(isComplete ? (this._pCompleteSelect.size()-1) : 0);
 };
 
-ZmTaskEditView.prototype._setRemindersEnabled =
-function(isEnabled) {
-    if (this._hasReminderSupport) {
-        this._remindDateButton.setEnabled(isEnabled);
-        this._remindTimeSelect.setEnabled(isEnabled);
-        Dwt.addClass(this._remindDateField.parentNode, !isEnabled ? 'DWTInputField-disabled' : 'DWTInputField', !isEnabled ? 'DWTInputField' : 'DWTInputField-disabled');
-        this._remindDateField.disabled = !isEnabled;
-    }
-};
 
 // Listeners
-ZmTaskEditView.prototype._handleCompleteOnBlur =
-function(inputEl) {
-	var pCompleteString = inputEl.value;
-    if (!pCompleteString) {
-		inputEl.value = this.formatPercentComplete(0);
-		return;
-	}
-    var newVal = this.getpCompleteInputValue();
-    if (newVal == 100) {
-        this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
-        this._statusCheckbox.checked = true;
-    } else if (newVal == 0) {
-        this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
-        this._statusCheckbox.checked = false;
-    } else if ((newVal > 0 || newVal < 100) && (this._statusSelect.getValue() != ZmCalendarApp.STATUS_COMP || this._statusSelect.getValue() != ZmCalendarApp.STATUS_NEED))
-    {
-        this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_INPR);
-        this._statusCheckbox.checked = false;
-    }
-    inputEl.value = this.formatPercentComplete(pCompleteString);
-};
-
-ZmTaskEditView.prototype._pCompleteButtonListener =
-function(ev) {
-	var menu = ev.item.getMenu();
-	ev.item.popup();
-};
-
-ZmTaskEditView.prototype._pCompleteSelectListener =
-function(ev) {
-	if(ev.item && ev.item instanceof DwtMenuItem){
-        var newVal = ev.item.getData("value");
-        this._pCompleteSelectInput.setValue(ev.item.getText());
-
-        if (newVal == 100) {
-			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
-			this._statusCheckbox.checked = true;
-		} else if (newVal == 0) {
-			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
-            this._statusCheckbox.checked = false;
-		} else if ((newVal > 0 || newVal < 100) && (this._statusSelect.getValue() != ZmCalendarApp.STATUS_COMP || this._statusSelect.getValue() != ZmCalendarApp.STATUS_NEED))
-		{
-			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_INPR);
-            this._statusCheckbox.checked = false;
-		}
-        return;
-    }
-};
 
 ZmTaskEditView.prototype._selectListener =
 function(ev) {
@@ -644,13 +338,13 @@ function(ev) {
 
 	if (selObj == this._statusSelect) {
 		if (newVal == ZmCalendarApp.STATUS_COMP) {
-			this._pCompleteSelectInput.setValue(this.formatPercentComplete(100));
+			this._pCompleteSelect.setSelectedValue("100");
 			this._statusCheckbox.checked = true;
 		} else if (newVal == ZmCalendarApp.STATUS_NEED) {
-			this._pCompleteSelectInput.setValue(this.formatPercentComplete(0));
+			this._pCompleteSelect.setSelectedValue("0");
 		} else if (newVal == ZmCalendarApp.STATUS_INPR) {
-			if (this.getpCompleteInputValue() == "100") {
-				this._pCompleteSelectInput.setValue(this.formatPercentComplete(0));
+			if (this._pCompleteSelect.getValue() == "100") {
+				this._pCompleteSelect.setSelectedValue("0");
 			}
 		}
 	} else {
@@ -676,33 +370,7 @@ ZmTaskEditView.prototype._handleOnClick =
 function(el) {
 	if (el.id == this._statusCheckboxId) {
 		this._setPercentCompleteFields(el.checked);
-    }else {
+	} else {
 		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
 	}
-};
-
-//
-// ZmCalItemEditView methods
-//
-
-ZmTaskEditView.prototype._setEmailReminderControls = function() {
-    ZmCalItemEditView.prototype._setEmailReminderControls.apply(this, arguments);
-    // primary reminder checkbox overrides other values
-    var isSelected = this._reminderCheckbox.isSelected();
-    this._remindDateField.disabled = !isSelected;
-    this._remindDateButton.setEnabled(isSelected);
-    this._remindTimeSelect.setEnabled(isSelected);
-    if (!isSelected) {
-        this._reminderEmailCheckbox.setEnabled(false);
-        this._reminderDeviceEmailCheckbox.setEnabled(false);
-    }
-    this._reminderDeviceEmailCheckbox.setVisible(appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED));
-};
-
-ZmTaskEditView.prototype.adjustReminderValue = function(calItem) {
-    // no-op
-};
-
-ZmTaskEditView.prototype._resetReminders = function() {
-    // no-op
 };

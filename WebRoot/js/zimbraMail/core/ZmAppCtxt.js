@@ -122,9 +122,6 @@ function() {
  * @param	{String}	params.detail 	the details (may be <code>null</code>)
  * @param	{Object}	params.transitions 	the transitions (may be <code>null</code>)
  * @param	{Object}	params.toast	the toast control (may be <code>null</code>)
- * @param   {boolean}   params.force    force any displayed toasts out of the way (dismiss them and run their dismissCallback). Enqueued messages that are not yet displayed will not be displayed
- * @param   {AjxCallback} params.dismissCallback    callback to run when the toast is dismissed (by another message using [force], or explicitly calling ZmStatusView.prototype.dismiss())
- * @param   {AjxCallback} params.finishCallback     callback to run when the toast finishes its transitions by itself (not when dismissed)
  * </ul>
  * 
  */
@@ -132,15 +129,6 @@ ZmAppCtxt.prototype.setStatusMsg =
 function(params) {
 	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
 	this._appController.setStatusMsg(params);
-};
-
-/**
- * Dismisses the displayed status message, if any
- */
-
-ZmAppCtxt.prototype.dismissStatusMsg =
-function(all) {
-	this._appController.dismissStatusMsg(all);
 };
 
 /**
@@ -440,9 +428,7 @@ function() {
 ZmAppCtxt.prototype.getNewFolderDialog =
 function() {
 	if (!this._newFolderDialog) {
-        var title = ZmMsg.createNewFolder;
-        var type = ZmOrganizer.FOLDER;
-        this._newFolderDialog = new ZmNewOrganizerDialog(this._shell, null, title, type)
+		this._newFolderDialog = new ZmNewFolderDialog(this._shell);
 	}
 	return this._newFolderDialog;
 };
@@ -578,7 +564,7 @@ function() {
 		this._chooseAccountDialog = new ZmChooseAccountDialog(this._shell);
 	}
 	return this._chooseAccountDialog;
-};
+}
 
 /**
  * Gets the pick tag dialog.
@@ -648,14 +634,6 @@ function() {
 	return this._sharePropsDialog;
 };
 
-ZmAppCtxt.prototype.getShareSearchDialog = function() {
-	if (!this._shareSearchDialog) {
-		AjxDispatcher.require("Share");
-		this._shareSearchDialog = new ZmShareSearchDialog({parent:this._shell});
-	}
-	return this._shareSearchDialog;
-};
-
 /**
  * Gets the accept share dialog.
  * 
@@ -696,6 +674,20 @@ function() {
 		this._revokeShareDialog = new ZmRevokeShareDialog(this._shell);
 	}
 	return this._revokeShareDialog;
+};
+
+/**
+ * Gets the mount folder dialog.
+ * 
+ * @return	{ZmMountFolderDialog}		the mount folder dialog
+ */
+ZmAppCtxt.prototype.getMountFolderDialog =
+function() {
+	if (!this._mountFolderDialog) {
+		AjxDispatcher.require("Share");
+		this._mountFolderDialog = new ZmMountFolderDialog(this._shell);
+	}
+	return this._mountFolderDialog;
 };
 
 /**
@@ -782,15 +774,6 @@ function() {
 	return this._attachDialog;
 };
 
-ZmAppCtxt.prototype.getDumpsterDialog =
-function() {
-	if (!this._dumpsterDialog) {
-		AjxDispatcher.require("Extras");
-		this._dumpsterDialog = new ZmDumpsterDialog(this._shell);
-	}
-	return this._dumpsterDialog;
-};
-
 /**
  * Runs the attach dialog callbacks.
  *
@@ -873,20 +856,6 @@ function() {
 		this._addrSelectDialog = new ZmSelectAddrDialog(this._shell);
 	}
 	return this._addrSelectDialog;
-};
-
-/**
- * Gets the debug log dialog.
- *
- * @return	{ZmDebugLogDialog}		the debug log dialog
- */
-ZmAppCtxt.prototype.getDebugLogDialog =
-function() {
-	if (!this._debugLogDialog) {
-		AjxDispatcher.require("Extras");
-		this._debugLogDialog = new ZmDebugLogDialog(this._shell);
-	}
-	return this._debugLogDialog;
 };
 
 /**
@@ -1184,14 +1153,6 @@ function() {
 	return (ctlr && ctlr.getList) ? ctlr.getList() : this._list ? this._list : null;
 };
 
-ZmAppCtxt.prototype.getActionController =
-function() {
-	if (!this._actionController && !this.isChildWindow) {
-		this._actionController = new ZmActionController();
-	}
-	return this._actionController;
-};
-
 /**
  * Gets a new window.
  * 
@@ -1227,27 +1188,26 @@ function(fullVersion, width, height) {
 		args = ["height=", height, ",width=", width, ",location=yes,menubar=yes,resizable=yes,scrollbars=no,status=yes,toolbar=yes"].join("");
 	}
 	var newWin = window.open(url.join(""), "_blank", args);
-	this.handlePopupBlocker(newWin);
-	if(newWin) {
+
+	// Chrome-specific way to detect popup-blocker (I know, it's ugly as hell isn't it?)
+	if (newWin && AjxEnv.isChrome) {
+		var oldOnload = newWin.onload;
+		newWin.onload = function() {
+			if (oldOnload)
+				oldOnload();
+			setTimeout(function() { // need to halt this for a bit so innerHeight can get in place (otherwise we may display the statusmsg when the window is not actually blocked)
+					if (newWin.innerHeight == 0)
+						appCtxt.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
+				}, 1);
+		};
+	}
+
+	if (!newWin) {
+		this.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
+	} else {
 		// add this new window to global list so parent can keep track of child windows!
 		return this.getAppController().addChildWindow(newWin);
 	}
-};
-
-/**
- * Handle Popup bloker for a given window
- * @param {Object}	win  A Window object
- */
-ZmAppCtxt.prototype.handlePopupBlocker =
-function(win) {
-	if (!win) {
-		this.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
-	} else if (win && AjxEnv.isChrome) {
-		setTimeout(function() { 
-					if (win.innerHeight == 0)
-						appCtxt.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
-				}, 50);
-		};
 };
 
 /**
@@ -1462,20 +1422,6 @@ function() {
 };
 
 /**
- * Gets the task manager.
- *
- * @return	{ZmTaskMgr}	the task manager
- */
-ZmAppCtxt.prototype.getTaskManager =
-function() {
-	if (!this._taskMgr) {
-		this._taskMgr = new ZmTaskMgr(this._shell);
-	}
-	return this._taskMgr;
-};
-
-
-/**
  * Gets the ACL.
  * 
  * @param	{ZmZimbrAccount}	account		the account
@@ -1552,7 +1498,7 @@ ZmAppCtxt.prototype.getSkinHint =
 function() {
 	if (arguments.length == 0) return "";
 	
-	var cur = window.skin && window.skin.hints;
+	var cur = skin && skin.hints;
 	if (!cur) { return ""; }
 	for (var i = 0; i < arguments.length; i++) {
 		var arg = arguments[i];
@@ -1570,7 +1516,7 @@ function() {
 ZmAppCtxt.prototype.getAutocompleter =
 function() {
 	if (!this._autocompleter) {
-		this._autocompleter = new ZmAutocomplete(null);
+		this._autocompleter = new ZmAutocomplete();
 	}
 	return this._autocompleter;
 };
@@ -1674,28 +1620,4 @@ function(type, account) {
 			this._acCache[acct.id][ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
 		}
 	}
-};
-
-ZmAppCtxt.prototype.setNotifyDebug =
-function(notify) {
-
-    if (!window.isNotifyDebugOn) {
-        return;
-    }
-
-    if (this._notify) {
-        this._notify =  [this._notify, notify, "\n\n"].join("");
-    } else {
-        this._notify = ["\n\n", notify, "\n\n"].join("");
-    }
-};
-
-ZmAppCtxt.prototype.getNotifyDebug =
-function() {
-    return this._notify;
-};
-
-ZmAppCtxt.prototype.clearNotifyDebug =
-function() {
-    this._notify = "";
 };

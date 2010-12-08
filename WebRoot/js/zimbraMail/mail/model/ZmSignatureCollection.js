@@ -84,13 +84,8 @@ function() {
  * @return	{Array}	an array of {@link ZmSignature} objects
  */
 ZmSignatureCollection.prototype.getSignatures =
-function(sort) {
-
-	var signatures = AjxUtil.values(this._idMap);
-	if (sort) {
-		signatures.sort(ZmSignatureCollection.BY_NAME);
-	}
-	return signatures;
+function() {
+	return AjxUtil.values(this._idMap);
 };
 
 ZmSignatureCollection.prototype.getSignatureOptions =

@@ -132,15 +132,15 @@
     String pprefix = isDevMode ? "public/jsp" : "js";
     String psuffix = isDevMode ? ".jsp" : "_all.js";
 
-    Pattern p = Pattern.compile("\\.|\\/|\\\\");
-    String[] pnames = packages.split(",");
-    for (String pname : pnames) {
-        //bug: 52944
-        // Security: Avoid including external pages inline
-        Matcher matcher = p.matcher(pname);
-        if(matcher.find()){
-            continue;
-        }
+      Pattern p = Pattern.compile("\\.|\\/|\\\\");
+      String[] pnames = packages.split(",");
+      for (String pname : pnames) {
+           //bug: 52944
+           // Security: Avoid including external pages inline
+           Matcher matcher = p.matcher(pname);
+           if(matcher.find()){
+               continue;
+           }
         String pageurl = "/"+pprefix+"/"+pname+psuffix;
 		pageContext.setAttribute("pageurl", pageurl);
 		if (isDevMode) { %>

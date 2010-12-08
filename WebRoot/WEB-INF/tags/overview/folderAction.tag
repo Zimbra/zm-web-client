@@ -22,7 +22,6 @@
 
 <app:handleError>
 <zm:getMailbox var="mailbox"/>
-<c:set var="types" value="${mailbox.prefs.groupMailBy}"/>
 
 <c:choose>
     <c:when test="${zm:actionSet(param, 'actionSave')}">
@@ -85,7 +84,6 @@
                         <zm:createFolder var="folder"
                                          parentid="${param.newFolderParentId}"
                                          name="${param.newFolderName}"
-                                         view="${fn:escapeXml(types)}"
                                          url="${param.newFolderUrl}"/>
                     </c:otherwise>
                 </c:choose>

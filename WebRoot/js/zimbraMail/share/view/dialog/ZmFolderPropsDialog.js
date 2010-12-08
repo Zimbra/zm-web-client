@@ -75,17 +75,25 @@ ZmFolderPropsDialog.prototype.popup =
 function(organizer) {
 	this._organizer = organizer;
 	organizer.addChangeListener(this._folderChangeListener);
-	var colorCode = 0;
-	if (this._color) {
-        var icon = organizer.getIcon(); 
-        this._color.setImage(icon);
-		if(ZmOrganizer.COLOR_VALUES[organizer.color] && (organizer.rgb != ZmOrganizer.COLOR_VALUES[organizer.color])) {
-			colorCode = organizer.rgb;
-		} else {
-			colorCode = organizer.color;
+
+	// dont allow "None" option in color picker
+	// bug 22490 removed None option when not in use
+	if (this._color &&
+		organizer.type != ZmOrganizer.FOLDER &&
+		organizer.type != ZmOrganizer.TASKS &&
+		organizer.type != ZmOrganizer.ADDRBOOK)
+	{
+		this._color.clearOptions();
+		for (var i = 1; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
+			var color = ZmOrganizer.COLOR_CHOICES[i];
+			this._color.addOption(color.label, false, color.value);
 		}
-        this._color.setValue(colorCode);
-        this._color.setEnabled(organizer.id != ZmFolder.ID_DRAFTS);
+	} else {
+		this._color.clearOptions();
+		for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
+			var color = ZmOrganizer.COLOR_CHOICES[i];
+			this._color.addOption(color.label, false, color.value);
+		}
 	}
 
 	this._handleFolderChange();
@@ -212,14 +220,9 @@ function(response) {
 	// change color
 	var callback = new AjxCallback(this, this._handleFreeBusy);
 	var organizer = this._organizer;
-	var color = this._color.getValue() || ZmOrganizer.DEFAULT_COLOR[organizer.type];
+	var color = this._color.getValue();
 	if (organizer.color != color) {
-        if (String(color).match(/^#/)) {
-            organizer.setRGB(color, callback, this._handleErrorCallback);
-        }
-        else {
-            organizer.setColor(color, callback, this._handleErrorCallback);
-        }
+		organizer.setColor(color, callback, this._handleErrorCallback);
 		return;
 	}
 
@@ -287,13 +290,7 @@ function(event) {
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
 	this._urlEl.innerHTML = organizer.url || "";
 	if (this._color) {
-		var colorCode = 0;
-		if(ZmOrganizer.COLOR_VALUES[organizer.color] && (organizer.rgb != ZmOrganizer.COLOR_VALUES[organizer.color])) {
-			colorCode = organizer.rgb;
-		} else {
-			colorCode = organizer.color;
-		}
-		this._color.setValue(colorCode);
+		this._color.setSelectedValue(organizer.color);
 		var isVisible = (organizer.type != ZmOrganizer.FOLDER ||
 						 (organizer.type == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)));
 		this._props.setPropertyVisible(this._colorId, isVisible);
@@ -483,7 +480,11 @@ function() {
 	propsGroup.setLabel(ZmMsg.properties);
 
 	this._props = new DwtPropertySheet(propsGroup);
-	this._color = new ZmColorButton({parent:this});
+	this._color = new DwtSelect({parent:this._props});
+	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
+		var color = ZmOrganizer.COLOR_CHOICES[i];
+		this._color.addOption(color.label, false, color.value);
+	}
 
 	this._props.addProperty(ZmMsg.nameLabel, nameEl);
 	this._props.addProperty(ZmMsg.typeLabel, this._typeEl);

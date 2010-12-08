@@ -22,19 +22,19 @@
  * @class
  * This class represents the status view.
  * 
- * @param    {DwtControl}    parent        the parent
- * @param    {String}        className     the class name
- * @param    {constant}      posStyle      the position style
- * @param    {String}        id            the id
+ * @param	{DwtControl}	parent		the parent
+ * @param	{String}		className	the class name
+ * @param	{constant}	posStyle		the position style
+ * @param	{String}	id			the id
  * 
  * @extends		DwtControl
  */
 ZmStatusView = function(parent, className, posStyle, id) {
 
-    DwtControl.call(this, {parent:parent, className:(className || "ZmStatus"), posStyle:posStyle, id:id});
+	DwtControl.call(this, {parent:parent, className:(className || "ZmStatus"), posStyle:posStyle, id:id});
 
-    this._toast = this._standardToast = new ZmToast(this, ZmId.TOAST);
-    this._statusQueue = [];
+	this._toast = this._standardToast = new ZmToast(this, ZmId.TOAST);
+	this._statusQueue = [];
 };
 
 ZmStatusView.prototype = new DwtControl;
@@ -45,66 +45,54 @@ ZmStatusView.prototype.constructor = ZmStatusView;
 /**
  * Defines the "informational" status level.
  */
-ZmStatusView.LEVEL_INFO             = 1;    // informational
+ZmStatusView.LEVEL_INFO 			= 1;	// informational
 /**
  * Defines the "warning" status level.
  */
-ZmStatusView.LEVEL_WARNING          = 2;    // warning
+ZmStatusView.LEVEL_WARNING			= 2;	// warning
 /**
  * Defines the "critical" status level.
  */
-ZmStatusView.LEVEL_CRITICAL         = 3;    // critical
+ZmStatusView.LEVEL_CRITICAL			= 3;	// critical
 
-ZmStatusView.MSG_PARAMS = ["msg", "level", "detail", "transitions", "toast", "force", "dismissCallback", "finishCallback"];
+ZmStatusView.MSG_PARAMS = ["msg", "level", "detail", "transitions", "toast"];
 
 // Public methods
 
 ZmStatusView.prototype.toString =
 function() {
-    return "ZmStatusView";
+	return "ZmStatusView";
 };
 
 /**
  * Displays a status message.
  * 
- * @param {String}    msg the message
- * @param {constant}    [level]         the level (see {@link ZmStatusView}<code>.LEVEL_</code> constants) 
- * @param {String}    [detail]         the details
- * @param {String}    [transitions] the transitions (see {@link ZmToast})
- * @param {String}    [toast]     the toast control
- * @param {boolean}    [force]        force any displayed toasts out of the way
- * @param {AjxCallback}    [dismissCallback]    callback to run when the toast is dismissed (by another message using [force], or explicitly calling ZmStatusView.prototype.dismiss())
- * @param {AjxCallback}    [finishCallback]     callback to run when the toast finishes its transitions by itself (not when dismissed)
+ * @param {String}	msg the message
+ * @param {constant}	[level] 		the level (see {@link ZmStatusView}<code>.LEVEL_</code> constants) 
+ * @param {String}	[detail] 		the details
+ * @param {String}	[transitions] the transitions (see {@link ZmToast})
+ * @param {String}	[toast] 	the toast control
  */
 ZmStatusView.prototype.setStatusMsg =
 function(params) {
-    params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
-    if (typeof params == "string") {
-        params = { msg: params };
-    }
-    var work = {
-        msg: params.msg,
-        level: params.level || ZmStatusView.LEVEL_INFO,
-        detail: params.detail,
-        date: new Date(),
-        transitions: params.transitions,
-        toast: params.toast || this._standardToast,
-        dismissCallback: (params.dismissCallback instanceof AjxCallback) ? params.dismissCallback : null,
-        finishCallback: (params.finishCallback instanceof AjxCallback) ? params.finishCallback : null,
-		dismissed: false
-    };
-
-	if (params.force) { // We want to dismiss ALL messages in the queue and display the new message
-		for (var i=0; i<this._statusQueue.length; i++) {
-			this._statusQueue[i].dismissed = true; // Dismiss all messages in the queue in turn, calling their dismissCallbacks along the way
-		}
+	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
+	if (typeof params == "string") {
+		params = { msg: params };
 	}
-    // always push so we know one is active
-    this._statusQueue.push(work);
-    if (!this._toast.isPoppedUp()) {
+	var work = {
+		msg: params.msg,
+		level: params.level || ZmStatusView.LEVEL_INFO,
+		detail: params.detail,
+		date: new Date(),
+		transitions: params.transitions,
+		toast: params.toast || this._standardToast
+	};
+
+	// always push so we know one is active
+	this._statusQueue.push(work);
+
+	if (!this._toast.isPoppedUp()) {
         this._updateStatusMsg();
-    } else if (params.force) {
-        this.dismissStatusMsg();
     }
 };
 
@@ -117,46 +105,36 @@ function() {
     return false;
 };
 
-ZmStatusView.prototype.dismissStatusMsg =
-function(all) {
-	if (all) {
-		for (var i=0; i<this._statusQueue.length; i++) {
-			this._statusQueue[i].dismissed = true; // Dismiss all messages in the queue in turn, calling their dismissCallbacks along the way
-		}
-	}
-    this._toast.dismiss();
-};
-
 // Static functions
 
 /**
  * Gets the style class name based on status level.
  * 
- * @param     {ZmStatusView}        work        the view
- * @return    {String}                          the class
+ * @param	{ZmStatusView}		work		the view
+ * @return	{String}		the class
  */
 ZmStatusView.getClass =
 function(work) {
-    switch (work.level) {
-        case ZmStatusView.LEVEL_CRITICAL:    return "ZToastCrit";
-        case ZmStatusView.LEVEL_WARNING:     return "ZToastWarn";
-        default:                             return "ZToastInfo";
-    }
+	switch (work.level) {
+		case ZmStatusView.LEVEL_CRITICAL:	return "ZToastCrit";
+		case ZmStatusView.LEVEL_WARNING:	return "ZToastWarn";
+		default: 							return "ZToastInfo";
+	}
 };
 
 /**
  * Gets the image based on status level.
  * 
- * @param     {ZmStatusView}        work        the view
- * @return    {String}                          the image
+ * @param	{ZmStatusView}		work		the view
+ * @return	{String}		the image
  */
 ZmStatusView.getImageHtml =
 function(work) {
-    switch (work.level) {
-        case ZmStatusView.LEVEL_CRITICAL:    return "Critical";
-        case ZmStatusView.LEVEL_WARNING:     return "Warning";
-        default:                             return "Success";
-    }
+	switch (work.level) {
+		case ZmStatusView.LEVEL_CRITICAL:	return "Critical";
+		case ZmStatusView.LEVEL_WARNING:	return "Warning";
+		default: 							return "Success";
+	}
 };
 
 
@@ -166,17 +144,12 @@ ZmStatusView.prototype._updateStatusMsg =
 function() {
     var work = this._statusQueue.shift();
     if (!work) { return; }
-	if (work.dismissed) { // If preemptively dismissed, just run the callback and proceed to the next msg
-		if (work.dismissCallback)
-			work.dismissCallback.run();
-		this.nextStatus();
-	} else {
-		var level = ZmStatusView.getClass(work);
-		var icon = ZmStatusView.getImageHtml(work);
 
-		this._toast = work.toast;
-		this._toast.popup(level, work.msg, icon, null, work.transitions, work.dismissCallback, work.finishCallback);
-	}
+    var level = ZmStatusView.getClass(work);
+    var icon = ZmStatusView.getImageHtml(work);
+
+    this._toast = work.toast;
+	this._toast.popup(level, work.msg, icon, null, work.transitions);
 };
 
 
@@ -189,10 +162,10 @@ function() {
  * @class
  * This class represents the "toaster".
  * 
- * @extends	DwtComposite
+ * @extends		DwtComposite
  */
 ZmToast = function(parent, id) {
-    if (arguments.length == 0) { return; }
+	if (arguments.length == 0) { return; }
 
     DwtComposite.call(this, {parent:parent.shell, className:"ZToast", posStyle:Dwt.ABSOLUTE_STYLE, id:id});
     this._statusView = parent;
@@ -203,7 +176,6 @@ ZmToast = function(parent, id) {
     this._funcs["show"] = AjxCallback.simpleClosure(this.__show, this);
     this._funcs["hide"] = AjxCallback.simpleClosure(this.__hide, this);
     this._funcs["pause"] = AjxCallback.simpleClosure(this.__pause, this);
-    this._funcs["hold"] = AjxCallback.simpleClosure(this.__hold, this);
     this._funcs["idle"] = AjxCallback.simpleClosure(this.__idle, this);
     this._funcs["fade"] = AjxCallback.simpleClosure(this.__fade, this);
     this._funcs["fade-in"] = this._funcs["fade"];
@@ -217,7 +189,7 @@ ZmToast.prototype = new DwtComposite;
 ZmToast.prototype.constructor = ZmToast;
 ZmToast.prototype.toString =
 function() {
-    return "ZmToast";
+	return "ZmToast";
 };
 
 // Constants
@@ -250,10 +222,6 @@ ZmToast.SLIDE_OUT = { type: "slide-out" };
  */
 ZmToast.PAUSE = { type: "pause" };
 /**
- * Defines the "hold" transition.
- */
-ZmToast.HOLD = { type: "hold" };
-/**
  * Defines the "idle" transition.
  */
 ZmToast.IDLE = {type: "idle" };
@@ -268,7 +236,6 @@ ZmToast.DEFAULT_TRANSITIONS = [ ZmToast.SLIDE_IN, ZmToast.PAUSE, ZmToast.SLIDE_O
 ZmToast.DEFAULT_STATE = {};
 ZmToast.DEFAULT_STATE["position"] = { location: "C" }; // center
 ZmToast.DEFAULT_STATE["pause"] = { duration: 1200 };
-ZmToast.DEFAULT_STATE["hold"] = {};
 ZmToast.DEFAULT_STATE["fade"] = { duration: 100, multiplier: 1 };
 ZmToast.DEFAULT_STATE["fade-in"] = { start: 0, end: 99, step: 10, duration: 200, multiplier: 1 };
 ZmToast.DEFAULT_STATE["fade-out"] = { start: 99, end: 0, step: -10, duration: 200, multiplier: 1 };
@@ -277,7 +244,6 @@ ZmToast.DEFAULT_STATE["slide-in"] = { start: -40, end: 0, step: 1, duration: 100
 ZmToast.DEFAULT_STATE["slide-out"] = { start: 0, end: -40, step: -1, duration: 100, multiplier: 1 };
 
 ZmToast.LEVEL_RE = /\b(ZToastCrit|ZToastWarn|ZToastInfo)\b/g;
-ZmToast.DISMISSABLE_STATES = [ZmToast.HOLD];
 
 // Data
 
@@ -288,19 +254,16 @@ ZmToast.prototype.TEMPLATE = "share.Widgets#ZToast";
 
 ZmToast.prototype.dispose =
 function() {
-    this._textEl = null;
-    this._iconEl = null;
-    this._detailEl = null;
-    DwtComposite.prototype.dispose.call(this);
+	this._textEl = null;
+	this._iconEl = null;
+	this._detailEl = null;
+	DwtComposite.prototype.dispose.call(this);
 };
 
 ZmToast.prototype.popup =
-function(level, text, icon, loc, customTransitions, dismissCallback, finishCallback) {
+function(level, text, icon, loc, customTransitions) {
     this.__clear();
     this._poppedUp = true;
-    this._dismissed = false;
-    this._dismissCallback = dismissCallback;
-    this._finishCallback = finishCallback;
 
     // setup display
     var el = this.getHtmlElement();
@@ -310,7 +273,7 @@ function(level, text, icon, loc, customTransitions, dismissCallback, finishCallb
         this._textEl.innerHTML = text || "";
     }
 
-    if (this._iconEl) {
+	if (this._iconEl) {
         AjxImg.setImage(this._iconEl, icon, false);
     }
 
@@ -318,7 +281,7 @@ function(level, text, icon, loc, customTransitions, dismissCallback, finishCallb
     var location = appCtxt.getSkinHint("toast", "location") || loc;
     var transitions = customTransitions || appCtxt.getSkinHint("toast", "transitions") || ZmToast.DEFAULT_TRANSITIONS;
 
-    transitions = [].concat( {type:"position", location:location}, transitions, {type:"hide"} );
+	transitions = [].concat( {type:"position", location:location}, transitions, {type:"hide"} );
 
     // start animation
     this._transitions = transitions;
@@ -330,11 +293,6 @@ function() {
     this.__clear();
     Dwt.setLocation(this.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
     this._poppedUp = false;
-    if (!this._dismissed) {
-        if (this._finishCallback)
-            this._finishCallback.run();
-    }
-    this._dismissed = false;
 };
 
 ZmToast.prototype.isPoppedUp =
@@ -344,15 +302,6 @@ function() {
 
 ZmToast.prototype.transition =
 function() {
-
-    if (this._pauseTimer) {
-        clearTimeout(this._pauseTimer);
-        this._pauseTimer = null;
-    }
-    if (this._held) {
-        this._held = false;
-    }
-
     var transition = this._transitions && this._transitions.shift();
     if (!transition) {
         this._poppedUp = false;
@@ -399,20 +348,20 @@ function(transition) {
     }
     var el = this.getHtmlElement();
     
-    switch (state.type) {
+	switch (state.type) {
         case "fade-in":
             Dwt.setOpacity(el, 0);
             Dwt.setLocation(el, null, 0);
             state.value = state.start;
             break;
-        case "fade-out":
-        case "fade":
+		case "fade-out":
+		case "fade":
             Dwt.setLocation(el, null, 0);
             state.value = state.start;
             break;
         case "slide-in":
-        case "slide-out":
-        case "slide":{
+		case "slide-out":
+		case "slide":{
             Dwt.setLocation(el, null, -36);
             Dwt.setOpacity(el, 100);
             state.value = state.start;
@@ -435,18 +384,14 @@ function() {
 
 ZmToast.prototype.__position =
 function() {
-    var location = this._state.location || "C";
-    var containerId = "skin_container_toast"; // Skins may specify an optional element with this id. Toasts will then be placed relative to this element, rather than to the the zshell
-
     var el = this.getHtmlElement();
-    var container = Dwt.byId(containerId) || this.shell.getHtmlElement();
-    
-    var bsize = Dwt.getSize(container);
+    var bsize = Dwt.getSize(this.shell.getHtmlElement());
     var tsize = Dwt.getSize(el);
 
     var x = (bsize.x - tsize.x) / 2;
-    var y = (bsize.y - tsize.y) / 2;
+    var y = (bsize.y - tsize.y) / 2
 
+    var location = this._state.location || "C";
     switch (location.toUpperCase()) {
         case 'N': y = 0-tsize.y; break;
         case 'S': y = bsize.y - tsize.y; break;
@@ -458,10 +403,6 @@ function() {
         case 'SW': x = 0; y = bsize.y - tsize.y; break;
         case 'C': default: /* nothing to do */ break;
     }
-
-    var offset = Dwt.toWindow(container);
-    x += offset.x;
-    y += offset.y;
     Dwt.setLocation(el, x, y);
 
     this._funcs["next"]();
@@ -484,64 +425,24 @@ function() {
 
 ZmToast.prototype.__pause =
 function() {
-    if (this._dismissed && ZmToast.__mayDismiss(ZmToast.PAUSE)) {
-        this._funcs["next"]();
-    } else {
-        this._pauseTimer = setTimeout(this._funcs["next"], this._state.duration);
-    }
-};
-
-
-/**
- * Hold the toast in place until dismiss() is called. If dismiss() was already called before this function (ie. during fade/slide in), continue immediately
- */
-ZmToast.prototype.__hold =
-function() {
-    if (this._dismissed && ZmToast.__mayDismiss(ZmToast.HOLD)!=-1) {
-        this._funcs["next"]();
-    } else {
-        this._held = true;
-    }
-};
-
-ZmToast.__mayDismiss =
-function(state) {
-    return AjxUtil.indexOf(ZmToast.DISMISSABLE_STATES, state)!=-1;
-};
-
-/**
- * Dismiss (continue) a held or paused toast (Given that ZmToast.DISMISSABLE_STATES agrees). If not yet held or paused, those states will be skipped when they occur
- */
-ZmToast.prototype.dismiss =
-function() {
-    if (!this._dismissed && this._poppedUp) {
-        var doDismiss = (this._pauseTimer && ZmToast.__mayDismiss(ZmToast.PAUSE)) || 
-            (this._held && ZmToast.__mayDismiss(ZmToast.HOLD));
-        if (doDismiss) {
-            this._funcs["next"]();
-        }
-        this._dismissed = true;
-        if (this._dismissCallback instanceof AjxCallback) {
-            this._dismissCallback.run();
-        }
-    }
+    setTimeout(this._funcs["next"], this._state.duration);
 };
 
 ZmToast.prototype.__idle =
 function() {
-    if (!this._idleTimer) {
-        this._idleTimer = new DwtIdleTimer(0, new AjxCallback(this, this.__idleCallback));
-    } else {
-        this._idleTimer.resurrect(0);
-    }
+	if (!this._idleTimer) {
+		this._idleTimer = new DwtIdleTimer(0, new AjxCallback(this, this.__idleCallback));
+	} else {
+		this._idleTimer.resurrect(0);
+	}
 };
 
 ZmToast.prototype.__idleCallback =
 function(idle) {
-    if (!idle) {
-        this.transition();
-        this._idleTimer.kill();
-    }
+	if (!idle) {
+		this.transition();
+		this._idleTimer.kill();
+	}
 };
 
 ZmToast.prototype.__move =

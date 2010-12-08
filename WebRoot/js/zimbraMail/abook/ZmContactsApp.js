@@ -43,9 +43,6 @@ ZmContactsApp = function(container, parentController) {
 	this._byEmail	= {};
 	this._byIM		= {};
 	this._byPhone	= {};
-
-	// cache fetched distribution lists
-	this._dlCache	= {};
 };
 
 // Organizer and item-related constants
@@ -73,8 +70,6 @@ ZmApp.QS_ARG[ZmApp.CONTACTS]			= "contacts";
 ZmContactsApp.SEARCHFOR_CONTACTS 	= 1;
 ZmContactsApp.SEARCHFOR_GAL 		= 2;
 ZmContactsApp.SEARCHFOR_PAS			= 3; // PAS = personal and shared
-ZmContactsApp.SEARCHFOR_FOLDERS		= 4;
-
 ZmContactsApp.SEARCHFOR_MAX 		= 50;
 
 ZmContactsApp.prototype = new ZmApp;
@@ -117,7 +112,6 @@ function(settings) {
 	settings.registerSetting("AUTOCOMPLETE_ON_COMMA",			{name: "zimbraPrefAutoCompleteQuickCompletionOnComma", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("AUTOCOMPLETE_SHARE",				{name: "zimbraPrefShareContactsInAutoComplete", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("AUTOCOMPLETE_SHARED_ADDR_BOOKS",	{name: "zimbraPrefSharedAddrBookAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	settings.registerSetting("AUTOCOMPLETE_ADDR_BUBBLES",		{name: "zimbraPrefAutocompleteAddressBubblesEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("EXPORT",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("GAL_AUTOCOMPLETE",				{name: "zimbraPrefGalAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("IMPORT",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
@@ -217,7 +211,7 @@ ZmContactsApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_CONTACT);	// placeholder
 	ZmOperation.registerOp(ZmId.OP_EDIT_CONTACT, {textKey:"AB_EDIT_CONTACT", image:"Edit", shortcut:ZmKeyMap.EDIT});
-//	ZmOperation.registerOp(ZmId.OP_MOUNT_ADDRBOOK, {textKey:"mountAddrBook", image:"ContactsFolder"});
+	ZmOperation.registerOp(ZmId.OP_MOUNT_ADDRBOOK, {textKey:"mountAddrBook", image:"ContactsFolder"});
 	ZmOperation.registerOp(ZmId.OP_NEW_ADDRBOOK, {textKey:"newAddrBook", tooltipKey:"newAddrBookTooltip", image:"NewContactsFolder"}, ZmSetting.NEW_ADDR_BOOK_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_CONTACT, {textKey:"newContact", tooltipKey:"newContactTooltip", image:"NewContact", shortcut:ZmKeyMap.NEW_CONTACT}, ZmSetting.CONTACTS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_GROUP, {textKey:"newGroup", tooltipKey:"newGroupTooltip", image:"NewGroup"}, ZmSetting.CONTACTS_ENABLED);
@@ -1063,14 +1057,4 @@ function(parent, name, color) {
 
 	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.ADDRBOOK)._doCreate(parent, name, color);
-};
-
-ZmContactsApp.prototype.getDL =
-function(addr) {
-	return this._dlCache[addr];
-};
-
-ZmContactsApp.prototype.cacheDL =
-function(addr, dl) {
-	this._dlCache[addr] = dl;
 };

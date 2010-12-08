@@ -44,9 +44,6 @@ ZmCalItem = function(type, list, id, folderId) {
     this.identity = null;
     this.isProposeTimeMode = false;
     this.isForwardMode = false;
-	this.alarmActions = new AjxVector();
-	this.alarmActions.add(ZmCalItem.ALARM_DISPLAY);
-	this._useAbsoluteReminder = false;
 };
 
 ZmCalItem.prototype = new ZmCalBaseItem;
@@ -185,11 +182,6 @@ ZmCalItem.REMINDER_UNIT_WEEKS       = "weeks";
  * Defines "none" reminder.
  */
 ZmCalItem.REMINDER_NONE             = "none";
-
-// Alarm actions
-ZmCalItem.ALARM_DISPLAY	= "DISPLAY";
-ZmCalItem.ALARM_EMAIL	= "EMAIL";
-ZmCalItem.ALARM_DEVICE_EMAIL = "DEVICE_EMAIL"; // SMS
 
 // Getters
 
@@ -446,19 +438,6 @@ function(timezone, keepCache) {
 };
 
 /**
- * Sets the end timezone.
- *
- * @param	{AjxTimezone}	timezone	the timezone
- */
-ZmCalItem.prototype.setEndTimezone =
-function(timezone) {
-	if (this._origEndTimezone == null) {
-		this._origEndTimezone = timezone;
-	}
-	this.endTimezone = timezone;
-};
-
-/**
  * Sets the view mode, and resets any other fields that should not be set for that view mode.
  * 
  * @param	{constant}	mode		the mode (see <code>ZmCalItem.MODE_</code> constants)
@@ -469,14 +448,6 @@ function(mode) {
 
 	if (this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
 		this._recurrence.repeatType = "NON";
-};
-
-/**
- * Gets the view mode
- */
-ZmCalItem.prototype.getViewMode =
-function(mode) {
-	return this.viewMode;
 };
 
 /**
@@ -654,34 +625,28 @@ ZmCalItem.prototype.parseAlarm =
 function(tmp) {
 	if (!tmp) { return; }
 
-	var m, h, d, w;
-	var trigger = tmp.trigger;
+	var m, h, d;
+	var trigger = (tmp) ? tmp.trigger : null;
 	var rel = (trigger && (trigger.length > 0)) ? trigger[0].rel : null;
 	m = (rel && (rel.length > 0)) ? rel[0].m : null;
 	d = (rel && (rel.length > 0)) ? rel[0].d : null;
 	h = (rel && (rel.length > 0)) ? rel[0].h : null;
-	w = (rel && (rel.length > 0)) ? rel[0].w : null;
 
 	this._reminderMinutes = 0;
-	if (tmp.action == ZmCalItem.ALARM_DISPLAY) {
+	if (tmp && (tmp.action == "DISPLAY")) {
 		if (m != null) {
 			this._reminderMinutes = m;
             this._origReminderUnits = ZmCalItem.REMINDER_UNIT_MINUTES;
 		}
 		if (h != null) {
 			h = parseInt(h);
-			this._reminderMinutes = h * 60;
+			this._reminderMinutes = h*60;
             this._origReminderUnits = ZmCalItem.REMINDER_UNIT_HOURS;
 		}
 		if (d != null) {
 			d = parseInt(d);
-			this._reminderMinutes = d * 24 * 60;
+			this._reminderMinutes = d*24*60;
             this._origReminderUnits = ZmCalItem.REMINDER_UNIT_DAYS;
-		}
-        if (w != null) {
-			w = parseInt(w);
-			this._reminderMinutes = w * 7 * 24 * 60;
-            this._origReminderUnits = ZmCalItem.REMINDER_UNIT_WEEKS;
 		}
 	}
 };
@@ -769,7 +734,7 @@ function() {
 		if (this._validAttachments == null) {
 			this._validAttachments = [];
 			for (var i = 0; i < attachs.length; ++i) {
-				if (this.message.isRealAttachment(attachs[i]) || attachs[i].ct == ZmMimeTable.TEXT_CAL)
+				if (this.message.isRealAttachment(attachs[i]))
 					this._validAttachments.push(attachs[i]);
 			}
 		}
@@ -892,7 +857,6 @@ function() {
         sd.setTime(sd.getTime() + (offset1 - offset2)*60*1000);
         ed.setTime(ed.getTime() + (offset1 - offset2)*60*1000);
         this.setTimezone(localTZ);
-        this.setEndTimezone(localTZ);
     }
 };
 
@@ -1002,24 +966,6 @@ function(message, viewMode) {
 };
 
 /**
- * Sets the required data from saved response
- *
- * @param	{Object} result create/moify appt response
- */
-ZmCalItem.prototype.setFromSavedResponse =
-function(result) {
-    this.invId = result.invId;
-    if(this.message) {
-        this.message.rev = result.rev;
-        this.message.ms = result.ms;
-    }
-
-    if(this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE && !this.isException) {
-        this.isException = true;
-    }
-};
-
-/**
  * Sets the from mail message. This method gets called when a mail item
  * is dragged onto the item and we
  * need to load the mail item and parse the right parts to show in {@link ZmCalItemEditView}.
@@ -1076,19 +1022,12 @@ function(message, viewMode) {
 	this.endsInUTC = end && start ? end.charAt(start.length-1) == "Z" : null;
 
 	// record timezone
-    var timezone;
 	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || viewMode == ZmCalItem.MODE_DELETE_INSTANCE || viewMode == ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE) {
-        timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-		this.setTimezone(timezone);
-		this.setEndTimezone(timezone);
+		this.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 	}
 	else {
 		var serverId = !this.startsInUTC && message.invite.getServerStartTimeTz();
-        timezone = serverId || AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-		this.setTimezone(timezone);
-        var endServerId = !this.endsInUTC && message.invite.getServerEndTimeTz();
-		this.setEndTimezone(endServerId || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
-		if(!this.startsInUTC && message.invite.getServerEndTimeTz()) this.setEndTimezone(message.invite.getServerEndTimeTz());
+		this.setTimezone(serverId || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 	}
 
 	var tzrule = AjxTimezone.getRule(AjxTimezone.getClientId(this.getTimezone()));
@@ -1097,54 +1036,15 @@ function(message, viewMode) {
 			tzrule = AjxTimezone.getRule(tzrule.aliasId) || tzrule;
 		}
 		this.setTimezone(tzrule.serverId);
-		this.setEndTimezone(tzrule.serverId);
 	}
 };
 
 /**
- * Override to add specific initialization but remember to call
- * the base implementation.
- *
  * @private
  */
 ZmCalItem.prototype._setExtrasFromMessage =
 function(message) {
-    this._setAlarmFromMessage(message);
-};
-
-ZmCalItem.prototype._setAlarmFromMessage =
-function(message) {
-	this._reminderMinutes = 0;
-	var alarm = message.invite.getAlarm();
-	if (alarm) {
-		for (var i in alarm) {
-            var alarmInst = alarm[i];
-            if (!alarmInst) continue;
-
-            var action = alarmInst.action;
-			if (action == ZmCalItem.ALARM_DISPLAY) {
-				this.parseAlarm(alarmInst);
-                // NOTE: No need to add a display alarm because it's
-                // NOTE: added by default in the constructor.
-                continue;
-			}
-
-            // NOTE: Both email and device-email/sms reminders appear
-            // NOTE: as "EMAIL" alarms but we distinguish between them
-            // NOTE: upon loading.
-            if (action == ZmCalItem.ALARM_EMAIL) {
-                var emails = alarmInst.at;
-                if (!emails) continue;
-                for (var j = 0; j < emails.length; j++) {
-                    var email = emails[j].a;
-                    if (email == appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS)) {
-                        action = ZmCalItem.ALARM_DEVICE_EMAIL;
-                    }
-                    this.addReminderAction(action);
-                }
-            }
-		}
-	}
+	// override
 };
 
 /**
@@ -1310,7 +1210,6 @@ function(attachmentId, callback, errorCallback, notifyList) {
 		needsExceptionId = true;
 	}
 	else if (this.viewMode == ZmCalItem.MODE_EDIT ||
-			 this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || 
 			 this.viewMode == ZmCalItem.MODE_EDIT_SERIES)
 	{
 		this._addInviteAndCompNum(soapDoc);
@@ -1339,62 +1238,31 @@ function(attachmentId, callback, errorCallback, notifyList) {
  */
 ZmCalItem.prototype._setAlarmData = 
 function(soapDoc, comp) {
-
-	var useAbs = this._useAbsoluteReminder;
-	var time = useAbs ? this._reminderAbs : this._reminderMinutes;
-	if (!time) { return; }
-
-    var emailAlarmNode, email;
-	for (var i = 0, len = this.alarmActions.size(); i < len; i++) {
-		var action = this.alarmActions.get(i);
-		if (action == ZmCalItem.ALARM_EMAIL) {
-			email = appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS);
-			if (!email) { continue; }
-		}
-        if (action == ZmCalItem.ALARM_DEVICE_EMAIL) {
-            email = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS);
-            if (!email) { continue; }
-            // NOTE: treat device email alarm as a standard email alarm
-            action = ZmCalItem.ALARM_EMAIL;
-        }
-        var isEmailAlarm = action == ZmCalItem.ALARM_EMAIL;
-        var alarm = isEmailAlarm && emailAlarmNode;
-        if (!alarm) {
-            alarm = soapDoc.set("alarm", null, comp);
-            alarm.setAttribute("action", action);
-            var trigger = soapDoc.set("trigger", null, alarm);
-            this._setReminderUnits(soapDoc, trigger, time);
-            this._addXPropsToAlarm(soapDoc, alarm);
-            if (isEmailAlarm) {
-                emailAlarmNode = alarm;
-            }
-        }
-		if (email) {
-			var at = soapDoc.set("at", null, alarm);
-			at.setAttribute("a", email);
-            email = null;
-		}
+	if (this._reminderMinutes == 0 || this._reminderMinutes == null) {
+		return;
 	}
+
+	var alarm = soapDoc.set("alarm", null, comp);
+	alarm.setAttribute("action", "DISPLAY");
+
+	var trigger = soapDoc.set("trigger", null, alarm);
+
+	var rel = soapDoc.set("rel", null, trigger);
+
+    this._setReminderUnits(rel);
+
+	this._addXPropsToAlarm(soapDoc, alarm);
 };
 
 /**
  * @private
  */
 ZmCalItem.prototype._setReminderUnits =
-function(soapDoc, trigger, time) {
-
-	time = time || 0;
-	var useAbs = this._useAbsoluteReminder;
-	var rel = soapDoc.set(useAbs ? "abs" : "rel", null, trigger);
-	if (useAbs) {
-		rel.setAttribute("d", time);
-	}
-	else {
-		rel.setAttribute("m", time);
-		//default option is to remind before appt start
-		rel.setAttribute("related", "START");
-		rel.setAttribute("neg", "1");
-	}
+function(rel) {
+    rel.setAttribute("m", this._reminderMinutes ? this._reminderMinutes:0);
+    //default option is to remind before appt start
+    rel.setAttribute("related", "START");
+    rel.setAttribute("neg", "1");
 };
 
 /**
@@ -1449,34 +1317,13 @@ function(minutes) {
  * @param	{int}	reminderUnits		the reminder units
  */
 ZmCalItem.prototype.setReminderUnits =
-function(reminderValue, reminderUnits, sendEmail) {
-    if (!reminderValue) {
+function(reminderValue, reminderUnits) {
+    if(!reminderValue) {
         this._reminderMinutes = 0;
         return;
     }
     reminderValue = parseInt(reminderValue + "");
 	this._reminderMinutes = ZmCalendarApp.convertReminderUnits(reminderValue, reminderUnits);
-	this._reminderSendEmail = sendEmail;
-};
-
-/**
- * Adds the given action to this appt's reminders. A type of action can only be added once.
- *
- * @param {constant}	action		alarm action
- */
-ZmCalItem.prototype.addReminderAction =
-function(action) {
-	this.alarmActions.add(action, null, true);
-};
-
-/**
- * Removes the given action from this appt's reminders.
- *
- * @param {constant}	action		alarm action
- */
-ZmCalItem.prototype.removeReminderAction =
-function(action) {
-	this.alarmActions.remove(action);
 };
 
 /**
@@ -1560,11 +1407,6 @@ function(cancelFutureInstances) {
     this._cancelFutureInstances = cancelFutureInstances;    
 };
 
-ZmCalItem.prototype._sendCancelMsg =
-function(callback){
-    this.save(null, callback);
-};
-
 /**
  * @private
  */
@@ -1580,7 +1422,7 @@ function(mode, callback, msg, batchCmd, result) {
         recurrence.repeatEndType = "D";
 
         this.viewMode = ZmCalItem.MODE_EDIT_SERIES;
-        this._sendCancelMsg(callback);
+        this.save(null, callback);
         return;
     }
 
@@ -1608,7 +1450,7 @@ function(mode, callback, msg, batchCmd, result) {
 		}
 
 		var m = soapDoc.set("m");
-		if (this.isOrganizer() && !this.inviteNeverSent) {
+		if (this.isOrganizer()) {
 			// NOTE: We only use the explicit list of addresses if sending via
 			//       a message compose.
 			if (msg) {
@@ -1868,10 +1710,6 @@ function(d) {
  */
 ZmCalItem.prototype._addInviteAndCompNum =
 function(soapDoc) {
-    if(this.message){
-        soapDoc.setMethodAttribute("ms", this.message.ms);
-        soapDoc.setMethodAttribute("rev", this.message.rev);
-    }
 	if (this.viewMode == ZmCalItem.MODE_EDIT_SERIES || this.viewMode == ZmCalItem.MODE_DELETE_SERIES) {
 		if (this.recurring && this.seriesInvId != null) {
 			soapDoc.setMethodAttribute("id", this.seriesInvId);
@@ -1912,9 +1750,9 @@ function(cancel, isHtml) {
     }else if (cancel) {
 		buf[i++] = singleInstance ? ZmMsg.apptInstanceCanceled : ZmMsg.apptCanceled;
 	} else if(!this.isForwardMode || this.isOrganizer()){
-		if (!this.inviteNeverSent && ( this.viewMode == ZmCalItem.MODE_EDIT ||
+		if (this.viewMode == ZmCalItem.MODE_EDIT ||
 			this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE ||
-			this.viewMode == ZmCalItem.MODE_EDIT_SERIES ) )
+			this.viewMode == ZmCalItem.MODE_EDIT_SERIES)
 		{
 			buf[i++] = singleInstance ? ZmMsg.apptInstanceModified : ZmMsg.apptModified;
 		}
@@ -2008,10 +1846,10 @@ function(soapDoc, attachmentId, notifyList, accountName) {
     if(isRemote){
         var e = soapDoc.set("e", null, m);
         var addr, displayName;
-        if(!identity){
+         if(!identity){
             var identityC = appCtxt.getIdentityCollection();
             identity = identityC && identityC.defaultIdentity;
-        }
+        }        
         if(identity){
             addr = identity.sendFromAddress;
             displayName = identity.sendFromDisplay;
@@ -2043,7 +1881,7 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 		var me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
         var user, displayName, identityUser;
         if(!identity){
-            var identityC = appCtxt.getIdentityCollection(acct);
+            var identityC = appCtxt.getIdentityCollection();
             identity = identityC && identityC.defaultIdentity;
         }        
         if(identity){ //If !Identity then consider the default identity
@@ -2183,11 +2021,6 @@ function(soapDoc, inv, comp) {
 			s.setAttribute("d", AjxDateUtil.getServerDate(this.startDate));
 		}
 	}
-
-
-    if(this.endTimezone) {
-        tz = this.endTimezone;
-    }
 
 	// end date
 	if (this.endDate) {
@@ -2338,30 +2171,11 @@ function(respName, callback, result) {
 		this.uid = response.uid;
 	}
 
-    var msgNode;
-    //echo=1 sends back echo response node, process it
-    if(response.echo){
-        msgNode = response.echo;
-        if(msgNode.length > 0){
-            msgNode = msgNode[0];
-        }
-    }
-    msgNode = msgNode ? msgNode.m : response.m;
-	if (msgNode != null) {
-        if(msgNode.length > 0){
-            msgNode = msgNode[0];
-        }
+	if (response.m != null) {
 		var oldInvId = this.invId;
-		this.invId = msgNode.id;
-		if (AjxUtil.isSpecified(oldInvId) && oldInvId != this.invId){
+		this.invId = response.m.id;
+		if (oldInvId != this.invId)
 			this.message = null;
-        }else if(msgNode){
-            this.message = new ZmMailMsg(msgNode.id);
-            this.message._loadFromDom(msgNode);
-            delete this._validAttachments;
-            this._validAttachments = null;
-            this.getAttachments();
-        }
 	}
 
 	this._messageNode = null;

@@ -85,7 +85,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
            if(matcher.find()){
                continue;
            }
-           String pageurl = "/"+pprefix+"/"+pname+psuffix;
+          String pageurl = "/"+pprefix+"/"+pname+psuffix;
           if (inDevMode) { %>
               <jsp:include>
                   <jsp:attribute name='page'><%=pageurl%></jsp:attribute>

@@ -58,7 +58,7 @@ FORM {
 /* Outer panel for the entire login/splash dialog */
 #ZLoginPanel {
 	position:relative;
-	width:500px;
+	width:500;
 	overflow:visible;
 	border: 2px solid; 
 	border-color: #CCCCCC #000000 #000000 #CCCCCC;

@@ -153,7 +153,6 @@
 .DwtHorizontalSash					{	@HSashContainer@	}
 .DwtHorizontalSash DIV				{	@HSashThumb@		}
 
-.RightBorderSeparator           {   border-right:5px solid @SeparatorColor@}
 
 
 
@@ -234,10 +233,6 @@
 	padding-top:2px;		/* ??? */
 }
 
-.overviewHeader .ImgNodeExpanded,
-.overviewHeader .ImgNodeCollapsed {
-    @ActiveCursor@
-}
 
 /*
 * Buttons
@@ -391,25 +386,7 @@
 .DwtMenuCascadeCell 					{	@LeftSeparator@		}
 
 
-#IFDEF MSIE
-.DwtMenuScrollTop,
-.DwtMenuScrollBottom					{	text-align:center; 	}
-.DwtMenuScrollTop div,
-.DwtMenuScrollBottom div				{	display:inline; }
-#ENDIF
 
-#IFDEF GECKO
-.DwtMenuScrollTop div,
-.DwtMenuScrollBottom div				{	position:relative; top:@MenuScrollArrowMargin@;	}
-#ENDIF
-
-.DwtMenuScrollTop,
-.DwtMenuScrollBottom					{	width: 100%; @MenuScrollHeight@ 	}
-.DwtMenuScrollTop div,
-.DwtMenuScrollBottom div				{	margin:@MenuScrollArrowMargin@ auto;	}
-
-.DwtMenu-congruentLeft					{	@MenuCongruentLeft@	}
-.DwtMenu-congruentRight					{	@MenuCongruentRight@ 	}
 
 /* ??? */
 .DwtSelectMenu table{
@@ -522,11 +499,6 @@
 	position: relative;
 	overflow: auto;
 	@FullSize@
-}
-
-
-.ZmContactSearchListView .DwtListView-Rows {
-    height: 276px;
 }
 
 /* ??? SHOTGUN */
@@ -706,13 +678,8 @@
 /* Text area for the message dialog, including icon */
 .DwtMsgArea {
 	@BoxPadding@
-	width: 100%;
 }
 
-/* Outer container for the confirmation dialog */
-.DwtConfirmDialog {
-	max-width: 400px;
-}
 
 /* Font for confirmation dialogs ('Are you sure you want to delete?') */
 .DwtConfirmDialogQuestion {
@@ -738,7 +705,7 @@
 .DwtAlertInfo {
 	@NoticeText@
 	@NoticeContainer-info@
-        max-width:770px; 
+	max-width:770px;
 }
 
 /* Alert appearance for warning-level message */
@@ -794,52 +761,23 @@
 
 /* Container for the entire color picker, inside the menu */
 .DwtColorPicker {
+	@SeparatorBorder@
+}
+
+/* Single cell in the picker -- doesn't seem to have a visible effect*/
+/* ??? USED? */
+.DwtColorPicker table td img {
+	border: 1px none black;
 }
 
 
-.DwtColorPicker .Colors {
-    position: relative;
-    height: 12px;
-    clear: both;
+.DwtColorPicker .NoFill, .DwtColorPicker .SetInputColor {
+	@SeparatorBorder@
+	@ActiveCursor@
+	text-align: center;
 }
 
-.DwtColorPicker .Color {
-    display: inline;
-    float: left;
-    width: 12px;
-    height: 11px;
-    margin-left: 1px;
-    margin-right: 1px;
-    border: solid 1px black;
-    border-top: none;
-}
 
-.DwtColorPicker .First .Color {
-    border-top: solid 1px black;
-}
-
-.DwtColorPicker .Colors .ZHover {
-    width: 10px;
-    border-left-width: 2px;
-    border-right-width: 2px;
-}
-
-.DwtColorPicker .Text {
-    clear: both;
-    margin: 4 0 4 0;
-}
-
-.DwtColorPickerButton .Color {
-    width: 12px;
-    height: 11px;
-    border: solid 1px black !important;
-}
-
-.DwtColorPickerLabel .Color {
-    width: 12px;
-    height: 11px;
-    border: solid 1px black !important;
-}
 /* ??? USED? */
 .DwtResizeGripper {
 	border: none;
@@ -925,11 +863,6 @@
 	@MiniCalDay-selected@
 }
 
-.ZmScheduleAssistantView .DwtCalendar .DwtCalendarDay-selected {
-	@MiniCalButton@
-	@MiniCalDay-sched-selected@
-}
-
 .DwtCalendarDay-today {
 	@MiniCalButton@
 	@MiniCalButton-today@
@@ -945,18 +878,6 @@
 .DwtCalendarDay-grey {
 	@MiniCalButton@
 	@MiniCalDay-wrongMonth@
-}
-
-.DwtCalendarDay-green {
-    background-color: #80C095;
-}
-
-.DwtCalendarDay-red {
-    background-color: #EC8080;
-}
-
-.DwtCalendarDay-orange {
-    background-color: #FFBB80;
 }
 
 .DwtMenu .DwtCalendar {
@@ -1493,18 +1414,6 @@ input.xform_field {
 	border-bottom-width:1px;
 	border-right-width:1px;
 }
-.dynselect_error_note,
-.oselect_error_note {
-    @MenuContainer@
-    @Text-error@
-    @NoticeContainer-warning@  
-    position:absolute;
-    z-index:10000000000;
-    border-bottom-width:1px;
-    border-right-width:1px;
-    white-space:nowrap;
-}
-
 .dynselect_menu,
 .oselect_menu {
 	@MenuContainer@
@@ -1757,21 +1666,12 @@ input.xform_field {
 .ZWidgetTable DIV				{	}
 .ZHasText .ZWidgetTitle			{	padding:0px 4px;	}
 
-#IFDEF MSIE
-.ZWidgetTable .ZLeftIcon .IEImage DIV, .ZWidgetTable .ZLeftIcon .IEImage IMG {
-    margin: 0px !important;
-}
-.ZHasIcon .ZMenuItemBorder .ZLeftIcon .IEImageMask IMG {
-	width: auto; height: auto;
-}
-#ENDIF
+.ZWidgetTable .ZLeftIcon DIV	{	margin:1px 4px;	}
+.ZWidgetTable .ZRightIcon DIV	{	margin:1px 4px;	}
+.ZWidgetTable .ZDropDown DIV	{	margin:1px 4px;	}
 
-.ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG	    {	margin:1px 4px;	}
-.ZWidgetTable .ZRightIcon DIV, .ZWidgetTable .ZRightIcon IMG	{	margin:1px 4px;	}
-.ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG	    {	margin:1px 4px;	}
-
-.ZHasText .ZLeftIcon DIV, .ZHasText .ZLeftIcon IMG		{	margin-right:0px !important;	}
-.ZHasText .ZRightIcon DIV, .ZHasText .ZRightIcon IMG	{	margin-left:0px !important;		}
+.ZHasText .ZLeftIcon DIV		{	margin-right:0px !important;	}
+.ZHasText .ZRightIcon DIV 		{	margin-left:0px !important;		}
 .ZHasText .ZDropDown DIV		{	margin-left:0px !important;		}
 
 .DwtDragProxy .ZWidgetTitle		{ width: auto; }
@@ -1835,7 +1735,7 @@ input.xform_field {
  *	ZToolbarButton	-- more subtle buttons, inside toolbars
  *
  ***************/
-.ZToolbarButtonTable {}
+ZToolbarButtonTable {}
 
 .ZToolbarButton									{	@ToolbarButton@			@ToolbarButtonSpacing@			}
 
@@ -1853,6 +1753,13 @@ input.xform_field {
 .ZActive	.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-active@		}
 .ZSelected	.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-selected@	}
 
+/*
+.ZToolbarButton .ZLeftIcon  DIV		{	margin-left:2px;}
+.ZToolbarButton .ZRightIcon DIV		{	margin-left:2px; margin-right:2px;}
+*/
+
+
+
 
 /***************
  *
@@ -1860,7 +1767,7 @@ input.xform_field {
  *
  ***************/
 
-.ZSelectAutoSizingContainer 		{ overflow: hidden; height: 22px; width: auto; }		/* TODO: SIZE ASSUMPTION! */
+.ZSelectAutoSizingContainer 		{ overflow: visible; height: 22px; width: auto; }		/* TODO: SIZE ASSUMPTION! */
 
 .ZSelect									{	@Select@		@SelectSpacing@			}
 .ZSelect .ZWidgetTitle						{	padding-left: 5px; text-align: left;	}
@@ -1881,7 +1788,14 @@ input.xform_field {
 
 
 
-.ZSelectPseudoItem    		        { padding: 0 17px 6px; visibility: hidden; }
+.ZSelectPseudoItem    		        { padding-right: 23px; visibility: hidden; }
+
+/*
+.ZSelect .ZLeftIcon  DIV			{	position:relative; left:5px;}
+.ZSelect .ZRightIcon DIV			{	margin-left:2px; margin-right:4px;}
+*/
+
+
 
 
 /***************
@@ -2166,16 +2080,16 @@ input.xform_field {
 	make the shim div in all items have the proper width
 	so things line up properly
 */
-.ZHasIcon .ZMenuItemBorder .ZLeftIcon DIV, .ZHasIcon .ZMenuItemBorder .ZLeftIcon IMG 		{	width:16px; height:16px; }
-.ZHasCheck .ZMenuItemBorder .ZCheckIcon DIV, .ZHasCheck .ZMenuItemBorder .ZCheckIcon IMG 	{	width:9px;	height:9px; }
-.ZHasSubmenu .ZMenuItemBorder .ZDropDown DIV, .ZHasSubmenu .ZMenuItemBorder .ZDropDown IMG 	{	width:16px;	height:16px; }
+.ZHasIcon .ZMenuItemBorder .ZLeftIcon DIV 		{	width:16px; height:16px; }
+.ZHasCheck .ZMenuItemBorder .ZCheckIcon DIV 	{	width:9px;	height:9px; }
+.ZHasSubmenu .ZMenuItemBorder .ZDropDown DIV 	{	width:16px;	height:16px; }
 
 
 .ZMenuItem-Separator	 						{	@MenuItemSeparator@	}
 .ZMenuItemSeparatorBorder TD					{	height:12px !important;}
 
-.ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon DIV, .ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon IMG,
-.ZHasCheck .ZMenuItemSeparatorBorder .ZCheckIcon DIV, .ZHasCheck .ZMenuItemSeparatorBorder .ZCheckIcon IMG,
+.ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon DIV,
+.ZHasCheck .ZMenuItemSeparatorBorder .ZCheckIcon DIV,
 .ZHasSubmenu .ZMenuItemSeparatorBorder .ZDropDown DIV 		{	height:1px !important; }
 
 

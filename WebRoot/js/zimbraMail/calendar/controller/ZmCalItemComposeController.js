@@ -39,29 +39,18 @@ function() {
 	return "ZmCalItemComposeController";
 };
 
-ZmCalItemComposeController.DEFAULT_TAB_TEXT = ZmMsg.appointment;
-ZmCalItemComposeController.SAVE_CLOSE = "SAVE_CLOSE";
-ZmCalItemComposeController.SEND = "SEND";
-ZmCalItemComposeController.SAVE  = "SAVE";
-ZmCalItemComposeController.APPT_MODE  = "APPT";
-ZmCalItemComposeController.MEETING_MODE  = "MEETING";
-
 // Public methods
 
 ZmCalItemComposeController.prototype.show =
 function(calItem, mode, isDirty) {
 
-	this._setSearchToolbarVisibilityPerSkin(false);
-	
-    this._mode = mode;
-	if (!this._toolbar) {
-		this._createToolBar();
-	}
+	this._initToolbar(mode);
 	var initial = this.initComposeView();
-	this._app.pushView(this.viewId);
+
+	this._app.pushView(this._getViewType());
 	this._composeView.set(calItem, mode, isDirty);
 	this._composeView.reEnableDesignMode();
-    this._initToolbar(mode);
+
 	if (initial) {
 		this._setComposeTabGroup();
 	}
@@ -69,9 +58,6 @@ function(calItem, mode, isDirty) {
 
 ZmCalItemComposeController.prototype._preHideCallback =
 function(view, force) {
-
-	this._setSearchToolbarVisibilityPerSkin(true);
-	
 	ZmController.prototype._preHideCallback.call(this);
 	return force ? true : this.popShield();
 };
@@ -156,19 +142,13 @@ function(initHide) {
 			this._createToolBar();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
+		this._app.createView({viewId:this._getViewType(), elements:elements, callbacks:callbacks, isTransient:true});
 		if (initHide) {
 			this._composeView.preload();
 		}
 		return true;
 	}
 	return false;
-};
-
-ZmCalItemComposeController.prototype._getTabParams =
-function() {
-	return {id:this.tabId, image:"NewAppointment", text:ZmCalItemComposeController.DEFAULT_TAB_TEXT, textPrecedence:76,
-			tooltip:ZmCalItemComposeController.DEFAULT_TAB_TEXT};
 };
 
 ZmCalItemComposeController.prototype._createComposeView =
@@ -258,26 +238,13 @@ function(skipNotify, composeMode) {
 	}
 };
 
-ZmCalItemComposeController.prototype.setOptionsBtnItem =
-function(skipNotify, composeMode) {
-	var mode;
-	if (composeMode) {
-		mode = composeMode;
-	} else {
-		var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
-		var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
-		mode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
-			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
-	}
-
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-	if (formatBtn) {
-		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
-	}
-};
-
 // Private / Protected methods
 
+
+ZmCalItemComposeController.prototype._getViewType =
+function() {
+	// override
+};
 
 ZmCalItemComposeController.prototype._initToolbar =
 function(mode) {
@@ -303,6 +270,9 @@ function(mode) {
     if(ZmCalItem.FORWARD_MAPPING[mode]) {
         saveButton.setText(ZmMsg.send);
         saveButton.setImage("Send");
+    }else {
+        saveButton.setText(ZmMsg.save);
+        saveButton.setImage("Save");
     }
 
 	var printButton = this._toolbar.getButton(ZmOperation.PRINT);
@@ -310,29 +280,26 @@ function(mode) {
 		printButton.setEnabled(!isNew);
 	}
 
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this.viewId], {waitUntilLoaded:true});
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._getViewType()], {waitUntilLoaded:true});
 };
-
 
 ZmCalItemComposeController.prototype._createToolBar =
 function() {
+	
+	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];
 
-	var buttons = [ZmOperation.SEND_INVITE, ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];
-
+	if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+		buttons.push(ZmOperation.PRINT);
+	}
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
 		buttons.push(ZmOperation.ATTACHMENT);
 	}
-
-    if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-		buttons.push(ZmOperation.PRINT);
-	}
-
 	if (!appCtxt.isOffline) {
 		buttons.push(ZmOperation.SPELL_CHECK);
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
 
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this.viewId, controller:this});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._getViewType(), controller:this});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 
@@ -343,9 +310,6 @@ function() {
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
 		this._toolbar.addSelectionListener(ZmOperation.ATTACHMENT, new AjxListener(this, this._attachmentListener));
 	}
-
-    var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
-    sendButton.setVisible(false);
 
 	// change default button style to toggle for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
@@ -374,7 +338,7 @@ function() {
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
 };
 
-ZmCalItemComposeController.prototype.showErrorMessage =
+ZmCalItemComposeController.prototype._showErrorMessage =
 function(errorMsg) {
 	var dialog = appCtxt.getMsgDialog();
 	//var msg = ZmMsg.errorSaving + (errorMsg ? (":<p>" + errorMsg) : ".");
@@ -385,41 +349,24 @@ function(errorMsg) {
 };
 
 ZmCalItemComposeController.prototype._saveCalItemFoRealz =
-function(calItem, attId, notifyList, force) {
-	if (this._composeView.isDirty() || force) {
+function(calItem, attId, notifyList) {
+	if (this._composeView.isDirty()) {
 		// bug: 16112 - check for folder existance
 		if (calItem.getFolder() && calItem.getFolder().noSuchFolder) {
 			var msg = AjxMessageFormat.format(ZmMsg.errorInvalidFolder, calItem.getFolder().name);
-			this.showErrorMessage(msg);
+			this._showErrorMessage(msg);
 			return false;
 		}
+		var callback = new AjxCallback(this, this._handleResponseSave, calItem);
+		var errorCallback = new AjxCallback(this, this._handleErrorSave, calItem);
         if(this._composeView.isReminderOnlyChanged()) {
             calItem.setMailNotificationOption(false);
         }
-        var callback = new AjxCallback(this, this._handleResponseSave, calItem);
-		var errorCallback = new AjxCallback(this, this._handleErrorSave, calItem);
-        this._doSaveCalItem(calItem, attId, callback, errorCallback, notifyList);
+		calItem.save(attId, callback, errorCallback, notifyList);
 	} else {
 		// bug: 27600 clean up edit view to avoid stagnant attendees
-		if(this.isCloseAction()) this._composeView.cleanup();
-
-        if(this._action == ZmCalItemComposeController.SAVE && !this._composeView.isDirty()) {
-            this.enableToolbar(true);                                
-        }
+		this._composeView.cleanup();
 	}
-};
-
-ZmCalItemComposeController.prototype._doSaveCalItem =
-function(calItem, attId, callback, errorCallback, notifyList){
-    if(this._action == ZmCalItemComposeController.SEND)
-        calItem.send(attId, callback, errorCallback, notifyList);
-    else
-        calItem.save(attId, callback, errorCallback, notifyList);
-};
-
-ZmCalItemComposeController.prototype.isCloseAction =
-function() {
-    return ( this._action == ZmCalItemComposeController.SEND ||  this._action == ZmCalItemComposeController.SAVE_CLOSE );
 };
 
 ZmCalItemComposeController.prototype._handleResponseSave =
@@ -437,7 +384,7 @@ function(calItem, result) {
         DBG.println(ex);
     } finally {
         this._composeView.cleanup();
-    }
+    }	 
 };
 
 ZmCalItemComposeController.prototype._handleErrorSave =
@@ -454,14 +401,11 @@ function(calItem, ex) {
 		msg = (invalid && invalid.length)
 			? AjxMessageFormat.format(ZmMsg.apptSendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
 			: ZmMsg.apptSendErrorAbort;
-	} else if(ex.code = ZmCsfeException.MAIL_MESSAGE_TOO_BIG) {
-        msg = (calItem.type == ZmItem.TASK) ? ZmMsg.taskSaveErrorToobig : ZmMsg.apptSaveErrorToobig;
-        this.enableToolbar(true);
-    }
+	}
 	if (msg) {
-        var dialog = appCtxt.getMsgDialog();
-        dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-        dialog.popup();
+		var msgDialog = appCtxt.getMsgDialog();
+		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+		msgDialog.popup();
 		appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);//notify Zimlets on success 
 		return true;
 	} else {
@@ -489,7 +433,6 @@ function(enabled) {
 // Save button was pressed
 ZmCalItemComposeController.prototype._saveListener =
 function(ev) {
-    this._action = ZmCalItemComposeController.SAVE;
     this.enableToolbar(false);
 	if (this._doSave() === false) {
 		return;
@@ -500,7 +443,6 @@ function(ev) {
 // Cancel button was pressed
 ZmCalItemComposeController.prototype._cancelListener =
 function(ev) {
-	this._action = ZmCalItemComposeController.SAVE_CLOSE;
 	this._app.popView();
 };
 
@@ -559,7 +501,7 @@ function() {
 		}
 	} catch(ex) {
 		if (AjxUtil.isString(ex)) {
-			this.showErrorMessage(ex);
+			this._showErrorMessage(ex);
 		} else {
 			DBG.dumpObj(AjxDebug.DBG1, ex);
 		}

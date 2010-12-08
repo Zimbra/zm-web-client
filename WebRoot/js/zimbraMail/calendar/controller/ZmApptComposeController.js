@@ -33,6 +33,9 @@ ZmApptComposeController = function(container, app) {
 	this._addedAttendees = [];
 	this._removedAttendees = [];
 	this._kbMgr = appCtxt.getKeyboardMgr();
+
+	// preload compose view for faster loading
+	this.initComposeView(true);
 };
 
 ZmApptComposeController.prototype = new ZmCalItemComposeController;
@@ -42,8 +45,6 @@ ZmApptComposeController.prototype.toString =
 function() {
 	return "ZmApptComposeController";
 };
-
-ZmApptComposeController._VALUE = "value";
 
 // Public methods
 
@@ -110,42 +111,10 @@ function() {
 	this._app.popView(true);
 };
 
-ZmApptComposeController.prototype._checkIsDirty =
-function(type, attribs){
-    return this._composeView.checkIsDirty(type, attribs)
-};
-
-ZmApptComposeController.prototype._getChangesDialog =
-function(){
-    if(!this._changesDialog){
-       var dlg = this._changesDialog = new DwtDialog({parent:appCtxt.getShell()});
-       var id = this._changesDialogId = Dwt.getNextId();
-       dlg.setContent(AjxTemplate.expand("calendar.Appointment#ChangesDialog", {id: id}));
-       dlg.setTitle(ZmMsg.apptSave); 
-       dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._changesDialogListener, id));
-    }
-    return this._changesDialog;
-};
-
-ZmApptComposeController.prototype._changesDialogListener =
-function(id){
-
-    var sendAppt = document.getElementById(id+"_send");
-    if(sendAppt.checked){
-        this._sendListener();
-    }
-    this._changesDialog.popdown();
-};
-
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
 	var appt = this._composeView.getAppt(attId);
 	if (appt) {
-
-        if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
-            appt.setRsvp(this._requestResponses.getChecked());
-            appt.setMailNotificationOption(true);
-        }
 
         if(appt.isProposeTime && !appt.isOrganizer()) {
             return this.sendCounterAppointmentRequest(appt);
@@ -189,26 +158,16 @@ function(attId) {
             this.enableToolbar(true);
 			return false;
 		}
-
-        //Validation Check for Significant / Insignificant / Local changes
-        if(this._action == ZmCalItemComposeController.SAVE && !appt.inviteNeverSent){
-            //Check for Significant Changes
-            if(this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT)){
-                this._getChangesDialog().popup();
-                this.enableToolbar(true);
-                return false;
-            }
-        }
-
+		
 		var origAttendees = appt.origAttendees;						// bug fix #4160
 		if (origAttendees && origAttendees.length > 0 && 			// make sure we're not u/l'ing a file
 			attId == null) 											// make sure we are editing an existing appt w/ attendees
 		{
-			if (!appt.inviteNeverSent && !this._composeView.getApptEditView().isDirty(true)) {	// make sure other fields (besides attendees field) have not changed
+			if (!this._composeView.getApptTab().isDirty(true)) {	// make sure other fields (besides attendees field) have not changed
 				var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
 				if (attendees.length > 0) {
 					// check whether organizer has added/removed any attendees
-					if (this._action == ZmCalItemComposeController.SEND && this._attendeesUpdated(appt, attId, attendees, origAttendees))
+					if (this._attendeesUpdated(appt, attId, attendees, origAttendees))
 						return false;
 				}
 			}
@@ -235,6 +194,15 @@ function(attId) {
 		var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
 
         var notifyList;
+        
+        //organizer forwarding an appt - add forward addr as attendees
+        if(appt.isForward) {
+            if(!attendees) attendees = [];
+            var fwdAddrs = appt.getForwardAddress();
+            attendees = attendees.concat(fwdAddrs);
+            appt.setAttendees(attendees, ZmCalBaseItem.PERSON);
+            notifyList = this.getNotifyList(fwdAddrs);
+        }        
 
 		var needsPermissionCheck = (attendees && attendees.length > 0) ||
 								   (resources && resources.length > 0) ||
@@ -258,175 +226,6 @@ function(attId) {
 	return false;
 };
 
-ZmApptComposeController.prototype.updateToolbarOps =
-function(mode, appt) {
-
-    var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
-    var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
-
-    if(mode == ZmCalItemComposeController.APPT_MODE) {
-        saveButton.setText(ZmMsg.saveClose);
-        saveButton.setImage("Save");
-        saveButton.setVisible(true);
-        sendButton.setVisible(false);
-
-        this._requestResponses.setEnabled(false);
-        this.setRequestResponses(false);
-
-    }else {
-        sendButton.setVisible(true);
-        saveButton.setVisible(true);
-        saveButton.setText(ZmMsg.save);
-        saveButton.setImage("Save");
-
-        //change cancel button's text/icon to close
-        var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
-        cancelButton.setText(ZmMsg.close);
-		cancelButton.setImage("Close");
-
-        this._requestResponses.setEnabled(true);
-        this.setRequestResponses(appt && appt.hasAttendees() ? appt.shouldRsvp() : true);
-
-    }
-
-    if((this._mode == ZmCalItem.MODE_PROPOSE_TIME) || ZmCalItem.FORWARD_MAPPING[this._mode]) {
-        sendButton.setVisible(true);
-        saveButton.setVisible(false);
-        
-        this._requestResponses.setEnabled(false);
-        this.setRequestResponses(false);
-    }
-
-};
-
-ZmApptComposeController.prototype._initToolbar =
-function(mode) {
-
-    ZmCalItemComposeController.prototype._initToolbar.call(this, mode);
-
-    //use send button for forward appt view
-    //Switch Save Btn label n listeners 
-    var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
-    saveButton.removeSelectionListeners();
-    if(ZmCalItem.FORWARD_MAPPING[mode]) {
-        saveButton.addSelectionListener(new AjxListener(this, this._sendListener));
-    }else {
-        saveButton.addSelectionListener(new AjxListener(this, this._saveListener));
-    }
-
-    var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
-    sendButton.removeSelectionListeners();
-    sendButton.addSelectionListener(new AjxListener(this, this._sendListener));
-};
-
-ZmApptComposeController.prototype._sendListener =
-function(ev){
-    this._action = ZmCalItemComposeController.SEND;
-    this.enableToolbar(false);
-	if (this._doSave() === false) {
-		return;
-    }
-	this._app.popView(true);
-};
-
-ZmApptComposeController.prototype.isSave =
-function(){
-    return (this._action == ZmCalItemComposeController.SAVE); 
-};
-
-ZmApptComposeController.prototype._saveListener =
-function(ev, force) {
-    var isMeeting = !this._composeView.isAttendeesEmpty();
-
-    this._action = isMeeting ? ZmCalItemComposeController.SAVE : ZmCalItemComposeController.SAVE_CLOSE;
-
-    //attendee should not have send/save option
-    if(!this._composeView.isOrganizer()) {
-        this._action = ZmCalItemComposeController.SAVE_CLOSE;
-    }
-    this.enableToolbar(false);
-
-    var dlg = appCtxt.getOkCancelMsgDialog();
-    if(dlg.isPoppedUp()){
-        dlg.popdown();
-    }
-
-    if(!force && this._action == ZmCalItemComposeController.SAVE){
-        var appt = this._composeView.getApptEditView()._calItem;
-        var inviteNeverSent = (appt && appt.inviteNeverSent);
-        var showDlg = true;
-        if(appt.isDraft){
-            showDlg = false;
-        }
-        if(showDlg && !inviteNeverSent && (this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT)
-                ||  this._checkIsDirty(ZmApptEditView.CHANGES_LOCAL))){
-            showDlg = false;
-        }
-        if(showDlg){
-            dlg.setMessage(ZmMsg.saveApptInfoMsg);
-            dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._saveListener, [ev, true]));
-            dlg.popup();
-            this.enableToolbar(true);
-            return;
-        }
-    }
-
-	if (this._doSave() === false) {
-		return;
-    }
-    if(!isMeeting){
-        this._app.popView(true);        
-    }
-};
-
-ZmApptComposeController.prototype._createToolBar =
-function() {
-
-    ZmCalItemComposeController.prototype._createToolBar.call(this);
-
-    var optionsButton = new DwtToolBarButton({id:ZmOperation.COMPOSE_OPTIONS, parent:this._toolbar});
-    optionsButton.setText(ZmMsg.options);
-    optionsButton.setImage("Preferences");
-
-    var m = new DwtMenu({parent:optionsButton});
-    optionsButton.setMenu(m);
-
-    var mi = this._requestResponses = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
-    mi.setText(ZmMsg.requestResponses);
-    mi.setChecked(true, true);
-
-    mi = this._markAsPrivate = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
-    mi.setText(ZmMsg.markApptPrivate);
-    mi.setChecked(false, true);
-
-	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
-};
-
-ZmApptComposeController.prototype.setRequestResponses =
-function(requestResponses) {
-   this._requestResponses.setChecked(requestResponses);
-};
-
-ZmApptComposeController.prototype.getRequestResponses =
-function() {
-   return this._requestResponses.getChecked();
-};
-
-ZmApptComposeController.prototype.markApptAsPrivate =
-function(isPrivate) {
-   this._markAsPrivate.setChecked(isPrivate);
-};
-
-ZmApptComposeController.prototype.isApptPrivate =
-function() {
-   return this._markAsPrivate.getChecked();
-};
-
-ZmApptComposeController.prototype.enablePrivateOption =
-function(enabled) {
-   return this._markAsPrivate.setEnabled(enabled);
-};
-
 ZmApptComposeController.prototype.getNotifyList =
 function(addrs) {
     var notifyList = [];
@@ -436,18 +235,6 @@ function(addrs) {
 
     return notifyList;
 }; 
-
-ZmApptComposeController.prototype.isAttendeesEmpty =
-function(appt) {
-    var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
-	var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
-	var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
-
-	var isAttendeesNotEmpty = (attendees && attendees.length > 0) ||
-							   (resources && resources.length > 0) ||
-							   (locations && locations.length > 0);
-    return !isAttendeesNotEmpty
-};
 
 ZmApptComposeController.prototype.checkConflicts =
 function(appt, attId, notifyList) {
@@ -511,7 +298,7 @@ function(appt, callback) {
 	var mode = appt.viewMode;
 
 	if (mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
-		if(appt.isRecurring() && mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
+		if(appt.isRecurring()) {
 			// for recurring appt - user GetRecurRequest to get full recurrence
 			// information and use the component in CheckRecurConflictRequest
 			var recurInfoCallback = new AjxCallback(this, this._checkResourceConflictsSoap, [appt, callback]);
@@ -618,7 +405,7 @@ function(appt, callback, recurInfo) {
 	var comp = soapDoc.set("comp", null, soapDoc.getMethod());
 
 	appt._addDateTimeToSoap(soapDoc, soapDoc.getMethod(), comp);
-	if(mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) appt._recurrence.setSoap(soapDoc, comp);
+	appt._recurrence.setSoap(soapDoc, comp);
 
 	this.setExceptFromRecurInfo(soapDoc, recurInfo);
 
@@ -730,7 +517,7 @@ function(appt, attId, notifyList, msgDialog) {
 ZmApptComposeController.prototype.saveCalItemContinue =
 function(appt, attId, notifyList) {
 	this._saveCalItemFoRealz(appt, attId, notifyList);
-	if(this.isCloseAction()) this._app.popView(true);
+	this._app.popView(true);
 };
 
 ZmApptComposeController.prototype.handleCheckPermissionResponseError =
@@ -791,7 +578,7 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) 
 	soapDoc.setMethodAttribute("uid", emailList);
 
 	var acct = (appCtxt.multiAccounts)
-		? this._composeView.getApptEditView().getCalendarAccount() : null;
+		? this._composeView.getApptTab().getEditView().getCalendarAccount() : null;
 
 	return appCtxt.getAppController().sendRequest({
 		soapDoc: soapDoc,
@@ -808,11 +595,6 @@ function() {
 	return (new ZmApptComposeView(this._container, null, this._app, this));
 };
 
-ZmApptComposeController.prototype._createScheduler =
-function(apptEditView) {
-	return (new ZmScheduleAssistantView(this._container, this, apptEditView));
-};
-
 ZmApptComposeController.prototype._setComposeTabGroup =
 function(setFocus) {
 	DBG.println(AjxDebug.DBG2, "_setComposeTabGroup");
@@ -820,17 +602,18 @@ function(setFocus) {
 	var rootTg = appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
 	tg.addMember(this._toolbar);
-	var editView = this._composeView.getApptEditView();
-	editView._addTabGroupMembers(tg);
+	var tabView = this._composeView.getTabView(this._composeView.getCurrentTab());
+	tabView._addTabGroupMembers(tg);
 
-	var focusItem = editView._savedFocusMember || editView._getDefaultFocusItem() || tg.getFirstMember(true);
+	var focusItem = tabView._savedFocusMember || tabView._getDefaultFocusItem() || tg.getFirstMember(true);
 	var ta = new AjxTimedAction(this, this._setFocus, [focusItem, !setFocus]);
 	AjxTimedAction.scheduleAction(ta, 10);
 };
 
 ZmApptComposeController.prototype._getDefaultFocusItem =
 function() {
-    return this._composeView.getApptEditView()._getDefaultFocusItem();	
+    var tabView = this._composeView.getTabView(this._composeView.getCurrentTab());
+    return tabView._getDefaultFocusItem();	
 };
 
 ZmApptComposeController.prototype.getKeyMapName =
@@ -841,6 +624,11 @@ function() {
 
 // Private / Protected methods
 
+ZmApptComposeController.prototype._getViewType =
+function() {
+	return ZmId.VIEW_APPOINTMENT;
+};
+
 ZmApptComposeController.prototype._attendeesUpdated =
 function(appt, attId, attendees, origAttendees) {
 	// create hashes of emails for comparison
@@ -848,12 +636,6 @@ function(appt, attId, attendees, origAttendees) {
 	for (var i = 0; i < origAttendees.length; i++) {
 		var email = origAttendees[i].getEmail();
 		origEmails[email] = true;
-	}
-	var fwdEmails = {};
-	var fwdAddrs = appt.getForwardAddress();
-	for(var i=0;i<fwdAddrs.length;i++) {
-		var email = fwdAddrs[i].getAddress();
-		fwdEmails[email] = true;
 	}
 	var curEmails = {};
 	for (var i = 0; i < attendees.length; i++) {
@@ -864,11 +646,11 @@ function(appt, attId, attendees, origAttendees) {
 	// walk the current list of attendees and check if there any new ones
 	for (var i = 0 ; i < attendees.length; i++) {
 		var email = attendees[i].getEmail();
-		if (!origEmails[email] && !fwdEmails[email]) {
+		if (!origEmails[email]) {
 			this._addedAttendees.push(email);
 		}
 	}
-    
+
 	for (var i = 0 ; i < origAttendees.length; i++) {
 		var email = origAttendees[i].getEmail();
 		if (!curEmails[email]) {
@@ -906,7 +688,7 @@ function(ev) {
 ZmApptComposeController.prototype._printListener =
 function() {
 	var calItem = this._composeView._apptEditView._calItem;
-	var url = ("/h/printappointments?id=" + calItem.invId + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT)); //bug:53493
+	var url = ("/h/printappointments?id=" + calItem.invId);
 	window.open(appContextPath+url, "_blank");
 };
 
@@ -932,102 +714,11 @@ function(appt, attId, dlg) {
 	this._app.popView(true);
 };
 
-ZmApptComposeController.prototype._saveCalItemFoRealz =
-function(calItem, attId, notifyList, force){
-    force = force || ( this._action == ZmCalItemComposeController.SEND );    
-    ZmCalItemComposeController.prototype._saveCalItemFoRealz.call(this, calItem, attId, notifyList, force);    
-};
-
-ZmApptComposeController.prototype._doSaveCalItem =
-function(appt, attId, callback, errorCallback, notifyList){        
-    if(this._action == ZmCalItemComposeController.SEND){
-        appt.send(attId, callback, errorCallback, notifyList);
-    }else{
-        var isMeeting = appt.hasAttendees();
-        if(isMeeting){
-            this._draftFlag = appt.isDraft || appt.inviteNeverSent || this._checkIsDirty(ZmApptEditView.CHANGES_INSIGNIFICANT);
-        }else{
-            this._draftFlag = false;
-        }
-        appt.save(attId, callback, errorCallback, notifyList, this._draftFlag);
-    }
-};
-
-ZmApptComposeController.prototype._handleResponseSave =
-function(calItem, result) {
-	if (calItem.__newFolderId) {
-		var folder = appCtxt.getById(calItem.__newFolderId);
-		calItem.__newFolderId = null;
-		this._app.getListController()._doMove(calItem, folder, null, false);
-	}
-
-    var isNewAppt;
-    var viewMode = calItem.getViewMode();
-    if(viewMode == ZmCalItem.MODE_NEW || viewMode == ZmCalItem.MODE_NEW_FROM_QUICKADD || viewMode == ZmAppt.MODE_DRAG_OR_SASH) {
-        isNewAppt = true;
-    }
-
-    if(this.isCloseAction()) {
-        calItem.handlePostSaveCallbacks();
-	    this._composeView.cleanup();
-    }else {
-        this.enableToolbar(true);
-        if(isNewAppt) {
-            viewMode = calItem.isRecurring() ? ZmCalItem.MODE_EDIT_SERIES : ZmCalItem.MODE_EDIT;
-        }
-        calItem.setFromSavedResponse(result);
-        if(this._action == ZmCalItemComposeController.SAVE){
-            calItem.isDraft = this._draftFlag;
-        }
-        this._composeView.set(calItem, viewMode);        
-    }
-
-    var msg = isNewAppt ? ZmMsg.apptCreated : ZmMsg.apptSaved;
-    if(calItem.hasAttendees()){
-        if(this._action == ZmCalItemComposeController.SAVE || this._action == ZmCalItemComposeController.SAVE_CLOSE){
-            msg = ZmMsg.apptSaved;
-        }else{
-            if(viewMode != ZmCalItem.MODE_NEW){
-                msg = ZmMsg.apptSent;
-            }
-        }              
-    }
-    appCtxt.setStatusMsg(msg);
-    
-    appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success
-};
-
-ZmApptComposeController.prototype._getViewType =
-function() {
-	return ZmId.VIEW_APPOINTMENT;
-};
-
-ZmApptComposeController.prototype._resetNavToolBarButtons =
-function(view) {
-	//do nothing
-};
-
 ZmApptComposeController.prototype._clearInvalidAttendeesCallback =
 function(appt, attId, dlg) {
 	dlg.popdown();
 	delete this._invalidAttendees;
-    if(this._action == ZmCalItemComposeController.SAVE){
-	    this._saveListener();
-    }else{
-        this._sendListener();
-    }
-};
-
-ZmApptComposeController.prototype.clearInvalidAttendees =
-function() {
-	this._invalidAttendees = [];
-};
-
-ZmApptComposeController.prototype.addInvalidAttendee =
-function(item) {
-	if (AjxUtil.indexOf(this._invalidAttendees, item)==-1) {
-		this._invalidAttendees.push(item);
-	}
+	this._saveListener();
 };
 
 ZmApptComposeController.prototype.closeView =
@@ -1043,100 +734,4 @@ function(newAppt) {
 ZmApptComposeController.prototype.proposeNewTime =
 function(newAppt) {
 	this.show(newAppt, ZmCalItem.MODE_PROPOSE_TIME);
-};
-
-ZmApptComposeController.prototype.initComposeView =
-function(initHide) {
-	if (!this._composeView) {
-		this._composeView = this._createComposeView();
-        var appEditView = this._composeView.getApptEditView();
-        this._smartScheduler = this._createScheduler(appEditView);
-        appEditView.setScheduleAssistant(this._smartScheduler);
-
-		var callbacks = {};
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
-		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
-		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
-		var elements = {};
-		if (!this._toolbar)
-			this._createToolBar();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
-		if (initHide) {
-			this._composeView.preload();
-		}
-		return true;
-	}
-	return false;
-};
-
-ZmApptComposeController.prototype.getCalendarAccount =
-function() {
-    return (appCtxt.multiAccounts)
-        ? this._composeView.getApptEditView().getCalendarAccount() : null;
-
-};
-
-ZmApptComposeController.prototype.getAttendees =
-function(type) {
-    return this._composeView.getAttendees(type);
-};
-
-ZmApptComposeController.prototype._postHideCallback =
-function() {
-	// overload me
-    if(appCtxt.getCurrentAppName() == ZmApp.CALENDAR || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
-        appCtxt.getAppViewMgr().showTreeFooter(true);
-    }
-    if(this._schedulerRendered) this._smartScheduler.zShow(false);
-};
-
-ZmApptComposeController.prototype._postShowCallback =
-function(view, force) {
-	var ta = new AjxTimedAction(this, this._setFocus);
-	AjxTimedAction.scheduleAction(ta, 10);
-    appCtxt.getAppViewMgr().showTreeFooter(false);
-    this.setSchedulerPanelContent();
-};
-
-ZmApptComposeController.prototype.getScheduleAssistant =
-function() {
-    return this._smartScheduler;
-};
-
-ZmApptComposeController.prototype.setSchedulerPanelContent =
-function() {
-    var scheduler = this.getScheduleAssistant();
-    if(scheduler) {
-        var avm = appCtxt.getAppViewMgr();
-        avm.setComponent(ZmAppViewMgr.C_TREE, scheduler);
-        this._schedulerRendered = true;
-    }
-};
-
-ZmApptComposeController.prototype.getWorkingInfo =
-function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) {
-   var soapDoc = AjxSoapDoc.create("GetWorkingHoursRequest", "urn:zimbraMail");
-   soapDoc.setMethodAttribute("s", startTime);
-   soapDoc.setMethodAttribute("e", endTime);
-   soapDoc.setMethodAttribute("name", emailList);
-
-   var acct = (appCtxt.multiAccounts)
-       ? this._composeView.getApptEditView().getCalendarAccount() : null;
-
-   return appCtxt.getAppController().sendRequest({
-       soapDoc: soapDoc,
-       asyncMode: true,
-       callback: callback,
-       errorCallback: errorCallback,
-       noBusyOverlay: noBusyOverlay,
-       accountName: (acct ? acct.name : null)
-   });
-};
-
-ZmApptComposeController.prototype._resetToolbarOperations =
-function() {
-    //do nothing - this  gets called when this controller handles a list view
 };

@@ -22,7 +22,7 @@
 ZmImportExportBaseView = function(params) {
 	if (arguments.length == 0) return;
 	DwtForm.call(this, params);
-	this._initSubType(ZmImportExportController.TYPE_CSV);
+	this._initSubType(ZmImportExportController.TYPE_TGZ);
 	this._setFolderButton(appCtxt.getById(ZmOrganizer.ID_ROOT));
 };
 ZmImportExportBaseView.prototype = new DwtForm;
@@ -115,13 +115,12 @@ ZmImportExportBaseView.prototype._getSubTypeOptions = function(type) {
 		];
 		ZmImportExportBaseView.prototype.CSV_OPTIONS = [];
 		var formats = appCtxt.get(ZmSetting.AVAILABLE_CSVFORMATS);
-		for (var i = 0; i < formats.length; i++) {
-			var format = formats[i];
-			if (format) {
-				ZmImportExportBaseView.prototype.CSV_OPTIONS.push(
-					{ displayValue: ZmMsg[format] || format, value: format }
-				);
-			}
+		var options = formats._options;
+		var displayOptions = formats._displayOptions;
+		for (var i = 0; i < options.length; i++) {
+			ZmImportExportBaseView.prototype.CSV_OPTIONS.push(
+				{ displayValue: displayOptions[i], value: options[i] }
+			);
 		}
 		ZmImportExportBaseView.prototype.ICS_OPTIONS = [
 			{ displayValue: ZmMsg["zimbra-ics"],			value: "zimbra-ics" }
@@ -195,7 +194,7 @@ ZmImportExportBaseView.prototype._setFolderButton = function(folder) {
 	this._folderId = folder ? folder.id : -1;
 	if (folder) {
 		var isRoot = folder.nId == ZmOrganizer.ID_ROOT;
-		this.setLabel("FOLDER_BUTTON", isRoot ? ZmMsg.allFolders : AjxStringUtil.htmlEncode(folder.name));
+		this.setLabel("FOLDER_BUTTON", isRoot ? ZmMsg.allFolders : folder.name);
 	}
 	else {
 		this.setLabel("FOLDER_BUTTON", ZmMsg.browse);

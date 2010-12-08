@@ -56,6 +56,7 @@ AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 AjxPackage.require("ajax.dwt.graphics.DwtCssStyle");
 AjxPackage.require("ajax.dwt.graphics.DwtPoint");
 AjxPackage.require("ajax.dwt.graphics.DwtRectangle");
+AjxPackage.require("ajax.dwt.graphics.DwtUnits");
 
 AjxPackage.require("ajax.dwt.events.DwtEvent");
 AjxPackage.require("ajax.dwt.events.DwtEventManager");

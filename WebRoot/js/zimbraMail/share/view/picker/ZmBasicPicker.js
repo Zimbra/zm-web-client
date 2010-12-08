@@ -49,7 +49,7 @@ function() {
 
 ZmBasicPicker.prototype._makeRow =
 function(text, id) {
-    var size = 17;
+    var size = 20;
     var html = [];
     var i = 0;
     html[i++] = "<tr valign='middle'>";

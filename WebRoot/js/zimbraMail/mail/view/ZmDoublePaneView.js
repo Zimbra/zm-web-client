@@ -148,7 +148,6 @@ function() {
 ZmDoublePaneView.prototype.setMsg =
 function(msg) {
 	this._msgView.set(msg);
-	this._controller._restoreFocus();	// bug 47700
 };
 
 ZmDoublePaneView.prototype.addInviteReplyListener =
@@ -205,7 +204,7 @@ function(newWidth, newHeight, force) {
 		var sashSize = sash.getSize();
 		var sashThickness = readingPaneOnRight ? sashSize.x : sashSize.y;
 		if (readingPaneOnRight) {
-			var listViewWidth = this._vertSashX || (Number(ZmMsg.LISTVIEW_WIDTH)) || Math.floor(newWidth / 2.5);
+			var listViewWidth = this._vertSashX || Math.floor(newWidth / 2.5);
 			this._mailListView.resetSize(listViewWidth, newHeight);
 			sash.setLocation(listViewWidth, 0);
 			this._msgView.setBounds(listViewWidth + sashThickness, 0,
@@ -267,7 +266,7 @@ function(delta) {
 				var firstHdr = this._mailListView._headerList[0];
 				var hdrWidth = firstHdr._width;
 				if (hdrWidth == "auto") {
-					var header = Dwt.byId(firstHdr._id);
+					var header = document.getById(firstHdr._id);
 					hdrWidth = header && Dwt.getSize(header).x;
 				}
 				this._minMLVWidth = hdrWidth;

@@ -72,7 +72,6 @@ function() {
  * @param	{Boolean}	params.skipRemote			if <code>true</code>, remote folders (mountpoints) will not be displayed
  * @param	{Boolean}	params.hideNewButton 		if <code>true</code>, new button will not be shown
  * @param	{Boolean}	params.noRootSelect			if <code>true</code>, do not make root tree item(s) selectable
- * @params  {Boolean}   params.showDrafts			if <code>true</code>, drafts folder will not be omited
  */
 ZmChooseFolderDialog.prototype.popup =
 function(params) {
@@ -91,8 +90,7 @@ function(params) {
 		}
 
 		var omit = omitPerAcct[acct.id] = params.omit || {};
-		
-		omit[ZmFolder.ID_DRAFTS] = !params.showDrafts;
+		omit[ZmFolder.ID_DRAFTS] = true;
 		omit[ZmFolder.ID_OUTBOX] = true;
 		omit[ZmFolder.ID_SYNC_FAILURES] = true;
 
@@ -159,8 +157,6 @@ function(params) {
 	for (var i = 0; i < treeIds.length; i++) {
 		treeIdMap[treeIds[i]] = true;
 	}
-
-	this._acceptFolderMatch = params.acceptFolderMatch;
 
 	// TODO: Refactor packages so that we don't have to bring in so much
 	// TODO: code just do make sure this dialog works.
@@ -324,30 +320,10 @@ function(ev) {
 	if (!msg && this._data) {
 		for (var i = 0; i < folderList.length; i++) {
 			var folder = folderList[i];
-			if (folder.mayContain && !folder.mayContain(this._data, null, this._acceptFolderMatch)) {
-				if(this._data instanceof ZmFolder) {
-					msg = ZmMsg.badTargetFolder; 
-				} else {
-					var items = AjxUtil.toArray(this._data);
-					for (var i = 0; i < items.length; i++) {
-						var item = items[i];
-						if (!item) {
-							continue;
-						}
-						if (item.isDraft && (folder.nId != ZmFolder.ID_TRASH && folder.nId != ZmFolder.ID_DRAFTS && folder.rid != ZmFolder.ID_DRAFTS)) {
-							// can move drafts into Trash or Drafts
-							msg = ZmMsg.badTargetFolderForDraftItem;
-							break;
-						} else if ((folder.nId == ZmFolder.ID_DRAFTS || folder.rid == ZmFolder.ID_DRAFTS) && !item.isDraft)	{
-							// only drafts can be moved into Drafts
-							msg = ZmMsg.badItemForDraftsFolder;
-							break;
-						}
-					}	
-					if(!msg) {
-						msg = ZmMsg.badTargetFolderItems; 
-					}
-				}
+			if (folder.mayContain && !folder.mayContain(this._data)) {
+				msg = (this._data instanceof ZmFolder)
+					? ZmMsg.badTargetFolder
+					: ZmMsg.badTargetFolderItems;
 				break;
 			}
 		}

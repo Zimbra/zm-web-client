@@ -238,7 +238,7 @@
                 width: '100%',
                 dompath: false, //Turns on the bar at the bottom
                 animate: true, //Animates the opening, closing and moving of Editor windows
-                plainText: false,
+                plainText: true,
                 focusAtStart: true,
                 collapse: true,
                 draggable: false
@@ -259,7 +259,7 @@
         width: '100%',
         dompath: false, //Turns on the bar at the bottom
         animate: true, //Animates the opening, closing and moving of Editor windows
-        plainText: false,
+        plainText: true,
         focusAtStart: true,
         collapse: true,
         draggable: false

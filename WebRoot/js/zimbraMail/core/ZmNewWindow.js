@@ -272,10 +272,6 @@ function() {
 
 		target = "compose-window";
 	} else if (cmd == "msgViewDetach") {
-		//bug 52366 - not sure why only REPLY_ALL causes the problem (and not REPLY for example), but in this case the window is opened first for view. But
-		//the user might of course click "reply to all" later in the window so I deep copy here in any case.
-		params.msg = this._deepCopyMsg(params.msg);
-		
 		var msgController = AjxDispatcher.run("GetMsgController");
 		appCtxt.msgCtlrSessionId = msgController.sessionId;
 		msgController.show(params.msg, params.mode);

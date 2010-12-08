@@ -305,11 +305,9 @@ function() {
  * same name. A new name will be generated for this folder and a rename is performed before the move.
  * 
  * @param	{ZmFolder}	newParent		the new parent
- * @param	{boolean}	noUndo			true if the action should not be undoable
- * @param	{String}	actionText		optional custom action text to display as summary
  */
 ZmFolder.prototype.move =
-function(newParent, noUndo, actionText) {
+function(newParent) {
 	var origName = this.name;
 	var name = this.name;
 	while (newParent.hasChild(name)) {
@@ -318,7 +316,7 @@ function(newParent, noUndo, actionText) {
 	if (origName != name) {
 		this.rename(name);
 	}
-	ZmOrganizer.prototype.move.call(this, newParent, noUndo, actionText);
+	ZmOrganizer.prototype.move.call(this, newParent);
 };
 
 /**
@@ -573,18 +571,17 @@ function() {
 *
 * @param {Object}	what		the object(s) to possibly move into this folder (item or organizer)
 * @param {constant}	folderType	the contextual folder type (for tree view root items)
-* @param {boolean}	ignoreExisting  Set to true if checks for item presence in the folder should be skipped (e.g. when recovering deleted items)
 */
 ZmFolder.prototype.mayContain =
-function(what, folderType, ignoreExisting) {
+function(what, folderType) {
 	if (!what) { return true; }
 	if (this.isFeed() || this.isSyncIssuesFolder()) { return false; }
 
 	var thisType = folderType || this.type;
 	var invalid = false;
 	if (what instanceof ZmFolder) {
-		invalid = ((what.parent == this && !ignoreExisting) || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
-				   (!this.isInTrash() && this.hasChild(what.name) && !ignoreExisting) ||
+		invalid = (what.parent == this || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
+				   (!this.isInTrash() && this.hasChild(what.name)) ||
 				   (what.type == ZmOrganizer.FOLDER && thisType == ZmOrganizer.SEARCH) ||
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
 				   (what.id == this.id) ||
@@ -604,28 +601,23 @@ function(what, folderType, ignoreExisting) {
 			invalid = true;
 		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;														// can't drop items into saved searches
-		} else if (item && (item.type == ZmItem.CONTACT) && item.isGal) {
+		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
 			invalid = true;
-		} else if (item && (item.type == ZmItem.CONV) && item.list && item.list.search && (item.list.search.folderId == this.id)) {
+		} else if ((item.type == ZmItem.CONV) && item.list && item.list.search && (item.list.search.folderId == this.id)) {
 			invalid = true;														// convs which are a result of a search for this folder
 		} else {																// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
-				var item = items[i];
-				if (!item) {
-					invalid = true;
-					break;
-				}
-				if (item == ZmItem.CONTACT) {
+				if (items[i].type == ZmItem.CONTACT) {
 					if (this.nId != ZmFolder.ID_TRASH) {
 						// can only move contacts into Trash
 						invalid = true;
 						break;
 					}
-				} else if (item.isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
+				} else if (items[i].isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
 					// can move drafts into Trash or Drafts
 					invalid = true;
 					break;
-				} else if ((this.nId == ZmFolder.ID_DRAFTS || this.rid == ZmFolder.ID_DRAFTS) && !item.isDraft)	{
+				} else if ((this.nId == ZmFolder.ID_DRAFTS || this.rid == ZmFolder.ID_DRAFTS) && !items[i].isDraft)	{
 					// only drafts can be moved into Drafts
 					invalid = true;
 					break;
@@ -636,7 +628,7 @@ function(what, folderType, ignoreExisting) {
 				// bug: 41531 - don't allow items to be moved into exchange
 				// account when moving across accounts
 				var acct = this.getAccount();
-				if (acct && item.getAccount() != acct &&
+				if (item.getAccount() != acct &&
 					(acct.type == ZmAccount.TYPE_MSE ||
 					 acct.type == ZmAccount.TYPE_EXCHANGE))
 				{
@@ -661,7 +653,7 @@ function(what, folderType, ignoreExisting) {
 
 			// can't move items to folder they're already in; we're okay if we
 			// have one item from another folder
-			if (!invalid && !ignoreExisting) {
+			if (!invalid) {
 				if (item.folderId) {
 					invalid = true;
 					for (var i = 0; i < items.length; i++) {

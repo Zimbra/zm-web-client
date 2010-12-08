@@ -56,7 +56,7 @@ ZmCalBaseItem = function(type, list, id, folderId) {
 
 ZmCalBaseItem.prototype = new ZmItem;
 ZmCalBaseItem.prototype.constructor = ZmCalBaseItem;
-ZmCalBaseItem.PRIVATE_FIELDS = {f:true,t:true,ex:true,fb:true,fba:true,transp:true,ptst:true,fr:true,priority:true,name:true,loc:true,geo:true,otherAtt:true,alarm:true};
+
 /**
  * Returns a string representation of the object.
  * 
@@ -73,10 +73,6 @@ function() {
  * Defines the "person" resource type.
  */
 ZmCalBaseItem.PERSON				= "PERSON";
-/**
- * Defines the "optional person" resource type.
- */
-ZmCalBaseItem.OPTIONAL_PERSON		= "OPT_PERSON";
 /**
  * Defines the "location" resource type.
  */
@@ -376,7 +372,7 @@ function(calItemNode, instNode) {
 
 	this.fba = this._getAttr(calItemNode, instNode, "fba");
 
-	var sd = instNode.s !=null ? instNode.s : calItemNode.inst && calItemNode.inst.length > 0 &&  calItemNode.inst[0].s;
+	var sd = this._getAttr(calItemNode, instNode, "s");
 	if (sd) {
         var tzo = this.tzo = instNode.tzo != null ? instNode.tzo : calItemNode.tzo;
 		var adjustMs = this.isAllDayEvent() ? (tzo + new Date(instNode.s).getTimezoneOffset()*60*1000) : 0;
@@ -408,8 +404,7 @@ function() {
  */
 ZmCalBaseItem.prototype._getAttr =
 function(calItem, inst, name) {
-	return inst[name] != null ? inst[name] : 
-		( (inst["class"]=="PRI" && ZmCalBaseItem.PRIVATE_FIELDS[name]) ? null : calItem[name]);
+	return inst[name] != null ? inst[name] : calItem[name];
 };
 
 /**

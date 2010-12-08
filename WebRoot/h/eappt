@@ -522,7 +522,7 @@
                         <tr>
                             <td colspan="3" style='padding:10px'>
                                 <textarea class='MsgCompose' rows="30" cols="80" style='width:100%'
-                                              name="body">${fn:escapeXml(empty compose.content ? (empty compose.decodedDescHtml ? compose.description : compose.decodedDescHtml) : compose.content)}</textarea>
+                                              name="body">${fn:escapeXml(empty compose.content ? compose.description : compose.content)}</textarea>
                             </td>
                         </tr>
                     </table>
@@ -611,12 +611,6 @@
     }
 
     checkForChanges = function(){
-        if(${uploader.isRepeatDone})
-            return (confirm("<fmt:message key="optionsExitConfirmation"/>"));
-
-        if(${uploader.isContactDone})
-            return (confirm("<fmt:message key="optionsExitConfirmation"/>"));
-
         var _el = _form.elements;
         var _checkFail = false;
         for ( var _i=0;_i < _el.length; _i++){

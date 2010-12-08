@@ -1,6 +1,5 @@
 <%@ page import="com.zimbra.common.mime.MimeCompoundHeader" %>
 <%@ page import="com.zimbra.cs.httpclient.URLUtil" %>
-<%@ page import="java.util.regex.*" %>
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
@@ -9,26 +8,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-
-<%!
-
-	// Trims down whitespace in the given string, EXCEPT within <textarea> and <pre> tags
-	private String trimWhitespace(String str) {
-		String crlf = "__ZCRLF__"; // This exact text should not be used anywhere else on the page we're processing. In case of problems, change this text to something else
-		String tab = "__ZTAB__";
-		Matcher m = Pattern.compile("(<textarea.*>.*</textarea>)|(<pre.*>.*</pre>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE).matcher(str);
-		while (m.find()) {
-			String oldpart = m.group();
-			String newpart = oldpart.replaceAll("\t", tab).replaceAll("\n", crlf);
-			str = str.replaceAll(oldpart, newpart);
-		}
-		str = str.replaceAll("[\t ]+", " ").replaceAll(tab,"\t");
-		str = str.replaceAll("\n\\s*\n", "\n").replaceAll(crlf,"\n");
-		return str;
-	}                                                                       
-
-%>
-
 <c:set var="F_LIMIT" value="${not empty sessionScope.F_LIMIT ? sessionScope.F_LIMIT : 100}" scope="session"/>
 <c:if test="${empty param.ajax}"><?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -242,7 +221,7 @@
     </div><mo:handleError>
         <c:import url="/m/zmview" var="response" scope="page"/></mo:handleError><%  //!TODO may be should be done through filter? but minimization of html is essential to reduce response size
         String respText = (String)pageContext.getAttribute("response");
-        respText = this.trimWhitespace(respText);
+        respText = respText.replaceAll("[\t ]+"," ").replaceAll("\n\\s*\n","\n");
         pageContext.setAttribute("response",respText);
     %><div class="container" id="body">${response}</div>
 </div></div></div>

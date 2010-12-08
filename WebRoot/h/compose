@@ -5,11 +5,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
 <app:handleError>
 <zm:getMailbox var="mailbox"/>
-<c:choose>                                                                                                   
+<c:choose>
     <c:when test="${not empty mailbox.prefs.locale}">
         <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
     </c:when>
@@ -225,8 +224,6 @@
             <c:set var="theBody" value="${zm:replaceAll(theBody, find,'&gt;&lt;' )}"/>
             <c:set var="find" value="\r\n"/>
             <c:set var="theBody" value="${zm:replaceAll(theBody, find,'<br>')}"/>  <%--  Needed otherwise YUI rich text editor in IE has two <br>'s for \r\n --%>
-            <c:set var="find" value="\n"/>
-            <c:set var="theBody" value="${zm:replaceAll(theBody, find,'<br>')}"/>
         </c:if>
         <textarea class='MsgCompose' name="body" id="body" rows="20" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${theBody}</textarea>
         <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' />
@@ -275,23 +272,13 @@
 <input type="hidden" name="inviteReplyInst" value="${fn:escapeXml(compose.inviteReplyInst)}"/>
 <input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-<%--input element used to set the draftid during autosave--%>
-<c:choose>
-    <c:when test="${message.isDraft}">
-       <input type="hidden" name="draftid" value="${message.id}"/>
-    </c:when>
-    <c:otherwise>
-        <input type="hidden" name="draftid" value=""/>
-    </c:otherwise>
-</c:choose>
-    
+<c:if test="${message.isDraft}">
+    <input type="hidden" name="draftid" value="${message.id}"/>
+</c:if>
 </form>
 <form id="SpellCheckForm">
     <input type="hidden" id="SpellCheckData" name="SpellCheckData" value=""/>
 </form>
-
-<iframe style="visibility:hidden" name="targetFrame">
-</iframe>
 
 <app:autoComplete>
     initAuto("toField","toContainer");
@@ -305,30 +292,6 @@
 
 <script type="text/javascript">
 <!--
-var AUTO_SAVE_DRAFT_INTERVAL = 30;
-var timer;
-timer = setTimeout(autoSaveTimer, AUTO_SAVE_DRAFT_INTERVAL*1000);
-
-function autoSaveTimer()
-{
-    //send saveDraft request only if there is a change in the content
-    if(checkForChanges())
-    {
-        grabFieldValues();
-        var formElement = document.forms["composeForm"];
-        //set iframe as the form target
-        formElement.target = 'targetFrame';
-        //create an input element used to set the autoSave flag
-        var elem = document.createElement('input');
-        elem.type = 'hidden';
-        elem.name = 'actionAutoSave';
-        elem.id = 'OPAUTOSAVE';
-        formElement.appendChild(elem);
-        formElement.submit();
-    }
-    setTimeout(autoSaveTimer, AUTO_SAVE_DRAFT_INTERVAL*1000 );
-}
-
 var showHideBcc = function(){
     var bcc = document.getElementById("bcc_tr");
     var showBcc = document.getElementById("show_bcc");
@@ -350,6 +313,7 @@ var showBccWhenNotNull = function() {
         showBcc.style.display=(showBcc.style.display=="block"?"none":"block") ;
         hideBcc.style.display=(hideBcc.style.display=="block"?"none":"block") ; 
     }
+
 }
 
 var trim = function(strVal){

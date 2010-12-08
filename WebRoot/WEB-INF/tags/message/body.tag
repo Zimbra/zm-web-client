@@ -43,7 +43,7 @@
         <c:choose>
             <c:when test="${isPrintView}">
                 <%-- Render inline for printview bug #34780 --%>
-                <div id="iframeBody${counter}" class="MsgBody-html">
+                <div id="iframeBody${counter}">
                 ${theBody}
                 </div>
             </c:when>

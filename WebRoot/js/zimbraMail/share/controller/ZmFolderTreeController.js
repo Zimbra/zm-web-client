@@ -39,8 +39,8 @@ ZmFolderTreeController = function(type, dropTgt) {
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
 	this._listeners[ZmOperation.SHARE_FOLDER] = new AjxListener(this, this._shareFolderListener);
+	this._listeners[ZmOperation.MOUNT_FOLDER] = new AjxListener(this, this._mountFolderListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER] = new AjxListener(this, this._emptyListener);
-	this._listeners[ZmOperation.RECOVER_DELETED_ITEMS] = new AjxListener(this, this._recoverListener);
 	this._listeners[ZmOperation.SYNC_OFFLINE_FOLDER] = new AjxListener(this, this._syncOfflineFolderListener);
 	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 };
@@ -109,7 +109,7 @@ function(parent, type, id) {
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
 		parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());
-		parent.enable(ZmOperation.SHARE_FOLDER, isShareVisible);
+		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], isShareVisible);
 		parent.enable(ZmOperation.EMPTY_FOLDER, (hasContent || folder.link));	// numTotal is not set for shared folders
 		parent.enable(ZmOperation.RENAME_FOLDER, !folder.isDataSource());		// dont allow datasource'd folder to be renamed via overview
 		parent.enable(ZmOperation.NEW_FOLDER, !folder.disallowSubFolder);
@@ -143,7 +143,7 @@ function(parent, type, id) {
 		}
 		// only allow Inbox and Sent system folders to be share-able for now
 		if (!folder.link && (nId == ZmFolder.ID_INBOX || nId == ZmFolder.ID_SENT || nId == ZmFolder.ID_DRAFTS)) {
-			parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.EDIT_PROPS], true);
+			parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER, ZmOperation.EDIT_PROPS], true);
 		}
 		// bug fix #30435 - enable empty folder for sync failures folder
 		if (appCtxt.isOffline && nId == ZmOrganizer.ID_SYNC_FAILURES && hasContent) {
@@ -222,14 +222,9 @@ function(parent, type, id) {
 	}
 	parent.enable(ZmOperation.BROWSE, true);
 
-	button = parent.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
-	if (button) {
-		button.setVisible(isTrash);
-		button.setEnabled(isTrash);
-	}
-
 	// we always enable sharing in case we're in multi-mbox mode
 	this._resetButtonPerSetting(parent, ZmOperation.SHARE_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
+	this._resetButtonPerSetting(parent, ZmOperation.MOUNT_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
 
 
@@ -244,6 +239,7 @@ ZmFolderTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [
 		ZmOperation.NEW_FOLDER,
+		ZmOperation.MOUNT_FOLDER,
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SYNC,
 		ZmOperation.BROWSE
@@ -269,7 +265,6 @@ function() {
 		ZmOperation.SYNC,
 		ZmOperation.SYNC_ALL,
 		ZmOperation.EMPTY_FOLDER,
-		ZmOperation.RECOVER_DELETED_ITEMS,
 		ZmOperation.SYNC_OFFLINE_FOLDER
 	];
 };
@@ -520,12 +515,24 @@ function(ev) {
  */
 ZmFolderTreeController.prototype._emptyListener =
 function(ev) {
-	this._getEmptyShieldWarning(ev);
-};
+	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
+	var ds = this._emptyShield = appCtxt.getOkCancelMsgDialog();
+	ds.reset();
+	ds.registerCallback(DwtDialog.OK_BUTTON, this._emptyShieldYesCallback, this, organizer);
+	ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._emptyShield);
+	var msg = (organizer.nId != ZmFolder.ID_TRASH)
+		? (AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName()))
+		: ZmMsg.confirmEmptyTrashFolder;
+	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 
-ZmFolderTreeController.prototype._recoverListener =
-function(ev) {
-	appCtxt.getDumpsterDialog().popup();
+	var focusButtonId = (organizer.nId == ZmFolder.ID_TRASH || organizer.nId == ZmFolder.ID_SPAM) ?  DwtDialog.OK_BUTTON : DwtDialog.CANCEL_BUTTON;
+	ds.associateEnterWithButton(focusButtonId);
+	ds.popup(null, focusButtonId);
+
+	if (!(organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash())) {
+		var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
+		cancelButton.focus();
+	}
 };
 
 /**
@@ -672,6 +679,15 @@ function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
 };
+
+/**
+ * @private
+ */
+ZmFolderTreeController.prototype._mountFolderListener =
+function(ev) {
+	appCtxt.getMountFolderDialog().popup(ZmOrganizer.FOLDER);
+};
+
 
 // Miscellaneous
 

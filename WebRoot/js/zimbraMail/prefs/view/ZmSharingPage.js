@@ -400,7 +400,7 @@ function() {
 
 	// form for creating a new share
 	var options = [];
-	var orgTypes = [ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR, ZmOrganizer.ADDRBOOK, 
+	var orgTypes = [ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR, ZmOrganizer.ADDRBOOK, ZmOrganizer.NOTEBOOK,
 					ZmOrganizer.TASKS, ZmOrganizer.BRIEFCASE];
 	var orgKey = {};
 	orgKey[ZmOrganizer.FOLDER]		= "mailFolder";

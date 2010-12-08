@@ -61,13 +61,11 @@
  * @param	{AjxCallback}	keyPressCallback	the additional client ONKEYPRESS handler
  * @param	{AjxCallback}	keyUpCallback		the additional client ONKEYUP handler
  * @param	{AjxCallback}	enterCallback		the client handler for Enter key
- * @param	{Hash}			options				the additional options for the data class
+ * @param	{Hash}			options				the additional options for autocompleteMatch() in data class
  * 
  * @extends		DwtComposite
  */
 ZmAutocompleteListView = function(params) {
-
-	if (arguments.length == 0) { return; }
 
 	var className = params.className ? params.className : "ZmAutocompleteListView";
 	DwtComposite.call(this, params.parent || appCtxt.getShell(), className, DwtControl.ABSOLUTE_STYLE);
@@ -77,12 +75,12 @@ ZmAutocompleteListView = function(params) {
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
 	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
+	this._compCallback = params.compCallback;
+	this._keyDownCallback = params.keyDownCallback;
+	this._keyPressCallback = params.keyPressCallback;
+	this._keyUpCallback = params.keyUpCallback;
+	this._enterCallback = params.enterCallback;
     this._options = params.options || {};
-
-	this._callbacks = {};
-	for (var i = 0; i < ZmAutocompleteListView.CALLBACKS.length; i++) {
-		this._setCallbacks(ZmAutocompleteListView.CALLBACKS[i], params);
-	}
 
 	this._isDelim = AjxUtil.arrayAsHash(params.delims || ZmAutocompleteListView.DELIMS);
 	this._isDelimCode = AjxUtil.arrayAsHash(params.delimCodes || ZmAutocompleteListView.DELIM_CODES);
@@ -112,34 +110,18 @@ ZmAutocompleteListView = function(params) {
 
 	this._origClass = "acRow";
 	this._selClass = "acRow-selected";
-	this._showLinkTextClass = "LinkText";
-	this._hideLinkTextClass = "LinkText-hide";
-	this._hideSelLinkTextClass = "LinkText-hide-selected";
+	this._showForgetTextClass = "ForgetText";
+	this._hideForgetTextClass = "ForgetText-hide";
+	this._hideSelForgetTextClass = "ForgetText-hide-selected";
 
 	this._numChars = 0;
 	this._done = {};
 	this.setVisible(false);
 	this.setScrollStyle(Dwt.SCROLL);
-	this.reset();
 };
 
 ZmAutocompleteListView.prototype = new DwtComposite;
 ZmAutocompleteListView.prototype.constructor = ZmAutocompleteListView;
-
-ZmAutocompleteListView.CB_COMPLETION	= "comp";
-ZmAutocompleteListView.CB_KEYDOWN		= "keyDown";
-ZmAutocompleteListView.CB_KEYPRESS		= "keyPress";
-ZmAutocompleteListView.CB_KEYUP			= "keyUp";
-ZmAutocompleteListView.CB_ENTER			= "enter";
-ZmAutocompleteListView.CB_ADDR_FOUND	= "addrFound";
-ZmAutocompleteListView.CALLBACKS = [
-		ZmAutocompleteListView.CB_COMPLETION,
-		ZmAutocompleteListView.CB_KEYDOWN,
-		ZmAutocompleteListView.CB_KEYPRESS,
-		ZmAutocompleteListView.CB_KEYUP,
-		ZmAutocompleteListView.CB_ENTER,
-		ZmAutocompleteListView.CB_ADDR_FOUND
-];
 
 // map of characters that are completion characters
 ZmAutocompleteListView.DELIMS		= [',', ';', '\n', '\r', '\t'];	// used when list is not showing
@@ -150,8 +132,6 @@ ZmAutocompleteListView.WAIT_ID = "wait";
 // for list selection with up/down arrows
 ZmAutocompleteListView.NEXT = -1;
 ZmAutocompleteListView.PREV = -2;
-
-ZmAutocompleteListView._activeAcList = null;
 
 // Public static methods
 
@@ -173,9 +153,9 @@ function(ev) {
 		result = ZmAutocompleteListView._onKeyDown(ev);
 	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
-	if (aclv) {
-		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYDOWN, element && element.id, [ev, aclv, result, element]);
+	var aclv = DwtControl.ALL_BY_ID[element._aclvId]
+	if (aclv && aclv._keyDownCallback) {
+		var cbResult = aclv._keyDownCallback.run(ev, aclv, result);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 	return result;
@@ -201,21 +181,9 @@ function(ev) {
 		}
 	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
-
-	// check for empty value before input is updated - looking for Delete when field was already empty
-	var value = element && element.value;
-	if (!value) {
-		if (aclv._options.addrBubbles && key == 8) {
-			var addrInput = DwtControl.ALL_BY_ID[element._aifId];
-			if (addrInput) {
-				addrInput.handleDelete();
-			}
-		}
-	}
-
-	if (aclv) {
-		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYPRESS, element && element.id, [ev, aclv, result, element]);
+	var aclv = DwtControl.ALL_BY_ID[element._aclvId]
+	if (aclv && aclv._keyPressCallback) {
+		var cbResult = aclv._keyPressCallback.run(ev, aclv);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 
@@ -238,9 +206,9 @@ function(ev) {
 	}
 	var result = ZmAutocompleteListView._onKeyUp(ev);
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
-	if (aclv) {
-		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYUP, element && element.id, [ev, aclv, result, element]);
+	var aclv = DwtControl.ALL_BY_ID[element._aclvId]
+	if (aclv && aclv._keyUpCallback) {
+		var cbResult = aclv._keyUpCallback.run(ev, aclv, result);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 	return result;
@@ -264,7 +232,7 @@ function(ev) {
 		if (!element) {
 			return ZmAutocompleteListView._echoKey(true, ev);
 		}
-		var aclv = DwtControl.ALL_BY_ID[element._aclvId];
+		var aclv = DwtControl.ALL_BY_ID[element._aclvId]
 		if (aclv && aclv.getVisible()) {
 			return ZmAutocompleteListView._echoKey(false, ev);
 		}
@@ -287,6 +255,8 @@ function(ev) {
 ZmAutocompleteListView._onKeyUp =
 function(ev) {
 
+	this._hasCompleted = false;
+
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	if (!element) {
 		return ZmAutocompleteListView._echoKey(true, ev);
@@ -294,7 +264,6 @@ function(ev) {
 
 	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
 	var key = DwtKeyEvent.getCharCode(ev);
-	aclv._hasCompleted = false;
 
 	// Tab/Esc handled in keydown for IE
 	if (AjxEnv.isIE && ev.type == "keyup" && (key == 9 || key == 27)) {
@@ -349,8 +318,8 @@ function(ev) {
 			aclv._focusAction.args = [ element ];
 			AjxTimedAction.scheduleAction(aclv._focusAction, 0);
 		}
-		if (key == 13 || key == 3) {
-			var result = aclv._runCallbacks(ZmAutocompleteListView.CB_ENTER, element && element.id, [ev]);
+		if ((key == 13 || key == 3) && aclv._enterCallback) {
+			var result = aclv._enterCallback.run(ev);
 			return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 		}
 		return ZmAutocompleteListView._echoKey(false, ev);
@@ -361,9 +330,9 @@ function(ev) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 
-	if (key == 13 || key == 3) {
+	if ((key == 13 || key == 3) && aclv._enterCallback) {
 		aclv.reset();
-		var result = aclv._runCallbacks(ZmAutocompleteListView.CB_ENTER, element && element.id, [ev]);
+		var result = aclv._enterCallback.run(ev);
 		return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 	}
 
@@ -402,17 +371,13 @@ function(echo, ev) {
 ZmAutocompleteListView._outsideMouseDownListener =
 function(ev) {
 	var curList = ZmAutocompleteListView._activeAcList;
-    if (curList && curList.getVisible()) {
+    if (curList.getVisible()) {
 		var obj = DwtControl.getTargetControl(ev);
-		var target = DwtUiEvent.getTargetWithProp(ev, "id");
-		if (obj && obj != curList && !obj.isLinkText && target != obj.getHtmlElement()) {
+		if (obj != curList && !obj.isForgetText) {
 			curList.show(false);
 			ev._stopPropagation = false;
 			ev._returnValue = true;
 		}
-	}
-	if (curList) {
-		curList.setWaiting(false);
 	}
 };
 
@@ -441,17 +406,13 @@ function(account) {
 /**
  * Adds autocompletion to the given field by setting key event handlers.
  *
- * @param {Element}	element			an HTML element
- * @param {string}	addrInputId		ID of ZmAddressInputField (for addr bubbles)
+ * @param {Element}	element		an HTML element
  * 
  * @private
  */
 ZmAutocompleteListView.prototype.handle =
-function(element, addrInputId) {
+function(element) {
 	element._aclvId = this._htmlElId;
-	if (addrInputId) {
-		element._aifId = addrInputId;
-	}
 	Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmAutocompleteListView.onKeyDown);
 	Dwt.setHandler(element, DwtEvent.ONKEYPRESS, ZmAutocompleteListView.onKeyPress);
 	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
@@ -494,18 +455,11 @@ function(info) {
  */
 ZmAutocompleteListView.prototype.reset =
 function() {
-
 	this._matches = null;
+	this._matchHash = {};
+	this._canForget = {};
 	this._selected = null;
-
-	this._matchHash			= {};
-	this._forgetLink		= {};
-	this._expandLink		= {};
-
-	if (this.getVisible()) {
-		this.show(false);
-	}
-	this.setWaiting(false);
+	this.show(false);
 };
 
 /**
@@ -555,38 +509,23 @@ function(key, isDelim) {
  */
 ZmAutocompleteListView.prototype.setWaiting =
 function(on) {
-
-	if (!on && !this._waitingDiv) { return; }
-
-	var div = this._waitingDiv;
-	if (!div) {
-		div = this._waitingDiv = document.createElement("div");
-		div.className = "acWaiting";
-		var html = [], idx = 0;
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0>";
-		html[idx++] = "<tr>";
-		html[idx++] = "<td><div class='ImgSpinner'></div></td>";
-		html[idx++] = "<td>" + ZmMsg.autocompleteWaiting + "</td>";
-		html[idx++] = "</tr>";
-		html[idx++] = "</table>";
-		div.innerHTML = html.join("");
-		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
-		appCtxt.getShell().getHtmlElement().appendChild(div);
+	if (on && !this._waitingRow) {
+		if (!this.size()) {
+			// make sure we're visible if "waiting" row is the only one
+			this.show(true);
+		}
+		var table = this._getTable();
+		var row = this._waitingRow = table.insertRow(-1);
+		var cell = row.insertCell(-1);
+		cell.innerHTML = "<div class='DwtWait16Icon'></div>";
+		cell = row.insertCell(-1);
+		cell.innerHTML = ZmMsg.autocompleteWaiting;
+		cell = row.insertCell(-1);
+		cell.innerHTML = "&nbsp;";
+	} else {
+		var ta = new AjxTimedAction(this, this._clearWaiting);
+		AjxTimedAction.scheduleAction(ta, 1000);
 	}
-
-	if (on) {
-		var loc = this._getDefaultLoc();
-		Dwt.setLocation(div, loc.x, loc.y);
-		ZmAutocompleteListView._activeAcList = this;
-		this._addMouseDownListener();
-	}
-	else {
-		ZmAutocompleteListView._activeAcList = null;
-		this._removeMouseDownListener();
-	}
-	
-	Dwt.setZIndex(div, on ? Dwt.Z_DIALOG_MENU : Dwt.Z_HIDDEN);
-	Dwt.setVisible(div, on);
 };
 
 // Private methods
@@ -623,7 +562,6 @@ ZmAutocompleteListView.prototype.show =
 function(show, loc) {
 	DBG.println(AjxDebug.DBG3, "autocomplete show: " + show);
 	if (show) {
-		this.setWaiting(false);
 		this._popup(loc);
 	} else {
 		this._hasCompleted = false;
@@ -660,15 +598,12 @@ function(text, start) {
 			var chunk = text.substring(start, i);
 			if (this._dataAPI.isComplete && this._dataAPI.isComplete(chunk)) {
 				DBG.println(AjxDebug.DBG3, "skipping completed chunk: " + chunk);
-				if (this._runCallbacks(ZmAutocompleteListView.CB_ADDR_FOUND, this._element && this._element.id, [this, chunk, c])) {
-					return null;
-				}
 				start = i + 1;
 				while (text.charAt(start) == ' ') {	// ignore leading space
 					start++;
 				}
 			} else {
-				return {text: text, str: chunk, start: start, end: i, delim: (c != ' ')};
+				return {text: text, str: chunk, start: start, end: i, delim: true};
 			}
 		}
 	}
@@ -721,8 +656,6 @@ function(str, chunk, text, start, callback, list) {
 			DBG.println(AjxDebug.DBG2, "matches found: " + list.length);
 			// done now in case of quick complete
 			this._set(list); // populate the list view
-		} else {
-			this._showNoResults();
 		}
 
 		// if text ends in a delimiter, complete immediately without showing the list
@@ -762,13 +695,11 @@ function(str, chunk, text, start, callback, list) {
  * @param text		[string]		current input text
  * @param str		[string]*		current chunk
  * @param hasDelim	[boolean]*		current chunk ends with a delimiter
- * @param match		[object]*		forced match object
  */
 ZmAutocompleteListView.prototype._complete =
-function(text, str, hasDelim, match) {
-
+function(text, str, hasDelim) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _complete: selected is " + this._selected);
-	match = match || this._matchHash[this._selected];
+	var match = this._matchHash[this._selected];
 	if (!match && str && hasDelim && this._dataAPI.quickComplete) {
 		match = this._dataAPI.quickComplete(str);
 	}
@@ -777,18 +708,6 @@ function(text, str, hasDelim, match) {
 	var start = this._start;
 	var end = hasDelim ? this._end + 1 : this._end;
 	DBG.println(AjxDebug.DBG2, "update replace range: " + start + " - " + end);
-	var value = this._getCompletionValue(match);
-	var newText = this._options.addrBubbles ? value :
-				  [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
-	if (value) {
-		this._done[value] = true;
-	}
-	DBG.display(AjxDebug.DBG2, newText);
-	return {text: newText, start: start + value.length + this._separator.length, match: match};
-};
-
-ZmAutocompleteListView.prototype._getCompletionValue =
-function(match) {
 	var value = "";
 	if (this._matchValue instanceof Array) {
 		for (var i = 0, len = this._matchValue.length; i < len; i++) {
@@ -800,45 +719,35 @@ function(match) {
 	} else {
 		value = match[this._matchValue] || "";
 	}
-	return value;
+	var newText = [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
+	if (value) {
+		this._done[value] = true;
+	}
+	DBG.display(AjxDebug.DBG2, newText);
+	return {text: newText, start: start + value.length + this._separator.length, match: match};
 };
 
 // Resets the value of an element to the given text.
 ZmAutocompleteListView.prototype._updateField =
-function(text, match, ev) {
-
+function(text, match) {
 	var el = this._element;
-	if (this._options.addrBubbles) {
-		var addrInput = el && el._aifId && DwtControl.ALL_BY_ID[el._aifId];
-		if (addrInput) {
-			if (match && match.multipleAddresses) {
-				addrInput.setValue(text);
-			}
-			else {
-				addrInput.add(text, match);
-			}
-			el = addrInput._input;
-		}
-	}
-	else if (el) {
-		el.value = text;
-		el.focus();
-		Dwt.setSelectionRange(el, text.length, text.length);
-	}
+	el.value = text;
+	el.focus();
+	Dwt.setSelectionRange(el, text.length, text.length);
 
 	this.reset();
 	this._hasCompleted = true;
-	this._runCallbacks(ZmAutocompleteListView.CB_COMPLETION, el && el.id, [text, el, match, ev]);
+	if (this._compCallback) {
+		this._compCallback.run(text, el, match);
+	}
 };
 
 // Updates the element with the currently selected match.
 ZmAutocompleteListView.prototype._update =
-function(hasDelim, match, ev) {
-
-	var value = this._element ? this._element.value : "";
-	var result = this._complete(value, null, hasDelim, match);
+function(hasDelim) {
+	var result = this._complete(this._element.value, null, hasDelim);
 	if (result) {
-		this._updateField(result.text, result.match, ev);
+		this._updateField(result.text, result.match);
 	}
 };
 
@@ -850,7 +759,7 @@ ZmAutocompleteListView.prototype._mouseDownListener =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 	var row = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!row || !row.id || row.id.indexOf("Row") == -1) { return; }
+	if (!row || !row.id) { return; }
 	if (ev.button == DwtMouseEvent.LEFT) {
 		this._setSelected(row.id);
 		if (this.isListenerRegistered(DwtEvent.SELECTION)) {
@@ -882,7 +791,7 @@ function(listener) {
 
 ZmAutocompleteListView.prototype._listSelectionListener = 
 function(ev) {
-	this._update(true, null, ev);
+	this._update(true);
 };
 
 // Layout
@@ -911,8 +820,6 @@ function(list) {
 
 	var table = this._getTable();
 	this._matches = list;
-	var forgetEnabled = (this._options.supportForget !== false);
-	var expandEnabled = (this._options.supportExpand !== false);
 	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
 		var match = this._matches[i];
@@ -933,22 +840,15 @@ function(list) {
 			}
 			cell = row.insertCell(-1);
 			cell.innerHTML = match.text || "&nbsp;";
-			if (forgetEnabled) {
-				this._insertLinkCell(this._forgetLink, row, rowId, this._getId("Forget", i), (match.score > 0));
-			}
-			if (expandEnabled) {
-				this._insertLinkCell(this._expandLink, row, rowId, this._getId("Expand", i), match.canExpand);
+			if (this._options.supportForget !== false) {
+				this._canForget[rowId] = match.canForget;
+				cell = row.insertCell(-1);
+				cell.className = "Forget";
+				cell.innerHTML = match.canForget ? "<a id='" + this._getId("Forget", i) + "'></a>" : "";
 			}
 		}
 	}
-	if (forgetEnabled) {
-		this._forgetText = {};
-		this._addLinks(this._forgetText, "Forget", ZmMsg.forget, ZmMsg.forgetTooltip, this._handleForgetLink);
-	}
-	if (expandEnabled) {
-		this._expandText = {};
-		this._addLinks(this._expandText, "Expand", ZmMsg.expand, ZmMsg.expandTooltip, this.expandDL);
-	}
+	this._addForgetLinks();
 
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
 		function() {
@@ -956,54 +856,41 @@ function(list) {
 		}), 100);
 };
 
-ZmAutocompleteListView.prototype._showNoResults =
-function() {
-	// do nothing. Overload to show something.
-};
-
-ZmAutocompleteListView.prototype._insertLinkCell =
-function(hash, row, rowId, linkId, addLink) {
-	hash[rowId] = addLink ? linkId : null;
-	var cell = row.insertCell(-1);
-	cell.className = "Link";
-	cell.innerHTML = addLink ? "<a id='" + linkId + "'></a>" : "";
-};
-
 ZmAutocompleteListView.prototype._getId =
 function(type, num) {
 	return [this._htmlElId, "ac" + type, num].join("_");
 };
 
-// Add a DwtText to the link so it can have a tooltip.
-ZmAutocompleteListView.prototype._addLinks =
-function(textHash, idLabel, label, tooltip, handler) {
+// Add a DwtText to each "forget" link so it can have a tooltip.
+ZmAutocompleteListView.prototype._addForgetLinks =
+function() {
 
+	this._rowForgetHash = {};
 	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
 		var match = this._matches[i];
 		var rowId = match.id = this._getId("Row", i);
-		var linkId = this._getId(idLabel, i);
-		var link = document.getElementById(linkId);
-		if (link) {
-			var textId = this._getId(idLabel + "Text", i);
-			var text = new DwtText({parent:this, className:this._hideLinkTextClass, id:textId});
-			textHash[rowId] = text;
-			text.isLinkText = true;
-			text.setText(label);
-			text.setToolTipContent(tooltip);
-			var listener = new AjxListener(this, handler, [match.email, textId, rowId]);
+		var forgetId = this._getId("Forget", i);
+		var forgetLink = document.getElementById(forgetId);
+		if (forgetLink) {
+			var text = new DwtText({parent:this, className:this._hideForgetTextClass});
+			this._rowForgetHash[rowId] = text;
+			text.isForgetText = true;
+			text.setText(ZmMsg.forget);
+			text.setToolTipContent(ZmMsg.forgetTooltip);
+			var listener = new AjxListener(this, this._handleForgetLink, [match.email, rowId]);
 			text.addListener(DwtEvent.ONMOUSEDOWN, listener);
-			text.reparentHtmlElement(link);
+			text.reparentHtmlElement(forgetLink);
 		}
 	}
 };
 
-ZmAutocompleteListView.prototype._showLink =
-function(hash, textHash, rowId, show) {
-	var text = textHash && textHash[rowId];
-	if (text) {
-		text.setClassName(!show ? this._hideLinkTextClass :
-			hash[rowId] ? this._showLinkTextClass : this._hideSelLinkTextClass);
+ZmAutocompleteListView.prototype._showForgetLink =
+function(rowId, show) {
+	var forgetText = this._rowForgetHash && this._rowForgetHash[rowId];
+	if (forgetText) {
+		forgetText.setClassName(!show ? this._hideForgetTextClass :
+			this._canForget[rowId] ? this._showForgetTextClass : this._hideSelForgetTextClass);
 	}
 };
 
@@ -1011,88 +898,44 @@ function(hash, textHash, rowId, show) {
 ZmAutocompleteListView.prototype._popup =
 function(loc) {
 
-	if (this.getVisible()) { return; }
-
-	loc = loc || this._getDefaultLoc();
-	var x = loc.x;
-	var y = loc.y;
-
+	// position just below input field
 	var shellHeight = this.shell.getSize().y;
+	var elLoc = Dwt.getLocation(this._element);
+	var elSize = Dwt.getSize(this._element);
+	var x = elLoc.x;
+	var y = elLoc.y + elSize.y;
 	var availHeight = shellHeight - y;
 	var fullHeight = this.size() * this._getRowHeight();
 	this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	this.setVisible(true);
 	var curSize = this.getSize();
 	if (availHeight < fullHeight) {
-	  //we are short add text to alert user to keep typing
-      this._showMoreResultsText(availHeight);
-      // if we don't fit, resize so we are scrollable
-      this.setSize(Dwt.DEFAULT, availHeight - (AjxEnv.isIE ? 30 : 10));
-	   // see if we need to account for width of vertical scrollbar
-	  var div = this.getHtmlElement();
-	  if (div.clientWidth != div.scrollWidth) {
+		// if we don't fit, resize so we are scrollable
+		this.setSize(Dwt.DEFAULT, availHeight - (AjxEnv.isIE ? 30 : 10));
+		// see if we need to account for width of vertical scrollbar
+		var div = this.getHtmlElement();
+		if (div.clientWidth != div.scrollWidth) {
 			this.setSize(curSize.x + Dwt.SCROLLBAR_WIDTH, Dwt.DEFAULT);
-	  }
-      
+		}
 	} else if (curSize.y < fullHeight) {
 		this.setSize(Dwt.CLEAR, fullHeight);
-	} else {
-		this.setSize(Dwt.CLEAR, Dwt.CLEAR);	// set back to auto-sizing
 	}
 
     this.setLocation(x, y);
 	this.setVisible(true);
 	this.setZIndex(Dwt.Z_DIALOG_MENU);
 	ZmAutocompleteListView._activeAcList = this;
-	this._addMouseDownListener();
-};
-
-// returns a point with a location just below the input field
-ZmAutocompleteListView.prototype._getDefaultLoc = 
-function() {
-
-	var elLoc = Dwt.getLocation(this._element);
-	var elSize = Dwt.getSize(this._element);
-	var x = elLoc.x;
-	var y = elLoc.y + elSize.y;
-	if (this._options.addrBubbles) {
-		y += 3;
-	}
-	DwtPoint.tmp.set(x, y);
-	return DwtPoint.tmp;
-};
-
-// Hides the list
-ZmAutocompleteListView.prototype._popdown = 
-function() {
-
-	if (!this.getVisible()) { return; }
-
-	this.setZIndex(Dwt.Z_HIDDEN);
-	this.setVisible(false);
-	ZmAutocompleteListView._activeAcList = null;
-	this._removeMouseDownListener();
-};
-
-/*
-    Display message to user that more results are available than fit in the current display
-    @param {int}    availHeight available height of display
- */
-ZmAutocompleteListView.prototype._showMoreResultsText =
-function (availHeight){
-    //over load for implementation
-};
-
-
-ZmAutocompleteListView.prototype._addMouseDownListener =
-function() {
 	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, ZmAutocompleteListView._outsideMouseDownListener);
 	this.shell._setEventHdlrs([DwtEvent.ONMOUSEDOWN]);
 	this.shell.addListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
 };
 
-ZmAutocompleteListView.prototype._removeMouseDownListener =
+// Hides the list
+ZmAutocompleteListView.prototype._popdown = 
 function() {
+	this.setZIndex(Dwt.Z_HIDDEN);
+	this.setVisible(false);
+	ZmAutocompleteListView._activeAcList = null;
 	DwtEventManager.removeListener(DwtEvent.ONMOUSEDOWN, ZmAutocompleteListView._outsideMouseDownListener);
 	this.shell._setEventHdlrs([DwtEvent.ONMOUSEDOWN], true);
 	this.shell.removeListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
@@ -1114,14 +957,23 @@ function(id) {
 	if (!(rows && rows.length)) { return; }
 
 	var len = rows.length;
-
+	var idx = -1;
 	if (id == ZmAutocompleteListView.NEXT || id == ZmAutocompleteListView.PREV) {
-		id = this._getRowId(rows, id, len);
-		if (!id) { return; }
+		if (len <= 1) { return; }
+		for (var i = 0; i < len; i++) {
+			if (rows[i].id == this._selected) {
+				idx = i;
+				break;
+			}
+		}
+		var newIdx = (id == ZmAutocompleteListView.PREV) ? idx - 1 : idx + 1;
+		if (newIdx < 0 || newIdx >= len) { return; }
+		id = rows[newIdx].id;
 	}
+	DwtControl._scrollIntoView(rows[newIdx], this.getHtmlElement());
 
 	for (var i = 0; i < len; i++) {
-		var row = rows[i];
+		var row = rows[i]
 		var curStyle = row.className;
 		if (row.id == id) {
 			row.className = this._selClass;
@@ -1130,33 +982,10 @@ function(id) {
 		}
 	}
 
-	this._showLink(this._forgetLink, this._forgetText, this._selected, false);
-	this._showLink(this._forgetLink, this._forgetText, id, true);
-
-	this._showLink(this._expandLink, this._expandText, this._selected, false);
-	this._showLink(this._expandLink, this._expandText, id, true);
+	this._showForgetLink(this._selected, false);
+	this._showForgetLink(id, true);
 
 	this._selected = id;
-};
-
-ZmAutocompleteListView.prototype._getRowId =
-function(rows, id, len) {
-	if (len <= 1) { return; }
-
-	var idx = -1;
-	for (var i = 0; i < len; i++) {
-		if (rows[i].id == this._selected) {
-			idx = i;
-			break;
-		}
-	}
-	var newIdx = (id == ZmAutocompleteListView.PREV) ? idx - 1 : idx + 1;
-
-	if (!(newIdx < 0 || newIdx >= len)) {
-		DwtControl._scrollIntoView(rows[newIdx], this.getHtmlElement());
-		return rows[newIdx].id;
-	}
-	return null;
 };
 
 ZmAutocompleteListView.prototype._getRowHeight =
@@ -1172,8 +1001,6 @@ function() {
 	return this._rowHeight || 18;
 };
 
-
-
 // Miscellaneous
 
 // Clears the internal list of matches
@@ -1187,18 +1014,13 @@ function() {
 			table.deleteRow(i);
 		}
 	}
-	this._removeLinks(this._forgetText);
-	this._removeLinks(this._expandText);
-};
-
-ZmAutocompleteListView.prototype._removeLinks =
-function(textHash) {
-	if (!textHash) { return; }
-	var textIds = AjxUtil.values(textHash);
-	for (var i = 0, len = textIds.length; i < len; i++) {
-		var textId = textIds[i];
-		DwtControl.ALL_BY_ID[textId] = null;
-		delete DwtControl.ALL_BY_ID[textId];
+	if (this._rowForgetHash) {
+		var forgetTextIds = AjxUtil.values(this._rowForgetHash);
+		for (var i = 0, len = forgetTextIds.length; i < len; i++) {
+			var forgetTextId = forgetTextIds[i];
+			DwtControl.ALL_BY_ID[forgetTextId] = null;
+			delete DwtControl.ALL_BY_ID[forgetTextId];
+		}
 	}
 };
 
@@ -1222,6 +1044,18 @@ function(ev) {
 	return (new DwtPoint(loc.x, loc.y + height));
 };
 
+ZmAutocompleteListView.prototype._clearWaiting =
+function() {
+	if (this._waitingRow && this._waitingRow.parentNode) {
+		this._waitingRow.parentNode.removeChild(this._waitingRow);
+	}
+	this._waitingRow = null;
+	if (!this.size()) {
+		// hide if "waiting" row was only one
+		this.show(false);
+	}
+};
+
 ZmAutocompleteListView.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
@@ -1231,135 +1065,18 @@ function(ev) {
 };
 
 ZmAutocompleteListView.prototype._handleForgetLink =
-function(email, textId, rowId) {
+function(email, rowId) {
 	if (this._dataAPI.forget) {
-		this._dataAPI.forget(email, new AjxCallback(this, this._handleResponseForget, [email, rowId]));
+		this._dataAPI.forget(email, new AjxCallback(this, this._handleResponseForget, [rowId, email]));
 	}
 };
 
 ZmAutocompleteListView.prototype._handleResponseForget =
-function(email, rowId) {
+function(rowId, email) {
 	var row = document.getElementById(rowId);
 	if (row) {
 		row.parentNode.removeChild(row);
 		var msg = AjxMessageFormat.format(ZmMsg.forgetSummary, [email]);
 		appCtxt.setStatusMsg(msg);
 	}
-	appCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
-};
-
-/**
- * Displays a second popup list with the members of the given distribution list.
- *
- * @param {string}			email		address of a distribution list
- * @param {string}			textId		ID of link text
- * @param {string}			rowId		ID or list view row
- * @param {DwtMouseEvent}	ev			mouse event
- * @param {DwtPoint}		loc			location to popup at; default is right of parent ACLV
- */
-ZmAutocompleteListView.prototype.expandDL =
-function(email, textId, rowId, ev, loc) {
-
-	if (!this._dataAPI.expandDL) { return; }
-
-	var mlv = this._memberListView;
-	if (mlv && textId && this._curExpanded == textId) {
-		mlv.show(false, null, true);
-		this._curExpanded = null;
-		this._setExpandText(textId, false);
-	} else {
-		if (mlv && mlv.getVisible()) {
-			// expanding a DL while another one is showing
-			this._setExpandText(this._curExpanded, false);
-			mlv.show(false, null, true);
-		}
-		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-		var contact = contactsApp.getContactByEmail(email);
-		if (!contact) {
-			contact = new ZmContact(null);
-			contact.initFromEmail(email);
-			contactsApp.updateCache(contact, true);
-		}
-		contact.isDL = true;
-		if (textId) {
-			this._curExpanded = textId;
-			this._setExpandText(textId, true);
-		}
-		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact, loc]));
-	}
-};
-
-ZmAutocompleteListView.prototype._handleResponseExpandDL =
-function(contact, loc, matches) {
-
-	var mlv = this._memberListView;
-	if (!mlv) {
-		mlv = this._memberListView = new ZmDLAutocompleteListView({parent:appCtxt.getShell(), parentAclv:this});
-		mlv._element = this._element;
-	}
-	mlv._dlContact = contact;
-	mlv._removeAll();
-	mlv._set(matches, contact);
-
-	if (!loc) {
-		// default position is just to right of parent ac list
-		var loc = this.getLocation();
-		loc.x += this.getSize().x;
-	}
-	mlv.show(true, loc);
-	if (!mlv._rowHeight) {
-		var table = document.getElementById(mlv._tableId);
-		if (table) {
-			mlv._rowHeight = Dwt.getSize(table.rows[0]).y;
-		}
-	}
-};
-
-ZmAutocompleteListView.prototype._setExpandText =
-function(textId, expanded) {
-	var textCtrl = DwtControl.fromElementId(textId);
-	if (textCtrl) {
-		textCtrl.setText(expanded ? ZmMsg.collapse : ZmMsg.expand);
-	}
-};
-
-ZmAutocompleteListView.prototype._setCallbacks =
-function(type, params) {
-
-	var cbKey = type + "Callback";
-	var list = this._callbacks[type] = [];
-	if (params[cbKey]) {
-		list.push({callback:params[cbKey]});
-	}
-};
-
-/**
- * Adds a callback of the given type. In an input ID is provided, then the callback
- * will only be run if the event happened in that input.
- *
- * @param {constant}	type		autocomplete callback type (ZmAutocompleteListView.CB_*)
- * @param {AjxCallback}	callback	callback to add
- * @param {string}		inputId		DOM ID of an input element (optional)
- */
-ZmAutocompleteListView.prototype.addCallback =
-function(type, callback, inputId) {
-	this._callbacks[type].push({callback:callback, inputId:inputId});
-};
-
-ZmAutocompleteListView.prototype._runCallbacks =
-function(type, inputId, args) {
-
-	var result = null;
-	var list = this._callbacks[type];
-	if (list && list.length) {
-		for (var i = 0; i < list.length; i++) {
-			var cbObj = list[i];
-			if (inputId && cbObj.inputId && (inputId != cbObj.inputId)) { continue; }
-			var r = AjxCallback.prototype.run.apply(cbObj.callback, args);
-			if (r === true || r === false) {
-				result = (result == null) ? r : result && r;
-			}
-		}
-	}
-	return result;
 };

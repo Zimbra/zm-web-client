@@ -175,7 +175,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 <table width="100%" style="height:100%;">
     <tr>
         <td align="center" valign="middle">
-            <div id="ZLoginPanel">
+            <div id="ZloginPanel">
                 <table width="100%">
                     <tr>
                         <td>
@@ -194,10 +194,10 @@ if (application.getInitParameter("offlineMode") != null)  {
                         </td>
                     </tr>
                     <tr>
-                        <td id="ZLoginBodyContainer">
+                        <td id="ZloginBodyContainer">
                             <c:if test="${errorCode != null}">
                                 <!-- ${fn:escapeXml(error.stackStrace)} -->
-                                <div id="ZLoginErrorPanel">
+                                <div id="ZloginErrorPanel">
                                     <table width="100%">
                                         <tr>
                                             <td valign="top" width="40">
@@ -211,7 +211,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                 </div>
                             </c:if>
 
-                            <div id="ZLoginFormPanel">
+                            <div id="ZloginFormPanel">
                                 <form method="post" name="loginForm" action="${formActionUrl}">
                                     <input type="hidden" name="loginOp" value="login"/>
                                     <table width="100%" cellpadding="4">
@@ -306,12 +306,12 @@ if (application.getInitParameter("offlineMode") != null)  {
 			                                </td>
                                         </tr>
 										<tr>
-                                            <td id="ZLoginClientLevelContainer">
+                                            <td id="ZloginClientLevelContainer">
                                                 <fmt:message key="clientLoginNotice"/>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td id="ZLoginLicenseContainer">
+                                            <td id="ZloginLicenseContainer">
                                                 <fmt:message key="splashScreenCopyright"/>
                                             </td>
                                         </tr>

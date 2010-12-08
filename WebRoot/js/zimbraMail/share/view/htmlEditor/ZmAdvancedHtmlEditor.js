@@ -177,13 +177,7 @@ function(html, insertFontStyle, onlyInnerContent) {
 	}
 
 	var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
-
-    var isReopened = false;
-    if (this.parent && this.parent.getController()) {
-          isReopened = this.parent.getController()._msg && this.parent.getController()._msg.isDraft;
-    }
-
-	if (insertFontStyle && !isReopened) {
+	if (insertFontStyle) {
 		html = this._getFontStyle(html);
 	}
 	return [
@@ -423,12 +417,12 @@ function(content) {
 	this._pendingContent = content;
 };
 
-ZmAdvancedHtmlEditor.prototype.addOnContentInitializedListener =
+ZmAdvancedHtmlEditor.prototype.addOnContentIntializedListener =
 function(callback) {
 	this._onContentInitializeCallback = callback;
 };
 
-ZmAdvancedHtmlEditor.prototype.removeOnContentInitializedListener =
+ZmAdvancedHtmlEditor.prototype.removeOnContentIntializedListener =
 function() {
 	this._onContentInitializeCallback = null;
 };

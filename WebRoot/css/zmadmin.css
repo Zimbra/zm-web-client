@@ -534,8 +534,8 @@ input.admin_xform_name_input_disabled {
 
 .CenterGrouperBorder {
 	@FieldSet@
-    padding-top:7px;
-	padding-left:5px;	
+        padding-top:7px;
+	padding-left:5px;	/* ??? SIZE */
 	padding-right:10px;
 	padding-bottom:10px;
 	margin-left:3px;
@@ -544,9 +544,9 @@ input.admin_xform_name_input_disabled {
 
 .AllScreenGrouperBorder {
 	@FieldSet@
-    padding-top:7px;
-	padding-left:5px;	
-	padding-right:5px;
+        padding-top:7px;
+	padding-left:0px;	/* ??? SIZE */
+	padding-right:0px;
 	padding-bottom:10px;
 	margin-left:7px;
 	margin-right:7px;
@@ -612,7 +612,7 @@ input.admin_xform_name_input_disabled {
 	padding: 0px ;	
 }
 
-.ZaShowSavedSearchArrowButton .ZWidgetTable .ZLeftIcon DIV, .ZaShowSavedSearchArrowButton .ZWidgetTable .ZLeftIcon IMG {
+.ZaShowSavedSearchArrowButton .ZWidgetTable .ZLeftIcon div {
 	margin-left: 3px ;	
 }
 
@@ -731,22 +731,4 @@ div.ZaSearchBuilderOptionRemoveAll table  {
 .AdminTreeItem-hover {
 	@ImagePadding@
 	text-decoration: underline;
-}
-.AboutScreen {
-}
-.AboutScreen h1 {margin:22px 20px 32px 20px;}
-
-
-.AboutScreen .ImgLoginBanner, 
-.AboutScreen .ImgAppBanner {
-    cursor:pointer;
-    display:block;
-    background-repeat:no-repeat;
-}
-.AboutScreen .ImgAltBanner {
-    margin:20px 0px 0px 20px;
-    width:71px;
-    height:11px;
-    background-image:url("@LogoImgDir@/AltBanner.png");
-    background-repeat:repeat-x;
 }

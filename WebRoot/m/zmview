@@ -58,10 +58,6 @@
          <c:import url="/m/mofolders"/>
     </c:when>
 
-    <c:when test="${app eq 'moveto'}">
-         <c:import url="/m/momoveto"/>
-    </c:when>
-    
     <c:when test="${app eq 'tasks'}">
          <c:import url="/m/motasks"/>
     </c:when>

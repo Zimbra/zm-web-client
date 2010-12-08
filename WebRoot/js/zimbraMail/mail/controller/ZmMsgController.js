@@ -423,7 +423,7 @@ function(ev) {
         url += "&xim=1";
     }
     if (appCtxt.isOffline) {
-        var acctName = item.getAccount().name;
+        var acctName = items[0].getAccount().name;
         url+="&acct=" + acctName ;
     }
     window.open(appContextPath+url, "_blank");

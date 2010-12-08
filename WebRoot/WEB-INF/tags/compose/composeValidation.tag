@@ -99,12 +99,12 @@
     grabFieldValues(); 
 
     var checkForChanges;
-    checkForChanges = function() {
+    checkForChanges = function(){
         var _checkFail = false;
         var _el = _form.elements;
         for ( var _i=0;_i < _el.length; _i++){
             if(_el[_i].type == "text" || _el[_i].type == "textarea"){
-                if(_fields[_el[_i].name] != undefined && _fields[_el[_i].name] != _el[_i].value) { _checkFail = true; }
+                if(_fields[_el[_i].name] != undefined && _fields[_el[_i].name] != _el[_i].value) { _checkFail = true;}
             }
         }
     <c:if test="${(isHtml)}">
@@ -126,36 +126,9 @@
         if(_checkFail){
             return "<fmt:message key="composeExitConfirmation"/>"; //disabling this for new way of save/cancel handling
         }
-    };
-
-    /*
-      Clears the autoSave timeout before unloading the page, resets the timeout if the
-      user opts to cancel the confirmation dialog.
-    */
-    function onElementFocus()
-    {
-        timer = setTimeout(autoSaveTimer, AUTO_SAVE_DRAFT_INTERVAL*1000);
-        if (this.removeEventListener)
-                this.removeEventListener('focus',onElementFocus, false);
-        else if (this.detachEvent)
-                this.detachEvent('onfocus',onElementFocus);
     }
 
-    window.onbeforeunload = function(e) {
-        clearTimeout(timer);
-        if (!e) e = window.event;
-        var activeElement = e && e.target && e.target.activeElement || document.activeElement;
-        // If user opts to cancel the confirmation dialog, focus shifts to the last activeElement which triggered this activity.
-        // Register a onFocus handler which will trigger the timer for autosave, then remove the onfocus listener.
-        // Note that this handler will be invoked only if the confirmation dialog is cancelled.
-        if (activeElement) {
-            if (activeElement.addEventListener)
-                activeElement.addEventListener('focus',onElementFocus,false);
-            else if (activeElement.attachEvent)
-                activeElement.attachEvent('onfocus',onElementFocus);
-        }
-        return checkForChanges();
-    };
+    window.onbeforeunload = checkForChanges;
 
     /* Move the body caret to the top of the textarea */
     var bodyEl = document.getElementById('body');

@@ -39,9 +39,6 @@ ZmTask = function(list, id, folderId) {
 	this.status = ZmCalendarApp.STATUS_NEED;
     this.startDate = new Date();
     this.endDate = this.startDate;
-    this.remindDate = this.startDate;
-    this.alarm = false;
-	this._useAbsoluteReminder = true;
 };
 
 ZmTask.prototype = new ZmCalItem;
@@ -69,10 +66,7 @@ function(task) {
 	var newTask = new ZmTaskClone();
 	newTask.startDate = task.startDate ? (new Date(task.startDate.getTime())) : null;
 	newTask.endDate = task.endDate ? (new Date(task.endDate.getTime())) : null;
-    newTask._uniqId = Dwt.getNextId();
 
-    newTask._validAttachments = AjxUtil.createProxy(task._validAttachments);
-    
 	if (!newTask._orig)
 		newTask._orig = task;
 
@@ -289,8 +283,7 @@ function(node, instNode) {
 	if (node.invId) {
 		this.invId = node.invId;
 	} else if (inv) {
-		var remoteIndex = inv.id;
-        remoteIndex = remoteIndex.toString().indexOf(":");
+		var remoteIndex = inv.id.indexOf(":");
 		if (remoteIndex != -1) {
 			this.invId = this.id + "-" + inv.id.substring(remoteIndex+1);
 		} else {
@@ -312,25 +305,10 @@ function(node, instNode) {
 			this.endDate.setHours(0,0,0);
 		}
 	}
-
-    var dur = this._getAttr(node, comp, "dur");
-	if (dur) {
-		var startTime = this.endDate.getTime() - (parseInt(dur));
-		this.startDate = new Date(startTime);
-        this.uniqStartTime = this.startDate.getTime();
-	} else if(!node.dur && this.endDate) {
-        this.startDate = this.endDate;
-        this.uniqStartTime = this.startDate.getTime();
-    } else if(!node.dur && !this.endDate) { //bug: 47394 if no duration & enddate then startDate is null 
+    //bug: 47394 if no duration then startDate is null
+    if(!node.dur) {
         this.startDate = null;
     }
-
-    if(node.alarm) this.alarm = node.alarm;
-    if(node.alarmData) this.alarmData = this._getAttr(node, instNode, "alarmData");
-
-    this.allDayEvent	= (instNode ? instNode.allDay : null || node.allDay)  ? "1" : "0";
-
-    this.tzo = 0;
 
 	if (node.name || comp)				this.name		= this._getAttr(node, comp, "name");
 	if (node.loc || comp)				this.location	= this._getAttr(node, comp, "loc");
@@ -345,29 +323,6 @@ function(node, instNode) {
 
 	if (node.f)	this._parseFlags(node.f);
 	if (node.t)	this._parseTags(node.t);
-
-    this.type = ZmItem.TASK;
-};
-
-/**
- * Checks if alarm is in range (based on current time).
- *
- * @return	{Boolean}	<code>true</code> if the alarm is in range
- */
-ZmTask.prototype.isAlarmInRange =
-function() {
-	if (!this.alarmData) { return false; }
-
-	var alarmData = this.alarmData[0];
-
-	if (!alarmData) { return false; }
-
-    this._nextAlarmTime = this.adjustMS(alarmData.nextAlarm, 0);
-    this._alarmInstStart = this.adjustMS(alarmData.alarmInstStart, this.tzo);
-
-	var currentTime = (new Date()).getTime();
- 
-    return this._nextAlarmTime <= currentTime;
 };
 
 /**
@@ -385,32 +340,8 @@ function(node, comp, name) {
  */
 ZmTask.prototype._setExtrasFromMessage =
 function(message) {
-    ZmCalItem.prototype._setExtrasFromMessage.apply(this, arguments);
-
 	this.location = message.invite.getLocation();
 };
-
-/**
- * @private
- */
-ZmTask.prototype.parseAlarm =
-function(tmp) {
-	if (!tmp) { return; }
-
-	var d;
-	var trigger = (tmp) ? tmp.trigger : null;
-	var abs = (trigger && (trigger.length > 0)) ? trigger[0].abs : null;
-	d = (abs && (abs.length > 0)) ? abs[0].d : null;
-
-	this._reminderMinutes = 0;
-	if (tmp && (tmp.action == "DISPLAY")) {
-		if (d != null) {
-			this._reminderAbs = d;
-            this.remindDate = d ? AjxDateUtil.parseServerDateTime(d) : null;
-		}
-	}
-};
-
 
 /**
  * @private
@@ -461,12 +392,3 @@ ZmTask.prototype._getInviteFromError =
 function(result) {
 	return (result._data.GetTaskResponse.task[0].inv[0]);
 };
-
-/**
- * @private
- */
-ZmTask.prototype.setTaskReminder =
-function(absStr) {
-    this._reminderAbs = absStr;
-};
-

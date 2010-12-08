@@ -306,8 +306,8 @@ A:visited { color: blue; }
 /* IE Hack to prevent buttons creating spaces around the text */
 .IEbutton input{
 #IFDEF MSIE
-	width: 100%;
-	margin-left: 2px;
+	width: 10px;
+	overflow: visible;
 #ENDIF
 }
 
@@ -348,11 +348,9 @@ A:visited { color: blue; }
 
 .Unread {	font-weight:bold; }
 
-.RowSelected TD { @SelectedRow@ !important}
+.RowSelected TD { @SelectedBg@ }
 .RowMatched TD { background-color: @HilightColor@ }
-.ZhConvExpanded TD {
-	background-color:#eeeeff;
-}
+
 
 .Folder { padding-bottom: 2px;  }
 
@@ -463,14 +461,6 @@ A:visited { color: blue; }
 .MsgBody .zUrl {
 	@FontFamily-fixed@
 	@FontSize-big@
-}
-
-.MsgBody-html {
-	padding: 10px;
-}
-
-.MsgBody-html pre, .MsgBody-html pre * {
-	@WordWrapPRE@
 }
 
 .MsgCompose {
@@ -1360,8 +1350,3 @@ input[type="password"] {
 input[disabled] {
 		@InputField-disabled@
 	}
-
-/* bug 51085: Hack to fix the alignment issue of Preferences header*/
-.ImgPrefsHeader{
-    width: auto !important;
-}

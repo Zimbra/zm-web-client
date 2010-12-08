@@ -224,12 +224,6 @@ function(params)
         handleResponse = new AjxCallback(this, this.handleGetItemResponse,[params]);
     }
 
-    var parentAppCtxt = window.opener && window.opener.appCtxt;
-    if (parentAppCtxt && parentAppCtxt.multiAccounts) {
-        var acct = parentAppCtxt.getActiveAccount();
-        params.accountName = acct && acct.name;
-    }
-
     var reqParams = {
         soapDoc: soapDoc,
         asyncMode: asyncMode,
@@ -278,13 +272,6 @@ function(params,response)
         if (data.ver) item.version = Number(data.ver);
         if (data.ct) item.contentType = data.ct.split(";")[0];
         item.folderId = docResp.l || ZmOrganizer.ID_BRIEFCASE;
-        item.locked = false;
-        if (data.loid)    {
-            item.locked = true;
-            item.lockId = data.loid;
-            item.lockUser = data.loe;
-            item.lockTime = new Date(Number(data.lt));
-        }
     }
 
     if(callback){
@@ -321,50 +308,11 @@ ZmDocletMgr.prototype.checkInvalidDocName = function(fileName) {
     var message;
     fileName = fileName.replace(/^\s+/,"").replace(/\s+$/,"");
 
-    if(fileName == ""){
-        message = ZmMsg.emptyDocName;
-    }else if (!ZmOrganizer.VALID_NAME_RE.test(fileName) || ZmDocletMgr.INVALID_DOC_NAME_RE.test(fileName)) {
+    if (!ZmOrganizer.VALID_NAME_RE.test(fileName) || ZmDocletMgr.INVALID_DOC_NAME_RE.test(fileName)) {
         message = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName));
     } else if ( fileName.length > ZmOrganizer.MAX_NAME_LENGTH){
         message = AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
     }
 
     return message;
-};
-
-ZmDocletMgr.prototype.unlock =
-function(item, callback, errorCallback, accountName){
-
-    var json = {
-		ItemActionRequest: {
-			_jsns: "urn:zimbraMail",
-			action: {
-				id:	item.id,
-				op:	"unlock"
-			}
-		}
-	};
-
-	var params = {
-		jsonObj:		json,
-		asyncMode:		Boolean(callback),
-		callback:		callback,
-		errorCallback:	errorCallback,
-		accountName:	accountName
-	};
-	return this.sendRequest(params);
-
-};
-
-ZmDocletMgr.getEditURLForContentType =
-function(contentType) {
-	AjxDispatcher.require("Startup1_1");
-	var editPage = "Slides.jsp";
-	switch(contentType) {
-		case ZmMimeTable.APP_ZIMBRA_SLIDES:			editPage = "Slides.jsp"; break;
-		case ZmMimeTable.APP_ZIMBRA_SPREADSHEET:	editPage = "SpreadsheetDoc.jsp"; break;
-		case ZmMimeTable.APP_ZIMBRA_DOC:			editPage = "Docs.jsp"; break;
-		default: return null;
-	};
-	return (window.appContextPath + "/public/" + editPage);
 };

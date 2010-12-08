@@ -35,6 +35,10 @@
 ZmMailApp = function(container, parentController) {
 	ZmApp.call(this, ZmApp.MAIL, container, parentController);
 
+	this._sessionController		= {};
+	this._sessionId				= {};
+	this._curSessionId			= {};
+
 	this._dataSourceCollection	= {};
 	this._identityCollection	= {};
 	this._signatureCollection	= {};
@@ -169,8 +173,6 @@ function(settings) {
 	settings.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 	settings.registerSetting("MAIL_ATTACH_VIEW_ENABLED",		{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_BLACKLIST",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST});
-    settings.registerSetting("TRUSTED_ADDR_LIST",			    {name:"zimbraPrefMailTrustedSenderList", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
-	settings.registerSetting("TRUSTED_ADDR_LIST_MAX_NUM_ENTRIES",	{name:"zimbraMailTrustedSenderListMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
 	settings.registerSetting("MAIL_BLACKLIST_MAX_NUM_ENTRIES",	{name:"zimbraMailBlacklistMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
 	settings.registerSetting("MAIL_FOLDER_COLORS_ENABLED",		{name:"zimbraPrefFolderColorEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("MAIL_FORWARDING_ADDRESS",			{name:"zimbraPrefMailForwardingAddress", type:ZmSetting.T_PREF});
@@ -336,23 +338,8 @@ function() {
 			],
 			manageChanges: true,
 			createView: function(parent, section, controller) {
-				return controller.getFilterController(section).getFilterView();
+				return controller.getFilterRulesController().getFilterRulesView();
 			}
-		},
-        TRUSTED_ADDR: {
-            parentId: "MAIL",
-			title: ZmMsg.trustedAddrs,
-			icon: "AllowUser",
-			templateId: "prefs.Pages#Trusted",
-			priority: 60,
-			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
-			createView: function(parent, section, controller) {
-				return new ZmTrustedPage(parent, section, controller);
-			},
-            manageDirty: true,
-            prefs: [
-				    ZmSetting.TRUSTED_ADDR_LIST
-                ]
 		}
 	};
 
@@ -404,10 +391,6 @@ function() {
 	});
 
 	ZmPref.registerPref("MAIL_BLACKLIST", {
-		displayContainer:	ZmPref.TYPE_CUSTOM
-	});
-
-    ZmPref.registerPref("TRUSTED_ADDR_LIST", {
 		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 
@@ -768,8 +751,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_MESSAGE, {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage", shortcut:ZmKeyMap.NEW_MESSAGE});
 	ZmOperation.registerOp(ZmId.OP_NEW_MESSAGE_WIN, {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage", shortcut:ZmKeyMap.NEW_MESSAGE_WIN});
 	ZmOperation.registerOp(ZmId.OP_REMOVE_FILTER_RULE, {textKey:"filterRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_CAL_REPLY, {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply", shortcut:ZmKeyMap.REPLY});
-    ZmOperation.registerOp(ZmId.OP_CAL_REPLY_ALL, {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll", shortcut:ZmKeyMap.REPLY_ALL});
 	ZmOperation.registerOp(ZmId.OP_REPLY, {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply", shortcut:ZmKeyMap.REPLY, textPrecedence:50});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ALL, {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll", shortcut:ZmKeyMap.REPLY_ALL, textPrecedence:48});
@@ -782,12 +763,10 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_RESET, {textKey:"reset", image:"Refresh", tooltipKey: "refreshFilters"});
 	ZmOperation.registerOp(ZmId.OP_RUN_FILTER_RULE, {textKey:"filterRun", image:"SwitchFormat"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SAVE_DRAFT, {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder", shortcut:ZmKeyMap.SAVE}, ZmSetting.SAVE_DRAFT_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_SEND_MENU, {textKey:"send", tooltipKey:"sendTooltip", image:"Send"}, ZmSetting.SAVE_DRAFT_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_SEND_LATER, {textKey:"sendLater", tooltipKey:"sendLaterTooltip", image:"SendLater"}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHOW_BCC, {textKey:"showBcc"});
 	ZmOperation.registerOp(ZmId.OP_SHOW_ONLY_MAIL, {textKey:"showOnlyMail", image:"Conversation"}, ZmSetting.MIXED_VIEW_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHOW_ORIG, {textKey:"showOrig", image:"Message"});
-	ZmOperation.registerOp(ZmId.OP_SPAM, {textKey:"junkLabel", tooltipKey:"junkTooltip", image:"JunkMail", shortcut:ZmKeyMap.SPAM, textPrecedence:70}, ZmSetting.SPAM_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SPAM, {textKey:"junk", tooltipKey:"junkTooltip", image:"JunkMail", shortcut:ZmKeyMap.SPAM, textPrecedence:70}, ZmSetting.SPAM_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_USE_PREFIX, {textKey:"usePrefix"});
 };
 
@@ -1047,7 +1026,6 @@ function(notify) {
 		mods["c"] = newMods;
 		appCtxt.getRequestMgr()._handleModifies(mods);
 	}
-    appCtxt.setNotifyDebug("Handling NOTIFY: in ZmMailApp - End of Prenotify");
 };
 
 /**
@@ -1064,7 +1042,6 @@ function(notify) {
  */
 ZmMailApp.prototype.createNotify =
 function(creates, force) {
-    appCtxt.setNotifyDebug("Handling NOTIFY: In ZmMailAppcreateNotify");
 	if (!creates["m"] && !creates["c"] && !creates["link"]) { return; }
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
@@ -1177,8 +1154,7 @@ function(creates) {
 					: (msg.fragment || "");
 
 				var from = msg.getAddress(AjxEmailAddress.FROM);
-				var email = (from && from instanceof AjxEmailAddress) ? from.getName() || from.getAddress() :
-							(from && typeof from == "string") ? from : ZmMsg.unknown;
+				var email = from.getName() || from.getAddress();
 				var title = (appCtxt.accountList.size() > 1)
 					? AjxMessageFormat.format(ZmMsg.newMailWithAccount, [email, acct.getDisplayName()])
 					: AjxMessageFormat.format(ZmMsg.newMail, email);
@@ -1761,6 +1737,40 @@ function(type) {
 	return this._curSessionId[type];
 };
 
+ZmMailApp.prototype.getSessionController =
+function(type, controllerClass, sessionId) {
+
+	if (!this._sessionController[type]) {
+		this._sessionController[type] = {};
+		this._sessionId[type] = 1;
+	}
+
+	if (sessionId && this._sessionController[type][sessionId]) {
+		return this._sessionController[type][sessionId];
+	}
+
+	var controllers = this._sessionController[type];
+	var controller;
+	for (var id in controllers) {
+		if (controllers[id].inactive) {
+			controller = controllers[id];
+			break;
+		}
+	}
+
+	sessionId = controller ? controller.sessionId : this._sessionId[type]++;
+
+	if (!controller) {
+		var ctlrClass = eval(controllerClass);
+		controller = this._sessionController[type][sessionId] = new ctlrClass(this._container, this);
+	}
+	controller.setSessionId(type, sessionId);
+	this._curSessionId[type] = sessionId;
+	controller.inactive = false;
+
+	return controller;
+};
+
 ZmMailApp.prototype.getConfirmController =
 function(sessionId) {
 	return this.getSessionController(ZmId.VIEW_MAIL_CONFIRM, "ZmMailConfirmController", sessionId);
@@ -1978,7 +1988,6 @@ function() {
 
 	var settings = appCtxt.getSettings();
 	settings.getSetting(ZmSetting.VIEW_AS_HTML).addChangeListener(this._settingListener);
-	settings.getSetting(ZmSetting.TRUSTED_ADDR_LIST).addChangeListener(this._settingListener);
 	settings.addChangeListener(this._settingsListener);
 };
 
@@ -1994,7 +2003,7 @@ function(ev) {
 	var setting = ev.source;
 	var mlc = this.getMailListController();
 
-	if (mlc && (setting.id == ZmSetting.VIEW_AS_HTML || setting.id == ZmSetting.TRUSTED_ADDR_LIST)) {
+	if (mlc && setting.id == ZmSetting.VIEW_AS_HTML) {
 		var dpv = mlc._doublePaneView;
 		var msg = dpv ? dpv.getMsg() : null;
 		if (msg) {

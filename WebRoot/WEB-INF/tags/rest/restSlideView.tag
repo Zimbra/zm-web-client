@@ -21,7 +21,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <rest:handleError>
-    <zm:getItemInfoJSON var="fileInfoJSON" authtoken="${requestScope.zimbra_authToken}" id="${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}"/>
+    <zm:getItemInfoJSON var="fileInfoJSON" box="${mailbox}" id="${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}"/>
 <c:if test="${not empty param.dev and param.dev eq '1'}">
     <c:set var="mode" value="mjsf" scope="request"/>
     <c:set var="gzip" value="false" scope="request"/>
@@ -207,7 +207,6 @@
         window.fileInfo = {name: 'Untitled', folderId: ZmOrganizer.ID_BRIEFCASE, contentType: 'application/x-zimbra-slides'};
 
         var itemInfo = ${fileInfoJSON};
-        itemInfo = itemInfo.Body && itemInfo.Body.GetItemResponse;
 
         if(itemInfo && itemInfo.doc && (itemInfo.doc.length==1)) {
             var item = ZmDocletMgr.createItem(itemInfo);
