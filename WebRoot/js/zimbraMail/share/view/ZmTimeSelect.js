@@ -751,15 +751,13 @@ function() {
     //listeners
     var buttonListener = new AjxListener(this, this._timeButtonListener);
     var buttonId = this._htmlElId + "_timeSelectBtn";
-
     //create time select drop down button
     var timeSelectButton = this._timeSelectBtn = new DwtButton({parent:this});
     timeSelectButton.addDropDownSelectionListener(buttonListener);
 
     timeSelectButton.setData(Dwt.KEY_ID, buttonId);
-    if (AjxEnv.isIE) {
-        timeSelectButton.setSize("20");
-    }
+    timeSelectButton.setSize("20");
+    
     this._timeIndex = {};
     // create menu for button
     this._hoursSelectMenu = new DwtMenu({parent:timeSelectButton, style:DwtMenu.DROPDOWN_STYLE, layout:DwtMenu.LAYOUT_SCROLL, maxRows:ZmTimeInput.ROWS});
