@@ -586,14 +586,16 @@ function() {
 
 	// Make sure they are on the the same level
 	var sigSize = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
-	this._sigList.setSize(Dwt.CLEAR, sigSize.y);
+	if (sigSize && sigSize.y)
+		this._sigList.setSize(Dwt.CLEAR, sigSize.y);
 };
 
 ZmSignaturesPage.prototype._resetEditorSize =
 function() {
 	// Adjust Size of the HTML Editor
 	var size = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
-	this._sigEditor.setSize(Dwt.CLEAR, size.y);
+	if (size && size.y)
+		this._sigEditor.setSize(Dwt.CLEAR, size.y);
 };
 
 ZmSignaturesPage.prototype._setupCustom =
