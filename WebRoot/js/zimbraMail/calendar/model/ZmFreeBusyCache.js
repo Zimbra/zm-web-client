@@ -21,7 +21,7 @@ ZmFreeBusyCache = function(controller) {
 ZmFreeBusyCache.STATUS_UNKNOWN = 'n';
 ZmFreeBusyCache.STATUS_TENTATIVE = 't';
 ZmFreeBusyCache.STATUS_BUSY = 'b';
-ZmFreeBusyCache.STATUS_OUT = 'o';
+ZmFreeBusyCache.STATUS_OUT = 'u';
 ZmFreeBusyCache.STATUS_FREE = 'f';
 
 ZmFreeBusyCache.STATUS_WORKING_HOURS = 'f';
