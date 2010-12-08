@@ -28,7 +28,7 @@
  * @extends		ZmDialog
  */
 ZmNewTagDialog = function(parent, className) {
-	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.createNewTag});
+	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.createNewTag, id:"CreateTagDialog"});
 
 	this._setNameField(this._htmlElId+"_name");
 	this._setTagColorMenu();
