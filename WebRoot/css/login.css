@@ -145,6 +145,7 @@ FORM {
 .offline {
 	color: @darken(AppC,50)@;
 	text-align: center;
+    padding: 10px 0;  
 }
 
 .offline a:link, .offline a:visited {
@@ -217,16 +218,6 @@ FORM {
 	width:100%;
 	z-index:10;
 }
-
-.LoginScreen #ZLoginCopyRight {
-	bottom:5px;
-	font-size:11px;
-	position:absolute;
-	text-align:center;
-	width:100%;
-	z-index:10;
-}
-
 .LoginScreen #ZLoginNotice a {
 	color:#FFF;
 }
@@ -234,9 +225,13 @@ FORM {
 	float:right;
 }
 .LoginScreen .copyright {
-	color: @darken(AppC,50)@; 
+    bottom:5px;
 	font-size:11px;
-	margin:13px 0px 3px;
+	position:absolute;
+	text-align:center;
+	width:100%;
+	z-index:10;
+	color: @darken(AppC,50)@;
 	text-align:center;
 }
 .LoginScreen .center-small .copyright {
