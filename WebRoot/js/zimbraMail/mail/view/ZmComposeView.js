@@ -2086,6 +2086,8 @@ function(action, msg, extraBodyText) {
 		}
 	}
 
+	this._msgAttId = null; //clear it in case of switching from "as attachment" back to "include original message" or to "don't include original"
+
 	if (action == ZmOperation.REPLY_CANCEL) {
 	  	value += crlf + sigPre; 	
 	} else if (incOptions.what == ZmSetting.INC_NONE) {
