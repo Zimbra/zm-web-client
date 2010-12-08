@@ -399,7 +399,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 
 		<div id="ZLoginNotice"><fmt:message key="clientLoginNotice"/></div>
         <br/><br/>
-        <div id="ZLoginCopyRight" class="copyright"><fmt:message key="splashScreenCopyright"/></div>
+        <div class="copyright"><fmt:message key="splashScreenCopyright"/></div>
 
 	</div>                                 
 <script>
