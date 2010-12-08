@@ -260,7 +260,7 @@ function(parent, num) {
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 	parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared && !isRevision));
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
-    parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, ((isLocked ? isLockOwner : true) && isItemSelected && !isMixedSelected));
+    parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, (isItemSelected && !isMixedSelected));
 
     var firstItem = items && items[0];
     var isWebDoc = firstItem && !firstItem.isFolder && firstItem.isWebDoc();
