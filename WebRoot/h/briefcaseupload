@@ -33,9 +33,9 @@
                 <td class='TbBt'>
                     <table cellspacing=0 cellpadding=0 class='Tb'>
                         <tr>
-                            <app:button name="actionAttachDone" src="common/ImgCheck.gif" tooltip="done" text="done"/>
+                            <app:button name="actionAttachDone" src="common/ImgCheck.png" tooltip="done" text="done"/>
                             <td><div class='vertSep'></div></td>
-                            <app:button name="actionAttachCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                            <app:button name="actionAttachCancel" src="common/ImgCancel.png" tooltip="cancel" text="cancel"/>
                         </tr>
                     </table>
                 </td>
@@ -54,7 +54,7 @@
                 <td class='ZhAppContent'>
                         <table cellpadding=0 cellspacing=10 height=80% width=100% class='Compose'>
                             <tr>
-                                <td align='right'><app:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/></td>
+                                <td align='right'><app:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.png"/></td>
                                 <td colspan=2><b><fmt:message key="selectFilesToAttach"/></b></td>
                             </tr>
                             <c:forEach begin="1" end="10" var="current">

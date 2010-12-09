@@ -110,7 +110,7 @@
                                                 </td>
                                                 <td align="right">
                                                     <mo:calendarUrl var="monthUrl" view="month" timezone="${timezone}" rawdate="${currentDay}"/>
-                                                    <span  onclick="return zClickLink('closeZoom');"><a id='closeZoom' href="${fn:escapeXml(monthUrl)}"><app:img src="common/ImgClose.gif" alt="close"/></a></span>
+                                                    <span  onclick="return zClickLink('closeZoom');"><a id='closeZoom' href="${fn:escapeXml(monthUrl)}"><app:img src="common/ImgClose.png" alt="close"/></a></span>
                                                 </td>
                                             </tr>
                                         </table>

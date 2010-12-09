@@ -33,10 +33,10 @@
                         <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}" st="" sc=""/>
                         <zm:currentResultUrl var="delRedirectUrl" value="/h/search" context="${context}" />
                         <input type="hidden" value="${delRedirectUrl}" name="delRedirectUrl" />
-                        <a href="${fn:escapeXml(closeurl)}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.gif" alt="close"/> <span>&nbsp;${fn:escapeXml(context.backTo)}&nbsp;</span></a>
+                        <a href="${fn:escapeXml(closeurl)}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.png" alt="close"/> <span>&nbsp;${fn:escapeXml(context.backTo)}&nbsp;</span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
-                    <app:button id="${keys ? 'OPDELETE' :''}" name="actionDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT"/>
+                    <app:button id="${keys ? 'OPDELETE' :''}" name="actionDelete" src="startup/ImgDelete.png" text="actionDelete" tooltip="actionTrashTT"/>
                     <td><div class='vertSep'></div></td>
                     <td  nowrap valign="middle">
                         <select name="folderId"  onchange="zclick('SOPMOVE')">
@@ -66,11 +66,11 @@
                     <app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionMessageGoTT" text="actionGo" />
                     <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
                         <td><div class='vertSep'></div></td>
-                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.gif"/>
+                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
                     </c:if>
                     <c:if test="${context.isFolderSearch and context.folder.isSpam}">
                         <td><div class='vertSep'></div></td>
-                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.gif"/>
+                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.png"/>
                     </c:if>
                 </tr>
             </table>
@@ -78,18 +78,18 @@
         <td align="right">
             <c:if test="${context.hasPrevItem}">
                 <zm:prevItemUrl var="prevItemUrl" value="/h/search" action="view" cursor="${cursor}" context="${context}"/>
-                <a  <c:if test="${keys}">id="PREV_ITEM" </c:if> href="${fn:escapeXml(prevItemUrl)}"><app:img altkey="ALT_MSG_PREVIOUS_MESSAGE" src="startup/ImgLeftArrow.gif" border="0" alt="prev"/></a>
+                <a  <c:if test="${keys}">id="PREV_ITEM" </c:if> href="${fn:escapeXml(prevItemUrl)}"><app:img altkey="ALT_MSG_PREVIOUS_MESSAGE" src="startup/ImgLeftArrow.png" border="0" alt="prev"/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
-                <app:img disabled='true' src="startup/ImgLeftArrow.gif" border="0" alt="no prev"/>
+                <app:img disabled='true' src="startup/ImgLeftArrow.png" border="0" alt="no prev"/>
             </c:if>
             <span class='Paging'>${context.searchResult.offset+context.currentItemIndex+1}</span>
             <c:if test="${context.hasNextItem}">
                 <zm:nextItemUrl var="nextItemUrl" value="/h/search" action="view" cursor="${cursor}" context="${context}"/>
-                <a  <c:if test="${keys}">id="NEXT_ITEM" </c:if> href="${fn:escapeXml(nextItemUrl)}"><app:img altkey="ALT_MSG_NEXT_MESSAGE" src="startup/ImgRightArrow.gif" border="0" alt="next"/></a>
+                <a  <c:if test="${keys}">id="NEXT_ITEM" </c:if> href="${fn:escapeXml(nextItemUrl)}"><app:img altkey="ALT_MSG_NEXT_MESSAGE" src="startup/ImgRightArrow.png" border="0" alt="next"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
-                <app:img disabled='true' src="startup/ImgRightArrow.gif" border="0" alt="no next"/>
+                <app:img disabled='true' src="startup/ImgRightArrow.png" border="0" alt="no next"/>
             </c:if>
         </td>
     </tr>

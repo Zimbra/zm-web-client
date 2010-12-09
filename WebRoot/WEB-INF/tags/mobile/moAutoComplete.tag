@@ -79,9 +79,9 @@
 
             if (e) {
                 var imgsrc =
-                        t == 'gal' ? "<app:imgurl value='startup/ImgGALContact.gif' />"
-                                : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.gif' />"
-                                : "<app:imgurl value='contacts/ImgContact.gif' />" ;
+                        t == 'gal' ? "<app:imgurl value='startup/ImgGALContact.png' />"
+                                : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.png' />"
+                                : "<app:imgurl value='contacts/ImgContact.png' />" ;
                 return ["<div class='tbl'><div class='tr'><span class='td left'><img src='",imgsrc,"'><" + "/span><span class='td left'>",
                     zhDisplay(d ? d : e, query),
                     "</span></div></div>"].join("");

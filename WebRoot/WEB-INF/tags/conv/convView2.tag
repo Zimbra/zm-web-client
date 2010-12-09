@@ -75,7 +75,7 @@
                                                                          cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="" sc=""/>
                                                     <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != message.id)) ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                                         <td style='border:none' class='CB' nowrap><input <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
-                                                        <td style='border:none' class='MsgStatusImg' align=center><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'startup/ImgMsgStatusRead.gif' : hit.messageHit.statusImage}"/></td>
+                                                        <td style='border:none' class='MsgStatusImg' align=center><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'startup/ImgMsgStatusRead.png' : hit.messageHit.statusImage}"/></td>
                                                         <td style='border:none' nowrap><a href="${msgUrl}">${fn:escapeXml(hit.messageHit.displaySender)}</a></td>
                                                         <td style='border:none' class='Img' ><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                                         <td style='border:none' width=1% nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}</td>
@@ -122,7 +122,7 @@
                                             <table width=100% cellpadding=1 cellspacing=0>
                                                 <tr>
                                                     <td>
-                                                        <app:img src="startup/ImgConversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}</span>
+                                                        <app:img src="startup/ImgConversation.png"/> <span class='MsgHdrSub'>${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}</span>
                                                     </td>
                                                     <td align="right">
                                                         <span class='Tags'>
@@ -131,7 +131,7 @@
                                                                 <app:img src="${tag.miniImage}"/> <span>${fn:escapeXml(tag.name)}</span>
                                                             </c:forEach>
                                                             <c:if test="${mailbox.features.flagging and convSummary.flagged}">
-                                                                <app:img src="startup/ImgFlagRed.gif"/>
+                                                                <app:img src="startup/ImgFlagRed.png"/>
                                                             </c:if>
                                                         </span>
                                                     </td>

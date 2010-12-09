@@ -65,11 +65,11 @@
         <div id="conv${chit.id}" style="height:50px;" class="tr conv_lv_list_row list-row${chit.isUnread ? '-unread' : ''}">
             <c:if test="${chit.messageCount ge 2}">
                 <c:set value="Conv" var="class"/>
-                <%--<mo:img src="startup/ImgConversationView.gif" class="left-icon"/>--%>
+                <%--<mo:img src="startup/ImgConversationView.png" class="left-icon"/>--%>
             </c:if>
             <c:if test="${chit.messageCount lt 2}">
                 <c:set value="Msg${chit.isUnread ? '' : 'Gray'}" var="class"/>
-                <%--<mo:img src="mail/ImgEnvelope${chit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
+                <%--<mo:img src="mail/ImgEnvelope${chit.isUnread?'':'Gray'}.png" class="left-icon"/>--%>
             </c:if>
             <span class="td f" <c:if test="${ua.isiPad == true}" > style='width:10%;' onclick='return zCheckUnCheck(this);'</c:if>>
                 <c:set value=",${chit.id}," var="stringToCheck"/>
@@ -108,7 +108,7 @@
                 </a><br/>
                 <c:if test="${chit.isFlagged}">
                     <span class="SmlIcnHldr Flag">&nbsp;</span>
-                    <%--<mo:img src="startup/ImgFlagRed.gif" alt="flag"/>--%>
+                    <%--<mo:img src="startup/ImgFlagRed.png" alt="flag"/>--%>
                 </c:if>
                 <c:if test="${chit.hasTags}">
                 <mo:miniTagImage

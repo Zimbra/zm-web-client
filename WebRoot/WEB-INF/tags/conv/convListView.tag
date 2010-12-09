@@ -79,25 +79,25 @@
 			<tbody id="mess_list_tbody">
 			<tr class='Header'>
 				<th class='CB' nowrap='nowrap'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type="checkbox" name="allids"/></th>
-                <th class='Img' nowrap><app:img src="startup/ImgNodeCollapsed.gif"/></th>
+                <th class='Img' nowrap><app:img src="startup/ImgNodeCollapsed.png"/></th>
 				<c:if test="${mailbox.features.flagging}">
-					<th class='Img' nowrap='nowrap'><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
+					<th class='Img' nowrap='nowrap'><app:img src="startup/ImgFlagRed.png" altkey="ALT_FLAGGED"/></th>
 				</c:if>
 				<c:if test="${mailbox.features.mailPriority}">
-					<th class='ImgNarrow' nowrap='nowrap' width='12'><app:img src="startup/ImgPriorityHigh_list.gif" altkey="ALT_PRIORITY"/></th>
+					<th class='ImgNarrow' nowrap='nowrap' width='12'><app:img src="startup/ImgPriorityHigh_list.png" altkey="ALT_PRIORITY"/></th>
 				</c:if>
 				<c:if test="${mailbox.features.tagging}">
-					<th class='Img' nowrap><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/></th>
+					<th class='Img' nowrap><app:img src="startup/ImgTag.png" altkey="ALT_TAG_TAG"/></th>
 				</c:if>
-                <th class='Img' nowrap=""><app:img src="startup/ImgMsgStatus.gif"/></th>
+                <th class='Img' nowrap=""><app:img src="startup/ImgMsgStatus.png"/></th>
    				<th width="10%" nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/></th>
-				<th class='Img' nowrap width='20'><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/></th>
+				<th class='Img' nowrap width='20'><app:img src="startup/ImgAttachment.png" altkey="ALT_ATTACHMENT"/></th>
 				<th nowrap>
 					<zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
 					<a href="${fn:escapeXml(subjectSortUrl)}">
 						<fmt:message key="subject"/>
 					</a></th>
-				<th width="20" nowrap><app:img src="startup/ImgConversation.gif" altkey="ALT_CONVERSATION"/></th>
+				<th width="20" nowrap><app:img src="startup/ImgConversation.png" altkey="ALT_CONVERSATION"/></th>
 				<th nowrap width="5%">
 					<zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'dateDesc' or empty context.ss) ? 'dateAsc' : 'dateDesc'}"/>
 					<a href="${fn:escapeXml(dateSortUrl)}">
@@ -127,8 +127,8 @@
   						<td class='CB' nowrap><input  id="C${status.index}" type="checkbox" name="id" value="${convHit.id}"></td>
                         <td class='Img' nowrap>
                             <c:choose>
-                                <c:when test="${convHit.messageCount > 1 and param.action == 'offView' and hit.id eq param.cid}"><a href="${fn:escapeXml(collapseUrl)}" id="${aid}"><app:img src="startup/ImgNodeExpanded.gif"/></a></c:when>
-                                <c:when test="${convHit.messageCount > 1}"><a href="${fn:escapeXml(convUrl)}" id="${aid}"><app:img src="startup/ImgNodeCollapsed.gif"/></a></c:when>
+                                <c:when test="${convHit.messageCount > 1 and param.action == 'offView' and hit.id eq param.cid}"><a href="${fn:escapeXml(collapseUrl)}" id="${aid}"><app:img src="startup/ImgNodeExpanded.png"/></a></c:when>
+                                <c:when test="${convHit.messageCount > 1}"><a href="${fn:escapeXml(convUrl)}" id="${aid}"><app:img src="startup/ImgNodeCollapsed.png"/></a></c:when>
                             </c:choose>
                         </td>
                         <c:if test="${mailbox.features.flagging}">
@@ -185,7 +185,7 @@
                                 <c:if test="${mailbox.features.tagging}">
                                     <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                 </c:if>
-                                <td class='Img'><app:img src="${(hit.messageHit.isUnread and hit.id == msg.id) ? 'startup/ImgMsgStatusRead.gif' : hit.messageHit.statusImage}" altkey="${(hit.messageHit.isUnread and hit.id == msg.id) ? 'ALT_MSG_STATUS_READ' : hit.messageHit.statusImageAltKey}"/></td>
+                                <td class='Img'><app:img src="${(hit.messageHit.isUnread and hit.id == msg.id) ? 'startup/ImgMsgStatusRead.png' : hit.messageHit.statusImage}" altkey="${(hit.messageHit.isUnread and hit.id == msg.id) ? 'ALT_MSG_STATUS_READ' : hit.messageHit.statusImageAltKey}"/></td>
                                 <td nowrap width="10%">
                                     &nbsp;&nbsp;&nbsp;&nbsp;
                                     <c:set var="sender" value="${hit.messageHit.displaySender}"/>${fn:escapeXml(empty sender ? unknownSender : sender)}

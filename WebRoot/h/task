@@ -65,16 +65,16 @@
 
     <c:choose>
         <c:when test="${empty compose.inviteId}">
-            <c:set var="apptImage" value="tasks/ImgNewTask.gif"/>
+            <c:set var="apptImage" value="tasks/ImgNewTask.png"/>
             <c:set var="apptImageAlt" value="ALT_NEW_TASK"/>
             <fmt:message var="apptSubject" key="newTask"/>
             <c:set var="isNewAppt" value="${true}"/>
         </c:when>
         <c:otherwise>
-            <c:set var="apptImage" value="tasks/ImgTask.gif"/>
+            <c:set var="apptImage" value="tasks/ImgTask.png"/>
             <c:set var="apptImageAlt" value="ALT_EDIT_TASK"/>
             <c:set var="apptSubject" value="${compose.subject}"/>
-            <c:set var="closeImage" value="common/ImgClose.gif"/>
+            <c:set var="closeImage" value="common/ImgClose.png"/>
             <c:set var="isNewAppt" value="${false}"/>
         </c:otherwise>
     </c:choose>
@@ -95,7 +95,7 @@
                                 <table cellspacing="0" cellpadding="0" class='Tb'>
                                     <tr>
 	                                    <td>
-		                                    <a href="/h/search?st=task" ><app:img src="common/ImgCancel.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="close"/></span></a>
+		                                    <a href="/h/search?st=task" ><app:img src="common/ImgCancel.png" altkey="refresh"/><span>&nbsp;<fmt:message key="close"/></span></a>
 
 	                                    </td>
                                     </tr>
@@ -248,7 +248,7 @@
                                     <tr>
                                         <td align='right'>
                                             <c:if test="${firstAttachment}">
-                                                <app:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
+                                                <app:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.png"/>
                                                 <c:set var="firstAttachment" value="${false}"/>
                                             </c:if>
                                         </td>
@@ -268,7 +268,7 @@
                                     <tr class="CompOrigAtt" valign="middle">
                                         <td align='right'>
                                             <c:if test="${firstAttachment}">
-                                                <app:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
+                                                <app:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.png"/>
                                                 <c:set var="firstAttachment" value="${false}"/>
                                             </c:if>
                                         </td>

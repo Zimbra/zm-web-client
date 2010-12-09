@@ -171,7 +171,7 @@
                                             </c:forEach>
                                         </c:if> 
                                         <c:if test="${mailbox.features.flagging and message.isFlagged}">
-                                            <app:img altkey='ALT_FLAGGED' src="startup/ImgFlagRed.gif"/>
+                                            <app:img altkey='ALT_FLAGGED' src="startup/ImgFlagRed.png"/>
                                         </c:if>
                                     </td>
                                 </tr>
@@ -180,7 +180,7 @@
                                 <tr>
                                     <td nowrap align="right" class='MsgHdrAttAnchor'>
                                         <a href="#attachments${message.partName}">
-                                            <app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+                                            <app:img src="startup/ImgAttachment.png" altkey="ALT_ATTACHMENT"/>
                                             <fmt:message key="attachmentCount">
                                                 <fmt:param value="${message.numberOfAttachments}"/>
                                             </fmt:message>
@@ -212,7 +212,7 @@
                                 <c:if test="${showInviteReply}">
                                     <td style='padding: 0 2px 0 2px'>
                                         <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=accept">
-                                            <app:img src="common/ImgCheck.gif" alt="check"/>
+                                            <app:img src="common/ImgCheck.png" alt="check"/>
                                             &nbsp;
                                             <span><fmt:message key="replyAccept"/></span>
                                         </a>
@@ -220,7 +220,7 @@
                                     <td><div class='vertSep'></div></td>
                                     <td style='padding: 0 2px 0 2px'>
                                         <a <c:if test="${not isPart}">id="OPTENT"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=tentative">
-                                            <app:img src="common/ImgQuestionMark.gif" alt="tentative"/>
+                                            <app:img src="common/ImgQuestionMark.png" alt="tentative"/>
                                             &nbsp;
                                             <span><fmt:message key="replyTentative"/></span>
                                         </a>
@@ -228,7 +228,7 @@
                                     <td><div class='vertSep'></div></td>
                                     <td style='padding: 0 2px 0 2px'>
                                         <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=decline">
-                                            <app:img src="common/ImgCancel.gif" alt="decline"/>
+                                            <app:img src="common/ImgCancel.png" alt="decline"/>
                                             &nbsp;
                                             <span><fmt:message key="replyDecline"/></span>
                                         </a>
@@ -241,7 +241,7 @@
                                 </c:if>
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${fn:escapeXml(hurl)}&amp;op=reply">
-                                        <app:img src="startup/ImgReply.gif" altkey="reply"/>
+                                        <app:img src="startup/ImgReply.png" altkey="reply"/>
                                         &nbsp;
                                         <span><fmt:message key="reply"/></span>
                                     </a>
@@ -249,7 +249,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${fn:escapeXml(hurl)}&amp;op=replyAll">
-                                        <app:img src="startup/ImgReplyAll.gif" altkey="replyAll"/>
+                                        <app:img src="startup/ImgReplyAll.png" altkey="replyall"/>
                                         &nbsp;
                                         <span><fmt:message key="replyAll"/></span>
                                     </a>
@@ -257,7 +257,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${fn:escapeXml(hurl)}&amp;op=forward">
-                                        <app:img src="startup/ImgForward.gif" altkey="forward"/>
+                                        <app:img src="startup/ImgForward.png" altkey="forward"/>
                                         &nbsp;
                                         <span><fmt:message key="forward"/></span>
                                     </a>
@@ -266,7 +266,7 @@
                                 <td style='padding: 0 2px 0 2px'>
                                     <c:if test="${not empty newWindowUrl}">
                                     <a accesskey='10' target="_blank" href="/h/printmessage?id=${message.id}&amp;${not empty param.xim ? 'xim=':''}1">
-                                        <app:img src="startup/ImgPrint.gif" altkey="print" title="print"/>
+                                        <app:img src="startup/ImgPrint.png" altkey="print" title="print"/>
                                         &nbsp;
                                         <span><fmt:message key="print"/></span>
                                     </a>
@@ -290,7 +290,7 @@
                                             </c:if>
                                         </c:url>
                                         <a id="OPSHOWCONV" href="${fn:escapeXml(convUrl)}">
-                                            <app:img src="startup/ImgConversation.gif" altkey="showConversation" title="showConversation"/>
+                                            <app:img src="startup/ImgConversation.png" altkey="showConversation" title="showConversation"/>
                                         </a>
                                     </td>
                                 </c:if>
@@ -298,7 +298,7 @@
                                 <c:if test="${not empty newWindowUrl}">
                                 <td style='padding: 0 2px 0 2px'>
                                     <a id="OPNEWWIN" target="_blank" href="${fn:escapeXml(newWindowUrl)}">
-                                        <app:img src="startup/ImgOpenInNewWindow.gif" altkey="newWindow" title="newWindow"/>
+                                        <app:img src="startup/ImgOpenInNewWindow.png" altkey="newWindow" title="newWindow"/>
                                     </a>
                                 </td>
                                 </c:if>
@@ -306,7 +306,7 @@
                                 <c:if test="${not isPart}">
                                 <td style='padding: 0 2px 0 2px'>
                                     <a id="OPSHOWORIG" target="_blank" href="/service/home/~/?id=${message.id}&amp;auth=co">
-                                        <app:img src="startup/ImgMessage.gif" altkey="showOrig" title="showOrig"/>
+                                        <app:img src="startup/ImgMessage.png" altkey="showOrig" title="showOrig"/>
                                     </a>
                                 </td>
                                 </c:if>
@@ -332,7 +332,7 @@
     <c:if test="${shareAccepted}">
         <tr>
             <td width="1%" class='DisplayImages'>
-                <app:img src="dwt/ImgInformation.gif" alt="info"/>
+                <app:img src="dwt/ImgInformation.png" alt="info"/>
             </td>
             <td class='DisplayImages' colspan="1">
                 <fmt:message key="shareAlreadyAccepted"/>

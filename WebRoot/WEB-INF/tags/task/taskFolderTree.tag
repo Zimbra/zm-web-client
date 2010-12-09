@@ -33,7 +33,7 @@
                 <c:param name="st" value="task"/>
                  <c:param name="${expanded ? 'collapse' : 'expand'}" value="tasks"/>
              </c:url>
-             <th style='width:20px'><a href="${fn:escapeXml(toggleUrl)}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}"/></a></th>
+             <th style='width:20px'><a href="${fn:escapeXml(toggleUrl)}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.png' : 'startup/ImgNodeCollapsed.png'}"/></a></th>
             <th class='Header'><fmt:message key="tasks"/></th>
             <th nowrap="nowrap" align='right' class='ZhTreeEdit'>
                 <c:url value="/h/mtasks" var="mabUrl">

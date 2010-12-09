@@ -35,10 +35,10 @@
                         <%-- Create a URL pointing back, but without st or sc, because we may get here from a message view (using message->show conversation). If we try to get back to the inbox with st=conversation while we left it expecting "message", we'll be in trouble (unable to set "view by" back to "message" is one side effect) --%>
                         <zm:currentResultUrl var="delRedirectUrl" value="/h/search" context="${context}" />
                         <input type="hidden" value="${delRedirectUrl}" name="delRedirectUrl" />
-                        <a href="${fn:escapeXml(closeurl)}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.gif" alt="close"/> <span>&nbsp;${fn:escapeXml(context.backTo)}&nbsp;</span></a>
+                        <a href="${fn:escapeXml(closeurl)}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.png" alt="close"/> <span>&nbsp;${fn:escapeXml(context.backTo)}&nbsp;</span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
-                    <app:button id="${keys ? 'OPDELETE' :''}" name="actionDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT"/>
+                    <app:button id="${keys ? 'OPDELETE' :''}" name="actionDelete" src="startup/ImgDelete.png" text="actionDelete" tooltip="actionTrashTT"/>
                     <td><div class='vertSep'></div></td>
                     <c:if test="${!context.folder.isDrafts}">
                     <td  nowrap valign="middle">
@@ -78,49 +78,49 @@
                     <%--
                     <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
                         <td><div class='vertSep'></div></td>
-                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.gif"/>
+                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
                     </c:if>
                     <c:if test="${context.isFolderSearch and context.folder.isSpam}">
                         <td><div class='vertSep'></div></td>
-                        <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.gif"/>
+                        <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.png"/>
                     </c:if>
                     --%>
                     <td><div class='vertSep'></div>                    <input type="hidden" name="contextConvId" value="${convSearchResult.conversationSummary.id}"></td>
-                   <app:button id="${keys ? 'OPMARKALL' :''}" name="actionMarkConvRead" src="startup/ImgReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
+                   <app:button id="${keys ? 'OPMARKALL' :''}" name="actionMarkConvRead" src="startup/ImgReadMessage.png" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
                 </tr>
             </table>
         </td>
         <td nowrap align="right">
             <c:if test="${context.hasPrevItem}">
                 <zm:prevItemUrl var="prevItemUrl" value="" action="view" cursor="${convCursor}" context="${context}" css="${param.css}"/>
-                <a <c:if test="${keys}"> id="PREV_PAGE"</c:if> href="${fn:escapeXml(prevItemUrl)}"><app:img altkey="ALT_CONV_PREVIOUS_CONVERSATION" src="arrows/ImgLeftDoubleArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}"> id="PREV_PAGE"</c:if> href="${fn:escapeXml(prevItemUrl)}"><app:img altkey="ALT_CONV_PREVIOUS_CONVERSATION" src="arrows/ImgLeftDoubleArrow.png" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
-                <app:img altkey='ALT_CONV_NO_PREVIOUS_CONVERSATION' disabled='true' src="arrows/ImgLeftDoubleArrow.gif" border="0"/>
+                <app:img altkey='ALT_CONV_NO_PREVIOUS_CONVERSATION' disabled='true' src="arrows/ImgLeftDoubleArrow.png" border="0"/>
             </c:if>
             <c:if test="${convSearchResult.hasPrevPage}">
                 <zm:currentResultUrl var="prevPageUrl" value=""  action="view" context="${context}"
                                      cso="${convSearchResult.prevOffset}" css="${param.css}"/>
-                <a <c:if test="${keys}">id="PREV_CONV_PAGE"</c:if> href="${fn:escapeXml(prevPageUrl)}"><app:img altkey="ALT_CONV_PREVIOUS_PAGE_IN_CONVERSATION" src="startup/ImgLeftArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}">id="PREV_CONV_PAGE"</c:if> href="${fn:escapeXml(prevPageUrl)}"><app:img altkey="ALT_CONV_PREVIOUS_PAGE_IN_CONVERSATION" src="startup/ImgLeftArrow.png" border="0"/></a>
             </c:if>
             <c:if test="${!convSearchResult.hasPrevPage}">
-                <app:img altkey='ALT_CONV_NO_PREVIOUS_PAGE_IN_CONVERSATION' disabled='true' src="startup/ImgLeftArrow.gif" border="0"/>
+                <app:img altkey='ALT_CONV_NO_PREVIOUS_PAGE_IN_CONVERSATION' disabled='true' src="startup/ImgLeftArrow.png" border="0"/>
             </c:if>
             <app:searchPageOffset searchResult="${convSearchResult}" max="${convSearchResult.conversationSummary.messageCount}"/>
             <c:if test="${convSearchResult.hasNextPage}">
                 <zm:currentResultUrl var="nextPageUrl" value=""  action="view" context="${context}"
                                      cso="${convSearchResult.nextOffset}" css="${param.css}"/>
-                <a <c:if test="${keys}"> id="NEXT_CONV_PAGE"</c:if> href="${fn:escapeXml(nextPageUrl)}"><app:img altkey="ALT_CONV_NEXT_PAGE_IN_CONVERSATION" src="startup/ImgRightArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}"> id="NEXT_CONV_PAGE"</c:if> href="${fn:escapeXml(nextPageUrl)}"><app:img altkey="ALT_CONV_NEXT_PAGE_IN_CONVERSATION" src="startup/ImgRightArrow.png" border="0"/></a>
             </c:if>
             <c:if test="${!convSearchResult.hasNextPage}">
-                <app:img altkey='ALT_CONV_NO_NEXT_PAGE_IN_CONVERSATION' disabled='true' src="startup/ImgRightArrow.gif" border="0"/>
+                <app:img altkey='ALT_CONV_NO_NEXT_PAGE_IN_CONVERSATION' disabled='true' src="startup/ImgRightArrow.png" border="0"/>
             </c:if>
             <c:if test="${context.hasNextItem}">
                 <zm:nextItemUrl var="nextItemUrl" value="" action="view" cursor="${convCursor}" context="${context}" css="${param.css}"/>
-                <a <c:if test="${keys}"> id="NEXT_PAGE"</c:if> href="${fn:escapeXml(nextItemUrl)}"><app:img  altkey="ALT_CONV_NEXT_CONVERSATION" src="arrows/ImgRightDoubleArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}"> id="NEXT_PAGE"</c:if> href="${fn:escapeXml(nextItemUrl)}"><app:img  altkey="ALT_CONV_NEXT_CONVERSATION" src="arrows/ImgRightDoubleArrow.png" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
-                <app:img altkey='ALT_CONV_NO_NEXT_CONVERSATION' disabled='true' src="arrows/ImgRightDoubleArrow.gif" border="0"/>
+                <app:img altkey='ALT_CONV_NO_NEXT_CONVERSATION' disabled='true' src="arrows/ImgRightDoubleArrow.png" border="0"/>
             </c:if>
         </td>
     </tr>

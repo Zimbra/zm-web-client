@@ -42,7 +42,7 @@
                 <td nowrap>&nbsp;</td>
                 <td nowrap>
                     <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                    <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
+                    <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.png" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
                 </td>
                 <td nowrap>&nbsp;</td>
                 <td><div class='vertSep'></div></td>
@@ -51,10 +51,10 @@
                     <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
                     <c:choose>
                     <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                        <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT" />
+                        <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" src="startup/ImgDelete.png" text="actionDelete" tooltip="actionTrashTT" />
                     </c:when>
                     <c:otherwise>
-                        <app:button id="${keys ? 'OPDELETE' : ''}" name="actionDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT"/>
+                        <app:button id="${keys ? 'OPDELETE' : ''}" name="actionDelete" src="startup/ImgDelete.png" text="actionDelete" tooltip="actionTrashTT"/>
                     </c:otherwise>
                     </c:choose>
                 </td>
@@ -78,9 +78,9 @@
                             <tr class='Header'>
                                 <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                 <c:if test="${mailbox.features.tagging}">
-                                    <th class='Img' nowrap><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/>
+                                    <th class='Img' nowrap><app:img src="startup/ImgTag.png" altkey="ALT_TAG_TAG"/>
                                 </c:if>
-                                <th class='Img' nowrap><app:img src="common/ImgGlobe.gif" altkey="ALT_TAG_TAG"/>
+                                <th class='Img' nowrap><app:img src="common/ImgGlobe.png" altkey="ALT_TAG_TAG"/>
                                 <th nowrap>
                                     <zm:newSortUrl var="nameSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
                                 <a href="${fn:escapeXml(nameSortUrl)}">

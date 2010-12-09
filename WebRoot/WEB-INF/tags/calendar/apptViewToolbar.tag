@@ -30,16 +30,16 @@
                 <tr>
                     <td nowrap>
                         <app:calendarUrl var="closeurl" />
-                        <a id="OPCLOSE" href="${fn:escapeXml(closeurl)}" <c:if test="${keys}"></c:if>> <app:img src="common/ImgClose.gif" alt="close"/> <span>&nbsp;<fmt:message key="close"/></span></a>
+                        <a id="OPCLOSE" href="${fn:escapeXml(closeurl)}" <c:if test="${keys}"></c:if>> <app:img src="common/ImgClose.png" alt="close"/> <span>&nbsp;<fmt:message key="close"/></span></a>
                     </td>
                     <c:if test="${not isReadOnly}">
                     <td><div class='vertSep'></div></td>
                     <c:choose>
                     <c:when test="${isInstance}">
-                        <app:button name="actionApptDelete" src="startup/ImgDelete.gif" tooltip="actionApptDeleteInstTT" text="deleteInst"/>
+                        <app:button name="actionApptDelete" src="startup/ImgDelete.png" tooltip="actionApptDeleteInstTT" text="deleteInst"/>
                     </c:when>
                     <c:otherwise>
-                        <app:button name="actionApptDelete" src="startup/ImgDelete.gif" tooltip="actionApptDeleteTT" text="delete"/>
+                        <app:button name="actionApptDelete" src="startup/ImgDelete.png" tooltip="actionApptDeleteTT" text="delete"/>
                     </c:otherwise>
                     </c:choose>
 

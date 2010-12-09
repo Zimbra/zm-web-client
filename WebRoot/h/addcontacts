@@ -50,11 +50,11 @@
             <td class='TbBt'>
                 <table cellspacing=0 cellpadding=0 class='Tb'>
                     <tr>
-                        <app:button name="actionContactDone" src="common/ImgCheck.gif" tooltip="done" text="done"/>
+                        <app:button name="actionContactDone" src="common/ImgCheck.png" tooltip="done" text="done"/>
                         <td><div class='vertSep'></div></td>
-                        <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
+                        <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.png" tooltip="addSelected" text="addSelected"/>
                         <td><div class='vertSep'></div></td>
-                        <app:button name="actionContactCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                        <app:button name="actionContactCancel" src="common/ImgCancel.png" tooltip="cancel" text="cancel"/>
                     </tr>
                 </table>
             </td>

@@ -62,17 +62,17 @@
 			</th>
 				<c:if test="${mailbox.features.flagging}">
 			<th class='Img' nowrap='nowrap'>
-				<app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
+				<app:img src="startup/ImgFlagRed.png" altkey="ALT_FLAGGED"/>
 			</th>
 				</c:if>
 			<c:if test="${mailbox.features.mailPriority}">
 			<th class='ImgNarrow' nowrap='nowrap' width='12'>
-				<app:img src="startup/ImgPriorityHigh_list.gif" altkey="ALT_PRIORITY"/>
+				<app:img src="startup/ImgPriorityHigh_list.png" altkey="ALT_PRIORITY"/>
 			</th>
 			</c:if>
 			<c:if test="${mailbox.features.tagging}">
 			<th class='Img' nowrap='nowrap'>
-				<app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/>
+				<app:img src="startup/ImgTag.png" altkey="ALT_TAG_TAG"/>
 			</th>
 			</c:if>
 			<th class='MsgStatusImg' nowrap='nowrap'>&nbsp;</th>
@@ -83,7 +83,7 @@
 				</a>
 			</th>
 			<th class='Img' nowrap='nowrap' width='20'>
-				<app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+				<app:img src="startup/ImgAttachment.png" altkey="ALT_ATTACHMENT"/>
 			</th>
 			<th nowrap>
 					<zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>

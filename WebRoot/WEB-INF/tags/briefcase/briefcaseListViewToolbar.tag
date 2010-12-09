@@ -30,20 +30,20 @@
                 <tr>
                     <td nowrap>
                         <zm:currentResultUrl var="refreshUrl" value="/h/search?view=${param.view}" context="${context}" refresh="true" />
-                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
+                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.png" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
                     <td>
                         <zm:currentResultUrl var="newUploadUrl" value="" context="${context}" action="newbrief"/>
-                        <a <c:if test="${keys}">id="NEW_UPLOAD" </c:if>href="${fn:escapeXml(newUploadUrl)}&lbfums="><app:img altkey="uploadNewFile" src="startup/ImgAttachment.gif"/><span>&nbsp;<fmt:message key="uploadNewFile"/></span></a>
+                        <a <c:if test="${keys}">id="NEW_UPLOAD" </c:if>href="${fn:escapeXml(newUploadUrl)}&lbfums="><app:img altkey="uploadNewFile" src="startup/ImgAttachment.png"/><span>&nbsp;<fmt:message key="uploadNewFile"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
                     <c:choose>
                         <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT" />
+                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" src="startup/ImgDelete.png" text="actionDelete" tooltip="actionTrashTT" />
                         </c:when>
                         <c:otherwise>
-                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT"/>
+                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionDelete" src="startup/ImgDelete.png" text="actionDelete" tooltip="actionTrashTT"/>
                         </c:otherwise>
                     </c:choose>
                     <td><div class='vertSep'></div></td>

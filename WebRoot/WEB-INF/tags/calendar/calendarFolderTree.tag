@@ -33,7 +33,7 @@
                 <%--TODO: add context (date, view, etc) --%>
                  <c:param name="${expanded ? 'collapse' : 'expand'}" value="calendars"/>
              </c:url>
-             <th style='width:20px'><a href="${fn:escapeXml(toggleUrl)}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}"/></a></th>
+             <th style='width:20px'><a href="${fn:escapeXml(toggleUrl)}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.png' : 'startup/ImgNodeCollapsed.png'}"/></a></th>
             <th class='Header'><fmt:message key="calendars"/></th>
             <th nowrap="nowrap" align='right' class='ZhTreeEdit'>
                 <c:url value="/h/mcalendars" var="mabUrl"/>

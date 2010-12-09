@@ -234,7 +234,7 @@ var kU = function(e,f,c){ // On key up, do this operations
                             for(var i=0, len = (acR !== undefined) ? acR.length : 0; i < len; i++){
                                 var t = acR[i].type;
                                 var e = acR[i].email.replace(/[']/g,"\"").replace(/&/g, "&amp;").replace(/[<]/g, "&lt;").replace(/>/g, "&gt;");
-                                var imgsrc = t == 'gal' ? "<app:imgurl value='startup/ImgGALContact.gif' />" : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.gif' />" : "<app:imgurl value='contacts/ImgContact.gif' />";
+                                var imgsrc = t == 'gal' ? "<app:imgurl value='startup/ImgGALContact.png' />" : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.png' />" : "<app:imgurl value='contacts/ImgContact.png' />";
                                 htm = htm+"<li id='cn_"+i+"' onclick=\"return sAC(\'"+val+"\',\'"+f.id+"\',\'"+escape(e)+"\',\'"+c.id+"\',\'"+si+"\');\" class='"+((i==0)?'yui-ac-highlight':'')+"'><div class='tbl'><div class='tr'><span class='td left'><img src='"+imgsrc+"'></span><span class='td left'><span class='ZhACB' id='em_"+i+"'>"+e+"</span></span></div></div></li>";
                             }
                             if(htm.length > 0 && acR.length > 0){

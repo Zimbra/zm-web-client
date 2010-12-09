@@ -298,8 +298,9 @@ if (application.getInitParameter("offlineMode") != null)  {
 				    <!-- ${fn:escapeXml(error.stackStrace)} -->
 				    <div id="ZLoginErrorPanel">
 				        <table><tr>
-                            <td><img id="ZLoginErrorIcon" alt='<fmt:message key="ALT_ERROR"/>'
-                                src="<app:imgurl value='dwt/ImgCritical_32.gif'/>"/></td>
+                            <td><app:img id="ZLoginErrorIcon" src="dwt/ImgCritical_32.png">
+                                    <jsp:attribute name="alt"><fmt:message key="ALT_ERROR"/></jsp:attribute>
+                                </app:img></td>
                             <td><c:out value="${errorMessage}"/></td>
                         </tr></table>
 				    </div>

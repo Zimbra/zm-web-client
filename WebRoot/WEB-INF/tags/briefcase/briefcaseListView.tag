@@ -52,9 +52,9 @@
                             <tr class='Header'>
                                 <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                 <c:if test="${mailbox.features.tagging}">
-                                    <th class='Img' nowrap><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/>
+                                    <th class='Img' nowrap><app:img src="startup/ImgTag.png" altkey="ALT_TAG_TAG"/>
                                 </c:if>
-                                <th class='Img' nowrap><app:img src="common/ImgGlobe.gif" altkey="ALT_TAG_TAG"/>
+                                <th class='Img' nowrap><app:img src="common/ImgGlobe.png" altkey="ALT_TAG_TAG"/>
                                 <th nowrap>
                                     <zm:newSortUrl var="nameSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
                                 <a href="${fn:escapeXml(nameSortUrl)}">

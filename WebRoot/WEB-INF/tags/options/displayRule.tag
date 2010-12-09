@@ -25,7 +25,7 @@
     <td class='ZhBottomSep'>
         <table width="100%" cellspacing="0" cellpadding="0">
     <tr class='contactHeaderRow'>
-        <td width="20"><center><app:img src="mail/ImgMailRule.gif" altkey="filterRule"/></center></td>
+        <td width="20"><center><app:img src="mail/ImgMailRule.png" altkey="filterRule"/></center></td>
         <td class='contactHeader'>${fn:escapeXml(rule.name)}</td>
     </tr>
 </table>

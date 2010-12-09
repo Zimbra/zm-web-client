@@ -58,13 +58,13 @@
                                     <tr>
                                         <td>
                                             <a id="OPCLOSE" href="<c:url value="/h/search?st=briefcase"/>">
-                                                <app:img src="common/ImgClose.gif" alt="close"/><span style='padding-left:5px'><fmt:message key="close"/></span>
+                                                <app:img src="common/ImgClose.png" alt="close"/><span style='padding-left:5px'><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWCAL" name="actionNewBriefcaseFolder" src="startup/ImgFolder.gif" tooltip="briefcaseNew" text="briefcaseNew"/>
+                                        <app:button id="OPNEWCAL" name="actionNewBriefcaseFolder" src="startup/ImgFolder.png" tooltip="briefcaseNew" text="briefcaseNew"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWLINK" name="actionNewSharedBriefcase" src="tasks/ImgNewTaskList.gif" tooltip="briefcaseNewShared" text="briefcaseNewShared"/>
+                                        <app:button id="OPNEWLINK" name="actionNewSharedBriefcase" src="tasks/ImgNewTaskList.png" tooltip="briefcaseNewShared" text="briefcaseNewShared"/>
                                     </tr>
                                 </table>
                             </td>

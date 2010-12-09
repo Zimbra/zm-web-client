@@ -38,7 +38,7 @@
         <h1>${zm:getVoiceFolderName(pageContext, context.folder)}</h1>
         <table class='ZhCallListPrintTable' cellpadding=2 cellspacing=0 width="80%" >
             <tr class='Header'>
-                <th width="40"><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/></th>
+                <th width="40"><app:img src="tasks/ImgTaskHigh.png" altkey="ALT_PRIORITY"/></th>
                 <th width="33%"><fmt:message key="${useTo ? 'to' : 'from'}"/>
                 <th width="33%"><fmt:message key="duration"/></th>
                 <th width="33%"><fmt:message key="received"/></th>
@@ -50,7 +50,7 @@
                 <td nowrap>
 					<c:choose>
 						<c:when test="${hit.voiceMailItemHit.isFlagged}">
-							<app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/>
+							<app:img src="tasks/ImgTaskHigh.png" altkey="ALT_PRIORITY"/>
 						</c:when>
 						<c:otherwise>
 							&nbsp;

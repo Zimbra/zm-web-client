@@ -22,5 +22,5 @@
 <c:set var="tags" value="${zm:getTags(pageContext, ids)}"/>
 <c:set var="tagNames" value="${fn:escapeXml(zm:getTagNames(pageContext, ids))}"/>
 <c:if test="${fn:length(tags) eq 1}"><c:set var="class" value="${tags[0].color}"/><%-- <mo:img src="${tags[0].miniImage}" alt="${fn:escapeXml(tags[0].name)}"/>--%></c:if>
-<c:if test="${fn:length(tags) gt 1}"><c:set var="class" value="Stack"/><%--<mo:img src="startup/ImgTagStack.gif" alt="tags"/>--%></c:if>
+<c:if test="${fn:length(tags) gt 1}"><c:set var="class" value="Stack"/><%--<mo:img src="startup/ImgTagStack.png" alt="tags"/>--%></c:if>
 <span class="SmlIcnHldr Tag${class}">&nbsp;</span>

@@ -49,7 +49,7 @@
 							<table width=100% cellpadding=2 cellspacing=0>
 								<tr class='Header'>
 									<th nowrap><input id="CHALL" onClick="checkAll(document.zform.voiceId,this)" type=checkbox name="allids"/></th>
-									<th nowrap><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/></th>
+									<th nowrap><app:img src="tasks/ImgTaskHigh.png" altkey="ALT_PRIORITY"/></th>
 									<th width='40%' nowrap><fmt:message key="from"/></th>
 									<th nowrap><fmt:message key="message"/></th>
 									<th nowrap>
@@ -72,7 +72,7 @@
 									<td class='Img' nowrap>
 										<c:choose>
 											<c:when test="${hit.voiceMailItemHit.isFlagged}">
-												<app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/>
+												<app:img src="tasks/ImgTaskHigh.png" altkey="ALT_PRIORITY"/>
 											</c:when>
 											<c:otherwise>&nbsp;</c:otherwise>
 										</c:choose>
@@ -87,7 +87,7 @@
 												<c:param name="phone" value="${phone}"/>
 												<c:param name="voiceId" value="${hit.voiceMailItemHit.serialize}"/>
 											</c:url>
-											<td nowrap><a id="A${status.index}" href="${url}"><app:img src="voicemail/ImgPlayMessage.gif" altkey="ALT_FLAGGED"/><u><fmt:message key="listen"/></u></a></td>
+											<td nowrap><a id="A${status.index}" href="${url}"><app:img src="voicemail/ImgPlayMessage.png" altkey="ALT_FLAGGED"/><u><fmt:message key="listen"/></u></a></td>
 										</c:when>
 										<c:otherwise>
 											<td nowrap>&nbsp;</td>

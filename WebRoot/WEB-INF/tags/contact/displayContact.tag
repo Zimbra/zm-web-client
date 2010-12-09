@@ -28,7 +28,7 @@
     <td class='ZhBottomSep'>
         <table width="100%" cellspacing="0" cellpadding="0">
             <tr class='${not empty folder ? folder.styleColor : 'Gray'}Bg'>
-        <td width="20"><center><app:img src="${contact.isGroup ? 'contacts/ImgGroup.gif' : 'contacts/ImgContact.gif'}" altkey="${contact.imageAltKey}"/></center></td>
+        <td width="20"><center><app:img src="${contact.isGroup ? 'contacts/ImgGroup.png' : 'contacts/ImgContact.png'}" altkey="${contact.imageAltKey}"/></center></td>
         <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : (contact.isGalContact ? contact.fullName : contact.displayFileAs))} <c:if test="${contact.isGalContact}"> (${fn:escapeXml(contact.displayFileAs)}) </c:if>
         </td>
         <td align='right' class='Tags'>
@@ -75,7 +75,7 @@
 <c:if test="${contact.isGroup}">
     <c:forEach var="member" items="${contact.groupMembers}">
         <tr>
-            <td width='20px'><app:img altkey='ALT_CONTACT_GROUP_EMAIL' src="startup/ImgMessage.gif"/></td>
+            <td width='20px'><app:img altkey='ALT_CONTACT_GROUP_EMAIL' src="startup/ImgMessage.png"/></td>
             <td><nobr>${fn:escapeXml(member)}</nobr></td>            
         </tr>
     </c:forEach>

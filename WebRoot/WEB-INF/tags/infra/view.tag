@@ -419,13 +419,13 @@
 																	<table cellspacing=0 cellpadding=0 class='Tb'>
 																	<tr>
 																	<c:if test="${selected != 'contacts' and selected != 'calendar' and mailbox.features.mail}">
-																		<app:button name="actionNewFolder" src="startup/ImgNewFolder.gif" tooltip="folderNew" text="folderNew"/>
+																		<app:button name="actionNewFolder" src="startup/ImgNewFolder.png" tooltip="folderNew" text="folderNew"/>
 																	</c:if>
 																	<c:if test="${selected eq 'contacts' and mailbox.features.newAddrBookEnabled}">
-																		<app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
+																		<app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/ImgNewContact.png" tooltip="addressBookNew" text="addressBookNew"/>
 																	</c:if>
 																	<c:if test="${selected eq 'calendar'}">
-																		<app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/ImgNewAppointment.gif" tooltip="calendarNew" text="calendarNew"/>
+																		<app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/ImgNewAppointment.png" tooltip="calendarNew" text="calendarNew"/>
 																	</c:if>
 																	</tr>
 																</table>
@@ -716,13 +716,13 @@
 							</td>
 						</c:if>
 						<td align="left" class="ZhAppLinks">
-							<a target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><app:img altkey="ALT_APP_LINK_HELP" src="startup/ImgHelp.gif"  border="0"/>&nbsp;<fmt:message key="help"/></a>
+							<a target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><app:img altkey="ALT_APP_LINK_HELP" src="startup/ImgHelp.png"  border="0"/>&nbsp;<fmt:message key="help"/></a>
 						</td>
 						<td>
 							&nbsp;
 						</td>
 						<td align="right" class="ZhAppLinks">
-							<a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="startup/ImgLogoff.gif" border="0"/>&nbsp;<fmt:message key="logOut"/></a>
+							<a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="startup/ImgLogoff.png" border="0"/>&nbsp;<fmt:message key="logOut"/></a>
 						</td>
 					</tr>
 				</table>
@@ -750,7 +750,7 @@
 					</c:otherwise>
 				</c:choose>
 				<div class="SearchButton" style="padding:2px;" >
-					<a  href="${fn:escapeXml(composeUrl)}" style="text-decoration:none;color:black;"><span id='tab_ikon_compose'><app:img src="startup/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span> &nbsp; <span id='tab_ikon_compose'></span><span><fmt:message key="compose"/></span></a>
+					<a  href="${fn:escapeXml(composeUrl)}" style="text-decoration:none;color:black;"><span id='tab_ikon_compose'><app:img src="startup/ImgNewMessage.png" altkey='ALT_APP_COMPOSE'/></span> &nbsp; <span id='tab_ikon_compose'></span><span><fmt:message key="compose"/></span></a>
 				</div
 
 			</td>--%>

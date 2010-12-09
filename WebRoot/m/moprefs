@@ -188,7 +188,7 @@
             <div class="td">
                 <a id='_back' href="?st=${mailbox.prefs.groupMailBy}&_back=1" class="zo_button"><fmt:message
                         key="cancel"/></a>
-                <%--<app:button id="OPSEND" name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>--%>
+                <%--<app:button id="OPSEND" name="actionSave" src="common/ImgSave.png" tooltip="save" text="save"/>--%>
                 <input type="submit" class="zo_button" name="actionPrefsSave" value="<fmt:message key="save"/>">
             </div>
         </div>

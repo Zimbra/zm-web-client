@@ -37,7 +37,7 @@
         </c:url>
 
         <a href='${fn:escapeXml(url)}'>
-            <app:img src="contacts/ImgPerson.gif" alt='${fn:escapeXml(label)}'/>
+            <app:img src="contacts/ImgPerson.png" alt='${fn:escapeXml(label)}'/>
             <span <c:if test="${requestScope.myCardSelected}"> class='ZhTISelected'</c:if>>
              ${zm:truncate(fn:escapeXml(label),20,true)}
             </span>

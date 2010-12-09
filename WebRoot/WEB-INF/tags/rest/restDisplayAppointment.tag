@@ -61,7 +61,7 @@
                 <td>
                     <table border="0" cellpadding="2" cellspacing="2">
                         <tr>
-                            <td width=24><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ImgApptRecur.gif' : 'startup/ImgAppointment.gif'}"/></td>
+                            <td width=24><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ImgApptRecur.png' : 'startup/ImgAppointment.png'}"/></td>
                             <td class='apptHeader'>
                             ${fn:escapeXml(empty appt.name ? noSubject : appt.name)}
                         </tr>
@@ -130,7 +130,7 @@
                                 <td class='MgrHdrValue'>
                                     <table cellpadding="0" cellspacing="0">
                                         <tr>
-                                            <td width=24><app:img src="calendar/ImgApptException.gif"/></td>
+                                            <td width=24><app:img src="calendar/ImgApptException.png"/></td>
                                             <td><b><fmt:message key="apptExceptionNote"/></b></td>
                                         </tr>
                                     </table>
@@ -208,7 +208,7 @@
                                 <tr>
                                     <td nowrap align='right' class='Tags'>
                                         <c:if test="${message.isFlagged}">
-                                            <app:img altkey='ALT_FLAGGED' src="startup/ImgFlagRed.gif"/>
+                                            <app:img altkey='ALT_FLAGGED' src="startup/ImgFlagRed.png"/>
                                         </c:if>
                                     </td>
                                 </tr>
@@ -217,7 +217,7 @@
                                 <tr>
                                     <td nowrap align="right" class='MsgHdrAttAnchor'>
                                         <a href="#attachments${message.partName}">
-                                            <app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+                                            <app:img src="startup/ImgAttachment.png" altkey="ALT_ATTACHMENT"/>
                                             <fmt:message key="attachmentCount">
                                                 <fmt:param value="${message.numberOfAttachments}"/>
                                             </fmt:message>

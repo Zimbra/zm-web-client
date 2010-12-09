@@ -98,7 +98,7 @@
                                 </td>
                                 <td width="1%" nowrap>
                                     <c:if test="${rule.active}">
-                                        <app:img altkey="active" src="common/ImgCheck.gif"/>
+                                        <app:img altkey="active" src="common/ImgCheck.png"/>
                                     </c:if>
 
                                 </td>
