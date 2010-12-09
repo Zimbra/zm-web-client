@@ -233,9 +233,10 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_FOLDER) {
 		var briefcase = appCtxt.getById(item.folderId);
 		htmlArr[idx++] = briefcase ? briefcase.getPath() : item.folderId;
-	} else if(field == ZmItem.F_SORTED_BY){
+	} else if (field == ZmItem.F_SORTED_BY){
         htmlArr[idx++] = this._getAbridgedContent(item, colIdx);
-    }else {
+    } 
+    else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}
 
@@ -329,7 +330,7 @@ ZmDetailListView.prototype._addRevisionRows =
 function(item, revisions){
 
     var rowIds = this._itemRowIdList[item.id];
-    if(rowIds && rowIds.length && this._rowsArePresent(item)){
+    if (rowIds && rowIds.length && rowIds.length == revisions.size() && this._rowsArePresent(item)){
         this._showRows(rowIds, true);
     }else{
         var index = this._getRowIndex(item);
@@ -337,7 +338,11 @@ function(item, revisions){
         for(var i=0; i< revisions.size(); i++){
             var rev = revisions.get(i);
             var div = this._createItemHtml(rev);
-            this._addRow(div, index+i+1);
+            //check if item exists before adding row
+            if (!document.getElementById(div.id))
+                this._addRow(div, index+i+1);
+            else
+                this._showRows([div.id],true);
             this._itemRowIdList[item.id].push(div.id);
         }
     }

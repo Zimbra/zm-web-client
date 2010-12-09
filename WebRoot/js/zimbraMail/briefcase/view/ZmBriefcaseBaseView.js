@@ -70,7 +70,13 @@ function(ev) {
         for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			if (this._list && this._list.contains(item)) {
-                this.redrawItem(item);
+                this._redrawItem(item);
+                if (this._expanded && this._expanded[item.id]){
+                    //if already expanded, update revisions row
+                    this.parent._expand(item);
+
+                }
+
             }
 		}
     }
@@ -261,7 +267,7 @@ function(ev) {
                 item.rename(fileName, new AjxCallback(this, this.resetRenameFile));
             }
         }else{
-            this._redrawItem(item);
+            this.redrawItem(item);
         }
         allowDefault = false;
     }else if( key == DwtKeyEvent.KEY_ESCAPE){
