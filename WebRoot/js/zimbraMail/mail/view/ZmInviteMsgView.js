@@ -517,7 +517,7 @@ function() {
 
 	// folder picker
 	var label = this._inviteMoveLabel = new DwtText({parent: tb, className: "DwtText InviteSelectLabel"});
-	label.setSize(100, DwtControl.DEFAULT);
+	label.setSize(Dwt.DEFAULT, DwtControl.DEFAULT);
 	label.setText(ZmMsg.calendarLabel);
 	tb.addSpacer();
 	this._inviteMoveSelect = new DwtSelect({parent:tb});
