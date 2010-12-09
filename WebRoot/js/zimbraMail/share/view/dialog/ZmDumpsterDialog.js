@@ -269,5 +269,8 @@ function(dlg) {
 	var params = ZmListController.prototype._getMoveParams.call(this, dlg);
 	params.acceptFolderMatch = true;
 	params.showDrafts =	true;
+	var omit = {};
+	omit[ZmFolder.ID_SPAM] = true;
+	params.omit = omit;
 	return params;
 };
