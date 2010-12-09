@@ -58,13 +58,22 @@ function() {
 	}
 };
 
-ZmSignaturesPage.prototype.getNewSignatures =
+ZmSignaturesPage.prototype._rehashByName =
 function() {
-
-	var list = [];
+	this._byName = {};
 	for (var id in this._signatures) {
 		var signature = this._signatures[id];
-		if (signature._new && !this._isInvalidSig(signature, true)) {
+		this._byName[signature.name] = signature;
+	}
+};
+
+ZmSignaturesPage.prototype.getNewSignatures =
+function(onlyValid) {
+	var list = [];
+	this._rehashByName();
+	for (var id in this._signatures) {
+		var signature = this._signatures[id];
+		if (signature._new && !(onlyValid && this._isInvalidSig(signature, true))) {
 			list.push(signature);
 		}
 	}
@@ -179,7 +188,7 @@ function() {
 
 	this._updateSignature();
 
-	return this.getNewSignatures().length > 0 ||
+	return this.getNewSignatures(false).length > 0 || // Let invalid new signatures count as dirtiness, so validation kicks in
 		   this.getDeletedSignatures().length > 0 ||
 		   this.getModifiedSignatures().length > 0 ||
 		   this.getChangedUsage().length > 0;
@@ -187,8 +196,8 @@ function() {
 
 ZmSignaturesPage.prototype.validate =
 function() {
-
 	this._updateSignature();
+	this._rehashByName();
 
 	for (var id in this._signatures) {
 		var error = this._isInvalidSig(this._signatures[id]);
@@ -207,7 +216,8 @@ ZmSignaturesPage.prototype._isInvalidSig =
 function(signature, strict) {
 
 	var hasName = AjxStringUtil._NON_WHITESPACE.test(signature.name);
-	var hasValue = AjxStringUtil._NON_WHITESPACE.test(signature.getValue());
+	var hasContact = Boolean(signature.contactId);
+	var hasValue = AjxStringUtil._NON_WHITESPACE.test(signature.getValue()) || hasContact;
 	var isNameDefault = (this._newNamesHash[signature.name] != null);
 	if (!hasName && !hasValue) {
 		this._deleteSignature(signature);
@@ -219,7 +229,7 @@ function(signature, strict) {
 	} else if (strict && isNameDefault && !hasValue) {
 		return true;
 	}
-	if (signature._new && hasName && this._nameUsed[signature.name]) {
+	if (signature._new && hasName && this._byName[signature.name] != signature) {
 		return AjxMessageFormat.format(ZmMsg.signatureNameDuplicate, signature.name);
 	}
 	var sigValue = signature.value;
@@ -259,7 +269,7 @@ function(batchCommand) {
 	}
 
 	// add signatures
-	var newSigs = this.getNewSignatures();
+	var newSigs = this.getNewSignatures(true);
 	for (var i = 0; i < newSigs.length; i++) {
 		var signature = newSigs[i];
 		signature._id = signature.id; // Clearing existing dummy id
@@ -313,7 +323,6 @@ function() {
 
 ZmSignaturesPage.prototype.setContact =
 function(contact) {
-
 	if (this._selSignature) {
 		this._selSignature.contactId = contact.id;
 	}
@@ -663,7 +672,7 @@ function(reset) {
 	this._origUsage = {};
 	this._isTempId = {};
 	this._newSigId = {};
-	this._nameUsed = {};
+	this._byName = {};
 
 	this._selSignature = null;
 	this._sigList.removeAll(true);
@@ -675,7 +684,6 @@ function(reset) {
 	for (var i = 0; i < count; i++) {
 		var signature = signatures[i];
 		this._addSignature(signature, true, reset);
-		this._nameUsed[signature.name] = true;
 	}
 	this._calcAutoSignatureNames(signatures);
 	for (var i = count; i < this._minEntries; i++) {
@@ -690,7 +698,6 @@ function(reset) {
 
 ZmSignaturesPage.prototype._calcAutoSignatureNames =
 function(signatures) {
-
 	this._newNames = [];
 	this._newNamesHash = {};
 	for (var i = 1; i <= this._maxEntries; i++) {
@@ -702,7 +709,6 @@ function(signatures) {
 
 ZmSignaturesPage.prototype._getNewSignatureName =
 function() {
-
 	var used = {};
 	for (var id in this._signatures) {
 		used[this._signatures[id].name] = true;
@@ -724,7 +730,6 @@ function() {
 	signature.name = this._getNewSignatureName();
 	signature._new = true;
 	this._isTempId[signature.id] = true;
-
 	return signature;
 };
 
@@ -739,7 +744,6 @@ function(skipControls) {
 
 ZmSignaturesPage.prototype._addSignature =
 function(signature, skipControls, reset, index, skipNotify) {
-
 	if (!signature._new) {
 		if (reset) {
 			this._restoreFromOrig(signature);
@@ -762,6 +766,7 @@ function(signature, skipControls, reset, index, skipNotify) {
 	}
 
 	this._resetOperations();
+	this._byName[signature.name] = signature;
 
 	return signature;
 };
@@ -817,7 +822,6 @@ function() {
 
 ZmSignaturesPage.prototype._resetSignature =
 function(signature, clear) {
-
 	this._selSignature = signature;
 	if (!signature) { return; }
 
@@ -829,7 +833,7 @@ function(signature, clear) {
 	var vcardName = "";
 	if (signature.contactId) {
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-		var contact = contactsApp && contactsApp.getContactList().getById(signature.contactId)
+		var contact = contactsApp && contactsApp.getContactList().getById(signature.contactId);
 		if (contact) {
 			vcardName = contact.getFileAs();
 		}
@@ -851,7 +855,6 @@ function(signature, clear) {
 
 ZmSignaturesPage.prototype._resetOperations =
 function() {
-
 	if (this._sigAddBtn) {
 		this._sigAddBtn.setEnabled(this._sigList.size() < this._maxEntries);
 	}
@@ -873,7 +876,6 @@ function(isText) {
 ZmSignaturesPage.prototype._formatCancelCallback =
 function(isText) {
 	this._formatWarningDialog.popdown();
-
 	// reset the option
 	this._sigFormat.setSelectedValue(!isText);
 };
@@ -915,7 +917,6 @@ function(ev) {
 
 ZmSignaturesPage.prototype._deleteSignature =
 function(signature, skipNotify) {
-
 	signature = signature || this._selSignature;
 	if (this._selSignature && !skipNotify) {
 		this._sigName.clear();
@@ -928,11 +929,11 @@ function(signature, skipNotify) {
 	if (!signature._new) {
 		this._deletedSignatures[signature.id] = signature;
 	}
+	delete this._byName[signature.name];
 };
 
 ZmSignaturesPage.prototype._handleDeleteButton =
 function(evt) {
-
 	this._deleteSignature();
 	this._selSignature = null;
 
@@ -954,22 +955,18 @@ function(evt) {
 
 ZmSignaturesPage.prototype._handleDeleteResponse =
 function(signature, resp) {
-
 	delete this._deletedSignatures[signature.id];
-	delete this._nameUsed[signature.name];
 };
 
 ZmSignaturesPage.prototype._handleModifyResponse =
 function(signature, resp) {
-
-	delete this._nameUsed[signature._orig.name];
-	this._nameUsed[signature.name] = true;
+	delete this._byName[signature._orig.name];
+	this._byName[signature.name] = signature;
 	this._setOrig(signature);
 };
 
 ZmSignaturesPage.prototype._handleModifyError =
 function(signature) {
-
 	this._restoreFromOrig(signature);
 	if (this._selSignature.id == signature.id) {
 		this._resetSignature(signature);
@@ -979,7 +976,6 @@ function(signature) {
 
 ZmSignaturesPage.prototype._handleNewResponse =
 function(signature, resp) {
-
 	var id = signature.id;
 	signature.id = signature._id;
 
@@ -988,7 +984,6 @@ function(signature, resp) {
 	this._deleteSignature(signature, true);
 	signature.id = id;
 	this._addSignature(signature, false, false, index, true);
-	this._nameUsed[signature.name] = true;
 
 	this._newSigId[signature._id] = signature.id;
 	delete signature._new;
@@ -1061,7 +1056,6 @@ function(signature) {
 
 ZmSignaturesPage.prototype._setOrig =
 function(signature) {
-
 	signature._orig = {
 		name:			signature.name,
 		contactId:		signature.contactId,
@@ -1072,7 +1066,6 @@ function(signature) {
 
 ZmSignaturesPage.prototype._restoreFromOrig =
 function(signature) {
-
 	var o = signature._orig;
 	signature.name = o.name;
 	signature.contactId = o.contactId;
