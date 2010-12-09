@@ -170,34 +170,9 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     window.appContextPath = '<%= contextPath %>';
     window.appDevMode     = ${isDevMode};
 
-
-    createDummyDBG =
-    function() {
-	window.AjxDebug = function() {};
-	window.AjxDebug.prototype.toString		= function() { return "dummy DBG class"};
-	window.AjxDebug.prototype.display		= function() {};
-	window.AjxDebug.prototype.dumpObj		= function() {};
-	window.AjxDebug.prototype.getDebugLevel	= function() {};
-	window.AjxDebug.prototype.isDisabled	= function() {};
-	window.AjxDebug.prototype.println		= function() {};
-	window.AjxDebug.prototype.printRaw		= function() {};
-	window.AjxDebug.prototype.printXML		= function() {};
-	window.AjxDebug.prototype.setDebugLevel	= function() {};
-	window.AjxDebug.prototype.setTitle		= function() {};
-	window.AjxDebug.prototype.showTiming	= function() {};
-	window.AjxDebug.prototype._getTimeStamp	= function() {};
-	window.AjxDebug.prototype.timePt		= function() {};
-	window.DBG = new window.AjxDebug();
-    };
-
     function launch() {
 
-    <% if(isDevMode) { %>
-        AjxDispatcher.require("Debug");
-        DBG = new AjxDebug(AjxDebug.NONE, null, false);
-    <% }else { %>
-        createDummyDBG();
-    <% } %>
+        window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
         window.appCtxt = new ZmAppCtxt();
         appCtxt.rememberMe = false;

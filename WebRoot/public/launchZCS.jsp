@@ -312,15 +312,12 @@ for (var pkg in window.AjxTemplateMsg) {
 		var prodMode = ${isProdMode};
 		var debugLevel = "<%= (debug != null) ? debug : "" %>";
 		var debugLogTarget = "<%= (debugLogTarget != null) ? debugLogTarget : "" %>";
-		if (!prodMode || debugLevel) {
-			AjxDispatcher.require("Debug");
-			window.DBG = new AjxDebug({level:AjxDebug.NONE, target:debugLogTarget});
-			// figure out the debug level
-			if (debugLevel == 't') {
-				DBG.showTiming(true);
-			} else {
-				DBG.setDebugLevel(debugLevel);
-			}
+		window.DBG = new AjxDebug({level:AjxDebug.NONE, target:debugLogTarget});
+		// figure out the debug level
+		if (debugLevel == 't') {
+			DBG.showTiming(true);
+		} else if (debugLevel) {
+			DBG.setDebugLevel(debugLevel);
 		}
 
 		AjxHistoryMgr.BLANK_FILE = "${contextPath}/public/blankHistory.html";

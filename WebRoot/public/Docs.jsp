@@ -161,9 +161,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     window.isRestView = false;
     window.isTinyMCE = <%= isTinyMce %>;
     window.appDevMode     = ${isDevMode};
-    
-    ZmDocsEditApp._createDBG(${isDevMode});
-
+	window.DBG = new AjxDebug(AjxDebug.NONE, null, false);  
     ZmDocsEditApp.setFile('${fileId}', '${fileName}', '${folderId}');
 
 </script>

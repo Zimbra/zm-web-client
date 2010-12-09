@@ -373,7 +373,11 @@ function(convs, msgs) {
 	if (this.type == ZmItem.CONV) {
 		// handle new convs first so we can set their fragments later from new msgs
 		for (var id in convs) {
-			if (this.getById(id)) { continue; }	// already have this conv
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: handling conv create " + id);
+			if (this.getById(id)) {
+				AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: conv already exists " + id);
+				continue;
+			}
 			newConvId[id] = convs[id];
 			var conv = convs[id];
 			if (this.search && this.search.matches && this.search.matches(conv) && !conv.ignoreJunkTrash()) {
@@ -383,17 +387,28 @@ function(convs, msgs) {
 					// a new msg for this conv matches current search
 					conv.list = this;
 					newConvs.push(conv);
+					AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: conv added " + id);
                     appCtxt.setNotifyDebug("Handling NOTIFY: notifyCreate ZmMailList --- New conv added");
 				}
+				else {
+					AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: conv failed account checks " + id);
+				}
+			}
+			else {
+				var query = this.search ? this.search.query : "";
+				var ignore = conv.ignoreJunkTrash();
+				AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: conv does not match search '" + query + "' or was ignored (" + ignore + ")");
 			}
 		}
 
 		// a new msg can hand us a new conv, and update a conv's info
 		for (var id in msgs) {
 			var msg = msgs[id];
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: CLV handling msg create " + id);
 			var cid = msg.cid;
 			var matchFunc = this.search && this.search.matches;
 			var msgMatches =  matchFunc && matchFunc(msg) && !msg.ignoreJunkTrash();
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: CLV msg matches: " + msgMatches);
 			var isActiveAccount = (!appCtxt.multiAccounts || (appCtxt.multiAccounts && msg.getAccount() == appCtxt.getActiveAccount()));
 			var conv = newConvId[cid] || this.getById(cid);
 			if (msgMatches && isActiveAccount) {
@@ -447,6 +462,7 @@ function(convs, msgs) {
 					}
 					modifiedItems.push(conv);
 				}
+				AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: conv list accepted msg " + id);
 				newMsgs.push(msg);
 			}
 		}
@@ -454,8 +470,12 @@ function(convs, msgs) {
 		// add new msg to list
 		for (var id in msgs) {
 			var msg = msgs[id];
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: handling msg create " + id);
 			if (this.getById(id)) {
 				if (this.search.matches && this.search.matches && this.search.matches(msg) && !msg.ignoreJunkTrash()) {
+					var query = this.search ? this.search.query : "";
+					var ignore = msg.ignoreJunkTrash();
+					AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: msg does not match search '" + query + "' or was ignored (" + ignore + ")");
 					msg.list = this; // Even though we have the msg in the list, it sometimes has its list wrong.
 				}
 				continue;
@@ -463,11 +483,13 @@ function(convs, msgs) {
 			if (this.convId) { // MLV within CV
 				if (msg.cid == this.convId && !this.getById(msg.id)) {
 					msg.list = this;
+					AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: msg list (CV) accepted msg " + id);
 					newMsgs.push(msg);
 				}
 			} else { // MLV (traditional)
 				if (this.search.matches && this.search.matches && this.search.matches(msg) && !msg.ignoreJunkTrash()) {
 					msg.list = this;
+					AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: msg list (TV) accepted msg " + id);
 					newMsgs.push(msg);
 				}
 			}

@@ -490,6 +490,7 @@ ZmRequestMgr.prototype._refreshHandler =
 function(refresh) {
 
 	DBG.println(AjxDebug.DBG1, "Handling REFRESH");
+	AjxDebug.println(AjxDebug.NOTIFY, "REFRESH block received");
 	if (!appCtxt.inStartup) {
 		this._controller._execPoll();
 	}

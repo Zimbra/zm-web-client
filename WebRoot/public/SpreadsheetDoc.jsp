@@ -181,8 +181,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 
     window.appContextPath = "${zm:jsEncode(contextPath)}";
     window.appDevMode     = ${isDevMode};
-    
-    ZmSpreadSheetApp._createDBG(${isDevMode});
+	window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
     ZmSpreadSheetApp.setFile('${fileId}', '${fileName}', '${folderId}');
 

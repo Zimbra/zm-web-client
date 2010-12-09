@@ -26,13 +26,11 @@ ZmDebugLogDialog = function(parent) {
 
 	var title = ZmMsg.debugLog;
 	var buttons = [ DwtDialog.OK_BUTTON, DwtDialog.NO_BUTTON ];
-	var clearButton = new DwtDialog_ButtonDescriptor(ZmDebugLogDialog.CLEAR_BUTTON, ZmMsg.clear, DwtDialog.ALIGN_LEFT);
 	var emailButton = new DwtDialog_ButtonDescriptor(ZmDebugLogDialog.EMAIL_BUTTON, ZmMsg.sendAsEmail, DwtDialog.ALIGN_LEFT);
 	DwtDialog.call(this, {parent:parent, title:title, standardButtons:[DwtDialog.OK_BUTTON],
-						  extraButtons: [clearButton, emailButton]});
+						  extraButtons: [emailButton]});
 
 	this.setButtonListener(ZmDebugLogDialog.EMAIL_BUTTON, new AjxListener(this, this._handleEmailButton));
-	this.setButtonListener(ZmDebugLogDialog.CLEAR_BUTTON, new AjxListener(this, this._handleClearButton));
 
 	this.setContent(this._contentHtml());
 };
@@ -40,20 +38,24 @@ ZmDebugLogDialog = function(parent) {
 ZmDebugLogDialog.prototype = new DwtDialog;
 ZmDebugLogDialog.prototype.constructor = ZmDebugLogDialog;
 
-ZmDebugLogDialog.CLEAR_BUTTON = "clear";
-
 // Public methods
 
 /**
  * Pops-up the dialog.
  *
- * @param	{ZmShare}		share		the share
- * @param	{String}		fromAddr	the from address
+ * @param	{string}		content		text to display
+ * @param	{constant}		type		logging type (see AjxDebug)
  */
 ZmDebugLogDialog.prototype.popup =
-function(content) {
+function(content, type) {
 
-	var div = document.getElementById(this._contentDivId);
+	this.setTitle(AjxMessageFormat.format(ZmMsg.debugLog, [type]));
+	var div = document.getElementById(this._descDivId);
+	if (div) {
+		var size = AjxDebug.BUFFER_MAX[type];
+		div.innerHTML = AjxMessageFormat.format(ZmMsg.debugLogDesc, [size, type]);
+	}
+	div = document.getElementById(this._contentDivId);
 	if (div) {
 		div.innerHTML = content;
 	}
@@ -65,15 +67,11 @@ function(content) {
 
 ZmDebugLogDialog.prototype._contentHtml =
 function() {
+
+	this._descDivId = this._htmlElId + "_desc";
 	this._contentDivId = this._htmlElId + "_log";
 
 	return AjxTemplate.expand("share.Widgets#ZmDebugLogDialog", {id:this._htmlElId});
-};
-
-ZmDebugLogDialog.prototype._handleClearButton =
-function(event) {
-	AjxDebug.BUFFER = [];
-	this.popdown();
 };
 
 ZmDebugLogDialog.prototype._handleEmailButton =

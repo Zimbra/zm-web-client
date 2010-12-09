@@ -1066,7 +1066,10 @@ ZmMailApp.prototype.createNotify =
 function(creates, force) {
     appCtxt.setNotifyDebug("Handling NOTIFY: In ZmMailAppcreateNotify");
 	if (!creates["m"] && !creates["c"] && !creates["link"]) { return; }
-	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
+	if (!force && !this._noDefer && this._deferNotifications("create", creates)) {
+		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: skipping/deferring notifications"); 
+		return;
+	}
 
 	if (creates["link"]) {
 		var list = creates["link"];
@@ -1087,16 +1090,17 @@ function(creates, force) {
 	}
 
 	var lastIndex = 0;
-	for (var i=0; i<controllers.length; i++) { // Some controllers may not be created yet. We need to determine the last existing controller in the list
-		if (controllers[i])
+	for (var i = 0; i < controllers.length; i++) { // Some controllers may not be created yet. We need to determine the last existing controller in the list
+		if (controllers[i]) {
 			lastIndex = i;
+		}
 	}
 
 	// give each controller a chance to handle the creates
-	for (var i=0; i<controllers.length; i++) {
+	for (var i = 0; i < controllers.length; i++) {
 		var controller = controllers[i];
 		if (controller) {
-			this._checkList(creates, controller.getList(), controller, i==lastIndex);
+			this._checkList(creates, controller.getList(), controller, i == lastIndex);
 		}
 	}
 
@@ -1204,13 +1208,22 @@ function(creates) {
 ZmMailApp.prototype._checkList =
 function(creates, list, controller, last) {
 
-	if (!(list && list instanceof ZmMailList)) { return; }
+	AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: handling mail creates for view " + controller._currentView);
+
+	if (!(list && list instanceof ZmMailList)) {
+		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: list is not a ZmMailList: " + list);
+		return;
+	}
 
 	var convs = {};
 	var msgs = {};
 
 	// make sure current search is matchable (conv can just match on cid)
-	if (!(list.search && list.search.matches) && (controller == this._tradController)) { return; }
+	if (!(list.search && list.search.matches) && (controller == this._tradController)) {
+		var query = list.search ? list.search.query : "";
+		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: search not matchable: " + query);
+		return;
+	}
 
 	var sortBy = list.search.sortBy;
 
@@ -1260,7 +1273,8 @@ function() {
  */
 ZmMailApp.prototype._checkType =
 function(creates, type, items, currList, sortBy, convs, last) {
-	var result = { gotMail:false, hasMore:false};
+
+	var result = { gotMail:false, hasMore:false };
 	var nodeName = ZmList.NODE[type];
 	var list = creates[nodeName];
 	if (!(list && list.length)) { return result; }
@@ -1277,37 +1291,51 @@ function(creates, type, items, currList, sortBy, convs, last) {
 			this._maxEntries = mlv && mlv.calculateMaxEntries();
 		}
 		if (this.numEntries > this._maxEntries) {
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: too many creates: num=" + this.numEntries + ", max=" + this._maxEntries);
 			return result;
 		}
 	}
 
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
-		if (create._handled) { continue; }
+		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: process create notification:");
+		var extra = (type == ZmItem.MSG) ? "cid=" + create.cid + "|l=" + create.l : "n=" + create.n;
+		AjxDebug.println(AjxDebug.NOTIFY, type + ": id=" + create.id + "|su='" + create.su + "'|f=" + create.f + "|d=" + create.d + "|" + extra);
+		if (create._handled) {
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: create already handled " + create.id);
+			continue;
+		}
 		if (last) {
 			create._handled = true;
 		}
 
 		// new conv does not affect a list of msgs
-		if (currList.type == ZmItem.MSG && type == ZmItem.CONV) { continue; }
+		if (currList.type == ZmItem.MSG && type == ZmItem.CONV) {
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: msg list ignoring conv create");
+			continue;
+		}
 
 		// perform stricter checking if we're in offline mode
 		if (appCtxt.isOffline) {
 			if ((ZmList.ITEM_TYPE[nodeName] != currList.type) && (currList.type != ZmItem.CONV)) {
+				AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: type mismatch: " + ZmList.ITEM_TYPE[nodeName] + " / " + currList.type);
 				continue;
 			}
 		}
 
 		// throttle influx of CREATE notifications during offline initial sync
 		if (throttle && this.numEntries > this._maxEntries) {
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: throttling");
 			result.hasMore = true;
 			break;
 		}
 
 		DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + nodeName);
+		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: item passed _checkType " + create.id);
 
 		var item = appCtxt.getById(create.id);
 		if (!item) {
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: create " + type + " object " + create.id);
 			var itemClass = eval(ZmList.ITEM_CLASS[type]);
 			item = itemClass.createFromDom(create, {}, true);
 		}
