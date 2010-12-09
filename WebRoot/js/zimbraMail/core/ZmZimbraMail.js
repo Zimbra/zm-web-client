@@ -155,10 +155,6 @@ function() {
 ZmZimbraMail.run =
 function(params) {
 
-	if (!window.DBG) {
-		ZmZimbraMail._createDummyDBG();
-	}
-
 	if (params.noSplashScreen) {
 		ZmZimbraMail.killSplash();
 	}
@@ -380,14 +376,14 @@ function(params) {
 			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.session) {
 				ZmCsfeCommand.setSessionId(girJSON.Header.context.session);
 			}
-			DBG.println(["<b>RESPONSE (from JSP tag)</b>"].join(""), "GetInfoResponse");
+			DBG.println(AjxDebug.DBG1, ["<b>RESPONSE (from JSP tag)</b>"].join(""), "GetInfoResponse");
 			DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
 		}
 		if (br.SearchResponse) {
 			var srJSON = params.searchResponse = {};
 			srJSON.Body = {};
 			srJSON.Body.SearchResponse = br.SearchResponse[0];
-			DBG.println(["<b>RESPONSE (from JSP tag)</b>"].join(""), "SearchResponse");
+			DBG.println(AjxDebug.DBG1, ["<b>RESPONSE (from JSP tag)</b>"].join(""), "SearchResponse");
 			DBG.dumpObj(AjxDebug.DBG1, srJSON, -1);
 		}
 	}
@@ -2730,28 +2726,6 @@ function(appName) {
 	var title = [ZmMsg.zimbraTitle, appName].join(": ");
 	Dwt.setTitle(title);
 	appCtxt.getApp(this._getDefaultStartAppName()).setOverviewPanelContent(false);
-};
-
-/**
- * @private
- */
-ZmZimbraMail._createDummyDBG =
-function() {
-	window.AjxDebug = function() {};
-	window.AjxDebug.prototype.toString		= function() { return "dummy DBG class";};
-	window.AjxDebug.prototype.display		= function() {};
-	window.AjxDebug.prototype.dumpObj		= function() {};
-	window.AjxDebug.prototype.getDebugLevel	= function() {};
-	window.AjxDebug.prototype.isDisabled	= function() {};
-	window.AjxDebug.prototype.println		= function() {};
-	window.AjxDebug.prototype.printRaw		= function() {};
-	window.AjxDebug.prototype.printXML		= function() {};
-	window.AjxDebug.prototype.setDebugLevel	= function() {};
-	window.AjxDebug.prototype.setTitle		= function() {};
-	window.AjxDebug.prototype.showTiming	= function() {};
-	window.AjxDebug.prototype._getTimeStamp	= function() {};
-	window.AjxDebug.prototype.timePt		= function() {};
-	window.DBG = new window.AjxDebug();
 };
 
 /**

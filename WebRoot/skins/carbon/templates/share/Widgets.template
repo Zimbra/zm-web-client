@@ -135,6 +135,6 @@
 </template>
 
 <template id='share.Widgets#ZmDebugLogDialog'>
-	<div class='DebugLogDialog-desc'><$= ZmMsg.debugLogDesc $></div>
+	<div class='DebugLogDialog-desc' id='${id}_desc'></div>
 	<div class='DebugLogDialog-log' id='${id}_log'></div>
 </template>

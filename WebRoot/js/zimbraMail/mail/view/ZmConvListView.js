@@ -733,7 +733,12 @@ ZmConvListView.prototype._changeListener =
 function(ev) {
 
 	var item = this._getItemFromEvent(ev);
-	if (!item || ev.handled || !this._handleEventType[item.type]) { return; }
+	if (!item || ev.handled || !this._handleEventType[item.type]) {
+		if (ev && ev.event == ZmEvent.E_CREATE) {
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: initial check failed");
+		}
+		return;
+	}
 
 	var fields = ev.getDetail("fields");
 	var isConv = (item.type == ZmItem.CONV);
@@ -801,6 +806,7 @@ function(ev) {
 	// if we get a new msg that's part of an expanded conv, insert it into the
 	// expanded conv, and don't move that conv
 	if (!isConv && (ev.event == ZmEvent.E_CREATE)) {
+		AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: handle msg create " + item.id);
 		var rowIds = this._msgRowIdList[item.cid];
 		var conv = appCtxt.getById(item.cid);
 		if (rowIds && rowIds.length && this._rowsArePresent(conv)) {
@@ -811,6 +817,7 @@ function(ev) {
 			var convIndex = this._getRowIndex(conv);
 			var sortIndex = ev.getDetail("sortIndex");
 			var msgIndex = sortIndex || 0;
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: add msg row to conv " + item.id + " within " + conv.id);
 			this._addRow(div, convIndex + msgIndex + 1);
 			rowIds.push(div.id);
 		}
@@ -838,12 +845,15 @@ function(ev) {
 
 		// INDEX change: a conv has gotten a new msg and may need to be moved within the list of convs
 		// if an expanded conv gets a new msg, don't move it to top
+		AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: handle conv create " + item.id);
 		var sortIndex = this._getSortIndex(item, sortBy);
 		var curIndex = this.getItemIndex(item, true);
 		if ((sortIndex != null) && (curIndex != null) && (sortIndex != curIndex) &&	!this._expanded[item.id]) {
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: change position of conv " + item.id + " to " + sortIndex);
 			this._removeMsgRows(item.id);
 			this.removeItem(item);
 			this.addItem(item, sortIndex);
+			// TODO: mark create notif handled?
 		}
 	}
 

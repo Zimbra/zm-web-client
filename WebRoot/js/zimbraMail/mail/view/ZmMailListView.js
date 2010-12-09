@@ -850,7 +850,12 @@ ZmMailListView.prototype._changeListener =
 function(ev) {
 
 	var item = this._getItemFromEvent(ev);
-	if (!item || ev.handled || !this._handleEventType[item.type]) { return; }
+	if (!item || ev.handled || !this._handleEventType[item.type]) {
+		if (ev && ev.event == ZmEvent.E_CREATE) {
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailListView: initial check failed");
+		}
+		return;
+	}
 
 	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" and "isScheduled" flag
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: FLAGS");
@@ -868,6 +873,7 @@ function(ev) {
 	
 	if (ev.event == ZmEvent.E_CREATE) {
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: CREATE");
+		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailListView: handle create " + item.id);
 
 		if (this._controller.actionedMsgId) {
 			var newMsg = appCtxt.getById(this._controller.actionedMsgId);
@@ -876,8 +882,14 @@ function(ev) {
 			this._controller.actionedMsgId = null;
 		}
 
-		if (this._list && this._list.contains(item)) { return; } // skip if we already have it
-		if (!this._handleEventType[item.type]) { return; }
+		if (this._list && this._list.contains(item)) {
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailListView: list already has item " + item.id);
+			return;
+		}
+		if (!this._handleEventType[item.type]) {
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailListView: list view of type " + this._mode + " does not handle " + item.type);
+			return;
+		}
 
 		// Check to see if ZmMailList::notifyCreate gave us an index for the item.
 		// If not, we assume that the new conv/msg is the most recent one. The only case
@@ -885,7 +897,9 @@ function(ev) {
 		//
 		// TODO: handle other sort orders, arbitrary insertion points
 		if ((this._isPageless || this.offset == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
-			this.addItem(item, ev.getDetail("sortIndex") || 0);
+			var sortIndex = ev.getDetail("sortIndex") || 0;
+			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailListView: adding item " + item.id + " at index " + sortIndex);
+			this.addItem(item, sortIndex);
 
 			if (appCtxt.isOffline && appCtxt.getActiveAccount().isOfflineInitialSync()) {
 				this._controller._app.numEntries++;

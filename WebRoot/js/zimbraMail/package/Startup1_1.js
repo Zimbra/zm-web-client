@@ -47,6 +47,9 @@ AjxPackage.require("ajax.util.AjxEmailAddress");
 AjxPackage.require("ajax.util.AjxHistoryMgr");
 AjxPackage.require("ajax.xml.AjxSerializer");
 
+AjxPackage.require("ajax.debug.AjxDebug");
+AjxPackage.require("ajax.debug.AjxDebugXmlDocument");
+
 AjxPackage.require("ajax.dwt.core.DwtId");
 AjxPackage.require("ajax.dwt.core.Dwt");
 AjxPackage.require("ajax.dwt.core.DwtException");

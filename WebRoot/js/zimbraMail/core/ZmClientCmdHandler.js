@@ -38,10 +38,13 @@
  * 		$set:tabs							show tab groups (in debug window)
  * 		$set:ymid [id]						set Yahoo IM user to id
  * 		$set:log [type]						dump log contents for type
+ * 		$set:log [type]	[size]				set number of msgs to keep for type
  * 		$set:compose						compose msg based on mailto: in query string
  * 		$set:error							show error dialog
  * 		$set:modify [setting] [value]		set setting to value, then optionally restart
  * 		$set:clearAutocompleteCache			clear contacts autocomplete cache
+ *
+ * TODO: should probably I18N the alert messages
  */
 
 /**
@@ -404,9 +407,19 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
  * @param	{Object}	[cmdArg1]		command arguments
  */
 ZmClientCmdHandler.prototype.execute_log =
-function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	var text = AjxDebug.BUFFER.join("");
-	appCtxt.getDebugLogDialog().popup(text);
+function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
+
+	var type = cmdArg1;
+	if (cmdArg2 != null) {
+		var size = parseInt(cmdArg2);
+		if (!isNaN(size)) {
+			AjxDebug.BUFFER_MAX[type] = size;
+			this._alert("Debug log size for '" + type + "' set to " + size);
+		}
+	}
+	else {
+		appCtxt.getDebugLogDialog().popup(AjxDebug.getDebugLog(type), type);
+	}
 };
 
 /**
