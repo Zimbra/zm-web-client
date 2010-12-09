@@ -74,7 +74,7 @@
         </c:choose>
         <div class="tbl">
         <div id="conv${mhit.id}" class="tr msg_lv_list_row list-row${mhit.isUnread ? '-unread' : ''}">
-               <%--<mo:img src="mail/ImgEnvelope${mhit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
+               <%--<mo:img src="mail/ImgEnvelope${mhit.isUnread?'':'Gray'}.png" class="left-icon"/>--%>
                <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/> 
                <span class="td f" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>>
                    <c:set value=",${mhit.id}," var="stringToCheck"/>

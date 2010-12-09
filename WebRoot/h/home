@@ -66,7 +66,7 @@
                     <tr>
                         <td>
                             <c:set var="refreshUrl" value="/h/home" />
-                            <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.gif" altkey="refresh"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
+                            <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.png" altkey="refresh"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
                         </td>
                     </tr>
                 </table>

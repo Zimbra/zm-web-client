@@ -72,7 +72,7 @@
                             </c:if>
                             <c:if test="${appt.exception}">
                                 <td valign='top'>
-                                    <app:img src="calendar/ImgApptException.gif" alt="exception"/>
+                                    <app:img src="calendar/ImgApptException.png" alt="exception"/>
                                 </td>
                             </c:if>
                             <c:if test="${not empty appt.tagIds}">
@@ -82,7 +82,7 @@
                                 <td><app:flagImage flagged="${appt.isFlagged}"/></td>
                             </c:if>
                             <c:if test="${appt.classPrivate or appt.classConfidential}">
-                                <td><app:img src="contacts/ImgReadOnly.gif" alt="readonly"/></td>
+                                <td><app:img src="contacts/ImgReadOnly.png" alt="readonly"/></td>
                             </c:if>
                         </tr>
                     </table>
@@ -116,7 +116,7 @@
                             </c:if>
                             <c:if test="${appt.exception}">
                                 <td valign='top'>
-                                    <app:img src="calendar/ImgApptException.gif" alt="exception"/>
+                                    <app:img src="calendar/ImgApptException.png" alt="exception"/>
                                 </td>
                             </c:if>
                             <c:if test="${not empty appt.tagIds}">
@@ -126,7 +126,7 @@
                                 <td><app:flagImage flagged="${appt.isFlagged}"/></td>
                             </c:if>
                             <c:if test="${appt.classPrivate or appt.classConfidential}">
-                                <td><app:img src="contacts/ImgReadOnly.gif" alt="readonly"/></td>
+                                <td><app:img src="contacts/ImgReadOnly.png" alt="readonly"/></td>
                             </c:if>
                         </tr>
                     </table>
@@ -182,7 +182,7 @@
                             </c:if>
                             <c:if test="${appt.exception}">
                                 <td valign='top'>
-                                    <app:img src="calendar/ImgApptException.gif" alt="exception"/>
+                                    <app:img src="calendar/ImgApptException.png" alt="exception"/>
                                 </td>
                             </c:if>
                             <c:if test="${not empty appt.tagIds}">
@@ -192,7 +192,7 @@
                                 <td><app:flagImage flagged="${appt.isFlagged}"/></td>
                             </c:if>
                             <c:if test="${appt.classPrivate or appt.classConfidential}">
-                                <td><app:img src="contacts/ImgReadOnly.gif" alt="readonly"/></td>
+                                <td><app:img src="contacts/ImgReadOnly.png" alt="readonly"/></td>
                             </c:if>
                         </tr>
                     </table>

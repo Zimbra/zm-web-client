@@ -95,16 +95,16 @@
 
     <c:choose>
         <c:when test="${empty compose.inviteId}">
-            <c:set var="apptImage" value="calendar/ImgNewAppointment.gif"/>
+            <c:set var="apptImage" value="calendar/ImgNewAppointment.png"/>
             <c:set var="apptImageAlt" value="ALT_NEW_APPOINTMENT"/>
             <fmt:message var="apptSubject" key="${param.st eq 'newtask' ? 'newTask' : 'newAppointment'}"/>
             <c:set var="isNewAppt" value="${true}"/>
         </c:when>
         <c:otherwise>
-            <c:set var="apptImage" value="startup/ImgAppointment.gif"/>
+            <c:set var="apptImage" value="startup/ImgAppointment.png"/>
             <c:set var="apptImageAlt" value="ALT_EDIT_APPOINTMENT"/>
             <c:set var="apptSubject" value="${compose.subject}"/>
-            <c:set var="closeImage" value="common/ImgClose.gif"/>
+            <c:set var="closeImage" value="common/ImgClose.png"/>
             <c:set var="isNewAppt" value="${false}"/>
         </c:otherwise>
     </c:choose>
@@ -149,7 +149,7 @@
 <fmt:message key="newTask" var="newTaskSub"/>
 <div class="sectionLbl"><b>${fn:escapeXml(apptSubject)}</b></div>
 <c:if test="${isInstance}"><div class="View"><div class="tbl"><div class="tr">
-                <span class="td ZhApptRecurrInfo"><app:img src="dwt/ImgInformation.gif"/></span>
+                <span class="td ZhApptRecurrInfo"><app:img src="dwt/ImgInformation.png"/></span>
                 <span class="td">
                     <c:url value="${context_url}?st=newappt&bt=${bt}&useInstance=0&invId=${id}" var="apptUrl"/><fmt:message key="apptInstNote"/>
                     <hr size="1"><a href="${apptUrl}"><fmt:message key="apptInstEditSeries"/></a>

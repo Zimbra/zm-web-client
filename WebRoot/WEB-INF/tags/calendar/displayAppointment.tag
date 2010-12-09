@@ -60,7 +60,7 @@
                 <td>
                     <table border="0" cellpadding="2" cellspacing="2">
                         <tr>
-                            <td width="24"><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ImgApptRecur.gif' : 'startup/ImgAppointment.gif'}" alt="appointment"/></td>
+                            <td width="24"><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ImgApptRecur.png' : 'startup/ImgAppointment.png'}" alt="appointment"/></td>
                             <td class='apptHeader'>
                                 ${fn:escapeXml(empty appt.name ? noSubject : appt.name)}
                             </td>
@@ -141,7 +141,7 @@
                                 <td class='MgrHdrValue'>
                                     <table cellpadding="0" cellspacing="0">
                                         <tr>
-                                            <td width="24"><app:img src="calendar/ImgApptException.gif"/></td>
+                                            <td width="24"><app:img src="calendar/ImgApptException.png"/></td>
                                             <td><b><fmt:message key="apptExceptionNote"/></b></td>
                                         </tr>
                                     </table>
@@ -213,7 +213,7 @@
                                             </c:forEach>
                                         </c:if> 
                                         <c:if test="${message.isFlagged}">
-                                            <app:img altkey='ALT_FLAGGED' src="startup/ImgFlagRed.gif"/>
+                                            <app:img altkey='ALT_FLAGGED' src="startup/ImgFlagRed.png"/>
                                         </c:if>
                                     </td>
                                 </tr>
@@ -222,7 +222,7 @@
                                 <tr>
                                     <td nowrap align="right" class='MsgHdrAttAnchor'>
                                         <a href="#attachments${message.partName}">
-                                            <app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+                                            <app:img src="startup/ImgAttachment.png" altkey="ALT_ATTACHMENT"/>
                                             <fmt:message key="attachmentCount">
                                                 <fmt:param value="${message.numberOfAttachments}"/>
                                             </fmt:message>
@@ -254,7 +254,7 @@
                                         <c:set var="keyOffset" value="${3}"/>
                                         <td style='padding: 0 2px 0 2px'>
                                             <a <c:if test="${not isPart}"></c:if> href="${fn:escapeXml(composeUrl)}&amp;op=accept">
-                                                <app:img src="common/ImgCheck.gif" alt="check"/>
+                                                <app:img src="common/ImgCheck.png" alt="check"/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyAccept"/></span>
                                             </a>
@@ -262,7 +262,7 @@
                                         <td><div class='vertSep'></div></td>
                                         <td style='padding: 0 2px 0 2px'>
                                             <a <c:if test="${not isPart}"></c:if> href="${fn:escapeXml(composeUrl)}&amp;op=tentative">
-                                                <app:img src="common/ImgQuestionMark.gif" alt="quesetionmark"/>
+                                                <app:img src="common/ImgQuestionMark.png" alt="quesetionmark"/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyTentative"/></span>
                                             </a>
@@ -270,7 +270,7 @@
                                         <td><div class='vertSep'></div></td>
                                         <td style='padding: 0 2px 0 2px'>
                                             <a <c:if test="${not isPart}"></c:if> href="${fn:escapeXml(composeUrl)}&amp;op=decline">
-                                                <app:img src="common/ImgCancel.gif" alt="cancel"/>
+                                                <app:img src="common/ImgCancel.png" alt="cancel"/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyDecline"/></span>
                                             </a>
@@ -289,7 +289,7 @@
                                 <tr>
                                     <td style='padding: 0 2px 0 2px'>
                                         <a target="_blank" href="${fn:escapeXml(newWindowUrl)}">
-                                            <app:img src="startup/ImgOpenInNewWindow.gif" altkey="newWindow" title="newWindow"/>
+                                            <app:img src="startup/ImgOpenInNewWindow.png" altkey="newWindow" title="newWindow"/>
                                         </a>
                                     </td>
                                 </tr>

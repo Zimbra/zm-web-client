@@ -67,17 +67,17 @@
 						<tr class="Header">
                             <th class='CB' nowrap='nowrap'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type="checkbox" name="allids"/></th>
                             <c:if test="${mailbox.features.flagging}">
-                                <th class='Img' nowrap='nowrap'><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
+                                <th class='Img' nowrap='nowrap'><app:img src="startup/ImgFlagRed.png" altkey="ALT_FLAGGED"/></th>
                             </c:if>
                             <c:if test="${mailbox.features.mailPriority}">
-                                <th class='ImgNarrow' nowrap='nowrap' width='12'><app:img src="startup/ImgPriorityHigh_list.gif" altkey="ALT_PRIORITY"/></th>
+                                <th class='ImgNarrow' nowrap='nowrap' width='12'><app:img src="startup/ImgPriorityHigh_list.png" altkey="ALT_PRIORITY"/></th>
                             </c:if>
                             <c:if test="${mailbox.features.tagging}">
-                                <th class='Img' nowrap><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/></th>
+                                <th class='Img' nowrap><app:img src="startup/ImgTag.png" altkey="ALT_TAG_TAG"/></th>
                             </c:if>
-                            <th class='Img' nowrap=""><app:img src="startup/ImgMsgStatus.gif"/></th>
+                            <th class='Img' nowrap=""><app:img src="startup/ImgMsgStatus.png"/></th>
                             <th width="160" nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/></th>
-                            <th class='Img' nowrap width='20'><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/></th>
+                            <th class='Img' nowrap width='20'><app:img src="startup/ImgAttachment.png" altkey="ALT_ATTACHMENT"/></th>
                             <th nowrap>
                                 <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
                                 <a href="${fn:escapeXml(subjectSortUrl)}">

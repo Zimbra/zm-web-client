@@ -31,7 +31,7 @@
             <td></td>
             <td class='Tab ${selected=='home' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_HOME' href="<c:url value="/h/home"/>" <c:if test="${keys}">accesskey="v"</c:if>>
-                    <span id='tab_ikon_home'><app:img src="common/ImgGlobe.gif" altkey='ALT_APP_HOME'/></span>
+                    <span id='tab_ikon_home'><app:img src="common/ImgGlobe.png" altkey='ALT_APP_HOME'/></span>
                     <span><fmt:message key="home"/></span>
                 </a>
             </td>
@@ -40,7 +40,7 @@
         <c:if test="${mailbox.features.mail}">
         <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
             <a id='TAB_MAIL' href="<c:url value="/h/search"/>">
-              <span id='tab_ikon_mail'><app:img src="startup/ImgMailApp.gif" altkey='ALT_APP_MAIL'/>
+              <span id='tab_ikon_mail'><app:img src="startup/ImgMailApp.png" altkey='ALT_APP_MAIL'/>
               </span>
                 <span><fmt:message key="mail"/></span>
             </a>
@@ -50,7 +50,7 @@
         <c:if test="${mailbox.features.voice}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='voice' ? 'TabSelected' :'TabNormal'}'>
-                <a id='TAB_VOICE' href="<c:url value="/h/search?st=voicemail"/>" <c:if test="${keys}">accesskey="v"</c:if>><span id='tab_ikon_voice'><app:img src="voicemail/ImgVoicemailApp.gif" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
+                <a id='TAB_VOICE' href="<c:url value="/h/search?st=voicemail"/>" <c:if test="${keys}">accesskey="v"</c:if>><span id='tab_ikon_voice'><app:img src="voicemail/ImgVoicemailApp.png" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
                         key="voice"/></span></a>
             </td>
             <td class='TabSpacerR'/>
@@ -59,7 +59,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='contacts' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_ADDRESSBOOK' href="<c:url value="/h/search?st=contact"/>">
-                   <span id='tab_ikon_contacts'><app:img src="contacts/ImgContact.gif" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
+                   <span id='tab_ikon_contacts'><app:img src="contacts/ImgContact.png" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
                         key="addressBook"/></span></a>
             </td>
             <td class='TabSpacerR'/>
@@ -68,7 +68,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='calendar' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_CALENDAR' href="<c:url value="/h/calendar"/>">
-                    <span id='tab_ikon_calendar'><app:img src="startup/ImgCalendarApp.gif" altkey='ALT_APP_CALENDAR'/></span><span><fmt:message
+                    <span id='tab_ikon_calendar'><app:img src="startup/ImgCalendarApp.png" altkey='ALT_APP_CALENDAR'/></span><span><fmt:message
                         key="calendar"/></span></a>
             </td>
             <td class='TabSpacerR'/>
@@ -77,7 +77,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='tasks' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_TASKS' href="<c:url value="/h/search?st=task"/>">
-                    <span id='tab_ikon_tasks'><app:img src="startup/ImgTaskList.gif" altkey='ALT_APP_TASK'/></span><span><fmt:message
+                    <span id='tab_ikon_tasks'><app:img src="startup/ImgTaskList.png" altkey='ALT_APP_TASK'/></span><span><fmt:message
                         key="tasks"/></span></a>
             </td>
             <td class='TabSpacerR'/>
@@ -86,7 +86,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='wiki' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_NOTEBOOK' href="<c:url value="/h/search?st=wiki"/>">
-                    <span id='tab_ikon_notebook'><app:img src="startup/ImgNoteApp.gif" altkey='ALT_APP_NOTEBOOK'/></span><span><fmt:message
+                    <span id='tab_ikon_notebook'><app:img src="startup/ImgNoteApp.png" altkey='ALT_APP_NOTEBOOK'/></span><span><fmt:message
                         key="notebook"/></span></a>
             </td>
             <td class='TabSpacerR'/>
@@ -95,7 +95,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='briefcase' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_BRIEFCASES' href="<c:url value="/h/search?st=briefcase"/>">
-                    <span id='tab_ikon_briefcases'><app:img src="startup/ImgFolder.gif" altkey='ALT_APP_BRIEFCASE'/></span><span><fmt:message
+                    <span id='tab_ikon_briefcases'><app:img src="startup/ImgFolder.png" altkey='ALT_APP_BRIEFCASE'/></span><span><fmt:message
                         key="briefcase"/></span></a>
             </td>
             <td class='TabSpacerR'/>
@@ -104,7 +104,7 @@
 	        <td class='TabSpacer'/>
 	        <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_OPTIONS' href="<c:url value="/h/options?prev=${selected}"/>">
-	                <span id='tab_ikon_options'><app:img src="startup/ImgPreferences.gif" altkey='ALT_APP_OPTIONS'/></span><span><fmt:message
+	                <span id='tab_ikon_options'><app:img src="startup/ImgPreferences.png" altkey='ALT_APP_OPTIONS'/></span><span><fmt:message
 	                    key="options"/></span></a>
 	        </td>
 	        <td class='TabSpacerR'/>
@@ -127,7 +127,7 @@
                     <c:url var="composeUrl" value="/h/search?action=compose"/>
                 </c:otherwise>
             </c:choose>
-            <a id='TAB_COMPOSE' href="${fn:escapeXml(composeUrl)}"><span id='tab_ikon_compose'><app:img src="startup/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span><span><fmt:message
+            <a id='TAB_COMPOSE' href="${fn:escapeXml(composeUrl)}"><span id='tab_ikon_compose'><app:img src="startup/ImgNewMessage.png" altkey='ALT_APP_COMPOSE'/></span><span><fmt:message
                     key="compose"/></span></a>
         </td>
         <td class='TabSpacerR'/>

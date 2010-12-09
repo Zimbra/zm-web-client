@@ -63,7 +63,7 @@
     <tr>
         <td class='zo_main_item'>
             <a href="mosearch">
-                <mo:img src="startup/ImgMailApp.gif" alt="mail"/>
+                <mo:img src="startup/ImgMailApp.png" alt="mail"/>
                 <fmt:message key="mail"/>
                 <c:if test="${mailbox.inbox.hasUnread}">&nbsp;(${mailbox.inbox.unreadCount})</c:if>
             </a>
@@ -73,7 +73,7 @@
             <tr>
                 <td class='zo_main_item'>
                 <a href="moaddrbooks">
-                    <mo:img src="contacts/ImgContact.gif" alt="contacts"/>
+                    <mo:img src="contacts/ImgContact.png" alt="contacts"/>
                     <fmt:message key="addressBooks"/>
                 </a>
                 </td>
@@ -83,7 +83,7 @@
             <tr>
                 <td class='zo_main_item'>
                 <a href="mocalendar">
-                    <mo:img src="startup/ImgCalendarApp.gif" alt="calendar"/>
+                    <mo:img src="startup/ImgCalendarApp.png" alt="calendar"/>
                     <fmt:message key="calendar"/>
                 </a>
                 </td>
@@ -92,7 +92,7 @@
         <tr>
             <td class='zo_main_item'>
             <a href="mofolders">
-                <mo:img src="mail/ImgMailFolder.gif" alt="mail" />
+                <mo:img src="mail/ImgMailFolder.png" alt="mail" />
                 <fmt:message key="MO_mailFoldersTags"/>
             </a>
             </td>
@@ -100,7 +100,7 @@
         <tr>
             <td class='zo_main_item'>
             <a href="moquery">
-                <mo:img src="startup/ImgSearch.gif" alt="search"/>
+                <mo:img src="startup/ImgSearch.png" alt="search"/>
                 <fmt:message key="search"/>
             </a>
             </td>
@@ -109,7 +109,7 @@
         <tr>
             <td class='zo_main_item'>
             <a href="?p=4">
-                <mo:img src="common/ImgPreferences.gif" />
+                <mo:img src="common/ImgPreferences.png" />
                 <fmt:message key="options"/>
             </a>
             </td>

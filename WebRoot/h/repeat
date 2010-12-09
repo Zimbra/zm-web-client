@@ -28,12 +28,12 @@
 
     <c:choose>
         <c:when test="${empty compose.inviteId}">
-            <c:set var="apptImage" value="calendar/ImgNewAppointment.gif"/>
+            <c:set var="apptImage" value="calendar/ImgNewAppointment.png"/>
             <c:set var="apptImageAlt" value="ALT_NEW_APPOINTMENT"/>
             <fmt:message var="apptSubject" key="newAppointment"/>
         </c:when>
         <c:otherwise>
-            <c:set var="apptImage" value="startup/ImgAppointment.gif"/>
+            <c:set var="apptImage" value="startup/ImgAppointment.png"/>
             <c:set var="apptImageAlt" value="ALT_EDIT_APPOINTMENT"/>
             <c:set var="apptSubject" value="${compose.subject}"/>
         </c:otherwise>
@@ -49,11 +49,11 @@
             <td class='TbBt'>
                 <table cellspacing=0 cellpadding=0 class='Tb'>
                     <tr>
-                        <app:button name="actionRepeatDone" src="common/ImgCheck.gif" tooltip="done" text="done"/>
+                        <app:button name="actionRepeatDone" src="common/ImgCheck.png" tooltip="done" text="done"/>
                         <td>
                             <div class='vertSep'></div>
                         </td>
-                        <app:button name="actionRepeatCancel" src="common/ImgCancel.gif" tooltip="cancel"
+                        <app:button name="actionRepeatCancel" src="common/ImgCancel.png" tooltip="cancel"
                                     text="cancel"/>
                     </tr>
                 </table>

@@ -74,11 +74,11 @@
             <td class='TbBt'>
                 <table cellspacing=0 cellpadding=0 class='Tb'>
                     <tr>
-                        <app:button name="actionContactDone" src="common/ImgCheck.gif" tooltip="done" text="done"/>
+                        <app:button name="actionContactDone" src="common/ImgCheck.png" tooltip="done" text="done"/>
                         <td><div class='vertSep'></div></td>
-                        <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
+                        <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.png" tooltip="addSelected" text="addSelected"/>
                         <td><div class='vertSep'></div></td>
-                        <app:button name="actionContactCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                        <app:button name="actionContactCancel" src="common/ImgCancel.png" tooltip="cancel" text="cancel"/>
                     </tr>
                 </table>
             </td>
@@ -292,13 +292,13 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                         <table align="center">
                             <tr>
                                 <td>
-                                    <input type="image" value="1" src="<app:imgurl value="startup/ImgLeftArrow.gif"/>" name="schedulePrevDate"/>
+                                    <input type="image" value="1" src="<app:imgurl value="startup/ImgLeftArrow.png"/>" name="schedulePrevDate"/>
                                 </td>
                                 <th nowrap="nowrap">
                                     <fmt:formatDate pattern="${hdrFormat}" value="${compose.apptStartCalendar.time}" timeZone="${tz}"/>
                                 </th>
                                 <td>
-                                    <input type="image" value="1" src="<app:imgurl value="startup/ImgRightArrow.gif"/>" name="scheduleNextDate"/>
+                                    <input type="image" value="1" src="<app:imgurl value="startup/ImgRightArrow.png"/>" name="scheduleNextDate"/>
                                 </td>
                             </tr>
                         </table>
@@ -380,7 +380,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                                     <c:set var="rows" value="${rows+1}"/>
                                     <td><div class="gridDiv ${compose.allDay ? 'end ':''}"/></td>
                                     <td>
-                                        <input type="image" name="removeAttendee" alt="<fmt:message key="remove"/>" value="${fn:escapeXml(anAttendee.fullAddress)}" src="<app:imgurl value="common/ImgCancel.gif"/>">
+                                        <input type="image" name="removeAttendee" alt="<fmt:message key="remove"/>" value="${fn:escapeXml(anAttendee.fullAddress)}" src="<app:imgurl value="common/ImgCancel.png"/>">
                                     </td>
                                 </tr>
                             </table>

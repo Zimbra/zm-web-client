@@ -85,7 +85,7 @@
                                 </c:if>
                                 <c:if test="${appt.exception}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ImgApptException.gif"/>
+                                        <app:img src="calendar/ImgApptException.png"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">
@@ -122,7 +122,7 @@
                                 </c:if>
                                 <c:if test="${appt.exception}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ImgApptException.gif" alt="exception"/>
+                                        <app:img src="calendar/ImgApptException.png" alt="exception"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">
@@ -172,7 +172,7 @@
                                 </c:if>
                                 <c:if test="${appt.exception}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ImgApptException.gif" alt="exception"/>
+                                        <app:img src="calendar/ImgApptException.png" alt="exception"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">

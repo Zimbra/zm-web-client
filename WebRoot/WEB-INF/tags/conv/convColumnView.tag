@@ -90,7 +90,7 @@
 						<input type="submit" value="<fmt:message key='actionGo'/>" name="sortAction"/>
 					</span>
 				</th>
-				<th width="1%" nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+				<th width="1%" nowrap><app:img src="startup/ImgAttachment.png" altkey="ALT_ATTACHMENT"/>
 			</tr>
 		</table>
 		<table width="100%" cellpadding="2" cellspacing="0">
@@ -112,8 +112,8 @@
 						<td class='CB' nowrap><input  id="C${status.index}" type="checkbox" name="id" value="${convHit.id}"></td>
                         <td class='Img' nowrap>
                             <c:choose>
-                                <c:when test="${convHit.messageCount > 1 and param.action == 'paneView' and hit.id eq param.cid}"><a href="${fn:escapeXml(collapseUrl)}" id="${aid}"><app:img src="startup/ImgNodeExpanded.gif"/></a></c:when>
-                                <c:when test="${convHit.messageCount > 1}"><a href="${fn:escapeXml(convUrl)}" id="${aid}"><app:img src="startup/ImgNodeCollapsed.gif"/></a></c:when>
+                                <c:when test="${convHit.messageCount > 1 and param.action == 'paneView' and hit.id eq param.cid}"><a href="${fn:escapeXml(collapseUrl)}" id="${aid}"><app:img src="startup/ImgNodeExpanded.png"/></a></c:when>
+                                <c:when test="${convHit.messageCount > 1}"><a href="${fn:escapeXml(convUrl)}" id="${aid}"><app:img src="startup/ImgNodeCollapsed.png"/></a></c:when>
                             </c:choose>
                         </td>
 						<td colspan="3" nowrap><%-- allow this column to wrap --%>

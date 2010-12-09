@@ -33,7 +33,7 @@
                 <c:param name="st" value="wiki"/>
                  <c:param name="${expanded ? 'collapse' : 'expand'}" value="notebook"/>
              </c:url>
-             <th style='width:20px'><a href="${fn:escapeXml(toggleUrl)}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}"/></a></th>
+             <th style='width:20px'><a href="${fn:escapeXml(toggleUrl)}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.png' : 'startup/ImgNodeCollapsed.png'}"/></a></th>
             <th class='Header'><fmt:message key="folders"/></th>
             <!--th width='1%' align='right' class='ZhTreeEdit'>
                 <c:url value="/h/mnotebook" var="mabUrl">

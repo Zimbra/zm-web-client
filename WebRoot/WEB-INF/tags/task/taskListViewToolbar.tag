@@ -30,25 +30,25 @@
                 <tr>
                     <td nowrap>
                         <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
+                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.png" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
                     <td>
                         <zm:currentResultUrl var="newTaskUrl" value="" context="${context}" action="edittask"/>
-                        <a <c:if test="${keys}">id="NEW_TASK" </c:if>href="${fn:escapeXml(newTaskUrl)}"><app:img altkey="newTask" src="tasks/ImgNewTask.gif"/><span><fmt:message key="newTask"/></span></a>
+                        <a <c:if test="${keys}">id="NEW_TASK" </c:if>href="${fn:escapeXml(newTaskUrl)}"><app:img altkey="newTask" src="tasks/ImgNewTask.png"/><span><fmt:message key="newTask"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
                     <c:choose>
                         <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT" />
+                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" src="startup/ImgDelete.png" text="actionDelete" tooltip="actionTrashTT" />
                         </c:when>
                         <c:otherwise>
-                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT"/>
+                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionDelete" src="startup/ImgDelete.png" text="actionDelete" tooltip="actionTrashTT"/>
                         </c:otherwise>
                     </c:choose>
                     <td><div class='vertSep'></div></td>
                     <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-                        <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+                        <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.png" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
                     </td>
                     <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
                         <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />

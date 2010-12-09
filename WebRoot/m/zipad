@@ -172,7 +172,7 @@
         	</div>
         	-->
         	
-       <div class="button alignLeft" style="width: 20px; margin: 5px 0 0 10px; height: 14px; padding: 4px;"><img src="/zimbra/img/startup/ImgRefresh.gif" border="0"/></div>
+       <div class="button alignLeft" style="width: 20px; margin: 5px 0 0 10px; height: 14px; padding: 4px;"><img src="/zimbra/img/startup/ImgRefresh.png" border="0"/></div>
         	<a href="www.zimbra.com" target="_new" class="alignLeft"><div class="logo"></div></a>
         	<div class ="alignRight buttonBottom">
         		<c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:url>

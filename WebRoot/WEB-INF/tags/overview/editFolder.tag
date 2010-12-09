@@ -295,7 +295,7 @@
                             <c:param name="sync" value="${folder.id}"/>
                         </c:url>                        
                         <a href="${fn:escapeXml(syncUrl)}">
-                            <app:img src="startup/ImgRefresh.gif" title="refresh"/>
+                            <app:img src="startup/ImgRefresh.png" title="refresh"/>
                         </a>
                     </td>
                 </tr>

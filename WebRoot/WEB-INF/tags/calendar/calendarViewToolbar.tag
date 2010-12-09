@@ -36,7 +36,7 @@
                 <tr valign="middle">
                     <app:calendarUrl var="refreshUrl" refresh="1"/>
                     <td height="100%">
-                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"> id="CAL_REFRESH"</c:if>><app:img altkey="ALT_CAL_REFRESH" src="startup/ImgRefresh.gif"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
+                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"> id="CAL_REFRESH"</c:if>><app:img altkey="ALT_CAL_REFRESH" src="startup/ImgRefresh.png"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
                     </td>
                     <td>
                         <div class='vertSep'></div>
@@ -49,33 +49,33 @@
                     <app:calendarUrl var="monthViewUrl" date="${dateDf}" view="month"/>
                     <app:calendarUrl var="scheduleViewUrl" date="${dateDf}" view="schedule"/>
                     <td height="100%">
-                        <a id="CAL_NEWAPPT" href="${fn:escapeXml(newApptUrl)}"><app:img altkey="ALT_CAL_NEW_APPT" src="calendar/ImgNewAppointment.gif"/><span style='padding-left:5px'><fmt:message key="new"/></span></a>
+                        <a id="CAL_NEWAPPT" href="${fn:escapeXml(newApptUrl)}"><app:img altkey="ALT_CAL_NEW_APPT" src="calendar/ImgNewAppointment.png"/><span style='padding-left:5px'><fmt:message key="new"/></span></a>
                     </td>
                     <td height="100%"><div class='vertSep'></div></td>
                     <td height="100%">
-                        <a id="CAL_DAY" href="${fn:escapeXml(dayViewUrl)}"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/ImgDayView.gif"/><span style='padding-left:5px'><fmt:message key="day"/></span></a>
+                        <a id="CAL_DAY" href="${fn:escapeXml(dayViewUrl)}"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/ImgDayView.png"/><span style='padding-left:5px'><fmt:message key="day"/></span></a>
                     </td>
                     <td height="100%">
-                        <a id="CAL_WORK" href="${fn:escapeXml(workWeekViewUrl)}"><app:img altkey="ALT_CAL_WORKWEEK_VIEW" src="calendar/ImgWorkWeekView.gif"/><span style='padding-left:5px'><fmt:message key="workWeek"/></span></a>
+                        <a id="CAL_WORK" href="${fn:escapeXml(workWeekViewUrl)}"><app:img altkey="ALT_CAL_WORKWEEK_VIEW" src="calendar/ImgWorkWeekView.png"/><span style='padding-left:5px'><fmt:message key="workWeek"/></span></a>
                     </td>
                     <td height="100%">
-                        <a id="CAL_WEEK" href="${fn:escapeXml(weekViewUrl)}"><app:img altkey="ALT_CAL_WEEK_VIEW" src="calendar/ImgWeekView.gif"/><span style='padding-left:5px'><fmt:message key="week"/></span></a>
+                        <a id="CAL_WEEK" href="${fn:escapeXml(weekViewUrl)}"><app:img altkey="ALT_CAL_WEEK_VIEW" src="calendar/ImgWeekView.png"/><span style='padding-left:5px'><fmt:message key="week"/></span></a>
                     </td>
                     <td height="100%">
-                        <a id="CAL_MONTH" href="${fn:escapeXml(monthViewUrl)}"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/ImgMonthView.gif"/><span style='padding-left:5px'><fmt:message key="month"/></span></a>
+                        <a id="CAL_MONTH" href="${fn:escapeXml(monthViewUrl)}"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/ImgMonthView.png"/><span style='padding-left:5px'><fmt:message key="month"/></span></a>
                     </td>
                     <td height="100%">
-                        <a id="CAL_SCHED" href="${fn:escapeXml(scheduleViewUrl)}"><app:img altkey="ALT_CAL_SCHEDULE_VIEW" src="calendar/ImgGroupSchedule.gif"/><span style='padding-left:5px'><fmt:message key="schedule"/></span></a>
+                        <a id="CAL_SCHED" href="${fn:escapeXml(scheduleViewUrl)}"><app:img altkey="ALT_CAL_SCHEDULE_VIEW" src="calendar/ImgGroupSchedule.png"/><span style='padding-left:5px'><fmt:message key="schedule"/></span></a>
                     </td>
                     <td height="100%"><div class='vertSep'></div></td>
                     <app:calendarUrl var="todayUrl" nodate="true"/>
                     <td height="100%">
-                        <a id="CAL_TODAY" href="${fn:escapeXml(todayUrl)}"><app:img altkey="ALT_CAL_TODAY" src="calendar/ImgDate.gif"/><span style='padding-left:5px'><fmt:message key="today"/></span></a>
+                        <a id="CAL_TODAY" href="${fn:escapeXml(todayUrl)}"><app:img altkey="ALT_CAL_TODAY" src="calendar/ImgDate.png"/><span style='padding-left:5px'><fmt:message key="today"/></span></a>
                     </td>
                     <td height="100%"><div class='vertSep'></div></td>
                     <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
                         <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-                        <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+                        <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.png" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
                     </td>
                     <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
                         <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
@@ -89,13 +89,13 @@
             <table cellspacing=5 cellpadding=0>
                 <tr>
                     <td>
-            <a <c:if test="${keys}">id="PREV_PAGE"</c:if> href="${fn:escapeXml(prevUrl)}"><app:img altkey="ALT_PAGE_PREVIOUS" src="startup/ImgLeftArrow.gif" border="0"/></a>
+            <a <c:if test="${keys}">id="PREV_PAGE"</c:if> href="${fn:escapeXml(prevUrl)}"><app:img altkey="ALT_PAGE_PREVIOUS" src="startup/ImgLeftArrow.png" border="0"/></a>
                     </td>
                     <td class='ZhCalPager'>
             ${fn:escapeXml(title)}
                     </td>
                     <td>
-            <a <c:if test="${keys}">id="NEXT_PAGE"</c:if> href="${fn:escapeXml(nextUrl)}"><app:img altkey="ALT_PAGE_NEXT" src="startup/ImgRightArrow.gif" border="0"/></a>
+            <a <c:if test="${keys}">id="NEXT_PAGE"</c:if> href="${fn:escapeXml(nextUrl)}"><app:img altkey="ALT_PAGE_NEXT" src="startup/ImgRightArrow.png" border="0"/></a>
                     </td>
                 </tr>
             </table>

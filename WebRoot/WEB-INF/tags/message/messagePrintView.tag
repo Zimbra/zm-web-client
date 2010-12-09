@@ -257,7 +257,7 @@
                                             </c:forEach>
                                         </c:if>
                                         <c:if test="${mailbox.features.flagging and message.isFlagged}">
-                                            <app:img altkey='ALT_FLAGGED' src="startup/ImgFlagRed.gif"/>
+                                            <app:img altkey='ALT_FLAGGED' src="startup/ImgFlagRed.png"/>
                                         </c:if>
                                     </td>
                                 </tr>
@@ -265,7 +265,7 @@
                             <c:if test="${not empty message.attachments}">
                                 <tr>
                                     <td nowrap align="right" class='MsgHdrAttAnchor'>
-                                            <app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+                                            <app:img src="startup/ImgAttachment.png" altkey="ALT_ATTACHMENT"/>
                                             <fmt:message key="attachmentCount">
                                                 <fmt:param value="${message.numberOfAttachments}"/>
                                             </fmt:message>

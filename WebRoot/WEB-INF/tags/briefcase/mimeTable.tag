@@ -30,7 +30,7 @@
         <c:set var="mimeDesc" value="mimeAdobePdfDocument" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/postscript'}">
-        <c:set var="mimeImg" value="doctypes/ImgGenericDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgGenericDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeAdobePsDocument" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/exe'}">
@@ -82,7 +82,7 @@
         <c:set var="mimeDesc" value="mimeImage" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'message/rfc822'}">
-        <c:set var="mimeImg" value="doctypes/ImgMessageDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgMessageDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeMailMessage" scope="request"/>
     </c:when>
     <c:when test="${zm:contains(contenttype,'text')}">
@@ -90,7 +90,7 @@
         <c:set var="mimeDesc" value="mimeTextFile" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'text/html'}">
-        <c:set var="mimeImg" value="doctypes/ImgHtmlDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgHtmlDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeHtmlDocument" scope="request"/>
     </c:when>
     <c:otherwise>

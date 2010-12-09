@@ -57,7 +57,7 @@
 <div id="ZLoginPanel">
 <table width="500" cellpadding="5" cellspacing="5" border="0" align="center" id="ZLoginBodyContainer">
  <tr>
-	<td><img src="<c:url value='/img/dwt/ImgWarning_32.gif' />" width="32" height="32" border="0"></td>
+	<td><img src="<c:url value='/img/dwt/ImgWarning_32.png' />" width="32" height="32" border="0"></td>
     <td vlaign="middle"><h2 style="margin: 0px;"><fmt:message key="${errTitle}"/></h2></td>
  </tr>
  <tr>

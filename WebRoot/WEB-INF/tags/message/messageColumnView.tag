@@ -74,7 +74,7 @@
 									<input type="submit" value="<fmt:message key='actionGo'/>" name="sortAction"/>
 								</span>
 							</th>
-							<th width="1%" nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+							<th width="1%" nowrap><app:img src="startup/ImgAttachment.png" altkey="ALT_ATTACHMENT"/>
 						</tr>
 					</table>
 					<table width="100%" cellpadding="2" cellspacing="0">

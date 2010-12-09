@@ -27,18 +27,18 @@
             <table cellspacing=0 cellpadding=0 class='Tb'>
                 <td nowrap>
                     <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                    <a href="${refreshUrl}"><c:if test="${keys}"></c:if><app:img src="startup/ImgRefresh.gif" altkey="getCalls"/><span><fmt:message key="getCalls"/></span></a>
+                    <a href="${refreshUrl}"><c:if test="${keys}"></c:if><app:img src="startup/ImgRefresh.png" altkey="getCalls"/><span><fmt:message key="getCalls"/></span></a>
                 </td>
                 <td><div class='vertSep'></div></td>
                 <td nowrap>
 					<c:choose>
 						<c:when test="${context.searchResult.size > 0}">
 							<zm:currentResultUrl var="refreshUrl" value="/h/printcalls" context="${context}" refresh="true" />
-							<a id="OPPRINT" target="_blank" href="${refreshUrl}"><app:img src="startup/ImgPrint.gif" altkey="actionPrint"/></a>
+							<a id="OPPRINT" target="_blank" href="${refreshUrl}"><app:img src="startup/ImgPrint.png" altkey="actionPrint"/></a>
 						</c:when>
 						<c:otherwise>
 							<%-- Empty <a> to pick up styles... --%>
-							<a><app:img src="startup/ImgPrint.gif" altkey="actionPrint" clazz="ImgDisabled"/></a>
+							<a><app:img src="startup/ImgPrint.png" altkey="actionPrint" clazz="ImgDisabled"/></a>
 						</c:otherwise>
 					</c:choose>
                 </td>
@@ -48,7 +48,7 @@
                         <c:param name="selected" value="voice"/>
                         <c:param name="phone" value="${zm:getPhoneFromVoiceQuery(context.query)}"/>
                     </c:url>
-                    <a id="OPCALLMANAGER" href="${optionsUrl}"><app:img src="voicemail/ImgCallManager.gif" altkey="callManager"/><span><fmt:message key="actionCallManager"/></span></a>
+                    <a id="OPCALLMANAGER" href="${optionsUrl}"><app:img src="voicemail/ImgCallManager.png" altkey="callManager"/><span><fmt:message key="actionCallManager"/></span></a>
                 </td>
             </table>
         </td>

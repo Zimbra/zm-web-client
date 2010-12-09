@@ -104,7 +104,7 @@
             <div class="tr nr">
                 <span class="td">
                 <c:if test="${contact.isFlagged}">
-                                &nbsp;<mo:img src="startup/ImgFlagRed.gif" alt="flag"/></c:if>
+                                &nbsp;<mo:img src="startup/ImgFlagRed.png" alt="flag"/></c:if>
                 <c:if test="${contact.hasTags and mailbox.features.tagging}">
                         <c:set var="tags" value="${zm:getTags(pageContext, contact.tagIds)}"/>
                         <c:forEach items="${tags}" var="tag">

@@ -27,13 +27,13 @@
     <zm:nextResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
     <a class='zo_button' href="${fn:escapeXml(url)}">
         <fmt:message key="MO_NEXT"/>
-        <%--<app:img src="arrows/ImgNextPage.gif" alt=""/>--%>
+        <%--<app:img src="arrows/ImgNextPage.png" alt=""/>--%>
     </a>
 </c:when>
 <c:otherwise>
     <a class='zo_button' style='color:gray'>
         <fmt:message key="MO_NEXT"/>
-        <%--<app:img src="arrows/ImgPreviousPage.gif" alt=""/>--%>
+        <%--<app:img src="arrows/ImgPreviousPage.png" alt=""/>--%>
     </a>
 </c:otherwise>
 </c:choose>

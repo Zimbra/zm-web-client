@@ -35,7 +35,7 @@
                     <input  id="searchWebField" name='<fmt:message key="searchFieldName"/>' class="YsearchField" maxlength="2048" value=""></td>
 				<td class="ImgField_R searchwidth"></td>
 				<td nowrap="nowrap">
-					<button class="SearchButton" type="submit" name="search"><app:img src="startup/ImgWebSearch.gif" altkey='ALT_SEARCH'/></button>
+					<button class="SearchButton" type="submit" name="search"><app:img src="startup/ImgWebSearch.png" altkey='ALT_SEARCH'/></button>
 				</td>
             </tr>
            </table>

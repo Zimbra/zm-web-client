@@ -37,7 +37,7 @@
                    <c:param name="${expanded ? 'collapse' : 'expand'}" value="${folder.id}"/>
                </c:url>
                 <a href="${fn:escapeXml(toggleUrl)}">
-                    <app:img src="${expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}" altkey="${expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/>
+                    <app:img src="${expanded ? 'startup/ImgNodeExpanded.png' : 'startup/ImgNodeCollapsed.png'}" altkey="${expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/>
                 </a>
         </c:if>
         <a href='${fn:escapeXml(url)}'>

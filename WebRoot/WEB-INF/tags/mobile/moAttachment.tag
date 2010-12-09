@@ -37,7 +37,7 @@
             </fmt:message>
         </c:if>
         <span class="td">
-            <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>--%>
+            <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.png"/>--%>
             <span class="SmlIcnHldr Attachment">&nbsp;</span>
             <input <c:if test="${checked}">checked </c:if>type=checkbox name="${name}" value="${value}">
             <a target="_blank" href="${fn:escapeXml(url)}&amp;disp=i">${fn:escapeXml(displayName)}</a>&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>

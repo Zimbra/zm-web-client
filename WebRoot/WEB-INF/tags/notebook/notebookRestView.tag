@@ -42,14 +42,14 @@
                         <td nowrap>&nbsp;</td>
                         <td nowrap>
                             <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                            <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
+                            <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.png" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
                         </td>
                         <td nowrap>&nbsp;</td>
                         <td><div class='vertSep'></div></td>
                         <td nowrap>&nbsp;</td>
                         <td nowrap>
                             <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                            <a href="${fn:escapeXml(iframeUrl)}" target="_blank" <c:if test="${keys}"></c:if>><app:img src="startup/ImgPrint.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="print"/></span></a>
+                            <a href="${fn:escapeXml(iframeUrl)}" target="_blank" <c:if test="${keys}"></c:if>><app:img src="startup/ImgPrint.png" altkey="refresh"/><span>&nbsp;<fmt:message key="print"/></span></a>
                         </td>
                     </tr>
                 </table>

@@ -79,17 +79,17 @@
                                     <tr>
                                         <td>
                                             <a id="OPCLOSE" href="<c:url value="/h/calendar"/>">
-                                                <app:img src="common/ImgClose.gif" alt="close"/><span style='padding-left:5px'><fmt:message key="close"/></span>
+                                                <app:img src="common/ImgClose.png" alt="close"/><span style='padding-left:5px'><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/ImgNewAppointment.gif" tooltip="calendarNew" text="calendarNew"/>
+                                        <app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/ImgNewAppointment.png" tooltip="calendarNew" text="calendarNew"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWSUB" name="actionNewSubscribedCalendar" src="calendar/ImgNewAppointment.gif" tooltip="calendarNewSubscribed" text="calendarNewSubscribed"/>
+                                        <app:button id="OPNEWSUB" name="actionNewSubscribedCalendar" src="calendar/ImgNewAppointment.png" tooltip="calendarNewSubscribed" text="calendarNewSubscribed"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWLINK" name="actionNewSharedCalendar" src="calendar/ImgNewAppointment.gif" tooltip="calendarNewShared" text="calendarNewShared"/>
+                                        <app:button id="OPNEWLINK" name="actionNewSharedCalendar" src="calendar/ImgNewAppointment.png" tooltip="calendarNewShared" text="calendarNewShared"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPFREEBUSYLINK" name="actionSendFreeBusyLink" src="calendar/ImgNewAppointment.gif" tooltip="sendFreeBusyLink" text="sendFreeBusyLink"/>
+                                        <app:button id="OPFREEBUSYLINK" name="actionSendFreeBusyLink" src="calendar/ImgNewAppointment.png" tooltip="sendFreeBusyLink" text="sendFreeBusyLink"/>
                                     </tr>
                                 </table>
                             </td>
