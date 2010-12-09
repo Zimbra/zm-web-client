@@ -650,16 +650,7 @@ function(items) {
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
 		if (!(searchFolder && searchFolder.nId == folder)) {
-			var found = false;
-			for (var j=0; j<items.length; j++) {
-				var item = items[j];
-				if (item && ((item.folders && item.folders[folder]) || (item.folderId == folder))) {
-					found = true;
-					break;
-				}
-			}
-			if (!found)
-				chars.push(ZmFolder.TCON_CODE[folder]);
+			chars.push(ZmFolder.TCON_CODE[folder]);
 		}
 	}
 	return chars.join("");
