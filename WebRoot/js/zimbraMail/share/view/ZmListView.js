@@ -642,6 +642,7 @@ function(actionCode, ev) {
 
 ZmListView.prototype.setMultiSelection =
 function(clickedEl, bContained, ev) {
+	this._selectedItem = null; //reset selected item
 	if (ev && ev.ctrlKey && this._selectedItems.size() == 1) {
 		this._checkSelectedItems(true);
 	}
@@ -699,11 +700,11 @@ function(check) {
  * @param	{Array}	selectedArray		an array of {Element} objects to select
  */
 ZmListView.prototype.setSelectedItems =
-function(selectedArray) {
+function(selectedArray, selectedItem) {
 	DwtListView.prototype.setSelectedItems.call(this, selectedArray);
 
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		this._checkSelectedItems(true);
+		this._checkSelectedItems(true, selectedItem);
 	}
 };
 
@@ -758,9 +759,12 @@ function() {
 };
 
 ZmListView.prototype._checkSelectedItems =
-function(check) {
+function(check, dontCheckThisItem) {
 	var sel = this.getSelection();
 	for (var i = 0; i < sel.length; i++) {
+		if (dontCheckThisItem && dontCheckThisItem.id && sel[i].id == dontCheckThisItem.id) {
+			continue;
+		}
 		this.setSelectionCbox(sel[i], !check);
 	}
 
@@ -1215,6 +1219,7 @@ function(params) {
 	params = params || {};
 	if (params.selection) {
 		s.selected = this.getSelection();
+		s.selectedItem = this._selectedItem; //viewed item
 	}
 	if (params.focus) {
 		s.focused = this.hasFocus();
@@ -1231,7 +1236,7 @@ function() {
 
 	var s = this._state;
 	if (s.selected && s.selected.length) {
-		this.setSelectedItems(s.selected);
+		this.setSelectedItems(s.selected, s.selectedItem);
 	}
 	if (s.anchorItem) {
 		var el = this._getElFromItem(s.anchorItem);
