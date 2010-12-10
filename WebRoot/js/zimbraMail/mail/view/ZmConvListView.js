@@ -745,7 +745,7 @@ function(ev) {
 		var items = ev.batchMode ? this._getItemsFromBatchEvent(ev) : [item];
 		for (var i = 0, len = items.length; i < len; i++) {
 			var item = items[i];
-			var	conv = appCtxt.getById(item.cid);
+			var conv = appCtxt.getById(item.cid);
 			handled = true;
 			if (conv) {
 				if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
@@ -760,6 +760,7 @@ function(ev) {
 						this._expanded[conv.id] = false;
 					}
 					this._controller._app._checkReplenishListView = this;
+					this._setNextSelection();
 				} else {
 					if (!(conv.hasMatchingMsg(this._controller._app.currentSearch, true))) {
 						this._list.remove(conv);				// view has sublist of controller list
