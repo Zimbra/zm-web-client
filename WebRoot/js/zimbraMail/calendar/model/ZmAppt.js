@@ -899,6 +899,10 @@ function() {
 ZmAppt.prototype.addAttendeesToChckConflictsRequest =
 function(soapDoc, inv) {
 	for (var type in this._attendees) {
+
+        //consider only location & equipments for conflict check
+        if(type == ZmCalBaseItem.PERSON) continue;
+        
 		if (this._attendees[type] && this._attendees[type].length) {
 			for (var i = 0; i < this._attendees[type].length; i++) {
 				//this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[type][i], type);
@@ -925,6 +929,10 @@ function(soapDoc, inv) {
 ZmAppt.prototype.addAttendeesToChckConflictsJSONRequest =
 function(inv) {
 	for (var type in this._attendees) {
+
+        //consider only location & equipments for conflict check
+        if(type == ZmCalBaseItem.PERSON) continue;
+
 		if (this._attendees[type] && this._attendees[type].length) {
 			var usr = inv.usr = [];
 			for (var i = 0; i < this._attendees[type].length; i++) {
