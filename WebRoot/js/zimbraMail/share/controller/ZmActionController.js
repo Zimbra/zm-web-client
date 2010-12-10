@@ -30,14 +30,16 @@ ZmActionController = function() {
 		targetObj:this,
 		id:"ZmActionController",
 		mouseDownHdlr:AjxCallback.simpleClosure(this.dismiss, this),
-		hardCapture:false
+		hardCapture:false,
+		onRelease:AjxCallback.simpleClosure(this._onRelease, this),
+		enableAnyEvent:true
 	});
 };
 
 ZmActionController.prototype.toString =
 function() {
 	return "ZmActionController";
-}
+};
 
 /**
  * Logs a raw action, dismissing any current undo message, interpreting the params and creates a ZmAction object that is pushed onto the stack and returned
@@ -95,10 +97,16 @@ ZmActionController.prototype.undoCurrent = function() {
 };
 
 ZmActionController.prototype.onPopup = function() {
-	if (!this._capturing) {
-		this._capturing = true;
-		this._mouseCapObj.capture();
+	this._capturing = true;
+	this._mouseCapObj.capture();
+};
+
+ZmActionController.prototype._onRelease = function() {
+	if (this._capturing && DwtMouseEventCapture.getId() == "ZmActionController") {
+		this._capturing = false;
 	}
+	appCtxt.dismissStatusMsg(true);
+	this._active = false;
 };
 
 /**
@@ -107,7 +115,7 @@ ZmActionController.prototype.onPopup = function() {
 ZmActionController.prototype.dismiss = function() {
 	if (this._capturing && DwtMouseEventCapture.getId() == "ZmActionController") {
 		this._capturing = false;
-		this._mouseCapObj.release();	
+		this._mouseCapObj.release();
 	}
 	appCtxt.dismissStatusMsg(true);
 	this._active = false;
