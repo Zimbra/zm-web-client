@@ -56,7 +56,6 @@ ZmCalBaseItem = function(type, list, id, folderId) {
 
 ZmCalBaseItem.prototype = new ZmItem;
 ZmCalBaseItem.prototype.constructor = ZmCalBaseItem;
-ZmCalBaseItem.PRIVATE_FIELDS = {f:true,t:true,ex:true,fb:true,fba:true,transp:true,ptst:true,fr:true,priority:true,name:true,loc:true,geo:true,otherAtt:true,alarm:true};
 /**
  * Returns a string representation of the object.
  * 
@@ -353,12 +352,13 @@ function(calItemNode, instNode) {
 	this.uid 			= calItemNode.uid;
 	this.folderId 		= calItemNode.l || this._getDefaultFolderId();
 	this.invId			= calItemNode.invId;
+	this.isException 	= instNode.ex; 
 	this.id 			= this._getAttr(calItemNode, instNode, "id");
 	this.name 			= this._getAttr(calItemNode, instNode, "name");
 	this.fragment 		= this._getAttr(calItemNode, instNode, "fr");
 	this.status 		= this._getAttr(calItemNode, instNode, "status");
 	this.ptst 			= this._getAttr(calItemNode, instNode, "ptst");
-	this.isException 	= this._getAttr(calItemNode, instNode, "ex");
+	
 	this.allDayEvent	= (instNode.allDay || calItemNode.allDay)  ? "1" : "0";
 	this.organizer		= calItemNode.or && calItemNode.or.a;
 	this.isOrg 			= this._getAttr(calItemNode, instNode, "isOrg");
@@ -408,8 +408,7 @@ function() {
  */
 ZmCalBaseItem.prototype._getAttr =
 function(calItem, inst, name) {
-	return inst[name] != null ? inst[name] : 
-		( (inst["class"]=="PRI" && ZmCalBaseItem.PRIVATE_FIELDS[name]) ? null : calItem[name]);
+	return inst[name] != null ? inst[name] : inst.ex ? null : calItem[name];
 };
 
 /**
