@@ -1657,9 +1657,9 @@ ZmComposeView.prototype._acKeyupHandler =
 function(ev, acListView, result) {
 	var key = DwtKeyEvent.getCharCode(ev);
 	// process any printable character or enter/backspace/delete keys
-	if (result && AjxStringUtil.isPrintKey(key) ||
-		key == 3 || key == 13 || key == 8 || key == 46 ||
-		(AjxEnv.isMac && key == 224)) // bug fix #24670
+	if (result && (ev.inputLengthChanged ||
+		(key == 3 || key == 13 || key == 8 || key == 46 ||
+		(AjxEnv.isMac && key == 224)))) // bug fix #24670
 	{
 		this._adjustAddrHeight(DwtUiEvent.getTargetWithProp(ev, "id"));
 	}
