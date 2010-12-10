@@ -224,16 +224,18 @@ function() {
 	// bug fix #7192 - disable detach toolbar button
 	this._toolbar.enable(ZmOperation.DETACH_COMPOSE, false);
 
-	var msg = this._composeView._msg;
-	var addrs = this._composeView.getRawAddrFields();
-	var subj = this._composeView._subjectField.value;
-	var forAttHtml = this._composeView._attcDiv.innerHTML;
+	var view = this._composeView;
+	var msg = view._msg;
+	var addrs = view.getRawAddrFields();
+	var subj = view._subjectField.value;
+	var forAttHtml = view._attcDiv.innerHTML;
+	var msgAttId = view._msgAttId; //include original as attachment
 	var body = this._getBodyContent();
-	var composeMode = this._composeView.getComposeMode();
-	var backupForm = this._composeView.backupForm;
-	var sendUID = this._composeView.sendUID;
-	var action = this._composeView._action || this._action;
-	var identity = this._composeView.getIdentity();
+	var composeMode = view.getComposeMode();
+	var backupForm = view.backupForm;
+	var sendUID = view.sendUID;
+	var action = view._action || this._action;
+	var identity = view.getIdentity();
 
 	// this is how child window knows what to do once loading:
 	var newWinObj = appCtxt.getNewWindow();
@@ -244,6 +246,7 @@ function() {
 		addrs: addrs,
 		subj: subj,
 		forwardHtml: forAttHtml,
+		msgAttId: msgAttId,
 		body: body,
 		composeMode: composeMode,
 		identityId: (identity ? identity.id : null),

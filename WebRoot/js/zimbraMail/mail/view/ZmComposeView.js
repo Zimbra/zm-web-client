@@ -976,6 +976,7 @@ function(params) {
 
 	if (params.forwardHtml) {
 		this._attcDiv.innerHTML = params.forwardHtml;
+		this._msgAttId = params.msgAttId;
 	}
 	if (params.identityId && this.identitySelect) {
 		this.identitySelect.setSelectedValue(params.identityId);
