@@ -173,8 +173,9 @@ function(ev) {
 		result = ZmAutocompleteListView._onKeyDown(ev);
 	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
+	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
 	if (aclv) {
+		aclv._inputLength = element.value.length;
 		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYDOWN, element && element.id, [ev, aclv, result, element]);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
@@ -201,12 +202,12 @@ function(ev) {
 		}
 	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
+	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
 
 	// check for empty value before input is updated - looking for Delete when field was already empty
 	var value = element && element.value;
 	if (!value) {
-		if (aclv._options.addrBubbles && key == 8) {
+		if (aclv && aclv._options.addrBubbles && key == 8) {
 			var addrInput = DwtControl.ALL_BY_ID[element._aifId];
 			if (addrInput) {
 				addrInput.handleDelete();
@@ -238,7 +239,7 @@ function(ev) {
 	}
 	var result = ZmAutocompleteListView._onKeyUp(ev);
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	var aclv = DwtControl.ALL_BY_ID[element._aclvId];
+	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
 	if (aclv) {
 		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYUP, element && element.id, [ev, aclv, result, element]);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
@@ -303,6 +304,7 @@ function(ev) {
 
 	var value = element.value;
 	DBG.println(AjxDebug.DBG3, ev.type + " event, key = " + key + ", value = " + value);
+	ev.inputLengthChanged = (value.length != aclv._inputLength);
 
 	// reset timer on any address field key activity
 	if (aclv._acActionId != -1 && !DwtKeyMap.IS_MODIFIER[key]) {
@@ -333,7 +335,7 @@ function(ev) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 
-	if (AjxStringUtil.isPrintKey(key) || (key == 3 || key == 9 || key == 13)) {
+	if (ev.inputLengthChanged || (key == 3 || key == 9 || key == 13)) {
 		aclv._numChars++;
 	}
 		
@@ -357,7 +359,7 @@ function(ev) {
 	}
 
 	// skip if it's some weird character
-	if (!AjxStringUtil.isPrintKey(key) && (key != 3 && key != 13 && key != 9 && key != 8 && key != 46)) {
+	if (!ev.inputLengthChanged && (key != 3 && key != 13 && key != 9 && key != 8 && key != 46)) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 

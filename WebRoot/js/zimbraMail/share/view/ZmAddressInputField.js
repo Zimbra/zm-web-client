@@ -489,15 +489,11 @@ function() {
 	this.getInputElement().blur();
 };
 
-// deselect if user enters text
+// deselect if user enters or removes text
 ZmAddressInputField.prototype._keyPressCallback =
 function(ev, aclv) {
-
-	if (this._selectedBubbleId) {
-		var key = DwtKeyEvent.getCharCode(ev);
-		if (AjxStringUtil.isPrintKey(key)) {
-			this.setSelected(this._selectedBubbleId);
-		}
+	if (this._selectedBubbleId && ev.inputLengthChanged) {
+		this.setSelected(this._selectedBubbleId);
 	}
 };
 
