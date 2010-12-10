@@ -159,18 +159,17 @@
                                 <td width="100%">
                                     <table cellspacing=0 cellpadding=0 border=0 width=100% height=100%>
                                         <tr>
-                                            <td width="70%">
+                                            <td width="100%">
                                                 <div id="${id}_name" class="itemName"></div>
                                                 <div class="itemMeta"><span id="${id}_modified"></span>&nbsp;by <span id="${id}_modifier"></span></div>
                                             </td>
-                                            <td align=right>
-                                                <div class="itemMeta"><span id="${id}_path" class="itemValue"></span></div>
-                                                <div class="itemTime"><span id="${id}_size" class="itemValue"></span></div>                                                
-                                            </td>
-                                            <td align=right width=30 valign="top">
-                                                <div id="${id}_window" style="padding: 0px 7px"></div>
+                                            <td align=middle width=30 valign="top">
                                                 <div id="${id}_lock"></div>
                                             </td>
+                                            <td align=left nowrap=true valign="top">
+                                                <div class="itemMeta"><span id="${id}_lockUser" class="itemValue"></span></div>
+                                                <div class="itemTime"><span id="${id}_lockTime" class="itemValue"></span></div>                                                
+                                            </td>                                            
                                         </tr>
                                         <tr id="${id}_notes_section">
                                             <td colspan="2">

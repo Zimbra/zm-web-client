@@ -508,14 +508,14 @@ function(){
 
     //Header Elements
     this._headerName = document.getElementById(this._htmlElId+"_name");
-    this._headerImage = document.getElementById(this._htmlElId+"_image");
-    this._headerSize = document.getElementById(this._htmlElId+"_size");
-    this._headerPath = document.getElementById(this._htmlElId+"_path");
+    this._headerImage = document.getElementById(this._htmlElId+"_image");   
 
     this._headerCreated = document.getElementById(this._htmlElId+"_created");
     this._headerCreator = document.getElementById(this._htmlElId+"_creator");
     this._headerModified = document.getElementById(this._htmlElId+"_modified");
     this._headerModifier = document.getElementById(this._htmlElId+"_modifier");
+    this._headerLockTime = document.getElementById(this._htmlElId+"_lockTime");
+    this._headerLockUser = document.getElementById(this._htmlElId+"_lockUser");
 
     this._headerNotesSection = document.getElementById(this._htmlElId+"_notes_section");
     this._headerNotes = document.getElementById(this._htmlElId+"_notes");
@@ -656,23 +656,6 @@ function(item){
     var icon = "Img" + ( mimeInfo ? mimeInfo.imageLarge : "UnknownDoc_48");
     this._headerImage.className = icon;
 
-    //Size
-    var size = item.size;
-    if (size && size >= 0) {
-        var sizeStr = ''
-        if (size < 1024)		sizeStr = size + " "+ZmMsg.b;//" B";
-        else if (size < (1024*1024) )	sizeStr = Math.round((size / 1024) * 10) / 10 + " "+ZmMsg.kb;//" KB";
-        else    sizeStr = Math.round((size / (1024*1024)) * 10) / 10 + " "+ZmMsg.mb;//" MB";
-        this._headerSize.innerHTML = sizeStr;
-    }
-
-    //Path
-    var organizer = appCtxt.getById(item.folderId);
-    if(organizer){
-        this._headerPath.innerHTML = organizer.getSearchPath();
-    }
-
-
     //Modified & Created
     var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
     if(this._headerModified)
@@ -685,7 +668,20 @@ function(item){
         this._headerCreator.innerHTML = item.creator;
 
     if(this._lockStatus)
-        this._lockStatus.innerHTML = AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");   
+        this._lockStatus.innerHTML = AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");
+
+    if(this._headerLockTime){
+        if(item.locked){
+            dateFormatter = AjxDateFormat.getDateInstance();
+            this._headerLockTime.innerHTML = dateFormatter.format(item.lockTime);
+        }else{
+            this._headerLockTime.innerHTML = ""
+        }        
+    }
+
+    if(this._headerLockUser){
+        this._headerLockUser.innerHTML = item.locked ? item.lockUser : "";
+    }
 
     this.setNotes(item);
 };
