@@ -140,14 +140,14 @@ ZmPicker.IMAGE[ZmPicker.ATTACHMENT]			= "Attachment";
 ZmPicker.IMAGE[ZmPicker.BASIC]				= "Message";
 ZmPicker.IMAGE[ZmPicker.CUSTOM]				= "Search";
 ZmPicker.IMAGE[ZmPicker.DATE]				= "Date";
-ZmPicker.IMAGE[ZmPicker.DOMAIN]				= "URL";
+ZmPicker.IMAGE[ZmPicker.DOMAIN]				= "Domain";
 ZmPicker.IMAGE[ZmPicker.FLAG]				= "FlagRed";
 ZmPicker.IMAGE[ZmPicker.FOLDER]				= "Folder";
-ZmPicker.IMAGE[ZmPicker.ZIMLET]				= "ZimbraIcon";
+ZmPicker.IMAGE[ZmPicker.ZIMLET]				= "Zimlet";
 ZmPicker.IMAGE[ZmPicker.SEARCH]				= "SearchFolder";
 ZmPicker.IMAGE[ZmPicker.SIZE]				= "Folder";
 ZmPicker.IMAGE[ZmPicker.TAG]				= "Tag";
-ZmPicker.IMAGE[ZmPicker.TIME]				= "Date";
+ZmPicker.IMAGE[ZmPicker.TIME]				= "Time";
 //ZmPicker.IMAGE[ZmPicker.RESET]			= "Close";	//MOW: no image for reset button
 ZmPicker.IMAGE[ZmPicker.CLOSE]				= "Close";
 
