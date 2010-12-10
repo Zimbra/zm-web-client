@@ -180,7 +180,9 @@ ZmItemMoveAction.prototype._doMove = function(callback, errorCallback, folderId)
 		folder: appCtxt.getById(folderId),
 		undoing: true,
 		finalCallback: new AjxCallback(this, this._handleDoMove, [this._item.folderId, folderId]),
-		actionText: ZmItemMoveAction.UNDO_MSG[this._op]
+		actionText: ZmItemMoveAction.UNDO_MSG[this._op],
+
+		fromFolderId: this._toFolderId
 	});
 };
 
@@ -188,7 +190,8 @@ ZmItemMoveAction.prototype._handleDoMove = function(oldFolderId, newFolderId, pa
 	var lists = [];
 	for (var id in params.idHash) {
 		var item = params.idHash[id];
-		item.folderId = newFolderId;
+		if (item instanceof ZmConv)
+			item.folderId = newFolderId;
 		var list = item && item.list;
 		if (AjxUtil.indexOf(lists, list)==-1)
 			lists.push(list);

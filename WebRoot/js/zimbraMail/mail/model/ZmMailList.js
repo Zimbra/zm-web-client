@@ -65,6 +65,7 @@ function() {
  *        callback		[AjxCallback]*	callback to run after each sub-request
  *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
  *        count			[int]*			starting count for number of items processed
+ *        fromFolderId  [String]*       optional folder to represent when calculating tcon. If unspecified, use current search folder nId
  *        
  * @private
  */
@@ -75,13 +76,14 @@ function(params) {
 		return ZmList.prototype.moveItems.apply(this, arguments);
 	}
 
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "noUndo", "actionText"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "noUndo", "actionText", "fromFolderId"]);
 	params.items = AjxUtil.toArray(params.items);
 
 	var params1 = AjxUtil.hashCopy(params);
+	delete params1.fromFolderId;
 
 	params1.attrs = {};
-	params1.attrs.tcon = this._getTcon(params.items);
+	params1.attrs.tcon = this._getTcon(params.items, params.fromFolderId);
 	params1.attrs.l = params.folder.id;
 	params1.action = (params.folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
     if (params1.folder.id == ZmFolder.ID_TRASH) {
@@ -665,17 +667,18 @@ function(items, sortBy, event, details) {
 };
 
 ZmMailList.prototype._getTcon =
-function(items) {
-	var chars = ["-"];
+function(items, nId) {
+	var chars = [];
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
 	var searchFolder = this.search && appCtxt.getById(this.search.folderId);
+	nId = nId || (searchFolder && searchFolder.nId);
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
-		if (!(searchFolder && searchFolder.nId == folder)) {
+		if (nId != folder) {
 			chars.push(ZmFolder.TCON_CODE[folder]);
 		}
 	}
-	return chars.join("");
+	return (chars.length) ?  ("-" + chars.join("")) : "";
 };
 
 // If this list is the result of a search that is constrained by the read
