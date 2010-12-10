@@ -1890,9 +1890,10 @@ function(action, type, override) {
 
 		// When updating address lists, use this._addressesMsg instead of this._msg, because
 		// this._msg changes after a draft is saved.
+		var addrAdded, addrVec;
 		if (!this._addressesMsg.isSent) {
-			var addrVec = this._addressesMsg.getReplyAddresses(action, used);
-			this._addAddresses(AjxEmailAddress.TO, addrVec, used);
+			addrVec = this._addressesMsg.getReplyAddresses(action, used);
+			addrAdded = this._addAddresses(AjxEmailAddress.TO, addrVec, used);
 			if (action == ZmOperation.REPLY_ALL) {
 				for (var i = 0, len = addrVec.size(); i < len; i++) {
 					var a = addrVec.get(i).address;
@@ -1900,8 +1901,12 @@ function(action, type, override) {
 				}
 			}
 		} else if (action == ZmOperation.REPLY) {
-			var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
-			this._addAddresses(AjxEmailAddress.TO, toAddrs);
+			addrVec = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
+			addrAdded = this._addAddresses(AjxEmailAddress.TO, addrVec);
+		}
+		if (!addrAdded && addrVec && addrVec.size()) {
+			// make sure we have at least one TO address if possible
+			this._addAddresses(AjxEmailAddress.TO, addrVec.slice(0, 1));
 		}
 
 		// reply to all senders if reply all (includes To: and Cc:)
@@ -1935,6 +1940,7 @@ function(action, type, override) {
 ZmComposeView.prototype._addAddresses =
 function(type, addrVec, used) {
 
+	var addrAdded = false;
 	used = used || {};
 	var addrList = [];
 	var addrs = addrVec && addrVec.getArray();
@@ -1951,8 +1957,9 @@ function(type, addrVec, used) {
 				else {
 					addrList.push(addr);
 				}
+				used[email] = true;
+				addrAdded = true;
 			}
-			used[email] = true;
 		}
 		if (!this._useAcAddrBubbles) {
 			// calls implicit toString() on each addr object
@@ -1960,6 +1967,7 @@ function(type, addrVec, used) {
 			this.setAddress(type, addrStr);
 		}
 	}
+	return addrAdded;
 };
 
 ZmComposeView.prototype._setObo =
