@@ -683,7 +683,7 @@
 					<div class='ZmSchedulerInputDisabled'>${organizer}</div>
 				<$ } $>
 				</td>
-				<td width=28 id='${sched.dwtNameId}_ptst' class='ZmSchedulerPTSTTd'>&nbsp;</td>
+				<td width=28 id='${sched.dwtNameId}_ptst' align='center' class='ZmSchedulerPTSTTd'>&nbsp;</td>
 			<$ } $>
 		</tr>
 	</table>
