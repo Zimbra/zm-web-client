@@ -423,6 +423,7 @@ function(attId, docIds, draftType, callback, contactId) {
 		tempMsg = new ZmMailMsg();
 		this._composeView.setDocAttachments(tempMsg, docIds);
 	}
+
 	var msg = this._composeView.getMsg(attId, isDraft, tempMsg, isTimed, contactId);
 
 	if (!msg) { return; }
@@ -490,8 +491,10 @@ function(attId, docIds, draftType, callback, contactId) {
 	var requestReadReceipt = false;
 	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
 		var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
-		var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
-		requestReadReceipt = (!!(mi && mi.getChecked()));
+        if (menu){
+		    var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
+		    requestReadReceipt = (!!(mi && mi.getChecked()));
+        }
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
