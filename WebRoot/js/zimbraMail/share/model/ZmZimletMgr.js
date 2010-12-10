@@ -50,6 +50,12 @@ function() {
 
 ZmZimletMgr._RE_REMOTE = /^((https?|ftps?):\x2f\x2f|\x2f)/;
 
+/**
+* List of Core Zimlets.
+* com_zimbra_apptsummary|com_zimbra_date|com_zimbra_dnd|com_zimbra_email|com_zimbra_linkedin|com_zimbra_phone|com_zimbra_webex|com_zimbra_social|com_zimbra_srchhighlighter|com_zimbra_url
+*/
+ZmZimletMgr.CORE_ZIMLETS = /com_zimbra_apptsummary|com_zimbra_date|com_zimbra_dnd|com_zimbra_email|com_zimbra_linkedin|com_zimbra_phone|com_zimbra_webex|com_zimbra_social|com_zimbra_srchhighlighter|com_zimbra_url/;
+
 //
 // Public methods
 //
@@ -77,6 +83,11 @@ function() {
  */
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps, target, callback, sync) {
+	if(window.location.href.toLowerCase().indexOf("zimlets=none") > 0) {
+		return;
+	} else if(window.location.href.toLowerCase().indexOf("zimlets=core") > 0) {
+		zimletArray = this._getCoreZimlets(zimletArray);
+	}
 	if (!zimletArray || !zimletArray.length) {
 		this.loaded = true;
 		this._resetOverviewTree();
@@ -87,6 +98,29 @@ function(zimletArray, userProps, target, callback, sync) {
 	if (!callback) {
 		this._loadZimlets(zimletArray, userProps, target, callback, sync);
 	}
+};
+
+/**
+ * Returng an array with only core-Zimlets. This is used when we want to debug with only core-zimlets (?zimlets=core)
+ * @param	{Array}	zimletArray		an array of {@link ZmZimlet} objects
+ *
+ * @private
+ */
+ZmZimletMgr.prototype._getCoreZimlets =
+function(zimletArray) {
+	if (!zimletArray || !zimletArray.length) {
+		return;
+	}
+	var coreZimlets = [];
+	var len = zimletArray.length;
+	for(var i = 0; i < len; i++) {			
+		var zimletObj = zimletArray[i].zimlet;
+		var zimletName = zimletObj && zimletObj[0] ? zimletObj[0].name : "";
+		if(ZmZimletMgr.CORE_ZIMLETS.test(zimletName)) {
+			coreZimlets.push(zimletArray[i]);
+		}		
+	}
+	return coreZimlets;
 };
 
 /**
