@@ -603,10 +603,11 @@ ZmDocsEditView.prototype._createToolbar = function(toolbar) {
     b.addSelectionListener(new AjxListener(this, this._saveCloseButtonListener));
     b.setToolTipContent(ZmMsg.saveClose);
 
-    new DwtControl({parent:toolbar, className:"vertSep"});    
-
     var listener = new AjxListener(this, this._tbActionListener);
+
     /*
+    new DwtControl({parent:toolbar, className:"vertSep"});
+
     b = this._buttons.clipboardCopy = new DwtToolBarButton(params);
 	b.setImage("Copy");
 	b.setData(ZmDocsEditView.ZD_VALUE, "ClipboardCopy");
@@ -626,7 +627,6 @@ ZmDocsEditView.prototype._createToolbar = function(toolbar) {
 	b.setToolTipContent(ZmMsg.paste);
 
     new DwtControl({parent:toolbar, className:"vertSep"});
-    */
 
     b = this._buttons.newDocument = new DwtToolBarButton(params);
     b.setText(ZmMsg.newDocument);
@@ -635,11 +635,13 @@ ZmDocsEditView.prototype._createToolbar = function(toolbar) {
     b.addSelectionListener(listener);
     b.setToolTipContent(ZmMsg.briefcaseCreateNewDocument);
 
-    /*b = this._buttons.clipboardPaste = new DwtToolBarButton(params);
+
+    b = this._buttons.clipboardPaste = new DwtToolBarButton(params);
     b.setText("Open Document");
     b.setData(ZmDocsEditView.ZD_VALUE, "OpenDocument");
     b.addSelectionListener(listener);
-    b.setToolTipContent(ZmMsg.paste);*/
+    b.setToolTipContent(ZmMsg.paste);
+    */
     
 };
 
