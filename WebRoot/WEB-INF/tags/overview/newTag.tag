@@ -24,7 +24,7 @@
 
 <table width="100%" cellspacing="0" cellpadding="0">
     <tr class='GrayBg'>
-        <c:set var="icon" value="startup/ImgTagBlue.gif"/>
+        <c:set var="icon" value="startup/ImgTagBlue.png"/>
         <td>&nbsp;</td>
         <td width="20">
             <app:img src="${icon}" alt='${fn:escapeXml(label)}'/>
