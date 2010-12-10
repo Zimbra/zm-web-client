@@ -604,7 +604,7 @@ ZmBriefcaseController.prototype._checkoutListener =
 function(){
      var item = this._getSelectedItem();
      if(item && item instanceof ZmBriefcaseItem){
-        this.checkout(item);
+        this.checkout(item, item.isWebDoc() ? null : new AjxCallback(this, this.downloadFile, item));
      }
 };
 
@@ -855,7 +855,6 @@ function(item){
         // bug fix #36618 - force new window since some users may get prompted for auth
         window.open(restUrl+ "?disp=a"+(item.version ? "&ver="+item.version : ""));
     }
-
 };
 
 ZmBriefcaseController.prototype._viewAsHtmlListener =
