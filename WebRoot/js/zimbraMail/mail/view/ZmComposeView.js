@@ -1796,7 +1796,7 @@ ZmComposeView.prototype._acKeyupHandler =
 function(ev, acListView, result, element) {
 	var key = DwtKeyEvent.getCharCode(ev);
 	// process any printable character or enter/backspace/delete keys
-	if (result && element && (AjxStringUtil.isPrintKey(key) ||
+	if (result && element && (ev.inputLengthChanged ||
 		(key == 3 || key == 13 || key == 8 || key == 46 ||
 		(AjxEnv.isMac && key == 224)))) // bug fix #24670
 	{
