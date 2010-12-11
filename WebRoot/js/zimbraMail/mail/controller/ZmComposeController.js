@@ -320,6 +320,13 @@ function(view) {
 	return !this._composeView.isDirty();
 };
 
+
+ZmComposeController.prototype._preShowCallback =
+function() {
+	this._setSearchToolbarVisibilityPerSkin(false);
+	return true;
+};
+
 ZmComposeController.prototype._postShowCallback =
 function() {
 	// always reset auto save every time this view is shown. This covers the
@@ -593,6 +600,7 @@ function(initHide, composeMode) {
 	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
 	callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
 	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
+	callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 	callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
 	var elements = {};
 	this._initializeToolBar();
