@@ -253,10 +253,7 @@ function(rule, isCondition, tableId, rowData, tabGroup) {
 		// don't show action if it's disabled
 		if (!isCondition) {
 			var actionIndex = ZmFilterRule.A_VALUE_MAP[i];
-			var actionCfg = ZmFilterRule.ACTIONS[actionIndex];
-			if (actionCfg.precondition && !appCtxt.get(actionCfg.precondition)) {
-				continue;
-			}
+			if (!ZmFilterRule.checkPreconditions(ZmFilterRule.ACTIONS[actionIndex])) { continue; }
 		}
 
 		for (j = 0; j < data.length; j++) {
@@ -490,14 +487,9 @@ function(conf, field, options, rowData, testType, rowId) {
 			var o = options[i];
 			// skip if the action or this option is disabled
 			if (isMainSelect && !isCondition) {
-				var actionCfg = ZmFilterRule.ACTIONS[o];
-				if (actionCfg.precondition && !appCtxt.get(actionCfg.precondition)) {
-					continue;
-				}
+				if (!ZmFilterRule.checkPreconditions(ZmFilterRule.ACTIONS[o])) { continue; }
 			}
-			if (o.precondition && !appCtxt.get(o.precondition)) {
-				continue;
-			}
+			if (!ZmFilterRule.checkPreconditions(o)) { continue; }
 			var value, label;
 			if (isMainSelect) {
 				value = o;
