@@ -38,12 +38,12 @@ ZmFilterRule = function(name, active, filterActions, filterTests) {
 	 * The filter rule actions.
 	 * @type	Object
 	 */
-	this.actions = filterActions || (new Object());
+	this.actions = filterActions || {};
 	/**
 	 * The filter rules conditions.
 	 * @type	Object
 	 */
-	this.conditions = filterTests || (new Object());
+	this.conditions = filterTests || {};
 	this.active = (active !== false);
 	if (!filterTests) {
 		this.setGroupOp();
@@ -64,43 +64,42 @@ ZmFilterRule.GROUP_ANY = "anyof";
 ZmFilterRule.GROUP_ALL = "allof";
 
 // Display widgets for various rule properties
-var i = 1;
+
 /**
  * Defines the "input" type.
  */
-ZmFilterRule.TYPE_INPUT			= i++;
+ZmFilterRule.TYPE_INPUT			= "INPUT";
 /**
  * Defines the "select" type.
  */
-ZmFilterRule.TYPE_SELECT		= i++;
+ZmFilterRule.TYPE_SELECT		= "SELECT";
 /**
  * Defines the "calendar" type.
  */
-ZmFilterRule.TYPE_CALENDAR		= i++;
+ZmFilterRule.TYPE_CALENDAR		= "CALENDAR";
 /**
  * Defines the "folder picker" type.
  */
-ZmFilterRule.TYPE_FOLDER_PICKER	= i++;
+ZmFilterRule.TYPE_FOLDER_PICKER	= "FOLDER_PICKER";
 /**
  * Defines the "tag picker" type.
  */
-ZmFilterRule.TYPE_TAG_PICKER	= i++;
+ZmFilterRule.TYPE_TAG_PICKER	= "TAG_PICKER";
 
 // Conditions (subjects)
-var i = 1;
-ZmFilterRule.C_FROM			= i++;
-ZmFilterRule.C_TO			= i++;
-ZmFilterRule.C_CC			= i++;
-ZmFilterRule.C_TO_CC		= i++;
-ZmFilterRule.C_SUBJECT		= i++;
-ZmFilterRule.C_HEADER		= i++;
-ZmFilterRule.C_SIZE			= i++;
-ZmFilterRule.C_DATE			= i++;
-ZmFilterRule.C_BODY			= i++;
-ZmFilterRule.C_ATT			= i++;
-ZmFilterRule.C_MIME_HEADER	= i++;
-ZmFilterRule.C_ADDRBOOK		= i++;
-ZmFilterRule.C_INVITE		= i++;
+ZmFilterRule.C_FROM			= "FROM";
+ZmFilterRule.C_TO			= "TO";
+ZmFilterRule.C_CC			= "CC";
+ZmFilterRule.C_TO_CC		= "TO_CC";
+ZmFilterRule.C_SUBJECT		= "SUBJECT";
+ZmFilterRule.C_HEADER		= "HEADER";
+ZmFilterRule.C_SIZE			= "SIZE";
+ZmFilterRule.C_DATE			= "DATE";
+ZmFilterRule.C_BODY			= "BODY";
+ZmFilterRule.C_ATT			= "ATT";
+ZmFilterRule.C_MIME_HEADER	= "MIME_HEADER";
+ZmFilterRule.C_ADDRBOOK		= "ADDRBOOK";
+ZmFilterRule.C_INVITE		= "INVITE";
 
 ZmFilterRule.C_HEADER_VALUE = {};
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM]	= "from";
@@ -160,27 +159,26 @@ ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ADDRBOOK]	= ZmFilterRule.TEST_ADDRBOOK;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_INVITE]		= ZmFilterRule.TEST_INVITE;
 
 // Operations (verbs)
-var i = 1;
-ZmFilterRule.OP_IS				= i++;
-ZmFilterRule.OP_NOT_IS			= i++;
-ZmFilterRule.OP_CONTAINS		= i++;
-ZmFilterRule.OP_NOT_CONTAINS	= i++;
-ZmFilterRule.OP_MATCHES			= i++;
-ZmFilterRule.OP_NOT_MATCHES		= i++;
-ZmFilterRule.OP_EXISTS			= i++;
-ZmFilterRule.OP_NOT_EXISTS		= i++;
-ZmFilterRule.OP_UNDER			= i++;
-ZmFilterRule.OP_NOT_UNDER		= i++;
-ZmFilterRule.OP_OVER			= i++;
-ZmFilterRule.OP_NOT_OVER		= i++;
-ZmFilterRule.OP_BEFORE			= i++;
-ZmFilterRule.OP_NOT_BEFORE		= i++;
-ZmFilterRule.OP_AFTER			= i++;
-ZmFilterRule.OP_NOT_AFTER		= i++;
-ZmFilterRule.OP_IN				= i++;
-ZmFilterRule.OP_NOT_IN			= i++;
-ZmFilterRule.OP_IS_REQUESTED	= i++; // invites
-ZmFilterRule.OP_IS_REPLIED		= i++; // invites
+ZmFilterRule.OP_IS				= "IS";
+ZmFilterRule.OP_NOT_IS			= "NOT_IS";
+ZmFilterRule.OP_CONTAINS		= "CONTAINS";
+ZmFilterRule.OP_NOT_CONTAINS	= "NOT_CONTAINS";
+ZmFilterRule.OP_MATCHES			= "MATCHES";
+ZmFilterRule.OP_NOT_MATCHES		= "NOT_MATCHES";
+ZmFilterRule.OP_EXISTS			= "EXISTS";
+ZmFilterRule.OP_NOT_EXISTS		= "NOT_EXISTS";
+ZmFilterRule.OP_UNDER			= "UNDER";
+ZmFilterRule.OP_NOT_UNDER		= "NOT_UNDER";
+ZmFilterRule.OP_OVER			= "OVER";
+ZmFilterRule.OP_NOT_OVER		= "NOT_OVER";
+ZmFilterRule.OP_BEFORE			= "BEFORE";
+ZmFilterRule.OP_NOT_BEFORE		= "NOT_BEFORE";
+ZmFilterRule.OP_AFTER			= "AFTER";
+ZmFilterRule.OP_NOT_AFTER		= "NOT_AFTER";
+ZmFilterRule.OP_IN				= "IN";
+ZmFilterRule.OP_NOT_IN			= "NOT_IN";
+ZmFilterRule.OP_IS_REQUESTED	= "IS_REQUESTED"; // invites
+ZmFilterRule.OP_IS_REPLIED		= "IS_REPLIED"; // invites
 
 // comparator types
 ZmFilterRule.COMP_STRING							= "stringComparison";
@@ -210,7 +208,6 @@ ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REPLIED]	= "anyreply";
 
 ZmFilterRule.OP_VALUE_MAP = {};
 for (var i in ZmFilterRule.OP_VALUE) {
-	if (i%2 == 0) { continue; } // skip all the "not's"
 	ZmFilterRule.OP_VALUE_MAP[ZmFilterRule.OP_VALUE[i]] = i;
 };
 
@@ -360,39 +357,39 @@ ZmFilterRule.IS_HEADER[ZmFilterRule.C_SUBJECT]	= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_HEADER]	= true;
 
 // Actions
-var i = 1;
+
 /**
  * Defines the "keep" action type.
  */
-ZmFilterRule.A_KEEP		= i++;
+ZmFilterRule.A_KEEP			= "KEEP";
 /**
  * Defines the "keep" action type.
  */
-ZmFilterRule.A_KEEP_SENT	= i++;
+ZmFilterRule.A_KEEP_SENT	= "KEEP_SENT";
 /**
  * Defines the "folder" action type.
  */
-ZmFilterRule.A_FOLDER	= i++;
+ZmFilterRule.A_FOLDER		= "FOLDER";
 /**
  * Defines the "discard" action type.
  */
-ZmFilterRule.A_DISCARD	= i++;
+ZmFilterRule.A_DISCARD		= "DISCARD";
 /**
  * Defines the "stop" action type.
  */
-ZmFilterRule.A_STOP		= i++;
+ZmFilterRule.A_STOP			= "STOP";
 /**
  * Defines the "flag" action type.
  */
-ZmFilterRule.A_FLAG		= i++;
+ZmFilterRule.A_FLAG			= "FLAG";
 /**
  * Defines the "tag" action type.
  */
-ZmFilterRule.A_TAG		= i++;
+ZmFilterRule.A_TAG			= "TAG";
 /**
  * Defines the "forward" action type.
  */
-ZmFilterRule.A_FORWARD	= i++;
+ZmFilterRule.A_FORWARD		= "FORWARD";
 
 /**
  * Defines the "keep" action name.
@@ -468,21 +465,24 @@ ZmFilterRule.A_LABEL[ZmFilterRule.A_FORWARD]	= ZmMsg.forwardToAddress;
  * </ul>
  */
 ZmFilterRule.ACTIONS = {};
-ZmFilterRule.ACTIONS[ZmFilterRule.A_KEEP] = {};
-ZmFilterRule.ACTIONS[ZmFilterRule.A_KEEP_SENT] = {};
+ZmFilterRule.ACTIONS[ZmFilterRule.A_KEEP]		= {};
+ZmFilterRule.ACTIONS[ZmFilterRule.A_KEEP_SENT]	= {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_DISCARD] = {};
-ZmFilterRule.ACTIONS[ZmFilterRule.A_STOP] = {};
-ZmFilterRule.ACTIONS[ZmFilterRule.A_FOLDER] = {
+ZmFilterRule.ACTIONS[ZmFilterRule.A_STOP]		= {};
+ZmFilterRule.ACTIONS[ZmFilterRule.A_FOLDER]	= {
 	param:				ZmFilterRule.TYPE_FOLDER_PICKER
 };
+
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG] = {
 	param:				ZmFilterRule.TYPE_SELECT,
 	// NOTE: If you change the order of these options, also change _setPreconditions!!!
 	pOptions:			[{label: ZmMsg.asRead, value: "read"}, {label: ZmMsg.asFlagged, value: "flagged"}]
 };
+
 ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG] = {
-	param:				ZmFilterRule.TYPE_TAG_PICKER
+	param:				ZmFilterRule.TYPE_TAG_PICKER,
 };
+
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD] = {
 	param:				ZmFilterRule.TYPE_INPUT,
 	validationFunction:	ZmPref.validateEmail,
@@ -511,7 +511,8 @@ ZmFilterRule._setPreconditions =
 function() {
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG].pOptions[1].precondition = ZmSetting.FLAGGING_ENABLED;
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG].precondition = ZmSetting.TAGGING_ENABLED;
-	ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD].precondition = ZmSetting.FILTERS_MAIL_FORWARDING_ENABLED;
+	ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD].precondition = [ZmSetting.FILTERS_MAIL_FORWARDING_ENABLED,
+																 ZmSetting.MAIL_FORWARDING_ENABLED];
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_DISCARD].precondition = ZmSetting.DISCARD_IN_FILTER_ENABLED;
 };
 
@@ -594,12 +595,9 @@ function() {
 ZmFilterRule.prototype.hasValidAction =
 function() {
 	for (var i in this.actions) {
-		var action = this.actions[i];
 		var actionIndex = ZmFilterRule.A_VALUE_MAP[i];
 		var actionCfg = ZmFilterRule.ACTIONS[actionIndex];
-		if ((actionIndex != ZmFilterRule.A_STOP) &&
-			(!actionCfg.precondition || appCtxt.get(actionCfg.precondition)))
-		{
+		if ((actionIndex != ZmFilterRule.A_STOP) && (ZmFilterRule.checkPreconditions(actionCfg))) {
 			return true;
 		}
 	}
@@ -683,4 +681,19 @@ function() {
 	rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, "", subjMod);
 	rule.addAction(ZmFilterRule.A_KEEP);
 	return rule;
+};
+
+ZmFilterRule.checkPreconditions =
+function(obj) {
+
+	var pre = obj && obj.precondition;
+	if (!pre) { return true; }
+
+	var conds = AjxUtil.toArray(pre);
+	for (var i = 0; i < conds.length; i++) {
+		if (!appCtxt.get(conds[i])) {
+			return false;
+		}
+	}
+	return true;
 };
