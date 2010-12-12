@@ -1233,10 +1233,8 @@ function(status, attId) {
 		if (zeroSizedAttachments){
 			appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
 		}
-		var isSaved = this._controller.saveCalItem(attId);
-        if(isSaved) {
-            this._controller.closeView();   
-        }
+		this._controller.saveCalItem(attId);
+		
 	} else if (status == AjxPost.SC_UNAUTHORIZED) {
 		// auth failed during att upload - let user relogin, continue with compose action
 		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);

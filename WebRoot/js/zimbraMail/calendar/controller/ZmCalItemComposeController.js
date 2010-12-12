@@ -437,6 +437,9 @@ function(calItem, result) {
         }
 
         calItem.handlePostSaveCallbacks();
+        if(this.isCloseAction()) {
+        	this.closeView();
+        }
         appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success
     } catch (ex) {
         DBG.println(ex);
@@ -499,7 +502,6 @@ function(ev) {
 	if (this._doSave() === false) {
 		return;
     }
-	this._app.popView(true);
 };
 
 // Cancel button was pressed
@@ -611,14 +613,8 @@ function() {
 
 ZmCalItemComposeController.prototype._closeView =
 function() {
-	this._app.popView(true);
-    try{
-	    appCtxt.getAppViewMgr().showPendingView(true);
-    } catch(ex) {
-        // do nothing
-    } finally {
-	    this._composeView.cleanup();
-    }
+	this._app.popView(true,this.viewId);
+    this._composeView.cleanup();
 };
 
 ZmCalItemComposeController.prototype._textModeOkCallback =

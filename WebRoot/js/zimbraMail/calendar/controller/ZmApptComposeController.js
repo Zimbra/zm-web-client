@@ -107,7 +107,7 @@ function(dialog, appt) {
 
 ZmApptComposeController.prototype._apptForwardCallback =
 function() {
-	this._app.popView(true);
+	this.closeView();
 };
 
 ZmApptComposeController.prototype._checkIsDirty =
@@ -326,7 +326,7 @@ function(ev){
 	if (this._doSave() === false) {
 		return;
     }
-	this._app.popView(true);
+	this.closeView();
 };
 
 ZmApptComposeController.prototype.isSave =
@@ -373,9 +373,6 @@ function(ev, force) {
 
 	if (this._doSave() === false) {
 		return;
-    }
-    if(!isMeeting){
-        this._app.popView(true);        
     }
 };
 
@@ -730,7 +727,6 @@ function(appt, attId, notifyList, msgDialog) {
 ZmApptComposeController.prototype.saveCalItemContinue =
 function(appt, attId, notifyList) {
 	this._saveCalItemFoRealz(appt, attId, notifyList);
-	if(this.isCloseAction()) this._app.popView(true);
 };
 
 ZmApptComposeController.prototype.handleCheckPermissionResponseError =
@@ -917,7 +913,6 @@ ZmApptComposeController.prototype._notifyDlgOkListener =
 function(ev) {
 	var notifyList = this._notifyDialog.notifyNew() ? this._addedAttendees : null;
 	this._saveCalItemFoRealz(this._notifyDialog.getAppt(), this._notifyDialog.getAttId(), notifyList);
-	this._app.popView(true);
 };
 
 ZmApptComposeController.prototype._notifyDlgCancelListener =
@@ -929,7 +924,6 @@ ZmApptComposeController.prototype._changeOrgCallback =
 function(appt, attId, dlg) {
 	dlg.popdown();
 	this._saveCalItemFoRealz(appt, attId);
-	this._app.popView(true);
 };
 
 ZmApptComposeController.prototype._saveCalItemFoRealz =
@@ -969,7 +963,7 @@ function(calItem, result) {
 
     if(this.isCloseAction()) {
         calItem.handlePostSaveCallbacks();
-	    this._composeView.cleanup();
+        this.closeView();	    
     }else {
         this.enableToolbar(true);
         if(isNewAppt) {

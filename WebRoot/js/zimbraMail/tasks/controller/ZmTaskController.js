@@ -67,7 +67,9 @@ function(attId) {
 ZmTaskController.prototype._handleResponseSave =
 function(calItem, result) {
 	ZmCalItemComposeController.prototype._handleResponseSave.call(this, calItem);
-
+	if(this._action == ZmCalItemComposeController.SAVE) {
+		this.closeView();	
+	}
 	// XXX: null out message so we re-fetch task next time its opened
 	// To optimize, we should save the modified contents into cache'd task item
 	if (calItem && calItem._orig)
