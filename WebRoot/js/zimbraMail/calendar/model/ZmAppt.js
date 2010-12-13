@@ -756,6 +756,13 @@ function(message) {
 			this._orig.setRsvp(rsvp);
 		}
 	}
+
+    // bug 53414: For a personal appt. consider inviteNeverSent=true always.
+    // Wish this was handled by server.
+    if(!this.isDraft && !this.hasAttendees()){
+        this.inviteNeverSent = true;
+    }
+
 };
 
 ZmAppt.prototype._getTextSummaryTime =
@@ -808,7 +815,7 @@ function(calItemNode, instNode) {
 	this.otherAttendees = this._getAttr(calItemNode, instNode, "otherAtt");
 	this.location = this._getAttr(calItemNode, instNode, "loc");
     this.isDraft = this._getAttr(calItemNode, instNode, "draft");
-    this.inviteNeverSent = this._getAttr(calItemNode, instNode, "neverSent") || false; 
+    this.inviteNeverSent = this._getAttr(calItemNode, instNode, "neverSent") || false;
 };
 
 ZmAppt.prototype._getSoapForMode =
