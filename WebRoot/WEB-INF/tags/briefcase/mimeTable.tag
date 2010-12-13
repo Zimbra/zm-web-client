@@ -93,6 +93,18 @@
         <c:set var="mimeImg" value="doctypes/ImgHtmlDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeHtmlDocument" scope="request"/>
     </c:when>
+    <c:when test="${contenttype eq 'application/x-zimbra-doc'}">
+        <c:set var="mimeImg" value="doctypes/ImgGenericDoc.gif" scope="request"/>
+        <c:set var="mimeDesc" value="zimbraDocument" scope="request"/>
+    </c:when>
+    <c:when test="${contenttype eq 'application/x-zimbra-slides'}">
+        <c:set var="mimeImg" value="doctypes/ImgPresentation.gif" scope="request"/>
+        <c:set var="mimeDesc" value="zimbraPresentation" scope="request"/>
+    </c:when>
+    <c:when test="${contenttype eq 'application/x-zimbra-xls'}">
+        <c:set var="mimeImg" value="doctypes/ImgZSpreadSheet.gif" scope="request"/>
+        <c:set var="mimeDesc" value="zimbraSpreadsheet" scope="request"/>
+    </c:when>
     <c:otherwise>
         <c:set var="mimeImg" value="doctypes/ImgUnknownDoc.gif" scope="request"/>
         <c:set var="mimeDesc" value="" scope="request"/>
