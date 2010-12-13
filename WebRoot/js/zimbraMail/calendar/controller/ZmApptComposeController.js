@@ -311,7 +311,7 @@ function(mode) {
     if(ZmCalItem.FORWARD_MAPPING[mode]) {
         saveButton.addSelectionListener(new AjxListener(this, this._sendListener));
     }else {
-        saveButton.addSelectionListener(new AjxListener(this, this._saveListener));
+        saveButton.addSelectionListener(new AjxListener(this, this._saveListener, [true]));
     }
 
     var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
