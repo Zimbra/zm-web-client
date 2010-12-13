@@ -37,9 +37,9 @@
 <c:set var="isDevMode" value="${not empty requestScope.mode and requestScope.mode eq 'mjsf'}" scope="request"/>
 <c:set var="isSkinDebugMode" value="${not empty requestScope.mode} and ${requestScope.mode eq 'skindebug'}" scope="request"/>
 
-<c:set var="packages" value="Ajax,Startup1_1,Startup1_2,Startup2,Slides" scope="request"/>
+<c:set var="packages" value="Startup1_1,Startup1_2,Startup2,Slides" scope="request"/>
 <c:if test="${not empty param.packages}">
-    <c:set var="packages" value="Ajax,Startup1_1,Startup1_2,Startup2,Slides,${param.packages}" scope="request"/>
+    <c:set var="packages" value="Startup1_1,Startup1_2,Startup2,Slides,${param.packages}" scope="request"/>
 </c:if>
 <c:set var="pnames" value="${fn:split(packages,',')}" scope="request"/>
 
@@ -140,37 +140,9 @@
     window.appContextPath = '${pageContext.request.contextPath}';
     window.appDevMode     = ${isDevMode};
 
-    createDummyDBG =
-    function() {
-        window.AjxDebug = function() {};
-        window.AjxDebug.prototype.toString		= function() { return "dummy DBG class"};
-        window.AjxDebug.prototype.display		= function() {};
-        window.AjxDebug.prototype.dumpObj		= function() {};
-        window.AjxDebug.prototype.getDebugLevel	= function() {};
-        window.AjxDebug.prototype.isDisabled	= function() {};
-        window.AjxDebug.prototype.println		= function() {};
-        window.AjxDebug.prototype.printRaw		= function() {};
-        window.AjxDebug.prototype.printXML		= function() {};
-        window.AjxDebug.prototype.setDebugLevel	= function() {};
-        window.AjxDebug.prototype.setTitle		= function() {};
-        window.AjxDebug.prototype.showTiming	= function() {};
-        window.AjxDebug.prototype._getTimeStamp	= function() {};
-        window.AjxDebug.prototype.timePt		= function() {};
-        window.DBG = new window.AjxDebug();
-    };
-
     create = function(data) {
 
-
-    <c:choose>
-    <c:when test="${isDevMode}">
-        AjxDispatcher.require("Debug");
-        DBG = new AjxDebug(AjxDebug.NONE, null, false);
-    </c:when>
-    <c:otherwise>
-        createDummyDBG();
-    </c:otherwise>
-    </c:choose>
+        window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
         window.restPage = true;
         window.appCtxt = new ZmAppCtxt();

@@ -85,10 +85,7 @@
         </jsp:include>
 
         <!-- Packages -->
-        <c:set var="packages" value="Boot,DocsPreview" scope="request"/>
-        <c:if test="${isDevMode}">
-            <c:set var="packages" value="${packages},Debug" scope="page"/>
-        </c:if>
+        <c:set var="packages" value="Boot,DocsPreview,Debug" scope="request"/>
         <c:set var="pnames" value="${fn:split(packages,',')}" scope="request"/>
         <c:set var="pprefix" value="js" scope="request"/>
         <c:choose>
@@ -127,7 +124,8 @@
         window.presentationMode = "embed";
         <jsp:include page="/public/slides/presentation.js" />
 
-        ZmDocsPreview._createDBG('${isDevMode}');
+        window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
+
         var slidePreview = ZmDocsPreview.launch('slideshowcontent', {deferInit: true});
         slidePreview.loadContent(new AjxCallback(window, loadSlideContent, [slidePreview]));
 

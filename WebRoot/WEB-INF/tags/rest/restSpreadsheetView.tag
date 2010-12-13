@@ -34,9 +34,9 @@
 <c:set var="isDevMode" value="${not empty requestScope.mode and requestScope.mode eq 'mjsf'}" scope="request"/>
 <c:set var="isSkinDebugMode" value="${not empty requestScope.mode} and ${requestScope.mode eq 'skindebug'}" scope="request"/>
 
-<c:set var="packages" value="Ajax,Startup1_1,Startup1_2,Spreadsheet" scope="request"/>
+<c:set var="packages" value="Startup1_1,Startup1_2,Spreadsheet" scope="request"/>
 <c:if test="${not empty param.packages}">
-    <c:set var="packages" value="Ajax,Startup1_1,Startup1_2,Spreadsheet,${param.packages}" scope="request"/>
+    <c:set var="packages" value="Startup1_1,Startup1_2,Spreadsheet,${param.packages}" scope="request"/>
 </c:if>
 <c:set var="pnames" value="${fn:split(packages,',')}" scope="request"/>
 
@@ -147,9 +147,9 @@
 
     window.contextPath = '${pageContext.request.contextPath}';
     window.appContextPath = '${pageContext.request.contextPath}';
-     window.appDevMode     = ${isDevMode};
+    window.appDevMode     = ${isDevMode};
 
-    ZmSpreadSheetApp._createDBG('${isDevMode}');
+    window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
     ZmSpreadSheetApp.setFile('${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}');
 

@@ -35,9 +35,9 @@
 <c:set var="isTinyMce" value="${not empty param.editor and param.editor eq 'tinymce'}" scope="request"/>
 <c:set var="isSkinDebugMode" value="${not empty requestScope.mode} and ${requestScope.mode eq 'skindebug'}" scope="request"/>
 
-<c:set var="packages" value="Ajax,Startup1_1,Startup1_2,Startup2,Docs" scope="request"/>
+<c:set var="packages" value="Startup1_1,Startup1_2,Startup2,Docs" scope="request"/>
 <c:if test="${not empty param.packages}">
-    <c:set var="packages" value="Ajax,Startup1_1,Startup1_2,Startup2,Docs,${param.packages}" scope="request"/>
+    <c:set var="packages" value="Startup1_1,Startup1_2,Startup2,Docs,${param.packages}" scope="request"/>
 </c:if>
 <c:set var="pnames" value="${fn:split(packages,',')}" scope="request"/>
 
@@ -135,7 +135,7 @@
     window.appContextPath = '${pageContext.request.contextPath}';
     window.appDevMode     = ${isDevMode};
 
-    ZmDocsEditApp._createDBG('${isDevMode}');
+    window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
     ZmDocsEditApp.setFile('${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}');
 

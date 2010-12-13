@@ -87,10 +87,7 @@
         </jsp:include>
 
         <!-- Packages -->
-        <c:set var="packages" value="Boot,SpreadsheetPreview" scope="request"/>
-        <c:if test="${isDevMode}">
-            <c:set var="packages" value="${packages},Debug" scope="page"/>
-        </c:if>
+        <c:set var="packages" value="Boot,SpreadsheetPreview,Debug" scope="request"/>
         <c:set var="pnames" value="${fn:split(packages,',')}" scope="request"/>
         <c:set var="pprefix" value="js" scope="request"/>
         <c:choose>
@@ -164,7 +161,7 @@
         </tbody>
     </table>
     <script type="text/javascript">
-        ZmSpreadSheetPreview._createDBG('${isDevMode}');
+        window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
         ZmSpreadSheetPreview.launch('spreadsheet',{
             version: '${version}',
