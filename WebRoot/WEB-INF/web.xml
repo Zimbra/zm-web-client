@@ -232,6 +232,11 @@
       <param-name>exts</param-name>
       <param-value>.htm,.xml</param-value>
     </init-param>
+    <!-- The types need to be specified in the SAME order as exts! -->
+    <init-param>
+      <param-name>exts</param-name>
+      <param-value>text/html,text/xml</param-value>
+    </init-param>
   </filter>
   <filter-mapping>
     <filter-name>InsertHelpBranding</filter-name>
