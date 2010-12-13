@@ -177,8 +177,6 @@ ZmComposeController.prototype.doAction =
 function(params) {
 
 
-	this._setSearchToolbarVisibilityPerSkin(false);
-
 	// is zdesktop, its possible there are no accounts that support smtp
 	var ac = window.parentAppCtxt || window.appCtxt;
 	if (ac.isOffline && !ac.get(ZmSetting.OFFLINE_COMPOSE_ENABLED)) {
