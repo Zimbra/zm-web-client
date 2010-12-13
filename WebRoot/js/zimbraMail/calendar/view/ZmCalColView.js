@@ -70,8 +70,8 @@ ZmCalColView._ALL_DAY_APPT_HEIGHT = 20;
 ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD = 3; // space between all day appt rows
 ZmCalColView._APPT_X_FUDGE = 0; // due to border stuff
 ZmCalColView._APPT_Y_FUDGE = -1; // ditto
-ZmCalColView._APPT_WIDTH_FUDGE = (AjxEnv.isIE ? 0 : -3); // due to border stuff
-ZmCalColView._APPT_HEIGHT_FUDGE = (AjxEnv.isIE ? 0 : -2); // ditto
+ZmCalColView._APPT_WIDTH_FUDGE = (AjxEnv.isIE ? 0 : 0); // due to border stuff
+ZmCalColView._APPT_HEIGHT_FUDGE = (AjxEnv.isIE ? 0 : 0); // ditto
 
 ZmCalColView._HOUR_HEIGHT = 42;
 ZmCalColView._HALF_HOUR_HEIGHT = ZmCalColView._HOUR_HEIGHT/2;

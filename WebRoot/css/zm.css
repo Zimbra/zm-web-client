@@ -1758,8 +1758,7 @@ HTML>BODY .appt-selected .appt_body,
 HTML>BODY .appt-selected .appt_30_body,
 HTML>BODY .appt-selected .appt_allday_body
 {
-	margin-top:-3px;
-	margin-left:-3px;
+	margin-left:-1px;
 #IFDEF GECKO
 	-moz-user-select: none;
 #ENDIF
