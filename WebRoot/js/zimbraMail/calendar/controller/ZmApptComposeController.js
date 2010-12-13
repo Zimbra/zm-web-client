@@ -131,8 +131,11 @@ ZmApptComposeController.prototype._changesDialogListener =
 function(id){
 
     var sendAppt = document.getElementById(id+"_send");
-    if(sendAppt.checked){
+    var discardAppt = document.getElementById(id+"_discard");
+    if (sendAppt.checked) {
         this._sendListener();
+    } else if (discardAppt.checked) {
+        this.closeView();
     }
     this._changesDialog.popdown();
 };
@@ -894,6 +897,16 @@ function(appt, attId, attendees, origAttendees) {
 // Cancel button was pressed
 ZmApptComposeController.prototype._cancelListener =
 function(ev) {
+
+    var appt = this._composeView.getAppt(this._attId);
+    if (appt && !appt.inviteNeverSent){
+        //Check for Significant Changes
+        if(this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT)){
+            this._getChangesDialog().popup();
+            this.enableToolbar(true);
+            return;
+        }
+    }
 	this._app.getCalController().setNeedsRefresh(true);
 
 	ZmCalItemComposeController.prototype._cancelListener.call(this, ev);
