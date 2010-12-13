@@ -441,7 +441,7 @@ ZmCalListView.prototype._handleSearchResponse =
 function(list) {
 
 	this.addItems(list.getArray());
-
+    Dwt.setTitle(this.getTitle());
 	// if we have more days to fetch, search again for the next set
 	if (this._segmentedDates.length > 0 && this._getItemsNeeded(true) > 0) {
 		this._search();
