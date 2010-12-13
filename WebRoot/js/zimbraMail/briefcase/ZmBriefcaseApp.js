@@ -317,7 +317,8 @@ function() {
     return [
         "width=",(screen.width || 640),",",
         "height=",(screen.height || 480),",",
-        "scrollbars=yes"
+        "scrollbars=yes,",
+        "resizable=yes"
     ].join("");
 };
 
