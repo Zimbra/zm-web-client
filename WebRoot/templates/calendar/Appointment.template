@@ -1050,6 +1050,8 @@
                 <input type='radio' name="saveappt" id='${id}_send' checked/>&nbsp;<$=ZmMsg.apptSaveChanges $>
                 <br/>
                 <input type='radio' name="saveappt" id='${id}_cancel'/>&nbsp;<$=ZmMsg.apptSaveCancel $>
+                <br/>
+                <input type='radio' name="saveappt" id='${id}_discard'/>&nbsp;<$=ZmMsg.apptSaveDiscard $>
             </td>
 		</tr>
 	</table>
