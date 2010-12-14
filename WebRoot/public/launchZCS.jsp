@@ -172,19 +172,6 @@
 	<jsp:param name="skin" value="${skin}" />
 </jsp:include>
 
-<!-- image overlays and masks -->
-<script>
-<jsp:include page="/img/images.css.js" />
-<jsp:include page="/skins/${skin}/img/images.css.js" />
-document.write("<DIV style='display:none'>");
-for (var id in AjxImgData) {
-	var data = AjxImgData[id];
-	if (data.f) data.f = data.f.replace(/@AppContextPath@/,appContextPath);
-	document.write("<IMG id='",id,"' src='",data.d||data.f,"'>");
-}
-document.write("</DIV>");
-</script>
-
 <!--
   --
   --
@@ -230,6 +217,19 @@ document.write("</DIV>");
 			switchToStandardClient();
 		}
 	</c:if>
+</script>
+<script>
+<jsp:include page="/img/images.css.js" />
+<jsp:include page="/skins/${skin}/img/images.css.js" />
+document.write("<DIV style='display:none'>");
+for (var id in AjxImgData) {
+	var data = AjxImgData[id];
+	if (data.f) data.f = data.f.replace(/@AppContextPath@/,appContextPath);
+	if (data.ief) data.ief = data.ief.replace(/@AppContextPath@/,appContextPath);
+	var f = AjxEnv.isIE ? data.ief : data.f;
+	document.write("<IMG id='",id,"' src='",data.d||f,"'>");
+}
+document.write("</DIV>");
 </script>
 <script>
 <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
