@@ -38,6 +38,8 @@ ZmAddressInputField = function(params) {
 
 	if (params.autocompleteListView) {
 		this.setAutocompleteListView(params.autocompleteListView);
+		this._bubbleAddedCallback = params.bubbleAddedCallback;
+		this._bubbleRemovedCallback = params.bubbleRemovedCallback;
 	}
 
 	this._bubbleClassName = "addrBubble";
@@ -73,9 +75,10 @@ function(aclv) {
  *
  * @param {string}					address		address text to go in the bubble
  * @param {ZmAutocompleteMatch}		match		match object (optional)
+ * @param {boolean}	dontCallBubbleAddedCallback  this is for the case the bubble was added by the compose view and it already takes care of what needed to be done on add
  */
 ZmAddressInputField.prototype.add =
-function(address, match) {
+function(address, match, dontCallBubbleAddedCallback) {
 
 	if (!address) { return; }
 
@@ -91,6 +94,11 @@ function(address, match) {
 	}
 
 	this._input.value = "";
+
+
+	if (this._bubbleAddedCallback && !dontCallBubbleAddedCallback) {
+		this._bubbleAddedCallback.run();
+	}
 };
 
 ZmAddressInputField.prototype._add =
@@ -221,9 +229,10 @@ function() {
  *
  * @param {string}	text	email addresses
  * @param {boolean}	add		if true, control is not cleared first
+ * @param {boolean}	dontCallBubbleAddedCallback  this is for the case the bubble was added by the compose view picker, or paste, or any other case that already takes care of what needed to be done on add
  */
 ZmAddressInputField.prototype.setValue =
-function(text, add) {
+function(text, add, dontCallBubbleAddedCallback) {
 
 	if (!add) {
 		this.clear();
@@ -235,7 +244,7 @@ function(text, add) {
 	for (var i = 0, len = addrs.length; i < len; i++) {
 		var addr = addrs[i].toString();
 		if (!this._addressHash[addr]) {
-			this.add(addr);
+			this.add(addr, null, dontCallBubbleAddedCallback);
 		}
 	}
 	if (parsed.bad && parsed.bad.size()) {
@@ -339,7 +348,12 @@ function() {
 
 	var text = this._input.value;
 	if (text) {
-		this.setValue(text);
+		this.setValue(text, true, true);
+		if (this._bubbleAddedCallback) {
+			//it might have not added anything. but in case we paste lots of emails, better to call the callback once (since I can't think of a case where it matters if only one bubble was added, or multiple)
+			//if there will be a case like that, remove this part and the "true" 2nd param to setValue above
+			this._bubbleAddedCallback.run();
+		}
 	}
 };
 
@@ -358,9 +372,10 @@ function(ev) {
  * Removes the bubble with the given ID from the holding area.
  *
  * @param {string}	bubbleId	ID of bubble to remove
+ * @param {boolean}	dontCallBubbleRemovedCallback
  */
 ZmAddressInputField.prototype.removeBubble =
-function(bubbleId) {
+function(bubbleId, dontCallBubbleRemovedCallback) {
 
 	var bubble = document.getElementById(bubbleId);
 	if (bubble) {
@@ -376,21 +391,28 @@ function(bubbleId) {
 	if (bubbleId == this._selectedBubbleId) {
 		this._selectedBubbleId = null;
 	}
+
+	if (this._bubbleRemovedCallback && !dontCallBubbleRemovedCallback) {
+		this._bubbleRemovedCallback.run();
+	}
+
 };
 
 /**
  * Removes the bubble with the given ID from the holding area.
  *
  * @param {string}	bubbleId	ID of bubble to remove
+ * @param {boolean}	dontCallBubbleRemovedCallback
+ *
  */
 ZmAddressInputField.removeBubble =
-function(bubbleId) {
+function(bubbleId, dontCallBubbleRemovedCallback) {
 
 	var bubble = document.getElementById(bubbleId);
 	var parentId = bubble._aifId || ZmAddressInputField.BUBBLE_OBJ_ID[bubbleId];
 	var addrInput = bubble && DwtControl.ALL_BY_ID[parentId];
 	if (addrInput && addrInput.getEnabled()) {
-		addrInput.removeBubble(bubbleId);
+		addrInput.removeBubble(bubbleId, dontCallBubbleRemovedCallback);
 		addrInput.focus();
 	}
 };

@@ -865,7 +865,7 @@ function(type, addr) {
 		}
 		else {
 			if (addr.isAjxEmailAddress) {
-				addrInput.add(addrStr, {isDL: addr.isGroup && addr.canExpand, email: addrStr});
+				addrInput.add(addrStr, {isDL: addr.isGroup && addr.canExpand, email: addrStr}, true);
 			}
 			else {
 				this._setAddrFieldValue(type, addrStr);
@@ -1822,11 +1822,26 @@ function(name) {
 	return forAttIds;
 };
 
+
+/**
+ * a callback that's called when bubbles are added or removed, since we need to resize the msg body in those cases.
+ */
+ZmComposeView.prototype._bubblesChangedCallback =
+function() {
+
+	if (!this._useAcAddrBubbles) {
+		return;
+	}
+
+	this._resetBodySize(); // body size might change due to change in size of address field (due to new bubbles).
+
+};
+
+
 ZmComposeView.prototype._acCompHandler =
 function(text, el, match) {
 
 	if (this._useAcAddrBubbles) {
-		this._resetBodySize(); // body size might change due to change in size of address field (due to new bubbles).
 		return;
 	}
 
@@ -2540,6 +2555,8 @@ function(templateId, data) {
 		if (this._useAcAddrBubbles) {
 			var aifParams = {
 				autocompleteListView:	this._acAddrSelectList,
+				bubbleAddedCallback:	(new AjxCallback(this, this._bubblesChangedCallback)),
+				bubbleRemovedCallback:	(new AjxCallback(this, this._bubblesChangedCallback)),
 				inputId:				inputId
 			}
 			var aif = this._addrInputField[type] = new ZmAddressInputField(aifParams);
@@ -3127,10 +3144,10 @@ function(addrs) {
 		this.setAddress(ZmMailMsg.COMPOSE_ADDRS[i], addr);
 	}
 
-	if (this._useAcAddrBubbles) {
-		this._resetBodySize(); // body size might change due to change in size of address field (due to new bubbles).
-	}
-	
+	//I still need this here since REMOVING stuff with the picker does not call removeBubble in the ZmAddresInputField.
+	//Also - it's better to do it once than for every bubble in this case. user might add many addresses with the picker
+	this._bubblesChangedCallback();
+
 	this._contactPicker.removePopdownListener(this._controller._dialogPopdownListener);
 	this._contactPicker.popdown();
 	this.reEnableDesignMode();
@@ -3449,7 +3466,7 @@ function(type, value) {
 	if (this._useAcAddrBubbles) {
 		var addrInput = this._addrInputField[type];
 		if (addrInput) {
-			addrInput.setValue(value);
+			addrInput.setValue(value, true);
 		}
 	}
 	else {
