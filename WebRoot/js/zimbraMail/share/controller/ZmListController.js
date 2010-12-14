@@ -1091,6 +1091,8 @@ function(items, folder, attrs, isShiftKey) {
 	}
 
 	var params = {folder:folder, attrs:attrs};
+    params.errorCallback = new AjxCallback(this, this._actionErrorCallback);
+
 	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
 	if (move.length) {
 		params.items = move;
@@ -1123,6 +1125,10 @@ function(items, folder, attrs, isShiftKey) {
 	}
 };
 
+ZmListController.prototype._actionErrorCallback =
+function(ex){
+    return false;
+};
 
 ZmListController.prototype._popupScheduledWarningDialog = function(callback) {
 	var dialog = appCtxt.getOkCancelMsgDialog();
