@@ -1094,7 +1094,8 @@ function(parent) {
 		var folderId = this._getSearchFolderId();
 		var folder = appCtxt.getById(folderId);
 		var inSpamFolder = ((folder && folder.nId == ZmFolder.ID_SPAM) ||
-							(!folder && folderId == ZmFolder.ID_SPAM)); // fall back
+							(!folder && folderId == ZmFolder.ID_SPAM)  ||
+                            (this._currentSearch && this._currentSearch.folderId == ZmFolder.ID_SPAM)); // fall back
 		var inPopupMenu = (parent instanceof ZmActionMenu);
 		if (inPopupMenu) {
 			item.setText(inSpamFolder ? ZmMsg.notJunkMarkLabel : ZmMsg.junkMarkLabel);
