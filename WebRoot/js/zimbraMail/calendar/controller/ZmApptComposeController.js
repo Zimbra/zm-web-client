@@ -709,9 +709,8 @@ function(appt, attId, names, notifyList, response) {
 		}
 		if (deniedAttendees.length > 0) {
 			var msg =  AjxMessageFormat.format(ZmMsg.invitePermissionDenied, [deniedAttendees.join(",")]);
-			var msgDialog = appCtxt.getYesNoMsgDialog();
+			var msgDialog = appCtxt.getMsgDialog();
 			msgDialog.reset();
-			msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._saveAfterPermissionCheck, this, [appt, attId, notifyList, msgDialog]);
 			msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
 			msgDialog.popup();
             this.enableToolbar(true);
