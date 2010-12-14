@@ -29,7 +29,7 @@
  */
 ZmChooseFolderDialog = function(parent, className) {
 	var newButton = new DwtDialog_ButtonDescriptor(ZmChooseFolderDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
-	var params = {parent:parent, className:className, extraButtons:[newButton]};
+	var params = {parent:parent, className:className, extraButtons:[newButton], id:"ChooseFolderDialog"};
 	ZmDialog.call(this, params);
 
 	this._createControls();
