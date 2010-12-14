@@ -1097,8 +1097,15 @@ function(message, viewMode) {
 			tzrule = AjxTimezone.getRule(tzrule.aliasId) || tzrule;
 		}
 		this.setTimezone(tzrule.serverId);
-		this.setEndTimezone(tzrule.serverId);
 	}
+
+    tzrule = AjxTimezone.getRule(AjxTimezone.getClientId(this.endTimezone));
+    if (tzrule) {
+        if (tzrule.aliasId) {
+            tzrule = AjxTimezone.getRule(tzrule.aliasId) || tzrule;
+        }
+        this.setEndTimezone(tzrule.serverId);
+    }
 };
 
 /**

@@ -1478,6 +1478,8 @@ function() {
 		inputEl.onblur = AjxCallback.simpleClosure(this._handleSubjectOnBlur, this, inputEl);
 		inputEl.onfocus = AjxCallback.simpleClosure(this._handleSubjectOnFocus, this, inputEl);
     }
+
+    this.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 };
 
 // cache all input fields so we dont waste time traversing DOM each time
@@ -1496,7 +1498,7 @@ function(calItem, isAllDayAppt) {
 
 ZmApptEditView.prototype._setTimezoneVisible =
 function(dateInfo) {
-	var showTimezone = !dateInfo.isAllDay;
+	var showTimezone = !dateInfo.isAllDay && this._repeatSelect && this._repeatSelect.getValue()=="NON";
 	if (showTimezone) {
 		showTimezone = appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) ||
 					   dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
@@ -1662,6 +1664,12 @@ ZmApptEditView.prototype._timezoneListener =
 function(ev) {
     this.handleTimezoneOverflow();
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+};
+
+
+ZmApptEditView.prototype._repeatChangeListener =
+function(ev) {
+    this._setTimezoneVisible(this._dateInfo);
 };
 
 /**
