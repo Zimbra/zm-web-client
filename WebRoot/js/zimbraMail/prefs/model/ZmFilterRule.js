@@ -480,7 +480,7 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG] = {
 };
 
 ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG] = {
-	param:				ZmFilterRule.TYPE_TAG_PICKER,
+	param:				ZmFilterRule.TYPE_TAG_PICKER
 };
 
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD] = {
