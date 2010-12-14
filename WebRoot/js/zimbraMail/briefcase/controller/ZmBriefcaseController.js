@@ -1306,3 +1306,17 @@ function(create){
         }
     }
 };
+
+ZmBriefcaseController.prototype._actionErrorCallback =
+function(ex){
+
+    var handled = false;
+    if(ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS){
+        handled = true;
+        var dlg = appCtxt.getMsgDialog();
+        dlg.setMessage(ZmMsg.errorFileAlreadyExistsResolution, DwtMessageDialog.WARNING_STYLE);
+        dlg.popup();
+    }
+
+    return handled;
+};

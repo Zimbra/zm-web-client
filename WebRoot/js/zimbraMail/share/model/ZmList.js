@@ -481,7 +481,7 @@ function(params) {
  */
 ZmList.prototype.moveItems =
 function(params) {
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "noUndo", "actionText"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo", "actionText"]);
 
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		return this._mixedAction("moveItems", params);
@@ -518,6 +518,9 @@ function(params) {
 			params1.accountName = params.items[0].getAccount().name;
 		}
 	}
+
+    //Error Callback
+    params1.errorCallback = params.errorCallback;
 
 	this._itemAction(params1);
 };
@@ -936,7 +939,7 @@ function(params) {
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(params.request, respCallback, params.errorCallback);
 	} else {
-		var reqParams = {asyncMode:true, callback:respCallback, accountName:params.accountName};
+		var reqParams = {asyncMode:true, callback:respCallback, errorCallback: params.errorCallback, accountName:params.accountName};
 		if (useJson) {
 			reqParams.jsonObj = params.request;
 		} else {
