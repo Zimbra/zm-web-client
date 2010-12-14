@@ -172,7 +172,10 @@ for (var pkg in window.AjxTemplateMsg) {
     <script type="text/javascript" language="JavaScript">
 		var cacheKillerVersion = "${vers}";
 		function launch() {
-			DBG = new AjxDebug(AjxDebug.NONE, null, false);
+			if (window.opener && window.opener.DBG) {
+				// use main window's debug object
+				window.DBG = window.opener.DBG;
+			}
 			ZmNewWindow.run();
 		}
 		AjxCore.addOnloadListener(launch);

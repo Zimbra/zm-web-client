@@ -82,8 +82,6 @@ function() {
 	AjxDispatcher.setLoaded("Mail", true);
 
 	var winOpener = window.opener || window;
-	// inherit parent window's debug level but only enable debug window if not already open
-	DBG.setDebugLevel(winOpener.DBG._level, true);
 
 	if (!window.parentController) {
 		window.parentController = winOpener._zimbraMail;
@@ -171,6 +169,8 @@ function() {
 		this._createView();
 		return;
 	}
+
+	DBG.println(" *************************** Hello from new window!");
 
 	if (!this._appViewMgr) {
 		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
