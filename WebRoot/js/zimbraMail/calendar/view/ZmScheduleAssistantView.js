@@ -766,7 +766,7 @@ function(visible) {
 
 ZmScheduleAssistantView.prototype.highlightMiniCal =
 function() {
-    this._customizeBtn.setText(AjxMessageFormat.format(ZmMsg.searchingMonthTitle, [this._miniCalendar.getDate()]));
+    this.setCustomizeTitle(true);
     this.getMonthFreeBusyInfo();
 };
 
@@ -796,28 +796,33 @@ function(item) {
 ZmScheduleAssistantView.prototype.getMonthFreeBusyInfo =
 function() {
     var range = this._miniCalendar.getDateRange();
+    var startDate = range.start;
+    var endDate = range.end;
 
     var params = {
         items: [],
         itemIndex: {},
         focus: false,
         timeFrame: {
-            start: range.start,
-            end: range.end
+            start: startDate,
+            end: endDate
         },
         miniCalSuggestions: true
     };
 
     //avoid suggestions for past date
     var currentDayTime = (new Date()).setHours(0,0,0,0);
-    if(currentDayTime >= range.start.getTime()) {
-        range.start = params.timeFrame.start = new Date(currentDayTime);
-
-        if(range.end.getTime() < currentDayTime) {
-            range.end = params.timeFrame.end = new Date(currentDayTime);
+    if(currentDayTime >= startDate.getTime() && currentDayTime <= endDate.getTime()) {
+        //reset start date if the current date falls within the month date range - to ignore free busy info from the past
+        startDate = params.timeFrame.start = new Date(currentDayTime);
+        if(endDate.getTime() == currentDayTime) {
+            endDate = params.timeFrame.end = new Date(currentDayTime + AjxDateUtil.MSEC_PER_DAY);
         }
+    }else if(endDate.getTime() < currentDayTime) {
+        //avoid fetching free busy info for dates in the past
+        this.setCustomizeTitle(false);
+        return;
     }
-
 
     var list = this._resources;
     var emails = [], attendeeEmails = [];
@@ -863,8 +868,8 @@ function() {
 
 
     var fbParams = {
-        startTime: range.start.getTime(),
-        endTime: range.end.getTime(),
+        startTime: startDate.getTime(),
+        endTime: endDate.getTime(),
         emails: emails,
         callback: callback,
         errorCallback: callback,
@@ -983,9 +988,13 @@ function(params) {
     }
 
     this._miniCalendar.setColor(params.dates, true, params.colors);
-    this._customizeBtn.setText(ZmMsg.suggestedTimes);
+    this.setCustomizeTitle(false);
 };
 
+ZmScheduleAssistantView.prototype.setCustomizeTitle =
+function(showLoadingMsg) {
+    this._customizeBtn.setText(showLoadingMsg ? AjxMessageFormat.format(ZmMsg.searchingMonthTitle, [this._miniCalendar.getDate()]) : ZmMsg.suggestedTimes);
+};
 
 ZmScheduleAssistantView.prototype._addColorCode =
 function(params, startTime, code) {
