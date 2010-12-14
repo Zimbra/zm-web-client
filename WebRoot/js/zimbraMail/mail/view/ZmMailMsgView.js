@@ -77,7 +77,7 @@ ZmMailMsgView.displayAdditionalHdrsInMsgView = {};
 
 // Consts
 
-ZmMailMsgView.SCROLL_WITH_IFRAME	= false;
+ZmMailMsgView.SCROLL_WITH_IFRAME	= true;
 ZmMailMsgView.LIMIT_ATTACHMENTS 	= ZmMailMsgView.SCROLL_WITH_IFRAME ? 3 : 0;
 ZmMailMsgView.ATTC_COLUMNS			= 2;
 ZmMailMsgView.ATTC_MAX_SIZE			= ZmMailMsgView.LIMIT_ATTACHMENTS * 16 + 8;
