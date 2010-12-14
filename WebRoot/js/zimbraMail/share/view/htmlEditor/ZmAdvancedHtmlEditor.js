@@ -555,7 +555,7 @@ function(id, mode, content) {
 };
 
 ZmAdvancedHtmlEditor.prototype.setMode =
-function(mode, convert) {
+function(mode, convert, convertor) {
 
     this.discardMisspelledWords();
 
@@ -565,9 +565,9 @@ function(mode, convert) {
 	var editor = this.getEditor();
 	if (mode == DwtHtmlEditor.HTML) {
 		var textArea = this.getContentField();
+		var content = convert ? AjxStringUtil.convertToHtml(textArea.value, true) : textArea.value;
 		if (editor && editor.getDoc()) {
 			var doc = editor.getDoc();
-			var content = convert ? AjxStringUtil.convertToHtml(textArea.value)	: textArea.value;
 			doc.body.innerHTML = content;
 			this._pendingContent = content;
 			//important: tinymce expects html markup in textarea so it might treat email
@@ -575,14 +575,13 @@ function(mode, convert) {
 			textArea.value = "";
 			this._editorContainer.setFocusMember(editor.getWin());
 		} else {
-			var content = convert ? AjxStringUtil.convertToHtml(textArea.value)	: textArea.value;
 			this._pendingContent = content;
 		}
 		tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);
 	} else {
 		var textArea = this.getContentField();
 		var doc = editor.getDoc();
-		var textContent = convert ? this._convertHtml2Text() : doc.innerHTML;
+		var textContent = convert ? this._convertHtml2Text(convertor) : doc.innerHTML;
 
 		tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);
 		textArea.value = textContent;
