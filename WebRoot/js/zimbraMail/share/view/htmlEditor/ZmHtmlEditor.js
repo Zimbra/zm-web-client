@@ -102,10 +102,10 @@ ZmHtmlEditor.prototype.setContent = function(content) {
 };
 
 ZmHtmlEditor.prototype.setMode =
-function(mode, convert) {
+function(mode, convert, convertor) {
 	this.discardMisspelledWords();
 
-	DwtHtmlEditor.prototype.setMode.call(this, mode, convert);
+	DwtHtmlEditor.prototype.setMode.call(this, mode, convert, convertor);
 
 	if (mode == DwtHtmlEditor.HTML) {
 		this._createToolbars();

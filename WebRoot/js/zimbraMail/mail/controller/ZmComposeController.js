@@ -517,9 +517,9 @@ function(draftType, msg, callback, result) {
 	var resp = result.getResponse();
 	this._processSendMsg(draftType, msg, resp);
 
-    this._msg = msg;
+	this._msg = msg;
 
-    if (callback) {
+	if (callback) {
 		callback.run(result);
 	}
 
@@ -1137,12 +1137,12 @@ function(incOptions) {
 	var mi = menu.getOp(ZmOperation.USE_PREFIX);
 	if (mi) {
 		mi.setEnabled(allowOptions);
-		mi.setChecked(incOptions.prefix && allowOptions, true);
+		mi.setChecked(incOptions.prefix, true);
 	}
 	mi = menu.getOp(ZmOperation.INCLUDE_HEADERS);
 	if (mi) {
 		mi.setEnabled(allowOptions);
-		mi.setChecked(incOptions.headers && allowOptions, true);
+		mi.setChecked(incOptions.headers, true);
 	}
 };
 
