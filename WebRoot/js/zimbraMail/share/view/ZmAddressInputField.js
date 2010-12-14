@@ -220,14 +220,15 @@ function() {
  * that we don't already have. Any part that doesn't parse is left in the input.
  *
  * @param {string}	text	email addresses
+ * @param {boolean}	add		if true, control is not cleared first
  */
 ZmAddressInputField.prototype.setValue =
-function(text) {
+function(text, add) {
 
-	if (!text) {
+	if (!add) {
 		this.clear();
-		return;
 	}
+	if (!text) { return; }
 	
 	var parsed = AjxEmailAddress.parseEmailString(text);
 	var addrs = parsed.good.getArray();
