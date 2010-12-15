@@ -209,6 +209,17 @@ function(list, sortField, doNotIncludeFolders){
 
     this._zmList = list;
     ZmListView.prototype.set.call(this, list, sortField);
+    if (this._expanded){
+    	var arr = list.getArray();
+    	var cnt = arr.length;
+    	for(var i=0;i<cnt;i++) {
+    		var item = arr[i];
+    		if(this._expanded[item.id]) {
+    			this.parent._expand(item);
+    		}
+    	}
+        
+    }
 };
 
 ZmBriefcaseBaseView.prototype.renameFile =
