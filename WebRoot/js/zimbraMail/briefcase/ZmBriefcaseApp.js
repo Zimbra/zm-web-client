@@ -495,82 +495,9 @@ function(msgId, partId, name) {
 	if (this._deferredFolders.length != 0) {
 		this._createDeferredFolders(ZmApp.BRIEFCASE);
 	}
-	var dlg = this._copyToDialog = appCtxt.getChooseFolderDialog();
-	var chooseCb = new AjxCallback(this, this._chooserCallback, [msgId, partId, name]);
-	ZmController.showDialog(dlg, chooseCb, this._getCopyParams(dlg, msgId, partId));
+    this.getBriefcaseController().createFromAttachment(msgId, partId, name);
 };
 
-ZmBriefcaseApp.prototype._getCopyParams =
-function(dlg, msgId, partId) {
-	var params = {
-		data:			{msgId:msgId,partId:partId},
-		treeIds:		[ZmOrganizer.BRIEFCASE],
-		overviewId:		dlg.getOverviewId(this._name),
-		title:			ZmMsg.addToBriefcaseTitle,
-		description:	ZmMsg.targetFolder,
-		appName:		ZmApp.BRIEFCASE
-	};
-    params.omit = {};
-    params.omit[ZmFolder.ID_DRAFTS] = true;
-    params.omit[ZmFolder.ID_TRASH] = true;
-    return params;
-};
-
-ZmBriefcaseApp.prototype._chooserCallback =
-function(msgId, partId, name, folder) {
-    //TODO: Avoid using search, instead try renaming on failure
-	var callback = new AjxCallback(this, this.handleDuplicateCheck, [msgId, partId, name, folder]);
-	this.search({query:folder.createQuery(), noRender:true, callback:callback, accountName:(folder && folder.account && folder.account.name) || undefined});
-};
-
-ZmBriefcaseApp.prototype.handleDuplicateCheck =
-function(msgId, partId, name, folder, results) {
-
-	var msg = appCtxt.getById(msgId);
-
-	var briefcase = folder;
-	if (briefcase.isReadOnly(folder.id)) {
-		ZmOrganizer._showErrorMsg(ZmMsg.errorPermission);
-		return;
-	}
-
-	if (msgId.indexOf(":") < 0) {
-		msgId = msg.getAccount().id + ":" + msg.id;
-	}
-
-
-	var searchResult = results.getResponse();
-	var items = searchResult && searchResult.getResults(ZmItem.BRIEFCASE_ITEM);
-	if (items instanceof ZmList) {
-		items = items.getArray();
-	}
-
-    var itemFound = false;
-	for (var i = 0, len = items.length; i < len; i++) {
-		if (items[i].name == name) {
-			itemFound = items[i];
-			break;
-		}
-	}
-
-    var folderId = (!folder.account || folder.account == appCtxt.getActiveAccount() || (folder.id.indexOf(":") != -1)) ? folder.id : [folder.account.id, folder.id].join(":");	
-    if(itemFound){
-       var dlg = appCtxt.getYesNoMsgDialog();
-        dlg.registerCallback(DwtDialog.YES_BUTTON, this._createFromAttachment, this, [msgId, partId, name, folderId, itemFound, dlg]);
-		dlg.setMessage(AjxMessageFormat.format(ZmMsg.errorFileAlreadyExistsReplace, name), DwtMessageDialog.WARNING_STYLE);
-		dlg.popup();
-    }else{
-       this._createFromAttachment(msgId, partId, name, folderId); 
-    }
-};
-
-ZmBriefcaseApp.prototype._createFromAttachment =
-function(msgId, partId, name, folderId, replaceItem, dlg){
-    var srcData = new ZmBriefcaseItem();
-    srcData.createFromAttachment(msgId, partId, name, folderId, replaceItem);
-    if(dlg)
-        dlg.popdown();
-};
 
 /**
  * @private

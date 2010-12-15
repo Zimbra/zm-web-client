@@ -211,17 +211,24 @@ function() {
  * @param	{String}	folderId		the folder id
  */
 ZmBriefcaseBaseItem.prototype.createFromAttachment =
-function(msgId, partId, name, folderId, replaceFile) {
-	var acctId = appCtxt.getActiveAccount().id;
-    
+function(msgId, partId, name, folderId, attribs) {
+
+    attribs = attribs || {};
+
+    var acctId = appCtxt.getActiveAccount().id;
 	var soapDoc = AjxSoapDoc.create("SaveDocumentRequest", "urn:zimbraMail");
 	var doc = soapDoc.set("doc");
-    if (replaceFile && replaceFile.id) {
-        doc.setAttribute("id", replaceFile.id);
-        doc.setAttribute("ver", replaceFile.version);
+    if (attribs.id && attribs.version) {
+        doc.setAttribute("id", attribs.id);
+        doc.setAttribute("ver", attribs.version);
     }else{
 	    doc.setAttribute("l", folderId);
     }
+
+    if(attribs.rename){
+        doc.setAttribute("name", attribs.rename);
+    }
+
 	var mnode = soapDoc.set("m", null, doc);
 	mnode.setAttribute("id", msgId);
 	mnode.setAttribute("part", partId);
@@ -229,8 +236,8 @@ function(msgId, partId, name, folderId, replaceFile) {
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: true,
-		callback: (new AjxCallback(this, this._handleResponseCreateItem, [folderId])),
-		errorCallback: (new AjxCallback(this, this._handleErrorCreateItem))
+		callback: (new AjxCallback(this, this._handleResponseCreateItem, [folderId, attribs.callback])),
+		errorCallback: (new AjxCallback(this, this._handleErrorCreateItem, [attribs.errorCallback]))
 	};
 	appCtxt.getAppController().sendRequest(params);
 };
@@ -286,14 +293,22 @@ function(version, callback){
 
 
 ZmBriefcaseBaseItem.prototype._handleResponseCreateItem =
-function(folderId,response) {
+function(folderId, callback, response) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.fileCreated);
 	appCtxt.getChooseFolderDialog().popdown();
+    if(callback)
+        callback.run(response);
 };
 
 ZmBriefcaseBaseItem.prototype._handleErrorCreateItem =
-function(ex) {
-	appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateFile, ZmStatusView.LEVEL_CRITICAL);
+function(callback, ex) {
+
+    var handled = false;
+	if(callback){
+        handled = callback.run(ex);
+    }
+    appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateFile, ZmStatusView.LEVEL_CRITICAL);
+    return handled;
 };
 
 ZmBriefcaseBaseItem.prototype.notifyModify =

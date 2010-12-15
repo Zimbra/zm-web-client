@@ -1320,3 +1320,174 @@ function(ex){
 
     return handled;
 };
+
+
+//Add to Briefcase
+
+ZmBriefcaseController.prototype.createFromAttachment =
+function(msgId, partId, name){
+
+     var dlg = this._saveAttDialog = appCtxt.getChooseFolderDialog();
+	 var chooseCb = new AjxCallback(this, this._chooserCallback, [msgId, partId, name]);
+	 ZmController.showDialog(dlg, chooseCb, this._getCopyParams(dlg, msgId, partId));
+
+};
+
+ZmBriefcaseController.prototype._getCopyParams =
+function(dlg, msgId, partId) {
+	var params = {
+		data:			{msgId:msgId,partId:partId},
+		treeIds:		[ZmOrganizer.BRIEFCASE],
+		overviewId:		dlg.getOverviewId(this._app._name),
+		title:			ZmMsg.addToBriefcaseTitle,
+		description:	ZmMsg.targetFolder,
+		appName:		ZmApp.BRIEFCASE
+	};
+    params.omit = {};
+    params.omit[ZmFolder.ID_DRAFTS] = true;
+    params.omit[ZmFolder.ID_TRASH] = true;
+    return params;
+};
+
+ZmBriefcaseController.prototype._chooserCallback =
+function(msgId, partId, name, folder) {
+    //TODO: Avoid using search, instead try renaming on failure
+	var callback = new AjxCallback(this, this._handleDuplicateCheck, [msgId, partId, name, folder]);
+	this._app.search({query:folder.createQuery(), noRender:true, callback:callback, accountName:(folder && folder.account && folder.account.name) || undefined});
+};
+
+ZmBriefcaseController.prototype._handleDuplicateCheck =
+function(msgId, partId, name, folder, results) {
+
+	var msg = appCtxt.getById(msgId);
+
+	var briefcase = folder;
+	if (briefcase.isReadOnly(folder.id)) {
+		ZmOrganizer._showErrorMsg(ZmMsg.errorPermission);
+		return;
+	}
+
+	if (msgId.indexOf(":") < 0) {
+		msgId = msg.getAccount().id + ":" + msg.id;
+	}
+
+
+	var searchResult = results.getResponse();
+	var items = searchResult && searchResult.getResults(ZmItem.BRIEFCASE_ITEM);
+	if (items instanceof ZmList) {
+		items = items.getArray();
+	}
+
+    var itemFound = false;
+	for (var i = 0, len = items.length; i < len; i++) {
+		if (items[i].name == name) {
+			itemFound = items[i];
+			break;
+		}
+	}
+
+    var folderId = (!folder.account || folder.account == appCtxt.getActiveAccount() || (folder.id.indexOf(":") != -1)) ? folder.id : [folder.account.id, folder.id].join(":");
+    if(itemFound){
+        var dlg = this._conflictDialog = this._getFileConflictDialog();
+        dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleConflictDialog, [msgId, partId, name, folderId, itemFound]))
+		dlg.popup();
+    }else{
+       this._createFromAttachment(msgId, partId, name, folderId);
+    }
+
+    if(this._saveAttDialog.isPoppedUp())
+        this._saveAttDialog.popdown();
+};
+
+ZmBriefcaseController.prototype._handleConflictDialog =
+function(msgId, partId, name, folderId, itemFound){
+
+    var attribs = {};
+    if(this._renameRadio.checked){
+        var newName = this._renameField.value;
+        var errorMsg = this.checkInvalidFileName(newName);
+        if(errorMsg){
+		    var dialog = appCtxt.getMsgDialog();
+		    dialog.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
+		    dialog.popup();
+		    return false;
+        }
+        attribs.rename = newName;
+    }else{
+        attribs.id = itemFound.id;
+        attribs.version = itemFound.version;
+    }
+
+    this._createFromAttachment(msgId, partId, name, folderId, attribs);
+};
+
+ZmBriefcaseController.prototype.checkInvalidFileName =
+function(fileName) {
+
+    var message;
+    fileName = fileName.replace(/^\s+/,"").replace(/\s+$/,"");
+
+    if(fileName == ""){
+        message = ZmMsg.emptyDocName;
+    }else if (!ZmOrganizer.VALID_NAME_RE.test(fileName)) {
+        message = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName));
+    } else if ( fileName.length > ZmOrganizer.MAX_NAME_LENGTH){
+        message = AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
+    }
+
+    return message;
+};
+
+ZmBriefcaseController.prototype._createFromAttachment =
+function(msgId, partId, name, folderId, attribs){
+
+    attribs = attribs || {};
+    if(attribs.id || attribs.rename)
+        attribs.callback = new AjxCallback(this, this._handleSuccessCreateFromAttachment, [msgId, partId, name, folderId]);
+    if(attribs.rename)
+        attribs.errorCallback = new AjxCallback(this, this._handleErrorCreateFromAttachment, [msgId, partId, name, folderId]);
+
+    var srcData = new ZmBriefcaseItem();
+    srcData.createFromAttachment(msgId, partId, name, folderId, attribs);
+};
+
+ZmBriefcaseController.prototype._handleSuccessCreateFromAttachment =
+function(msgId, partId, name, folderId, response){
+    if(this._conflictDialog){
+        this._renameField.value = "";
+        this._conflictDialog.popdown();
+    }
+};
+
+ZmBriefcaseController.prototype._handleErrorCreateFromAttachment =
+function(msgId, partId, name, folderId, ex){
+
+    var handled = false;
+    if(ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS){
+        handled = true;
+        var dlg = appCtxt.getMsgDialog();
+        dlg.setMessage(AjxMessageFormat.format(ZmMsg.errorFileExistsWarning, name), DwtMessageDialog.WARNING_STYLE);
+        dlg.popup();
+    }
+
+    return handled;
+};
+
+ZmBriefcaseController.prototype._getFileConflictDialog =
+function(){
+    if(!this._nameConflictDialog){
+       var dlg = this._nameConflictDialog = new DwtDialog({parent:appCtxt.getShell()});
+       var id = this._nameConflictId = Dwt.getNextId();
+       dlg.setContent(AjxTemplate.expand("briefcase.Briefcase#NameConflictDialog", {id: id}));
+       dlg.setTitle(ZmMsg.addToBriefcaseTitle);
+
+       this._renameRadio = document.getElementById(id+'_rename');
+       this._renameField = document.getElementById(id+'_newname');
+
+    }
+    return this._nameConflictDialog;
+};
+
+
+
+

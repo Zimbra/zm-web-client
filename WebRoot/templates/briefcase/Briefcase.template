@@ -211,3 +211,18 @@
         </tr>
     </table>
 </template>
+
+<template id="briefcase.Briefcase#NameConflictDialog">
+	<table cellpadding='5' cellspacing='0' border='0' width='300'>
+		<tr>
+			<td><$=ZmMsg.errorFileAlreadyExistsReplace $></td>
+		</tr>
+		<tr>
+			<td style='padding: 20px 30px;white-space:nowrap;'>
+                <input type='radio' name="savefile" id='${id}_version' checked/>&nbsp;<$=ZmMsg.saveNameConflitVersion $>
+                <br/><br/>
+                <input type='radio' name="savefile" id='${id}_rename'/>&nbsp;<$=ZmMsg.saveNameConflictRename $> <input type='text' id="${id}_newname"/>
+            </td>
+		</tr>
+	</table>
+</template>
