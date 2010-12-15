@@ -1133,6 +1133,7 @@ function(sched, type, svp) {
             sched.attendee.setParticipantRole((type == ZmCalItem.ROLE_OPTIONAL) ? ZmCalItem.ROLE_OPTIONAL : ZmCalItem.ROLE_REQUIRED);
             if(this.isComposeMode) {
                 this._editView._setAttendees();
+                this._editView.updateScheduleAssistant(this._attendees[ZmCalBaseItem.PERSON], ZmCalBaseItem.PERSON);
                 if(type == ZmCalItem.ROLE_OPTIONAL) this._editView.showOptional();  
             }
         }
@@ -1156,6 +1157,7 @@ function(sched, type, svp) {
 		if(this.isComposeMode) {
             this._editView.parent.updateAttendees(sched.attendee, sched.attType, ZmApptComposeView.MODE_REMOVE);
             this._editView._setAttendees();
+            if(type == ZmCalBaseItem.PERSON) this._editView.updateScheduleAssistant(this._attendees[ZmCalBaseItem.PERSON], ZmCalBaseItem.PERSON);
         }
 		sched.attendee = null;
 	}
