@@ -174,6 +174,18 @@ function(ev) {
 	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
+
+	// check for empty value before input is updated - looking for Delete when field was already empty
+	var value = element && element.value;
+	if (!value) {
+		if (aclv && aclv._options.addrBubbles && key == 8) {
+			var addrInput = DwtControl.ALL_BY_ID[element._aifId];
+			if (addrInput) {
+				addrInput.handleDelete();
+			}
+		}
+	}
+
 	if (aclv) {
 		aclv._inputLength = element.value.length;
 		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYDOWN, element && element.id, [ev, aclv, result, element]);
@@ -203,17 +215,6 @@ function(ev) {
 	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
-
-	// check for empty value before input is updated - looking for Delete when field was already empty
-	var value = element && element.value;
-	if (!value) {
-		if (aclv && aclv._options.addrBubbles && key == 8) {
-			var addrInput = DwtControl.ALL_BY_ID[element._aifId];
-			if (addrInput) {
-				addrInput.handleDelete();
-			}
-		}
-	}
 
 	if (aclv) {
 		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYPRESS, element && element.id, [ev, aclv, result, element]);
@@ -364,6 +365,12 @@ function(ev) {
 	}
 
 	if (key == 13 || key == 3) {
+		if (aclv._options.addrBubbles) {
+			if (aclv._dataAPI.isComplete && aclv._dataAPI.isComplete(value)) {
+				DBG.println(AjxDebug.DBG3, "got a Return, found an addr: " + value);
+				aclv._runCallbacks(ZmAutocompleteListView.CB_ADDR_FOUND, aclv._element && aclv._element.id, [aclv, value, "\n"]);
+			}
+		}
 		aclv.reset();
 		var result = aclv._runCallbacks(ZmAutocompleteListView.CB_ENTER, element && element.id, [ev]);
 		return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
@@ -645,6 +652,7 @@ function(show, loc) {
  */
 ZmAutocompleteListView.prototype._nextChunk =
 function(text, start) {
+
 	while (text.charAt(start) == ' ') {	// ignore leading space
 		start++;
 	}
@@ -658,19 +666,22 @@ function(text, start) {
 				c = text.charAt(++i);
 			}
 		}
-		if (this._isDelim[c]) {
+		var isDelim = this._isDelim[c];
+		if (isDelim || (this._options.addrBubbles && c == ' ')) {
 			var chunk = text.substring(start, i);
 			if (this._dataAPI.isComplete && this._dataAPI.isComplete(chunk)) {
 				DBG.println(AjxDebug.DBG3, "skipping completed chunk: " + chunk);
 				if (this._runCallbacks(ZmAutocompleteListView.CB_ADDR_FOUND, this._element && this._element.id, [this, chunk, c])) {
 					return null;
 				}
-				start = i + 1;
+				if (isDelim) {
+					start = i + 1;
+				}
 				while (text.charAt(start) == ' ') {	// ignore leading space
 					start++;
 				}
-			} else {
-				return {text: text, str: chunk, start: start, end: i, delim: (c != ' ')};
+			} else if (isDelim) {
+				return {text: text, str: chunk, start: start, end: i, delim: isDelim};
 			}
 		}
 	}
@@ -771,9 +782,6 @@ function(text, str, hasDelim, match) {
 
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _complete: selected is " + this._selected);
 	match = match || this._matchHash[this._selected];
-	if (!match && str && hasDelim && this._dataAPI.quickComplete) {
-		match = this._dataAPI.quickComplete(str);
-	}
 	if (!match)	{ return; }
 
 	var start = this._start;
