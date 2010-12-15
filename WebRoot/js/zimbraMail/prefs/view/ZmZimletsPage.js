@@ -429,13 +429,15 @@ ZmZimletsPage._getZimlets =
 function() {
 	var allz = appCtxt.get(ZmSetting.ZIMLETS) || [];
 	var zimlets = new ZmPrefZimlets();
+    var zimletMgr = appCtxt.getZimletMgr();
 	for (var i = 0; i <  allz.length; i++) {
 		var name = allz[i].zimlet[0].name;
 		if (allz[i].zimletContext[0].presence == "mandatory") {
 			continue; // skip mandatory zimlets to be shown in prefs
 		}
-		var desc = allz[i].zimlet[0].description;
-		var label = allz[i].zimlet[0].label;
+        var zimletContext = zimletMgr.getZimletByName(name);
+		var desc = zimletContext.description;
+		var label = zimletContext.label;
 		var isEnabled = allz[i].zimletContext[0].presence == "enabled";
 		zimlets.addPrefZimlet(new ZmPrefZimlet(name, isEnabled, desc, label));
 	}

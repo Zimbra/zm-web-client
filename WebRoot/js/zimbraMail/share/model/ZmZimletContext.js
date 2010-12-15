@@ -246,6 +246,10 @@ function() {
  */
 ZmZimletContext.prototype._finished_loadIncludes =
 function() {
+    // localize messages
+    this.label = this.label && this.processMessage(this.label);
+    this.description = this.description && this.processMessage(this.description);
+
 	var CTOR = this.handlerObject ? window[this.handlerObject] : ZmZimletBase;
 	if (!CTOR) {
 		DBG.println("zimlet handler not defined ("+this.handlerObject+")");
