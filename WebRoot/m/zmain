@@ -20,7 +20,7 @@
 		while (m.find()) {
 			String oldpart = m.group();
 			String newpart = oldpart.replaceAll("\t", tab).replaceAll("\n", crlf);
-			str = str.replaceAll(oldpart, newpart);
+			str = str.replaceAll(Pattern.quote(oldpart), newpart);
 		}
 		str = str.replaceAll("[\t ]+", " ").replaceAll(tab,"\t");
 		str = str.replaceAll("\n\\s*\n", "\n").replaceAll(crlf,"\n");
