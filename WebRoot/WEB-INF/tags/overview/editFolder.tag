@@ -201,7 +201,7 @@
                         <c:if test="${folder.parentId eq 1}">selected</c:if> value="1"/>
                 <fmt:message key="rootFolder"/>
                 <zm:forEachFolder var="parent">
-                    <c:if test="${parent.isMessageMoveTarget and !parent.isTrash and !parent.isSpam}">
+                    <c:if test="${(parent.isMessageMoveTarget and !parent.isSpam) or parent.isTrash}">
                         <c:if test="${parent.id ne folder.id}">
                             <option
                                     <c:if test="${parent.id eq folder.parentId}">selected</c:if> value="${parent.id}"/>

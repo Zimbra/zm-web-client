@@ -126,7 +126,7 @@
                 <option selected value="1"/>
                 <fmt:message key="rootFolder"/>
                 <zm:forEachFolder var="parent">
-                    <c:if test="${parent.isMessageMoveTarget and !parent.isTrash and !parent.isSpam}">
+                    <c:if test="${(parent.isMessageMoveTarget and !parent.isSpam) or parent.isTrash}">
                         <option value="${parent.id}"/>
                         ${fn:escapeXml(parent.rootRelativePath)}
                     </c:if>
