@@ -87,8 +87,14 @@ function(msg) {
 		}
 		else if (invite.hasInviteReplyMethod()) {
 			var ac = window.parentAppCtxt || window.appCtxt;
-			if (!this._inviteToolbar || AjxEnv.isIE) {
-				this._inviteToolbar = this._getInviteToolbar();
+			if (AjxEnv.isIE && this._inviteToolbar) {
+				//according to fix to bug 52412 reparenting doestn't work on IE. so I don't reparent for IE but also if the toolbar element exists,
+				//I remove it from parent since in the case of double-click message view, it appears multiple times without removing it
+				this._inviteToolbar.dispose();
+				this._inviteToolbar = null;
+			}
+			if (!this._inviteToolbar) {
+				this._inviteToolbar = this._createInviteToolbar();
 			}
 			this._inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement(), 0);
 			this._inviteToolbar.setVisible(Dwt.DISPLAY_BLOCK);
@@ -458,7 +464,19 @@ function() {
 	return tb;
 };
 
-ZmInviteMsgView.prototype._getInviteToolbar =
+/**
+ * returns the toolbar. Creates a new one only if it's not already set to the internal field
+ */
+ZmInviteMsgView.prototype.getInviteToolbar =
+function() {
+	if (this._inviteToolbar) {
+		return this._inviteToolbar;
+	}
+	return this._createInviteToolbar();
+}
+
+
+ZmInviteMsgView.prototype._createInviteToolbar =
 function() {
 	var replyButtonIds = [
 		ZmOperation.INVITE_REPLY_ACCEPT,

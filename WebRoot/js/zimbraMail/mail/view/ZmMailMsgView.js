@@ -1797,7 +1797,7 @@ function(self, iframe, attempt) {
 			subtract(self._msgTruncatedId);
 		}
 		if (self._inviteMsgView && self._inviteMsgView.isActive()) {
-			subtract(self._inviteMsgView._getInviteToolbar().getHtmlElement());
+			subtract(self._inviteMsgView.getInviteToolbar().getHtmlElement());
 			if (self._inviteMsgView._dayView) {
 				subtract(self._inviteMsgView._dayView.getHtmlElement());
 			}
