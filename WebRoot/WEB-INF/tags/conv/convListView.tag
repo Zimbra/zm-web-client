@@ -407,11 +407,12 @@
 
 				}
 			}
-			var msgIdstr = msgIds.join(",");
-			mesgId = (msgIdstr != "") ? msgIdstr : document.getElementById("C"+rowNo).value;
+			var msgIdstr = (msgIds != "") ? msgIds.join(",") : "";
+			mesgId = (msgIdstr != "") ? msgIdstr : ((rowNo != "") ? document.getElementById("C"+rowNo).value : "");
 
 			this.deltaY = 15;
-			this.deltaX = (YAHOO.util.Event.getPageX(ev) - $D.getXY(document.getElementById(rowId))[0]);
+            if (rowId != "")
+			    this.deltaX = (YAHOO.util.Event.getPageX(ev) - $D.getXY(document.getElementById(rowId))[0]);
 
 		};
 
