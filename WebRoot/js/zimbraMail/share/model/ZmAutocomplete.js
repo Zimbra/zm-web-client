@@ -265,37 +265,6 @@ function(str) {
 	return AjxEmailAddress.isValid(str);
 };
 
-/**
- * Quick completion of a string when there are no matches. Appends the
- * user's domain to the given string.
- *
- * @param {String}	 str	the text that was typed in
- * @return	{String}	the string
- */
-ZmAutocomplete.prototype.quickComplete =
-function(str) {
-
-	if (str.indexOf("@") != -1) { return null; }
-
-	if (!this._userDomain) {
-		var uname = appCtxt.get(ZmSetting.USERNAME);
-		if (uname) {
-			var a = uname.split("@");
-			if (a && a.length) {
-				this._userDomain = a[a.length - 1];
-			}
-		}
-	}
-	if (this._userDomain) {
-		var text = [str, this._userDomain].join("@");
-		var match = new ZmAutocompleteMatch();
-		match.name = match.email = match.fullAddress = text;
-		return match;
-	} else {
-		return null;
-	}
-};
-
 ZmAutocomplete.prototype.forget =
 function(addr, callback) {
 
@@ -309,8 +278,9 @@ function(addr, callback) {
 ZmAutocomplete.prototype._handleResponseForget =
 function(callback) {
 	appCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
-	if (appCtxt.isChildWindow)
+	if (appCtxt.isChildWindow) {
 		parentAppCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
+	}
 	if (callback) {
 		callback.run();
 	}

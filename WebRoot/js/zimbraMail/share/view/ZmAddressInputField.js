@@ -341,6 +341,11 @@ function(ev) {
 	if (addrInput && addrInput._selectedBubbleId) {
 		addrInput.setSelected(addrInput._selectedBubbleId);
 	}
+	var value = addrInput._input.value;
+	if (addrInput._aclv._dataAPI.isComplete && addrInput._aclv._dataAPI.isComplete(value)) {
+		DBG.println(AjxDebug.DBG3, "input field blurred, found an addr: " + value);
+		addrInput.add(value);
+	}
 };
 
 ZmAddressInputField.prototype._handlePaste =
