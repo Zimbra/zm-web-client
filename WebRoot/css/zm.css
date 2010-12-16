@@ -1689,9 +1689,7 @@ line-height:normal;
     margin:0 0 0 -1px;
 }
 
-.appt_body table,
-.appt_30_body table,
-.appt_allday_body table         {
+.appt_body table {
     border:1px solid #999999;
     background-color: #e5e5e5;
 #IFDEF SAFARI
@@ -1706,6 +1704,11 @@ line-height:normal;
     /*filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#e5e5e5', EndColorStr='#ffffff');  IE6,IE7
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#e5e5e5', EndColorStr='#ffffff')"; IE8 */
 #ENDIF
+}
+
+.appt_30_body table,
+.appt_allday_body table {
+    border:1px solid #999999;
 }
 
 .appt-selected .appt_body,
