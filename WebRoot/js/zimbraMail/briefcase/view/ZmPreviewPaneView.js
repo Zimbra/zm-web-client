@@ -523,6 +523,8 @@ function(){
 
     this._lockStatus = document.getElementById(this._htmlElId+"_lock");
 
+    Dwt.setHandler(this._headerExpand, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleExpand, this));
+
 };
 
 ZmPreviewView._errorCallback =
@@ -688,15 +690,31 @@ function(item){
 
 ZmPreviewView.prototype.setNotes =
 function(item){
-    var visible = item.isRevision && item.subject;
+    var visible = item.subject;
     Dwt.setVisible(this._headerNotesSection, visible);
-    if(visible){
-        if(this._headerNotes)
-            this._headerNotes.innerHTML = item.subject
-        if(this._headerExpand)
-            this._headerExpand.innerHTML = AjxImg.getImageHtml("NodeExpanded");
+    if(visible && this._headerNotes){
+        this._headerNotes.innerHTML = item.subject
     }
-};        
+    this.expandNotes(false);
+};
+
+ZmPreviewView.prototype.expandNotes =
+function(expand){
+
+    this._expandState = expand;
+
+    if(this._headerNotes){
+        this._headerNotes.style.height = expand ? "" : "15px";
+    }
+    if(this._headerExpand){
+       this._headerExpand.innerHTML = AjxImg.getImageHtml((expand ? "NodeExpanded" : "NodeCollapsed"));
+    }
+};
+
+ZmPreviewView.prototype._toggleExpand =
+function(){
+    this.expandNotes(!this._expandState);
+};
 
 ZmPreviewView.prototype.downloadListener =
 function(item){

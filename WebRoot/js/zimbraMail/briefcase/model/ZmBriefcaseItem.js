@@ -363,6 +363,10 @@ function(node) {
         this.lockUser = node.loe;
         this.lockTime = new Date(Number(node.lt));
     }
+
+    if (node.desc){  this.notes = node.desc; }
+    this.subject = this.getNotes();
+
 };
 
 /**
@@ -525,8 +529,15 @@ function(data) {
         //loid is not always set in response; set locked to false when value is blank
         this.locked = false;
     }
+
+    if (data.desc)  this.notes = data.desc;
+    this.subject = this.getNotes();
 };
 
+ZmBriefcaseItem.prototype.getNotes =
+function(){
+    return AjxMessageFormat.format(ZmMsg.revisionNotes, [this.version, (this.notes || ZmMsg.emptyNotes)]);
+};
 
 ZmBriefcaseFolderItem = function(folder) {
 
