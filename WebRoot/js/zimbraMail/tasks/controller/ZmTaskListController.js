@@ -582,8 +582,7 @@ function(num) {
 ZmTaskListController.prototype._resetOperations =
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
-	var tasks = this._taskListView.getSelection();
-
+    
 	// a valid folderId means user clicked on a task list
 	var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
 	if (folderId) {
@@ -611,7 +610,10 @@ function(parent, num) {
     parent.enable(ZmOperation.VIEW_MENU, true)
     parent.enable(ZmOperation.TEXT, true);
 
-	parent.enable(ZmOperation.SHOW_ORIG, num == 1 && tasks && tasks.length && tasks[0].getRestUrl() != null);
+    if (parent.getOp(ZmOperation.SHOW_ORIG)){
+        var tasks = this._taskListView.getSelection();
+        parent.enable(ZmOperation.SHOW_ORIG, num == 1 && tasks && tasks.length && tasks[0].getRestUrl() != null);
+    }
 };
 
 ZmTaskListController.prototype._doDelete =
