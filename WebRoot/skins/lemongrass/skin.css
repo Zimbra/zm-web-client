@@ -12,16 +12,22 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-body	{	
-	@ChromeBg@	
+#skin_container_splash_screen {	
+	background: #f5faeb url("@SkinImgDir@/bg_lemongrass.png") repeat-x bottom left;
 }
 
-#skin_tr_top	{
-/*background-color: @ChromeBg@;
-background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
+/** set the height for the top row -- must be set to a fixed number! **/
+#skin_spacing_top_row					{	height:36px; 
+											background-color: @MastheadColor@;
+											background-image: -moz-linear-gradient(top, @lighten(MastheadColor,50)@, @MastheadColor@); /* FF3.6 */
+ 											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @lighten(MastheadColor,50)@),color-stop(1, @MastheadColor@)); /* Saf4+, Chrome */
+    										filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(MastheadColor,50)@', EndColorStr='@MastheadColor@'); /* IE6,IE7 */
+    										-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(MastheadColor,50)@', EndColorStr='@MastheadColor@')"; /* IE8 */
 }
-#skin_tr_search_builder	{
-/*background-color: @ChromeBg@;*/
+
+
+#skin_spacing_app_row{
+	background-color: @MastheadColor@;
 }
 
 /* Cell for the 'body' (notice/form/about/license) 
@@ -95,6 +101,9 @@ background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
 
 #skin_spacing_filler				{	
 	height:12px; 
-	border-top: solid 1px #865823;
-	background: transparent;
+	background-color: @AltC@;
+	background-image: -moz-linear-gradient(top, @AltC@, @AppC@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @AppC@));                /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@darken(AltC,90)@', EndColorStr='@AppC@');                          /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@darken(AltC,90)@', EndColorStr='@AppC@')";                     /* IE8 */
  }
