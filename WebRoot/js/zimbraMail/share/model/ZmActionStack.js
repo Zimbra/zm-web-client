@@ -81,6 +81,16 @@ ZmActionStack.prototype.logAction = function(params) {
 			items.push(item);
 		}
 	}
+	for (var i=0; i<items.length; i++) {
+		if (items[i] instanceof ZmConv) { // For conversation moves, also log the messages within
+			var msgs = items[i].getMsgList();
+			for (var j=0; j<msgs.length; j++) {
+				if (AjxUtil.indexOf(msgs[j])==-1) {
+					items.push(msgs[j]);
+				}
+			}
+		}
+	}
 	var attrs = params.attrs;
 	var multi = items.length>1;
 
