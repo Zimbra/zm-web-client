@@ -251,7 +251,7 @@ function(callback, accountName, result) {
 
 		// for offline, find out whether this client supports prism-specific features
 		if (appCtxt.isOffline) {
-			if (AjxEnv.isPrism && window.platform && (AjxEnv.isMac || AjxEnv.isWindows)) {
+			if (AjxEnv.isPrism && window.platform) {
 				var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
 				if (setting) {
 					setting.setValue(true);

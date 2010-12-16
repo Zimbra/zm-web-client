@@ -510,8 +510,8 @@ function(params, result) {
 	} else {
 		if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && window.platform && 
 			window.platform.isRegisteredProtocolHandler("mailto")) {  
-		    // bug fix #34342 - always register the protocol handler for mac on start up
-		    this.registerMailtoHandler(AjxEnv.isMac);
+		    // bug fix #34342 - always register the protocol handler for mac and linux on start up
+		    this.registerMailtoHandler(!AjxEnv.isWindows);
 		}    
 	}
 
