@@ -1053,11 +1053,13 @@ function(newAppt) {
 
 ZmApptComposeController.prototype.initComposeView =
 function(initHide) {
+    
 	if (!this._composeView) {
 		this._composeView = this._createComposeView();
         var appEditView = this._composeView.getApptEditView();
         this._smartScheduler = this._createScheduler(appEditView);
         appEditView.setScheduleAssistant(this._smartScheduler);
+        this._savedFocusMember = appEditView._getDefaultFocusItem();
 
 		var callbacks = {};
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
@@ -1076,6 +1078,9 @@ function(initHide) {
 		}
 		return true;
 	}
+    else{
+        this._savedFocusMember = this._composeView.getApptEditView()._getDefaultFocusItem();
+    }
 	return false;
 };
 
@@ -1103,7 +1108,7 @@ function() {
 };
 
 ZmApptComposeController.prototype._postShowCallback =
-function(view, force) {
+function(view, force) {    
 	var ta = new AjxTimedAction(this, this._setFocus);
 	AjxTimedAction.scheduleAction(ta, 10);
     appCtxt.getAppViewMgr().showTreeFooter(false);
