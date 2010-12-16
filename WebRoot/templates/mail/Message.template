@@ -261,7 +261,7 @@
 	<div class='DisplayImages' id='${id}'>
 		<table width='100%' cellspacing=0 cellpadding=0>
 			<tr>
-				<td style='width:20px'><$= AjxImg.getImageHtml("Status") $></td>
+				<td style='width:20px'><$= AjxImg.getImageHtml("Warning") $></td>
 				<td>${text} <span id='${id}_link' style='font:inherit; color:blue; text-decoration:underline'>${link}</span></td>
 			</tr>
 		</table>
@@ -272,8 +272,8 @@
 	<div class='DisplayImages' id='${id}'>
 		<table width='100%' cellspacing=0 cellpadding=0>
 			<tr>
-				<td style='width:20px'><$= AjxImg.getImageHtml("Status") $></td>
-				<td>${text} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline'>${link}</a> ${alwaysText} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_domain'>${domain}</a> ${or} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_email'>${email}<a></td>
+				<td style='width:20px'><$= AjxImg.getImageHtml("Warning") $></td>
+				<td>${text} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline'>${link}</a> - ${alwaysText} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_domain'>${domain}</a> ${or} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_email'>${email}<a></td>
 			</tr>
 		</table>
 	</div>
