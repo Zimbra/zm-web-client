@@ -1556,6 +1556,8 @@ function(type, attribs){
            }
            if(!attribs.excludeLocation) {
                vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.LOCATION].getArray(), ZmCalBaseItem.LOCATION, false, true));
+               //location can even be a normal label text
+               vals.push(this._locationInputField.getValue());
            }
            if(!attribs.excludeEquipment) {
                vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.EQUIPMENT].getArray(), ZmCalBaseItem.EQUIPMENT, false, true));
