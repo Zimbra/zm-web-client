@@ -1078,16 +1078,19 @@ function(msg, idoc) {
 	idoc = idoc || this._htmlEditor._getIframeDoc();
 	if (!idoc) { return; }
 
-    var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
-	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
-	var sentBy = (sender && sender.address) ? sender : addr;
-	var sentByAddr = sentBy && sentBy != ZmMsg.unknown ? sentBy.getAddress() : null;
-    if (sentByAddr) {
-        msg.sentByAddr = sentByAddr;
-        msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@")+1);
-        var showImages = this._isTrustedSender(msg);
+    var showImages = false;
+    if(msg) {
+        var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
+        var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
+        var sentBy = (sender && sender.address) ? sender : addr;
+        var sentByAddr = sentBy && sentBy != ZmMsg.unknown ? sentBy.getAddress() : null;
+        if (sentByAddr) {
+            msg.sentByAddr = sentByAddr;
+            msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@")+1);
+            showImages = this._isTrustedSender(msg);
+        }
     }
-
+    
 	var images = idoc.getElementsByTagName("img");
 	var num = 0;
 	for (var i = 0; i < images.length; i++) {
