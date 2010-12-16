@@ -2023,6 +2023,7 @@ function(ev) {
 	var mlc = this.getMailListController();
 
 	if (mlc && (setting.id == ZmSetting.VIEW_AS_HTML || setting.id == ZmSetting.TRUSTED_ADDR_LIST)) {
+        this.resetTrustedSendersList();
 		var dpv = mlc._doublePaneView;
 		var msg = dpv ? dpv.getMsg() : null;
 		if (msg) {
@@ -2065,4 +2066,23 @@ function(ev) {
 	if (newView) {
 		mlc.switchView(newView, true);
 	}
+};
+
+ZmMailApp.prototype.getTrustedSendersList =
+function() {
+    if(!this._trustedList) {
+        var trustedList = appCtxt.get(ZmSetting.TRUSTED_ADDR_LIST);
+        if(trustedList && trustedList[0]) {
+            this._trustedList = AjxVector.fromArray(trustedList[0].split(","));
+        }
+        else {
+            this._trustedList = new AjxVector();
+        }
+    }
+    return this._trustedList;
+};
+
+ZmMailApp.prototype.resetTrustedSendersList =
+function() {
+    this._trustedList = null;
 };

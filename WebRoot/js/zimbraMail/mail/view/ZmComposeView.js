@@ -1078,6 +1078,16 @@ function(msg, idoc) {
 	idoc = idoc || this._htmlEditor._getIframeDoc();
 	if (!idoc) { return; }
 
+    var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
+	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
+	var sentBy = (sender && sender.address) ? sender : addr;
+	var sentByAddr = sentBy && sentBy != ZmMsg.unknown ? sentBy.getAddress() : null;
+    if (sentByAddr) {
+        msg.sentByAddr = sentByAddr;
+        msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@")+1);
+        var showImages = this._isTrustedSender(msg);
+    }
+
 	var images = idoc.getElementsByTagName("img");
 	var num = 0;
 	for (var i = 0; i < images.length; i++) {
@@ -1105,9 +1115,29 @@ function(msg, idoc) {
 					images[i].setAttribute("dfsrc", dfsrc);
 				}
 			}
+            else if(showImages) {
+                var src = dfsrc;//x + "&t=" + (new Date()).getTime();
+                num++;
+                images[i].src = src;
+                images[i].setAttribute("dfsrc", dfsrc);
+            }
 		}
 	}
 	return (num == images.length);
+};
+
+ZmComposeView.prototype._isTrustedSender =
+function(msg) {
+    var trustedList = this.getTrustedSendersList();
+    if (trustedList.contains(msg.sentByAddr) || trustedList.contains(msg.sentByDomain)){
+        return true;
+    }
+    return false;
+};
+
+ZmComposeView.prototype.getTrustedSendersList =
+function() {
+    return this._controller.getApp().getTrustedSendersList();
 };
 
 ZmComposeView.prototype._cleanupFileRefImages =

@@ -142,7 +142,6 @@ function() {
 		this._objectManager.reset();
 	}
 	this.setScrollWithIframe(this._scrollWithIframe);
-	this._resetTrustedSenders();
 };
 
 ZmMailMsgView.prototype.preventSelection =
@@ -670,8 +669,8 @@ function(msg, idoc, id, iframe) {
             }
             //Create a modifyprefs req and add the addr to modify
             if(addrToAdd) {
-                self._trustedList.add(addrToAdd, null, true);
-                self._controller.addTrustedAddr(self._trustedList.join(","), new AjxCallback(self, self._addTrustedAddrCallback, [addrToAdd]), new AjxCallback(self, self._addTrustedAddrErrorCallback, [addrToAdd]));
+                self.getTrustedSendersList().add(addrToAdd, null, true);
+                self._controller.addTrustedAddr(self.getTrustedSendersList().join(","), new AjxCallback(self, self._addTrustedAddrCallback, [addrToAdd]), new AjxCallback(self, self._addTrustedAddrErrorCallback, [addrToAdd]));
             }
         }
 		var images = idoc.getElementsByTagName("img");
@@ -927,36 +926,27 @@ function(container, html, isTextMsg, isTruncated) {
 
 ZmMailMsgView.prototype._addTrustedAddrCallback =
 function(addr) {
-    this._trustedList.add(addr, null, true);
-    appCtxt.set(ZmSetting.TRUSTED_ADDR_LIST, [this._trustedList.getArray().join(",")]);
+    this.getTrustedSendersList().add(addr, null, true);
+    appCtxt.set(ZmSetting.TRUSTED_ADDR_LIST, [this.getTrustedSendersList().getArray().join(",")]);
 };
 
 ZmMailMsgView.prototype._addTrustedAddrErrorCallback =
 function(addr) {
-    this._trustedList.remove(addr);
-};
-
-ZmMailMsgView.prototype._resetTrustedSenders =
-function() {
-    this._trustedList = null;
+    this.getTrustedSendersList().remove(addr);
 };
 
 ZmMailMsgView.prototype._isTrustedSender =
 function(msg) {
-    if(!this._trustedList) {
-        var trustedList = appCtxt.get(ZmSetting.TRUSTED_ADDR_LIST);
-        if(trustedList && trustedList[0]) {
-            this._trustedList = AjxVector.fromArray(trustedList[0].split(","));
-        }
-        else {
-            this._trustedList = new AjxVector();
-        }
-    }
-
-    if (this._trustedList.contains(msg.sentByAddr) || this._trustedList.contains(msg.sentByDomain)){
+    var trustedList = this.getTrustedSendersList();
+    if (trustedList.contains(msg.sentByAddr) || trustedList.contains(msg.sentByDomain)){
         return true;
     }
     return false;
+};
+
+ZmMailMsgView.prototype.getTrustedSendersList =
+function() {
+    return this._controller.getApp().getTrustedSendersList();
 };
 
 ZmMailMsgView.prototype._renderMessage =
@@ -1080,6 +1070,9 @@ function(msg, container, callback) {
 
 	var folder = appCtxt.getById(msg.folderId);
 	var isSyncFailureMsg = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
+    if(!msg.showImages) {
+        msg.showImages = folder && folder.isFeed();
+    }
 
 	this._hdrTableId		= ZmId.getViewId(this._viewId, ZmId.MV_HDR_TABLE, this._mode);
 	var closeBtnCellId		= hasHeaderCloseBtn ? ZmId.getViewId(this._viewId, ZmId.MV_CLOSE_BTN_CELL, this._mode) : null;
