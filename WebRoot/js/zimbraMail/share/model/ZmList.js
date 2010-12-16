@@ -477,7 +477,7 @@ function(params) {
  * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
  * @param	{int}			params.count			the starting count for number of items processed
  * @param	{boolean}		params.noUndo			true if the action is not undoable (e.g. performed as an undo)
- * @param	{String}		params.actionText		optional text to display in the confirmation toast instead of the default summary
+ * @param	{String}		params.actionText		optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast entirely
  */
 ZmList.prototype.moveItems =
 function(params) {
@@ -491,10 +491,10 @@ function(params) {
 	params1.items = AjxUtil.toArray(params.items);
 	params1.attrs = params.attrs || {};
 	if (params1.folder.id == ZmFolder.ID_TRASH) {
-		params1.actionText = params.actionText || ZmMsg.actionTrash;
+		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionTrash) : null;
 		params1.action = "trash";
 	} else {
-		params1.actionText = params.actionText || ZmMsg.actionMove;
+		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionMove) : null;
 		params1.actionArg = params.folder.getName(false, false, true);
 		params1.action = "move";
 		params1.attrs.l = params.folder.id;

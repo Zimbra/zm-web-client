@@ -178,7 +178,7 @@ ZmItemMoveAction.prototype._doMove = function(callback, errorCallback, folderId)
 	this._item.list.moveItems({
 		items: [this._item],
 		folder: appCtxt.getById(folderId),
-		undoing: true,
+		noUndo: true,
 		finalCallback: new AjxCallback(this, this._handleDoMove, [this._item.folderId, folderId]),
 		actionText: ZmItemMoveAction.UNDO_MSG[this._op],
 
@@ -211,41 +211,51 @@ ZmItemMoveAction.prototype.redo = function(callback, errorCallback) {
 };
 
 ZmItemMoveAction.multipleUndo = function(actions, redo) {
-	var ftTable = {};
+	var masterAction = actions && actions.length && actions[0];
+	var sortingTable = {};
 	for (var i=0; i<actions.length; i++) {
 		var action = actions[i];
 		if (action instanceof ZmItemMoveAction) {
 			var from = action.getFromFolderId();
 			var to = action.getToFolderId();
-			if (!ftTable[from]) ftTable[from] = {};
-			if (!ftTable[from][to]) ftTable[from][to] = [];
-			ftTable[from][to].push(action);
+			var item = action.getItem();
+			var type = (item && item.list && item.list.type) || 0;
+			if (!sortingTable[from]) sortingTable[from] = {};
+			if (!sortingTable[from][to]) sortingTable[from][to] = {};
+			if (!sortingTable[from][to][type]) sortingTable[from][to][type] = [];
+			sortingTable[from][to][type].push(action);
 		}
 	}
-	for (var from in ftTable) {
-		for (var to in ftTable[from]) {
-			var subset = ftTable[from][to];
-			var items = [];
-			var list;
-			var commonop;
-			for (var i=0; i<subset.length; i++) {
-				var action = subset[i];
-				var item = action.getItem();
-				items.push(item);
-				if (!list && item.list) list = item.list;
-				var op = action.getOp && action.getOp();
-				if (!commonop)
-					commonop = op;
-				else if (commonop != op)
-					commonop = "move";
-			}
-			if (list) {
-				list.moveItems({
-					items: items,
-					folder: appCtxt.getById(redo ? to : from),
-					undoing: true,
-					actionText: commonop && ZmItemMoveAction.UNDO_MSG[commonop]
-				});
+	for (var from in sortingTable) {
+		for (var to in sortingTable[from]) {
+			for (var type in sortingTable[from][to]) {
+				var subset = sortingTable[from][to][type];
+				var items = [];
+				var list = null;
+				var hasMasterAction = false;
+				var commonop;
+				for (var i=0; i<subset.length; i++) {
+					var action = subset[i];
+					if (action == masterAction)
+						hasMasterAction = true;
+					var item = action.getItem();
+					items.push(item);
+					if (!list && item.list)
+						list = item.list;
+					var op = action.getOp && action.getOp();
+					if (!commonop)
+						commonop = op;
+					else if (commonop != op)
+						commonop = "move";
+				}
+				if (list) {
+					list.moveItems({
+						items: items,
+						folder: appCtxt.getById(redo ? to : from),
+						noUndo: true,
+						actionText: hasMasterAction ? (commonop && ZmItemMoveAction.UNDO_MSG[commonop]) : null
+					});
+				}
 			}
 		}
 	}
