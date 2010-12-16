@@ -12,12 +12,21 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-body, #skin_container_splash_screen	{
-	@ChromeBg@
+#skin_container_splash_screen	{
+	background: #939494 url("@SkinImgDir@/bg.gif") repeat-x top left;
 }
 
 #skin_container_links a {
 	color: #ffffff;
+}
+
+/** set the height for the top row -- must be set to a fixed number! **/
+#skin_spacing_top_row					{	height:36px; 
+											background-color: @AltC@;
+											background-image: -moz-linear-gradient(top, @AltC@, @AppC@); /* FF3.6 */
+ 											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @AppC@)); /* Saf4+, Chrome */
+    										filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@AppC@'); /* IE6,IE7 */
+    										-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@AppC@')"; /* IE8 */
 }
 
 #skin_container_links a:hover {
@@ -184,7 +193,9 @@ body, #skin_container_splash_screen	{
 
 #skin_spacing_filler				{	
 	height:12px; 
-	border-top: solid 1px #555;
-	background: transparent;
-
+	background-color: @AltC@;
+	background-image: -moz-linear-gradient(top, @lighten(AltC,90)@, @AppC@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @lighten(AltC,90)@),color-stop(1, @AppC@));                /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AltC,90)@', EndColorStr='@AppC@');                          /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AltC,90)@', EndColorStr='@AppC@')";                     /* IE8 */
  }
