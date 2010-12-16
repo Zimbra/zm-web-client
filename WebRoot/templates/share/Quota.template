@@ -24,29 +24,22 @@
 
 <!-- Show amount used with no quota -->
 <template id='share.Quota#UsedUnlimited'>
-	<table cellspacing=0 cellpadding=0 width='100%'>
-		<tr>
-			<td class='BannerTextQuota'>${desc}</td>
-		</tr>
-	</table>
+    <div class='BannerTextQuota'>${desc}</div>
 </template>
 
 
 <template id='share.Quota#Tooltip'>
-	<table>
-		<$ if (data.username != data.login) { $>
-			<tr><td><center>${login}</center></td></tr>
-		<$ } $>
-
-		<$ if (data.quota) { $>
-			<$
-				var tooltipMsg = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.size, data.limit]);
-			$>
-			<tr>
-                <td>
-                    <center><$= ZmMsg.quota $>: ${percent}% (<$= tooltipMsg $>)</center>
-                </td>
-            </tr>
-		<$ } $>
-	</table>
+        <$ if (data.username != data.login) { $>
+            <div style="text-align:center;">${login}</div>
+        <$ } $>
+            <div style="text-align:center;margin-top:3px;">
+                <$ if (data.quota) { $>
+                    <$
+                        var tooltipMsg = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.size, data.limit]);
+                    $>
+                    <$= ZmMsg.quotaLabel $> ${percent}% (<$= tooltipMsg $>)
+                <$ } else { $>
+                    ${desc}
+                <$ } $>
+            </div>
 </template>
