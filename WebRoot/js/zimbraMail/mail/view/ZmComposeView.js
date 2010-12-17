@@ -919,12 +919,12 @@ function(composeMode, switchPreface) {
 		var sigId = this._controller._currentSignatureId;
 		var account = appCtxt.multiAccounts && this.getFromAccount();
 
-		this.applySignature(content, sigId, account, null); // Remove the signature before switching
+		this.applySignature(content, sigId, account, null, true); // Remove the signature before switching
 
 		this._htmlEditor.setMode(composeMode, true, convertor); // Do the switch
 
 		content = this._htmlEditor.getContent();
-		this.applySignature(content, null, account, sigId); // Reapply the signature after switching
+		this.applySignature(content, null, account, sigId, false); // Reapply the signature after switching
 
 		if (htmlMode && switchPreface) {
 			this._switchPreface();
@@ -1360,7 +1360,7 @@ function(){
  * @private
  */
 ZmComposeView.prototype.applySignature =
-function(content, oldSignatureId, account, newSignatureId) {
+function(content, oldSignatureId, account, newSignatureId, skipSave) {
 
 	content = content || "";
 	var ac = window.parentAppCtxt || window.appCtxt;
@@ -1485,7 +1485,7 @@ function(content, oldSignatureId, account, newSignatureId) {
 	if (signature && signature.contactId) {
 		this._attachSignatureVcard(signature.id);
 	}
-	else if (hadVcard) {
+	else if (hadVcard && !skipSave) {
 		this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL);
 	}
 };
