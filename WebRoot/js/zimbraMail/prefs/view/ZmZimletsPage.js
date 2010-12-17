@@ -436,8 +436,8 @@ function() {
 			continue; // skip mandatory zimlets to be shown in prefs
 		}
         var zimletContext = zimletMgr.getZimletByName(name);
-		var desc = zimletContext.description;
-		var label = zimletContext.label;
+		var desc = zimletContext ? zimletContext.description : allz[i].zimlet[0].description;
+		var label = zimletContext ? zimletContext.label : allz[i].zimlet[0].label;
 		var isEnabled = allz[i].zimletContext[0].presence == "enabled";
 		zimlets.addPrefZimlet(new ZmPrefZimlet(name, isEnabled, desc, label));
 	}
@@ -500,6 +500,7 @@ ZmPrefZimletListView.prototype._handleZimletsLoaded = function(evt) {
     for (var i = 0; i < array.length; i++) {
         var item = array[i];
         var zimlet = zimletMgr.getZimletByName(item.name);
+        if (!zimlet) continue;
         item.label = zimlet.label;
         item.desc = zimlet.description; 
         this.setCellContents(item, ZmPrefZimletListView.COL_NAME, AjxStringUtil.htmlEncode(item.label));
