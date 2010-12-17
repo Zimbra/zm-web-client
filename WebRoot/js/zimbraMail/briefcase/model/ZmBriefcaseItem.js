@@ -68,9 +68,7 @@ function(dontIncludeThisName, ignoreCustomDocs) {
 	if (dontIncludeThisName) {
 		url = url.replace(/[^\/]+$/,"");
 	}
-    if(!ignoreCustomDocs && this.contentType && this.isWebDoc()) {
-        url += "?fmt=html";
-    }
+
 	return url;
 };
 

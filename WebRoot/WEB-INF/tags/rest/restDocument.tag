@@ -24,28 +24,36 @@
 
 <zm:getDocument  var="doc" box="${mailbox}" id="${requestScope.zimbra_target_item_id}"/>
 
-<c:set var="isPreview" value="${not empty param.preview and param.preview eq '1'}" scope="request"/>
+<c:set var="isEdit" value="${not empty param.action and param.action eq 'edit'}" scope="request"/>
 
 <c:set var="contentType" value="${doc.contentType}"/>
 <c:choose>
-    <c:when test="${(contentType eq 'application/x-zimbra-slides' and isPreview)}">
-        <rest:slidePreview/>
-    </c:when>
-    <c:when test="${(contentType eq 'application/x-zimbra-slides')}">
-        <rest:slideView/>
-    </c:when>
-    <c:when test="${(contentType eq 'application/x-zimbra-doc' and isPreview)}">
-         <rest:documentPreview/>
-    </c:when>        
-    <c:when test="${(contentType eq 'application/x-zimbra-doc')}">
+
+    <%--Documents--%>
+    <c:when test="${(contentType eq 'application/x-zimbra-doc' and isEdit)}">
         <rest:documentView/>
     </c:when>
-    <c:when test="${(contentType eq 'application/x-zimbra-xls' and isPreview)}">
-        <rest:spreadsheetPreview/>
+    <c:when test="${(contentType eq 'application/x-zimbra-doc')}">
+         <rest:documentPreview/>
     </c:when>
-    <c:when test="${(contentType eq 'application/x-zimbra-xls')}">
+
+    <%--Slides--%>
+    <c:when test="${(contentType eq 'application/x-zimbra-slides' and isEdit)}">
+        <rest:slideView/>
+    </c:when>
+    <c:when test="${(contentType eq 'application/x-zimbra-slides')}">
+        <rest:slidePreview/>
+    </c:when>
+
+
+    <%--Spreadsheet--%>
+    <c:when test="${(contentType eq 'application/x-zimbra-xls' and isEdit)}">
         <rest:spreadsheetView/>
     </c:when>
+    <c:when test="${(contentType eq 'application/x-zimbra-xls')}">
+        <rest:spreadsheetPreview/>
+    </c:when>
+
     <c:otherwise>
         <fmt:message key="unsupportedRestView"/>
     </c:otherwise>

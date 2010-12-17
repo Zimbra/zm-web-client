@@ -597,7 +597,7 @@ function(item){
     restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
 
     if(ZmMimeTable.isWebDoc(item.contentType)){
-        restUrl = restUrl + ( restUrl.match(/\?/) ? '&' : '?' ) + "preview=1&viewonly=1";
+        restUrl = restUrl + ( restUrl.match(/\?/) ? '&' : '?' ) + "viewonly=1";
     }else{
 
         this._setupLoading();

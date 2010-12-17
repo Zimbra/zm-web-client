@@ -41,9 +41,17 @@ function(callback){
 
     var serverUrl = window.location.href;
     serverUrl = serverUrl.replace(/\?.*/,''); //Cleanup Params
+
+    var urlParams = [];
+    urlParams.push("fmt=native");
+
     var version = this._params.version;
-    var urlParams = version ? ("?ver="+version) : "";
-    serverUrl = serverUrl +  urlParams;
+    if(version)
+        urlParams.push("ver="+version);
+
+    urlParams = urlParams.join('&');
+    serverUrl = serverUrl + ( urlParams.length > 0 ? "?" : "" ) + urlParams;
+
     AjxRpc.invoke(urlParams, serverUrl, null, new AjxCallback(this, this._handleFetchContent, callback), true);
 };
 
