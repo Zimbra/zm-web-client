@@ -1478,8 +1478,6 @@ function() {
 		inputEl.onblur = AjxCallback.simpleClosure(this._handleSubjectOnBlur, this, inputEl);
 		inputEl.onfocus = AjxCallback.simpleClosure(this._handleSubjectOnFocus, this, inputEl);
     }
-
-    this.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 };
 
 // cache all input fields so we dont waste time traversing DOM each time
@@ -1671,6 +1669,7 @@ function(ev) {
 
 ZmApptEditView.prototype._repeatChangeListener =
 function(ev) {
+    ZmCalItemEditView.prototype._repeatChangeListener.call(this, ev);
     this._setTimezoneVisible(this._dateInfo);
 };
 
