@@ -1016,6 +1016,7 @@ function(action) {
 
 	var isReply = this._composeView._isReply(action);
 	var isCalReply = this._composeView._isCalReply(action);
+	var isInviteReply = this._composeView._isInviteReply(action);
 	var isForward = this._composeView._isForward(action);
 	var list = [];
 	if (isReply || isCalReply) {
@@ -1024,9 +1025,13 @@ function(action) {
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		list.push(ZmOperation.FORMAT_HTML, ZmOperation.FORMAT_TEXT, ZmOperation.SEP);
 	}
-	if (isReply) {
+	if (isInviteReply) { // Accept/decline/etc... an appointment invitation
+		list.push(ZmOperation.SEP, ZmOperation.INC_NONE, ZmOperation.INC_BODY, ZmOperation.INC_SMART);
+	} else if (isCalReply) { // Regular reply to an appointment
+		list.push(ZmOperation.SEP, ZmOperation.INC_NONE, ZmOperation.INC_BODY, ZmOperation.INC_SMART);
+	} else if (isReply) { // Message reply
         list.push(ZmOperation.SEP, ZmOperation.INC_NONE, ZmOperation.INC_BODY, ZmOperation.INC_SMART, ZmOperation.INC_ATTACHMENT);
-	} else if (isForward) {
+	} else if (isForward) { // Message forwarding
         list.push(ZmOperation.SEP, ZmOperation.INC_BODY, ZmOperation.INC_ATTACHMENT);
 	}
     if (isReply || isForward || isCalReply) {

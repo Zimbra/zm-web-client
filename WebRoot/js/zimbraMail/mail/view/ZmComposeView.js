@@ -1772,8 +1772,6 @@ function(action) {
 	action = action || this._action;
 	return (action == ZmOperation.REPLY_ACCEPT ||
 			action == ZmOperation.REPLY_CANCEL ||
-			action == ZmOperation.CAL_REPLY ||
-			action == ZmOperation.CAL_REPLY_ALL ||
 			action == ZmOperation.REPLY_DECLINE ||
 			action == ZmOperation.REPLY_TENTATIVE ||
 			action == ZmOperation.REPLY_MODIFY ||
@@ -1785,6 +1783,7 @@ function(action) {
 	action = action || this._action;
 	return (action == ZmOperation.REPLY ||
 			action == ZmOperation.REPLY_ALL ||
+			this._isCalReply(action) ||
 			this._isInviteReply(action));
 };
 
