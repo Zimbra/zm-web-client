@@ -438,12 +438,25 @@ function() {
 	if (!this._overviewPanelContent) {
 		var params = this._getOverviewParams();
 		params.overviewId = this.getOverviewId();
-		var ov = this._overviewPanelContent = this._opc.createOverview(params);
+		var ov = this._overviewPanelContent = this._getOverviewController().createOverview(params);
 		ov.set(this._getOverviewTrees());
 	}
 
 	return this._overviewPanelContent;
 };
+
+/**
+ * Lazy load OverviewController - It happens in child windows, since it's not loaded upfront, but might be needed when attaching mail messages
+ * @return {ZmOverviewController}  the overview controller
+ */
+ZmApp.prototype._getOverviewController =
+function() {
+	if (!this._opc) {
+		this._opc = appCtxt.getOverviewController();
+	}
+	return this._opc;
+};
+
 
 /**
  * Gets the overview container.
@@ -461,7 +474,7 @@ function() {
 		var overviewParams = this._getOverviewParams();
 		overviewParams.overviewTrees = this._getOverviewTrees();
 
-		this._overviewContainer = this._opc.createOverviewContainer(containerParams, overviewParams);
+		this._overviewContainer = this._getOverviewController().createOverviewContainer(containerParams, overviewParams);
 	}
 
 	return this._overviewContainer;
@@ -496,7 +509,8 @@ function(reset) {
  */
 ZmApp.prototype.getOverview =
 function() {
-	return this._opc && this._opc.getOverview(this.getOverviewId());
+	var opc = this._getOverviewController();
+	return opc && opc.getOverview(this.getOverviewId());
 };
 
 /**
@@ -506,7 +520,7 @@ function() {
  */
 ZmApp.prototype.resetOverview =
 function(overviewId) {
-	var overview = overviewId ? this._opc.getOverview(overviewId) : this.getOverview();
+	var overview = overviewId ? this._getOverviewController().getOverview(overviewId) : this.getOverview();
 	if (overview) {
 		var expIds = [];
 		var treeIds = overview.getTreeViews(), len = treeIds.length;
@@ -760,6 +774,30 @@ function() {
 		}
 	}
 };
+
+/**
+ * Disposes of the tree controllers (right now mainly gets rid of change listeners.
+ */
+ZmApp.prototype.disposeTreeControllers =
+function() {
+
+	var overviewController = this._opc;
+	//this is created lazily in case of child window. There's nothing to do if it was not created.
+	if (!overviewController) {
+		return;
+	}
+
+	var appTargets = ZmApp.DROP_TARGETS[this._name];
+	for (var type in appTargets) {
+		var targets = appTargets[type];
+		for (var i = 0; i < targets.length; i++) {
+			var orgType = targets[i];
+			var treeController = overviewController.getTreeController(orgType, true);
+			treeController.dispose();
+		}
+	}
+};
+
 
 /**
  * @private

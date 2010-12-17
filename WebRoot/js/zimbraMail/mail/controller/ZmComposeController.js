@@ -157,6 +157,9 @@ function() {
 		settings.getSetting(ZmComposeController.SETTINGS[i]).removeChangeListener(this._settingChangeListener);
 	}
 	this._composeView._dispose();
+
+	var app = this.getApp();
+	app.disposeTreeControllers();
 };
 
 /**

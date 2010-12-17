@@ -118,14 +118,15 @@ ZmNewWindow.unload =
 function(ev) {
 	if (!window.opener || !window.parentController) { return; }
 
-	if (window.command == "compose" || window.command == "composeDetach") {
+	var command = window.newWindowCommand; //bug 54409 - was using wrong attribute for command in unload
+	if (command == "compose" || command == "composeDetach") {
 		// compose controller adds listeners to parent window's list so we
 		// need to remove them before closing this window!
 		var cc = AjxDispatcher.run("GetComposeController", appCtxt.composeCtlrSessionId);
 		if (cc) {
 			cc.dispose();
 		}
-	} else if (window.command == "msgViewDetach") {
+	} else if (command == "msgViewDetach") {
 		// msg controller (as a ZmListController) adds listener to tag list
 		var mc = AjxDispatcher.run("GetMsgController", appCtxt.msgCtlrSessionId);
 		if (mc) {

@@ -268,6 +268,23 @@ function(account) {
 	return dataTree;
 };
 
+/**
+ * Dispose of this controller. Removes the tree change listener.
+ * called when ZmComposeController is disposed (new window).
+ * If the change listener stayed we would get exceptions since this window will no longer exist.
+ *
+ */
+ZmTreeController.prototype.dispose =
+function() {
+	var account = appCtxt.getActiveAccount();
+	var dataTree = this._dataTree[account.id];
+	if (!dataTree) {
+		return;
+	}
+	dataTree.removeChangeListener(this._getTreeChangeListener());
+};
+
+
 
 ZmTreeController.prototype.setVisibleIfExists =
 function(parent, opId, visible) {
