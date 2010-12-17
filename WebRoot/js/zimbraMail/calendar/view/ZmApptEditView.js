@@ -1822,6 +1822,8 @@ function(type, value, markAsOptional) {
 		if (!item) { continue; }
 
         var contact = AjxEmailAddress.parse(item);
+        if (!contact) { continue; }
+
         var addr = contact.getAddress();
         var key = addr + "-" + type;
         if(!this._attendeesHashMap[key]) {
