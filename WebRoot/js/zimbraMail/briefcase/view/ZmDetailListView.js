@@ -503,6 +503,9 @@ function(params) {
 ZmDetailListView.prototype._folderChangeListener =
 function(ev){
 
+    // make sure this is current list view
+	if (appCtxt.getCurrentController() != this._controller) { return; }
+
     ZmBriefcaseBaseView.prototype._folderChangeListener.call(this, ev);
 
     var organizers = ev.getDetail("organizers");
