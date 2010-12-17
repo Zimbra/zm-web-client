@@ -234,7 +234,7 @@
     </init-param>
     <!-- The types need to be specified in the SAME order as exts! -->
     <init-param>
-      <param-name>exts</param-name>
+      <param-name>types</param-name>
       <param-value>text/html,text/xml</param-value>
     </init-param>
   </filter>
