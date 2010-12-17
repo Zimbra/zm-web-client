@@ -769,7 +769,7 @@ function(items){
                 //added for bug: 45150
                 restUrl = this._app.fixCrossDomainReference(restUrl);
                 restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
-                restUrl = restUrl + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
+                restUrl += (restUrl.match(/\?/) ? '&' : '?') + "action=edit&localeId=" + AjxEnv.DEFAULT_LOCALE;
                 window.open(restUrl, this._getWindowName(item.name), "");
             }
         }
@@ -807,7 +807,7 @@ function(items){
 		if (item.isWebDoc()) {
 			//added for bug: 45150
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
-			restUrl = restUrl + "&preview=1" + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
+			restUrl += (restUrl.match(/\?/) ? "&" : "?") + "localeId=" + AjxEnv.DEFAULT_LOCALE;
 		} else {
 			if (!ZmMimeTable.isRenderable(item.contentType) && !ZmMimeTable.isMultiMedia(item.contentType)) {
                	restUrl += (restUrl.match(/\?/) ? "&" : "?") + "view=html";
@@ -917,10 +917,6 @@ function(event) {
 			var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
 			url = remoteUri + url.substring((url.indexOf("/",7)));
 		}
-
-        if(item.isWebDoc()) {
-            url += (url.match(/\?/) ?  '&' : '?') + 'preview=1';
-        }
         
 		urls.push(url);
 		names.push(item.name);
