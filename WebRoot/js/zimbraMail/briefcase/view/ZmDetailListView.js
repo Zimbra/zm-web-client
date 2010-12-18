@@ -201,7 +201,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		idx = this._getImageHtml(htmlArr, idx, (item.locked ? "PadLock" : "Blank_16") , this._getFieldId(item, field)); //AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");
 	} else if (field == ZmItem.F_VERSION) {
 		htmlArr[idx++] = item.version;
-	} else if (field == ZmItem.F_NAME) {
+	} else if (field == ZmItem.F_NAME || field == ZmItem.F_SUBJECT) {
 		htmlArr[idx++] = "<div id='"+this._getFieldId(item, ZmItem.F_NAME)+"'>"+this._getDisplayName(item)+"</div>";
 	} else if (field == ZmItem.F_FILE_TYPE) {
         if(item.isFolder){

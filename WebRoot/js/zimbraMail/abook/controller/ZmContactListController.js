@@ -50,7 +50,7 @@ ZmContactListController = function(container, contactsApp) {
 
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
-	this._listeners[ZmOperation.PRINT_CONTACT] = new AjxListener(this, this._printContactListener);
+	this._listeners[ZmOperation.PRINT_CONTACT] = new AjxListener(this, this._printListener);
 	this._listeners[ZmOperation.PRINT_ADDRBOOK] = new AjxListener(this, this._printAddrBookListener);
     this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._syncAllListener);
 
@@ -287,7 +287,7 @@ function(actionCode) {
 
 		case ZmKeyMap.PRINT:
 			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-				this._printContactListener();
+				this._printListener();
 			}
 			break;
 
@@ -855,7 +855,7 @@ function(ev) {
 /**
  * @private
  */
-ZmContactListController.prototype._printContactListener =
+ZmContactListController.prototype._printListener =
 function(ev) {
 	var contacts = this._listView[this._currentView].getSelection();
 	var ids = [];

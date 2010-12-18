@@ -1590,6 +1590,7 @@ ZmCalViewController.prototype.getSelectionCount = function() {
 
 ZmCalViewController.prototype._divvyItems =
 function(items) {
+
 	var normal = [];
 	var readonly = [];
 	var recurring = [];
@@ -1597,6 +1598,7 @@ function(items) {
 
 	for (var i = 0; i < items.length; i++) {
 		var appt = items[i];
+		if (appt.type != ZmItem.APPT) { continue; }
 
 		if (appt.isReadOnly()) {
 			readonly.push(appt);

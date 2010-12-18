@@ -110,27 +110,49 @@ function(searchResults) {
 	}
 };
 
-// Resets the available options on a toolbar or action menu.
-ZmMixedController.prototype._resetOperations =
-function(parent, num) {
-	ZmListController.prototype._resetOperations.call(this, parent, num);
-	parent.enable(ZmOperation.CHECK_MAIL, true);
-	
-	// Disallow printing of documents.
-	if (num == 1) {
-		var selectedItem = this.getCurrentView().getSelection()[0];
-		if (selectedItem.type == ZmItem.DOCUMENT) {
-			parent.enable(ZmOperation.PRINT, false);
-		}
-	}
-};
-
 ZmMixedController.prototype.getKeyMapName =
 function() {
 	return "ZmMixedController";
 };
 
-// Private and protected methods
+ZmMixedController.prototype.handleKeyAction =
+function(actionCode) {
+
+	switch (actionCode) {
+
+		case ZmKeyMap.DEL:
+			this._deleteListener();
+			break;
+
+		case ZmKeyMap.MOVE:
+			this._moveListener();
+			break;
+
+		case ZmKeyMap.PRINT:
+			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+				this._printListener();
+			}
+			break;
+
+		case ZmKeyMap.TAG:
+			var items = this.getSelection();
+			if (items && items.length && (appCtxt.getTagTree().size() > 0)) {
+				var dlg = appCtxt.getPickTagDialog();
+				ZmController.showDialog(dlg, new AjxCallback(this, this._tagSelectionCallback, [items, dlg]));
+			}
+			break;
+
+		case ZmKeyMap.UNTAG:
+			if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+				this._callControllerFunction("_doRemoveAllTags");
+			}
+			break;
+
+		default:
+			return ZmController.prototype.handleKeyAction.call(this, actionCode);
+	}
+	return true;
+};
 
 ZmMixedController.prototype._initializeToolBar = 
 function(view) {
@@ -256,19 +278,23 @@ function() {
 	return itemsByType;
 };
 
-ZmMixedController.prototype._deleteListener = function(ev) { this._callListener(ev, "_deleteListener"); };
-ZmMixedController.prototype._moveListener = function(ev) { this._callListener(ev, "_moveListener"); };
-ZmMixedController.prototype._tagListener = function(ev) { this._callListener(ev, "_tagListener"); };
-ZmMixedController.prototype._printListener = function(ev) { this._callListener(ev, "_printListener"); };
+ZmMixedController.prototype._deleteListener = function(ev) { this._callControllerFunction("_deleteListener", [ev]); };
+ZmMixedController.prototype._moveListener = function(ev) { this._callControllerFunction("_moveListener", [ev]); };
+ZmMixedController.prototype._tagListener = function(ev) { this._callControllerFunction("_tagListener", [ev]); };
+ZmMixedController.prototype._printListener = function(ev) { this._callControllerFunction("_printListener", [ev]); };
 
-ZmMixedController.prototype._callListener =
-function(ev, listener) {
+ZmMixedController.prototype._callControllerFunction =
+function(funcName, args) {
+
+	args = args || [];
 	var itemHash = this._divvyItems();
 	for (var type in itemHash) {
 		var ctlr = this._getListController(type);
-		if (listener == "_printListener" && type == ZmItem.CONTACT || type == ZmItem.GROUP) {
-			listener = "_printContactListener";
+		if (ctlr && ctlr[funcName]) {
+			var items = itemHash[type];
+			items[0]._mixedType = type;
+			var args1 = args.concat([items]);
+			ctlr[funcName].apply(ctlr, args1);
 		}
-		ctlr[listener](ev);
 	}
 };

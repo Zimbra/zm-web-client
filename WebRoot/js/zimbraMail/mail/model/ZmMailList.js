@@ -163,10 +163,6 @@ function(params) {
 
 	var params1 = AjxUtil.hashCopy(params);
 
-	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		return this._mixedAction("spamItems", params);
-	}
-
 	params1.action = params.markAsSpam ? "spam" : "!spam";
 	params1.attrs = {};
 	params1.attrs.tcon = this._getTcon(params.items);
@@ -251,7 +247,7 @@ function(params) {
 
 	params = Dwt.getParams(arguments, ["items", "hardDelete", "attrs", "childWin"]);
 
-	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
+	if (this.type == ZmItem.CONV) {
 		var searchFolder = this.search ? appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isHardDelete()) {
 			var instantOn = appCtxt.getAppController().getInstantNotify();

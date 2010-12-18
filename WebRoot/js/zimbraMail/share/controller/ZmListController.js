@@ -249,7 +249,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.MOVE:
-			this._moveListener.call(this);
+			this._moveListener();
 			break;
 
 		case ZmKeyMap.NEXT_PAGE:
@@ -650,11 +650,13 @@ function(ev) {
  * @private
  */
 ZmListController.prototype._tagListener =
-function(ev) {
-	if (appCtxt.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
+function(ev, items) {
+
+	var curView = appCtxt.getAppViewMgr().getCurrentViewId();
+	if (curView == this._getViewType() || curView == ZmId.VIEW_MIXED) {
 		var tagEvent = ev.getData(ZmTagMenu.KEY_TAG_EVENT);
 		var tagAdded = ev.getData(ZmTagMenu.KEY_TAG_ADDED);
-		var items = this.getSelection();
+		items = items || this.getSelection();
 		if (tagEvent == ZmEvent.E_TAGS && tagAdded) {
 			this._doTag(items, ev.getData(Dwt.KEY_OBJECT), true);
 		} else if (tagEvent == ZmEvent.E_CREATE) {
@@ -769,7 +771,8 @@ function(ev) {
 ZmListController.prototype._navBarListener =
 function(ev) {
 	// skip listener for non-current views
-	if (appCtxt.getAppViewMgr().getCurrentViewId() != this._getViewType()) { return; }
+	var curView = appCtxt.getAppViewMgr().getCurrentViewId();
+	if (curView != this._getViewType() && curView != ZmId.VIEW_MIXED) { return; }
 
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 
@@ -910,8 +913,9 @@ function(ev) {
 		var sel = this.getSelection();
 		if (sel.length) {
 			var vec = AjxVector.fromArray(sel);
-			if (vec.contains(item))
+			if (vec.contains(item)) {
 				items = sel;
+			}
 		}
 		this._doTag(items, data, true);
 	} else if (ev.action == DwtDropEvent.DRAG_LEAVE) {
@@ -931,7 +935,8 @@ function(ev) {
 ZmListController.prototype._tagChangeListener =
 function(ev) {
 	// only process if current view is this view!
-	if (appCtxt.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
+	var curView = appCtxt.getAppViewMgr().getCurrentViewId();
+	if (curView == this._getViewType() || curView == ZmId.VIEW_MIXED) {
 		if (ev.type == ZmEvent.S_TAG && ev.event == ZmEvent.E_CREATE && this._pendingActionData) {
 			var tag = ev.getDetail("organizers")[0];
 			this._doTag(this._pendingActionData, tag, true);
@@ -1889,8 +1894,12 @@ function(actionMethod, args, params, allDoneCallback) {
 	params.count = this._continuation.count;
 	params.idsOnly = true;
 
-	var items = params.items;
-	var list = (items && (items instanceof Array) && items.length && items[0].list) || this._list;
+	var items = params.items || [];
+	var item = items[0];
+	var list = (item && item.list) || this._list;
+	if (list && (list.type == ZmItem.MIXED) && item._mixedType) {
+		list.type = item._mixedType;
+	}
 	if (!this._continuation.lastItem) {
 		this._continuation.lastItem = list.getVector().getLast();
 		this._continuation.totalItems = list.size();

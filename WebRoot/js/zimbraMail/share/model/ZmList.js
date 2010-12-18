@@ -342,10 +342,6 @@ function(params) {
 
 	params = Dwt.getParams(arguments, ["items", "op", "value", "callback"]);
 
-	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		return this._mixedAction("flagItems", params);
-	}
-
 	params.items = AjxUtil.toArray(params.items);
 
 	if (params.op == "update") {
@@ -393,10 +389,6 @@ function(params) {
 		tagId = ZmOrganizer.normalizeId(tagId);
 	}
 
-	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		return this._mixedAction("tagItems", params);
-	}
-
 	// only tag items that don't have the tag, and untag ones that do
 	// always tag a conv, because we don't know if all items in the conv have the tag yet
 	var items = AjxUtil.toArray(params.items);
@@ -433,11 +425,6 @@ ZmList.prototype.removeAllTags =
 function(params) {
 
 	params = (params && params.items) ? params : {items:params};
-
-	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		this._mixedAction("removeAllTags", params);
-		return;
-	}
 
 	var items = AjxUtil.toArray(params.items);
 	var items1 = [];
@@ -483,10 +470,6 @@ ZmList.prototype.moveItems =
 function(params) {
 	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo", "actionText"]);
 
-	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		return this._mixedAction("moveItems", params);
-	}
-
 	var params1 = AjxUtil.hashCopy(params);
 	params1.items = AjxUtil.toArray(params.items);
 	params1.attrs = params.attrs || {};
@@ -498,10 +481,6 @@ function(params) {
 		params1.actionArg = params.folder.getName(false, false, true);
 		params1.action = "move";
 		params1.attrs.l = params.folder.id;
-	}
-
-	if (this.type == ZmItem.MIXED) {
-		params1.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
 	}
 
     if (appCtxt.multiAccounts) {
@@ -613,10 +592,6 @@ ZmList.prototype.deleteItems =
 function(params) {
 
 	params = Dwt.getParams(arguments, ["items", "hardDelete", "attrs", "childWin"]);
-
-	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		return this._mixedAction("deleteItems", params);
-	}
 
 	var items = params.items = AjxUtil.toArray(params.items);
 
@@ -835,9 +810,7 @@ function(params, batchCmd) {
 
 	DBG.println("sa", "ITEM ACTION: " + idList.length + " items");
 	var type;
-	if (this.type == ZmItem.MIXED) {
-		type = this._mixedType;
-	} else if (params.items.length == 1 && params.items[0] && params.items[0].type) {
+	if (params.items.length == 1 && params.items[0] && params.items[0].type) {
 		type = params.items[0].type;
 	} else {
 		type = this.type;
@@ -1059,40 +1032,6 @@ function(params) {
 	var dialog = ZmList.progressDialog;
 	if (dialog && dialog.isPoppedUp()) {
 		dialog.popdown();
-	}
-};
-
-/**
- * Hack to support actions on a list of items of more than one type. Since some
- * specialized lists (ZmMailList or ZmContactList, for example) override action
- * methods (such as deleteItems), we need to be able to call the proper method
- * for each item type.
- *
- * XXX: We could optimize this a bit by either using a batch request, or by
- * using ItemActionRequest. But we still want to call the appropriate method for
- * each item type, so that any overridden methods get called. So for now, it's
- * easier to do the requests separately.
- * 
- * @private
- */
-ZmList.prototype._mixedAction =
-function(method, params) {
-
-	var typedItems = this._getTypedItems(params.items);
-	var params1 = AjxUtil.hashCopy(params);
-	for (var type in typedItems) {
-		this._mixedType = type; // marker that we've been here already
-		if (type == ZmItem.CONTACT) {
-			var items = typedItems[type];
-			for (var i = 0; i < items.length; i++) {
-				params1.items = [items[i]];
-				items[i].list[method](params);
-			}
-		} else {
-			params1.items = typedItems[type];
-			ZmMailList.prototype[method].call(this, params);
-		}
-		this._mixedType = null;
 	}
 };
 

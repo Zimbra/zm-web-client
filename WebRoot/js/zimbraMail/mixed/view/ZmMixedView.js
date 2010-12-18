@@ -38,7 +38,7 @@ ZmMixedView.LV_CLASS[ZmItem.CONTACT]		= "ZmContactSimpleView";
 ZmMixedView.LV_CLASS[ZmItem.GROUP]			= "ZmContactSimpleView";
 ZmMixedView.LV_CLASS[ZmItem.CONV]			= "ZmConvListView";
 ZmMixedView.LV_CLASS[ZmItem.MSG]			= "ZmMailMsgListView";
-ZmMixedView.LV_CLASS[ZmItem.APPT]			= "ZmCalListView";
+ZmMixedView.LV_CLASS[ZmItem.APPT]			= "ZmApptListView";
 ZmMixedView.LV_CLASS[ZmItem.TASK]			= "ZmTaskListView";
 ZmMixedView.LV_CLASS[ZmItem.PAGE]			= "ZmFileListView";
 ZmMixedView.LV_CLASS[ZmItem.BRIEFCASE_ITEM]	= "ZmDetailListView";
@@ -47,7 +47,7 @@ ZmMixedView.LV_CLASS[ZmItem.BRIEFCASE_ITEM]	= "ZmDetailListView";
 ZmMixedView.LV_FUNCS = ["_addParams", "_getDiv", "_getDivClass", "_getTable",
 						"_getRow", "_getRowClass", "_getRowId", "_getCell", "_getCellId",
 						"_getCellClass", "_getCellAttrText", "_getCellContents",
-						"_getFieldId"];
+						"_getFieldId", "_getDisplayName"];
 
 // functions particular to certain types
 ZmMixedView.LV_ADDED_FUNCS = {};
@@ -59,6 +59,9 @@ ZmMixedView.LV_ADDED_FUNCS[ZmItem.MSG]	= ["_getFragmentSpan", "_getFragmentHtml"
 ZmMixedView.LV_FUNCS_TT = {};
 ZmMixedView.LV_FUNCS_TT[ZmItem.CONV]	= ["_getParticipantToolTip", "_handleResponseGetContact"];
 ZmMixedView.LV_FUNCS_TT[ZmItem.MSG]		= ["_getParticipantToolTip", "_handleResponseGetContact"];
+
+// save this view's function pointers
+ZmMixedView.LV_SAVE = {};
 
 ZmMixedView.prototype.toString = 
 function() {
@@ -118,12 +121,18 @@ function(item, params) {
 
 	params = params || {};
 	params.isMixedView = true;
+	if (item.type == ZmItem.APPT) {
+		appCtxt.cacheSet(item.id, item);	// let this view handle notifications
+	}
 	AjxDispatcher.require(ZmMixedController.PKGS[item.type]);
 	var listViewClass = window[ZmMixedView.LV_CLASS[item.type]];
 	var funcs = ZmMixedView.LV_FUNCS.concat(ZmMixedView.LV_ADDED_FUNCS[item.type]);
 	this._emulateListView(listViewClass, funcs);
+	var div = listViewClass.prototype._createItemHtml.call(this, item, params);
 
-	return listViewClass.prototype._createItemHtml.call(this, item, params);
+	this._restoreListView(funcs);
+
+	return div;
 };
 
 /**
@@ -139,7 +148,19 @@ function(listViewClass, funcs) {
 	if (!(funcs && funcs.length)) { return; }
 	for (var i = 0; i < funcs.length; i++) {
 		var funcName = funcs[i];
+		ZmMixedView.LV_SAVE[funcName] = ZmMixedView.prototype[funcName];
 		ZmMixedView.prototype[funcName] = listViewClass.prototype[funcName];
+	}
+};
+
+// restore this view's function pointers
+ZmMixedView.prototype._restoreListView =
+function(funcs) {
+
+	if (!(funcs && funcs.length)) { return; }
+	for (var i = 0; i < funcs.length; i++) {
+		var funcName = funcs[i];
+		ZmMixedView.prototype[funcName] = ZmMixedView.LV_SAVE[funcName];
 	}
 };
 
@@ -156,11 +177,13 @@ function(params) {
 		tooltip = ZmMsg[ZmItem.MSG_KEY[item.type]];
 	} else {
 		var listViewClass = window[ZmMixedView.LV_CLASS[item.type]];
-		this._emulateListView(listViewClass, ZmMixedView.LV_FUNCS_TT[item.type]);
+		var funcs = ZmMixedView.LV_FUNCS_TT[item.type];
+		this._emulateListView(listViewClass, funcs);
 		// some views hand off to their controllers
 		this._controller = this._mixedController._getListController(item.type);
 		tooltip = listViewClass.prototype._getToolTip.apply(this, arguments);
 		this._controller = this._mixedController;
+		this._restoreListView(funcs);
 	}
 	return tooltip;
 };
@@ -180,4 +203,11 @@ function(ev) {
 
 	// call base class last
 	ZmListView.prototype._changeListener.call(this, ev);
+};
+
+ZmMixedView.prototype._getFieldId =
+function(item, field) {
+
+	var listViewClass = window[ZmMixedView.LV_CLASS[item.type]];
+	return listViewClass.prototype._getFieldId.apply(this, arguments);	
 };
