@@ -1448,7 +1448,10 @@ function(ev) {
 	if (ev.detail != DwtMenuItem.CHECKED && !ZmComposeController.OP_CHECK[op]) { return; }
 
 	if (op == ZmOperation.REPLY || op == ZmOperation.REPLY_ALL || op == ZmOperation.CAL_REPLY || op == ZmOperation.CAL_REPLY_ALL) {
-		this._composeView._setAddresses(op, AjxEmailAddress.TO, this._toOverride);
+		var cv = this._composeView;
+		cv.setAddress(AjxEmailAddress.TO, "");
+		cv.setAddress(AjxEmailAddress.CC, "");
+		cv._setAddresses(op, AjxEmailAddress.TO, this._toOverride);
 	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
 		if (this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE))) {
 			this._switchInclude(op);
