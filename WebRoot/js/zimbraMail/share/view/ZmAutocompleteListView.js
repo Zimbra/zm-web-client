@@ -511,8 +511,9 @@ function() {
 	this._forgetLink		= {};
 	this._expandLink		= {};
 
-	if (this.getVisible()) {
-		this.show(false);
+	this.show(false);
+	if (this._memberListView) {
+		this._memberListView.show(false);
 	}
 	this.setWaiting(false);
 };
@@ -1274,14 +1275,14 @@ function(email, textId, rowId, ev, loc) {
 
 	var mlv = this._memberListView;
 	if (mlv && textId && this._curExpanded == textId) {
-		mlv.show(false, null, true);
+		mlv.show(false);
 		this._curExpanded = null;
 		this._setExpandText(textId, false);
 	} else {
 		if (mlv && mlv.getVisible()) {
 			// expanding a DL while another one is showing
 			this._setExpandText(this._curExpanded, false);
-			mlv.show(false, null, true);
+			mlv.show(false);
 		}
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		var contact = contactsApp.getContactByEmail(email);
@@ -1297,6 +1298,7 @@ function(email, textId, rowId, ev, loc) {
 		}
 		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact, loc]));
 	}
+	this._element.focus();
 };
 
 ZmAutocompleteListView.prototype._handleResponseExpandDL =
