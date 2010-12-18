@@ -711,6 +711,11 @@ INPUT[type="text"].people_search_input {
 	border: 1px inset #F0F0F0;
 }
 
+.addrBubbleHolder-empty {
+	padding: 0;
+	margin-top: 0;
+}
+
 .addrBubbleHolder {
 	padding: 2px 0;
 	margin-top: 2px;

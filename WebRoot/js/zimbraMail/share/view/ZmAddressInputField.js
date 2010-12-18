@@ -94,7 +94,7 @@ function(address, match, dontCallBubbleAddedCallback) {
 	}
 
 	this._input.value = "";
-
+	this._holder.className = "addrBubbleHolder";
 
 	if (this._bubbleAddedCallback && !dontCallBubbleAddedCallback) {
 		this._bubbleAddedCallback.run();
@@ -395,6 +395,10 @@ function(bubbleId, dontCallBubbleRemovedCallback) {
 	delete this._addressHash[addr];
 	if (bubbleId == this._selectedBubbleId) {
 		this._selectedBubbleId = null;
+	}
+
+	if (this._addresses.length == 0) {
+		this._holder.className = "addrBubbleHolder-empty";
 	}
 
 	if (this._bubbleRemovedCallback && !dontCallBubbleRemovedCallback) {
