@@ -663,7 +663,7 @@
 		</antcall>
 		<!-- merge skin images -->
         <antcall target="images-skins">
-            <param name="skin.dir" value="${web.dir}/skins" />
+            <param name="skin.dir" value="${skins.dir}" />
         </antcall>
         <if><available file="${customer.skin.dir}" />
             <then>
