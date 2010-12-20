@@ -658,11 +658,12 @@ ZmTreeView.prototype._handleAddShare = function() {
     for (var i = 0; i < shares.length; i++) {
         var share = shares[i];
         var name = share.folderPath.substr(1).replace("/"," ");
+        var ownerName = (share.normalizedOwnerName.indexOf('@') >1) ? share.normalizedOwnerName.substr(0, share.normalizedOwnerName.indexOf('@')) : share.normalizedOwnerName;
         requests.push({
             _jsns: "urn:zimbraMail",
             link: {
                 l: ZmOrganizer.ID_ROOT,
-                name: ZmShare.getDefaultMountpointName(share.ownerName, name),
+                name: ZmShare.getDefaultMountpointName(ownerName, name),
                 view: share.view,
                 zid: share.ownerId,
                 rid: share.folderId
