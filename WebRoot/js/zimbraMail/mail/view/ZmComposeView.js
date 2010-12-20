@@ -857,7 +857,7 @@ function(type, addr) {
 
 	addr = addr || "";
 
-	var addrStr = addr.isAjxEmailAddress ? addr.getAddress() : addr;
+	var addrStr = addr.isAjxEmailAddress ? addr.toString() : addr;
 	if (this._useAcAddrBubbles) {
 		var addrInput = this._addrInputField[type];
 		if (!addrStr) {
