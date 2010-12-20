@@ -4637,3 +4637,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmScheduleAssistantView .DwtCalendar {
     border-bottom: 1px solid @AppC@    
 }
+
+.ReminderInput INPUT{
+    width: 100%
+}

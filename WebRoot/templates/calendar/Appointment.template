@@ -4,9 +4,9 @@
 <template id='calendar.Appointment#ComposeViewColumns'>
     <colgroup>
         <col width="80">
-        <col width="265">
         <col>
-        <col>
+        <col width="90">
+        <col width="130">
         <col width="100">
     </colgroup>
 </template>
@@ -19,7 +19,7 @@
             <$= AjxTemplate.expand("#ComposeViewColumns") $>
             <tr id='${id}_invitemsg_container' style='display:none;'>
                 <td class='ZmFieldLabelRight'>&nbsp;</td>
-                <td colspan="3">
+                <td colspan="4">
                     <table border=0>
                         <tr>
                             <td id="${id}_invitemsgicon" ><$= AjxImg.getImageHtml("Information") $></td>
@@ -30,16 +30,16 @@
             </tr>
             <tr id='${id}_forward_options' style='display:none;'>
                 <td class='ZmFieldLabelRight'><div id='${id}_picker'><$=ZmMsg.toLabel$></div></td>
-                <td colspan='3' id='${id}_to_control'></td>
+                <td colspan='4' id='${id}_to_control'></td>
             </tr>
             <$ if (data.isAppt && !appCtxt.multiAccounts) { $>
             <tr id="${id}_identityContainer">
                 <td class='ZmFieldLabelRight'><nobr><$= ZmMsg.fromLabel $></nobr></td>
-                <td colspan='3' id="${id}_identity"></td>
+                <td colspan='4' id="${id}_identity"></td>
             </tr>
             <$ } $>
             <tr><td class='ZmFieldLabelRight'><nobr><$= ZmMsg.subjectLabel $></nobr></td>
-                <td colspan='3' id='${id}_subject'></td>
+                <td colspan='4' id='${id}_subject'></td>
             </tr>
             <tr id="${id}_attendeesContainer">
                 <td class='ZmFieldLabelRight'><div id='${id}_req_att_picker'><$= ZmMsg.attendeesLabel $></div></td>
@@ -58,7 +58,7 @@
             <$ if (data.isGalEnabled) { $>
             <tr id='${id}_resourcesContainer'>
                 <td class='ZmFieldLabelRight'><div id='${id}_res_btn'><$= ZmMsg.resources $></div></td>
-                <td colspan='3' id='${id}_resourcesData'></td>
+                <td colspan='4' id='${id}_resourcesData'></td>
             </tr>
             <$ } $>
             <tr><td class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.startLabel : (ZmMsg.startDate+":")) $></nobr></td>
@@ -74,7 +74,7 @@
                     </table>
                 </td>
                 <td id='${id}_repeatLabel' class='ZmFieldLabelRight'><nobr><$= ZmMsg.repeatLabel $></nobr></td>
-                <td id='${id}_repeat_options'>
+                <td id='${id}_repeat_options' colspan="2">
                     <div id='${id}_repeatSelect' class="ZmApptComposeField"></div>
                     <div id='${id}_repeatDesc' class="ZmApptComposeField FakeAnchor"></div>
                 </td>
