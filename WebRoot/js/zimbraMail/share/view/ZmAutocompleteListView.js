@@ -365,11 +365,15 @@ function(ev) {
 	}
 
 	if (key == 13 || key == 3) {
-		if (aclv._options.addrBubbles) {
-			if (aclv._dataAPI.isComplete && aclv._dataAPI.isComplete(value)) {
+		if (aclv._options.addrBubbles && aclv._dataAPI.isComplete && aclv._dataAPI.isComplete(value)) {
 				DBG.println(AjxDebug.DBG3, "got a Return, found an addr: " + value);
 				aclv._runCallbacks(ZmAutocompleteListView.CB_ADDR_FOUND, aclv._element && aclv._element.id, [aclv, value, "\n"]);
-			}
+		} else {
+			// Treat as regular selection
+			var selEv = DwtShell.selectionEvent;
+			DwtUiEvent.copy(selEv, ev);
+			selEv.detail = 0;
+			aclv.notifyListeners(DwtEvent.SELECTION, selEv);
 		}
 		aclv.reset();
 		var result = aclv._runCallbacks(ZmAutocompleteListView.CB_ENTER, element && element.id, [ev]);
