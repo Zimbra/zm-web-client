@@ -533,7 +533,7 @@ function(ev) {
 		}
 		if (restUrl) {
             if(item.isDownloadable()) {
-                location.href = restUrl;
+                this._downloadFile(restUrl);
             }else {
 			    window.open(restUrl, this._getWindowName(item.name), item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
             }
@@ -851,9 +851,21 @@ function() {
 ZmBriefcaseController.prototype.downloadFile =
 function(item){
     var restUrl = item.getRestUrl();
-    if (item && restUrl) {
-        // bug fix #36618 - force new window since some users may get prompted for auth
-        window.open(restUrl+ "?disp=a"+(item.version ? "&ver="+item.version : ""));
+    if (!restUrl) {
+        return false;
+    }
+    restUrl = this._app.fixCrossDomainReference(restUrl);
+    if (restUrl) {
+        restUrl += "?disp=a"+(item.version ? "&ver="+item.version : "");
+        this._downloadFile(restUrl)
+    }
+};
+
+ZmBriefcaseController.prototype._downloadFile =
+function(downloadUrl){
+    if(downloadUrl){
+        ZmZimbraMail.unloadHackCallback();
+        location.href = downloadUrl;
     }
 };
 
