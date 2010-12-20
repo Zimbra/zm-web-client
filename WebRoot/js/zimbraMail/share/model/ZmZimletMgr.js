@@ -507,37 +507,40 @@ function(zimletArray, zimletNames) {
  */
 ZmZimletMgr.prototype.__getIncludes =
 function(zimletArray, zimletNames, isJS) {
+    // get language info
+    var languageId = null;
+    var countryId = null;
+    if (appCtxt.get(ZmSetting.LOCALE_NAME)) {
+        var locale = appCtxt.get(ZmSetting.LOCALE_NAME) || "";
+        var parts = locale.split("_");
+        languageId = parts[0];
+        countryId = parts[1];
+    }
+    var locid = "";
+    if (languageId) locid += "&language="+languageId;
+    if (countryId) locid += "&country="+countryId;
+
+    // add cache killer to each url
+    var query = [
+        "?v=",
+        window.appDevMode ? new Date().getTime() : window.cacheKillerVersion
+    ].join("");
+
+    // add messages for all zimlets
+    var includes = [];
+    if (window.appDevMode && isJS) {
+        var zimlets = appCtxt.get(ZmSetting.ZIMLETS) || [];
+        for (var i = 0; i < zimlets.length; i++) {
+            var zimlet = zimlets[i].zimlet[0];
+            includes.push([appContextPath, "/res/", zimlet.name, ".js", query, locid].join(""));
+        }
+    }
+
 	// add remote urls
-	var includes = [];
 	for (var i = 0; i < zimletArray.length; i++) {
 		var zimlet = zimletArray[i].zimlet[0];
 		var baseUrl = zimletArray[i].zimletContext[0].baseUrl;
 		var isDevZimlet = baseUrl.match("/_dev/");
-
-        var languageId = null;
-        var countryId = null;
-        if(appCtxt.get(ZmSetting.LOCALE_NAME)) {
-            var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
-            var index = locale.indexOf("_");
-            if (index == -1) {
-                languageId = locale;
-                } else {
-                languageId = locale.substr(0, index);
-                countryId = locale.substr(index+1);
-            }
-        }        
-		// add cache killer to each url
-		var query = isDevZimlet
-			? ("?debug=1&v="+new Date().getTime()+"&")
-			: ("?v="+cacheKillerVersion+"&");
-        	query += ((languageId ? "language=" + languageId : "")+"&");
-        	query += ((countryId ? "country=" + countryId : ""));
-
-
-		// include messages
-		if (window.appDevMode && isJS) {
-			includes.push([appContextPath, "/res/", zimlet.name, ".js", query].join(""));
-		}
 
 		// include links
 		var links = (isJS ? zimlet.include : zimlet.includeCSS) || [];
@@ -549,7 +552,8 @@ function(zimletArray, zimletNames, isJS) {
 				continue;
 			}
 			if (window.appDevMode || isDevZimlet) {
-				includes.push([baseUrl, url, query].join(""));
+                var debug = isDevZimlet ? "&debug=1" : "";
+				includes.push([baseUrl, url, query, locid, debug].join(""));
 			}
 		}
 	}

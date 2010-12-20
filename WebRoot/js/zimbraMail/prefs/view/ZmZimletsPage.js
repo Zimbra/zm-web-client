@@ -429,15 +429,18 @@ ZmZimletsPage._getZimlets =
 function() {
 	var allz = appCtxt.get(ZmSetting.ZIMLETS) || [];
 	var zimlets = new ZmPrefZimlets();
-    var zimletMgr = appCtxt.getZimletMgr();
+    var zimletsLoaded = appCtxt.getZimletMgr().isLoaded();
 	for (var i = 0; i <  allz.length; i++) {
 		var name = allz[i].zimlet[0].name;
 		if (allz[i].zimletContext[0].presence == "mandatory") {
 			continue; // skip mandatory zimlets to be shown in prefs
 		}
-        var zimletContext = zimletMgr.getZimletByName(name);
-		var desc = zimletContext ? zimletContext.description : allz[i].zimlet[0].description;
-		var label = zimletContext ? zimletContext.label : allz[i].zimlet[0].label;
+		var desc = allz[i].zimlet[0].description;
+		var label = allz[i].zimlet[0].label;
+        if (zimletsLoaded) {
+            desc = ZmZimletContext.processMessage(name, desc);
+            label = ZmZimletContext.processMessage(name, label);
+        }
 		var isEnabled = allz[i].zimletContext[0].presence == "enabled";
 		zimlets.addPrefZimlet(new ZmPrefZimlet(name, isEnabled, desc, label));
 	}
@@ -479,7 +482,7 @@ function() {
 	return "ZmPrefZimletListView";
 };
 
-/**
+/**                                                                        
  * Only show zimlets that have at least one valid action (eg, if the only action
  * is "tag" and tagging is disabled, don't show the rule).
  */
@@ -495,14 +498,11 @@ function(list) {
 
 ZmPrefZimletListView.prototype._handleZimletsLoaded = function(evt) {
     this._zimletsLoaded = true;
-    var zimletMgr = appCtxt.getZimletMgr();
     var array = this.parent.getZimlets()._vector.getArray();
     for (var i = 0; i < array.length; i++) {
         var item = array[i];
-        var zimlet = zimletMgr.getZimletByName(item.name);
-        if (!zimlet) continue;
-        item.label = zimlet.label;
-        item.desc = zimlet.description; 
+        item.label = ZmZimletContext.processMessage(item.name, item.label);
+        item.desc = ZmZimletContext.processMessage(item.name, item.desc);
         this.setCellContents(item, ZmPrefZimletListView.COL_NAME, AjxStringUtil.htmlEncode(item.label));
         this.setCellContents(item, ZmPrefZimletListView.COL_DESC, AjxStringUtil.htmlEncode(item.desc));
     }
@@ -561,6 +561,8 @@ function(html, idx, item, field, colIdx, params) {
 	else if (field == ZmPrefZimletListView.COL_NAME) {
         html[idx++] = "<div id='";
         html[idx++] = this._getCellId(item, ZmPrefZimletListView.COL_NAME);
+        html[idx++] = "' title='";
+        html[idx++] = item.name;
         html[idx++] = "'>";
 		html[idx++] = AjxStringUtil.stripTags(item.getNameWithoutPrefix(!this._zimletsLoaded), true);
         html[idx++] = "</div>";
