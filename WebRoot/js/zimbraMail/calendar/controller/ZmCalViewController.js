@@ -2835,10 +2835,10 @@ function(appt, actionMenu) {
 	var isForwardable = !isTrash && calendar && !calendar.isReadOnly();
 
 	// reply action menu
-	actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
-	actionMenu.enable(ZmOperation.REPLY_DECLINE, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
-	actionMenu.enable(ZmOperation.REPLY_TENTATIVE, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
-	actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled);
+	actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
+	actionMenu.enable(ZmOperation.REPLY_DECLINE, enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
+	actionMenu.enable(ZmOperation.REPLY_TENTATIVE, enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
+	actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled && isReplyable);
 	actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
 
 	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isOrganizer);
