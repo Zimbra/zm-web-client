@@ -116,7 +116,6 @@ ZmAutocompleteListView = function(params) {
 	this._hideLinkTextClass = "LinkText-hide";
 	this._hideSelLinkTextClass = "LinkText-hide-selected";
 
-	this._numChars = 0;
 	this._done = {};
 	this.setVisible(false);
 	this.setScrollStyle(Dwt.SCROLL);
@@ -336,14 +335,10 @@ function(ev) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 
-	if (ev.inputLengthChanged || (key == 3 || key == 9 || key == 13)) {
-		aclv._numChars++;
-	}
-		
 	// if the user types a single delimiting character with the list showing, do completion
-	var isDelim = (aclv.getVisible() && (aclv._numChars == 1) && (!ev.shiftKey && aclv._isDelimCode[key]));
+	var isDelim = (aclv.getVisible() && (!ev.shiftKey && aclv._isDelimCode[key]));
 
-	DBG.println(AjxDebug.DBG3, "numChars = " + aclv._numChars + ", key = " + key + ", isDelim: " + isDelim);
+	DBG.println(AjxDebug.DBG3, "key = " + key + ", isDelim: " + isDelim);
 	if (isDelim || (key == 27 || (aclv.getVisible() && (key == 38 || key == 40)))) {
 		aclv.handleAction(key, isDelim);
 		// In Firefox, focus shifts on Tab even if we return false (and stop propagation and prevent default),
@@ -616,7 +611,6 @@ function(ev) {
 	var element = ev.element;
 	var aclv = ev.aclv;
 	aclv._acActionId = -1; // so we don't try to cancel
-	aclv._numChars = 0;
 
 	aclv.reset();				// start fresh
 	aclv._element = element;	// for updating element later
