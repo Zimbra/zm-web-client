@@ -887,6 +887,7 @@
 </template>
 
 <template id='calendar.Appointment#ReadOnlyView'>
+    <div class='ApptHeaderDiv'>
 	<table border=0 class='MsgHeaderTable' id='${id}_hdrTable' cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<$ if(data.isAppt && data.allowEdit) {$>
@@ -926,6 +927,7 @@
 		<$ if (data.recurStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.repeats, val:data.recurStr}) $><$ } $>
 		<$ if (data.attachStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
 	</table>
+    </div>
 </template>
 
 <template id="calendar.Appointment#AddEntry">
