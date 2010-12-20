@@ -507,6 +507,52 @@ INPUT[type="text"].people_search_input {
 	padding: 0px 10px;
 }
 
+
+/* setting max heights for header divs for different views. Use IE hack for max-height */
+/* reading pane bottom*/
+.ReadingPane_bottom .ZmMailMsgView .ZmMailMsgViewDiv, .ReadingPane_bottom .ZmMailMsgView .InvHeaderDiv {
+    #IFDEF MSIE
+        height: expression(this.scrollHeight > 150 ? "150px" : "auto");
+    #ENDIF
+    max-height:150px;
+    overflow:auto;
+}
+/* reading pane right*/
+.ReadingPane_right .ZmMailMsgView .ZmMailMsgViewDiv, .ReadingPane_right .ZmMailMsgView .InvHeaderDiv {
+    #IFDEF MSIE
+        height: expression(this.scrollHeight > 250 ? "250px" : "auto");
+    #ENDIF
+    max-height:250px;
+    overflow:auto;
+}
+
+/* reading pane off - not sure if that's possible with message displayed, but just in case there's a way */
+.ReadingPane_off .ZmMailMsgView .ZmMailMsgViewDiv, .ReadingPane_off .ZmMailMsgView .InvHeaderDiv {
+    #IFDEF MSIE
+        height: expression(this.scrollHeight > 400 ? "400px" : "auto");
+    #ENDIF
+    max-height:400px;
+    overflow:auto;
+}
+
+/* the non-double-pane case - double-clicked message */
+.ZmMailMsgView .ZmMailMsgViewDiv, .ZmMailMsgView .InvHeaderDiv {
+    #IFDEF MSIE
+        height: expression(this.scrollHeight > 400 ? "400px" : "auto");
+    #ENDIF
+    max-height:400px;
+    overflow:auto;
+}
+
+/* max-height setting for appointment view header */
+.ApptHeaderDiv {
+    #IFDEF MSIE
+        height: expression(this.scrollHeight > 300 ? "300px" : "auto");
+    #ENDIF
+    max-height:300px;
+    overflow:auto;
+}
+
 .ZmConvDoublePaneView .calendar_view, .ZmConvView .calendar_view {
 	@TopSeparator@
 	@LeftSeparator@
