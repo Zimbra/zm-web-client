@@ -336,7 +336,7 @@ function(list, sortField) {
     var list = this._detailListView._zmList;
     if(list)
         list.addChangeListener(new AjxListener(this, this._listViewChangeListener));
-    this._selectFirstItem();
+    this._previewView.set(null);
 };
 
 ZmPreviewPaneView.prototype._listViewChangeListener =
