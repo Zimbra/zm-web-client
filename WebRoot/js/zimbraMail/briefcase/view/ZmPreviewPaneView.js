@@ -357,7 +357,7 @@ function(ev){
     var item = ev.item, handled = false;
     if(ev.field == ZmItem.F_EXPAND && this._detailListView._isExpandable(item)){
         this._detailListView.expandItem(item);   
-    }else if(this._controller.isReadingPaneOn() && item && !item.isFolder){
+    }else if(this._controller.isReadingPaneOn() && item ){
         this._previewView.set(item);
     }
 };
@@ -591,6 +591,13 @@ function(item){
     this._oldItem = this._previewItem;
     this._previewItem = item;
     this.enablePreview(true);
+
+    if(item.isFolder){
+        this._setFolder(item);
+        return;
+    }
+
+
     this._setHeader(item);
 
     var restUrl = item.getRestUrl();
@@ -641,6 +648,37 @@ function(){
             iframe.style.height = newHt + "px";
         }
     }
+};
+
+ZmPreviewView.prototype._setFolder =
+function(item){
+
+    //Name
+    this._headerName.innerHTML = item.name;
+
+    //Briefcase icon
+    this._headerImage.className = "ImgBriefcase_48";
+
+    if(this._headerModifier)
+        this._headerModifier.innerHTML = item.getOwner();
+
+    if(this._headerModified)
+        this._headerModified.innerHTML = ""
+    if(this._headerCreated)
+        this._headerCreated.innerHTML = "";
+    if(this._headerCreator)
+        this._headerCreator.innerHTML = "";
+    if(this._lockStatus)
+        this._lockStatus.innerHTML = AjxImg.getImageHtml("Blank_16");
+    if(this._headerLockTime){
+        this._headerLockTime.innerHTML = "";
+    }
+    if(this._headerLockUser){
+        this._headerLockUser.innerHTML = "";
+    }
+    Dwt.setVisible(this._headerNotesSection, false);
+
+    this._iframePreview.setIframeContent(AjxTemplate.expand('briefcase.Briefcase#FolderPreview'));
 };
 
 ZmPreviewView.prototype._setHeader =

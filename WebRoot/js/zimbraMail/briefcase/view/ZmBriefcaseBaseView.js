@@ -322,19 +322,3 @@ function(){
         this.resetRenameFile();
 };
 
-ZmBriefcaseBaseView.prototype._itemClicked =
-function(clickedEl, ev) {
-		
-    ZmListView.prototype._itemClicked.call(this, clickedEl, ev);
-
-    if (ev.button == DwtMouseEvent.LEFT) {
-        var items = this.getSelection();
-        if (items && items.length) {
-            var item = items[0];
-            if (item.isFolder) {
-                this._controller._app.search({folderId:item.id, noClear:true});
-            }
-        }
-    }
-};
-
