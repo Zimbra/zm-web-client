@@ -307,7 +307,7 @@ function(reset) {
 			this._dayView.setBounds(mvBounds.x, mvHeight, mvBounds.width, dvHeight);
 			// don't call DwtControl's setSize() since it triggers control
 			// listener and leads to infinite loop
-			Dwt.setSize(this.parent.getHtmlElement(), Dwt.DEFAULT, mvHeight);
+
 			Dwt.delClass(this.parent.getHtmlElement(), "RightBorderSeparator");
 		} else {
 			var parentWidth = grandParentSize.x;
