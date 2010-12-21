@@ -362,7 +362,7 @@ function(node) {
         this.lockTime = new Date(Number(node.lt));
     }
 
-    if (node.desc){  this.notes = node.desc; }
+    if (node.desc){  this.notes = AjxStringUtil.htmlEncode(node.desc); }
     this.subject = this.getNotes();
 
 };
@@ -528,7 +528,7 @@ function(data) {
         this.locked = false;
     }
 
-    if (data.desc)  this.notes = data.desc;
+    if (data.desc)  this.notes = AjxStringUtil.htmlEncode(data.desc);
     this.subject = this.getNotes();
 };
 
@@ -609,7 +609,7 @@ function(data){
     if (data.cd)    this.createDate = new Date(Number(data.cd));
     if (data.leb)   this.modifier = data.leb;
     if (data.md)    this.modifyDate = new Date(Number(data.md));
-	if (data.desc)  this.notes = data.desc;
+	if (data.desc)  this.notes = AjxStringUtil.htmlEncode(data.desc);
 
     this.subject = this.getNotes();
     this._parseTags(data.t);
