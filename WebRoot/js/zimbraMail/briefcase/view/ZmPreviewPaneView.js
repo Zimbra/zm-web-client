@@ -653,6 +653,8 @@ function(){
 ZmPreviewView.prototype._setFolder =
 function(item){
 
+    this._cleanup();
+
     //Name
     this._headerName.innerHTML = item.name;
 
@@ -662,8 +664,18 @@ function(item){
     if(this._headerModifier)
         this._headerModifier.innerHTML = item.getOwner();
 
+    this._iframePreview.setIframeContent(AjxTemplate.expand('briefcase.Briefcase#FolderPreview'));
+};
+
+ZmPreviewView.prototype._cleanup =
+function(){
+
+    this._headerName.innerHTML = "";
+
+    this._headerImage.className = "ImgUnknownDoc_48";
+
     if(this._headerModified)
-        this._headerModified.innerHTML = ""
+        this._headerModified.innerHTML = "";
     if(this._headerCreated)
         this._headerCreated.innerHTML = "";
     if(this._headerCreator)
@@ -678,7 +690,6 @@ function(item){
     }
     Dwt.setVisible(this._headerNotesSection, false);
 
-    this._iframePreview.setIframeContent(AjxTemplate.expand('briefcase.Briefcase#FolderPreview'));
 };
 
 ZmPreviewView.prototype._setHeader =
