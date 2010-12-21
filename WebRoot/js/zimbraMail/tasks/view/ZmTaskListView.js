@@ -497,7 +497,7 @@ function(columnItem, bSortAsc) {
 		case ZmItem.F_SUBJECT:		sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC; break;
 		case ZmItem.F_STATUS:		sortBy = bSortAsc ? ZmSearch.STATUS_ASC : ZmSearch.STATUS_DESC; break;
 		case ZmItem.F_PCOMPLETE:	sortBy = bSortAsc ? ZmSearch.PCOMPLETE_ASC : ZmSearch.PCOMPLETE_DESC; break;
-		case ZmItem.F_DATE:			sortBy = bSortAsc ? ZmSearch.DUE_DATE_DESC : ZmSearch.DUE_DATE_ASC;	break; //bug:
+		case ZmItem.F_DATE:			sortBy = bSortAsc ? ZmSearch.DUE_DATE_DESC : ZmSearch.DUE_DATE_ASC;	break; //bug:50890 changed the default order
         case ZmItem.F_SORTED_BY:    sortBy = bSortAsc ? ZmSearch.DUE_DATE_DESC : ZmSearch.DUE_DATE_ASC;	break;
 	}
 
@@ -506,7 +506,7 @@ function(columnItem, bSortAsc) {
 		appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
 	}
 
-	if (this.getList().size() > 1 && this._sortByString) {
+	if (this.getList().size() > 0 && this._sortByString) {
 		var params = {
 			query: this._controller.getSearchString(),
 			queryHint: this._controller.getSearchStringHint(),
@@ -661,6 +661,9 @@ function(ev) {
                 task.message = null;
 			    task.getDetails(ZmCalItem.MODE_EDIT, new AjxCallback(this._controller, this._controller._showTaskReadOnlyView, task));
 		    }
+            //bug:53715 refreshed the listview after modification
+            this._sortColumn(ZmItem.F_DATE,true);
+            this._renderList(this.getList(),true,false);
 		}
 	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
         for (var i = 0; i < items.length; i++) {
