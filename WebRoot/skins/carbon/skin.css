@@ -562,3 +562,21 @@ SELECT						{	@FieldBorder@	}
 	color: white;
 	text-decoration: none;
 }
+
+/* Row Displays */
+.Row {
+    border-color:#ccc;
+}
+.Row, .RowDouble, .Row-focused {
+    border-width:0 0 1px;
+}
+.RowOdd, .RowEven {
+    background-color:transparent;
+    border-top-color:transparent;
+}
+.ZmConvExpanded, .BriefcaseItemExpanded {
+    background-color:#ededed;
+}
+.RowDouble-matched {
+    background-color:#fffec4;
+}
