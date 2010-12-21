@@ -221,9 +221,8 @@ function(parent, num) {
 	// call base class
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 
-	var isFolderSelected;
 	var items = this._listView[this._currentView].getSelection();
-	var noOfFolders = 0, isRevisionSelected=false, isBriefcaseItemSelected=false;
+	var isFolderSelected=false, noOfFolders = 0, isRevisionSelected=false, isBriefcaseItemSelected=false, isMixedSelected=false;
 	if (items) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
@@ -237,8 +236,8 @@ function(parent, num) {
             }
 		}
 	}
-    
-    var isMixedSelected = isBriefcaseItemSelected && isRevisionSelected;
+
+    isMixedSelected = isFolderSelected ? (isBriefcaseItemSelected || isRevisionSelected) :  (isBriefcaseItemSelected && isRevisionSelected);
 
     var briefcase = appCtxt.getById(this._folderId);
     var isTrash = (briefcase && briefcase.nId == ZmOrganizer.ID_TRASH);
@@ -260,7 +259,7 @@ function(parent, num) {
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 	parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared && !isRevision));
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
-    parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, (isItemSelected && !isMixedSelected));
+    parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, (isItemSelected && !isFolderSelected));
 
     var firstItem = items && items[0];
     var isWebDoc = firstItem && !firstItem.isFolder && firstItem.isWebDoc();
@@ -523,13 +522,17 @@ function(ev) {
 		var item = ev.item;
 		var restUrl = item.getRestUrl();
 
-        if(item.isFolder) return;
+        if(item.isFolder){
+            this._app.search({folderId:item.id, noClear:true});
+            return;
+        }
 
         if (item.isWebDoc()) {
             //added for bug: 45150
             restUrl = this._app.fixCrossDomainReference(restUrl);
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
-            restUrl = restUrl + "&preview=1" + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
+            restUrl += (restUrl.match(/\?/) ? "&" : "?") + "localeId=" + AjxEnv.DEFAULT_LOCALE;
+
 		}
 		if (restUrl) {
             if(item.isDownloadable()) {

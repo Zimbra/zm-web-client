@@ -577,6 +577,10 @@ function(baseIcon, large){
         return this.folder.getIconWithColor();  
 };
 
+ZmBriefcaseFolderItem.prototype.getOwner =
+function(){
+    return this.folder.getOwner();
+};
 
 //ZmRevisionItem
 ZmRevisionItem = function(id, parentItem){
