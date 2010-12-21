@@ -793,6 +793,9 @@ function() {
 		for (var i = 0; i < targets.length; i++) {
 			var orgType = targets[i];
 			var treeController = overviewController.getTreeController(orgType, true);
+			if (!treeController) {
+				continue;
+			}
 			treeController.dispose();
 		}
 	}

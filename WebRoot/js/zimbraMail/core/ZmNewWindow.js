@@ -119,14 +119,17 @@ function(ev) {
 	if (!window.opener || !window.parentController) { return; }
 
 	var command = window.newWindowCommand; //bug 54409 - was using wrong attribute for command in unload
-	if (command == "compose" || command == "composeDetach") {
+	if (command == "compose" || command == "composeDetach"
+			|| (command == "msgViewDetach" && appCtxt.composeCtlrSessionId)) { //msgViewDetach might turn into a compose session if user hits "reply"/etc
 		// compose controller adds listeners to parent window's list so we
 		// need to remove them before closing this window!
 		var cc = AjxDispatcher.run("GetComposeController", appCtxt.composeCtlrSessionId);
 		if (cc) {
 			cc.dispose();
 		}
-	} else if (command == "msgViewDetach") {
+	}
+
+	if (command == "msgViewDetach") {
 		// msg controller (as a ZmListController) adds listener to tag list
 		var mc = AjxDispatcher.run("GetMsgController", appCtxt.msgCtlrSessionId);
 		if (mc) {
@@ -234,6 +237,10 @@ function() {
 	var rootTg = appCtxt.getRootTabGroup();
 	var startupFocusItem;
 
+	//I null composeCtlrSessionId so it's not kept from irrelevant sessions from parent window.
+	// (since I set it in every compose session, in ZmMailApp.prototype.compose).
+	// This is important in case of cmd == "msgViewDetach"
+	appCtxt.composeCtlrSessionId = null;  
 	// depending on the command, do the right thing
 	if (cmd == "compose" || cmd == "composeDetach") {
 		var cc = AjxDispatcher.run("GetComposeController");	// get a new compose ctlr

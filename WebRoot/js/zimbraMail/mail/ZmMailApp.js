@@ -1832,7 +1832,9 @@ function() {
  */
 ZmMailApp.prototype.compose =
 function(params) {
-	AjxDispatcher.run("GetComposeController").doAction(params);
+	var controller = AjxDispatcher.run("GetComposeController");
+	appCtxt.composeCtlrSessionId = controller.sessionId; //this is used in ZmNewWindow.js. For disposing of the controller and its listeners, overview, and tree listeners.
+	controller.doAction(params);
 };
 
 /**
