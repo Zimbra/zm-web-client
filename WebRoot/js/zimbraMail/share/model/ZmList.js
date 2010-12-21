@@ -906,13 +906,14 @@ function(params) {
 	} else {
 		params.action.id = idStr;
 	}
+	var more = Boolean(params.ids.length && !params.cancelled);
 
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [params]);
 
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(params.request, respCallback, params.errorCallback);
 	} else {
-		var reqParams = {asyncMode:true, callback:respCallback, errorCallback: params.errorCallback, accountName:params.accountName};
+		var reqParams = {asyncMode:true, callback:respCallback, errorCallback: params.errorCallback, accountName:params.accountName, more:more};
 		if (useJson) {
 			reqParams.jsonObj = params.request;
 		} else {
