@@ -109,7 +109,8 @@
                 </td>
                 </tr>
                </table>
-             </td>   
+             </td>
+             <td></td>   
             </tr>
             <tr><td style='<$= AjxEnv.isWebKitBased ? "padding-top:6px;" : "" $>' class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.endLabel : ZmMsg.dateDueLabel ) $></nobr></td>
 
