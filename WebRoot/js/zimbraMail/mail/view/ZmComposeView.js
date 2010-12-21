@@ -1502,7 +1502,7 @@ function(el, ctxt) {
 		if (ctxt.isPreformatted) {
 			return AjxStringUtil.trim(el.nodeValue);
 		} else {
-			return AjxStringUtil.trim(el.nodeValue.replace(AjxStringUtil._LF, ""), true);
+			return AjxStringUtil.trim(el.nodeValue.replace(AjxStringUtil._LF, ""));
 		}
 	}
 };
