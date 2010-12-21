@@ -227,7 +227,7 @@ for (var id in AjxImgData) {
 	if (data.f) data.f = data.f.replace(/@AppContextPath@/,appContextPath);
 	if (data.ief) data.ief = data.ief.replace(/@AppContextPath@/,appContextPath);
 	var f = AjxEnv.isIE ? data.ief : data.f;
-	document.write("<IMG id='",id,"' src='",data.d||f,"'>");
+	document.write("<IMG id='",id,"' src='",data.d||f,"?v=${vers}'>");
 }
 document.write("</DIV>");
 </script>
