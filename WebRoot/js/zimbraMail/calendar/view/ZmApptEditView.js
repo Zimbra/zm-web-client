@@ -1649,15 +1649,20 @@ function(ev) {
 ZmApptEditView.prototype.handleTimezoneOverflow =
 function() {
     var timezoneTxt = this._tzoneSelectStart.getText();
-    if(timezoneTxt.length > 30) {
-        timezoneTxt = timezoneTxt.substring(0, 30) + '...';
-        this._tzoneSelectStart.setText(timezoneTxt);
+    var limit = AjxEnv.isIE ? 25 : 30;
+    if(timezoneTxt.length > limit) {
+        var newTimezoneTxt = timezoneTxt.substring(0, limit) + '...';
+        this._tzoneSelectStart.setText(newTimezoneTxt);
     }
+    var option = this._tzoneSelectStart.getSelectedOption();
+    this._tzoneSelectStart.setToolTipContent(option ? option.getDisplayValue() : timezoneTxt);
     timezoneTxt = this._tzoneSelectEnd.getText();
-    if(timezoneTxt.length > 30) {
-        timezoneTxt = timezoneTxt.substring(0, 30) + '...';
-        this._tzoneSelectEnd.setText(timezoneTxt);
+    if(timezoneTxt.length > limit) {
+        var newTimezoneTxt = timezoneTxt.substring(0, limit) + '...';
+        this._tzoneSelectEnd.setText(newTimezoneTxt);
     }
+    option = this._tzoneSelectEnd.getSelectedOption();
+    this._tzoneSelectEnd.setToolTipContent(option ? option.getDisplayValue() : timezoneTxt);
 };
 
 ZmApptEditView.prototype._timezoneListener =

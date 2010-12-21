@@ -727,7 +727,8 @@ function(width) {
 			parentElement: (this._htmlElId + "_reminderSelectInput"),
 			type: DwtInputField.STRING,
 			errorIconStyle: DwtInputField.ERROR_ICON_NONE,
-			validationStyle: DwtInputField.CONTINUAL_VALIDATION
+			validationStyle: DwtInputField.CONTINUAL_VALIDATION,
+            className: "DwtInputField ReminderInput"
 		};
 		this._reminderSelectInput = new DwtInputField(params);
 		var reminderInputEl = this._reminderSelectInput.getInputElement();
