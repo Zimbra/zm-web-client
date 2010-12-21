@@ -497,11 +497,11 @@ function(columnItem, bSortAsc) {
 		case ZmItem.F_SUBJECT:		sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC; break;
 		case ZmItem.F_STATUS:		sortBy = bSortAsc ? ZmSearch.STATUS_ASC : ZmSearch.STATUS_DESC; break;
 		case ZmItem.F_PCOMPLETE:	sortBy = bSortAsc ? ZmSearch.PCOMPLETE_ASC : ZmSearch.PCOMPLETE_DESC; break;
-		case ZmItem.F_DATE:			sortBy = bSortAsc ? ZmSearch.DUE_DATE_ASC : ZmSearch.DUE_DATE_DESC;	break;
-        case ZmItem.F_SORTED_BY:    sortBy = bSortAsc ? ZmSearch.DUE_DATE_ASC : ZmSearch.DUE_DATE_DESC;	break;
+		case ZmItem.F_DATE:			sortBy = bSortAsc ? ZmSearch.DUE_DATE_DESC : ZmSearch.DUE_DATE_ASC;	break; //bug:
+        case ZmItem.F_SORTED_BY:    sortBy = bSortAsc ? ZmSearch.DUE_DATE_DESC : ZmSearch.DUE_DATE_ASC;	break;
 	}
 
-	if (sortBy) {
+    if (sortBy) {
 		this._sortByString = sortBy;
 		appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
 	}
@@ -615,8 +615,7 @@ function(ev) {
 
 	var items = ev.getDetail("items") || ev.items;
     items = AjxUtil.toArray(items);
-
-	if (ev.event == ZmEvent.E_CREATE) {
+    if (ev.event == ZmEvent.E_CREATE) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 
@@ -664,7 +663,7 @@ function(ev) {
 		    }
 		}
 	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
-		for (var i = 0; i < items.length; i++) {
+        for (var i = 0; i < items.length; i++) {
 			this.removeItem(items[i], true);
 		}
 		this._controller._app._checkReplenishListView = this;
