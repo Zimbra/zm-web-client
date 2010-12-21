@@ -77,6 +77,7 @@
             <td class='ZhCalDayHSB' height="100%" width="1px">&nbsp;</td>
         </c:otherwise>
     </c:choose>
+    <c:set var="preDay" value="" />
     <c:forEach var="day" items="${layout.days}">
         <td nowrap class='ZhCalDaySEP ZhCalDayHeader${(day.startTime eq today.timeInMillis and empty day.folderId) ? 'Today':''}' colspan="${day.maxColumns}" width="${day.width}%">
             <c:choose>
@@ -90,7 +91,13 @@
                         <a href="${fn:escapeXml(dayUrl)}">
                     </c:if>
                     <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
-                    <fmt:formatDate value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
+                    <fmt:formatDate var="currDay" value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
+                    <%-- Bug:49466 - fix for day light saving --%>
+                    <c:if test="${currDay eq preDay}">
+                        <fmt:formatDate var="currDay" value="${zm:addDay(zm:getCalendar(day.startTime, timezone),1).time}" pattern="${titleFormat}"/>
+                    </c:if>
+                    ${currDay}
+                    <c:set var="preDay" value="${currDay}" />
                     <c:if test="${not print}">
                         </a>
                     </c:if>
