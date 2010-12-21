@@ -62,7 +62,7 @@
             </tr>
             <$ } $>
             <tr>
-              <td style='<$= AjxEnv.isChrome ? "padding-top:10px;" : "" $>' class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.startLabel : (ZmMsg.startDate+":")) $></nobr></td>
+              <td style='<$= AjxEnv.isWebKitBased ? "padding-top:14px;" : "" $>' class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.startLabel : (ZmMsg.startDate+":")) $></nobr></td>
               <td rowspan="2" colspan="3" align="right">
                <table border=0 width="100%">
                 <tr>
@@ -111,7 +111,7 @@
                </table>
              </td>   
             </tr>
-            <tr><td style='<$= AjxEnv.isChrome ? "padding-top:2px;" : "" $>' class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.endLabel : ZmMsg.dateDueLabel ) $></nobr></td>
+            <tr><td style='<$= AjxEnv.isWebKitBased ? "padding-top:6px;" : "" $>' class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.endLabel : ZmMsg.dateDueLabel ) $></nobr></td>
 
                 <td><div id='${id}_reminderConfigure'></div></td>
             </tr>
