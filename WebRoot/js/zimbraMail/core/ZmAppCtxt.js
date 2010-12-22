@@ -288,13 +288,18 @@ function() {
 };
 
 /**
- * Gets the overview controller.
+ * Gets the overview controller. Creates a new one if not already set, unless dontCreate is true. 
+ *
+ * @param {boolean} dontCreate (optional) - don't create overviewController if not created already. (see ZmApp for usage with dontCreate == true)
  * 
  * @return	{ZmOverviewController}	the overview controller
  */
 ZmAppCtxt.prototype.getOverviewController =
-function() {
+function(dontCreate) {
 	if (!this._overviewController) {
+		if (dontCreate) {
+			return null;
+		}
 		this._overviewController = new ZmOverviewController(this._shell);
 	}
 	return this._overviewController;
