@@ -12,8 +12,15 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-body, #skin_container_splash_screen	{
-	@ChromeBg@
+
+body, #skin_outer{ background: @lighten(AppC,40)@ !important;}
+ 
+#skin_container_splash_screen	{
+											background-color: @AppC@;
+											background-image: -moz-linear-gradient(top, @lighten(AppC,60)@, @lighten(AppC,30)@); /* FF3.6 */
+ 											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @lighten(AppC,60)@),color-stop(1, @lighten(AppC,30)@)); /* Saf4+, Chrome */
+    										filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AppC,60)@', EndColorStr='@lighten(AppC,30)@'); /* IE6,IE7 */
+    										-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AppC,60)@', EndColorStr='@lighten(AppC,30)@')"; /* IE8 */
 }
 
 #skin_container_links a {
@@ -29,6 +36,28 @@ body, #skin_container_splash_screen	{
 	background: #314a33 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
 	text-align:center;
 }
+
+#skin_spacing_top_row					{	height:36px; 
+											background-color: @AppC@;
+											background-image: -moz-linear-gradient(top, @lighten(AppC,60)@, @lighten(AppC,30)@); /* FF3.6 */
+ 											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @lighten(AppC,60)@),color-stop(1, @lighten(AppC,30)@)); /* Saf4+, Chrome */
+    										filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AppC,60)@', EndColorStr='@lighten(AppC,30)@'); /* IE6,IE7 */
+    										-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AppC,60)@', EndColorStr='@lighten(AppC,30)@')"; /* IE8 */
+}
+
+#skin_spacing_app_row{
+	background-color: @lighten(AppC,30)@;
+}
+
+#skin_spacing_filler				{	
+	height:12px; 
+	background-color: @HeaderColor@;
+	background-image: -moz-linear-gradient(top, @AppC@, @lighten(AppC,40)@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,@AppC@),color-stop(1, @lighten(AppC,40)@));                /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@lighten(AppC,40)@');                          /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@lighten(AppC,40)@')";                     /* IE8 */
+ }
+
 
 #skin_container_tree {
 	background-color: #fff;
@@ -108,9 +137,4 @@ body, #skin_container_splash_screen	{
 	border-bottom-color: #fff;
 }
 
-#skin_spacing_filler				{	
-	height:12px; 
-	border-top: solid 1px #455C42;
-	background: transparent;
-	
- }
+
