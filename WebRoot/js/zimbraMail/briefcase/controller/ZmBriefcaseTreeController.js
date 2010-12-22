@@ -227,36 +227,12 @@ function(overviewId) {
 	return [];  
 };
 
-ZmBriefcaseTreeController.prototype._trashChangeListener =
-function(treeView, ev){
-
-    if(ev.type == ZmOrganizer.BRIEFCASE && ev.event == ZmEvent.E_MOVE) {
-
-        var organizers = ev.getDetail("organizers");
-        if (!organizers && ev.source) {
-            organizers = [ev.source];
-        }
-
-        if(organizers)
-            treeView.setSelected(organizers[0], false);
-        
-    }
-};
-
 ZmBriefcaseTreeController.prototype.show =
 function(params) {
 	params.include = {};
 	params.include[ZmFolder.ID_TRASH] = true;
     params.showUnread = false;
-    var treeView = ZmFolderTreeController.prototype.show.call(this, params);
-
-	// contacts app has its own Trash folder so listen for change events
-	var trash = this.getDataTree().getById(ZmFolder.ID_TRASH);
-	if (trash) {
-		trash.addChangeListener(new AjxListener(this, this._trashChangeListener, treeView));
-	}
-
-	return treeView;
+    return ZmFolderTreeController.prototype.show.call(this, params);
 };
 
 ZmBriefcaseTreeController.prototype._handleSearchResponse =
