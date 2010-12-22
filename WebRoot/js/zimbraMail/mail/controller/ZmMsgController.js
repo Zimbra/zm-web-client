@@ -67,7 +67,7 @@ function(msg, mode, callback, markRead) {
 	this._currentView = this._getViewType();
 	this._list = msg.list;
 	if (!msg._loaded) {
-		var respCallback = new AjxCallback(this, this._handleResponseShow, callback);
+		var respCallback = new AjxCallback(this, this._handleResponseShow, [callback]);
 		if (msg._loadPending) {
 			// override any local callback if we're being launched by double-pane view,
 			// so that multiple GetMsgRequest's aren't made
@@ -84,7 +84,7 @@ function(msg, mode, callback, markRead) {
 ZmMsgController.prototype._handleResponseShow = 
 function(callback, result) {
 	this._showMsg();
-	if (callback) {
+	if (callback instanceof AjxCallback) {
 		callback.run();
 	}
 };
