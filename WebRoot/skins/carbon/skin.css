@@ -565,17 +565,17 @@ SELECT						{	@FieldBorder@	}
 
 /* Row Displays */
 .Row {
-    border-color:#CCCCCC;
+    border-color:#ccc;
 }
 .Row, .RowDouble, .Row-focused {
-    border-width: 0 0 1px;
+    border-width:0 0 1px;
 }
 .RowOdd, .RowEven {
     background-color:transparent;
     border-top-color:transparent;
 }
 .ZmConvExpanded, .BriefcaseItemExpanded {
-    background-color:#EDEDED;
+    background-color:#ededed;
 }
 .RowDouble-matched {
     background-color:#fffec4;
