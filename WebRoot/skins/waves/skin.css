@@ -12,11 +12,8 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-body	{	
-	/*background-color: #FAF5F3;
-	background: #FAF5F3 url("@SkinImgDir@/login_page_bg.png") no-repeat; 
-	background-position: bottom left;*/
-	@ChromeBg@	
+body, #skin_outer	{	
+	 background: @lighten(ToolbarColor,40)@ !important;	
 }
 #skin_container_splash_screen			{	@ChromeBg@	}
 
@@ -28,6 +25,29 @@ background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
 /*background-color: @ChromeBg@;*/
 }
 
+#skin_spacing_top_row					{	height:36px; 
+											background-color: @AppC@;
+											background-image: -moz-linear-gradient(top, @AppC@, @AltC@); /* FF3.6 */
+ 											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @AltC@)); /* Saf4+, Chrome */
+    										filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@AltC@'); /* IE6,IE7 */
+    										-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@AltC@')"; /* IE8 */
+}
+
+#skin_spacing_app_row{
+	background-color: @AltC@;
+}
+
+
+#skin_spacing_filler				{	
+	height:12px; 
+	background-color: @lighten(ToolbarColor,40)@;
+	background-image: -moz-linear-gradient(top, @ToolbarColor@, @lighten(ToolbarColor,40)@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @lighten(AltC,90)@),color-stop(1, @AppC@));                /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AltC,90)@', EndColorStr='@AppC@');                          /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AltC,90)@', EndColorStr='@AppC@')";                     /* IE8 */
+ }
+
+
 /* Cell for the 'body' (notice/form/about/license) 
 #ZLoginBodyContainer {
 	@WindowInnerContainer-light@
@@ -36,6 +56,8 @@ background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
 	padding-bottom:20px;
 	color: white;
 }*/
+
+
 
 
 #ZLoginAppName {
@@ -103,9 +125,4 @@ background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
 	background-color: #E8E8E8;
 }
 
-#skin_spacing_filler				{	
-	height:12px; 
-	border-top: solid 1px #AAAAAA;
-	background: transparent;
 
- }
