@@ -827,6 +827,8 @@ function(text, match, ev) {
 				addrInput.add(text, match);
 			}
 			el = addrInput._input;
+			if (AjxEnv.isIE) // Input field loses focus along the way. Restore it when the stack is finished
+				AjxTimedAction.scheduleAction(new AjxTimedAction(addrInput, addrInput.focus), 0);
 		}
 	}
 	else if (el) {
