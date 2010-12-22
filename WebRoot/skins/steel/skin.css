@@ -1,6 +1,27 @@
+/** set the height for the top row -- must be set to a fixed number! **/
+
+#skin_spacing_top_row					{	height:36px; 
+											@SkinOuter@
+}
+
+#skin_spacing_app_row{
+	 @SkinOuter@
+}
+
+
 #skin_spacing_filler				{	
 	height:12px; 
-	border-top: solid 1px #E3E3E3;
-	background: transparent;
-
+	background-color: @HeaderColor@;
+	background-image: -moz-linear-gradient(top, @AltC@, @AppC@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @AppC@));                /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@AppC@');                          /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@AppC@')";                     /* IE8 */
  }
+ 
+ #skin_container_splash_screen	{
+	@SkinOuter@
+}
+ 
+ 
+body, #skin_outer { background: @AppC@ !important; }
+
