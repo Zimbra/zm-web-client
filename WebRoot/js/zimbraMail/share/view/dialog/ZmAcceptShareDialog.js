@@ -82,14 +82,16 @@ function(share, fromAddr) {
 	this._reply.setReplyNote("");
 
 	var orgType = ZmOrganizer.TYPE[share.link.view];
-	if (orgType == ZmOrganizer.FOLDER) {
-		this._color.getMenu().getItem(0).setEnabled(true);
-		this._color.setSelectedValue(0);
-	} else {
-		this._color.getMenu().getItem(0).setEnabled(false);
-		this._color.setSelectedValue(1);
+	var icon = null;
+	var orgClass = ZmOrganizer.ORG_CLASS[orgType];
+	if (orgClass) {
+		var prototype = window[orgClass].prototype;
+		// HACK: to get default icon regardless of organizer type
+		icon = prototype.getIcon.apply(prototype);
 	}
-
+	this._color.setImage(icon);
+	this._color.setValue(ZmOrganizer.DEFAULT_COLOR[orgType]);
+	
 	DwtDialog.prototype.popup.call(this);
 };
 
@@ -148,11 +150,7 @@ function() {
 	this._nameEl.style.width = "20em";
 	var nameElement = this._nameEl;
 
-	this._color = new DwtSelect({parent:view});
-	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
-		var color = ZmOrganizer.COLOR_CHOICES[i];
-		this._color.addOption(color.label, false, color.value);
-	}
+	this._color = new ZmColorButton({parent:this});
 
 	var props = this._propSheet = new DwtPropertySheet(view);
 	var propsEl = props.getHtmlElement();

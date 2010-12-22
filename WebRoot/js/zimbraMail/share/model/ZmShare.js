@@ -682,6 +682,12 @@ function(name, color, replyType, notes, callback, owner) {
 		color: color,
 		view: this.link.view
 	};
+
+	if (String(color).match(/^#/)) {
+		params.rgb = color;
+		delete params.color;
+	}
+
 	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) && ZmOrganizer.VIEW_HASH[ZmOrganizer.CALENDAR][this.link.view]) {
 		params.f = ZmOrganizer.FLAG_CHECKED;
 	}
