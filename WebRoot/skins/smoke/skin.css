@@ -28,6 +28,30 @@ body	{  @ChromeBg@ }
 	text-decoration: none;
 }
 
+
+/** set the height for the top row -- must be set to a fixed number! **/
+#skin_spacing_top_row					{	height:36px; 
+											background-color: @AltC@;
+											background-image: -moz-linear-gradient(top, @AppC@, @AltC@); /* FF3.6 */
+ 											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC)@),color-stop(1, @AltC@)); /* Saf4+, Chrome */
+    										filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@AltC@'); /* IE6,IE7 */
+    										-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@AltC@')"; /* IE8 */
+}
+
+#skin_spacing_app_row{
+	background-color: @AltC@;
+}
+
+
+#skin_spacing_filler				{	
+	height:12px; 
+	background-color: @HeaderColor@;
+	background-image: -moz-linear-gradient(top, @darken(AltC,15)@, @HeaderColor@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @darken(AltC,25)@),color-stop(1, @HeaderColor@));                /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@darken(AltC,25)@', EndColorStr='@HeaderColor@');                          /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@darken(AltC,25)@', EndColorStr='@HeaderColor@')";                     /* IE8 */
+ }
+
 #skin_container_tree_top {
 	background: #85878a url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
 	text-align:center;
@@ -127,9 +151,3 @@ body	{  @ChromeBg@ }
 	border-bottom-color: #fff;
 }
 
-#skin_spacing_filler				{	
-	height:12px; 
-	border-top: solid 1px #939598;
-	background: transparent;
-
- }
