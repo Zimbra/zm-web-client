@@ -16,6 +16,32 @@ body	{  @ChromeBg@ }
 
 #skin_outer { background: #fffae7 !important; }
 
+
+/** set the height for the top row -- must be set to a fixed number! **/
+
+#skin_spacing_top_row					{	height:36px; 
+											background-color: @AltC@;
+											background-image: -moz-linear-gradient(top, @AppC@, @SelC@); /* FF3.6 */
+ 											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @SelC@)); /* Saf4+, Chrome */
+    										filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@SelC@'); /* IE6,IE7 */
+    										-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@SelC@')"; /* IE8 */
+}
+
+#skin_spacing_app_row{
+	background-color: @SelC@;
+}
+
+
+#skin_spacing_filler{	
+	height:12px; 
+	background-color: #bda74f;
+	background-image: -moz-linear-gradient(top, #bda74f, @AppC@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #bda74f),color-stop(1, @AppC@));                /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#bda74f', EndColorStr='@AppC@');                          /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#bda74f', EndColorStr='@AppC@')";                     /* IE8 */
+ }
+
+
 #skin_container_splash_screen			{		}
 
 #skin_container_links a{
@@ -36,6 +62,7 @@ body	{  @ChromeBg@ }
 #skin_spacing_tree {
 	background-color: transparent;
 }
+
 
 #skin_td_tree	{	
 	border: 0;
