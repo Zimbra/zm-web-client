@@ -387,7 +387,7 @@ function(view) {
 
 ZmBriefcaseController.prototype._getDefaultFocusItem =
 function() {
-	return this._toolbar[this._currentView];
+	return this._listView[this._currentView];
 };
 
 // Returns a list of subfolders of the given folder, as ZmBriefcaseItem objects

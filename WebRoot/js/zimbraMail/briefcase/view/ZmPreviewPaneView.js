@@ -38,12 +38,14 @@ ZmPreviewPaneView = function(parent, controller, dropTgt) {
 
     this._detailListView = new ZmDetailListView(this, this._controller, this._controller._dropTgt );
     this._detailListView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
-
+    this._listSelectionShortcutDelayAction = new AjxTimedAction(this, this._listSelectionTimedAction);
+    this._delayedSelectionItem = null;
 	this.setReadingPane();
 };
 
 ZmPreviewPaneView.prototype = new DwtComposite;
 ZmPreviewPaneView.prototype.constructor = ZmPreviewPaneView;
+ZmPreviewPaneView.LIST_SELECTION_SHORTCUT_DELAY = 300;
 
 ZmPreviewPaneView.prototype.toString =
 function() {
@@ -352,13 +354,36 @@ function(ev){
     
 };
 
+ZmPreviewPaneView.prototype._listSelectionTimedAction =
+function() {
+	if(!this._delayedSelectionItem) {
+		return;
+	}
+	if (this._listSelectionShortcutDelayActionId) {
+		AjxTimedAction.cancelAction(this._listSelectionShortcutDelayActionId);
+	}
+	this._previewView.set(this._delayedSelectionItem);
+};
+
 ZmPreviewPaneView.prototype._listSelectionListener =
 function(ev){
     var item = ev.item, handled = false;
+    if(!item) {
+    	return;
+    }
     if(ev.field == ZmItem.F_EXPAND && this._detailListView._isExpandable(item)){
         this._detailListView.expandItem(item);   
-    }else if(this._controller.isReadingPaneOn() && item ){
-        this._previewView.set(item);
+    } else if(this._controller.isReadingPaneOn() && item){
+    	if (ev.kbNavEvent) {
+    		if (this._listSelectionShortcutDelayActionId) {
+    			AjxTimedAction.cancelAction(this._listSelectionShortcutDelayActionId); 
+    		}
+    		this._delayedSelectionItem = item;
+    		this._listSelectionShortcutDelayActionId = AjxTimedAction.scheduleAction(this._listSelectionShortcutDelayAction,
+    				ZmPreviewPaneView.LIST_SELECTION_SHORTCUT_DELAY)
+    	} else {
+    		this._previewView.set(item);
+    	}
     }
 };
 
