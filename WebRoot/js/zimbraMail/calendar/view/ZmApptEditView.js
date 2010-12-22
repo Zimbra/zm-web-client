@@ -178,8 +178,7 @@ ZmApptEditView.prototype.enableInputs =
 function(bEnableInputs) {
 	ZmCalItemEditView.prototype.enableInputs.call(this, bEnableInputs);
 	if (this.GROUP_CALENDAR_ENABLED) {
-		//only organizer can edit the attendees
-		var bEnableAttendees = (this._isOrganizer != null) ? this._isOrganizer : bEnableInputs;
+		var bEnableAttendees = bEnableInputs;
 		if (appCtxt.isOffline && bEnableAttendees &&
 			this._calItem && this._calItem.getFolder().getAccount().isMain)
 		{
