@@ -187,15 +187,18 @@ function(what, targetFolderType) {
         var items = AjxUtil.toArray(what);
 		var item = items[0];
         if (item.type == ZmItem.BRIEFCASE_ITEM){
-            // Can't move folder items to themselves
+
             if (!invalid) {
                 for (var i = 0; i < items.length; i++) {
-                    if (items[i] instanceof ZmBriefcaseFolderItem && items[i].id == this.id) {
+                    if (items[i] instanceof ZmBriefcaseFolderItem && (items[i].id == this.id ||             // Can't move folder items to themselves
+                    		this.isChildOf(items[i].folder))) { // Can't move parent folder to child folder
                         invalid = true;
                         break;
                     }
                 }
             }
+            
+            
             // can't move items to folder they're already in; we're okay if
             // we have one item from another folder
             if (!invalid && item.folderId) {
