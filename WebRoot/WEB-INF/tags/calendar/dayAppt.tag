@@ -161,13 +161,13 @@
     </table>
 </c:when>
 <c:otherwise>
-    <table class='ZhCalDayAppt' width="100%" style="height:100%; opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="2">
+    <table onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt' width="100%" style="height:100%; opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="2">
         <tr>
             <td class="${fbashowAsColor}" width="2px"></td>
             <td class='${color}${needsAction ? 'Dark' : 'Light'}' valign=top>
                 <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
                 &nbsp;
-                <c:if test="${param.action ne 'print'}"><a href="${fn:escapeXml(apptUrl)}"></c:if>
+                <c:if test="${param.action ne 'print'}"><a id="${apptId}" href="${fn:escapeXml(apptUrl)}"></c:if>
                     ${fn:escapeXml(subject)}
                 <c:if test="${param.action ne 'print'}"></a></c:if>
             </td>
