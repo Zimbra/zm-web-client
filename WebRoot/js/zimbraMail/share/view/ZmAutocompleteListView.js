@@ -1298,7 +1298,9 @@ function(email, textId, rowId, ev, loc) {
 		}
 		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact, loc]));
 	}
-	this._element.focus();
+	if (this._element) {
+		this._element.focus();
+	}
 };
 
 ZmAutocompleteListView.prototype._handleResponseExpandDL =
