@@ -201,7 +201,7 @@ function(params) {
 
 ZmMailMsg._handleResponseFetchMsg =
 function(callback, result) {
-	if (callback) {
+	if (callback instanceof AjxCallback) {
 		callback.run(result);
 	}
 };
