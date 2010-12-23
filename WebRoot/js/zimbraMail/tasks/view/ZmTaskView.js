@@ -68,6 +68,7 @@ function(calItem) {
 	var attachStr = ZmCalItemView._getAttachString(calItem);
     var alarm = calItem.alarm;
     var remindDate = calItem.remindDate ? AjxDateFormat.getDateInstance().format(calItem.remindDate) : null;
+    var remindTime = calItem.remindDate ? AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT).format(calItem.remindDate) : "";
 
 	if (this._objectManager) {
 		this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
@@ -93,6 +94,7 @@ function(calItem) {
 		recurStr: recurStr,
 		attachStr: attachStr,
         remindDate: remindDate,
+        remindTime: remindTime,
         alarm: alarm,
 		folder: appCtxt.getTree(ZmOrganizer.TASKS).getById(calItem.folderId),
 		folderLabel: ZmMsg.folder
