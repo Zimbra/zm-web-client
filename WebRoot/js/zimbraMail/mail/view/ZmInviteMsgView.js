@@ -93,11 +93,11 @@ function(msg) {
 				this._inviteToolbar.dispose();
 				this._inviteToolbar = null;
 			}
-			if (!this._inviteToolbar) {
-				this._inviteToolbar = this._createInviteToolbar();
-			}
-			this._inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement(), 0);
-			this._inviteToolbar.setVisible(Dwt.DISPLAY_BLOCK);
+
+			var inviteToolbar = this.getInviteToolbar();
+
+			inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement(), 0);
+			inviteToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
 			// show on-behalf-of info?
 			this._respondOnBehalfLabel.innerHTML = msg.cif
@@ -469,10 +469,10 @@ function() {
  */
 ZmInviteMsgView.prototype.getInviteToolbar =
 function() {
-	if (this._inviteToolbar) {
-		return this._inviteToolbar;
+	if (!this._inviteToolbar) {
+		this._inviteToolbar = this._createInviteToolbar();
 	}
-	return this._createInviteToolbar();
+	return this._inviteToolbar;
 }
 
 
