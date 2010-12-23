@@ -903,6 +903,7 @@ function(composeMode, switchPreface) {
 			this._switchPreface();
 		}
 
+		var self = this;
 		var convertor = {
 			"hr": function(el) {
 				return ZmComposeView._convertHtmlPreface(self, el);
