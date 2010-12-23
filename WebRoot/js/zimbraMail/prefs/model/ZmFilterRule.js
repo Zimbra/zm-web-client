@@ -178,7 +178,12 @@ ZmFilterRule.OP_NOT_AFTER		= "NOT_AFTER";
 ZmFilterRule.OP_IN				= "IN";
 ZmFilterRule.OP_NOT_IN			= "NOT_IN";
 ZmFilterRule.OP_IS_REQUESTED	= "IS_REQUESTED"; // invites
+ZmFilterRule.OP_NOT_REQUESTED   = "NOT_REQUESTED"; //invites
+ZmFilterRule.OP_NOT_REPLIED     = "NOT_REPLIED"; //invites
 ZmFilterRule.OP_IS_REPLIED		= "IS_REPLIED"; // invites
+ZmFilterRule.OP_IS_READRECEIPT  = ZmFilterRule.OP_CONTAINS;
+ZmFilterRule.OP_NOT_READRECEIPT  = ZmFilterRule.OP_NOT_CONTAINS;
+
 
 // comparator types
 ZmFilterRule.COMP_STRING							= "stringComparison";
@@ -205,6 +210,7 @@ ZmFilterRule.OP_VALUE[ZmFilterRule.OP_AFTER]		= "after";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IN]			= "in";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REQUESTED]	= "anyrequest";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REPLIED]	= "anyreply";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_READRECEIPT] = "contains";
 
 ZmFilterRule.OP_VALUE_MAP = {};
 for (var i in ZmFilterRule.OP_VALUE) {
@@ -232,7 +238,12 @@ ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_AFTER]	= ZmMsg.notAfter;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IN]			= ZmMsg.isIn;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_IN]		= ZmMsg.notIn;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_REQUESTED]	= ZmMsg.isRequested;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_REQUESTED] = ZmMsg.notRequested;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_REPLIED]	= ZmMsg.isReplied;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_REPLIED]  = ZmMsg.notReplied;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_READRECEIPT] = ZmMsg.exists;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_READRECEIPT] = ZmMsg.notExist;
+
 
 // commonly used lists
 ZmFilterRule.MATCHING_OPS = [
@@ -315,6 +326,9 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_ATT] = {
 		opsOptions:	[ZmFilterRule.OP_EXISTS, ZmFilterRule.OP_NOT_EXISTS]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_MIME_HEADER] = {
+        ops:        ZmFilterRule.TYPE_SELECT,
+        opsOptions: [ZmFilterRule.OP_IS_READRECEIPT, ZmFilterRule.OP_NOT_READRECEIPT]
+
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRBOOK] = {
 		subjectMod:	ZmFilterRule.TYPE_SELECT,
@@ -327,7 +341,7 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRBOOK] = {
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_INVITE] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[ZmFilterRule.OP_IS_REQUESTED, ZmFilterRule.OP_IS_REPLIED]
+		opsOptions:	[ZmFilterRule.OP_IS_REQUESTED, ZmFilterRule.OP_NOT_REQUESTED, ZmFilterRule.OP_IS_REPLIED, ZmFilterRule.OP_NOT_REPLIED]
 };
 
 // listed in order we want to display them in the SELECT
@@ -633,6 +647,8 @@ function(testType, comparator, value, subjectMod) {
 		case ZmFilterRule.OP_NOT_BEFORE:	negativeOp = ZmFilterRule.OP_BEFORE; break;
 		case ZmFilterRule.OP_NOT_AFTER:		negativeOp = ZmFilterRule.OP_AFTER; break;
 		case ZmFilterRule.OP_NOT_IN:		negativeOp = ZmFilterRule.OP_IN; break;
+        case ZmFilterRule.OP_NOT_REPLIED:   negativeOp = ZmFilterRule.OP_IS_REPLIED; break;
+        case ZmFilterRule.OP_NOT_REQUESTED: negativeOp = ZmFilterRule.OP_IS_REQUESTED; break;
 	}
 	if (negativeOp) {
 		conditionData.negative = "1";
@@ -654,7 +670,7 @@ function(testType, comparator, value, subjectMod) {
 	}
 
 	if (testType == ZmFilterRule.TEST_INVITE) {
-		conditionData.method = [{_content:ZmFilterRule.OP_VALUE[comparator]}];
+	    conditionData.method = [{_content:ZmFilterRule.OP_VALUE[negativeOp || comparator]}];
 	}
 
 	return conditionData;

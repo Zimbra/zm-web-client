@@ -645,9 +645,15 @@ function(isMainSelect, testType, field, rowData) {
 		else if (testType == ZmFilterRule.TEST_INVITE) {
 			if (field == "ops") {
 				var isRequested = ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REQUESTED];
-				dataValue = (isRequested == rowData.method[0]._content)
+                if (rowData.negative!=1) {
+				    dataValue = (isRequested == rowData.method[0]._content)
 					? ZmFilterRule.OP_IS_REQUESTED
 					: ZmFilterRule.OP_IS_REPLIED;
+                }else {
+                    dataValue = (isRequested == rowData.method[0]._content)
+					? ZmFilterRule.OP_NOT_REQUESTED
+					: ZmFilterRule.OP_NOT_REPLIED;
+                }
 			}
 		}
 		else if (testType == ZmFilterRule.TEST_ADDRBOOK) {
@@ -661,6 +667,13 @@ function(isMainSelect, testType, field, rowData) {
 				dataValue = rowData.value;
 			}
 		}
+        else if (testType == ZmFilterRule.TEST_MIME_HEADER) {
+            if (field == "ops") {
+                dataValue = (rowData.negative == "1")
+                    ? ZmFilterRule.OP_NOT_READRECEIPT
+                    : ZmFilterRule.OP_IS_READRECEIPT;
+            }
+        }
 		// actions
 		else if (testType == ZmFilterRule.A_NAME_FOLDER) {
 			dataValue = rowData.folderPath;
@@ -1116,7 +1129,6 @@ function(rowId) {
 	else if (testType == ZmFilterRule.TEST_MIME_HEADER) {
 		subjectMod = "Content-Type";
 		value = ZmMimeTable.MSG_READ_RECEIPT;
-		comparator = ZmFilterRule.OP_CONTAINS;
 	}
 
 	return { testType:testType, comparator:comparator, value:value, subjectMod:subjectMod };
