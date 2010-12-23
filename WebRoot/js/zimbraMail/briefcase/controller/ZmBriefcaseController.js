@@ -282,30 +282,30 @@ function(parent, num) {
     if(parent &&  parent instanceof ZmActionMenu){
 
         //Open - webDocs
-        parent.getOp(ZmOperation.OPEN_FILE).setVisible(isItemSelected && !isMultiFolder && isWebDoc);
+        parent.getOp(ZmOperation.OPEN_FILE) && parent.getOp(ZmOperation.OPEN_FILE).setVisible(isItemSelected && !isMultiFolder && isWebDoc);
 
         //Case 1: Multiple Admins
         //Case 2: Stale Lock ( Handle exception )
 
         //Checkin
         var checkinEnabled = !isReadOnly && num == 1 && isLockOwner && !isWebDoc && !isRevision;
-        parent.getOp(ZmOperation.CHECKIN).setVisible(checkinEnabled);
+        parent.getOp(ZmOperation.CHECKIN) && parent.getOp(ZmOperation.CHECKIN).setVisible(checkinEnabled);
 
         //Checkout
         var checkoutEnabled = !isReadOnly && !isLocked && !isRevision;
-        parent.getOp(ZmOperation.CHECKOUT).setVisible(!isRevision && !isLocked);
+        parent.getOp(ZmOperation.CHECKOUT) && parent.getOp(ZmOperation.CHECKOUT).setVisible(!isRevision && !isLocked);
         parent.enable(ZmOperation.CHECKOUT, checkoutEnabled && num == 1);
 
         //Discard Checkout
         var discardCheckoutEnabled = (num == 1) && isLocked && !isRevision;
-        parent.getOp(ZmOperation.DISCARD_CHECKOUT).setVisible(discardCheckoutEnabled);
+        parent.getOp(ZmOperation.DISCARD_CHECKOUT) && parent.getOp(ZmOperation.DISCARD_CHECKOUT).setVisible(discardCheckoutEnabled);
         parent.enable(ZmOperation.DISCARD_CHECKOUT, discardCheckoutEnabled && (isAdmin || isLockOwner || !isShared));
 
         //Versioning
         var versionEnabled = (!isReadOnly && num == 1 && isRevision);
-        parent.getOp(ZmOperation.RESTORE_VERSION).setVisible(isRevision);
+        parent.getOp(ZmOperation.RESTORE_VERSION) && parent.getOp(ZmOperation.RESTORE_VERSION).setVisible(isRevision);
         parent.enable(ZmOperation.RESTORE_VERSION, versionEnabled && !isHightestVersion);
-        parent.getOp(ZmOperation.DELETE_VERSION).setVisible(isRevision);
+        parent.getOp(ZmOperation.DELETE_VERSION) && parent.getOp(ZmOperation.DELETE_VERSION).setVisible(isRevision);
         parent.enable(ZmOperation.DELETE_VERSION, versionEnabled && !isHightestVersion);
 
 
