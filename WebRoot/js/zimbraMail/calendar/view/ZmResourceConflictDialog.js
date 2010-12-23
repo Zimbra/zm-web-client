@@ -156,11 +156,27 @@ function(usr) {
 
 ZmResourceConflictDialog.prototype.getDurationText =
 function(inst) {
-	var start = new Date(inst.s);
+    var hourMinOffset = 0,
+        start = new Date(),
+        userTimeZone = appCtxt.get(ZmSetting.DEFAULT_TIMEZONE),
+        currentTimeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+    if(this._appt.isAllDayEvent() && userTimeZone != currentTimeZone) {
+        var offset1 = AjxTimezone.getOffset(AjxTimezone.getClientId(currentTimeZone), start);
+        var offset2 = AjxTimezone.getOffset(AjxTimezone.getClientId(userTimeZone), start);
+        hourMinOffset = (offset2 - offset1) * 60 * 1000;    //offset is in minutes convert to miliseconds
+    }
+    start = new Date(inst.s + hourMinOffset);
 	var endTime = start.getTime() + inst.dur;
 	var end = new Date(endTime);
 
-	var pattern =  ZmMsg.apptTimeInstance;
+    var pattern =  ZmMsg.apptTimeInstance;
+    if(this._appt.isAllDayEvent()) {
+        pattern =  ZmMsg.apptTimeAllDay;
+        if(end.getDate() != start.getDate()) {
+            pattern =  ZmMsg.apptTimeAllDayMulti;
+        }
+    }
+
 	return AjxMessageFormat.format(pattern, [start, end, ""]);
 };
 
