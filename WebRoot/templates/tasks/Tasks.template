@@ -18,7 +18,7 @@
 		<$ if (data.priority) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.priority, val:data.priority}) $><$ } $>
 		<$ if (data.status) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.status, val:data.status}) $><$ } $>
 		<$ if (data.pComplete) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.completed, val:data.pComplete+'%'}) $><$ } $>
-        <$ if (data.alarm) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.reminder, val:data.remindDate}) $><$ } $>
+        <$ if (data.alarm) { $><$= AjxTemplate.expand("tasks.Tasks#ReminderEntry", {lbl:ZmMsg.reminder, val1:data.remindDate, val2:data.remindTime }) $><$ } $>
         
 		<!-- exception warning -->
 		<$ if (data.isException) { $>
@@ -42,5 +42,12 @@
 	<tr>
 		<td class='LabelColName' style='padding-left:2px;'><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.lbl)) $> </td>
 		<td class='LabelColValue'><$= data.val $></td>
+	</tr>
+</template>
+
+<template id="tasks.Tasks#ReminderEntry">
+	<tr>
+		<td class='LabelColName' style='padding-left:2px;'><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.lbl)) $> </td>
+		<td class='LabelColValue'><$= data.val1 $> @ <$= data.val2 $></td>
 	</tr>
 </template>
