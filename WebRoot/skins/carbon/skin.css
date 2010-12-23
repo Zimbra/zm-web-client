@@ -569,6 +569,7 @@ SELECT						{	@FieldBorder@	}
 }
 .Row, .RowDouble, .Row-focused {
     border-width:0 0 1px;
+    border-bottom-color:@AltC@;
 }
 .RowOdd, .RowEven {
     background-color:transparent;
@@ -578,5 +579,5 @@ SELECT						{	@FieldBorder@	}
     background-color:#ededed;
 }
 .RowDouble-matched {
-    background-color:#fffec4;
+    background-color:@SearchResultColor@;
 }

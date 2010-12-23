@@ -394,6 +394,9 @@ INPUT[type="text"].people_search_input {
 	border: none !important;
 }
 
+.ZmSearchResult {   
+    background-color:@SearchResultColor@;
+}
 
 /*
  * Conversation view stuff

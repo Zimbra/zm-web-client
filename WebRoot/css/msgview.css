@@ -86,3 +86,8 @@ a:active {
 	@FontFamily-fixed@
 	@WordWrapPRE@
 }
+
+/* Search Highlighter Zimlet Styles */
+.ZmSearchResult {   
+    background-color:@SearchResultColor@;
+}
