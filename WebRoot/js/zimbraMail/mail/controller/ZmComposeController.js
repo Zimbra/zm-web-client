@@ -303,8 +303,6 @@ function() {
 ZmComposeController.prototype._preHideCallback =
 function(view, force) {
 
-	this._setSearchToolbarVisibilityPerSkin(true);
-
 	if (force && this._autoSaveTimer) {
 		this._autoSaveTimer.kill();
 
@@ -361,7 +359,10 @@ function() {
 		this._action == ZmOperation.REPLY_TENTATIVE))
 	{
 		window.close();
+		return;
 	}
+
+	this._setSearchToolbarVisibilityPerSkin(true);
 };
 
 /**
