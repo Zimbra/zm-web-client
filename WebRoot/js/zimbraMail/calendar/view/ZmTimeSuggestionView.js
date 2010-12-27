@@ -257,6 +257,11 @@ function() {
     this.handleLocationOverflow();
 };
 
+ZmTimeSuggestionView.prototype.setSuggestionsPref =
+function(showOnlyGreenSuggestions) {
+    this._showOnlyGreenSuggestions = showOnlyGreenSuggestions;
+};
+
 ZmTimeSuggestionView.prototype.setNoAttendeesHtml =
 function() {
     this.removeAll();
@@ -270,16 +275,24 @@ function() {
 	var	div = document.createElement("div");
 	var subs = {
 		message: this._getNoResultsMessage(),
-		type: this.type
+		type: this.type,
+        showOnlyGreenSuggestions: this._showOnlyGreenSuggestions,
+        id: this.getHTMLElId()
 	};
 	div.innerHTML = AjxTemplate.expand("calendar.Appointment#TimeSuggestion-NoSuggestions", subs);
 	this._addRow(div);
+
+    //add event handlers for no results action link
+    this._searchAllId = this.getHTMLElId() + "_showall"
+    this._searchAllLink = document.getElementById(this._searchAllId);
+    this._searchAllLink._viewId = AjxCore.assignId(this);
+    Dwt.setHandler(this._searchAllLink, DwtEvent.ONCLICK, ZmTimeSuggestionView._onClick);
 };
 
 ZmTimeSuggestionView.prototype._getNoResultsMessage =
 function() {
     var durationStr = AjxDateUtil.computeDuration(this._duration);
-    return AjxMessageFormat.format(ZmMsg.noSuggestionsFound, [this._startDate, durationStr]);
+    return AjxMessageFormat.format(this._showOnlyGreenSuggestions ? ZmMsg.noGreenSuggestionsFound : ZmMsg.noSuggestionsFound, [this._startDate, durationStr]);
 };
 
 ZmTimeSuggestionView.prototype.setLoadingHtml =
@@ -369,3 +382,21 @@ function(list, noResultsOk, doAdd) {
 };
 
 
+ZmTimeSuggestionView._onClick =
+function(ev) {
+	ev = ev || window.event;
+	var el = DwtUiEvent.getTarget(ev);
+	var edv = AjxCore.objectWithId(el._viewId);
+	if (edv) {
+		edv._handleOnClick(el);
+	}
+};
+
+ZmTimeSuggestionView.prototype._handleOnClick =
+function(el) {
+    if(!el) return;
+	// figure out which input field was clicked
+	if (el.id == this._searchAllId) {
+         this.parent.suggestAction(true, true);
+	}
+};
