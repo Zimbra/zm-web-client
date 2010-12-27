@@ -41,11 +41,13 @@
             </c:when>
             <c:otherwise>
                 <c:set var="otherFlags" value="${fn:replace(fn:replace(folder.flags,'#',''), 'b', '')}"/>
+                <c:if test="${not empty param.folderColor}"><c:set var="folderRgb" value="${zm:getFolderRgbColor(param.folderColor, folder.defaultView)}"/></c:if>
                 <zm:updateFolder
                         parentid="${empty param.folderParentId ? folder.parentId : param.folderParentId}"
                         id="${param.folderId}"
                         name="${param.folderName}"
                         color="${empty param.folderColor ? folder.color : param.folderColor}"
+                        rgb="${empty param.folderColor ? folder.rgbColor : folderRgb}"
                         flags="${otherFlags}${param.folderExcludeFlag}${param.folderCheckedFlag}"/>
                 <c:if test="${not empty param.folderUrl and param.folderUrl ne folder.remoteURL}">
                     <zm:modifyFolderUrl id="${param.folderId}" url="${param.folderUrl}"/>

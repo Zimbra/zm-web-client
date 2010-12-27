@@ -107,14 +107,14 @@
                                     <c:set var="index" value="${0}"/>
                                     <zm:forEachFolder var="folder">
                                         <c:if test="${folder.isAppointmentView}">
-                                            <c:set var="rowColor" value="${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}"/>
+                                            <c:set var="rowColor" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
                                             <c:set var="selected" value="${selectedFolder.id eq folder.id and not newCalendar}"/>
                                             <c:if test="${selected}"><c:set var="selectedRow" value="${index}"/></c:if>                                            
                                             <tr>
-                                                <td class='${rowColor}' width="1%">
+                                                <td style='background-color:${rowColor}' width="1%">
                                                     &nbsp;
                                                 </td>
-                                                <td class='${rowColor}'>
+                                                <td style='background-color:${rowColor}'>
                                                     <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
                                                     <c:url var="selectUrl" value="">
                                                         <c:param name="id" value="${folder.id}"/>

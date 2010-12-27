@@ -83,7 +83,7 @@
                                     <c:set var="index" value="${0}"/>
                                     <zm:forEachFolder var="folder">
                                         <c:if test="${folder.isTaskView}">
-                                            <c:set var="rowColor" value="${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}"/>
+                                            <c:set var="rowColor" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
                                             <c:set var="selected" value="${selectedFolder.id eq folder.id and not newTaskList}"/>
                                             <c:if test="${selected}"><c:set var="selectedRow" value="${index}"/></c:if>
                                             <tr>
