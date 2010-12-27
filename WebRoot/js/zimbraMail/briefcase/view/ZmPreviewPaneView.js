@@ -429,13 +429,6 @@ function(rev){
     return ( rev.id +'_'+(rev.version||rev.ver));    
 };
 
-ZmPreviewPaneView.prototype._deleteVerListener =
-function(items){
-    items = items || this._detailListView.getSelection();
-    if(!items || items.length == 0) return;
-    var verItem = items[0];
-    this.deleteVersion(verItem);
-};
 
 ZmPreviewPaneView.prototype._restoreVerListener =
 function(){
@@ -455,12 +448,24 @@ function(verItem){
     }
 };
 
+ZmPreviewPaneView.prototype.deleteVersions =
+function(items){
+    items = items || this._detailListView.getSelection();
+    if(!items || items.length == 0) return;
+
+    var delVerBatchCmd = new ZmBatchCommand(true, null, true);
+    for(var i=0; i<items.length; i++){
+        delVerBatchCmd.add(new AjxCallback(this, this.deleteVersion, [items[i], delVerBatchCmd]));
+    }
+    delVerBatchCmd.run();
+};
+
 ZmPreviewPaneView.prototype.deleteVersion =
-function(verItem){
+function(verItem, batchCmd){
     if(verItem.isRevision){
         var item =  verItem.parent;
         if(item && item.version != verItem.revision ){
-            item.deleteVersion(verItem.version, new AjxCallback(this, this.refreshItem, item));
+            item.deleteVersion(verItem.version, new AjxCallback(this, this.refreshItem, item), batchCmd);
         }
     }
 };

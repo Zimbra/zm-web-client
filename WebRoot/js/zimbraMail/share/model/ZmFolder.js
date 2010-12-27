@@ -309,7 +309,7 @@ function() {
  * @param	{String}	actionText		optional custom action text to display as summary
  */
 ZmFolder.prototype.move =
-function(newParent, noUndo, actionText) {
+function(newParent, noUndo, actionText, batchCmd) {
 	var origName = this.name;
 	var name = this.name;
 	while (newParent.hasChild(name)) {
@@ -318,7 +318,7 @@ function(newParent, noUndo, actionText) {
 	if (origName != name) {
 		this.rename(name);
 	}
-	ZmOrganizer.prototype.move.call(this, newParent, noUndo, actionText);
+	ZmOrganizer.prototype.move.call(this, newParent, noUndo, actionText, batchCmd);
 };
 
 /**
