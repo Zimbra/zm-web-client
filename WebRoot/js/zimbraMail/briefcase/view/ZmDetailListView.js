@@ -360,6 +360,17 @@ function(item, clear){
      }
 };
 
+ZmDetailListView.prototype.collapseAll =
+function(){
+    var list = this.getItemList(), item;
+    for(var id in this._expanded){
+        if(this._expanded[id]){
+            item = list.getById(id);
+            this.collapse(item);
+        }
+    }
+};
+
 ZmDetailListView.prototype.refreshItem =
 function(item){
      if(this._expanded[item.id]){
@@ -520,8 +531,13 @@ function(ev){
         var fields = ev.getDetail("fields");        
         if( fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_COLOR] )
             refresh = true;
+    }else if(ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE){
+        refresh = true;
+        if(currentFolderId != organizer.id){
+            this.collapseAll();
+        }
     }
-    
+
     if(refresh) {
         appCtxt.getApp(ZmApp.BRIEFCASE).search({folderId: currentFolderId});
     }

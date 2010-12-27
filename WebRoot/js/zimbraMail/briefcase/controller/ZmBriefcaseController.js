@@ -58,7 +58,6 @@ ZmBriefcaseController = function(container, app) {
     this._listeners[ZmOperation.CHECKIN] = new AjxListener(this, this._handleCheckin);
     this._listeners[ZmOperation.CHECKOUT] = new AjxListener(this, this._checkoutListener);
     this._listeners[ZmOperation.DISCARD_CHECKOUT] = new AjxListener(this, this._handleDiscardCheckout);
-    this._listeners[ZmOperation.DELETE_VERSION] = new AjxListener(this, this._delVersionListener);
     this._listeners[ZmOperation.RESTORE_VERSION] = new AjxListener(this, this._restoreVerListener);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -223,6 +222,7 @@ function(parent, num) {
 
 	var items = this._listView[this._currentView].getSelection();
 	var isFolderSelected=false, noOfFolders = 0, isRevisionSelected=false, isBriefcaseItemSelected=false, isMixedSelected=false;
+    var hasHighestRevisionSelected = false;
 	if (items) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
@@ -231,6 +231,9 @@ function(parent, num) {
 				noOfFolders++;
 			}else if(item.isRevision){
                 isRevisionSelected = true;
+                if(item.parent.version == item.version){
+                    hasHighestRevisionSelected = true;
+                }
             }else{
                 isBriefcaseItemSelected = true;
             }
@@ -251,7 +254,6 @@ function(parent, num) {
 
     var item = items[0];
     var isRevision = item && item.isRevision;
-    var isHightestVersion = item && item.isRevision && ( item.parent.version == item.version );
 	
 	parent.enable([ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isMailEnabled && isItemSelected && !isMultiFolder && !isFolderSelected));
 	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected && !isRevision));
@@ -266,8 +268,6 @@ function(parent, num) {
     var isLocked = firstItem && !firstItem.isFolder && firstItem.locked;
     var isLockOwner = isLocked && (item.lockUser == appCtxt.getActiveAccount().name);
 
-    //Delete Operation
-    parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected && !isRevision && (isLocked ? isLockOwner : true) && !isMixedSelected ));
 
     //Rename Operation
     parent.enable(ZmOperation.RENAME_FILE, ( num ==1 && !isFolderSelected && !isReadOnly && !isRevision && (isLocked ? isLockOwner : true) ));
@@ -278,6 +278,9 @@ function(parent, num) {
     // Edit
     parent.enable(ZmOperation.OPEN_FILE, (num == 1 && isWebDoc));
     parent.enable(ZmOperation.EDIT_FILE, !isReadOnly && (  !isLocked || isLockOwner ) && isWebDoc && !isRevision && num == 1);
+
+    //Delete Operation
+    parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected && !isMixedSelected && (isLocked ? isLockOwner : true) &&  (isRevision ? !hasHighestRevisionSelected : true )));
 
     if(parent &&  parent instanceof ZmActionMenu){
 
@@ -303,10 +306,9 @@ function(parent, num) {
 
         //Versioning
         var versionEnabled = (!isReadOnly && num == 1 && isRevision);
+        var isHightestVersion = item && item.isRevision && ( item.parent.version == item.version );
         parent.getOp(ZmOperation.RESTORE_VERSION) && parent.getOp(ZmOperation.RESTORE_VERSION).setVisible(isRevision);
         parent.enable(ZmOperation.RESTORE_VERSION, versionEnabled && !isHightestVersion);
-        parent.getOp(ZmOperation.DELETE_VERSION) && parent.getOp(ZmOperation.DELETE_VERSION).setVisible(isRevision);
-        parent.enable(ZmOperation.DELETE_VERSION, versionEnabled && !isHightestVersion);
 
 
     }
@@ -335,24 +337,39 @@ function(items) {
 	if (!items) {
 		items = this._listView[this._currentView].getSelection();
 	}
+    var item = (items instanceof Array) ? items[0] : items;
+    if(!item) return;
 
-	var dialog = appCtxt.getConfirmationDialog();
-	var message = (items instanceof Array && items.length > 1) ? ZmMsg.confirmDeleteItemList : null;
+	var message = ( items.length > 1 ) ?  ( item.isRevision ? ZmMsg.confirmPermanentDeleteItemList : ZmMsg.confirmDeleteItemList ) : null;
 	if (!message) {
-
-        this._confirmDeleteFormatter = !(this._folderId == String(ZmOrganizer.ID_TRASH)) ? new AjxMessageFormat(ZmMsg.confirmDeleteItem) : new AjxMessageFormat(ZmMsg.confirmPermanentDeleteItem);        
-
-		var item = (items instanceof Array) ? items[0] : items;
-		if (!item) { return; }
-		message = this._confirmDeleteFormatter.format(AjxStringUtil.htmlEncode(item.name));
+        var delMsgFormatter = new AjxMessageFormat( (this._folderId == String(ZmOrganizer.ID_TRASH) || item.isRevision ) ? ZmMsg.confirmPermanentDeleteItem : ZmMsg.confirmDeleteItem );
+		message = delMsgFormatter.format(AjxStringUtil.htmlEncode(item.name));
 	}
-	var callback = new AjxCallback(this, this._doDelete2, [items]);
-	dialog.popup(message, callback);
+
+    var dialog = appCtxt.getConfirmationDialog();
+	dialog.popup(message, new AjxCallback(this, this._doDelete2, [items]));
 };
 
 ZmBriefcaseController.prototype._doDelete2 =
 function(items) {
-	ZmListController.prototype._doDelete.call(this, items);
+
+    var item = (items instanceof Array) ? items[0] : items;
+
+    if(item.isRevision){
+        var view = this._parentView[this._currentView];
+        view.deleteVersions(items);
+        //this._delVersionListener(items);
+    }else if(item.isFolder){
+        var delBatchCmd = new ZmBatchCommand(true), folder;
+        var trashFolder = appCtxt.getById(ZmFolder.ID_TRASH);
+        for(var i=0; i< items.length; i++){
+            folder = items[i].folder;
+            delBatchCmd.add(new AjxCallback(folder, folder.move, [trashFolder, false, null, delBatchCmd]));
+        }
+        delBatchCmd.run();
+    }else{
+        ZmListController.prototype._doDelete.call(this, items);
+    }
 };
 
 // view management
@@ -572,28 +589,6 @@ function(ev) {
     
 };
 
-ZmBriefcaseController.prototype._delVersionListener =
-function(ev, items, force){
-
-    var view = this._parentView[this._currentView];
-   items = items || view.getSelection();
-
-    if(!force){
-        var dlg = this._delVerDlg = appCtxt.getOkCancelMsgDialog();
-        dlg.reset();
-        dlg.registerCallback(DwtDialog.OK_BUTTON, new AjxCallback(this, this._delVersionListener, [ev, items, true]));
-        dlg.setMessage(ZmMsg.delVersionShieldMsg, DwtMessageDialog.WARNING_STYLE);
-        dlg.associateEnterWithButton(DwtDialog.CANCEL_BUTTON);
-        dlg.popup(null, DwtDialog.CANCEL_BUTTON);
-        return;
-    }
-
-    if(this._delVerDlg)
-        this._delVerDlg.popdown();
-
-    view._deleteVerListener(items);
-};
-
 ZmBriefcaseController.prototype._restoreVerListener =
 function(){
     var view = this._parentView[this._currentView];
@@ -717,7 +712,7 @@ function() {
 		list.push(ZmOperation.CREATE_SLIDE_SHOW);
 	}
     list.push(ZmOperation.SEP);
-    list.push(ZmOperation.CHECKOUT, ZmOperation.CHECKIN, ZmOperation.DISCARD_CHECKOUT, ZmOperation.RESTORE_VERSION, ZmOperation.DELETE_VERSION);
+    list.push(ZmOperation.CHECKOUT, ZmOperation.CHECKIN, ZmOperation.DISCARD_CHECKOUT, ZmOperation.RESTORE_VERSION/*, ZmOperation.DELETE_VERSION*/);
 
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
@@ -1498,7 +1493,4 @@ function(){
     }
     return this._nameConflictDialog;
 };
-
-
-
 

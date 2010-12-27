@@ -1037,7 +1037,7 @@ function(attrs) {
  * @param {String}	actionText		optional custom action text to display as summary
  */
 ZmOrganizer.prototype.move =
-function(newParent, noUndo, actionText) {
+function(newParent, noUndo, actionText, batchCmd) {
 	var newId = (newParent.nId > 0)
 		? newParent.id
 		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
@@ -1049,7 +1049,7 @@ function(newParent, noUndo, actionText) {
 		return;
 	}
 	var params = {};
-
+    params.batchCmd = batchCmd;
 	if (newId == ZmOrganizer.ID_TRASH) {
 		params.action = "trash";
 		params.noUndo = noUndo;
@@ -1072,7 +1072,7 @@ function(newParent, noUndo, actionText) {
  * 
  */
 ZmOrganizer.prototype._delete =
-function() {
+function(batchCmd) {
 	DBG.println(AjxDebug.DBG1, "deleting: " + this.name + ", ID: " + this.id);
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK || this.type == ZmOrganizer.BRIEFCASE) &&
 					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH));
@@ -1080,7 +1080,7 @@ function() {
 	if (this.isSystem() && !isEmptyOp) return;
 
 	var action = isEmptyOp ? "empty" : "delete";
-	this._organizerAction({action: action});
+	this._organizerAction({action: action, batchCmd: batchCmd});
 };
 
 /**

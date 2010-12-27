@@ -267,7 +267,7 @@ function(restoreVerion, callback){
 };
 
 ZmBriefcaseBaseItem.prototype.deleteVersion =
-function(version, callback){
+function(version, callback, batchCmd){
 
     var json = {
 		PurgeRevisionRequest: {
@@ -280,12 +280,16 @@ function(version, callback){
 		}
 	};
 
-	var params = {
-		jsonObj:		json,
-		asyncMode:		true,
-		callback:		callback
-	};
-	return appCtxt.getAppController().sendRequest(params);
+    if(batchCmd){
+        batchCmd.addRequestParams(json, callback);
+    }else{
+        var params = {
+            jsonObj:		json,
+            asyncMode:		true,
+            callback:		callback
+        };
+        return appCtxt.getAppController().sendRequest(params);
+    }
 
 };
 
