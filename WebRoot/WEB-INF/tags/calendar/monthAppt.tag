@@ -29,7 +29,8 @@
 <app:calendarUrl appt="${appt}" var="apptUrl"/>
 
 <fmt:setTimeZone value="${timezone}"/>
-<c:if test="${empty color}"><c:set var="color" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/></c:if>
+<c:set var="folder" value="${zm:getFolder(pageContext, appt.folderId)}"/> 
+<c:if test="${empty color}"><c:set var="color" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/></c:if>
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
 <c:set var="fbashowAsColor" value="${'ZmScheduler-U'}"/>
 <c:choose>
@@ -43,8 +44,8 @@
     <c:when test="${appt.allDay}">
         <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
         <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
-        <div style="padding:0px;" <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright} padding:0px;"</c:if>
-             class='ZhCalMonthAllDayAppt${needsAction ? 'New ':' '} ${color}${needsAction ? 'Dark' : 'Light'}'>
+        <div style="padding:0px; background-color:${color}" <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright} padding:0px;"</c:if>
+             class='ZhCalMonthAllDayAppt${needsAction ? 'New ':' '}'>
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
             <tr>
                 <td class="${fbashowAsColor}" width="4px"></td>
@@ -56,7 +57,7 @@
         </div>
     </c:when>
     <c:otherwise>
-        <div class='ZhCalMonthAppt ${color}${needsAction ? 'Dark' : 'Light'}' style="padding:0px;">
+        <div style="padding:0px; background-color:${color}" class='ZhCalMonthAppt'>
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
             <tr>
                 <td class="${fbashowAsColor}" width="4px"></td>

@@ -24,8 +24,9 @@
 
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
+<c:set var="color" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
 <tr>
-    <td nowrap colspan="3" class='${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''} Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'
+    <td nowrap colspan="3" style="background-color:${color}" class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'
         style='padding-left: ${padFudge + folder.depth*8}px'>
         <c:url var="url" value="/h/search">
             <c:param name="sfi" value="${folder.id}"/>

@@ -52,8 +52,11 @@
 <fmt:message var="noSubject" key="noSubject"/>
 
 <c:set var="isPart" value="${!empty message.partName}"/>
+<c:set var="folder" value="${zm:getFolder(pageContext, message.folderId)}"/>
+<c:set var="color" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
+
 <table cellpadding="0" cellspacing="0" width="100%" class='Compose'>
-<tr class='${zm:getFolder(pageContext, message.folderId).styleColor}Bg'>
+<tr style="background-color:${color}">
     <td class='ZhBottomSep'>
         <table width="100%" cellspacing="0" cellpadding="0">
             <tr class='apptHeaderRow'>
@@ -71,10 +74,10 @@
                     <table border="0" cellpadding="2" cellspacing="2">
                         <tr>
                             <td class="companyName" width="100%">
-                                <c:set var="folderImage" value="${zm:getFolder(pageContext, message.folderId).image}"/>
+                                <c:set var="folderImage" value="${folder.image}"/>
                                 <app:img altkey='ALT_CONTACT_FOLDER' src="${folderImage}"/>
                             </td>
-                            <td class="companyFolder">${fn:escapeXml(zm:getFolderName(pageContext, message.folderId))}</td>
+                            <td class="companyFolder">${fn:escapeXml(folder.name)}</td>
                         </tr>
                     </table>
                 </td>

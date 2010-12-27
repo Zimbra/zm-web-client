@@ -23,11 +23,12 @@
 <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
 <zm:getMailbox var="mailbox"/>
 <c:set var="folder" value="${zm:getFolder(pageContext, contact.folderId)}"/>
+<c:set var="color" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr>
     <td class='ZhBottomSep'>
         <table width="100%" cellspacing="0" cellpadding="0">
-            <tr class='${not empty folder ? folder.styleColor : 'Gray'}Bg'>
+            <tr style="background-color:${color}">
         <td width="20"><center><app:img src="${contact.isGroup ? 'contacts/ImgGroup.png' : 'contacts/ImgContact.png'}" altkey="${contact.imageAltKey}"/></center></td>
         <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : (contact.isGalContact ? contact.fullName : contact.displayFileAs))} <c:if test="${contact.isGalContact}"> (${fn:escapeXml(contact.displayFileAs)}) </c:if>
         </td>

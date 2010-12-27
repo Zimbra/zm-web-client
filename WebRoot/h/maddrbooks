@@ -87,7 +87,7 @@
 										<%-- Kind of hacky here using newAddrBookEnabled to tell whether or not Emailed Contacts are shown... --%>
 										<c:set var="omit" value="${folder.isAutoContacts and not mailbox.features.newAddrBookEnabled}"/>
 										<c:if test="${folder.isContactView and not folder.isInTrash and not omit}">
-                                            <c:set var="rowColor" value="${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}"/>
+                                            <c:set var="rowColor" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
                                             <c:set var="selected" value="${selectedFolder.id eq folder.id and not newAddressBook}"/>
                                             <c:if test="${selected}"><c:set var="selectedRow" value="${index}"/></c:if>
                                             <tr>
@@ -111,7 +111,7 @@
                                         <zm:forEachFolder var="folder">
                                             <c:if test="${folder.isTrash or (folder.isContactView and folder.isInTrash)}">
                                                 <c:set var="selected" value="${selectedFolder.id eq folder.id and not newAddressBook}"/>
-                                                <c:set var="rowColor" value="${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}"/>
+                                                <c:set var="rowColor" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
                                             <c:if test="${selected}"><c:set var="selectedRow" value="${index}"/></c:if>                                                                                            
                                                 <tr>
                                                     <td <c:if test="${not folder.isTrash}">class='${rowColor}'</c:if> width="1%">

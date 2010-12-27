@@ -25,7 +25,8 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <fmt:setTimeZone value="${timezone}"/>
-<c:set var="color" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/>
+<c:set var="folder" value="${zm:getFolder(pageContext,appt.folderId)}"/>
+<c:set var="color" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
 <fmt:message var="noSubject" key="noSubject"/>
 <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
@@ -52,7 +53,7 @@
     <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
 
     <table onclick='zSelectRow(event,"${apptId}")' <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright} padding:0px; opacity:${fbaOpacity};"</c:if>
-           class='ZhCalDayAllDayAppt${needsAction ? 'New ' : ' '} ${color}${needsAction ? 'Dark' : 'Light'}'
+           style="background-color:${color}" class='ZhCalDayAllDayAppt${needsAction ? 'New ' : ' '}'
            width="100%" style='height:100%; padding:0px; opacity:${fbaOpacity};' border="0" cellspacing="0" cellpadding="1">
         <tr>
             <td class="${fbashowAsColor}" width="2px"></td>
@@ -95,7 +96,7 @@
     <table onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt${needsAction ? 'New' : ''}' width="100%" style="height:100%; opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="2">
         <tr>
             <td rowspan="2" class="${fbashowAsColor}" width="1px"></td>
-            <td colspan="${needImages ? 1 : 2}" nowrap class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}' valign=top>
+            <td colspan="${needImages ? 1 : 2}" nowrap style="background-color:${color}" valign=top>
                 <c:choose>
                     <c:when test="${appt.startTime lt start}">
                         <fmt:formatDate value="${appt.startDate}" type="both" timeStyle="short" dateStyle="short"/>
@@ -106,7 +107,7 @@
                 </c:choose>
             </td>
             <c:if test="${needImages}">
-                <td width="1%" align="right" class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}'>
+                <td width="1%" align="right" style="background-color:${color}">
                     <table border="0" cellspacing="0" cellpadding="0">
                         <tr>
                             <c:if test="${appt.otherAttendees}">
@@ -134,7 +135,7 @@
             </c:if>
         </tr>
         <tr>
-            <td colspan="2" height="100%" class='${color}${needsAction ? '' : 'Bg'}' valign="top">
+            <td colspan="2" height="100%" valign="top">
                 <c:if test="${param.action ne 'print'}"><a id="${apptId}" href="${fn:escapeXml(apptUrl)}"></c:if>
                     ${fn:escapeXml(subject)}
                     <c:if test="${param.action ne 'print'}"></a></c:if>
@@ -146,7 +147,7 @@
         </tr>
         <c:if test="${appt.duration gt zm:MSECS_PER_HOUR()}">
             <tr>
-                <td colspan="2" align="left" valign="bottom" height="1%" class='ZhCalDayApptEnd ${color}${needsAction ? '' : 'Bg'}'>
+                <td colspan="2" align="left" valign="bottom" height="1%" class='ZhCalDayApptEnd'>
                     <c:choose>
                         <c:when test="${appt.endTime gt end}">
                             <fmt:formatDate value="${appt.endDate}" type="both" timeStyle="short" dateStyle="short"/>
@@ -164,7 +165,7 @@
     <table onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt' width="100%" style="height:100%; opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="2">
         <tr>
             <td class="${fbashowAsColor}" width="2px"></td>
-            <td class='${color}${needsAction ? 'Dark' : 'Light'}' valign=top>
+            <td style="background-color:${color}" valign=top>
                 <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
                 &nbsp;
                 <c:if test="${param.action ne 'print'}"><a id="${apptId}" href="${fn:escapeXml(apptUrl)}"></c:if>
@@ -172,7 +173,7 @@
                 <c:if test="${param.action ne 'print'}"></a></c:if>
             </td>
             <c:if test="${needImages}">
-                <td valign='top' width="1%" align="right" class='${color}${needsAction ? 'Dark' : 'Light'}'>
+                <td valign='top' width="1%" align="right" style="background-color:${color}">
                     <table border="0" cellspacing="0" cellpadding="0">
                         <tr>
                             <c:if test="${appt.otherAttendees}">

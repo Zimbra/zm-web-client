@@ -25,6 +25,7 @@
     <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
     <c:set var="shortWeekDays" value="${dateSymbols.shortWeekdays}"/>
     <c:set var="months" value="${dateSymbols.months}"/>
+    <c:set var="folder" value="${zm:getFolder(pageContext, empty compose ? 10 : compose.apptFolderId)}"/>    
 
     <c:choose>
         <c:when test="${empty compose.inviteId}">
@@ -72,7 +73,7 @@
         <tr>
             <td class='ZhAppContent'>
                 <table cellpadding="2" cellspacing="0" width=100%>
-                <tr  class='${zm:getFolder(pageContext, empty compose ? 10 : compose.apptFolderId).styleColor}Bg'>
+                <tr style='background-color:${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}'>
                             <td colspan=1 class='ZhBottomSep'>
                                 <table width=100% cellpadding=0 cellspacing=0>
                                     <tr class='apptHeaderRow'>
