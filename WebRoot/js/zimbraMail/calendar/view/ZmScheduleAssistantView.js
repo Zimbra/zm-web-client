@@ -166,12 +166,13 @@ function() {
 };
 
 ZmScheduleAssistantView.prototype.suggestAction =
-function(focusOnSuggestion) {
+function(focusOnSuggestion, showAllSuggestions) {
 
     var params = {
         items: [],        
         itemIndex: {},
-        focus: focusOnSuggestion
+        focus: focusOnSuggestion,
+        showOnlyGreenSuggestions: this.isShowOnlyGreenSuggestions() && !showAllSuggestions
     };
 
     this._timeSuggestions.setLoadingHtml();
@@ -645,7 +646,7 @@ function(startTime, endTime, params) {
 
     //mini calendar suggestions should avoid collecting all computed information in array for optimiziation
     if(!params.miniCalSuggestions && fbInfo.availableUsers > 0) {
-        var showOnlyGreenSuggestions = this.isShowOnlyGreenSuggestions();
+        var showOnlyGreenSuggestions = params.showOnlyGreenSuggestions;
         if(!showOnlyGreenSuggestions || (fbInfo.availableUsers == this._totalUsers)) {
             this._fbStat.add(fbInfo);
             this._fbStatMap[key] = fbInfo;            
@@ -739,6 +740,7 @@ function(params) {
     params.totalUsers = this._totalUsers;
     params.totalLocations = this._totalLocations;
 
+    this._timeSuggestions.setSuggestionsPref(params.showOnlyGreenSuggestions);
     this._timeSuggestions.set(params);
     if(params.focus) this._timeSuggestions.focus();
 };
