@@ -398,9 +398,11 @@ if (application.getInitParameter("offlineMode") != null)  {
 			<div class="offline"><fmt:message key="switchToOfflineClientEx"/></div>
 		</div>
 
+		<div class="Footer">
 		<div id="ZLoginNotice"><fmt:message key="clientLoginNotice"/></div>
-        <br/><br/>
+        
         <div class="copyright"><fmt:message key="splashScreenCopyright"/></div>
+        </div>
 
 	</div>                                 
 <script>

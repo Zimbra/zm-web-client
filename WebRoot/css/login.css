@@ -209,14 +209,18 @@ FORM {
 	padding:3px;
 	text-align:left;
 }
+.LoginScreen .Footer{
+	position: absolute;
+	bottom: 5px;
+	z-index: 10;
+	width: 100%;
+	text-align: center;
+}
+
 .LoginScreen #ZLoginNotice {
-	bottom:30px;
+    margin-bottom: 10px;
 	color:#FFF;
 	font-size:11px;
-	position:absolute;
-	text-align:center;
-	width:100%;
-	z-index:10;
 }
 .LoginScreen #ZLoginNotice a {
 	color:#FFF;
@@ -225,12 +229,7 @@ FORM {
 	float:right;
 }
 .LoginScreen .copyright {
-    bottom:5px;
-	font-size:11px;
-	position:absolute;
-	text-align:center;
-	width:100%;
-	z-index:10;
+ 	font-size:11px;
 	color: @darken(AppC,50)@;
 	text-align:center;
 }
