@@ -232,7 +232,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		htmlArr[idx++] = "</span>";
 	} else if (field == ZmItem.F_FOLDER) {
 		var briefcase = appCtxt.getById(item.folderId);
-		htmlArr[idx++] = briefcase ? briefcase.getPath() : item.folderId;
+		htmlArr[idx++] = briefcase ? briefcase.getName() : item.folderId;
 	} else if (field == ZmItem.F_SORTED_BY){
         htmlArr[idx++] = this._getAbridgedContent(item, colIdx);
     } 
