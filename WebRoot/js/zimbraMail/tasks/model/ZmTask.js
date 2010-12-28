@@ -315,9 +315,13 @@ function(node, instNode) {
 
     var dur = this._getAttr(node, comp, "dur");
 	if (dur) {
-		var startTime = this.endDate.getTime() - (parseInt(dur));
-		this.startDate = new Date(startTime);
-        this.uniqStartTime = this.startDate.getTime();
+        if(this.endDate) {
+            var startTime = this.endDate.getTime() - (parseInt(dur));
+            this.startDate = new Date(startTime);
+            this.uniqStartTime = this.startDate.getTime();
+        } else {
+            this.startDate = null;     //bug:51912 temporarily added untill server sends startDate or come up with other solution
+        }
 	} else if(!node.dur && this.endDate) {
         this.startDate = this.endDate;
         this.uniqStartTime = this.startDate.getTime();
@@ -388,6 +392,19 @@ function(message) {
     ZmCalItem.prototype._setExtrasFromMessage.apply(this, arguments);
 
 	this.location = message.invite.getLocation();
+};
+
+/**
+ * @private overriden to set endDate to be null only if endDate is empty
+ * @param message
+ * @param viewMode
+ */
+ZmTask.prototype._setTimeFromMessage =
+function(message, viewMode) {
+    ZmCalItem.prototype._setTimeFromMessage.apply(this, arguments);
+    if(message.invite.components[0].e == null){
+        this.endDate = null;
+    }
 };
 
 /**
