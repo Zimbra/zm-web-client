@@ -536,6 +536,9 @@ function(calItem, mode) {
         	this._attInputField[ZmCalBaseItem.FORWARD] = this._forwardToField;
         }
     	this._attendees[ZmCalBaseItem.PERSON] = AjxVector.fromArray(attendees);
+        for(var a=0;a<attendees.length;a++){
+            this._attendeesHashMap[attendees[a].getEmail()+"-"+ZmCalBaseItem.PERSON]=attendees[a];
+        }
     	this._attInputField[ZmCalBaseItem.PERSON] = this._attendeesInputField;
     	this._fwdApptOrigAttendees = [];
         showScheduleView = true;
