@@ -247,6 +247,24 @@
             myEdit[i].on('afterNodeChange', function() {
                     this.toolbar.enableAllButtons();
             });
+            /* Fix signature image src url*/
+            myEdit[i].on('editorContentLoaded', function() {
+                var _edit = arguments[1];
+                var idoc = _edit._getDoc();
+                if (idoc) {
+                    var images = idoc.getElementsByTagName("img");
+                    var path = ["/home/","${mailbox.accountInfo.name}", "/"].join("");
+                    var img;
+                    for (var i = 0; i < images.length; i++) {
+                        img = images[i];
+                        var dfsrc = img.getAttribute("dfsrc");
+                        if (dfsrc && dfsrc.indexOf("doc:") == 0) {
+                            img.src = [path, dfsrc.substring(4)].join('');
+                        }
+                    }
+                }
+            }, myEdit[i], true);
+
             myEdit[i]._defaultToolbar.titlebar = false;
             myEdit[i].render();
         } else if(sigType == 'text/plain') {
@@ -269,7 +287,7 @@
     myEditor.on('afterNodeChange', function() {
          this.toolbar.enableAllButtons();
     });
-            
+
     /*hide titlebar*/
     myEditor._defaultToolbar.titlebar = false;
     myEditor.render();
