@@ -196,3 +196,70 @@ function(startTime, endTime) {
 	}
 	return result;
 };
+
+
+/**
+ * Moves a list of items to the given folder.
+ * <p>
+ * Search results are treated as though they're in a temporary folder, so that they behave as
+ * they would if they were in any other folder such as Inbox. When items that are part of search
+ * results are moved, they will disappear from the view, even though they may still satisfy the
+ * search.
+ * </p>
+ *
+ * @param	{Hash}			params					a hash of parameters
+ * @param	{Array}			params.items			a list of items to move
+ * @param	{ZmFolder}		params.folder			the destination folder
+ * @param	{Hash}			params.attrs			the additional attrs for SOAP command
+ * @param	{AjxCallback}	params.callback			the callback to run after each sub-request
+ * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
+ * @param	{int}			params.count			the starting count for number of items processed
+ * @param	{boolean}		params.noUndo			true if the action is not undoable (e.g. performed as an undo)
+ * @param	{String}		params.actionText		optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast entirely
+ */
+ZmApptList.prototype.moveItems =
+function(params) {
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo", "actionText"]);
+
+	var params1 = AjxUtil.hashCopy(params);
+	params1.items = AjxUtil.toArray(params.items);
+	params1.attrs = params.attrs || {};
+	if (params1.folder.id == ZmFolder.ID_TRASH) {
+		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionTrash) : null;
+		params1.action = "trash";
+        //This code snippet differs from the ZmList.moveItems
+        var currentView = appCtxt.getAppViewMgr().getCurrentView();
+        if(currentView) {
+            var viewController = currentView.getController();
+            if(viewController) {
+                //Since it is a drag and drop, only one item can be dragged - so get the first element from array
+                return viewController._deleteAppointment(params1.items[0]);
+            }
+        }
+	} else {
+		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionMove) : null;
+		params1.actionArg = params.folder.getName(false, false, true);
+		params1.action = "move";
+		params1.attrs.l = params.folder.id;
+	}
+
+    if (appCtxt.multiAccounts) {
+		// Reset accountName for multi-account to be the respective account if we're
+		// moving a draft out of Trash.
+		// OR,
+		// check if we're moving to or from a shared folder, in which case, always send
+		// request on-behalf-of the account the item originally belongs to.
+        var folderId = params.items[0].getFolderId();
+        var fromFolder = appCtxt.getById(folderId);
+		if ((params.items[0].isDraft && params.folder.id == ZmFolder.ID_DRAFTS) ||
+			(params.folder.isRemote()) || (fromFolder.isRemote()))
+		{
+			params1.accountName = params.items[0].getAccount().name;
+		}
+	}
+
+    //Error Callback
+    params1.errorCallback = params.errorCallback;
+
+	this._itemAction(params1);
+};
