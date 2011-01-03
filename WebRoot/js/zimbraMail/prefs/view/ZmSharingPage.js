@@ -114,6 +114,7 @@ ZmSharingView = function(params) {
 	this._shareByDomId = {};
 
 	this._initialize();
+	ZmFolderTree.createAllDeferredFolders();
 };
 
 ZmSharingView.prototype = new DwtComposite;

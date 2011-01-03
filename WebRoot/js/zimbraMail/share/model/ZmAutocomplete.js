@@ -460,7 +460,7 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 		this.text = this.name = match.getFullName();
 		this.email = match.getEmail();
 		this.item = match;
-		this.type = ZmContact.getAttr(match, ZmResource.F_type) || ZmAutocomplete.AC_TYPE_GAL;
+		this.type = ZmContact.getAttr(match, ZmResource && ZmResource.F_type || "zimbraCalResType") || ZmAutocomplete.AC_TYPE_GAL;
         this.fullAddress = match.getAttendeeText();
 	} else {
 		this.isGroup = Boolean(match.isGroup);
