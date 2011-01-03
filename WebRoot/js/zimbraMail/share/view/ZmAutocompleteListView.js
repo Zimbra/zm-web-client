@@ -1299,8 +1299,10 @@ function(contact, loc, matches) {
 	mlv._set(matches, contact);
 
 	// default position is just to right of parent ac list
-	var loc = this.getLocation();
-	loc.x += this.getSize().x;
+	if (this.getVisible()) {
+		loc = this.getLocation();
+		loc.x += this.getSize().x;
+	}
 
 	mlv.show(true, loc);
 	if (!mlv._rowHeight) {

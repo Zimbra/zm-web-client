@@ -58,6 +58,8 @@ function() {
 	return "ZmAddressInputField";
 };
 
+ZmAddressInputField.INPUT_EXTRA = 30;
+
 // tie a bubble SPAN to a widget that can handle clicks
 ZmAddressInputField.BUBBLE_OBJ_ID = {};
 
@@ -66,7 +68,7 @@ function(aclv) {
 
 	this._aclv = aclv;
 	this._separator = (aclv._separator) || AjxEmailAddress.SEPARATOR;
-	aclv.addCallback(ZmAutocompleteListView.CB_KEYPRESS, new AjxCallback(this, this._keyPressCallback), this._inputId);
+	aclv.addCallback(ZmAutocompleteListView.CB_KEYUP, new AjxCallback(this, this._keyUpCallback), this._inputId);
 	aclv.addCallback(ZmAutocompleteListView.CB_ADDR_FOUND, new AjxCallback(this, this._addrFoundCallback), this._inputId);
 };
 
@@ -96,6 +98,8 @@ function(address, match, dontCallBubbleAddedCallback) {
 	this._input.value = "";
 	this._holder.className = "addrBubbleHolder";
 
+	this._resizeInput();
+
 	if (this._bubbleAddedCallback && !dontCallBubbleAddedCallback) {
 		this._bubbleAddedCallback.run();
 	}
@@ -123,7 +127,7 @@ function(address, match) {
 	this._addressHash[address] = true;
 	this._bubbleAddress[bubbleId] = address;
 
-	this._holder.appendChild(bubble);
+	this._holder.insertBefore(bubble, this._input);
 	Dwt.setHandler(bubble, DwtEvent.ONCLICK, ZmAddressInputField.onClick);
 	this.focus();
 };
@@ -254,6 +258,7 @@ function(text, add, dontCallBubbleAddedCallback) {
 	else {
 		this._input.value = "";
 	}
+	this._resizeInput();
 };
 
 /**
@@ -262,13 +267,16 @@ function(text, add, dontCallBubbleAddedCallback) {
 ZmAddressInputField.prototype.handleDelete =
 function() {
 
-	if (this._selectedBubbleId) {
-		ZmAddressInputField.removeBubble(this._selectedBubbleId);
+	var sel = this.getSelection();
+	if (sel.length) {
+		for (var i = 0, len = sel.length; i < len; i++) {
+			this.removeBubble(sel[i].id);
+		}
 	}
 	else {
-		var bubble = this._holder.lastChild;
+		var bubble = this._bubbles[this._bubbles.length - 1];
 		if (bubble) {
-			this.setSelected(bubble.id);
+			this.setSelected(bubble, true);
 		}
 	}
 };
@@ -276,7 +284,7 @@ function() {
 /**
  * Sets selection of the given bubble.
  *
- * @param {string}	bubble		bubble to select
+ * @param {Element}	bubble		bubble to select
  * @param {boolean} selected	if true, select the bubble, otherwise deselect it
  */
 ZmAddressInputField.prototype.setSelected =
@@ -345,8 +353,13 @@ function(ev) {
 	}
 };
 
+ZmAddressInputField.onCut =
+function(ev) {
+	this._resizeInput();
+};
+
 /**
- * Deselects selected bubble.
+ * Deselects selected bubbles.
  *
  * @param ev
  */
@@ -355,13 +368,18 @@ function(ev) {
 
 	var input = DwtUiEvent.getTarget(ev);
 	var addrInput = input && DwtControl.ALL_BY_ID[input._aifId];
-	if (addrInput && addrInput._selectedBubbleId) {
-		addrInput.setSelected(addrInput._selectedBubbleId);
+	if (addrInput) {
+		addrInput.handleBlur(ev);
 	}
-	var value = addrInput._input.value;
-	if (addrInput._aclv._dataAPI.isComplete && addrInput._aclv._dataAPI.isComplete(value)) {
+};
+
+ZmAddressInputField.prototype.handleBlur =
+function(ev) {
+
+	var value = this._input.value;
+	if (this._aclv._dataAPI.isComplete && this._aclv._dataAPI.isComplete(value)) {
 		DBG.println(AjxDebug.DBG3, "input field blurred, found an addr: " + value);
-		addrInput.add(value);
+		this.add(value);
 	}
 };
 
@@ -410,19 +428,18 @@ function(bubbleId, dontCallBubbleRemovedCallback) {
 	delete this._bubbleAddress[bubbleId];
 	this._bubble[bubbleId] = null;
 	delete this._bubble[bubbleId];
+	delete this._selected[bubbleId];
 	delete this._addressHash[addr];
-	if (bubbleId == this._selectedBubbleId) {
-		this._selectedBubbleId = null;
-	}
 
 	if (this._addresses.length == 0) {
 		this._holder.className = "addrBubbleHolder-empty";
 	}
 
+	this._resizeInput();
+	
 	if (this._bubbleRemovedCallback && !dontCallBubbleRemovedCallback) {
 		this._bubbleRemovedCallback.run();
 	}
-
 };
 
 /**
@@ -507,6 +524,7 @@ function(params) {
 	this._input = document.getElementById(this._inputId);
 
 	Dwt.setHandler(this._holder, DwtEvent.ONCLICK, ZmAddressInputField.onHolderClick);
+	Dwt.setHandler(this._input, DwtEvent.ONCUT, ZmAddressInputField.onCut);
 	Dwt.setHandler(this._input, DwtEvent.ONPASTE, ZmAddressInputField.onPaste);
 	Dwt.setHandler(this._input, DwtEvent.ONBLUR, ZmAddressInputField.onBlur);
 };
@@ -519,6 +537,7 @@ function() {
 	this._addressHash	= {};	// used addresses, so we can check for dupes
 	this._bubbleAddress	= {};	// addresses by bubble ID
 	this._selected		= {};	// which bubbles are selected
+	this._bubbleWidth	= {};	// width of bubble by ID
 	this._input.value	= "";
 };
 
@@ -541,12 +560,10 @@ function() {
 	this.getInputElement().blur();
 };
 
-// deselect if user enters or removes text
-ZmAddressInputField.prototype._keyPressCallback =
+// TODO: handle auto-repeat keys
+ZmAddressInputField.prototype._keyUpCallback =
 function(ev, aclv) {
-	if (this._selectedBubbleId && ev.inputLengthChanged) {
-		this.setSelected(this._selectedBubbleId);
-	}
+	this._resizeInput();
 };
 
 ZmAddressInputField.prototype._addrFoundCallback =
@@ -594,6 +611,20 @@ function(ev, bubble) {
 			for (var i = 0, len = sel.length; i < len; i++) {
 				Dwt.selectText(sel[i]);
 			}
-			this.blur();
+			this.blur();	// make text selection work in FF
 		}), 10);
+};
+
+// size the input to a bit more than its current content
+ZmAddressInputField.prototype._resizeInput =
+function() {
+
+	var val = this._input.value;
+	var holderWidth = Dwt.getSize(this._holder).x;
+	var inputWidth = Math.min(AjxStringUtil.getWidth(val), holderWidth) + ZmAddressInputField.INPUT_EXTRA;
+	Dwt.setSize(this._input, inputWidth, Dwt.DEFAULT);
+
+	if (this._bubbles.length) {
+		this._bubbles[this._bubbles.length - 1].style.marginRight = "3px";
+	}
 };
