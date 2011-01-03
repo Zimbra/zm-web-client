@@ -1344,7 +1344,7 @@ function(ev) {
 		for (var i = 0; i < list.length; i++) {
 			ids.push(list[i].invId);
 		}
-		url = "/h/printappointments?id=" + ids.join(",") + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+		url = "/h/printappointments?id=" + ids.join(",") + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT);  //bug:53493
 
 	} else {
 		var date = this._viewMgr
@@ -1376,7 +1376,7 @@ function(ev) {
 			"/h/printcalendar?view=", view,
 			"&l=", l,
 			"&date=", date.getFullYear(), month, day,
-			"&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)
+            "&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)                 //bug:53493
 		].join("");
 	}
 
@@ -1657,7 +1657,7 @@ function(appt, mode) {
 	} else {
 		var msg = ZmMsg.confirmCancelAppt;
 		if (appt.isRecurring()) {
-	    	msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name) :  ZmMsg.confirmCancelApptSeries; 
+			msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name) :  ZmMsg.confirmCancelApptSeries;
 		}
 		confirmDialog.popup(msg, cancelNoReplyCallback);
 	}
