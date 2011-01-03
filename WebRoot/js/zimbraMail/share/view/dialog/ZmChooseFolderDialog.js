@@ -76,6 +76,9 @@ function() {
  */
 ZmChooseFolderDialog.prototype.popup =
 function(params) {
+
+	this._keyPressedInField = false; //see comment in _handleKeyUp
+
 	// use reasonable defaults
 	params = params || {};
 
@@ -276,6 +279,9 @@ function() {
 	this._inputField = new DwtInputField({parent: this});
 	document.getElementById(this._inputDivId).appendChild(this._inputField.getHtmlElement());
 	this._inputField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
+	//this._inputField.addListener(DwtEvent.ONKEYDOWN, new AjxListener(this, this._handleKeyDown));
+	// unfortunately there's no onkeydown generally set for input fields so above line does not work
+	this._inputField.setHandler(DwtEvent.ONKEYDOWN, AjxCallback.simpleClosure(this._handleKeyDown, this));
 };
 
 ZmChooseFolderDialog.prototype._showNewDialog =
@@ -392,8 +398,26 @@ function() {
 	}
 };
 
+ZmChooseFolderDialog.prototype._handleKeyDown =
+function(ev) {
+	this._keyPressedInField = true; //see comment in _handleKeyUp
+};
+
 ZmChooseFolderDialog.prototype._handleKeyUp =
 function(ev) {
+
+	// this happens in the case of SearchFolder when the keyboard shortcut "s" was released when this
+	// field was in focus but it does not affect the field since it was not pressed here.
+	// (Bug 52983)
+	// in other words, the sequence that caused the bug is:
+	// 1. "s" keyDown triggering ZmDialog.prototype.popup()
+	// 2. ZmDialog.prototype.popup setting focus on the input field
+	// 3. "s" keyUp called triggering ZmChooseFolderDialog.prototype._handleKeyUp.
+	// Note that this is reset to false in the popup only, since only one time we need this protection, and it's the simplest.
+	if (!this._keyPressedInField) {
+		return;
+	}
+
 
 	var key = DwtKeyEvent.getCharCode(ev);
 	if (key == 9) {
@@ -417,7 +441,10 @@ function(ev) {
 				(path.indexOf(testPath) == 0 && (path.substr(testPath.length).indexOf("/") == -1))) {
 
 				matches.push(ti);
-                if (!firstMatch || (folderInfo.accountId == appCtxt.getActiveAccount().id)) {
+				var activeAccountId = appCtxt.getActiveAccount().id;
+				//choose the FIRST of active account folders. 
+				if (!firstMatch || (folderInfo.accountId == activeAccountId
+								&&	firstMatch.accountId != activeAccountId)) {
                     firstMatch = folderInfo;
                 }
 			}
