@@ -184,8 +184,8 @@ FORM {
     margin:auto 10px auto auto;
 }
 .LoginScreen .postioning{
-	position: relative;
-	z-index: 20;
+    position: relative;
+    z-index: 20;
 }
 .LoginScreen #ZLoginWhatsThisAnchor {
 	color: @darken(AppC,50)@;
@@ -225,7 +225,7 @@ FORM {
 .LoginScreen #ZLoginNotice a {
 	color:#FFF;
 }
-.LoginScreen #login {
+.LoginScreen #login {  /*Is this used?*/
 	float:right;
 }
 .LoginScreen .copyright {
@@ -234,7 +234,7 @@ FORM {
 	text-align:center;
 }
 .LoginScreen .center-small .copyright {
-	margin:13px 20px 3px;
+	padding:13px 20px 3px;
 }
 
 
