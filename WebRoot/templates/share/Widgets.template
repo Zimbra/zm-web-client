@@ -245,8 +245,7 @@
 </template>
 
 <template id="share.Widgets#ZmAddressInputField">
-	<div id='${holderId}' class='addrBubbleHolder-empty'></div>
-	<div>
+	<div id='${holderId}' class='addrBubbleHolder-empty'>
 		<input id='${inputId}'>
 	</div>
 </template>

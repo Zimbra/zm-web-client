@@ -778,14 +778,14 @@ INPUT[type="text"].people_search_input {
 .addrBubbleContainer input {
 	border: 0px !important;
 	outline: none !important;
-	width: 100%;
 }
 
 .addrBubble, .addrBubble-selected {
 	color: black;
 	border: 1px solid #999999;
 	padding: 1px 3px;
-	margin: 0 0 2px 3px;
+	margin-bottom: 2px;
+	margin-left: 3px;
 	display: inline-block;
 
 	#IFDEF SAFARI
