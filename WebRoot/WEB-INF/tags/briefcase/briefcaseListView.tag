@@ -92,7 +92,7 @@
                                         <app:img src="${mimeImg}"/>
                                     </td>
                                     <td><%-- allow this column to wrap --%>
-                                        <c:set var="briefUrl" value="/service/home/~/?id=${briefHit.id}&auth=co"/>
+                                        <c:set var="briefUrl" value="/home/${mailbox.accountInfo.name}/Briefcase/${briefHit.document.name}?auth=co"/>
                                         <a href="${fn:escapeXml(briefUrl)}" id="${aid}" onclick="return false;">
                                             <c:set var='docName' value="${empty briefHit.document.name ? unknownSubject : zm:truncate(briefHit.document.name,100,true)}"/>
                                             <c:out value="${docName}"/>
