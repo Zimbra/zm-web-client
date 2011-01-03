@@ -982,7 +982,7 @@
             <td width="16" ><$= AjxImg.getImageHtml(data.attendeeImage) $></td>
             <td><$= data.timeLabel $></td>
             <$ if (data.totalLocations > 0) { $>
-            <td align="right" width="20" id='${id}_loc'><span class="fakeAnchor"><$= data.locationCountStr $></span></td>
+            <td align="right" width="20" id='${id}_loc'><span class="removeLink"><$= data.locationCountStr $></span></td>
             <td width="16"><$= AjxImg.getImageHtml(data.locationImage) $></td>
             <$ } $>
         </tr>
