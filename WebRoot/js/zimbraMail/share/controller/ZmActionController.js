@@ -23,17 +23,11 @@
  * Optimally there should only be one object of this class, globally reachable
  */
 ZmActionController = function() {
+
 	this._actionStack = new ZmActionStack(1);
 	this._statusTransitions = ZmActionController._substituteTransitions(appCtxt.getSkinHint("toast", "transitions") || ZmToast.DEFAULT_TRANSITIONS);
-
-	this._mouseCapObj = new DwtMouseEventCapture({
-		targetObj:this,
-		id:"ZmActionController",
-		mouseDownHdlr:AjxCallback.simpleClosure(this.dismiss, this),
-		hardCapture:false,
-		onRelease:AjxCallback.simpleClosure(this._onRelease, this),
-		enableAnyEvent:true
-	});
+	this._outsideListener = new AjxListener(this, ZmActionController.prototype._outsideMouseDownListener);
+	appCtxt.getKeyboardMgr().addListener(DwtEvent.ONKEYDOWN, this._outsideListener);
 };
 
 ZmActionController.prototype.toString =
@@ -97,27 +91,23 @@ ZmActionController.prototype.undoCurrent = function() {
 };
 
 ZmActionController.prototype.onPopup = function() {
-	this._capturing = true;
-	this._mouseCapObj.capture();
-};
-
-ZmActionController.prototype._onRelease = function() {
-	if (this._capturing && DwtMouseEventCapture.getId() == "ZmActionController") {
-		this._capturing = false;
+	var omem = appCtxt.getOutsideMouseEventMgr();
+	var omemParams = {
+		id:					"ZmActionController",
+		obj:				this,
+		elementId:			ZmId.TOAST,
+		outsideListener:	this._outsideListener
 	}
-	appCtxt.dismissStatusMsg(true);
-	this._active = false;
+	omem.startListening(omemParams);
 };
 
 /**
  * Dismisses the popped up toast
  */
 ZmActionController.prototype.dismiss = function() {
-	if (this._capturing && DwtMouseEventCapture.getId() == "ZmActionController") {
-		this._capturing = false;
-		this._mouseCapObj.release();
-	}
 	appCtxt.dismissStatusMsg(true);
+	var omem = appCtxt.getOutsideMouseEventMgr();
+	omem.stopListening("ZmActionController");
 	this._active = false;
 };
 
@@ -157,9 +147,16 @@ ZmActionController._registerCallback = function(callback) {
 ZmActionController.callRegisteredCallback = function(id) {
 	var callback = ZmActionController._registeredCallbacks[id];
 	if (callback) {
-		if (callback instanceof AjxCallback)
+		if (callback instanceof AjxCallback) {
 			callback.run();
-		else if (AjxUtil.isFunction(callback))
+		}
+		else if (AjxUtil.isFunction(callback)) {
 			callback();
+		}
 	}
+};
+
+ZmActionController.prototype._outsideMouseDownListener =
+function(ev) {
+	this.dismiss();
 };

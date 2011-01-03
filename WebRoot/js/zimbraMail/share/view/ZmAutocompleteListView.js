@@ -150,8 +150,6 @@ ZmAutocompleteListView.WAIT_ID = "wait";
 ZmAutocompleteListView.NEXT = -1;
 ZmAutocompleteListView.PREV = -2;
 
-ZmAutocompleteListView._activeAcList = null;
-
 // Public static methods
 
 /**
@@ -408,18 +406,12 @@ function(echo, ev) {
  * @private
  */
 ZmAutocompleteListView._outsideMouseDownListener =
-function(ev) {
-	var curList = ZmAutocompleteListView._activeAcList;
-    if (curList && curList.getVisible()) {
-		var obj = DwtControl.getTargetControl(ev);
-		var target = DwtUiEvent.getTargetWithProp(ev, "id");
-		if (obj && obj != curList && !obj.isLinkText && target != obj.getHtmlElement()) {
-			curList.show(false);
-			ev._stopPropagation = false;
-			ev._returnValue = true;
-		}
-	}
+function(ev, context) {
+
+	var curList = context && context.obj;
 	if (curList) {
+		DBG.println("out", "outside listener, cur " + curList.toString() + ": " + curList._htmlElId);
+		curList.show(false);
 		curList.setWaiting(false);
 	}
 };
@@ -586,14 +578,8 @@ function(on) {
 	if (on) {
 		var loc = this._getDefaultLoc();
 		Dwt.setLocation(div, loc.x, loc.y);
-		ZmAutocompleteListView._activeAcList = this;
-		this._addMouseDownListener();
 	}
-	else {
-		ZmAutocompleteListView._activeAcList = null;
-		this._removeMouseDownListener();
-	}
-	
+
 	Dwt.setZIndex(div, on ? Dwt.Z_DIALOG_MENU : Dwt.Z_HIDDEN);
 	Dwt.setVisible(div, on);
 };
@@ -1054,8 +1040,14 @@ function(loc) {
     this.setLocation(x, y);
 	this.setVisible(true);
 	this.setZIndex(Dwt.Z_DIALOG_MENU);
-	ZmAutocompleteListView._activeAcList = this;
-	this._addMouseDownListener();
+
+	var omem = appCtxt.getOutsideMouseEventMgr();
+	var omemParams = {
+		id:					"ZmAutocompleteListView",
+		obj:				this,
+		outsideListener:	this._outsideListener
+	}
+	omem.startListening(omemParams);
 };
 
 // returns a point with a location just below the input field
@@ -1078,11 +1070,17 @@ ZmAutocompleteListView.prototype._popdown =
 function() {
 
 	if (!this.getVisible()) { return; }
+	DBG.println("out", "popdown " + this.toString() + ": " + this._htmlElId);
 
+	if (this._memberListView) {
+		this._memberListView._popdown();
+	}
+	
 	this.setZIndex(Dwt.Z_HIDDEN);
 	this.setVisible(false);
-	ZmAutocompleteListView._activeAcList = null;
-	this._removeMouseDownListener();
+
+	var omem = appCtxt.getOutsideMouseEventMgr();
+	omem.stopListening({id:"ZmAutocompleteListView", obj:this});
 };
 
 /*
@@ -1092,21 +1090,6 @@ function() {
 ZmAutocompleteListView.prototype._showMoreResultsText =
 function (availHeight){
     //over load for implementation
-};
-
-
-ZmAutocompleteListView.prototype._addMouseDownListener =
-function() {
-	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, ZmAutocompleteListView._outsideMouseDownListener);
-	this.shell._setEventHdlrs([DwtEvent.ONMOUSEDOWN]);
-	this.shell.addListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
-};
-
-ZmAutocompleteListView.prototype._removeMouseDownListener =
-function() {
-	DwtEventManager.removeListener(DwtEvent.ONMOUSEDOWN, ZmAutocompleteListView._outsideMouseDownListener);
-	this.shell._setEventHdlrs([DwtEvent.ONMOUSEDOWN], true);
-	this.shell.removeListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
 };
 
 /**
@@ -1173,7 +1156,7 @@ function(rows, id, len) {
 ZmAutocompleteListView.prototype._getRowHeight =
 function() {
 	if (!this._rowHeight) {
-		if (!ZmAutocompleteListView._activeAcList) {
+		if (!this.getVisible()) {
 			this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 			this.setVisible(true);
 		}
@@ -1315,11 +1298,10 @@ function(contact, loc, matches) {
 	mlv._removeAll();
 	mlv._set(matches, contact);
 
-	if (!loc) {
-		// default position is just to right of parent ac list
-		var loc = this.getLocation();
-		loc.x += this.getSize().x;
-	}
+	// default position is just to right of parent ac list
+	var loc = this.getLocation();
+	loc.x += this.getSize().x;
+
 	mlv.show(true, loc);
 	if (!mlv._rowHeight) {
 		var table = document.getElementById(mlv._tableId);

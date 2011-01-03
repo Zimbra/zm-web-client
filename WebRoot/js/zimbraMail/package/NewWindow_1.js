@@ -71,6 +71,7 @@ AjxPackage.require("ajax.dwt.events.DwtHtmlEditorStateEvent");
 AjxPackage.require("ajax.dwt.events.DwtTreeEvent");
 AjxPackage.require("ajax.dwt.events.DwtHoverEvent");
 AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
+AjxPackage.require("ajax.dwt.events.DwtOutsideMouseEventMgr");
 
 AjxPackage.require("ajax.dwt.keyboard.DwtKeyMap");
 
