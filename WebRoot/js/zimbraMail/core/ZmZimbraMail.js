@@ -1553,11 +1553,6 @@ function() {
 	}
 };
 
-ZmZimbraMail.prototype.handleAnyKey =
-function(ev) {
-	this.dismissStatusMsg(true);
-};
-
 /**
  * @private
  */

@@ -23,7 +23,6 @@ ZmPeopleAutocompleteListView = function(params) {
 
 	this.addClassName("ZmPeopleAutocompleteListView");
 	this.setScrollStyle(DwtControl.CLIP);
-	this._outsideListener = new AjxListener(null, ZmPeopleAutocompleteListView._outsideMouseDownListener);
 };
 
 ZmPeopleAutocompleteListView.prototype = new ZmAutocompleteListView;

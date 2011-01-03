@@ -52,16 +52,20 @@ function(list, contact) {
 	this._addMembers(list);
 
 	// add row for selecting all at top of list
-	var table = this._getTable();
-	var row = table.insertRow(0);
-	row.className = this._origClass;
-	row.id = this._selectAllRowId = this._getId("Row", "selectAll");
-	var cell = row.insertCell(-1);
-	cell.className = "Icon";
-	cell.innerHTML = AjxImg.getImageHtml("Blank16");
-	cell = row.insertCell(-1);
 	var dl = appCtxt.getApp(ZmApp.CONTACTS).getDL(contact.getEmail());
-	cell.innerHTML = AjxMessageFormat.format(ZmMsg.selectAllMembers, [dl.total]);
+	var numMembers = dl.total;
+	if (numMembers != 1) {
+		var table = this._getTable();
+		var row = table.insertRow(0);
+		row.className = this._origClass;
+		row.id = this._selectAllRowId = this._getId("Row", "selectAll");
+		var cell = row.insertCell(-1);
+		cell.className = "Icon";
+		cell.innerHTML = AjxImg.getImageHtml("Blank16");
+		cell = row.insertCell(-1);
+		var text = numMembers ? ZmMsg.selectAllMembers : ZmMsg.noMembers;
+		cell.innerHTML = AjxMessageFormat.format(text, [dl.total]);
+	}
 
 	// autoselect first real row
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
@@ -146,15 +150,6 @@ ZmDLAutocompleteListView.prototype._doUpdate =
 function(hasDelim, ev) {
 	var sel = this._matchHash[this._selected];
 	this._parentAclv._update(hasDelim, sel, ev);
-};
-
-ZmDLAutocompleteListView.prototype.show =
-function(show, loc, leaveParentUp) {
-
-	ZmAutocompleteListView.prototype.show.apply(this, arguments);
-	if (!show && !leaveParentUp && this._parentAclv) {
-		this._parentAclv.show(show, loc);
-	}
 };
 
 ZmDLAutocompleteListView.handleDLScroll =

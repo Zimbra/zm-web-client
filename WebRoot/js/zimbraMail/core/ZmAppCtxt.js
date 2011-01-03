@@ -1704,3 +1704,8 @@ ZmAppCtxt.prototype.clearNotifyDebug =
 function() {
     this._notify = "";
 };
+
+ZmAppCtxt.prototype.getOutsideMouseEventMgr =
+function() {
+	return DwtOutsideMouseEventMgr.INSTANCE;
+};
