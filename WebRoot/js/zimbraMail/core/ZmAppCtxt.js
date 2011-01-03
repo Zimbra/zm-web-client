@@ -365,7 +365,7 @@ function() {
 ZmAppCtxt.prototype.getYesNoCancelMsgDialog =
 function() {
 	if (!this._yesNoCancelMsgDialog) {
-		this._yesNoCancelMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]});
+		this._yesNoCancelMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON], id:"YesNoCancel"});
 	}	
 	return this._yesNoCancelMsgDialog;
 };
