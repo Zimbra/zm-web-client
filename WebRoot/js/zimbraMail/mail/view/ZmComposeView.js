@@ -2455,7 +2455,10 @@ function(extraBodyText) {
 
 ZmComposeView.prototype.isTinyMCEEnabled =
 function() {
-    return window.isTinyMCE;
+    // Bug 54805
+    // disable tinymce
+    //return window.isTinyMCE;
+    return false;
 };
 
 /**
