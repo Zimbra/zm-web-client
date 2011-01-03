@@ -55,7 +55,10 @@ ZmApptListView.prototype.needsRefresh = function() {
 
 ZmApptListView.prototype.setNeedsRefresh = function(needsRefresh) {
     var controller = this._controller;
-    return controller.getCurrentView().setNeedsRefresh(needsRefresh);
+    if(controller.getCurrentView().setNeedsRefresh){
+        return controller.getCurrentView().setNeedsRefresh(needsRefresh);
+    }
+    return null;
 };
 
 //to override

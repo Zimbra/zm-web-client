@@ -1952,7 +1952,7 @@ function(newAppt, mode, isDirty, startDate) {
 	var appt = newAppt || this._newApptObject(sd, AjxDateUtil.MSEC_PER_HALF_HOUR);
 
     //certain views can set attendees before creating appointment
-    if(this._viewVisible) {
+    if(this._viewVisible && this._viewMgr.getCurrentView().getAtttendees) {
         var attendees = this._viewMgr.getCurrentView().getAtttendees();
         if(attendees && attendees.length > 0) appt.setAttendees(attendees, ZmCalBaseItem.PERSON);
     }
@@ -3196,7 +3196,7 @@ function(notify) {
 
 ZmCalViewController.prototype.setNeedsRefresh =
 function(refresh) {
-	if (this._viewMgr != null) {
+	if (this._viewMgr != null && this._viewMgr.setNeedsRefresh) {
 		this._viewMgr.setNeedsRefresh(refresh);
 	}
 };
@@ -3463,12 +3463,38 @@ function() {
 		params.endDate = new Date(sd.getTime() + dur);
 	}
 
-	if(appt) {
+	if(appt && appt.isOrganizer()) {
 		appCtxt.setStatusMsg({msg: ZmMsg.apptCreatingFromCopy, force: true});
 		this.duplicateAppt(appt, params);
 	}
+    else{
+        var origOrganizer=appt.organizer;
+        var orgToAttendee = ZmApptViewHelper.getAttendeeFromItem(origOrganizer, ZmCalBaseItem.PERSON);
+        var attendees = appt._attendees[ZmCalBaseItem.PERSON]
+        if(attendees && attendees.length){attendees.push(orgToAttendee);}
+        appt._attendees[ZmCalBaseItem.PERSON]=attendees;
+        var dlg = appCtxt.getYesNoMsgDialog();
+        dlg.registerCallback(DwtDialog.YES_BUTTON, this._proceedDuplicating, this, [appt, params, dlg]);
+        dlg.registerCallback(DwtDialog.NO_BUTTON, this._stopDuplicating, this, [dlg]);
+        var msg = AjxMessageFormat.format(ZmMsg.confirmApptDuplication);
+        dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+		dlg.popup();
+    }
 
 	delete this._clipBoardAppts;
+};
+
+ZmCalViewController.prototype._proceedDuplicating =
+function(appt,params,dlg) {
+  dlg.popdown();
+  appCtxt.setStatusMsg({msg: ZmMsg.apptCreatingFromCopy, force: true});
+  this.duplicateAppt(appt, params);  
+};
+
+ZmCalViewController.prototype._stopDuplicating =
+function(dlg) {
+  dlg.popdown();
+  appCtxt.setStatusMsg({msg: ZmMsg.apptCopyStopped, force: true});  
 };
 
 ZmCalViewController.prototype._getDefaultFocusItem =
