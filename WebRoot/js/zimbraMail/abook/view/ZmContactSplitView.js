@@ -514,30 +514,33 @@ function(data) {
 	var html = [];
 	while (true) {
 		data.name1 = ++i > 1 || ZmContact.IS_ADDONE[data.name] ? data.name + i : data.name;
-		var value = data.attrs[data.name1];
-		if (!value) { break; }
-		if (!isEmail) {
-			value = AjxStringUtil.htmlEncode(value);
-		}
-		if (ZmContact.IS_DATE[data.name]) {
-			var date = ZmEditContactViewOther.parseDate(value);
-			if (date) {
-			    var includeYear = date.getFullYear() != 0;
-			    var formatter = includeYear ?
-			        AjxDateFormat.getDateInstance(AjxDateFormat.LONG) : new AjxDateFormat(ZmMsg.formatDateLongNoYear);
-			    value = formatter.format(date);
-            }
-		}
-		if (data.findObjects) {
-			value = data.findObjects(value, data.objectType);
-		}
-		if (data.encode) {
-			value = data.encode(value);
-		}
-		data.value = value;
+		var values = data.attrs[data.name1];
+		if (!values) { break; }
+		values = AjxUtil.toArray(values);
+		for (var j=0; j<values.length; j++) {
+			var value = values[j];
+			if (!isEmail) {
+				value = AjxStringUtil.htmlEncode(value);
+			}
+			if (ZmContact.IS_DATE[data.name]) {
+				var date = ZmEditContactViewOther.parseDate(value);
+				if (date) {
+					var includeYear = date.getFullYear() != 0;
+					var formatter = includeYear ?
+					    AjxDateFormat.getDateInstance(AjxDateFormat.LONG) : new AjxDateFormat(ZmMsg.formatDateLongNoYear);
+					value = formatter.format(date);
+		        	}
+			}
+			if (data.findObjects) {
+				value = data.findObjects(value, data.objectType);
+			}
+			if (data.encode) {
+				value = data.encode(value);
+			}
+			data.value = value;
 
-		html.push(AjxTemplate.expand("#SplitView_list_item", data));
-
+			html.push(AjxTemplate.expand("#SplitView_list_item", data));
+		}
 		data.seenone = true;
 	}
 
