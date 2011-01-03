@@ -4412,52 +4412,49 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmEditContactViewAddress .DwtInputField INPUT,
 .ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField-hint INPUT{
-	border: none !important;
+	border:none !important;
 }
 .ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField TEXTAREA {
-    overflow-y : auto;
+    overflow-y:auto;
 }
-
 
 .ZmEditContactView .contactHeaderTable {
 	background-color: @lighten(AltC,40)@;
 }
-
 .ZmEditContactView .contactHeaderCell {
-	padding: .25em .5em;
-	border-bottom: solid 1px @darken(AppC,40)@;
-}
-
-.ZmEditContactView .rowLabel, .ZmContactSplitView .rowLabel {
-	padding:.7em .5em .25em;
-	text-align: right;
-	font-weight: bold;
-}
-
-.ZmEditContactView .rowValue, .ZmContactSplitView .rowValue {
-	padding:.7em .5em .25em;
-	width: 150px;
-}
-
-.ZmEditContactView .rowValue, .ZmContactSplitView .rowValue[colspan] {
 	padding:.25em .5em;
-	width: auto;
+	border-bottom:solid 1px @darken(AppC,40)@;
 }
 
-.ZmEditContactView .rowType, .ZmContactSplitView .rowType {
-	padding:.7em .5em .25em;
+.ZmEditContactView .rowLabel, .ZmEditContactView .rowType, 
+.ZmContactSplitView .rowLabel, .ZmContactSplitView .rowType,
+.ZmContactSplitView .rowValue, .ZmContactSplitView .rowValue[colspan] {
+    padding:.7em .5em .25em;
+}
+.ZmEditContactView .rowValue {
+    padding:.25em .5em;
+}
+.ZmEditContactView .rowLabel, .ZmContactSplitView .rowLabel {
+    text-align:right;
+    font-weight:bold;
+}
+.ZmEditContactView .rowValue, .ZmContactSplitView .rowValue {
+    width:150px;
+}
+.ZmEditContactView .rowValue, .ZmContactSplitView .rowValue[colspan] {
+    width:auto;
 }
 
 .itemSortIcon {
-	padding-left: 7px;
-	width: 100%;
+	padding-left:7px;
+	width:100%;
 }
 
 .itemCountText {
-	padding-right: 2px;
-	white-space: nowrap;
-	cursor: default;
+	padding-right:2px;
+	white-space:nowrap;
+	cursor:default;
 }
 
 .ZmApptComposeView .addresses {
@@ -4467,11 +4464,11 @@ If you feel compelled to have a background color, please do so on a per skin lev
 /*calendar resource conflict dialog app*/
 
 .ResourceConflictMsg {
-    padding: 10px 20px 10px 2px;
+    padding:10px 20px 10px 2px;
 }
 
 .ResourceConflictResolver {
-    padding-left: 27px;
+    padding-left:27px;
 }
 
 /*Preview View */
