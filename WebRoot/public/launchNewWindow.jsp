@@ -2,6 +2,7 @@
 <%@ page import='java.util.Locale' %>
 <%@ page import="java.util.regex.Pattern" %>
 <%@ page import="java.util.regex.Matcher" %>
+<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
@@ -79,6 +80,7 @@
 		localeId = request.getParameter("localeId");
 	}
 	if (localeId != null) {
+		localeId = BeanUtils.cook(localeId);
         int index = localeId.indexOf("_");
         if (index == -1) {
 			locale = new Locale(localeId);
