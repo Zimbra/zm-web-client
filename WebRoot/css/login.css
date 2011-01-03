@@ -84,13 +84,8 @@ FORM {
 	margin-top:-150px;
 	margin-left:-250px;
 }
-.LoginScreen .center-small {
-	width:350px;
-	height:270px;
-	margin-top:-135px;
-	margin-left:-175px;
-}
-.LoginScreen .center, .LoginScreen .center-small {
+
+.LoginScreen .center {
 	position:absolute;
 	top:50%;
 	left:50%;
@@ -234,7 +229,7 @@ FORM {
 	text-align:center;
 }
 .LoginScreen .center-small .copyright {
-	padding:13px 20px 3px;
+	/* padding:13px 20px 3px; */
 }
 
 
@@ -282,3 +277,80 @@ FORM {
 	font-size: 1.2em;
 	line-height: 1.3em;
 }
+
+
+
+
+/* Mobile */
+
+.LoginScreen .center-small {
+	width:240px;
+	height:305px;
+	overflow:visible;
+	margin: 10px auto;
+	padding-top: 5px; 
+	
+	/*Linear gradient backgrounds*/
+	background-color: @darken(AppC,10)@;
+	background-image: -moz-linear-gradient(top, @AppC@, @darken(AppC,10)@); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @darken(AppC,10)@)); /* Saf4+, Chrome */
+/*	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); */ /* IE6,IE7 */
+/*	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')";*/ /* IE8 */
+
+	/*Radial gradient backgrounds*/
+	background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @AppC@ 0%, @darken(AppC,10)@ 100%); /* FF3.6 */
+	background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
+
+	-moz-border-radius: 15px; /* FF1+ */
+	-webkit-border-radius: 15px; /* Saf3-4 */
+	border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
+	
+	-moz-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* FF3.5+ */
+	-webkit-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* Saf3.0+, Chrome */
+	box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
+	#IFDEF MSIE
+	border: 1px solid @darken(AltC,50)@; /* Plain border for IE */
+	#ENDIF
+}
+
+.center-small .form {
+	color: @darken(AppC,50)@;
+	margin: 0px 10px;
+	border-collapse:collapse;
+	text-align:left;
+}
+
+.center-small .form td:first-child label {margin-right:5px;}
+
+.center-small .form input[type='text'], 
+.center-small .form input[type='password'] {
+	width:155px;
+	border:1px solid @AltC@;
+}
+
+.center-small .form select {
+	width:140px;
+}
+.center-small .ImgAltBanner{
+	margin: 10px auto;
+}
+
+
+.LoginScreen .center-small .offline{
+	display: none;
+}
+
+
+.Footer-small{
+	width: 100%;
+	text-align: center;
+	position: relative !important;
+}
+.Footer-small .copyright{
+	font-size: 9px !important;
+}
+
+.Footer-small #ZLoginNotice{
+	display: none;
+}
+

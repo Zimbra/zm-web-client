@@ -251,7 +251,7 @@ if (application.getInitParameter("offlineMode") != null)  {
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraLoginTitle"/></title>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
-    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=1;">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
     <link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml.css'>
 		<c:param name="skin"	value="${skin}" />
@@ -272,6 +272,7 @@ if (application.getInitParameter("offlineMode") != null)  {
         <fmt:message key="favIconUrl" var="favIconUrl"/>
 	</c:if>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
+    
     
 </head>
 <c:set value="/img" var="iconPath" scope="request"/>
@@ -397,8 +398,8 @@ if (application.getInitParameter("offlineMode") != null)  {
 			<div class="offline"><fmt:message key="switchToOfflineClientEx"/></div>
 		</div>
 
-		<div class="Footer">
-		<div id="ZLoginNotice"><fmt:message key="clientLoginNotice"/></div>
+		<div class="${smallScreen?'Footer-small':'Footer'}">
+		<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="clientLoginNotice"/></div>
         
         <div class="copyright"><fmt:message key="splashScreenCopyright"/></div>
         </div>
