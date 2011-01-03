@@ -42,6 +42,8 @@ ZmTimeSuggestionView = function(parent, controller, apptEditView) {
 ZmTimeSuggestionView.prototype = new ZmListView;
 ZmTimeSuggestionView.prototype.constructor = ZmTimeSuggestionView;
 
+ZmTimeSuggestionView._VALUE = 'value';
+ZmTimeSuggestionView._ITEM_INFO = 'iteminfo';
 ZmTimeSuggestionView.SHOW_MORE_VALUE = '-1';
 ZmTimeSuggestionView.F_LABEL = 'ts';
 ZmTimeSuggestionView.COL_NAME	= "t";
@@ -101,8 +103,9 @@ function(itemDiv, ev) {
     if(item) {
         this._editView.setDate(new Date(item.startTime), new Date(item.endTime));
         //user clicked the link directly
-        if (ev.target && (ev.target.className == "fakeAnchor" || ev.target.className == "ImgLocationGreen" || ev.target.className == "ImgLocationRed")) {
-            this.showMore(item);        
+        if (ev.target && (ev.target.className == "removeLink" || ev.target.className == "ImgLocationGreen" || ev.target.className == "ImgLocationRed")) {
+            var menu = this._createLocationsMenu(item);
+            menu.popup(0, ev.docX, ev.docY);
         }
     }
 };
@@ -167,6 +170,7 @@ function(params) {
     return tooltip;
 };
 
+//obsolete - will be removed as a part of clean up process
 ZmTimeSuggestionView.prototype.switchLocationSelect =
 function(item, id, ev) {
     var locId = id + "_loc";
@@ -219,6 +223,55 @@ function(item, id, ev) {
     this.handleLocationOverflow();
 };
 
+ZmTimeSuggestionView.prototype._createLocationsMenu =
+function(item) {
+    var menu = this._locationsMenu = new ZmPopupMenu(this, null, null, this._controller);  
+    var listener = new AjxListener(this, this._locationsMenuListener);
+
+    var location, name, locationObj;
+    for (var i = item.locations.length; --i >=0;) {
+        location = this._items[item.locations[i]];
+        locationObj = this.parent.getLocationByEmail(location);
+        name = location;
+        if(locationObj) {
+            name = locationObj.getAttr(ZmResource.F_locationName) || locationObj.getAttr(ZmResource.F_name);
+        }
+
+        var mi = menu.createMenuItem(location, {style:DwtMenuItem.RADIO_STYLE, text: name});
+        mi.addSelectionListener(listener);
+        mi.setData(ZmTimeSuggestionView._VALUE, location);
+
+        if(item.locations.length - i > 20) {
+            mi = menu.createMenuItem(ZmTimeSuggestionView.SHOW_MORE_VALUE, {style:DwtMenuItem.RADIO_STYLE, text: ZmMsg.showMore});
+            mi.addSelectionListener(listener);
+            mi.setData(ZmTimeSuggestionView._VALUE, ZmTimeSuggestionView.SHOW_MORE_VALUE);
+            mi.setData(ZmTimeSuggestionView._ITEM_INFO, item);
+            break;
+        }
+    }
+
+    return menu;
+};
+
+ZmTimeSuggestionView.prototype._locationsMenuListener =
+function(ev) {
+
+    var id = ev.item.getData(ZmTimeSuggestionView._VALUE)
+
+    if(id == ZmTimeSuggestionView.SHOW_MORE_VALUE) {
+        var itemInfo = ev.item.getData(ZmTimeSuggestionView._ITEM_INFO);
+        if(itemInfo) this.showMore(itemInfo);
+        return;
+    }
+
+    var itemIndex = this._itemIndex[id];
+    var location = this._items[itemIndex];
+    if(location) {
+        var locationObj = this.parent.getLocationByEmail(location);
+        this._editView.updateLocation(locationObj);
+    }
+};
+
 ZmTimeSuggestionView.prototype.handleLocationOverflow =
 function() {
     var locTxt = this._locSelect.getText();
@@ -228,6 +281,7 @@ function() {
     }
 };
 
+//obsolete - will be removed as a part of clean up process
 ZmTimeSuggestionView.prototype._restorePrevLocationInfo =
 function() {
     var prevId = this._locSelect.itemId;
