@@ -422,7 +422,11 @@ function(files, status, guids, response) {
 
 	// keep mine
 	else if (conflictCount > 0 && action == ZmUploadDialog.ACTION_KEEP_MINE) {
-		this._uploadSaveDocs2(files, status, guids);
+        if(this._conflictAction){
+            this._shieldSaveDocs(files, status, guids);
+        }else{
+		    this._uploadSaveDocs2(files, status, guids);
+        }
 	}
 	// perform callback
 	else if (this._uploadCallback) {
@@ -430,6 +434,21 @@ function(files, status, guids, response) {
 	}else{
         this._conflictAction = null;
     }
+};
+
+ZmUploadDialog.prototype._shieldSaveDocs =
+function(files, status, guids){
+    var dlg = appCtxt.getYesNoMsgDialog();
+    dlg.reset();
+    dlg.setButtonListener(DwtDialog.YES_BUTTON, new AjxListener(this, this._shieldSaveDocsYesCallback, [dlg, files, status, guids]));
+    dlg.setMessage(ZmMsg.uploadConflictShield, DwtMessageDialog.WARNING_STYLE, ZmMsg.uploadConflict);
+    dlg.popup();
+};
+
+ZmUploadDialog.prototype._shieldSaveDocsYesCallback =
+function(dlg, files, status, guids){
+    this._uploadSaveDocs2(files, status, guids);
+    dlg.popdown();
 };
 
 ZmUploadDialog.prototype.setConflictAction =
