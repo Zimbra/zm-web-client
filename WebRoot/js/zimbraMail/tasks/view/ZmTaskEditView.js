@@ -150,11 +150,11 @@ function(calItem, mode) {
 	this._setPriority(calItem.priority);
 	this._statusSelect.setSelectedValue(calItem.status);
     this._pCompleteSelectInput.setValue(this.formatPercentComplete(calItem.pComplete));
-	this._statusCheckbox.checked = calItem.status == ZmCalendarApp.STATUS_COMP && calItem.pComplete == 100;
 };
 
 ZmTaskEditView.prototype._populateForSave =
 function(calItem) {
+
 	ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
 
 	calItem.location = this._location.getValue();
@@ -251,8 +251,6 @@ function() {
 
 ZmTaskEditView.prototype._createHTML =
 function() {
-	this._statusCheckboxId 	= this._htmlElId + "_status_cbox";
-
 	//this._repeatDescId		= this._htmlElId + "_repeatDesc";
     this._isAppt = false;
 	var subs = {
@@ -479,7 +477,6 @@ function() {
 	var edvId = AjxCore.assignId(this);
 
 	// add event listeners where necessary
-	Dwt.setHandler(this._statusCheckbox, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 	//Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 	//Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
 	//Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
@@ -487,7 +484,7 @@ function() {
 	//this._repeatDescField._editViewId =
     if (this._hasReminderSupport) {
         // TODO: What is this for?
-        this._statusCheckbox._editViewId = this._reminderCheckbox._editViewId = edvId;
+        this._reminderCheckbox._editViewId = edvId;
     }
 };
 
@@ -495,8 +492,6 @@ function() {
 ZmTaskEditView.prototype._cacheFields =
 function() {
 	ZmCalItemEditView.prototype._cacheFields.call(this);
-	this._statusCheckbox = document.getElementById(this._statusCheckboxId);
-    
 	// HACK: hide all recurrence-related fields until tasks supports it
 	//this._repeatSelect.setVisibility(false);
 	//var repeatLabel = document.getElementById(this._htmlElId + "_repeatLabel");
@@ -514,7 +509,6 @@ function(excludeAttendees) {
 	vals.push(this._location.getValue());
 	vals.push(this._getPriority());
 	vals.push(this._folderSelect.getValue());
-	vals.push("" + this._statusCheckbox.checked);
 	vals.push(this.getpCompleteInputValue());
 	vals.push(this._statusSelect.getValue());
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
@@ -592,14 +586,11 @@ function(inputEl) {
     var newVal = this.getpCompleteInputValue();
     if (newVal == 100) {
         this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
-        this._statusCheckbox.checked = true;
     } else if (newVal == 0) {
         this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
-        this._statusCheckbox.checked = false;
     } else if ((newVal > 0 || newVal < 100) && (this._statusSelect.getValue() != ZmCalendarApp.STATUS_COMP || this._statusSelect.getValue() != ZmCalendarApp.STATUS_NEED))
     {
         this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_INPR);
-        this._statusCheckbox.checked = false;
     }
     inputEl.value = this.formatPercentComplete(pCompleteString);
 };
@@ -618,14 +609,11 @@ function(ev) {
 
         if (newVal == 100) {
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
-			this._statusCheckbox.checked = true;
 		} else if (newVal == 0) {
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
-            this._statusCheckbox.checked = false;
 		} else if ((newVal > 0 || newVal < 100) && (this._statusSelect.getValue() != ZmCalendarApp.STATUS_COMP || this._statusSelect.getValue() != ZmCalendarApp.STATUS_NEED))
 		{
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_INPR);
-            this._statusCheckbox.checked = false;
 		}
         return;
     }
@@ -640,12 +628,9 @@ function(ev) {
 
 	var selObj = ev._args.selectObj;
 
-	this._statusCheckbox.checked = false;
-
 	if (selObj == this._statusSelect) {
 		if (newVal == ZmCalendarApp.STATUS_COMP) {
 			this._pCompleteSelectInput.setValue(this.formatPercentComplete(100));
-			this._statusCheckbox.checked = true;
 		} else if (newVal == ZmCalendarApp.STATUS_NEED) {
 			this._pCompleteSelectInput.setValue(this.formatPercentComplete(0));
 		} else if (newVal == ZmCalendarApp.STATUS_INPR) {
@@ -656,7 +641,6 @@ function(ev) {
 	} else {
 		if (newVal == 100) {
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
-			this._statusCheckbox.checked = true;
 		} else if (newVal == 0) {
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
 		} else if ((oldVal == 0 || oldVal == 100) &&
@@ -674,11 +658,7 @@ function(ev) {
 
 ZmTaskEditView.prototype._handleOnClick =
 function(el) {
-	if (el.id == this._statusCheckboxId) {
-		this._setPercentCompleteFields(el.checked);
-    }else {
 		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
-	}
 };
 
 //
