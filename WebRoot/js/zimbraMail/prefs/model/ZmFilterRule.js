@@ -181,8 +181,8 @@ ZmFilterRule.OP_IS_REQUESTED	= "IS_REQUESTED"; // invites
 ZmFilterRule.OP_NOT_REQUESTED   = "NOT_REQUESTED"; //invites
 ZmFilterRule.OP_NOT_REPLIED     = "NOT_REPLIED"; //invites
 ZmFilterRule.OP_IS_REPLIED		= "IS_REPLIED"; // invites
-ZmFilterRule.OP_IS_READRECEIPT  = ZmFilterRule.OP_CONTAINS;
-ZmFilterRule.OP_NOT_READRECEIPT  = ZmFilterRule.OP_NOT_CONTAINS;
+ZmFilterRule.OP_IS_READRECEIPT  = "IS_READRECEIPT";
+ZmFilterRule.OP_NOT_READRECEIPT = "NOT_READRECEIPT";
 
 
 // comparator types
@@ -649,6 +649,7 @@ function(testType, comparator, value, subjectMod) {
 		case ZmFilterRule.OP_NOT_IN:		negativeOp = ZmFilterRule.OP_IN; break;
         case ZmFilterRule.OP_NOT_REPLIED:   negativeOp = ZmFilterRule.OP_IS_REPLIED; break;
         case ZmFilterRule.OP_NOT_REQUESTED: negativeOp = ZmFilterRule.OP_IS_REQUESTED; break;
+        case ZmFilterRule.OP_NOT_READRECEIPT: negativeOp = ZmFilterRule.OP_CONTAINS; break;
 	}
 	if (negativeOp) {
 		conditionData.negative = "1";
