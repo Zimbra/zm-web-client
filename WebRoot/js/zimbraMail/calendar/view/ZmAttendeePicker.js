@@ -794,6 +794,7 @@ function(isPagingSupported, more, list) {
 	}
 
 	this._fillFreeBusy(list1, AjxCallback.simpleClosure(function(list1) { this._chooser.setItems(list1); }, this));
+	this._chooser.sourceListView.focus();
 };
 
 ZmAttendeePicker.prototype.searchCalendarResources =
