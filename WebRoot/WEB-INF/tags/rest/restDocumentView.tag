@@ -32,7 +32,10 @@
 </c:if>
 
 <c:set var="isDevMode" value="${not empty requestScope.mode and requestScope.mode eq 'mjsf'}" scope="request"/>
-<c:set var="isTinyMce" value="${not empty param.editor and param.editor eq 'tinymce'}" scope="request"/>
+<%-- Support for tinymce suspended --%>
+<%--<c:set var="isTinyMce" value="${not empty param.editor and param.editor eq 'tinymce'}" scope="request"/>--%>
+<c:set var="isTinyMce" value="false" />
+
 <c:set var="isSkinDebugMode" value="${not empty requestScope.mode} and ${requestScope.mode eq 'skindebug'}" scope="request"/>
 
 <c:set var="packages" value="Startup1_1,Startup1_2,Startup2,Docs" scope="request"/>
