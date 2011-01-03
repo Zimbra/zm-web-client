@@ -159,7 +159,7 @@ function() {
 							 mountKey       : "mountFolder",
 							 createFunc     : "ZmOrganizer.create",
 							 compareFunc    : "ZmBriefcase.sortCompare",
-							 deferrable     : false,
+							 deferrable     : true,
 							 newOp			: ZmOperation.NEW_BRIEFCASE,
 							 displayOrder	: 100,
 							 hasColor       : true,

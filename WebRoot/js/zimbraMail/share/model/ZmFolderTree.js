@@ -121,7 +121,7 @@ function(parent, obj, tree, elementType, path, account) {
 		}
 		// let's avoid deferring folders for offline since multi-account folder deferring is hairy
 		var hasGrants = (obj.acl && obj.acl.grant && obj.acl.grant.length > 0);
-		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type] && !appCtxt.isOffline && !hasGrants) {
+		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type] && !appCtxt.isOffline) {
 			var app = appCtxt.getApp(ZmOrganizer.APP[type]);
 			var defParams = {
 				type:			type,
@@ -144,6 +144,15 @@ function(parent, obj, tree, elementType, path, account) {
 	}
 
 	return folder;
+};
+
+ZmFolderTree.createAllDeferredFolders =
+function() {
+	var ac = appCtxt.getAppController();
+	for (var appId in ZmApp.ORGANIZER) {
+		var app = ac.getApp(appId);
+		app.createDeferred();
+	}
 };
 
 /**
