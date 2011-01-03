@@ -285,8 +285,10 @@ function() {
     //add event handlers for no results action link
     this._searchAllId = this.getHTMLElId() + "_showall"
     this._searchAllLink = document.getElementById(this._searchAllId);
-    this._searchAllLink._viewId = AjxCore.assignId(this);
-    Dwt.setHandler(this._searchAllLink, DwtEvent.ONCLICK, ZmTimeSuggestionView._onClick);
+    if(this._searchAllLink) {
+        this._searchAllLink._viewId = AjxCore.assignId(this);
+        Dwt.setHandler(this._searchAllLink, DwtEvent.ONCLICK, ZmTimeSuggestionView._onClick);
+    }
 };
 
 ZmTimeSuggestionView.prototype._getNoResultsMessage =
