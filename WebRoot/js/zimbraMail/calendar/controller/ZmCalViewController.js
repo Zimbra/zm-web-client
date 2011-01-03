@@ -3463,38 +3463,12 @@ function() {
 		params.endDate = new Date(sd.getTime() + dur);
 	}
 
-	if(appt && appt.isOrganizer()) {
+	if(appt) {
 		appCtxt.setStatusMsg({msg: ZmMsg.apptCreatingFromCopy, force: true});
 		this.duplicateAppt(appt, params);
-	}
-    else{
-        var origOrganizer=appt.organizer;
-        var orgToAttendee = ZmApptViewHelper.getAttendeeFromItem(origOrganizer, ZmCalBaseItem.PERSON);
-        var attendees = appt._attendees[ZmCalBaseItem.PERSON]
-        if(attendees && attendees.length){attendees.push(orgToAttendee);}
-        appt._attendees[ZmCalBaseItem.PERSON]=attendees;
-        var dlg = appCtxt.getYesNoMsgDialog();
-        dlg.registerCallback(DwtDialog.YES_BUTTON, this._proceedDuplicating, this, [appt, params, dlg]);
-        dlg.registerCallback(DwtDialog.NO_BUTTON, this._stopDuplicating, this, [dlg]);
-        var msg = AjxMessageFormat.format(ZmMsg.confirmApptDuplication);
-        dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-		dlg.popup();
-    }
+	}   
 
 	delete this._clipBoardAppts;
-};
-
-ZmCalViewController.prototype._proceedDuplicating =
-function(appt,params,dlg) {
-  dlg.popdown();
-  appCtxt.setStatusMsg({msg: ZmMsg.apptCreatingFromCopy, force: true});
-  this.duplicateAppt(appt, params);  
-};
-
-ZmCalViewController.prototype._stopDuplicating =
-function(dlg) {
-  dlg.popdown();
-  appCtxt.setStatusMsg({msg: ZmMsg.apptCopyStopped, force: true});  
 };
 
 ZmCalViewController.prototype._getDefaultFocusItem =
