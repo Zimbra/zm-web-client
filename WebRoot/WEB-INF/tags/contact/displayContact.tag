@@ -23,7 +23,8 @@
 <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
 <zm:getMailbox var="mailbox"/>
 <c:set var="folder" value="${zm:getFolder(pageContext, contact.folderId)}"/>
-<c:set var="color" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
+<fmt:message var="colorGray" key="colorGray"/>
+<c:set var="color" value="${zm:lightenColor(not empty folder ? ((folder.rgb != 'null') ? folder.rgb : folder.rgbColor) : colorGray)}"/>
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr>
     <td class='ZhBottomSep'>
