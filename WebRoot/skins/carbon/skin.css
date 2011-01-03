@@ -578,6 +578,6 @@ SELECT						{	@FieldBorder@	}
 .ZmConvExpanded, .BriefcaseItemExpanded {
     background-color:#ededed;
 }
-.RowDouble-matched {
+.Row-matched, .RowDouble-matched {
     background-color:@SearchResultColor@;
 }
