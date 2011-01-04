@@ -81,7 +81,7 @@ function(calItem, result) {
     calItem.setFromSavedResponse(result);
     
 	appCtxt.setStatusMsg(ZmMsg.taskSaved);
-    if(calItem.alarm == true) {
+    if(calItem.alarm == true || calItem.isAlarmModified()) {
         this._app.getReminderController().refresh();
     }    
 };

@@ -985,7 +985,7 @@ function(localOnly) {
 
                 var tasks = appCtxt.getFolderTree(acct).getByType(ZmOrganizer.TASKS);
                 for (var j = 0; j < tasks.length; j++) {
-                    if (tasks[j].nId == ZmOrganizer.ID_TASKS) {
+                    if (tasks[j].nId == ZmOrganizer.ID_TRASH) {
                         continue;
                     }
                     cc.push(tasks[j]);
