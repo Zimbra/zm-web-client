@@ -320,7 +320,7 @@ function(node, instNode) {
             this.startDate = new Date(startTime);
             this.uniqStartTime = this.startDate.getTime();
         } else {
-            this.startDate = null;     //bug:51912 temporarily added untill server sends startDate or come up with other solution
+            this.startDate = null;     //bug:51912 added to handle only two cases, with startDate & dueDate or without starDate & dueDate
         }
 	} else if(!node.dur && this.endDate) {
         this.startDate = this.endDate;
@@ -366,7 +366,7 @@ function() {
 
 	if (!alarmData) { return false; }
 
-    this._nextAlarmTime = this.adjustMS(alarmData.nextAlarm, 0);
+    this._nextAlarmTime = new Date(alarmData.nextAlarm);
     this._alarmInstStart = this.adjustMS(alarmData.alarmInstStart, this.tzo);
 
 	var currentTime = (new Date()).getTime();
@@ -402,8 +402,8 @@ function(message) {
 ZmTask.prototype._setTimeFromMessage =
 function(message, viewMode) {
     ZmCalItem.prototype._setTimeFromMessage.apply(this, arguments);
-    if(message.invite.components[0].e == null){
-        this.endDate = null;
+    if(message.invite.components[0].s == null){
+        this.startDate = null;
     }
 };
 
