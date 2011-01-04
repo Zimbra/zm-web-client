@@ -25,7 +25,7 @@
 <app:yuiInclude/>
 
 <script type="text/javascript">
-<!--
+<!--             
 var myEditor;
 
     var saveContentToTextarea = function(){
@@ -65,6 +65,20 @@ var myEditor;
         var html = document.getElementById('body').innerHTML;;
         if(html==""){
             myEditor.setEditorHTML("<br/>");
+        }
+        var _edit = arguments[1];
+        var idoc = _edit._getDoc();
+        if (idoc) {
+            var images = idoc.getElementsByTagName("img");
+            var path = ["/home/", "${mailbox.accountInfo.name}", "/"].join("");
+            var img;
+            for (var i = 0; i < images.length; i++) {
+                img = images[i];
+                var dfsrc = img.getAttribute("dfsrc");
+                if (dfsrc && dfsrc.indexOf("doc:") == 0) {
+                    img.src = [path, dfsrc.substring(4)].join('');
+                }
+            }
         }
     }, myEditor, true);
 
