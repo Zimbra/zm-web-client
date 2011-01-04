@@ -839,7 +839,10 @@ function(mode, isException) {
 		case ZmCalItem.MODE_DELETE_SERIES:
 		case ZmCalItem.MODE_DELETE_INSTANCE:
 			return "CancelAppointmentRequest";
-
+			
+		case ZmCalItem.MODE_PURGE:
+			return "ItemActionRequest";
+			
 		case ZmCalItem.MODE_FORWARD:
 		case ZmCalItem.MODE_FORWARD_SERIES:
 		case ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE:
