@@ -182,6 +182,11 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 		}
 	}
 
+    if (this._contactSource == ZmItem.CONTACT) {
+        query = query.replace(/\"/g, '\\"');
+        query = "\"" + query + "\"";
+    }
+
 	this._searchIcon.className = "DwtWait16Icon";
 
 	// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
