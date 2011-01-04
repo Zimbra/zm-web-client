@@ -2798,7 +2798,7 @@ function(recurrenceMode) {
 	    		forwardOp,
 	    		deleteOp,
 	    		ZmOperation.SEP];
-	if (recurrenceMode == ZmOperation.VIEW_APPT_SERIES) {
+	if (recurrenceMode != ZmOperation.VIEW_APPT_INSTANCE) {
 		retVal.push(ZmOperation.MOVE);
 	}
 	retVal.push(ZmOperation.TAG_MENU);
