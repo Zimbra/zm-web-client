@@ -284,10 +284,19 @@ function(list, noResultsOk, doAdd) {
 		}
         
         //bug:50890 in chronological order
-        if(htmlPastDueArr.length) htmlArr.push(htmlPastDueArr.join(""));
-        if(htmlTodayArr.length) htmlArr.push(htmlTodayArr.join(""));
-        if(htmlUpcomingArr.length) htmlArr.push(htmlUpcomingArr.join(""));
-        if(htmlNoDueArr.length) htmlArr.push(htmlNoDueArr.join(""));
+        var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, this.view);
+
+        if(sortBy == ZmSearch.DUE_DATE_DESC) {
+            if(htmlUpcomingArr.length) htmlArr.push(htmlUpcomingArr.join(""));
+            if(htmlTodayArr.length) htmlArr.push(htmlTodayArr.join(""));
+            if(htmlPastDueArr.length) htmlArr.push(htmlPastDueArr.join(""));
+            if(htmlNoDueArr.length) htmlArr.push(htmlNoDueArr.join(""));
+        } else {
+            if(htmlPastDueArr.length) htmlArr.push(htmlPastDueArr.join(""));
+            if(htmlTodayArr.length) htmlArr.push(htmlTodayArr.join(""));
+            if(htmlUpcomingArr.length) htmlArr.push(htmlUpcomingArr.join(""));
+            if(htmlNoDueArr.length) htmlArr.push(htmlNoDueArr.join(""));
+        }
 
 		if (htmlArr.length) {
 			this._parentEl.innerHTML = htmlArr.join("");
@@ -344,7 +353,13 @@ function() {
 
 ZmTaskListView.prototype._getCellId =
 function(item, field) {
-	return (field == ZmItem.F_PRIORITY) ? this._getFieldId(item, field) : null;
+    if(field == ZmItem.F_PRIORITY) {
+	    return this._getFieldId(item, field)
+    } else if (field == ZmItem.F_SELECTION) {
+		return this._getFieldId(item, ZmItem.F_SELECTION_CELL);
+	} else {
+		return DwtListView.prototype._getCellId.apply(this, arguments);
+	}
 };
 
 ZmTaskListView.prototype.setTask =
@@ -645,7 +660,7 @@ function(ev) {
 				this._resetList();
 			}
 
-			this._list.add(item, idx);	
+			this._list.add(item, idx);
 			appCtxt.getSearchController().redoSearch(appCtxt.getCurrentSearch());
             this._renderList(this.getList(),true,false);
             if(this._list && this._list.size() == 1) { this.setSelection(this._list.get(0)); }
