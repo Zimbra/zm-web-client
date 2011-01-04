@@ -233,10 +233,6 @@ function() {
 
 ZmPeopleAutocompleteListView.prototype._listSelectionListener =
 function(ev) {
-    var curList = ZmAutocompleteListView._activeAcList;
-    if (curList){
-        curList.show(false);
-    }
 };
 
 ZmPeopleAutocompleteListView.prototype._peopleItemListener =
@@ -251,7 +247,7 @@ ZmPeopleAutocompleteListView.prototype._peopleItemListener =
             var params = {action:ZmOperation.NEW_MESSAGE, toOverride: new AjxEmailAddress(this._activeContact.getEmail(),
             AjxEmailAddress.TO, this._activeContact.getFullName())};
 	        AjxDispatcher.run("Compose", params);
-        break;
+            break;
 
         case "NewAppt":
             AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
@@ -269,6 +265,8 @@ ZmPeopleAutocompleteListView.prototype._peopleItemListener =
 	        cc.show(list, true);
             break;
     }
+
+    this.show(false); 
 
  };
 
