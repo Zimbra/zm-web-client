@@ -1080,6 +1080,30 @@ function(view) {
 };
 
 /**
+ * Removes items from target list, paying attention to current mode. Also handles button state.
+ *
+ * @param {AjxVector|array|Object|hash}	list			a list of items or hash of lists
+ * @param {boolean}	skipNotify	if <code>true</code>, do not notify listeners
+ */
+ZmApptChooser.prototype.remove =
+function(list, skipNotify) {
+	list = (list instanceof AjxVector) ? list.getArray() : (list instanceof Array) ? list : [list];
+	if (this._mode == DwtChooser.MODE_MOVE) {
+		for (var i = 0; i < list.length; i++) {
+            var itemIndex = this.sourceListView.getItemIndex(list[i]);
+            //avoid adding duplicate entries
+            if(itemIndex == null) {
+			    var index = this._getInsertionIndex(this.sourceListView, list[i]);
+			    this.sourceListView.addItem(list[i], index, true);
+            }
+		}
+		this._sourceSize = list ? list.length : 0;
+	}
+	this.removeItems(list, DwtChooserListView.TARGET);
+};
+
+
+/**
  * This class creates a specialized source list view for the contact chooser. The items
  * it manages are of type ZmContact or its subclass ZmResource.
  *
