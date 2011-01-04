@@ -159,6 +159,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 <script type="text/javascript" language="JavaScript">
 
     window.appContextPath = '<%= contextPath %>';
+    window.appRequestLocaleId = "${locale}";
     window.contextPath = '<%= contextPath %>';
     window.isRestView = false;
     window.isTinyMCE = <%= isTinyMce %>;

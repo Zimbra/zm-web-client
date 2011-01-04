@@ -180,6 +180,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 <script type="text/javascript" language="JavaScript">
 
     window.appContextPath = "${zm:jsEncode(contextPath)}";
+    window.appRequestLocaleId = "${locale}";
     window.appDevMode     = ${isDevMode};
 	window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
 

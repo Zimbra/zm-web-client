@@ -117,6 +117,7 @@
 
 	appContextPath = "${contextPath}";
 	appCurrentSkin = "${skin}";
+    appRequestLocaleId = "${locale}";
 	// NOTE: Force zimlets to load individually to avoid aggregation!
 	appExtension   = "js";
 	window.appDevMode     = true;
