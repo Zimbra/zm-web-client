@@ -158,6 +158,7 @@
 	appContextPath = "${zm:jsEncode(contextPath)}";
 	appCurrentSkin = "${zm:jsEncode(skin)}";
 	appExtension   = "${zm:jsEncode(ext)}";
+	appRequestLocaleId = "${locale}";
 	window.appDevMode     = ${isDevMode};
     window.isScriptErrorOn   = ${isScriptErrorOn};
     window.isNotifyDebugOn   = ${isNotifyDebugOn};
