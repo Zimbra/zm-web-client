@@ -185,7 +185,9 @@
 	<tr id='${rowId}'>
 		<td width=100% valign=top>
 			<b>${reminderName}</b><br>
-			<$= ZmMsg.whenLabel $> ${durationText}<br>
+			<$ if (data.durationText != "") { $>
+			    <$= ZmMsg.whenLabel $> ${durationText}<br>
+            <$ } $>
 
 			<$ if (data.organizer) { $>
 				<$= ZmMsg.organizerLabel $> ${organizer}<br>

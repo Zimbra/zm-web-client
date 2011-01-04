@@ -37,9 +37,9 @@ ZmTask = function(list, id, folderId) {
 	this.priority = ZmCalItem.PRIORITY_NORMAL;
 	this.pComplete = 0;
 	this.status = ZmCalendarApp.STATUS_NEED;
-    this.startDate = new Date();
-    this.endDate = this.startDate;
-    this.remindDate = this.startDate;
+    this.startDate = "";
+    this.endDate = "";
+    this.remindDate = new Date();
     this.alarm = false;
 	this._useAbsoluteReminder = true;
 };
@@ -176,6 +176,22 @@ function() {
 };
 
 /**
+ * Gets the end time.
+ *
+ * @return	{Date}	the end time
+ */
+ZmTask.prototype.getEndTime = function() { return this.endDate ? this.endDate.getTime() : null; }; 	// end time in ms
+
+
+/**
+ * Gets the start time.
+ *
+ * @return	{Date}	the start time
+ */
+ZmTask.prototype.getStartTime = function() { return this.startDate ? this.startDate.getTime() : null; }; 	// start time in ms
+
+
+/**
  * Checks if the task is complete.
  * 
  * @return	{Boolean}	<code>true</code> if the task is complete
@@ -302,41 +318,34 @@ function(node, instNode) {
 	if (node.l) this.folderId = node.l;
 	if (node.s) this.size = node.s;
 	if (node.sf) this.sf = node.sf;
-	if (node.dueDate) {
-		this.endDate = new Date(parseInt(node.dueDate,10));
-	} else {
-		var part = this._getAttr(node, comp, "e");
-		var ed = (part && part.length) ? part[0].d : null;
-		this.endDate = ed ? AjxDateUtil.parseServerDateTime(ed) : null;
-		if (this.endDate) {
-			this.endDate.setHours(0,0,0);
-		}
-	}
-
-    var dur = this._getAttr(node, comp, "dur");
-	if (dur) {
-        if(this.endDate) {
-            var startTime = this.endDate.getTime() - (parseInt(dur));
-            this.startDate = new Date(startTime);
-            this.uniqStartTime = this.startDate.getTime();
-        } else {
-            this.startDate = null;     //bug:51912 added to handle only two cases, with startDate & dueDate or without starDate & dueDate
-        }
-	} else if(!node.dur && this.endDate) {
-        this.startDate = this.endDate;
-        this.uniqStartTime = this.startDate.getTime();
-    } else if(!node.dur && !this.endDate) { //bug: 47394 if no duration & enddate then startDate is null 
-        this.startDate = null;
-    }
-
-    if(node.alarm) this.alarm = node.alarm;
-    if(node.alarmData) this.alarmData = this._getAttr(node, instNode, "alarmData");
 
     this.allDayEvent	= (instNode ? instNode.allDay : null || node.allDay)  ? "1" : "0";
 
-    this.tzo = 0;
+    var nodeInst = node.inst && node.inst.length > 0 ? node.inst[0] : null;
+    var tzo = this.tzo = nodeInst && nodeInst.tzo != null ? nodeInst.tzo : 0;
+    var tzoDue = this.tzoDue = nodeInst && nodeInst.tzoDue != null ? nodeInst.tzoDue : 0;
 
-	if (node.name || comp)				this.name		= this._getAttr(node, comp, "name");
+    if (nodeInst && nodeInst.s) {
+		var adjustMs = this.isAllDayEvent() ? (tzo + new Date(nodeInst.s).getTimezoneOffset()*60*1000) : 0;
+		var startTime = parseInt(nodeInst.s,10) + adjustMs;
+		this.startDate = new Date(startTime);
+		this.uniqStartTime = this.startDate.getTime();
+	} else {
+        this.startDate = null;
+    }
+
+    if (nodeInst && nodeInst.dueDate) {
+        var adjustMs = this.isAllDayEvent() ? (tzoDue + new Date(nodeInst.dueDate).getTimezoneOffset()*60*1000) : 0;
+		var endTime = parseInt(nodeInst.dueDate,10) + adjustMs;
+		this.endDate = new Date(endTime);
+	} else {
+        this.endDate = null;
+    }
+
+    if(node.alarm) this.alarm = node.alarm;
+    if(node.alarmData) this.alarmData = this._getAttr(node, comp, "alarmData");
+
+    if (node.name || comp)				this.name		= this._getAttr(node, comp, "name");
 	if (node.loc || comp)				this.location	= this._getAttr(node, comp, "loc");
 	if (node.allDay || comp)			this.setAllDayEvent(this._getAttr(node, comp, "allDay"));
 	if (node.priority || comp)			this.priority	= parseInt(this._getAttr(node, comp, "priority"));

@@ -467,6 +467,9 @@ function(compNum) {
 	var cn = compNum || 0;
 	var sd = this.getServerStartDate(cn);
 	var ed = this.getServerEndDate(cn);
+
+    if(!sd) return false;
+
 	return (sd.getDate() != ed.getDate()) || (sd.getMonth() != ed.getMonth()) || (sd.getFullYear() != ed.getFullYear());
 };
 
@@ -698,7 +701,7 @@ function(compNum, emptyAllDay, startOnly, isText, startDate, endDate) {
 			}
 			return ZmInvite._daysFormatter.format([startDay, endDay]);
 		} 
-		return AjxDateFormat.getDateInstance(AjxDateFormat.FULL).format(sd);
+		return sd ? AjxDateFormat.getDateInstance(AjxDateFormat.FULL).format(sd) : "";
 	}
 
     var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
