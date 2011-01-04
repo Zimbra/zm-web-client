@@ -412,7 +412,7 @@ function(calItem) {
 	}
 	calItem.setStartDate(startDate, true);
 	calItem.setEndDate(endDate, true);
-	if (Dwt.getVisibility(this._tzoneSelectStart.getHtmlElement())) {
+	if (Dwt.getVisibility(this._tzoneSelectStartElement)) {
         calItem.timezone = this._tzoneSelectStart.getValue();
         calItem.setEndTimezone(this._tzoneSelectEnd.getValue());
     }
@@ -1503,8 +1503,14 @@ function(dateInfo) {
 		showTimezone = appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) ||
 					   dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 	}
-    if (this._tzoneSelectStartElement) Dwt.setVisible(this._tzoneSelectStartElement, showTimezone);
-    if (this._tzoneSelectEndElement) Dwt.setVisible(this._tzoneSelectEndElement, showTimezone);
+    if (this._tzoneSelectStartElement) {
+        Dwt.setVisible(this._tzoneSelectStartElement, showTimezone);
+        Dwt.setVisibility(this._tzoneSelectStartElement, showTimezone);
+    }
+    if (this._tzoneSelectEndElement) {
+        Dwt.setVisible(this._tzoneSelectEndElement, showTimezone);
+        Dwt.setVisibility(this._tzoneSelectEndElement, showTimezone);
+    }
 };
 
 ZmApptEditView.prototype._showTimeFields =
