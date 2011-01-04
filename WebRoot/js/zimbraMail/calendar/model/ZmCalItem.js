@@ -120,10 +120,16 @@ ZmCalItem.MODE_FORWARD_INVITE			= 13;
  * Defines the "propose" mode.
  */
 ZmCalItem.MODE_PROPOSE_TIME 			= 14;
+
+/**
+ * Defines the "purge" (delete from trash) mode.
+ */
+ZmCalItem.MODE_PURGE 					= 15
+
 /**
  * Defines the "last" mode index constant.
  */
-ZmCalItem.MODE_LAST					    = 14;
+ZmCalItem.MODE_LAST					    = 15;
 
 ZmCalItem.FORWARD_MAPPING = {};
 ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD]                   = ZmCalItem.MODE_EDIT;
@@ -1577,86 +1583,100 @@ function(callback){
  */
 ZmCalItem.prototype._doCancel =
 function(mode, callback, msg, batchCmd, result) {
-
-    if(mode == ZmCalItem.MODE_DELETE_SERIES && this._cancelFutureInstances) {
-
-        var recurrence = this._recurrence;
-        var untilDate = new Date(this.getOrigStartDate().getTime());
-        untilDate.setTime(untilDate.getTime() - AjxDateUtil.MSEC_PER_DAY);
-        recurrence.repeatEndDate = untilDate;
-        recurrence.repeatEndType = "D";
-
-        this.viewMode = ZmCalItem.MODE_EDIT_SERIES;
-        this._sendCancelMsg(callback);
-        return;
-    }
-
-	if (mode == ZmCalItem.MODE_DELETE ||
-		mode == ZmCalItem.MODE_DELETE_SERIES ||
-		mode == ZmCalItem.MODE_DELETE_INSTANCE)
-	{
+	if(this.folderId == ZmOrganizer.ID_TRASH) {
+		mode = ZmCalItem.MODE_PURGE;
 		var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode), "urn:zimbraMail");
+		var action = soapDoc.set("action");
+		action.setAttribute("op", "delete");
+		action.setAttribute("id", this.id);
 		var accountName = this.getRemoteFolderOwner();
-		this._addInviteAndCompNum(soapDoc);
-
-		// Exceptions should be treated as instances (bug 15817)
-		if (mode == ZmCalItem.MODE_DELETE_INSTANCE || this.isException) {
-			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
-			var inst = soapDoc.set("inst");
-			var allDay = this.isAllDayEvent();
-			var format = allDay ? AjxDateUtil.getServerDate : AjxDateUtil.getServerDateTime;
-			inst.setAttribute("d", format(this.getOrigStartDate()));
-			if (!allDay && this.timezone) {
-				inst.setAttribute("tz", this.timezone);
-
-				var clientId = AjxTimezone.getClientId(this.timezone);
-				ZmTimezone.set(soapDoc, clientId, null, true);
-			}
-		}
-
-		var m = soapDoc.set("m");
-		if (this.isOrganizer() && !this.inviteNeverSent) {
-			// NOTE: We only use the explicit list of addresses if sending via
-			//       a message compose.
-			if (msg) {
-				for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
-					var type = ZmMailMsg.ADDRS[i];
-
-					// if on-behalf-of, dont set the from address
-					if (accountName && type == AjxEmailAddress.FROM) { continue; }
-
-					var vector = msg.getAddresses(type);
-					var count = vector.size();
-					for (var j = 0; j < count; j++) {
-						var addr = vector.get(j);
-						var e = soapDoc.set("e", null, m);
-						e.setAttribute("a", addr.getAddress());
-						e.setAttribute("t", AjxEmailAddress.toSoapType[type]);
-					}
-				}
-
-				// set from address to on-behalf-of if applicable
-				if (accountName) {
-					var e = soapDoc.set("e", null, m);
-					e.setAttribute("a", accountName);
-					e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
-				}
-			}
-			else {
-				this._addAttendeesToSoap(soapDoc, null, m, null, accountName);
-			}
-		}
-        var subject = (msg && msg.subject) ? msg.subject : ([ZmMsg.cancelled, ": ", this.name].join(""));
-		soapDoc.set("su", subject, m);
-		this._addNotesToSoap(soapDoc, m, true);
-
 		if (batchCmd) {
 			batchCmd.addRequestParams(soapDoc, callback);
 		} else {
 			this._sendRequest(soapDoc, accountName, callback);
 		}
 	} else {
-		if (callback) callback.run();
+	    if(mode == ZmCalItem.MODE_DELETE_SERIES && this._cancelFutureInstances) {
+	
+	        var recurrence = this._recurrence;
+	        var untilDate = new Date(this.getOrigStartDate().getTime());
+	        untilDate.setTime(untilDate.getTime() - AjxDateUtil.MSEC_PER_DAY);
+	        recurrence.repeatEndDate = untilDate;
+	        recurrence.repeatEndType = "D";
+	
+	        this.viewMode = ZmCalItem.MODE_EDIT_SERIES;
+	        this._sendCancelMsg(callback);
+	        return;
+	    }
+		
+		if (mode == ZmCalItem.MODE_DELETE ||
+			mode == ZmCalItem.MODE_DELETE_SERIES ||
+			mode == ZmCalItem.MODE_DELETE_INSTANCE)
+		{
+	
+			var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode), "urn:zimbraMail");
+			var accountName = this.getRemoteFolderOwner();
+			this._addInviteAndCompNum(soapDoc);
+	
+			// Exceptions should be treated as instances (bug 15817)
+			if (mode == ZmCalItem.MODE_DELETE_INSTANCE || this.isException) {
+				soapDoc.setMethodAttribute("s", this.getOrigStartTime());
+				var inst = soapDoc.set("inst");
+				var allDay = this.isAllDayEvent();
+				var format = allDay ? AjxDateUtil.getServerDate : AjxDateUtil.getServerDateTime;
+				inst.setAttribute("d", format(this.getOrigStartDate()));
+				if (!allDay && this.timezone) {
+					inst.setAttribute("tz", this.timezone);
+	
+					var clientId = AjxTimezone.getClientId(this.timezone);
+					ZmTimezone.set(soapDoc, clientId, null, true);
+				}
+			}
+	
+			var m = soapDoc.set("m");
+			if (this.isOrganizer() && !this.inviteNeverSent) {
+				// NOTE: We only use the explicit list of addresses if sending via
+				//       a message compose.
+				if (msg) {
+					for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
+						var type = ZmMailMsg.ADDRS[i];
+	
+						// if on-behalf-of, dont set the from address
+						if (accountName && type == AjxEmailAddress.FROM) { continue; }
+	
+						var vector = msg.getAddresses(type);
+						var count = vector.size();
+						for (var j = 0; j < count; j++) {
+							var addr = vector.get(j);
+							var e = soapDoc.set("e", null, m);
+							e.setAttribute("a", addr.getAddress());
+							e.setAttribute("t", AjxEmailAddress.toSoapType[type]);
+						}
+					}
+	
+					// set from address to on-behalf-of if applicable
+					if (accountName) {
+						var e = soapDoc.set("e", null, m);
+						e.setAttribute("a", accountName);
+						e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+					}
+				}
+				else {
+					this._addAttendeesToSoap(soapDoc, null, m, null, accountName);
+				}
+			}
+	        var subject = (msg && msg.subject) ? msg.subject : ([ZmMsg.cancelled, ": ", this.name].join(""));
+			soapDoc.set("su", subject, m);
+			this._addNotesToSoap(soapDoc, m, true);
+	
+			if (batchCmd) {
+				batchCmd.addRequestParams(soapDoc, callback);
+			} else {
+				this._sendRequest(soapDoc, accountName, callback);
+			}
+		} else {
+			if (callback) callback.run();
+		}
 	}
 };
 
