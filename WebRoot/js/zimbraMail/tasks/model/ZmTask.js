@@ -385,6 +385,19 @@ function(node, comp, name) {
 };
 
 /**
+ * Checks if alarm is modified.
+ *
+ * @return	{Boolean}	<code>true</code> if the alarm is modified
+ */
+ZmTask.prototype.isAlarmModified =
+function() {
+    if(this._orig.alarm == true && this.alarm == false) {
+        return true;
+    }
+    return false;
+}
+
+/**
  * @private
  */
 ZmTask.prototype._setExtrasFromMessage =
