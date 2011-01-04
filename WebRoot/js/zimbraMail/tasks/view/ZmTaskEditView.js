@@ -218,8 +218,8 @@ function() {
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
 
 	if (subj && subj.length) {
-		var endDate = this._endDateField.value;
-		if (endDate.length > 0 && (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField)))
+		var startDate = this._startDateField.value;
+		if (startDate.length > 0 && (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField)))
 		{
 			errorMsg = ZmMsg.errorInvalidDates;
 		}
