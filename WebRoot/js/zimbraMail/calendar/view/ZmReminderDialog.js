@@ -341,16 +341,19 @@ function() {
 ZmReminderDialog.prototype._getDurationText =
 function(appt) {
 	var isMultiDay = appt.isMultiDay();
-	var start = appt._alarmInstStart ? new Date(appt._alarmInstStart) : appt.startDate;
+	var start = appt._alarmInstStart ? new Date(appt._alarmInstStart) : appt.startDate ? appt.startDate : null;
 	// bug: 28598 - alarm for recurring appt might still point to old alarm time
 	// cannot take endTime directly
 	var endTime = appt._alarmInstStart ? (start.getTime() + appt.getDuration()) : appt.getEndTime();
 	var end = new Date(endTime);
 
+    //for task
+    if(appt.type == ZmItem.TASK && !start && !endTime) { return null; }
+
 	if (appt.isAllDayEvent()) {
-		end = new Date(endTime - (isMultiDay ? 2 * AjxDateUtil.MSEC_PER_HOUR : 0));
+		end = appt.type != ZmItem.TASK ? new Date(endTime - (isMultiDay ? 2 * AjxDateUtil.MSEC_PER_HOUR : 0)) : end;
 		var pattern = isMultiDay ? ZmMsg.apptTimeAllDayMulti : ZmMsg.apptTimeAllDay;
-		return AjxMessageFormat.format(pattern, [start, end]);
+		return start ? AjxMessageFormat.format(pattern, [start, end]) : AjxMessageFormat.format(pattern, [end]); //for task
 	}
 	var pattern = isMultiDay ? ZmMsg.apptTimeInstanceMulti : ZmMsg.apptTimeInstance;
 	return AjxMessageFormat.format(pattern, [start, end, ""]);

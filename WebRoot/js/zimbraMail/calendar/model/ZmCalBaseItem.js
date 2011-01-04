@@ -244,12 +244,18 @@ ZmCalBaseItem.prototype.isMultiDay =
 function() {
 	var start = this.startDate;
 	var end = this.endDate;
+
+    if(!start && !end) { return false; }
+
+    if(!start) { return false; }
+
 	if (end.getHours() == 0 && end.getMinutes() == 0 && end.getSeconds() == 0) {
 		// if end is the beginning of day, then disregard that it
 		// technically crossed a day boundary for the purpose of
 		// determining if it is a multi-day appt
 		end = new Date(end.getTime() - 2 * AjxDateUtil.MSEC_PER_HOUR);
 	}
+
 	return (start.getDate() != end.getDate()) ||
 		   (start.getMonth() != end.getMonth()) ||
 		   (start.getFullYear() != end.getFullYear());
