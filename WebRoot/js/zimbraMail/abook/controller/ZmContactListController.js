@@ -867,8 +867,10 @@ function(ev) {
 		url = "/h/printcontacts?id=" + ids.join("&id=");
 		url = url + "&st=gal";
 		var query = this._currentSearch && this._currentSearch.query;
-		if (query)
+		if (query && contacts.length > 1)
 			url += "&sq="+query;
+        else if(contacts.length==1)
+            url += "&sq=" + contacts[0].getFileAs();
 	}
 	if (appCtxt.isOffline) {
 		var folderId = this._folderId || ZmFolder.ID_CONTACTS;
@@ -884,7 +886,6 @@ function(ev) {
 ZmContactListController.prototype._printAddrBookListener =
 function(ev) {
 	var url;
-
 	if (this._folderId && !this._list._isShared) {
 		url = "/h/printcontacts?sfi=" + this._folderId;
 	} else {
@@ -909,8 +910,10 @@ function(ev) {
 	if (this.isGalSearch()) {
 		url = url + "&st=gal";
 		var query = this._currentSearch && this._currentSearch.query;
-		if (query)
+		if (query && list && list.length > 1)
 			url += "&sq="+query;
+        else if (list && list.length == 1)
+            url += "&sq="+list[0].getFileAs();
 	}
 	if (appCtxt.isOffline) {
 		var folderId = this._folderId || ZmFolder.ID_CONTACTS;
