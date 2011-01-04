@@ -693,8 +693,8 @@ function(result) {
 		}
 	} else if (obj.name != appCtxt.getUsername()) {
 		DBG.println(AjxDebug.DBG1, "AUTH TOKEN CHANGED, NEW USER: " + obj.name + " (old user: " + appCtxt.getUsername() + ")");
+		ZmCsfeCommand.clearAuthToken();
 		var loginDialog = appCtxt.getLoginDialog();
-		loginDialog.registerCallback(this._loginCallback, this);
 		loginDialog.setError(ZmMsg.authChanged);
 		var reloginMode = false;
 		loginDialog.setReloginMode(reloginMode);
