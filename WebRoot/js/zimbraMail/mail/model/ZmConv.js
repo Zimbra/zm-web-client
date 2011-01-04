@@ -737,3 +737,15 @@ function(type) {
 	}
 	return AjxVector.fromArray(list);
 };
+
+/**
+ * Gets the status tool tip.
+ * 
+ * @return	{String}	the tool tip
+ */
+ZmConv.prototype.getStatusTooltip =
+function() {
+	var status = [];
+	if (this.isScheduled)	{ status.push(ZmMsg.scheduled); }
+	return status.join(", ");
+};
