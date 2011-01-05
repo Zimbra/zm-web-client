@@ -658,14 +658,24 @@ function(sched, attendee, type) {
 
 ZmFreeBusySchedulerView.prototype._getStartTime =
 function() {
-	var startDate = AjxDateUtil.simpleParseDateStr(this._dateInfo.startDate);
-	return startDate.getTime();
+	return this._getStartDate().getTime();
 };
 
 ZmFreeBusySchedulerView.prototype._getEndTime =
 function() {
-	var endDate = AjxDateUtil.simpleParseDateStr(this._dateInfo.endDate);
-	return endDate.getTime();
+	return this._getEndDate().getTime();
+};
+
+ZmFreeBusySchedulerView.prototype._getStartDate =
+function() {
+    var startDate = AjxDateUtil.simpleParseDateStr(this._dateInfo.startDate);
+    return AjxTimezone.convertTimezone(startDate, this._dateInfo.timezone, AjxTimezone.DEFAULT);
+};
+
+ZmFreeBusySchedulerView.prototype._getEndDate =
+function() {
+    var endDate = AjxDateUtil.simpleParseDateStr(this._dateInfo.endDate);
+    return AjxTimezone.convertTimezone(endDate, this._dateInfo.timezone, AjxTimezone.DEFAULT);
 };
 
 ZmFreeBusySchedulerView.prototype._setDateInfo =
@@ -1179,12 +1189,14 @@ function(status, slots, table, sched) {
 	var row = table.rows[0];
 	var className = this._getClassForStatus(status);
 
-    var currentDate = AjxDateUtil.simpleParseDateStr(this._dateInfo.startDate);
+    var currentDate = this._getStartDate();
 
 	if (row && className) {
 		// figure out the table cell that needs to be colored
 		for (var i = 0; i < slots.length; i++) {
-            this._fbCache.convertWorkingHours(slots[i], currentDate);
+            if(status == ZmFreeBusySchedulerView.STATUS_WORKING) {
+                this._fbCache.convertWorkingHours(slots[i], currentDate);
+            }
 			var startIdx = this._getIndexFromTime(slots[i].s);
 			var endIdx = this._getIndexFromTime(slots[i].e, true);
 
@@ -1304,15 +1316,21 @@ function(sched, isAllAttendees) {
  */
 ZmFreeBusySchedulerView.prototype._getIndexFromTime =
 function(time, isEnd, adjust) {
-	var d = (time instanceof Date) ? time : new Date(time);
-	var hourmin = d.getHours() * 60 + d.getMinutes();
-	adjust = adjust != null ? adjust : true;
-	if (adjust && this._dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT)) {
-		var offset1 = AjxTimezone.getOffset(AjxTimezone.DEFAULT, d);
-		var offset2 = AjxTimezone.getOffset(AjxTimezone.getClientId(this._dateInfo.timezone), d);
-		hourmin += offset2 - offset1;
-	}
-	var idx = Math.floor(hourmin / 60) * 2;
+    var hourmin,
+        seconds;
+    adjust = adjust != null ? adjust : true;
+    if(adjust) {
+        var dayStartTime = this._getStartTime();
+        var indexTime = (time instanceof Date) ? time.getTime() : time;
+        hourmin = (indexTime - dayStartTime)/60000; //60000 = 1000(msec) * 60 (sec) - hence, dividing by 60000 means calculating the minutes and
+        seconds = (indexTime - dayStartTime)%60000; //mod by 60000 means calculating the seconds remaining
+    }
+    else {
+        var d = (time instanceof Date) ? time : new Date(time);
+        hourmin = d.getHours() * 60 + d.getMinutes();
+        seconds = d.getSeconds();
+    }
+    var idx = Math.floor(hourmin / 60) * 2;
 	var minutes = hourmin % 60;
 	if (minutes >= 30) {
 		idx++;
@@ -1320,8 +1338,8 @@ function(time, isEnd, adjust) {
 	// end times don't mark blocks on half-hour boundary
 	if (isEnd && (minutes == 0 || minutes == 30)) {
 		// block even if it exceeds 1 second
-		var s = d.getSeconds();
-		if (s == 0) {
+		//var s = d.getSeconds();
+		if (seconds == 0) {
 			idx--;
 		}
 	}
@@ -1482,7 +1500,7 @@ function(appt, div) {
 
         var row = table.rows[0];
 
-        var currentDate = AjxDateUtil.simpleParseDateStr(this._dateInfo.startDate);
+        var currentDate = this._getStartDate();
 
         if (row) {
             // figure out the table cell that needs to be colored
