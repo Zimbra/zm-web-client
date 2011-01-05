@@ -318,7 +318,7 @@ function(item) {
 ZmDetailListView.prototype.expand =
 function(item, revisions){
 
-    if(!revisions || revisions.size() == 0 ) return;
+    if(!item || !revisions || revisions.size() == 0 ) return;
 
     this._addRevisionRows(item, revisions);
        
@@ -366,14 +366,14 @@ function(){
     for(var id in this._expanded){
         if(this._expanded[id]){
             item = list.getById(id);
-            this.collapse(item);
+            if(item) this.collapse(item);
         }
     }
 };
 
 ZmDetailListView.prototype.refreshItem =
 function(item){
-     if(this._expanded[item.id]){
+     if(item && this._expanded[item.id]){
          var rowIds = this._itemRowIdList[item.id];
      }
 };
