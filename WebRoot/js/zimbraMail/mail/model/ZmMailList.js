@@ -666,8 +666,14 @@ ZmMailList.prototype._getTcon =
 function(items, nId) {
 	var chars = [];
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
-	var searchFolder = this.search && appCtxt.getById(this.search.folderId);
-	nId = nId || (searchFolder && searchFolder.nId);
+
+    if(!nId){
+        var searchFolder = this.search && appCtxt.getById(this.search.folderId);
+        if(searchFolder){
+            nId = searchFolder.isRemote() ? searchFolder.rid : searchFolder.nId;
+        }
+    }
+
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
 		if (nId != folder) {
