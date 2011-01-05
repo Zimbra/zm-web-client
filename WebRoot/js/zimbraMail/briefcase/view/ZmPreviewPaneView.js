@@ -371,6 +371,11 @@ function(ev){
     if(!item) {
     	return;
     }
+
+    var noChange = ev && ev._details && ev._details.oldFolderId == item.folderId;
+    if ((ev.event == ZmEvent.E_MOVE && noChange) || ev.event == ZmEvent.E_DELETE)
+        return;
+
     if(ev.field == ZmItem.F_EXPAND && this._detailListView._isExpandable(item)){
         this._detailListView.expandItem(item);   
     } else if(this._controller.isReadingPaneOn() && item){
