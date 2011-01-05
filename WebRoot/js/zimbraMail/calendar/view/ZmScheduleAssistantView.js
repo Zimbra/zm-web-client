@@ -154,7 +154,11 @@ function(ev) {
 ZmScheduleAssistantView.prototype._prefChangeListener =
 function() {
     this._resources = [];
-    this.suggestAction(true);
+    if(!this.isSuggestionsEnabled()) {
+        this.reset();
+    }else {
+        this.suggestAction(true);
+    }
 };
 
 ZmScheduleAssistantView.prototype.getPrefDialog =
@@ -176,7 +180,7 @@ function(focusOnSuggestion, showAllSuggestions) {
     };
 
     this._timeSuggestions.setLoadingHtml();
-    if(this._resources.length == 0) {
+    if(this._resources.length == 0 && this.isSuggestRooms()) {
         this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
     }else {
         this._findFreeBusyInfo(params);
@@ -266,7 +270,7 @@ ZmScheduleAssistantView.prototype.reset =
 function(date, attendees, forceRefresh) {
     this.resizeTimeSuggestions();
 
-    if(!this._editView.isSuggestionsNeeded()) {
+    if(!this._editView.isSuggestionsNeeded() || !this.isSuggestionsEnabled()) {
         if(this._timeSuggestions) this._timeSuggestions.removeAll();
         this.clearMiniCal();
         return;
@@ -315,8 +319,11 @@ function(callback, sortBy) {
     if(this._prefDialog) {
         for (var i = 0; i < ZmTimeSuggestionPrefDialog.PREF_FIELDS.length; i++) {
             var sf = ZmTimeSuggestionPrefDialog.PREF_FIELDS[i];
-            if(sf == ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD || sf == ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD) continue;
+
+            if(!ZmTimeSuggestionPrefDialog.isSearchCondition(sf)) continue;
+
             value = AjxStringUtil.trim(this._prefDialog.getPreference(sf));
+
             if (value.length) {
                 var attr = ZmTimeSuggestionPrefDialog.SF_ATTR[sf];
                 var op = ZmTimeSuggestionPrefDialog.SF_OP[sf] ? ZmTimeSuggestionPrefDialog.SF_OP[sf] : "has";
@@ -574,6 +581,16 @@ function() {
       return this._prefDialog ? (this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD) == 'true') : false;
 };
 
+ZmScheduleAssistantView.prototype.isSuggestionsEnabled =
+function() {
+      return this._prefDialog ? (this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.DISABLE_SUGGESTIONS_FIELD) != 'true') : true;
+};
+
+ZmScheduleAssistantView.prototype.isSuggestRooms =
+function() {
+      return this._prefDialog ? (this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD) != 'false') : true;
+};
+
 ZmScheduleAssistantView.prototype.getAttendees =
 function() {
     return this._attendees;
@@ -623,26 +640,29 @@ function(startTime, endTime, params) {
         }
     }
 
-    var list = this._resources, resource;
-	for (var i = list.length; --i >= 0;) {
-		attendee = list[i];
-		resource = attendee.getEmail();
+    if(this.isSuggestRooms()) {
 
-		if (resource instanceof Array) {
-			resource = resource[0];
-		}
-        sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, resource);
-        isFree = true;
-        if(sched.b) isFree = isFree && this.isBooked(sched.b, startTime, endTime);
-        if(sched.t) isFree = isFree && this.isBooked(sched.t, startTime, endTime);
-        if(sched.u) isFree = isFree && this.isBooked(sched.u, startTime, endTime);
+        var list = this._resources, resource;
+        for (var i = list.length; --i >= 0;) {
+            attendee = list[i];
+            resource = attendee.getEmail();
 
-        //collect all the item indexes of the locations available at this slot
-        if(isFree) {
-            if(!params.miniCalSuggestions) fbInfo.locations.push(params.itemIndex[resource]);
-            fbInfo.availableLocations++;
+            if (resource instanceof Array) {
+                resource = resource[0];
+            }
+            sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, resource);
+            isFree = true;
+            if(sched.b) isFree = isFree && this.isBooked(sched.b, startTime, endTime);
+            if(sched.t) isFree = isFree && this.isBooked(sched.t, startTime, endTime);
+            if(sched.u) isFree = isFree && this.isBooked(sched.u, startTime, endTime);
+
+            //collect all the item indexes of the locations available at this slot
+            if(isFree) {
+                if(!params.miniCalSuggestions) fbInfo.locations.push(params.itemIndex[resource]);
+                fbInfo.availableLocations++;
+            }
         }
-	}
+    }
 
     //mini calendar suggestions should avoid collecting all computed information in array for optimiziation
     if(!params.miniCalSuggestions && fbInfo.availableUsers > 0) {
@@ -974,7 +994,9 @@ function(params) {
             fbStat = this.computeAvailability(dayStartTime, dayStartTime + duration, params);
             dayStartTime += AjxDateUtil.MSEC_PER_HALF_HOUR;
 
-            if(fbStat && fbStat.availableUsers == this._totalUsers && fbStat.availableLocations > 0) {
+            var roomsAvailable = (fbStat.availableLocations > 0);
+            var includeRooms   = this.isSuggestRooms();
+            if(fbStat && fbStat.availableUsers == this._totalUsers && (!includeRooms || roomsAvailable)) {
                 this._addColorCode(params, startTime, ZmMiniCalendar.COLOR_GREEN);
                 freeSlotFound = true;
                 //found atleast one free slot that can accomodate all attendees and atleast one recources
