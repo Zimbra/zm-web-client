@@ -127,7 +127,11 @@ function(address, match) {
 	this._addressHash[address] = true;
 	this._bubbleAddress[bubbleId] = address;
 
-	this._holder.insertBefore(bubble, this._input);
+	if (this._input.parentNode == this._holder) {
+		this._holder.insertBefore(bubble, this._input);
+	} else {
+		this._holder.appendChild(bubble);
+	}
 	Dwt.setHandler(bubble, DwtEvent.ONCLICK, ZmAddressInputField.onClick);
 	this.focus();
 };

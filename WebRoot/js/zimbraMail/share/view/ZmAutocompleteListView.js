@@ -381,6 +381,8 @@ function(ev) {
 	aclv._acAction.obj = aclv;
 	aclv._acAction.args = [ ev1 ];
 	DBG.println(AjxDebug.DBG2, "scheduling autocomplete");
+	aclv._autocompleting = true;
+
 	aclv._acActionId = AjxTimedAction.scheduleAction(aclv._acAction, aclv._acInterval);
 	
 	return ZmAutocompleteListView._echoKey(true, ev);
@@ -484,6 +486,7 @@ function(info) {
 		this._autocomplete(chunk, callback);
 	} else if (info.change) {
 		// quick completion was done
+		this._autocompleting = false;
 		DBG.println(AjxDebug.DBG2, "autocomplete, new text: " + info.text + "; element: " + this._element.value);
 		this._updateField(info.text, info.match);
 	}
@@ -713,6 +716,7 @@ function(str, chunk, text, start, callback, list) {
 
 	var retValue;
 	var change = false;
+	this._autocompleting = false;
 
 	if (!retValue) {
 		if (list && list.length) {
@@ -831,12 +835,14 @@ function(text, match, ev) {
 // Updates the element with the currently selected match.
 ZmAutocompleteListView.prototype._update =
 function(hasDelim, match, ev) {
-
-	var value = this._element ? this._element.value : "";
-	var result = this._complete(value, null, hasDelim, match);
-	if (result) {
-		this._updateField(result.text, result.match, ev);
+	if (!this._autocompleting) { // Trying to update while autocomplete is busy usually results in undesired results
+		var value = this._element ? this._element.value : "";
+		var result = this._complete(value, null, hasDelim, match);
+		if (result) {
+			this._updateField(result.text, result.match, ev);
+		}
 	}
+	this._popdown();
 };
 
 // Listeners
