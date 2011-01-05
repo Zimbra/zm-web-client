@@ -40,7 +40,14 @@
             <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.png"/>--%>
             <span class="SmlIcnHldr Attachment">&nbsp;</span>
             <input <c:if test="${checked}">checked </c:if>type=checkbox name="${name}" value="${value}">
-            <a target="_blank" href="${fn:escapeXml(url)}&amp;disp=i">${fn:escapeXml(displayName)}</a>&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>
+            <c:choose>
+            <c:when test="${zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked')}">
+	            ${fn:escapeXml(displayName)}&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>
+			</c:when>
+			<c:otherwise>
+                <a target="_blank" href="${fn:escapeXml(url)}&amp;disp=i">${fn:escapeXml(displayName)}</a>&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>
+            </c:otherwise>
+            </c:choose>
         </span>
         </div>
 </div>

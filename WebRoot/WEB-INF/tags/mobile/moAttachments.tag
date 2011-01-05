@@ -50,7 +50,14 @@
                             <c:if test="${mailbox.features.briefcases && ua.isiPad eq false}"><input type="checkbox" name="attachIds" value="${fn:escapeXml(partId)}"/></c:if> <mo:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}"/>
                         </span>
                         <span>
-                            <a href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${zm:displaySize(pageContext,part.size)})
+                        <c:choose>
+                            <c:when test="${zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked')}">
+                                <b>${fn:escapeXml(pname)}</b>(${zm:displaySize(pageContext,part.size)})
+                            </c:when>
+                            <c:otherwise>
+                                <a href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${zm:displaySize(pageContext,part.size)})
+                            </c:otherwise>
+                            </c:choose>
                         </span>
                         <c:if test="${mailbox.features.viewInHtml and part.isViewAsHtmlTarget}">
                             <span>

@@ -1456,7 +1456,7 @@ function() {
 				htmlArr[idx++] = att.size;
 				htmlArr[idx++] = ") ";
 			}
-			if (att.htmlLink) {
+			if (att.htmlLink && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
 				htmlArr[idx++] = att.htmlLink;
 				htmlArr[idx++] = ZmMsg.preview;
 				htmlArr[idx++] = "</a>";
@@ -1465,7 +1465,7 @@ function() {
 				htmlArr[idx++] = ZmMsg.addressBook;
 				htmlArr[idx++] = "</a>";
 			}
-			if (att.download) {
+			if (att.download && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
 				if (att.htmlLink || att.vcardLink) {
 					htmlArr[idx++] = " | ";
 				}
