@@ -138,6 +138,7 @@
 
     window.contextPath = '${pageContext.request.contextPath}';    
     window.appContextPath = '${pageContext.request.contextPath}';
+    window.appRequestLocaleId = "${localeId}";
     window.appDevMode     = ${isDevMode};
 
     create = function(data) {

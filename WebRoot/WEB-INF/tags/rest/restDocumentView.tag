@@ -136,6 +136,7 @@
     window.isTinyMCE = ${isTinyMce};
     window.contextPath = '${pageContext.request.contextPath}';
     window.appContextPath = '${pageContext.request.contextPath}';
+    window.appRequestLocaleId = "${localeId}";
     window.appDevMode     = ${isDevMode};
 
     window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
