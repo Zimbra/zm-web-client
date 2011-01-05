@@ -642,16 +642,16 @@ function(items, sortBy, event, details) {
 
 ZmMailList.prototype._getTcon =
 function() {
-	var chars = ["-"];
+	var chars = [];
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
 	var searchFolder = this.search && appCtxt.getById(this.search.folderId);
+	var nId = searchFolder && ( searchFolder.isRemote() ? searchFolder.rid : searchFolder.nId );
 	for (var i = 0; i < folders.length; i++) {
-		if (!(searchFolder && searchFolder.nId == folders[i])) {
+		if (nId != folders[i]) {
 			chars.push(ZmFolder.TCON_CODE[folders[i]]);
 		}
 	}
-
-	return chars.join("");
+	return (chars.length) ?  ("-" + chars.join("")) : "";
 };
 
 // If this list is the result of a search that is constrained by the read
