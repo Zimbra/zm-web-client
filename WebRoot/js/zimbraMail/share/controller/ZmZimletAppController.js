@@ -95,10 +95,11 @@ ZmZimletAppController.prototype.getToolbar = function() {
 /**
  * Shows the controller.
  * 
+ *@return boolean <code>true</code> if previous view was not dirty and hence could swap it with new view; else <code>false</code>
  */
 ZmZimletAppController.prototype.show = function() {
 	this.getView();
-	this._app.pushView(this._getViewType());
+	return this._app.pushView(this._getViewType());
 };
 
 //

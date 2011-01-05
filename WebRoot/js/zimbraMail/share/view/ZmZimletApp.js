@@ -106,7 +106,10 @@ function(view) {
  */
 ZmZimletApp.prototype.launch =
 function(params, callback) {
-	this.getController().show();
+	var isNewViewShown = this.getController().show();
+	if(!isNewViewShown) {
+		return;
+	}
 	ZmApp.prototype.launch.call(this, params);
 	if (this._zimlet.appLaunch) {
 		this._zimlet.appLaunch(this.getName(), params);
