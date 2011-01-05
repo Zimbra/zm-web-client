@@ -1677,6 +1677,10 @@ ZmApptEditView.prototype._timezoneListener =
 function(ev) {
     this.handleTimezoneOverflow();
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+    if(this._schedulerOpened) {
+        //this._controller.getApp().getFreeBusyCache().clearCache();
+        this._scheduleView._timeChangeListener(ev, id);
+    }
 };
 
 
