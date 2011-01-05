@@ -405,11 +405,13 @@ function(calItem, attId, notifyList, force) {
 		var errorCallback = new AjxCallback(this, this._handleErrorSave, calItem);
         this._doSaveCalItem(calItem, attId, callback, errorCallback, notifyList);
 	} else {
-		// bug: 27600 clean up edit view to avoid stagnant attendees
-		if(this.isCloseAction()) this._composeView.cleanup();
-
-        if(this._action == ZmCalItemComposeController.SAVE && !this._composeView.isDirty()) {
-            this.enableToolbar(true);                                
+        if (this._action == ZmCalItemComposeController.SAVE && !this._composeView.isDirty()) {
+            this.enableToolbar(true);
+        }
+        
+        if (this.isCloseAction()){
+            this._composeView.cleanup();  // bug: 27600 clean up edit view to avoid stagnant attendees
+            this.closeView();
         }
 	}
 };

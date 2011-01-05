@@ -63,6 +63,10 @@ function(attId) {
 	return false;
 };
 
+ZmTaskController.prototype.isCloseAction =
+function() {
+    return this._action == ZmCalItemComposeController.SAVE;
+};
 
 ZmTaskController.prototype._handleResponseSave =
 function(calItem, result) {
