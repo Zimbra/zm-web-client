@@ -233,7 +233,8 @@ function(signature, strict) {
 		return AjxMessageFormat.format(ZmMsg.signatureNameDuplicate, signature.name);
 	}
 	var sigValue = signature.value;
-	if (sigValue.length > appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH)) {
+	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
+	if (sigValue.length > maxLength) {
 		return AjxMessageFormat.format((signature.contentType == ZmMimeTable.TEXT_HTML)
 			? ZmMsg.errorHtmlSignatureTooLong
 			: ZmMsg.errorSignatureTooLong, maxLength);
