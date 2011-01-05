@@ -125,24 +125,6 @@ function() {
 	return false;
 };
 
-/**
- * updates a marker class that should be used everywhere we want to do CSS that's reading-pane-view (right, bottom, off) specific.
- * This way in the CSS I can write a rule that's something like this: .ReadingPane_bottom .ZmMailMsgViewDiv  and set styles that are specific to that view.
- *  
- * @param view new view
- * @param oldView  previous view.
- */
-ZmDoublePaneController.prototype.updateMarkerClassPerView =
-function(view, oldView) {
-	var elem = this._doublePaneView.getHtmlElement();
-	var classPrefix = "ReadingPane_";
-	if (oldView) {
-		Dwt.delClass(elem, classPrefix + oldView, classPrefix + view);
-	}
-	else {
-		Dwt.addClass(elem, classPrefix + view);
-	}
-};
 
 ZmDoublePaneController.prototype.switchView =
 function(view, force) {
@@ -152,7 +134,6 @@ function(view, force) {
 		if (view != oldView) {
 			this._setReadingPanePref(view);
 			this._doublePaneView.setReadingPane();
-			this.updateMarkerClassPerView(view, oldView);
 		}
 	} else {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
@@ -225,8 +206,6 @@ function(view) {
 		dpv.addInviteReplyListener(this._inviteReplyListener);
 		dpv.addShareListener(this._shareListener);
 	}
-
-	this.updateMarkerClassPerView(this._getReadingPanePref());
 
 	ZmMailListController.prototype._initialize.call(this, view);
 };
