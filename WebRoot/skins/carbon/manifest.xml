@@ -18,10 +18,6 @@
 			<file>skin.html</file>
 			<file>splash.html</file>
 		</html>
-		<templates>
-			<file>templates/share/App.template</file>
-			<file>templates/share/Widgets.template</file>
-		</templates>
   </advanced>
   <standard>
 		<css>
