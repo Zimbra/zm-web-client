@@ -93,23 +93,6 @@ function(params, result) {
 			this._faultHandler.run(folder);
 			return true;
 		}
-
-        if(id) {
-            var clearedInvalidFolder = false;
-            for(var i=params.folderIds.length; --i >= 0;) {
-                if(params.folderIds[i] == id) {
-                    params.folderIds.splice(i, 1);
-                    clearedInvalidFolder = true;
-                    break;
-                }
-            }
-
-            //get mini calendar data again with valid folder ids
-            if(clearedInvalidFolder) {
-                this._getMiniCalData(params);
-                return true;
-            }
-        }
 	}
 
 	//continue with callback operation
@@ -168,6 +151,9 @@ function(params, result) {
 		this.highlightMiniCal([]);
 	}
 
+    var errors = (miniCalResponse && miniCalResponse.error);
+    this.handleError(errors);
+
 	this.updateCache(params, data);
 
 	if (params.callback) {
@@ -191,7 +177,25 @@ function(miniCalResponse, data) {
 				}
 			}
 		}
+
+        var errors = (miniCalResponse[i] && miniCalResponse[i].error);
+        this.handleError(errors);
 	}
+};
+
+ZmMiniCalCache.prototype.handleError =
+function(errors) {
+    if (errors && errors.length) {
+        for (var i = 0; i < errors.length; i++) {
+            if (errors[i].code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT || errors[i].code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || errors[i].code == ZmCsfeException.SVC_PERM_DENIED) {
+                var id = errors[i].id;
+                if (id && appCtxt.getById(id)) {
+                    var folder = appCtxt.getById(id);
+                    folder.noSuchFolder = true;
+                }
+            }
+        }
+    }
 };
 
 ZmMiniCalCache.prototype.highlightMiniCal =
