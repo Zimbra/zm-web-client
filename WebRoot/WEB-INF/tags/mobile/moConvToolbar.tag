@@ -62,7 +62,7 @@
         <div class="compose button">
             <a href="${fn:escapeXml(closeurl)}${empty param.ajax ? '#conv' : '&isto=conv'}${cid}" class='zo_leftbutton'>${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}</a>
         </div>
-        <div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.png" border="0"/></div>
+        <div class="icons button"><app:img src="startup/ImgRefresh.png" border="0"/></div>
         <div class="select button">
 
         <c:if test="${context.searchResult.size gt 0}">

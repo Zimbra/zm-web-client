@@ -22,11 +22,11 @@
 
 <c:choose>
     <c:when test="${contenttype eq 'application'}">
-        <c:set var="mimeImg" value="doctypes/ImgExeDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgExeDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeUnknownBinaryType" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/pdf'}">
-        <c:set var="mimeImg" value="doctypes/ImgPDFDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgPDFDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeAdobePdfDocument" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/postscript'}">
@@ -34,51 +34,51 @@
         <c:set var="mimeDesc" value="mimeAdobePsDocument" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/exe'}">
-        <c:set var="mimeImg" value="doctypes/ImgExeDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgExeDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeApplication" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/x-msdownload'}">
-        <c:set var="mimeImg" value="doctypes/ImgExeDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgExeDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeMsDownload" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/vnd.ms-excel'}">
-        <c:set var="mimeImg" value="doctypes/ImgMSExcelDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgMSExcelDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeMsExcelDocument" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/vnd.ms-powerpoint'}">
-        <c:set var="mimeImg" value="doctypes/ImgMSPowerpointDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgMSPowerpointDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeMsPPTDocument" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/vnd.ms-project'}">
-        <c:set var="mimeImg" value="doctypes/ImgMSProjectDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgMSProjectDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeMsProjectDocument" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/vnd.visio'}">
-        <c:set var="mimeImg" value="doctypes/ImgMSVisioDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgMSVisioDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeMsVisioDocument" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/msword'}">
-        <c:set var="mimeImg" value="doctypes/ImgMSWordDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgMSWordDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeMsWordDocument" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/octet-stream'}">
-        <c:set var="mimeImg" value="doctypes/ImgUnknownDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgUnknownDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeUnknownBinaryType" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/zip'}">
-        <c:set var="mimeImg" value="doctypes/ImgZipDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgZipDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeZipFile" scope="request"/>
     </c:when>
     <c:when test="${zm:contains(contenttype,'audio')}">
-        <c:set var="mimeImg" value="doctypes/ImgAudioDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgAudioDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeAudio" scope="request"/>
     </c:when>
     <c:when test="${zm:contains(contenttype,'video')}">
-        <c:set var="mimeImg" value="doctypes/ImgVideoDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgVideoDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeVideo" scope="request"/>
     </c:when>
     <c:when test="${zm:contains(contenttype,'image')}">
-        <c:set var="mimeImg" value="doctypes/ImgImageDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgImageDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeImage" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'message/rfc822'}">
@@ -86,7 +86,7 @@
         <c:set var="mimeDesc" value="mimeMailMessage" scope="request"/>
     </c:when>
     <c:when test="${zm:contains(contenttype,'text')}">
-        <c:set var="mimeImg" value="doctypes/ImgGenericDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgGenericDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="mimeTextFile" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'text/html'}">
@@ -94,19 +94,19 @@
         <c:set var="mimeDesc" value="mimeHtmlDocument" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/x-zimbra-doc'}">
-        <c:set var="mimeImg" value="doctypes/ImgGenericDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgGenericDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="zimbraDocument" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/x-zimbra-slides'}">
-        <c:set var="mimeImg" value="doctypes/ImgPresentation.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgPresentation.png" scope="request"/>
         <c:set var="mimeDesc" value="zimbraPresentation" scope="request"/>
     </c:when>
     <c:when test="${contenttype eq 'application/x-zimbra-xls'}">
-        <c:set var="mimeImg" value="doctypes/ImgZSpreadSheet.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgZSpreadSheet.png" scope="request"/>
         <c:set var="mimeDesc" value="zimbraSpreadsheet" scope="request"/>
     </c:when>
     <c:otherwise>
-        <c:set var="mimeImg" value="doctypes/ImgUnknownDoc.gif" scope="request"/>
+        <c:set var="mimeImg" value="doctypes/ImgUnknownDoc.png" scope="request"/>
         <c:set var="mimeDesc" value="" scope="request"/>
     </c:otherwise>
 </c:choose>

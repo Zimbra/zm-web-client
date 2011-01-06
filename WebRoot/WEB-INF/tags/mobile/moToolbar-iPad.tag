@@ -56,7 +56,7 @@
                     <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${count lt sessionScope.F_LIMIT and fldr.isContactView}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
                     </select></c:if>
 
-                <div class="icons button"><input type="image" name="actionDelete" src="/zimbra/img/startup/ImgTrash.png" value="<fmt:message key='delete'/>" onclick="return submitForm(document.getElementById('zForm'),null,this.value);"/></div>
+                <div class="icons button"><input type="image" name="actionDelete" src="<app:imgurl value='startup/ImgTrash.png'/>" value="<fmt:message key='delete'/>" onclick="return submitForm(document.getElementById('zForm'),null,this.value);"/></div>
                 <div class="select button">
                     <div>
                        <select class="zo_select_button" name="anAction" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
@@ -90,9 +90,9 @@
                     </div>
 
 
-                    <!-- div class="icons button"><input type="image" name="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}" src="/zimbra/img/startup/ImgTrash.png" value="<fmt:message key='delete'/>" onclick="return submitForm(document.getElementById('zForm'),null,this.value);"/></div -->
+                    <!-- div class="icons button"><input type="image" name="${not context.folder.isInTrash ? 'actionDelete' : 'actionHardDelete'}" src="<app:imgurl value='startup/ImgTrash.png'/>" value="<fmt:message key='delete'/>" onclick="return submitForm(document.getElementById('zForm'),null,this.value);"/></div -->
 
-                    <!-- div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.png" border="0"/></div -->
+                    <!-- div class="icons button"><app:img src="startup/ImgRefresh.png" border="0"/></div -->
                     
                     <div class="select button">
                    		<a id='aActionMenu' onclick="return toggleElem('actListMenu');"><fmt:message key="moreActions"/></a>
@@ -186,7 +186,7 @@
                         <div class="folder button">
                             <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals&_pv=1"><fmt:message key="calendar"/></a>
                         </div>
-                        <div class="icons button"><img src="/zimbra/img/startup/ImgRefresh.png" border="0"/></div>
+                        <div class="icons button"><app:img src="startup/ImgRefresh.png" border="0"/></div>
                     </div>
                     <div class="td toolbar">
                         <div class="folder button">

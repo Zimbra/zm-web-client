@@ -27,6 +27,12 @@ static File getImageSrc(File appdir, String src, Locale locale) {
     File dir = file.getParentFile();
     String dirname = dir.getName();
     File dirdir = dir.getParentFile();
+    if (!file.exists()) {
+        File zfile = new File(dir.getParentFile(), "zimbra/"+file.getName());
+        if (zfile.exists()) {
+            file = zfile;
+        }
+    }
     Locale[] locales = locale.getCountry() != null
                      ? new Locale[] { locale, new Locale(locale.getLanguage()) }
                      : new Locale[] { locale };
