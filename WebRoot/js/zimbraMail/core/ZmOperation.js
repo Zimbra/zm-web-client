@@ -139,7 +139,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_RENAME_SEARCH, {textKey:"renameSearch", image:"Rename"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_TAG, {textKey:"renameTag", image:"Rename"}, ZmSetting.TAGGING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SAVE, {textKey:"save", image:"Save", shortcut:ZmKeyMap.SAVE});
-	ZmOperation.registerOp(ZmId.OP_SEARCH, {textKey:"search", image:"Search"}, ZmSetting.SEARCH_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SEARCH, {textKey:"findEmailBySender", image:"Search"}, ZmSetting.SEARCH_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SEND, {textKey:"send", tooltipKey:"sendTooltip", image:"Send", shortcut:ZmKeyMap.SEND});
     ZmOperation.registerOp(ZmId.OP_FREE_BUSY_LINK, {textKey:"freeBusyLink", tooltipKey:"freeBusyLinkTooltip", image:"Send"});
     ZmOperation.registerOp(ZmId.OP_SHARE, {textKey:"share", tooltipKey:"shareTooltip"}, ZmSetting.SHARING_ENABLED);
