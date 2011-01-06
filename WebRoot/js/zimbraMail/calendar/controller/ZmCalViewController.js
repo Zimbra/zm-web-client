@@ -2561,7 +2561,8 @@ function(parent, num) {
 ZmCalViewController.prototype._listSelectionListener =
 function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
-	if (ev.detail == DwtListView.ITEM_SELECTED) {
+    // to avoid conflicts on opening a readonly appointment in readonly view
+	if (ev.detail == DwtListView.ITEM_SELECTED && this.getViewMgr().getCurrentViewName()!=ZmId.VIEW_CAL_APPT) {
 		this._viewMgr.getCurrentView()._apptSelected();
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var appt = ev.item;
@@ -2577,6 +2578,11 @@ function(ev) {
 		}
 	}
 };
+
+ZmCalViewController.prototype.getViewMgr =
+function(){
+    return this._viewMgr;
+}
 
 ZmCalViewController.prototype._handleMenuViewAction =
 function(ev) {
