@@ -436,7 +436,7 @@ function() {
 			continue; // skip mandatory zimlets to be shown in prefs
 		}
 		var desc = allz[i].zimlet[0].description;
-		var label = allz[i].zimlet[0].label;
+		var label = allz[i].zimlet[0].label || name.replace(/^.*_/,"");
         if (zimletsLoaded) {
             desc = ZmZimletContext.processMessage(name, desc);
             label = ZmZimletContext.processMessage(name, label);
@@ -501,7 +501,8 @@ ZmPrefZimletListView.prototype._handleZimletsLoaded = function(evt) {
     var array = this.parent.getZimlets()._vector.getArray();
     for (var i = 0; i < array.length; i++) {
         var item = array[i];
-        item.label = ZmZimletContext.processMessage(item.name, item.label);
+        var label = item.label || item.name.replace(/^.*_/,"");
+        item.label = ZmZimletContext.processMessage(item.name, label);
         item.desc = ZmZimletContext.processMessage(item.name, item.desc);
         this.setCellContents(item, ZmPrefZimletListView.COL_NAME, AjxStringUtil.htmlEncode(item.label));
         this.setCellContents(item, ZmPrefZimletListView.COL_DESC, AjxStringUtil.htmlEncode(item.desc));
