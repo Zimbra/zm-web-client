@@ -473,6 +473,8 @@ function(view) {
 	}
 
 	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT);
+    if (this._actionMenu.getOp("SEARCH"))
+        ZmOperation.setOperation(this._actionMenu, ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailByContact);
 };
 
 /**
@@ -1041,3 +1043,5 @@ function() {
 	lv.set(this._list);
 	lv._setNextSelection();
 };
+
+
