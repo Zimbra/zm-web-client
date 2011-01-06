@@ -855,7 +855,7 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay, batc
 	var seriesMode = mode == ZmCalItem.MODE_EDIT_SERIES;
     var fetchSeriesMsg = (seriesMode && this.message && !this.message.seriesMode);
 	if (this.message == null || fetchSeriesMsg) {
-		var id = seriesMode ? (this.seriesInvId || this.invId) : this.invId;
+		var id = seriesMode ? (this.seriesInvId || this.invId || this.id) : this.invId;
 		this.message = new ZmMailMsg(id);
 		if (this._orig) {
 			this._orig.message = this.message;
@@ -996,7 +996,10 @@ function(message, viewMode) {
 		this.isException = message.invite.isException();
         this.recurring =  message.invite.isRecurring();
         this.location = message.invite.getLocation();
-        this.seq = message.invite.getSequenceNo(); 
+        this.seq = message.invite.getSequenceNo();
+        if(message.invite.id) {
+            this.invId = this.id + "-" + message.invite.id;
+        }
 		this._setTimeFromMessage(message, viewMode);
 		this._setExtrasFromMessage(message);
 		this._setRecurrence(message);

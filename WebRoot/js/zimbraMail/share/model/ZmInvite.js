@@ -71,6 +71,7 @@ function(node) {
 	var invite = new ZmInvite();
 	invite.components = node[0].comp;
 	invite.replies = node[0].replies;
+    invite.id = node[0].id;
 	// not sure why components are null .. but.
 	if (invite.components == null) {
 		invite.components = [{}];
