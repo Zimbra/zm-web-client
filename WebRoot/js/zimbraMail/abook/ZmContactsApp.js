@@ -301,7 +301,7 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmItem.CONTACT,
 								{msgKey:		"searchContacts",
 								 tooltipKey:	"searchPersonalContacts",
-								 icon:			"ContactsFolder",
+								 icon:			"Contact",
 								 shareIcon:		"SharedContactsFolder",
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_CONTACT)
 								});

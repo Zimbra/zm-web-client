@@ -292,7 +292,7 @@ function() {
 		},
 		ACCOUNTS: {
 			parentId: "MAIL",
-			icon: "IMAPAccount",
+			icon: "Accounts",
 			title: (appCtxt.isOffline ? ZmMsg.personas : ZmMsg.accounts),
 			templateId: "prefs.Pages#Accounts",
 			priority: 40,
@@ -340,7 +340,7 @@ function() {
         TRUSTED_ADDR: {
             parentId: "MAIL",
 			title: ZmMsg.trustedAddrs,
-			icon: "AllowUser",
+			icon: "TrustedAddresses",
 			templateId: "prefs.Pages#Trusted",
 			priority: 60,
 			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
