@@ -147,7 +147,7 @@
         try{
         var idex = 0;
         var c = [];
-        while (idex <= zrc )
+        while (idex < zrc )
         {
         if(document.getElementById("C"+idex).checked) {
             cid = document.getElementById("C"+idex).value;
@@ -157,11 +157,16 @@
         }
         }catch(ex){
         }
-        if (c.length==0) {
-            window.open("/h/printcontacts?st=${zm:cook(param.st)}&sfi=${context.folder.id}");
-        } else {
-            window.open("/h/printcontacts?st=${zm:cook(param.st)}&sq=${param.sq}&id="+c.join("&id="));
+        var url = "/h/printcontacts?st=${zm:cook(param.st)}";
+        if (${not empty param.sq}) {
+            url += "&sq=${param.sq}";
         }
+        if (c.length==0) {
+            url += "&sfi=${context.folder.id}";
+        } else {
+            url += "&id=" + c.join("&id=");
+        }
+        window.open(url);
     }
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
     var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }

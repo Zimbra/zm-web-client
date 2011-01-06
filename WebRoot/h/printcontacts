@@ -60,8 +60,10 @@
     </c:if>
 
     <c:if test="${hasGalContacts}">
-        <zm:searchGal var="galResults" query="${empty param.sq ? '*' : param.sq}"/>
+        <zm:searchGal var="galResults" query="${empty param.sq ? '*' : param.sq}" type="account"/>
     </c:if>
+    <c:set var="addRow" value="true"/>
+    <table class="zPrintMsgs" cellpadding="10" cellspacing="10">
 
     <c:forEach items="${contactIds}" var="contactId" varStatus="status">
         <c:set var="galContact" value="${hasGalContacts && fn:contains(contactId,'|')}"/>
@@ -77,29 +79,54 @@
                 </c:forEach>
             </c:when>
         </c:choose>
-        <div class="zPrintMsgs" style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
+        <c:if test="${addRow}"><tr></c:if>
+        <td style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;" width="500px" valign="top">
             <app:displayContact contact="${contact}"/>
-        </div>
+        </td>
+        <c:set var="addRow" value="${!addRow}"/>
+        <c:if test="${addRow}"></tr></c:if>
     </c:forEach>
+
+    <c:if test="${!addRow}"></tr></c:if>
+    </table>
 </c:if>
 
 <c:if test="${empty contactIds}">
+
     <c:if test="${param.st ne 'gal'}">
-    <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true"/>
-    <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-        <zm:getContact id="${hit.contactHit.id}" var="contact"/>
-        <div class="zPrintMsgs" style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
-            <app:displayContact contact="${contact}"/>
-        </div>
-    </c:forEach>
+        <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true"/>
+        <c:set var="addRow" value="true"/>
+        <table class="zPrintMsgs" cellpadding="10" cellspacing="10">
+
+        <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+            <zm:getContact id="${hit.contactHit.id}" var="contact"/>
+            <c:if test="${addRow}"><tr></c:if>
+            <td style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;" width="500px" valign="top">
+                <app:displayContact contact="${contact}"/>
+            </td>
+            <c:set var="addRow" value="${!addRow}"/>
+            <c:if test="${addRow}"></tr></c:if>
+        </c:forEach>
+
+        <c:if test="${!addRow}"></tr></c:if>
+        </table>
     </c:if>
     <c:if test="${param.st eq 'gal'}">
-    <zm:searchGal var="result" query="*"/>
-    <c:forEach items="${result.contacts}" var="contact" varStatus="status">
-        <div class="zPrintMsgs" style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
-            <app:displayContact contact="${contact}"/>
-        </div>
-    </c:forEach>
+        <zm:searchGal var="result" query="${empty param.sq ? '*' : param.sq}" type="account"/>
+        <c:set var="addRow" value="true"/>
+        <table class="zPrintMsgs" cellpadding="10" cellspacing="10">
+
+        <c:forEach items="${result.contacts}" var="contact" varStatus="status">
+            <c:if test="${addRow}"><tr></c:if>
+            <td style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;" width="500px" valign="top">
+                <app:displayContact contact="${contact}"/>
+            </td>
+            <c:set var="addRow" value="${!addRow}"/>
+            <c:if test="${addRow}"></tr></c:if>
+        </c:forEach>
+
+        <c:if test="${!addRow}"></tr></c:if>
+        </table>
     </c:if>
 </c:if>
 </td>
