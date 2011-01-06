@@ -37,6 +37,7 @@ AjxPackage.require("zimbraMail.mail.model.ZmSignatureCollection");
 
 AjxPackage.require("zimbraMail.prefs.view.ZmPreferencesPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmShortcutsPage");
+AjxPackage.require("zimbraMail.prefs.view.ZmBackupPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmPrefView");
 AjxPackage.require("zimbraMail.prefs.view.ZmFilterRulesView");
 AjxPackage.require("zimbraMail.prefs.view.ZmFilterRuleDialog");
