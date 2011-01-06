@@ -35,7 +35,7 @@ ZmMailMsgView = function(params) {
 	this._expandHeader = true;
 	this._expandDivId = ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_DIV, this._mode);
 
-	this._scrollWithIframe = false;
+	this._scrollWithIframe = ZmMailMsgView.SCROLL_WITH_IFRAME; // Making it local var
 	this._limitAttachments = this._scrollWithIframe ? 3 : 0; //making it local
 	this._attcMaxSize = this._limitAttachments * 16 + 8;
 	this.setScrollStyle(this._scrollWithIframe ? DwtControl.CLIP : DwtControl.SCROLL);
@@ -1456,7 +1456,7 @@ function() {
 				htmlArr[idx++] = att.size;
 				htmlArr[idx++] = ") ";
 			}
-			if (att.htmlLink) {
+			if (att.htmlLink && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
 				htmlArr[idx++] = att.htmlLink;
 				htmlArr[idx++] = ZmMsg.preview;
 				htmlArr[idx++] = "</a>";
@@ -1465,7 +1465,7 @@ function() {
 				htmlArr[idx++] = ZmMsg.addressBook;
 				htmlArr[idx++] = "</a>";
 			}
-			if (att.download) {
+			if (att.download && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
 				if (att.htmlLink || att.vcardLink) {
 					htmlArr[idx++] = " | ";
 				}
