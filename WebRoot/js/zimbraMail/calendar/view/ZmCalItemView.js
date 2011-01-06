@@ -84,7 +84,8 @@ function(calItem, prevView, mode) {
 	if (this._calItem == calItem) { return; }
 
 	// so that Close button knows which view to go to
-	this._prevView = prevView || this._controller._viewMgr.getCurrentViewName();
+    //condition introduced to avoid irrelevant view being persisted as previous view
+	this._prevView = prevView || (!( calItem.folderId==ZmFolder.ID_TRASH && this.getController().getViewMgr().getCurrentViewName()==ZmId.VIEW_CAL_APPT) ? this._controller._viewMgr.getCurrentViewName():this._prevView);
 
 	this.reset();
 	this._calItem = calItem;
