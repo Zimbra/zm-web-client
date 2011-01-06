@@ -1,0 +1,30 @@
+HILFETHEMEN ZUM REBRANDING VON ZWC – ANLEITUNG ZUM ÄNDERN VON VARIABLEN 
+
+Der Zimbra-Webclient kann unter einem anderen Markennamen genutzt werden, um Bezugnahmen auf Zimbra und auf den Produktnamen von Zimbra gegen den Namen Ihres Unternehmens und Ihrer Produkte auszutauschen.
+
+Die Standardvariablen in der Datei ZbMsg.properties lauten folgendermaßen:
+
+"Ausführlicher Name des Webclients" - ClientNameLong = Zimbra Web Client
+"Kurzname des Webclients" - ClientNameShort = ZWC
+"Der Name Ihres Unternehmens" - CompanyName = Zimbra
+"Diese Variable ist nicht relevant.  Nicht ändern" - DesktopName = Zimbra Desktop
+"Vollständiger Name des Produkts" - CollaborationProductFullName = Zimbra Collaboration Suite
+"Kurzname des Produkts" - CollaborationProductShortName = ZCS
+
+So werden diese Variablen geändert:
+
+1. SSH an den Zimbra-Server
+
+2. Von Zimbra zum folgenden Verzeichnis wechseln:
+/opt/zimbra/jetty/webapps/zimbra/WEB-INF/classes/messages/
+
+3. Zum Ändern der Werte ZbMsg.properties bearbeiten.  Den Namen Zimbra gegen den Namen Ihres Unternehmens austauschen. DEN DESKRIPTOR DER VARIABLEN NICHT ÄNDERN ODER ENTFERNEN.
+
+4. Einen Neustart des Servers durchführen.  zmcontrol restart eingeben.
+
+5. Die Hilfe erneut in den Browser laden. 
+
+Für Schritt 5 muss eventuell ein erneutes Laden des Browsers erzwungen oder der Browser-Cache geleert werden.
+
+Hinweis: Beim Upgraden von ZCS gehen die Änderungen an der Datei ZbMsg.properties verloren. Daher sollte von der geänderten Datei eine Kopie gespeichert werden, mit der die Änderungen nach dem Upgrade wiederhergestellt werden können. 
+

@@ -4368,7 +4368,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmEditContactViewAddress .DwtInputField INPUT,
 .ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField-hint INPUT{
-	border: none !important;
+	border:none !important;
 }
 .ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField TEXTAREA {
@@ -4392,14 +4392,14 @@ If you feel compelled to have a background color, please do so on a per skin lev
     padding:.25em .5em;
 }
 .ZmEditContactView .rowLabel, .ZmContactSplitView .rowLabel {
-	text-align:right;
-	font-weight:bold;
+    text-align:right;
+    font-weight:bold;
 }
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue {
-	width:150px;
+    width:150px;
 }
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue[colspan] {
-	width:auto;
+    width:auto;
 }
 
 .itemSortIcon {
@@ -4435,7 +4435,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .PreviewFrame iframe {
     height:100%;
-    width:100%;
+    width: 100%;
 }
 
 .PreviewViewHeader .itemName{
@@ -4596,6 +4596,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .ReminderInput INPUT{
     width: 100%
+}
 
 .SuggestionPrefTitle {
     font-weight: bold;

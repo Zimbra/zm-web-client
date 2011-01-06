@@ -1,0 +1,30 @@
+ZWCヘルプトピックのリブランド - 変数の変更方法 
+
+Zimbra Web Clientヘルプは、ZimbraまたはZimbra製品名を御社の社名または製品名に置換することにより、リブランドすることができます。
+
+ZbMsg.propertiesファイルのデフォルトの変数は、以下のとおりです。
+
+"Web Clientの長い名前" - ClientNameLong = Zimbra Web Client
+"Web Clientの短い名前" - ClientNameShort = ZWC
+"御社名" - CompanyName = Zimbra
+"この変数は関係ありません。  変更しないでください" - DesktopName = Zimbra Desktop
+"製品のフルネーム" - CollaborationProductFullName = Zimbra Collaboration Suite
+"製品の短い名前" - CollaborationProductShortName = ZCS
+
+これらの変数を変更する方法
+
+1. ZimbraサーバーにSSHを実行します。
+
+2. Zimbraで以下のディレクトリに変更します。
+/opt/zimbra/jetty/webapps/zimbra/WEB-INF/classes/messages/
+
+3. 値を変更するには、ZbMsg.propertiesを編集します。  Zimbraの名前を会社名で置換します。 変数記述子を変更したり、削除しないでください。
+
+4. サーバーを再起動します。  「zmcontrol restart」と入力します。
+
+5. ブラウザでヘルプを再ロードします。 
+
+ステップ5では、ブラウザの強制再ロードまたはブラウザキャッシュのクリアを行う必要があることがあります。
+
+備考： ZCSをアップグレードすると、ZbMsg.propertiesファイルに行った変更は失われます。 変更したファイルのコピーを作成し、アップグレード後に復元することをお勧めします。 
+
