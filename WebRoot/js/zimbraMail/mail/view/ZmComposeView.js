@@ -1196,7 +1196,7 @@ function(idoc) {
 					try{ img.src = dfsrc; }catch(ex){};
 				}
 			if (cid) {
-				img.setAttribute("dfsrc", cid.replace("@","%40")); // replace @ with %40 per bug #52085
+				img.setAttribute("dfsrc", cid);
 			}
 		}
 	}
