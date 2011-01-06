@@ -1191,7 +1191,7 @@ function(params, callback) {
 		this._pendingMsg = msg.id;
 		// use prototype in callback because these functions are overridden by ZmConvListController
 		var respCallback = new AjxCallback(this, ZmMailListController.prototype._handleResponseGetLoadedMsg, [callback, msg]);
-		msg.load({getHtml:params.getHtml, markRead:params.markRead, callback:respCallback, noBusyOverlay:false, needExp:true});
+		msg.load({getHtml:params.getHtml, markRead:params.markRead, callback:respCallback, noBusyOverlay:false});
 	}
 };
 

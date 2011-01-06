@@ -490,12 +490,13 @@ function(callback, result) {
 /**
  * Fetches a conversation from the server.
  *
- * @param {Hash}	params		a hash of parameters
- * @param {String}	params.cid			the conv ID
+ * @param {Hash}		params				a hash of parameters:
+ * @param {String}		params.cid			the conv ID
  * @param {AjxCallback}	params.callback		the callback to run with result
- * @param {String}	params.fetchId		the ID of msg to load
- * @param {Boolean}	params.markRead		if <code>true</code>, mark msg read
- * @param {Boolean}	params.noTruncate	if <code>true</code>, do not limit size of msg
+ * @param {String}		params.fetchId		the ID of msg to load
+ * @param {Boolean}		params.markRead		if <code>true</code>, mark msg read
+ * @param {Boolean}		params.noTruncate	if <code>true</code>, do not limit size of msg
+ * @param {boolean}		params.needExp		if not <code>false</code>, have server check if addresses are DLs
  */
 ZmSearch.prototype.getConv =
 function(params) {
@@ -513,7 +514,7 @@ function(params) {
 		if (this.getHtml) {
 			request.html = 1;			// get it as HTML
 		}
-		if (params.needExp) {			// indicate if addresses are DLs
+		if (params.needExp !== false) {
 			request.needExp = 1;
 		}
 		// added headers to the request

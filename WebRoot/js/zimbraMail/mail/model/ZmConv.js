@@ -80,15 +80,16 @@ function(msg, args) {
  * should be used when in a search context, for example when expanding a conv that is the result
  * of a search.
  *
- * @param {Hash}	params			a hash of parameters
- * @param {String}      params.query				the query used to retrieve this conv
- * @param {constant}      params.sortBy			the sort constraint
- * @param {int}      params.offset			the position of first msg to return
- * @param {int}      params.limit				the number of msgs to return
- * @param {Boolean}      params.getHtml			if <code>true</code>, return HTML part for inlined msg
- * @param {Boolean}      params.getFirstMsg		if <code>true</code>, retrieve the content of the first matching msg in the conv as a side effect of the search
- * @param  {Boolean}     params.markRead			if <code>true</code>, mark that msg read
- * @param {AjxCallback} callback			the callback to run with results
+ * @param {Hash}		params				a hash of parameters:
+ * @param {String}		params.query		the query used to retrieve this conv
+ * @param {constant}	params.sortBy		the sort constraint
+ * @param {int}			params.offset		the position of first msg to return
+ * @param {int}			params.limit		the number of msgs to return
+ * @param {Boolean}		params.getHtml		if <code>true</code>, return HTML part for inlined msg
+ * @param {Boolean}		params.getFirstMsg	if <code>true</code>, retrieve the content of the first matching msg in the conv as a side effect of the search
+ * @param {Boolean}		params.markRead		if <code>true</code>, mark that msg read
+ * @param {boolean}		params.needExp		if not <code>false</code>, have server check if addresses are DLs
+ * @param {AjxCallback}	callback			the callback to run with results
  */
 ZmConv.prototype.load =
 function(params, callback) {
@@ -148,7 +149,7 @@ function(params, callback) {
 			fetchId:	fetchId,
 			markRead:	params.markRead,
 			noTruncate:	params.noTruncate,
-			needExp:	fetchId && params.needExp
+			needExp:	Boolean(fetchId)
 		};
 		search.getConv(convParams);
 	}
