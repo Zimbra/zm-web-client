@@ -39,6 +39,7 @@ ZmPreferencesApp = function(container, parentController) {
 // Organizer and item-related constants
 ZmEvent.S_FILTER					= "FILTER";
 ZmEvent.S_PREF_ZIMLET				= "PREF_ZIMLET";
+ZmEvent.S_PREF_ACCOUNT				= "PREF_ACCOUNT";
 
 // App-related constants
 /**
@@ -364,6 +365,26 @@ function() {
 			}
 		}
 	};
+    if (appCtxt.isOffline) {
+        sections["BACKUP"] = {
+			title: ZmMsg.offlineBackups,
+			icon: "backup",
+			templateId: "prefs.Pages#BackUp",
+			priority: 130,
+            prefs: [
+                ZmSetting.OFFLINE_BACKUP_ENABLE,
+                ZmSetting.OFFLINE_BACKUP_NOW_BUTTON,
+                ZmSetting.OFFLINE_BACKUP_INTERVAL,
+                ZmSetting.OFFLINE_BACKUP_PATH,
+                ZmSetting.OFFLINE_BACKUP_KEEP,
+                ZmSetting.OFFLINE_BACKUP_ACCOUNT_ID
+            ],
+			createView: function(parent, section, controller) {
+				return new ZmBackupPage(parent, section, controller);
+			}
+		}
+    }
+
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
 	}
@@ -534,6 +555,47 @@ function() {
 				displayContainer:	ZmPref.TYPE_CHECKBOX
 			});
 		}
+
+        ZmPref.registerPref("OFFLINE_BACKUP_ENABLE", {
+            displayName:		ZmMsg.offlineBackUpEnable,
+            displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+            displayOptions:		[ZmMsg.offlineBackUpOptionEnable, ZmMsg.offlineBackUpOptionDisable],
+            orientation:		ZmPref.ORIENT_HORIZONTAL,
+            options:            [true, false]
+        });
+
+        ZmPref.registerPref("OFFLINE_BACKUP_ACCOUNT_ID", {
+            displayName:		ZmMsg.offlineBackUpAccounts,
+            displayContainer:	ZmPref.TYPE_CUSTOM
+        });
+
+        ZmPref.registerPref("OFFLINE_BACKUP_NOW_BUTTON", {
+            displayName:		ZmMsg.offlineBackUpButton,
+            displayContainer:	ZmPref.TYPE_CUSTOM
+        });
+
+        ZmPref.registerPref("OFFLINE_BACKUP_INTERVAL", {
+            displayName:		ZmMsg.offlineBackUpInterval,
+            displayContainer:	ZmPref.TYPE_SELECT,
+            displayOptions:		[ZmMsg.everyDay, ZmMsg.everyWeek, ZmMsg.everyMonth],
+            options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH]
+        });
+
+        ZmPref.registerPref("OFFLINE_BACKUP_PATH", {
+            displayName:		ZmMsg.offlineBackUpPath,
+            displayContainer:	ZmPref.TYPE_INPUT
+        });
+
+        ZmPref.registerPref("OFFLINE_BACKUP_KEEP", {
+            displayName:		ZmMsg.offlineBackUpKeep,
+            displayContainer:	ZmPref.TYPE_SELECT,
+            displayOptions:		["1", "2", "3"]
+        });
+
+        ZmPref.registerPref("OFFLINE_BACKUP_ACCOUNT_ID", {
+            displayName:		ZmMsg.offlineBackUpKeep,
+            displayContainer:	ZmPref.TYPE_CUSTOM
+        });
 	}
 
 	// Polling Interval Options - Dynamically constructed according to MIN_POLLING_INTERVAL,POLLING_INTERVAL

@@ -143,6 +143,7 @@ function(account, sectionId) {
 			(!account.isMain && (sectionId != "GENERAL" &&
 								 sectionId != "SHORTCUTS" &&
 								 sectionId != "PREF_ZIMLETS" &&
+                                 sectionId != "BACKUP" &&
 								 sectionId != "COMPOSING")
 			));
 };
