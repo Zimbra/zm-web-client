@@ -137,20 +137,20 @@ ZmMailMsg.requestHeaders = {};
 /**
  * Fetches a message from the server.
  *
- * @param {Hash}	params		a hash of parameters
- * @param {ZmZimbraMail}      params.sender		the provides access to sendRequest()
- * @param {int}	params.msgId			the ID of the msg to be fetched.
- * @param {int}	      params.partId 		the msg part ID (if retrieving attachment part, i.e. rfc/822)
- * @param {int}	      params.ridZ   		the RECURRENCE-ID in Z (UTC) timezone
- * @param {Boolean}      params.getHtml		if <code>true</code>, try to fetch html from the server
- * @param {Boolean}      params.markRead		if <code>true</code>, mark msg read
- * @param {AjxCallback}	params.callback		the async callback
- * @param {AjxCallback}	      params.errorCallback	the async error callback
- * @param {Boolean}	      params.noBusyOverlay	if <code>true</code>, do not put up busy overlay during request
- * @param {Boolean}	      params.noTruncate	if <code>true</code>, do not truncate message body
- * @param {ZmBatchCommand}      params.batchCmd		if set, request gets added to this batch command
- * @param {String}      params.accountName	the name of the account to send request on behalf of
- * @param {boolean}      params.needExp	if <code>true</code>, have server check if addresses are DLs
+ * @param {Hash}			params					a hash of parameters
+ * @param {ZmZimbraMail}	params.sender			the provides access to sendRequest()
+ * @param {int}				params.msgId			the ID of the msg to be fetched.
+ * @param {int}				params.partId 			the msg part ID (if retrieving attachment part, i.e. rfc/822)
+ * @param {int}				params.ridZ   			the RECURRENCE-ID in Z (UTC) timezone
+ * @param {Boolean}			params.getHtml			if <code>true</code>, try to fetch html from the server
+ * @param {Boolean}			params.markRead			if <code>true</code>, mark msg read
+ * @param {AjxCallback}		params.callback			the async callback
+ * @param {AjxCallback}		params.errorCallback	the async error callback
+ * @param {Boolean}			params.noBusyOverlay	if <code>true</code>, do not put up busy overlay during request
+ * @param {Boolean}			params.noTruncate		if <code>true</code>, do not truncate message body
+ * @param {ZmBatchCommand}	params.batchCmd			if set, request gets added to this batch command
+ * @param {String}			params.accountName		the name of the account to send request on behalf of
+ * @param {boolean}			params.needExp			if not <code>false</code>, have server check if addresses are DLs
  */
 ZmMailMsg.fetchMsg =
 function(params) {
@@ -167,7 +167,7 @@ function(params) {
 	if (params.getHtml) {
 		m.html = 1;
 	}
-	if (params.needExp) {
+	if (params.needExp !== false) {
 		m.needExp = 1;
 	}
 
@@ -669,17 +669,17 @@ function(node, args) {
  * Gets the full message object from the back end based on the current message ID, and
  * fills in the message.
  *
- * @param {Hash}	params		a hash of parameters
- * @param {Boolean}      params.getHtml		if <code>true</code>, try to fetch html from the server
- * @param {Boolean}      params.markRead		if <code>true</code>, mark msg read
- * @param {Boolean}      params.forceLoad		if <code>true</code>, get msg from server
- * @param {AjxCallback}      params.callback		the async callback
- * @param {AjxCallback}      params.errorCallback	the async error callback
- * @param {Boolean}      params.noBusyOverlay	if <code>true</code>, do not put up busy overlay during request
- * @param {Boolean}      params.noTruncate	if <code>true</code>, do not set max limit on size of msg body
- * @param {ZmBatchCommand}      params.batchCmd		if set, request gets added to this batch command
- * @param {String}      params.accountName	the name of the account to send request on behalf of
- * @param {boolean}      params.needExp	if <code>true</code>, have server check if addresses are DLs
+ * @param {Hash}			params					a hash of parameters:
+ * @param {Boolean}			params.getHtml			if <code>true</code>, try to fetch html from the server
+ * @param {Boolean}			params.markRead			if <code>true</code>, mark msg read
+ * @param {Boolean}			params.forceLoad		if <code>true</code>, get msg from server
+ * @param {AjxCallback}		params.callback			the async callback
+ * @param {AjxCallback}		params.errorCallback	the async error callback
+ * @param {Boolean}			params.noBusyOverlay	if <code>true</code>, do not put up busy overlay during request
+ * @param {Boolean}			params.noTruncate		if <code>true</code>, do not set max limit on size of msg body
+ * @param {ZmBatchCommand}	params.batchCmd			if set, request gets added to this batch command
+ * @param {String}			params.accountName		the name of the account to send request on behalf of
+ * @param {boolean}			params.needExp			if not <code>false</code>, have server check if addresses are DLs
  */
 ZmMailMsg.prototype.load =
 function(params) {
