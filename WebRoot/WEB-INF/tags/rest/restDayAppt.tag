@@ -78,11 +78,6 @@
                     <td width="1%" align="right">
                         <table border="0" cellspacing="0" cellpadding="0">
                             <tr>
-                                <c:if test="${appt.otherAttendees}">
-                                    <td valign='top'>
-                                        <app:img src="calendar/ImgApptMeeting.gif"/>
-                                    </td>
-                                </c:if>
                                 <c:if test="${appt.exception}">
                                     <td valign='top'>
                                         <app:img src="calendar/ImgApptException.png"/>
@@ -115,11 +110,6 @@
                     <td width="1%" align="right" class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}'>
                         <table border="0" cellspacing="0" cellpadding="0">
                             <tr>
-                                <c:if test="${appt.otherAttendees}">
-                                    <td valign='top'>
-                                        <app:img src="calendar/ImgApptMeeting.gif" alt="meeting"/>
-                                    </td>
-                                </c:if>
                                 <c:if test="${appt.exception}">
                                     <td valign='top'>
                                         <app:img src="calendar/ImgApptException.png" alt="exception"/>
@@ -165,11 +155,6 @@
                     <td valign='top' width="1%" align="right" class='${color}${needsAction ? 'Dark' : 'Light'}'>
                         <table border="0" cellspacing="0" cellpadding="0">
                             <tr>
-                                <c:if test="${appt.otherAttendees}">
-                                    <td valign='top'>
-                                        <app:img src="calendar/ImgApptMeeting.gif" alt="meeting"/>
-                                    </td>
-                                </c:if>
                                 <c:if test="${appt.exception}">
                                     <td valign='top'>
                                         <app:img src="calendar/ImgApptException.png" alt="exception"/>

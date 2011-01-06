@@ -57,13 +57,13 @@
         <td align=center>
             <c:if test="${not print}">
             <mo:calendarUrl var="prevYear" timezone="${timezone}" rawdate="${zm:addYear(date,-1)}"/>
-            <a href="${fn:escapeXml(prevYear)}"><img src="/zimbra/img/startup/ImgFastRevArrowSmall.gif" border="0"/></a>
+            <a href="${fn:escapeXml(prevYear)}"><app:img src="startup/ImgFastRevArrowSmall.png" border="0"/></a>
             </c:if>
         </td>
         <td align=center>
             <c:if test="${not print}">
             <mo:calendarUrl var="prevMonth" timezone="${timezone}" rawdate="${zm:addMonth(date,-1)}"/>
-            <a href="${fn:escapeXml(prevMonth)}"><img src="/zimbra/img/startup/ImgRevArrowSmall.gif" border="0"/></a>
+            <a href="${fn:escapeXml(prevMonth)}"><app:img src="startup/ImgRevArrowSmall.png" border="0"/></a>
              </c:if>
         </td>
         <mo:calendarUrl var="todayUrl" nodate="true"/>
@@ -73,13 +73,13 @@
         <td align=center>
             <c:if test="${not print}">
             <mo:calendarUrl var="nextMonth" timezone="${timezone}" rawdate="${zm:addMonth(date,1)}"/>
-             <a href="${fn:escapeXml(nextMonth)}"><img src="/zimbra/img/startup/ImgFwdArrowSmall.gif" border="0"/></a>
+             <a href="${fn:escapeXml(nextMonth)}"><app:img src="startup/ImgFwdArrowSmall.png" border="0"/></a>
             </c:if>
         </td>
         <td align=center>
             <c:if test="${not print}">
             <mo:calendarUrl var="nextYear" timezone="${timezone}" rawdate="${zm:addYear(date,1)}"/>
-             <a href="${fn:escapeXml(nextYear)}"><img src="/zimbra/img/startup/ImgFastFwdArrowSmall.gif" border="0"/></a>
+             <a href="${fn:escapeXml(nextYear)}"><app:img src="startup/ImgFastFwdArrowSmall.png" border="0"/></a>
             </c:if>
         </td>
     </tr>
