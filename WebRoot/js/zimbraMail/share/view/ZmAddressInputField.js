@@ -45,6 +45,11 @@ ZmAddressInputField = function(params) {
 	this._bubbleClassName = "addrBubble";
 	this._selectedBubbleClassName = this._bubbleClassName + "-" + DwtCssStyle.SELECTED;
 
+	if (ZmAddressInputField.AUTO_SELECT_TEXT) {
+		this._keyDownListener = new AjxListener(this, this._handleKeyDown);
+	}
+	this._outsideListener = new AjxListener(null, ZmAddressInputField._outsideMouseDownListener);
+
 	this._reset();
 };
 
@@ -58,6 +63,7 @@ function() {
 	return "ZmAddressInputField";
 };
 
+ZmAddressInputField.AUTO_SELECT_TEXT = false;
 ZmAddressInputField.INPUT_EXTRA = 30;
 
 // tie a bubble SPAN to a widget that can handle clicks
@@ -65,10 +71,9 @@ ZmAddressInputField.BUBBLE_OBJ_ID = {};
 
 ZmAddressInputField.prototype.setAutocompleteListView =
 function(aclv) {
-
 	this._aclv = aclv;
 	this._separator = (aclv._separator) || AjxEmailAddress.SEPARATOR;
-	aclv.addCallback(ZmAutocompleteListView.CB_KEYUP, new AjxCallback(this, this._keyUpCallback), this._inputId);
+	aclv.addCallback(ZmAutocompleteListView.CB_KEYDOWN, new AjxCallback(this, this._keyDownCallback), this._inputId);
 	aclv.addCallback(ZmAutocompleteListView.CB_ADDR_FOUND, new AjxCallback(this, this._addrFoundCallback), this._inputId);
 };
 
@@ -77,10 +82,10 @@ function(aclv) {
  *
  * @param {string}					address		address text to go in the bubble
  * @param {ZmAutocompleteMatch}		match		match object (optional)
- * @param {boolean}	dontCallBubbleAddedCallback  this is for the case the bubble was added by the compose view and it already takes care of what needed to be done on add
+ * @param {boolean}					skipNotify  if true, don't call bubbleAddedCallback
  */
 ZmAddressInputField.prototype.add =
-function(address, match, dontCallBubbleAddedCallback) {
+function(address, match, index, skipNotify) {
 
 	if (!address) { return; }
 
@@ -88,25 +93,26 @@ function(address, match, dontCallBubbleAddedCallback) {
 	if (match && match.isGroup && match.type == ZmAutocomplete.AC_TYPE_CONTACT) {
 		var addrs = AjxEmailAddress.split(address);
 		for (var i = 0, len = addrs.length; i < len; i++) {
-			this._add(addrs[i].toString(), match);
+			this._add(addrs[i].toString(), match, index + i);
 		}
 	}
 	else {
-		this._add(address, match);
+		this._add(address, match, index);
 	}
 
 	this._input.value = "";
 	this._holder.className = "addrBubbleHolder";
 
 	this._resizeInput();
+	this._checkSelectionCount();
 
-	if (this._bubbleAddedCallback && !dontCallBubbleAddedCallback) {
+	if (this._bubbleAddedCallback && !skipNotify) {
 		this._bubbleAddedCallback.run();
 	}
 };
 
 ZmAddressInputField.prototype._add =
-function(address, match) {
+function(address, match, index) {
 
 	var params = {
 		address:	address,
@@ -120,19 +126,24 @@ function(address, match) {
 	};
 	var bubble = ZmAddressInputField.getBubble(params);
 
-	var bubbleId = bubble.id;
-	this._bubble[bubbleId] = bubble;
-	this._bubbles.push(bubble);
-	this._addresses.push(address);
-	this._addressHash[address] = true;
-	this._bubbleAddress[bubbleId] = address;
-
 	if (this._input.parentNode == this._holder) {
-		this._holder.insertBefore(bubble, this._input);
+		var refBubble;
+		if (index != null) {
+			var bubbles = this._getBubbleList();
+			refBubble = bubbles[index];
+		}
+		this._holder.insertBefore(bubble, refBubble || this._input);
 	} else {
 		this._holder.appendChild(bubble);
 	}
+
+	var bubbleId = bubble.id;
+	this._bubble[bubbleId] = bubble;
+	this._addressHash[address] = true;
+	this._bubbleAddress[bubbleId] = address;
+
 	Dwt.setHandler(bubble, DwtEvent.ONCLICK, ZmAddressInputField.onClick);
+	Dwt.setHandler(bubble, DwtEvent.ONDBLCLICK, ZmAddressInputField.onDoubleClick);
 	this.focus();
 };
 
@@ -141,6 +152,7 @@ function(address, match) {
  * itself (a SPAN).
  *
  * @param {hash}		params		a hash of params:
+ *
  * @param {string}		id			element ID for the bubble (optional)
  * @param {string}		className	CSS class for the bubble (optional)
  * @param {string}		address		email address to display in the bubble
@@ -208,11 +220,43 @@ function(params) {
 };
 
 /**
+ * Removes the bubble with the given ID from the holding area.
+ *
+ * @param {string}	bubbleId	ID of bubble to remove
+ * @param {boolean}	skipNotify	if true, don't call bubbleRemovedCallback
+ */
+ZmAddressInputField.prototype.removeBubble =
+function(bubbleId, skipNotify) {
+
+	var bubble = document.getElementById(bubbleId);
+	if (bubble) {
+		bubble.parentNode.removeChild(bubble);
+	}
+
+	var addr = this._bubbleAddress[bubbleId];
+	delete this._bubbleAddress[bubbleId];
+	this._bubble[bubbleId] = null;
+	delete this._bubble[bubbleId];
+	delete this._selected[bubbleId];
+	delete this._addressHash[addr];
+
+	if (this._holder.childNodes.length <= 1) {
+		this._holder.className = "addrBubbleHolder-empty";
+	}
+
+	this._resizeInput();
+	this._checkSelectionCount();
+
+	if (this._bubbleRemovedCallback && !skipNotify) {
+		this._bubbleRemovedCallback.run();
+	}
+};
+
+/**
  * Removes all bubbles from the holding area.
  */
 ZmAddressInputField.prototype.clear =
 function() {
-
 	for (var id in this._bubble) {
 		this.removeBubble(id);
 	}
@@ -224,8 +268,7 @@ function() {
  */
 ZmAddressInputField.prototype.getValue =
 function() {
-
-	var list = [].concat(this._addresses);
+	var list = [].concat(this._getAddresses());
 	if (this._input.value) {
 		list.push(this._input.value);
 	}
@@ -236,12 +279,12 @@ function() {
  * Parses the given text into email addresses, and adds a bubble for each one
  * that we don't already have. Any part that doesn't parse is left in the input.
  *
- * @param {string}	text	email addresses
- * @param {boolean}	add		if true, control is not cleared first
- * @param {boolean}	dontCallBubbleAddedCallback  this is for the case the bubble was added by the compose view picker, or paste, or any other case that already takes care of what needed to be done on add
+ * @param {string}	text		email addresses
+ * @param {boolean}	add			if true, control is not cleared first
+ * @param {boolean}	skipNotify	if true, don't call bubbleAddedCallback
  */
 ZmAddressInputField.prototype.setValue =
-function(text, add, dontCallBubbleAddedCallback) {
+function(text, add, skipNotify) {
 
 	if (!add) {
 		this.clear();
@@ -253,7 +296,7 @@ function(text, add, dontCallBubbleAddedCallback) {
 	for (var i = 0, len = addrs.length; i < len; i++) {
 		var addr = addrs[i].toString();
 		if (!this._addressHash[addr]) {
-			this.add(addr, null, dontCallBubbleAddedCallback);
+			this.add(addr, null, skipNotify);
 		}
 	}
 	if (parsed.bad && parsed.bad.size()) {
@@ -276,9 +319,11 @@ function() {
 		for (var i = 0, len = sel.length; i < len; i++) {
 			this.removeBubble(sel[i].id);
 		}
+		this.focus();
 	}
 	else {
-		var bubble = this._bubbles[this._bubbles.length - 1];
+		var index = this._getInputIndex();
+		var bubble = (index > 0) && this._holder.childNodes[index - 1];
 		if (bubble) {
 			this.setSelected(bubble, true);
 		}
@@ -305,18 +350,21 @@ ZmAddressInputField.prototype.getSelection =
 function() {
 
 	var sel = [];
-	for (var i = 0, len = this._bubbles.length; i < len; i++) {
-		var bubble = this._bubbles[i];
-		if (this._selected[bubble.id]) {
-			sel.push(bubble);
+	for (var id in this._selected) {
+		if (this._selected[id]) {
+			sel.push(this._bubble[id]);
 		}
 	}
 	return sel;
 };
 
+ZmAddressInputField.prototype.getSelectionCount =
+function() {
+	return this.getSelection().length;
+};
+
 ZmAddressInputField.prototype.deselectAll =
 function() {
-
 	var sel = this.getSelection();
 	for (var i = 0, len = sel.length; i < len; i++) {
 		this.setSelected(sel[i], false);
@@ -330,14 +378,21 @@ function() {
  */
 ZmAddressInputField.onClick =
 function(ev) {
-
-	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev);
-
-	var bubble = DwtUiEvent.getTarget(ev);
-	var addrInput = bubble && DwtControl.ALL_BY_ID[bubble._aifId];
+	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
 	if (addrInput) {
-		addrInput._itemClicked(mouseEv, bubble);
+		var mouseEv = DwtShell.mouseEvent;
+		mouseEv.setFromDhtmlEvent(ev);
+		addrInput._itemClicked(mouseEv, DwtUiEvent.getTarget(ev));
+	}
+};
+
+ZmAddressInputField.onDoubleClick =
+function(ev) {
+	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
+	if (addrInput) {
+		var mouseEv = DwtShell.mouseEvent;
+		mouseEv.setFromDhtmlEvent(ev);
+		addrInput._itemDoubleClicked(mouseEv, DwtUiEvent.getTarget(ev));
 	}
 };
 
@@ -348,65 +403,35 @@ function(ev) {
  */
 ZmAddressInputField.onPaste =
 function(ev) {
-
-	var input = DwtUiEvent.getTarget(ev);
-	var addrInput = input && DwtControl.ALL_BY_ID[input._aifId];
+	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
 	if (addrInput) {
 		// give browser time to update input - easier than dealing with clipboard
-		AjxTimedAction.scheduleAction(new AjxTimedAction(addrInput, addrInput._handlePaste), 100);
+		// will also resize the INPUT
+		AjxTimedAction.scheduleAction(new AjxTimedAction(addrInput, addrInput._checkInput), 100);
 	}
 };
 
 ZmAddressInputField.onCut =
 function(ev) {
-	this._resizeInput();
-};
-
-/**
- * Deselects selected bubbles.
- *
- * @param ev
- */
-ZmAddressInputField.onBlur =
-function(ev) {
-
-	var input = DwtUiEvent.getTarget(ev);
-	var addrInput = input && DwtControl.ALL_BY_ID[input._aifId];
+	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
 	if (addrInput) {
-		addrInput.handleBlur(ev);
+		addrInput._resizeInput();
 	}
 };
 
-ZmAddressInputField.prototype.handleBlur =
-function(ev) {
-
-	var value = this._input.value;
-	if (this._aclv._dataAPI.isComplete && this._aclv._dataAPI.isComplete(value)) {
-		DBG.println(AjxDebug.DBG3, "input field blurred, found an addr: " + value);
-		this.add(value);
-	}
-};
-
-ZmAddressInputField.prototype._handlePaste =
+// looks for valid addresses in the input, and converts them to bubbles
+ZmAddressInputField.prototype._checkInput =
 function() {
-
 	var text = this._input.value;
 	if (text) {
-		this.setValue(text, true, true);
-		if (this._bubbleAddedCallback) {
-			//it might have not added anything. but in case we paste lots of emails, better to call the callback once (since I can't think of a case where it matters if only one bubble was added, or multiple)
-			//if there will be a case like that, remove this part and the "true" 2nd param to setValue above
-			this._bubbleAddedCallback.run();
-		}
+		this.setValue(text, true);
 	}
 };
 
 // focus input when holder div is clicked
 ZmAddressInputField.onHolderClick =
 function(ev) {
-
-	var holder = DwtUiEvent.getTarget(ev);
-	var addrInput = holder && DwtControl.ALL_BY_ID[holder._aifId];
+	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
 	if (addrInput) {
 		addrInput.focus();
 	}
@@ -416,51 +441,17 @@ function(ev) {
  * Removes the bubble with the given ID from the holding area.
  *
  * @param {string}	bubbleId	ID of bubble to remove
- * @param {boolean}	dontCallBubbleRemovedCallback
- */
-ZmAddressInputField.prototype.removeBubble =
-function(bubbleId, dontCallBubbleRemovedCallback) {
-
-	var bubble = document.getElementById(bubbleId);
-	if (bubble) {
-		bubble.parentNode.removeChild(bubble);
-	}
-
-	AjxUtil.arrayRemove(this._bubbles, bubble);
-	var addr = this._bubbleAddress[bubbleId];
-	AjxUtil.arrayRemove(this._addresses, addr);
-	delete this._bubbleAddress[bubbleId];
-	this._bubble[bubbleId] = null;
-	delete this._bubble[bubbleId];
-	delete this._selected[bubbleId];
-	delete this._addressHash[addr];
-
-	if (this._addresses.length == 0) {
-		this._holder.className = "addrBubbleHolder-empty";
-	}
-
-	this._resizeInput();
-	
-	if (this._bubbleRemovedCallback && !dontCallBubbleRemovedCallback) {
-		this._bubbleRemovedCallback.run();
-	}
-};
-
-/**
- * Removes the bubble with the given ID from the holding area.
- *
- * @param {string}	bubbleId	ID of bubble to remove
- * @param {boolean}	dontCallBubbleRemovedCallback
+ * @param {boolean}	skipNotify	if true, don't call bubbleRemovedCallback
  *
  */
 ZmAddressInputField.removeBubble =
-function(bubbleId, dontCallBubbleRemovedCallback) {
+function(bubbleId, skipNotify) {
 
 	var bubble = document.getElementById(bubbleId);
 	var parentId = bubble._aifId || ZmAddressInputField.BUBBLE_OBJ_ID[bubbleId];
 	var addrInput = bubble && DwtControl.ALL_BY_ID[parentId];
 	if (addrInput && addrInput.getEnabled()) {
-		addrInput.removeBubble(bubbleId, dontCallBubbleRemovedCallback);
+		addrInput.removeBubble(bubbleId, skipNotify);
 		addrInput.focus();
 	}
 };
@@ -501,13 +492,11 @@ function(bubbleId, email) {
 
 ZmAddressInputField.prototype.getInputElement =
 function() {
-
 	return this._input;
 };
 
 ZmAddressInputField.prototype.setEnabled =
 function(enabled) {
-
 	DwtControl.prototype.setEnabled.call(this, enabled);
 	this._input.disabled = !enabled;
 };
@@ -530,18 +519,14 @@ function(params) {
 	Dwt.setHandler(this._holder, DwtEvent.ONCLICK, ZmAddressInputField.onHolderClick);
 	Dwt.setHandler(this._input, DwtEvent.ONCUT, ZmAddressInputField.onCut);
 	Dwt.setHandler(this._input, DwtEvent.ONPASTE, ZmAddressInputField.onPaste);
-	Dwt.setHandler(this._input, DwtEvent.ONBLUR, ZmAddressInputField.onBlur);
 };
 
 ZmAddressInputField.prototype._reset =
 function() {
 	this._bubble		= {};	// bubbles by bubble ID
-	this._bubbles		= [];	// bubbles in order
-	this._addresses		= [];	// ordered address list
 	this._addressHash	= {};	// used addresses, so we can check for dupes
 	this._bubbleAddress	= {};	// addresses by bubble ID
 	this._selected		= {};	// which bubbles are selected
-	this._bubbleWidth	= {};	// width of bubble by ID
 	this._input.value	= "";
 };
 
@@ -552,7 +537,7 @@ ZmAddressInputField.prototype.focus =
 function() {
 	if (this.getEnabled()) {
 		this._hasFocus = true;
-		this.getInputElement().focus();
+		this._input.focus();
 	}
 };
 
@@ -561,18 +546,30 @@ function() {
  */
 ZmAddressInputField.prototype.blur =
 function() {
-	this.getInputElement().blur();
+	this._input.blur();
 };
 
-// TODO: handle auto-repeat keys
-ZmAddressInputField.prototype._keyUpCallback =
+ZmAddressInputField.prototype._keyDownCallback =
 function(ev, aclv) {
-	this._resizeInput();
+
+	ev = DwtUiEvent.getEvent(ev);
+	var key = DwtKeyEvent.getCharCode(ev);
+	var propagate = true;
+	if (key == 27 && this._editMode) {
+		this._leaveEditMode(true);
+		propagate = false;	// eat the event - eg don't let compose view catch Esc and pop the view
+	}
+	else {
+		this._resizeInput();
+	}
+	DwtUiEvent.setBehaviour(ev, !propagate, propagate);
+	return propagate;
 };
 
 ZmAddressInputField.prototype._addrFoundCallback =
 function(aclv, addr, delim) {
-	this.add(addr);
+	this.add(addr, null, this._editModeIndex, true);
+	this._leaveEditMode();
 	return true;
 };
 
@@ -582,8 +579,9 @@ function(ev, bubble) {
 	if (ev.shiftKey) {
 		if (this._lastSelected) {
 			var select = false;
-			for (var i = 0, len = this._bubbles.length; i < len; i++) {
-				var b = this._bubbles[i];
+			var bubbles = this._getBubbleList();
+			for (var i = 0, len = bubbles.length; i < len; i++) {
+				var b = bubbles[i];
 				if (b == bubble || b == this._lastSelected) {
 					if (select) {
 						this.setSelected(b, true);
@@ -603,32 +601,183 @@ function(ev, bubble) {
 		}
 	}
 	else {
+		var wasOnlyOneSelected = ((this.getSelectionCount() == 1) && this._selected[bubble.id]);
 		this.deselectAll();
-		this.setSelected(bubble, true);
-		this._lastSelected = bubble;
+		this.setSelected(bubble, !wasOnlyOneSelected);
+		this._lastSelected = wasOnlyOneSelected ? null : bubble;
 	}
 
-	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
-		function() {
-			Dwt.deselectText();
-			var sel = this.getSelection();
-			for (var i = 0, len = sel.length; i < len; i++) {
-				Dwt.selectText(sel[i]);
-			}
-			this.blur();	// make text selection work in FF
-		}), 10);
+	this._checkSelectionCount();
+
+	if (ZmAddressInputField.AUTO_SELECT_TEXT) {
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this,
+			function() {
+				Dwt.deselectText();
+				var sel = this.getSelection();
+				for (var i = 0, len = sel.length; i < len; i++) {
+					Dwt.selectText(sel[i]);
+				}
+				if (sel.length > 0) {
+					this.blur();	// make text selection work in FF
+				}
+			}), 10);
+	}
+};
+
+// Double-clicking a bubble moves it into edit mode. It is replaced by the
+// INPUT, which is moved to the bubble's position. The bubble's address fills
+// the input and is selected.
+ZmAddressInputField.prototype._itemDoubleClicked =
+function(ev, bubble) {
+	this._checkInput();
+	this._enterEditMode(bubble);
+};
+
+ZmAddressInputField.prototype._enterEditMode =
+function(bubble) {
+
+	if (this._editMode) {
+		this._leaveEditMode();
+	}
+
+	this._editModeIndex = this._getBubbleIndex(bubble);
+	this._holder.insertBefore(this._input, bubble);
+	this._input.value = this._editModeAddress = this._bubbleAddress[bubble.id];
+	this.removeBubble(bubble.id, true);	// also resizes input
+	this.focus();
+	this._input.select();
+
+	this._editMode = true;
+};
+
+ZmAddressInputField.prototype._leaveEditMode =
+function(restore) {
+
+	if (!this._editMode) { return; }
+
+	if (restore) {
+		this._input.value = this._editModeAddress;
+		this._checkInput();
+	}
+	if (this._holder.lastChild != this._input) {
+		this._holder.appendChild(this._input);
+	}
+	this._resizeInput();
+	this.focus();
+
+	this._editMode = false;
+	this._editModeIndex = this._editModeAddress = null;
+};
+
+ZmAddressInputField.prototype._checkSelectionCount =
+function() {
+
+	var count = this.getSelectionCount();
+	if (!this._selectionMode && count > 0) {
+		if (ZmAddressInputField.AUTO_SELECT_TEXT) {
+			appCtxt.getKeyboardMgr().addListener(DwtEvent.ONKEYDOWN, this._keyDownListener);
+		}
+		var omem = appCtxt.getOutsideMouseEventMgr();
+		var omemParams = {
+			id:					"ZmAddressInputField",
+			obj:				this,
+			outsideListener:	this._outsideListener
+		}
+		omem.startListening(omemParams);
+		this._selectionMode = true;
+	}
+	else if (this._selectionMode && count == 0) {
+		if (ZmAddressInputField.AUTO_SELECT_TEXT) {
+			appCtxt.getKeyboardMgr().removeListener(DwtEvent.ONKEYDOWN, this._keyDownListener);
+		}
+		var omem = appCtxt.getOutsideMouseEventMgr();
+		omem.stopListening("ZmAddressInputField");
+		this._selectionMode = false;
+	}
 };
 
 // size the input to a bit more than its current content
 ZmAddressInputField.prototype._resizeInput =
 function() {
 
-	var val = this._input.value;
+	var val = AjxStringUtil.htmlEncode(this._input.value);
 	var holderWidth = Dwt.getSize(this._holder).x;
 	var inputWidth = Math.min(AjxStringUtil.getWidth(val), holderWidth) + ZmAddressInputField.INPUT_EXTRA;
 	Dwt.setSize(this._input, inputWidth, Dwt.DEFAULT);
 
-	if (this._bubbles.length) {
-		this._bubbles[this._bubbles.length - 1].style.marginRight = "3px";
+	if (AjxEnv.isIE) {
+		// TODO: make the INPUT line up with the SPANs vertically
 	}
+};
+
+/**
+ * Handle delete key when one or more bubbles is selected. We can't do it the normal way through
+ * a keyboard shortcut, since that requires browser focus to be set to the hidden keyboard input
+ * field, which would undo the text selection.
+ *
+ * @private
+ */
+ZmAddressInputField.prototype._handleKeyDown =
+function(ev) {
+
+	ev = DwtUiEvent.getEvent(ev);
+	var propagate = true;
+	var key = DwtKeyEvent.getCharCode(ev);
+	if (key == 8 && this.getSelectionCount()) {
+		this.handleDelete();
+		propagate = false;	// don't let the browser catch it and interpret it as Back
+	}
+	DwtUiEvent.setBehaviour(ev, !propagate, propagate);
+	return propagate;
+};
+
+// Returns an ordered list of bubbles
+ZmAddressInputField.prototype._getBubbleList =
+function(id) {
+
+	var list = [];
+	var children = this._holder.childNodes;
+	for (var i = 0; i < children.length; i++) {
+		var node = children[i];
+		if (node && node.tagName && node.tagName.toLowerCase() == "span") {
+			list.push(node);
+		}
+	}
+	return list;
+};
+
+ZmAddressInputField.prototype._getBubbleIndex =
+function(bubble) {
+	return AjxUtil.indexOf(this._holder.childNodes, bubble);
+};
+
+ZmAddressInputField.prototype._getInputIndex =
+function() {
+	return AjxUtil.indexOf(this._holder.childNodes, this._input);
+};
+
+// Returns an ordered list of bubble addresses
+ZmAddressInputField.prototype._getAddresses =
+function() {
+
+	var addrs = [];
+	var bubbles = this._getBubbleList();
+	for (var i = 0; i < bubbles.length; i++) {
+		addrs.push(this._bubbleAddress[bubbles[i].id]);
+	}
+	return addrs;
+};
+
+ZmAddressInputField._outsideMouseDownListener =
+function(ev, context) {
+	var aif = context && context.obj;
+	if (aif) {
+		aif.deselectAll();
+	}
+};
+
+ZmAddressInputField._getAddrInputFromEvent =
+function(ev) {
+	var target = DwtUiEvent.getTarget(ev);
+	return target && DwtControl.ALL_BY_ID[target._aifId];
 };

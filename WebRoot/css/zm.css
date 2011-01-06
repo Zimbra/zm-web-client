@@ -734,6 +734,11 @@ INPUT[type="text"].people_search_input {
 .addrBubbleContainer input {
 	border: 0px !important;
 	outline: none !important;
+	margin-left: 3px;
+}
+
+.addrBubbleContainer input:first-child {
+	margin-left: 0;
 }
 
 .addrBubble, .addrBubble-selected {
@@ -758,6 +763,10 @@ INPUT[type="text"].people_search_input {
 
 .addrBubble-selected {
 	background-color: @SelC@;
+}
+
+.addrBubbleHolder span:hover {
+	cursor: pointer;
 }
 
 .addrBubble .link {
