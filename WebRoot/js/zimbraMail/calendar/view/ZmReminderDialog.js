@@ -89,7 +89,8 @@ function() {
         // only show, at most, five appointment reminders
         for (var i = 0; i < appts.length && i < 5; i++) {
             var appt = appts[i];
-            var delta = this._formatDeltaString(this._computeDelta(appt));
+            var startDelta = this._computeDelta(appt);
+            var delta = startDelta ? this._formatDeltaString(startDelta) : "";
             var text = [appt.getName(), ", ", this._getDurationText(appt), "\n(", delta, ")"].join("");
             if (AjxEnv.isMac) {
                 ZmDesktopAlert.getInstance().start(ZmMsg.reminders, text);
@@ -193,7 +194,7 @@ function(data) {
 		else if (startDelta > ZmReminderDialog.SOON)	td.className = 'ZmReminderSoon';
 		else											td.className = 'ZmReminderFuture';
 
-		td.innerHTML = this._formatDeltaString(startDelta);
+		td.innerHTML = startDelta ? this._formatDeltaString(startDelta) : "";
 	}
 };
 
@@ -362,7 +363,7 @@ function(appt) {
 ZmReminderDialog.prototype._computeDelta =
 function(appt) {
 	return (appt.alarmData && appt.alarmData.length > 0)
-		? ((new Date()).getTime() - appt.adjustMS(appt.alarmData[0].alarmInstStart, appt.tzo))
+		? (appt.alarmData[0].alarmInstStart ? (new Date()).getTime() - appt.adjustMS(appt.alarmData[0].alarmInstStart, appt.tzo) : appt.getEndTime()  ? (new Date()).getTime() - appt.getEndTime() : null)
 		: ((new Date()).getTime() - appt.getStartTime());
 };
 	
