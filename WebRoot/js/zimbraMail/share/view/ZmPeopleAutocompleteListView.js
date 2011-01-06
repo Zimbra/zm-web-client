@@ -142,7 +142,7 @@ function() {
 
 ZmPeopleAutocompleteListView.prototype._setSelected =
 function(id) {
-    if (id) {
+    if (id && id instanceof String) {
         id = id.split("-")[0]; 
     }
 
