@@ -202,3 +202,31 @@ function(clearDL) {
 	}
 	ZmAutocompleteListView.prototype.reset.call(this);
 };
+
+ZmDLAutocompleteListView.prototype._popup =
+function(loc) {
+
+	if (this.getVisible()) { return; }
+
+	loc = loc || this._getDefaultLoc();
+	var x = loc.x;
+	var windowSize = this.shell.getSize();
+	this.setVisible(true);
+	var curSize = this.getSize();
+	this.setVisible(false);
+	var newX = (x + curSize.x >= windowSize.x) ? windowSize.x - curSize.x : x;
+	if (newX != x) {
+		var parentSize = this._parentAclv.getSize();
+		this._parentAclv.setLocation(windowSize.x - (curSize.x + parentSize.x + 2), Dwt.DEFAULT);
+		loc.x = newX;
+	}
+	ZmAutocompleteListView.prototype._popup.call(this, loc);
+};
+
+ZmDLAutocompleteListView.prototype._popdown =
+function() {
+	if (this._parentAclv) {
+		this._parentAclv._curExpanded = null;
+	}
+	ZmAutocompleteListView.prototype._popdown.call(this);
+};

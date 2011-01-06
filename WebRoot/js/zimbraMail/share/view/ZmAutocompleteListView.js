@@ -360,7 +360,7 @@ function(ev) {
 	if (key == 13 || key == 3) {
 		if (aclv._options.addrBubbles && aclv._dataAPI.isComplete && aclv._dataAPI.isComplete(value)) {
 				DBG.println(AjxDebug.DBG3, "got a Return, found an addr: " + value);
-				aclv._runCallbacks(ZmAutocompleteListView.CB_ADDR_FOUND, aclv._element && aclv._element.id, [aclv, value, "\n"]);
+				aclv._runCallbacks(ZmAutocompleteListView.CB_ADDR_FOUND, element.id, [aclv, value, "\n"]);
 		} else {
 			// Treat as regular selection
 			var selEv = DwtShell.selectionEvent;
@@ -704,7 +704,6 @@ function(chunk, callback) {
 	var text = chunk.text;
 	var start = chunk.end; // move beyond the current chunk
 
-	// do matching
 	this._removeAll();
 
 	var respCallback = new AjxCallback(this, this._handleResponseAutocomplete, [str, chunk, text, start, callback]);
@@ -1020,8 +1019,8 @@ function(loc) {
 	var x = loc.x;
 	var y = loc.y;
 
-	var shellHeight = this.shell.getSize().y;
-	var availHeight = shellHeight - y;
+	var windowSize = this.shell.getSize();
+	var availHeight = windowSize.y - y;
 	var fullHeight = this.size() * this._getRowHeight();
 	this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	this.setVisible(true);
@@ -1043,7 +1042,10 @@ function(loc) {
 		this.setSize(Dwt.CLEAR, Dwt.CLEAR);	// set back to auto-sizing
 	}
 
-    this.setLocation(x, y);
+	var newX = (x + curSize.x >= windowSize.x) ? windowSize.x - curSize.x : x;
+
+	DBG.println(AjxDebug.DBG1, this.toString() + " popup at: " + newX + "," + y);
+    this.setLocation(newX, y);
 	this.setVisible(true);
 	this.setZIndex(Dwt.Z_DIALOG_MENU);
 
@@ -1084,6 +1086,7 @@ function() {
 	
 	this.setZIndex(Dwt.Z_HIDDEN);
 	this.setVisible(false);
+	this._removeAll();
 
 	var omem = appCtxt.getOutsideMouseEventMgr();
 	omem.stopListening({id:"ZmAutocompleteListView", obj:this});
@@ -1194,11 +1197,11 @@ function() {
 ZmAutocompleteListView.prototype._removeLinks =
 function(textHash) {
 	if (!textHash) { return; }
-	var textIds = AjxUtil.values(textHash);
-	for (var i = 0, len = textIds.length; i < len; i++) {
-		var textId = textIds[i];
-		DwtControl.ALL_BY_ID[textId] = null;
-		delete DwtControl.ALL_BY_ID[textId];
+	for (var id in textHash) {
+		var textCtrl = textHash[id];
+		if (textCtrl) {
+			textCtrl.dispose();
+		}
 	}
 };
 
