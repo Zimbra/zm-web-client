@@ -86,11 +86,15 @@ BODY						{	margin:0px; 				}
 #skin_container_tree_top				{	@SkinBorderUsername@	}
 
 #skin_container_links a,
-#skin_container_logoff a				{	padding: 0px;  color: white;}
+#skin_container_logoff a				{	padding: 0px;  color: white; font-weight: normal;}
 
 /** User Name section **/
 #skin_container_username				{	height:auto; padding-top:0px;	}
-#skin_container_username *				{	color:#FFF;  }
+#skin_container_username *				{	color:#FFF; font-weight: normal; }
+
+#skin_container_help,
+#skin_container_logoff					{	padding: 0px 5px; margin:0px 10px 0px 0px; }
+
 
 /** Quota section **/	
 #skin_container_quota					{	@SkinBorderQuota@	}
@@ -102,9 +106,7 @@ BODY						{	margin:0px; 				}
 #skin_container_helpLogoff 				{	white-space:nowrap;	}
 
 #skin_td_switch_offline,
-#skin_container_admin,
-#skin_container_help,
-#skin_container_logoff					{
+#skin_container_admin	{
 	background-color:transparent;
 	color:#fff;
 	display:inline-block;
