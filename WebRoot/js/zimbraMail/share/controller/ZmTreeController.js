@@ -365,7 +365,7 @@ function(overviewId, account) {
 	}
 	var treeItems = rootTreeItem.getItems();
 	for (var i = 0; i < treeItems.length; i++) {
-		this._fixupTreeNode(treeItems[i], null, treeView);
+		this._fixupTreeNode(treeItems[i], null, treeView, true);
 	}
 };
 
@@ -379,7 +379,7 @@ function(overviewId, account) {
  * @private
  */
 ZmTreeController.prototype._fixupTreeNode =
-function(treeItem, organizer, treeView) {
+function(treeItem, organizer, treeView, skipNotify) {
 	if (treeItem._isSeparator) { return; }
 	organizer = organizer || treeItem.getData(Dwt.KEY_OBJECT);
 	if (organizer) {
@@ -397,16 +397,16 @@ function(treeItem, organizer, treeView) {
 		}
 
 		// set expand state per user's prefs
-		this._expandTreeItem(treeItem);
+		this._expandTreeItem(treeItem, skipNotify);
 	}
     var treeItems = treeItem.getItems();
     for (var i = 0; i < treeItems.length; i++) {
-        this._fixupTreeNode(treeItems[i], null, treeView);
+        this._fixupTreeNode(treeItems[i], null, treeView, skipNotify);
     }
 };
 
 ZmTreeController.prototype._expandTreeItem =
-function(treeItem) {
+function(treeItem, skipNotify) {
 	var expanded = appCtxt.get(ZmSetting.FOLDERS_EXPANDED);
 	var folderId = treeItem.getData(Dwt.KEY_ID);
 	var parentTi = treeItem.parent;
@@ -415,7 +415,7 @@ function(treeItem) {
 	if (expanded[folderId] &&
 		parentTi && (parentTi instanceof DwtTreeItem) && parentTi.getExpanded())
 	{
-		treeItem.setExpanded(true);
+		treeItem.setExpanded(true, null, skipNotify);
 	}
 };
 
