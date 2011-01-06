@@ -31,5 +31,5 @@ Note: When you upgrade ZCS, changes made to the ZbMsg.properties file are lost. 
 ----------------------
 
 ZCS 7.0 
-Revised 1/2011
+Revised 12/2010
 

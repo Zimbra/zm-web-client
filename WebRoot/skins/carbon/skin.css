@@ -86,11 +86,11 @@ BODY						{	margin:0px; 				}
 #skin_container_tree_top				{	@SkinBorderUsername@	}
 
 #skin_container_links a,
-#skin_container_logoff a				{	padding: 0px;  color: white;}
+#skin_container_logoff a					{	padding: 0px; color: white;}
 
 /** User Name section **/
 #skin_container_username				{	height:auto; padding-top:0px;	}
-#skin_container_username *				{	color:#FFF;  }
+#skin_container_username *				{	color:#FFF;	 }
 
 /** Quota section **/	
 #skin_container_quota					{	@SkinBorderQuota@	}
