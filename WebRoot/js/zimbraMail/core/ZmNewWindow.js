@@ -40,6 +40,8 @@ ZmNewWindow = function() {
 	appCtxt.setAppController(this);
 
 	this._settings = appCtxt.getSettings();
+	this._settings.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError); //must set this for child window since AjxException is fresh for this window. Also must pass AjxException and the handler since we want it to update the one from this child window, and not the parent window
+
 	this._shell = appCtxt.getShell();
 
 	// Register keymap and global key action handler w/ shell's keyboard manager

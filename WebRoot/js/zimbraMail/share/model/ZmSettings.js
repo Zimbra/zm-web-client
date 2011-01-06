@@ -632,11 +632,7 @@ function() {
 		this._settings[ZmSetting.SHOW_SCRIPT_ERRORS].setValue(true, null, false, true);
 	}
 
-	// script error reporting
-	var rse = AjxException.reportScriptErrors = this._settings[ZmSetting.SHOW_SCRIPT_ERRORS].getValue();
-	if (rse) {
-		AjxException.setScriptErrorHandler(ZmController.handleScriptError);
-	}
+	this.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError);
 
 	// default sorting preferences
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONVLIST, true, true);
@@ -649,6 +645,24 @@ function() {
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_ASC, ZmId.VIEW_CAL, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DUE_DATE_ASC, ZmId.VIEW_TASKLIST, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.SUBJ_ASC, ZmId.VIEW_BRIEFCASE_DETAIL, true, true);
+};
+
+
+/**
+ * sets AjxException static attributes. This is extracted so it can be called from ZmNewwindow as well.
+ * this is since the child window gets its own AjxException variable.
+ *
+ * @param AjxExceptionClassVar
+ * @param handler
+ */
+ZmSettings.prototype.setReportScriptErrorsSettings =
+function(AjxExceptionClassVar, handler) {
+	// script error reporting
+	var rse = AjxExceptionClassVar.reportScriptErrors = this._settings[ZmSetting.SHOW_SCRIPT_ERRORS].getValue();
+	if (rse) {
+		AjxExceptionClassVar.setScriptErrorHandler(handler);
+	}
+
 };
 
 /**
