@@ -603,6 +603,10 @@ function(folder) {
 		var msg = AjxMessageFormat.format(ZmMsg.orgChange, folder.getOwner());
 		dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
+    }else if (this.isMovingBetwAcctsAsAttendee(this._pendingActionData, folder.id)) {
+		var dlg = appCtxt.getMsgDialog();
+		dlg.setMessage(ZmMsg.apptInviteOnly, DwtMessageDialog.WARNING_STYLE);
+		dlg.popup();
 	} else {
 		this._doMove(this._pendingActionData, folder, null, false);
 	    this._clearDialog(appCtxt.getChooseFolderDialog());
@@ -2880,6 +2884,29 @@ function(appts, newFolderId) {
 			if (origFolder && newFolder) {
 				if ((origFolder.id != newFolderId) &&
 					((origFolder.link && !newFolder.link) || (!origFolder.link && newFolder.link)))
+				{
+					isMovingBetw = true;
+					break;
+				}
+			}
+		}
+	}
+
+	return isMovingBetw;
+};
+
+// returns true if moving given read-only invite appt between accounts
+ZmCalViewController.prototype.isMovingBetwAcctsAsAttendee =
+function(appts, newFolderId) {
+	appts = (!(appts instanceof Array)) ? [appts] : appts;
+	var isMovingBetw = false;
+	for (var i = 0; i < appts.length; i++) {
+		var appt = appts[i];
+		if (appt.isReadOnly() && appt._orig) {
+			var origFolder = appt._orig.getFolder();
+			var newFolder = appCtxt.getById(newFolderId);
+			if (origFolder && newFolder) {
+				if ((origFolder.id != newFolderId) && origFolder.owner != newFolder.owner)
 				{
 					isMovingBetw = true;
 					break;
