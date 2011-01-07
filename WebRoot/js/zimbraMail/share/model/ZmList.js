@@ -482,6 +482,7 @@ function(params) {
 		params1.action = "move";
 		params1.attrs.l = params.folder.id;
 	}
+	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, [params]);
 
     if (appCtxt.multiAccounts) {
 		// Reset accountName for multi-account to be the respective account if we're

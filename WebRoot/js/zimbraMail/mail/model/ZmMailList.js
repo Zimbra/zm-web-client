@@ -92,7 +92,7 @@ function(params) {
         params1.actionText = params.actionText || ZmMsg.actionMove;
         params1.actionArg = params1.folder.getName(false, false, true);
     }
-	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, params);
+	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, [params]);
 
 	if (appCtxt.multiAccounts) {
 		// Reset accountName for multi-account to be the respective account if we're
