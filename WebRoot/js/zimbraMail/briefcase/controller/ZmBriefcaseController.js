@@ -602,8 +602,17 @@ ZmBriefcaseController.prototype._checkoutListener =
 function(){
      var item = this._getSelectedItem();
      if(item && item instanceof ZmBriefcaseItem){
-        this.checkout(item, item.isWebDoc() ? null : new AjxCallback(this, this.downloadFile, item));
+        this.checkout(item, item.isWebDoc() ? null : new AjxCallback(this, this._postCheckout, item));
      }
+};
+
+ZmBriefcaseController.prototype._postCheckout =
+function(item){
+    if(AjxEnv.isSafari){
+        setTimeout(AjxCallback.simpleClosure(this.downloadFile, this, item), 100);
+    }else{
+        this.downloadFile(item);
+    }
 };
 
 ZmBriefcaseController.prototype._handleCheckin =
