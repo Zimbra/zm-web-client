@@ -336,7 +336,6 @@ function(subs, sentBy, sentByAddr) {
 		this._msg.folderId != ZmFolder.ID_SENT)
 	{
 		subs.counterInvMsg = AjxMessageFormat.format(ZmMsg.counterInviteMsg, [(sentBy && sentBy.name ) ? sentBy.name : sentByAddr]);
-		subs.newProposedTime = this._invite.getProposedTimeStr();
 	}
 	// if this an action'ed invite, show the status banner
 	else if (isOrganizer && this._invite.hasAttendeeResponse()) {
