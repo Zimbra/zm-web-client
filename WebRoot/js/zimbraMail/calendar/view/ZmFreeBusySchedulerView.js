@@ -1806,13 +1806,16 @@ function(ev) {
 
 ZmFreeBusySchedulerView.prototype.updateAllAttendeeCellStatus =
 function(idx, status) {
+
+    if(status == ZmFreeBusySchedulerView.STATUS_WORKING) return;
+
 	if (!this._allAttendeesStatus[idx]) {
 		this._allAttendeesStatus[idx] = status;
 	} else if (status!= this._allAttendeesStatus[idx]) {
 		if (status != ZmFreeBusySchedulerView.STATUS_UNKNOWN &&
 			status != ZmFreeBusySchedulerView.STATUS_FREE)
 		{
-			this._allAttendeesStatus[idx] = ZmFreeBusySchedulerView.STATUS_BUSY;;
+			this._allAttendeesStatus[idx] = ZmFreeBusySchedulerView.STATUS_BUSY;
 		}
 	}
 };
