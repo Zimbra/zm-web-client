@@ -822,6 +822,7 @@ function(callback) {
 
 ZmFreeBusySchedulerView.prototype.postUpdateHandler =
 function() {
+    this._colorAllAttendees();
     if(this._updateCallback) {
         this._updateCallback.run();
         this._updateCallback = null;
