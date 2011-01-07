@@ -1,9 +1,5 @@
 <skin>
 	<common>
-		<script>
-			<file>../_base/base2/ZmSkin.js</file>
-            <file>skin.js</file>
-		</script>
 	  	<substitutions>
 			<file>../_base/base2/skin.properties</file>
 			<file>skin.properties</file>
@@ -14,6 +10,9 @@
 		</css>
   </common>  
   <advanced>
+  		<script>
+			<file>../_base/base2/ZmSkin.js</file>     
+		</script>
 		<html>
 			<file>skin.html</file>
 			<file>splash.html</file>
