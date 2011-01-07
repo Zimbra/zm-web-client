@@ -491,10 +491,10 @@ ZmApptViewHelper._getShowAsColorFromId =
 function(id) {
 	switch(id) {
         case ZmCalBaseItem.PSTATUS_NEEDS_ACTION: return "ZmAppt-no-response";
-		case "F": return "ZmAppt-free";
+		case "F": return "ZmAppt-free freeBusyBar_free";
 		case "B": return "ZmAppt-busy";
-		case "T": return "ZmAppt-tentative";
-		case "O": return "ZmAppt-ooo";
+		case "T": return "ZmAppt-tentative freeBusyBar_tentative";
+		case "O": return "ZmAppt-ooo freeBusyBar_ooo";
 	}
 	return "ZmAppt-busy";
 };
