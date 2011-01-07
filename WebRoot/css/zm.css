@@ -4604,7 +4604,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ReminderInput INPUT{
-    width: 100%
+    width: 100%;
 }
 
 .SuggestionPrefTitle {
