@@ -6,7 +6,7 @@
 			<$ }else { $>
             <tr class='${headerColor}'>			
 			<$ } $>
-				<td width='4px' class='${showAsColor}' ></td>
+                <td class="${showAsColor}" width=4 rowspan="<$= data.hideTime ? 2 : 3 $>"></td>
 				<td class='appt${newState}_time' id='${id}_st'>
 					<$ if (data.icon) { $>
 						<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
@@ -21,7 +21,6 @@
 				</td>
 			</tr>
 			<tr valign=top>
-				<td width='4px' class='${showAsColor}' ></td>
 				<td class=appt${newState}_name style='height:100%'>
 					${name}
 					<$ if (data.location) { $>
@@ -31,7 +30,6 @@
 			</tr>
 			<$ if(!data.hideTime) {$>			
 			<tr>
-				<td width='4px' class='${showAsColor}' ></td>
 				<td class=appt_end_time id='${id}_et'>${endtime}</td>
 			</tr>
 			<$ } $>
