@@ -327,7 +327,7 @@ ZmShareSearchDialog.prototype._addToOwnerMap = function(owners, shares) {
         if (!owner) {
             owner = owners[share.ownerId] = {
                 ownerId: share.ownerId,
-                ownerName: share.ownerName,
+                ownerName: share.ownerName || share.ownerEmail,
                 ownerEmail: share.ownerEmail,
                 shares: []
             };
@@ -374,7 +374,7 @@ ZmShareSearchDialog.prototype._appendShareNodes = function(owners) {
         var parentNode = this._getNode(owner.ownerId);
         if (!parentNode) {
             var root = this._getNode(ZmOrganizer.ID_ROOT);
-            parentNode = this._createOrganizer(root, owner.ownerId, owner.ownerName);
+            parentNode = this._createOrganizer(root, owner.ownerId, owner.ownerName || owner.ownerEmail);
             this._appendChild(parentNode, root);
         }
 
