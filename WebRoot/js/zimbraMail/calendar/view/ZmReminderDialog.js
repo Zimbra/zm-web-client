@@ -159,7 +159,7 @@ function(list) {
 
 		// open button
 		var openBtn = this._openButtons[data.openBtnId] = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:data.openBtnId});
-		openBtn.setImage(appt.otherAttendees ? "ApptMeeting" : "Appointment");
+		openBtn.setImage(appt.otherAttendees ? "ApptMeeting" : (appt.type == ZmItem.TASK) ? "TasksApp" : "Appointment");
 		openBtn.setText(ZmMsg.viewAppointment);
 		openBtn.addSelectionListener(openListener);
 		openBtn.apptUid = uid;
