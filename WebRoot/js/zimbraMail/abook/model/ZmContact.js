@@ -878,7 +878,7 @@ function(attr, batchCmd) {
 			name == "createTimeStamp" ||
 			name == "modifyTimeStamp") { continue; }
 
-		this._addRequestAttr(cn.a, name, attr[name]);
+		this._addRequestAttr(cn, name, attr[name]);
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr, batchCmd != null]);
@@ -977,7 +977,7 @@ function(attr, callback) {
 
 	for (var name in attr) {
 		if (name == ZmContact.F_folderId) { continue; }
-		this._addRequestAttr(cn.a, name, (attr[name] && attr[name].value) || attr[name]);
+		this._addRequestAttr(cn, name, (attr[name] && attr[name].value) || attr[name]);
 		continueRequest = true;
 	}
 
@@ -991,7 +991,7 @@ function(attr, callback) {
             contact[field] = value != null ? value : this.getAttr(field);
         }
         var fullName = ZmContact.computeFileAs(contact); 
-        this._addRequestAttr(cn.a, ZmContact.X_fullName, fullName);
+        this._addRequestAttr(cn, ZmContact.X_fullName, fullName);
     }
 
 	if (continueRequest) {
@@ -1533,7 +1533,7 @@ function(text, delims) {
  * @private
  */
 ZmContact.prototype._addRequestAttr =
-function(attrs, name, value) {
+function(cn, name, value) {
 	var a = {n:name};
 	if (name == ZmContact.F_image && AjxUtil.isString(value) && value.length) {
 		// handle contact photo
@@ -1545,7 +1545,17 @@ function(attrs, name, value) {
 	} else {
 		a._content = value || "";
 	}
-	attrs.push(a);
+
+    if (value instanceof Array) {
+        if (!cn._attrs)
+            cn._attrs = {};
+        cn._attrs[name] = value || "";
+    }
+    else  {
+        if (!cn.a)
+            cn.a = [];
+        cn.a.push(a);
+    }
 };
 
 /**
