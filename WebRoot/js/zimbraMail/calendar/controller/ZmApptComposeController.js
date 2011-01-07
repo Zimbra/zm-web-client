@@ -295,7 +295,7 @@ function(mode, appt) {
     if((this._mode == ZmCalItem.MODE_PROPOSE_TIME) || ZmCalItem.FORWARD_MAPPING[this._mode]) {
         sendButton.setVisible(true);
         saveButton.setVisible(false);
-        
+
         this._requestResponses.setEnabled(false);
         this.setRequestResponses(false);
     }
@@ -320,6 +320,10 @@ function(mode) {
     var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
     sendButton.removeSelectionListeners();
     sendButton.addSelectionListener(new AjxListener(this, this._sendListener));
+
+    var btn = this._toolbar.getButton(ZmOperation.ATTACHMENT);
+    if(btn)
+        btn.setEnabled(!(this._mode == ZmCalItem.MODE_PROPOSE_TIME || ZmCalItem.FORWARD_MAPPING[mode]));
 };
 
 ZmApptComposeController.prototype._sendListener =
