@@ -371,6 +371,11 @@ function() {
 	}
 };
 
+ZmAddressInputField.prototype.preventSelection =
+function(targetEl) {
+	return !(this._bubble[targetEl.id] || this.__isInputEl(targetEl));
+};
+
 /**
  * Clicking a bubble toggles its selection.
  * 
