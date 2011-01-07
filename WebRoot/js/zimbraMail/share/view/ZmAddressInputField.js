@@ -63,7 +63,7 @@ function() {
 	return "ZmAddressInputField";
 };
 
-ZmAddressInputField.AUTO_SELECT_TEXT = false;
+ZmAddressInputField.AUTO_SELECT_TEXT = true;
 ZmAddressInputField.INPUT_EXTRA = 30;
 
 // tie a bubble SPAN to a widget that can handle clicks
@@ -74,6 +74,7 @@ function(aclv) {
 	this._aclv = aclv;
 	this._separator = (aclv._separator) || AjxEmailAddress.SEPARATOR;
 	aclv.addCallback(ZmAutocompleteListView.CB_KEYDOWN, new AjxCallback(this, this._keyDownCallback), this._inputId);
+	aclv.addCallback(ZmAutocompleteListView.CB_KEYUP, new AjxCallback(this, this._keyUpCallback), this._inputId);
 	aclv.addCallback(ZmAutocompleteListView.CB_ADDR_FOUND, new AjxCallback(this, this._addrFoundCallback), this._inputId);
 };
 
@@ -554,6 +555,7 @@ function() {
 	this._input.blur();
 };
 
+// Check for Esc while in edit mode
 ZmAddressInputField.prototype._keyDownCallback =
 function(ev, aclv) {
 
@@ -564,11 +566,17 @@ function(ev, aclv) {
 		this._leaveEditMode(true);
 		propagate = false;	// eat the event - eg don't let compose view catch Esc and pop the view
 	}
-	else {
-		this._resizeInput();
+	else if (key == 9) {	// TAB
+		this._checkInput();
 	}
 	DwtUiEvent.setBehaviour(ev, !propagate, propagate);
 	return propagate;
+};
+
+// need to do this on keyup, after character has appeared in the INPUT
+ZmAddressInputField.prototype._keyUpCallback =
+function(ev, aclv) {
+	this._resizeInput();
 };
 
 ZmAddressInputField.prototype._addrFoundCallback =
