@@ -219,10 +219,14 @@ function() {
 
 	if (subj && subj.length) {
 		var startDate = AjxStringUtil.trim(this._startDateField.value);
-		if(!ZmTimeSelect.parse(startDate)) {
+		if (startDate.length > 0 && (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField))) {
+			errorMsg = ZmMsg.errorInvalidDates;
+		}
+		var remindTime =  ZmTimeSelect.parse(this._remindTimeSelect.getInputField().getValue());
+		if (!remindTime) {
 			errorMsg = AjxMsg.invalidTimeString;
 		}
-		if(Math.round(this.getpCompleteInputValue()) > 100) {
+        if(Math.round(this.getpCompleteInputValue()) > 100) {
            errorMsg = ZmMsg.errorInvalidPercentage;
         }
     } else {
