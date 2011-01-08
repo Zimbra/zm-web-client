@@ -563,12 +563,16 @@ ZmTimeInput.prototype.getValue =
 function(date) {
 	//return (ZmTimeInput.getDateFromFields(this.getHours(), this.getMinutes(), this.getAmPm(), date));
     var d = ZmTimeSelect.parse(this._timeSelectInput.getValue());
+	if(!d) {
+		d = new Date();
+	}
     date = date || new Date();
     //daylight saving time
     if(AjxDateUtil.isDayShifted(date)) {
         AjxDateUtil.rollToNextDay(date);
     }
-    date.setHours(date.getHours(), date.getMinutes(), 0, 0);
+	
+    date.setHours(d.getHours(), d.getMinutes(), 0, 0);
     return date;
 };
 
