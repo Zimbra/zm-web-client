@@ -230,7 +230,7 @@ input.admin_xform_name_input_disabled {
 }
 
 .LogoContainer {
-	left: 27px;
+	left: 10px;
 	top: 6px;
 }
 
@@ -423,6 +423,7 @@ input.admin_xform_name_input_disabled {
 }
 
 .ImgAppBanner {
+    background-position:17px 0px;
 	cursor:pointer;
 }
 

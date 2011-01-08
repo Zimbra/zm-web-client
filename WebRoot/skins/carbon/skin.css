@@ -140,10 +140,7 @@ BODY						{	margin:0px; 				}
 
 /** App Chooser **/
 #skin_spacing_app_row					{ 
-	background-color:@AppC@; 
-	background-image: url("@SkinImgDir@/vmwareLogo.png");
-	background-position: right center;
-	background-repeat:no-repeat;
+	background-color:@AppC@;
 	padding:0px 7px; 
 }
 #skin_spacing_app_chooser				{}
@@ -218,8 +215,22 @@ BODY						{	margin:0px; 				}
 	@trRadius@: 8px;
 }
 
+.LoginScreen .decor1, .SplashScreen .decor1 {
+    background-image:url("@SkinImgDir@/vmwarePeel.png");
+    background-repeat:no-repeat;
+    border-top-right-radius: 15px;
+    height:102px;
+    overflow:hidden;
+    position:absolute;
+    right:0;
+    top:0;
+    width:103px;
+    -moz-border-radius-topright:15px;
+    -webkit-border-top-right-radius:15px;
+}
 
-.SplashScreen { position:absolute;
+.SplashScreen { 
+    position:absolute;
     left:0px;
     top:0px;
     width:100%;

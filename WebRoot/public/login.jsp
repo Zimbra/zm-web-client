@@ -396,6 +396,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                     
 			</table>
 			<div class="offline"><fmt:message key="switchToOfflineClientEx"/></div>
+			<div class="decor1"></div>
 		</div>
 
 		<div class="${smallScreen?'Footer-small':'Footer'}">
