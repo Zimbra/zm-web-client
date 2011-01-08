@@ -568,7 +568,7 @@ function(date) {
     if(AjxDateUtil.isDayShifted(date)) {
         AjxDateUtil.rollToNextDay(date);
     }
-    date.setHours(d.getHours(), d.getMinutes(), 0, 0);
+    date.setHours(date.getHours(), date.getMinutes(), 0, 0);
     return date;
 };
 
