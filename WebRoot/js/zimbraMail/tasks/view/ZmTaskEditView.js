@@ -219,12 +219,10 @@ function() {
 
 	if (subj && subj.length) {
 		var startDate = AjxStringUtil.trim(this._startDateField.value);
-		if (startDate.length > 0 && (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField)))
-		{
-			errorMsg = ZmMsg.errorInvalidDates;
+		if(!ZmTimeSelect.parse(startDate)) {
+			errorMsg = AjxMsg.invalidTimeString;
 		}
-        if(Math.round(this.getpCompleteInputValue()) > 100)
-        {
+		if(Math.round(this.getpCompleteInputValue()) > 100) {
            errorMsg = ZmMsg.errorInvalidPercentage;
         }
     } else {
