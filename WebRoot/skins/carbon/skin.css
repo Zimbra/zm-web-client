@@ -71,14 +71,14 @@ BODY						{	margin:0px; 				}
 #skin_spacing_search					{	width:100%; padding-bottom:3px; @cssValue(HSashContainer,width)@; text-align:right;			}
 #skin_container_search					{	max-width:700px;	}
 
-#skin_container_people_search			{	width:150px; }
+#skin_container_people_search			{	width:200px; }
 	
 
 /** Search Builder & its toolbar **/
 #skin_spacing_search_builder			{	padding-bottom:5px;	}
 #skin_container_search_builder			{	@SkinBorderSB@	}
 #skin_spacing_search_builder_toolbar	{}
-#skin_container_search_builder_toolbar	{	@SkinBorderSBToolbar@		}
+#skin_container_search_builder_toolbar	{	@SkinBorderSBToolbar@	}
 
 
 /** combined username/quota **/
@@ -90,12 +90,12 @@ BODY						{	margin:0px; 				}
 
 /** User Name section **/
 #skin_container_username				{	height:auto; padding-top:0px;	}
-#skin_container_username *				{	color:#FFF; font-weight: normal; }
+#skin_container_username *				{	color:#FFF;	font-weight: normal;  }
 
 #skin_container_help,
-#skin_container_logoff					{	padding: 0px 5px; margin:0px 10px 0px 0px; }
-
-
+#skin_container_logoff,
+#skin_container_adminlink				{	padding: 0px 5px; margin:0px 10px 0px 0px; white-space:nowrap;}
+	
 /** Quota section **/	
 #skin_container_quota					{	@SkinBorderQuota@	}
 
@@ -106,7 +106,7 @@ BODY						{	margin:0px; 				}
 #skin_container_helpLogoff 				{	white-space:nowrap;	}
 
 #skin_td_switch_offline,
-#skin_container_admin	{
+#skin_container_admin {
 	background-color:transparent;
 	color:#fff;
 	display:inline-block;
@@ -594,4 +594,5 @@ SELECT						{	@FieldBorder@	}
 }
 .Row-matched, .RowDouble-matched {
     background-color:@SearchResultColor@;
+}
 }
