@@ -263,7 +263,7 @@ function(type, used, addAsContact) {
  * @return	{AjxVector}	an array of {@link AjxEmailAddress} objects
  */
 ZmMailMsg.prototype.getReplyAddresses =
-function(mode, aliases) {
+function(mode, aliases, isDefaultIdentity) {
 
 	// reply-to has precedence over everything else
 	var addrVec = this._addrs[AjxEmailAddress.REPLY_TO];
@@ -279,7 +279,7 @@ function(mode, aliases) {
 			addrVec = this.isInvite() ? this._getAttendees() : this._addrs[AjxEmailAddress.TO];
 		} else {
 			addrVec = this._addrs[AjxEmailAddress.FROM];
-			if (aliases) {
+			if (aliases && isDefaultIdentity) {
 				var from = addrVec.get(0);
 				// make sure we're not replying to ourself
 				if (from && aliases[from.address]) {
