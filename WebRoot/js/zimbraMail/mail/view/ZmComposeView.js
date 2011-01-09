@@ -1980,7 +1980,11 @@ function(action, type, override) {
 		// this._msg changes after a draft is saved.
 		var addrAdded, addrVec;
 		if (!this._addressesMsg.isSent) {
-			addrVec = this._addressesMsg.getReplyAddresses(action, used);
+			var isDefaultIdentity = true;
+			if(this.identitySelect) {
+				var isDefaultIdentity = defaultIdentity.id == this.identitySelect.getValue(); 
+			}
+			addrVec = this._addressesMsg.getReplyAddresses(action, used, isDefaultIdentity);
 			addrAdded = this._addAddresses(AjxEmailAddress.TO, addrVec, used);
 			if (action == ZmOperation.REPLY_ALL) {
 				for (var i = 0, len = addrVec.size(); i < len; i++) {
