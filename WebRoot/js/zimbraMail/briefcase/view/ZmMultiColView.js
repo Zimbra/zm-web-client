@@ -319,7 +319,7 @@ function(item) {
         if (item.isSlideDoc()) {
             actionLink = [ '<a href="', originalRestURL, "?fmt=html&run=1&localeId="+AjxEnv.DEFAULT_LOCALE, '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
         } else if(item.isWebDoc()) {
-            actionLink = [ '<a href="', originalRestURL, "?fmt=html&localeId="+AjxEnv.DEFAULT_LOCALE'" target="_blank">', ZmMsg.edit, '</a>' ].join("");
+            actionLink = [ '<a href="', originalRestURL, "?fmt=html&localeId="+AjxEnv.DEFAULT_LOCALE, '" target="_blank">', ZmMsg.edit, '</a>' ].join("");
         } else {
             actionLink = [ '<a href="', originalRestURL, "?disp=a", (item.isDownloadable() ? '" onclick="ZmZimbraMail.unloadHackCallback();"' : '" target="_blank"'), '>', ZmMsg.saveFile, '</a>' ].join("");
         }
