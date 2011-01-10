@@ -41,7 +41,7 @@
                     <td>
                         <div class='vertSep'></div>
                     </td>
-                    <fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd" timeZone="${timezone}"/>
+                    <fmt:formatDate var="dateDf" value="${zm:getCurrentTime(timezone).time}" pattern="yyyyMMdd'T'HHmmss" timeZone="${timezone}"/>
                     <app:calendarUrl var="newApptUrl" date="${dateDf}" action="edit"/>
                     <app:calendarUrl var="dayViewUrl" date="${dateDf}" view="day"/>
                     <app:calendarUrl var="weekViewUrl" date="${dateDf}" view="week"/>

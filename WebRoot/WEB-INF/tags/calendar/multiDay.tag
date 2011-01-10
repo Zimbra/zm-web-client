@@ -170,7 +170,8 @@
     <tr style="height:100%">
         <c:if test="${row.rowNum % 4 eq 0}">
             <td valign=top class='ZhCalDayHour' nowrap width="1%" rowspan="4" style='border-left:none;color:blue;'>
-                <app:calendarUrl var="newAppt" timezone="${timezone}" rawdate="${date}" action="edit"/>
+                <fmt:formatDate var="dateDf" value="${row.date}" pattern="yyyyMMdd'T'HHmmss" timeZone="${timezone}"/>
+                <app:calendarUrl var="newAppt" timezone="${timezone}" date="${dateDf}" action="edit"/>
                 <c:if test="${not print}"><a href="${newAppt}"></c:if><fmt:formatDate value="${row.date}" type="time" timeStyle="short"/>
                 <c:if test="${not print}"></a></c:if>
                     <fmt:formatDate var="timetitle" value="${row.date}" type="time" timeStyle="long"/>
