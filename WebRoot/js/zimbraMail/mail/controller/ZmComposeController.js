@@ -227,7 +227,6 @@ function() {
 
 	var view = this._composeView;
 	var msg = view._msg;
-	var addrs = view.getRawAddrFields();
 	var subj = view._subjectField.value;
 	var forAttHtml = view._attcDiv.innerHTML;
 	var msgAttId = view._msgAttId; //include original as attachment
@@ -238,13 +237,22 @@ function() {
 	var action = view._action || this._action;
 	var identity = view.getIdentity();
 
+	var addrList = {};
+	var addrs = !view._useAcAddrBubbles && view.getRawAddrFields();
+	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+		var type = ZmMailMsg.COMPOSE_ADDRS[i];
+		addrList[type] = view._useAcAddrBubbles ? view._addrInputField[type].getAddresses(true) :
+				   								  addrs[type] && addrs[type].good.getArray();
+
+	}
+
 	// this is how child window knows what to do once loading:
 	var newWinObj = appCtxt.getNewWindow();
 	newWinObj.command = "composeDetach";
 	newWinObj.params = {
 		action: action,
 		msg: msg,
-		addrs: addrs,
+		addrs: addrList,
 		subj: subj,
 		forwardHtml: forAttHtml,
 		msgAttId: msgAttId,

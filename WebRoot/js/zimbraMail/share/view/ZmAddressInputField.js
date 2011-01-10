@@ -140,6 +140,7 @@ function(address, match, index) {
 
 	var bubbleId = bubble.id;
 	this._bubble[bubbleId] = bubble;
+	this._match[bubbleId] = match;
 	this._addressHash[address] = true;
 	this._bubbleAddress[bubbleId] = address;
 
@@ -239,6 +240,7 @@ function(bubbleId, skipNotify) {
 	this._bubble[bubbleId] = null;
 	delete this._bubble[bubbleId];
 	delete this._selected[bubbleId];
+	delete this._match[bubbleId];
 	delete this._addressHash[addr];
 
 	if (this._holder.childNodes.length <= 1) {
@@ -269,7 +271,7 @@ function() {
  */
 ZmAddressInputField.prototype.getValue =
 function() {
-	var list = [].concat(this._getAddresses());
+	var list = [].concat(this.getAddresses());
 	if (this._input.value) {
 		list.push(this._input.value);
 	}
@@ -533,6 +535,7 @@ function() {
 	this._addressHash	= {};	// used addresses, so we can check for dupes
 	this._bubbleAddress	= {};	// addresses by bubble ID
 	this._selected		= {};	// which bubbles are selected
+	this._match			= {};	// match object by bubble ID
 	this._input.value	= "";
 };
 
@@ -769,14 +772,32 @@ function() {
 	return AjxUtil.indexOf(this._holder.childNodes, this._input);
 };
 
-// Returns an ordered list of bubble addresses
-ZmAddressInputField.prototype._getAddresses =
-function() {
+
+/**
+ * Returns an ordered list of bubble addresses.
+ *
+ * @param {boolean}	asObjects	if true, return list of AjxEmailAddress
+ */
+ZmAddressInputField.prototype.getAddresses =
+function(asObjects) {
 
 	var addrs = [];
 	var bubbles = this._getBubbleList();
 	for (var i = 0; i < bubbles.length; i++) {
-		addrs.push(this._bubbleAddress[bubbles[i].id]);
+		var bubbleId = bubbles[i].id;
+		var addr = this._bubbleAddress[bubbleId];
+		if (asObjects) {
+			var addrObj = AjxEmailAddress.parse(addr);
+			var match = this._match[bubbleId];
+			if (match && match.isDL) {
+				addrObj.isGroup = true;
+				addrObj.canExpand = true;
+			}
+			addrs.push(addrObj);
+		}
+		else {
+			addrs.push(addr);
+		}
 	}
 	return addrs;
 };

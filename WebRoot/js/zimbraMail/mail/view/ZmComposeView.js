@@ -982,8 +982,8 @@ function(params) {
 	this._msg = params.msg;
 
 	// set the addr fields as populated
-	for (var i in params.addrs) {
-		this.setAddress(i, params.addrs[i]);
+	for (var type in params.addrs) {
+		this._addAddresses(type, AjxVector.fromArray(params.addrs[type]));
 	}
 
 	this._subjectField.value = params.subj || "";
@@ -3145,16 +3145,16 @@ function(ev, addrType) {
 	}
 
 	var curType = obj ? obj.addrType : addrType;
-	var a = {};
-	var addrs = this._collectAddrs();
+	var addrList = {};
+	var addrs = !this._useAcAddrBubbles && this._collectAddrs();
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		if (addrs[type]) {
-			a[type] = addrs[type].good.getArray();
-		}
+		addrList[type] = this._useAcAddrBubbles ? this._addrInputField[type].getAddresses(true) :
+				   								  addrs[type] && addrs[type].good.getArray();
+
 	}
 	this._contactPicker.addPopdownListener(this._controller._dialogPopdownListener);
-	var str = (this._field[curType].value && !(a[curType] && a[curType].length))
+	var str = (this._field[curType].value && !(addrList[curType] && addrList[curType].length))
 		? this._field[curType].value : "";
 
 	var account;
@@ -3162,7 +3162,7 @@ function(ev, addrType) {
 		var addr = this._fromSelect.getSelectedOption().addr;
 		account = appCtxt.accountList.getAccountByEmail(addr.address);
 	}
-	this._contactPicker.popup(curType, a, str, account);
+	this._contactPicker.popup(curType, addrList, str, account);
 };
 
 ZmComposeView.prototype._controlListener =
@@ -3176,12 +3176,12 @@ function() {
 // Transfers addresses from the contact picker to the compose view.
 ZmComposeView.prototype._contactPickerOkCallback =
 function(addrs) {
+
 	this.enableInputs(true);
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		var vec = addrs[type];
-		var addr = (vec.size() > 0) ? vec.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
-		this.setAddress(ZmMailMsg.COMPOSE_ADDRS[i], addr);
+		this.setAddress(type, "");
+		this._addAddresses(type, addrs[type]);
 	}
 
 	//I still need this here since REMOVING stuff with the picker does not call removeBubble in the ZmAddresInputField.

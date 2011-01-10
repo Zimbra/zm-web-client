@@ -78,6 +78,7 @@ function() {
 */
 ZmContactPicker.prototype.popup =
 function(buttonId, addrs, str, account) {
+
 	if (!this._initialized) {
 		this._initialize(account);
 		this._initialized = true;
@@ -193,16 +194,17 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 	this._chooser.sourceListView.sortingEnabled = (this._contactSource == ZmItem.CONTACT);
 
 	var params = {
-		obj: this,
-		ascending: ascending,
-		query: query,
-		queryHint: queryHint,
-		offset: this._list.size(),
-		lastId: lastId,
-		lastSortVal: lastSortVal,
-		respCallback: (new AjxCallback(this, this._handleResponseSearch, [firstTime])),
-		errorCallback: this._searchErrorCallback,
-		accountName: (this._account && this._account.name)
+		obj:			this,
+		ascending:		ascending,
+		query:			query,
+		queryHint:		queryHint,
+		offset:			this._list.size(),
+		lastId:			lastId,
+		lastSortVal:	lastSortVal,
+		respCallback:	(new AjxCallback(this, this._handleResponseSearch, [firstTime])),
+		errorCallback:	this._searchErrorCallback,
+		accountName:	(this._account && this._account.name),
+		expandDL:		true
 	};
 	ZmContactsHelper.search(params);
 };

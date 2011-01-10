@@ -192,11 +192,12 @@ ZmDLAutocompleteListView.prototype.reset =
 function(clearDL) {
 
 	if (clearDL) {
-		var dlBubble = document.getElementById(this._parentAclv._curExpanded);
+		var dlBubble = document.getElementById(this._dlBubbleId);
 		if (dlBubble) {
 			var addrInput = DwtControl.ALL_BY_ID[dlBubble._aifId];
 			if (addrInput) {
-				addrInput.removeBubble(dlBubble.id);
+				addrInput.removeBubble(this._dlBubbleId);
+				this._dlBubbleId = null;
 			}
 		}
 	}

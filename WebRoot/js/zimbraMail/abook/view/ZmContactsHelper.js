@@ -77,7 +77,7 @@ function(resp) {
 	var a = vec.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var contact = a[i];
-		if (contact.isGroup()) {
+		if (contact.isGroup() && !contact.isDL) {
 			var members = contact.getGroupMembers().good.toString(AjxEmailAddress.SEPARATOR);
 			ZmContactsHelper._addContactToList(list, contact, members, true);
 		} else {
@@ -100,6 +100,10 @@ function(list, contact, addr, isGroup) {
 	email.id = Dwt.getNextId();
 	email.__contact = contact;
 	email.icon = contact.getIcon();
+	if (contact.isDL) {
+		email.isGroup = true;
+		email.canExpand = contact.canExpand;
+	}
 	list.push(email);
 };
 

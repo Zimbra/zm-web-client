@@ -1266,11 +1266,13 @@ function(email, textId, rowId, ev, loc) {
 	if (!this._dataAPI.expandDL) { return; }
 
 	var mlv = this._memberListView;
-	if (mlv && textId && this._curExpanded == textId) {
+	if (mlv && mlv.getVisible() && textId && this._curExpanded == textId) {
+		// User has clicked "Collapse" link
 		mlv.show(false);
 		this._curExpanded = null;
 		this._setExpandText(textId, false);
 	} else {
+		// User has clicked "Expand" link
 		if (mlv && mlv.getVisible()) {
 			// expanding a DL while another one is showing
 			this._setExpandText(this._curExpanded, false);
@@ -1288,7 +1290,7 @@ function(email, textId, rowId, ev, loc) {
 			this._curExpanded = textId;
 			this._setExpandText(textId, true);
 		}
-		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact, loc]));
+		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact, loc, textId]));
 	}
 	if (this._element) {
 		this._element.focus();
@@ -1296,7 +1298,7 @@ function(email, textId, rowId, ev, loc) {
 };
 
 ZmAutocompleteListView.prototype._handleResponseExpandDL =
-function(contact, loc, matches) {
+function(contact, loc, textId, matches) {
 
 	var mlv = this._memberListView;
 	if (!mlv) {
@@ -1304,6 +1306,7 @@ function(contact, loc, matches) {
 		mlv._element = this._element;
 	}
 	mlv._dlContact = contact;
+	mlv._dlBubbleId = textId;
 	mlv._removeAll();
 	mlv._set(matches, contact);
 

@@ -176,7 +176,7 @@ function() {
 		return;
 	}
 
-	DBG.println(" *************************** Hello from new window!");
+	DBG.println(AjxDebug.DBG1, " ************ Hello from new window!");
 
 	if (!this._appViewMgr) {
 		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
