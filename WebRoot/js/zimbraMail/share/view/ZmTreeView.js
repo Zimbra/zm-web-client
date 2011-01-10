@@ -465,7 +465,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			}
 		}
 		if (this._addShareLink && this._addShareLink.parent == parentNode) {
-			addShareIndex = parentNode.getChildIndex(this._addShareLink);
+			var addShareIndex = parentNode.getChildIndex(this._addShareLink);
 			if (addShareIndex >= 0 && index > addShareIndex)
 				index = addShareIndex; // Bug 52053: We must make sure nothing has a higher index than that of this._addShareLink
 		}
