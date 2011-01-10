@@ -175,6 +175,10 @@ function(calItem) {
 	}
 
     //set reminder
+    var reminders = [
+        { control: this._reminderEmailCheckbox,       action: ZmCalItem.ALARM_EMAIL        },
+        { control: this._reminderDeviceEmailCheckbox, action: ZmCalItem.ALARM_DEVICE_EMAIL }
+    ];
     if (this._hasReminderSupport && this._reminderCheckbox.isSelected()) {
         var remindDate = AjxDateUtil.simpleParseDateStr(this._remindDateField.value);
         calItem.alarm = true;
@@ -182,10 +186,6 @@ function(calItem) {
         remindDate = this._remindTimeSelect.getValue(remindDate);
         var remindFmtStr = AjxDateUtil.getServerDateTime(remindDate,true);
         calItem.setTaskReminder(remindFmtStr);
-        var reminders = [
-            { control: this._reminderEmailCheckbox,       action: ZmCalItem.ALARM_EMAIL        },
-            { control: this._reminderDeviceEmailCheckbox, action: ZmCalItem.ALARM_DEVICE_EMAIL }
-        ];
         for (var i = 0; i < reminders.length; i++) {
             var reminder = reminders[i];
             if (reminder.control && reminder.control.isSelected()) {
@@ -205,6 +205,19 @@ function(calItem) {
     calItem.pComplete = this.getpCompleteInputValue();
 	calItem.priority = this._getPriority();
 	calItem.status = this._statusSelect.getValue();
+
+    //bug:51913 disable alarm when stats is completed
+    if(this.getpCompleteInputValue() == 100 && this._statusSelect.getValue() == ZmCalendarApp.STATUS_COMP) {
+       calItem.alarm = false;
+       calItem.remindDate = new Date();
+       calItem.setTaskReminder(null);
+       for (var i = 0; i < reminders.length; i++) {
+           var reminder = reminders[i];
+           if (reminder.control && reminder.control.isSelected()) {
+               calItem.removeReminderAction(reminder.action);
+           }
+       }
+    }
 
 //	XXX: uncomment when supported
 //	this._getRecurrence(calItem);	// set any recurrence rules LAST
@@ -322,6 +335,20 @@ function(flag) {
 ZmTaskEditView.prototype.getpCompleteInputValue = function() {
   var pValue = this._pCompleteSelectInput.getValue();
   return Math.round(pValue.replace(/[%]/g,""));  
+};
+
+ZmTaskEditView.prototype._unSelectRemindersCheckbox = function() {
+    var reminders = [
+        { control: this._reminderEmailCheckbox},
+        { control: this._reminderDeviceEmailCheckbox},
+        { control: this._reminderCheckbox}
+    ];
+    for (var i = 0; i < reminders.length; i++) {
+        var reminder = reminders[i];
+        if (reminder.control) {
+            reminder.control.setSelected(false);
+        }
+    }
 };
 
 ZmTaskEditView.prototype.formatPercentComplete = function(pValue) {
@@ -588,6 +615,7 @@ function(inputEl) {
     var newVal = this.getpCompleteInputValue();
     if (newVal == 100) {
         this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
+        this._unSelectRemindersCheckbox();   //bug:51913 disable alarm when stats is completed
     } else if (newVal == 0) {
         this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
     } else if ((newVal > 0 || newVal < 100) && (this._statusSelect.getValue() != ZmCalendarApp.STATUS_COMP || this._statusSelect.getValue() != ZmCalendarApp.STATUS_NEED))
@@ -611,6 +639,7 @@ function(ev) {
 
         if (newVal == 100) {
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
+            this._unSelectRemindersCheckbox();  //bug:51913 disable alarm when stats is completed
 		} else if (newVal == 0) {
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
 		} else if ((newVal > 0 || newVal < 100) && (this._statusSelect.getValue() != ZmCalendarApp.STATUS_COMP || this._statusSelect.getValue() != ZmCalendarApp.STATUS_NEED))
@@ -633,6 +662,7 @@ function(ev) {
 	if (selObj == this._statusSelect) {
 		if (newVal == ZmCalendarApp.STATUS_COMP) {
 			this._pCompleteSelectInput.setValue(this.formatPercentComplete(100));
+            this._unSelectRemindersCheckbox();    //bug:51913 disable alarm when stats is completed
 		} else if (newVal == ZmCalendarApp.STATUS_NEED) {
 			this._pCompleteSelectInput.setValue(this.formatPercentComplete(0));
 		} else if (newVal == ZmCalendarApp.STATUS_INPR) {
@@ -643,6 +673,7 @@ function(ev) {
 	} else {
 		if (newVal == 100) {
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
+            this._unSelectRemindersCheckbox();
 		} else if (newVal == 0) {
 			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
 		} else if ((oldVal == 0 || oldVal == 100) &&
