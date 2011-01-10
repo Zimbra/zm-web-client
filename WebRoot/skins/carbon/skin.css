@@ -595,4 +595,3 @@ SELECT						{	@FieldBorder@	}
 .Row-matched, .RowDouble-matched {
     background-color:@SearchResultColor@;
 }
-}
