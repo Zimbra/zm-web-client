@@ -30,8 +30,6 @@ ZmFilterController = function(container, prefsApp, prefsView, section, parent) {
 
 	ZmPrefController.call(this, container, prefsApp);
 
-	ZmFilterRule._setPreconditions();
-
 	this._prefsView = prefsView;
 
 	this._parent = parent;
