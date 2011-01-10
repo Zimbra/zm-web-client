@@ -438,6 +438,21 @@ DIV.vSpace {
 	vertical-align:top;
 }
 
+.RowDouble TD.SubjectDoubleRow {
+    vertical-align:text-bottom;
+}
+
+#IFDEF MACINTOSH
+#IFDEF WEBKIT
+.RowDouble TD.SubjectDoubleRow {
+    padding-top:1px;
+} 
+.RowDouble .Unread TD.SubjectDoubleRow {
+    padding-top:0px;
+}
+#ENDIF
+#ENDIF
+
 /* list row styles (bgs & border) */
 
 .Row						{	@ListItemContainer-normal@			}
