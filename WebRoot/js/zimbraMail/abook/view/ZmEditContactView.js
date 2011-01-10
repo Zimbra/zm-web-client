@@ -407,7 +407,10 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 				folderOrId = null;
 			}
 		}
-		this._setFolder(folderOrId || ZmOrganizer.ID_ADDRBOOK);
+
+        //check introduced to avoid choosing a readonly/shared folder as default folder location 
+		this._setFolder((folderOrId && !folderOrId.isReadOnly()) ? folderOrId : ZmOrganizer.ID_ADDRBOOK);
+
 	}
 
 	if (this.getControl("TAG"))
