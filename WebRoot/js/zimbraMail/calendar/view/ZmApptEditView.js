@@ -1258,6 +1258,10 @@ function() {
         this._scheduleView.update(this._dateInfo, organizer, this._attendees);
         this._scheduleView.updateFreeBusy();
     }
+
+    if(this._calItem && this._calItem.organizer != this._calendarOrgs[calId]) {
+        this._calItem.setOrganizer(this._calendarOrgs[calId]);
+    }
 };
 
 ZmApptEditView.prototype.setSchedulerVisibility =
