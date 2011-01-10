@@ -314,38 +314,46 @@ ZmUploadDialog.prototype._uploadSaveDocs = function(files, status, guids) {
 ZmUploadDialog.prototype._uploadSaveDocs2 =
 function(files, status, guids) {
 	// create document wrappers
-	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra", null);
-	soapDoc.setMethodAttribute("onerror", "continue");
-	var foundOne = false;
+    var request = [];
+    var foundOne = false;
 	for (var i = 0; i < files.length; i++) {
-		var file = files[i];
+         var file = files[i];
 		if (file.done) { continue; }
 		foundOne = true;
 
-		var saveDocNode = soapDoc.set("SaveDocumentRequest", null, null, "urn:zimbraMail");
-		saveDocNode.setAttribute("requestId", i);
-
-		var docNode = soapDoc.set("doc", null, saveDocNode);
-		if (file.id) {
-			docNode.setAttribute("id", file.id);
-			docNode.setAttribute("ver", file.version);
-		}
-		else {
-			docNode.setAttribute("l", this._uploadFolder.id);
-		}
-
-        if(file.notes){
-            docNode.setAttribute("desc", file.notes);
+        var  SaveDocumentRequest = {
+            _jsns: "urn:zimbraMail",
+            requestId: i,
+            doc: {}
         }
 
-		var uploadNode = soapDoc.set("upload", null, docNode);
-		uploadNode.setAttribute("id", file.guid);
-	}
+        var doc = SaveDocumentRequest.doc;
+        if(file.id){
+            doc.id = file.id;
+            doc.ver = file.version;
+        }else{
+            doc.l = this._uploadFolder.id;
+        }
+        if(file.notes){
+            doc.notes = file.notes;
+        }
+        doc.upload = {
+            id: file.guid
+        }
+        request.push(SaveDocumentRequest);
+    }
 
-	if (foundOne) {
+    if (foundOne) {
+        var json = {
+            BatchRequest: {
+                _jsns: "urn:zimbra",
+                onerror: "continue",
+                SaveDocumentRequest: ( (request.length == 1) ? request[0] : request )
+            }
+        };
 		var callback = new AjxCallback(this, this._uploadSaveDocsResponse, [ files, status, guids ]);
 		var params = {
-			soapDoc:soapDoc,
+			jsonObj: json,
 			asyncMode:true,
 			callback:callback
 		};
@@ -539,7 +547,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 
         txtCell = txtRow.insertCell(-1);
 	    txtCell.innerHTML = [
-    		"<input id='",txtInputId,"' type='text' name='",ZmUploadDialog.UPLOAD_TITLE_FIELD_NAME,"' size=40>",
+    		"<input id='",txtInputId,"' type='text' name='",ZmUploadDialog.UPLOAD_TITLE_FIELD_NAME,"' size=40>"
     	].join("");
         txtCell.colSpan = 3;
     }
