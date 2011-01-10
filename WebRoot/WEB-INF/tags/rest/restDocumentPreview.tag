@@ -164,7 +164,7 @@
     <script type="text/javascript">
         window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
         ZmDocsPreview.launch('zdocument', {
-            version: '${version}',
+            version: '${zm:cook(version)}',
             versionCont: "version_cont"
         });
     </script>

@@ -164,7 +164,7 @@
         window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
         ZmSpreadSheetPreview.launch('spreadsheet',{
-            version: '${version}',
+            version: '${zm:cook(version)}',
             versionCont: "version_cont" 
         });
     </script>

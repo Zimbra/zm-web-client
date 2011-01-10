@@ -63,6 +63,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     Locale locale = request.getLocale();
     String localeId = getAttribute(request, "localeId", null);
     if (localeId != null) {
+        localeId = BeanUtils.cook(localeId);
         int index = localeId.indexOf("_");
         if (index == -1) {
             locale = new Locale(localeId);
