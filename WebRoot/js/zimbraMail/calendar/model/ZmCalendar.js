@@ -163,11 +163,16 @@ function(what) {
 			if (item.folderId) {
 				invalid = true;
 				for (var i = 0; i < items.length; i++) {
-					var folder = appCtxt.getById(items[i].folderId);
+                    var folder = appCtxt.getById(items[i].folderId);
+                    if(items[i].isReadOnly() && folder.owner != this.owner) {
+                        invalid = true;
+                        break;
+                    }
 					if (item.viewMode == ZmCalItem.MODE_NEW || folder != this) {
 						invalid = false;
 						break;
 					}
+
 				}
 			}
 		}
