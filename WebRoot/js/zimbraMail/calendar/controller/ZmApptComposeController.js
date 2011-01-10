@@ -413,7 +413,7 @@ function(requestResponses) {
 
 ZmApptComposeController.prototype.getRequestResponses =
 function() {
-   return this._requestResponses.getChecked();
+   return this._requestResponses.getEnabled() ? this._requestResponses.getChecked() : true;
 };
 
 ZmApptComposeController.prototype.markApptAsPrivate =
