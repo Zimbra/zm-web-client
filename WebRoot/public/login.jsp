@@ -402,7 +402,16 @@ if (application.getInitParameter("offlineMode") != null)  {
 		<div class="${smallScreen?'Footer-small':'Footer'}">
 		<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="clientLoginNotice"/></div>
         
-        <div class="copyright"><fmt:message key="splashScreenCopyright"/></div>
+        <div class="copyright">
+            <c:choose>
+                <c:when test="${useMobile}">
+                    <fmt:message bundle="${zhmsg}" key="splashScreenCopyright"/>
+                </c:when>
+                <c:otherwise>
+                    <fmt:message key="splashScreenCopyright"/>
+                </c:otherwise>
+            </c:choose>
+            </div>
         </div>
 	</div>                                 
 <script>
