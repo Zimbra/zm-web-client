@@ -291,8 +291,9 @@ function(parent, num) {
         //Case 2: Stale Lock ( Handle exception )
 
         //Checkin
-        var checkinEnabled = !isReadOnly && num == 1 && isLockOwner && !isWebDoc && !isRevision;
+        var checkinEnabled = !isReadOnly && isLockOwner && !isWebDoc && !isRevision;
         parent.getOp(ZmOperation.CHECKIN) && parent.getOp(ZmOperation.CHECKIN).setVisible(checkinEnabled);
+        parent.enable(ZmOperation.CHECKIN, checkinEnabled && num == 1 );
 
         //Checkout
         var checkoutEnabled = !isReadOnly && !isLocked && !isRevision;
