@@ -85,6 +85,7 @@ ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[ZmTimeSuggestionPrefDialog.SUGGESTROO
 
 ZmTimeSuggestionPrefDialog.DEFAULT_VAL = {};
 ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD] = 'true';
+ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD] = ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS;
 
 // Public methods
 
@@ -166,7 +167,7 @@ function(text) {
 
 ZmTimeSuggestionPrefDialog.prototype.getPreference =
 function(id) {
-    return this._prefs[id];
+    return (this._prefs[id] != null) ? this._prefs[id] : ZmTimeSuggestionPrefDialog.DEFAULT_VAL[id];
 };
 
 ZmTimeSuggestionPrefDialog.prototype.setCallback =
