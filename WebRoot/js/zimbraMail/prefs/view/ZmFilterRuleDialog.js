@@ -590,8 +590,11 @@ function(isMainSelect, testType, field, rowData) {
 			if (field == "subjectMod") {
 				dataValue = rowData.header;
 			} else if (field == "ops") {
-				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.stringComparison];
-				if (dataValue && rowData.negative == "1") { dataValue++; }
+				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.stringComparison] == ZmFilterRule.OP_IS_READRECEIPT ? ZmFilterRule.OP_CONTAINS : 
+                        ZmFilterRule.OP_VALUE_MAP[rowData.stringComparison];
+				if (dataValue && rowData.negative == "1") {
+                    dataValue = ZmFilterRule.getNegativeComparator(dataValue);
+                }
 			} else if (field == "value") {
 				dataValue = rowData.value;
 			}
@@ -610,7 +613,9 @@ function(isMainSelect, testType, field, rowData) {
 		else if (testType == ZmFilterRule.TEST_SIZE) {
 			if (field == "ops") {
 				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.numberComparison];
-				if (dataValue && rowData.negative == "1") { dataValue++; }
+				if (dataValue && rowData.negative == "1") {
+                    dataValue = ZmFilterRule.getNegativeComparator(dataValue);
+                }
 			} else if (field == "valueMod") {
 				var m = rowData.s ? rowData.s.match(/(\d+)([A-Z]*)/) : null;
 				dataValue = m ? ((!m[2]) ? "B" : m[2]) : null;
@@ -621,7 +626,9 @@ function(isMainSelect, testType, field, rowData) {
 		else if (testType == ZmFilterRule.TEST_DATE) {
 			if (field == "ops") {
 				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.dateComparison];
-				if (dataValue && rowData.negative == "1") { dataValue++; }
+				if (dataValue && rowData.negative == "1") {
+                    dataValue = ZmFilterRule.getNegativeComparator(dataValue);
+                }
 			} else if (field == "value") {
 				dataValue = rowData.d * 1000;
 			}
