@@ -735,8 +735,11 @@ function(message) {
 			var resourceEmail = AjxEmailAddress.split(resources[i].a)[0];
 
 			var location = ZmApptViewHelper.getAttendeeFromItem(resourceEmail, ZmCalBaseItem.LOCATION, false, false, true);
-			if (location) {
-				location.setParticipantStatus(ptstReplies[resourceEmail] || ptst);
+			if (location || this.isLocationResource(resourceEmail, resources[i].d)) {
+                if(!location) location = ZmApptViewHelper.getAttendeeFromItem(resourceEmail, ZmCalBaseItem.LOCATION);
+                if(resources[i].d) location.setAttr(ZmResource.F_locationName, resources[i].d);
+
+                location.setParticipantStatus(ptstReplies[resourceEmail] || ptst);
 				this._attendees[ZmCalBaseItem.LOCATION].push(location);
 				this.origLocations.push(location);
 			} else {
@@ -763,6 +766,29 @@ function(message) {
         this.inviteNeverSent = true;
     }
 
+};
+
+ZmAppt.prototype.isLocationResource =
+function(resourceEmail, displayName) {
+	var locationStr = this.location;
+    var items = AjxEmailAddress.split(locationStr);
+
+    for (var i = 0; i < items.length; i++) {
+
+        var item = AjxStringUtil.trim(items[i]);
+        if (!item) { continue; }
+
+        if(displayName == item) return true;
+
+        var contact = AjxEmailAddress.parse(item);
+        if (!contact) { continue; }
+
+        var name = contact.getName() || contact.getDispName();
+
+        if(resourceEmail == contact.getAddress() || displayName == name) return true;
+    }
+
+    return false;
 };
 
 ZmAppt.prototype._getTextSummaryTime =
