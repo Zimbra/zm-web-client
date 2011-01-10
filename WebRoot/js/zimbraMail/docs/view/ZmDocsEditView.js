@@ -59,12 +59,12 @@ ZmDocsEditView.prototype.save = function(){
 	}
 
     ZmDocsEditApp.fileInfo.name    = fileName;
-    if(window.isTinyMCE) { //temp check
-        var ed = tinyMCE.get('tiny_mce_content');
-        ZmDocsEditApp.fileInfo.content = ed.getContent();
-    } else {
+    //    if(window.isTinyMCE) { //temp check
+    //        var ed = tinyMCE.get('tiny_mce_content');
+    //        ZmDocsEditApp.fileInfo.content = ed.getContent();
+    //    } else {
         ZmDocsEditApp.fileInfo.content = this._editor.getContent();
-    }
+    //    }
     ZmDocsEditController.savedDoc = ZmDocsEditApp.fileInfo.content; 
     ZmDocsEditApp.fileInfo.contentType = ZmDocsEditApp.APP_ZIMBRA_DOC;
     this._docMgr.setSaveCallback(new AjxCallback(this, this._saveHandler));
@@ -213,7 +213,8 @@ ZmDocsEditView.prototype._initialize = function() {
     iFrame.setAttribute("allowtransparency", "true", false);
     iFrame.onload = AjxCallback.simpleClosure(this._stealFocus, this, iFrame.id);
 
-    if(window.isTinyMCE) {  //temp check
+    //if(window.isTinyMCE) {  //temp check
+      if(false) {
         var htmlEl = this.getHtmlElement();
         var divEl = document.createElement("div");
         divEl.setAttribute("style","padding:3px; height:98%");
