@@ -86,7 +86,7 @@ BODY						{	margin:0px; 				}
 #skin_container_tree_top				{	@SkinBorderUsername@	}
 
 #skin_container_links a,
-#skin_container_logoff a				{	padding: 0px;  color: white; font-weight: normal;}
+#skin_container_logoff a					{	padding: 0px; color: white; font-weight: normal; }
 
 /** User Name section **/
 #skin_container_username				{	height:auto; padding-top:0px;	}
@@ -594,5 +594,4 @@ SELECT						{	@FieldBorder@	}
 }
 .Row-matched, .RowDouble-matched {
     background-color:@SearchResultColor@;
-}
 }
