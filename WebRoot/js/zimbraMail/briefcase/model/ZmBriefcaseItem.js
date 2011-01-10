@@ -214,30 +214,36 @@ function(msgId, partId, name, folderId, attribs) {
     attribs = attribs || {};
 
     var acctId = appCtxt.getActiveAccount().id;
-	var soapDoc = AjxSoapDoc.create("SaveDocumentRequest", "urn:zimbraMail");
-	var doc = soapDoc.set("doc");
+
+    var json = {
+        SaveDocumentRequest: {
+            _jsns: "urn:zimbraMail",
+			doc: {
+                m: {
+                    id: msgId,
+                    part: partId
+                }
+            }
+        }
+    };
+
+    var doc = json.SaveDocumentRequest.doc;
     if (attribs.id && attribs.version) {
-        doc.setAttribute("id", attribs.id);
-        doc.setAttribute("ver", attribs.version);
+        doc.id = attribs.id;
+        doc.ver = attribs.version;
     }else{
-	    doc.setAttribute("l", folderId);
+        doc.l = folderId;
     }
-
     if(attribs.rename){
-        doc.setAttribute("name", attribs.rename);
+        doc.name = attribs.rename;
     }
-
-	var mnode = soapDoc.set("m", null, doc);
-	mnode.setAttribute("id", msgId);
-	mnode.setAttribute("part", partId);
-
-	var params = {
-		soapDoc: soapDoc,
+    var params = {
+		jsonObj: json,
 		asyncMode: true,
 		callback: (new AjxCallback(this, this._handleResponseCreateItem, [folderId, attribs.callback])),
 		errorCallback: (new AjxCallback(this, this._handleErrorCreateItem, [attribs.errorCallback]))
 	};
-	appCtxt.getAppController().sendRequest(params);
+    appCtxt.getAppController().sendRequest(params);
 };
 
 ZmBriefcaseBaseItem.prototype.restoreVersion =
