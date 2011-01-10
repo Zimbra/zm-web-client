@@ -412,12 +412,10 @@ function(params) {
 
 			if (contact.isShared() || params.folder.link) {
 				hardMove.push(contact);
-				if (contact.isLoaded) {
-					moveBatchCmd.add(this._getCopyCmd(contact, params.folder));
-				} else {
-					contact.load(null,null);
-					moveBatchCmd.add(this._getCopyCmd(contact, params.folder));
+				if (!contact.isLoaded) {
+					loadBatchCmd.add(new AjxCallback(contact, contact.load, [null, null]));
 				}
+				moveBatchCmd.add(this._getCopyCmd(contact, params.folder));
 			} else {
 				softMove.push(contact);
 			}
@@ -427,16 +425,17 @@ function(params) {
 	}
 
 	if (hardMove.length > 0) {
+		var params1 = {
+			items: hardMove,
+			action: "delete",
+			actionText: ZmMsg.actionMove,
+			actionArg: params.folder.getName(false, false, true)
+		};
+
 		if (loadBatchCmd.size()) {
-			var respCallback = new AjxCallback(this, this._handleResponseLoadMove, [moveBatchCmd, hardMove]);
+			var respCallback = new AjxCallback(this, this._handleResponseLoadMove, [moveBatchCmd, params1]);
 			loadBatchCmd.run(respCallback);
 		} else {
-			var params1 = {
-				items: hardMove,
-				action: "delete",
-				actionText: ZmMsg.actionMove,
-				actionArg: params.folder.getName(false, false, true)
-			};
 			var deleteCmd = new AjxCallback(this, this._itemAction, [params1]);
 			moveBatchCmd.add(deleteCmd);
 
@@ -488,8 +487,8 @@ function(result) {
  * @private
  */
 ZmContactList.prototype._handleResponseLoadMove =
-function(moveBatchCmd, hardMove) {
-	var deleteCmd = new AjxCallback(this, this._itemAction, [{items:hardMove, action:"delete"}]);
+function(moveBatchCmd, params) {
+	var deleteCmd = new AjxCallback(this, this._itemAction, [params]);
 	moveBatchCmd.add(deleteCmd);
 
 	var respCallback = new AjxCallback(this, this._handleResponseMoveBatchCmd);
