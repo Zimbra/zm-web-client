@@ -44,8 +44,15 @@
     
     <c:choose>
         <c:when test="${not empty param.date}">
-            <fmt:parseDate timeZone="${tz}" var="date" pattern="yyyyMMdd" value="${param.date}"/>
-            <c:set scope="request" var="dateContext" value="${zm:getCalendarMidnight(date.time, tz)}"/>
+            <c:choose>
+                <c:when test="${fn:contains(param.date, 'T')}">
+                     <fmt:parseDate timeZone="${tz}" var="date" pattern="yyyyMMdd'T'HHmmss" value="${param.date}"/>
+                </c:when>
+                <c:otherwise>
+                     <fmt:parseDate timeZone="${tz}" var="date" pattern="yyyyMMdd" value="${param.date}"/>
+                </c:otherwise>
+            </c:choose>
+            <c:set scope="request" var="dateContext" value="${zm:getCalendar(date.time, tz)}"/>
         </c:when>
         <c:otherwise>
             <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
