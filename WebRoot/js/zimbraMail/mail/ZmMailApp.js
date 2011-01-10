@@ -921,6 +921,9 @@ function(notify) {
 
 	if (!(notify.deleted && notify.created && notify.modified))	{ return notify; }
 
+	DBG.println(AjxDebug.NOTIFY, " ---------------- ZmMailApp::preNotify - entry");
+	DBG.dumpObj(AjxDebug.NOTIFY, notify);
+
 	// first, see if we are deleting any virtual convs (which have negative IDs)
 	var virtConvDeleted = false;
 	var deletedIds = notify.deleted.id && notify.deleted.id.split(",");
@@ -936,7 +939,10 @@ function(notify) {
 			newDeletedIds.push(id);
 		}
 	}
-	if (!virtConvDeleted) { return notify; }
+	if (!virtConvDeleted) {
+		DBG.println(AjxDebug.NOTIFY, "no virtual convs deleted, return");
+		return notify;
+	}
 
 	// look for creates of convs that mean a virtual conv got promoted
 	var gotNewConv = false;
@@ -948,6 +954,8 @@ function(notify) {
 			for (var i = 0; i < list.length; i++) {
 				var create = list[i];
 				var id = create.id;
+				var extra = (name == "m") ? "|cid=" + create.cid + "|l=" + create.l : "|n=" + create.n;
+				AjxDebug.println(AjxDebug.NOTIFY, name + ": id=" + id + "|su='" + create.su + "'|f=" + create.f + "|d=" + create.d + extra);
 				if (name == "m") {
 					createdMsgs[id] = create;
 				} else if (name == "c" && (create.n > 1)) {
@@ -958,7 +966,10 @@ function(notify) {
 			}
 		}
 	}
-	if (!gotNewConv) { return notify; }
+	if (!gotNewConv) {
+		DBG.println(AjxDebug.NOTIFY, "no virtual convs promoted, return");
+		return notify;
+	}
 
 	// last thing to confirm virt conv promotion is msg changing cid
 	var msgMoved = false;
@@ -986,7 +997,10 @@ function(notify) {
 			}
 		}
 	}
-	if (!msgMoved) { return notify; }
+	if (!msgMoved) {
+		DBG.println(AjxDebug.NOTIFY, "no msgs changed cid, return");
+		return notify;
+	}
 
 	// We're promoting a virtual conv. Normalize the notifications object, and
 	// process a preliminary notif that will update the virtual conv's ID to its
@@ -1045,6 +1059,8 @@ function(notify) {
 		mods["c"] = newMods;
 		appCtxt.getRequestMgr()._handleModifies(mods);
 	}
+	DBG.println(AjxDebug.NOTIFY, " ---------------- ZmMailApp::preNotify - exit");
+	DBG.dumpObj(AjxDebug.NOTIFY, notify);
     appCtxt.setNotifyDebug("Handling NOTIFY: in ZmMailApp - End of Prenotify");
 };
 
@@ -1297,8 +1313,8 @@ function(creates, type, items, currList, sortBy, convs, last) {
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: process create notification:");
-		var extra = (type == ZmItem.MSG) ? "cid=" + create.cid + "|l=" + create.l : "n=" + create.n;
-		AjxDebug.println(AjxDebug.NOTIFY, type + ": id=" + create.id + "|su='" + create.su + "'|f=" + create.f + "|d=" + create.d + "|" + extra);
+		var extra = (type == ZmItem.MSG) ? "|cid=" + create.cid + "|l=" + create.l : "|n=" + create.n;
+		AjxDebug.println(AjxDebug.NOTIFY, type + ": id=" + create.id + "|su='" + create.su + "'|f=" + create.f + "|d=" + create.d + extra);
 		if (create._handled) {
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: create already handled " + create.id);
 			continue;
