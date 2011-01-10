@@ -840,7 +840,37 @@ function() {
 	var bodyPart = this.getBodyPart();
 	if (bodyPart && (bodyPart.ct == ZmMimeTable.TEXT_PLAIN || bodyPart.body && ZmMimeTable.isTextType(bodyPart.ct))) {
 		return bodyPart.content;
-	} else if (bodyPart && bodyPart.ct != ZmMimeTable.TEXT_PLAIN && bodyPart.ct != ZmMimeTable.TEXT_HTML) {
+	}
+    else if (bodyPart.ct == ZmMimeTable.TEXT_CAL) {
+        // NOTE: IE doesn't match multi-line regex, even when explicitly
+        // specifying the "m" attribute.
+        var lines = bodyPart.content.split(/\r\n/);
+        var desc = [];
+        var content = "";
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            if (line.match(/^DESCRIPTION:/)) {
+                desc.push(line.substr(12));
+                for (var j = i + 1; j < lines.length; j++) {
+                    line = lines[j];
+                    if (line.match(/^\s+/)) {
+                        desc.push(line.replace(/^\s+/, " "));
+                        continue;
+                    }
+                    break;
+                }
+                break;
+            }
+        }
+        if (desc.length > 0) {
+            content = desc.join("");
+            content = content.replace(/\\t/g, "\t");
+            content = content.replace(/\\n/g, "\n");
+            content = content.replace(/\\(.)/g, "$1");
+        }
+        return content;
+    }
+    else if (bodyPart && bodyPart.ct != ZmMimeTable.TEXT_PLAIN && bodyPart.ct != ZmMimeTable.TEXT_HTML) {
 		// looks like the body of this message is the attachment itself
 		return "";
 	}
