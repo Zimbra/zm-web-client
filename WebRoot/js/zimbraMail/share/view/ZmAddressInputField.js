@@ -660,10 +660,13 @@ function(bubble) {
 	this._holder.insertBefore(this._input, bubble);
 	this._input.value = this._editModeAddress = this._bubbleAddress[bubble.id];
 	this.removeBubble(bubble.id, true);	// also resizes input
-	this.focus();
-	this._input.select();
-
 	this._editMode = true;
+	// Chrome triggers BLUR after DBLCLICK, so use a timer to make sure select works
+	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
+		function() {
+			this.focus();
+			this._input.select();
+		}), 10);
 };
 
 ZmAddressInputField.prototype._leaveEditMode =
