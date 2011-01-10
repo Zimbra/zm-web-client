@@ -464,8 +464,16 @@ function(calItem, ex) {
 		msg = (invalid && invalid.length)
 			? AjxMessageFormat.format(ZmMsg.apptSendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
 			: ZmMsg.apptSendErrorAbort;
-	} else if(ex.code = ZmCsfeException.MAIL_MESSAGE_TOO_BIG) {
+	} else if(ex.code == ZmCsfeException.MAIL_MESSAGE_TOO_BIG) {
         msg = (calItem.type == ZmItem.TASK) ? ZmMsg.taskSaveErrorToobig : ZmMsg.apptSaveErrorToobig;
+        this.enableToolbar(true);
+    }
+    else if (ex.code == ZmCsfeException.MAIL_INVITE_OUT_OF_DATE) {
+        msg = ZmMsg.inviteOutOfDate;
+        this.enableToolbar(true);
+    }
+    else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_CALITEM) {
+        msg = ex.getErrorMsg([ex.getData("itemId")]);
         this.enableToolbar(true);
     }
 	if (msg) {
