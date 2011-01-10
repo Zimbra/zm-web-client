@@ -1741,7 +1741,11 @@ function(action, type, override) {
 		// When updating address lists, use this._addressesMsg instead of this._msg, because
 		// this._msg changes after a draft is saved.
 		if (!this._addressesMsg.isSent) {
-			var addrVec = this._addressesMsg.getReplyAddresses(action, used);
+			var isDefaultIdentity = true;
+			if(this.identitySelect) {
+				var isDefaultIdentity = defaultIdentity.id == this.identitySelect.getValue(); 
+			}
+			var addrVec = this._addressesMsg.getReplyAddresses(action, used, isDefaultIdentity);
 			var addr = this._getAddrString(addrVec);
 			if (action == ZmOperation.REPLY_ALL) {
 				for (var i = 0, len = addrVec.size(); i < len; i++) {
