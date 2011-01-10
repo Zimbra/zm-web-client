@@ -449,6 +449,28 @@ function(list) {
 };
 
 /**
+ * Adds the items.
+ * The function is overridden to not to show the "No results found" if anything is present in the list.
+ *
+ * @param	{array}		itemArray		an array of items
+ */
+DwtListView.prototype.addItems =
+function(itemArray) {
+	if (AjxUtil.isArray(itemArray)) {
+		if (!this._list) {
+			this._list = new AjxVector();
+		}
+
+		// clear the "no results" message before adding!
+		if (this._list.size() == 0) {
+			this._resetList();
+		}
+		this._renderList(AjxVector.fromArray(itemArray), this._list.size() != 0, true);
+		this._list.addList(itemArray);
+	}
+};
+
+/**
  * This method gets called when the user scrolls up/down. If there are more
  * appointments to request, it does so.
  *
