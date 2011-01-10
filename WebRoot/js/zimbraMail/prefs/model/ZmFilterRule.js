@@ -714,3 +714,31 @@ function(obj) {
 	}
 	return true;
 };
+
+/**
+ * helper method to get the negative comparator
+ *
+ * @return	{constant}	the operator (see <code>ZmFilterRule.OP_</code> constants)
+ */
+
+ZmFilterRule.getNegativeComparator =
+function(comparator) {
+    var negativeOp;
+    
+    switch (comparator) {
+		case ZmFilterRule.OP_IS:		negativeOp = ZmFilterRule.OP_NOT_IS; break;
+		case ZmFilterRule.OP_CONTAINS:	negativeOp = ZmFilterRule.OP_NOT_CONTAINS; break;
+		case ZmFilterRule.OP_MATCHES:	negativeOp = ZmFilterRule.OP_NOT_MATCHES; break;
+		case ZmFilterRule.OP_EXISTS:	negativeOp = ZmFilterRule.OP_NOT_EXISTS; break;
+		case ZmFilterRule.OP_UNDER:		negativeOp = ZmFilterRule.OP_NOT_UNDER; break;
+		case ZmFilterRule.OP_OVER:		negativeOp = ZmFilterRule.OP_NOT_OVER; break;
+		case ZmFilterRule.OP_BEFORE:	negativeOp = ZmFilterRule.OP_NOT_BEFORE; break;
+		case ZmFilterRule.OP_AFTER:		negativeOp = ZmFilterRule.OP_NOT_AFTER; break;
+		case ZmFilterRule.OP_IN:		negativeOp = ZmFilterRule.OP_NOT_IN; break;
+        case ZmFilterRule.OP_IS_REPLIED:   negativeOp = ZmFilterRule.OP_NOT_REPLIED; break;
+        case ZmFilterRule.OP_IS_REQUESTED: negativeOp = ZmFilterRule.OP_NOT_REQUESTED; break;
+        case ZmFilterRule.OP_IS_READRECEIPT: negativeOp = ZmFilterRule.OP_NOT_CONTAINS; break;
+	}
+    return negativeOp;
+
+};
