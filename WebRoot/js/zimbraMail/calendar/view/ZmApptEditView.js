@@ -1826,7 +1826,10 @@ function(type, value, markAsOptional) {
 		if (!item) { continue; }
 
         var contact = AjxEmailAddress.parse(item);
-        if (!contact) { continue; }
+        if (!contact) {
+            this._controller.addInvalidAttendee(item);
+            continue;
+        }
 
         var addr = contact.getAddress();
         var key = addr + "-" + type;
