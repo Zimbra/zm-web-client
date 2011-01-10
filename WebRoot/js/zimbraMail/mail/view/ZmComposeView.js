@@ -983,6 +983,7 @@ function(params) {
 
 	// set the addr fields as populated
 	for (var type in params.addrs) {
+		this.setAddress(type, "");
 		this._addAddresses(type, AjxVector.fromArray(params.addrs[type]));
 	}
 
