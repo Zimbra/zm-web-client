@@ -2214,7 +2214,7 @@ function(action, msg, extraBodyText) {
 			} else {
 				var headerText = "";
 				if (headers.length) {
-					var text = wrapParams.text = headers.join(crlf) + crlf2;
+					var text = wrapParams.text = headers.join(crlf) + crlf;
 					wrapParams.len = 120; // headers tend to be longer
 					headerText = incOptions.prefix ? AjxStringUtil.wordWrap(wrapParams) : text;
 				}
@@ -2236,7 +2236,7 @@ function(action, msg, extraBodyText) {
 			} else {
 				var headerText = "";
 				if (headers.length) {
-					var text = wrapParams.text = headers.join(crlf) + crlf2;
+					var text = wrapParams.text = headers.join(crlf) + crlf;
 					wrapParams.len = 120; // headers tend to be longer
 					headerText = incOptions.prefix ? AjxStringUtil.wordWrap(wrapParams) : text;
 				}
