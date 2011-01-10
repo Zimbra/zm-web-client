@@ -39,6 +39,32 @@ ZmApptViewHelper.REPEAT_OPTIONS = [
 	{ label: ZmMsg.everyYear, 			value: "YEA", 	selected: false },
 	{ label: ZmMsg.custom, 				value: "CUS", 	selected: false }];
 
+
+ZmApptViewHelper.SHOWAS_OPTIONS = [
+	{ label: ZmMsg.free, 				value: "F", 	selected: false },
+	{ label: ZmMsg.replyTentative, 		value: "T", 	selected: false },
+	{ label: ZmMsg.busy, 				value: "B", 	selected: true  },
+	{ label: ZmMsg.outOfOffice,			value: "O", 	selected: false }
+];
+
+/**
+ * returns the label of the option specified by it's value. This is used in calendar.Appointment#Tooltip template
+ *
+ * @param value
+ * returns the label
+ */
+ZmApptViewHelper.getShowAsOptionLabel =
+function(value) {
+
+	for (var i = 0; i < ZmApptViewHelper.SHOWAS_OPTIONS.length; i++) {
+		var option = ZmApptViewHelper.SHOWAS_OPTIONS[i];
+		if (option.value == value) {
+			return option.label;
+		}
+	}
+};
+
+
 /**
  * Gets an object with the indices of the currently selected time fields.
  *

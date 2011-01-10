@@ -62,12 +62,6 @@ ZmApptEditView.prototype.constructor = ZmApptEditView;
 
 // Consts
 
-ZmApptEditView.SHOWAS_OPTIONS = [
-	{ label: ZmMsg.free, 				value: "F", 	selected: false },
-	{ label: ZmMsg.replyTentative, 		value: "T", 	selected: false },
-	{ label: ZmMsg.busy, 				value: "B", 	selected: true  },
-	{ label: ZmMsg.outOfOffice,			value: "O", 	selected: false }
-];
 
 ZmApptEditView.PRIVACY_OPTION_PUBLIC = "PUB";
 ZmApptEditView.PRIVACY_OPTION_PRIVATE = "PRI";
@@ -94,16 +88,6 @@ function() {
 	return "ZmApptEditView";
 };
 
-ZmApptEditView.getShowAsOptionLabel =
-function(value) {
-
-	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
-		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
-		if (option.value == value) {
-			return option.label;
-		}
-	}
-};
 
 ZmApptEditView.prototype.show =
 function() {
@@ -735,8 +719,8 @@ function(width) {
 
 	// show-as DwtSelect
 	this._showAsSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_showAsSelect")});
-	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
-		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
+	for (var i = 0; i < ZmApptViewHelper.SHOWAS_OPTIONS.length; i++) {
+		var option = ZmApptViewHelper.SHOWAS_OPTIONS[i];
 		this._showAsSelect.addOption(option.label, option.selected, option.value, "showAs" + option.value);
 	}
 

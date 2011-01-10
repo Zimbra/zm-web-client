@@ -840,7 +840,7 @@
         </td>
         <td align='left' nowrap>
             <span style="float:left"><$= AjxImg.getImageHtml("showAs" + data.appt.freeBusy) $></span>
-            <span style="float:left">&nbsp;<$= AjxStringUtil.htmlEncode(ZmApptEditView.getShowAsOptionLabel(data.appt.freeBusy)) $></span>
+            <span style="float:left">&nbsp;<$= AjxStringUtil.htmlEncode(ZmApptViewHelper.getShowAsOptionLabel(data.appt.freeBusy)) $></span>
         </td>
     </tr>
 
