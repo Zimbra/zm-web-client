@@ -702,6 +702,10 @@ function() {
 
 ZmFilterRule.checkPreconditions =
 function(obj) {
+    if (!ZmFilterRule.__preConditionsInitialized) {
+        ZmFilterRule.__preConditionsInitialized = true;
+        ZmFilterRule._setPreconditions();
+    }
 
 	var pre = obj && obj.precondition;
 	if (!pre) { return true; }
