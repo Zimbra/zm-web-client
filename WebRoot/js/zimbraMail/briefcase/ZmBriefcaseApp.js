@@ -301,7 +301,7 @@ function(contentType, name, winName) {
 	}
 
     if(this.getBriefcaseController().chkFolderPermission(folderId)) {
-        var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + (window.isTinyMCE ? "&editor=tinymce" : "") + "&skin=" + appCurrentSkin + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
+        var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + "&skin=" + appCurrentSkin + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
         var winname = winName || name || (new Date()).getTime().toString();
         window.open(url, winname); //bug:44324 removed new launching window
     }
@@ -332,7 +332,7 @@ function() {
 ZmBriefcaseApp.addEditorParam =
 function(restUrl) {
     if(restUrl && window.isTinyMCE) {
-        restUrl += (restUrl.match(/\?/) ?  "&editor=tinymce" : "?editor=tinymce");
+    //        restUrl += (restUrl.match(/\?/) ?  "&editor=tinymce" : "?editor=tinymce");
     }
     return restUrl;
 };

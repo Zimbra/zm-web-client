@@ -82,11 +82,11 @@ function(id) {
 ZmDocsEditController.prototype.loadDocument = function(item) {
     var content = this._docMgr.fetchDocumentContent(item);
     if(content) {
-        if(window.isTinyMCE) {
-            this._docsEdit.setPendingContent(content);            
-        }else {
+    //        if(window.isTinyMCE) {
+    //            this._docsEdit.setPendingContent(content);
+    //        }else {
             this._docsEdit._editor.setContent(content);
-        }
+    //        }
         ZmDocsEditController.savedDoc = content;
     }
 };
@@ -134,12 +134,12 @@ window.onbeforeunload = function() {
 ZmDocsEditController.prototype.checkForChanges = function() {
    var curDoc = null;
    var controller = ZmDocsEditApp._controller;
-   if(window.isTinyMCE) {
-     var ed = tinyMCE.get('tiny_mce_content');
-     curDoc = ed.getContent();
-   } else {
+    //   if(window.isTinyMCE) {
+    //     var ed = tinyMCE.get('tiny_mce_content');
+    //     curDoc = ed.getContent();
+    //   } else {
      curDoc = controller._docsEdit._editor.getContent();  
-   }
+    //   }
    /*if(!ZmDocsEditApp.fileInfo.id) {
      return ZmMsg.exitDocNotSaved;
    }*/

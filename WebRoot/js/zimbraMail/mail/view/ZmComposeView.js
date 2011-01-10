@@ -946,10 +946,10 @@ function(composeMode, switchPreface) {
 
 		// swap new body field into tab group
 		var newMember = (composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
-        if (window.isTinyMCE) {
-            curMember = newMember = this._htmlEditor.getEditorContainer();
-            this._retryHtmlEditorFocus();
-        }
+        //        if (window.isTinyMCE) {
+        //            curMember = newMember = this._htmlEditor.getEditorContainer();
+        //            this._retryHtmlEditorFocus();
+        //        }
 		if (curMember && newMember && (curMember != newMember) && this._controller._tabGroup) {
 			this._controller._tabGroup.replaceMember(curMember, newMember);
 			// focus via replaceMember() doesn't take, try again
