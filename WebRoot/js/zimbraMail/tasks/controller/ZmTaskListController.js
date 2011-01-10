@@ -668,6 +668,10 @@ function(task,ftask) {
 	var clone = ZmTask.quickClone(task);
 	clone.pComplete = task.isComplete() ? 0 : 100;
 	clone.status = task.isComplete() ? ZmCalendarApp.STATUS_NEED : ZmCalendarApp.STATUS_COMP;
+    if(!task.isComplete()) {  //bug:51913 disable alarm when stats is completed
+        clone.alarm = false;
+        clone.setTaskReminder(null);
+    }
 	clone.setViewMode(ZmCalItem.MODE_EDIT);
 	var callback = new AjxCallback(this, this._markAsCompletedResponse, [clone,ftask]);
 	clone.save(null, callback);
