@@ -71,82 +71,63 @@
 <body <c:if test="${successfullLogin ne 'true'}">
         onload="document.changePassForm.password.focus();"
         </c:if>>
-<table width=100% height=100%>
-    <tr>
-        <td align=center valign=middle>
-        <div class="LoginScreen">
-            <div class="center">
-                <table width=100%>
-                    <tr>
-                        <td>
-                            <table width=100%>
-                                <tr>
-                                    <td valign=middle>
-										<div class="ImgAltBanner"></div>					                                    
-                                        <a href="http://www.zimbra.com/" target="_new"><div class='ImgLoginBanner' style="margin: 20px 0 0 20px;"></div></a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                        <td>
-                    </tr>
-                    <tr>
-                        <td> <!-- Removed for new changes if any error occurs in future pls. put it back  id='ZLoginBodyContainer'-->
-                            <c:if test="${not empty errorMessage}">
-                                <!-- ${fn:escapeXml(error.stackStrace)} -->
-                                <div id='ZLoginErrorPanel'>
-                                    <table width=100%>
-                                        <tr>
-                                            <td valign='top' width='40'>
-                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<app:imgurl value='${messageImage}'/>"/>
-                                            </td>
-                                            <td class='errorText'>
-                                                <c:out value="${errorMessage}"/> 
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </c:if>
-                            
-                            <c:if test="${successfullLogin ne 'true'}">
-                                <div id='ZLoginFormPanel' style="margin-left: 12%;">
-                                    <form method='post' name="changePassForm" action="" autocomplete="off" accept-charset="utf-8">
-                                        <input type="hidden" name="loginOp" value="login"/>
-                                        <table width=100% cellpadding=4 class="form">
-                                            <tr>
-                                                <td class='zLoginLabelContainer'><label for="oldPassword"><fmt:message key="oldPassword"/>:</label></td>
-                                                <td colspan=2 class='zLoginFieldContainer'>
-                                                    <input id="oldPassword" autocomplete="off" class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class='zLoginLabelContainer'><label for="newPassword"><fmt:message key="newPassword"/>:</label></td>
-                                                <td colspan=2 class='zLoginFieldContainer'>
-                                                    <input id="newPassword" autocomplete="off" class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class='zLoginLabelContainer'><label for="confirm"><fmt:message key="confirm"/>:</label></td>
-                                                <td colspan=2 class='zLoginFieldContainer'>
-                                                    <input id="confirm" autocomplete="off" class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td></td>
-                                                <td colspan=2><input type=submit class='zLoginButton'
-                                                                     value="<fmt:message key="changePassword"/>"/></td>
-                                            </tr>
-                                        </table>
-                                    </form>
-                                </div>
-                            </c:if>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-          </div> 
-        </td>
-    </tr>
-</table>
+    <div class="LoginScreen">
+        <div class="center">
+            <div class="ImgAltBanner"></div>					                                    
+            <h1>
+                <a href="http://www.zimbra.com/" target="_new">
+                    <div class='ImgLoginBanner' style="margin: 20px 0 0 20px;"></div>
+                </a>
+            </h1>
+            <c:if test="${not empty errorMessage}">
+                <!-- ${fn:escapeXml(error.stackStrace)} -->
+                <div id='ZLoginErrorPanel'>
+                    <table width=100%>
+                        <tr>
+                            <td valign='top' width='40'>
+                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<app:imgurl value='${messageImage}'/>"/>
+                            </td>
+                            <td class='errorText'>
+                                <c:out value="${errorMessage}"/> 
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </c:if>
+            <c:if test="${successfullLogin ne 'true'}">
+                <div id='ZLoginFormPanel' style="margin-left: 12%;">
+                    <form method='post' name="changePassForm" action="" autocomplete="off" accept-charset="utf-8">
+                        <input type="hidden" name="loginOp" value="login"/>
+                        <table class="form">
+                            <tr>
+                                <td class='zLoginLabelContainer'><label for="oldPassword"><fmt:message key="oldPassword"/>:</label></td>
+                                <td class='zLoginFieldContainer'>
+                                    <input id="oldPassword" autocomplete="off" class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class='zLoginLabelContainer'><label for="newPassword"><fmt:message key="newPassword"/>:</label></td>
+                                <td class='zLoginFieldContainer'>
+                                    <input id="newPassword" autocomplete="off" class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class='zLoginLabelContainer'><label for="confirm"><fmt:message key="confirm"/>:</label></td>
+                                <td class='zLoginFieldContainer'>
+                                    <input id="confirm" autocomplete="off" class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><input type=submit class='zLoginButton'
+                                                     value="<fmt:message key="changePassword"/>"/></td>
+                            </tr>
+                        </table>
+                        <div class="decor1"></div>
+                    </form>
+                </div>
+            </c:if>
+        </div>
+    </div> 
 </body>
 </html>
