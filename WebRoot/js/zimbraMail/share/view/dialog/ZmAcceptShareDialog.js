@@ -85,9 +85,13 @@ function(share, fromAddr) {
 	var icon = null;
 	var orgClass = ZmOrganizer.ORG_CLASS[orgType];
 	if (orgClass) {
-		var prototype = window[orgClass].prototype;
-		// HACK: to get default icon regardless of organizer type
-		icon = prototype.getIcon.apply(prototype);
+		var orgPackage = ZmOrganizer.ORG_PACKAGE[orgType];
+		if (orgPackage) {
+			AjxDispatcher.require(orgPackage);
+			var prototype = window[orgClass].prototype;
+			// HACK: to get default icon regardless of organizer type
+			icon = prototype.getIcon.apply(prototype);
+		}
 	}
 	this._color.setImage(icon);
 	this._color.setValue(ZmOrganizer.DEFAULT_COLOR[orgType]);
