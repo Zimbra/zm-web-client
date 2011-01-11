@@ -721,7 +721,12 @@ function() {
 
 	var val = AjxStringUtil.htmlEncode(this._input.value);
 	var holderWidth = Dwt.getSize(this._holder).x;
-	var inputWidth = Math.min(AjxStringUtil.getWidth(val), holderWidth) + ZmAddressInputField.INPUT_EXTRA;
+	var strW = AjxStringUtil.getWidth(val);
+	if (AjxEnv.isWindows && AjxEnv.isFirefox) {
+		// FF/Win: fudge factor since string is longer in INPUT than when measured in SPAN
+		strW = strW * 1.2;
+	}
+	var inputWidth = Math.min(strW, holderWidth) + ZmAddressInputField.INPUT_EXTRA;
 	Dwt.setSize(this._input, inputWidth, Dwt.DEFAULT);
 
 	if (AjxEnv.isIE) {
