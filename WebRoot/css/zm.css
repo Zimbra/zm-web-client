@@ -1945,7 +1945,7 @@ HTML>BODY .appt-selected .appt_allday_body
  *	Free/busy view
  */
 /* Colors for the free/busy blocks */		/*??? SKIN THIS ? */
-.ZmScheduler-free 		{	background-color: #F3F3ED;	}
+.ZmScheduler-free 		{	background-color: #E3E3DC;	}
 .ZmScheduler-busy 		{	background-color: #4AA6F1;	}
 .ZmScheduler-tentative 	{	background-color: #BAE0E3;	}
 .ZmScheduler-outOfOffice {	background-color: #7B5BAC;	}
