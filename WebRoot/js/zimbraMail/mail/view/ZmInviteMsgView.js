@@ -282,7 +282,8 @@ function(reset) {
 		if (this.parent.getController() instanceof ZmMsgController) {
 			// get the bounds for the app content area so we can position the day view
 			var appContentBounds = appCtxt.getAppViewMgr()._getContainerBounds(ZmAppViewMgr.C_APP_CONTENT);
-			grandParentSize = {x: appContentBounds.width, y: appContentBounds.height};
+            if (this.mode && this.mode != "MSG")
+			    grandParentSize = {x: appContentBounds.width, y: appContentBounds.height};
 
 			// set padding so we can add it to the day view's x-location since it is a child of the shell
 			padding = appContentBounds.x;
@@ -305,6 +306,24 @@ function(reset) {
 			var mvHeight = parentHeight - dvHeight;
 
 			this._dayView.setBounds(mvBounds.x, mvHeight, mvBounds.width, dvHeight);
+            if (this.parent && this.parent instanceof ZmMailMsgView){
+                var el = this.parent.getHtmlElement();
+                if (this.mode && this.mode != "MSG") {
+                    if (el){
+                        el.style.height = mvHeight + "px";
+                        el.style.overflow = Dwt.Scroll
+                    }
+                }
+                else {
+                    var bodyDiv = this.parent.getMsgBodyElement();
+                    if (bodyDiv) bodyDiv.style.overflow  = Dwt.CLIP;
+                    if (el) {
+                        el.style.overflow = "auto";
+                        el.style.height = (mvHeight - this._inviteToolbar.getYH() + 10) + "px";
+                    }
+                }
+            }
+
 			// don't call DwtControl's setSize() since it triggers control
 			// listener and leads to infinite loop
 

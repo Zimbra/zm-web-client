@@ -2068,3 +2068,8 @@ function(msgId, partId, name) {
 
 	appCtxt.getApp(ZmApp.CALENDAR).importAppointment(msgId, partId, name);
 };
+
+ZmMailMsgView.prototype.getMsgBodyElement =
+function(){
+    return document.getElementById(ZmId.getViewId(this._viewId, ZmId.MV_MSG_BODY, this._mode));
+};
