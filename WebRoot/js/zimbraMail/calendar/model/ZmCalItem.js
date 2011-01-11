@@ -917,8 +917,8 @@ function(mode, message, callback, result) {
         var invite = this._orig.proposedInvite;
         var start = invite.getServerStartTime();
         var end = invite.getServerEndTime();
-        if (start) this.setStartDate(AjxDateUtil.parseServerDateTime(start));
-        if (end) this.setEndDate(AjxDateUtil.parseServerDateTime(end));
+        if (start) this.setStartDate(AjxDateUtil.parseServerDateTime(start, true));
+        if (end) this.setEndDate(AjxDateUtil.parseServerDateTime(end, true));
 
         //set timezone from proposed invite
         var tz = invite.getServerStartTimeTz();
