@@ -120,7 +120,7 @@ and the container element is replaced with that control.
 					</tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_SHOW_SELECTION_CHECKBOX' tabindex='90'></div></td>
+						<td class='ZOptionsField'><div id='${id}_SHOW_SELECTION_CHECKBOX' tabindex='95'></div></td>
 					</tr>
 					<$ if (appCtxt.isOffline && appCtxt.accountList.size() > 2) { $>
 						<tr>
@@ -143,7 +143,11 @@ and the container element is replaced with that control.
 					<$ } $>
                     <tr>
                        	<td class='ZOptionsLabel'><$=ZmMsg.printFontSizeLabel$></td>
-						<td class='ZOptionsField'><select id='${id}_DEFAULT_PRINTFONTSIZE' tabindex='50'></select></td>
+						<td class='ZOptionsField'><select id='${id}_DEFAULT_PRINTFONTSIZE' tabindex='130'></select></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.bubbles$></td>
+						<td class='ZOptionsField'><div id='${id}_USE_ADDR_BUBBLES' tabindex='140'></div></td>
 					</tr>
 				</table>
 			</td>

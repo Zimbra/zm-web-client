@@ -241,9 +241,7 @@ function() {
 	var addrs = !view._useAcAddrBubbles && view.getRawAddrFields();
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		addrList[type] = view._useAcAddrBubbles ? view._addrInputField[type].getAddresses(true) :
-				   								  addrs[type] && addrs[type].good.getArray();
-
+		addrList[type] = view._useAcAddrBubbles ? view._addrInputField[type].getAddresses(true) : addrs[type];
 	}
 
 	// this is how child window knows what to do once loading:

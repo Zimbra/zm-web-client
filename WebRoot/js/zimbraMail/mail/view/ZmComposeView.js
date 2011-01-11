@@ -46,7 +46,7 @@ ZmComposeView = function(parent, controller, composeMode) {
 	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE]	= ZmOperation.REPLY_TENTATIVE_NOTIFY;
 
 	this._onMsgDataChange = new AjxCallback(this, this._onMsgDataChange);
-	this._useAcAddrBubbles = appCtxt.get(ZmSetting.AUTOCOMPLETE_ADDR_BUBBLES);
+	this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 
 	this._controller = controller;
 	this._initialize(composeMode);
@@ -984,7 +984,8 @@ function(params) {
 	// set the addr fields as populated
 	for (var type in params.addrs) {
 		this.setAddress(type, "");
-		this._addAddresses(type, AjxVector.fromArray(params.addrs[type]));
+		var addrs = AjxUtil.toArray(params.addrs[type]);
+		this._addAddresses(type, AjxVector.fromArray(addrs));
 	}
 
 	this._subjectField.value = params.subj || "";
@@ -2040,7 +2041,7 @@ function(type, addrVec, used) {
 	if (addrs && addrs.length) {
 		for (var i = 0, len = addrs.length; i < len; i++) {
 			var addr = addrs[i];
-			var email = addr && addr.getAddress();
+			var email = addr.isAjxEmailAddress ? addr && addr.getAddress() : addr;
 			if (!email) { continue; }
 			email = email.toLowerCase();
 			if (!used[email]) {

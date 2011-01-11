@@ -50,7 +50,7 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
     this._attendeePicker = {};
     this._pickerButton = {};
 
-	this._useAcAddrBubbles = appCtxt.get(ZmSetting.AUTOCOMPLETE_ADDR_BUBBLES);
+	this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 
     //used to preserve original attendees while forwarding appt
     this._fwdApptOrigAttendees = [];

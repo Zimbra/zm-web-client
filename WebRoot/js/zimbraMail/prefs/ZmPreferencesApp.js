@@ -256,7 +256,8 @@ function() {
 				ZmSetting.DEFAULT_TIMEZONE,
                 ZmSetting.DEFAULT_PRINTFONTSIZE,
 				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
-				ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED // offline
+				ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED, // offline
+				ZmSetting.USE_ADDR_BUBBLES
 			]
 		},
 		COMPOSING: {
@@ -540,6 +541,11 @@ function() {
 
 	ZmPref.registerPref("SHARING", {
 		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
+
+	ZmPref.registerPref("USE_ADDR_BUBBLES", {
+		displayName:		ZmMsg.useAddressBubbles,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
 	if (appCtxt.isOffline) {

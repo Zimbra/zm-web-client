@@ -1006,7 +1006,9 @@ function(msg, container, callback) {
 		}
 	}
 
-	var options = {addrBubbles:true};
+	var options = {};
+	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
+	
 	if (this._objectManager) {
 		this._lazyCreateObjectManager();
 
