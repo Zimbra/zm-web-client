@@ -2012,8 +2012,7 @@ function() {
 	this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data);
 
 	// tooltip for username/quota fields
-	var html = (username != login || data.quota > 0)
-		? AjxTemplate.expand('share.Quota#Tooltip', data) : null;
+	var html = AjxTemplate.expand('share.Quota#Tooltip', data);
 	this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
 	this._components[ZmAppViewMgr.C_QUOTA_INFO].setToolTipContent(html);
 };
