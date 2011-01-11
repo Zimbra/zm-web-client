@@ -52,6 +52,7 @@
 	
 
 <div class="center">
+        <div class="ImgAltBanner"></div>    
 		<h1><div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
 		<h2><script>document.write(ZmMsg.splashScreenAppName)</script></h2>
 
@@ -71,6 +72,7 @@
 			<div class="switch"></div>
 			<div class="copyright" id='ZLoginLicenseContainer'><fmt:message key="splashScreenCopyright" /></div>
 		<div> 
+		<div class="decor1"></div>
 	</div>
 	
   </div>
