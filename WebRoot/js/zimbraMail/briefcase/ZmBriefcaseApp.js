@@ -248,6 +248,12 @@ function(creates, force) {
 	}
 };
 
+ZmBriefcaseApp.prototype.modifyNotify =
+function(modifies, force) {
+     var bc = AjxDispatcher.run("GetBriefcaseController");
+     bc.handleModifyNotify(modifies);
+};
+
 ZmBriefcaseApp.prototype.handleOp =
 function(op) {
 

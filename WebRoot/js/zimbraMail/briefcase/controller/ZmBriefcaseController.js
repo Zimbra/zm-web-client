@@ -1323,6 +1323,13 @@ function(create){
     }
 };
 
+ZmBriefcaseController.prototype.handleModifyNotify =
+function(modifies){
+    var view = this._listView[this._currentView];
+    view.deselectAll();
+    this._resetToolbarOperations();
+};
+
 ZmBriefcaseController.prototype._actionErrorCallback =
 function(ex){
 
