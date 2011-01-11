@@ -1326,7 +1326,8 @@ function(create){
 ZmBriefcaseController.prototype.handleModifyNotify =
 function(modifies){
     var view = this._listView[this._currentView];
-    view.deselectAll();
+    if (view)
+        view.deselectAll();
     this._resetToolbarOperations();
 };
 
