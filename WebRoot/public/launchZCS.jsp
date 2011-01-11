@@ -52,6 +52,8 @@
 	// Set standard HTTP/1.0 no-cache header.
 	response.setHeader("Pragma", "no-cache");
 %>
+
+<zm:getUserAgent var="ua" session="false"/>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
@@ -170,6 +172,39 @@
 </noscript>
 </head>
 <body>
+<c:if test="${ua.isChrome or ua.isSafari}">
+    <%
+        /*preloading splash screen images to avoid latency*/
+        String splashLocation = "_base";
+        //skins that are not related with base login banner
+        String[] spSkin={"carbon","lake","lemongrass","pebble","tree","twilight","waves"};
+
+        for(int i=0;i<spSkin.length;i++){
+            if(skin.equals(spSkin[i])){
+                splashLocation=skin;
+            }
+        }
+        /*preloading splash screen images to avoid latency ends*/
+    %>
+    <%--preloading the splash screen images to avoid latency --%>
+    <div style="display:none;">
+      <img src="<%=contextPath%>/skins/<%=splashLocation%>/logos/LoginBanner.png" alt=""/>
+      <%if(splashLocation.equals("carbon")){%>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/vmwarePeel.png" alt=""/>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/logos/AltBanner.png" alt=""/>
+      <%}%>
+      <%if(splashLocation.equals("lemongrass")){%>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/bg_lemongrass.png" alt=""/>
+      <%}%>
+      <%if(splashLocation.equals("twilight")||splashLocation.equals("waves")){%><img src="<%=contextPath%>/skins/<%=splashLocation%>/img/skins/login_bg.png" alt=""/><%}%>
+      <%if(splashLocation.equals("steel")){%><img src="<%=contextPath%>/skins/<%=splashLocation%>/img/SkinOuter.repeat.gif" alt=""/><%}%>
+      <%if(splashLocation.equals("waves")){%>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/login_bg.png" alt=""/>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/login_page_bg.png" alt=""/>
+      <%}%>
+    </div>
+    <%--preloading the splash screen images to avoid latency ends --%>
+</c:if>
 <jsp:include page="Resources.jsp">
 	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys,ZdMsg,AjxTemplateMsg" />
 	<jsp:param name="skin" value="${skin}" />
