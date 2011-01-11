@@ -184,13 +184,14 @@ function(attId) {
             if(!appt.isOrganizer()) return this.forwardCalItem(appt);
 		}
 
-		if (this._invalidAttendees && this._invalidAttendees.length > 0) {
+		if (!this._attendeeValidated && this._invalidAttendees && this._invalidAttendees.length > 0) {
 			var dlg = appCtxt.getYesNoMsgDialog();
 			dlg.registerCallback(DwtDialog.YES_BUTTON, this._clearInvalidAttendeesCallback, this, [appt, attId, dlg]);
 			var msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, this._invalidAttendees.join(","));
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
             this.enableToolbar(true);
+            this._attendeeValidated = true;
 			return false;
 		}
 
@@ -313,14 +314,14 @@ function(mode) {
     var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
     saveButton.removeSelectionListeners();
     if(ZmCalItem.FORWARD_MAPPING[mode]) {
-        saveButton.addSelectionListener(new AjxListener(this, this._sendListener));
+        saveButton.addSelectionListener(new AjxListener(this, this._sendBtnListener));
     }else {
-        saveButton.addSelectionListener(new AjxListener(this, this._saveListener, [true]));
+        saveButton.addSelectionListener(new AjxListener(this, this._saveBtnListener));
     }
 
     var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
     sendButton.removeSelectionListeners();
-    sendButton.addSelectionListener(new AjxListener(this, this._sendListener));
+    sendButton.addSelectionListener(new AjxListener(this, this._sendBtnListener));
 
     var btn = this._toolbar.getButton(ZmOperation.ATTACHMENT);
     if(btn)
@@ -340,6 +341,18 @@ function(ev){
 ZmApptComposeController.prototype.isSave =
 function(){
     return (this._action == ZmCalItemComposeController.SAVE); 
+};
+
+ZmApptComposeController.prototype._saveBtnListener =
+function(ev) {
+    delete this._attendeeValidated;
+    return this._saveListener(ev, true);
+};
+
+ZmApptComposeController.prototype._sendBtnListener =
+function(ev) {
+    delete this._attendeeValidated;
+    return this._sendListener(ev);
 };
 
 ZmApptComposeController.prototype._saveListener =
@@ -950,7 +963,8 @@ function(calItem, attId, notifyList, force){
 };
 
 ZmApptComposeController.prototype._doSaveCalItem =
-function(appt, attId, callback, errorCallback, notifyList){        
+function(appt, attId, callback, errorCallback, notifyList){
+    delete this._attendeeValidated;
     if(this._action == ZmCalItemComposeController.SEND){
         appt.send(attId, callback, errorCallback, notifyList);
     }else{
