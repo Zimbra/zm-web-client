@@ -132,6 +132,7 @@ function(id){
 
     var sendAppt = document.getElementById(id+"_send");
     var discardAppt = document.getElementById(id+"_discard");
+    delete this._invalidAttendees;
     if (sendAppt.checked) {
         this._sendListener();
     } else if (discardAppt.checked) {
