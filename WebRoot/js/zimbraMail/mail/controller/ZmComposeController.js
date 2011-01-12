@@ -505,8 +505,10 @@ function(attId, docIds, draftType, callback, contactId) {
 	var requestReadReceipt = false;
 	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
 		var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
-		var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
-		requestReadReceipt = (!!(mi && mi.getChecked()));
+        if (menu){
+		    var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
+		    requestReadReceipt = (!!(mi && mi.getChecked()));
+        }
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
@@ -1517,7 +1519,9 @@ function(op) {
 			if (cv._preface) {
 				var idx = curText.indexOf(cv._preface);
 				if (idx > 0) {
-					userText = curText.substr(0, idx);
+					userText = curText.substr(0, idx);//.replace(/\n$/,"");
+				} else {
+					userText = curText;
 				}
 			} else {
 				userText = curText;
