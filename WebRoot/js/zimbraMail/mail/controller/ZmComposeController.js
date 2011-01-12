@@ -1519,7 +1519,9 @@ function(op) {
 			if (cv._preface) {
 				var idx = curText.indexOf(cv._preface);
 				if (idx > 0) {
-					userText = curText.substr(0, idx);
+					userText = curText.substr(0, idx);//.replace(/\n$/,"");
+				} else {
+					userText = curText;
 				}
 			} else {
 				userText = curText;

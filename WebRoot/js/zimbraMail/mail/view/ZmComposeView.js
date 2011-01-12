@@ -917,15 +917,39 @@ function(composeMode, switchPreface) {
 			"_after": AjxCallback.simpleClosure(this._applyHtmlPrefix, this, "<blockquote>", "</blockquote>")
 		};
 		var content = this._htmlEditor.getContent();
-		var sigId = this._controller._currentSignatureId;
-		var account = appCtxt.multiAccounts && this.getFromAccount();
+		if (htmlMode) {
+			var anyChar = "[\\s\\S]"; // Includes newlines
+			var baseContent;
 
-		this.applySignature(content, sigId, account, null, true); // Remove the signature before switching
+			var preface = this._getPreface(DwtHtmlEditor.TEXT);
+			if (preface) {
+				var incMsgRe = new RegExp(AjxStringUtil.regExEscape(preface)+anyChar+"*$");
+				baseContent = content.replace(incMsgRe, "");
+			}
 
-		this._htmlEditor.setMode(composeMode, true, convertor); // Do the switch
+			var sig = this.getSignatureContent(this._controller._currentSignatureId);
+			if (sig) {
+				var textsig = AjxStringUtil.convertHtml2Text(sig, {"#text": ZmComposeView._convertTextNode});
+				if (textsig) {
+					var sigRe = new RegExp(AjxStringUtil.regExEscape(textsig));
+					baseContent = baseContent.replace(sigRe, "");
+				}
+			}
 
-		content = this._htmlEditor.getContent();
-		this.applySignature(content, null, account, sigId, false); // Reapply the signature after switching
+			var htmlContent = this._msg.getBodyContent();
+			this._htmlEditor.setMode(composeMode, true);
+			this._setBody(this._action, this._msg, baseContent || "\n");
+		} else {
+			var sigId = this._controller._currentSignatureId;
+			var account = appCtxt.multiAccounts && this.getFromAccount();
+
+			this.applySignature(content, sigId, account, null, true); // Remove the signature before switching
+
+			this._htmlEditor.setMode(composeMode, true, convertor); // Do the switch
+
+			content = this._htmlEditor.getContent();
+			this.applySignature(content, null, account, sigId, false); // Reapply the signature after switching
+		}
 
 		if (htmlMode && switchPreface) {
 			this._switchPreface();
@@ -2172,13 +2196,15 @@ function(action, msg, extraBodyText) {
 	var sigPre = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig : "";
 
 	extraBodyText = extraBodyText || "";
-
-	if (sigPre && extraBodyText)
-		extraBodyText = extraBodyText.replace(new RegExp(AjxStringUtil.regExEscape(sigPre),"i"),"");
+	if (sigPre && extraBodyText) {
+		extraBodyText = extraBodyText.replace(new RegExp(AjxStringUtil.regExEscape(sigPre)+"[\\s\\S]*","i"),"");
+	}
 
 	var preText = extraBodyText + sigPre;
 	if (sigPre) {
 		preText += crlf;
+	} else if (htmlMode) {
+		preText = preText.replace("\n","<br/>");
 	}
 
 	if (incOptions.headers) {
