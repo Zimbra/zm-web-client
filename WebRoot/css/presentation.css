@@ -46,7 +46,7 @@
 	    position: absolute;
 	    font-size: 16px;
 		overflow: hidden;
-	/*background: url(../img/wood-bg.png);*/		
+	/*background: url(@AppContextPath@/img/wood-bg.png);*/		
 }
 
 .preview {

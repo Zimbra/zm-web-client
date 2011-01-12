@@ -85,10 +85,10 @@
     <c:if test="${ua.isiPad eq true}">
        <div style="background-color: #ececed;border-bottom: 1px solid #dbdbdc; padding: 4px 6px;">
         <div class="subject">${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
-            <c:if test="${message.isFlagged}"><span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
+            <c:if test="${message.isFlagged}"><span class="Img ImgFlagRed">&nbsp;</span></c:if>
             <c:if test="${message.hasTags and mailbox.features.tagging}">
          <span class="mo_taglist"><c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
-            <c:forEach items="${tags}" var="tag"><span class="SmlIcnHldr Tag${tag.color}">&nbsp;</span><span>${fn:escapeXml(tag.name)}</span></c:forEach>
+            <c:forEach items="${tags}" var="tag"><span class="Img ImgTag${zm:capitalize(tag.color)}">&nbsp;</span><span>${fn:escapeXml(tag.name)}</span></c:forEach>
         </span>
             </c:if>
         </div>
@@ -105,11 +105,11 @@
 
     <c:if test="${ua.isiPad == false}">
         <div class="tbl"><div class="tr"><div class="td">
-            <span class="SmlIcnHldr Reply">&nbsp;</span>
+            <span class="Img ImgReply">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="?st=newmail&amp;id=${message.id}&amp;op=reply" class="Action reply"><fmt:message key="reply"/></a>
-            <span class="SmlIcnHldr ReplyAll">&nbsp;</span>
+            <span class="Img ImgReplyAll">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="?st=newmail&id=${message.id}&amp;op=replyAll" class="Action replyAll"><fmt:message key="replyAll"/></a>
-            <span class="SmlIcnHldr Forward">&nbsp;</span>
+            <span class="Img ImgForward">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="?st=newmail&id=${message.id}&amp;op=forward" class="Action forward"><fmt:message key="forward"/></a>
         </div></div></div>
     </c:if>
@@ -117,10 +117,10 @@
     <c:if test="${ua.isiPad == false}">
 <fmt:message var="noSubject" key="noSubject"/><hr size="1"/>
 <div class="zo_unread"><b>${fn:escapeXml(empty message.subject ? noSubject : message.subject)}</b>
-    <c:if test="${message.isFlagged}"><span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
+    <c:if test="${message.isFlagged}"><span class="Img ImgFlagRed">&nbsp;</span></c:if>
     <c:if test="${message.hasTags and mailbox.features.tagging}">
      <span class="mo_taglist"><c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
-        <c:forEach items="${tags}" var="tag"><span class="SmlIcnHldr Tag${tag.color}">&nbsp;</span><span>${fn:escapeXml(tag.name)}</span></c:forEach>
+        <c:forEach items="${tags}" var="tag"><span class="Img ImgTag${zm:capitalize(tag.color)}">&nbsp;</span><span>${fn:escapeXml(tag.name)}</span></c:forEach>
     </span>
     </c:if>
 </div>
@@ -132,11 +132,11 @@
 <hr size="1"/>
 </c:if>
 <c:if test="${not hideops}"><c:if test="${showInviteReply}"><div class="tbl"><div class="tr"><div class="td">
-            <span class="${ua.isiPad eq true ? '' : 'SmlIcnHldr Check'}">&nbsp;</span>
+            <span class="${ua.isiPad eq true ? '' : 'Img ImgCalInviteAccepted'}">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="?st=newmail&id=${message.id}&amp;op=accept" class="Action accept"><fmt:message key="replyAccept"/></a> &nbsp;
-            <span class="${ua.isiPad eq true ? '' : 'SmlIcnHldr Question'}">&nbsp;</span>
+            <span class="${ua.isiPad eq true ? '' : 'Img ImgCalInviteTentative'}">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPTENT"</c:if> href="?st=newmail&id=${message.id}&amp;op=tentative" class="Action tentative"><fmt:message key="replyTentative"/></a>
-            <span class="${ua.isiPad eq true ? '' : 'SmlIcnHldr Cancel'}">&nbsp;</span>
+            <span class="${ua.isiPad eq true ? '' : 'Img ImgCalInviteDeclined'}">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="?st=newmail&id=${message.id}&amp;op=decline" class="Action decline"><fmt:message key="replyDecline"/></a>
 </div></div></div><hr size="1"/></c:if></c:if>
 <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">

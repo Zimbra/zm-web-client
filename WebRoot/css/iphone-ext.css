@@ -164,7 +164,7 @@ a {
     border-bottom:1px solid #EEEEEE;
 }
 #appbar a.appTab,#appbar a.appTab-active{
-    background: url( "/img/mobile/iphone-ext/AppsNav.png" ) top left no-repeat;
+    background: url( "@AppContextPath@/img/mobile/iphone-ext/AppsNav.png" ) top left no-repeat;
 }
 a#mail,a.mail {
     background-position: 50% 0 !important;
@@ -232,7 +232,7 @@ form {
 .Toolbar {
     background: #d3d2d7;
     border:0px;
-    background: #efefef url( "/img/mobile/iphone/iPhoneToolbar1.png" ) bottom repeat-x;
+    background: #efefef url( "@AppContextPath@/img/mobile/iphone/iPhoneToolbar1.png" ) bottom repeat-x;
 }
 .StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
     padding: 10px;
@@ -291,7 +291,7 @@ input[type="button"], input[type="reset"] {
     -webkit-appearance: button;
 }
 .searchButton, input[type="submit"], input.submit {
-     background: #2e69e0 url( "/img/mobile/iphone/iPhoneGoButton1.png" ) 50% 50% repeat-x;
+     background: #2e69e0 url( "@AppContextPath@/img/mobile/iphone/iPhoneGoButton1.png" ) 50% 50% repeat-x;
     -webkit-border-radius: 5px;
     -webkit-appearance: button;
 }
@@ -320,7 +320,7 @@ input[type="button"], input[type="reset"] {
 }
 .loadingIcon{
     padding:10px;
-    background:#ffffd0 url("/img/mobile/iphone/loading.gif") 50% 50% no-repeat !important;
+    background:#ffffd0 url("@AppContextPath@/img/mobile/iphone/loading.gif") 50% 50% no-repeat !important;
     -webkit-border-radius: 5px;
 }
 .LoadingDiv{
@@ -358,7 +358,7 @@ input[type="button"], input[type="reset"] {
     background-position: 0 -218px !important;
 }
 .Person48 {
-    background: url( "/img/large/ImgPerson_48.gif" ) 90% 50% no-repeat;
+    background: url( "@AppContextPath@/img/large/ImgPerson_48.png" ) 90% 50% no-repeat;
     height: 50px;
     width: 50px;
     padding: 2px;
@@ -469,7 +469,7 @@ select {
     padding: 0 5px;
 }
 .zo_select_button,.zo_button,.zo_button_disabled, .zo_button_group, input[type="button"], input[type="reset"],.searchButton {
-    background: #58759d url( "/img/mobile/iphone/iPhoneButton2.png" ) 50% 50% repeat-x;
+    background: #58759d url( "@AppContextPath@/img/mobile/iphone/iPhoneButton2.png" ) 50% 50% repeat-x;
     vertical-align:middle !important;
     text-shadow: rgba( 0, 0, 0, 0.6 ) 0px -1px 0;
    
@@ -583,6 +583,8 @@ div.row span.l {
 .msg-list-in-conv .cell {
     padding: 2px !important;
 }
+
+/* TODO: Do we need these classes any more?
 .SmlIcnHldr {
     width: 18px;
     height: 18px;
@@ -590,97 +592,6 @@ div.row span.l {
     display: inline-block;
     background: url("/img/mobile/iphone-ext/common.gif") no-repeat top left;
 }
-.FldrSearchFolder {
-    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
-}
-.FldrFolder {
-    background: url( "/img/startup/ImgFolder.gif" ) 50% 50% no-repeat;
-}
-.FldrSharedCalendarFolder {
-    background: url( "/img/calendar/ImgSharedCalendarFolder.gif" ) 50% 50% no-repeat;
-}
-.FldrCalendarFolder {
-    background: url( "/img/calendar/ImgCalendarFolder.gif" ) 50% 50% no-repeat;
-}
-.FldrSharedContactsFolder {
-    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
-}
-.FldrEmailedContacts {
-    background: url( "/img/contacts/ImgSharedContactsFolder.gif" ) 50% 50% no-repeat;
-}
-.FldrContactsFolder {
-    background: url( "/img/contacts/ImgContactsFolder.gif" ) 50% 50% no-repeat;
-}
-.FldrSharedTaskList {
-    background: url( "/img/tasks/ImgSharedTaskList.gif" ) 50% 50% no-repeat;
-}
-.FldrTaskList {
-    background: url( "/img/startup/ImgTaskList.gif" ) 50% 50% no-repeat;
-}
-.FldrInbox {
-    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
-}
-.FldrTrash {
-    background: url( "/img/startup/ImgTrash.gif" ) 50% 50% no-repeat;
-}
-.FldrSpamFolder {
-    background: url( "/img/startup/ImgSpamFolder.gif" ) 50% 50% no-repeat;
-}
-.FldrSentFolder {
-    background: url( "/img/startup/ImgSentFolder.gif" ) 50% 50% no-repeat;
-}
-.FldrDraftFolder {
-    background: url( "/img/startup/ImgDraftFolder.gif" ) 50% 50% no-repeat;
-}
-.FldrRSS {
-    background: url( "/img/startup/ImgRSS.gif" ) 50% 50% no-repeat;
-}
-.FldrSharedMailFolder {
-    background: url( "/img/startup/ImgSharedMailFolder.gif" ) 50% 50% no-repeat;
-}
-.FldrPlacedCalls {
-    background: url( "/img/voicemail/ImgPlacedCalls.gif" ) 50% 50% no-repeat;
-}
-.FldrAnsweredCalls {
-    background: url( "/img/voicemail/ImgAnsweredCalls.gif" ) 50% 50% no-repeat;
-}
-.FldrMissedCalls {
-    background: url( "/img/voicemail/ImgMissedCalls.gif" ) 50% 50% no-repeat;
-}
-.FldrVoicemail {
-    background: url( "/img/voicemail/ImgVoicemail.gif" ) 50% 50% no-repeat;
-}
-.Flag {
-    background-position: 0 -164px !important;
-}
-.Tagblue {
-    background-position: 0 -110px !important;
-}
-.Tagcyan {
-    background-position: 0 -92px !important; 
-}
-.Tagorange {
-    background-position: 0 -128px !important;
-}
-.Taggreen {
-    background-position: 0 -182px !important;
-}
-.Tagpurple {
-    background-position: 0 -290px !important;
-}
-.Tagred {
-    background-position: 0 -344px !important;
-}
-.Tagyellow {
-    background-position: 0 -38px !important;
-}
-.TagStack {
-    background-position: 0 -74px !important;
-}
-.TagdefaultColor,.Tag {
-    background-position: 0 -146px !important;
-}
-
 .SmlDocIcnHldr {
     width: 18px;
     height: 18px;
@@ -689,24 +600,7 @@ div.row span.l {
     vertical-align: -22%;
     background: url("/img/doctypes.gif?v=090227110051") no-repeat top left;
 }
-.ImgAudioDoc{background:url("/img/doctypes.gif?v=090227110051") 0px 0px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -16px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgExeDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -32px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgGenericDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -48px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgHtmlDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -64px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgImageDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -80px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSExcelDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -96px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSPowerpointDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -112px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSProjectDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -128px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSVisioDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -144px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSWordDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -160px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMessageDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -176px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgPDFDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -192px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgPresentation{background:url("/img/doctypes.gif?v=090227110051") 0px -208px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgUnknownDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -224px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgVideoDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -240px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgZSpreadSheet{background:url("/img/doctypes.gif?v=090227110051") 0px -256px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgZipDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -272px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+*/
  .ZmThumbnailItem{
     float:left;
      width:43%;
@@ -731,13 +625,15 @@ div.row span.l {
         -webkit-border-radius: 5px;
         -moz-border-radius: 5px;
 }
+/* TODO: Is this still used? And have we lost any formatting going to ImgEdit class?
 .Edit{
-    background: #eeeeee url("/img/startup/ImgEdit.gif") 50% 50% no-repeat;
+    background: #eeeeee url("@AppContextPath@/img/zimbra/ImgEdit.png") 50% 50% no-repeat;
     padding: 3px;
     border:1px outset #efefef;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
 }
+*/
 .delete_button{
-    background: #cc0000 url("/img/mobile/iphone/iPhoneDeleteButton1.png") repeat scroll 50% 50% !important;
+    background: #cc0000 url("@AppContextPath@/img/mobile/iphone/iPhoneDeleteButton1.png") repeat scroll 50% 50% !important;
 }

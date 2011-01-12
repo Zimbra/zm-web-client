@@ -45,7 +45,7 @@
         <div class="Stripes header">
             <div class="tbl">
                 <div class="tr">
-                    <span class="td aleft person">&nbsp;</span>
+                    <span class="td aleft ImgPerson_48">&nbsp;</span>
                     <span class="td aleft">
                        <div>
                            <strong>${fn:escapeXml(contact.displayFileAs)}</strong>
@@ -64,11 +64,11 @@
                     <div class="tr nr">
                 <span class="td aleft">
                 <c:if test="${contact.isFlagged}">
-                    <span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
+                    <span class="Img ImgFlagRed">&nbsp;</span></c:if>
                 <c:if test="${contact.hasTags and mailbox.features.tagging}">
                     <c:set var="tags" value="${zm:getTags(pageContext, contact.tagIds)}"/>
                     <c:forEach items="${tags}" var="tag">
-                        <span class="SmlIcnHldr Tag${tag.color}">&nbsp;</span><span>${fn:escapeXml(tag.name)}</span>
+                        <span class="Img ImgTag${zm:capitalize(tag.color)}">&nbsp;</span><span>${fn:escapeXml(tag.name)}</span>
                     </c:forEach>
                 </c:if>
                 </span>

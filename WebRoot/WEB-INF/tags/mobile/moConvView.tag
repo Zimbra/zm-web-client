@@ -105,7 +105,7 @@
 
 <c:if test="${ua.isiPad == false}">
     <div class='zo_m_cv_sub'>
-        <span class="SmlIcnHldr ConvOpen">&nbsp;</span>&nbsp;${fn:escapeXml(empty subject ? emptySubject : subject)}
+        <span class="Img ImgConversation">&nbsp;</span>&nbsp;${fn:escapeXml(empty subject ? emptySubject : subject)}
     </div>
 </c:if>
 <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
@@ -119,11 +119,11 @@
             <c:set var="folders" value="${zm:getFolder(pageContext,mhit.folderId)}"/>
             <div class="tbl convView">
                 <div id="conv${mhit.id}" pconv="${convSummary.id}" class="tr conv_v_list_row list-row${mhit.isUnread ? '-unread' : ''}" style="${folders.isTrash ? 'text-decoration:line-through;' : ''}">
-                   <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/>
+                   <c:set value="ImgEnvelope${mhit.isUnread ? '' : 'Gray'}" var="class"/>
                    <span class="td f" <c:if test="${ua.isiPad == true}" > style='width:10%;' onclick='return zCheckUnCheck(this);'</c:if>>
                        <c:set value=",${mhit.id}," var="stringToCheck"/>
                        <input class="chk" type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':''} name="id" value="${mhit.id}" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>/>
-                       <c:if test="${ua.isiPad eq false}" ><span class="SmlIcnHldr ${class}">&nbsp;</span> </c:if>
+                       <c:if test="${ua.isiPad eq false}" ><span class="Img ${class}">&nbsp;</span> </c:if>
                    </span>
                    <span class="td m" onclick='return zClickLink("a${mhit.id}");'>
                        <div class="from-span">
@@ -151,14 +151,14 @@
                            ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
                        </a><br/>
                        <c:if test="${mhit.isFlagged}">
-                           <span class="SmlIcnHldr Flag">&nbsp;</span>
+                           <span class="Img ImgFlagRed">&nbsp;</span>
                        </c:if>
                        <c:if test="${mhit.hasTags}">
                        <mo:miniTagImage
                                ids="${mhit.tagIds}"/>
                        </c:if>
                        <c:if test="${mhit.hasAttachment}">
-                                <span class="SmlIcnHldr Attachment">&nbsp;</span>
+                                <span class="Img ImgAttachment">&nbsp;</span>
                             </c:if>
                        <span class="small-gray-text">(${fn:escapeXml(zm:displaySize(pageContext, mhit.size))})</span>
                    </span>

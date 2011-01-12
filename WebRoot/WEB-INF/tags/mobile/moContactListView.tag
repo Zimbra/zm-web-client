@@ -65,7 +65,7 @@
                         <input <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if> class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                                name="id" value="${chit.id}"/></c:if>
             <c:if test="${ua.isiPad == false}">
-                <span class="SmlIcnHldr ${class}">&nbsp;</span>
+                <span class="Img Img${class}">&nbsp;</span>
             </c:if>               
             </span>
             <span class="td m">
@@ -93,7 +93,7 @@
             </span>
             <span class="td l">
                 <c:if test="${chit.isFlagged}">
-                    <span class="SmlIcnHldr Flag">&nbsp;</span>
+                    <span class="Img ImgFlagRed">&nbsp;</span>
                 </c:if>
                 <c:if test="${chit.hasTags}">
                     <mo:miniTagImage ids="${chit.tagIds}"/>

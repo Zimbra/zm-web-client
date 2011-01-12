@@ -165,7 +165,7 @@ a {
     display: inline-block;
 }
 .appTab,.appTab-active{
-    background: transparent url( "/img/mobile/wm6/AppsNav.gif" ) no-repeat top left;
+    background: transparent url( "@AppContextPath@/img/mobile/wm6/AppsNav.gif" ) no-repeat top left;
 }
 a.appTab-active{
     background-color: #105d65 !important;
@@ -232,32 +232,18 @@ form {
 	clear: both;
     color: #abe3f2;
 }
+
+/* TODO: Do we still need these classes?
 .SmlDocIcnHldr {
     width: 18px;
     height: 18px;
     max-height: 18px;
     display: inline-block;
     vertical-align: -22%;
-    background: url("/img/doctypes.gif") no-repeat top left;
+    /*background: url("@AppContextPath@/img/doctypes.gif") no-repeat top left;*/
 }
-.ImgAudioDoc{background:url("/img/doctypes.gif") 0px 0px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgDoc{background:url("/img/doctypes.gif") 0px -16px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgExeDoc{background:url("/img/doctypes.gif") 0px -32px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgGenericDoc{background:url("/img/doctypes.gif") 0px -48px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgHtmlDoc{background:url("/img/doctypes.gif") 0px -64px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgImageDoc{background:url("/img/doctypes.gif") 0px -80px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSExcelDoc{background:url("/img/doctypes.gif") 0px -96px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSPowerpointDoc{background:url("/img/doctypes.gif") 0px -112px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSProjectDoc{background:url("/img/doctypes.gif") 0px -128px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSVisioDoc{background:url("/img/doctypes.gif") 0px -144px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSWordDoc{background:url("/img/doctypes.gif") 0px -160px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMessageDoc{background:url("/img/doctypes.gif") 0px -176px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgPDFDoc{background:url("/img/doctypes.gif") 0px -192px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgPresentation{background:url("/img/doctypes.gif") 0px -208px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgUnknownDoc{background:url("/img/doctypes.gif") 0px -224px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgVideoDoc{background:url("/img/doctypes.gif") 0px -240px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgZSpreadSheet{background:url("/img/doctypes.gif") 0px -256px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgZipDoc{background:url("/img/doctypes.gif") 0px -272px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+*/
+
  .ZmThumbnailItem{
     float:left;
      width:43%;
@@ -432,7 +418,7 @@ form {
     background-position: 0 -218px !important;
 }
 .Person48 {
-    background: url( "/img/large/ImgPerson_48.gif" ) 90% 50% no-repeat;
+    background: url( "@AppContextPath@/img/large/ImgPerson_48.png" ) 90% 50% no-repeat;
     height: 50px;
     width: 50px;
     padding: 2px;
@@ -531,7 +517,7 @@ form {
     z-index: 9030;
 }
 .searchButton,.tb,#appbar{
-    background: transparent url("/img/mobile/wm6/tb.gif") repeat-x;
+    background: transparent url("@AppContextPath@/img/mobile/wm6/tb.gif") repeat-x;
 }
 .searchButton {
     background-position:0px -2px !important;
@@ -607,7 +593,7 @@ form {
 }
 .loadingIcon{
     padding:0px 10px;
-    background:#ffffd0 url("/img/mobile/iphone/loading.gif") 50% 50% no-repeat !important;
+    background:#ffffd0 url("@AppContextPath@/img/mobile/iphone/loading.gif") 50% 50% no-repeat !important;
     -webkit-border-radius: 5px;
 }
 .loadingDiv{
@@ -691,13 +677,14 @@ h1, h2, h3, h4, h5, h6 {
     padding: 2px !important;
 }
 
+/* TODO: Is this still used? And have we lost any formatting going to ImgEdit class?
 .SmlIcnHldr,.Edit {
     width: 16px;
     height: 16px;
     max-height: 16px;
     display:inline-block;
     font-size:13px !important;
-    background: url("/img/mobile/iphone-ext/common.gif") no-repeat top left;
+    background: url("@AppContextPath@/img/mobile/iphone-ext/common.gif") no-repeat top left;
 }
 .Edit{
     background-color: transparent;
@@ -705,98 +692,11 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1px 3px;
     border:1px outset #efefef;
 }
-.FldrSearchFolder {
-    background-position: 0px  -441px;
-}
-.FldrFolder {
-    background-position: 0px  -426px;
-}
-.FldrSharedCalendarFolder {
-    background-position: 0px  -457px;
-}
-.FldrCalendarFolder {
-    background-position: 0px  -472px;
-}
-.FldrSharedContactsFolder {
-    background-position: 0px  -521px;
-}
-.FldrEmailedContacts {
-    background-position: 0px  -505px;
-}
-.FldrContactsFolder {
-    background-position: 0px  -488px;
-}
-.FldrSharedTaskList {
-    background-position: 0px  -540px;
-}
-.FldrTaskList {
-    background-position: 0px  -556px;
-}
-.FldrInbox {
-    background-position: 0px  -426px;
-}
-.FldrTrash {
-    background-position: 0px  -573px;
-}
-.FldrSpamFolder {
-    background-position: 0px  -590px;
-}
-.FldrSentFolder {
-    background-position: 0px  -624px;
-}
-.FldrDraftFolder {
-    background-position: 0px  -607px;
-}
-.FldrRSS {
-    background-position: 0px  -642px;
-}
-.FldrSharedMailFolder {
-    background-position: 0px  -658px;
-}
-.FldrPlacedCalls {
-    background-position: 0px  -675px;
-}
-.FldrAnsweredCalls {
-    background-position: 0px  -692px;
-}
-.FldrMissedCalls {
-    background-position: 0px  -709px;
-}
-.FldrVoicemail {
-    background-position: 0px  -675px;
-}
-.Flag {
-    background-position: 0 -164px !important;
-}
-.Tagblue {
-    background-position: 0 -110px !important;
-}
-.Tagcyan {
-    background-position: 0 -92px !important;
-}
-.Tagorange {
-    background-position: 0 -128px !important;
-}
-.Taggreen {
-    background-position: 0 -182px !important;
-}
-.Tagpurple {
-    background-position: 0 -290px !important;
-}
-.Tagred {
-    background-position: 0 -344px !important;
-}
-.Tagyellow {
-    background-position: 0 -38px !important;
-}
-.TagStack {
-    background-position: 0 -74px !important;
-}
-.TagdefaultColor,.Tag {
-    background-position: 0 -146px !important;
-}
+*/
 #nfldrfrm .td,#nsrchfrm .td,#ntagfrm .td{
 	width: 100%;
 	text-align: center;
 	display: inline-block;
 }
+
+.Img { display:inline-block; }

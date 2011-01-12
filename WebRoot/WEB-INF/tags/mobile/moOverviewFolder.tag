@@ -47,7 +47,7 @@
     </c:if>
     <span class='td left' onclick='return zClickLink("FLDR${folder.id}")' width="94%">
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
-            <c:if test="${ua.isiPad eq false}"><span class="SmlIcnHldr Fldr${folder.type}">&nbsp;</span></c:if>
+            <c:if test="${ua.isiPad eq false}"><span class="Img Img${folder.type}">&nbsp;</span></c:if>
             <c:choose>
                 <c:when test="${folder.hasUnread}">
                     <c:set var="folderName" value="${label} (${folder.unreadCount})"/>
@@ -87,7 +87,7 @@
                 </c:choose>
             </c:otherwise>
         </c:choose>
-        <span class="td right editFix" width="5%"><a class="SmlIcnHldr Edit" href="?st=${param.st}&_ajxnoca=1&show${what}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span>
+        <span class="td right editFix" width="5%"><a class="Img ImgEdit" href="?st=${param.st}&_ajxnoca=1&show${what}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span>
     </c:if>
         </div>
     </div>

@@ -556,24 +556,24 @@ div.row span.l {
 }
 
 .Msg {
-    background: none; /*url( "/img/mail/ImgEnvelope.gif" ) 90% 49% no-repeat;*/
+    background: none; /*url( "@AppContextPath@/img/zimbra/ImgEnvelope.png" ) 90% 49% no-repeat;*/
 }
 
 .MsgGray {
-    background: none; /*url( "/img/mail/ImgEnvelopeGray.gif" ) 90% 49% no-repeat;*/
+    background: none; /*url( "@AppContextPath@/img/zimbra/ImgEnvelopeGray.png" ) 90% 49% no-repeat;*/
 
 }
 
 .Conv {
-    background: none; /*url( "/img/startup/ImgConversationView.gif" ) 90% 50% no-repeat;*/
+    background: none; /*url( "@AppContextPath@/img/zimbra/ImgConversationView.png" ) 90% 50% no-repeat;*/
 }
 
 .Contact {
-    background: none; /*url( "/img/contacts/ImgContact.gif" ) 90% 50% no-repeat;*/
+    background: none; /*url( "@AppContextPath@/img/zimbra/ImgContact.png" ) 90% 50% no-repeat;*/
 }
 
 .Person48 {
-    background: none; /*url( "/img/large/ImgPerson_48.gif" ) 90% 50% no-repeat;*/
+    background: none; /*url( "@AppContextPath@/img/large/ImgPerson_48.png" ) 90% 50% no-repeat;*/
     height: 50px;
     width: 50px;
     padding: 2px;
