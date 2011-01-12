@@ -38,9 +38,10 @@ ZmAddressInputField = function(params) {
 
 	if (params.autocompleteListView) {
 		this.setAutocompleteListView(params.autocompleteListView);
-		this._bubbleAddedCallback = params.bubbleAddedCallback;
-		this._bubbleRemovedCallback = params.bubbleRemovedCallback;
 	}
+
+    this._bubbleAddedCallback = params.bubbleAddedCallback;
+    this._bubbleRemovedCallback = params.bubbleRemovedCallback;
 
 	this._bubbleClassName = "addrBubble";
 	this._selectedBubbleClassName = this._bubbleClassName + "-" + DwtCssStyle.SELECTED;
