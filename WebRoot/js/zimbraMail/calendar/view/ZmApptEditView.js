@@ -1863,7 +1863,7 @@ function(type, value, markAsOptional) {
 
         var contact = AjxEmailAddress.parse(item);
         if (!contact) {
-            this._controller.addInvalidAttendee(item);
+            if(type != ZmCalBaseItem.LOCATION) this._controller.addInvalidAttendee(item);
             continue;
         }
 
