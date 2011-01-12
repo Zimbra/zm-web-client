@@ -1623,6 +1623,8 @@ function(ev, id) {
     if(this._schedulerOpened) {
         this._scheduleView._timeChangeListener(ev, id);
     }
+
+    if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);
 };
 
 ZmApptEditView.prototype.setScheduleAssistant =
