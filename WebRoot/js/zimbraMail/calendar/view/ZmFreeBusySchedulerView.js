@@ -1632,7 +1632,7 @@ function(params) {
     if(!params.status) params.status = ZmFreeBusySchedulerView.STATUS_FREE;
 
     var fbStatusMsg = [];
-    fbStatusMsg[ZmFreeBusySchedulerView.STATUS_FREE]     = ZmMsg.free;
+    fbStatusMsg[ZmFreeBusySchedulerView.STATUS_FREE]     = ZmMsg.nonWorking;
     fbStatusMsg[ZmFreeBusySchedulerView.STATUS_BUSY]     = ZmMsg.busy;
     fbStatusMsg[ZmFreeBusySchedulerView.STATUS_TENTATIVE]= ZmMsg.tentative;
     fbStatusMsg[ZmFreeBusySchedulerView.STATUS_OUT]      = ZmMsg.outOfOffice;
