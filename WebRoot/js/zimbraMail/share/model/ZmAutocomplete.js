@@ -453,7 +453,7 @@ function(ev) {
  * @param {Boolean}	isContact	if <code>true</code>, provided match is a {@link ZmContact}
  */
 ZmAutocompleteMatch = function(match, options, isContact) {
-
+    AjxDispatcher.require("CalendarCore");
 	if (!match) { return; }
 	this.type = match.type;
 	if (isContact) {
@@ -738,7 +738,7 @@ function(listType, callback) {
 	var folders = appCtxt.getFolderTree().asList({includeRemote:true});
 	for (var i = 0, len = folders.length; i < len; i++) {
 		var folder = folders[i];
-		if (folder.id != ZmOrganizer.ID_ROOT && folder.type == ZmOrganizer.FOLDER) {
+		if (folder.id != ZmOrganizer.ID_ROOT && folder.type == ZmOrganizer.FOLDER && !ZmFolder.HIDE_ID[folder.id]) {
 			list.push(folder);
 		}
 	}
