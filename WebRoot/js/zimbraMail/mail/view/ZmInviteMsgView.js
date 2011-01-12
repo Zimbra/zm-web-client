@@ -345,7 +345,7 @@ function(reset) {
 
 ZmInviteMsgView.prototype.addSubs =
 function(subs, sentBy, sentByAddr) {
-
+    AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	subs.invite = this._invite;
 
 	var isOrganizer = this._invite && this._invite.isOrganizer();
@@ -358,7 +358,6 @@ function(subs, sentBy, sentByAddr) {
 	}
 	// if this an action'ed invite, show the status banner
 	else if (isOrganizer && this._invite.hasAttendeeResponse()) {
-		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		var attendee = this._invite.getAttendees()[0];
 		var ptst = attendee && attendee.ptst;
 		if (ptst) {
