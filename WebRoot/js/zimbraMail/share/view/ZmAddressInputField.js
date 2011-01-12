@@ -477,7 +477,7 @@ function(bubbleId, email) {
 	if (bubble) {
 		var loc = Dwt.getLocation(bubble);
 		loc.y += Dwt.getSize(bubble).y + 2;
-		this._aclv.expandDL(email, bubble.id, null, null, loc);
+		this._aclv.expandDL(email, bubble.id, null, null, loc, this._input);
 	}
 };
 
