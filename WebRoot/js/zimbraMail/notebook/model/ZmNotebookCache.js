@@ -862,7 +862,7 @@ function(params,response)
 ZmNotebookCache.prototype.getPath = 
 function(url){
 
-	var parts = this.parseURL(url);
+	var parts = AjxStringUtil.parseURL(url);
 
 	if(!parts)
 	return;
@@ -891,40 +891,6 @@ function(url){
 	return path;
 };
 
-ZmNotebookCache.prototype.parseURL = 
-function(sourceUri) {
-
-    var names = ["source","protocol","authority","domain","port","path","directoryPath","fileName","query","anchor"];
-    var parts = new RegExp("^(?:([^:/?#.]+):)?(?://)?(([^:/?#]*)(?::(\\d*))?)?((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[\\?#]|$)))*/?)?([^?#/]*))?(?:\\?([^#]*))?(?:#(.*))?").exec(sourceUri);
-    var uri = {};
-    
-    for(var i = 0; i < 10; i++){
-        uri[names[i]] = (parts[i] ? parts[i] : "");
-    }
-    
-    if(uri.directoryPath.length > 0){
-        uri.directoryPath = uri.directoryPath.replace(/\/?$/, "/");
-    }
-    
-    return uri;
-};
-
-//correct all the cross domain reference in passed url content
-//eg: http://<ipaddress>/ url might have rest url page which points to http://<server name>/ pages
-ZmNotebookCache.prototype.fixCrossDomainReference = 
-function(url, restUrlAuthority) {
-
-	var refURL = window.location.protocol+"//"+window.location.host;
-	var urlParts = this.parseURL(url);
-	if(urlParts.authority!=window.location.host){
-		var oldRef = urlParts.protocol +"://"+ urlParts.authority;
-		if((restUrlAuthority && url.indexOf(restUrlAuthority) >=0) || !restUrlAuthority){
-			url = url.replace(oldRef,refURL);			
-		}
-	}
-	return url;	
-
-};
 
 //tracking all custom pages which has the name _Index given by user
 //currently we show table of contents page assuming it as _Index page

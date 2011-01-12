@@ -305,7 +305,7 @@ ZmNotebookPageView.prototype.mutateLinks = function(doc){
 				//and internal page link reference with actual server name rest url
 				if(this._orginalRestAuthority){
 					var restURLPrefix = null;
-					var new_href = this.fixCrossDomainReference(link.href, this._orginalRestAuthority);
+					var new_href = AjxStringUtil.fixCrossDomainReference(link.href, this._orginalRestAuthority);
 					if(new_href != link.href){
 						link.href = new_href;
 					}
@@ -662,7 +662,7 @@ ZmNotebookPageView.prototype.loadURL = function(restUrl){
 	//wiki iframe loading cannot access content of different protocol (https)
 	var refURL = window.location.protocol+"//"+window.location.host;
 	var url = this.fixLinkProtocol(restUrl,refURL);		
-	url = this.fixCrossDomainReference(url);
+	url = AjxStringUtil.fixCrossDomainReference(url);
     if(appCtxt.get(ZmSetting.LOCALE_NAME)) {
         var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
         var index = locale.indexOf("_");
@@ -759,12 +759,6 @@ ZmNotebookPageView.prototype.handleItemResponse = function(item){
 			this.addColumn(this._iframe.contentWindow.document);
 };
 
-ZmNotebookPageView.prototype.fixCrossDomainReference = function(url, linkPrefix){
-
-	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();	
-	return cache.fixCrossDomainReference(url, linkPrefix);
-
-};
 
 ZmNotebookPageView.prototype.copyIframeContents =
 function(ndoc, cdoc) {    
@@ -810,7 +804,7 @@ function(doc) {
 	var bases = doc.getElementsByTagName("base");
 	if(bases && bases.length>0){
 		var href = bases[0] ? bases[0].href : null;
-		href = href ? this.fixCrossDomainReference(href) : null;
+		href = href ? AjxStringUtil.fixCrossDomainReference(href) : null;
 		if(href){
 			bases[0].href = href;
 		}
