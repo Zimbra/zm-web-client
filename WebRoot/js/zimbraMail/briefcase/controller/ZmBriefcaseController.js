@@ -547,7 +547,7 @@ function(ev) {
 
         if (item.isWebDoc()) {
             //added for bug: 45150
-            restUrl = this._app.fixCrossDomainReference(restUrl);
+            restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
             restUrl += (restUrl.match(/\?/) ? "&" : "?") + "localeId=" + AjxEnv.DEFAULT_LOCALE;
 
@@ -775,7 +775,7 @@ function(items){
 
             if (item.isWebDoc()) {
                 //added for bug: 45150
-                restUrl = this._app.fixCrossDomainReference(restUrl);
+                restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
                 restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
                 restUrl += (restUrl.match(/\?/) ? '&' : '?') + "action=edit&localeId=" + AjxEnv.DEFAULT_LOCALE;
                 window.open(restUrl, this._getWindowName(item.name), "");
@@ -811,7 +811,7 @@ function(items){
 		if (!restUrl) {
 			continue;
 		}
-		restUrl = this._app.fixCrossDomainReference(restUrl);
+		restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
 		if (item.isWebDoc()) {
 			//added for bug: 45150
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
@@ -862,7 +862,7 @@ function(item){
     if (!restUrl) {
         return false;
     }
-    restUrl = this._app.fixCrossDomainReference(restUrl);
+    restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
     if (restUrl) {
         restUrl += "?disp=a"+(item.version ? "&ver="+item.version : "");
         this._downloadFile(restUrl)

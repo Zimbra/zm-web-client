@@ -799,7 +799,8 @@ function() {
 			img = images[i];
 			var dfsrc = img.getAttribute("dfsrc");
 			if (dfsrc && dfsrc.indexOf("doc:") == 0) {
-				img.src = [path, dfsrc.substring(4)].join('');
+				var url = [path, dfsrc.substring(4)].join('');
+				img.src = AjxStringUtil.fixCrossDomainReference(url);
 			}
 		}
 	}
@@ -1226,6 +1227,7 @@ function(file, width, height) {
 	var df = doc.createDocumentFragment();
 	df.appendChild(img);
 	this._insertNodeAtSelection(df);
+	this.parent._fixSignatureInlineImages();
 };
 
 ZmSignatureEditor.prototype._getImgSelDlg =

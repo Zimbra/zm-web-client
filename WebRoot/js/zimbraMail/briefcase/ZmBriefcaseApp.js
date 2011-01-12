@@ -506,22 +506,6 @@ function(msgId, partId, name) {
 };
 
 
-/**
- * @private
- */
-ZmBriefcaseApp.prototype.fixCrossDomainReference =
-function(url, restUrlAuthority) {
-	var urlParts = AjxStringUtil.parseURL(url);
-	if (urlParts.authority != window.location.host) {
-		if ((restUrlAuthority && url.indexOf(restUrlAuthority) >=0) || !restUrlAuthority) {
-			var oldRef = urlParts.protocol + "://" + urlParts.authority;
-			var newRef = window.location.protocol + "//" + window.location.host;
-			url = url.replace(oldRef, newRef);
-		}
-	}
-	return url;
-};
-
 //Make sure we load BriefcaseCore before calling _creatDeferredFolders() from child window.
 ZmBriefcaseApp.prototype._createDeferredFolders =
 function(type) {

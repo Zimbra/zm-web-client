@@ -301,8 +301,8 @@ function(item) {
 
     //added for bug: 45150
     if(item.isWebDoc()) {
-        restURL = this._controller.getApp().fixCrossDomainReference(restURL);
-        originalRestURL = this._controller.getApp().fixCrossDomainReference(originalRestURL);
+        restURL = AjxStringUtil.fixCrossDomainReference(restURL);
+        originalRestURL = AjxStringUtil.fixCrossDomainReference(originalRestURL);
     }
 
     //Name: fileLink

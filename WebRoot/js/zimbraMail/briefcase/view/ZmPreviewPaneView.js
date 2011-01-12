@@ -578,7 +578,7 @@ function(item, errorCode, error){
     if(item){
 
         var restUrl = item.getRestUrl();
-        restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
+        restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
 
         //Try to generate, otherwise fallback
         if(ZmMimeTable.isRenderable(item.contentType)){
@@ -636,7 +636,7 @@ function(item){
     this._setHeader(item);
 
     var restUrl = item.getRestUrl();
-    restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
+    restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
 
     if(ZmMimeTable.isWebDoc(item.contentType)){
         restUrl = restUrl + ( restUrl.match(/\?/) ? '&' : '?' ) + "viewonly=1";

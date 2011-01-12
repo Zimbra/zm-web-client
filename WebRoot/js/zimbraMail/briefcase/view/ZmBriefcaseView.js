@@ -74,7 +74,7 @@ function(item, params) {
         var restURL = item.getRestUrl();
         //added for bug: 45150
         if(item.isWebDoc()) {
-            restURL = this._controller.getApp().fixCrossDomainReference(restURL);
+            restURL = AjxStringUtil.fixCrossDomainReference(restURL);
         }
 
 		nameText = ['<a href="', restURL  + (item.isWebDoc() ? "&preview=1&localeId=" + AjxEnv.DEFAULT_LOCALE : ""), '" target="_blank">', name, '</a>'].join('');
