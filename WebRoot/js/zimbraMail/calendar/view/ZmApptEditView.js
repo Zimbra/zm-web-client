@@ -686,7 +686,10 @@ function(width) {
 	this._attInputField = {};
 
 	if (this.GROUP_CALENDAR_ENABLED) {
-		this._attendeesInputField = this._createInputField("_person", ZmCalBaseItem.PERSON);
+        var params = {
+            bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees)
+        };
+		this._attendeesInputField = this._createInputField("_person", ZmCalBaseItem.PERSON, params);
 		this._optAttendeesInputField = this._createInputField("_optional", ZmCalBaseItem.OPTIONAL_PERSON);
 	}
 
@@ -800,7 +803,10 @@ function(width) {
 };
 
 ZmApptEditView.prototype._createInputField =
-function(idTag, attType) {
+function(idTag, attType, params) {
+
+    params = params || {};
+
     var height = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "52px;" : "21px";
     var overflow = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? false : true;
     
@@ -810,7 +816,8 @@ function(idTag, attType) {
 	if (this._useAcAddrBubbles) {
 		var aifParams = {
 			autocompleteListView:	this._acAddrSelectList,
-			inputId:				inputId
+			inputId:				inputId,
+            bubbleRemovedCallback:  params.bubbleRemovedCallback
 		}
 		var input = this._attInputField[attType] = new ZmAddressInputField(aifParams);
 		input.reparentHtmlElement(cellId);
@@ -1454,6 +1461,11 @@ function(text, el, match) {
     }
 
     this.updateToolbarOps();
+};
+
+ZmApptEditView.prototype._handleRemovedAttendees =
+function() {
+    this.handleAttendeeChange();
 };
 
 ZmApptEditView.prototype._addEventHandlers =
