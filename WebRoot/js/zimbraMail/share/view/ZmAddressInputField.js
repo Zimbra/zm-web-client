@@ -120,12 +120,13 @@ function(address, match, index) {
 		returnSpan:	true,
 		className:	this._bubbleClassName,
 		canRemove:	true,
-		canExpand:	match && match.isDL,
+		canExpand:	(match && match.isDL) || this._expandable[address],
 		dlAddress:	match && match.email,
 		separator:	this._separator,
 		parentId:	this._htmlElId
 	};
 	var bubble = ZmAddressInputField.getBubble(params);
+	this._expandable[address] = params.canExpand;
 
 	if (this._input.parentNode == this._holder) {
 		var refBubble;
@@ -536,6 +537,7 @@ function() {
 	this._bubbleAddress	= {};	// addresses by bubble ID
 	this._selected		= {};	// which bubbles are selected
 	this._match			= {};	// match object by bubble ID
+	this._expandable	= {};	// whether an addr is an expandable DL addr
 	this._input.value	= "";
 };
 
