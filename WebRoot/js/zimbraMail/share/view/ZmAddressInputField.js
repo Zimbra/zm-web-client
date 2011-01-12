@@ -196,12 +196,9 @@ function(params) {
 		var expandLinkText = AjxImg.getImageHtml("BubbleExpand", expStyle, "id='" + expandLinkId + "' onclick='" + expandLink + "'");
 	}
 
-	if (params.separator) {
-		var sep = AjxStringUtil.trim(params.separator);
-		var separator = "<span style='visibility:hidden'>" + sep + "</span>";
-	}
+	var sep = params.separator ? AjxStringUtil.trim(params.separator) : "";
 
-	var content = expandLinkText + address + separator + removeLinkText;
+	var content = expandLinkText + address + sep + removeLinkText;
 	if (params.returnSpan) {
 		var bubble = document.createElement("span");
 		bubble.id = id;
@@ -636,7 +633,7 @@ function(ev, bubble) {
 				for (var i = 0, len = sel.length; i < len; i++) {
 					Dwt.selectText(sel[i]);
 				}
-				if (sel.length > 0) {
+				if (sel.length > 0 && AjxEnv.isGeckoBased) {
 					this.blur();	// make text selection work in FF
 				}
 			}), 10);
