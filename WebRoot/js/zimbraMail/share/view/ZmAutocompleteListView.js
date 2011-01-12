@@ -1259,9 +1259,10 @@ function(email, rowId) {
  * @param {string}			rowId		ID or list view row
  * @param {DwtMouseEvent}	ev			mouse event
  * @param {DwtPoint}		loc			location to popup at; default is right of parent ACLV
+ * @param {Element}			element		input element
  */
 ZmAutocompleteListView.prototype.expandDL =
-function(email, textId, rowId, ev, loc) {
+function(email, textId, rowId, ev, loc, element) {
 
 	if (!this._dataAPI.expandDL) { return; }
 
@@ -1290,15 +1291,16 @@ function(email, textId, rowId, ev, loc) {
 			this._curExpanded = textId;
 			this._setExpandText(textId, true);
 		}
-		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact, loc, textId]));
+		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact, loc, textId, element]));
 	}
+	this._element = this._element || element;
 	if (this._element) {
 		this._element.focus();
 	}
 };
 
 ZmAutocompleteListView.prototype._handleResponseExpandDL =
-function(contact, loc, textId, matches) {
+function(contact, loc, textId, element, matches) {
 
 	var mlv = this._memberListView;
 	if (!mlv) {

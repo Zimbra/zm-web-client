@@ -1039,15 +1039,14 @@ function(ev) {
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancelCallback, this);
 	}
 
-    var addrs = this._collectForwardAddrs();
-    var a = {};
-    if (addrs[AjxEmailAddress.TO] && addrs[AjxEmailAddress.TO].good) {
-        a[AjxEmailAddress.TO] = addrs[AjxEmailAddress.TO].good.getArray();
-    }
-    var str = (this._forwardToField.getValue() && !(a[AjxEmailAddress.TO] && a[AjxEmailAddress.TO].length))
-        ? this._forwardToField.getValue() : "";
-	var account;
-	this._contactPicker.popup(AjxEmailAddress.TO, a, str, account);
+	var addrList = {};
+	var addrs = !this._useAcAddrBubbles && this._collectForwardAddrs();
+	var type = AjxEmailAddress.TO;
+	addrList[type] = this._useAcAddrBubbles ? this._forwardToField.getAddresses(true) :
+											  addrs[type] && addrs[type].good.getArray();
+
+    var str = (this._forwardToField.getValue() && !(addrList[type] && addrList[type].length)) ? this._forwardToField.getValue() : "";
+	this._contactPicker.popup(type, addrList, str);
 };
 
 ZmApptEditView.prototype._attendeesButtonListener =
@@ -1066,15 +1065,14 @@ function(addrType, ev) {
 		contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._attendeePickerCancelCallback, this, [addrType]);
 	}
 
-    var addrs = this._collectAddrs(inputObj.getValue());
-    var a = {};
-    if (addrs[AjxEmailAddress.TO] && addrs[AjxEmailAddress.TO].good) {
-        a[AjxEmailAddress.TO] = addrs[AjxEmailAddress.TO].good.getArray();
-    }
-    var str = (inputObj.getValue() && !(a[AjxEmailAddress.TO] && a[AjxEmailAddress.TO].length))
-        ? inputObj.getValue() : "";
-	var account;
-	contactPicker.popup(AjxEmailAddress.TO, a, str, account);
+	var addrList = {};
+	var addrs = !this._useAcAddrBubbles && this._collectAddrs(inputObj.getValue());
+	var type = AjxEmailAddress.TO;
+	addrList[type] = this._useAcAddrBubbles ? this._attInputField[addrType].getAddresses(true) :
+											  addrs[type] && addrs[type].good.getArray();
+		
+    var str = (inputObj.getValue() && !(addrList[type] && addrList[type].length)) ? inputObj.getValue() : "";
+	contactPicker.popup(type, addrList, str);
 };
 
 ZmApptEditView.prototype._locationButtonListener =
@@ -1101,14 +1099,40 @@ function(addrType) {
 // Transfers addresses from the contact picker to the appt compose view.
 ZmApptEditView.prototype._attendeePickerOkCallback =
 function(addrType, addrs) {
+
     this._attInputField[addrType].setEnabled(true);
     var vec = (addrs instanceof AjxVector) ? addrs : addrs[AjxEmailAddress.TO];
-    var addr = (vec.size() > 0) ? vec.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
-    addr = addr ? addr : "";
-    this._attInputField[addrType].setValue(addr);
+	this._setAddresses(vec, this._attInputField[addrType]);
+
     this._activeInputField = addrType; 
     this._handleAttendeeField(addrType);
 	this._attendeePicker[addrType].popdown();
+};
+
+ZmApptEditView.prototype._setAddresses =
+function(addrVec, addrInput) {
+
+	if (this._useAcAddrBubbles) {
+		addrInput.clear();
+		var addrs = addrVec && addrVec.getArray();
+		if (addrs && addrs.length) {
+			for (var i = 0, len = addrs.length; i < len; i++) {
+				var addr = addrs[i];
+				var addrStr = addr.isAjxEmailAddress ? addr.toString() : addr;
+				if (addr.isAjxEmailAddress) {
+					addrInput.add(addrStr, {isDL: addr.isGroup && addr.canExpand, email: addrStr}, true);
+				}
+				else {
+					addrInput.setValue(addrStr, true);
+				}
+			}
+		}
+	}
+	else {
+		var addr = (addrVec.size() > 0) ? addrVec.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
+		addr = addr ? addr : "";
+		addrInput.setValue(addr);
+	}
 };
 
 // Transfers addresses from the location/resource picker to the appt compose view.
@@ -1150,9 +1174,7 @@ ZmApptEditView.prototype._contactPickerOkCallback =
 function(addrs) {
     this._forwardToField.setEnabled(true);
     var vec = (addrs instanceof AjxVector) ? addrs : addrs[AjxEmailAddress.TO];
-    var addr = (vec.size() > 0) ? vec.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
-    addr = addr ? addr : "";
-    this._forwardToField.setValue(addr);
+	this._setAddresses(vec, this._forwardToField);
     this._activeInputField = ZmCalBaseItem.PERSON;
     this._handleAttendeeField(ZmCalBaseItem.PERSON);
 	//this._contactPicker.removePopdownListener(this._controller._dialogPopdownListener);
@@ -1381,7 +1403,7 @@ function(text, el, match) {
 		return;
 	}
 	var attendee = match.item;
-    var type = el._attType;
+    var type = el && el._attType;
 	if (attendee) {
 		if (type == ZmCalBaseItem.FORWARD) {
             DBG.println("forward auto complete match : " + match)
