@@ -88,9 +88,10 @@ function(share, fromAddr) {
 		var orgPackage = ZmOrganizer.ORG_PACKAGE[orgType];
 		if (orgPackage) {
 			AjxDispatcher.require(orgPackage);
-			var prototype = window[orgClass].prototype;
-			// HACK: to get default icon regardless of organizer type
-			icon = prototype.getIcon.apply(prototype);
+			//to fix bug 55320 - got rid of the calling getIcon on the prototype hack - that caused isRemote to set _isRemote on the prototype thus causing every object to have it by default set.
+			var sample = new window[orgClass]({}); //get a sample object just for the icon
+			sample._isRemote = true; //hack - so it would get the remote version of the icon
+			icon = sample.getIcon();
 		}
 	}
 	this._color.setImage(icon);
