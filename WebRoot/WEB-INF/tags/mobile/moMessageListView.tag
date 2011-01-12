@@ -75,11 +75,11 @@
         <div class="tbl">
         <div id="conv${mhit.id}" class="tr msg_lv_list_row list-row${mhit.isUnread ? '-unread' : ''}">
                <%--<mo:img src="mail/ImgEnvelope${mhit.isUnread?'':'Gray'}.png" class="left-icon"/>--%>
-               <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/> 
+               <c:set value="ImgEnvelope${mhit.isUnread ? '' : 'Gray'}" var="class"/>
                <span class="td f" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>>
                    <c:set value=",${mhit.id}," var="stringToCheck"/>
                    <input <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if> class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"':''} name="id" value="${mhit.id}"/>
-                   <c:if test="${ua.isiPad eq false}" ><span class="SmlIcnHldr ${class}">&nbsp;</span></c:if>
+                   <c:if test="${ua.isiPad eq false}" ><span class="Img ${class}">&nbsp;</span></c:if>
                </span>
                <span class="td m" onclick='return zClickLink("a${mhit.id}");'>
                    <div class="from-span">
@@ -107,14 +107,14 @@
                        ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
                    </a><br/>
                    <c:if test="${mhit.isFlagged}">
-                       <span class="SmlIcnHldr Flag">&nbsp;</span>
+                       <span class="Img ImgFlagRed">&nbsp;</span>
                    </c:if>
                    <c:if test="${mhit.hasTags}">
                    <mo:miniTagImage
                            ids="${mhit.tagIds}"/>
                    </c:if>
                    <c:if test="${mhit.hasAttachment}">
-                            <span class="SmlIcnHldr Attachment">&nbsp;</span>
+                            <span class="Img ImgAttachment">&nbsp;</span>
                    </c:if>
                    <span class="small-gray-text">(${fn:escapeXml(zm:displaySize(pageContext, mhit.size))})</span>
                </span>

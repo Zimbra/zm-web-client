@@ -64,17 +64,17 @@
     <div class="tbl">
         <div id="conv${chit.id}" style="height:50px;" class="tr conv_lv_list_row list-row${chit.isUnread ? '-unread' : ''}">
             <c:if test="${chit.messageCount ge 2}">
-                <c:set value="Conv" var="class"/>
+                <c:set value="ImgConversation" var="class"/>
                 <%--<mo:img src="startup/ImgConversationView.png" class="left-icon"/>--%>
             </c:if>
             <c:if test="${chit.messageCount lt 2}">
-                <c:set value="Msg${chit.isUnread ? '' : 'Gray'}" var="class"/>
+                <c:set value="ImgEnvelope${chit.isUnread ? '' : 'Gray'}" var="class"/>
                 <%--<mo:img src="mail/ImgEnvelope${chit.isUnread?'':'Gray'}.png" class="left-icon"/>--%>
             </c:if>
             <span class="td f" <c:if test="${ua.isiPad == true}" > style='width:10%;' onclick='return zCheckUnCheck(this);'</c:if>>
                 <c:set value=",${chit.id}," var="stringToCheck"/>
                 <input <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if> class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedCids,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''} name="cid" value="${chit.id}"/>
-                <c:if test="${ua.isiPad eq false}" > <span class="SmlIcnHldr ${class}">&nbsp;</span> </c:if>
+                <c:if test="${ua.isiPad eq false}" > <span class="Img ${class}">&nbsp;</span> </c:if>
             </span>
             <span class="td" style="width:1%;">
                 <c:if test="${chit.messageCount gt 1 and ua.isiPad eq true}"></c:if>
@@ -107,7 +107,7 @@
                     ${fn:escapeXml(zm:displayMsgDate(pageContext, chit.date))}
                 </a><br/>
                 <c:if test="${chit.isFlagged}">
-                    <span class="SmlIcnHldr Flag">&nbsp;</span>
+                    <span class="Img ImgFlagRed">&nbsp;</span>
                     <%--<mo:img src="startup/ImgFlagRed.png" alt="flag"/>--%>
                 </c:if>
                 <c:if test="${chit.hasTags}">
@@ -115,7 +115,7 @@
                         ids="${hit.conversationHit.tagIds}"/>
                 </c:if>
                 <c:if test="${chit.hasAttachment}">
-                    <span class="SmlIcnHldr Attachment">&nbsp;</span>
+                    <span class="Img ImgAttachment">&nbsp;</span>
                 </c:if>
                 <c:if test="${chit.messageCount gt 1}"><span class="small-gray-text">(${chit.messageCount})</span></c:if>
             </span>

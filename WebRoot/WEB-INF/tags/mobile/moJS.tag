@@ -585,7 +585,7 @@ var showLoadingMsg = function(msg, show, status, timeout, divId) {
         if (msg && show) {
             aMsgDiv.className = aMsgDiv.className.replace("hidden","").replace("shown","").replace(/Status(Info|Warning|Critical)/,"");
             aMsgDiv.className += " "+status+" shown";
-            aMsgDiv.innerHTML = "<div class='tbl'><div class='tr'><span class='td loadingIcon'></span><span style='width:90%;text-align:left;' class='td'>" + msg + "</span><span style='overflow:hidden;height:16px;' class='SmlIcnHldr Cancel'></span></div></div>";
+            aMsgDiv.innerHTML = "<div class='tbl'><div class='tr'><span class='td loadingIcon'></span><span style='width:90%;text-align:left;' class='td'>" + msg + "</span><span style='overflow:hidden;height:16px;' class='ImgCancel'></span></div></div>";
 
             if (timeout) {
                 setTimeout(function() {

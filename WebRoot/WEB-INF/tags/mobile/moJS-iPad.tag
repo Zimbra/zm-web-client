@@ -1042,10 +1042,10 @@ ZmiPadMail.processResponse = function (respData, url) {
                          if(msgEl.getElementsByClassName("l")[0]) {
                           var liHtml = msgEl.getElementsByClassName("l")[0].innerHTML;
 
-                          if(liHtml.indexOf("SmlIcnHldr Flag") == -1) {
-                            msgEl.getElementsByClassName("l")[0].innerHTML += '<span class="SmlIcnHldr Flag">&nbsp;</span>'
+                          if(liHtml.indexOf("ImgFlagRed") == -1) {
+                            msgEl.getElementsByClassName("l")[0].innerHTML += '<span class="Img ImgFlagRed">&nbsp;</span>'
                           } else {
-                            msgEl.getElementsByClassName("l")[0].innerHTML = (msgEl.getElementsByClassName("l")[0].innerHTML).replace("SmlIcnHldr Flag","");
+                            msgEl.getElementsByClassName("l")[0].innerHTML = (msgEl.getElementsByClassName("l")[0].innerHTML).replace("Img ImgFlagRed","");
                           }
                          }
                      }
@@ -1380,7 +1380,7 @@ var showSwipe = function(id) {
       sHTML[i++] = "<span><button type='button' style='z-index:-999' class='zo_button delete_button delBtnV'><a href='?st=newmail&amp;op=reply&amp;id="+ (msgId.value).replace("-","") + "'><fmt:message key="reply"/></a></button></span>";
       sHTML[i++] = "<span><button type='button' style='z-index:-999' class='zo_button delete_button delBtnV'><a href='?st=newmail&amp;op=replyAll&amp;id="+ (msgId.value).replace("-","") + "'><fmt:message key="replyAll"/></a></button></span>";
       var lastEl = p.getElementsByClassName("l")[0];
-      if(p && lastEl && (lastEl.innerHTML).indexOf("SmlIcnHldr Flag") != -1 ) {
+      if(p && lastEl && (lastEl.innerHTML).indexOf("ImgFlagRed") != -1 ) {
         sHTML[i++] = "<span><button type='submit' style='z-index:-999' class='zo_button delete_button delBtnV' name='anAction' value='actionUnflag'><fmt:message key="MO_Unflag"/></button></span>";
       } else {
         sHTML[i++] = "<span><button type='submit' style='z-index:-999' class='zo_button delete_button delBtnV' name='anAction' value='actionFlag'><fmt:message key="MO_flag"/></button></span>";

@@ -202,6 +202,6 @@
 <span class=" f-right"><input type='button' class='zo_button' value='<fmt:message key="to"/>' onclick="$('zForm').anAction[0].value='composeTo';submitForm($('zForm'));">
 </span>
 </c:if>
-<span class="zo_button1" onclick="return checkAll($('zForm').getElementsByClassName('chk'),false);"><span class="SmlIcnHldr Cancel"></span></span></span></div>
+<span class="zo_button1" onclick="return checkAll($('zForm').getElementsByClassName('chk'),false);"><span class="ImgCancel"></span></span></span></div>
 </div>
 </c:if>

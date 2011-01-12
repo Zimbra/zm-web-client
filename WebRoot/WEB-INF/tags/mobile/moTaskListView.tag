@@ -41,7 +41,7 @@
             <span class="td f">
                     <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                            name="id" value="${taskHit.id}"/>
-            <span class="SmlIcnHldr Task">&nbsp;</span>
+            <span class="Img ImgTask">&nbsp;</span>
             </span>
             <span class="td m" onclick='return zClickLink("a${taskHit.id}")' style="${taskHit.percentComplete eq '100' ? 'text-decoration:line-through;' : ''}">
                 <a id="a${taskHit.id}" href="${taskUrl}">

@@ -119,7 +119,7 @@
             <span class="td f">
                     <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                            name="id" value="${bchit.id}"/>
-            <span class="SmlDocIcnHldr ${mimeImg}">&nbsp;</span>
+            <span class="${mimeImg}">&nbsp;</span>
             </span>
             <span class="td m" onclick='return zClickLink("a${bchit.id}")'>
                 <c:set var="briefUrl" value="/service/home/~/?id=${bchit.id}&auth=co"/>
