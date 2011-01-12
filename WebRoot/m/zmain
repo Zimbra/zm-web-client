@@ -1,4 +1,4 @@
-/*
+<%--
  * ***** BEGIN LICENSE BLOCK *****
  * 
  * Zimbra Collaboration Suite Web Client
@@ -13,7 +13,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * 
  * ***** END LICENSE BLOCK *****
- */
+--%>
 <%@ page import="com.zimbra.common.mime.MimeCompoundHeader" %>
 <%@ page import="com.zimbra.cs.httpclient.URLUtil" %>
 <%@ page import="java.util.regex.*" %>
