@@ -281,7 +281,7 @@
 
 <template id='mail.Message#AllAttachments'>
 	<table border=0 cellspacing=0 style='margin:5px 0px 1px 0px'>
-		<$ if (data.viewAllUrl && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
+		<$ if (data.viewAllUrl && !(appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) ||  appCtxt.get(ZmSetting.P_ATTACHMENTS_BLOCKED)) ) { $>
 			<tr>
 				<td style='width:18px'>
 					<$= AjxImg.getImageHtml("ViewAll", "position:relative;") $>
@@ -291,7 +291,7 @@
 				</td>
 			</tr>
 		<$}$>
-		<$ if (!appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
+		<$ if (!(appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) ||  appCtxt.get(ZmSetting.P_ATTACHMENTS_BLOCKED))) { $>
 		<tr>
 			<td style='width:18px'>
 				<$= AjxImg.getImageHtml(ZmMimeTable.getInfo(ZmMimeTable.APP_ZIP).image, "position:relative;") $>

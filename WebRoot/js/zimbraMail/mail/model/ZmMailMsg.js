@@ -1703,7 +1703,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					props.download = [
 						"<a style='text-decoration:underline' class='AttLink' href='",
 						url,
-						appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)
+						appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) || appCtxt.get(ZmSetting.P_ATTACHMENTS_BLOCKED)
 							? "' target='_blank'>"
 							: "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>"
 					].join("");
