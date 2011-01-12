@@ -335,7 +335,7 @@ function(files, status, guids) {
             doc.l = this._uploadFolder.id;
         }
         if(file.notes){
-            doc.notes = file.notes;
+            doc.desc = file.notes;
         }
         doc.upload = {
             id: file.guid
