@@ -172,7 +172,7 @@ function(params) {
 	this._toggleBccField(null, appCtxt.get(ZmSetting.SHOW_BCC));
 
 	// populate fields based on the action and user prefs
-	this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
+	this._setAddresses(action, AjxEmailAddress.TO, params.toOverrideObj || params.toOverride);
 	if (params.ccOverride) {
 		this._setAddresses(action, AjxEmailAddress.CC, params.ccOverride);
 	}
@@ -3153,7 +3153,6 @@ function(ev, addrType) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		addrList[type] = this._useAcAddrBubbles ? this._addrInputField[type].getAddresses(true) :
 				   								  addrs[type] && addrs[type].good.getArray();
-
 	}
 	this._contactPicker.addPopdownListener(this._controller._dialogPopdownListener);
 	var str = (this._field[curType].value && !(addrList[curType] && addrList[curType].length))
