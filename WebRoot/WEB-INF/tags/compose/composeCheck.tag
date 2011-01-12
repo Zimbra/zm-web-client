@@ -34,12 +34,8 @@
     <c:if test="${mailbox.prefs.forwardReplyInOriginalFormat && !empty param.rf && (param.rf eq 'html' || param.rf eq 'text')}">
         <c:set var="composeformat" value="${param.rf}"/>
     </c:if>
-    <%-- SWAP the inline images src and dfsrc before send, save etc. --%>
     <c:set var="isHtml" value="${composeformat eq 'html'}"/>
     <c:set var="theBody" value="${isHtml ? (empty uploader.compose.htmlContent ?  uploader.compose.content : uploader.compose.htmlContent) : uploader.compose.content}"/>
-    <c:set var="theBody" value="${fn:replace(theBody,' dfsrc=',' asrc=')}"/>
-    <c:set var="theBody" value="${fn:replace(theBody,' src=',' dfsrc=')}"/>
-    <c:set var="theBody" value="${fn:replace(theBody,' asrc=',' src=')}"/>
     <c:set var="contentToSet" value="${isHtml ? (empty uploader.compose.htmlContent ?  'content' : 'htmlContent') : 'content'}"/>
     <c:set property="${contentToSet}" value="${theBody}" target="${uploader.compose}"/>
 
