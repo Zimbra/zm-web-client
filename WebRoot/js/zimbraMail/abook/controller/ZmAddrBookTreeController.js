@@ -266,7 +266,10 @@ function(folder) {
 
 		if (folder.id != ZmFolder.ID_TRASH) {
 			var clc = AjxDispatcher.run("GetContactListController");
-			clc.getParentView().getAlphabetBar().reset();
+			var view = clc.getParentView();
+			if (view) {
+				view.getAlphabetBar().reset();
+			}
 		}
 	}
 };
