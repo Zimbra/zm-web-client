@@ -393,9 +393,19 @@ function(convs, msgs) {
 				}
 			}
 			else {
+				// debug info for bug 47589
 				var query = this.search ? this.search.query : "";
 				var ignore = conv.ignoreJunkTrash();
-				AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: conv does not match search '" + query + "' or was ignored (" + ignore + ")");
+				AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: conv does not match search '" + query + "' or was ignored (" + ignore + "); match function:");
+				var matchFunc = (this.search && this.search.matches) || "";
+				AjxDebug.println(AjxDebug.NOTIFY, matchFunc.toString());
+				if (!conv) {
+					AjxDebug.println(AjxDebug.NOTIFY, "conv is null!");
+				}
+				else {
+					var folders = AjxUtil.keys(conv.folders) || "";
+					AjxDebug.println(AjxDebug.NOTIFY, "conv folders: " + folders.join(" "));
+				}
 			}
 		}
 
