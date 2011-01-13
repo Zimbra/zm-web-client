@@ -206,26 +206,27 @@ FORM {
 }
 .LoginScreen .Footer{
 	position: absolute;
-	bottom: 5px;
+	bottom: 0;
 	z-index: 10;
 	width: 100%;
 	text-align: center;
 }
 
 .LoginScreen #ZLoginNotice {
-    margin-bottom: 10px;
-	color:#FFF;
+	color:@darken(AppC,50)@;
 	font-size:11px;
+    margin-bottom: 10px;
 }
-.LoginScreen #ZLoginNotice a {
-	color:#FFF;
+.LoginScreen #ZLoginNotice A {
+	color:@darken(AppC,50)@;
 }
 .LoginScreen #login {  /*Is this used?*/
 	float:right;
 }
 .LoginScreen .copyright {
+    color: @darken(AppC,50)@;
  	font-size:11px;
-	color: @darken(AppC,50)@;
+ 	margin-bottom:5px;
 	text-align:center;
 }
 .LoginScreen .center-small .copyright {
@@ -285,7 +286,7 @@ FORM {
 
 .LoginScreen .center-small {
 	width:240px;
-	height:305px;
+/*	height:305px; */
 	overflow:visible;
 	margin: 10px auto;
 	padding-top: 5px; 
@@ -312,34 +313,39 @@ FORM {
 	border: 1px solid @darken(AltC,50)@; /* Plain border for IE */
 	#ENDIF
 }
-
+.center-small H1 {
+    margin-bottom:20px;
+}
+.center-small .ImgAltBanner,
+.center-small .ImgAppBanner {
+    background-position:center center;
+    background-repeat:no-repeat;
+    width:200px;
+}
+.center-small .ImgAltBanner {
+    margin:10px auto;
+}
 .center-small .form {
 	color: @darken(AppC,50)@;
 	margin: 0px 10px;
 	border-collapse:collapse;
 	text-align:left;
 }
-
-.center-small .form td:first-child label {margin-right:5px;}
-
+.center-small .form td:first-child label {
+    margin-right:5px;
+}
 .center-small .form input[type='text'], 
 .center-small .form input[type='password'] {
 	width:155px;
 	border:1px solid @AltC@;
 }
-
 .center-small .form select {
 	width:140px;
 }
-.center-small .ImgAltBanner{
-	margin: 10px auto;
-}
-
-
-.LoginScreen .center-small .offline{
+.center-small #ZloginWhatsThisAnchor,
+.center-small .offline {
 	display: none;
 }
-
 
 .Footer-small{
 	width: 100%;
