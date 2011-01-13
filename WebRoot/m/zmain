@@ -30,17 +30,23 @@
 
 	// Trims down whitespace in the given string, EXCEPT within <textarea> and <pre> tags
 	private String trimWhitespace(String str) {
-		String crlf = "__ZCRLF__"; // This exact text should not be used anywhere else on the page we're processing. In case of problems, change this text to something else
-		String tab = "__ZTAB__";
-		Matcher m = Pattern.compile("(<textarea.*>.*</textarea>)|(<pre.*>.*</pre>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE).matcher(str);
-		while (m.find()) {
-			String oldpart = m.group();
-			String newpart = oldpart.replaceAll("\t", tab).replaceAll("\n", crlf);
-			str = str.replaceAll(Pattern.quote(oldpart), newpart);
+		try {
+			String crlf = "__ZCRLF__"; // This exact text should not be used anywhere else on the page we're processing. In case of problems, change this text to something else
+			String tab = "__ZTAB__";
+			String pstr = str;
+			Matcher m = Pattern.compile("(<textarea.*>.*</textarea>)|(<pre.*>.*</pre>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE).matcher(pstr);
+			while (m.find()) {
+				String oldpart = m.group();
+				String newpart = oldpart.replaceAll("\t", tab).replaceAll("\n", crlf);
+				newpart = newpart.replaceAll("\\$","\\\\\\$");
+				pstr = pstr.replaceAll(Pattern.quote(oldpart), newpart);
+			}
+			pstr = pstr.replaceAll("[\t ]+", " ").replaceAll(tab,"\t");
+			pstr = pstr.replaceAll("\n\\s*\n", "\n").replaceAll(crlf,"\n");
+			return pstr;
+		} catch (Exception e) { // If anything goes awry, return the original string
+			return str;
 		}
-		str = str.replaceAll("[\t ]+", " ").replaceAll(tab,"\t");
-		str = str.replaceAll("\n\\s*\n", "\n").replaceAll(crlf,"\n");
-		return str;
 	}                                                                       
 
 %>
