@@ -238,7 +238,6 @@ function(callback, accountName, result) {
     if (obj.rest)			{ this._settings[ZmSetting.REST_URL].setValue(obj.rest); }
 	if (obj.license)		{ this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status); }
 	if (obj.attSizeLimit)   { this._settings[ZmSetting.ATTACHMENT_SIZE_LIMIT].setValue(obj.attSizeLimit); }
-	if (obj.zimbraAttachmentsBlocked)   { this._settings[ZmSetting.P_ATTACHMENTS_BLOCKED].setValue(obj.zimbraAttachmentsBlocked); }
     if (obj.docSizeLimit)   { this._settings[ZmSetting.DOCUMENT_SIZE_LIMIT].setValue(obj.docSizeLimit); }
 
 	if (obj.prefs && obj.prefs._attrs) {
@@ -704,7 +703,6 @@ function() {
 	this.registerSetting("SHOW_SCRIPT_ERRORS",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("TIMEOUT",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:30}); // seconds
 	this.registerSetting("USE_XML",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("P_ATTACHMENTS_BLOCKED",		    {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
 	// DOMAIN SETTINGS
 	this.registerSetting("CHANGE_PASSWORD_URL",				{type:ZmSetting.T_CONFIG});
