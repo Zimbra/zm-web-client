@@ -77,7 +77,7 @@
     <table cellspacing="8">
         <tr>
             <td>
-                <app:img src="doctypes/ImgZipDoc.gif" alt="zip" title="zip"/>
+                <app:img src="zimbra/ImgZipDoc.png" alt="zip" title="zip"/>
             </td>
             <td>
                 <a href="${url}"><fmt:message key="downloadAllAttachments"/></a>
