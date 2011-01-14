@@ -686,7 +686,7 @@ function(results, search, isMixed, noUpdateOverview, noClear) {
 	// show results based on type - may invoke package load
 	var resultsType = isMixed ? ZmItem.MIXED : results.type;
 	var loadCallback = new AjxCallback(this, this._handleLoadShowResults, [results, search, noUpdateOverview]);
-	var app = appCtxt.getApp(ZmItem.APP[resultsType]);
+	var app = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
 	app.currentSearch = search;
 	app.currentQuery = search.query;
 	app.showSearchResults(results, loadCallback);
