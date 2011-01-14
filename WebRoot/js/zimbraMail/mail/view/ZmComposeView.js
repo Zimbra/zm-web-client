@@ -905,52 +905,60 @@ function(composeMode, switchPreface) {
 			this._switchPreface();
 		}
 
-		var self = this;
-		var convertor = {
-			"hr": function(el) {
-				return ZmComposeView._convertHtmlPreface(self, el);
-			},
-			"blockquote": function(el) {
-				return "\n<blockquote>\n";
-			},
-			"/blockquote": function(el) {
-				return "\n</blockquote>\n";
-			},
-			"_after": AjxCallback.simpleClosure(this._applyHtmlPrefix, this, "<blockquote>", "</blockquote>")
-		};
 		var content = this._htmlEditor.getContent();
-		if (htmlMode) {
-			var anyChar = "[\\s\\S]"; // Includes newlines
-			var baseContent;
+		var sigId = this._controller._currentSignatureId;
 
-			var preface = this._getPreface(DwtHtmlEditor.TEXT);
-			if (preface) {
-				var incMsgRe = new RegExp(AjxStringUtil.regExEscape(preface)+anyChar+"*$");
-				baseContent = content.replace(incMsgRe, "");
+		if (htmlMode) {
+
+			var anyChar = "[\\s\\S]"; // Includes ALL chars, even newlines
+			var baseContent = content || "";
+
+			// Strip away included message
+			if (this._msg) {
+				var preface = this._getPreface(DwtHtmlEditor.TEXT);
+				if (preface) {
+					var incMsgRe = new RegExp(AjxStringUtil.regExEscape(preface)+anyChar+"*$");
+					baseContent = content.replace(incMsgRe, "");
+				}
 			}
 
-			var sig = this.getSignatureContent(this._controller._currentSignatureId);
+			// Strip away signature
+			var sig = this.getSignatureContent(sigId);
 			if (sig) {
 				var textsig = AjxStringUtil.convertHtml2Text(sig, {"#text": ZmComposeView._convertTextNode});
 				if (textsig) {
-					var sigRe = new RegExp(AjxStringUtil.regExEscape(textsig));
+					var sigRe = new RegExp(AjxStringUtil.regExEscape(textsig.replace(/[\n\r]*$/,""))+"\\s*$");
 					baseContent = baseContent.replace(sigRe, "");
 				}
 			}
 
-			var htmlContent = this._msg.getBodyContent();
+			// Do the mode switch
 			this._htmlEditor.setMode(composeMode, true);
-			this._setBody(this._action, this._msg, baseContent || "\n");
+			// Re-set the whole body, with optional replied/forwarded msg and signature automatically added. baseContent is the text that the user may have written before switching
+			this._setBody(this._action, this._msg || null, baseContent || "\n");
+
 		} else {
-			var sigId = this._controller._currentSignatureId;
+
+			var self = this;
+			var convertor = {
+				"hr": function(el) {
+					return ZmComposeView._convertHtmlPreface(self, el);
+				},
+				"blockquote": function(el) {
+					return "\n<blockquote>\n";
+				},
+				"/blockquote": function(el) {
+					return "\n</blockquote>\n";
+				},
+				"_after": AjxCallback.simpleClosure(this._applyHtmlPrefix, this, "<blockquote>", "</blockquote>")
+			};
+
 			var account = appCtxt.multiAccounts && this.getFromAccount();
-
 			this.applySignature(content, sigId, account, null, true); // Remove the signature before switching
-
-			this._htmlEditor.setMode(composeMode, true, convertor); // Do the switch
-
-			content = this._htmlEditor.getContent();
+			this._htmlEditor.setMode(composeMode, true, convertor); // Do the mode switch
+			content = this._htmlEditor.getContent(); // Get the content in the new mode
 			this.applySignature(content, null, account, sigId, false); // Reapply the signature after switching
+
 		}
 
 		if (htmlMode && switchPreface) {
@@ -1418,6 +1426,13 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 					lastIdx = oldSigContent.lastIndexOf(ZmComposeView.SIG_KEY_LC);
 				}
 				if (idx != -1 && lastIdx != -1) {
+					var nIdx = newSig.indexOf(ZmComposeView.SIG_KEY);
+					if (nIdx != -1)
+						newSig = newSig.substring(nIdx);
+					var nLastIdx = newSig.lastIndexOf(ZmComposeView.SIG_KEY);
+					if (nLastIdx != -1)
+						newSig = newSig.substring(0, nLastIdx + ZmComposeView.SIG_KEY.length);
+					
 					newSigContent = oldSigContent.substring(0, idx) + newSig +
 									oldSigContent.substring(lastIdx + ZmComposeView.SIG_KEY.length);
 				}
@@ -1439,16 +1454,19 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 			var sigContent = this.getSignatureContent(oldSignatureId);
 			replaceSignature = AjxStringUtil.convertHtml2Text(sigContent, {"#text": ZmComposeView._convertTextNode});
 			if (replaceSignature) {
-				var replaceRe = "(" + AjxStringUtil.regExEscape(newLine) + ")*" + AjxStringUtil.regExEscape(replaceSignature);
+				var newLinesRe = "(" + AjxStringUtil.regExEscape(newLine) + ")*";
+				var replaceRe = newLinesRe + AjxStringUtil.regExEscape(replaceSignature) + newLinesRe; // Eat up all whitespace before and after the signature
 				replaceRe = replaceRe.replace(/(\\n|\\r)/g, "\\s*");
 				if (!isAbove) {
-					replaceRe += "\\s*(" + AjxStringUtil.regExEscape(newLine) + ")*";
-					replaceRe += "$";
+					replaceRe += "\\s*" + newLinesRe + "$";
 				}
-
+				var contentAfterRe = new RegExp(replaceRe+"\\s*\\S","i");
 				replaceRe = new RegExp(replaceRe, "i");
 				//Replace Signature
 				if (replaceRe.test(content)) {
+					if (contentAfterRe.test(content)) {// There is content after the signature, add one more newline
+						newSig += "\n";
+					}
 					content = content.replace(replaceRe, newSig || "\n");
 					done = true;
 				}
@@ -2178,7 +2196,7 @@ function(action, msg, extraBodyText) {
 
 	var bodyInfo = {};
 	var what = incOptions.what;
-	if (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART) {
+	if (msg && (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART)) {
 		bodyInfo = this._getBodyContent(msg, htmlMode);
 		body = bodyInfo.body;
 		// Bug 7160: Strip off the ~*~*~*~ from invite replies.
@@ -2205,11 +2223,12 @@ function(action, msg, extraBodyText) {
 	var preText = extraBodyText + sigPre;
 	if (sigPre) {
 		preText += crlf;
-	} else if (htmlMode) {
-		preText = preText.replace("\n","<br/>");
+	}
+	if (htmlMode) {
+		preText = preText.replace(/\n/g,"<br/>");
 	}
 
-	if (incOptions.headers) {
+	if (incOptions.headers && msg) {
 		for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
 			var hdr = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i], htmlMode);
 			if (hdr) {
@@ -2224,7 +2243,7 @@ function(action, msg, extraBodyText) {
 	  	value += crlf + sigPre;
 	} else if (incOptions.what == ZmSetting.INC_NONE) {
 		value = preText;
-	} else if (incOptions.what == ZmSetting.INC_ATTACH) {
+	} else if (incOptions.what == ZmSetting.INC_ATTACH && this._msg) {
 		value = preText;
 		this._msgAttId = this._msg.id;
 	} else {
@@ -2279,7 +2298,7 @@ function(action, msg, extraBodyText) {
 	}
 
 	var isHtmlEditorInitd = this._htmlEditor.isHtmlModeInited();
-	if (!isHtmlEditorInitd) {
+	if (!isHtmlEditorInitd && msg) {
 		this._fixMultipartRelatedImages_onTimer(msg);
 	}
 
@@ -2290,7 +2309,7 @@ function(action, msg, extraBodyText) {
 		this._htmlEditor.setContent(value);
 	}
 
-	if (isHtmlEditorInitd) {
+	if (isHtmlEditorInitd && msg) {
 		this._fixMultipartRelatedImages_onTimer(msg);
 	}
 
