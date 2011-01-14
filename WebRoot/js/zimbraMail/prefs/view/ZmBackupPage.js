@@ -103,7 +103,7 @@ function() {
     var accts = this.getAccounts()._vector.getArray();
 
     var settingsObj = appCtxt.getSettings();
-	var setting = settingsObj.getSetting(ZmSetting.OFFLINE_BACKUP_ACCOUNT_ID);
+    var setting = settingsObj.getSetting(ZmSetting.OFFLINE_BACKUP_ACCOUNT_ID);
 
     var checked = [];
     for (var i = 0; i < accts.length; i++) {
@@ -153,7 +153,7 @@ function() {
     for (var i = 0; i < backups.length; i++) {
         if (backups[i].active) {
             var bk = backups[i];
-            sel.push(bk.id);
+            sel.push(backups[i]);
             break;
         }
     }
@@ -165,9 +165,9 @@ function() {
 
     var soapDoc = AjxSoapDoc.create("AccountRestoreRequest", "urn:zimbraOffline");
     var method = soapDoc.getMethod();
-	method.setAttribute("id", sel.id);
-    method.setAttribute("time", sel.ts);
-    var respCallback = new AjxCallback(this, this._handleAccountRestoreSent);
+    method.setAttribute("id", sel[0].acct);
+    method.setAttribute("time", sel[0].timestamp);
+    var respCallback = new AjxCallback(this, this._handleAccountRestoreSent, [sel[0].acct]);
     var params = {
         soapDoc:soapDoc,
         callback:respCallback,
@@ -178,9 +178,12 @@ function() {
 };
 
 ZmBackupPage.prototype._handleAccountRestoreSent =
-function() {
-    appCtxt.setStatusMsg(ZmMsg.offlineBackUpStarted);
-    this._uploadButton.setEnabled(true);
+function(id, resp) {
+
+    this._restoreButton.setEnabled(true);
+    if(resp._data.AccountRestoreResponse.status == "restored") {
+        appCtxt.setStatusMsg(AjxMessageFormat.format(ZmMsg.offlineBackupRestored, appCtxt.accountList.getAccount(id).name));
+    }
 };
 
 /**
@@ -341,22 +344,32 @@ function(html, idx, item, field, colIdx, params) {
 
 
 /**
-* Handles click of 'active' checkbox by toggling the rule's active state.
-*
-* @param ev			[DwtEvent]	click event
-*/
+ * Handles click of 'active' checkbox by toggling the rule's active state.
+ *
+ * @param ev			[DwtEvent]	click event
+ */
 ZmPrefAcctListView._activeStateChange =
 function(ev) {
-	var target = DwtUiEvent.getTarget(ev);
-	var flvId = target.getAttribute("_acId");
-	var flv = AjxCore.objectWithId(flvId);
-	var name = target.getAttribute("_name");
-	var z = flv.parent.getAccounts().getPrefBackupByName(name);
-	if (z) {
-		z.active = !z.active;
-	}
+    var target = DwtUiEvent.getTarget(ev);
+    var flvId = target.getAttribute("_acId");
+    var flv = AjxCore.objectWithId(flvId);
+    var name = target.getAttribute("_name");
+    var z = flv.parent.getAccounts().getPrefAccountByName(name);
+    if (z) {
+        z.active = !z.active;
+    }
 };
 
+ZmPrefAcctListView.prototype._allowLeftSelection =
+function(clickedEl, ev, button) {
+    var target = DwtUiEvent.getTarget(ev);
+    var isInput = (target.id.indexOf("_acctsCheckbox") > 0);
+    if (isInput) {
+        ZmPrefAcctListView._activeStateChange(ev);
+    }
+
+    return !isInput;
+};
 
 /**
  * Model class to hold the list of PrefAccounts
@@ -489,8 +502,8 @@ function() {
     for (var i = 0; i < restoreArr.length; i++) {
         item.timestamp = restoreArr[i].timestamp;
         item.size = restoreArr[i].fileSize;
-        this.setCellContents(item, ZmPrefZimletListView.COL_NAME, item.timestamp);
-        this.setCellContents(item, ZmPrefZimletListView.COL_DESC, item.size);
+        this.setCellContents(item, ZmPrefBackupListView.COL_NAME, item.timestamp);
+        this.setCellContents(item, ZmPrefBackupListView.COL_DESC, item.size);
     }
 };
 
@@ -518,14 +531,6 @@ function() {
         (new DwtListHeaderItem({field:ZmPrefBackupListView.COL_ACTION, text:ZmMsg.account, width:ZmMsg.COLUMN_WIDTH_FOLDER_DLV}))
     ];
 };
-
-//ZmPrefBackupListView.prototype._getCellClass =
-//function(item, field, params) {
-//    if (field == ZmPrefAcctListView.COL_ACTIVE) {
-//        return "FilterActiveCell";
-//    }
-//    return DwtListView.prototype._getCellClass.call(this, item, field, params);
-//};
 
 ZmPrefBackupListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
@@ -567,15 +572,27 @@ function(html, idx, item, field, colIdx, params) {
 
 ZmPrefBackupListView._activeStateChange =
 function(ev) {
-	var target = DwtUiEvent.getTarget(ev);
-	var bkId = target.getAttribute("_bkId");
-	var bk = AjxCore.objectWithId(bkId);
-	var name = target.getAttribute("_name");
-	var z = bk.parent.getZimlets().getPrefZimletByName(name);
-	if (z) {
-		z.active = !z.active;
-	}
+    var target = DwtUiEvent.getTarget(ev);
+    var bkId = target.getAttribute("_bkId");
+    var bk = AjxCore.objectWithId(bkId);
+    var name = target.getAttribute("_name");
+    var z = bk.parent.getBackups().getPrefBackupByName(name);
+    if (z) {
+        z.active = !z.active;
+    }
 };
+
+ZmPrefBackupListView.prototype._allowLeftSelection =
+function(clickedEl, ev, button) {
+    var target = DwtUiEvent.getTarget(ev);
+    var isInput = (target.id.indexOf("_backupCheckbox") > 0);
+    if (isInput) {
+        ZmPrefBackupListView._activeStateChange(ev);
+    }
+
+    return !isInput;
+};
+
 
 /**
  * Model class to hold the list of backups
