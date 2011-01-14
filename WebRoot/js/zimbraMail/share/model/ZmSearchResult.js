@@ -165,6 +165,12 @@ function(respEl) {
 			}
 		}
 
+		if (!defaultType) {
+			var curApp = appCtxt.getCurrentAppName();
+			var types = ZmApp.SEARCH_TYPES[curApp];
+			defaultType = (types && types.length) ? types[0] : ZmItem.MSG;
+		}
+
 		for (var i = 0; i < types.length; i++) {
 			var type = types[i];
 			var data = respEl[ZmList.NODE[type]];
@@ -209,6 +215,7 @@ function(respEl) {
 	var _en = new Date();
 	DBG.println(AjxDebug.DBG1, "TOTAL PARSE TIME for " + count + " NODES: " + (_en.getTime() - _st.getTime()));
 
+	currentType = currentType || defaultType;
 	if (numTypes <= 1) {
 		this.type = currentType;
 	} else if (numTypes == 2 && (foundType[ZmItem.PAGE] || foundType[ZmItem.DOCUMENT])) {
