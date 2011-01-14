@@ -282,7 +282,7 @@ function(reset) {
 		if (this.parent.getController() instanceof ZmMsgController) {
 			// get the bounds for the app content area so we can position the day view
 			var appContentBounds = appCtxt.getAppViewMgr()._getContainerBounds(ZmAppViewMgr.C_APP_CONTENT);
-            if (this.mode && this.mode != "MSG")
+            if (!isRight)
 			    grandParentSize = {x: appContentBounds.width, y: appContentBounds.height};
 
 			// set padding so we can add it to the day view's x-location since it is a child of the shell
