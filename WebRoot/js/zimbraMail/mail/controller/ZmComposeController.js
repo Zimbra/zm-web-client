@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -505,8 +505,10 @@ function(attId, docIds, draftType, callback, contactId) {
 	var requestReadReceipt = false;
 	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
 		var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
-		var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
-		requestReadReceipt = (!!(mi && mi.getChecked()));
+        if (menu){
+		    var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
+		    requestReadReceipt = (!!(mi && mi.getChecked()));
+        }
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
@@ -1517,7 +1519,9 @@ function(op) {
 			if (cv._preface) {
 				var idx = curText.indexOf(cv._preface);
 				if (idx > 0) {
-					userText = curText.substr(0, idx);
+					userText = curText.substr(0, idx);//.replace(/\n$/,"");
+				} else {
+					userText = curText;
 				}
 			} else {
 				userText = curText;
