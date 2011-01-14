@@ -51,8 +51,10 @@ ZmShareProxy.prototype.getIcon = function() {
 
     // icon based on view type
     var type = ZmOrganizer.TYPE[this.shareInfo.view];
+    var orgPackage = ZmOrganizer.ORG_PACKAGE[type];
+    if (orgPackage) AjxDispatcher.require(orgPackage);
     var orgClass = window[ZmOrganizer.ORG_CLASS[type]];
-    return orgClass.prototype.getIcon.call(this) || "Folder";
+    return orgClass ? orgClass.prototype.getIcon.call(this) : "Folder";
 };
 
 ZmShareProxy.prototype.getToolTip = function(force) {
