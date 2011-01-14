@@ -858,6 +858,13 @@ function(type, addr) {
 	addr = addr || "";
 
 	var addrStr = addr.isAjxEmailAddress ? addr.toString() : addr;
+
+	//show first, so focus works on IE.
+	if (addrStr.length && !this._using[type]) {
+		this._using[type] = true;
+		this._showAddressField(type, true);
+	}
+
 	if (this._useAcAddrBubbles) {
 		var addrInput = this._addrInputField[type];
 		if (!addrStr) {
@@ -874,11 +881,6 @@ function(type, addr) {
 	}
 	else {
 		this._setAddrFieldValue(type, addrStr);
-	}
-
-	if (addrStr.length && !this._using[type]) {
-		this._using[type] = true;
-		this._showAddressField(type, true);
 	}
 
 	// Use a timed action so that first time through, addr textarea
