@@ -592,7 +592,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 		if (!isDraft) {
 			this._cleanupSignatureIds(idoc);
 		}
-		var defangedContent = this._htmlEditor.getContent(true);
+		var defangedContent = this._htmlEditor.getContent(!isDraft);
 
 		// Bug 27422 - Firefox and Safari implementation of execCommand("bold")
 		// etc use styles, and some email clients (Entourage) don't process the
