@@ -460,7 +460,7 @@ ZmShareSearchDialog.prototype.popup = function(organizerType, addCallback, cance
     if (cancelCallback) this._buttonDesc[DwtDialog.CANCEL_BUTTON].callback = cancelCallback;
 
     if (appCtxt.multiAccounts) {
-        var acct = object.account || appCtxt.accountList.mainAccount;
+        var acct =   appCtxt.getActiveAccount() || appCtxt.accountList.mainAccount;
         this._acAddrSelectList.setActiveAccount(acct);
     }
 
