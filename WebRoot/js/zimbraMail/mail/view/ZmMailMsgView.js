@@ -703,6 +703,8 @@ function(msg, idoc, id, iframe) {
 			msg.setHtmlContent(this._htmlBody);
 			msg.showImages = true;
 		}
+        //Make sure the link is not followed
+        return false;
 	};
 };
 
