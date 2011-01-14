@@ -151,8 +151,7 @@ function() {
     var backups = this.getBackups()._vector.getArray();
     var sel = [];
     for (var i = 0; i < backups.length; i++) {
-        if (backups[i].active) {
-            var bk = backups[i];
+        if (backups[i] && backups[i].active) {
             sel.push(backups[i]);
             break;
         }
