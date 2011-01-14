@@ -105,6 +105,7 @@ function() {
 	this.getSetting(ZmSetting.CHILD_ACCTS_VISIBLE).addChangeListener(listener);
 	this.getSetting(ZmSetting.ATTACHMENTS_BLOCKED).addChangeListener(listener);
 
+
 	if (appCtxt.isOffline) {
 		this.getSetting(ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED).addChangeListener(listener);
 		this.getSetting(ZmSetting.OFFLINE_IS_MAILTO_HANDLER).addChangeListener(listener);
@@ -236,7 +237,7 @@ function(callback, accountName, result) {
 	if (obj.used)			{ this._settings[ZmSetting.QUOTA_USED].setValue(obj.used); }
     if (obj.rest)			{ this._settings[ZmSetting.REST_URL].setValue(obj.rest); }
 	if (obj.license)		{ this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status); }
-    if (obj.attSizeLimit)   { this._settings[ZmSetting.ATTACHMENT_SIZE_LIMIT].setValue(obj.attSizeLimit); }
+	if (obj.attSizeLimit)   { this._settings[ZmSetting.ATTACHMENT_SIZE_LIMIT].setValue(obj.attSizeLimit); }
     if (obj.docSizeLimit)   { this._settings[ZmSetting.DOCUMENT_SIZE_LIMIT].setValue(obj.docSizeLimit); }
 
 	if (obj.prefs && obj.prefs._attrs) {
@@ -732,7 +733,6 @@ function() {
 	this.registerSetting("MAIL_SEND_LATER_ENABLED",				{name:"zimbraFeatureMailSendLaterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
 	// COS SETTINGS
-	this.registerSetting("ATTACHMENTS_BLOCKED",				{name:"zimbraAttachmentsBlocked", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("AVAILABLE_SKINS",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST, isGlobal:true});
 	this.registerSetting("AVAILABLE_CSVFORMATS",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST, isGlobal:true});
 	this.registerSetting("BROWSE_ENABLED",					{name:"zimbraFeatureAdvancedSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
