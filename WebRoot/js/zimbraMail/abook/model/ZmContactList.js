@@ -230,7 +230,9 @@ function(contact) {
  */
 ZmContactList.prototype._realizeContact =
 function(contact, idx) {
+
 	if (contact instanceof ZmContact) { return contact; }
+	if (contact && contact.type == ZmItem.CONTACT) { return contact; }	// instanceof often fails in new window
 
 	var args = {list:this};
 	var obj = eval(ZmList.ITEM_CLASS[this.type]);

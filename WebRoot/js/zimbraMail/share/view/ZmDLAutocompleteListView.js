@@ -53,7 +53,7 @@ function(list, contact) {
 
 	// add row for selecting all at top of list
 	var dl = appCtxt.getApp(ZmApp.CONTACTS).getDL(contact.getEmail());
-	var numMembers = dl.total;
+	var numMembers = dl ? dl.total : list.length;
 	if (numMembers != 1) {
 		var table = this._getTable();
 		var row = table.insertRow(0);
@@ -64,7 +64,7 @@ function(list, contact) {
 		cell.innerHTML = AjxImg.getImageHtml("Blank16");
 		cell = row.insertCell(-1);
 		var text = numMembers ? ZmMsg.selectAllMembers : ZmMsg.noMembers;
-		cell.innerHTML = AjxMessageFormat.format(text, [dl.total]);
+		cell.innerHTML = AjxMessageFormat.format(text, [numMembers]);
 	}
 
 	// autoselect first real row
