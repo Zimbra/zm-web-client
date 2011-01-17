@@ -189,7 +189,11 @@ function(params) {
 	}
 
 	if (params.canExpand) {
-		var addr = params.dlAddress || params.address;
+		var addr = params.dlAddress;	// make sure this is just email address
+		if (!addr) {
+			var obj = AjxEmailAddress.parse(params.address);
+			addr = obj ? obj.getAddress() : "";
+		}
 		var expandLinkId = id + "_expand";
 		var expandLink = 'ZmAddressInputField.expandBubble("' + id + '","' + addr + '");';
 		var expStyle = style + "margin-right:3px;";
