@@ -1815,7 +1815,11 @@ function(idx, status) {
 		if (status != ZmFreeBusySchedulerView.STATUS_UNKNOWN &&
 			status != ZmFreeBusySchedulerView.STATUS_FREE)
 		{
-			this._allAttendeesStatus[idx] = ZmFreeBusySchedulerView.STATUS_BUSY;
+            if(status == ZmFreeBusySchedulerView.STATUS_OUT || this._allAttendeesStatus[idx] == ZmFreeBusySchedulerView.STATUS_OUT) {
+    			this._allAttendeesStatus[idx] = ZmFreeBusySchedulerView.STATUS_OUT;
+            }else {
+            	this._allAttendeesStatus[idx] = ZmFreeBusySchedulerView.STATUS_BUSY;
+            }
 		}
 	}
 };
