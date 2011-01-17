@@ -927,7 +927,7 @@ function(composeMode, switchPreface) {
 			if (sig) {
 				var textsig = AjxStringUtil.convertHtml2Text(sig, {"#text": ZmComposeView._convertTextNode});
 				if (textsig) {
-					var sigRe = new RegExp(AjxStringUtil.regExEscape(textsig.replace(/[\n\r]*$/,""))+"\\s*$");
+					var sigRe = new RegExp(AjxStringUtil.regExEscape(textsig.replace(/[\n\r]*$/,"")).replace(/\\n/g,"\\s?\\n")+anyChar+"*$");
 					baseContent = baseContent.replace(sigRe, "");
 				}
 			}
