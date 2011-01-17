@@ -446,3 +446,11 @@ function() {
 		return mailApp.getConvListController();
 	}
 };
+
+ZmMsgController.prototype._acceptShareHandler =
+function(ev) {
+    ZmMailListController.prototype._acceptShareHandler.call(this, ev);
+    //Close View
+    appCtxt.getAppViewMgr().popView();
+};
+
