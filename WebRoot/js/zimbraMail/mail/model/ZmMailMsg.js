@@ -1268,6 +1268,10 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 			} else {
 				msgNode.id = this.nId;
 			}
+
+			if (!isDraft) { // not saveDraftRequest 
+				msgNode.did = this.nId || this.id; // set draft id
+			}
 		}
 	}
 
