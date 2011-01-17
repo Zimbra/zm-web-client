@@ -204,7 +204,8 @@ function(ev){
 ZmCalendarTreeController.prototype._detachListener =
 function(ev){
 	var folder = this._getActionedOrganizer(ev);
-	var url = (folder) ? folder.getRestUrl() : null;
+    var acct = folder && folder.getAccount();
+	var url = (folder) ? folder.getRestUrl(acct) : null;
 	if (url) {
 		window.open(url+".html?tz=" + AjxTimezone.DEFAULT, "_blank");
 	}
