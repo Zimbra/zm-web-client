@@ -8,7 +8,7 @@
 	
 	<div id="ZSplashPanel" class="center">
 		<h1><div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
-		<h2><script>document.write(ZmMsg.splashScreenAppName)</script></h2>
+		<h2><script>if(!appCtxt.offline) { document.write(ZmMsg.splashScreenAppName) }</script></h2>
 		<div id="#ZSplashBodyContainer" class="content">
 			<div class="message"><script>document.write(ZmMsg.splashScreenLoading)</script></div>
 			<div class="switch"><script>if(!appCtxt.offline) { document.write(ZmMsg.splashScreenSwitch) }</script></div>
