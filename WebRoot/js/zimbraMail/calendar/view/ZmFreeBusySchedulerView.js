@@ -178,6 +178,7 @@ function(dateInfo, organizer, attendees) {
 ZmFreeBusySchedulerView.prototype.update =
 function(dateInfo, organizer, attendees) {
 	this._updateAttendees(organizer, attendees);
+    this.updateFreeBusy();
 	this._outlineAppt();
 };
 
