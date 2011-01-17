@@ -1291,22 +1291,22 @@ function(email, textId, rowId, ev, loc, element) {
 			this._curExpanded = textId;
 			this._setExpandText(textId, true);
 		}
-		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact, loc, textId, element]));
+		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact, loc, textId]));
 	}
-	this._element = this._element || element;
+	this._element = element || this._element;
 	if (this._element) {
 		this._element.focus();
 	}
 };
 
 ZmAutocompleteListView.prototype._handleResponseExpandDL =
-function(contact, loc, textId, element, matches) {
+function(contact, loc, textId, matches) {
 
 	var mlv = this._memberListView;
 	if (!mlv) {
 		mlv = this._memberListView = new ZmDLAutocompleteListView({parent:appCtxt.getShell(), parentAclv:this});
-		mlv._element = this._element;
 	}
+	mlv._element = this._element;
 	mlv._dlContact = contact;
 	mlv._dlBubbleId = textId;
 	mlv._removeAll();
