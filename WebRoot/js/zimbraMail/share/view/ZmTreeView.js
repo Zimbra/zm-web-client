@@ -187,10 +187,16 @@ function(params) {
 
     //determine if call is from dialog/picker rather than nav tree
     var isApp = this._overview && this._overview.isAppOverview;
+    var isZimbraAccount = true;
+    if(appCtxt.multiAccounts && params.account){
+        var acct = params.account;
+        isZimbraAccount = acct.isZimbraAccount && !acct.isMain;
+    }
+
 
     // TODO: Find a better way to indicate which trees show the share link 
     var addShareLink =
-        appCtxt.get(ZmSetting.SHARING_ENABLED)  && isApp  &&
+        appCtxt.get(ZmSetting.SHARING_ENABLED)  && isApp  && isZimbraAccount &&
         (
             this.type == ZmOrganizer.FOLDER   ||
             this.type == ZmOrganizer.ADDRBOOK ||
