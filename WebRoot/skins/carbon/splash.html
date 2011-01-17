@@ -11,12 +11,12 @@
 		<h1><div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
 		<div class="content">
 			<div class="message"><script>document.write(ZmMsg.splashScreenLoading)</script></div>
-			<div class="switch"><script>document.write(ZmMsg.splashScreenSwitch)</script></div>
+			<div class="switch"><script>if(!window.isOffline) { document.write(ZmMsg.splashScreenSwitch) }</script></div>
 			<div class="copyright"><script>document.write(ZmMsg.splashScreenCopyright)</script></div>
 		<div> 
         <div class="decor1"></div>
 	</div>
-	
+
 	
 </div>
 <!-- END SPLASH SCREEN -->
