@@ -1437,23 +1437,26 @@ function() {
 		htmlArr[idx++] = AjxImg.getImageHtml(att.linkIcon, "position:relative;");
 		htmlArr[idx++] = "</td><td style='white-space:nowrap'>";
 
-		var linkArr = [];
-		var j = 0;
-		linkArr[j++] = att.isHit ? "<span class='AttName-matched'>" : "";
-		linkArr[j++] = att.link;
-		linkArr[j++] = AjxStringUtil.htmlEncode( AjxStringUtil.clipFile(att.label, 30) );
-		linkArr[j++] = att.isHit ? "</a></span>" : "</a>";
-		var link = linkArr.join("");
-
-		// objectify if this attachment is an image
-		if (att.objectify && this._objectManager) {
-			this._lazyCreateObjectManager();
-			var imgHandler = this._objectManager.getImageAttachmentHandler();
-			idx = this._objectManager.generateSpan(imgHandler, htmlArr, idx, link, {url:att.url});
+		if (appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
+			// if attchments are blocked, just show the label
+			htmlArr[idx++] = att.label;
 		} else {
-			htmlArr[idx++] = link;
+			var linkArr = [];
+			var j = 0;
+			linkArr[j++] = att.isHit ? "<span class='AttName-matched'>" : "";
+			linkArr[j++] = att.link;
+			linkArr[j++] = AjxStringUtil.htmlEncode( AjxStringUtil.clipFile(att.label, 30) );
+			linkArr[j++] = att.isHit ? "</a></span>" : "</a>";
+			var link = linkArr.join("");
+			// objectify if this attachment is an image
+			if (att.objectify && this._objectManager) {
+				this._lazyCreateObjectManager();
+				var imgHandler = this._objectManager.getImageAttachmentHandler();
+				idx = this._objectManager.generateSpan(imgHandler, htmlArr, idx, link, {url:att.url});
+			} else {
+				htmlArr[idx++] = link;
+			}
 		}
-
 		if (att.size || att.htmlLink || att.vcardLink || att.download || att.briefcaseLink || att.importICSLink) {
 			htmlArr[idx++] = "&nbsp;(";
 			if (att.size) {
