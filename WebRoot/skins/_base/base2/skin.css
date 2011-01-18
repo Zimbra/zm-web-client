@@ -198,22 +198,22 @@ BODY						{	margin:0px; 				}
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@')"; /* IE8 */
 }
 .SplashScreen .center { 
-    width:500px;
-    min-height:300px;
     margin-top:-150px;
     margin-left:-250px;
+    min-height:300px;
+    width:500px;
 }   
 .SplashScreen .center-small {
-    width:350px;
     height:270px;
     margin-top:-135px;
     margin-left:-175px;
+    width:350px;
 }
 .SplashScreen .center, .SplashScreen .center-small {
-    position:absolute;
-    top:50%;
     left:50%;
     overflow:visible;
+    position:absolute;
+    top:50%;
 
     /*Linear gradient backgrounds*/
     background-color: @darken(AppC,10)@;
@@ -241,6 +241,7 @@ BODY						{	margin:0px; 				}
     margin:22px 100px 0px 20px;
 }
 .SplashScreen h2 {
+    cursor:default;
     margin:0px 0px 32px 100px;
 }
 .SplashScreen .ImgLoginBanner {
@@ -260,6 +261,7 @@ BODY						{	margin:0px; 				}
 }
 .SplashScreen .message {
     color:#000000;
+    cursor:default;
     font-size:14px;
     font-weight:bold;
     padding-top:20px;
@@ -267,12 +269,18 @@ BODY						{	margin:0px; 				}
 .SplashScreen .switch{
     margin:30px 100px 60px;
 }
-.SplashScreen .copyright {
-    bottom:5px;
-    color: @darken(AppC,50)@;
-    font-size:11px;
+.SplashScreen .Footer {
+    bottom:0;
+    position:absolute;
     text-align:center;
-    position:fixed;
+    width:100%;
+    z-index:10;
+}
+.SplashScreen .copyright {
+    color: @darken(AppC,50)@;
+    cursor:default;
+    font-size:11px;
+    margin-bottom:5px;
 }
 
 /** Logo Images **/

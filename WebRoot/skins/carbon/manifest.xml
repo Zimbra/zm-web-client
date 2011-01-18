@@ -6,7 +6,6 @@
 		</substitutions>
 		<css>
 			<file>skin.css</file>
-			<file>style/login.css</file>
 		</css>
   </common>  
   <advanced>
@@ -15,7 +14,7 @@
 		</script>
 		<html>
 			<file>skin.html</file>
-			<file>splash.html</file>
+			<file>../_base/base2/splash.html</file>
 		</html>
   </advanced>
   <standard>
