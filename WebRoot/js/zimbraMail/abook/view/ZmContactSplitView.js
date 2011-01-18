@@ -1097,7 +1097,7 @@ function(contact, params) {
 
 	// icon
 	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
-	htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon());
+	htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon(), null, "id=" + this._getFieldId(contact, "type"));
 	htmlArr[idx++] = "</center></td>";
 
 	// file as
@@ -1112,7 +1112,7 @@ function(contact, params) {
 		}
 		fileAs = [AjxStringUtil.htmlEncode(ZmMsg.noName), val].join(" ");
 	}
-	htmlArr[idx++] = "<td style='vertical-align:middle;'>&nbsp;";
+	htmlArr[idx++] = "<td id='" + this._getFieldId(contact, "fileas") + "' style='vertical-align:middle;'>&nbsp;";
 	htmlArr[idx++] = fileAs;
 	htmlArr[idx++] = "</td>";
 
