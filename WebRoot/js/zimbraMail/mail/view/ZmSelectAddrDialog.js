@@ -52,8 +52,7 @@ ZmSelectAddrDialog.prototype._contentHtml =
 function() {
 	var html = [];
 	var idx = 0;
-	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0";
-	html[idx++] = (AjxEnv.isSafari) ? " width='300'>" : ">";
+	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0>";
 	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmSelectAddrDialog", {id:this._htmlElId});
 	html[idx++] = "</table>";
 	return html.join("");
