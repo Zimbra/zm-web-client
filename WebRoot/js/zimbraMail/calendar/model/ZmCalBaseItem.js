@@ -485,7 +485,7 @@ function() {
 	// if server doesn't tell us what URL to use, do our best to generate
 	var organizer = appCtxt.getById(this.folderId);
 	var url = organizer
-		? ([organizer.getRestUrl(), "/?id=", AjxStringUtil.urlComponentEncode(this.id)].join(""))
+		? ([organizer.getRestUrl(), "/?id=", AjxStringUtil.urlComponentEncode(this.id || this.invId)].join(""))
 		: null;
 
 	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
