@@ -7,67 +7,18 @@
 	</script>
 	
 	<div id="ZSplashPanel" class="center">
+	    <div class="ImgAltBanner"></div>
 		<h1><div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
 		<h2><script>if(!window.isOffline) { document.write(ZmMsg.splashScreenAppName) }</script></h2>
 		<div id="#ZSplashBodyContainer" class="content">
 			<div class="message"><script>document.write(ZmMsg.splashScreenLoading)</script></div>
 			<div class="switch"><script>if(!window.isOffline) { document.write(ZmMsg.splashScreenSwitch) }</script></div>
-			<div class="copyright"><script>document.write(ZmMsg.splashScreenCopyright)</script></div>
-		<div> 
+		</div> 
+        <div class="decor1"></div>
 	</div>
-	
-	<!--table style='width:100%;height:100%'>
-		<tr>
-			<td align=center valign=middle>
-				<div id='ZSplashPanel'>
-					<table class='zLoginTable' width='100%' cellpadding=0 cellspacing=0>
-						<tr>
-							<td id='ZLoginHeaderContainer'>
-								<center>
-									<table class='zLoginTable'>
-										<tr>
-											<td id='ZLoginBannerContainer'>
-												<div id='ZLoginBannerPanel'>
-													<table class='zLoginTable'>
-														<tr>
-															<td>
-																<div style='cursor:pointer' id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div>
-															</td>
-															<td valign=top id='ZLoginShortVersion'>
-															</td>
-														</tr>
-													</table>
-													<div id='ZLoginAppName'><script>document.write(ZmMsg.splashScreenAppName)</script></div>
-												</div>
-											</td>
-										</tr>
-									</table>
-								</center>
-							</td>
-						</tr>
-						<tr>
-							<td id='ZSplashBodyContainer'>
-								<div id='ZLoginLoadingPanel'>
-									<table>
-										<tr>
-											<td id='ZLoginLoadingMsg'><script>document.write(ZmMsg.splashScreenLoading)</script></td>
-										</tr>
-										<tr>
-											<td id='ZLoginSwitchMsg'><script>document.write(ZmMsg.splashScreenSwitch)</script></td>
-										</tr>
-									</table>
-								</div>
-								<table class='zLoginTable' width='100%' cellpadding=0 cellspacing=0>
-									<tr>
-										<td id='ZLoginLicenseContainer'><script>document.write(ZmMsg.splashScreenCopyright)</script></td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-					</table>
-				</div>
-			</td>
-		</tr>
-	</table-->
+	<div class="Footer">
+        <div class="copyright"><script>document.write(ZmMsg.splashScreenCopyright)</script></div>
+    </div>
+
 </div>
 <!-- END SPLASH SCREEN -->
