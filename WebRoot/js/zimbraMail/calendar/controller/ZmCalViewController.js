@@ -1444,7 +1444,24 @@ function(appt, mode, params) {
 	if(params.isException) appt.clearRecurrence();
 	if(params.startDate) appt.setStartDate(params.startDate);
 	if(params.endDate) appt.setEndDate(params.endDate);
-	this.newAppointment(appt, mode, true);
+
+    if(!appt.isOrganizer())
+    {
+          var origOrganizer=appt.organizer;
+          var myEmail=appt.getFolder().getAccount().getEmail();
+          appt.replaceAttendee(myEmail,origOrganizer);
+          appt.organizer=myEmail;
+          appt.isOrg=true;
+          var dlg = appCtxt.getMsgDialog();
+		  var callback = new AjxCallback(this, this.newAppointment,[appt,mode,true]);
+		  var listener = new AjxListener(this, this._handleReadonlyOk, [callback, dlg]);
+		  dlg.setButtonListener(DwtDialog.OK_BUTTON, listener);
+		  dlg.setMessage(ZmMsg.confirmApptDuplication);
+		  dlg.popup();
+    }
+    else{
+	    this.newAppointment(appt, mode, true);
+    }
 };
 
 ZmCalViewController.prototype._proposeTimeListener =

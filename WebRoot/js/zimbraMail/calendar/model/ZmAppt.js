@@ -1117,6 +1117,27 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 	}
 };
 
+ZmAppt.prototype.replaceAttendee =
+function(oldAttendee,newAttendee){
+   var attendees = this._attendees[ZmCalBaseItem.PERSON];
+   if(attendees && attendees.length){
+    for(var a=0;a<attendees.length;a++){
+        if(attendees[a].getEmail()==oldAttendee){
+            attendees[a]=this._createAttendeeFromMail(newAttendee);
+            break;
+        }
+    }
+   }
+   this._attendees[ZmCalBaseItem.PERSON]=attendees;
+}
+
+ZmAppt.prototype._createAttendeeFromMail=
+function(mailId){
+    var attendee=new ZmContact(null);
+    attendee.initFromEmail(mailId);
+    return attendee;
+}
+
 ZmAppt.prototype._getInviteFromError =
 function(result) {
 	return (result._data.GetAppointmentResponse.appt[0].inv[0]);
