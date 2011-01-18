@@ -128,6 +128,10 @@ function() {
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 	if (this._appt.isAllDayEvent()) {
 		appt.setAllDayEvent(true);
+        if(AjxDateUtil.isDayShifted(startDate)) {
+            AjxDateUtil.rollToNextDay(startDate);
+            AjxDateUtil.rollToNextDay(endDate);
+        }
 	} else {
 		appt.setAllDayEvent(false);
 		startDate = this._startTimeSelect.getValue(startDate);
