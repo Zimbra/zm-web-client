@@ -935,7 +935,7 @@ function(composeMode, switchPreface) {
 			// Do the mode switch
 			this._htmlEditor.setMode(composeMode, true);
 			// Re-set the whole body, with optional replied/forwarded msg and signature automatically added. baseContent is the text that the user may have written before switching
-			this._setBody(this._action, this._msg || null, baseContent || "\n");
+			this._setBody(this._action, this._msg || null, baseContent || "\n", null, true);
 
 		} else {
 
@@ -2153,7 +2153,7 @@ function(action, msg, subjOverride) {
 };
 
 ZmComposeView.prototype._setBody =
-function(action, msg, extraBodyText) {
+function(action, msg, extraBodyText, dummyIncOptions /* (not used, but passed by resetBody - not time to check why?) */, switchingToHtml) {
 	var htmlMode = (this._composeMode == DwtHtmlEditor.HTML);
 
 	var isDraft = (action == ZmOperation.DRAFT);
@@ -2224,7 +2224,7 @@ function(action, msg, extraBodyText) {
 	if (sigPre) {
 		preText += crlf;
 	}
-	if (htmlMode) {
+	if (switchingToHtml) {
 		preText = preText.replace(/\n/g,"<br/>");
 	}
 
