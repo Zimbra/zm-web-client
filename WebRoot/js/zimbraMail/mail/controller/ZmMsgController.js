@@ -140,7 +140,15 @@ function(actionCode) {
 		case ZmKeyMap.CANCEL:
 			this._backListener();
 			break;
-			
+
+		case ZmKeyMap.NEXT_PAGE:
+			this._goToMsg(this._currentView, true);
+			break;
+
+		case ZmKeyMap.PREV_PAGE:
+			this._goToMsg(this._currentView, false);
+			break;
+
 		default:
 			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
 			break;
