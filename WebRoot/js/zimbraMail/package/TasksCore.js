@@ -22,7 +22,7 @@
  *  - If a search for tasks returns results
  */
 AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
-
+AjxPackage.require("zimbraMail.calendar.model.ZmRecurrence");
 AjxPackage.require("zimbraMail.tasks.model.ZmTaskFolder");
 AjxPackage.require("zimbraMail.tasks.model.ZmTask");
 
